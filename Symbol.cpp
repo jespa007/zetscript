@@ -6,14 +6,14 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 
 		if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 
-			if(k_str_int_type_ptr==symbol->str_native_type){
+			if(k_str_zs_int_type_ptr==symbol->str_native_type){
 				return {
 						0,
 						ptr_variable,
 						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C
 				};
 
-			}else if(k_str_const_int_type_ptr==symbol->str_native_type){
+			}else if(k_str_const_zs_int_type_ptr==symbol->str_native_type){
 				return {
 						0,
 						ptr_variable,
@@ -32,26 +32,23 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 						ptr_variable,
 						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY
 				};
-			}else if(k_str_char_type_ptr==symbol->str_native_type){
+			}else if(  k_str_char_type_ptr==symbol->str_native_type
+					|| k_str_const_char_type_ptr==symbol->str_native_type
+					|| k_str_string_type_ptr==symbol->str_native_type
+					){
+				char *input_s=(char *)ptr_variable;
+				ScriptObjectString *s=new ScriptObjectString(zs);
 
-				return {
-							ptr_variable,
-							0,
-							MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING
-				};
-			}else if(k_str_const_char_type_ptr==symbol->str_native_type){
+				if(k_str_string_type_ptr==symbol->str_native_type){
+					s->value=(void *)ptr_variable;
+					input_s=(char *)(((std::string *)ptr_variable)->c_str());
+				}
 
+				*((std::string *)(s->value))=input_s;
 				return {
-						ptr_variable,
-						0,
-						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY
-				};
-			}else if(k_str_string_type_ptr==symbol->str_native_type){
-
-				return {
-						(void *)((std::string *)ptr_variable)->c_str(),
-						ptr_variable,
-						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C
+					(void *)input_s,
+					(void *)(s),
+					MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING
 				};
 			}else if(k_str_bool_type_ptr==symbol->str_native_type){
 				return {
@@ -62,7 +59,6 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 				};
 			}else if(k_str_const_bool_type_ptr==symbol->str_native_type){
 				return {
-
 						0,
 						ptr_variable,
 						MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY
@@ -78,7 +74,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 
 							NULL,
 							var,
-							MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C
+							MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT
 					};
 				}else{
 					THROW_RUNTIME_ERROR("Native symbol \"%s\" has type \"%s\" that is not registered",symbol->name.c_str(),symbol->str_native_type.c_str());

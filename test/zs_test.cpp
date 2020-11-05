@@ -88,20 +88,20 @@ public:
 class CInteger{
 public:
 
-	int n;
+	zs_int n;
 	CInteger(){
 		n=0;
 	}
 
-	CInteger(int _n){
+	CInteger(zs_int _n){
 		n=_n;
 	}
 
-	void ScriptConstructor(int _n){
+	void ScriptConstructor(zs_int _n){
 		n=_n;
 	}
 
-	void _set(int i){
+	void _set(zs_int i){
 		this->n = i;
 	}
 
@@ -118,11 +118,11 @@ public:
 		return new CInteger((int)(n1->n + n2));
 	}
 
-	static CInteger * _add(CInteger *n1, int n2){
+	static CInteger * _add(CInteger *n1, zs_int n2){
 		return new CInteger(n1->n + n2);
 	}
 
-	static CInteger * _add(int n1, CInteger * n2){
+	static CInteger * _add(zs_int n1, CInteger * n2){
 		return new CInteger(n1 + n2->n);
 	}
 
@@ -130,11 +130,11 @@ public:
 		return new CInteger(n1->n / n2->n);
 	}
 
-	static CInteger * _div(CInteger *n1, int n2){
+	static CInteger * _div(CInteger *n1, zs_int n2){
 		return new CInteger(n1->n / n2);
 	}
 
-	static CInteger * _div(int n1, CInteger *n2){
+	static CInteger * _div(zs_int n1, CInteger *n2){
 		return new CInteger(n1 / n2->n);
 	}
 
@@ -149,11 +149,11 @@ public:
 		return new CInteger(n1->n % n2->n);
 	}
 
-	static CInteger * _mod(CInteger *n1, int n2){
+	static CInteger * _mod(CInteger *n1, zs_int n2){
 		return new CInteger(fmod(n1->n, n2));
 	}
 
-	static CInteger * _mod(int n1, CInteger *n2){
+	static CInteger * _mod(zs_int n1, CInteger *n2){
 		return new CInteger(n1 % n2->n);
 	}
 
@@ -161,11 +161,11 @@ public:
 		return new CInteger(n1->n * n2->n);
 	}
 
-	static CInteger * _mul(CInteger *n1, int n2){
+	static CInteger * _mul(CInteger *n1, zs_int n2){
 		return new CInteger(n1->n * n2);
 	}
 
-	static CInteger * _mul(int n1, CInteger * n2){
+	static CInteger * _mul(zs_int n1, CInteger * n2){
 		return new CInteger(n1 * n2->n);
 	}
 
@@ -173,11 +173,11 @@ public:
 		return new CInteger(n1->n << n2->n);
 	}
 
-	static CInteger * _shl(CInteger *n1, int n2){
+	static CInteger * _shl(CInteger *n1, zs_int n2){
 		return new CInteger(n1->n << n2);
 	}
 
-	static CInteger * _shl(int n1, CInteger *n2){
+	static CInteger * _shl(zs_int n1, CInteger *n2){
 		return new CInteger(n1 << n2->n);
 	}
 
@@ -185,11 +185,11 @@ public:
 		return new CInteger(n1->n & n2->n);
 	}
 
-	static CInteger * _and(CInteger *n1, int n2){
+	static CInteger * _and(CInteger *n1, zs_int n2){
 		return new CInteger(n1->n & n2);
 	}
 
-	static CInteger * _and(int n1, CInteger * n2){
+	static CInteger * _and(zs_int n1, CInteger * n2){
 		return new CInteger(n1 & n2->n);
 	}
 
@@ -197,11 +197,11 @@ public:
 		return new CInteger(n1->n | n2->n);
 	}
 
-	static CInteger * _or(CInteger *n1, int n2){
+	static CInteger * _or(CInteger *n1, zs_int n2){
 		return new CInteger(n1->n | n2);
 	}
 
-	static CInteger * _or(int n1, CInteger * n2){
+	static CInteger * _or(zs_int n1, CInteger * n2){
 		return new CInteger(n1 | n2->n);
 	}
 
@@ -210,11 +210,11 @@ public:
 		return new CInteger(n1->n ^ n2->n);
 	}
 
-	static CInteger * _xor(CInteger *n1, int n2){
+	static CInteger * _xor(CInteger *n1, zs_int n2){
 		return new CInteger(n1->n ^ n2);
 	}
 
-	static CInteger * _xor(int n1, CInteger * n2){
+	static CInteger * _xor(zs_int n1, CInteger * n2){
 		return new CInteger(n1 ^ n2->n);
 	}
 
@@ -223,11 +223,11 @@ public:
 		return new CInteger(n1->n >> n2->n);
 	}
 
-	static CInteger * _shr(CInteger *n1, int n2){
+	static CInteger * _shr(CInteger *n1, zs_int n2){
 		return new CInteger(n1->n >> n2);
 	}
 
-	static CInteger * _shr(int n1, CInteger *n2){
+	static CInteger * _shr(zs_int n1, CInteger *n2){
 		return new CInteger(n1 >> n2->n);
 	}
 
@@ -291,23 +291,29 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_ARITHMETIC_INT_OP(val1, op, val2) \
 { \
-	int *aux_value=NULL; \
+	zs_int *aux_value=NULL; \
 	std::string str= STR(val1) \
 				STR(op) \
+				" "\
 				STR(val2) \
 				";"; \
-	aux_value=zs->evalIntValue(str); \
-	if(aux_value!=NULL){ \
-		if(*aux_value != (val1 op val2)){ \
-			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,*aux_value); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalIntValue(str); \
+		if(aux_value!=NULL){ \
+			if(*aux_value != (val1 op val2)){ \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
+		exit(-1); \
+	}\
 }
 
 #define TEST_ARITHMETIC_CINTEGER_OP(val1, op, val2) \
 { \
-	int *aux_value=NULL; \
+	zs_int *aux_value=NULL; \
 	std::string str= "it1=("\
 				"(i1=new CInteger("\
 				STR(val1) \
@@ -317,13 +323,18 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");it2=it1.toInt();delete it1;delete i1;delete i2;it2;"; \
-	aux_value=zs->evalIntValue(str); \
-	if(aux_value!=NULL){ \
-		if( *aux_value != (val1 op val2)){ \
-			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,*aux_value); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalIntValue(str); \
+		if(aux_value!=NULL){ \
+			if( *aux_value != (val1 op val2)){ \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+			fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
+			exit(-1); \
+	}\
 }
 
 #define TEST_ARITHMETIC_FLOAT_OP(val1, op, val2) \
@@ -332,15 +343,21 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 	float * aux_value=NULL; \
 	std::string str= STR(val1) \
 				STR(op) \
+				" "\
 				STR(val2) \
 				";"; \
-	aux_value=zs->evalFloatValue(str); \
-	if(aux_value!=NULL){ \
-		if(!floatValuesAreAlmostTheSame(*aux_value,expr)){ \
-			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,*aux_value); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalFloatValue(str); \
+		if(aux_value!=NULL){ \
+			if(!floatValuesAreAlmostTheSame(*aux_value,expr)){ \
+				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
+		exit(-1); \
+	}\
 }
 
 
@@ -351,13 +368,18 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				"%" \
 				STR(val2) \
 				";"; \
-	aux_value=zs->evalFloatValue(str); \
-	if(aux_value!=NULL){ \
-		if(!floatValuesAreAlmostTheSame( *aux_value , fmod(val1,val2))){ \
-			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),*aux_value); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalFloatValue(str); \
+		if(aux_value!=NULL){ \
+			if(!floatValuesAreAlmostTheSame( *aux_value , fmod(val1,val2))){ \
+				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
+		exit(-1); \
+	}\
 }
 
 
@@ -374,13 +396,18 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;nt2;"; \
-	aux_value=zs->evalFloatValue(str); \
-	if(aux_value!=NULL){ \
-		if(!floatValuesAreAlmostTheSame(*aux_value,expr)){ \
-			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,*aux_value); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalFloatValue(str); \
+		if(aux_value!=NULL){ \
+			if(!floatValuesAreAlmostTheSame(*aux_value,expr)){ \
+				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
+		exit(-1); \
+	}\
 }
 
 #define TEST_ARITHMETIC_CNUMBER_MOD(val1, val2) \
@@ -395,13 +422,18 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 				STR(val2) \
 				"))"\
 				");nt2=nt1.toFloat();delete n1; delete n2;delete nt1;nt2;"; \
-	aux_value=zs->evalFloatValue(str);\
-	if(aux_value!=NULL){ \
-		if(!floatValuesAreAlmostTheSame(*aux_value  , fmod(val1,val2))){ \
-			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),*aux_value); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalFloatValue(str);\
+		if(aux_value!=NULL){ \
+			if(!floatValuesAreAlmostTheSame(*aux_value  , fmod(val1,val2))){ \
+				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
+		exit(-1); \
+	}\
 }
 
 
@@ -410,16 +442,22 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 	std::string * aux_value=NULL; \
 	std::string str= STR(val1) \
 				STR(op) \
+				" "\
 				val2\
 				";"; \
 	std::string expected_str = std::string(val1) op val2;\
-	aux_value=zs->evalStringValue(str);\
-	if(aux_value!=NULL){ \
-		if(*aux_value!=expected_str){ \
-			fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),expected_str.c_str(),aux_value->c_str()); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalStringValue(str);\
+		if(aux_value!=NULL){ \
+			if(*aux_value!=expected_str){ \
+				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),expected_str.c_str(),aux_value->c_str()); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
+		exit(-1); \
+	}\
 }
 
 
@@ -548,42 +586,58 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 
 #define TEST_ARITHMETIC_OP(val1, op, val2) \
 { \
-	int aux_value=0; \
+	zs_int aux_value=0; \
 	std::string str= STR(val1) \
 				STR(op) \
+				" "\
 				STR(val2) \
 				";"; \
-	if((aux_value=ZetScript::eval<f>(str)) != (val1 op val2)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
+	try{\
+		if((aux_value=ZetScript::eval<f>(str)) != (val1 op val2)){ \
+			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
+			exit(-1); \
+		} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
 		exit(-1); \
-	} \
+	}\
 }
 
 #define TEST_ARITHMETIC_INT_EXPR(expr) \
 { \
-	int * aux_value=NULL; \
+	zs_int * aux_value=NULL; \
 	std::string str_expr= STR(expr)";"; \
 	\
-	aux_value=zs->evalIntValue(str_expr);\
-	if(aux_value != NULL){\
-		if(*aux_value != (expr)){ \
-			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,*aux_value); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalIntValue(str_expr);\
+		if(aux_value != NULL){\
+			if(*aux_value != (expr)){ \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str_expr.c_str(),ex.what()); \
+		exit(-1); \
+	}\
 }
 
 #define TEST_INT_EXPR(expr, expected_value) \
 { \
-	int *aux_value=NULL; \
+	zs_int *aux_value=NULL; \
 	\
-	aux_value=zs->evalIntValue(expr);\
-	if(aux_value != NULL){\
-		if(*aux_value  != (expected_value)){ \
-			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,*aux_value); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalIntValue(expr);\
+		if(aux_value != NULL){\
+			if(*aux_value  != (expected_value)){ \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",expr,ex.what()); \
+		exit(-1); \
+	}\
 }
 
 
@@ -592,48 +646,68 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 	float * aux_value=NULL; \
 	\
 	aux_value=zs->evalFloatValue(expr); \
-	if(aux_value != NULL){ \
-		if(*aux_value  != (expected_value)){ \
-			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,*aux_value); \
-			exit(-1); \
+	try{\
+		if(aux_value != NULL){ \
+			if(*aux_value  != (expected_value)){ \
+				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",expr,ex.what()); \
+		exit(-1); \
+	}\
 }
 
 #define TEST_BOOL_EXPR(expr, expected_value) \
 { \
 	bool *aux_value=NULL; \
 	\
-	aux_value=zs->evalBoolValue(expr);\
-	if(aux_value != NULL){ \
-		if(*aux_value  != (expected_value)){ \
-			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,*aux_value); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalBoolValue(expr);\
+		if(aux_value != NULL){ \
+			if(*aux_value  != (expected_value)){ \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",expr,ex.what()); \
+		exit(-1); \
+	}\
 }
 
 #define TEST_STRING_EXPR(expr, expected_value) \
 { \
 	std::string aux_value=""; \
 	\
-	if((aux_value=ZetScript::evalStringValue(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,expected_value,aux_value.c_str()); \
+	try{\
+		if((aux_value=ZetScript::evalStringValue(expr))  != (expected_value)){ \
+			fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,expected_value,aux_value.c_str()); \
+			exit(-1); \
+		} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",expr,ex.what()); \
 		exit(-1); \
-	} \
+	}\
 }
 
 #define TEST_NUMBER_EXPR(expr, expected_value) \
 { \
 	float *aux_value=NULL; \
 	\
-	aux_value=zs->evalFloatValue(expr);\
-	if(aux_value != NULL){ \
-		if(*aux_value  != (expected_value)){ \
-			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,*aux_value); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalFloatValue(expr);\
+		if(aux_value != NULL){ \
+			if(*aux_value  != (expected_value)){ \
+				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,*aux_value); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",expr,ex.what()); \
+		exit(-1); \
+	}\
 }
 
 #define TEST_ARITHMETIC_FLOAT_EXPR(expr) \
@@ -641,18 +715,23 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 	float *aux_value=NULL; \
 	std::string str_expr= STR(expr)";"; \
 	\
-	aux_value=zs->evalFloatValue(str_expr); \
-	if(aux_value != NULL){ \
-		if(!floatValuesAreAlmostTheSame(*aux_value  , (expr))){ \
-			double error = fabs(fabs(*aux_value)-fabs(expr));\
-			if(error>0.001){ /* Only error if the difference is more than expected */\
-				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,aux_value); \
-				exit(-1); \
-			}else{\
-				fprintf(stderr,"warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n",str_expr.c_str(),expr,*aux_value); \
-			}\
+	try{\
+		aux_value=zs->evalFloatValue(str_expr); \
+		if(aux_value != NULL){ \
+			if(!floatValuesAreAlmostTheSame(*aux_value  , (expr))){ \
+				double error = fabs(fabs(*aux_value)-fabs(expr));\
+				if(error>0.001){ /* Only error if the difference is more than expected */\
+					fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,aux_value); \
+					exit(-1); \
+				}else{\
+					fprintf(stderr,"warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n",str_expr.c_str(),expr,*aux_value); \
+				}\
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str_expr.c_str(),ex.what()); \
+		exit(-1); \
+	}\
 }
 
 #define TEST_ARITHMETIC_BOOL_EXPR(val1) \
@@ -660,13 +739,18 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 	bool *aux_value=NULL; \
 	std::string str= STR(val1) \
 				";"; \
-	aux_value=zs->evalBoolValue(str);\
-	if(aux_value != NULL) { \
-		if(*aux_value != (val1)){ \
-			fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",*aux_value?"true":"false"); \
-			exit(-1); \
+	try{\
+		aux_value=zs->evalBoolValue(str);\
+		if(aux_value != NULL) { \
+			if(*aux_value != (val1)){ \
+				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",*aux_value?"true":"false"); \
+				exit(-1); \
+			} \
 		} \
-	} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
+		exit(-1); \
+	}\
 }
 
 
@@ -774,49 +858,49 @@ int main(int argc, char * argv[]) {
 	zs->registerVariableMember<CInteger>("n",&CInteger::n);
 
 
-	zs->registerMemberFunctionStatic<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add));
-	zs->registerMemberFunctionStatic<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add));
+	zs->registerMemberFunctionStatic<CInteger>("_add",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_add));
+	zs->registerMemberFunctionStatic<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_add));
 	zs->registerMemberFunctionStatic<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add));
 
-	zs->registerMemberFunctionStatic<CInteger>("_mul",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mul));
-	zs->registerMemberFunctionStatic<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mul));
+	zs->registerMemberFunctionStatic<CInteger>("_mul",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_mul));
+	zs->registerMemberFunctionStatic<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_mul));
 	zs->registerMemberFunctionStatic<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mul));
 
-	zs->registerMemberFunctionStatic<CInteger>("_div",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_div));
-	zs->registerMemberFunctionStatic<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_div));
+	zs->registerMemberFunctionStatic<CInteger>("_div",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_div));
+	zs->registerMemberFunctionStatic<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_div));
 	zs->registerMemberFunctionStatic<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_div));
 
-	zs->registerMemberFunctionStatic<CInteger>("_mod",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mod));
-	zs->registerMemberFunctionStatic<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mod));
+	zs->registerMemberFunctionStatic<CInteger>("_mod",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_mod));
+	zs->registerMemberFunctionStatic<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_mod));
 	zs->registerMemberFunctionStatic<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mod));
 
 
-	zs->registerMemberFunctionStatic<CInteger>("_shr",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shr));
-	zs->registerMemberFunctionStatic<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shr));
+	zs->registerMemberFunctionStatic<CInteger>("_shr",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_shr));
+	zs->registerMemberFunctionStatic<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_shr));
 	zs->registerMemberFunctionStatic<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shr));
 
 
-	zs->registerMemberFunctionStatic<CInteger>("_shl",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shl));
-	zs->registerMemberFunctionStatic<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shl));
+	zs->registerMemberFunctionStatic<CInteger>("_shl",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_shl));
+	zs->registerMemberFunctionStatic<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_shl));
 	zs->registerMemberFunctionStatic<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shl));
 
 
-	zs->registerMemberFunctionStatic<CInteger>("_and",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_and));
-	zs->registerMemberFunctionStatic<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_and));
+	zs->registerMemberFunctionStatic<CInteger>("_and",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_and));
+	zs->registerMemberFunctionStatic<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_and));
 	zs->registerMemberFunctionStatic<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_and));
 
-	zs->registerMemberFunctionStatic<CInteger>("_or",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_or));
-	zs->registerMemberFunctionStatic<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_or));
+	zs->registerMemberFunctionStatic<CInteger>("_or",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_or));
+	zs->registerMemberFunctionStatic<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_or));
 	zs->registerMemberFunctionStatic<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_or));
 
-	zs->registerMemberFunctionStatic<CInteger>("_xor",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_xor));
-	zs->registerMemberFunctionStatic<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_xor));
+	zs->registerMemberFunctionStatic<CInteger>("_xor",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_xor));
+	zs->registerMemberFunctionStatic<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_xor));
 	zs->registerMemberFunctionStatic<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_xor));
 
 
 	zs->registerMemberFunctionStatic<CInteger>("_neg",static_cast<CInteger * (*)(CInteger *)>(&CInteger::_neg));
 
-	zs->registerMemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set));
+	zs->registerMemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(zs_int)>(&CInteger::_set));
 	zs->registerMemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set));
 
 
@@ -886,8 +970,6 @@ int main(int argc, char * argv[]) {
 
 	// test declare var int/bool/std::string/number
 	printf("%i. testing primitive var\n",++n_test);
-
-
 
 
 	TEST_INT_EXPR("var i=1;",1);

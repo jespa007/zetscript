@@ -805,21 +805,21 @@ namespace zetscript{
 							}else if(type_var  &  MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
 								*stk_dst=*stk_src;
 							}else if(type_var & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
-								if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){
-									*((std::string *)stk_dst->var_ref)=((const char *)stk_src->stk_value);/* Assign std::string */
-									stk_dst->stk_value=(void *)(((std::string *)stk_dst->var_ref)->c_str());/* Because std::string assignment implies reallocs ptr char it changes, so reassing const char pointer */
-								}else{
-									if(((stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)==0) || (stk_dst->var_ref==NULL)){/* Generates a std::string var */
-										script_var= NEW_STRING_VAR;
-										stk_dst->var_ref=script_var;
-										aux_str=&(((ScriptObjectString *)script_var)->str_value);
-										stk_dst->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
-										script_var->initSharedPtr();
-										sharePointer(script_var->ptr_shared_pointer_node);
-									}
-									(*aux_str)=((const char *)stk_src->stk_value);
-									stk_dst->stk_value=(void *)aux_str->c_str();/* Because std::string assignment implies reallocs ptr char it changes, so reassing const char pointer */
+								if((stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING) && (stk_dst->var_ref!=NULL)){ // dst is string reload
+									script_var=(ScriptObject *)stk_dst->var_ref;
+								}else{ // Generates a std::string var
+									stk_dst->var_ref=script_var= NEW_STRING_VAR;
+									script_var->initSharedPtr();
+									sharePointer(script_var->ptr_shared_pointer_node);
+									stk_dst->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
 								}
+
+								// load std::string
+								aux_str=(std::string *)(((ScriptObjectString *)script_var)->value);
+								// save string src-->dst
+								(*aux_str)=((const char *)stk_src->stk_value);
+								// set stk_value
+								stk_dst->stk_value=(void *)aux_str->c_str();
 							}else if(type_var & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
 								script_var=(ScriptObject *)stk_src->var_ref;
 								stk_dst->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
@@ -833,7 +833,6 @@ namespace zetscript{
 							}
 							if(copy_aux!=NULL)stk_dst->properties|=MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;
 						}
-
 
 						// check old var structure ...
 						switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(old_stk_dst.properties)){

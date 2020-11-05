@@ -3,8 +3,8 @@
 namespace zetscript{
 
 	const char * k_str_void_type =typeid(void).name();
-	const char * k_str_int_type_ptr=typeid(int *).name();
-	const char * k_str_const_int_type_ptr=typeid(const int *).name();
+	const char * k_str_zs_int_type_ptr=typeid(zs_int *).name();
+	const char * k_str_const_zs_int_type_ptr=typeid(const zs_int *).name();
 	const char * k_str_float_type_ptr=typeid(float *).name();
 	const char * k_str_const_float_type_ptr=typeid(const float *).name();
 	const char * k_str_string_type_ptr=typeid(std::string *).name();
@@ -12,8 +12,8 @@ namespace zetscript{
 	const char * k_str_const_char_type_ptr=typeid(const char *).name();
 	const char * k_str_bool_type_ptr=typeid(bool *).name();
 	const char * k_str_const_bool_type_ptr=typeid(const bool *).name();
-	const char * k_str_int_type=typeid(int).name();
-	const char * k_str_unsigned_int_type=typeid(unsigned int).name();
+	//const char * k_str_zs_int_type=typeid(zs_int).name();
+	//const char * k_str_unsigned_int_type=typeid(unsigned int).name();
 	const char * k_str_zs_int_type=typeid(zs_int).name();
 	const char * k_str_float_type=typeid(float).name();
 	const char * k_str_bool_type=typeid(bool).name();
@@ -187,7 +187,7 @@ namespace zetscript{
 
 	void (* ZetScript::print_out_callback)(const char *) = NULL;
 
-	int * ZetScript::evalIntValue(const std::string & str_to_eval){
+	zs_int * ZetScript::evalIntValue(const std::string & str_to_eval){
 
 		eval(str_to_eval.c_str());
 
@@ -197,7 +197,7 @@ namespace zetscript{
 
 			if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){
 
-				eval_int=(int)((zs_int)se->stk_value);
+				eval_int=(zs_int)se->stk_value;
 				return &eval_int;
 			}
 			else{
@@ -337,12 +337,12 @@ namespace zetscript{
 		// remove all shared 0 pointers
 		if(main_function_object->registered_symbols->count > 0){
 			// set global top stack element
-			StackElement *vm_stk_element=&virtual_machine->getVmStackPtr()[idx_current_global_variable_checkpoint];
+			StackElement *vm_stk_element=&virtual_machine->getVmStackPtr()[main_function_object->registered_symbols->count-1];
 
 			for (
-					int v = idx_start;
-					v < main_function_object->registered_symbols->count;
-					v++) {
+					int v = main_function_object->registered_symbols->count-1;
+					v >= idx_start;
+					v--) {
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
 				if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
 
@@ -361,7 +361,7 @@ namespace zetscript{
 					main_function_object->registered_symbols->pop_back();
 
 					// clear global function/variable
-					*vm_stk_element++={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+					*vm_stk_element--={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 				}
 			}
 		}
@@ -390,9 +390,9 @@ namespace zetscript{
 	ZetScript::~ZetScript(){
 
 		clearGlobalVariables(0);
-		scope_factory->clear(IDX_SCRIPT_SCOPE_MAIN+1);
+		/*scope_factory->clear(IDX_SCRIPT_SCOPE_MAIN+1);
 		script_function_factory->clear(IDX_SCRIPT_FUNCTION_MAIN+1);
-		script_class_factory->clear(IDX_SCRIPT_CLASS_MAIN+1);
+		script_class_factory->clear(IDX_SCRIPT_CLASS_MAIN+1);*/
 
 		// clear objects...
 		delete virtual_machine;

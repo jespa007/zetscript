@@ -143,8 +143,8 @@ namespace zetscript{
 		ZS_REGISTER_VARIABLE(zs,"System",&system_built_in);
 
 		// Custom user function or classes
-		zs->eval("function test_function(){ print(\"hola\")}",false);
-		zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()",false);
+	/*	zs->eval("function test_function(){ print(\"hola\")}",false);
+		zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()",false);*/
 
 		zs->saveState();
 		//zs->eval("print(\"hola1\");test_function()\nvar i=0;",false);
@@ -161,15 +161,13 @@ namespace zetscript{
 		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
-			int v=idx_start;
-			v < script_classes->count; // avoid main class
-			v++
+			int v=script_classes->count-1;
+			v >= idx_start; // avoid main class
+			v--
 		){
 			ScriptClass * sc = (ScriptClass *)script_classes->get(v);
-			if((sc->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){ //script class
-				delete sc;
-				script_classes->pop_back();
-			}
+			delete sc;
+			script_classes->pop_back();
 		}
 	}
 

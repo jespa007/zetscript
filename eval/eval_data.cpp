@@ -548,14 +548,14 @@ namespace zetscript{
 			int current_part=0;
 			std::string number_part[3];
 			//value="";
-			bool isHexa=false;
+			bool is_hexa=false;
 			bool is01s=true;
 			//bool isInt=true;
-			bool isChar=false;
+			bool is_char=false;
+			bool is_float=false;
 
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
-			isHexa=(*aux_p == 'x' || *aux_p == 'X') || ((*aux_p == '0' && *(aux_p+1) == 'X') || (*aux_p == '0' && *(aux_p+1) == 'x'));
 
 			if(is_keyword(s)){
 				 return NULL;
@@ -610,54 +610,49 @@ namespace zetscript{
 				return aux_p;
 			}
 
-			if(!(('0'<=*aux_p&&*aux_p<='9') || isHexa || (*aux_p == '.'))){ // is no number directly
+			if(*aux_p == '0' && ((*(aux_p+1) == 'X') || (*(aux_p+1) == 'x'))){
+				is_hexa=true;
+				aux_p+=2;
+			}
+
+
+			if(!(('0'<=*aux_p&&*aux_p<='9') || is_hexa || (*aux_p == '.'))){ // is no number directly
 				return NULL;
 			}
 
 			// else is candidate to number ...
 			do{
 
+				if(is_float && (*aux_p == 'e' || *aux_p == 'E')){ // exponencial part ?
+
+					if(current_part == 1 && number_part[current_part].size()>1){
+						current_part=2;
+						number_part[current_part]+=*aux_p++;
+						if(*(aux_p)=='+' || *(aux_p)=='-'){
+							number_part[current_part]+=*aux_p++;
+						}
+					}else{ // error
+						number_part[current_part]+=*aux_p; // save conflicting character
+						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+					}
+				}
+
 				if('0'<=*aux_p&&*aux_p<='9'){
 					number_part[current_part]+=*aux_p;
 				}
-				else if(('a'<=*aux_p&& *aux_p<='f') || ('A'<=*aux_p && *aux_p<='F')){ // hexa ?
-					if(isHexa){
-						number_part[current_part]+=*aux_p;
-					}
-					else if(*aux_p == 'e' || *aux_p == 'E'){ // exponencial part ?
-
-						if(current_part==0 || current_part==1){
-							current_part=2;
-							number_part[current_part]+=*aux_p;
-							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-
-							if(*(aux_p)=='+' || *(aux_p)=='-'){
-								number_part[current_part]+=*aux_p;
-								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-							}
-						}
-						else{ // error
-							number_part[current_part]+=*aux_p; // save conflicting character
-							EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
-						}
-					}
-					else{ // error
-						number_part[current_part]+=*aux_p; // save conflicting character
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
-					}
+				else if((('a'<=*aux_p&& *aux_p<='f') || ('A'<=*aux_p && *aux_p<='F')) && is_hexa){ // hexa ?
+					number_part[current_part]+=*aux_p;
+					//else{ // error
+					//	number_part[current_part]+=*aux_p; // save conflicting character
+					//	EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+					//}
 				}
 				else if(*aux_p == '.'){ // fraccional part ?
-
-					if(isHexa){ // error
-						number_part[current_part]+=*aux_p; // save conflicting character
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
-					}
-
-					if(current_part==0){
+					if(!is_hexa && (current_part==0)){
 						current_part++;
 						number_part[current_part]+=".";
-					}
-					else{ // error
+						is_float=true;
+					}else{ // error
 						number_part[current_part]+=*aux_p; // save conflicting character
 						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}

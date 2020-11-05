@@ -77,7 +77,7 @@ namespace zetscript{
 		was_created_by_constructor=false;
 		c_scriptclass_info=NULL;
 		idx_class = ZS_INVALID_CLASS;
-		aux_string ="";
+		//aux_string ="";
 		delete_c_object = false; // --> user is responsible to delete C objects!
 		info_function_new=NULL;
 		instruction_new=NULL;

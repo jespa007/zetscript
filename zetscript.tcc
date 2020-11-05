@@ -5,6 +5,8 @@ namespace zetscript{
 			//zs_int ptr_var = (zs_int)input_var;
 				std::string s_return_value;
 				StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+				ScriptObjectString *so=NULL;
+				char *input_s=NULL;
 				//int idx_builtin_type=getIdxClassFromItsNativeType(typeid(T).name());
 				// save return type ...
 				switch(idx_builtin_type_var){
@@ -34,20 +36,29 @@ namespace zetscript{
 					 stk_result={(void *)(((bool)ptr_var)),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL};
 					 break;
 				 case IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C:
-					 if(ptr_var==0) return stk_result;
-					 stk_result={(void *)ptr_var,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
-					 break;
 				 case IDX_BUILTIN_TYPE_STRING_PTR_C:
+
 					 if(ptr_var==0) return stk_result;
-					 stk_result={(void *)((std::string *)ptr_var)->c_str(),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};//new std::string(*((std::string *)result))};
+					 input_s=(char *)ptr_var;
+					 so=new ScriptObjectString(this);
+					 if(idx_builtin_type_var==IDX_BUILTIN_TYPE_STRING_PTR_C){
+						so->value=(void *)ptr_var;
+						input_s=(char *)((std::string *)ptr_var)->c_str();
+					 }
+
+					 stk_result={(void *)input_s,so,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};
 					 break;
 				 case IDX_BUILTIN_TYPE_STACK_ELEMENT:
 					 if(ptr_var==0) return stk_result;
-					 stk_result=*((StackElement *)ptr_var);//{MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING,(void *)((std::string *)ptr_var)->c_str(),NULL};//new std::string(*((std::string *)result))};
+					 stk_result=*((StackElement *)ptr_var);
 					 break;
 				 default:
 					 if(ptr_var==0) return stk_result;
-					 stk_result = {NULL,script_class_factory->instanceScriptObjectiableByIdx(idx_builtin_type_var,(void *)ptr_var),MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
+					 stk_result = {
+							 NULL
+							 ,script_class_factory->instanceScriptObjectiableByIdx(idx_builtin_type_var,(void *)ptr_var)
+							 ,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT
+					 };
 					 break;
 				}
 
@@ -56,6 +67,7 @@ namespace zetscript{
 
 		bool ZetScript::convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, zs_int *ptr_var, std::string & error){
 			zs_int val_ret=0;
+			ScriptObjectString *so=NULL;
 
 			ScriptObject *script_variable=NULL;
 
@@ -123,24 +135,17 @@ namespace zetscript{
 					break;
 
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+					if(stack_element->var_ref == 0){ // if not created try to create a tmp scriptvar it will be removed...
+						error= "internal error var_ref is NULL";
+						return false;
+					}
+
+					so=(ScriptObjectString *)stack_element->var_ref;
+
 					if(idx_builtin_type == IDX_BUILTIN_TYPE_STRING_PTR_C){
-						ScriptObjectString *str_var_ref=(ScriptObjectString *)stack_element->var_ref;
-						if(stack_element->var_ref == 0){ // if not created try to create a tmp scriptvar it will be removed...
-							if(stack_element->stk_value != NULL){
-								str_var_ref= new ScriptObjectString(this);
-								str_var_ref->str_value=(const char *)stack_element->stk_value;
-								str_var_ref->initSharedPtr(); // init but not assigned so it can be removed...
-							}else
-							{ // pass param std::string ...
-								error= "(std::string *) stk_value and var_ref are NULL";
-								return false;
-							}
-						}
-
-						val_ret=(zs_int)(&str_var_ref->str_value);
-
+						val_ret=(zs_int)(so->value);
 					}else if (idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
-						val_ret=(zs_int)(stack_element->stk_value);
+						val_ret=(zs_int)(((std::string *)(so->value))->c_str());
 					}else{
 						error= "cannot convert \""+zs_rtti::demangle((k_str_string_type_ptr))+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 						return false;

@@ -14,14 +14,12 @@ namespace zetscript{
 	public:
 		std::string str_value;
 
-		ScriptObjectString(){}
 		ScriptObjectString(ZetScript *_zs);
-		ScriptObjectString(ZetScript *_zs,const std::string & s);
+		ScriptObjectString(ZetScript *_zs,const std::string * s);
 
 		virtual std::string toString();
 
 	protected:
-		virtual void setup();
 	
 	};
 

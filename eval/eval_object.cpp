@@ -118,7 +118,8 @@ namespace zetscript{
 
 				 // register constant...
 				if((constant_value = eval_data->zs->getRegisteredConstantValue(key_value))==NULL){
-					ScriptObjectString *s=new ScriptObjectString(eval_data->zs,symbol_value);
+					ScriptObjectString *s=new ScriptObjectString(eval_data->zs);
+					s->str_value=symbol_value;
 					constant_value=eval_data->zs->registerConstantValue(key_value,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING);
 					constant_value->stk_value=((void *)(s->str_value.c_str()));
 					constant_value->var_ref=s;

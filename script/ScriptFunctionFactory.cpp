@@ -30,16 +30,6 @@ namespace zetscript{
 
 		Symbol *symbol=NULL;
 
-		if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)){
-			if(script_functions->count > 1){ // if greather than 1 check if node consecutive...
-				ScriptFunction *sc = (ScriptFunction *)script_functions->items[script_functions->count-1];
-				if(!((sc->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF)){ // non consecutive c node..
-						THROW_RUNTIME_ERROR("C Functions should be added after global scope and consecutuve C scope node.");
-				}
-			}
-		}
-
-
 		if((symbol=scope->addSymbol(
 				file
 				,line
@@ -86,38 +76,19 @@ namespace zetscript{
 		return (ScriptFunction 	*)script_functions->items[idx];
 	}
 
-	bool ScriptFunctionFactory::checkCanregisterNativeFunction(const std::string &function_name){
-
-		int size = script_functions->count;
-
-		if(size>=3){ //0 is main function (reserved). We check when >= 3 to check previous one (i.e from 1)
-			ScriptFunction * info_function =(ScriptFunction *)script_functions->items[script_functions->count-1];
-			if(
-					(info_function->symbol.properties&SYMBOL_PROPERTY_C_OBJECT_REF)!=SYMBOL_PROPERTY_C_OBJECT_REF
-			){
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	void ScriptFunctionFactory::clear(int _idx_start){
 
 		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
-			int v=idx_start;
-			v < script_functions->count; // avoid delete main function
-			v++
+			int v=script_functions->count-1;
+			v >= idx_start; // avoid delete main function
+			v--
 		){
 
 			ScriptFunction * info_function = (ScriptFunction * )script_functions->items[v];
-			if((info_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) //
-			{
-				script_functions->pop_back();
-				delete info_function;
-			}
+			delete info_function;
+			script_functions->pop_back();
 
 		}
 	}

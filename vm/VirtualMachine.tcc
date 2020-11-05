@@ -127,7 +127,7 @@ namespace zetscript{
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
 					var =((ScriptObject *)(stk_local_var->var_ref));
-					if(var){
+					if(var !=NULL){
 						if(var->ptr_shared_pointer_node != NULL){
 							var->unrefSharedPtr();
 						}
@@ -381,26 +381,12 @@ namespace zetscript{
 									all_check=false;
 									break;
 								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 									var_object=((ScriptObject *)current_arg->var_ref);
 									aux_string=var_object->getNativePointerClassName();
 
 									if(arg_idx_type==idx_type){
 										all_check=true;
 									}
-									else{
-										ScriptClass *c_class=NULL;
-										if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
-											all_check =
-													(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->var_ref!=0)
-												  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
-										}else if((c_class=var_object->getNativeClass())!=NULL){ /* check whether the base is ok... */
-											all_check=IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,c_class->idx_class,arg_idx_type);
-										}else{ /* fail ... */
-											all_check=false;
-										}
-									}
-
 									break;
 							}
 						}
@@ -438,7 +424,7 @@ namespace zetscript{
 					aux_string="unknow";
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
-					aux_string=k_str_int_type;
+					aux_string=k_str_zs_int_type;
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 					aux_string=k_str_float_type;
@@ -459,7 +445,6 @@ namespace zetscript{
 					aux_string="undefined";
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT|MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 					aux_string = ((ScriptObject *)current_arg->var_ref)->getNativePointerClassName();
 					break;
 				}
@@ -565,7 +550,7 @@ namespace zetscript{
 
 		//std::string *str;
 		ScriptObjectString *script_var_string = NEW_STRING_VAR;
-		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
+		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};
 		script_var_string->initSharedPtr();
 
 		std::string str1;
@@ -644,7 +629,7 @@ namespace zetscript{
 
 		//std::string *str;
 		ScriptObjectString *script_var_string = NEW_STRING_VAR;
-		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
+		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};
 		script_var_string->initSharedPtr();
 
 

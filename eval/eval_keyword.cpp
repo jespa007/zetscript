@@ -1221,7 +1221,7 @@ namespace zetscript{
 							//,std::vector<char>{','}
 						);
 
-						if(is_constant){ // resolve constant_expression
+						/*if(is_constant){ // resolve constant_expression
 
 							ConstantValue *stk_op1,*stk_op2,*stk_int_calc_result;
 							std::vector<zs_int> stack; // constant/vectors or dictionaries...
@@ -1283,7 +1283,7 @@ namespace zetscript{
 							for(unsigned i=0; i < inter_calc_stack.size();i++){
 								free((void *)inter_calc_stack[i]);
 							}
-						}
+						}*/
 
 						line = start_line;
 					}

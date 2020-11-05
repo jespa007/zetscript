@@ -235,10 +235,10 @@ namespace zetscript{
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-					delete (ScriptObjectString *)stk->var_ref;
-					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
-					delete (ScriptObject *)stk->var_ref;
+					if(stk->var_ref != NULL){
+						delete (ScriptObject *)stk->var_ref;
+					}
 					break;
 
 				}

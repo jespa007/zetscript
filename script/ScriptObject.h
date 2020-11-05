@@ -121,7 +121,7 @@ class ScriptClass;
 		int idx_start_user_properties;
 
 
-		std::string aux_string;
+		//std::string aux_string;
 		//zs_vector * stk_properties_built_in; // std::vector<FunctionSymbol>
 		//zs_map	  *	properties_keys_built_in; // to search faster each property by its name
 

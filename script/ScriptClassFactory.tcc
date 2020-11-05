@@ -57,10 +57,6 @@ namespace zetscript{
 		std::vector<FunctionParam> arg_info;
 		zs_int ref_ptr=0;
 
-		if(!script_function_factory->checkCanregisterNativeFunction(function_name)){
-			THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name);
-		}
-
 		if(main_function == NULL){
 			THROW_RUNTIME_ERROR("main function is not created");
 		}
@@ -136,13 +132,6 @@ namespace zetscript{
 		}
 
 		// after MAX_BASIC_CLASS_TYPES all registered C classes should follow a registered C class ...
-		if(size > 1){ // because = 0 is reserved for main class and >= 1 is for C registered classes
-			if((
-				((((ScriptClass *)script_classes->get(size-1))->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF )!=SYMBOL_PROPERTY_C_OBJECT_REF)
-			)){
-				THROW_RUNTIME_ERROR("C class \"%s\" should register after C classes. Register C classes after script classes are not allowed",class_name.c_str());
-			}
-		}
 
 		if(isClassRegistered(class_name)){
 			THROW_RUNTIME_ERROR("%s already exist", class_name.c_str());
@@ -453,11 +442,7 @@ namespace zetscript{
 		zs_int ref_ptr=0;
 		std::string str_class_name_ptr = typeid( C *).name();
 
-		if(!script_function_factory->checkCanregisterNativeFunction(function_name)){
-			THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name);
-		}
-
-		ScriptClass * sc=getScriptClass(str_class_name_ptr);
+		ScriptClass * sc=getScriptClassByNativeClassPtr(str_class_name_ptr);
 
 		if(sc == NULL){
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
@@ -530,10 +515,6 @@ namespace zetscript{
 		std::string str_class_name_ptr = typeid( C *).name();
 		std::string function_class_name = zs_rtti::demangle(typeid(C).name())+"::"+function_name;
 
-
-		if(!script_function_factory->checkCanregisterNativeFunction(function_class_name)){
-			THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name);
-		}
 
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
@@ -667,10 +648,6 @@ namespace zetscript{
 		}
 
 		function_class_name = c_class->symbol.name+"::"+function_name;
-
-		if(!script_function_factory->checkCanregisterNativeFunction(function_class_name)){
-			THROW_RUNTIME_ERROR("function \"%s\" should register after C functions. Register after script functions is not allowed",function_name);
-		}
 
 		// check valid parameters ...
 		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){

@@ -1,3 +1,7 @@
+//5.0+2.0e2;
+print("test_"+-1);
+
+
 /*vxcvxc
 
 for(var i=0; i< 10; i++){
@@ -5,8 +9,8 @@ for(var i=0; i< 10; i++){
 }*/
 
 //test_function();
-var a={a:1};
-print("a.length:"+a.length)
+//var a={a:1};
+//print("a.length:"+a.length)
 //System.eval("function test_function{0}(){ print(\"hola\")}",1)
 //test_function1()
 

@@ -13,6 +13,7 @@ int main(int argc, char * argv[]) {
 
 	ZetScript *zs = new ZetScript();
 
+
 	if (argc > 1) {
 		bool vm_execute=true;
 		bool show_bytecode=false;

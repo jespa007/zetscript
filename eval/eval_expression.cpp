@@ -113,6 +113,7 @@ namespace zetscript{
 					 ,line
 					 ,str_value
 			))!=NULL){ // int/bool/float, etc
+
 				if((const_obj=zs_strutils::parse_int(str_value))!=NULL){ // int literal
 					zs_int value = *((zs_int *)const_obj);
 					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
@@ -164,6 +165,10 @@ namespace zetscript{
 
 			}else{ // if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
 
+				 if(eval_data->error){
+					 return NULL;
+				 }
+
 				 aux=(char *)start_word;
 				 // try eval identifier, boolean, std::string ...
 				char pre=0;
@@ -186,7 +191,8 @@ namespace zetscript{
 					if((get_obj = eval_data->zs->getRegisteredConstantValue(key_value))!=NULL){
 						obj = (zs_int)get_obj;
 					}else{
-						ScriptObjectString *s=new ScriptObjectString(eval_data->zs,str_value);
+						ScriptObjectString *s=new ScriptObjectString(eval_data->zs);
+						s->str_value=str_value;
 						obj=(zs_int)eval_data->zs->registerConstantValue(key_value,s);
 					 }
 
@@ -515,6 +521,10 @@ namespace zetscript{
 			return is_end_expression(s) || (op<Keyword::KEYWORDS_WITHIN_EXPRESSIONS && op !=Keyword::KEYWORD_UNKNOWN) ;
 		}
 
+		bool is_end_expression_with_cr(const char * s){
+			return false;
+		}
+
 		char * eval_expression(
 				EvalData *eval_data
 				,const char *s
@@ -681,6 +691,10 @@ namespace zetscript{
 									,pre_operator
 									,pre_self_operation_type
 							);
+
+							if(aux_p == NULL){
+								goto error_expression;
+							}
 
 							last_accessor_value=symbol_token_node.value;
 
@@ -857,7 +871,10 @@ namespace zetscript{
 						}
 					}
 
-					if((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
+					if(
+						((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN)
+						&& ((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID)
+					){
 						aux_p+=strlen(eval_info_pre_post_self_operations[post_self_operation_type].str);
 					}
 
@@ -910,7 +927,18 @@ namespace zetscript{
 					}
 
 					if(operator_type==Operator::OPERATOR_UNKNOWN){
-						EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected operator");
+						switch(post_self_operation_type){
+						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
+							EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"invalid post increment");
+							break;
+						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
+							EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"invalid post decrement");
+							break;
+						default:
+							EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected operator");
+							break;
+						}
+
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_operators[operator_type].str),line);
