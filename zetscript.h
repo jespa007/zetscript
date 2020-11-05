@@ -162,13 +162,13 @@ namespace zetscript{
 
 		void	setCallbackOnError(PrintFunctionCallback _fun);
 
-		zs_int * evalIntValue(const std::string & str_to_eval);
-		bool * evalBoolValue(const std::string & str_to_eval);
-		float * evalFloatValue(const std::string & str_to_eval);
-		std::string * evalStringValue(const std::string & str_to_eval);
 
-		void eval(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
-		void evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
+		void 			eval(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
+		void 			evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
+		zs_int * 		evalIntValue(const std::string & str_to_eval);
+		bool * 			evalBoolValue(const std::string & str_to_eval);
+		float * 		evalFloatValue(const std::string & str_to_eval);
+		std::string * 	evalStringValue(const std::string & str_to_eval);
 
 		ConstantValue 	* 		registerConstantIntValue(const std::string & const_name, int value);
 
@@ -443,7 +443,7 @@ namespace zetscript{
 		//void printGeneratedCode(ScriptFunction *sfo);
 
 		//----
-		void evalInternal(const char * code, bool exec_vm, bool show_bytecode, const char * filename);
+		void evalInternal(const char * code, bool exec_vm, bool show_bytecode, const char * filename, bool preserve_zero_shares=false);
 
 		// FUNCTIONS
 		static 									void  print(const char *s);

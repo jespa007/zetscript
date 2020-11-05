@@ -246,7 +246,8 @@ namespace zetscript{
 
 	std::string * ZetScript::evalStringValue(const std::string & str_to_eval){
 
-		eval(str_to_eval.c_str());
+		// eval and preserve zero shares to get value...
+		evalInternal(str_to_eval.c_str(),true,false,NULL,true);
 
 		StackElement *se=virtual_machine->getLastStackValue();
 
@@ -265,7 +266,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	void ZetScript::evalInternal(const char * code, bool vm_exec, bool show_bytecode, const char * filename)  {
+	void ZetScript::evalInternal(const char * code, bool vm_exec, bool show_bytecode, const char * filename, bool preserve_zero_shares)  {
 		eval::eval(this,code,filename);
 
 		if(show_bytecode){
@@ -274,7 +275,7 @@ namespace zetscript{
 
 		if(vm_exec){
 			// the first code to execute is the main function that in fact is a special member function inside our main class
-			virtual_machine->execute(script_class_factory->getMainFunction(), NULL);
+			virtual_machine->execute(script_class_factory->getMainFunction(), NULL,NULL,0,preserve_zero_shares);
 		}
 	}
 

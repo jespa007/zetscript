@@ -486,7 +486,7 @@ namespace zetscript{
 
 		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 
-		if(ZS_STRCMP(ByteCodeMetamethodToStr(BYTE_CODE_METAMETHOD_SET),==,function_name)){
+		if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_SET),==,function_name)){
 			StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
 			*stk_element = {0,(ScriptFunction *)symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
 
@@ -564,10 +564,10 @@ namespace zetscript{
 		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 
 		// check whether is static metamethod...
-		if(ZS_STRCMP(ByteCodeMetamethodToStr(BYTE_CODE_METAMETHOD_SET),!=,function_name)){
+		if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_SET),!=,function_name)){
 
 			for(int i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
-				if(ZS_STRCMP(ByteCodeMetamethodToStr((ByteCodeMetamethod)i),==,function_name)){
+				if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr((ByteCodeMetamethod)i),==,function_name)){
 
 					// check if they are gte,gt,equ, not_equ, lt, lte
 					if(  i == BYTE_CODE_METAMETHOD_EQU //STRCMP(function_name, == ,"_equ")

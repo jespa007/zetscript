@@ -56,6 +56,7 @@ namespace zetscript{
 			 ,ScriptObject 	*	this_object
 			 ,StackElement 	*  	stk_params=NULL
 			 ,unsigned char		n_stk_params=0
+			 ,bool preserve_zero_shares=false
 		);
 
 		 void setStackElement(unsigned int idx, StackElement stk);
@@ -164,7 +165,7 @@ namespace zetscript{
 			,unsigned char n_args
 			,StackElement *stk_result_op1=NULL
 			,StackElement *stk_result_op2=NULL
-			,const char * metamethod_str=NULL
+			,const char * metamethod_operator_str=NULL
 		);
 
 
@@ -173,7 +174,7 @@ namespace zetscript{
 		inline void applyMetamethod(
 			 ScriptFunction *info_function
 			,Instruction *instruction
-			,const char *op_code_str
+//			,const char *op_code_str
 			,ByteCodeMetamethod op_code_methamethod
 			,StackElement *stk_result_op1
 			,StackElement *stk_result_op2

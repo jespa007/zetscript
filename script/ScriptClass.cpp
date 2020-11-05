@@ -170,7 +170,7 @@ namespace zetscript{
 		else{
 			// check if metamethod...
 			for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
-				if(ZS_STRCMP(ByteCodeMetamethodToStr((ByteCodeMetamethod)i),==,function_name.c_str())){
+				if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr((ByteCodeMetamethod)i),==,function_name.c_str())){
 					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
 					*stk_element = {0,(void *)function_symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
 					metamethod_operator[i]->push_back((zs_int)stk_element);

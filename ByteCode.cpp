@@ -57,7 +57,34 @@ namespace zetscript{
 		return "unknow_op";
 	}
 
-	const char * ByteCodeMetamethodToStr(ByteCodeMetamethod op){
+	const char * ByteCodeMetamethodToOperatorStr(ByteCodeMetamethod op){
+		switch (op) {
+			case	BYTE_CODE_METAMETHOD_EQU:		return  "==";  // ==
+			case	BYTE_CODE_METAMETHOD_NOT_EQU: 	return  "!=";  // !=,
+			case	BYTE_CODE_METAMETHOD_LT:		return  "<";  // <
+			case	BYTE_CODE_METAMETHOD_LTE:		return  "<=";  // <=
+			case	BYTE_CODE_METAMETHOD_NOT:		return  "!"; // !
+			case	BYTE_CODE_METAMETHOD_GT:		return  ">";  // >
+			case	BYTE_CODE_METAMETHOD_GTE:		return  ">="; // >=
+
+			case	BYTE_CODE_METAMETHOD_NEG:		return  "-"; // -a, !a
+			case	BYTE_CODE_METAMETHOD_ADD:		return  "+"; // +
+			case	BYTE_CODE_METAMETHOD_SUB:		return  "-"; // -
+			case	BYTE_CODE_METAMETHOD_DIV:		return  "/"; // /
+			case	BYTE_CODE_METAMETHOD_MUL:		return  "*"; // *
+			case	BYTE_CODE_METAMETHOD_MOD:		return  "%";  // %
+			case	BYTE_CODE_METAMETHOD_AND:		return  "&"; // binary and
+			case	BYTE_CODE_METAMETHOD_OR:		return  "|"; //   binary or
+			case	BYTE_CODE_METAMETHOD_XOR:		return  "^"; // binary xor
+			case	BYTE_CODE_METAMETHOD_SHL:		return  "<<"; // binary shift left
+			case	BYTE_CODE_METAMETHOD_SHR:		return  ">>"; // binary shift right
+			case	BYTE_CODE_METAMETHOD_SET:		return  "="; // set
+			default:
+				return "none";
+		}
+	}
+
+	const char * ByteCodeMetamethodToSymbolStr(ByteCodeMetamethod op){
 
 		switch (op) {
 			case	BYTE_CODE_METAMETHOD_EQU:		return  "_equ";  // ==

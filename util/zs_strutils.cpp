@@ -83,11 +83,42 @@ namespace zetscript{
 
 		std::string int_to_str(zs_int number){
 
-			char int_str[1000000];
+			std::string result="0";
+			bool negative=false;
 
-			sprintf(int_str,"%llu",number);
+			if(number < 0){
+				negative=true;
+				number=-number;
+			}
 
-		   return std::string(int_str);
+			if(number != 0){
+				result="";
+				while(number != 0){
+					result+=((number%10)+'0');
+					number*=0.1;
+				}
+			}
+
+			// is negative ?
+			if(negative){
+				result+="-";
+			}
+
+			// reverse result
+			int len=result.length();
+			for(unsigned i=0; i < (len>>1); i++){
+				// do swap
+				char aux1=result[len-i-1];
+				result[len-i-1]=result[i];
+				result[i]=aux1;
+			}
+
+		   return result;
+			/*char float_str[100];
+
+						sprintf(float_str,"%i",number);
+
+					   return std::string(float_str);*/
 		}
 
 		std::string float_to_str(float number){

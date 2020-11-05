@@ -11,7 +11,10 @@ namespace zetscript{
 				, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions
 				, std::vector<char>expected_ending_char={} // expecting ending char when expression finish (by default not check or 0)
 				, int level=0
-				);
+		);
+
+
+		//------------------------------------------------------------------------------------------------------------------------------
 
 		char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, TokenNode *token_node){
 			// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
@@ -28,7 +31,7 @@ namespace zetscript{
 			}
 
 			instructions->push_back(eval_instruction=new EvalInstruction(
-					instruction_properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS?BYTE_CODE_LOAD_TYPE_VARIABLE:BYTE_CODE_LOAD_TYPE_FUNCTION
+					instruction_properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS?BYTE_CODE_LOAD_TYPE_VARIABLE:BYTE_CODE_LOAD_TYPE_FIND
 					,ZS_IDX_UNDEFINED
 					,ZS_IDX_UNDEFINED
 					,instruction_properties
@@ -297,10 +300,6 @@ namespace zetscript{
 							);
 							  n_args++;
 						  }
-
-						/*if(*aux_p != ',' && *aux_p != ')'){
-							EVAL_ERROR(eval_data->current_parsing_file,line ,"Expected ',' or ')'");
-						}*/
 
 					 }while(*aux_p != ')');
 

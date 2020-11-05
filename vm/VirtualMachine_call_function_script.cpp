@@ -23,7 +23,6 @@
 		applyMetamethod(\
 			calling_function\
 			,instruction\
-			,STR(%)\
 			,BYTE_CODE_METAMETHOD_MOD\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -55,7 +54,6 @@
 		applyMetamethod(\
 				calling_function\
 				,instruction\
-				,STR(__C_OP__)\
 				,__METAMETHOD__\
 				,stk_result_op1\
 				,stk_result_op2\
@@ -102,7 +100,6 @@
 		applyMetamethod(\
 			 calling_function\
 			,instruction\
-			,STR(__C_OP__)\
 			, __METAMETHOD__\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -130,7 +127,6 @@
 		applyMetamethod(\
 			calling_function\
 			,instruction\
-			,STR(__C_OP__)\
 			, __METAMETHOD__\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -310,7 +306,7 @@ namespace zetscript{
 		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
 
 		if(stk_start >= &vm_stack[VM_STACK_LOCAL_VAR_MAX-1]){
-			VM_STOP_EXECUTE(SFI_GET_FILE_LINE(calling_function,calling_instruction),"Error MAXIMUM stack size reached");
+			VM_STOP_EXECUTE("Error MAXIMUM stack size reached");
 		}
 
 		// Init local vars ...
@@ -521,10 +517,7 @@ namespace zetscript{
 
 					if((stk_var->properties & MSK_STACK_ELEMENT_PROPERTY_READ_ONLY)!=0){
 
-						VM_STOP_EXECUTE(
-								"Cannot perform self operations on constant elements",
-								SFI_GET_SYMBOL_NAME(calling_function,instruction)
-						);
+						VM_STOP_EXECUTE("Cannot perform self operations on constant elements");
 					}
 
 					/* all preoperators makes load var as constant ... */
@@ -734,7 +727,6 @@ namespace zetscript{
 								applyMetamethod(
 										 calling_function
 										,instruction
-										,"="
 										,BYTE_CODE_METAMETHOD_SET
 										,stk_result_op2 // it contents variable to be assigned
 										,stk_result_op1 // it contects the result of expression or whatever
@@ -911,7 +903,6 @@ namespace zetscript{
 					applyMetamethod(
 						calling_function
 						,instruction
-						,"!"
 						,BYTE_CODE_METAMETHOD_NOT
 						,stk_result_op1
 						,stk_result_op2
@@ -929,7 +920,6 @@ namespace zetscript{
 					applyMetamethod(
 							calling_function
 							,instruction
-							,"-"
 							,BYTE_CODE_METAMETHOD_NEG
 							,stk_result_op1
 							,stk_result_op2
@@ -964,7 +954,6 @@ namespace zetscript{
 						applyMetamethod(
 							calling_function
 							,instruction
-							,"+"
 							,BYTE_CODE_METAMETHOD_ADD
 							,stk_result_op1
 							,stk_result_op2
@@ -1000,7 +989,6 @@ namespace zetscript{
 						applyMetamethod(
 							calling_function
 							,instruction
-							,"-"
 							,BYTE_CODE_METAMETHOD_SUB
 							,stk_result_op1
 							,stk_result_op2
@@ -1415,10 +1403,11 @@ namespace zetscript{
 			while(vm_scope_start<(vm_current_scope)){
 				popVmScope(false); // do not check removeEmptySharedPointers to have better performance
 			}
+
+			removeEmptySharedPointers(idx_current_call);
 		}
 
-		removeEmptySharedPointers(idx_current_call--);
-
+		idx_current_call--;
 
 		// POP STACK
 		//=========================

@@ -1,5 +1,17 @@
 //5.0+2.0e2;
-print("test_"+-1);
+//print("test_"+-1);
+//-5+4;
+//"test_"+true;
+
+/*function test_callback(f){
+	print(f());
+}
+
+test_callback(function(a,b,c){
+	return "result a:\"+a+\"b:\"+b+\"c:\"+c;"
+});*/
+
+!(10>0)&&(10>0);
 
 
 /*vxcvxc

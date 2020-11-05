@@ -32,18 +32,20 @@ int main(){
 		zs->registerFunction("test_callback",test_callback);
 
 		zs->eval(
-			"class Test{"
-			"	function1(arg){"
-			"		print(\"calling Test.Function:\"+arg);"
-			"	}"
-			"};"
-			""
-			"function delete_test(){"
-			"	delete test;"
-			"	print(\"test variable was deleted\");"
-			"}"
-			"var test=new Test();"
-			"test_callback(function(a,b,c){return \"result a:\"+a+\"b:\"+b+\"c:\"+c;});"
+			"class Test{\n"
+			"	function1(arg){\n"
+			"		print(\"calling Test.Function:\"+arg);\n"
+			"	}\n"
+			"};\n"
+			"\n"
+			"function delete_test(){\n"
+			"	delete test;\n"
+			"	print(\"test variable was deleted\");\n"
+			"}\n"
+			"var test=new Test();\n"
+			"test_callback(function(a,b,c){\n"
+			"		return \"result a:\"+a+\"b:\"+b+\"c:\"+c;\n"
+			"});\n"
 			""
 		);
 

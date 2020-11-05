@@ -143,23 +143,7 @@ namespace zetscript{
 					}
 					is_constant_number=true;
 				}
-				else if((const_obj=zs_strutils::parse_bool(str_value))!=NULL){ // bool literal
-
-					bool value = *((bool *)const_obj);
-					if(pre_operator==PreOperator::PRE_OPERATOR_NOT){
-						value=!value;
-						str_value="!"+str_value;
-					}
-
-					delete (bool *)const_obj;
-
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
-						obj = (zs_int)get_obj;
-					}else{
-						obj=(zs_int)eval_data->zs->registerConstantValue(str_value,(void *)value,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL);
-					}
-					is_constant_boolean=true;
-				}else{
+				else{
 					EVAL_ERROR(eval_data->current_parsing_file,line ,"Unable to parse literal \"%s\"",str_value.c_str());
 				}
 
@@ -211,6 +195,22 @@ namespace zetscript{
 						byte_code=BYTE_CODE_LOAD_TYPE_NULL;
 					}else if(str_value=="undefined"){ // undefined literal
 						byte_code=BYTE_CODE_LOAD_TYPE_UNDEFINED;
+					}else if((const_obj=zs_strutils::parse_bool(str_value))!=NULL){ // bool literal
+
+						bool value = *((bool *)const_obj);
+						if(pre_operator==PreOperator::PRE_OPERATOR_NOT){
+							value=!value;
+							str_value="!"+str_value;
+						}
+
+						delete (bool *)const_obj;
+
+						if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
+							obj = (zs_int)get_obj;
+						}else{
+							obj=(zs_int)eval_data->zs->registerConstantValue(str_value,(void *)value,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL);
+						}
+						is_constant_boolean=true;
 					}else{ // it should be an identifier token  ...
 						token_node->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
 						byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
@@ -516,9 +516,18 @@ namespace zetscript{
 			 return *s==')' || *s==','||  *s==']'  ||  *s==';' || *s == 0 || *s=='}';
 		}
 
-		bool    is_end_expression_or_keyword(const char * s){
+		int    is_end_expression_or_keyword(const char * s,EvalData *eval_data,int line){
 			Keyword op=is_keyword(s);
-			return is_end_expression(s) || (op<Keyword::KEYWORDS_WITHIN_EXPRESSIONS && op !=Keyword::KEYWORD_UNKNOWN) ;
+			bool is_anonymouse_function=false;
+
+			if(op==Keyword::KEYWORD_FUNCTION){
+				char *check=NULL;
+				IGNORE_BLANKS(check,eval_data,s+strlen(eval_info_keywords[op].str),line);
+
+				is_anonymouse_function=*check=='(';
+			}
+
+			return !is_anonymouse_function && (is_end_expression(s) || (op<Keyword::KEYWORDS_WITHIN_EXPRESSIONS && op !=Keyword::KEYWORD_UNKNOWN));
 		}
 
 		bool is_end_expression_with_cr(const char * s){
@@ -565,7 +574,7 @@ namespace zetscript{
 				EVAL_ERROR(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
 			}
 
-			if(!is_end_expression_or_keyword(aux_p)){
+			if(!is_end_expression_or_keyword(aux_p,eval_data,line)){
 
 				for(;;){ // it eats identifier/constant operator, etc
 
@@ -950,6 +959,10 @@ namespace zetscript{
 					// push operator token
 					expression_tokens.push_back(operator_token_node);
 				}
+			}
+
+			if(eval_data->error){
+				goto error_expression;
 			}
 
 			if(expected_ending_char.size() > 0) { // throw error...

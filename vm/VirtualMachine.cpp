@@ -159,6 +159,7 @@ namespace zetscript{
 			 ,ScriptObject 		*	this_object
 			 ,StackElement 		*  	stk_params
 			 ,unsigned	char  		n_stk_params
+			 ,bool 					preserve_zero_shares
 	){
 
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
@@ -190,6 +191,11 @@ namespace zetscript{
 			calling_function,
 			vm_stk_current,
 			n_stk_params);
+
+		if(preserve_zero_shares==false){
+			removeEmptySharedPointers(IDX_CALL_STACK_MAIN);
+		}
+
 
 		if(error){
 			// it was error so reset stack and stop execution ? ...
