@@ -48,6 +48,7 @@ namespace zetscript{
 			char *aux_p = (char *)s;
 			std::string symbol_value;
 			Keyword key_w;
+			EvalInstruction *eval_instruction;
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -66,7 +67,19 @@ namespace zetscript{
 						,symbol_value
 				);
 
-				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+				eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(BYTE_CODE_LOAD_TYPE_FIND));
+				eval_instruction->symbol.name=symbol_value;
+				eval_instruction->symbol.scope=scope_info;
+
+				eval_instruction->instruction_source_info=InstructionSourceInfo(
+											 eval_data->current_parsing_file
+											 ,line
+											 ,get_compiled_symbol(eval_data,symbol_value)
+										);
+
+
+				eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
+
 				return aux_p;
 			}
 
@@ -152,7 +165,7 @@ namespace zetscript{
 										eval_data
 										,aux_p
 										, line
-										,sc->symbol.scope // pass class scope
+										,sc->symbol_class.scope // pass class scope
 
 								);
 						}else{
@@ -351,7 +364,7 @@ namespace zetscript{
 
 				// register function ...
 				if(is_anonymous){ // register named function...
-					function_name="_@afun_"+(scope_info->script_class!=SCRIPT_CLASS_MAIN(eval_data)?scope_info->script_class->symbol.name:"")+"_"+zs_strutils::int_to_str(n_anonymous_function++);
+					function_name="_@afun_"+(scope_info->script_class!=SCRIPT_CLASS_MAIN(eval_data)?scope_info->script_class->symbol_class.name:"")+"_"+zs_strutils::int_to_str(n_anonymous_function++);
 				}
 
 
@@ -767,12 +780,14 @@ namespace zetscript{
 						Keyword key_w = is_keyword(aux_p);
 
 						if(key_w == KEYWORD_VAR){
-							aux_p = eval_keyword_var_or_const(
+							if((aux_p = eval_keyword_var_or_const(
 									eval_data
 									,aux_p
 									,line
 									,new_scope
-							);
+							))==NULL){
+								return NULL;
+							}
 						}
 						else{
 							EVAL_ERROR(eval_data->current_parsing_file,line,"Expected For 'var' keyword");
@@ -786,16 +801,19 @@ namespace zetscript{
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[Keyword::KEYWORD_IN].str),line);
 
-						aux_p = eval_expression(
+						if((aux_p = eval_expression(
 								eval_data
 								,(const char *)aux_p
 								,line
 								,new_scope
 								,&eval_data->current_function->instructions
-						);
+						))==NULL){
+							return NULL;
+						}
 
 						// init it and vector/dictionary
-						eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_IT_INI));
+						EVAL_ERROR(eval_data->current_parsing_file,line,"CREATE ITERATOR TODOOO ");
+						//eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_IT_INI));
 					}
 					else{ // expects conditional and post (i.e for(;;) )
 						if(*aux_p != ';'){
@@ -839,13 +857,15 @@ namespace zetscript{
 							}
 
 							do{
-								aux_p = eval_expression(
+								if((aux_p = eval_expression(
 										eval_data
 										,aux_p
 										,line
 										,new_scope
 										,&post_operations
-								);
+								))==NULL){
+									return NULL;
+								}
 
 								if(*aux_p == ',' ){
 									IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -869,12 +889,14 @@ namespace zetscript{
 					}
 
 					// eval block ...
-					aux_p=eval_block(
+					if((aux_p=eval_block(
 							eval_data
 							,aux_p
 							,line
 							,new_scope
-					);
+					))==NULL){
+						return NULL;
+					}
 
 					// catch all continues and set all jmps after processing block but before post operation...
 					link_continues(eval_data,(int)(eval_data->current_function->instructions.size()));
@@ -1212,14 +1234,16 @@ namespace zetscript{
 						// try to evaluate expression...
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-						aux_p = eval_expression(
+						if((aux_p = eval_expression(
 							eval_data
 							,is_constant?(aux_p+1):start_var
 							,start_line
 							,scope_info
 							,is_constant?&constant_instructions:&eval_data->current_function->instructions
 							//,std::vector<char>{','}
-						);
+						))==NULL){
+							return NULL;
+						}
 
 						/*if(is_constant){ // resolve constant_expression
 

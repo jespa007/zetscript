@@ -15,10 +15,10 @@ namespace zetscript{
 
 	public:
 
-		int				idx_starting_this_members;
+		//int				idx_starting_this_members;
 		ClassTypeIdx 	idx_class; 	// registered class idx
 
-		Symbol 			symbol;		// info symbol class
+		Symbol 			symbol_class;		// info symbol class
 
 
 		zs_vector *symbol_members; // a list of pre-registered C symbols to be added as stack element properties when class is instanced through scriptvar ( see ScriptObject::createSymbols)

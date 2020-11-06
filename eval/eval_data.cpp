@@ -612,7 +612,8 @@ namespace zetscript{
 
 			if(*aux_p == '0' && ((*(aux_p+1) == 'X') || (*(aux_p+1) == 'x'))){
 				is_hexa=true;
-				aux_p+=2;
+				number_part[current_part]+=*aux_p++;
+				number_part[current_part]+=*aux_p++;
 			}
 
 

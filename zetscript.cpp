@@ -27,6 +27,11 @@ namespace zetscript{
 
 
 	ZetScript::ZetScript(){
+		eval_int=0;
+		eval_float=0;
+		eval_string="";
+		eval_bool = false;
+		idx_current_global_variable_checkpoint=0;
 
 		eval::init();
 		scope_factory = new ScopeFactory(this);
@@ -35,15 +40,69 @@ namespace zetscript{
 
 		virtual_machine = new VirtualMachine(this);
 		script_class_factory = new ScriptClassFactory(this);
-
-		virtual_machine->init();
 		script_class_factory->init();
+		virtual_machine->init();
 
-		eval_int=0;
-		eval_float=0;
-		eval_string="";
-		eval_bool = false;
-		idx_current_global_variable_checkpoint=0;
+		script_class_factory->registerSystem();
+
+		//-------------------------
+		// Register built in extra
+		// String
+		script_class_factory->registerNativeClass<StringBuiltIn>("StringBuiltIn");
+		script_class_factory->registerNativeMemberFunction<StringBuiltIn>(ZS_CONTRUCTOR_NAME,StringBuiltIn::constructorSf);
+		script_class_factory->registerNativeMemberFunction<StringBuiltIn>("format",StringBuiltIn::formatSf);
+		//ZS_REGISTER_VARIABLE(zs,"String",&string_built_in);
+
+		// Math
+		script_class_factory->registerNativeSingletonClass<MathBuiltIn>("MathBuiltIn");
+		script_class_factory->registerNativeStaticConstMember<MathBuiltIn>("PI",&MathBuiltIn::PI);
+		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("sin",MathBuiltIn::sin);
+		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("cos",MathBuiltIn::cos);
+		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
+		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
+		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
+		ZS_REGISTER_VARIABLE(this,"Math",&math_built_in);
+
+		// System
+		script_class_factory->registerNativeClass<SystemBuiltIn>("SystemBuiltIn");
+		script_class_factory->registerNativeMemberFunction<SystemBuiltIn>(ZS_CONTRUCTOR_NAME,SystemBuiltIn::constructorSf);
+		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("clock",SystemBuiltIn::clock);
+		script_class_factory->registerNativeMemberFunction<SystemBuiltIn>("print",SystemBuiltIn::printSf);
+		script_class_factory->registerNativeMemberFunction<SystemBuiltIn>("println",SystemBuiltIn::printlnSf);
+		script_class_factory->registerNativeMemberFunction<SystemBuiltIn>("eval",SystemBuiltIn::evalSf);
+		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("makeReadOnly",SystemBuiltIn::makeReadOnly);
+		//ZS_REGISTER_VARIABLE(zs,"System",&system_built_in);
+
+		// Custom user function or classes
+		eval(
+			zs_strutils::format(
+
+				"class StringBuiltinCustom extends StringBuiltIn{\n"
+				"	format(s,...args){"
+				"		super(this,s,args);" // passing this because is registered as static
+					"}"
+				"}"
+
+				"class SystemBuiltinCustom extends SystemBuiltIn{\n"
+				"	print(s,...args){"
+				"		super(this,s,args);"  // passing this because is registered as static
+				"	}"
+				"	println(s,...args){"
+				"		super(this,s,args);"  // passing this because is registered as static
+				"	}"
+				"}"
+				"var String= new StringBuiltinCustom(ptrToZetScriptPtr(0x%p));"
+				"var System= new SystemBuiltinCustom(ptrToZetScriptPtr(0x%p),String);"
+				"System.makeReadOnly(String);"
+				"System.makeReadOnly(System);"
+			,(void *)this,(void *)this)
+		);
+
+
+	/*	zs->eval("function test_function(){ print(\"hola\")}",false);
+		zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()",false);*/
+
+		saveState();
 	}
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT ASM INFO
@@ -267,6 +326,7 @@ namespace zetscript{
 	}
 
 	void ZetScript::evalInternal(const char * code, bool vm_exec, bool show_bytecode, const char * filename, bool preserve_zero_shares)  {
+
 		eval::eval(this,code,filename);
 
 		if(show_bytecode){
@@ -354,7 +414,9 @@ namespace zetscript{
 						var =((ScriptObject *)(vm_stk_element->var_ref));
 						if(var){
 							if(var->ptr_shared_pointer_node != NULL){
-								var->unrefSharedPtr();
+								if(!var->unrefSharedPtr(IDX_CALL_STACK_MAIN)){
+									THROW_RUNTIME_ERROR("error clearing variables: %s",this->virtual_machine->getError());
+								}
 							}
 						}
 					}
@@ -389,6 +451,9 @@ namespace zetscript{
 	}
 
 	ZetScript::~ZetScript(){
+
+		// delete system and string...
+		eval("delete System;delete String;");
 
 		clearGlobalVariables(0);
 		/*scope_factory->clear(IDX_SCRIPT_SCOPE_MAIN+1);

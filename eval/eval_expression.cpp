@@ -642,50 +642,58 @@ namespace zetscript{
 						last_accessor_line=0;
 						last_accessor_value="";
 						if(*aux_p=='['){ // std::vector object...
-							aux_p=eval_object_vector(
+							if((aux_p=eval_object_vector(
 								eval_data
 								,aux_p
 								,line
 								,scope_info
 								,&symbol_token_node.instructions
 								,level
-							);
+							))==NULL){
+								goto error_expression;
+							}
 							symbol_token_node.token_type = TokenType::TOKEN_TYPE_VECTOR;
 						}else if(*aux_p=='{'){ // struct object ...
 
-							aux_p=eval_object(
+							if((aux_p=eval_object(
 								eval_data
 								,aux_p
 								,line
 								,scope_info
 								,&symbol_token_node.instructions
 								,level
-							);
+							))==NULL){
+								goto error_expression;
+							}
 
 							symbol_token_node.token_type = TokenType::TOKEN_TYPE_OBJECT;
 
 						}else if(keyword_type == Keyword::KEYWORD_NEW){
 
-							aux_p=eval_object_new(
+							if((aux_p=eval_object_new(
 								eval_data
 								,aux_p
 								,line
 								,scope_info
 								,&symbol_token_node.instructions
 								,level
-							);
+							))==NULL){
+								goto error_expression;
+							}
 
 							symbol_token_node.token_type = TokenType::TOKEN_TYPE_NEW_OBJECT;
 
 						}else if(keyword_type == Keyword::KEYWORD_FUNCTION){ // can be after instanceof or a function object..
 
-							aux_p=eval_object_function(
+							if((aux_p=eval_object_function(
 								eval_data
 								,aux_p
 								,line
 								,scope_info
 								,&symbol_token_node
-							);
+							))==NULL){
+								goto error_expression;
+							}
 
 							symbol_token_node.token_type = TokenType::TOKEN_TYPE_FUNCTION_OBJECT;
 						}
@@ -693,15 +701,13 @@ namespace zetscript{
 							symbol_token_node.pre_operator=pre_operator;
 
 							last_accessor_line=line;
-							aux_p = eval_symbol(eval_data
+							if((aux_p = eval_symbol(eval_data
 									,aux_p
 									,line
 									,&symbol_token_node
 									,pre_operator
 									,pre_self_operation_type
-							);
-
-							if(aux_p == NULL){
+							)) == NULL){
 								goto error_expression;
 							}
 
@@ -756,7 +762,7 @@ namespace zetscript{
 										aux_p++;
 									}
 
-									aux_p = eval_expression(
+									if((aux_p = eval_expression(
 											eval_data
 											,aux_p
 											,line
@@ -764,14 +770,16 @@ namespace zetscript{
 											,&symbol_token_node.instructions
 											,std::vector<char>{}
 											,level+1
-									);
+									))==NULL){
+										goto error_expression;
+									}
 									n_params++;
 								}
 								byte_code=ByteCode::BYTE_CODE_CALL;
 								aux_p++;
 								break;
 							case '[': // std::vector access
-								aux_p = eval_expression(
+								if((aux_p = eval_expression(
 										eval_data
 										,aux_p+1
 										,line
@@ -779,7 +787,9 @@ namespace zetscript{
 										,&symbol_token_node.instructions
 										,std::vector<char>{}
 										,level+1
-								);
+								))==NULL){
+									goto error_expression;
+								}
 
 								if(*aux_p != ']'){
 									EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
@@ -973,9 +983,13 @@ namespace zetscript{
 
 					if(*aux_p!=expected_ending_char[i]){
 						if(i>0){
-							expected_ending_str+=",";
+							i == expected_ending_char.size()-1 ?
+									expected_ending_str+=" or ":
+									expected_ending_str+=" , ";
+
+
 						}
-						expected_ending_str+=expected_ending_char[i];
+						expected_ending_str+=std::string("\"")+expected_ending_char[i]+"\"";
 					}
 					else {
 						found=true;

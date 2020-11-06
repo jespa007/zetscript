@@ -68,7 +68,7 @@ class ScriptClass;
 		StackElement * getProperty(short idx);
 		const char *getSymbolNameFromPropertyPtr(StackElement *stk);
 
-		void eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
+		bool eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 
 		zs_vector * getAllProperties();
 		StackElement *getUserProperty(int idx);
@@ -87,11 +87,11 @@ class ScriptClass;
 		const std::string & getNativePointerClassName();
 
 		virtual std::string toString();
-		virtual void initSharedPtr();
-		virtual void unrefSharedPtr();
+		virtual bool initSharedPtr();
+		virtual bool unrefSharedPtr(int _idx_current_call);
 		ZetScript      * getZetScript() { return zs;}
 
-		virtual void destroy();
+		virtual bool destroy();
 		virtual ~ScriptObject();
 
 	protected:
@@ -126,7 +126,7 @@ class ScriptClass;
 		//zs_map	  *	properties_keys_built_in; // to search faster each property by its name
 
 		void createSymbols(ScriptClass *irv);
-		void eraseProperty(short idx);
+		bool eraseProperty(short idx);
 		StackElement * addPropertyBuiltIn(
 				const std::string & symbol_value
 		);

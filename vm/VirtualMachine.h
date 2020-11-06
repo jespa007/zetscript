@@ -18,6 +18,7 @@ namespace zetscript{
 	#define VM_ERROR(s,...)				error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
 	#define VM_ERROR_AND_RET(s,...)		error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return stk_result;
 	#define VM_STOP_EXECUTE(s,...)		error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
+	#define VM_SET_USER_ERROR(vm,s,...)	vm->setInternalError(__FILE__,__LINE__, s, ##__VA_ARGS__)
 
 	class ScriptFunction;
 	class ZetScript;
@@ -28,9 +29,9 @@ namespace zetscript{
 		VirtualMachine(ZetScript *_zs);
 
 		InfoSharedPointerNode *newSharedPointer(ScriptObject *var_ptr);
-		void sharePointer( InfoSharedPointerNode *_node);
-		void unrefSharedScriptObject( InfoSharedPointerNode *_node, bool remove_if_0=false);
-		void removeSharedScriptObject( InfoSharedPointerNode *_node);
+		bool sharePointer( InfoSharedPointerNode *_node);
+		bool unrefSharedScriptObject( InfoSharedPointerNode *_node, int idx_current_call, bool remove_if_0=false);
+		//void removeSharedScriptObject( InfoSharedPointerNode *_node, std::string *error);
 
 		const ScriptFunction * getCurrent_C_FunctionCall();
 
@@ -59,12 +60,14 @@ namespace zetscript{
 			 ,bool preserve_zero_shares=false
 		);
 
-		 void setStackElement(unsigned int idx, StackElement stk);
+		 bool setStackElement(unsigned int idx, StackElement stk);
 
 		StackElement *getLastStackValue();
 		StackElement * getStackElement(unsigned int idx_glb_element);
 
-		void setError(const char *str);
+		void setError(const std::string & str);
+		void setInternalError(const char *file, int line, const char *s,...);
+		std::string getError();
 
 		~VirtualMachine();
 
@@ -116,7 +119,7 @@ namespace zetscript{
 		ScriptFunction  *main_function_object;
 		ScriptClass *main_class_object;
 
-		int idx_current_call;
+		int vm_idx_call;
 		int idx_last_statment;
 		const ScriptFunction *current_call_c_function;
 		ZetScript *zs;		ScriptFunctionFactory 	*script_function_factory;
@@ -149,8 +152,8 @@ namespace zetscript{
 
 		//const char * toString(StackElement * index);
 
-		inline void insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
-		inline void deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
+		inline bool insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
+		inline bool deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 
 		inline ScriptFunction *  findFunction(

@@ -13,13 +13,16 @@ test_callback(function(a,b,c){
 
 //!(10>0)&&(10>0);
 
-class A{
+/*class A{
 	print(){}
 }
 
 var a=new A();
 
-a.hjhkj();
+a.hjhkj();*/
+
+System.println("dasdas dsadasd");
+//System.println("dasdas dsadasd");
 
 
 /*vxcvxc

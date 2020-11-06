@@ -30,6 +30,7 @@ namespace zetscript{
 
 		ScriptClassFactory(ZetScript *_zs);
 		void init();
+		void registerSystem();
 
 		 /**
 		  * Class management region
@@ -158,7 +159,7 @@ namespace zetscript{
 		/**
 		 * Register C function as function member
 		 */
-		template <typename F>
+		template <typename C,typename F>
 		void	registerNativeMemberFunction(
 				const char *function_name
 				,F function_type
@@ -197,9 +198,6 @@ namespace zetscript{
 			 * register_c_base_symbols it tells to register functions/variable member already registered on base classes. Only works if class is not polymorphic (i.e there's no any virtual functions involved)
 			 */
 		bool register_c_base_symbols;
-		MathBuiltIn math_built_in;
-		SystemBuiltIn 	system_built_in;
-		StringBuiltIn 	string_built_in;
 		int 			idx_clear_checkpoint;
 
 

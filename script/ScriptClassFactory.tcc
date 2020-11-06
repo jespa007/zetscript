@@ -149,14 +149,14 @@ namespace zetscript{
 		irc = new ScriptClass(zs,idx_class);
 		scope->setScriptClass(irc);
 
-		irc->symbol=*symbol;
+		irc->symbol_class=*symbol;
 
 		// in C there's no script constructor ...
 		irc->idx_function_member_constructor=-1;
 		// allow dynamic constructor in function its parameters ...
 
 		irc->str_class_ptr_type=str_class_name_ptr;
-		irc->symbol.properties|=SYMBOL_PROPERTY_C_OBJECT_REF;
+		irc->symbol_class.properties|=SYMBOL_PROPERTY_C_OBJECT_REF;
 
 		irc->c_constructor = NULL;
 		irc->c_destructor = NULL;
@@ -179,7 +179,7 @@ namespace zetscript{
 
 
 		if(irc->idx_class < IDX_BUILTIN_TYPE_MAX && irc->idx_class != IDX_BUILTIN_TYPE_STACK_ELEMENT){
-			THROW_RUNTIME_ERROR("The class to register \"%s\"  should BYTE_CODE_NOT BE a built in class",irc->str_class_ptr_type.c_str());
+			THROW_RUNTIME_ERROR("The class to register \"%s\"  should not built in class",irc->str_class_ptr_type.c_str());
 		}
 
 
@@ -363,7 +363,7 @@ namespace zetscript{
 		// check valid parameters ...
 		if(getIdxClassFromItsNativeType(var_type) == -1){
 			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-					,c_class->symbol.name.c_str()
+					,c_class->symbol_class.name.c_str()
 					,var_name
 					,zs_rtti::demangle(typeid(R).name()).c_str());
 		}
@@ -405,7 +405,7 @@ namespace zetscript{
 		// check valid parameters ...
 		if(getIdxClassFromItsNativeType(var_type) == -1){
 			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-					,c_class->symbol.name.c_str()
+					,c_class->symbol_class.name.c_str()
 					,var_name
 					,zs_rtti::demangle(typeid(R).name()).c_str());
 		}
@@ -612,7 +612,7 @@ namespace zetscript{
 	 * register static function registerNativeMemberFunction as function member
 	 * Is automatically added in function member list according first parameter type of function_type
 	 */
-	template <typename F>
+	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberFunction(
 			const char *function_name
 			,F function_type
@@ -628,6 +628,7 @@ namespace zetscript{
 		std::vector<FunctionParam> arg_info;
 		int idx_return_type=-1;
 		zs_int ref_ptr=0;
+		std::string str_class_name_ptr = typeid( C *).name();
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 
 		// 1. check all parameters ok.
@@ -647,7 +648,12 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("class %s is not registered",arg[0].c_str());
 		}
 
-		function_class_name = c_class->symbol.name+"::"+function_name;
+		if(c_class->str_class_ptr_type !=  str_class_name_ptr){
+			THROW_RUNTIME_ERROR("first parameter is \"%s\" and should be the same type as the class (i.e \"%s\")",arg[0].c_str(),str_class_name_ptr.c_str());
+		}
+
+
+		function_class_name = c_class->symbol_class.name+"::"+function_name;
 
 		// check valid parameters ...
 		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){

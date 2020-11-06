@@ -90,6 +90,8 @@
 #include "script/ScriptObject.h"
 #include "script/ScriptObjectString.h"
 #include "script/ScriptObjectVector.h"
+#include "script/ScriptObjectString.h"
+#include "script/ScriptObjectIterator.h"
 #include "script/ScriptClass.h"
 #include "script/ScriptFunction.h"
 #include "script/ScriptFunctionFactory.h"
@@ -434,6 +436,10 @@ namespace zetscript{
 		bool eval_bool;
 		std::string eval_string;
 		int idx_current_global_variable_checkpoint;
+		MathBuiltIn math_built_in;
+		SystemBuiltIn 	system_built_in;
+		StringBuiltIn 	string_built_in;
+
 
 		//===================================================================================================
 		//

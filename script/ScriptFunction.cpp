@@ -95,7 +95,7 @@ namespace zetscript{
 			symbol_ref=sfo->symbol.name;
 		}else{ // is a class
 			symbol_ref=sfo->symbol.name;//+std::string("::")+std::string("????");
-			class_str=sc->symbol.name+"::";
+			class_str=sc->symbol_class.name+"::";
 		}
 
 
@@ -310,7 +310,9 @@ namespace zetscript{
 
 
 		if(scope_block == MAIN_SCOPE(this) && ((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0)) { // is global var ...
-			zs->getVirtualMachine()->setStackElement(idx_position,convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr));
+			if(!zs->getVirtualMachine()->setStackElement(idx_position,convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr))){
+				THROW_RUNTIME_ERROR(zs->getVirtualMachine()->getError().c_str());
+			}
 		}
 
 		registered_symbols->push_back((zs_int)symbol);

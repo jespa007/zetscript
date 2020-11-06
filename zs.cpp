@@ -9,10 +9,14 @@
 using namespace zetscript;
 
 
+ZetScript *ptrToZetScript(zs_int ptr){
+	return (ZetScript *)ptr;
+}
+
+
 int main(int argc, char * argv[]) {
 
 	ZetScript *zs = new ZetScript();
-
 
 	if (argc > 1) {
 		bool vm_execute=true;

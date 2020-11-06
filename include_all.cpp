@@ -19,6 +19,7 @@
 #include		"script/ScriptObject.cpp"
 #include		"script/ScriptObjectString.cpp"
 #include		"script/ScriptObjectVector.cpp"
+#include		"script/ScriptObjectIterator.cpp"
 
 #include		"script/ScriptFunctionFactory.cpp"
 #include		"script/ScriptClassFactory.cpp"

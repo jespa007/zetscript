@@ -16,7 +16,7 @@ namespace zetscript{
 		}
 
 		removeEmptySharedPointers(IDX_CALL_STACK_MAIN);
-		idx_current_call=0;
+		vm_idx_call=0;
 	}
 
 	VirtualMachine::VirtualMachine(ZetScript *_zs){
@@ -31,7 +31,7 @@ namespace zetscript{
 			*aux++={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 		}
 
-		idx_current_call=0;
+		vm_idx_call=0;
 		vm_stk_current=NULL;
 		vm_current_scope = vm_scope;
 
@@ -64,6 +64,7 @@ namespace zetscript{
 
 
 	void VirtualMachine::init(){
+		// script class factory should be created and initialized
 		script_function_factory=this->zs->getScriptFunctionFactory();
 		script_class_factory=this->zs->getScriptClassFactory();
 		scope_factory = this->zs->getScopeFactory();
@@ -83,21 +84,24 @@ namespace zetscript{
 		_node->next=NULL;
 		_node->data.n_shares=0;
 		_node->data.shared_ptr=_var_ptr;
-		_node->data.zero_shares=&zero_shares[idx_current_call];
+		_node->data.zero_shares=&zero_shares[vm_idx_call];
 
 		// insert node into shared nodes ...
-		insertShareNode(_node->data.zero_shares,_node);
+		if(!insertShareNode(_node->data.zero_shares,_node)){
+			return NULL;
+		}
 		return _node;
 	}
 
-	void VirtualMachine::sharePointer(InfoSharedPointerNode *_node){
+	bool VirtualMachine::sharePointer(InfoSharedPointerNode *_node){
 
 		unsigned char *n_shares = &_node->data.n_shares;
 
 		bool move_to_shared_list=*n_shares==0;
 
 		if(*n_shares >= MAX_SHARES_VARIABLE){
-			THROW_RUNTIME_ERROR("MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE);
+			VM_SET_USER_ERROR(this,"MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE);
+			return false;
 		}
 
 		(*n_shares)++;
@@ -105,23 +109,30 @@ namespace zetscript{
 		if(move_to_shared_list){
 
 			// Mov to shared pointer...
-			deattachShareNode(_node->data.zero_shares,_node);
+			if(!deattachShareNode(_node->data.zero_shares,_node)){
+				return false;
+			}
 			// update current stack due different levels from functions!
 			//_node->currentStack=idx_current_call;
-			insertShareNode(&shared_vars,_node);
+			if(!insertShareNode(&shared_vars,_node)){
+				return false;
+			}
 
 			// node is not in list of zero refs anymore...
 			_node->data.zero_shares=NULL;
 		}
+		return true;
 	}
 
-	void VirtualMachine::unrefSharedScriptObject(InfoSharedPointerNode *_node, bool remove_if_0){
+	bool VirtualMachine::unrefSharedScriptObject(InfoSharedPointerNode *_node, int idx_current_call, bool remove_if_0){
 
 		unsigned char *n_shares = &_node->data.n_shares;
 		if(*n_shares > 0){ // already zero
 			if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
 
-				deattachShareNode(&shared_vars,_node);
+				if(!deattachShareNode(&shared_vars,_node)){
+					return false;
+				}
 
 				if(remove_if_0){ // force remove node and data ...
 					delete _node->data.shared_ptr;
@@ -130,11 +141,15 @@ namespace zetscript{
 				else{ // insert into zero array.. if not referenced anymore will be removed by REMOVE_0_SHARED
 					// update current stack due different levels from functions!
 					_node->data.zero_shares=&zero_shares[idx_current_call];
-					insertShareNode(_node->data.zero_shares,_node);
+					if(!insertShareNode(_node->data.zero_shares,_node)){
+						return false;
+					}
 
 				}
 			}
 		}
+
+		return true;
 	}
 
 	const ScriptFunction * VirtualMachine::getCurrent_C_FunctionCall(){
@@ -149,9 +164,19 @@ namespace zetscript{
 		return NULL;
 	}
 
-	void VirtualMachine::setError(const char *str){
+	void VirtualMachine::setError(const std::string & str){
 		error = true;
 		error_str=str;
+	}
+
+	std::string VirtualMachine::getError(){
+		return error_str;
+	}
+
+	void VirtualMachine::setInternalError(const char *file, int line, const char *in_txt,...){
+		char out_txt[ZS_MAX_VARG_OUTPUT_STRING];
+		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
+		error_str=zs_strutils::format("[%s:%i] %s",file,line,out_txt);
 	}
 
 	StackElement  VirtualMachine::execute(
@@ -165,7 +190,7 @@ namespace zetscript{
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 		StackElement info={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
-		if(idx_current_call==0){ // set stack and Init vars for first call...
+		if(vm_idx_call==0){ // set stack and Init vars for first call...
 
 			error=false;
 			error_str="";
@@ -206,12 +231,14 @@ namespace zetscript{
 		return info;
 	}
 
-	void VirtualMachine::setStackElement(unsigned int idx, StackElement stk){
+	bool VirtualMachine::setStackElement(unsigned int idx, StackElement stk){
 		if(idx >= VM_STACK_LOCAL_VAR_MAX){
-			throw "setStackElement: out of bounds";
+			VM_SET_USER_ERROR(this,"setStackElement: out of bounds");
+			return false;
 		}
 
 		vm_stack[idx]=stk;
+		return true;
 	}
 
 	StackElement  * VirtualMachine::getLastStackValue(){
@@ -233,6 +260,11 @@ namespace zetscript{
 				// if is variable we should delete
 				//main_function->registered_symbols->pop_back();
 				StackElement *stk=&vm_stack[v];
+
+				if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+					stk=(StackElement *)stk->var_ref;
+				}
+
 				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk->properties)){
 				default:
 					break;
@@ -242,6 +274,7 @@ namespace zetscript{
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
+
 					if(stk->var_ref != NULL){
 						delete (ScriptObject *)stk->var_ref;
 					}

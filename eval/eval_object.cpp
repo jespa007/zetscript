@@ -37,14 +37,16 @@ namespace zetscript{
 					,instruction_properties
 			));
 
-			aux_p=eval_keyword_function(
+			if((aux_p=eval_keyword_function(
 				eval_data
 				,aux_p
 				,line
 				,scope_info
 				,true
 				,&token_node->value
-			);
+			))==NULL){
+				return NULL;
+			}
 
 			eval_instruction->symbol.name=token_node->value;
 			eval_instruction->symbol.scope=scope_info;
@@ -297,9 +299,15 @@ namespace zetscript{
 									  ,instructions
 									  ,std::vector<char>{',',')'}
 									  ,level+1
-							);
+							  );
+
+							  if(aux_p == NULL){
+								  return NULL;
+							  }
+
 							  n_args++;
 						  }
+
 
 					 }while(*aux_p != ')');
 

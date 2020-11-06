@@ -46,9 +46,8 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_SCOPE: 			return "PUSH_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:	return "PUSH_ATTR"; // New object (CREATE)
 			case BYTE_CODE_NEW_OBJECT: 			return "NEW_OBJ"; // New object (CREATE)
-			case BYTE_CODE_IT_INI:	 			return "IT_INI"; // BYTE_CODE_IT_INI
-			case BYTE_CODE_IT_CHK_END: 			return "IT_CHK_END"; // BYTE_CODE_IT_CHK_END
-			case BYTE_CODE_SET_AND_NEXT:		return "SET_AND_NEXT"; // BYTE_CODE_SET_AND_NEXT
+			case BYTE_CODE_IT_END: 				return "IT_END"; // BYTE_CODE_IT_CHK_END
+			case BYTE_CODE_IT_NEXT:				return "IT_NEXT"; // BYTE_CODE_SET_AND_NEXT
 			case BYTE_CODE_RESET_STACK:			return "RESET_STACK"; // BYTE_CODE_SET_AND_NEXT
 
 			default:

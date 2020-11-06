@@ -27,9 +27,10 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 
 namespace zetscript{
 
-	inline void VirtualMachine::insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node){
+	inline bool  VirtualMachine::insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node){
 		if(_node->next != NULL || _node->previous!=NULL) {
-			THROW_RUNTIME_ERROR(" Internal error expected node not in list");
+			VM_SET_USER_ERROR(this," Internal error expected node not in list");
+			return false;
 		}
 
 		if(list->first == NULL){ /*one  node: trivial ?*/
@@ -45,14 +46,16 @@ namespace zetscript{
 			_node->next=list->first;
 			list->first->previous=_node;
 		}
+		return true;
 	}
 
-	inline void VirtualMachine::deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node){
+	inline bool VirtualMachine::deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node){
 
-		if(list == NULL) return;
+		if(list == NULL) return true;
 
 		if(_node->next == NULL || _node->previous == NULL){
-			THROW_RUNTIME_ERROR(" An already deattached node");
+			VM_SET_USER_ERROR(this," An already deattached node");
+			return false;
 		}
 
 		if((_node->previous == _node) && (_node->next == _node)){ // 1 single node...
@@ -72,6 +75,7 @@ namespace zetscript{
 
 		}
 		_node->previous = _node->next = NULL;
+		return true;
 	}
 
 
@@ -91,7 +95,9 @@ namespace zetscript{
 				next_node=current->next;
 				finish=next_node ==list->first;
 
-				deattachShareNode(list,current);
+				if(!deattachShareNode(list,current)){
+					return;
+				}
 
 				delete current->data.shared_ptr;
 				current->data.shared_ptr=NULL;
@@ -129,7 +135,9 @@ namespace zetscript{
 					var =((ScriptObject *)(stk_local_var->var_ref));
 					if(var !=NULL){
 						if(var->ptr_shared_pointer_node != NULL){
-							var->unrefSharedPtr();
+							if(!var->unrefSharedPtr(vm_idx_call)){
+								return;
+							}
 						}
 					}
 				}
@@ -142,13 +150,13 @@ namespace zetscript{
 			
 			// remove deferred shared pointers except for return value...
 			if(check_empty_shared_pointers){
-				removeEmptySharedPointers(this->idx_current_call);
+				removeEmptySharedPointers(vm_idx_call);
 			}
 
 			// pop current var
 			--vm_current_scope;
 		}else{
-			THROW_RUNTIME_ERROR("internal error: trying to pop at the bottom");
+			VM_SET_USER_ERROR(this,"internal error: trying to pop at the bottom");
 		}
 
 	}
@@ -269,7 +277,9 @@ namespace zetscript{
 
 		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){ //
 
-			((ScriptObject *)(ret_obj.var_ref))->initSharedPtr();
+			if(!((ScriptObject *)(ret_obj.var_ref))->initSharedPtr()){
+				return;
+			}
 
 			if(byte_code_metamethod != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
 				((ScriptObject *)(ret_obj.var_ref))->setDelete_C_ObjectOnDestroy(true);

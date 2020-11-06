@@ -79,10 +79,14 @@ namespace zetscript{
 
 		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_C_STATIC_REF) == 0){ // is function member  ...
 			if(this_object!= NULL){
-				StackElement *stk_prop_fun = this_object->getProperty(calling_function->symbol.idx_position);
+				StackElement *stk_prop_fun=NULL;
+				if((stk_prop_fun = this_object->getProperty(calling_function->symbol.idx_position))==NULL){
+					return stk_result;
+				}
 				fun_ptr=((ScriptFunction *)stk_prop_fun->var_ref)->ref_native_function_ptr; // var ref holds function ptr
 			}else{
-				THROW_RUNTIME_ERROR("Internal error: expected object for function member");
+				VM_SET_USER_ERROR(this,"Internal error: expected object for function member");
+				return stk_result;
 			}
 		}
 
@@ -94,8 +98,9 @@ namespace zetscript{
 		bool static_ref=calling_function->symbol.properties&SYMBOL_PROPERTY_C_STATIC_REF;
 		int this_param=0;
 		zs_int param_this_object=0;
+		int idx_arg_start=0;
 
-		if(static_ref==false){
+		if(static_ref == false){
 			this_param=1;
 
 			if(this_object==NULL){
@@ -107,6 +112,19 @@ namespace zetscript{
 			}else{ // pass script var
 				param_this_object=(zs_int)this_object; // pass c object
 			}
+		}else{
+
+			// special case that constructor is passed as static
+			if(		(calling_function->symbol.properties&SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS)
+					&& instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
+					&& this_object!=NULL
+				){
+				idx_arg_start = 1;
+				n_args++;
+				converted_param[0]=(zs_int)this_object->getNativeObject();
+
+			}
+
 		}
 
 		if(n_args>MAX_NATIVE_FUNCTION_ARGS){
@@ -130,9 +148,9 @@ namespace zetscript{
 		}
 
 		// convert parameters script to c...
-		for(unsigned char  i = 0; i < n_args;i++){
+		for(unsigned char  i = idx_arg_start; i < n_args;i++){
 
-			stk_arg_current=&stk_arg_calling_function[i];
+			stk_arg_current=&stk_arg_calling_function[i-idx_arg_start];
 			FunctionParam *function_param=(FunctionParam *)calling_function->params->items[i];
 
 			if(!zs->convertStackElementToVar(

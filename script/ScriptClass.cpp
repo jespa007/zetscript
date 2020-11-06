@@ -8,7 +8,7 @@ namespace zetscript{
 
 	bool ScriptClass::isNativeClass(){
 
-		 return ((symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
+		 return ((symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
 	}
 	//------------------------------------------------------------
 
@@ -19,7 +19,7 @@ namespace zetscript{
 		c_constructor=NULL;
 		idx_function_member_constructor =ZS_IDX_UNDEFINED;
 		idx_class=_idx_class;
-		idx_starting_this_members=0;
+		//idx_starting_this_members=0;
 
 		for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 			metamethod_operator[i]=new zs_vector();
@@ -88,17 +88,17 @@ namespace zetscript{
 	Symbol				* 	ScriptClass::getSymbol(const std::string & symbol_name, char n_params){
 		bool only_symbol=n_params<0;
 
-		for(int i = (int)(symbol_members->count-1); i >= idx_starting_this_members ; i--){
-			Symbol *symbol=(Symbol *)symbol_members->items[i];
-			if(symbol->name == symbol_name){
+		for(int i = (int)(symbol_members->count-1); i >= 0 ; i--){
+			Symbol *member_symbol=(Symbol *)symbol_members->items[i];
+			if(member_symbol->name == symbol_name){
 				if(only_symbol){
-					return symbol;
+					return member_symbol;
 				}
-				if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){ // for C function symbols
-					ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
+				if(member_symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){ // for C function symbols
+					ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
 					if((((int)n_params==sf->params->count) || (n_params==ANY_PARAMS_SYMBOL_ONLY))
 					 ){
-						return symbol;
+						return member_symbol;
 					}
 				}
 			}
@@ -138,7 +138,7 @@ namespace zetscript{
 
 		Symbol *function_symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
-				symbol.scope
+				symbol_class.scope
 				,file
 				,line
 				//---- Function data
@@ -174,7 +174,7 @@ namespace zetscript{
 					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
 					*stk_element = {0,(void *)function_symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
 					metamethod_operator[i]->push_back((zs_int)stk_element);
-					std::string class_name = script_class_factory->getScriptClass(this->idx_class)->symbol.name;
+					std::string class_name = script_class_factory->getScriptClass(this->idx_class)->symbol_class.name;
 
 					ZS_PRINT_DEBUG("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());
 					break;
@@ -187,7 +187,7 @@ namespace zetscript{
 	//-----
 	ScriptClass::~ScriptClass(){
 
-		if ((symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF) {
+		if ((symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF) {
 
 			if (c_constructor !=NULL) {
 				delete c_constructor;

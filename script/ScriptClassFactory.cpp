@@ -31,8 +31,8 @@
 		return;\
 	}else{\
 		ScriptClass *sc=registerClass(__FILE__,__LINE__,STR(type_class),"");\
-		sc->symbol.scope->is_c_node=true;\
-		sc->symbol.properties=SYMBOL_PROPERTY_C_OBJECT_REF;\
+		sc->symbol_class.scope->is_c_node=true;\
+		sc->symbol_class.properties=SYMBOL_PROPERTY_C_OBJECT_REF;\
 		sc->str_class_ptr_type=(typeid(type_class).name());\
 	}
 
@@ -58,7 +58,13 @@ namespace zetscript{
 		main_function=NULL;
 		main_object=NULL;
 		script_classes=new zs_vector;
+		main_object=NULL;
+		main_function=NULL;
+		idx_clear_checkpoint=0;
+	}
 
+	void ScriptClassFactory::init(){
+		// ScriptFunctionFactory has to be created
 		main_object=registerClass(__FILE__, __LINE__,MAIN_SCRIPT_CLASS_NAME,""); // 0
 		MAIN_SCOPE(this)->script_class=main_object;
 
@@ -66,11 +72,14 @@ namespace zetscript{
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
 
 		idx_clear_checkpoint=1; // by default restore till main class.
-
 	}
 
-	void ScriptClassFactory::init(){
-		// VM has to be initialized
+	ZetScript *ptrToZetScriptPtr(zs_int ptr){
+		return (ZetScript *)ptr;
+	}
+
+	void ScriptClassFactory::registerSystem(){
+		// ScriptFunctionFactory/VirtualMachine has to be created/initialized
 
 
 		// REGISTER BUILT IN C TYPES
@@ -87,6 +96,7 @@ namespace zetscript{
 
 		// REGISTER BUILT IN CLASS TYPES
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
+		REGISTER_BUILT_IN_CLASS_SINGLETON(ZetScript,IDX_BUILTIN_TYPE_ZETSCRIPT);
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
 		REGISTER_BUILT_IN_CLASS(ScriptObject,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT);
 		REGISTER_BUILT_IN_CLASS(ScriptObjectString,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING);
@@ -108,6 +118,7 @@ namespace zetscript{
 		// Let's register functions,...
 		// register c function's
 
+		ZS_REGISTER_FUNCTION(zs,"ptrToZetScriptPtr",ptrToZetScriptPtr);
 
 		ZS_REGISTER_FUNCTION(zs,"print",static_cast<void (*)(const char *)>(print));
 		ZS_REGISTER_FUNCTION(zs,"print",static_cast<void (*)(zs_int)>(print));
@@ -115,53 +126,10 @@ namespace zetscript{
 
 		//ZS_REGISTER_FUNCTION_MEMBER(this->zs,ScriptObjectVector,"size",&ScriptObjectVector::size);
 
-		registerNativeMemberFunction("push",&ScriptObjectVector::pushSf);
-		registerNativeMemberFunction("pop",&ScriptObjectVector::popSf);
-
-		//-------------------------
-		// Register built in extra
-		// String
-		registerNativeSingletonClass<StringBuiltIn>("StringBuiltIn");
-		registerNativeMemberFunctionStatic<StringBuiltIn>("format",StringBuiltIn::format);
-		ZS_REGISTER_VARIABLE(zs,"String",&string_built_in);
-
-		// Math
-		registerNativeSingletonClass<MathBuiltIn>("MathBuiltIn");
-		registerNativeStaticConstMember<MathBuiltIn>("PI",&MathBuiltIn::PI);
-		registerNativeMemberFunctionStatic<MathBuiltIn>("sin",MathBuiltIn::sin);
-		registerNativeMemberFunctionStatic<MathBuiltIn>("cos",MathBuiltIn::cos);
-		registerNativeMemberFunctionStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
-		registerNativeMemberFunctionStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
-		registerNativeMemberFunctionStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
-		ZS_REGISTER_VARIABLE(zs,"Math",&math_built_in);
-
-		// System
-		registerNativeSingletonClass<SystemBuiltIn>("SystemBuiltIn");
-		registerNativeMemberFunctionStatic<SystemBuiltIn>("clock",SystemBuiltIn::clock);
-		registerNativeMemberFunctionStatic<SystemBuiltIn>("print",SystemBuiltIn::print);
-		registerNativeMemberFunctionStatic<SystemBuiltIn>("println",SystemBuiltIn::println);
-		registerNativeMemberFunctionStatic<SystemBuiltIn>("eval",SystemBuiltIn::eval);
-		registerNativeMemberFunctionStatic<SystemBuiltIn>("makeReadOnly",SystemBuiltIn::makeReadOnly);
-		//ZS_REGISTER_VARIABLE(zs,"System",&system_built_in);
-
-		// Custom user function or classes
-		zs->eval("class SystemBuiltinExtra extends SystemBuiltIn{\n"
-				"	print(s,...args){"
-				"		super(s,args);"
-				"	}"
-				"	println(s,...args){"
-				"		super(s,args);"
-				"	}"
-				"}"
-				"var System= new SystemBuiltinExtra();"
-				"System.makeReadOnly(System)");
-
-	/*	zs->eval("function test_function(){ print(\"hola\")}",false);
-		zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()",false);*/
+		registerNativeMemberFunction<ScriptObjectVector>("push",&ScriptObjectVector::pushSf);
+		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVector::popSf);
 
 		zs->saveState();
-		//zs->eval("print(\"hola1\");test_function()\nvar i=0;",false);
-		//zs->eval("print(\"hola2\");test_function()\ni=1;",false);
 	}
 
 
@@ -219,7 +187,7 @@ namespace zetscript{
 			scope->setScriptClass(sci);
 
 			sci->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
-			sci->symbol=*symbol;
+			sci->symbol_class=*symbol;
 
 			script_classes->push_back((zs_int)sci);
 
@@ -229,7 +197,7 @@ namespace zetscript{
 
 				if(sci->idx_base_classes->count > 0){
 					ScriptClass *match_class=getScriptClass(sci->idx_base_classes->items[0]);
-					THROW_RUNTIME_ERROR("Class \"%s\" already is inherited from \"%s\"",class_name.c_str(),match_class->symbol.name.c_str());
+					THROW_RUNTIME_ERROR("Class \"%s\" already is inherited from \"%s\"",class_name.c_str(),match_class->symbol_class.name.c_str());
 				}
 
 				if((base_class = getScriptClass(base_class_name)) == NULL){
@@ -247,7 +215,7 @@ namespace zetscript{
 				}
 
 				// set idx starting member
-				sci->idx_starting_this_members=sci->symbol_members->count;
+				//sci->idx_starting_this_members=sci->symbol_members->count;
 
 				// 2. set idx base class...
 				sci->idx_base_classes->push_back(base_class->idx_class);
@@ -298,7 +266,7 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
-			if(class_name == sc->symbol.name){
+			if(class_name == sc->symbol_class.name){
 				return i;
 			}
 		}
@@ -386,7 +354,8 @@ namespace zetscript{
 
 	const char * ScriptClassFactory::getScriptClassName(ClassTypeIdx idx){
 		if(idx != ZS_INVALID_CLASS){
-			return ((ScriptClass *)script_classes->get(idx))->symbol.name.c_str();
+			ScriptClass *sc=(ScriptClass *)script_classes->get(idx);
+			return sc->symbol_class.name.c_str();
 		}
 		 return "class_unknow";
 	}
