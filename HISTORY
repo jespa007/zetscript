@@ -160,6 +160,7 @@ Date: XX-12-2020
 #218 Encapsulate std::string in ScriptObjectString 
 > #219 Create iterator 
 > #220 Set information for non-existant properties in store instruction 
+> #222 do as an option to show system functions 
 
 Other: 
 
