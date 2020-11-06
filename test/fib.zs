@@ -8,6 +8,7 @@ function fibR(n)
     return fibR(n-2)+fibR(n-1);
 }
 
-var start=System.clock();
-System.print("fib: {0} time: {1} ms", fibR(34),System.clock()-start);
+//var start=System.clock();
+fibR(34)
+//System.print("fib: {0} time: {1} ms", fibR(34),System.clock()-start);
 
