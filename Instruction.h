@@ -6,10 +6,11 @@
 #pragma once
 
 
-//#define ZS_IDX_INSTRUCTION_OP2_UNDEFINED			-1
-#define ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME		-2
-#define ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR			-3
-#define ZS_IDX_INSTRUCTION_OP2_THIS					-4
+//#define ZS_IDX_INSTRUCTION_OP2_UNDEFINED				-1
+#define ZS_IDX_INSTRUCTION_OP2_SOLVE_AT_RUNTIME			-2
+#define ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR				-3
+#define ZS_IDX_INSTRUCTION_OP2_THIS						-4
+#define ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND	-5
 
 
 // properties shared by compiler + instruction ..
@@ -29,10 +30,11 @@ typedef enum{
 	BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS,												// 0x0080
 	BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD,												// 0x0100
 	BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR,											// 0x0200
+	BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_PTR,												// 0x0400
 	BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_LAST,
 	//-- BYTE_CODE_CALL TYPE
-	BIT_INSTRUCTION_PROPERTY_POP_ONE= BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_LAST,			// 0x0400
-	//BIT_INSTRUCTION_PROPERTY_START_EXPRESSION,												// 0x0800
+	BIT_INSTRUCTION_PROPERTY_POP_ONE= BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_LAST,			// 0x0800
+	//BIT_INSTRUCTION_PROPERTY_START_EXPRESSION,											// 0x1000
 	BIT_INSTRUCTION_PROPERTY_MAX
 }BitInstructionProperty;
 
@@ -51,6 +53,7 @@ typedef enum{
 
 //GLOBAL_SCOPE,   // by default
 #define	MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL			(0x1<<BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL)
+#define	MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_PTR			(0x1<<BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_PTR)
 #define MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS			(0x1<<BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
 #define MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD			(0x1<<BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD)
 #define MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR			(0x1<<BIT_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR)
@@ -99,18 +102,18 @@ namespace zetscript{
 
 		const char * file;
 		short line;
-		std::string * str_symbol; // should be deallocated
+		std::string * ptr_str_symbol_name; // should be deallocated
 
 		InstructionSourceInfo(){
-			str_symbol=NULL;
+			ptr_str_symbol_name=NULL;
 			file="unknow_file";
 			line=-1;
 		}
 
-		InstructionSourceInfo(const char * _file, short _line,std::string *_str_symbol){
+		InstructionSourceInfo(const char * _file, short _line,std::string *_ptr_str_symbol_name){
 			file=_file;
 			line=_line;
-			str_symbol=_str_symbol;
+			ptr_str_symbol_name=_ptr_str_symbol_name;
 		}
 	};
 

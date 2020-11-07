@@ -63,6 +63,7 @@ namespace zetscript{
 
 		//Symbol				* 	getMemberFunction(const std::string & function_name, unsigned int n_args);
 		bool isNativeClass();
+		bool isNativeSingletonClass();
 
 		virtual ~ScriptClass();
 

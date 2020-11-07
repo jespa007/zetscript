@@ -74,7 +74,7 @@ namespace zetscript{
 				eval_instruction->instruction_source_info=InstructionSourceInfo(
 											 eval_data->current_parsing_file
 											 ,line
-											 ,get_compiled_symbol(eval_data,symbol_value)
+											 ,eval_get_mapped_name(eval_data,symbol_value)
 										);
 
 
@@ -161,13 +161,15 @@ namespace zetscript{
 						// 1st. check whether eval a keyword...
 						key_w = is_keyword(aux_p);
 						if(key_w == Keyword::KEYWORD_UNKNOWN){
-								aux_p = eval_keyword_function(
+								if((aux_p = eval_keyword_function(
 										eval_data
 										,aux_p
 										, line
 										,sc->symbol_class.scope // pass class scope
 
-								);
+								))==NULL){
+									return NULL;
+								}
 						}else{
 							EVAL_ERROR(eval_data->current_parsing_file,line,"unexpected keyword \"%s\" in class declaration \"%s\"",eval_info_keywords[key_w].str,class_name.c_str());
 						}

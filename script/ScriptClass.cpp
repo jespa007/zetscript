@@ -10,6 +10,13 @@ namespace zetscript{
 
 		 return ((symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
 	}
+
+	bool ScriptClass::isNativeSingletonClass(){
+		 return ((symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0)
+				 	 &&
+				this->c_constructor == NULL;
+
+	}
 	//------------------------------------------------------------
 
 	ScriptClass::ScriptClass(ZetScript *_zs,ClassTypeIdx _idx_class){
@@ -155,8 +162,8 @@ namespace zetscript{
 		if(function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 			Symbol *symbol_repeat=NULL;
 			if((symbol_repeat=getSymbol(function_symbol->name,NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark
-				((ScriptFunction *)symbol_repeat->ref_ptr)->function_should_be_deduced_at_runtime=true; // mark the function found (only matters for first time)
-				((ScriptFunction *)function_symbol->ref_ptr)->function_should_be_deduced_at_runtime=true;
+				((ScriptFunction *)symbol_repeat->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
+				((ScriptFunction *)function_symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
 			}
 		}
 

@@ -77,7 +77,7 @@ namespace zetscript{
 		zs_int  fun_ptr = calling_function->ref_native_function_ptr;
 		StackElement stk_result={0,0,BIT_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 
-		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_C_STATIC_REF) == 0){ // is function member  ...
+		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_STATIC) == 0){ // is function member  ...
 			if(this_object!= NULL){
 				StackElement *stk_prop_fun=NULL;
 				if((stk_prop_fun = this_object->getProperty(calling_function->symbol.idx_position))==NULL){
@@ -95,7 +95,7 @@ namespace zetscript{
 		zs_int result=0;
 		StackElement *stk_arg_current;
 		current_call_c_function = calling_function;
-		bool static_ref=calling_function->symbol.properties&SYMBOL_PROPERTY_C_STATIC_REF;
+		bool static_ref=calling_function->symbol.properties&SYMBOL_PROPERTY_STATIC;
 		int this_param=0;
 		zs_int param_this_object=0;
 		int idx_arg_start=0;

@@ -608,6 +608,9 @@ namespace zetscript{
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
 				*(*str_dst_it)="function";
 				break;
+			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_CLASS:
+				*(*str_dst_it)="class";
+				break;
 			default:
 				if(stk_src_item->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
 					*(*str_dst_it)=((ScriptObject *)(stk_src_item)->var_ref)->toString();

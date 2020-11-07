@@ -39,7 +39,7 @@ namespace zetscript{
 				,var_name
 				,var_type
 				,(zs_int)var_ptr
-				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF)) != NULL
+				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC)) != NULL
 		){
 			ZS_PRINT_DEBUG("Registered variable name: %s",var_name.c_str());
 		}
@@ -108,7 +108,7 @@ namespace zetscript{
 				,arg_info
 				,idx_return_type
 				,ref_ptr
-				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF
+				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC
 			);
 
 		ZS_PRINT_DEBUG("Registered function name: %s",function_name);
@@ -419,7 +419,7 @@ namespace zetscript{
 				,var_name
 				,var_type
 				,(zs_int)var_pointer
-				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF | SYMBOL_PROPERTY_CONST
+				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST
 		);
 	}
 
@@ -559,7 +559,7 @@ namespace zetscript{
 				,arg_info
 				, idx_return_type
 				, ref_ptr
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC
 		);
 		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 
@@ -684,7 +684,7 @@ namespace zetscript{
 				, arg_info
 				, idx_return_type
 				, ref_ptr
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_C_STATIC_REF | SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
 		);
 		ZS_PRINT_DEBUG("Registered C function %s as function member %s::%s",function_name, function_class_name.c_str(),function_name);
 	}

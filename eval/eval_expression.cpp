@@ -78,7 +78,7 @@ namespace zetscript{
 			return ByteCode::BYTE_CODE_END_FUNCTION;
 		}
 
-		std::string * get_compiled_symbol(EvalData *eval_data,const std::string & s){
+		std::string * eval_get_mapped_name(EvalData *eval_data,const std::string & s){
 			if(compiled_symbol_name->count(s)==0){
 				(*compiled_symbol_name)[s]=new std::string (s);
 			}
@@ -591,7 +591,7 @@ namespace zetscript{
 								aux_p+=strlen(eval_info_pre_post_self_operations[pre_self_operation_type].str);
 								break;
 							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID:
-								EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
+								EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
 								break;
 						}
 					}else{
@@ -614,7 +614,7 @@ namespace zetscript{
 					if(*aux_p=='('){ // inner expression (priority)
 
 						if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-							EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_info_pre_post_self_operations[pre_self_operation_type].str);
+							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_info_pre_post_self_operations[pre_self_operation_type].str);
 						}
 
 						aux_p=eval_expression(
@@ -627,7 +627,7 @@ namespace zetscript{
 								,level+1);
 
 						if(*aux_p != ')'){
-							EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected ')'");
+							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Expected ')'");
 						}
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -721,7 +721,7 @@ namespace zetscript{
 								symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
 									eval_data->current_parsing_file
 									,line
-									,get_compiled_symbol(eval_data,symbol_token_node.value)
+									,eval_get_mapped_name(eval_data,symbol_token_node.value)
 								);
 							}
 						}
@@ -757,7 +757,7 @@ namespace zetscript{
 									// check if ref identifier...
 									if(n_params>0){
 										if(*aux_p != ','){
-											EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected ','");
+											EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Expected ','");
 										}
 										aux_p++;
 									}
@@ -792,7 +792,7 @@ namespace zetscript{
 								}
 
 								if(*aux_p != ']'){
-									EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected ']'");
+									EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Expected ']'");
 								}
 
 								aux_p++;
@@ -810,7 +810,7 @@ namespace zetscript{
 								check_identifier_name_expression_ok(eval_data,accessor_value,line);
 
 								if(accessor_value == SYMBOL_VALUE_THIS){
-									EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"\"this\" is not allowed as member name");
+									EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"\"this\" is not allowed as member name");
 								}
 
 								if(first_access){ // check first symbol at first...
@@ -824,7 +824,7 @@ namespace zetscript{
 										instruction_token->instruction_source_info= InstructionSourceInfo(
 											eval_data->current_parsing_file
 											,line
-											,get_compiled_symbol(eval_data,accessor_value)
+											,eval_get_mapped_name(eval_data,accessor_value)
 										);
 									}
 								}
@@ -849,7 +849,7 @@ namespace zetscript{
 									instruction_token->instruction_source_info= InstructionSourceInfo(
 										eval_data->current_parsing_file
 										,line
-										,get_compiled_symbol(eval_data,accessor_value)
+										,eval_get_mapped_name(eval_data,accessor_value)
 									);
 								}
 
@@ -861,7 +861,7 @@ namespace zetscript{
 									instruction_token->instruction_source_info= InstructionSourceInfo(
 										eval_data->current_parsing_file
 										,last_accessor_line
-										,get_compiled_symbol(eval_data,last_accessor_value)
+										,eval_get_mapped_name(eval_data,last_accessor_value)
 									);
 								}
 							}
@@ -882,7 +882,7 @@ namespace zetscript{
 							symbol_token_node.instructions[0]->instruction_source_info= InstructionSourceInfo(
 								eval_data->current_parsing_file
 								,last_accessor_line
-								,get_compiled_symbol(eval_data,SYMBOL_VALUE_THIS)
+								,eval_get_mapped_name(eval_data,SYMBOL_VALUE_THIS)
 							);
 
 							symbol_token_node.instructions[0]->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;
@@ -899,7 +899,7 @@ namespace zetscript{
 
 					if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
 					&& post_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-						EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
+						EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
 					}
 
 					unsigned last_instruction=(int)(symbol_token_node.instructions.size()-1);
@@ -948,13 +948,13 @@ namespace zetscript{
 					if(operator_type==Operator::OPERATOR_UNKNOWN){
 						switch(post_self_operation_type){
 						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
-							EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"invalid post increment");
+							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"invalid post increment");
 							break;
 						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
-							EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"invalid post decrement");
+							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"invalid post decrement");
 							break;
 						default:
-							EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Expected operator");
+							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Expected operator");
 							break;
 						}
 
@@ -998,12 +998,12 @@ namespace zetscript{
 
 				if(found == false){
 					size_t len=aux_p-start_expression_str;
-					EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,start_expression_line,"%s at the end of expression %10s...",expected_ending_str.c_str(),zs_strutils::substring(start_expression_str,0,len).c_str());
+					EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,start_expression_line,"%s at the end of expression %10s...",expected_ending_str.c_str(),zs_strutils::substring(start_expression_str,0,len).c_str());
 				}
 			}
 
 			if(aux_p==0){
-				EVAL_EXPRESSION_ERROR(eval_data->current_parsing_file,line ,"Unexpected end of file");
+				EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Unexpected end of file");
 			}
 
 			// there's an expression

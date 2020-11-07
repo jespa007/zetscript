@@ -2,8 +2,8 @@ namespace zetscript{
 	namespace eval{
 		int n_anonymouse_function=0;
 
-		//std::string * 	get_compiled_symbol(EvalData *eval_data,const std::string * symbol_name);
-		std::string * get_compiled_symbol(EvalData *eval_data,const std::string & s);
+		//std::string * 	eval_get_mapped_name(EvalData *eval_data,const std::string * symbol_name);
+		std::string * eval_get_mapped_name(EvalData *eval_data,const std::string & s);
 		char 		*	eval_expression(
 				EvalData *eval_data
 				,const char *s
@@ -60,7 +60,7 @@ namespace zetscript{
 			eval_instruction->instruction_source_info= InstructionSourceInfo(
 				eval_data->current_parsing_file
 				,line
-				,get_compiled_symbol(eval_data,token_node->value
+				,eval_get_mapped_name(eval_data,token_node->value
 				)
 			);
 
@@ -261,22 +261,22 @@ namespace zetscript{
 					 constructor_function=sc->getSymbol(FUNCTION_MEMBER_CONSTRUCTOR_NAME);
 
 					 // insert load function ...
-					 if(constructor_function != NULL){
-						 instructions->push_back(
-							eval_instruction=new EvalInstruction(
-								 BYTE_CODE_LOAD_TYPE_VARIABLE
-								 ,ZS_IDX_UNDEFINED
-								 ,ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
-								 ,MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD
-							)
-						 );
 
-						 eval_instruction->instruction_source_info=InstructionSourceInfo(
-							 eval_data->current_parsing_file
-							 ,line
-							 ,get_compiled_symbol(eval_data,FUNCTION_MEMBER_CONSTRUCTOR_NAME)
-						);
-					 }
+					 instructions->push_back(
+						eval_instruction=new EvalInstruction(
+							 BYTE_CODE_LOAD_TYPE_VARIABLE
+							 ,ZS_IDX_UNDEFINED
+							 ,constructor_function!=NULL?ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR:ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND
+							 ,MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD
+						)
+					 );
+
+					 eval_instruction->instruction_source_info=InstructionSourceInfo(
+						 eval_data->current_parsing_file
+						 ,line
+						 ,eval_get_mapped_name(eval_data,FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+					);
+
 
 
 					 if(*aux_p != '('){
@@ -312,17 +312,15 @@ namespace zetscript{
 					 }while(*aux_p != ')');
 
 					 // if constructor function found insert call function...
-					 if(constructor_function != NULL){
+					 instructions->push_back(
+						 new EvalInstruction(
+							 BYTE_CODE_CALL
+							 ,n_args
+							 ,constructor_function!=NULL?ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR:ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND
+							 ,MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD
+						)
+					 );
 
-						 instructions->push_back(
-							 new EvalInstruction(
-								 BYTE_CODE_CALL
-								 ,n_args
-								 ,ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
-								 ,MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD
-							)
-						 );
-					 }
 
 					return aux_p+1; // ignore last )
 				}

@@ -204,6 +204,10 @@ namespace zetscript{
 					THROW_RUNTIME_ERROR("Class %s not registered",base_class_name.c_str());
 				}
 
+				if(base_class->isNativeSingletonClass()){
+					THROW_RUNTIME_ERROR("Class \"%s\" cannot extend from \"%s\" because is singleton. To allow extension register class \"%\" with registerNativeClass instead of registerNativeSingletonClass",class_name.c_str(),base_class_name.c_str(),base_class_name.c_str());
+				}
+
 
 				// 1. extend all symbols from base class
 				for(int i=0; i < base_class->symbol_members->count; i++){

@@ -18,6 +18,7 @@ namespace zetscript{
 		BYTE_CODE_LOAD_TYPE_UNDEFINED,
 		BYTE_CODE_LOAD_TYPE_NULL,
 		BYTE_CODE_LOAD_TYPE_CONSTANT,
+		BYTE_CODE_LOAD_TYPE_CLASS,
 
 		BYTE_CODE_STORE, // mov expression to var
 		BYTE_CODE_PUSH_VECTOR_ELEMENT, // Value push for std::vector

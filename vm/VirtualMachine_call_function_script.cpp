@@ -231,6 +231,18 @@ vm_stk_current++;
 	vm_stk_current++; \
 }
 
+#define PUSH_FUNCTION(ref) \
+vm_stk_current->stk_value=0; \
+vm_stk_current->var_ref=(void *)ref; \
+vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION; \
+vm_stk_current++;
+
+#define PUSH_CLASS(ref) \
+vm_stk_current->stk_value=0; \
+vm_stk_current->var_ref=(void *)ref; \
+vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_CLASS; \
+vm_stk_current++;
+
 // explains whether stk is this or not. Warning should be given as value and not as ptr
 #define STK_IS_THIS(stk) (this_object != NULL && (stk)->var_ref == this_object)
 
@@ -385,6 +397,9 @@ namespace zetscript{
 				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:
 					stk_var = _stk_local_var+instruction->value_op2;
 					break;
+				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_PTR:
+					stk_var = (StackElement *)instruction->value_op2;
+					break;
 				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR:
 					POP_TWO;
 					if( (stk_result_op1->properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)){
@@ -417,6 +432,8 @@ namespace zetscript{
 					break;
 				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD:
 				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS:
+
+					if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND) continue;
 
 					stk_var=NULL;
 					if(scope_type & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD){
@@ -623,6 +640,10 @@ namespace zetscript{
 				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:
 					stk_var = _stk_local_var+instruction->value_op2;
 					break;
+				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_PTR:
+					//stk_var = _stk_local_var+instruction->value_op2;
+					PUSH_FUNCTION(instruction->value_op2);
+					continue;
 				default:
 				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS:
 				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD:
@@ -633,6 +654,9 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:
 				(*vm_stk_current++)=*(((ConstantValue *)instruction->value_op2));
+				continue;
+			case BYTE_CODE_LOAD_TYPE_CLASS:
+				PUSH_CLASS(instruction->value_op2);
 				continue;
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT:
@@ -795,7 +819,7 @@ namespace zetscript{
 								stk_dst->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL;
 								*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);
 								if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)stk_src_ref);
-							}else if(type_var  &  MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
+							}else if(type_var  &  (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_CLASS) ){
 								*stk_dst=*stk_src;
 							}else if(type_var & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
 								if((stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING) && (stk_dst->var_ref!=NULL)){ // dst is string reload
@@ -1130,18 +1154,25 @@ namespace zetscript{
 				continue;
 
 			 case  BYTE_CODE_CALL: // calling function after all of args are processed...
+
 				 {
 					ScriptFunction *sf = NULL;
 					unsigned char n_args=instruction->value_op1; // number arguments will pass to this function
 					StackElement *stk_function_ref=NULL;
 					unsigned short scope_type=0;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
-					bool is_constructor=(char)instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR;
-
 
 					StackElement *stk_start_arg_call=(vm_stk_current-n_args);
-					stk_function_ref = ((stk_start_arg_call-1));
 
+
+					if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND){ // points the object
+						vm_stk_current=stk_start_arg_call;
+						continue;
+
+					}
+
+					stk_function_ref = ((stk_start_arg_call-1));
+					bool is_constructor=(char)instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR;
 					scope_type = GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction->properties);
 					calling_object = this_object;
 
@@ -1164,7 +1195,7 @@ namespace zetscript{
 					}
 
 					// if a c function that it has more than 1 symbol with same number of parameters, so we have to solve and get the right one...
-					if(sf->function_should_be_deduced_at_runtime){
+					if(sf->symbol.properties & SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME){
 
 						StackElement *stk_element_ptr=vm_stack;
 						int stk_element_len = main_function_object->registered_symbols->count;
@@ -1296,6 +1327,7 @@ namespace zetscript{
 						*vm_stk_current++ = ret_obj;
 					}
 				 }
+
 				continue;
 			 case  BYTE_CODE_RET:
 				if(vm_stk_current>stk_start){ // can return something. value is +1 from stack
@@ -1374,7 +1406,7 @@ namespace zetscript{
 						}
 					}
 					else{
-						VM_STOP_EXECUTE("delete op: expected scriptvar var but it was \"%s\"",stk_result_op1->toString());
+						VM_STOP_EXECUTE("Error deleting \"%s\". cannot perform delete on variables type \"%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_result_op1->toString());
 					}
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:

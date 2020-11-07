@@ -161,6 +161,7 @@ Date: XX-12-2020
 > #219 Create iterator 
 > #220 Set information for non-existant properties in store instruction 
 > #222 do as an option to show system functions 
+> #223 get static function through class 
 
 Other: 
 

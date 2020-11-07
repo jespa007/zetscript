@@ -37,7 +37,7 @@ namespace zetscript{
 		script_class_factory=zs->getScriptClassFactory();
 
 		//num_native_functions=new zs_map;
-		function_should_be_deduced_at_runtime=false;
+		//function_should_be_deduced_at_runtime=false;
 	}
 
 	const char * ScriptFunction::instructionPropertyPreOperationToStr(unsigned int properties){
@@ -255,8 +255,8 @@ namespace zetscript{
 	const char *  ScriptFunction::getInstructionSymbolName(Instruction * ins){
 		InstructionSourceInfo *info=getInstructionInfo(ins);
 
-		if(info!=NULL && info->str_symbol!=NULL){
-			return info->str_symbol->c_str();
+		if(info!=NULL && info->ptr_str_symbol_name!=NULL){
+			return info->ptr_str_symbol_name->c_str();
 		}
 		return "unknown";
 	}
@@ -411,8 +411,8 @@ namespace zetscript{
 					scope_block
 					,symbol->name
 					,(char)params.size()))!=NULL){ // there's one or more name with same args --> mark
-					((ScriptFunction *)symbol_repeat->ref_ptr)->function_should_be_deduced_at_runtime=true; // mark the function found (only matters for first time)
-					((ScriptFunction *)symbol->ref_ptr)->function_should_be_deduced_at_runtime=true;
+					((ScriptFunction *)symbol_repeat->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
+					((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
 				}
 			}
 

@@ -360,15 +360,7 @@ namespace zetscript{
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
 				break;
 			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
-
 				 ir_fun  = (ScriptFunction *)(si->var_ref);
-				 /*if((ir_fun->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF){ // create proxy function ...
-					 if((ir_fun->symbol.properties & SYMBOL_PROPERTY_C_STATIC_REF) != SYMBOL_PROPERTY_C_STATIC_REF){ // delete function pointer
-						 StackElement *stk_element=(StackElement *)si->stk_value;
-						 delete ((CMemberFunctionPointer *)stk_element->stk_value);
-						 free(si->stk_value);
-					 }
-				}*/
 				break;
 			default: // properties ...
 
