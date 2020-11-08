@@ -148,7 +148,7 @@
 			(*((float *)(ref)))__OPERATOR__;\
 			break;\
 	default:\
-		VM_STOP_EXECUTE(" Cannot perform pre/post operator (%s)",stk_var->toString());\
+		VM_STOP_EXECUTE(" Cannot perform pre/post operator (%s)",stk_var->typeStr());\
 		break;\
 	}\
 }
@@ -375,7 +375,7 @@ namespace zetscript{
 					}else{ // function
 						// assign script function ...
 						instruction->byte_code=BYTE_CODE_LOAD_TYPE_FUNCTION;
-						instruction->value_op2=symbol_not_defined->idx_position;
+						instruction->value_op2=symbol_not_defined->ref_ptr;
 						goto lbl_load_type_function;
 					}
 				}else{ // load undefined as default!
@@ -397,13 +397,15 @@ namespace zetscript{
 				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:
 					stk_var = _stk_local_var+instruction->value_op2;
 					break;
-				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_PTR:
-					stk_var = (StackElement *)instruction->value_op2;
-					break;
 				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR:
 					POP_TWO;
-					if( (stk_result_op1->properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)) == (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT | MSK_STACK_ELEMENT_PROPERTY_PTR_STK)){
-						var_object = (ScriptObject *)(((StackElement *)stk_result_op1->var_ref)->var_ref);
+					var_object=NULL;
+					if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+						stk_result_op1 = (StackElement *)stk_result_op1->var_ref;
+					}
+
+					if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+						var_object = (ScriptObject *)(stk_result_op1->var_ref);
 					}
 
 					stk_var=NULL;
@@ -451,10 +453,9 @@ namespace zetscript{
 						if((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT)!= MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT)
 						{
 							VM_STOP_EXECUTE(
-									SFI_GET_FILE_LINE(calling_function,instruction)
-									,"Cannot read property \"%s\" of %s"
+									"Cannot read property \"%s\" of %s"
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-									,stk_result_op1->toString());
+									,stk_result_op1->typeStr());
 						}
 
 						calling_object = (ScriptObject  *)stk_result_op1->var_ref;
@@ -630,30 +631,13 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_TYPE_UNDEFINED:
 				PUSH_UNDEFINED;
 				continue;
-			case BYTE_CODE_LOAD_TYPE_FUNCTION: // expect load local/global symbol to load function...
+			case BYTE_CODE_LOAD_TYPE_FUNCTION: // expect constant and function has the same behaviour...
 				lbl_load_type_function:
-				scope_type=GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction->properties);
-				switch(scope_type){
-				case 0: // global
-					stk_var = vm_stack + instruction->value_op2;
-					break;
-				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:
-					stk_var = _stk_local_var+instruction->value_op2;
-					break;
-				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_PTR:
-					//stk_var = _stk_local_var+instruction->value_op2;
-					PUSH_FUNCTION(instruction->value_op2);
-					continue;
-				default:
-				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS:
-				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD:
-					VM_STOP_EXECUTE("internal error: load function only contemplates global/local scope");
-					break;
-				}
-				*vm_stk_current++=*stk_var;
+				PUSH_FUNCTION(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:
-				(*vm_stk_current++)=*(((ConstantValue *)instruction->value_op2));
+			case BYTE_CODE_LOAD_TYPE_STATIC:
+				*vm_stk_current++=*((StackElement *)instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_TYPE_CLASS:
 				PUSH_CLASS(instruction->value_op2);
@@ -728,7 +712,7 @@ namespace zetscript{
 						) {
 
 							ScriptObject *script_object=(ScriptObject *)stk_result_op1->var_ref;
-							if((stk_var=script_object->addProperty((const char *)stk_result_op1->stk_value, error_str))==NULL){
+							if((stk_dst=script_object->addProperty((const char *)stk_result_op1->stk_value, error_str))==NULL){
 								VM_STOP_EXECUTE(error_str.c_str());
 							}
 
@@ -852,7 +836,7 @@ namespace zetscript{
 									}
 								}
 							}else{
-								VM_STOP_EXECUTE("(internal) cannot determine var type %s",stk_src->toString());
+								VM_STOP_EXECUTE("(internal) cannot determine var type %s",stk_src->typeStr());
 							}
 							if(copy_aux!=NULL)stk_dst->properties|=MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;
 						}
@@ -1239,17 +1223,10 @@ namespace zetscript{
 							ScriptObjectVector *var_args=NULL;
 							zs_int *function_param=&sf->params->items[0];
 							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
-							for(unsigned i = 0; i < (unsigned)effective_args; i++){
-								if(((FunctionParam *)(*function_param))->var_args == true && var_args==NULL){ // enter var args
-									var_args=new ScriptObjectVector(this->zs);
-									if(!var_args->initSharedPtr()){
-										goto lbl_exit_function;
-									}
-									stk_arg->stk_value=0;
-									stk_arg->var_ref=(void *)var_args;
-									stk_arg->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
-								}
-								else if(((FunctionParam *)(*function_param))->by_ref == false){ // copy
+							int i=0;
+							for(;;){
+
+								if(((FunctionParam *)(*function_param))->by_ref == false){ // copy
 									unsigned short properties = stk_arg->properties;
 									if(properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 										*stk_arg=*((StackElement *)stk_arg->var_ref);
@@ -1258,6 +1235,7 @@ namespace zetscript{
 										if(!sc->initSharedPtr()){
 											goto lbl_exit_function;
 										}
+										sc->set((const char *)stk_arg->stk_value);
 										stk_arg->stk_value=(void *)sc->str_value.c_str();
 										stk_arg->var_ref=(void *)sc;
 										stk_arg->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
@@ -1266,11 +1244,40 @@ namespace zetscript{
 
 								if(var_args!=NULL){
 									var_args->push(stk_arg);
+
+									if(i+1 >= (unsigned)n_args){
+										break;
+									}
+								}else{
+									if(((FunctionParam *)(*function_param))->var_args == true){ // enter var args
+										var_args=new ScriptObjectVector(this->zs);
+										if(!var_args->initSharedPtr()){
+											goto lbl_exit_function;
+										}
+
+										// push first arg
+										var_args->push(stk_arg);
+										// replace for vector type...
+										stk_arg->stk_value=0;
+										stk_arg->var_ref=(void *)var_args;
+										stk_arg->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
+										if(i+1 >= (unsigned)n_args){
+											break;
+										}
+									}else{
+										function_param++;
+										if(i+1 >= (unsigned)effective_args){
+											break;
+										}
+									}
 								}
 
 								stk_arg++;
-								function_param++;
+								i++;
+
+
 							}
+
 						}
 
 						// ... we must set the rest of parameters as undefined in case user put less params. If params exceds the number of accepted params in function,
@@ -1406,7 +1413,7 @@ namespace zetscript{
 						}
 					}
 					else{
-						VM_STOP_EXECUTE("Error deleting \"%s\". cannot perform delete on variables type \"%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_result_op1->toString());
+						VM_STOP_EXECUTE("Error deleting \"%s\". cannot perform delete on variables type \"%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_result_op1->typeStr());
 					}
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:

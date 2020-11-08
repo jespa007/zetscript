@@ -76,7 +76,7 @@ namespace zetscript{
 				stack_element=((StackElement *)stack_element->var_ref);
 			}
 
-			if(idx_builtin_type == IDX_BUILTIN_TYPE_STACK_ELEMENT){//*ScriptClass::STACK_ELEMENT_PTR)){// && (stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK)){ // set directly stackvar
+			if(idx_builtin_type == IDX_BUILTIN_TYPE_STACK_ELEMENT){
 				val_ret=(zs_int)stack_element;
 			}else{
 
@@ -179,7 +179,7 @@ namespace zetscript{
 						}
 
 					}else if((c_class=script_variable->getNativeClass())!=NULL){ // get the pointer directly ...
-
+						//std::string error_cast;
 						if(c_class->idx_class==idx_builtin_type){
 							val_ret=(zs_int)script_variable->getNativeObject();
 						}

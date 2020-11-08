@@ -7,8 +7,8 @@
 #define IDX_CALL_STACK_MAIN 1
 
 #define PRINT_DUAL_ERROR_OP(c)\
-std::string var_type1=stk_result_op1->toString(),\
-	   var_type2=stk_result_op2->toString();\
+std::string var_type1=stk_result_op1->typeStr(),\
+	   var_type2=stk_result_op2->typeStr();\
 \
 	VM_ERROR("cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 		var_type1.c_str(),\
@@ -16,7 +16,7 @@ std::string var_type1=stk_result_op1->toString(),\
 		var_type2.c_str());\
 
 #define PRINT_ERROR_OP(c)\
-	std::string var_type1=stk_result_op1->toString();\
+	std::string var_type1=stk_result_op1->typeStr();\
 \
 VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 	c,\
@@ -213,7 +213,7 @@ namespace zetscript{
 
 
 		if(chk_ok == false){
-			std::string var_type1=stk_result_op1->toString(),
+			std::string var_type1=stk_result_op1->typeStr(),
 					var_type2="";
 
 			if(n_stk_args==1){ /* 1 arg*/
@@ -223,7 +223,7 @@ namespace zetscript{
 						);
 				return;
 			}else{ /* 2 args*/
-				var_type2=stk_result_op2->toString();
+				var_type2=stk_result_op2->typeStr();
 				VM_ERROR("cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
 						var_type1.c_str(),
 						byte_code_metamethod_operator_str,

@@ -495,8 +495,11 @@ namespace zetscript{
 			return Directive::DIRECTIVE_UNKNOWN;
 		}
 
-		bool  is_access_punctuator(char *s){
-			return *s=='.' || *s=='[' || *s=='(';
+		std::string * eval_get_mapped_name(EvalData *eval_data,const std::string & s){
+			if(compiled_symbol_name->count(s)==0){
+				(*compiled_symbol_name)[s]=new std::string (s);
+			}
+			return (*compiled_symbol_name)[s];
 		}
 
 		bool  is_end_symbol_token(char *s, char pre=0){

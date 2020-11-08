@@ -77,7 +77,7 @@ Date: XX-12-2020
 #121 CEval,CScriptClassFactory and CZetScript as instanceable
 #122 Restore CScriptClassFactory
 > #124 Implement Integer helper class
-> #125 Implement String helper class
+#125 Implement String helper class
 #126 Save pure c function instead of std::function for speed improvement
 #128 Implement register_c_function_as_member 
 #129 Migrate new C++ coding style
@@ -121,10 +121,10 @@ Date: XX-12-2020
 #172 get rid super scope
 #173 Manage this context automatically on anonymouse function created on class 
 #175 Arguments as E/S 
-> #177 Implement saveCurrentState
+#177 Implement saveCurrentState
 #179 Bug if-else fails {max scope reached} 
 #180 Return vector or dictionary not deref its user properties 
-> #181 Implement var args 
+#181 Implement var args 
 > #182 Make ScriptVarStringr iterable like Vector 
 > #183 Implement Dictionary helper class 
 > #184 Implement + for Vector 
@@ -141,7 +141,7 @@ Date: XX-12-2020
 > #197 Avoid vector/string objects to add properties through string 
 > #199 Check fix instanceof 
 > #200 length variable only avaiable in vector and string objects
-> #201 System.print: convert any stackelement in string if argument itself is not string var  
+#201 System.print: convert any stackelement in string if argument itself is not string var  
 > #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
 > #203 ScriptObject: Implement concatenate operator (+) feature
 > #204 Implement indexs as ScriptObjectVector in ScriptObject 
@@ -150,7 +150,7 @@ Date: XX-12-2020
 > #207 ScriptObjectString: Implement operator [] 
 > #208 Implement Float helper class
 > #209 Implement Boolean helper class  
-> #210 Fix check keyword delete
+#210 Fix check keyword delete
 > #211 Fix check directive import 
 #212 Fix accessors betwen assigns 
 #213 Replace int by intptr
@@ -159,9 +159,9 @@ Date: XX-12-2020
 > #217 div/mod issues 
 #218 Encapsulate std::string in ScriptObjectString 
 > #219 Create iterator 
-> #220 Set information for non-existant properties in store instruction 
-> #222 do as an option to show system functions 
-> #223 get static function through class 
+#220 Set information for non-existant properties in store instruction 
+#222 do as an option to show system functions 
+#223 get static function through class 
 
 Other: 
 

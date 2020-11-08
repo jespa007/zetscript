@@ -331,12 +331,11 @@ namespace zetscript{
 
 					if(*aux_p=='.' && *(aux_p+1)=='.' && *(aux_p+2)=='.'){// is_keyword(aux_p)==KEYWORD_REF){
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
-						arg_info.by_ref =true;
-					}else if(is_keyword(aux_p)==KEYWORD_VARIABLE_ARGS){
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KEYWORD_REF].str),line);
 						var_args=arg_info.var_args =true;
+					}else if(is_keyword(aux_p)==KEYWORD_REF){
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KEYWORD_REF].str),line);
+						arg_info.by_ref =true;
 					}
-
 
 
 					//int m_start_arg=line;

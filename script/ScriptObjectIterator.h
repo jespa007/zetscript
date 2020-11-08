@@ -4,14 +4,14 @@
  */
 #pragma once
 
-enum{
-	IDX_ITERATOR_ELEMENT_OBJECT=0,
-	IDX_ITERATOR_ELEMENT_KEY,
-	IDX_ITERATOR_ELEMENT_VALUE,
-	IDX_ITERATOR_ELEMENT_MAX,
-}IdxIteratorElement;
-
 namespace zetscript{
+
+	typedef enum {
+		IDX_ITERATOR_ELEMENT_OBJECT = 0,
+		IDX_ITERATOR_ELEMENT_KEY,
+		IDX_ITERATOR_ELEMENT_VALUE,
+		IDX_ITERATOR_ELEMENT_MAX,
+	}IdxIteratorElement;
 
 	class  ScriptObjectIterator: public ScriptObject{
 

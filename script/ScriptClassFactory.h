@@ -48,7 +48,7 @@ namespace zetscript{
 
 		bool 							isClassRegistered(const std::string & v);
 
-		zs_int							doCast(zs_int obj, ClassTypeIdx idx_class_src, ClassTypeIdx idx_class_dst);
+		zs_int							doCast(zs_int obj, ClassTypeIdx idx_class_src, ClassTypeIdx idx_class_dst/*, std::string & error*/);
 		inline ScriptClass * 			getMainObject() { return main_object;}
 		inline ScriptFunction * 		getMainFunction() { return main_function;}
 

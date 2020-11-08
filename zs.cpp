@@ -19,8 +19,7 @@ int main(int argc, char * argv[]) {
 	ZetScript *zs = new ZetScript();
 
 	if (argc > 1) {
-		bool vm_execute=true;
-		bool show_bytecode=false;
+		unsigned short eval_options=zetscript::EvalOption::EVAL_OPTION_EXECUTE;
 		std::string file;
 
 		for(int i=1; i < argc; i++){
@@ -30,9 +29,11 @@ int main(int argc, char * argv[]) {
 			case 1:
 
 				if(strcmp(argv[i],"--no_execute")==0){
-					vm_execute = false;
+					eval_options &= ~zetscript::EvalOption::EVAL_OPTION_EXECUTE;
 				}else if(strcmp(argv[i],"--show_code")==0){
-					show_bytecode=true;
+					eval_options|=zetscript::EvalOption::EVAL_OPTION_SHOW_USER_CODE;
+				}else if(strcmp(argv[i],"--show_system_code")==0){
+					eval_options|=zetscript::EvalOption::EVAL_OPTION_SHOW_SYSTEM_CODE;
 
 				}else if(strcmp(argv[i],"--version")==0){
 					printf(ZETSCRIP_COPYRIGHT);
@@ -69,7 +70,7 @@ int main(int argc, char * argv[]) {
 		try{
 			std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 			try{
-				zs->evalFile(file,vm_execute,show_bytecode);
+				zs->evalFile(file,eval_options);
 			}catch(std::exception & ex){
 				fprintf(stderr,"%s\n",ex.what());
 			}

@@ -16,6 +16,7 @@ namespace zetscript{
 
 		ScriptObjectString(ZetScript *_zs);
 		ScriptObjectString(ZetScript *_zs,const std::string * s);
+		void set(const std::string & s);
 
 		virtual std::string toString();
 

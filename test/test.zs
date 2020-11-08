@@ -20,8 +20,12 @@ test_callback(function(a,b,c){
 var a=new A();
 
 a.hjhkj();*/
+var a={}
+a.i=1;
+System::println(a.i)
+delete a;
 
-System.println("dasdas dsadasd");
+//System::println(1);
 //System.println("dasdas dsadasd");
 
 

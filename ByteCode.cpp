@@ -32,6 +32,8 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_TYPE_UNDEFINED:	return "LOAD_UNDEF"; // load to find
 			case BYTE_CODE_LOAD_TYPE_NULL:		return "LOAD_NULL"; // load to find
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:	return "LOAD_CONST"; // load to find
+			case BYTE_CODE_LOAD_TYPE_STATIC:	return "LOAD_STATIC"; // load to find
+			case BYTE_CODE_LOAD_TYPE_CLASS:		return "LOAD_CLASS"; // load to find
 			case BYTE_CODE_JMP:         		return "JMP"; // Unconditional jump.
 			case BYTE_CODE_JNT:         		return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          		return "JT"; // goto if true ... goes end to conditional.

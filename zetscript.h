@@ -118,6 +118,13 @@
 
 namespace zetscript{
 
+	typedef enum{
+		EVAL_OPTION_EXECUTE=0x1<<0,
+		EVAL_OPTION_SHOW_USER_CODE=0x1<<1,
+		EVAL_OPTION_SHOW_SYSTEM_CODE=0x1<<2,
+		EVAL_OPTION_PRESERVE_0_SHARES=0x1<<3,
+	}EvalOption;
+
 
 	extern const char *	k_str_void_type;				// 	typeid(void).name()
 	extern const char * k_str_zs_int_type_ptr;			//	typeid(int *).name()
@@ -147,7 +154,7 @@ namespace zetscript{
 		//===================================================================================================
 		//
 		// PRINT ASM INFO
-		void printGeneratedCode();
+		void printGeneratedCode(bool show_system_code=false);
 
 		// PRINT ASM INFO
 		//---------------------------------------------------------------------------------------------------------------------------------------
@@ -164,9 +171,8 @@ namespace zetscript{
 
 		void	setCallbackOnError(PrintFunctionCallback _fun);
 
-
-		void 			eval(const std::string & expresion, bool execute=true,bool show_bytecode=false, const char * filename="");
-		void 			evalFile(const std::string & filename,bool execute=true,bool show_bytecode=false);
+		void 			eval(const std::string & expresion,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE, const char * filename="");
+		void 			evalFile(const std::string & filename,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE);
 		zs_int * 		evalIntValue(const std::string & str_to_eval);
 		bool * 			evalBoolValue(const std::string & str_to_eval);
 		float * 		evalFloatValue(const std::string & str_to_eval);
@@ -449,7 +455,7 @@ namespace zetscript{
 		//void printGeneratedCode(ScriptFunction *sfo);
 
 		//----
-		void evalInternal(const char * code, bool exec_vm, bool show_bytecode, const char * filename, bool preserve_zero_shares=false);
+		void evalInternal(const char * code, unsigned short options, const char * filename=NULL);
 
 		// FUNCTIONS
 		static 									void  print(const char *s);

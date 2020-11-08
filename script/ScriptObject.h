@@ -79,6 +79,8 @@ class ScriptClass;
 		ScriptClass *getNativeClass();
 
 		ScriptFunction *getConstructorFunction();
+		StackElement **getStkProperties(){return (StackElement **)&stk_properties->items[this->idx_start_user_properties];}
+		zs_int size(){return lenght_user_properties;}
 
 
 		ScriptClass *getScriptClass();

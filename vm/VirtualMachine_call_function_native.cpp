@@ -159,11 +159,10 @@ namespace zetscript{
 					,(zs_int *)&converted_param[i]
 					,error_str
 			)){
-				VM_ERROR_AND_RET("Function \"%s\", param %i: %s. Native function \"%s\" that was found for first time it has different argument types now.",
+				VM_ERROR_AND_RET("Function \"%s\", param %i: %s",
 																calling_function->symbol.name.c_str(),
 																i,
-																error_str.c_str(),
-																calling_function->symbol.name.c_str()
+																error_str.c_str()
 																);
 			}
 

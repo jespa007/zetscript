@@ -147,8 +147,12 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:
+			case BYTE_CODE_LOAD_TYPE_STATIC:
 				icv=(ConstantValue *)instruction->value_op2;
 				switch(icv->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES){
+				//case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
+				//	printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\tFUN\t%s\n",idx_instruction,ByteCodeToStr(instruction->byte_code),symbol_value.c_str());
+				//	break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,ByteCodeToStr(instruction->byte_code),(int)((zs_int)icv->stk_value)==0?"false":"true");
 					break;

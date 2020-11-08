@@ -374,7 +374,7 @@ namespace zetscript{
 			memset(sf->instructions, 0, size);
 			bool is_static = true;
 			int ok=TRUE;
-			int idx_instruction=0;
+			//int idx_instruction=0;
 
 
 			for(unsigned i=0; i < eval_data->current_function->instructions.size(); i++){
@@ -390,8 +390,6 @@ namespace zetscript{
 					std::string *symbol_to_find=&instruction->symbol.name;
 
 					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS){ // search the symbol within class.
-
-
 
 						if(*symbol_to_find == SYMBOL_VALUE_SUPER){ // trivial super.
 							Symbol *symbol_sf_foundf=NULL;
@@ -428,77 +426,18 @@ namespace zetscript{
 								instruction->vm_instruction.value_op2=symbol_function->idx_position;
 							}
 						}
-					}else{ // find locally, if not will be resolved at runt-time //else if(sf->existArgumentName(ls->value)==ZS_IDX_UNDEFINED){ // search symbol within local or global  ...
+					}else if((sc = eval_data->script_class_factory->getScriptClass(*symbol_to_find))!= NULL){
 
+							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_CLASS;
+							instruction->vm_instruction.value_op2=(zs_int)sc;
+
+					}else{ // try find local symbol  ...
 						bool local_found=false;
 						ScriptFunction *script_function_found=NULL;
-						ScriptClass *sc=NULL;
+						//ScriptClass *sc=NULL;
 						Symbol * sc_var = NULL;
+						sc_var = instruction->symbol.scope->getSymbol(*symbol_to_find, NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_DOWN);
 
-						if((sc = eval_data->script_class_factory->getScriptClass(*symbol_to_find))!= NULL){
-
-							// find function on next instruction...
-							EvalInstruction *instruction_static_symbol = eval_data->current_function->instructions[i+1];
-
-							if((instruction_static_symbol->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD) != 0){ // load static var directly
-
-								Symbol *symbol_static = sc->getSymbol(*instruction_static_symbol->instruction_source_info.ptr_str_symbol_name);
-								bool is_static_symbol= symbol_static->properties & SYMBOL_PROPERTY_STATIC;
-
-
-								if( symbol_static->n_params >= 0){ // is a function
-									ScriptFunction *static_script_function = (ScriptFunction *)symbol_static->ref_ptr;
-									is_static_symbol= static_script_function->symbol.properties & SYMBOL_PROPERTY_STATIC;
-								}
-
-								if(is_static_symbol == false){
-									EVAL_ERROR_POP_FUNCTION(
-											instruction_static_symbol->instruction_source_info.file
-											,instruction_static_symbol->instruction_source_info.line
-											,"Symbol %s::%s is not static. Make sure that function has no this/super in its body implementation"
-											,sc->symbol_class.name.c_str()
-											,symbol_static->name.c_str());
-								}
-
-								if( ((symbol_static->properties & SYMBOL_PROPERTY_IS_FUNCTION) == 0)
-									&&
-									((symbol_static->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0)
-								){
-									EVAL_ERROR_POP_FUNCTION(
-											instruction_static_symbol->instruction_source_info.file
-											,instruction_static_symbol->instruction_source_info.line
-											,"Symbol %s::%s is not function or static variable is not native"
-											,sc->symbol_class.name.c_str()
-											,symbol_static->name.c_str());
-
-								}
-
-								if((symbol_static->properties & SYMBOL_PROPERTY_IS_FUNCTION)){
-									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_FUNCTION;
-								}else{
-									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_VARIABLE;
-								}
-
-								instruction->vm_instruction.value_op2=symbol_static->ref_ptr;
-								instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_PTR;
-								instruction->instruction_source_info.ptr_str_symbol_name=eval_get_mapped_name(eval_data,sc->symbol_class.name+"::"+symbol_static->name);
-								//eval_data->current_function->script_function->instructions[idx_instruction]=instruction->vm_instruction;
-
-								// save source
-
-								// advance and ignore next instruction
-								i++;
-								//continue;
-
-							}else{ // TODO: manage load a class
-								instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_CLASS;
-								instruction->vm_instruction.value_op2=(zs_int)sc;
-							}
-
-						} // try find local symbol  ...
-						else{
-							sc_var = instruction->symbol.scope->getSymbol(*symbol_to_find, NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_DOWN);
-						}
 
 						if(sc_var != NULL){ // local symbol found
 
@@ -515,8 +454,7 @@ namespace zetscript{
 								if(function_symbol!=NULL){
 									script_function_found=(ScriptFunction *)function_symbol->ref_ptr;
 									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_FUNCTION;
-									instruction->vm_instruction.value_op2=function_symbol->idx_position; // store script function
-									instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
+									instruction->vm_instruction.value_op2=(zs_int)script_function_found; // store script function
 									local_found =true;
 								}
 							}
@@ -525,7 +463,7 @@ namespace zetscript{
 				}
 
 				// save instruction ...
-				eval_data->current_function->script_function->instructions[idx_instruction]=instruction->vm_instruction;
+				eval_data->current_function->script_function->instructions[i]=instruction->vm_instruction;
 
 				//------------------------------------
 				// symbol value to save at runtime ...
@@ -535,9 +473,8 @@ namespace zetscript{
 				instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
 
 
-				eval_data->current_function->script_function->instruction_source_info[idx_instruction]=instruction_info;
+				eval_data->current_function->script_function->instruction_source_info[i]=instruction_info;
 
-				idx_instruction++;
 			}
 
 			if(is_static){

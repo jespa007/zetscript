@@ -79,16 +79,19 @@ namespace zetscript{
 
 				"class String{\n"
 				"	format(s,...args){"
-				"		StringBuiltIn.format(ptrToZetScriptPtr(0x%p),s,args);" // passing this because is registered as static
+				"		StringBuiltIn::format(ptrToZetScriptPtr(0x%p),s,args);" // passing this because is registered as static
 				"	}"
 				"}"
 				""
 				"class System{\n"
+				"	clock(){"
+				"		return SystemBuiltIn::clock();"
+				"	}"
 				"	print(s,...args){"
-				"		SystemBuiltIn.print(ptrToZetScriptPtr(0x%p),s,args);"  // passing this because is registered as static
+				"		SystemBuiltIn::print(ptrToZetScriptPtr(0x%p),s,args);"  // passing this because is registered as static
 				"	}"
 				"	println(s,...args){"
-				"		SystemBuiltIn.println(ptrToZetScriptPtr(0x%p),s,args);"  // passing this because is registered as static
+				"		SystemBuiltIn::println(ptrToZetScriptPtr(0x%p),s,args);"  // passing this because is registered as static
 				"	}"
 				"}"
 				//"var String= new StringBuiltinCustom(ptrToZetScriptPtr(0x%p));"
@@ -110,7 +113,7 @@ namespace zetscript{
 	}
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // PRINT ASM INFO
-	 void ZetScript::printGeneratedCode(){
+	 void ZetScript::printGeneratedCode(bool show_system_code){
 
 		 zs_vector *script_classes=script_class_factory->getScriptClasses();
 		 // for all classes print code...
@@ -135,13 +138,22 @@ namespace zetscript{
 
 		 for(unsigned i = 1; i < script_classes->count; i++){
 			 ScriptClass *rc=(ScriptClass *)script_classes->get(i);
+			 bool show_class=true;
 
-			 for(unsigned f = 0; f < rc->symbol_members->count; f++){
-				 Symbol *symbol=(Symbol *)rc->symbol_members->items[f];
-				 if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
-					 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,rc);
+			 if(show_system_code == false && (
+					 	rc->symbol_class.name == "System"
+					 ||	rc->symbol_class.name == "String"
+				)){
+				 show_class=false;
+			 }
+
+			 if(show_class){
+				 for(unsigned f = 0; f < rc->symbol_members->count; f++){
+					 Symbol *symbol=(Symbol *)rc->symbol_members->items[f];
+					 if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
+						 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,rc);
+					 }
 				 }
-
 			 }
 		 }
 	 }
@@ -310,7 +322,7 @@ namespace zetscript{
 	std::string * ZetScript::evalStringValue(const std::string & str_to_eval){
 
 		// eval and preserve zero shares to get value...
-		evalInternal(str_to_eval.c_str(),true,false,NULL,true);
+		evalInternal(str_to_eval.c_str(),EvalOption::EVAL_OPTION_EXECUTE|EvalOption::EVAL_OPTION_PRESERVE_0_SHARES);
 
 		StackElement *se=virtual_machine->getLastStackValue();
 
@@ -329,26 +341,26 @@ namespace zetscript{
 		return NULL;
 	}
 
-	void ZetScript::evalInternal(const char * code, bool vm_exec, bool show_bytecode, const char * filename, bool preserve_zero_shares)  {
+	void ZetScript::evalInternal(const char * code, unsigned short options, const char * filename)  {
 
 		eval::eval(this,code,filename);
 
-		if(show_bytecode){
-			printGeneratedCode();
+		if(options & EvalOption::EVAL_OPTION_SHOW_USER_CODE){
+			printGeneratedCode(options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_CODE);
 		}
 
-		if(vm_exec){
+		if(options & EvalOption::EVAL_OPTION_EXECUTE){
 			// the first code to execute is the main function that in fact is a special member function inside our main class
-			virtual_machine->execute(script_class_factory->getMainFunction(), NULL,NULL,0,preserve_zero_shares);
+			virtual_machine->execute(script_class_factory->getMainFunction(), NULL,NULL,0,options & EvalOption::EVAL_OPTION_PRESERVE_0_SHARES);
 		}
 	}
 
-	void ZetScript::eval(const std::string & code, bool exec_vm, bool show_bytecode, const char * filename)  {
+	void ZetScript::eval(const std::string & code, unsigned short options, const char * filename)  {
 
-		evalInternal(code.c_str(), exec_vm, show_bytecode, filename);
+		evalInternal(code.c_str(), options, filename);
 	}
 
-	void ZetScript::evalFile(const std::string &  filename, bool vm_exec, bool show_bytecode){
+	void ZetScript::evalFile(const std::string &  filename, unsigned short options){
 		//int idx_file=-1;
 		char *buf_tmp=NULL;
 
@@ -363,7 +375,7 @@ namespace zetscript{
 				bool error=false;
 				std::string error_str;
 				try{
-					evalInternal(buf_tmp, vm_exec, show_bytecode,filename.c_str());
+					evalInternal(buf_tmp,options,filename.c_str());
 				}
 				catch(std::exception & e){
 					error=true;

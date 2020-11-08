@@ -2,22 +2,32 @@
 
 namespace zetscript{
 
-	void StringBuiltIn::constructorSf(StringBuiltIn *built_in_string,ZetScript *zs){
-		built_in_string->zs=zs;
-	}
 
-	ScriptObjectString * StringBuiltIn::formatSf(StringBuiltIn *built_in_string,StackElement *str, StackElement *args){
-		return built_in_string->format(str, args);
-	}
+	ScriptObjectString * StringBuiltIn::formatSf(ZetScript *zs,StackElement *str, StackElement *args){
+		std::string first_param=str->toString();
+		ScriptObjectVector *sov=NULL;
 
-	ScriptObjectString * StringBuiltIn::format(StackElement *str, StackElement *args){
-		if(((str->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING) == 0) || str->var_ref == NULL){
-			//THROW_EXCEPTION("StringBuiltIn::format expected first parameter as string");
+		if(args->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+			args=(StackElement *)args->var_ref;
 		}
 
+		if(args->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+			ScriptObject *so=(ScriptObject *)args->var_ref;
+			if(so->idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){
+				sov=(ScriptObjectVector *)so;
+			}
+		}
+
+		if(sov != NULL){
+			StackElement **stk_it=sov->getStkProperties();
+			for(unsigned i=0; i < sov->size(); i++){
+				first_param=zs_strutils::replace(first_param,zs_strutils::format("{%i}",i),(*stk_it)->toString());
+				stk_it++;
+			}
+		}
 		//ScriptObjectString *str_in=(ScriptObjectString *)(str->var_ref);
 		ScriptObjectString *str_out=new ScriptObjectString(zs);
-		str_out->str_value="dajdjasldas";//str_in->str_value;
+		str_out->str_value=first_param;//str_in->str_value;
 		return str_out;
 	}
 }

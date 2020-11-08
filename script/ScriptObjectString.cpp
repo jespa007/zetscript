@@ -18,6 +18,10 @@ namespace zetscript{
 		value = (void *)s;
 	}
 
+	void ScriptObjectString::set(const std::string & s){
+		*((std::string *)value) = s;
+	}
+
 	std::string ScriptObjectString::toString(){
 		return *((std::string *)value);
 	}
