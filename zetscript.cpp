@@ -79,7 +79,7 @@ namespace zetscript{
 
 				"class String{\n"
 				"	format(s,...args){"
-				"		StringBuiltIn::format(ptrToZetScriptPtr(0x%p),s,args);" // passing this because is registered as static
+				"		StringBuiltIn::format(ptrToZetScriptPtr(0x%x),s,args);" // passing this because is registered as static
 				"	}"
 				"}"
 				""
@@ -88,10 +88,10 @@ namespace zetscript{
 				"		return SystemBuiltIn::clock();"
 				"	}"
 				"	print(s,...args){"
-				"		SystemBuiltIn::print(ptrToZetScriptPtr(0x%p),s,args);"  // passing this because is registered as static
+				"		SystemBuiltIn::print(ptrToZetScriptPtr(0x%x),s,args);"  // passing this because is registered as static
 				"	}"
 				"	println(s,...args){"
-				"		SystemBuiltIn::println(ptrToZetScriptPtr(0x%p),s,args);"  // passing this because is registered as static
+				"		SystemBuiltIn::println(ptrToZetScriptPtr(0x%x),s,args);"  // passing this because is registered as static
 				"	}"
 				"}"
 				//"var String= new StringBuiltinCustom(ptrToZetScriptPtr(0x%p));"

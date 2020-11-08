@@ -652,10 +652,6 @@ namespace zetscript{
 				}
 				else if((('a'<=*aux_p&& *aux_p<='f') || ('A'<=*aux_p && *aux_p<='F')) && is_hexa){ // hexa ?
 					number_part[current_part]+=*aux_p;
-					//else{ // error
-					//	number_part[current_part]+=*aux_p; // save conflicting character
-					//	EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
-					//}
 				}
 				else if(*aux_p == '.'){ // fraccional part ?
 					if(!is_hexa && (current_part==0)){
