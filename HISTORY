@@ -1,4 +1,5 @@
 
+
 //----------------------------------------------------------
 Version: 2.1.0
 Date: XX-09-2020
@@ -7,8 +8,10 @@ Date: XX-09-2020
 > #165 try eval expressions as constant 
 > #176 Add shared version 
 > #174 eval constant values and optimize expressions 
-> #215 Implement typeof operator
-> #221 Implement backup/restore state  
+> #221 Implement backup/restore state
+> #225 implement File class
+> #226 implement Stream class
+  
 
 //----------------------------------------------------------
 Version: 2.0.0
@@ -162,6 +165,10 @@ Date: XX-12-2020
 #220 Set information for non-existant properties in store instruction 
 #222 do as an option to show system functions 
 #223 get static function through class 
+> #224 implement keyword static
+> #227 implement DateTime class
+> #215 Implement typeof operator
+
 
 Other: 
 

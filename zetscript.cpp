@@ -48,7 +48,7 @@ namespace zetscript{
 		//-------------------------
 		// Register built in extra
 		// String
-		script_class_factory->registerNativeSingletonClass<StringBuiltIn>("StringBuiltIn");
+		script_class_factory->registerNativeClass<StringBuiltIn>("StringBuiltIn");
 		//script_class_factory->registerNativeMemberFunction<StringBuiltIn>(ZS_CONTRUCTOR_NAME,StringBuiltIn::constructorSf);
 		script_class_factory->registerNativeMemberFunctionStatic<StringBuiltIn>("format",StringBuiltIn::formatSf);
 		//ZS_REGISTER_VARIABLE(zs,"String",&string_built_in);
@@ -78,19 +78,19 @@ namespace zetscript{
 			zs_strutils::format(
 
 				"class String{\n"
-				"	format(s,...args){"
+				"	static format(s,...args){"
 				"		StringBuiltIn::format(ptrToZetScriptPtr(0x%x),s,args);" // passing this because is registered as static
 				"	}"
 				"}"
 				""
 				"class System{\n"
-				"	clock(){"
+				"	static clock(){"
 				"		return SystemBuiltIn::clock();"
 				"	}"
-				"	print(s,...args){"
+				"	static print(s,...args){"
 				"		SystemBuiltIn::print(ptrToZetScriptPtr(0x%x),s,args);"  // passing this because is registered as static
 				"	}"
-				"	println(s,...args){"
+				"	static println(s,...args){"
 				"		SystemBuiltIn::println(ptrToZetScriptPtr(0x%x),s,args);"  // passing this because is registered as static
 				"	}"
 				"}"
