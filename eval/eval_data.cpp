@@ -32,6 +32,7 @@ namespace zetscript{
 			KEYWORD_DO_WHILE,
 			KEYWORD_VAR,
 			KEYWORD_CONST,
+			KEYWORD_STATIC,
 			KEYWORD_SWITCH,
 			KEYWORD_CASE,
 			KEYWORD_DEFAULT,
@@ -41,13 +42,13 @@ namespace zetscript{
 			KEYWORD_FUNCTION,
 			KEYWORD_CLASS,
 			KEYWORD_DELETE,
-			KEYWORDS_WITHIN_EXPRESSIONS,
-			//-------------------
-			// Put keyword within expressions here!...
-			KEYWORD_THIS=KEYWORDS_WITHIN_EXPRESSIONS,
-			KEYWORD_NEW,
 			KEYWORD_REF,
 			KEYWORD_VARIABLE_ARGS,
+			KEYWORDS_WITHIN_EXPRESSIONS,
+			//-------------------
+			// Put here keywords are considered within expressions!...
+			KEYWORD_THIS=KEYWORDS_WITHIN_EXPRESSIONS,
+			KEYWORD_NEW,
 			KEYWORD_MAX
 		}Keyword;
 
@@ -277,12 +278,12 @@ namespace zetscript{
 			}
 		};
 
-		EvalOperator eval_info_operators[OPERATOR_MAX];
-		EvalPreOperator eval_info_pre_operators[PRE_OPERATOR_MAX];
-		EvalIdentityOperator eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_MAX];
-		EvalSeparator eval_info_separators[SEPARATOR_MAX];
-		EvalKeyword eval_info_keywords[KEYWORD_MAX];
-		EvalDirective eval_info_directives[DIRECTIVE_MAX];
+		EvalOperator eval_data_operators[OPERATOR_MAX];
+		EvalPreOperator eval_data_pre_operators[PRE_OPERATOR_MAX];
+		EvalIdentityOperator eval_data_pre_post_self_operations[PRE_POST_SELF_OPERATION_MAX];
+		EvalSeparator eval_data_separators[SEPARATOR_MAX];
+		EvalKeyword eval_data_keywords[KEYWORD_MAX];
+		EvalDirective eval_data_directives[DIRECTIVE_MAX];
 
 
 		bool g_init_eval=false;
@@ -401,8 +402,8 @@ namespace zetscript{
 
 		Separator   is_separator(const char *s){
 			for(unsigned char i = 1; i < SEPARATOR_MAX; i++){
-				if(*eval_info_separators[i].str == *s){
-					return eval_info_separators[i].id;
+				if(*eval_data_separators[i].str == *s){
+					return eval_data_separators[i].id;
 				}
 			}
 			return Separator::SEPARATOR_UNKNOWN;
@@ -410,8 +411,8 @@ namespace zetscript{
 
 		Operator   is_operator(const char *s){
 			for(unsigned char i = 1; i < OPERATOR_MAX; i++){
-				if(eval_info_operators[i].eval_fun(s)){
-					return eval_info_operators[i].id;
+				if(eval_data_operators[i].eval_fun(s)){
+					return eval_data_operators[i].id;
 				}
 			}
 			return Operator::OPERATOR_UNKNOWN;
@@ -419,8 +420,8 @@ namespace zetscript{
 
 		PreOperator   	is_pre_operator(const char *s){
 			for(unsigned char i = 1; i < PRE_OPERATOR_MAX; i++){
-				if(*eval_info_pre_operators[i].str == *s){
-					return eval_info_pre_operators[i].id;
+				if(*eval_data_pre_operators[i].str == *s){
+					return eval_data_pre_operators[i].id;
 				}
 			}
 			return PreOperator::PRE_OPERATOR_UNKNOWN;
@@ -463,15 +464,15 @@ namespace zetscript{
 			//char *aux=str;
 
 			for(int i = 0; i < KEYWORD_MAX; i++){
-				if(eval_info_keywords[i].str!=NULL){
-					size_t size = strlen(eval_info_keywords[i].str);
+				if(eval_data_keywords[i].str!=NULL){
+					size_t size = strlen(eval_data_keywords[i].str);
 					char *aux = str+size;
-					if((strncmp(str,eval_info_keywords[i].str,size)==0) && (
+					if((strncmp(str,eval_data_keywords[i].str,size)==0) && (
 							is_special_char(aux) ||
 
 						   is_comment_block_start(aux)) //start block comment
 					){
-						return eval_info_keywords[i].id;
+						return eval_data_keywords[i].id;
 					}
 				}
 			}
@@ -483,12 +484,12 @@ namespace zetscript{
 			char *str=(char *)c;
 
 			for(int i = 0; i < DIRECTIVE_MAX; i++){
-				if(eval_info_directives[i].str){
-					size_t size = strlen(eval_info_directives[i].str);
+				if(eval_data_directives[i].str){
+					size_t size = strlen(eval_data_directives[i].str);
 
-					if(strncmp(str,eval_info_directives[i].str,size)==0)
+					if(strncmp(str,eval_data_directives[i].str,size)==0)
 					{
-						return eval_info_directives[i].id;
+						return eval_data_directives[i].id;
 					}
 				}
 			}
@@ -728,97 +729,98 @@ namespace zetscript{
 			if(g_init_eval) return;
 
 			// Init operator punctuators...
-			memset(eval_info_operators,0,sizeof(eval_info_operators));
-			memset(eval_info_pre_operators,0,sizeof(eval_info_pre_operators));
-			memset(eval_info_pre_post_self_operations,0,sizeof(eval_info_pre_post_self_operations));
-			memset(eval_info_separators,0,sizeof(eval_info_separators));
-			memset(eval_info_keywords,0,sizeof(eval_info_keywords));
+			memset(eval_data_operators,0,sizeof(eval_data_operators));
+			memset(eval_data_pre_operators,0,sizeof(eval_data_pre_operators));
+			memset(eval_data_pre_post_self_operations,0,sizeof(eval_data_pre_post_self_operations));
+			memset(eval_data_separators,0,sizeof(eval_data_separators));
+			memset(eval_data_keywords,0,sizeof(eval_data_keywords));
 
-			eval_info_operators[OPERATOR_UNKNOWN]={OPERATOR_UNKNOWN, "none",NULL};
+			eval_data_operators[OPERATOR_UNKNOWN]={OPERATOR_UNKNOWN, "none",NULL};
 
-			eval_info_operators[OPERATOR_ADD]={OPERATOR_ADD, "+",is_operator_add};
-			eval_info_operators[OPERATOR_SUB]={OPERATOR_SUB, "-",is_operator_sub};
-			eval_info_operators[OPERATOR_MUL]={OPERATOR_MUL, "*",is_operator_mul};
-			eval_info_operators[OPERATOR_DIV]={OPERATOR_DIV, "/",is_operator_div};
-			eval_info_operators[OPERATOR_MOD]={OPERATOR_MOD, "%",is_operator_mod};
+			eval_data_operators[OPERATOR_ADD]={OPERATOR_ADD, "+",is_operator_add};
+			eval_data_operators[OPERATOR_SUB]={OPERATOR_SUB, "-",is_operator_sub};
+			eval_data_operators[OPERATOR_MUL]={OPERATOR_MUL, "*",is_operator_mul};
+			eval_data_operators[OPERATOR_DIV]={OPERATOR_DIV, "/",is_operator_div};
+			eval_data_operators[OPERATOR_MOD]={OPERATOR_MOD, "%",is_operator_mod};
 
-			eval_info_operators[OPERATOR_TERNARY_IF]={OPERATOR_TERNARY_IF, "?",is_operator_ternary_if};
-			eval_info_operators[OPERATOR_TERNARY_ELSE]={OPERATOR_TERNARY_ELSE, ":",is_operator_ternary_else};
-			eval_info_operators[OPERATOR_ASSIGN]={OPERATOR_ASSIGN, "=",is_operator_assign};
-			eval_info_operators[OPERATOR_ASSIGN_ADD]={OPERATOR_ASSIGN_ADD, "+=",is_operator_assign_add};
-			eval_info_operators[OPERATOR_ASSIGN_SUB]={OPERATOR_ASSIGN_SUB, "-=",is_operator_assign_sub};
-			eval_info_operators[OPERATOR_ASSIGN_MUL]={OPERATOR_ASSIGN_MUL, "*=",is_operator_assign_mul};
-			eval_info_operators[OPERATOR_ASSIGN_DIV]={OPERATOR_ASSIGN_DIV, "/=",is_operator_assign_div};
-			eval_info_operators[OPERATOR_ASSIGN_MOD]={OPERATOR_ASSIGN_MOD, "%=",is_operator_assign_mod};
-			eval_info_operators[OPERATOR_ASSIGN_XOR]={OPERATOR_ASSIGN_XOR,"^=",is_operator_assign_xor};
-			eval_info_operators[OPERATOR_ASSIGN_BINARY_AND]={OPERATOR_ASSIGN_BINARY_AND,"&=",is_operator_assign_binary_and};
-			eval_info_operators[OPERATOR_ASSIGN_BINARY_OR]={OPERATOR_ASSIGN_BINARY_OR,"|=",is_operator_assign_binary_or};
-			eval_info_operators[OPERATOR_ASSIGN_SHIFT_LEFT]={OPERATOR_ASSIGN_SHIFT_LEFT,"<<=",is_operator_assign_shift_left};
-			eval_info_operators[OPERATOR_ASSIGN_SHIFT_RIGHT]={OPERATOR_ASSIGN_SHIFT_RIGHT,">>=",is_operator_assign_shift_right};
+			eval_data_operators[OPERATOR_TERNARY_IF]={OPERATOR_TERNARY_IF, "?",is_operator_ternary_if};
+			eval_data_operators[OPERATOR_TERNARY_ELSE]={OPERATOR_TERNARY_ELSE, ":",is_operator_ternary_else};
+			eval_data_operators[OPERATOR_ASSIGN]={OPERATOR_ASSIGN, "=",is_operator_assign};
+			eval_data_operators[OPERATOR_ASSIGN_ADD]={OPERATOR_ASSIGN_ADD, "+=",is_operator_assign_add};
+			eval_data_operators[OPERATOR_ASSIGN_SUB]={OPERATOR_ASSIGN_SUB, "-=",is_operator_assign_sub};
+			eval_data_operators[OPERATOR_ASSIGN_MUL]={OPERATOR_ASSIGN_MUL, "*=",is_operator_assign_mul};
+			eval_data_operators[OPERATOR_ASSIGN_DIV]={OPERATOR_ASSIGN_DIV, "/=",is_operator_assign_div};
+			eval_data_operators[OPERATOR_ASSIGN_MOD]={OPERATOR_ASSIGN_MOD, "%=",is_operator_assign_mod};
+			eval_data_operators[OPERATOR_ASSIGN_XOR]={OPERATOR_ASSIGN_XOR,"^=",is_operator_assign_xor};
+			eval_data_operators[OPERATOR_ASSIGN_BINARY_AND]={OPERATOR_ASSIGN_BINARY_AND,"&=",is_operator_assign_binary_and};
+			eval_data_operators[OPERATOR_ASSIGN_BINARY_OR]={OPERATOR_ASSIGN_BINARY_OR,"|=",is_operator_assign_binary_or};
+			eval_data_operators[OPERATOR_ASSIGN_SHIFT_LEFT]={OPERATOR_ASSIGN_SHIFT_LEFT,"<<=",is_operator_assign_shift_left};
+			eval_data_operators[OPERATOR_ASSIGN_SHIFT_RIGHT]={OPERATOR_ASSIGN_SHIFT_RIGHT,">>=",is_operator_assign_shift_right};
 
-			eval_info_operators[OPERATOR_XOR]={OPERATOR_XOR, "^",is_operator_xor};
-			eval_info_operators[OPERATOR_BINARY_AND]={OPERATOR_BINARY_AND, "&",is_operator_binari_and};
-			eval_info_operators[OPERATOR_OR]={OPERATOR_OR, "|",is_operator_binari_or};
-			eval_info_operators[OPERATOR_SHIFT_LEFT]={OPERATOR_SHIFT_LEFT, "<<",is_operator_shift_left};
-			eval_info_operators[OPERATOR_SHIFT_RIGHT]={OPERATOR_SHIFT_RIGHT, ">>",is_operator_shift_right};
-			eval_info_operators[OPERATOR_LOGIC_AND]={OPERATOR_LOGIC_AND, "&&",is_operator_logic_and};
-			eval_info_operators[OPERATOR_LOGIC_OR]={OPERATOR_LOGIC_OR, "||",is_operator_logic_or};
-			eval_info_operators[OPERATOR_LOGIC_EQUAL]={OPERATOR_LOGIC_EQUAL, "==",is_operator_logic_equal};
-			eval_info_operators[OPERATOR_LOGIC_NOT_EQUAL]={OPERATOR_LOGIC_NOT_EQUAL, "!=",is_operator_logic_not_equal};
-			eval_info_operators[OPERATOR_LOGIC_GT]={OPERATOR_LOGIC_GT, ">",is_operator_logic_gt};
-			eval_info_operators[OPERATOR_LOGIC_LT]={OPERATOR_LOGIC_LT, "<",is_operator_logic_lt};
-			eval_info_operators[OPERATOR_LOGIC_GTE]={OPERATOR_LOGIC_GTE, ">=",is_operator_logic_gte};
-			eval_info_operators[OPERATOR_LOGIC_LTE]={OPERATOR_LOGIC_LTE, "<=",is_operator_logic_lte};
-			eval_info_operators[OPERATOR_INSTANCEOF]={OPERATOR_INSTANCEOF, "instanceof",is_operator_instanceof};
-
-
-			eval_info_pre_operators[PRE_OPERATOR_NOT]={PRE_OPERATOR_NOT, "!",is_operator_logic_not};
-			eval_info_pre_operators[PRE_OPERATOR_POS]={PRE_OPERATOR_POS, "+",is_operator_add};
-			eval_info_pre_operators[PRE_OPERATOR_NEG]={PRE_OPERATOR_NEG, "-",is_operator_sub};
+			eval_data_operators[OPERATOR_XOR]={OPERATOR_XOR, "^",is_operator_xor};
+			eval_data_operators[OPERATOR_BINARY_AND]={OPERATOR_BINARY_AND, "&",is_operator_binari_and};
+			eval_data_operators[OPERATOR_OR]={OPERATOR_OR, "|",is_operator_binari_or};
+			eval_data_operators[OPERATOR_SHIFT_LEFT]={OPERATOR_SHIFT_LEFT, "<<",is_operator_shift_left};
+			eval_data_operators[OPERATOR_SHIFT_RIGHT]={OPERATOR_SHIFT_RIGHT, ">>",is_operator_shift_right};
+			eval_data_operators[OPERATOR_LOGIC_AND]={OPERATOR_LOGIC_AND, "&&",is_operator_logic_and};
+			eval_data_operators[OPERATOR_LOGIC_OR]={OPERATOR_LOGIC_OR, "||",is_operator_logic_or};
+			eval_data_operators[OPERATOR_LOGIC_EQUAL]={OPERATOR_LOGIC_EQUAL, "==",is_operator_logic_equal};
+			eval_data_operators[OPERATOR_LOGIC_NOT_EQUAL]={OPERATOR_LOGIC_NOT_EQUAL, "!=",is_operator_logic_not_equal};
+			eval_data_operators[OPERATOR_LOGIC_GT]={OPERATOR_LOGIC_GT, ">",is_operator_logic_gt};
+			eval_data_operators[OPERATOR_LOGIC_LT]={OPERATOR_LOGIC_LT, "<",is_operator_logic_lt};
+			eval_data_operators[OPERATOR_LOGIC_GTE]={OPERATOR_LOGIC_GTE, ">=",is_operator_logic_gte};
+			eval_data_operators[OPERATOR_LOGIC_LTE]={OPERATOR_LOGIC_LTE, "<=",is_operator_logic_lte};
+			eval_data_operators[OPERATOR_INSTANCEOF]={OPERATOR_INSTANCEOF, "instanceof",is_operator_instanceof};
 
 
-			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_INC]={PRE_POST_SELF_OPERATION_INC, "++",is_pre_post_self_operation_inc};
-			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_DEC]={PRE_POST_SELF_OPERATION_DEC, "--",is_pre_post_self_operation_dec};
-			eval_info_pre_post_self_operations[PRE_POST_SELF_OPERATION_INVALID]={PRE_POST_SELF_OPERATION_INVALID, "+-",is_pre_post_self_operation_invalid};
+			eval_data_pre_operators[PRE_OPERATOR_NOT]={PRE_OPERATOR_NOT, "!",is_operator_logic_not};
+			eval_data_pre_operators[PRE_OPERATOR_POS]={PRE_OPERATOR_POS, "+",is_operator_add};
+			eval_data_pre_operators[PRE_OPERATOR_NEG]={PRE_OPERATOR_NEG, "-",is_operator_sub};
+
+
+			eval_data_pre_post_self_operations[PRE_POST_SELF_OPERATION_INC]={PRE_POST_SELF_OPERATION_INC, "++",is_pre_post_self_operation_inc};
+			eval_data_pre_post_self_operations[PRE_POST_SELF_OPERATION_DEC]={PRE_POST_SELF_OPERATION_DEC, "--",is_pre_post_self_operation_dec};
+			eval_data_pre_post_self_operations[PRE_POST_SELF_OPERATION_INVALID]={PRE_POST_SELF_OPERATION_INVALID, "+-",is_pre_post_self_operation_invalid};
 
 			// special punctuators...
-			eval_info_separators[SEPARATOR_COMA]={SEPARATOR_COMA, ",",NULL};
-			eval_info_separators[SEPARATOR_SEMICOLON]={SEPARATOR_SEMICOLON, ";",NULL};
-			eval_info_separators[SEPARATOR_PARENTHESIS_OPEN]={SEPARATOR_PARENTHESIS_OPEN, "(",NULL};
-			eval_info_separators[SEPARATOR_PARENTHESIS_CLOSE]={SEPARATOR_PARENTHESIS_CLOSE, ")",NULL};
-			eval_info_separators[SEPARATOR_SQUARE_BRAKET_OPEN]={SEPARATOR_SQUARE_BRAKET_OPEN, "[",NULL};
-			eval_info_separators[SEPARATOR_SQUARE_BRAKET_CLOSE]={SEPARATOR_SQUARE_BRAKET_CLOSE, "]",NULL};
+			eval_data_separators[SEPARATOR_COMA]={SEPARATOR_COMA, ",",NULL};
+			eval_data_separators[SEPARATOR_SEMICOLON]={SEPARATOR_SEMICOLON, ";",NULL};
+			eval_data_separators[SEPARATOR_PARENTHESIS_OPEN]={SEPARATOR_PARENTHESIS_OPEN, "(",NULL};
+			eval_data_separators[SEPARATOR_PARENTHESIS_CLOSE]={SEPARATOR_PARENTHESIS_CLOSE, ")",NULL};
+			eval_data_separators[SEPARATOR_SQUARE_BRAKET_OPEN]={SEPARATOR_SQUARE_BRAKET_OPEN, "[",NULL};
+			eval_data_separators[SEPARATOR_SQUARE_BRAKET_CLOSE]={SEPARATOR_SQUARE_BRAKET_CLOSE, "]",NULL};
 
 			// Init special punctuators...
 			// Init keywords...
 
-			eval_info_keywords[KEYWORD_UNKNOWN] = {KEYWORD_UNKNOWN, NULL,NULL};
-			eval_info_keywords[KEYWORD_VAR] = {KEYWORD_VAR,"var",eval_keyword_var_or_const};
-			eval_info_keywords[KEYWORD_CONST] = {KEYWORD_CONST,"const",eval_keyword_var_or_const};
-			eval_info_keywords[KEYWORD_IF] = {KEYWORD_IF,"if",eval_keyword_if_else};
-			eval_info_keywords[KEYWORD_ELSE] = {KEYWORD_ELSE,"else"};
-			eval_info_keywords[KEYWORD_FOR] = {KEYWORD_FOR,"for",eval_keyword_for};
-			eval_info_keywords[KEYWORD_WHILE] = {KEYWORD_WHILE,"while",eval_keyword_while};
-			eval_info_keywords[KEYWORD_DO_WHILE] = {KEYWORD_DO_WHILE,"do",eval_keyword_do_while}; // while is expected in the end ...
+			eval_data_keywords[KEYWORD_UNKNOWN] = {KEYWORD_UNKNOWN, NULL,NULL};
+			eval_data_keywords[KEYWORD_VAR] = {KEYWORD_VAR,"var",eval_keyword_var_or_const};
+			eval_data_keywords[KEYWORD_CONST] = {KEYWORD_CONST,"const",eval_keyword_var_or_const};
+			eval_data_keywords[KEYWORD_STATIC] = {KEYWORD_STATIC,"static",eval_keyword_static};
+			eval_data_keywords[KEYWORD_IF] = {KEYWORD_IF,"if",eval_keyword_if_else};
+			eval_data_keywords[KEYWORD_ELSE] = {KEYWORD_ELSE,"else"};
+			eval_data_keywords[KEYWORD_FOR] = {KEYWORD_FOR,"for",eval_keyword_for};
+			eval_data_keywords[KEYWORD_WHILE] = {KEYWORD_WHILE,"while",eval_keyword_while};
+			eval_data_keywords[KEYWORD_DO_WHILE] = {KEYWORD_DO_WHILE,"do",eval_keyword_do_while}; // while is expected in the end ...
 
-			eval_info_keywords[KEYWORD_SWITCH] = {KEYWORD_SWITCH,"switch",eval_keyword_switch};
-			eval_info_keywords[KEYWORD_CASE] = {KEYWORD_CASE,"case",NULL};
-			eval_info_keywords[KEYWORD_DEFAULT] = {KEYWORD_DEFAULT,"default",NULL};
-			eval_info_keywords[KEYWORD_BREAK] = {KEYWORD_BREAK,"break",eval_keyword_break};
-			eval_info_keywords[KEYWORD_CONTINUE] = {KEYWORD_CONTINUE,"continue",eval_keyword_continue};
-			eval_info_keywords[KEYWORD_FUNCTION] = {KEYWORD_FUNCTION,"function",NULL};
-			eval_info_keywords[KEYWORD_RETURN] = {KEYWORD_RETURN,"return",eval_keyword_return};
-			eval_info_keywords[KEYWORD_THIS] = {KEYWORD_THIS,"this", NULL};
-			eval_info_keywords[KEYWORD_CLASS] = {KEYWORD_CLASS,"class",NULL};
-			eval_info_keywords[KEYWORD_NEW] = {KEYWORD_NEW,"new", NULL};
-			eval_info_keywords[KEYWORD_DELETE] = {KEYWORD_DELETE,"delete",eval_keyword_delete};
-			eval_info_keywords[KEYWORD_IN] = {KEYWORD_IN,"in",NULL};
-			eval_info_keywords[KEYWORD_REF] = {KEYWORD_REF,"ref",NULL};
-			eval_info_keywords[KEYWORD_VARIABLE_ARGS] = {KEYWORD_VARIABLE_ARGS,"...",NULL};
+			eval_data_keywords[KEYWORD_SWITCH] = {KEYWORD_SWITCH,"switch",eval_keyword_switch};
+			eval_data_keywords[KEYWORD_CASE] = {KEYWORD_CASE,"case",NULL};
+			eval_data_keywords[KEYWORD_DEFAULT] = {KEYWORD_DEFAULT,"default",NULL};
+			eval_data_keywords[KEYWORD_BREAK] = {KEYWORD_BREAK,"break",eval_keyword_break};
+			eval_data_keywords[KEYWORD_CONTINUE] = {KEYWORD_CONTINUE,"continue",eval_keyword_continue};
+			eval_data_keywords[KEYWORD_FUNCTION] = {KEYWORD_FUNCTION,"function",NULL};
+			eval_data_keywords[KEYWORD_RETURN] = {KEYWORD_RETURN,"return",eval_keyword_return};
+			eval_data_keywords[KEYWORD_THIS] = {KEYWORD_THIS,"this", NULL};
+			eval_data_keywords[KEYWORD_CLASS] = {KEYWORD_CLASS,"class",NULL};
+			eval_data_keywords[KEYWORD_NEW] = {KEYWORD_NEW,"new", NULL};
+			eval_data_keywords[KEYWORD_DELETE] = {KEYWORD_DELETE,"delete",eval_keyword_delete};
+			eval_data_keywords[KEYWORD_IN] = {KEYWORD_IN,"in",NULL};
+			eval_data_keywords[KEYWORD_REF] = {KEYWORD_REF,"ref",NULL};
+			eval_data_keywords[KEYWORD_VARIABLE_ARGS] = {KEYWORD_VARIABLE_ARGS,"...",NULL};
 
 			// DIRECTIVES
-			eval_info_directives[DIRECTIVE_UNKNOWN]={DIRECTIVE_UNKNOWN, NULL};
-			eval_info_directives[DIRECTIVE_INCLUDE]={DIRECTIVE_INCLUDE, "import"};
+			eval_data_directives[DIRECTIVE_UNKNOWN]={DIRECTIVE_UNKNOWN, NULL};
+			eval_data_directives[DIRECTIVE_INCLUDE]={DIRECTIVE_INCLUDE, "import"};
 
 			compiled_symbol_name=new std::map<std::string,std::string *>;
 

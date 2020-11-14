@@ -245,7 +245,7 @@ namespace zetscript{
 					 pre_self_operation != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
 					 && token_node->token_type != TokenType::TOKEN_TYPE_IDENTIFIER
 			){
-				 EVAL_ERROR(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers ",eval_info_pre_post_self_operations[ pre_self_operation].str);
+				 EVAL_ERROR(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers ",eval_data_pre_post_self_operations[ pre_self_operation].str);
 			 }
 
 			 // check pre operators...
@@ -254,7 +254,7 @@ namespace zetscript{
 					&& !(is_constant_number || (token_node->token_type == TokenType::TOKEN_TYPE_IDENTIFIER))
 			     )
 			 {
-				 EVAL_ERROR(eval_data->current_parsing_file,line ,"+/- pre operator not allowed before \"%s\". Only allowed on  numbers or identifiers",str_value.c_str(),eval_info_pre_operators[ token_node->pre_operator].str);
+				 EVAL_ERROR(eval_data->current_parsing_file,line ,"+/- pre operator not allowed before \"%s\". Only allowed on  numbers or identifiers",str_value.c_str(),eval_data_pre_operators[ token_node->pre_operator].str);
 			 }
 
 			 if(
@@ -262,7 +262,7 @@ namespace zetscript{
 				  && !(is_constant_number || is_constant_boolean || (token_node->token_type == TokenType::TOKEN_TYPE_IDENTIFIER))
 			     )
 			 {
-				 EVAL_ERROR(eval_data->current_parsing_file,line ,"! pre operator not allowed before \"%s\". only allowed on constants booleans/numbers or identifiers ",str_value.c_str(),eval_info_pre_operators[ token_node->pre_operator].str);
+				 EVAL_ERROR(eval_data->current_parsing_file,line ,"! pre operator not allowed before \"%s\". only allowed on constants booleans/numbers or identifiers ",str_value.c_str(),eval_data_pre_operators[ token_node->pre_operator].str);
 			 }
 
 			 if((token_node->pre_operator == PreOperator::PRE_OPERATOR_NEG) || (token_node->pre_operator == PreOperator::PRE_OPERATOR_NOT)){
@@ -402,7 +402,7 @@ namespace zetscript{
 									&&
 						(operator_type < OPERATOR_ARITHMETIC_ASSIGN_LAST)
 					)))){ // ... save all assignables from operator split
-					EVAL_ERROR(eval_data->current_parsing_file,token_node_operator->line,"Operation \"%s\" in assignment is not allowed",eval_info_operators[operator_type].str);
+					EVAL_ERROR(eval_data->current_parsing_file,token_node_operator->line,"Operation \"%s\" in assignment is not allowed",eval_data_operators[operator_type].str);
 				}
 
 				// should be identifier...
@@ -519,7 +519,7 @@ namespace zetscript{
 
 			if(op==Keyword::KEYWORD_FUNCTION){
 				char *check=NULL;
-				IGNORE_BLANKS(check,eval_data,s+strlen(eval_info_keywords[op].str),line);
+				IGNORE_BLANKS(check,eval_data,s+strlen(eval_data_keywords[op].str),line);
 
 				is_anonymouse_function=*check=='(';
 			}
@@ -589,7 +589,7 @@ namespace zetscript{
 								break;
 							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
 							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
-								aux_p+=strlen(eval_info_pre_post_self_operations[pre_self_operation_type].str);
+								aux_p+=strlen(eval_data_pre_post_self_operations[pre_self_operation_type].str);
 								break;
 							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID:
 								EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
@@ -603,7 +603,7 @@ namespace zetscript{
 							case PreOperator::PRE_OPERATOR_NEG:
 							case PreOperator::PRE_OPERATOR_POS:
 							case PreOperator::PRE_OPERATOR_NOT:
-								aux_p+=strlen(eval_info_pre_operators[pre_operator].str);
+								aux_p+=strlen(eval_data_pre_operators[pre_operator].str);
 								break;
 						}
 					}
@@ -615,7 +615,7 @@ namespace zetscript{
 					if(*aux_p=='('){ // inner expression (priority)
 
 						if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_info_pre_post_self_operations[pre_self_operation_type].str);
+							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_data_pre_post_self_operations[pre_self_operation_type].str);
 						}
 
 						aux_p=eval_expression(
@@ -984,7 +984,7 @@ namespace zetscript{
 						((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN)
 						&& ((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID)
 					){
-						aux_p+=strlen(eval_info_pre_post_self_operations[post_self_operation_type].str);
+						aux_p+=strlen(eval_data_pre_post_self_operations[post_self_operation_type].str);
 					}
 
 					if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
@@ -1050,7 +1050,7 @@ namespace zetscript{
 
 					}
 
-					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_operators[operator_type].str),line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_operators[operator_type].str),line);
 
 					operator_token_node.line=line;
 					operator_token_node.operator_type=operator_type;

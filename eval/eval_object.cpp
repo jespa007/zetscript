@@ -105,7 +105,7 @@ namespace zetscript{
 				lineSymbol = line;
 
 				if((keyw=eval::is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: \"%s\" keyword is not allowed as property name",eval::eval_info_keywords[keyw].str);
+					EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: \"%s\" keyword is not allowed as property name",eval::eval_data_keywords[keyw].str);
 				}
 
 				aux_p=get_identifier_token(
@@ -236,7 +236,7 @@ namespace zetscript{
 
 				if(key_w == Keyword::KEYWORD_NEW){
 					EvalInstruction *eval_instruction = NULL;
-					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 					// try get symbol ...++++
 					aux_p=get_identifier_token(
 							eval_data
@@ -280,7 +280,7 @@ namespace zetscript{
 
 
 					 if(*aux_p != '('){
-						 EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_info_keywords[key_w].str);
+						 EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_data_keywords[key_w].str);
 					 }
 
 					 n_args=0;

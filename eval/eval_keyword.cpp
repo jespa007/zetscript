@@ -58,7 +58,7 @@ namespace zetscript{
 
 			if(key_w == Keyword::KEYWORD_DELETE){
 
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				aux_p=get_identifier_token(
 						eval_data
@@ -106,7 +106,7 @@ namespace zetscript{
 					EVAL_ERROR(eval_data->current_parsing_file,line,"class keyword is not allowed");
 				}
 
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				// check for symbol's name
 				aux_p=get_identifier_token(
@@ -160,18 +160,34 @@ namespace zetscript{
 
 						// 1st. check whether eval a keyword...
 						key_w = is_keyword(aux_p);
-						if(key_w == Keyword::KEYWORD_UNKNOWN){
-								if((aux_p = eval_keyword_function(
+
+						switch(key_w){
+						case Keyword::KEYWORD_UNKNOWN:
+								aux_p = eval_keyword_static(
 										eval_data
 										,aux_p
 										, line
 										,sc->symbol_class.scope // pass class scope
-
-								))==NULL){
-									return NULL;
-								}
-						}else{
-							EVAL_ERROR(eval_data->current_parsing_file,line,"unexpected keyword \"%s\" in class declaration \"%s\"",eval_info_keywords[key_w].str,class_name.c_str());
+										);
+								break;
+						case Keyword::KEYWORD_STATIC:
+								aux_p = eval_keyword_static(
+									eval_data
+									,aux_p
+									, line
+									,sc->symbol_class.scope // pass class scope
+								);
+								break;
+						case Keyword::KEYWORD_CONST:
+								aux_p = eval_keyword_var_or_const(
+									eval_data
+									,aux_p
+									, line
+									,sc->symbol_class.scope // pass class scope
+								);
+								break;
+						default:
+							EVAL_ERROR(eval_data->current_parsing_file,line,"unexpected keyword \"%s\" in class declaration \"%s\"",eval_data_keywords[key_w].str,class_name.c_str());
 						}
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					}
@@ -231,7 +247,7 @@ namespace zetscript{
 			}
 			else{
 				key_w = is_keyword(aux_p);
-				advance_chars=strlen(eval_info_keywords[key_w].str);
+				advance_chars=strlen(eval_data_keywords[key_w].str);
 			}
 
 			if(key_w == Keyword::KEYWORD_FUNCTION){
@@ -333,7 +349,7 @@ namespace zetscript{
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
 						var_args=arg_info.var_args =true;
 					}else if(is_keyword(aux_p)==KEYWORD_REF){
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[KEYWORD_REF].str),line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[KEYWORD_REF].str),line);
 						arg_info.by_ref =true;
 					}
 
@@ -439,7 +455,7 @@ namespace zetscript{
 
 			if(key_w == Keyword::KEYWORD_RETURN){ // possible variable...
 				//PASTNode child_node=NULL;
-				aux_p += strlen(eval_info_keywords[key_w].str);
+				aux_p += strlen(eval_data_keywords[key_w].str);
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				// save starting point before process the expression...
@@ -498,7 +514,7 @@ namespace zetscript{
 
 			if(key_w == Keyword::KEYWORD_WHILE){
 
-				aux_p += strlen(eval_info_keywords[key_w].str);
+				aux_p += strlen(eval_data_keywords[key_w].str);
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				// evaluate conditional line ...
@@ -572,7 +588,7 @@ namespace zetscript{
 
 			if(key_w == Keyword::KEYWORD_DO_WHILE){
 
-				aux_p += strlen(eval_info_keywords[key_w].str);
+				aux_p += strlen(eval_data_keywords[key_w].str);
 
 				//1st evaluate body ..
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -602,7 +618,7 @@ namespace zetscript{
 					EVAL_ERROR(eval_data->current_parsing_file,line,"expected while keyword");
 				}
 
-				aux_p += strlen(eval_info_keywords[key_w].str);
+				aux_p += strlen(eval_data_keywords[key_w].str);
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -658,7 +674,7 @@ namespace zetscript{
 				do{
 					end=true;
 					//ei_jmps.clear();
-					aux_p += strlen(eval_info_keywords[key_w].str);
+					aux_p += strlen(eval_data_keywords[key_w].str);
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					if(*aux_p != '('){
@@ -708,7 +724,7 @@ namespace zetscript{
 
 						else_end_jmp.push_back(ei_aux);
 
-						aux_p += strlen(eval_info_keywords[key_w].str);
+						aux_p += strlen(eval_data_keywords[key_w].str);
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -762,7 +778,7 @@ namespace zetscript{
 
 			if(key_w == Keyword::KEYWORD_FOR){
 
-				aux_p += strlen(eval_info_keywords[key_w].str);
+				aux_p += strlen(eval_data_keywords[key_w].str);
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if(*aux_p == '('){ // ready ...
@@ -800,7 +816,7 @@ namespace zetscript{
 					key_w = is_keyword(aux_p);
 					if(key_w == Keyword::KEYWORD_IN){
 
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[Keyword::KEYWORD_IN].str),line);
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[Keyword::KEYWORD_IN].str),line);
 
 						if((aux_p = eval_expression(
 								eval_data
@@ -945,7 +961,7 @@ namespace zetscript{
 
 			if(key_w == Keyword::KEYWORD_SWITCH){
 
-				aux_p += strlen(eval_info_keywords[key_w].str);
+				aux_p += strlen(eval_data_keywords[key_w].str);
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if(*aux_p == '('){
@@ -981,11 +997,11 @@ namespace zetscript{
 									int idx_current_instruction=(int)(eval_data->current_function->instructions.size());
 
 									// ignore case
-									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 
 									if((pre_operator = is_pre_operator(aux_p))!=PreOperator::PRE_OPERATOR_UNKNOWN){
-										IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_pre_operators[pre_operator].str),line);
+										IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_pre_operators[pre_operator].str),line);
 									}
 
 									// capture constant value (should be a constant -not a identifier in any case-)
@@ -1025,7 +1041,7 @@ namespace zetscript{
 
 									is_default=true;
 									n_default++;
-									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 								}else{
 									EVAL_ERROR(eval_data->current_parsing_file,line,"Expected 'case' or 'default' keyword");
@@ -1051,7 +1067,7 @@ namespace zetscript{
 								);
 
 								if((is_keyword(aux_p) == Keyword::KEYWORD_BREAK)){ // it cuts current expression to link breaks...
-									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[Keyword::KEYWORD_BREAK].str),line);
+									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[Keyword::KEYWORD_BREAK].str),line);
 									EvalInstruction *ei_break_jmp=new EvalInstruction(BYTE_CODE_JMP);
 									eval_data->current_function->instructions.push_back(ei_break_jmp);
 									ei_break_jmps.push_back(ei_break_jmp);
@@ -1166,6 +1182,26 @@ namespace zetscript{
 			return stk_int_calc_result;
 		}
 
+		char * eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+			char *aux_p = (char *)s;
+			Keyword key_w;
+			ScriptClass *sc=NULL;
+
+			// check class scope...
+			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+				&& scope_info->scope_base == scope_info
+				&& scope_info->scope_parent == NULL // class
+				){
+				sc=scope_info->script_class;
+			}
+
+			if(key_w == Keyword::KEYWORD_STATIC){ // possible variable...
+
+			}
+
+			return NULL;
+		}
+
 		char * eval_keyword_var_or_const(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 			// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
 			char *aux_p = (char *)s;
@@ -1175,17 +1211,33 @@ namespace zetscript{
 			//bool end=false;
 			bool allow_for_in=true;
 			int start_line=0;
+			ScriptClass *sc=NULL;
 
+			// check class scope...
+			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+				&& scope_info->scope_base == scope_info
+				&& scope_info->scope_parent == NULL // class
+				){
+				sc=scope_info->script_class;
+			}
+
+			// check for keyword ...
 			key_w = is_keyword(aux_p);
-
 
 			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
 				bool is_constant = key_w == Keyword::KEYWORD_CONST;
 				if(is_constant){ // scope_info will be global scope...
-					scope_info = MAIN_SCOPE(eval_data);
+					if(sc==NULL){
+						scope_info = MAIN_SCOPE(eval_data);
+					}
+					else{
+						scope_info=sc->symbol_class.scope;
+					}
+				}else if(sc!=NULL){
+					EVAL_ERROR(eval_data->current_parsing_file,line,"Class \"%s\": Unexpected \"var\" keyword",sc->symbol_class.name.c_str());
 				}
 
-				aux_p += strlen(eval_info_keywords[key_w].str);
+				aux_p += strlen(eval_data_keywords[key_w].str);
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				bool new_variable=false;
 
@@ -1195,6 +1247,7 @@ namespace zetscript{
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					start_var=aux_p;
 					start_line = line;
+					Symbol *symbol_variable;
 
 					line = start_line;
 
@@ -1211,18 +1264,22 @@ namespace zetscript{
 					Keyword keyw = is_keyword(variable_name.c_str());
 
 					if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_info_keywords[keyw].str);
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_data_keywords[keyw].str);
 					}
 
 					// register symbol...
-					if(is_constant == false){ // do not register as variable...
-						eval_data->current_function->script_function->registerLocalVariable(
+					if(sc == NULL){ // register as global...
+
+						symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
 								scope_info
 								,eval_data->current_parsing_file
 								, line
 								, variable_name
 						);
+					}else{
+						symbol_variable=sc->registerNativeVariableMember()
 					}
+					//}
 
 					// advance identifier length chars
 					aux_p=end_var;
@@ -1240,7 +1297,7 @@ namespace zetscript{
 							,is_constant?(aux_p+1):start_var
 							,start_line
 							,scope_info
-							,is_constant?&constant_instructions:&eval_data->current_function->instructions
+							,eval_data->current_function->instructions
 							//,std::vector<char>{','}
 						))==NULL){
 							return NULL;
@@ -1312,6 +1369,13 @@ namespace zetscript{
 
 						line = start_line;
 					}
+					else{
+						if(is_constant){
+							EVAL_ERROR(eval_data->current_parsing_file,line,"Uninitialized constant symbol %s%s"
+									,sc!=NULL?zs_strutils::format("::%s",sc->symbol_class.name.c_str()).c_str():""
+									,variable_name.c_str());
+						}
+					}
 					new_variable=false;
 					if(*aux_p == ','){
 						new_variable=true;
@@ -1335,7 +1399,7 @@ namespace zetscript{
 				int last_line_ok = line;
 				EvalInstruction *jmp_instruction;
 
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				// insert jmp instruction
 				eval_data->current_function->instructions.push_back(
@@ -1361,7 +1425,7 @@ namespace zetscript{
 				int last_line_ok = line;
 				EvalInstruction *jmp_instruction;
 
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_info_keywords[key_w].str),line);
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				// insert jmp instruction
 				eval_data->current_function->instructions.push_back(
@@ -1391,8 +1455,8 @@ namespace zetscript{
 					return  eval_keyword_class(eval_data,s,line,scope_info);
 					break;
 				default:
-					if(eval_info_keywords[keyw].eval_fun != NULL){
-						return (*eval_info_keywords[keyw].eval_fun)(eval_data,s,line,scope_info);
+					if(eval_data_keywords[keyw].eval_fun != NULL){
+						return (*eval_data_keywords[keyw].eval_fun)(eval_data,s,line,scope_info);
 					}else{
 						THROW_RUNTIME_ERROR("Not implemented");
 					}

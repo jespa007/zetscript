@@ -291,7 +291,7 @@ namespace zetscript{
 					if(directive != Directive::DIRECTIVE_UNKNOWN){
 						switch(directive){
 						case DIRECTIVE_INCLUDE:
-							aux += strlen(eval_info_directives[directive].str);
+							aux += strlen(eval_data_directives[directive].str);
 							IGNORE_BLANKS(aux,eval_data,aux,line);
 							if(*aux != '\"'){
 								EVAL_ERROR(eval_data->current_parsing_file,line,"expected starting \" directive");
@@ -317,7 +317,7 @@ namespace zetscript{
 							aux++;// advance ..
 							break;
 						default:
-							EVAL_ERROR(eval_data->current_parsing_file,line,"directive \"%s\" not supported",eval_info_directives[directive].str);
+							EVAL_ERROR(eval_data->current_parsing_file,line,"directive \"%s\" not supported",eval_data_directives[directive].str);
 							break;
 						}
 
