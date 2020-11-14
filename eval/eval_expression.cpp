@@ -898,7 +898,7 @@ namespace zetscript{
 												((symbol_static->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0)
 											){
 												first_instruction_token->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_STATIC;
-												first_instruction_token->vm_instruction.value_op2=symbol_static->ref_ptr;
+												first_instruction_token->vm_instruction.value_op2=symbol_static->ref_ptr; // global stack element
 											}else{
 												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"Symbol %s is not function or static variable is not native",static_access_name.c_str());
 											}

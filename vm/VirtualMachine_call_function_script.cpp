@@ -497,8 +497,20 @@ namespace zetscript{
 
 						stk_var=calling_object->getProperty(symbol_access_str, &idx_stk_element);
 
+
 						// not exist ... add
-						if(stk_var == NULL){
+						if(stk_var != NULL){
+							Symbol *symbol=calling_object->getSymbol(idx_stk_element);
+							// check if static
+							if(symbol->properties & SYMBOL_PROPERTY_STATIC){
+								VM_STOP_EXECUTE("Cannot access static symbols with \".\", static symbols are acceded by \"::\"");
+							}
+						}else{
+
+							// something went wrong
+							if(this->error){
+								goto lbl_exit_function;
+							}
 
 							vm_stk_current->stk_value=(void *)symbol_access_str;
 							vm_stk_current->var_ref=calling_object;

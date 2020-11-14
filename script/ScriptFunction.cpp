@@ -313,9 +313,17 @@ namespace zetscript{
 		symbol->idx_position = idx_position;
 
 
-		if(scope_block == MAIN_SCOPE(this) && ((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0)) { // is global var ...
-			if(!zs->getVirtualMachine()->setStackElement(idx_position,convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr))){
-				THROW_RUNTIME_ERROR(zs->getVirtualMachine()->getError().c_str());
+		if(scope_block == MAIN_SCOPE(this)) { // is global var ...
+			StackElement *ref_stk=NULL;
+			if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0){
+				ref_stk=convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr);
+				if(!zs->getVirtualMachine()->setStackElement(idx_position,ref_stk)){
+					THROW_RUNTIME_ERROR(zs->getVirtualMachine()->getError().c_str());
+				}
+			}else{
+				if((ref_stk=zs->getVirtualMachine()->getStackElement(idx_position))==NULL){
+					THROW_RUNTIME_ERROR(zs->getVirtualMachine()->getError().c_str());
+				}
 			}
 		}
 

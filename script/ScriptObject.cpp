@@ -50,8 +50,12 @@ namespace zetscript{
 					void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
 
 					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
+				}else if(symbol->properties & (SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST)){
+					se->stk_value=NULL;
+					se->var_ref=symbol->ref_ptr;
+					se->properties=MSK_STACK_ELEMENT_PROPERTY_PTR_STK;
 				}else{
-					VM_SET_USER_ERROR(this->virtual_machine,"symbol should be c var");
+					VM_SET_USER_ERROR(this->virtual_machine,"internal error: symbol should be static or native var");
 					return;
 				}
 			}
@@ -311,6 +315,11 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
+	Symbol * ScriptObject::getSymbolMemberByIdx(int idx){
+
+		return (Symbol *)this->registered_class_info->symbol_members->items[idx];
+	}
+
 	StackElement * ScriptObject::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
 
 		bool exists;
@@ -319,6 +328,7 @@ namespace zetscript{
 			if(idx!=NULL){
 				*idx=idx_stk_element;
 			}
+
 			return (StackElement *)stk_properties->items[idx_stk_element];
 		}
 		return NULL;

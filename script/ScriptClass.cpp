@@ -45,17 +45,23 @@ namespace zetscript{
 
 	}
 
-	Symbol				* 	ScriptClass::registerNativeVariableMember(
+	Symbol				* 	ScriptClass::registerMemberVariable(
 		const std::string & file
 		, short line
 		,const std::string & symbol_name
-		,const std::string & str_native_type
 		,zs_int ref_ptr
 		, unsigned short properties
+		,const std::string & str_native_type
 	){
-	if(getSymbol(symbol_name)!=NULL){
-		THROW_RUNTIME_ERROR("Variable \"%s\" already registered",symbol_name.c_str());
-	}
+		// ref_ptr: as natives is the inc pointer when object is created or stack_element pointer for static/const
+
+		if(getSymbol(symbol_name)!=NULL){
+			THROW_RUNTIME_ERROR("Variable \"%s\" already registered",symbol_name.c_str());
+		}
+
+		if((properties & (SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST))==0){
+			THROW_RUNTIME_ERROR("Variable \"%s\" should registered as native, static or const",symbol_name.c_str());
+		}
 
 		Symbol *symbol=new Symbol;
 
@@ -68,7 +74,7 @@ namespace zetscript{
 		symbol->ref_ptr=ref_ptr;
 		symbol->name=symbol_name;
 		symbol->str_native_type = str_native_type;
-		symbol->properties=properties | SYMBOL_PROPERTY_C_OBJECT_REF;
+		symbol->properties=properties;
 
 		symbol_members->push_back((zs_int)symbol);
 		symbol_members_built_in->push_back((zs_int)symbol);

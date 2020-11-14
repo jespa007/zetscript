@@ -156,14 +156,6 @@ namespace zetscript{
 		return current_call_c_function;
 	}
 
-	StackElement * VirtualMachine::getStackElement(unsigned int idx_glb_element){
-
-		if(idx_glb_element < main_function_object->registered_symbols->count){
-			return &vm_stack[idx_glb_element];
-		}
-		return NULL;
-	}
-
 	void VirtualMachine::setError(const std::string & str){
 		error = true;
 		error_str=str;
@@ -240,6 +232,17 @@ namespace zetscript{
 		vm_stack[idx]=stk;
 		return true;
 	}
+
+	StackElement * VirtualMachine::getStackElement(unsigned int idx_glb_element){
+
+		if(idx_glb_element < main_function_object->registered_symbols->count){
+			return &vm_stack[idx_glb_element];
+		}else{
+			VM_SET_USER_ERROR(this,"getStackElement: out of bounds");
+		}
+		return NULL;
+	}
+
 
 	StackElement  * VirtualMachine::getLastStackValue(){
 		return (vm_stk_current-1);

@@ -20,7 +20,7 @@ namespace zetscript{
 
 		Symbol 			symbol_class;		// info symbol class
 
-
+		//zs_vector *symbol_members_static; // register a collection of symbols to be deleted at the end...
 		zs_vector *symbol_members; // a list of pre-registered C symbols to be added as stack element properties when class is instanced through scriptvar ( see ScriptObject::createSymbols)
 		zs_vector *symbol_members_built_in; // register a collection of symbols to be deleted at the end...
 		//zs_vector *function_members; // a list of function members (script as well as registered native functions) to be registered on create any scriptvar, see ScriptObject::createSymbols)
@@ -38,7 +38,7 @@ namespace zetscript{
 
 		 ScriptClass(ZetScript *_zs,ClassTypeIdx _idx_class);
 
-		Symbol				* 	registerNativeVariableMember(
+		Symbol				* 	registerMemberVariable(
 				const std::string & file
 				, short line
 				,const std::string & var_name

@@ -63,9 +63,10 @@ class ScriptClass;
 
 		StackElement *		newSlot();
 
-		int			   getPropertyIdx(const std::string & varname);
-		StackElement * getProperty(const std::string & varname, int * idx=NULL);
-		StackElement * getProperty(short idx);
+		Symbol *		getSymbolMemberByIdx(int idx_symbol_member);
+		int			   	getPropertyIdx(const std::string & varname);
+		StackElement * 	getProperty(const std::string & varname, int * idx=NULL);
+		StackElement * 	getProperty(short idx);
 		const char *getSymbolNameFromPropertyPtr(StackElement *stk);
 
 		bool eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);

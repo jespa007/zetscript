@@ -1,13 +1,14 @@
 namespace zetscript{
 	namespace eval{
 
-		void push_function(EvalData *eval_data,ScriptFunction *sf);
-		int  pop_function(EvalData *eval_data);
-		char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char * eval_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,bool return_on_break_or_continue_keyword = false);
+		void 	push_function(EvalData *eval_data,ScriptFunction *sf);
+		int  	pop_function(EvalData *eval_data);
+		char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,bool return_on_break_or_continue_keyword = false);
 		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function=false);
-		void eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start);
-		void inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value);
+		void 	eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start);
+		void 	inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value);
+		char * 	eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 
 		char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol){
 
@@ -162,15 +163,15 @@ namespace zetscript{
 						key_w = is_keyword(aux_p);
 
 						switch(key_w){
-						case Keyword::KEYWORD_UNKNOWN:
-								aux_p = eval_keyword_static(
-										eval_data
-										,aux_p
-										, line
-										,sc->symbol_class.scope // pass class scope
-										);
+						case Keyword::KEYWORD_UNKNOWN: // supposes a member function
+								aux_p = eval_keyword_function(
+									eval_data
+									,aux_p
+									, line
+									,sc->symbol_class.scope // pass class scope
+								);
 								break;
-						case Keyword::KEYWORD_STATIC:
+						case Keyword::KEYWORD_STATIC: // can be a function or symbol
 								aux_p = eval_keyword_static(
 									eval_data
 									,aux_p
@@ -178,8 +179,8 @@ namespace zetscript{
 									,sc->symbol_class.scope // pass class scope
 								);
 								break;
-						case Keyword::KEYWORD_CONST:
-								aux_p = eval_keyword_var_or_const(
+						case Keyword::KEYWORD_CONST: // const symbol
+								aux_p = eval_keyword_var(
 									eval_data
 									,aux_p
 									, line
@@ -221,20 +222,9 @@ namespace zetscript{
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
-			char *end_var=NULL;
 			Keyword key_w;
-			std::vector<FunctionParam> args;
-			std::string conditional_str;
-			ScriptClass *sc=NULL; // if NULL it suposes is the main
-			Symbol *symbol_sf=NULL;
-
-			Symbol * irv=NULL;
-
-			static int n_anonymous_function=0;
-			std::string function_name="";
-			//Scope *scope=scope_info;
 			size_t advance_chars=0;
-			bool is_anonymous=false;
+			ScriptClass *sc=NULL; // if NULL it suposes is the main
 
 
 			// check for keyword ...
@@ -252,8 +242,22 @@ namespace zetscript{
 
 			if(key_w == Keyword::KEYWORD_FUNCTION){
 
-				std::string arg_value;
-				FunctionParam arg_info;
+
+				char *end_var=NULL;
+
+				std::vector<FunctionParam> args;
+				std::string conditional_str;
+				Symbol *symbol_sf=NULL;
+
+				Symbol * irv=NULL;
+
+				static int n_anonymous_function=0;
+				std::string function_name="";
+				//Scope *scope=scope_info;
+				bool is_anonymous=false;
+
+				//std::string arg_value;
+				//FunctionParam arg_info;
 
 				Scope *scope_function =eval_new_scope(eval_data,scope_info,true); // push current scope
 				ScriptFunction *sf=NULL;
@@ -321,58 +325,17 @@ namespace zetscript{
 				}
 
 				// save scope pointer for function args ...
-				aux_p++;
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+				//aux_p++;
+				//IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				bool var_args=false;
+				//bool var_args=false;
 
 				// grab words separated by ,
-				while(*aux_p != 0 && *aux_p != ')' && !var_args){
-					arg_info.by_ref=false;
-					arg_info.var_args=false;
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-					if(args.size()>0){
-						if(*aux_p != ','){
-							EVAL_ERROR(eval_data->current_parsing_file,line,"Expected ',' ");
-						}
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-					}
-
-					if(*aux_p == ')' || *aux_p == ','){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Expected arg");
-					}
-
-					// capture line where argument is...
-					arg_info.line=line;
-
-					if(*aux_p=='.' && *(aux_p+1)=='.' && *(aux_p+2)=='.'){// is_keyword(aux_p)==KEYWORD_REF){
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
-						var_args=arg_info.var_args =true;
-					}else if(is_keyword(aux_p)==KEYWORD_REF){
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[KEYWORD_REF].str),line);
-						arg_info.by_ref =true;
-					}
-
-
-					//int m_start_arg=line;
-					end_var=get_identifier_token(
-							 eval_data
-							,aux_p
-							,line
-							,arg_value
-					);
-
-					// copy value
-					zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var);
-
-					// ok register symbol into the object function ...
-					arg_info.arg_name=arg_value;
-					args.push_back(arg_info);
-					aux_p=end_var;
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+				if((aux_p=eval_args_function(eval_data,aux_p,line,&args))==NULL){
+					return NULL;
 				}
 
-				aux_p++;
+				//aux_p++;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if(*aux_p != '{'){
@@ -797,7 +760,7 @@ namespace zetscript{
 						Keyword key_w = is_keyword(aux_p);
 
 						if(key_w == KEYWORD_VAR){
-							if((aux_p = eval_keyword_var_or_const(
+							if((aux_p = eval_keyword_var(
 									eval_data
 									,aux_p
 									,line
@@ -1117,7 +1080,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		ConstantValue * perform_const_operation(EvalData *eval_data,int line,ByteCode byte_code,ConstantValue *stk_op1, ConstantValue *stk_op2){
+		/*ConstantValue * perform_const_operation(EvalData *eval_data,int line,ByteCode byte_code,ConstantValue *stk_op1, ConstantValue *stk_op2){
 
 			float op2=0;
 			float result_op=0;
@@ -1180,7 +1143,7 @@ namespace zetscript{
 			}
 
 			return stk_int_calc_result;
-		}
+		}*/
 
 		char * eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 			char *aux_p = (char *)s;
@@ -1188,54 +1151,52 @@ namespace zetscript{
 			ScriptClass *sc=NULL;
 
 			// check class scope...
-			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-				&& scope_info->scope_base == scope_info
-				&& scope_info->scope_parent == NULL // class
-				){
-				sc=scope_info->script_class;
-			}
+			if(key_w == Keyword::KEYWORD_STATIC){
+				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+					&& scope_info->scope_base == scope_info
+					&& scope_info->scope_parent == NULL // class
+					){
+					sc=scope_info->script_class;
+				}
 
-			if(key_w == Keyword::KEYWORD_STATIC){ // possible variable...
 
 			}
 
 			return NULL;
 		}
 
-		char * eval_keyword_var_or_const(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+		char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 			// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
-			char *aux_p = (char *)s;
-			Keyword key_w;
-			char *start_var,*end_var;
-			std::string s_aux,variable_name;
-			//bool end=false;
-			bool allow_for_in=true;
-			int start_line=0;
-			ScriptClass *sc=NULL;
-
-			// check class scope...
-			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-				&& scope_info->scope_base == scope_info
-				&& scope_info->scope_parent == NULL // class
-				){
-				sc=scope_info->script_class;
-			}
-
 			// check for keyword ...
-			key_w = is_keyword(aux_p);
+			Keyword key_w = is_keyword(s);
 
-			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
-				bool is_constant = key_w == Keyword::KEYWORD_CONST;
-				if(is_constant){ // scope_info will be global scope...
-					if(sc==NULL){
-						scope_info = MAIN_SCOPE(eval_data);
-					}
-					else{
-						scope_info=sc->symbol_class.scope;
-					}
-				}else if(sc!=NULL){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"Class \"%s\": Unexpected \"var\" keyword",sc->symbol_class.name.c_str());
+			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST || key_w == Keyword::KEYWORD_STATIC){ // possible variable...
+				char *aux_p = (char *)s;
+				int start_line=0;
+				char *start_var,*end_var;
+				ScriptClass *sc=NULL;
+				std::string s_aux,variable_name;
+
+				// check class scope...
+				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+					&& scope_info->scope_base == scope_info
+					&& scope_info->scope_parent == NULL // class
+					){
+					sc=scope_info->script_class;
 				}
+
+				bool is_constant_or_static = key_w == Keyword::KEYWORD_CONST || key_w == Keyword::KEYWORD_STATIC;
+				if(is_constant_or_static){ // scope_info will be global scope...
+
+					if(sc==NULL || eval_data->current_function->script_function->symbol.scope != MAIN_SCOPE(eval_data)){
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Static or constant vars must be declared in class or as global");
+					}
+
+					// always static or constant are global symbols...
+					scope_info = MAIN_SCOPE(eval_data);
+				}/*else if(sc!=NULL){
+					EVAL_ERROR(eval_data->current_parsing_file,line,"Class \"%s\": Unexpected \"var\" keyword",sc->symbol_class.name.c_str());
+				}*/
 
 				aux_p += strlen(eval_data_keywords[key_w].str);
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -1268,25 +1229,31 @@ namespace zetscript{
 					}
 
 					// register symbol...
-					if(sc == NULL){ // register as global...
 
-						symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
-								scope_info
-								,eval_data->current_parsing_file
-								, line
-								, variable_name
+
+					symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
+						scope_info
+						,eval_data->current_parsing_file
+						, line
+						, variable_name
+					);
+
+					if(sc != NULL){
+						symbol_variable=sc->addStaticSymbol(
+							scope_info
+							,eval_data->current_parsing_file
+							,line
+							,variable_name
 						);
-					}else{
-						symbol_variable=sc->registerNativeVariableMember()
 					}
-					//}
+
+
 
 					// advance identifier length chars
 					aux_p=end_var;
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-					if(*aux_p == '='){//(*aux_p == ';' || (*aux_p == ',' && !extension_prop))){ // JE: added multivar feature (',)).
-						allow_for_in=false;
+					if(*aux_p == '='){
 
 						std::vector<EvalInstruction *>	 		constant_instructions;
 						// try to evaluate expression...
