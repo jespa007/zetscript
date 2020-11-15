@@ -34,8 +34,9 @@ namespace zetscript{
 
 		symbol_members=new zs_vector();
 		symbol_members_built_in=new zs_vector();
-		idx_base_classes=new zs_vector;
+		symbol_members_static=new zs_vector();
 
+		idx_base_classes=new zs_vector;
 
 		// factories
 		zs = _zs;
@@ -46,12 +47,50 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerMemberVariable(
-		const std::string & file
-		, short line
+		 const std::string & file
+		,short line
 		,const std::string & symbol_name
-		,zs_int ref_ptr
-		, unsigned short properties
+
+		,unsigned short symbol_properties
+
+	){
+		return registerInternalMemberVariable(
+			 file
+			,line
+			,symbol_name
+			,symbol_properties
+			,symbol_name
+		);
+	}
+
+	Symbol				* 	ScriptClass::registerNativeMemberVariable(
+		 const std::string & file
+		,short line
+		,const std::string & symbol_name
 		,const std::string & str_native_type
+		,zs_int ref_ptr
+		,unsigned short symbol_properties
+
+
+	){
+		return registerInternalMemberVariable(
+			 file
+			,line
+			,symbol_name
+			,symbol_properties
+			,str_native_type
+			,ref_ptr
+		);
+
+	}
+
+	Symbol				* 	ScriptClass::registerInternalMemberVariable(
+		 const std::string & file
+		,short line
+		,const std::string & symbol_name
+		,unsigned short symbol_properties
+		,const std::string & str_native_type
+		,zs_int ref_ptr
 	){
 		// ref_ptr: as natives is the inc pointer when object is created or stack_element pointer for static/const
 
@@ -59,8 +98,8 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Variable \"%s\" already registered",symbol_name.c_str());
 		}
 
-		if((properties & (SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST))==0){
-			THROW_RUNTIME_ERROR("Variable \"%s\" should registered as native, static or const",symbol_name.c_str());
+		if((symbol_properties & (SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_CONST))==0){
+			THROW_RUNTIME_ERROR("Variable \"%s\" should registered as native or const",symbol_name.c_str());
 		}
 
 		Symbol *symbol=new Symbol;
@@ -74,7 +113,7 @@ namespace zetscript{
 		symbol->ref_ptr=ref_ptr;
 		symbol->name=symbol_name;
 		symbol->str_native_type = str_native_type;
-		symbol->properties=properties;
+		symbol->properties=symbol_properties;
 
 		symbol_members->push_back((zs_int)symbol);
 		symbol_members_built_in->push_back((zs_int)symbol);
@@ -120,17 +159,57 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol * ScriptClass::registerMemberFunction(
+	Symbol				* 	ScriptClass::registerMemberFunction(
+			const std::string & file
+			, short line
+			,const std::string & function_name
+			, std::vector<FunctionParam> args
+			, unsigned short symbol_properties
+
+	){
+		return registerInternalMemberFunction(
+				 file
+				,  line
+				,function_name
+				, args
+				, symbol_properties
+		);
+	}
+
+	Symbol				* 	ScriptClass::registerNativeMemberFunction(
+			const std::string & file
+			, short line
+			,const std::string & function_name
+			, std::vector<FunctionParam> args
+			, int idx_return_type
+			,zs_int ref_ptr
+			, unsigned short symbol_properties
+
+	){
+		return registerInternalMemberFunction(
+				 file
+				, line
+				,function_name
+				,args
+				,symbol_properties
+				,idx_return_type
+				,ref_ptr
+		);
+
+	}
+
+	Symbol * ScriptClass::registerInternalMemberFunction(
 		const std::string & file
 		, short line
 		, const std::string & function_name
 		, std::vector<FunctionParam> params
+		, unsigned short symbol_properties
 		, int idx_return_type
 		,zs_int ref_ptr
-		, unsigned short properties
+
 	){
 
-		if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
+		if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
 			if(getSymbol(function_name,(char)params.size()) != NULL){
 				Symbol *existing_symbol;
 				if((existing_symbol=getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
@@ -161,7 +240,7 @@ namespace zetscript{
 				,params
 				,idx_return_type
 				,ref_ptr
-				,properties|SYMBOL_PROPERTY_IS_FUNCTION
+				,symbol_properties|SYMBOL_PROPERTY_IS_FUNCTION
 		);
 
 		// register num function symbols only for c symbols...

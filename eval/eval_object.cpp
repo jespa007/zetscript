@@ -108,7 +108,7 @@ namespace zetscript{
 					EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: \"%s\" keyword is not allowed as property name",eval::eval_data_keywords[keyw].str);
 				}
 
-				aux_p=get_identifier_token(
+				aux_p=get_name_identifier_token(
 						eval_data
 						,aux_p
 						,line
@@ -238,7 +238,7 @@ namespace zetscript{
 					EvalInstruction *eval_instruction = NULL;
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 					// try get symbol ...++++
-					aux_p=get_identifier_token(
+					aux_p=get_name_identifier_token(
 							eval_data
 							,aux_p
 							,line

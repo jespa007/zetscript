@@ -499,13 +499,13 @@ namespace zetscript{
 
 
 						// not exist ... add
-						if(stk_var != NULL){
-							Symbol *symbol=calling_object->getSymbol(idx_stk_element);
+						if(stk_var == NULL){
+/*							Symbol *symbol=calling_object->getSymbol(idx_stk_element);
 							// check if static
 							if(symbol->properties & SYMBOL_PROPERTY_STATIC){
 								VM_STOP_EXECUTE("Cannot access static symbols with \".\", static symbols are acceded by \"::\"");
 							}
-						}else{
+						}else{*/
 
 							// something went wrong
 							if(this->error){

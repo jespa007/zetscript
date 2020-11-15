@@ -120,7 +120,7 @@ namespace zetscript{
 		 * Register C Member var
 		 */
 		template <typename C, typename R,typename T>
-		void registerNativeVariableMember(
+		void registerNativeMemberVariable(
 				const char *var_name
 				, R T::*var_pointer
 				 , const char *registered_file=""

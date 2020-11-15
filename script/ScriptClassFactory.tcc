@@ -304,7 +304,7 @@ namespace zetscript{
 						params.push_back(*((FunctionParam *) script_function->params->items[j]));
 					}
 
-					this_class->registerMemberFunction(
+					this_class->registerNativeMemberFunction(
 						script_function->symbol.file,
 						script_function->symbol.line,
 						script_function->symbol.name,
@@ -316,7 +316,7 @@ namespace zetscript{
 
 				}else{ // register built-in variable member
 
-					this_class->registerNativeVariableMember(
+					this_class->registerNativeMemberVariable(
 							symbol_src->file
 							,symbol_src->line
 							,symbol_src->name
@@ -342,7 +342,7 @@ namespace zetscript{
 	 */
 	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
 	template <typename C, typename R,typename T>
-	void ScriptClassFactory::registerNativeVariableMember(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
+	void ScriptClassFactory::registerNativeMemberVariable(const char *var_name, R T::*var_pointer, const char *registered_file,int registered_line) //unsigned int offset)
 	{
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
@@ -369,13 +369,14 @@ namespace zetscript{
 		}
 
 		// register variable...
-		c_class->registerNativeVariableMember(
+		c_class->registerNativeMemberVariable(
 				 registered_file
 				,registered_line
 				,var_name
 				,var_type
 				,ref_ptr
 				,SYMBOL_PROPERTY_C_OBJECT_REF
+
 		);
 	}
 
@@ -413,13 +414,15 @@ namespace zetscript{
 
 
 		// register variable...
-		c_class->registerNativeVariableMember(
+		c_class->registerNativeMemberVariable(
 				 registered_file
 				,registered_line
 				,var_name
 				,var_type
 				,(zs_int)var_pointer
 				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST
+
+
 		);
 	}
 
@@ -474,7 +477,7 @@ namespace zetscript{
 		ref_ptr=((zs_int)function_proxy_factory->newProxyMemberFunction<C>(arg.size(),function_type));
 
 		// register member function...
-		Symbol *symbol = sc->registerMemberFunction(
+		Symbol *symbol = sc->registerNativeMemberFunction(
 				 registered_file
 				,registered_line
 				,function_name
@@ -552,7 +555,7 @@ namespace zetscript{
 		ref_ptr=(zs_int)function_ptr;
 
 		// register member function...
-		Symbol * symbol_sf = c_class->registerMemberFunction(
+		Symbol * symbol_sf = c_class->registerNativeMemberFunction(
 				 registered_file
 				,registered_line
 				,function_name
@@ -677,7 +680,7 @@ namespace zetscript{
 		ref_ptr=(zs_int)function_type;
 
 		// register member function...
-		c_class->registerMemberFunction(
+		c_class->registerNativeMemberFunction(
 				  registered_file
 				, registered_line
 				, function_name

@@ -50,9 +50,9 @@ namespace zetscript{
 					void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
 
 					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
-				}else if(symbol->properties & (SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST)){
+				}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
 					se->stk_value=NULL;
-					se->var_ref=symbol->ref_ptr;
+					se->var_ref=(void *)symbol->ref_ptr;
 					se->properties=MSK_STACK_ELEMENT_PROPERTY_PTR_STK;
 				}else{
 					VM_SET_USER_ERROR(this->virtual_machine,"internal error: symbol should be static or native var");

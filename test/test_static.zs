@@ -1,6 +1,9 @@
 class A{
-	static a=10;
-	const b=11;
+	//static var a=10 // initialized static var
+	//static var b // unitialized static var
+	const b=11
+	const a=new A(); // a.jjjj();
+	//static var v=11;
 	
 	constructor(){
 		this.a=0; // incorrect -> you should use A::a		
@@ -10,17 +13,26 @@ class A{
 		
 	}
 	
+	print2(){
+		System.print("print2")
+	}
+	
 	
 };
 
-
-static A::print(){
-	System.println("hola ...");
+function a(){
+	
 }
 
-A::b(){
+
+/*static function A::print(){
+	System.println("hola ...");
+}*/
+
+
+function A::b(){
 	this.m=0;
 }
 
-static A  ::   c=0;
-const A::d; // <-- invalid should initialize by =
+//static var A  ::   c
+//const A::d // <-- invalid should initialize by =

@@ -42,12 +42,12 @@ int main(){
 	zs->registerNativeClass<MyClass>("MyClass"); // register MyClass with name MyClass in script side.
 	zs->registerNativeClass<MyClassExtend>("MyClassExtend"); // register MyClassExtend with name MyClassExtend in script side.
 
-	zs->registerNativeVariableMember<MyClass>("data1",&MyClass::data1); // register data1 named data1 in script side as variable member.
+	zs->registerNativeMemberVariable<MyClass>("data1",&MyClass::data1); // register data1 named data1 in script side as variable member.
 	zs->registerNativeMemberFunction<MyClass>("function0",&MyClass::function0); // register function0 named function1 in script side as function member.
 	zs->registerNativeMemberFunction<MyClass>("function1",&MyClass::function1); // register function1 named function1 in script side as function member.
 
 
-	zs->registerNativeVariableMember<MyClassExtend>("data2",&MyClassExtend::data2); // register data2 named data1 in script side as variable member.
+	zs->registerNativeMemberVariable<MyClassExtend>("data2",&MyClassExtend::data2); // register data2 named data1 in script side as variable member.
 	zs->registerNativeMemberFunction<MyClassExtend>("function2",&MyClassExtend::function2); // register function2 named function2 in script side as function member.
 
 

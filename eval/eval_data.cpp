@@ -291,7 +291,7 @@ namespace zetscript{
 
 		char * 	eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * 	eval_keyword_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool check_anonymous_function=false, std::string * function_name_result=NULL);
-		char * 	eval_keyword_var_or_const(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * 	eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * 	eval_keyword_while(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * 	eval_keyword_do_while(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
@@ -724,7 +724,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		typedef enum{
+		/*typedef enum{
 			CLASS_EXTESION_TYPE_UNKNOWN=0,
 			CLASS_EXTESION_TYPE_VARIABLE,
 			CLASS_EXTESION_TYPE_FUNCTION,
@@ -850,7 +850,7 @@ namespace zetscript{
 				}
 			}
 			return class_extension_type;
-		}
+		}*/
 
 		// PROTOTYPES
 		void init(){
@@ -923,9 +923,9 @@ namespace zetscript{
 			// Init keywords...
 
 			eval_data_keywords[KEYWORD_UNKNOWN] = {KEYWORD_UNKNOWN, NULL,NULL};
-			eval_data_keywords[KEYWORD_VAR] = {KEYWORD_VAR,"var",eval_keyword_var_or_const};
-			eval_data_keywords[KEYWORD_CONST] = {KEYWORD_CONST,"const",eval_keyword_var_or_const};
-			eval_data_keywords[KEYWORD_STATIC] = {KEYWORD_STATIC,"static",eval_keyword_static};
+			eval_data_keywords[KEYWORD_VAR] = {KEYWORD_VAR,"var",eval_keyword_var};
+			eval_data_keywords[KEYWORD_CONST] = {KEYWORD_CONST,"const",eval_keyword_var};
+			eval_data_keywords[KEYWORD_STATIC] = {KEYWORD_STATIC,"static",NULL};
 			eval_data_keywords[KEYWORD_IF] = {KEYWORD_IF,"if",eval_keyword_if_else};
 			eval_data_keywords[KEYWORD_ELSE] = {KEYWORD_ELSE,"else"};
 			eval_data_keywords[KEYWORD_FOR] = {KEYWORD_FOR,"for",eval_keyword_for};

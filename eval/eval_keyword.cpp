@@ -1,6 +1,7 @@
 namespace zetscript{
 	namespace eval{
 
+
 		void 	push_function(EvalData *eval_data,ScriptFunction *sf);
 		int  	pop_function(EvalData *eval_data);
 		char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
@@ -8,7 +9,9 @@ namespace zetscript{
 		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function=false);
 		void 	eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start);
 		void 	inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value);
-		char * 	eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+
+		static int n_anonymous_function=0;
 
 		char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol){
 
@@ -19,7 +22,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			// check whwther the function is anonymous or not.
-			aux_p=get_identifier_token(
+			aux_p=get_name_identifier_token(
 					eval_data
 					,aux_p
 					,line
@@ -30,7 +33,7 @@ namespace zetscript{
 			if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
 
 				if((*sc=GET_SCRIPT_CLASS(eval_data,class_name)) != NULL){
-					aux_p=get_identifier_token(
+					aux_p=get_name_identifier_token(
 							eval_data
 							,aux_p+2
 							,line
@@ -56,12 +59,11 @@ namespace zetscript{
 			// check for keyword ...
 			key_w = is_keyword(aux_p);
 
-
 			if(key_w == Keyword::KEYWORD_DELETE){
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
-				aux_p=get_identifier_token(
+				aux_p=get_name_identifier_token(
 						eval_data
 						,aux_p
 						,line
@@ -73,11 +75,10 @@ namespace zetscript{
 				eval_instruction->symbol.scope=scope_info;
 
 				eval_instruction->instruction_source_info=InstructionSourceInfo(
-											 eval_data->current_parsing_file
-											 ,line
-											 ,eval_get_mapped_name(eval_data,symbol_value)
-										);
-
+					 eval_data->current_parsing_file
+					 ,line
+					 ,eval_get_mapped_name(eval_data,symbol_value)
+				);
 
 				eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
 
@@ -110,7 +111,7 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				// check for symbol's name
-				aux_p=get_identifier_token(
+				aux_p=get_name_identifier_token(
 						eval_data
 						,aux_p
 						,line
@@ -124,7 +125,7 @@ namespace zetscript{
 
 				if(strncmp(aux_p, "extends",7)==0 ){ // extension class detected
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+7,line);
-					aux_p=get_identifier_token(
+					aux_p=get_name_identifier_token(
 							eval_data
 							,aux_p
 							,line
@@ -163,16 +164,9 @@ namespace zetscript{
 						key_w = is_keyword(aux_p);
 
 						switch(key_w){
+						case Keyword::KEYWORD_STATIC: // can be a function or symbol
 						case Keyword::KEYWORD_UNKNOWN: // supposes a member function
 								aux_p = eval_keyword_function(
-									eval_data
-									,aux_p
-									, line
-									,sc->symbol_class.scope // pass class scope
-								);
-								break;
-						case Keyword::KEYWORD_STATIC: // can be a function or symbol
-								aux_p = eval_keyword_static(
 									eval_data
 									,aux_p
 									, line
@@ -203,7 +197,6 @@ namespace zetscript{
 					EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '{' to start class declaration\"%s\"",class_name.c_str());
 				}
 			}
-
 			return NULL;
 		}
 		//
@@ -211,6 +204,221 @@ namespace zetscript{
 		//
 		//  KEYWORDS
 		//
+
+		char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+			// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
+			// check for keyword ...
+			char *aux_p = (char *)s;
+			Keyword key_w = is_keyword(s);
+			bool is_static = false;
+			bool is_constant = false;
+
+			// check if static...
+			/*if(key_w==Keyword::KEYWORD_STATIC){
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+				is_static=true;
+				key_w=is_keyword(aux_p);
+			}*/
+			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
+
+				is_constant=key_w == Keyword::KEYWORD_CONST;
+
+				int start_line=0;
+				char *start_var,*end_var;
+				ScriptClass *sc=NULL;
+				std::string s_aux,variable_name;
+				Symbol *symbol_variable;
+
+				/*if(is_static &&  key_w == Keyword::KEYWORD_CONST){
+					EVAL_ERROR(eval_data->current_parsing_file,line,"invalid static const");
+				}*/
+
+				// check class scope...
+				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+					&& scope_info->scope_base == scope_info
+					&& scope_info->scope_parent == NULL // class
+				){
+					sc=scope_info->script_class;
+				}
+
+				if(is_constant){ // scope_info will be global scope...
+					if(!(sc!=NULL || eval_data->current_function->script_function->symbol.scope == MAIN_SCOPE(eval_data))){
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Static or constant vars must be declared in class or as global");
+					}
+
+					// always static or constant are global symbols...
+					scope_info = MAIN_SCOPE(eval_data);
+
+					/*if(sc!=NULL){
+						pre_symbol=sc->symbol_class.name+"::";
+					}*/
+
+				}/*else if(sc!=NULL){
+					EVAL_ERROR(eval_data->current_parsing_file,line,"Class \"%s\": Unexpected \"var\" keyword",sc->symbol_class.name.c_str());
+				}*/
+
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+				bool new_variable=false;
+
+
+				do{ // JE: added multivar feature.
+
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+					start_var=aux_p;
+					start_line = line;
+					Symbol *sybol_variable;
+
+					line = start_line;
+
+					// check whwther the function is anonymous with a previous arithmetic operation ....
+					end_var=get_name_identifier_token(
+							eval_data,
+							aux_p,
+							line,
+							variable_name
+					);
+
+					ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
+
+					Keyword keyw = is_keyword(variable_name.c_str());
+
+					if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_data_keywords[keyw].str);
+					}
+
+					// register symbol...
+
+
+					if(sc == NULL){
+						symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
+							scope_info
+							,eval_data->current_parsing_file
+							, line
+							, variable_name
+							, is_constant ? SYMBOL_PROPERTY_CONST : 0
+						);
+					}else{
+
+						// register constant in class...
+						if(sc != NULL){
+							symbol_variable=sc->registerMemberVariable(
+								 eval_data->current_parsing_file
+								,line
+								,variable_name
+								, is_constant ? SYMBOL_PROPERTY_CONST : 0
+							);
+						}
+					}
+
+
+
+					// advance identifier length chars
+					aux_p=end_var;
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					if(*aux_p == '='){
+
+						std::vector<EvalInstruction *>	 		constant_instructions;
+						// try to evaluate expression...
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+						if((aux_p = eval_expression(
+							eval_data
+							,is_constant?(aux_p+1):start_var
+							,start_line
+							,scope_info
+							,eval_data->current_function->instructions
+							//,std::vector<char>{','}
+						))==NULL){
+							return NULL;
+						}
+
+						/*if(is_constant){ // resolve constant_expression
+
+							ConstantValue *stk_op1,*stk_op2,*stk_int_calc_result;
+							std::vector<zs_int> stack; // constant/vectors or dictionaries...
+							std::vector<zs_int> inter_calc_stack; // constant/vectors or dictionaries...
+
+							// let's fun evalute, an expression throught its op codes...
+							EvalInstruction **it=&constant_instructions[0];
+							size_t size=constant_instructions.size();
+							for(unsigned i=0; i < size; i++,it++){
+								Instruction *instruction=&(*it)->vm_instruction;
+								if(instruction->byte_code == BYTE_CODE_LOAD_TYPE_CONSTANT){
+									stack.push_back(instruction->value_op2);
+								}else{ // expect operation ?
+
+									if(stack.size()<2){
+										EVAL_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error expected >= 3 stacks for constant");
+									}
+
+									stk_op1=(ConstantValue *)stack[stack.size()-2];
+									stk_op2=(ConstantValue *)stack[stack.size()-1];
+									stack.pop_back(); // op2
+									stack.pop_back(); // op1
+
+									stk_int_calc_result=perform_const_operation(
+										eval_data
+										,(*it)->instruction_source_info.line
+										,instruction->byte_code
+										,stk_op1
+										,stk_op2
+									);
+
+									stack.push_back((zs_int)stk_int_calc_result);
+									inter_calc_stack.push_back((zs_int)stk_int_calc_result);
+								}
+							}
+
+							if(stack.size()!=1){
+								EVAL_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error: final stack should be 1");
+							}
+
+							stk_int_calc_result = (ConstantValue *)stack[0];
+
+							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){
+								printf("constant %i\n",(int)((zs_int)stk_int_calc_result->stk_value));
+							}
+
+							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
+								printf("constant %f\n",*((float *)&stk_int_calc_result->stk_value));
+							}
+
+							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+								printf("constant %s\n",((std::string *)stk_int_calc_result)->c_str());
+							}
+
+							for(unsigned i=0; i < constant_instructions.size();i++){
+								delete constant_instructions[i];
+							}
+
+							for(unsigned i=0; i < inter_calc_stack.size();i++){
+								free((void *)inter_calc_stack[i]);
+							}
+						}*/
+
+						line = start_line;
+					}
+					else{
+						if(is_constant){
+							EVAL_ERROR(eval_data->current_parsing_file,line,"Uninitialized constant symbol %s%s"
+									,sc!=NULL?zs_strutils::format("::%s",sc->symbol_class.name.c_str()).c_str():""
+									,variable_name.c_str());
+						}
+					}
+					new_variable=false;
+					if(*aux_p == ','){
+						new_variable=true;
+						aux_p++;
+					}
+				}while(new_variable);
+
+				return aux_p;
+			}
+			return NULL;
+		}
+
 		char * eval_keyword_function(
 				EvalData *eval_data
 				, const char *s
@@ -221,12 +429,19 @@ namespace zetscript{
 			){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-			char *aux_p = (char *)s;
-			Keyword key_w;
-			size_t advance_chars=0;
 			ScriptClass *sc=NULL; // if NULL it suposes is the main
+			char *aux_p = (char *)s;
+			Keyword key_w=is_keyword(aux_p);
+			bool is_static = false;
 
-
+			// check if static...
+			if(key_w==Keyword::KEYWORD_STATIC){
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+				is_static=true;
+				key_w=is_keyword(aux_p);
+			}
+			//Keyword key_w;
+			//
 			// check for keyword ...
 			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
 				&& scope_info->scope_base == scope_info
@@ -237,13 +452,17 @@ namespace zetscript{
 			}
 			else{
 				key_w = is_keyword(aux_p);
-				advance_chars=strlen(eval_data_keywords[key_w].str);
+				//advance_chars=strlen(eval_data_keywords[key_w].str);
 			}
 
-			if(key_w == Keyword::KEYWORD_FUNCTION){
+			if(is_keyword(s) == Keyword::KEYWORD_FUNCTION){
+				FunctionParam arg_info;
+				bool var_args=false;
+				int n_arg=0;
+				char *end_var = NULL;
+				std::string arg_value;
+				//size_t advance_chars=0;
 
-
-				char *end_var=NULL;
 
 				std::vector<FunctionParam> args;
 				std::string conditional_str;
@@ -251,10 +470,17 @@ namespace zetscript{
 
 				Symbol * irv=NULL;
 
-				static int n_anonymous_function=0;
+
 				std::string function_name="";
 				//Scope *scope=scope_info;
 				bool is_anonymous=false;
+
+				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+					&& scope_info->scope_base == scope_info
+					&& scope_info->scope_parent == NULL // is function member
+					){
+					sc=scope_info->script_class;
+				}
 
 				//std::string arg_value;
 				//FunctionParam arg_info;
@@ -263,7 +489,7 @@ namespace zetscript{
 				ScriptFunction *sf=NULL;
 
 				// advance keyword...
-				aux_p += advance_chars;
+				//aux_p += advance_chars;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				bool named_function = *aux_p!='(';
@@ -292,7 +518,7 @@ namespace zetscript{
 					// not member function, so is normal function ...
 					if(end_var == NULL){ // global function
 						// check whwther the function is anonymous with a previous arithmetic operation ....
-						end_var=get_identifier_token(
+						end_var=get_name_identifier_token(
 								eval_data
 								,aux_p
 								,line
@@ -325,17 +551,65 @@ namespace zetscript{
 				}
 
 				// save scope pointer for function args ...
-				//aux_p++;
-				//IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+				aux_p++;
+				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				//bool var_args=false;
 
-				// grab words separated by ,
-				if((aux_p=eval_args_function(eval_data,aux_p,line,&args))==NULL){
-					return NULL;
+				aux_p++;
+
+				while(*aux_p != 0 && *aux_p != ')' && !var_args){
+					arg_info.by_ref=false;
+					arg_info.var_args=false;
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+					if(n_arg>0){
+						if(*aux_p != ','){
+							EVAL_ERROR(eval_data->current_parsing_file,line,"Expected ',' ");
+						}
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+					}
+
+					if(*aux_p == ')' || *aux_p == ','){
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Expected arg");
+					}
+
+					// capture line where argument is...
+					arg_info.line=line;
+
+					if(*aux_p=='.' && *(aux_p+1)=='.' && *(aux_p+2)=='.'){// is_keyword(aux_p)==KEYWORD_REF){
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
+						var_args=arg_info.var_args =true;
+					}else if(is_keyword(aux_p)==KEYWORD_REF){
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[KEYWORD_REF].str),line);
+						arg_info.by_ref =true;
+					}
+
+
+					//int m_start_arg=line;
+					end_var=get_name_identifier_token(
+							 eval_data
+							,aux_p
+							,line
+							,arg_value
+					);
+
+					// copy value
+					zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var);
+					// ok register symbol into the object function ...
+					arg_info.arg_name=arg_value;
+					args.push_back(arg_info);
+
+
+					aux_p=end_var;
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				}
 
-				//aux_p++;
+				// grab words separated by ,
+				/*if((aux_p=eval_args_function(eval_data,aux_p,line,&args))==NULL){
+					return NULL;
+				}*/
+
+				aux_p++;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if(*aux_p != '{'){
@@ -360,6 +634,10 @@ namespace zetscript{
 							,function_name
 							,args
 					);
+
+					if(is_static){
+						symbol_sf->properties|=SYMBOL_PROPERTY_STATIC;
+					}
 				}
 				else{ // register as local variable in the function...
 					symbol_sf=eval_data->current_function->script_function->registerLocalFunction(
@@ -373,7 +651,6 @@ namespace zetscript{
 					if(scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
 						symbol_sf->properties|=SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS;
 					}
-
 				}
 
 				sf=(ScriptFunction *)symbol_sf->ref_ptr;
@@ -1127,7 +1404,10 @@ namespace zetscript{
 				if(op2==0){
 					EVAL_ERROR(file,line,"divide by 0");
 				}
-				result_op=fmod(result_op,op2);
+
+
+				result_op=fmod(result_op,op2);+¡
+				`¡^Ñ
 				break;
 			default:
 				EVAL_ERROR(file,line,"const instruction %i not implemented",byte_code);
@@ -1151,207 +1431,30 @@ namespace zetscript{
 			ScriptClass *sc=NULL;
 
 			// check class scope...
-			if(key_w == Keyword::KEYWORD_STATIC){
-				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+			if(is_keyword(aux_p)==Keyword::KEYWORD_STATIC){
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[Keyword::KEYWORD_STATIC].str),line);
+
+				key_w=is_keyword(aux_p);
+
+				if(key_w == Keyword::KEYWORD_FUNCTION){
+					return eval_keyword_function(eval_data,s,line,scope_info);
+				}
+
+				else if(key_w == Keyword::KEYWORD_VAR){
+					return eval_keyword_var(eval_data,s,line,scope_info);
+				}else{ // not supported
+					EVAL_ERROR(eval_data->current_parsing_file,line,"expected \"var\" or \"function\" after \"static\"");
+				}
+				/*if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
 					&& scope_info->scope_base == scope_info
 					&& scope_info->scope_parent == NULL // class
 					){
 					sc=scope_info->script_class;
-				}
-
-
-			}
-
-			return NULL;
-		}
-
-		char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
-			// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
-			// check for keyword ...
-			Keyword key_w = is_keyword(s);
-
-			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST || key_w == Keyword::KEYWORD_STATIC){ // possible variable...
-				char *aux_p = (char *)s;
-				int start_line=0;
-				char *start_var,*end_var;
-				ScriptClass *sc=NULL;
-				std::string s_aux,variable_name;
-
-				// check class scope...
-				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-					&& scope_info->scope_base == scope_info
-					&& scope_info->scope_parent == NULL // class
-					){
-					sc=scope_info->script_class;
-				}
-
-				bool is_constant_or_static = key_w == Keyword::KEYWORD_CONST || key_w == Keyword::KEYWORD_STATIC;
-				if(is_constant_or_static){ // scope_info will be global scope...
-
-					if(sc==NULL || eval_data->current_function->script_function->symbol.scope != MAIN_SCOPE(eval_data)){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Static or constant vars must be declared in class or as global");
-					}
-
-					// always static or constant are global symbols...
-					scope_info = MAIN_SCOPE(eval_data);
-				}/*else if(sc!=NULL){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"Class \"%s\": Unexpected \"var\" keyword",sc->symbol_class.name.c_str());
 				}*/
 
-				aux_p += strlen(eval_data_keywords[key_w].str);
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-				bool new_variable=false;
-
-
-				do{ // JE: added multivar feature.
-
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-					start_var=aux_p;
-					start_line = line;
-					Symbol *symbol_variable;
-
-					line = start_line;
-
-					// check whwther the function is anonymous with a previous arithmetic operation ....
-					end_var=get_identifier_token(
-							eval_data,
-							aux_p,
-							line,
-							variable_name
-					);
-
-					ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
-
-					Keyword keyw = is_keyword(variable_name.c_str());
-
-					if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_data_keywords[keyw].str);
-					}
-
-					// register symbol...
-
-
-					symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
-						scope_info
-						,eval_data->current_parsing_file
-						, line
-						, variable_name
-					);
-
-					if(sc != NULL){
-						symbol_variable=sc->addStaticSymbol(
-							scope_info
-							,eval_data->current_parsing_file
-							,line
-							,variable_name
-						);
-					}
-
-
-
-					// advance identifier length chars
-					aux_p=end_var;
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-					if(*aux_p == '='){
-
-						std::vector<EvalInstruction *>	 		constant_instructions;
-						// try to evaluate expression...
-						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-						if((aux_p = eval_expression(
-							eval_data
-							,is_constant?(aux_p+1):start_var
-							,start_line
-							,scope_info
-							,eval_data->current_function->instructions
-							//,std::vector<char>{','}
-						))==NULL){
-							return NULL;
-						}
-
-						/*if(is_constant){ // resolve constant_expression
-
-							ConstantValue *stk_op1,*stk_op2,*stk_int_calc_result;
-							std::vector<zs_int> stack; // constant/vectors or dictionaries...
-							std::vector<zs_int> inter_calc_stack; // constant/vectors or dictionaries...
-
-							// let's fun evalute, an expression throught its op codes...
-							EvalInstruction **it=&constant_instructions[0];
-							size_t size=constant_instructions.size();
-							for(unsigned i=0; i < size; i++,it++){
-								Instruction *instruction=&(*it)->vm_instruction;
-								if(instruction->byte_code == BYTE_CODE_LOAD_TYPE_CONSTANT){
-									stack.push_back(instruction->value_op2);
-								}else{ // expect operation ?
-
-									if(stack.size()<2){
-										EVAL_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error expected >= 3 stacks for constant");
-									}
-
-									stk_op1=(ConstantValue *)stack[stack.size()-2];
-									stk_op2=(ConstantValue *)stack[stack.size()-1];
-									stack.pop_back(); // op2
-									stack.pop_back(); // op1
-
-									stk_int_calc_result=perform_const_operation(
-										eval_data
-										,(*it)->instruction_source_info.line
-										,instruction->byte_code
-										,stk_op1
-										,stk_op2
-									);
-
-									stack.push_back((zs_int)stk_int_calc_result);
-									inter_calc_stack.push_back((zs_int)stk_int_calc_result);
-								}
-							}
-
-							if(stack.size()!=1){
-								EVAL_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error: final stack should be 1");
-							}
-
-							stk_int_calc_result = (ConstantValue *)stack[0];
-
-							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){
-								printf("constant %i\n",(int)((zs_int)stk_int_calc_result->stk_value));
-							}
-
-							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
-								printf("constant %f\n",*((float *)&stk_int_calc_result->stk_value));
-							}
-
-							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
-								printf("constant %s\n",((std::string *)stk_int_calc_result)->c_str());
-							}
-
-							for(unsigned i=0; i < constant_instructions.size();i++){
-								delete constant_instructions[i];
-							}
-
-							for(unsigned i=0; i < inter_calc_stack.size();i++){
-								free((void *)inter_calc_stack[i]);
-							}
-						}*/
-
-						line = start_line;
-					}
-					else{
-						if(is_constant){
-							EVAL_ERROR(eval_data->current_parsing_file,line,"Uninitialized constant symbol %s%s"
-									,sc!=NULL?zs_strutils::format("::%s",sc->symbol_class.name.c_str()).c_str():""
-									,variable_name.c_str());
-						}
-					}
-					new_variable=false;
-					if(*aux_p == ','){
-						new_variable=true;
-						aux_p++;
-					}
-				}while(new_variable);
-
-				return aux_p;
 			}
+
 			return NULL;
 		}
 

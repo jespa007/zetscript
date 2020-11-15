@@ -20,9 +20,9 @@ namespace zetscript{
 
 		Symbol 			symbol_class;		// info symbol class
 
-		//zs_vector *symbol_members_static; // register a collection of symbols to be deleted at the end...
+		zs_vector *symbol_members_static; // register a collection of symbols to be deleted at the end...
 		zs_vector *symbol_members; // a list of pre-registered C symbols to be added as stack element properties when class is instanced through scriptvar ( see ScriptObject::createSymbols)
-		zs_vector *symbol_members_built_in; // register a collection of symbols to be deleted at the end...
+		zs_vector *symbol_members_built_in; // it has static/const and internal of symbols. Only is destroyed when deletes the class...
 		//zs_vector *function_members; // a list of function members (script as well as registered native functions) to be registered on create any scriptvar, see ScriptObject::createSymbols)
 
 		//------------- VARIABLES STRUCT ---------------
@@ -39,12 +39,19 @@ namespace zetscript{
 		 ScriptClass(ZetScript *_zs,ClassTypeIdx _idx_class);
 
 		Symbol				* 	registerMemberVariable(
-				const std::string & file
-				, short line
-				,const std::string & var_name
-				,const std::string & str_native_type
-				,zs_int ref_ptr // it should pass reference always because is built-in
-				, unsigned short properties
+			 const std::string & file
+			,short line
+			,const std::string & symbol_name
+			,unsigned short symbol_properties
+		);
+
+		Symbol				* 	registerNativeMemberVariable(
+			const std::string & file
+			,short line
+			,const std::string & symbol_name
+			,const std::string & str_native_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_properties
 		);
 
 		Symbol *	getSuperFunctionSymbol(Symbol *symbol);
@@ -56,9 +63,19 @@ namespace zetscript{
 				, short line
 				,const std::string & function_name
 				, std::vector<FunctionParam> args={}
+				, unsigned short properties=0
+
+		);
+
+		Symbol				* 	registerNativeMemberFunction(
+				const std::string & file
+				, short line
+				,const std::string & function_name
+				, std::vector<FunctionParam> args={}
 				, int idx_return_type=ZS_IDX_UNDEFINED
 				,zs_int ref_ptr=0
 				, unsigned short properties=0
+
 		);
 
 		//Symbol				* 	getMemberFunction(const std::string & function_name, unsigned int n_args);
@@ -72,6 +89,25 @@ namespace zetscript{
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
+
+		Symbol				* 	registerInternalMemberVariable(
+			const std::string & file
+			, short line
+			,const std::string & symbol_name
+			, unsigned short properties
+			,const std::string & str_native_type=""
+			,zs_int ref_ptr=0 // it's the offset from pointer or a pointer directly
+		);
+
+		Symbol				* 	registerInternalMemberFunction(
+			const std::string & file
+			, short line
+			,const std::string & function_name
+			, std::vector<FunctionParam> args
+			, unsigned short properties=0
+			, int idx_return_type=ZS_IDX_UNDEFINED
+			,zs_int ref_ptr=0
+		);
 		//zs_map *num_native_functions;
 	};
 }

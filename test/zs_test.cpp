@@ -827,7 +827,7 @@ int main(int argc, char * argv[]) {
 
 	zs->registerMemberFunction<CFloat>("CFloat",static_cast<void (CFloat::*)(float *)>(&CFloat::_set));
 	zs->registerMemberFunction<CFloat>("toFloat",&CFloat::toFloat);
-	zs->registerVariableMember<CFloat>("n",&CFloat::n);
+	zs->registerMemberVariable<CFloat>("n",&CFloat::n);
 
 
 	zs->registerMemberFunctionStatic<CFloat>("_add",static_cast<CFloat * (*)(float *,CFloat * )>(&CFloat::_add));
@@ -855,7 +855,7 @@ int main(int argc, char * argv[]) {
 	zs->registerClass<CInteger>("CInteger");
 	zs->registerMemberFunction<CInteger>("CInteger",&CInteger::ScriptConstructor);
 	zs->registerMemberFunction<CInteger>("toInt",&CInteger::toInt);
-	zs->registerVariableMember<CInteger>("n",&CInteger::n);
+	zs->registerMemberVariable<CInteger>("n",&CInteger::n);
 
 
 	zs->registerMemberFunctionStatic<CInteger>("_add",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_add));
