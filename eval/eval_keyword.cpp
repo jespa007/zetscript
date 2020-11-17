@@ -77,7 +77,7 @@ namespace zetscript{
 				eval_instruction->instruction_source_info=InstructionSourceInfo(
 					 eval_data->current_parsing_file
 					 ,line
-					 ,eval_get_mapped_name(eval_data,symbol_value)
+					 ,get_mapped_name(eval_data,symbol_value)
 				);
 
 				eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
@@ -184,6 +184,11 @@ namespace zetscript{
 						default:
 							EVAL_ERROR(eval_data->current_parsing_file,line,"unexpected keyword \"%s\" in class declaration \"%s\"",eval_data_keywords[key_w].str,class_name.c_str());
 						}
+
+						if(aux_p == NULL){
+							return NULL;
+						}
+
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					}
 
@@ -221,17 +226,14 @@ namespace zetscript{
 			}*/
 			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
 
-				is_constant=key_w == Keyword::KEYWORD_CONST;
-
 				int start_line=0;
 				char *start_var,*end_var;
 				ScriptClass *sc=NULL;
-				std::string s_aux,variable_name;
+				std::string s_aux,variable_name,pre_variable_name="";
 				Symbol *symbol_variable;
+				is_constant=key_w == Keyword::KEYWORD_CONST;
 
-				/*if(is_static &&  key_w == Keyword::KEYWORD_CONST){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"invalid static const");
-				}*/
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				// check class scope...
 				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
@@ -239,35 +241,35 @@ namespace zetscript{
 					&& scope_info->scope_parent == NULL // class
 				){
 					sc=scope_info->script_class;
+
+					if(is_constant == false){
+						EVAL_ERROR(eval_data->current_parsing_file,line," unexpected \"var\" keyword in class");
+					}
+
+					pre_variable_name=sc->symbol_class.name+"::";
 				}
 
 				if(is_constant){ // scope_info will be global scope...
-					if(!(sc!=NULL || eval_data->current_function->script_function->symbol.scope == MAIN_SCOPE(eval_data))){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Static or constant vars must be declared in class or as global");
+					if(!(sc!=NULL || scope_info == MAIN_SCOPE(eval_data))){
+						EVAL_ERROR(eval_data->current_parsing_file,line,"\"const\" is allowed only in class or global");
 					}
 
 					// always static or constant are global symbols...
 					scope_info = MAIN_SCOPE(eval_data);
-
-					/*if(sc!=NULL){
-						pre_symbol=sc->symbol_class.name+"::";
-					}*/
-
-				}/*else if(sc!=NULL){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"Class \"%s\": Unexpected \"var\" keyword",sc->symbol_class.name.c_str());
-				}*/
-
-
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
-				bool new_variable=false;
+				}
 
 
 				do{ // JE: added multivar feature.
 
+					if(*aux_p == ','){ // is new variable
+						aux_p++;
+					}
+
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
 					start_var=aux_p;
 					start_line = line;
-					Symbol *sybol_variable;
+				//	Symbol *sybol_variable;
 
 					line = start_line;
 
@@ -288,29 +290,27 @@ namespace zetscript{
 					}
 
 					// register symbol...
-
-
-					if(sc == NULL){
+					try{
 						symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
 							scope_info
-							,eval_data->current_parsing_file
+							, eval_data->current_parsing_file
 							, line
-							, variable_name
-							, is_constant ? SYMBOL_PROPERTY_CONST : 0
+							, pre_variable_name+variable_name
 						);
-					}else{
 
-						// register constant in class...
 						if(sc != NULL){
-							symbol_variable=sc->registerMemberVariable(
+							Symbol *const_symbol=sc->registerMemberVariable(
 								 eval_data->current_parsing_file
 								,line
 								,variable_name
-								, is_constant ? SYMBOL_PROPERTY_CONST : 0
+								,is_constant?SYMBOL_PROPERTY_CONST:0
 							);
-						}
-					}
 
+							const_symbol->ref_ptr=symbol_variable->ref_ptr;
+						}
+					}catch(std::exception & ex){
+						EVAL_ERROR(eval_data->current_parsing_file,line,ex.what());
+					}
 
 
 					// advance identifier length chars
@@ -320,99 +320,52 @@ namespace zetscript{
 					if(*aux_p == '='){
 
 						std::vector<EvalInstruction *>	 		constant_instructions;
+
 						// try to evaluate expression...
-						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+						if(is_constant){ // load constant...
+							EvalInstruction *eval_instruction;
+							eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(
+								BYTE_CODE_LOAD_TYPE_VARIABLE
+							));
+
+							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
+							eval_instruction->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, pre_variable_name+variable_name);
+							eval_instruction->symbol.name=pre_variable_name+variable_name;
+							eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
+						}
 
 						if((aux_p = eval_expression(
 							eval_data
-							,is_constant?(aux_p+1):start_var
+							,is_constant?aux_p+1:start_var
 							,start_line
 							,scope_info
-							,eval_data->current_function->instructions
-							//,std::vector<char>{','}
+							,&eval_data->current_function->instructions
+							,{}
+							,0
+							,false
 						))==NULL){
 							return NULL;
 						}
 
-						/*if(is_constant){ // resolve constant_expression
-
-							ConstantValue *stk_op1,*stk_op2,*stk_int_calc_result;
-							std::vector<zs_int> stack; // constant/vectors or dictionaries...
-							std::vector<zs_int> inter_calc_stack; // constant/vectors or dictionaries...
-
-							// let's fun evalute, an expression throught its op codes...
-							EvalInstruction **it=&constant_instructions[0];
-							size_t size=constant_instructions.size();
-							for(unsigned i=0; i < size; i++,it++){
-								Instruction *instruction=&(*it)->vm_instruction;
-								if(instruction->byte_code == BYTE_CODE_LOAD_TYPE_CONSTANT){
-									stack.push_back(instruction->value_op2);
-								}else{ // expect operation ?
-
-									if(stack.size()<2){
-										EVAL_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error expected >= 3 stacks for constant");
-									}
-
-									stk_op1=(ConstantValue *)stack[stack.size()-2];
-									stk_op2=(ConstantValue *)stack[stack.size()-1];
-									stack.pop_back(); // op2
-									stack.pop_back(); // op1
-
-									stk_int_calc_result=perform_const_operation(
-										eval_data
-										,(*it)->instruction_source_info.line
-										,instruction->byte_code
-										,stk_op1
-										,stk_op2
-									);
-
-									stack.push_back((zs_int)stk_int_calc_result);
-									inter_calc_stack.push_back((zs_int)stk_int_calc_result);
-								}
-							}
-
-							if(stack.size()!=1){
-								EVAL_ERROR(eval_data->current_parsing_file,(*it)->instruction_source_info.line,"internal error: final stack should be 1");
-							}
-
-							stk_int_calc_result = (ConstantValue *)stack[0];
-
-							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){
-								printf("constant %i\n",(int)((zs_int)stk_int_calc_result->stk_value));
-							}
-
-							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
-								printf("constant %f\n",*((float *)&stk_int_calc_result->stk_value));
-							}
-
-							if(stk_int_calc_result->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
-								printf("constant %s\n",((std::string *)stk_int_calc_result)->c_str());
-							}
-
-							for(unsigned i=0; i < constant_instructions.size();i++){
-								delete constant_instructions[i];
-							}
-
-							for(unsigned i=0; i < inter_calc_stack.size();i++){
-								free((void *)inter_calc_stack[i]);
-							}
-						}*/
+						if(is_constant){ // make ptr as constant after variable is saved
+							eval_data->current_function->instructions.push_back(new EvalInstruction(
+								BYTE_CODE_STORE_CONST
+							));
+						}
 
 						line = start_line;
 					}
-					else{
-						if(is_constant){
-							EVAL_ERROR(eval_data->current_parsing_file,line,"Uninitialized constant symbol %s%s"
-									,sc!=NULL?zs_strutils::format("::%s",sc->symbol_class.name.c_str()).c_str():""
-									,variable_name.c_str());
-						}
+					else if(is_constant){
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Uninitialized constant symbol %s%s"
+								,sc!=NULL?zs_strutils::format("::%s",sc->symbol_class.name.c_str()).c_str():""
+								,variable_name.c_str());
 					}
-					new_variable=false;
-					if(*aux_p == ','){
-						new_variable=true;
-						aux_p++;
-					}
-				}while(new_variable);
+
+				}while(*aux_p == ','); // is new variable
+
+				if(*aux_p == ';'){
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+				}
 
 				return aux_p;
 			}
@@ -446,7 +399,7 @@ namespace zetscript{
 			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
 				&& scope_info->scope_base == scope_info
 				&& scope_info->scope_parent == NULL // is function member
-				){
+				){ // class members are defined as functions
 				key_w = Keyword::KEYWORD_FUNCTION;
 				sc=scope_info->script_class;
 			}
@@ -455,7 +408,7 @@ namespace zetscript{
 				//advance_chars=strlen(eval_data_keywords[key_w].str);
 			}
 
-			if(is_keyword(s) == Keyword::KEYWORD_FUNCTION){
+			if(key_w == Keyword::KEYWORD_FUNCTION){
 				FunctionParam arg_info;
 				bool var_args=false;
 				int n_arg=0;
@@ -464,7 +417,7 @@ namespace zetscript{
 				//size_t advance_chars=0;
 
 
-				std::vector<FunctionParam> args;
+				std::vector<FunctionParam> args={};
 				std::string conditional_str;
 				Symbol *symbol_sf=NULL;
 
@@ -547,22 +500,17 @@ namespace zetscript{
 
 				// eval function args...
 				if(*aux_p != '('){ // push arguments...
-					EVAL_ERROR(eval_data->current_parsing_file,line,"Expected open '(' for function");
+					EVAL_ERROR(eval_data->current_parsing_file,line,"Expected open '(' function");
 				}
 
 				// save scope pointer for function args ...
-				aux_p++;
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-				//bool var_args=false;
-
-				aux_p++;
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 				while(*aux_p != 0 && *aux_p != ')' && !var_args){
 					arg_info.by_ref=false;
 					arg_info.var_args=false;
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-					if(n_arg>0){
+					if(args.size()>0){
 						if(*aux_p != ','){
 							EVAL_ERROR(eval_data->current_parsing_file,line,"Expected ',' ");
 						}
@@ -584,13 +532,12 @@ namespace zetscript{
 						arg_info.by_ref =true;
 					}
 
-
 					//int m_start_arg=line;
 					end_var=get_name_identifier_token(
-							 eval_data
-							,aux_p
-							,line
-							,arg_value
+						 eval_data
+						,aux_p
+						,line
+						,arg_value
 					);
 
 					// copy value
@@ -598,7 +545,6 @@ namespace zetscript{
 					// ok register symbol into the object function ...
 					arg_info.arg_name=arg_value;
 					args.push_back(arg_info);
-
 
 					aux_p=end_var;
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -633,11 +579,9 @@ namespace zetscript{
 							,line
 							,function_name
 							,args
+							,is_static?SYMBOL_PROPERTY_STATIC:0
 					);
 
-					if(is_static){
-						symbol_sf->properties|=SYMBOL_PROPERTY_STATIC;
-					}
 				}
 				else{ // register as local variable in the function...
 					symbol_sf=eval_data->current_function->script_function->registerLocalFunction(
@@ -1068,7 +1012,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						// init it and vector/dictionary
+						// init it and vector/object
 						EVAL_ERROR(eval_data->current_parsing_file,line,"CREATE ITERATOR TODOOO ");
 						//eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_IT_INI));
 					}
@@ -1340,9 +1284,6 @@ namespace zetscript{
 							// update all jmp acording number of cases found...
 							inc_jmp_codes(eval_data, idx_start_switch, idx_current_instruction, (int)(ei_cases.size()));
 
-
-
-
 							return aux_p+1;
 						}
 						else{
@@ -1404,8 +1345,6 @@ namespace zetscript{
 				if(op2==0){
 					EVAL_ERROR(file,line,"divide by 0");
 				}
-
-
 				result_op=fmod(result_op,op2);+¡
 				`¡^Ñ
 				break;

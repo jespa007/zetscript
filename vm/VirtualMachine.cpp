@@ -251,24 +251,25 @@ namespace zetscript{
 
 	VirtualMachine::~VirtualMachine(){
 		// destroy c variable scripts
-		ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
+		/*ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
+		StackElement *stk_it=&vm_stack[0];
 
 		// clear all symbols except c variables/functions ...
 		for (int v = 0;
 			 v<main_function->registered_symbols->count;
-			 v++) {
+			 v++ ,stk_it++) {
 			Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
 			if (((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF)
 			) {
 				// if is variable we should delete
 				//main_function->registered_symbols->pop_back();
-				StackElement *stk=&vm_stack[v];
+				StackElement *stk=stk_it++;
 
 				if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 					stk=(StackElement *)stk->var_ref;
 				}
 
-				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk->properties)){
+				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_it->properties)){
 				default:
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
@@ -285,7 +286,9 @@ namespace zetscript{
 
 				}
 			}
-		}
+
+
+		}*/
 	}
 }
 

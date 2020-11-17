@@ -421,27 +421,21 @@ namespace zetscript{
 					v >= idx_start;
 					v--) {
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
-				if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
+				ScriptObject *var = NULL;
 
-					//StackElement *ptr_ale =&this->virtual_machine->vm_stack[v];
-					ScriptObject *var = NULL;
-
-					if(vm_stk_element->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
-						var =((ScriptObject *)(vm_stk_element->var_ref));
-						if(var){
-							if(var->ptr_shared_pointer_node != NULL){
-								if(!var->unrefSharedPtr(IDX_CALL_STACK_MAIN)){
-									THROW_RUNTIME_ERROR("error clearing variables: %s",this->virtual_machine->getError());
-								}
+				if(vm_stk_element->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+					var =((ScriptObject *)(vm_stk_element->var_ref));
+					if(var){
+						if(var->ptr_shared_pointer_node != NULL){
+							if(!var->unrefSharedPtr(IDX_CALL_STACK_MAIN)){
+								THROW_RUNTIME_ERROR("error clearing variables: %s",this->virtual_machine->getError());
 							}
 						}
 					}
-
-					main_function_object->registered_symbols->pop_back();
-
-					// clear global function/variable
-					*vm_stk_element--={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 				}
+
+				main_function_object->registered_symbols->pop_back();
+				*vm_stk_element--={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 			}
 		}
 

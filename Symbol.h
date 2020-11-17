@@ -12,12 +12,12 @@
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 typedef enum {
-	SYMBOL_PROPERTY_IS_FUNCTION						= 0x1 << 0, // ref_ptr holds script function ptr
-	SYMBOL_PROPERTY_C_OBJECT_REF 					= 0x1 << 1,
-	SYMBOL_PROPERTY_STATIC 							= 0x1 << 2, // C function or C++ static functions
-	SYMBOL_PROPERTY_CONST 							= 0x1 << 3, // This symbol is not assignable
-	SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS		= 0x1 << 4, // will pass object this as first parameter
-	SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME				= 0x1 << 5  // for functions...
+	SYMBOL_PROPERTY_IS_FUNCTION						= 0x1 << 0, // 0x01: ref_ptr holds script function ptr
+	SYMBOL_PROPERTY_C_OBJECT_REF 					= 0x1 << 1, // 0x02:
+	SYMBOL_PROPERTY_STATIC 							= 0x1 << 2, // 0x04: C function or C++ static functions
+	SYMBOL_PROPERTY_CONST 							= 0x1 << 3, // 0x08: This symbol is not assignable
+	SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS		= 0x1 << 4, // 0x10: will pass object this as first parameter
+	SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME				= 0x1 << 5  // 0x20: for functions...
 }SymbolProperty;
 
 namespace zetscript{

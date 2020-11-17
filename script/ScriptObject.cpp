@@ -55,7 +55,7 @@ namespace zetscript{
 					se->var_ref=(void *)symbol->ref_ptr;
 					se->properties=MSK_STACK_ELEMENT_PROPERTY_PTR_STK;
 				}else{
-					VM_SET_USER_ERROR(this->virtual_machine,"internal error: symbol should be static or native var");
+					VM_SET_USER_ERROR(this->virtual_machine,"internal error: symbol should be const or native var");
 					return;
 				}
 			}
@@ -441,7 +441,6 @@ namespace zetscript{
 		map_property_keys->erase(property_name.c_str()); // erase also property key
 
 		return true;
-
 	}
 
 	ScriptClass * ScriptObject::getScriptClass(){

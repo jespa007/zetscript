@@ -2,8 +2,8 @@ namespace zetscript{
 	namespace eval{
 		int n_anonymouse_function=0;
 
-		//std::string * 	eval_get_mapped_name(EvalData *eval_data,const std::string * symbol_name);
-		std::string * eval_get_mapped_name(EvalData *eval_data,const std::string & s);
+		//std::string * 	get_mapped_name(EvalData *eval_data,const std::string * symbol_name);
+		std::string * get_mapped_name(EvalData *eval_data,const std::string & s);
 		char 		*	eval_expression(
 				EvalData *eval_data
 				,const char *s
@@ -11,6 +11,7 @@ namespace zetscript{
 				, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions
 				, std::vector<char>expected_ending_char={} // expecting ending char when expression finish (by default not check or 0)
 				, int level=0
+				, bool add_reset_stack=true
 		);
 
 
@@ -60,7 +61,7 @@ namespace zetscript{
 			eval_instruction->instruction_source_info= InstructionSourceInfo(
 				eval_data->current_parsing_file
 				,line
-				,eval_get_mapped_name(eval_data,token_node->value
+				,get_mapped_name(eval_data,token_node->value
 				)
 			);
 
@@ -79,10 +80,10 @@ namespace zetscript{
 			Keyword keyw;
 
 			if(*aux_p != '{'){ // go for final ...
-				EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '{'");
+				EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: Expected '{'");
 			}
 
-			// declare dictionary ...
+			// instance object ...
 			instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_OBJECT));
 
 			// this solve problem void structs...
@@ -96,7 +97,7 @@ namespace zetscript{
 				// expression expected ...
 				if(v_elements > 0){
 					if(*aux_p != ','){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ',' for dictionary property");
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected ',' for object property");
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -105,7 +106,7 @@ namespace zetscript{
 				lineSymbol = line;
 
 				if((keyw=eval::is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: \"%s\" keyword is not allowed as property name",eval::eval_data_keywords[keyw].str);
+					EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: \"%s\" keyword is not allowed as property name",eval::eval_data_keywords[keyw].str);
 				}
 
 				aux_p=get_name_identifier_token(
@@ -116,7 +117,7 @@ namespace zetscript{
 				);
 
 				if(zs_strutils::is_empty(symbol_value)){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: expected property name");
+					EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected property name");
 				}
 
 				 key_value="\""+symbol_value+"\"";
@@ -140,7 +141,7 @@ namespace zetscript{
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				 if(*aux_p != ':'){ // expected : ...
-					 EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ':' after property name");
+					 EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected ':' after property name");
 				 }
 
 				 aux_p++;
@@ -163,7 +164,7 @@ namespace zetscript{
 			}
 
 			if( *aux_p != '}'){
-				EVAL_ERROR(eval_data->current_parsing_file,line,"dictionary: expected ending '}'");
+				EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected ending '}'");
 			}
 
 			return aux_p+1;
@@ -175,7 +176,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
 			if(*aux_p != '['){
-				EVAL_ERROR(eval_data->current_parsing_file,line,"vector: expected '['");
+				EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected '['");
 			}
 
 			// declare vector ...
@@ -191,7 +192,7 @@ namespace zetscript{
 				// expression expected ...
 				if(v_elements > 0){
 					if(*aux_p != ','){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"vector: expected ',' before element");
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected ',' before element");
 					}
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 				}
@@ -211,7 +212,7 @@ namespace zetscript{
 			}
 
 			if( *aux_p != ']'){
-				EVAL_ERROR(eval_data->current_parsing_file,line,"vector: expected ending ']'");
+				EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected ending ']'");
 			}
 
 			return aux_p+1;
@@ -274,7 +275,7 @@ namespace zetscript{
 					 eval_instruction->instruction_source_info=InstructionSourceInfo(
 						 eval_data->current_parsing_file
 						 ,line
-						 ,eval_get_mapped_name(eval_data,FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+						 ,get_mapped_name(eval_data,FUNCTION_MEMBER_CONSTRUCTOR_NAME)
 					);
 
 

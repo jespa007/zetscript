@@ -14,7 +14,7 @@ namespace zetscript{
 		BYTE_CODE_END_FUNCTION = 0,
 		BYTE_CODE_LOAD_TYPE_FIND,
 		BYTE_CODE_LOAD_TYPE_VARIABLE, // primitive value like number/std::string or boolean...
-		BYTE_CODE_LOAD_TYPE_STATIC, // primitive value like number/std::string or boolean...
+		//BYTE_CODE_LOAD_TYPE_STATIC, // primitive value like number/std::string or boolean...
 		BYTE_CODE_LOAD_TYPE_FUNCTION,
 		BYTE_CODE_LOAD_TYPE_UNDEFINED,
 		BYTE_CODE_LOAD_TYPE_NULL,
@@ -60,6 +60,7 @@ namespace zetscript{
 		BYTE_CODE_IT_NEXT,
 		BYTE_CODE_IT_END,
 		BYTE_CODE_RESET_STACK,
+		BYTE_CODE_STORE_CONST,
 		BYTE_CODE_MAX
 
 	}ByteCode;

@@ -147,26 +147,27 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:
-			case BYTE_CODE_LOAD_TYPE_STATIC:
+			//case BYTE_CODE_LOAD_TYPE_STATIC:
 				icv=(ConstantValue *)instruction->value_op2;
 				switch(icv->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES){
-				//case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
-				//	printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\tFUN\t%s\n",idx_instruction,ByteCodeToStr(instruction->byte_code),symbol_value.c_str());
-				//	break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n",idx_instruction,ByteCodeToStr(instruction->byte_code),(int)((zs_int)icv->stk_value)==0?"false":"true");
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t%s\n",idx_instruction,(int)((zs_int)icv->stk_value)==0?"false":"true");
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i\n",idx_instruction,ByteCodeToStr(instruction->byte_code),(int)((zs_int)icv->stk_value));
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t%i\n",idx_instruction,(int)((zs_int)icv->stk_value));
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%f\n",idx_instruction,ByteCodeToStr(instruction->byte_code),*((float *)&icv->stk_value));
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t%f\n",idx_instruction,*((float *)&icv->stk_value));
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\"%s\"\n",idx_instruction,ByteCodeToStr(instruction->byte_code),((const char *)icv->stk_value));
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t\"%s\"\n",idx_instruction,((const char *)icv->stk_value));
+					break;
+				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST FUN\t%s\n",idx_instruction,icv->toString());
 					break;
 				default:
-					THROW_RUNTIME_ERROR("internal error: no literal defined");
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST VAR\t%s\n",idx_instruction,symbol_value.c_str());
+					break;
 				}
 				break;
 			case BYTE_CODE_LOAD_TYPE_FIND:
@@ -312,6 +313,8 @@ namespace zetscript{
 		symbol->properties = properties;
 		symbol->idx_position = idx_position;
 
+		registered_symbols->push_back((zs_int)symbol);
+
 
 		if(scope_block == MAIN_SCOPE(this)) { // is global var ...
 			StackElement ref_stk;
@@ -327,7 +330,7 @@ namespace zetscript{
 			}
 		}
 
-		registered_symbols->push_back((zs_int)symbol);
+
 
 		return symbol;
 	}

@@ -188,10 +188,16 @@ namespace zetscript{
 			std::vector<EvalInstruction *> 	instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
 
 			TokenNode(){
+				reset();
+			}
+
+			void reset(){
+				value="";
 				line=-1;
 				token_type=TokenType::TOKEN_TYPE_UNKNOWN;
 				operator_type=Operator::OPERATOR_UNKNOWN;
 				pre_operator=PreOperator::PRE_OPERATOR_UNKNOWN;
+				instructions.clear();
 			}
 		};
 
@@ -497,7 +503,7 @@ namespace zetscript{
 			return Directive::DIRECTIVE_UNKNOWN;
 		}
 
-		std::string * eval_get_mapped_name(EvalData *eval_data,const std::string & s){
+		std::string * get_mapped_name(EvalData *eval_data,const std::string & s){
 			if(compiled_symbol_name->count(s)==0){
 				(*compiled_symbol_name)[s]=new std::string (s);
 			}
@@ -723,134 +729,6 @@ namespace zetscript{
 			}
 			return NULL;
 		}
-
-		/*typedef enum{
-			CLASS_EXTESION_TYPE_UNKNOWN=0,
-			CLASS_EXTESION_TYPE_VARIABLE,
-			CLASS_EXTESION_TYPE_FUNCTION,
-		}ClassExtensionType;
-
-		char *eval_args_function(EvalData *eval_data,const char *s, int & line, std::vector<FunctionParam> *args){
-			char *aux_p = (char *)s;
-			FunctionParam arg_info;
-			bool var_args=false;
-			int n_arg=0;
-			char *end_var = NULL;
-			std::string arg_value;
-
-			if(*aux_p != '('){
-				return NULL;
-			}
-
-			aux_p++;
-
-			while(*aux_p != 0 && *aux_p != ')' && !var_args){
-				arg_info.by_ref=false;
-				arg_info.var_args=false;
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-				if(n_arg>0){
-					if(*aux_p != ','){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Expected ',' ");
-					}
-					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-				}
-
-				if(*aux_p == ')' || *aux_p == ','){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"Expected arg");
-				}
-
-				// capture line where argument is...
-				arg_info.line=line;
-
-				if(*aux_p=='.' && *(aux_p+1)=='.' && *(aux_p+2)=='.'){// is_keyword(aux_p)==KEYWORD_REF){
-					IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
-					var_args=arg_info.var_args =true;
-				}else if(is_keyword(aux_p)==KEYWORD_REF){
-					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[KEYWORD_REF].str),line);
-					arg_info.by_ref =true;
-				}
-
-
-				//int m_start_arg=line;
-				end_var=get_identifier_token(
-						 eval_data
-						,aux_p
-						,line
-						,arg_value
-				);
-
-				// copy value
-				if(args != NULL){ // register value
-					zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var);
-					// ok register symbol into the object function ...
-					arg_info.arg_name=arg_value;
-					args->push_back(arg_info);
-				}
-
-
-				aux_p=end_var;
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-				n_arg++;
-			}
-
-			if(*aux_p != ')'){
-				EVAL_ERROR(eval_data->current_parsing_file,line,"Expected ')'");
-			}
-
-			return aux_p+1;
-		}
-
-		ClassExtensionType get_class_extension_type(EvalData *eval_data,const char *s, int line, ScriptClass * sc, std::string * symbol){
-			// without static
-			char *aux_p = (char *)s;
-			ClassExtensionType class_extension_type=ClassExtensionType::CLASS_EXTESION_TYPE_UNKNOWN;
-			std::string name;
-			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-			int level=0;
-
-			if(is_keyword(aux_p)){
-				 return class_extension_type;
-			}
-
-			if(get_name_identifier_token(eval_data,aux_p, line, name) == NULL){
-				return class_extension_type;
-			}
-
-			IGNORE_BLANKS(aux_p,eval_data,aux_p+name.size(),line);
-
-			if(aux_p ==NULL || !(*aux_p == ':' && *(aux_p+1) == ':' )){
-				return class_extension_type;
-			}
-
-			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-			if(aux_p ==NULL || get_name_identifier_token(eval_data,aux_p, line, name) == NULL){
-				return class_extension_type;
-			}
-
-			IGNORE_BLANKS(aux_p,eval_data,aux_p+name.size(),line);
-
-			if(aux_p == NULL){
-				return class_extension_type;
-			}
-
-			if(is_keyword(aux_p) || *aux_p == '=' || *aux_p == ';' ){
-				class_extension_type=ClassExtensionType::CLASS_EXTESION_TYPE_VARIABLE;
-			}else if(*aux_p == '('){
-
-				// fast parse elements
-				aux_p=eval_args_function(eval_data,aux_p, line, NULL);
-
-				if(aux_p != NULL){
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-					if(*aux_p == '{'){
-						class_extension_type=ClassExtensionType::CLASS_EXTESION_TYPE_FUNCTION;
-					}
-				}
-			}
-			return class_extension_type;
-		}*/
 
 		// PROTOTYPES
 		void init(){

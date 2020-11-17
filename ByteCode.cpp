@@ -32,7 +32,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_TYPE_UNDEFINED:	return "LOAD_UNDEF"; // load to find
 			case BYTE_CODE_LOAD_TYPE_NULL:		return "LOAD_NULL"; // load to find
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:	return "LOAD_CONST"; // load to find
-			case BYTE_CODE_LOAD_TYPE_STATIC:	return "LOAD_STATIC"; // load to find
+			//case BYTE_CODE_LOAD_TYPE_STATIC:	return "LOAD_STATIC"; // load to find
 			case BYTE_CODE_LOAD_TYPE_CLASS:		return "LOAD_CLASS"; // load to find
 			case BYTE_CODE_JMP:         		return "JMP"; // Unconditional jump.
 			case BYTE_CODE_JNT:         		return "JNT"; // goto if not true ... goes end to conditional.
@@ -51,6 +51,7 @@ namespace zetscript{
 			case BYTE_CODE_IT_END: 				return "IT_END"; // BYTE_CODE_IT_CHK_END
 			case BYTE_CODE_IT_NEXT:				return "IT_NEXT"; // BYTE_CODE_SET_AND_NEXT
 			case BYTE_CODE_RESET_STACK:			return "RESET_STACK"; // BYTE_CODE_SET_AND_NEXT
+			case BYTE_CODE_STORE_CONST:			return "STORE_CONST"; // BYTE_CODE_STORE_CONST
 
 			default:
 				break;

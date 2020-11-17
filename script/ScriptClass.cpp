@@ -34,7 +34,7 @@ namespace zetscript{
 
 		symbol_members=new zs_vector();
 		symbol_members_built_in=new zs_vector();
-		symbol_members_static=new zs_vector();
+//		symbol_members_static=new zs_vector();
 
 		idx_base_classes=new zs_vector;
 

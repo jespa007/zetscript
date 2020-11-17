@@ -372,7 +372,7 @@ namespace zetscript{
 			size_t size = (eval_data->current_function->instructions.size() + 1) * sizeof(Instruction);
 			sf->instructions = (PtrInstruction)malloc(size);
 			memset(sf->instructions, 0, size);
-			bool is_static = true;
+			//bool is_static = eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC;
 			int ok=TRUE;
 			//int idx_instruction=0;
 
@@ -381,7 +381,7 @@ namespace zetscript{
 
 				Symbol *vis=NULL;
 				EvalInstruction *instruction = eval_data->current_function->instructions[i];
-				is_static&=((instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)==0);
+				//is_static&=((instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)==0);
 
 				if(		   ((	instruction->vm_instruction.properties & (MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR)) == 0)
 					    && ((	instruction->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_FIND) || (	instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS ))
@@ -415,7 +415,7 @@ namespace zetscript{
 							}
 							//instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_VARIABLE;
 							instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
-							instruction->instruction_source_info.ptr_str_symbol_name =eval_get_mapped_name(eval_data,str_symbol_to_find);
+							instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,str_symbol_to_find);
 							instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 
 						}else{ // is "this" symbol
@@ -475,10 +475,6 @@ namespace zetscript{
 
 				eval_data->current_function->script_function->instruction_source_info[i]=instruction_info;
 
-			}
-
-			if(is_static){
-				sf->symbol.properties|=SYMBOL_PROPERTY_STATIC;
 			}
 
 	lbl_exit_pop_function:

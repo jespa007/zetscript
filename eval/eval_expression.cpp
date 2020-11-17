@@ -79,8 +79,14 @@ namespace zetscript{
 		}
 
 		bool  is_access_punctuator(char *s){
-			return *s=='.' || *s=='[' || *s=='(' || *s==':';
+			return *s=='.' || *s=='[' || *s=='(';
 		}
+
+		bool  is_access_punctuator_or_static_reference(char *s){
+			return  is_access_punctuator(s) || (*s==':' && *(s+1)==':');
+		}
+
+
 
 		// to std::string utils ...
 		char * eval_symbol(EvalData *eval_data
@@ -539,6 +545,7 @@ namespace zetscript{
 				, std::vector<EvalInstruction *> 	* instructions
 				, std::vector<char> expected_ending_char
 				, int level
+				, bool reset_stack
 
 			){
 			// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
@@ -563,6 +570,7 @@ namespace zetscript{
 			char *aux_p=NULL,*test_s=NULL;
 			bool new_line_break=false;
 			char *test_ignore_blanks=NULL,*test_char_carry_return=NULL;
+			TokenNode symbol_token_node;
 
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
@@ -579,7 +587,7 @@ namespace zetscript{
 
 				for(;;){ // it eats identifier/constant operator, etc
 
-					TokenNode 	symbol_token_node,operator_token_node;
+					TokenNode 	operator_token_node;
 
 					keyword_type=Keyword::KEYWORD_UNKNOWN;
 
@@ -722,7 +730,7 @@ namespace zetscript{
 								symbol_token_node.instructions[0]->instruction_source_info = InstructionSourceInfo(
 									eval_data->current_parsing_file
 									,line
-									,eval_get_mapped_name(eval_data,symbol_token_node.value)
+									,get_mapped_name(eval_data,symbol_token_node.value)
 								);
 							}
 						}
@@ -730,18 +738,20 @@ namespace zetscript{
 
 					last_line_ok=line;
 
-					IGNORE_BLANKS(test_s,eval_data,aux_p,line);
+					// ignore blanks and test
+					IGNORE_BLANKS(test_s,eval_data,aux_p,last_line_ok);
 
 					// eval accessor element (supose that was a preinsert a load instruction for identifier )...
-					if(is_access_punctuator(aux_p)){
+					if(is_access_punctuator_or_static_reference(aux_p)){
 
+						line=last_line_ok;
 						aux_p=test_s;
 						char n_params=0;
 						bool first_access=true;
-						bool last_access_static=false;
+						//bool last_access_static=false;
 						static_access.clear();
-						static_access.push_back(symbol_token_node.value);
-
+						bool is_static_access=false;
+						bool is_next_static=false;
 
 						do{
 							ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
@@ -749,7 +759,7 @@ namespace zetscript{
 							bool this_symbol_access=false;
 							bool vector_access=false;
 							EvalInstruction *instruction_token=NULL;
-							bool is_static_access=false;
+
 
 							aux_p=test_s;
 
@@ -782,6 +792,7 @@ namespace zetscript{
 									n_params++;
 								}
 								byte_code=ByteCode::BYTE_CODE_CALL;
+								is_static_access=false;
 								aux_p++;
 								break;
 							case '[': // std::vector access
@@ -803,6 +814,7 @@ namespace zetscript{
 
 								aux_p++;
 								vector_access=true;
+								is_static_access=false;
 								byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
 								break;
 							case ':':
@@ -810,7 +822,9 @@ namespace zetscript{
 								if(*aux_p != '.'){
 									if( *(aux_p+1) == ':'){ // static access
 										// check if first access, else check if last name was also static...
-										if(last_access_static==true || first_access==true){
+										if(first_access==true){
+											// push first access name
+											static_access.push_back(symbol_token_node.value);
 											is_static_access=true;
 											aux_p++;
 										}
@@ -832,6 +846,13 @@ namespace zetscript{
 								check_identifier_name_expression_ok(eval_data,accessor_value,line);
 
 								if(is_static_access){
+									IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+									// check static const var...
+									is_static_access = is_access_punctuator_or_static_reference(aux_p) && *aux_p != '.'; // . property ends static
+									if(is_static_access == false){ // supose byte code as VARIABLE
+										byte_code=BYTE_CODE_LOAD_TYPE_VARIABLE;
+									}
+
 									static_access.push_back(accessor_value);
 								}else{
 
@@ -842,6 +863,10 @@ namespace zetscript{
 									if(first_access){ // check first symbol at first...
 										if(symbol_token_node.value == SYMBOL_VALUE_THIS){
 
+											if(eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC){
+												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"\"this\" is not allowed in static functions");
+											}
+
 											// set symbol name
 											instruction_token=symbol_token_node.instructions[0];
 											instruction_token->symbol.name=accessor_value;
@@ -850,7 +875,7 @@ namespace zetscript{
 											instruction_token->instruction_source_info= InstructionSourceInfo(
 												eval_data->current_parsing_file
 												,line
-												,eval_get_mapped_name(eval_data,accessor_value)
+												,get_mapped_name(eval_data,accessor_value)
 											);
 										}
 									}
@@ -860,15 +885,27 @@ namespace zetscript{
 								break;
 							}
 
-							if(instruction_token==NULL && is_static_access==false){
+							if(instruction_token==NULL && (is_static_access==false)){
 
-								instruction_token=new EvalInstruction(byte_code);
-								symbol_token_node.instructions.push_back(instruction_token);
+
 								ScriptClass *script_class_access=NULL;
 								Symbol *symbol_static = NULL;//script_class_access->getSymbol();
 
-								if(last_access_static == true){ // static access
+								if(static_access.size() == 0
+									|| byte_code != ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE // the other types it requires an extra op to do call or access vector
+								){ // static access
+									instruction_token=new EvalInstruction(byte_code);
+									symbol_token_node.instructions.push_back(instruction_token);
+								}
+
+								if(static_access.size() > 0){
+
 									EvalInstruction *first_instruction_token=symbol_token_node.instructions[0]; // override first instruction
+
+									if(byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE){
+										instruction_token=first_instruction_token;
+									}
+
 									//std::vectorzs_strutils::split('|');
 									static_access_name="";
 									for(unsigned i=0; i < static_access.size(); i++){
@@ -880,7 +917,7 @@ namespace zetscript{
 
 									// override symbol name
 									symbol_token_node.value=static_access_name;
-									first_instruction_token->instruction_source_info.ptr_str_symbol_name=eval_get_mapped_name(eval_data,static_access_name);
+									first_instruction_token->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data,static_access_name);
 
 									if((script_class_access=eval_data->script_class_factory->getScriptClass(static_access[0]))==NULL){
 										EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"static access error: class \"%s\" not exist",static_access[0].c_str());
@@ -890,18 +927,15 @@ namespace zetscript{
 
 									if(symbol_static != NULL){
 
-										if(byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE){
+										if(byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE){ // it should be constant type ...
 
 											// check symbol is native and not function
-											if( ((symbol_static->properties & SYMBOL_PROPERTY_IS_FUNCTION) == 0)
-												&&
-												((symbol_static->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0)
-											){
-												first_instruction_token->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_STATIC;
-												first_instruction_token->vm_instruction.value_op2=symbol_static->ref_ptr; // global stack element
-											}else{
-												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"Symbol %s is not function or static variable is not native",static_access_name.c_str());
+											if((symbol_static->properties & SYMBOL_PROPERTY_CONST) == 0){
+												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"Symbol \"%s\" is not constant",static_access_name.c_str());
 											}
+
+											first_instruction_token->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT;
+											first_instruction_token->vm_instruction.value_op2=symbol_static->ref_ptr; // global stack element
 										}
 										else if(byte_code == ByteCode::BYTE_CODE_CALL){
 
@@ -924,6 +958,9 @@ namespace zetscript{
 									}else{
 										EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"Symbol %s not exist",static_access_name.c_str());
 									}
+
+									// clear static symbols to mark end static
+									static_access.clear();
 								}
 
 								// generate source info in case accessor load...
@@ -938,7 +975,7 @@ namespace zetscript{
 									instruction_token->instruction_source_info= InstructionSourceInfo(
 										eval_data->current_parsing_file
 										,line
-										,eval_get_mapped_name(eval_data,symbol_static!=NULL?static_access_name:accessor_value)
+										,get_mapped_name(eval_data,symbol_static!=NULL?static_access_name:accessor_value)
 									);
 								}
 								else if(byte_code == ByteCode::BYTE_CODE_CALL){
@@ -949,19 +986,20 @@ namespace zetscript{
 									instruction_token->instruction_source_info= InstructionSourceInfo(
 										eval_data->current_parsing_file
 										,last_accessor_line
-										,eval_get_mapped_name(eval_data,symbol_static != NULL?static_access_name:accessor_value)
+										,get_mapped_name(eval_data,symbol_static != NULL?static_access_name:accessor_value)
 									);
 								}
 
 							}
 							// not first access anymore...
 							first_access=false;
-							last_access_static=is_static_access;
+							//last_access_static=is_static_access;
 							last_accessor_value=accessor_value;
 
 							test_s=aux_p;
+							last_line_ok=line;
 
-						}while(is_access_punctuator(aux_p));
+						}while(is_access_punctuator_or_static_reference(aux_p));
 					}else{
 
 						if(symbol_token_node.value==SYMBOL_VALUE_THIS){
@@ -972,7 +1010,7 @@ namespace zetscript{
 							symbol_token_node.instructions[0]->instruction_source_info= InstructionSourceInfo(
 								eval_data->current_parsing_file
 								,last_accessor_line
-								,eval_get_mapped_name(eval_data,SYMBOL_VALUE_THIS)
+								,get_mapped_name(eval_data,SYMBOL_VALUE_THIS)
 							);
 
 							symbol_token_node.instructions[0]->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;
@@ -1015,9 +1053,11 @@ namespace zetscript{
 
 					// push symbol
 					expression_tokens.push_back(symbol_token_node);
+					symbol_token_node.reset();
 
 					new_line_break=false;
-					IGNORE_BLANKS(test_ignore_blanks,eval_data,aux_p,line);
+					last_line_ok=line;
+					IGNORE_BLANKS(test_ignore_blanks,eval_data,aux_p,last_line_ok);
 
 					if((test_char_carry_return=strchr(aux_p,'\n'))!=NULL){ // new line is like ';'
 						new_line_break=test_char_carry_return<test_ignore_blanks;
@@ -1099,7 +1139,7 @@ namespace zetscript{
 			// there's an expression
 			if(expression_tokens.size()>0){
 
-				if(level == 0){ // set instruction as start statment...
+				if(level == 0 && reset_stack == true){ // set instruction as start statment...
 					eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.begin()+idx_instruction_start_expression,
 							new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
@@ -1122,6 +1162,10 @@ namespace zetscript{
 			return aux_p;
 
 error_expression:
+
+			for(unsigned kk=0;kk<symbol_token_node.instructions.size();kk++){
+				delete symbol_token_node.instructions[kk];
+			}
 
 			for(unsigned kk=0;kk<expression_tokens.size();kk++){
 				for(unsigned jj=0;jj<expression_tokens[kk].instructions.size();jj++){

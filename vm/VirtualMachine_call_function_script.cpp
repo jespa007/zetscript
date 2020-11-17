@@ -453,8 +453,10 @@ namespace zetscript{
 						if((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT)!= MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT)
 						{
 							VM_STOP_EXECUTE(
-									"Cannot read property \"%s\" of %s"
+									"Cannot perform access operation [ ... %s.%s ]. Expected \"%s\" as object but is type \"%s\""
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 									,stk_result_op1->typeStr());
 						}
 
@@ -648,7 +650,6 @@ namespace zetscript{
 				PUSH_FUNCTION(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:
-			case BYTE_CODE_LOAD_TYPE_STATIC:
 				*vm_stk_current++=*((StackElement *)instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_TYPE_CLASS:
@@ -657,6 +658,7 @@ namespace zetscript{
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT:
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:
+			case BYTE_CODE_STORE_CONST:
 
 				{
 					bool assign_metamethod=false;
@@ -712,7 +714,6 @@ namespace zetscript{
 					}
 					else{ // pop two parameters nothing ...
 						POP_TWO; // op1:dst / op2:src
-
 
 						stk_dst=stk_result_op1;
 
@@ -881,7 +882,13 @@ namespace zetscript{
 						}
 					}
 					// to be able to do multiple assigns like a=b+=c=1 (1 will be pushed in each store instruction)
-					*vm_stk_current++=*stk_dst;
+					if(operator_type ==BYTE_CODE_STORE
+					){
+						*vm_stk_current++=*stk_dst;
+					}
+					else if(operator_type ==BYTE_CODE_STORE_CONST){
+						stk_dst->properties |= MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
+					}
 				}
 				continue;
 			case BYTE_CODE_EQU:  // ==
@@ -1283,11 +1290,8 @@ namespace zetscript{
 										}
 									}
 								}
-
 								stk_arg++;
 								i++;
-
-
 							}
 
 						}

@@ -93,7 +93,7 @@ Date: XX-12-2020
 #136 Clear unusued scopes
 #137 Callback function support
 #138 remove all std::vector and std::string access on VM
-> #139 Implement const operator
+#139 Implement const operator
 > #140 Implement Vector methods  
 #141 limit n params only for c functions 
 #142 Try to optimize bind function member 
@@ -165,7 +165,7 @@ Date: XX-12-2020
 #220 Set information for non-existant properties in store instruction 
 #222 do as an option to show system functions 
 #223 get static function through class 
-> #224 implement keyword static
+#224 implement keyword static
 > #227 implement DateTime class
 > #215 Implement typeof operator
 
