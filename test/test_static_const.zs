@@ -25,7 +25,7 @@ class A{
 	
 };
 
-
+function a(){}
 
 //System::println("gdgdf")
 System::println(A::a.b);
