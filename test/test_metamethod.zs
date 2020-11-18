@@ -29,7 +29,7 @@ class Vector2{
 var v=(new Vector2(0,2)+new Vector2(0,2));//+new Vector2()
 //var v=new Vector2(0,2)+new Vector2(0,2)
 //var v=new Vector2();
-print(""+(v).toString())
+System::println(v)
 
 //print(new Vector2(0,2)); // it prints each new vector
 //print((new Vector2(0,2)+new Vector2(1,0)+new Vector2())); // it sums and then it prints*/

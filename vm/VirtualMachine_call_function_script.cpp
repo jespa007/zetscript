@@ -1217,8 +1217,9 @@ namespace zetscript{
 
 						if(!ignore_call)
 						{
+							ScriptFunction *sf_aux;
 							//zs_vector *global_symbols=main_function_object->registered_symbols;symbol_to_find
-							if((sf=findFunction(
+							if((sf_aux=findFunction(
 									 calling_object
 									,calling_function
 									,instruction
@@ -1231,6 +1232,8 @@ namespace zetscript{
 
 								VM_STOP_EXECUTE("cannot find function \"%s\"",sf->symbol.name.c_str());
 							}
+
+							sf=sf_aux;
 						}
 					}
 

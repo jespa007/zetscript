@@ -361,7 +361,7 @@ namespace zetscript{
 		int pop_function(EvalData *eval_data){
 
 			ScriptFunction *sf = eval_data->current_function->script_function;
-			ScriptClass *sc = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
+			ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 
 			if(sf->instructions != NULL){
 				free(sf->instructions);
@@ -388,6 +388,7 @@ namespace zetscript{
 				) { // try to solve symbol...
 
 					std::string *symbol_to_find=&instruction->symbol.name;
+					ScriptClass *sc_aux=NULL;
 
 					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS){ // search the symbol within class.
 
@@ -396,7 +397,7 @@ namespace zetscript{
 							std::string str_symbol_to_find = sf->symbol.name;
 
 							for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
-								Symbol *symbol_member = (Symbol *)sc->symbol_members->items[i];
+								Symbol *symbol_member = (Symbol *)sf_class->symbol_members->items[i];
 								if(symbol_member->properties & SYMBOL_PROPERTY_IS_FUNCTION){
 									ScriptFunction *sf=(ScriptFunction *)symbol_member->ref_ptr;
 									bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?str_symbol_to_find == symbol_member->name:true);
@@ -421,15 +422,15 @@ namespace zetscript{
 						}else{ // is "this" symbol
 
 							// is automatically created on vm...
-							Symbol *symbol_function=sc->getSymbol(*symbol_to_find,ANY_PARAMS_SYMBOL_ONLY);
+							Symbol *symbol_function=sf_class->getSymbol(*symbol_to_find,ANY_PARAMS_SYMBOL_ONLY);
 							if(symbol_function!=NULL){
 								instruction->vm_instruction.value_op2=symbol_function->idx_position;
 							}
 						}
-					}else if((sc = eval_data->script_class_factory->getScriptClass(*symbol_to_find))!= NULL){
+					}else if((sc_aux = eval_data->script_class_factory->getScriptClass(*symbol_to_find))!= NULL){
 
 							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_CLASS;
-							instruction->vm_instruction.value_op2=(zs_int)sc;
+							instruction->vm_instruction.value_op2=(zs_int)sc_aux;
 
 					}else{ // try find local symbol  ...
 						bool local_found=false;
