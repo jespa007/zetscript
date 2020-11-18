@@ -717,6 +717,10 @@ namespace zetscript{
 
 						stk_dst=stk_result_op1;
 
+						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_READ_ONLY){
+							VM_STOP_EXECUTE("Assign to constant element is not allowed ");
+						}
+
 						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {
 							stk_dst=(StackElement *)stk_result_op1->var_ref; // stk_value is expect to contents a stack variable
 						}else if(		(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED)
@@ -763,10 +767,6 @@ namespace zetscript{
 					}
 
 					if(! assign_metamethod){
-
-						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_READ_ONLY){
-							VM_STOP_EXECUTE("Assign to constant element is not allowed ");
-						}
 
 						StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 						{

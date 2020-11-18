@@ -405,6 +405,10 @@ namespace zetscript{
 			}
 			else{
 				key_w = is_keyword(aux_p);
+
+				if(key_w == Keyword::KEYWORD_FUNCTION){
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+				}
 				//advance_chars=strlen(eval_data_keywords[key_w].str);
 			}
 
@@ -500,7 +504,7 @@ namespace zetscript{
 
 				// eval function args...
 				if(*aux_p != '('){ // push arguments...
-					EVAL_ERROR(eval_data->current_parsing_file,line,"Expected open '(' function");
+					EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected function start argument declaration '(' ");
 				}
 
 				// save scope pointer for function args ...
@@ -512,13 +516,13 @@ namespace zetscript{
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					if(args.size()>0){
 						if(*aux_p != ','){
-							EVAL_ERROR(eval_data->current_parsing_file,line,"Expected ',' ");
+							EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected function argument separator ','");
 						}
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 					}
 
 					if(*aux_p == ')' || *aux_p == ','){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Expected arg");
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected argument name");
 					}
 
 					// capture line where argument is...
@@ -559,7 +563,7 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if(*aux_p != '{'){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '{' as function block");
+					EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error:  expected '{' as function block");
 				}
 
 				// register function ...
