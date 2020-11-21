@@ -176,7 +176,10 @@ namespace zetscript{
 	}
 
 	bool ScriptObject::itHasSetMetamethod(){
-		return registered_class_info->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->count > 0;
+		if(registered_class_info->metamethod_operator[BYTE_CODE_METAMETHOD_SET]!=NULL){
+			return registered_class_info->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->count > 0;
+		}
+		return false;
 	}
 
 	void ScriptObject::setDelete_C_ObjectOnDestroy(bool _delete_on_destroy){

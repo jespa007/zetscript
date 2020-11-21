@@ -30,14 +30,12 @@ namespace zetscript{
 
 		Symbol *symbol=NULL;
 
-		if((symbol=scope->addSymbol(
+		symbol=scope->addSymbol(
 				file
 				,line
 				,function_name
 				,(char)args.size()
-		))==NULL){
-			return NULL;
-		}
+		);
 
 		short idx_script_function = script_functions->count;
 

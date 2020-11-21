@@ -230,6 +230,7 @@ namespace zetscript{
 				char *start_var,*end_var;
 				ScriptClass *sc=NULL;
 				std::string s_aux,variable_name,pre_variable_name="";
+				std::string error;
 				Symbol *symbol_variable;
 				is_constant=key_w == Keyword::KEYWORD_CONST;
 
@@ -300,11 +301,16 @@ namespace zetscript{
 
 						if(sc != NULL){
 							Symbol *const_symbol=sc->registerMemberVariable(
-								 eval_data->current_parsing_file
+								error
+								,eval_data->current_parsing_file
 								,line
 								,variable_name
 								,is_constant?SYMBOL_PROPERTY_CONST:0
 							);
+
+							if(const_symbol==NULL){
+								EVAL_ERROR(eval_data->current_parsing_file,line,"%s",error.c_str());
+							}
 
 							const_symbol->ref_ptr=symbol_variable->ref_ptr;
 						}
@@ -418,6 +424,7 @@ namespace zetscript{
 				int n_arg=0;
 				char *end_var = NULL;
 				std::string arg_value;
+				std::string error;
 				//size_t advance_chars=0;
 
 
@@ -579,12 +586,17 @@ namespace zetscript{
 				//--- OP
 				if(sc!=NULL){ // register as variable member...
 					symbol_sf=sc->registerMemberFunction(
-							 eval_data->current_parsing_file
+							error
+							,eval_data->current_parsing_file
 							,line
 							,function_name
 							,args
 							,is_static?SYMBOL_PROPERTY_STATIC:0
 					);
+
+					if(symbol_sf == NULL){
+						EVAL_ERROR(eval_data->current_parsing_file,line,error.c_str());
+					}
 
 				}
 				else{ // register as local variable in the function...

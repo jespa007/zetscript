@@ -39,14 +39,16 @@ namespace zetscript{
 		 ScriptClass(ZetScript *_zs,ClassTypeIdx _idx_class);
 
 		Symbol				* 	registerMemberVariable(
-			 const std::string & file
+			std::string & error
+			,const std::string & file
 			,short line
 			,const std::string & symbol_name
 			,unsigned short symbol_properties
 		);
 
 		Symbol				* 	registerNativeMemberVariable(
-			const std::string & file
+			std::string & error
+			,const std::string & file
 			,short line
 			,const std::string & symbol_name
 			,const std::string & str_native_type
@@ -59,7 +61,8 @@ namespace zetscript{
 		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
 		Symbol				* 	registerMemberFunction(
-				const std::string & file
+				std::string & error
+				,const std::string & file
 				, short line
 				,const std::string & function_name
 				, std::vector<FunctionParam> args={}
@@ -68,7 +71,8 @@ namespace zetscript{
 		);
 
 		Symbol				* 	registerNativeMemberFunction(
-				const std::string & file
+				 std::string & error
+				,const std::string & file
 				, short line
 				,const std::string & function_name
 				, std::vector<FunctionParam> args={}
@@ -91,7 +95,8 @@ namespace zetscript{
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
 		Symbol				* 	registerInternalMemberVariable(
-			const std::string & file
+			std::string & error
+			,const std::string & file
 			, short line
 			,const std::string & symbol_name
 			, unsigned short properties
@@ -100,7 +105,8 @@ namespace zetscript{
 		);
 
 		Symbol				* 	registerInternalMemberFunction(
-			const std::string & file
+		      std::string & error
+			, const std::string & file
 			, short line
 			,const std::string & function_name
 			, std::vector<FunctionParam> args

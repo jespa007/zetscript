@@ -26,7 +26,7 @@ class Vector2{
 	}
 };
 
-var v=(new Vector2(0,2)+new Vector2(0,2));//+new Vector2()
+var v=(new Vector2(0,2)-new Vector2(0,2));//+new Vector2()
 //var v=new Vector2(0,2)+new Vector2(0,2)
 //var v=new Vector2();
 System::println(v)

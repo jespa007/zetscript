@@ -64,11 +64,12 @@ namespace zetscript{
 	}
 
 	void ScriptClassFactory::init(){
+		std::string error;
 		// ScriptFunctionFactory has to be created
 		main_object=registerClass(__FILE__, __LINE__,MAIN_SCRIPT_CLASS_NAME,""); // 0
 		MAIN_SCOPE(this)->script_class=main_object;
 
-		Symbol *symbol_main_function=main_object->registerMemberFunction(__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
+		Symbol *symbol_main_function=main_object->registerMemberFunction(error,__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
 
 		idx_clear_checkpoint=1; // by default restore till main class.

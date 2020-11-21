@@ -27,10 +27,11 @@ namespace zetscript{
 		idx_function_member_constructor =ZS_IDX_UNDEFINED;
 		idx_class=_idx_class;
 		//idx_starting_this_members=0;
+		memset(metamethod_operator,0,sizeof(metamethod_operator));
 
-		for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
+		/*for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 			metamethod_operator[i]=new zs_vector();
-		}
+		}*/
 
 		symbol_members=new zs_vector();
 		symbol_members_built_in=new zs_vector();
@@ -47,7 +48,8 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerMemberVariable(
-		 const std::string & file
+		std::string & error
+		,const std::string & file
 		,short line
 		,const std::string & symbol_name
 
@@ -55,7 +57,8 @@ namespace zetscript{
 
 	){
 		return registerInternalMemberVariable(
-			 file
+			error
+			,file
 			,line
 			,symbol_name
 			,symbol_properties
@@ -64,7 +67,8 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerNativeMemberVariable(
-		 const std::string & file
+		std::string & error
+		,const std::string & file
 		,short line
 		,const std::string & symbol_name
 		,const std::string & str_native_type
@@ -74,7 +78,8 @@ namespace zetscript{
 
 	){
 		return registerInternalMemberVariable(
-			 file
+			error
+			,file
 			,line
 			,symbol_name
 			,symbol_properties
@@ -85,7 +90,8 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerInternalMemberVariable(
-		 const std::string & file
+	    std::string & error
+		,const std::string & file
 		,short line
 		,const std::string & symbol_name
 		,unsigned short symbol_properties
@@ -95,11 +101,13 @@ namespace zetscript{
 		// ref_ptr: as natives is the inc pointer when object is created or stack_element pointer for static/const
 
 		if(getSymbol(symbol_name)!=NULL){
-			THROW_RUNTIME_ERROR("Variable \"%s\" already registered",symbol_name.c_str());
+			error=zs_strutils::format("Variable \"%s\" already registered",symbol_name.c_str());
+			return NULL;
 		}
 
 		if((symbol_properties & (SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_CONST))==0){
-			THROW_RUNTIME_ERROR("Variable \"%s\" should registered as native or const",symbol_name.c_str());
+			error=zs_strutils::format("Variable \"%s\" should registered as native or const",symbol_name.c_str());
+			return NULL;
 		}
 
 		Symbol *symbol=new Symbol;
@@ -160,24 +168,29 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerMemberFunction(
-			const std::string & file
+			 std::string & error
+			,const std::string & file
 			, short line
 			,const std::string & function_name
 			, std::vector<FunctionParam> args
 			, unsigned short symbol_properties
 
+
 	){
 		return registerInternalMemberFunction(
-				 file
+				 error
+				, file
 				,  line
 				,function_name
 				, args
 				, symbol_properties
+
 		);
 	}
 
 	Symbol				* 	ScriptClass::registerNativeMemberFunction(
-			const std::string & file
+			std::string & error
+			,const std::string & file
 			, short line
 			,const std::string & function_name
 			, std::vector<FunctionParam> args
@@ -187,7 +200,8 @@ namespace zetscript{
 
 	){
 		return registerInternalMemberFunction(
-				 file
+				error
+				, file
 				, line
 				,function_name
 				,args
@@ -199,7 +213,8 @@ namespace zetscript{
 	}
 
 	Symbol * ScriptClass::registerInternalMemberFunction(
-		const std::string & file
+		std::string & error
+		, const std::string & file
 		, short line
 		, const std::string & function_name
 		, std::vector<FunctionParam> params
@@ -213,8 +228,7 @@ namespace zetscript{
 			if(getSymbol(function_name,(char)params.size()) != NULL){
 				Symbol *existing_symbol;
 				if((existing_symbol=getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
-
-					THROW_RUNTIME_ERROR("Function \"%s\" declared at [%s:%i] is already defined at [%s:%i]"
+					error=zs_strutils::format("Function \"%s\" declared at [%s:%i] is already defined at [%s:%i]"
 						,function_name.c_str()
 						,zs_path::get_file_name(file.c_str()).c_str()
 						,line
@@ -253,7 +267,7 @@ namespace zetscript{
 		}
 
 		// register
-		symbol_members->push_back((zs_int)function_symbol);
+
 
 		// constructor...
 		if(function_name == FUNCTION_MEMBER_CONSTRUCTOR_NAME){
@@ -263,6 +277,19 @@ namespace zetscript{
 			// check if metamethod...
 			for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 				if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr((ByteCodeMetamethod)i),==,function_name.c_str())){
+
+					// metamethod should be not static
+					if(function_symbol->properties & SYMBOL_PROPERTY_STATIC){
+						error = zs_strutils::format("Metamethod \"%s\" has to be not static"
+							,function_name.c_str()
+						);
+						return NULL;
+					}
+
+					if(metamethod_operator[i]==NULL){
+						metamethod_operator[i]=new zs_vector();
+					}
+
 					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
 					*stk_element = {0,(void *)function_symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
 					metamethod_operator[i]->push_back((zs_int)stk_element);
@@ -273,6 +300,8 @@ namespace zetscript{
 				}
 			}
 		}
+
+		symbol_members->push_back((zs_int)function_symbol);
 
 		return function_symbol;
 	}
@@ -305,11 +334,12 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 			zs_vector *vec=(zs_vector *)metamethod_operator[i];
-			for(unsigned j = 0; j < vec->count; j++){
-				free((void *)vec->items[j]);
+			if(vec != NULL){
+				for(unsigned j = 0; j < vec->count; j++){
+					free((void *)vec->items[j]);
+				}
+				delete vec;
 			}
-
-			delete vec;
 		}
 		memset(metamethod_operator,0,sizeof(metamethod_operator));
 

@@ -1,3 +1,8 @@
+class v2{}
+
+new v2(0)+new v2(1)-new v2(3)-new v2(4)
+//System::println(0+1+2-3-4)
+
 //5.0+2.0e2;
 //print("test_"+-1);
 //-5+4;
@@ -20,10 +25,12 @@ test_callback(function(a,b,c){
 var a=new A();
 
 a.hjhkj();*/
-var a={}
+/*var a={}
 a.i=1;
 System::println(a.i)
-delete a;
+delete a;*/
+
+
 
 //System::println(1);
 //System.println("dasdas dsadasd");
