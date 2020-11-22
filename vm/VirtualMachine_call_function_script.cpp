@@ -20,13 +20,15 @@
 			PUSH_FLOAT(fmod(f_aux_value1 , f_aux_value2));\
 	}\
 	else{\
-		applyMetamethod(\
+		if(applyMetamethod(\
 			calling_function\
 			,instruction\
 			,BYTE_CODE_METAMETHOD_MOD\
 			,stk_result_op1\
 			,stk_result_op2\
-		);\
+		)==false){\
+			goto lbl_exit_function;\
+		}\
 	}\
 }
 
@@ -51,13 +53,15 @@
 			PUSH_FLOAT(f_aux_value1 __C_OP__ f_aux_value2);\
 	}\
 	else{\
-		applyMetamethod(\
+		if(applyMetamethod(\
 				calling_function\
 				,instruction\
 				,__METAMETHOD__\
 				,stk_result_op1\
 				,stk_result_op2\
-		);\
+		)==false){\
+			goto lbl_exit_function;\
+		}\
 	}\
 }
 
@@ -97,13 +101,15 @@
 			PUSH_BOOLEAN(false);\
 		}\
 	}else{\
-		applyMetamethod(\
+		if(applyMetamethod(\
 			 calling_function\
 			,instruction\
 			, __METAMETHOD__\
 			,stk_result_op1\
 			,stk_result_op2\
-		);\
+		)==false){\
+			goto lbl_exit_function;\
+		}\
 	}\
 }
 
@@ -124,13 +130,15 @@
 	if(properties == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){\
 		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}else{\
-		applyMetamethod(\
+		if(applyMetamethod(\
 			calling_function\
 			,instruction\
 			, __METAMETHOD__\
 			,stk_result_op1\
 			,stk_result_op2\
-		);\
+		)==false){\
+			goto lbl_exit_function;\
+		}\
 	}\
 }
 
@@ -198,65 +206,65 @@ STK_VALUE_IS_INT_OR_FLOAT(stk_result_op1->type_var)
 		(stk_result_op2->stk_value == VM_NULL)
 
 #define PUSH_UNDEFINED \
-vm_stk_current->stk_value=0; \
-vm_stk_current->var_ref=0; \
-vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED; \
-vm_stk_current++;
+stk_vm_current->stk_value=0; \
+stk_vm_current->var_ref=0; \
+stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED; \
+stk_vm_current++;
 
 #define PUSH_NULL \
-vm_stk_current->stk_value=0; \
-vm_stk_current->var_ref=0; \
-vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL; \
-vm_stk_current++;
+stk_vm_current->stk_value=0; \
+stk_vm_current->var_ref=0; \
+stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL; \
+stk_vm_current++;
 
 
 #define PUSH_BOOLEAN(init_value) \
-vm_stk_current->stk_value=(void *)((zs_int)(init_value)); \
-vm_stk_current->var_ref=0; \
-vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL; \
-vm_stk_current++;
+stk_vm_current->stk_value=(void *)((zs_int)(init_value)); \
+stk_vm_current->var_ref=0; \
+stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL; \
+stk_vm_current++;
 
 
 #define PUSH_INTEGER(init_value) \
-vm_stk_current->stk_value=(void *)((zs_int)(init_value)); \
-vm_stk_current->var_ref=0; \
-vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT; \
-vm_stk_current++;
+stk_vm_current->stk_value=(void *)((zs_int)(init_value)); \
+stk_vm_current->var_ref=0; \
+stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT; \
+stk_vm_current++;
 
 #define PUSH_FLOAT(init_value) \
 {\
 	float aux=(float)(init_value); \
-	COPY_FLOAT(&vm_stk_current->stk_value,&aux); \
-	vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT; \
-	vm_stk_current++; \
+	COPY_FLOAT(&stk_vm_current->stk_value,&aux); \
+	stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT; \
+	stk_vm_current++; \
 }
 
 #define PUSH_FUNCTION(ref) \
-vm_stk_current->stk_value=0; \
-vm_stk_current->var_ref=(void *)ref; \
-vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION; \
-vm_stk_current++;
+stk_vm_current->stk_value=0; \
+stk_vm_current->var_ref=(void *)ref; \
+stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION; \
+stk_vm_current++;
 
 #define PUSH_CLASS(ref) \
-vm_stk_current->stk_value=0; \
-vm_stk_current->var_ref=(void *)ref; \
-vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_CLASS; \
-vm_stk_current++;
+stk_vm_current->stk_value=0; \
+stk_vm_current->var_ref=(void *)ref; \
+stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_CLASS; \
+stk_vm_current++;
 
 // explains whether stk is this or not. Warning should be given as value and not as ptr
 #define STK_IS_THIS(stk) (this_object != NULL && (stk)->var_ref == this_object)
 
 
 #define POP_TWO \
-stk_result_op2=--vm_stk_current;\
-stk_result_op1=--vm_stk_current;
+stk_result_op2=--stk_vm_current;\
+stk_result_op1=--stk_vm_current;
 
 #define READ_TWO_POP_ONE \
-stk_result_op2=--vm_stk_current;\
-stk_result_op1=(vm_stk_current-1);
+stk_result_op2=--stk_vm_current;\
+stk_result_op1=(stk_vm_current-1);
 
 #define POP_ONE \
-stk_result_op1=--vm_stk_current;
+stk_result_op1=--stk_vm_current;
 
 
 namespace zetscript{
@@ -360,7 +368,7 @@ namespace zetscript{
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
 			case BYTE_CODE_RESET_STACK:
-				vm_stk_current=stk_start;
+				stk_vm_current=stk_start;
 				continue;
 			case BYTE_CODE_LOAD_TYPE_FIND:
 
@@ -443,7 +451,7 @@ namespace zetscript{
 						Instruction *previous_ins= (instruction-1);
 
 						if(previous_ins->byte_code == BYTE_CODE_NEW){
-							stk_result_op1=(vm_stk_current-1);
+							stk_result_op1=(stk_vm_current-1);
 						}
 						else{
 							POP_ONE; // get var op1 and symbol op2
@@ -514,10 +522,10 @@ namespace zetscript{
 								goto lbl_exit_function;
 							}
 
-							vm_stk_current->stk_value=(void *)symbol_access_str;
-							vm_stk_current->var_ref=calling_object;
-							vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
-							vm_stk_current++;
+							stk_vm_current->stk_value=(void *)symbol_access_str;
+							stk_vm_current->var_ref=calling_object;
+							stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
+							stk_vm_current++;
 							continue;
 
 							/*if((stk_var=calling_object->addProperty(symbol_access_str, error_str,NULL,&idx_stk_element))==NULL){
@@ -537,14 +545,14 @@ namespace zetscript{
 				if(!HAS_PRE_POST_INC_DEC_OP(pre_post_properties)){
 					// update var if needed ...
 					if(stk_var->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){ // we assign the pointer directly...
-						*vm_stk_current++=*stk_var;
+						*stk_vm_current++=*stk_var;
 					}
 					else{ // is not pointer, so we do pointer
-						vm_stk_current->stk_value=(stk_var)->stk_value;
-						vm_stk_current->var_ref=stk_var;
-						vm_stk_current->properties=(unsigned short)(((stk_var)->properties)|MSK_STACK_ELEMENT_PROPERTY_PTR_STK);
+						stk_vm_current->stk_value=(stk_var)->stk_value;
+						stk_vm_current->var_ref=stk_var;
+						stk_vm_current->properties=(unsigned short)(((stk_var)->properties)|MSK_STACK_ELEMENT_PROPERTY_PTR_STK);
 
-						vm_stk_current++;
+						stk_vm_current++;
 					}
 				}else{ // has pre post
 
@@ -557,42 +565,42 @@ namespace zetscript{
 					switch(pre_post_properties){
 					case MSK_INSTRUCTION_PROPERTY_PRE_INC:
 							PERFORM_PRE_POST_OPERATOR(stk_var,++);
-							(*vm_stk_current++)=*stk_var;
+							(*stk_vm_current++)=*stk_var;
 							continue;
 					case MSK_INSTRUCTION_PROPERTY_PRE_DEC:
 							PERFORM_PRE_POST_OPERATOR(stk_var,--);
-							(*vm_stk_current++)=*stk_var;
+							(*stk_vm_current++)=*stk_var;
 							continue;
 					case MSK_INSTRUCTION_PROPERTY_POST_DEC:
-							(*vm_stk_current++)=*stk_var;
+							(*stk_vm_current++)=*stk_var;
 							PERFORM_PRE_POST_OPERATOR(stk_var,--);
 							continue;
 					case MSK_INSTRUCTION_PROPERTY_POST_INC:
-							(*vm_stk_current++)=*stk_var;
+							(*stk_vm_current++)=*stk_var;
 							PERFORM_PRE_POST_OPERATOR(stk_var,++);
 							continue;
 					case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
 							switch(GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_var->properties)){
 							case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
 								if(stk_var->properties& MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){
-									vm_stk_current->stk_value=(void *)(-(*((zs_int *)stk_var->var_ref)));
-									vm_stk_current->var_ref=stk_var;
-									vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT|MSK_STACK_ELEMENT_PROPERTY_PTR_STK|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;
+									stk_vm_current->stk_value=(void *)(-(*((zs_int *)stk_var->var_ref)));
+									stk_vm_current->var_ref=stk_var;
+									stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT|MSK_STACK_ELEMENT_PROPERTY_PTR_STK|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;
 								}else{
-									vm_stk_current->stk_value=(void *)(-(((zs_int)stk_var->stk_value)));
-									vm_stk_current->var_ref=stk_var;
-									vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT|MSK_STACK_ELEMENT_PROPERTY_PTR_STK;
+									stk_vm_current->stk_value=(void *)(-(((zs_int)stk_var->stk_value)));
+									stk_vm_current->var_ref=stk_var;
+									stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT|MSK_STACK_ELEMENT_PROPERTY_PTR_STK;
 								}
 								break;
 							case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
 								if(stk_var->properties& MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){
-									vm_stk_current->stk_value=(void *)(!(*((bool *)stk_var->var_ref)));
-									vm_stk_current->var_ref=stk_var;
-									vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL|MSK_STACK_ELEMENT_PROPERTY_PTR_STK|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;
+									stk_vm_current->stk_value=(void *)(!(*((bool *)stk_var->var_ref)));
+									stk_vm_current->var_ref=stk_var;
+									stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL|MSK_STACK_ELEMENT_PROPERTY_PTR_STK|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;
 								}else{
-									vm_stk_current->stk_value=(void *)(!(((bool)stk_var->stk_value)));
-									vm_stk_current->var_ref=stk_var;
-									vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL|MSK_STACK_ELEMENT_PROPERTY_PTR_STK;
+									stk_vm_current->stk_value=(void *)(!(((bool)stk_var->stk_value)));
+									stk_vm_current->var_ref=stk_var;
+									stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL|MSK_STACK_ELEMENT_PROPERTY_PTR_STK;
 								}
 								break;
 
@@ -603,12 +611,12 @@ namespace zetscript{
 									COPY_FLOAT(&aux_float,&stk_var->stk_value);
 								}
 								aux_float=-aux_float;
-								COPY_FLOAT(&vm_stk_current->stk_value,&aux_float);
-								vm_stk_current->var_ref=stk_var;
-								vm_stk_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT|MSK_STACK_ELEMENT_PROPERTY_PTR_STK;
+								COPY_FLOAT(&stk_vm_current->stk_value,&aux_float);
+								stk_vm_current->var_ref=stk_var;
+								stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT|MSK_STACK_ELEMENT_PROPERTY_PTR_STK;
 
 								if(stk_var->properties& MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){
-									vm_stk_current->properties|=MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;
+									stk_vm_current->properties|=MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C;
 								}
 
 
@@ -617,7 +625,7 @@ namespace zetscript{
 								VM_STOP_EXECUTE("internal error:cannot perform pre operator - because is not number");
 							}
 
-							vm_stk_current++;
+							stk_vm_current++;
 							continue;
 					default:
 						break;
@@ -628,13 +636,13 @@ namespace zetscript{
 				if(stk_var->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C){
 					switch(GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_var->properties)){
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
-						memcpy(&((vm_stk_current-1)->stk_value),stk_var->var_ref,sizeof(zs_int));
+						memcpy(&((stk_vm_current-1)->stk_value),stk_var->var_ref,sizeof(zs_int));
 						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
-						COPY_FLOAT(&((vm_stk_current-1)->stk_value),stk_var->var_ref);
+						COPY_FLOAT(&((stk_vm_current-1)->stk_value),stk_var->var_ref);
 						break;
 					case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
-						(vm_stk_current-1)->stk_value=(void *)((*((bool *)stk_var->var_ref)));
+						(stk_vm_current-1)->stk_value=(void *)((*((bool *)stk_var->var_ref)));
 						break;
 					}
 				}
@@ -650,7 +658,7 @@ namespace zetscript{
 				PUSH_FUNCTION(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:
-				*vm_stk_current++=*((StackElement *)instruction->value_op2);
+				*stk_vm_current++=*((StackElement *)instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_TYPE_CLASS:
 				PUSH_CLASS(instruction->value_op2);
@@ -667,8 +675,8 @@ namespace zetscript{
 					if(operator_type==BYTE_CODE_PUSH_VECTOR_ELEMENT){
 						POP_ONE; // only pops the value, the last is the std::vector variable itself
 						ScriptObject *vec_obj = NULL;
-						if((vm_stk_current-1)->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
-							vec_obj = (ScriptObject *)(vm_stk_current-1)->var_ref;
+						if((stk_vm_current-1)->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+							vec_obj = (ScriptObject *)(stk_vm_current-1)->var_ref;
 							if(vec_obj->idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								stk_src=stk_result_op1;
@@ -687,7 +695,7 @@ namespace zetscript{
 
 						POP_TWO; // first must be a string that describes variable name and the other the variable itself ...
 						ScriptObject *obj = NULL;
-						StackElement *stk_object=(vm_stk_current-1);
+						StackElement *stk_object=(stk_vm_current-1);
 						if((stk_object->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT)==0){
 							VM_STOP_EXECUTE("Expected object but is type ");
 						}
@@ -750,13 +758,15 @@ namespace zetscript{
 						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
 
 							if(((ScriptObject *)stk_dst->var_ref)->itHasSetMetamethod()){
-								applyMetamethod(
+								if(!applyMetamethod(
 										 calling_function
 										,instruction
 										,BYTE_CODE_METAMETHOD_SET
 										,stk_result_op2 // it contents variable to be assigned
 										,stk_result_op1 // it contects the result of expression or whatever
-								);
+								)){
+									goto lbl_exit_function;
+								}
 								assign_metamethod=true;
 							}
 
@@ -826,7 +836,7 @@ namespace zetscript{
 									if(!script_var->initSharedPtr()){
 										goto lbl_exit_function;
 									}
-									if(!sharePointer(script_var->ptr_shared_pointer_node)){
+									if(!sharePointer(script_var->shared_pointer)){
 										goto lbl_exit_function;
 									}
 									stk_dst->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
@@ -844,7 +854,7 @@ namespace zetscript{
 								stk_dst->stk_value=NULL;
 								stk_dst->var_ref=script_var;
 								if(!STK_IS_THIS(stk_src)){ // do not share this!
-									if(!sharePointer(script_var->ptr_shared_pointer_node)){
+									if(!sharePointer(script_var->shared_pointer)){
 										goto lbl_exit_function;
 									}
 								}
@@ -872,7 +882,7 @@ namespace zetscript{
 										old_stk_dst.var_ref != stk_dst->var_ref  // not same ref ...
 									&&  STK_IS_THIS(&old_stk_dst)  // ... or this, do not share/unshare
 									){ // unref pointer because new pointer has been attached...
-										if(!unrefSharedScriptObject(((ScriptObject  *)old_stk_dst.var_ref)->ptr_shared_pointer_node,vm_idx_call)){
+										if(!unrefSharedScriptObject(((ScriptObject  *)old_stk_dst.var_ref)->shared_pointer,vm_idx_call)){
 											goto lbl_exit_function;
 										}
 									}
@@ -884,7 +894,7 @@ namespace zetscript{
 					// to be able to do multiple assigns like a=b+=c=1 (1 will be pushed in each store instruction)
 					if(operator_type ==BYTE_CODE_STORE
 					){
-						*vm_stk_current++=*stk_dst;
+						*stk_vm_current++=*stk_dst;
 					}
 					else if(operator_type ==BYTE_CODE_STORE_CONST){
 						stk_dst->properties |= MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
@@ -936,13 +946,15 @@ namespace zetscript{
 				if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL){ // operation will result as integer.
 					PUSH_BOOLEAN((!((bool)(stk_result_op1->stk_value))));
 				}else{
-					applyMetamethod(
+					if(!applyMetamethod(
 						calling_function
 						,instruction
 						,BYTE_CODE_METAMETHOD_NOT
 						,stk_result_op1
 						,stk_result_op2
-					);
+					)){
+						goto lbl_exit_function;
+					}
 				}
 				continue;
 			case BYTE_CODE_NEG: // -
@@ -953,13 +965,15 @@ namespace zetscript{
 					COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
 					PUSH_FLOAT(-f_aux_value1);
 				}else{ // try metamethod ...
-					applyMetamethod(
+					if(!applyMetamethod(
 							calling_function
 							,instruction
 							,BYTE_CODE_METAMETHOD_NEG
 							,stk_result_op1
 							,stk_result_op2
-					);
+					)){
+						goto lbl_exit_function;
+					}
 				}
 				continue;
 			case BYTE_CODE_ADD: // +
@@ -984,16 +998,18 @@ namespace zetscript{
 						COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
 						PUSH_FLOAT(f_aux_value1 + STK_VALUE_TO_ZS_INT(stk_result_op2));
 					}else if((stk_result_op1->properties | stk_result_op2->properties) &  MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){ // replace all string from stk2 to empty
-						*vm_stk_current++=performAddString(stk_result_op1,stk_result_op2);
+						*stk_vm_current++=performAddString(stk_result_op1,stk_result_op2);
 					}else{ // try metamethod ...
 
-						applyMetamethod(
+						if(!applyMetamethod(
 							calling_function
 							,instruction
 							,BYTE_CODE_METAMETHOD_ADD
 							,stk_result_op1
 							,stk_result_op2
-						);
+						)){
+							goto lbl_exit_function;
+						}
 					}
 				}
 				continue;
@@ -1019,16 +1035,18 @@ namespace zetscript{
 						COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
 						PUSH_FLOAT(f_aux_value1 - STK_VALUE_TO_ZS_INT(stk_result_op2));
 					}else if(mask_and_properties==MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
-						*vm_stk_current++=performSubString(stk_result_op1,stk_result_op2);
+						*stk_vm_current++=performSubString(stk_result_op1,stk_result_op2);
 					}else{ // try metamethod ...
 
-						applyMetamethod(
+						if(!applyMetamethod(
 							calling_function
 							,instruction
 							,BYTE_CODE_METAMETHOD_SUB
 							,stk_result_op1
 							,stk_result_op2
-						);
+						)){
+							goto lbl_exit_function;
+						}
 					}
 				}
 				continue;
@@ -1165,11 +1183,11 @@ namespace zetscript{
 					unsigned short scope_type=0;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
 
-					StackElement *stk_start_arg_call=(vm_stk_current-n_args);
+					StackElement *stk_start_arg_call=(stk_vm_current-n_args);
 
 
 					if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND){ // points the object
-						vm_stk_current=stk_start_arg_call;
+						stk_vm_current=stk_start_arg_call;
 						continue;
 
 					}
@@ -1338,7 +1356,7 @@ namespace zetscript{
 					// if a scriptvar --> init shared
 					if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
 						ScriptObject *sv=(ScriptObject *)ret_obj.var_ref;
-						if(sv->ptr_shared_pointer_node == NULL){ // if return this, it holds ptr_shared_pointer
+						if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
 							if(!sv->initSharedPtr()){
 								goto lbl_exit_function;
 							}
@@ -1346,35 +1364,35 @@ namespace zetscript{
 					}
 
 					// reset stack (function+instruction (-1 op less))...
-					vm_stk_current=stk_start_arg_call-1;
+					stk_vm_current=stk_start_arg_call-1;
 
 					// ... and push result if not function constructor...
 					if(!is_constructor){
-						*vm_stk_current++ = ret_obj;
+						*stk_vm_current++ = ret_obj;
 					}
 				 }
 
 				continue;
 			 case  BYTE_CODE_RET:
-				if(vm_stk_current>stk_start){ // can return something. value is +1 from stack
-					stk_result=*(vm_stk_current-1);
+				if(stk_vm_current>stk_start){ // can return something. value is +1 from stack
+					stk_result=*(stk_vm_current-1);
 					if(stk_result.properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 						stk_result=*((StackElement *)stk_result.var_ref); // unpack
 					}
 
 					// if scriptvariable and in the zeros list, deattach
-					if(stk_result.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+					if(stk_result.properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
 						if(!STK_IS_THIS(&stk_result)){
 							ScriptObject *script_var=(ScriptObject *)stk_result.var_ref;
 
 							// deattach from zero shares if exist...
-							if(!deattachShareNode(script_var->ptr_shared_pointer_node->data.zero_shares,script_var->ptr_shared_pointer_node)){
+							if(deattachShareNode(script_var->shared_pointer->data.zero_shares,script_var->shared_pointer)==false){
 								goto lbl_exit_function;
 							}
 
 							// and free
-							free(script_var->ptr_shared_pointer_node);
-							script_var->ptr_shared_pointer_node=NULL;
+							free(script_var->shared_pointer);
+							script_var->shared_pointer=NULL;
 						}
 					}
 				}
@@ -1387,21 +1405,21 @@ namespace zetscript{
 					}
 					script_var->info_function_new=calling_function;
 					script_var->instruction_new=instruction;
-					(*vm_stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
+					(*stk_vm_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
 					continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new std::vector object...
 					script_var=NEW_VECTOR_VAR;
 					if(!script_var->initSharedPtr()){
 						goto lbl_exit_function;
 					}
-					(*vm_stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
+					(*stk_vm_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new std::vector object...
 				script_var=new ScriptObject(this->zs);
 				if(!script_var->initSharedPtr()){
 					goto lbl_exit_function;
 				}
-				(*vm_stk_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
+				(*stk_vm_current++)={NULL,script_var,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT};
 				continue;
 			 case  BYTE_CODE_DELETE:
 					POP_ONE;
@@ -1423,7 +1441,7 @@ namespace zetscript{
 							}
 
 							if(script_var->isCreatedByContructor()){
-								script_var->setDelete_C_ObjectOnDestroy(true);
+								script_var->deleteNativeObjectOnDestroy(true);
 							}
 
 							se->stk_value=NULL;
@@ -1470,8 +1488,6 @@ namespace zetscript{
 			while(vm_scope_start<(vm_current_scope)){
 				popVmScope(false); // do not check removeEmptySharedPointers to have better performance
 			}
-
-			removeEmptySharedPointers(vm_idx_call);
 		}
 
 		vm_idx_call--;

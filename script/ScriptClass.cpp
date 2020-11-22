@@ -26,7 +26,7 @@ namespace zetscript{
 		c_constructor=NULL;
 		idx_function_member_constructor =ZS_IDX_UNDEFINED;
 		idx_class=_idx_class;
-		//idx_starting_this_members=0;
+		idx_starting_this_members=0;
 		memset(metamethod_operator,0,sizeof(metamethod_operator));
 
 		/*for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
@@ -145,10 +145,16 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol				* 	ScriptClass::getSymbol(const std::string & symbol_name, char n_params){
+	Symbol				* 	ScriptClass::getSymbol(const std::string & symbol_name, char n_params,bool include_inherited_symbols){
 		bool only_symbol=n_params<0;
+		int idx_end=include_inherited_symbols==true?0:idx_starting_this_members;
 
-		for(int i = (int)(symbol_members->count-1); i >= 0 ; i--){
+		for(
+				int i = (int)(symbol_members->count-1);
+				i >= idx_end
+				; i--
+		){
+
 			Symbol *member_symbol=(Symbol *)symbol_members->items[i];
 			if(member_symbol->name == symbol_name){
 				if(only_symbol){
@@ -225,10 +231,10 @@ namespace zetscript{
 	){
 
 		if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
-			if(getSymbol(function_name,(char)params.size()) != NULL){
+			if(getSymbol(function_name,(char)params.size(),false) != NULL){ // we only search repeat symbols on this class ...
 				Symbol *existing_symbol;
 				if((existing_symbol=getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
-					error=zs_strutils::format("Function \"%s\" declared at [%s:%i] is already defined at [%s:%i]"
+					error=zs_strutils::format("Function \"%s\" is already defined at [%s:%i]"
 						,function_name.c_str()
 						,zs_path::get_file_name(file.c_str()).c_str()
 						,line
@@ -277,9 +283,24 @@ namespace zetscript{
 			// check if metamethod...
 			for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 				if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr((ByteCodeMetamethod)i),==,function_name.c_str())){
+					Symbol *symbol_result;
 
-					// metamethod should be not static
-					if(function_symbol->properties & SYMBOL_PROPERTY_STATIC){
+					if((symbol_result=getSymbol(function_name,(char)params.size())) != NULL){
+						error = zs_strutils::format("Metamethod \"%s::%s\" is already defined at \"%s::%s\" (%s:%i). Metamethods cannot be override"
+							,symbol_class.name.c_str()
+							,function_name.c_str()
+							,symbol_result->scope->script_class->symbol_class.name.c_str()
+							,function_name.c_str()
+							,zs_path::get_file_name(symbol_result->file.c_str()).c_str()
+							,symbol_result->line
+						);
+						return NULL;
+					}
+
+					// metamethod in script side are not static
+					if((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0
+					    && (function_symbol->properties & SYMBOL_PROPERTY_STATIC))
+					{
 						error = zs_strutils::format("Metamethod \"%s\" has to be not static"
 							,function_name.c_str()
 						);

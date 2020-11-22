@@ -23,7 +23,7 @@ namespace zetscript{
 			if (file != NULL)
 				filename = zs_path::get_file_name(file);
 
-			char  text[4096] = { 0 };
+			char  text[ZS_MAX_STR_BUFFER] = { 0 };
 
 			va_list  ap;
 			va_start(ap,  input_text);

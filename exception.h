@@ -29,7 +29,7 @@ namespace zetscript {
 				int	   line;
 				std::string	error_description;
 
-				char what_msg[4096];
+				char what_msg[ZS_MAX_STR_BUFFER];
 			public:
 
 				script_exception(const char *  _file, int _line, const char * _error_description, const char *_error_type);

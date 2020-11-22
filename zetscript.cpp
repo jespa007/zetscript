@@ -351,7 +351,10 @@ namespace zetscript{
 
 		if(options & EvalOption::EVAL_OPTION_EXECUTE){
 			// the first code to execute is the main function that in fact is a special member function inside our main class
-			virtual_machine->execute(script_class_factory->getMainFunction(), NULL,NULL,0,options & EvalOption::EVAL_OPTION_PRESERVE_0_SHARES);
+			virtual_machine->execute(
+					NULL
+					,script_class_factory->getMainFunction()
+			);
 		}
 	}
 
@@ -426,7 +429,7 @@ namespace zetscript{
 				if(vm_stk_element->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
 					var =((ScriptObject *)(vm_stk_element->var_ref));
 					if(var){
-						if(var->ptr_shared_pointer_node != NULL){
+						if(var->shared_pointer != NULL){
 							if(!var->unrefSharedPtr(IDX_CALL_STACK_MAIN)){
 								THROW_RUNTIME_ERROR("error clearing variables: %s",this->virtual_machine->getError());
 							}

@@ -15,7 +15,7 @@ namespace zetscript{
 
 	public:
 
-		//int				idx_starting_this_members;
+		int				idx_starting_this_members;
 		ClassTypeIdx 	idx_class; 	// registered class idx
 
 		Symbol 			symbol_class;		// info symbol class
@@ -57,7 +57,7 @@ namespace zetscript{
 		);
 
 		Symbol *	getSuperFunctionSymbol(Symbol *symbol);
-		Symbol *    getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
+		Symbol *    getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
 		Symbol				* 	registerMemberFunction(

@@ -22,7 +22,7 @@ class ScriptClass;
 
 		//----------------------
 		// MEM MANNAGER RELATED
-		InfoSharedPointerNode 	* ptr_shared_pointer_node;
+		InfoSharedPointerNode 	* shared_pointer;
 		ClassTypeIdx	 		idx_class;
 		ScriptFunction 		*	info_function_new;
 		Instruction 		*	instruction_new;
@@ -48,7 +48,7 @@ class ScriptClass;
 		bool isCreatedByContructor();
 		bool setIdxClass(unsigned char idx);
 		bool itHasSetMetamethod();
-		void setDelete_C_ObjectOnDestroy(bool _delete_on_destroy);
+		void deleteNativeObjectOnDestroy(bool _delete_on_destroy);
 
 		StackElement * addProperty(
 				const std::string & symbol_value
@@ -108,8 +108,8 @@ class ScriptClass;
 		/**
 		 * This variable tells whether is pointer function or not.
 		 */
-		ScriptClass *registered_class_info;
-		ScriptClass *c_scriptclass_info;
+		ScriptClass *script_class;
+		ScriptClass *script_class_native;
 		bool delete_c_object;
 
 		virtual void setup();

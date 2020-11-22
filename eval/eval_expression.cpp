@@ -766,6 +766,14 @@ namespace zetscript{
 							switch(*aux_p){
 							case '(': // is a function call
 
+								if(	first_access
+										&& symbol_token_node.value == SYMBOL_VALUE_SUPER
+										&& scope_info == MAIN_SCOPE(eval_data)
+								){
+									EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"\"super\" is not allowed here");
+
+								}
+
 								n_params=0;
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
@@ -861,10 +869,15 @@ namespace zetscript{
 									}
 
 									if(first_access){ // check first symbol at first...
+
 										if(symbol_token_node.value == SYMBOL_VALUE_THIS){
 
 											if(eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC){
-												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"\"this\" is not allowed in static functions");
+												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"\"this\" cannot be used in static functions");
+											}
+
+											if(scope_info == MAIN_SCOPE(eval_data)){
+												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"\"this\" is not allowed here");
 											}
 
 											// set symbol name

@@ -33,14 +33,14 @@ namespace zetscript {
 
 
 		void throw_script_error(const char *scrip_filename, int script_line, const char *in_txt,...){
-			char out_txt[ZS_MAX_VARG_OUTPUT_STRING];
+			char out_txt[ZS_MAX_STR_BUFFER];
 			ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 
 			throw script_exception_error(scrip_filename,script_line,out_txt);
 		}
 
 		void throw_runtime_error(const char *filename, int line, const char *in_txt,...){
-			char out_txt[ZS_MAX_VARG_OUTPUT_STRING];
+			char out_txt[ZS_MAX_STR_BUFFER];
 			ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 
 			throw std::runtime_error(zs_strutils::format("[%s:%i] %s",zs_path::get_file_name(filename).c_str(),line,out_txt));

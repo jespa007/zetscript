@@ -16,7 +16,7 @@ namespace zetscript{
 		//this_variable.properties|=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
 
 		// add extra symbol this itself if is a class typedef by user...
-		//if(registered_class_info->idx_class >=IDX_BUILTIN_TYPE_MAX){ // put as read only and cannot assign
+		//if(script_class->idx_class >=IDX_BUILTIN_TYPE_MAX){ // put as read only and cannot assign
 		this_variable.var_ref=this;
 		this_variable.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
 		//}
@@ -78,14 +78,14 @@ namespace zetscript{
 
 	void ScriptObject::setup(){
 
-		ptr_shared_pointer_node = NULL;
+		shared_pointer = NULL;
 
-		registered_class_info = NULL;
+		script_class = NULL;
 		c_object = NULL;
 		created_object = NULL;
 		value = NULL;
 		was_created_by_constructor=false;
-		c_scriptclass_info=NULL;
+		script_class_native=NULL;
 		idx_class = ZS_INVALID_CLASS;
 		//aux_string ="";
 		delete_c_object = false; // --> user is responsible to delete C objects!
@@ -111,26 +111,26 @@ namespace zetscript{
 
 	void ScriptObject::init(ScriptClass *irv, void * _c_object){
 
-		this->registered_class_info = irv;
+		this->script_class = irv;
 		idx_class = irv->idx_class;
 		c_object = _c_object;
 		
-		c_scriptclass_info=NULL;
+		script_class_native=NULL;
 
-		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (c_scriptclass_info) to get needed info to destroy create the C++ object.
-			if(registered_class_info->isNativeClass()){
-				c_scriptclass_info=registered_class_info;
-				created_object = (*registered_class_info->c_constructor)();
+		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
+			if(script_class->isNativeClass()){
+				script_class_native=script_class;
+				created_object = (*script_class->c_constructor)();
 				was_created_by_constructor=true;
 				c_object = created_object;
 			}else {
-				ScriptClass *sc=registered_class_info;
+				ScriptClass *sc=script_class;
 				// get first class with c inheritance...
 
-				while((sc->idx_base_classes->count>0) && (c_scriptclass_info==NULL)){
+				while((sc->idx_base_classes->count>0) && (script_class_native==NULL)){
 					sc=GET_SCRIPT_CLASS(this,sc->idx_base_classes->items[0]); // get base class (only first in script because has single inheritance)...
 					if(sc->isNativeClass()){ // we found the native script class!
-						c_scriptclass_info=sc;
+						script_class_native=sc;
 						if(sc->c_constructor!=NULL){ // if not null is class, else is singleton or static class already created
 							created_object = (*sc->c_constructor)();
 							was_created_by_constructor=true;
@@ -142,7 +142,7 @@ namespace zetscript{
 			}
 
 		}else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
-			c_scriptclass_info=irv;
+			script_class_native=irv;
 		}
 
 		// only create symbols if not std::string or std::vector type to make it fast ...
@@ -157,8 +157,8 @@ namespace zetscript{
 
 	ScriptFunction *ScriptObject::getConstructorFunction(){
 
-		if(registered_class_info->idx_function_member_constructor != ZS_IDX_UNDEFINED){
-			return (ScriptFunction *)registered_class_info->symbol_members->items[registered_class_info->idx_function_member_constructor];
+		if(script_class->idx_function_member_constructor != ZS_IDX_UNDEFINED){
+			return (ScriptFunction *)script_class->symbol_members->items[script_class->idx_function_member_constructor];
 		}
 
 		return NULL;
@@ -171,18 +171,18 @@ namespace zetscript{
 			return false;
 		}
 
-		registered_class_info = _info_registered_class;
+		script_class = _info_registered_class;
 		return true;
 	}
 
 	bool ScriptObject::itHasSetMetamethod(){
-		if(registered_class_info->metamethod_operator[BYTE_CODE_METAMETHOD_SET]!=NULL){
-			return registered_class_info->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->count > 0;
+		if(script_class->metamethod_operator[BYTE_CODE_METAMETHOD_SET]!=NULL){
+			return script_class->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->count > 0;
 		}
 		return false;
 	}
 
-	void ScriptObject::setDelete_C_ObjectOnDestroy(bool _delete_on_destroy){
+	void ScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
 		created_object=NULL;
 		if((this->delete_c_object = _delete_on_destroy)==true){
 			created_object=c_object;
@@ -283,7 +283,7 @@ namespace zetscript{
 
 			// update n_refs +1
 			if(sv->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
-				if(!virtual_machine->sharePointer(((ScriptObject *)(sv->var_ref))->ptr_shared_pointer_node)){
+				if(virtual_machine->sharePointer(((ScriptObject *)(sv->var_ref))->shared_pointer) == false){
 					return NULL;
 				}
 			}
@@ -320,7 +320,7 @@ namespace zetscript{
 
 	Symbol * ScriptObject::getSymbolMemberByIdx(int idx){
 
-		return (Symbol *)this->registered_class_info->symbol_members->items[idx];
+		return (Symbol *)this->script_class->symbol_members->items[idx];
 	}
 
 	StackElement * ScriptObject::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
@@ -384,7 +384,7 @@ namespace zetscript{
 					  ){ // deallocate but not if is c or this ref
 
 						// remove property if not referenced anymore
-						if(!virtual_machine->unrefSharedScriptObject(((ScriptObject *)(si->var_ref))->ptr_shared_pointer_node,true)){
+						if(!virtual_machine->unrefSharedScriptObject(((ScriptObject *)(si->var_ref))->shared_pointer,true)){
 							return false;
 						}
 
@@ -447,26 +447,47 @@ namespace zetscript{
 	}
 
 	ScriptClass * ScriptObject::getScriptClass(){
-		return registered_class_info;
+		return script_class;
 	}
 
 	const std::string & ScriptObject::getClassName(){
-		return registered_class_info->symbol_class.name;
+		return script_class->symbol_class.name;
 	}
 
 	const std::string & ScriptObject::getNativePointerClassName(){
-		return registered_class_info->str_class_ptr_type;
+		return script_class->str_class_ptr_type;
 	}
 
 	std::string ScriptObject::toString(){
-		return "@Class:"+registered_class_info->symbol_class.name;
+		// check whether toString is implemented...
+		zs_vector *stk_elements=this->script_class->metamethod_operator[BYTE_CODE_METAMETHOD_TO_STRING];
+
+		if(stk_elements != NULL){ // get first element
+			if(stk_elements->count > 0){
+				StackElement *stk_to_string=(StackElement *)stk_elements->items[0];
+				StackElement result=VM_EXECUTE(
+						virtual_machine
+						,this
+						,(ScriptFunction *)stk_to_string->var_ref
+						,NULL
+						,0
+				);
+
+				if(result.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+//					((ScriptObjectString *)result.var_ref)->toString();
+					return ((ScriptObjectString *)result.var_ref)->toString();
+				}
+			}
+		}
+
+		return "@Class:"+script_class->symbol_class.name;
 	}
 
 	bool ScriptObject::initSharedPtr(){
 		// is assigned means that when is created is assigned immediately ?
 
-		if(ptr_shared_pointer_node == NULL){
-			if((ptr_shared_pointer_node = virtual_machine->newSharedPointer(this))==NULL){
+		if(shared_pointer == NULL){
+			if((shared_pointer = virtual_machine->newSharedPointer(this))==NULL){
 				return false;
 			}
 		}
@@ -479,8 +500,8 @@ namespace zetscript{
 	}
 
 	bool ScriptObject::unrefSharedPtr(int _idx_current_call){
-		if(ptr_shared_pointer_node!=NULL){
-			if(!virtual_machine->unrefSharedScriptObject(ptr_shared_pointer_node,_idx_current_call)){
+		if(shared_pointer!=NULL){
+			if(!virtual_machine->unrefSharedScriptObject(shared_pointer,_idx_current_call)){
 				return false;
 			}
 		}
@@ -500,11 +521,11 @@ namespace zetscript{
 	}
 
 	ScriptClass * ScriptObject::getNativeClass(){
-		 return c_scriptclass_info;
+		 return script_class_native;
 	}
 
 	bool ScriptObject::isNativeObject(){
-		 return ((registered_class_info->symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
+		 return ((script_class->symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
 	}
 
 	bool ScriptObject::destroy(){
@@ -512,14 +533,18 @@ namespace zetscript{
 		bool deallocated = false;
 		if(created_object != 0){
 			if((this->idx_class<IDX_BUILTIN_TYPE_MAX) || delete_c_object){ // only erases pointer if basic type or user/auto delete is required ...
-				(*c_scriptclass_info->c_destructor)(created_object);
+				(*script_class_native->c_destructor)(created_object);
 				deallocated=true;
 			}
 		}
 
 //#ifdef __DEBUG__
 		if(!deallocated && was_created_by_constructor){
-			printf("[%s:%i] Allocated C pointer not deallocated\n",SFI_GET_FILE_LINE(info_function_new, instruction_new));
+			virtual_machine->setError(
+				zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
+					,SFI_GET_FILE_LINE(info_function_new, instruction_new))
+				);
+			return false;
 		}
 //#endif
 		// remove vars & fundtions if class is C...

@@ -15,10 +15,11 @@ namespace zetscript{
 	#define NO_PARAMS std::vector<StackElement>{}
 	#define ZS_VM_FUNCTION_TYPE std::function<ScriptObject * (const std::vector<ScriptObject *> & param)>
 
+	#define VM_EXECUTE(vm,o,f,stk,n)	vm->execute(o,f,stk,n,__FILE__,__LINE__)
 	#define VM_ERROR(s,...)				error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
 	#define VM_ERROR_AND_RET(s,...)		error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return stk_result;
 	#define VM_STOP_EXECUTE(s,...)		error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
-	#define VM_SET_USER_ERROR(vm,s,...)	vm->setInternalError(__FILE__,__LINE__, s, ##__VA_ARGS__)
+	#define VM_SET_USER_ERROR(vm,s,...)	vm->setErrorFileLine(__FILE__,__LINE__, s, ##__VA_ARGS__)
 
 	class ScriptFunction;
 	class ZetScript;
@@ -53,20 +54,24 @@ namespace zetscript{
 		void addGlobalVar(const StackElement & stk);
 
 		StackElement execute(
-			 ScriptFunction *	script_function
-			 ,ScriptObject 	*	this_object
+			 ScriptObject 	*	this_object
+			 ,ScriptFunction *	script_function
 			 ,StackElement 	*  	stk_params=NULL
 			 ,unsigned char		n_stk_params=0
-			 ,bool preserve_zero_shares=false
+			 ,const char *file =NULL
+			 ,int line=-1
 		);
 
+		void destroyLifetimeObject(ScriptObject *script_object);
+
 		 bool setStackElement(unsigned int idx, StackElement stk);
+		 StackElement *getStkVmCurrent();
 
 		StackElement *getLastStackValue();
 		StackElement * getStackElement(unsigned int idx_glb_element);
 
 		void setError(const std::string & str);
-		void setInternalError(const char *file, int line, const char *s,...);
+		void setErrorFileLine(const char *file, int line, const char *s,...);
 		std::string getError();
 
 		~VirtualMachine();
@@ -87,6 +92,12 @@ namespace zetscript{
 			ByteCode byte_code;
 			const char *str;
 		}OpCodeInfo;
+
+		typedef struct{
+			const char *file;
+			int line;
+			ScriptObject * script_object;
+		}InfoLifetimeObject;
 
 
 		struct VM_Scope{
@@ -112,10 +123,11 @@ namespace zetscript{
 		 VM_Scope			vm_scope[VM_SCOPE_MAX];
 		 VM_Scope			*vm_scope_max;
 
-		 StackElement     	vm_stack[VM_STACK_LOCAL_VAR_MAX];
+		 StackElement     					vm_stack[VM_STACK_LOCAL_VAR_MAX];
+		 std::map<void *,InfoLifetimeObject *>	lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
-		StackElement *vm_stk_current;
+		StackElement *stk_vm_current;
 		ScriptFunction  *main_function_object;
 		ScriptClass *main_class_object;
 
@@ -132,7 +144,7 @@ namespace zetscript{
 		StackElement  callFunctionScript(
 				ScriptObject 		* 	this_object,
 				ScriptFunction 	*	info_function,
-				StackElement 	* 	_stk_start_args=NULL,
+				StackElement 	* 	_stk_start_args,
 				//std::string 		  		  * _ptrStartStr=NULL,
 				unsigned char 		n_args=0,
 				Instruction *calling_instruction = NULL);
@@ -154,6 +166,7 @@ namespace zetscript{
 
 		inline bool insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		inline bool deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
+		void insertLifetimeObject(const char *file, int line, ScriptObject *script_object);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 
 		inline ScriptFunction *  findFunction(
@@ -166,15 +179,12 @@ namespace zetscript{
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
-			,StackElement *stk_result_op1=NULL
-			,StackElement *stk_result_op2=NULL
-			,const char * metamethod_operator_str=NULL
 		);
 
 
 		inline void popVmScope(bool check_empty_shared_pointers=true);
 
-		inline void applyMetamethod(
+		inline bool applyMetamethod(
 			 ScriptFunction *info_function
 			,Instruction *instruction
 //			,const char *op_code_str

@@ -86,7 +86,7 @@ namespace zetscript{
 			BYTE_CODE_METAMETHOD_SHL, // shift left
 			BYTE_CODE_METAMETHOD_SHR, // shift right
 			BYTE_CODE_METAMETHOD_SET, // store '='
-
+			BYTE_CODE_METAMETHOD_TO_STRING, // toString
 			BYTE_CODE_METAMETHOD_MAX
 	}ByteCodeMetamethod;
 

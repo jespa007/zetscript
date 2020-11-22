@@ -25,7 +25,7 @@ namespace zetscript{
 
 		// update n_refs +1
 		if(_stk->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
-			virtual_machine->sharePointer(((ScriptObject *)(_stk->var_ref))->ptr_shared_pointer_node);
+			virtual_machine->sharePointer(((ScriptObject *)(_stk->var_ref))->shared_pointer);
 		}
 	}
 

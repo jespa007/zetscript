@@ -12,7 +12,7 @@ class Vector2{
 		this.x=_x;
 		this.y=_y;
 	}
-
+	
 	// defines _add metamethod...
 	_add(v1,v2){
 		var v3=new Vector2();
@@ -26,7 +26,7 @@ class Vector2{
 	}
 };
 
-var v=(new Vector2(0,2)-new Vector2(0,2));//+new Vector2()
+var v=(new Vector2(0,2)+new Vector2(0,2));//+new Vector2()
 //var v=new Vector2(0,2)+new Vector2(0,2)
 //var v=new Vector2();
 System::println(v)

@@ -168,7 +168,7 @@ Date: XX-12-2020
 #224 implement keyword static
 > #227 implement DateTime class
 > #215 Implement typeof operator
-> #229 Implement toJson(bool one_line=false) for Vector and Object 
+> #229 Implement toJson(bool formated=false) for Vector and Object 
 
 
 Other: 

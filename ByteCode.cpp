@@ -81,6 +81,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHL:		return  "<<"; // binary shift left
 			case	BYTE_CODE_METAMETHOD_SHR:		return  ">>"; // binary shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "="; // set
+			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "toString"; // set
 			default:
 				return "none";
 		}
@@ -109,6 +110,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; // binary shift left
 			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; // binary shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; // set
+			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_toString"; // toString
 			default:
 				return "none";
 		}

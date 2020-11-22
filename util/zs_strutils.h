@@ -1,17 +1,17 @@
 #pragma once
 
-
+#define	ZS_MAX_STR_BUFFER 4096
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
 #define ZS_STRCMP(a, R, b) (strcmp(a,b) R 0)
 #define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
-#define ZS_MAX_VARG_OUTPUT_STRING	4096
+
 
 #define ZS_CAPTURE_VARIABLE_ARGS(text_out, text_in)\
 {va_list  ap;\
 va_start(ap,  text_in);\
-int n=vsnprintf(text_out,ZS_MAX_VARG_OUTPUT_STRING,text_in,  ap);\
-if(n==4096){\
+int n=vsnprintf(text_out,ZS_MAX_STR_BUFFER,text_in,  ap);\
+if(n==ZS_MAX_STR_BUFFER){\
 	text_out[sizeof(text_out)-2]='.';\
 	text_out[sizeof(text_out)-3]='.';\
 	text_out[sizeof(text_out)-4]='.';\

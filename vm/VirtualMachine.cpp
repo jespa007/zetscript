@@ -32,7 +32,7 @@ namespace zetscript{
 		}
 
 		vm_idx_call=0;
-		vm_stk_current=NULL;
+		stk_vm_current=NULL;
 		vm_current_scope = vm_scope;
 
 		f_aux_value1=0;
@@ -165,18 +165,19 @@ namespace zetscript{
 		return error_str;
 	}
 
-	void VirtualMachine::setInternalError(const char *file, int line, const char *in_txt,...){
-		char out_txt[ZS_MAX_VARG_OUTPUT_STRING];
+	void VirtualMachine::setErrorFileLine(const char *file, int line, const char *in_txt,...){
+		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 		error_str=zs_strutils::format("[%s:%i] %s",file,line,out_txt);
 	}
 
 	StackElement  VirtualMachine::execute(
-			 ScriptFunction 	*	calling_function
-			 ,ScriptObject 		*	this_object
-			 ,StackElement 		*  	stk_params
-			 ,unsigned	char  		n_stk_params
-			 ,bool 					preserve_zero_shares
+		 ScriptObject 		*	this_object
+		 ,ScriptFunction 	*	calling_function
+		 ,StackElement 		*  	stk_params
+		 ,unsigned	char  		n_stk_params
+		 , const char *file
+		 , int line
 	){
 
 		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
@@ -187,17 +188,17 @@ namespace zetscript{
 			error=false;
 			error_str="";
 
-			vm_stk_current=vm_stack;
+			stk_vm_current=vm_stack;
 
 			// calls script function from C : preserve stack space for global vars
 			if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
-				vm_stk_current=&vm_stack[main_function_object->registered_symbols->count];
+				stk_vm_current=&vm_stack[main_function_object->registered_symbols->count];
 			}
 			//vm_foreach_current=&vm_foreach[0];
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
 			for(unsigned i = 0; i < n_stk_params; i++){
-				*vm_stk_current++=stk_params[i];
+				*stk_vm_current++=stk_params[i];
 			}
 		}
 
@@ -206,11 +207,17 @@ namespace zetscript{
 		info=callFunctionScript(
 			this_object,
 			calling_function,
-			vm_stk_current,
+			stk_vm_current,
 			n_stk_params);
 
-		if(preserve_zero_shares==false){
-			removeEmptySharedPointers(IDX_CALL_STACK_MAIN);
+		// if string or object do not remove empty shared pointers if they are 0s
+		if(info.properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
+			// add generated
+			insertLifetimeObject(file,line,(ScriptObject *)info.var_ref);
+			/*ScriptObject * so=(ScriptObject *)info.var_ref;
+			if(so->shared_pointer==NULL){ // is not shared, add on the list for next time...
+				so->initSharedPtr();
+			}*/
 		}
 
 
@@ -223,6 +230,27 @@ namespace zetscript{
 		return info;
 	}
 
+	void VirtualMachine::insertLifetimeObject(const char *file, int line, ScriptObject *script_object){
+		InfoLifetimeObject *info = (InfoLifetimeObject *)malloc(sizeof(InfoLifetimeObject));
+
+		info->file=file;
+		info->line=line;
+		info->script_object=script_object;
+
+		lifetime_object[script_object]=info;
+	}
+
+	void VirtualMachine::destroyLifetimeObject(ScriptObject *script_object){
+		if(lifetime_object.count(script_object)==0){
+			THROW_RUNTIME_ERROR("Cannot find stack element lifetime");
+		}
+
+		InfoLifetimeObject *info = lifetime_object[script_object];
+
+		delete info->script_object;
+		free(info);
+	}
+
 	bool VirtualMachine::setStackElement(unsigned int idx, StackElement stk){
 		if(idx >= VM_STACK_LOCAL_VAR_MAX){
 			VM_SET_USER_ERROR(this,"setStackElement: out of bounds");
@@ -231,6 +259,10 @@ namespace zetscript{
 
 		vm_stack[idx]=stk;
 		return true;
+	}
+
+	StackElement *VirtualMachine::getStkVmCurrent(){
+		return stk_vm_current;
 	}
 
 	StackElement * VirtualMachine::getStackElement(unsigned int idx_glb_element){
@@ -245,11 +277,26 @@ namespace zetscript{
 
 
 	StackElement  * VirtualMachine::getLastStackValue(){
-		return (vm_stk_current-1);
+		return (stk_vm_current-1);
 	}
 
 
 	VirtualMachine::~VirtualMachine(){
+
+		if(lifetime_object.size()>0){
+
+			std::string error="Some lifetime objects returned by function vm->execute were not deallocated:\n";
+
+			for(auto it=lifetime_object.begin(); it !=lifetime_object.end();it++ ){
+				error+=zs_strutils::format("* [%s:%i] not deallocated \n",zs_path::get_filename(it->second->file),it->second->line);
+			}
+
+			error+="Please use destroyLifetimeObject() before destroy zetscript to avoid this exception\n";
+
+			THROW_RUNTIME_ERROR(error.c_str());
+
+		}
+
 		// destroy c variable scripts
 		/*ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 		StackElement *stk_it=&vm_stack[0];

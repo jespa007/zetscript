@@ -214,8 +214,9 @@ namespace zetscript{
 				[&,calling_obj,fun_obj](){
 					bool error=false;
 					virtual_machine->execute(
-										fun_obj,
-										calling_obj);
+						 calling_obj
+						,fun_obj
+					);
 
 				}
 			)));
@@ -233,8 +234,9 @@ namespace zetscript{
 						R ret_value;
 
 						StackElement stk = virtual_machine->execute(
-								fun_obj,
-								calling_obj);
+								 calling_obj
+								,fun_obj
+						);
 
 						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
@@ -267,10 +269,10 @@ namespace zetscript{
 					};
 
 					virtual_machine->execute(
-								fun_obj,
-								calling_obj,
-								args,
-								1);
+								 calling_obj
+								,fun_obj
+								,args
+								,1);
 				}
 			)));
 		}
@@ -296,10 +298,10 @@ namespace zetscript{
 						};
 
 						StackElement stk = virtual_machine->execute(
-													fun_obj,
-													calling_obj,
-													args,
-													1);
+								 calling_obj
+								,fun_obj
+								,args
+								,1);
 
 						if(!convertStackElementToVar(&stk,idx_return, (zs_int*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
@@ -336,10 +338,11 @@ namespace zetscript{
 					};
 
 					virtual_machine->execute(
-									fun_obj,
-									calling_obj,
-									args,
-									2);
+						calling_obj
+						,fun_obj
+						,args
+						,2
+					);
 
 				}
 
@@ -371,10 +374,11 @@ namespace zetscript{
 						};
 
 						StackElement stk = virtual_machine->execute(
-													fun_obj,
-													calling_obj,
-													args,
-													2);
+							 calling_obj
+							,fun_obj
+							,args
+							,2
+						);
 
 						if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
@@ -417,10 +421,11 @@ namespace zetscript{
 					};
 
 					virtual_machine->execute(
-									fun_obj,
-									calling_obj,
-									args,
-									3);
+							 calling_obj
+							,fun_obj
+							,args
+							,3
+					);
 
 				}
 
@@ -452,10 +457,11 @@ namespace zetscript{
 					};
 
 					StackElement stk = virtual_machine->execute(
-												fun_obj,
-												calling_obj,
-												args,
-												3);
+						 calling_obj
+						,fun_obj
+						,args
+						,3
+					);
 
 					if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
 						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
@@ -498,10 +504,11 @@ namespace zetscript{
 					};
 
 					virtual_machine->execute(
-									fun_obj,
-									calling_obj,
-									args,
-									4);
+						calling_obj,
+						fun_obj,
+						args,
+						4
+					);
 
 				}
 
@@ -537,10 +544,11 @@ namespace zetscript{
 						};
 
 						StackElement stk = virtual_machine->execute(
-													fun_obj,
-													calling_obj,
-													args,
-													4);
+								calling_obj,
+								fun_obj,
+
+								args,
+								4);
 
 						if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
@@ -589,10 +597,11 @@ namespace zetscript{
 					};
 
 					virtual_machine->execute(
-									fun_obj,
-									calling_obj,
-									args,
-									5);
+							calling_obj,
+							fun_obj,
+
+							args,
+							5);
 				}
 
 			)));
@@ -633,10 +642,11 @@ namespace zetscript{
 					};
 
 					StackElement stk = virtual_machine->execute(
-												fun_obj,
-												calling_obj,
-												args,
-												5);
+							calling_obj,
+							fun_obj,
+
+							args,
+							5);
 
 					if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
 						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
@@ -688,10 +698,11 @@ namespace zetscript{
 					};
 
 					virtual_machine->execute(
-									fun_obj,
-									calling_obj,
-									args,
-									6);
+							calling_obj,
+							fun_obj,
+
+							args,
+							6);
 				}
 
 			)));
@@ -732,10 +743,11 @@ namespace zetscript{
 						};
 
 						StackElement stk = virtual_machine->execute(
-													fun_obj,
-													calling_obj,
-													args,
-													6);
+								calling_obj,
+								fun_obj,
+
+								args,
+								6);
 
 						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());

@@ -1,12 +1,10 @@
 #include "../zetscript.h"
 
-#define			MAX_BUFFER_COPY_FROM_INTERVAL 4096
-
 namespace zetscript{
 	namespace zs_strutils{
 
 		std::string  format(const  char  *input_text, ...){
-			char  _sformat_buffer[4096] = { 0 };
+			char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
 			va_list  ap;
 			va_start(ap,  input_text);
 			vsprintf(_sformat_buffer,  input_text,  ap);
@@ -323,7 +321,7 @@ namespace zetscript{
 
 		void copy_from_ptr_diff(std::string & str_dst,const char *p1, const char *p2){
 
-			char aux_str_copy[MAX_BUFFER_COPY_FROM_INTERVAL] = {0};
+			char aux_str_copy[ZS_MAX_STR_BUFFER] = {0};
 
 			if(p1 == NULL || p2 == NULL){
 				THROW_RUNTIME_ERROR("NULL entry (%p %p)",p1,p2);
@@ -331,8 +329,8 @@ namespace zetscript{
 
 			int var_length=p2-p1;
 
-			if(var_length < 0 || var_length >= (MAX_BUFFER_COPY_FROM_INTERVAL+1)){
-				THROW_RUNTIME_ERROR("array out of bounds (Max:%i Min:%i Current:%i)",0,MAX_BUFFER_COPY_FROM_INTERVAL,var_length);
+			if(var_length < 0 || var_length >= (ZS_MAX_STR_BUFFER+1)){
+				THROW_RUNTIME_ERROR("array out of bounds (Max:%i Min:%i Current:%i)",0,ZS_MAX_STR_BUFFER,var_length);
 			}
 
 			if(p1 == p2){

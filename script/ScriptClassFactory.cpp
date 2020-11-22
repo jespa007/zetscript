@@ -220,7 +220,7 @@ namespace zetscript{
 				}
 
 				// set idx starting member
-				//sci->idx_starting_this_members=sci->symbol_members->count;
+				sci->idx_starting_this_members=sci->symbol_members->count;
 
 				// 2. set idx base class...
 				sci->idx_base_classes->push_back(base_class->idx_class);

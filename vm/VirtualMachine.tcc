@@ -134,7 +134,7 @@ namespace zetscript{
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
 					var =((ScriptObject *)(stk_local_var->var_ref));
 					if(var !=NULL){
-						if(var->ptr_shared_pointer_node != NULL){
+						if(var->shared_pointer != NULL){
 							if(!var->unrefSharedPtr(vm_idx_call)){
 								return;
 							}
@@ -161,7 +161,7 @@ namespace zetscript{
 
 	}
 
-	inline void VirtualMachine::applyMetamethod(
+	inline bool VirtualMachine::applyMetamethod(
 		 ScriptFunction *calling_function
 		,Instruction *instruction
 		,ByteCodeMetamethod byte_code_metamethod
@@ -169,9 +169,52 @@ namespace zetscript{
 		,StackElement *stk_result_op2
 	
 	) {
+		//std::string str_symbol_to_find="";
+		ScriptObject *calling_object=NULL;
+		ScriptClass *script_class_aux=NULL;
+		StackElement *stk_args = stk_vm_current;
+		ScriptFunction *ptr_function_found=NULL;
+		StackElement ret_obj;
+		const char *byte_code_metamethod_operator_str=ByteCodeMetamethodToOperatorStr(byte_code_metamethod);
+		const char *str_symbol_metamethod=ByteCodeMetamethodToSymbolStr(byte_code_metamethod);
+		zs_vector *stk_elements=NULL;
+		std::string error_found="";
+
+		ScriptObject *script_object=NULL;
+		ScriptObject *one_param = NULL;
+			int n_stk_args=((byte_code_metamethod == BYTE_CODE_METAMETHOD_NOT\
+							|| byte_code_metamethod == BYTE_CODE_METAMETHOD_NEG\
+							|| byte_code_metamethod == BYTE_CODE_METAMETHOD_SET\
+							   )? 1:2);
+
+		if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+			stk_result_op1 = (StackElement *)(stk_result_op1->var_ref);
+		}
+
+		if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+			script_object = (ScriptObject *)(stk_result_op1->var_ref);
+		}
+
+		if(script_object == NULL) { // script null
+			if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
+				stk_result_op2 = (StackElement *)(stk_result_op2->var_ref);
+			}
+
+			if(stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+				script_object = (ScriptObject *)(stk_result_op2->var_ref);
+			}
+		}
+
+		if(script_object == NULL){ // cannot perform operation
+			error_found="";
+			goto apply_metamethod_error;
+		}
+
+		// calling object
+		calling_object = script_object;
 
 		//int idx_offset_function_member_start=0;
-		ScriptObject *so1 = NULL;
+		/*ScriptObject *so1 = NULL;
 		ScriptObject *so2 = NULL;
 		ScriptFunction * ptr_function_found=NULL;
 		ScriptObject *calling_object=NULL; // TODO: seach calling object and both stk op1/op2 shoould be same type
@@ -181,14 +224,14 @@ namespace zetscript{
 						|| byte_code_metamethod == BYTE_CODE_METAMETHOD_NEG\
 						|| byte_code_metamethod == BYTE_CODE_METAMETHOD_SET\
 						   )? 1:2);
-		StackElement *stk_args = vm_stk_current; // because it did a pop
-		//if((zs_int)instruction->value_op2 == ZS_IDX_UNDEFINED){ /* search for first time , else the function is stored in value_op2 */
+		StackElement *stk_args = stk_vm_current; // because it did a pop
+		//if((zs_int)instruction->value_op2 == ZS_IDX_UNDEFINED){ // search for first time , else the function is stored in value_op2
 		ScriptClass *script_class_aux=NULL;
 
 		const char * symbol_to_find;
 		ptr_function_found=NULL;
 		bool chk_ok=false;
-		const char *byte_code_metamethod_operator_str=ByteCodeMetamethodToOperatorStr(byte_code_metamethod);
+
 
 
 		if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT))){
@@ -216,13 +259,13 @@ namespace zetscript{
 			std::string var_type1=stk_result_op1->typeStr(),
 					var_type2="";
 
-			if(n_stk_args==1){ /* 1 arg*/
+			if(n_stk_args==1){ // 1 arg
 				VM_ERROR("cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
 						byte_code_metamethod_operator_str,
 						var_type1.c_str()
 						);
 				return;
-			}else{ /* 2 args*/
+			}else{ // 2 args
 				var_type2=stk_result_op2->typeStr();
 				VM_ERROR("cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
 						var_type1.c_str(),
@@ -240,36 +283,39 @@ namespace zetscript{
 					one_param = (ScriptObject *)(((StackElement *)one_param))->var_ref;
 				}
 			}
+		}*/
+
+		script_class_aux=GET_SCRIPT_CLASS(this,script_object->idx_class);
+		stk_elements=script_class_aux->metamethod_operator[byte_code_metamethod];
+
+		if(stk_elements == NULL){ // operator is not implemented
+			error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
+			goto apply_metamethod_error;
 		}
-
-		script_class_aux=GET_SCRIPT_CLASS(this,so1->idx_class);
-		zs_vector *stk_elements=script_class_aux->metamethod_operator[byte_code_metamethod];
 		//StackElement *stk_args=mm_test_startArg;//(mm_test_startArg-n_metam_args;//+idx_offset_function_member_start);
-		//unsigned n_stk_args=n_metam_args;
+		//unsigned n_stk_args=n_metam_args;*/
 
-		symbol_to_find=ByteCodeMetamethodToSymbolStr(byte_code_metamethod);
-
-		ptr_function_found = findFunction(
+		if((ptr_function_found = findFunction(
 			 calling_object
 			,calling_function
 			,instruction
 			,false
 			,(void *)stk_elements->items
 			,stk_elements->count
-			,symbol_to_find
+			,str_symbol_metamethod
 			,stk_args
 			,n_stk_args
-			,stk_result_op1
-			,stk_result_op2
-			,byte_code_metamethod_operator_str
-		);
+		)) == NULL){
+			error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is implemented but and unexpected args were found",str_symbol_metamethod,byte_code_metamethod_operator_str);
+			goto apply_metamethod_error;
+		}
 
 		/*}else{
 			ptr_function_found = (ScriptFunction *)instruction->value_op2;
 		}*/
 		/* by default virtual machine gets main object class in order to run functions ... */
-		bool error = false;
-		StackElement ret_obj=callFunctionScript(
+		//bool error = false;
+		ret_obj=callFunctionScript(
 				NULL // it has not related with any calling function
 				,ptr_function_found
 				,stk_args
@@ -278,20 +324,41 @@ namespace zetscript{
 		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){ //
 
 			if(!((ScriptObject *)(ret_obj.var_ref))->initSharedPtr()){
-				return;
+				return false;
 			}
 
 			if(byte_code_metamethod != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
-				((ScriptObject *)(ret_obj.var_ref))->setDelete_C_ObjectOnDestroy(true);
+				((ScriptObject *)(ret_obj.var_ref))->deleteNativeObjectOnDestroy(true);
 			}
 		}
 
 		// reset stack...
-		vm_stk_current=stk_args;
+		stk_vm_current=stk_args;
 
 		if(byte_code_metamethod != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
-			*vm_stk_current++ = ret_obj;
+			*stk_vm_current++ = ret_obj;
 		}
+
+		return true;
+
+apply_metamethod_error:
+
+		if(n_stk_args==1){
+			VM_ERROR("cannot perform operator \"%s%s\". %s"
+				,byte_code_metamethod_operator_str
+				,stk_result_op1->typeStr()
+				,error_found.c_str()
+				);
+		}else{
+			VM_ERROR("cannot perform operator \"%s %s %s\". %s"
+				,stk_result_op1->typeStr()
+				,byte_code_metamethod_operator_str
+				,stk_result_op2->typeStr()
+				,error_found.c_str()
+				);
+		}
+
+		return false;
 
 
 	}
@@ -306,10 +373,7 @@ namespace zetscript{
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
-			,StackElement *stk_result_op1
-			,StackElement *stk_result_op2
-			,const char *metamethod_operator_str
-			) {
+		) {
 
 		// by default search over global functions...
 		ScriptObject *var_object = NULL;
@@ -334,7 +398,7 @@ namespace zetscript{
 			ScriptFunction *irfs = (ScriptFunction *)stk_element->var_ref;
 			aux_string=irfs->symbol.name;
 
-			if(metamethod_operator_str != NULL || (aux_string == symbol_to_find && irfs->params->count == n_args)){
+			if((aux_string == symbol_to_find && irfs->params->count == n_args)){
 				if((irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;
@@ -482,7 +546,7 @@ namespace zetscript{
 				ScriptFunction *irfs = (ScriptFunction *)stk_element->var_ref;
 
 
-				if(metamethod_operator_str != NULL || (irfs->symbol.name == symbol_to_find)){
+				if(irfs->symbol.name == symbol_to_find){
 
 					if(n_candidates == 0){
 						str_candidates+="\tPossible candidates are:\n\n";
@@ -510,46 +574,24 @@ namespace zetscript{
 			}
 
 			if(n_candidates == 0){
-				if(metamethod_operator_str != NULL){
-					if(n_args==2){
-						PRINT_DUAL_ERROR_OP(metamethod_operator_str);
-
-					}else{
-						PRINT_ERROR_OP(metamethod_operator_str);
-
-					}
-				}else{
-
-					VM_ERROR("Cannot find %s \"%s%s(%s)\".\n\n",
-							is_constructor ? "constructor":"function",
-							calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-									calling_function->getInstructionSymbolName(instruction),
-							args_str.c_str()
-					);
-
-					return NULL;
-				}
-			}
-			else{
-				if(metamethod_operator_str!=NULL){
-					VM_ERROR("Cannot find metamethod \"%s\" for \"%s%s(%s)\".\n\n%s",
-						metamethod_operator_str,
-						calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
-						"unknown TODOOOOOO",//((ScriptFunction *)global_symbols->items[0])->symbol.name.c_str(),
-						args_str.c_str(),
-						str_candidates.c_str());
-						return NULL;
-				}else{
-					VM_ERROR("Cannot match %s \"%s%s(%s)\" .\n\n%s",
+				VM_ERROR("Cannot find %s \"%s%s(%s)\".\n\n",
 						is_constructor ? "constructor":"function",
 						calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 								calling_function->getInstructionSymbolName(instruction),
-						args_str.c_str(),
-						str_candidates.c_str());
-					return NULL;
-				}
-			}
+						args_str.c_str()
+				);
 
+				return NULL;
+			}
+			else{
+				VM_ERROR("Cannot match %s \"%s%s(%s)\" .\n\n%s",
+					is_constructor ? "constructor":"function",
+					calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+							calling_function->getInstructionSymbolName(instruction),
+					args_str.c_str(),
+					str_candidates.c_str());
+				return NULL;
+			}
 		}
 
 		return ptr_function_found;
