@@ -66,11 +66,12 @@ namespace zetscript{
 		// System
 		script_class_factory->registerNativeSingletonClass<SystemBuiltIn>("SystemBuiltIn");
 		//script_class_factory->registerNativeMemberFunction<SystemBuiltIn>(ZS_CONTRUCTOR_NAME,SystemBuiltIn::constructorSf);
+		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("readChar",SystemBuiltIn::readChar);
 		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("clock",SystemBuiltIn::clock);
 		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("print",SystemBuiltIn::printSf);
 		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("println",SystemBuiltIn::printlnSf);
 		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("eval",SystemBuiltIn::evalSf);
-		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("makeReadOnly",SystemBuiltIn::makeReadOnly);
+		//script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("makeReadOnly",SystemBuiltIn::makeReadOnly);
 		//ZS_REGISTER_VARIABLE(zs,"System",&system_built_in);
 
 		// Custom user function or classes
@@ -84,6 +85,9 @@ namespace zetscript{
 				"}"
 				""
 				"class System{\n"
+				"	static readChar(){"
+				"		return SystemBuiltIn::readChar();"
+				"	}"
 				"	static clock(){"
 				"		return SystemBuiltIn::clock();"
 				"	}"

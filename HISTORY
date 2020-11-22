@@ -120,7 +120,7 @@ Date: XX-12-2020
 #168 When semicolon on expression is missing it shows wrong filename 
 > #169 Fix/Check metamethods 
 #170 Fix class 
-> #171 test returns stack var with 0 refs 
+#171 test returns stack var with 0 refs (solved by #230, user is in charge to destroy lifetime objects) 
 #172 get rid super scope
 #173 Manage this context automatically on anonymouse function created on class 
 #175 Arguments as E/S 
@@ -129,7 +129,7 @@ Date: XX-12-2020
 #180 Return vector or dictionary not deref its user properties 
 #181 Implement var args 
 > #182 Make ScriptVarStringr iterable like Vector 
-> #183 Implement Dictionary helper class 
+> #183 Implement Object helper class 
 > #184 Implement + for Vector 
 #185 parser char as integer
 > #186 Implement StriptVarString methods

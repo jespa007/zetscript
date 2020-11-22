@@ -247,6 +247,8 @@ namespace zetscript{
 
 		InfoLifetimeObject *info = lifetime_object[script_object];
 
+		lifetime_object.erase(script_object);
+
 		delete info->script_object;
 		free(info);
 	}

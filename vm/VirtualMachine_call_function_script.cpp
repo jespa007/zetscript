@@ -1354,7 +1354,7 @@ namespace zetscript{
 					}
 
 					// if a scriptvar --> init shared
-					if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+					if(ret_obj.properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
 						ScriptObject *sv=(ScriptObject *)ret_obj.var_ref;
 						if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
 							if(!sv->initSharedPtr()){
@@ -1488,6 +1488,8 @@ namespace zetscript{
 			while(vm_scope_start<(vm_current_scope)){
 				popVmScope(false); // do not check removeEmptySharedPointers to have better performance
 			}
+
+			removeEmptySharedPointers(vm_idx_call);
 		}
 
 		vm_idx_call--;

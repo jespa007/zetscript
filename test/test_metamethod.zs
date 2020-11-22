@@ -31,6 +31,8 @@ var v=(new Vector2(0,2)+new Vector2(0,2));//+new Vector2()
 //var v=new Vector2();
 System::println(v)
 
+System::println("key press: {0}",System::readChar())
+
 //print(new Vector2(0,2)); // it prints each new vector
 //print((new Vector2(0,2)+new Vector2(1,0)+new Vector2())); // it sums and then it prints*/
 

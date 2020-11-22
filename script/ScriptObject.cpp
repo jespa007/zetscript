@@ -475,7 +475,16 @@ namespace zetscript{
 
 				if(result.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
 //					((ScriptObjectString *)result.var_ref)->toString();
-					return ((ScriptObjectString *)result.var_ref)->toString();
+					ScriptObject *so=(ScriptObjectString *)result.var_ref;
+
+					// capture string...
+					std::string aux=so->toString();
+
+					// ... destroy lifetime object we don't need anymore
+					virtual_machine->destroyLifetimeObject(so);
+
+					// return
+					return aux;
 				}
 			}
 		}

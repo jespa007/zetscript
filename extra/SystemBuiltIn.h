@@ -8,6 +8,7 @@ namespace zetscript{
 	class SystemBuiltIn{
 	public:
 		static zs_int clock();
+		static zs_int readChar();
 		static void makeReadOnly(StackElement *stk);
 
 		static void printlnSf(ZetScript *zs,StackElement *str, StackElement *args);
