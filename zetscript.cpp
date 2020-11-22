@@ -46,12 +46,11 @@ namespace zetscript{
 		script_class_factory->registerSystem();
 
 		//-------------------------
-		// Register built in extra
+		// Register built in modules
+
 		// String
 		script_class_factory->registerNativeClass<StringBuiltIn>("StringBuiltIn");
-		//script_class_factory->registerNativeMemberFunction<StringBuiltIn>(ZS_CONTRUCTOR_NAME,StringBuiltIn::constructorSf);
 		script_class_factory->registerNativeMemberFunctionStatic<StringBuiltIn>("format",StringBuiltIn::formatSf);
-		//ZS_REGISTER_VARIABLE(zs,"String",&string_built_in);
 
 		// Math
 		script_class_factory->registerNativeSingletonClass<MathBuiltIn>("Math");
@@ -61,18 +60,14 @@ namespace zetscript{
 		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
 		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
 		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
-		//ZS_REGISTER_VARIABLE(this,"Math",&math_built_in);
 
 		// System
 		script_class_factory->registerNativeSingletonClass<SystemBuiltIn>("SystemBuiltIn");
-		//script_class_factory->registerNativeMemberFunction<SystemBuiltIn>(ZS_CONTRUCTOR_NAME,SystemBuiltIn::constructorSf);
 		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("readChar",SystemBuiltIn::readChar);
 		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("clock",SystemBuiltIn::clock);
 		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("print",SystemBuiltIn::printSf);
 		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("println",SystemBuiltIn::printlnSf);
 		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("eval",SystemBuiltIn::evalSf);
-		//script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("makeReadOnly",SystemBuiltIn::makeReadOnly);
-		//ZS_REGISTER_VARIABLE(zs,"System",&system_built_in);
 
 		// Custom user function or classes
 		eval(
@@ -80,28 +75,24 @@ namespace zetscript{
 
 				"class String{\n"
 				"	static format(s,...args){"
-				"		StringBuiltIn::format(ptrToZetScriptPtr(0x%x),s,args);" // passing this because is registered as static
+				"		StringBuiltIn::format(ptrToZetScriptPtr(0x%x),s,args)" // passing this because is registered as static
 				"	}"
 				"}"
 				""
 				"class System{\n"
 				"	static readChar(){"
-				"		return SystemBuiltIn::readChar();"
+				"		return SystemBuiltIn::readChar()"
 				"	}"
 				"	static clock(){"
-				"		return SystemBuiltIn::clock();"
+				"		return SystemBuiltIn::clock()"
 				"	}"
 				"	static print(s,...args){"
-				"		SystemBuiltIn::print(ptrToZetScriptPtr(0x%x),s,args);"  // passing this because is registered as static
+				"		SystemBuiltIn::print(ptrToZetScriptPtr(0x%x),s,args)"  // passing this because is registered as static
 				"	}"
 				"	static println(s,...args){"
-				"		SystemBuiltIn::println(ptrToZetScriptPtr(0x%x),s,args);"  // passing this because is registered as static
+				"		SystemBuiltIn::println(ptrToZetScriptPtr(0x%x),s,args)"  // passing this because is registered as static
 				"	}"
 				"}"
-				//"var String= new StringBuiltinCustom(ptrToZetScriptPtr(0x%p));"
-				//"var System= new SystemBuiltinCustom(ptrToZetScriptPtr(0x%p),String);"
-				//"System.makeReadOnly(String);"
-				//"System.makeReadOnly(System);"
 			,
 			(void *)this,
 			(void *)this,

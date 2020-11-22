@@ -1,5 +1,10 @@
 #include "zetscript.h"
 
+#ifdef _MSC_VER
+#include <conio.h>
+#define getch _getch
+#endif
+
 namespace zetscript{
 
 	zs_int SystemBuiltIn::clock(){
