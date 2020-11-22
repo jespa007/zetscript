@@ -102,7 +102,7 @@ Date: XX-12-2020
 #146 Implement eval Dictionary object
 #147 Implement bind class const static variable
 #148 replace all writeError functions by throw and remove error param 
-> #150 String operator + with any stackelement
+#150 String operator + with any stackelement
 #154 Fix continue, break keyword 
 #153 fix DO-WHILE keyword
 #152 fix WHILE keyword
@@ -169,7 +169,7 @@ Date: XX-12-2020
 > #227 implement DateTime class
 > #215 Implement typeof operator
 > #229 Implement toJson(bool formated=false) for Vector and Object 
-
+#230 Control return ScriptObject[String] values that are not deallocated by user 
 
 Other: 
 

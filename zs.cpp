@@ -76,7 +76,7 @@ int main(int argc, char * argv[]) {
 			}
 			std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double, std::milli> time_span=t2-t1;
-			printf("executed %s %.0fms\n", zs_path::get_file_name(file).c_str(),time_span.count());
+			printf("executed %s %.0fms\n", zs_path::get_filename(file).c_str(),time_span.count());
 		}catch(std::exception & ex){
 			fprintf(stderr,"%s\n",ex.what());
 		}

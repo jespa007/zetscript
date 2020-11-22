@@ -236,9 +236,9 @@ namespace zetscript{
 				if((existing_symbol=getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
 					error=zs_strutils::format("Function \"%s\" is already defined at [%s:%i]"
 						,function_name.c_str()
-						,zs_path::get_file_name(file.c_str()).c_str()
+						,zs_path::get_filename(file.c_str()).c_str()
 						,line
-						,zs_path::get_file_name(existing_symbol->file.c_str()).c_str()
+						,zs_path::get_filename(existing_symbol->file.c_str()).c_str()
 						,existing_symbol->line
 					);
 				}
@@ -291,7 +291,7 @@ namespace zetscript{
 							,function_name.c_str()
 							,symbol_result->scope->script_class->symbol_class.name.c_str()
 							,function_name.c_str()
-							,zs_path::get_file_name(symbol_result->file.c_str()).c_str()
+							,zs_path::get_filename(symbol_result->file.c_str()).c_str()
 							,symbol_result->line
 						);
 						return NULL;

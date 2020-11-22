@@ -355,9 +355,9 @@ namespace zetscript{
 
 					THROW_RUNTIME_ERROR("Symbol \"%s\" defined at [%s:%i] is already defined at [%s:%i]"
 						,function_name.c_str()
-						,zs_path::get_file_name(file.c_str()).c_str()
+						,zs_path::get_filename(file.c_str()).c_str()
 						,line
-						,zs_path::get_file_name(symbol_found->file.c_str()).c_str()
+						,zs_path::get_filename(symbol_found->file.c_str()).c_str()
 						,symbol_found->line
 					);
 				}

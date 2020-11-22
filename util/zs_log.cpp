@@ -21,7 +21,7 @@ namespace zetscript{
 			}
 
 			if (file != NULL)
-				filename = zs_path::get_file_name(file);
+				filename = zs_path::get_filename(file);
 
 			char  text[ZS_MAX_STR_BUFFER] = { 0 };
 

@@ -2,7 +2,7 @@
 
 namespace zetscript{
 	namespace zs_path{
-		std::string  get_file_name(const std::string & _path) {
+		std::string  get_filename(const std::string & _path) {
 		  size_t found;
 		  std::string ss=_path;
 		  found=_path.find_last_of("/\\");
@@ -13,7 +13,7 @@ namespace zetscript{
 
 		std::string  get_filename_without_extension(const std::string & _path) {
 
-			std::string file = get_file_name(_path);
+			std::string file = get_filename(_path);
 
 
 			std::string fName(file);

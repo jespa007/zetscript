@@ -285,15 +285,16 @@ namespace zetscript{
 
 		if(lifetime_object.size()>0){
 
-			std::string error="Some lifetime objects returned by function vm->execute were not deallocated:\n";
+			std::string error="\n\nSome lifetime objects created by virtual machine were not destroyed:\n\n";
 
 			for(auto it=lifetime_object.begin(); it !=lifetime_object.end();it++ ){
-				error+=zs_strutils::format("* [%s:%i] not deallocated \n",zs_path::get_filename(it->second->file),it->second->line);
+				error+=zs_strutils::format("* Object lifetime created at [%s:%i] was not destroyed \n",zs_path::get_filename(it->second->file).c_str(),it->second->line);
 			}
 
-			error+="Please use destroyLifetimeObject() before destroy zetscript to avoid this exception\n";
+			error+="\n\n";
+			//error+="\nPlease destroy lifetime objects through destroyLifetimeObject() before destroy zetscript to avoid this exception\n";
 
-			THROW_RUNTIME_ERROR(error.c_str());
+			fprintf(stderr,error.c_str());
 
 		}
 

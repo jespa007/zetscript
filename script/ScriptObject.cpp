@@ -540,11 +540,11 @@ namespace zetscript{
 
 //#ifdef __DEBUG__
 		if(!deallocated && was_created_by_constructor){
-			virtual_machine->setError(
+			fprintf(stderr,
 				zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
-					,SFI_GET_FILE_LINE(info_function_new, instruction_new))
+					,SFI_GET_FILE_LINE(info_function_new, instruction_new)).c_str()
 				);
-			return false;
+			//return false;
 		}
 //#endif
 		// remove vars & fundtions if class is C...

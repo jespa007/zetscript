@@ -43,7 +43,7 @@ namespace zetscript {
 			char out_txt[ZS_MAX_STR_BUFFER];
 			ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 
-			throw std::runtime_error(zs_strutils::format("[%s:%i] %s",zs_path::get_file_name(filename).c_str(),line,out_txt));
+			throw std::runtime_error(zs_strutils::format("[%s:%i] %s",zs_path::get_filename(filename).c_str(),line,out_txt));
 		}
 
 	}
