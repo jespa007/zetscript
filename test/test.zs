@@ -1,6 +1,22 @@
-class v2{}
+class Integer{
+	constructor(){
+		this.b=false;
+	}
+	_gt(v1){
+		return this.b > v1.b;
+	}
 
-new v2(0)+new v2(1)-new v2(3)-new v2(4)
+	/*_not(){
+		return new Boolean(-this.b)
+	}*/
+}
+
+
+!(new Integer(10)>new Integer(0))&&(new Integer(10)>new Integer(0))
+
+//class v2{}
+
+//new v2(0)+new v2(1)-new v2(3)-new v2(4)
 //System::println(0+1+2-3-4)
 
 //5.0+2.0e2;

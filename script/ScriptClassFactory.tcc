@@ -297,7 +297,7 @@ namespace zetscript{
 
 				Symbol *symbol_src = (Symbol *)base_class->symbol_members->items[i];
 
-				if(symbol_src->properties & SYMBOL_PROPERTY_IS_FUNCTION){ // is function
+				if(symbol_src->properties & SYMBOL_PROPERTY_FUNCTION){ // is function
 					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
 					// build params...
 					std::vector<FunctionParam> params;
@@ -519,7 +519,7 @@ namespace zetscript{
 
 		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
 
-		if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_SET),==,function_name)){
+		/*if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_SET),==,function_name)){
 			if(sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]==NULL){
 				sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]=new zs_vector();
 			}
@@ -529,7 +529,7 @@ namespace zetscript{
 
 			sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->push_back((zs_int)stk_element);
 			ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
-		}
+		}*/
 	}
 
 
@@ -638,7 +638,7 @@ namespace zetscript{
 								zs_rtti::demangle(return_type.c_str()).c_str());
 					}
 
-					if(c_class->metamethod_operator[i]==NULL){
+					/*if(c_class->metamethod_operator[i]==NULL){
 						c_class->metamethod_operator[i]=new zs_vector();
 					}
 
@@ -647,7 +647,7 @@ namespace zetscript{
 
 					c_class->metamethod_operator[i]->push_back((zs_int)stk_element);
 
-					ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
+					ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);*/
 					break;
 				}
 			}

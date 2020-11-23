@@ -34,7 +34,7 @@ namespace zetscript{
 		zs_vector						   	*   idx_base_classes; // list of idx of classes base
 
 
-		zs_vector 			*metamethod_operator[BYTE_CODE_METAMETHOD_MAX]; // overrided metamethod
+		//zs_vector 			*metamethod_operator[BYTE_CODE_METAMETHOD_MAX]; // overrided metamethod
 
 		 ScriptClass(ZetScript *_zs,ClassTypeIdx _idx_class);
 

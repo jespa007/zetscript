@@ -12,7 +12,7 @@
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 typedef enum {
-	SYMBOL_PROPERTY_IS_FUNCTION						= 0x1 << 0, // 0x01: ref_ptr holds script function ptr
+	SYMBOL_PROPERTY_FUNCTION						= 0x1 << 0, // 0x01: ref_ptr holds script function ptr
 	SYMBOL_PROPERTY_C_OBJECT_REF 					= 0x1 << 1, // 0x02:
 	SYMBOL_PROPERTY_STATIC 							= 0x1 << 2, // 0x04: C function or C++ static functions
 	SYMBOL_PROPERTY_CONST 							= 0x1 << 3, // 0x08: This symbol is not assignable

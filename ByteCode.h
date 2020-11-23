@@ -93,6 +93,8 @@ namespace zetscript{
 	const char * ByteCodeToStr(ByteCode  op);
 	const char * ByteCodeMetamethodToOperatorStr(ByteCodeMetamethod op);
 	const char * ByteCodeMetamethodToSymbolStr(ByteCodeMetamethod op);
+	int			 getNumArgumentsStaticMetamethod(ByteCodeMetamethod op);
+	int			 getNumArgumentsNonStaticMetamethod(ByteCodeMetamethod op);
 
 
 

@@ -118,4 +118,17 @@ namespace zetscript{
 		return "none";
 	}
 
+	int			 getNumArgumentsStaticMetamethod(ByteCodeMetamethod op){
+		int n_stk_args=((      op == BYTE_CODE_METAMETHOD_NOT
+							|| op == BYTE_CODE_METAMETHOD_NEG
+							|| op == BYTE_CODE_METAMETHOD_SET
+							|| op == BYTE_CODE_METAMETHOD_TO_STRING
+							   )? 1:2);
+		return n_stk_args;
+	}
+
+	int			 getNumArgumentsNonStaticMetamethod(ByteCodeMetamethod op){
+		return getNumArgumentsStaticMetamethod(op)-1;
+	}
+
 }

@@ -334,7 +334,7 @@ namespace zetscript{
 			StackElement *ptr_aux = _stk_local_var+n_args;
 			for(unsigned i = n_args; i < (symbols_count); i++){
 				Symbol *symbol=(Symbol *)registered_symbols->items[i];
-				if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
+				if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 					ptr_aux->stk_value=0;
 					ptr_aux->var_ref=(void *)symbol->ref_ptr;
 					ptr_aux->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION; // starts undefined.
@@ -758,13 +758,13 @@ namespace zetscript{
 						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
 
 							if(((ScriptObject *)stk_dst->var_ref)->itHasSetMetamethod()){
-								if(!applyMetamethod(
+								if(applyMetamethod(
 										 calling_function
 										,instruction
 										,BYTE_CODE_METAMETHOD_SET
 										,stk_result_op2 // it contents variable to be assigned
 										,stk_result_op1 // it contects the result of expression or whatever
-								)){
+								)==false){
 									goto lbl_exit_function;
 								}
 								assign_metamethod=true;
@@ -946,13 +946,13 @@ namespace zetscript{
 				if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL){ // operation will result as integer.
 					PUSH_BOOLEAN((!((bool)(stk_result_op1->stk_value))));
 				}else{
-					if(!applyMetamethod(
+					if(applyMetamethod(
 						calling_function
 						,instruction
 						,BYTE_CODE_METAMETHOD_NOT
 						,stk_result_op1
 						,stk_result_op2
-					)){
+					)==false){
 						goto lbl_exit_function;
 					}
 				}
@@ -1001,13 +1001,13 @@ namespace zetscript{
 						*stk_vm_current++=performAddString(stk_result_op1,stk_result_op2);
 					}else{ // try metamethod ...
 
-						if(!applyMetamethod(
+						if(applyMetamethod(
 							calling_function
 							,instruction
 							,BYTE_CODE_METAMETHOD_ADD
 							,stk_result_op1
 							,stk_result_op2
-						)){
+						)==false){
 							goto lbl_exit_function;
 						}
 					}
@@ -1038,13 +1038,13 @@ namespace zetscript{
 						*stk_vm_current++=performSubString(stk_result_op1,stk_result_op2);
 					}else{ // try metamethod ...
 
-						if(!applyMetamethod(
+						if(applyMetamethod(
 							calling_function
 							,instruction
 							,BYTE_CODE_METAMETHOD_SUB
 							,stk_result_op1
 							,stk_result_op2
-						)){
+						)==false){
 							goto lbl_exit_function;
 						}
 					}
@@ -1264,55 +1264,57 @@ namespace zetscript{
 							zs_int *function_param=&sf->params->items[0];
 							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
 							int i=0;
-							for(;;){
+							if(sf->params->count > 0){
+								for(;;){
 
-								if(((FunctionParam *)(*function_param))->by_ref == false){ // copy
-									unsigned short properties = stk_arg->properties;
-									if(properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
-										*stk_arg=*((StackElement *)stk_arg->var_ref);
-									}else if(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){ // remove
-										ScriptObjectString *sc=new ScriptObjectString(this->zs);
-										if(!sc->initSharedPtr()){
-											goto lbl_exit_function;
+									if(((FunctionParam *)(*function_param))->by_ref == false){ // copy
+										unsigned short properties = stk_arg->properties;
+										if(properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+											*stk_arg=*((StackElement *)stk_arg->var_ref);
+										}else if(properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){ // remove
+											ScriptObjectString *sc=new ScriptObjectString(this->zs);
+											if(!sc->initSharedPtr()){
+												goto lbl_exit_function;
+											}
+											sc->set((const char *)stk_arg->stk_value);
+											stk_arg->stk_value=(void *)sc->str_value.c_str();
+											stk_arg->var_ref=(void *)sc;
+											stk_arg->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
 										}
-										sc->set((const char *)stk_arg->stk_value);
-										stk_arg->stk_value=(void *)sc->str_value.c_str();
-										stk_arg->var_ref=(void *)sc;
-										stk_arg->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING;
 									}
-								}
 
-								if(var_args!=NULL){
-									var_args->push(stk_arg);
-
-									if(i+1 >= (unsigned)n_args){
-										break;
-									}
-								}else{
-									if(((FunctionParam *)(*function_param))->var_args == true){ // enter var args
-										var_args=new ScriptObjectVector(this->zs);
-										if(!var_args->initSharedPtr()){
-											goto lbl_exit_function;
-										}
-
-										// push first arg
+									if(var_args!=NULL){
 										var_args->push(stk_arg);
-										// replace for vector type...
-										stk_arg->stk_value=0;
-										stk_arg->var_ref=(void *)var_args;
-										stk_arg->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
+
 										if(i+1 >= (unsigned)n_args){
 											break;
 										}
 									}else{
-										function_param++;
-										if(i+1 >= (unsigned)effective_args){
-											break;
+										if(((FunctionParam *)(*function_param))->var_args == true){ // enter var args
+											var_args=new ScriptObjectVector(this->zs);
+											if(!var_args->initSharedPtr()){
+												goto lbl_exit_function;
+											}
+
+											// push first arg
+											var_args->push(stk_arg);
+											// replace for vector type...
+											stk_arg->stk_value=0;
+											stk_arg->var_ref=(void *)var_args;
+											stk_arg->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
+											if(i+1 >= (unsigned)n_args){
+												break;
+											}
+										}else{
+											function_param++;
+											if(i+1 >= (unsigned)effective_args){
+												break;
+											}
 										}
 									}
+									stk_arg++;
+									i++;
 								}
-								stk_arg++;
-								i++;
 							}
 
 						}

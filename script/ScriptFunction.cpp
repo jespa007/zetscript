@@ -446,7 +446,7 @@ namespace zetscript{
 			if(symbol->name == symbol_name){
 				if(only_symbol){
 					return symbol;
-				}else if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
+				}else if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 					ScriptFunction *current_sf=(ScriptFunction *)symbol->ref_ptr;
 					if(
 

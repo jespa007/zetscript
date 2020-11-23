@@ -172,20 +172,21 @@ namespace zetscript{
 		//std::string str_symbol_to_find="";
 		ScriptObject *calling_object=NULL;
 		ScriptClass *script_class_aux=NULL;
-		StackElement *stk_args = stk_vm_current;
+		StackElement *stk_vm_current_backup,*stk_args;
+		int stk_element_len=0;
 		ScriptFunction *ptr_function_found=NULL;
 		StackElement ret_obj;
 		const char *byte_code_metamethod_operator_str=ByteCodeMetamethodToOperatorStr(byte_code_metamethod);
 		const char *str_symbol_metamethod=ByteCodeMetamethodToSymbolStr(byte_code_metamethod);
 		zs_vector *stk_elements=NULL;
 		std::string error_found="";
-
+		zs_vector * list_props=NULL;
 		ScriptObject *script_object=NULL;
 		ScriptObject *one_param = NULL;
-			int n_stk_args=((byte_code_metamethod == BYTE_CODE_METAMETHOD_NOT\
-							|| byte_code_metamethod == BYTE_CODE_METAMETHOD_NEG\
-							|| byte_code_metamethod == BYTE_CODE_METAMETHOD_SET\
-							   )? 1:2);
+		int n_stk_args=getNumArgumentsStaticMetamethod(byte_code_metamethod);
+
+		// init stk
+		stk_vm_current_backup=stk_args=stk_vm_current;
 
 		if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
 			stk_result_op1 = (StackElement *)(stk_result_op1->var_ref);
@@ -195,7 +196,9 @@ namespace zetscript{
 			script_object = (ScriptObject *)(stk_result_op1->var_ref);
 		}
 
+		// only C refs can check 2nd param
 		if(script_object == NULL) { // script null
+
 			if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
 				stk_result_op2 = (StackElement *)(stk_result_op2->var_ref);
 			}
@@ -205,121 +208,97 @@ namespace zetscript{
 			}
 		}
 
+
 		if(script_object == NULL){ // cannot perform operation
 			error_found="";
 			goto apply_metamethod_error;
 		}
 
-		// calling object
-		calling_object = script_object;
-
-		//int idx_offset_function_member_start=0;
-		/*ScriptObject *so1 = NULL;
-		ScriptObject *so2 = NULL;
-		ScriptFunction * ptr_function_found=NULL;
-		ScriptObject *calling_object=NULL; // TODO: seach calling object and both stk op1/op2 shoould be same type
-
-		ScriptObject *one_param = NULL;
-		int n_stk_args=((byte_code_metamethod == BYTE_CODE_METAMETHOD_NOT\
-						|| byte_code_metamethod == BYTE_CODE_METAMETHOD_NEG\
-						|| byte_code_metamethod == BYTE_CODE_METAMETHOD_SET\
-						   )? 1:2);
-		StackElement *stk_args = stk_vm_current; // because it did a pop
-		//if((zs_int)instruction->value_op2 == ZS_IDX_UNDEFINED){ // search for first time , else the function is stored in value_op2
-		ScriptClass *script_class_aux=NULL;
-
-		const char * symbol_to_find;
-		ptr_function_found=NULL;
-		bool chk_ok=false;
 
 
 
-		if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT))){
-			so1 = (ScriptObject *)(stk_result_op1->var_ref);
-			if(((stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
-				so1 = (ScriptObject *)(((StackElement *)so1))->var_ref;
-			}
-		}
 
-		if(stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
-			so2 = (ScriptObject *)(stk_result_op2->var_ref);
-			if(stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
-				so2 = (ScriptObject *)(((StackElement *)so2))->var_ref;
-			}
-		}
+		//stk_elements=script_class_aux->metamethod_operator[byte_code_metamethod];
 
-		if(so1 != NULL && n_stk_args == 1){
-			chk_ok = true;
-		}else if(so2 != NULL && n_stk_args == 2){
-			chk_ok= so1->idx_class == so2->idx_class;
-		}
-
-
-		if(chk_ok == false){
-			std::string var_type1=stk_result_op1->typeStr(),
-					var_type2="";
-
-			if(n_stk_args==1){ // 1 arg
-				VM_ERROR("cannot perform operator %s\"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
-						byte_code_metamethod_operator_str,
-						var_type1.c_str()
-						);
-				return;
-			}else{ // 2 args
-				var_type2=stk_result_op2->typeStr();
-				VM_ERROR("cannot perform operator \"%s\" %s  \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",
-						var_type1.c_str(),
-						byte_code_metamethod_operator_str,
-						var_type2.c_str());
-				return;
-			}
-		}
-
-		if(n_stk_args == 1){
-			if(byte_code_metamethod == BYTE_CODE_METAMETHOD_SET){
-				//idx_offset_function_member_start=1;
-				one_param = (ScriptObject *)(stk_result_op2->var_ref);
-				if(stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
-					one_param = (ScriptObject *)(((StackElement *)one_param))->var_ref;
-				}
-			}
-		}*/
-
-		script_class_aux=GET_SCRIPT_CLASS(this,script_object->idx_class);
-		stk_elements=script_class_aux->metamethod_operator[byte_code_metamethod];
-
-		if(stk_elements == NULL){ // operator is not implemented
+		/*if(stk_elements == NULL){ // operator is not implemented
 			error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
 			goto apply_metamethod_error;
-		}
-		//StackElement *stk_args=mm_test_startArg;//(mm_test_startArg-n_metam_args;//+idx_offset_function_member_start);
-		//unsigned n_stk_args=n_metam_args;*/
+		}*/
 
-		if((ptr_function_found = findFunction(
-			 calling_object
-			,calling_function
-			,instruction
-			,false
-			,(void *)stk_elements->items
-			,stk_elements->count
-			,str_symbol_metamethod
+		if(script_object->isNativeObject()){
+			list_props=script_object->getAllProperties();//getFunctions();
+
+			ptr_function_found = findFunction(
+				 calling_object
+				,calling_function
+				,instruction
+				,false
+				,(void *)list_props->items
+				,list_props->count
+				,str_symbol_metamethod
+				,stk_args
+				,n_stk_args
+			);
+
+			if(ptr_function_found != NULL){
+				if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
+					error_found="Expected native %s to be static";
+					goto apply_metamethod_error;
+				}
+			}
+
+			else{ // try find non-static
+				// search for non-static
+				if((ptr_function_found = findFunction(
+					 calling_object
+					,calling_function
+					,instruction
+					,false
+					,(void *)stk_elements->items
+					,stk_elements->count
+					,str_symbol_metamethod
+					,stk_args+1
+					,n_stk_args-1
+				)) == NULL){
+					error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is implemented but cannot find appropriate function for its argument types",str_symbol_metamethod,byte_code_metamethod_operator_str);
+					goto apply_metamethod_error;
+				}
+
+				if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_STATIC) != 0){
+					error_found="Expected native %s to be non-static";
+					goto apply_metamethod_error;
+				}
+			}
+		}else{ // get first item...
+			StackElement * stk = script_object->getProperty(str_symbol_metamethod,NULL);
+
+			if(stk == NULL){
+				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
+				goto apply_metamethod_error;
+			}
+
+			if((stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)==0){
+				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
+				goto apply_metamethod_error;
+			}
+
+			ptr_function_found=(ScriptFunction *)stk->var_ref;
+
+		}
+
+		// non static ignores first parameter and set calling object to allow this
+		if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
+			calling_object=script_object;
+			stk_args++;
+			n_stk_args--;
+		}
+
+		ret_obj=callFunctionScript(
+			calling_object
+			,ptr_function_found
 			,stk_args
 			,n_stk_args
-		)) == NULL){
-			error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is implemented but and unexpected args were found",str_symbol_metamethod,byte_code_metamethod_operator_str);
-			goto apply_metamethod_error;
-		}
-
-		/*}else{
-			ptr_function_found = (ScriptFunction *)instruction->value_op2;
-		}*/
-		/* by default virtual machine gets main object class in order to run functions ... */
-		//bool error = false;
-		ret_obj=callFunctionScript(
-				NULL // it has not related with any calling function
-				,ptr_function_found
-				,stk_args
-				,n_stk_args);
+		);
 
 		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){ //
 
@@ -333,7 +312,7 @@ namespace zetscript{
 		}
 
 		// reset stack...
-		stk_vm_current=stk_args;
+		stk_vm_current=stk_vm_current_backup;
 
 		if(byte_code_metamethod != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
 			*stk_vm_current++ = ret_obj;

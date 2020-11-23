@@ -41,7 +41,7 @@ namespace zetscript{
 
 		// sets local function information...
 		symbol->idx_position = _idx_position; // idx local/member function
-		symbol->properties = properties | SYMBOL_PROPERTY_IS_FUNCTION;
+		symbol->properties = properties | SYMBOL_PROPERTY_FUNCTION;
 
 		ScriptFunction *script_function = new ScriptFunction(
 				zs

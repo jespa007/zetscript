@@ -14,19 +14,19 @@ class Vector2{
 	}
 	
 	// defines _add metamethod...
-	_add(v1,v2){
-		var v3=new Vector2();
-		v3.x=v1.x + v2.x;
-		v3.y=v1.y + v2.y;
-		return v3;
+	_add(v1){
+		
+		return new Vector2(
+				this.x+v1.x
+				,this.y+v1.y);
 	}
 	
 	_toString(){ // a way to have a custom string output
-		return "("+this.x+","+this.y+")";
+		return "["+this.x+","+this.y+"]";
 	}
 };
 
-var v=(new Vector2(0,2)+new Vector2(0,2));//+new Vector2()
+var v=(new Vector2(1,2)+new Vector2(3,4));//+new Vector2()
 //var v=new Vector2(0,2)+new Vector2(0,2)
 //var v=new Vector2();
 System::println(v)

@@ -398,7 +398,7 @@ namespace zetscript{
 
 							for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
 								Symbol *symbol_member = (Symbol *)sf_class->symbol_members->items[i];
-								if(symbol_member->properties & SYMBOL_PROPERTY_IS_FUNCTION){
+								if(symbol_member->properties & SYMBOL_PROPERTY_FUNCTION){
 									ScriptFunction *sf=(ScriptFunction *)symbol_member->ref_ptr;
 									bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?str_symbol_to_find == symbol_member->name:true);
 									if(

@@ -25,7 +25,7 @@ namespace zetscript{
 		for ( unsigned i = 0; i < ir_class->symbol_members->count; i++){
 
 			Symbol * symbol = (Symbol *)ir_class->symbol_members->items[i];
-			bool is_script_function=symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION;
+			bool is_script_function=symbol->properties & SYMBOL_PROPERTY_FUNCTION;
 			bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
 
 			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
@@ -35,7 +35,7 @@ namespace zetscript{
 				return;
 			}
 
-			if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
+			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 
 				ScriptFunction * ir_fun  = (ScriptFunction *)symbol->ref_ptr;
 				se->stk_value=this;
@@ -176,10 +176,11 @@ namespace zetscript{
 	}
 
 	bool ScriptObject::itHasSetMetamethod(){
-		if(script_class->metamethod_operator[BYTE_CODE_METAMETHOD_SET]!=NULL){
+		return getProperty(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_SET),NULL) != NULL;
+		/*metamethod_operator[BYTE_CODE_METAMETHOD_SET]!=NULL){
 			return script_class->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->count > 0;
 		}
-		return false;
+		return false;*/
 	}
 
 	void ScriptObject::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
@@ -460,31 +461,29 @@ namespace zetscript{
 
 	std::string ScriptObject::toString(){
 		// check whether toString is implemented...
-		zs_vector *stk_elements=this->script_class->metamethod_operator[BYTE_CODE_METAMETHOD_TO_STRING];
+		StackElement *stk_function=getProperty(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_TO_STRING),NULL);
 
-		if(stk_elements != NULL){ // get first element
-			if(stk_elements->count > 0){
-				StackElement *stk_to_string=(StackElement *)stk_elements->items[0];
-				StackElement result=VM_EXECUTE(
-						virtual_machine
-						,this
-						,(ScriptFunction *)stk_to_string->var_ref
-						,NULL
-						,0
-				);
+		if(stk_function != NULL){ // get first element
+			if(stk_function->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
+				ScriptFunction *ptr_function=(ScriptFunction *)stk_function->var_ref;
+				if((ptr_function->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
 
-				if(result.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
-//					((ScriptObjectString *)result.var_ref)->toString();
-					ScriptObject *so=(ScriptObjectString *)result.var_ref;
-
-					// capture string...
-					std::string aux=so->toString();
-
-					// ... destroy lifetime object we don't need anymore
-					virtual_machine->destroyLifetimeObject(so);
-
-					// return
-					return aux;
+					StackElement result=VM_EXECUTE(
+							virtual_machine
+							,this
+							,ptr_function
+							,NULL
+							,0
+					);
+					if(result.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+						ScriptObject *so=(ScriptObjectString *)result.var_ref;
+						// capture string...
+						std::string aux=so->toString();
+						// ... destroy lifetime object we don't need anymore
+						virtual_machine->destroyLifetimeObject(so);
+						// return
+						return aux;
+					}
 				}
 			}
 		}

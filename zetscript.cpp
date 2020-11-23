@@ -121,7 +121,7 @@ namespace zetscript{
 		 for(unsigned j =0; j < sf_main->registered_symbols->count; j++){
 			Symbol *symbol=(Symbol *)sf_main->registered_symbols->items[j];
 
-			if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
+			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 
 				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
 
@@ -145,7 +145,7 @@ namespace zetscript{
 			 if(show_class){
 				 for(unsigned f = 0; f < rc->symbol_members->count; f++){
 					 Symbol *symbol=(Symbol *)rc->symbol_members->items[f];
-					 if(symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){
+					 if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 						 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,rc);
 					 }
 				 }

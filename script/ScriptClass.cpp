@@ -27,7 +27,7 @@ namespace zetscript{
 		idx_function_member_constructor =ZS_IDX_UNDEFINED;
 		idx_class=_idx_class;
 		idx_starting_this_members=0;
-		memset(metamethod_operator,0,sizeof(metamethod_operator));
+		//memset(metamethod_operator,0,sizeof(metamethod_operator));
 
 		/*for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 			metamethod_operator[i]=new zs_vector();
@@ -131,13 +131,13 @@ namespace zetscript{
 
 	Symbol *	ScriptClass::getSuperFunctionSymbol(Symbol *symbol){
 
-		if((symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION) == 0){
+		if((symbol->properties & SYMBOL_PROPERTY_FUNCTION) == 0){
 			THROW_RUNTIME_ERROR("internal error: symbol is not a function");
 		}
 
 		for(int i = symbol->idx_position-1; i >=0; i--){
 			Symbol *symbol_member = (Symbol *)symbol_members->items[i];
-			if((symbol->name == symbol_member->name) && (symbol_member->properties & SYMBOL_PROPERTY_IS_FUNCTION)){
+			if((symbol->name == symbol_member->name) && (symbol_member->properties & SYMBOL_PROPERTY_FUNCTION)){
 				return symbol_member;
 			}
 		}
@@ -160,7 +160,7 @@ namespace zetscript{
 				if(only_symbol){
 					return member_symbol;
 				}
-				if(member_symbol->properties & SYMBOL_PROPERTY_IS_FUNCTION){ // for C function symbols
+				if(member_symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // for C function symbols
 					ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
 					if((((int)n_params==sf->params->count) || (n_params==ANY_PARAMS_SYMBOL_ONLY))
 					 ){
@@ -260,7 +260,7 @@ namespace zetscript{
 				,params
 				,idx_return_type
 				,ref_ptr
-				,symbol_properties|SYMBOL_PROPERTY_IS_FUNCTION
+				,symbol_properties|SYMBOL_PROPERTY_FUNCTION
 		);
 
 		// register num function symbols only for c symbols...
@@ -280,34 +280,64 @@ namespace zetscript{
 			idx_function_member_constructor = idx_position;
 		}
 		else{
-			// check if metamethod...
+			// check metamethod function...
 			for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 				if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr((ByteCodeMetamethod)i),==,function_name.c_str())){
+					ByteCodeMetamethod op=(ByteCodeMetamethod)i;
+					const char *byte_code_metamethod_operator_str=ByteCodeMetamethodToOperatorStr(op);
+					const char *str_symbol_metamethod=ByteCodeMetamethodToSymbolStr(op);
+					int min_args_static_metamethod=getNumArgumentsStaticMetamethod(op); // expected params for static function, n_args -1 else
+
 					Symbol *symbol_result;
 
-					if((symbol_result=getSymbol(function_name,(char)params.size())) != NULL){
-						error = zs_strutils::format("Metamethod \"%s::%s\" is already defined at \"%s::%s\" (%s:%i). Metamethods cannot be override"
-							,symbol_class.name.c_str()
-							,function_name.c_str()
-							,symbol_result->scope->script_class->symbol_class.name.c_str()
-							,function_name.c_str()
-							,zs_path::get_filename(symbol_result->file.c_str()).c_str()
-							,symbol_result->line
-						);
-						return NULL;
+					// can be one parameter or 0 params...
+					if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
+						if((symbol_result=getSymbol(function_name,(char)params.size())) != NULL){
+							error = zs_strutils::format("Metamethod \"%s::%s\" is already defined at \"%s::%s\" (%s:%i). Metamethods cannot be override"
+								,symbol_class.name.c_str()
+								,function_name.c_str()
+								,symbol_result->scope->script_class->symbol_class.name.c_str()
+								,function_name.c_str()
+								,zs_path::get_filename(symbol_result->file.c_str()).c_str()
+								,symbol_result->line
+							);
+							return NULL;
+						}
 					}
 
 					// metamethod in script side are not static
-					if((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0
+					if(function_symbol->properties & SYMBOL_PROPERTY_STATIC){
+						if(function_symbol->n_params<min_args_static_metamethod){
+							error = zs_strutils::format("Static metamethod %s (aka %s) should have at least %i parameter/s"
+								,str_symbol_metamethod
+								,byte_code_metamethod_operator_str
+								,min_args_static_metamethod
+							);
+
+							return NULL;
+						}
+					}
+					else {
+						min_args_static_metamethod=getNumArgumentsNonStaticMetamethod(op);
+						if(function_symbol->n_params< min_args_static_metamethod){ // non-static functions pass this object as first parameter
+							error = zs_strutils::format("Non static metamethod %s (aka %s) should have at least %i parameter/s"
+								,str_symbol_metamethod
+								,byte_code_metamethod_operator_str
+								,min_args_static_metamethod
+							);
+							return NULL;
+						}
+					}
+					/*if((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0
 					    && (function_symbol->properties & SYMBOL_PROPERTY_STATIC))
 					{
 						error = zs_strutils::format("Metamethod \"%s\" has to be not static"
 							,function_name.c_str()
 						);
 						return NULL;
-					}
+					}*/
 
-					if(metamethod_operator[i]==NULL){
+					/*if(metamethod_operator[i]==NULL){
 						metamethod_operator[i]=new zs_vector();
 					}
 
@@ -316,7 +346,7 @@ namespace zetscript{
 					metamethod_operator[i]->push_back((zs_int)stk_element);
 					std::string class_name = script_class_factory->getScriptClass(this->idx_class)->symbol_class.name;
 
-					ZS_PRINT_DEBUG("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());
+					ZS_PRINT_DEBUG("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());*/
 					break;
 				}
 			}
@@ -353,7 +383,7 @@ namespace zetscript{
 		delete symbol_members;
 		symbol_members=NULL;
 
-		for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
+		/*for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 			zs_vector *vec=(zs_vector *)metamethod_operator[i];
 			if(vec != NULL){
 				for(unsigned j = 0; j < vec->count; j++){
@@ -362,7 +392,7 @@ namespace zetscript{
 				delete vec;
 			}
 		}
-		memset(metamethod_operator,0,sizeof(metamethod_operator));
+		memset(metamethod_operator,0,sizeof(metamethod_operator));*/
 
 		delete idx_base_classes;
 
