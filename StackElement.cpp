@@ -6,17 +6,17 @@ namespace zetscript{
 		StackElement *stk=this;
 		const char * result="undefined";
 		if(STK_VALUE_IS_ZS_INT(stk))
-			result= "Integer";
+			result= "int";
 		else if(STK_VALUE_IS_FLOAT(stk))
-			result= "Float";
+			result= "float";
 		else if(STK_VALUE_IS_BOOLEAN(stk))
-			result= "Boolean";
+			result= "bool";
 		else if(STK_VALUE_IS_STRING(stk))
-			result= "String";
+			result= "string";
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result= "Function";
+			result= "function";
 		else if(STK_VALUE_IS_CLASS(stk))
-			result= "Class";
+			result= "class";
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
 			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){

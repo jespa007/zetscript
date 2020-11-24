@@ -626,14 +626,18 @@ namespace zetscript{
 							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_data_pre_post_self_operations[pre_self_operation_type].str);
 						}
 
-						aux_p=eval_expression(
+						if((aux_p=eval_expression(
 								eval_data
 								,aux_p+1
 								, line
 								, scope_info
 								, &symbol_token_node.instructions
 								,std::vector<char>{}
-								,level+1);
+								,level+1)
+							)== NULL){
+							goto error_expression;
+						}
+
 
 						if(*aux_p != ')'){
 							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Expected ')'");
@@ -641,8 +645,10 @@ namespace zetscript{
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-						if(pre_operator==PreOperator::PRE_OPERATOR_NEG || pre_operator==PreOperator::PRE_OPERATOR_NOT){
+						if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
 							symbol_token_node.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
+						}else if(pre_operator==PreOperator::PRE_OPERATOR_NOT){
+							symbol_token_node.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NOT));
 						}
 
 						symbol_token_node.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;

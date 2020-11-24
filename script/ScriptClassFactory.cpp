@@ -294,7 +294,7 @@ namespace zetscript{
 
 	 ScriptObject 		 * ScriptClassFactory::instanceScriptObjectiableByIdx(ClassTypeIdx idx_class, void * value_object){
 
-		 ScriptObject *class_object=NULL;
+		 ScriptObject *so=NULL;
 
 		 // 0. Search class info ...
 		 ScriptClass *rc = getScriptClass(idx_class);
@@ -315,16 +315,17 @@ namespace zetscript{
 
 			 case IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR:
 			 case IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT:
-				 class_object = (ScriptObject *)value_object;
+			 case IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING:
+				 so = (ScriptObject *)value_object;
 				 break;
 			 default:
 				 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
-				 class_object = new ScriptObject(zs);
-				 class_object->init(rc, value_object);
+				 so = new ScriptObject(zs);
+				 so->init(rc, value_object);
 				 break;
 			 }
 		 }
-		 return class_object;
+		 return so;
 	 }
 
 	unsigned char ScriptClassFactory::getIdx_C_RegisteredClass(const std::string & str_classPtr){

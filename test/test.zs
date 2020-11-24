@@ -1,18 +1,40 @@
-class Integer{
-	constructor(){
-		this.b=false;
-	}
-	_gt(v1){
-		return this.b > v1.b;
-	}
 
-	/*_not(){
-		return new Boolean(-this.b)
-	}*/
+/*
+class CInteger{
+	constructor(v){
+		this.i=v;
+	}
+	_set(v){
+		this.i=v;
+	}
+	_add(v){
+		return new CInteger(this.i+v.i);
+	}
+	
+	toInt(){
+		return this.i;
+	}
 }
 
+var i1,i2;
+var it1,it2;
+it1=(
+	(i1=new CInteger(
+		4
+		))
+		+
+		(i2=new CInteger(
+		4
+		))
+		);
+it2=it1.toInt();delete it1;delete i1;delete i2;it2;
 
-!(new Integer(10)>new Integer(0))&&(new Integer(10)>new Integer(0))
+System::println(it2);*/
+
+String::format("dadsa");
+//!(new Integer(10)>new Integer(0))&&(new Integer(10)>new Integer(0))*/
+
+//!(10>0)
 
 //class v2{}
 
