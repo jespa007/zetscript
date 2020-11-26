@@ -23,7 +23,7 @@ class ScriptClass;
 		//----------------------
 		// MEM MANNAGER RELATED
 		InfoSharedPointerNode 	* shared_pointer;
-		ClassTypeIdx	 		idx_class;
+		int	 					idx_class;
 		ScriptFunction 		*	info_function_new;
 		Instruction 		*	instruction_new;
 		bool 					was_created_by_constructor;

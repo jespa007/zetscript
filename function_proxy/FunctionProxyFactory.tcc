@@ -216,6 +216,8 @@ namespace zetscript{
 			)
 		);
 
+		return fun_ptr;
+
 
 	}
 
@@ -417,5 +419,7 @@ namespace zetscript{
 				,false
 			)
 		);
+
+		return fun_ptr;
 	}
 }

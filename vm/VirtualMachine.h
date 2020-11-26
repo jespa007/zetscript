@@ -16,9 +16,9 @@ namespace zetscript{
 	#define ZS_VM_FUNCTION_TYPE std::function<ScriptObject * (const std::vector<ScriptObject *> & param)>
 
 	#define VM_EXECUTE(vm,o,f,stk,n)	vm->execute(o,f,stk,n,__FILE__,__LINE__)
-	#define VM_ERROR(s,...)				error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
-	#define VM_ERROR_AND_RET(s,...)		error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return stk_result;
-	#define VM_STOP_EXECUTE(s,...)		error=true;error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
+	#define VM_ERROR(s,...)				vm_error=true;vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
+	#define VM_ERROR_AND_RET(s,...)		vm_error=true;vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return stk_result;
+	#define VM_STOP_EXECUTE(s,...)		vm_error=true;vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
 	#define VM_SET_USER_ERROR(vm,s,...)	vm->setErrorFileLine(__FILE__,__LINE__, s, ##__VA_ARGS__)
 
 	class ScriptFunction;
@@ -116,9 +116,9 @@ namespace zetscript{
 
 		//char				str_aux[8192];
 		 float 				f_aux_value1,f_aux_value2;
-		 bool				error;
-		 std::string 		error_str;
-		 std::string 		error_callstack_str;
+		 bool				vm_error;
+		 std::string 		vm_error_str;
+		 std::string 		vm_error_callstack_str;
 		 VM_Scope			*vm_current_scope;
 		 VM_Scope			vm_scope[VM_SCOPE_MAX];
 		 VM_Scope			*vm_scope_max;

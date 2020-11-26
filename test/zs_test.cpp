@@ -232,7 +232,7 @@ public:
 	}
 
 
-	int toInt(){
+	zs_int toInt(){
 		return n;
 	}
 
@@ -903,7 +903,16 @@ int main(int argc, char * argv[]) {
 	zs->registerMemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(zs_int)>(&CInteger::_set));
 	zs->registerMemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set));
 
-	zs->eval("var it1=new CInteger(4);it1.toInt();",EvalOption::EVAL_OPTION_SHOW_USER_CODE | EvalOption::EVAL_OPTION_EXECUTE);
+	zs->eval("var i1,i2,it1,it2,n1,n2,nt1,nt2;");
+	zs->evalIntValue("it1=("\
+			"(i1=new CInteger("\
+			"4" \
+			"))"\
+			"+"\
+			"(i2=new CInteger("\
+			"4" \
+			"))"\
+			");it2=it1.toInt();delete it1;delete i1;delete i2;it2;");
 	//TEST_ARITHMETIC_CINTEGER_OP(4,+,4);
 	return 0;
 

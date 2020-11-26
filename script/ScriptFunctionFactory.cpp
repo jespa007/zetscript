@@ -19,7 +19,7 @@ namespace zetscript{
 			, const std::string & file
 			, short line
 			//--- Function data
-			, ClassTypeIdx idx_class
+			, int idx_class
 			, short _idx_position
 			, const std::string & function_name
 			, std::vector<FunctionParam> args

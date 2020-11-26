@@ -6,7 +6,7 @@ namespace zetscript{
 
 	ScriptFunction::ScriptFunction(
 			ZetScript * _zs
-			,ClassTypeIdx _idx_class
+			,int _idx_class
 			,short _idx_script_function
 			, std::vector<FunctionParam> _params
 			,int _idx_return_type
@@ -143,7 +143,7 @@ namespace zetscript{
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
-					,instruction->value_op1!=ZS_INVALID_CLASS?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
+					,(int)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
 				);
 				break;
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:

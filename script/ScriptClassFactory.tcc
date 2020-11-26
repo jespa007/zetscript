@@ -1,5 +1,5 @@
 #define 				MAX_REGISTER_CLASSES 	100
-#define 				ZS_INVALID_CLASS		((unsigned char)ZS_IDX_UNDEFINED)
+
 
 namespace zetscript{
 
@@ -28,7 +28,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("main function is not created");
 		}
 
-		if(getIdxClassFromItsNativeType(var_type) == ZS_INVALID_CLASS){
+		if(getIdxClassFromItsNativeType(var_type) == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("%s has not valid type (%s)",var_name.c_str(),var_type.c_str());
 		}
 
@@ -87,7 +87,7 @@ namespace zetscript{
 						,zs_rtti::demangle(arg[i]).c_str());
 			}
 
-			if(idx_type ==ZS_INVALID_CLASS){
+			if(idx_type ==ZS_IDX_UNDEFINED){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered"
 						,i
 						,zs_rtti::demangle(arg[i]).c_str()
@@ -123,7 +123,7 @@ namespace zetscript{
 		ScriptClass *irc=NULL;
 		std::string str_class_name_ptr = typeid( T *).name();
 		int size=script_classes->count;
-		ClassTypeIdx idx_class=ZS_IDX_UNDEFINED;
+		int idx_class=ZS_IDX_UNDEFINED;
 		Scope * scope = NULL;
 		Symbol *symbol=NULL;
 
@@ -138,11 +138,11 @@ namespace zetscript{
 		}
 
 
-		if(getIdx_C_RegisteredClass(str_class_name_ptr)!=ZS_INVALID_CLASS){
+		if(getIdx_C_RegisteredClass(str_class_name_ptr)!=ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("this %s is already registered",zs_rtti::demangle(typeid( T).name()).c_str());
 		}
 
-		idx_class=(ClassTypeIdx)(script_classes->count);
+		idx_class=script_classes->count;
 		scope = scope_factory->newScope(NULL,true);
 		symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_SYMBOL_ONLY);
 
@@ -152,7 +152,7 @@ namespace zetscript{
 		irc->symbol_class=*symbol;
 
 		// in C there's no script constructor ...
-		irc->idx_function_member_constructor=-1;
+		irc->idx_function_member_constructor=ZS_IDX_UNDEFINED;
 		// allow dynamic constructor in function its parameters ...
 
 		irc->str_class_ptr_type=str_class_name_ptr;
@@ -162,7 +162,7 @@ namespace zetscript{
 		irc->c_destructor = NULL;
 		script_classes->push_back((zs_int)irc);
 
-		irc->idx_class=(ClassTypeIdx)(script_classes->count-1);
+		irc->idx_class=script_classes->count-1;
 		ZS_PRINT_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
 
 		return irc;
@@ -425,7 +425,7 @@ namespace zetscript{
 
 		// 1. check all parameters ok.
 		// check valid parameters ...
-		if(getIdxClassFromItsNativeType(var_type) == -1){
+		if(getIdxClassFromItsNativeType(var_type) == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
 					,c_class->symbol_class.name.c_str()
 					,var_name
@@ -482,7 +482,7 @@ namespace zetscript{
 
 
 		// check valid parameters ...
-		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){
+		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name);
 		}
 
@@ -493,7 +493,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
 			}
 
-			if(idx_type==ZS_INVALID_CLASS){
+			if(idx_type==ZS_IDX_UNDEFINED){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,zs_rtti::demangle(arg[i]).c_str(),function_name);
 			}
 			arg_info.push_back({idx_type,arg[i]});
@@ -580,7 +580,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
 			}
 
-			if(idx_type==ZS_INVALID_CLASS){
+			if(idx_type==ZS_IDX_UNDEFINED){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,zs_rtti::demangle(arg[i]).c_str(),function_name);
 			}
 
@@ -717,7 +717,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
 			}
 
-			if(idx_type==ZS_INVALID_CLASS){
+			if(idx_type==ZS_IDX_UNDEFINED){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,zs_rtti::demangle(arg[i]).c_str(),function_name);
 			}
 

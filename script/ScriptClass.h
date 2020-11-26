@@ -16,7 +16,7 @@ namespace zetscript{
 	public:
 
 		int				idx_starting_this_members;
-		ClassTypeIdx 	idx_class; 	// registered class idx
+		int 			idx_class; 	// registered class idx
 
 		Symbol 			symbol_class;		// info symbol class
 
@@ -26,7 +26,7 @@ namespace zetscript{
 		//zs_vector *function_members; // a list of function members (script as well as registered native functions) to be registered on create any scriptvar, see ScriptObject::createSymbols)
 
 		//------------- VARIABLES STRUCT ---------------
-		unsigned char							idx_function_member_constructor;
+		int							idx_function_member_constructor;
 
 		std::function<void * ()>			* 	c_constructor;
 		std::function<void (void *  p)> 	*	c_destructor;
@@ -36,7 +36,7 @@ namespace zetscript{
 
 		//zs_vector 			*metamethod_operator[BYTE_CODE_METAMETHOD_MAX]; // overrided metamethod
 
-		 ScriptClass(ZetScript *_zs,ClassTypeIdx _idx_class);
+		 ScriptClass(ZetScript *_zs,int _idx_class);
 
 		Symbol				* 	registerMemberVariable(
 			std::string & error

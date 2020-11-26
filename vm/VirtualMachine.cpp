@@ -51,8 +51,8 @@ namespace zetscript{
 		script_function_factory=NULL;
 		script_class_factory=NULL;
 		scope_factory=NULL;
-		error=false;
-		error_str="";
+		vm_error=false;
+		vm_error_str="";
 	}
 
 	#ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
@@ -157,18 +157,18 @@ namespace zetscript{
 	}
 
 	void VirtualMachine::setError(const std::string & str){
-		error = true;
-		error_str=str;
+		vm_error = true;
+		vm_error_str=str;
 	}
 
 	std::string VirtualMachine::getError(){
-		return error_str;
+		return vm_error_str;
 	}
 
 	void VirtualMachine::setErrorFileLine(const char *file, int line, const char *in_txt,...){
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
-		error_str=zs_strutils::format("[%s:%i] %s",file,line,out_txt);
+		setError(zs_strutils::format("[%s:%i] %s",file,line,out_txt));
 	}
 
 	StackElement  VirtualMachine::execute(
@@ -185,8 +185,9 @@ namespace zetscript{
 
 		if(vm_idx_call==0){ // set stack and Init vars for first call...
 
-			error=false;
-			error_str="";
+			vm_error=false;
+			vm_error_str="";
+			this->vm_error_callstack_str="";
 
 			stk_vm_current=vm_stack;
 
@@ -221,10 +222,10 @@ namespace zetscript{
 		}
 
 
-		if(error){
+		if(vm_error){
 			// it was error so reset stack and stop execution ? ...
 			doStackDump();
-			throw std::runtime_error(error_str);
+			throw std::runtime_error(this->vm_error_callstack_str+"\n"+vm_error_str);
 		}
 
 		return info;

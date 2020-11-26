@@ -41,10 +41,10 @@ namespace zetscript{
 	class ScriptObject;
 	class ScriptClass;
 	class ScriptFunction;
-	typedef unsigned char 									ClassTypeIdx;
+	//typedef unsigned char 									ClassTypeIdx;
 	typedef intptr_t zs_int;
 
-	typedef enum:ClassTypeIdx{
+	typedef enum:int{
 
 		// built-in types...
 		IDX_BUILTIN_TYPE_CLASS_MAIN = 0, 	// Main class ...
@@ -60,6 +60,7 @@ namespace zetscript{
 		IDX_BUILTIN_TYPE_BOOL_PTR_C,
 		IDX_BUILTIN_TYPE_FLOAT_C,
 		IDX_BUILTIN_TYPE_FLOAT_PTR_C,
+		IDX_BUILTIN_TYPE_CONST_FLOAT_PTR_C,
 
 		// built in classes...
 		IDX_BUILTIN_TYPE_STACK_ELEMENT,

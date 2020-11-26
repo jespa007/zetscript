@@ -259,7 +259,7 @@ namespace zetscript{
 
 	zs_int * ZetScript::evalIntValue(const std::string & str_to_eval){
 
-		eval(str_to_eval.c_str(),EvalOption::EVAL_OPTION_SHOW_USER_CODE);
+		eval(str_to_eval.c_str(),EvalOption::EVAL_OPTION_EXECUTE | EvalOption::EVAL_OPTION_SHOW_USER_CODE);
 
 		StackElement *se=virtual_machine->getLastStackValue();
 

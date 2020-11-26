@@ -93,6 +93,7 @@ namespace zetscript{
 		REGISTER_BUILT_IN_TYPE(bool *,IDX_BUILTIN_TYPE_BOOL_PTR_C);
 		REGISTER_BUILT_IN_TYPE(float,IDX_BUILTIN_TYPE_FLOAT_C);
 		REGISTER_BUILT_IN_TYPE(float *,IDX_BUILTIN_TYPE_FLOAT_PTR_C);
+		REGISTER_BUILT_IN_TYPE(const float *,IDX_BUILTIN_TYPE_CONST_FLOAT_PTR_C);
 
 
 		// REGISTER BUILT IN CLASS TYPES
@@ -163,7 +164,7 @@ namespace zetscript{
 			,const std::string & class_name
 			, const std::string & base_class_name
 	){
-		unsigned char  index;
+		int  index;
 		ScriptClass *sci=NULL;
 
 		if(script_classes->count>=MAX_REGISTER_CLASSES){
@@ -176,7 +177,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		if((index = getIdxScriptClassInternal(class_name))==ZS_INVALID_CLASS){ // check whether is local var registered scope ...
+		if((index = getIdxScriptClassInternal(class_name))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
 
 			// BYTE_CODE_NEW SCOPE C and register ...
 			Scope * scope = NEW_SCOPE(this,NULL);
@@ -236,12 +237,12 @@ namespace zetscript{
 		return script_classes;
 	}
 
-	std::map<unsigned char, std::map<unsigned char, ConversionType>>  *	 ScriptClassFactory::getConversionTypes() {
+	std::map<int, std::map<int, ConversionType>>  *	 ScriptClassFactory::getConversionTypes() {
 		return & conversion_types;
 	}
 
-	ScriptClass 	* ScriptClassFactory::getScriptClass(unsigned char idx){
-		if(idx == ZS_INVALID_CLASS){
+	ScriptClass 	* ScriptClassFactory::getScriptClass(int idx){
+		if(idx == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("ScriptClass node out of bound");
 			return NULL;
 		}
@@ -249,8 +250,8 @@ namespace zetscript{
 	}
 
 	ScriptClass 	* ScriptClassFactory::getScriptClass(const std::string & class_name){
-		unsigned char idx;
-		if((idx = getIdxScriptClassInternal(class_name))!=ZS_INVALID_CLASS){ // check whether is local var registered scope ...
+		int idx;
+		if((idx = getIdxScriptClassInternal(class_name))!=ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
 			return (ScriptClass *)script_classes->get(idx);
 		}
 		return NULL;
@@ -267,7 +268,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	unsigned char ScriptClassFactory::getIdxScriptClassInternal(const std::string & class_name){
+	int ScriptClassFactory::getIdxScriptClassInternal(const std::string & class_name){
 
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
@@ -275,11 +276,11 @@ namespace zetscript{
 				return i;
 			}
 		}
-		return ZS_INVALID_CLASS;
+		return ZS_IDX_UNDEFINED;
 	}
 
 	bool ScriptClassFactory::isClassRegistered(const std::string & v){
-		return getIdxScriptClassInternal(v) != ZS_INVALID_CLASS;
+		return getIdxScriptClassInternal(v) != ZS_IDX_UNDEFINED;
 	}
 
 	ScriptObject *		ScriptClassFactory::instanceScriptObjectiableByClassName(const std::string & class_name){
@@ -292,7 +293,7 @@ namespace zetscript{
 		 return NULL;
 	 }
 
-	 ScriptObject 		 * ScriptClassFactory::instanceScriptObjectiableByIdx(ClassTypeIdx idx_class, void * value_object){
+	 ScriptObject 		 * ScriptClassFactory::instanceScriptObjectiableByIdx(int idx_class, void * value_object){
 
 		 ScriptObject *so=NULL;
 
@@ -328,7 +329,7 @@ namespace zetscript{
 		 return so;
 	 }
 
-	unsigned char ScriptClassFactory::getIdx_C_RegisteredClass(const std::string & str_classPtr){
+	int ScriptClassFactory::getIdx_C_RegisteredClass(const std::string & str_classPtr){
 		// ok check str_native_type
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
@@ -336,10 +337,10 @@ namespace zetscript{
 				return i;
 			}
 		}
-		return ZS_INVALID_CLASS;
+		return ZS_IDX_UNDEFINED;
 	}
 
-	zs_int ScriptClassFactory::doCast(zs_int obj, ClassTypeIdx idx_class_src, ClassTypeIdx idx_class_dst/*, std::string & error*/){//c_class->idx_class,idx_return_type){
+	zs_int ScriptClassFactory::doCast(zs_int obj, int idx_class_src, int idx_class_dst/*, std::string & error*/){//c_class->idx_class,idx_return_type){
 
 		ScriptClass *class_src = getScriptClass(idx_class_src);
 		ScriptClass *class_dst = getScriptClass(idx_class_dst);
@@ -358,15 +359,15 @@ namespace zetscript{
 		return (conversion_types)[idx_class_src][idx_class_dst](obj);
 	}
 
-	const char * ScriptClassFactory::getScriptClassName(ClassTypeIdx idx){
-		if(idx != ZS_INVALID_CLASS){
+	const char * ScriptClassFactory::getScriptClassName(int idx){
+		if(idx != ZS_IDX_UNDEFINED){
 			ScriptClass *sc=(ScriptClass *)script_classes->get(idx);
 			return sc->symbol_class.name.c_str();
 		}
 		 return "class_unknow";
 	}
 
-	unsigned char ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const std::string & str_native_type){
+	int ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const std::string & str_native_type){
 
 		// 1. we have to handle primitives like void, (int *), (bool *),(float *) and (std::string *).
 		 // 2. Check for rest registered C classes...
@@ -378,14 +379,14 @@ namespace zetscript{
 			 }
 		 }
 
-		 return ZS_INVALID_CLASS;
+		 return ZS_IDX_UNDEFINED;
 	 }
 
-	unsigned char 			ScriptClassFactory::getIdxClassFromItsNativeType(const std::string & str_native_type){
+	int 			ScriptClassFactory::getIdxClassFromItsNativeType(const std::string & str_native_type){
 		return getIdxScriptInternalFrom_C_Type(str_native_type);
 	}
 
-	bool 	ScriptClassFactory::isClassInheritsFrom(ClassTypeIdx idx_class,ClassTypeIdx idx_base_class){
+	bool 	ScriptClassFactory::isClassInheritsFrom(int idx_class,int idx_base_class){
 
 		if(idx_class == idx_base_class){
 			return true;

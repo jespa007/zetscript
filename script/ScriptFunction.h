@@ -19,7 +19,7 @@ namespace zetscript{
 	public:
 
 		Symbol 	  		symbol;	 		// function registered by scope
-		ClassTypeIdx	idx_class; 		// which class belongs to...
+		int				idx_class; 		// which class belongs to...
 		short 			idx_script_function;		// idx_script_function from factory
 		int 			idx_return_type; 			// idx return type
 		zs_int 			ref_native_function_ptr;
@@ -37,7 +37,7 @@ namespace zetscript{
 
 		ScriptFunction(
 				ZetScript *_zs
-				,ClassTypeIdx _idx_class
+				,int _idx_class
 				,short _idx_script_function
 				, std::vector<FunctionParam> _params
 				,int  idx_return_type

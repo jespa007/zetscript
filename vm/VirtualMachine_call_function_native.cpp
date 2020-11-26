@@ -100,8 +100,8 @@ namespace zetscript{
 		zs_int param_this_object=0;
 		int idx_arg_start=0;
 
-		if(static_ref == false){
-			this_param=1;
+		if(static_ref == false){ // member function is a lambda function that pass this object as first parameter, so this why static_ref == false but ...
+			//this_param=1; // .. put this_param as 1 because we pass 1st param in the lambda function.
 
 			if(this_object==NULL){
 				VM_ERROR_AND_RET("Internal error: Cannot set parameter as this object due this object is NULL");
@@ -110,7 +110,7 @@ namespace zetscript{
 			if(this_object->idx_class>=IDX_BUILTIN_TYPE_MAX){
 				param_this_object=(zs_int)this_object->getNativeObject(); // pass c object
 			}else{ // pass script var
-				param_this_object=(zs_int)this_object; // pass c object
+				param_this_object=(zs_int)this_object; // pass built-in zetscript object (vector/object/etc)
 			}
 		}else{
 
@@ -118,11 +118,10 @@ namespace zetscript{
 			if(		(calling_function->symbol.properties&SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS)
 					&& instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
 					&& this_object!=NULL
-				){
+			){
 				idx_arg_start = 1;
 				n_args++;
 				converted_param[0]=(zs_int)this_object->getNativeObject();
-
 			}
 
 		}
@@ -157,22 +156,20 @@ namespace zetscript{
 					stk_arg_current
 					,function_param->idx_type
 					,(zs_int *)&converted_param[i]
-					,error_str
+					,vm_error_str
 			)){
 				VM_ERROR_AND_RET("Function \"%s\", param %i: %s",
-																calling_function->symbol.name.c_str(),
-																i,
-																error_str.c_str()
-																);
+					calling_function->symbol.name.c_str(),
+					i,
+					vm_error_str.c_str()
+				);
 			}
 
 			if(function_param->idx_type == IDX_BUILTIN_TYPE_FLOAT_PTR_C){
 				float *ptr=&float_converted_param[i];
 				*ptr = *((float *)&converted_param[i]);
 				converted_param[i]=(zs_int)ptr;
-
 			}
-
 		}
 
 		if(calling_function->idx_return_type == IDX_BUILTIN_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){

@@ -518,7 +518,7 @@ namespace zetscript{
 						}else{*/
 
 							// something went wrong
-							if(this->error){
+							if(vm_error == true){
 								goto lbl_exit_function;
 							}
 
@@ -712,8 +712,8 @@ namespace zetscript{
 						StackElement *se=NULL;
 						const char *str = (const char *)stk_result_op1->stk_value;
 						stk_src=stk_result_op2;
-						if((se =((ScriptObject *)obj)->addProperty(str,error_str))==NULL){
-							VM_STOP_EXECUTE(error_str.c_str());
+						if((se =((ScriptObject *)obj)->addProperty(str,vm_error_str))==NULL){
+							VM_STOP_EXECUTE(vm_error_str.c_str());
 							return stk_result;
 						}
 
@@ -737,8 +737,8 @@ namespace zetscript{
 						) {
 
 							ScriptObject *script_object=(ScriptObject *)stk_result_op1->var_ref;
-							if((stk_dst=script_object->addProperty((const char *)stk_result_op1->stk_value, error_str))==NULL){
-								VM_STOP_EXECUTE(error_str.c_str());
+							if((stk_dst=script_object->addProperty((const char *)stk_result_op1->stk_value, vm_error_str))==NULL){
+								VM_STOP_EXECUTE(vm_error_str.c_str());
 							}
 
 
@@ -1332,16 +1332,14 @@ namespace zetscript{
 								,stk_start_arg_call
 								,n_args
 								,instruction);
-
-						if(error){
-							error_callstack_str+="\ncalling at ...";
-						}
 					}
 					else{ // C function
-						calling_object=this_object;
-						if(is_constructor && (sf->symbol.properties & SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS)){
+
+						if((is_constructor && (sf->symbol.properties & SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))
+							){
 							calling_object= (ScriptObject *)(stk_start_arg_call-2)->var_ref; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
 						}
+
 						ret_obj= callFunctionNative(
 								 sf
 								,stk_start_arg_call
@@ -1350,9 +1348,19 @@ namespace zetscript{
 								,calling_object
 						);
 
-						if(error){
-							error_callstack_str+="\ncalling at ...";
-						}
+
+					}
+
+					if(vm_error == true){
+						vm_error_callstack_str+=zs_strutils::format(
+								"\nat %s (file:%s line:%i)" // TODO: get full symbol ?
+								,sf->symbol.name.c_str()
+								,SFI_GET_FILE(calling_function,instruction)
+								,SFI_GET_LINE(calling_function,instruction)
+
+
+						);
+						goto lbl_exit_function;
 					}
 
 					// if a scriptvar --> init shared

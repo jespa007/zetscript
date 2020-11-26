@@ -19,7 +19,7 @@ namespace zetscript{
 	}
 	//------------------------------------------------------------
 
-	ScriptClass::ScriptClass(ZetScript *_zs,ClassTypeIdx _idx_class){
+	ScriptClass::ScriptClass(ZetScript *_zs,int _idx_class){
 
 		str_class_ptr_type="";
 		c_destructor = NULL;
