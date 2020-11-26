@@ -293,12 +293,22 @@ namespace zetscript{
 			n_stk_args--;
 		}
 
-		ret_obj=callFunctionScript(
-			calling_object
-			,ptr_function_found
-			,stk_args
-			,n_stk_args
-		);
+		if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
+			ret_obj=callFunctionScript(
+				calling_object
+				,ptr_function_found
+				,stk_args
+				,n_stk_args
+			);
+		}else{ //
+			ret_obj= callFunctionNative(
+					ptr_function_found
+					,stk_args
+					,n_stk_args
+					,instruction
+					,calling_object
+			);
+		}
 
 		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){ //
 

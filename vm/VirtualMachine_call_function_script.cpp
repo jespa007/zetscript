@@ -285,6 +285,10 @@ namespace zetscript{
 			VM_ERROR_AND_RET("Reached max stack");
 		}
 
+		if(calling_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+			VM_ERROR_AND_RET("Internal error: Not script function");
+		}
+
 		float aux_float=0.0;
 		StackElement ret_obj;
 		ScriptObject *script_var=NULL;
