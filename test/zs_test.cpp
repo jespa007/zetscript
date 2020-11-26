@@ -903,6 +903,9 @@ int main(int argc, char * argv[]) {
 	zs->registerMemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(zs_int)>(&CInteger::_set));
 	zs->registerMemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set));
 
+	zs->eval("var it1=new CInteger(4);it1.toInt();",EvalOption::EVAL_OPTION_SHOW_USER_CODE | EvalOption::EVAL_OPTION_EXECUTE);
+	//TEST_ARITHMETIC_CINTEGER_OP(4,+,4);
+	return 0;
 
 	// unsinged
 	printf("%i. testing arithmetic CInteger...\n",++n_test);
