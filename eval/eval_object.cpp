@@ -276,9 +276,7 @@ namespace zetscript{
 						 eval_data->current_parsing_file
 						 ,line
 						 ,get_mapped_name(eval_data,FUNCTION_MEMBER_CONSTRUCTOR_NAME)
-					);
-
-
+					 );
 
 					 if(*aux_p != '('){
 						 EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_data_keywords[key_w].str);
