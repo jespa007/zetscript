@@ -96,7 +96,7 @@ namespace zetscript{
 		}
 
 		zs_int converted_param[MAX_NATIVE_FUNCTION_ARGS];
-		float 	 float_converted_param[MAX_NATIVE_FUNCTION_ARGS];
+		//float 	 float_converted_param[MAX_NATIVE_FUNCTION_ARGS];
 		zs_int result=0;
 		StackElement *stk_arg_current;
 		current_call_c_function = calling_function;
@@ -170,11 +170,12 @@ namespace zetscript{
 				);
 			}
 
-			if(function_param->idx_type == IDX_BUILTIN_TYPE_FLOAT_PTR_C){
+			// we manage float, so we have to manage another variable to keep its pointer when passes into native param
+			/*if(function_param->idx_type == IDX_BUILTIN_TYPE_FLOAT_PTR_C){
 				float *ptr=&float_converted_param[i];
 				*ptr = *((float *)&converted_param[i]);
 				converted_param[i]=(zs_int)ptr;
-			}
+			}*/
 		}
 
 		if(calling_function->idx_return_type == IDX_BUILTIN_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){

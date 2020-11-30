@@ -333,6 +333,9 @@ namespace zetscript{
 			VM_STOP_EXECUTE("Error MAXIMUM stack size reached");
 		}
 
+		// stk_vm_current starts always from stk_start to avoid overwritting local variables...
+		stk_vm_current = stk_start;
+
 		// Init local vars ...
 		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (vm_idx_call > 1)){
 			StackElement *ptr_aux = _stk_local_var+n_args;
@@ -356,6 +359,7 @@ namespace zetscript{
 
 		// PUSH STACK
 		//=========================================
+
 
 		//-----------------------------------------------------------------------------------------------------------------------
 		//
@@ -733,15 +737,15 @@ namespace zetscript{
 							VM_STOP_EXECUTE("Assign to constant element is not allowed ");
 						}
 
-						if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {
-							stk_dst=(StackElement *)stk_result_op1->var_ref; // stk_value is expect to contents a stack variable
-						}else if(		(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED)
-								&&  stk_result_op1->stk_value != NULL
-								&&  stk_result_op1->var_ref != NULL
+						if(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK) {
+							stk_dst=(StackElement *)stk_dst->var_ref; // stk_value is expect to contents a stack variable
+						}else if(		(stk_dst->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED)
+								&&  stk_dst->stk_value != NULL
+								&&  stk_dst->var_ref != NULL
 						) {
 
-							ScriptObject *script_object=(ScriptObject *)stk_result_op1->var_ref;
-							if((stk_dst=script_object->addProperty((const char *)stk_result_op1->stk_value, vm_error_str))==NULL){
+							ScriptObject *script_object=(ScriptObject *)stk_dst->var_ref;
+							if((stk_dst=script_object->addProperty((const char *)stk_dst->stk_value, vm_error_str))==NULL){
 								VM_STOP_EXECUTE(vm_error_str.c_str());
 							}
 

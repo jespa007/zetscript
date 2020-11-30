@@ -38,7 +38,7 @@
 
 namespace zetscript{
 
-	void  print(const char *s){
+	/*void  print(const char *s){
 		printf("%s\n",s);
 		fflush(stdout);
 	}
@@ -46,7 +46,7 @@ namespace zetscript{
 	void  print(zs_int s){
 		printf("print integer test: %llu\n",s);
 		fflush(stdout);
-	}
+	}*/
 
 
 	ScriptClassFactory::ScriptClassFactory(ZetScript *_zs){
@@ -122,8 +122,8 @@ namespace zetscript{
 
 		ZS_REGISTER_FUNCTION(zs,"ptrToZetScriptPtr",ptrToZetScriptPtr);
 
-		ZS_REGISTER_FUNCTION(zs,"print",static_cast<void (*)(const char *)>(print));
-		ZS_REGISTER_FUNCTION(zs,"print",static_cast<void (*)(zs_int)>(print));
+		//ZS_REGISTER_FUNCTION(zs,"print",static_cast<void (*)(const char *)>(print));
+		//ZS_REGISTER_FUNCTION(zs,"print",static_cast<void (*)(zs_int)>(print));
 
 
 		//ZS_REGISTER_FUNCTION_MEMBER(this->zs,ScriptObjectVector,"size",&ScriptObjectVector::size);

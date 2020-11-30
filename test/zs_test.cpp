@@ -39,6 +39,20 @@ public:
 		return new CFloat(*n1 + n2->n);
 	}
 
+	static CFloat * _sub(CFloat *n1, CFloat *n2){
+		return new CFloat(n1->n - n2->n);
+	}
+
+	static CFloat * _sub(CFloat *n1, float *n2){
+		return new CFloat(n1->n - *n2);
+	}
+
+	static CFloat * _sub(float *n1, CFloat *n2){
+		return new CFloat(*n1 - n2->n);
+	}
+
+
+
 	static CFloat * _neg(CFloat *n1){
 		return new CFloat(-n1->n);
 	}
@@ -97,10 +111,6 @@ public:
 		n=_n;
 	}
 
-	void ScriptConstructor(zs_int _n){
-		n=_n;
-	}
-
 	void _set(zs_int i){
 		this->n = i;
 	}
@@ -124,6 +134,23 @@ public:
 
 	static CInteger * _add(zs_int n1, CInteger * n2){
 		return new CInteger(n1 + n2->n);
+	}
+
+
+	static CInteger * _sub(CInteger *n1, CInteger *n2){
+		return new CInteger(n1->n - n2->n);
+	}
+
+	static CInteger * _sub(CInteger *n1, float n2){
+		return new CInteger((int)(n1->n - n2));
+	}
+
+	static CInteger * _sub(CInteger *n1, zs_int n2){
+		return new CInteger(n1->n - n2);
+	}
+
+	static CInteger * _sub(zs_int n1, CInteger * n2){
+		return new CInteger(n1 - n2->n);
 	}
 
 	static CInteger * _div(CInteger *n1, CInteger *n2){
@@ -489,9 +516,8 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 		TEST_ARITHMETIC_INT_OP(-val1,%,-val2);
 
 #define COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(val1,val2) \
-		TEST_ARITHMETIC_CINTEGER_OP(val1,+,val2);
-/*
-TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(val1,+,val2); \
+		TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 		TEST_ARITHMETIC_CINTEGER_OP(-val1,+,val2); \
 		TEST_ARITHMETIC_CINTEGER_OP(-val1,+,-val2); \
 		\
@@ -514,7 +540,7 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 		TEST_ARITHMETIC_CINTEGER_OP(val1,%,-val2); \
 		TEST_ARITHMETIC_CINTEGER_OP(-val1,%,val2); \
 		TEST_ARITHMETIC_CINTEGER_OP(-val1,%,-val2);
-*/
+
 
 #define COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(val1,val2) \
 		TEST_ARITHMETIC_CNUMBER_OP(val1,+,val2); \
@@ -825,7 +851,9 @@ int main(int argc, char * argv[]) {
 	//int i= 0+ +1;
 	zs->registerClass<CFloat>("CFloat");
 
-	zs->registerMemberFunction<CFloat>("CFloat",static_cast<void (CFloat::*)(float *)>(&CFloat::_set));
+	zs->registerMemberFunction<CFloat>("constructor",static_cast<void (CFloat::*)(float *)>(&CFloat::_set));
+	zs->registerMemberFunction<CFloat>("constructor",static_cast<void (CFloat::*)(CFloat *)>(&CFloat::_set));
+
 	zs->registerMemberFunction<CFloat>("toFloat",&CFloat::toFloat);
 	zs->registerMemberVariable<CFloat>("n",&CFloat::n);
 
@@ -833,6 +861,11 @@ int main(int argc, char * argv[]) {
 	zs->registerMemberFunctionStatic<CFloat>("_add",static_cast<CFloat * (*)(float *,CFloat * )>(&CFloat::_add));
 	zs->registerMemberFunctionStatic<CFloat>("_add",static_cast<CFloat * (*)(CFloat *,float *)>(&CFloat::_add));
 	zs->registerMemberFunctionStatic<CFloat>("_add",static_cast<CFloat * (*)(CFloat *,CFloat * )>(&CFloat::_add));
+
+	zs->registerMemberFunctionStatic<CFloat>("_sub",static_cast<CFloat * (*)(float *,CFloat * )>(&CFloat::_sub));
+	zs->registerMemberFunctionStatic<CFloat>("_sub",static_cast<CFloat * (*)(CFloat *,float *)>(&CFloat::_sub));
+	zs->registerMemberFunctionStatic<CFloat>("_sub",static_cast<CFloat * (*)(CFloat *,CFloat * )>(&CFloat::_sub));
+
 
 	zs->registerMemberFunctionStatic<CFloat>("_mul",static_cast<CFloat * (*)(float *,CFloat * )>(&CFloat::_mul));
 	zs->registerMemberFunctionStatic<CFloat>("_mul",static_cast<CFloat * (*)(CFloat *,float *)>(&CFloat::_mul));
@@ -853,7 +886,8 @@ int main(int argc, char * argv[]) {
 
 
 	zs->registerClass<CInteger>("CInteger");
-	zs->registerMemberFunction<CInteger>("CInteger",&CInteger::ScriptConstructor);
+	zs->registerMemberFunction<CInteger>("constructor",static_cast<void (CInteger::*)(zs_int)>(&CInteger::_set));
+	zs->registerMemberFunction<CInteger>("constructor",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set));
 	zs->registerMemberFunction<CInteger>("toInt",&CInteger::toInt);
 	zs->registerMemberVariable<CInteger>("n",&CInteger::n);
 
@@ -861,6 +895,11 @@ int main(int argc, char * argv[]) {
 	zs->registerMemberFunctionStatic<CInteger>("_add",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_add));
 	zs->registerMemberFunctionStatic<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_add));
 	zs->registerMemberFunctionStatic<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add));
+
+	zs->registerMemberFunctionStatic<CInteger>("_sub",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_sub));
+	zs->registerMemberFunctionStatic<CInteger>("_sub",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_sub));
+	zs->registerMemberFunctionStatic<CInteger>("_sub",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_sub));
+
 
 	zs->registerMemberFunctionStatic<CInteger>("_mul",static_cast<CInteger * (*)(zs_int,CInteger * )>(&CInteger::_mul));
 	zs->registerMemberFunctionStatic<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,zs_int)>(&CInteger::_mul));
@@ -903,78 +942,6 @@ int main(int argc, char * argv[]) {
 	zs->registerMemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(zs_int)>(&CInteger::_set));
 	zs->registerMemberFunction<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set));
 
-	printf("%i. testing primitive var\n",++n_test);
-
-
-		/*TEST_INT_EXPR("i++;i;",2);
-		TEST_INT_EXPR("++i;i;",3);
-		TEST_INT_EXPR("i--;i;",2);
-		TEST_INT_EXPR("--i;i;",1);
-
-
-		TEST_INT_EXPR("i=10;i*=10;",100);
-		TEST_INT_EXPR("i/=10;",10);
-		TEST_INT_EXPR("i+=10;",20);
-		TEST_INT_EXPR("i-=5;",15);
-		TEST_INT_EXPR("i%=10;",5);
-
-		// test reassign and float
-		TEST_NUMBER_EXPR("i=2.0;",2.0f);
-		TEST_NUMBER_EXPR("i++;i;",3.0f);
-		TEST_NUMBER_EXPR("--i;i;",2.0f);
-
-		TEST_BOOL_EXPR("i=true;",true);
-		TEST_BOOL_EXPR("i=!i;",false);
-		TEST_BOOL_EXPR("i==i;",true);
-		TEST_BOOL_EXPR("i!=i;",false);
-		//TEST_BOOL_EXPR("i=!i;",true);*/
-
-
-		/*printf("%i. testing std::vector var ...\n",++n_test);
-
-		TEST_INT_EXPR("var v=[3,true,2.0,\"is_a_string\"];v.size();",4); // <-- crash if no constructor defined new CInteger(x)!
-		TEST_INT_EXPR("v[0];",3);
-		TEST_BOOL_EXPR("v[1];",true);
-		TEST_NUMBER_EXPR("v[2];",2.0);
-		TEST_STRING_EXPR("v[3];","is_a_string");
-		//TEST_INT_EXPR("v[4].n;",5);// <-- error !!!
-		//TEST_NUMBER_EXPR("v[5].n;",10.0f);
-
-		// test adding ...
-
-		printf("%i. testing struct var ...\n",++n_test);
-
-		TEST_INT_EXPR("var s={i:3,b:true,n:2.0,s:\"is_a_string\",o:new CInteger(5)};s.size();",5);
-		TEST_BOOL_EXPR("s.b;",true);
-		TEST_NUMBER_EXPR("s.n;",2.0);
-		TEST_STRING_EXPR("s.s;","is_a_string");
-	//	TEST_BOOL_EXPR("s.o.instanceof(MyObject);",true);
-
-		printf("%i. testing metamethod integer ...\n",++n_test);
-		TEST_INT_EXPR("var mt=new CInteger(5);mt=0+1+2+mt+4+5;mt.n;",17);*/
-
-		printf("%i. test if-else ...\n",++n_test);
-		/*TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}i;",10);
-		TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}i;",11);*/
-
-		//TEST_INT_EXPR("var i=1;i;",1);
-		zs->evalIntValue("var i=1;i;");
-	//zs->eval("var i1,i2,it1,it2");
-		zs->evalIntValue("var it1=new CInteger(4);delete it1;");
-
-#if 0
-	zs->evalIntValue("var i1,i2,it1,it2;it1=("\
-			"(i1=new CInteger("\
-			"4" \
-			"))/*"\
-			"+"\
-			"(i2=new CInteger("\
-			"4" \
-			"))*/"\
-			");it2=it1.toInt();/*delete it1;*/delete i1;/*delete i2;*/");
-#endif
-	//TEST_ARITHMETIC_CINTEGER_OP(4,+,4);
-	return 0;
 
 	// unsinged
 	printf("%i. testing arithmetic CInteger...\n",++n_test);
@@ -1118,7 +1085,13 @@ int main(int argc, char * argv[]) {
 	printf("%i. test consisten script-c-script calls ...\n",++n_test);
 	// test calling script-c-script-c
 	zs->registerFunction("test_function_1st_c_call",test_function_1st_c_call);
-	zs->eval("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
+	zs->eval("function test_1st_script_call(){\n"
+				"System::println (\"Hello from script\");\n"
+				"test_function_1st_c_call();\n"
+			"}\n"
+			"function test_2nd_script_call(){\n"
+				"System::print(\"2nd call script\");\n"
+			"}");
 
 	std::function<void ()> * test_1st_script_call=zs->bindScriptFunction<void ()>("test_1st_script_call");
 	test_2nd_script_call=zs->bindScriptFunction<void ()>("test_2nd_script_call");

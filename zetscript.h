@@ -122,7 +122,6 @@ namespace zetscript{
 		EVAL_OPTION_EXECUTE=0x1<<0,
 		EVAL_OPTION_SHOW_USER_CODE=0x1<<1,
 		EVAL_OPTION_SHOW_SYSTEM_CODE=0x1<<2,
-		EVAL_OPTION_PRESERVE_0_SHARES=0x1<<3,
 	}EvalOption;
 
 
@@ -455,7 +454,7 @@ namespace zetscript{
 		//void printGeneratedCode(ScriptFunction *sfo);
 
 		//----
-		void evalInternal(const char * code, unsigned short options, const char * filename=NULL);
+		void evalInternal(const char * code, unsigned short options=EVAL_OPTION_EXECUTE, const char * filename=NULL);
 
 		// FUNCTIONS
 		static 									void  print(const char *s);

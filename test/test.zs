@@ -31,7 +31,14 @@ it2=it1.toInt();delete it1;delete i1;delete i2;it2;
 
 System::println(it2);*/
 
-String::format("dadsa");
+function test_1st_script_call(){
+				print     ("Hello from script");
+				//test_function_1st_c_call();
+			}
+
+
+
+//String::format("dadsa");
 //!(new Integer(10)>new Integer(0))&&(new Integer(10)>new Integer(0))*/
 
 //!(10>0)

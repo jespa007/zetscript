@@ -317,16 +317,23 @@ namespace zetscript{
 
 
 		if(scope_block == MAIN_SCOPE(this)) { // is global var ...
-			StackElement ref_stk;
+			StackElement stk_global_var;
 			if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0){ // native variable
-				ref_stk=convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr);
-				if(!zs->getVirtualMachine()->setStackElement(idx_position,ref_stk)){
+				stk_global_var=convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr);
+				if(!zs->getVirtualMachine()->setStackElement(idx_position,stk_global_var)){
 					THROW_RUNTIME_ERROR(zs->getVirtualMachine()->getError().c_str());
 				}
 			}else{ // script variable
-				if((symbol->ref_ptr=(zs_int)zs->getVirtualMachine()->getStackElement(idx_position))==0){
+				StackElement *stk_global_var_ptr=zs->getVirtualMachine()->getStackElement(idx_position);
+				if(stk_global_var_ptr==NULL){
 					THROW_RUNTIME_ERROR(zs->getVirtualMachine()->getError().c_str());
 				}
+
+				// reset stack to undefined, it can have some garbage from previous operations...
+				stk_global_var_ptr->setUndefined();
+
+				symbol->ref_ptr=(zs_int)stk_global_var_ptr;
+
 			}
 		}
 

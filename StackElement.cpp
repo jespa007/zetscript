@@ -56,4 +56,10 @@ namespace zetscript{
 		return result;
 
 	}
+
+	void StackElement::setUndefined(){
+		this->stk_value=0;
+		this->var_ref=0;
+		this->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
+	}
 }

@@ -259,7 +259,7 @@ namespace zetscript{
 
 	zs_int * ZetScript::evalIntValue(const std::string & str_to_eval){
 
-		eval(str_to_eval.c_str(),EvalOption::EVAL_OPTION_EXECUTE | EvalOption::EVAL_OPTION_SHOW_USER_CODE);
+		eval(str_to_eval.c_str());
 
 		StackElement *se=virtual_machine->getLastStackValue();
 
@@ -317,7 +317,7 @@ namespace zetscript{
 	std::string * ZetScript::evalStringValue(const std::string & str_to_eval){
 
 		// eval and preserve zero shares to get value...
-		evalInternal(str_to_eval.c_str(),EvalOption::EVAL_OPTION_EXECUTE|EvalOption::EVAL_OPTION_PRESERVE_0_SHARES);
+		evalInternal(str_to_eval.c_str());
 
 		StackElement *se=virtual_machine->getLastStackValue();
 

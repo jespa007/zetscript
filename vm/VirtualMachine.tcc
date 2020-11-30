@@ -178,7 +178,7 @@ namespace zetscript{
 		StackElement ret_obj;
 		const char *byte_code_metamethod_operator_str=ByteCodeMetamethodToOperatorStr(byte_code_metamethod);
 		const char *str_symbol_metamethod=ByteCodeMetamethodToSymbolStr(byte_code_metamethod);
-		zs_vector *stk_elements=NULL;
+		//zs_vector *stk_elements=NULL;
 		std::string error_found="";
 		zs_vector * list_props=NULL;
 		ScriptObject *script_object=NULL;
@@ -249,18 +249,20 @@ namespace zetscript{
 
 			else{ // try find non-static
 				// search for non-static
+				//stk_elements=script_object->getAllProperties();
+
 				if((ptr_function_found = findFunction(
 					 calling_object
 					,calling_function
 					,instruction
 					,false
-					,(void *)stk_elements->items
-					,stk_elements->count
+					,(void *)list_props->items
+					,list_props->count
 					,str_symbol_metamethod
 					,stk_args+1
 					,n_stk_args-1
 				)) == NULL){
-					error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is implemented but cannot find appropriate function for its argument types",str_symbol_metamethod,byte_code_metamethod_operator_str);
+					error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
 					goto apply_metamethod_error;
 				}
 

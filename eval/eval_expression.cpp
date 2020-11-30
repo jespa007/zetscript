@@ -748,7 +748,7 @@ namespace zetscript{
 					IGNORE_BLANKS(test_s,eval_data,aux_p,last_line_ok);
 
 					// eval accessor element (supose that was a preinsert a load instruction for identifier )...
-					if(is_access_punctuator_or_static_reference(aux_p)){
+					if(is_access_punctuator_or_static_reference(test_s)){
 
 						line=last_line_ok;
 						aux_p=test_s;
@@ -1005,7 +1005,7 @@ namespace zetscript{
 									instruction_token->instruction_source_info= InstructionSourceInfo(
 										eval_data->current_parsing_file
 										,last_accessor_line
-										,get_mapped_name(eval_data,symbol_static != NULL?static_access_name:accessor_value)
+										,get_mapped_name(eval_data,symbol_static != NULL?static_access_name:last_accessor_value) // only can get from last_accessor_value because accessor_value is empty on each iteration
 									);
 								}
 

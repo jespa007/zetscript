@@ -124,6 +124,7 @@ namespace zetscript{
 		// it gives stackelement as string (the result should be deleted)
 		const char * typeStr();
 		std::string toString();
+		void setUndefined();
 
 	};
 
