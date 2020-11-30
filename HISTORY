@@ -118,7 +118,7 @@ Date: XX-12-2020
 #164 implement length property built-in for get length of vector/dictionary/string instead of call size() 
 
 #168 When semicolon on expression is missing it shows wrong filename 
-#169 Fix/Check metamethods 
+> #169 Fix/Check metamethods 
 #170 Fix class 
 #171 test returns stack var with 0 refs (solved by #230, user is in charge to destroy lifetime objects) 
 #172 get rid super scope
