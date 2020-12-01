@@ -9,7 +9,7 @@
 namespace zetscript{
 
 	class CZetgine;
-	class  ScriptObjectVector: public ScriptObject{
+	class  ScriptObjectVector: public ScriptObjectBase{
 	public:
 		StackElement return_callc;
 

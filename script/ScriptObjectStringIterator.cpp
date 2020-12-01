@@ -7,8 +7,9 @@
 
 namespace zetscript{
 
-	ScriptObjectIterator::ScriptObjectIterator(ZetScript *_zs):ScriptObjectBase(_zs){
+	ScriptObjectIterator::ScriptObjectIterator(ZetScript *_zs):ScriptObjectBase{
 	}
+
 
 
 	void	 ScriptObjectIterator::nextSf(ScriptObjectIterator *si){
@@ -20,7 +21,7 @@ namespace zetscript{
 	}
 
 
-	bool	 ScriptObjectIterator::endSf(ScriptObjectIterator *si){
+	bool	 ScriptObjectIterator::endSf((ScriptObjectIterator *si){
 		return si->end();
 	}
 

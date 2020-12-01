@@ -16,7 +16,7 @@ class ScriptClass;
 	class ZetScript;
 	class VirtualMachine;
 	class ScriptClassFactory;
-	class  ScriptObject{
+	class  ScriptObject: public ScriptObjectBase{
 
 	public:
 

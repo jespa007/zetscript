@@ -400,8 +400,14 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_LOAD_TYPE_VARIABLE: // load variable ...
 		lbl_load_type_variable:
-				scope_type=GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction->properties);
 
+				//--------------------------------------------------------------------------
+				//
+				// STEPS LOAD STK VARIABLE
+				//
+				// 1. load variable itself
+				//
+				scope_type=GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction->properties);
 				switch(scope_type){
 				default: // global...
 					if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_THIS){
@@ -434,7 +440,6 @@ namespace zetscript{
 							}
 
 							// determine object ...
-
 							if((stk_var =var_vector->getUserProperty(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){
 								goto lbl_exit_function;
 							}
@@ -443,9 +448,6 @@ namespace zetscript{
 					if(stk_var == NULL){ // push undefined
 						PUSH_UNDEFINED;
 						continue;
-						/*VM_STOP_EXECUTE("Variable \"%s\" is not type std::vector",
-							SFI_GET_SYMBOL_NAME(calling_function,instructions+instruction->value_op2)
-						);*/
 					}
 					break;
 				case MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD:
@@ -518,12 +520,6 @@ namespace zetscript{
 
 						// not exist ... add
 						if(stk_var == NULL){
-/*							Symbol *symbol=calling_object->getSymbol(idx_stk_element);
-							// check if static
-							if(symbol->properties & SYMBOL_PROPERTY_STATIC){
-								VM_STOP_EXECUTE("Cannot access static symbols with \".\", static symbols are acceded by \"::\"");
-							}
-						}else{*/
 
 							// something went wrong
 							if(vm_error == true){
@@ -535,18 +531,16 @@ namespace zetscript{
 							stk_vm_current->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
 							stk_vm_current++;
 							continue;
-
-							/*if((stk_var=calling_object->addProperty(symbol_access_str, error_str,NULL,&idx_stk_element))==NULL){
-								VM_STOP_EXECUTE(error_str.c_str());
-								return stk_result;
-							}*/
-
 						}
 
 					}
 					break;
 				}
 
+
+				//
+				// 2. Check whether variable has PRE increment/decrement
+				//
 				//instruction_properties=instruction->properties;
 				pre_post_properties = GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(instruction->properties);
 

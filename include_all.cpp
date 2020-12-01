@@ -16,10 +16,14 @@
 #include 		"ByteCode.cpp"
 
 
+#include		"script/ScriptObjectBase.cpp"
 #include		"script/ScriptObject.cpp"
-#include		"script/ScriptObjectString.cpp"
-#include		"script/ScriptObjectVector.cpp"
 #include		"script/ScriptObjectIterator.cpp"
+#include		"script/ScriptObjectString.cpp"
+#include		"script/ScriptObjectStringIterator.cpp"
+#include		"script/ScriptObjectVector.cpp"
+#include		"script/ScriptObjectVectorIterator.cpp"
+
 
 #include		"script/ScriptFunctionFactory.cpp"
 #include		"script/ScriptClassFactory.cpp"

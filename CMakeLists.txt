@@ -209,10 +209,14 @@ ELSE()
 		scope/ScopeFactory.cpp
 				
 		 # Script
+		 script/ScriptObjectBase.cpp
 		script/ScriptObject.cpp
-		script/ScriptObjectString.cpp
-		script/ScriptObjectVector.cpp
 		script/ScriptObjectIterator.cpp
+		script/ScriptObjectString.cpp
+		script/ScriptObjectStringIterator.cpp
+		script/ScriptObjectVector.cpp
+		script/ScriptObjectVectorIterator.cpp
+		
 		script/ScriptClass.cpp
 		script/ScriptFunction.cpp
 		script/ScriptFunctionFactory.cpp
