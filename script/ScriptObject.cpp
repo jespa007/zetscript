@@ -548,9 +548,10 @@ namespace zetscript{
 
 //#ifdef __DEBUG__
 		if(!deallocated && was_created_by_constructor){
-			fprintf(stderr,
-				zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
-					,SFI_GET_FILE_LINE(info_function_new, instruction_new)).c_str()
+			fprintf(stderr,"%s"
+					,zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
+							,SFI_GET_FILE_LINE(info_function_new, instruction_new)
+					).c_str()
 				);
 			//return false;
 		}

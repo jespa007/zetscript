@@ -328,7 +328,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 		aux_value=zs->evalIntValue(str); \
 		if(aux_value!=NULL){ \
 			if(*aux_value != (val1 op val2)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,*aux_value); \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,(int)*aux_value); \
 				exit(-1); \
 			} \
 		} \
@@ -354,7 +354,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 		aux_value=zs->evalIntValue(str); \
 		if(aux_value!=NULL){ \
 			if( *aux_value != (val1 op val2)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,*aux_value); \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,(int)*aux_value); \
 				exit(-1); \
 			} \
 		} \
@@ -638,7 +638,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 		aux_value=zs->evalIntValue(str_expr);\
 		if(aux_value != NULL){\
 			if(*aux_value != (expr)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,*aux_value); \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,(int)*aux_value); \
 				exit(-1); \
 			} \
 		} \
@@ -656,7 +656,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 		aux_value=zs->evalIntValue(expr);\
 		if(aux_value != NULL){\
 			if(*aux_value  != (expected_value)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,*aux_value); \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,(int)*aux_value); \
 				exit(-1); \
 			} \
 		} \
@@ -747,7 +747,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 			if(!floatValuesAreAlmostTheSame(*aux_value  , (expr))){ \
 				double error = fabs(fabs(*aux_value)-fabs(expr));\
 				if(error>0.001){ /* Only error if the difference is more than expected */\
-					fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,aux_value); \
+					fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,*aux_value); \
 					exit(-1); \
 				}else{\
 					fprintf(stderr,"warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n",str_expr.c_str(),expr,*aux_value); \

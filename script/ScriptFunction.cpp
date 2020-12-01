@@ -163,7 +163,7 @@ namespace zetscript{
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t\"%s\"\n",idx_instruction,((const char *)icv->stk_value));
 					break;
 				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST FUN\t%s\n",idx_instruction,icv->toString());
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST FUN\t%s\n",idx_instruction,icv->toString().c_str());
 					break;
 				default:
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST VAR\t%s\n",idx_instruction,symbol_value.c_str());

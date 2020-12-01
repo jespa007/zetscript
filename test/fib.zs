@@ -1,5 +1,6 @@
-// mingw gcc best timing 1153ms - 1192ms
-// vc++      best timing 1447ms - 1460ms
+// Laptop N5050 Intel(R) Core(TM) i5-2450M CPU @ 2.50GHz
+// mingw gcc best timing 1900ms - 2000ms
+// vc++      best timing 2447ms - 2500ms
 function fibR(n) {
 	if (n < 2) {
      	return n; 

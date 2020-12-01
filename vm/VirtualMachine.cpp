@@ -297,7 +297,7 @@ namespace zetscript{
 			error+="\n\n";
 			//error+="\nPlease destroy lifetime objects through destroyLifetimeObject() before destroy zetscript to avoid this exception\n";
 
-			fprintf(stderr,error.c_str());
+			fprintf(stderr,"%s",error.c_str());
 
 		}
 
