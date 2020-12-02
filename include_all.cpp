@@ -18,13 +18,8 @@
 
 #include		"script/ScriptObjectBase.cpp"
 #include		"script/ScriptObject.cpp"
-#include		"script/ScriptObjectIterator.cpp"
 #include		"script/ScriptObjectString.cpp"
-#include		"script/ScriptObjectStringIterator.cpp"
 #include		"script/ScriptObjectVector.cpp"
-#include		"script/ScriptObjectVectorIterator.cpp"
-
-
 #include		"script/ScriptFunctionFactory.cpp"
 #include		"script/ScriptClassFactory.cpp"
 //#include		"script/ScriptContext.cpp"
@@ -47,6 +42,9 @@
 #include 		"extra/MathBuiltIn.cpp"
 #include 		"extra/SystemBuiltIn.cpp"
 #include 		"extra/StringBuiltIn.cpp"
+#include "script/IteratorScriptObject.cpp"
+#include "script/IteratorScriptObjectString.cpp"
+#include "script/IteratorScriptObjectVector.cpp"
 
 #include		"zetscript.cpp"
 

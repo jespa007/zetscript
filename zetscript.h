@@ -89,11 +89,11 @@
 
 #include "script/ScriptObjectBase.h"
 #include "script/ScriptObject.h"
-#include "script/ScriptObjectIterator.h"
+#include "script/IteratorScriptObject.h"
 #include "script/ScriptObjectString.h"
-#include "script/ScriptObjectStringIterator.h"
+#include "script/IteratorScriptObjectString.h"
 #include "script/ScriptObjectVector.h"
-#include "script/ScriptObjectVectorIterator.h"
+#include "script/IteratorScriptObjectVector.h"
 
 #include "script/ScriptClass.h"
 #include "script/ScriptFunction.h"

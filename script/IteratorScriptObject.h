@@ -6,15 +6,14 @@
 
 namespace zetscript{
 
-
-	class  ScriptObjectStringIterator:public ScriptObjectBase{
+	class  IteratorScriptObject:public ScriptObjectBase{
 
 	public:
 
-		ScriptObjectStringIterator(ScriptObjectString *sov);
+		IteratorScriptObject(ScriptObject *so);
 
-		static StackElement 	_getSf(ScriptObjectStringIterator *si);
-		static void				_nextSf(ScriptObjectStringIterator *si);
+		static StackElement 	_getSf();
+		static void				_nextSf();
 		static bool				endSf();
 
 	protected:
