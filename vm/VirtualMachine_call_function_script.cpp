@@ -764,8 +764,8 @@ namespace zetscript{
 										 calling_function
 										,instruction
 										,BYTE_CODE_METAMETHOD_SET
-										,stk_result_op2 // it contents variable to be assigned
-										,stk_result_op1 // it contects the result of expression or whatever
+										,stk_result_op1 // it contents variable to be assigned
+										,stk_result_op2 // it contects the result of expression or whatever
 								)==false){
 									goto lbl_exit_function;
 								}

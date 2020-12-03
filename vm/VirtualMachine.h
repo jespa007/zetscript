@@ -181,7 +181,6 @@ namespace zetscript{
 			,unsigned char n_args
 		);
 
-
 		inline void popVmScope(bool check_empty_shared_pointers=true);
 
 		inline bool applyMetamethod(
@@ -191,7 +190,6 @@ namespace zetscript{
 			,ByteCodeMetamethod op_code_methamethod
 			,StackElement *stk_result_op1
 			,StackElement *stk_result_op2
-
 		);
 
 		inline StackElement performAddString(StackElement *stk_result_op1,StackElement *stk_result_op2);

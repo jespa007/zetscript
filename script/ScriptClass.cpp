@@ -86,7 +86,6 @@ namespace zetscript{
 			,str_native_type
 			,ref_ptr
 		);
-
 	}
 
 	Symbol				* 	ScriptClass::registerInternalMemberVariable(
