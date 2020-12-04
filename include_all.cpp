@@ -16,7 +16,6 @@
 #include 		"ByteCode.cpp"
 
 
-#include		"script/ScriptObjectBase.cpp"
 #include		"script/ScriptObject.cpp"
 #include		"script/ScriptObjectString.cpp"
 #include		"script/ScriptObjectVector.cpp"
@@ -42,9 +41,9 @@
 #include 		"extra/MathBuiltIn.cpp"
 #include 		"extra/SystemBuiltIn.cpp"
 #include 		"extra/StringBuiltIn.cpp"
-#include "script/IteratorScriptObject.cpp"
-#include "script/IteratorScriptObjectString.cpp"
-#include "script/IteratorScriptObjectVector.cpp"
+#include "script/ScriptObjectIterator.cpp"
+#include "script/ScriptObjectStringIterator.cpp"
+#include "script/ScriptObjectVectorIterator.cpp"
 
 #include		"zetscript.cpp"
 

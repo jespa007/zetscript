@@ -11,14 +11,16 @@ namespace zetscript{
 		StackElement *se;
 		std::string error;
 
-		memset(&this_variable,0,sizeof(this_variable));
+		// special var this
+		memset(&stk_this,0,sizeof(stk_this));
+		stk_this.var_ref=this;
+		stk_this.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
 
-		//this_variable.properties|=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
-
-		// add extra symbol this itself if is a class typedef by user...
-		//if(script_class->idx_class >=IDX_BUILTIN_TYPE_MAX){ // put as read only and cannot assign
-		this_variable.var_ref=this;
-		this_variable.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
+		// special var count
+		memset(&stk_count,0,sizeof(stk_count));
+		stk_count.stk_value=0;//this->countUserProperties();
+		stk_count.var_ref=0;
+		stk_count.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT;
 		//}
 
 		// Register c vars...
@@ -62,18 +64,18 @@ namespace zetscript{
 		}
 
 		// register custom built-in vars
-		if((se=addPropertyBuiltIn(
+		/*if((se=addPropertyBuiltIn(
 			"length"
 		))==NULL){
 			return;
 		}
 
 		se->var_ref=&lenght_user_properties;
-		se->properties=(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY);
+		se->properties=(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY);*/
 
 		// start property idx starts  from last built-in property...
 		idx_start_user_properties=stk_properties->count;
-		lenght_user_properties=0;
+		//lenght_user_properties=0;
 	}
 
 	void ScriptObject::setup(){
@@ -91,7 +93,7 @@ namespace zetscript{
 		delete_c_object = false; // --> user is responsible to delete C objects!
 		info_function_new=NULL;
 		instruction_new=NULL;
-		memset(&this_variable,0,sizeof(this_variable));
+		memset(&stk_this,0,sizeof(stk_this));
 		stk_properties=new zs_vector();
 		map_property_keys=new zs_map();
 		idx_start_user_properties = 0;
@@ -194,7 +196,6 @@ namespace zetscript{
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk={NULL,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
 		stk_properties->push_back((zs_int)stk);
-		lenght_user_properties=(int)stk_properties->count-idx_start_user_properties;
 		return stk;
 	}
 
@@ -326,6 +327,12 @@ namespace zetscript{
 
 	StackElement * ScriptObject::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
 
+		// special properties
+		if(property_name == "count"){
+			stk_count.stk_value=(void *)this->countUserProperties();
+			return &stk_count;
+		}
+
 		bool exists;
 		zs_int idx_stk_element=this->map_property_keys->get(property_name.c_str(),exists);
 		if(exists){
@@ -341,7 +348,7 @@ namespace zetscript{
 	StackElement * ScriptObject::getProperty(short idx){
 
 		if(idx==ZS_IDX_SCRIPTVAR_PROPERTY_IS_THIS){
-			return &this_variable;
+			return &stk_this;
 		}
 
 		if(idx >= (int)stk_properties->count){
@@ -398,12 +405,12 @@ namespace zetscript{
 		free((void *)stk_properties->items[idx]);
 		stk_properties->erase(idx);
 
-		if(stk_properties->count<idx_start_user_properties){
+		/*if(stk_properties->count<idx_start_user_properties){
 			lenght_user_properties=0; // invalidate any user property
 		}
 		else{
 			lenght_user_properties=stk_properties->count-idx_start_user_properties;
-		}
+		}*/
 
 		return true;
 	}
@@ -416,7 +423,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		if(v_index >= this->lenght_user_properties){
+		if(v_index >= this->countUserProperties()){
 			VM_SET_USER_ERROR(this->virtual_machine,"Index std::vector out of bounds (%i)",v_index);
 			return NULL;
 		}
@@ -425,7 +432,7 @@ namespace zetscript{
 	}
 
 	StackElement *ScriptObject::getThisProperty(){
-		return &this->this_variable;
+		return &this->stk_this;
 	}
 
 	zs_vector * ScriptObject::getAllProperties(){ // return list of stack elements
@@ -445,6 +452,19 @@ namespace zetscript{
 		map_property_keys->erase(property_name.c_str()); // erase also property key
 
 		return true;
+	}
+
+	zs_int ScriptObject::countUserProperties(){
+
+		zs_int count=this->stk_properties->count-this->idx_start_user_properties;
+		if(this->script_class->idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING){
+			return ((std::string *)this->value)->size();
+		}
+		return count;
+	}
+
+	StackElement **ScriptObject::getUserProperties(){
+		return (StackElement **)&stk_properties->items[this->idx_start_user_properties];
 	}
 
 	ScriptClass * ScriptObject::getScriptClass(){

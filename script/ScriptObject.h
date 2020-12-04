@@ -16,7 +16,7 @@ class ScriptClass;
 	class ZetScript;
 	class VirtualMachine;
 	class ScriptClassFactory;
-	class  ScriptObject: public ScriptObjectBase{
+	class  ScriptObject{
 
 	public:
 
@@ -80,8 +80,12 @@ class ScriptClass;
 		ScriptClass *getNativeClass();
 
 		ScriptFunction *getConstructorFunction();
-		StackElement **getStkProperties(){return (StackElement **)&stk_properties->items[this->idx_start_user_properties];}
-		zs_int size(){return lenght_user_properties;}
+
+		//-------------------------------------------------------
+		// USER PROP
+		zs_int countUserProperties();
+		StackElement **getUserProperties();
+		//-------------------------------------------------------
 
 
 		ScriptClass *getScriptClass();
@@ -99,7 +103,7 @@ class ScriptClass;
 
 	protected:
 
-		StackElement this_variable;
+		StackElement stk_this,stk_count;
 		//StackElement * exist(const char *c);
 		ZetScript      *zs;
 		VirtualMachine	*virtual_machine;
@@ -120,7 +124,7 @@ class ScriptClass;
 		void * c_object;
 		zs_vector			*	stk_properties; // vector of stack elements
 		zs_map				*	map_property_keys; // to search faster each property by its name
-		zs_int lenght_user_properties;
+		//zs_int lenght_user_properties;
 		int idx_start_user_properties;
 
 

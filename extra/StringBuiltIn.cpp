@@ -19,8 +19,8 @@ namespace zetscript{
 		}
 
 		if(sov != NULL){
-			StackElement **stk_it=sov->getStkProperties();
-			for(unsigned i=0; i < sov->size(); i++){
+			StackElement **stk_it=sov->getUserProperties();
+			for(unsigned i=0; i < sov->countUserProperties(); i++){
 				first_param=zs_strutils::replace(first_param,zs_strutils::format("{%i}",i),(*stk_it)->toString());
 				stk_it++;
 			}

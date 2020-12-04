@@ -161,7 +161,7 @@ namespace zetscript{
 
 	}
 
-	inline bool VirtualMachine::applySetter(
+	/*inline bool VirtualMachine::applySetter(
 		 ScriptFunction *calling_function
 		,Instruction *instruction
 		,StackElement *stk_result_op1
@@ -169,7 +169,7 @@ namespace zetscript{
 
 	) {
 
-	}
+	}*/
 
 	inline bool VirtualMachine::applyMetamethod(
 		 ScriptFunction *calling_function
