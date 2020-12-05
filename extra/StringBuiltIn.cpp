@@ -7,11 +7,11 @@ namespace zetscript{
 		std::string first_param=str->toString();
 		ScriptObjectVector *sov=NULL;
 
-		if(args->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+		if(args->properties & MSK_STK_PROPERTY_PTR_STK){
 			args=(StackElement *)args->var_ref;
 		}
 
-		if(args->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+		if(args->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)args->var_ref;
 			if(so->idx_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){
 				sov=(ScriptObjectVector *)so;

@@ -75,7 +75,7 @@ namespace zetscript{
 			){
 
 		zs_int  fun_ptr = calling_function->ref_native_function_ptr;
-		StackElement stk_result={0,0,BIT_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+		StackElement stk_result={0,0,BIT_STK_PROPERTY_UNDEFINED};
 
 		if((calling_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
 			VM_SET_USER_ERROR(this,"Internal error: Function not native");

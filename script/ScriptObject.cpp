@@ -14,13 +14,13 @@ namespace zetscript{
 		// special var this
 		memset(&stk_this,0,sizeof(stk_this));
 		stk_this.var_ref=this;
-		stk_this.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT;
+		stk_this.properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
 
 		// special var count
 		memset(&stk_count,0,sizeof(stk_count));
 		stk_count.stk_value=0;//this->countUserProperties();
 		stk_count.var_ref=0;
-		stk_count.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT;
+		stk_count.properties=MSK_STK_PROPERTY_ZS_INT;
 		//}
 
 		// Register c vars...
@@ -42,7 +42,7 @@ namespace zetscript{
 				ScriptFunction * ir_fun  = (ScriptFunction *)symbol->ref_ptr;
 				se->stk_value=this;
 				se->var_ref=ir_fun;
-				se->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION; // tell stack element that is a function
+				se->properties=MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function
 			}
 			else{ // var... should be native in principle ?
 
@@ -55,7 +55,7 @@ namespace zetscript{
 				}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
 					se->stk_value=NULL;
 					se->var_ref=(void *)symbol->ref_ptr;
-					se->properties=MSK_STACK_ELEMENT_PROPERTY_PTR_STK;
+					se->properties=MSK_STK_PROPERTY_PTR_STK;
 				}else{
 					VM_SET_USER_ERROR(this->virtual_machine,"internal error: symbol should be const or native var");
 					return;
@@ -71,7 +71,7 @@ namespace zetscript{
 		}
 
 		se->var_ref=&lenght_user_properties;
-		se->properties=(MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT|MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C|MSK_STACK_ELEMENT_PROPERTY_READ_ONLY);*/
+		se->properties=(MSK_STK_PROPERTY_ZS_INT|MSK_STK_PROPERTY_IS_VAR_C|MSK_STK_PROPERTY_READ_ONLY);*/
 
 		// start property idx starts  from last built-in property...
 		idx_start_user_properties=stk_properties->count;
@@ -194,7 +194,7 @@ namespace zetscript{
 
 	StackElement *ScriptObject::newSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
-		*stk={NULL,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+		*stk={NULL,0,MSK_STK_PROPERTY_UNDEFINED};
 		stk_properties->push_back((zs_int)stk);
 		return stk;
 	}
@@ -229,7 +229,7 @@ namespace zetscript{
 		*new_stk={
 				0,
 				0,
-				MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED
+				MSK_STK_PROPERTY_UNDEFINED
 			}; //assign var
 
   	    return new_stk;
@@ -284,7 +284,7 @@ namespace zetscript{
 			si = *sv;
 
 			// update n_refs +1
-			if(sv->properties&MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+			if(sv->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
 				if(virtual_machine->sharePointer(((ScriptObject *)(sv->var_ref))->shared_pointer) == false){
 					return NULL;
 				}
@@ -295,7 +295,7 @@ namespace zetscript{
 			si={
 				0,
 				0,
-				MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED
+				MSK_STK_PROPERTY_UNDEFINED
 			};
 		}
 
@@ -328,7 +328,7 @@ namespace zetscript{
 	StackElement * ScriptObject::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
 
 		// special properties
-		if(property_name == "count"){
+		if(property_name == "length"){
 			stk_count.stk_value=(void *)this->countUserProperties();
 			return &stk_count;
 		}
@@ -370,23 +370,22 @@ namespace zetscript{
 		}
 
 		si=(StackElement *)stk_properties->items[idx];
-		unsigned short var_type = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(si->properties);
+		unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(si->properties);
 
 		switch(var_type){
 
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+			case MSK_STK_PROPERTY_BOOL:
+			case MSK_STK_PROPERTY_ZS_INT:
+			case MSK_STK_PROPERTY_UNDEFINED:
+			case MSK_STK_PROPERTY_FLOAT:
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
+			case MSK_STK_PROPERTY_FUNCTION:
 				 ir_fun  = (ScriptFunction *)(si->var_ref);
 				break;
 			default: // properties ...
 
-				if(var_type & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
-					if(((si->properties & MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C) != MSK_STACK_ELEMENT_PROPERTY_IS_VAR_C)
+				if(var_type & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					if(((si->properties & MSK_STK_PROPERTY_IS_VAR_C) != MSK_STK_PROPERTY_IS_VAR_C)
 						&& (si->var_ref != this) // ensure that property don't holds its same var.
 						&& (si->var_ref != 0)
 					  ){ // deallocate but not if is c or this ref
@@ -484,7 +483,7 @@ namespace zetscript{
 		StackElement *stk_function=getProperty(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_TO_STRING),NULL);
 
 		if(stk_function != NULL){ // get first element
-			if(stk_function->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
+			if(stk_function->properties & MSK_STK_PROPERTY_FUNCTION){
 				ScriptFunction *ptr_function=(ScriptFunction *)stk_function->var_ref;
 				if((ptr_function->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
 
@@ -495,7 +494,7 @@ namespace zetscript{
 							,NULL
 							,0
 					);
-					if(result.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+					if(result.properties & MSK_STK_PROPERTY_STRING){
 						ScriptObject *so=(ScriptObjectString *)result.var_ref;
 						// capture string...
 						std::string aux=so->toString();

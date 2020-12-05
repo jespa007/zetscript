@@ -142,7 +142,7 @@ namespace zetscript{
 					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
 						obj = (zs_int)get_obj;
 					}else{
-						obj=(zs_int)eval_data->zs->registerConstantValue(str_value,value_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT);
+						obj=(zs_int)eval_data->zs->registerConstantValue(str_value,value_ptr,MSK_STK_PROPERTY_FLOAT);
 					}
 					is_constant_number=true;
 				}
@@ -211,7 +211,7 @@ namespace zetscript{
 						if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
 							obj = (zs_int)get_obj;
 						}else{
-							obj=(zs_int)eval_data->zs->registerConstantValue(str_value,(void *)value,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL);
+							obj=(zs_int)eval_data->zs->registerConstantValue(str_value,(void *)value,MSK_STK_PROPERTY_BOOL);
 						}
 						is_constant_boolean=true;
 					}else{ // it should be an identifier token  ...

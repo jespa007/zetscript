@@ -28,7 +28,7 @@ namespace zetscript{
 		StackElement *aux=vm_stack;
 
 		for(int i=0; i < VM_STACK_LOCAL_VAR_MAX;i++){
-			*aux++={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+			*aux++={0,NULL,MSK_STK_PROPERTY_UNDEFINED};
 		}
 
 		vm_idx_call=0;
@@ -180,8 +180,8 @@ namespace zetscript{
 		 , int line
 	){
 
-		StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
-		StackElement info={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+		StackElement stk_result={0,0,MSK_STK_PROPERTY_UNDEFINED};
+		StackElement info={0,0,MSK_STK_PROPERTY_UNDEFINED};
 
 		if(vm_idx_call==0){ // set stack and Init vars for first call...
 
@@ -212,7 +212,7 @@ namespace zetscript{
 			n_stk_params);
 
 		// if string or object do not remove empty shared pointers if they are 0s
-		if(info.properties & (MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT | MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING)){
+		if(info.properties & (MSK_STK_PROPERTY_SCRIPT_OBJECT | MSK_STK_PROPERTY_STRING)){
 			// add generated
 			insertLifetimeObject(file,line,(ScriptObject *)info.var_ref);
 			/*ScriptObject * so=(ScriptObject *)info.var_ref;
@@ -316,19 +316,19 @@ namespace zetscript{
 				//main_function->registered_symbols->pop_back();
 				StackElement *stk=stk_it++;
 
-				if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+				if(stk->properties & MSK_STK_PROPERTY_PTR_STK){
 					stk=(StackElement *)stk->var_ref;
 				}
 
-				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_it->properties)){
+				switch(GET_MSK_STK_PROPERTY_TYPES(stk_it->properties)){
 				default:
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+				case MSK_STK_PROPERTY_ZS_INT:
+				case MSK_STK_PROPERTY_BOOL:
+				case MSK_STK_PROPERTY_FLOAT:
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
+				case MSK_STK_PROPERTY_STRING:
+				case MSK_STK_PROPERTY_SCRIPT_OBJECT:
 
 					if(stk->var_ref != NULL){
 						delete (ScriptObject *)stk->var_ref;

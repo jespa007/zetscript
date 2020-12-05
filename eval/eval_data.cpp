@@ -40,6 +40,7 @@ namespace zetscript{
 			KEYWORD_CONTINUE,
 			KEYWORD_RETURN,
 			KEYWORD_FUNCTION,
+			//KEYWORD_ATTRIB,
 			KEYWORD_CLASS,
 			KEYWORD_DELETE,
 			KEYWORD_REF,
@@ -816,6 +817,7 @@ namespace zetscript{
 			eval_data_keywords[KEYWORD_BREAK] = {KEYWORD_BREAK,"break",eval_keyword_break};
 			eval_data_keywords[KEYWORD_CONTINUE] = {KEYWORD_CONTINUE,"continue",eval_keyword_continue};
 			eval_data_keywords[KEYWORD_FUNCTION] = {KEYWORD_FUNCTION,"function",NULL};
+			//eval_data_keywords[KEYWORD_ATTRIB] = {KEYWORD_ATTRIB,"attrib",NULL};
 			eval_data_keywords[KEYWORD_RETURN] = {KEYWORD_RETURN,"return",eval_keyword_return};
 			eval_data_keywords[KEYWORD_THIS] = {KEYWORD_THIS,"this", NULL};
 			eval_data_keywords[KEYWORD_CLASS] = {KEYWORD_CLASS,"class",NULL};

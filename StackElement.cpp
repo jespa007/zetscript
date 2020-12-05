@@ -19,7 +19,7 @@ namespace zetscript{
 			result= "class";
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
-			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+			if(this->properties & MSK_STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->var_ref;
 			}
 			result=((ScriptObject *)stk->var_ref)->getClassName().c_str();
@@ -46,7 +46,7 @@ namespace zetscript{
 			result= std::string("Class")+"@"+((ScriptClass *)stk->var_ref)->symbol_class.name;
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
-			if(this->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+			if(this->properties & MSK_STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->var_ref;
 			}
 
@@ -60,6 +60,6 @@ namespace zetscript{
 	void StackElement::setUndefined(){
 		this->stk_value=0;
 		this->var_ref=0;
-		this->properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED;
+		this->properties=MSK_STK_PROPERTY_UNDEFINED;
 	}
 }

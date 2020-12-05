@@ -149,20 +149,20 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_TYPE_CONSTANT:
 			//case BYTE_CODE_LOAD_TYPE_STATIC:
 				icv=(ConstantValue *)instruction->value_op2;
-				switch(icv->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES){
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
+				switch(icv->properties & MSK_STK_PROPERTY_TYPE_PRIMITIVES){
+				case MSK_STK_PROPERTY_BOOL:
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t%s\n",idx_instruction,(int)((zs_int)icv->stk_value)==0?"false":"true");
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+				case MSK_STK_PROPERTY_ZS_INT:
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t%i\n",idx_instruction,(int)((zs_int)icv->stk_value));
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+				case MSK_STK_PROPERTY_FLOAT:
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t%f\n",idx_instruction,*((float *)&icv->stk_value));
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+				case MSK_STK_PROPERTY_STRING:
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t\"%s\"\n",idx_instruction,((const char *)icv->stk_value));
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
+				case MSK_STK_PROPERTY_FUNCTION:
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST FUN\t%s\n",idx_instruction,icv->toString().c_str());
 					break;
 				default:
@@ -421,7 +421,7 @@ namespace zetscript{
 					,{
 						NULL
 						,(void *)symbol->ref_ptr
-						,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION
+						,MSK_STK_PROPERTY_FUNCTION
 					}
 				);
 			}

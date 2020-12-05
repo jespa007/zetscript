@@ -525,7 +525,7 @@ namespace zetscript{
 			}
 
 			StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
-			*stk_element = {0,(ScriptFunction *)symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+			*stk_element = {0,(ScriptFunction *)symbol->ref_ptr,MSK_STK_PROPERTY_FUNCTION};
 
 			sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->push_back((zs_int)stk_element);
 			ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
@@ -643,7 +643,7 @@ namespace zetscript{
 					}
 
 					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
-					*stk_element = {0,(void *)symbol_sf->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+					*stk_element = {0,(void *)symbol_sf->ref_ptr,MSK_STK_PROPERTY_FUNCTION};
 
 					c_class->metamethod_operator[i]->push_back((zs_int)stk_element);
 

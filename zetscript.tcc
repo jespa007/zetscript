@@ -4,7 +4,7 @@ namespace zetscript{
 		 StackElement ZetScript::convertVarToStackElement(zs_int ptr_var, int idx_builtin_type_var){
 			//zs_int ptr_var = (zs_int)input_var;
 				std::string s_return_value;
-				StackElement stk_result={0,0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+				StackElement stk_result={0,0,MSK_STK_PROPERTY_UNDEFINED};
 				ScriptObjectString *so=NULL;
 				char *input_s=NULL;
 				//int idx_builtin_type=getIdxClassFromItsNativeType(typeid(T).name());
@@ -14,26 +14,26 @@ namespace zetscript{
 					break;
 				 case IDX_BUILTIN_TYPE_ZS_INT_PTR_C:
 					 if(ptr_var==0) return stk_result;
-					 stk_result={(void *)(*((zs_int *)ptr_var)),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT};
+					 stk_result={(void *)(*((zs_int *)ptr_var)),0,MSK_STK_PROPERTY_ZS_INT};
 					 break;
 				 case IDX_BUILTIN_TYPE_ZS_INT_C:
-					 stk_result={(void *)(((zs_int)ptr_var)),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT};
+					 stk_result={(void *)(((zs_int)ptr_var)),0,MSK_STK_PROPERTY_ZS_INT};
 					 break;
 				 case IDX_BUILTIN_TYPE_FLOAT_C:
-					 stk_result.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;//{};
+					 stk_result.properties=MSK_STK_PROPERTY_FLOAT;//{};
 					 memcpy(&stk_result.stk_value,&ptr_var,sizeof(float));
 					 break;
 				 case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
 					 if(ptr_var==0) return stk_result;
-					 stk_result.properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;//{};
+					 stk_result.properties=MSK_STK_PROPERTY_FLOAT;//{};
 					 memcpy(&stk_result.stk_value,&(*(float *)ptr_var),sizeof(float));
 					 break;
 				 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
 					 if(ptr_var==0) return stk_result;
-					 stk_result={(void *)(*((bool *)ptr_var)),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL};
+					 stk_result={(void *)(*((bool *)ptr_var)),0,MSK_STK_PROPERTY_BOOL};
 					 break;
 				 case IDX_BUILTIN_TYPE_BOOL_C:
-					 stk_result={(void *)(((bool)ptr_var)),0,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL};
+					 stk_result={(void *)(((bool)ptr_var)),0,MSK_STK_PROPERTY_BOOL};
 					 break;
 				 case IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C:
 				 case IDX_BUILTIN_TYPE_STRING_PTR_C:
@@ -46,7 +46,7 @@ namespace zetscript{
 						input_s=(char *)((std::string *)ptr_var)->c_str();
 					 }
 
-					 stk_result={(void *)input_s,so,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};
+					 stk_result={(void *)input_s,so,MSK_STK_PROPERTY_STRING};
 					 break;
 				 case IDX_BUILTIN_TYPE_STACK_ELEMENT:
 					 if(ptr_var==0) return stk_result;
@@ -57,7 +57,7 @@ namespace zetscript{
 					 stk_result = {
 							 NULL
 							 ,script_class_factory->instanceScriptObjectiableByIdx(idx_builtin_type_var,(void *)ptr_var)
-							 ,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT
+							 ,MSK_STK_PROPERTY_SCRIPT_OBJECT
 					 };
 					 break;
 				}
@@ -72,7 +72,7 @@ namespace zetscript{
 			ScriptObject *script_variable=NULL;
 
 			// save return type ...
-			if(stack_element->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+			if(stack_element->properties & MSK_STK_PROPERTY_PTR_STK){
 				stack_element=((StackElement *)stack_element->var_ref);
 			}
 
@@ -80,8 +80,8 @@ namespace zetscript{
 				val_ret=(zs_int)stack_element;
 			}else{
 
-				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stack_element->properties)){
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
+				switch(GET_MSK_STK_PROPERTY_TYPES(stack_element->properties)){
+				case MSK_STK_PROPERTY_BOOL:
 					if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_C){// *ScriptClass::k_str_bool_type){
 						val_ret=(zs_int)(stack_element->stk_value);
 					}else if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_PTR_C){//*ScriptClass::k_str_bool_type_ptr){
@@ -93,7 +93,7 @@ namespace zetscript{
 					}
 
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+				case MSK_STK_PROPERTY_FLOAT:
 					switch(idx_builtin_type){
 					case IDX_BUILTIN_TYPE_FLOAT_C:
 						memcpy(&val_ret,&stack_element->stk_value,sizeof(float));
@@ -113,7 +113,7 @@ namespace zetscript{
 						return false;
 					}
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+				case MSK_STK_PROPERTY_ZS_INT:
 					switch(idx_builtin_type){
 					case IDX_BUILTIN_TYPE_ZS_INT_C:
 						val_ret=(zs_int)(stack_element->stk_value);
@@ -134,7 +134,7 @@ namespace zetscript{
 					}
 					break;
 
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+				case MSK_STK_PROPERTY_STRING:
 					if(stack_element->var_ref == 0){ // if not created try to create a tmp scriptvar it will be removed...
 						error= "internal error var_ref is NULL";
 						return false;
@@ -151,7 +151,7 @@ namespace zetscript{
 						return false;
 					}
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
+				case MSK_STK_PROPERTY_FUNCTION:
 					val_ret=(zs_int)stack_element->var_ref;
 					break;
 				default: // script variable by default ...
@@ -835,7 +835,7 @@ namespace zetscript{
 							&& registered_symbol->scope == MAIN_SCOPE(this)){
 								StackElement *stk = virtual_machine->getStackElement(j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
-									if(stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+									if(stk->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 										calling_obj=(ScriptObject *)stk->var_ref;
 									}
 								}
@@ -852,7 +852,7 @@ namespace zetscript{
 					}else{ // we have got the calling_obj from last iteration ...
 						se = calling_obj->getProperty(symbol_to_find);
 						if(se!=NULL){
-							if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+							if(se->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 								calling_obj=(ScriptObject *)se->var_ref;
 							}else{
 								THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
@@ -866,7 +866,7 @@ namespace zetscript{
 
 				is=calling_obj->getProperty(access_var[access_var.size()-1]);
 				if(is!=NULL){
-					if(is->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION){
+					if(is->properties & MSK_STK_PROPERTY_FUNCTION){
 						fun_obj=(ScriptFunction *)is->var_ref;
 					}
 				}else{

@@ -204,7 +204,7 @@ namespace zetscript{
 
 	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, ScriptObjectString * _value){
 
-		unsigned short properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING | MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
+		unsigned short properties=MSK_STK_PROPERTY_STRING | MSK_STK_PROPERTY_READ_ONLY;
 		StackElement *stk;
 
 		if((stk = getRegisteredConstantValue(const_name))!=NULL){
@@ -223,7 +223,7 @@ namespace zetscript{
 
 	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, zs_int _value){
 		zs_int value = _value;
-		unsigned short properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT;
+		unsigned short properties=MSK_STK_PROPERTY_ZS_INT;
 		StackElement *stk;
 
 		if((stk = getRegisteredConstantValue(const_name))!=NULL){
@@ -235,7 +235,7 @@ namespace zetscript{
 	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, float _value){
 		zs_int value;// = _value;
 		*((float *)&value)=_value;
-		unsigned short properties=MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT;
+		unsigned short properties=MSK_STK_PROPERTY_FLOAT;
 		StackElement *stk;
 
 		if((stk = getRegisteredConstantValue(const_name))!=NULL){
@@ -265,7 +265,7 @@ namespace zetscript{
 
 		if(se != NULL){
 
-			if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT){
+			if(se->properties & MSK_STK_PROPERTY_ZS_INT){
 
 				eval_int=(zs_int)se->stk_value;
 				return &eval_int;
@@ -286,7 +286,7 @@ namespace zetscript{
 
 		if(se != NULL){
 
-			if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL){
+			if(se->properties & MSK_STK_PROPERTY_BOOL){
 				eval_bool=(bool)((zs_int)se->stk_value);
 				return &eval_bool;
 
@@ -303,7 +303,7 @@ namespace zetscript{
 		StackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
-			if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT){
+			if(se->properties & MSK_STK_PROPERTY_FLOAT){
 				eval_float = *((float *)(&se->stk_value));
 				return &eval_float;
 			}
@@ -323,7 +323,7 @@ namespace zetscript{
 
 		if(se != NULL){
 
-			if(se->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+			if(se->properties & MSK_STK_PROPERTY_STRING){
 
 				eval_string = ((const char *)se->stk_value);
 				return &eval_string;
@@ -421,7 +421,7 @@ namespace zetscript{
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
 				ScriptObject *var = NULL;
 
-				if(vm_stk_element->properties &MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+				if(vm_stk_element->properties &MSK_STK_PROPERTY_SCRIPT_OBJECT){
 					var =((ScriptObject *)(vm_stk_element->var_ref));
 					if(var){
 						if(var->shared_pointer != NULL){
@@ -433,7 +433,7 @@ namespace zetscript{
 				}
 
 				main_function_object->registered_symbols->pop_back();
-				*vm_stk_element--={0,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED};
+				*vm_stk_element--={0,NULL,MSK_STK_PROPERTY_UNDEFINED};
 			}
 		}
 
@@ -479,14 +479,14 @@ namespace zetscript{
 
 		for(std::map<std::string,ConstantValue *>::iterator it=constant_values.begin();it!=constant_values.end();it++){
 			ConstantValue *icv=it->second;
-			switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(icv->properties)){
+			switch(GET_MSK_STK_PROPERTY_TYPES(icv->properties)){
 			default:
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+			case MSK_STK_PROPERTY_ZS_INT:
+			case MSK_STK_PROPERTY_BOOL:
+			case MSK_STK_PROPERTY_FLOAT:
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+			case MSK_STK_PROPERTY_STRING:
 				delete (ScriptObjectString *)icv->var_ref;
 				break;
 			}

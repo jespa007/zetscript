@@ -275,7 +275,7 @@ namespace zetscript{
 
 
 		// constructor...
-		if(function_name == FUNCTION_MEMBER_CONSTRUCTOR_NAME){
+		if(function_name == this->symbol_class.name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
 			idx_function_member_constructor = idx_position;
 		}
 		else{
@@ -341,7 +341,7 @@ namespace zetscript{
 					}
 
 					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
-					*stk_element = {0,(void *)function_symbol->ref_ptr,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION};
+					*stk_element = {0,(void *)function_symbol->ref_ptr,MSK_STK_PROPERTY_FUNCTION};
 					metamethod_operator[i]->push_back((zs_int)stk_element);
 					std::string class_name = script_class_factory->getScriptClass(this->idx_class)->symbol_class.name;
 

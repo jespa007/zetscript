@@ -22,11 +22,11 @@ namespace zetscript{
 	}
 
 
-	bool	 ScriptObjectVectorIterator::endSf(ScriptObjectVectorIterator *si){
-		return si->end();
+	bool	 ScriptObjectVectorIterator::_endSf(ScriptObjectVectorIterator *si){
+		return si->_end();
 	}
 
-	bool	 ScriptObjectVectorIterator::end(){
+	bool	 ScriptObjectVectorIterator::_end(){
 		return false;
 	}
 

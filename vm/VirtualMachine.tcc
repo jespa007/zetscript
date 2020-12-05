@@ -124,14 +124,14 @@ namespace zetscript{
 				Symbol *scope_symbol=(Symbol *)scope_symbols->items[i];
 				StackElement *stk_local_var =&stk_local_vars[scope_symbol->idx_position]; // position where symbol is located on stack
 
-				if(stk_local_var->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+				if(stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK){
 					stk_local_var=(StackElement *)stk_local_var->var_ref;
 				}
 
 				ScriptObject *var = NULL;
-				switch(GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(stk_local_var->properties)){
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
+				switch(GET_MSK_STK_PROPERTY_TYPES(stk_local_var->properties)){
+				case MSK_STK_PROPERTY_STRING:
+				case MSK_STK_PROPERTY_SCRIPT_OBJECT:
 					var =((ScriptObject *)(stk_local_var->var_ref));
 					if(var !=NULL){
 						if(var->shared_pointer != NULL){
@@ -144,7 +144,7 @@ namespace zetscript{
 				*stk_local_var={
 					0,
 					0,
-					MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED
+					MSK_STK_PROPERTY_UNDEFINED
 				};
 			}
 			
@@ -198,22 +198,22 @@ namespace zetscript{
 		// init stk
 		stk_vm_current_backup=stk_args=stk_vm_current;
 
-		if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+		if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK){
 			stk_result_op1 = (StackElement *)(stk_result_op1->var_ref);
 		}
 
-		if(stk_result_op1->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+		if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 			script_object = (ScriptObject *)(stk_result_op1->var_ref);
 		}
 
 		// only C refs can check 2nd param
 		if(script_object == NULL) { // script null
 
-			if(((stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK))){
+			if(((stk_result_op2->properties & MSK_STK_PROPERTY_PTR_STK))){
 				stk_result_op2 = (StackElement *)(stk_result_op2->var_ref);
 			}
 
-			if(stk_result_op2->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+			if(stk_result_op2->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 				script_object = (ScriptObject *)(stk_result_op2->var_ref);
 			}
 		}
@@ -289,7 +289,7 @@ namespace zetscript{
 				goto apply_metamethod_error;
 			}
 
-			if((stk->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)==0){
+			if((stk->properties & MSK_STK_PROPERTY_FUNCTION)==0){
 				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
 				goto apply_metamethod_error;
 			}
@@ -322,7 +322,7 @@ namespace zetscript{
 			);
 		}
 
-		if(ret_obj.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){ //
+		if(ret_obj.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){ //
 
 			if(!((ScriptObject *)(ret_obj.var_ref))->initSharedPtr()){
 				return false;
@@ -391,7 +391,7 @@ apply_metamethod_error:
 				stk_element=&((StackElement *)stk_elements_ptr)[i];
 			}
 
-			if((stk_element->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION) == 0){
+			if((stk_element->properties & MSK_STK_PROPERTY_FUNCTION) == 0){
 				continue;
 			}
 
@@ -410,52 +410,49 @@ apply_metamethod_error:
 
 						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT){
 
-							if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+							if(current_arg->properties & MSK_STK_PROPERTY_PTR_STK){
 								current_arg = (StackElement *)current_arg->var_ref;
 							}
 
-							unsigned short var_type = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(current_arg->properties);
+							unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(current_arg->properties);
 
 							switch(var_type){
 								default:
 									aux_string="unknow";
 									all_check=false;
 									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+								case MSK_STK_PROPERTY_ZS_INT:
 									idx_type=IDX_BUILTIN_TYPE_ZS_INT_PTR_C;
 									all_check=
 											arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_PTR_C
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_C
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C;
 									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+								case MSK_STK_PROPERTY_FLOAT:
 									idx_type=IDX_BUILTIN_TYPE_FLOAT_PTR_C;
 									all_check=arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C
 											||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_C
 											||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_PTR_C
 										    ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_C;
 									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
+								case MSK_STK_PROPERTY_BOOL:
 									idx_type=IDX_BUILTIN_TYPE_BOOL_PTR_C;
 									all_check=
 											arg_idx_type==IDX_BUILTIN_TYPE_BOOL_PTR_C
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_BOOL_C;
 
 									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+								case MSK_STK_PROPERTY_STRING:
 									idx_type=IDX_BUILTIN_TYPE_STRING_PTR_C;
 
 									all_check =
 											(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->var_ref!=0)
 										  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
 									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
+								case MSK_STK_PROPERTY_UNDEFINED:
 									all_check=false;
 									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
-									all_check=false;
-									break;
-								case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
+								case MSK_STK_PROPERTY_SCRIPT_OBJECT:
 									var_object=((ScriptObject *)current_arg->var_ref);
 									aux_string=var_object->getNativePointerClassName();
 
@@ -484,50 +481,47 @@ apply_metamethod_error:
 
 			for( unsigned k = 0; k < n_args;k++){
 				StackElement *current_arg=&stk_arg[k];
-				if(current_arg->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+				if(current_arg->properties & MSK_STK_PROPERTY_PTR_STK){
 					current_arg = (StackElement *)current_arg->var_ref;
 				}
 
 				if(k>0){
 					args_str+=",";
 				}
-				unsigned short var_type = GET_MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPES(current_arg->properties);
+				unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(current_arg->properties);
 
 				switch(var_type){
 
 				default:
 					aux_string="unknow";
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+				case MSK_STK_PROPERTY_ZS_INT:
 					aux_string=k_str_zs_int_type;
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+				case MSK_STK_PROPERTY_FLOAT:
 					aux_string=k_str_float_type;
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
+				case MSK_STK_PROPERTY_BOOL:
 					aux_string=k_str_bool_type;
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+				case MSK_STK_PROPERTY_STRING:
 					aux_string=k_str_string_type_ptr;
 					if(current_arg->var_ref==0){ /* is constant char */
 						aux_string=	k_str_const_char_type_ptr;
 					}
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
-					aux_string="NULL";
-					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
+				case MSK_STK_PROPERTY_UNDEFINED:
 					aux_string="undefined";
 					break;
-				case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT:
+				case MSK_STK_PROPERTY_SCRIPT_OBJECT:
 					aux_string = ((ScriptObject *)current_arg->var_ref)->getNativePointerClassName();
 					break;
 				}
 				args_str+=zs_rtti::demangle(aux_string);
 
-				if(var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT
-				||var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT
-				||var_type == MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL
+				if(var_type == MSK_STK_PROPERTY_ZS_INT
+				||var_type == MSK_STK_PROPERTY_FLOAT
+				||var_type == MSK_STK_PROPERTY_BOOL
 				){
 					args_str+=" [*] ";
 				}
@@ -540,7 +534,7 @@ apply_metamethod_error:
 				}else{
 					stk_element=&((StackElement *)stk_elements_ptr)[i];
 				}
-				if((stk_element->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION)== 0){
+				if((stk_element->properties & MSK_STK_PROPERTY_FUNCTION)== 0){
 					continue;
 				}
 
@@ -603,7 +597,7 @@ apply_metamethod_error:
 
 		//std::string *str;
 		ScriptObjectString *script_var_string = NEW_STRING_VAR;
-		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};
+		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STK_PROPERTY_STRING};
 		script_var_string->initSharedPtr();
 
 		std::string str1;
@@ -625,37 +619,34 @@ apply_metamethod_error:
 		// str1
 		for(unsigned i=0; i < 2; i++){
 			StackElement *stk_src_item=(*stk_src_it);
-			if(stk_src_item->properties & MSK_STACK_ELEMENT_PROPERTY_PTR_STK){
+			if(stk_src_item->properties & MSK_STK_PROPERTY_PTR_STK){
 				stk_src_item=(StackElement *)stk_src_item->var_ref;
 			}
 
-			switch(GET_STACK_ELEMENT_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
+			switch(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
+			case MSK_STK_PROPERTY_UNDEFINED:
 				*(*str_dst_it)="undefined";
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
-				*(*str_dst_it)="null";
-				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+			case MSK_STK_PROPERTY_ZS_INT:
 				*(*str_dst_it)=zs_strutils::int_to_str((zs_int)(stk_src_item)->stk_value);
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+			case MSK_STK_PROPERTY_FLOAT:
 				*(*str_dst_it)=zs_strutils::float_to_str(*((float *)&((stk_src_item)->stk_value)));
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
+			case MSK_STK_PROPERTY_BOOL:
 				*(*str_dst_it)=(stk_src_item)->stk_value == 0?"false":"true";
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
+			case MSK_STK_PROPERTY_STRING:
 				*(*str_dst_it)=(const char *)(stk_src_item)->stk_value;
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
+			case MSK_STK_PROPERTY_FUNCTION:
 				*(*str_dst_it)="function";
 				break;
-			case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_CLASS:
+			case MSK_STK_PROPERTY_CLASS:
 				*(*str_dst_it)="class";
 				break;
 			default:
-				if(stk_src_item->properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_SCRIPT_OBJECT){
+				if(stk_src_item->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 					*(*str_dst_it)=((ScriptObject *)(stk_src_item)->var_ref)->toString();
 				}
 				else{
@@ -679,13 +670,13 @@ apply_metamethod_error:
 
 	inline StackElement VirtualMachine::performSubString(StackElement *stk_result_op1,StackElement *stk_result_op2){
 		// we have to create an new string variable
-		if((stk_result_op1->properties & stk_result_op1->properties) != MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING){
+		if((stk_result_op1->properties & stk_result_op1->properties) != MSK_STK_PROPERTY_STRING){
 			THROW_RUNTIME_ERROR("Expected both operants as string var");
 		}
 
 		//std::string *str;
 		ScriptObjectString *script_var_string = NEW_STRING_VAR;
-		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING};
+		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STK_PROPERTY_STRING};
 		script_var_string->initSharedPtr();
 
 

@@ -14,13 +14,13 @@ namespace zetscript{
 
 		static StackElement 	_getSf(ScriptObjectIterator *si);
 		static void				_nextSf(ScriptObjectIterator *si);
-		static bool				endSf(ScriptObjectIterator *si);
+		static bool				_endSf(ScriptObjectIterator *si);
 
 
 
 		StackElement _get();
 		void _next();
-		bool end();
+		bool _end();
 
 	};
 

@@ -25,12 +25,11 @@ namespace zetscript{
 
 					StackElement sv=variable->at(i);
 
-					switch(sv.properties & MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_TYPE_PRIMITIVES)
+					switch(sv.properties & MSK_STK_PROPERTY_TYPE_PRIMITIVES)
 					{
 						default:
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_UNDEFINED:
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_NULL:
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FLOAT:
+						case MSK_STK_PROPERTY_UNDEFINED:
+						case MSK_STK_PROPERTY_FLOAT:
 							if(ZS_STRCMP(dst_convert_type, ==,typeid(float).name())){
 								memcpy(&aux_flt, &sv.stk_value, sizeof(float));
 								v_out.push_back(aux_flt);
@@ -41,13 +40,13 @@ namespace zetscript{
 								return v_out;
 							}
 							break;
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_BOOL:
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING:
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_FUNCTION:
+						case MSK_STK_PROPERTY_BOOL:
+						case MSK_STK_PROPERTY_STRING:
+						case MSK_STK_PROPERTY_FUNCTION:
 							THROW_RUNTIME_ERROR("type not implemented yet");
 							return v_out;
 							break;
-						case MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_ZS_INT:
+						case MSK_STK_PROPERTY_ZS_INT:
 							if(ZS_STRCMP(dst_convert_type, ==,typeid(int).name()) || ZS_STRCMP(dst_convert_type, ==,typeid(float).name())){// typeid(int).name()) || ){
 								v_out.push_back((zs_int)sv.stk_value);
 							}else{

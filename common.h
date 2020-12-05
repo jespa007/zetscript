@@ -13,8 +13,8 @@
 #define MAX_NATIVE_FUNCTION_ARGS				6
 
 #define DEFAULT_NO_FILENAME						"no_file"
-#define FUNCTION_MEMBER_CONSTRUCTOR_NAME 		"constructor"
-#define ZS_CONTRUCTOR_NAME						FUNCTION_MEMBER_CONSTRUCTOR_NAME
+//#define FUNCTION_MEMBER_CONSTRUCTOR_NAME 		"constructor"
+//#define ZS_CONTRUCTOR_NAME						FUNCTION_MEMBER_CONSTRUCTOR_NAME
 
 // HELPER FUNCTIONSs
 #define REGISTER_NATIVE_BASE_SYMBOLS(script_class_factory,o)		   			(zs)->registerNativeBaseSymbols(o))

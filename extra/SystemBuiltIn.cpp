@@ -59,7 +59,7 @@ namespace zetscript{
 	}
 
 	void SystemBuiltIn::makeReadOnly(StackElement *stk){
-		stk->properties|=MSK_STACK_ELEMENT_PROPERTY_READ_ONLY;
+		stk->properties|=MSK_STK_PROPERTY_READ_ONLY;
 	}
 
 

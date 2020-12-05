@@ -143,7 +143,7 @@ Date: XX-12-2020
 #196 Do not extend property when it access 
 > #197 Avoid vector/string objects to add properties through string 
 > #199 Check fix instanceof 
-> #200 length variable only avaiable in vector and string objects
+#200 Implement count variable
 #201 System.print: convert any stackelement in string if argument itself is not string var  
 > #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
 > #203 ScriptObject: Implement concatenate operator (+) feature
@@ -170,7 +170,11 @@ Date: XX-12-2020
 > #215 Implement typeof operator
 > #229 Implement toJson(bool formated=false) for Vector and Object 
 #230 Control return ScriptObject[String] values that are not deallocated by user 
-> #231 register class passing C function constructor and destructor 
+> #231 register class passing C function constructor and destructor
+> #232 Implement properties 
+> #233 if(key/value in obj){} 
+ 
+
 
 Other: 
 

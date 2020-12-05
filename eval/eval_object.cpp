@@ -126,7 +126,7 @@ namespace zetscript{
 				if((constant_value = eval_data->zs->getRegisteredConstantValue(key_value))==NULL){
 					ScriptObjectString *s=new ScriptObjectString(eval_data->zs);
 					s->str_value=symbol_value;
-					constant_value=eval_data->zs->registerConstantValue(key_value,NULL,MSK_STACK_ELEMENT_PROPERTY_VAR_TYPE_STRING);
+					constant_value=eval_data->zs->registerConstantValue(key_value,NULL,MSK_STK_PROPERTY_STRING);
 					constant_value->stk_value=((void *)(s->str_value.c_str()));
 					constant_value->var_ref=s;
 				 }
@@ -259,10 +259,9 @@ namespace zetscript{
 
         			 // call function if there's any constructor function
 					 // get constructor function
-					 constructor_function=sc->getSymbol(FUNCTION_MEMBER_CONSTRUCTOR_NAME);
+					 constructor_function=sc->getSymbol(scope_info->script_class->symbol_class.name); // FUNCTION_MEMBER_CONSTRUCTOR_NAME
 
 					 // insert load function ...
-
 					 instructions->push_back(
 						eval_instruction=new EvalInstruction(
 							 BYTE_CODE_LOAD_TYPE_VARIABLE
@@ -275,7 +274,7 @@ namespace zetscript{
 					 eval_instruction->instruction_source_info=InstructionSourceInfo(
 						 eval_data->current_parsing_file
 						 ,line
-						 ,get_mapped_name(eval_data,FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+						 ,get_mapped_name(eval_data,scope_info->script_class->symbol_class.name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
 					 );
 
 					 if(*aux_p != '('){

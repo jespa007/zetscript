@@ -61,27 +61,31 @@ namespace zetscript{
 
 	const char * ByteCodeMetamethodToOperatorStr(ByteCodeMetamethod op){
 		switch (op) {
-			case	BYTE_CODE_METAMETHOD_EQU:		return  "==";  // ==
-			case	BYTE_CODE_METAMETHOD_NOT_EQU: 	return  "!=";  // !=,
-			case	BYTE_CODE_METAMETHOD_LT:		return  "<";  // <
-			case	BYTE_CODE_METAMETHOD_LTE:		return  "<=";  // <=
-			case	BYTE_CODE_METAMETHOD_NOT:		return  "!"; // !
-			case	BYTE_CODE_METAMETHOD_GT:		return  ">";  // >
-			case	BYTE_CODE_METAMETHOD_GTE:		return  ">="; // >=
-
-			case	BYTE_CODE_METAMETHOD_NEG:		return  "-"; // -a, !a
-			case	BYTE_CODE_METAMETHOD_ADD:		return  "+"; // +
-			case	BYTE_CODE_METAMETHOD_SUB:		return  "-"; // -
-			case	BYTE_CODE_METAMETHOD_DIV:		return  "/"; // /
-			case	BYTE_CODE_METAMETHOD_MUL:		return  "*"; // *
-			case	BYTE_CODE_METAMETHOD_MOD:		return  "%";  // %
-			case	BYTE_CODE_METAMETHOD_AND:		return  "&"; // binary and
-			case	BYTE_CODE_METAMETHOD_OR:		return  "|"; //   binary or
-			case	BYTE_CODE_METAMETHOD_XOR:		return  "^"; // binary xor
-			case	BYTE_CODE_METAMETHOD_SHL:		return  "<<"; // binary shift left
-			case	BYTE_CODE_METAMETHOD_SHR:		return  ">>"; // binary shift right
-			case	BYTE_CODE_METAMETHOD_SET:		return  "="; // set
-			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "toString"; // set
+			case	BYTE_CODE_METAMETHOD_EQU:		return  "==";  		// ==
+			case	BYTE_CODE_METAMETHOD_NOT_EQU: 	return  "!=";  		// !=,
+			case	BYTE_CODE_METAMETHOD_LT:		return  "<";  		// <
+			case	BYTE_CODE_METAMETHOD_LTE:		return  "<=";  		// <=
+			case	BYTE_CODE_METAMETHOD_NOT:		return  "!"; 		// !
+			case	BYTE_CODE_METAMETHOD_GT:		return  ">";  		// >
+			case	BYTE_CODE_METAMETHOD_GTE:		return  ">="; 		// >=
+			case	BYTE_CODE_METAMETHOD_NEG:		return  "-"; 		// -a, !a
+			case	BYTE_CODE_METAMETHOD_ADD:		return  "+"; 		// +
+			case	BYTE_CODE_METAMETHOD_SUB:		return  "-"; 		// -
+			case	BYTE_CODE_METAMETHOD_DIV:		return  "/"; 		// /
+			case	BYTE_CODE_METAMETHOD_MUL:		return  "*"; 		// *
+			case	BYTE_CODE_METAMETHOD_MOD:		return  "%";  		// %
+			case	BYTE_CODE_METAMETHOD_AND:		return  "&"; 		// binary and
+			case	BYTE_CODE_METAMETHOD_OR:		return  "|";		// binary or
+			case	BYTE_CODE_METAMETHOD_XOR:		return  "^"; 		// binary xor
+			case	BYTE_CODE_METAMETHOD_SHL:		return  "<<"; 		// binary shift left
+			case	BYTE_CODE_METAMETHOD_SHR:		return  ">>"; 		// binary shift right
+			case	BYTE_CODE_METAMETHOD_SET:		return  "_set";		// _set
+			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "_toString";// _toString
+			case 	BYTE_CODE_METAMETHOD_ITER: 		return  "_iter";	// _iter
+			case 	BYTE_CODE_METAMETHOD_NEXT: 		return  "_next";	// _next
+			case 	BYTE_CODE_METAMETHOD_END: 		return  "_end";		// _end
+			case 	BYTE_CODE_METAMETHOD_GET: 		return  "_get";		// _getter
+			case 	BYTE_CODE_METAMETHOD_EXIST:		return  "_exist"; 	// _exist
 			default:
 				return "none";
 		}
@@ -90,27 +94,31 @@ namespace zetscript{
 	const char * ByteCodeMetamethodToSymbolStr(ByteCodeMetamethod op){
 
 		switch (op) {
-			case	BYTE_CODE_METAMETHOD_EQU:		return  "_equ";  // ==
-			case	BYTE_CODE_METAMETHOD_NOT_EQU: 	return  "_nequ";  // !=,
-			case	BYTE_CODE_METAMETHOD_LT:		return  "_lt";  // <
-			case	BYTE_CODE_METAMETHOD_LTE:		return  "_lte";  // <=
-			case	BYTE_CODE_METAMETHOD_NOT:		return  "_not"; // !
-			case	BYTE_CODE_METAMETHOD_GT:		return  "_gt";  // >
-			case	BYTE_CODE_METAMETHOD_GTE:		return  "_gte"; // >=
-
-			case	BYTE_CODE_METAMETHOD_NEG:		return  "_neg"; // -a, !a
-			case	BYTE_CODE_METAMETHOD_ADD:		return  "_add"; // +
-			case	BYTE_CODE_METAMETHOD_SUB:		return  "_sub"; // -
-			case	BYTE_CODE_METAMETHOD_DIV:		return  "_div"; // /
-			case	BYTE_CODE_METAMETHOD_MUL:		return  "_mul"; // *
-			case	BYTE_CODE_METAMETHOD_MOD:		return  "_mod";  // %
-			case	BYTE_CODE_METAMETHOD_AND:		return  "_and"; // binary and
-			case	BYTE_CODE_METAMETHOD_OR:		return  "_or"; //   binary or
-			case	BYTE_CODE_METAMETHOD_XOR:		return  "_xor"; // binary xor
-			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; // binary shift left
-			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; // binary shift right
-			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; // set
-			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_toString"; // toString
+			case	BYTE_CODE_METAMETHOD_EQU:		return  "_equ"; 	// ==
+			case	BYTE_CODE_METAMETHOD_NOT_EQU: 	return  "_nequ";  	// !=,
+			case	BYTE_CODE_METAMETHOD_LT:		return  "_lt";  	// <
+			case	BYTE_CODE_METAMETHOD_LTE:		return  "_lte";  	// <=
+			case	BYTE_CODE_METAMETHOD_NOT:		return  "_not"; 	// !
+			case	BYTE_CODE_METAMETHOD_GT:		return  "_gt";  	// >
+			case	BYTE_CODE_METAMETHOD_GTE:		return  "_gte"; 	// >=
+			case	BYTE_CODE_METAMETHOD_NEG:		return  "_neg"; 	// -a, !a
+			case	BYTE_CODE_METAMETHOD_ADD:		return  "_add"; 	// +
+			case	BYTE_CODE_METAMETHOD_SUB:		return  "_sub"; 	// -
+			case	BYTE_CODE_METAMETHOD_DIV:		return  "_div"; 	// /
+			case	BYTE_CODE_METAMETHOD_MUL:		return  "_mul"; 	// *
+			case	BYTE_CODE_METAMETHOD_MOD:		return  "_mod";  	// %
+			case	BYTE_CODE_METAMETHOD_AND:		return  "_and"; 	// binary and
+			case	BYTE_CODE_METAMETHOD_OR:		return  "_or"; 		// binary or
+			case	BYTE_CODE_METAMETHOD_XOR:		return  "_xor"; 	// binary xor
+			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; 	// binary shift left
+			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; 	// binary shift right
+			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; 	// _set
+			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_toString";// _toString
+			case 	BYTE_CODE_METAMETHOD_ITER: 		return  "_iter";	// _iter
+			case 	BYTE_CODE_METAMETHOD_NEXT: 		return  "_next";	// _next
+			case 	BYTE_CODE_METAMETHOD_END: 		return  "_end";		// _end
+			case 	BYTE_CODE_METAMETHOD_GET: 		return  "_get";		// _getter
+			case 	BYTE_CODE_METAMETHOD_EXIST:		return  "_exist"; 	// _exist
 			default:
 				return "none";
 		}
@@ -119,12 +127,20 @@ namespace zetscript{
 	}
 
 	int			 getNumArgumentsStaticMetamethod(ByteCodeMetamethod op){
-		int n_stk_args=((      op == BYTE_CODE_METAMETHOD_NOT
-							|| op == BYTE_CODE_METAMETHOD_NEG
-							|| op == BYTE_CODE_METAMETHOD_SET
-							|| op == BYTE_CODE_METAMETHOD_TO_STRING
-							   )? 1:2);
-		return n_stk_args;
+		switch(op){
+			case BYTE_CODE_METAMETHOD_NOT:
+			case BYTE_CODE_METAMETHOD_NEG:
+			case BYTE_CODE_METAMETHOD_SET:
+			case BYTE_CODE_METAMETHOD_TO_STRING:
+			case BYTE_CODE_METAMETHOD_ITER:
+			case BYTE_CODE_METAMETHOD_NEXT:
+			case BYTE_CODE_METAMETHOD_END:
+			case BYTE_CODE_METAMETHOD_GET:
+			case BYTE_CODE_METAMETHOD_EXIST:
+				return 1;
+		}
+
+		return 2;
 	}
 
 	int			 getNumArgumentsNonStaticMetamethod(ByteCodeMetamethod op){
