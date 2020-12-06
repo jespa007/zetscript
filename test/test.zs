@@ -1,3 +1,14 @@
+class A{
+	constructor(){
+		
+	}
+	
+	static function a(){
+				
+	}
+	
+}
+
 
 /*
 class CInteger{
