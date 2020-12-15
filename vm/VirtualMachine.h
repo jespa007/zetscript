@@ -146,8 +146,8 @@ namespace zetscript{
 				ScriptFunction 	*	info_function,
 				StackElement 	* 	_stk_start_args,
 				//std::string 		  		  * _ptrStartStr=NULL,
-				unsigned char 		n_args=0,
-				Instruction *calling_instruction = NULL);
+				unsigned char 		n_args=0
+				);
 
 
 		 StackElement  callFunctionNative(

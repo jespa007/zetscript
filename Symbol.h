@@ -12,13 +12,13 @@
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 typedef enum {
-	SYMBOL_PROPERTY_ATTRIB						= 0x1 << 1, // 0x01: ref_ptr holds script function ptr
-	SYMBOL_PROPERTY_FUNCTION					= 0x1 << 2, // 0x01: ref_ptr holds script function ptr
-	SYMBOL_PROPERTY_C_OBJECT_REF 				= 0x1 << 3, // 0x02:
-	SYMBOL_PROPERTY_STATIC 						= 0x1 << 4, // 0x04: C function or C++ static functions
-	SYMBOL_PROPERTY_CONST 						= 0x1 << 5, // 0x08: This symbol is not assignable
-	SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS	= 0x1 << 6, // 0x10: will pass object this as first parameter
-	SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME			= 0x1 << 7  // 0x20: for functions...
+	SYMBOL_PROPERTY_ATTRIB						= 0x1 << 1, // 0x01: ref_ptr holds structure get/set functions
+	SYMBOL_PROPERTY_FUNCTION					= 0x1 << 2, // 0x02: ref_ptr holds script function ptr
+	SYMBOL_PROPERTY_C_OBJECT_REF 				= 0x1 << 3, // 0x04: ref_ptr holds C object
+	SYMBOL_PROPERTY_STATIC 						= 0x1 << 4, // 0x08: C function or C++ static functions
+	SYMBOL_PROPERTY_CONST 						= 0x1 << 5, // 0x10: This symbol is not assignable
+	SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS	= 0x1 << 6, // 0x20: will pass this object as first parameter
+	SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME			= 0x1 << 7  // 0x40: for functions...
 }SymbolProperty;
 
 namespace zetscript{
@@ -33,7 +33,7 @@ namespace zetscript{
 		unsigned short properties; // symbol properties using SymbolProperty bits
 
 		std::string name; 	// symbol name
-		zs_int ref_ptr; 	// pointer ref just in case is C var/function
+		zs_int ref_ptr; 	// pointer ref that holds rellevant information
 		std::string str_native_type; // In case is C, we need to know its type ...
 
 		char n_params; // max params in case of function

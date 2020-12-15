@@ -265,12 +265,12 @@ namespace zetscript{
 			ScriptFunction 			* calling_function,
 			StackElement 		  	* _stk_local_var,
 			//std::string 		  	* _str_start,
-			unsigned char 			n_args,
-			Instruction 			*calling_instruction){
+			unsigned char 			n_args
+	    ){
 
 
 		StackElement  stk_result={0,0,MSK_STK_PROPERTY_UNDEFINED};
-		Instruction * instruction = calling_instruction;
+		Instruction * instruction = NULL;//calling_instruction;
 
 		if(vm_idx_call >= MAX_FUNCTION_CALL){
 			VM_ERROR_AND_RET("Reached max stack");
@@ -1318,7 +1318,7 @@ namespace zetscript{
 								,sf
 								,stk_start_arg_call
 								,n_args
-								,instruction);
+						);
 					}
 					else{ // C function
 

@@ -391,7 +391,7 @@ namespace zetscript{
 			}
 
 			//--------------------------------------------------------------
-			// assign operators, load identifiers first
+			// operator = found --> assign operators, load identifiers first
 			for(int i=0; i < idx_start; i+=2){ // starting from assign operator if idx_start > 0
 				EvalInstruction *instruction=NULL;
 				TokenNode * token_node_symbol = &expression_tokens->at(i);
@@ -399,7 +399,7 @@ namespace zetscript{
 				Operator operator_type=token_node_operator->operator_type;
 				int end_idx=(int)(expression_tokens->size()-1);
 
-				// should be assign operator...
+				// Check for operators found. Each operator found it has to be (=,+=,-=,... etc)
 				if(!(
 						token_node_operator->token_type == TokenType::TOKEN_TYPE_OPERATOR
 					&&	(operator_type == OPERATOR_ASSIGN
@@ -416,7 +416,7 @@ namespace zetscript{
 					EVAL_ERROR(eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal \"%s\" is not allowed",token_node_symbol->value.c_str());
 				}
 
-				// load variable and accessors...
+				// load variable and its accessors...
 				for(unsigned i=0;i<token_node_symbol->instructions.size();i++){
 					EvalInstruction *ei_load_assign_instruction=token_node_symbol->instructions[i];
 					if(ei_load_assign_instruction->vm_instruction.byte_code ==  BYTE_CODE_CALL){
@@ -542,14 +542,15 @@ namespace zetscript{
 				,const char *s
 				, int & line
 				, Scope *scope_info
-				, std::vector<EvalInstruction *> 	* instructions
+				, std::vector<EvalInstruction *> 	* dst_instructions
 				, std::vector<char> expected_ending_char
 				, int level
-				, bool reset_stack
+				, uint16_t properties
 
 			){
 			// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 			// If this functions finds ';' then the function will generate ast.
+			std::vector<EvalInstruction *> 	src_instructions; // we will write all instructions here as aux, and later will assign to dst_instructions
 			std::vector<TokenNode> expression_tokens;
 			PreOperator pre_operator = PreOperator::PRE_OPERATOR_UNKNOWN;
 			PrePostSelfOperation pre_self_operation_type=PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN;
@@ -1090,6 +1091,7 @@ namespace zetscript{
 					if(	is_end_expression(aux_p)
 					|| operator_type==Operator::OPERATOR_TERNARY_IF
 					|| operator_type==Operator::OPERATOR_TERNARY_ELSE
+					|| ((operator_type==Operator::OPERATOR_ASSIGN) && ((properties & EVAL_EXPRESSION_PROPERTY_BREAK_ON_ASSIGNMENT_OPERATOR) == true))
 					|| ( new_line_break && (operator_type==Operator::OPERATOR_UNKNOWN ))){ // if not operator and carry return found is behaves as end expression
 						break;
 					}
@@ -1158,7 +1160,7 @@ namespace zetscript{
 			// there's an expression
 			if(expression_tokens.size()>0){
 
-				if(level == 0 && reset_stack == true){ // set instruction as start statment...
+				if(level == 0 && ((properties & EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK) == false)){ // set instruction as start statment...
 					eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.begin()+idx_instruction_start_expression,
 							new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
@@ -1170,12 +1172,111 @@ namespace zetscript{
 					,aux_p
 					,line
 					,scope_info
-					,instructions
+					,&src_instructions
 					,level
 					,&expression_tokens
 
 				);
 			}
+
+			// ok this is not the end...
+			if(((properties & EVAL_EXPRESSION_PROPERTY_ALLOW_EXPRESSION_SEQUENCE)==true)
+				&& (level == 0)
+				&& (*aux_p == ',')
+			)
+			{
+				// preserve each set of instructions of each expressions
+				std::vector<EvalInstruction *> exp_instruction[2]; // right/left assigment
+
+				//std::vector<EvalInstruction *> exp_instruction;
+				int idx=0;
+
+				// save first expression...
+				exp_instruction[idx]=src_instructions;
+
+				do{
+
+					// starting performing expressions
+					aux_p=eval_expression(
+								eval_data
+								,aux_p
+								, line
+								, scope_info
+								, &exp_instruction[idx] // it's saving to instructions...
+								,{}
+								,0
+								,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK | EVAL_EXPRESSION_PROPERTY_BREAK_ON_ASSIGNMENT_OPERATOR
+							);
+
+					if(aux_p != NULL && *aux_p != 0 && *aux_p=='='){ // assignment op, start left assigments
+						idx++; //--> start next
+					}
+
+				}while(aux_p != NULL && *aux_p != 0 && *aux_p==',' );
+
+
+				src_instructions={};
+
+
+				// check there's only a simple load on the left
+				for(int i = 0; i < idx; i++){
+					size_t length_instructions = exp_instruction[i].size();
+
+					if(idx>0 && i==0){ // assignment detected
+						// check left are literals
+						for(int j = 0; j < length_instructions; j++){
+							if(exp_instruction[i][j]->vm_instruction.byte_code != BYTE_CODE_LOAD_TYPE_VARIABLE){
+								EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,start_expression_line,"left sequence assignment it must be literal");
+
+							}
+						}
+
+						// reverse order load assigment
+						for(int j = 0; j < (length_instructions>>1); j++){
+							EvalInstruction *aux;
+							aux=exp_instruction[i][length_instructions-1-j]; // save end
+							exp_instruction[i][length_instructions-1-j]=exp_instruction[i][j]; // begin --> end
+							exp_instruction[i][j]=aux; // end --> begin
+						}
+
+
+
+
+					}
+
+					src_instructions.insert(
+							src_instructions.end()
+							,exp_instruction[i].begin()
+							,exp_instruction[i].end()
+					);
+
+				}
+
+				// and in the end only one store with the number of loads
+				if(idx > 0){
+					src_instructions.push_back(
+						new EvalInstruction(ByteCode::BYTE_CODE_STORE,exp_instruction[0].size()) // store multiple ?
+					);
+				}
+
+				// and in the end only one store with the number of loads
+
+				/*if(idx > 0){
+
+				}*/
+
+
+
+			}
+
+
+			// write all instructions to instructions pointer
+			dst_instructions->insert(
+					dst_instructions->end(),
+					src_instructions.begin(),
+					src_instructions.end()
+			);
+
 
 			// last character is a separator so it return increments by 1
 			return aux_p;

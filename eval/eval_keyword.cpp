@@ -1,7 +1,7 @@
 namespace zetscript{
 	namespace eval{
 
-
+		char * eval_attrib(EvalData *eval_data, const char *s, int & line, Scope *scope_info);
 		void 	push_function(EvalData *eval_data,ScriptFunction *sf);
 		int  	pop_function(EvalData *eval_data);
 		char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
@@ -159,8 +159,8 @@ namespace zetscript{
 					// register info class ...
 					// check for named functions or vars...
 					while(*aux_p != '}' && *aux_p != 0){
-
-						if((aux_p=eval_attrib(
+						char *test_attrib=aux_p;
+						if((test_attrib=eval_attrib(
 								eval_data
 								,aux_p
 								, line
@@ -195,6 +195,8 @@ namespace zetscript{
 							if(aux_p == NULL){
 								return NULL;
 							}
+						}else{ // parsed detected an attrib
+							aux_p = test_attrib;
 						}
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -356,7 +358,7 @@ namespace zetscript{
 							,&eval_data->current_function->instructions
 							,{}
 							,0
-							,false
+							,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
 						))==NULL){
 							return NULL;
 						}
@@ -391,12 +393,14 @@ namespace zetscript{
 				, const char *s
 				, int & line
 				, Scope *scope_info
-				, bool check_anonymous_function
-				, std::string * resulted_function_name
 			){
 
+			fprintf(stderr,"===============================\n");
+			fprintf(stderr,"Eval_attrib not implemented yet\n");
+			fprintf(stderr,"===============================\n");
+
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-			ScriptClass *sc=NULL; // if NULL it suposes is the main
+			/*ScriptClass *sc=NULL; // if NULL it suposes is the main
 			char *aux_p = (char *)s;
 			Keyword key_w=is_keyword(aux_p);
 			bool is_static = false;
@@ -628,7 +632,9 @@ namespace zetscript{
 
 			pop_function(eval_data);
 
-			return aux_p;
+			return aux_p;*/
+
+			return NULL;
 		}
 
 		char * eval_keyword_function(
@@ -918,6 +924,9 @@ namespace zetscript{
 						, line
 						, scope_info
 						,&eval_data->current_function->instructions
+						,{}
+						,0
+						,EVAL_EXPRESSION_PROPERTY_ALLOW_EXPRESSION_SEQUENCE | EVAL_EXPRESSION_PROPERTY_NO_ALLOW_EXPRESSION_SEQUENCE_ASSIGNMENT
 						//,std::vector<char>{';'}
 				))!= NULL){
 

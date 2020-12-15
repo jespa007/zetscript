@@ -1,5 +1,13 @@
 namespace zetscript{
 	namespace eval{
+
+		typedef enum{
+			EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK=0x1<<0,
+			EVAL_EXPRESSION_PROPERTY_ALLOW_EXPRESSION_SEQUENCE=0x1<<1,
+			EVAL_EXPRESSION_PROPERTY_NO_ALLOW_EXPRESSION_SEQUENCE_ASSIGNMENT=0x1<<2,
+			EVAL_EXPRESSION_PROPERTY_BREAK_ON_ASSIGNMENT_OPERATOR=0x1<<3
+		}EvalExpressionProperty;
+
 		int n_anonymouse_function=0;
 
 		//std::string * 	get_mapped_name(EvalData *eval_data,const std::string * symbol_name);
@@ -11,7 +19,7 @@ namespace zetscript{
 				, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions
 				, std::vector<char>expected_ending_char={} // expecting ending char when expression finish (by default not check or 0)
 				, int level=0
-				, bool add_reset_stack=true
+				, uint16_t properties = 0
 		);
 
 

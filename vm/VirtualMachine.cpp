@@ -344,5 +344,5 @@ namespace zetscript{
 }
 
 
-#include "VirtualMachine_call_function_native.cpp"
-#include "VirtualMachine_call_function_script.cpp"
+#include "VirtualMachine_callFunctionNative.cpp"
+#include "VirtualMachine_callFunctionScript.cpp"
