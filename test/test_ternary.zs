@@ -6,7 +6,7 @@ var j=
 	a>0 ?  			//if(a>0){
 		(c=a>2) ? 	//	if(a>2){
 			a+3		//		a+3
-		: b=a > 4 ?	//	}else if(b=a>4){ // it also assigns b in the middle of ternary 
+		: b=a > 4 ?	//	}else if(b=a>4){ // it also assigns boolean value into b in the middle of ternary 
 			a+5		// 		a+2	5			
 		: 			//	}else{
 		  a>3?		//		if(a>3){

@@ -1,4 +1,9 @@
-class A{
+var a=0>1?0:1
+		
+		
+System::println(a);
+
+/*class A{
 	constructor(){
 		
 	}
@@ -7,7 +12,7 @@ class A{
 				
 	}
 	
-}
+}*/
 
 
 /*
@@ -42,10 +47,10 @@ it2=it1.toInt();delete it1;delete i1;delete i2;it2;
 
 System::println(it2);*/
 
-function test_1st_script_call(){
+/*function test_1st_script_call(){
 				print     ("Hello from script");
 				//test_function_1st_c_call();
-			}
+			}*/
 
 
 

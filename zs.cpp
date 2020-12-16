@@ -28,11 +28,11 @@ int main(int argc, char * argv[]) {
 			switch(a.size()){
 			case 1:
 
-				if(strcmp(argv[i],"--no_execute")==0){
+				if(strcmp(argv[i],"--no-execute")==0){
 					eval_options &= ~zetscript::EvalOption::EVAL_OPTION_EXECUTE;
-				}else if(strcmp(argv[i],"--show_code")==0){
+				}else if(strcmp(argv[i],"--show-code")==0){
 					eval_options|=zetscript::EvalOption::EVAL_OPTION_SHOW_USER_CODE;
-				}else if(strcmp(argv[i],"--show_system_code")==0){
+				}else if(strcmp(argv[i],"--show-system-code")==0){
 					eval_options|=zetscript::EvalOption::EVAL_OPTION_SHOW_SYSTEM_CODE;
 
 				}else if(strcmp(argv[i],"--version")==0){
