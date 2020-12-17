@@ -16,6 +16,10 @@
 													eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 													goto error_expression;\
 
+
+#define IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) (Operator::OPERATOR_ASSIGN_ADD<=(c) && (c)<=Operator::OPERATOR_ASSIGN_SHIFT_RIGHT)
+#define IS_OPERATOR_TYPE_ASSIGN(c) (IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) && (c)==OPERATOR_ASSIGN)
+
 namespace zetscript{
 	namespace eval{
 
@@ -90,21 +94,19 @@ namespace zetscript{
 
 			// ASSIGN
 			OPERATOR_ASSIGN, 										// =
-			OPERATOR_ARITHMETIC_ASSIGN_FIRST,
-			OPERATOR_ASSIGN_ADD=OPERATOR_ARITHMETIC_ASSIGN_FIRST,	// +=
+			OPERATOR_ASSIGN_ADD,									// += (first)
 			OPERATOR_ASSIGN_SUB, 									// -=
 			OPERATOR_ASSIGN_MUL, 									// *=
 			OPERATOR_ASSIGN_DIV, 									// /=
 			OPERATOR_ASSIGN_MOD, 									// %=
 			OPERATOR_ASSIGN_XOR,									// ^=
-			OPERATOR_ASSIGN_BINARY_AND,								// &=
-			OPERATOR_ASSIGN_BINARY_OR,  							// |=
+			OPERATOR_ASSIGN_AND,									// &=
+			OPERATOR_ASSIGN_OR, 		 							// |=
 			OPERATOR_ASSIGN_SHIFT_LEFT, 							// <<=
-			OPERATOR_ASSIGN_SHIFT_RIGHT, 							// >>=
-			OPERATOR_ARITHMETIC_ASSIGN_LAST,
+			OPERATOR_ASSIGN_SHIFT_RIGHT, 							// >>= (last)
 
 			// TERNARY...
-			OPERATOR_TERNARY_IF=OPERATOR_ARITHMETIC_ASSIGN_LAST,	// ?
+			OPERATOR_TERNARY_IF,	// ?
 			OPERATOR_TERNARY_ELSE, 									// :
 
 			// LOGIC...
@@ -125,7 +127,7 @@ namespace zetscript{
 			OPERATOR_SUB, 											// -
 			OPERATOR_XOR, 											// ^
 			OPERATOR_MUL, 											// *
-			OPERATOR_BINARY_AND, 									// &
+			OPERATOR_AND,		 									// &
 			OPERATOR_DIV, 											// /
 			OPERATOR_MOD, 											// %
 			OPERATOR_SHIFT_LEFT, 									// <<
@@ -325,13 +327,13 @@ namespace zetscript{
 		bool 	is_operator_assign_div(const char *s)				{return ((*s=='/') && (*(s+1)=='='));}
 		bool 	is_operator_assign_mod(const char *s)				{return ((*s=='%') && (*(s+1)=='='));}
 		bool 	is_operator_assign_xor(const char *s)				{return ((*s=='^') && (*(s+1)=='='));}		// ^=
-		bool 	is_operator_assign_binary_and(const char *s)		{return ((*s=='&') && (*(s+1)=='='));}		// &=
-		bool 	is_operator_assign_binary_or(const char *s)			{return ((*s=='|') && (*(s+1)=='='));}  	// |=
+		bool 	is_operator_assign_and(const char *s)				{return ((*s=='&') && (*(s+1)=='='));}		// &=
+		bool 	is_operator_assign_or(const char *s)				{return ((*s=='|') && (*(s+1)=='='));}  	// |=
 		bool 	is_operator_assign_shift_left(const char *s)		{return ((*s=='<') && (*(s+1)=='<')&& (*(s+2)=='='));} 	// <<=
 		bool 	is_operator_assign_shift_right(const char *s)		{return ((*s=='>') && (*(s+1)=='>')&& (*(s+2)=='='));} 	// >>=
 		bool 	is_operator_xor(const char *s)						{return ((*s=='^') && (*(s+1)!='='));}
-		bool 	is_operator_binari_and(const char *s)				{return ((*s=='&') && (*(s+1)!='&') && (*(s+1)!='='));}
-		bool 	is_operator_binari_or(const char *s)				{return ((*s=='|') && (*(s+1)!='|') && (*(s+1)!='='));}
+		bool 	is_operator_and(const char *s)						{return ((*s=='&') && (*(s+1)!='&') && (*(s+1)!='='));}
+		bool 	is_operator_or(const char *s)						{return ((*s=='|') && (*(s+1)!='|') && (*(s+1)!='='));}
 		bool 	is_operator_shift_left(const char *s)				{return ((*s=='<') && (*(s+1)=='<') && (*(s+2)!='='));}
 		bool 	is_operator_shift_right(const char *s)				{return	((*s=='>') && (*(s+1)=='>') && (*(s+2)!='='));}
 		bool 	is_operator_logic_and(const char *s)				{return ((*s=='&') && (*(s+1)=='&'));}
@@ -760,14 +762,14 @@ namespace zetscript{
 			eval_data_operators[OPERATOR_ASSIGN_DIV]={OPERATOR_ASSIGN_DIV, "/=",is_operator_assign_div};
 			eval_data_operators[OPERATOR_ASSIGN_MOD]={OPERATOR_ASSIGN_MOD, "%=",is_operator_assign_mod};
 			eval_data_operators[OPERATOR_ASSIGN_XOR]={OPERATOR_ASSIGN_XOR,"^=",is_operator_assign_xor};
-			eval_data_operators[OPERATOR_ASSIGN_BINARY_AND]={OPERATOR_ASSIGN_BINARY_AND,"&=",is_operator_assign_binary_and};
-			eval_data_operators[OPERATOR_ASSIGN_BINARY_OR]={OPERATOR_ASSIGN_BINARY_OR,"|=",is_operator_assign_binary_or};
+			eval_data_operators[OPERATOR_ASSIGN_AND]={OPERATOR_ASSIGN_AND,"&=",is_operator_assign_and};
+			eval_data_operators[OPERATOR_ASSIGN_OR]={OPERATOR_ASSIGN_OR,"|=",is_operator_assign_or};
 			eval_data_operators[OPERATOR_ASSIGN_SHIFT_LEFT]={OPERATOR_ASSIGN_SHIFT_LEFT,"<<=",is_operator_assign_shift_left};
 			eval_data_operators[OPERATOR_ASSIGN_SHIFT_RIGHT]={OPERATOR_ASSIGN_SHIFT_RIGHT,">>=",is_operator_assign_shift_right};
 
 			eval_data_operators[OPERATOR_XOR]={OPERATOR_XOR, "^",is_operator_xor};
-			eval_data_operators[OPERATOR_BINARY_AND]={OPERATOR_BINARY_AND, "&",is_operator_binari_and};
-			eval_data_operators[OPERATOR_OR]={OPERATOR_OR, "|",is_operator_binari_or};
+			eval_data_operators[OPERATOR_AND]={OPERATOR_AND, "&",is_operator_and};
+			eval_data_operators[OPERATOR_OR]={OPERATOR_OR, "|",is_operator_or};
 			eval_data_operators[OPERATOR_SHIFT_LEFT]={OPERATOR_SHIFT_LEFT, "<<",is_operator_shift_left};
 			eval_data_operators[OPERATOR_SHIFT_RIGHT]={OPERATOR_SHIFT_RIGHT, ">>",is_operator_shift_right};
 			eval_data_operators[OPERATOR_LOGIC_AND]={OPERATOR_LOGIC_AND, "&&",is_operator_logic_and};

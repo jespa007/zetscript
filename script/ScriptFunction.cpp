@@ -222,18 +222,16 @@ namespace zetscript{
 				break;
 			default:
 				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s %s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 						idx_instruction
 						,instructionPropertyPreOperationToStr(instruction->properties)
 						,ByteCodeToStr(instruction->byte_code)
 						,instructionPropertyPostOperationToStr(instruction->properties)
-						,instruction->properties & MSK_INSTRUCTION_PROPERTY_POP_ONE ? "{pop one}":""
 					);
 				}else if(n_ops==1){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s\t%i\n"
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i\n"
 						,idx_instruction
 						,ByteCodeToStr(instruction->byte_code)
-						,(instruction->properties & MSK_INSTRUCTION_PROPERTY_POP_ONE)?"_CS":""
 						,instruction->value_op1
 					);
 				}else{ //2 ops

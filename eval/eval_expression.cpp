@@ -12,48 +12,54 @@ namespace zetscript{
 			switch(op){
 			default:
 				break;
+			// assign and arithmetic with assign
 			case Operator::OPERATOR_ASSIGN:
 				return ByteCode::BYTE_CODE_STORE;
-
-			// operators and assignments
-			case Operator::OPERATOR_ADD:
 			case Operator::OPERATOR_ASSIGN_ADD:
-				return ByteCode::BYTE_CODE_ADD;
-
-			case Operator::OPERATOR_SUB:
+				return ByteCode::BYTE_CODE_STORE_ADD;
 			case Operator::OPERATOR_ASSIGN_SUB:
-				return ByteCode::BYTE_CODE_SUB;
-
-			case Operator::OPERATOR_MUL:
+				return ByteCode::BYTE_CODE_STORE_SUB;
 			case Operator::OPERATOR_ASSIGN_MUL:
-				return ByteCode::BYTE_CODE_MUL;
-
+				return ByteCode::BYTE_CODE_STORE_MUL;
 			case Operator::OPERATOR_ASSIGN_DIV:
+				return ByteCode::BYTE_CODE_STORE_DIV;
+			case Operator::OPERATOR_ASSIGN_MOD:
+				return ByteCode::BYTE_CODE_STORE_MOD;
+			case Operator::OPERATOR_ASSIGN_XOR:
+				return ByteCode::BYTE_CODE_STORE_XOR;
+			case Operator::OPERATOR_ASSIGN_AND:
+				return ByteCode::BYTE_CODE_STORE_AND;
+			case Operator::OPERATOR_ASSIGN_OR:
+				return ByteCode::BYTE_CODE_STORE_OR;
+			case Operator::OPERATOR_ASSIGN_SHIFT_LEFT:
+				return ByteCode::BYTE_CODE_STORE_SHL;
+			case Operator::OPERATOR_ASSIGN_SHIFT_RIGHT:
+				return ByteCode::BYTE_CODE_STORE_SHR;
+
+
+			// arithmetic ops
+			case Operator::OPERATOR_ADD:
+				return ByteCode::BYTE_CODE_ADD;
+			case Operator::OPERATOR_SUB:
+				return ByteCode::BYTE_CODE_SUB;
+			case Operator::OPERATOR_MUL:
+				return ByteCode::BYTE_CODE_MUL;
 			case Operator::OPERATOR_DIV:
 				return ByteCode::BYTE_CODE_DIV;
-
-			case Operator::OPERATOR_ASSIGN_MOD:
 			case Operator::OPERATOR_MOD:
 				return ByteCode::BYTE_CODE_MOD;
-
-			case Operator::OPERATOR_ASSIGN_XOR:
 			case Operator::OPERATOR_XOR:
 				return ByteCode::BYTE_CODE_XOR;
-
-			case Operator::OPERATOR_ASSIGN_BINARY_AND:
-			case Operator::OPERATOR_BINARY_AND:
+			case Operator::OPERATOR_AND:
 				return ByteCode::BYTE_CODE_AND;
-
-			case Operator::OPERATOR_ASSIGN_SHIFT_LEFT:
+			case Operator::OPERATOR_OR:
+				return ByteCode::BYTE_CODE_OR;
 			case Operator::OPERATOR_SHIFT_LEFT:
 				return ByteCode::BYTE_CODE_SHL;
-
-			case Operator::OPERATOR_ASSIGN_SHIFT_RIGHT:
 			case Operator::OPERATOR_SHIFT_RIGHT:
 				return ByteCode::BYTE_CODE_SHR;
 
-			case Operator::OPERATOR_OR:
-				return ByteCode::BYTE_CODE_OR;
+			// logic
 			case Operator::OPERATOR_LOGIC_AND:
 				return ByteCode::BYTE_CODE_LOGIC_AND;
 			case Operator::OPERATOR_LOGIC_OR:
@@ -380,11 +386,7 @@ namespace zetscript{
 			for(int i=idx_end; i >= 0; i--){
 				Operator token_operator = expression_tokens->at(i).operator_type;
 
-				if(
-					(OPERATOR_ASSIGN <= token_operator)
-								&&
-					(token_operator < OPERATOR_ARITHMETIC_ASSIGN_LAST)
-				){ // ... save all assignables from operator split
+				if(IS_OPERATOR_TYPE_ASSIGN(token_operator)){ // ... save all assignables from operator split
 						idx_start=i+1;
 						break;
 				}
@@ -392,7 +394,7 @@ namespace zetscript{
 
 			//--------------------------------------------------------------
 			// operator = found --> assign operators, load identifiers first
-			for(int i=0; i < idx_start; i+=2){ // starting from assign operator if idx_start > 0
+			for(int i=0; i < idx_start; i+=2){ // starting from assign operator if idx_start > 0 += 2 is because there's a symbol followed by its operator
 				EvalInstruction *instruction=NULL;
 				TokenNode * token_node_symbol = &expression_tokens->at(i);
 				TokenNode * token_node_operator = &expression_tokens->at(i+1);
@@ -401,13 +403,10 @@ namespace zetscript{
 
 				// Check for operators found. Each operator found it has to be (=,+=,-=,... etc)
 				if(!(
-						token_node_operator->token_type == TokenType::TOKEN_TYPE_OPERATOR
-					&&	(operator_type == OPERATOR_ASSIGN
-					|| (
-						(OPERATOR_ARITHMETIC_ASSIGN_FIRST <= operator_type)
-									&&
-						(operator_type < OPERATOR_ARITHMETIC_ASSIGN_LAST)
-					)))){ // ... save all assignables from operator split
+						(token_node_operator->token_type == TokenType::TOKEN_TYPE_OPERATOR)
+					&&	(IS_OPERATOR_TYPE_ASSIGN(operator_type))
+
+					)){ // ... save all assignables from operator split
 					EVAL_ERROR(eval_data->current_parsing_file,token_node_operator->line,"Operation \"%s\" in assignment is not allowed",eval_data_operators[operator_type].str);
 				}
 
@@ -416,7 +415,10 @@ namespace zetscript{
 					EVAL_ERROR(eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal \"%s\" is not allowed",token_node_symbol->value.c_str());
 				}
 
-				// load variable and its accessors...
+				assign_instructions_post_expression.push_back({});
+
+
+				// add instructions related about its accessors...
 				for(unsigned i=0;i<token_node_symbol->instructions.size();i++){
 					EvalInstruction *ei_load_assign_instruction=token_node_symbol->instructions[i];
 					if(ei_load_assign_instruction->vm_instruction.byte_code ==  BYTE_CODE_CALL){
@@ -425,31 +427,27 @@ namespace zetscript{
 								,ei_load_assign_instruction->instruction_source_info.line
 								,"Calling a function in an assignment is not allowed");
 					}
-					instructions->push_back(token_node_symbol->instructions[i]);
+					assign_instructions_post_expression[i>>1].push_back(token_node_symbol->instructions[i]);
 				}
-
-				assign_instructions_post_expression.push_back({});
 
 				// if is arithmetic with assign...
-				if(operator_type>=OPERATOR_ARITHMETIC_ASSIGN_FIRST && operator_type<OPERATOR_ARITHMETIC_ASSIGN_LAST){
-					// ... add arithmetic operator byte code
-					assign_instructions_post_expression[i>>1].push_back(instruction=new EvalInstruction(
-							convert_operator_to_byte_code(operator_type)
-					));
 
-					instruction->instruction_source_info= InstructionSourceInfo(
-							eval_data->current_parsing_file
-							,token_node_operator->line
-							,NULL
-					);
-					// set pops one to do the operation but keeps the variable to store on the top of stack
-					instruction->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_POP_ONE;
-				}
+				// ... add arithmetic operator byte code
+				assign_instructions_post_expression[i>>1].push_back(instruction=new EvalInstruction(
+						convert_operator_to_byte_code(operator_type)
+				));
+
+				instruction->instruction_source_info= InstructionSourceInfo(
+						eval_data->current_parsing_file
+						,token_node_operator->line
+						,NULL
+				);
+				// set pops one to do the operation but keeps the variable to store on the top of stack
+				//instruction->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_POP_ONE;
+
 
 				//--------------------------------------------------------------
 				// assign operators, add store byte code
-				assign_instructions_post_expression[i>>1].push_back(instruction=new EvalInstruction(ByteCode::BYTE_CODE_STORE));
-
 				instruction->instruction_source_info= InstructionSourceInfo(
 						eval_data->current_parsing_file
 						,token_node_operator->line
@@ -457,6 +455,8 @@ namespace zetscript{
 				);
 			}
 			//--------------------------------------------------------------
+
+			// eval right expression
 			eval_operators_expression(
 				 eval_data
 				, expression_tokens
@@ -465,6 +465,7 @@ namespace zetscript{
 				, idx_end
 			);
 
+			// if ends with ternary then continues performing expressions
 			if(*aux_p == '?'){ // ternary
 				EvalInstruction *ei_ternary_if_jnt=NULL;
 				EvalInstruction *ei_ternary_else_jmp=NULL;

@@ -657,6 +657,16 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT:
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:
 			case BYTE_CODE_STORE_CONST:
+			case BYTE_CODE_STORE_ADD:
+			case BYTE_CODE_STORE_SUB:
+			case BYTE_CODE_STORE_MUL:
+			case BYTE_CODE_STORE_DIV:
+			case BYTE_CODE_STORE_MOD:
+			case BYTE_CODE_STORE_AND:
+			case BYTE_CODE_STORE_OR:
+			case BYTE_CODE_STORE_XOR:
+			case BYTE_CODE_STORE_SHL:
+			case BYTE_CODE_STORE_SHR:
 
 				{
 					bool assign_metamethod=false;
@@ -710,8 +720,46 @@ namespace zetscript{
 						stk_dst=se;
 
 					}
-					else{ // pop two parameters nothing ...
-						POP_TWO; // op1:dst / op2:src
+					else{ // can be assign or arithmetic and assing pop two parameters nothing ...
+						if(IS_BYTE_CODE_STORE_WITH_OPERATION(operator_type)){ // arithmetic
+							READ_TWO_POP_ONE
+							switch(operator_type){
+							case BYTE_CODE_STORE_ADD:
+								PROCESS_ARITHMETIC_OPERATION(+,BYTE_CODE_METAMETHOD_ADD);
+								break;
+							case BYTE_CODE_STORE_SUB:
+								PROCESS_ARITHMETIC_OPERATION(-,BYTE_CODE_METAMETHOD_SUB);
+								break;
+							case BYTE_CODE_STORE_MUL:
+								PROCESS_ARITHMETIC_OPERATION(*,BYTE_CODE_METAMETHOD_MUL);
+								break;
+							case BYTE_CODE_STORE_DIV:
+								PROCESS_ARITHMETIC_OPERATION(/,BYTE_CODE_METAMETHOD_DIV);
+								break;
+							case BYTE_CODE_STORE_MOD:
+								PROCESS_MOD_OPERATION;
+								break;
+							case BYTE_CODE_STORE_AND:
+								PROCESS_BINARY_OPERATION(&,BYTE_CODE_METAMETHOD_ADD);
+								break;
+							case BYTE_CODE_STORE_OR:
+								PROCESS_BINARY_OPERATION(|,BYTE_CODE_METAMETHOD_OR);
+								break;
+							case BYTE_CODE_STORE_XOR:
+								PROCESS_BINARY_OPERATION(^,BYTE_CODE_METAMETHOD_XOR);
+								break;
+							case BYTE_CODE_STORE_SHL:
+								PROCESS_BINARY_OPERATION(<<,BYTE_CODE_METAMETHOD_SHL);
+								break;
+							case BYTE_CODE_STORE_SHR:
+								PROCESS_BINARY_OPERATION(>>,BYTE_CODE_METAMETHOD_SHR);
+								break;
+
+							}
+
+						}else{
+							POP_TWO; // op1:dst / op2:src
+						}
 
 						stk_dst=stk_result_op1;
 
@@ -913,19 +961,11 @@ namespace zetscript{
 				PROCESS_COMPARE_OPERATION(>=,BYTE_CODE_METAMETHOD_GTE);
 				continue;
 			case BYTE_CODE_LOGIC_AND:  // &&
-				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE;
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_LOGIC_OPERATION(&&);
 				continue;
 			case BYTE_CODE_LOGIC_OR:  // ||
-				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE;
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_LOGIC_OPERATION(||);
 				continue;
 			case BYTE_CODE_NOT: // !
@@ -964,7 +1004,11 @@ namespace zetscript{
 				}
 				continue;
 			case BYTE_CODE_ADD: // +
-				{
+
+				POP_TWO;
+				PROCESS_ARITHMETIC_OPERATION(+,BYTE_CODE_METAMETHOD_ADD);
+
+				/*{
 					if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
 						READ_TWO_POP_ONE;
 					}else{
@@ -998,16 +1042,13 @@ namespace zetscript{
 							goto lbl_exit_function;
 						}
 					}
-				}
+				}*/
 				continue;
 			case BYTE_CODE_SUB: // -
+				POP_TWO;
+				PROCESS_ARITHMETIC_OPERATION(-,BYTE_CODE_METAMETHOD_SUB);
+/*#define  PROCESS_ARITHMETIC_OPERATION_SUB
 				{
-					if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-						READ_TWO_POP_ONE;
-					}else{
-						POP_TWO;
-					}
-
 					unsigned short mask_and_properties =GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);
 					if(mask_and_properties==MSK_STK_PROPERTY_ZS_INT){ // fast operation
 						PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) - STK_VALUE_TO_ZS_INT(stk_result_op2));
@@ -1035,71 +1076,39 @@ namespace zetscript{
 							goto lbl_exit_function;
 						}
 					}
-				}
+				}*/
 				continue;
 			case BYTE_CODE_MUL: // *
-				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_ARITHMETIC_OPERATION(*,BYTE_CODE_METAMETHOD_MUL);
 				continue;
 			case BYTE_CODE_DIV: // /
-				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_ARITHMETIC_OPERATION(/, BYTE_CODE_METAMETHOD_DIV);
 				continue;
 
 			 case BYTE_CODE_MOD: // /
-				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_MOD_OPERATION;
 				continue;
 			 case BYTE_CODE_AND: // &
-				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_BINARY_OPERATION(&, BYTE_CODE_METAMETHOD_AND);
 				continue;
 			 case BYTE_CODE_OR: // *
-				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_BINARY_OPERATION(|, BYTE_CODE_METAMETHOD_OR);
 				continue;
 			 case BYTE_CODE_XOR: // ^
-				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_BINARY_OPERATION(^, BYTE_CODE_METAMETHOD_XOR);
 				continue;
 			 case BYTE_CODE_SHR: // >>
-				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_BINARY_OPERATION(>>,BYTE_CODE_METAMETHOD_SHR);
 				continue;
 			 case BYTE_CODE_SHL: // <<
-				if(instruction->properties&MSK_INSTRUCTION_PROPERTY_POP_ONE){
-					READ_TWO_POP_ONE
-				}else{
-					POP_TWO;
-				}
+				POP_TWO;
 				PROCESS_BINARY_OPERATION(<<, BYTE_CODE_METAMETHOD_SHL);
 				continue;
 			 case BYTE_CODE_JMP:

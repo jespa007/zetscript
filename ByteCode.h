@@ -5,6 +5,8 @@
 
 #pragma once
 
+#define IS_BYTE_CODE_STORE_WITH_OPERATION(b) (ByteCode::BYTE_CODE_STORE_ADD<=(b) && (b) <=ByteCode::BYTE_CODE_STORE_SHR)
+
 namespace zetscript{
 
 	typedef enum:char{
@@ -22,6 +24,16 @@ namespace zetscript{
 		BYTE_CODE_LOAD_TYPE_CLASS,
 
 		BYTE_CODE_STORE, // mov expression to var
+		BYTE_CODE_STORE_ADD, //
+		BYTE_CODE_STORE_SUB, //
+		BYTE_CODE_STORE_MUL, //
+		BYTE_CODE_STORE_DIV, //
+		BYTE_CODE_STORE_MOD, //
+		BYTE_CODE_STORE_AND, //
+		BYTE_CODE_STORE_OR, //
+		BYTE_CODE_STORE_XOR, //
+		BYTE_CODE_STORE_SHL, //
+		BYTE_CODE_STORE_SHR, //
 		BYTE_CODE_PUSH_VECTOR_ELEMENT, // Value push for std::vector
 		BYTE_CODE_PUSH_OBJECT_ELEMENT,
 		BYTE_CODE_EQU,  // ==
@@ -39,11 +51,11 @@ namespace zetscript{
 		BYTE_CODE_MUL, // *
 		BYTE_CODE_DIV, // /
 		BYTE_CODE_MOD,  // %
-		BYTE_CODE_AND, // bitwise logic and
-		BYTE_CODE_OR, // bitwise logic or
-		BYTE_CODE_XOR, // logic xor
-		BYTE_CODE_SHL, // shift left
-		BYTE_CODE_SHR, // shift right
+		BYTE_CODE_AND, // binary and
+		BYTE_CODE_OR, // binary or
+		BYTE_CODE_XOR, // binary xor
+		BYTE_CODE_SHL, // binary shift left
+		BYTE_CODE_SHR, // binary shift right
 		BYTE_CODE_INSTANCEOF,
 		BYTE_CODE_JMP,
 		BYTE_CODE_JNT, // goto if not true ... goes end to conditional.
