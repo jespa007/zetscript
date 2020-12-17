@@ -84,6 +84,17 @@ namespace zetscript{
 			return ByteCode::BYTE_CODE_END_FUNCTION;
 		}
 
+		char * eval_expression_main(
+				EvalData *eval_data
+				,const char *s
+				, int & line
+				, Scope *scope_info
+				, std::vector<EvalInstruction *> 	* instructions
+				, std::vector<char> expected_ending_char={}
+				, uint16_t properties=0 // uint16_t properties
+		);
+
+
 		bool  is_access_punctuator(char *s){
 			return *s=='.' || *s=='[' || *s=='(';
 		}
@@ -372,9 +383,7 @@ namespace zetscript{
 				, int & line
 				, Scope *scope_info
 				, std::vector<EvalInstruction *> *instructions
-				, int level
 				, std::vector<TokenNode> * expression_tokens
-
 			){
 
 			char *aux_p=(char *)s;
@@ -448,11 +457,11 @@ namespace zetscript{
 
 				//--------------------------------------------------------------
 				// assign operators, add store byte code
-				instruction->instruction_source_info= InstructionSourceInfo(
+				/*instruction->instruction_source_info= InstructionSourceInfo(
 						eval_data->current_parsing_file
 						,token_node_operator->line
 						,NULL
-				);
+				);*/
 			}
 			//--------------------------------------------------------------
 
@@ -473,14 +482,16 @@ namespace zetscript{
 				// insert JNT
 				instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
 
-				aux_p=eval_expression(
+				aux_p=eval_expression_main(
 						eval_data
 						,aux_p+1
 						, line
 						, scope_info
 						, instructions
 						,std::vector<char>{}
-						,level+1);
+						,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
+
+				);
 
 				if(*aux_p != ':'){
 					EVAL_ERROR(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
@@ -488,19 +499,20 @@ namespace zetscript{
 
 				instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
 
-				ei_ternary_if_jnt->vm_instruction.value_op2=instructions->size();
+				ei_ternary_if_jnt->vm_instruction.value_op2=instructions->size()+eval_data->current_function->instructions.size();
 
-				aux_p=eval_expression(
+				aux_p=eval_expression_main(
 					eval_data
 					,aux_p+1
 					, line
 					, scope_info
 					, instructions
 					,std::vector<char>{}
-					,level+1
+					,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
+
 				);
 
-				ei_ternary_else_jmp->vm_instruction.value_op2=instructions->size()+(level>=1?2:0); // adds +2
+				ei_ternary_else_jmp->vm_instruction.value_op2=instructions->size()+eval_data->current_function->instructions.size();
 
 			}
 			//--------------------------------------------------------------
@@ -538,20 +550,19 @@ namespace zetscript{
 			return false;
 		}
 
-		char * eval_expression(
+		char * eval_expression_main(
 				EvalData *eval_data
 				,const char *s
 				, int & line
 				, Scope *scope_info
-				, std::vector<EvalInstruction *> 	* dst_instructions
+				, std::vector<EvalInstruction *> 	* instructions
 				, std::vector<char> expected_ending_char
-				, int level
-				, uint16_t properties
+				, uint16_t properties // uint16_t properties
+
 
 			){
 			// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 			// If this functions finds ';' then the function will generate ast.
-			std::vector<EvalInstruction *> 	src_instructions; // we will write all instructions here as aux, and later will assign to dst_instructions
 			std::vector<TokenNode> expression_tokens;
 			PreOperator pre_operator = PreOperator::PRE_OPERATOR_UNKNOWN;
 			PrePostSelfOperation pre_self_operation_type=PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN;
@@ -602,7 +613,7 @@ namespace zetscript{
 								aux_p+=strlen(eval_data_pre_post_self_operations[pre_self_operation_type].str);
 								break;
 							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID:
-								EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
+								EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
 								break;
 						}
 					}else{
@@ -625,24 +636,24 @@ namespace zetscript{
 					if(*aux_p=='('){ // inner expression (priority)
 
 						if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_data_pre_post_self_operations[pre_self_operation_type].str);
+							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_data_pre_post_self_operations[pre_self_operation_type].str);
 						}
 
-						if((aux_p=eval_expression(
+						if((aux_p=eval_expression_main(
 								eval_data
 								,aux_p+1
 								, line
 								, scope_info
 								, &symbol_token_node.instructions
 								,std::vector<char>{}
-								,level+1)
-							)== NULL){
+								,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
+							)
+						)== NULL){
 							goto error_expression;
 						}
 
-
 						if(*aux_p != ')'){
-							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Expected ')'");
+							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Expected ')'");
 						}
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -665,7 +676,6 @@ namespace zetscript{
 								,line
 								,scope_info
 								,&symbol_token_node.instructions
-								,level
 							))==NULL){
 								goto error_expression;
 							}
@@ -678,7 +688,6 @@ namespace zetscript{
 								,line
 								,scope_info
 								,&symbol_token_node.instructions
-								,level
 							))==NULL){
 								goto error_expression;
 							}
@@ -693,7 +702,6 @@ namespace zetscript{
 								,line
 								,scope_info
 								,&symbol_token_node.instructions
-								,level
 							))==NULL){
 								goto error_expression;
 							}
@@ -778,7 +786,7 @@ namespace zetscript{
 										&& symbol_token_node.value == SYMBOL_VALUE_SUPER
 										&& scope_info == MAIN_SCOPE(eval_data)
 								){
-									EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"\"super\" is not allowed here");
+									EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"\"super\" is not allowed here");
 
 								}
 
@@ -789,19 +797,19 @@ namespace zetscript{
 									// check if ref identifier...
 									if(n_params>0){
 										if(*aux_p != ','){
-											EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Expected ','");
+											EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Expected ','");
 										}
 										aux_p++;
 									}
 
-									if((aux_p = eval_expression(
+									if((aux_p = eval_expression_main(
 											eval_data
 											,aux_p
 											,line
 											,scope_info
 											,&symbol_token_node.instructions
 											,std::vector<char>{}
-											,level+1
+											,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
 									))==NULL){
 										goto error_expression;
 									}
@@ -812,20 +820,20 @@ namespace zetscript{
 								aux_p++;
 								break;
 							case '[': // std::vector access
-								if((aux_p = eval_expression(
+								if((aux_p = eval_expression_main(
 										eval_data
 										,aux_p+1
 										,line
 										,scope_info
 										,&symbol_token_node.instructions
 										,std::vector<char>{}
-										,level+1
+										,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
 								))==NULL){
 									goto error_expression;
 								}
 
 								if(*aux_p != ']'){
-									EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Expected ']'");
+									EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Expected ']'");
 								}
 
 								aux_p++;
@@ -845,10 +853,10 @@ namespace zetscript{
 											aux_p++;
 										}
 										else{
-											EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Invalid static access");
+											EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Invalid static access");
 										}
 									}else{
-										EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Unexpected char ':'");
+										EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Unexpected char ':'");
 									}
 								}
 
@@ -873,7 +881,7 @@ namespace zetscript{
 								}else{
 
 									if(accessor_value == SYMBOL_VALUE_THIS){
-										EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"\"this\" is not allowed as member name");
+										EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"\"this\" is not allowed as member name");
 									}
 
 									if(first_access){ // check first symbol at first...
@@ -881,11 +889,11 @@ namespace zetscript{
 										if(symbol_token_node.value == SYMBOL_VALUE_THIS){
 
 											if(eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC){
-												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"\"this\" cannot be used in static functions");
+												EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"\"this\" cannot be used in static functions");
 											}
 
 											if(scope_info == MAIN_SCOPE(eval_data)){
-												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"\"this\" is not allowed here");
+												EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"\"this\" is not allowed here");
 											}
 
 											// set symbol name
@@ -941,7 +949,7 @@ namespace zetscript{
 									first_instruction_token->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data,static_access_name);
 
 									if((script_class_access=eval_data->script_class_factory->getScriptClass(static_access[0]))==NULL){
-										EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"static access error: class \"%s\" not exist",static_access[0].c_str());
+										EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line,"static access error: class \"%s\" not exist",static_access[0].c_str());
 									}
 
 									symbol_static=script_class_access->getSymbol(static_access[1]);
@@ -952,7 +960,7 @@ namespace zetscript{
 
 											// check symbol is native and not function
 											if((symbol_static->properties & SYMBOL_PROPERTY_CONST) == 0){
-												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"Symbol \"%s\" is not constant",static_access_name.c_str());
+												EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line,"Symbol \"%s\" is not constant",static_access_name.c_str());
 											}
 
 											first_instruction_token->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT;
@@ -968,16 +976,16 @@ namespace zetscript{
 													first_instruction_token->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_FUNCTION;
 													first_instruction_token->vm_instruction.value_op2=(zs_int)static_script_function;
 												}else{
-													EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"static access error: \"%s\" is not static. Make sure that there's no this/super defined in body",static_access_name.c_str());
+													EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line,"static access error: \"%s\" is not static. Make sure that there's no this/super defined in body",static_access_name.c_str());
 												}
 											}else{
-												EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"static access error: \"%s\" is not a function",static_access_name.c_str());
+												EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line,"static access error: \"%s\" is not a function",static_access_name.c_str());
 											}
 										}else{
-											EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"static access: Unexpected byte code");
+											EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line,"static access: Unexpected byte code");
 										}
 									}else{
-										EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"Symbol %s not exist",static_access_name.c_str());
+										EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line,"Symbol %s not exist",static_access_name.c_str());
 									}
 
 									// clear static symbols to mark end static
@@ -1025,7 +1033,7 @@ namespace zetscript{
 
 						if(symbol_token_node.value==SYMBOL_VALUE_THIS){
 							if(eval_data->current_function->script_function->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
-								EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
+								EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
 							}
 
 							symbol_token_node.instructions[0]->instruction_source_info= InstructionSourceInfo(
@@ -1048,7 +1056,7 @@ namespace zetscript{
 
 					if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
 					&& post_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-						EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
+						EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
 					}
 
 					unsigned last_instruction=(int)(symbol_token_node.instructions.size()-1);
@@ -1100,13 +1108,13 @@ namespace zetscript{
 					if(operator_type==Operator::OPERATOR_UNKNOWN){
 						switch(post_self_operation_type){
 						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
-							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"invalid post increment");
+							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"invalid post increment");
 							break;
 						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
-							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"invalid post decrement");
+							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"invalid post decrement");
 							break;
 						default:
-							EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Expected operator");
+							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Expected operator");
 							break;
 						}
 
@@ -1150,18 +1158,18 @@ namespace zetscript{
 
 				if(found == false){
 					size_t len=aux_p-start_expression_str;
-					EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,start_expression_line,"%s at the end of expression %10s...",expected_ending_str.c_str(),zs_strutils::substring(start_expression_str,0,len).c_str());
+					EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,start_expression_line,"%s at the end of expression %10s...",expected_ending_str.c_str(),zs_strutils::substring(start_expression_str,0,len).c_str());
 				}
 			}
 
 			if(aux_p==0){
-				EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,line ,"Unexpected end of file");
+				EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Unexpected end of file");
 			}
 
 			// there's an expression
 			if(expression_tokens.size()>0){
 
-				if(level == 0 && ((properties & EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK) == false)){ // set instruction as start statment...
+				if((properties & EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK) == false){ // set instruction as start statment...
 					eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.begin()+idx_instruction_start_expression,
 							new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
@@ -1173,16 +1181,60 @@ namespace zetscript{
 					,aux_p
 					,line
 					,scope_info
-					,&src_instructions
-					,level
+					,instructions
 					,&expression_tokens
-
 				);
+			}
+
+
+			// last character is a separator so it return increments by 1
+			return aux_p;
+
+error_expression:
+
+			for(unsigned kk=0;kk<symbol_token_node.instructions.size();kk++){
+				delete symbol_token_node.instructions[kk];
+			}
+
+			for(unsigned kk=0;kk<expression_tokens.size();kk++){
+				for(unsigned jj=0;jj<expression_tokens[kk].instructions.size();jj++){
+					delete expression_tokens[kk].instructions[jj];
+				}
+			}
+
+			return NULL;
+
+		}
+
+
+		char * eval_expression(
+				EvalData *eval_data
+				,const char *s
+				, int & line
+				, Scope *scope_info
+				, std::vector<EvalInstruction *> 	* dst_instructions
+				, std::vector<char> expected_ending_char
+				, uint16_t properties
+
+			){
+			std::vector<EvalInstruction *>  ternary_end_jmp;
+			std::vector<EvalInstruction *> 	src_instructions; // we will write all instructions here as aux, and later will assign to dst_instructions
+			char *aux_p=eval_expression_main(
+				eval_data
+				, s
+				, line
+				, scope_info
+				, &src_instructions
+				, expected_ending_char
+				, properties
+			);
+
+			if(aux_p == NULL){
+				return NULL;
 			}
 
 			// ok this is not the end...
 			if(((properties & EVAL_EXPRESSION_PROPERTY_ALLOW_EXPRESSION_SEQUENCE)==true)
-				&& (level == 0)
 				&& (*aux_p == ',')
 			)
 			{
@@ -1198,14 +1250,13 @@ namespace zetscript{
 				do{
 
 					// starting performing expressions
-					aux_p=eval_expression(
+					aux_p=eval_expression_main(
 								eval_data
 								,aux_p
 								, line
 								, scope_info
 								, &exp_instruction[idx] // it's saving to instructions...
 								,{}
-								,0
 								,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK | EVAL_EXPRESSION_PROPERTY_BREAK_ON_ASSIGNMENT_OPERATOR
 							);
 
@@ -1227,7 +1278,7 @@ namespace zetscript{
 						// check left are literals
 						for(int j = 0; j < length_instructions; j++){
 							if(exp_instruction[i][j]->vm_instruction.byte_code != BYTE_CODE_LOAD_TYPE_VARIABLE){
-								EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,start_expression_line,"left sequence assignment it must be literal");
+								EVAL_ERROR(eval_data->current_parsing_file,exp_instruction[i][j],"left sequence assignment it must be literal");
 
 							}
 						}
@@ -1278,24 +1329,8 @@ namespace zetscript{
 					src_instructions.end()
 			);
 
-
-			// last character is a separator so it return increments by 1
 			return aux_p;
 
-error_expression:
-
-			for(unsigned kk=0;kk<symbol_token_node.instructions.size();kk++){
-				delete symbol_token_node.instructions[kk];
-			}
-
-			for(unsigned kk=0;kk<expression_tokens.size();kk++){
-				for(unsigned jj=0;jj<expression_tokens[kk].instructions.size();jj++){
-					delete expression_tokens[kk].instructions[jj];
-				}
-			}
-
-			return NULL;
-
-		}
+		};
 	}
 }

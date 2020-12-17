@@ -357,7 +357,6 @@ namespace zetscript{
 							,scope_info
 							,&eval_data->current_function->instructions
 							,{}
-							,0
 							,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
 						))==NULL){
 							return NULL;
@@ -925,7 +924,6 @@ namespace zetscript{
 						, scope_info
 						,&eval_data->current_function->instructions
 						,{}
-						,0
 						,EVAL_EXPRESSION_PROPERTY_ALLOW_EXPRESSION_SEQUENCE | EVAL_EXPRESSION_PROPERTY_NO_ALLOW_EXPRESSION_SEQUENCE_ASSIGNMENT
 						//,std::vector<char>{';'}
 				))!= NULL){

@@ -12,13 +12,15 @@
 													goto lbl_exit_pop_function;
 
 
-#define EVAL_ERROR_EXPRESSION(file,line,s,...)		eval_data->error=true;\
-													eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-													goto error_expression;\
+#define EVAL_ERROR_EXPRESSION_MAIN(file,line,s,...)		eval_data->error=true;\
+														eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+														goto error_expression;\
+
+
 
 
 #define IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) (Operator::OPERATOR_ASSIGN_ADD<=(c) && (c)<=Operator::OPERATOR_ASSIGN_SHIFT_RIGHT)
-#define IS_OPERATOR_TYPE_ASSIGN(c) (IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) && (c)==OPERATOR_ASSIGN)
+#define IS_OPERATOR_TYPE_ASSIGN(c) (IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) || (c)==Operator::OPERATOR_ASSIGN)
 
 namespace zetscript{
 	namespace eval{

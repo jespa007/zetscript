@@ -25,7 +25,17 @@ namespace zetscript{
 			case BYTE_CODE_XOR:         		return "XOR"; // logic xor
 			case BYTE_CODE_SHL:         		return "SHL"; // shift left
 			case BYTE_CODE_SHR:         		return "SHR"; // shift right
-			case BYTE_CODE_STORE:       		return "STORE"; // mov expression to var
+			case BYTE_CODE_STORE:       		return "STORE"; // =
+			case BYTE_CODE_STORE_ADD:       	return "STORE_ADD"; // +=
+			case BYTE_CODE_STORE_SUB:       	return "STORE_SUB"; // -=
+			case BYTE_CODE_STORE_MUL:       	return "STORE_MUL"; // *=
+			case BYTE_CODE_STORE_DIV:       	return "STORE_DIV"; // /=
+			case BYTE_CODE_STORE_MOD:       	return "STORE_MOD"; // %=
+			case BYTE_CODE_STORE_AND:       	return "STORE_AND"; // &=
+			case BYTE_CODE_STORE_OR: 	      	return "STORE_OR"; // |=
+			case BYTE_CODE_STORE_XOR: 	      	return "STORE_XOR"; // ^=
+			case BYTE_CODE_STORE_SHL: 	      	return "STORE_SHL"; // <<=
+			case BYTE_CODE_STORE_SHR: 	      	return "STORE_SHR"; // >>=
 			case BYTE_CODE_LOAD_TYPE_VARIABLE:	return "LOAD_VAR"; // load type var
 			case BYTE_CODE_LOAD_TYPE_FIND:      return "LOAD_???"; // load to find
 			case BYTE_CODE_LOAD_TYPE_FUNCTION:	return "LOAD_FUN"; // load to find

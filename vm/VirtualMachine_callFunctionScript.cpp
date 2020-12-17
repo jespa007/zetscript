@@ -761,7 +761,7 @@ namespace zetscript{
 							POP_TWO; // op1:dst / op2:src
 						}
 
-						stk_dst=stk_result_op1;
+						stk_dst=stk_result_op2;
 
 						if(stk_dst->properties & MSK_STK_PROPERTY_READ_ONLY){
 							VM_STOP_EXECUTE("Assignment to constant variable");
@@ -785,7 +785,7 @@ namespace zetscript{
 						}
 
 
-						stk_src=stk_result_op2; // store ptr instruction2 op as src_var_value
+						stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value
 
 						// we need primitive stackelement in order to assign...
 						if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObject::VAR_TYPE::OBJECT){
@@ -1086,7 +1086,6 @@ namespace zetscript{
 				POP_TWO;
 				PROCESS_ARITHMETIC_OPERATION(/, BYTE_CODE_METAMETHOD_DIV);
 				continue;
-
 			 case BYTE_CODE_MOD: // /
 				POP_TWO;
 				PROCESS_MOD_OPERATION;

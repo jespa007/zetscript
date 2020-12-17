@@ -817,9 +817,6 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 int main(int argc, char * argv[]) {
 
-
-	printf("vm:%lu\n",sizeof(VirtualMachine));
-
 	int n_test=0;
 
 	ZetScript *zs=new ZetScript();

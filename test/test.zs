@@ -1,7 +1,8 @@
-var a=0>1?0:1
-		
-		
-System::println(a);
+var a=-1
+
+a+=0>1?0:1
+			
+//System::println(a);
 
 /*class A{
 	constructor(){

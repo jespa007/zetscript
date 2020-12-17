@@ -342,7 +342,6 @@ namespace zetscript{
 						, scope_info
 						,&eval_data->current_function->instructions
 						,{}
-						,0
 						,EVAL_EXPRESSION_PROPERTY_ALLOW_EXPRESSION_SEQUENCE
 					);
 				}

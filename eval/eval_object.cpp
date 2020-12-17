@@ -18,7 +18,6 @@ namespace zetscript{
 				, int & line
 				, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions
 				, std::vector<char>expected_ending_char={} // expecting ending char when expression finish (by default not check or 0)
-				, int level=0
 				, uint16_t properties = 0
 		);
 
@@ -77,9 +76,8 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions,int level){
-
-			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+		char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
+			// Inline object: two possibles uses {a:1,b:2}["a"] or {a:1, b:2}.a
 			char *aux_p = (char *)s;
 			std::string symbol_value;
 			int lineSymbol;
@@ -162,7 +160,7 @@ namespace zetscript{
 						 ,scope_info
 						 ,instructions
 						 ,std::vector<char>{}
-						 ,level+1
+				 	 	 ,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK // we want to preserve all values current expression evaluation
 				);
 
 				 // push attr (push a element pair)
@@ -178,8 +176,8 @@ namespace zetscript{
 			return aux_p+1;
 		}
 
-		char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvalInstruction *> *	instructions, int level){
-
+		char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvalInstruction *> *	instructions){
+			// Inline vector: [0,1,2,3][0]+23
 			char * aux_p=NULL;
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
@@ -211,7 +209,8 @@ namespace zetscript{
 						,scope_info
 						,instructions
 						,std::vector<char>{}
-						,level+1);
+						,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK // we want to preserve all values current expression evaluation
+						);
 
 				// vpush
 				instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_VECTOR_ELEMENT));
@@ -226,8 +225,8 @@ namespace zetscript{
 			return aux_p+1;
 		}
 
-		char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions, int level){
-
+		char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
+			// Inline new : (new A(4+5)).toString()
 			char *aux_p = (char *)s;
 			std::string symbol_value;
 			ScriptClass *sc=NULL;
@@ -304,7 +303,7 @@ namespace zetscript{
 									  ,scope_info
 									  ,instructions
 									  ,std::vector<char>{',',')'}
-									  ,level+1
+							  	  	  ,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK // we want to preserve all values current expression evaluation
 							  );
 
 							  if(aux_p == NULL){
