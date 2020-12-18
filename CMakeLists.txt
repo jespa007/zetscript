@@ -1,6 +1,6 @@
 # CMakeLists.txt
 #
-# Copyright 2020 by
+# Copyright 2021 by
 # Jordi Espada
 #
 # Say

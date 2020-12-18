@@ -483,14 +483,13 @@ namespace zetscript{
 				instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
 
 				aux_p=eval_expression_main(
-						eval_data
-						,aux_p+1
-						, line
-						, scope_info
-						, instructions
-						,std::vector<char>{}
-						,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
-
+					eval_data
+					,aux_p+1
+					, line
+					, scope_info
+					, instructions
+					,std::vector<char>{}
+					,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
 				);
 
 				if(*aux_p != ':'){
