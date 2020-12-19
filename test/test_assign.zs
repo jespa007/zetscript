@@ -7,7 +7,18 @@ function ret_expression_sequence_2(){
 }
 
 
-var a,b,c;
+var a=0,b=1,(c,d,e,f=0,1,2,[0,1,2,3]);
+
+/*%a,b,c=0,1,2%
+[a,b,c=0,1,2]
+(a,b,c=0,1,2)
+{a,b,c=0,1,2}
+*a,b,c=0,1,2*
+!a,b,c=0,1,2!
+$a,b,c=0,1,2$
+<a,b,c=0,1,2>*/
+
+
 
 a,b,c=0,1,2
 System::println("Test left == right --> a:{0} b:{1} c:{2}",a,,b,c);

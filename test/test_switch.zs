@@ -3,53 +3,54 @@ function test_switch(a){
 
 	switch(a){
 	default:
-		print("default ("+a+")")
+		System::println("default ("+a+")")
 		break
 	case - 1:
-		print("-1")
+		System::println("-1")
 	case 0:
 	case 1:
-		print("case 0,1")
+		System::println("case 0,1")
 	case 2:
-		print("case 2")
+		System::println("case 2")
 	case 3:
-		print("case 3")
+		System::println("case 3")
 		break
 	case 4:
-		print("case 4")
+		System::println("case 4")
 		break
 	case 5:
-		print("case 5")
+		System::println("case 5")
 		break
 	}
 	
 }
-print("--")
+System::println("--")
 test_switch(-2)
-print("--")
+System::println("--")
 test_switch(-1)
-print("--")
+System::println("--")
 test_switch(0)
-print("--")
+System::println("--")
 test_switch(3)
-print("--")
+System::println("--")
 test_switch(4)
-print("--")
+System::println("--")
 
 var s="hello"
 
 switch(s){
 default:
-	print("default-string")
+	System::println("default-string")
 	break
 case "hello":
-	print("hello1")
+	System::println("hello1")
 	break
 case "bye":
-	print("bye1")
+	System::println("bye1")
 	break
 	
 }
+
 
 
 

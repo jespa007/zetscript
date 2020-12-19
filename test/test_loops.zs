@@ -11,7 +11,6 @@ while(j < 10){
 	print("j:"+j++);
 }
 
-
 print("test do-while:");
 j=0;
 do{

@@ -125,7 +125,6 @@ namespace zetscript{
 			 bool error=false;
 			 bool is_constant_string=false;
 			 unsigned short instruction_properties=0;
-			 token_node->token_type = TokenType::TOKEN_TYPE_UNKNOWN;
 
 			 if((aux=parse_literal_number(
 					 eval_data
@@ -498,7 +497,7 @@ namespace zetscript{
 
 				instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
 
-				ei_ternary_if_jnt->vm_instruction.value_op2=instructions->size()+eval_data->current_function->instructions.size();
+				ei_ternary_if_jnt->vm_instruction.value_op2=instructions->size()+instructions->size();
 
 				aux_p=eval_expression_main(
 					eval_data
@@ -511,7 +510,7 @@ namespace zetscript{
 
 				);
 
-				ei_ternary_else_jmp->vm_instruction.value_op2=instructions->size()+eval_data->current_function->instructions.size();
+				ei_ternary_else_jmp->vm_instruction.value_op2=instructions->size()+instructions->size();
 
 			}
 			//--------------------------------------------------------------
@@ -528,7 +527,7 @@ namespace zetscript{
 		}
 
 		bool is_end_expression(const char *s){
-			 return *s==')' || *s==','||  *s==']'  ||  *s==';' || *s == 0 || *s=='}';
+			 return *s==')' || *s==','||  *s==']' || *s==';' || *s == 0 || *s=='}';
 		}
 
 		int    is_end_expression_or_keyword(const char * s,EvalData *eval_data,int line){
@@ -589,7 +588,7 @@ namespace zetscript{
 			start_expression_str=aux_p;
 			start_expression_line=line;
 
-			int idx_instruction_start_expression=(int)(eval_data->current_function->instructions.size());
+			int idx_instruction_start_expression=(int)instructions->size();
 
 			if(is_end_expression(aux_p) && *aux_p != ';'){
 				EVAL_ERROR(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
@@ -1169,8 +1168,8 @@ namespace zetscript{
 			if(expression_tokens.size()>0){
 
 				if((properties & EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK) == false){ // set instruction as start statment...
-					eval_data->current_function->instructions.insert(
-							eval_data->current_function->instructions.begin()+idx_instruction_start_expression,
+					instructions->insert(
+							instructions->begin()+idx_instruction_start_expression,
 							new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
 					);
 				}

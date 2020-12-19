@@ -169,7 +169,7 @@ namespace zetscript{
 			return new_scope;
 		}
 
-		void inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value){
+		/*void inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value){
 
 			if(idx_end_instruction>(int)eval_data->current_function->instructions.size()){
 				THROW_RUNTIME_ERROR("idx_end_instruction out of bounds ");
@@ -189,7 +189,7 @@ namespace zetscript{
 					break;
 				}
 			}
-		}
+		}*/
 
 		void eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start){
 			if(scope->n_registered_symbols_as_variables > 0){ // if there's local symbols insert push/pop scope for there symbols
@@ -199,7 +199,7 @@ namespace zetscript{
 							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope)
 					);
 
-					inc_jmp_codes(eval_data,idx_instruction_start,(int)(eval_data->current_function->instructions.size()),1);
+					//inc_jmp_codes(eval_data,idx_instruction_start,(int)(eval_data->current_function->instructions.size()),1);
 
 					// and finally insert pop scope
 					eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_POP_SCOPE,0));
@@ -272,7 +272,7 @@ namespace zetscript{
 					return aux;
 				}else if(keyw != Keyword::KEYWORD_UNKNOWN && keyw < KEYWORDS_WITHIN_EXPRESSIONS){ // it cuts current expression to link breaks...
 
-					if(((keyw == Keyword::KEYWORD_BREAK) || (keyw == Keyword::KEYWORD_CASE)) && return_on_break_or_case){
+					if(((keyw == Keyword::KEYWORD_BREAK) || (keyw == Keyword::KEYWORD_CASE)|| (keyw == Keyword::KEYWORD_DEFAULT)) && return_on_break_or_case){
 						return aux;
 					}
 

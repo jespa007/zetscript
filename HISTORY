@@ -178,6 +178,8 @@ Date: XX-12-2020
 > #236 Implement sequence expressions
 > #237 Optimize size Object structure 
 > #238 Change behaviour save vars 
+> #239 change absolute jmp offset by relative jmp offset 
+> #240 Implement Variable Assing Multiple (aka vam) 
  
 
 

@@ -378,9 +378,10 @@ namespace zetscript{
 
 				}while(*aux_p == ','); // is new variable
 
-				if(*aux_p == ';'){
+				// do not eat ';' because for it has to check
+				/*if(*aux_p == ';'){
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-				}
+				}*/
 
 				return aux_p;
 			}
@@ -1154,6 +1155,7 @@ namespace zetscript{
 					// insert instruction if evaluated expression
 					eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JNT));
 					if_jnt=ei_aux;
+					int idx_start_block=eval_data->current_function->instructions.size();
 					//ei_jmps.push_back(ei_aux);
 
 					IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
@@ -1167,6 +1169,8 @@ namespace zetscript{
 						,scope_info
 					);
 
+					int idx_end_block=eval_data->current_function->instructions.size();
+
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					bool else_key = false;
@@ -1174,13 +1178,17 @@ namespace zetscript{
 						else_key = (key_w == Keyword::KEYWORD_ELSE);
 					}
 
-					if(!else_key){ // it finish if-else
-						if_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size();
-					}else{ // do else
+					if_jnt->vm_instruction.value_op2=idx_end_block-idx_start_block+1;
+
+					if(else_key){ // it finish if-else
+
 
 						// we should insert jmp to end conditional chain if/else...
-						eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JMP));
-						if_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size();
+						eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(
+								BYTE_CODE_JMP
+								,ZS_IDX_UNDEFINED
+								,eval_data->current_function->instructions.size()
+								));						if_jnt->vm_instruction.value_op2+=1; // sum +1 because we inserted a jmp for else
 
 						else_end_jmp.push_back(ei_aux);
 
@@ -1217,7 +1225,8 @@ namespace zetscript{
 				}while(!end); // loop
 
 				for(unsigned i=0; i < else_end_jmp.size(); i++){
-					else_end_jmp[i]->vm_instruction.value_op2=eval_data->current_function->instructions.size();
+					Instruction *ins=&else_end_jmp[i]->vm_instruction;
+					ins->value_op2=eval_data->current_function->instructions.size()-ins->value_op2;
 				}
 				return aux_p;
 			}
@@ -1411,9 +1420,10 @@ namespace zetscript{
 			Scope *scope_case=NULL;
 			std::string val;
 			Keyword key_w;//,key_w2;
-			int idx_start_switch;
+			std::vector<EvalInstruction *> 	switch_expression; // stores all conditional instructions at begin
 			std::vector<EvalInstruction *> 	ei_cases; // stores all conditional instructions at begin
 			std::vector<EvalInstruction *>  ei_break_jmps; // breaks or if condition not satisfies nothing (there's no default)
+			EvalInstruction *jmp_default = NULL;
 
 			// check for keyword ...
 			key_w = is_keyword(aux_p);
@@ -1432,7 +1442,7 @@ namespace zetscript{
 							,aux_p
 							,line
 							,scope_info
-							,&eval_data->current_function->instructions
+							,&switch_expression
 							,std::vector<char>{')'}
 						);
 
@@ -1441,9 +1451,9 @@ namespace zetscript{
 						if(*aux_p == '{'){
 
 							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-
-							idx_start_switch = (int)(eval_data->current_function->instructions.size());
-							int n_default=0;
+							jmp_default=NULL;
+							int idx_start_instruction = (int)(eval_data->current_function->instructions.size());
+							//int n_default=0;
 
 							while(*aux_p != '}' && *aux_p != 0){
 
@@ -1452,9 +1462,9 @@ namespace zetscript{
 								key_w = is_keyword(aux_p);
 								if(key_w == KEYWORD_CASE){
 
-									TokenNode token_node;
+									TokenNode token_symbol;
 									PreOperator pre_operator=PreOperator::PRE_OPERATOR_UNKNOWN;
-									int idx_current_instruction=(int)(eval_data->current_function->instructions.size());
+
 
 									// ignore case
 									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
@@ -1469,13 +1479,13 @@ namespace zetscript{
 										eval_data
 										,aux_p
 										,line
-										,&token_node
+										,&token_symbol
 										,pre_operator
 										,PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
 									);
 
-									if(token_node.token_type != TOKEN_TYPE_LITERAL){
-										EVAL_ERROR(eval_data->current_parsing_file,line,"'case' only accepts literals");
+									if(token_symbol.token_type != TOKEN_TYPE_LITERAL){
+										EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"'case' only accepts literals");
 									}
 
 									/*std::vector<EvalInstruction *> case_instructions={
@@ -1487,28 +1497,34 @@ namespace zetscript{
 									)};*/
 
 									// insert a pair of instructions...
-									ei_cases.push_back(token_node.instructions[0]);
+									ei_cases.push_back(token_symbol.instructions[0]);
 									ei_cases.push_back(new EvalInstruction(
 											BYTE_CODE_JE
 											,ZS_IDX_UNDEFINED
-											,idx_current_instruction
+											,((int)(eval_data->current_function->instructions.size()))-idx_start_instruction	 // offset
 									));
 
 								}else if(key_w == KEYWORD_DEFAULT){
-									if(n_default > 0){
-										EVAL_ERROR(eval_data->current_parsing_file,line,"there's an already 'default' case");
+									if(jmp_default!=NULL){
+										EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"there's an already 'default' case");
 									}
 
+									jmp_default=new EvalInstruction(
+											BYTE_CODE_JMP
+											,ZS_IDX_UNDEFINED
+											,((int)(eval_data->current_function->instructions.size()))-idx_start_instruction+1	 // offset
+									);
+
 									is_default=true;
-									n_default++;
+									//n_default++;
 									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 								}else{
-									EVAL_ERROR(eval_data->current_parsing_file,line,"Expected 'case' or 'default' keyword");
+									EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"Expected 'case' or 'default' keyword");
 								}
 
 								if(*aux_p!=':'){
-									EVAL_ERROR(eval_data->current_parsing_file,line,"Expected ':' ");
+									EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"Expected ':' ");
 								}
 
 								// ignore :
@@ -1527,48 +1543,148 @@ namespace zetscript{
 								);
 
 								if((is_keyword(aux_p) == Keyword::KEYWORD_BREAK)){ // it cuts current expression to link breaks...
+
 									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[Keyword::KEYWORD_BREAK].str),line);
-									EvalInstruction *ei_break_jmp=new EvalInstruction(BYTE_CODE_JMP);
-									eval_data->current_function->instructions.push_back(ei_break_jmp);
-									ei_break_jmps.push_back(ei_break_jmp);
+
+									// ignore all ;
+									while(*aux_p==';' && *aux_p != 0){
+										IGNORE_BLANKS(aux_p,eval_data,aux_p+1, line);
+									}
+
+									if(*aux_p != '}'){ // not end insert jmp
+
+
+										EvalInstruction *ei_break_jmp=new EvalInstruction(
+												BYTE_CODE_JMP
+												,ZS_IDX_UNDEFINED
+												,((int)(eval_data->current_function->instructions.size()))-idx_start_instruction
+										);
+										eval_data->current_function->instructions.push_back(ei_break_jmp);
+										ei_break_jmps.push_back(ei_break_jmp);
+									}
+
+
 								}else if(is_default){
-									EVAL_ERROR(eval_data->current_parsing_file,line,"'default' case needs to have a 'break' at the end");
+									EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"'default' needs a 'break' at the end");
 								}
 
 								IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 							}
 
-							int idx_current_instruction=(int)(eval_data->current_function->instructions.size());
-
 							if(*aux_p != '}'){
-								EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '}' switch");
+								EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"Expected '}' switch");
 							}
 
-							// insert all cases found first
-							eval_data->current_function->instructions.insert(
-									eval_data->current_function->instructions.begin()+idx_start_switch,
-									ei_cases.begin(),
-									ei_cases.end()
-							);
+							// end instruction
+							int offset_end_instruction=((int)(eval_data->current_function->instructions.size()))-idx_start_instruction;
 
-							for(unsigned i=0; i < ei_break_jmps.size(); i++){
-								ei_break_jmps[i]->vm_instruction.value_op2=idx_current_instruction;
+							// delete last jmp because has no sense...
+							/*if(eval_data->current_function->instructions.size() > 0){
+								EvalInstruction *eval_instruction=eval_data->current_function->instructions[eval_data->current_function->instructions.size()-1];
+								if(eval_instruction->vm_instruction.byte_code == BYTE_CODE_JMP){
+									eval_data->current_function->instructions.pop_back();
+									delete eval_instruction;
+								}
+							}*/
+
+							if(offset_end_instruction > 0 && ei_cases.size()> 0){ // there's conditions to manage
+
+								EvalInstruction *jmp_after_je_cases;
+								int size_ei_cases=ei_cases.size();
+								int size_condition = switch_expression.size();
+								int size_ei_cases_and_condition = ei_cases.size()+size_condition+1; // +1 for jmp default if there's no default
+								offset_end_instruction+=size_ei_cases_and_condition;
+
+								if(jmp_default == NULL){ // no default found so, we insert a default jmp to the end
+									jmp_default=new EvalInstruction(
+									BYTE_CODE_JMP
+									,ZS_IDX_UNDEFINED
+									,offset_end_instruction-size_ei_cases-size_condition
+									);
+								}/*else{
+									jmp_default->vm_instruction.value_op2+=1; // jmp itself
+								}*/
+								//ei_cases.push_back(jmp_default);
+
+								// 1. Insert condition
+								eval_data->current_function->instructions.insert(
+										eval_data->current_function->instructions.begin()+idx_start_instruction,
+										switch_expression.begin(),
+										switch_expression.end()
+								);
+
+								// 2. all cases found first
+								eval_data->current_function->instructions.insert(
+										eval_data->current_function->instructions.begin()+idx_start_instruction+size_condition,
+										ei_cases.begin(),
+										ei_cases.end()
+								);
+
+								// 3. insert jmp
+								eval_data->current_function->instructions.insert(
+										eval_data->current_function->instructions.begin()+idx_start_instruction+size_condition+size_ei_cases,
+										jmp_default
+								);
+
+
+								//int size_body_switch=idx_end_instruction-idx_start_instruction;
+								// update je-cases (multiple)and jmps
+								for(unsigned i=0; i < ei_cases.size(); i+=2){ // to discard end jmp and += 2 because is x2 multiple
+									Instruction *ins=&ei_cases[i+1]->vm_instruction; // load je
+									ins->value_op2+=size_ei_cases-i; // --je minus distance
+								}
+
+
+								for(unsigned i=0; i < ei_break_jmps.size(); i++){
+									Instruction *ins=&ei_break_jmps[i]->vm_instruction;
+									ins->value_op2=offset_end_instruction-size_ei_cases_and_condition-ins->value_op2; // -1 for jmp itself
+								}
+
+							}else{
+
+								// deallocate condition
+								for(unsigned i=0; i < switch_expression.size(); i++){
+									delete switch_expression[i];
+								}
+								switch_expression.clear();
+
+								// deallocate all cases
+								for(unsigned i=0; i < ei_cases.size(); i++){
+									delete ei_cases[i];
+								}
+								ei_cases.clear();
+
+								if(jmp_default != NULL){
+									delete jmp_default;
+								}
+								jmp_default=NULL;
 							}
 
 
 							// update all jmp acording number of cases found...
-							inc_jmp_codes(eval_data, idx_start_switch, idx_current_instruction, (int)(ei_cases.size()));
+							//inc_jmp_codes(eval_data, idx_start_switch, idx_current_instruction, (int)(ei_cases.size()));
 
 							return aux_p+1;
 						}
 						else{
-							EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '{' begin switch block");
+							EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"Expected '{' begin switch block");
 						}
 				}
 				else{
-					EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '(' switch ");
+					EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"Expected '(' switch ");
 				}
+			}
+
+eval_keyword_switch_error:
+
+			for(unsigned i=0; i < switch_expression.size(); i++){
+				delete switch_expression[i];
+			}
+			switch_expression.clear();
+
+			if(jmp_default!=NULL){
+				delete jmp_default;
 			}
 
 			return NULL;

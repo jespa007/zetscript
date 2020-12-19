@@ -1161,7 +1161,7 @@ namespace zetscript{
 				}
 				continue;
 			case BYTE_CODE_JE:  // especial j for switch
-				READ_TWO_POP_ONE;
+				READ_TWO_POP_ONE; // reads switch value and case value
 				PROCESS_COMPARE_OPERATION(==, BYTE_CODE_METAMETHOD_EQU);
 				POP_ONE; // retrieve result...
 				if(stk_result_op1->stk_value != 0){ // if true goto

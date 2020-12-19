@@ -16,7 +16,9 @@
 														eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 														goto error_expression;\
 
-
+#define EVAL_ERROR_KEYWORD_SWITCH(file,line,s,...)		eval_data->error=true;\
+														eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+														goto eval_keyword_switch_error;\
 
 
 #define IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) (Operator::OPERATOR_ASSIGN_ADD<=(c) && (c)<=Operator::OPERATOR_ASSIGN_SHIFT_RIGHT)
@@ -271,8 +273,8 @@ namespace zetscript{
 			ScriptClassFactory 				* 		script_class_factory;
 			EvalFunction					* 		current_function;
 			std::vector<EvalFunction *> 	  		functions;
-			std::vector<EvalInstruction *>			break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
-			std::vector<EvalInstruction *>			continue_jmp_instructions; // number of continue_jmp_instructions collected (should managed only on loops)
+		//	std::vector<EvalInstruction *>			break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
+		//	std::vector<EvalInstruction *>			continue_jmp_instructions; // number of continue_jmp_instructions collected (should managed only on loops)
 			const char 						* 		current_parsing_file;
 			bool							  		error;
 			std::string								error_str;
@@ -382,7 +384,7 @@ namespace zetscript{
 			bool end = false;
 			while(!end){
 				end = true;
-				while(*aux_p!=0 && ((*aux_p==' ')  || (*aux_p=='\t'))) aux_p++;
+				while(*aux_p!=0 && ((*aux_p==' ') || (*aux_p=='\t'))) aux_p++;
 
 				if( is_comment_single_line(aux_p)) // ignore line
 					while(*aux_p!=0 && *aux_p!='\n') aux_p++;
