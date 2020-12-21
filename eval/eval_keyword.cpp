@@ -942,20 +942,16 @@ namespace zetscript{
 		//
 		// LOOPS
 		//
-		void eval_new_loop_jmp_continue(EvalData *eval_data){
+		/*void eval_new_loop_jmp_continue(EvalData *eval_data){
 			// PRE: instruction have to set current offset in jmp
 			int idx_current=eval_data->loop_break_continue_info.size()-1;
 			if(idx_current >= 0){
 				LoopBreakContinueInfo * loop_break_continue_info = &eval_data->loop_break_continue_info[idx_current];
 				eval_data->current_function->instructions.push_back(
-						/*switch(0){
 
-						};*/
 				);
 
-				/*eval_data->current_function->switch_loop_continue_jmp_instructions[idx_current].push_back(
 
-				);*/
 			}
 
 		}
@@ -991,6 +987,20 @@ namespace zetscript{
 				}
 				//eval_data->continue_jmp_instructions.clear();
 			}
+		}*/
+
+		void link_loop_break_continues(EvalData *eval_data,int idx_start){
+
+			int idx_end_instruction = eval_data->current_function->instructions.size();
+			for(int i=idx_start; i < idx_end_instruction;i++){
+				Instruction *ins=&eval_data->current_function->instructions[i]->vm_instruction;
+				if(ins->value_op2 == ZS_IDX_INSTRUCTION_JMP_BREAK){
+					ins->value_op2=idx_end_instruction-i;
+				}else if(ins->value_op2 == ZS_IDX_INSTRUCTION_JMP_CONTINUE){
+					ins->value_op2=idx_start-i;
+				}
+			}
+
 		}
 
 		char *eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
@@ -1007,8 +1017,14 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				// insert jmp instruction
-				eval_new_loop_jmp_break(eval_data);
-
+				//eval_new_loop_jmp_break(eval_data);
+				eval_data->current_function->instructions.push_back(
+						new EvalInstruction(
+								BYTE_CODE_JMP,
+								ZS_IDX_UNDEFINED,
+								ZS_IDX_INSTRUCTION_JMP_BREAK
+						)
+				);
 			}
 			return aux_p;
 		}
@@ -1026,7 +1042,13 @@ namespace zetscript{
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
-				eval_new_loop_jmp_continue(eval_data);
+				eval_data->current_function->instructions.push_back(
+						new EvalInstruction(
+								BYTE_CODE_JMP,
+								ZS_IDX_UNDEFINED,
+								ZS_IDX_INSTRUCTION_JMP_CONTINUE
+						)
+				);
 
 			}
 			return aux_p;
@@ -1094,10 +1116,11 @@ namespace zetscript{
 				ei_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size();
 
 				// catch all breaks in the while...
-				link_breaks(eval_data);
+				//link_breaks(eval_data);
 
 				// catch all breaks in the while...
-				link_continues(eval_data,idx_instruction_conditional_while);
+				//link_continues(eval_data,idx_instruction_conditional_while);
+				link_loop_break_continues(eval_data,idx_instruction_conditional_while);
 
 				return aux_p;
 			}
@@ -1179,10 +1202,11 @@ namespace zetscript{
 				eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JT,ZS_IDX_UNDEFINED,idx_do_while_start));
 
 				// catch all breaks in the while...
-				link_breaks(eval_data);
+				//link_breaks(eval_data);
 
 				// catch all continues and evaluates bottom...
-				link_continues(eval_data,idx_do_while_conditional);
+				link_loop_break_continues(eval_data,idx_do_while_start);
+
 
 				return end_expr+1;
 			}
@@ -1341,8 +1365,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					// catch all continues and set all jmps after processing block but before post operation...
-					link_continues(eval_data,(int)(eval_data->current_function->instructions.size()));
+					//link_continues(eval_data,(int)(eval_data->current_function->instructions.size()));
 
 					// insert post operations...
 					eval_data->current_function->instructions.insert(
@@ -1353,12 +1376,16 @@ namespace zetscript{
 
 					// insert jmp instruction to begin condition for...
 					eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JMP,ZS_IDX_UNDEFINED,idx_instruction_for_start));
+					int idx_end_instruction = (int)eval_data->current_function->instructions.size();
 
 					// update jnt instruction to jmp after jmp instruction...
-					ei_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size();
+					ei_jnt->vm_instruction.value_op2=idx_end_instruction;
 
 					// catch all breaks in the while...
-					link_breaks(eval_data);
+					//link_breaks(eval_data);
+					// catch all continues and set all jmps after processing block but before post operation...
+					link_loop_break_continues(eval_data,idx_instruction_for_start);
+
 
 					// true: We treat declared variables into for as another scope.
 					eval_check_scope(eval_data,new_scope,idx_instruction_start_for);
@@ -1619,7 +1646,7 @@ namespace zetscript{
 										EvalInstruction *ei_break_jmp=new EvalInstruction(
 												BYTE_CODE_JMP
 												,ZS_IDX_UNDEFINED
-												,((int)(eval_data->current_function->instructions.size()))-idx_start_instruction
+												,ZS_IDX_INSTRUCTION_JMP_BREAK
 										);
 										eval_data->current_function->instructions.push_back(ei_break_jmp);
 										ei_break_jmps.push_back(ei_break_jmp);
@@ -1686,9 +1713,11 @@ namespace zetscript{
 								}
 
 
-								for(unsigned i=0; i < ei_break_jmps.size(); i++){
-									Instruction *ins=&ei_break_jmps[i]->vm_instruction;
-									ins->value_op2=offset_end_instruction-size_ei_cases_and_condition-ins->value_op2; // -1 for jmp itself
+								for(unsigned i=idx_start_instruction; i < eval_data->current_function->instructions.size();i++){
+									Instruction *ins=eval_data->current_function->instructions[i]->vm_instruction;
+									if(ins->value_op2==ZS_IDX_INSTRUCTION_JMP_BREAK){
+										ins->value_op2=offset_end_instruction-size_ei_cases_and_condition-i;
+									}
 								}
 
 							}else{

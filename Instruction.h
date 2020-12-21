@@ -11,6 +11,8 @@
 #define ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR				-3
 #define ZS_IDX_INSTRUCTION_OP2_THIS						-4
 #define ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND	-5
+#define ZS_IDX_INSTRUCTION_JMP_BREAK					-6
+#define ZS_IDX_INSTRUCTION_JMP_CONTINUE					-7
 
 
 // properties shared by compiler + instruction ..
