@@ -938,25 +938,98 @@ namespace zetscript{
 			return NULL;
 		}
 
-		void link_breaks(EvalData *eval_data){
+		//------------------------------------------------------------------------------------------------------------------------------------------
+		//
+		// LOOPS
+		//
+		void eval_new_loop_jmp_continue(EvalData *eval_data){
+			// PRE: instruction have to set current offset in jmp
+			int idx_current=eval_data->loop_break_continue_info.size()-1;
+			if(idx_current >= 0){
+				LoopBreakContinueInfo * loop_break_continue_info = &eval_data->loop_break_continue_info[idx_current];
+				eval_data->current_function->instructions.push_back(
+						/*switch(0){
+
+						};*/
+				);
+
+				/*eval_data->current_function->switch_loop_continue_jmp_instructions[idx_current].push_back(
+
+				);*/
+			}
+
+		}
+
+		void eval_new_loop_jmp_break(EvalData *eval_data){
+			// PRE: instruction have to set current offset in jmp
+			int idx_current=eval_data->loop_break_continue_info.size()-1;
+			if(idx_current >= 0){
+				LoopBreakContinueInfo * loop_break_continue_info =  &eval_data->loop_break_continue_info[idx_current];
+				.push_back(
+				);
+			}
+
+		}
+
+		void pop_jmp_breaks(EvalData *eval_data){
 			// capture breaks and link jmp positions...
-			if(eval_data->break_jmp_instructions.size() > 0){ // capture break_jmp_instructions...
-				size_t idx_instruction = eval_data->current_function->instructions.size();
-				for(unsigned i=0; i < eval_data->break_jmp_instructions.size(); i++){
-					eval_data->break_jmp_instructions[i]->vm_instruction.value_op2=idx_instruction;
+			if(eval_data->switch_loop_break_jmp_instructions.size() > 0){ // capture break_jmp_instructions...
+				std::vector<EvalInstruction *> instructions= eval_data->current_function->switch_loop_break_jmp_instructions.pop_back();
+				for(unsigned i=0; i < instructions.size(); i++){
+					instructions[i]->vm_instruction.value_op2=idx_instruction;
 				}
-				eval_data->break_jmp_instructions.clear();
+				//eval_data->break_jmp_instructions.clear();
 			}
 		}
 
-		void link_continues(EvalData *eval_data, unsigned idx_instruction){
+		void pop_jmp_continues(EvalData *eval_data, unsigned idx_instruction){
 			// capture breaks and link jmp positions...
-			if(eval_data->continue_jmp_instructions.size() > 0){ // capture breaks...
-				for(unsigned i=0; i < eval_data->continue_jmp_instructions.size(); i++){
-					eval_data->continue_jmp_instructions[i]->vm_instruction.value_op2=idx_instruction;
+			if(eval_data->loop_continue_jmp_instructions.size() > 0){ // capture breaks...
+				std::vector<EvalInstruction *> instructions= eval_data->current_function->loop_continue_jmp_instructions.pop_back();
+				for(unsigned i=0; i < instructions.size(); i++){
+					instructions[i]->vm_instruction.value_op2=idx_instruction;
 				}
-				eval_data->continue_jmp_instructions.clear();
+				//eval_data->continue_jmp_instructions.clear();
 			}
+		}
+
+		char *eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
+			char *aux_p = (char *)s;
+			Keyword key_w;
+
+			key_w = is_keyword(aux_p);
+
+			if(key_w == Keyword::KEYWORD_BREAK){
+
+				int last_line_ok = line;
+				//EvalInstruction *jmp_instruction;
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+
+				// insert jmp instruction
+				eval_new_loop_jmp_break(eval_data);
+
+			}
+			return aux_p;
+		}
+
+		char *eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
+			char *aux_p = (char *)s;
+			Keyword key_w;
+
+			key_w = is_keyword(aux_p);
+
+			if(key_w == Keyword::KEYWORD_CONTINUE){
+
+				int last_line_ok = line;
+				EvalInstruction *jmp_instruction;
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+
+				eval_new_loop_jmp_continue(eval_data);
+
+			}
+			return aux_p;
 		}
 
 		char * eval_keyword_while(EvalData *eval_data,const char *s,int & line, Scope *scope_info){
@@ -1116,122 +1189,6 @@ namespace zetscript{
 			return NULL;
 		}
 
-		char * eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
-
-			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-			char *aux_p = (char *)s;
-			char *end_expr;//,*start_symbol;
-			Keyword key_w;
-			//std::vector<EvalInstruction *> ei_jmps;
-			EvalInstruction *if_jnt;
-			std::vector<EvalInstruction *> else_end_jmp;
-			EvalInstruction *ei_aux;
-			bool end=true;
-
-			// check for keyword ...
-			key_w = is_keyword(aux_p);
-
-			if(key_w == Keyword::KEYWORD_IF){
-				do{
-					end=true;
-					//ei_jmps.clear();
-					aux_p += strlen(eval_data_keywords[key_w].str);
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-					if(*aux_p != '('){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '(' if");
-					}
-
-					// eval conditional expression
-					end_expr = eval_expression(
-							eval_data
-							,aux_p+1
-							,line
-							,scope_info
-							,&eval_data->current_function->instructions
-							,std::vector<char>{')'}
-					);
-
-					// insert instruction if evaluated expression
-					eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JNT));
-					if_jnt=ei_aux;
-					int idx_start_block=eval_data->current_function->instructions.size();
-					//ei_jmps.push_back(ei_aux);
-
-					IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
-					if(*aux_p != '{'){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Expected if-block open block ('{')");
-
-					}
-
-					aux_p=eval_block(eval_data,aux_p
-						,line
-						,scope_info
-					);
-
-					int idx_end_block=eval_data->current_function->instructions.size();
-
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-					bool else_key = false;
-					if((key_w = is_keyword(aux_p)) != Keyword::KEYWORD_UNKNOWN){
-						else_key = (key_w == Keyword::KEYWORD_ELSE);
-					}
-
-					if_jnt->vm_instruction.value_op2=idx_end_block-idx_start_block+1;
-
-					if(else_key){ // it finish if-else
-
-
-						// we should insert jmp to end conditional chain if/else...
-						eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(
-								BYTE_CODE_JMP
-								,ZS_IDX_UNDEFINED
-								,eval_data->current_function->instructions.size()
-								));						if_jnt->vm_instruction.value_op2+=1; // sum +1 because we inserted a jmp for else
-
-						else_end_jmp.push_back(ei_aux);
-
-						aux_p += strlen(eval_data_keywords[key_w].str);
-
-						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-						bool if_key = false;
-						if((key_w = is_keyword(aux_p)) != Keyword::KEYWORD_UNKNOWN){
-							if_key = (key_w == Keyword::KEYWORD_IF);
-						}
-
-						if(if_key){ // else if
-							end=false;
-						}else{ // only else, expect {
-
-							if(*aux_p != '{'){
-								EVAL_ERROR(eval_data->current_parsing_file,line,"Expected else-block open block ('{')");
-							}
-
-							// eval else block
-							aux_p=eval_block(
-									eval_data
-									,aux_p
-									,line
-									,scope_info
-							);
-
-						}
-
-
-					}
-
-				}while(!end); // loop
-
-				for(unsigned i=0; i < else_end_jmp.size(); i++){
-					Instruction *ins=&else_end_jmp[i]->vm_instruction;
-					ins->value_op2=eval_data->current_function->instructions.size()-ins->value_op2;
-				}
-				return aux_p;
-			}
-			return NULL;
-		}
 
 		char * eval_keyword_for(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 
@@ -1415,6 +1372,119 @@ namespace zetscript{
 			return NULL;
 		}
 
+		char * eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+
+			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+			char *aux_p = (char *)s;
+			char *end_expr;//,*start_symbol;
+			Keyword key_w;
+			//std::vector<EvalInstruction *> ei_jmps;
+			EvalInstruction *if_jnt;
+			std::vector<EvalInstruction *> else_end_jmp;
+			EvalInstruction *ei_aux;
+			bool end=true;
+
+			// check for keyword ...
+			key_w = is_keyword(aux_p);
+
+			if(key_w == Keyword::KEYWORD_IF){
+				do{
+					end=true;
+					//ei_jmps.clear();
+					aux_p += strlen(eval_data_keywords[key_w].str);
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					if(*aux_p != '('){
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '(' if");
+					}
+
+					// eval conditional expression
+					end_expr = eval_expression(
+							eval_data
+							,aux_p+1
+							,line
+							,scope_info
+							,&eval_data->current_function->instructions
+							,std::vector<char>{')'}
+					);
+
+					// insert instruction if evaluated expression
+					eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JNT));
+					if_jnt=ei_aux;
+					int idx_start_block=eval_data->current_function->instructions.size();
+					//ei_jmps.push_back(ei_aux);
+
+					IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
+					if(*aux_p != '{'){
+						EVAL_ERROR(eval_data->current_parsing_file,line,"Expected if-block open block ('{')");
+
+					}
+
+					aux_p=eval_block(eval_data,aux_p
+						,line
+						,scope_info
+					);
+
+					int idx_end_block=eval_data->current_function->instructions.size();
+
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					bool else_key = false;
+					if((key_w = is_keyword(aux_p)) != Keyword::KEYWORD_UNKNOWN){
+						else_key = (key_w == Keyword::KEYWORD_ELSE);
+					}
+
+					if_jnt->vm_instruction.value_op2=idx_end_block-idx_start_block+1;
+
+					if(else_key){ // it finish if-else
+
+
+						// we should insert jmp to end conditional chain if/else...
+						eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(
+								BYTE_CODE_JMP
+								,ZS_IDX_UNDEFINED
+								,eval_data->current_function->instructions.size()
+								));						if_jnt->vm_instruction.value_op2+=1; // sum +1 because we inserted a jmp for else
+
+						else_end_jmp.push_back(ei_aux);
+
+						aux_p += strlen(eval_data_keywords[key_w].str);
+
+						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+						bool if_key = false;
+						if((key_w = is_keyword(aux_p)) != Keyword::KEYWORD_UNKNOWN){
+							if_key = (key_w == Keyword::KEYWORD_IF);
+						}
+
+						if(if_key){ // else if
+							end=false;
+						}else{ // only else, expect {
+
+							if(*aux_p != '{'){
+								EVAL_ERROR(eval_data->current_parsing_file,line,"Expected else-block open block ('{')");
+							}
+
+							// eval else block
+							aux_p=eval_block(
+									eval_data
+									,aux_p
+									,line
+									,scope_info
+							);
+						}
+					}
+				}while(!end); // loop
+
+				for(unsigned i=0; i < else_end_jmp.size(); i++){
+					Instruction *ins=&else_end_jmp[i]->vm_instruction;
+					ins->value_op2=eval_data->current_function->instructions.size()-ins->value_op2;
+				}
+				return aux_p;
+			}
+			return NULL;
+		}
+
 		char * eval_keyword_switch(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 			char *aux_p = (char *)s;
 			Scope *scope_case=NULL;
@@ -1487,14 +1557,6 @@ namespace zetscript{
 									if(token_symbol.token_type != TOKEN_TYPE_LITERAL){
 										EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"'case' only accepts literals");
 									}
-
-									/*std::vector<EvalInstruction *> case_instructions={
-											token_node.instructions[0]
-											,new EvalInstruction(
-											BYTE_CODE_JE
-											,ZS_IDX_UNDEFINED
-											,idx_current_instruction
-									)};*/
 
 									// insert a pair of instructions...
 									ei_cases.push_back(token_symbol.instructions[0]);
@@ -1579,15 +1641,6 @@ namespace zetscript{
 							// end instruction
 							int offset_end_instruction=((int)(eval_data->current_function->instructions.size()))-idx_start_instruction;
 
-							// delete last jmp because has no sense...
-							/*if(eval_data->current_function->instructions.size() > 0){
-								EvalInstruction *eval_instruction=eval_data->current_function->instructions[eval_data->current_function->instructions.size()-1];
-								if(eval_instruction->vm_instruction.byte_code == BYTE_CODE_JMP){
-									eval_data->current_function->instructions.pop_back();
-									delete eval_instruction;
-								}
-							}*/
-
 							if(offset_end_instruction > 0 && ei_cases.size()> 0){ // there's conditions to manage
 
 								EvalInstruction *jmp_after_je_cases;
@@ -1602,9 +1655,8 @@ namespace zetscript{
 									,ZS_IDX_UNDEFINED
 									,offset_end_instruction-size_ei_cases-size_condition
 									);
-								}/*else{
-									jmp_default->vm_instruction.value_op2+=1; // jmp itself
-								}*/
+								}
+
 								//ei_cases.push_back(jmp_default);
 
 								// 1. Insert condition
@@ -1627,8 +1679,6 @@ namespace zetscript{
 										jmp_default
 								);
 
-
-								//int size_body_switch=idx_end_instruction-idx_start_instruction;
 								// update je-cases (multiple)and jmps
 								for(unsigned i=0; i < ei_cases.size(); i+=2){ // to discard end jmp and += 2 because is x2 multiple
 									Instruction *ins=&ei_cases[i+1]->vm_instruction; // load je
@@ -1661,10 +1711,6 @@ namespace zetscript{
 								jmp_default=NULL;
 							}
 
-
-							// update all jmp acording number of cases found...
-							//inc_jmp_codes(eval_data, idx_start_switch, idx_current_instruction, (int)(ei_cases.size()));
-
 							return aux_p+1;
 						}
 						else{
@@ -1690,72 +1736,6 @@ eval_keyword_switch_error:
 			return NULL;
 		}
 
-		/*ConstantValue * perform_const_operation(EvalData *eval_data,int line,ByteCode byte_code,ConstantValue *stk_op1, ConstantValue *stk_op2){
-
-			float op2=0;
-			float result_op=0;
-			ConstantValue *stk_int_calc_result=NULL;
-			const char *file=eval_data->current_parsing_file;
-			//int line=(*it)->instruction_source_info.line;
-
-			if(stk_op1->properties & MSK_STK_PROPERTY_ZS_INT){
-				result_op=((zs_int)stk_op1->stk_value);
-			}else if(stk_op1->properties & MSK_STK_PROPERTY_FLOAT){
-				result_op=*((float *)(&stk_op1->stk_value));
-			}else{
-				EVAL_ERROR(file,line,"Constant operations should be number");
-			}
-
-			if(stk_op2->properties & MSK_STK_PROPERTY_ZS_INT){
-				op2=((zs_int)stk_op2->stk_value);
-			}else if(stk_op2->properties & MSK_STK_PROPERTY_FLOAT){
-				op2=*(float *)((zs_int)stk_op2->stk_value);
-			}else{
-				EVAL_ERROR(file,line,"Constant operations should be number");
-			}
-
-			stk_int_calc_result=(ConstantValue *)malloc(sizeof(ConstantValue));
-
-			// which operation ?
-			switch(byte_code){
-			case BYTE_CODE_NOT:
-				result_op=-result_op;
-				break;
-			case BYTE_CODE_ADD:
-				result_op+=op2;
-				break;
-			case BYTE_CODE_MUL:
-				result_op*=op2;
-				break;
-			case BYTE_CODE_DIV:
-				if(op2==0){
-					EVAL_ERROR(file,line,"divide by 0");
-				}
-				result_op/=op2;
-				break;
-			case BYTE_CODE_MOD:
-				if(op2==0){
-					EVAL_ERROR(file,line,"divide by 0");
-				}
-				result_op=fmod(result_op,op2);+¡
-				`¡^Ñ
-				break;
-			default:
-				EVAL_ERROR(file,line,"const instruction %i not implemented",byte_code);
-				break;
-			}
-
-			if((stk_op1->properties & MSK_STK_PROPERTY_ZS_INT) && (stk_op2->properties & MSK_STK_PROPERTY_ZS_INT)){
-				*stk_int_calc_result={(void *)((zs_int)result_op),0,MSK_STK_PROPERTY_ZS_INT};
-			} // float
-			if((stk_op1->properties & MSK_STK_PROPERTY_FLOAT) || (stk_op2->properties & MSK_STK_PROPERTY_FLOAT)){
-				memcpy(&stk_int_calc_result->stk_value,&result_op,sizeof(float));
-				stk_int_calc_result->properties=MSK_STK_PROPERTY_FLOAT;
-			}
-
-			return stk_int_calc_result;
-		}*/
-
 		char * eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 			char *aux_p = (char *)s;
 			Keyword key_w;
@@ -1777,70 +1757,11 @@ eval_keyword_switch_error:
 				}else{ // not supported
 					EVAL_ERROR(eval_data->current_parsing_file,line,"expected \"var\" or \"function\" after \"static\"");
 				}
-				/*if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-					&& scope_info->scope_base == scope_info
-					&& scope_info->scope_parent == NULL // class
-					){
-					sc=scope_info->script_class;
-				}*/
-
 			}
 
 			return NULL;
 		}
 
-		char *eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
-			char *aux_p = (char *)s;
-			Keyword key_w;
-
-			key_w = is_keyword(aux_p);
-
-			if(key_w == Keyword::KEYWORD_BREAK){
-
-				int last_line_ok = line;
-				EvalInstruction *jmp_instruction;
-
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
-
-				// insert jmp instruction
-				eval_data->current_function->instructions.push_back(
-					jmp_instruction=new EvalInstruction(BYTE_CODE_JMP)
-				);
-
-				// remmember jmp break...
-				eval_data->break_jmp_instructions.push_back(
-					jmp_instruction
-				);
-			}
-			return aux_p;
-		}
-
-		char *eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
-			char *aux_p = (char *)s;
-			Keyword key_w;
-
-			key_w = is_keyword(aux_p);
-
-			if(key_w == Keyword::KEYWORD_CONTINUE){
-
-				int last_line_ok = line;
-				EvalInstruction *jmp_instruction;
-
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
-
-				// insert jmp instruction
-				eval_data->current_function->instructions.push_back(
-					jmp_instruction=new EvalInstruction(BYTE_CODE_JMP)
-				);
-
-				// remmember jmp break...
-				eval_data->continue_jmp_instructions.push_back(
-					jmp_instruction
-				);
-			}
-
-			return aux_p;
-		}
 
 		char *eval_keyword(EvalData *eval_data,const char *s, int & line, Scope *scope_info, Keyword keyw){
 			char *aux_p= (char *)s;

@@ -266,6 +266,11 @@ namespace zetscript{
 			bool (*eval_fun)(const char *);
 		} EvalSeparator;
 
+		typedef struct{
+			std::vector<EvalInstruction *> break_jmps;
+			int	idx_instruction_start_loop;
+		}LoopBreakContinueInfo;
+
 		struct EvalData{
 			ZetScript 						* 		zs;
 			ScopeFactory 					* 		scope_factory;
@@ -273,8 +278,8 @@ namespace zetscript{
 			ScriptClassFactory 				* 		script_class_factory;
 			EvalFunction					* 		current_function;
 			std::vector<EvalFunction *> 	  		functions;
-		//	std::vector<EvalInstruction *>			break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
-		//	std::vector<EvalInstruction *>			continue_jmp_instructions; // number of continue_jmp_instructions collected (should managed only on loops)
+			//std::vector<std::vector<EvalInstruction *>>			loop_break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
+			std::vector<LoopBreakContinueInfo>		loop_break_continue_info; // number of continue_jmp_instructions collected (should managed only on loops)
 			const char 						* 		current_parsing_file;
 			bool							  		error;
 			std::string								error_str;
