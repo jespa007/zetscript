@@ -7,8 +7,8 @@ namespace zetscript{
 		char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * 	eval_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info,bool return_on_break_or_continue_keyword = false);
 		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function=false);
-		void 	eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start);
-		void 	inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value);
+		void 	eval_check_scope(EvalData *eval_data, Scope *scope);
+		//void 	inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value);
 		char * 	eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 
 		static int n_anonymous_function=0;
@@ -1171,8 +1171,10 @@ namespace zetscript{
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			Keyword key_w;
-			unsigned int idx_instruction_for_start=-1,idx_instruction_for_after_condition=-1;
-			EvalInstruction *ei_jnt; // conditional to end block
+			 int
+					 idx_instruction_for_start=ZS_IDX_UNDEFINED
+					,idx_instruction_for_after_condition=ZS_IDX_UNDEFINED;
+			EvalInstruction *ei_jnt=NULL; // conditional to end block
 			std::vector<EvalInstruction *> post_operations;
 
 			// check for keyword ...
@@ -1340,7 +1342,9 @@ namespace zetscript{
 
 
 					// update jnt instruction to jmp after jmp instruction...
-					ei_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size()-idx_instruction_for_after_condition;
+					if(ei_jnt != NULL){ // infinite loop
+						ei_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size()-idx_instruction_for_after_condition;
+					}
 
 					// catch all breaks in the while...
 					//link_breaks(eval_data);
@@ -1349,7 +1353,7 @@ namespace zetscript{
 
 
 					// true: We treat declared variables into for as another scope.
-					eval_check_scope(eval_data,new_scope,idx_instruction_start_for);
+					eval_check_scope(eval_data,new_scope);
 					return aux_p;
 
 				}else{

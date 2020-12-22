@@ -191,7 +191,7 @@ namespace zetscript{
 			}
 		}*/
 
-		void eval_check_scope(EvalData *eval_data, Scope *scope, unsigned idx_instruction_start){
+		void eval_check_scope(EvalData *eval_data, Scope *scope){
 			if(scope->n_registered_symbols_as_variables > 0){ // if there's local symbols insert push/pop scope for there symbols
 				if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 					eval_data->current_function->instructions.insert(
@@ -220,7 +220,7 @@ namespace zetscript{
 			// check for keyword ...
 			if(*aux_p == '{'){
 
-				int idx_instruction_start_block=(int)(eval_data->current_function->instructions.size());
+				//int idx_instruction_start_block=(int)(eval_data->current_function->instructions.size());
 
 				aux_p++;
 
@@ -237,7 +237,7 @@ namespace zetscript{
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '}' ");
 					}
 
-					eval_check_scope(eval_data,new_scope_info,idx_instruction_start_block);
+					eval_check_scope(eval_data,new_scope_info);
 					return aux_p+1;
 				}
 			}
