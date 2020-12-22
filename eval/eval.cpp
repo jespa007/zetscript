@@ -234,7 +234,7 @@ namespace zetscript{
 				)) != NULL){
 
 					if(*aux_p != '}'){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '}' ");
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '}' ");
 					}
 
 					eval_check_scope(eval_data,new_scope_info,idx_instruction_start_block);
@@ -294,7 +294,7 @@ namespace zetscript{
 							aux += strlen(eval_data_directives[directive].str);
 							IGNORE_BLANKS(aux,eval_data,aux,line);
 							if(*aux != '\"'){
-								EVAL_ERROR(eval_data->current_parsing_file,line,"expected starting \" directive");
+								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"expected starting \" directive");
 							}
 							aux++;
 							start_var=aux;
@@ -302,7 +302,7 @@ namespace zetscript{
 							while(*aux != '\n' && *aux!=0 && !(*aux=='\"' && *(aux-1)!='\\')) aux++;
 
 							if(*aux != '\"'){
-								EVAL_ERROR(eval_data->current_parsing_file,line,"expected end \" directive");
+								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"expected end \" directive");
 							}
 
 							end_var=aux;
@@ -317,7 +317,7 @@ namespace zetscript{
 							aux++;// advance ..
 							break;
 						default:
-							EVAL_ERROR(eval_data->current_parsing_file,line,"directive \"%s\" not supported",eval_data_directives[directive].str);
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"directive \"%s\" not supported",eval_data_directives[directive].str);
 							break;
 						}
 

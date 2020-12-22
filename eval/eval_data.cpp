@@ -2,9 +2,15 @@
 
 #define IGNORE_BLANKS(aux_p,eval_data,s,line) 	if((aux_p=zetscript::eval::ignore_blanks(eval_data,(s),line))==NULL) return 0
 #define RESULT_LITERAL_VALUE 					(number_part[0]+number_part[1]+number_part[2]).c_str()
-#define EVAL_ERROR(file,line,s,...)				eval_data->error=true;\
+#define EVAL_ERROR_FILE_LINE(file,line,s,...)	eval_data->error=true;\
 												eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 												return 0;
+
+#define EVAL_ERROR(s,...)						eval_data->error=true;\
+												eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+												return 0;
+
+
 
 #define EVAL_ERROR_POP_FUNCTION(file,line,s,...)	eval_data->error=true;\
 													eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
@@ -403,7 +409,7 @@ namespace zetscript{
 
 					end=false;
 				}else if( is_comment_block_end(aux_p)){
-					EVAL_ERROR(eval_data->current_parsing_file,line," Unexpected end comment block");
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected end comment block");
 				}
 				// make compatible windows format...
 				if(*aux_p == '\r'){
@@ -536,7 +542,7 @@ namespace zetscript{
 			Keyword kw;
 
 			if((kw=is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-				EVAL_ERROR(eval_data->current_parsing_file,line," Unexpected \"%s\" keyword", aux_p);
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected \"%s\" keyword", aux_p);
 			}
 
 			// avoid special literal words
@@ -545,7 +551,7 @@ namespace zetscript{
 				|| symbol=="undefined"
 				|| symbol == "null"
 			){
-				EVAL_ERROR(eval_data->current_parsing_file,line," Unexpected \"%s\"", aux_p);
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected \"%s\"", aux_p);
 			}
 
 			// the rest is checked here...
@@ -564,7 +570,7 @@ namespace zetscript{
 					aux_p++;
 				}
 			}else{
-				EVAL_ERROR(eval_data->current_parsing_file,line," expected symbol");
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," expected symbol");
 			}
 
 			return TRUE;
@@ -597,7 +603,7 @@ namespace zetscript{
 					aux_p++;
 					switch(*aux_p){
 					default:
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"unknown special char \\%c",*aux_p);
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"unknown special char \\%c",*aux_p);
 						break;
 					case 'n':
 						i_char='\n';
@@ -613,12 +619,12 @@ namespace zetscript{
 				}else if(*aux_p != '\''){
 
 					if(*aux_p==0){
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"Unterminated char \'");
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unterminated char \'");
 					}
 
 					i_char=*aux_p;
 				}else{
-					EVAL_ERROR(eval_data->current_parsing_file,line ,"empty character constant");
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"empty character constant");
 				}
 
 				aux_p++;
@@ -626,9 +632,9 @@ namespace zetscript{
 					while(*aux_p!=0 && *aux_p!='\n' && *aux_p!='\'' ) aux_p++;
 
 					if(*aux_p == '\''){
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"multi-character character constant");
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"multi-character character constant");
 					}else{
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"Unterminated char \'");
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unterminated char \'");
 					}
 				}
 
@@ -663,7 +669,7 @@ namespace zetscript{
 						}
 					}else{ // error
 						number_part[current_part]+=*aux_p; // save conflicting character
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 				}
 
@@ -680,14 +686,14 @@ namespace zetscript{
 						is_float=true;
 					}else{ // error
 						number_part[current_part]+=*aux_p; // save conflicting character
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 				}
 
 				else if(*aux_p == 'b'){ // is end binary format?
 					if(!is01s || (current_part != 0)){
 						number_part[current_part]+=*aux_p; // save conflicting character
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 					}
 
 					number_part[current_part]+=*aux_p;
@@ -695,7 +701,7 @@ namespace zetscript{
 				}
 				else{
 					number_part[current_part]+=*aux_p; // save conflicting character
-					EVAL_ERROR(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
 				}
 				is01s&=(('0'==*aux_p) || ('1'==*aux_p));
 
@@ -737,7 +743,7 @@ namespace zetscript{
 
 					return aux_p;
 			}else{
-				EVAL_ERROR(eval_data->current_parsing_file,line,"Expected symbol", *aux_p);
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected symbol", *aux_p);
 			}
 			return NULL;
 		}

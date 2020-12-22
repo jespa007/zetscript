@@ -86,7 +86,7 @@ namespace zetscript{
 			Keyword keyw;
 
 			if(*aux_p != '{'){ // go for final ...
-				EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: Expected '{'");
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: Expected '{'");
 			}
 
 			// instance object ...
@@ -103,7 +103,7 @@ namespace zetscript{
 				// expression expected ...
 				if(v_elements > 0){
 					if(*aux_p != ','){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected ',' for object property");
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected ',' for object property");
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -112,7 +112,7 @@ namespace zetscript{
 				lineSymbol = line;
 
 				if((keyw=eval::is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: \"%s\" keyword is not allowed as property name",eval::eval_data_keywords[keyw].str);
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: \"%s\" keyword is not allowed as property name",eval::eval_data_keywords[keyw].str);
 				}
 
 				aux_p=get_name_identifier_token(
@@ -123,7 +123,7 @@ namespace zetscript{
 				);
 
 				if(zs_strutils::is_empty(symbol_value)){
-					EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected property name");
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected property name");
 				}
 
 				 key_value="\""+symbol_value+"\"";
@@ -147,7 +147,7 @@ namespace zetscript{
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				 if(*aux_p != ':'){ // expected : ...
-					 EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected ':' after property name");
+					 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected ':' after property name");
 				 }
 
 				 aux_p++;
@@ -170,7 +170,7 @@ namespace zetscript{
 			}
 
 			if( *aux_p != '}'){
-				EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected ending '}'");
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected ending '}'");
 			}
 
 			return aux_p+1;
@@ -182,7 +182,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,s,line);
 
 			if(*aux_p != '['){
-				EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected '['");
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected '['");
 			}
 
 			// declare vector ...
@@ -198,7 +198,7 @@ namespace zetscript{
 				// expression expected ...
 				if(v_elements > 0){
 					if(*aux_p != ','){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected ',' before element");
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected ',' before element");
 					}
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 				}
@@ -219,7 +219,7 @@ namespace zetscript{
 			}
 
 			if( *aux_p != ']'){
-				EVAL_ERROR(eval_data->current_parsing_file,line,"Syntax error: expected ending ']'");
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected ending ']'");
 			}
 
 			return aux_p+1;
@@ -256,7 +256,7 @@ namespace zetscript{
 					sc=GET_SCRIPT_CLASS(eval_data,symbol_value);
 
 					if(sc==NULL){
-						EVAL_ERROR(eval_data->current_parsing_file,line,"class '%s' not defined",symbol_value.c_str());
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",symbol_value.c_str());
 					}
 
 					instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW));
@@ -285,7 +285,7 @@ namespace zetscript{
 					 );
 
 					 if(*aux_p != '('){
-						 EVAL_ERROR(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_data_keywords[key_w].str);
+						 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_data_keywords[key_w].str);
 					 }
 
 					 n_args=0;

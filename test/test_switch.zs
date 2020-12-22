@@ -11,16 +11,23 @@ function test_switch(a){
 	case 1:
 		System::println("case 0,1")
 	case 2:
+		{
+		var b
 		System::println("case 2")
-	case 3:
-		System::println("case 3")
+		}
+	case 3:{
+		var c,d,e=0
+		System::println("case 3 {0} {1}",a,b,c)
 		break
+	}
 	case 4:
 		System::println("case 4")
 		break
 	case 5:
-		System::println("case 5")
-		break
+		{
+			System::println("case 5")
+			break
+		}
 	}
 	
 }

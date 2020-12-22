@@ -206,8 +206,8 @@ namespace zetscript{
 						,idx_instruction
 						,ByteCodeToStr(instruction->byte_code)
 						,(instruction-sfo->instructions)+(int)instruction->value_op2
-						,(int)instruction->value_op2<0?'-':'+'
-						,(int)instruction->value_op2
+						,(int)instruction->value_op2>=0?'+':'-'
+						,(int)abs(instruction->value_op2)
 						);
 				break;
 			case BYTE_CODE_PUSH_SCOPE:

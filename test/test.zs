@@ -1,6 +1,42 @@
-var a=-1
+/*var a=-1
 
-a+=0>1?0:1
+a+=0>1?0:1*/
+function test_switch(a){
+	
+
+	switch(a){
+	default:
+		var a
+		//System::println("default ("+a+")")
+		break
+	/*case - 1:
+		System::println("-1")
+	case 0:
+	case 1:
+		System::println("case 0,1")*/
+	/*case 2:
+		{
+		var a,b
+		System::println("case 2")
+		}*/
+	/*case 3:{
+		var c,d,e=0
+		System::println("case 3 {0} {1}",a,b,c)
+		break
+	}
+	case 4:
+		System::println("case 4")
+		break
+	case 5:
+		{
+			System::println("case 5")
+			break
+		}*/
+	}
+	
+}
+
+//System::println(test_switch);
 			
 //System::println(a);
 

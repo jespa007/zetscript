@@ -163,7 +163,7 @@ namespace zetscript{
 					is_constant_number=true;
 				}
 				else{
-					EVAL_ERROR(eval_data->current_parsing_file,line ,"Unable to parse literal \"%s\"",str_value.c_str());
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unable to parse literal \"%s\"",str_value.c_str());
 				}
 
 			}else{ // if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
@@ -182,7 +182,7 @@ namespace zetscript{
 					}while(!((*aux=='\"' && *(aux-1)!= '\\')|| *aux==0 || *aux=='\n'));
 
 					if(*aux!='\"'){
-						EVAL_ERROR(eval_data->current_parsing_file,line ,"Constant string not ends with '\"'");
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Constant string not ends with '\"'");
 					}
 
 					if((start_word+1)<aux){ // copy string without double quotes...
@@ -240,7 +240,7 @@ namespace zetscript{
 								char *test=aux;
 								IGNORE_BLANKS(test,eval_data,aux,line);
 								if(*test != '('){
-									EVAL_ERROR(eval_data->current_parsing_file,line ,"\"super\" only allowed as function");
+									EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"\"super\" only allowed as function");
 								}
 							}
 
@@ -267,7 +267,7 @@ namespace zetscript{
 					 pre_self_operation != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
 					 && token_node->token_type != TokenType::TOKEN_TYPE_IDENTIFIER
 			){
-				 EVAL_ERROR(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers ",eval_data_pre_post_self_operations[ pre_self_operation].str);
+				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers ",eval_data_pre_post_self_operations[ pre_self_operation].str);
 			 }
 
 			 // check pre operators...
@@ -276,7 +276,7 @@ namespace zetscript{
 					&& !(is_constant_number || (token_node->token_type == TokenType::TOKEN_TYPE_IDENTIFIER))
 			     )
 			 {
-				 EVAL_ERROR(eval_data->current_parsing_file,line ,"+/- pre operator not allowed before \"%s\". Only allowed on  numbers or identifiers",str_value.c_str(),eval_data_pre_operators[ token_node->pre_operator].str);
+				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"+/- pre operator not allowed before \"%s\". Only allowed on  numbers or identifiers",str_value.c_str(),eval_data_pre_operators[ token_node->pre_operator].str);
 			 }
 
 			 if(
@@ -284,7 +284,7 @@ namespace zetscript{
 				  && !(is_constant_number || is_constant_boolean || (token_node->token_type == TokenType::TOKEN_TYPE_IDENTIFIER))
 			     )
 			 {
-				 EVAL_ERROR(eval_data->current_parsing_file,line ,"! pre operator not allowed before \"%s\". only allowed on constants booleans/numbers or identifiers ",str_value.c_str(),eval_data_pre_operators[ token_node->pre_operator].str);
+				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"! pre operator not allowed before \"%s\". only allowed on constants booleans/numbers or identifiers ",str_value.c_str(),eval_data_pre_operators[ token_node->pre_operator].str);
 			 }
 
 			 if((token_node->pre_operator == PreOperator::PRE_OPERATOR_NEG) || (token_node->pre_operator == PreOperator::PRE_OPERATOR_NOT)){
@@ -415,12 +415,12 @@ namespace zetscript{
 					&&	(IS_OPERATOR_TYPE_ASSIGN(operator_type))
 
 					)){ // ... save all assignables from operator split
-					EVAL_ERROR(eval_data->current_parsing_file,token_node_operator->line,"Operation \"%s\" in assignment is not allowed",eval_data_operators[operator_type].str);
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,token_node_operator->line,"Operation \"%s\" in assignment is not allowed",eval_data_operators[operator_type].str);
 				}
 
 				// should be identifier...
 				if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-					EVAL_ERROR(eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal \"%s\" is not allowed",token_node_symbol->value.c_str());
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal \"%s\" is not allowed",token_node_symbol->value.c_str());
 				}
 
 				assign_instructions_post_expression.push_back({});
@@ -430,7 +430,7 @@ namespace zetscript{
 				for(unsigned i=0;i<token_node_symbol->instructions.size();i++){
 					EvalInstruction *ei_load_assign_instruction=token_node_symbol->instructions[i];
 					if(ei_load_assign_instruction->vm_instruction.byte_code ==  BYTE_CODE_CALL){
-						EVAL_ERROR(
+						EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,ei_load_assign_instruction->instruction_source_info.line
 								,"Calling a function in an assignment is not allowed");
@@ -492,7 +492,7 @@ namespace zetscript{
 				);
 
 				if(*aux_p != ':'){
-					EVAL_ERROR(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
 				}
 
 				instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
@@ -591,7 +591,7 @@ namespace zetscript{
 			int idx_instruction_start_expression=(int)instructions->size();
 
 			if(is_end_expression(aux_p) && *aux_p != ';'){
-				EVAL_ERROR(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
 			}
 
 			if(!is_end_expression_or_keyword(aux_p,eval_data,line)){
@@ -1276,7 +1276,7 @@ error_expression:
 						// check left are literals
 						for(int j = 0; j < length_instructions; j++){
 							if(exp_instruction[i][j]->vm_instruction.byte_code != BYTE_CODE_LOAD_TYPE_VARIABLE){
-								EVAL_ERROR(eval_data->current_parsing_file,exp_instruction[i][j],"left sequence assignment it must be literal");
+								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,exp_instruction[i][j],"left sequence assignment it must be literal");
 
 							}
 						}
