@@ -187,21 +187,6 @@ STK_VALUE_IS_INT_OR_FLOAT(stk_result_op1->type_var)
 (stk_result_op1->properties & MSK_STK_PROPERTY_STRING) && \
 (stk_result_op2->properties & MSK_STK_PROPERTY_STRING)
 
-#define OP1_AND_OP2_ARE_UNDEFINED \
-		(stk_result_op1->stk_value == VM_UNDEFINED) && \
-		(stk_result_op2->stk_value == VM_UNDEFINED)
-
-#define OP1_AND_OP2_ARE_NULL \
-		(stk_result_op1->stk_value == VM_NULL) && \
-		(stk_result_op2->stk_value == VM_NULL)
-
-#define OP1_OR_OP2_IS_UNDEFINED \
-		(stk_result_op1->stk_value == VM_UNDEFINED) || \
-		(stk_result_op2->stk_value == VM_UNDEFINED)
-
-#define OP1_OR_OP2_ARE_NULL \
-		(stk_result_op1->stk_value == VM_NULL) || \
-		(stk_result_op2->stk_value == VM_NULL)
 
 #define PUSH_UNDEFINED \
 stk_vm_current->stk_value=0; \
@@ -390,6 +375,7 @@ namespace zetscript{
 				}
 				continue;
 			case BYTE_CODE_LOAD_TYPE_VARIABLE: // load variable ...
+			case BYTE_CODE_LOAD_TYPE_VARIABLE_: // load variable ...
 		lbl_load_type_variable:
 
 				//--------------------------------------------------------------------------
@@ -774,7 +760,8 @@ namespace zetscript{
 								&&  stk_dst->var_ref != NULL
 						) {
 
-							ScriptObject *script_object=(ScriptObject *)stk_dst->var_ref;
+							//
+							ScriptObject *script_object=(ScriptObject *)stk_dst->var_ref;// calling object
 							if((stk_dst=script_object->addProperty((const char *)stk_dst->stk_value, vm_error_str))==NULL){
 								VM_STOP_EXECUTE(vm_error_str.c_str());
 							}

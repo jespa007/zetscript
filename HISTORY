@@ -176,10 +176,11 @@ Date: XX-12-2020
 > #234 Back to class name constructor 
 > #235 Make optional function keyword as member function class
 > #236 Implement sequence expressions
-> #237 Optimize size Object structure 
+> #237 Optimize memory 
 > #238 Change behaviour save vars 
 > #239 change absolute jmp offset by relative jmp offset 
-> #240 Implement Variable Assing Multiple (aka vam) 
+> #240 Implement Multiple Assingment 
+> #241 Change VM Stack Based by Register Based 
  
 
 
