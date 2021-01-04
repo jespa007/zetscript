@@ -65,10 +65,11 @@ namespace zetscript{
 		// built in classes...
 		IDX_BUILTIN_TYPE_STACK_ELEMENT,
 		IDX_BUILTIN_TYPE_ZETSCRIPT,
-		IDX_BUILTIN_TYPE_FUNCTION,
-		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT,
-		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING,
-		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR,
+		IDX_BUILTIN_TYPE_FUNCTION, // function a(){}
+		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS, //  {}
+		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING, // "string"
+		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR, // vector []
+		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS, // class A{}
 
 		IDX_BUILTIN_TYPE_MAX
 	}IdxBuiltInType;
@@ -116,8 +117,8 @@ namespace zetscript{
 	struct _InfoSharedList;
 
 	typedef struct _SharedPointerInfo {
-		ScriptObject 		*shared_ptr;
-		unsigned char 	n_shares;
+		ScriptObject 			*shared_ptr;
+		unsigned short 			n_shares;
 		_InfoSharedList *zero_shares;
 	} SharedPointerInfo;
 

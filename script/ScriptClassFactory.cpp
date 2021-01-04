@@ -100,9 +100,10 @@ namespace zetscript{
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ZetScript,IDX_BUILTIN_TYPE_ZETSCRIPT);
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
-		REGISTER_BUILT_IN_CLASS(ScriptObject,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT);
+		REGISTER_BUILT_IN_CLASS(ScriptObjectAnonymous,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS);
 		REGISTER_BUILT_IN_CLASS(ScriptObjectString,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING);
 		REGISTER_BUILT_IN_CLASS(ScriptObjectVector,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR);
+		REGISTER_BUILT_IN_CLASS(ScriptObjectClass,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS);
 
 		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -112,8 +113,10 @@ namespace zetscript{
 		// From here you defined all basic, start define hierarchy
 
 		// register custom functions ...
-		nativeClassInheritsFrom<ScriptObjectVector,ScriptObject>();
-		//nativeClassInheritsFrom<ScriptObjectDictionary,ScriptObject>();
+		/*nativeClassInheritsFrom<ScriptObjectVector,ScriptObject>();
+		nativeClassInheritsFrom<ScriptObjectAnonymous,ScriptObjectVector>();
+		nativeClassInheritsFrom<ScriptObjectClass,ScriptObjectAnonymous>();*/
+		//nativeClassInheritsFrom<ScriptObjectDictionary,ScriptObjectAnonymous>();
 
 
 		//------------------------------------------------------------------------------------------------------------
@@ -140,8 +143,8 @@ namespace zetscript{
 		register_c_base_symbols = _register;
 	}
 
-	void ScriptClassFactory::clear(int _idx_start){
-		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
+	void ScriptClassFactory::clear(short _idx_start){
+		short idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
 			int v=script_classes->count-1;
@@ -237,11 +240,11 @@ namespace zetscript{
 		return script_classes;
 	}
 
-	std::map<int, std::map<int, ConversionType>>  *	 ScriptClassFactory::getConversionTypes() {
+	std::map<short, std::map<short, ConversionType>>  *	 ScriptClassFactory::getConversionTypes() {
 		return & conversion_types;
 	}
 
-	ScriptClass 	* ScriptClassFactory::getScriptClass(int idx){
+	ScriptClass 	* ScriptClassFactory::getScriptClass(short idx){
 		if(idx == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("ScriptClass node out of bound");
 			return NULL;
@@ -283,19 +286,19 @@ namespace zetscript{
 		return getIdxScriptClassInternal(v) != ZS_IDX_UNDEFINED;
 	}
 
-	ScriptObject *		ScriptClassFactory::instanceScriptObjectiableByClassName(const std::string & class_name){
+	ScriptObjectClass *		ScriptClassFactory::instanceScriptObjectClassByClassName(const std::string & class_name){
 		 // 0. Search class info ...
 		 ScriptClass * rc = getScriptClass(class_name);
 
 		 if(rc != NULL){
-			 return instanceScriptObjectiableByIdx(rc->idx_class);
+			 return instanceScriptObjectClassByIdx(rc->idx_class);
 		 }
 		 return NULL;
 	 }
 
-	 ScriptObject 		 * ScriptClassFactory::instanceScriptObjectiableByIdx(int idx_class, void * value_object){
+	 ScriptObjectClass 		 * ScriptClassFactory::instanceScriptObjectClassByIdx(short idx_class, void * value_object){
 
-		 ScriptObject *so=NULL;
+		 ScriptObjectClass *so=NULL;
 
 		 // 0. Search class info ...
 		 ScriptClass *rc = getScriptClass(idx_class);
@@ -310,19 +313,16 @@ namespace zetscript{
 			 case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
 			 case IDX_BUILTIN_TYPE_STRING_PTR_C:
 			 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
-				 THROW_RUNTIME_ERROR("Internal error");
-				 return NULL;
-				 break;
-
 			 case IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR:
-			 case IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT:
+			 case IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS:
 			 case IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING:
-				 so = (ScriptObject *)value_object;
+				 THROW_RUNTIME_ERROR("Internal error: An idx class was expected but it was %i",rc->idx_class);
+				 return NULL;
 				 break;
 			 default:
 				 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
-				 so = new ScriptObject(zs);
-				 so->init(rc, value_object);
+				 so = new ScriptObjectClass(zs);
+				 so->init(rc->idx_class, value_object);
 				 break;
 			 }
 		 }
@@ -340,7 +340,7 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	zs_int ScriptClassFactory::doCast(zs_int obj, int idx_class_src, int idx_class_dst/*, std::string & error*/){//c_class->idx_class,idx_return_type){
+	zs_int ScriptClassFactory::doCast(zs_int obj, short idx_class_src, short idx_class_dst/*, std::string & error*/){//c_class->idx_class,idx_return_type){
 
 		ScriptClass *class_src = getScriptClass(idx_class_src);
 		ScriptClass *class_dst = getScriptClass(idx_class_dst);
@@ -359,7 +359,7 @@ namespace zetscript{
 		return (conversion_types)[idx_class_src][idx_class_dst](obj);
 	}
 
-	const char * ScriptClassFactory::getScriptClassName(int idx){
+	const char * ScriptClassFactory::getScriptClassName(short idx){
 		if(idx != ZS_IDX_UNDEFINED){
 			ScriptClass *sc=(ScriptClass *)script_classes->get(idx);
 			return sc->symbol_class.name.c_str();
@@ -386,7 +386,7 @@ namespace zetscript{
 		return getIdxScriptInternalFrom_C_Type(str_native_type);
 	}
 
-	bool 	ScriptClassFactory::isClassInheritsFrom(int idx_class,int idx_base_class){
+	bool 	ScriptClassFactory::isClassInheritsFrom(short idx_class,short idx_base_class){
 
 		if(idx_class == idx_base_class){
 			return true;

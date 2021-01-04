@@ -40,7 +40,7 @@ namespace zetscript{
 		//function_should_be_deduced_at_runtime=false;
 	}
 
-	const char * ScriptFunction::instructionPropertyPreOperationToStr(unsigned int properties){
+	/*const char * ScriptFunction::instructionPropertyPreOperationToStr(unsigned int properties){
 		switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(properties)){
 			case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
 				return "-";
@@ -66,7 +66,7 @@ namespace zetscript{
 		}
 
 		return "";
-	}
+	}*/
 
 	InstructionSourceInfo * ScriptFunction::getInstructionInfo(Instruction *instruction){
 		short idx= (instruction-this->instructions);///sizeof(Instruction *);
@@ -81,7 +81,7 @@ namespace zetscript{
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
 		zs_vector * m_vf = sfo->registered_symbols;
-		ConstantValue *icv=NULL;
+		StackElement *icv=NULL;
 
 		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
@@ -110,7 +110,7 @@ namespace zetscript{
 			unsigned char value_op1 = instruction->value_op1;
 			int value_op2 = instruction->value_op2;
 			symbol_value=SFI_GET_SYMBOL_NAME(sfo,instruction);
-			char object_access[512] = "";
+			//char object_access[512] = "";
 			const char *pre=instructionPropertyPreOperationToStr(instruction->properties)
 					 ,*post=instructionPropertyPostOperationToStr(instruction->properties);
 
@@ -122,7 +122,7 @@ namespace zetscript{
 				 n_ops++;
 			 }
 
-			 if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD){
+			/* if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 				 sprintf(object_access,
 						"."
 						);
@@ -130,71 +130,63 @@ namespace zetscript{
 			 else if(symbol_value.c_str() == SYMBOL_VALUE_SUPER){
 				sprintf(object_access,"super.");
 			 }
-			 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS){
+			 else if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS){
 				sprintf(object_access,"this.");
 			 }
-			 else if(instruction->properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR){
+			 else if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
 				 sprintf(object_access,"{vector element}");
-			 }
+			 }*/
 
 			switch(instruction->byte_code){
 
-			case  BYTE_CODE_NEW:
+			case  BYTE_CODE_NEW_CLASS:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
 					,(int)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
 				);
 				break;
-			case BYTE_CODE_LOAD_TYPE_CONSTANT:
-			//case BYTE_CODE_LOAD_TYPE_STATIC:
-				icv=(ConstantValue *)instruction->value_op2;
-				switch(icv->properties & MSK_STK_PROPERTY_TYPE_PRIMITIVES){
-				case MSK_STK_PROPERTY_BOOL:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t%s\n",idx_instruction,(int)((zs_int)icv->stk_value)==0?"false":"true");
-					break;
-				case MSK_STK_PROPERTY_ZS_INT:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t%i\n",idx_instruction,(int)((zs_int)icv->stk_value));
-					break;
-				case MSK_STK_PROPERTY_FLOAT:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t%f\n",idx_instruction,*((float *)&icv->stk_value));
-					break;
-				case MSK_STK_PROPERTY_STRING:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST\t\"%s\"\n",idx_instruction,((const char *)icv->stk_value));
-					break;
-				case MSK_STK_PROPERTY_FUNCTION:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST FUN\t%s\n",idx_instruction,icv->toString().c_str());
-					break;
-				default:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\tCONST VAR\t%s\n",idx_instruction,symbol_value.c_str());
-					break;
-				}
+			case BYTE_CODE_LOAD_BOOL:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_BOOL\t%s\t%s\n",idx_instruction,instruction->value_op2==0?"false":"true");
 				break;
-			case BYTE_CODE_LOAD_TYPE_FIND:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s%s\n"
+			case BYTE_CODE_LOAD_FLOAT:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_FLT\t%f\n",idx_instruction,*((float *)&instruction->value_op2));
+				break;
+			case BYTE_CODE_LOAD_ZS_INT:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_INT\t%i\n",idx_instruction,(int)(instruction->value_op2));
+				break;
+			case BYTE_CODE_LOAD_STRING:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t\"%s\"\n",idx_instruction,icv->toString().c_str());
+				break;
+			case BYTE_CODE_LOAD_FUNCTION:
+			case BYTE_CODE_FIND_VARIABLE:
+			case BYTE_CODE_LOAD_LOCAL:
+			case BYTE_CODE_LOAD_GLOBAL:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
-					,pre
-					,object_access
 					,symbol_value.c_str()
-					,post
 				);
 				break;
-			case BYTE_CODE_LOAD_TYPE_VARIABLE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s%s%s\n"
+
+			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s {vector}\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
-					,pre
-					,object_access
 					,symbol_value.c_str()
-					,post
 				);
 				break;
-			case BYTE_CODE_LOAD_TYPE_FUNCTION:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s%s\n"
+			case BYTE_CODE_LOAD_THIS:
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
-					,object_access
+					,symbol_value.c_str() == SYMBOL_VALUE_SUPER?"{super}":"{this}"
+				);
+				break;
+			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t.%s\n"
+					,idx_instruction
+					,ByteCodeToStr(instruction->byte_code)
 					,symbol_value.c_str()
 				);
 				break;
@@ -202,13 +194,11 @@ namespace zetscript{
 			case BYTE_CODE_JT:
 			case BYTE_CODE_JMP:
 			case BYTE_CODE_JE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%03i [%c%03i]\n"
-						,idx_instruction
-						,ByteCodeToStr(instruction->byte_code)
-						,(instruction-sfo->instructions)+(int)instruction->value_op2
-						,(int)instruction->value_op2>=0?'+':'-'
-						,(int)abs(instruction->value_op2)
-						);
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%03i\n"
+					,idx_instruction
+					,ByteCodeToStr(instruction->byte_code)
+					,instruction->value_op2
+				);
 				break;
 			case BYTE_CODE_PUSH_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
@@ -249,7 +239,7 @@ namespace zetscript{
 		}
 	 }
 
-	short 		 ScriptFunction::getInstructionLine(Instruction * ins){
+	short	 ScriptFunction::getInstructionLine(Instruction * ins){
 		InstructionSourceInfo *info=getInstructionInfo(ins);
 		if(info!=NULL){
 			return info->line;
@@ -320,11 +310,11 @@ namespace zetscript{
 			StackElement stk_global_var;
 			if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0){ // native variable
 				stk_global_var=convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr);
-				if(!zs->getVirtualMachine()->setStackElement(idx_position,stk_global_var)){
+				if(!zs->getVirtualMachine()->setStackElementAt(idx_position,stk_global_var)){
 					THROW_RUNTIME_ERROR(zs->getVirtualMachine()->getError().c_str());
 				}
 			}else{ // script variable
-				StackElement *stk_global_var_ptr=zs->getVirtualMachine()->getStackElement(idx_position);
+				StackElement *stk_global_var_ptr=zs->getVirtualMachine()->getStackElementAt(idx_position);
 				if(stk_global_var_ptr==NULL){
 					THROW_RUNTIME_ERROR(zs->getVirtualMachine()->getError().c_str());
 				}
@@ -336,8 +326,6 @@ namespace zetscript{
 
 			}
 		}
-
-
 
 		return symbol;
 	}
@@ -416,11 +404,10 @@ namespace zetscript{
 
 			if(scope_block == MAIN_SCOPE(this)) { // global function
 				// set global stk var...
-				zs->getVirtualMachine()->setStackElement(
+				zs->getVirtualMachine()->setStackElementAt(
 					(int)idx_position
 					,{
-						NULL
-						,(void *)symbol->ref_ptr
+						(void *)symbol->ref_ptr
 						,MSK_STK_PROPERTY_FUNCTION
 					}
 				);

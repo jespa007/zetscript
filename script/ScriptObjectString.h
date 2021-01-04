@@ -12,16 +12,16 @@ namespace zetscript{
 	class  ScriptObjectString: public ScriptObject{
 
 	public:
-		std::string str_value;
-
+		void 		*	value;	// 8
 		ScriptObjectString(ZetScript *_zs);
-		ScriptObjectString(ZetScript *_zs,const std::string * s);
+
 		void set(const std::string & s);
+		virtual zs_int count();
 
 		virtual std::string toString();
 
-	protected:
-	
+	private:
+		std::string str_value;
 	};
 
 }

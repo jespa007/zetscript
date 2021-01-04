@@ -35,6 +35,14 @@ namespace zetscript{
 
 		struct EvalData;
 
+		typedef enum{
+			EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION=0x1<<1, // it tells is a regular expression in eval or in post operation for
+			EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT=0x1<<2, // do not allow a,b,c=0,0,0
+			EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR=0x1<<3, // break when any assign operator (i.e, =, +=, -=, ...) is found
+			EVAL_EXPRESSION_RESET_STACK=0x1<<4,
+			//EVAL_EXPRESSION_PROPERTY_SIMPLIFY=0x1<<5 // it will simplify expressions without assignment like that a+1, but keep calling functions but not push return values
+		}EvalExpressionProperty;
+
 		typedef enum
 			:unsigned char {
 			KEYWORD_UNKNOWN = 0,
@@ -133,13 +141,13 @@ namespace zetscript{
 
 			// ARITHMETIC
 			OPERATOR_ADD, 											// +
-			OPERATOR_OR, 											// |
 			OPERATOR_SUB, 											// -
 			OPERATOR_XOR, 											// ^
 			OPERATOR_MUL, 											// *
 			OPERATOR_AND,		 									// &
 			OPERATOR_DIV, 											// /
 			OPERATOR_MOD, 											// %
+			OPERATOR_OR, 											// |
 			OPERATOR_SHIFT_LEFT, 									// <<
 			OPERATOR_SHIFT_RIGHT, 									// >>
 
@@ -149,21 +157,78 @@ namespace zetscript{
 		}Operator;
 
 
-		typedef enum :unsigned char {
-			PRE_OPERATOR_UNKNOWN=0,
-			PRE_OPERATOR_NOT, 		// ! (for boolean)
-			PRE_OPERATOR_POS, 		// + (just ignore)
-			PRE_OPERATOR_NEG	, 	// -
-			PRE_OPERATOR_MAX
-		}PreOperator;
+#define OPERATOR_GROUP_0(operator_type) \
+(\
+		(operator_type) == OPERATOR_LOGIC_AND \
+	|| 	(operator_type) == OPERATOR_LOGIC_OR \
+)
+
+
+
+#define OPERATOR_GROUP_1(operator_type) \
+(\
+	(operator_type) == OPERATOR_LOGIC_EQUAL \
+|| 	(operator_type) == OPERATOR_LOGIC_NOT_EQUAL \
+|| 	(operator_type) == OPERATOR_LOGIC_GTE \
+|| 	(operator_type) == OPERATOR_LOGIC_LTE \
+|| 	(operator_type) == OPERATOR_LOGIC_GT \
+|| 	(operator_type) == OPERATOR_LOGIC_LT \
+)
+
+#define OPERATOR_GROUP_2(operator_type) \
+( \
+	(operator_type) == OPERATOR_ADD \
+|| 	(operator_type) == OPERATOR_SUB \
+)
+
+#define OPERATOR_GROUP_3(operator_type) \
+( \
+	(operator_type) == OPERATOR_MUL \
+|| 	(operator_type) == OPERATOR_DIV \
+||  (operator_type) == OPERATOR_MOD \
+)
+
+#define OPERATOR_GROUP_4(operator_type) \
+( \
+	(operator_type) == OPERATOR_AND \
+|| 	(operator_type) == OPERATOR_OR \
+|| 	(operator_type) == OPERATOR_XOR \
+)
+
+#define	OPERATOR_GROUP_5(operator_type) \
+(\
+	(operator_type) == OPERATOR_SHIFT_LEFT \
+|| 	(operator_type) == OPERATOR_SHIFT_RIGHT \
+)
+
+#define OPERATOR_GROUP_MAX	5
+
 
 		typedef enum :unsigned char {
+			PRE_OPERATION_UNKNOWN=0,
+			PRE_OPERATION_NOT, 		// ! (for boolean)
+			PRE_OPERATION_POS, 		// + (just ignore)
+			PRE_OPERATION_NEG	, 	// -
+			PRE_OPERATION_DEC    ,	// --
+			PRE_OPERATION_INC	,	// ++
+			PRE_OPERATION_DEC_INC_INVALID,	// -+ or +-
+			PRE_OPERATION_MAX
+		}PreOperation;
+
+		typedef enum :unsigned char {
+			POST_OPERATION_UNKNOWN=0,
+			POST_OPERATION_DEC	,	// --
+			POST_OPERATION_INC	,	// ++
+			POST_OPERATION_MAX
+		}PostOperation;
+
+		/*typedef enum :unsigned char {
 			PRE_POST_SELF_OPERATION_UNKNOWN=0,
 			PRE_POST_SELF_OPERATION_INC,		// ++
 			PRE_POST_SELF_OPERATION_DEC,		// --
 			PRE_POST_SELF_OPERATION_INVALID,	// +- or -+
 			PRE_POST_SELF_OPERATION_MAX
-		}PrePostSelfOperation;
+		}PrePostSelfOperation;*/
 
 		typedef enum :unsigned char {
 			SEPARATOR_UNKNOWN=0,
@@ -193,7 +258,7 @@ namespace zetscript{
 
 		struct TokenNode{
 			TokenType	  					token_type; // can be operator, literal, identifier, object. (separator are not take account)
-			PreOperator   					pre_operator; // !,+,-
+			PreOperation   					pre_operation; // !,+,-,--,++
 			Operator  						operator_type;
 
 			std::string 					value; // token value content
@@ -209,7 +274,7 @@ namespace zetscript{
 				line=-1;
 				token_type=TokenType::TOKEN_TYPE_UNKNOWN;
 				operator_type=Operator::OPERATOR_UNKNOWN;
-				pre_operator=PreOperator::PRE_OPERATOR_UNKNOWN;
+				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 				instructions.clear();
 			}
 		};
@@ -255,16 +320,16 @@ namespace zetscript{
 		} EvalOperator;
 
 		typedef struct {
-			PreOperator id;
+			PreOperation id;
 			const char *str;
 			bool (*eval_fun)(const char *);
-		} EvalPreOperator;
+		} EvalPreOperation;
 
 		typedef struct {
-			PrePostSelfOperation id;
+			PostOperation id;
 			const char *str;
 			bool (*eval_fun)(const char *);
-		} EvalIdentityOperator;
+		} EvalPostOperation;
 
 		typedef struct {
 			Separator id;
@@ -303,8 +368,8 @@ namespace zetscript{
 		};
 
 		EvalOperator eval_data_operators[OPERATOR_MAX];
-		EvalPreOperator eval_data_pre_operators[PRE_OPERATOR_MAX];
-		EvalIdentityOperator eval_data_pre_post_self_operations[PRE_POST_SELF_OPERATION_MAX];
+		EvalPreOperation eval_data_pre_operations[PRE_OPERATION_MAX];
+		EvalPostOperation eval_data_post_operations[POST_OPERATION_MAX];
 		EvalSeparator eval_data_separators[SEPARATOR_MAX];
 		EvalKeyword eval_data_keywords[KEYWORD_MAX];
 		EvalDirective eval_data_directives[DIRECTIVE_MAX];
@@ -325,8 +390,8 @@ namespace zetscript{
 		char *	eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
 		char *	eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
 		char * 	eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node, PreOperator pre_operator, PrePostSelfOperation pre_self_operation);
-
+		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
+		Symbol *eval_find_local_variable(ScriptFunction *sf,Scope *scope, const std::string & symbol_to_find);
 
 		bool	is_operator_ternary_if(const char *s)				{return *s=='?';}
 		bool 	is_operator_ternary_else(const char *s)				{return *s==':';}
@@ -360,9 +425,9 @@ namespace zetscript{
 		bool 	is_operator_logic_gte(const char *s)				{return ((*s=='>') && (*(s+1)=='='));}
 		bool 	is_operator_logic_lte(const char *s)				{return ((*s=='<') && (*(s+1)=='='));}
 		bool 	is_operator_logic_not(const char *s)				{return ((*s=='!') && (*(s+1)!='='));}
-		bool 	is_pre_post_self_operation_inc(const char *s)		{return ((*s=='+') && (*(s+1)=='+'));}
-		bool 	is_pre_post_self_operation_dec(const char *s)		{return ((*s=='-') && (*(s+1)=='-'));}
-		bool 	is_pre_post_self_operation_invalid(const char *s)	{return ((*s=='-') && (*(s+1)=='+')) || ((*s=='+') && (*(s+1)=='-'));}
+		bool 	is_operation_dec(const char *s)						{return ((*s=='-') && (*(s+1)=='-'));}
+		bool 	is_operation_inc(const char *s)						{return ((*s=='+') && (*(s+1)=='+'));}
+		bool 	is_operation_dec_inc_invalid(const char *s)			{return ((*s=='-') && (*(s+1)=='+')) || ((*s=='+') && (*(s+1)=='-'));}
 		bool 	is_comment_single_line(char *s)						{return	((*s=='/') && (*(s+1)=='/'));}
 		bool 	is_comment_block_start(char *s)						{return ((*s=='/') && (*(s+1)=='*'));}
 		bool 	is_comment_block_end(char *s)						{return ((*s=='*') && (*(s+1)=='/'));}
@@ -443,27 +508,41 @@ namespace zetscript{
 			return Operator::OPERATOR_UNKNOWN;
 		}
 
-		PreOperator   	is_pre_operator(const char *s){
-			for(unsigned char i = 1; i < PRE_OPERATOR_MAX; i++){
-				if(*eval_data_pre_operators[i].str == *s){
-					return eval_data_pre_operators[i].id;
-				}
+		unsigned char get_operator_type_group(Operator operator_type){
+			if(OPERATOR_GROUP_0(operator_type)){
+				return 0;
+			}else if (OPERATOR_GROUP_1(operator_type)){
+				return 1;
+			}else if (OPERATOR_GROUP_2(operator_type)){
+				return 2;
+			}else if (OPERATOR_GROUP_3(operator_type)){
+				return 3;
+			}else if (OPERATOR_GROUP_4(operator_type)){
+				return 4;
+			}else if (OPERATOR_GROUP_5(operator_type)){
+				return 5;
 			}
-			return PreOperator::PRE_OPERATOR_UNKNOWN;
+
+			return OPERATOR_GROUP_MAX;
+
 		}
 
-		PrePostSelfOperation   is_pre_post_self_operation(const char *s){
-			if(is_pre_post_self_operation_inc(s)){
-				return PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC;
-
-			}else if(is_pre_post_self_operation_dec(s)){
-				return PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC;
+		PreOperation   	is_pre_operation(const char *s){
+			for(unsigned char i = 1; i < PRE_OPERATION_MAX; i++){
+				if(*eval_data_pre_operations[i].str == *s){
+					return eval_data_pre_operations[i].id;
+				}
 			}
-			else if(is_pre_post_self_operation_invalid(s)){
-				return PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID;
-			}
+			return PreOperation::PRE_OPERATION_UNKNOWN;
+		}
 
-			return PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN;
+		PostOperation   is_post_operation(const char *s){
+			for(unsigned char i = 1; i < POST_OPERATION_MAX; i++){
+				if(*eval_data_post_operations[i].str == *s){
+					return eval_data_post_operations[i].id;
+				}
+			}
+			return PostOperation::POST_OPERATION_UNKNOWN;
 		}
 
 		bool is_special_char(char *aux){
@@ -530,7 +609,7 @@ namespace zetscript{
 
 		bool  is_end_symbol_token(char *s, char pre=0){
 			return is_operator(s)!=Operator::OPERATOR_UNKNOWN
-				   || is_pre_post_self_operation(s)!=PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
+				   || is_post_operation(s)!=PostOperation::POST_OPERATION_UNKNOWN
 				   || is_separator(s)!=Separator::SEPARATOR_UNKNOWN
 				   || is_special_char(s)
 				   || (*s=='\"' && pre!='\\');
@@ -641,7 +720,7 @@ namespace zetscript{
 				aux_p++;
 
 				// convert i_char to value...
-				value=zs_strutils::int_to_str(i_char);
+				value=zs_strutils::zs_int_to_str(i_char);
 				return aux_p;
 			}
 
@@ -755,8 +834,8 @@ namespace zetscript{
 
 			// Init operator punctuators...
 			memset(eval_data_operators,0,sizeof(eval_data_operators));
-			memset(eval_data_pre_operators,0,sizeof(eval_data_pre_operators));
-			memset(eval_data_pre_post_self_operations,0,sizeof(eval_data_pre_post_self_operations));
+			memset(eval_data_pre_operations,0,sizeof(eval_data_pre_operations));
+			memset(eval_data_post_operations,0,sizeof(eval_data_post_operations));
 			memset(eval_data_separators,0,sizeof(eval_data_separators));
 			memset(eval_data_keywords,0,sizeof(eval_data_keywords));
 
@@ -798,14 +877,17 @@ namespace zetscript{
 			eval_data_operators[OPERATOR_INSTANCEOF]={OPERATOR_INSTANCEOF, "instanceof",is_operator_instanceof};
 
 
-			eval_data_pre_operators[PRE_OPERATOR_NOT]={PRE_OPERATOR_NOT, "!",is_operator_logic_not};
-			eval_data_pre_operators[PRE_OPERATOR_POS]={PRE_OPERATOR_POS, "+",is_operator_add};
-			eval_data_pre_operators[PRE_OPERATOR_NEG]={PRE_OPERATOR_NEG, "-",is_operator_sub};
+			eval_data_pre_operations[PRE_OPERATION_NOT]={PRE_OPERATION_NOT, "!",is_operator_logic_not};
+			eval_data_pre_operations[PRE_OPERATION_POS]={PRE_OPERATION_POS, "+",is_operator_add};
+			eval_data_pre_operations[PRE_OPERATION_NEG]={PRE_OPERATION_NEG, "-",is_operator_sub};
+			eval_data_pre_operations[PRE_OPERATION_DEC]={PRE_OPERATION_DEC, "--",is_operation_dec};
+			eval_data_pre_operations[PRE_OPERATION_INC]={PRE_OPERATION_INC, "++",is_operation_inc};
+			eval_data_pre_operations[PRE_OPERATION_DEC_INC_INVALID]={PRE_OPERATION_DEC_INC_INVALID, "+-/-+",is_operation_dec_inc_invalid};
 
 
-			eval_data_pre_post_self_operations[PRE_POST_SELF_OPERATION_INC]={PRE_POST_SELF_OPERATION_INC, "++",is_pre_post_self_operation_inc};
-			eval_data_pre_post_self_operations[PRE_POST_SELF_OPERATION_DEC]={PRE_POST_SELF_OPERATION_DEC, "--",is_pre_post_self_operation_dec};
-			eval_data_pre_post_self_operations[PRE_POST_SELF_OPERATION_INVALID]={PRE_POST_SELF_OPERATION_INVALID, "+-",is_pre_post_self_operation_invalid};
+			eval_data_post_operations[POST_OPERATION_INC]={POST_OPERATION_INC, "++",is_operation_inc};
+			eval_data_post_operations[POST_OPERATION_DEC]={POST_OPERATION_DEC, "--",is_operation_dec};
+
 
 			// special punctuators...
 			eval_data_separators[SEPARATOR_COMA]={SEPARATOR_COMA, ",",NULL};

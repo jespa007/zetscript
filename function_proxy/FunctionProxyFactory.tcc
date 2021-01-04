@@ -15,6 +15,8 @@ namespace zetscript{
 		));
 
 		member_variable_proxies->push_back(fun_ptr);
+
+		return fun_ptr;
 	}
 
 	template <typename _C, typename _R, typename _T, typename..._A>

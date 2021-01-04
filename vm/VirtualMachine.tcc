@@ -120,19 +120,17 @@ namespace zetscript{
 			zs_vector			 * scope_symbols=scope->registered_symbols;
 			//ScopeBlockVars   *scope_block_vars=&scope_info_function->scope_block_vars[index];
 
-			for(uint8_t i = 0; i < scope_symbols->count; i++){
+			for(unsigned i = 0; i < scope_symbols->count; i++){
 				Symbol *scope_symbol=(Symbol *)scope_symbols->items[i];
 				StackElement *stk_local_var =&stk_local_vars[scope_symbol->idx_position]; // position where symbol is located on stack
 
 				if(stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK){
-					stk_local_var=(StackElement *)stk_local_var->var_ref;
+					stk_local_var=(StackElement *)stk_local_var->stk_value;
 				}
 
-				ScriptObject *var = NULL;
-				switch(GET_MSK_STK_PROPERTY_TYPES(stk_local_var->properties)){
-				case MSK_STK_PROPERTY_STRING:
-				case MSK_STK_PROPERTY_SCRIPT_OBJECT:
-					var =((ScriptObject *)(stk_local_var->var_ref));
+				ScriptObjectAnonymous *var = NULL;
+				if(stk_local_var->properties==MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					var =((ScriptObjectAnonymous *)(stk_local_var->stk_value));
 					if(var !=NULL){
 						if(var->shared_pointer != NULL){
 							if(!var->unrefSharedPtr(vm_idx_call)){
@@ -141,11 +139,7 @@ namespace zetscript{
 						}
 					}
 				}
-				*stk_local_var={
-					0,
-					0,
-					MSK_STK_PROPERTY_UNDEFINED
-				};
+				*stk_local_var=stk_undefined;
 			}
 			
 			// remove deferred shared pointers except for return value...
@@ -180,7 +174,7 @@ namespace zetscript{
 	
 	) {
 		//std::string str_symbol_to_find="";
-		ScriptObject *calling_object=NULL;
+		ScriptObjectClass *calling_object=NULL;
 		ScriptClass *script_class_aux=NULL;
 		StackElement *stk_vm_current_backup,*stk_args;
 		int stk_element_len=0;
@@ -191,35 +185,35 @@ namespace zetscript{
 		//zs_vector *stk_elements=NULL;
 		std::string error_found="";
 		zs_vector * list_props=NULL;
-		ScriptObject *script_object=NULL;
-		ScriptObject *one_param = NULL;
+		ScriptObjectClass *script_object_class=NULL;
+		ScriptObjectClass *one_param_object_class = NULL;
 		int n_stk_args=getNumArgumentsStaticMetamethod(byte_code_metamethod);
 
 		// init stk
 		stk_vm_current_backup=stk_args=stk_vm_current;
 
 		if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK){
-			stk_result_op1 = (StackElement *)(stk_result_op1->var_ref);
+			stk_result_op1 = (StackElement *)(stk_result_op1->stk_value);
 		}
 
-		if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-			script_object = (ScriptObject *)(stk_result_op1->var_ref);
+		if(STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op1)){
+			script_object_class = (ScriptObjectClass *)(stk_result_op1->stk_value);
 		}
 
 		// only C refs can check 2nd param
-		if(script_object == NULL) { // script null
+		if(script_object_class == NULL) { // script null
 
 			if(((stk_result_op2->properties & MSK_STK_PROPERTY_PTR_STK))){
-				stk_result_op2 = (StackElement *)(stk_result_op2->var_ref);
+				stk_result_op2 = (StackElement *)(stk_result_op2->stk_value);
 			}
 
-			if(stk_result_op2->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-				script_object = (ScriptObject *)(stk_result_op2->var_ref);
+			if(STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op2)){
+				script_object_class = (ScriptObjectClass *)(stk_result_op2->stk_value);
 			}
 		}
 
 
-		if(script_object == NULL){ // cannot perform operation
+		if(script_object_class == NULL){ // cannot perform operation
 			error_found="";
 			goto apply_metamethod_error;
 		}
@@ -235,8 +229,8 @@ namespace zetscript{
 			goto apply_metamethod_error;
 		}*/
 
-		if(script_object->isNativeObject()){
-			list_props=script_object->getAllProperties();//getFunctions();
+		if(script_object_class->isNativeObject()){
+			list_props=script_object_class->getAllElements();//getFunctions();
 
 			ptr_function_found = findFunction(
 				 calling_object
@@ -282,7 +276,7 @@ namespace zetscript{
 				}
 			}
 		}else{ // get first item...
-			StackElement * stk = script_object->getProperty(str_symbol_metamethod,NULL);
+			StackElement * stk = script_object_class->getProperty(str_symbol_metamethod,NULL);
 
 			if(stk == NULL){
 				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
@@ -294,13 +288,13 @@ namespace zetscript{
 				goto apply_metamethod_error;
 			}
 
-			ptr_function_found=(ScriptFunction *)stk->var_ref;
+			ptr_function_found=(ScriptFunction *)stk->stk_value;
 
 		}
 
 		// non static ignores first parameter and set calling object to allow this
 		if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
-			calling_object=script_object;
+			calling_object=script_object_class;
 			stk_args++;
 			n_stk_args--;
 		}
@@ -322,14 +316,14 @@ namespace zetscript{
 			);
 		}
 
-		if(ret_obj.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){ //
+		if(STK_IS_SCRIPT_OBJECT_CLASS(&ret_obj)){ //
 
-			if(!((ScriptObject *)(ret_obj.var_ref))->initSharedPtr()){
+			if(!((ScriptObject *)(ret_obj.stk_value))->initSharedPtr()){
 				return false;
 			}
 
 			if(byte_code_metamethod != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
-				((ScriptObject *)(ret_obj.var_ref))->deleteNativeObjectOnDestroy(true);
+				((ScriptObjectClass *)(ret_obj.stk_value))->deleteNativeObjectOnDestroy(true);
 			}
 		}
 
@@ -377,7 +371,7 @@ apply_metamethod_error:
 		) {
 
 		// by default search over global functions...
-		ScriptObject *var_object = NULL;
+
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
 		bool stk_element_are_ptr=stk_elements_ptr!=vm_stack;
@@ -396,7 +390,7 @@ apply_metamethod_error:
 			}
 
 
-			ScriptFunction *irfs = (ScriptFunction *)stk_element->var_ref;
+			ScriptFunction *irfs = (ScriptFunction *)stk_element->stk_value;
 			aux_string=irfs->symbol.name;
 
 			if((aux_string == symbol_to_find && irfs->params->count == n_args)){
@@ -411,7 +405,7 @@ apply_metamethod_error:
 						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT){
 
 							if(current_arg->properties & MSK_STK_PROPERTY_PTR_STK){
-								current_arg = (StackElement *)current_arg->var_ref;
+								current_arg = (StackElement *)current_arg->stk_value;
 							}
 
 							unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(current_arg->properties);
@@ -442,22 +436,30 @@ apply_metamethod_error:
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_BOOL_C;
 
 									break;
-								case MSK_STK_PROPERTY_STRING:
-									idx_type=IDX_BUILTIN_TYPE_STRING_PTR_C;
-
-									all_check =
-											(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->var_ref!=0)
-										  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
-									break;
 								case MSK_STK_PROPERTY_UNDEFINED:
 									all_check=false;
 									break;
 								case MSK_STK_PROPERTY_SCRIPT_OBJECT:
-									var_object=((ScriptObject *)current_arg->var_ref);
-									aux_string=var_object->getNativePointerClassName();
 
-									if(arg_idx_type==idx_type){
-										all_check=true;
+									if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
+										idx_type=IDX_BUILTIN_TYPE_STRING_PTR_C;
+
+										all_check =
+											(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->stk_value!=0)
+										  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
+									}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
+										ScriptObjectClass *var_object_class=((ScriptObjectClass *)current_arg->stk_value);
+										aux_string=var_object_class->getClassName();
+										if(arg_idx_type==idx_type){
+											all_check=true;
+										}
+									}else{
+										ScriptObject *var_object = NULL;
+										var_object=((ScriptObject *)current_arg->stk_value);
+										aux_string=var_object->getClassName();
+										if(arg_idx_type==idx_type){
+											all_check=true;
+										}
 									}
 									break;
 							}
@@ -482,7 +484,7 @@ apply_metamethod_error:
 			for( unsigned k = 0; k < n_args;k++){
 				StackElement *current_arg=&stk_arg[k];
 				if(current_arg->properties & MSK_STK_PROPERTY_PTR_STK){
-					current_arg = (StackElement *)current_arg->var_ref;
+					current_arg = (StackElement *)current_arg->stk_value;
 				}
 
 				if(k>0){
@@ -504,17 +506,20 @@ apply_metamethod_error:
 				case MSK_STK_PROPERTY_BOOL:
 					aux_string=k_str_bool_type;
 					break;
-				case MSK_STK_PROPERTY_STRING:
-					aux_string=k_str_string_type_ptr;
-					if(current_arg->var_ref==0){ /* is constant char */
-						aux_string=	k_str_const_char_type_ptr;
-					}
-					break;
 				case MSK_STK_PROPERTY_UNDEFINED:
 					aux_string="undefined";
 					break;
 				case MSK_STK_PROPERTY_SCRIPT_OBJECT:
-					aux_string = ((ScriptObject *)current_arg->var_ref)->getNativePointerClassName();
+					if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
+						aux_string=k_str_string_type_ptr;
+						if(current_arg->stk_value==0){ /* is constant char */
+							aux_string=	k_str_const_char_type_ptr;
+						}
+					}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
+						aux_string = ((ScriptObjectClass *)current_arg->stk_value)->getNativePointerClassName();
+					}else{ // object
+						aux_string = ((ScriptObject *)current_arg->stk_value)->getClassName();
+					}
 					break;
 				}
 				args_str+=zs_rtti::demangle(aux_string);
@@ -538,7 +543,7 @@ apply_metamethod_error:
 					continue;
 				}
 
-				ScriptFunction *irfs = (ScriptFunction *)stk_element->var_ref;
+				ScriptFunction *irfs = (ScriptFunction *)stk_element->stk_value;
 
 
 				if(irfs->symbol.name == symbol_to_find){
@@ -547,7 +552,7 @@ apply_metamethod_error:
 						str_candidates+="\tPossible candidates are:\n\n";
 					}
 					str_candidates+="\t\t-"+(calling_object==NULL?""
-							:calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::")
+							:calling_object->idx_script_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::")
 							:"")+irfs->symbol.name+"(";
 
 					for(unsigned a = 0; a < irfs->params->count; a++){
@@ -560,7 +565,7 @@ apply_metamethod_error:
 									GET_IDX_2_CLASS_C_STR(this,((FunctionParam *)irfs->params->items[a])->idx_type
 							));
 						}else{ /* typic var ... */
-							str_candidates+="arg"+zs_strutils::int_to_str(a+1);
+							str_candidates+="arg"+zs_strutils::zs_int_to_str(a+1);
 						}
 					}
 					str_candidates+=");\n";
@@ -571,7 +576,7 @@ apply_metamethod_error:
 			if(n_candidates == 0){
 				VM_ERROR("Cannot find %s \"%s%s(%s)\".\n\n",
 						is_constructor ? "constructor":"function",
-						calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+						calling_object==NULL?"":calling_object->idx_script_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 								calling_function->getInstructionSymbolName(instruction),
 						args_str.c_str()
 				);
@@ -581,7 +586,7 @@ apply_metamethod_error:
 			else{
 				VM_ERROR("Cannot match %s \"%s%s(%s)\" .\n\n%s",
 					is_constructor ? "constructor":"function",
-					calling_object==NULL?"":calling_object->idx_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+					calling_object==NULL?"":calling_object->idx_script_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
 							calling_function->getInstructionSymbolName(instruction),
 					args_str.c_str(),
 					str_candidates.c_str());
@@ -594,10 +599,14 @@ apply_metamethod_error:
 
 	inline StackElement VirtualMachine::performAddString(StackElement *stk_result_op1,StackElement *stk_result_op2){
 		// we have to create an new string variable
+		if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){
+			THROW_RUNTIME_ERROR("Expected both operants as string var");
+		}
+
 
 		//std::string *str;
 		ScriptObjectString *script_var_string = NEW_STRING_VAR;
-		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STK_PROPERTY_STRING};
+		StackElement stk_element={script_var_string, MSK_STK_PROPERTY_SCRIPT_OBJECT};
 		script_var_string->initSharedPtr();
 
 		std::string str1;
@@ -620,7 +629,7 @@ apply_metamethod_error:
 		for(unsigned i=0; i < 2; i++){
 			StackElement *stk_src_item=(*stk_src_it);
 			if(stk_src_item->properties & MSK_STK_PROPERTY_PTR_STK){
-				stk_src_item=(StackElement *)stk_src_item->var_ref;
+				stk_src_item=(StackElement *)stk_src_item->stk_value;
 			}
 
 			switch(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
@@ -628,16 +637,13 @@ apply_metamethod_error:
 				*(*str_dst_it)="undefined";
 				break;
 			case MSK_STK_PROPERTY_ZS_INT:
-				*(*str_dst_it)=zs_strutils::int_to_str((zs_int)(stk_src_item)->stk_value);
+				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->stk_value);
 				break;
 			case MSK_STK_PROPERTY_FLOAT:
 				*(*str_dst_it)=zs_strutils::float_to_str(*((float *)&((stk_src_item)->stk_value)));
 				break;
 			case MSK_STK_PROPERTY_BOOL:
 				*(*str_dst_it)=(stk_src_item)->stk_value == 0?"false":"true";
-				break;
-			case MSK_STK_PROPERTY_STRING:
-				*(*str_dst_it)=(const char *)(stk_src_item)->stk_value;
 				break;
 			case MSK_STK_PROPERTY_FUNCTION:
 				*(*str_dst_it)="function";
@@ -647,7 +653,7 @@ apply_metamethod_error:
 				break;
 			default:
 				if(stk_src_item->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					*(*str_dst_it)=((ScriptObject *)(stk_src_item)->var_ref)->toString();
+					*(*str_dst_it)=((ScriptObjectAnonymous *)(stk_src_item)->stk_value)->toString();
 				}
 				else{
 					*(*str_dst_it)="unknow";
@@ -662,28 +668,23 @@ apply_metamethod_error:
 		}
 
 		// save result
-		script_var_string->str_value=str1+str2;
-		stk_element.stk_value=(void *)script_var_string->str_value.c_str();
+		script_var_string->set(str1+str2);
 
 		return stk_element;
 	}
 
 	inline StackElement VirtualMachine::performSubString(StackElement *stk_result_op1,StackElement *stk_result_op2){
 		// we have to create an new string variable
-		if((stk_result_op1->properties & stk_result_op1->properties) != MSK_STK_PROPERTY_STRING){
+		if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){
 			THROW_RUNTIME_ERROR("Expected both operants as string var");
 		}
 
 		//std::string *str;
 		ScriptObjectString *script_var_string = NEW_STRING_VAR;
-		StackElement stk_element={(void *)script_var_string->str_value.c_str(),script_var_string, MSK_STK_PROPERTY_STRING};
+		StackElement stk_element={script_var_string, MSK_STK_PROPERTY_SCRIPT_OBJECT};
 		script_var_string->initSharedPtr();
 
-
-		script_var_string->str_value=(const char *)stk_result_op1->stk_value;
-		script_var_string->str_value=zs_strutils::replace(script_var_string->str_value,(const char *)stk_result_op2->stk_value,"");
-
-		stk_element.stk_value=(void *)script_var_string->str_value.c_str();
+		script_var_string->set(zs_strutils::replace(script_var_string->toString(),stk_result_op2->toString(),""));
 
 		return stk_element;
 	}

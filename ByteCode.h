@@ -5,23 +5,30 @@
 
 #pragma once
 
-#define IS_BYTE_CODE_STORE_WITH_OPERATION(b) (ByteCode::BYTE_CODE_STORE_ADD<=(b) && (b) <=ByteCode::BYTE_CODE_STORE_SHR)
+
 
 namespace zetscript{
 
-	typedef enum:char{
+	typedef enum:unsigned char{
 
 		// ARITMETHIC OPERATORS.
-		BYTE_CODE_INVALID=-1,
 		BYTE_CODE_END_FUNCTION = 0,
-		BYTE_CODE_LOAD_TYPE_FIND,
-		BYTE_CODE_LOAD_TYPE_VARIABLE, // primitive value like number/std::string or boolean...
+		BYTE_CODE_FIND_VARIABLE,
+		BYTE_CODE_LOAD_GLOBAL,
+		BYTE_CODE_LOAD_LOCAL,
+		BYTE_CODE_LOAD_THIS,
+		BYTE_CODE_LOAD_ELEMENT_VECTOR,
+		BYTE_CODE_LOAD_ELEMENT_THIS,
+		BYTE_CODE_LOAD_ELEMENT_OBJECT,
 		//BYTE_CODE_LOAD_TYPE_STATIC, // primitive value like number/std::string or boolean...
-		BYTE_CODE_LOAD_TYPE_FUNCTION,
-		BYTE_CODE_LOAD_TYPE_UNDEFINED,
-		BYTE_CODE_LOAD_TYPE_NULL,
-		BYTE_CODE_LOAD_TYPE_CONSTANT,
-		BYTE_CODE_LOAD_TYPE_CLASS,
+		BYTE_CODE_LOAD_FUNCTION,
+		BYTE_CODE_LOAD_UNDEFINED,
+		BYTE_CODE_LOAD_STRING,
+		BYTE_CODE_LOAD_FLOAT,
+		BYTE_CODE_LOAD_BOOL,
+		BYTE_CODE_LOAD_ZS_INT,
+		BYTE_CODE_LOAD_CLASS,
+		BYTE_CODE_LOAD_STACK_ELEMENT,
 
 		BYTE_CODE_STORE, // mov expression to var
 		BYTE_CODE_STORE_ADD, //
@@ -62,23 +69,29 @@ namespace zetscript{
 		BYTE_CODE_JE, //
 		BYTE_CODE_JT, // goto if true ... goes end to conditional.
 		BYTE_CODE_CALL, // call function...
-		BYTE_CODE_NEW, // new operator...
+		BYTE_CODE_CALL_CONSTRUCTOR, // call function...
+		BYTE_CODE_NEW_CLASS, // new operator...
 		BYTE_CODE_DELETE,
 		BYTE_CODE_NEW_VECTOR, // Vector object
-		BYTE_CODE_NEW_OBJECT,
+		BYTE_CODE_NEW_ANONYMOUS,
 		BYTE_CODE_RET, // ret instruction ..
 		BYTE_CODE_PUSH_SCOPE,
 		BYTE_CODE_POP_SCOPE,
 		BYTE_CODE_IT_NEXT,
 		BYTE_CODE_IT_END,
-		BYTE_CODE_RESET_STACK,
 		BYTE_CODE_STORE_CONST,
-		BYTE_CODE_MAX
+		BYTE_CODE_RESET_STACK,
+		BYTE_CODE_PRE_INC,
+		BYTE_CODE_PRE_DEC,
+		BYTE_CODE_POST_INC,
+		BYTE_CODE_POST_DEC,
+		//---------------------------
+		BYTE_CODE_INVALID=255,
 
 	}ByteCode;
 
 
-	typedef enum:char {
+	typedef enum:unsigned char {
 			BYTE_CODE_METAMETHOD_EQU=0,  // ==
 			BYTE_CODE_METAMETHOD_NOT_EQU,  // !=
 			BYTE_CODE_METAMETHOD_LT,  // <
@@ -106,6 +119,35 @@ namespace zetscript{
 			BYTE_CODE_METAMETHOD_EXIST, // _exist
 			BYTE_CODE_METAMETHOD_MAX
 	}ByteCodeMetamethod;
+
+#define IS_BYTE_CODE_LOAD_VARIABLE_TYPE(byte_code) \
+(\
+  ((byte_code)==ByteCode::BYTE_CODE_LOAD_GLOBAL)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_THIS)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_LOCAL)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_VECTOR)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT)\
+)
+
+#define IS_BYTE_CODE_LOAD_CONSTANT(byte_code) \
+(\
+   ((byte_code)== BYTE_CODE_LOAD_BOOL) \
+|| ((byte_code)== BYTE_CODE_LOAD_ZS_INT) \
+|| ((byte_code)== BYTE_CODE_LOAD_FLOAT) \
+|| ((byte_code)== BYTE_CODE_LOAD_STRING) \
+)
+
+#define IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(byte_code) \
+(\
+   ((byte_code)== BYTE_CODE_LOAD_LOCAL) \
+|| ((byte_code)== BYTE_CODE_FIND_VARIABLE) \
+|| ((byte_code)== BYTE_CODE_LOAD_GLOBAL)\
+)
+
+
+#define IS_BYTE_CODE_STORE_WITH_OPERATION(b) 	(ByteCode::BYTE_CODE_STORE_ADD<=(b) && (b) <=ByteCode::BYTE_CODE_STORE_SHR)
+#define IS_BYTE_CODE_STORE(b) 					(ByteCode::BYTE_CODE_STORE_ADD<=(b) && (b) <=ByteCode::BYTE_CODE_STORE_SHR || (b)==ByteCode::BYTE_CODE_STORE)
 
 	const char * ByteCodeToStr(ByteCode  op);
 	const char * ByteCodeMetamethodToOperatorStr(ByteCodeMetamethod op);

@@ -33,7 +33,7 @@ namespace zetscript{
 		 float 		* parse_float(const std::string & );
 
 
-		 std::string int_to_str(zs_int number);
+		 std::string zs_int_to_str(zs_int number);
 		 std::string float_to_str(float number);
 		 std::string to_lower(const std::string & str);
 		 std::string to_upper(const std::string & str);

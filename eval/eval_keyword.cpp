@@ -13,81 +13,10 @@ namespace zetscript{
 
 		static int n_anonymous_function=0;
 
-		char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol){
-
-			char *aux_p = (char *)s;
-			std::string class_name;
-			*sc=NULL;
-
-			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-			// check whwther the function is anonymous or not.
-			aux_p=get_name_identifier_token(
-					eval_data
-					,aux_p
-					,line
-					,class_name);
-
-			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-			if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
-
-				if((*sc=GET_SCRIPT_CLASS(eval_data,class_name)) != NULL){
-					aux_p=get_name_identifier_token(
-							eval_data
-							,aux_p+2
-							,line
-							,member_symbol
-					);
-					return aux_p;
-				}else{
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class %s not found",class_name.c_str());
-				}
-			}
-			return NULL;
-		}
-
-		char * eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
-			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-			char *aux_p = (char *)s;
-			std::string symbol_value;
-			Keyword key_w;
-			EvalInstruction *eval_instruction;
-
-			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-			// check for keyword ...
-			key_w = is_keyword(aux_p);
-
-			if(key_w == Keyword::KEYWORD_DELETE){
-
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
-
-				aux_p=get_name_identifier_token(
-						eval_data
-						,aux_p
-						,line
-						,symbol_value
-				);
-
-				eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(BYTE_CODE_LOAD_TYPE_FIND));
-				eval_instruction->symbol.name=symbol_value;
-				eval_instruction->symbol.scope=scope_info;
-
-				eval_instruction->instruction_source_info=InstructionSourceInfo(
-					 eval_data->current_parsing_file
-					 ,line
-					 ,get_mapped_name(eval_data,symbol_value)
-				);
-
-				eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
-
-				return aux_p;
-			}
-
-			return NULL;
-		}
-
+		//------------------------------------------------------------------------------------------------------------------------------------------
+		//
+		// CLASS
+		//
 		char * eval_keyword_class(EvalData *eval_data,const char *s,int & line, Scope *scope_info){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
@@ -214,181 +143,83 @@ namespace zetscript{
 			}
 			return NULL;
 		}
-		//
-		//--------------------------------------------------------------------------------------------------------------------------------------------------------
-		//
-		//  KEYWORDS
-		//
 
-		char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
-			// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
-			// check for keyword ...
+		char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol){
+
 			char *aux_p = (char *)s;
-			Keyword key_w = is_keyword(s);
-			bool is_static = false;
-			bool is_constant = false;
+			std::string class_name;
+			*sc=NULL;
 
-			// check if static...
-			/*if(key_w==Keyword::KEYWORD_STATIC){
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
-				is_static=true;
-				key_w=is_keyword(aux_p);
-			}*/
-			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				int start_line=0;
-				char *start_var,*end_var;
-				ScriptClass *sc=NULL;
-				std::string s_aux,variable_name,pre_variable_name="";
-				std::string error;
-				Symbol *symbol_variable;
-				is_constant=key_w == Keyword::KEYWORD_CONST;
+			// check whwther the function is anonymous or not.
+			aux_p=get_name_identifier_token(
+					eval_data
+					,aux_p
+					,line
+					,class_name);
 
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				// check class scope...
-				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-					&& scope_info->scope_base == scope_info
-					&& scope_info->scope_parent == NULL // class
-				){
-					sc=scope_info->script_class;
+			if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
 
-					if(is_constant == false){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," unexpected \"var\" keyword in class");
-					}
-
-					pre_variable_name=sc->symbol_class.name+"::";
-				}
-
-				if(is_constant){ // scope_info will be global scope...
-					if(!(sc!=NULL || scope_info == MAIN_SCOPE(eval_data))){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"\"const\" is allowed only in class or global");
-					}
-
-					// always static or constant are global symbols...
-					scope_info = MAIN_SCOPE(eval_data);
-				}
-
-
-				do{ // JE: added multivar feature.
-
-					if(*aux_p == ','){ // is new variable
-						aux_p++;
-					}
-
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-					start_var=aux_p;
-					start_line = line;
-				//	Symbol *sybol_variable;
-
-					line = start_line;
-
-					// check whwther the function is anonymous with a previous arithmetic operation ....
-					end_var=get_name_identifier_token(
-							eval_data,
-							aux_p,
-							line,
-							variable_name
-					);
-
-					ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
-
-					Keyword keyw = is_keyword(variable_name.c_str());
-
-					if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_data_keywords[keyw].str);
-					}
-
-					// register symbol...
-					try{
-						symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
-							scope_info
-							, eval_data->current_parsing_file
-							, line
-							, pre_variable_name+variable_name
-						);
-
-						if(sc != NULL){
-							Symbol *const_symbol=sc->registerMemberVariable(
-								error
-								,eval_data->current_parsing_file
-								,line
-								,variable_name
-								,is_constant?SYMBOL_PROPERTY_CONST:0
-							);
-
-							if(const_symbol==NULL){
-								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"%s",error.c_str());
-							}
-
-							const_symbol->ref_ptr=symbol_variable->ref_ptr;
-						}
-					}catch(std::exception & ex){
-						EVAL_ERROR("%s",ex.what());
-					}
-
-
-					// advance identifier length chars
-					aux_p=end_var;
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-					if(*aux_p == '='){
-
-						std::vector<EvalInstruction *>	 		constant_instructions;
-
-						// try to evaluate expression...
-						if(is_constant){ // load constant...
-							EvalInstruction *eval_instruction;
-							eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(
-								BYTE_CODE_LOAD_TYPE_VARIABLE
-							));
-
-							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
-							eval_instruction->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, pre_variable_name+variable_name);
-							eval_instruction->symbol.name=pre_variable_name+variable_name;
-							eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
-						}
-
-						if((aux_p = eval_expression(
+				if((*sc=GET_SCRIPT_CLASS(eval_data,class_name)) != NULL){
+					aux_p=get_name_identifier_token(
 							eval_data
-							,is_constant?aux_p+1:start_var
-							,start_line
-							,scope_info
-							,&eval_data->current_function->instructions
-							,{}
-							,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
-						))==NULL){
-							return NULL;
-						}
-
-						if(is_constant){ // make ptr as constant after variable is saved
-							eval_data->current_function->instructions.push_back(new EvalInstruction(
-								BYTE_CODE_STORE_CONST
-							));
-						}
-
-						line = start_line;
-					}
-					else if(is_constant){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Uninitialized constant symbol %s%s"
-								,sc!=NULL?zs_strutils::format("::%s",sc->symbol_class.name.c_str()).c_str():""
-								,variable_name.c_str());
-					}
-
-				}while(*aux_p == ','); // is new variable
-
-				// do not eat ';' because for it has to check
-				/*if(*aux_p == ';'){
-					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-				}*/
-
-				return aux_p;
+							,aux_p+2
+							,line
+							,member_symbol
+					);
+					return aux_p;
+				}else{
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class %s not found",class_name.c_str());
+				}
 			}
 			return NULL;
 		}
 
-		char * eval_attrib(
+		char * eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+			char *aux_p = (char *)s;
+			std::string symbol_value;
+			Keyword key_w;
+			EvalInstruction *eval_instruction;
+
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+			// check for keyword ...
+			key_w = is_keyword(aux_p);
+
+			if(key_w == Keyword::KEYWORD_DELETE){
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+
+				aux_p=get_name_identifier_token(
+						eval_data
+						,aux_p
+						,line
+						,symbol_value
+				);
+
+				eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(BYTE_CODE_FIND_VARIABLE));
+				eval_instruction->symbol.name=symbol_value;
+				eval_instruction->symbol.scope=scope_info;
+
+				eval_instruction->instruction_source_info=InstructionSourceInfo(
+					 eval_data->current_parsing_file
+					 ,line
+					 ,get_mapped_name(eval_data,symbol_value)
+				);
+
+				eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
+
+				return aux_p;
+			}
+
+			return NULL;
+		}
+
+		char * eval_keyword_class_attrib(
 				EvalData *eval_data
 				, const char *s
 				, int & line
@@ -396,7 +227,7 @@ namespace zetscript{
 			){
 
 			fprintf(stderr,"===============================\n");
-			fprintf(stderr,"Eval_attrib not implemented yet\n");
+			fprintf(stderr,"eval_keyword_class_attrib not implemented yet\n");
 			fprintf(stderr,"===============================\n");
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
@@ -637,6 +468,183 @@ namespace zetscript{
 			return NULL;
 		}
 
+		//
+		//--------------------------------------------------------------------------------------------------------------------------------------------------------
+		//
+		//  VAR
+		//
+		char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+			// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
+			// check for keyword ...
+			char *aux_p = (char *)s;
+			Keyword key_w = is_keyword(s);
+			bool is_static = false;
+			bool is_constant = false;
+
+			// check if static...
+			/*if(key_w==Keyword::KEYWORD_STATIC){
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+				is_static=true;
+				key_w=is_keyword(aux_p);
+			}*/
+			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
+
+				int start_line=0;
+				char *start_var,*end_var;
+				ScriptClass *sc=NULL;
+				std::string s_aux,variable_name,pre_variable_name="";
+				std::string error;
+				Symbol *symbol_variable;
+				is_constant=key_w == Keyword::KEYWORD_CONST;
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+
+				// check class scope...
+				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+					&& scope_info->scope_base == scope_info
+					&& scope_info->scope_parent == NULL // class
+				){
+					sc=scope_info->script_class;
+
+					if(is_constant == false){
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," unexpected \"var\" keyword in class");
+					}
+
+					pre_variable_name=sc->symbol_class.name+"::";
+				}
+
+				if(is_constant){ // scope_info will be global scope...
+					if(!(sc!=NULL || scope_info == MAIN_SCOPE(eval_data))){
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"\"const\" is allowed only in class or global");
+					}
+
+					// always static or constant are global symbols...
+					scope_info = MAIN_SCOPE(eval_data);
+				}
+
+
+				do{ // JE: added multivar feature.
+
+					if(*aux_p == ','){ // is new variable
+						aux_p++;
+					}
+
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					start_var=aux_p;
+					start_line = line;
+				//	Symbol *sybol_variable;
+
+					line = start_line;
+
+					// check whwther the function is anonymous with a previous arithmetic operation ....
+					end_var=get_name_identifier_token(
+							eval_data,
+							aux_p,
+							line,
+							variable_name
+					);
+
+					ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
+
+					Keyword keyw = is_keyword(variable_name.c_str());
+
+					if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_data_keywords[keyw].str);
+					}
+
+					// register symbol...
+					try{
+						symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
+							scope_info
+							, eval_data->current_parsing_file
+							, line
+							, pre_variable_name+variable_name
+						);
+
+						if(sc != NULL){
+							Symbol *const_symbol=sc->registerMemberVariable(
+								error
+								,eval_data->current_parsing_file
+								,line
+								,variable_name
+								,is_constant?SYMBOL_PROPERTY_CONST:0
+							);
+
+							if(const_symbol==NULL){
+								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"%s",error.c_str());
+							}
+
+							const_symbol->ref_ptr=symbol_variable->ref_ptr;
+						}
+					}catch(std::exception & ex){
+						EVAL_ERROR("%s",ex.what());
+					}
+
+
+					// advance identifier length chars
+					aux_p=end_var;
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					if(*aux_p == '='){
+
+						std::vector<EvalInstruction *>	 		constant_instructions;
+
+						// try to evaluate expression...
+						if(is_constant){ // load constant...
+							EvalInstruction *eval_instruction;
+							eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(
+								BYTE_CODE_LOAD_VARIABLE
+							));
+
+							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
+							eval_instruction->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, pre_variable_name+variable_name);
+							eval_instruction->symbol.name=pre_variable_name+variable_name;
+							eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
+						}
+
+						if((aux_p = eval_expression(
+							eval_data
+							,is_constant?aux_p+1:start_var
+							,start_line
+							,scope_info
+							,&eval_data->current_function->instructions
+							,{}
+						))==NULL){
+							return NULL;
+						}
+
+						if(is_constant){ // make ptr as constant after variable is saved
+							eval_data->current_function->instructions.push_back(new EvalInstruction(
+								BYTE_CODE_STORE_CONST
+							));
+						}
+
+						line = start_line;
+					}
+					else if(is_constant){
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Uninitialized constant symbol %s%s"
+								,sc!=NULL?zs_strutils::format("::%s",sc->symbol_class.name.c_str()).c_str():""
+								,variable_name.c_str());
+					}
+
+				}while(*aux_p == ','); // is new variable
+
+				// do not eat ';' because for it has to check
+				/*if(*aux_p == ';'){
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+				}*/
+
+				return aux_p;
+			}
+			return NULL;
+		}
+
+
+		//------------------------------------------------------------------------------------------------------------------------------------------
+		//
+		// FUNCTION
+		//
 		char * eval_keyword_function(
 				EvalData *eval_data
 				, const char *s
@@ -925,7 +933,7 @@ namespace zetscript{
 						, scope_info
 						,&eval_data->current_function->instructions
 						,{}
-						,EVAL_EXPRESSION_PROPERTY_ALLOW_EXPRESSION_SEQUENCE | EVAL_EXPRESSION_PROPERTY_NO_ALLOW_EXPRESSION_SEQUENCE_ASSIGNMENT
+						,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION
 						//,std::vector<char>{';'}
 				))!= NULL){
 
@@ -1274,8 +1282,19 @@ namespace zetscript{
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 						if(*aux_p != ')' ){ // finally do post op...
+							aux_p = eval_expression(
+								eval_data
+								,(const char *)aux_p
+								,line
+								,new_scope
+								,&post_operations
+								,{}
+								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_RESET_STACK // it allows expression sequence and it does a reset stack in the end
+							);
 
-							if(*aux_p == ',' ){
+
+
+							/*if(*aux_p == ',' ){
 								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected ) ");
 							}
 
@@ -1298,7 +1317,7 @@ namespace zetscript{
 									}
 								}
 
-							}while(*aux_p != ')' && *aux_p != 0);
+							}while(*aux_p != ')' && *aux_p != 0);*/
 						}
 					}
 
@@ -1364,6 +1383,10 @@ namespace zetscript{
 			return NULL;
 		}
 
+		//------------------------------------------------------------------------------------------------------------------------------------------
+		//
+		// CONDITIONALS
+		//
 		char * eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.

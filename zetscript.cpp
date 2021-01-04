@@ -179,20 +179,24 @@ namespace zetscript{
 	//
 	// CONSTANT MANAGEMENT
 
-	ConstantValue *ZetScript::getRegisteredConstantValue(const std::string & const_name){
+	StackElement *ZetScript::getRegisteredConstantScriptObjectString(const std::string & const_name){
 
-		if((constant_values).count(const_name) == 1){
-			return (constant_values)[const_name];
+		if(constant_string_objects==NULL){
+			constant_string_objects=new std::map<std::string,StackElement *>();
+		}
+
+		if((constant_string_objects)->count(const_name) == 1){
+			return (constant_string_objects)->at(const_name);
 		}
 		return NULL;
 	}
 
-	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, ConstantValue constant_value){
+	/*ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, ConstantValue constant_value){
 		if(getRegisteredConstantValue(const_name) != NULL){
 			THROW_RUNTIME_ERROR("internal:constant %s already exist",const_name.c_str());
 		}
 
-		ConstantValue *info_ptr=new ConstantValue;
+		StackElement *info_ptr=new StackElement;
 		*info_ptr=constant_value;
 		(constant_values)[const_name]=info_ptr;
 		return info_ptr;
@@ -200,28 +204,32 @@ namespace zetscript{
 
 	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, void *obj, unsigned short properties){
 		return registerConstantValue(const_name,{obj,NULL,properties});
-	}
+	}*/
 
-	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, ScriptObjectString * _value){
+	StackElement * ZetScript::registerConstantScriptObjectString(const std::string & const_name){
 
-		unsigned short properties=MSK_STK_PROPERTY_STRING | MSK_STK_PROPERTY_READ_ONLY;
-		StackElement *stk;
+		StackElement *stk=NULL;
+		ScriptObjectString *so=NULL;
 
-		if((stk = getRegisteredConstantValue(const_name))!=NULL){
+		if((stk = getRegisteredConstantScriptObjectString(const_name))!=NULL){
 			return stk;
 		}
 
+		stk=new StackElement;
+		(constant_string_objects)->at(const_name)=stk;
 
-		stk=registerConstantValue(const_name,(void *)_value,properties);
+		so=new ScriptObjectString(this);
 		// swap values stk_ref/stk_value
-		stk->var_ref=(void *)_value;
-		stk->stk_value=(char *)_value->str_value.c_str();
+		so->set(const_name);
+
+		stk->stk_value=so;
+		stk->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT | MSK_STK_PROPERTY_READ_ONLY;
 
 		return stk;
 
 	}
 
-	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, zs_int _value){
+	/*ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, zs_int _value){
 		zs_int value = _value;
 		unsigned short properties=MSK_STK_PROPERTY_ZS_INT;
 		StackElement *stk;
@@ -242,7 +250,7 @@ namespace zetscript{
 			return stk;
 		}
 		return registerConstantValue(const_name,(void *)value,properties);
-	}
+	}*/
 
 	// CONSTANT MANAGEMENT
 	//
@@ -323,9 +331,9 @@ namespace zetscript{
 
 		if(se != NULL){
 
-			if(se->properties & MSK_STK_PROPERTY_STRING){
+			if(STK_IS_SCRIPT_OBJECT_STRING(se)){
 
-				eval_string = ((const char *)se->stk_value);
+				eval_string = ((ScriptObjectString *)se->stk_value)->toString();
 				return &eval_string;
 			}
 			else{
@@ -400,7 +408,7 @@ namespace zetscript{
 		}
 	}
 
-	void ZetScript::getScriptObject(const std::string &function_access,ScriptObject **calling_obj,ScriptFunction **fun_obj ){
+	void ZetScript::getScriptObject(const std::string &function_access,ScriptObjectClass **calling_obj,ScriptFunction **fun_obj ){
 
 	}
 
@@ -419,10 +427,10 @@ namespace zetscript{
 					v >= idx_start;
 					v--) {
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
-				ScriptObject *var = NULL;
+				ScriptObjectAnonymous *var = NULL;
 
-				if(vm_stk_element->properties &MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					var =((ScriptObject *)(vm_stk_element->var_ref));
+				if(vm_stk_element->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					var =((ScriptObjectAnonymous *)(vm_stk_element->stk_value));
 					if(var){
 						if(var->shared_pointer != NULL){
 							if(!var->unrefSharedPtr(IDX_CALL_STACK_MAIN)){
@@ -433,7 +441,7 @@ namespace zetscript{
 				}
 
 				main_function_object->registered_symbols->pop_back();
-				*vm_stk_element--={0,NULL,MSK_STK_PROPERTY_UNDEFINED};
+				*vm_stk_element--=stk_undefined;
 			}
 		}
 
@@ -477,22 +485,16 @@ namespace zetscript{
 
 		virtual_machine=NULL;
 
-		for(std::map<std::string,ConstantValue *>::iterator it=constant_values.begin();it!=constant_values.end();it++){
-			ConstantValue *icv=it->second;
-			switch(GET_MSK_STK_PROPERTY_TYPES(icv->properties)){
-			default:
-				break;
-			case MSK_STK_PROPERTY_ZS_INT:
-			case MSK_STK_PROPERTY_BOOL:
-			case MSK_STK_PROPERTY_FLOAT:
-				break;
-			case MSK_STK_PROPERTY_STRING:
-				delete (ScriptObjectString *)icv->var_ref;
-				break;
+		if(constant_string_objects != NULL){
+
+			for(std::map<std::string,StackElement *>::iterator it=constant_string_objects->begin();it!=constant_string_objects->end();it++){
+				StackElement *icv=it->second;
+				delete (ScriptObjectString *)icv->stk_value;
+				delete icv;
 			}
-			delete icv;
+			constant_string_objects->clear();
+			delete constant_string_objects;
 		}
-		constant_values.clear();
 
 		eval::deinit();
 

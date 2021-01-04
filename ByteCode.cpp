@@ -36,14 +36,20 @@ namespace zetscript{
 			case BYTE_CODE_STORE_XOR: 	      	return "STORE_XOR"; // ^=
 			case BYTE_CODE_STORE_SHL: 	      	return "STORE_SHL"; // <<=
 			case BYTE_CODE_STORE_SHR: 	      	return "STORE_SHR"; // >>=
-			case BYTE_CODE_LOAD_TYPE_VARIABLE:	return "LOAD_VAR"; // load type var
-			case BYTE_CODE_LOAD_TYPE_FIND:      return "LOAD_???"; // load to find
-			case BYTE_CODE_LOAD_TYPE_FUNCTION:	return "LOAD_FUN"; // load to find
-			case BYTE_CODE_LOAD_TYPE_UNDEFINED:	return "LOAD_UNDEF"; // load to find
-			case BYTE_CODE_LOAD_TYPE_NULL:		return "LOAD_NULL"; // load to find
-			case BYTE_CODE_LOAD_TYPE_CONSTANT:	return "LOAD_CONST"; // load to find
-			//case BYTE_CODE_LOAD_TYPE_STATIC:	return "LOAD_STATIC"; // load to find
-			case BYTE_CODE_LOAD_TYPE_CLASS:		return "LOAD_CLASS"; // load to find
+			case BYTE_CODE_LOAD_LOCAL:			return "LOAD_LOCAL"; // load type var
+			case BYTE_CODE_LOAD_GLOBAL:			return "LOAD_GLOBAL"; // load type var
+			case BYTE_CODE_LOAD_THIS:			return "LOAD_THIS"; // load type var
+			case BYTE_CODE_FIND_VARIABLE:      	return "LOAD_???"; // load to find global
+			case BYTE_CODE_LOAD_ELEMENT_VECTOR:	return "LOAD_EVEC"; // load element vector
+			case BYTE_CODE_LOAD_ELEMENT_OBJECT:	return "LOAD_EOBJ"; // load element object
+			case BYTE_CODE_LOAD_FUNCTION:		return "LOAD_FUNCT"; // load function
+			case BYTE_CODE_LOAD_UNDEFINED:		return "LOAD_UNDEF"; // load undfined
+			case BYTE_CODE_LOAD_STACK_ELEMENT:	return "LOAD_STK"; // load stack element
+			case BYTE_CODE_LOAD_STRING:			return "LOAD_STR"; // load string
+			case BYTE_CODE_LOAD_FLOAT:			return "LOAD_FLT"; // load float
+			case BYTE_CODE_LOAD_BOOL:			return "LOAD_BOOL"; // load bool
+			case BYTE_CODE_LOAD_ZS_INT:			return "LOAD_INT"; // load zs_int
+			case BYTE_CODE_LOAD_CLASS:			return "LOAD_CLASS"; // load to find
 			case BYTE_CODE_JMP:         		return "JMP"; // Unconditional jump.
 			case BYTE_CODE_JNT:         		return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          		return "JT"; // goto if true ... goes end to conditional.
@@ -52,15 +58,14 @@ namespace zetscript{
 			case BYTE_CODE_NEW_VECTOR: 			return "NEW_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT: return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 				return "RET"; // Value pop for stdvector
-			case BYTE_CODE_NEW: 				return "NEW"; // New object (CREATE)
+			case BYTE_CODE_NEW_CLASS: 			return "NEW_CLASS"; // New object (CREATE)
 			case BYTE_CODE_DELETE:				return "DELETE";
 			case BYTE_CODE_POP_SCOPE: 			return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 			return "PUSH_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:	return "PUSH_ATTR"; // New object (CREATE)
-			case BYTE_CODE_NEW_OBJECT: 			return "NEW_OBJ"; // New object (CREATE)
+			case BYTE_CODE_NEW_ANONYMOUS:		return "NEW_OBJ"; // New object (CREATE)
 			case BYTE_CODE_IT_END: 				return "IT_END"; // BYTE_CODE_IT_CHK_END
 			case BYTE_CODE_IT_NEXT:				return "IT_NEXT"; // BYTE_CODE_SET_AND_NEXT
-			case BYTE_CODE_RESET_STACK:			return "RESET_STACK"; // BYTE_CODE_SET_AND_NEXT
 			case BYTE_CODE_STORE_CONST:			return "STORE_CONST"; // BYTE_CODE_STORE_CONST
 
 			default:

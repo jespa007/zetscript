@@ -103,28 +103,25 @@ namespace zetscript{
 			return  is_access_punctuator(s) || (*s==':' && *(s+1)==':');
 		}
 
-
-
 		// to std::string utils ...
 		char * eval_symbol(EvalData *eval_data
 				,const char *start_word
 				, int line
 				,TokenNode * token_node
-				, PreOperator pre_operator
-				, PrePostSelfOperation pre_self_operation
+				, PreOperation pre_operation
+				, PostOperation post_operation
 		){
 			// PRE:
 			bool is_constant_number=false, is_constant_boolean=false;
 			EvalInstruction *instruction=NULL;
-			ByteCode byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT;
+			zs_int value = ZS_IDX_UNDEFINED;
+			ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 			token_node->token_type = TokenType::TOKEN_TYPE_LITERAL;
-			intptr_t obj=ZS_IDX_UNDEFINED;
 			void *get_obj=NULL,*const_obj=NULL;
 			char *aux=(char *)start_word;
 			std::string str_value="";
 			 bool error=false;
-			 bool is_constant_string=false;
-			 unsigned short instruction_properties=0;
+//			 unsigned short instruction_properties=0;
 
 			 if((aux=parse_literal_number(
 					 eval_data
@@ -134,33 +131,26 @@ namespace zetscript{
 			))!=NULL){ // int/bool/float, etc
 
 				if((const_obj=zs_strutils::parse_int(str_value))!=NULL){ // int literal
-					zs_int value = *((zs_int *)const_obj);
-					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
+					value = *((zs_int *)const_obj);
+					if(pre_operation==PreOperation::PRE_OPERATION_NEG){
+						pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
 						value=-value;
-						str_value="-"+str_value;
 					}
 
 					delete (zs_int *)const_obj;
-					obj=(zs_int)eval_data->zs->registerConstantValue(str_value,value);
-					is_constant_number=true;
-				}else if((const_obj=zs_strutils::parse_float(str_value))!=NULL){ // float literal
-					float value = *((float *)const_obj);
+					byte_code = ByteCode::BYTE_CODE_LOAD_ZS_INT;
 
-					if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
-						value=-value;
-						str_value="-"+str_value;
+				}else if((const_obj=zs_strutils::parse_float(str_value))!=NULL){ // float literal
+					float value_flt = *((float *)const_obj);
+
+					if(pre_operation==PreOperation::PRE_OPERATION_NEG){
+						pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
+						value_flt=-value_flt;
 					}
 
 					delete (float *)const_obj;
-					void *value_ptr;
-					memcpy(&value_ptr,&value,sizeof(float));
-
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
-						obj = (zs_int)get_obj;
-					}else{
-						obj=(zs_int)eval_data->zs->registerConstantValue(str_value,value_ptr,MSK_STK_PROPERTY_FLOAT);
-					}
-					is_constant_number=true;
+					memcpy(&value,&value_flt,sizeof(float));
+					byte_code = ByteCode::BYTE_CODE_LOAD_FLOAT;
 				}
 				else{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unable to parse literal \"%s\"",str_value.c_str());
@@ -189,17 +179,9 @@ namespace zetscript{
 						 zs_strutils::copy_from_ptr_diff(str_value,start_word+1,aux);
 					}
 					aux++;
-					std::string key_value="\""+str_value+"\"";
-
-					if((get_obj = eval_data->zs->getRegisteredConstantValue(key_value))!=NULL){
-						obj = (zs_int)get_obj;
-					}else{
-						ScriptObjectString *s=new ScriptObjectString(eval_data->zs);
-						s->str_value=str_value;
-						obj=(zs_int)eval_data->zs->registerConstantValue(key_value,s);
-					 }
-
-				}else{ // is speacial word or identifier
+					eval_data->zs->registerConstantScriptObjectString(str_value);
+					byte_code = ByteCode::BYTE_CODE_LOAD_STRING;
+				}else{ // is undefined,boolean or identifier
 					bool end=false;
 					while(!end){
 						pre=*aux;
@@ -210,29 +192,23 @@ namespace zetscript{
 						}
 					}
 
-					if(str_value=="null"){ // null literal
-						byte_code=BYTE_CODE_LOAD_TYPE_NULL;
-					}else if(str_value=="undefined"){ // undefined literal
-						byte_code=BYTE_CODE_LOAD_TYPE_UNDEFINED;
+					if(str_value=="undefined"){ // undefined literal
+						byte_code=ByteCode::BYTE_CODE_LOAD_UNDEFINED;
 					}else if((const_obj=zs_strutils::parse_bool(str_value))!=NULL){ // bool literal
 
-						bool value = *((bool *)const_obj);
-						if(pre_operator==PreOperator::PRE_OPERATOR_NOT){
-							value=!value;
-							str_value="!"+str_value;
+						bool value_bool = *((bool *)const_obj);
+						if(pre_operation==PreOperation::PRE_OPERATION_NOT){
+							pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
+							value_bool=!value_bool;
+							//str_value="!"+str_value;
 						}
 
 						delete (bool *)const_obj;
-
-						if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value))!=NULL){
-							obj = (zs_int)get_obj;
-						}else{
-							obj=(zs_int)eval_data->zs->registerConstantValue(str_value,(void *)value,MSK_STK_PROPERTY_BOOL);
-						}
-						is_constant_boolean=true;
-					}else{ // it should be an identifier token  ...
+						value = value_bool;
+						byte_code=ByteCode::BYTE_CODE_LOAD_BOOL;
+					}else{ // it's an identifier token  ...
 						token_node->token_type = TokenType::TOKEN_TYPE_IDENTIFIER;
-						byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
+						byte_code = ByteCode::BYTE_CODE_FIND_VARIABLE;
 
 						if(str_value == SYMBOL_VALUE_THIS || str_value == SYMBOL_VALUE_SUPER){
 
@@ -244,14 +220,10 @@ namespace zetscript{
 								}
 							}
 
-							instruction_properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
-
-						}else if((get_obj = eval_data->zs->getRegisteredConstantValue(str_value)) != NULL){  // check if symbol is constant ...
-							byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT;
-							obj=(zs_int)get_obj;
+							byte_code= ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS;// MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 						}else{
 							// should be an identifier and should be find after eval function or at runtime...
-							byte_code = ByteCode::BYTE_CODE_LOAD_TYPE_FIND;
+							//byte_code = ByteCode::BYTE_CODE_FIND_VARIABLE;
 
 							check_identifier_name_expression_ok(
 								eval_data
@@ -262,51 +234,366 @@ namespace zetscript{
 					}
 				}
 			 }
-			 // check pre self operation (only allowed on indentifiers...
-			 if(
-					 pre_self_operation != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
-					 && token_node->token_type != TokenType::TOKEN_TYPE_IDENTIFIER
-			){
-				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers ",eval_data_pre_post_self_operations[ pre_self_operation].str);
-			 }
 
-			 // check pre operators...
-			 if((   token_node->pre_operator == PreOperator::PRE_OPERATOR_NEG
-			    || token_node->pre_operator == PreOperator::PRE_OPERATOR_POS)
-					&& !(is_constant_number || (token_node->token_type == TokenType::TOKEN_TYPE_IDENTIFIER))
-			     )
-			 {
-				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"+/- pre operator not allowed before \"%s\". Only allowed on  numbers or identifiers",str_value.c_str(),eval_data_pre_operators[ token_node->pre_operator].str);
-			 }
-
-			 if(
-					 (token_node->pre_operator == PreOperator::PRE_OPERATOR_NOT)
-				  && !(is_constant_number || is_constant_boolean || (token_node->token_type == TokenType::TOKEN_TYPE_IDENTIFIER))
-			     )
-			 {
-				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"! pre operator not allowed before \"%s\". only allowed on constants booleans/numbers or identifiers ",str_value.c_str(),eval_data_pre_operators[ token_node->pre_operator].str);
-			 }
-
-			 if((token_node->pre_operator == PreOperator::PRE_OPERATOR_NEG) || (token_node->pre_operator == PreOperator::PRE_OPERATOR_NOT)){
-				 instruction_properties|=MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT;
-			 }
 
 			token_node->value = str_value;
 			token_node->instructions.push_back(
-				instruction=new EvalInstruction(
-						byte_code
+				new EvalInstruction(
+					byte_code
+					,ZS_IDX_UNDEFINED
+					,value
+				)
+			);
+
+			if(		(pre_operation == PreOperation::PRE_OPERATION_NEG)
+				|| 	(pre_operation == PreOperation::PRE_OPERATION_NOT)
+				|| 	(pre_operation == PreOperation::PRE_OPERATION_INC)
+				|| 	(pre_operation == PreOperation::PRE_OPERATION_DEC)
+			){
+				if(token_node->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"expected identifier before pre operation \"%s\"",eval_data_pre_operations[ pre_operation].str);
+				}
+
+				token_node->instructions.push_back(
+					new EvalInstruction(
+						pre_operation == PreOperation::PRE_OPERATION_NEG ? ByteCode::BYTE_CODE_NEG:
+						pre_operation == PreOperation::PRE_OPERATION_NOT ? ByteCode::BYTE_CODE_NOT:
+						pre_operation == PreOperation::PRE_OPERATION_DEC ? ByteCode::BYTE_CODE_PRE_DEC:
+						ByteCode::BYTE_CODE_PRE_INC
+					)
+				);
+
+			}
+			else if(
+					(post_operation == PostOperation::POST_OPERATION_INC)
+				|| 	(post_operation == PostOperation::POST_OPERATION_DEC)
+			){
+				unsigned short properties = 0;
+
+				if(token_node->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"expected identifier after post operation \"%s\"",eval_data_post_operations[ post_operation].str);
+				}
+
+				if(token_node->pre_operation != PreOperation::PRE_OPERATION_UNKNOWN){
+				   if(token_node->pre_operation != PreOperation::PRE_OPERATION_NEG){
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Cannot combine pre-operation \"%s\" with post-operation \"%s\" on \"%s\""
+							,eval_data_pre_operations[ pre_operation].str
+							,eval_data_pre_operations[ post_operation].str
+							,token_node->value.c_str()
+						);
+				   }
+
+				   properties=MSK_INSTRUCTION_PROPERTY_PRE_NEG;
+
+
+				}
+
+				token_node->instructions.push_back(
+					new EvalInstruction(
+						post_operation == PostOperation::POST_OPERATION_DEC ? ByteCode::BYTE_CODE_POST_DEC:
+						ByteCode::BYTE_CODE_POST_INC
 						,ZS_IDX_UNDEFINED
-						,obj
-						,instruction_properties
-			));
+						,ZS_IDX_UNDEFINED
+						,properties
+					)
+				);
+
+			}
 
 			return aux;
 			// POST: token as literal or identifier
 		}
 
+		EvalInstruction * eval_expression_perform_K_operation(EvalData *eval_data,ByteCode byte_code, Instruction *i1){
+			EvalInstruction *result_instruction=NULL;
+
+			if(i1->isConstant()==fakse){
+				return NULL;
+			}
+
+
+			return result_instruction;
+		}
+
+		EvalInstruction * eval_expression_perform_R_operation(EvalData *eval_data,Scope *scope,  ByteCode byte_code, EvalInstruction *i1){
+			EvalInstruction *result_instruction=NULL;
+			ByteCode load_byte_code= i1->vm_instruction.byte_code;
+			zs_int	 load_value_op2= i1->vm_instruction.value_op2;
+
+			if(IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(load_byte_code) == false){
+				return NULL;
+			}
+
+			if(i1->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){ // try to find ...
+				// try to find local first and global later.
+				Symbol *symbol_found=NULL;
+
+				if((symbol_found = eval_find_local_variable(eval_data,scope,i1->symbol)) != NULL){
+					load_byte_code=BYTE_CODE_LOAD_LOCAL;
+					load_value_op2=symbol_found->idx_position;
+				}else if (symbol_found = eval_find_global_variable(eval_data,i1->symbol)) != NULL){
+					load_byte_code=BYTE_CODE_LOAD_GLOBAL;
+					load_value_op2=symbol_found->idx_position;
+				}else{
+					return NULL;
+				}
+
+
+			}
+
+			if(load_byte_code != BYTE_CODE_FIND_VARIABLE){
+				result_instruction = new EvalInstruction(
+						byte_code
+						,ZS_IDX_UNDEFINED
+						,load_value_op2
+						,MSK_INSTRUCTION_PROPERTY_ILOAD_R | (load_byte_code == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0)
+				);
+			}
+
+			return result_instruction;
+		}
+
+
+		EvalInstruction * eval_expression_perform_RR_operation(EvalData *eval_data,ByteCode byte_code, Instruction *i1, Instruction *i2){
+			EvalInstruction *result_instruction=NULL;
+
+			if(!(IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(i1->byte_code) && IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(i2->byte_code))){
+				return NULL;
+			}
+
+			if(i2->byte_code == BYTE_CODE_FIND_VARIABLE){
+
+			}
+
+
+
+			return result_instruction;
+		}
+
+
+		EvalInstruction * eval_expression_perform_KR_operation(EvalData *eval_data,ByteCode byte_code, Instruction *i1, Instruction *i2){
+			EvalInstruction *result_instruction=NULL;
+
+			if(!(i1->isConstant() && IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(i2->byte_code))){
+				return NULL;
+			}
+
+			return result_instruction;
+
+		}
+
+		EvalInstruction * eval_expression_perform_RK_operation(EvalData *eval_data,ByteCode byte_code, Instruction *i1, Instruction *i2){
+			EvalInstruction *result_instruction=NULL;
+			if(!(IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(i1->byte_code) && i2->isConstant())){
+				return NULL;
+			}
+			return result_instruction;
+
+		}
+
+		EvalInstruction * eval_expression_perform_KK_operation(EvalData *eval_data,ByteCode byte_code, Instruction *i1, Instruction *i2){
+			float  result_op_float=0;
+			zs_int result_op_zs_int=0;
+			std::string result_op_str=0;
+			EvalInstruction *result_instruction=NULL;
+			ByteCode result_bc=ByteCode::BYTE_CODE_INVALID;
+
+
+			// check last two instructions stk op1 and stk op2 are bool/int/float or string
+			if(!(i1->isConstant() && i2->isConstant())){
+				return NULL;
+			}
+
+
+			// which operation ?
+			switch(byte_code){
+			case BYTE_CODE_ADD: // int & int/int & float/float&float
+				if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
+					result_op_zs_int=(i1->value_op2)+(i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_ZS_INT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
+					result_op_float=*((float *)&i1->value_op2)+(i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
+					result_op_float=*((float *)&i1->value_op2)+(i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
+					result_op_float=*((float *)&i1->value_op2)+*((float *)&i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_STRING && i2->isConstant()){
+					result_op_str=zs_strutils::format("%s%s",i1->getConstantString().c_str(),i2->getConstantValueOp2ToString().c_str());
+					result_bc=BYTE_CODE_LOAD_STRING;
+				}
+				else if(i1->isConstant() && i2->byte_code == BYTE_CODE_LOAD_STRING){
+					result_op_str=zs_strutils::format("%s%s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantString().c_str());
+					result_bc=BYTE_CODE_LOAD_STRING;
+				}else{
+					THROW_EXCEPTION(zs_strutils::format("I don't know how to perform constant operation %s '+' %s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantValueOp2ToString().c_str()));
+				}
+
+				break;
+			case BYTE_CODE_MUL:
+				if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
+					result_op_zs_int=(i1->value_op2)*(i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_ZS_INT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
+					result_op_float=*((float *)&i1->value_op2)*(i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
+					result_op_float=*((float *)&i1->value_op2)*(i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
+					result_op_float=*((float *)&i1->value_op2)* *((float *)&i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else{
+					THROW_EXCEPTION(zs_strutils::format("I don't know how to perform constant operation %s '*' %s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantValueOp2ToString().c_str()));
+				}
+
+				break;
+			case BYTE_CODE_DIV:
+				if(i2->value_op2==0){
+					THROW_EXCEPTION("divide by 0");
+				}
+				if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
+					result_op_zs_int=(i1->value_op2)/(i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_ZS_INT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
+					result_op_float=*((float *)&i1->value_op2)/(i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
+					result_op_float=*((float *)&i1->value_op2)/(i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
+					result_op_float=*((float *)&i1->value_op2)/ *((float *)&i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else{
+					THROW_EXCEPTION(zs_strutils::format("I don't know how to perform constant operation %s '/' %s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantValueOp2ToString().c_str()));
+				}
+				break;
+			case BYTE_CODE_MOD:
+				if(i2->value_op2==0){
+					THROW_EXCEPTION("divide by 0");
+				}
+				if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
+					result_op_zs_int=(i1->value_op2)%(i2->value_op2);
+					result_bc=BYTE_CODE_LOAD_ZS_INT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
+					result_op_float=fmod(*((float *)&i1->value_op2),(i2->value_op2));
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
+					result_op_float=fmod(*((float *)&i1->value_op2),(i2->value_op2));
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
+					result_op_float=fmod(*((float *)&i1->value_op2), *((float *)&i2->value_op2));
+					result_bc=BYTE_CODE_LOAD_FLOAT;
+				}else{
+					THROW_EXCEPTION(zs_strutils::format("I don't know how to perform constant operation %s '/' %s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantValueOp2ToString().c_str()));
+				}
+				break;
+			default:
+				THROW_EXCEPTION(zs_strutils::format("const instruction %i not implemented",byte_code));
+				break;
+			}
+
+
+			switch(result_bc){
+			case BYTE_CODE_LOAD_ZS_INT:
+				result_instruction=new EvalInstruction(
+						result_bc
+						,ZS_IDX_UNDEFINED
+						,result_op_zs_int
+				);
+				break;
+			case BYTE_CODE_LOAD_FLOAT:
+				result_instruction=new EvalInstruction(
+						result_bc
+						,ZS_IDX_UNDEFINED
+						,result_op_float
+				);
+				break;
+			case BYTE_CODE_LOAD_STRING:
+				result_instruction=new EvalInstruction(
+						result_bc
+						,ZS_IDX_UNDEFINED
+						,(zs_int)eval_data->zs->registerConstantScriptObjectString(result_op_str)
+				);
+				break;
+
+			}
+
+
+
+
+			return result_instruction;
+		}
+
+		void eval_expression_optimize_2fn(EvalData *eval_data,ByteCode byte_code, std::vector<EvalInstruction *> *instructions){
+			// PRE: Last two instructions were generated by both final nodes
+			size_t size_instructions=instructions->size();
+			EvalInstruction *instruction;
+
+			if(size_instructions < 2){
+				return;
+			}
+
+			EvalInstruction *i1=instructions->at(size_instructions-2);
+			EvalInstruction *i2=instructions->at(size_instructions-1);
+
+			Instruction *vm_i1=&i1->vm_instruction;
+			Instruction *vm_i2=&i2->vm_instruction;
+
+
+			if((instruction=eval_expression_perform_KK_operation(eval_data,byte_code,vm_i1,vm_i2))!=NULL){
+			}else if((instruction=eval_expression_perform_KR_operation(eval_data,byte_code,vm_i1,vm_i2))!=NULL){
+			}else if((instruction=eval_expression_perform_RK_operation(eval_data,byte_code,vm_i1,vm_i2))==NULL){
+			}else if((instruction=eval_expression_perform_RR_operation(eval_data,byte_code,vm_i1,vm_i2))==NULL){
+			}
+
+			if(instruction != NULL){
+				// remove last two instructions from vector
+				delete instructions->at(size_instructions-2);
+				delete instructions->at(size_instructions-1);
+
+				instructions->erase(instructions->begin()+size_instructions-2,instructions->end());
+
+				instructions->push_back(instruction);
+			}
+
+		}
+
+		void eval_expression_optimize_1fn(EvalData *eval_data,ByteCode byte_code, std::vector<EvalInstruction *> *instructions){
+			// PRE: Last instruction node was generated by a final node
+			size_t size_instructions=instructions->size();
+			EvalInstruction *instruction;
+
+			if(size_instructions < 2){
+				return;
+			}
+
+			EvalInstruction *i1=instructions->at(size_instructions-1);
+
+			Instruction *vm_i1=&i1->vm_instruction;
+
+
+			if((instruction=eval_expression_perform_K_operation(eval_data,byte_code,vm_i1))!=NULL){
+			}else if((instruction=eval_expression_perform_R_operation(eval_data,byte_code,vm_i1))!=NULL){
+			}
+
+			if(instruction != NULL){
+				// remove last two instructions from vector
+				delete instructions->at(size_instructions-1);
+
+				instructions->erase(instructions->begin()+size_instructions-2,instructions->end());
+
+				instructions->push_back(instruction);
+			}
+
+		}
+
 		// eval operator expression only evaluates expression with normal operators (+,-,>>,<<,etc) respecting always its preference. Assign operators (=,+=,-=,etc) should be extracted
-		void eval_operators_expression(
+		void eval_expression_tokens_to_byte_code(
 				  EvalData *eval_data
+				, Scope *scope
 				, std::vector<TokenNode> * expression_tokens
 				, std::vector<EvalInstruction *> *instructions
 				, int idx_start
@@ -316,6 +603,10 @@ namespace zetscript{
 			int 			idx_split=-1;
 			TokenNode      *split_node = NULL;
 			Operator 	op_split=Operator::OPERATOR_MAX;
+			EvalInstruction *left_eval_constant=NULL;
+			EvalInstruction *right_eval_constant=NULL;
+			TokenNode 		*last_token_node;
+			unsigned char 	idx_group_split=OPERATOR_GROUP_MAX;
 
 			// trivial case (symbol node)
 			if(idx_start>=idx_end){
@@ -328,15 +619,22 @@ namespace zetscript{
 				return;
 			}
 
-			// get the most preference operator (see eval_data::Operator)...
+
+
+			// get the most preference operator by group(see eval_data::Operator)...
 			for(int i=idx_end; i >= idx_start; i--){
 
-				if( (expression_tokens->at(i).token_type == TokenType::TOKEN_TYPE_OPERATOR)
-					&& (expression_tokens->at(i).operator_type < op_split))
-				{
-					op_split=expression_tokens->at(i).operator_type;
-					idx_split=i;
+				// get split preference
+				if(expression_tokens->at(i).token_type == TokenType::TOKEN_TYPE_OPERATOR){
+					unsigned char idx_group=get_operator_type_group(expression_tokens->at(i).operator_type);
+
+					if(idx_group < idx_group_split){
+						idx_group_split=idx_group;
+						idx_split=i;
+					}
+
 				}
+
 			}
 
 			if(idx_split == -1){
@@ -347,17 +645,33 @@ namespace zetscript{
 			split_node=&expression_tokens->at(idx_split);
 
 			// perform left side op (can have operators)...
-			eval_operators_expression(
+			eval_expression_tokens_to_byte_code(
 				eval_data
+				,scope
 				,expression_tokens
 				,instructions
 				,idx_start
 				,idx_split-1
 			);
 
+			last_token_node=expression_tokens[idx_start];
+			//last_instruction=instructions->at(instructions->size()-1);
+
+			if(idx_start >= idx_split-1){ // it's the end leaf
+					if(last_token_node->token_type == TokenType::TOKEN_TYPE_LITERAL){ // constant
+
+					}else if(   last_token_node->token_type == TokenType::TOKEN_TYPE_IDENTIFIER
+							 && last_token_node->instructions.size()==1
+							 && (symbol=eval_find_local_variable(eval_data, scope, last_token_node->value))!=NULL){
+
+					}
+
+			}
+
 			// perform right side op...
-			eval_operators_expression(
+			eval_expression_tokens_to_byte_code(
 				eval_data
+				,scope
 				,expression_tokens
 				,instructions
 				,idx_split+1
@@ -376,12 +690,12 @@ namespace zetscript{
 			);
 		}
 
-		char * eval_operators(
+		char * eval_expression_to_byte_code(
 				EvalData *eval_data
 				,const char *s
 				, int & line
 				, Scope *scope_info
-				, std::vector<EvalInstruction *> *instructions
+				, std::vector<EvalInstruction *> *dst_instructions
 				, std::vector<TokenNode> * expression_tokens
 			){
 
@@ -390,7 +704,11 @@ namespace zetscript{
 			int idx_start=0;
 			int idx_end=(int)(expression_tokens->size()-1);
 			std::vector<std::vector<EvalInstruction *>> assign_instructions_post_expression;
+			//std::vector<EvalInstruction *> src_instructions;
+			std::vector<EvalInstruction *> optimized_instructions;
 
+
+			// search for assign
 			for(int i=idx_end; i >= 0; i--){
 				Operator token_operator = expression_tokens->at(i).operator_type;
 
@@ -433,12 +751,20 @@ namespace zetscript{
 						EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,ei_load_assign_instruction->instruction_source_info.line
-								,"Calling a function in an assignment is not allowed");
+								,"Calling a function in left assignment is not allowed");
 					}
 					assign_instructions_post_expression[i>>1].push_back(token_node_symbol->instructions[i]);
 				}
 
-				// if is arithmetic with assign...
+				// get last instruction...
+				Instruction *last_load_instruction=&assign_instructions_post_expression[i>>1][assign_instructions_post_expression[i>>1].size()-1]->vm_instruction;
+
+				// if is a access property ...
+				if(last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS //properties & (MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS | MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD)){
+				||last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
+					// .. add information last load that it will be stored
+					last_load_instruction->properties |= MSK_INSTRUCTION_PROPERTY_PACK_MEMBER_INFO;
+				}
 
 				// ... add arithmetic operator byte code
 				assign_instructions_post_expression[i>>1].push_back(instruction=new EvalInstruction(
@@ -465,10 +791,11 @@ namespace zetscript{
 			//--------------------------------------------------------------
 
 			// eval right expression
-			eval_operators_expression(
+			eval_expression_tokens_to_byte_code(
 				 eval_data
+				, scope_info
 				, expression_tokens
-				, instructions
+				, dst_instructions
 				, idx_start
 				, idx_end
 			);
@@ -479,38 +806,36 @@ namespace zetscript{
 				EvalInstruction *ei_ternary_else_jmp=NULL;
 
 				// insert JNT
-				instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
+				dst_instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
 
 				aux_p=eval_expression_main(
 					eval_data
 					,aux_p+1
 					, line
 					, scope_info
-					, instructions
+					, dst_instructions
 					,std::vector<char>{}
-					,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
 				);
 
+				// TODO: JEB Check whether expression is constant true/false
 				if(*aux_p != ':'){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
 				}
 
-				instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
+				dst_instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
 
-				ei_ternary_if_jnt->vm_instruction.value_op2=instructions->size()+instructions->size();
+				ei_ternary_if_jnt->vm_instruction.value_op2=dst_instructions->size()+dst_instructions->size();
 
 				aux_p=eval_expression_main(
 					eval_data
 					,aux_p+1
 					, line
 					, scope_info
-					, instructions
+					, dst_instructions
 					,std::vector<char>{}
-					,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
-
 				);
 
-				ei_ternary_else_jmp->vm_instruction.value_op2=instructions->size()+instructions->size();
+				ei_ternary_else_jmp->vm_instruction.value_op2=dst_instructions->size()+dst_instructions->size();
 
 			}
 			//--------------------------------------------------------------
@@ -520,9 +845,32 @@ namespace zetscript{
 
 				// insert assign instruction...
 				for(unsigned j=0; j < assign_instructions_post_expression[i].size() ;j++){
-					instructions->push_back(assign_instructions_post_expression[i][j]);
+					dst_instructions->push_back(assign_instructions_post_expression[i][j]);
 				}
+				dst_instructions->insert(
+					dst_instructions->end()
+					,assign_instructions_post_expression[i].begin()
+					,assign_instructions_post_expression[i].end()
+				);
+
+				/*if(i-1 > 0){ // is partial store
+
+					Instruction *vm_store_instruction=&assign_instructions_post_expression[i][assign_instructions_post_expression[i].size()-1]->vm_instruction;
+					vm_store_instruction->properties|=MSK_INSTRUCTION_PROPERTY_POP_ONE;
+				}*/
 			}
+
+			//eval_expression_write_byte_code(dst_instructions,&src_instructions);
+
+
+
+			/*for(auto it=src_instructions.begin(); it != src_instructions.end(); it++){
+
+				dst_instructions->push_back(*it);
+			}*/
+
+
+
 			return aux_p;
 		}
 
@@ -644,7 +992,6 @@ namespace zetscript{
 								, scope_info
 								, &symbol_token_node.instructions
 								,std::vector<char>{}
-								,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
 							)
 						)== NULL){
 							goto error_expression;
@@ -656,9 +1003,9 @@ namespace zetscript{
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-						if(pre_operator==PreOperator::PRE_OPERATOR_NEG){
+						if(pre_operator==PreOperation::PRE_OPERATION_NEG){
 							symbol_token_node.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
-						}else if(pre_operator==PreOperator::PRE_OPERATOR_NOT){
+						}else if(pre_operation==PreOperation::PRE_OPERATION_NOT){
 							symbol_token_node.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NOT));
 						}
 
@@ -807,7 +1154,6 @@ namespace zetscript{
 											,scope_info
 											,&symbol_token_node.instructions
 											,std::vector<char>{}
-											,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
 									))==NULL){
 										goto error_expression;
 									}
@@ -825,7 +1171,6 @@ namespace zetscript{
 										,scope_info
 										,&symbol_token_node.instructions
 										,std::vector<char>{}
-										,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK
 								))==NULL){
 									goto error_expression;
 								}
@@ -837,7 +1182,7 @@ namespace zetscript{
 								aux_p++;
 								vector_access=true;
 								is_static_access=false;
-								byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
+								byte_code=ByteCode::BYTE_CODE_LOAD_VARIABLE;
 								break;
 							case ':':
 							case '.': // member/static access
@@ -872,7 +1217,7 @@ namespace zetscript{
 									// check static const var...
 									is_static_access = is_access_punctuator_or_static_reference(aux_p) && *aux_p != '.'; // . property ends static
 									if(is_static_access == false){ // supose byte code as VARIABLE
-										byte_code=BYTE_CODE_LOAD_TYPE_VARIABLE;
+										byte_code=ByteCode::BYTE_CODE_LOAD_VARIABLE;
 									}
 
 									static_access.push_back(accessor_value);
@@ -907,7 +1252,7 @@ namespace zetscript{
 										}
 									}
 
-									byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE;
+									byte_code=ByteCode::BYTE_CODE_LOAD_VARIABLE;
 								}
 								break;
 							}
@@ -917,10 +1262,20 @@ namespace zetscript{
 
 								ScriptClass *script_class_access=NULL;
 								Symbol *symbol_static = NULL;//script_class_access->getSymbol();
+								EvalInstruction *last_instruction_token=NULL;
 
-								if(static_access.size() == 0
-									|| byte_code != ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE // the other types it requires an extra op to do call or access vector
-								){ // static access
+								if(   static_access.size() == 0 // is not static access
+									|| byte_code == ByteCode::BYTE_CODE_CALL // it requires an extra op to do call
+								){
+
+									Instruction *instruction_last_load=&symbol_token_node.instructions[symbol_token_node.instructions.size()-1]->vm_instruction;
+
+									// informs to pack member info in order to get all information in vm call
+									if(   instruction_last_load->byte_code==BYTE_CODE_LOAD_ELEMENT_THIS //properties & (MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS | MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD) ){
+										|| instruction_last_load->byte_code==BYTE_CODE_LOAD_ELEMENT_OBJECT){
+										instruction_last_load->properties|=MSK_INSTRUCTION_PROPERTY_PACK_MEMBER_INFO;
+									}
+
 									instruction_token=new EvalInstruction(byte_code);
 									symbol_token_node.instructions.push_back(instruction_token);
 								}
@@ -929,7 +1284,7 @@ namespace zetscript{
 
 									EvalInstruction *first_instruction_token=symbol_token_node.instructions[0]; // override first instruction
 
-									if(byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE){
+									if(IS_BYTE_CODE_LOAD_VARIABLE_TYPE(byte_code)){
 										instruction_token=first_instruction_token;
 									}
 
@@ -954,14 +1309,14 @@ namespace zetscript{
 
 									if(symbol_static != NULL){
 
-										if(byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE){ // it should be constant type ...
+										if(IS_BYTE_CODE_LOAD_VARIABLE_TYPE(byte_code)){ // it should be constant type ...
 
 											// check symbol is native and not function
 											if((symbol_static->properties & SYMBOL_PROPERTY_CONST) == 0){
 												EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line,"Symbol \"%s\" is not constant",static_access_name.c_str());
 											}
 
-											first_instruction_token->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT;
+											first_instruction_token->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_STACK_ELEMENT;
 											first_instruction_token->vm_instruction.value_op2=symbol_static->ref_ptr; // global stack element
 										}
 										else if(byte_code == ByteCode::BYTE_CODE_CALL){
@@ -971,7 +1326,7 @@ namespace zetscript{
 											if( symbol_static->n_params >= 0){ // is a function
 												ScriptFunction *static_script_function = (ScriptFunction *)symbol_static->ref_ptr;
 												if(static_script_function->symbol.properties & SYMBOL_PROPERTY_STATIC){
-													first_instruction_token->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_TYPE_FUNCTION;
+													first_instruction_token->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_FUNCTION;
 													first_instruction_token->vm_instruction.value_op2=(zs_int)static_script_function;
 												}else{
 													EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line,"static access error: \"%s\" is not static. Make sure that there's no this/super defined in body",static_access_name.c_str());
@@ -991,12 +1346,12 @@ namespace zetscript{
 								}
 
 								// generate source info in case accessor load...
-								if(byte_code==ByteCode::BYTE_CODE_LOAD_TYPE_VARIABLE){
-									// mark as accessor
+								if(IS_BYTE_CODE_LOAD_VARIABLE_TYPE(byte_code)){
+									// override load byte code if accessor
 									if(vector_access){
-										instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
+										instruction_token->vm_instruction.byte_code=BYTE_CODE_LOAD_ELEMENT_VECTOR; //.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
 									}else if(symbol_static == NULL){
-										instruction_token->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD;
+										instruction_token->vm_instruction.byte_code=BYTE_CODE_LOAD_ELEMENT_OBJECT;//.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD;
 									}
 
 									instruction_token->instruction_source_info= InstructionSourceInfo(
@@ -1098,7 +1453,7 @@ namespace zetscript{
 					if(	is_end_expression(aux_p)
 					|| operator_type==Operator::OPERATOR_TERNARY_IF
 					|| operator_type==Operator::OPERATOR_TERNARY_ELSE
-					|| ((operator_type==Operator::OPERATOR_ASSIGN) && ((properties & EVAL_EXPRESSION_PROPERTY_BREAK_ON_ASSIGNMENT_OPERATOR) == true))
+					|| ((operator_type==Operator::OPERATOR_ASSIGN) && ((properties & EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR) == true))
 					|| ( new_line_break && (operator_type==Operator::OPERATOR_UNKNOWN ))){ // if not operator and carry return found is behaves as end expression
 						break;
 					}
@@ -1167,14 +1522,7 @@ namespace zetscript{
 			// there's an expression
 			if(expression_tokens.size()>0){
 
-				if((properties & EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK) == false){ // set instruction as start statment...
-					instructions->insert(
-							instructions->begin()+idx_instruction_start_expression,
-							new EvalInstruction(ByteCode::BYTE_CODE_RESET_STACK)
-					);
-				}
-
-				aux_p=eval_operators(
+				aux_p=eval_expression_to_byte_code(
 					eval_data
 					,aux_p
 					,line
@@ -1217,6 +1565,8 @@ error_expression:
 			){
 			std::vector<EvalInstruction *>  ternary_end_jmp;
 			std::vector<EvalInstruction *> 	src_instructions; // we will write all instructions here as aux, and later will assign to dst_instructions
+			bool not_assignment=false;
+
 			char *aux_p=eval_expression_main(
 				eval_data
 				, s
@@ -1232,7 +1582,7 @@ error_expression:
 			}
 
 			// ok this is not the end...
-			if(((properties & EVAL_EXPRESSION_PROPERTY_ALLOW_EXPRESSION_SEQUENCE)==true)
+			if(((properties & (EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION))==true) // allows expression sequence
 				&& (*aux_p == ',')
 			)
 			{
@@ -1249,14 +1599,14 @@ error_expression:
 
 					// starting performing expressions
 					aux_p=eval_expression_main(
-								eval_data
-								,aux_p
-								, line
-								, scope_info
-								, &exp_instruction[idx] // it's saving to instructions...
-								,{}
-								,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK | EVAL_EXPRESSION_PROPERTY_BREAK_ON_ASSIGNMENT_OPERATOR
-							);
+						eval_data
+						,aux_p
+						, line
+						, scope_info
+						, &exp_instruction[idx] // it's saving to instructions...
+						,{}
+						,EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR
+					);
 
 					if(aux_p != NULL && *aux_p != 0 && *aux_p=='='){ // assignment op, start left assigments
 						idx++; //--> start next
@@ -1264,21 +1614,21 @@ error_expression:
 
 				}while(aux_p != NULL && *aux_p != 0 && *aux_p==',' );
 
-
 				src_instructions={};
-
 
 				// check there's only a simple load on the left
 				for(int i = 0; i < idx; i++){
 					size_t length_instructions = exp_instruction[i].size();
 
 					if(idx>0 && i==0){ // assignment detected
-						// check left are literals
-						for(int j = 0; j < length_instructions; j++){
-							if(exp_instruction[i][j]->vm_instruction.byte_code != BYTE_CODE_LOAD_TYPE_VARIABLE){
-								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,exp_instruction[i][j],"left sequence assignment it must be literal");
-
-							}
+						// check left are pure literals
+						ByteCode byte_code=exp_instruction[i][length_instructions-1]->vm_instruction.byte_code;
+						if(IS_BYTE_CODE_LOAD_VARIABLE_TYPE(exp_instruction[i][length_instructions-1]->vm_instruction.byte_code) == false){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,exp_instruction[i][length_instructions-1]->instruction_source_info.line
+								,"\"%s\" is not allowed on left assignment multiple because is %s. Left assignments has to be literals  (i.e a,b.c,b[0]. etc)"
+								,eval_data->current_parsing_file,exp_instruction[i][length_instructions-1]->instruction_source_info.ptr_str_symbol_name->c_str()
+								,"unknown"
+							);
 						}
 
 						// reverse order load assigment
@@ -1288,18 +1638,13 @@ error_expression:
 							exp_instruction[i][length_instructions-1-j]=exp_instruction[i][j]; // begin --> end
 							exp_instruction[i][j]=aux; // end --> begin
 						}
-
-
-
-
 					}
 
 					src_instructions.insert(
-							src_instructions.end()
-							,exp_instruction[i].begin()
-							,exp_instruction[i].end()
+						src_instructions.end()
+						,exp_instruction[i].begin()
+						,exp_instruction[i].end()
 					);
-
 				}
 
 				// and in the end only one store with the number of loads
@@ -1308,17 +1653,7 @@ error_expression:
 						new EvalInstruction(ByteCode::BYTE_CODE_STORE,exp_instruction[0].size()) // store multiple ?
 					);
 				}
-
-				// and in the end only one store with the number of loads
-
-				/*if(idx > 0){
-
-				}*/
-
-
-
 			}
-
 
 			// write all instructions to instructions pointer
 			dst_instructions->insert(
@@ -1326,6 +1661,13 @@ error_expression:
 					src_instructions.begin(),
 					src_instructions.end()
 			);
+
+			if(properties & (EVAL_EXPRESSION_RESET_STACK)){ // reset stack at the end
+				dst_instructions->insert(
+						new EvalInstruction(BYTE_CODE_RESET_STACK)
+				);
+			}
+
 
 			return aux_p;
 

@@ -7,10 +7,10 @@ Date: XX-09-2020
 
 > #165 try eval expressions as constant 
 > #176 Add shared version 
-> #174 eval constant values and optimize expressions 
 > #221 Implement backup/restore state
 > #225 implement File class
 > #226 implement Stream class
+
   
 
 //----------------------------------------------------------
@@ -122,8 +122,9 @@ Date: XX-12-2020
 #170 Fix class 
 #171 test returns stack var with 0 refs (solved by #230, user is in charge to destroy lifetime objects) 
 #172 get rid super scope
-#173 Manage this context automatically on anonymouse function created on class 
+#173 Manage this context automatically on anonymouse function created on class
 #175 Arguments as E/S 
+> #174 Expression optimization: Evaluate constant operations 
 #177 Implement saveCurrentState
 #179 Bug if-else fails {max scope reached} 
 #180 Return vector or dictionary not deref its user properties 
@@ -176,13 +177,19 @@ Date: XX-12-2020
 > #234 Back to class name constructor 
 > #235 Make optional function keyword as member function class
 > #236 Implement sequence expressions
-> #237 Optimize memory 
+#237 Optimize memory
 > #238 Change behaviour save vars 
 > #239 change absolute jmp offset by relative jmp offset 
-> #240 Implement Multiple Assingment 
-> #241 Change VM Stack Based by Register Based 
+> #240 Implement Multiple Assignment
+#241 Optimize VM Stack Based operations
+> #242 compile code/load compiled code feature  (*.zsc)
+> #243 Expression optimization: immediate register/constant load on operations 
+> #244 Optimize memory for constants
+#245 Get rid of MSK_STACK_ELEMENT_UNDEFINED/MSK_STACK_ELEMENT_STRING
+> #246 Get rid RESET STACK on each expression 
+#247 Optimization: move type field load variable to byte load_variable_XXXX 
+#248 Restructure script object elements
  
-
 
 Other: 
 

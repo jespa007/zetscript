@@ -71,11 +71,12 @@ namespace zetscript{
 			StackElement *stk_arg_calling_function,
 			unsigned char n_args,
 			Instruction *instruction,
-			ScriptObject  * this_object
+			ScriptObjectClass  * this_object
 			){
 
 		zs_int  fun_ptr = calling_function->ref_native_function_ptr;
-		StackElement stk_result={0,0,BIT_STK_PROPERTY_UNDEFINED};
+		StackElement stk_result;
+		stk_result.properties=0;
 
 		if((calling_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
 			VM_SET_USER_ERROR(this,"Internal error: Function not native");
@@ -85,10 +86,10 @@ namespace zetscript{
 		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_STATIC) == 0){ // is function member  ...
 			if(this_object!= NULL){
 				StackElement *stk_prop_fun=NULL;
-				if((stk_prop_fun = this_object->getProperty(calling_function->symbol.idx_position))==NULL){
+				if((stk_prop_fun = this_object->getElementAt(calling_function->symbol.idx_position))==NULL){
 					return stk_result;
 				}
-				fun_ptr=((ScriptFunction *)stk_prop_fun->var_ref)->ref_native_function_ptr; // var ref holds function ptr
+				fun_ptr=((ScriptFunction *)stk_prop_fun->stk_value)->ref_native_function_ptr; // var ref holds function ptr
 			}else{
 				VM_SET_USER_ERROR(this,"Internal error: expected object for function member");
 				return stk_result;
@@ -112,7 +113,7 @@ namespace zetscript{
 				VM_ERROR_AND_RET("Internal error: Cannot set parameter as this object due this object is NULL");
 			}
 
-			if(this_object->idx_class>=IDX_BUILTIN_TYPE_MAX){
+			if(this_object->idx_script_class>=IDX_BUILTIN_TYPE_MAX){
 				param_this_object=(zs_int)this_object->getNativeObject(); // pass c object
 			}else{ // pass script var
 				param_this_object=(zs_int)this_object; // pass built-in zetscript object (vector/object/etc)

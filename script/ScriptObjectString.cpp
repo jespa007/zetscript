@@ -8,14 +8,8 @@
 namespace zetscript{
 
 	ScriptObjectString::ScriptObjectString(ZetScript *_zs):ScriptObject(_zs){
-		init(SCRIPT_CLASS_STRING(this), (void *)this);
 		str_value = "";
 		value = &str_value;
-	}
-
-	ScriptObjectString::ScriptObjectString(ZetScript *_zs, const std::string * s):ScriptObject(_zs){
-		init(SCRIPT_CLASS_STRING(this), (void *)this);
-		value = (void *)s;
 	}
 
 	void ScriptObjectString::set(const std::string & s){
@@ -24,6 +18,10 @@ namespace zetscript{
 
 	std::string ScriptObjectString::toString(){
 		return *((std::string *)value);
+	}
+
+	zs_int ScriptObjectString::count(){
+		return ((std::string *)value)->size();
 	}
 
 }

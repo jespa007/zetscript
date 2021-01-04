@@ -8,29 +8,25 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 
 			if(k_str_zs_int_type_ptr==symbol->str_native_type){
 				return {
-						0,
 						ptr_variable,
-						MSK_STK_PROPERTY_ZS_INT|MSK_STK_PROPERTY_IS_VAR_C
+						MSK_STK_PROPERTY_ZS_INT_PTR
 				};
 
 			}else if(k_str_const_zs_int_type_ptr==symbol->str_native_type){
 				return {
-						0,
 						ptr_variable,
-						MSK_STK_PROPERTY_ZS_INT|MSK_STK_PROPERTY_IS_VAR_C|MSK_STK_PROPERTY_READ_ONLY
+						MSK_STK_PROPERTY_ZS_INT_PTR|MSK_STK_PROPERTY_READ_ONLY
 				};
 
 			}else if(k_str_float_type_ptr==symbol->str_native_type){
 				return {
-						0,
 						ptr_variable,
-						MSK_STK_PROPERTY_FLOAT|MSK_STK_PROPERTY_IS_VAR_C
+						MSK_STK_PROPERTY_FLOAT_PTR
 				};
 			}else if(k_str_const_float_type_ptr==symbol->str_native_type){
 				return {
-						0,
 						ptr_variable,
-						MSK_STK_PROPERTY_FLOAT|MSK_STK_PROPERTY_IS_VAR_C|MSK_STK_PROPERTY_READ_ONLY
+						MSK_STK_PROPERTY_FLOAT_PTR|MSK_STK_PROPERTY_READ_ONLY
 				};
 			}else if(  k_str_char_type_ptr==symbol->str_native_type
 					|| k_str_const_char_type_ptr==symbol->str_native_type
@@ -46,33 +42,28 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 
 				*((std::string *)(s->value))=input_s;
 				return {
-					(void *)input_s,
 					(void *)(s),
-					MSK_STK_PROPERTY_STRING
+					MSK_STK_PROPERTY_SCRIPT_OBJECT
 				};
 			}else if(k_str_bool_type_ptr==symbol->str_native_type){
 				return {
-
-						0,
 						ptr_variable,
-						MSK_STK_PROPERTY_BOOL|MSK_STK_PROPERTY_IS_VAR_C
+						MSK_STK_PROPERTY_BOOL_PTR
 				};
 			}else if(k_str_const_bool_type_ptr==symbol->str_native_type){
 				return {
-						0,
 						ptr_variable,
-						MSK_STK_PROPERTY_BOOL|MSK_STK_PROPERTY_IS_VAR_C|MSK_STK_PROPERTY_READ_ONLY
+						MSK_STK_PROPERTY_BOOL_PTR|MSK_STK_PROPERTY_READ_ONLY
 				};
 			}else{
 				ScriptClass *info_registered_class = zs->getScriptClassFactory()->getScriptClassByNativeClassPtr(symbol->str_native_type);//  ScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 				if(info_registered_class){
-					ScriptObject *var = new ScriptObject(zs);
-					var->init(info_registered_class,ptr_variable);
+					ScriptObjectClass *var = new ScriptObjectClass(zs);
+					var->init(info_registered_class->idx_class,ptr_variable);
+
 
 					return{
-
-							NULL,
 							var,
 							MSK_STK_PROPERTY_SCRIPT_OBJECT
 					};
@@ -84,10 +75,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 			THROW_RUNTIME_ERROR("Variable %s is not c referenced as C symbol",symbol->name.c_str());
 		}
 
-		return{
-			0,
-			0,
-			MSK_STK_PROPERTY_UNDEFINED};
+		return stk_undefined;
 	}
 
 }

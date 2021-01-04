@@ -47,14 +47,14 @@ namespace zetscript{
 
 	void SystemBuiltIn::printlnSf(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=StringBuiltIn::formatSf(zs,str,args);
-		printf("%s\n",str_out->str_value.c_str());
+		printf("%s\n",str_out->toString().c_str());
 		delete str_out;
 	}
 
 
 	void SystemBuiltIn::printSf(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=StringBuiltIn::formatSf(zs,str,args);
-		printf("%s",str_out->str_value.c_str());
+		printf("%s",str_out->toString().c_str());
 		delete str_out;
 	}
 

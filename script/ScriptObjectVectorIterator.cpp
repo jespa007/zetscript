@@ -11,8 +11,6 @@ namespace zetscript{
 
 	}
 
-
-
 	void	 ScriptObjectVectorIterator::_nextSf(ScriptObjectVectorIterator *si){
 		si->_next();
 	}

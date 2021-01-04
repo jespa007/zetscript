@@ -6,7 +6,7 @@
 
 
 #define IDX_SCRIPT_CLASS_MAIN							0
-#define NEW_CLASS_VAR_BY_IDX(data,idx)					((data->script_class_factory)->instanceScriptObjectiableByIdx(idx))
+#define NEW_CLASS_VAR_BY_IDX(data,idx)					((data->script_class_factory)->instanceScriptObjectClassByIdx(idx))
 #define GET_SCRIPT_CLASS(data,idx_or_name)				((data->script_class_factory)->getScriptClass(idx_or_name))
 #define GET_SCRIPT_CLASS_NAME(data,idx) 				((data->script_class_factory)->getScriptClassName(idx))
 #define SCRIPT_CLASS_MAIN(data)							((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_CLASS_MAIN))    // 0 is the main class
@@ -19,7 +19,7 @@
 
 namespace zetscript{
 
-	class ScriptObject;
+	class ScriptObjectAnonymous;
 	class ScriptClass;
 	class ZetScript;
 
@@ -36,27 +36,27 @@ namespace zetscript{
 		  * Class management region
 		  */
 		ScriptClass * 					registerClass(const std::string & file, short line, const std::string & class_name, const std::string & base_class_name="");
-		ScriptClass * 					getScriptClass(int idx);
+		ScriptClass * 					getScriptClass(short idx);
 		ScriptClass * 					getScriptClass(const std::string & name);
 		ScriptClass * 					getScriptClassByNativeClassPtr(const std::string & class_type);
-		const char 	* 					getScriptClassName(int idx);
+		const char 	* 					getScriptClassName(short idx);
 		void							classInheritsFrom(const std::string & the_class,const std::string & the_base_class);
-		bool							isClassInheritsFrom(int idx_class,int idx_base_class);
+		bool							isClassInheritsFrom(short idx_class,short idx_base_class);
 		int								getIdxClassFromItsNativeType(const std::string & s);
 		int			 					getIdx_C_RegisteredClass(const std::string & str_classPtr);
 		zs_vector	* 					getScriptClasses();
 
 		bool 							isClassRegistered(const std::string & v);
 
-		zs_int							doCast(zs_int obj, int idx_class_src, int idx_class_dst/*, std::string & error*/);
+		zs_int							doCast(zs_int obj, short idx_class_src, short idx_class_dst/*, std::string & error*/);
 		inline ScriptClass * 			getMainObject() { return main_object;}
 		inline ScriptFunction * 		getMainFunction() { return main_function;}
 
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
-		ScriptObject 			* 			instanceScriptObjectiableByClassName(const std::string & class_name);
-		ScriptObject 			* 			instanceScriptObjectiableByIdx(int  idx_class, void * value_object = NULL);
+		ScriptObjectClass 			* 			instanceScriptObjectClassByClassName(const std::string & class_name);
+		ScriptObjectClass 			* 			instanceScriptObjectClassByIdx(short  idx_class, void * value_object = NULL);
 
 		void 							registerNativeBaseSymbols(bool _register);
 
@@ -68,7 +68,7 @@ namespace zetscript{
 			 const std::string & var_name
 			 ,V var_ptr
 			 , const char *registered_file=""
-			 ,int registered_line=-1
+			 ,short registered_line=-1
 		);
 
 		/**
@@ -79,7 +79,7 @@ namespace zetscript{
 			 const char * function_name
 			 ,F function_ptr
 			 , const char *registered_file=""
-			,int registered_line=-1
+			,short registered_line=-1
 		);
 
 		/**
@@ -89,7 +89,7 @@ namespace zetscript{
 		 ScriptClass *  registerNativeSingletonClass(
 				 const std::string & class_name
 				 , const char *registered_file=""
-				,int registered_line=-1
+				,short registered_line=-1
 		);
 
 		/**
@@ -99,7 +99,7 @@ namespace zetscript{
 		void registerNativeClass(
 				const std::string & class_name
 				 , const char *registered_file=""
-				,int registered_line=-1
+				,short registered_line=-1
 		);
 
 
@@ -107,7 +107,7 @@ namespace zetscript{
 		void registerNativeClassBuiltIn(
 				const std::string & class_name
 				 , const char *registered_file=""
-				,int registered_line=-1
+				,short registered_line=-1
 		);
 
 
@@ -124,7 +124,7 @@ namespace zetscript{
 				const char *var_name
 				, R T::*var_pointer
 				 , const char *registered_file=""
-				,int registered_line=-1
+				,short registered_line=-1
 		);
 
 		template <typename C, typename R>
@@ -132,7 +132,7 @@ namespace zetscript{
 				const char *var_name
 				, const R var_pointer
 				 , const char *registered_file=""
-				,int registered_line=-1
+				,short registered_line=-1
 		);
 
 		/**
@@ -143,7 +143,7 @@ namespace zetscript{
 				const char *function_name
 				,R (T:: *function_type)(_A...)
 				 , const char *registered_file=""
-				,int registered_line=-1
+				,short registered_line=-1
 		);
 
 		/**
@@ -154,7 +154,7 @@ namespace zetscript{
 				const char *function_name
 				,F ptr_function
 				, const char *registered_file=""
-				,int registered_line=-1);
+				,short registered_line=-1);
 
 		/**
 		 * Register C function as function member
@@ -164,10 +164,10 @@ namespace zetscript{
 				const char *function_name
 				,F function_type
 				 , const char *registered_file=""
-				,int registered_line=-1
+				,short registered_line=-1
 		);
 
-		void 	clear(int _idx_start=ZS_IDX_UNDEFINED);
+		void 	clear(short _idx_start=ZS_IDX_UNDEFINED);
 		void 	setClearCheckpoint();
 
 
@@ -192,7 +192,7 @@ namespace zetscript{
 		FunctionProxyFactory 			*	function_proxy_factory;
 		ScriptClass 					* 	main_object;
 		ScriptFunction 					* 	main_function;
-		std::map<int,std::map<int,ConversionType>> 	conversion_types;
+		std::map<short,std::map<short,ConversionType>> 	conversion_types;
 
 		/*
 			 * register_c_base_symbols it tells to register functions/variable member already registered on base classes. Only works if class is not polymorphic (i.e there's no any virtual functions involved)
@@ -203,7 +203,7 @@ namespace zetscript{
 
 		PrimitiveType *					getPrimitiveTypeFromStr(const std::string & str);
 
-		std::map<int, std::map<int, ConversionType>>
+		std::map<short, std::map<short, ConversionType>>
 					*  					getConversionTypes();
 
 		void 							registerPrimitiveTypes();

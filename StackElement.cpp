@@ -2,6 +2,8 @@
 
 namespace zetscript{
 
+	extern const StackElement stk_undefined={0,0};
+
 	const char * StackElement::typeStr(){
 		StackElement *stk=this;
 		const char * result="undefined";
@@ -11,8 +13,10 @@ namespace zetscript{
 			result= "float";
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= "bool";
-		else if(STK_VALUE_IS_STRING(stk))
+		else if(STK_IS_SCRIPT_OBJECT_STRING(stk))
 			result= "string";
+		else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk))
+			result= "vector";
 		else if(STK_VALUE_IS_FUNCTION(stk))
 			result= "function";
 		else if(STK_VALUE_IS_CLASS(stk))
@@ -20,9 +24,9 @@ namespace zetscript{
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
 			if(this->properties & MSK_STK_PROPERTY_PTR_STK){
-				stk=(StackElement *)stk->var_ref;
+				stk=(StackElement *)stk->stk_value;
 			}
-			result=((ScriptObject *)stk->var_ref)->getClassName().c_str();
+			result=((ScriptObjectAnonymous *)stk->stk_value)->getClassName().c_str();
 		}
 
 		return result;
@@ -33,24 +37,22 @@ namespace zetscript{
 		StackElement *stk=this;
 
 		if(STK_VALUE_IS_ZS_INT(stk))
-			result= zs_strutils::int_to_str((zs_int)stk->stk_value);
+			result= zs_strutils::zs_int_to_str((zs_int)stk->stk_value);
 		else if(STK_VALUE_IS_FLOAT(stk))
 			result= zs_strutils::float_to_str(*((float *)&stk->stk_value));
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= stk->stk_value?"true":"false";
-		else if(STK_VALUE_IS_STRING(stk))
-			result= (const char *)stk->stk_value;
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result= std::string("Function")+"@"+((ScriptFunction *)stk->var_ref)->symbol.name;
+			result= std::string("Function")+"@"+((ScriptFunction *)stk->stk_value)->symbol.name;
 		else if(STK_VALUE_IS_CLASS(stk))
-			result= std::string("Class")+"@"+((ScriptClass *)stk->var_ref)->symbol_class.name;
+			result= std::string("Class")+"@"+((ScriptClass *)stk->stk_value)->symbol_class.name;
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
 			if(this->properties & MSK_STK_PROPERTY_PTR_STK){
-				stk=(StackElement *)stk->var_ref;
+				stk=(StackElement *)stk->stk_value;
 			}
 
-			result=((ScriptObject *)stk->var_ref)->toString();
+			result=((ScriptObjectAnonymous *)stk->stk_value)->toString();
 		}
 
 		return result;
@@ -58,8 +60,6 @@ namespace zetscript{
 	}
 
 	void StackElement::setUndefined(){
-		this->stk_value=0;
-		this->var_ref=0;
-		this->properties=MSK_STK_PROPERTY_UNDEFINED;
+		*this=stk_undefined;
 	}
 }

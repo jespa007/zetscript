@@ -13,7 +13,7 @@ namespace zetscript{
 	#define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
 
 	#define NO_PARAMS std::vector<StackElement>{}
-	#define ZS_VM_FUNCTION_TYPE std::function<ScriptObject * (const std::vector<ScriptObject *> & param)>
+	#define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectAnonymous * (const std::vector<ScriptObjectAnonymous *> & param)>
 
 	#define VM_EXECUTE(vm,o,f,stk,n)	vm->execute(o,f,stk,n,__FILE__,__LINE__)
 	#define VM_ERROR(s,...)				vm_error=true;vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
@@ -54,9 +54,9 @@ namespace zetscript{
 		void addGlobalVar(const StackElement & stk);
 
 		StackElement execute(
-			 ScriptObject 	*	this_object
+			 ScriptObjectClass *	this_object
 			 ,ScriptFunction *	script_function
-			 ,StackElement 	*  	stk_params=NULL
+			 ,StackElement 	 * 	stk_params=NULL
 			 ,unsigned char		n_stk_params=0
 			 ,const char *file =NULL
 			 ,int line=-1
@@ -64,11 +64,11 @@ namespace zetscript{
 
 		void destroyLifetimeObject(ScriptObject *script_object);
 
-		 bool setStackElement(unsigned int idx, StackElement stk);
+		 bool setStackElementAt(unsigned int idx, StackElement stk);
 		 StackElement *getStkVmCurrent();
 
 		StackElement *getLastStackValue();
-		StackElement * getStackElement(unsigned int idx_glb_element);
+		StackElement * getStackElementAt(unsigned int idx_glb_element);
 
 		void setError(const std::string & str);
 		void setErrorFileLine(const char *file, int line, const char *s,...);
@@ -96,7 +96,7 @@ namespace zetscript{
 		typedef struct{
 			const char *file;
 			int line;
-			ScriptObject * script_object;
+			ScriptObjectAnonymous * script_object;
 		}InfoLifetimeObject;
 
 
@@ -109,7 +109,7 @@ namespace zetscript{
 
 		struct VM_Foreach{
 			StackElement 		   	*key; // iterator element can be std::string or integer...
-			ScriptObject				*ptr; // can be struct or std::vector...
+			ScriptObjectAnonymous				*ptr; // can be struct or std::vector...
 			unsigned int 		   	idx_current;
 
 		};
@@ -142,11 +142,11 @@ namespace zetscript{
 
 
 		StackElement  callFunctionScript(
-				ScriptObject 		* 	this_object,
-				ScriptFunction 	*	info_function,
-				StackElement 	* 	_stk_start_args,
+				ScriptObjectAnonymous	* 	this_object,
+				ScriptFunction 			*	info_function,
+				StackElement 			* 	_stk_start_args,
 				//std::string 		  		  * _ptrStartStr=NULL,
-				unsigned char 		n_args=0
+				unsigned char 				n_args=0
 				);
 
 
@@ -155,7 +155,7 @@ namespace zetscript{
 			 StackElement *stk_arg_calling_function,
 			 unsigned char n_args,
 			 Instruction *ins,
-			 ScriptObject  * this_object
+			 ScriptObjectClass  * this_object
 		);
 
 		/**
@@ -166,7 +166,7 @@ namespace zetscript{
 
 		inline bool insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		inline bool deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
-		void insertLifetimeObject(const char *file, int line, ScriptObject *script_object);
+		void insertLifetimeObject(const char *file, int line, ScriptObjectAnonymous *script_object);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 
 		inline ScriptFunction *  findFunction(
@@ -174,7 +174,7 @@ namespace zetscript{
 			,ScriptFunction *info_function
 			,Instruction * instruction
 			,bool is_constructor
-			,void *stk_elements_ptr // can be **stack_element from ScriptObject stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
+			,void *stk_elements_ptr // can be **stack_element from ScriptObjectAnonymous stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
 			,int stk_elements_len // length of stk_elements
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg

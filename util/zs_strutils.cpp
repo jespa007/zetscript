@@ -79,7 +79,7 @@ namespace zetscript{
 			return n;
 		}
 
-		std::string int_to_str(zs_int number){
+		std::string zs_int_to_str(zs_int number){
 
 			std::string result="0";
 			bool negative=false;

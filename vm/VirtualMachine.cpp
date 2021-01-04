@@ -28,7 +28,7 @@ namespace zetscript{
 		StackElement *aux=vm_stack;
 
 		for(int i=0; i < VM_STACK_LOCAL_VAR_MAX;i++){
-			*aux++={0,NULL,MSK_STK_PROPERTY_UNDEFINED};
+			*aux++=stk_undefined;
 		}
 
 		vm_idx_call=0;
@@ -95,7 +95,7 @@ namespace zetscript{
 
 	bool VirtualMachine::sharePointer(InfoSharedPointerNode *_node){
 
-		unsigned char *n_shares = &_node->data.n_shares;
+		unsigned short *n_shares = &_node->data.n_shares;
 
 		bool move_to_shared_list=*n_shares==0;
 
@@ -126,7 +126,7 @@ namespace zetscript{
 
 	bool VirtualMachine::unrefSharedScriptObject(InfoSharedPointerNode *_node, int idx_current_call, bool remove_if_0){
 
-		unsigned char *n_shares = &_node->data.n_shares;
+		unsigned short *n_shares = &_node->data.n_shares;
 		if(*n_shares > 0){ // already zero
 			if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
 
@@ -172,7 +172,7 @@ namespace zetscript{
 	}
 
 	StackElement  VirtualMachine::execute(
-		 ScriptObject 		*	this_object
+		 ScriptObjectClass 		*	this_object
 		 ,ScriptFunction 	*	calling_function
 		 ,StackElement 		*  	stk_params
 		 ,unsigned	char  		n_stk_params
@@ -180,8 +180,8 @@ namespace zetscript{
 		 , int line
 	){
 
-		StackElement stk_result={0,0,MSK_STK_PROPERTY_UNDEFINED};
-		StackElement info={0,0,MSK_STK_PROPERTY_UNDEFINED};
+		StackElement stk_result=stk_undefined;
+		StackElement info=stk_undefined;
 
 		if(vm_idx_call==0){ // set stack and Init vars for first call...
 
@@ -212,10 +212,10 @@ namespace zetscript{
 			n_stk_params);
 
 		// if string or object do not remove empty shared pointers if they are 0s
-		if(info.properties & (MSK_STK_PROPERTY_SCRIPT_OBJECT | MSK_STK_PROPERTY_STRING)){
+		if(info.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 			// add generated
-			insertLifetimeObject(file,line,(ScriptObject *)info.var_ref);
-			/*ScriptObject * so=(ScriptObject *)info.var_ref;
+			insertLifetimeObject(file,line,(ScriptObjectAnonymous *)info.stk_value);
+			/*ScriptObjectAnonymous * so=(ScriptObjectAnonymous *)info.var_ref;
 			if(so->shared_pointer==NULL){ // is not shared, add on the list for next time...
 				so->initSharedPtr();
 			}*/
@@ -231,7 +231,7 @@ namespace zetscript{
 		return info;
 	}
 
-	void VirtualMachine::insertLifetimeObject(const char *file, int line, ScriptObject *script_object){
+	void VirtualMachine::insertLifetimeObject(const char *file, int line, ScriptObjectAnonymous *script_object){
 		InfoLifetimeObject *info = (InfoLifetimeObject *)malloc(sizeof(InfoLifetimeObject));
 
 		info->file=file;
@@ -254,7 +254,7 @@ namespace zetscript{
 		free(info);
 	}
 
-	bool VirtualMachine::setStackElement(unsigned int idx, StackElement stk){
+	bool VirtualMachine::setStackElementAt(unsigned int idx, StackElement stk){
 		if(idx >= VM_STACK_LOCAL_VAR_MAX){
 			VM_SET_USER_ERROR(this,"setStackElement: out of bounds");
 			return false;
@@ -268,7 +268,7 @@ namespace zetscript{
 		return stk_vm_current;
 	}
 
-	StackElement * VirtualMachine::getStackElement(unsigned int idx_glb_element){
+	StackElement * VirtualMachine::getStackElementAt(unsigned int idx_glb_element){
 
 		if(idx_glb_element < main_function_object->registered_symbols->count){
 			return &vm_stack[idx_glb_element];
@@ -300,46 +300,6 @@ namespace zetscript{
 			fprintf(stderr,"%s",error.c_str());
 
 		}
-
-		// destroy c variable scripts
-		/*ScriptFunction * main_function = this->script_function_factory->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
-		StackElement *stk_it=&vm_stack[0];
-
-		// clear all symbols except c variables/functions ...
-		for (int v = 0;
-			 v<main_function->registered_symbols->count;
-			 v++ ,stk_it++) {
-			Symbol *symbol=(Symbol *)main_function->registered_symbols->items[v];
-			if (((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF)
-			) {
-				// if is variable we should delete
-				//main_function->registered_symbols->pop_back();
-				StackElement *stk=stk_it++;
-
-				if(stk->properties & MSK_STK_PROPERTY_PTR_STK){
-					stk=(StackElement *)stk->var_ref;
-				}
-
-				switch(GET_MSK_STK_PROPERTY_TYPES(stk_it->properties)){
-				default:
-					break;
-				case MSK_STK_PROPERTY_ZS_INT:
-				case MSK_STK_PROPERTY_BOOL:
-				case MSK_STK_PROPERTY_FLOAT:
-					break;
-				case MSK_STK_PROPERTY_STRING:
-				case MSK_STK_PROPERTY_SCRIPT_OBJECT:
-
-					if(stk->var_ref != NULL){
-						delete (ScriptObject *)stk->var_ref;
-					}
-					break;
-
-				}
-			}
-
-
-		}*/
 	}
 }
 

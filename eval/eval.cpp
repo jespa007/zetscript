@@ -342,7 +342,7 @@ namespace zetscript{
 						, scope_info
 						,&eval_data->current_function->instructions
 						,{}
-						,EVAL_EXPRESSION_PROPERTY_ALLOW_EXPRESSION_SEQUENCE
+						,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT | EVAL_EXPRESSION_RESET_STACK
 					);
 				}
 
@@ -358,6 +358,33 @@ namespace zetscript{
 
 		void push_function(EvalData *eval_data,ScriptFunction *script_function){
 			eval_data->functions.push_back(eval_data->current_function=new EvalFunction(script_function));
+		}
+
+		Symbol *eval_local_variable(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find){
+
+			EvalFunction *sf=eval_data->current_function;
+			Symbol * sc_var = scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_DOWN);
+
+			if(sc_var != NULL){ // local symbol found
+
+				if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
+					return sf->script_function->getSymbol(sc_var->scope,symbol_to_find);
+				}
+				else{ // symbol is function...
+					return sf->script_function->getSymbol(sc_var->scope,symbol_to_find,NO_PARAMS_SYMBOL_ONLY);
+				}
+			}
+
+			// try find global variable...
+
+			return NULL;
+		}
+
+		Symbol *eval_global_variable(EvalData *eval_data, const std::string & symbol_to_find){
+
+			// try find global variable...
+			return eval_data->zs->getScriptClassFactory()->getMainFunction()->getSymbol(MAIN_SCOPE(eval_data),symbol_to_find);
+
 		}
 
 		int pop_function(EvalData *eval_data){
@@ -383,16 +410,23 @@ namespace zetscript{
 
 				Symbol *vis=NULL;
 				EvalInstruction *instruction = eval_data->current_function->instructions[i];
+				std::string *symbol_to_find=NULL;
+				ScriptClass *sc_aux=NULL;
 				//is_static&=((instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)==0);
+				switch(instruction->vm_instruction.byte_code){
+				// convert relative to absolute jmp
+				case BYTE_CODE_JMP: // adds relative to absolute offset
+				case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
+				case BYTE_CODE_JE: //
+				case BYTE_CODE_JT: // goto if true ... goes end to conditional.
+					instruction->vm_instruction.value_op2=i+instruction->vm_instruction.value_op2;
+					break;
+				case BYTE_CODE_FIND_VARIABLE:
+				case BYTE_CODE_LOAD_ELEMENT_THIS:
+				    // try to solve symbol...
+					symbol_to_find=&instruction->symbol.name;
 
-				if(		   ((	instruction->vm_instruction.properties & (MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR)) == 0)
-					    && ((	instruction->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_TYPE_FIND) || (	instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS ))
-				) { // try to solve symbol...
-
-					std::string *symbol_to_find=&instruction->symbol.name;
-					ScriptClass *sc_aux=NULL;
-
-					if(instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS){ // search the symbol within class.
+					if(instruction->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS){ // search the symbol within class.
 
 						if(*symbol_to_find == SYMBOL_VALUE_SUPER){ // trivial super.
 							Symbol *symbol_sf_foundf=NULL;
@@ -419,7 +453,7 @@ namespace zetscript{
 							//instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_VARIABLE;
 							instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
 							instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,str_symbol_to_find);
-							instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
+							//instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 
 						}else{ // is "this" symbol
 
@@ -431,10 +465,10 @@ namespace zetscript{
 						}
 					}else if((sc_aux = eval_data->script_class_factory->getScriptClass(*symbol_to_find))!= NULL){
 
-							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_CLASS;
+							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_CLASS;
 							instruction->vm_instruction.value_op2=(zs_int)sc_aux;
 
-					}else{ // try find local symbol  ...
+					}/*else{ // try find local symbol  ...
 						bool local_found=false;
 						ScriptFunction *script_function_found=NULL;
 						//ScriptClass *sc=NULL;
@@ -446,7 +480,7 @@ namespace zetscript{
 
 							if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
 								if((vis=sf->getSymbol(sc_var->scope,*symbol_to_find))!=NULL){
-									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_VARIABLE;
+									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_VARIABLE;
 									instruction->vm_instruction.value_op2=vis->idx_position;
 									instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
 									local_found=true;
@@ -456,13 +490,13 @@ namespace zetscript{
 								Symbol *function_symbol=sf->getSymbol(sc_var->scope,*symbol_to_find,NO_PARAMS_SYMBOL_ONLY);
 								if(function_symbol!=NULL){
 									script_function_found=(ScriptFunction *)function_symbol->ref_ptr;
-									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_FUNCTION;
+									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_FUNCTION;
 									instruction->vm_instruction.value_op2=(zs_int)script_function_found; // store script function
 									local_found =true;
 								}
 							}
 						}
-					}
+					}*/
 				}
 
 				// save instruction ...

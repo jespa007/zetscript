@@ -1,12 +1,6 @@
 namespace zetscript{
 	namespace eval{
 
-		typedef enum{
-			EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK=0x1<<0,
-			EVAL_EXPRESSION_PROPERTY_ALLOW_EXPRESSION_SEQUENCE=0x1<<1,
-			EVAL_EXPRESSION_PROPERTY_NO_ALLOW_EXPRESSION_SEQUENCE_ASSIGNMENT=0x1<<2,
-			EVAL_EXPRESSION_PROPERTY_BREAK_ON_ASSIGNMENT_OPERATOR=0x1<<3
-		}EvalExpressionProperty;
 
 		int n_anonymouse_function=0;
 
@@ -30,16 +24,17 @@ namespace zetscript{
 			std::vector<EvalInstruction *> 	* instructions=&token_node->instructions;
 			char *aux_p = (char *)s;
 			unsigned short instruction_properties=0; // global by default ...
+			ByteCode byte_code = ByteCode::BYTE_CODE_FIND_VARIABLE; // not found by default
 
 			if(scope_info->scope_parent!=NULL){// is within function ?
-				instruction_properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
-				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN){ // is within function member ?
-					instruction_properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
+
+				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN){ // function object as function member because it will use this inside
+					byte_code=ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS;
 				}
 			}
 
 			instructions->push_back(eval_instruction=new EvalInstruction(
-					instruction_properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS?BYTE_CODE_LOAD_TYPE_VARIABLE:BYTE_CODE_LOAD_TYPE_FIND
+					byte_code
 					,ZS_IDX_UNDEFINED
 					,ZS_IDX_UNDEFINED
 					,instruction_properties
@@ -81,8 +76,8 @@ namespace zetscript{
 			char *aux_p = (char *)s;
 			std::string symbol_value;
 			int lineSymbol;
-			std::string key_value;
-			ConstantValue *constant_value;
+			//std::string key_value;
+			StackElement *stk_key_object;
 			Keyword keyw;
 
 			if(*aux_p != '{'){ // go for final ...
@@ -90,7 +85,7 @@ namespace zetscript{
 			}
 
 			// instance object ...
-			instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_OBJECT));
+			instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_ANONYMOUS));
 
 			// this solve problem void structs...
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -126,22 +121,16 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected property name");
 				}
 
-				 key_value="\""+symbol_value+"\"";
-
 				 // register constant...
-				if((constant_value = eval_data->zs->getRegisteredConstantValue(key_value))==NULL){
-					ScriptObjectString *s=new ScriptObjectString(eval_data->zs);
-					s->str_value=symbol_value;
-					constant_value=eval_data->zs->registerConstantValue(key_value,NULL,MSK_STK_PROPERTY_STRING);
-					constant_value->stk_value=((void *)(s->str_value.c_str()));
-					constant_value->var_ref=s;
+				if((stk_key_object = eval_data->zs->getRegisteredConstantScriptObjectString(symbol_value))==NULL){
+					stk_key_object=eval_data->zs->registerConstantScriptObjectString(symbol_value);
 				 }
 
 				// add instruction...
 				instructions->push_back(
-						new EvalInstruction(ByteCode::BYTE_CODE_LOAD_TYPE_CONSTANT
+						new EvalInstruction(ByteCode::BYTE_CODE_LOAD_STRING
 						,ZS_IDX_UNDEFINED
-						,(zs_int)constant_value
+						,(zs_int)stk_key_object
 				));
 
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -160,7 +149,6 @@ namespace zetscript{
 						 ,scope_info
 						 ,instructions
 						 ,std::vector<char>{}
-				 	 	 ,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK // we want to preserve all values current expression evaluation
 				);
 
 				 // push attr (push a element pair)
@@ -209,7 +197,6 @@ namespace zetscript{
 						,scope_info
 						,instructions
 						,std::vector<char>{}
-						,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK // we want to preserve all values current expression evaluation
 						);
 
 				// vpush
@@ -259,7 +246,7 @@ namespace zetscript{
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",symbol_value.c_str());
 					}
 
-					instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW));
+					instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_CLASS));
 
 					eval_instruction->vm_instruction.value_op1=sc->idx_class;
         			 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -268,15 +255,16 @@ namespace zetscript{
 					 // get constructor function
 					 constructor_function=sc->getSymbol(scope_info->script_class->symbol_class.name); // FUNCTION_MEMBER_CONSTRUCTOR_NAME
 
-					 // insert load function ...
-					 instructions->push_back(
-						eval_instruction=new EvalInstruction(
-							 BYTE_CODE_LOAD_TYPE_VARIABLE
-							 ,ZS_IDX_UNDEFINED
-							 ,constructor_function!=NULL?ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR:ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND
-							 ,MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD
-						)
-					 );
+					 if(constructor_function != NULL){
+						 // insert load function ...
+						 instructions->push_back(
+							eval_instruction=new EvalInstruction(
+								 ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT
+								 ,ZS_IDX_UNDEFINED
+								 ,ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
+							)
+						 );
+					 }
 
 					 eval_instruction->instruction_source_info=InstructionSourceInfo(
 						 eval_data->current_parsing_file
@@ -303,7 +291,6 @@ namespace zetscript{
 									  ,scope_info
 									  ,instructions
 									  ,std::vector<char>{',',')'}
-							  	  	  ,EVAL_EXPRESSION_PROPERTY_NO_RESET_STACK // we want to preserve all values current expression evaluation
 							  );
 
 							  if(aux_p == NULL){
@@ -317,14 +304,14 @@ namespace zetscript{
 					 }while(*aux_p != ')');
 
 					 // if constructor function found insert call function...
-					 instructions->push_back(
-						 new EvalInstruction(
-							 BYTE_CODE_CALL
-							 ,n_args
-							 ,constructor_function!=NULL?ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR:ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND
-							 ,MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD
-						)
-					 );
+					  if(constructor_function != NULL){
+						 instructions->push_back(
+							 new EvalInstruction(
+								  BYTE_CODE_CALL_CONSTRUCTOR
+								 ,n_args
+							)
+						 );
+					  }
 
 
 					return aux_p+1; // ignore last )
