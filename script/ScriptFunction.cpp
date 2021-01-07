@@ -176,18 +176,19 @@ namespace zetscript{
 					,symbol_value.c_str()
 				);
 				break;
-			case BYTE_CODE_LOAD_THIS:
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
-					,idx_instruction
-					,ByteCodeToStr(instruction->byte_code)
-					,symbol_value.c_str() == SYMBOL_VALUE_SUPER?"{super}":"{this}"
-				);
-				break;
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t.%s\n"
+			case BYTE_CODE_LOAD_THIS:
+
+
+				while(instruction->properties & MSK_INSTRUCTION_PROPERTY_NEXT_FIELD_LOAD){
+					symbol_value+"."+SFI_GET_SYMBOL_NAME(sfo,instruction);
+					instruction++;
+				}
+
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
+					,symbol_value
 					,ByteCodeToStr(instruction->byte_code)
-					,symbol_value.c_str()
 				);
 				break;
 			case BYTE_CODE_JNT:

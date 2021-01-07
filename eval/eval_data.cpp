@@ -531,7 +531,7 @@ namespace zetscript{
 
 		PreOperation   	is_pre_operation(const char *s){
 			for(unsigned char i = 1; i < PRE_OPERATION_MAX; i++){
-				if(*eval_data_pre_operations[i].str == *s){
+				if(eval_data_pre_operations[i].eval_fun(s)){
 					return eval_data_pre_operations[i].id;
 				}
 			}
@@ -540,7 +540,7 @@ namespace zetscript{
 
 		PostOperation   is_post_operation(const char *s){
 			for(unsigned char i = 1; i < POST_OPERATION_MAX; i++){
-				if(*eval_data_post_operations[i].str == *s){
+				if(eval_data_post_operations[i].eval_fun(s)){
 					return eval_data_post_operations[i].id;
 				}
 			}
