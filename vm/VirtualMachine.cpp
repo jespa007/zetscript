@@ -214,8 +214,8 @@ namespace zetscript{
 		// if string or object do not remove empty shared pointers if they are 0s
 		if(info.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 			// add generated
-			insertLifetimeObject(file,line,(ScriptObjectAnonymous *)info.stk_value);
-			/*ScriptObjectAnonymous * so=(ScriptObjectAnonymous *)info.var_ref;
+			insertLifetimeObject(file,line,(ScriptObjectAnonymousClass *)info.stk_value);
+			/*ScriptObjectAnonymousClass * so=(ScriptObjectAnonymousClass *)info.var_ref;
 			if(so->shared_pointer==NULL){ // is not shared, add on the list for next time...
 				so->initSharedPtr();
 			}*/
@@ -231,7 +231,7 @@ namespace zetscript{
 		return info;
 	}
 
-	void VirtualMachine::insertLifetimeObject(const char *file, int line, ScriptObjectAnonymous *script_object){
+	void VirtualMachine::insertLifetimeObject(const char *file, int line, ScriptObjectAnonymousClass *script_object){
 		InfoLifetimeObject *info = (InfoLifetimeObject *)malloc(sizeof(InfoLifetimeObject));
 
 		info->file=file;

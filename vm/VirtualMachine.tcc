@@ -128,9 +128,9 @@ namespace zetscript{
 					stk_local_var=(StackElement *)stk_local_var->stk_value;
 				}
 
-				ScriptObjectAnonymous *var = NULL;
+				ScriptObjectAnonymousClass *var = NULL;
 				if(stk_local_var->properties==MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					var =((ScriptObjectAnonymous *)(stk_local_var->stk_value));
+					var =((ScriptObjectAnonymousClass *)(stk_local_var->stk_value));
 					if(var !=NULL){
 						if(var->shared_pointer != NULL){
 							if(!var->unrefSharedPtr(vm_idx_call)){
@@ -653,7 +653,7 @@ apply_metamethod_error:
 				break;
 			default:
 				if(stk_src_item->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					*(*str_dst_it)=((ScriptObjectAnonymous *)(stk_src_item)->stk_value)->toString();
+					*(*str_dst_it)=((ScriptObjectAnonymousClass *)(stk_src_item)->stk_value)->toString();
 				}
 				else{
 					*(*str_dst_it)="unknow";

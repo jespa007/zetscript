@@ -19,7 +19,7 @@
 
 namespace zetscript{
 
-	class ScriptObjectAnonymous;
+	class ScriptObjectAnonymousClass;
 	class ScriptClass;
 	class ZetScript;
 

@@ -12,7 +12,7 @@ class ScriptClass;
 	class ZetScript;
 	class VirtualMachine;
 	class ScriptClassFactory;
-	class  ScriptObjectAnonymous:public ScriptObjectVector{
+	class  ScriptObjectAnonymousClass:public ScriptObjectVector{
 
 	public:
 
@@ -21,7 +21,7 @@ class ScriptClass;
 
 		// Construct ...
 
-		ScriptObjectAnonymous(ZetScript	*_zs);
+		ScriptObjectAnonymousClass(ZetScript	*_zs);
 
 
 
@@ -44,7 +44,7 @@ class ScriptClass;
 		bool eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 
 
-		virtual ~ScriptObjectAnonymous();
+		virtual ~ScriptObjectAnonymousClass();
 
 	protected:
 

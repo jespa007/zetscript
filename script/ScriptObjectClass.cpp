@@ -7,7 +7,7 @@
 
 namespace zetscript{
 
-	ScriptObjectClass::ScriptObjectClass(ZetScript *zs):ScriptObjectAnonymous(zs){
+	ScriptObjectClass::ScriptObjectClass(ZetScript *zs):ScriptObjectAnonymousClass(zs){
 		was_created_by_constructor=false;
 		info_function_new=NULL;
 		instruction_new=NULL;
@@ -31,45 +31,41 @@ namespace zetscript{
 
 		ScriptClass *script_class=getScriptClass();
 		//------------------------------------------------------------------------------
-			// CREATE SYMBOLS
+		// pre-register built-in members...
+		for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
 
+			Symbol * symbol = (Symbol *)script_class->symbol_members->items[i];
+			bool is_script_function=symbol->properties & SYMBOL_PROPERTY_FUNCTION;
+			bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
 
-			// Register c vars...
-			for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
-
-				Symbol * symbol = (Symbol *)script_class->symbol_members->items[i];
-				bool is_script_function=symbol->properties & SYMBOL_PROPERTY_FUNCTION;
-				bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
-
-				// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
-				if((se=addPropertyBuiltIn(
-					symbol->name
-				))==NULL){
-					return;
-				}
-
-				if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
-
-					se->stk_value=(ScriptFunction *)symbol->ref_ptr;
-					se->properties=MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function
-				}
-				else{ // var... should be native in principle ?
-
-					if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
-					{
-						// we know the type object so we assign the pointer ...
-						void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
-
-						*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
-					}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
-						se->stk_value=(void *)symbol->ref_ptr;
-						se->properties=MSK_STK_PROPERTY_PTR_STK;
-					}else{
-						VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"internal error: symbol should be const or native var");
-						return;
-					}
-				}
+			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
+			if((se=addPropertyBuiltIn(
+				symbol->name
+			))==NULL){
+				return;
 			}
+
+			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
+
+				se->stk_value=(ScriptFunction *)symbol->ref_ptr;
+				se->properties=MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function
+			}
+			else{ // var...
+
+				if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
+				{
+					// we know the type object so we assign the pointer ...
+					void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
+					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
+				}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
+					se->stk_value=(void *)symbol->ref_ptr;
+					se->properties=MSK_STK_PROPERTY_PTR_STK;
+				}/*else{ // fixed var
+					//VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"internal error: symbol should be const or native var");
+					//return;
+				}*/
+			}
+		}
 
 
 			//-------------------------------------------------------------------------------
@@ -182,53 +178,45 @@ namespace zetscript{
 		 return script_class_native;
 	}
 
-
 	std::string ScriptObjectClass::toString(){
-			// check whether toString is implemented...
-			StackElement *stk_function=getProperty(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_TO_STRING),NULL);
+		// check whether toString is implemented...
+		StackElement *stk_function=getProperty(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_TO_STRING),NULL);
 
-			if(stk_function != NULL){ // get first element
-				if(stk_function->properties & MSK_STK_PROPERTY_FUNCTION){
-					ScriptFunction *ptr_function=(ScriptFunction *)stk_function->stk_value;
-					if((ptr_function->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
+		if(stk_function != NULL){ // get first element
+			if(stk_function->properties & MSK_STK_PROPERTY_FUNCTION){
+				ScriptFunction *ptr_function=(ScriptFunction *)stk_function->stk_value;
+				if((ptr_function->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
 
-						StackElement result=VM_EXECUTE(
-								this->zs->getVirtualMachine()
-								,this
-								,ptr_function
-								,NULL
-								,0
-						);
-						if(STK_IS_SCRIPT_OBJECT_STRING(&result)){
-							ScriptObjectString *so=(ScriptObjectString *)result.stk_value;
-							// capture string...
-							std::string aux=so->toString();
-							// ... destroy lifetime object we don't need anymore
-							this->zs->getVirtualMachine()->destroyLifetimeObject(so);
-							// return
-							return aux;
-						}
+					StackElement result=VM_EXECUTE(
+							this->zs->getVirtualMachine()
+							,this
+							,ptr_function
+							,NULL
+							,0
+					);
+					if(STK_IS_SCRIPT_OBJECT_STRING(&result)){
+						ScriptObjectString *so=(ScriptObjectString *)result.stk_value;
+						// capture string...
+						std::string aux=so->toString();
+						// ... destroy lifetime object we don't need anymore
+						this->zs->getVirtualMachine()->destroyLifetimeObject(so);
+						// return
+						return aux;
 					}
 				}
 			}
-
-			return ScriptObjectAnonymous::toString();
 		}
 
+		return ScriptObjectAnonymousClass::toString();
+	}
 
 
 	// built-in only for initialized
 	StackElement * ScriptObjectClass::addPropertyBuiltIn(const std::string & symbol_value){
 		std::string key_value = symbol_value;
 
-		/*if(idx_start_user_properties != 0){
-			VM_SET_USER_ERROR(this->virtual_machine,"addPropertyBuiltIn should be used within ScriptObjectAnonymous::createSymbols");
-			return NULL;
-		}*/
-
 		// if ignore duplicate was true, map resets idx to the last function...
 		map_property_keys->set(key_value.c_str(),stk_elements.count);
-
 
 		StackElement *new_stk=newSlot();
 		*new_stk=stk_undefined;

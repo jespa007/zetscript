@@ -11,10 +11,10 @@ namespace zetscript{
 		class ZetScript;
 		class VirtualMachine;
 		class ScriptClassFactory;
-		class  ScriptObjectClass: public ScriptObjectAnonymous{
+		class  ScriptObjectClass: public ScriptObjectAnonymousClass{
 		public:
 
-			//---> TODO JEB: move all vars to ScriptObjectAnonymous Class
+			//---> TODO JEB: move all vars to ScriptObjectAnonymousClass Class
 			ScriptFunction 		*	info_function_new;
 			Instruction 		*	instruction_new;
 			bool 					was_created_by_constructor;

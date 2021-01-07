@@ -26,7 +26,7 @@ namespace zetscript{
 			if(this->properties & MSK_STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->stk_value;
 			}
-			result=((ScriptObjectAnonymous *)stk->stk_value)->getClassName().c_str();
+			result=((ScriptObjectAnonymousClass *)stk->stk_value)->getClassName().c_str();
 		}
 
 		return result;
@@ -52,7 +52,7 @@ namespace zetscript{
 				stk=(StackElement *)stk->stk_value;
 			}
 
-			result=((ScriptObjectAnonymous *)stk->stk_value)->toString();
+			result=((ScriptObjectAnonymousClass *)stk->stk_value)->toString();
 		}
 
 		return result;

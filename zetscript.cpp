@@ -427,10 +427,10 @@ namespace zetscript{
 					v >= idx_start;
 					v--) {
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
-				ScriptObjectAnonymous *var = NULL;
+				ScriptObjectAnonymousClass *var = NULL;
 
 				if(vm_stk_element->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					var =((ScriptObjectAnonymous *)(vm_stk_element->stk_value));
+					var =((ScriptObjectAnonymousClass *)(vm_stk_element->stk_value));
 					if(var){
 						if(var->shared_pointer != NULL){
 							if(!var->unrefSharedPtr(IDX_CALL_STACK_MAIN)){

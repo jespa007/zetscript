@@ -103,7 +103,7 @@ enum:unsigned short {
 
 #define STK_VALUE_IS_VECTOR(stk) \
 (( stk->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) &&\
- (((ScriptObjectAnonymous *)(stk->stk_value))->idx_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR))
+ (((ScriptObjectAnonymousClass *)(stk->stk_value))->idx_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR))
 
 /*#define STK_VALUE_IS_INT_OR_FLOAT(properties) \
 ((properties & MSK_STK_PROPERTY_ZS_INT) ||\

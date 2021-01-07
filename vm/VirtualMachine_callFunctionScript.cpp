@@ -368,7 +368,7 @@ PERFORM_POST_OPERATION(stk_var);
 namespace zetscript{
 
 	StackElement VirtualMachine::callFunctionScript(
-			ScriptObjectAnonymous	* this_object,
+			ScriptObjectAnonymousClass	* this_object,
 			ScriptFunction 			* calling_function,
 			StackElement 		  	* _stk_local_var,
 			//std::string 		  	* _str_start,
@@ -389,9 +389,9 @@ namespace zetscript{
 		float aux_float=0.0;
 		StackElement ret_obj;
 		ScriptObject *script_var=NULL;
-		ScriptObjectAnonymous *script_object_anonymous_aux=NULL;
+		ScriptObjectAnonymousClass *script_object_anonymous_aux=NULL;
 		ScriptObjectClass *script_object_class=NULL;
-		ScriptObjectAnonymous *calling_object=NULL; // used on call instruction
+		ScriptObjectAnonymousClass *calling_object=NULL; // used on call instruction
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
 		StackElement *stk_var;
@@ -511,7 +511,7 @@ namespace zetscript{
 				}
 
 				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					var_object = (ScriptObjectAnonymous *)(stk_result_op1->stk_value);
+					var_object = (ScriptObjectAnonymousClass *)(stk_result_op1->stk_value);
 				}
 
 				stk_var=NULL;
@@ -566,12 +566,12 @@ namespace zetscript{
 						);
 					}
 
-					script_object_anonymous_aux = (ScriptObjectAnonymous  *)stk_result_op1->stk_value;
+					script_object_anonymous_aux = (ScriptObjectAnonymousClass  *)stk_result_op1->stk_value;
 					if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {
 						StackElement *stk_ins=((StackElement *)stk_result_op1->stk_value);
 
 						if(stk_ins->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-							script_object_anonymous_aux=((ScriptObjectAnonymous *)stk_ins->stk_value);
+							script_object_anonymous_aux=((ScriptObjectAnonymousClass *)stk_ins->stk_value);
 						}
 					}
 
@@ -688,9 +688,9 @@ namespace zetscript{
 
 					if(instruction->byte_code==BYTE_CODE_PUSH_VECTOR_ELEMENT){
 						POP_ONE; // only pops the value, the last is the std::vector variable itself
-						ScriptObjectAnonymous *vec_obj = NULL;
+						ScriptObjectAnonymousClass *vec_obj = NULL;
 						if((stk_vm_current-1)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-							vec_obj = (ScriptObjectAnonymous *)(stk_vm_current-1)->stk_value;
+							vec_obj = (ScriptObjectAnonymousClass *)(stk_vm_current-1)->stk_value;
 							if(vec_obj->idx_script_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								stk_src=stk_result_op1;
@@ -708,13 +708,13 @@ namespace zetscript{
 					}else if(instruction->byte_code==BYTE_CODE_PUSH_OBJECT_ELEMENT){
 
 						POP_TWO; // first must be a string that describes variable name and the other the variable itself ...
-						ScriptObjectAnonymous *obj = NULL;
+						ScriptObjectAnonymousClass *obj = NULL;
 						StackElement *stk_object=(stk_vm_current-1);
 						if(STK_IS_SCRIPT_OBJECT_ANONYMOUS(stk_object)){
 							VM_STOP_EXECUTE("Expected object but is type ");
 						}
 
-						obj = (ScriptObjectAnonymous *)stk_object->stk_value;
+						obj = (ScriptObjectAnonymousClass *)stk_object->stk_value;
 						if(obj->idx_script_class != IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS){ // push value ...
 							VM_STOP_EXECUTE("Expected object but is type ");
 						}
@@ -800,7 +800,7 @@ namespace zetscript{
 									VM_STOP_EXECUTE("Internal error, store on packed member info has not object and const char information");
 							}
 
-							ScriptObjectAnonymous *calling_object_info=(ScriptObjectAnonymous *)stk_calling_object_info->stk_value;// calling object
+							ScriptObjectAnonymousClass *calling_object_info=(ScriptObjectAnonymousClass *)stk_calling_object_info->stk_value;// calling object
 							if((stk_dst=calling_object_info->addProperty((const char *)stk_symbol_info->stk_value, vm_error_str))==NULL){
 								VM_STOP_EXECUTE(vm_error_str.c_str());
 							}
@@ -814,7 +814,7 @@ namespace zetscript{
 						stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value
 
 						// we need primitive stackelement in order to assign...
-						if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectAnonymous::VAR_TYPE::OBJECT){
+						if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectAnonymousClass::VAR_TYPE::OBJECT){
 							stk_src=(StackElement *)stk_src->stk_value; // stk_value is expect to contents a stack variable
 						}
 
@@ -940,12 +940,12 @@ namespace zetscript{
 						case MSK_STK_PROPERTY_SCRIPT_OBJECT: // we are getting script vars ...
 							if((old_stk_dst.properties & (MSK_STK_PROPERTY_IS_VAR_C))==(MSK_STK_PROPERTY_IS_VAR_C)==0){ // is not C class
 								if(old_stk_dst.stk_value!=NULL){ // it had a pointer (no constant)...
-									//ScriptObjectAnonymous *old_script_dst_var_ref=(ScriptObjectAnonymous *)(old_stk_dst.var_ref);
+									//ScriptObjectAnonymousClass *old_script_dst_var_ref=(ScriptObjectAnonymousClass *)(old_stk_dst.var_ref);
 									if(
 										old_stk_dst.stk_value != stk_dst->stk_value  // not same ref ...
 									&&  STK_IS_THIS(&old_stk_dst)  // ... or this, do not share/unshare
 									){ // unref pointer because new pointer has been attached...
-										if(!unrefSharedScriptObject(((ScriptObjectAnonymous  *)old_stk_dst.stk_value)->shared_pointer,vm_idx_call)){
+										if(!unrefSharedScriptObject(((ScriptObjectAnonymousClass  *)old_stk_dst.stk_value)->shared_pointer,vm_idx_call)){
 											goto lbl_exit_function;
 										}
 									}
@@ -1144,7 +1144,7 @@ namespace zetscript{
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
 				 POP_TWO;
 
-				if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectAnonymous::VAR_TYPE::OBJECT){
+				if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectAnonymousClass::VAR_TYPE::OBJECT){
 					stk_result_op1=(StackElement *)stk_result_op1->stk_value; // stk_value is expect to contents a stack variable
 				}
 				switch((zs_int)stk_result_op2->stk_value){
@@ -1163,7 +1163,7 @@ namespace zetscript{
 				default:
 					if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 						bool b = this->script_class_factory->isClassInheritsFrom(			//
-								((ScriptObjectAnonymous *)(stk_result_op1->stk_value))->idx_script_class // A
+								((ScriptObjectAnonymousClass *)(stk_result_op1->stk_value))->idx_script_class // A
 								, (zs_int)stk_result_op2->stk_value				// B
 						);
 						PUSH_BOOLEAN(b);
@@ -1237,7 +1237,7 @@ namespace zetscript{
 						}
 
 
-						calling_object=(ScriptObjectAnonymous *)stk_calling_object_info->stk_value; // unpack all elements...
+						calling_object=(ScriptObjectAnonymousClass *)stk_calling_object_info->stk_value; // unpack all elements...
 						stk_function_ref=stk_symbol_info; // function ref...
 						calling_from_object_type=true;
 					}
@@ -1454,7 +1454,7 @@ namespace zetscript{
 					// if scriptvariable and in the zeros list, deattach
 					if(stk_result.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 						if(!STK_IS_THIS(&stk_result)){
-							ScriptObjectAnonymous *script_var=(ScriptObjectAnonymous *)stk_result.stk_value;
+							ScriptObjectAnonymousClass *script_var=(ScriptObjectAnonymousClass *)stk_result.stk_value;
 
 							// deattach from zero shares if exist...
 							if(deattachShareNode(script_var->shared_pointer->data.zero_shares,script_var->shared_pointer)==false){
@@ -1486,7 +1486,7 @@ namespace zetscript{
 					(*stk_vm_current++)={script_var,MSK_STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_NEW_ANONYMOUS: // Create new std::vector object...
-					script_var=new ScriptObjectAnonymous(this->zs);
+					script_var=new ScriptObjectAnonymousClass(this->zs);
 					if(!script_var->initSharedPtr()){
 						goto lbl_exit_function;
 					}

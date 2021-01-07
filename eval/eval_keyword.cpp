@@ -110,6 +110,7 @@ namespace zetscript{
 										,sc->symbol_class.scope // pass class scope
 									);
 									break;
+							case Keyword::KEYWORD_VAR:
 							case Keyword::KEYWORD_CONST: // const symbol
 									aux_p = eval_keyword_var(
 										eval_data
@@ -472,7 +473,7 @@ namespace zetscript{
 		//
 		//--------------------------------------------------------------------------------------------------------------------------------------------------------
 		//
-		//  VAR
+		//  VAR/FUNCTION
 		//
 		char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 			// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
@@ -481,6 +482,7 @@ namespace zetscript{
 			Keyword key_w = is_keyword(s);
 			bool is_static = false;
 			bool is_constant = false;
+			ScriptClass *sc=NULL;
 
 			// check if static...
 			/*if(key_w==Keyword::KEYWORD_STATIC){
@@ -488,6 +490,23 @@ namespace zetscript{
 				is_static=true;
 				key_w=is_keyword(aux_p);
 			}*/
+			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+				&& scope_info->scope_base == scope_info
+				&& scope_info->scope_parent == NULL // is function member
+				){ // class members are defined as functions
+				key_w = Keyword::KEYWORD_FUNCTION;
+				sc=scope_info->script_class;
+			}
+			else{
+				key_w = is_keyword(aux_p);
+
+				if(key_w == Keyword::KEYWORD_FUNCTION){
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+				}
+				//advance_chars=strlen(eval_data_keywords[key_w].str);
+			}
+
+
 			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
 
 				int start_line=0;
@@ -501,18 +520,14 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				// check class scope...
-				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-					&& scope_info->scope_base == scope_info
-					&& scope_info->scope_parent == NULL // class
-				){
-					sc=scope_info->script_class;
+				/*if(sc != NULL){
+					//sc=scope_info->script_class;
 
 					if(is_constant == false){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," unexpected \"var\" keyword in class");
 					}
 
-					pre_variable_name=sc->symbol_class.name+"::";
-				}
+				}*/
 
 				if(is_constant){ // scope_info will be global scope...
 					if(!(sc!=NULL || scope_info == MAIN_SCOPE(eval_data))){
@@ -521,6 +536,10 @@ namespace zetscript{
 
 					// always static or constant are global symbols...
 					scope_info = MAIN_SCOPE(eval_data);
+
+					if(sc!=NULL){
+						pre_variable_name=sc->symbol_class.name+"::";
+					}
 				}
 
 
@@ -588,6 +607,8 @@ namespace zetscript{
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 					if(*aux_p == '='){
+
+
 
 						std::vector<EvalInstruction *>	 		constant_instructions;
 
@@ -707,12 +728,12 @@ namespace zetscript{
 				//Scope *scope=scope_info;
 				bool is_anonymous=false;
 
-				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+				/*if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
 					&& scope_info->scope_base == scope_info
 					&& scope_info->scope_parent == NULL // is function member
 					){
 					sc=scope_info->script_class;
-				}
+				}*/
 
 				//std::string arg_value;
 				//FunctionParam arg_info;

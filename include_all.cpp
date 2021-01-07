@@ -18,8 +18,8 @@
 
 
 #include 		"script/ScriptObject.cpp"
-#include 		"script/ScriptObjectAnonymous.cpp"
-#include 		"script/ScriptObjectAnonymousIterator.cpp"
+#include 		"script/ScriptObjectAnonymousClass.cpp"
+#include 		"script/ScriptObjectAnonymousClassIterator.cpp"
 #include		"script/ScriptObjectString.cpp"
 #include 		"script/ScriptObjectStringIterator.cpp"
 #include		"script/ScriptObjectVector.cpp"

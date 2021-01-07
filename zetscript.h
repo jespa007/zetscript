@@ -90,8 +90,8 @@
 #include "script/ScriptObjectStringIterator.h"
 #include "script/ScriptObjectVector.h"
 #include "script/ScriptObjectVectorIterator.h"
-#include "script/ScriptObjectAnonymous.h"
-#include "script/ScriptObjectAnonymousIterator.h"
+#include "script/ScriptObjectAnonymousClass.h"
+#include "script/ScriptObjectAnonymousClassIterator.h"
 #include "script/ScriptObjectClass.h"
 
 #include "script/ScriptClass.h"

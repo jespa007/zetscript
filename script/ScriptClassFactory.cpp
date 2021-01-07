@@ -100,7 +100,7 @@ namespace zetscript{
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ZetScript,IDX_BUILTIN_TYPE_ZETSCRIPT);
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
-		REGISTER_BUILT_IN_CLASS(ScriptObjectAnonymous,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS);
+		REGISTER_BUILT_IN_CLASS(ScriptObjectAnonymousClass,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS);
 		REGISTER_BUILT_IN_CLASS(ScriptObjectString,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING);
 		REGISTER_BUILT_IN_CLASS(ScriptObjectVector,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR);
 		REGISTER_BUILT_IN_CLASS(ScriptObjectClass,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS);
@@ -114,9 +114,9 @@ namespace zetscript{
 
 		// register custom functions ...
 		/*nativeClassInheritsFrom<ScriptObjectVector,ScriptObject>();
-		nativeClassInheritsFrom<ScriptObjectAnonymous,ScriptObjectVector>();
-		nativeClassInheritsFrom<ScriptObjectClass,ScriptObjectAnonymous>();*/
-		//nativeClassInheritsFrom<ScriptObjectDictionary,ScriptObjectAnonymous>();
+		nativeClassInheritsFrom<ScriptObjectAnonymousClass,ScriptObjectVector>();
+		nativeClassInheritsFrom<ScriptObjectClass,ScriptObjectAnonymousClass>();*/
+		//nativeClassInheritsFrom<ScriptObjectDictionary,ScriptObjectAnonymousClass>();
 
 
 		//------------------------------------------------------------------------------------------------------------
