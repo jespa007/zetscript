@@ -111,9 +111,9 @@ namespace zetscript{
 			int value_op2 = instruction->value_op2;
 			symbol_value=SFI_GET_SYMBOL_NAME(sfo,instruction);
 			//char object_access[512] = "";
-			const char *pre=instructionPropertyPreOperationToStr(instruction->properties)
+			/*const char *pre=instructionPropertyPreOperationToStr(instruction->properties)
 					 ,*post=instructionPropertyPostOperationToStr(instruction->properties);
-
+*/
 			if((char)value_op1 != ZS_IDX_UNDEFINED){
 				n_ops++;
 			}
@@ -214,11 +214,11 @@ namespace zetscript{
 				break;
 			default:
 				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 						idx_instruction
-						,instructionPropertyPreOperationToStr(instruction->properties)
+						//,instructionPropertyPreOperationToStr(instruction->properties)
 						,ByteCodeToStr(instruction->byte_code)
-						,instructionPropertyPostOperationToStr(instruction->properties)
+						//,instructionPropertyPostOperationToStr(instruction->properties)
 					);
 				}else if(n_ops==1){
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i\n"

@@ -360,7 +360,7 @@ namespace zetscript{
 			eval_data->functions.push_back(eval_data->current_function=new EvalFunction(script_function));
 		}
 
-		Symbol *eval_local_variable(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find){
+		Symbol *eval_find_local_variable(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find){
 
 			EvalFunction *sf=eval_data->current_function;
 			Symbol * sc_var = scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_DOWN);
@@ -380,7 +380,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		Symbol *eval_global_variable(EvalData *eval_data, const std::string & symbol_to_find){
+		Symbol *eval_find_global_variable(EvalData *eval_data, const std::string & symbol_to_find){
 
 			// try find global variable...
 			return eval_data->zs->getScriptClassFactory()->getMainFunction()->getSymbol(MAIN_SCOPE(eval_data),symbol_to_find);

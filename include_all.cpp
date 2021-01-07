@@ -14,6 +14,7 @@
 #include 		"Symbol.cpp"
 #include 		"StackElement.cpp"
 #include 		"ByteCode.cpp"
+#include 		"Instruction.cpp"
 
 
 #include 		"script/ScriptObject.cpp"

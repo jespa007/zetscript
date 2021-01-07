@@ -2,6 +2,17 @@ namespace zetscript{
 
 	namespace eval{
 
+		#define MAX_REGISTER_LENGTH	256
+
+		#define IS_TOKEN_SIMPLIFIABLE(token) \
+		(\
+			(token->instructions.size()==1)\
+			&& (\
+				token->instructions[0]->vm_instruction.isConstant()\
+			||  IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(token->instructions[0]->vm_instruction.byte_code)\
+			)\
+		)
+
 		typedef struct{
 			EvalInstruction *	instruction_symbol; // affected symbol
 			Operator			assign_operator; // operator
@@ -92,6 +103,7 @@ namespace zetscript{
 				, std::vector<EvalInstruction *> 	* instructions
 				, std::vector<char> expected_ending_char={}
 				, uint16_t properties=0 // uint16_t properties
+				, std::vector<EvalInstruction *> *only_call_instructions=NULL
 		);
 
 
@@ -109,7 +121,7 @@ namespace zetscript{
 				, int line
 				,TokenNode * token_node
 				, PreOperation pre_operation
-				, PostOperation post_operation
+			//	, PostOperation post_operation
 		){
 			// PRE:
 			bool is_constant_number=false, is_constant_boolean=false;
@@ -245,74 +257,86 @@ namespace zetscript{
 				)
 			);
 
-			if(		(pre_operation == PreOperation::PRE_OPERATION_NEG)
-				|| 	(pre_operation == PreOperation::PRE_OPERATION_NOT)
-				|| 	(pre_operation == PreOperation::PRE_OPERATION_INC)
-				|| 	(pre_operation == PreOperation::PRE_OPERATION_DEC)
-			){
-				if(token_node->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"expected identifier before pre operation \"%s\"",eval_data_pre_operations[ pre_operation].str);
-				}
 
-				token_node->instructions.push_back(
-					new EvalInstruction(
-						pre_operation == PreOperation::PRE_OPERATION_NEG ? ByteCode::BYTE_CODE_NEG:
-						pre_operation == PreOperation::PRE_OPERATION_NOT ? ByteCode::BYTE_CODE_NOT:
-						pre_operation == PreOperation::PRE_OPERATION_DEC ? ByteCode::BYTE_CODE_PRE_DEC:
-						ByteCode::BYTE_CODE_PRE_INC
-					)
-				);
-
-			}
-			else if(
-					(post_operation == PostOperation::POST_OPERATION_INC)
-				|| 	(post_operation == PostOperation::POST_OPERATION_DEC)
-			){
-				unsigned short properties = 0;
-
-				if(token_node->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"expected identifier after post operation \"%s\"",eval_data_post_operations[ post_operation].str);
-				}
-
-				if(token_node->pre_operation != PreOperation::PRE_OPERATION_UNKNOWN){
-				   if(token_node->pre_operation != PreOperation::PRE_OPERATION_NEG){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Cannot combine pre-operation \"%s\" with post-operation \"%s\" on \"%s\""
-							,eval_data_pre_operations[ pre_operation].str
-							,eval_data_pre_operations[ post_operation].str
-							,token_node->value.c_str()
-						);
-				   }
-
-				   properties=MSK_INSTRUCTION_PROPERTY_PRE_NEG;
-
-
-				}
-
-				token_node->instructions.push_back(
-					new EvalInstruction(
-						post_operation == PostOperation::POST_OPERATION_DEC ? ByteCode::BYTE_CODE_POST_DEC:
-						ByteCode::BYTE_CODE_POST_INC
-						,ZS_IDX_UNDEFINED
-						,ZS_IDX_UNDEFINED
-						,properties
-					)
-				);
-
-			}
 
 			return aux;
 			// POST: token as literal or identifier
 		}
 
-		EvalInstruction * eval_expression_perform_K_operation(EvalData *eval_data,ByteCode byte_code, Instruction *i1){
-			EvalInstruction *result_instruction=NULL;
+		unsigned eval_expression_load_const_byte_code_to_instruction_property(ByteCode byte_code){
 
-			if(i1->isConstant()==fakse){
+			switch(byte_code){
+			case BYTE_CODE_LOAD_ZS_INT:
+				return MSK_INSTRUCTION_PROPERTY_ZS_INT;
+				break;
+			case BYTE_CODE_LOAD_BOOL:
+				return MSK_INSTRUCTION_PROPERTY_BOOL;
+				break;
+			case BYTE_CODE_LOAD_FLOAT:
+				return MSK_INSTRUCTION_PROPERTY_FLOAT;
+				break;
+			case BYTE_CODE_LOAD_STRING:
+				return MSK_INSTRUCTION_PROPERTY_STRING;
+				break;
+			}
+
+			return 0;
+		}
+
+		bool eval_expression_get_register(EvalData *eval_data, Scope *scope,EvalInstruction *i1, ByteCode & load_byte_code, zs_int & load_value_op2){
+			Symbol *symbol_found=NULL;
+
+			 if(!IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(i1->vm_instruction.byte_code)){
+				 return false;
+			 }
+
+			 load_value_op2=i1->vm_instruction.value_op2;
+			 load_byte_code=i1->vm_instruction.byte_code;
+
+			if(i1->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
+
+				if((symbol_found = eval_find_local_variable(eval_data,scope,i1->symbol.name)) != NULL){
+					load_byte_code=BYTE_CODE_LOAD_LOCAL;
+					load_value_op2=symbol_found->idx_position;
+				}else if ((symbol_found = eval_find_global_variable(eval_data,i1->symbol.name)) != NULL){
+					load_byte_code=BYTE_CODE_LOAD_GLOBAL;
+					load_value_op2=symbol_found->idx_position;
+				}else{
+					return false;
+				}
+			}
+
+			if(load_value_op2 >= MAX_REGISTER_LENGTH){
+				return false;
+			}
+
+			return true;
+		}
+
+		//-------------------------------------------------------------------------------------------------------------------------------
+		// IMMEDIATE OPERATION 1 OPS
+		EvalInstruction * eval_expression_perform_K_operation(EvalData *eval_data,ByteCode byte_code, EvalInstruction *i1){
+			EvalInstruction *result_instruction=NULL;
+			unsigned k_properties=0;
+
+			if(i1->vm_instruction.isConstant()==false){
 				return NULL;
 			}
 
+			if(IS_BYTE_CODE_OPERATION(byte_code) == false){
+				return NULL;
+			}
 
-			return result_instruction;
+			if((k_properties=eval_expression_load_const_byte_code_to_instruction_property(i1->vm_instruction.byte_code))==0){
+				return NULL;
+			}
+
+			return new EvalInstruction(
+					byte_code
+					, ZS_IDX_UNDEFINED
+					, i1->vm_instruction.value_op2
+					, MSK_INSTRUCTION_PROPERTY_ILOAD_K |k_properties
+			);
 		}
 
 		EvalInstruction * eval_expression_perform_R_operation(EvalData *eval_data,Scope *scope,  ByteCode byte_code, EvalInstruction *i1){
@@ -320,83 +344,35 @@ namespace zetscript{
 			ByteCode load_byte_code= i1->vm_instruction.byte_code;
 			zs_int	 load_value_op2= i1->vm_instruction.value_op2;
 
+			if(IS_BYTE_CODE_OPERATION(byte_code) == false){
+				return NULL;
+			}
+
 			if(IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(load_byte_code) == false){
 				return NULL;
 			}
 
-			if(i1->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){ // try to find ...
-				// try to find local first and global later.
-				Symbol *symbol_found=NULL;
-
-				if((symbol_found = eval_find_local_variable(eval_data,scope,i1->symbol)) != NULL){
-					load_byte_code=BYTE_CODE_LOAD_LOCAL;
-					load_value_op2=symbol_found->idx_position;
-				}else if (symbol_found = eval_find_global_variable(eval_data,i1->symbol)) != NULL){
-					load_byte_code=BYTE_CODE_LOAD_GLOBAL;
-					load_value_op2=symbol_found->idx_position;
-				}else{
-					return NULL;
-				}
-
-
-			}
-
-			if(load_byte_code != BYTE_CODE_FIND_VARIABLE){
-				result_instruction = new EvalInstruction(
-						byte_code
-						,ZS_IDX_UNDEFINED
-						,load_value_op2
-						,MSK_INSTRUCTION_PROPERTY_ILOAD_R | (load_byte_code == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0)
-				);
-			}
-
-			return result_instruction;
-		}
-
-
-		EvalInstruction * eval_expression_perform_RR_operation(EvalData *eval_data,ByteCode byte_code, Instruction *i1, Instruction *i2){
-			EvalInstruction *result_instruction=NULL;
-
-			if(!(IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(i1->byte_code) && IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(i2->byte_code))){
+			if(eval_expression_get_register(eval_data, scope, i1, load_byte_code,load_value_op2) == false){
 				return NULL;
 			}
 
-			if(i2->byte_code == BYTE_CODE_FIND_VARIABLE){
-
-			}
-
-
-
-			return result_instruction;
+			return new EvalInstruction(
+					byte_code
+					,load_value_op2
+					,ZS_IDX_UNDEFINED
+					,MSK_INSTRUCTION_PROPERTY_ILOAD_R | (load_byte_code == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0)
+			);
 		}
-
-
-		EvalInstruction * eval_expression_perform_KR_operation(EvalData *eval_data,ByteCode byte_code, Instruction *i1, Instruction *i2){
-			EvalInstruction *result_instruction=NULL;
-
-			if(!(i1->isConstant() && IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(i2->byte_code))){
-				return NULL;
-			}
-
-			return result_instruction;
-
-		}
-
-		EvalInstruction * eval_expression_perform_RK_operation(EvalData *eval_data,ByteCode byte_code, Instruction *i1, Instruction *i2){
-			EvalInstruction *result_instruction=NULL;
-			if(!(IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(i1->byte_code) && i2->isConstant())){
-				return NULL;
-			}
-			return result_instruction;
-
-		}
-
-		EvalInstruction * eval_expression_perform_KK_operation(EvalData *eval_data,ByteCode byte_code, Instruction *i1, Instruction *i2){
+		//-------------------------------------------------------------------------------------------------------------------------------
+		// IMMEDIATE OPERATION 2 OPS
+		EvalInstruction * eval_expression_perform_KK_operation(EvalData *eval_data,ByteCode byte_code, EvalInstruction *ei1, EvalInstruction *ei2){
 			float  result_op_float=0;
 			zs_int result_op_zs_int=0;
 			std::string result_op_str=0;
 			EvalInstruction *result_instruction=NULL;
 			ByteCode result_bc=ByteCode::BYTE_CODE_INVALID;
+			Instruction *i1=&ei1->vm_instruction;
+			Instruction *i2=&ei2->vm_instruction;
 
 
 			// check last two instructions stk op1 and stk op2 are bool/int/float or string
@@ -521,50 +497,172 @@ namespace zetscript{
 
 			}
 
-
-
-
 			return result_instruction;
 		}
 
-		void eval_expression_optimize_2fn(EvalData *eval_data,ByteCode byte_code, std::vector<EvalInstruction *> *instructions){
+
+
+		EvalInstruction * eval_expression_perform_KR_operation(EvalData *eval_data,Scope *scope,ByteCode byte_code, EvalInstruction *ei1, EvalInstruction *ei2){
+			// i1: K / i2: R
+			Instruction *i1=&ei1->vm_instruction;
+			Instruction *i2=&ei2->vm_instruction;
+			ByteCode load_byte_code_2= i2->byte_code;
+			zs_int	 load_value_op2_2= i2->value_op2;
+
+			unsigned k_properties=0;
+
+
+			if(IS_BYTE_CODE_OPERATION(byte_code) == false){
+				return NULL;
+			}
+
+			if(i1->isConstant() == false){
+				return NULL;
+			}
+
+			if((k_properties=eval_expression_load_const_byte_code_to_instruction_property(i1->byte_code))==0){
+				return NULL;
+			}
+
+
+			if(IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(load_byte_code_2) == false){
+				return NULL;
+			}
+
+			if(eval_expression_get_register(eval_data, scope, ei2, load_byte_code_2,load_value_op2_2) == false){
+				return NULL;
+			}
+
+
+
+			return new EvalInstruction(
+					byte_code
+					,i2->value_op2
+					,i1->value_op2
+					,MSK_INSTRUCTION_PROPERTY_ILOAD_KR
+					| (load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0)
+					| k_properties
+			);
+
+		}
+
+		EvalInstruction * eval_expression_perform_RK_operation(EvalData *eval_data,Scope *scope,ByteCode byte_code, EvalInstruction *ei1, EvalInstruction *ei2){
+			// i1: R / i2: K
+			Instruction *i1=&ei1->vm_instruction;
+			Instruction *i2=&ei2->vm_instruction;
+			ByteCode load_byte_code_1= i1->byte_code;
+			zs_int	 load_value_op2_1= i1->value_op2;
+
+			unsigned k_properties=0;
+
+			if(IS_BYTE_CODE_OPERATION(byte_code) == false){
+				return NULL;
+			}
+
+			if(i2->isConstant() == false){
+				return NULL;
+			}
+
+
+			if((k_properties=eval_expression_load_const_byte_code_to_instruction_property(i2->byte_code))==0){
+				return NULL;
+			}
+
+
+			if(IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(load_byte_code_1) == false){
+				return NULL;
+			}
+
+			if(eval_expression_get_register(eval_data, scope, ei1, load_byte_code_1,load_value_op2_1) == false){
+				return NULL;
+			}
+
+			return new EvalInstruction(
+					byte_code
+					,i1->value_op2
+					,i2->value_op2
+					,MSK_INSTRUCTION_PROPERTY_ILOAD_RK
+					| (load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0)
+					| k_properties
+			);
+
+		}
+
+		EvalInstruction * eval_expression_perform_RR_operation(EvalData *eval_data,Scope *scope,ByteCode byte_code, EvalInstruction *ei1, EvalInstruction *ei2){
+				EvalInstruction *result_instruction=NULL;
+				Instruction *i1=&ei1->vm_instruction;
+				Instruction *i2=&ei2->vm_instruction;
+				ByteCode load_byte_code_1= i1->byte_code;
+				zs_int	 load_value_op2_1= i1->value_op2;
+				ByteCode load_byte_code_2= i2->byte_code;
+				zs_int	 load_value_op2_2= i2->value_op2;
+
+				if(IS_BYTE_CODE_OPERATION(byte_code) == false){
+					return NULL;
+				}
+
+
+				if(eval_expression_get_register(eval_data, scope, ei1, load_byte_code_1,load_value_op2_1) == false){
+					return NULL;
+				}
+
+
+				if(eval_expression_get_register(eval_data, scope, ei2, load_byte_code_2,load_value_op2_2) == false){
+					return NULL;
+				}
+
+				return new EvalInstruction(
+						byte_code
+						,load_value_op2_1
+						,(load_byte_code_2 & 0xff) | (load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0) << (8)
+						,MSK_INSTRUCTION_PROPERTY_ILOAD_RR | (load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0)
+				);
+
+			}
+
+
+		bool eval_expression_optimize_2fn(EvalData *eval_data,Scope *scope,ByteCode byte_code, std::vector<EvalInstruction *> *instructions){
 			// PRE: Last two instructions were generated by both final nodes
 			size_t size_instructions=instructions->size();
 			EvalInstruction *instruction;
 
 			if(size_instructions < 2){
-				return;
+				return false;
 			}
 
 			EvalInstruction *i1=instructions->at(size_instructions-2);
 			EvalInstruction *i2=instructions->at(size_instructions-1);
 
-			Instruction *vm_i1=&i1->vm_instruction;
-			Instruction *vm_i2=&i2->vm_instruction;
 
-
-			if((instruction=eval_expression_perform_KK_operation(eval_data,byte_code,vm_i1,vm_i2))!=NULL){
-			}else if((instruction=eval_expression_perform_KR_operation(eval_data,byte_code,vm_i1,vm_i2))!=NULL){
-			}else if((instruction=eval_expression_perform_RK_operation(eval_data,byte_code,vm_i1,vm_i2))==NULL){
-			}else if((instruction=eval_expression_perform_RR_operation(eval_data,byte_code,vm_i1,vm_i2))==NULL){
+			if((instruction=eval_expression_perform_KK_operation(eval_data,byte_code,i1,i2))==NULL){
+				if((instruction=eval_expression_perform_KR_operation(eval_data,scope,byte_code,i1,i2))!=NULL){
+					if((instruction=eval_expression_perform_RK_operation(eval_data,scope,byte_code,i1,i2))==NULL){
+						if((instruction=eval_expression_perform_RR_operation(eval_data,scope,byte_code,i1,i2))==NULL){
+							return false; // cannot be simplified
+						}
+					}
+				}
 			}
 
-			if(instruction != NULL){
-				// remove last two instructions from vector
-				delete instructions->at(size_instructions-2);
-				delete instructions->at(size_instructions-1);
 
-				instructions->erase(instructions->begin()+size_instructions-2,instructions->end());
+			// remove last two instructions from vector
+			delete i1;
+			delete i2;
 
-				instructions->push_back(instruction);
-			}
+			// erase last two instructions
+			instructions->resize(instructions->size()-2);
+
+			// and push the new one
+			instructions->push_back(instruction);
+
+			return true;
 
 		}
 
-		void eval_expression_optimize_1fn(EvalData *eval_data,ByteCode byte_code, std::vector<EvalInstruction *> *instructions){
+		void eval_expression_optimize_1fn(EvalData *eval_data,Scope *scope_info,ByteCode byte_code, std::vector<EvalInstruction *> *instructions){
 			// PRE: Last instruction node was generated by a final node
 			size_t size_instructions=instructions->size();
-			EvalInstruction *instruction;
+			EvalInstruction *instruction=NULL;
 
 			if(size_instructions < 2){
 				return;
@@ -575,8 +673,8 @@ namespace zetscript{
 			Instruction *vm_i1=&i1->vm_instruction;
 
 
-			if((instruction=eval_expression_perform_K_operation(eval_data,byte_code,vm_i1))!=NULL){
-			}else if((instruction=eval_expression_perform_R_operation(eval_data,byte_code,vm_i1))!=NULL){
+			if((instruction=eval_expression_perform_K_operation(eval_data,byte_code,i1))!=NULL){
+			}else if((instruction=eval_expression_perform_R_operation(eval_data,scope_info,byte_code,i1))!=NULL){
 			}
 
 			if(instruction != NULL){
@@ -605,8 +703,10 @@ namespace zetscript{
 			Operator 	op_split=Operator::OPERATOR_MAX;
 			EvalInstruction *left_eval_constant=NULL;
 			EvalInstruction *right_eval_constant=NULL;
-			TokenNode 		*last_token_node;
 			unsigned char 	idx_group_split=OPERATOR_GROUP_MAX;
+			bool is_left_branch_end=false, is_right_branch_end=false;
+			bool is_left_token_simplifiable=false,is_right_token_simplifiable=false;
+			TokenNode		*left_token,*right_token;
 
 			// trivial case (symbol node)
 			if(idx_start>=idx_end){
@@ -632,9 +732,7 @@ namespace zetscript{
 						idx_group_split=idx_group;
 						idx_split=i;
 					}
-
 				}
-
 			}
 
 			if(idx_split == -1){
@@ -654,19 +752,7 @@ namespace zetscript{
 				,idx_split-1
 			);
 
-			last_token_node=expression_tokens[idx_start];
-			//last_instruction=instructions->at(instructions->size()-1);
 
-			if(idx_start >= idx_split-1){ // it's the end leaf
-					if(last_token_node->token_type == TokenType::TOKEN_TYPE_LITERAL){ // constant
-
-					}else if(   last_token_node->token_type == TokenType::TOKEN_TYPE_IDENTIFIER
-							 && last_token_node->instructions.size()==1
-							 && (symbol=eval_find_local_variable(eval_data, scope, last_token_node->value))!=NULL){
-
-					}
-
-			}
 
 			// perform right side op...
 			eval_expression_tokens_to_byte_code(
@@ -678,10 +764,33 @@ namespace zetscript{
 				,idx_end
 			);
 
+			//------------------------------------------------------------------------------------
+			// OPTIMIZATION PART: Try to simplify 2 ops into one op
+			is_left_branch_end=idx_start >= idx_split-1;
+			left_token=&expression_tokens->at(idx_start);
+			is_left_token_simplifiable = is_left_branch_end && IS_TOKEN_SIMPLIFIABLE(left_token);
+
+			is_right_branch_end=idx_split+1>=idx_end;
+			right_token=&expression_tokens->at(idx_split+1);
+			is_right_token_simplifiable = is_right_branch_end && IS_TOKEN_SIMPLIFIABLE(right_token);
+
+			if(is_right_token_simplifiable || is_left_token_simplifiable){
+				if(is_right_token_simplifiable && is_left_token_simplifiable){
+
+				}else if(is_right_token_simplifiable){
+
+				}else{ // left token simplifiable
+
+				}
+			}else{ // cannot be simplified...
 			// push operator byte code...
-			instructions->push_back(instruction=new EvalInstruction(
+				instructions->push_back(instruction=new EvalInstruction(
 					convert_operator_to_byte_code(split_node->operator_type))
-			);
+				);
+			}
+			// OPTIMIZATION PART
+			//------------------------------------------------------------------------------------
+
 
 			instruction->instruction_source_info= InstructionSourceInfo(
 					eval_data->current_parsing_file
@@ -697,6 +806,7 @@ namespace zetscript{
 				, Scope *scope_info
 				, std::vector<EvalInstruction *> *dst_instructions
 				, std::vector<TokenNode> * expression_tokens
+				, std::vector<EvalInstruction *> *only_call_instructions
 			){
 
 			char *aux_p=(char *)s;
@@ -808,6 +918,7 @@ namespace zetscript{
 				// insert JNT
 				dst_instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
 
+				// eval ? part
 				aux_p=eval_expression_main(
 					eval_data
 					,aux_p+1
@@ -816,6 +927,11 @@ namespace zetscript{
 					, dst_instructions
 					,std::vector<char>{}
 				);
+
+				// save instruction if only call in the end (for support multi assigments on the left)
+				if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
+					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
+				}
 
 				// TODO: JEB Check whether expression is constant true/false
 				if(*aux_p != ':'){
@@ -826,6 +942,7 @@ namespace zetscript{
 
 				ei_ternary_if_jnt->vm_instruction.value_op2=dst_instructions->size()+dst_instructions->size();
 
+				// eval : part
 				aux_p=eval_expression_main(
 					eval_data
 					,aux_p+1
@@ -835,7 +952,19 @@ namespace zetscript{
 					,std::vector<char>{}
 				);
 
+				// save instruction if only call in the end  (for support multi assigments on the left)
+				if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
+					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
+				}
+
+
 				ei_ternary_else_jmp->vm_instruction.value_op2=dst_instructions->size()+dst_instructions->size();
+
+			}else{
+				// save instruction if only call in the end  (for support multi assigments on the left)
+				if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
+					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
+				}
 
 			}
 			//--------------------------------------------------------------
@@ -852,24 +981,7 @@ namespace zetscript{
 					,assign_instructions_post_expression[i].begin()
 					,assign_instructions_post_expression[i].end()
 				);
-
-				/*if(i-1 > 0){ // is partial store
-
-					Instruction *vm_store_instruction=&assign_instructions_post_expression[i][assign_instructions_post_expression[i].size()-1]->vm_instruction;
-					vm_store_instruction->properties|=MSK_INSTRUCTION_PROPERTY_POP_ONE;
-				}*/
 			}
-
-			//eval_expression_write_byte_code(dst_instructions,&src_instructions);
-
-
-
-			/*for(auto it=src_instructions.begin(); it != src_instructions.end(); it++){
-
-				dst_instructions->push_back(*it);
-			}*/
-
-
 
 			return aux_p;
 		}
@@ -904,15 +1016,15 @@ namespace zetscript{
 				, std::vector<EvalInstruction *> 	* instructions
 				, std::vector<char> expected_ending_char
 				, uint16_t properties // uint16_t properties
+				, std::vector<EvalInstruction *> 	*only_call_instructions
 
 
 			){
 			// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 			// If this functions finds ';' then the function will generate ast.
 			std::vector<TokenNode> expression_tokens;
-			PreOperator pre_operator = PreOperator::PRE_OPERATOR_UNKNOWN;
-			PrePostSelfOperation pre_self_operation_type=PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN;
-			PrePostSelfOperation post_self_operation_type=PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN;
+			PreOperation pre_operation = PreOperation::PRE_OPERATION_UNKNOWN;
+			PostOperation post_operation=PostOperation::POST_OPERATION_UNKNOWN;
 			Operator operator_type = Operator::OPERATOR_UNKNOWN;
 			Keyword keyword_type;
 			int last_line_ok=0;
@@ -950,29 +1062,16 @@ namespace zetscript{
 
 					keyword_type=Keyword::KEYWORD_UNKNOWN;
 
-					if((pre_self_operation_type=is_pre_post_self_operation(aux_p)) != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-						switch(pre_self_operation_type){
-							default:
-								break;
-							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
-							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
-								aux_p+=strlen(eval_data_pre_post_self_operations[pre_self_operation_type].str);
-								break;
-							case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID:
-								EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
-								break;
-						}
-					}else{
-						// check pre operator (-,+,!)...
-						switch(pre_operator=is_pre_operator(aux_p)){
-							default:
-								break;
-							case PreOperator::PRE_OPERATOR_NEG:
-							case PreOperator::PRE_OPERATOR_POS:
-							case PreOperator::PRE_OPERATOR_NOT:
-								aux_p+=strlen(eval_data_pre_operators[pre_operator].str);
-								break;
-						}
+					// check pre operator (-,+,!,-- or ++)
+					switch(pre_operation=is_pre_operation(aux_p)){
+						case PreOperation::PRE_OPERATION_UNKNOWN:
+							break;
+						default:
+							aux_p+=strlen(eval_data_pre_operations[pre_operation].str);
+							break;
+						case PreOperation::PRE_OPERATION_DEC_INC_INVALID:
+							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
+							break;
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -981,8 +1080,8 @@ namespace zetscript{
 					// parenthesis (evals another expression)
 					if(*aux_p=='('){ // inner expression (priority)
 
-						if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_data_pre_post_self_operations[pre_self_operation_type].str);
+						if(pre_operation == PreOperation::PRE_OPERATION_INC || pre_operation == PreOperation::PRE_OPERATION_DEC){
+							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_data_pre_operations[pre_operation].str);
 						}
 
 						if((aux_p=eval_expression_main(
@@ -1003,7 +1102,7 @@ namespace zetscript{
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-						if(pre_operator==PreOperation::PRE_OPERATION_NEG){
+						if(pre_operation==PreOperation::PRE_OPERATION_NEG){
 							symbol_token_node.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
 						}else if(pre_operation==PreOperation::PRE_OPERATION_NOT){
 							symbol_token_node.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NOT));
@@ -1068,15 +1167,15 @@ namespace zetscript{
 							symbol_token_node.token_type = TokenType::TOKEN_TYPE_FUNCTION_OBJECT;
 						}
 						else { // symbol
-							symbol_token_node.pre_operator=pre_operator;
+							symbol_token_node.pre_operation=pre_operation;
 
 							last_accessor_line=line;
 							if((aux_p = eval_symbol(eval_data
 									,aux_p
 									,line
 									,&symbol_token_node
-									,pre_operator
-									,pre_self_operation_type
+									,pre_operation
+//									,pre_operation
 							)) == NULL){
 								goto error_expression;
 							}
@@ -1118,7 +1217,7 @@ namespace zetscript{
 							ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 							accessor_value="";
 							bool this_symbol_access=false;
-							bool vector_access=false;
+							//bool vector_access=false;
 							EvalInstruction *instruction_token=NULL;
 
 
@@ -1180,9 +1279,9 @@ namespace zetscript{
 								}
 
 								aux_p++;
-								vector_access=true;
+								//vector_access=true;
 								is_static_access=false;
-								byte_code=ByteCode::BYTE_CODE_LOAD_VARIABLE;
+								byte_code=ByteCode::BYTE_CODE_LOAD_ELEMENT_VECTOR;
 								break;
 							case ':':
 							case '.': // member/static access
@@ -1216,8 +1315,8 @@ namespace zetscript{
 									IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 									// check static const var...
 									is_static_access = is_access_punctuator_or_static_reference(aux_p) && *aux_p != '.'; // . property ends static
-									if(is_static_access == false){ // supose byte code as VARIABLE
-										byte_code=ByteCode::BYTE_CODE_LOAD_VARIABLE;
+									if(is_static_access == false){ // end static access and load variable
+										byte_code=ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT;
 									}
 
 									static_access.push_back(accessor_value);
@@ -1252,7 +1351,7 @@ namespace zetscript{
 										}
 									}
 
-									byte_code=ByteCode::BYTE_CODE_LOAD_VARIABLE;
+									byte_code=ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT;
 								}
 								break;
 							}
@@ -1348,7 +1447,7 @@ namespace zetscript{
 								// generate source info in case accessor load...
 								if(IS_BYTE_CODE_LOAD_VARIABLE_TYPE(byte_code)){
 									// override load byte code if accessor
-									if(vector_access){
+									if(byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
 										instruction_token->vm_instruction.byte_code=BYTE_CODE_LOAD_ELEMENT_VECTOR; //.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_VECTOR;
 									}else if(symbol_static == NULL){
 										instruction_token->vm_instruction.byte_code=BYTE_CODE_LOAD_ELEMENT_OBJECT;//.properties|=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD;
@@ -1400,38 +1499,98 @@ namespace zetscript{
 						}
 					}
 
-					if(
-						((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN)
-						&& ((post_self_operation_type=is_pre_post_self_operation(aux_p))!= PrePostSelfOperation::PRE_POST_SELF_OPERATION_INVALID)
+					//
+					post_operation=is_post_operation(aux_p);
+					//unsigned last_instruction=(int)(symbol_token_node.instructions.size()-1);
+					//TokeNode *last_token_node=symbol_token_node.instructions[last_instruction]
+					//symbol_token_node.instructions[last_instruction]
+
+					if(		(pre_operation == PreOperation::PRE_OPERATION_NEG)
+						|| 	(pre_operation == PreOperation::PRE_OPERATION_NOT)
+						|| 	(pre_operation == PreOperation::PRE_OPERATION_INC)
+						|| 	(pre_operation == PreOperation::PRE_OPERATION_DEC)
 					){
-						aux_p+=strlen(eval_data_pre_post_self_operations[post_self_operation_type].str);
+						if(symbol_token_node.token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"expected identifier before pre operation \"%s\"",eval_data_pre_operations[ pre_operation].str);
+						}
+
+						symbol_token_node.instructions.push_back(
+							new EvalInstruction(
+								pre_operation == PreOperation::PRE_OPERATION_NEG ? ByteCode::BYTE_CODE_NEG:
+								pre_operation == PreOperation::PRE_OPERATION_NOT ? ByteCode::BYTE_CODE_NOT:
+								pre_operation == PreOperation::PRE_OPERATION_DEC ? ByteCode::BYTE_CODE_PRE_DEC:
+								ByteCode::BYTE_CODE_PRE_INC
+							)
+						);
+
+					}
+					else if(
+							(post_operation == PostOperation::POST_OPERATION_INC)
+						|| 	(post_operation == PostOperation::POST_OPERATION_DEC)
+					){
+						unsigned short properties = 0;
+
+						if(symbol_token_node.token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"expected identifier after post operation \"%s\"",eval_data_post_operations[ post_operation].str);
+						}
+
+						if(symbol_token_node.pre_operation != PreOperation::PRE_OPERATION_UNKNOWN){
+						   if(symbol_token_node.pre_operation != PreOperation::PRE_OPERATION_NEG){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Cannot combine pre-operation \"%s\" with post-operation \"%s\" on \"%s\""
+									,eval_data_pre_operations[ pre_operation].str
+									,eval_data_pre_operations[ post_operation].str
+									,symbol_token_node.value.c_str()
+								);
+						   }
+
+						   properties=MSK_INSTRUCTION_PROPERTY_PRE_NEG;
+
+						}
+
+						symbol_token_node.instructions.push_back(
+							new EvalInstruction(
+								post_operation == PostOperation::POST_OPERATION_DEC ? ByteCode::BYTE_CODE_POST_DEC:
+								ByteCode::BYTE_CODE_POST_INC
+								,ZS_IDX_UNDEFINED
+								,ZS_IDX_UNDEFINED
+								,properties
+							)
+						);
 					}
 
-					if(pre_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
-					&& post_self_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
+
+					/*if(
+						post_operation!= PostOperation::POST_OPERATION_UNKNOWN)
+						&& ((post_operation=)!= PostOperation::POST_OPERATION_DEC_INC_INVALID)
+					){
+						aux_p+=strlen(eval_data_post_operations[post_operation].str);
+					}*/
+
+					/*if(pre_operation != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
+					&& post_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
 						EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
 					}
 
 					unsigned last_instruction=(int)(symbol_token_node.instructions.size()-1);
 
 					// pre/post operator...
-					switch(pre_self_operation_type){
-					case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
+					switch(pre_operation){
+					case PreOperation::PRE_OPERATION_INC:
 						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_INC;
 						break;
-					case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
+					case PreOperation::PRE_OPERATION_DEC:
 						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_DEC;
 						break;
 					}
 
-					switch(post_self_operation_type){
+					switch(post_operation){
 					case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
 						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_INC;
 						break;
 					case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
 						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_DEC;
 						break;
-					}
+					}*/
 
 					// push symbol
 					expression_tokens.push_back(symbol_token_node);
@@ -1459,18 +1618,17 @@ namespace zetscript{
 					}
 
 					if(operator_type==Operator::OPERATOR_UNKNOWN){
-						switch(post_self_operation_type){
-						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
+						switch(post_operation){
+						case PostOperation::POST_OPERATION_INC:
 							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"invalid post increment");
 							break;
-						case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
+						case PostOperation::POST_OPERATION_DEC:
 							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"invalid post decrement");
 							break;
 						default:
 							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Expected operator");
 							break;
 						}
-
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_operators[operator_type].str),line);
@@ -1529,6 +1687,7 @@ namespace zetscript{
 					,scope_info
 					,instructions
 					,&expression_tokens
+					,only_call_instructions
 				);
 			}
 
@@ -1564,15 +1723,19 @@ error_expression:
 
 			){
 			std::vector<EvalInstruction *>  ternary_end_jmp;
-			std::vector<EvalInstruction *> 	src_instructions; // we will write all instructions here as aux, and later will assign to dst_instructions
+			std::vector<std::vector<EvalInstruction *> *> 	left_expressions; // we will write all instructions here as aux, and later will assign to dst_instructions
+			std::vector<std::vector<EvalInstruction *>*> 	expressions; // right/left assigment
+			std::vector<EvalInstruction *> only_call_instructions;
 			bool not_assignment=false;
+
+			expressions.push_back(new std::vector<EvalInstruction *>);
 
 			char *aux_p=eval_expression_main(
 				eval_data
 				, s
 				, line
 				, scope_info
-				, &src_instructions
+				, expressions[0]
 				, expected_ending_char
 				, properties
 			);
@@ -1587,15 +1750,24 @@ error_expression:
 			)
 			{
 				// preserve each set of instructions of each expressions
-				std::vector<EvalInstruction *> exp_instruction[2]; // right/left assigment
+				std::vector<EvalInstruction *> *expression;//[2]; // right/left assigment
+
 
 				//std::vector<EvalInstruction *> exp_instruction;
 				int idx=0;
-
+				int n_expression=1;
 				// save first expression...
-				exp_instruction[idx]=src_instructions;
+				//exp_instruction[idx]=src_instructions;
+
 
 				do{
+
+					if(idx==0) { // left expressions
+						expressions.push_back(expression=new std::vector<EvalInstruction *>);
+					}else{ // right expressions
+						left_expressions.push_back(expression=new std::vector<EvalInstruction *>);
+					}
+
 
 					// starting performing expressions
 					aux_p=eval_expression_main(
@@ -1603,18 +1775,22 @@ error_expression:
 						,aux_p
 						, line
 						, scope_info
-						, &exp_instruction[idx] // it's saving to instructions...
+						, expression // it's saving to instructions...
 						,{}
 						,EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR
+						, idx==1 &&  n_expression==0? &only_call_instructions:NULL
 					);
 
 					if(aux_p != NULL && *aux_p != 0 && *aux_p=='='){ // assignment op, start left assigments
 						idx++; //--> start next
+						n_expression=0;
 					}
+
+					n_expression++;
 
 				}while(aux_p != NULL && *aux_p != 0 && *aux_p==',' );
 
-				src_instructions={};
+				/*src_instructions={};
 
 				// check there's only a simple load on the left
 				for(int i = 0; i < idx; i++){
@@ -1646,26 +1822,140 @@ error_expression:
 						,exp_instruction[i].end()
 					);
 				}
-
+				 */
 				// and in the end only one store with the number of loads
-				if(idx > 0){
+				/*if(idx > 0){
 					src_instructions.push_back(
 						new EvalInstruction(ByteCode::BYTE_CODE_STORE,exp_instruction[0].size()) // store multiple ?
 					);
+				}*/
+			}/*else{
+
+			}*/
+
+			if(left_expressions.size() > 0){ // multi-assignment
+				int right_size=(int)expressions.size();
+				int left_size=(int)left_expressions.size();
+
+				for(int l=right_size; l < left_size;l++){ // push an expression with only undefiend byte code
+					expressions.push_back(new std::vector<EvalInstruction *>({
+						new EvalInstruction(
+							BYTE_CODE_LOAD_UNDEFINED
+						)
+					}));
+				}
+
+				// right and left are balanced (for each left expression write right
+				for(int i=0; i < left_size;i++){
+					EvalInstruction *instruction = left_expressions[i]->at(left_expressions[i]->size()-1);
+
+					if(IS_BYTE_CODE_LOAD_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,instruction->instruction_source_info.line
+							,"\"%s\" is not allowed on left assignment multiple because is %s. Left assignments has to be literals  (i.e a,b.c,b[0]. etc)"
+							,eval_data->current_parsing_file,instruction->instruction_source_info.ptr_str_symbol_name->c_str()
+							,"unknown"
+						);
+					}
+
+					dst_instructions->insert(
+							dst_instructions->end(),
+							expressions[i]->begin(),
+							expressions[i]->end()
+					);
+
+
+					dst_instructions->insert(
+							dst_instructions->end(),
+							left_expressions[i]->begin(),
+							left_expressions[i]->end()
+					);
+
+					// add final store instruction...
+					dst_instructions->push_back(
+						new EvalInstruction(
+							BYTE_CODE_STORE
+							,ZS_IDX_UNDEFINED
+							,ZS_IDX_UNDEFINED
+							,MSK_INSTRUCTION_PROPERTY_POP_TWO
+						)
+					);
+
+
+				}
+
+				// write the rest right expressions,
+				for(int r=left_size; r < right_size;r++){ // push an expression with only undefiend byte code
+					if(properties & (EVAL_EXPRESSION_RESET_STACK)){ //
+						expressions[r]->push_back(
+							new EvalInstruction(
+								BYTE_CODE_POP_ONE
+							)
+						);
+					}
+
+					dst_instructions->insert(
+							dst_instructions->end(),
+							expressions[r]->begin(),
+							expressions[r]->end()
+					);
+				}
+
+				// finally check special condition where there's function on the right and n vars on the left
+				if(expressions.size() == 1){
+					for(auto it=only_call_instructions.begin();it!=only_call_instructions.end();it++){
+						(*it)->vm_instruction.value_op2=left_expressions.size(); // the number of assigments expect on the left
+					}
+				}
+
+			}else{ // check if there's an store at the end and add MSK_INSTRUCTION_PROPERTY_POP_TWO if
+				for(auto it=expressions.begin();it!=expressions.end();it++){
+					EvalInstruction *ei=(*it)->at((*it)->size()-1);
+					if(properties & (EVAL_EXPRESSION_RESET_STACK)){ //
+						if(IS_BYTE_CODE_STORE(ei->vm_instruction.byte_code)){
+							ei->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_POP_TWO;
+						}else{
+							(*it)->push_back(
+								new EvalInstruction(
+									BYTE_CODE_POP_ONE
+								)
+							);
+						}
+
+					}
+					// write all instructions to instructions pointer
+					dst_instructions->insert(
+						dst_instructions->end(),
+						(*it)->begin(),
+						(*it)->end()
+					);
+					//delete *it;
 				}
 			}
 
 			// write all instructions to instructions pointer
-			dst_instructions->insert(
+			/*dst_instructions->insert(
 					dst_instructions->end(),
 					src_instructions.begin(),
 					src_instructions.end()
-			);
+			);*/
 
-			if(properties & (EVAL_EXPRESSION_RESET_STACK)){ // reset stack at the end
+			// for each right expression, if not store then do pop one
+
+			/*if(properties & (EVAL_EXPRESSION_POP_ONE_IF_NO_STORE)){ // reset stack at the end
 				dst_instructions->insert(
-						new EvalInstruction(BYTE_CODE_RESET_STACK)
+						new EvalInstruction(BYTE_CODE_POP_ONE)
 				);
+			}*/
+
+			// erase all vectors ...
+			for(auto it=expressions.begin(); it!=expressions.end(); it++){
+				delete *it;
+				*it=NULL;
+			}
+
+			for(auto it=left_expressions.begin(); it!=left_expressions.end(); it++){
+				delete *it;
+				*it=NULL;
 			}
 
 

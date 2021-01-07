@@ -10,6 +10,7 @@ namespace zetscript{
 		void 	eval_check_scope(EvalData *eval_data, Scope *scope);
 		//void 	inc_jmp_codes(EvalData *eval_data, int idx_start_instruction, int idx_end_instruction, unsigned inc_value);
 		char * 	eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * eval_keyword_class_attrib(EvalData *eval_data, const char *s, int & line	, Scope *scope_info	);
 
 		static int n_anonymous_function=0;
 
@@ -89,7 +90,7 @@ namespace zetscript{
 					// check for named functions or vars...
 					while(*aux_p != '}' && *aux_p != 0){
 						char *test_attrib=aux_p;
-						if((test_attrib=eval_attrib(
+						if((test_attrib=eval_keyword_class_attrib(
 								eval_data
 								,aux_p
 								, line
@@ -594,7 +595,7 @@ namespace zetscript{
 						if(is_constant){ // load constant...
 							EvalInstruction *eval_instruction;
 							eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(
-								BYTE_CODE_LOAD_VARIABLE
+								BYTE_CODE_LOAD_GLOBAL
 							));
 
 							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
@@ -842,7 +843,7 @@ namespace zetscript{
 
 				// register function ...
 				if(is_anonymous){ // register named function...
-					function_name="_@afun_"+(scope_info->script_class!=SCRIPT_CLASS_MAIN(eval_data)?scope_info->script_class->symbol_class.name:"")+"_"+zs_strutils::int_to_str(n_anonymous_function++);
+					function_name="_@afun_"+(scope_info->script_class!=SCRIPT_CLASS_MAIN(eval_data)?scope_info->script_class->symbol_class.name:"")+"_"+zs_strutils::zs_int_to_str(n_anonymous_function++);
 				}
 
 
@@ -1548,15 +1549,15 @@ namespace zetscript{
 								if(key_w == KEYWORD_CASE){
 
 									TokenNode token_symbol;
-									PreOperator pre_operator=PreOperator::PRE_OPERATOR_UNKNOWN;
+									PreOperation pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 
 
 									// ignore case
 									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 
-									if((pre_operator = is_pre_operator(aux_p))!=PreOperator::PRE_OPERATOR_UNKNOWN){
-										IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_pre_operators[pre_operator].str),line);
+									if((pre_operation = is_pre_operation(aux_p))!=PreOperation::PRE_OPERATION_UNKNOWN){
+										IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_pre_operations[pre_operation].str),line);
 									}
 
 									// capture constant value (should be a constant -not a identifier in any case-)
@@ -1565,8 +1566,7 @@ namespace zetscript{
 										,aux_p
 										,line
 										,&token_symbol
-										,pre_operator
-										,PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
+										,pre_operation
 									);
 
 									if(token_symbol.token_type != TOKEN_TYPE_LITERAL){

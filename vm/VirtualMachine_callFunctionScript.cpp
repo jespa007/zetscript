@@ -228,11 +228,11 @@ PERFORM_POST_OPERATION(stk_var);
 
 
 #define POP_TWO \
-if((instruction->properties & MSK_INSTRUCTION_ILOAD)== 0 ){\
+if((instruction->properties & MSK_INSTRUCTION_PROPERTY_ILOAD)== 0 ){\
 	stk_result_op2=--stk_vm_current;\
 	stk_result_op1=--stk_vm_current;\
 }else{ \
-    switch(instruction->properties & MSK_INSTRUCTION_ILOAD){\
+    switch(instruction->properties & MSK_INSTRUCTION_PROPERTY_ILOAD){\
     case MSK_INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
          stk_result_op1=(StackElement *)instruction->value_op2;\
          stk_result_op2=--stk_vm_current;\
@@ -471,9 +471,6 @@ namespace zetscript{
 			switch(instruction->byte_code){
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
-			case BYTE_CODE_RESET_STACK:
-				stk_vm_current = stk_start;
-				continue;
 			case BYTE_CODE_FIND_VARIABLE:
 
 				str_not_defined=SFI_GET_SYMBOL_NAME(calling_function,instruction);
@@ -1542,6 +1539,9 @@ namespace zetscript{
 				 VM_STOP_EXECUTE("BYTE_CODE_IT_CHK_END TODOOOOO!",
 				 SFI_GET_SYMBOL_NAME(calling_function,instruction)
 				);
+				 continue;
+			 case BYTE_CODE_POP_ONE:
+				 stk_vm_current--;
 				 continue;
 			//
 			// END OPERATOR MANAGEMENT

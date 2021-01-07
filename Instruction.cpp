@@ -9,9 +9,9 @@ namespace zetscript{
 		}
 
 		Instruction::Instruction(ByteCode _byte_code
-		 ,unsigned char _value_op1=ZS_IDX_UNDEFINED
-		 ,zs_int _value_op2=ZS_IDX_UNDEFINED
-		 ,unsigned short _properties=0
+		 ,unsigned char _value_op1
+		 ,zs_int _value_op2
+		 ,unsigned short _properties
 		 ){
 			byte_code=_byte_code;
 			value_op1=_value_op1;
@@ -21,7 +21,7 @@ namespace zetscript{
 
 
 		std::string Instruction::getConstantString(){
-			ScriptObjectString *obj=NULL;
+			ScriptObject *obj=NULL;
 			StackElement *stk=NULL;
 
 			if(this->byte_code != BYTE_CODE_LOAD_STRING){

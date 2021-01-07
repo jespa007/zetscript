@@ -219,6 +219,7 @@ namespace zetscript{
 			POST_OPERATION_UNKNOWN=0,
 			POST_OPERATION_DEC	,	// --
 			POST_OPERATION_INC	,	// ++
+			POST_OPERATION_DEC_INC_INVALID,	// -+ or +-
 			POST_OPERATION_MAX
 		}PostOperation;
 
@@ -391,7 +392,8 @@ namespace zetscript{
 		char *	eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
 		char * 	eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
-		Symbol *eval_find_local_variable(ScriptFunction *sf,Scope *scope, const std::string & symbol_to_find);
+		Symbol *eval_find_local_variable(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find);
+		Symbol *eval_find_global_variable(EvalData *eval_data, const std::string & symbol_to_find);
 
 		bool	is_operator_ternary_if(const char *s)				{return *s=='?';}
 		bool 	is_operator_ternary_else(const char *s)				{return *s==':';}
@@ -887,6 +889,7 @@ namespace zetscript{
 
 			eval_data_post_operations[POST_OPERATION_INC]={POST_OPERATION_INC, "++",is_operation_inc};
 			eval_data_post_operations[POST_OPERATION_DEC]={POST_OPERATION_DEC, "--",is_operation_dec};
+			eval_data_post_operations[POST_OPERATION_DEC_INC_INVALID]={POST_OPERATION_DEC_INC_INVALID, "+-/-+",is_operation_dec_inc_invalid};
 
 
 			// special punctuators...

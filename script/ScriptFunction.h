@@ -111,8 +111,8 @@ namespace zetscript{
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 		//zs_map					*num_native_functions;
 
-		static const char *instructionPropertyPreOperationToStr(unsigned int properties);
-		static const char *instructionPropertyPostOperationToStr(unsigned int properties);
+		//static const char *instructionPropertyPreOperationToStr(unsigned int properties);
+		//static const char *instructionPropertyPostOperationToStr(unsigned int properties);
 		static std::string formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
 		InstructionSourceInfo * getInstructionInfo(Instruction *instruction);
 

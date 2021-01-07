@@ -43,6 +43,9 @@ namespace zetscript{
 		BYTE_CODE_STORE_SHR, //
 		BYTE_CODE_PUSH_VECTOR_ELEMENT, // Value push for std::vector
 		BYTE_CODE_PUSH_OBJECT_ELEMENT,
+		//-------------------------------
+		// OPERATIONS
+		//
 		BYTE_CODE_EQU,  // ==
 		BYTE_CODE_NOT_EQU,  // !=
 		BYTE_CODE_LT,  // <
@@ -63,6 +66,9 @@ namespace zetscript{
 		BYTE_CODE_XOR, // binary xor
 		BYTE_CODE_SHL, // binary shift left
 		BYTE_CODE_SHR, // binary shift right
+		//
+		// OPERATIONS
+		//-------------------------------------
 		BYTE_CODE_INSTANCEOF,
 		BYTE_CODE_JMP,
 		BYTE_CODE_JNT, // goto if not true ... goes end to conditional.
@@ -80,44 +86,43 @@ namespace zetscript{
 		BYTE_CODE_IT_NEXT,
 		BYTE_CODE_IT_END,
 		BYTE_CODE_STORE_CONST,
-		BYTE_CODE_RESET_STACK,
 		BYTE_CODE_PRE_INC,
 		BYTE_CODE_PRE_DEC,
 		BYTE_CODE_POST_INC,
 		BYTE_CODE_POST_DEC,
+		BYTE_CODE_POP_ONE, // just in case there's no assignment on left
 		//---------------------------
 		BYTE_CODE_INVALID=255,
 
 	}ByteCode;
 
-
 	typedef enum:unsigned char {
-			BYTE_CODE_METAMETHOD_EQU=0,  // ==
-			BYTE_CODE_METAMETHOD_NOT_EQU,  // !=
-			BYTE_CODE_METAMETHOD_LT,  // <
-			BYTE_CODE_METAMETHOD_LTE,  // <=
-			BYTE_CODE_METAMETHOD_NOT, // !
-			BYTE_CODE_METAMETHOD_GT,  // >
-			BYTE_CODE_METAMETHOD_GTE, // >=
-			BYTE_CODE_METAMETHOD_NEG, // -a
-			BYTE_CODE_METAMETHOD_ADD, // +
-			BYTE_CODE_METAMETHOD_SUB, // -
-			BYTE_CODE_METAMETHOD_DIV, // /
-			BYTE_CODE_METAMETHOD_MUL, // *
-			BYTE_CODE_METAMETHOD_MOD,  // %
-			BYTE_CODE_METAMETHOD_AND, // bitwise logic and
-			BYTE_CODE_METAMETHOD_OR, // bitwise logic or
-			BYTE_CODE_METAMETHOD_XOR, // logic xor
-			BYTE_CODE_METAMETHOD_SHL, // shift left
-			BYTE_CODE_METAMETHOD_SHR, // shift right
-			BYTE_CODE_METAMETHOD_SET, // store '='
-			BYTE_CODE_METAMETHOD_TO_STRING, // toString
-			BYTE_CODE_METAMETHOD_ITER, // _iter
-			BYTE_CODE_METAMETHOD_NEXT, // _next
-			BYTE_CODE_METAMETHOD_END, // _end
-			BYTE_CODE_METAMETHOD_GET, // _getter
-			BYTE_CODE_METAMETHOD_EXIST, // _exist
-			BYTE_CODE_METAMETHOD_MAX
+		BYTE_CODE_METAMETHOD_EQU=0,  // ==
+		BYTE_CODE_METAMETHOD_NOT_EQU,  // !=
+		BYTE_CODE_METAMETHOD_LT,  // <
+		BYTE_CODE_METAMETHOD_LTE,  // <=
+		BYTE_CODE_METAMETHOD_NOT, // !
+		BYTE_CODE_METAMETHOD_GT,  // >
+		BYTE_CODE_METAMETHOD_GTE, // >=
+		BYTE_CODE_METAMETHOD_NEG, // -a
+		BYTE_CODE_METAMETHOD_ADD, // +
+		BYTE_CODE_METAMETHOD_SUB, // -
+		BYTE_CODE_METAMETHOD_DIV, // /
+		BYTE_CODE_METAMETHOD_MUL, // *
+		BYTE_CODE_METAMETHOD_MOD,  // %
+		BYTE_CODE_METAMETHOD_AND, // bitwise logic and
+		BYTE_CODE_METAMETHOD_OR, // bitwise logic or
+		BYTE_CODE_METAMETHOD_XOR, // logic xor
+		BYTE_CODE_METAMETHOD_SHL, // shift left
+		BYTE_CODE_METAMETHOD_SHR, // shift right
+		BYTE_CODE_METAMETHOD_SET, // store '='
+		BYTE_CODE_METAMETHOD_TO_STRING, // toString
+		BYTE_CODE_METAMETHOD_ITER, // _iter
+		BYTE_CODE_METAMETHOD_NEXT, // _next
+		BYTE_CODE_METAMETHOD_END, // _end
+		BYTE_CODE_METAMETHOD_GET, // _getter
+		BYTE_CODE_METAMETHOD_EXIST, // _exist
+		BYTE_CODE_METAMETHOD_MAX
 	}ByteCodeMetamethod;
 
 #define IS_BYTE_CODE_LOAD_VARIABLE_TYPE(byte_code) \
@@ -145,9 +150,10 @@ namespace zetscript{
 || ((byte_code)== BYTE_CODE_LOAD_GLOBAL)\
 )
 
+#define IS_BYTE_CODE_OPERATION(byte_code) 		(BYTE_CODE_EQU <=(byte_code) && (byte_code)<= BYTE_CODE_SHR)
 
 #define IS_BYTE_CODE_STORE_WITH_OPERATION(b) 	(ByteCode::BYTE_CODE_STORE_ADD<=(b) && (b) <=ByteCode::BYTE_CODE_STORE_SHR)
-#define IS_BYTE_CODE_STORE(b) 					(ByteCode::BYTE_CODE_STORE_ADD<=(b) && (b) <=ByteCode::BYTE_CODE_STORE_SHR || (b)==ByteCode::BYTE_CODE_STORE)
+#define IS_BYTE_CODE_STORE(b) 					(IS_BYTE_CODE_STORE_WITH_OPERATION(b) || ((b)==ByteCode::BYTE_CODE_STORE))
 
 	const char * ByteCodeToStr(ByteCode  op);
 	const char * ByteCodeMetamethodToOperatorStr(ByteCodeMetamethod op);
