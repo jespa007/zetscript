@@ -110,6 +110,7 @@ namespace zetscript{
 			unsigned char value_op1 = instruction->value_op1;
 			int value_op2 = instruction->value_op2;
 			symbol_value=SFI_GET_SYMBOL_NAME(sfo,instruction);
+			Instruction *instruction_aux=NULL;
 			//char object_access[512] = "";
 			/*const char *pre=instructionPropertyPreOperationToStr(instruction->properties)
 					 ,*post=instructionPropertyPostOperationToStr(instruction->properties);
@@ -178,12 +179,11 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
 			case BYTE_CODE_LOAD_THIS:
-
-
-				while(instruction->properties & MSK_INSTRUCTION_PROPERTY_NEXT_FIELD_LOAD){
-					symbol_value+"."+SFI_GET_SYMBOL_NAME(sfo,instruction);
-					instruction++;
-				}
+				instruction_aux=instruction;
+				do{
+					symbol_value+"."+SFI_GET_SYMBOL_NAME(sfo,instruction_aux);
+					instruction_aux++;
+				}while(instruction_aux->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT);
 
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
@@ -211,6 +211,14 @@ namespace zetscript{
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
+				);
+				break;
+			case BYTE_CODE_CALL:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\targ:%i ret:%i\n"
+					,idx_instruction
+					,ByteCodeToStr(instruction->byte_code)
+					,instruction->value_op1
+					,instruction->value_op2<=0?1:instruction->value_op2
 				);
 				break;
 			default:
@@ -365,22 +373,7 @@ namespace zetscript{
 			ScriptFunction *sf = (ScriptFunction *)symbol_found->ref_ptr;
 			sf->clear();
 			sf->updateParams(params);
-			/*idx_script_function=sf->idx_script_function;
-			delete sf;
-			sf = new ScriptFunction(
-					zs
-					,idx_class
-					,idx_script_function
-					,params
-					,idx_return_type
-					,symbol
-					,ref_ptr
-			);*/
-
-			//script_function_factory->setScriptFunction(idx_script_function,sf);
-			//symbol_found->ref_ptr=(zs_int)sf;
 			symbol_found->n_params=(char)params.size();
-
 			symbol=symbol_found;
 		}
 		else{

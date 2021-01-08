@@ -218,7 +218,7 @@ stk_vm_current++;
 
 
 
-#define LOAD_FROM_STACK(offset,properties) ((properties) & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL)==0 ? vm_stack + offset:_stk_local_var+offset
+#define LOAD_FROM_STACK(offset,properties) ((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS)==0 ? vm_stack + offset:_stk_local_var+offset
 
 /*
 PERFORM_PRE_OPERATION(dst_var,stk_var);
@@ -613,7 +613,7 @@ namespace zetscript{
 							goto lbl_exit_function;
 						}
 
-						// TODO: JEB Get calling object!
+						// pack member info for store information...
 						if(instruction->properties & MSK_INSTRUCTION_PROPERTY_PACK_MEMBER_INFO){
 							// save
 							PUSH_CONST_CHAR(symbol_access_str);
@@ -1208,38 +1208,13 @@ namespace zetscript{
 					StackElement *stk_start_arg_call=(stk_vm_current-n_args);
 
 
-					/*if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND){ // points the object
-						stk_vm_current=stk_start_arg_call;
-						continue;
-
-					}*/
-
 					stk_function_ref = ((stk_start_arg_call-1));
 					bool is_constructor=instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR;
 					//scope_type = GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(instruction->properties);
 					calling_object = this_object;
 
-					if(stk_function_ref->properties & MSK_STK_PROPERTY_ARRAY_STK){
-
-						StackElement *stk_pack_info=stk_function_ref;
-
-						if((zs_int)stk_function_ref->stk_value != 2){
-							VM_STOP_EXECUTE("Internal error, call on packed info is not length 2");
-						}
-
-						StackElement *stk_calling_object_info=--stk_vm_current;
-						StackElement *stk_symbol_info=--stk_vm_current;
-
-
-						if((stk_symbol_info->properties != MSK_STK_PROPERTY_FUNCTION)
-							&& (stk_calling_object_info->properties != MSK_STK_PROPERTY_SCRIPT_OBJECT)){
-								VM_STOP_EXECUTE("Internal error, store on packed member info does not provide object and function information");
-						}
-
-
-						calling_object=(ScriptObjectAnonymousClass *)stk_calling_object_info->stk_value; // unpack all elements...
-						stk_function_ref=stk_symbol_info; // function ref...
-						calling_from_object_type=true;
+					if(stk_function_ref->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER){
+						calling_object = ((FunctionMember *)stk_function_ref)->so_object;
 					}
 
 					if(stk_function_ref->properties & MSK_STK_PROPERTY_PTR_STK){
@@ -1263,9 +1238,8 @@ namespace zetscript{
 						int stk_element_len = main_function_object->registered_symbols->count;
 						bool ignore_call=false;
 
-
 						if(
-								calling_from_object_type //scope_type&(MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
+							calling_from_object_type //scope_type&(MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
 						){
 							//bool is_constructor=sf->symbol.name==FUNCTION_MEMBER_CONSTRUCTOR_NAME;
 							ignore_call= (is_constructor) && calling_object->isNativeObject() && n_args==0;
@@ -1373,28 +1347,23 @@ namespace zetscript{
 						);
 					}
 					else{ // C function
-
-						ScriptObjectClass *calling_object_class=NULL;
-
-
-
 						if((is_constructor && (sf->symbol.properties & SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))
 							){
-							calling_object= (ScriptObjectClass *)(stk_start_arg_call-2)->stk_value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
+							calling_object= (ScriptObjectAnonymousClass *)(stk_start_arg_call-2)->stk_value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
 						}
 
-						if(calling_object->idx_script_class>=IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS){
 
-							ret_obj= callFunctionNative(
-									 sf
-									,stk_start_arg_call
-									,n_args
-									,instruction
-									,calling_object_class
-							);
-						}else{
+						if(calling_object != NULL && calling_object->idx_script_class<IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS){
 							VM_STOP_EXECUTE("Internal error, expected object class");
 						}
+
+						ret_obj= callFunctionNative(
+							 sf
+							,stk_start_arg_call
+							,n_args
+							,instruction
+							,(ScriptObjectClass *)calling_object
+						);
 					}
 
 					if(vm_error == true){
@@ -1409,11 +1378,17 @@ namespace zetscript{
 
 					// reset stack (function+instruction (-1 op less))...
 					StackElement *src_returned_variables=stk_vm_current;
-					stk_vm_current=stk_start_arg_call-1;
+
 
 					// TODO: calcule returned stack elements
-					int n_returned_arguments_from_function=1;//stk_vm_current-sf->params->count;
-					int n_expected_assignments=instruction->value_op2;
+					//int min_return=1;//stk_vm_current-sf->params->count;
+					int max_return=instruction->value_op2;
+					if(max_return <= 0){ // min_return
+						max_return=1;
+					}
+
+					StackElement *stk_return=(stk_start_arg_call+calling_function->registered_symbols->count );
+					int n_returned_arguments_from_function=stk_vm_current-stk_return;
 
 					// setup all returned variables from function
 					for(int i=0; i < n_returned_arguments_from_function; i++){
@@ -1429,18 +1404,22 @@ namespace zetscript{
 								}
 							}
 						}
-
-						if(i<n_expected_assignments){
-							*stk_vm_current++ = *stk_ret;
-						}
-
 						// ... and push result if not function constructor...
 					}
 
+					// reset stack
+					stk_vm_current=stk_start_arg_call-1;
+
 					// set undefined for other assignments...
-					for(int i=n_returned_arguments_from_function; i < n_expected_assignments; i++){
-						PUSH_UNDEFINED;
+					for(int i=max_return-1; i >=0; i--){
+						if(i < n_returned_arguments_from_function){
+							*stk_vm_current++= stk_return[i];
+						}
+						else{
+							PUSH_UNDEFINED;
+						}
 					}
+					// reset stack
 				 }
 
 				continue;
@@ -1514,7 +1493,6 @@ namespace zetscript{
 							if(script_object_class->isCreatedByContructor()){
 								script_object_class->deleteNativeObjectOnDestroy(true);
 							}
-
 							*se=stk_undefined;
 						}
 					}
@@ -1540,15 +1518,14 @@ namespace zetscript{
 				 SFI_GET_SYMBOL_NAME(calling_function,instruction)
 				);
 				 continue;
-			 case BYTE_CODE_POP_ONE:
-				 stk_vm_current--;
+			 case BYTE_CODE_RESET_STACK:
+				 stk_vm_current=stk_start;
 				 continue;
 			//
 			// END OPERATOR MANAGEMENT
 			//
 			//-----------------------------------------------------------------------------------------------------------------------
 			}
-			//VM_STOP_EXECUTE("operator type(%s) not implemented",ByteCodeToStr(instruction->byte_code));
 		 }
 
 	lbl_exit_function:

@@ -327,25 +327,6 @@ namespace zetscript{
 							return NULL;
 						}
 					}
-					/*if((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0
-					    && (function_symbol->properties & SYMBOL_PROPERTY_STATIC))
-					{
-						error = zs_strutils::format("Metamethod \"%s\" has to be not static"
-							,function_name.c_str()
-						);
-						return NULL;
-					}*/
-
-					/*if(metamethod_operator[i]==NULL){
-						metamethod_operator[i]=new zs_vector();
-					}
-
-					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
-					*stk_element = {0,(void *)function_symbol->ref_ptr,MSK_STK_PROPERTY_FUNCTION};
-					metamethod_operator[i]->push_back((zs_int)stk_element);
-					std::string class_name = script_class_factory->getScriptClass(this->idx_class)->symbol_class.name;
-
-					ZS_PRINT_DEBUG("Registered metamethod %s::%s",class_name.c_str(), function_name.c_str());*/
 					break;
 				}
 			}

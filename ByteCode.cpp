@@ -70,8 +70,10 @@ namespace zetscript{
 			case BYTE_CODE_PRE_INC:				return "PRE_INC"; // BYTE_CODE_STORE_CONST
 			case BYTE_CODE_PRE_DEC:				return "PRE_DEC"; // BYTE_CODE_STORE_CONST
 			case BYTE_CODE_POST_INC:			return "POST_INC"; // BYTE_CODE_STORE_CONST
+			case BYTE_CODE_NEG_POST_INC:		return "NEG_POST_INC"; // BYTE_CODE_STORE_CONST
 			case BYTE_CODE_POST_DEC:			return "POST_DEC"; // BYTE_CODE_STORE_CONST
-			case BYTE_CODE_POP_ONE: 			return "POP_ONE"; // BYTE_CODE_STORE_CONST
+			case BYTE_CODE_NEG_POST_DEC:		return "NEG_POST_DEC"; // BYTE_CODE_STORE_CONST
+			case BYTE_CODE_RESET_STACK: 		return "RESET_STACK"; // BYTE_CODE_STORE_CONST
 
 			default:
 				break;

@@ -26,9 +26,7 @@ namespace zetscript{
 		StackElement *se;
 		std::string error;
 
-
 		idx_script_class=_idx_script_class;
-
 		ScriptClass *script_class=getScriptClass();
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
@@ -47,8 +45,8 @@ namespace zetscript{
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
 
-				se->stk_value=(ScriptFunction *)symbol->ref_ptr;
-				se->properties=MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function
+				se->stk_value=new FunctionMember(this,(ScriptFunction *)symbol->ref_ptr);
+				se->properties=MSK_STK_PROPERTY_FUNCTION_MEMBER | MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function
 			}
 			else{ // var...
 
@@ -159,10 +157,7 @@ namespace zetscript{
 		}
 	}
 
-
-
 	Symbol * ScriptObjectClass::getSymbolMemberByIdx(int idx){
-
 		return (Symbol *)getScriptClass()->symbol_members->items[idx];
 	}
 
@@ -225,6 +220,16 @@ namespace zetscript{
 	}
 
 	ScriptObjectClass::~ScriptObjectClass(){
+
+
+		// deallocate member function objects
+		for(int i=0; i< stk_elements.count; i++){
+			StackElement *stk=(StackElement *)stk_elements.items[i];
+			if(stk->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER){
+				delete (FunctionMember *)stk->stk_value;
+			}
+		}
+
 
 		bool deallocated = false;
 		if(created_object != 0 && delete_c_object){

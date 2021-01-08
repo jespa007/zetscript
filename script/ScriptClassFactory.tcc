@@ -543,18 +543,6 @@ namespace zetscript{
 		}
 
 		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
-
-		/*if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_SET),==,function_name)){
-			if(sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]==NULL){
-				sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]=new zs_vector();
-			}
-
-			StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
-			*stk_element = {0,(ScriptFunction *)symbol->ref_ptr,MSK_STK_PROPERTY_FUNCTION};
-
-			sc->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->push_back((zs_int)stk_element);
-			ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
-		}*/
 	}
 
 
@@ -667,17 +655,6 @@ namespace zetscript{
 								zs_rtti::demangle(str_class_name_ptr.c_str()).c_str(),
 								zs_rtti::demangle(return_type.c_str()).c_str());
 					}
-
-					/*if(c_class->metamethod_operator[i]==NULL){
-						c_class->metamethod_operator[i]=new zs_vector();
-					}
-
-					StackElement *stk_element = (StackElement *)malloc(sizeof(StackElement));
-					*stk_element = {0,(void *)symbol_sf->ref_ptr,MSK_STK_PROPERTY_FUNCTION};
-
-					c_class->metamethod_operator[i]->push_back((zs_int)stk_element);
-
-					ZS_PRINT_DEBUG("Registered metamethod %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);*/
 					break;
 				}
 			}

@@ -41,6 +41,7 @@ namespace zetscript{
 	class ScriptObject;
 	class ScriptClass;
 	class ScriptFunction;
+	class ScriptObjectClass;
 	//typedef unsigned char 									ClassTypeIdx;
 	typedef intptr_t zs_int;
 
@@ -139,6 +140,19 @@ namespace zetscript{
 		bool by_ref;
 		bool var_args;
 	}FunctionParam;
+
+	struct FunctionMember{
+	public:
+		ScriptFunction 		*so_function; // make function pointer first to make compatible with stk
+		ScriptObjectClass	*so_object;
+
+		FunctionMember(
+				ScriptObjectClass	*_so_object
+				,ScriptFunction 	*_so_function){
+			so_object = _so_object;
+			so_function= _so_function;
+		}
+	};
 
 	#pragma pack(pop)
 

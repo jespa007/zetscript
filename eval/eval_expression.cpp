@@ -295,10 +295,10 @@ namespace zetscript{
 
 			if(i1->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
 
-				if((symbol_found = eval_find_local_variable(eval_data,scope,i1->symbol.name)) != NULL){
+				if((symbol_found = eval_find_local_symbol(eval_data,scope,i1->symbol.name)) != NULL){
 					load_byte_code=BYTE_CODE_LOAD_LOCAL;
 					load_value_op2=symbol_found->idx_position;
-				}else if ((symbol_found = eval_find_global_variable(eval_data,i1->symbol.name)) != NULL){
+				}else if ((symbol_found = eval_find_global_symbol(eval_data,i1->symbol.name)) != NULL){
 					load_byte_code=BYTE_CODE_LOAD_GLOBAL;
 					load_value_op2=symbol_found->idx_position;
 				}else{
@@ -360,7 +360,7 @@ namespace zetscript{
 					byte_code
 					,load_value_op2
 					,ZS_IDX_UNDEFINED
-					,MSK_INSTRUCTION_PROPERTY_ILOAD_R | (load_byte_code == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0)
+					,MSK_INSTRUCTION_PROPERTY_ILOAD_R | (load_byte_code == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0)
 			);
 		}
 		//-------------------------------------------------------------------------------------------------------------------------------
@@ -540,7 +540,7 @@ namespace zetscript{
 					,i2->value_op2
 					,i1->value_op2
 					,MSK_INSTRUCTION_PROPERTY_ILOAD_KR
-					| (load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0)
+					| (load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0)
 					| k_properties
 			);
 
@@ -582,7 +582,7 @@ namespace zetscript{
 					,i1->value_op2
 					,i2->value_op2
 					,MSK_INSTRUCTION_PROPERTY_ILOAD_RK
-					| (load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0)
+					| (load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0)
 					| k_properties
 			);
 
@@ -614,8 +614,8 @@ namespace zetscript{
 				return new EvalInstruction(
 						byte_code
 						,load_value_op2_1
-						,(load_byte_code_2 & 0xff) | (load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0) << (8)
-						,MSK_INSTRUCTION_PROPERTY_ILOAD_RR | (load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL:0)
+						,(load_byte_code_2 & 0xff) | (load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0) << (8)
+						,MSK_INSTRUCTION_PROPERTY_ILOAD_RR | (load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0)
 				);
 
 			}
@@ -973,18 +973,12 @@ namespace zetscript{
 
 			// ... finally save store operators
 			for(int i=(int)(assign_instructions_post_expression.size()-1); i >=0 ;i--){
-
-				// insert assign instruction...
-				for(unsigned j=0; j < assign_instructions_post_expression[i].size() ;j++){
-					dst_instructions->push_back(assign_instructions_post_expression[i][j]);
-				}
 				dst_instructions->insert(
 					dst_instructions->end()
 					,assign_instructions_post_expression[i].begin()
 					,assign_instructions_post_expression[i].end()
 				);
 			}
-
 			return aux_p;
 		}
 
@@ -1363,19 +1357,19 @@ namespace zetscript{
 
 								ScriptClass *script_class_access=NULL;
 								Symbol *symbol_static = NULL;//script_class_access->getSymbol();
-								EvalInstruction *last_instruction_token=NULL;
+								//EvalInstruction *last_instruction_token=NULL;
 
 								if(   static_access.size() == 0 // is not static access
 									|| byte_code == ByteCode::BYTE_CODE_CALL // it requires an extra op to do call
 								){
 
-									Instruction *instruction_last_load=&symbol_token_node.instructions[symbol_token_node.instructions.size()-1]->vm_instruction;
+									//Instruction *instruction_last_load=&symbol_token_node.instructions[symbol_token_node.instructions.size()-1]->vm_instruction;
 
 									// informs to pack member info in order to get all information in vm call
-									if(   instruction_last_load->byte_code==BYTE_CODE_LOAD_ELEMENT_THIS //properties & (MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS | MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD) ){
+									/*if(   instruction_last_load->byte_code==BYTE_CODE_LOAD_ELEMENT_THIS //properties & (MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS | MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD) ){
 										|| instruction_last_load->byte_code==BYTE_CODE_LOAD_ELEMENT_OBJECT){
 										instruction_last_load->properties|=MSK_INSTRUCTION_PROPERTY_PACK_MEMBER_INFO;
-									}
+									}*/
 
 									instruction_token=new EvalInstruction(byte_code);
 									symbol_token_node.instructions.push_back(instruction_token);
@@ -1502,7 +1496,7 @@ namespace zetscript{
 					}
 
 					//
-					post_operation=is_post_operation(aux_p);
+
 					//unsigned last_instruction=(int)(symbol_token_node.instructions.size()-1);
 					//TokeNode *last_token_node=symbol_token_node.instructions[last_instruction]
 					//symbol_token_node.instructions[last_instruction]
@@ -1526,11 +1520,14 @@ namespace zetscript{
 						);
 
 					}
-					else if(
+
+					post_operation=is_post_operation(aux_p);
+
+					if(
 							(post_operation == PostOperation::POST_OPERATION_INC)
 						|| 	(post_operation == PostOperation::POST_OPERATION_DEC)
 					){
-						unsigned short properties = 0;
+						ByteCode byte_code_post_operation= ByteCode::BYTE_CODE_INVALID;
 
 						if(symbol_token_node.token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
 							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"expected identifier after post operation \"%s\"",eval_data_post_operations[ post_operation].str);
@@ -1544,55 +1541,27 @@ namespace zetscript{
 									,symbol_token_node.value.c_str()
 								);
 						   }
-
-						   properties=MSK_INSTRUCTION_PROPERTY_PRE_NEG;
-
 						}
+
+					   if(post_operation == PostOperation::POST_OPERATION_INC){
+						   byte_code_post_operation=ByteCode::BYTE_CODE_POST_INC;
+						   if(symbol_token_node.pre_operation==PreOperation::PRE_OPERATION_NEG){
+							   byte_code_post_operation=ByteCode::BYTE_CODE_NEG_POST_INC;
+						   }
+					   }else {
+						   byte_code_post_operation=ByteCode::BYTE_CODE_POST_DEC;
+						   if(symbol_token_node.pre_operation==PreOperation::PRE_OPERATION_NEG){
+							   byte_code_post_operation=ByteCode::BYTE_CODE_NEG_POST_DEC;
+						   }
+					   }
 
 						symbol_token_node.instructions.push_back(
 							new EvalInstruction(
-								post_operation == PostOperation::POST_OPERATION_DEC ? ByteCode::BYTE_CODE_POST_DEC:
-								ByteCode::BYTE_CODE_POST_INC
-								,ZS_IDX_UNDEFINED
-								,ZS_IDX_UNDEFINED
-								,properties
+								byte_code_post_operation
 							)
 						);
 					}
 
-
-					/*if(
-						post_operation!= PostOperation::POST_OPERATION_UNKNOWN)
-						&& ((post_operation=)!= PostOperation::POST_OPERATION_DEC_INC_INVALID)
-					){
-						aux_p+=strlen(eval_data_post_operations[post_operation].str);
-					}*/
-
-					/*if(pre_operation != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN
-					&& post_operation_type != PrePostSelfOperation::PRE_POST_SELF_OPERATION_UNKNOWN){
-						EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Cannot perform post and pre operations on identifier at same time");
-					}
-
-					unsigned last_instruction=(int)(symbol_token_node.instructions.size()-1);
-
-					// pre/post operator...
-					switch(pre_operation){
-					case PreOperation::PRE_OPERATION_INC:
-						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_INC;
-						break;
-					case PreOperation::PRE_OPERATION_DEC:
-						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_PRE_DEC;
-						break;
-					}
-
-					switch(post_operation){
-					case PrePostSelfOperation::PRE_POST_SELF_OPERATION_INC:
-						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_INC;
-						break;
-					case PrePostSelfOperation::PRE_POST_SELF_OPERATION_DEC:
-						symbol_token_node.instructions[last_instruction]->vm_instruction.properties|=MSK_INSTRUCTION_PROPERTY_POST_DEC;
-						break;
-					}*/
 
 					// push symbol
 					expression_tokens.push_back(symbol_token_node);
@@ -1830,9 +1799,11 @@ error_expression:
 					dst_instructions->push_back(
 						new EvalInstruction(
 							BYTE_CODE_STORE
-							,ZS_IDX_UNDEFINED
-							,ZS_IDX_UNDEFINED
-							,MSK_INSTRUCTION_PROPERTY_POP_TWO
+						)
+					);
+					dst_instructions->push_back(
+						new EvalInstruction(
+							BYTE_CODE_RESET_STACK
 						)
 					);
 
@@ -1844,7 +1815,7 @@ error_expression:
 					if(properties & (EVAL_EXPRESSION_RESET_STACK)){ //
 						expressions[r]->push_back(
 							new EvalInstruction(
-								BYTE_CODE_POP_ONE
+								BYTE_CODE_RESET_STACK
 							)
 						);
 					}
@@ -1863,20 +1834,15 @@ error_expression:
 					}
 				}
 
-			}else{ // check if there's an store at the end and add MSK_INSTRUCTION_PROPERTY_POP_TWO if
+			}else{ // make a reset stack in the end and write all instructions
 				for(auto it=expressions.begin();it!=expressions.end();it++){
 					EvalInstruction *ei=(*it)->at((*it)->size()-1);
 					if(properties & (EVAL_EXPRESSION_RESET_STACK)){ //
-						if(IS_BYTE_CODE_STORE(ei->vm_instruction.byte_code)){
-							ei->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_POP_TWO;
-						}else{
-							(*it)->push_back(
-								new EvalInstruction(
-									BYTE_CODE_POP_ONE
-								)
-							);
-						}
-
+						(*it)->push_back(
+							new EvalInstruction(
+								BYTE_CODE_RESET_STACK
+							)
+						);
 					}
 					// write all instructions to instructions pointer
 					dst_instructions->insert(
