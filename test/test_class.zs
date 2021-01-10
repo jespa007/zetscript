@@ -2,14 +2,14 @@
 class Test{
 	const MAX_NUM=9
 	
-	// setup
-	var b=-1,c=-2,d=-3 
+	// pre create vars with initialization
+	var b=-1,c=-2,d=-3,e
 
 	Test(a,b=-1,c=Test::MAX_NUM){
 		this.a =a; // init a
 		this.b=b
 		this.c=c
-		System::println("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} MAX_NUM:{2}",this.a,this.b,this.c,this.d,Test::MAX_NUM);
+		System::println("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.e:{4} MAX_NUM:{2}",this.a,this.b,this.c,this.d,this.e,Test::MAX_NUM);
 		
 	}
 	function1(a){
@@ -19,12 +19,16 @@ class Test{
 	}
 };
 
-// post-include function member Test::function2
+// post-include function member
 function Test::function2(a){
 	this.function1(a+5); // it calls Test::function1(a+5)
 	this.a+=a;
 	System::println("Test::function2, this.a:{0}",this.a);
 }
+
+// post-include var and const member
+var Test::f=-1,Test::e
+const Test::MAX_NUM_EXT=10
 
 // A inheritance class example. TestExtended inherites function1 and function2. 
 class TestExtended extends Test{
@@ -53,4 +57,4 @@ class TestExtended extends Test{
 };
 
 var t=new TestExtended(1); 	// instances TestExtended class
-t.function3(20);
+t.function3(20); // it calls anynomus function
