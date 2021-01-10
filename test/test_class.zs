@@ -3,11 +3,13 @@ class Test{
 	const MAX_NUM=9
 	
 	// setup
-	var b=-1,c=-2 //--> like doing this.b=-1 in constructor
+	var b=-1,c=-2,d=-3 
 
-	Test(){
-		this.a =0; // init a
-		System::println("Test::constructor a:{0} b:{1} c:{2} MAX_NUM:{2}",this.a,this.b,this.c,Test::MAX_NUM);
+	Test(a,b=-1,c=Test::MAX_NUM){
+		this.a =a; // init a
+		this.b=b
+		this.c=c
+		System::println("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} MAX_NUM:{2}",this.a,this.b,this.c,this.d,Test::MAX_NUM);
 		
 	}
 	function1(a){
@@ -27,9 +29,9 @@ function Test::function2(a){
 // A inheritance class example. TestExtended inherites function1 and function2. 
 class TestExtended extends Test{
 	
-	TestExtended(){
-		System::println("TestExtended::constructor");
-		super(); // it calls base constructor (by default it doesn't call)
+	TestExtended(a){
+		System::println("TestExtended::constructor this.a:{0}",this.a);
+		super(a); // it calls base constructor (by default it doesn't call)
 		this.function3=function(a){ // creates anonymous function with this context
 			this.a+=a;
 			System::println("TextExtended::Anonymous function, this.a:{0}",this.a);
@@ -50,5 +52,5 @@ class TestExtended extends Test{
 	}
 };
 
-var t=new TestExtended(); 	// instances TestExtended class
+var t=new TestExtended(1); 	// instances TestExtended class
 t.function3(20);
