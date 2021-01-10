@@ -185,10 +185,12 @@ Date: XX-12-2020
 > #243 Expression optimization: immediate register/constant load on operations 
 > #244 Optimize memory for constants
 #245 Get rid of MSK_STACK_ELEMENT_UNDEFINED/MSK_STACK_ELEMENT_STRING
-> #246 Get rid RESET STACK on each expression 
+> #246 Erase code never execute or temporal expresion that will never assigned 
 #247 Optimization: move type field load variable to byte load_variable_XXXX 
 #248 Restructure script object elements
-> #249 back compatibility for var class 
+> #249 Allow default parameters for function 
+> #252 Allow var class support with constant init 
+> #253 Get rid RESET STACK on each expression 
  
 
 Other: 

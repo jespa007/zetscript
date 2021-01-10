@@ -5,119 +5,6 @@
 
 #include "zetscript.h"
 
-//#include "zetscript.h"
-
-/*
-
-Constants (C)
--------------
-
-C <= Integer,Number,Boolean,String
-
-
-Pre operators (Pe)
--------------
-
-Pe <= [ --, ++ ]
-
-Post operators (Po)
--------------
-
-Po <= [ --, ++ ]
-
-
-Symbol (S)
--------------
-
-S <=  [A-Za-Z ][A-Za-z0-9 ]*  --> token variable
-S <=  [0-9]*.[0-9]* | [e|E][-|+][0-9]*  --> token integer or number
-S <=  0x[0-9a-fA-F]* --> token hexadecimal
-S <=  [0-1]*b --> token binary
-S <= "[all characters]" --> token std::string
-
-
-Punctuator (P)
--------------
-
-Arithmetic
-
-P <= [  /, *, %, -, + ]
-
-Bit
-
-P <= [  &, |, ^, <<, >> ]
-
-Logical
-
-P <= [  ==, >=, <=, >, <, !=, &&, || ]
-
-Assignments
-
-P <= [  =, +=, -=, /=, %=, *=, <<=, >>=, ^=, |=, &=]
-
-Object
-
-P <= [  . ]
-
-Ternary
-
-P <= [  ?,: ]
-
-
-Anonymous Objects (O)
--------------
-
-O <= [E1,E2,E3,...,En] 
-O <= function(a1,a2,...,an){ B }
-O <= {S1:E1,S2:E2,...,Sn:Em}
-
-Expression (E)
--------------
-
-E <= (E) // parentesis E
-E <= E P E // punctuator
-E <= !E // negate result of expression
-E <= -E // Prerest (negate result of expression)
-E <= +E // Presum (it does nothing)
-E <= [Pe]S[Po] // variable with/out pre/post operator.
-E <= (S|O)[E1][E2]...[En] // array access
-E <= (S|O)(E1,E2,..,En) // function call
-E(t)<= E; | E,
-
-
-Keyword (K)
--------------
-
-- var S=E;
-- for(var S1=Ei1,S2=Ei2,...,Sn=Eim;Ec;Ep1,Ep2,Ep3,...,Epk){ B } //
-- for(var S1 in S2) { B } //
-- while(Ec) { B }
-- do{ B } while(Ec);
-- switch(E){ // switch should have constants on case
-	default:
-	case C0:
-		� break;
-	case C1:
-		� break;
-		� ..
-	case CN:
-		� break;
-	}
-
--if(Ec){ B1 } else if (Ec2) { B2 } else { B3 }
-
-
-Body (B)
-----------
-
-Starts with '{' and ends with '}'
-
-B <- [E;|K]* // A set of expressions ended with ; or Keyword
-
-*/
-
-
-
 #ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
 
 #define print_eval_cr ZS_PRINT_DEBUG
@@ -127,6 +14,10 @@ B <- [E;|K]* // A set of expressions ended with ; or Keyword
 
 #include "eval_data.cpp"
 #include "eval_object.cpp"
+#include "eval_expression_optimize.cpp"
+#include "eval_expression_byte_code.cpp"
+#include "eval_expression_symbol.cpp"
+#include "eval_expression_token_symbol.cpp"
 #include "eval_expression.cpp"
 #include "eval_keyword.cpp"
 
@@ -342,7 +233,7 @@ namespace zetscript{
 						, scope_info
 						,&eval_data->current_function->instructions
 						,{}
-						,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT | EVAL_EXPRESSION_RESET_STACK
+						,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT | EVAL_EXPRESSION_POP_ONE_ON_END_EXPRESSION
 					);
 				}
 

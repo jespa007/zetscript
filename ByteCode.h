@@ -92,7 +92,7 @@ namespace zetscript{
 		BYTE_CODE_NEG_POST_INC,
 		BYTE_CODE_POST_DEC,
 		BYTE_CODE_NEG_POST_DEC,
-		BYTE_CODE_RESET_STACK, // just in case there's no assignment on left
+		BYTE_CODE_POP_ONE, // just in case there's no assignment on left
 		//---------------------------
 		BYTE_CODE_INVALID=255,
 

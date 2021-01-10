@@ -1311,7 +1311,7 @@ namespace zetscript{
 								,new_scope
 								,&post_operations
 								,{}
-								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_RESET_STACK // it allows expression sequence and it does a reset stack in the end
+								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_POP_ONE_ON_END_EXPRESSION // it allows expression sequence and it does a reset stack in the end
 							);
 
 
@@ -1582,7 +1582,7 @@ namespace zetscript{
 									}
 
 									// capture constant value (should be a constant -not a identifier in any case-)
-									aux_p=eval_symbol(
+									aux_p=eval_expression_symbol(
 										eval_data
 										,aux_p
 										,line

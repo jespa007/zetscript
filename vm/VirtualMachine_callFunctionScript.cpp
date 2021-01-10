@@ -670,7 +670,7 @@ namespace zetscript{
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT:
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:
-			case BYTE_CODE_STORE_CONST:
+			//case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE_ADD:
 			case BYTE_CODE_STORE_SUB:
 			case BYTE_CODE_STORE_MUL:
@@ -735,8 +735,11 @@ namespace zetscript{
 
 					}
 					else{ // can be assign or arithmetic and assing pop two parameters nothing ...
+
+						READ_TWO_POP_ONE
+
 						if(IS_BYTE_CODE_STORE_WITH_OPERATION(instruction->byte_code)){ // arithmetic
-							READ_TWO_POP_ONE
+
 							switch(instruction->byte_code){
 							case BYTE_CODE_STORE_ADD:
 								PROCESS_ARITHMETIC_OPERATION(+,BYTE_CODE_METAMETHOD_ADD);
@@ -771,9 +774,9 @@ namespace zetscript{
 
 							}
 
-						}else{
+						}/*else{
 							POP_TWO; // op1:dst / op2:src
-						}
+						}*/
 
 						stk_dst=stk_result_op2;
 
@@ -954,14 +957,18 @@ namespace zetscript{
 							break;
 						}
 					}
-					// to be able to do multiple assigns like a=b+=c=1 (1 will be pushed in each store instruction)
-					if(instruction->byte_code ==BYTE_CODE_STORE
+
+
+					if((instruction+1)->byte_code ==BYTE_CODE_POP_ONE // it marks end expression so ignore it
 					){
+						instruction++;
+					}else{ // push to eval multi assigment
 						*stk_vm_current++=*stk_dst;
+
 					}
-					else if(instruction->byte_code ==BYTE_CODE_STORE_CONST){
+					/*else if(instruction->byte_code ==BYTE_CODE_STORE_CONST){
 						stk_dst->properties |= MSK_STK_PROPERTY_READ_ONLY;
-					}
+					}*/
 				}
 				continue;
 			case BYTE_CODE_EQU:  // ==
@@ -1518,8 +1525,8 @@ namespace zetscript{
 				 SFI_GET_SYMBOL_NAME(calling_function,instruction)
 				);
 				 continue;
-			 case BYTE_CODE_RESET_STACK:
-				 stk_vm_current=stk_start;
+			 case BYTE_CODE_POP_ONE:
+				 --stk_vm_current;//=stk_start;
 				 continue;
 			//
 			// END OPERATOR MANAGEMENT
