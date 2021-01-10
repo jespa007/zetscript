@@ -16,7 +16,7 @@
 #include "eval_object.cpp"
 #include "eval_expression_optimize.cpp"
 #include "eval_expression_byte_code.cpp"
-#include "eval_expression_symbol.cpp"
+#include "eval_symbol.cpp"
 #include "eval_expression_token_symbol.cpp"
 #include "eval_expression.cpp"
 #include "eval_keyword.cpp"

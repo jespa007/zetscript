@@ -146,7 +146,7 @@ namespace zetscript{
 					token_node_symbol.pre_operation=pre_operation;
 
 					last_accessor_line=line;
-					if((aux_p = eval_expression_symbol(eval_data
+					if((aux_p = eval_symbol(eval_data
 							,aux_p
 							,line
 							,&token_node_symbol

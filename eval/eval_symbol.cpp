@@ -2,7 +2,7 @@ namespace zetscript{
 	namespace eval{
 
 		// to std::string utils ...
-		char * eval_expression_symbol(EvalData *eval_data
+		char * eval_symbol(EvalData *eval_data
 				,const char *start_word
 				, int line
 				,TokenNode * token_node_symbol
