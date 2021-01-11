@@ -27,7 +27,7 @@ namespace zetscript{
 		}
 
 		char *eval_expression_token_symbol(EvalData *eval_data, char *s, int & current_line, Scope *scope_info, std::vector<TokenNode> *expression_tokens){
-			char *aux_p = NULL, *test_s=NULL;
+			char *aux_p = s, *test_s=NULL;
 			int first_line=current_line;
 			int line=current_line;
 			TokenNode token_node_symbol;

@@ -65,44 +65,46 @@ namespace zetscript{
 			}
 		}
 
+		// init built in vars
 
-			//-------------------------------------------------------------------------------
-			// LINK C OBJECT
 
-			//this->script_class = irv;
-			//idx_class = irv->idx_class;
-			c_object = _c_object;
-			script_class_native=NULL;
+		//-------------------------------------------------------------------------------
+		// LINK C OBJECT
 
-			if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
-				if(script_class->isNativeClass()){
-					script_class_native=script_class;
-					created_object = (*script_class->c_constructor)();
-					was_created_by_constructor=true;
-					c_object = created_object;
-				}else {
-					ScriptClass *sc=script_class;
-					// get first class with c inheritance...
+		//this->script_class = irv;
+		//idx_class = irv->idx_class;
+		c_object = _c_object;
+		script_class_native=NULL;
 
-					while((sc->idx_base_classes->count>0) && (script_class_native==NULL)){
-						sc=this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]); // get base class (only first in script because has single inheritance)...
-						if(sc->isNativeClass()){ // we found the native script class!
-							script_class_native=sc;
-							if(sc->c_constructor!=NULL){ // if not null is class, else is singleton or static class already created
-								created_object = (*sc->c_constructor)();
-								was_created_by_constructor=true;
-								c_object = created_object;
-							}
+		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
+			if(script_class->isNativeClass()){
+				script_class_native=script_class;
+				created_object = (*script_class->c_constructor)();
+				was_created_by_constructor=true;
+				c_object = created_object;
+			}else {
+				ScriptClass *sc=script_class;
+				// get first class with c inheritance...
+
+				while((sc->idx_base_classes->count>0) && (script_class_native==NULL)){
+					sc=this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]); // get base class (only first in script because has single inheritance)...
+					if(sc->isNativeClass()){ // we found the native script class!
+						script_class_native=sc;
+						if(sc->c_constructor!=NULL){ // if not null is class, else is singleton or static class already created
+							created_object = (*sc->c_constructor)();
+							was_created_by_constructor=true;
+							c_object = created_object;
 						}
 					}
-
 				}
 
-			}/*else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
-				idx_script_class_native=irv->idx_class;
-			}*/
+			}
 
-					// only create symbols if not std::string or std::vector type to make it fast ...
+		}/*else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
+			idx_script_class_native=irv->idx_class;
+		}*/
+
+		// only create symbols if not std::string or std::vector type to make it fast ...
 	}
 
 	/*void ScriptObjectClass::setup(){
