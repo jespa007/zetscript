@@ -418,7 +418,27 @@ namespace zetscript{
 				return NULL;
 			}
 
-			EvalInstruction *i1=instructions->at(size_instructions-1);
+			EvalInstruction *i1=instructions->at(size_instructions-2);
+			EvalInstruction *i2=instructions->at(size_instructions-1);
+
+			// can be computed, yeah!
+			if(i1->vm_instruction.isConstant() && i2->vm_instruction.isConstant()){
+				instruction=eval_expression_perform_KK_operation(eval_data,byte_code,i1,i2);
+
+				// remove last two instructions from vector
+				delete i1;
+				delete i2;
+
+				// erase last two instructions
+				instructions->resize(instructions->size()-2);
+
+				// and push the new one
+				instructions->push_back(instruction);
+
+				return instruction;
+			}
+
+			i1=i2;
 
 			Instruction *vm_i1=&i1->vm_instruction;
 
@@ -428,11 +448,13 @@ namespace zetscript{
 				}
 			}
 
-			// remove last two instructions from vector
-			delete instructions->at(size_instructions-1);
+			// erase last instruction
+			delete i1;
 
-			instructions->erase(instructions->begin()+size_instructions-2,instructions->end());
+			// erase last instruction
+			instructions->resize(instructions->size()-1);
 
+			// and push the new one
 			instructions->push_back(instruction);
 
 			return instruction;

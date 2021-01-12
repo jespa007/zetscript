@@ -228,11 +228,12 @@ PERFORM_POST_OPERATION(stk_var);
 
 
 #define POP_TWO \
-if((instruction->properties & MSK_INSTRUCTION_PROPERTY_ILOAD)== 0 ){\
-	stk_result_op2=--stk_vm_current;\
-	stk_result_op1=--stk_vm_current;\
-}else{ \
     switch(instruction->properties & MSK_INSTRUCTION_PROPERTY_ILOAD){\
+    default:\
+    case 0:\
+		stk_result_op2=--stk_vm_current;\
+		stk_result_op1=--stk_vm_current;\
+		break;\
     case MSK_INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
          stk_result_op1=(StackElement *)instruction->value_op2;\
          stk_result_op2=--stk_vm_current;\
@@ -251,9 +252,10 @@ if((instruction->properties & MSK_INSTRUCTION_PROPERTY_ILOAD)== 0 ){\
         break;\
    case MSK_INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
         stk_result_op1=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
-        stk_result_op2=LOAD_FROM_STACK(((instruction->value_op2&0xff0000)>>4),instruction->value_op2); \
-    }\
-}\
+        stk_result_op2=LOAD_FROM_STACK(((instruction->value_op2&0xff0000)>>4),instruction->value_op2);\
+        break;\
+    }
+
 
 #define READ_TWO_POP_ONE \
 stk_result_op2=--stk_vm_current;\
@@ -670,7 +672,7 @@ namespace zetscript{
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT:
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:
-			//case BYTE_CODE_STORE_CONST:
+			case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE_ADD:
 			case BYTE_CODE_STORE_SUB:
 			case BYTE_CODE_STORE_MUL:
@@ -958,17 +960,17 @@ namespace zetscript{
 						}
 					}
 
+					if(instruction->byte_code ==BYTE_CODE_STORE_CONST){
+						stk_dst->properties |= MSK_STK_PROPERTY_READ_ONLY;
+					}
 
 					if((instruction+1)->byte_code ==BYTE_CODE_POP_ONE // it marks end expression so ignore it
 					){
 						instruction++;
-					}else{ // push to eval multi assigment
+					}else{ // push to allow eval multi assigment
 						*stk_vm_current++=*stk_dst;
-
 					}
-					/*else if(instruction->byte_code ==BYTE_CODE_STORE_CONST){
-						stk_dst->properties |= MSK_STK_PROPERTY_READ_ONLY;
-					}*/
+
 				}
 				continue;
 			case BYTE_CODE_EQU:  // ==

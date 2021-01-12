@@ -483,6 +483,7 @@ namespace zetscript{
 			bool is_static = false;
 			bool is_constant = false;
 			ScriptClass *sc=NULL;
+			Scope *scope_var=scope_info;
 
 			// check if static...
 			/*if(key_w==Keyword::KEYWORD_STATIC){
@@ -490,12 +491,12 @@ namespace zetscript{
 				is_static=true;
 				key_w=is_keyword(aux_p);
 			}*/
-			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-				&& scope_info->scope_base == scope_info
-				&& scope_info->scope_parent == NULL // is function member
+			if(scope_var->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+				&& scope_var->scope_base == scope_var
+				&& scope_var->scope_parent == NULL // is function member
 				){ // class members are defined as functions
 				key_w = Keyword::KEYWORD_FUNCTION;
-				sc=scope_info->script_class;
+				sc=scope_var->script_class;
 			}
 			else{
 				key_w = is_keyword(aux_p);
@@ -521,7 +522,7 @@ namespace zetscript{
 
 				// check class scope...
 				/*if(sc != NULL){
-					//sc=scope_info->script_class;
+					//sc=scope_var->script_class;
 
 					if(is_constant == false){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," unexpected \"var\" keyword in class");
@@ -529,13 +530,13 @@ namespace zetscript{
 
 				}*/
 
-				if(is_constant){ // scope_info will be global scope...
-					if(!(sc!=NULL || scope_info == MAIN_SCOPE(eval_data))){
+				if(is_constant){ // scope_var will be global scope...
+					if(!(sc!=NULL || scope_var == MAIN_SCOPE(eval_data))){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"\"const\" is allowed only in class or global");
 					}
 
 					// always static or constant are global symbols...
-					scope_info = MAIN_SCOPE(eval_data);
+					scope_var = MAIN_SCOPE(eval_data);
 
 					if(sc!=NULL){
 						pre_variable_name=sc->symbol_class.name+"::";
@@ -576,7 +577,7 @@ namespace zetscript{
 					// register symbol...
 					try{
 						symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
-							scope_info
+							scope_var
 							, eval_data->current_parsing_file
 							, line
 							, pre_variable_name+variable_name
@@ -588,14 +589,14 @@ namespace zetscript{
 								,eval_data->current_parsing_file
 								,line
 								,variable_name
-								,is_constant?SYMBOL_PROPERTY_CONST:0
+								,is_constant?SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC :0
 							);
 
 							if(const_symbol==NULL){
 								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"%s",error.c_str());
 							}
 
-							const_symbol->ref_ptr=symbol_variable->ref_ptr;
+							const_symbol->ref_ptr=symbol_variable->idx_position;
 						}
 					}catch(std::exception & ex){
 						EVAL_ERROR("%s",ex.what());
@@ -629,7 +630,7 @@ namespace zetscript{
 							eval_data
 							,is_constant?aux_p+1:start_var
 							,start_line
-							,scope_info
+							,scope_var
 							,&eval_data->current_function->instructions
 							,{}
 						))==NULL){

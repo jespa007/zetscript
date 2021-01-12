@@ -170,6 +170,7 @@ namespace zetscript{
 			// OPTIMIZATION PART: Try to simplify 2 ops into one op
 			instruction=NULL;
 			byte_code=convert_operator_to_byte_code(split_node->operator_type);
+
 			is_left_branch_end=idx_start >= idx_split-1;
 			left_token=&expression_tokens->at(idx_start);
 			is_left_token_simplifiable = is_left_branch_end && IS_TOKEN_SIMPLIFIABLE(left_token);

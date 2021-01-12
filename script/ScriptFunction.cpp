@@ -40,34 +40,6 @@ namespace zetscript{
 		//function_should_be_deduced_at_runtime=false;
 	}
 
-	/*const char * ScriptFunction::instructionPropertyPreOperationToStr(unsigned int properties){
-		switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(properties)){
-			case MSK_INSTRUCTION_PROPERTY_PRE_NEG_OR_NOT:
-				return "-";
-			case MSK_INSTRUCTION_PROPERTY_PRE_INC:
-				return "++";
-			case MSK_INSTRUCTION_PROPERTY_PRE_DEC:
-				return "--";
-			default:
-				break;
-		}
-
-		return "";
-	}
-
-	const char * ScriptFunction::instructionPropertyPostOperationToStr(unsigned int properties){
-		switch(GET_MSK_INSTRUCTION_PROPERTY_PRE_POST_OP(properties)){
-			case MSK_INSTRUCTION_PROPERTY_POST_INC:
-					return "++";
-				case MSK_INSTRUCTION_PROPERTY_POST_DEC:
-					return "--";
-				default:
-					break;
-		}
-
-		return "";
-	}*/
-
 	InstructionSourceInfo * ScriptFunction::getInstructionInfo(Instruction *instruction){
 		short idx= (instruction-this->instructions);///sizeof(Instruction *);
 		if(instruction_source_info.count(idx)==1){
@@ -106,15 +78,11 @@ namespace zetscript{
 		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++,idx_instruction++){
 
 			int n_ops=0;
-			//const char *start_expression=(instruction->properties & MSK_INSTRUCTION_PROPERTY_START_EXPRESSION)?"{start expression}":"";
 			unsigned char value_op1 = instruction->value_op1;
 			int value_op2 = instruction->value_op2;
 			symbol_value=SFI_GET_SYMBOL_NAME(sfo,instruction);
 			Instruction *instruction_aux=NULL;
-			//char object_access[512] = "";
-			/*const char *pre=instructionPropertyPreOperationToStr(instruction->properties)
-					 ,*post=instructionPropertyPostOperationToStr(instruction->properties);
-*/
+
 			if((char)value_op1 != ZS_IDX_UNDEFINED){
 				n_ops++;
 			}
@@ -122,21 +90,6 @@ namespace zetscript{
 			 if(value_op2 != ZS_IDX_UNDEFINED){
 				 n_ops++;
 			 }
-
-			/* if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
-				 sprintf(object_access,
-						"."
-						);
-			 }
-			 else if(symbol_value.c_str() == SYMBOL_VALUE_SUPER){
-				sprintf(object_access,"super.");
-			 }
-			 else if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS){
-				sprintf(object_access,"this.");
-			 }
-			 else if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
-				 sprintf(object_access,"{vector element}");
-			 }*/
 
 			switch(instruction->byte_code){
 
@@ -225,9 +178,7 @@ namespace zetscript{
 				if(n_ops==0){
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 						idx_instruction
-						//,instructionPropertyPreOperationToStr(instruction->properties)
 						,ByteCodeToStr(instruction->byte_code)
-						//,instructionPropertyPostOperationToStr(instruction->properties)
 					);
 				}else if(n_ops==1){
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i\n"
@@ -275,18 +226,6 @@ namespace zetscript{
 		return "unknown";
 	}
 
-	/*int ScriptFunction::existArgumentName(const std::string & arg_name){
-		int idx_arg=ZS_IDX_UNDEFINED;
-
-		for(unsigned i = 0; i < this->params->count && idx_arg == ZS_IDX_UNDEFINED; i++){
-			FunctionParam *function_param=(FunctionParam *)this->params->items[i];
-			if(function_param->arg_name == arg_name){
-				idx_arg=i;
-			}
-		}
-		return idx_arg;
-	}*/
-
 	Symbol * ScriptFunction::registerLocalVariable(
 			 Scope * scope_block
 			, const std::string & file
@@ -313,7 +252,6 @@ namespace zetscript{
 		symbol->idx_position = idx_position;
 
 		registered_symbols->push_back((zs_int)symbol);
-
 
 		if(scope_block == MAIN_SCOPE(this)) { // is global var ...
 			StackElement stk_global_var;
@@ -484,8 +422,6 @@ namespace zetscript{
 	}
 
 	ScriptFunction::~ScriptFunction(){
-
-
 		clear();
 
 		delete params;
@@ -493,9 +429,6 @@ namespace zetscript{
 
 		delete registered_symbols;
 		registered_symbols=NULL;
-
-
-		//delete num_native_functions;
 	}
 
 }
