@@ -265,12 +265,14 @@ namespace zetscript{
 			std::string 					value; // token value content
 			int 							line;
 			std::vector<EvalInstruction *> 	instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
+			bool are_instructions_moved;
 
 			TokenNode(){
 				reset();
 			}
 
 			void reset(){
+				are_instructions_moved=false;
 				value="";
 				line=-1;
 				token_type=TokenType::TOKEN_TYPE_UNKNOWN;

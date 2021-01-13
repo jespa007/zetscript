@@ -164,7 +164,7 @@ namespace zetscript{
 			// there's an expression
 			if(expression_tokens.size()>0){
 
-				aux_p=eval_expression_to_byte_code(
+				if((aux_p=eval_expression_to_byte_code(
 					eval_data
 					,aux_p
 					,line
@@ -172,9 +172,10 @@ namespace zetscript{
 					,instructions
 					,&expression_tokens
 					,only_call_instructions
-				);
+				))==NULL){
+					goto error_expression;
+				}
 			}
-
 
 			// last character is a separator so it return increments by 1
 			return aux_p;
@@ -182,9 +183,16 @@ namespace zetscript{
 error_expression:
 
 			for(unsigned kk=0;kk<expression_tokens.size();kk++){
-				for(unsigned jj=0;jj<expression_tokens[kk].instructions.size();jj++){
-					delete expression_tokens[kk].instructions[jj];
+				if(expression_tokens[kk].are_instructions_moved == false){ // it means that instructions was not saved in instructions vector yet
+					for(unsigned jj=0;jj<expression_tokens[kk].instructions.size();jj++){
+						delete expression_tokens[kk].instructions[jj];
+					}
 				}
+			}
+
+			// erase all instructions in vector...
+			for(unsigned i=0; i < instructions->size(); i++){
+				delete instructions->at(i);
 			}
 
 			return NULL;
