@@ -171,15 +171,16 @@ namespace zetscript{
 			instruction=NULL;
 			byte_code=convert_operator_to_byte_code(split_node->operator_type);
 
-			is_left_branch_end=idx_start >= idx_split-1;
+			/*is_left_branch_end=idx_start >= idx_split-1;
 			left_token=&expression_tokens->at(idx_start);
 			is_left_token_simplifiable = is_left_branch_end && IS_TOKEN_SIMPLIFIABLE(left_token);
 
 			is_right_branch_end=idx_split+1>=idx_end;
 			right_token=&expression_tokens->at(idx_split+1);
-			is_right_token_simplifiable = is_right_branch_end && IS_TOKEN_SIMPLIFIABLE(right_token);
+			is_right_token_simplifiable = is_right_branch_end && IS_TOKEN_SIMPLIFIABLE(right_token);*/
+			//instruction=eval_expression_optimize(eval_data,scope,byte_code, instructions);
 
-			if(is_right_token_simplifiable || is_left_token_simplifiable){
+			/*if(is_right_token_simplifiable || is_left_token_simplifiable){
 				if(is_right_token_simplifiable && is_left_token_simplifiable){
 					instruction=eval_expression_optimize_2fn(eval_data,scope,byte_code, instructions);
 				}else if(is_right_token_simplifiable){
@@ -187,9 +188,9 @@ namespace zetscript{
 				}else{ // left token simplifiable
 					instruction=eval_expression_optimize_1fn(eval_data,scope,byte_code, instructions);
 				}
-			}
+			}*/
 
-			if(instruction==NULL){ // cannot be simplified...
+			if(eval_expression_optimize(eval_data,scope,byte_code, instructions)==NULL){ // cannot be simplified...
 			// push operator byte code...
 				instructions->push_back(instruction=new EvalInstruction(
 					convert_operator_to_byte_code(split_node->operator_type))

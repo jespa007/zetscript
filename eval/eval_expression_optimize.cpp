@@ -68,7 +68,7 @@ namespace zetscript{
 			return true;
 		}
 
-		//-------------------------------------------------------------------------------------------------------------------------------
+	/*	//-------------------------------------------------------------------------------------------------------------------------------
 		// IMMEDIATE OPERATION 1 OPS
 		EvalInstruction * eval_expression_perform_K_operation(EvalData *eval_data,ByteCode byte_code, EvalInstruction *i1){
 			EvalInstruction *result_instruction=NULL;
@@ -117,7 +117,7 @@ namespace zetscript{
 					,ZS_IDX_UNDEFINED
 					,MSK_INSTRUCTION_PROPERTY_ILOAD_R | (load_byte_code == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0)
 			);
-		}
+		}*/
 		//-------------------------------------------------------------------------------------------------------------------------------
 		// IMMEDIATE OPERATION 2 OPS
 		EvalInstruction * eval_expression_perform_KK_operation(EvalData *eval_data,ByteCode byte_code, EvalInstruction *ei1, EvalInstruction *ei2){
@@ -255,7 +255,7 @@ namespace zetscript{
 			return result_instruction;
 		}
 
-		EvalInstruction * eval_expression_perform_KR_operation(EvalData *eval_data,Scope *scope,ByteCode byte_code, EvalInstruction *ei1, EvalInstruction *ei2){
+		/*EvalInstruction * eval_expression_perform_KR_operation(EvalData *eval_data,Scope *scope,ByteCode byte_code, EvalInstruction *ei1, EvalInstruction *ei2){
 			// i1: K / i2: R
 			Instruction *i1=&ei1->vm_instruction;
 			Instruction *i2=&ei2->vm_instruction;
@@ -458,6 +458,77 @@ namespace zetscript{
 			instructions->push_back(instruction);
 
 			return instruction;
+		}*/
+
+
+		EvalInstruction *eval_expression_optimize(EvalData *eval_data,Scope *scope_info,ByteCode byte_code, std::vector<EvalInstruction *> *instructions){
+			size_t size_instructions=instructions->size();
+			EvalInstruction *instruction=NULL;
+			bool is_i1_K=false;
+			bool is_i2_K=false;
+			bool is_i1_R=false;
+			bool is_i2_R=false;
+			int n_eval_ops=0;
+
+			if(size_instructions < 2){
+				return NULL;
+			}
+
+			EvalInstruction *i1=instructions->at(size_instructions-2);
+			EvalInstruction *i2=instructions->at(size_instructions-1);
+
+			is_i1_K=i1->vm_instruction.isConstant();
+			is_i2_K=i2->vm_instruction.isConstant();
+
+			// can be computed, yeah!
+			if(is_i1_K && is_i2_K){
+				instruction=eval_expression_perform_KK_operation(eval_data,byte_code,i1,i2);
+				n_eval_ops=2;
+			}else{ // try KR/RK/RR
+				ByteCode load_byte_code_1= i1->vm_instruction.byte_code;
+				zs_int	 load_value_op2_1= i1->vm_instruction.value_op2;
+				ByteCode load_byte_code_2= i2->vm_instruction.byte_code;
+				zs_int	 load_value_op2_2= i2->vm_instruction.value_op2;
+
+				is_i1_R=eval_expression_get_register(eval_data, scope_info, i1, load_byte_code_1,load_value_op2_1);
+				is_i2_R=eval_expression_get_register(eval_data, scope_info, i2, load_byte_code_2,load_value_op2_2);
+
+				if(is_i1_R && is_i2_K){
+					n_eval_ops=2;
+				}else(is_i1_K && is_i2_R){
+					n_eval_ops=2;
+				}else{
+					if(is_i2_K){
+						n_eval_ops=1;
+						i1=i2;
+					}else if(is_i2_R){
+						n_eval_ops=1;
+						i1=i2;
+					}
+
+				}
+
+			}
+
+			if(n_eval_ops == 0){
+				return NULL;
+			}
+
+
+			// remove last two instructions from vector
+			delete i1;
+			if(n_eval_ops == 2){
+				delete i2;
+			}
+
+			// erase last two instructions
+			instructions->resize(instructions->size()-n_eval_ops);
+
+			// and push the new one
+			instructions->push_back(instruction);
+
+			return instruction;
+
 		}
 	}
 }
