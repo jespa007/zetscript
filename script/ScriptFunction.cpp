@@ -101,7 +101,7 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_BOOL\t%s\t%s\n",idx_instruction,instruction->value_op2==0?"false":"true");
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_BOOL\t%s\n",idx_instruction,instruction->value_op2==0?"false":"true");
 				break;
 			case BYTE_CODE_LOAD_FLOAT:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_FLT\t%f\n",idx_instruction,*((float *)&instruction->value_op2));

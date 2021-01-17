@@ -42,7 +42,7 @@ if(i1->byte_code == BYTE_CODE_LOAD_BOOL && i2->byte_code == BYTE_CODE_LOAD_BOOL)
 	result_op_bool=(i1->value_op2)LOGIC_OP(i2->value_op2);\
 	result_bc=BYTE_CODE_LOAD_BOOL;\
 }else{\
-	THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform logic operation %s '%s' %s"\
+	THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform boolean operation %s '%s' %s"\
 			,eval_data->current_parsing_file\
 			,token_operator->line\
 			,i1->getConstantValueOp2ToString().c_str()\
@@ -223,7 +223,6 @@ namespace zetscript{
 			case BYTE_CODE_NOT_EQU:
 				PERFORM_LOGIC_OPERATION(==);
 				break;
-
 			default:
 				THROW_EXCEPTION(zs_strutils::format("const operation KK '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
 				break;
@@ -252,7 +251,13 @@ namespace zetscript{
 						,(zs_int)eval_data->zs->registerConstantScriptObjectString(result_op_str)
 				);
 				break;
-
+			case BYTE_CODE_LOAD_BOOL:
+				result_instruction=new EvalInstruction(
+						result_bc
+						,ZS_IDX_UNDEFINED
+						,result_op_bool
+				);
+				break;
 			}
 
 			return result_instruction;
