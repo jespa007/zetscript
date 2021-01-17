@@ -221,7 +221,7 @@ namespace zetscript{
 				PERFORM_LOGIC_OPERATION(==);
 				break;
 			case BYTE_CODE_NOT_EQU:
-				PERFORM_LOGIC_OPERATION(==);
+				PERFORM_LOGIC_OPERATION(!=);
 				break;
 			default:
 				THROW_EXCEPTION(zs_strutils::format("const operation KK '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));

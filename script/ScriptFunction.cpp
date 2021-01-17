@@ -53,7 +53,6 @@ namespace zetscript{
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
 		zs_vector * m_vf = sfo->registered_symbols;
-		StackElement *icv=NULL;
 
 		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
@@ -110,7 +109,7 @@ namespace zetscript{
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_INT\t%i\n",idx_instruction,(int)(instruction->value_op2));
 				break;
 			case BYTE_CODE_LOAD_STRING:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t\"%s\"\n",idx_instruction,icv->toString().c_str());
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t\"%s\"\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
 				break;
 			case BYTE_CODE_LOAD_FUNCTION:
 			case BYTE_CODE_FIND_VARIABLE:

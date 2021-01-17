@@ -77,7 +77,7 @@ namespace zetscript{
 						 zs_strutils::copy_from_ptr_diff(str_value,start_word+1,aux);
 					}
 					aux++;
-					eval_data->zs->registerConstantScriptObjectString(str_value);
+					value=(zs_int)eval_data->zs->registerConstantScriptObjectString(str_value);
 					byte_code = ByteCode::BYTE_CODE_LOAD_STRING;
 				}else{ // is undefined,boolean or identifier
 					bool end=false;

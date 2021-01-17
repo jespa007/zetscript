@@ -216,7 +216,7 @@ namespace zetscript{
 		}
 
 		stk=new StackElement;
-		(constant_string_objects)->at(const_name)=stk;
+		(*constant_string_objects)[const_name]=stk;
 
 		so=new ScriptObjectString(this);
 		// swap values stk_ref/stk_value

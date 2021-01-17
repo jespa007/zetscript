@@ -6,4 +6,5 @@
 0+f();*/
 
 //1+1+4*10/
-true || (false && false)+1
+//true || (false && false)+1
+"dads"+1+true+0.48668054j
