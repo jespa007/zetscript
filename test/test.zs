@@ -7,4 +7,6 @@
 
 //1+1+4*10/
 //true || (false && false)+1
-"dads"+1+true+0.48668054j
+var a=0,b=0;
+a+b;
+//"dads"+1+true+0.48668054j
