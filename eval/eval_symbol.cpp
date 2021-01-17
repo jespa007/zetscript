@@ -6,7 +6,7 @@ namespace zetscript{
 				,const char *start_word
 				, int line
 				,TokenNode * token_node_symbol
-				, PreOperation pre_operation
+				, PreOperation & pre_operation
 			//	, PostOperation post_operation
 		){
 			// PRE:

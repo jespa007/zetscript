@@ -20,7 +20,7 @@
 
 #define EVAL_ERROR_EXPRESSION_MAIN(file,line,s,...)		eval_data->error=true;\
 														eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-														goto error_expression;\
+														goto error_expression_main;\
 
 #define EVAL_ERROR_KEYWORD_SWITCH(file,line,s,...)		eval_data->error=true;\
 														eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
@@ -104,105 +104,6 @@ namespace zetscript{
 			ACCESSOR_MEMBER, // a.b.c
 			ACCESSOR_MAX
 		}AccessorType;
-
-		// operator enumerated as its precedence
-		typedef enum :unsigned char {
-
-			OPERATOR_UNKNOWN = 0,
-
-			// ASSIGN
-			OPERATOR_ASSIGN, 										// =
-			OPERATOR_ASSIGN_ADD,									// += (first)
-			OPERATOR_ASSIGN_SUB, 									// -=
-			OPERATOR_ASSIGN_MUL, 									// *=
-			OPERATOR_ASSIGN_DIV, 									// /=
-			OPERATOR_ASSIGN_MOD, 									// %=
-			OPERATOR_ASSIGN_XOR,									// ^=
-			OPERATOR_ASSIGN_AND,									// &=
-			OPERATOR_ASSIGN_OR, 		 							// |=
-			OPERATOR_ASSIGN_SHIFT_LEFT, 							// <<=
-			OPERATOR_ASSIGN_SHIFT_RIGHT, 							// >>= (last)
-
-			// TERNARY...
-			OPERATOR_TERNARY_IF,	// ?
-			OPERATOR_TERNARY_ELSE, 									// :
-
-			// LOGIC...
-			OPERATOR_LOGIC_AND,										// &&
-			OPERATOR_LOGIC_OR, 										// ||
-
-			// RELATIONAL
-			OPERATOR_LOGIC_EQUAL, 									// ==
-			OPERATOR_LOGIC_NOT_EQUAL, 								// !=
-			OPERATOR_LOGIC_GTE, 									// >=
-			OPERATOR_LOGIC_LTE, 									// <=
-			OPERATOR_LOGIC_GT, 										// >
-			OPERATOR_LOGIC_LT, 										// <
-
-			// ARITHMETIC
-			OPERATOR_ADD, 											// +
-			OPERATOR_SUB, 											// -
-			OPERATOR_XOR, 											// ^
-			OPERATOR_MUL, 											// *
-			OPERATOR_AND,		 									// &
-			OPERATOR_DIV, 											// /
-			OPERATOR_MOD, 											// %
-			OPERATOR_OR, 											// |
-			OPERATOR_SHIFT_LEFT, 									// <<
-			OPERATOR_SHIFT_RIGHT, 									// >>
-
-			OPERATOR_INSTANCEOF, 									// instanceof
-
-			OPERATOR_MAX
-		}Operator;
-
-
-#define OPERATOR_GROUP_0(operator_type) \
-(\
-		(operator_type) == OPERATOR_LOGIC_AND \
-	|| 	(operator_type) == OPERATOR_LOGIC_OR \
-)
-
-
-
-#define OPERATOR_GROUP_1(operator_type) \
-(\
-	(operator_type) == OPERATOR_LOGIC_EQUAL \
-|| 	(operator_type) == OPERATOR_LOGIC_NOT_EQUAL \
-|| 	(operator_type) == OPERATOR_LOGIC_GTE \
-|| 	(operator_type) == OPERATOR_LOGIC_LTE \
-|| 	(operator_type) == OPERATOR_LOGIC_GT \
-|| 	(operator_type) == OPERATOR_LOGIC_LT \
-)
-
-#define OPERATOR_GROUP_2(operator_type) \
-( \
-	(operator_type) == OPERATOR_ADD \
-|| 	(operator_type) == OPERATOR_SUB \
-)
-
-#define OPERATOR_GROUP_3(operator_type) \
-( \
-	(operator_type) == OPERATOR_MUL \
-|| 	(operator_type) == OPERATOR_DIV \
-||  (operator_type) == OPERATOR_MOD \
-)
-
-#define OPERATOR_GROUP_4(operator_type) \
-( \
-	(operator_type) == OPERATOR_AND \
-|| 	(operator_type) == OPERATOR_OR \
-|| 	(operator_type) == OPERATOR_XOR \
-)
-
-#define	OPERATOR_GROUP_5(operator_type) \
-(\
-	(operator_type) == OPERATOR_SHIFT_LEFT \
-|| 	(operator_type) == OPERATOR_SHIFT_RIGHT \
-)
-
-#define OPERATOR_GROUP_MAX	5
-
 
 		typedef enum :unsigned char {
 			PRE_OPERATION_UNKNOWN=0,
@@ -872,12 +773,12 @@ namespace zetscript{
 			eval_data_operators[OPERATOR_SHIFT_RIGHT]={OPERATOR_SHIFT_RIGHT, ">>",is_operator_shift_right};
 			eval_data_operators[OPERATOR_LOGIC_AND]={OPERATOR_LOGIC_AND, "&&",is_operator_logic_and};
 			eval_data_operators[OPERATOR_LOGIC_OR]={OPERATOR_LOGIC_OR, "||",is_operator_logic_or};
-			eval_data_operators[OPERATOR_LOGIC_EQUAL]={OPERATOR_LOGIC_EQUAL, "==",is_operator_logic_equal};
-			eval_data_operators[OPERATOR_LOGIC_NOT_EQUAL]={OPERATOR_LOGIC_NOT_EQUAL, "!=",is_operator_logic_not_equal};
-			eval_data_operators[OPERATOR_LOGIC_GT]={OPERATOR_LOGIC_GT, ">",is_operator_logic_gt};
-			eval_data_operators[OPERATOR_LOGIC_LT]={OPERATOR_LOGIC_LT, "<",is_operator_logic_lt};
-			eval_data_operators[OPERATOR_LOGIC_GTE]={OPERATOR_LOGIC_GTE, ">=",is_operator_logic_gte};
-			eval_data_operators[OPERATOR_LOGIC_LTE]={OPERATOR_LOGIC_LTE, "<=",is_operator_logic_lte};
+			eval_data_operators[OPERATOR_EQUAL]={OPERATOR_EQUAL, "==",is_operator_logic_equal};
+			eval_data_operators[OPERATOR_NOT_EQUAL]={OPERATOR_NOT_EQUAL, "!=",is_operator_logic_not_equal};
+			eval_data_operators[OPERATOR_GT]={OPERATOR_GT, ">",is_operator_logic_gt};
+			eval_data_operators[OPERATOR_LT]={OPERATOR_LT, "<",is_operator_logic_lt};
+			eval_data_operators[OPERATOR_GTE]={OPERATOR_GTE, ">=",is_operator_logic_gte};
+			eval_data_operators[OPERATOR_LTE]={OPERATOR_LTE, "<=",is_operator_logic_lte};
 			eval_data_operators[OPERATOR_INSTANCEOF]={OPERATOR_INSTANCEOF, "instanceof",is_operator_instanceof};
 
 

@@ -2,9 +2,60 @@
 #define MAX_REGISTER_LENGTH	128
 
 
+#define PERFORM_ARITHMETIC_OPERATION(ARITHMETIC_OP) \
+if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
+	result_op_zs_int=(i1->value_op2)ARITHMETIC_OP(i2->value_op2);\
+	result_bc=BYTE_CODE_LOAD_ZS_INT;\
+}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
+	result_op_float=*((float *)&i1->value_op2)ARITHMETIC_OP(i2->value_op2);\
+	result_bc=BYTE_CODE_LOAD_FLOAT;\
+}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
+	result_op_float=*((float *)&i1->value_op2)ARITHMETIC_OP(i2->value_op2);\
+	result_bc=BYTE_CODE_LOAD_FLOAT;\
+}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
+	result_op_float=*((float *)&i1->value_op2)ARITHMETIC_OP *((float *)&i2->value_op2);\
+	result_bc=BYTE_CODE_LOAD_FLOAT;\
+}else{\
+	THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform arithmetic operation %s '%s' %s"\
+			,eval_data->current_parsing_file\
+			,token_operator->line\
+			,i1->getConstantValueOp2ToString().c_str()\
+			,STR(ARITHMETIC_OP)\
+			,i2->getConstantValueOp2ToString().c_str()));\
+}
+
+#define PERFORM_BINARY_OPERATION(BINARY_OP) \
+if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
+	result_op_zs_int=(i1->value_op2)BINARY_OP(i2->value_op2);\
+	result_bc=BYTE_CODE_LOAD_ZS_INT;\
+}else{\
+	THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform binary operation %s '%s' %s"\
+			,eval_data->current_parsing_file\
+			,token_operator->line\
+			,i1->getConstantValueOp2ToString().c_str()\
+			,STR(BINARY_OP)\
+			,i2->getConstantValueOp2ToString().c_str()));\
+}
+
+#define PERFORM_LOGIC_OPERATION(LOGIC_OP) \
+if(i1->byte_code == BYTE_CODE_LOAD_BOOL && i2->byte_code == BYTE_CODE_LOAD_BOOL){\
+	result_op_bool=(i1->value_op2)LOGIC_OP(i2->value_op2);\
+	result_bc=BYTE_CODE_LOAD_BOOL;\
+}else{\
+	THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform logic operation %s '%s' %s"\
+			,eval_data->current_parsing_file\
+			,token_operator->line\
+			,i1->getConstantValueOp2ToString().c_str()\
+			,STR(LOGIC_OP)\
+			,i2->getConstantValueOp2ToString().c_str()));\
+}
+
+
 namespace zetscript{
 
 	namespace eval{
+
+
 
 		unsigned short eval_expression_load_const_byte_code_to_instruction_property(ByteCode byte_code){
 
@@ -58,38 +109,32 @@ namespace zetscript{
 
 		//-------------------------------------------------------------------------------------------------------------------------------
 		// IMMEDIATE OPERATION 2 OPS
-		EvalInstruction * eval_expression_perform_KK_operation(EvalData *eval_data,ByteCode byte_code, EvalInstruction *ei1, EvalInstruction *ei2){
+		EvalInstruction * eval_expression_perform_KK_operation(
+				EvalData *eval_data
+				,TokenNode *token_operator
+				, EvalInstruction *ei1
+				, EvalInstruction *ei2
+		){
 			float  result_op_float=0;
 			zs_int result_op_zs_int=0;
+			bool	result_op_bool=false;
 			std::string result_op_str="";
 			EvalInstruction *result_instruction=NULL;
 			ByteCode result_bc=ByteCode::BYTE_CODE_INVALID;
 			Instruction *i1=&ei1->vm_instruction;
 			Instruction *i2=&ei2->vm_instruction;
-
+			ByteCode byte_code=eval_operator_to_byte_code(token_operator->operator_type);
 
 			// check last two instructions stk op1 and stk op2 are bool/int/float or string
 			if(!(i1->isConstant() && i2->isConstant())){
 				return NULL;
 			}
 
-
 			// which operation ?
 			switch(byte_code){
 			case BYTE_CODE_ADD: // int & int/int & float/float&float
-				if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
-					result_op_zs_int=(i1->value_op2)+(i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_ZS_INT;
-				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
-					result_op_float=*((float *)&i1->value_op2)+(i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_FLOAT;
-				}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
-					result_op_float=*((float *)&i1->value_op2)+(i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_FLOAT;
-				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
-					result_op_float=*((float *)&i1->value_op2)+*((float *)&i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_FLOAT;
-				}else if(i1->byte_code == BYTE_CODE_LOAD_STRING && i2->isConstant()){
+
+				if(i1->byte_code == BYTE_CODE_LOAD_STRING && i2->isConstant()){
 					result_op_str=zs_strutils::format("%s%s",i1->getConstantString().c_str(),i2->getConstantValueOp2ToString().c_str());
 					result_bc=BYTE_CODE_LOAD_STRING;
 				}
@@ -97,51 +142,31 @@ namespace zetscript{
 					result_op_str=zs_strutils::format("%s%s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantString().c_str());
 					result_bc=BYTE_CODE_LOAD_STRING;
 				}else{
-					THROW_EXCEPTION(zs_strutils::format("I don't know how to perform constant operation %s '+' %s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantValueOp2ToString().c_str()));
+					PERFORM_ARITHMETIC_OPERATION(+);
 				}
 
 				break;
+			case BYTE_CODE_SUB:
+				PERFORM_ARITHMETIC_OPERATION(-);
+				break;
 			case BYTE_CODE_MUL:
-				if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
-					result_op_zs_int=(i1->value_op2)*(i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_ZS_INT;
-				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
-					result_op_float=*((float *)&i1->value_op2)*(i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_FLOAT;
-				}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
-					result_op_float=*((float *)&i1->value_op2)*(i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_FLOAT;
-				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
-					result_op_float=*((float *)&i1->value_op2)* *((float *)&i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_FLOAT;
-				}else{
-					THROW_EXCEPTION(zs_strutils::format("I don't know how to perform constant operation %s '*' %s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantValueOp2ToString().c_str()));
-				}
-
+				PERFORM_ARITHMETIC_OPERATION(*);
 				break;
 			case BYTE_CODE_DIV:
 				if(i2->value_op2==0){
-					THROW_EXCEPTION("divide by 0");
+					THROW_EXCEPTION(zs_strutils::format("[%s:%i] divide by 0"
+							,eval_data->current_parsing_file
+							,token_operator->line
+					));
 				}
-				if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
-					result_op_zs_int=(i1->value_op2)/(i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_ZS_INT;
-				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
-					result_op_float=*((float *)&i1->value_op2)/(i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_FLOAT;
-				}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
-					result_op_float=*((float *)&i1->value_op2)/(i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_FLOAT;
-				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
-					result_op_float=*((float *)&i1->value_op2)/ *((float *)&i2->value_op2);
-					result_bc=BYTE_CODE_LOAD_FLOAT;
-				}else{
-					THROW_EXCEPTION(zs_strutils::format("I don't know how to perform constant operation %s '/' %s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantValueOp2ToString().c_str()));
-				}
+				PERFORM_ARITHMETIC_OPERATION(/);
 				break;
 			case BYTE_CODE_MOD:
 				if(i2->value_op2==0){
-					THROW_EXCEPTION("divide by 0");
+					THROW_EXCEPTION(zs_strutils::format("[%s:%i] divide by 0"
+							,eval_data->current_parsing_file
+							,token_operator->line
+					));
 				}
 				if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
 					result_op_zs_int=(i1->value_op2)%(i2->value_op2);
@@ -156,11 +181,51 @@ namespace zetscript{
 					result_op_float=fmod(*((float *)&i1->value_op2), *((float *)&i2->value_op2));
 					result_bc=BYTE_CODE_LOAD_FLOAT;
 				}else{
-					THROW_EXCEPTION(zs_strutils::format("I don't know how to perform constant operation %s '/' %s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantValueOp2ToString().c_str()));
+					THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform constant operation %s '/' %s"
+							,eval_data->current_parsing_file
+							,token_operator->line
+							,i1->getConstantValueOp2ToString().c_str()
+							,i2->getConstantValueOp2ToString().c_str()));
 				}
 				break;
+			// binary ops
+			case BYTE_CODE_AND:
+				PERFORM_BINARY_OPERATION(&);
+				break;
+			case BYTE_CODE_OR:
+				PERFORM_BINARY_OPERATION(|);
+				break;
+			case BYTE_CODE_XOR:
+				PERFORM_BINARY_OPERATION(^);
+				break;
+			// logic ops
+			case BYTE_CODE_LOGIC_AND:
+				PERFORM_LOGIC_OPERATION(&&);
+				break;
+			case BYTE_CODE_LOGIC_OR:
+				PERFORM_LOGIC_OPERATION(||);
+				break;
+			case BYTE_CODE_LT:
+				PERFORM_LOGIC_OPERATION(<);
+				break;
+			case BYTE_CODE_GT:
+				PERFORM_LOGIC_OPERATION(>);
+				break;
+			case BYTE_CODE_GTE:
+				PERFORM_LOGIC_OPERATION(>=);
+				break;
+			case BYTE_CODE_LTE:
+				PERFORM_LOGIC_OPERATION(<=);
+				break;
+			case BYTE_CODE_EQU:
+				PERFORM_LOGIC_OPERATION(==);
+				break;
+			case BYTE_CODE_NOT_EQU:
+				PERFORM_LOGIC_OPERATION(==);
+				break;
+
 			default:
-				THROW_EXCEPTION(zs_strutils::format("const instruction %i not implemented",byte_code));
+				THROW_EXCEPTION(zs_strutils::format("const operation KK '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
 				break;
 			}
 
@@ -193,7 +258,7 @@ namespace zetscript{
 			return result_instruction;
 		}
 
-		EvalInstruction *eval_expression_optimize(EvalData *eval_data,Scope *scope_info,ByteCode byte_code, std::vector<EvalInstruction *> *instructions){
+		EvalInstruction *eval_expression_optimize(EvalData *eval_data,Scope *scope_info,TokenNode   *token_operation, std::vector<EvalInstruction *> *instructions){
 			size_t size_instructions=instructions->size();
 			EvalInstruction *instruction=NULL;
 			bool is_i1_K=false;
@@ -214,13 +279,14 @@ namespace zetscript{
 
 			// can be computed, yeah!
 			if(is_i1_K && is_i2_K){
-				instruction=eval_expression_perform_KK_operation(eval_data,byte_code,i1,i2);
+				instruction=eval_expression_perform_KK_operation(eval_data,token_operation,i1,i2);
 				n_eval_ops=2;
 			}else{ // try KR/RK/RR/k or R
 				ByteCode load_byte_code_1= i1->vm_instruction.byte_code;
 				zs_int	 load_value_op2_1= i1->vm_instruction.value_op2;
 				ByteCode load_byte_code_2= i2->vm_instruction.byte_code;
 				zs_int	 load_value_op2_2= i2->vm_instruction.value_op2;
+				ByteCode byte_code=eval_operator_to_byte_code(token_operation->operator_type);
 				unsigned short k_properties=0;
 
 
@@ -310,7 +376,6 @@ namespace zetscript{
 			instructions->resize(instructions->size()-n_eval_ops);
 
 			// and push the new one
-			instructions->push_back(instruction);
 
 			return instruction;
 

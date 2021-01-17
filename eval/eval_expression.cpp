@@ -77,7 +77,7 @@ namespace zetscript{
 
 
 					if((aux_p = eval_expression_token_symbol(eval_data,aux_p,line,scope_info,&expression_tokens))==NULL){
-						goto error_expression;
+						goto error_expression_main;
 					}
 
 					new_line_break=false;
@@ -127,7 +127,7 @@ namespace zetscript{
 			}
 
 			if(eval_data->error){
-				goto error_expression;
+				goto error_expression_main;
 			}
 
 			if(expected_ending_char.size() > 0) { // throw error...
@@ -173,14 +173,14 @@ namespace zetscript{
 					,&expression_tokens
 					,only_call_instructions
 				))==NULL){
-					goto error_expression;
+					goto error_expression_main;
 				}
 			}
 
 			// last character is a separator so it return increments by 1
 			return aux_p;
 
-error_expression:
+error_expression_main:
 
 			for(unsigned kk=0;kk<expression_tokens.size();kk++){
 				if(expression_tokens[kk].are_instructions_moved == false){ // it means that instructions was not saved in instructions vector yet
@@ -191,9 +191,9 @@ error_expression:
 			}
 
 			// erase all instructions in vector...
-			for(unsigned i=0; i < instructions->size(); i++){
+			/*for(unsigned i=0; i < instructions->size(); i++){
 				delete instructions->at(i);
-			}
+			}*/
 
 			return NULL;
 
@@ -229,7 +229,7 @@ error_expression:
 			);
 
 			if(aux_p == NULL){
-				return NULL;
+				goto error_expression;
 			}
 
 			// ok this is not the end...
@@ -399,6 +399,21 @@ error_expression:
 
 
 			return aux_p;
+
+error_expression:
+
+			for(auto v=expressions.begin(); v!=expressions.end(); v++){ // delete expression vectors
+				for(auto e=(*v)->begin() //delete instructions
+						; e!=(*v)->end()
+						; e++){
+					delete *e;
+				}
+
+				delete *v;
+
+			}
+
+			return NULL;
 
 		};
 	}

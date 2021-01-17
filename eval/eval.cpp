@@ -12,6 +12,7 @@
 #define print_eval_cr(s,...)
 #endif
 
+#include "eval_operator.cpp"
 #include "eval_data.cpp"
 #include "eval_object.cpp"
 #include "eval_expression_optimize.cpp"

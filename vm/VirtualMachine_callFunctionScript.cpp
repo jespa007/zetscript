@@ -461,7 +461,7 @@ namespace zetscript{
 
 		//-----------------------------------------------------------------------------------------------------------------------
 		//
-		// EXECUTE INSTRUCTION HERE
+		// MAIN LOOP
 		//
 		 for(;;){ // foreach byte code instruction ...
 
