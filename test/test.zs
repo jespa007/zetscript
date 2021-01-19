@@ -7,6 +7,32 @@
 
 //1+1+4*10/
 //true || (false && false)+1
-var a=0,b=0;
-a+b;
+//var a=1,(b,c=2,3);
+//a+b;
+/*var a=1,b=2;
+
+(1+a)-b*/
+
+function fun(
+		a,b,c
+	){
+	//var d,f;
+	return a;
+}
+
+
+fun(1,0,0,0)+fun(2,7,7,7,7,7,7,7)
+
+
+
+
+//System::println(System::clock()+100);
+
+//var a,b,c;
+
+//return 1;
+
+//a,b=0,0
 //"dads"+1+true+0.48668054j
+
+//return 0;

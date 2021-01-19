@@ -199,7 +199,7 @@ namespace zetscript{
 				Instruction *last_load_instruction=&assign_instructions_post_expression[i>>1][assign_instructions_post_expression[i>>1].size()-1]->vm_instruction;
 
 				// if is a access property ...
-				if(last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS //properties & (MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS | MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD)){
+				if(last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS
 				||last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 					// .. add information last load that it will be stored
 					last_load_instruction->properties |= MSK_INSTRUCTION_PROPERTY_PACK_MEMBER_INFO;

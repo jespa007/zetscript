@@ -50,24 +50,15 @@ namespace zetscript{
 		std::string Instruction::getConstantValueOp2ToString(){
 			std::string value_op2_string="unknow value";
 
-
-			switch(byte_code){
-			case BYTE_CODE_LOAD_BOOL:
+			if(byte_code ==BYTE_CODE_LOAD_BOOL || (this->properties & MSK_INSTRUCTION_PROPERTY_BOOL) ){
 				value_op2_string=this->value_op2 == 0 ? "false":"true";
-				break;
-			case BYTE_CODE_LOAD_ZS_INT:
+			}else if(byte_code==BYTE_CODE_LOAD_ZS_INT || (this->properties & MSK_INSTRUCTION_PROPERTY_ZS_INT)){
 				value_op2_string=zs_strutils::zs_int_to_str(this->value_op2);
-				break;
-			case BYTE_CODE_LOAD_FLOAT:
+			}else if(byte_code==BYTE_CODE_LOAD_FLOAT|| (this->properties & MSK_INSTRUCTION_PROPERTY_FLOAT)){
 				value_op2_string=zs_strutils::float_to_str(this->getConstantFloat());
-				break;
-			case BYTE_CODE_LOAD_STRING:
-				value_op2_string=this->getConstantString();
-				break;
-
+			}else if(byte_code==BYTE_CODE_LOAD_STRING || (this->properties & MSK_INSTRUCTION_PROPERTY_STRING)){
+				value_op2_string="\""+this->getConstantString()+"\"";
 			}
-
 			return value_op2_string;
 		}
-
 }

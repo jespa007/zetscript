@@ -191,21 +191,6 @@ namespace zetscript{
 		return NULL;
 	}
 
-	/*ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, ConstantValue constant_value){
-		if(getRegisteredConstantValue(const_name) != NULL){
-			THROW_RUNTIME_ERROR("internal:constant %s already exist",const_name.c_str());
-		}
-
-		StackElement *info_ptr=new StackElement;
-		*info_ptr=constant_value;
-		(constant_values)[const_name]=info_ptr;
-		return info_ptr;
-	}
-
-	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, void *obj, unsigned short properties){
-		return registerConstantValue(const_name,{obj,NULL,properties});
-	}*/
-
 	StackElement * ZetScript::registerConstantScriptObjectString(const std::string & const_name){
 
 		StackElement *stk=NULL;
@@ -229,36 +214,9 @@ namespace zetscript{
 
 	}
 
-	/*ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, zs_int _value){
-		zs_int value = _value;
-		unsigned short properties=MSK_STK_PROPERTY_ZS_INT;
-		StackElement *stk;
-
-		if((stk = getRegisteredConstantValue(const_name))!=NULL){
-			return stk;
-		}
-		return registerConstantValue(const_name,(void *)value,properties);
-	}
-
-	ConstantValue * ZetScript::registerConstantValue(const std::string & const_name, float _value){
-		zs_int value;// = _value;
-		*((float *)&value)=_value;
-		unsigned short properties=MSK_STK_PROPERTY_FLOAT;
-		StackElement *stk;
-
-		if((stk = getRegisteredConstantValue(const_name))!=NULL){
-			return stk;
-		}
-		return registerConstantValue(const_name,(void *)value,properties);
-	}*/
-
 	// CONSTANT MANAGEMENT
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
-
-	/*void  ZetScript::internalPrintError(const char *s){
-		 virtual_machine->SetError(s);
-	}*/
 	void ZetScript::setPrintOutCallback(void (* _printout_callback)(const char *)){
 		print_out_callback=_printout_callback;
 	}
@@ -340,7 +298,6 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("evalStringValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
 			}
 		}
-
 		return NULL;
 	}
 

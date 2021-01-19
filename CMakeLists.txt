@@ -210,12 +210,14 @@ ELSE()
 				
 		 # Script
 		script/ScriptObject.cpp
-		script/ScriptObjectIterator.cpp
 		script/ScriptObjectString.cpp
 		script/ScriptObjectStringIterator.cpp
 		script/ScriptObjectVector.cpp
 		script/ScriptObjectVectorIterator.cpp
-		
+		script/ScriptObjectAnonymousClass.cpp
+		script/ScriptObjectAnonymousClassIterator.cpp
+		script/ScriptObjectClass.cpp
+				
 		script/ScriptClass.cpp
 		script/ScriptFunction.cpp
 		script/ScriptFunctionFactory.cpp
@@ -223,6 +225,7 @@ ELSE()
 		 		 		
  		# Core
  		StackElement.cpp
+ 		Instruction.cpp
  		ByteCode.cpp
  		exception.cpp
  		Symbol.cpp

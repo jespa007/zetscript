@@ -93,7 +93,7 @@ Date: XX-12-2020
 #136 Clear unusued scopes
 #137 Callback function support
 #138 remove all std::vector and std::string access on VM
-#139 Implement const operator
+> #139 Implement const operator
 > #140 Implement Vector methods  
 #141 limit n params only for c functions 
 #142 Try to optimize bind function member 
@@ -191,6 +191,7 @@ Date: XX-12-2020
 > #249 Allow function default arg value 
 > #252 Allow var class with optional initialization
 > #253 Get rid RESET STACK on each expression 
+> #254 VM optimization: Immediate load if member or function are members 
  
 
 Other: 

@@ -230,6 +230,7 @@ namespace zetscript{
 				do{
 					ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 					accessor_name="";
+					zs_int instruction_value2=ZS_IDX_UNDEFINED;
 
 					switch(*aux_p){
 					case '(': // is a function call
@@ -305,6 +306,7 @@ namespace zetscript{
 						byte_code=ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT;
 
 						if(it_accessor_token==0 && token_node_symbol.value == SYMBOL_VALUE_THIS){ // check first symbol at first...
+							ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_class);
 
 							if(eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC){
 								EVAL_ERROR_EXPRESSION_TOKEN(eval_data->current_parsing_file,line ,"\"this\" cannot be used in static functions");
@@ -316,7 +318,18 @@ namespace zetscript{
 
 							// set symbol name
 							token_node_symbol.instructions[0]->symbol.name=accessor_name;
+
 							byte_code=ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS;
+
+							// search whether symbol is already in the object and set-it
+							Symbol *symbol_member=sf_class->getSymbol(accessor_name);
+
+							if(symbol_member != NULL){ // is member
+								instruction_value2=symbol_member->idx_position;
+								byte_code=ByteCode::BYTE_CODE_LOAD_THIS_MEMBER;
+							}
+
+
 						}
 						break;
 					}
@@ -336,6 +349,7 @@ namespace zetscript{
 						);
 						break;
 					default:
+						instruction_token->vm_instruction.value_op2=instruction_value2;
 						instruction_token->instruction_source_info= InstructionSourceInfo(
 							eval_data->current_parsing_file
 							,line
@@ -356,7 +370,7 @@ namespace zetscript{
 
 			}else{
 
-				if(token_node_symbol.value==SYMBOL_VALUE_THIS){
+				if(token_node_symbol.value==SYMBOL_VALUE_THIS){ // only takes symbol this
 					if(eval_data->current_function->script_function->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
 						EVAL_ERROR_EXPRESSION_TOKEN(eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
 					}

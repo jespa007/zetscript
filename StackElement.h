@@ -106,16 +106,11 @@ enum:unsigned short {
 (( stk->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) &&\
  (((ScriptObjectAnonymousClass *)(stk->stk_value))->idx_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR))
 
-/*#define STK_VALUE_IS_INT_OR_FLOAT(properties) \
-((properties & MSK_STK_PROPERTY_ZS_INT) ||\
-(properties & MSK_STK_PROPERTY_FLOAT))*/
-
 #define STK_VALUE_TO_ZS_INT(ptr_result_instruction) \
 		((zs_int)((zs_int)(ptr_result_instruction->stk_value)))
 
 #define STK_VALUE_TO_BOOL(ptr_result_instruction) \
 		(((bool)(ptr_result_instruction->stk_value)))
-
 
 
 namespace zetscript{

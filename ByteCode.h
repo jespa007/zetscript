@@ -14,13 +14,19 @@ namespace zetscript{
 		// ARITMETHIC OPERATORS.
 		BYTE_CODE_END_FUNCTION = 0,
 		BYTE_CODE_FIND_VARIABLE,
+
+		// load variable
 		BYTE_CODE_LOAD_GLOBAL,
 		BYTE_CODE_LOAD_LOCAL,
 		BYTE_CODE_LOAD_THIS,
+		BYTE_CODE_LOAD_THIS_MEMBER,
+
+		// load element
 		BYTE_CODE_LOAD_ELEMENT_VECTOR,
 		BYTE_CODE_LOAD_ELEMENT_THIS,
 		BYTE_CODE_LOAD_ELEMENT_OBJECT,
-		//BYTE_CODE_LOAD_TYPE_STATIC, // primitive value like number/std::string or boolean...
+
+		// load constant
 		BYTE_CODE_LOAD_FUNCTION,
 		BYTE_CODE_LOAD_UNDEFINED,
 		BYTE_CODE_LOAD_STRING,
@@ -30,14 +36,14 @@ namespace zetscript{
 		BYTE_CODE_LOAD_CLASS,
 		BYTE_CODE_LOAD_STACK_ELEMENT,
 
-		BYTE_CODE_STORE, // mov expression to var
+		BYTE_CODE_STORE, 	 // mov expression to var
 		BYTE_CODE_STORE_ADD, //
 		BYTE_CODE_STORE_SUB, //
 		BYTE_CODE_STORE_MUL, //
 		BYTE_CODE_STORE_DIV, //
 		BYTE_CODE_STORE_MOD, //
 		BYTE_CODE_STORE_AND, //
-		BYTE_CODE_STORE_OR, //
+		BYTE_CODE_STORE_OR,  //
 		BYTE_CODE_STORE_XOR, //
 		BYTE_CODE_STORE_SHL, //
 		BYTE_CODE_STORE_SHR, //
@@ -92,7 +98,7 @@ namespace zetscript{
 		BYTE_CODE_NEG_POST_INC,
 		BYTE_CODE_POST_DEC,
 		BYTE_CODE_NEG_POST_DEC,
-		BYTE_CODE_POP_ONE, // just in case there's no assignment on left
+		BYTE_CODE_POP_ONE, // just in case there's no assignment on left or after last assignment
 		//---------------------------
 		BYTE_CODE_INVALID=255,
 
@@ -134,6 +140,7 @@ namespace zetscript{
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_LOCAL)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_VECTOR)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_THIS_MEMBER)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT)\
 )
 
@@ -145,11 +152,12 @@ namespace zetscript{
 || ((byte_code)== BYTE_CODE_LOAD_STRING) \
 )
 
-#define IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(byte_code) \
+#define IS_BYTE_CODE_LOAD_VARIABLE_IMMEDIATE(byte_code) \
 (\
    ((byte_code)== BYTE_CODE_LOAD_LOCAL) \
 || ((byte_code)== BYTE_CODE_FIND_VARIABLE) \
 || ((byte_code)== BYTE_CODE_LOAD_GLOBAL)\
+|| ((byte_code)== BYTE_CODE_LOAD_THIS_MEMBER)\
 )
 
 #define IS_BYTE_CODE_OPERATION(byte_code) 		(BYTE_CODE_EQU <=(byte_code) && (byte_code)<= BYTE_CODE_SHR)

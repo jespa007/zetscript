@@ -48,6 +48,13 @@ namespace zetscript{
 		return NULL;
 	}
 
+#define GET_ILOAD_ACCESS_VARIABLE_TO_STR(properties) \
+ ((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? "Local"\
+:((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? "this."\
+:"Global"\
+
+
+
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc){
 
 		// PRE: it should printed after compile and updateReferences.
@@ -61,6 +68,7 @@ namespace zetscript{
 		std::string symbol_ref="????";
 		std::string class_str="";
 		std::string symbol_value="";
+		std::string iload_info="";
 
 		if(sc==NULL){ // no class is a function on a global scope
 			symbol_ref=sfo->symbol.name;
@@ -68,6 +76,7 @@ namespace zetscript{
 			symbol_ref=sfo->symbol.name;//+std::string("::")+std::string("????");
 			class_str=sc->symbol_class.name+"::";
 		}
+
 
 
 		printf("-------------------------------------------------------\n");
@@ -81,6 +90,7 @@ namespace zetscript{
 			int value_op2 = instruction->value_op2;
 			symbol_value=SFI_GET_SYMBOL_NAME(sfo,instruction);
 			Instruction *instruction_aux=NULL;
+			iload_info="";
 
 			if((char)value_op1 != ZS_IDX_UNDEFINED){
 				n_ops++;
@@ -89,6 +99,42 @@ namespace zetscript{
 			 if(value_op2 != ZS_IDX_UNDEFINED){
 				 n_ops++;
 			 }
+
+			switch(instruction->properties & MSK_INSTRUCTION_PROPERTY_ILOAD){
+			default:
+				break;
+			case MSK_INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
+				 iload_info=zs_strutils::format("%s", instruction->getConstantValueOp2ToString().c_str());
+				 break;
+			case MSK_INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
+				 iload_info=zs_strutils::format("%s[%i]"
+					 ,GET_ILOAD_ACCESS_VARIABLE_TO_STR(instruction->properties)
+					 ,instruction->value_op1
+				 );
+				 break;
+			case MSK_INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
+			 	 iload_info=zs_strutils::format("%s,%s[%i]"
+					 ,instruction->getConstantValueOp2ToString().c_str()
+					 ,GET_ILOAD_ACCESS_VARIABLE_TO_STR(instruction->properties)
+					 ,instruction->value_op1
+				 );
+				break;
+			case MSK_INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
+				 iload_info=zs_strutils::format("%s[%i],%s"
+					 ,GET_ILOAD_ACCESS_VARIABLE_TO_STR(instruction->properties)
+					 ,instruction->value_op1
+					 ,instruction->getConstantValueOp2ToString().c_str()
+				 );
+				break;
+		   case MSK_INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
+		   	   iload_info=zs_strutils::format("%s[%i],%s[%i]"
+		  			 ,GET_ILOAD_ACCESS_VARIABLE_TO_STR(instruction->properties)
+		  			 ,instruction->value_op1
+		  			 ,GET_ILOAD_ACCESS_VARIABLE_TO_STR(instruction->value_op2)
+		  			 ,(instruction->value_op2 & 0xff0000) >> 16
+		  		);
+				break;
+			}
 
 			switch(instruction->byte_code){
 
@@ -109,7 +155,7 @@ namespace zetscript{
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_INT\t%i\n",idx_instruction,(int)(instruction->value_op2));
 				break;
 			case BYTE_CODE_LOAD_STRING:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t\"%s\"\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
 				break;
 			case BYTE_CODE_LOAD_FUNCTION:
 			case BYTE_CODE_FIND_VARIABLE:
@@ -174,24 +220,34 @@ namespace zetscript{
 				);
 				break;
 			default:
-				if(n_ops==0){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+
+				if(iload_info != ""){
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 						idx_instruction
 						,ByteCodeToStr(instruction->byte_code)
+						,iload_info.c_str()
 					);
-				}else if(n_ops==1){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i\n"
-						,idx_instruction
-						,ByteCodeToStr(instruction->byte_code)
-						,instruction->value_op1
-					);
-				}else{ //2 ops
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%i,%i\n"
-						,idx_instruction
-						,ByteCodeToStr(instruction->byte_code)
-						,instruction->value_op1
-						,(int)instruction->value_op2
-					);
+				}else{
+
+					if(n_ops==0){
+						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+							idx_instruction
+							,ByteCodeToStr(instruction->byte_code)
+						);
+					}else if(n_ops==1){
+						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%i\n"
+							,idx_instruction
+							,ByteCodeToStr(instruction->byte_code)
+							,instruction->value_op1
+						);
+					}else{ //2 ops
+						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%i,%i\n"
+							,idx_instruction
+							,ByteCodeToStr(instruction->byte_code)
+							,instruction->value_op1
+							,(int)instruction->value_op2
+						);
+					}
 				}
 				break;
 			}

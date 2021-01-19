@@ -80,7 +80,7 @@ namespace zetscript{
 		bool eval_expression_get_register(EvalData *eval_data, Scope *scope,EvalInstruction *i1, ByteCode & load_byte_code, zs_int & load_value_op2){
 			Symbol *symbol_found=NULL;
 
-			 if(!IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(i1->vm_instruction.byte_code)){
+			 if(!IS_BYTE_CODE_LOAD_VARIABLE_IMMEDIATE(i1->vm_instruction.byte_code)){
 				 return false;
 			 }
 
@@ -293,6 +293,7 @@ namespace zetscript{
 				zs_int	 load_value_op2_2= i2->vm_instruction.value_op2;
 				ByteCode byte_code=eval_operator_to_byte_code(token_operation->operator_type);
 				unsigned short k_properties=0;
+				n_eval_ops=2;
 
 
 				is_i1_R=eval_expression_get_register(eval_data, scope_info, i1, load_byte_code_1,load_value_op2_1);
@@ -301,47 +302,58 @@ namespace zetscript{
 					instruction=new EvalInstruction(
 							byte_code
 							,load_value_op2_1
-							,(load_byte_code_2 & 0xff) | (load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0) << (8)
-							,MSK_INSTRUCTION_PROPERTY_ILOAD_RR | (load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0)
+							,((load_value_op2_2 & 0xff) << 16) // pack value + properties
+							  | (
+									load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
+									:load_byte_code_2 == BYTE_CODE_LOAD_THIS_MEMBER ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+									:0
+								)
+							,MSK_INSTRUCTION_PROPERTY_ILOAD_RR
+							| (
+									load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
+									:load_byte_code_1 == BYTE_CODE_LOAD_THIS_MEMBER ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+									:0
+							)
 					);
 
 				}else if(is_i1_R && is_i2_K){ // RK
-					n_eval_ops=2;
-
 					if((k_properties=eval_expression_load_const_byte_code_to_instruction_property(load_byte_code_2))==0){
 						return NULL;
 					}
-
 
 					instruction= new EvalInstruction(
 							byte_code
 							,load_value_op2_1
 							,load_value_op2_2
 							,MSK_INSTRUCTION_PROPERTY_ILOAD_RK
-							| (load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0)
+							| (
+									load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
+									:load_byte_code_1 == BYTE_CODE_LOAD_THIS_MEMBER ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+									:0
+							)
 							| k_properties
 					);
 				}else if(is_i1_K && is_i2_R){ // KR
-					n_eval_ops=2;
-
 					if((k_properties=eval_expression_load_const_byte_code_to_instruction_property(load_byte_code_1))==0){
 						return NULL;
 					}
-
 
 					instruction=new EvalInstruction(
 							byte_code
 							,load_value_op2_2
 							,load_value_op2_1
 							,MSK_INSTRUCTION_PROPERTY_ILOAD_KR
-							| (load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0)
+							| (
+									load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
+									:load_byte_code_2 == BYTE_CODE_LOAD_THIS_MEMBER ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+									:0
+							)
 							| k_properties
 					);
 				}else{ // check last instructions
 					i1=i2;
+					n_eval_ops=1;
 					if(is_i2_K){
-						n_eval_ops=1;
-
 						if((k_properties=eval_expression_load_const_byte_code_to_instruction_property(load_byte_code_1))==0){
 							return NULL;
 						}
@@ -354,14 +366,19 @@ namespace zetscript{
 						);
 
 					}else if(is_i2_R){
-						n_eval_ops=1;
 
 						instruction=new EvalInstruction(
 								byte_code
 								,load_value_op2_2
 								,ZS_IDX_UNDEFINED
-								,MSK_INSTRUCTION_PROPERTY_ILOAD_R | (load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_LOCAL_ACCESS:0)
+								,MSK_INSTRUCTION_PROPERTY_ILOAD_R | (
+										load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
+										:load_byte_code_2 == BYTE_CODE_LOAD_THIS_MEMBER ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+										:0
+								)
 						);
+					}else{ // no optimization...
+						n_eval_ops=0;
 					}
 				}
 			}

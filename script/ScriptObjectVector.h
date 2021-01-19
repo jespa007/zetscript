@@ -75,7 +75,7 @@ namespace zetscript{
 		virtual ~ScriptObjectVector();
 	protected:
 		StackElement 		stk_count;
-		zs_vector stk_elements;
+		zs_vector 			stk_elements;
 
 
 		bool 				eraseElementAt(short idx);

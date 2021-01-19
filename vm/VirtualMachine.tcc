@@ -300,14 +300,14 @@ namespace zetscript{
 		}
 
 		if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
-			ret_obj=callFunctionScript(
+			callFunctionScript(
 				calling_object
 				,ptr_function_found
 				,stk_args
 				,n_stk_args
 			);
 		}else{ //
-			ret_obj= callFunctionNative(
+			callFunctionNative(
 					ptr_function_found
 					,stk_args
 					,n_stk_args

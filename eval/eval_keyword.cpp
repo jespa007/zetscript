@@ -609,10 +609,6 @@ namespace zetscript{
 
 					if(*aux_p == '='){
 
-
-
-						std::vector<EvalInstruction *>	 		constant_instructions;
-
 						// try to evaluate expression...
 						if(is_constant){ // load constant...
 							EvalInstruction *eval_instruction;
@@ -633,6 +629,7 @@ namespace zetscript{
 							,scope_var
 							,&eval_data->current_function->instructions
 							,{}
+							,EVAL_EXPRESSION_POP_ONE_ON_END_EXPRESSION
 						))==NULL){
 							return NULL;
 						}

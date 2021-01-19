@@ -66,7 +66,7 @@
 
 namespace zetscript{
 
-	StackElement  VirtualMachine::callFunctionNative(
+	void  VirtualMachine::callFunctionNative(
 			const ScriptFunction *calling_function,
 			StackElement *stk_arg_calling_function,
 			unsigned char n_args,
@@ -75,24 +75,22 @@ namespace zetscript{
 			){
 
 		zs_int  fun_ptr = calling_function->ref_native_function_ptr;
-		StackElement stk_result;
-		stk_result.properties=0;
 
 		if((calling_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
 			VM_SET_USER_ERROR(this,"Internal error: Function not native");
-			return stk_result;
+			return;
 		}
 
 		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_STATIC) == 0){ // is function member  ...
 			if(this_object!= NULL){
 				StackElement *stk_prop_fun=NULL;
 				if((stk_prop_fun = this_object->getElementAt(calling_function->symbol.idx_position))==NULL){
-					return stk_result;
+					return;
 				}
 				fun_ptr=((ScriptFunction *)stk_prop_fun->stk_value)->ref_native_function_ptr; // var ref holds function ptr
 			}else{
 				VM_SET_USER_ERROR(this,"Internal error: expected object for function member");
-				return stk_result;
+				return;
 			}
 		}
 
@@ -643,6 +641,6 @@ namespace zetscript{
 			}
 		}
 
-		return this->zs->convertVarToStackElement(result,calling_function->idx_return_type);
+		*this->stk_vm_current++=this->zs->convertVarToStackElement(result,calling_function->idx_return_type);
 	}
 }

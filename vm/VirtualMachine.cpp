@@ -171,7 +171,7 @@ namespace zetscript{
 		setError(zs_strutils::format("[%s:%i] %s",file,line,out_txt));
 	}
 
-	StackElement  VirtualMachine::execute(
+	StackElement VirtualMachine::execute(
 		 ScriptObjectClass 		*	this_object
 		 ,ScriptFunction 	*	calling_function
 		 ,StackElement 		*  	stk_params
@@ -180,8 +180,10 @@ namespace zetscript{
 		 , int line
 	){
 
-		StackElement stk_result=stk_undefined;
-		StackElement info=stk_undefined;
+		//StackElement stk_result=stk_undefined;
+		StackElement stk_return=stk_undefined;
+		StackElement *stk_start=NULL;
+
 
 		if(vm_idx_call==0){ // set stack and Init vars for first call...
 
@@ -189,36 +191,51 @@ namespace zetscript{
 			vm_error_str="";
 			this->vm_error_callstack_str="";
 
-			stk_vm_current=vm_stack;
+			stk_start=vm_stack;
 
-			// calls script function from C : preserve stack space for global vars
+			// calls script function from C : preserve stack space for global vars to avoid
 			if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
-				stk_vm_current=&vm_stack[main_function_object->registered_symbols->count];
+				stk_start=&vm_stack[main_function_object->registered_symbols->count];
 			}
-			//vm_foreach_current=&vm_foreach[0];
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
+			stk_start=stk_vm_current;
+
 			for(unsigned i = 0; i < n_stk_params; i++){
-				*stk_vm_current++=stk_params[i];
+				*stk_start++=stk_params[i];
 			}
 		}
 
 		// byte code executing starts here. Later script function can call c++ function, but once in c++ function is not possible by now call script function again.
+		//stk_start=stk_vm_current;
 
-		info=callFunctionScript(
+		callFunctionScript(
 			this_object,
 			calling_function,
-			stk_vm_current,
+			stk_start,
 			n_stk_params);
 
-		// if string or object do not remove empty shared pointers if they are 0s
-		if(info.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-			// add generated
-			insertLifetimeObject(file,line,(ScriptObjectAnonymousClass *)info.stk_value);
-			/*ScriptObjectAnonymousClass * so=(ScriptObjectAnonymousClass *)info.var_ref;
-			if(so->shared_pointer==NULL){ // is not shared, add on the list for next time...
-				so->initSharedPtr();
-			}*/
+		// get number return elements
+		int n_returned_arguments_from_function=stk_vm_current-(stk_start+calling_function->registered_symbols->count);
+
+		if(n_returned_arguments_from_function > 0){
+
+			// get first...
+			stk_return=*(stk_vm_current-n_returned_arguments_from_function);
+
+			// if object add into lifetime till user delete it
+			if(stk_return.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+				// add generated
+				insertLifetimeObject(file,line,(ScriptObjectAnonymousClass *)stk_return.stk_value);
+			}
+
+			// deallocate all returned variables from 1
+			for(int i=1; i < n_returned_arguments_from_function; i++){
+				if(stk_return.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					delete (ScriptObject *)stk_return.stk_value;
+				}
+			}
+
 		}
 
 
@@ -228,10 +245,10 @@ namespace zetscript{
 			throw std::runtime_error(this->vm_error_callstack_str+"\n"+vm_error_str);
 		}
 
-		return info;
+		return stk_return;
 	}
 
-	void VirtualMachine::insertLifetimeObject(const char *file, int line, ScriptObjectAnonymousClass *script_object){
+	void VirtualMachine::insertLifetimeObject(const char *file, int line, ScriptObject *script_object){
 		InfoLifetimeObject *info = (InfoLifetimeObject *)malloc(sizeof(InfoLifetimeObject));
 
 		info->file=file;

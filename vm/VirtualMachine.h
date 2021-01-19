@@ -17,7 +17,7 @@ namespace zetscript{
 
 	#define VM_EXECUTE(vm,o,f,stk,n)	vm->execute(o,f,stk,n,__FILE__,__LINE__)
 	#define VM_ERROR(s,...)				vm_error=true;vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
-	#define VM_ERROR_AND_RET(s,...)		vm_error=true;vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return stk_result;
+	#define VM_ERROR_AND_RET(s,...)		vm_error=true;vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return;
 	#define VM_STOP_EXECUTE(s,...)		vm_error=true;vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
 	#define VM_SET_USER_ERROR(vm,s,...)	vm->setErrorFileLine(__FILE__,__LINE__, s, ##__VA_ARGS__)
 
@@ -96,7 +96,7 @@ namespace zetscript{
 		typedef struct{
 			const char *file;
 			int line;
-			ScriptObjectAnonymousClass * script_object;
+			ScriptObject * script_object;
 		}InfoLifetimeObject;
 
 
@@ -141,7 +141,7 @@ namespace zetscript{
 		StackElement stk_aux;
 
 
-		StackElement  callFunctionScript(
+		void  callFunctionScript(
 				ScriptObjectAnonymousClass	* 	this_object,
 				ScriptFunction 			*	info_function,
 				StackElement 			* 	_stk_start_args,
@@ -150,7 +150,7 @@ namespace zetscript{
 				);
 
 
-		 StackElement  callFunctionNative(
+		 void  callFunctionNative(
 			 const ScriptFunction *calling_function,
 			 StackElement *stk_arg_calling_function,
 			 unsigned char n_args,
@@ -166,7 +166,7 @@ namespace zetscript{
 
 		inline bool insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		inline bool deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
-		void insertLifetimeObject(const char *file, int line, ScriptObjectAnonymousClass *script_object);
+		void insertLifetimeObject(const char *file, int line, ScriptObject *script_object);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 
 		inline ScriptFunction *  findFunction(
