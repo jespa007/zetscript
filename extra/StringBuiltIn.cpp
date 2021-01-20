@@ -24,7 +24,7 @@ namespace zetscript{
 			}
 		}
 		//ScriptObjectString *str_in=(ScriptObjectString *)(str->var_ref);
-		ScriptObjectString *str_out=new ScriptObjectString(zs);
+		ScriptObjectString *str_out=ScriptObjectString::newStringObject(zs);
 		str_out->set(first_param);//str_in->str_value;
 		return str_out;
 	}

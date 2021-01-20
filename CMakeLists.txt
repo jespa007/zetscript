@@ -80,7 +80,7 @@ else()
     	MESSAGE ("-- Plataform: Unknown" )
 	endif()
 	
-	IF (MEMMANAGER)
+	IF ("${MEMMANAGER}" STREQUAL "ON")
 		message("-- Memmanager: ON (Warning execution time could be slow)")
 		SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__MEMMANAGER__")
 		include_directories (
@@ -102,7 +102,16 @@ set( LIBRARY_TYPE_CREATION "STATIC" )
 if(BUILD_SHARED_LIBS)
 	set( LIBRARY_TYPE_CREATION "SHARED" )
 endif()
+
 message("-- Library type: " ${LIBRARY_TYPE_CREATION})
+
+IF ("${STRICT_STATIC_FUNCTIONS_ONLY}" STREQUAL "ON")
+	message("-- Strict static functions only: ON")
+	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__STRICT_STATIC_FUNCTIONS_ONLY__")
+ELSE()
+	message("-- Strict static functions only: OFF")
+ENDIF()
+
 
 #
 # COMMON PARAMS
@@ -133,7 +142,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
 	MESSAGE ("-- Toolchain: GNU")
 
-	set(COMPILE_TARGET_FLAGS " -O2 -fomit-frame-pointer ")
+	set(COMPILE_TARGET_FLAGS " -O2 -fomit-frame-pointer")
 
 	IF ( "${TARGET}" STREQUAL "debug")
 		set(COMPILE_TARGET_FLAGS " -O0 -g ")
@@ -214,8 +223,8 @@ ELSE()
 		script/ScriptObjectStringIterator.cpp
 		script/ScriptObjectVector.cpp
 		script/ScriptObjectVectorIterator.cpp
-		script/ScriptObjectAnonymousClass.cpp
-		script/ScriptObjectAnonymousClassIterator.cpp
+		script/ScriptObjectAnonymous.cpp
+		script/ScriptObjectAnonymousIterator.cpp
 		script/ScriptObjectClass.cpp
 				
 		script/ScriptClass.cpp

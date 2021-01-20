@@ -14,7 +14,13 @@ namespace zetscript{
 		return sv->pop();
 	}
 
-	ScriptObjectVector::ScriptObjectVector(ZetScript *_zs):ScriptObject(_zs){
+	ScriptObjectVector * ScriptObjectVector::newVectorObject(ZetScript *zs){
+		ScriptObjectVector *sv=new ScriptObjectVector();
+		sv->setZetScript(zs);
+		return sv;
+	}
+
+	ScriptObjectVector::ScriptObjectVector(){
 		this->idx_script_class=IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR;
 		stk_count.stk_value=0;
 		stk_count.properties=MSK_STK_PROPERTY_ZS_INT;

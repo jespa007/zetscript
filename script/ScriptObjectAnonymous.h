@@ -12,7 +12,7 @@ class ScriptClass;
 	class ZetScript;
 	class VirtualMachine;
 	class ScriptClassFactory;
-	class  ScriptObjectAnonymousClass:public ScriptObjectVector{
+	class  ScriptObjectAnonymous:public ScriptObjectVector{
 
 	public:
 
@@ -20,10 +20,9 @@ class ScriptClass;
 		// public vars ...
 
 		// Construct ...
+		static ScriptObjectAnonymous * newAnonymousObject(ZetScript	*_zs);
 
-		ScriptObjectAnonymousClass(ZetScript	*_zs);
-
-
+		ScriptObjectAnonymous();
 
 		StackElement * addProperty(
 				const std::string & symbol_value
@@ -44,7 +43,7 @@ class ScriptClass;
 		bool eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 
 
-		virtual ~ScriptObjectAnonymousClass();
+		virtual ~ScriptObjectAnonymous();
 
 	protected:
 

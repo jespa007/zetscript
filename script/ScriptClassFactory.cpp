@@ -8,15 +8,19 @@
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
 		return;\
 	}\
-	registerNativeClass<type_class>(STR(type_class));
+	registerNativeClassStatic<type_class>(STR(type_class),NULL,NULL);
 
 
-#define REGISTER_BUILT_IN_CLASS(type_class, idx_class)\
+#define REGISTER_BUILT_IN_CLASS(type_class, idx_class,constructor,destructor)\
 	if(script_classes->count!=idx_class){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
 		return;\
 	}\
-	registerNativeClassBuiltIn<type_class>(STR(type_class));
+	if(idx_class >= IDX_BUILTIN_TYPE_MAX){\
+		THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",STR(type_class));\
+		return;\
+	}\
+	registerNativeClassStatic<type_class>(STR(type_class),constructor,destructor);
 
 #define REGISTER_BUILT_IN_CLASS_SINGLETON(type_class, idx_class)\
 	if(script_classes->count!=idx_class){\
@@ -38,16 +42,10 @@
 
 namespace zetscript{
 
-	/*void  print(const char *s){
-		printf("%s\n",s);
-		fflush(stdout);
-	}
-
-	void  print(zs_int s){
-		printf("print integer test: %llu\n",s);
-		fflush(stdout);
-	}*/
-
+	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectAnonymous);
+	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectString);
+	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVector);
+	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectClass);
 
 	ScriptClassFactory::ScriptClassFactory(ZetScript *_zs){
 		zs = _zs;
@@ -80,8 +78,6 @@ namespace zetscript{
 	}
 
 	void ScriptClassFactory::registerSystem(){
-		// ScriptFunctionFactory/VirtualMachine has to be created/initialized
-
 
 		// REGISTER BUILT IN C TYPES
 		REGISTER_BUILT_IN_TYPE(void,IDX_BUILTIN_TYPE_VOID_C);
@@ -95,41 +91,20 @@ namespace zetscript{
 		REGISTER_BUILT_IN_TYPE(float *,IDX_BUILTIN_TYPE_FLOAT_PTR_C);
 		REGISTER_BUILT_IN_TYPE(const float *,IDX_BUILTIN_TYPE_CONST_FLOAT_PTR_C);
 
-
 		// REGISTER BUILT IN CLASS TYPES
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ZetScript,IDX_BUILTIN_TYPE_ZETSCRIPT);
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
-		REGISTER_BUILT_IN_CLASS(ScriptObjectAnonymousClass,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS);
-		REGISTER_BUILT_IN_CLASS(ScriptObjectString,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING);
-		REGISTER_BUILT_IN_CLASS(ScriptObjectVector,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR);
-		REGISTER_BUILT_IN_CLASS(ScriptObjectClass,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS);
-
-		//------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-		// rgister basic classes (Warning!!! must match idx !!! and the order is important!!!)
-
-		//----------------------------------------------------------------------
-		// From here you defined all basic, start define hierarchy
-
-		// register custom functions ...
-		/*nativeClassInheritsFrom<ScriptObjectVector,ScriptObject>();
-		nativeClassInheritsFrom<ScriptObjectAnonymousClass,ScriptObjectVector>();
-		nativeClassInheritsFrom<ScriptObjectClass,ScriptObjectAnonymousClass>();*/
-		//nativeClassInheritsFrom<ScriptObjectDictionary,ScriptObjectAnonymousClass>();
-
+		REGISTER_BUILT_IN_CLASS(ScriptObjectAnonymous,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS,ScriptObjectAnonymous_new,ScriptObjectAnonymous_delete);
+		REGISTER_BUILT_IN_CLASS(ScriptObjectString,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING,ScriptObjectString_new,ScriptObjectString_delete);
+		REGISTER_BUILT_IN_CLASS(ScriptObjectVector,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR,ScriptObjectVector_new,ScriptObjectVector_delete);
+		REGISTER_BUILT_IN_CLASS(ScriptObjectClass,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS,ScriptObjectClass_new,ScriptObjectClass_delete);
 
 		//------------------------------------------------------------------------------------------------------------
 		// Let's register functions,...
 		// register c function's
 
 		ZS_REGISTER_FUNCTION(zs,"ptrToZetScriptPtr",ptrToZetScriptPtr);
-
-		//ZS_REGISTER_FUNCTION(zs,"print",static_cast<void (*)(const char *)>(print));
-		//ZS_REGISTER_FUNCTION(zs,"print",static_cast<void (*)(zs_int)>(print));
-
-
-		//ZS_REGISTER_FUNCTION_MEMBER(this->zs,ScriptObjectVector,"size",&ScriptObjectVector::size);
 
 		registerNativeMemberFunction<ScriptObjectVector>("push",&ScriptObjectVector::pushSf);
 		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVector::popSf);
@@ -321,7 +296,7 @@ namespace zetscript{
 				 break;
 			 default:
 				 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
-				 so = new ScriptObjectClass(zs);
+				 so = ScriptObjectClass::newScriptObjectClass(zs);
 				 so->init(rc->idx_class, value_object);
 				 break;
 			 }

@@ -33,7 +33,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 					|| k_str_string_type_ptr==symbol->str_native_type
 					){
 				char *input_s=(char *)ptr_variable;
-				ScriptObjectString *s=new ScriptObjectString(zs);
+				ScriptObjectString *s=ScriptObjectString::newStringObject(zs);
 
 				if(k_str_string_type_ptr==symbol->str_native_type){
 					s->value=(void *)ptr_variable;
@@ -59,7 +59,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 				ScriptClass *info_registered_class = zs->getScriptClassFactory()->getScriptClassByNativeClassPtr(symbol->str_native_type);//  ScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 				if(info_registered_class){
-					ScriptObjectClass *var = new ScriptObjectClass(zs);
+					ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs);
 					var->init(info_registered_class->idx_class,ptr_variable);
 
 

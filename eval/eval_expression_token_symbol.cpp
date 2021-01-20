@@ -23,16 +23,40 @@ namespace zetscript{
 			return check_identifier_name_expression_ok(eval_data,accessor_name,line) == TRUE;
 		}
 
-		char *eval_expression_token_symbol(EvalData *eval_data, char *s, int & current_line, Scope *scope_info, std::vector<TokenNode> *expression_tokens){
-			char *aux_p = s;//, *test_s=NULL;
-			int first_line=current_line;
-			int line=current_line;
+		bool eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,std::string & static_error){
+			bool ok=true;
+			if(static_symbol->properties & SYMBOL_PROPERTY_STATIC){ // it should be constant type ...
+
+				instruction->value_op2=static_symbol->ref_ptr; // it's pointer (script function) or stack element id (const)
+
+				if(static_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
+					instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+				}else if(static_symbol->properties & SYMBOL_PROPERTY_CONST){
+					instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
+				}else{
+					static_error="symbol expected to be function or const";
+					ok=false;
+				}
+			}
+			else{
+				static_error="is not static";
+				ok=false;
+			}
+			return ok;
+		}
+
+		char *eval_expression_token_symbol(EvalData *eval_data, char *s, int & line, Scope *scope_info, std::vector<TokenNode> *expression_tokens){
+			char *aux_p = s,*test_aux_p;//, *test_s=NULL;
+			int first_line=line,test_line;
+			//int line=current_line;
 			TokenNode token_node_symbol;
 			EvalInstruction *instruction_token=NULL;
 			PreOperation pre_operation = PreOperation::PRE_OPERATION_UNKNOWN;
 			PostOperation post_operation=PostOperation::POST_OPERATION_UNKNOWN;
 			int last_accessor_line=0;
-			Keyword keyword_type=Keyword::KEYWORD_UNKNOWN;
+			int last_line_ok=0;
+			std::string static_error;
+
 
 			// check pre operator (-,+,!,-- or ++)
 			switch(pre_operation=is_pre_operation(aux_p)){
@@ -47,7 +71,7 @@ namespace zetscript{
 			}
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-			keyword_type=is_keyword(aux_p);
+
 
 			// parenthesis (evals another expression)
 			if(*aux_p=='('){ // inner expression (priority)
@@ -83,6 +107,9 @@ namespace zetscript{
 				token_node_symbol.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;
 			}
 			else{ // symbol token
+
+				Keyword keyword_type=is_keyword(aux_p);
+
 				if(*aux_p=='['){ // std::vector object...
 					if((aux_p=eval_object_vector(
 						eval_data
@@ -154,53 +181,48 @@ namespace zetscript{
 						token_node_symbol.instructions[0]->symbol.scope=scope_info;
 						EvalInstruction *instruction = token_node_symbol.instructions[0];
 
-						if(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':'){ // class static
+						if(*aux_p != 0 && *aux_p==':'){
 
-							// the first item is the class
-							std::string static_access_value=token_node_symbol.value,class_element;
-							Symbol *member_symbol=NULL;
+							if(*(aux_p+1)==':'){ // class static
 
-							ScriptClass *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol.value);
+								// the first item is the class
+								std::string static_access_value=token_node_symbol.value,class_element;
+								Symbol *member_symbol=NULL;
 
-							if(sc == NULL){
-								EVAL_ERROR_EXPRESSION_TOKEN(eval_data->current_parsing_file,line,"static access error: class \"%s\" not exist",token_node_symbol.value.c_str());
-							}
+								ScriptClass *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol.value);
 
-							//do{
-							IGNORE_BLANKS(aux_p,eval_data,aux_p+2,line);
+								//do{
+								IGNORE_BLANKS(aux_p,eval_data,aux_p+2,line);
 
-							last_accessor_line=line;
-							if(get_accessor_name(eval_data, &aux_p, line,class_element) == false){
-								goto error_expression_token_symbol;
-							}
-
-							static_access_value+="::"+class_element;
-
-							//}while(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':' && n_static_access < max_static_access);
-
-							// override
-							token_node_symbol.value=static_access_value;
-
-							member_symbol=sc->getSymbol(class_element);
-
-							if(member_symbol == NULL){
-								EVAL_ERROR_EXPRESSION_TOKEN(eval_data->current_parsing_file,line,"Symbol %s not exist",static_access_value.c_str());
-							}
-
-							if(member_symbol->properties & SYMBOL_PROPERTY_STATIC){ // it should be constant type ...
-
-								instruction->vm_instruction.value_op2=member_symbol->ref_ptr; // it's pointer (script function) or stack element id (const)
-
-								if(member_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
-									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_FUNCTION;
-								}else if(member_symbol->properties & SYMBOL_PROPERTY_CONST){
-									instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_GLOBAL;
-								}else{
-									EVAL_ERROR_EXPRESSION_TOKEN(eval_data->current_parsing_file,line,"Static symbol \"%s\" expected to be function or const",static_access_value.c_str());
+								last_accessor_line=line;
+								if(get_accessor_name(eval_data, &aux_p, line,class_element) == false){
+									goto error_expression_token_symbol;
 								}
-							}
-							else{
-								EVAL_ERROR_EXPRESSION_TOKEN(eval_data->current_parsing_file,line,"Symbol \"%s\" is not static",static_access_value.c_str());
+
+								static_access_value+="::"+class_element;
+
+								//}while(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':' && n_static_access < max_static_access);
+
+								// override
+								token_node_symbol.value=static_access_value;
+
+								if(sc != NULL){ // if class exist ...
+
+									member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
+
+									if(member_symbol != NULL){
+										if(!eval_set_instruction_static_symbol(&instruction->vm_instruction,member_symbol,static_error)){
+											EVAL_ERROR_EXPRESSION_TOKEN(
+													eval_data->current_parsing_file
+													,line
+													,"Symbol \"%s\" %s"
+													,static_access_value.c_str()
+													,static_error.c_str());
+										}
+									}
+								} // --> in eval::pop_function will be find
+							}else{
+								EVAL_ERROR_EXPRESSION_TOKEN(eval_data->current_parsing_file,line,"Incomplete static access operator");
 							}
 						}
 
@@ -216,14 +238,13 @@ namespace zetscript{
 				}
 			}
 
-			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+			IGNORE_BLANKS(test_aux_p,eval_data,aux_p,test_line);
 
 			// eval accessor element (supose that was a preinsert a load instruction for identifier )...
 			if(is_access_punctuator(aux_p)){
 				std::string accessor_name="",
 							last_accessor_value=token_node_symbol.value;
 
-				line=current_line;
 				char n_params=0;
 				int it_accessor_token=0;
 
@@ -231,6 +252,9 @@ namespace zetscript{
 					ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 					accessor_name="";
 					zs_int instruction_value2=ZS_IDX_UNDEFINED;
+
+					aux_p=test_aux_p;
+					line=test_line;
 
 					switch(*aux_p){
 					case '(': // is a function call
@@ -244,16 +268,19 @@ namespace zetscript{
 						}
 
 						n_params=0;
+						last_line_ok=line;
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 						while(*aux_p != ')'){
 							// check if ref identifier...
 							if(n_params>0){
 								if(*aux_p != ','){
-									EVAL_ERROR_EXPRESSION_TOKEN(eval_data->current_parsing_file,line ,"Expected ','");
+									EVAL_ERROR_EXPRESSION_TOKEN(eval_data->current_parsing_file,last_line_ok ,"Expected ',' or ')'");
 								}
 								aux_p++;
 							}
+
+							last_line_ok=line;
 
 							if((aux_p = eval_expression_main(
 									eval_data
@@ -334,7 +361,6 @@ namespace zetscript{
 						break;
 					}
 
-
 					token_node_symbol.instructions.push_back(instruction_token=new EvalInstruction(byte_code));
 
 					switch(byte_code){
@@ -364,13 +390,18 @@ namespace zetscript{
 
 					it_accessor_token++;
 
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+					IGNORE_BLANKS(test_aux_p,eval_data,aux_p,test_line);
 
 				}while(is_access_punctuator(aux_p));
 
 			}else{
 
 				if(token_node_symbol.value==SYMBOL_VALUE_THIS){ // only takes symbol this
+
+					// restore test...
+					aux_p=test_aux_p;
+					line=test_line;
+
 					if(eval_data->current_function->script_function->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
 						EVAL_ERROR_EXPRESSION_TOKEN(eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
 					}
@@ -385,6 +416,7 @@ namespace zetscript{
 					token_node_symbol.instructions[0]->vm_instruction.properties=0;
 				}
 			}
+
 
 			if(		(pre_operation == PreOperation::PRE_OPERATION_NEG)
 				|| 	(pre_operation == PreOperation::PRE_OPERATION_NOT)

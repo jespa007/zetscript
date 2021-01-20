@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define NEW_STRING_VAR (new ScriptObjectString(this->zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassString()),NULL))
+#define NEW_STRING_VAR (ScriptObjectString::newStringObject(this->zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassString()),NULL))
 
 
 namespace zetscript{
@@ -12,8 +12,12 @@ namespace zetscript{
 	class  ScriptObjectString: public ScriptObject{
 
 	public:
+
+		static ScriptObjectString * newStringObject(ZetScript *zs);
+
 		void 		*	value;	// 8
-		ScriptObjectString(ZetScript *_zs);
+		ScriptObjectString();
+
 
 		void set(const std::string & s);
 		virtual zs_int count();
@@ -22,6 +26,8 @@ namespace zetscript{
 
 	private:
 		std::string str_value;
+
+		void setup();
 	};
 
 }

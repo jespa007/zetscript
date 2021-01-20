@@ -226,7 +226,7 @@ namespace zetscript{
 			// if object add into lifetime till user delete it
 			if(stk_return.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 				// add generated
-				insertLifetimeObject(file,line,(ScriptObjectAnonymousClass *)stk_return.stk_value);
+				insertLifetimeObject(file,line,(ScriptObjectAnonymous *)stk_return.stk_value);
 			}
 
 			// deallocate all returned variables from 1

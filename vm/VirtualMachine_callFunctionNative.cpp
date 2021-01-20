@@ -143,7 +143,7 @@ namespace zetscript{
 		}
 
 		if((char)calling_function->params->count != (n_args-this_param)){
-			VM_ERROR_AND_RET("C argument VS scrip argument doestn't match sizes");
+			VM_ERROR_AND_RET("C argument VS script argument doestn't match sizes");
 		}
 
 		if(calling_function->params->count > MAX_NATIVE_FUNCTION_ARGS){

@@ -13,7 +13,9 @@ namespace zetscript{
 		InfoSharedPointerNode 	* 	shared_pointer; // 8
 		short 						idx_script_class; // 2
 
-		ScriptObject(ZetScript *_zs);
+		ScriptObject();
+		void setZetScript(ZetScript	*_zs);
+
 
 		virtual				zs_int count();
 

@@ -176,17 +176,18 @@ namespace zetscript{
 		return irc;
 	}
 
+#ifndef __STRICT_STATIC_FUNCTIONS_ONLY__
 	/**
 	 * Register C Class. Return index registered class
 	 */
-	template<typename T>
+	template<typename C>
 	void ScriptClassFactory::registerNativeClass(
 			const std::string & class_name
 			, const char *registered_file
 			,short registered_line
 	){//, const std::string & base_class_name=""){
 
-		ScriptClass *irc =registerNativeSingletonClass<T>(class_name);
+		ScriptClass *irc =registerNativeSingletonClass<C>(class_name);
 		// get class...
 
 
@@ -194,45 +195,65 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("The class to register \"%s\"  should not built in class",irc->str_class_ptr_type.c_str());
 		}
 
-
 		//put the constructor/destructor...
 		irc->c_constructor = new std::function<void *()>([=](){
-			T *t=new T();
+			C *t=new C();
 			return t;
 		});
 
 		irc->c_destructor = new std::function<void (void *)>([=](void *p){
-			delete (T *)p;
+			delete (C *)p;
 		});
 	}
+#endif
 
 	/**
 	 * Register C Class. Return index registered class
 	 */
-	template<typename T>
-	void ScriptClassFactory::registerNativeClassBuiltIn(
+	template<typename C>
+	void ScriptClassFactory::registerNativeClassStatic(
 			const std::string & class_name
+			, C * (*_constructor)()
+			, void (*_destructor)(C *)
 			, const char *registered_file
 			,short registered_line
 	){//, const std::string & base_class_name=""){
 
-		ScriptClass *irc =registerNativeSingletonClass<T>(class_name);
+		ScriptClass *irc =registerNativeSingletonClass<C>(class_name);
+		// get class...
+
+		irc->c_constructor = (void *)_constructor;
+		irc->c_destructor = (void *)_destructor;
+		irc->static_constructor_destructor = true;
+	}
+
+
+	/**
+	 * Register C Class. Return index registered class
+	 */
+	/*template<typename C>
+	void ScriptClassFactory::registerNativeClassBuiltIn(
+			const std::string & class_name
+			, C * (*_constructor)()
+			, void (*_destructor)(C *)
+			, const char *registered_file
+			,short registered_line
+	){//, const std::string & base_class_name=""){
+
+		ScriptClass *irc =registerNativeSingletonClass<C>(class_name);
 
 		if(irc->idx_class >= IDX_BUILTIN_TYPE_MAX){
 			THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",irc->str_class_ptr_type.c_str());
 		}
 
-		//put the constructor/destructor...
-		ZetScript *_zs=zs;
-		irc->c_constructor = new std::function<void *()>([_zs](){
-			T* t=new T(_zs);
-			return t;
-		});
 
-		irc->c_destructor = new std::function<void (void *)>([=](void *p){
-			delete (T *)p;
-		});
-	}
+		irc->c_constructor = (void *)_constructor;
+		irc->c_destructor = (void *)_destructor;
+		irc->static_constructor_destructor = true;
+		//put the constructor/destructor...
+	}*/
+
+
 
 	template<class C,class B>
 	void ScriptClassFactory::nativeClassInheritsFrom(){

@@ -7,7 +7,7 @@
 
 namespace zetscript{
 
-	ScriptObjectAnonymousClassIterator::ScriptObjectAnonymousClassIterator(ZetScript *_zs):ScriptObject(_zs){
+	ScriptObjectAnonymousClassIterator::ScriptObjectAnonymousClassIterator(){
 	}
 
 

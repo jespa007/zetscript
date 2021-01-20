@@ -7,7 +7,7 @@
 
 namespace zetscript{
 
-	ScriptObjectStringIterator::ScriptObjectStringIterator(ZetScript *_zs):ScriptObject(_zs){
+	ScriptObjectStringIterator::ScriptObjectStringIterator(){
 	}
 
 

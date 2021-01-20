@@ -32,6 +32,7 @@ namespace zetscript{
 		eval_string="";
 		eval_bool = false;
 		idx_current_global_variable_checkpoint=0;
+		constant_string_objects=NULL;
 
 		eval::init();
 		scope_factory = new ScopeFactory(this);
@@ -49,7 +50,7 @@ namespace zetscript{
 		// Register built in modules
 
 		// String
-		script_class_factory->registerNativeClass<StringBuiltIn>("StringBuiltIn");
+		script_class_factory->registerNativeSingletonClass<StringBuiltIn>("StringBuiltIn");
 		script_class_factory->registerNativeMemberFunctionStatic<StringBuiltIn>("format",StringBuiltIn::formatSf);
 
 		// Math
@@ -72,10 +73,9 @@ namespace zetscript{
 		// Custom user function or classes
 		eval(
 			zs_strutils::format(
-
 				"class String{\n"
 				"	static format(s,...args){"
-				"		StringBuiltIn::format(ptrToZetScriptPtr(0x%x),s,args)" // passing this because is registered as static
+				"		StringBuiltIn::format(System::getZetScript(),s,args)" // passing this because is registered as static
 				"	}"
 				"}"
 				""
@@ -87,15 +87,16 @@ namespace zetscript{
 				"		return SystemBuiltIn::clock()"
 				"	}"
 				"	static print(s,...args){"
-				"		SystemBuiltIn::print(ptrToZetScriptPtr(0x%x),s,args)"  // passing this because is registered as static
+				"		SystemBuiltIn::print(System::getZetScript(),s,args)"  // passing this because is registered as static
 				"	}"
-				"	static println(s,...args){"
-				"		SystemBuiltIn::println(ptrToZetScriptPtr(0x%x),s,args)"  // passing this because is registered as static
+				"	static function println(s,...args){"
+				"		SystemBuiltIn::println(System::getZetScript(),s,args)"  // passing this because is registered as static
 				"	}"
+				"	static getZetScript(){"
+				"		return ptrToZetScriptPtr(0x%x);"
+				"   }"
 				"}"
 			,
-			(void *)this,
-			(void *)this,
 			(void *)this
 			)
 		);
@@ -203,7 +204,7 @@ namespace zetscript{
 		stk=new StackElement;
 		(*constant_string_objects)[const_name]=stk;
 
-		so=new ScriptObjectString(this);
+		so=ScriptObjectString::newStringObject(this);
 		// swap values stk_ref/stk_value
 		so->set(const_name);
 
@@ -384,10 +385,10 @@ namespace zetscript{
 					v >= idx_start;
 					v--) {
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
-				ScriptObjectAnonymousClass *var = NULL;
+				ScriptObjectAnonymous *var = NULL;
 
 				if(vm_stk_element->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					var =((ScriptObjectAnonymousClass *)(vm_stk_element->stk_value));
+					var =((ScriptObjectAnonymous *)(vm_stk_element->stk_value));
 					if(var){
 						if(var->shared_pointer != NULL){
 							if(!var->unrefSharedPtr(IDX_CALL_STACK_MAIN)){

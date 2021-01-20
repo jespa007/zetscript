@@ -90,8 +90,8 @@
 #include "script/ScriptObjectStringIterator.h"
 #include "script/ScriptObjectVector.h"
 #include "script/ScriptObjectVectorIterator.h"
-#include "script/ScriptObjectAnonymousClass.h"
-#include "script/ScriptObjectAnonymousClassIterator.h"
+#include "script/ScriptObjectAnonymous.h"
+#include "script/ScriptObjectAnonymousIterator.h"
 #include "script/ScriptObjectClass.h"
 
 #include "script/ScriptClass.h"
@@ -137,7 +137,7 @@ namespace zetscript{
 	extern const char * k_str_const_char_type_ptr;		//	typeid(std::string *).name()
 	extern const char * k_str_bool_type_ptr;			//	typeid(bool *).name()
 	extern const char * k_str_const_bool_type_ptr;		//	typeid(bool *).name()
-	extern const char *	k_str_zs_int_type;			//	typeid(zs_int).name()
+	extern const char *	k_str_zs_int_type;				//	typeid(zs_int).name()
 
 	extern const char * k_str_float_type;				//	typeid(int).name()
 	extern const char * k_str_bool_type;				//	typeid(bool).name()
@@ -151,16 +151,13 @@ namespace zetscript{
 
 	public:
 
-
 		//===================================================================================================
 		//
-		// PRINT ASM INFO
+		// PRINT BYTE CODE INFO
 		void printGeneratedCode(bool show_system_code=false);
 
-		// PRINT ASM INFO
+		// PRINT BYTE CODE INFO
 		//---------------------------------------------------------------------------------------------------------------------------------------
-
-
 
 		ZetScript();
 
@@ -179,23 +176,14 @@ namespace zetscript{
 		float * 		evalFloatValue(const std::string & str_to_eval);
 		std::string * 	evalStringValue(const std::string & str_to_eval);
 
-		//ConstantValue 	* 		registerConstantIntValue(const std::string & const_name, int value);
-
 		// CONSTANT TOOLS
 		StackElement * getRegisteredConstantScriptObjectString(const std::string & const_name);
 		StackElement * registerConstantScriptObjectString(const std::string & const_name);
-		/**ConstantValue *	registerConstantValue(const std::string & const_name, ConstantValue constant_value);
-		ConstantValue * registerConstantValue(const std::string & const_name, void *obj, unsigned short properties);
-		ConstantValue * registerConstantValue(const std::string & const_name, zs_int  value);
-		ConstantValue * registerConstantValue(const std::string & const_name, float  value);
-		ConstantValue * registerConstantValue(const std::string & const_name, ScriptObjectString  *str);*/
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
 		bool isFilenameAlreadyParsed(const std::string & filename);
 		const char * getParsedFilenameFromIdx(unsigned idx);
-
-
 		//-----------------------------------------------
 
 		void 						setPrintOutCallback(void (*)(const char *));
@@ -227,9 +215,15 @@ namespace zetscript{
 		/**
 		 * Register C Class. Return index registered class
 		 */
+#ifndef __STRICT_STATIC_FUNCTIONS_ONLY__
 		template<typename C>
 		void registerClass(const std::string & class_name, const char *registered_file="",short registered_line=-1){
-			script_class_factory->registerNativeClass<C>(class_name, registered_file,registered_line);
+			script_class_factory->registerNativeClass<C>(class_name, NULL, NULL, registered_file,registered_line);
+		}
+#endif
+		template<typename C>
+		void registerClassStatic(const std::string & class_name, C  * (*_constructor)(), void (*destructor)(C *), const char *registered_file="",short registered_line=-1){
+			script_class_factory->registerNativeClassStatic<C>(class_name, _constructor, destructor, registered_file,registered_line);
 		}
 
 		template<class C, class B>
@@ -241,6 +235,8 @@ namespace zetscript{
 			script_class_factory->registerNativeBaseSymbols(r);
 		}
 
+
+#ifndef __STRICT_STATIC_FUNCTIONS_ONLY__
 		/**
 		 * Register Function Member Class
 		 */
@@ -248,6 +244,7 @@ namespace zetscript{
 		void registerMemberFunction(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",short registered_line=-1 ){
 			script_class_factory->registerNativeMemberFunction<C>(function_name,function_type, registered_file,registered_line );
 		}
+#endif
 
 		/**
 		 * Register Static Function Member Class
@@ -272,7 +269,7 @@ namespace zetscript{
 
 		template<typename T>
 		static ScriptObjectVector * convertStdVectorToScriptObjectVector(const std::vector<T> & v,ZetScript *zs_instance){
-			ScriptObjectVector *vsv = new ScriptObjectVector(zs_instance);
+			ScriptObjectVector *vsv = ScriptObjectVector::newVectorObject(zs_instance);
 
 			for ( unsigned i = 0; i < v.size(); i++){
 				StackElement *stk = vsv->newSlot();

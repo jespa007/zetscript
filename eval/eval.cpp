@@ -281,6 +281,8 @@ namespace zetscript{
 
 		int pop_function(EvalData *eval_data){
 
+			char class_aux[512]={0},member_aux[512]={0};
+			std::string static_error;
 			ScriptFunction *sf = eval_data->current_function->script_function;
 			ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 
@@ -310,12 +312,12 @@ namespace zetscript{
 				//is_static&=((instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)==0);
 				switch(instruction->vm_instruction.byte_code){
 				// convert relative to absolute jmp
-				case BYTE_CODE_JMP: // adds relative to absolute offset
+				/*case BYTE_CODE_JMP: // adds relative to absolute offset
 				case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				case BYTE_CODE_JE: //
 				case BYTE_CODE_JT: // goto if true ... goes end to conditional.
-					instruction->vm_instruction.value_op2=i+instruction->vm_instruction.value_op2;
-					break;
+					//instruction->vm_instruction.value_op2=i+instruction->vm_instruction.value_op2;
+					break;*/
 				case BYTE_CODE_LOAD_ELEMENT_THIS:
 				    // try to solve symbol...
 					//if(instruction->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS){ // search the symbol within class.
@@ -354,12 +356,15 @@ namespace zetscript{
 							instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,sf->symbol.name);
 							//instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 
-						}else{ // is "this" symbol
+						}else{ // is "this" symbol, check whether symbol is member
 
-							// is automatically created on vm...
-							Symbol *symbol_function=sf_class->getSymbol(*ptr_str_symbol_to_find,ANY_PARAMS_SYMBOL_ONLY);
-							if(symbol_function!=NULL){
-								instruction->vm_instruction.value_op2=symbol_function->idx_position;
+							if(instruction->vm_instruction.value_op2 == ZS_IDX_UNDEFINED){
+								// is automatically created on vm...
+								Symbol *symbol_function=sf_class->getSymbol(*ptr_str_symbol_to_find,ANY_PARAMS_SYMBOL_ONLY);
+								if(symbol_function!=NULL){
+									instruction->vm_instruction.value_op2=symbol_function->idx_position;
+									instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_THIS_MEMBER; // immediate load
+								}
 							}
 						}
 					//}
@@ -367,7 +372,7 @@ namespace zetscript{
 				case BYTE_CODE_FIND_VARIABLE:
 					if((vis = eval_find_local_symbol(eval_data,instruction->symbol.scope,*ptr_str_symbol_to_find)) != NULL){
 						is_local=true;
-					}else{
+					}else{ // find global or static
 						vis = eval_find_global_symbol(eval_data,*ptr_str_symbol_to_find);
 					}
 

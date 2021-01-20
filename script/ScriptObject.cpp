@@ -6,11 +6,14 @@
 
 namespace zetscript{
 
-	ScriptObject::ScriptObject(ZetScript * _zs){
+	ScriptObject::ScriptObject(){
 		idx_script_class=ZS_IDX_UNDEFINED;
-		zs=_zs;
 		shared_pointer=NULL;
+		zs=NULL;
+	}
 
+	void ScriptObject::setZetScript(ZetScript *_zs){
+		zs=_zs;
 	}
 
 	zs_int ScriptObject::count(){

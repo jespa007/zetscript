@@ -44,7 +44,7 @@ namespace zetscript{
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
 		script_class_factory=zs->getScriptClassFactory();
-
+		static_constructor_destructor=false;
 	}
 
 	Symbol				* 	ScriptClass::registerMemberVariable(
@@ -341,14 +341,16 @@ namespace zetscript{
 
 		if ((symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF) {
 
-			if (c_constructor !=NULL) {
-				delete c_constructor;
-				c_constructor=NULL;
-			}
+			if(this->static_constructor_destructor == false){
+				if (c_constructor !=NULL) {
+					delete (std::function<void *()> *)c_constructor;
+					c_constructor=NULL;
+				}
 
-			if (c_destructor != NULL) {
-				delete c_destructor;
-				c_destructor=NULL;
+				if (c_destructor != NULL) {
+					delete (std::function<void (void *)> *)c_destructor;
+					c_destructor=NULL;
+				}
 			}
 
 		}

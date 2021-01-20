@@ -102,6 +102,7 @@ namespace zetscript{
 
 							switch(key_w){
 							case Keyword::KEYWORD_STATIC: // can be a function or symbol
+							case Keyword::KEYWORD_FUNCTION: // can be a function or symbol
 							case Keyword::KEYWORD_UNKNOWN: // supposes a member function
 									aux_p = eval_keyword_function(
 										eval_data
@@ -228,9 +229,9 @@ namespace zetscript{
 				, Scope *scope_info
 			){
 
-			fprintf(stderr,"===============================\n");
+		/*	fprintf(stderr,"===============================\n");
 			fprintf(stderr,"eval_keyword_class_attrib not implemented yet\n");
-			fprintf(stderr,"===============================\n");
+			fprintf(stderr,"===============================\n");*/
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			/*ScriptClass *sc=NULL; // if NULL it suposes is the main
@@ -682,9 +683,9 @@ namespace zetscript{
 
 			// check if static...
 			if(key_w==Keyword::KEYWORD_STATIC){
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+
 				is_static=true;
-				key_w=is_keyword(aux_p);
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 			}
 			//Keyword key_w;
 			//
@@ -693,17 +694,22 @@ namespace zetscript{
 				&& scope_info->scope_base == scope_info
 				&& scope_info->scope_parent == NULL // is function member
 				){ // class members are defined as functions
-				key_w = Keyword::KEYWORD_FUNCTION;
+				key_w=is_keyword(aux_p);
+				if(key_w != Keyword::KEYWORD_FUNCTION){ // make it optional
+					key_w = Keyword::KEYWORD_FUNCTION;
+				}
+				else{
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+				}
 				sc=scope_info->script_class;
 			}
 			else{
 				key_w = is_keyword(aux_p);
-
 				if(key_w == Keyword::KEYWORD_FUNCTION){
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 				}
-				//advance_chars=strlen(eval_data_keywords[key_w].str);
 			}
+
 
 			if(key_w == Keyword::KEYWORD_FUNCTION){
 				FunctionParam arg_info;
@@ -1816,6 +1822,7 @@ eval_keyword_switch_error:
 			if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
 
 				switch(keyw){
+				case KEYWORD_STATIC:
 				case KEYWORD_FUNCTION:
 					return  eval_keyword_function(eval_data,s,line,scope_info);
 					break;

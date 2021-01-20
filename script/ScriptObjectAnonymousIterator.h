@@ -10,7 +10,7 @@ namespace zetscript{
 
 	public:
 
-		ScriptObjectAnonymousClassIterator(ZetScript *_zs);
+		ScriptObjectAnonymousClassIterator();
 
 		static StackElement 	_getSf(ScriptObjectAnonymousClassIterator *si);
 		static void				_nextSf(ScriptObjectAnonymousClassIterator *si);

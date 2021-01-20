@@ -196,7 +196,7 @@ namespace zetscript{
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%03i\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
-					,instruction->value_op2
+					,(instruction-sfo->instructions)+instruction->value_op2
 				);
 				break;
 			case BYTE_CODE_PUSH_SCOPE:

@@ -17,9 +17,15 @@
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(data,s)		(data->script_class_factory)->getScriptClassByNativeClassPtr(s))    // 0 is the main class
 #define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_class_factory)->getScriptClass(idx)->str_class_ptr_type)
 
+#define ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(obj_type) \
+ obj_type * obj_type##_new(){ return new obj_type();} \
+ void obj_type##_delete(obj_type *ptr){ delete  (obj_type *)(ptr);}
+
+
+
 namespace zetscript{
 
-	class ScriptObjectAnonymousClass;
+	class ScriptObjectAnonymous;
 	class ScriptClass;
 	class ZetScript;
 
@@ -92,24 +98,39 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
+#ifndef __STRICT_STATIC_FUNCTIONS_ONLY__
 		/**
-		 * Register C Class. Return index registered class
+		 * User Register C Class
 		 */
-		template<typename T>
+		template<typename C>
 		void registerNativeClass(
-				const std::string & class_name
-				 , const char *registered_file=""
-				,short registered_line=-1
+			const std::string & class_name
+			, const char *registered_file=""
+			,short registered_line=-1
+		);
+#endif
+
+		template<typename C>
+		void registerNativeClassStatic(
+			const std::string & class_name
+			, C * (*_constructor)()
+			, void (*_destructor)(C *)
+			, const char *registered_file=""
+			,short registered_line=-1
 		);
 
-
-		template<typename T>
+		/**
+		 * Built in register C Class, like ScriptObject,ScriptObjectString...
+		 */
+	/*	template<typename C>
 		void registerNativeClassBuiltIn(
-				const std::string & class_name
-				 , const char *registered_file=""
-				,short registered_line=-1
+			const std::string & class_name
+			, C * (*_constructor)()
+			, void (*_destructor)(C *)
+			, const char *registered_file=""
+			, short registered_line=-1
 		);
-
+*/
 
 		template<class C, class B>
 		void nativeClassInheritsFrom();

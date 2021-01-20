@@ -1,6 +1,14 @@
+//System::println(0);
+//String::format();
+/*function fun(){}
+
+fun()
+*/
+//return System::getZetScript()
+
 //var a=0
 //0+0,0,0
-//System::println(0)
+System::println(0)
 /*function f(){return 1,2+2+5,3;}
 
 0+f();*/
@@ -12,7 +20,7 @@
 /*var a=1,b=2;
 
 (1+a)-b*/
-
+/*
 function fun(
 		a,b,c
 	){
@@ -22,7 +30,7 @@ function fun(
 
 
 fun(1,0,0,0)+fun(2,7,7,7,7,7,7,7)
-
+*/
 
 
 

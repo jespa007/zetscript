@@ -11,7 +11,7 @@ Date: XX-09-2020
 > #225 implement File class
 > #226 implement Stream class
 > #242 compile code/load compiled code feature  (*.zsc)
-  
+> #246 Erase code never execute or temporal expresion that will never assigned  
 
 //----------------------------------------------------------
 Version: 2.0.0
@@ -124,7 +124,7 @@ Date: XX-12-2020
 #172 get rid super scope
 #173 Manage this context automatically on anonymouse function created on class
 #175 Arguments as E/S 
-> #174 Expression optimization: Evaluate constant operations 
+#174 Expression optimization: Evaluate constant operations 
 #177 Implement saveCurrentState
 #179 Bug if-else fails {max scope reached} 
 #180 Return vector or dictionary not deref its user properties 
@@ -142,7 +142,7 @@ Date: XX-12-2020
 #194 Detect literal or assigments within literals  
 #195 Change ScriptVar by ScriptObject and remove ScriptVarDictionnary
 #196 Do not extend property when it access 
-> #197 Avoid vector/string objects to add properties through string 
+#197 Avoid vector/string objects to add properties through string 
 > #199 Check fix instanceof 
 #200 Implement count variable
 #201 System.print: convert any stackelement in string if argument itself is not string var  
@@ -171,28 +171,27 @@ Date: XX-12-2020
 > #215 Implement typeof operator
 > #229 Implement toJson(bool formated=false) for Vector and Object 
 #230 Control return ScriptObject[String] values that are not deallocated by user 
-> #231 register class passing C function constructor and destructor
+#231 register class passing C function constructor and destructor
 > #232 Implement class attribs 
 > #233 if(key/value in obj){} 
 > #234 Back to class name constructor 
-> #235 Make optional function keyword as member function class
+#235 Make optional function keyword as member function class
 > #236 Implement sequence expressions
 #237 Optimize memory
-> #238 Change behaviour save vars 
-> #239 change absolute jmp offset by relative jmp offset 
+#238 Change behaviour save vars 
+#239 change absolute jmp offset by relative jmp offset 
 > #240 Implement Multiple Assignment
 #241 Optimize VM Stack Based operations
 > #243 Expression optimization: immediate register/constant load on operations 
-> #244 Optimize memory for constants
+#244 Optimize memory for constants
 #245 Get rid of MSK_STACK_ELEMENT_UNDEFINED/MSK_STACK_ELEMENT_STRING
-> #246 Erase code never execute or temporal expresion that will never assigned 
 #247 Optimization: move type field load variable to byte load_variable_XXXX 
 #248 Restructure script object elements
 > #249 Allow function default arg value 
 > #252 Allow var class with optional initialization
-> #253 Get rid RESET STACK on each expression 
+#253 Get rid RESET STACK on each expression 
 > #254 VM optimization: Immediate load if member or function are members 
- 
+#255 Set Strict Bind static funcions 
 
 Other: 
 

@@ -4,10 +4,18 @@
  */
 #include "zetscript.h"
 
+#define CALL_CONSTRUCTOR_CLASS(sc) ((sc->static_constructor_destructor)?(*((void *(*)())sc->c_constructor))():(*((std::function<void *()> *)(sc->c_constructor)))())
+#define CALL_DESTRUCTOR_CLASS(sc,obj) ((sc->static_constructor_destructor)?(*((void (*)(void *))sc->c_destructor))(obj):(*((std::function<void (void *)> *)(sc->c_destructor)))(obj))
 
 namespace zetscript{
 
-	ScriptObjectClass::ScriptObjectClass(ZetScript *zs):ScriptObjectAnonymousClass(zs){
+	ScriptObjectClass * ScriptObjectClass::newScriptObjectClass(ZetScript *zs){
+		ScriptObjectClass *sc=new ScriptObjectClass();
+		sc->setZetScript(zs);
+		return sc;
+	}
+
+	ScriptObjectClass::ScriptObjectClass(){
 		was_created_by_constructor=false;
 		info_function_new=NULL;
 		instruction_new=NULL;
@@ -79,7 +87,7 @@ namespace zetscript{
 		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
 			if(script_class->isNativeClass()){
 				script_class_native=script_class;
-				created_object = (*script_class->c_constructor)();
+				created_object = CALL_CONSTRUCTOR_CLASS(script_class); // (*script_class->c_constructor)();
 				was_created_by_constructor=true;
 				c_object = created_object;
 			}else {
@@ -91,7 +99,7 @@ namespace zetscript{
 					if(sc->isNativeClass()){ // we found the native script class!
 						script_class_native=sc;
 						if(sc->c_constructor!=NULL){ // if not null is class, else is singleton or static class already created
-							created_object = (*sc->c_constructor)();
+							created_object =  CALL_CONSTRUCTOR_CLASS(sc); //(*sc->c_constructor)();
 							was_created_by_constructor=true;
 							c_object = created_object;
 						}
@@ -204,7 +212,7 @@ namespace zetscript{
 			}
 		}
 
-		return ScriptObjectAnonymousClass::toString();
+		return ScriptObjectAnonymous::toString();
 	}
 
 
@@ -236,7 +244,7 @@ namespace zetscript{
 		bool deallocated = false;
 		if(created_object != 0 && delete_c_object){
 			 // only erases pointer if basic type or user/auto delete is required ...
-			(*(script_class_native->c_destructor))(created_object);
+			CALL_DESTRUCTOR_CLASS(script_class_native,created_object);//(*(script_class_native->c_destructor))(created_object);
 			deallocated=true;
 
 		}

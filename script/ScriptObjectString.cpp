@@ -7,7 +7,13 @@
 
 namespace zetscript{
 
-	ScriptObjectString::ScriptObjectString(ZetScript *_zs):ScriptObject(_zs){
+	ScriptObjectString * ScriptObjectString::newStringObject(ZetScript *zs){
+		ScriptObjectString *so=new ScriptObjectString();
+		so->setZetScript(zs);
+		return so;
+	}
+
+	ScriptObjectString::ScriptObjectString(){
 		str_value = "";
 		value = &str_value;
 	}

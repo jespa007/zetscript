@@ -40,7 +40,7 @@ namespace zetscript{
 
 					 if(ptr_var==0) return stk_result;
 
-					 so=new ScriptObjectString(this);
+					 so=ScriptObjectString::newStringObject(this);
 					 if(idx_builtin_type_var==IDX_BUILTIN_TYPE_STRING_PTR_C){
 						so->value=(void *)ptr_var;
 

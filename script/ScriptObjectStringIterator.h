@@ -11,7 +11,7 @@ namespace zetscript{
 
 	public:
 
-		ScriptObjectStringIterator(ZetScript *_zs);
+		ScriptObjectStringIterator();
 
 		static StackElement 	_getSf(ScriptObjectStringIterator *si);
 		static void				_nextSf(ScriptObjectStringIterator *si);
