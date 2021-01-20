@@ -10,4 +10,3 @@ function fibR(n) {
 
 var start=System::clock();
 System::println("fib: {0} time: {1} ms", fibR(34),System::clock()-start);
-
