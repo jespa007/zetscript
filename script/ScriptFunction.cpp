@@ -406,7 +406,7 @@ namespace zetscript{
 				if((symbol_repeat=getSymbol(
 					scope_block
 					,symbol->name
-					,(char)params.size()))!=NULL){ // there's one or more name with same args --> mark
+					,(char)params.size()))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
 					((ScriptFunction *)symbol_repeat->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
 					((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
 				}

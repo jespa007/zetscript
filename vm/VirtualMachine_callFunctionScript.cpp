@@ -534,37 +534,42 @@ namespace zetscript{
 
 					//calling_object_instruction=previous_ins;
 
+				}else{ // check whether if exist or not
+					if(instruction->value_op2>=0){ // on dynamic members fix idx when we find a C function
+						stk_var=this_object->getElementAt(instruction->value_op2);
+					}
 				}
 
-				// get dynamic property
-				if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR){
-					str_symbol=(char *)script_object_anonymous_aux->getScriptClass()->symbol_class.name.c_str(); //FUNCTION_MEMBER_CONSTRUCTOR_NAME;
-				}else{
-					str_symbol=(char *)SFI_GET_SYMBOL_NAME(script_object_anonymous_aux,instruction);
-				}
-
-
-				// not exist ... add
-				if((stk_var=script_object_anonymous_aux->getProperty(str_symbol, &idx_stk_element)) == NULL){
-
-					// something went wrong
-					if(vm_error == true){
-						goto lbl_exit_function;
+				if(stk_var==NULL){
+					// get dynamic property
+					if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR){
+						str_symbol=(char *)script_object_anonymous_aux->getScriptClass()->symbol_class.name.c_str(); //FUNCTION_MEMBER_CONSTRUCTOR_NAME;
+					}else{
+						str_symbol=(char *)SFI_GET_SYMBOL_NAME(script_object_anonymous_aux,instruction);
 					}
 
-					// pack member info for store information...
-					if(instruction->properties & MSK_INSTRUCTION_PROPERTY_PACK_MEMBER_INFO){
-						// save
-						PUSH_CONST_CHAR(str_symbol);
-						PUSH_OBJECT(calling_object);
-						PUSH_ARRAY_STK(2);
+
+					if((stk_var=script_object_anonymous_aux->getProperty(str_symbol, &idx_stk_element)) == NULL){
+
+						// something went wrong
+						if(vm_error == true){
+							goto lbl_exit_function;
+						}
+
+						// pack member info for store information...
+						if(instruction->properties & MSK_INSTRUCTION_PROPERTY_PACK_MEMBER_INFO){
+							// save
+							PUSH_CONST_CHAR(str_symbol);
+							PUSH_OBJECT(calling_object);
+							PUSH_ARRAY_STK(2);
+						}
+						else{
+							stk_vm_current->stk_value=0;
+							stk_vm_current->properties=MSK_STK_PROPERTY_UNDEFINED;
+							stk_vm_current++;
+						}
+						continue;
 					}
-					else{
-						stk_vm_current->stk_value=0;
-						stk_vm_current->properties=MSK_STK_PROPERTY_UNDEFINED;
-						stk_vm_current++;
-					}
-					continue;
 				}
 				PUSH_STK_PTR(stk_var);
 				continue;
