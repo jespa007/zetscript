@@ -212,11 +212,11 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\targ:%i ret:%i\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\targ:%i ret:%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)
 					,instruction->value_op1
-					,instruction->value_op2<=0?1:instruction->value_op2
+					,instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK?"all":"1"
 				);
 				break;
 			default:

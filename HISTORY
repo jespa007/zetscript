@@ -192,6 +192,7 @@ Date: XX-12-2020
 #253 Get rid RESET STACK on each expression 
 > #254 VM optimization: Immediate load if member or function are members 
 #255 Set Strict Bind static funcions 
+> #256 Make compatibility back loops, while, switch, pre/post increment etc 
 
 Other: 
 

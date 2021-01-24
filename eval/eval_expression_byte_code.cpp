@@ -24,7 +24,8 @@ namespace zetscript{
 				, std::vector<EvalInstruction *> 	* instructions
 				, std::vector<char> expected_ending_char={}
 				, uint16_t properties=0 // uint16_t properties
-				, std::vector<EvalInstruction *> *only_call_instructions=NULL
+				, int n_recursive_level=0
+				//, std::vector<EvalInstruction *> *only_call_instructions=NULL
 		);
 
 
@@ -138,7 +139,10 @@ namespace zetscript{
 				, Scope *scope_info
 				, std::vector<EvalInstruction *> *dst_instructions
 				, std::vector<TokenNode> * expression_tokens
-				, std::vector<EvalInstruction *> *only_call_instructions
+				, uint16_t properties
+				, int n_recursion_level
+
+				//, std::vector<EvalInstruction *> *only_call_instructions
 			){
 
 			char *aux_p=(char *)s;
@@ -247,6 +251,7 @@ namespace zetscript{
 			if(*aux_p == '?'){ // ternary
 				EvalInstruction *ei_ternary_if_jnt=NULL;
 				EvalInstruction *ei_ternary_else_jmp=NULL;
+				Instruction *last_instruction=NULL;
 
 				// insert JNT
 				dst_instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
@@ -258,13 +263,20 @@ namespace zetscript{
 					, line
 					, scope_info
 					, dst_instructions
-					,std::vector<char>{}
+					, std::vector<char>{}
+					, properties
+					, n_recursion_level+1
 				);
 
-				// save instruction if only call in the end (for support multi assigments on the left)
-				if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
-					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
+				last_instruction=&dst_instructions->at(dst_instructions->size()-1)->vm_instruction;
+				if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+					last_instruction->value_op2=ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK;
 				}
+
+				// save instruction if only call in the end (for support multi assigments on the left)
+				/*if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
+					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
+				}*/
 
 				// TODO: JEB Check whether expression is constant true/false
 				if(*aux_p != ':'){
@@ -278,26 +290,37 @@ namespace zetscript{
 				// eval : part
 				aux_p=eval_expression_main(
 					eval_data
-					,aux_p+1
+					, aux_p+1
 					, line
 					, scope_info
 					, dst_instructions
-					,std::vector<char>{}
+					, std::vector<char>{}
+				    , properties
+					, n_recursion_level+1
 				);
 
-				// save instruction if only call in the end  (for support multi assigments on the left)
-				if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
-					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
+				last_instruction=&dst_instructions->at(dst_instructions->size()-1)->vm_instruction;
+				if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+					last_instruction->value_op2=ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK;
 				}
+
+				// save instruction if only call in the end  (for support multi assigments on the left)
+				/*if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
+					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
+				}*/
 
 
 				ei_ternary_else_jmp->vm_instruction.value_op2=dst_instructions->size()+dst_instructions->size();
 
 			}else{
-				// save instruction if only call in the end  (for support multi assigments on the left)
-				if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
-					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
+				Instruction *last_instruction=&dst_instructions->at(dst_instructions->size()-1)->vm_instruction;
+				if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+					last_instruction->value_op2=ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK;
 				}
+				// save instruction if only call in the end  (for support multi assigments on the left)
+				/*if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
+					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
+				}*/
 
 			}
 			//--------------------------------------------------------------

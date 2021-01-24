@@ -45,7 +45,15 @@ namespace zetscript{
 			return ok;
 		}
 
-		char *eval_expression_token_symbol(EvalData *eval_data, char *s, int & line, Scope *scope_info, std::vector<TokenNode> *expression_tokens){
+		char *eval_expression_token_symbol(
+				EvalData *eval_data
+				, char *s
+				, int & line
+				, Scope *scope_info
+				, std::vector<TokenNode> *expression_tokens
+				, uint16_t properties
+				, int n_recursive_level
+			){
 			char *aux_p = s,*test_aux_p;//, *test_s=NULL;
 			int first_line=line,test_line;
 			//int line=current_line;
@@ -87,6 +95,8 @@ namespace zetscript{
 						, scope_info
 						, &token_node_symbol.instructions
 						,std::vector<char>{}
+						,properties
+						,n_recursive_level+1
 					)
 				)== NULL){
 					goto error_expression_token_symbol;
@@ -289,6 +299,8 @@ namespace zetscript{
 									,scope_info
 									,&token_node_symbol.instructions
 									,std::vector<char>{}
+									,properties
+									,n_recursive_level+1
 							))==NULL){
 								goto error_expression_token_symbol;
 							}
@@ -306,6 +318,8 @@ namespace zetscript{
 								,scope_info
 								,&token_node_symbol.instructions
 								,std::vector<char>{}
+								,properties
+								,n_recursive_level+1
 						))==NULL){
 							goto error_expression_token_symbol;
 						}
@@ -366,6 +380,7 @@ namespace zetscript{
 					switch(byte_code){
 					case BYTE_CODE_CALL:
 						instruction_token->vm_instruction.value_op1=n_params;
+						//instruction_token->vm_instruction.value_op2=properties & EVAL_EXPRESSION_ON_MAIN_BLOCK?ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK:1; // allow max return element == 1
 
 						// also insert source file/line/symbol info to get info of this call...
 						instruction_token->instruction_source_info= InstructionSourceInfo(
@@ -448,6 +463,9 @@ namespace zetscript{
 				if(token_node_symbol.token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"expected identifier after post operation \"%s\"",eval_data_post_operations[ post_operation].str);
 				}
+
+				// advance pointer...
+				aux_p+=strlen(eval_data_post_operations[post_operation].str);
 
 				if(token_node_symbol.pre_operation != PreOperation::PRE_OPERATION_UNKNOWN){
 				   if(token_node_symbol.pre_operation != PreOperation::PRE_OPERATION_NEG){

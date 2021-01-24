@@ -73,7 +73,7 @@ namespace zetscript{
 			case BYTE_CODE_NEG_POST_INC:		return "NEG_POST_INC"; // -i++
 			case BYTE_CODE_POST_DEC:			return "POST_DEC"; // i--
 			case BYTE_CODE_NEG_POST_DEC:		return "NEG_POST_DEC"; // -i--
-			case BYTE_CODE_POP_ONE: 			return "POP_ONE"; // POP ONE AND IT MARKS END EXPRESSION
+			case BYTE_CODE_RESET_STACK:			return "RESET_STACK"; // POP ONE AND IT MARKS END EXPRESSION
 
 			default:
 				break;

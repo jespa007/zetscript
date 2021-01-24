@@ -630,7 +630,7 @@ namespace zetscript{
 							,scope_var
 							,&eval_data->current_function->instructions
 							,{}
-							,EVAL_EXPRESSION_POP_ONE_ON_END_EXPRESSION
+							,EVAL_EXPRESSION_ON_MAIN_BLOCK
 						))==NULL){
 							return NULL;
 						}
@@ -1245,7 +1245,18 @@ namespace zetscript{
 							}
 						}
 						else{
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected For 'var' keyword");
+							if((aux_p = eval_expression(
+									eval_data
+									,aux_p
+									,line
+									,new_scope
+									,&eval_data->current_function->instructions
+									,{}
+									,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK
+							))==NULL){
+								return NULL;
+							}
+							//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected For 'var' keyword");
 						}
 					}
 
@@ -1285,13 +1296,15 @@ namespace zetscript{
 
 								idx_instruction_for_start=(int)(eval_data->current_function->instructions.size());
 
-								aux_p = eval_expression(
+								if((aux_p = eval_expression(
 										eval_data
 										,(const char *)aux_p
 										,line
 										,new_scope
 										,&eval_data->current_function->instructions
-								);
+								))==NULL){
+									return NULL;
+								}
 
 								eval_data->current_function->instructions.push_back(ei_jnt=new EvalInstruction(BYTE_CODE_JNT));
 
@@ -1308,42 +1321,17 @@ namespace zetscript{
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 						if(*aux_p != ')' ){ // finally do post op...
-							aux_p = eval_expression(
+							if((aux_p = eval_expression(
 								eval_data
 								,(const char *)aux_p
 								,line
 								,new_scope
 								,&post_operations
 								,{}
-								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_POP_ONE_ON_END_EXPRESSION // it allows expression sequence and it does a reset stack in the end
-							);
-
-
-
-							/*if(*aux_p == ',' ){
-								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected ) ");
+								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK // it allows expression sequence and it does a reset stack in the end
+							))==NULL){
+								return NULL;
 							}
-
-							do{
-								if((aux_p = eval_expression(
-										eval_data
-										,aux_p
-										,line
-										,new_scope
-										,&post_operations
-								))==NULL){
-									return NULL;
-								}
-
-								if(*aux_p == ',' ){
-									IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-								}else{
-									if(*aux_p != ')' ){
-										EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected ')'");
-									}
-								}
-
-							}while(*aux_p != ')' && *aux_p != 0);*/
 						}
 					}
 
@@ -1388,7 +1376,7 @@ namespace zetscript{
 
 					// update jnt instruction to jmp after jmp instruction...
 					if(ei_jnt != NULL){ // infinite loop
-						ei_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size()-idx_instruction_for_after_condition;
+						ei_jnt->vm_instruction.value_op2=(eval_data->current_function->instructions.size()-idx_instruction_for_after_condition)+1;
 					}
 
 					// catch all breaks in the while...

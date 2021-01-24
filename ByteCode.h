@@ -36,7 +36,8 @@ namespace zetscript{
 		BYTE_CODE_LOAD_CLASS,
 		BYTE_CODE_LOAD_STACK_ELEMENT,
 
-		BYTE_CODE_STORE, 	 // mov expression to var
+		BYTE_CODE_STORE_CONST, // it stores and set stack only-read
+		BYTE_CODE_STORE, 	 // mov expression to var ( > 1 multiple)
 		BYTE_CODE_STORE_ADD, //
 		BYTE_CODE_STORE_SUB, //
 		BYTE_CODE_STORE_MUL, //
@@ -91,14 +92,13 @@ namespace zetscript{
 		BYTE_CODE_POP_SCOPE,
 		BYTE_CODE_IT_NEXT,
 		BYTE_CODE_IT_END,
-		BYTE_CODE_STORE_CONST,
 		BYTE_CODE_PRE_INC,
 		BYTE_CODE_PRE_DEC,
 		BYTE_CODE_POST_INC,
 		BYTE_CODE_NEG_POST_INC,
 		BYTE_CODE_POST_DEC,
 		BYTE_CODE_NEG_POST_DEC,
-		BYTE_CODE_POP_ONE, // just in case there's no assignment on left or after last assignment
+		BYTE_CODE_RESET_STACK, // just in case there's no assignment on left or after last assignment
 		//---------------------------
 		BYTE_CODE_INVALID=255,
 
@@ -163,7 +163,9 @@ namespace zetscript{
 #define IS_BYTE_CODE_OPERATION(byte_code) 		(BYTE_CODE_EQU <=(byte_code) && (byte_code)<= BYTE_CODE_SHR)
 
 #define IS_BYTE_CODE_STORE_WITH_OPERATION(b) 	(ByteCode::BYTE_CODE_STORE_ADD<=(b) && (b) <=ByteCode::BYTE_CODE_STORE_SHR)
-#define IS_BYTE_CODE_STORE(b) 					(IS_BYTE_CODE_STORE_WITH_OPERATION(b) || ((b)==ByteCode::BYTE_CODE_STORE))
+//#define IS_BYTE_CODE_STORE(b) 					(IS_BYTE_CODE_STORE_WITH_OPERATION(b) || ((b)==ByteCode::BYTE_CODE_STORE))
+
+
 
 	const char * ByteCodeToStr(ByteCode  op);
 	const char * ByteCodeMetamethodToOperatorStr(ByteCodeMetamethod op);

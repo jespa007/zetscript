@@ -1,3 +1,23 @@
+/*function fun(){
+	return 0,1;
+}*/
+
+//var t=v[fun()];
+//var g=false?1+fun():fun()
+
+var a,b,c;
+
+a,b,c=0,1,2
+
+/*var start=System::clock();
+System::println(start);*/
+
+/*var i=0;
+for(i=0; i < 10; i++){
+	
+}*/
+
+
 //System::println(0);
 //String::format();
 /*function fun(){}
@@ -5,10 +25,9 @@
 fun()
 */
 //return System::getZetScript()
-
 //var a=0
 //0+0,0,0
-System::println(0)
+//System::println(0)
 /*function f(){return 1,2+2+5,3;}
 
 0+f();*/

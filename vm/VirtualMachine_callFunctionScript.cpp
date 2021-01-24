@@ -377,6 +377,8 @@ namespace zetscript{
 			instruction = instruction_it++;
 
 			switch(instruction->byte_code){
+			default:
+				VM_STOP_EXECUTE("byte code \"%s\" implemented",ByteCodeToStr(instruction->byte_code));
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
 			case BYTE_CODE_FIND_VARIABLE:
@@ -492,6 +494,7 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
 			case BYTE_CODE_LOAD_ELEMENT_THIS:
+load_element_object:
 
 				//if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND) continue;
 				stk_var=NULL;
@@ -540,14 +543,13 @@ namespace zetscript{
 					}
 				}
 
-				if(stk_var==NULL){
+				if(stk_var==NULL){ // load element from object or dynamic member element from this
 					// get dynamic property
 					if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR){
 						str_symbol=(char *)script_object_anonymous_aux->getScriptClass()->symbol_class.name.c_str(); //FUNCTION_MEMBER_CONSTRUCTOR_NAME;
 					}else{
 						str_symbol=(char *)SFI_GET_SYMBOL_NAME(script_object_anonymous_aux,instruction);
 					}
-
 
 					if((stk_var=script_object_anonymous_aux->getProperty(str_symbol, &idx_stk_element)) == NULL){
 
@@ -572,6 +574,12 @@ namespace zetscript{
 					}
 				}
 				PUSH_STK_PTR(stk_var);
+
+				if((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){ // fast load access without pass through switch instruction
+					instruction++;
+					goto load_element_object;
+				}
+
 				continue;
 			case BYTE_CODE_LOAD_UNDEFINED:
 				PUSH_UNDEFINED;
@@ -895,7 +903,7 @@ namespace zetscript{
 						stk_dst->properties |= MSK_STK_PROPERTY_READ_ONLY;
 					}
 
-					if((instruction+1)->byte_code ==BYTE_CODE_POP_ONE // it marks end expression so ignore it
+					if((instruction+1)->byte_code ==BYTE_CODE_RESET_STACK // it marks end expression so ignore it
 					){
 						instruction++;
 					}else{ // push to allow eval multi assigment
@@ -1247,14 +1255,14 @@ namespace zetscript{
 					}
 
 					// reset stack (function+instruction (-1 op less))...
-					StackElement *src_returned_variables=stk_vm_current;
+					/*StackElement *src_returned_variables=stk_vm_current;
 
 					// TODO: calcule returned stack elements
 					//int min_return=1;//stk_vm_current-sf->params->count;
 					int max_return=instruction->value_op2;
 					if(max_return <= 0){ // as default returns 1
 						max_return=1;
-					}
+					}*/
 
 					StackElement *stk_return=(stk_start_arg_call+sf->registered_symbols->count );
 					int n_returned_arguments_from_function=stk_vm_current-stk_return;
@@ -1275,17 +1283,30 @@ namespace zetscript{
 						}
 						// ... and push result if not function constructor...
 					}
-					// reset stack
-					stk_vm_current=stk_start_arg_call-1;
 
-					// set undefined for other assignments...
-					for(int i=max_return-1; i >=0; i--){
-						if(i < n_returned_arguments_from_function){
-							*stk_vm_current++= stk_return[i];
+					stk_vm_current=stk_start_arg_call-1; // reset stack
+
+					if(instruction->value_op2 == ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK) {
+						// return all elements in reverse order in order to get right assignment ...
+						for(int i=n_returned_arguments_from_function-1; i >=0; i--){
+							//if(n_returned_arguments_from_function > 0){
+							*stk_vm_current++= stk_return[i]; // only return first argument
+							/*}
+							else{
+								PUSH_UNDEFINED; // no return push undefined
+							}*/
+						}
+
+					}else{ // return only first element
+						// set undefined for other assignments...
+							//for(int i=max_return-1; i >=0; i--){
+						if(n_returned_arguments_from_function > 0){
+							*stk_vm_current++= stk_return[0]; // only return first argument
 						}
 						else{
-							PUSH_UNDEFINED;
+							PUSH_UNDEFINED; // no return push undefined
 						}
+							//}
 					}
 				 }
 				continue;
@@ -1383,8 +1404,13 @@ namespace zetscript{
 				 SFI_GET_SYMBOL_NAME(calling_function,instruction)
 				);
 				 continue;
-			 case BYTE_CODE_POP_ONE:
-				 --stk_vm_current;//=stk_start;
+			 case BYTE_CODE_RESET_STACK:
+				 stk_vm_current=stk_start;
+				 continue;
+			 case BYTE_CODE_POST_INC:
+				 stk_var=stk_vm_current-1; // only read last stk element and inc
+				 // do everything
+
 				 continue;
 			}
 		 }

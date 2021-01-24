@@ -35,7 +35,8 @@ namespace zetscript{
 				, std::vector<EvalInstruction *> 	* instructions
 				, std::vector<char> expected_ending_char
 				, uint16_t properties // uint16_t properties
-				, std::vector<EvalInstruction *> 	*only_call_instructions
+				, int n_recursive_level
+				//, std::vector<EvalInstruction *> 	*only_call_instructions
 
 
 			){
@@ -76,7 +77,14 @@ namespace zetscript{
 				for(;;){ // it eats identifier/constant operator, etc
 
 
-					if((aux_p = eval_expression_token_symbol(eval_data,aux_p,line,scope_info,&expression_tokens))==NULL){
+					if((aux_p = eval_expression_token_symbol(
+							eval_data
+							,aux_p
+							,line
+							,scope_info
+							,&expression_tokens
+							,properties
+							,n_recursive_level))==NULL){
 						goto error_expression_main;
 					}
 
@@ -171,7 +179,9 @@ namespace zetscript{
 					,scope_info
 					,instructions
 					,&expression_tokens
-					,only_call_instructions
+					//,only_call_instructions
+					,properties
+					,n_recursive_level
 				))==NULL){
 					goto error_expression_main;
 				}
@@ -213,7 +223,7 @@ error_expression_main:
 			std::vector<EvalInstruction *>  ternary_end_jmp;
 			std::vector<std::vector<EvalInstruction *> *> 	left_expressions; // we will write all instructions here as aux, and later will assign to dst_instructions
 			std::vector<std::vector<EvalInstruction *>*> 	expressions; // right/left assigment
-			std::vector<EvalInstruction *> only_call_instructions;
+			//std::vector<EvalInstruction *> only_call_instructions;
 			bool not_assignment=false;
 
 			expressions.push_back(new std::vector<EvalInstruction *>);
@@ -226,6 +236,7 @@ error_expression_main:
 				, expressions[0]
 				, expected_ending_char
 				, properties
+				//, &only_call_instructions
 			);
 
 			if(aux_p == NULL){
@@ -261,7 +272,9 @@ error_expression_main:
 						, expression // it's saving to instructions...
 						,{}
 						,EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR
-						, idx==1 &&  n_expression==0? &only_call_instructions:NULL
+						, properties
+						//,&only_call_instructions
+						//, idx==1 &&  n_expression==0? &only_call_instructions:NULL //
 					);
 
 					if(aux_p != NULL && *aux_p != 0 && *aux_p=='='){ // assignment op, start left assigments
@@ -316,11 +329,12 @@ error_expression_main:
 					dst_instructions->push_back(
 						new EvalInstruction(
 							BYTE_CODE_STORE
+							,100
 						)
 					);
 					dst_instructions->push_back(
 						new EvalInstruction(
-							BYTE_CODE_POP_ONE
+							BYTE_CODE_RESET_STACK
 						)
 					);
 
@@ -329,14 +343,6 @@ error_expression_main:
 
 				// write the rest right expressions,
 				for(int r=left_size; r < right_size;r++){ // push an expression with only undefiend byte code
-					if(properties & (EVAL_EXPRESSION_POP_ONE_ON_END_EXPRESSION)){ //
-						expressions[r]->push_back(
-							new EvalInstruction(
-								BYTE_CODE_POP_ONE
-							)
-						);
-					}
-
 					dst_instructions->insert(
 							dst_instructions->end(),
 							expressions[r]->begin(),
@@ -344,23 +350,24 @@ error_expression_main:
 					);
 				}
 
+
 				// finally check special condition where there's function on the right and n vars on the left
-				if(expressions.size() == 1){
+				/*if(expressions.size() == 1){
 					for(auto it=only_call_instructions.begin();it!=only_call_instructions.end();it++){
-						(*it)->vm_instruction.value_op2=left_expressions.size(); // the number of assigments expect on the left
+						(*it)->vm_instruction.value_op2=;// left_expressions.size(); // the number of assigments expect on the left
 					}
-				}
+				}*/
 
 			}else{ // make a reset stack in the end and write all instructions
 				for(auto it=expressions.begin();it!=expressions.end();it++){
-					EvalInstruction *ei=(*it)->at((*it)->size()-1);
-					if(properties & (EVAL_EXPRESSION_POP_ONE_ON_END_EXPRESSION)){ //
+					/*EvalInstruction *ei=(*it)->at((*it)->size()-1);
+					if(properties & (EVAL_EXPRESSION_ON_MAIN_BLOCK)){ //
 						(*it)->push_back(
 							new EvalInstruction(
-								BYTE_CODE_POP_ONE
+								BYTE_CODE_RESET_STACK
 							)
 						);
-					}
+					}*/
 					// write all instructions to instructions pointer
 					dst_instructions->insert(
 						dst_instructions->end(),
@@ -369,6 +376,16 @@ error_expression_main:
 					);
 					//delete *it;
 				}
+			}
+
+
+
+			if(properties & (EVAL_EXPRESSION_ON_MAIN_BLOCK)){ //
+				dst_instructions->push_back(
+					new EvalInstruction(
+							BYTE_CODE_RESET_STACK
+					)
+				);
 			}
 
 			// write all instructions to instructions pointer
