@@ -22,6 +22,10 @@
 														eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 														goto error_expression_main;\
 
+#define EVAL_ERROR_EXPRESSION(file,line,s,...)		eval_data->error=true;\
+													eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+													goto error_expression_delete_only_vectors;\
+
 #define EVAL_ERROR_KEYWORD_SWITCH(file,line,s,...)		eval_data->error=true;\
 														eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 														goto eval_keyword_switch_error;\

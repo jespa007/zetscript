@@ -5,9 +5,17 @@
 //var t=v[fun()];
 //var g=false?1+fun():fun()
 
-var a,b,c;
 
-a,b,c=0,1,2
+
+a,b,c.d=0,1,2
+
+var a=0,b=0,c={};
+
+//a+=b-=c=2
+
+System::println("{0} {1} {2}",a,b,c)
+
+
 
 /*var start=System::clock();
 System::println(start);*/

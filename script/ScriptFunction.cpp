@@ -82,15 +82,16 @@ namespace zetscript{
 		printf("-------------------------------------------------------\n");
 		printf("\nCode for function \"%s%s\"\n\n",class_str.c_str(),symbol_ref.c_str());
 
-		unsigned idx_instruction=0;
-		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++,idx_instruction++){
+
+		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++){
 
 			int n_ops=0;
 			unsigned char value_op1 = instruction->value_op1;
 			int value_op2 = instruction->value_op2;
 			symbol_value=SFI_GET_SYMBOL_NAME(sfo,instruction);
-			Instruction *instruction_aux=NULL;
+			//Instruction *instruction_aux=NULL;
 			iload_info="";
+			unsigned idx_instruction=instruction-sfo->instructions;
 
 			if((char)value_op1 != ZS_IDX_UNDEFINED){
 				n_ops++;
@@ -177,16 +178,16 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
 			case BYTE_CODE_LOAD_THIS:
-				instruction_aux=instruction;
-				do{
-					symbol_value+"."+SFI_GET_SYMBOL_NAME(sfo,instruction_aux);
-					instruction_aux++;
-				}while(instruction_aux->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT);
+				//instruction_aux=instruction;
+				while((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
+					instruction++;
+					symbol_value+=std::string(".")+SFI_GET_SYMBOL_NAME(sfo,instruction);
+				}
 
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
-					,symbol_value
 					,ByteCodeToStr(instruction->byte_code)
+					,symbol_value.c_str()
 				);
 				break;
 			case BYTE_CODE_JNT:

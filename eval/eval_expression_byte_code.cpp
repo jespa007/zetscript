@@ -165,6 +165,7 @@ namespace zetscript{
 			// operator = found --> assign operators, load identifiers first
 			for(int i=0; i < idx_start; i+=2){ // starting from assign operator if idx_start > 0 += 2 is because there's a symbol followed by its operator
 				EvalInstruction *instruction=NULL;
+				int idx_post_operation = i >> 1;
 				TokenNode * token_node_symbol = &expression_tokens->at(i);
 				TokenNode * token_node_operator = &expression_tokens->at(i+1);
 				Operator operator_type=token_node_operator->operator_type;
@@ -188,19 +189,19 @@ namespace zetscript{
 
 
 				// add instructions related about its accessors...
-				for(unsigned i=0;i<token_node_symbol->instructions.size();i++){
-					EvalInstruction *ei_load_assign_instruction=token_node_symbol->instructions[i];
+				for(unsigned j=0;j<token_node_symbol->instructions.size();j++){
+					EvalInstruction *ei_load_assign_instruction=token_node_symbol->instructions[j];
 					if(ei_load_assign_instruction->vm_instruction.byte_code ==  BYTE_CODE_CALL){
 						EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,ei_load_assign_instruction->instruction_source_info.line
 								,"Calling a function in left assignment is not allowed");
 					}
-					assign_instructions_post_expression[i>>1].push_back(token_node_symbol->instructions[i]);
+					assign_instructions_post_expression[idx_post_operation].push_back(token_node_symbol->instructions[j]);
 				}
 
 				// get last instruction...
-				Instruction *last_load_instruction=&assign_instructions_post_expression[i>>1][assign_instructions_post_expression[i>>1].size()-1]->vm_instruction;
+				Instruction *last_load_instruction=&assign_instructions_post_expression[idx_post_operation][assign_instructions_post_expression[idx_post_operation].size()-1]->vm_instruction;
 
 				// if is a access property ...
 				if(last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS
@@ -210,7 +211,7 @@ namespace zetscript{
 				}
 
 				// ... add arithmetic operator byte code
-				assign_instructions_post_expression[i>>1].push_back(instruction=new EvalInstruction(
+				assign_instructions_post_expression[idx_post_operation].push_back(instruction=new EvalInstruction(
 						eval_operator_to_byte_code(operator_type)
 				));
 
@@ -219,17 +220,7 @@ namespace zetscript{
 						,token_node_operator->line
 						,NULL
 				);
-				// set pops one to do the operation but keeps the variable to store on the top of stack
-				//instruction->vm_instruction.properties |= MSK_INSTRUCTION_PROPERTY_POP_ONE;
 
-
-				//--------------------------------------------------------------
-				// assign operators, add store byte code
-				/*instruction->instruction_source_info= InstructionSourceInfo(
-						eval_data->current_parsing_file
-						,token_node_operator->line
-						,NULL
-				);*/
 			}
 			//--------------------------------------------------------------
 

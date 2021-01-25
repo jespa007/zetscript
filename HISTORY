@@ -193,6 +193,7 @@ Date: XX-12-2020
 > #254 VM optimization: Immediate load if member or function are members 
 #255 Set Strict Bind static funcions 
 > #256 Make compatibility back loops, while, switch, pre/post increment etc 
+> #257 Set as local variable not found in the block if declared after its using
 
 Other: 
 

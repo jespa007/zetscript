@@ -104,23 +104,13 @@ namespace zetscript{
 					if(	is_end_expression(aux_p)
 					|| operator_type==Operator::OPERATOR_TERNARY_IF
 					|| operator_type==Operator::OPERATOR_TERNARY_ELSE
-					|| ((operator_type==Operator::OPERATOR_ASSIGN) && ((properties & EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR) == true))
+					|| ((operator_type==Operator::OPERATOR_ASSIGN) && (properties & EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR))
 					|| ( new_line_break && (operator_type==Operator::OPERATOR_UNKNOWN ))){ // if not operator and carry return found is behaves as end expression
 						break;
 					}
 
 					if(operator_type==Operator::OPERATOR_UNKNOWN){
-						/*switch(post_operation){
-						case PostOperation::POST_OPERATION_INC:
-							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"invalid post increment");
-							break;
-						case PostOperation::POST_OPERATION_DEC:
-							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"invalid post decrement");
-							break;
-						default:*/
-							EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Expected operator");
-						/*	break;
-						}*/
+						EVAL_ERROR_EXPRESSION_MAIN(eval_data->current_parsing_file,line ,"Expected operator");
 					}
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_operators[operator_type].str),line);
@@ -199,16 +189,9 @@ error_expression_main:
 					}
 				}
 			}
-
-			// erase all instructions in vector...
-			/*for(unsigned i=0; i < instructions->size(); i++){
-				delete instructions->at(i);
-			}*/
-
 			return NULL;
 
 		}
-
 
 		char * eval_expression(
 				EvalData *eval_data
@@ -222,51 +205,48 @@ error_expression_main:
 			){
 			std::vector<EvalInstruction *>  ternary_end_jmp;
 			std::vector<std::vector<EvalInstruction *> *> 	left_expressions; // we will write all instructions here as aux, and later will assign to dst_instructions
-			std::vector<std::vector<EvalInstruction *>*> 	expressions; // right/left assigment
+			std::vector<std::vector<EvalInstruction *>*> 	right_expressions; // right/left assigment
 			//std::vector<EvalInstruction *> only_call_instructions;
 			bool not_assignment=false;
 
-			expressions.push_back(new std::vector<EvalInstruction *>);
+			left_expressions.push_back(new std::vector<EvalInstruction *>);
 
 			char *aux_p=eval_expression_main(
 				eval_data
 				, s
 				, line
 				, scope_info
-				, expressions[0]
+				, left_expressions[0]
 				, expected_ending_char
 				, properties
 				//, &only_call_instructions
 			);
 
 			if(aux_p == NULL){
-				goto error_expression;
+				goto error_expression_delete_left_right_expressions;
 			}
 
 			// ok this is not the end...
 			if(((properties & EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION)!=0) && (*aux_p == ','))
 			{
 				// preserve each set of instructions of each expressions
-				std::vector<EvalInstruction *> *expression;//[2]; // right/left assigment
-
-				//aux_p++; // ignore ,
+				std::vector<EvalInstruction *> *expression=NULL;//[2]; // right/left assigment
 
 				int idx=0;
-				int n_expression=1;
 
 				do{
 
 					if(idx==0) { // left expressions
-						expressions.push_back(expression=new std::vector<EvalInstruction *>);
-					}else{ // right expressions
 						left_expressions.push_back(expression=new std::vector<EvalInstruction *>);
+					}else{ // right expressions
+						right_expressions.push_back(expression=new std::vector<EvalInstruction *>);
 					}
 
 
 					// starting performing expressions
-					aux_p=eval_expression_main(
+					if((aux_p=eval_expression_main(
 						eval_data
-						,aux_p+1 // +1 ignore ,
+						,aux_p+1 // +1 ignore ',' or '='
 						, line
 						, scope_info
 						, expression // it's saving to instructions...
@@ -275,80 +255,86 @@ error_expression_main:
 						, properties
 						//,&only_call_instructions
 						//, idx==1 &&  n_expression==0? &only_call_instructions:NULL //
-					);
+					))==NULL){
+						goto error_expression_delete_left_right_expressions;
+					}
 
 					if(aux_p != NULL && *aux_p != 0 && *aux_p=='='){ // assignment op, start left assigments
 						idx++; //--> start next
-						n_expression=0;
 					}
 
-					n_expression++;
-
-				}while(aux_p != NULL && *aux_p != 0 && *aux_p==',' );
+				}while(aux_p != NULL && *aux_p != 0 && (*aux_p==',' || *aux_p=='=') );
 
 			}
 
-			if(left_expressions.size() > 0){ // multi-assignment
-				int right_size=(int)expressions.size();
+			if(right_expressions.size() > 0){ // multi-assignment
+				int right_size=(int)right_expressions.size();
 				int left_size=(int)left_expressions.size();
+				int max_size=right_size>left_size?right_size:left_size;
 
-				for(int l=right_size; l < left_size;l++){ // push an expression with only undefiend byte code
-					expressions.push_back(new std::vector<EvalInstruction *>({
-						new EvalInstruction(
-							BYTE_CODE_LOAD_UNDEFINED
-						)
-					}));
+				// write right expressions in reverse order and the right one < left one, we push an undefined element
+				for(int r=max_size-1; r >= 0;r--){
+					if(r<=right_size){
+						dst_instructions->insert(
+							dst_instructions->end(),
+							right_expressions[r]->begin(),
+							right_expressions[r]->end()
+						);
+					}else{
+						dst_instructions->push_back(
+							new EvalInstruction(
+								BYTE_CODE_LOAD_UNDEFINED
+							)
+						);
+
+					}
 				}
 
-				// right and left are balanced (for each left expression write right
-				for(int i=0; i < left_size;i++){
-					EvalInstruction *instruction = left_expressions[i]->at(left_expressions[i]->size()-1);
+				// write left assignments...
+				for(int l=left_size-1; l >= 0;l--){
+					dst_instructions->insert(
+							dst_instructions->end(),
+							left_expressions[l]->begin(),
+							left_expressions[l]->end()
+					);
+				}
+
+				// add final store instruction...
+				dst_instructions->push_back(
+					new EvalInstruction(
+						BYTE_CODE_STORE
+						,left_size
+					)
+				);
+
+				// check if any left assignment is right...
+				for(int l=0; l < left_size;l++){
+					EvalInstruction *instruction = left_expressions[l]->at(left_expressions[l]->size()-1);
 
 					if(IS_BYTE_CODE_LOAD_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,instruction->instruction_source_info.line
-							,"\"%s\" is not allowed on left assignment multiple because is %s. Left assignments has to be literals  (i.e a,b.c,b[0]. etc)"
+						EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,instruction->instruction_source_info.line
+							,"\"%s\" is not allowed on left assignment multiple because '%s' is not literal. Left assignments has to be literals  (i.e a,b.c,b[0]. etc)"
 							,eval_data->current_parsing_file,instruction->instruction_source_info.ptr_str_symbol_name->c_str()
 							,"unknown"
 						);
 					}
-
-					dst_instructions->insert(
-							dst_instructions->end(),
-							expressions[i]->begin(),
-							expressions[i]->end()
-					);
-
-
-					dst_instructions->insert(
-							dst_instructions->end(),
-							left_expressions[i]->begin(),
-							left_expressions[i]->end()
-					);
-
-					// add final store instruction...
-					dst_instructions->push_back(
-						new EvalInstruction(
-							BYTE_CODE_STORE
-							,100
-						)
-					);
-					dst_instructions->push_back(
-						new EvalInstruction(
-							BYTE_CODE_RESET_STACK
-						)
-					);
-
-
 				}
 
-				// write the rest right expressions,
+				/*dst_instructions->push_back(
+					new EvalInstruction(
+						BYTE_CODE_RESET_STACK
+					)
+				);*/
+
+
+				/*// write the rest right expressions,
 				for(int r=left_size; r < right_size;r++){ // push an expression with only undefiend byte code
 					dst_instructions->insert(
 							dst_instructions->end(),
 							expressions[r]->begin(),
 							expressions[r]->end()
 					);
-				}
+				}*/
 
 
 				// finally check special condition where there's function on the right and n vars on the left
@@ -359,25 +345,15 @@ error_expression_main:
 				}*/
 
 			}else{ // make a reset stack in the end and write all instructions
-				for(auto it=expressions.begin();it!=expressions.end();it++){
-					/*EvalInstruction *ei=(*it)->at((*it)->size()-1);
-					if(properties & (EVAL_EXPRESSION_ON_MAIN_BLOCK)){ //
-						(*it)->push_back(
-							new EvalInstruction(
-								BYTE_CODE_RESET_STACK
-							)
-						);
-					}*/
+				for(auto it=left_expressions.begin();it!=left_expressions.end();it++){
 					// write all instructions to instructions pointer
 					dst_instructions->insert(
 						dst_instructions->end(),
 						(*it)->begin(),
 						(*it)->end()
 					);
-					//delete *it;
 				}
 			}
-
 
 
 			if(properties & (EVAL_EXPRESSION_ON_MAIN_BLOCK)){ //
@@ -388,28 +364,16 @@ error_expression_main:
 				);
 			}
 
-			// write all instructions to instructions pointer
-			/*dst_instructions->insert(
-					dst_instructions->end(),
-					src_instructions.begin(),
-					src_instructions.end()
-			);*/
 
-			// for each right expression, if not store then do pop one
-
-			/*if(properties & (EVAL_EXPRESSION_POP_ONE_IF_NO_STORE)){ // reset stack at the end
-				dst_instructions->insert(
-						new EvalInstruction(BYTE_CODE_POP_ONE)
-				);
-			}*/
+error_expression_delete_only_vectors:
 
 			// erase all vectors ...
-			for(auto it=expressions.begin(); it!=expressions.end(); it++){
+			for(auto it=left_expressions.begin(); it!=left_expressions.end(); it++){
 				delete *it;
 				*it=NULL;
 			}
 
-			for(auto it=left_expressions.begin(); it!=left_expressions.end(); it++){
+			for(auto it=right_expressions.begin(); it!=right_expressions.end(); it++){
 				delete *it;
 				*it=NULL;
 			}
@@ -417,17 +381,27 @@ error_expression_main:
 
 			return aux_p;
 
-error_expression:
+error_expression_delete_left_right_expressions:
 
-			for(auto v=expressions.begin(); v!=expressions.end(); v++){ // delete expression vectors
-				for(auto e=(*v)->begin() //delete instructions
-						; e!=(*v)->end()
+			// we delete all instructions for left
+			for(auto le=left_expressions.begin(); le!=left_expressions.end(); le++){ // delete left expressions and vectors
+				for(auto e=(*le)->begin() //delete expressions
+						; e!=(*le)->end()
 						; e++){
 					delete *e;
 				}
 
-				delete *v;
+				delete *le;
+			}
 
+			for(auto re=right_expressions.begin(); re!=right_expressions.end(); re++){ // delete right expressions and vectors
+				for(auto e=(*re)->begin() //delete expressions
+						; e!=(*re)->end()
+						; e++){
+					delete *e;
+				}
+
+				delete *re;
 			}
 
 			return NULL;

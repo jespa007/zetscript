@@ -135,12 +135,13 @@ namespace zetscript{
 
 #define IS_BYTE_CODE_LOAD_VARIABLE_TYPE(byte_code) \
 (\
-  ((byte_code)==ByteCode::BYTE_CODE_LOAD_GLOBAL)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_THIS)\
+  ((byte_code)==ByteCode::BYTE_CODE_FIND_VARIABLE)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_GLOBAL)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_LOCAL)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_THIS)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_THIS_MEMBER)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_VECTOR)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_THIS_MEMBER)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT)\
 )
 

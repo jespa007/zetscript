@@ -55,16 +55,14 @@ namespace zetscript{
 				, int n_recursive_level
 			){
 			char *aux_p = s,*test_aux_p;//, *test_s=NULL;
-			int first_line=line,test_line;
-			//int line=current_line;
+			int first_line=line,test_line=line;
 			TokenNode token_node_symbol;
 			EvalInstruction *instruction_token=NULL;
 			PreOperation pre_operation = PreOperation::PRE_OPERATION_UNKNOWN;
 			PostOperation post_operation=PostOperation::POST_OPERATION_UNKNOWN;
-			int last_accessor_line=0;
-			int last_line_ok=0;
+			int last_accessor_line=line;
+			int last_line_ok=line;
 			std::string static_error;
-
 
 			// check pre operator (-,+,!,-- or ++)
 			switch(pre_operation=is_pre_operation(aux_p)){
@@ -79,7 +77,6 @@ namespace zetscript{
 			}
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
 
 			// parenthesis (evals another expression)
 			if(*aux_p=='('){ // inner expression (priority)

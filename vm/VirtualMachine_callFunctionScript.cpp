@@ -496,7 +496,6 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_ELEMENT_THIS:
 load_element_object:
 
-				//if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR_NOT_FOUND) continue;
 				stk_var=NULL;
 				script_object_anonymous_aux=this_object; // take this as default
 				if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
@@ -510,6 +509,21 @@ load_element_object:
 						POP_ONE; // get var op1 and symbol op2
 					}
 
+					/*if((stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT)!= MSK_STK_PROPERTY_SCRIPT_OBJECT)
+					{
+						VM_STOP_EXECUTE(
+							"Cannot perform access operation [ ... %s.%s ]. Expected \"%s\" as object but is type \"%s\""
+							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+							,stk_result_op1->typeStr()
+						);
+					}*/
+
+					if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {
+						stk_result_op1=((StackElement *)stk_result_op1->stk_value);
+					}
+
 					if((stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT)!= MSK_STK_PROPERTY_SCRIPT_OBJECT)
 					{
 						VM_STOP_EXECUTE(
@@ -521,21 +535,14 @@ load_element_object:
 						);
 					}
 
-					script_object_anonymous_aux = (ScriptObjectAnonymous  *)stk_result_op1->stk_value;
-					if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {
-						StackElement *stk_ins=((StackElement *)stk_result_op1->stk_value);
+					script_object_anonymous_aux=((ScriptObjectAnonymous *)stk_result_op1->stk_value);
 
-						if(stk_ins->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-							script_object_anonymous_aux=((ScriptObjectAnonymous *)stk_ins->stk_value);
-						}
-					}
 
 					if(script_object_anonymous_aux == NULL)
 					{
 						VM_STOP_EXECUTE("var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(script_object_anonymous_aux,previous_ins));
 					}
 
-					//calling_object_instruction=previous_ins;
 
 				}else{ // check whether if exist or not
 					if(instruction->value_op2>=0){ // on dynamic members fix idx when we find a C function
@@ -548,7 +555,7 @@ load_element_object:
 					if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR){
 						str_symbol=(char *)script_object_anonymous_aux->getScriptClass()->symbol_class.name.c_str(); //FUNCTION_MEMBER_CONSTRUCTOR_NAME;
 					}else{
-						str_symbol=(char *)SFI_GET_SYMBOL_NAME(script_object_anonymous_aux,instruction);
+						str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
 					}
 
 					if((stk_var=script_object_anonymous_aux->getProperty(str_symbol, &idx_stk_element)) == NULL){
@@ -626,7 +633,8 @@ load_element_object:
 
 				{
 					bool assign_metamethod=false;
-
+					int n_elements_left=0;
+					StackElement *stk_multi_var_src=NULL;
 
 					if(instruction->byte_code==BYTE_CODE_PUSH_VECTOR_ELEMENT){
 						POP_ONE; // only pops the value, the last is the std::vector variable itself
@@ -677,47 +685,77 @@ load_element_object:
 					}
 					else{ // can be assign or arithmetic and assing pop two parameters nothing ...
 
-						READ_TWO_POP_ONE
+						if(instruction->byte_code==BYTE_CODE_STORE && instruction->value_op1 > 0){
 
-						if(IS_BYTE_CODE_STORE_WITH_OPERATION(instruction->byte_code)){ // arithmetic
+							n_elements_left=instruction->value_op1;
+							StackElement *stk_aux=stk_vm_current;
 
-							switch(instruction->byte_code){
-							case BYTE_CODE_STORE_ADD:
-								PROCESS_ARITHMETIC_OPERATION(+,BYTE_CODE_METAMETHOD_ADD);
-								break;
-							case BYTE_CODE_STORE_SUB:
-								PROCESS_ARITHMETIC_OPERATION(-,BYTE_CODE_METAMETHOD_SUB);
-								break;
-							case BYTE_CODE_STORE_MUL:
-								PROCESS_ARITHMETIC_OPERATION(*,BYTE_CODE_METAMETHOD_MUL);
-								break;
-							case BYTE_CODE_STORE_DIV:
-								PROCESS_ARITHMETIC_OPERATION(/,BYTE_CODE_METAMETHOD_DIV);
-								break;
-							case BYTE_CODE_STORE_MOD:
-								PROCESS_MOD_OPERATION;
-								break;
-							case BYTE_CODE_STORE_AND:
-								PROCESS_BINARY_OPERATION(&,BYTE_CODE_METAMETHOD_ADD);
-								break;
-							case BYTE_CODE_STORE_OR:
-								PROCESS_BINARY_OPERATION(|,BYTE_CODE_METAMETHOD_OR);
-								break;
-							case BYTE_CODE_STORE_XOR:
-								PROCESS_BINARY_OPERATION(^,BYTE_CODE_METAMETHOD_XOR);
-								break;
-							case BYTE_CODE_STORE_SHL:
-								PROCESS_BINARY_OPERATION(<<,BYTE_CODE_METAMETHOD_SHL);
-								break;
-							case BYTE_CODE_STORE_SHR:
-								PROCESS_BINARY_OPERATION(>>,BYTE_CODE_METAMETHOD_SHR);
-								break;
+							//stk_vm_current--; // set to 0
 
+							// set stack elements to the top
+							for(int i=0; i < n_elements_left; i++){
+
+								stk_aux--;
+
+								if(stk_aux->properties & MSK_STK_PROPERTY_ARRAY_STK){
+									if((zs_int)stk_aux->stk_value != 2){
+										VM_STOP_EXECUTE("Internal expected array stk = 2");
+									}
+									stk_aux-=2;
+								}else if ((stk_aux->properties & MSK_STK_PROPERTY_PTR_STK) == 0){
+									VM_STOP_EXECUTE("Expected stk ptr or array stk");
+								}
 							}
 
-						}/*else{
-							POP_TWO; // op1:dst / op2:src
-						}*/
+							stk_multi_var_src=stk_aux;
+							n_elements_left=n_elements_left-1;
+							stk_result_op2=--stk_vm_current;
+							stk_result_op1=--stk_multi_var_src;
+
+
+						}else{
+							READ_TWO_POP_ONE
+
+							if(IS_BYTE_CODE_STORE_WITH_OPERATION(instruction->byte_code)){ // arithmetic
+
+								switch(instruction->byte_code){
+								case BYTE_CODE_STORE_ADD:
+									PROCESS_ARITHMETIC_OPERATION(+,BYTE_CODE_METAMETHOD_ADD);
+									break;
+								case BYTE_CODE_STORE_SUB:
+									PROCESS_ARITHMETIC_OPERATION(-,BYTE_CODE_METAMETHOD_SUB);
+									break;
+								case BYTE_CODE_STORE_MUL:
+									PROCESS_ARITHMETIC_OPERATION(*,BYTE_CODE_METAMETHOD_MUL);
+									break;
+								case BYTE_CODE_STORE_DIV:
+									PROCESS_ARITHMETIC_OPERATION(/,BYTE_CODE_METAMETHOD_DIV);
+									break;
+								case BYTE_CODE_STORE_MOD:
+									PROCESS_MOD_OPERATION;
+									break;
+								case BYTE_CODE_STORE_AND:
+									PROCESS_BINARY_OPERATION(&,BYTE_CODE_METAMETHOD_ADD);
+									break;
+								case BYTE_CODE_STORE_OR:
+									PROCESS_BINARY_OPERATION(|,BYTE_CODE_METAMETHOD_OR);
+									break;
+								case BYTE_CODE_STORE_XOR:
+									PROCESS_BINARY_OPERATION(^,BYTE_CODE_METAMETHOD_XOR);
+									break;
+								case BYTE_CODE_STORE_SHL:
+									PROCESS_BINARY_OPERATION(<<,BYTE_CODE_METAMETHOD_SHL);
+									break;
+								case BYTE_CODE_STORE_SHR:
+									PROCESS_BINARY_OPERATION(>>,BYTE_CODE_METAMETHOD_SHR);
+									break;
+
+								}
+
+							}
+						}
+
+	vm_store_next:
 
 						stk_dst=stk_result_op2;
 
@@ -903,11 +941,22 @@ load_element_object:
 						stk_dst->properties |= MSK_STK_PROPERTY_READ_ONLY;
 					}
 
-					if((instruction+1)->byte_code ==BYTE_CODE_RESET_STACK // it marks end expression so ignore it
-					){
-						instruction++;
-					}else{ // push to allow eval multi assigment
+					if(n_elements_left > 0){
+						n_elements_left--;
+						//stk_vm_current++;
+						//POP_TWO;
+						stk_result_op2=--stk_vm_current;//stk_multi_var_dest++; // left assigment
+						stk_result_op1=--stk_multi_var_src; // result on the right
+
+						goto vm_store_next;
+					}
+					else{
+						/*if((instruction+1)->byte_code ==BYTE_CODE_RESET_STACK // it marks end expression so ignore it
+						){
+							instruction++;
+						}else{ // push to allow eval multi assigment*/
 						*stk_vm_current++=*stk_dst;
+						//}
 					}
 				}
 				continue;
@@ -1084,7 +1133,6 @@ load_element_object:
 					zs_int idx_function=ZS_IDX_UNDEFINED;
 
 					StackElement *stk_start_arg_call=(stk_vm_current-n_args);
-
 
 					stk_function_ref = ((stk_start_arg_call-1));
 					bool is_constructor=instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR;
