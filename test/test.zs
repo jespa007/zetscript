@@ -5,9 +5,12 @@
 //var t=v[fun()];
 //var g=false?1+fun():fun()
 
-var a=1;
+//var a=1;
+//System::println("{0}",Math::randm())
 
-System::println("{0}",Math::randm())
+for(var i=0,j=0; i < 10 && true; i++, i++,0,j+=2,2,3,4){
+	System::println("{0} {1}",i,j)
+}
 
 
 {
