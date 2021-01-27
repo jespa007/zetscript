@@ -37,8 +37,6 @@
 namespace zetscript{
 	namespace eval{
 
-		struct EvalData;
-
 		typedef enum{
 			EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION=0x1<<1, // it tells is a regular expression in eval or in post operation for
 			EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT=0x1<<2, // do not allow a,b,c=0,0,0
@@ -286,18 +284,7 @@ namespace zetscript{
 		bool g_init_eval=false;
 		std::map<std::string,std::string *>	 	*compiled_symbol_name=NULL;
 
-		char * 	eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char * 	eval_keyword_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, bool check_anonymous_function=false, std::string * function_name_result=NULL);
-		char * 	eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char * 	eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char * 	eval_keyword_while(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char * 	eval_keyword_do_while(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char * 	eval_keyword_return(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char * 	eval_keyword_switch(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char * 	eval_keyword_for(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char *	eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
-		char *	eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
-		char * 	eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+
 		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,  Scope *scope_info,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
 		Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find);
 		Symbol *eval_find_global_symbol(EvalData *eval_data, const std::string & symbol_to_find);

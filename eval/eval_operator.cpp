@@ -1,4 +1,4 @@
-#include "eval_operator.h"
+#include "eval.h"
 
 namespace zetscript{
 
@@ -111,7 +111,6 @@ namespace zetscript{
 			case Operator::OPERATOR_ASSIGN_SHIFT_RIGHT:
 				return ">>=";
 
-
 			// arithmetic ops
 			case Operator::OPERATOR_ADD:
 				return "+";
@@ -159,5 +158,4 @@ namespace zetscript{
 		}
 
 	}
-
-};
+}

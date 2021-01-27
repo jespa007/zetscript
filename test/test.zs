@@ -22,18 +22,24 @@
 
 function fun(){return 0,undefined,2,undefined}
 
-var a,b,c;
+var a,b,c,d;
 
 //0,1,2,3,4,5,6,7,8,9,10,11,12,13
 
-a,b,c=fun() //<-- it should be not possible
-//a,b,c=1,2,3
+//var (a,b,c=fun()),b=1 //<-- it should be not possible
+
+a,b,c=1,2,3,d=4
+
+/*for(var k,v in it){
+	k,v=it()
+	it++;
+}*/
 
 
 
 //a+=b-=c=2
 
-System::println("{0} {1} {2}",a,b,c)
+System::println("{0} {1} {2} {3}",a,b,c,d)
 
 
 

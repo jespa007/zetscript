@@ -3,8 +3,6 @@ namespace zetscript{
 	namespace eval{
 
 
-
-
 		bool is_end_expression(const char *s){
 			 return *s==')' || *s==','||  *s==']' || *s==';' || *s == 0 || *s=='}';
 		}
@@ -250,7 +248,7 @@ error_expression_main:
 						, scope_info
 						, expression // it's saving to instructions...
 						,{}
-						,properties | EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR
+						,properties | (idx==0?EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR:0)
 					))==NULL){
 						goto error_expression_delete_left_right_expressions;
 					}

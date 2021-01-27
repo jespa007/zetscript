@@ -19,6 +19,10 @@
 #include "eval_expression_byte_code.cpp"
 #include "eval_symbol.cpp"
 #include "eval_expression_token_symbol.cpp"
+#include "eval_keyword_class.cpp"
+#include "eval_keyword_conditional.cpp"
+#include "eval_keyword_loop.cpp"
+#include "eval_keyword_var_function.cpp"
 #include "eval_expression.cpp"
 #include "eval_keyword.cpp"
 
@@ -32,9 +36,9 @@ namespace zetscript{
 			bool error;
 			std::string error_str;
 			eval_data->current_parsing_file=_filename;
-			push_function(eval_data,MAIN_FUNCTION(eval_data));
+			eval_push_function(eval_data,MAIN_FUNCTION(eval_data));
 			eval_recursive(eval_data,str,line,MAIN_SCOPE(eval_data));
-			pop_function(eval_data);
+			eval_pop_function(eval_data);
 
 			error=eval_data->error;
 			error_str=eval_data->error_str;
@@ -248,7 +252,7 @@ namespace zetscript{
 			return aux;
 		}
 
-		void push_function(EvalData *eval_data,ScriptFunction *script_function){
+		void eval_push_function(EvalData *eval_data,ScriptFunction *script_function){
 			eval_data->functions.push_back(eval_data->current_function=new EvalFunction(script_function));
 		}
 
@@ -279,7 +283,7 @@ namespace zetscript{
 
 		}
 
-		int pop_function(EvalData *eval_data){
+		int eval_pop_function(EvalData *eval_data){
 
 			char class_aux[512]={0},member_aux[512]={0};
 			std::string static_error;

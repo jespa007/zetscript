@@ -1,3 +1,6 @@
+#include "eval.h"
+
+
 #define IS_TOKEN_SIMPLIFIABLE(token) \
 (\
 	(token->instructions.size()==1)\
