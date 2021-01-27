@@ -633,7 +633,7 @@ load_element_object:
 
 				{
 					bool assign_metamethod=false;
-					int n_elements_left=0;
+					char n_elements_left=0;
 					StackElement *stk_multi_var_src=NULL;
 
 					if(instruction->byte_code==BYTE_CODE_PUSH_VECTOR_ELEMENT){
@@ -685,9 +685,10 @@ load_element_object:
 					}
 					else{ // can be assign or arithmetic and assing pop two parameters nothing ...
 
-						if(instruction->byte_code==BYTE_CODE_STORE && instruction->value_op1 > 0){
+						n_elements_left=(char)instruction->value_op1;
 
-							n_elements_left=instruction->value_op1;
+						if(instruction->byte_code==BYTE_CODE_STORE && n_elements_left > 0){
+
 							StackElement *stk_aux=stk_vm_current;
 
 							//stk_vm_current--; // set to 0
@@ -707,10 +708,10 @@ load_element_object:
 								}
 							}
 
-							stk_multi_var_src=stk_aux;
+							stk_multi_var_src=stk_aux-n_elements_left-1;
 							n_elements_left=n_elements_left-1;
 							stk_result_op2=--stk_vm_current;
-							stk_result_op1=--stk_multi_var_src;
+							stk_result_op1=++stk_multi_var_src;
 
 
 						}else{
@@ -857,7 +858,7 @@ load_element_object:
 							// init stk_dst
 							*stk_dst = stk_undefined;
 
-							if(type_var & MSK_STK_PROPERTY_UNDEFINED){
+							if(type_var == MSK_STK_PROPERTY_UNDEFINED){
 								stk_dst->properties=MSK_STK_PROPERTY_UNDEFINED;
 							}else if(type_var & MSK_STK_PROPERTY_ZS_INT){
 								stk_dst->properties=MSK_STK_PROPERTY_ZS_INT;
@@ -946,7 +947,7 @@ load_element_object:
 						//stk_vm_current++;
 						//POP_TWO;
 						stk_result_op2=--stk_vm_current;//stk_multi_var_dest++; // left assigment
-						stk_result_op1=--stk_multi_var_src; // result on the right
+						stk_result_op1=++stk_multi_var_src; // result on the right
 
 						goto vm_store_next;
 					}
@@ -1335,15 +1336,29 @@ load_element_object:
 					stk_vm_current=stk_start_arg_call-1; // reset stack
 
 					if(instruction->value_op2 == ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK) {
+						StackElement tmp;
 						// return all elements in reverse order in order to get right assignment ...
-						for(int i=n_returned_arguments_from_function-1; i >=0; i--){
+
+						// reverse returned items
+						for(int i=0; i<(n_returned_arguments_from_function>>1); i++){
+							tmp=stk_return[n_returned_arguments_from_function-i-1];
+							stk_return[n_returned_arguments_from_function-i-1]=stk_return[i];
+							stk_return[i]=tmp;
+						}
+
+						// copy to vm stack
+						stk_vm_current=stk_start_arg_call+n_returned_arguments_from_function; // stk_vm_current points to first stack element
+
+						for(int i=n_returned_arguments_from_function-1; i>=0; i--){
 							//if(n_returned_arguments_from_function > 0){
-							*stk_vm_current++= stk_return[i]; // only return first argument
+							*--stk_vm_current= stk_return[i]; // only return first argument
 							/*}
 							else{
 								PUSH_UNDEFINED; // no return push undefined
 							}*/
 						}
+
+						stk_vm_current+=n_returned_arguments_from_function;
 
 					}else{ // return only first element
 						// set undefined for other assignments...

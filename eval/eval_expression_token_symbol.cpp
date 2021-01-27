@@ -177,6 +177,7 @@ namespace zetscript{
 					if((aux_p = eval_symbol(eval_data
 							,aux_p
 							,line
+							,scope_info
 							,&token_node_symbol
 							,pre_operation
 					)) == NULL){

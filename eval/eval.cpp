@@ -306,7 +306,7 @@ namespace zetscript{
 				EvalInstruction *instruction = eval_data->current_function->instructions[i];
 				std::string *ptr_str_symbol_to_find=NULL;
 				ScriptClass *sc_aux=NULL;
-				bool is_local=false;
+				//bool is_local=false;
 				ptr_str_symbol_to_find=&instruction->symbol.name;
 
 				//is_static&=((instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)==0);
@@ -370,11 +370,23 @@ namespace zetscript{
 					//}
 						break;
 				case BYTE_CODE_FIND_VARIABLE:
-					if((vis = eval_find_local_symbol(eval_data,instruction->symbol.scope,*ptr_str_symbol_to_find)) != NULL){
+					/*if((vis = eval_find_local_symbol(eval_data,instruction->symbol.scope,*ptr_str_symbol_to_find)) != NULL){
 						is_local=true;
-					}else{ // find global or static
+					}else{ // find global or static*/
+					if(instruction->symbol.scope != MAIN_SCOPE(eval_data)){ // find global symbol if not global
 						vis = eval_find_global_symbol(eval_data,*ptr_str_symbol_to_find);
+					}else{
+						if(instruction->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
+							EVAL_ERROR_POP_FUNCTION(
+									instruction->instruction_source_info.file
+									,instruction->instruction_source_info.line
+									,"symbol '%s' not defined"
+									//,sf_class->symbol_class.name.c_str()
+									,ptr_str_symbol_to_find->c_str()
+							);
+						}
 					}
+					//}
 
 					if(vis != NULL){
 						if(vis->properties & SYMBOL_PROPERTY_FUNCTION){
@@ -382,7 +394,7 @@ namespace zetscript{
 							instruction->vm_instruction.value_op2=(zs_int)(ScriptFunction *)vis->ref_ptr; // store script function
 						}
 						else{ // variable
-							instruction->vm_instruction.byte_code=is_local ? BYTE_CODE_LOAD_LOCAL:BYTE_CODE_LOAD_GLOBAL;
+							instruction->vm_instruction.byte_code=/*is_local ? BYTE_CODE_LOAD_LOCAL:*/BYTE_CODE_LOAD_GLOBAL;
 							instruction->vm_instruction.value_op2=vis->idx_position;
 						}
 					}

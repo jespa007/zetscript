@@ -7,9 +7,29 @@
 
 
 
-a,b,c.d=0,1,2
+{
+	//var c=1;
 
-var a=0,b=0,c={};
+	//System::println("{0} {1} {2}",c)
+}
+
+//var a=0,b,c;
+
+//var a=0,b=0,c={};
+
+//a,b,c=0,1,2
+
+
+function fun(){return 0,undefined,2,undefined}
+
+var a,b,c;
+
+//0,1,2,3,4,5,6,7,8,9,10,11,12,13
+
+a,b,c=fun() //<-- it should be not possible
+//a,b,c=1,2,3
+
+
 
 //a+=b-=c=2
 

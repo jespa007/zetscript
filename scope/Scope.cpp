@@ -155,7 +155,7 @@ namespace zetscript{
 		Symbol *sv=NULL;
 
 
-		if(scope_direction==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction==ScopeDirection::SCOPE_DIRECTION_DOWN){
+		if(scope_direction==ScopeDirection::SCOPE_DIRECTION_BOTH ||scope_direction==ScopeDirection::SCOPE_DIRECTION_DOWN){
 			sv=getSymbolRecursiveDownScope(var_name,n_params);
 		}
 

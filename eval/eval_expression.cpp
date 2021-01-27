@@ -219,7 +219,6 @@ error_expression_main:
 				, left_expressions[0]
 				, expected_ending_char
 				, properties
-				//, &only_call_instructions
 			);
 
 			if(aux_p == NULL){
@@ -251,10 +250,7 @@ error_expression_main:
 						, scope_info
 						, expression // it's saving to instructions...
 						,{}
-						,EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR
-						, properties
-						//,&only_call_instructions
-						//, idx==1 &&  n_expression==0? &only_call_instructions:NULL //
+						,properties | EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR
 					))==NULL){
 						goto error_expression_delete_left_right_expressions;
 					}
@@ -273,8 +269,8 @@ error_expression_main:
 				int max_size=right_size>left_size?right_size:left_size;
 
 				// write right expressions in reverse order and the right one < left one, we push an undefined element
-				for(int r=max_size-1; r >= 0;r--){
-					if(r<=right_size){
+				for(int r=max_size-1; r >=0;r--){
+					if(r<right_size){
 						dst_instructions->insert(
 							dst_instructions->end(),
 							right_expressions[r]->begin(),
@@ -291,7 +287,7 @@ error_expression_main:
 				}
 
 				// write left assignments...
-				for(int l=left_size-1; l >= 0;l--){
+				for(int l=0; l < left_size;l++){
 					dst_instructions->insert(
 							dst_instructions->end(),
 							left_expressions[l]->begin(),

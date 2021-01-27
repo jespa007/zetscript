@@ -5,6 +5,7 @@ namespace zetscript{
 		char * eval_symbol(EvalData *eval_data
 				,const char *start_word
 				, int line
+				,  Scope *scope_info
 				,TokenNode * token_node_symbol
 				, PreOperation & pre_operation
 			//	, PostOperation post_operation
@@ -120,12 +121,26 @@ namespace zetscript{
 
 							byte_code= ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS;// MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 						}else{
+							Symbol *vis=NULL;
+
 							// should be an identifier and should be find after eval function or at runtime...
 							check_identifier_name_expression_ok(
 								eval_data
 								,str_value
 								,line
 							);
+
+							// try to find local or global
+							/*if(scope_info == MAIN_SCOPE(eval_data)){ // symbol in global scope
+								if( (vis=eval_find_global_symbol(eval_data,str_value) )!= NULL){ // global symbol found
+									byte_code= ByteCode::BYTE_CODE_LOAD_GLOBAL;
+									value=vis->idx_position;
+								}
+							}else*/ if((vis=eval_find_local_symbol(eval_data,scope_info,str_value)) != NULL){ // local sy
+								byte_code= ByteCode::BYTE_CODE_LOAD_LOCAL;
+								value=vis->idx_position;
+							}
+
 						}
 					}
 				}

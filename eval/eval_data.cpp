@@ -298,7 +298,7 @@ namespace zetscript{
 		char *	eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
 		char *	eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info);
 		char * 	eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
+		char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,  Scope *scope_info,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
 		Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find);
 		Symbol *eval_find_global_symbol(EvalData *eval_data, const std::string & symbol_to_find);
 
@@ -731,7 +731,7 @@ namespace zetscript{
 
 					return aux_p;
 			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected symbol", *aux_p);
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected identifier");
 			}
 			return NULL;
 		}

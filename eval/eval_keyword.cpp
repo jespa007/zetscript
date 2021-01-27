@@ -560,12 +560,14 @@ namespace zetscript{
 					line = start_line;
 
 					// check whwther the function is anonymous with a previous arithmetic operation ....
-					end_var=get_name_identifier_token(
+					if((end_var=get_name_identifier_token(
 							eval_data,
 							aux_p,
 							line,
 							variable_name
-					);
+					))==NULL){
+						return NULL;
+					}
 
 					ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
 
@@ -1578,6 +1580,7 @@ namespace zetscript{
 										eval_data
 										,aux_p
 										,line
+										,scope_info
 										,&token_symbol
 										,pre_operation
 									);
