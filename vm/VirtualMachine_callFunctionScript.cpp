@@ -140,18 +140,49 @@
 	}\
 }
 
-#define PERFORM_POST_OPERATOR(dst_var, __OPERATOR__) \
+#define PERFORM_POST_OPERATOR(__PRE_OP__,__OPERATOR__) \
 {\
-	void **ref=(void **)(&((dst_var)->stk_value));\
-	if(dst_var->properties & MSK_STK_PROPERTY_IS_VAR_C){\
-		ref=(void **)((dst_var)->stk_value);\
+	stk_var=--stk_vm_current;\
+	if(stk_var->properties & MSK_STK_PROPERTY_PTR_STK){\
+		stk_var=(StackElement *)((stk_var)->stk_value);\
+	}\
+	void **ref=(void **)(&((stk_var)->stk_value));\
+	if(stk_var->properties & MSK_STK_PROPERTY_IS_VAR_C){\
+		ref=(void **)((stk_var)->stk_value);\
+	}\
+	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_var)->properties)){\
+	case MSK_STK_PROPERTY_ZS_INT:\
+			PUSH_INTEGER(__PRE_OP__(*((zs_int *)(ref))));\
+			(*((zs_int *)(ref)))__OPERATOR__;\
+			break;\
+	case MSK_STK_PROPERTY_FLOAT:\
+			PUSH_FLOAT(__PRE_OP__(*((float *)(ref))));\
+			(*((float *)(ref)))__OPERATOR__;\
+			break;\
+	default:\
+		VM_STOP_EXECUTE(" Cannot perform pre/post operator (%s)",stk_var->typeStr());\
+		break;\
+	}\
+}
+
+#define PERFORM_PRE_OPERATOR(__OPERATOR__) \
+{\
+	stk_var=--stk_vm_current;\
+	if(stk_var->properties & MSK_STK_PROPERTY_PTR_STK){\
+		stk_var=(StackElement *)((stk_var)->stk_value);\
+	}\
+	void **ref=(void **)(&((stk_var)->stk_value));\
+	if(stk_var->properties & MSK_STK_PROPERTY_IS_VAR_C){\
+		ref=(void **)((stk_var)->stk_value);\
 	}\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_var)->properties)){\
 	case MSK_STK_PROPERTY_ZS_INT:\
 			(*((zs_int *)(ref)))__OPERATOR__;\
+			PUSH_INTEGER(*((zs_int *)(ref)));\
 			break;\
 	case MSK_STK_PROPERTY_FLOAT:\
 			(*((float *)(ref)))__OPERATOR__;\
+			PUSH_FLOAT(*((float *)(ref)));\
 			break;\
 	default:\
 		VM_STOP_EXECUTE(" Cannot perform pre/post operator (%s)",stk_var->typeStr());\
@@ -1471,10 +1502,24 @@ load_element_object:
 				 stk_vm_current=stk_start;
 				 continue;
 			 case BYTE_CODE_POST_INC:
-				 stk_var=stk_vm_current-1; // only read last stk element and inc
-				 // do everything
-
+				 PERFORM_POST_OPERATOR(+,++);
 				 continue;
+			 case BYTE_CODE_POST_DEC:
+				 PERFORM_POST_OPERATOR(+,--);
+				 continue;
+			 case BYTE_CODE_PRE_INC:
+				 PERFORM_PRE_OPERATOR(++);
+				 continue;
+			 case BYTE_CODE_PRE_DEC:
+				 PERFORM_PRE_OPERATOR(--);
+				 continue;
+			 case BYTE_CODE_NEG_POST_INC:
+				 PERFORM_POST_OPERATOR(-,++);
+				 continue;
+			 case BYTE_CODE_NEG_POST_DEC:
+				 PERFORM_POST_OPERATOR(-,--);
+				 continue;
+
 			}
 		 }
 

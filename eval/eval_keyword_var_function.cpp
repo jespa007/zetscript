@@ -47,6 +47,7 @@ namespace zetscript{
 				std::string error;
 				Symbol *symbol_variable;
 				is_constant=key_w == Keyword::KEYWORD_CONST;
+				Operator ending_op;
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
@@ -180,6 +181,11 @@ namespace zetscript{
 					}
 
 				}while(!end); // is new variable
+
+				// after variable declaration is expected to have any keyword but is not valid any operator,
+				if((ending_op=is_operator(aux_p))!=Operator::OPERATOR_UNKNOWN){
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected '%s' within variable initialization",eval_data_operators[ending_op].str)
+				}
 
 				return aux_p;
 			}

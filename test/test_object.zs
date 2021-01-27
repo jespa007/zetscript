@@ -9,6 +9,7 @@ var object={ // structure
 
 // add property test
 object.k=false;
+object["k"]=false;
 
 print("dictionary.k:"+object.k);
 

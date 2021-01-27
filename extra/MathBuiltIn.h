@@ -8,6 +8,8 @@
 #define M_PI 3.1415926535897932384626433832795f
 #endif 
 
+#define ONE_OVER_RAND_MAX	(1.0f/(float)(RAND_MAX))
+
 namespace zetscript{
 
 	class MathBuiltIn{
@@ -32,6 +34,10 @@ namespace zetscript{
 
 		static float pow(float *base, float *exp){
 			return powf(*base,*exp);
+		}
+
+		static float random(){
+			return rand()*ONE_OVER_RAND_MAX;
 		}
 	};
 

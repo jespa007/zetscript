@@ -5,6 +5,9 @@
 //var t=v[fun()];
 //var g=false?1+fun():fun()
 
+var a=1;
+
+System::println("{0}",Math::randm())
 
 
 {
@@ -20,7 +23,8 @@
 //a,b,c=0,1,2
 
 
-function fun(){return 0,undefined,2,undefined}
+
+/*function fun(){return 0,undefined,2,undefined}
 
 var a,b,c,d;
 
@@ -28,7 +32,7 @@ var a,b,c,d;
 
 //var (a,b,c=fun()),b=1 //<-- it should be not possible
 
-a,b,c=1,2,3,d=4
+a,b,c=1,2,3,d=4*/
 
 /*for(var k,v in it){
 	k,v=it()
@@ -39,7 +43,7 @@ a,b,c=1,2,3,d=4
 
 //a+=b-=c=2
 
-System::println("{0} {1} {2} {3}",a,b,c,d)
+//System::println("{0} {1} {2} {3}",a,b,c,d)
 
 
 

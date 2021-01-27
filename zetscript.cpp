@@ -61,6 +61,7 @@ namespace zetscript{
 		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
 		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
 		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
+		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("random",MathBuiltIn::random);
 
 		// System
 		script_class_factory->registerNativeSingletonClass<SystemBuiltIn>("SystemBuiltIn");

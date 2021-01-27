@@ -6,6 +6,11 @@
 												eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 												return 0;
 
+#define EVAL_ERROR_TOKEN_SYMBOL(file,line,s,...)	eval_data->error=true;\
+													eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+													goto lbl_eval_error_token_symbol;
+
+
 #define EVAL_ERROR(s,...)						eval_data->error=true;\
 												eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 												return 0;
@@ -109,12 +114,14 @@ namespace zetscript{
 
 		typedef enum :unsigned char {
 			PRE_OPERATION_UNKNOWN=0,
-			PRE_OPERATION_NOT, 		// ! (for boolean)
-			PRE_OPERATION_POS, 		// + (just ignore)
-			PRE_OPERATION_NEG	, 	// -
+			// two chars here!
 			PRE_OPERATION_DEC    ,	// --
 			PRE_OPERATION_INC	,	// ++
 			PRE_OPERATION_DEC_INC_INVALID,	// -+ or +-
+			// one chars here!
+			PRE_OPERATION_NOT, 		// ! (for boolean)
+			PRE_OPERATION_POS, 		// + (just ignore)
+			PRE_OPERATION_NEG	, 	// -
 			PRE_OPERATION_MAX
 		}PreOperation;
 

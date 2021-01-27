@@ -29,6 +29,7 @@
 
 #include        <memory.h>
 #include        <math.h>
+#include        <random>
 #include        <vector>
 #include        <stack>
 #include		<regex>
