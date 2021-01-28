@@ -8,15 +8,17 @@
 //var a=1;
 //System::println("{0}",Math::randm())
 
+//var b="vaca"
+
 class A{
-	var a=0,b="vaca"+1
+	var b="vaca",a=0,//,A::h=undefined
 }
 
 var A::c=false
 
 var a=new A();
 
-System::println("{0} {1} {2}",a.a,b.b,b.c)
+//System::println("{0} {1} {2}",a.a,b.b,b.c)
 
 /*for(var i=0,j=0; i < 10 && true; i++, i++,0,j+=2,2,3,4){
 	System::println("{0} {1}",i,j)

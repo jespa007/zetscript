@@ -19,16 +19,18 @@ namespace zetscript{
 	}
 	//------------------------------------------------------------
 
-	ScriptClass::ScriptClass(ZetScript *_zs,int _idx_class){
+	ScriptClass::ScriptClass(ZetScript *_zs,short _idx_class,Symbol *_symbol_class){
 
 		std::string error="";
-		Symbol *symbol;
+		Symbol *symbol_field_initializer=NULL;
+
 		str_class_ptr_type="";
 		c_destructor = NULL;
 		c_constructor=NULL;
 		idx_function_member_constructor =ZS_IDX_UNDEFINED;
 		idx_class=_idx_class;
 		idx_starting_this_members=0;
+		symbol_class=*_symbol_class;
 		//memset(metamethod_operator,0,sizeof(metamethod_operator));
 
 		/*for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
@@ -49,17 +51,21 @@ namespace zetscript{
 		static_constructor_destructor=false;
 
 
-		symbol=this->registerInternalMemberFunction(
+		symbol_field_initializer=this->registerInternalMemberFunction(
 				error
-				,"internal"
-				,-1
-				,"__@constructor@__"
+				,__FILE__
+				,__LINE__
+				,"__@field_initializer@__"
 				,{}
 		);
 
-		sf_constructor_builtin=(ScriptFunction *)symbol->ref_ptr;
+		sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;
+		/*sf_field_initializer->instructions=(PtrInstruction)malloc(sizeof(Instruction));
+		sf_field_initializer->instructions_len=sizeof(Instruction);
+		memset(sf_field_initializer->instructions)*/
 
-		/*sf_constructor_builtin=new ScriptFunction(zs
+
+		/*sf_field_initializer=new ScriptFunction(zs
 				,this->idx_class
 				,ZS_IDX_UNDEFINED
 				,{}
@@ -401,7 +407,7 @@ namespace zetscript{
 		memset(metamethod_operator,0,sizeof(metamethod_operator));*/
 
 		delete idx_base_classes;
-		delete sf_constructor_builtin;
+
 
 	}
 }

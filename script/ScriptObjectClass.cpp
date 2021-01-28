@@ -36,7 +36,7 @@ namespace zetscript{
 
 		callConstructorBuiltin(this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]));
 
-		zs->getVirtualMachine()->execute(this,sc->sf_constructor_builtin);
+		zs->getVirtualMachine()->execute(this,sc->sf_field_initializer);
 	}
 
 

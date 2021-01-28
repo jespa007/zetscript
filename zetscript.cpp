@@ -203,6 +203,7 @@ namespace zetscript{
 		}
 
 		stk=new StackElement;
+
 		(*constant_string_objects)[const_name]=stk;
 
 		so=ScriptObjectString::newStringObject(this);

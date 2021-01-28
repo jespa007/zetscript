@@ -163,11 +163,11 @@ namespace zetscript{
 			// register symbol on main scope...
 			Symbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_SYMBOL_ONLY);
 
-			sci = new ScriptClass(this->zs,script_classes->count);
+			sci = new ScriptClass(this->zs,script_classes->count,symbol);
 			scope->setScriptClass(sci);
 
 			sci->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
-			sci->symbol_class=*symbol;
+			//sci->symbol_class=*symbol;
 
 			script_classes->push_back((zs_int)sci);
 
@@ -304,7 +304,7 @@ namespace zetscript{
 		 return so;
 	 }
 
-	int ScriptClassFactory::getIdx_C_RegisteredClass(const std::string & str_classPtr){
+	short ScriptClassFactory::getIdx_C_RegisteredClass(const std::string & str_classPtr){
 		// ok check str_native_type
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
@@ -357,7 +357,7 @@ namespace zetscript{
 		 return ZS_IDX_UNDEFINED;
 	 }
 
-	int 			ScriptClassFactory::getIdxClassFromItsNativeType(const std::string & str_native_type){
+	short 			ScriptClassFactory::getIdxClassFromItsNativeType(const std::string & str_native_type){
 		return getIdxScriptInternalFrom_C_Type(str_native_type);
 	}
 

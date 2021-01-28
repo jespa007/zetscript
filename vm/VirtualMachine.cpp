@@ -179,6 +179,9 @@ namespace zetscript{
 		 , const char *file
 		 , int line
 	){
+		if(calling_function->instructions == NULL){ // no instructions do not execute
+			return stk_undefined;
+		}
 
 		//StackElement stk_result=stk_undefined;
 		StackElement stk_return=stk_undefined;

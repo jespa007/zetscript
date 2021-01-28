@@ -219,13 +219,17 @@ namespace zetscript{
 									member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
 
 									if(member_symbol != NULL){
-										if(!eval_set_instruction_static_symbol(&instruction->vm_instruction,member_symbol,static_error)){
-											EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
-													eval_data->current_parsing_file
-													,line
-													,"Symbol \"%s\" %s"
-													,static_access_value.c_str()
-													,static_error.c_str());
+										if(member_symbol->properties & SYMBOL_PROPERTY_STATIC){
+											if(!eval_set_instruction_static_symbol(&instruction->vm_instruction,member_symbol,static_error)){
+												EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
+														eval_data->current_parsing_file
+														,line
+														,"Symbol \"%s\" %s"
+														,static_access_value.c_str()
+														,static_error.c_str());
+											}
+										}else{ // is a member var
+											instruction->vm_instruction.byte_code = BYTE_CODE_LOAD_THIS_MEMBER;
 										}
 									}
 								} // --> in eval::pop_function will be find

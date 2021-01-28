@@ -286,27 +286,26 @@ namespace zetscript{
 		void eval_inject_evaluated_instructions(EvalData *data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions){
 
 			// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
-			PtrInstruction new_block=NULL;
+			PtrInstruction new_instructions=NULL;
+			size_t new_instructions_len=0;
 			PtrInstruction start_ptr=NULL;
 			int current_size=sf->instructions_len;
 			int n_elements_to_add=instructions->size();
 
-			if(n_elements_to_add == 0){
+			if(current_size == 0){
 				n_elements_to_add=n_elements_to_add+1;
-			}else{
-				current_size-=sizeof(Instruction); // rest the last mark
 			}
 
-			size_t size = current_size+(n_elements_to_add) * sizeof(Instruction);
-			new_block=(PtrInstruction)malloc(size);
-			memset(sf->instructions, 0, size);
+			new_instructions_len = current_size+(n_elements_to_add) * sizeof(Instruction);
+			new_instructions=(PtrInstruction)malloc(new_instructions_len);
+			memset(new_instructions, 0, new_instructions_len);
 
 			// 2. copy current block to new
 			if(current_size>0){
-				memcpy(new_block,sf->instructions,current_size);
+				memcpy(new_instructions,sf->instructions,current_size);
 			}
 
-			start_ptr=new_block+current_size;
+			start_ptr=new_instructions+current_size;
 			// 3. copy eval instructions
 
 			for(unsigned i=0; i < instructions->size(); i++){
@@ -324,6 +323,9 @@ namespace zetscript{
 				sf->instruction_source_info[i]=instruction_info;
 
 			}
+
+			sf->instructions=new_instructions;
+			sf->instructions_len=new_instructions_len;
 		}
 
 		int eval_pop_function(EvalData *eval_data){

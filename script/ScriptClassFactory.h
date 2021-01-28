@@ -48,8 +48,8 @@ namespace zetscript{
 		const char 	* 					getScriptClassName(short idx);
 		void							classInheritsFrom(const std::string & the_class,const std::string & the_base_class);
 		bool							isClassInheritsFrom(short idx_class,short idx_base_class);
-		int								getIdxClassFromItsNativeType(const std::string & s);
-		int			 					getIdx_C_RegisteredClass(const std::string & str_classPtr);
+		short							getIdxClassFromItsNativeType(const std::string & s);
+		short		 					getIdx_C_RegisteredClass(const std::string & str_classPtr);
 		zs_vector	* 					getScriptClasses();
 
 		bool 							isClassRegistered(const std::string & v);

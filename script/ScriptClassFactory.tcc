@@ -154,10 +154,10 @@ namespace zetscript{
 		scope = scope_factory->newScope(NULL,true);
 		symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_SYMBOL_ONLY);
 
-		irc = new ScriptClass(zs,idx_class);
+		irc = new ScriptClass(zs,idx_class,symbol);
 		scope->setScriptClass(irc);
 
-		irc->symbol_class=*symbol;
+		//irc->symbol_class=*symbol;
 
 		// in C there's no script constructor ...
 		irc->idx_function_member_constructor=ZS_IDX_UNDEFINED;

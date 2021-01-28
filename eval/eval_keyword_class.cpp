@@ -154,6 +154,10 @@ namespace zetscript{
 					,line
 					,class_name);
 
+			if(aux_p == NULL){
+				return NULL;
+			}
+
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...

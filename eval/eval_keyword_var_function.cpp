@@ -20,8 +20,9 @@ namespace zetscript{
 			bool is_constant = false;
 			ScriptClass *sc=NULL;
 			Scope *scope_var=scope_info;
-			ScriptFunction *sf_constructor_builtin=NULL;
+			ScriptFunction *sf_field_initializer=NULL;
 			std::vector<EvalInstruction *> member_var_init_instructions;
+			bool is_class_scope=false;
 
 			// check if static...
 			/*if(scope_var->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
@@ -67,8 +68,8 @@ namespace zetscript{
 					&& scope_var->scope_parent == NULL // is function member
 				){ // class members are defined as functions
 					sc=scope_var->script_class;
+					is_class_scope=true;
 				}
-
 
 				if(is_constant){ // scope_var will be global scope...
 					if(!(sc!=NULL || scope_var == MAIN_SCOPE(eval_data))){
@@ -82,7 +83,7 @@ namespace zetscript{
 						pre_variable_name=sc->symbol_class.name+"::";
 					}
 				}else if(sc != NULL){
-					sf_constructor_builtin=sc->sf_constructor_builtin;
+					sf_field_initializer=sc->sf_field_initializer;
 				}
 
 
@@ -90,14 +91,29 @@ namespace zetscript{
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					start_var=aux_p;
 
-					// check whwther the function is anonymous with a previous arithmetic operation ....
-					if((end_var=get_name_identifier_token(
-							eval_data,
-							aux_p,
-							line,
-							variable_name
-					))==NULL){
-						return NULL;
+
+					if((end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
+							eval_data
+							,aux_p
+							,line
+							,&sc
+							,variable_name
+					   ))!=NULL){
+						if(is_class_scope==true){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected ::");
+						}
+						sf_field_initializer=sc->sf_field_initializer;
+					}else{
+
+						// check whwther the function is anonymous with a previous arithmetic operation ....
+						if((end_var=get_name_identifier_token(
+								eval_data,
+								aux_p,
+								line,
+								variable_name
+						))==NULL){
+							return NULL;
+						}
 					}
 
 					ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
@@ -172,16 +188,21 @@ namespace zetscript{
 							,is_constant?aux_p+1:start_var
 							,aux_line
 							,scope_var
-							,sf_constructor_builtin!=NULL?&member_var_init_instructions:&eval_data->current_function->instructions
+							,sf_field_initializer!=NULL?&member_var_init_instructions:&eval_data->current_function->instructions
 							,{}
 							,EVAL_EXPRESSION_ON_MAIN_BLOCK
 						))==NULL){
-							return NULL;
+							goto error_eval_keyword_var;
 						}
 
-						if(sf_constructor_builtin != NULL){ // check load and set find
+						if(sf_field_initializer != NULL){ // check load and set find
 
-							eval_inject_evaluated_instructions(eval_data,sf_constructor_builtin,&member_var_init_instructions);
+							eval_inject_evaluated_instructions(eval_data,sf_field_initializer,&member_var_init_instructions);
+
+							for(size_t i=0; i < member_var_init_instructions.size(); i++){
+								delete member_var_init_instructions[i];
+							}
+
 							member_var_init_instructions.clear();
 						}
 
@@ -215,6 +236,14 @@ namespace zetscript{
 
 				return aux_p;
 			}
+
+error_eval_keyword_var:
+			for(size_t i=0; i < member_var_init_instructions.size(); i++){
+				delete member_var_init_instructions[i];
+			}
+
+			member_var_init_instructions.clear();
+
 			return NULL;
 		}
 
