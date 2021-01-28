@@ -1,6 +1,16 @@
-/*function fun(){
+function fun1(){
 	return 0,1;
-}*/
+}
+
+function fun2(){
+	return 2,3;
+}
+
+var a,b,c,d
+
+a,b=fun1() //,fun2()
+
+System::println("1 {0} {1} {2} {3}",a,b,c,d)
 
 //var t=v[fun()];
 //var g=false?1+fun():fun()
@@ -10,13 +20,13 @@
 
 //var b="vaca"
 
-class A{
+/*class A{
 	var b="vaca",a=0,//,A::h=undefined
 }
 
 var A::c=false
 
-var a=new A();
+var a=new A();*/
 
 //System::println("{0} {1} {2}",a.a,b.b,b.c)
 

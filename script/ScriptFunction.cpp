@@ -65,6 +65,10 @@ namespace zetscript{
 			return;
 		}
 
+		if(sfo->instructions == NULL){
+			return;
+		}
+
 		std::string symbol_ref="????";
 		std::string class_str="";
 		std::string symbol_value="";
