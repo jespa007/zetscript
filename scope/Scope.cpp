@@ -100,70 +100,45 @@ namespace zetscript{
 		return addSymbol(file, line, symbol_name, n_params);
 	}
 
-	Symbol * Scope::getSymbolRecursiveDownScope(const std::string & str_symbol, char n_params){
+	Symbol * Scope::getSymbol(const std::string & str_symbol, char n_params, ScopeDirection scope_direction){
 
-		// find local symbols
-		for(unsigned i = 0; i < registered_symbols->count; i++){
-			Symbol *local_symbol = (Symbol *)registered_symbols->items[i];
-			if(
-				   ( local_symbol->name == str_symbol )
-				&& ( local_symbol->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY )
-			){
-				return local_symbol;//.idxScopeVar; // ptr scope ?
-			}
-		}
+		Symbol *sv=NULL;
 
-		if(
-				this->scope_parent != NULL			 	 // it says that is the end of scopes
-				&& this->scope_parent != MAIN_SCOPE(this) // avoid find symbols to global scope. If not found in local it will try link global on eval_pop_function
-		){
-			return this->scope_parent->getSymbolRecursiveDownScope(str_symbol,n_params);
-		}
-
-		return NULL;
-	}
-
-	Symbol * Scope::getSymbolRecursiveUpScope(const std::string & str_symbol, char n_params){
 		// for each variable in current scope ...
 		for(unsigned i = 0; i < registered_symbols->count; i++){
-			Symbol *local_symbol=(Symbol *)registered_symbols->items[i];
+			sv=(Symbol *)registered_symbols->items[i];
 			if(
-				   ( local_symbol->name == str_symbol )
-			   &&  ( local_symbol->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY )
+				   ( sv->name == str_symbol )
+			   &&  ( sv->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY )
 			){
-				return local_symbol;
+				return sv;
 			}
 		}
 
-		// ok lets iterate through current scope list
-		for(unsigned i = 0; i < registered_scopes->count; i++){
-			Scope *s=(Scope *)registered_scopes->items[i];
+		if(scope_direction==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction==ScopeDirection::SCOPE_DIRECTION_DOWN){
+			if(
+					this->scope_parent != NULL			 	 // it says that is the end of scopes
+					&& this->scope_parent != MAIN_SCOPE(this) // avoid find symbols to global scope. If not found in local it will try link global on eval_pop_function
+			){
+				return this->scope_parent->getSymbol(str_symbol,n_params,ScopeDirection::SCOPE_DIRECTION_DOWN);
+			}
+		}
 
-			if(s->is_scope_function == false){ // avoid local scope functions ...
-				Symbol *sv=s->getSymbolRecursiveUpScope(str_symbol,n_params);
+		if(scope_direction==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction==ScopeDirection::SCOPE_DIRECTION_UP){
+			for(unsigned i = 0; i < registered_scopes->count; i++){
+				Scope *s=(Scope *)registered_scopes->items[i];
 
-				if(sv != NULL) {
-					return sv;
+				if(s->is_scope_function == false){ // avoid local scope functions ...
+					Symbol *sv=s->getSymbol(str_symbol,n_params,ScopeDirection::SCOPE_DIRECTION_UP);
+
+					if(sv != NULL) {
+						return sv;
+					}
 				}
 			}
 		}
+
 		return NULL;
-	}
-
-	Symbol * Scope::getSymbol(const std::string & var_name, char n_params, ScopeDirection scope_direction){
-		//return getSymbolRecursive(var_name, n_params);
-		Symbol *sv=NULL;
-
-
-		if(scope_direction==ScopeDirection::SCOPE_DIRECTION_BOTH ||scope_direction==ScopeDirection::SCOPE_DIRECTION_DOWN){
-			sv=getSymbolRecursiveDownScope(var_name,n_params);
-		}
-
-		if(sv == NULL && (scope_direction==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction==ScopeDirection::SCOPE_DIRECTION_UP)){
-			sv=getSymbolRecursiveUpScope(var_name, n_params);
-		}
-
-		return sv;
 	}
 
 	unsigned int Scope::numRegisteredSymbolsAsVariable(){

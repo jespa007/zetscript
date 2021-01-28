@@ -21,6 +21,8 @@ typedef enum {
 	SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME			= 0x1 << 7  // 0x40: for functions...
 }SymbolProperty;
 
+#define IS_SYMBOL_VAR_MEMBER(s) ((s)->properties == 0)
+
 namespace zetscript{
 
 	class	ZetScript;

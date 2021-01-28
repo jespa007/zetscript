@@ -21,6 +21,8 @@ namespace zetscript{
 
 	ScriptClass::ScriptClass(ZetScript *_zs,int _idx_class){
 
+		std::string error="";
+		Symbol *symbol;
 		str_class_ptr_type="";
 		c_destructor = NULL;
 		c_constructor=NULL;
@@ -45,6 +47,24 @@ namespace zetscript{
 		script_function_factory= zs->getScriptFunctionFactory();
 		script_class_factory=zs->getScriptClassFactory();
 		static_constructor_destructor=false;
+
+
+		symbol=this->registerInternalMemberFunction(
+				error
+				,"internal"
+				,-1
+				,"__@constructor@__"
+				,{}
+		);
+
+		sf_constructor_builtin=(ScriptFunction *)symbol->ref_ptr;
+
+		/*sf_constructor_builtin=new ScriptFunction(zs
+				,this->idx_class
+				,ZS_IDX_UNDEFINED
+				,{}
+				,
+				);*/
 	}
 
 	Symbol				* 	ScriptClass::registerMemberVariable(
@@ -104,10 +124,10 @@ namespace zetscript{
 			return NULL;
 		}
 
-		if((symbol_properties & (SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_CONST))==0){
+		/*if((symbol_properties & (SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_CONST))==0){
 			error=zs_strutils::format("Variable \"%s\" should registered as native or const",symbol_name.c_str());
 			return NULL;
-		}
+		}*/
 
 		Symbol *symbol=new Symbol;
 
@@ -124,6 +144,7 @@ namespace zetscript{
 
 		symbol_members->push_back((zs_int)symbol);
 		symbol_members_built_in->push_back((zs_int)symbol);
+
 		return symbol;
 
 	}
@@ -357,6 +378,9 @@ namespace zetscript{
 
 		for(unsigned i=0; i < symbol_members_built_in->count; i++){
 			Symbol *symbol=(Symbol *)symbol_members_built_in->items[i];
+			if(symbol->properties == 0){ // is member var
+				free((void *)symbol->ref_ptr);
+			}
 			delete symbol; // symbol variable member was created before
 		}
 		delete symbol_members_built_in;
@@ -377,6 +401,7 @@ namespace zetscript{
 		memset(metamethod_operator,0,sizeof(metamethod_operator));*/
 
 		delete idx_base_classes;
+		delete sf_constructor_builtin;
 
 	}
 }

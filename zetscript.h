@@ -95,8 +95,8 @@
 #include "script/ScriptObjectAnonymousIterator.h"
 #include "script/ScriptObjectClass.h"
 
-#include "script/ScriptClass.h"
 #include "script/ScriptFunction.h"
+#include "script/ScriptClass.h"
 #include "script/ScriptFunctionFactory.h"
 #include "script/ScriptClassFactory.h"
 

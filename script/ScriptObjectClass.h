@@ -47,7 +47,7 @@ namespace zetscript{
 			~ScriptObjectClass();
 
 		protected:
-
+			void callConstructorBuiltin(ScriptClass *sc);
 
 		private:
 			/**

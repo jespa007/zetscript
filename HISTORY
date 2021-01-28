@@ -146,8 +146,8 @@ Date: XX-12-2020
 > #199 Check fix instanceof 
 #200 Implement count variable
 #201 System.print: convert any stackelement in string if argument itself is not string var  
-> #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
-> #203 ScriptObject: Implement concatenate operator (+) feature
+#202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
+> #203 AnonymousObject: Implement concatenate operator (+) feature
 > #204 Implement indexs as ScriptObjectVector in ScriptObject 
 #205 desglosse BYTE_LOAD to BYTE_LOAD_XXXX 
 #206 Override global functions 

@@ -20,9 +20,11 @@ namespace zetscript{
 			bool is_constant = false;
 			ScriptClass *sc=NULL;
 			Scope *scope_var=scope_info;
+			ScriptFunction *sf_constructor_builtin=NULL;
+			std::vector<EvalInstruction *> member_var_init_instructions;
 
 			// check if static...
-			if(scope_var->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+			/*if(scope_var->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // class members are defined as functions
@@ -35,7 +37,7 @@ namespace zetscript{
 				if(key_w == Keyword::KEYWORD_FUNCTION){
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 				}
-			}
+			}*/
 
 			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
 
@@ -60,6 +62,13 @@ namespace zetscript{
 					}
 
 				}*/
+				if(scope_var->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+					&& scope_var->scope_base == scope_var
+					&& scope_var->scope_parent == NULL // is function member
+				){ // class members are defined as functions
+					sc=scope_var->script_class;
+				}
+
 
 				if(is_constant){ // scope_var will be global scope...
 					if(!(sc!=NULL || scope_var == MAIN_SCOPE(eval_data))){
@@ -72,6 +81,8 @@ namespace zetscript{
 					if(sc!=NULL){
 						pre_variable_name=sc->symbol_class.name+"::";
 					}
+				}else if(sc != NULL){
+					sf_constructor_builtin=sc->sf_constructor_builtin;
 				}
 
 
@@ -99,15 +110,17 @@ namespace zetscript{
 
 					// register symbol...
 					try{
-						symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
-							scope_var
-							, eval_data->current_parsing_file
-							, line
-							, pre_variable_name+variable_name
-						);
+						if(is_constant || sc==NULL){ // is constant or is local (sc==NULL)
+							symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
+								scope_var
+								, eval_data->current_parsing_file
+								, line
+								, pre_variable_name+variable_name
+							);
+						}
 
 						if(sc != NULL){
-							Symbol *const_symbol=sc->registerMemberVariable(
+							Symbol *symbol=sc->registerMemberVariable(
 								error
 								,eval_data->current_parsing_file
 								,line
@@ -115,11 +128,17 @@ namespace zetscript{
 								,is_constant?SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC :0
 							);
 
-							if(const_symbol==NULL){
+							if(symbol==NULL){
 								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"%s",error.c_str());
 							}
 
-							const_symbol->ref_ptr=symbol_variable->idx_position;
+							if(is_constant){
+								symbol->ref_ptr=symbol_variable->idx_position;
+							}else{ // reserve stack element to register var
+								StackElement *stk_new=(StackElement *)malloc(sizeof(StackElement));
+								symbol->ref_ptr=(zs_int)stk_new;
+								stk_new->setUndefined();
+							}
 						}
 					}catch(std::exception & ex){
 						EVAL_ERROR("%s",ex.what());
@@ -147,16 +166,23 @@ namespace zetscript{
 							eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
 						}
 
+
 						if((aux_p = eval_expression(
 							eval_data
 							,is_constant?aux_p+1:start_var
 							,aux_line
 							,scope_var
-							,&eval_data->current_function->instructions
+							,sf_constructor_builtin!=NULL?&member_var_init_instructions:&eval_data->current_function->instructions
 							,{}
 							,EVAL_EXPRESSION_ON_MAIN_BLOCK
 						))==NULL){
 							return NULL;
+						}
+
+						if(sf_constructor_builtin != NULL){ // check load and set find
+
+							eval_inject_evaluated_instructions(eval_data,sf_constructor_builtin,&member_var_init_instructions);
+							member_var_init_instructions.clear();
 						}
 
 						if(is_constant){ // make ptr as constant after variable is saved

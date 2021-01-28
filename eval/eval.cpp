@@ -283,6 +283,49 @@ namespace zetscript{
 
 		}
 
+		void eval_inject_evaluated_instructions(EvalData *data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions){
+
+			// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
+			PtrInstruction new_block=NULL;
+			PtrInstruction start_ptr=NULL;
+			int current_size=sf->instructions_len;
+			int n_elements_to_add=instructions->size();
+
+			if(n_elements_to_add == 0){
+				n_elements_to_add=n_elements_to_add+1;
+			}else{
+				current_size-=sizeof(Instruction); // rest the last mark
+			}
+
+			size_t size = current_size+(n_elements_to_add) * sizeof(Instruction);
+			new_block=(PtrInstruction)malloc(size);
+			memset(sf->instructions, 0, size);
+
+			// 2. copy current block to new
+			if(current_size>0){
+				memcpy(new_block,sf->instructions,current_size);
+			}
+
+			start_ptr=new_block+current_size;
+			// 3. copy eval instructions
+
+			for(unsigned i=0; i < instructions->size(); i++){
+				EvalInstruction *instruction = instructions->at(i);
+				// save instruction ...
+				start_ptr[i]=instruction->vm_instruction;
+
+				//------------------------------------
+				// symbol value to save at runtime ...
+				InstructionSourceInfo instruction_info=instruction->instruction_source_info;
+
+				// Save str_symbol that was created on eval process, and is destroyed when eval finish.
+				instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
+
+				sf->instruction_source_info[i]=instruction_info;
+
+			}
+		}
+
 		int eval_pop_function(EvalData *eval_data){
 
 			char class_aux[512]={0},member_aux[512]={0};
@@ -297,6 +340,7 @@ namespace zetscript{
 
 			// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
 			size_t size = (eval_data->current_function->instructions.size() + 1) * sizeof(Instruction);
+			sf->instructions_len=size;
 			sf->instructions = (PtrInstruction)malloc(size);
 			memset(sf->instructions, 0, size);
 			//bool is_static = eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC;
@@ -473,7 +517,7 @@ namespace zetscript{
 				}
 
 				// save instruction ...
-				eval_data->current_function->script_function->instructions[i]=instruction->vm_instruction;
+				sf->instructions[i]=instruction->vm_instruction;
 
 				//------------------------------------
 				// symbol value to save at runtime ...
@@ -483,7 +527,7 @@ namespace zetscript{
 				instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
 
 
-				eval_data->current_function->script_function->instruction_source_info[i]=instruction_info;
+				sf->instruction_source_info[i]=instruction_info;
 
 			}
 

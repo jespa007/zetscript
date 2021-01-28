@@ -28,6 +28,7 @@ namespace zetscript{
 
 
 		PtrInstruction  instructions; // The set of byte code instructions that executes the function
+		size_t			instructions_len;
 
 
 		// local symbols for class or function...

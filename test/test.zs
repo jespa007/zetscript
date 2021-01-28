@@ -8,7 +8,17 @@
 //var a=1;
 //System::println("{0}",Math::randm())
 
-for(var i=0,j=0; i < 10 && true; i++, i++,0,j+=2,2,3,4){
+class A{
+	var a=0,b="vaca"+1
+}
+
+var A::c=false
+
+var a=new A();
+
+System::println("{0} {1} {2}",a.a,b.b,b.c)
+
+/*for(var i=0,j=0; i < 10 && true; i++, i++,0,j+=2,2,3,4){
 	System::println("{0} {1}",i,j)
 }
 
@@ -17,7 +27,7 @@ for(var i=0,j=0; i < 10 && true; i++, i++,0,j+=2,2,3,4){
 	//var c=1;
 
 	//System::println("{0} {1} {2}",c)
-}
+}*/
 
 //var a=0,b,c;
 

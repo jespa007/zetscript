@@ -29,10 +29,21 @@ namespace zetscript{
 		script_class_native=NULL;
 	}
 
+	void ScriptObjectClass::callConstructorBuiltin(ScriptClass *sc ){
+		if(sc == NULL){
+			return;
+		}
+
+		callConstructorBuiltin(this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]));
+
+		zs->getVirtualMachine()->execute(this,sc->sf_constructor_builtin);
+	}
+
 
 	void ScriptObjectClass::init(short _idx_script_class,void *_c_object){
 		StackElement *se;
 		std::string error;
+		ScriptClass *sc=NULL;
 
 		idx_script_class=_idx_script_class;
 		ScriptClass *script_class=getScriptClass();
@@ -76,6 +87,7 @@ namespace zetscript{
 		// init built in vars
 
 
+
 		//-------------------------------------------------------------------------------
 		// LINK C OBJECT
 
@@ -91,7 +103,7 @@ namespace zetscript{
 				was_created_by_constructor=true;
 				c_object = created_object;
 			}else {
-				ScriptClass *sc=script_class;
+				sc=script_class;
 				// get first class with c inheritance...
 
 				while((sc->idx_base_classes->count>0) && (script_class_native==NULL)){
@@ -111,6 +123,12 @@ namespace zetscript{
 		}/*else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
 			idx_script_class_native=irv->idx_class;
 		}*/
+
+		// execute init var
+		//sc=script_class;
+		callConstructorBuiltin(script_class);
+
+
 
 		// only create symbols if not std::string or std::vector type to make it fast ...
 	}
