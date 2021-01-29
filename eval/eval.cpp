@@ -283,35 +283,55 @@ namespace zetscript{
 
 		}
 
-		void eval_inject_evaluated_instructions(EvalData *data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions){
+		void eval_generate_byte_code_field_initializer(EvalData *data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions, Symbol *symbol_member_var){
 
 			// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
 			PtrInstruction new_instructions=NULL;
 			size_t new_instructions_len=0;
-			PtrInstruction start_ptr=NULL;
-			int current_size=sf->instructions_len;
+			Instruction * start_ptr=NULL;
+			//int current_size=sf->instructions_len;
 			int n_elements_to_add=instructions->size();
+			int idx_load_this_element=instructions->size()-3;
 
-			if(current_size == 0){
+
+			if(instructions->size() < 3){
+				THROW_RUNTIME_ERROR("eval_generate_byte_code_field_initializer: internal error 1");
+			}
+
+
+
+			if(instructions->at(idx_load_this_element)->vm_instruction.byte_code != BYTE_CODE_LOAD_LOCAL){
+				THROW_RUNTIME_ERROR("eval_generate_byte_code_field_initializer: internal error 2");
+			}
+
+			if(sf->instructions_len == 0){
 				n_elements_to_add=n_elements_to_add+1;
 			}
 
-			new_instructions_len = current_size+(n_elements_to_add) * sizeof(Instruction);
-			new_instructions=(PtrInstruction)malloc(new_instructions_len);
+			new_instructions_len = sf->instructions_len+(n_elements_to_add) * sizeof(Instruction);
+			new_instructions=(Instruction *)malloc(new_instructions_len);
 			memset(new_instructions, 0, new_instructions_len);
 
+			start_ptr=(Instruction *)((uint8_t *)new_instructions+sf->instructions_len);
+
 			// 2. copy current block to new
-			if(current_size>0){
-				memcpy(new_instructions,sf->instructions,current_size);
+			if(sf->instructions_len>0){
+				memcpy(new_instructions,sf->instructions,sf->instructions_len);
+				start_ptr--; // start from end instruction
 			}
 
-			start_ptr=new_instructions+current_size;
+
 			// 3. copy eval instructions
 
 			for(unsigned i=0; i < instructions->size(); i++){
 				EvalInstruction *instruction = instructions->at(i);
 				// save instruction ...
-				start_ptr[i]=instruction->vm_instruction;
+				*start_ptr=instruction->vm_instruction;
+
+				if(i==idx_load_this_element){
+					start_ptr->byte_code=BYTE_CODE_LOAD_THIS_MEMBER;
+					start_ptr->value_op2=symbol_member_var->idx_position;
+				}
 
 				//------------------------------------
 				// symbol value to save at runtime ...
@@ -321,6 +341,8 @@ namespace zetscript{
 				instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
 
 				sf->instruction_source_info[i]=instruction_info;
+
+				start_ptr++;
 
 			}
 

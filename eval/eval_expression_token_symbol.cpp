@@ -382,7 +382,6 @@ namespace zetscript{
 					switch(byte_code){
 					case BYTE_CODE_CALL:
 						instruction_token->vm_instruction.value_op1=n_params;
-						//instruction_token->vm_instruction.value_op2=properties & EVAL_EXPRESSION_ON_MAIN_BLOCK?ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK:1; // allow max return element == 1
 
 						// also insert source file/line/symbol info to get info of this call...
 						instruction_token->instruction_source_info= InstructionSourceInfo(

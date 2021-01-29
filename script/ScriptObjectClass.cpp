@@ -34,7 +34,9 @@ namespace zetscript{
 			return;
 		}
 
-		callConstructorBuiltin(this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]));
+		if(sc->idx_base_classes->count>0){
+			callConstructorBuiltin(this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]));
+		}
 
 		zs->getVirtualMachine()->execute(this,sc->sf_field_initializer);
 	}
@@ -65,7 +67,7 @@ namespace zetscript{
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
 
 				se->stk_value=new FunctionMember(this,(ScriptFunction *)symbol->ref_ptr);
-				se->properties=MSK_STK_PROPERTY_FUNCTION_MEMBER | MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function
+				se->properties=MSK_STK_PROPERTY_FUNCTION_MEMBER | MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function member
 			}
 			else{ // var...
 

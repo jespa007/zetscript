@@ -267,11 +267,6 @@ namespace zetscript{
 					last_instruction->value_op2=ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK;
 				}
 
-				// save instruction if only call in the end (for support multi assigments on the left)
-				/*if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
-					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
-				}*/
-
 				// TODO: JEB Check whether expression is constant true/false
 				if(*aux_p != ':'){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
@@ -298,12 +293,6 @@ namespace zetscript{
 					last_instruction->value_op2=ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK;
 				}
 
-				// save instruction if only call in the end  (for support multi assigments on the left)
-				/*if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
-					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
-				}*/
-
-
 				ei_ternary_else_jmp->vm_instruction.value_op2=dst_instructions->size()+dst_instructions->size();
 
 			}else{
@@ -311,11 +300,6 @@ namespace zetscript{
 				if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
 					last_instruction->value_op2=ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK;
 				}
-				// save instruction if only call in the end  (for support multi assigments on the left)
-				/*if(only_call_instructions != NULL && dst_instructions->at(dst_instructions->size()-1)->vm_instruction.byte_code == BYTE_CODE_CALL){
-					only_call_instructions->push_back(dst_instructions->at(dst_instructions->size()-1));
-				}*/
-
 			}
 			//--------------------------------------------------------------
 

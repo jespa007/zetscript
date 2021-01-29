@@ -16,53 +16,29 @@ namespace zetscript{
 			// check for keyword ...
 			char *aux_p = (char *)s;
 			Keyword key_w = is_keyword(s);
-			bool is_static = false;
-			bool is_constant = false;
-			ScriptClass *sc=NULL;
-			Scope *scope_var=scope_info;
-			ScriptFunction *sf_field_initializer=NULL;
 			std::vector<EvalInstruction *> member_var_init_instructions;
-			bool is_class_scope=false;
-
-			// check if static...
-			/*if(scope_var->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
-				&& scope_var->scope_base == scope_var
-				&& scope_var->scope_parent == NULL // is function member
-			){ // class members are defined as functions
-				key_w = Keyword::KEYWORD_FUNCTION;
-				sc=scope_var->script_class;
-			}
-			else{
-				key_w = is_keyword(aux_p);
-
-				if(key_w == Keyword::KEYWORD_FUNCTION){
-					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
-				}
-			}*/
 
 			if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
+				bool is_static = false,
+					 is_constant = false,
+				 	 is_class_scope=false,
+				 	 end=false;
 
-				bool end=false;
+				Scope *scope_var=scope_info;
+				ScriptFunction *sf_field_initializer=NULL;
+
 
 				char *start_var,*end_var;
 				ScriptClass *sc=NULL;
 				std::string s_aux,variable_name,pre_variable_name="";
 				std::string error;
-				Symbol *symbol_variable;
+				Symbol *symbol_variable,*symbol_member_variable=NULL;
 				is_constant=key_w == Keyword::KEYWORD_CONST;
 				Operator ending_op;
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				// check class scope...
-				/*if(sc != NULL){
-					//sc=scope_var->script_class;
-
-					if(is_constant == false){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," unexpected \"var\" keyword in class");
-					}
-
-				}*/
 				if(scope_var->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
 					&& scope_var->scope_base == scope_var
 					&& scope_var->scope_parent == NULL // is function member
@@ -90,21 +66,29 @@ namespace zetscript{
 				do{
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					start_var=aux_p;
+					end_var=NULL;
+					ScriptClass *sc_var_member_extension=sc;
 
-
-					if((end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
+					if(sc==NULL){
+						if((end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
 							eval_data
 							,aux_p
 							,line
-							,&sc
+							,&sc_var_member_extension
 							,variable_name
 					   ))!=NULL){
-						if(is_class_scope==true){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected ::");
+							if(is_class_scope==true){
+								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected ::");
+							}
+							sf_field_initializer=sc_var_member_extension->sf_field_initializer;
+						}else{ // NULL check if error
+							if(eval_data->error){
+								return NULL;
+							}
 						}
-						sf_field_initializer=sc->sf_field_initializer;
-					}else{
+					}
 
+					if(end_var==NULL){
 						// check whwther the function is anonymous with a previous arithmetic operation ....
 						if((end_var=get_name_identifier_token(
 								eval_data,
@@ -126,7 +110,7 @@ namespace zetscript{
 
 					// register symbol...
 					try{
-						if(is_constant || sc==NULL){ // is constant or is local (sc==NULL)
+						if(is_constant || sc_var_member_extension==NULL){ // is constant or is local (sc_var_member_extension==NULL)
 							symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
 								scope_var
 								, eval_data->current_parsing_file
@@ -135,8 +119,8 @@ namespace zetscript{
 							);
 						}
 
-						if(sc != NULL){
-							Symbol *symbol=sc->registerMemberVariable(
+						if(sc_var_member_extension != NULL){
+							symbol_member_variable=sc_var_member_extension->registerMemberVariable(
 								error
 								,eval_data->current_parsing_file
 								,line
@@ -144,15 +128,15 @@ namespace zetscript{
 								,is_constant?SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC :0
 							);
 
-							if(symbol==NULL){
+							if(symbol_member_variable==NULL){
 								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"%s",error.c_str());
 							}
 
 							if(is_constant){
-								symbol->ref_ptr=symbol_variable->idx_position;
+								symbol_member_variable->ref_ptr=symbol_variable->idx_position;
 							}else{ // reserve stack element to register var
 								StackElement *stk_new=(StackElement *)malloc(sizeof(StackElement));
-								symbol->ref_ptr=(zs_int)stk_new;
+								symbol_member_variable->ref_ptr=(zs_int)stk_new;
 								stk_new->setUndefined();
 							}
 						}
@@ -170,7 +154,37 @@ namespace zetscript{
 						int aux_line=line;
 
 						// try to evaluate expression...
-						if(is_constant){ // load constant...
+						/*if(is_constant){ // load constant...
+
+						}*/
+
+
+						if((aux_p = eval_expression(
+							eval_data
+							,sc_var_member_extension!=NULL || is_constant == true?aux_p+1:start_var
+							,aux_line
+							,scope_var
+							,sf_field_initializer!=NULL?&member_var_init_instructions:&eval_data->current_function->instructions
+							,{}
+							,is_constant==true ? 0:EVAL_EXPRESSION_ON_MAIN_BLOCK
+						))==NULL){
+							goto error_eval_keyword_var;
+						}
+
+						if(sf_field_initializer != NULL){ // check load and set find
+
+							eval_generate_byte_code_field_initializer(eval_data,sf_field_initializer,&member_var_init_instructions,symbol_member_variable);
+
+							// set variable as member
+							//(Instruction )((uint8_t *)sf_field_initializer->instructions+sf_field_initializer->instructions_len)
+
+							for(size_t i=0; i < member_var_init_instructions.size(); i++){
+								delete member_var_init_instructions[i];
+							}
+
+							member_var_init_instructions.clear();
+						}
+						else if(is_constant){ // make ptr as constant after variable is saved
 							EvalInstruction *eval_instruction;
 							eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(
 								BYTE_CODE_LOAD_GLOBAL
@@ -180,35 +194,13 @@ namespace zetscript{
 							eval_instruction->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, pre_variable_name+variable_name);
 							eval_instruction->symbol.name=pre_variable_name+variable_name;
 							eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
-						}
 
-
-						if((aux_p = eval_expression(
-							eval_data
-							,is_constant?aux_p+1:start_var
-							,aux_line
-							,scope_var
-							,sf_field_initializer!=NULL?&member_var_init_instructions:&eval_data->current_function->instructions
-							,{}
-							,EVAL_EXPRESSION_ON_MAIN_BLOCK
-						))==NULL){
-							goto error_eval_keyword_var;
-						}
-
-						if(sf_field_initializer != NULL){ // check load and set find
-
-							eval_inject_evaluated_instructions(eval_data,sf_field_initializer,&member_var_init_instructions);
-
-							for(size_t i=0; i < member_var_init_instructions.size(); i++){
-								delete member_var_init_instructions[i];
-							}
-
-							member_var_init_instructions.clear();
-						}
-
-						if(is_constant){ // make ptr as constant after variable is saved
 							eval_data->current_function->instructions.push_back(new EvalInstruction(
 								BYTE_CODE_STORE_CONST
+							));
+
+							eval_data->current_function->instructions.push_back(new EvalInstruction(
+								BYTE_CODE_RESET_STACK
 							));
 						}
 
@@ -216,7 +208,7 @@ namespace zetscript{
 					}
 					else if(is_constant){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Uninitialized constant symbol %s%s"
-								,sc!=NULL?zs_strutils::format("::%s",sc->symbol_class.name.c_str()).c_str():""
+								,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->symbol_class.name.c_str()).c_str():""
 								,variable_name.c_str());
 					}
 

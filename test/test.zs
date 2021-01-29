@@ -1,4 +1,4 @@
-function fun1(){
+/*function fun1(){
 	return 0,1;
 }
 
@@ -6,11 +6,23 @@ function fun2(){
 	return 2,3;
 }
 
-var a,b,c,d
+function fun3(){
+	return 4,5,6;
+}
 
-a,b=fun1() //,fun2()
+function fun4(){
+	return 7,8;
+}
 
-System::println("1 {0} {1} {2} {3}",a,b,c,d)
+function fun5(){
+	return 9,10,11;
+}
+
+var a,b,c,d,e,f,g,h,k,l,m,n,aux=false
+
+a,b,c,d,e,f,g,h,k,l,m,n=fun1(),fun2(),fun3(),aux==false?fun4():fun5()
+
+System::println("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}",a,b,c,d,e,f,g,h,k,l,m,n)*/
 
 //var t=v[fun()];
 //var g=false?1+fun():fun()
@@ -20,13 +32,13 @@ System::println("1 {0} {1} {2} {3}",a,b,c,d)
 
 //var b="vaca"
 
-/*class A{
-	var b="vaca",a=0,//,A::h=undefined
+class A{
+	var b="vaca",a=0//,A::h=undefined
 }
 
-var A::c=false
+//var A::c=false
 
-var a=new A();*/
+var a=new A();
 
 //System::println("{0} {1} {2}",a.a,b.b,b.c)
 

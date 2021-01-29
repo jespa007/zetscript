@@ -23,6 +23,7 @@ namespace zetscript{
 
 		std::string error="";
 		Symbol *symbol_field_initializer=NULL;
+		sf_field_initializer=NULL;
 
 		str_class_ptr_type="";
 		c_destructor = NULL;
@@ -50,27 +51,20 @@ namespace zetscript{
 		script_class_factory=zs->getScriptClassFactory();
 		static_constructor_destructor=false;
 
-
-		symbol_field_initializer=this->registerInternalMemberFunction(
-				error
-				,__FILE__
-				,__LINE__
-				,"__@field_initializer@__"
-				,{}
-		);
-
-		sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;
-		/*sf_field_initializer->instructions=(PtrInstruction)malloc(sizeof(Instruction));
-		sf_field_initializer->instructions_len=sizeof(Instruction);
-		memset(sf_field_initializer->instructions)*/
+		if(_idx_class != IDX_SCRIPT_CLASS_MAIN){ // main class has no field initializers and reserve first function as main function
 
 
-		/*sf_field_initializer=new ScriptFunction(zs
-				,this->idx_class
-				,ZS_IDX_UNDEFINED
-				,{}
-				,
-				);*/
+			symbol_field_initializer=this->registerInternalMemberFunction(
+					error
+					,__FILE__
+					,__LINE__
+					,"__@field_initializer@__"
+					,{}
+			);
+
+			sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;
+
+		}
 	}
 
 	Symbol				* 	ScriptClass::registerMemberVariable(

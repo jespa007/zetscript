@@ -1378,18 +1378,18 @@ load_element_object:
 						}
 
 						// copy to vm stack
-						stk_vm_current=stk_start_arg_call+n_returned_arguments_from_function; // stk_vm_current points to first stack element
+						stk_vm_current=stk_start_arg_call-1;//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
-						for(int i=n_returned_arguments_from_function-1; i>=0; i--){
+						for(int i=0;i<n_returned_arguments_from_function;i++){
 							//if(n_returned_arguments_from_function > 0){
-							*--stk_vm_current= stk_return[i]; // only return first argument
+							*stk_vm_current++= *stk_return++; // only return first argument
 							/*}
 							else{
 								PUSH_UNDEFINED; // no return push undefined
 							}*/
 						}
 
-						stk_vm_current+=n_returned_arguments_from_function;
+						//stk_vm_current+=n_returned_arguments_from_function;
 
 					}else{ // return only first element
 						// set undefined for other assignments...
