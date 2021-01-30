@@ -14,6 +14,7 @@ namespace zetscript{
 	}
 
 	ScriptObjectString::ScriptObjectString(){
+		idx_script_class=IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING;
 		str_value = "";
 		value = &str_value;
 	}

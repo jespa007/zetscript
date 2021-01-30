@@ -183,7 +183,6 @@ namespace zetscript{
 			return stk_undefined;
 		}
 
-		//StackElement stk_result=stk_undefined;
 		StackElement stk_return=stk_undefined;
 		StackElement *stk_start=NULL;
 

@@ -484,7 +484,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_THIS: // load variable ...
 				PUSH_STK_PTR(this_object->getThisProperty());
 				continue;
-			case BYTE_CODE_LOAD_THIS_MEMBER: // direct load
+			case BYTE_CODE_LOAD_MEMBER: // direct load
 				PUSH_STK_PTR(this_object->getElementAt(instruction->value_op2));
 				continue;
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
@@ -907,30 +907,31 @@ load_element_object:
 								*stk_dst=*stk_src;
 							}else if(type_var & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 
-								stk_dst->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
-
 								if(STK_IS_SCRIPT_OBJECT_STRING(stk_src)){
-									ScriptObject *script_object=NULL;
+									ScriptObjectString *str_object=NULL;
 
 									if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
-										script_var=(ScriptObject *)stk_dst->stk_value;
+										str_object=(ScriptObjectString *)stk_dst->stk_value;
 									}else{ // Generates a std::string var
-										stk_dst->stk_value=script_object= NEW_STRING_VAR;
-										if(!script_object->initSharedPtr()){
+										stk_dst->stk_value=str_object= NEW_STRING_VAR;
+										stk_dst->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
+										if(!str_object->initSharedPtr()){
 											goto lbl_exit_function;
 										}
-										if(!sharePointer(script_object->shared_pointer)){
+										if(!sharePointer(str_object->shared_pointer)){
 											goto lbl_exit_function;
 										}
 									}
 
-									((ScriptObjectString *)script_object)->set(stk_src->toString());
+									str_object->set(stk_src->toString());
 
 								}else{ // object we pass its reference
 
-									ScriptObject *script_object=(ScriptObject *)stk_src->stk_value;
+									script_var=(ScriptObject *)stk_src->stk_value;
 
 									stk_dst->stk_value=script_var;
+									stk_dst->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
+
 									if(!STK_IS_THIS(stk_src)){ // do not share this!
 										if(!sharePointer(script_var->shared_pointer)){
 											goto lbl_exit_function;

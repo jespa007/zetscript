@@ -283,29 +283,32 @@ namespace zetscript{
 
 		}
 
-		void eval_generate_byte_code_field_initializer(EvalData *data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions, Symbol *symbol_member_var){
+		void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions, Symbol *symbol_member_var){
 
 			// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
 			PtrInstruction new_instructions=NULL;
+			unsigned idx_position=0;
 			size_t new_instructions_len=0;
 			Instruction * start_ptr=NULL;
 			//int current_size=sf->instructions_len;
 			int n_elements_to_add=instructions->size();
-			int idx_load_this_element=instructions->size()-3;
+			//int idx_load_this_element=instructions->size()-3;
 
 
-			if(instructions->size() < 3){
+			/*if(instructions->size() < 3){
 				THROW_RUNTIME_ERROR("eval_generate_byte_code_field_initializer: internal error 1");
-			}
+			}*/
 
 
 
-			if(instructions->at(idx_load_this_element)->vm_instruction.byte_code != BYTE_CODE_LOAD_LOCAL){
+			/*if(instructions->at(idx_load_this_element)->vm_instruction.byte_code != BYTE_CODE_LOAD_LOCAL){
 				THROW_RUNTIME_ERROR("eval_generate_byte_code_field_initializer: internal error 2");
-			}
+			}*/
 
-			if(sf->instructions_len == 0){
-				n_elements_to_add=n_elements_to_add+1;
+			n_elements_to_add=n_elements_to_add+3; // +3 for load/store/reset stack
+
+			if(sf->instructions == NULL){
+				n_elements_to_add=n_elements_to_add+1; // +1 for end instruction
 			}
 
 			new_instructions_len = sf->instructions_len+(n_elements_to_add) * sizeof(Instruction);
@@ -322,16 +325,10 @@ namespace zetscript{
 
 
 			// 3. copy eval instructions
-
 			for(unsigned i=0; i < instructions->size(); i++){
 				EvalInstruction *instruction = instructions->at(i);
 				// save instruction ...
 				*start_ptr=instruction->vm_instruction;
-
-				if(i==idx_load_this_element){
-					start_ptr->byte_code=BYTE_CODE_LOAD_THIS_MEMBER;
-					start_ptr->value_op2=symbol_member_var->idx_position;
-				}
 
 				//------------------------------------
 				// symbol value to save at runtime ...
@@ -344,6 +341,26 @@ namespace zetscript{
 
 				start_ptr++;
 
+			}
+
+			// 4. add load/store/reset stack
+			idx_position=start_ptr-new_instructions;
+			*start_ptr++=Instruction(BYTE_CODE_LOAD_MEMBER,ZS_IDX_UNDEFINED,symbol_member_var->idx_position);
+			sf->instruction_source_info[idx_position]=InstructionSourceInfo(
+				eval_data->current_parsing_file
+				,symbol_member_var->line
+				,get_mapped_name(eval_data,symbol_member_var->name)
+			);
+
+			//instruction_token->vm_instruction.value_op2=instruction_value2;
+
+
+
+			*start_ptr++=Instruction(BYTE_CODE_STORE);
+			*start_ptr++=Instruction(BYTE_CODE_RESET_STACK);
+
+			if(sf->instructions != NULL){
+				free(sf->instructions); // deallocate last allocated instructions
 			}
 
 			sf->instructions=new_instructions;
@@ -435,7 +452,7 @@ namespace zetscript{
 								Symbol *symbol_function=sf_class->getSymbol(*ptr_str_symbol_to_find,ANY_PARAMS_SYMBOL_ONLY);
 								if(symbol_function!=NULL){
 									instruction->vm_instruction.value_op2=symbol_function->idx_position;
-									instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_THIS_MEMBER; // immediate load
+									instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER; // immediate load
 								}
 							}
 						}

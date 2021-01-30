@@ -31,14 +31,27 @@ System::println("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}",a,b,c,d,e,f,
 //System::println("{0}",Math::randm())
 
 //var b="vaca"
-
-class A{
-	var b="vaca",a=0//,A::h=undefined
+//const b=0;
+class B{
+	print(){System::println("dadsa")}	
 }
 
-//var A::c=false
+class A{
+	//const c=0
+	var b="vaca",c=new B()//,a=0//,A::h=undefined
+}
+
+//var A::d=false
+//const A::e=-1
 
 var a=new A();
+var b=new B();
+
+b.print()
+
+/*var d=*/a.c.print()
+
+//d.print()
 
 //System::println("{0} {1} {2}",a.a,b.b,b.c)
 

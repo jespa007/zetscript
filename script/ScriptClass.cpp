@@ -124,9 +124,9 @@ namespace zetscript{
 			return NULL;
 		}
 
-		/*if((symbol_properties & (SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_CONST))==0){
-			error=zs_strutils::format("Variable \"%s\" should registered as native or const",symbol_name.c_str());
-			return NULL;
+		/*if(((symbol_properties & (SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_CONST))==0) && ref_ptr==0){ // add
+			//error=zs_strutils::format("Variable \"%s\" should registered as native or const",symbol_name.c_str());
+			//return NULL;
 		}*/
 
 		Symbol *symbol=new Symbol;
@@ -378,9 +378,6 @@ namespace zetscript{
 
 		for(unsigned i=0; i < symbol_members_built_in->count; i++){
 			Symbol *symbol=(Symbol *)symbol_members_built_in->items[i];
-			if(symbol->properties == 0){ // is member var
-				free((void *)symbol->ref_ptr);
-			}
 			delete symbol; // symbol variable member was created before
 		}
 		delete symbol_members_built_in;

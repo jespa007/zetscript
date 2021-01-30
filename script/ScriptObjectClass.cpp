@@ -80,6 +80,11 @@ namespace zetscript{
 					se->stk_value=(void *)symbol->ref_ptr;
 					se->properties=MSK_STK_PROPERTY_PTR_STK;
 				}/*else{ // fixed var
+					StackElement *stk_new=(StackElement *)malloc(sizeof(StackElement));
+					se->stk_value=stk_new;
+					stk_new->setUndefined();
+					se->properties=MSK_STK_PROPERTY_PTR_STK;
+
 					//VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"internal error: symbol should be const or native var");
 					//return;
 				}*/
@@ -250,13 +255,33 @@ namespace zetscript{
 	}
 
 	ScriptObjectClass::~ScriptObjectClass(){
-
+		ScriptClass *script_class=getScriptClass();
 
 		// deallocate member function objects
 		for(int i=0; i< stk_elements.count; i++){
 			StackElement *stk=(StackElement *)stk_elements.items[i];
 			if(stk->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER){
 				delete (FunctionMember *)stk->stk_value;
+			}
+		}
+
+		for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
+			Symbol *symbol = (Symbol *)script_class->symbol_members->items[i];
+
+			if(symbol->properties == 0){ // member var
+				StackElement *stk=(StackElement *)stk_elements.items[i];
+				if(stk->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					ScriptObject *so=(ScriptObject *)stk->stk_value;
+
+					if(so->shared_pointer->data.n_shares==1){ // can delete because is shared with only this
+						free(so->shared_pointer);
+						delete so;
+					}else{
+						if(so->shared_pointer->data.n_shares>1){ // we deferr this share
+							so->shared_pointer->data.n_shares--;
+						}
+					}
+				}
 			}
 		}
 

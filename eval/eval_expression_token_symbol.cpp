@@ -229,7 +229,7 @@ namespace zetscript{
 														,static_error.c_str());
 											}
 										}else{ // is a member var
-											instruction->vm_instruction.byte_code = BYTE_CODE_LOAD_THIS_MEMBER;
+											instruction->vm_instruction.byte_code = BYTE_CODE_LOAD_MEMBER;
 										}
 									}
 								} // --> in eval::pop_function will be find
@@ -369,7 +369,7 @@ namespace zetscript{
 
 							if(symbol_member != NULL){ // is member
 								instruction_value2=symbol_member->idx_position;
-								byte_code=ByteCode::BYTE_CODE_LOAD_THIS_MEMBER;
+								byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER;
 							}
 
 

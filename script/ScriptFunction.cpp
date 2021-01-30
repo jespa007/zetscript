@@ -166,6 +166,7 @@ namespace zetscript{
 			case BYTE_CODE_FIND_VARIABLE:
 			case BYTE_CODE_LOAD_LOCAL:
 			case BYTE_CODE_LOAD_GLOBAL:
+			case BYTE_CODE_LOAD_MEMBER:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,ByteCodeToStr(instruction->byte_code)

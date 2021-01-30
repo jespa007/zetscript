@@ -119,7 +119,7 @@ namespace zetscript{
 							);
 						}
 
-						if(sc_var_member_extension != NULL){
+						if( sc_var_member_extension != NULL){
 							symbol_member_variable=sc_var_member_extension->registerMemberVariable(
 								error
 								,eval_data->current_parsing_file
@@ -132,13 +132,10 @@ namespace zetscript{
 								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"%s",error.c_str());
 							}
 
-							if(is_constant){
+							if(is_constant == true){
 								symbol_member_variable->ref_ptr=symbol_variable->idx_position;
-							}else{ // reserve stack element to register var
-								StackElement *stk_new=(StackElement *)malloc(sizeof(StackElement));
-								symbol_member_variable->ref_ptr=(zs_int)stk_new;
-								stk_new->setUndefined();
 							}
+
 						}
 					}catch(std::exception & ex){
 						EVAL_ERROR("%s",ex.what());
@@ -153,25 +150,19 @@ namespace zetscript{
 
 						int aux_line=line;
 
-						// try to evaluate expression...
-						/*if(is_constant){ // load constant...
-
-						}*/
-
-
 						if((aux_p = eval_expression(
 							eval_data
 							,sc_var_member_extension!=NULL || is_constant == true?aux_p+1:start_var
 							,aux_line
 							,scope_var
-							,sf_field_initializer!=NULL?&member_var_init_instructions:&eval_data->current_function->instructions
+							,sf_field_initializer!=NULL && is_constant==false?&member_var_init_instructions:&eval_data->current_function->instructions
 							,{}
-							,is_constant==true ? 0:EVAL_EXPRESSION_ON_MAIN_BLOCK
+							,0 //is_constant==true||sf_field_initializer ? 0:EVAL_EXPRESSION_ON_MAIN_BLOCK
 						))==NULL){
 							goto error_eval_keyword_var;
 						}
 
-						if(sf_field_initializer != NULL){ // check load and set find
+						if(sf_field_initializer != NULL && is_constant == false){ // check load and set find
 
 							eval_generate_byte_code_field_initializer(eval_data,sf_field_initializer,&member_var_init_instructions,symbol_member_variable);
 
@@ -184,21 +175,24 @@ namespace zetscript{
 
 							member_var_init_instructions.clear();
 						}
-						else if(is_constant){ // make ptr as constant after variable is saved
-							EvalInstruction *eval_instruction;
-							eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(
-								BYTE_CODE_LOAD_GLOBAL
-							));
+						else{
+							if(is_constant){ // make ptr as constant after variable is saved
+								EvalInstruction *eval_instruction;
+								eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(
+									BYTE_CODE_LOAD_GLOBAL
+								));
 
-							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
-							eval_instruction->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, pre_variable_name+variable_name);
-							eval_instruction->symbol.name=pre_variable_name+variable_name;
-							eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
+								eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
+								eval_instruction->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, pre_variable_name+variable_name);
+								eval_instruction->symbol.name=pre_variable_name+variable_name;
+								eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
 
-							eval_data->current_function->instructions.push_back(new EvalInstruction(
-								BYTE_CODE_STORE_CONST
-							));
+								eval_data->current_function->instructions.push_back(new EvalInstruction(
+									BYTE_CODE_STORE_CONST
+								));
+							}
 
+							// finally we insert reset stack
 							eval_data->current_function->instructions.push_back(new EvalInstruction(
 								BYTE_CODE_RESET_STACK
 							));
