@@ -110,7 +110,11 @@ namespace zetscript{
 
 					// register symbol...
 					try{
-						if(is_constant || sc_var_member_extension==NULL){ // is constant or is local (sc_var_member_extension==NULL)
+
+						bool is_local_or_const=is_constant || sc_var_member_extension==NULL;
+						bool is_const_member_or_var_member=sc_var_member_extension != NULL;
+
+						if(is_local_or_const){ // is constant or is local (sc_var_member_extension==NULL)
 							symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
 								scope_var
 								, eval_data->current_parsing_file
@@ -119,7 +123,7 @@ namespace zetscript{
 							);
 						}
 
-						if( sc_var_member_extension != NULL){
+						if( is_const_member_or_var_member){
 							symbol_member_variable=sc_var_member_extension->registerMemberVariable(
 								error
 								,eval_data->current_parsing_file
@@ -149,20 +153,22 @@ namespace zetscript{
 					if(*aux_p == '='){
 
 						int aux_line=line;
+						bool is_var_member_or_const=sc_var_member_extension!=NULL || is_constant == true;
+						bool is_var_member=sf_field_initializer!=NULL && is_constant==false;
 
 						if((aux_p = eval_expression(
 							eval_data
-							,sc_var_member_extension!=NULL || is_constant == true?aux_p+1:start_var
+							,is_var_member_or_const?aux_p+1:start_var
 							,aux_line
 							,scope_var
-							,sf_field_initializer!=NULL && is_constant==false?&member_var_init_instructions:&eval_data->current_function->instructions
+							,is_var_member?&member_var_init_instructions:&eval_data->current_function->instructions
 							,{}
 							,0 //is_constant==true||sf_field_initializer ? 0:EVAL_EXPRESSION_ON_MAIN_BLOCK
 						))==NULL){
 							goto error_eval_keyword_var;
 						}
 
-						if(sf_field_initializer != NULL && is_constant == false){ // check load and set find
+						if(is_var_member){ // check load and set find
 
 							eval_generate_byte_code_field_initializer(eval_data,sf_field_initializer,&member_var_init_instructions,symbol_member_variable);
 

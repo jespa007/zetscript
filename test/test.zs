@@ -47,9 +47,9 @@ class A{
 var a=new A();
 var b=new B();
 
-b.print()
+//b.print()
 
-/*var d=*/a.c.print()
+/*var d=*//*a.c.print()*/
 
 //d.print()
 
