@@ -23,11 +23,11 @@ namespace zetscript{
 			case Operator::OPERATOR_ASSIGN_MOD:
 				return ByteCode::BYTE_CODE_STORE_MOD;
 			case Operator::OPERATOR_ASSIGN_XOR:
-				return ByteCode::BYTE_CODE_STORE_XOR;
+				return ByteCode::BYTE_CODE_STORE_BITWISE_XOR;
 			case Operator::OPERATOR_ASSIGN_AND:
-				return ByteCode::BYTE_CODE_STORE_AND;
+				return ByteCode::BYTE_CODE_STORE_BITWISE_AND;
 			case Operator::OPERATOR_ASSIGN_OR:
-				return ByteCode::BYTE_CODE_STORE_OR;
+				return ByteCode::BYTE_CODE_STORE_BITWISE_OR;
 			case Operator::OPERATOR_ASSIGN_SHIFT_LEFT:
 				return ByteCode::BYTE_CODE_STORE_SHL;
 			case Operator::OPERATOR_ASSIGN_SHIFT_RIGHT:
@@ -46,11 +46,11 @@ namespace zetscript{
 			case Operator::OPERATOR_MOD:
 				return ByteCode::BYTE_CODE_MOD;
 			case Operator::OPERATOR_XOR:
-				return ByteCode::BYTE_CODE_XOR;
+				return ByteCode::BYTE_CODE_BITWISE_XOR;
 			case Operator::OPERATOR_AND:
-				return ByteCode::BYTE_CODE_AND;
+				return ByteCode::BYTE_CODE_BITWISE_AND;
 			case Operator::OPERATOR_OR:
-				return ByteCode::BYTE_CODE_OR;
+				return ByteCode::BYTE_CODE_BITWISE_OR;
 			case Operator::OPERATOR_SHIFT_LEFT:
 				return ByteCode::BYTE_CODE_SHL;
 			case Operator::OPERATOR_SHIFT_RIGHT:

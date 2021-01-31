@@ -210,7 +210,7 @@ namespace zetscript{
 				if(last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS
 				||last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 					// .. add information last load that it will be stored
-					last_load_instruction->properties |= MSK_INSTRUCTION_PROPERTY_PACK_MEMBER_INFO;
+					last_load_instruction->properties |= MSK_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST;
 				}
 
 				// ... add arithmetic operator byte code

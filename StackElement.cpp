@@ -2,7 +2,7 @@
 
 namespace zetscript{
 
-	extern const StackElement stk_undefined={0,0};
+	extern const StackElement stk_undefined={0,MSK_STK_PROPERTY_UNDEFINED};
 
 	const char * StackElement::typeStr(){
 		StackElement *stk=this;

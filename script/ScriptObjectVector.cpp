@@ -55,7 +55,7 @@ namespace zetscript{
 		return (StackElement *)stk_elements.items[idx];
 	}
 
-		bool ScriptObjectVector::eraseElementAt( short idx){//onst std::string & varname){
+	bool ScriptObjectVector::eraseElementAt( short idx){//onst std::string & varname){
 
 		StackElement *si;
 		ScriptFunction * ir_fun;
@@ -87,7 +87,7 @@ namespace zetscript{
 					  ){ // deallocate but not if is c or this ref
 
 						// remove property if not referenced anymore
-						if(!this->zs->getVirtualMachine()->unrefSharedScriptObject(((ScriptObject *)(si->stk_value))->shared_pointer,true)){
+						if(!this->zs->getVirtualMachine()->unrefSharedScriptObjectAndRemoveIfZero((ScriptObject **)&si->stk_value)){
 							return false;
 						}
 

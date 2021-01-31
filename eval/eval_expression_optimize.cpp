@@ -189,13 +189,13 @@ namespace zetscript{
 				}
 				break;
 			// binary ops
-			case BYTE_CODE_AND:
+			case BYTE_CODE_BITWISE_AND:
 				PERFORM_BINARY_OPERATION(&);
 				break;
-			case BYTE_CODE_OR:
+			case BYTE_CODE_BITWISE_OR:
 				PERFORM_BINARY_OPERATION(|);
 				break;
-			case BYTE_CODE_XOR:
+			case BYTE_CODE_BITWISE_XOR:
 				PERFORM_BINARY_OPERATION(^);
 				break;
 			// logic ops

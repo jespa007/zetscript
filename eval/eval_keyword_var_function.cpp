@@ -29,6 +29,7 @@ namespace zetscript{
 
 
 				char *start_var,*end_var;
+				int start_line=0;
 				ScriptClass *sc=NULL;
 				std::string s_aux,variable_name,pre_variable_name="";
 				std::string error;
@@ -66,20 +67,22 @@ namespace zetscript{
 				do{
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					start_var=aux_p;
+					start_line=line;
 					end_var=NULL;
 					ScriptClass *sc_var_member_extension=sc;
 
 					if(sc==NULL){
 						if((end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
 							eval_data
-							,aux_p
-							,line
+							,start_var
+							,start_line
 							,&sc_var_member_extension
 							,variable_name
 					   ))!=NULL){
 							if(is_class_scope==true){
 								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected ::");
 							}
+							line=start_line;
 							sf_field_initializer=sc_var_member_extension->sf_field_initializer;
 						}else{ // NULL check if error
 							if(eval_data->error){
@@ -129,7 +132,7 @@ namespace zetscript{
 								,eval_data->current_parsing_file
 								,line
 								,variable_name
-								,is_constant?SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC :0
+								,is_constant?SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC : 0
 							);
 
 							if(symbol_member_variable==NULL){
@@ -163,7 +166,7 @@ namespace zetscript{
 							,scope_var
 							,is_var_member?&member_var_init_instructions:&eval_data->current_function->instructions
 							,{}
-							,0 //is_constant==true||sf_field_initializer ? 0:EVAL_EXPRESSION_ON_MAIN_BLOCK
+							//,0 //is_constant==true||sf_field_initializer ? 0:EVAL_EXPRESSION_ON_MAIN_BLOCK
 						))==NULL){
 							goto error_eval_keyword_var;
 						}

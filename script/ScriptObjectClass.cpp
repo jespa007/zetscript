@@ -79,21 +79,9 @@ namespace zetscript{
 				}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
 					se->stk_value=(void *)symbol->ref_ptr;
 					se->properties=MSK_STK_PROPERTY_PTR_STK;
-				}/*else{ // fixed var
-					StackElement *stk_new=(StackElement *)malloc(sizeof(StackElement));
-					se->stk_value=stk_new;
-					stk_new->setUndefined();
-					se->properties=MSK_STK_PROPERTY_PTR_STK;
-
-					//VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"internal error: symbol should be const or native var");
-					//return;
-				}*/
+				}
 			}
 		}
-
-		// init built in vars
-
-
 
 		//-------------------------------------------------------------------------------
 		// LINK C OBJECT
@@ -127,9 +115,7 @@ namespace zetscript{
 
 			}
 
-		}/*else{ // pass the pointer reference but in principle is cannot be deleted when the scriptvar is deleted...
-			idx_script_class_native=irv->idx_class;
-		}*/
+		}
 
 		// execute init var
 		//sc=script_class;
@@ -139,33 +125,6 @@ namespace zetscript{
 
 		// only create symbols if not std::string or std::vector type to make it fast ...
 	}
-
-	/*void ScriptObjectClass::setup(){
-		//FunctionSymbol *si;
-
-
-
-		// register custom built-in vars
-		if((se=addPropertyBuiltIn(
-			"length"
-		))==NULL){
-			return;
-		}
-
-		se->var_ref=&lenght_user_properties;
-		se->properties=(MSK_STK_PROPERTY_ZS_INT|MSK_STK_PROPERTY_IS_VAR_C|MSK_STK_PROPERTY_READ_ONLY);
-
-		// start property idx starts  from last built-in property...
-		//idx_start_user_properties=stk_properties->count;
-		//lenght_user_properties=0;
-	}
-
-	void ScriptObjectClass::init(ScriptClass *irv, void * _c_object){
-
-
-		createSymbols(irv);
-
-	}*/
 
 	ScriptFunction *ScriptObjectClass::getConstructorFunction(){
 
@@ -178,11 +137,7 @@ namespace zetscript{
 	}
 
 	bool ScriptObjectClass::itHasSetMetamethod(){
-		return getProperty(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_SET),NULL) != NULL;
-		/*metamethod_operator[BYTE_CODE_METAMETHOD_SET]!=NULL){
-			return script_class->metamethod_operator[BYTE_CODE_METAMETHOD_SET]->count > 0;
-		}
-		return false;*/
+		return getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET),NULL) != NULL;
 	}
 
 	void ScriptObjectClass::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
@@ -210,7 +165,7 @@ namespace zetscript{
 
 	std::string ScriptObjectClass::toString(){
 		// check whether toString is implemented...
-		StackElement *stk_function=getProperty(ByteCodeMetamethodToSymbolStr(BYTE_CODE_METAMETHOD_TO_STRING),NULL);
+		StackElement *stk_function=getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING),NULL);
 
 		if(stk_function != NULL){ // get first element
 			if(stk_function->properties & MSK_STK_PROPERTY_FUNCTION){
@@ -264,27 +219,6 @@ namespace zetscript{
 				delete (FunctionMember *)stk->stk_value;
 			}
 		}
-
-		for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
-			Symbol *symbol = (Symbol *)script_class->symbol_members->items[i];
-
-			if(symbol->properties == 0){ // member var
-				StackElement *stk=(StackElement *)stk_elements.items[i];
-				if(stk->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					ScriptObject *so=(ScriptObject *)stk->stk_value;
-
-					if(so->shared_pointer->data.n_shares==1){ // can delete because is shared with only this
-						free(so->shared_pointer);
-						delete so;
-					}else{
-						if(so->shared_pointer->data.n_shares>1){ // we deferr this share
-							so->shared_pointer->data.n_shares--;
-						}
-					}
-				}
-			}
-		}
-
 
 		bool deallocated = false;
 		if(created_object != 0 && delete_c_object){

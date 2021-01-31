@@ -215,7 +215,7 @@ namespace zetscript{
 		char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
 			// Inline new : (new A(4+5)).toString()
 			char *aux_p = (char *)s;
-			std::string symbol_value;
+			std::string class_name;
 			ScriptClass *sc=NULL;
 			int n_args=0;
 			Symbol *constructor_function=NULL;
@@ -237,13 +237,13 @@ namespace zetscript{
 							eval_data
 							,aux_p
 							,line
-							,symbol_value
+							,class_name
 					);
 
-					sc=GET_SCRIPT_CLASS(eval_data,symbol_value);
+					sc=GET_SCRIPT_CLASS(eval_data,class_name);
 
 					if(sc==NULL){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",symbol_value.c_str());
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
 					}
 
 					instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_CLASS));
@@ -253,15 +253,15 @@ namespace zetscript{
 
         			 // call function if there's any constructor function
 					 // get constructor function
-					 constructor_function=sc->getSymbol(scope_info->script_class->symbol_class.name); // FUNCTION_MEMBER_CONSTRUCTOR_NAME
+					 constructor_function=sc->getSymbol(class_name); // FUNCTION_MEMBER_CONSTRUCTOR_NAME
 
 					 if(constructor_function != NULL){
 						 // insert load function ...
 						 instructions->push_back(
 							eval_instruction=new EvalInstruction(
-								 ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT
+								 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR
 								 ,ZS_IDX_UNDEFINED
-								 ,ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
+								 ,constructor_function->idx_position
 							)
 						 );
 					 }
@@ -269,7 +269,7 @@ namespace zetscript{
 					 eval_instruction->instruction_source_info=InstructionSourceInfo(
 						 eval_data->current_parsing_file
 						 ,line
-						 ,get_mapped_name(eval_data,scope_info->script_class->symbol_class.name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+						 ,get_mapped_name(eval_data,class_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
 					 );
 
 					 if(*aux_p != '('){

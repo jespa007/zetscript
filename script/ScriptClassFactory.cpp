@@ -106,6 +106,7 @@ namespace zetscript{
 
 		ZS_REGISTER_FUNCTION(zs,"ptrToZetScriptPtr",ptrToZetScriptPtr);
 
+		// StringObjectVector
 		registerNativeMemberFunction<ScriptObjectVector>("push",&ScriptObjectVector::pushSf);
 		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVector::popSf);
 

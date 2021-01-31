@@ -302,11 +302,11 @@ namespace zetscript{
 		else{
 			// check metamethod function...
 			for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
-				if(ZS_STRCMP(ByteCodeMetamethodToSymbolStr((ByteCodeMetamethod)i),==,function_name.c_str())){
+				if(ZS_STRCMP(byte_code_metamethod_to_symbol_str((ByteCodeMetamethod)i),==,function_name.c_str())){
 					ByteCodeMetamethod op=(ByteCodeMetamethod)i;
-					const char *byte_code_metamethod_operator_str=ByteCodeMetamethodToOperatorStr(op);
-					const char *str_symbol_metamethod=ByteCodeMetamethodToSymbolStr(op);
-					int min_args_static_metamethod=getNumArgumentsStaticMetamethod(op); // expected params for static function, n_args -1 else
+					const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(op);
+					const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(op);
+					int min_args_static_metamethod=get_num_arguments_static_metamethod(op); // expected params for static function, n_args -1 else
 
 					Symbol *symbol_result;
 
@@ -338,7 +338,7 @@ namespace zetscript{
 						}
 					}
 					else {
-						min_args_static_metamethod=getNumArgumentsNonStaticMetamethod(op);
+						min_args_static_metamethod=get_num_arguments_non_static_metamethod(op);
 						if(function_symbol->n_params< min_args_static_metamethod){ // non-static functions pass this object as first parameter
 							error = zs_strutils::format("Non static metamethod %s (aka %s) should have at least %i parameter/s"
 								,str_symbol_metamethod

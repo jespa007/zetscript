@@ -105,7 +105,7 @@ namespace zetscript{
 		int idx_arg_start=0;
 
 		if(static_ref == false){ // member function is a lambda function that pass this object as first parameter, so this why static_ref == false but ...
-			//this_param=1; // .. put this_param as 1 because we pass 1st param in the lambda function.
+
 
 			if(this_object==NULL){
 				VM_ERROR_AND_RET("Internal error: Cannot set parameter as this object due this object is NULL");
@@ -120,7 +120,7 @@ namespace zetscript{
 
 			// special case that constructor is passed as static
 			if(		(calling_function->symbol.properties&SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS)
-					&& instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR
+					&& instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR
 					&& this_object!=NULL
 			){
 				idx_arg_start = 1;
@@ -168,13 +168,6 @@ namespace zetscript{
 					vm_error_str.c_str()
 				);
 			}
-
-			// we manage float, so we have to manage another variable to keep its pointer when passes into native param
-			/*if(function_param->idx_type == IDX_BUILTIN_TYPE_FLOAT_PTR_C){
-				float *ptr=&float_converted_param[i];
-				*ptr = *((float *)&converted_param[i]);
-				converted_param[i]=(zs_int)ptr;
-			}*/
 		}
 
 		if(calling_function->idx_return_type == IDX_BUILTIN_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){

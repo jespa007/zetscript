@@ -7,7 +7,7 @@
 // properties shared by compiler + VM
 typedef enum:unsigned char {
 	//-- COMPILER/VM TYPE VAR
-	BIT_STK_PROPERTY_ZS_INT=0,								// 0x0001
+	BIT_STK_PROPERTY_ZS_INT,								// 0x0001
 	BIT_STK_PROPERTY_FLOAT,									// 0x0002
 	BIT_STK_PROPERTY_BOOL,									// 0x0004
 	BIT_STK_PROPERTY_FUNCTION,								// 0x0008
@@ -19,15 +19,15 @@ typedef enum:unsigned char {
 	BIT_STK_PROPERTY_IS_VAR_C = BIT_STK_PROPERTY_MAX, 		// 0x0080
 	BIT_STK_PROPERTY_PTR_STK,	 							// 0x0100
 	BIT_STK_PROPERTY_READ_ONLY,				 				// 0x0200
-	BIT_STK_PROPERTY_ATTRIB,								// 0x0400
-	BIT_STK_PROPERTY_ARRAY_STK,								// 0x0800
+	//BIT_STK_PROPERTY_ATTRIB,								// 0x0400
+	//BIT_STK_PROPERTY_ARRAY_STK,								// 0x0800
 	MAX_BIT_RUNTIME
 
 }StkProperty;
 
 
 
-#define		MSK_STK_PROPERTY_UNDEFINED 			0 // let's say a variable not defined...
+#define		MSK_STK_PROPERTY_UNDEFINED 			0 //(0x1 << BIT_STK_PROPERTY_ZS_UNDEFINED) // let's say a variable not defined...
 #define		MSK_STK_PROPERTY_ZS_INT 			(0x1 << BIT_STK_PROPERTY_ZS_INT) // primitive int
 #define		MSK_STK_PROPERTY_FLOAT				(0x1 << BIT_STK_PROPERTY_FLOAT) // primitive number
 #define		MSK_STK_PROPERTY_BOOL				(0x1 << BIT_STK_PROPERTY_BOOL) // primitive bool
@@ -56,8 +56,8 @@ enum:unsigned short {
 	MSK_STK_PROPERTY_IS_VAR_C = (0x1 << BIT_STK_PROPERTY_IS_VAR_C),
 	MSK_STK_PROPERTY_PTR_STK = (0x1 << BIT_STK_PROPERTY_PTR_STK),
 	MSK_STK_PROPERTY_READ_ONLY = (0x1 << BIT_STK_PROPERTY_READ_ONLY),
-	MSK_STK_PROPERTY_ARRAY_STK = (0x1 << BIT_STK_PROPERTY_ARRAY_STK),
-	MSK_STK_PROPERTY_CONST_CHAR = 0xffff 	// special use const char
+	//MSK_STK_PROPERTY_ARRAY_STK = (0x1 << BIT_STK_PROPERTY_ARRAY_STK),
+	//MSK_STK_PROPERTY_CONST_CHAR = 0xffff 	// special use const char
 	//MSK_STK_PROPERTY_RETURN = (0x1 << BIT_STK_PROPERTY_RETURN)
 };
 
@@ -66,7 +66,7 @@ enum:unsigned short {
 #define MSK_STK_PROPERTY_BOOL_PTR (MSK_STK_PROPERTY_IS_VAR_C | MSK_STK_PROPERTY_BOOL)
 
 #define MSK_STK_PROPERTY_RUNTIME					(((0x1<<(MAX_BIT_RUNTIME-BIT_STK_PROPERTY_IS_VAR_C))-1)<<(BIT_STK_PROPERTY_IS_VAR_C))
-#define GET_MSK_STK_PROPERTY_RUNTIME(prop)		((prop)&MSK_STK_PROPERTY_RUNTIME)
+#define GET_MSK_STK_PROPERTY_RUNTIME(prop)			((prop)&MSK_STK_PROPERTY_RUNTIME)
 
 #define STK_VALUE_IS_FLOAT_OR_INT(stk)\
 	(stk->properties & (MSK_STK_PROPERTY_FLOAT|MSK_STK_PROPERTY_ZS_INT))

@@ -31,7 +31,8 @@ namespace zetscript{
 
 		InfoSharedPointerNode *newSharedPointer(ScriptObject *var_ptr);
 		bool sharePointer( InfoSharedPointerNode *_node);
-		bool unrefSharedScriptObject( InfoSharedPointerNode *_node, int idx_current_call, bool remove_if_0=false);
+		bool unrefSharedScriptObjectAndRemoveIfZero(ScriptObject **);
+		bool unrefSharedScriptObject( InfoSharedPointerNode *_node, int idx_current_call);
 		//void removeSharedScriptObject( InfoSharedPointerNode *_node, std::string *error);
 
 		const ScriptFunction * getCurrent_C_FunctionCall();
@@ -166,6 +167,7 @@ namespace zetscript{
 
 		inline bool insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		inline bool deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
+		bool   decrementShareNodesAndDettachIfZero(InfoSharedPointerNode *_node, bool & is_dettached);
 		void insertLifetimeObject(const char *file, int line, ScriptObject *script_object);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 
@@ -183,10 +185,18 @@ namespace zetscript{
 
 		inline void popVmScope(bool check_empty_shared_pointers=true);
 
+		inline bool applyMetamethodPrimitive(
+			 ScriptFunction *info_function
+			,Instruction *instruction
+			,ByteCodeMetamethod op_code_methamethod
+			,StackElement *stk_result_op1
+			,StackElement *stk_result_op2
+			, bool & error
+		);
+
 		inline bool applyMetamethod(
 			 ScriptFunction *info_function
 			,Instruction *instruction
-//			,const char *op_code_str
 			,ByteCodeMetamethod op_code_methamethod
 			,StackElement *stk_result_op1
 			,StackElement *stk_result_op2
@@ -203,4 +213,4 @@ namespace zetscript{
 
 
 #include "VirtualMachine.tcc"
-//#include "VirtualMachine_call_function_script.tcc"
+

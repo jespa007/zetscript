@@ -93,6 +93,7 @@ namespace zetscript{
 			unsigned char value_op1 = instruction->value_op1;
 			int value_op2 = instruction->value_op2;
 			symbol_value=SFI_GET_SYMBOL_NAME(sfo,instruction);
+
 			//Instruction *instruction_aux=NULL;
 			iload_info="";
 			unsigned idx_instruction=instruction-sfo->instructions;
@@ -104,6 +105,15 @@ namespace zetscript{
 			 if(value_op2 != ZS_IDX_UNDEFINED){
 				 n_ops++;
 			 }
+
+			 if((	   instruction->byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER
+					|| instruction->byte_code==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS
+				)
+				==true){
+
+				// ... we create new instruction
+				 symbol_value="this."+symbol_value;
+			}
 
 			switch(instruction->properties & MSK_INSTRUCTION_PROPERTY_ILOAD){
 			default:
@@ -146,7 +156,7 @@ namespace zetscript{
 			case  BYTE_CODE_NEW_CLASS:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
-					,ByteCodeToStr(instruction->byte_code)
+					,byte_code_to_str(instruction->byte_code)
 					,(int)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
 				);
 				break;
@@ -165,11 +175,13 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_FUNCTION:
 			case BYTE_CODE_FIND_VARIABLE:
 			case BYTE_CODE_LOAD_LOCAL:
+			case BYTE_CODE_LOAD_CONSTRUCTOR:
+			case BYTE_CODE_LOAD_THIS:
 			case BYTE_CODE_LOAD_GLOBAL:
 			case BYTE_CODE_LOAD_MEMBER:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
-					,ByteCodeToStr(instruction->byte_code)
+					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
 				);
 				break;
@@ -177,12 +189,12 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s {vector}\n"
 					,idx_instruction
-					,ByteCodeToStr(instruction->byte_code)
+					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
 				);
 				break;
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
-			case BYTE_CODE_LOAD_THIS:
+			case BYTE_CODE_LOAD_ELEMENT_THIS:
 				//instruction_aux=instruction;
 				while((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 					instruction++;
@@ -191,7 +203,7 @@ namespace zetscript{
 
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
-					,ByteCodeToStr(instruction->byte_code)
+					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
 				);
 				break;
@@ -201,26 +213,33 @@ namespace zetscript{
 			case BYTE_CODE_JE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%03i\n"
 					,idx_instruction
-					,ByteCodeToStr(instruction->byte_code)
+					,byte_code_to_str(instruction->byte_code)
 					,(instruction-sfo->instructions)+instruction->value_op2
 				);
 				break;
 			case BYTE_CODE_PUSH_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 					,idx_instruction
-					,ByteCodeToStr(instruction->byte_code)
+					,byte_code_to_str(instruction->byte_code)
 				);
 				break;
 			case BYTE_CODE_POP_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 					,idx_instruction
-					,ByteCodeToStr(instruction->byte_code)
+					,byte_code_to_str(instruction->byte_code)
+				);
+				break;
+			case BYTE_CODE_CALL_CONSTRUCTOR:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\targ:%i\n"
+					,idx_instruction
+					,byte_code_to_str(instruction->byte_code)
+					,instruction->value_op1
 				);
 				break;
 			case BYTE_CODE_CALL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\targ:%i ret:%s\n"
 					,idx_instruction
-					,ByteCodeToStr(instruction->byte_code)
+					,byte_code_to_str(instruction->byte_code)
 					,instruction->value_op1
 					,instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK?"all":"1"
 				);
@@ -230,7 +249,7 @@ namespace zetscript{
 				if(iload_info != ""){
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 						idx_instruction
-						,ByteCodeToStr(instruction->byte_code)
+						,byte_code_to_str(instruction->byte_code)
 						,iload_info.c_str()
 					);
 				}else{
@@ -238,18 +257,18 @@ namespace zetscript{
 					if(n_ops==0){
 						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 							idx_instruction
-							,ByteCodeToStr(instruction->byte_code)
+							,byte_code_to_str(instruction->byte_code)
 						);
 					}else if(n_ops==1){
 						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%i\n"
 							,idx_instruction
-							,ByteCodeToStr(instruction->byte_code)
+							,byte_code_to_str(instruction->byte_code)
 							,instruction->value_op1
 						);
 					}else{ //2 ops
 						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%i,%i\n"
 							,idx_instruction
-							,ByteCodeToStr(instruction->byte_code)
+							,byte_code_to_str(instruction->byte_code)
 							,instruction->value_op1
 							,(int)instruction->value_op2
 						);

@@ -35,6 +35,7 @@ namespace zetscript{
 		BYTE_CODE_LOAD_ZS_INT,
 		BYTE_CODE_LOAD_CLASS,
 		BYTE_CODE_LOAD_STACK_ELEMENT,
+		BYTE_CODE_LOAD_CONSTRUCTOR,
 
 		BYTE_CODE_STORE_CONST, // it stores and set stack only-read
 		BYTE_CODE_STORE, 	 // mov expression to var ( > 1 multiple)
@@ -43,9 +44,9 @@ namespace zetscript{
 		BYTE_CODE_STORE_MUL, //
 		BYTE_CODE_STORE_DIV, //
 		BYTE_CODE_STORE_MOD, //
-		BYTE_CODE_STORE_AND, //
-		BYTE_CODE_STORE_OR,  //
-		BYTE_CODE_STORE_XOR, //
+		BYTE_CODE_STORE_BITWISE_AND, //
+		BYTE_CODE_STORE_BITWISE_OR,  //
+		BYTE_CODE_STORE_BITWISE_XOR, //
 		BYTE_CODE_STORE_SHL, //
 		BYTE_CODE_STORE_SHR, //
 		BYTE_CODE_PUSH_VECTOR_ELEMENT, // Value push for std::vector
@@ -68,9 +69,9 @@ namespace zetscript{
 		BYTE_CODE_MUL, // *
 		BYTE_CODE_DIV, // /
 		BYTE_CODE_MOD,  // %
-		BYTE_CODE_AND, // binary and
-		BYTE_CODE_OR, // binary or
-		BYTE_CODE_XOR, // binary xor
+		BYTE_CODE_BITWISE_AND, // binary and
+		BYTE_CODE_BITWISE_OR, // binary or
+		BYTE_CODE_BITWISE_XOR, // binary xor
 		BYTE_CODE_SHL, // binary shift left
 		BYTE_CODE_SHR, // binary shift right
 		//
@@ -168,11 +169,13 @@ namespace zetscript{
 
 
 
-	const char * ByteCodeToStr(ByteCode  op);
-	const char * ByteCodeMetamethodToOperatorStr(ByteCodeMetamethod op);
-	const char * ByteCodeMetamethodToSymbolStr(ByteCodeMetamethod op);
-	int			 getNumArgumentsStaticMetamethod(ByteCodeMetamethod op);
-	int			 getNumArgumentsNonStaticMetamethod(ByteCodeMetamethod op);
+	const char * byte_code_to_str(ByteCode  op);
+	const char * byte_code_to_operator_str(ByteCode op);
+	const char * byte_code_metamethod_to_operator_str(ByteCodeMetamethod op);
+	const char * byte_code_metamethod_to_symbol_str(ByteCodeMetamethod op);
+	int			 get_num_arguments_static_metamethod(ByteCodeMetamethod op);
+	int			 get_num_arguments_non_static_metamethod(ByteCodeMetamethod op);
+
 
 
 

@@ -54,7 +54,7 @@ namespace zetscript{
 		if(list == NULL) return true;
 
 		if(_node->next == NULL || _node->previous == NULL){
-			VM_SET_USER_ERROR(this," An already deattached node");
+			VM_SET_USER_ERROR(this," Internal error: An already deattached node");
 			return false;
 		}
 
@@ -99,8 +99,8 @@ namespace zetscript{
 					return;
 				}
 
-				delete current->data.shared_ptr;
-				current->data.shared_ptr=NULL;
+				delete current->data.ptr_script_object_shared;
+				current->data.ptr_script_object_shared=NULL;
 				free(current);
 
 				current=next_node;
@@ -155,6 +155,31 @@ namespace zetscript{
 
 	}
 
+	inline bool VirtualMachine::applyMetamethodPrimitive(
+			 ScriptFunction *calling_function
+			,Instruction *instruction
+			,ByteCodeMetamethod byte_code_metamethod
+			,StackElement *stk_result_op1
+			,StackElement *stk_result_op2
+			, bool & error
+	){
+
+		//error=true;
+		if((byte_code_metamethod == ByteCodeMetamethod::BYTE_CODE_METAMETHOD_ADD)
+			&& (
+					STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)
+					||
+					STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)
+				)
+		){
+			*stk_vm_current++=performAddString(stk_result_op1,stk_result_op2);
+			return true;
+		}
+
+
+		return false;
+	}
+
 	inline bool VirtualMachine::applyMetamethod(
 		 ScriptFunction *calling_function
 		,Instruction *instruction
@@ -163,21 +188,45 @@ namespace zetscript{
 		,StackElement *stk_result_op2
 	
 	) {
+		bool error=false;
+
+		if(applyMetamethodPrimitive(
+					 calling_function
+					,instruction
+					,byte_code_metamethod
+					,stk_result_op1
+					,stk_result_op2
+					, error
+			)){
+			return true;
+		}
+
+		if(error == true){
+			return false;
+		}
+
 		//std::string str_symbol_to_find="";
+		std::string str_stk_result_op1_full_definition="";
+		std::string str_stk_result_op2_full_definition="";
 		ScriptObjectClass *calling_object=NULL;
 		ScriptClass *script_class_aux=NULL;
 		StackElement *stk_vm_current_backup,*stk_args;
 		int stk_element_len=0;
 		ScriptFunction *ptr_function_found=NULL;
 		StackElement ret_obj;
-		const char *byte_code_metamethod_operator_str=ByteCodeMetamethodToOperatorStr(byte_code_metamethod);
-		const char *str_symbol_metamethod=ByteCodeMetamethodToSymbolStr(byte_code_metamethod);
+		const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(byte_code_metamethod);
+		const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
 		//zs_vector *stk_elements=NULL;
 		std::string error_found="";
 		zs_vector * list_props=NULL;
 		ScriptObjectClass *script_object_class=NULL;
 		ScriptObjectClass *one_param_object_class = NULL;
-		int n_stk_args=getNumArgumentsStaticMetamethod(byte_code_metamethod);
+		int n_stk_args=get_num_arguments_static_metamethod(byte_code_metamethod);
+		StackElement *stk_return=NULL;
+		int n_returned_arguments_from_function=0;
+		//unsigned char n_args=instruction->value_op1; // number arguments will pass to this function
+		//StackElement *stk_start_arg_call=(stk_vm_current-n_args);
+
 
 		// init stk
 		stk_vm_current_backup=stk_args=stk_vm_current;
@@ -207,17 +256,6 @@ namespace zetscript{
 			error_found="";
 			goto apply_metamethod_error;
 		}
-
-
-
-
-
-		//stk_elements=script_class_aux->metamethod_operator[byte_code_metamethod];
-
-		/*if(stk_elements == NULL){ // operator is not implemented
-			error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
-			goto apply_metamethod_error;
-		}*/
 
 		if(script_object_class->isNativeObject()){
 			list_props=script_object_class->getAllElements();//getFunctions();
@@ -306,16 +344,40 @@ namespace zetscript{
 			);
 		}
 
-		if(STK_IS_SCRIPT_OBJECT_CLASS(&ret_obj)){ //
+		stk_return=(stk_args+ptr_function_found->registered_symbols->count );
+		n_returned_arguments_from_function=stk_vm_current-stk_return;
+
+		// setup all returned variables from function
+		for(int i=0; i < n_returned_arguments_from_function; i++){
+
+			StackElement *stk_ret = --stk_vm_current;
+
+			// if a scriptvar --> init shared
+			if(stk_ret->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+				ScriptObject *sv=(ScriptObject *)stk_ret->stk_value;
+
+				if(byte_code_metamethod != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
+					((ScriptObjectClass *)(stk_ret->stk_value))->deleteNativeObjectOnDestroy(true);
+				}
+
+				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
+					if(!sv->initSharedPtr()){
+						return false;
+					}
+				}
+			}
+			// ... and push result if not function constructor...
+		}
+
+		ret_obj=stk_return[0];
+
+		/*if(STK_IS_SCRIPT_OBJECT_CLASS(&ret_obj)){ //
 
 			if(!((ScriptObject *)(ret_obj.stk_value))->initSharedPtr()){
 				return false;
 			}
 
-			if(byte_code_metamethod != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
-				((ScriptObjectClass *)(ret_obj.stk_value))->deleteNativeObjectOnDestroy(true);
-			}
-		}
+		}*/
 
 		// reset stack...
 		stk_vm_current=stk_vm_current_backup;
@@ -328,17 +390,18 @@ namespace zetscript{
 
 apply_metamethod_error:
 
+
 		if(n_stk_args==1){
-			VM_ERROR("cannot perform operator \"%s %s\". %s"
-				,byte_code_metamethod_operator_str
-				,stk_result_op1->typeStr()
+			VM_ERROR("cannot perform operation \"%s %s\". %s"
+				,byte_code_to_operator_str(instruction->byte_code)
+				,stk_result_op1->toString().c_str()
 				,error_found.c_str()
 				);
 		}else{
-			VM_ERROR("cannot perform operator \"%s %s %s\". %s"
-				,stk_result_op1->typeStr()
-				,byte_code_metamethod_operator_str
-				,stk_result_op2->typeStr()
+			VM_ERROR("cannot perform operation \"%s %s %s\". %s"
+				,stk_result_op1->toString().c_str()
+				,byte_code_to_operator_str(instruction->byte_code)
+				,stk_result_op2->toString().c_str()
 				,error_found.c_str()
 				);
 		}
@@ -623,9 +686,9 @@ apply_metamethod_error:
 			}
 
 			switch(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
-			case MSK_STK_PROPERTY_UNDEFINED:
-				*(*str_dst_it)="undefined";
-				break;
+			//case MSK_STK_PROPERTY_UNDEFINED:
+			//	*(*str_dst_it)="undefined";
+			//	break;
 			case MSK_STK_PROPERTY_ZS_INT:
 				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->stk_value);
 				break;
@@ -642,7 +705,9 @@ apply_metamethod_error:
 				*(*str_dst_it)="class";
 				break;
 			default:
-				if(stk_src_item->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+				if(stk_src_item->properties==MSK_STK_PROPERTY_UNDEFINED){
+					*(*str_dst_it)="undefined";
+				}else if(stk_src_item->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 					*(*str_dst_it)=((ScriptObjectAnonymous *)(stk_src_item)->stk_value)->toString();
 				}
 				else{

@@ -1,3 +1,43 @@
+/*var a
+a+=0*/
+/*
+class A{
+	//var a
+	A(){
+		//this.a=0
+		//this.b=1
+	}
+
+	fun(){
+		System::println("sum="+(this.b))		
+	}
+	
+}
+
+var a=new A()
+a.b=1
+a.fun()*/
+
+class A{}
+
+function @default1(){
+	return 0+1
+}
+
+function fun(a=0+1){
+	var a=new A();
+}
+
+var a=undefined;
+
+fun(a)
+
+System::println(a)
+
+
+
+
+
 /*function fun1(){
 	return 0,1;
 }
@@ -32,22 +72,22 @@ System::println("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}",a,b,c,d,e,f,
 
 //var b="vaca"
 //const b=0;
-class B{
+/*class B{
 	print(){System::println("dadsa")}	
 }
 
 class A{
 	//const c=0
 	var b="vaca",c=new B()//,a=0//,A::h=undefined
-}
+}*/
 
 //var A::d=false
 //const A::e=-1
 
-var a=new A();
-var b=new B();
+//var a=new A();
+/*var b=new B();
 
-//b.print()
+b.print()*/
 
 /*var d=*//*a.c.print()*/
 

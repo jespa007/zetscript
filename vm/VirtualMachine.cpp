@@ -83,7 +83,7 @@ namespace zetscript{
 		_node->previous=NULL;
 		_node->next=NULL;
 		_node->data.n_shares=0;
-		_node->data.shared_ptr=_var_ptr;
+		_node->data.ptr_script_object_shared=_var_ptr;
 		_node->data.zero_shares=&zero_shares[vm_idx_call];
 
 		// insert node into shared nodes ...
@@ -124,32 +124,56 @@ namespace zetscript{
 		return true;
 	}
 
-	bool VirtualMachine::unrefSharedScriptObject(InfoSharedPointerNode *_node, int idx_current_call, bool remove_if_0){
+	bool VirtualMachine::decrementShareNodesAndDettachIfZero(InfoSharedPointerNode *_node, bool & is_dettached){
 
+		is_dettached=false;
 		unsigned short *n_shares = &_node->data.n_shares;
-		if(*n_shares > 0){ // already zero
+		if(*n_shares > 0){ // not zero
 			if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
 
 				if(!deattachShareNode(&shared_vars,_node)){
 					return false;
 				}
 
-				if(remove_if_0){ // force remove node and data ...
-					delete _node->data.shared_ptr;
-					free(_node);
-				}
-				else{ // insert into zero array.. if not referenced anymore will be removed by REMOVE_0_SHARED
-					// update current stack due different levels from functions!
-					_node->data.zero_shares=&zero_shares[idx_current_call];
-					if(!insertShareNode(_node->data.zero_shares,_node)){
-						return false;
-					}
-
-				}
+				is_dettached=true;
 			}
 		}
 
 		return true;
+	}
+
+	bool VirtualMachine::unrefSharedScriptObjectAndRemoveIfZero(ScriptObject **so){
+
+		InfoSharedPointerNode *_node=(*so)->shared_pointer;
+		bool is_dettached=false;
+
+		if(decrementShareNodesAndDettachIfZero(_node,is_dettached)){
+
+			if(is_dettached == true){
+				delete _node->data.ptr_script_object_shared; // it deletes shared_script_object
+				free(_node);
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	bool VirtualMachine::unrefSharedScriptObject(InfoSharedPointerNode *_node, int idx_current_call){
+
+		bool is_dettached=false;
+		if(decrementShareNodesAndDettachIfZero(_node,is_dettached)){
+			if(is_dettached){
+				_node->data.zero_shares=&zero_shares[idx_current_call];
+				if(!insertShareNode(_node->data.zero_shares,_node)){ // insert to zero shares vector to remove automatically on ending scope
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	const ScriptFunction * VirtualMachine::getCurrent_C_FunctionCall(){

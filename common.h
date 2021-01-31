@@ -118,7 +118,7 @@ namespace zetscript{
 	struct _InfoSharedList;
 
 	typedef struct _SharedPointerInfo {
-		ScriptObject 			*shared_ptr;
+		ScriptObject 			*ptr_script_object_shared;
 		unsigned short 			n_shares;
 		_InfoSharedList *zero_shares;
 	} SharedPointerInfo;

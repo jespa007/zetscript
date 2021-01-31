@@ -228,8 +228,8 @@ namespace zetscript{
 														,static_access_value.c_str()
 														,static_error.c_str());
 											}
-										}else{ // is a member var
-											instruction->vm_instruction.byte_code = BYTE_CODE_LOAD_MEMBER;
+										}else{
+											EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Symbol \"%s\" is not static",static_access_value.c_str());
 										}
 									}
 								} // --> in eval::pop_function will be find
@@ -347,6 +347,7 @@ namespace zetscript{
 						}
 
 						byte_code=ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT;
+						instruction_token=token_node_symbol.instructions[0];
 
 						if(it_accessor_token==0 && token_node_symbol.value == SYMBOL_VALUE_THIS){ // check first symbol at first...
 							ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_class);
@@ -369,15 +370,24 @@ namespace zetscript{
 
 							if(symbol_member != NULL){ // is member
 								instruction_value2=symbol_member->idx_position;
+
+								// override byte code
 								byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER;
 							}
-
 
 						}
 						break;
 					}
 
-					token_node_symbol.instructions.push_back(instruction_token=new EvalInstruction(byte_code));
+					// if not load element from this ...
+					if((	   byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER
+							|| byte_code==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS
+						)
+						==false){
+
+						// ... we create new instruction
+						token_node_symbol.instructions.push_back(instruction_token=new EvalInstruction(byte_code));
+					}
 
 					switch(byte_code){
 					case BYTE_CODE_CALL:
@@ -391,6 +401,7 @@ namespace zetscript{
 						);
 						break;
 					default:
+						instruction_token->vm_instruction.byte_code=byte_code;
 						instruction_token->vm_instruction.value_op2=instruction_value2;
 						instruction_token->instruction_source_info= InstructionSourceInfo(
 							eval_data->current_parsing_file
@@ -399,6 +410,7 @@ namespace zetscript{
 						);
 						break;
 					}
+
 
 
 					// not first access anymore...
