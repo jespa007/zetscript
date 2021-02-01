@@ -478,9 +478,9 @@ namespace zetscript{
 
 		// insert new args...
 		for(unsigned i = 0; i < _params.size(); i++){
-			FunctionParam *script_param = new FunctionParam();
-			*script_param=_params[i];
-			params->push_back((zs_int)script_param);
+//			FunctionParam *script_param = new FunctionParam(_params[i]);
+//			*script_param=_params[i];
+			params->push_back((zs_int)(new FunctionParam(_params[i])));
 		}
 	}
 

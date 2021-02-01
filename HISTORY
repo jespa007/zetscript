@@ -173,7 +173,7 @@ Date: XX-12-2020
 #230 Control return ScriptObject[String] values that are not deallocated by user 
 #231 register class passing C function constructor and destructor
 > #232 Implement class attribs 
-> #233 Implement boolean in keyword 
+> #233 Implement operator IN 
 #234 Back to class name constructor 
 #235 Make optional function keyword as member function class
 #236 Implement sequence expressions

@@ -133,13 +133,42 @@ namespace zetscript{
 		InfoSharedPointerNode *first, *last;
 	}InfoSharedList;
 
-	typedef struct{
+	struct FunctionParam{
 		int idx_type;
 		std::string arg_name; //arg c++ type or arg name
 		int line;
 		bool by_ref;
 		bool var_args;
-	}FunctionParam;
+		StackElement default_value; // constant int/float/bool/string or anonymous function that return an expression or other object
+
+		FunctionParam(){
+			idx_type=ZS_IDX_UNDEFINED;
+			arg_name="";
+			line=ZS_IDX_UNDEFINED;
+			by_ref=false;
+			var_args=false;
+			default_value=stk_undefined;
+		}
+
+		FunctionParam(int _idx_type, std::string _arg_name, StackElement _default_value=stk_undefined){
+			idx_type=_idx_type;
+			arg_name=_arg_name;
+			line=ZS_IDX_UNDEFINED;
+			by_ref=false;
+			var_args=false;
+			default_value=_default_value;
+		}
+
+		FunctionParam( const FunctionParam & _function_param){
+			idx_type=_function_param.idx_type;
+			arg_name=_function_param.arg_name;
+			line=_function_param.line;
+			by_ref=_function_param.by_ref;
+			var_args=_function_param.var_args;
+			default_value=_function_param.default_value;
+		}
+
+	};
 
 	struct FunctionMember{
 	public:

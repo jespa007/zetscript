@@ -57,7 +57,8 @@ namespace zetscript{
 	{
 		int idx_return_type=-1;
 		std::string return_type;
-		std::vector<std::string> arg;
+		std::vector<std::string> str_arg;
+
 		std::vector<FunctionParam> arg_info;
 		zs_int ref_ptr=0;
 
@@ -67,9 +68,9 @@ namespace zetscript{
 
 		// 1. check all parameters ok.
 		using Traits3 = FunctionTraits<decltype(function_ptr)>;
-		getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
+		getParamsFunction<Traits3>(0,return_type, str_arg, MakeIndexSequence<Traits3::arity>{});
 
-		if(arg.size()>MAX_NATIVE_FUNCTION_ARGS){
+		if(str_arg.size()>MAX_NATIVE_FUNCTION_ARGS){
 			THROW_RUNTIME_ERROR("Max argyments reached");
 		}
 
@@ -80,25 +81,26 @@ namespace zetscript{
 					,function_name);
 		}
 
-		for(unsigned int i = 0; i < arg.size(); i++){
-			int idx_type = getIdxClassFromItsNativeType(arg[i]);
+		for(unsigned int i = 0; i < str_arg.size(); i++){
+			int idx_type = getIdxClassFromItsNativeType(str_arg[i]);
+			StackElement default_value=stk_undefined;
 
 			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
 						,i
-						,zs_rtti::demangle(arg[i]).c_str()
+						,zs_rtti::demangle(str_arg[i]).c_str()
 						,function_name
-						,zs_rtti::demangle(arg[i]).c_str());
+						,zs_rtti::demangle(str_arg[i]).c_str());
 			}
 
 			if(idx_type ==ZS_IDX_UNDEFINED){
 				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered"
 						,i
-						,zs_rtti::demangle(arg[i]).c_str()
+						,zs_rtti::demangle(str_arg[i]).c_str()
 						,function_name);
 			}
 
-			arg_info.push_back({idx_type,arg[i]});
+			arg_info.push_back(FunctionParam(idx_type,str_arg[i]));
 		}
 
 		ref_ptr=(zs_int)function_ptr;

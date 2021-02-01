@@ -58,6 +58,7 @@
 #include "memmgr.h"
 #endif
 
+#include "StackElement.h"
 #include "common.h"
 
 // utils
@@ -72,7 +73,6 @@
 
 #include "exception.h"
 #include "ByteCode.h"
-#include "StackElement.h"
 #include "Instruction.h"
 #include "Symbol.h"
 

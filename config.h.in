@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef ZS_CONFIG_H
+#define ZS_CONFIG_H
 
 /*
  * These values are automatically set according to their cmake variables.
@@ -8,6 +8,6 @@
 #define ZS_NUMBER_DOUBLE 		${ZS_NUMBER_DOUBLE}
 #define ZS_NUMBER_PRECISSION  	${ZS_NUMBER_PRECISSION}
 
-#endif /* CONFIG_H */
+#endif /* ZS_CONFIG_H */
 
 
