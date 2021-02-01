@@ -46,8 +46,10 @@ set( ZS_NUMBER_DOUBLE 2 )
 
 if("${ZS_NUMBER_PRECISSION}" STREQUAL "DOUBLE")
 	set( ZS_NUMBER_PRECISSION "ZS_NUMBER_DOUBLE" )
+	MESSAGE("-- Number precission: double"  )
 else()
 	set( ZS_NUMBER_PRECISSION "ZS_NUMBER_FLOAT" )
+	MESSAGE("-- Number precission: float"  )
 endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/config.h)
@@ -58,6 +60,7 @@ include_directories (
 )
 
 file(GLOB_RECURSE INCS "*.h")
+
 
 message("-- Install drectory: " ${CMAKE_INSTALL_PREFIX})
 
@@ -309,6 +312,7 @@ ELSE()
 		ZetScript.tcc
 		script/ScriptClassFactory.tcc
 		ByteCode.h
+		config.h
 	)
 	
 	
