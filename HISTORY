@@ -19,27 +19,22 @@ Date: XX-04-2021 (Expected to finish on 27 April)
 
 Main improvements: 
 
--Put "function" keyword is now optional within class 
--Support setter/getter for class
--Implement DateTime
--Implement Helper System
--Implement Helper Math
--Option to strict to limit C functions instead C++ function to avoid grow compile times and output size
--Implement iterators
--Default argument support
--Variable arguments support
--Arguments by reference support
--Support IN to iterate or check existing element in container 
--Multiple Return/Assignment
--Restructure architecture
+-Massive update that rewrites a internal architecture, organize and clean code
 -VM speed up ~x2.7
 -VM save memory stack ~x2
--General use try/catch
--Anonymous function within class
+-Optimize size/compile times for binding c++ functions ~x2
+-Multiple Return/Assignment
+-Use of "this" with anonymous function created in class members
+-Implements arguments with options: default, variable arguments and by reference
+-Implements setter/getter for class
+-Implements new keywords: typeof
+-Implements new operators: const, in
+-Implements iterators
+-Implements builtin classes: DateTime
+-Implements builtin Helper classes: System, Math, Integer and String
+-"function" keyword to declare function member is not mandatory within the class
 
-
-Issues
-
+Solved issues
  
 #64 Implement "include" preprocessor feature 
 #65 added shared/static link cmake option through -DLINK=[SHARED|STATIC]
@@ -214,7 +209,7 @@ Issues
 #252 Allow var class with optional initialization
 #253 Get rid RESET STACK on each expression 
 #254 VM optimization: Immediate load if member or function are members 
-> #255 Set Strict Bind static funcions 
+#255 Set Strict Bind static funcions 
 > #256 Make compatibility back loops, while, switch, pre/post increment etc 
 #257 Set as local variable not found in the block if declared after its using
 > #258 Access object properties by other type rather string feature
