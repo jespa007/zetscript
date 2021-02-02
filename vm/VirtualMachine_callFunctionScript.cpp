@@ -1256,7 +1256,7 @@ load_element_object:
 									if(var_args!=NULL){
 										var_args->push(stk_arg);
 
-										if(i+1 >= (unsigned)n_args){
+										if(i+1 >= (int)n_args){
 											break;
 										}
 									}else{
@@ -1271,12 +1271,12 @@ load_element_object:
 											// replace for vector type...
 											stk_arg->stk_value=(void *)var_args;
 											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
-											if(i+1 >= (unsigned)n_args){
+											if(i+1 >= (int)n_args){
 												break;
 											}
 										}else{
 											function_param++;
-											if(i+1 >= (unsigned)effective_args){
+											if(i+1 >= (int)effective_args){
 												break;
 											}
 										}

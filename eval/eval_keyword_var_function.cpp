@@ -28,14 +28,14 @@ namespace zetscript{
 				ScriptFunction *sf_field_initializer=NULL;
 
 
-				char *start_var,*end_var;
+				char *start_var=NULL,*end_var=NULL;
 				int start_line=0;
 				ScriptClass *sc=NULL;
 				std::string s_aux,variable_name,pre_variable_name="";
-				std::string error;
-				Symbol *symbol_variable,*symbol_member_variable=NULL;
+				std::string error="";
+				Symbol *symbol_variable=NULL,*symbol_member_variable=NULL;
 				is_constant=key_w == Keyword::KEYWORD_CONST;
-				Operator ending_op;
+				Operator ending_op=Operator::OPERATOR_UNKNOWN;
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
@@ -352,8 +352,12 @@ error_eval_keyword_var:
 								,line
 								,function_name
 						);
+
+						if(end_var == NULL){
+							return NULL;
+						}
 						// copy value
-						zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
+						//zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
 					}
 					aux_p=end_var;
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -382,8 +386,7 @@ error_eval_keyword_var:
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 				while(*aux_p != 0 && *aux_p != ')' && !var_args){
-					arg_info.by_ref=false;
-					arg_info.var_args=false;
+					arg_info=FunctionParam();
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					if(args.size()>0){
 						if(*aux_p != ','){
@@ -419,10 +422,35 @@ error_eval_keyword_var:
 					zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var);
 					// ok register symbol into the object function ...
 					arg_info.arg_name=arg_value;
-					args.push_back(arg_info);
+
 
 					aux_p=end_var;
+
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					if(*aux_p=='='){ // default argument...
+						std::vector<EvalInstruction *> instructions_default;
+
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+						// create inline expression
+						aux_p=eval_expression(
+								eval_data
+								,aux_p
+								,line
+								,MAIN_SCOPE(eval_data)
+								,&instructions_default
+						);
+
+						if(aux_p==NULL){
+							return NULL;
+						}
+
+						// copy evaluated instruction
+						arg_info.ptr_default_expression=(void *)new std::vector<EvalInstruction *>(instructions_default);
+
+					}
+
+					args.push_back(arg_info);
 				}
 
 				aux_p++;

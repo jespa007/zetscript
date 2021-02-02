@@ -7,7 +7,20 @@ namespace zetscript{
 
 	namespace eval{
 
-		struct EvalInstruction;
+		struct EvalInstruction{
+			Instruction 					vm_instruction;
+			Symbol							symbol;
+			InstructionSourceInfo 			instruction_source_info;
+
+			EvalInstruction(
+				ByteCode _byte_code
+				,unsigned char _index_op1=ZS_IDX_UNDEFINED
+				,zs_int _index_op2=ZS_IDX_UNDEFINED
+				,unsigned short _properties=0
+			 ){
+				vm_instruction=Instruction(_byte_code,_index_op1,_index_op2,_properties);
+			}
+		};
 
 		char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 		char * 	eval_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case=false);

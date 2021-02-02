@@ -5,7 +5,7 @@ namespace zetscript{
 
 		char * read(const std::string &  filename, size_t & n_bytes_readed){
 
-			size_t  length, readed_elements;
+			int  length, readed_elements;
 			FILE  *fp;
 
 			if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)

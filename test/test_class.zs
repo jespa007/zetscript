@@ -3,13 +3,13 @@ class Test{
 	const MAX_NUM=9
 	
 	// pre create vars with initialization
-	var b=-1,c=-2,d=-3,e
+	var b=-1,c=-2
 
 	Test(a,b=-1,c=Test::MAX_NUM){
-		this.a =a; // init a
+		this.a=a; // init a (dynamic)
 		this.b=b
 		this.c=c
-		System::println("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.e:{4} MAX_NUM:{2}",this.a,this.b,this.c,this.d,this.e,Test::MAX_NUM);
+		System::println("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.e:{4} MAX_NUM:{2}",this.a,this.b,this.c,Test::MAX_NUM);
 		
 	}
 	function1(a){

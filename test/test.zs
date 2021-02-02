@@ -1,3 +1,22 @@
+
+
+function fun(a,b=-1){
+	
+}
+
+fun(1);
+
+/*var a=1,b,c
+
+a+=b=c=a,1
+
+System::println("{0} {1} {2}",a,b,c)*/
+
+/*for(var i=0; i < 10; i++){
+	
+}*/
+
+
 /*var a
 a+=0*/
 /*
@@ -18,7 +37,7 @@ var a=new A()
 a.b=1
 a.fun()*/
 
-class A{}
+/*class A{}
 
 function @default1(){
 	return 0+1
@@ -33,7 +52,7 @@ var a=undefined;
 fun(a)
 
 System::println(a)
-
+*/
 
 
 

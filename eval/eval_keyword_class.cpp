@@ -4,7 +4,7 @@ namespace zetscript{
 
 	namespace eval{
 
-		char * eval_keyword_class_attrib(EvalData *eval_data, const char *s, int & line	, Scope *scope_info	);
+		char * eval_keyword_class_attrib(EvalData *eval_data, const char *s, int & line	, ScriptClass *sc	);
 
 		//------------------------------------------------------------------------------------------------------------------------------------------
 		//
@@ -25,6 +25,10 @@ namespace zetscript{
 
 
 			if(key_w == Keyword::KEYWORD_CLASS){
+
+				char *test_attrib_s=NULL;
+				int  test_attrib_line=-1;
+
 
 				if(scope_info->scope_parent!=NULL){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class keyword is not allowed");
@@ -81,21 +85,22 @@ namespace zetscript{
 					// register info class ...
 					// check for named functions or vars...
 					while(*aux_p != '}' && *aux_p != 0){
-						char *test_attrib=aux_p;
+						/*char *test_attrib=aux_p;
 						if((test_attrib=eval_keyword_class_attrib(
 							eval_data
 							,aux_p
 							, line
 							,sc->symbol_class.scope // pass class scope
-						))==NULL){
+						))==NULL){*/
 
 							// 1st. check whether eval a keyword...
 							key_w = is_keyword(aux_p);
 
 							switch(key_w){
-							case Keyword::KEYWORD_STATIC: // can be a function or symbol
-							case Keyword::KEYWORD_FUNCTION: // can be a function or symbol
-							case Keyword::KEYWORD_UNKNOWN: // supposes a member function
+							// functions
+							case Keyword::KEYWORD_STATIC:
+							case Keyword::KEYWORD_FUNCTION:
+
 									aux_p = eval_keyword_function(
 										eval_data
 										,aux_p
@@ -103,6 +108,26 @@ namespace zetscript{
 										,sc->symbol_class.scope // pass class scope
 									);
 									break;
+							case Keyword::KEYWORD_UNKNOWN: // supposes a member function
+								if((test_attrib_s=eval_keyword_class_attrib(eval_data
+										,aux_p
+										, test_attrib_line
+										,sc
+								))!=NULL){
+									aux_p=test_attrib_s;
+									line=test_attrib_line;
+								}else{
+									if(eval_data->error){
+										return NULL;
+									}
+									// function member without function keyword
+									aux_p=eval_keyword_function(eval_data
+											,aux_p
+											, line
+											,sc->symbol_class.scope
+									);
+								}
+								break;
 							case Keyword::KEYWORD_VAR:
 							case Keyword::KEYWORD_CONST: // const symbol
 									aux_p = eval_keyword_var(
@@ -119,10 +144,9 @@ namespace zetscript{
 							if(aux_p == NULL){
 								return NULL;
 							}
-						}else{ // parsed detected an attrib
+						/*}else{ // parsed detected an attrib
 							aux_p = test_attrib;
-						}
-
+						}*/
 						IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					}
 
@@ -222,8 +246,100 @@ namespace zetscript{
 				EvalData *eval_data
 				, const char *s
 				, int & line
-				, Scope *scope_info
+				, ScriptClass *sc
 			){
+
+			char *aux_p = (char *)s;
+			char *end_var = NULL;
+			std::string attrib_name="";
+			int attrib_start_line;
+			std::string class_attribute_name=sc->symbol_class.name;
+			Scope *scope_info=sc->symbol_class.scope;
+
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+			attrib_start_line = line;
+
+			end_var=get_name_identifier_token(
+					eval_data
+					,aux_p
+					,line
+					,attrib_name
+			);
+
+
+			if(end_var == NULL){
+				return NULL;
+			}
+
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+			if(*aux_p=='{'){ // is a class attribute
+
+
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
+				// here we only expect to have _set and _get functions
+
+				while(*aux_p != '}' && *aux_p != 0){
+					/*char *test_attrib=aux_p;
+					if((test_attrib=eval_keyword_class_attrib(
+						eval_data
+						,aux_p
+						, line
+						,sc->symbol_class.scope // pass class scope
+					))==NULL){*/
+						//sc->registerMemberAttrib();
+
+						// 1st. check whether eval a keyword...
+						Keyword key_w = is_keyword(aux_p);
+
+						switch(key_w){
+						// functions
+						case Keyword::KEYWORD_FUNCTION:
+						case Keyword::KEYWORD_UNKNOWN:
+							aux_p = eval_keyword_function(
+								eval_data
+								,aux_p
+								, line
+								,sc->symbol_class.scope // pass class scope
+							);
+							break;
+						default:
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword \"%s\" in attribute \"%s::%s\""
+									,eval_data_keywords[key_w].str
+									,class_attribute_name.c_str()
+									,attrib_name.c_str()
+									);
+						}
+
+						if(aux_p == NULL){
+							return NULL;
+						}
+					/*}else{ // parsed detected an attrib
+						aux_p = test_attrib;
+					}*/
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+				}
+
+				if(*aux_p != '}'){
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,attrib_start_line ,"expected '}' to end in attribute \"%s::%s\""
+							,class_attribute_name.c_str()
+							,attrib_name.c_str()
+							);
+				}
+
+				return aux_p+1;
+
+			}
+
+			return NULL;
+
+			// copy value
+			//zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
+
+			// it starts with name + {
 
 		/*	fprintf(stderr,"===============================\n");
 			fprintf(stderr,"eval_keyword_class_attrib not implemented yet\n");

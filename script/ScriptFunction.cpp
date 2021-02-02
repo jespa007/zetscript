@@ -157,7 +157,7 @@ namespace zetscript{
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
-					,(int)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
+					,(char)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:
@@ -468,18 +468,36 @@ namespace zetscript{
 		return NULL;
 	}
 
-	void ScriptFunction::updateParams(std::vector<FunctionParam> _params){
-		// delete existing args...
+	void ScriptFunction::destroyDefaultExpression(FunctionParam * function_param){
+		std::vector<eval::EvalInstruction *> *instruccions=(std::vector<eval::EvalInstruction *> *)function_param->ptr_default_expression;
+		if(instruccions != NULL) {
+			for(auto it=(instruccions)->begin(); it != (instruccions)->end(); it++){
+				delete *it;
+			}
+		}
+
+		delete instruccions;
+		instruccions=NULL;
+
+	}
+
+	void ScriptFunction::clearParams(){
 		for(unsigned i=0; i < params->count; i++){
+			FunctionParam * function_param=(FunctionParam *)params->items[i];
+			destroyDefaultExpression(function_param);
 			delete (FunctionParam *)params->items[i];
 		}
 
 		params->clear();
+	}
+
+
+	void ScriptFunction::updateParams(std::vector<FunctionParam> _params){
+		// delete existing args...
+		clearParams();
 
 		// insert new args...
 		for(unsigned i = 0; i < _params.size(); i++){
-//			FunctionParam *script_param = new FunctionParam(_params[i]);
-//			*script_param=_params[i];
 			params->push_back((zs_int)(new FunctionParam(_params[i])));
 		}
 	}
@@ -489,9 +507,7 @@ namespace zetscript{
 		registered_symbols->clear();
 
 		// delete arg info variables...
-		for(unsigned i=0; i < params->count; i++){
-			delete (FunctionParam *)params->items[i];
-		}
+		clearParams();
 
 		// delete arg info variables...
 		if(instructions != NULL){

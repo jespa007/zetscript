@@ -290,20 +290,7 @@ namespace zetscript{
 			unsigned idx_position=0;
 			size_t new_instructions_len=0;
 			Instruction * start_ptr=NULL;
-			//int current_size=sf->instructions_len;
 			int n_elements_to_add=instructions->size();
-			//int idx_load_this_element=instructions->size()-3;
-
-
-			/*if(instructions->size() < 3){
-				THROW_RUNTIME_ERROR("eval_generate_byte_code_field_initializer: internal error 1");
-			}*/
-
-
-
-			/*if(instructions->at(idx_load_this_element)->vm_instruction.byte_code != BYTE_CODE_LOAD_LOCAL){
-				THROW_RUNTIME_ERROR("eval_generate_byte_code_field_initializer: internal error 2");
-			}*/
 
 			n_elements_to_add=n_elements_to_add+3; // +3 for load/store/reset stack
 
@@ -351,9 +338,6 @@ namespace zetscript{
 				,symbol_member_var->line
 				,get_mapped_name(eval_data,symbol_member_var->name)
 			);
-
-			//instruction_token->vm_instruction.value_op2=instruction_value2;
-
 
 
 			*start_ptr++=Instruction(BYTE_CODE_STORE);

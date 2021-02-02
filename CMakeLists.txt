@@ -78,7 +78,7 @@ if(MSVC)
 
 else()
 
-	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall")
+	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra")
    
 	if (MINGW)
 		MESSAGE("-- Plataform: MINGW" )

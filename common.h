@@ -85,37 +85,8 @@ namespace zetscript{
 	//-----------------------------
 	#pragma pack(push, 1)
 
-	/*struct LinkSymbolFirstAccess{
-
-		short idx_script_function;
-		Scope *scope;
-		std::string value;
-		char n_params;
-
-		LinkSymbolFirstAccess(){
-
-			idx_script_function=ZS_IDX_UNDEFINED;
-			scope=NULL;
-			value = "";
-			n_params=ZS_IDX_UNDEFINED;
-		}
-
-		LinkSymbolFirstAccess(
-				 int _idx_script_function
-				,Scope *_scope
-				,const std::string & _value
-				,char _n_params=0
-				){
-			idx_script_function=_idx_script_function;
-			scope=_scope;
-			value=_value;
-			n_params=_n_params;
-		}
-	};*/
-
-	//-------------------------------------------------------
-
 	struct _InfoSharedList;
+	//struct EvalInstruction;
 
 	typedef struct _SharedPointerInfo {
 		ScriptObject 			*ptr_script_object_shared;
@@ -139,7 +110,7 @@ namespace zetscript{
 		int line;
 		bool by_ref;
 		bool var_args;
-		StackElement default_value; // constant int/float/bool/string or anonymous function that return an expression or other object
+		void *ptr_default_expression; // constant int/float/bool/string or anonymous function that return an expression or other object
 
 		FunctionParam(){
 			idx_type=ZS_IDX_UNDEFINED;
@@ -147,16 +118,16 @@ namespace zetscript{
 			line=ZS_IDX_UNDEFINED;
 			by_ref=false;
 			var_args=false;
-			default_value=stk_undefined;
+			ptr_default_expression=NULL;
 		}
 
-		FunctionParam(int _idx_type, std::string _arg_name, StackElement _default_value=stk_undefined){
+		FunctionParam(int _idx_type, std::string _arg_name){
 			idx_type=_idx_type;
 			arg_name=_arg_name;
 			line=ZS_IDX_UNDEFINED;
 			by_ref=false;
 			var_args=false;
-			default_value=_default_value;
+			ptr_default_expression=NULL;
 		}
 
 		FunctionParam( const FunctionParam & _function_param){
@@ -165,9 +136,8 @@ namespace zetscript{
 			line=_function_param.line;
 			by_ref=_function_param.by_ref;
 			var_args=_function_param.var_args;
-			default_value=_function_param.default_value;
+			ptr_default_expression=_function_param.ptr_default_expression;
 		}
-
 	};
 
 	struct FunctionMember{

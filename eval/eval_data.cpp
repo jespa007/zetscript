@@ -152,21 +152,6 @@ namespace zetscript{
 			SEPARATOR_MAX
 		}Separator;
 
-		struct EvalInstruction{
-			Instruction 					vm_instruction;
-			Symbol							symbol;
-			InstructionSourceInfo 			instruction_source_info;
-
-			EvalInstruction(
-				ByteCode _byte_code
-				,unsigned char _index_op1=ZS_IDX_UNDEFINED
-				,zs_int _index_op2=ZS_IDX_UNDEFINED
-				,unsigned short _properties=0
-			 ){
-				vm_instruction=Instruction(_byte_code,_index_op1,_index_op2,_properties);
-			}
-		};
-
 		struct TokenNode{
 			TokenType	  					token_type; // can be operator, literal, identifier, object. (separator are not take account)
 			PreOperation   					pre_operation; // !,+,-,--,++
@@ -809,7 +794,7 @@ namespace zetscript{
 			eval_data_keywords[KEYWORD_CONST] = {KEYWORD_CONST,"const",eval_keyword_var};
 			eval_data_keywords[KEYWORD_STATIC] = {KEYWORD_STATIC,"static",NULL};
 			eval_data_keywords[KEYWORD_IF] = {KEYWORD_IF,"if",eval_keyword_if_else};
-			eval_data_keywords[KEYWORD_ELSE] = {KEYWORD_ELSE,"else"};
+			eval_data_keywords[KEYWORD_ELSE] = {KEYWORD_ELSE,"else",NULL};
 			eval_data_keywords[KEYWORD_FOR] = {KEYWORD_FOR,"for",eval_keyword_for};
 			eval_data_keywords[KEYWORD_WHILE] = {KEYWORD_WHILE,"while",eval_keyword_while};
 			eval_data_keywords[KEYWORD_DO_WHILE] = {KEYWORD_DO_WHILE,"do",eval_keyword_do_while}; // while is expected in the end ...

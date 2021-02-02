@@ -103,6 +103,7 @@ namespace zetscript{
 	protected:
 		void updateParams(std::vector<FunctionParam> args);
 		void clear();
+
 	private:
 
 
@@ -116,6 +117,8 @@ namespace zetscript{
 		//static const char *instructionPropertyPostOperationToStr(unsigned int properties);
 		static std::string formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
 		InstructionSourceInfo * getInstructionInfo(Instruction *instruction);
+		void destroyDefaultExpression(FunctionParam * function_param);
+		void clearParams();
 
 	};
 }

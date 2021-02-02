@@ -126,7 +126,7 @@ namespace zetscript{
 				goto error_expression_main;
 			}
 
-			if(expected_ending_char.size() > 0) { // throw error...
+			if(expected_ending_char.size() > 0) { // throw error ...
 				std::string expected_ending_str="Expected ";
 				bool found=false;
 
