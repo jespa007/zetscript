@@ -19,7 +19,10 @@ namespace zetscript{
 		       /*#include <unistd.h>   //_getch*/
 		       /*#include <termios.h>  //_getch*/
 
-		       struct termios old={0};
+		       struct termios old;
+
+		       memset(&old,0,sizeof(old));
+
 		       fflush(stdout);
 		       if(tcgetattr(0, &old)<0){
 		           perror("tcsetattr()");

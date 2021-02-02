@@ -15,7 +15,30 @@ Date: XX-09-2020
 
 //----------------------------------------------------------
 Version: 2.0.0
-Date: XX-12-2020
+Date: XX-04-2021 (Expected to finish on 27 April)
+
+Main improvements: 
+
+-Put "function" keyword is now optional within class 
+-Support setter/getter for class
+-Implement DateTime
+-Implement Helper System
+-Implement Helper Math
+-Option to strict to limit C functions instead C++ function to avoid grow compile times and output size
+-Implement iterators
+-Default argument support
+-Variable arguments support
+-Arguments by reference support
+-Support IN to iterate or check existing element in container 
+-Multiple Return/Assignment
+-Restructure architecture
+-VM speed up ~x2.7
+-VM save memory stack ~x2
+-General use try/catch
+-Anonymous function within class
+
+
+Issues
 
  
 #64 Implement "include" preprocessor feature 
@@ -202,11 +225,7 @@ Date: XX-12-2020
 > #264 Implement passing args by reference
 > #265 Implement zs_test_strict
 
-Other: 
-
--Lot of clean code up.
--Improve VM speed up ~1.6
-
+ 
 //----------------------------------------------------------
 Version: 1.3.0
 Date: 30-03-2018
