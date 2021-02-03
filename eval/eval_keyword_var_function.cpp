@@ -178,9 +178,9 @@ namespace zetscript{
 							// set variable as member
 							//(Instruction )((uint8_t *)sf_field_initializer->instructions+sf_field_initializer->instructions_len)
 
-							for(size_t i=0; i < member_var_init_instructions.size(); i++){
+							/*for(size_t i=0; i < member_var_init_instructions.size(); i++){
 								delete member_var_init_instructions[i];
-							}
+							}*/
 
 							member_var_init_instructions.clear();
 						}
@@ -247,6 +247,60 @@ error_eval_keyword_var:
 		//
 		// FUNCTION
 		//
+
+		std::string eval_anonymous_function_name(const std::string &pre_name=""){
+			return "_@afun_"+(pre_name==""?"":pre_name+"_")+zs_strutils::zs_int_to_str(n_anonymous_function++);
+		}
+
+		ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,std::vector<EvalInstruction *> *eval_instructions){
+
+			std::string function_name=eval_anonymous_function_name("defval");
+			Instruction *instructions=NULL,*start_ptr=NULL;
+			size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
+			size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
+
+			Symbol * symbol_sf=MAIN_FUNCTION(eval_data)->registerLocalFunction(
+				 MAIN_SCOPE(eval_data)
+				, eval_data->current_parsing_file
+				, -1
+				, function_name
+			);
+
+			ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
+
+			// fill all instructions
+			start_ptr=sf->instructions=(Instruction *)malloc(instructions_total_bytes); // +1 is for return
+			memset(start_ptr,0,instructions_total_bytes);
+			sf->instructions_len=instructions_len;
+
+			for(unsigned i=0; i < eval_instructions->size(); i++){
+				EvalInstruction *instruction = eval_instructions->at(i);
+				InstructionSourceInfo instruction_info=instruction->instruction_source_info;
+
+				// save instruction ...
+				*start_ptr=instruction->vm_instruction;
+				// Save str_symbol that was created on eval process, and is destroyed when eval finish.
+				instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
+
+				sf->instruction_source_info[i]=instruction_info;
+
+				start_ptr++;
+
+				delete instruction;
+			}
+
+			// add return in the end...
+			start_ptr->byte_code=BYTE_CODE_RET;
+			start_ptr->value_op1=ZS_IDX_UNDEFINED;
+			start_ptr->value_op2=ZS_IDX_UNDEFINED;
+
+			eval_instructions->clear();
+
+
+			return sf;
+		}
+
+
 		char * eval_keyword_function(
 				EvalData *eval_data
 				, const char *s
@@ -418,6 +472,10 @@ error_eval_keyword_var:
 						,arg_value
 					);
 
+					if(end_var == NULL){
+						return NULL;
+					}
+
 					// copy value
 					zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var);
 					// ok register symbol into the object function ...
@@ -430,6 +488,7 @@ error_eval_keyword_var:
 
 					if(*aux_p=='='){ // default argument...
 						std::vector<EvalInstruction *> instructions_default;
+						bool create_anonymous_function_return_expression=false;
 
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 						// create inline expression
@@ -445,8 +504,45 @@ error_eval_keyword_var:
 							return NULL;
 						}
 
+						if(instructions_default.size() == 0){ // expected expression
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error:  expected expression after '='");
+						}
+
 						// copy evaluated instruction
-						arg_info.ptr_default_expression=(void *)new std::vector<EvalInstruction *>(instructions_default);
+						// convert instruction to stk_element
+						if(instructions_default.size() == 1){
+							Instruction *instruction=&instructions_default[0]->vm_instruction;
+							// trivial default values that can be accomplished by single stack element.
+							switch(instruction->byte_code){
+							case BYTE_CODE_LOAD_UNDEFINED:
+								arg_info.default_var_value=stk_undefined;
+								break;
+							case BYTE_CODE_LOAD_FLOAT:
+								arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_FLOAT};
+								break;
+							case BYTE_CODE_LOAD_BOOL:
+								arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_BOOL};
+								break;
+							case BYTE_CODE_LOAD_ZS_INT:
+								arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_ZS_INT};
+								break;
+							default: // else is an object so we'll create a function in order to return object or complex expression
+								create_anonymous_function_return_expression=true;
+								break;
+							}
+						}else{ //non trivial expression so we will create an anonymous function
+							create_anonymous_function_return_expression=true;
+						}
+
+						if(create_anonymous_function_return_expression==true){
+							ScriptFunction *sf=eval_new_inline_anonymous_function(eval_data,&instructions_default);
+							arg_info.default_var_value={sf,MSK_STK_PROPERTY_FUNCTION};
+						}
+
+						// finally delete all evaluated code
+						for(unsigned i=0; i < instructions_default.size(); i++){
+							delete instructions_default[i];
+						}
 
 					}
 
@@ -462,11 +558,11 @@ error_eval_keyword_var:
 
 				// register function ...
 				if(is_anonymous){ // register named function...
-					function_name="_@afun_"+(scope_info->script_class!=SCRIPT_CLASS_MAIN(eval_data)?scope_info->script_class->symbol_class.name:"")+"_"+zs_strutils::zs_int_to_str(n_anonymous_function++);
+					function_name=eval_anonymous_function_name(sc!=NULL?sc->symbol_class.name:"");
 				}
 
 
-				if(resulted_function_name!=NULL){ // save function...
+				if(resulted_function_name!=NULL){ // save generated function name...
 					*resulted_function_name=function_name;
 				}
 

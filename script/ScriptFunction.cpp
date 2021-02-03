@@ -36,6 +36,8 @@ namespace zetscript{
 		script_function_factory= zs->getScriptFunctionFactory();
 		script_class_factory=zs->getScriptClassFactory();
 
+		min_stack_needed=0;
+
 		//num_native_functions=new zs_map;
 		//function_should_be_deduced_at_runtime=false;
 	}
@@ -468,24 +470,10 @@ namespace zetscript{
 		return NULL;
 	}
 
-	void ScriptFunction::destroyDefaultExpression(FunctionParam * function_param){
-		std::vector<eval::EvalInstruction *> *instruccions=(std::vector<eval::EvalInstruction *> *)function_param->ptr_default_expression;
-		if(instruccions != NULL) {
-			for(auto it=(instruccions)->begin(); it != (instruccions)->end(); it++){
-				delete *it;
-			}
-		}
-
-		delete instruccions;
-		instruccions=NULL;
-
-	}
-
 	void ScriptFunction::clearParams(){
 		for(unsigned i=0; i < params->count; i++){
 			FunctionParam * function_param=(FunctionParam *)params->items[i];
-			destroyDefaultExpression(function_param);
-			delete (FunctionParam *)params->items[i];
+			delete function_param;
 		}
 
 		params->clear();

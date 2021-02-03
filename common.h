@@ -110,7 +110,7 @@ namespace zetscript{
 		int line;
 		bool by_ref;
 		bool var_args;
-		void *ptr_default_expression; // constant int/float/bool/string or anonymous function that return an expression or other object
+		StackElement default_var_value; // constant int/float/bool/string or anonymous function that return an expression or other object
 
 		FunctionParam(){
 			idx_type=ZS_IDX_UNDEFINED;
@@ -118,7 +118,7 @@ namespace zetscript{
 			line=ZS_IDX_UNDEFINED;
 			by_ref=false;
 			var_args=false;
-			ptr_default_expression=NULL;
+			default_var_value=stk_undefined;
 		}
 
 		FunctionParam(int _idx_type, std::string _arg_name){
@@ -127,7 +127,7 @@ namespace zetscript{
 			line=ZS_IDX_UNDEFINED;
 			by_ref=false;
 			var_args=false;
-			ptr_default_expression=NULL;
+			default_var_value=stk_undefined;
 		}
 
 		FunctionParam( const FunctionParam & _function_param){
@@ -136,7 +136,7 @@ namespace zetscript{
 			line=_function_param.line;
 			by_ref=_function_param.by_ref;
 			var_args=_function_param.var_args;
-			ptr_default_expression=_function_param.ptr_default_expression;
+			default_var_value=_function_param.default_var_value;
 		}
 	};
 

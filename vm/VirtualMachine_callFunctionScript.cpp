@@ -304,6 +304,20 @@ stk_result_op1=--stk_vm_current;
 	stk_vm_current->properties=MSK_STK_PROPERTY_PTR_STK;\
 	stk_vm_current++;
 
+#define SHARE_ALL_RETURNING_OBJECTS(n_return)\
+	for(int i=0; i < n_return; i++){\
+		StackElement *stk_ret = --stk_vm_current;\
+		if(stk_ret->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){\
+			ScriptObject *sv=(ScriptObject *)stk_ret->stk_value;\
+			if(sv->shared_pointer == NULL){\
+				if(!sv->initSharedPtr()){\
+					goto lbl_exit_function;\
+				}\
+			}\
+		}\
+	}
+
+
 
 namespace zetscript{
 
@@ -311,7 +325,6 @@ namespace zetscript{
 			ScriptObjectAnonymous	* this_object,
 			ScriptFunction 			* calling_function,
 			StackElement 		  	* _stk_local_var,
-			//std::string 		  	* _str_start,
 			unsigned char 			n_args
 	    ){
 
@@ -321,75 +334,54 @@ namespace zetscript{
 			VM_ERROR_AND_RET("Reached max stack");
 		}
 
-		if(calling_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
-			VM_ERROR_AND_RET("Internal error: Not script function");
-		}
-
-		float aux_float=0.0;
 		ScriptObject *so_aux=NULL;
 		ScriptObjectAnonymous *so_anonymous_aux=NULL;
 		ScriptObjectClass *so_class_aux=NULL;
-		//ScriptObjectAnonymous *script_object_anonymous_aux=NULL;
-		//ScriptObjectClass *script_object_class=NULL;
-		//ScriptObjectAnonymous *calling_object=NULL; // used on call instruction
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
 		StackElement stk_constant_aux;
 		StackElement *stk_var;
 		const char *str_symbol=NULL,*str_aux=NULL;
-		Symbol * symbol_not_defined=NULL;
+		Symbol * symbol_aux=NULL;
 		int idx_stk_element;
-
 		unsigned short pre_post_properties=0;
-		//ScriptObject *var_object = NULL;
-
 		unsigned short scope_type=0;
-
 		StackElement *stk_dst=NULL;
 		StackElement *stk_src=NULL;
-
 		Instruction *instructions=calling_function->instructions; // starting instruction
 		Instruction *instruction_it=instructions;
-
 		VM_Scope * vm_scope_start=vm_current_scope; // save current scope...
-
 		Scope * scope = calling_function->symbol.scope;// ast->idx_scope;
-
-		vm_idx_call++;
-
 		zs_vector *registered_symbols=calling_function->registered_symbols;
-		ZS_PRINT_DEBUG("Executing function %s ...",calling_function->symbol.name.c_str());
-
-		//=========================================
-		// PUSH STACK
-		// reserve vars and assign argv vars ...
 		unsigned symbols_count=registered_symbols->count;
 		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
+		StackElement *ptr_aux = _stk_local_var+n_args;
 
-		if(stk_start >= &vm_stack[VM_STACK_LOCAL_VAR_MAX-1]){
+		if(stk_start+calling_function->min_stack_needed >= &vm_stack[VM_STACK_LOCAL_VAR_MAX-1]){
 			VM_STOP_EXECUTE("Error MAXIMUM stack size reached");
 		}
 
-		// stk_vm_current starts always from stk_start to avoid overwritting local variables...
 		stk_vm_current = stk_start;
+		vm_idx_call++;
+
+#ifdef __DEBUG__
+		ZS_PRINT_DEBUG("Executing function %s ...",calling_function->symbol.name.c_str());
+#endif
 
 		// Init local vars ...
-		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (vm_idx_call > 1)){
-			StackElement *ptr_aux = _stk_local_var+n_args;
-			for(unsigned i = n_args; i < (symbols_count); i++){ // from n_args, setup local vars
-				Symbol *symbol=(Symbol *)registered_symbols->items[i];
-				if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
-					ptr_aux->stk_value=(void *)symbol->ref_ptr;
-					ptr_aux->properties=MSK_STK_PROPERTY_FUNCTION;
+		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN && (vm_idx_call > 1)){
 
+			for(unsigned i = n_args; i < (symbols_count); i++){ // from n_args, setup local vars
+				symbol_aux=(Symbol *)registered_symbols->items[i];
+				if(symbol_aux->properties & SYMBOL_PROPERTY_FUNCTION){
+					ptr_aux->stk_value=(void *)symbol_aux->ref_ptr;
+					ptr_aux->properties=MSK_STK_PROPERTY_FUNCTION;
 				}else{
 					*ptr_aux=stk_undefined;		// undefined as default
 				}
 				ptr_aux++;
 			}
 		}
-		// PUSH STACK
-		//=========================================
 
 		//-----------------------------------------------------------------------------------------------------------------------
 		//
@@ -431,16 +423,16 @@ namespace zetscript{
 					//get member
 					strcpy(copy_aux,str_aux);
 
-					symbol_not_defined=static_class->getSymbol(copy_aux); // ... and member as well we can define the instruction here
+					symbol_aux=static_class->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 
-					if(symbol_not_defined == NULL){
+					if(symbol_aux == NULL){
 						VM_STOP_EXECUTE("Cannot link static access '%s' class '%s' not exist"
 							,str_symbol
 							,copy_aux
 						);
 					}
 
-					if(!eval::eval_set_instruction_static_symbol(instruction,symbol_not_defined,static_error)){
+					if(!eval::eval_set_instruction_static_symbol(instruction,symbol_aux,static_error)){
 
 						VM_STOP_EXECUTE("Symbol \"%s\" %s"
 							,str_symbol
@@ -449,17 +441,17 @@ namespace zetscript{
 					}
 
 				}else{
-					symbol_not_defined = main_function_object->getSymbol(MAIN_SCOPE(this),str_symbol);//, NO_PARAMS_SYMBOL_ONLY, ScopeDirection::SCOPE_DIRECTION_DOWN);
+					symbol_aux = main_function_object->getSymbol(MAIN_SCOPE(this),str_symbol);//, NO_PARAMS_SYMBOL_ONLY, ScopeDirection::SCOPE_DIRECTION_DOWN);
 				}
 
-				if(symbol_not_defined != NULL){
-					if(symbol_not_defined->n_params==NO_PARAMS_SYMBOL_ONLY){ // variable
+				if(symbol_aux != NULL){
+					if(symbol_aux->n_params==NO_PARAMS_SYMBOL_ONLY){ // variable
 						instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
 						PUSH_STK_PTR(vm_stack + instruction->value_op2);
 					}else{ // function
 						// assign script function ...
 						instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
-						instruction->value_op2=symbol_not_defined->ref_ptr;
+						instruction->value_op2=symbol_aux->ref_ptr;
 						PUSH_FUNCTION(instruction->value_op2);
 					}
 				}else{ // load undefined as default!
@@ -985,7 +977,9 @@ load_element_object:
 						stk_result_op1=++stk_multi_var_src; // result on the right
 						goto vm_store_next;
 					}
-					else{
+					else if(   instruction->byte_code!=BYTE_CODE_PUSH_VECTOR_ELEMENT
+							&& instruction->byte_code!=BYTE_CODE_PUSH_OBJECT_ELEMENT
+					){
 						*stk_vm_current++=*stk_dst;
 					}
 				}
@@ -1287,10 +1281,43 @@ load_element_object:
 							}
 						}
 
-						// ... we must set the rest of parameters as undefined in case user put less params. If params exceds the number of accepted params in function,
+						// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 						// will be ignored always.
 						for(unsigned i = n_args; i < sf->params->count; i++){
-							PUSH_UNDEFINED;
+							FunctionParam *param=(FunctionParam *)sf->params->items[i];
+							StackElement *stk_def_afun_start=stk_vm_current;
+							param->default_var_value;
+							int n_returned_args_afun=0;
+
+							switch(param->default_var_value.properties){
+							case MSK_STK_PROPERTY_UNDEFINED:
+							case MSK_STK_PROPERTY_ZS_INT:
+							case MSK_STK_PROPERTY_BOOL:
+							case MSK_STK_PROPERTY_FLOAT:
+								*stk_vm_current++=param->default_var_value;
+								break;
+							case MSK_STK_PROPERTY_FUNCTION: // we call function in the middle of the function
+								callFunctionScript(
+									NULL,
+									(ScriptFunction *)param->default_var_value.stk_value,
+									stk_def_afun_start
+								);
+
+								n_returned_args_afun=stk_vm_current-stk_def_afun_start;
+
+								SHARE_ALL_RETURNING_OBJECTS(n_returned_args_afun)
+
+								// reset stack
+								stk_vm_current=stk_def_afun_start+1; // reset stack
+
+//								*stk_vm_current++=stk_def_afun_start[0]; // take only first return ...
+								break;
+							default:
+								VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\"",param->default_var_value.typeStr());
+								break;
+
+							}
+							//PUSH_UNDEFINED;
 							n_args++;
 						}
 
@@ -1339,21 +1366,8 @@ load_element_object:
 					int n_returned_arguments_from_function=stk_vm_current-stk_return;
 
 					// setup all returned variables from function
-					for(int i=0; i < n_returned_arguments_from_function; i++){
 
-						StackElement *stk_ret = --stk_vm_current;
-
-						// if a scriptvar --> init shared
-						if(stk_ret->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-							ScriptObject *sv=(ScriptObject *)stk_ret->stk_value;
-							if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
-								if(!sv->initSharedPtr()){
-									goto lbl_exit_function;
-								}
-							}
-						}
-						// ... and push result if not function constructor...
-					}
+					SHARE_ALL_RETURNING_OBJECTS(n_returned_arguments_from_function)
 
 					stk_vm_current=stk_start_arg_call-1; // reset stack
 

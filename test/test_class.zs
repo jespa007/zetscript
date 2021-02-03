@@ -9,7 +9,14 @@ class Test{
 		this.a=a; // init a (dynamic)
 		this.b=b
 		this.c=c
-		System::println("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.e:{4} MAX_NUM:{2}",this.a,this.b,this.c,Test::MAX_NUM);
+		System::println("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.e:{4} this.f:{4} MAX_NUM:{2}"
+				,this.a
+				,this.b
+				,this.c
+				,this.d
+				,this.e
+				,this.f
+				,Test::MAX_NUM);
 		
 	}
 	function1(a){

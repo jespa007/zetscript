@@ -23,18 +23,16 @@ namespace zetscript{
 		short 			idx_script_function;		// idx_script_function from factory
 		int 			idx_return_type; 			// idx return type
 		zs_int 			ref_native_function_ptr;
-		//bool 			function_should_be_deduced_at_runtime; // look-up for solve function on vm
 		zs_vector 	* 	params;  // std::vector<FunctionParam> tells var arg name or var type name (in of C )
-
+		int				min_stack_needed;
 
 		PtrInstruction  instructions; // The set of byte code instructions that executes the function
-		size_t			instructions_len;
 
+		// number of instructions
+		size_t			instructions_len;
 
 		// local symbols for class or function...
 		zs_vector   *	registered_symbols; // registered symbols
-		//zs_vector   *	registered_functions; // registered functions
-
 
 		ScriptFunction(
 				ZetScript *_zs
@@ -60,13 +58,6 @@ namespace zetscript{
 		static void printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc=NULL);
 
 		int existArgumentName(const std::string & arg_name);
-		/*bool searchVarFunctionSymbol(
-				std::string symbol_to_find,Instruction *iao
-				, int current_function
-				, bool & symbol_not_found
-				, unsigned int param_scope_type
-				, int n_args_to_find=-1
-		);*/
 
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.
@@ -106,18 +97,12 @@ namespace zetscript{
 
 	private:
 
-
 		ZetScript 				*zs;
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
-		//zs_map					*num_native_functions;
-
-		//static const char *instructionPropertyPreOperationToStr(unsigned int properties);
-		//static const char *instructionPropertyPostOperationToStr(unsigned int properties);
 		static std::string formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
 		InstructionSourceInfo * getInstructionInfo(Instruction *instruction);
-		void destroyDefaultExpression(FunctionParam * function_param);
 		void clearParams();
 
 	};

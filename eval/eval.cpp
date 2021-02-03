@@ -289,6 +289,7 @@ namespace zetscript{
 			PtrInstruction new_instructions=NULL;
 			unsigned idx_position=0;
 			size_t new_instructions_len=0;
+			size_t new_instructions_total_bytes=0;
 			Instruction * start_ptr=NULL;
 			int n_elements_to_add=instructions->size();
 
@@ -298,15 +299,16 @@ namespace zetscript{
 				n_elements_to_add=n_elements_to_add+1; // +1 for end instruction
 			}
 
-			new_instructions_len = sf->instructions_len+(n_elements_to_add) * sizeof(Instruction);
-			new_instructions=(Instruction *)malloc(new_instructions_len);
-			memset(new_instructions, 0, new_instructions_len);
+			new_instructions_len = sf->instructions_len+(n_elements_to_add);
+			new_instructions_total_bytes=new_instructions_len* sizeof(Instruction);
+			new_instructions=(Instruction *)malloc(new_instructions_total_bytes);
+			memset(new_instructions, 0, new_instructions_total_bytes);
 
-			start_ptr=(Instruction *)((uint8_t *)new_instructions+sf->instructions_len);
+			start_ptr=new_instructions+sf->instructions_len;
 
 			// 2. copy current block to new
 			if(sf->instructions_len>0){
-				memcpy(new_instructions,sf->instructions,sf->instructions_len);
+				memcpy(new_instructions,sf->instructions,new_instructions_total_bytes);
 				start_ptr--; // start from end instruction
 			}
 
@@ -327,6 +329,8 @@ namespace zetscript{
 				sf->instruction_source_info[i]=instruction_info;
 
 				start_ptr++;
+
+				delete instruction; // do not need eval instruction any more
 
 			}
 
@@ -349,6 +353,8 @@ namespace zetscript{
 
 			sf->instructions=new_instructions;
 			sf->instructions_len=new_instructions_len;
+
+			instructions->clear();
 		}
 
 		int eval_pop_function(EvalData *eval_data){

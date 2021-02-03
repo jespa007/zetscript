@@ -1,10 +1,30 @@
 
-
+/*
 function fun(a,b=-1){
 	
 }
 
-fun(1);
+fun(1);*/
+
+function fun(a,b={a:0,b:1,c:2}){
+	System::println(b)
+	return 0
+}
+
+
+/*class A{
+	A(){
+		0
+	}
+	
+	print(){
+		System::println("mierda");
+	}
+}*/
+
+var a=fun()
+
+System::println(a)
 
 /*var a=1,b,c
 
