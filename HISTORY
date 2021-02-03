@@ -23,13 +23,14 @@ Main improvements:
 -VM speed up ~x2.7
 -VM save memory stack ~x2
 -Optimize size/compile times for binding c++ functions ~x2
--Multiple Return/Assignment
--Use of "this" with anonymous function created in class members
+-ZetScript can be instanced more than once
+-Implements multiple Return/Assignments
+-Anonymous functions created within class members can use "this" keyword to access all of those members.
 -Implements arguments with options: default, variable arguments and by reference
 -Implements setter/getter for class
--Implements new keywords: typeof
--Implements new operators: const, in
--Implements iterators
+-Implements new keywords: typeof, const
+-Implements new operators: in
+-Implements builtin iterators for string, vector and anonymous/class objects
 -Implements builtin classes: DateTime
 -Implements builtin Helper classes: System, Math, Integer and String
 -"function" keyword to declare function member is not mandatory within the class
