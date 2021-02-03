@@ -69,6 +69,7 @@ namespace zetscript{
 			KEYWORD_CONTINUE,
 			KEYWORD_RETURN,
 			KEYWORD_FUNCTION,
+			//KEYWORD_ANONYMOUS_FUNCTION,
 			//KEYWORD_ATTRIB,
 			KEYWORD_CLASS,
 			KEYWORD_DELETE,
@@ -503,6 +504,23 @@ namespace zetscript{
 				   || (*s=='\"' && pre!='\\');
 		}
 
+		bool  is_anonymous_function(EvalData *eval_data,const char *s, int line){
+			Keyword key_w;
+			char *aux_p = (char *)s;
+
+			key_w = is_keyword(aux_p);
+
+			if(key_w == Keyword::KEYWORD_FUNCTION){
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+
+				if(*aux_p == '('){
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		int  check_identifier_name_expression_ok(EvalData *eval_data,const std::string & symbol, int line){
 
 			char *aux_p = (char *)symbol.c_str();
@@ -805,6 +823,7 @@ namespace zetscript{
 			eval_data_keywords[KEYWORD_BREAK] = {KEYWORD_BREAK,"break",eval_keyword_break};
 			eval_data_keywords[KEYWORD_CONTINUE] = {KEYWORD_CONTINUE,"continue",eval_keyword_continue};
 			eval_data_keywords[KEYWORD_FUNCTION] = {KEYWORD_FUNCTION,"function",NULL};
+			//eval_data_keywords[KEYWORD_ANONYMOUS_FUNCTION]={KEYWORD_ANONYMOUS_FUNCTION,"function",NULL};
 			//eval_data_keywords[KEYWORD_ATTRIB] = {KEYWORD_ATTRIB,"attrib",NULL};
 			eval_data_keywords[KEYWORD_RETURN] = {KEYWORD_RETURN,"return",eval_keyword_return};
 			eval_data_keywords[KEYWORD_THIS] = {KEYWORD_THIS,"this", NULL};

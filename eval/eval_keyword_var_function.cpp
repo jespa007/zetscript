@@ -6,11 +6,139 @@ namespace zetscript{
 
 		static int n_anonymous_function=0;
 
+		std::string eval_anonymous_function_name(const std::string &pre_name=""){
+			return "_@afun_"+(pre_name==""?"":pre_name+"_")+zs_strutils::zs_int_to_str(n_anonymous_function++);
+		}
+
+
+		void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions, Symbol *symbol_member_var){
+
+			// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
+			PtrInstruction new_instructions=NULL;
+			unsigned idx_position=0;
+			size_t new_instructions_len=0;
+			size_t new_instructions_total_bytes=0;
+			Instruction * start_ptr=NULL;
+			int n_elements_to_add=instructions->size();
+
+			n_elements_to_add=n_elements_to_add+3; // +3 for load/store/reset stack
+
+			if(sf->instructions == NULL){
+				n_elements_to_add=n_elements_to_add+1; // +1 for end instruction
+			}
+
+			new_instructions_len = sf->instructions_len+(n_elements_to_add);
+			new_instructions_total_bytes=new_instructions_len* sizeof(Instruction);
+			new_instructions=(Instruction *)malloc(new_instructions_total_bytes);
+			memset(new_instructions, 0, new_instructions_total_bytes);
+
+			start_ptr=new_instructions+sf->instructions_len;
+
+			// 2. copy current block to new
+			if(sf->instructions_len>0){
+				memcpy(new_instructions,sf->instructions,new_instructions_total_bytes);
+				start_ptr--; // start from end instruction
+			}
+
+
+			// 3. copy eval instructions
+			for(unsigned i=0; i < instructions->size(); i++){
+				EvalInstruction *instruction = instructions->at(i);
+				// save instruction ...
+				*start_ptr=instruction->vm_instruction;
+
+				//------------------------------------
+				// symbol value to save at runtime ...
+				InstructionSourceInfo instruction_info=instruction->instruction_source_info;
+
+				// Save str_symbol that was created on eval process, and is destroyed when eval finish.
+				instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
+
+				sf->instruction_source_info[i]=instruction_info;
+
+				start_ptr++;
+
+				delete instruction; // do not need eval instruction any more
+
+			}
+
+			// 4. add load/store/reset stack
+			idx_position=start_ptr-new_instructions;
+			*start_ptr++=Instruction(BYTE_CODE_LOAD_MEMBER,ZS_IDX_UNDEFINED,symbol_member_var->idx_position);
+			sf->instruction_source_info[idx_position]=InstructionSourceInfo(
+				eval_data->current_parsing_file
+				,symbol_member_var->line
+				,get_mapped_name(eval_data,symbol_member_var->name)
+			);
+
+
+			*start_ptr++=Instruction(BYTE_CODE_STORE);
+			*start_ptr++=Instruction(BYTE_CODE_RESET_STACK);
+
+			if(sf->instructions != NULL){
+				free(sf->instructions); // deallocate last allocated instructions
+			}
+
+			sf->instructions=new_instructions;
+			sf->instructions_len=new_instructions_len;
+
+			instructions->clear();
+		}
+
+		ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,std::vector<EvalInstruction *> *eval_instructions){
+
+			std::string function_name=eval_anonymous_function_name("defval");
+			Instruction *instructions=NULL,*start_ptr=NULL;
+			size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
+			size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
+
+			Symbol * symbol_sf=MAIN_FUNCTION(eval_data)->registerLocalFunction(
+				 MAIN_SCOPE(eval_data)
+				, eval_data->current_parsing_file
+				, -1
+				, function_name
+			);
+
+			ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
+
+			// fill all instructions
+			start_ptr=sf->instructions=(Instruction *)malloc(instructions_total_bytes); // +1 is for return
+			memset(start_ptr,0,instructions_total_bytes);
+			sf->instructions_len=instructions_len;
+
+			for(unsigned i=0; i < eval_instructions->size(); i++){
+				EvalInstruction *instruction = eval_instructions->at(i);
+				InstructionSourceInfo instruction_info=instruction->instruction_source_info;
+
+				// save instruction ...
+				*start_ptr=instruction->vm_instruction;
+				// Save str_symbol that was created on eval process, and is destroyed when eval finish.
+				instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
+
+				sf->instruction_source_info[i]=instruction_info;
+
+				start_ptr++;
+
+				delete instruction;
+			}
+
+			// add return in the end...
+			start_ptr->byte_code=BYTE_CODE_RET;
+			start_ptr->value_op1=ZS_IDX_UNDEFINED;
+			start_ptr->value_op2=ZS_IDX_UNDEFINED;
+
+			eval_instructions->clear();
+
+
+			return sf;
+		}
+
 		//
 		//--------------------------------------------------------------------------------------------------------------------------------------------------------
 		//
 		//  VAR/FUNCTION
 		//
+
 		char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 			// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
 			// check for keyword ...
@@ -175,13 +303,6 @@ namespace zetscript{
 
 							eval_generate_byte_code_field_initializer(eval_data,sf_field_initializer,&member_var_init_instructions,symbol_member_variable);
 
-							// set variable as member
-							//(Instruction )((uint8_t *)sf_field_initializer->instructions+sf_field_initializer->instructions_len)
-
-							/*for(size_t i=0; i < member_var_init_instructions.size(); i++){
-								delete member_var_init_instructions[i];
-							}*/
-
 							member_var_init_instructions.clear();
 						}
 						else{
@@ -248,66 +369,13 @@ error_eval_keyword_var:
 		// FUNCTION
 		//
 
-		std::string eval_anonymous_function_name(const std::string &pre_name=""){
-			return "_@afun_"+(pre_name==""?"":pre_name+"_")+zs_strutils::zs_int_to_str(n_anonymous_function++);
-		}
-
-		ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,std::vector<EvalInstruction *> *eval_instructions){
-
-			std::string function_name=eval_anonymous_function_name("defval");
-			Instruction *instructions=NULL,*start_ptr=NULL;
-			size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
-			size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
-
-			Symbol * symbol_sf=MAIN_FUNCTION(eval_data)->registerLocalFunction(
-				 MAIN_SCOPE(eval_data)
-				, eval_data->current_parsing_file
-				, -1
-				, function_name
-			);
-
-			ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
-
-			// fill all instructions
-			start_ptr=sf->instructions=(Instruction *)malloc(instructions_total_bytes); // +1 is for return
-			memset(start_ptr,0,instructions_total_bytes);
-			sf->instructions_len=instructions_len;
-
-			for(unsigned i=0; i < eval_instructions->size(); i++){
-				EvalInstruction *instruction = eval_instructions->at(i);
-				InstructionSourceInfo instruction_info=instruction->instruction_source_info;
-
-				// save instruction ...
-				*start_ptr=instruction->vm_instruction;
-				// Save str_symbol that was created on eval process, and is destroyed when eval finish.
-				instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
-
-				sf->instruction_source_info[i]=instruction_info;
-
-				start_ptr++;
-
-				delete instruction;
-			}
-
-			// add return in the end...
-			start_ptr->byte_code=BYTE_CODE_RET;
-			start_ptr->value_op1=ZS_IDX_UNDEFINED;
-			start_ptr->value_op2=ZS_IDX_UNDEFINED;
-
-			eval_instructions->clear();
-
-
-			return sf;
-		}
-
-
 		char * eval_keyword_function(
 				EvalData *eval_data
 				, const char *s
 				, int & line
 				, Scope *scope_info
-				, bool check_anonymous_function
-				, std::string * resulted_function_name
+				, bool allow_anonymous_function
+				, Symbol ** symbol_function
 			){
 
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
@@ -348,7 +416,7 @@ error_eval_keyword_var:
 
 			if(key_w == Keyword::KEYWORD_FUNCTION){
 				FunctionParam arg_info;
-				bool var_args=false;
+				//bool var_args=false;
 				int n_arg=0;
 				char *end_var = NULL;
 				std::string arg_value;
@@ -377,10 +445,6 @@ error_eval_keyword_var:
 				bool named_function = *aux_p!='(';
 
 				if(named_function){ // is named function..
-
-					if(check_anonymous_function){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected anonymous function");
-					}
 
 					// function cannot be declared within main scope
 					if(scope_info != MAIN_SCOPE(eval_data) && sc == NULL){ // function within a function (not function member)
@@ -417,8 +481,10 @@ error_eval_keyword_var:
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				}
 				else{ // name anonymous function
-					if(check_anonymous_function==false){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Anonymous functions should be used on expression");
+
+					if(allow_anonymous_function==false){
+						// it return NULL telling to no eval function here. It will perform in expression instead (it also will create anonymous in there)
+						return NULL;
 					}
 
 					is_anonymous=true;
@@ -439,7 +505,7 @@ error_eval_keyword_var:
 				// save scope pointer for function args ...
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-				while(*aux_p != 0 && *aux_p != ')' && !var_args){
+				while(*aux_p != 0 && *aux_p != ')'){
 					arg_info=FunctionParam();
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					if(args.size()>0){
@@ -458,7 +524,7 @@ error_eval_keyword_var:
 
 					if(*aux_p=='.' && *(aux_p+1)=='.' && *(aux_p+2)=='.'){// is_keyword(aux_p)==KEYWORD_REF){
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
-						var_args=arg_info.var_args =true;
+						arg_info.var_args =true;
 					}else if(is_keyword(aux_p)==KEYWORD_REF){
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[KEYWORD_REF].str),line);
 						arg_info.by_ref =true;
@@ -486,7 +552,15 @@ error_eval_keyword_var:
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-					if(*aux_p=='='){ // default argument...
+					if(arg_info.var_args && *aux_p!=')'){
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected ')' after variable argument declaration");
+					}
+					else if(*aux_p=='='){ // default argument...
+
+						if(arg_info.by_ref){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Arguments by reference cannot set a default argument");
+						}
+
 						std::vector<EvalInstruction *> instructions_default;
 						bool create_anonymous_function_return_expression=false;
 
@@ -562,9 +636,9 @@ error_eval_keyword_var:
 				}
 
 
-				if(resulted_function_name!=NULL){ // save generated function name...
+				/*if(resulted_function_name!=NULL){ // save generated function name...
 					*resulted_function_name=function_name;
-				}
+				}*/
 
 				//--- OP
 				if(sc!=NULL){ // register as variable member...
@@ -596,12 +670,16 @@ error_eval_keyword_var:
 					}
 				}
 
+				if(symbol_function != NULL){
+					*symbol_function=symbol_sf;
+				}
+
 				sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
 				// register args as part of stack...
 				for(unsigned i=0; i < args.size(); i++){
 					try{
-						sf->registerLocalVariable(
+						sf->registerLocalArgument(
 								scope_function
 								,eval_data->current_parsing_file
 								,args[i].line

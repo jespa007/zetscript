@@ -242,34 +242,38 @@ namespace zetscript{
 			n_stk_params);
 
 		// get number return elements
-		int n_returned_arguments_from_function=stk_vm_current-(stk_start+calling_function->registered_symbols->count);
-
-		if(n_returned_arguments_from_function > 0){
-
-			// get first...
-			stk_return=*(stk_vm_current-n_returned_arguments_from_function);
-
-			// if object add into lifetime till user delete it
-			if(stk_return.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-				// add generated
-				insertLifetimeObject(file,line,(ScriptObjectAnonymous *)stk_return.stk_value);
-			}
-
-			// deallocate all returned variables from 1
-			for(int i=1; i < n_returned_arguments_from_function; i++){
-				if(stk_return.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					delete (ScriptObject *)stk_return.stk_value;
-				}
-			}
-
-		}
 
 
 		if(vm_error){
 			// it was error so reset stack and stop execution ? ...
 			doStackDump();
 			throw std::runtime_error(this->vm_error_callstack_str+"\n"+vm_error_str);
+		}else{
+			int n_returned_arguments_from_function=stk_vm_current-(stk_start+calling_function->registered_symbols->count);
+
+			if(n_returned_arguments_from_function > 0){
+
+				// get first...
+				StackElement *ptr_stk_return=(stk_vm_current-n_returned_arguments_from_function);
+				stk_return = ptr_stk_return[0];
+
+				// if object add into lifetime till user delete it
+				if(stk_return.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					// add generated
+					insertLifetimeObject(file,line,(ScriptObjectAnonymous *)stk_return.stk_value);
+				}
+
+				// deallocate all returned variables from 1
+				for(int i=1; i < n_returned_arguments_from_function; i++){
+					StackElement stk_aux=ptr_stk_return[i];
+					if(stk_aux.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+						delete (ScriptObject *)stk_aux.stk_value;
+					}
+				}
+			}
 		}
+
+
 
 		return stk_return;
 	}

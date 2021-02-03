@@ -24,7 +24,8 @@ namespace zetscript{
 			std::vector<EvalInstruction *> 	* instructions=&token_node->instructions;
 			char *aux_p = (char *)s;
 			unsigned short instruction_properties=0; // global by default ...
-			ByteCode byte_code = ByteCode::BYTE_CODE_FIND_VARIABLE; // not found by default
+			Symbol *symbol_object=NULL;
+			ByteCode byte_code = ByteCode::BYTE_CODE_LOAD_LOCAL; // not found by default
 
 			if(scope_info->scope_parent!=NULL){// is within function ?
 
@@ -46,12 +47,14 @@ namespace zetscript{
 				,line
 				,scope_info
 				,true
-				,&token_node->value
+				,&symbol_object
 			))==NULL){
 				return NULL;
 			}
 
-			eval_instruction->symbol.name=token_node->value;
+			eval_instruction->vm_instruction.byte_code=byte_code;
+			eval_instruction->vm_instruction.value_op2=symbol_object->idx_position;
+			token_node->value=eval_instruction->symbol.name=symbol_object->name;
 			eval_instruction->symbol.scope=scope_info;
 
 			/*eval_instruction->link_symbol_first_access=LinkSymbolFirstAccess(
@@ -219,6 +222,7 @@ namespace zetscript{
 			ScriptClass *sc=NULL;
 			int n_args=0;
 			Symbol *constructor_function=NULL;
+			int start_line=line;
 
 			Keyword key_w;
 
@@ -306,11 +310,14 @@ namespace zetscript{
 					 // if constructor function found insert call function...
 					  if(constructor_function != NULL){
 						 instructions->push_back(
-							 new EvalInstruction(
+								 eval_instruction=new EvalInstruction(
 								  BYTE_CODE_CALL_CONSTRUCTOR
 								 ,n_args
 							)
 						 );
+
+						 eval_instruction->instruction_source_info.file=eval_data->current_parsing_file;
+						 eval_instruction->instruction_source_info.line=start_line;
 					  }
 
 

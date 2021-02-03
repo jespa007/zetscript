@@ -308,6 +308,28 @@ namespace zetscript{
 		return "unknown";
 	}
 
+	Symbol * ScriptFunction::registerLocalArgument(
+			 Scope * scope_block
+			, const std::string & file
+			, short line
+			, const std::string & symbol_name
+	){
+		Symbol * symbol=NULL;
+		short idx_position=(short)registered_symbols->count;
+		StackElement *se=NULL;
+
+
+		if((symbol=scope_block->registerSymbol(file,line, symbol_name, NO_PARAMS_SYMBOL_ONLY,  ScopeDirection::SCOPE_DIRECTION_CURRENT))==NULL){
+				return NULL;
+		}
+
+		symbol->idx_position = idx_position;
+
+		registered_symbols->push_back((zs_int)symbol);
+
+		return symbol;
+	}
+
 	Symbol * ScriptFunction::registerLocalVariable(
 			 Scope * scope_block
 			, const std::string & file

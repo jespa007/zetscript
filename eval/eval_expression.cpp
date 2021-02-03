@@ -7,18 +7,9 @@ namespace zetscript{
 			 return *s==')' || *s==','||  *s==']' || *s==';' || *s == 0 || *s=='}';
 		}
 
-		int    is_end_expression_or_keyword(const char * s,EvalData *eval_data,int line){
+		int    is_end_expression_or_keyword(EvalData *eval_data,const char * s,int line){
 			Keyword op=is_keyword(s);
-			bool is_anonymouse_function=false;
-
-			if(op==Keyword::KEYWORD_FUNCTION){
-				char *check=NULL;
-				IGNORE_BLANKS(check,eval_data,s+strlen(eval_data_keywords[op].str),line);
-
-				is_anonymouse_function=*check=='(';
-			}
-
-			return !is_anonymouse_function && (is_end_expression(s) || (op<Keyword::KEYWORDS_WITHIN_EXPRESSIONS && op !=Keyword::KEYWORD_UNKNOWN));
+			return !is_anonymous_function(eval_data,s,line) && (is_end_expression(s) || (op<Keyword::KEYWORDS_WITHIN_EXPRESSIONS && op !=Keyword::KEYWORD_UNKNOWN));
 		}
 
 		bool is_end_expression_with_cr(const char * s){
@@ -70,7 +61,7 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
 			}
 
-			if(!is_end_expression_or_keyword(aux_p,eval_data,line)){
+			if(!is_end_expression_or_keyword(eval_data,aux_p,line)){
 
 				for(;;){ // it eats identifier/constant operator, etc
 

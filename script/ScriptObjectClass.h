@@ -54,6 +54,7 @@ namespace zetscript{
 			 * This variable tells whether is pointer function or not.
 			 */
 			//ScriptClass *script_class;
+			zs_vector	* builtin_members;
 			ScriptClass * script_class_native;
 			bool delete_c_object;
 

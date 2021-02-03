@@ -9,7 +9,7 @@ class Test{
 		this.a=a; // init a (dynamic)
 		this.b=b
 		this.c=c
-		System::println("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.e:{4} this.f:{4} MAX_NUM:{2}"
+		System::println("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.e:{4} this.f:{5} MAX_NUM:{6}"
 				,this.a
 				,this.b
 				,this.c
@@ -64,4 +64,4 @@ class TestExtended extends Test{
 };
 
 var t=new TestExtended(1); 	// instances TestExtended class
-t.function3(20); // it calls anynomus function
+t.function3(20); // it calls anynomus function*/

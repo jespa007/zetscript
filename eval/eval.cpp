@@ -166,7 +166,7 @@ namespace zetscript{
 
 				if(*aux == '}'){ // ending block trivial cases...
 					return aux;
-				}else if(keyw != Keyword::KEYWORD_UNKNOWN && keyw < KEYWORDS_WITHIN_EXPRESSIONS){ // it cuts current expression to link breaks...
+				}else if(keyw != Keyword::KEYWORD_UNKNOWN && keyw < KEYWORDS_WITHIN_EXPRESSIONS && (is_anonymous_function(eval_data,aux,line)==false)){ // it cuts current expression to link breaks...
 
 					if(((keyw == Keyword::KEYWORD_BREAK) || (keyw == Keyword::KEYWORD_CASE)|| (keyw == Keyword::KEYWORD_DEFAULT)) && return_on_break_or_case){
 						return aux;
@@ -283,80 +283,6 @@ namespace zetscript{
 
 		}
 
-		void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions, Symbol *symbol_member_var){
-
-			// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
-			PtrInstruction new_instructions=NULL;
-			unsigned idx_position=0;
-			size_t new_instructions_len=0;
-			size_t new_instructions_total_bytes=0;
-			Instruction * start_ptr=NULL;
-			int n_elements_to_add=instructions->size();
-
-			n_elements_to_add=n_elements_to_add+3; // +3 for load/store/reset stack
-
-			if(sf->instructions == NULL){
-				n_elements_to_add=n_elements_to_add+1; // +1 for end instruction
-			}
-
-			new_instructions_len = sf->instructions_len+(n_elements_to_add);
-			new_instructions_total_bytes=new_instructions_len* sizeof(Instruction);
-			new_instructions=(Instruction *)malloc(new_instructions_total_bytes);
-			memset(new_instructions, 0, new_instructions_total_bytes);
-
-			start_ptr=new_instructions+sf->instructions_len;
-
-			// 2. copy current block to new
-			if(sf->instructions_len>0){
-				memcpy(new_instructions,sf->instructions,new_instructions_total_bytes);
-				start_ptr--; // start from end instruction
-			}
-
-
-			// 3. copy eval instructions
-			for(unsigned i=0; i < instructions->size(); i++){
-				EvalInstruction *instruction = instructions->at(i);
-				// save instruction ...
-				*start_ptr=instruction->vm_instruction;
-
-				//------------------------------------
-				// symbol value to save at runtime ...
-				InstructionSourceInfo instruction_info=instruction->instruction_source_info;
-
-				// Save str_symbol that was created on eval process, and is destroyed when eval finish.
-				instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
-
-				sf->instruction_source_info[i]=instruction_info;
-
-				start_ptr++;
-
-				delete instruction; // do not need eval instruction any more
-
-			}
-
-			// 4. add load/store/reset stack
-			idx_position=start_ptr-new_instructions;
-			*start_ptr++=Instruction(BYTE_CODE_LOAD_MEMBER,ZS_IDX_UNDEFINED,symbol_member_var->idx_position);
-			sf->instruction_source_info[idx_position]=InstructionSourceInfo(
-				eval_data->current_parsing_file
-				,symbol_member_var->line
-				,get_mapped_name(eval_data,symbol_member_var->name)
-			);
-
-
-			*start_ptr++=Instruction(BYTE_CODE_STORE);
-			*start_ptr++=Instruction(BYTE_CODE_RESET_STACK);
-
-			if(sf->instructions != NULL){
-				free(sf->instructions); // deallocate last allocated instructions
-			}
-
-			sf->instructions=new_instructions;
-			sf->instructions_len=new_instructions_len;
-
-			instructions->clear();
-		}
-
 		int eval_pop_function(EvalData *eval_data){
 
 			char class_aux[512]={0},member_aux[512]={0};
@@ -370,10 +296,12 @@ namespace zetscript{
 			}
 
 			// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
-			size_t size = (eval_data->current_function->instructions.size() + 1) * sizeof(Instruction);
-			sf->instructions_len=size;
-			sf->instructions = (PtrInstruction)malloc(size);
-			memset(sf->instructions, 0, size);
+			//eval_data->current_function->instructions.size() + 1
+			size_t len=eval_data->current_function->instructions.size() + 1; // +1 for end instruction
+			size_t total_size_bytes = (len) * sizeof(Instruction);
+			sf->instructions_len=len;
+			sf->instructions = (PtrInstruction)malloc(total_size_bytes);
+			memset(sf->instructions, 0, total_size_bytes);
 			//bool is_static = eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC;
 			int ok=TRUE;
 			//int idx_instruction=0;

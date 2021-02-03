@@ -86,10 +86,10 @@ namespace zetscript{
 	//
 	// SCOPE VARIABLE MANAGEMENT
 	//
-	Symbol * Scope::registerSymbol(const std::string & file,short line, const std::string & symbol_name, char n_params){
+	Symbol * Scope::registerSymbol(const std::string & file,short line, const std::string & symbol_name, char n_params, ScopeDirection check_repeated_symbols_direction){
 		Symbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
-		if((p_irv = getSymbol(symbol_name,n_params))!=NULL){ // check whether symbol is already registered ...
+		if((p_irv = getSymbol(symbol_name,n_params,check_repeated_symbols_direction))!=NULL){ // check whether symbol is already registered ...
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
 				THROW_SCRIPT_ERROR(file.c_str(),line," error symbol \"%s\" already registered at %s:%i", symbol_name.c_str(),p_irv->file.c_str(),p_irv->line);
 			}else{
@@ -100,7 +100,7 @@ namespace zetscript{
 		return addSymbol(file, line, symbol_name, n_params);
 	}
 
-	Symbol * Scope::getSymbol(const std::string & str_symbol, char n_params, ScopeDirection scope_direction){
+	Symbol * Scope::getSymbol(const std::string & str_symbol, char n_params, ScopeDirection scope_direction_repeated_symbols){
 
 		Symbol *sv=NULL;
 
@@ -115,7 +115,7 @@ namespace zetscript{
 			}
 		}
 
-		if(scope_direction==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction==ScopeDirection::SCOPE_DIRECTION_DOWN){
+		if(scope_direction_repeated_symbols==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction_repeated_symbols==ScopeDirection::SCOPE_DIRECTION_DOWN){
 			if(
 					this->scope_parent != NULL			 	 // it says that is the end of scopes
 					&& this->scope_parent != MAIN_SCOPE(this) // avoid find symbols to global scope. If not found in local it will try link global on eval_pop_function
@@ -124,7 +124,7 @@ namespace zetscript{
 			}
 		}
 
-		if(scope_direction==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction==ScopeDirection::SCOPE_DIRECTION_UP){
+		if(scope_direction_repeated_symbols==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction_repeated_symbols==ScopeDirection::SCOPE_DIRECTION_UP){
 			for(unsigned i = 0; i < registered_scopes->count; i++){
 				Scope *s=(Scope *)registered_scopes->items[i];
 

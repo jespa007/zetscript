@@ -7,7 +7,8 @@
 namespace zetscript{
 
 	typedef enum{
-		SCOPE_DIRECTION_DOWN=0,
+		SCOPE_DIRECTION_CURRENT=0,
+		SCOPE_DIRECTION_DOWN,
 		SCOPE_DIRECTION_UP,
 		SCOPE_DIRECTION_BOTH
 	}ScopeDirection;
@@ -46,8 +47,8 @@ namespace zetscript{
 		 * @n_params:
 		 */
 		Symbol * addSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params);
-		Symbol * registerSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
-		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, ScopeDirection scope_direction=ScopeDirection::SCOPE_DIRECTION_BOTH);
+		Symbol * registerSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, ScopeDirection scope_direction_repeated_symbols=ScopeDirection::SCOPE_DIRECTION_BOTH);
+		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, ScopeDirection scope_direction_repeated_symbols=ScopeDirection::SCOPE_DIRECTION_BOTH);
 
 		void						    markAsUnusued();
 

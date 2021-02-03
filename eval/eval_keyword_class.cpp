@@ -10,6 +10,7 @@ namespace zetscript{
 		//
 		// CLASS
 		//
+
 		char * eval_keyword_class(EvalData *eval_data,const char *s,int & line, Scope *scope_info){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;

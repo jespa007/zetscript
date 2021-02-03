@@ -59,6 +59,17 @@ namespace zetscript{
 
 		int existArgumentName(const std::string & arg_name);
 
+
+		/* Registers argument variable
+		 * Desc: Inserts variable at scope some block scope or by scope info itself.
+		 */
+		Symbol *registerLocalArgument(
+				 Scope * scope_block
+				, const std::string & file
+				, short line
+				, const std::string & symbol_name
+		);
+
 		/* Registers local variable
 		 * Desc: Inserts variable at scope some block scope or by scope info itself.
 		 */

@@ -14,6 +14,7 @@ namespace zetscript{
 
 
 	ScriptObjectAnonymous::ScriptObjectAnonymous(){
+		idx_script_class=IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS;
 		map_property_keys=new zs_map();
 	}
 

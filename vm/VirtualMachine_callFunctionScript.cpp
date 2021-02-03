@@ -672,23 +672,23 @@ load_element_object:
 						POP_TWO; // first must be a string that describes variable name and the other the variable itself ...
 						ScriptObjectAnonymous *obj = NULL;
 						StackElement *stk_object=(stk_vm_current-1);
-						if(STK_IS_SCRIPT_OBJECT_ANONYMOUS(stk_object)){
-							VM_STOP_EXECUTE("Expected object but is type ");
+						if(STK_IS_SCRIPT_OBJECT_ANONYMOUS(stk_object) == 0){
+							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_object->typeStr());
 						}
 
 						obj = (ScriptObjectAnonymous *)stk_object->stk_value;
-						if(obj->idx_script_class != IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS){ // push value ...
-							VM_STOP_EXECUTE("Expected object but is type ");
-						}
+						/*if(obj->idx_script_class != IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS){ // push value ...
+							VM_STOP_EXECUTE("Internal: Expected object but is type \"%s\"",stk_object->typeStr());
+						}*/
 
-						if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
-							VM_STOP_EXECUTE("internal error (operator2 is not std::string)");
+						if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
+							VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\"",stk_result_op1->typeStr());
 						}
 								// op1 is now the src value ...
 						StackElement *se=NULL;
-						const char *str = (const char *)stk_result_op1->stk_value;
+						//const char *str = (const char *)stk_result_op1->stk_value;
 						stk_src=stk_result_op2;
-						if((se =obj->addProperty(str,vm_error_str))==NULL){
+						if((se =obj->addProperty(stk_result_op1->toString(),vm_error_str))==NULL){
 							VM_STOP_EXECUTE(vm_error_str.c_str());
 						}
 
