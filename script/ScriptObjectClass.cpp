@@ -215,7 +215,7 @@ namespace zetscript{
 		ScriptClass *script_class=getScriptClass();
 
 		// deallocate built-in function member objects
-		for(int i=0; i< builtin_members->count; i++){
+		for(unsigned i=0; i< builtin_members->count; i++){
 			StackElement *stk=(StackElement *)builtin_members->items[i];
 			if(stk->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER){
 				delete (FunctionMember *)stk->stk_value;

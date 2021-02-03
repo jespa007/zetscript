@@ -1,9 +1,20 @@
+var a=1
+
+var i1=10/2 // <-- should be decimal instead of in
+var i2=Integer.parse(10/2) // <-- should be int instead of float
+//Integer.parse("10") // <-- convert to 
+//Float.parse("10")
+
+var i3=100.0/2 // <-- fails
+var i4=3110.0/a // <-- fails
+
+
 // A class example
-class Test{
+/*class Test{
 	const MAX_NUM=9
 	
 	// pre create vars with initialization
-	var b=-1,c=-2
+	var b=-1,c=-2,d="dasds"
 
 	Test(a,b=-1,c=Test::MAX_NUM){
 		this.a=a; // init a (dynamic)
@@ -34,10 +45,13 @@ function Test::function2(a){
 }
 
 // post-include var and const member
-var Test::f=-1,Test::e
+var Test::f=-1,Test::e,Test::h
 const Test::MAX_NUM_EXT=10
 
-new Test()
+
+var a=new Test(121)
+*/
+
 /*
 // A inheritance class example. TestExtended inherites function1 and function2. 
 class TestExtended extends Test{

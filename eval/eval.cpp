@@ -332,15 +332,28 @@ namespace zetscript{
 						if(*ptr_str_symbol_to_find == SYMBOL_VALUE_SUPER){
 							// get current function name and find first ancestor in heritance
 							Symbol *symbol_sf_foundf=NULL;
+							std::string target_name;
+
+							bool is_constructor = sf->symbol.name == sf_class->symbol_class.name;
 							//std::string str_function_symbol_to_find = sf->symbol.name;
 
 							for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
 								Symbol *symbol_member = (Symbol *)sf_class->symbol_members->items[i];
+								bool match_names=false;
+								if(is_constructor==true){
+									if(symbol_member->scope == NULL){ // is constant...
+										continue;
+									}
+									match_names=symbol_member->scope->script_class->symbol_class.name==symbol_member->name;
+								}else{
+									match_names=symbol_member->name==sf->symbol.name;
+								}
+
 								if(symbol_member->properties & SYMBOL_PROPERTY_FUNCTION){
 									ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
-									bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?sf->symbol.name == symbol_member->name:true);
+									bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
 									if(
-											(sf_member->symbol.name == sf->symbol.name)
+											(match_names)
 										&& (match_params)
 										){
 										symbol_sf_foundf = symbol_member;
@@ -358,9 +371,9 @@ namespace zetscript{
 										,sf->symbol.name.c_str()
 								);
 							}
-							//instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_TYPE_VARIABLE;
+							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER;
 							instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
-							instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,sf->symbol.name);
+							instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,std::string(symbol_sf_foundf->scope->script_class->symbol_class.name)+"::"+symbol_sf_foundf->name);
 							//instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 
 						}else{ // is "this" symbol, check whether symbol is member

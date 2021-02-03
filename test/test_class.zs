@@ -3,7 +3,7 @@ class Test{
 	const MAX_NUM=9
 	
 	// pre create vars with initialization
-	var b=-1,c=-2
+	var a,b=-1,c=-2
 
 	Test(a,b=-1,c=Test::MAX_NUM){
 		this.a=a; // init a (dynamic)
