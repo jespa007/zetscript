@@ -36,7 +36,7 @@ namespace zetscript{
 
 			// 2. copy current block to new
 			if(sf->instructions_len>0){
-				memcpy(new_instructions,sf->instructions,new_instructions_total_bytes);
+				memcpy(new_instructions,sf->instructions,sf->instructions_len*sizeof(Instruction));
 				start_ptr--; // start from end instruction
 			}
 
