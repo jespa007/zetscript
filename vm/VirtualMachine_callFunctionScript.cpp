@@ -357,6 +357,10 @@ namespace zetscript{
 		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
 		StackElement *ptr_aux = _stk_local_var+n_args;
 
+		if(instructions==NULL){
+			return;
+		}
+
 		if(stk_start+calling_function->min_stack_needed >= &vm_stack[VM_STACK_LOCAL_VAR_MAX-1]){
 			VM_STOP_EXECUTE("Error MAXIMUM stack size reached");
 		}

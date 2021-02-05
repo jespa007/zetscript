@@ -1,4 +1,4 @@
-var a=1
+/*var a=1
 
 var i1=10/2 // <-- should be decimal instead of in
 var i2=Integer.parse(10/2) // <-- should be int instead of float
@@ -7,10 +7,25 @@ var i2=Integer.parse(10/2) // <-- should be int instead of float
 
 var i3=100.0/2 // <-- fails
 var i4=3110.0/a // <-- fails
+*/
+class Test{
+	Test(){
+		System::println("dasdas");
+	}
+	
+}
 
+class TestEx extends Test{
+	TestEx(){
+		super();
+	}
+}
 
+new Test()
+
+/*
 // A class example
-/*class Test{
+class Test{
 	const MAX_NUM=9
 	
 	// pre create vars with initialization
@@ -47,10 +62,10 @@ function Test::function2(a){
 // post-include var and const member
 var Test::f=-1,Test::e,Test::h
 const Test::MAX_NUM_EXT=10
-
-
-var a=new Test(121)
 */
+
+//var a=new Test(121)
+
 
 /*
 // A inheritance class example. TestExtended inherites function1 and function2. 
