@@ -39,7 +39,9 @@ namespace zetscript{
 			callConstructorBuiltin(this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]));
 		}
 
-		zs->getVirtualMachine()->execute(this,sc->sf_field_initializer);
+		if(sc->sf_field_initializer != NULL){ // execute if only script class
+			zs->getVirtualMachine()->execute(this,sc->sf_field_initializer);
+		}
 	}
 
 

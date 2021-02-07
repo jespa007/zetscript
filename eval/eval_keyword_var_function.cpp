@@ -294,7 +294,6 @@ namespace zetscript{
 							,scope_var
 							,is_var_member?&member_var_init_instructions:&eval_data->current_function->instructions
 							,{}
-							//,0 //is_constant==true||sf_field_initializer ? 0:EVAL_EXPRESSION_ON_MAIN_BLOCK
 						))==NULL){
 							goto error_eval_keyword_var;
 						}

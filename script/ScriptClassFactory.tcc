@@ -148,7 +148,7 @@ namespace zetscript{
 		}
 
 
-		if(getIdx_C_RegisteredClass(str_class_name_ptr)!=ZS_IDX_UNDEFINED){
+		if(getIdxNativeRegisteredClass(str_class_name_ptr)!=ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("this %s is already registered",zs_rtti::demangle(typeid( T).name()).c_str());
 		}
 

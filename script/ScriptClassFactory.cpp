@@ -205,6 +205,23 @@ namespace zetscript{
 				// 2. set idx base class...
 				sci->idx_base_classes->push_back(base_class->idx_class);
 			}
+
+			if(sci->idx_class != IDX_SCRIPT_CLASS_MAIN){ // main class has no field initializers and reserve first function as main function
+				std::string error="";
+				Symbol *symbol_field_initializer=NULL;
+
+				symbol_field_initializer=sci->registerMemberFunction(
+						error
+						,__FILE__
+						,__LINE__
+						,zs_strutils::format("__@field_initializer_%s_@__",sci->symbol_class.name.c_str())
+						,{}
+				);
+
+				sci->sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;
+
+			}
+
 			return sci;
 		}else{
 			THROW_RUNTIME_ERROR("class \"%s\" already registered",class_name.c_str());
@@ -305,7 +322,7 @@ namespace zetscript{
 		 return so;
 	 }
 
-	short ScriptClassFactory::getIdx_C_RegisteredClass(const std::string & str_classPtr){
+	short ScriptClassFactory::getIdxNativeRegisteredClass(const std::string & str_classPtr){
 		// ok check str_native_type
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
