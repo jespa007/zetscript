@@ -1,9 +1,9 @@
 /*var a=1
 
 var i1=10/2 // <-- should be decimal instead of in
-var i2=Integer.parse(10/2) // <-- should be int instead of float
-//Integer.parse("10") // <-- convert to 
-//Float.parse("10")
+var i2=Integer.parse(10/2) // <-- convert to int
+//Integer.parse("10") // <-- convert to int
+//Float.parse("10") //<-- convert to float
 
 var i3=100.0/2 // <-- fails
 var i4=3110.0/a // <-- fails
@@ -17,7 +17,7 @@ class Test{
 
 class TestEx extends Test{
 	TestEx(){
-		super();
+		super(); //<--fails
 	}
 }
 
