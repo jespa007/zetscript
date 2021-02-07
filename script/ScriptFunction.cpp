@@ -108,7 +108,7 @@ namespace zetscript{
 				 n_ops++;
 			 }
 
-			 if((	   instruction->byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER
+			 if((	   instruction->byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_VAR
 					|| instruction->byte_code==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS
 				)
 				==true){
@@ -180,7 +180,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_CONSTRUCTOR:
 			case BYTE_CODE_LOAD_THIS:
 			case BYTE_CODE_LOAD_GLOBAL:
-			case BYTE_CODE_LOAD_MEMBER:
+			case BYTE_CODE_LOAD_MEMBER_VAR:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)

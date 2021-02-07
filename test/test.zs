@@ -9,9 +9,13 @@ var i3=100.0/2 // <-- fails
 var i4=3110.0/a // <-- fails
 */
 class Test{
+	var a=0
+
 	Test(){
-		System::println("dasdas");
+		System::println("dasdas {0}"+this.a);
 	}
+	
+	
 	
 }
 
@@ -21,7 +25,7 @@ class TestEx extends Test{
 	}
 }
 
-new TestEx()
+new Test()
 
 /*
 // A class example

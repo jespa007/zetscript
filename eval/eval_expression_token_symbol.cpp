@@ -369,10 +369,15 @@ namespace zetscript{
 							Symbol *symbol_member=sf_class->getSymbol(accessor_name);
 
 							if(symbol_member != NULL){ // is member
-								instruction_value2=symbol_member->idx_position;
+								// functions always loads dynamically because we can have an override function
+								// so we don't load as member in a fix position else is a variable ...
+								if((symbol_member->properties & SYMBOL_PROPERTY_FUNCTION) == 0){
 
-								// override byte code
-								byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER;
+									instruction_value2=symbol_member->idx_position;
+
+									// override byte code
+									byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_VAR;
+								}
 							}
 
 						}
@@ -380,7 +385,7 @@ namespace zetscript{
 					}
 
 					// if not load element from this ...
-					if((	   byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER
+					if((	   byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_VAR
 							|| byte_code==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS
 						)
 						==false){

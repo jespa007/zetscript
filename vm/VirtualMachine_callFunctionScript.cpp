@@ -472,7 +472,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_THIS: // load variable ...
 				PUSH_STK_PTR(this_object->getThisProperty());
 				continue;
-			case BYTE_CODE_LOAD_MEMBER: // direct load
+			case BYTE_CODE_LOAD_MEMBER_VAR: // direct load
 				PUSH_STK_PTR(this_object->getElementAt(instruction->value_op2));
 				continue;
 			case BYTE_CODE_LOAD_CONSTRUCTOR:

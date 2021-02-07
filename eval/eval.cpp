@@ -371,7 +371,7 @@ namespace zetscript{
 										,sf->symbol.name.c_str()
 								);
 							}
-							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER;
+							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER_VAR;
 							instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
 							instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,std::string(symbol_sf_foundf->scope->script_class->symbol_class.name)+"::"+symbol_sf_foundf->name);
 							//instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
@@ -382,8 +382,12 @@ namespace zetscript{
 								// is automatically created on vm...
 								Symbol *symbol_function=sf_class->getSymbol(*ptr_str_symbol_to_find,ANY_PARAMS_SYMBOL_ONLY);
 								if(symbol_function!=NULL){
-									instruction->vm_instruction.value_op2=symbol_function->idx_position;
-									instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER; // immediate load
+									// functions always loads dynamically because we can have an override function
+									// so we don't load as member in a fix position else is a member variable ...
+									if((symbol_function->properties & SYMBOL_PROPERTY_FUNCTION) == 0){ // if not function set as load immediate
+										instruction->vm_instruction.value_op2=symbol_function->idx_position;
+										instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_VAR; // immediate load
+									}
 								}
 							}
 						}

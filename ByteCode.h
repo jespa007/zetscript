@@ -19,7 +19,7 @@ namespace zetscript{
 		BYTE_CODE_LOAD_GLOBAL,
 		BYTE_CODE_LOAD_LOCAL,
 		BYTE_CODE_LOAD_THIS,
-		BYTE_CODE_LOAD_MEMBER,
+		BYTE_CODE_LOAD_MEMBER_VAR,
 
 		// load element
 		BYTE_CODE_LOAD_ELEMENT_VECTOR,
@@ -140,7 +140,7 @@ namespace zetscript{
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_GLOBAL)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_LOCAL)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_THIS)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_MEMBER)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_MEMBER_VAR)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_VECTOR)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT)\
@@ -159,7 +159,7 @@ namespace zetscript{
    ((byte_code)== BYTE_CODE_LOAD_LOCAL) \
 || ((byte_code)== BYTE_CODE_FIND_VARIABLE) \
 || ((byte_code)== BYTE_CODE_LOAD_GLOBAL)\
-|| ((byte_code)== BYTE_CODE_LOAD_MEMBER)\
+|| ((byte_code)== BYTE_CODE_LOAD_MEMBER_VAR)\
 )
 
 #define IS_BYTE_CODE_OPERATION(byte_code) 		(BYTE_CODE_EQU <=(byte_code) && (byte_code)<= BYTE_CODE_SHR)

@@ -40,7 +40,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL:			return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_THIS:			return "LOAD_THIS"; // load type var
 			case BYTE_CODE_LOAD_CONSTRUCTOR:	return "LOAD_CTOR"; // load type var
-			case BYTE_CODE_LOAD_MEMBER:			return "LOAD_MEMBER"; // load type var
+			case BYTE_CODE_LOAD_MEMBER_VAR:			return "LOAD_MEMBER"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      	return "LOAD_???"; // load to find global
 			case BYTE_CODE_LOAD_ELEMENT_THIS:	return "LOAD_E@THIS"; // load element object
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:	return "LOAD_E@VEC"; // load element vector
@@ -122,7 +122,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_GLOBAL:			return "LOAD_GLOBAL"; // load type var
 			case BYTE_CODE_LOAD_LOCAL:			return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_THIS:			return "LOAD_THIS"; // load type var
-			case BYTE_CODE_LOAD_MEMBER:			return "LOAD_MEMBER"; // load type var
+			case BYTE_CODE_LOAD_MEMBER_VAR:			return "LOAD_MEMBER"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      	return "LOAD_???"; // load to find global
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:	return "LOAD_EVEC"; // load element vector
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:	return "LOAD_EOBJ"; // load element object
