@@ -21,7 +21,7 @@ class TestEx extends Test{
 	}
 }
 
-new Test()
+new TestEx()
 
 /*
 // A class example
