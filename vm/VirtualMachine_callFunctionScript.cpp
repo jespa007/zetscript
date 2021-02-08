@@ -1,21 +1,21 @@
 
 #define PROCESS_MOD_OPERATION \
-	if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_ZS_INT){\
+	msk_properties=GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
 			PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) % STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}\
-	else if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
+	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_FLOAT )){\
+		if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
 				COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
 				PUSH_FLOAT(fmod(STK_VALUE_TO_ZS_INT(stk_result_op1),f_aux_value2));\
-	}else if (STK_VALUE_IS_FLOAT(stk_result_op1) && STK_VALUE_IS_ZS_INT(stk_result_op2)){\
+		}else{\
 				COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
 				PUSH_FLOAT(fmod(f_aux_value1 , STK_VALUE_TO_ZS_INT(stk_result_op2)));\
-	}\
-	else if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_FLOAT){\
+		}\
+	}else if(msk_properties == MSK_STK_PROPERTY_FLOAT){\
 			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
 			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
 			PUSH_FLOAT(fmod(f_aux_value1 , f_aux_value2));\
-	}\
-	else{\
+	}else{\
 		if(applyMetamethod(\
 			calling_function\
 			,instruction\
@@ -26,6 +26,7 @@
 			goto lbl_exit_function;\
 		}\
 	}\
+
 
 
 #define PROCESS_ARITHMETIC_OPERATION(__C_OP__, __METAMETHOD__)\
@@ -59,22 +60,26 @@
 
 
 
+
 #define PROCESS_COMPARE_OPERATION(__C_OP__, __METAMETHOD__)\
-	if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_ZS_INT){\
+	msk_properties=GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
 		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}else if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_BOOL){\
+	}else if(msk_properties == MSK_STK_PROPERTY_BOOL){\
 		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
-	}else if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
-	}else if (STK_VALUE_IS_FLOAT(stk_result_op1) && STK_VALUE_IS_ZS_INT(stk_result_op2)){\
-		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-		PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}else if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_FLOAT){\
+	}else if(msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_FLOAT )){\
+		if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
+			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+			PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
+		}else{\
+			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+			PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
+		}\
+	}else if(msk_properties == MSK_STK_PROPERTY_FLOAT){\
 		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
 		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
 		PUSH_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
-	}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
+	}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
 		PUSH_BOOLEAN(ZS_STRCMP(stk_result_op1->toString().c_str(), __C_OP__ ,stk_result_op2->toString().c_str()));\
 	}else if(  (stk_result_op1->properties==MSK_STK_PROPERTY_UNDEFINED || stk_result_op2->properties==MSK_STK_PROPERTY_UNDEFINED)\
 			&& (__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
@@ -95,6 +100,7 @@
 			goto lbl_exit_function;\
 		}\
 	}\
+
 
 
 #define PROCESS_LOGIC_OPERATION(__C_OP__)\
