@@ -137,6 +137,13 @@ namespace zetscript{
 										, line
 										,sc->symbol_class.scope // pass class scope
 									);
+
+									if(aux_p != NULL){ // particular case where var declaration ends with ';'
+										if(*aux_p == ';'){
+											aux_p++;
+										}
+									}
+
 									break;
 							default:
 								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword \"%s\" in class declaration \"%s\"",eval_data_keywords[key_w].str,class_name.c_str());

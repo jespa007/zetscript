@@ -1,6 +1,9 @@
 
 #define MAX_REGISTER_LENGTH	128
 
+#define FLOAT_TO_ZS_INT(dst_zs_int, src_float) memcpy(&dst_zs_int,&src_float,sizeof(float))
+
+
 
 #define PERFORM_ARITHMETIC_OPERATION(ARITHMETIC_OP) \
 if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
@@ -8,12 +11,15 @@ if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_
 	result_bc=BYTE_CODE_LOAD_ZS_INT;\
 }else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
 	result_op_float=*((float *)&i1->value_op2)ARITHMETIC_OP(i2->value_op2);\
+	FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);\
 	result_bc=BYTE_CODE_LOAD_FLOAT;\
 }else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
 	result_op_float=*((float *)&i1->value_op2)ARITHMETIC_OP(i2->value_op2);\
+	FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);\
 	result_bc=BYTE_CODE_LOAD_FLOAT;\
 }else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
 	result_op_float=*((float *)&i1->value_op2)ARITHMETIC_OP *((float *)&i2->value_op2);\
+	FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);\
 	result_bc=BYTE_CODE_LOAD_FLOAT;\
 }else{\
 	THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform arithmetic operation %s '%s' %s"\
@@ -173,12 +179,15 @@ namespace zetscript{
 					result_bc=BYTE_CODE_LOAD_ZS_INT;
 				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
 					result_op_float=fmod(*((float *)&i1->value_op2),(i2->value_op2));
+					FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);
 					result_bc=BYTE_CODE_LOAD_FLOAT;
 				}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
 					result_op_float=fmod(*((float *)&i1->value_op2),(i2->value_op2));
+					FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);
 					result_bc=BYTE_CODE_LOAD_FLOAT;
 				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
 					result_op_float=fmod(*((float *)&i1->value_op2), *((float *)&i2->value_op2));
+					FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);
 					result_bc=BYTE_CODE_LOAD_FLOAT;
 				}else{
 					THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform constant operation %s '/' %s"
@@ -241,7 +250,7 @@ namespace zetscript{
 				result_instruction=new EvalInstruction(
 						result_bc
 						,ZS_IDX_UNDEFINED
-						,result_op_float
+						,result_op_zs_int
 				);
 				break;
 			case BYTE_CODE_LOAD_STRING:

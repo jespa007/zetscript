@@ -24,12 +24,14 @@ namespace zetscript{
 			ScriptObject *obj=NULL;
 			StackElement *stk=NULL;
 
-			if(this->byte_code != BYTE_CODE_LOAD_STRING){
+			if((this->byte_code == BYTE_CODE_LOAD_STRING) || (this->properties & MSK_INSTRUCTION_PROPERTY_STRING)){
+
+				stk=(StackElement *)this->value_op2;
+				obj = (ScriptObject *)stk->stk_value;
+
+			}else{
 				THROW_EXCEPTION("instruction is not constant string");
 			}
-
-			stk=(StackElement *)this->value_op2;
-			obj = (ScriptObject *)stk->stk_value;
 
 			return obj->toString();
 
@@ -37,10 +39,12 @@ namespace zetscript{
 
 		float Instruction::getConstantFloat(){
 
-			if(this->byte_code != BYTE_CODE_LOAD_FLOAT){
+			if(((this->byte_code == BYTE_CODE_LOAD_FLOAT) || (this->properties & MSK_INSTRUCTION_PROPERTY_FLOAT))==false){
 				THROW_EXCEPTION("instruction is not constant float");
 			}
+
 			return *((float *)&this->value_op2);
+
 		}
 
 		bool Instruction::isConstant(){

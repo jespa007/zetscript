@@ -112,6 +112,12 @@ namespace zetscript{
 
 				// save instruction ...
 				*start_ptr=instruction->vm_instruction;
+
+				if(instruction->vm_instruction.byte_code == BYTE_CODE_LOAD_STRING){
+					start_ptr->byte_code = BYTE_CODE_NEW_STRING;
+					start_ptr->properties=MSK_INSTRUCTION_PROPERTY_STRING;
+				}
+
 				// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 				instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
 

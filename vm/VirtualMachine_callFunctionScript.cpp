@@ -1,20 +1,16 @@
 
 #define PROCESS_MOD_OPERATION \
-{ \
-	unsigned short properties = GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
-	if(properties == MSK_STK_PROPERTY_ZS_INT){\
+	if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_ZS_INT){\
 			PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) % STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}\
-	else if(properties == (MSK_STK_PROPERTY_ZS_INT|MSK_STK_PROPERTY_FLOAT)){\
-			if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
+	else if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
 				COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-				PUSH_FLOAT(fmod(STK_VALUE_TO_ZS_INT(stk_result_op1) , f_aux_value2));\
-			}else{\
+				PUSH_FLOAT(fmod(STK_VALUE_TO_ZS_INT(stk_result_op1),f_aux_value2));\
+	}else if (STK_VALUE_IS_FLOAT(stk_result_op1) && STK_VALUE_IS_ZS_INT(stk_result_op2)){\
 				COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
 				PUSH_FLOAT(fmod(f_aux_value1 , STK_VALUE_TO_ZS_INT(stk_result_op2)));\
-			}\
 	}\
-	else if(properties == MSK_STK_PROPERTY_FLOAT){\
+	else if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_FLOAT){\
 			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
 			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
 			PUSH_FLOAT(fmod(f_aux_value1 , f_aux_value2));\
@@ -30,27 +26,24 @@
 			goto lbl_exit_function;\
 		}\
 	}\
-}
+
 
 #define PROCESS_ARITHMETIC_OPERATION(__C_OP__, __METAMETHOD__)\
-{\
-	unsigned short properties = GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);\
-	if(properties == MSK_STK_PROPERTY_ZS_INT){\
-			PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}\
-	else if(properties == (MSK_STK_PROPERTY_ZS_INT|MSK_STK_PROPERTY_FLOAT)){\
-			if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-				COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-				PUSH_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
-			}else{\
-				COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-				PUSH_FLOAT(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
-			}\
-	}\
-	else if(properties == MSK_STK_PROPERTY_FLOAT){\
-			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+	msk_properties=GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
+		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
+	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_FLOAT )){\
+		if(STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
 			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-			PUSH_FLOAT(f_aux_value1 __C_OP__ f_aux_value2);\
+			PUSH_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
+		}else{\
+			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+			PUSH_FLOAT(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
+		}\
+	}else if(msk_properties == MSK_STK_PROPERTY_FLOAT){\
+		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+		PUSH_FLOAT(f_aux_value1 __C_OP__ f_aux_value2);\
 	}\
 	else{\
 		if(applyMetamethod(\
@@ -63,37 +56,30 @@
 			goto lbl_exit_function;\
 		}\
 	}\
-}
+
+
 
 #define PROCESS_COMPARE_OPERATION(__C_OP__, __METAMETHOD__)\
-{\
-	unsigned short properties = GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);\
-	if(properties == MSK_STK_PROPERTY_ZS_INT){\
+	if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_ZS_INT){\
 		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}\
-	else if(properties == MSK_STK_PROPERTY_BOOL){\
+	}else if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_BOOL){\
 		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
-	}\
-	else if(properties & (MSK_STK_PROPERTY_ZS_INT|MSK_STK_PROPERTY_FLOAT)){\
-		if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
-			PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
-		}else{\
-			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-			PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
-		}\
-	}\
-	else if(properties == MSK_STK_PROPERTY_FLOAT){\
+	}else if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
+		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
+	}else if (STK_VALUE_IS_FLOAT(stk_result_op1) && STK_VALUE_IS_ZS_INT(stk_result_op2)){\
+		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+		PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
+	}else if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_FLOAT){\
 		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
 		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
 		PUSH_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
-	}\
-	else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
+	}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
 		PUSH_BOOLEAN(ZS_STRCMP(stk_result_op1->toString().c_str(), __C_OP__ ,stk_result_op2->toString().c_str()));\
 	}else if(  (stk_result_op1->properties==MSK_STK_PROPERTY_UNDEFINED || stk_result_op2->properties==MSK_STK_PROPERTY_UNDEFINED)\
 			&& (__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
 			){\
-		if(properties == MSK_STK_PROPERTY_UNDEFINED){\
+		if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_UNDEFINED){\
 			PUSH_BOOLEAN(true  __C_OP__  true);\
 		}else{\
 			PUSH_BOOLEAN(false);\
@@ -109,23 +95,19 @@
 			goto lbl_exit_function;\
 		}\
 	}\
-}
+
 
 #define PROCESS_LOGIC_OPERATION(__C_OP__)\
-{\
-	unsigned short properties = GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);\
-	if(properties == MSK_STK_PROPERTY_BOOL){\
+	if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_BOOL){\
 		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}else{\
 		PRINT_DUAL_ERROR_OP(STR(__C_OP__));\
 		goto lbl_exit_function;\
 	}\
-}
+
 
 #define PROCESS_BINARY_OPERATION(__C_OP__, __METAMETHOD__)\
-{\
-	unsigned short properties = GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties);\
-	if(properties == MSK_STK_PROPERTY_ZS_INT){\
+	if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_ZS_INT){\
 		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}else{\
 		if(applyMetamethod(\
@@ -138,7 +120,6 @@
 			goto lbl_exit_function;\
 		}\
 	}\
-}
 
 #define PERFORM_POST_OPERATOR(__PRE_OP__,__OPERATOR__) \
 {\
@@ -266,24 +247,24 @@ stk_vm_current++;
     case MSK_INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
 		 stk_result_op1=--stk_vm_current;\
 		 stk_result_op2=&stk_constant_aux;\
-         stk_result_op2->stk_value=(void *)instruction->value_op2;\
-         stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
+		 stk_result_op2->stk_value=(void *)instruction->value_op2;\
+		 stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
          break;\
     case MSK_INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
 		 stk_result_op1=--stk_vm_current;\
          stk_result_op2=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
          break;\
     case MSK_INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
-		stk_result_op1=&stk_constant_aux;\
-        stk_result_op1->stk_value=(void *)instruction->value_op2;\
-        stk_result_op1->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
-        stk_result_op2=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
-        break;\
+		 stk_result_op1=&stk_constant_aux;\
+		 stk_result_op1->stk_value=(void *)instruction->value_op2;\
+		 stk_result_op1->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
+         stk_result_op2=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
+         break;\
     case MSK_INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
         stk_result_op1=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
-        stk_result_op2=&stk_constant_aux;\
-        stk_result_op2->stk_value=(void *)instruction->value_op2;\
-        stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
+		stk_result_op2=&stk_constant_aux;\
+		stk_result_op2->stk_value=(void *)instruction->value_op2;\
+		stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
         break;\
    case MSK_INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
         stk_result_op1=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
@@ -346,6 +327,7 @@ namespace zetscript{
 		int idx_stk_element;
 		unsigned short pre_post_properties=0;
 		unsigned short scope_type=0;
+		unsigned short msk_properties=0;
 		StackElement *stk_dst=NULL;
 		StackElement *stk_src=NULL;
 		Instruction *instructions=calling_function->instructions; // starting instruction
@@ -1412,7 +1394,8 @@ load_element_object:
 					// if scriptvariable and in the zeros list, deattach
 					if(stk_it->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 						if(!STK_IS_THIS(stk_it)){
-							ScriptObjectAnonymous *script_var=(ScriptObjectAnonymous *)stk_it->stk_value;
+
+							ScriptObject *script_var=(ScriptObject *)stk_it->stk_value;
 
 							// deattach from zero shares if exist...
 							if(deattachShareNode(script_var->shared_pointer->data.zero_shares,script_var->shared_pointer)==false){
@@ -1422,6 +1405,7 @@ load_element_object:
 							// and free
 							free(script_var->shared_pointer);
 							script_var->shared_pointer=NULL;
+
 						}
 					}
 				}
@@ -1451,6 +1435,15 @@ load_element_object:
 					if(!so_aux->initSharedPtr()){
 						goto lbl_exit_function;
 					}
+					(*stk_vm_current++)={so_aux,MSK_STK_PROPERTY_SCRIPT_OBJECT};
+					continue;
+
+			 case  BYTE_CODE_NEW_STRING: // Create new std::vector object...
+				 so_aux=ScriptObjectString::newStringObject(this->zs,instruction->getConstantValueOp2ToString());
+					if(!so_aux->initSharedPtr()){
+						goto lbl_exit_function;
+					}
+
 					(*stk_vm_current++)={so_aux,MSK_STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_DELETE:

@@ -13,7 +13,7 @@ namespace zetscript{
 
 	public:
 
-		static ScriptObjectString * newStringObject(ZetScript *zs);
+		static ScriptObjectString * newStringObject(ZetScript *zs, const std::string & str="");
 
 		void 		*	value;	// 8
 		ScriptObjectString();

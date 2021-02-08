@@ -4,12 +4,35 @@ var i1=10/2 // <-- should be decimal instead of in
 var i2=Integer.parse(10/2) // <-- convert to int
 //Integer.parse("10") // <-- convert to int
 //Float.parse("10") //<-- convert to float
+*/
+var a=2;
 
 var i3=100.0/2 // <-- fails
 var i4=3110.0/a // <-- fails
-*/
-class Test{
-	var a=0
+
+System::println(i3)
+
+/*
+var a=[];
+
+function fun(a={}){
+	//a={}
+	a=[] //<-- here I allocate [] at fun scope but a {} allocated at global scope
+	//System::println(a);
+} //<-- here a cannot deallocate [] because it's a scope
+
+//System::println(a);
+
+fun(a);*/
+
+//System::println(a);
+
+/*for(;;){
+	System::println("loop")
+}*/
+
+/*class Test{
+	var a=0;
 
 	Test(){
 		System::println("dasdas {0}"+this.a);
@@ -17,15 +40,18 @@ class Test{
 	
 	
 	
-}
-
+}*/
+/*
 class TestEx extends Test{
 	TestEx(){
 		super(); //<--fails
 	}
 }
 
-new Test()
+new Test()*/
+/*
+var a
+System::println("dasdas "+a);*/
 
 /*
 // A class example

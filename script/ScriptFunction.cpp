@@ -174,6 +174,10 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_STRING:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
 				break;
+			case BYTE_CODE_NEW_STRING:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tNEW_STRING\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
+				break;
+
 			case BYTE_CODE_LOAD_FUNCTION:
 			case BYTE_CODE_FIND_VARIABLE:
 			case BYTE_CODE_LOAD_LOCAL:

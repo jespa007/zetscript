@@ -229,9 +229,9 @@ namespace zetscript{
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 			Keyword key_w;
-			 int
-					 idx_instruction_for_start=ZS_IDX_UNDEFINED
-					,idx_instruction_for_after_condition=ZS_IDX_UNDEFINED;
+			int	 idx_instruction_for_start=ZS_IDX_UNDEFINED
+				,idx_instruction_for_after_condition=ZS_IDX_UNDEFINED;
+
 			EvalInstruction *ei_jnt=NULL; // conditional to end block
 			std::vector<EvalInstruction *> post_operations;
 
@@ -245,7 +245,7 @@ namespace zetscript{
 
 				if(*aux_p == '('){ // ready ...
 
-					int idx_instruction_start_for=(int)(eval_data->current_function->instructions.size());
+					idx_instruction_for_start=(int)(eval_data->current_function->instructions.size());
 
 					// save scope pointer ...
 					Scope *new_scope =eval_new_scope(eval_data,scope_info); // push current scope

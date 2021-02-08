@@ -164,6 +164,7 @@ namespace zetscript{
 			, bool & error
 	){
 
+
 		//error=true;
 		if((byte_code_metamethod == ByteCodeMetamethod::BYTE_CODE_METAMETHOD_ADD)
 			&& (
@@ -189,21 +190,6 @@ namespace zetscript{
 	
 	) {
 		bool error=false;
-
-		if(applyMetamethodPrimitive(
-					 calling_function
-					,instruction
-					,byte_code_metamethod
-					,stk_result_op1
-					,stk_result_op2
-					, error
-			)){
-			return true;
-		}
-
-		if(error == true){
-			return false;
-		}
 
 		//std::string str_symbol_to_find="";
 		std::string str_stk_result_op1_full_definition="";
@@ -250,6 +236,23 @@ namespace zetscript{
 				script_object_class = (ScriptObjectClass *)(stk_result_op2->stk_value);
 			}
 		}
+
+
+		if(applyMetamethodPrimitive(
+					 calling_function
+					,instruction
+					,byte_code_metamethod
+					,stk_result_op1
+					,stk_result_op2
+					, error
+			)){
+			return true;
+		}
+
+		if(error == true){
+			return false;
+		}
+
 
 
 		if(script_object_class == NULL){ // cannot perform operation
