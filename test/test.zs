@@ -1,3 +1,11 @@
+function fun(a){
+	
+	a=[]
+
+}
+
+fun()
+
 /*var a=1
 
 var i1=10/2 // <-- should be decimal instead of in
@@ -5,12 +13,12 @@ var i2=Integer.parse(10/2) // <-- convert to int
 //Integer.parse("10") // <-- convert to int
 //Float.parse("10") //<-- convert to float
 */
-var a=2;
+/*var a=2;
 
 var i3=100.0/2 // <-- fails
 var i4=3110.0/a // <-- fails
-
-System::println(i3)
+*/
+//System::println(i3)
 
 /*
 var a=[];
