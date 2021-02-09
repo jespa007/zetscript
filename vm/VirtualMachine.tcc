@@ -25,6 +25,40 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 
 #define COPY_FLOAT(d,s)  memcpy((d),(s),sizeof(float))
 
+
+// defer all local vars
+#define POP_VM_SCOPE()\
+	if(vm_scope<vm_current_scope)\
+	{\
+		VM_Scope *vm_check_scope=(vm_current_scope-1);\
+		StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
+		zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
+		Symbol *scope_symbol					=(Symbol*)scope_symbols->items;\
+		StackElement *stk_local_var				=NULL;\
+		for(int i = scope_symbols->count-1; i >=0 ; --i){\
+			stk_local_var =stk_local_vars+scope_symbol->idx_position;\
+			if(stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK){\
+				stk_local_var=(StackElement *)stk_local_var->stk_value;\
+			}\
+			if(stk_local_var->properties==MSK_STK_PROPERTY_SCRIPT_OBJECT){\
+				ScriptObjectAnonymous *anonymous_var =((ScriptObjectAnonymous *)(stk_local_var->stk_value));\
+				if(anonymous_var !=NULL){\
+					if(anonymous_var->shared_pointer != NULL){\
+						if(!anonymous_var->unrefSharedPtr(vm_idx_call)){\
+							return;\
+						}\
+					}\
+				}\
+			}\
+			STK_SET_UNDEFINED(stk_local_var);\
+			scope_symbol++;\
+		}\
+		--vm_current_scope;\
+	}else{\
+		VM_SET_USER_ERROR(this,"internal error: trying to pop at the bottom");\
+	}
+
+
 namespace zetscript{
 
 	inline bool  VirtualMachine::insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node){
@@ -107,58 +141,6 @@ namespace zetscript{
 
 			}while(!finish);
 		}
-	}
-
-	// defer all local vars
-	inline void VirtualMachine::popVmScope(bool check_empty_shared_pointers) {
-
-		if(vm_scope<vm_current_scope) // pop 1 scope
-		{
-
-			ScriptFunction *scope_info_function		=(vm_current_scope-1)->script_function;
-			Scope *scope         					=(vm_current_scope-1)->scope;
-			StackElement         * stk_local_vars	=(vm_current_scope-1)->stk_local_vars;
-			zs_vector			 * scope_symbols	=scope->registered_symbols;
-			Symbol *scope_symbol					=(Symbol*)scope_symbols->items;
-			StackElement *stk_local_var				=NULL;
-			ScriptObjectAnonymous *anonymous_var 	=NULL;
-			//Symbol *it_symbol=scope_symbols->items;
-			//ScopeBlockVars   *scope_block_vars=&scope_info_function->scope_block_vars[index];
-
-			for(int i = scope_symbols->count-1; i >=0 ; --i){
-				//Symbol *scope_symbol=(Symbol *)scope_symbols->items[i];
-				stk_local_var =stk_local_vars+scope_symbol->idx_position; // position where symbol is located on stack
-
-				if(stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK){
-					stk_local_var=(StackElement *)stk_local_var->stk_value;
-				}
-
-
-				if(stk_local_var->properties==MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					anonymous_var =((ScriptObjectAnonymous *)(stk_local_var->stk_value));
-					if(anonymous_var !=NULL){
-						if(anonymous_var->shared_pointer != NULL){
-							if(!anonymous_var->unrefSharedPtr(vm_idx_call)){
-								return;
-							}
-						}
-					}
-				}
-				//*stk_local_var=stk_undefined;
-				scope_symbol++;
-			}
-			
-			// remove deferred shared pointers except for return value...
-			if(check_empty_shared_pointers){
-				removeEmptySharedPointers(vm_idx_call);
-			}
-
-			// pop current var
-			--vm_current_scope;
-		}else{
-			VM_SET_USER_ERROR(this,"internal error: trying to pop at the bottom");
-		}
-
 	}
 
 	inline bool VirtualMachine::applyMetamethodPrimitive(

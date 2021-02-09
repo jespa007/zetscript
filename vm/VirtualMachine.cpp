@@ -12,7 +12,7 @@ namespace zetscript{
 	void VirtualMachine::doStackDump(){
 		// derefer all variables in all scopes (except main )...
 		while(vm_scope<(vm_current_scope)){
-			popVmScope(false);
+			POP_VM_SCOPE();
 		}
 
 		removeEmptySharedPointers(IDX_CALL_STACK_MAIN);
@@ -25,11 +25,7 @@ namespace zetscript{
 
 		memset(&zero_shares,0,sizeof(zero_shares));
 		memset(&shared_vars,0,sizeof(shared_vars));
-		StackElement *aux=vm_stack;
-
-		for(int i=0; i < VM_STACK_LOCAL_VAR_MAX;i++){
-			*aux++=stk_undefined;
-		}
+		memset(&vm_stack,0,sizeof(vm_stack));
 
 		vm_idx_call=0;
 		stk_vm_current=NULL;

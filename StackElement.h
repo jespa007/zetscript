@@ -110,6 +110,8 @@ enum:unsigned short {
 #define STK_VALUE_TO_BOOL(ptr_result_instruction) \
 		(((bool)(ptr_result_instruction->stk_value)))
 
+#define STK_SET_UNDEFINED(stk) memset(stk,0,sizeof(StackElement))
+//#define STK_ASSIGN(dst,src) memcpy(dst,src,sizeof(StackElement))
 
 namespace zetscript{
 

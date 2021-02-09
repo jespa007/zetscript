@@ -183,7 +183,6 @@ namespace zetscript{
 			,unsigned char n_args
 		);
 
-		inline void popVmScope(bool check_empty_shared_pointers=true);
 
 		inline bool applyMetamethodPrimitive(
 			 ScriptFunction *info_function

@@ -188,7 +188,7 @@
 
 
 #define PUSH_UNDEFINED \
-*stk_vm_current++=stk_undefined; \
+STK_SET_UNDEFINED(stk_vm_current++); \
 
 #define PUSH_BOOLEAN(init_value) \
 stk_vm_current->stk_value=(void *)((zs_int)(init_value)); \
@@ -373,7 +373,7 @@ namespace zetscript{
 					ptr_aux->stk_value=(void *)symbol_aux->ref_ptr;
 					ptr_aux->properties=MSK_STK_PROPERTY_FUNCTION;
 				}else{
-					*ptr_aux=stk_undefined;		// undefined as default
+					STK_SET_UNDEFINED(ptr_aux);		// undefined as default
 				}
 				ptr_aux++;
 			}
@@ -880,7 +880,7 @@ load_element_object:
 							//unsigned short runtime_var=0; /* there's no reason to heredate runtime_props ?!? GET_MSK_STK_PROPERTY_RUNTIME(type_var);*/
 
 							// init stk_dst
-							*stk_dst = stk_undefined;
+							STK_SET_UNDEFINED(stk_dst);
 
 							if(type_var == MSK_STK_PROPERTY_UNDEFINED){
 								stk_dst->properties=MSK_STK_PROPERTY_UNDEFINED;
@@ -1479,7 +1479,7 @@ load_element_object:
 							if(script_object_class->isCreatedByContructor()){
 								script_object_class->deleteNativeObjectOnDestroy(true);
 							}
-							*se=stk_undefined;
+							STK_SET_UNDEFINED(se);
 						}
 					}
 					else{
@@ -1491,7 +1491,10 @@ load_element_object:
 				continue;
 
 			 case BYTE_CODE_POP_SCOPE:
-				popVmScope();
+				POP_VM_SCOPE();
+				if((zero_shares+vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove
+					removeEmptySharedPointers(vm_idx_call);
+				}
 				continue;
 			 case BYTE_CODE_IT_NEXT:
 				 VM_STOP_EXECUTE("BYTE_CODE_SET_AND_NEXT TODOOOOO!",
@@ -1535,7 +1538,7 @@ load_element_object:
 		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){ // if main function only remove empty shared pointers but preserve global variables!)
 			// pop all scopes
 			while(vm_scope_start<(vm_current_scope)){
-				popVmScope(false); // do not check removeEmptySharedPointers to have better performance
+				POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
 			}
 
 			removeEmptySharedPointers(vm_idx_call);
