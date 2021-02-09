@@ -20,7 +20,7 @@ Date: XX-04-2021 (Expected to finish on 27 April)
 Main improvements: 
 
 -Massive update that rewrites a internal architecture, organize and clean code
--VM speed up ~x2.7
+-VM speed up ~x2
 -VM save memory stack ~x2
 -Optimize size/compile times for binding c++ functions ~x2
 -ZetScript can be instanced more than once
