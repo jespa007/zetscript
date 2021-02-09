@@ -744,7 +744,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 	try{\
 		aux_value=zs->evalFloatValue(str_expr); \
 		if(aux_value != NULL){ \
-			if(!floatValuesAreAlmostTheSame(*aux_value  , (expr))){ \
+			if(!floatValuesAreAlmostTheSame(*aux_value  , (float)(expr))){ \
 				double error = fabs(fabs(*aux_value)-fabs(expr));\
 				if(error>0.001){ /* Only error if the difference is more than expected */\
 					fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,*aux_value); \

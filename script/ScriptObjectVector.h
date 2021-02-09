@@ -67,7 +67,7 @@ namespace zetscript{
 		ScriptObjectVector();
 
 		virtual StackElement * 	getElementAt(short idx);
-		virtual zs_int count();
+		virtual size_t count();
 		zs_vector * getAllElements();
 
 		StackElement *			newSlot();

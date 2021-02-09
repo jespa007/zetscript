@@ -57,7 +57,7 @@ namespace zetscript{
 			if(key_w == Keyword::KEYWORD_CONTINUE){
 
 				int last_line_ok = line;
-				EvalInstruction *jmp_instruction;
+				//EvalInstruction *jmp_instruction;
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
@@ -389,7 +389,7 @@ namespace zetscript{
 							new EvalInstruction(
 								BYTE_CODE_JMP
 								,ZS_IDX_UNDEFINED
-								,-(eval_data->current_function->instructions.size()-idx_instruction_for_start)
+								,-((int)(eval_data->current_function->instructions.size())-idx_instruction_for_start)
 							)
 					);
 

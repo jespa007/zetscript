@@ -17,7 +17,7 @@ namespace zetscript{
 		void setZetScript(ZetScript	*_zs);
 
 
-		virtual				zs_int count();
+		virtual				size_t count();
 
 		bool 				initSharedPtr();
 		bool 				unrefSharedPtr(int _idx_current_call);

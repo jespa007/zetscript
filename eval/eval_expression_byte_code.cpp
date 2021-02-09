@@ -51,9 +51,9 @@ namespace zetscript{
 			unsigned char 	idx_group_split=OPERATOR_GROUP_MAX;
 			bool is_left_branch_end=false, is_right_branch_end=false;
 			bool is_left_token_simplifiable=false,is_right_token_simplifiable=false;
-			TokenNode		*left_token,*right_token;
+			//TokenNode		*left_token,*right_token;
 			bool simplified_ok=false;
-			ByteCode byte_code;
+			//ByteCode byte_code;
 
 			// trivial case (symbol node)
 			if(idx_start>=idx_end){

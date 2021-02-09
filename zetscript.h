@@ -219,7 +219,7 @@ namespace zetscript{
 #ifndef __STRICT_STATIC_FUNCTIONS_ONLY__
 		template<typename C>
 		void registerClass(const std::string & class_name, const char *registered_file="",short registered_line=-1){
-			script_class_factory->registerNativeClass<C>(class_name, NULL, NULL, registered_file,registered_line);
+			script_class_factory->registerNativeClass<C>(class_name, registered_file,registered_line);
 		}
 #endif
 		template<typename C>

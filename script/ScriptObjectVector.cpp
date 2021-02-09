@@ -38,7 +38,7 @@ namespace zetscript{
 		return &stk_elements;
 	}
 
-	zs_int ScriptObjectVector::count(){
+	size_t ScriptObjectVector::count(){
 
 		return this->stk_elements.count;
 	}

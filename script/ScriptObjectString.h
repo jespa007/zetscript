@@ -20,7 +20,7 @@ namespace zetscript{
 
 
 		void set(const std::string & s);
-		virtual zs_int count();
+		virtual size_t count();
 
 		virtual std::string toString();
 

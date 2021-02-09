@@ -16,7 +16,7 @@ namespace zetscript{
 		zs=_zs;
 	}
 
-	zs_int ScriptObject::count(){
+	size_t ScriptObject::count(){
 		return 0;
 	}
 

@@ -285,7 +285,7 @@ namespace zetscript{
 
 							if(offset_end_instruction > 0 && ei_cases.size()> 0){ // there's conditions to manage
 
-								EvalInstruction *jmp_after_je_cases;
+								//EvalInstruction *jmp_after_je_cases;
 
 								int size_ei_cases=ei_cases.size();
 								int size_ei_switch_expression = switch_expression.size();
