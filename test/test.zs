@@ -1,6 +1,6 @@
-function fun(a){
-	
-	a=[]
+function fun(){
+	//var b=0
+	//a=[]
 
 }
 

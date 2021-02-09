@@ -106,7 +106,7 @@ namespace zetscript{
 			}
 		}
 
-		char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+		char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, ScriptFunction *sf,std::vector<FunctionArg> * args){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 
@@ -115,12 +115,30 @@ namespace zetscript{
 
 			// check for keyword ...
 			if(*aux_p == '{'){
-
+				bool is_function = sf!=NULL && args != NULL;
 				//int idx_instruction_start_block=(int)(eval_data->current_function->instructions.size());
 
 				aux_p++;
 
-				new_scope_info = eval_new_scope(eval_data,scope_info); // special case... ast is created later ...
+				new_scope_info = eval_new_scope(eval_data,scope_info,is_function); // special case... ast is created later ...
+
+				if(is_function){
+					// register args as part of stack...
+					for(unsigned i=0; i < args->size(); i++){
+						try{
+							sf->registerLocalArgument(
+								new_scope_info
+								,eval_data->current_parsing_file
+								,args->at(i).line
+								,args->at(i).arg_name
+							);
+						}catch(std::exception & ex){
+							eval_data->error=true;
+							eval_data->error_str=ex.what();
+							return NULL;
+						}
+					}
+				}
 
 				if((aux_p = eval_recursive(
 						eval_data

@@ -395,7 +395,7 @@ namespace zetscript{
 			}
 
 			//std::string arg_value;
-			//FunctionParam arg_info;
+			//FunctionArg arg_info;
 
 			Scope *scope_function =eval_new_scope(eval_data,scope_info,true); // push current scope
 			ScriptFunction *sf=NULL;

@@ -185,7 +185,7 @@ namespace zetscript{
 			,const std::string & file
 			, short line
 			,const std::string & function_name
-			, std::vector<FunctionParam> args
+			, std::vector<FunctionArg> args
 			, unsigned short symbol_properties
 
 
@@ -206,7 +206,7 @@ namespace zetscript{
 			,const std::string & file
 			, short line
 			,const std::string & function_name
-			, std::vector<FunctionParam> args
+			, std::vector<FunctionArg> args
 			, int idx_return_type
 			,zs_int ref_ptr
 			, unsigned short symbol_properties
@@ -230,7 +230,7 @@ namespace zetscript{
 		, const std::string & file
 		, short line
 		, const std::string & function_name
-		, std::vector<FunctionParam> params
+		, std::vector<FunctionArg> params
 		, unsigned short symbol_properties
 		, int idx_return_type
 		,zs_int ref_ptr

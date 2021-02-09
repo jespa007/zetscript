@@ -1224,7 +1224,7 @@ load_element_object:
 							if(sf->params->count > 0){
 								for(;;){
 
-									if(((FunctionParam *)(*function_param))->by_ref == false){ // copy
+									if(((FunctionArg *)(*function_param))->by_ref == false){ // copy
 										unsigned short properties = stk_arg->properties;
 										if(properties & MSK_STK_PROPERTY_PTR_STK){
 											*stk_arg=*((StackElement *)stk_arg->stk_value);
@@ -1246,7 +1246,7 @@ load_element_object:
 											break;
 										}
 									}else{
-										if(((FunctionParam *)(*function_param))->var_args == true){ // enter var args
+										if(((FunctionArg *)(*function_param))->var_args == true){ // enter var args
 											var_args=ScriptObjectVector::newVectorObject(this->zs);
 											if(!var_args->initSharedPtr()){
 												goto lbl_exit_function;
@@ -1276,7 +1276,7 @@ load_element_object:
 						// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 						// will be ignored always.
 						for(unsigned i = n_args; i < sf->params->count; i++){
-							FunctionParam *param=(FunctionParam *)sf->params->items[i];
+							FunctionArg *param=(FunctionArg *)sf->params->items[i];
 							StackElement *stk_def_afun_start=stk_vm_current;
 							param->default_var_value;
 							int n_returned_args_afun=0;

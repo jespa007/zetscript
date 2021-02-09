@@ -456,7 +456,7 @@ apply_metamethod_error:
 					int arg_idx_type=-1;
 					for( unsigned k = 0; k < n_args && all_check;k++){
 						StackElement *current_arg=&stk_arg[k];
-						arg_idx_type=((FunctionParam *)irfs->params->items[k])->idx_type;
+						arg_idx_type=((FunctionArg *)irfs->params->items[k])->idx_type;
 
 						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT){
 
@@ -618,7 +618,7 @@ apply_metamethod_error:
 
 						if(irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 							str_candidates+=zs_rtti::demangle(
-									GET_IDX_2_CLASS_C_STR(this,((FunctionParam *)irfs->params->items[a])->idx_type
+									GET_IDX_2_CLASS_C_STR(this,((FunctionArg *)irfs->params->items[a])->idx_type
 							));
 						}else{ /* typic var ... */
 							str_candidates+="arg"+zs_strutils::zs_int_to_str(a+1);

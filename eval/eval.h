@@ -22,7 +22,7 @@ namespace zetscript{
 			}
 		};
 
-		char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
+		char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,ScriptFunction *sf=NULL,std::vector<FunctionArg> * args=NULL);
 		char * 	eval_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case=false);
 		Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function=false);
 		void 	eval_check_scope(EvalData *eval_data, Scope *scope);

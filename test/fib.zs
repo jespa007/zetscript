@@ -1,6 +1,6 @@
 // Laptop N5050 Intel(R) Core(TM) i5-2450M CPU @ 2.50GHz
-// mingw gcc best timing 1088ms
-// vc++      best timing 1398ms
+// mingw gcc best timing 1325ms
+// vc++      best timing 1703ms
 function fibR(n) {
 	if (n < 2) {
      	return n; 
@@ -8,6 +8,8 @@ function fibR(n) {
     return fibR(n-2)+fibR(n-1);
 }
 
-var start=System::clock();
-System::println("fib: {0} time: {1} ms", fibR(34),System::clock()-start);
+for(var i=0; i < 100; i++){
+	var start=System::clock();
+	System::println("fib: {0} time: {1} ms", fibR(34),System::clock()-start);
+}
 

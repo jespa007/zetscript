@@ -8,7 +8,7 @@ namespace zetscript{
 			ZetScript * _zs
 			,int _idx_class
 			,short _idx_script_function
-			, std::vector<FunctionParam> _params
+			, std::vector<FunctionArg> _params
 			,int _idx_return_type
 			,Symbol *_symbol
 			, zs_int _ref_native_function_ptr
@@ -390,7 +390,7 @@ namespace zetscript{
 			,const std::string & file
 			, short line
 			, const std::string & function_name
-			, std::vector<FunctionParam> params
+			, std::vector<FunctionArg> params
 			, int idx_return_type
 			,zs_int ref_ptr
 			, unsigned short properties
@@ -498,7 +498,7 @@ namespace zetscript{
 
 	void ScriptFunction::clearParams(){
 		for(unsigned i=0; i < params->count; i++){
-			FunctionParam * function_param=(FunctionParam *)params->items[i];
+			FunctionArg * function_param=(FunctionArg *)params->items[i];
 			delete function_param;
 		}
 
@@ -506,13 +506,13 @@ namespace zetscript{
 	}
 
 
-	void ScriptFunction::updateParams(std::vector<FunctionParam> _params){
+	void ScriptFunction::updateParams(std::vector<FunctionArg> _params){
 		// delete existing args...
 		clearParams();
 
 		// insert new args...
 		for(unsigned i = 0; i < _params.size(); i++){
-			params->push_back((zs_int)(new FunctionParam(_params[i])));
+			params->push_back((zs_int)(new FunctionArg(_params[i])));
 		}
 	}
 

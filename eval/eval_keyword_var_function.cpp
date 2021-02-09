@@ -420,7 +420,7 @@ error_eval_keyword_var:
 
 
 			if(key_w == Keyword::KEYWORD_FUNCTION){
-				FunctionParam arg_info;
+				FunctionArg arg_info;
 				//bool var_args=false;
 				int n_arg=0;
 				char *end_var = NULL;
@@ -429,7 +429,7 @@ error_eval_keyword_var:
 				//size_t advance_chars=0;
 
 
-				std::vector<FunctionParam> args={};
+				std::vector<FunctionArg> args={};
 				std::string conditional_str;
 				Symbol *symbol_sf=NULL;
 
@@ -440,7 +440,7 @@ error_eval_keyword_var:
 				//Scope *scope=scope_info;
 				bool is_anonymous=false;
 
-				Scope *scope_function =eval_new_scope(eval_data,scope_info,true); // push current scope
+				Scope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
 				ScriptFunction *sf=NULL;
 
 				// advance keyword...
@@ -511,7 +511,7 @@ error_eval_keyword_var:
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 				while(*aux_p != 0 && *aux_p != ')'){
-					arg_info=FunctionParam();
+					arg_info=FunctionArg();
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					if(args.size()>0){
 						if(*aux_p != ','){
@@ -681,21 +681,7 @@ error_eval_keyword_var:
 
 				sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
-				// register args as part of stack...
-				for(unsigned i=0; i < args.size(); i++){
-					try{
-						sf->registerLocalArgument(
-								scope_function
-								,eval_data->current_parsing_file
-								,args[i].line
-								,args[i].arg_name
-						);
-					}catch(std::exception & ex){
-						eval_data->error=true;
-						eval_data->error_str=ex.what();
-						return NULL;
-					}
-				}
+
 
 				eval_push_function(eval_data,sf);
 
@@ -704,7 +690,12 @@ error_eval_keyword_var:
 						eval_data
 						,aux_p
 						,line
-						,scope_function);
+						,scope_info
+						,sf
+						,&args);
+
+				//
+				//eval_check_scope(eval_data,scope_function);
 
 				eval_pop_function(eval_data);
 			}
