@@ -58,6 +58,7 @@
 #include "memmgr.h"
 #endif
 
+#include "config.h"
 #include "StackElement.h"
 #include "common.h"
 
@@ -85,6 +86,8 @@
 #include "extra/MathBuiltIn.h"
 #include "extra/SystemBuiltIn.h"
 #include "extra/StringBuiltIn.h"
+#include "extra/IntegerBuiltIn.h"
+#include "extra/FloatBuiltIn.h"
 
 #include "script/ScriptObject.h"
 #include "script/ScriptObjectString.h"
@@ -94,6 +97,7 @@
 #include "script/ScriptObjectAnonymous.h"
 #include "script/ScriptObjectAnonymousIterator.h"
 #include "script/ScriptObjectClass.h"
+#include "script/ScriptObjectVarRef.h"
 
 #include "script/ScriptFunction.h"
 #include "script/ScriptClass.h"
@@ -129,10 +133,10 @@ namespace zetscript{
 
 
 	extern const char *	k_str_void_type;				// 	typeid(void).name()
-	extern const char * k_str_zs_int_type_ptr;			//	typeid(int *).name()
+	extern const char * k_str_zs_int_type_ptr;			//	typeid(zs_int *).name()
 	extern const char * k_str_const_zs_int_type_ptr;	//	typeid(int *).name()
-	extern const char * k_str_float_type_ptr;			//	typeid(float *).name()
-	extern const char * k_str_const_float_type_ptr;		//	typeid(float *).name()
+	extern const char * k_str_float_type_ptr;			//	typeid(zs_float *).name()
+	extern const char * k_str_const_float_type_ptr;		//	typeid(zs_float *).name()
 	extern const char * k_str_string_type_ptr;			//	typeid(std::string *).name()
 	extern const char * k_str_char_type_ptr;			//	typeid(std::string *).name()
 	extern const char * k_str_const_char_type_ptr;		//	typeid(std::string *).name()
@@ -174,7 +178,7 @@ namespace zetscript{
 		void 			evalFile(const std::string & filename,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE);
 		zs_int * 		evalIntValue(const std::string & str_to_eval);
 		bool * 			evalBoolValue(const std::string & str_to_eval);
-		float * 		evalFloatValue(const std::string & str_to_eval);
+		zs_float * 		evalFloatValue(const std::string & str_to_eval);
 		std::string * 	evalStringValue(const std::string & str_to_eval);
 
 		// CONSTANT TOOLS
@@ -437,7 +441,7 @@ namespace zetscript{
 		ScriptFunctionFactory *script_function_factory;
 		ScriptClassFactory *script_class_factory;
 
-		float eval_float;
+		zs_float eval_float;
 		zs_int eval_int;
 		bool eval_bool;
 		std::string eval_string;

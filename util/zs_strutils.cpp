@@ -60,18 +60,18 @@ namespace zetscript{
 			return NULL;
 		}
 
-		float *  parse_float(const std::string & s){
+		zs_float *  parse_float(const std::string & s){
 			char *p;bool ok=true;
-			float *n=NULL;
+			zs_float *n=NULL;
 
-			float numberValue=0;
+			zs_float numberValue=0;
 			if(s!="0") {// trivial case
 			  numberValue=strtof((char *)s.c_str(),&p);
 			  ok = *p == '\0';
 			}
 
 			if(ok){
-				n=new float;
+				n=new zs_float;
 				*n = numberValue;
 			}
 
@@ -119,7 +119,7 @@ namespace zetscript{
 					   return std::string(float_str);*/
 		}
 
-		std::string float_to_str(float number){
+		std::string float_to_str(zs_float number){
 
 			char float_str[100];
 

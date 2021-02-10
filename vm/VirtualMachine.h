@@ -41,15 +41,6 @@ namespace zetscript{
 
 		StackElement *getVmStackPtr(){return vm_stack;}
 
-		/*inline float *setFloatReturnValue(float f){
-			f_return_value = f;
-			return &f_return_value;
-		}
-
-		inline std::string *setStringReturnValue(std::string s){
-			s_return_value = s;
-			return &s_return_value;
-		}*/
 		inline void  removeEmptySharedPointers(int idx_stack);
 
 		void addGlobalVar(const StackElement & stk);
@@ -116,7 +107,7 @@ namespace zetscript{
 		};
 
 		//char				str_aux[8192];
-		 float 				f_aux_value1,f_aux_value2;
+		zs_float			f_aux_value1,f_aux_value2;
 		 bool				vm_error;
 		 std::string 		vm_error_str;
 		 std::string 		vm_error_callstack_str;

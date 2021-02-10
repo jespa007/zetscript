@@ -6,6 +6,9 @@ function fun(){
 
 fun()
 
+//String::format("dsda")
+Float::parse(2)
+
 /*var a=1
 
 var i1=10/2 // <-- should be decimal instead of in

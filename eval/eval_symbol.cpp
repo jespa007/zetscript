@@ -40,15 +40,15 @@ namespace zetscript{
 					byte_code = ByteCode::BYTE_CODE_LOAD_ZS_INT;
 
 				}else if((const_obj=zs_strutils::parse_float(str_value))!=NULL){ // float literal
-					float value_flt = *((float *)const_obj);
+					zs_float value_flt = *((zs_float *)const_obj);
 
 					if(pre_operation==PreOperation::PRE_OPERATION_NEG){
 						pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
 						value_flt=-value_flt;
 					}
 
-					delete (float *)const_obj;
-					memcpy(&value,&value_flt,sizeof(float));
+					delete (zs_float *)const_obj;
+					ZS_FLOAT_COPY(&value,&value_flt);
 					byte_code = ByteCode::BYTE_CODE_LOAD_FLOAT;
 				}
 				else{

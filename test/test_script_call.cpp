@@ -6,12 +6,12 @@ using namespace zetscript;
 ZetScript *zs=NULL;
 
 void test_callback(ScriptFunction *script_function){
-	float param1=1.0;
+	zs_float param1=1.0;
 	int param2=2.0;
 	bool param3=true;
 	std::string *s;
 
-	auto callback_function = zs->bindScriptFunction<std::string * (float *, int *, bool *)>(script_function);
+	auto callback_function = zs->bindScriptFunction<std::string * (zs_float *, int *, bool *)>(script_function);
 
 	// call the function...
 	s=(*callback_function)(&param1,&param2,&param3);

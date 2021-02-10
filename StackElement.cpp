@@ -39,7 +39,7 @@ namespace zetscript{
 		if(STK_VALUE_IS_ZS_INT(stk))
 			result= zs_strutils::zs_int_to_str((zs_int)stk->stk_value);
 		else if(STK_VALUE_IS_FLOAT(stk))
-			result= zs_strutils::float_to_str(*((float *)&stk->stk_value));
+			result= zs_strutils::float_to_str(*((zs_float *)&stk->stk_value));
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= stk->stk_value?"true":"false";
 		else if(STK_VALUE_IS_FUNCTION(stk))

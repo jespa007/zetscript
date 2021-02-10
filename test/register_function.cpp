@@ -11,7 +11,7 @@ int add(int op1, int op2){
 }
 
 
-float add(float *op1, float *op2){
+zs_float add(zs_float *op1, zs_float *op2){
 	return *op1+*op2;
 }
 
@@ -21,7 +21,7 @@ int main(){
 	ZetScript *zs = new ZetScript(); // instance ZetScript
 
 	zs->registerNativeGlobalFunction("add",static_cast<int (*)(int,int)>(add));
-	zs->registerNativeGlobalFunction("add",static_cast<float (*)(float *,float *)>(add));
+	zs->registerNativeGlobalFunction("add",static_cast<zs_float (*)(zs_float *,zs_float *)>(add));
 
 
 	zs->eval(

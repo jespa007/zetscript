@@ -4,9 +4,10 @@
 /*
  * These values are automatically set according to their cmake variables.
  */
-#define ZS_NUMBER_FLOAT 		${ZS_NUMBER_FLOAT}
-#define ZS_NUMBER_DOUBLE 		${ZS_NUMBER_DOUBLE}
-#define ZS_NUMBER_PRECISSION  	${ZS_NUMBER_PRECISSION}
+
+typedef ${ZS_FLOAT_TYPE} 	zs_float;
+
+#define ZS_FLOAT_COPY(dst_ptr, src_ptr) memcpy((void *)(dst_ptr),(void *)(src_ptr),sizeof(zs_float))
 
 #endif /* ZS_CONFIG_H */
 

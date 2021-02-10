@@ -3,17 +3,17 @@
 	msk_properties=GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
 			PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) % STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_FLOAT )){\
+	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_FLOAT )){\
 		if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-				COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+				ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 				PUSH_FLOAT(fmod(STK_VALUE_TO_ZS_INT(stk_result_op1),f_aux_value2));\
 		}else{\
-				COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+				ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
 				PUSH_FLOAT(fmod(f_aux_value1 , STK_VALUE_TO_ZS_INT(stk_result_op2)));\
 		}\
-	}else if(msk_properties == MSK_STK_PROPERTY_FLOAT){\
-			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+	}else if(msk_properties == MSK_STK_PROPERTY_ZS_FLOAT){\
+			ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
+			ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 			PUSH_FLOAT(fmod(f_aux_value1 , f_aux_value2));\
 	}else{\
 		if(applyMetamethod(\
@@ -33,17 +33,17 @@
 	msk_properties=GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
 		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_FLOAT )){\
+	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_FLOAT )){\
 		if(STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+			ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 			PUSH_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
 		}else{\
-			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+			ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
 			PUSH_FLOAT(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		}\
-	}else if(msk_properties == MSK_STK_PROPERTY_FLOAT){\
-		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+	}else if(msk_properties == MSK_STK_PROPERTY_ZS_FLOAT){\
+		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
+		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 		PUSH_FLOAT(f_aux_value1 __C_OP__ f_aux_value2);\
 	}\
 	else{\
@@ -67,17 +67,17 @@
 		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}else if(msk_properties == MSK_STK_PROPERTY_BOOL){\
 		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
-	}else if(msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_FLOAT )){\
+	}else if(msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_FLOAT )){\
 		if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+			ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 			PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
 		}else{\
-			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+			ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
 			PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		}\
-	}else if(msk_properties == MSK_STK_PROPERTY_FLOAT){\
-		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+	}else if(msk_properties == MSK_STK_PROPERTY_ZS_FLOAT){\
+		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
+		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 		PUSH_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
 	}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
 		PUSH_BOOLEAN(ZS_STRCMP(stk_result_op1->toString().c_str(), __C_OP__ ,stk_result_op2->toString().c_str()));\
@@ -107,7 +107,7 @@
 	if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_BOOL){\
 		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}else{\
-		PRINT_DUAL_ERROR_OP(STR(__C_OP__));\
+		PRINT_DUAL_ERROR_OP(ZS_STR(__C_OP__));\
 		goto lbl_exit_function;\
 	}\
 
@@ -142,9 +142,9 @@
 			PUSH_INTEGER(__PRE_OP__(*((zs_int *)(ref))));\
 			(*((zs_int *)(ref)))__OPERATOR__;\
 			break;\
-	case MSK_STK_PROPERTY_FLOAT:\
-			PUSH_FLOAT(__PRE_OP__(*((float *)(ref))));\
-			(*((float *)(ref)))__OPERATOR__;\
+	case MSK_STK_PROPERTY_ZS_FLOAT:\
+			PUSH_FLOAT(__PRE_OP__(*((zs_float *)(ref))));\
+			(*((zs_float *)(ref)))__OPERATOR__;\
 			break;\
 	default:\
 		VM_STOP_EXECUTE(" Cannot perform pre/post operator (%s)",stk_var->typeStr());\
@@ -167,9 +167,9 @@
 			(*((zs_int *)(ref)))__OPERATOR__;\
 			PUSH_INTEGER(*((zs_int *)(ref)));\
 			break;\
-	case MSK_STK_PROPERTY_FLOAT:\
-			(*((float *)(ref)))__OPERATOR__;\
-			PUSH_FLOAT(*((float *)(ref)));\
+	case MSK_STK_PROPERTY_ZS_FLOAT:\
+			(*((zs_float *)(ref)))__OPERATOR__;\
+			PUSH_FLOAT(*((zs_float *)(ref)));\
 			break;\
 	default:\
 		VM_STOP_EXECUTE(" Cannot perform pre/post operator (%s)",stk_var->typeStr());\
@@ -219,9 +219,9 @@ stk_vm_current++;
 
 #define PUSH_FLOAT(init_value) \
 {\
-	float aux=(float)(init_value); \
-	COPY_FLOAT(&stk_vm_current->stk_value,&aux); \
-	stk_vm_current->properties=MSK_STK_PROPERTY_FLOAT; \
+	zs_float aux=(zs_float)(init_value); \
+	ZS_FLOAT_COPY(&stk_vm_current->stk_value,&aux); \
+	stk_vm_current->properties=MSK_STK_PROPERTY_ZS_FLOAT; \
 	stk_vm_current++; \
 }
 
@@ -609,7 +609,7 @@ load_element_object:
 				continue;
 			case BYTE_CODE_LOAD_FLOAT:
 				stk_vm_current->stk_value=(void *)instruction->value_op2;
-				stk_vm_current->properties=MSK_STK_PROPERTY_FLOAT;
+				stk_vm_current->properties=MSK_STK_PROPERTY_ZS_FLOAT;
 				stk_vm_current++;
 				continue;
 			case BYTE_CODE_LOAD_BOOL:
@@ -877,7 +877,6 @@ load_element_object:
 								copy_aux=&((stk_dst)->stk_value);
 							}
 							unsigned short type_var=stk_src->properties;
-							//unsigned short runtime_var=0; /* there's no reason to heredate runtime_props ?!? GET_MSK_STK_PROPERTY_RUNTIME(type_var);*/
 
 							// init stk_dst
 							STK_SET_UNDEFINED(stk_dst);
@@ -888,10 +887,10 @@ load_element_object:
 								stk_dst->properties=MSK_STK_PROPERTY_ZS_INT;
 								*((zs_int *)stk_dst_ref)=*((zs_int *)stk_src_ref);
 								if(copy_aux!=NULL)(*(zs_int *)copy_aux)=*((zs_int *)stk_src_ref);
-							}else if(type_var & MSK_STK_PROPERTY_FLOAT){
-								stk_dst->properties=MSK_STK_PROPERTY_FLOAT;
-								*((float *)stk_dst_ref)=*((float *)stk_src_ref);
-								if(copy_aux!=NULL)(*(float *)copy_aux)=*((float *)stk_src_ref);
+							}else if(type_var & MSK_STK_PROPERTY_ZS_FLOAT){
+								stk_dst->properties=MSK_STK_PROPERTY_ZS_FLOAT;
+								*((zs_float *)stk_dst_ref)=*((zs_float *)stk_src_ref);
+								if(copy_aux!=NULL)(*(zs_float *)copy_aux)=*((zs_float *)stk_src_ref);
 							}else if(type_var & MSK_STK_PROPERTY_BOOL){
 								stk_dst->properties=MSK_STK_PROPERTY_BOOL;
 								*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);
@@ -941,14 +940,13 @@ load_element_object:
 						switch(GET_MSK_STK_PROPERTY_TYPES(old_stk_dst.properties)){
 						case MSK_STK_PROPERTY_UNDEFINED:
 						case MSK_STK_PROPERTY_ZS_INT:
-						case MSK_STK_PROPERTY_FLOAT:
+						case MSK_STK_PROPERTY_ZS_FLOAT:
 						case MSK_STK_PROPERTY_BOOL:
 						case MSK_STK_PROPERTY_FUNCTION: // we aren't take care about nothing! :)
 							break;
 						case MSK_STK_PROPERTY_SCRIPT_OBJECT: // we are getting script vars ...
 							if((old_stk_dst.properties & (MSK_STK_PROPERTY_IS_VAR_C))==(MSK_STK_PROPERTY_IS_VAR_C)==0){ // is not C class
 								if(old_stk_dst.stk_value!=NULL){ // it had a pointer (no constant)...
-									//ScriptObjectAnonymous *old_script_dst_var_ref=(ScriptObjectAnonymous *)(old_stk_dst.var_ref);
 									if(
 										old_stk_dst.stk_value != stk_dst->stk_value  // not same ref ...
 									&&  STK_IS_THIS(&old_stk_dst)  // ... or this, do not share/unshare
@@ -1032,8 +1030,8 @@ load_element_object:
 				POP_ONE;
 				if(stk_result_op1->properties & MSK_STK_PROPERTY_ZS_INT){ // operation will result as integer.
 					PUSH_INTEGER((-((zs_int)(stk_result_op1->stk_value))));
-				}else if(stk_result_op1->properties & MSK_STK_PROPERTY_FLOAT){
-					COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
+				}else if(stk_result_op1->properties & MSK_STK_PROPERTY_ZS_FLOAT){
+					ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);
 					PUSH_FLOAT(-f_aux_value1);
 				}else{ // try metamethod ...
 					if(!applyMetamethod(
@@ -1098,7 +1096,7 @@ load_element_object:
 					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STK_PROPERTY_ZS_INT)!=0);
 					break;
 				case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
-					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STK_PROPERTY_FLOAT)!=0);
+					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STK_PROPERTY_ZS_FLOAT)!=0);
 					break;
 				case IDX_BUILTIN_TYPE_BOOL_PTR_C:
 					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STK_PROPERTY_BOOL)!=0);
@@ -1241,6 +1239,16 @@ load_element_object:
 											stk_arg->stk_value=(void *)sc;
 											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
 										}
+									}else{
+										if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false){ // create new
+											ScriptObjectVarRef *sc=ScriptObjectVarRef::newVarRefObject(this->zs);
+											if(!sc->initSharedPtr()){
+												goto lbl_exit_function;
+											}
+											stk_arg->stk_value=(void *)sc;
+											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
+										}
+
 									}
 
 									if(var_args!=NULL){
@@ -1289,7 +1297,7 @@ load_element_object:
 							case MSK_STK_PROPERTY_UNDEFINED:
 							case MSK_STK_PROPERTY_ZS_INT:
 							case MSK_STK_PROPERTY_BOOL:
-							case MSK_STK_PROPERTY_FLOAT:
+							case MSK_STK_PROPERTY_ZS_FLOAT:
 								*stk_vm_current++=param->default_var_value;
 								break;
 							case MSK_STK_PROPERTY_FUNCTION: // we call function in the middle of the function

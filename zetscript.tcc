@@ -20,13 +20,13 @@ namespace zetscript{
 					 stk_result={(void *)(((zs_int)ptr_var)),MSK_STK_PROPERTY_ZS_INT};
 					 break;
 				 case IDX_BUILTIN_TYPE_FLOAT_C:
-					 stk_result.properties=MSK_STK_PROPERTY_FLOAT;//{};
-					 memcpy(&stk_result.stk_value,&ptr_var,sizeof(float));
+					 stk_result.properties=MSK_STK_PROPERTY_ZS_FLOAT;//{};
+					 ZS_FLOAT_COPY(&stk_result.stk_value,&ptr_var);
 					 break;
 				 case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
 					 if(ptr_var==0) return stk_result;
-					 stk_result.properties=MSK_STK_PROPERTY_FLOAT;//{};
-					 memcpy(&stk_result.stk_value,&(*(float *)ptr_var),sizeof(float));
+					 stk_result.properties=MSK_STK_PROPERTY_ZS_FLOAT;//{};
+					 ZS_FLOAT_COPY(&stk_result.stk_value,&(*(zs_float *)ptr_var));
 					 break;
 				 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
 					 if(ptr_var==0) return stk_result;
@@ -93,10 +93,10 @@ namespace zetscript{
 					}
 
 					break;
-				case MSK_STK_PROPERTY_FLOAT:
+				case MSK_STK_PROPERTY_ZS_FLOAT:
 					switch(idx_builtin_type){
 					case IDX_BUILTIN_TYPE_FLOAT_C:
-						memcpy(&val_ret,&stack_element->stk_value,sizeof(float));
+						ZS_FLOAT_COPY(&val_ret,&stack_element->stk_value);
 						break;
 					case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
 						val_ret=(zs_int)(&stack_element->stk_value);
@@ -104,7 +104,7 @@ namespace zetscript{
 					case IDX_BUILTIN_TYPE_ZS_INT_C:
 						{
 							int *aux_dst = ((int *)&val_ret);
-							float *aux_src=(float *)&stack_element->stk_value;
+							zs_float *aux_src=(zs_float *)&stack_element->stk_value;
 							*aux_dst=(int)(*aux_src);
 						}
 						break;
@@ -122,12 +122,8 @@ namespace zetscript{
 						val_ret=(zs_int)(&stack_element->stk_value);
 						break;
 					case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
-						{
-							float aux_tr=((zs_int)stack_element->stk_value);
-							memcpy((float *)&val_ret,&aux_tr,sizeof(float));
-						}
+						ZS_FLOAT_COPY(&val_ret,stack_element->stk_value);
 						break;
-
 					default:
 						error= "cannot convert \"int\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 						return false;

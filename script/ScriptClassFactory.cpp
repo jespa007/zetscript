@@ -5,36 +5,36 @@
 
 #define REGISTER_BUILT_IN_STRUCT(type_class, idx_class)\
 	if(script_classes->count!=idx_class){\
-		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
+		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeClassStatic<type_class>(STR(type_class),NULL,NULL);
+	registerNativeClassStatic<type_class>(ZS_STR(type_class),NULL,NULL);
 
 
-#define REGISTER_BUILT_IN_CLASS(type_class, idx_class,constructor,destructor)\
+#define REGISTER_BUILT_IN_CLASS(name_class, type_class, idx_class)\
 	if(script_classes->count!=idx_class){\
-		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
+		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	if(idx_class >= IDX_BUILTIN_TYPE_MAX){\
-		THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",STR(type_class));\
+		THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeClassStatic<type_class>(STR(type_class),constructor,destructor);
+	registerNativeClassStatic<type_class>(name_class,type_class##_new,type_class##_delete);
 
 #define REGISTER_BUILT_IN_CLASS_SINGLETON(type_class, idx_class)\
 	if(script_classes->count!=idx_class){\
-		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",STR(type_class));\
+		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeSingletonClass<type_class>(STR(type_class));
+	registerNativeSingletonClass<type_class>(ZS_STR(type_class));
 
 #define REGISTER_BUILT_IN_TYPE(type_class, idx_class)\
 	if(script_classes->count!=idx_class){\
-		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",STR(type_class));\
+		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",ZS_STR(type_class));\
 		return;\
 	}else{\
-		ScriptClass *sc=registerClass(__FILE__,__LINE__,STR(type_class),"");\
+		ScriptClass *sc=registerClass(__FILE__,__LINE__,ZS_STR(type_class),"");\
 		sc->symbol_class.scope->is_c_node=true;\
 		sc->symbol_class.properties=SYMBOL_PROPERTY_C_OBJECT_REF;\
 		sc->str_class_ptr_type=(typeid(type_class).name());\
@@ -46,6 +46,7 @@ namespace zetscript{
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectString);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVector);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectClass);
+	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVarRef);
 
 	ScriptClassFactory::ScriptClassFactory(ZetScript *_zs){
 		zs = _zs;
@@ -79,7 +80,12 @@ namespace zetscript{
 
 	void ScriptClassFactory::registerSystem(){
 
-		// REGISTER BUILT IN C TYPES
+		// !!!
+		// !!! START REGISTER BUILT IN CLASSES AND TYPES
+		// !!! WARNING IT SHOULD BE IN THE SAME ORDER AS IS DEFINED IN COMMON.H
+		// !!!
+
+		// primitives
 		REGISTER_BUILT_IN_TYPE(void,IDX_BUILTIN_TYPE_VOID_C);
 		REGISTER_BUILT_IN_TYPE(zs_int,IDX_BUILTIN_TYPE_ZS_INT_C);
 		REGISTER_BUILT_IN_TYPE(zs_int *,IDX_BUILTIN_TYPE_ZS_INT_PTR_C);
@@ -87,18 +93,26 @@ namespace zetscript{
 		REGISTER_BUILT_IN_TYPE(std::string *,IDX_BUILTIN_TYPE_STRING_PTR_C);
 		REGISTER_BUILT_IN_TYPE(bool,IDX_BUILTIN_TYPE_BOOL_C);
 		REGISTER_BUILT_IN_TYPE(bool *,IDX_BUILTIN_TYPE_BOOL_PTR_C);
-		REGISTER_BUILT_IN_TYPE(float,IDX_BUILTIN_TYPE_FLOAT_C);
-		REGISTER_BUILT_IN_TYPE(float *,IDX_BUILTIN_TYPE_FLOAT_PTR_C);
-		REGISTER_BUILT_IN_TYPE(const float *,IDX_BUILTIN_TYPE_CONST_FLOAT_PTR_C);
+		REGISTER_BUILT_IN_TYPE(zs_float,IDX_BUILTIN_TYPE_FLOAT_C);
+		REGISTER_BUILT_IN_TYPE(zs_float *,IDX_BUILTIN_TYPE_FLOAT_PTR_C);
+		REGISTER_BUILT_IN_TYPE(const zs_float *,IDX_BUILTIN_TYPE_CONST_FLOAT_PTR_C);
 
-		// REGISTER BUILT IN CLASS TYPES
+		// estructures
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
+
+		//classes
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ZetScript,IDX_BUILTIN_TYPE_ZETSCRIPT);
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
-		REGISTER_BUILT_IN_CLASS(ScriptObjectAnonymous,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS,ScriptObjectAnonymous_new,ScriptObjectAnonymous_delete);
-		REGISTER_BUILT_IN_CLASS(ScriptObjectString,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING,ScriptObjectString_new,ScriptObjectString_delete);
-		REGISTER_BUILT_IN_CLASS(ScriptObjectVector,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR,ScriptObjectVector_new,ScriptObjectVector_delete);
-		REGISTER_BUILT_IN_CLASS(ScriptObjectClass,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS,ScriptObjectClass_new,ScriptObjectClass_delete);
+		REGISTER_BUILT_IN_CLASS("VarRef",ScriptObjectVarRef,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VAR_REF);
+		REGISTER_BUILT_IN_CLASS("Object",ScriptObjectAnonymous,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS);
+		REGISTER_BUILT_IN_CLASS("String",ScriptObjectString,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING);
+		REGISTER_BUILT_IN_CLASS("Vector",ScriptObjectVector,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR);
+		REGISTER_BUILT_IN_CLASS("Class",ScriptObjectClass,IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS);
+		// !!!
+		// !!! END REGISTER BUILT IN CLASSES AND TYPES
+		// !!! WARNING IT SHOULD BE IN THE SAME ORDER AS IS DEFINED IN COMMON.H
+		// !!!
+
 
 		//------------------------------------------------------------------------------------------------------------
 		// Let's register functions,...
@@ -362,7 +376,7 @@ namespace zetscript{
 
 	int ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const std::string & str_native_type){
 
-		// 1. we have to handle primitives like void, (int *), (bool *),(float *) and (std::string *).
+		// 1. we have to handle primitives like void, (int *), (bool *),(zs_float *) and (std::string *).
 		 // 2. Check for rest registered C classes...
 		 for(unsigned i = 0; i < script_classes->count; i++){
 			 ScriptClass * sc=(ScriptClass *)script_classes->get(i);

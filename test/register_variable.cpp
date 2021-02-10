@@ -13,7 +13,7 @@ void say_helloworld(){
 int main(){
 
 	int 	int_var = 10;
-	float 	float_var = 0.5;
+	zs_float 	float_var = 0.5;
 	bool 	bool_var = true;
 	std::string	string_var = "in c++";
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#define	ZS_MAX_STR_BUFFER 4096
-#define STR_EXPAND(tok) #tok
-#define STR(tok) STR_EXPAND(tok)
-#define ZS_STRCMP(a, R, b) (strcmp(a,b) R 0)
+#define	ZS_MAX_STR_BUFFER 	4096
+#define ZS_STR_EXPAND(tok) 	#tok
+#define ZS_STR(tok) 		ZS_STR_EXPAND(tok)
+#define ZS_STRCMP(a, R, b) 	(strcmp(a,b) R 0)
 #define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
 
 
@@ -30,11 +30,11 @@ namespace zetscript{
 
 		 bool  		* parse_bool(const std::string & );
 		 zs_int		* parse_int(const std::string & );
-		 float 		* parse_float(const std::string & );
+		 zs_float	* parse_float(const std::string & );
 
 
 		 std::string zs_int_to_str(zs_int number);
-		 std::string float_to_str(float number);
+		 std::string float_to_str(zs_float number);
 		 std::string to_lower(const std::string & str);
 		 std::string to_upper(const std::string & str);
 		 std::wstring to_wstring(const std::string &s);

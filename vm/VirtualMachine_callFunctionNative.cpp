@@ -15,13 +15,13 @@
 #define PTR_FUNCTION_RET_PARAM5(f) ((zs_int (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_PARAM6(f) ((zs_int (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
-#define PTR_FUNCTION_RET_FLOAT_PARAM0(f) ((float (*)())(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM1(f) ((float (*)(zs_int))(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM2(f) ((float (*)(zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM3(f) ((float (*)(zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM4(f) ((float (*)(zs_int,zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM5(f) ((float (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_FLOAT_PARAM6(f) ((float (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM0(f) ((zs_float (*)())(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM1(f) ((zs_float (*)(zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM2(f) ((zs_float (*)(zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM3(f) ((zs_float (*)(zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM4(f) ((zs_float (*)(zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM5(f) ((zs_float (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM6(f) ((zs_float (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 #define PTR_FUNCTION_RET_BOOL_PARAM0(f) ((bool (*)())(f))
 #define PTR_FUNCTION_RET_BOOL_PARAM1(f) ((bool (*)(zs_int))(f))
@@ -48,13 +48,13 @@
 #define PTR_FUNCTION_MEMBER_RET_PARAM5(f) (*((std::function<zs_int(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
 #define PTR_FUNCTION_MEMBER_RET_PARAM6(f) (*((std::function<zs_int(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
 
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM0(f) (*((std::function<float(zs_int)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM1(f) (*((std::function<float(zs_int,zs_int)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM2(f) (*((std::function<float(zs_int,zs_int,zs_int)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM3(f) (*((std::function<float(zs_int,zs_int,zs_int,zs_int)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM4(f) (*((std::function<float(zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM5(f) (*((std::function<float(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
-#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM6(f) (*((std::function<float(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM0(f) (*((std::function<zs_float(zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM1(f) (*((std::function<zs_float(zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM2(f) (*((std::function<zs_float(zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM3(f) (*((std::function<zs_float(zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM4(f) (*((std::function<zs_float(zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM5(f) (*((std::function<zs_float(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
+#define PTR_FUNCTION_MEMBER_RET_FLOAT_PARAM6(f) (*((std::function<zs_float(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int)> *)f))
 
 #define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM0(f) (*((std::function<bool(zs_int)> *)f))
 #define PTR_FUNCTION_MEMBER_RET_BOOL_PARAM1(f) (*((std::function<bool(zs_int,zs_int)> *)f))
@@ -95,7 +95,6 @@ namespace zetscript{
 		}
 
 		zs_int converted_param[MAX_NATIVE_FUNCTION_ARGS];
-		//float 	 float_converted_param[MAX_NATIVE_FUNCTION_ARGS];
 		zs_int result=0;
 		StackElement *stk_arg_current;
 		current_call_c_function = calling_function;
@@ -401,7 +400,7 @@ namespace zetscript{
 				break;
 			}
 		}else if(calling_function->idx_return_type==IDX_BUILTIN_TYPE_FLOAT_C){ // we must do a float cast in order to get float return.
-			float aux_flt;
+			zs_float aux_flt;
 			switch(n_args){
 			case 0:
 				if(static_ref){
@@ -516,7 +515,7 @@ namespace zetscript{
 				break;
 			}
 
-			memcpy(&result, &aux_flt, sizeof(float));
+			ZS_FLOAT_COPY(&result, &aux_flt);
 		}else{ // generic pointer or int
 
 			switch(n_args){

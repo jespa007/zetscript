@@ -23,8 +23,6 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 	var_type1.c_str());\
 	return NULL;
 
-#define COPY_FLOAT(d,s)  memcpy((d),(s),sizeof(float))
-
 
 // defer all local vars
 #define POP_VM_SCOPE()\
@@ -466,7 +464,7 @@ apply_metamethod_error:
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_C
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C;
 									break;
-								case MSK_STK_PROPERTY_FLOAT:
+								case MSK_STK_PROPERTY_ZS_FLOAT:
 									idx_type=IDX_BUILTIN_TYPE_FLOAT_PTR_C;
 									all_check=arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C
 											||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_C
@@ -544,7 +542,7 @@ apply_metamethod_error:
 				case MSK_STK_PROPERTY_ZS_INT:
 					aux_string=k_str_zs_int_type;
 					break;
-				case MSK_STK_PROPERTY_FLOAT:
+				case MSK_STK_PROPERTY_ZS_FLOAT:
 					aux_string=k_str_float_type;
 					break;
 				case MSK_STK_PROPERTY_BOOL:
@@ -569,7 +567,7 @@ apply_metamethod_error:
 				args_str+=zs_rtti::demangle(aux_string);
 
 				if(var_type == MSK_STK_PROPERTY_ZS_INT
-				||var_type == MSK_STK_PROPERTY_FLOAT
+				||var_type == MSK_STK_PROPERTY_ZS_FLOAT
 				||var_type == MSK_STK_PROPERTY_BOOL
 				){
 					args_str+=" [*] ";
@@ -683,8 +681,8 @@ apply_metamethod_error:
 			case MSK_STK_PROPERTY_ZS_INT:
 				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->stk_value);
 				break;
-			case MSK_STK_PROPERTY_FLOAT:
-				*(*str_dst_it)=zs_strutils::float_to_str(*((float *)&((stk_src_item)->stk_value)));
+			case MSK_STK_PROPERTY_ZS_FLOAT:
+				*(*str_dst_it)=zs_strutils::float_to_str(*((zs_float *)&((stk_src_item)->stk_value)));
 				break;
 			case MSK_STK_PROPERTY_BOOL:
 				*(*str_dst_it)=(stk_src_item)->stk_value == 0?"false":"true";

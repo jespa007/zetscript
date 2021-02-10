@@ -12,6 +12,7 @@ Date: XX-09-2020
 > #226 implement Stream class
 > #242 compile code/load compiled code feature  (*.zsc)
 > #246 Erase code never execute or temporal expresion that will never assigned  
+> #209 Implement Boolean helper class  
 
 //----------------------------------------------------------
 Version: 2.0.0
@@ -98,7 +99,7 @@ Solved issues
 #120 Put all common function used by user in zs namespace and the rest in zs::core
 #121 CEval,CScriptClassFactory and CZetScript as instanceable
 #122 Restore CScriptClassFactory
-> #124 Implement Integer helper class
+#124 Implement Integer helper class
 #125 Implement String helper class
 #126 Save pure c function instead of std::function for speed improvement
 #128 Implement register_c_function_as_member 
@@ -162,7 +163,7 @@ Solved issues
 #195 Change ScriptVar by ScriptObject and remove ScriptVarDictionnary
 #196 Do not extend property when it access 
 #197 Avoid vector/string objects to add properties through string 
-> #199 Check fix instanceof 
+#199 Check fix instanceof 
 #200 Implement count variable
 #201 System.print: convert any stackelement in string if argument itself is not string var  
 #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
@@ -171,8 +172,8 @@ Solved issues
 #205 desglosse BYTE_LOAD to BYTE_LOAD_XXXX 
 #206 Override global functions 
 > #207 ScriptObjectString: Implement operator [] 
-> #208 Implement Float helper class
-> #209 Implement Boolean helper class  
+#208 Implement Float helper class
+
 #210 Fix check keyword delete
 > #211 Fix check directive import 
 #212 Fix accessors betwen assigns 
@@ -216,11 +217,11 @@ Solved issues
 > #258 Access object properties by other type rather string feature
 > #259 Erase dinamic object properties/elements by remove operator feature
 > #261 zs_test: launch *.zs and check result from each test from files after do internal test improvement test
-> #262 Select compile double or float precision config
+#262 Select compile double or float precision config
 #263 ScriptObjectString: Implement operator + feature feature
 > #264 Implement passing args by reference
 > #265 Implement zs_test_strict
-
+#266 Optimize using Push/Pop scope 
  
 //----------------------------------------------------------
 Version: 1.3.0
