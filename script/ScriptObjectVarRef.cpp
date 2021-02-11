@@ -7,13 +7,13 @@
 
 namespace zetscript{
 
-	ScriptObjectVarRef * ScriptObjectVarRef::newVarRefObject(ZetScript *zs){
+	ScriptObjectVarRef * ScriptObjectVarRef::newScriptObjectVarRef(ZetScript *zs){
 		ScriptObjectVarRef *so=new ScriptObjectVarRef();
 		return so;
 	}
 
 	ScriptObjectVarRef::ScriptObjectVarRef(){
-		idx_script_class=IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VAR_REF;
+		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF;
 	}
 
 

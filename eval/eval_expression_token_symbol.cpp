@@ -435,7 +435,7 @@ namespace zetscript{
 					aux_p=test_aux_p;
 					line=test_line;
 
-					if(eval_data->current_function->script_function->idx_class == IDX_BUILTIN_TYPE_CLASS_MAIN){
+					if(eval_data->current_function->script_function->idx_class == IDX_BUILTIN_TYPE_MAIN){
 						EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
 					}
 

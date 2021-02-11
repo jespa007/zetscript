@@ -5,14 +5,12 @@
 #pragma once
 
 
+#define ZS_NEW_OBJECT_OBJECT(zs) (ScriptObjectObject::newScriptObjectObject(zs))
+
 namespace zetscript{
 
-class ScriptClass;
-	class ScriptClass;
 	class ZetScript;
-	class VirtualMachine;
-	class ScriptClassFactory;
-	class  ScriptObjectAnonymous:public ScriptObjectVector{
+	class  ScriptObjectObject:public ScriptObjectVector{
 
 	public:
 
@@ -20,9 +18,9 @@ class ScriptClass;
 		// public vars ...
 
 		// Construct ...
-		static ScriptObjectAnonymous * newAnonymousObject(ZetScript	*_zs);
+		static ScriptObjectObject * newScriptObjectObject(ZetScript	*_zs);
 
-		ScriptObjectAnonymous();
+		ScriptObjectObject();
 
 		StackElement * addProperty(
 				const std::string & symbol_value
@@ -43,7 +41,7 @@ class ScriptClass;
 		bool eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
 
 
-		virtual ~ScriptObjectAnonymous();
+		virtual ~ScriptObjectObject();
 
 	protected:
 

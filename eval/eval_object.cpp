@@ -29,7 +29,7 @@ namespace zetscript{
 
 			if(scope_info->scope_parent!=NULL){// is within function ?
 
-				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN){ // function object as function member because it will use this inside
+				if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_MAIN){ // function object as function member because it will use this inside
 					byte_code=ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS;
 				}
 			}
@@ -88,7 +88,7 @@ namespace zetscript{
 			}
 
 			// instance object ...
-			instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_ANONYMOUS));
+			instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_OBJECT));
 
 			// this solve problem void structs...
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);

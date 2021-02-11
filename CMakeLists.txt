@@ -236,8 +236,8 @@ ELSE()
 		script/ScriptObjectStringIterator.cpp
 		script/ScriptObjectVector.cpp
 		script/ScriptObjectVectorIterator.cpp
-		script/ScriptObjectAnonymous.cpp
-		script/ScriptObjectAnonymousIterator.cpp
+		script/ScriptObjectObject.cpp
+		script/ScriptObjectObjectIterator.cpp
 		script/ScriptObjectClass.cpp
 				
 		script/ScriptClass.cpp
@@ -309,8 +309,8 @@ ELSE()
 		script/ScriptFunction.h
 		script/ScriptFunctionFactory.h
 		script/ScriptObject.h
-		script/ScriptObjectAnonymous.h
-		script/ScriptObjectAnonymousIterator.h
+		script/ScriptObjectObject.h
+		script/ScriptObjectObjectIterator.h
 		script/ScriptObjectClass.h
 		script/ScriptObjectString.h
 		script/ScriptObjectStringIterator.h

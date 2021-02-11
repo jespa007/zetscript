@@ -313,7 +313,7 @@ stk_result_op1=--stk_vm_current;
 namespace zetscript{
 
 	void VirtualMachine::callFunctionScript(
-			ScriptObjectAnonymous	* this_object,
+			ScriptObjectObject	* this_object,
 			ScriptFunction 			* calling_function,
 			StackElement 		  	* _stk_local_var,
 			unsigned char 			n_args
@@ -326,7 +326,7 @@ namespace zetscript{
 		}
 
 		ScriptObject *so_aux=NULL;
-		ScriptObjectAnonymous *so_anonymous_aux=NULL;
+		ScriptObjectObject *so_anonymous_aux=NULL;
 		ScriptObjectClass *so_class_aux=NULL;
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
@@ -478,13 +478,13 @@ namespace zetscript{
 				}
 
 				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					so_anonymous_aux = (ScriptObjectAnonymous *)(stk_result_op1->stk_value);
+					so_anonymous_aux = (ScriptObjectObject *)(stk_result_op1->stk_value);
 				}
 
 				stk_var=NULL;
 
 				if(so_anonymous_aux != NULL){
-					if(so_anonymous_aux->idx_script_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){
+					if(so_anonymous_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
 						ScriptObjectVector * so_vector = (ScriptObjectVector *)so_anonymous_aux;
 						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){
 							VM_STOP_EXECUTE("Expected std::vector-index as integer or std::string");
@@ -538,7 +538,7 @@ load_element_object:
 						);
 					}
 
-					so_anonymous_aux=((ScriptObjectAnonymous *)stk_result_op1->stk_value);
+					so_anonymous_aux=((ScriptObjectObject *)stk_result_op1->stk_value);
 
 
 					if(so_anonymous_aux == NULL)
@@ -571,7 +571,7 @@ load_element_object:
 						// pack member info for store information...
 						if(instruction->properties & MSK_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST){
 							// save
-							//ScriptObjectAnonymous *calling_object_info=(ScriptObjectAnonymous *)stk_calling_object_info->stk_value;// calling object
+							//ScriptObjectObject *calling_object_info=(ScriptObjectObject *)stk_calling_object_info->stk_value;// calling object
 							if((stk_var=so_anonymous_aux->addProperty((const char *)str_symbol, vm_error_str))==NULL){
 								VM_STOP_EXECUTE(vm_error_str.c_str());
 							}
@@ -646,10 +646,10 @@ load_element_object:
 
 					if(instruction->byte_code==BYTE_CODE_PUSH_VECTOR_ELEMENT){
 						POP_ONE; // only pops the value, the last is the std::vector variable itself
-						ScriptObjectAnonymous *vec_obj = NULL;
+						ScriptObjectObject *vec_obj = NULL;
 						if((stk_vm_current-1)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-							vec_obj = (ScriptObjectAnonymous *)(stk_vm_current-1)->stk_value;
-							if(vec_obj->idx_script_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){ // push value ...
+							vec_obj = (ScriptObjectObject *)(stk_vm_current-1)->stk_value;
+							if(vec_obj->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								stk_src=stk_result_op1;
 								if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK){
@@ -666,14 +666,14 @@ load_element_object:
 					}else if(instruction->byte_code==BYTE_CODE_PUSH_OBJECT_ELEMENT){
 
 						POP_TWO; // first must be a string that describes variable name and the other the variable itself ...
-						ScriptObjectAnonymous *obj = NULL;
+						ScriptObjectObject *obj = NULL;
 						StackElement *stk_object=(stk_vm_current-1);
-						if(STK_IS_SCRIPT_OBJECT_ANONYMOUS(stk_object) == 0){
+						if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_object) == 0){
 							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_object->typeStr());
 						}
 
-						obj = (ScriptObjectAnonymous *)stk_object->stk_value;
-						/*if(obj->idx_script_class != IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS){ // push value ...
+						obj = (ScriptObjectObject *)stk_object->stk_value;
+						/*if(obj->idx_script_class != IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT){ // push value ...
 							VM_STOP_EXECUTE("Internal: Expected object but is type \"%s\"",stk_object->typeStr());
 						}*/
 
@@ -809,7 +809,7 @@ load_element_object:
 									VM_STOP_EXECUTE("Internal error, store on packed member info has not object and const char information");
 							}
 
-							ScriptObjectAnonymous *calling_object_info=(ScriptObjectAnonymous *)stk_calling_object_info->stk_value;// calling object
+							ScriptObjectObject *calling_object_info=(ScriptObjectObject *)stk_calling_object_info->stk_value;// calling object
 							if((stk_dst=calling_object_info->addProperty((const char *)stk_symbol_info->stk_value, vm_error_str))==NULL){
 								VM_STOP_EXECUTE(vm_error_str.c_str());
 							}
@@ -821,7 +821,7 @@ load_element_object:
 						stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value
 
 						// we need primitive stackelement in order to assign...
-						if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectAnonymous::VAR_TYPE::OBJECT){
+						if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectObject::VAR_TYPE::OBJECT){
 							stk_src=(StackElement *)stk_src->stk_value; // stk_value is expect to contents a stack variable
 						}
 
@@ -905,7 +905,7 @@ load_element_object:
 									if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
 										str_object=(ScriptObjectString *)stk_dst->stk_value;
 									}else{ // Generates a std::string var
-										stk_dst->stk_value=str_object= NEW_STRING_VAR;
+										stk_dst->stk_value=str_object= ZS_NEW_OBJECT_STRING(this->zs);
 										stk_dst->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
 										if(!str_object->initSharedPtr()){
 											goto lbl_exit_function;
@@ -951,7 +951,7 @@ load_element_object:
 										old_stk_dst.stk_value != stk_dst->stk_value  // not same ref ...
 									&&  STK_IS_THIS(&old_stk_dst)  // ... or this, do not share/unshare
 									){ // unref pointer because new pointer has been attached...
-										if(!unrefSharedScriptObject(((ScriptObjectAnonymous  *)old_stk_dst.stk_value)->shared_pointer,vm_idx_call)){
+										if(!unrefSharedScriptObject(((ScriptObjectObject  *)old_stk_dst.stk_value)->shared_pointer,vm_idx_call)){
 											goto lbl_exit_function;
 										}
 									}
@@ -1088,7 +1088,7 @@ load_element_object:
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
 				 POP_TWO;
 
-				if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectAnonymous::VAR_TYPE::OBJECT){
+				if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectObject::VAR_TYPE::OBJECT){
 					stk_result_op1=(StackElement *)stk_result_op1->stk_value; // stk_value is expect to contents a stack variable
 				}
 				switch((zs_int)stk_result_op2->stk_value){
@@ -1107,7 +1107,7 @@ load_element_object:
 				default:
 					if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 						bool b = this->script_class_factory->isClassInheritsFrom(			//
-								((ScriptObjectAnonymous *)(stk_result_op1->stk_value))->idx_script_class // A
+								((ScriptObjectObject *)(stk_result_op1->stk_value))->idx_script_class // A
 								, (zs_int)stk_result_op2->stk_value				// B
 						);
 						PUSH_BOOLEAN(b);
@@ -1149,7 +1149,7 @@ load_element_object:
 					StackElement *stk_function_ref=NULL;
 					bool calling_from_object_type=false;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
-					ScriptObjectAnonymous *calling_object = this_object;
+					ScriptObjectObject *calling_object = this_object;
 					unsigned char n_args=instruction->value_op1; // number arguments will pass to this function
 					StackElement *stk_start_arg_call=(stk_vm_current-n_args);
 
@@ -1231,7 +1231,7 @@ load_element_object:
 										if(properties & MSK_STK_PROPERTY_PTR_STK){
 											*stk_arg=*((StackElement *)stk_arg->stk_value);
 										}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
-											ScriptObjectString *sc=ScriptObjectString::newStringObject(this->zs);
+											ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(this->zs);
 											if(!sc->initSharedPtr()){
 												goto lbl_exit_function;
 											}
@@ -1241,7 +1241,7 @@ load_element_object:
 										}
 									}else{
 										if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false){ // create new
-											ScriptObjectVarRef *sc=ScriptObjectVarRef::newVarRefObject(this->zs);
+											ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(this->zs);
 											if(!sc->initSharedPtr()){
 												goto lbl_exit_function;
 											}
@@ -1259,7 +1259,7 @@ load_element_object:
 										}
 									}else{
 										if(((FunctionArg *)(*function_param))->var_args == true){ // enter var args
-											var_args=ScriptObjectVector::newVectorObject(this->zs);
+											var_args=ZS_NEW_OBJECT_VECTOR(this->zs);
 											if(!var_args->initSharedPtr()){
 												goto lbl_exit_function;
 											}
@@ -1335,10 +1335,10 @@ load_element_object:
 					else{ // C function
 						if((is_constructor && (sf->symbol.properties & SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))
 							){
-							calling_object= (ScriptObjectAnonymous *)(stk_start_arg_call-2)->stk_value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
+							calling_object= (ScriptObjectObject *)(stk_start_arg_call-2)->stk_value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
 						}
 
-						if(calling_object != NULL && calling_object->idx_script_class<IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS){
+						if(calling_object != NULL && calling_object->idx_script_class<IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
 							VM_STOP_EXECUTE("Internal error, expected object class");
 						}
 
@@ -1442,14 +1442,14 @@ load_element_object:
 
 					continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new std::vector object...
-					so_aux=NEW_VECTOR_VAR;
+					so_aux=ZS_NEW_OBJECT_VECTOR(this->zs);
 					if(!so_aux->initSharedPtr()){
 						goto lbl_exit_function;
 					}
 					(*stk_vm_current++)={so_aux,MSK_STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
-			 case  BYTE_CODE_NEW_ANONYMOUS: // Create new std::vector object...
-				 so_aux=ScriptObjectAnonymous::newAnonymousObject(this->zs);
+			 case  BYTE_CODE_NEW_OBJECT: // Create new std::vector object...
+				 so_aux=ZS_NEW_OBJECT_OBJECT(this->zs);
 					if(!so_aux->initSharedPtr()){
 						goto lbl_exit_function;
 					}
@@ -1457,7 +1457,7 @@ load_element_object:
 					continue;
 
 			 case  BYTE_CODE_NEW_STRING: // Create new std::vector object...
-				 so_aux=ScriptObjectString::newStringObject(this->zs,instruction->getConstantValueOp2ToString());
+				 so_aux= ScriptObjectString::newScriptObjectString(this->zs,instruction->getConstantValueOp2ToString());
 					if(!so_aux->initSharedPtr()){
 						goto lbl_exit_function;
 					}
@@ -1480,7 +1480,7 @@ load_element_object:
 							goto lbl_exit_function;
 						}
 
-						if(so_aux->idx_script_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS)
+						if(so_aux->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS)
 						{ // max ...
 							script_object_class=(ScriptObjectClass *)so_aux;
 

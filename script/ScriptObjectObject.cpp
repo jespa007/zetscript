@@ -6,20 +6,20 @@
 
 namespace zetscript{
 
-	ScriptObjectAnonymous * ScriptObjectAnonymous::newAnonymousObject(ZetScript	*_zs){
-		ScriptObjectAnonymous *ac= new ScriptObjectAnonymous();
+	ScriptObjectObject * ScriptObjectObject::newScriptObjectObject(ZetScript	*_zs){
+		ScriptObjectObject *ac= new ScriptObjectObject();
 		ac->setZetScript(_zs);
 		return ac;
 	}
 
 
-	ScriptObjectAnonymous::ScriptObjectAnonymous(){
-		idx_script_class=IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS;
+	ScriptObjectObject::ScriptObjectObject(){
+		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT;
 		map_property_keys=new zs_map();
 	}
 
 
-	StackElement * ScriptObjectAnonymous::addProperty(
+	StackElement * ScriptObjectObject::addProperty(
 			const std::string & symbol_value
 			,std::string & error
 			//, const ScriptFunction *info_function
@@ -69,7 +69,7 @@ namespace zetscript{
 
 			// update n_refs +1
 			if(sv->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
-				if(zs->getVirtualMachine()->sharePointer(((ScriptObjectAnonymous *)(sv->stk_value))->shared_pointer) == false){
+				if(zs->getVirtualMachine()->sharePointer(((ScriptObjectObject *)(sv->stk_value))->shared_pointer) == false){
 					return NULL;
 				}
 			}
@@ -90,7 +90,7 @@ namespace zetscript{
 		return new_stk;
 	}
 
-	int  ScriptObjectAnonymous::getPropertyIdx(const std::string & property_name){//,bool only_var_name){
+	int  ScriptObjectObject::getPropertyIdx(const std::string & property_name){//,bool only_var_name){
 
 		bool exists;
 		int idx_stk_element=this->map_property_keys->get(property_name.c_str(),exists);
@@ -100,11 +100,11 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	StackElement *ScriptObjectAnonymous::getThisProperty(){
+	StackElement *ScriptObjectObject::getThisProperty(){
 		return &this->stk_this;
 	}
 
-	StackElement * ScriptObjectAnonymous::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
+	StackElement * ScriptObjectObject::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
 
 		// special properties
 		/*if(property_name == "length"){
@@ -124,7 +124,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	bool ScriptObjectAnonymous::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
+	bool ScriptObjectObject::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
 		bool exists=false;
 		zs_int idx_property = map_property_keys->get(property_name.c_str(),exists);
 		if(!exists){
@@ -140,7 +140,7 @@ namespace zetscript{
 		return true;
 	}
 
-	ScriptObjectAnonymous::~ScriptObjectAnonymous(){
+	ScriptObjectObject::~ScriptObjectObject(){
 		delete map_property_keys;
 	}
 }

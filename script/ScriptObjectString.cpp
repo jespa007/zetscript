@@ -7,7 +7,7 @@
 
 namespace zetscript{
 
-	ScriptObjectString * ScriptObjectString::newStringObject(ZetScript *zs, const std::string & str){
+	ScriptObjectString * ScriptObjectString::newScriptObjectString(ZetScript *zs, const std::string & str){
 		ScriptObjectString *so=new ScriptObjectString();
 		so->setZetScript(zs);
 		so->set(str);
@@ -15,7 +15,7 @@ namespace zetscript{
 	}
 
 	ScriptObjectString::ScriptObjectString(){
-		idx_script_class=IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING;
+		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING;
 		str_value = "";
 		value = &str_value;
 	}

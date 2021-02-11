@@ -367,7 +367,7 @@ namespace zetscript{
 			//Keyword key_w;
 			//
 			// check for keyword ...
-			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_MAIN
 				&& scope_info->scope_base == scope_info
 				&& scope_info->scope_parent == NULL // is function member
 				){ // class members are defined as functions
@@ -387,7 +387,7 @@ namespace zetscript{
 			//Scope *scope=scope_info;
 			bool is_anonymous=false;
 
-			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_MAIN
 				&& scope_info->scope_base == scope_info
 				&& scope_info->scope_parent == NULL // is function member
 				){

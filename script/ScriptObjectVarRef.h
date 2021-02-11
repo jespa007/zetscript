@@ -4,13 +4,16 @@
  */
 #pragma once
 
+
+#define ZS_NEW_OBJECT_VAR_REF(zs) ScriptObjectVarRef::newScriptObjectVarRef(zs)
+
 namespace zetscript{
 
 	class  ScriptObjectVarRef: public ScriptObject{
 
 	public:
 
-		static ScriptObjectVarRef * newVarRefObject(ZetScript *zs);
+		static ScriptObjectVarRef * newScriptObjectVarRef(ZetScript *zs);
 		ScriptObjectVarRef();
 
 

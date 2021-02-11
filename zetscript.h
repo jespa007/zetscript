@@ -94,8 +94,8 @@
 #include "script/ScriptObjectStringIterator.h"
 #include "script/ScriptObjectVector.h"
 #include "script/ScriptObjectVectorIterator.h"
-#include "script/ScriptObjectAnonymous.h"
-#include "script/ScriptObjectAnonymousIterator.h"
+#include "script/ScriptObjectObject.h"
+#include "script/ScriptObjectObjectIterator.h"
 #include "script/ScriptObjectClass.h"
 #include "script/ScriptObjectVarRef.h"
 
@@ -274,7 +274,7 @@ namespace zetscript{
 
 		template<typename T>
 		static ScriptObjectVector * convertStdVectorToScriptObjectVector(const std::vector<T> & v,ZetScript *zs_instance){
-			ScriptObjectVector *vsv = ScriptObjectVector::newVectorObject(zs_instance);
+			ScriptObjectVector *vsv = ZS_NEW_OBJECT_VECTOR(zs_instance);
 
 			for ( unsigned i = 0; i < v.size(); i++){
 				StackElement *stk = vsv->newSlot();

@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define NEW_VECTOR_VAR (ScriptObjectVector::newVectorObject(this->zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new ScriptObjectVector())))
+#define ZS_NEW_OBJECT_VECTOR(zs) (ScriptObjectVector::newScriptObjectVector(zs)) //ScriptClass::getInstance()->getRegisteredClassByIdx(ScriptClass::getInstance()->getIdxClassVector())))//,(void *)(new ScriptObjectVector())))
 
 namespace zetscript{
 
@@ -62,7 +62,7 @@ namespace zetscript{
 		static void    			pushSf(ScriptObjectVector *sv,StackElement  * stk);
 		static StackElement *  	popSf(ScriptObjectVector *sv);
 
-		static ScriptObjectVector * newVectorObject(ZetScript *zs);
+		static ScriptObjectVector * newScriptObjectVector(ZetScript *zs);
 
 		ScriptObjectVector();
 

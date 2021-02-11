@@ -40,7 +40,7 @@ namespace zetscript{
 
 					 if(ptr_var==0) return stk_result;
 
-					 so=ScriptObjectString::newStringObject(this);
+					 so=ZS_NEW_OBJECT_STRING(this);
 					 if(idx_builtin_type_var==IDX_BUILTIN_TYPE_STRING_PTR_C){
 						so->value=(void *)ptr_var;
 
@@ -162,7 +162,7 @@ namespace zetscript{
 						}
 
 						if(idx_builtin_type!=script_object->idx_script_class){
-							if(script_object->idx_script_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING){
+							if(script_object->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
 
 								if(idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
 									val_ret=(zs_int)((ScriptObjectString *)script_object)->toString().c_str();
@@ -171,7 +171,7 @@ namespace zetscript{
 								}else{ // cannot convert string object to c
 
 								}
-							}else if(script_object->idx_script_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS){
+							}else if(script_object->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
 								ScriptObjectClass *script_object_class = (ScriptObjectClass *)script_object;
 								c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
 
