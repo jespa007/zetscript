@@ -26,18 +26,13 @@ namespace zetscript{
 				value=strtoll (binary.c_str(), NULL, 2);
 			}
 			else{
+
+				throw std::runtime_error(format("cannot convert \"%s\" to zs_int",val.c_str()));
 				return NULL;
 			}
 
-		   /*if ((numberValue == LONG_MIN || numberValue == LONG_MAX) && errno == ERANGE){
-			  printf("Value out of range.\n");
-		   }*/
-
-
-
 			n=new zs_int;
 			*n = value;
-
 
 			// TODO: develop exception handler.
 			return n;
@@ -56,6 +51,8 @@ namespace zetscript{
 				return b;
 			}
 
+			throw std::runtime_error(format("cannot convert \"%s\" to bool",s.c_str()));
+
 			// TODO: develop exception handler.
 			return NULL;
 		}
@@ -68,7 +65,7 @@ namespace zetscript{
 			n = strtof(data, &end);
 
 			if (end == data){
-				throw std::runtime_error(format("cannot convert \"%s\" to number",s));
+				throw std::runtime_error(format("cannot convert \"%s\" to zs_float",s.c_str()));
 				return NULL;
 			}
 
@@ -108,11 +105,7 @@ namespace zetscript{
 			}
 
 		   return result;
-			/*char float_str[100];
 
-						sprintf(float_str,"%i",number);
-
-					   return std::string(float_str);*/
 		}
 
 		std::string float_to_str(zs_float number){
