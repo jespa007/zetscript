@@ -61,22 +61,18 @@ namespace zetscript{
 		}
 
 		zs_float *  parse_float(const std::string & s){
-			char *p;bool ok=true;
-			zs_float *n=NULL;
+			 char *end;
+			 char *data=(char *)s.c_str();
+			float  n;
+			errno = 0;
+			n = strtof(data, &end);
 
-			zs_float numberValue=0;
-			if(s!="0") {// trivial case
-			  numberValue=strtof((char *)s.c_str(),&p);
-			  ok = *p == '\0';
+			if (end == data){
+				throw std::runtime_error(format("cannot convert \"%s\" to number",s));
+				return NULL;
 			}
 
-			if(ok){
-				n=new zs_float;
-				*n = numberValue;
-			}
-
-			// TODO: develop exception handler.
-			return n;
+			return new zs_float(n);
 		}
 
 		std::string zs_int_to_str(zs_int number){
