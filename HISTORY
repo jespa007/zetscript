@@ -32,7 +32,7 @@ Main improvements:
 -Implements new operators: in
 -Implements builtin iterators for string, vector and anonymous/class objects
 -Implements builtin classes: DateTime
--Implements builtin Helper classes: System, Math, Integer and String
+-Implements builtin Helper classes: System, Math, Integer,Json and String
 -"function" keyword to declare function member is not mandatory within the class
 
 Solved issues
@@ -220,6 +220,7 @@ Solved issues
 #263 ScriptObjectString: Implement operator + feature feature
 > #264 Implement passing args by reference
 > #265 Implement zs_test_strict
+> #267 Implement Builtin helper class Json
 
  
 //----------------------------------------------------------
