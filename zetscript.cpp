@@ -5,8 +5,8 @@ namespace zetscript{
 	const char * k_str_void_type =typeid(void).name();
 	const char * k_str_zs_int_type_ptr=typeid(zs_int *).name();
 	const char * k_str_const_zs_int_type_ptr=typeid(const zs_int *).name();
-	const char * k_str_float_type_ptr=typeid(float *).name();
-	const char * k_str_const_float_type_ptr=typeid(const float *).name();
+	const char * k_str_float_type_ptr=typeid(zs_float *).name();
+	const char * k_str_const_float_type_ptr=typeid(const zs_float *).name();
 	const char * k_str_string_type_ptr=typeid(std::string *).name();
 	const char * k_str_char_type_ptr=typeid(char *).name();
 	const char * k_str_const_char_type_ptr=typeid(const char *).name();
@@ -15,7 +15,7 @@ namespace zetscript{
 	//const char * k_str_zs_int_type=typeid(zs_int).name();
 	//const char * k_str_unsigned_int_type=typeid(unsigned int).name();
 	const char * k_str_zs_int_type=typeid(zs_int).name();
-	const char * k_str_float_type=typeid(float).name();
+	const char * k_str_float_type=typeid(zs_float).name();
 	const char * k_str_bool_type=typeid(bool).name();
 	const char * k_str_stack_element_type=typeid(StackElement).name();
 
@@ -53,6 +53,15 @@ namespace zetscript{
 		script_class_factory->registerNativeSingletonClass<StringBuiltIn>("StringBuiltIn");
 		script_class_factory->registerNativeMemberFunctionStatic<StringBuiltIn>("format",StringBuiltIn::formatSf);
 
+		// Integer
+		script_class_factory->registerNativeSingletonClass<IntegerBuiltIn>("Integer");
+		script_class_factory->registerNativeMemberFunctionStatic<IntegerBuiltIn>("parse",IntegerBuiltIn::parse);
+
+		// Float
+		script_class_factory->registerNativeSingletonClass<FloatBuiltIn>("Float");
+		script_class_factory->registerNativeMemberFunctionStatic<FloatBuiltIn>("parse",FloatBuiltIn::parse);
+
+
 		// Math
 		script_class_factory->registerNativeSingletonClass<MathBuiltIn>("Math");
 		script_class_factory->registerNativeStaticConstMember<MathBuiltIn>("PI",&MathBuiltIn::PI);
@@ -74,10 +83,8 @@ namespace zetscript{
 		// Custom user function or classes
 		eval(
 			zs_strutils::format(
-				"class String{\n"
-				"	static format(s,...args){"
-				"		StringBuiltIn::format(System::getZetScript(),s,args)" // passing this because is registered as static
-				"	}"
+				"static String::format(s,...args){"
+				"	StringBuiltIn::format(System::getZetScript(),s,args)" // passing this because is registered as static
 				"}"
 				""
 				"class System{\n"
@@ -206,7 +213,7 @@ namespace zetscript{
 
 		(*constant_string_objects)[const_name]=stk;
 
-		so=ScriptObjectString::newStringObject(this);
+		so=ZS_NEW_OBJECT_STRING(this);
 		// swap values stk_ref/stk_value
 		so->set(const_name);
 
@@ -267,13 +274,13 @@ namespace zetscript{
 		return NULL;
 	}
 
-	float * ZetScript::evalFloatValue(const std::string & str_to_eval){
+	zs_float * ZetScript::evalFloatValue(const std::string & str_to_eval){
 		eval(str_to_eval.c_str());
 		StackElement *se=virtual_machine->getLastStackValue();
 
 		if(se != NULL){
-			if(se->properties & MSK_STK_PROPERTY_FLOAT){
-				eval_float = *((float *)(&se->stk_value));
+			if(se->properties & MSK_STK_PROPERTY_ZS_FLOAT){
+				eval_float = *((zs_float *)(&se->stk_value));
 				return &eval_float;
 			}
 			else{
@@ -387,10 +394,10 @@ namespace zetscript{
 					v >= idx_start;
 					v--) {
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
-				ScriptObjectAnonymous *var = NULL;
+				ScriptObjectObject *var = NULL;
 
 				if(vm_stk_element->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					var =((ScriptObjectAnonymous *)(vm_stk_element->stk_value));
+					var =((ScriptObjectObject *)(vm_stk_element->stk_value));
 					if(var){
 						if(var->shared_pointer != NULL){
 							if(!var->unrefSharedPtr(IDX_CALL_STACK_MAIN)){

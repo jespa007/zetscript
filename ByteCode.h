@@ -87,7 +87,7 @@ namespace zetscript{
 		BYTE_CODE_NEW_CLASS, // new operator...
 		BYTE_CODE_DELETE,
 		BYTE_CODE_NEW_VECTOR, // Vector object
-		BYTE_CODE_NEW_ANONYMOUS,
+		BYTE_CODE_NEW_OBJECT,
 		BYTE_CODE_NEW_STRING,
 		BYTE_CODE_RET, // ret instruction ..
 		BYTE_CODE_PUSH_SCOPE,

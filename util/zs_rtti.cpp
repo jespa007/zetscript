@@ -19,8 +19,8 @@ namespace zetscript{
 					return "bool *";
 				}
 
-			if(name == std::string(typeid(float *).name())){
-					return "float *";
+			if(name == std::string(typeid(zs_float *).name())){
+					return ZS_STR(zs_float)" *";
 				}
 
 

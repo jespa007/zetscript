@@ -14,29 +14,29 @@ namespace zetscript{
 
 	class MathBuiltIn{
 	public:
-		static const float PI;
+		static const zs_float PI;
 
-		static float degToRad(float *deg){
+		static zs_float degToRad(zs_float *deg){
 			return (*deg*M_PI)/180.0f;
 		}
 
-		static float sin(float *rad){
+		static zs_float sin(zs_float *rad){
 			return sinf(*rad);
 		}
 
-		static float cos(float *rad){
+		static zs_float cos(zs_float *rad){
 			return cosf(*rad);
 		}
 
-		static float abs(float *n){
+		static zs_float abs(zs_float *n){
 			return fabs(*n);
 		}
 
-		static float pow(float *base, float *exp){
+		static zs_float pow(zs_float *base, zs_float *exp){
 			return powf(*base,*exp);
 		}
 
-		static float random(){
+		static zs_float random(){
 			return rand()*ONE_OVER_RAND_MAX;
 		}
 	};

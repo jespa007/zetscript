@@ -27,9 +27,9 @@ public:
 
 class MyClassExtend:public MyClass{
 public:
-	float data2;
+	zs_float data2;
 
-	void function2(float *arg){
+	void function2(zs_float *arg){
 		this->data2 = *arg;
 		printf("Float argument is %.02f\n",this->data2);
 	}

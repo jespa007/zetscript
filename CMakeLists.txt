@@ -40,16 +40,12 @@ ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
 # COMMON PARAMS
 #
 
-set( ZS_NUMBER_PRECISION_SINGLE 1 )
-set( ZS_NUMBER_PRECISION_DOUBLE 2 )
-
-
-if("${NUMBER_PRECISION}" STREQUAL "DOUBLE")
-	set( ZS_NUMBER_PRECISION "ZS_NUMBER_PRECISION_DOUBLE" )
-	MESSAGE("-- Number precision: double"  )
+if("${FLOAT_PRECISION}" STREQUAL "DOUBLE")
+	set( ZS_FLOAT_TYPE 			"double" )
+	MESSAGE("-- Float precision: double"  )
 else()
-	set( ZS_NUMBER_PRECISION "ZS_NUMBER_PRECISION_SINGLE" )
-	MESSAGE("-- Number precision: single"  )
+	set( ZS_FLOAT_TYPE		"float" )
+	MESSAGE("-- Float precision: single"  )
 endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/config.h)
@@ -218,6 +214,8 @@ ELSE()
  		extra/MathBuiltIn.cpp
 		extra/StringBuiltIn.cpp
 		extra/SystemBuiltIn.cpp
+		extra/IntegerBuiltIn.cpp
+		extra/FloatBuiltIn.cpp
  		
  		# VM
  		vm/VirtualMachine.cpp
@@ -238,8 +236,8 @@ ELSE()
 		script/ScriptObjectStringIterator.cpp
 		script/ScriptObjectVector.cpp
 		script/ScriptObjectVectorIterator.cpp
-		script/ScriptObjectAnonymous.cpp
-		script/ScriptObjectAnonymousIterator.cpp
+		script/ScriptObjectObject.cpp
+		script/ScriptObjectObjectIterator.cpp
 		script/ScriptObjectClass.cpp
 				
 		script/ScriptClass.cpp
@@ -288,31 +286,63 @@ ELSE()
 
 	SET(
 		HS
+		# Utils
+ 		util/zs_file.h
+ 		util/zs_log.h
+ 		util/zs_path.h
+ 		util/zs_rtti.h
+ 		util/zs_strutils.h
+ 		util/zs_vector.h
+ 		util/zs_map.h
+ 		
+ 		# extra
+		extra/FloatBuiltIn.h
+		extra/IntegerBuiltIn.h
+		extra/MathBuiltIn.h
+		extra/StringBuiltIn.h
+		extra/SystemBuiltIn.h
 		
-		script/ScriptObjectString.h
-		script/ScriptObjectVector.h
-		script/ScriptObjectIterator.h
-		script/ScriptObject.h
+		# script
 		script/ScriptClass.h
-		script/ScriptFunction.h
-		
-		factory/ScopeFactory.h
-		factory/ScriptClassFactory.h
-		factory/ScriptFunctionFactory.h
-		factory/FunctionProxyFactory.h
-		
-		
-		common.h
-		Scope.h
-		VirtualMachine.h
-		zetscript.h
-		exception.h
-		
-		vm/VirtualMachine.tcc
-		ZetScript.tcc
+		script/ScriptClassFactory.h
 		script/ScriptClassFactory.tcc
+		script/ScriptFunction.h
+		script/ScriptFunctionFactory.h
+		script/ScriptObject.h
+		script/ScriptObjectObject.h
+		script/ScriptObjectObjectIterator.h
+		script/ScriptObjectClass.h
+		script/ScriptObjectString.h
+		script/ScriptObjectStringIterator.h
+		script/ScriptObjectVarRef.h
+		script/ScriptObjectVector.h
+		script/ScriptObjectVectorIterator.h
+		
+		# function proxy
+		function_proxy/FunctionProxyFactory.h
+		function_proxy/FunctionProxyFactory.h
+		function_proxy/FunctionProxyFactory.tcc
+		function_proxy/FunctionTraits.h
+		
+		# scope
+		scope/Scope.h
+		scope/ScopeFactory.h
+		
+		# vm
+		vm/VirtualMachine.h
+		vm/VirtualMachine.tcc
+		
+		
+		# main
 		ByteCode.h
+		common.h
 		config.h
+		exception.h
+		Instruction.h
+		StackElement.h
+		Symbol.h
+		zetscript.h
+		zetscript.tcc
 	)
 	
 	

@@ -9,12 +9,12 @@ using namespace zetscript;
 class CFloat{
 public:
 
-	float n;
+	zs_float n;
 	CFloat(){
 		n=0;
 	}
 
-	CFloat(float _n){
+	CFloat(zs_float _n){
 		n=_n;
 	}
 
@@ -23,7 +23,7 @@ public:
 		n=_n->n;
 	}
 
-	void _set(float *_n){
+	void _set(zs_float *_n){
 		n=*_n;
 	}
 
@@ -31,11 +31,11 @@ public:
 		return new CFloat(n1->n + n2->n);
 	}
 
-	static CFloat * _add(CFloat *n1, float *n2){
+	static CFloat * _add(CFloat *n1, zs_float *n2){
 		return new CFloat(n1->n + *n2);
 	}
 
-	static CFloat * _add(float *n1, CFloat *n2){
+	static CFloat * _add(zs_float *n1, CFloat *n2){
 		return new CFloat(*n1 + n2->n);
 	}
 
@@ -43,11 +43,11 @@ public:
 		return new CFloat(n1->n - n2->n);
 	}
 
-	static CFloat * _sub(CFloat *n1, float *n2){
+	static CFloat * _sub(CFloat *n1, zs_float *n2){
 		return new CFloat(n1->n - *n2);
 	}
 
-	static CFloat * _sub(float *n1, CFloat *n2){
+	static CFloat * _sub(zs_float *n1, CFloat *n2){
 		return new CFloat(*n1 - n2->n);
 	}
 
@@ -61,11 +61,11 @@ public:
 		return new CFloat(n1->n / n2->n);
 	}
 
-	static CFloat * _div(CFloat *n1, float *n2){
+	static CFloat * _div(CFloat *n1, zs_float *n2){
 		return new CFloat(n1->n / *n2);
 	}
 
-	static CFloat * _div(float *n1, CFloat *n2){
+	static CFloat * _div(zs_float *n1, CFloat *n2){
 		return new CFloat(*n1 / n2->n);
 	}
 
@@ -73,11 +73,11 @@ public:
 		return new CFloat(fmod(n1->n ,n2->n));
 	}
 
-	static CFloat * _mod(CFloat *n1, float *n2){
+	static CFloat * _mod(CFloat *n1, zs_float *n2){
 		return new CFloat(fmod(n1->n, *n2));
 	}
 
-	static CFloat * _mod(float *n1, CFloat *n2){
+	static CFloat * _mod(zs_float *n1, CFloat *n2){
 		return new CFloat(fmod(*n1 ,n2->n));
 	}
 
@@ -85,15 +85,15 @@ public:
 		return new CFloat(n1->n * n2->n);
 	}
 
-	static CFloat * _mul(CFloat *n1, float *n2){
+	static CFloat * _mul(CFloat *n1, zs_float *n2){
 		return new CFloat(n1->n * *n2);
 	}
 
-	static CFloat * _mul(float *n1, CFloat *n2){
+	static CFloat * _mul(zs_float *n1, CFloat *n2){
 		return new CFloat(*n1 * n2->n);
 	}
 
-	float toFloat(){
+	zs_float toFloat(){
 		return n;
 	}
 
@@ -124,7 +124,7 @@ public:
 		return new CInteger(n1->n + n2->n);
 	}
 
-	static CInteger * _add(CInteger *n1, float n2){
+	static CInteger * _add(CInteger *n1, zs_float n2){
 		return new CInteger((int)(n1->n + n2));
 	}
 
@@ -141,7 +141,7 @@ public:
 		return new CInteger(n1->n - n2->n);
 	}
 
-	static CInteger * _sub(CInteger *n1, float n2){
+	static CInteger * _sub(CInteger *n1, zs_float n2){
 		return new CInteger((int)(n1->n - n2));
 	}
 
@@ -291,7 +291,7 @@ class CNumber3 :public CFloat {
 
 
 // Usable AlmostEqual function
-bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
+bool floatValuesAreAlmostTheSame(zs_float A, zs_float B, int maxUlps=8)
 {
 	 return (fabs(A - B) <= FLT_EPSILON *2* std::max(fabs(A), fabs(B)));
     // Make sure maxUlps is non-negative and small enough that the
@@ -366,8 +366,8 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_ARITHMETIC_FLOAT_OP(val1, op, val2) \
 { \
-	float expr=((float)(val1) op (float)(val2));\
-	float * aux_value=NULL; \
+	zs_float expr=((zs_float)(val1) op (zs_float)(val2));\
+	zs_float * aux_value=NULL; \
 	std::string str= STR(val1) \
 				STR(op) \
 				" "\
@@ -390,7 +390,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_ARITHMETIC_FLOAT_MOD(val1, val2) \
 { \
-	float *aux_value=NULL; \
+	zs_float *aux_value=NULL; \
 	std::string str= STR(val1) \
 				"%" \
 				STR(val2) \
@@ -412,8 +412,8 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_ARITHMETIC_CNUMBER_OP(val1, op, val2) \
 { \
-	float expr=((float)(val1) op (float)(val2));\
-	float *aux_value=NULL; \
+	zs_float expr=((zs_float)(val1) op (zs_float)(val2));\
+	zs_float *aux_value=NULL; \
 	std::string str= "nt1=("\
 				"(n1=new CFloat("\
 				STR(val1) \
@@ -439,7 +439,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_ARITHMETIC_CNUMBER_MOD(val1, val2) \
 { \
-	float *aux_value=NULL; \
+	zs_float *aux_value=NULL; \
 	std::string str= "nt1=("\
 				"(n1=new CFloat("\
 				STR(val1) \
@@ -669,7 +669,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_FLOAT_EXPR(expr, expected_value) \
 { \
-	float * aux_value=NULL; \
+	zs_float * aux_value=NULL; \
 	\
 	aux_value=zs->evalFloatValue(expr); \
 	try{\
@@ -720,7 +720,7 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_NUMBER_EXPR(expr, expected_value) \
 { \
-	float *aux_value=NULL; \
+	zs_float *aux_value=NULL; \
 	\
 	try{\
 		aux_value=zs->evalFloatValue(expr);\
@@ -738,13 +738,13 @@ bool floatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
 
 #define TEST_ARITHMETIC_FLOAT_EXPR(expr) \
 { \
-	float *aux_value=NULL; \
+	zs_float *aux_value=NULL; \
 	std::string str_expr= STR(expr)";"; \
 	\
 	try{\
 		aux_value=zs->evalFloatValue(str_expr); \
 		if(aux_value != NULL){ \
-			if(!floatValuesAreAlmostTheSame(*aux_value  , (float)(expr))){ \
+			if(!floatValuesAreAlmostTheSame(*aux_value  , (zs_float)(expr))){ \
 				double error = fabs(fabs(*aux_value)-fabs(expr));\
 				if(error>0.001){ /* Only error if the difference is more than expected */\
 					fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,*aux_value); \
@@ -848,37 +848,37 @@ int main(int argc, char * argv[]) {
 	//int i= 0+ +1;
 	zs->registerClass<CFloat>("CFloat");
 
-	zs->registerMemberFunction<CFloat>("constructor",static_cast<void (CFloat::*)(float *)>(&CFloat::_set));
+	zs->registerMemberFunction<CFloat>("constructor",static_cast<void (CFloat::*)(zs_float *)>(&CFloat::_set));
 	zs->registerMemberFunction<CFloat>("constructor",static_cast<void (CFloat::*)(CFloat *)>(&CFloat::_set));
 
 	zs->registerMemberFunction<CFloat>("toFloat",&CFloat::toFloat);
 	zs->registerMemberVariable<CFloat>("n",&CFloat::n);
 
 
-	zs->registerMemberFunctionStatic<CFloat>("_add",static_cast<CFloat * (*)(float *,CFloat * )>(&CFloat::_add));
-	zs->registerMemberFunctionStatic<CFloat>("_add",static_cast<CFloat * (*)(CFloat *,float *)>(&CFloat::_add));
+	zs->registerMemberFunctionStatic<CFloat>("_add",static_cast<CFloat * (*)(zs_float *,CFloat * )>(&CFloat::_add));
+	zs->registerMemberFunctionStatic<CFloat>("_add",static_cast<CFloat * (*)(CFloat *,zs_float *)>(&CFloat::_add));
 	zs->registerMemberFunctionStatic<CFloat>("_add",static_cast<CFloat * (*)(CFloat *,CFloat * )>(&CFloat::_add));
 
-	zs->registerMemberFunctionStatic<CFloat>("_sub",static_cast<CFloat * (*)(float *,CFloat * )>(&CFloat::_sub));
-	zs->registerMemberFunctionStatic<CFloat>("_sub",static_cast<CFloat * (*)(CFloat *,float *)>(&CFloat::_sub));
+	zs->registerMemberFunctionStatic<CFloat>("_sub",static_cast<CFloat * (*)(zs_float *,CFloat * )>(&CFloat::_sub));
+	zs->registerMemberFunctionStatic<CFloat>("_sub",static_cast<CFloat * (*)(CFloat *,zs_float *)>(&CFloat::_sub));
 	zs->registerMemberFunctionStatic<CFloat>("_sub",static_cast<CFloat * (*)(CFloat *,CFloat * )>(&CFloat::_sub));
 
 
-	zs->registerMemberFunctionStatic<CFloat>("_mul",static_cast<CFloat * (*)(float *,CFloat * )>(&CFloat::_mul));
-	zs->registerMemberFunctionStatic<CFloat>("_mul",static_cast<CFloat * (*)(CFloat *,float *)>(&CFloat::_mul));
+	zs->registerMemberFunctionStatic<CFloat>("_mul",static_cast<CFloat * (*)(zs_float *,CFloat * )>(&CFloat::_mul));
+	zs->registerMemberFunctionStatic<CFloat>("_mul",static_cast<CFloat * (*)(CFloat *,zs_float *)>(&CFloat::_mul));
 	zs->registerMemberFunctionStatic<CFloat>("_mul",static_cast<CFloat * (*)(CFloat *,CFloat * )>(&CFloat::_mul));
 
-	zs->registerMemberFunctionStatic<CFloat>("_div",static_cast<CFloat * (*)(float *,CFloat * )>(&CFloat::_div));
-	zs->registerMemberFunctionStatic<CFloat>("_div",static_cast<CFloat * (*)(CFloat *,float *)>(&CFloat::_div));
+	zs->registerMemberFunctionStatic<CFloat>("_div",static_cast<CFloat * (*)(zs_float *,CFloat * )>(&CFloat::_div));
+	zs->registerMemberFunctionStatic<CFloat>("_div",static_cast<CFloat * (*)(CFloat *,zs_float *)>(&CFloat::_div));
 	zs->registerMemberFunctionStatic<CFloat>("_div",static_cast<CFloat * (*)(CFloat *,CFloat * )>(&CFloat::_div));
 
-	zs->registerMemberFunctionStatic<CFloat>("_mod",static_cast<CFloat * (*)(float *,CFloat * )>(&CFloat::_mod));
-	zs->registerMemberFunctionStatic<CFloat>("_mod",static_cast<CFloat * (*)(CFloat *,float *)>(&CFloat::_mod));
+	zs->registerMemberFunctionStatic<CFloat>("_mod",static_cast<CFloat * (*)(zs_float *,CFloat * )>(&CFloat::_mod));
+	zs->registerMemberFunctionStatic<CFloat>("_mod",static_cast<CFloat * (*)(CFloat *,zs_float *)>(&CFloat::_mod));
 	zs->registerMemberFunctionStatic<CFloat>("_mod",static_cast<CFloat * (*)(CFloat *,CFloat * )>(&CFloat::_mod));
 
 	zs->registerMemberFunctionStatic<CFloat>("_neg",static_cast<CFloat * (*)(CFloat *)>(&CFloat::_neg));
 
-	zs->registerMemberFunction<CFloat>("_set",static_cast<void (CFloat::*)(float *)>(&CFloat::_set));
+	zs->registerMemberFunction<CFloat>("_set",static_cast<void (CFloat::*)(zs_float *)>(&CFloat::_set));
 	zs->registerMemberFunction<CFloat>("_set",static_cast<void (CFloat::*)(CFloat *)>(&CFloat::_set));
 
 

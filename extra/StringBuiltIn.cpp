@@ -13,7 +13,7 @@ namespace zetscript{
 
 		if(args->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)args->stk_value;
-			if(so->idx_script_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){
+			if(so->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
 				sov=(ScriptObjectVector *)so;
 			}
 		}
@@ -24,7 +24,7 @@ namespace zetscript{
 			}
 		}
 		//ScriptObjectString *str_in=(ScriptObjectString *)(str->var_ref);
-		ScriptObjectString *str_out=ScriptObjectString::newStringObject(zs);
+		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(zs);
 		str_out->set(first_param);//str_in->str_value;
 		return str_out;
 	}

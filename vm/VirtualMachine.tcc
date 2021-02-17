@@ -23,8 +23,6 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 	var_type1.c_str());\
 	return NULL;
 
-#define COPY_FLOAT(d,s)  memcpy((d),(s),sizeof(float))
-
 
 // defer all local vars
 #define POP_VM_SCOPE()\
@@ -41,7 +39,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 				stk_local_var=(StackElement *)stk_local_var->stk_value;\
 			}\
 			if(stk_local_var->properties==MSK_STK_PROPERTY_SCRIPT_OBJECT){\
-				ScriptObjectAnonymous *anonymous_var =((ScriptObjectAnonymous *)(stk_local_var->stk_value));\
+				ScriptObjectObject *anonymous_var =((ScriptObjectObject *)(stk_local_var->stk_value));\
 				if(anonymous_var !=NULL){\
 					if(anonymous_var->shared_pointer != NULL){\
 						if(!anonymous_var->unrefSharedPtr(vm_idx_call)){\
@@ -466,7 +464,7 @@ apply_metamethod_error:
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_C
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C;
 									break;
-								case MSK_STK_PROPERTY_FLOAT:
+								case MSK_STK_PROPERTY_ZS_FLOAT:
 									idx_type=IDX_BUILTIN_TYPE_FLOAT_PTR_C;
 									all_check=arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C
 											||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_C
@@ -544,7 +542,7 @@ apply_metamethod_error:
 				case MSK_STK_PROPERTY_ZS_INT:
 					aux_string=k_str_zs_int_type;
 					break;
-				case MSK_STK_PROPERTY_FLOAT:
+				case MSK_STK_PROPERTY_ZS_FLOAT:
 					aux_string=k_str_float_type;
 					break;
 				case MSK_STK_PROPERTY_BOOL:
@@ -569,7 +567,7 @@ apply_metamethod_error:
 				args_str+=zs_rtti::demangle(aux_string);
 
 				if(var_type == MSK_STK_PROPERTY_ZS_INT
-				||var_type == MSK_STK_PROPERTY_FLOAT
+				||var_type == MSK_STK_PROPERTY_ZS_FLOAT
 				||var_type == MSK_STK_PROPERTY_BOOL
 				){
 					args_str+=" [*] ";
@@ -596,7 +594,7 @@ apply_metamethod_error:
 						str_candidates+="\tPossible candidates are:\n\n";
 					}
 					str_candidates+="\t\t-"+(calling_object==NULL?""
-							:calling_object->idx_script_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::")
+							:calling_object->idx_script_class!=IDX_BUILTIN_TYPE_MAIN?(calling_object->getClassName()+"::")
 							:"")+irfs->symbol.name+"(";
 
 					for(unsigned a = 0; a < irfs->params->count; a++){
@@ -620,7 +618,7 @@ apply_metamethod_error:
 			if(n_candidates == 0){
 				VM_ERROR("Cannot find %s \"%s%s(%s)\".\n\n",
 						is_constructor ? "constructor":"function",
-						calling_object==NULL?"":calling_object->idx_script_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+						calling_object==NULL?"":calling_object->idx_script_class!=IDX_BUILTIN_TYPE_MAIN?(calling_object->getClassName()+"::").c_str():"",
 								calling_function->getInstructionSymbolName(instruction),
 						args_str.c_str()
 				);
@@ -630,7 +628,7 @@ apply_metamethod_error:
 			else{
 				VM_ERROR("Cannot match %s \"%s%s(%s)\" .\n\n%s",
 					is_constructor ? "constructor":"function",
-					calling_object==NULL?"":calling_object->idx_script_class!=IDX_BUILTIN_TYPE_CLASS_MAIN?(calling_object->getClassName()+"::").c_str():"",
+					calling_object==NULL?"":calling_object->idx_script_class!=IDX_BUILTIN_TYPE_MAIN?(calling_object->getClassName()+"::").c_str():"",
 							calling_function->getInstructionSymbolName(instruction),
 					args_str.c_str(),
 					str_candidates.c_str());
@@ -649,7 +647,7 @@ apply_metamethod_error:
 
 
 		//std::string *str;
-		ScriptObjectString *script_var_string = NEW_STRING_VAR;
+		ScriptObjectString *script_var_string = ZS_NEW_OBJECT_STRING(this->zs);
 		StackElement stk_element={script_var_string, MSK_STK_PROPERTY_SCRIPT_OBJECT};
 		script_var_string->initSharedPtr();
 
@@ -683,8 +681,8 @@ apply_metamethod_error:
 			case MSK_STK_PROPERTY_ZS_INT:
 				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->stk_value);
 				break;
-			case MSK_STK_PROPERTY_FLOAT:
-				*(*str_dst_it)=zs_strutils::float_to_str(*((float *)&((stk_src_item)->stk_value)));
+			case MSK_STK_PROPERTY_ZS_FLOAT:
+				*(*str_dst_it)=zs_strutils::float_to_str(*((zs_float *)&((stk_src_item)->stk_value)));
 				break;
 			case MSK_STK_PROPERTY_BOOL:
 				*(*str_dst_it)=(stk_src_item)->stk_value == 0?"false":"true";
@@ -699,7 +697,7 @@ apply_metamethod_error:
 				if(stk_src_item->properties==MSK_STK_PROPERTY_UNDEFINED){
 					*(*str_dst_it)="undefined";
 				}else if(stk_src_item->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					*(*str_dst_it)=((ScriptObjectAnonymous *)(stk_src_item)->stk_value)->toString();
+					*(*str_dst_it)=((ScriptObjectObject *)(stk_src_item)->stk_value)->toString();
 				}
 				else{
 					*(*str_dst_it)="unknow";
@@ -726,7 +724,7 @@ apply_metamethod_error:
 		}
 
 		//std::string *str;
-		ScriptObjectString *script_var_string = NEW_STRING_VAR;
+		ScriptObjectString *script_var_string = ZS_NEW_OBJECT_STRING(this->zs);
 		StackElement stk_element={script_var_string, MSK_STK_PROPERTY_SCRIPT_OBJECT};
 		script_var_string->initSharedPtr();
 

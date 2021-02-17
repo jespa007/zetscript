@@ -3,17 +3,17 @@
 	msk_properties=GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
 			PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) % STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_FLOAT )){\
+	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_FLOAT )){\
 		if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-				COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+				ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 				PUSH_FLOAT(fmod(STK_VALUE_TO_ZS_INT(stk_result_op1),f_aux_value2));\
 		}else{\
-				COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+				ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
 				PUSH_FLOAT(fmod(f_aux_value1 , STK_VALUE_TO_ZS_INT(stk_result_op2)));\
 		}\
-	}else if(msk_properties == MSK_STK_PROPERTY_FLOAT){\
-			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+	}else if(msk_properties == MSK_STK_PROPERTY_ZS_FLOAT){\
+			ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
+			ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 			PUSH_FLOAT(fmod(f_aux_value1 , f_aux_value2));\
 	}else{\
 		if(applyMetamethod(\
@@ -33,17 +33,17 @@
 	msk_properties=GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
 	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
 		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_FLOAT )){\
+	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_FLOAT )){\
 		if(STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+			ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 			PUSH_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
 		}else{\
-			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+			ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
 			PUSH_FLOAT(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		}\
-	}else if(msk_properties == MSK_STK_PROPERTY_FLOAT){\
-		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+	}else if(msk_properties == MSK_STK_PROPERTY_ZS_FLOAT){\
+		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
+		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 		PUSH_FLOAT(f_aux_value1 __C_OP__ f_aux_value2);\
 	}\
 	else{\
@@ -67,17 +67,17 @@
 		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}else if(msk_properties == MSK_STK_PROPERTY_BOOL){\
 		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
-	}else if(msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_FLOAT )){\
+	}else if(msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_FLOAT )){\
 		if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-			COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+			ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 			PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
 		}else{\
-			COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
+			ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
 			PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		}\
-	}else if(msk_properties == MSK_STK_PROPERTY_FLOAT){\
-		COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);\
-		COPY_FLOAT(&f_aux_value2,&stk_result_op2->stk_value);\
+	}else if(msk_properties == MSK_STK_PROPERTY_ZS_FLOAT){\
+		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
+		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 		PUSH_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
 	}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
 		PUSH_BOOLEAN(ZS_STRCMP(stk_result_op1->toString().c_str(), __C_OP__ ,stk_result_op2->toString().c_str()));\
@@ -107,7 +107,7 @@
 	if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_BOOL){\
 		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}else{\
-		PRINT_DUAL_ERROR_OP(STR(__C_OP__));\
+		PRINT_DUAL_ERROR_OP(ZS_STR(__C_OP__));\
 		goto lbl_exit_function;\
 	}\
 
@@ -142,9 +142,9 @@
 			PUSH_INTEGER(__PRE_OP__(*((zs_int *)(ref))));\
 			(*((zs_int *)(ref)))__OPERATOR__;\
 			break;\
-	case MSK_STK_PROPERTY_FLOAT:\
-			PUSH_FLOAT(__PRE_OP__(*((float *)(ref))));\
-			(*((float *)(ref)))__OPERATOR__;\
+	case MSK_STK_PROPERTY_ZS_FLOAT:\
+			PUSH_FLOAT(__PRE_OP__(*((zs_float *)(ref))));\
+			(*((zs_float *)(ref)))__OPERATOR__;\
 			break;\
 	default:\
 		VM_STOP_EXECUTE(" Cannot perform pre/post operator (%s)",stk_var->typeStr());\
@@ -167,9 +167,9 @@
 			(*((zs_int *)(ref)))__OPERATOR__;\
 			PUSH_INTEGER(*((zs_int *)(ref)));\
 			break;\
-	case MSK_STK_PROPERTY_FLOAT:\
-			(*((float *)(ref)))__OPERATOR__;\
-			PUSH_FLOAT(*((float *)(ref)));\
+	case MSK_STK_PROPERTY_ZS_FLOAT:\
+			(*((zs_float *)(ref)))__OPERATOR__;\
+			PUSH_FLOAT(*((zs_float *)(ref)));\
 			break;\
 	default:\
 		VM_STOP_EXECUTE(" Cannot perform pre/post operator (%s)",stk_var->typeStr());\
@@ -219,9 +219,9 @@ stk_vm_current++;
 
 #define PUSH_FLOAT(init_value) \
 {\
-	float aux=(float)(init_value); \
-	COPY_FLOAT(&stk_vm_current->stk_value,&aux); \
-	stk_vm_current->properties=MSK_STK_PROPERTY_FLOAT; \
+	zs_float aux=(zs_float)(init_value); \
+	ZS_FLOAT_COPY(&stk_vm_current->stk_value,&aux); \
+	stk_vm_current->properties=MSK_STK_PROPERTY_ZS_FLOAT; \
 	stk_vm_current++; \
 }
 
@@ -313,7 +313,7 @@ stk_result_op1=--stk_vm_current;
 namespace zetscript{
 
 	void VirtualMachine::callFunctionScript(
-			ScriptObjectAnonymous	* this_object,
+			ScriptObjectObject	* this_object,
 			ScriptFunction 			* calling_function,
 			StackElement 		  	* _stk_local_var,
 			unsigned char 			n_args
@@ -326,7 +326,7 @@ namespace zetscript{
 		}
 
 		ScriptObject *so_aux=NULL;
-		ScriptObjectAnonymous *so_anonymous_aux=NULL;
+		ScriptObjectObject *so_anonymous_aux=NULL;
 		ScriptObjectClass *so_class_aux=NULL;
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
@@ -478,13 +478,13 @@ namespace zetscript{
 				}
 
 				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					so_anonymous_aux = (ScriptObjectAnonymous *)(stk_result_op1->stk_value);
+					so_anonymous_aux = (ScriptObjectObject *)(stk_result_op1->stk_value);
 				}
 
 				stk_var=NULL;
 
 				if(so_anonymous_aux != NULL){
-					if(so_anonymous_aux->idx_script_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){
+					if(so_anonymous_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
 						ScriptObjectVector * so_vector = (ScriptObjectVector *)so_anonymous_aux;
 						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){
 							VM_STOP_EXECUTE("Expected std::vector-index as integer or std::string");
@@ -538,7 +538,7 @@ load_element_object:
 						);
 					}
 
-					so_anonymous_aux=((ScriptObjectAnonymous *)stk_result_op1->stk_value);
+					so_anonymous_aux=((ScriptObjectObject *)stk_result_op1->stk_value);
 
 
 					if(so_anonymous_aux == NULL)
@@ -571,7 +571,7 @@ load_element_object:
 						// pack member info for store information...
 						if(instruction->properties & MSK_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST){
 							// save
-							//ScriptObjectAnonymous *calling_object_info=(ScriptObjectAnonymous *)stk_calling_object_info->stk_value;// calling object
+							//ScriptObjectObject *calling_object_info=(ScriptObjectObject *)stk_calling_object_info->stk_value;// calling object
 							if((stk_var=so_anonymous_aux->addProperty((const char *)str_symbol, vm_error_str))==NULL){
 								VM_STOP_EXECUTE(vm_error_str.c_str());
 							}
@@ -609,7 +609,7 @@ load_element_object:
 				continue;
 			case BYTE_CODE_LOAD_FLOAT:
 				stk_vm_current->stk_value=(void *)instruction->value_op2;
-				stk_vm_current->properties=MSK_STK_PROPERTY_FLOAT;
+				stk_vm_current->properties=MSK_STK_PROPERTY_ZS_FLOAT;
 				stk_vm_current++;
 				continue;
 			case BYTE_CODE_LOAD_BOOL:
@@ -646,10 +646,10 @@ load_element_object:
 
 					if(instruction->byte_code==BYTE_CODE_PUSH_VECTOR_ELEMENT){
 						POP_ONE; // only pops the value, the last is the std::vector variable itself
-						ScriptObjectAnonymous *vec_obj = NULL;
+						ScriptObjectObject *vec_obj = NULL;
 						if((stk_vm_current-1)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-							vec_obj = (ScriptObjectAnonymous *)(stk_vm_current-1)->stk_value;
-							if(vec_obj->idx_script_class == IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR){ // push value ...
+							vec_obj = (ScriptObjectObject *)(stk_vm_current-1)->stk_value;
+							if(vec_obj->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								stk_src=stk_result_op1;
 								if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK){
@@ -666,14 +666,14 @@ load_element_object:
 					}else if(instruction->byte_code==BYTE_CODE_PUSH_OBJECT_ELEMENT){
 
 						POP_TWO; // first must be a string that describes variable name and the other the variable itself ...
-						ScriptObjectAnonymous *obj = NULL;
+						ScriptObjectObject *obj = NULL;
 						StackElement *stk_object=(stk_vm_current-1);
-						if(STK_IS_SCRIPT_OBJECT_ANONYMOUS(stk_object) == 0){
+						if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_object) == 0){
 							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_object->typeStr());
 						}
 
-						obj = (ScriptObjectAnonymous *)stk_object->stk_value;
-						/*if(obj->idx_script_class != IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS){ // push value ...
+						obj = (ScriptObjectObject *)stk_object->stk_value;
+						/*if(obj->idx_script_class != IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT){ // push value ...
 							VM_STOP_EXECUTE("Internal: Expected object but is type \"%s\"",stk_object->typeStr());
 						}*/
 
@@ -809,7 +809,7 @@ load_element_object:
 									VM_STOP_EXECUTE("Internal error, store on packed member info has not object and const char information");
 							}
 
-							ScriptObjectAnonymous *calling_object_info=(ScriptObjectAnonymous *)stk_calling_object_info->stk_value;// calling object
+							ScriptObjectObject *calling_object_info=(ScriptObjectObject *)stk_calling_object_info->stk_value;// calling object
 							if((stk_dst=calling_object_info->addProperty((const char *)stk_symbol_info->stk_value, vm_error_str))==NULL){
 								VM_STOP_EXECUTE(vm_error_str.c_str());
 							}
@@ -821,7 +821,7 @@ load_element_object:
 						stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value
 
 						// we need primitive stackelement in order to assign...
-						if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectAnonymous::VAR_TYPE::OBJECT){
+						if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectObject::VAR_TYPE::OBJECT){
 							stk_src=(StackElement *)stk_src->stk_value; // stk_value is expect to contents a stack variable
 						}
 
@@ -877,7 +877,6 @@ load_element_object:
 								copy_aux=&((stk_dst)->stk_value);
 							}
 							unsigned short type_var=stk_src->properties;
-							//unsigned short runtime_var=0; /* there's no reason to heredate runtime_props ?!? GET_MSK_STK_PROPERTY_RUNTIME(type_var);*/
 
 							// init stk_dst
 							STK_SET_UNDEFINED(stk_dst);
@@ -888,10 +887,10 @@ load_element_object:
 								stk_dst->properties=MSK_STK_PROPERTY_ZS_INT;
 								*((zs_int *)stk_dst_ref)=*((zs_int *)stk_src_ref);
 								if(copy_aux!=NULL)(*(zs_int *)copy_aux)=*((zs_int *)stk_src_ref);
-							}else if(type_var & MSK_STK_PROPERTY_FLOAT){
-								stk_dst->properties=MSK_STK_PROPERTY_FLOAT;
-								*((float *)stk_dst_ref)=*((float *)stk_src_ref);
-								if(copy_aux!=NULL)(*(float *)copy_aux)=*((float *)stk_src_ref);
+							}else if(type_var & MSK_STK_PROPERTY_ZS_FLOAT){
+								stk_dst->properties=MSK_STK_PROPERTY_ZS_FLOAT;
+								*((zs_float *)stk_dst_ref)=*((zs_float *)stk_src_ref);
+								if(copy_aux!=NULL)(*(zs_float *)copy_aux)=*((zs_float *)stk_src_ref);
 							}else if(type_var & MSK_STK_PROPERTY_BOOL){
 								stk_dst->properties=MSK_STK_PROPERTY_BOOL;
 								*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);
@@ -906,7 +905,7 @@ load_element_object:
 									if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
 										str_object=(ScriptObjectString *)stk_dst->stk_value;
 									}else{ // Generates a std::string var
-										stk_dst->stk_value=str_object= NEW_STRING_VAR;
+										stk_dst->stk_value=str_object= ZS_NEW_OBJECT_STRING(this->zs);
 										stk_dst->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
 										if(!str_object->initSharedPtr()){
 											goto lbl_exit_function;
@@ -941,19 +940,18 @@ load_element_object:
 						switch(GET_MSK_STK_PROPERTY_TYPES(old_stk_dst.properties)){
 						case MSK_STK_PROPERTY_UNDEFINED:
 						case MSK_STK_PROPERTY_ZS_INT:
-						case MSK_STK_PROPERTY_FLOAT:
+						case MSK_STK_PROPERTY_ZS_FLOAT:
 						case MSK_STK_PROPERTY_BOOL:
 						case MSK_STK_PROPERTY_FUNCTION: // we aren't take care about nothing! :)
 							break;
 						case MSK_STK_PROPERTY_SCRIPT_OBJECT: // we are getting script vars ...
 							if((old_stk_dst.properties & (MSK_STK_PROPERTY_IS_VAR_C))==(MSK_STK_PROPERTY_IS_VAR_C)==0){ // is not C class
 								if(old_stk_dst.stk_value!=NULL){ // it had a pointer (no constant)...
-									//ScriptObjectAnonymous *old_script_dst_var_ref=(ScriptObjectAnonymous *)(old_stk_dst.var_ref);
 									if(
 										old_stk_dst.stk_value != stk_dst->stk_value  // not same ref ...
 									&&  STK_IS_THIS(&old_stk_dst)  // ... or this, do not share/unshare
 									){ // unref pointer because new pointer has been attached...
-										if(!unrefSharedScriptObject(((ScriptObjectAnonymous  *)old_stk_dst.stk_value)->shared_pointer,vm_idx_call)){
+										if(!unrefSharedScriptObject(((ScriptObjectObject  *)old_stk_dst.stk_value)->shared_pointer,vm_idx_call)){
 											goto lbl_exit_function;
 										}
 									}
@@ -1032,8 +1030,8 @@ load_element_object:
 				POP_ONE;
 				if(stk_result_op1->properties & MSK_STK_PROPERTY_ZS_INT){ // operation will result as integer.
 					PUSH_INTEGER((-((zs_int)(stk_result_op1->stk_value))));
-				}else if(stk_result_op1->properties & MSK_STK_PROPERTY_FLOAT){
-					COPY_FLOAT(&f_aux_value1,&stk_result_op1->stk_value);
+				}else if(stk_result_op1->properties & MSK_STK_PROPERTY_ZS_FLOAT){
+					ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);
 					PUSH_FLOAT(-f_aux_value1);
 				}else{ // try metamethod ...
 					if(!applyMetamethod(
@@ -1090,7 +1088,7 @@ load_element_object:
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
 				 POP_TWO;
 
-				if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectAnonymous::VAR_TYPE::OBJECT){
+				if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectObject::VAR_TYPE::OBJECT){
 					stk_result_op1=(StackElement *)stk_result_op1->stk_value; // stk_value is expect to contents a stack variable
 				}
 				switch((zs_int)stk_result_op2->stk_value){
@@ -1098,7 +1096,7 @@ load_element_object:
 					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STK_PROPERTY_ZS_INT)!=0);
 					break;
 				case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
-					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STK_PROPERTY_FLOAT)!=0);
+					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STK_PROPERTY_ZS_FLOAT)!=0);
 					break;
 				case IDX_BUILTIN_TYPE_BOOL_PTR_C:
 					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STK_PROPERTY_BOOL)!=0);
@@ -1109,7 +1107,7 @@ load_element_object:
 				default:
 					if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 						bool b = this->script_class_factory->isClassInheritsFrom(			//
-								((ScriptObjectAnonymous *)(stk_result_op1->stk_value))->idx_script_class // A
+								((ScriptObjectObject *)(stk_result_op1->stk_value))->idx_script_class // A
 								, (zs_int)stk_result_op2->stk_value				// B
 						);
 						PUSH_BOOLEAN(b);
@@ -1151,7 +1149,7 @@ load_element_object:
 					StackElement *stk_function_ref=NULL;
 					bool calling_from_object_type=false;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
-					ScriptObjectAnonymous *calling_object = this_object;
+					ScriptObjectObject *calling_object = this_object;
 					unsigned char n_args=instruction->value_op1; // number arguments will pass to this function
 					StackElement *stk_start_arg_call=(stk_vm_current-n_args);
 
@@ -1233,7 +1231,7 @@ load_element_object:
 										if(properties & MSK_STK_PROPERTY_PTR_STK){
 											*stk_arg=*((StackElement *)stk_arg->stk_value);
 										}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
-											ScriptObjectString *sc=ScriptObjectString::newStringObject(this->zs);
+											ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(this->zs);
 											if(!sc->initSharedPtr()){
 												goto lbl_exit_function;
 											}
@@ -1241,6 +1239,16 @@ load_element_object:
 											stk_arg->stk_value=(void *)sc;
 											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
 										}
+									}else{
+										if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false){ // create new
+											ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(this->zs);
+											if(!sc->initSharedPtr()){
+												goto lbl_exit_function;
+											}
+											stk_arg->stk_value=(void *)sc;
+											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
+										}
+
 									}
 
 									if(var_args!=NULL){
@@ -1251,7 +1259,7 @@ load_element_object:
 										}
 									}else{
 										if(((FunctionArg *)(*function_param))->var_args == true){ // enter var args
-											var_args=ScriptObjectVector::newVectorObject(this->zs);
+											var_args=ZS_NEW_OBJECT_VECTOR(this->zs);
 											if(!var_args->initSharedPtr()){
 												goto lbl_exit_function;
 											}
@@ -1289,7 +1297,7 @@ load_element_object:
 							case MSK_STK_PROPERTY_UNDEFINED:
 							case MSK_STK_PROPERTY_ZS_INT:
 							case MSK_STK_PROPERTY_BOOL:
-							case MSK_STK_PROPERTY_FLOAT:
+							case MSK_STK_PROPERTY_ZS_FLOAT:
 								*stk_vm_current++=param->default_var_value;
 								break;
 							case MSK_STK_PROPERTY_FUNCTION: // we call function in the middle of the function
@@ -1327,10 +1335,10 @@ load_element_object:
 					else{ // C function
 						if((is_constructor && (sf->symbol.properties & SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))
 							){
-							calling_object= (ScriptObjectAnonymous *)(stk_start_arg_call-2)->stk_value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
+							calling_object= (ScriptObjectObject *)(stk_start_arg_call-2)->stk_value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
 						}
 
-						if(calling_object != NULL && calling_object->idx_script_class<IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS){
+						if(calling_object != NULL && calling_object->idx_script_class<IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
 							VM_STOP_EXECUTE("Internal error, expected object class");
 						}
 
@@ -1434,14 +1442,14 @@ load_element_object:
 
 					continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new std::vector object...
-					so_aux=NEW_VECTOR_VAR;
+					so_aux=ZS_NEW_OBJECT_VECTOR(this->zs);
 					if(!so_aux->initSharedPtr()){
 						goto lbl_exit_function;
 					}
 					(*stk_vm_current++)={so_aux,MSK_STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
-			 case  BYTE_CODE_NEW_ANONYMOUS: // Create new std::vector object...
-				 so_aux=ScriptObjectAnonymous::newAnonymousObject(this->zs);
+			 case  BYTE_CODE_NEW_OBJECT: // Create new std::vector object...
+				 so_aux=ZS_NEW_OBJECT_OBJECT(this->zs);
 					if(!so_aux->initSharedPtr()){
 						goto lbl_exit_function;
 					}
@@ -1449,7 +1457,7 @@ load_element_object:
 					continue;
 
 			 case  BYTE_CODE_NEW_STRING: // Create new std::vector object...
-				 so_aux=ScriptObjectString::newStringObject(this->zs,instruction->getConstantValueOp2ToString());
+				 so_aux= ScriptObjectString::newScriptObjectString(this->zs,instruction->getConstantValueOp2ToString());
 					if(!so_aux->initSharedPtr()){
 						goto lbl_exit_function;
 					}
@@ -1472,7 +1480,7 @@ load_element_object:
 							goto lbl_exit_function;
 						}
 
-						if(so_aux->idx_script_class==IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS)
+						if(so_aux->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS)
 						{ // max ...
 							script_object_class=(ScriptObjectClass *)so_aux;
 

@@ -23,7 +23,7 @@ namespace zetscript{
 	//	script_class = NULL;
 		c_object = NULL;
 		created_object = NULL;
-		idx_script_class = IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS;
+		idx_script_class = IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS;
 		delete_c_object = false; // --> user is responsible to delete C objects!
 		memset(&stk_this,0,sizeof(stk_this));
 		script_class_native=NULL;
@@ -196,7 +196,7 @@ namespace zetscript{
 			}
 		}
 
-		return ScriptObjectAnonymous::toString();
+		return ScriptObjectObject::toString();
 	}
 
 

@@ -174,7 +174,7 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				// check class scope...
-				if(scope_var->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+				if(scope_var->script_class->idx_class != IDX_BUILTIN_TYPE_MAIN
 					&& scope_var->scope_base == scope_var
 					&& scope_var->scope_parent == NULL // is function member
 				){ // class members are defined as functions
@@ -398,7 +398,7 @@ error_eval_keyword_var:
 			//Keyword key_w;
 			//
 			// check for keyword ...
-			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_CLASS_MAIN
+			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_MAIN
 				&& scope_info->scope_base == scope_info
 				&& scope_info->scope_parent == NULL // is function member
 				){ // class members are defined as functions
@@ -419,7 +419,7 @@ error_eval_keyword_var:
 			}
 
 
-			if(key_w == Keyword::KEYWORD_FUNCTION){
+			if(key_w == Keyword::KEYWORD_FUNCTION || is_static){
 				FunctionArg arg_info;
 				//bool var_args=false;
 				int n_arg=0;
@@ -597,7 +597,7 @@ error_eval_keyword_var:
 								arg_info.default_var_value=stk_undefined;
 								break;
 							case BYTE_CODE_LOAD_FLOAT:
-								arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_FLOAT};
+								arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_ZS_FLOAT};
 								break;
 							case BYTE_CODE_LOAD_BOOL:
 								arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_BOOL};

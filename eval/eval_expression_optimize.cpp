@@ -1,32 +1,29 @@
 
 #define MAX_REGISTER_LENGTH	128
 
-#define FLOAT_TO_ZS_INT(dst_zs_int, src_float) memcpy(&dst_zs_int,&src_float,sizeof(float))
-
-
 
 #define PERFORM_ARITHMETIC_OPERATION(ARITHMETIC_OP) \
 if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
 	result_op_zs_int=(i1->value_op2)ARITHMETIC_OP(i2->value_op2);\
 	result_bc=BYTE_CODE_LOAD_ZS_INT;\
 }else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
-	result_op_float=*((float *)&i1->value_op2)ARITHMETIC_OP(i2->value_op2);\
-	FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);\
+	result_op_float=*((zs_float *)&i1->value_op2)ARITHMETIC_OP(i2->value_op2);\
+	ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
 	result_bc=BYTE_CODE_LOAD_FLOAT;\
 }else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
-	result_op_float=*((float *)&i1->value_op2)ARITHMETIC_OP(i2->value_op2);\
-	FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);\
+	result_op_float=*((zs_float *)&i1->value_op2)ARITHMETIC_OP(i2->value_op2);\
+	ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
 	result_bc=BYTE_CODE_LOAD_FLOAT;\
 }else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
-	result_op_float=*((float *)&i1->value_op2)ARITHMETIC_OP *((float *)&i2->value_op2);\
-	FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);\
+	result_op_float=*((zs_float *)&i1->value_op2)ARITHMETIC_OP *((zs_float *)&i2->value_op2);\
+	ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
 	result_bc=BYTE_CODE_LOAD_FLOAT;\
 }else{\
 	THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform arithmetic operation %s '%s' %s"\
 			,eval_data->current_parsing_file\
 			,token_operator->line\
 			,i1->getConstantValueOp2ToString().c_str()\
-			,STR(ARITHMETIC_OP)\
+			,ZS_STR(ARITHMETIC_OP)\
 			,i2->getConstantValueOp2ToString().c_str()));\
 }
 
@@ -39,7 +36,7 @@ if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_
 			,eval_data->current_parsing_file\
 			,token_operator->line\
 			,i1->getConstantValueOp2ToString().c_str()\
-			,STR(BINARY_OP)\
+			,ZS_STR(BINARY_OP)\
 			,i2->getConstantValueOp2ToString().c_str()));\
 }
 
@@ -52,7 +49,7 @@ if(i1->byte_code == BYTE_CODE_LOAD_BOOL && i2->byte_code == BYTE_CODE_LOAD_BOOL)
 			,eval_data->current_parsing_file\
 			,token_operator->line\
 			,i1->getConstantValueOp2ToString().c_str()\
-			,STR(LOGIC_OP)\
+			,ZS_STR(LOGIC_OP)\
 			,i2->getConstantValueOp2ToString().c_str()));\
 }
 
@@ -73,7 +70,7 @@ namespace zetscript{
 				return MSK_INSTRUCTION_PROPERTY_BOOL;
 				break;
 			case BYTE_CODE_LOAD_FLOAT:
-				return MSK_INSTRUCTION_PROPERTY_FLOAT;
+				return MSK_INSTRUCTION_PROPERTY_ZS_FLOAT;
 				break;
 			case BYTE_CODE_LOAD_STRING:
 				return MSK_INSTRUCTION_PROPERTY_STRING;
@@ -121,7 +118,7 @@ namespace zetscript{
 				, EvalInstruction *ei1
 				, EvalInstruction *ei2
 		){
-			float  result_op_float=0;
+			zs_float  result_op_float=0;
 			zs_int result_op_zs_int=0;
 			bool	result_op_bool=false;
 			std::string result_op_str="";
@@ -178,16 +175,16 @@ namespace zetscript{
 					result_op_zs_int=(i1->value_op2)%(i2->value_op2);
 					result_bc=BYTE_CODE_LOAD_ZS_INT;
 				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
-					result_op_float=fmod(*((float *)&i1->value_op2),(i2->value_op2));
-					FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);
+					result_op_float=fmod(*((zs_float *)&i1->value_op2),(i2->value_op2));
+					ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
 					result_bc=BYTE_CODE_LOAD_FLOAT;
 				}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
-					result_op_float=fmod(*((float *)&i1->value_op2),(i2->value_op2));
-					FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);
+					result_op_float=fmod(*((zs_float *)&i1->value_op2),(i2->value_op2));
+					ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
 					result_bc=BYTE_CODE_LOAD_FLOAT;
 				}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
-					result_op_float=fmod(*((float *)&i1->value_op2), *((float *)&i2->value_op2));
-					FLOAT_TO_ZS_INT(result_op_zs_int,result_op_float);
+					result_op_float=fmod(*((zs_float *)&i1->value_op2), *((zs_float *)&i2->value_op2));
+					ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
 					result_bc=BYTE_CODE_LOAD_FLOAT;
 				}else{
 					THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform constant operation %s '/' %s"

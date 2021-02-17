@@ -13,7 +13,7 @@ namespace zetscript{
 	#define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
 
 	#define NO_PARAMS std::vector<StackElement>{}
-	#define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectAnonymous * (const std::vector<ScriptObjectAnonymous *> & param)>
+	#define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectObject * (const std::vector<ScriptObjectObject *> & param)>
 
 	#define VM_EXECUTE(vm,o,f,stk,n)	vm->execute(o,f,stk,n,__FILE__,__LINE__)
 	#define VM_ERROR(s,...)				vm_error=true;vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
@@ -41,15 +41,6 @@ namespace zetscript{
 
 		StackElement *getVmStackPtr(){return vm_stack;}
 
-		/*inline float *setFloatReturnValue(float f){
-			f_return_value = f;
-			return &f_return_value;
-		}
-
-		inline std::string *setStringReturnValue(std::string s){
-			s_return_value = s;
-			return &s_return_value;
-		}*/
 		inline void  removeEmptySharedPointers(int idx_stack);
 
 		void addGlobalVar(const StackElement & stk);
@@ -110,13 +101,13 @@ namespace zetscript{
 
 		struct VM_Foreach{
 			StackElement 		   	*key; // iterator element can be std::string or integer...
-			ScriptObjectAnonymous	*ptr; // can be struct or std::vector...
+			ScriptObjectObject	*ptr; // can be struct or std::vector...
 			unsigned int 		   	idx_current;
 
 		};
 
 		//char				str_aux[8192];
-		 float 				f_aux_value1,f_aux_value2;
+		zs_float			f_aux_value1,f_aux_value2;
 		 bool				vm_error;
 		 std::string 		vm_error_str;
 		 std::string 		vm_error_callstack_str;
@@ -143,7 +134,7 @@ namespace zetscript{
 
 
 		void  callFunctionScript(
-				ScriptObjectAnonymous	* 	this_object,
+				ScriptObjectObject	* 	this_object,
 				ScriptFunction 			*	info_function,
 				StackElement 			* 	_stk_start_args,
 				//std::string 		  		  * _ptrStartStr=NULL,
@@ -176,7 +167,7 @@ namespace zetscript{
 			,ScriptFunction *info_function
 			,Instruction * instruction
 			,bool is_constructor
-			,void *stk_elements_ptr // can be **stack_element from ScriptObjectAnonymous stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
+			,void *stk_elements_ptr // can be **stack_element from ScriptObjectObject stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
 			,int stk_elements_len // length of stk_elements
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg

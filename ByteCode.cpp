@@ -67,7 +67,7 @@ namespace zetscript{
 			case BYTE_CODE_POP_SCOPE: 			return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 			return "PUSH_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:	return "PUSH_ATTR"; // New object (CREATE)
-			case BYTE_CODE_NEW_ANONYMOUS:		return "NEW_OBJ"; // New object (CREATE)
+			case BYTE_CODE_NEW_OBJECT:		return "NEW_OBJ"; // New object (CREATE)
 			case BYTE_CODE_NEW_STRING:			return "NEW_STR";
 			case BYTE_CODE_IT_END: 				return "IT_END"; // BYTE_CODE_IT_CHK_END
 			case BYTE_CODE_IT_NEXT:				return "IT_NEXT"; // BYTE_CODE_SET_AND_NEXT
@@ -148,7 +148,7 @@ namespace zetscript{
 			case BYTE_CODE_POP_SCOPE: 			return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 			return "PUSH_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:	return "PUSH_ATTR"; // New object (CREATE)
-			case BYTE_CODE_NEW_ANONYMOUS:		return "NEW_OBJ"; // New object (CREATE)
+			case BYTE_CODE_NEW_OBJECT:		return "NEW_OBJ"; // New object (CREATE)
 			case BYTE_CODE_IT_END: 				return "IT_END"; // BYTE_CODE_IT_CHK_END
 			case BYTE_CODE_IT_NEXT:				return "IT_NEXT"; // BYTE_CODE_SET_AND_NEXT
 			case BYTE_CODE_STORE_CONST:			return "STORE_CONST"; // BYTE_CODE_STORE_CONST

@@ -14,14 +14,14 @@ namespace zetscript{
 		return sv->pop();
 	}
 
-	ScriptObjectVector * ScriptObjectVector::newVectorObject(ZetScript *zs){
+	ScriptObjectVector * ScriptObjectVector::newScriptObjectVector(ZetScript *zs){
 		ScriptObjectVector *sv=new ScriptObjectVector();
 		sv->setZetScript(zs);
 		return sv;
 	}
 
 	ScriptObjectVector::ScriptObjectVector(){
-		this->idx_script_class=IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR;
+		this->idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR;
 		stk_count.stk_value=0;
 		stk_count.properties=MSK_STK_PROPERTY_ZS_INT;
 		//this->init(SCRIPT_CLASS_VECTOR(this), (void *)this);
@@ -73,7 +73,7 @@ namespace zetscript{
 			case MSK_STK_PROPERTY_BOOL:
 			case MSK_STK_PROPERTY_ZS_INT:
 			case MSK_STK_PROPERTY_UNDEFINED:
-			case MSK_STK_PROPERTY_FLOAT:
+			case MSK_STK_PROPERTY_ZS_FLOAT:
 				break;
 			case MSK_STK_PROPERTY_FUNCTION:
 				 ir_fun  = (ScriptFunction *)(si->stk_value);

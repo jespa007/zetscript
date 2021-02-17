@@ -21,10 +21,10 @@
 
 // if 0 is in main <> 0, else.
 #define DO_CAST																	((this->zs))->doCast
-#define GET_IDX_BUILTIN_TYPE_CLASS_FROM_ITS_C_TYPE								((this->zs))->getIdxClassFromItsNativeType
+#define GET_IDX_BUILTIN_TYPE_FROM_ITS_C_TYPE								((this->zs))->getIdxClassFromItsNativeType
 #define INSTANCE_SCRIPT_VARIABLE_BY_IDX											((this->zs))->instanceScriptObjectiableByIdx
 #define GET_METAMETHOD(m)														((this->zs))->getMetamethod(m)
-#define IS_IDX_BUILTIN_TYPE_CLASS_INSTANCEOF(zs,idx_class,idx_class_instance)	((this->script_class_factory))->isClassInheritsFrom(idx_class,idx_class_instance)
+#define IS_IDX_BUILTIN_TYPE_INSTANCEOF(zs,idx_class,idx_class_instance)	((this->script_class_factory))->isClassInheritsFrom(idx_class,idx_class_instance)
 
 #ifndef TRUE
 #define TRUE 1
@@ -47,8 +47,10 @@ namespace zetscript{
 
 	typedef enum:int{
 
+		// !!! HERE WE DEFINE THE BUILTINT CLASSES
+		// !!! WARNING THE REGISTER HAS TO RESPECT THE SAME ORDER
 		// built-in types...
-		IDX_BUILTIN_TYPE_CLASS_MAIN = 0, 	// Main class ...
+		IDX_BUILTIN_TYPE_MAIN = 0, 	// Main class ...
 
 		// built in C types...
 		IDX_BUILTIN_TYPE_VOID_C,
@@ -63,15 +65,17 @@ namespace zetscript{
 		IDX_BUILTIN_TYPE_FLOAT_PTR_C,
 		IDX_BUILTIN_TYPE_CONST_FLOAT_PTR_C,
 
-		// built in classes...
 		IDX_BUILTIN_TYPE_STACK_ELEMENT,
 		IDX_BUILTIN_TYPE_ZETSCRIPT,
 		IDX_BUILTIN_TYPE_FUNCTION, // function a(){}
-		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_ANONYMOUS, //  {}
-		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_STRING, // "string"
-		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_VECTOR, // vector []
-		IDX_BUILTIN_TYPE_CLASS_SCRIPT_OBJECT_CLASS, // class A{}
-
+		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF,
+		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT, //  {}
+		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING, // "string"
+		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR, // vector []
+		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS, // class A{}
+		// !!!
+		// !!! DO NOT DECLARE NOTHING HERE!! RESERVED FOR USER CLASSES !!!!!
+		// !!!
 		IDX_BUILTIN_TYPE_MAX
 	}IdxBuiltInType;
 
