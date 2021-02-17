@@ -220,6 +220,7 @@ Solved issues
 #263 ScriptObjectString: Implement operator + feature feature
 > #264 Implement passing args by reference
 > #265 Implement zs_test_strict
+#266 Optimize using Push/Pop scope 
 > #267 Implement Builtin helper class Json
 
  
