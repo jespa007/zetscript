@@ -11,7 +11,7 @@ Date: XX-09-2020
 > #225 implement File class
 > #226 implement Stream class
 > #242 compile code/load compiled code feature  (*.zsc)
-> #246 Erase code never execute or temporal expresion that will never assigned  
+> #246 Erase code never execute or temporal expresion that will never assigned
 
 //----------------------------------------------------------
 Version: 2.0.0

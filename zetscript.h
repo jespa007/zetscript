@@ -88,6 +88,7 @@
 #include "extra/StringBuiltIn.h"
 #include "extra/IntegerBuiltIn.h"
 #include "extra/FloatBuiltIn.h"
+#include "extra/JsonBuiltIn.h"
 
 #include "script/ScriptObject.h"
 #include "script/ScriptObjectString.h"
