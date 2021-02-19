@@ -1226,7 +1226,17 @@ load_element_object:
 							if(sf->params->count > 0){
 								for(;;){
 
-									if(((FunctionArg *)(*function_param))->by_ref == false){ // copy
+									if(((FunctionArg *)(*function_param))->by_ref == true){ // copy
+										if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false){ // create new
+											ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(this->zs);
+											if(!sc->initSharedPtr()){
+												goto lbl_exit_function;
+											}
+											stk_arg->stk_value=(void *)sc;
+											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
+										} // else is already var ref ... and pass
+
+									}else{ // copy
 										unsigned short properties = stk_arg->properties;
 										if(properties & MSK_STK_PROPERTY_PTR_STK){
 											*stk_arg=*((StackElement *)stk_arg->stk_value);
@@ -1239,16 +1249,6 @@ load_element_object:
 											stk_arg->stk_value=(void *)sc;
 											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
 										}
-									}else{
-										if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false){ // create new
-											ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(this->zs);
-											if(!sc->initSharedPtr()){
-												goto lbl_exit_function;
-											}
-											stk_arg->stk_value=(void *)sc;
-											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
-										}
-
 									}
 
 									if(var_args!=NULL){
@@ -1356,10 +1356,10 @@ load_element_object:
 
 					if(vm_error == true){
 						vm_error_callstack_str+=zs_strutils::format(
-								"\nat %s (file:%s line:%i)" // TODO: get full symbol ?
-								,sf->symbol.name.c_str()
-								,SFI_GET_FILE(calling_function,instruction)
-								,SFI_GET_LINE(calling_function,instruction)
+							"\nat %s (file:%s line:%i)" // TODO: get full symbol ?
+							,sf->symbol.name.c_str()
+							,SFI_GET_FILE(calling_function,instruction)
+							,SFI_GET_LINE(calling_function,instruction)
 						);
 						goto lbl_exit_function;
 					}

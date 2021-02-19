@@ -27,7 +27,7 @@ namespace zetscript{
 			}
 			else{
 
-				throw std::runtime_error(format("cannot convert \"%s\" to zs_int",val.c_str()));
+				//throw std::runtime_error(format("cannot convert \"%s\" to zs_int",val.c_str()));
 				return NULL;
 			}
 
@@ -51,25 +51,32 @@ namespace zetscript{
 				return b;
 			}
 
-			throw std::runtime_error(format("cannot convert \"%s\" to bool",s.c_str()));
+			//throw std::runtime_error(format("cannot convert \"%s\" to bool",s.c_str()));
 
 			// TODO: develop exception handler.
 			return NULL;
 		}
 
 		zs_float *  parse_float(const std::string & s){
-			 char *end;
-			 char *data=(char *)s.c_str();
-			float  n;
+
+			char *end;
+			char *data=(char *)s.c_str();
+			float  l;
 			errno = 0;
-			n = strtof(data, &end);
+			l = strtof(data, &end);
 
 			if (end == data){
-				throw std::runtime_error(format("cannot convert \"%s\" to zs_float",s.c_str()));
+				return NULL;
+			}else	if ((errno == ERANGE && l == FLT_MAX) || l > FLT_MAX) {
+				return NULL;
+			}else if ((errno == ERANGE && l < FLT_MIN) /* || l < FLT_MIN*/) {
+				return NULL;
+			}
+			if (*s.c_str() == '\0' || *end != '\0') {
 				return NULL;
 			}
 
-			return new zs_float(n);
+			return new zs_float(l);
 		}
 
 		std::string zs_int_to_str(zs_int number){
