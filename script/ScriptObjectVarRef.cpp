@@ -19,8 +19,8 @@ namespace zetscript{
 		stk_var_ref.setUndefined();
 
 	}
-	StackElement ScriptObjectVarRef::getStackElement(){
-		return stk_var_ref;
+	StackElement *ScriptObjectVarRef::getStackElementPtr(){
+		return &stk_var_ref;
 	}
 	void ScriptObjectVarRef::setStackElement(StackElement stk){
 		stk_var_ref=stk;

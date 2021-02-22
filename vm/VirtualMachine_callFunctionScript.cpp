@@ -462,7 +462,7 @@ namespace zetscript{
 				PUSH_STK_PTR(_stk_local_var+instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_REF:
-				*stk_vm_current++=(((ScriptObjectVarRef *)((_stk_local_var+instruction->value_op2))->stk_value)->getStackElement());
+				*stk_vm_current++=*STK_GET_VAR_REF(_stk_local_var+instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_THIS: // load variable ...
 				PUSH_STK_PTR(this_object->getThisProperty());
@@ -489,7 +489,6 @@ namespace zetscript{
 				if(so_anonymous_aux != NULL){
 					if(so_anonymous_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF){
 						ScriptObjectVarRef *o_script_var_ref=(ScriptObjectVarRef *)so_anonymous_aux;
-
 					}
 
 					if(so_anonymous_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
@@ -741,6 +740,17 @@ load_element_object:
 								stk_result_op1=--stk_vm_current;
 								stk_result_op2=--stk_vm_current;
 
+								// check if by ref
+								if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
+									stk_result_op1=STK_GET_VAR_REF(stk_result_op1);
+								}
+
+								// check if by ref
+								if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){
+									stk_result_op2=STK_GET_VAR_REF(stk_result_op2);
+								}
+
+
 								if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK){
 									stk_result_op1=(StackElement *)stk_result_op1->stk_value;
 								}
@@ -793,7 +803,18 @@ load_element_object:
 						READ_TWO_POP_ONE
 
 	vm_store_next:
+						stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value
 						stk_dst=stk_result_op2;
+
+						// check if by ref
+						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
+							stk_src=STK_GET_VAR_REF(stk_src);
+						}
+
+						// check if by ref
+						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_dst)){
+							stk_dst=STK_GET_VAR_REF(stk_dst);
+						}
 
 						if(stk_dst->properties & MSK_STK_PROPERTY_READ_ONLY){
 							VM_STOP_EXECUTE("Assignment to constant variable");
@@ -802,31 +823,9 @@ load_element_object:
 						// TODO: JEB get calling element
 						if(stk_dst->properties & MSK_STK_PROPERTY_PTR_STK) {
 							stk_dst=(StackElement *)stk_dst->stk_value; // stk_value is expect to contents a stack variable
-						}/*else if(stk_dst->properties & MSK_STK_PROPERTY_ARRAY_STK){ // we have member information
-							//
-							if((zs_int)stk_dst->stk_value != 2){
-								VM_STOP_EXECUTE("Internal error, store on packed info is not length 2");
-							}
-
-							StackElement *stk_pack_info=stk_dst;
-							StackElement *stk_calling_object_info=--stk_vm_current;
-							StackElement *stk_symbol_info=--stk_vm_current;
-
-							if((stk_symbol_info->properties != MSK_STK_PROPERTY_CONST_CHAR)
-								&& (stk_calling_object_info->properties != MSK_STK_PROPERTY_SCRIPT_OBJECT)){
-									VM_STOP_EXECUTE("Internal error, store on packed member info has not object and const char information");
-							}
-
-							ScriptObjectObject *calling_object_info=(ScriptObjectObject *)stk_calling_object_info->stk_value;// calling object
-							if((stk_dst=calling_object_info->addProperty((const char *)stk_symbol_info->stk_value, vm_error_str))==NULL){
-								VM_STOP_EXECUTE(vm_error_str.c_str());
-							}
-
-						}*/else{
+						}else{
 							VM_STOP_EXECUTE("Expected l-value on assignment but it was type \"%s\"",stk_dst->typeStr());
 						}
-
-						stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value
 
 						// we need primitive stackelement in order to assign...
 						if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectObject::VAR_TYPE::OBJECT){
@@ -915,12 +914,16 @@ load_element_object:
 									}else{ // Generates a std::string var
 										stk_dst->stk_value=str_object= ZS_NEW_OBJECT_STRING(this->zs);
 										stk_dst->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
+
+										//------------------ IMPROVEEEEEEE (init share + share pointer ? -------
+										throw std::runtime_error("improveeee init + share pointer");
 										if(!str_object->initSharedPtr()){
 											goto lbl_exit_function;
 										}
 										if(!sharePointer(str_object->shared_pointer)){
 											goto lbl_exit_function;
 										}
+										//-------------------------------------
 									}
 
 									str_object->set(stk_src->toString());
@@ -944,7 +947,7 @@ load_element_object:
 							if(copy_aux!=NULL)stk_dst->properties|=MSK_STK_PROPERTY_IS_VAR_C;
 						}
 
-						// check old var structure ...
+						// check old dst value to unref if it was an object ...
 						switch(GET_MSK_STK_PROPERTY_TYPES(old_stk_dst.properties)){
 						case MSK_STK_PROPERTY_UNDEFINED:
 						case MSK_STK_PROPERTY_ZS_INT:
@@ -953,6 +956,9 @@ load_element_object:
 						case MSK_STK_PROPERTY_FUNCTION: // we aren't take care about nothing! :)
 							break;
 						case MSK_STK_PROPERTY_SCRIPT_OBJECT: // we are getting script vars ...
+
+							throw std::runtime_error("if var ref, defer on its scope not in current idx call init + share pointer");
+
 							if((old_stk_dst.properties & (MSK_STK_PROPERTY_IS_VAR_C))==(MSK_STK_PROPERTY_IS_VAR_C)==0){ // is not C class
 								if(old_stk_dst.stk_value!=NULL){ // it had a pointer (no constant)...
 									if(

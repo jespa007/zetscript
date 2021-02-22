@@ -15,7 +15,7 @@ namespace zetscript{
 		static ScriptObjectVarRef * newScriptObjectVarRef(ZetScript *zs, StackElement _stk_var_ref); // idx call
 		ScriptObjectVarRef();
 
-		StackElement getStackElement();
+		StackElement *getStackElementPtr();
 		void setStackElement(StackElement stk);
 
 	private:

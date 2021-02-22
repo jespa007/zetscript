@@ -1,4 +1,9 @@
+
+
 function fun2(ref a){
+	
+	a=20
+	
 	System::println(a)	
 }
 
@@ -12,6 +17,8 @@ function fun(a){
 var a=10
 
 fun(a)
+
+System::println(a)	
 
 //String::format("dsda")
 //Float::parse(2)

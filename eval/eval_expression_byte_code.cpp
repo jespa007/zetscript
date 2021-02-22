@@ -211,6 +211,8 @@ namespace zetscript{
 				||last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 					// .. add information last load that it will be stored
 					last_load_instruction->properties |= MSK_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST;
+				}else if(last_load_instruction->byte_code == BYTE_CODE_LOAD_REF){ // chance by LOAD LOCAL to get the object and set
+					last_load_instruction->byte_code=BYTE_CODE_LOAD_LOCAL;
 				}
 
 				// ... add arithmetic operator byte code
