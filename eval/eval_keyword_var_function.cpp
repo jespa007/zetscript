@@ -513,6 +513,8 @@ error_eval_keyword_var:
 				while(*aux_p != 0 && *aux_p != ')'){
 					arg_info=FunctionArg();
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+					Keyword kw_arg=Keyword::KEYWORD_UNKNOWN;
+
 					if(args.size()>0){
 						if(*aux_p != ','){
 							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected function argument separator ','");
@@ -527,12 +529,23 @@ error_eval_keyword_var:
 					// capture line where argument is...
 					arg_info.line=line;
 
+
+
 					if(*aux_p=='.' && *(aux_p+1)=='.' && *(aux_p+2)=='.'){// is_keyword(aux_p)==KEYWORD_REF){
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
 						arg_info.var_args =true;
-					}else if(is_keyword(aux_p)==KEYWORD_REF){
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[KEYWORD_REF].str),line);
-						arg_info.by_ref =true;
+					}else{
+						switch(kw_arg=is_keyword(aux_p)){
+						case Keyword::KEYWORD_UNKNOWN:
+							break;
+						case KEYWORD_REF:
+							IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[KEYWORD_REF].str),line);
+							arg_info.by_ref =true;
+							break;
+						default:
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: unexpected keyword \"%s\"",eval_data_keywords[kw_arg].str);
+							break;
+						}
 					}
 
 					//int m_start_arg=line;

@@ -1,13 +1,20 @@
-function fun(){
+function fun2(ref a){
+	System::println(a)	
+}
+
+function fun(a){
 	//var b=0
 	//a=[]
+	fun2(a);
 
 }
 
-fun()
+var a=10
+
+fun(a)
 
 //String::format("dsda")
-Float::parse(2)
+//Float::parse(2)
 
 /*var a=1
 

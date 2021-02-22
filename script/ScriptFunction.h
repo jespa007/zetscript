@@ -68,6 +68,7 @@ namespace zetscript{
 				, const std::string & file
 				, short line
 				, const std::string & symbol_name
+				, uint16_t properties
 		);
 
 		/* Registers local variable

@@ -461,6 +461,9 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL: // load variable ...
 				PUSH_STK_PTR(_stk_local_var+instruction->value_op2);
 				continue;
+			case BYTE_CODE_LOAD_REF:
+				*stk_vm_current++=(((ScriptObjectVarRef *)((_stk_local_var+instruction->value_op2))->stk_value)->getStackElement());
+				continue;
 			case BYTE_CODE_LOAD_THIS: // load variable ...
 				PUSH_STK_PTR(this_object->getThisProperty());
 				continue;
@@ -484,6 +487,11 @@ namespace zetscript{
 				stk_var=NULL;
 
 				if(so_anonymous_aux != NULL){
+					if(so_anonymous_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF){
+						ScriptObjectVarRef *o_script_var_ref=(ScriptObjectVarRef *)so_anonymous_aux;
+
+					}
+
 					if(so_anonymous_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
 						ScriptObjectVector * so_vector = (ScriptObjectVector *)so_anonymous_aux;
 						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){
@@ -1228,7 +1236,12 @@ load_element_object:
 
 									if(((FunctionArg *)(*function_param))->by_ref == true){ // copy
 										if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false){ // create new
-											ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(this->zs);
+
+											if((stk_arg->properties & MSK_STK_PROPERTY_PTR_STK) != MSK_STK_PROPERTY_PTR_STK){
+												VM_STOP_EXECUTE("Expected passing variable as argument but it was %s",stk_arg->typeStr());
+											}
+
+											ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(this->zs,*stk_arg);
 											if(!sc->initSharedPtr()){
 												goto lbl_exit_function;
 											}

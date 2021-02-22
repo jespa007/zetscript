@@ -131,7 +131,10 @@ namespace zetscript{
 								,eval_data->current_parsing_file
 								,args->at(i).line
 								,args->at(i).arg_name
+								,args->at(i).by_ref?SYMBOL_PROPERTY_REF:0
 							);
+
+
 						}catch(std::exception & ex){
 							eval_data->error=true;
 							eval_data->error_str=ex.what();
@@ -455,7 +458,7 @@ namespace zetscript{
 							instruction->vm_instruction.value_op2=(zs_int)(ScriptFunction *)vis->ref_ptr; // store script function
 						}
 						else{ // variable
-							instruction->vm_instruction.byte_code=/*is_local ? BYTE_CODE_LOAD_LOCAL:*/BYTE_CODE_LOAD_GLOBAL;
+							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_GLOBAL;
 							instruction->vm_instruction.value_op2=vis->idx_position;
 						}
 					}

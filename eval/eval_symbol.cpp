@@ -141,6 +141,10 @@ namespace zetscript{
 							}else*/ if((vis=eval_find_local_symbol(eval_data,scope_info,str_value)) != NULL){ // local sy
 								byte_code= ByteCode::BYTE_CODE_LOAD_LOCAL;
 								value=vis->idx_position;
+
+								if((vis->properties & SYMBOL_PROPERTY_REF) == SYMBOL_PROPERTY_REF){
+									byte_code= ByteCode::BYTE_CODE_LOAD_REF;
+								}
 							}
 
 						}

@@ -180,6 +180,7 @@ namespace zetscript{
 
 			case BYTE_CODE_LOAD_FUNCTION:
 			case BYTE_CODE_FIND_VARIABLE:
+			case BYTE_CODE_LOAD_REF:
 			case BYTE_CODE_LOAD_LOCAL:
 			case BYTE_CODE_LOAD_CONSTRUCTOR:
 			case BYTE_CODE_LOAD_THIS:
@@ -317,6 +318,7 @@ namespace zetscript{
 			, const std::string & file
 			, short line
 			, const std::string & symbol_name
+			, uint16_t properties
 	){
 		Symbol * symbol=NULL;
 		short idx_position=(short)registered_symbols->count;
@@ -327,6 +329,7 @@ namespace zetscript{
 				return NULL;
 		}
 
+		symbol->properties=properties;
 		symbol->idx_position = idx_position;
 
 		registered_symbols->push_back((zs_int)symbol);

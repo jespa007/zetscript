@@ -38,6 +38,7 @@ namespace zetscript{
 			case BYTE_CODE_STORE_SHR: 	      	return "STORE_SHR"; // >>=
 			case BYTE_CODE_LOAD_GLOBAL:			return "LOAD_GLOBAL"; // load type var
 			case BYTE_CODE_LOAD_LOCAL:			return "LOAD_LOCAL"; // load type var
+			case BYTE_CODE_LOAD_REF:			return "LOAD_REF"; // load type var
 			case BYTE_CODE_LOAD_THIS:			return "LOAD_THIS"; // load type var
 			case BYTE_CODE_LOAD_CONSTRUCTOR:	return "LOAD_CTOR"; // load type var
 			case BYTE_CODE_LOAD_MEMBER_VAR:			return "LOAD_MEMBER"; // load type var

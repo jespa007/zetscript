@@ -18,6 +18,7 @@ namespace zetscript{
 		// load variable
 		BYTE_CODE_LOAD_GLOBAL,
 		BYTE_CODE_LOAD_LOCAL,
+		BYTE_CODE_LOAD_REF,
 		BYTE_CODE_LOAD_THIS,
 		BYTE_CODE_LOAD_MEMBER_VAR,
 
