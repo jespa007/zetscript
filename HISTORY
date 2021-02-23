@@ -218,7 +218,7 @@ Solved issues
 > #261 zs_test: launch *.zs and check result from each test from files after do internal test improvement test
 > #262 Select compile double or float precision config
 #263 ScriptObjectString: Implement operator + feature feature
-> #264 Implement passing args by reference
+#264 Implement passing args by reference
 > #265 Implement zs_test_strict
 #266 Optimize using Push/Pop scope 
 > #267 Implement Builtin helper class Json
