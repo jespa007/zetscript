@@ -963,11 +963,13 @@ load_element_object:
 
 							if((old_stk_dst.properties & (MSK_STK_PROPERTY_IS_VAR_C))==(MSK_STK_PROPERTY_IS_VAR_C)==0){ // is not C class
 								if(old_stk_dst.stk_value!=NULL){ // it had a pointer (no constant)...
-									if(
-										old_stk_dst.stk_value != stk_dst->stk_value  // not same ref ...
-									&&  STK_IS_THIS(&old_stk_dst)  // ... or this, do not share/unshare
-									){ // unref pointer because new pointer has been attached...
+									if(! // if not...
+										(old_stk_dst.stk_value == stk_dst->stk_value)  // ... same ref ...
+									||  (STK_IS_THIS(&old_stk_dst)) // ... or this
+									   // ... do share/unshare
+									){
 
+										// unref pointer because new pointer has been attached...
 										StackElement *chk_ref=(StackElement *)stk_result_op2->stk_value;
 										ScriptObjectObject  *old_so=(ScriptObjectObject  *)old_stk_dst.stk_value;
 										int idx_call=vm_idx_call;
@@ -1248,82 +1250,90 @@ load_element_object:
 						if(n_args > 0){
 							StackElement *stk_arg=stk_start_arg_call;
 							ScriptObjectVector *var_args=NULL;
+							ScriptObject *so_param=NULL;
+							bool end_args=false;
 							zs_int *function_param=&sf->params->items[0];
 							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
-							int i=0;
-							if(sf->params->count > 0){
-								for(;;){
+							for(int i=0;i < n_args && end_args==false;i++){
+								so_param=NULL; // script object we passing
 
-									if(((FunctionArg *)(*function_param))->by_ref == true){ // copy
+								if(((FunctionArg *)(*function_param))->by_ref == true){ // copy
 
-										StackElement *check_ref=stk_arg;
-										if(stk_arg->properties & MSK_STK_PROPERTY_PTR_STK){
-											check_ref=(StackElement *)check_ref->stk_value;
+									StackElement *check_ref=stk_arg;
+									if(stk_arg->properties & MSK_STK_PROPERTY_PTR_STK){
+										check_ref=(StackElement *)check_ref->stk_value;
+									}
+
+									if(STK_IS_SCRIPT_OBJECT_VAR_REF(check_ref)==false) { // create new
+
+										if((stk_arg->properties & MSK_STK_PROPERTY_PTR_STK) != MSK_STK_PROPERTY_PTR_STK){
+											VM_STOP_EXECUTE("Calling function \"%s\", parameter \"%i\": Passing argument by reference has to be variable",sf->symbol.name.c_str(),i+1);
 										}
 
-										if(STK_IS_SCRIPT_OBJECT_VAR_REF(check_ref)==false) { // create new
-
-											if((stk_arg->properties & MSK_STK_PROPERTY_PTR_STK) != MSK_STK_PROPERTY_PTR_STK){
-												VM_STOP_EXECUTE("Calling function \"%s\", parameter \"%i\": Passing argument by reference has to be variable",sf->symbol.name.c_str(),i+1);
-											}
-
-											ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(this->zs,*stk_arg,vm_idx_call);
-											if(!createSharedPointer(sc)){
-												goto lbl_exit_function;
-											}
-											stk_arg->stk_value=(void *)sc;
-											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
-										}else{ // else is already var ref ... set stk_Arg as check_ref
-											stk_arg->stk_value=check_ref->stk_value;
-											stk_arg->properties=check_ref->properties;
+										ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(this->zs,*stk_arg,vm_idx_call);
+										if(!createSharedPointer(sc)){
+											goto lbl_exit_function;
 										}
+										so_param=sc;
+										stk_arg->stk_value=(void *)sc;
+										stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
+									}else{ // else is already var ref ... set stk_Arg as check_ref
+										if(check_ref->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+											so_param=(ScriptObject *)check_ref->stk_value;
+										}
+										stk_arg->stk_value=check_ref->stk_value;
+										stk_arg->properties=check_ref->properties;
+									}
 
-									}else{ // copy
-										unsigned short properties = stk_arg->properties;
-										if(properties & MSK_STK_PROPERTY_PTR_STK){
-											*stk_arg=*((StackElement *)stk_arg->stk_value);
-										}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
+								}else{ // copy
+									unsigned short properties = stk_arg->properties;
+									if(properties & MSK_STK_PROPERTY_PTR_STK){
+										*stk_arg=*((StackElement *)stk_arg->stk_value);
+									}
+
+									if(stk_arg->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+										so_param=(ScriptObject *)stk_arg->stk_value;
+										if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
+											//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
 											ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(this->zs);
 											if(!createSharedPointer(sc)){
 												goto lbl_exit_function;
 											}
 											sc->set(stk_arg->toString());
+											so_param=sc;
 											stk_arg->stk_value=(void *)sc;
 											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
 										}
 									}
+								}
 
-									if(var_args!=NULL){
-										var_args->push(stk_arg);
-
-										if(i+1 >= (int)n_args){
-											break;
+								if(var_args!=NULL){
+									var_args->push(stk_arg);
+								}else{
+									if(((FunctionArg *)(*function_param))->var_args == true){ // enter var args
+										so_param=var_args=ZS_NEW_OBJECT_VECTOR(this->zs);
+										if(!createSharedPointer(var_args)){
+											goto lbl_exit_function;
 										}
-									}else{
-										if(((FunctionArg *)(*function_param))->var_args == true){ // enter var args
-											var_args=ZS_NEW_OBJECT_VECTOR(this->zs);
-											if(!createSharedPointer(var_args)){
-												goto lbl_exit_function;
-											}
 
-											// push first arg
-											var_args->push(stk_arg);
-											// replace for vector type...
-											stk_arg->stk_value=(void *)var_args;
-											stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
-											if(i+1 >= (int)n_args){
-												break;
-											}
-										}else{
-											function_param++;
-											if(i+1 >= (int)effective_args){
-												break;
-											}
+										// push first arg
+										var_args->push(stk_arg);
+										// replace for vector type...
+										stk_arg->stk_value=(void *)var_args;
+										stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
+									}else{
+										function_param++;
+										if(i+1 >= (int)effective_args){
+											end_args=true;
 										}
 									}
-									stk_arg++;
-									i++;
 								}
+
+								if(so_param != NULL){ // share n+1 to function
+									sharePointer(so_param);//->shared_pointer->data.n_shares++;
+								}
+
+								stk_arg++;
 							}
 						}
 
@@ -1479,9 +1489,6 @@ load_element_object:
 					so_class_aux->info_function_new=calling_function;
 					so_class_aux->instruction_new=instruction;
 					(*stk_vm_current++)={so_class_aux,MSK_STK_PROPERTY_SCRIPT_OBJECT};
-
-
-
 					continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new std::vector object...
 					so_aux=ZS_NEW_OBJECT_VECTOR(this->zs);
@@ -1491,7 +1498,7 @@ load_element_object:
 					(*stk_vm_current++)={so_aux,MSK_STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new std::vector object...
-				 so_aux=ZS_NEW_OBJECT_OBJECT(this->zs);
+				 	so_aux=ZS_NEW_OBJECT_OBJECT(this->zs);
 					if(!createSharedPointer(so_aux)){
 						goto lbl_exit_function;
 					}

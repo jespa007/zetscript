@@ -12,9 +12,9 @@ class C{
 }
 
 
-function fun2(ref a){
+function fun2(a){
 	
-	a=20
+	a=5
 	
 	System::println(a)
 }
@@ -22,6 +22,7 @@ function fun2(ref a){
 function fun(ref a){
 	//var b=0
 	//a=[]
+	a=20
 	fun2(a);
 	
 	System::println(a)
@@ -30,9 +31,11 @@ function fun(ref a){
 
 }
 
-var a=new B()
+var a={}
 
-//fun(a)
+System::println(a)	
+
+fun(a)
 
 System::println(a)	
 

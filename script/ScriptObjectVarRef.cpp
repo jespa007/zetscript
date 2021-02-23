@@ -37,5 +37,9 @@ namespace zetscript{
 		stk_var_ref=stk;
 	}
 
+	std::string ScriptObjectVarRef::toString(){
+		return stk_var_ref.toString();
+	}
+
 
 }

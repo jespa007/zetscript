@@ -36,6 +36,10 @@ namespace zetscript{
 		std::string result="undefined";
 		StackElement *stk=this;
 
+		if(this->properties & MSK_STK_PROPERTY_PTR_STK){
+			stk=(StackElement *)stk->stk_value;
+		}
+
 		if(STK_VALUE_IS_ZS_INT(stk))
 			result= zs_strutils::zs_int_to_str((zs_int)stk->stk_value);
 		else if(STK_VALUE_IS_FLOAT(stk))
@@ -47,10 +51,6 @@ namespace zetscript{
 		else if(STK_VALUE_IS_CLASS(stk))
 			result= std::string("Class")+"@"+((ScriptClass *)stk->stk_value)->symbol_class.name;
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
-
-			if(this->properties & MSK_STK_PROPERTY_PTR_STK){
-				stk=(StackElement *)stk->stk_value;
-			}
 
 			result=((ScriptObjectObject *)stk->stk_value)->toString();
 		}

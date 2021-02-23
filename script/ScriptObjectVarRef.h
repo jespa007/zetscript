@@ -20,6 +20,8 @@ namespace zetscript{
 		StackElement *getStackElementPtr();
 		void setStackElement(StackElement stk);
 
+		virtual std::string toString();
+
 	private:
 		StackElement stk_var_ref;
 		int idx_call;

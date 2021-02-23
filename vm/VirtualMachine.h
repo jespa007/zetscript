@@ -5,7 +5,7 @@ namespace zetscript{
 	#define VM_STACK_LOCAL_VAR_MAX				256
 	#define VM_SCOPE_MAX						64
 	#define MAX_FUNCTION_CALL 					128
-	#define MAX_SHARES_VARIABLE 				64
+	#define MAX_SHARES_VARIABLE 				256
 
 
 	#define SET_INTEGER_RETURN(i)	CURRENT_VM->setIntegerReturnValue(i)
