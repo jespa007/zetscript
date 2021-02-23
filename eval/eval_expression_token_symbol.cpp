@@ -57,6 +57,7 @@ namespace zetscript{
 			char *aux_p = s,*test_aux_p;//, *test_s=NULL;
 			int first_line=line,test_line=line;
 			TokenNode token_node_symbol;
+			std::vector<EvalInstruction *> arg_instruction;
 			EvalInstruction *instruction_token=NULL;
 			PreOperation pre_operation = PreOperation::PRE_OPERATION_UNKNOWN;
 			PostOperation post_operation=PostOperation::POST_OPERATION_UNKNOWN;
@@ -283,7 +284,11 @@ namespace zetscript{
 						last_line_ok=line;
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
+						// eval all calling arguments
 						while(*aux_p != ')'){
+							bool error_arg=false;
+							arg_instruction.clear();
+
 							// check if ref identifier...
 							if(n_params>0){
 								if(*aux_p != ','){
@@ -299,13 +304,31 @@ namespace zetscript{
 									,aux_p
 									,line
 									,scope_info
-									,&token_node_symbol.instructions
+									,&arg_instruction//token_node_symbol.instructions
 									,std::vector<char>{}
-									,properties
+									,properties // avoid load ref, to avoid pass 2 reference
 									,n_recursive_level+1
 							))==NULL){
+								error_arg =true;
+							}
+
+							if(arg_instruction.size()==1){
+								if(arg_instruction[0]->vm_instruction.byte_code==BYTE_CODE_LOAD_REF){
+									arg_instruction[0]->vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
+								}
+							}
+
+							token_node_symbol.instructions.insert(
+									token_node_symbol.instructions.end()
+									,arg_instruction.begin()
+									,arg_instruction.end()
+
+							);
+
+							if(error_arg){
 								goto error_expression_token_symbol;
 							}
+
 							n_params++;
 						}
 

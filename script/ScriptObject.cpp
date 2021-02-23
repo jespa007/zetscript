@@ -40,35 +40,6 @@ namespace zetscript{
 		return zs;
 	}
 
-	bool ScriptObject::initSharedPtr(){
-		// is assigned means that when is created is assigned immediately ?
-
-		if(shared_pointer == NULL){
-			if((shared_pointer = this->zs->getVirtualMachine()->newSharedPointer(this))==NULL){
-				return false;
-			}
-		}
-		else{
-			VM_SET_USER_ERROR(this->zs->getVirtualMachine()," shared ptr already registered");
-			return false;
-		}
-
-		return true;
-	}
-
-	bool ScriptObject::unrefSharedPtr(int _idx_current_call){
-		if(shared_pointer!=NULL){
-			if(!this->zs->getVirtualMachine()->unrefSharedScriptObject(shared_pointer,_idx_current_call)){
-				return false;
-			}
-		}
-		else{
-			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"shared ptr not registered");
-			return false;
-		}
-		return true;
-	}
-
 	std::string ScriptObject::toString(){
 		return "@"+getClassName();
 	}

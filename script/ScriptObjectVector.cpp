@@ -117,7 +117,7 @@ namespace zetscript{
 
 		// update n_refs +1
 		if(_stk->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
-			this->zs->getVirtualMachine()->sharePointer(((ScriptObject *)(_stk->stk_value))->shared_pointer);
+			this->zs->getVirtualMachine()->sharePointer(((ScriptObject *)(_stk->stk_value)));
 		}
 	}
 

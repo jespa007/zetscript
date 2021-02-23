@@ -400,7 +400,7 @@ namespace zetscript{
 					var =((ScriptObjectObject *)(vm_stk_element->stk_value));
 					if(var){
 						if(var->shared_pointer != NULL){
-							if(!var->unrefSharedPtr(IDX_CALL_STACK_MAIN)){
+							if(!this->virtual_machine->unrefSharedScriptObject(var,IDX_CALL_STACK_MAIN)){
 								THROW_RUNTIME_ERROR("error clearing variables: %s",this->virtual_machine->getError());
 							}
 						}

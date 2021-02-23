@@ -72,24 +72,33 @@ namespace zetscript{
 	//============================================================================================================================================
 	// POINTER MANANAGER
 
-	InfoSharedPointerNode * VirtualMachine::newSharedPointer(ScriptObject *_var_ptr){
-		//int index = VirtualMachine::getFreeCell();
-		InfoSharedPointerNode *_node = (InfoSharedPointerNode *)malloc(sizeof(InfoSharedPointerNode));
-		// init
-		_node->previous=NULL;
-		_node->next=NULL;
-		_node->data.n_shares=0;
-		_node->data.ptr_script_object_shared=_var_ptr;
-		_node->data.zero_shares=&zero_shares[vm_idx_call];
+	bool VirtualMachine::createSharedPointer(ScriptObject *_obj){
+		if(_obj->shared_pointer == NULL){
+			InfoSharedPointerNode *_node = (InfoSharedPointerNode *)malloc(sizeof(InfoSharedPointerNode));
+			// init
+			_node->previous=NULL;
+			_node->next=NULL;
+			_node->data.n_shares=0;
+			_node->data.ptr_script_object_shared=_obj;
+			_node->data.zero_shares=&zero_shares[vm_idx_call]; // it saves the zeros nodes where was set
 
-		// insert node into shared nodes ...
-		if(!insertShareNode(_node->data.zero_shares,_node)){
-			return NULL;
+			// insert node into shared nodes ...
+			if(!insertShareNode(_node->data.zero_shares,_node)){
+				return false;
+			}
+			_obj->shared_pointer=_node;
+			return true;
+		}else{
+			VM_SET_USER_ERROR(this," shared ptr already has a shared pointer data");
 		}
-		return _node;
+
+		return false;
+
 	}
 
-	bool VirtualMachine::sharePointer(InfoSharedPointerNode *_node){
+	bool VirtualMachine::sharePointer(ScriptObject *_obj){
+
+		InfoSharedPointerNode *_node=_obj->shared_pointer;
 
 		unsigned short *n_shares = &_node->data.n_shares;
 
@@ -155,18 +164,23 @@ namespace zetscript{
 		return false;
 	}
 
-	bool VirtualMachine::unrefSharedScriptObject(InfoSharedPointerNode *_node, int idx_current_call){
+	bool VirtualMachine::unrefSharedScriptObject(ScriptObject *_obj, int idx_current_call){
 
-		bool is_dettached=false;
-		if(decrementShareNodesAndDettachIfZero(_node,is_dettached)){
-			if(is_dettached){
-				_node->data.zero_shares=&zero_shares[idx_current_call];
-				if(!insertShareNode(_node->data.zero_shares,_node)){ // insert to zero shares vector to remove automatically on ending scope
-					return false;
+		InfoSharedPointerNode *shared_pointer=_obj->shared_pointer;
+		if(shared_pointer!=NULL){
+			bool is_dettached=false;
+			if(decrementShareNodesAndDettachIfZero(shared_pointer,is_dettached)){
+				if(is_dettached){
+					shared_pointer->data.zero_shares=&zero_shares[idx_current_call];
+					if(!insertShareNode(shared_pointer->data.zero_shares,shared_pointer)){ // insert to zero shares vector to remove automatically on ending scope
+						return false;
+					}
 				}
-			}
 
-			return true;
+				return true;
+			}
+		}else{
+			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"shared ptr not registered");
 		}
 
 		return false;

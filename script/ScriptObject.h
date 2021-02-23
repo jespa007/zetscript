@@ -19,8 +19,8 @@ namespace zetscript{
 
 		virtual				size_t count();
 
-		bool 				initSharedPtr();
-		bool 				unrefSharedPtr(int _idx_current_call);
+		//bool 				initSharedPtr();
+		//bool 				unrefSharedPtr(int _idx_current_call);
 		ZetScript      * 	getZetScript();
 
 		ScriptClass * 	    getNativeScriptClass();

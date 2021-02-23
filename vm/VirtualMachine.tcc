@@ -31,10 +31,10 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 		VM_Scope *vm_check_scope=(vm_current_scope-1);\
 		StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
 		zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
-		Symbol *scope_symbol					=(Symbol*)scope_symbols->items;\
+		zs_int *scope_symbol					=scope_symbols->items;\
 		StackElement *stk_local_var				=NULL;\
 		for(int i = scope_symbols->count-1; i >=0 ; --i){\
-			stk_local_var =stk_local_vars+scope_symbol->idx_position;\
+			stk_local_var =stk_local_vars+((Symbol *)scope_symbol)->idx_position;\
 			if(stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK){\
 				stk_local_var=(StackElement *)stk_local_var->stk_value;\
 			}\
@@ -42,7 +42,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 				ScriptObjectObject *anonymous_var =((ScriptObjectObject *)(stk_local_var->stk_value));\
 				if(anonymous_var !=NULL){\
 					if(anonymous_var->shared_pointer != NULL){\
-						if(!anonymous_var->unrefSharedPtr(vm_idx_call)){\
+						if(!this->unrefSharedScriptObject(anonymous_var,vm_idx_call)){\
 							return;\
 						}\
 					}\
@@ -350,7 +350,7 @@ namespace zetscript{
 				}
 
 				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
-					if(!sv->initSharedPtr()){
+					if(!createSharedPointer(sv)){
 						return false;
 					}
 				}
@@ -416,13 +416,13 @@ apply_metamethod_error:
 
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
-		bool stk_element_are_ptr=stk_elements_ptr!=vm_stack;
+		bool stk_element_are_vector_element_ptr=stk_elements_ptr!=vm_stack;
 
 		for(int i = stk_elements_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 			StackElement *stk_element=NULL;
 
-			if(stk_element_are_ptr){
-				stk_element=((StackElement **)stk_elements_ptr)[i];//(StackElement *)list_symbols->items[i];
+			if(stk_element_are_vector_element_ptr){
+				stk_element=(StackElement *)((zs_int *)stk_elements_ptr)[i];//(StackElement *)list_symbols->items[i];
 			}else{
 				stk_element=&((StackElement *)stk_elements_ptr)[i];
 			}
@@ -576,8 +576,8 @@ apply_metamethod_error:
 
 			for(int i = stk_elements_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 				StackElement *stk_element=NULL;
-				if(stk_element_are_ptr){
-					stk_element=((StackElement **)stk_elements_ptr)[i];//(StackElement *)list_symbols->items[i];
+				if(stk_element_are_vector_element_ptr){
+					stk_element=(StackElement *)((zs_int *)stk_elements_ptr)[i];//(StackElement *)list_symbols->items[i];
 				}else{
 					stk_element=&((StackElement *)stk_elements_ptr)[i];
 				}
@@ -647,9 +647,9 @@ apply_metamethod_error:
 
 
 		//std::string *str;
-		ScriptObjectString *script_var_string = ZS_NEW_OBJECT_STRING(this->zs);
-		StackElement stk_element={script_var_string, MSK_STK_PROPERTY_SCRIPT_OBJECT};
-		script_var_string->initSharedPtr();
+		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(this->zs);
+		StackElement stk_element={so_string, MSK_STK_PROPERTY_SCRIPT_OBJECT};
+		createSharedPointer(so_string);
 
 		std::string str1;
 		std::string str2;
@@ -712,7 +712,7 @@ apply_metamethod_error:
 		}
 
 		// save result
-		script_var_string->set(str1+str2);
+		so_string->set(str1+str2);
 
 		return stk_element;
 	}
@@ -724,11 +724,11 @@ apply_metamethod_error:
 		}
 
 		//std::string *str;
-		ScriptObjectString *script_var_string = ZS_NEW_OBJECT_STRING(this->zs);
-		StackElement stk_element={script_var_string, MSK_STK_PROPERTY_SCRIPT_OBJECT};
-		script_var_string->initSharedPtr();
+		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(this->zs);
+		StackElement stk_element={so_string, MSK_STK_PROPERTY_SCRIPT_OBJECT};
+		createSharedPointer(so_string);
 
-		script_var_string->set(zs_strutils::replace(script_var_string->toString(),stk_result_op2->toString(),""));
+		so_string->set(zs_strutils::replace(so_string->toString(),stk_result_op2->toString(),""));
 
 		return stk_element;
 	}

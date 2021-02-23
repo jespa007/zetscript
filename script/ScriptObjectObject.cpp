@@ -69,7 +69,7 @@ namespace zetscript{
 
 			// update n_refs +1
 			if(sv->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
-				if(zs->getVirtualMachine()->sharePointer(((ScriptObjectObject *)(sv->stk_value))->shared_pointer) == false){
+				if(zs->getVirtualMachine()->sharePointer(((ScriptObjectObject *)(sv->stk_value))) == false){
 					return NULL;
 				}
 			}

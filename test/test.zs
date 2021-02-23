@@ -1,22 +1,38 @@
 
+class A{
+	
+}
+
+class B{
+	
+}
+
+class C{
+	
+}
+
 
 function fun2(ref a){
 	
 	a=20
 	
-	System::println(a)	
+	System::println(a)
 }
 
-function fun(a){
+function fun(ref a){
 	//var b=0
 	//a=[]
 	fun2(a);
+	
+	System::println(a)
+	
+	//a=10 //new A()
 
 }
 
-var a=10
+var a=new B()
 
-fun(a)
+//fun(a)
 
 System::println(a)	
 

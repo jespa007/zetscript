@@ -373,16 +373,6 @@ namespace zetscript{
 		delete symbol_members;
 		symbol_members=NULL;
 
-		/*for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
-			zs_vector *vec=(zs_vector *)metamethod_operator[i];
-			if(vec != NULL){
-				for(unsigned j = 0; j < vec->count; j++){
-					free((void *)vec->items[j]);
-				}
-				delete vec;
-			}
-		}
-		memset(metamethod_operator,0,sizeof(metamethod_operator));*/
 
 		delete idx_base_classes;
 

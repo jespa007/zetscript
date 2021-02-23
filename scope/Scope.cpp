@@ -156,9 +156,6 @@ namespace zetscript{
 	Scope::~Scope(){
 
 		// delete scope found
-		/*for(unsigned i = 0; i < registered_scopes->count; i++){
-			delete (Scope *)registered_scopes->items[i];
-		}*/
 		delete registered_scopes;
 		registered_scopes=NULL;
 

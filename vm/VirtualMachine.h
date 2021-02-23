@@ -29,10 +29,10 @@ namespace zetscript{
 
 		VirtualMachine(ZetScript *_zs);
 
-		InfoSharedPointerNode *newSharedPointer(ScriptObject *var_ptr);
-		bool sharePointer( InfoSharedPointerNode *_node);
+		bool createSharedPointer(ScriptObject *var_ptr);
+		bool sharePointer( ScriptObject *_node);
 		bool unrefSharedScriptObjectAndRemoveIfZero(ScriptObject **);
-		bool unrefSharedScriptObject( InfoSharedPointerNode *_node, int idx_current_call);
+		bool unrefSharedScriptObject(ScriptObject *_obj, int idx_current_call);
 		//void removeSharedScriptObject( InfoSharedPointerNode *_node, std::string *error);
 
 		const ScriptFunction * getCurrent_C_FunctionCall();
