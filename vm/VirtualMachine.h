@@ -29,10 +29,10 @@ namespace zetscript{
 
 		VirtualMachine(ZetScript *_zs);
 
-		bool createSharedPointer(ScriptObject *var_ptr);
-		bool sharePointer( ScriptObject *_node);
-		bool unrefSharedScriptObjectAndRemoveIfZero(ScriptObject **);
-		bool unrefSharedScriptObject(ScriptObject *_obj, int idx_current_call);
+		inline bool createSharedPointer(ScriptObject *var_ptr);
+		inline bool sharePointer( ScriptObject *_node);
+		inline bool unrefSharedScriptObjectAndRemoveIfZero(ScriptObject **);
+		inline bool unrefSharedScriptObject(ScriptObject *_obj, int idx_current_call);
 		//void removeSharedScriptObject( InfoSharedPointerNode *_node, std::string *error);
 
 		const ScriptFunction * getCurrent_C_FunctionCall();
@@ -158,7 +158,7 @@ namespace zetscript{
 
 		inline bool insertShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
 		inline bool deattachShareNode(InfoSharedList * list, InfoSharedPointerNode *_node);
-		bool   decrementShareNodesAndDettachIfZero(InfoSharedPointerNode *_node, bool & is_dettached);
+		inline bool decrementShareNodesAndDettachIfZero(InfoSharedPointerNode *_node, bool & is_dettached);
 		void insertLifetimeObject(const char *file, int line, ScriptObject *script_object);
 		//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
 

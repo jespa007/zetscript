@@ -8,8 +8,10 @@ function fibR(n) {
     return fibR(n-2)+fibR(n-1);
 }
 
-var start=System::clock();
-System::println("fib: {0} time: {1} ms", fibR(34),System::clock()-start);
+for(var i=0; i < 100; i++){
+	var start=System::clock();
+	System::println("fib: {0} time: {1} ms", fibR(34),System::clock()-start);
+}
 
 
 

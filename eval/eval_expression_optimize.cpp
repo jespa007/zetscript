@@ -95,7 +95,7 @@ namespace zetscript{
 				if((symbol_found = eval_find_local_symbol(eval_data,scope,i1->symbol.name)) != NULL){
 					load_byte_code=BYTE_CODE_LOAD_LOCAL;
 					load_value_op2=symbol_found->idx_position;
-					if(symbol_found->properties & (SYMBOL_PROPERTY_REF) == SYMBOL_PROPERTY_REF){
+					if((symbol_found->properties & (SYMBOL_PROPERTY_REF)) == SYMBOL_PROPERTY_REF){
 						load_byte_code=BYTE_CODE_LOAD_REF;
 					}
 				}else if ((symbol_found = eval_find_global_symbol(eval_data,i1->symbol.name)) != NULL){

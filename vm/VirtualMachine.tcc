@@ -32,20 +32,16 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
 	zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
 	zs_int *symbols					=scope_symbols->items;\
-	StackElement *stk_local_var				=NULL;\
-	uint16_t len=scope_symbols->count;\
-	for(int i = 0; i <len ; i++){\
-		stk_local_var =stk_local_vars+((Symbol *)symbols[i])->idx_position;\
+	for(int i = scope_symbols->count-1; i >=0 ; --i){\
+		StackElement *stk_local_var =stk_local_vars+((Symbol *)(symbols+i))->idx_position;\
 		if(stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK){\
 			stk_local_var=(StackElement *)stk_local_var->stk_value;\
 		}\
-		if(stk_local_var->properties==MSK_STK_PROPERTY_SCRIPT_OBJECT){\
-			ScriptObject *so =((ScriptObject *)(stk_local_var->stk_value));\
-			if(so !=NULL){\
-				if(so->shared_pointer != NULL){\
-					if(!this->unrefSharedScriptObject(so,vm_idx_call)){\
-						return;\
-					}\
+		if(stk_local_var->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){\
+			ScriptObject *so=(ScriptObject *)(stk_local_var->stk_value);\
+			if(so != NULL){\
+				if(unrefSharedScriptObject(so,vm_idx_call)==false){\
+					return;\
 				}\
 			}\
 		}\
@@ -139,6 +135,120 @@ namespace zetscript{
 
 			}while(!finish);
 		}
+	}
+
+	inline bool VirtualMachine::createSharedPointer(ScriptObject *_obj){
+		if(_obj->shared_pointer == NULL){
+			InfoSharedPointerNode *_node = (InfoSharedPointerNode *)malloc(sizeof(InfoSharedPointerNode));
+			// init
+			_node->previous=NULL;
+			_node->next=NULL;
+			_node->data.n_shares=0;
+			_node->data.ptr_script_object_shared=_obj;
+			_node->data.zero_shares=&zero_shares[vm_idx_call]; // it saves the zeros nodes where was set
+
+			// insert node into shared nodes ...
+			if(!insertShareNode(_node->data.zero_shares,_node)){
+				return false;
+			}
+			_obj->shared_pointer=_node;
+			return true;
+		}else{
+			VM_SET_USER_ERROR(this," shared ptr already has a shared pointer data");
+		}
+
+		return false;
+
+	}
+
+	inline bool VirtualMachine::sharePointer(ScriptObject *_obj){
+
+		InfoSharedPointerNode *_node=_obj->shared_pointer;
+
+		unsigned short *n_shares = &_node->data.n_shares;
+
+		bool move_to_shared_list=*n_shares==0;
+
+		if(*n_shares >= MAX_SHARES_VARIABLE){
+			VM_SET_USER_ERROR(this,"MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE);
+			return false;
+		}
+
+		(*n_shares)++;
+
+		if(move_to_shared_list){
+
+			// Mov to shared pointer...
+			if(!deattachShareNode(_node->data.zero_shares,_node)){
+				return false;
+			}
+			// update current stack due different levels from functions!
+			//_node->currentStack=idx_current_call;
+			if(!insertShareNode(&shared_vars,_node)){
+				return false;
+			}
+
+			// node is not in list of zero refs anymore...
+			_node->data.zero_shares=NULL;
+		}
+		return true;
+	}
+
+	inline bool VirtualMachine::decrementShareNodesAndDettachIfZero(InfoSharedPointerNode *_node, bool & is_dettached){
+
+		is_dettached=false;
+		unsigned short *n_shares = &_node->data.n_shares;
+		if(*n_shares > 0){ // not zero
+			if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
+
+				if(!deattachShareNode(&shared_vars,_node)){
+					return false;
+				}
+
+				is_dettached=true;
+			}
+		}
+
+		return true;
+	}
+
+	inline bool VirtualMachine::unrefSharedScriptObjectAndRemoveIfZero(ScriptObject **so){
+
+		InfoSharedPointerNode *_node=(*so)->shared_pointer;
+		bool is_dettached=false;
+
+		if(decrementShareNodesAndDettachIfZero(_node,is_dettached)){
+
+			if(is_dettached == true){
+				delete _node->data.ptr_script_object_shared; // it deletes shared_script_object
+				free(_node);
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+
+	inline bool VirtualMachine::unrefSharedScriptObject(ScriptObject *_obj, int idx_current_call){
+
+		InfoSharedPointerNode *shared_pointer=_obj->shared_pointer;
+		if(shared_pointer!=NULL){
+			bool is_dettached=false;
+			if(decrementShareNodesAndDettachIfZero(shared_pointer,is_dettached)){
+				if(is_dettached){
+					shared_pointer->data.zero_shares=&zero_shares[idx_current_call];
+					if(!insertShareNode(shared_pointer->data.zero_shares,shared_pointer)){ // insert to zero shares vector to remove automatically on ending scope
+						return false;
+					}
+				}
+				return true;
+			}
+		}else{
+			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"shared ptr not registered");
+		}
+
+		return false;
 	}
 
 	inline bool VirtualMachine::applyMetamethodPrimitive(

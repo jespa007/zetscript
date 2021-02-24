@@ -3,6 +3,8 @@
  *  See LICENSE file for details.
  */
 
+#include "zetscript.h"
+
 namespace zetscript{
 
 	zs_float FloatBuiltIn::parse(zs_int number){

@@ -1258,7 +1258,8 @@ load_element_object:
 							bool end_args=false;
 							zs_int *function_param=&sf->params->items[0];
 							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
-							for(int i=0;i < n_args && end_args==false;i++){
+							int i=0;
+							for(;i < n_args && end_args==false;i++){
 								so_param=NULL; // script object we passing
 								uint16_t sfa_properties=((ScriptFunctionArg *)(*function_param))->properties;
 

@@ -232,6 +232,7 @@ ELSE()
 				
 		 # Script
 		script/ScriptObject.cpp
+		script/ScriptObjectVarRef.cpp
 		script/ScriptObjectString.cpp
 		script/ScriptObjectStringIterator.cpp
 		script/ScriptObjectVector.cpp
@@ -242,6 +243,7 @@ ELSE()
 				
 		script/ScriptClass.cpp
 		script/ScriptFunction.cpp
+		script/ScriptFunctionArg.cpp
 		script/ScriptFunctionFactory.cpp
 		script/ScriptClassFactory.cpp
 		 		 		
@@ -307,6 +309,7 @@ ELSE()
 		script/ScriptClassFactory.h
 		script/ScriptClassFactory.tcc
 		script/ScriptFunction.h
+		script/ScriptFunctionArg.h
 		script/ScriptFunctionFactory.h
 		script/ScriptObject.h
 		script/ScriptObjectObject.h
