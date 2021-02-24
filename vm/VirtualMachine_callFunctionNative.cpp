@@ -153,7 +153,7 @@ namespace zetscript{
 		for(unsigned char  i = idx_arg_start; i < n_args;i++){
 
 			stk_arg_current=&stk_arg_calling_function[i-idx_arg_start];
-			FunctionArg *function_param=(FunctionArg *)calling_function->params->items[i];
+			ScriptFunctionArg *function_param=(ScriptFunctionArg *)calling_function->params->items[i];
 
 			if(!zs->convertStackElementToVar(
 					stk_arg_current

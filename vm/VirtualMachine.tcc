@@ -26,35 +26,35 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 
 // defer all local vars
 #define POP_VM_SCOPE()\
-	if(vm_scope<vm_current_scope)\
-	{\
-		VM_Scope *vm_check_scope=(vm_current_scope-1);\
-		StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
-		zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
-		zs_int *scope_symbol					=scope_symbols->items;\
-		StackElement *stk_local_var				=NULL;\
-		for(int i = scope_symbols->count-1; i >=0 ; --i){\
-			stk_local_var =stk_local_vars+((Symbol *)scope_symbol)->idx_position;\
-			if(stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK){\
-				stk_local_var=(StackElement *)stk_local_var->stk_value;\
-			}\
-			if(stk_local_var->properties==MSK_STK_PROPERTY_SCRIPT_OBJECT){\
-				ScriptObjectObject *anonymous_var =((ScriptObjectObject *)(stk_local_var->stk_value));\
-				if(anonymous_var !=NULL){\
-					if(anonymous_var->shared_pointer != NULL){\
-						if(!this->unrefSharedScriptObject(anonymous_var,vm_idx_call)){\
-							return;\
-						}\
+ if(vm_scope<vm_current_scope)\
+{\
+	VM_Scope *vm_check_scope=(vm_current_scope-1);\
+	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
+	zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
+	zs_int *symbols					=scope_symbols->items;\
+	StackElement *stk_local_var				=NULL;\
+	uint16_t len=scope_symbols->count;\
+	for(int i = 0; i <len ; i++){\
+		stk_local_var =stk_local_vars+((Symbol *)symbols[i])->idx_position;\
+		if(stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK){\
+			stk_local_var=(StackElement *)stk_local_var->stk_value;\
+		}\
+		if(stk_local_var->properties==MSK_STK_PROPERTY_SCRIPT_OBJECT){\
+			ScriptObject *so =((ScriptObject *)(stk_local_var->stk_value));\
+			if(so !=NULL){\
+				if(so->shared_pointer != NULL){\
+					if(!this->unrefSharedScriptObject(so,vm_idx_call)){\
+						return;\
 					}\
 				}\
 			}\
-			STK_SET_UNDEFINED(stk_local_var);\
-			scope_symbol++;\
 		}\
-		--vm_current_scope;\
-	}else{\
-		VM_SET_USER_ERROR(this,"internal error: trying to pop at the bottom");\
-	}
+		STK_SET_UNDEFINED(stk_local_var);\
+	}\
+	--vm_current_scope;\
+}else{\
+	VM_SET_USER_ERROR(this,"internal error: trying to pop at the bottom");\
+}
 
 
 namespace zetscript{
@@ -422,7 +422,7 @@ apply_metamethod_error:
 			StackElement *stk_element=NULL;
 
 			if(stk_element_are_vector_element_ptr){
-				stk_element=(StackElement *)((zs_int *)stk_elements_ptr)[i];//(StackElement *)list_symbols->items[i];
+				stk_element=(StackElement *)(((zs_int *)stk_elements_ptr)+i);//(StackElement *)list_symbols->items[i];
 			}else{
 				stk_element=&((StackElement *)stk_elements_ptr)[i];
 			}
@@ -442,7 +442,7 @@ apply_metamethod_error:
 					int arg_idx_type=-1;
 					for( unsigned k = 0; k < n_args && all_check;k++){
 						StackElement *current_arg=&stk_arg[k];
-						arg_idx_type=((FunctionArg *)irfs->params->items[k])->idx_type;
+						arg_idx_type=((ScriptFunctionArg *)irfs->params->items[k])->idx_type;
 
 						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT){
 
@@ -577,7 +577,7 @@ apply_metamethod_error:
 			for(int i = stk_elements_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 				StackElement *stk_element=NULL;
 				if(stk_element_are_vector_element_ptr){
-					stk_element=(StackElement *)((zs_int *)stk_elements_ptr)[i];//(StackElement *)list_symbols->items[i];
+					stk_element=(StackElement *)(((zs_int *)stk_elements_ptr)+i);//(StackElement *)list_symbols->items[i];
 				}else{
 					stk_element=&((StackElement *)stk_elements_ptr)[i];
 				}
@@ -604,7 +604,7 @@ apply_metamethod_error:
 
 						if(irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 							str_candidates+=zs_rtti::demangle(
-									GET_IDX_2_CLASS_C_STR(this,((FunctionArg *)irfs->params->items[a])->idx_type
+									GET_IDX_2_CLASS_C_STR(this,((ScriptFunctionArg *)irfs->params->items[a])->idx_type
 							));
 						}else{ /* typic var ... */
 							str_candidates+="arg"+zs_strutils::zs_int_to_str(a+1);

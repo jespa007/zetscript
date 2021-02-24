@@ -295,7 +295,7 @@ stk_result_op1=--stk_vm_current;
 	stk_vm_current->properties=MSK_STK_PROPERTY_PTR_STK;\
 	stk_vm_current++;
 
-#define SHARE_ALL_RETURNING_OBJECTS(n_return)\
+#define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(n_return,with_share)\
 	for(int i=0; i < n_return; i++){\
 		StackElement *stk_ret = --stk_vm_current;\
 		if(stk_ret->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){\
@@ -303,6 +303,11 @@ stk_result_op1=--stk_vm_current;
 			if(sv->shared_pointer == NULL){\
 				if(!createSharedPointer(sv)){\
 					goto lbl_exit_function;\
+				}\
+				if(with_share==true){\
+					if(!sharePointer(sv)){\
+						goto lbl_exit_function;\
+					}\
 				}\
 			}\
 		}\
@@ -1239,7 +1244,6 @@ load_element_object:
 
 								VM_STOP_EXECUTE("cannot find function \"%s\"",sf->symbol.name.c_str());
 							}
-
 							sf=sf_aux;
 						}
 					}
@@ -1256,8 +1260,9 @@ load_element_object:
 							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
 							for(int i=0;i < n_args && end_args==false;i++){
 								so_param=NULL; // script object we passing
+								uint16_t sfa_properties=((ScriptFunctionArg *)(*function_param))->properties;
 
-								if(((FunctionArg *)(*function_param))->by_ref == true){ // copy
+								if(sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF){ // copy
 
 									StackElement *check_ref=stk_arg;
 									if(stk_arg->properties & MSK_STK_PROPERTY_PTR_STK){
@@ -1291,6 +1296,15 @@ load_element_object:
 										*stk_arg=*((StackElement *)stk_arg->stk_value);
 									}
 
+									if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==true) { // not passing by ref it gets its value
+										*stk_arg=*((ScriptObjectVarRef *)stk_arg->stk_value)->getStackElementPtr();
+
+										if(stk_arg->properties & MSK_STK_PROPERTY_PTR_STK){ // and because is a ref var, we get the value that apoint
+											*stk_arg=*((StackElement *)stk_arg->stk_value);
+										}
+									}
+
+
 									if(stk_arg->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 										so_param=(ScriptObject *)stk_arg->stk_value;
 										if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
@@ -1308,11 +1322,15 @@ load_element_object:
 								}
 
 								if(var_args!=NULL){
-									var_args->push(stk_arg);
+									var_args->push(stk_arg); // we do not share pointer here due is already added in a vector
 								}else{
-									if(((FunctionArg *)(*function_param))->var_args == true){ // enter var args
-										so_param=var_args=ZS_NEW_OBJECT_VECTOR(this->zs);
+									if(sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS){ // enter var args
+										var_args=ZS_NEW_OBJECT_VECTOR(this->zs);
 										if(!createSharedPointer(var_args)){
+											goto lbl_exit_function;
+										}
+
+										if(!sharePointer(var_args)){ // we share pointer +1 to not remove on pop in calling return
 											goto lbl_exit_function;
 										}
 
@@ -1321,16 +1339,19 @@ load_element_object:
 										// replace for vector type...
 										stk_arg->stk_value=(void *)var_args;
 										stk_arg->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
-									}else{
+									}else{ // not push in var arg
+
+										if(so_param != NULL){ // share n+1 to function
+											if(!sharePointer(so_param)){ // we share pointer +1 to not remove on pop in calling return
+												goto lbl_exit_function;
+											}
+										}
+
 										function_param++;
 										if(i+1 >= (int)effective_args){
 											end_args=true;
 										}
 									}
-								}
-
-								if(so_param != NULL){ // share n+1 to function
-									sharePointer(so_param);//->shared_pointer->data.n_shares++;
 								}
 
 								stk_arg++;
@@ -1340,7 +1361,7 @@ load_element_object:
 						// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 						// will be ignored always.
 						for(unsigned i = n_args; i < sf->params->count; i++){
-							FunctionArg *param=(FunctionArg *)sf->params->items[i];
+							ScriptFunctionArg *param=(ScriptFunctionArg *)sf->params->items[i];
 							StackElement *stk_def_afun_start=stk_vm_current;
 							param->default_var_value;
 							int n_returned_args_afun=0;
@@ -1361,7 +1382,7 @@ load_element_object:
 
 								n_returned_args_afun=stk_vm_current-stk_def_afun_start;
 
-								SHARE_ALL_RETURNING_OBJECTS(n_returned_args_afun)
+								CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(n_returned_args_afun,true) // we share pointer (true second arg) to not remove on pop in calling return
 
 								// reset stack
 								stk_vm_current=stk_def_afun_start+1; // reset stack
@@ -1423,7 +1444,7 @@ load_element_object:
 
 					// setup all returned variables from function
 
-					SHARE_ALL_RETURNING_OBJECTS(n_returned_arguments_from_function)
+					CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(n_returned_arguments_from_function,false)
 
 					stk_vm_current=stk_start_arg_call-1; // reset stack
 
@@ -1548,7 +1569,7 @@ load_element_object:
 				continue;
 
 			 case BYTE_CODE_POP_SCOPE:
-				POP_VM_SCOPE();
+				 POP_VM_SCOPE()
 				if((zero_shares+vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove
 					removeEmptySharedPointers(vm_idx_call);
 				}

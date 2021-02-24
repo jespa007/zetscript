@@ -38,7 +38,7 @@ namespace zetscript{
 				ZetScript *_zs
 				,int _idx_class
 				,short _idx_script_function
-				, std::vector<FunctionArg> _params
+				, std::vector<ScriptFunctionArg> _params
 				,int  idx_return_type
 				, Symbol *symbol
 				, zs_int _ref_native_function_ptr
@@ -95,7 +95,7 @@ namespace zetscript{
 				, const std::string & file
 				, short line
 				, const std::string & function_name
-				, std::vector<FunctionArg> args={}
+				, std::vector<ScriptFunctionArg> args={}
 				, int idx_return_type=ZS_IDX_UNDEFINED
 				, zs_int ref_ptr=0
 				, unsigned short properties=0
@@ -104,7 +104,7 @@ namespace zetscript{
 		~ScriptFunction();
 
 	protected:
-		void updateParams(std::vector<FunctionArg> args);
+		void updateParams(std::vector<ScriptFunctionArg> args);
 		void clear();
 
 	private:

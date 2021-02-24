@@ -106,7 +106,7 @@ namespace zetscript{
 			}
 		}
 
-		char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, ScriptFunction *sf,std::vector<FunctionArg> * args){
+		char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, ScriptFunction *sf,std::vector<ScriptFunctionArg> * args){
 			// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 			char *aux_p = (char *)s;
 
@@ -131,7 +131,7 @@ namespace zetscript{
 								,eval_data->current_parsing_file
 								,args->at(i).line
 								,args->at(i).arg_name
-								,args->at(i).by_ref?SYMBOL_PROPERTY_REF:0
+								,args->at(i).properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF?SYMBOL_PROPERTY_REF:0
 							);
 
 

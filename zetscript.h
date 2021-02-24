@@ -100,6 +100,7 @@
 #include "script/ScriptObjectClass.h"
 #include "script/ScriptObjectVarRef.h"
 
+#include "script/ScriptFunctionArg.h"
 #include "script/ScriptFunction.h"
 #include "script/ScriptClass.h"
 #include "script/ScriptFunctionFactory.h"

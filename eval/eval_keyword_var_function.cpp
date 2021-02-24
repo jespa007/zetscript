@@ -420,7 +420,7 @@ error_eval_keyword_var:
 
 
 			if(key_w == Keyword::KEYWORD_FUNCTION || is_static){
-				FunctionArg arg_info;
+				ScriptFunctionArg arg_info;
 				//bool var_args=false;
 				int n_arg=0;
 				char *end_var = NULL;
@@ -429,7 +429,7 @@ error_eval_keyword_var:
 				//size_t advance_chars=0;
 
 
-				std::vector<FunctionArg> args={};
+				std::vector<ScriptFunctionArg> args={};
 				std::string conditional_str;
 				Symbol *symbol_sf=NULL;
 
@@ -511,7 +511,7 @@ error_eval_keyword_var:
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 				while(*aux_p != 0 && *aux_p != ')'){
-					arg_info=FunctionArg();
+					arg_info=ScriptFunctionArg();
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 					Keyword kw_arg=Keyword::KEYWORD_UNKNOWN;
 
@@ -533,14 +533,14 @@ error_eval_keyword_var:
 
 					if(*aux_p=='.' && *(aux_p+1)=='.' && *(aux_p+2)=='.'){// is_keyword(aux_p)==KEYWORD_REF){
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
-						arg_info.var_args =true;
+						arg_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS;
 					}else{
 						switch(kw_arg=is_keyword(aux_p)){
 						case Keyword::KEYWORD_UNKNOWN:
 							break;
 						case KEYWORD_REF:
 							IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[KEYWORD_REF].str),line);
-							arg_info.by_ref =true;
+							arg_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF;
 							break;
 						default:
 							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: unexpected keyword \"%s\"",eval_data_keywords[kw_arg].str);
@@ -570,12 +570,12 @@ error_eval_keyword_var:
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-					if(arg_info.var_args && *aux_p!=')'){
+					if((arg_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS) && *aux_p!=')'){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected ')' after variable argument declaration");
 					}
 					else if(*aux_p=='='){ // default argument...
 
-						if(arg_info.by_ref){
+						if(arg_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF ){
 							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Arguments by reference cannot set a default argument");
 						}
 

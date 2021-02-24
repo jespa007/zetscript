@@ -1,4 +1,4 @@
-
+/*
 class A{
 	
 }
@@ -12,32 +12,39 @@ class C{
 }
 
 
-function fun2(a){
+function fun2(ref a){
 	
-	a=5
-	
-	System::println(a)
+	a=5 // <-- should not save
 }
 
 function fun(ref a){
 	//var b=0
 	//a=[]
 	a=20
+	
+	//System::println(a)
+	
 	fun2(a);
 	
 	System::println(a)
+	
+	return a,a;
 	
 	//a=10 //new A()
 
 }
 
 var a={}
+*/
+//System::println(a)	
 
-System::println(a)	
+System::println("{0} {1}",0)
 
-fun(a)
 
-System::println(a)	
+//System::println(a)
+//System::println(a)
+
+//System::println(a)	
 
 //String::format("dsda")
 //Float::parse(2)

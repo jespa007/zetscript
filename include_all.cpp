@@ -31,6 +31,7 @@
 #include		"script/ScriptClassFactory.cpp"
 //#include		"script/ScriptContext.cpp"
 #include		"script/ScriptFunction.cpp"
+#include		"script/ScriptFunctionArg.cpp"
 #include		"script/ScriptClass.cpp"
 
 #include		"scope/Scope.cpp"

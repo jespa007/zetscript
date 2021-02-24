@@ -59,7 +59,7 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> str_arg;
 
-		std::vector<FunctionArg> arg_info;
+		std::vector<ScriptFunctionArg> arg_info;
 		zs_int ref_ptr=0;
 
 		if(main_function == NULL){
@@ -100,7 +100,7 @@ namespace zetscript{
 						,function_name);
 			}
 
-			arg_info.push_back(FunctionArg(idx_type,str_arg[i]));
+			arg_info.push_back(ScriptFunctionArg(idx_type,str_arg[i]));
 		}
 
 		ref_ptr=(zs_int)function_ptr;
@@ -339,9 +339,9 @@ namespace zetscript{
 				if(symbol_src->properties & SYMBOL_PROPERTY_FUNCTION){ // is function
 					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
 					// build params...
-					std::vector<FunctionArg> params;
+					std::vector<ScriptFunctionArg> params;
 					for(unsigned j=0; j < script_function->params->count;j++){
-						params.push_back(*((FunctionArg *) script_function->params->items[j]));
+						params.push_back(*((ScriptFunctionArg *) script_function->params->items[j]));
 					}
 
 					Symbol *symbol_result = this_class->registerNativeMemberFunction(
@@ -512,7 +512,7 @@ namespace zetscript{
 		// to make compatible MSVC shared library
 		std::string return_type;
 		std::vector<std::string> arg;
-		std::vector<FunctionArg> arg_info;
+		std::vector<ScriptFunctionArg> arg_info;
 		std::string error;
 		int idx_return_type=-1;
 		zs_int ref_ptr=0;
@@ -588,7 +588,7 @@ namespace zetscript{
 		std::string error;
 		std::vector<std::string> params;
 		std::vector<std::string> arg;
-		std::vector<FunctionArg> arg_info;
+		std::vector<ScriptFunctionArg> arg_info;
 		int idx_return_type=-1;
 		zs_int ref_ptr=0;
 		std::string str_class_name_ptr = typeid( C *).name();
@@ -703,7 +703,7 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> params;
 		std::vector<std::string> arg;
-		std::vector<FunctionArg> arg_info;
+		std::vector<ScriptFunctionArg> arg_info;
 		int idx_return_type=-1;
 		zs_int ref_ptr=0;
 		std::string str_class_name_ptr = typeid( C *).name();
