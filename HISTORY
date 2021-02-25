@@ -5,6 +5,7 @@ Version: 2.1.0
 Date: XX-09-2020
 
 
+#79 Implement coroutines 
 #165 try eval expressions as constant 
 > #176 Add shared version
 > #221 Implement backup/restore state
