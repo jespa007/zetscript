@@ -33,7 +33,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 	zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
 	zs_int *symbols					=scope_symbols->items;\
 	for(int i = scope_symbols->count-1; i >=0 ; --i){\
-		StackElement *stk_local_var =stk_local_vars+((Symbol *)(symbols+i))->idx_position;\
+		StackElement *stk_local_var =stk_local_vars+((Symbol *)(symbols[i]))->idx_position;\
 		if(stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK){\
 			stk_local_var=(StackElement *)stk_local_var->stk_value;\
 		}\
@@ -532,7 +532,7 @@ apply_metamethod_error:
 			StackElement *stk_element=NULL;
 
 			if(stk_element_are_vector_element_ptr){
-				stk_element=(StackElement *)(((zs_int *)stk_elements_ptr)+i);//(StackElement *)list_symbols->items[i];
+				stk_element=(StackElement *)(((zs_int *)stk_elements_ptr)[i]);//(StackElement *)list_symbols->items[i];
 			}else{
 				stk_element=&((StackElement *)stk_elements_ptr)[i];
 			}
@@ -687,7 +687,7 @@ apply_metamethod_error:
 			for(int i = stk_elements_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 				StackElement *stk_element=NULL;
 				if(stk_element_are_vector_element_ptr){
-					stk_element=(StackElement *)(((zs_int *)stk_elements_ptr)+i);//(StackElement *)list_symbols->items[i];
+					stk_element=(StackElement *)(((zs_int *)stk_elements_ptr)[i]);//(StackElement *)list_symbols->items[i];
 				}else{
 					stk_element=&((StackElement *)stk_elements_ptr)[i];
 				}
