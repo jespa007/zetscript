@@ -153,7 +153,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
 	MESSAGE ("-- Toolchain: GNU")
 
-	set(COMPILE_TARGET_FLAGS " -O2 -fomit-frame-pointer")
+	set(COMPILE_TARGET_FLAGS " -O2 ")
 
 	IF ( "${TARGET}" STREQUAL "debug")
 		set(COMPILE_TARGET_FLAGS " -O0 -g ")
@@ -271,7 +271,7 @@ IF ( "${FCOMPILE}" STREQUAL "ON")
 	add_executable(zs${POST_NAME}
 		${PROJECT_SOURCE_DIR}/zs.cpp
 	)
-	target_link_libraries(zs${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 	
 	# test_script_call
 	#add_executable(test_script_call${POST_NAME}
