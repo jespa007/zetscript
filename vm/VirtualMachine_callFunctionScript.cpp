@@ -1620,7 +1620,9 @@ load_element_object:
 				POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
 			}
 
-			removeEmptySharedPointers(vm_idx_call);
+			if((zero_shares+vm_idx_call)->first!=NULL){
+				removeEmptySharedPointers(vm_idx_call);
+			}
 		}
 
 		vm_idx_call--;

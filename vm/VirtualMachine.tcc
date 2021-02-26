@@ -34,10 +34,10 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 	zs_int *symbols					=scope_symbols->items;\
 	for(int i = scope_symbols->count-1; i >=0 ; --i){\
 		StackElement *stk_local_var =stk_local_vars+((Symbol *)(symbols[i]))->idx_position;\
-		if(stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK){\
+		if((stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK)==MSK_STK_PROPERTY_PTR_STK){\
 			stk_local_var=(StackElement *)stk_local_var->stk_value;\
 		}\
-		if(stk_local_var->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){\
+		if((stk_local_var->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT)==MSK_STK_PROPERTY_SCRIPT_OBJECT){\
 			ScriptObject *so=(ScriptObject *)(stk_local_var->stk_value);\
 			if(so != NULL){\
 				if(unrefSharedScriptObject(so,vm_idx_call)==false){\
