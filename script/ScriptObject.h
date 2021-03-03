@@ -27,13 +27,14 @@ namespace zetscript{
 		bool 				isNativeObject();
 		const std::string & getClassName();
 		ScriptClass * 	    getScriptClass();
+		virtual StackElement * 			getProperty(const std::string & property_name, int * idx=NULL);
 
 		virtual std::string toString();
 
 		virtual ~ScriptObject();
 	protected:
 		ZetScript 				*	zs; // 8
-
+		StackElement 		stk_count;
 	};
 
 }

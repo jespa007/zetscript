@@ -1,3 +1,18 @@
+//var a="a"
+//	var b="b"
+//System::println(a+1)
+var v3=[1,2,3]+[4,5,6]
+
+//for(var i=0; i < v3.count; i++){
+	System::println(v3[0]);
+System::println(v3[1]);
+System::println(v3[2]);
+System::println(v3[3]);
+System::println(v3[4]);
+System::println(v3[5]);
+System::println(v3[6]);
+//}
+
 /*
 class A{
 	
@@ -38,7 +53,7 @@ var a={}
 */
 //System::println(a)	
 
-System::println("{0} {1}",0)
+//System::println("{0} {1}",0)
 
 
 //System::println(a)

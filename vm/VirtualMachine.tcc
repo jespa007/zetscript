@@ -6,6 +6,57 @@
 
 #define IDX_CALL_STACK_MAIN 1
 
+#define PUSH_UNDEFINED \
+STK_SET_UNDEFINED(stk_vm_current++); \
+
+#define PUSH_BOOLEAN(init_value) \
+stk_vm_current->stk_value=(void *)((zs_int)(init_value)); \
+stk_vm_current->properties=MSK_STK_PROPERTY_BOOL; \
+stk_vm_current++;
+
+
+#define PUSH_INTEGER(init_value) \
+stk_vm_current->stk_value=(void *)((zs_int)(init_value)); \
+stk_vm_current->properties=MSK_STK_PROPERTY_ZS_INT; \
+stk_vm_current++;
+
+/*#define PUSH_ARRAY_STK(n_stk) \
+stk_vm_current->stk_value=(void *)((zs_int)(n_stk)); \
+stk_vm_current->properties=MSK_STK_PROPERTY_ARRAY_STK; \
+stk_vm_current++;
+
+#define PUSH_CONST_CHAR(const_char) \
+stk_vm_current->stk_value=(void *)((zs_int)(const_char)); \
+stk_vm_current->properties=MSK_STK_PROPERTY_CONST_CHAR; \
+stk_vm_current++;*/
+
+#define PUSH_OBJECT(obj_value) \
+stk_vm_current->stk_value=(void *)((zs_int)(obj_value)); \
+stk_vm_current->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT; \
+stk_vm_current++;
+
+
+#define PUSH_FLOAT(init_value) \
+{\
+	zs_float aux=(zs_float)(init_value); \
+	ZS_FLOAT_COPY(&stk_vm_current->stk_value,&aux); \
+	stk_vm_current->properties=MSK_STK_PROPERTY_ZS_FLOAT; \
+	stk_vm_current++; \
+}
+
+#define PUSH_FUNCTION(ref) \
+stk_vm_current->stk_value=(void *)ref; \
+stk_vm_current->properties=MSK_STK_PROPERTY_FUNCTION; \
+stk_vm_current++;
+
+#define PUSH_CLASS(ref) \
+stk_vm_current->stk_value=(void *)ref; \
+stk_vm_current->properties=MSK_STK_PROPERTY_CLASS; \
+stk_vm_current++;
+
+// explains whether stk is this or not. Warning should be given as value and not as ptr
+#define STK_IS_THIS(stk) (this_object != NULL && (stk)->stk_value == this_object)
+
 #define PRINT_DUAL_ERROR_OP(c)\
 std::string var_type1=stk_result_op1->typeStr(),\
 	   var_type2=stk_result_op2->typeStr();\
@@ -262,16 +313,40 @@ namespace zetscript{
 
 
 		//error=true;
-		if((byte_code_metamethod == ByteCodeMetamethod::BYTE_CODE_METAMETHOD_ADD)
-			&& (
+		switch(byte_code_metamethod){
+		case ByteCodeMetamethod::BYTE_CODE_METAMETHOD_ADD:
+			if(
 					STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)
 					||
 					STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)
 				)
-		){
-			*stk_vm_current++=performAddString(stk_result_op1,stk_result_op2);
-			return true;
+			{
+				ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(this->zs,stk_result_op1,stk_result_op2);
+				createSharedPointer(so_string);
+				PUSH_OBJECT(so_string);
+
+				return true;
+			}
+			else if(
+				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op1)
+				&&
+				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)
+			){
+				ScriptObjectVector *so_vector=ScriptObjectVector::newScriptObjectVectorAdd(
+						this->zs
+						,(ScriptObjectVector *)stk_result_op1->stk_value
+						,(ScriptObjectVector *)stk_result_op2->stk_value
+				);
+				createSharedPointer(so_vector);
+				PUSH_OBJECT(so_vector);
+
+				return true;
+			}
+			break;
+		default:
+			break;
 		}
+
 
 
 		return false;
@@ -749,98 +824,6 @@ apply_metamethod_error:
 		return ptr_function_found;
 	}
 
-	inline StackElement VirtualMachine::performAddString(StackElement *stk_result_op1,StackElement *stk_result_op2){
-		// we have to create an new string variable
-		if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){
-			THROW_RUNTIME_ERROR("Expected both operants as string var");
-		}
 
-
-		//std::string *str;
-		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(this->zs);
-		StackElement stk_element={so_string, MSK_STK_PROPERTY_SCRIPT_OBJECT};
-		createSharedPointer(so_string);
-
-		std::string str1;
-		std::string str2;
-
-		std::string * str_dst[]={
-			   &str1,
-			   &str2
-		};
-
-		StackElement * stk_src[]={
-			   stk_result_op1,
-			   stk_result_op2
-		};
-
-		std::string  ** str_dst_it=str_dst;
-		StackElement ** stk_src_it=stk_src;
-
-		// str1
-		for(unsigned i=0; i < 2; i++){
-			StackElement *stk_src_item=(*stk_src_it);
-			if(stk_src_item->properties & MSK_STK_PROPERTY_PTR_STK){
-				stk_src_item=(StackElement *)stk_src_item->stk_value;
-			}
-
-			switch(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
-			//case MSK_STK_PROPERTY_UNDEFINED:
-			//	*(*str_dst_it)="undefined";
-			//	break;
-			case MSK_STK_PROPERTY_ZS_INT:
-				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->stk_value);
-				break;
-			case MSK_STK_PROPERTY_ZS_FLOAT:
-				*(*str_dst_it)=zs_strutils::float_to_str(*((zs_float *)&((stk_src_item)->stk_value)));
-				break;
-			case MSK_STK_PROPERTY_BOOL:
-				*(*str_dst_it)=(stk_src_item)->stk_value == 0?"false":"true";
-				break;
-			case MSK_STK_PROPERTY_FUNCTION:
-				*(*str_dst_it)="function";
-				break;
-			case MSK_STK_PROPERTY_CLASS:
-				*(*str_dst_it)="class";
-				break;
-			default:
-				if(stk_src_item->properties==MSK_STK_PROPERTY_UNDEFINED){
-					*(*str_dst_it)="undefined";
-				}else if(stk_src_item->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					*(*str_dst_it)=((ScriptObjectObject *)(stk_src_item)->stk_value)->toString();
-				}
-				else{
-					*(*str_dst_it)="unknow";
-				}
-
-				break;
-			}
-
-			str_dst_it++;
-			stk_src_it++;
-
-		}
-
-		// save result
-		so_string->set(str1+str2);
-
-		return stk_element;
-	}
-
-	inline StackElement VirtualMachine::performSubString(StackElement *stk_result_op1,StackElement *stk_result_op2){
-		// we have to create an new string variable
-		if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){
-			THROW_RUNTIME_ERROR("Expected both operants as string var");
-		}
-
-		//std::string *str;
-		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(this->zs);
-		StackElement stk_element={so_string, MSK_STK_PROPERTY_SCRIPT_OBJECT};
-		createSharedPointer(so_string);
-
-		so_string->set(zs_strutils::replace(so_string->toString(),stk_result_op2->toString(),""));
-
-		return stk_element;
-	}
 
 }

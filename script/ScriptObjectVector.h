@@ -63,9 +63,11 @@ namespace zetscript{
 		static StackElement *  	popSf(ScriptObjectVector *sv);
 
 		static ScriptObjectVector * newScriptObjectVector(ZetScript *zs);
+		static ScriptObjectVector * newScriptObjectVectorAdd(ZetScript *zs,ScriptObjectVector *v1,ScriptObjectVector *v2);
 
 		ScriptObjectVector();
 
+		virtual StackElement * 			getProperty(const std::string & property_name, int * idx=NULL);
 		virtual StackElement * 	getElementAt(short idx);
 		virtual size_t count();
 		zs_vector * getAllElements();
@@ -76,7 +78,6 @@ namespace zetscript{
 
 		virtual ~ScriptObjectVector();
 	protected:
-		StackElement 		stk_count;
 		zs_vector 			stk_elements;
 
 

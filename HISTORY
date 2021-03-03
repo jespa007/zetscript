@@ -151,7 +151,7 @@ Solved issues
 #181 Implement var args 
 > #182 Make ScriptVarStringr iterable like Vector 
 > #183 Implement Object helper class 
-> #184 Implement + for Vector 
+#184 Implement + for Vector 
 #185 parser char as integer
 > #186 Implement StriptVarString methods
 #187 Implement Console helper class

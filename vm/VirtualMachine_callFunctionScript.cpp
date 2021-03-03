@@ -187,56 +187,7 @@
 
 
 
-#define PUSH_UNDEFINED \
-STK_SET_UNDEFINED(stk_vm_current++); \
 
-#define PUSH_BOOLEAN(init_value) \
-stk_vm_current->stk_value=(void *)((zs_int)(init_value)); \
-stk_vm_current->properties=MSK_STK_PROPERTY_BOOL; \
-stk_vm_current++;
-
-
-#define PUSH_INTEGER(init_value) \
-stk_vm_current->stk_value=(void *)((zs_int)(init_value)); \
-stk_vm_current->properties=MSK_STK_PROPERTY_ZS_INT; \
-stk_vm_current++;
-
-/*#define PUSH_ARRAY_STK(n_stk) \
-stk_vm_current->stk_value=(void *)((zs_int)(n_stk)); \
-stk_vm_current->properties=MSK_STK_PROPERTY_ARRAY_STK; \
-stk_vm_current++;
-
-#define PUSH_CONST_CHAR(const_char) \
-stk_vm_current->stk_value=(void *)((zs_int)(const_char)); \
-stk_vm_current->properties=MSK_STK_PROPERTY_CONST_CHAR; \
-stk_vm_current++;*/
-
-#define PUSH_OBJECT(obj_value) \
-stk_vm_current->stk_value=(void *)((zs_int)(obj_value)); \
-stk_vm_current->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT; \
-stk_vm_current++;
-
-
-#define PUSH_FLOAT(init_value) \
-{\
-	zs_float aux=(zs_float)(init_value); \
-	ZS_FLOAT_COPY(&stk_vm_current->stk_value,&aux); \
-	stk_vm_current->properties=MSK_STK_PROPERTY_ZS_FLOAT; \
-	stk_vm_current++; \
-}
-
-#define PUSH_FUNCTION(ref) \
-stk_vm_current->stk_value=(void *)ref; \
-stk_vm_current->properties=MSK_STK_PROPERTY_FUNCTION; \
-stk_vm_current++;
-
-#define PUSH_CLASS(ref) \
-stk_vm_current->stk_value=(void *)ref; \
-stk_vm_current->properties=MSK_STK_PROPERTY_CLASS; \
-stk_vm_current++;
-
-// explains whether stk is this or not. Warning should be given as value and not as ptr
-#define STK_IS_THIS(stk) (this_object != NULL && (stk)->stk_value == this_object)
 
 
 
@@ -331,7 +282,7 @@ namespace zetscript{
 		}
 
 		ScriptObject *so_aux=NULL;
-		ScriptObjectObject *so_anonymous_aux=NULL;
+		ScriptObjectObject *so_object_aux=NULL;
 		ScriptObjectClass *so_class_aux=NULL;
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
@@ -480,24 +431,24 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
 				POP_TWO;
-				so_anonymous_aux=NULL;
+				so_object_aux=NULL;
 				if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK){
 					stk_result_op1 = (StackElement *)stk_result_op1->stk_value;
 				}
 
 				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					so_anonymous_aux = (ScriptObjectObject *)(stk_result_op1->stk_value);
+					so_object_aux = (ScriptObjectObject *)(stk_result_op1->stk_value);
 				}
 
 				stk_var=NULL;
 
-				if(so_anonymous_aux != NULL){
-					if(so_anonymous_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF){
-						ScriptObjectVarRef *o_script_var_ref=(ScriptObjectVarRef *)so_anonymous_aux;
+				if(so_object_aux != NULL){
+					if(so_object_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF){
+						ScriptObjectVarRef *o_script_var_ref=(ScriptObjectVarRef *)so_object_aux;
 					}
 
-					if(so_anonymous_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
-						ScriptObjectVector * so_vector = (ScriptObjectVector *)so_anonymous_aux;
+					if(so_object_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
+						ScriptObjectVector * so_vector = (ScriptObjectVector *)so_object_aux;
 						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){
 							VM_STOP_EXECUTE("Expected std::vector-index as integer or std::string");
 						}
@@ -523,7 +474,7 @@ namespace zetscript{
 load_element_object:
 
 				stk_var=NULL;
-				so_anonymous_aux=this_object; // take this as default
+				so_object_aux=this_object; // take this as default
 				if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 
 					Instruction *previous_ins= (instruction-1);
@@ -550,12 +501,12 @@ load_element_object:
 						);
 					}
 
-					so_anonymous_aux=((ScriptObjectObject *)stk_result_op1->stk_value);
+					so_aux=((ScriptObject *)stk_result_op1->stk_value);
 
 
-					if(so_anonymous_aux == NULL)
+					if(so_aux == NULL)
 					{
-						VM_STOP_EXECUTE("var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(so_anonymous_aux,previous_ins));
+						VM_STOP_EXECUTE("var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(so_object_aux,previous_ins));
 					}
 
 
@@ -568,12 +519,12 @@ load_element_object:
 				if(stk_var==NULL){ // load element from object or dynamic member element from this
 					// get dynamic property
 					/*if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR){
-						str_symbol=(char *)so_anonymous_aux->getScriptClass()->symbol_class.name.c_str(); //FUNCTION_MEMBER_CONSTRUCTOR_NAME;
+						str_symbol=(char *)so_object_aux->getScriptClass()->symbol_class.name.c_str(); //FUNCTION_MEMBER_CONSTRUCTOR_NAME;
 					}else{*/
 						str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
 					//}
 
-					if((stk_var=so_anonymous_aux->getProperty(str_symbol, &idx_stk_element)) == NULL){
+					if((stk_var=so_aux->getProperty(str_symbol, &idx_stk_element)) == NULL){
 
 						// something went wrong
 						if(vm_error == true){
@@ -584,12 +535,12 @@ load_element_object:
 						if(instruction->properties & MSK_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST){
 							// save
 							//ScriptObjectObject *calling_object_info=(ScriptObjectObject *)stk_calling_object_info->stk_value;// calling object
-							if((stk_var=so_anonymous_aux->addProperty((const char *)str_symbol, vm_error_str))==NULL){
+							if((stk_var=so_object_aux->addProperty((const char *)str_symbol, vm_error_str))==NULL){
 								VM_STOP_EXECUTE(vm_error_str.c_str());
 							}
 							PUSH_STK_PTR(stk_var);
 							/*PUSH_CONST_CHAR(str_symbol);
-							PUSH_OBJECT(so_anonymous_aux);
+							PUSH_OBJECT(so_object_aux);
 							PUSH_ARRAY_STK(2);*/
 						}
 						else{

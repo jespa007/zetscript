@@ -33,7 +33,7 @@ namespace zetscript{
 		);
 
 		int			   			getPropertyIdx(const std::string & varname);
-		StackElement * 			getProperty(const std::string & property_name, int * idx=NULL);
+		virtual StackElement * 			getProperty(const std::string & property_name, int * idx=NULL);
 
 		StackElement *getThisProperty();
 

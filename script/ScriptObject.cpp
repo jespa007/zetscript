@@ -10,6 +10,10 @@ namespace zetscript{
 		idx_script_class=ZS_IDX_UNDEFINED;
 		shared_pointer=NULL;
 		zs=NULL;
+
+		stk_count.stk_value=0;
+		stk_count.properties=MSK_STK_PROPERTY_ZS_INT;
+
 	}
 
 	void ScriptObject::setZetScript(ZetScript *_zs){
@@ -38,6 +42,14 @@ namespace zetscript{
 
 	ZetScript      * ScriptObject::getZetScript() {
 		return zs;
+	}
+
+	StackElement * 			ScriptObject::getProperty(const std::string & property_name, int * idx){
+		if(property_name == "count"){
+			stk_count.stk_value=(void *)this->count();
+			return &stk_count;
+		}
+		return NULL;
 	}
 
 	std::string ScriptObject::toString(){

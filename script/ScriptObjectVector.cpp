@@ -20,10 +20,23 @@ namespace zetscript{
 		return sv;
 	}
 
+	ScriptObjectVector * ScriptObjectVector::newScriptObjectVectorAdd(ZetScript *zs,ScriptObjectVector *v1,ScriptObjectVector *v2){
+		ScriptObjectVector *so_vector = ZS_NEW_OBJECT_VECTOR(zs);
+
+		for(unsigned i=0; i < v1->stk_elements.count;i++){
+			so_vector->push((StackElement *)v1->stk_elements.items[i]);
+		}
+
+		for(unsigned i=0; i < v2->stk_elements.count;i++){
+			so_vector->push((StackElement *)v2->stk_elements.items[i]);
+		}
+
+
+		return so_vector;
+	}
+
 	ScriptObjectVector::ScriptObjectVector(){
 		this->idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR;
-		stk_count.stk_value=0;
-		stk_count.properties=MSK_STK_PROPERTY_ZS_INT;
 		//this->init(SCRIPT_CLASS_VECTOR(this), (void *)this);
 	}
 
@@ -44,9 +57,6 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObjectVector::getElementAt(short idx){
-
-
-
 		if(idx >= (int)stk_elements.count){
 			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"idx symbol index out of bounds (%i)",idx);
 			return NULL;
@@ -108,6 +118,10 @@ namespace zetscript{
 		}*/
 
 		return true;
+	}
+
+	StackElement * 			ScriptObjectVector::getProperty(const std::string & property_name, int * idx){
+		return ScriptObject::getProperty(property_name,idx);
 	}
 
 	void ScriptObjectVector::push(StackElement  * _stk){
