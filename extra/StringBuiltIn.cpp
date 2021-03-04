@@ -19,7 +19,7 @@ namespace zetscript{
 		}
 
 		if(sov != NULL){
-			for(unsigned i=0; i < sov->count(); i++){
+			for(unsigned i=0; i < sov->length(); i++){
 				first_param=zs_strutils::replace(first_param,zs_strutils::format("{%i}",i),sov->getElementAt(i)->toString());
 			}
 		}

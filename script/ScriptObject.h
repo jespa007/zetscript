@@ -17,7 +17,7 @@ namespace zetscript{
 		void setZetScript(ZetScript	*_zs);
 
 
-		virtual				size_t count();
+		virtual				size_t length();
 
 		//bool 				initSharedPtr();
 		//bool 				unrefSharedPtr(int _idx_current_call);
@@ -34,7 +34,7 @@ namespace zetscript{
 		virtual ~ScriptObject();
 	protected:
 		ZetScript 				*	zs; // 8
-		StackElement 		stk_count;
+		StackElement 		stk_length;
 	};
 
 }

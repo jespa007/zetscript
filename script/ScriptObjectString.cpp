@@ -115,7 +115,7 @@ namespace zetscript{
 		return *((std::string *)value);
 	}
 
-	size_t ScriptObjectString::count(){
+	size_t ScriptObjectString::length(){
 		return ((std::string *)value)->size();
 	}
 

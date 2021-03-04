@@ -231,7 +231,13 @@
         stk_result_op1=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
         stk_result_op2=LOAD_FROM_STACK(((instruction->value_op2&0xff0000)>>16),instruction->value_op2);\
         break;\
-    }
+    }\
+	if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK){\
+		stk_result_op1=(StackElement *)stk_result_op1->stk_value;\
+	}\
+	if(stk_result_op2->properties & MSK_STK_PROPERTY_PTR_STK){\
+		stk_result_op2=(StackElement *)stk_result_op2->stk_value;\
+	}
 
 
 #define READ_TWO_POP_ONE \

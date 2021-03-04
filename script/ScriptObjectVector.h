@@ -69,7 +69,7 @@ namespace zetscript{
 
 		virtual StackElement * 			getProperty(const std::string & property_name, int * idx=NULL);
 		virtual StackElement * 	getElementAt(short idx);
-		virtual size_t count();
+		virtual size_t length();
 		zs_vector * getAllElements();
 
 		StackElement *			newSlot();

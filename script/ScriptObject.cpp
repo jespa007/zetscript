@@ -11,8 +11,8 @@ namespace zetscript{
 		shared_pointer=NULL;
 		zs=NULL;
 
-		stk_count.stk_value=0;
-		stk_count.properties=MSK_STK_PROPERTY_ZS_INT;
+		stk_length.stk_value=0;
+		stk_length.properties=MSK_STK_PROPERTY_ZS_INT;
 
 	}
 
@@ -20,7 +20,7 @@ namespace zetscript{
 		zs=_zs;
 	}
 
-	size_t ScriptObject::count(){
+	size_t ScriptObject::length(){
 		return 0;
 	}
 
@@ -45,9 +45,9 @@ namespace zetscript{
 	}
 
 	StackElement * 			ScriptObject::getProperty(const std::string & property_name, int * idx){
-		if(property_name == "count"){
-			stk_count.stk_value=(void *)this->count();
-			return &stk_count;
+		if(property_name == "length"){
+			stk_length.stk_value=(void *)this->length();
+			return &stk_length;
 		}
 		return NULL;
 	}

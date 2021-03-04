@@ -1,16 +1,20 @@
-//var a="a"
-//	var b="b"
-//System::println(a+1)
-var v3=[1,2,3]+[4,5,6]
+0<6
 
-//for(var i=0; i < v3.count; i++){
-	System::println(v3[0]);
+var a="a"
+	var b="b"
+System::println(a+1)
+/*var v3=[1,2,3]+[4,5,6]
+
+for(var i=0; i < v3.length; i++){
+	System::println(v3[i]);
+}*/
+/*	System::println(v3[0]);
 System::println(v3[1]);
 System::println(v3[2]);
 System::println(v3[3]);
 System::println(v3[4]);
 System::println(v3[5]);
-System::println(v3[6]);
+System::println(v3[6]);*/
 //}
 
 /*
