@@ -77,7 +77,9 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 
 // defer all local vars
 #define POP_VM_SCOPE()\
- if(vm_scope<vm_current_scope)\
+ if(vm_scope>=vm_current_scope){\
+	VM_SET_USER_ERROR(this,"internal error: trying to pop at the bottom");\
+}\
 {\
 	VM_Scope *vm_check_scope=(vm_current_scope-1);\
 	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
@@ -99,9 +101,8 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 		STK_SET_UNDEFINED(stk_local_var);\
 	}\
 	--vm_current_scope;\
-}else{\
-	VM_SET_USER_ERROR(this,"internal error: trying to pop at the bottom");\
 }
+	
 
 
 namespace zetscript{

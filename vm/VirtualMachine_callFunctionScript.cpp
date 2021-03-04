@@ -178,16 +178,11 @@
 }
 
 #define PUSH_VM_SCOPE(_scope,_ptr_info_function, _ptr_local_var,_properties)\
-	if(vm_current_scope >=  vm_scope_max){THROW_RUNTIME_ERROR("reached max scope");}\
 	vm_current_scope->scope=(Scope *)_scope;\
 	vm_current_scope->script_function=_ptr_info_function;\
 	vm_current_scope->stk_local_vars=_ptr_local_var;\
 	vm_current_scope->properties=_properties;\
 	vm_current_scope++;\
-
-
-
-
 
 
 

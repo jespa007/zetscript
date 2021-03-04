@@ -126,7 +126,8 @@ namespace zetscript{
 		int vm_idx_call;
 		int idx_last_statment;
 		const ScriptFunction *current_call_c_function;
-		ZetScript *zs;		ScriptFunctionFactory 	*script_function_factory;
+		ZetScript *zs;
+		ScriptFunctionFactory 	*script_function_factory;
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;
 
