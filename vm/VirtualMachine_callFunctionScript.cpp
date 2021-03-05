@@ -178,11 +178,16 @@
 }
 
 #define PUSH_VM_SCOPE(_scope,_ptr_info_function, _ptr_local_var,_properties)\
+	if(vm_current_scope >=  vm_scope_max){THROW_RUNTIME_ERROR("reached max scope");}\
 	vm_current_scope->scope=(Scope *)_scope;\
 	vm_current_scope->script_function=_ptr_info_function;\
 	vm_current_scope->stk_local_vars=_ptr_local_var;\
 	vm_current_scope->properties=_properties;\
 	vm_current_scope++;\
+
+
+
+
 
 
 
@@ -1208,12 +1213,12 @@ load_element_object:
 							ScriptObjectVector *var_args=NULL;
 							ScriptObject *so_param=NULL;
 							bool end_args=false;
-							zs_int *function_param=&sf->params->items[0];
+							int function_param=0;//&sf->params->items[0];
 							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
 							int i=0;
 							for(;i < n_args && end_args==false;i++){
 								so_param=NULL; // script object we passing
-								uint16_t sfa_properties=((ScriptFunctionArg *)(*function_param))->properties;
+								uint16_t sfa_properties=((ScriptFunctionArg *)sf->params->items[function_param])->properties;// ((ScriptFunctionArg *)(*function_param))->properties;
 
 								if(sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF){ // copy
 
