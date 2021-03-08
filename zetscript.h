@@ -69,7 +69,9 @@
 #include "util/zs_rtti.h"
 #include "util/zs_path.h"
 #include "util/zs_vector.h"
+#include "util/zs_map_iterator.h"
 #include "util/zs_map.h"
+
 
 
 #include "exception.h"

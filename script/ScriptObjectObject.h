@@ -19,6 +19,7 @@ namespace zetscript{
 
 		// Construct ...
 		static ScriptObjectObject * newScriptObjectObject(ZetScript	*_zs);
+		static ScriptObjectObject * newScriptObjectObjectAddStk(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2);
 
 		ScriptObjectObject();
 
@@ -35,7 +36,8 @@ namespace zetscript{
 		int			   			getPropertyIdx(const std::string & varname);
 		virtual StackElement * 			getProperty(const std::string & property_name, int * idx=NULL);
 
-		StackElement *getThisProperty();
+		StackElement 	*getThisProperty();
+		zs_map_iterator begin();
 
 
 		bool eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);

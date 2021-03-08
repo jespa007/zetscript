@@ -311,26 +311,22 @@ namespace zetscript{
 			,StackElement *stk_result_op2
 			, bool & error
 	){
-
-
 		//error=true;
 		switch(byte_code_metamethod){
 		case ByteCodeMetamethod::BYTE_CODE_METAMETHOD_ADD:
 			if(
-					STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)
+				STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)
 					||
-					STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)
-				)
-			{
+				STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)
+			){
 				ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(this->zs,stk_result_op1,stk_result_op2);
 				createSharedPointer(so_string);
 				PUSH_OBJECT(so_string);
-
 				return true;
 			}
 			else if(
 				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op1)
-				&&
+					&&
 				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)
 			){
 				ScriptObjectVector *so_vector=ScriptObjectVector::newScriptObjectVectorAdd(
@@ -343,12 +339,23 @@ namespace zetscript{
 
 				return true;
 			}
+			else if(
+				STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op1)
+					&&
+				STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)
+			){
+				ScriptObjectObject *so_object=ScriptObjectObject::newScriptObjectObjectAdd(
+						this->zs
+						,(ScriptObjectObject *)stk_result_op1->stk_value
+						,(ScriptObjectObject *)stk_result_op2->stk_value
+				);
+				createSharedPointer(so_object);
+				PUSH_OBJECT(so_object);
+			}
 			break;
 		default:
 			break;
 		}
-
-
 
 		return false;
 	}

@@ -9,6 +9,7 @@
 #include 		"util/zs_strutils.cpp"
 #include 		"util/zs_vector.cpp"
 #include 		"util/zs_map.cpp"
+#include 		"util/zs_map_iterator.cpp"
 
 #include		"exception.cpp"
 #include 		"Symbol.cpp"
@@ -52,6 +53,7 @@
 #include 		"extra/StringBuiltIn.cpp"
 #include 		"extra/IntegerBuiltIn.cpp"
 #include 		"extra/FloatBuiltIn.cpp"
+#include 		"extra/JsonBuiltIn.cpp"
 
 
 #include		"zetscript.cpp"

@@ -1,14 +1,6 @@
 #include "zetscript.h"
 
-#define HASH_MAP_SIZE 256
-
 namespace zetscript{
-
-
-	/*struct table{
-		int size;
-		struct node *list[HASH_MAP_SIZE];
-	};*/
 
 	uint8_t zs_map::hash_code(const char * key){
 		size_t key_len=strlen(key);
@@ -17,7 +9,6 @@ namespace zetscript{
 		for(unsigned i=0; i < key_len; i++){
 			p+=key[i];
 		}
-
 		return p;
 	}
 
@@ -29,6 +20,10 @@ namespace zetscript{
 		for(unsigned i=0;i<this->count;i++){
 			this->list[i]=NULL;
 		}
+	}
+
+	zs_map_iterator zs_map::begin(){
+		return zs_map_iterator(this);
 	}
 
 	zs_map_node * zs_map::lookup_node(const char * key){
@@ -130,5 +125,4 @@ namespace zetscript{
 		}
 		free(this->list);
 	}
-
 }
