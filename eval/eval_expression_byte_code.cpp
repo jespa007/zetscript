@@ -212,30 +212,7 @@ namespace zetscript{
 					// .. add information last load that it will be stored
 					last_load_instruction->properties |= MSK_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST;
 				}else{
-
-					switch(last_load_instruction->byte_code){
-					case BYTE_CODE_LOAD_GLOBAL:
-						last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
-						break;
-					case BYTE_CODE_LOAD_REF:
-						last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_REF;
-						break;
-					case BYTE_CODE_LOAD_LOCAL:
-						last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_LOCAL;
-						break;
-					case BYTE_CODE_LOAD_THIS:
-						last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_THIS;
-						break;
-					case BYTE_CODE_LOAD_MEMBER_VAR:
-						last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_MEMBER_VAR;
-						break;
-					default:
-						EVAL_ERROR_FILE_LINE(
-						eval_data->current_parsing_file
-						,-1
-						,"Internal:Unexpected byte code %i assign ",last_load_instruction->byte_code);
-						break;
-					}
+					last_load_instruction->byte_code=load_to_push_stk(last_load_instruction->byte_code);
 				}
 
 				// ... add arithmetic operator byte code

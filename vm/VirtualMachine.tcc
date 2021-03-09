@@ -87,9 +87,6 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 	zs_int *symbols					=scope_symbols->items;\
 	for(int i = scope_symbols->count-1; i >=0 ; --i){\
 		StackElement *stk_local_var =stk_local_vars+((Symbol *)(symbols[i]))->idx_position;\
-		if((stk_local_var->properties & MSK_STK_PROPERTY_PTR_STK)==MSK_STK_PROPERTY_PTR_STK){\
-			stk_local_var=(StackElement *)stk_local_var->stk_value;\
-		}\
 		if((stk_local_var->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT)==MSK_STK_PROPERTY_SCRIPT_OBJECT){\
 			ScriptObject *so=(ScriptObject *)(stk_local_var->stk_value);\
 			if(so != NULL){\
@@ -661,10 +658,6 @@ apply_metamethod_error:
 
 						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT){
 
-							if(current_arg->properties & MSK_STK_PROPERTY_PTR_STK){
-								current_arg = (StackElement *)current_arg->stk_value;
-							}
-
 							unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(current_arg->properties);
 
 							switch(var_type){
@@ -740,9 +733,6 @@ apply_metamethod_error:
 
 			for( unsigned k = 0; k < n_args;k++){
 				StackElement *current_arg=&stk_arg[k];
-				if(current_arg->properties & MSK_STK_PROPERTY_PTR_STK){
-					current_arg = (StackElement *)current_arg->stk_value;
-				}
 
 				if(k>0){
 					args_str+=",";

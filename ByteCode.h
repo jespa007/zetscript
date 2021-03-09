@@ -15,27 +15,31 @@ namespace zetscript{
 		BYTE_CODE_END_FUNCTION = 0,
 		BYTE_CODE_FIND_VARIABLE,
 
-		// load variable to push
+		// load ptr var
 		BYTE_CODE_PUSH_STK_GLOBAL,
 		BYTE_CODE_PUSH_STK_LOCAL,
 		BYTE_CODE_PUSH_STK_REF,
 		BYTE_CODE_PUSH_STK_THIS,
 		BYTE_CODE_PUSH_STK_MEMBER_VAR,
-		BYTE_CODE_PUSH_STK_CONSTRUCTOR,
+		BYTE_CODE_PUSH_STK_ELEMENT_VECTOR,
+		BYTE_CODE_PUSH_STK_ELEMENT_THIS,
+		BYTE_CODE_PUSH_STK_ELEMENT_OBJECT,
 
-		// load contents variable
+
+		// load var content
 		BYTE_CODE_LOAD_GLOBAL,
 		BYTE_CODE_LOAD_LOCAL,
 		BYTE_CODE_LOAD_REF,
 		BYTE_CODE_LOAD_THIS,
 		BYTE_CODE_LOAD_MEMBER_VAR,
-
-		// load element
 		BYTE_CODE_LOAD_ELEMENT_VECTOR,
 		BYTE_CODE_LOAD_ELEMENT_THIS,
 		BYTE_CODE_LOAD_ELEMENT_OBJECT,
 
-		// load constant
+		// special load
+		BYTE_CODE_LOAD_CONSTRUCTOR,
+
+		// load constants
 		BYTE_CODE_LOAD_FUNCTION,
 		BYTE_CODE_LOAD_UNDEFINED,
 		BYTE_CODE_LOAD_STRING,
@@ -185,6 +189,7 @@ namespace zetscript{
 	const char * byte_code_metamethod_to_symbol_str(ByteCodeMetamethod op);
 	int			 get_num_arguments_static_metamethod(ByteCodeMetamethod op);
 	int			 get_num_arguments_non_static_metamethod(ByteCodeMetamethod op);
+	ByteCode	 swap_load_to_push_stk(ByteCode op);
 
 
 }

@@ -263,7 +263,7 @@ namespace zetscript{
 						 // insert load function ...
 						 instructions->push_back(
 							eval_instruction=new EvalInstruction(
-								 ByteCode::BYTE_CODE_PUSH_STK_CONSTRUCTOR
+								 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR
 								 ,ZS_IDX_UNDEFINED
 								 ,constructor_function->idx_position
 							)

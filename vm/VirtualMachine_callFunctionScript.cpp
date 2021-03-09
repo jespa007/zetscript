@@ -130,9 +130,7 @@
 #define PERFORM_POST_OPERATOR(__PRE_OP__,__OPERATOR__) \
 {\
 	stk_var=--stk_vm_current;\
-	if(stk_var->properties & MSK_STK_PROPERTY_PTR_STK){\
-		stk_var=(StackElement *)((stk_var)->stk_value);\
-	}\
+	stk_var=(StackElement *)((stk_var)->stk_value);\
 	void **ref=(void **)(&((stk_var)->stk_value));\
 	if(stk_var->properties & MSK_STK_PROPERTY_IS_VAR_C){\
 		ref=(void **)((stk_var)->stk_value);\
@@ -155,9 +153,7 @@
 #define PERFORM_PRE_OPERATOR(__OPERATOR__) \
 {\
 	stk_var=--stk_vm_current;\
-	if(stk_var->properties & MSK_STK_PROPERTY_PTR_STK){\
-		stk_var=(StackElement *)((stk_var)->stk_value);\
-	}\
+	stk_var=(StackElement *)((stk_var)->stk_value);\
 	void **ref=(void **)(&((stk_var)->stk_value));\
 	if(stk_var->properties & MSK_STK_PROPERTY_IS_VAR_C){\
 		ref=(void **)((stk_var)->stk_value);\
@@ -223,13 +219,7 @@
         stk_result_op1=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
         stk_result_op2=LOAD_FROM_STACK(((instruction->value_op2&0xff0000)>>16),instruction->value_op2);\
         break;\
-    }/*\
-	if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK){\
-		stk_result_op1=(StackElement *)stk_result_op1->stk_value;\
-	}\
-	if(stk_result_op2->properties & MSK_STK_PROPERTY_PTR_STK){\
-		stk_result_op2=(StackElement *)stk_result_op2->stk_value;\
-	}*/
+    }
 
 
 #define READ_TWO_POP_ONE \
@@ -432,6 +422,38 @@ namespace zetscript{
 				PUSH_STK_PTR(this_object->getElementAt(instruction->value_op2));
 				continue;
 
+			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:
+			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
+				so_object_aux=NULL; \
+				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){ \
+					stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr(); \
+				} \
+				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){ \
+					so_object_aux = (ScriptObjectObject *)(stk_result_op1->stk_value); \
+				} \
+				stk_var=NULL; \
+				if(so_object_aux != NULL){ \
+					if(so_object_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){ \
+						ScriptObjectVector * so_vector = (ScriptObjectVector *)so_object_aux; \
+						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
+							VM_STOP_EXECUTE("Expected std::vector-index as integer or std::string"); \
+						} \
+						/* determine object ...*/ \
+						if((stk_var =so_vector->getElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){ \
+							goto lbl_exit_function; \
+						} \
+					} \
+				} \
+				if(stk_var == NULL){ /* push undefined */ \
+					PUSH_UNDEFINED; \
+					continue; \
+				}
+				if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
+					*stk_vm_current++=*stk_var;
+					continue;
+				}
+				PUSH_STK_PTR(stk_var);
+				continue;
 			// load
 			case BYTE_CODE_LOAD_GLOBAL: // load variable ...
 				*stk_vm_current++=*(vm_stack+instruction->value_op2);
@@ -448,50 +470,12 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_MEMBER_VAR: // direct load
 				*stk_vm_current++=*this_object->getElementAt(instruction->value_op2);
 				continue;
-			case BYTE_CODE_PUSH_STK_CONSTRUCTOR:
-				PUSH_STK_PTR(((ScriptObjectClass *)((stk_vm_current-1)->stk_value))->getElementAt(instruction->value_op2));
+			case BYTE_CODE_LOAD_CONSTRUCTOR:
+				*stk_vm_current++=*(((ScriptObjectClass *)((stk_vm_current-1)->stk_value))->getElementAt(instruction->value_op2));
 				continue;
-			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
-				POP_TWO;
-				so_object_aux=NULL;
-				if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK){
-					stk_result_op1 = (StackElement *)stk_result_op1->stk_value;
-				}
 
-				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
-					stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr();
-				}
-
-				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					so_object_aux = (ScriptObjectObject *)(stk_result_op1->stk_value);
-				}
-
-				stk_var=NULL;
-
-				if(so_object_aux != NULL){
-
-					if(so_object_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
-						ScriptObjectVector * so_vector = (ScriptObjectVector *)so_object_aux;
-						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){
-							VM_STOP_EXECUTE("Expected std::vector-index as integer or std::string");
-						}
-
-						// determine object ...
-						if((stk_var =so_vector->getElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){
-							goto lbl_exit_function;
-						}
-					}
-				}
-
-				if(stk_var == NULL){ // push undefined
-					PUSH_UNDEFINED;
-					continue;
-				}
-
-				PUSH_STK_PTR(stk_var);
-
-				//PERFORM_PRE_PUSH_POST_OPERATION;
-				continue;
+			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
+			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
 			case BYTE_CODE_LOAD_ELEMENT_THIS:
 load_element_object:
@@ -579,9 +563,12 @@ load_element_object:
 					*stk_vm_current++=*stk_var;
 				}
 				else{ // copy the content of this value
-					*stk_vm_current++=*((StackElement *)stk_var->stk_value);
+					if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT){ // push
+						PUSH_STK_PTR(stk_var);
+					}else{ // load
+						*stk_vm_current++=*((StackElement *)stk_var->stk_value);
+					}
 				}
-
 
 				if((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){ // fast load access without pass through switch instruction
 					instruction++;

@@ -520,24 +520,9 @@ namespace zetscript{
 					)
 				);
 
-				// change load by push stk
-				switch(last_load_instruction->byte_code){
-				case BYTE_CODE_LOAD_GLOBAL:
-					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
-					break;
-				case BYTE_CODE_LOAD_LOCAL:
-					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_LOCAL;
-					break;
-				case BYTE_CODE_LOAD_REF:
-					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_REF;
-					break;
-				case BYTE_CODE_LOAD_THIS:
-					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_THIS;
-					break;
-				case BYTE_CODE_LOAD_MEMBER_VAR:
-					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_MEMBER_VAR;
-					break;
-				}
+				// change load by push because is mutable
+				last_load_instruction->byte_code=load_to_push_stk(last_load_instruction->byte_code);
+
 			}
 
 
@@ -561,24 +546,9 @@ namespace zetscript{
 					)
 				);
 
-				// change load by push stk
-				switch(last_load_instruction->byte_code){
-				case BYTE_CODE_LOAD_GLOBAL:
-					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
-					break;
-				case BYTE_CODE_LOAD_LOCAL:
-					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_LOCAL;
-					break;
-				case BYTE_CODE_LOAD_REF:
-					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_REF;
-					break;
-				case BYTE_CODE_LOAD_THIS:
-					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_THIS;
-					break;
-				case BYTE_CODE_LOAD_MEMBER_VAR:
-					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_MEMBER_VAR;
-					break;
-				}
+				// change load by push because is mutable
+				last_load_instruction->byte_code=load_to_push_stk(last_load_instruction->byte_code);
+
 			}
 
 

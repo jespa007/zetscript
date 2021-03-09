@@ -41,11 +41,14 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_REF:		return "PUSH_STK_REF"; // push stk global
 			case BYTE_CODE_PUSH_STK_THIS:		return "PUSH_STK_THIS"; // push stk global
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR:		return "PUSH_STK_MEMBER_VAR"; // push stk global
+			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:	return "PUSH_STK_E@VECTOR"; // load element vector
+			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:	return "PUSH_STK_E@THIS"; // load element object
+			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:	return "PUSH_STK_E@OBJ"; // load element object
 			case BYTE_CODE_LOAD_GLOBAL:			return "LOAD_GLOBAL"; // load type var
 			case BYTE_CODE_LOAD_LOCAL:			return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_REF:			return "LOAD_REF"; // load type var
 			case BYTE_CODE_LOAD_THIS:			return "LOAD_THIS"; // load type var
-			case BYTE_CODE_PUSH_STK_CONSTRUCTOR:	return "LOAD_CTOR"; // load type var
+			case BYTE_CODE_LOAD_CONSTRUCTOR:	return "LOAD_CTOR"; // load type var
 			case BYTE_CODE_LOAD_MEMBER_VAR:			return "LOAD_MEMBER"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      	return "LOAD_???"; // load to find global
 			case BYTE_CODE_LOAD_ELEMENT_THIS:	return "LOAD_E@THIS"; // load element object
@@ -54,6 +57,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_FUNCTION:		return "LOAD_FUNCT"; // load function
 			case BYTE_CODE_LOAD_UNDEFINED:		return "LOAD_UNDEF"; // load undfined
 			case BYTE_CODE_LOAD_STACK_ELEMENT:	return "LOAD_STK"; // load stack element
+
 			case BYTE_CODE_LOAD_STRING:			return "LOAD_STR"; // load string
 			case BYTE_CODE_LOAD_FLOAT:			return "LOAD_FLT"; // load float
 			case BYTE_CODE_LOAD_BOOL:			return "LOAD_BOOL"; // load bool
@@ -258,6 +262,28 @@ namespace zetscript{
 
 	int			 get_num_arguments_non_static_metamethod(ByteCodeMetamethod op){
 		return get_num_arguments_static_metamethod(op)-1;
+	}
+
+
+	ByteCode			 load_to_push_stk(ByteCode op){
+	// load ptr var
+		switch(op){
+			// load var content
+			case BYTE_CODE_LOAD_GLOBAL:return BYTE_CODE_PUSH_STK_GLOBAL;
+			case BYTE_CODE_LOAD_LOCAL:return BYTE_CODE_PUSH_STK_LOCAL;
+			case BYTE_CODE_LOAD_REF:return BYTE_CODE_PUSH_STK_REF;
+			case BYTE_CODE_LOAD_THIS:return BYTE_CODE_PUSH_STK_THIS;
+			case BYTE_CODE_LOAD_MEMBER_VAR:return BYTE_CODE_PUSH_STK_MEMBER_VAR;
+			case BYTE_CODE_LOAD_ELEMENT_VECTOR:return BYTE_CODE_PUSH_STK_ELEMENT_VECTOR;
+			case BYTE_CODE_LOAD_ELEMENT_THIS:return BYTE_CODE_PUSH_STK_ELEMENT_THIS;
+			case BYTE_CODE_LOAD_ELEMENT_OBJECT:return BYTE_CODE_PUSH_STK_ELEMENT_OBJECT;
+			default:
+				THROW_RUNTIME_ERROR("internal: op code not type load");
+				break;
+		}
+
+		return op;
+
 	}
 
 }
