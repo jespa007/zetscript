@@ -71,7 +71,7 @@ namespace zetscript{
 			StackElement *stk_arg_calling_function,
 			unsigned char n_args,
 			Instruction *instruction,
-			ScriptObjectClass  * this_object
+			ScriptObject  * this_object
 			){
 
 		zs_int  fun_ptr = calling_function->ref_native_function_ptr;

@@ -67,10 +67,10 @@ namespace zetscript{
 
 		ScriptObjectVector();
 
-		virtual StackElement * 			getProperty(const std::string & property_name, int * idx=NULL);
 		virtual StackElement * 	getElementAt(short idx);
+
 		virtual size_t length();
-		zs_vector * getAllElements();
+		virtual zs_vector * getAllElements();
 
 		StackElement *			newSlot();
 		void 					push(StackElement  * stk);
@@ -81,10 +81,10 @@ namespace zetscript{
 		zs_vector 			stk_elements;
 
 
-		bool 				eraseElementAt(short idx);
+		bool 							eraseElementAt(short idx);
 
 	private:
-
+		void init();
 
 	};
 

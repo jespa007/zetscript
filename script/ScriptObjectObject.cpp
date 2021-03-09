@@ -19,11 +19,11 @@ namespace zetscript{
 		//zs_map_iterator it_2=o2->map_property_keys->begin();
 
 		for(auto it=o1->begin(); it.end();it.next()){
-			obj->addProperty(it.getKey(),error,(StackElement *)it.getValue());
+			obj->addProperty(it.getKey(),error,o2->getElementAt(it.getValue()));
 		}
 
 		for(auto it=o2->begin(); it.end();it.next()){
-			obj->addProperty(it.getKey(),error,(StackElement *)it.getValue());
+			obj->addProperty(it.getKey(),error,o2->getElementAt(it.getValue()));
 		}
 		return obj;
 	}
@@ -113,10 +113,6 @@ namespace zetscript{
 			return idx_stk_element;
 		}
 		return ZS_IDX_UNDEFINED;
-	}
-
-	StackElement *ScriptObjectObject::getThisProperty(){
-		return &this->stk_this;
 	}
 
 	zs_map_iterator ScriptObjectObject::begin(){

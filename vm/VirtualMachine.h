@@ -46,7 +46,7 @@ namespace zetscript{
 		void addGlobalVar(const StackElement & stk);
 
 		StackElement execute(
-			 ScriptObjectClass *	this_object
+			 ScriptObject *		this_object
 			 ,ScriptFunction *	script_function
 			 ,StackElement 	 * 	stk_params=NULL
 			 ,unsigned char		n_stk_params=0
@@ -135,11 +135,11 @@ namespace zetscript{
 
 
 		void  callFunctionScript(
-				ScriptObjectObject	* 	this_object,
-				ScriptFunction 			*	info_function,
-				StackElement 			* 	_stk_start_args,
-				//std::string 		  		  * _ptrStartStr=NULL,
-				unsigned char 				n_args=0
+				ScriptObject		* 	this_object,
+				ScriptFunction 		*	info_function,
+				StackElement 		* 	_stk_start_args,
+				//std::string 		* _ptrStartStr=NULL,
+				unsigned char 		n_args=0
 				);
 
 
@@ -148,7 +148,7 @@ namespace zetscript{
 			 StackElement *stk_arg_calling_function,
 			 unsigned char n_args,
 			 Instruction *ins,
-			 ScriptObjectClass  * this_object
+			 ScriptObject  * this_object
 		);
 
 		/**
@@ -168,8 +168,8 @@ namespace zetscript{
 			,ScriptFunction *info_function
 			,Instruction * instruction
 			,bool is_constructor
-			,void *stk_elements_ptr // can be **stack_element from ScriptObjectObject stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
-			,int stk_elements_len // length of stk_elements
+			,void *stk_elements_builtin_ptr // can be **stack_element from ScriptObjectObject stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
+			,int stk_elements_builtin_len // length of stk_elements_builtin
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args

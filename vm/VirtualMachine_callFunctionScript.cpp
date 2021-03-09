@@ -263,7 +263,7 @@ stk_result_op1=--stk_vm_current;
 namespace zetscript{
 
 	void VirtualMachine::callFunctionScript(
-			ScriptObjectObject	* this_object,
+			ScriptObject			* this_object,
 			ScriptFunction 			* calling_function,
 			StackElement 		  	* _stk_local_var,
 			unsigned char 			n_args
@@ -276,7 +276,7 @@ namespace zetscript{
 		}
 
 		ScriptObject *so_aux=NULL;
-		ScriptObjectObject *so_object_aux=NULL;
+		ScriptObject *so_object_aux=NULL;
 		ScriptObjectClass *so_class_aux=NULL;
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
@@ -1144,7 +1144,7 @@ load_element_object:
 					StackElement *stk_function_ref=NULL;
 					bool calling_from_object_type=false;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
-					ScriptObjectObject *calling_object = this_object;
+					ScriptObject *calling_object = this_object;
 					unsigned char n_args=instruction->value_op1; // number arguments will pass to this function
 					StackElement *stk_start_arg_call=(stk_vm_current-n_args);
 
@@ -1363,9 +1363,9 @@ load_element_object:
 							calling_object= (ScriptObjectObject *)(stk_start_arg_call-2)->stk_value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
 						}
 
-						if(calling_object != NULL && calling_object->idx_script_class<IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
+						/*if(calling_object != NULL && calling_object->idx_script_class<IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
 							VM_STOP_EXECUTE("Internal error, expected object class");
-						}
+						}*/
 
 						callFunctionNative(
 							 sf

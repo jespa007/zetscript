@@ -1,13 +1,16 @@
+var v=[0,1]
+v.push(2)
+
 /*var a="a";
 var b=1;
 System::println(a+b+a)*/
-
+/*
 var v=[0,1,2,3]
 
 for(var i=0; i < v.length; ++i){
 	System::println(i)
 }
-
+*/
 
 /*var v3=[1,2,3]+[4,5,6]
 
@@ -35,8 +38,8 @@ class B{
 class C{
 	
 }
-
-
+*/
+/*
 function fun2(ref a){
 	
 	a=5 // <-- should not save
@@ -59,8 +62,8 @@ function fun(ref a){
 
 }
 
-var a={}
-*/
+var a={}*/
+
 //System::println(a)	
 
 //System::println("{0} {1}",0)

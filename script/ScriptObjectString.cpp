@@ -119,10 +119,6 @@ namespace zetscript{
 		return ((std::string *)value)->size();
 	}
 
-	StackElement * 			ScriptObjectString::getProperty(const std::string & property_name, int * idx){
-		return ScriptObject::getProperty(property_name,idx);
-	}
-
 	ScriptObjectString *ScriptObjectString::sub(ScriptObjectString *s1){
 		//std::string *str;
 		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(this->zs);

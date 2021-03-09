@@ -19,12 +19,13 @@ namespace zetscript{
 		void 		*	value;	// 8
 		ScriptObjectString();
 
-		virtual StackElement * 			getProperty(const std::string & property_name, int * idx=NULL);
 		void set(const std::string & s);
 		virtual size_t length();
 		virtual std::string toString();
 
 		ScriptObjectString *sub(ScriptObjectString *s1);
+	protected:
+
 
 	private:
 		std::string str_value;

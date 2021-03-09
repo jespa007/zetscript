@@ -111,10 +111,10 @@ namespace zetscript{
 	struct FunctionMember{
 	public:
 		ScriptFunction 		*so_function; // make function pointer first to make compatible with stk
-		ScriptObjectClass	*so_object;
+		ScriptObject		*so_object;
 
 		FunctionMember(
-				ScriptObjectClass	*_so_object
+				ScriptObject		*_so_object
 				,ScriptFunction 	*_so_function){
 			so_object = _so_object;
 			so_function= _so_function;

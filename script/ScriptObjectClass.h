@@ -34,7 +34,7 @@ namespace zetscript{
 			bool itHasSetMetamethod();
 			void deleteNativeObjectOnDestroy(bool _delete_on_destroy);
 
-			void * getNativeObject();
+			virtual void * getNativeObject();
 			ScriptClass * getNativeScriptClass();
 
 			Symbol *		getSymbolMemberByIdx(int idx_symbol_member);
@@ -54,16 +54,11 @@ namespace zetscript{
 			 * This variable tells whether is pointer function or not.
 			 */
 			//ScriptClass *script_class;
-			zs_vector	* builtin_members;
+
 			ScriptClass * script_class_native;
 			bool delete_c_object;
 
 			void * created_object;
 			void * c_object;
-
-
-			StackElement * addPropertyBuiltIn(
-					const std::string & symbol_value
-			);
 		};
 }

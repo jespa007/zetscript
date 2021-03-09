@@ -17,6 +17,8 @@ namespace zetscript{
 	ScriptObjectVector * ScriptObjectVector::newScriptObjectVector(ZetScript *zs){
 		ScriptObjectVector *sv=new ScriptObjectVector();
 		sv->setZetScript(zs);
+		sv->init();
+
 		return sv;
 	}
 
@@ -37,14 +39,16 @@ namespace zetscript{
 
 	ScriptObjectVector::ScriptObjectVector(){
 		this->idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR;
-		//this->init(SCRIPT_CLASS_VECTOR(this), (void *)this);
 	}
 
-	StackElement *ScriptObjectVector::newSlot(){
-		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
-		*stk=stk_undefined;
-		stk_elements.push_back((zs_int)stk);
-		return stk;
+	void ScriptObjectVector::init(){
+		ScriptClass *script_class=getScriptClass();
+		//------------------------------------------------------------------------------
+		// pre-register built-in members...
+		for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
+			Symbol * symbol = (Symbol *)script_class->symbol_members->items[i];
+			addPropertyBuiltIn("push",{new FunctionMember(this,(ScriptFunction *)symbol->ref_ptr),MSK_STK_PROPERTY_FUNCTION_MEMBER | MSK_STK_PROPERTY_FUNCTION});
+		}
 	}
 
 	zs_vector * ScriptObjectVector::getAllElements(){ // return list of stack elements
@@ -55,6 +59,7 @@ namespace zetscript{
 
 		return this->stk_elements.count;
 	}
+
 
 	StackElement * ScriptObjectVector::getElementAt(short idx){
 		if(idx >= (int)stk_elements.count){
@@ -120,8 +125,11 @@ namespace zetscript{
 		return true;
 	}
 
-	StackElement * 			ScriptObjectVector::getProperty(const std::string & property_name, int * idx){
-		return ScriptObject::getProperty(property_name,idx);
+	StackElement *ScriptObjectVector::newSlot(){
+		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
+		*stk=stk_undefined;
+		stk_elements.push_back((zs_int)stk);
+		return stk;
 	}
 
 	void ScriptObjectVector::push(StackElement  * _stk){
@@ -140,7 +148,6 @@ namespace zetscript{
 			VM_SET_USER_ERROR(this->virtual_machine,"pop(): error stack already empty");
 			return NULL;
 		}*/
-
 		StackElement *stk_element=((StackElement *)stk_elements.items[stk_elements.count-1]);
 		if(!eraseElementAt(stk_elements.count-1)){
 			return NULL;

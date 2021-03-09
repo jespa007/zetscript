@@ -25,9 +25,7 @@ namespace zetscript{
 		created_object = NULL;
 		idx_script_class = IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS;
 		delete_c_object = false; // --> user is responsible to delete C objects!
-		memset(&stk_this,0,sizeof(stk_this));
 		script_class_native=NULL;
-		builtin_members=new zs_vector;
 	}
 
 	void ScriptObjectClass::callConstructorBuiltin(ScriptClass *sc ){
@@ -71,7 +69,6 @@ namespace zetscript{
 
 				se->stk_value=new FunctionMember(this,(ScriptFunction *)symbol->ref_ptr);
 				se->properties=MSK_STK_PROPERTY_FUNCTION_MEMBER | MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function member
-				builtin_members->push_back((zs_int)se);
 			}
 			else{ // var...
 
@@ -199,32 +196,9 @@ namespace zetscript{
 		return ScriptObjectObject::toString();
 	}
 
-
-	// built-in only for initialized
-	StackElement * ScriptObjectClass::addPropertyBuiltIn(const std::string & symbol_value){
-		std::string key_value = symbol_value;
-
-		// if ignore duplicate was true, map resets idx to the last function...
-		map_property_keys->set(key_value.c_str(),stk_elements.count);
-
-		StackElement *new_stk=newSlot();
-		*new_stk=stk_undefined;
-
-  	    return new_stk;
-	}
-
 	ScriptObjectClass::~ScriptObjectClass(){
 		ScriptClass *script_class=getScriptClass();
 
-		// deallocate built-in function member objects
-		for(unsigned i=0; i< builtin_members->count; i++){
-			StackElement *stk=(StackElement *)builtin_members->items[i];
-			if(stk->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER){
-				delete (FunctionMember *)stk->stk_value;
-			}
-		}
-
-		delete builtin_members;
 
 		bool deallocated = false;
 		if(created_object != 0 && delete_c_object){

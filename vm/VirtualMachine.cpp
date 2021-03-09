@@ -93,7 +93,7 @@ namespace zetscript{
 	}
 
 	StackElement VirtualMachine::execute(
-		 ScriptObjectClass 		*	this_object
+		 ScriptObject 		*	this_object
 		 ,ScriptFunction 	*	calling_function
 		 ,StackElement 		*  	stk_params
 		 ,unsigned	char  		n_stk_params

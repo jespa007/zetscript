@@ -400,7 +400,7 @@ namespace zetscript{
 		StackElement ret_obj;
 		const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(byte_code_metamethod);
 		const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
-		//zs_vector *stk_elements=NULL;
+		//zs_vector *stk_elements_builtin=NULL;
 		std::string error_found="";
 		zs_vector * list_props=NULL;
 		ScriptObjectClass *script_object_class=NULL;
@@ -482,7 +482,7 @@ namespace zetscript{
 
 			else{ // try find non-static
 				// search for non-static
-				//stk_elements=script_object->getAllProperties();
+				//stk_elements_builtin=script_object->getAllProperties();
 
 				if((ptr_function_found = findFunction(
 					 calling_object
@@ -617,8 +617,8 @@ apply_metamethod_error:
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
 			,bool is_constructor
-			,void *stk_elements_ptr // vector of properties
-			,int stk_elements_len // vector of properties
+			,void *stk_elements_builtin_ptr // vector of properties
+			,int stk_elements_builtin_len // vector of properties
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
@@ -628,15 +628,15 @@ apply_metamethod_error:
 
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
-		bool stk_element_are_vector_element_ptr=stk_elements_ptr!=vm_stack;
+		bool stk_element_are_vector_element_ptr=stk_elements_builtin_ptr!=vm_stack;
 
-		for(int i = stk_elements_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
+		for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 			StackElement *stk_element=NULL;
 
 			if(stk_element_are_vector_element_ptr){
-				stk_element=(StackElement *)(((zs_int *)stk_elements_ptr)[i]);//(StackElement *)list_symbols->items[i];
+				stk_element=(StackElement *)(((zs_int *)stk_elements_builtin_ptr)[i]);//(StackElement *)list_symbols->items[i];
 			}else{
-				stk_element=&((StackElement *)stk_elements_ptr)[i];
+				stk_element=&((StackElement *)stk_elements_builtin_ptr)[i];
 			}
 
 			if((stk_element->properties & MSK_STK_PROPERTY_FUNCTION) == 0){
@@ -779,12 +779,12 @@ apply_metamethod_error:
 				}
 			}
 
-			for(int i = stk_elements_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
+			for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 				StackElement *stk_element=NULL;
 				if(stk_element_are_vector_element_ptr){
-					stk_element=(StackElement *)(((zs_int *)stk_elements_ptr)[i]);//(StackElement *)list_symbols->items[i];
+					stk_element=(StackElement *)(((zs_int *)stk_elements_builtin_ptr)[i]);//(StackElement *)list_symbols->items[i];
 				}else{
-					stk_element=&((StackElement *)stk_elements_ptr)[i];
+					stk_element=&((StackElement *)stk_elements_builtin_ptr)[i];
 				}
 				if((stk_element->properties & MSK_STK_PROPERTY_FUNCTION)== 0){
 					continue;
