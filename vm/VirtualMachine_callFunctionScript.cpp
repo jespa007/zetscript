@@ -1,6 +1,6 @@
 
 #define PROCESS_MOD_OPERATION \
-	msk_properties=GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	msk_properties=stk_result_op1->properties|stk_result_op2->properties;\
 	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
 			PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) % STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_FLOAT )){\
@@ -30,7 +30,7 @@
 
 
 #define PROCESS_ARITHMETIC_OPERATION(__C_OP__, __METAMETHOD__)\
-	msk_properties=GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	msk_properties=stk_result_op1->properties|stk_result_op2->properties;\
 	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
 		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_FLOAT )){\
@@ -62,7 +62,7 @@
 
 
 #define PROCESS_COMPARE_OPERATION(__C_OP__, __METAMETHOD__)\
-	msk_properties=GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties|stk_result_op2->properties);\
+	msk_properties=stk_result_op1->properties|stk_result_op2->properties;\
 	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
 		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}else if(msk_properties == MSK_STK_PROPERTY_BOOL){\
@@ -185,18 +185,10 @@
 	vm_current_scope->properties=_properties;\
 	vm_current_scope++;\
 
-
-
-
-
-
-
 #define LOAD_FROM_STACK(offset,properties) \
 	 ((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? _stk_local_var+offset \
 	:((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? this_object->getElementAt(offset) \
 	:vm_stack + offset\
-
-
 
 #define POP_TWO \
     switch(instruction->properties & MSK_INSTRUCTION_PROPERTY_ILOAD){\
@@ -231,13 +223,13 @@
         stk_result_op1=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
         stk_result_op2=LOAD_FROM_STACK(((instruction->value_op2&0xff0000)>>16),instruction->value_op2);\
         break;\
-    }\
+    }/*\
 	if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK){\
 		stk_result_op1=(StackElement *)stk_result_op1->stk_value;\
 	}\
 	if(stk_result_op2->properties & MSK_STK_PROPERTY_PTR_STK){\
 		stk_result_op2=(StackElement *)stk_result_op2->stk_value;\
-	}
+	}*/
 
 
 #define READ_TWO_POP_ONE \
@@ -246,6 +238,12 @@ stk_result_op1=(stk_vm_current-1);
 
 #define POP_ONE \
 stk_result_op1=--stk_vm_current;
+
+#define LOAD_STK(stk_ptr) \
+	stk_vm_current->stk_value=(stk_ptr)->stk_value;\
+	stk_vm_current->properties=(stk_ptr)->properties;\
+	stk_vm_current++;
+
 
 #define PUSH_STK_PTR(stk_ptr) \
 	stk_vm_current->stk_value=(stk_ptr);\
@@ -351,7 +349,7 @@ namespace zetscript{
 
 			switch(instruction->byte_code){
 			default:
-				VM_STOP_EXECUTE("byte code \"%s\" implemented",byte_code_to_str(instruction->byte_code));
+				VM_STOP_EXECUTE("byte code \"%s\" not implemented",byte_code_to_str(instruction->byte_code));
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
 			case BYTE_CODE_FIND_VARIABLE:
@@ -417,22 +415,40 @@ namespace zetscript{
 				}
 
 				continue;
-			case BYTE_CODE_LOAD_GLOBAL: // load variable ...
+			// store
+			case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
 				PUSH_STK_PTR(vm_stack + instruction->value_op2);
 				continue;
-			case BYTE_CODE_LOAD_LOCAL: // load variable ...
+			case BYTE_CODE_PUSH_STK_LOCAL: // load variable ...
 				PUSH_STK_PTR(_stk_local_var+instruction->value_op2);
+				continue;
+			case BYTE_CODE_PUSH_STK_REF:
+				PUSH_STK_PTR(STK_GET_STK_VAR_REF(_stk_local_var+instruction->value_op2));
+				continue;
+			case BYTE_CODE_PUSH_STK_THIS: // load variable ...
+				PUSH_STK_PTR(this_object->getThisProperty());
+				continue;
+			case BYTE_CODE_PUSH_STK_MEMBER_VAR: // direct load
+				PUSH_STK_PTR(this_object->getElementAt(instruction->value_op2));
+				continue;
+
+			// load
+			case BYTE_CODE_LOAD_GLOBAL: // load variable ...
+				*stk_vm_current++=*(vm_stack+instruction->value_op2);
+				continue;
+			case BYTE_CODE_LOAD_LOCAL: // load variable ...
+				*stk_vm_current++=*(_stk_local_var+instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_REF:
 				*stk_vm_current++=*STK_GET_STK_VAR_REF(_stk_local_var+instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_THIS: // load variable ...
-				PUSH_STK_PTR(this_object->getThisProperty());
+				*stk_vm_current++=*this_object->getThisProperty();
 				continue;
 			case BYTE_CODE_LOAD_MEMBER_VAR: // direct load
-				PUSH_STK_PTR(this_object->getElementAt(instruction->value_op2));
+				*stk_vm_current++=*this_object->getElementAt(instruction->value_op2);
 				continue;
-			case BYTE_CODE_LOAD_CONSTRUCTOR:
+			case BYTE_CODE_PUSH_STK_CONSTRUCTOR:
 				PUSH_STK_PTR(((ScriptObjectClass *)((stk_vm_current-1)->stk_value))->getElementAt(instruction->value_op2));
 				continue;
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
@@ -442,6 +458,10 @@ namespace zetscript{
 					stk_result_op1 = (StackElement *)stk_result_op1->stk_value;
 				}
 
+				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
+					stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr();
+				}
+
 				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 					so_object_aux = (ScriptObjectObject *)(stk_result_op1->stk_value);
 				}
@@ -449,9 +469,6 @@ namespace zetscript{
 				stk_var=NULL;
 
 				if(so_object_aux != NULL){
-					if(so_object_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF){
-						ScriptObjectVarRef *o_script_var_ref=(ScriptObjectVarRef *)so_object_aux;
-					}
 
 					if(so_object_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
 						ScriptObjectVector * so_vector = (ScriptObjectVector *)so_object_aux;
@@ -557,7 +574,14 @@ load_element_object:
 						continue;
 					}
 				}
-				PUSH_STK_PTR(stk_var);
+
+				if((stk_var->properties & MSK_STK_PROPERTY_PTR_STK) == 0){ // copy its value directly
+					*stk_vm_current++=*stk_var;
+				}
+				else{ // copy the content of this value
+					*stk_vm_current++=*((StackElement *)stk_var->stk_value);
+				}
+
 
 				if((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){ // fast load access without pass through switch instruction
 					instruction++;

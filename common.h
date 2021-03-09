@@ -45,7 +45,7 @@ namespace zetscript{
 	//typedef unsigned char 									ClassTypeIdx;
 	typedef intptr_t zs_int;
 
-	typedef enum:int{
+	typedef enum:short{
 
 		// !!! HERE WE DEFINE THE BUILTINT CLASSES
 		// !!! WARNING THE REGISTER HAS TO RESPECT THE SAME ORDER
@@ -69,9 +69,9 @@ namespace zetscript{
 		IDX_BUILTIN_TYPE_ZETSCRIPT,
 		IDX_BUILTIN_TYPE_FUNCTION, // function a(){}
 		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF,
-		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT, //  {}
 		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING, // "string"
 		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR, // vector []
+		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT, //  {}
 		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS, // class A{}
 		// !!!
 		// !!! DO NOT DECLARE NOTHING HERE!! RESERVED FOR USER CLASSES !!!!!

@@ -3,7 +3,7 @@
  *  See LICENSE file for details.
  */
 
-#include "zetscript.h"
+//#include "zetscript.h"
 
 namespace zetscript{
 

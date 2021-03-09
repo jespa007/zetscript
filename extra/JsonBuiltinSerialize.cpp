@@ -1,127 +1,69 @@
+
 namespace zetscript{
+
+#define ZS_JSON_SERIALIZE_NEW_LINE(str_value,ident) \
+	str_value += "\n";\
+	for (int k = 0; k < (ident); k++)	str_value += "\t";
 
 	namespace json{
 
-		template<typename _T>
-		void serialize_json_var_map(std::string & str_result, _T * json_var_map, int ident, bool minimized) {
+		void serialize_stk(std::string & str_result, StackElement *stk, int ident,bool is_formatted);
 
-			str_result += "{";
 
-			if (minimized==false){
-				ZJ_FORMAT_OUTPUT_NEW_LINE(str_result,ident+1);
-			}
-
-			int j=0;
-			for (auto it=json_var_map->begin();it !=json_var_map->end();it++,j++) {
-
-				if (j > 0){
-					if (minimized==false){
-						ZJ_FORMAT_OUTPUT_NEW_LINE(str_result,ident+1);
-					}
-					str_result += ",";
-				}
-
-				str_result += "\""+it->first +"\":";
-				serialize_json_var(str_result,json_var_map->getJsonVarPtr(it->first),ident+1,minimized);
-
-			}
-
-			if (minimized==false){
-				ZJ_FORMAT_OUTPUT_NEW_LINE(str_result,ident);
-			}
-			str_result += "}";
-		}
-
-		template<typename _T>
-		void serialize_json_var_vector(std::string & str_result, _T * json_var_vector,int ident, bool minimized){
+		void serialize_vector(std::string & str_result, ScriptObjectVector * vector,int ident, bool is_formatted){
 
 			str_result+="[";
 
-			if (minimized==false && json_var_vector->getType() !=JsonVarType::JSON_VAR_TYPE_VECTOR_OF_OBJECTS){
-				ZJ_FORMAT_OUTPUT_NEW_LINE(str_result,ident+1);
+			if (is_formatted){
+				ZS_JSON_SERIALIZE_NEW_LINE(str_result,ident+1);
 			}
-			for (unsigned i = 0; i < json_var_vector->size(); i++) {
+
+			for (unsigned i = 0; i < vector->length(); i++) {
 				if (i > 0) {
 					str_result += ",";
 				}
 
-				serialize_json_var(str_result,json_var_vector->getJsonVarPtr(i),ident,minimized);
+				serialize_stk(str_result,vector->getElementAt(i),ident,is_formatted);
 			}
-			if (minimized==false && json_var_vector->getType() !=JsonVarType::JSON_VAR_TYPE_VECTOR_OF_OBJECTS){
-				ZJ_FORMAT_OUTPUT_NEW_LINE(str_result,ident);
+			if (is_formatted){
+				ZS_JSON_SERIALIZE_NEW_LINE(str_result,ident);
 			}
 			str_result+="]";
 		}
 
-		void serialize_json_var_object(std::string & str_result, JsonVar *json_var, int ident, bool minimized){
+		void serialize_object(std::string & str_result, ScriptObjectObject *obj, int ident, bool is_formatted){
 			int k=0;
-
-			if(json_var->getType() != JsonVarType::JSON_VAR_TYPE_OBJECT){
-				throw std::runtime_error(zj_strutils::format("Expected json object but it was %s",json_var->getTypeStr()));
-			}
 
 			str_result += "{";
 
-			if (minimized == false){
+			if (is_formatted){
 				str_result += "\n";
 			}
 
-			char *aux_p = (char *)json_var->getPtrDataStart();
-			char *end_p = (char *)json_var->getPtrDataEnd();
-
-			for (; aux_p < end_p; k++) {
-				JsonVar * p_sv = (JsonVar *)aux_p;
-
-				if (p_sv != NULL) {
-
-					if (minimized==false){
-						for (int i = 0; i <= (ident); i++){
-							str_result += "\t";
-						}
-					}
-
-					str_result += "\"" + p_sv->getVariableName()+ "\":";
-
-					switch (p_sv->getType())// == )
-					{
-					case JsonVarType::JSON_VAR_TYPE_BOOLEAN:
-					case JsonVarType::JSON_VAR_TYPE_NUMBER:
-					case JsonVarType::JSON_VAR_TYPE_STRING:
-						serialize_json_var(str_result,p_sv,0,minimized);
-						break;
-
-					case JsonVarType::JSON_VAR_TYPE_OBJECT:
-					case JsonVarType::JSON_VAR_TYPE_VECTOR_OF_BOOLEANS:
-					case JsonVarType::JSON_VAR_TYPE_VECTOR_OF_STRINGS:
-					case JsonVarType::JSON_VAR_TYPE_VECTOR_OF_NUMBERS:
-					case JsonVarType::JSON_VAR_TYPE_VECTOR_OF_OBJECTS:
-					case JsonVarType::JSON_VAR_TYPE_MAP_OF_BOOLEANS:
-					case JsonVarType::JSON_VAR_TYPE_MAP_OF_STRINGS:
-					case JsonVarType::JSON_VAR_TYPE_MAP_OF_NUMBERS:
-					case JsonVarType::JSON_VAR_TYPE_MAP_OF_OBJECTS:
-						if (minimized==false){
-							str_result += "\n";
-							for (int i = 0; i <= ident; i++){
-								str_result += "\t";
-							}
-						}
-						serialize_json_var(str_result,p_sv,ident+1, minimized);
-						break;
+			for(auto it=obj->begin();!it.end();it.next(),k++){
+				if (is_formatted){
+					for (int i = 0; i <= (ident); i++){
+						str_result += "\t";
 					}
 				}
-				aux_p += p_sv->getSizeData();
 
-				if (aux_p < end_p){
+				if (k>0){
 					str_result += ",";
 				}
 
-				if (minimized == false){
+
+				str_result += "\"" + std::string(it.getKey())+ "\":";
+
+				serialize_stk(str_result, (StackElement *)it.getValue(), ident,is_formatted);
+
+
+				if (is_formatted){
 					str_result += "\n";
 				}
 
 			}
 
-			if (minimized == false){
+			if (is_formatted){
 				for (int i = 0; i < ident; i++){
 					str_result += "\t";
 				}
@@ -129,60 +71,66 @@ namespace zetscript{
 
 			str_result += "}";
 
-			if (minimized == false){
+			if (is_formatted){
 				"\n";
 			}
 		}
 
-		void serialize_json_var(std::string & str_result, JsonVar *json_var, int ident,bool minimized){
-			switch(json_var->getType()){
+		void serialize_stk(std::string & str_result, StackElement *stk, int ident,bool is_formatted){
+			ScriptObject *obj=NULL;
+			int16_t var_type = 0;
+
+			if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk)){
+				stk=((ScriptObjectVarRef *)stk->stk_value)->getStackElementPtr();
+			}
+
+			var_type = GET_MSK_STK_PROPERTY_TYPES(stk->properties);
+
+
+			switch(var_type){
 			default:
 				break;
-			case JSON_VAR_TYPE_BOOLEAN:
-				str_result+=(*((JsonVarBoolean<> *)json_var)==true)?"true":"false";
+			case MSK_STK_PROPERTY_ZS_FLOAT:
+			case MSK_STK_PROPERTY_BOOL:
+			case MSK_STK_PROPERTY_ZS_INT:
+				str_result+=stk->toString();
 				break;
-			case JSON_VAR_TYPE_NUMBER:
-				str_result+=zj_strutils::float_to_str(*((JsonVarNumber<> *)json_var));
+			case MSK_STK_PROPERTY_UNDEFINED:
+				str_result+="null";
 				break;
-			case JSON_VAR_TYPE_STRING:
-				str_result+=std::string("\"") + *((JsonVarString<> *)json_var) + "\"";
-				break;
-			case JSON_VAR_TYPE_OBJECT:
-				serialize_json_var_object(str_result, json_var,ident,minimized);
-				break;
-			case JSON_VAR_TYPE_VECTOR_OF_BOOLEANS:
-				serialize_json_var_vector<JsonVarVectorBoolean<>>(str_result, (JsonVarVectorBoolean<> *)json_var,ident,minimized);
-				break;
-			case JSON_VAR_TYPE_VECTOR_OF_NUMBERS:
-				serialize_json_var_vector<JsonVarVectorNumber<>>(str_result,(JsonVarVectorNumber<> *)json_var,ident,minimized);
-				break;
-			case JSON_VAR_TYPE_VECTOR_OF_STRINGS:
-				serialize_json_var_vector<JsonVarVectorString<>>(str_result,(JsonVarVectorString<> *)(json_var),ident,minimized);
-				break;
-			case JSON_VAR_TYPE_VECTOR_OF_OBJECTS:
-				serialize_json_var_vector<JsonVarVectorObject<TestVoid>>(str_result,(JsonVarVectorObject<TestVoid> *)json_var,ident,minimized);
-				break;
-			case JSON_VAR_TYPE_MAP_OF_BOOLEANS:
-				serialize_json_var_map<JsonVarMapBoolean<>>(str_result, (JsonVarMapBoolean<> *)json_var,ident,minimized);
-				break;
-			case JSON_VAR_TYPE_MAP_OF_NUMBERS:
-				serialize_json_var_map<JsonVarMapNumber<>>(str_result, (JsonVarMapNumber<> *)json_var,ident,minimized);
-				break;
-			case JSON_VAR_TYPE_MAP_OF_STRINGS:
-				serialize_json_var_map<JsonVarMapString<>>(str_result, (JsonVarMapString<> *)json_var,ident,minimized);
-				break;
-			case JSON_VAR_TYPE_MAP_OF_OBJECTS:
-				serialize_json_var_map<JsonVarMapObject<TestVoid>>(str_result, (JsonVarMapObject<TestVoid> *)json_var,ident,minimized);
+			case MSK_STK_PROPERTY_SCRIPT_OBJECT: // vector or object
+
+				if (is_formatted){
+					str_result += "\n";
+					for (int i = 0; i <= ident; i++){
+						str_result += "\t";
+					}
+				}
+
+				obj=((ScriptObject *)stk->stk_value);
+				switch(obj->idx_script_class){
+				case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
+					str_result+=std::string("\"") + ((ScriptObjectString *)obj)->toString() + "\"";
+					break;
+				case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR:
+					serialize_vector(str_result,(ScriptObjectVector *)obj,ident,is_formatted);
+					break;
+				default:
+					if(obj->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT){
+						serialize_object(str_result,(ScriptObjectObject *)obj,ident,is_formatted);
+					}
+					break;
+				}
 				break;
 			}
 		}
 
-		std::string serialize(JsonVar *json_var, bool minimized){
-			std::string serialized_var="";
+		std::string serialize(StackElement *stk, bool is_formatted){
+			std::string serialized_stk="";
 
-			serialize_json_var(serialized_var,json_var,0,minimized);
+			serialize_stk(serialized_stk,stk,0,is_formatted);
 
-			return serialized_var;
+			return serialized_stk;
 		}
 
 

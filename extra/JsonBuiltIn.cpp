@@ -12,12 +12,12 @@ namespace zetscript{
 		const char *str_start;
 	}DeserializeData;
 
-	extern char json_message_error[16836];
+	//extern char json_message_error[16836];
 
 
 
-	void throw_error(DeserializeData *deserialize_data, const char * str_current, int line, const char *string_text, ...);
-	void throw_warning(DeserializeData *deserialize_data, const char * str_current, int line, const char *string_text, ...);
+	//void throw_error(DeserializeData *deserialize_data, const char * str_current, int line, const char *string_text, ...);
+	//void throw_warning(DeserializeData *deserialize_data, const char * str_current, int line, const char *string_text, ...);
 
 
 	const char end_char_standard_value[] = {
@@ -31,15 +31,17 @@ namespace zetscript{
 			0
 	};
 
-	#include "JsonBuiltinDeserialize.cpp"
+	//#include "JsonBuiltinDeserialize.cpp"
 	#include "JsonBuiltinSerialize.cpp"
 
 	ScriptObjectObject * JsonBuiltIn::deserialize(ScriptObjectString *str_json){
 		// deserialize ...
+		return NULL;
 	}
 
 	ScriptObjectString * JsonBuiltIn::serialize(ScriptObjectObject *obj,bool minimized){
 		// iterate for all elements in the obj
+		return NULL;
 
 	}
 }

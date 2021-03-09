@@ -12,7 +12,7 @@ namespace zetscript{
 		return ac;
 	}
 
-	static ScriptObjectObject * newScriptObjectObjectAddStk(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
+	ScriptObjectObject * ScriptObjectObject::newScriptObjectObjectAdd(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
 		std::string error="";
 		ScriptObjectObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
 		//zs_map_iterator it_1=o1->map_property_keys->begin();
@@ -25,11 +25,8 @@ namespace zetscript{
 		for(auto it=o2->begin(); it.end();it.next()){
 			obj->addProperty(it.getKey(),error,(StackElement *)it.getValue());
 		}
-
-
 		return obj;
 	}
-
 
 	ScriptObjectObject::ScriptObjectObject(){
 		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT;

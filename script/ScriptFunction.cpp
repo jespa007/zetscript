@@ -50,11 +50,16 @@ namespace zetscript{
 		return NULL;
 	}
 
-#define GET_ILOAD_ACCESS_VARIABLE_TO_STR(properties) \
+#define GET_ILOAD_ACCESS_TYPE_STR(properties) \
  ((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? "Local"\
-:((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? "this."\
+:((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? "This"\
 :"Global"\
 
+
+#define GET_ILOAD_R_STR(properties,value) \
+	 ((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->registered_symbols->items[value])->name.c_str()\
+	:((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_members->items[value])->name.c_str()\
+	:((Symbol *)MAIN_FUNCTION(sfo)->registered_symbols->items[value])->name.c_str()\
 
 
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc){
@@ -124,31 +129,31 @@ namespace zetscript{
 				 iload_info=zs_strutils::format("%s", instruction->getConstantValueOp2ToString().c_str());
 				 break;
 			case MSK_INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
-				 iload_info=zs_strutils::format("%s[%i]"
-					 ,GET_ILOAD_ACCESS_VARIABLE_TO_STR(instruction->properties)
-					 ,instruction->value_op1
+				 iload_info=zs_strutils::format("%s[\"%s\"]"
+					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
+					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				 break;
 			case MSK_INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
-			 	 iload_info=zs_strutils::format("%s,%s[%i]"
+			 	 iload_info=zs_strutils::format("%s,%s[\"%s\"]"
 					 ,instruction->getConstantValueOp2ToString().c_str()
-					 ,GET_ILOAD_ACCESS_VARIABLE_TO_STR(instruction->properties)
-					 ,instruction->value_op1
+					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
+					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				break;
 			case MSK_INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
-				 iload_info=zs_strutils::format("%s[%i],%s"
-					 ,GET_ILOAD_ACCESS_VARIABLE_TO_STR(instruction->properties)
-					 ,instruction->value_op1
+				 iload_info=zs_strutils::format("%s[\"%s\"],%s"
+					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
+					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 					 ,instruction->getConstantValueOp2ToString().c_str()
 				 );
 				break;
 		   case MSK_INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
-		   	   iload_info=zs_strutils::format("%s[%i],%s[%i]"
-		  			 ,GET_ILOAD_ACCESS_VARIABLE_TO_STR(instruction->properties)
-		  			 ,instruction->value_op1
-		  			 ,GET_ILOAD_ACCESS_VARIABLE_TO_STR(instruction->value_op2)
-		  			 ,(instruction->value_op2 & 0xff0000) >> 16
+		   	   iload_info=zs_strutils::format("%s[\"%s\"],%s[\"%s\"]"
+		  			 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
+		  			 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
+		  			 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->value_op2)
+					 ,GET_ILOAD_R_STR(instruction->value_op2,(instruction->value_op2 & 0xff0000) >> 16)
 		  		);
 				break;
 			}
@@ -178,11 +183,16 @@ namespace zetscript{
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\tNEW_STRING\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
 				break;
 
+			case BYTE_CODE_PUSH_STK_GLOBAL:
+			case BYTE_CODE_PUSH_STK_LOCAL:
+			case BYTE_CODE_PUSH_STK_REF:
+			case BYTE_CODE_PUSH_STK_THIS:
+			case BYTE_CODE_PUSH_STK_MEMBER_VAR:
+			case BYTE_CODE_PUSH_STK_CONSTRUCTOR:
 			case BYTE_CODE_LOAD_FUNCTION:
 			case BYTE_CODE_FIND_VARIABLE:
 			case BYTE_CODE_LOAD_REF:
 			case BYTE_CODE_LOAD_LOCAL:
-			case BYTE_CODE_LOAD_CONSTRUCTOR:
 			case BYTE_CODE_LOAD_THIS:
 			case BYTE_CODE_LOAD_GLOBAL:
 			case BYTE_CODE_LOAD_MEMBER_VAR:

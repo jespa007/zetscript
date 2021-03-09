@@ -120,7 +120,7 @@ namespace zetscript{
 		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
 		void * stk_value; // operable value
 		//void * var_ref; // stack ref in case to assign new value.
-		unsigned short properties; // it tells its properties
+		uint16_t properties; // it tells its properties
 
 		// it gives stackelement as string (the result should be deleted)
 		const char * typeStr();

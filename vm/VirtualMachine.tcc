@@ -311,6 +311,14 @@ namespace zetscript{
 			,StackElement *stk_result_op2
 			, bool & error
 	){
+
+		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
+			stk_result_op1=((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr();
+		}
+
+		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){
+			stk_result_op2=((ScriptObjectVarRef *)stk_result_op2->stk_value)->getStackElementPtr();
+		}
 		//error=true;
 		switch(byte_code_metamethod){
 		case ByteCodeMetamethod::BYTE_CODE_METAMETHOD_ADD:
@@ -339,18 +347,32 @@ namespace zetscript{
 
 				return true;
 			}
-			else if(
-				STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op1)
+			else{ // try object
+				ScriptObject *obj1=NULL;
+				ScriptObject *obj2=NULL;
+
+				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					obj1=(ScriptObject *)stk_result_op1->stk_value;
+				}
+
+				if(stk_result_op2->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					obj2=(ScriptObject *)stk_result_op2->stk_value;
+				}
+
+
+				if(
+					obj1->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
 					&&
-				STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)
-			){
-				ScriptObjectObject *so_object=ScriptObjectObject::newScriptObjectObjectAdd(
-						this->zs
-						,(ScriptObjectObject *)stk_result_op1->stk_value
-						,(ScriptObjectObject *)stk_result_op2->stk_value
-				);
-				createSharedPointer(so_object);
-				PUSH_OBJECT(so_object);
+					obj2->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
+				){
+					ScriptObjectObject *so_object=ScriptObjectObject::newScriptObjectObjectAdd(
+							this->zs
+							,(ScriptObjectObject *)obj1
+							,(ScriptObjectObject *)obj2
+					);
+					createSharedPointer(so_object);
+					PUSH_OBJECT(so_object);
+				}
 			}
 			break;
 		default:

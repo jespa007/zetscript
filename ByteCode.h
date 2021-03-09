@@ -15,7 +15,15 @@ namespace zetscript{
 		BYTE_CODE_END_FUNCTION = 0,
 		BYTE_CODE_FIND_VARIABLE,
 
-		// load variable
+		// load variable to push
+		BYTE_CODE_PUSH_STK_GLOBAL,
+		BYTE_CODE_PUSH_STK_LOCAL,
+		BYTE_CODE_PUSH_STK_REF,
+		BYTE_CODE_PUSH_STK_THIS,
+		BYTE_CODE_PUSH_STK_MEMBER_VAR,
+		BYTE_CODE_PUSH_STK_CONSTRUCTOR,
+
+		// load contents variable
 		BYTE_CODE_LOAD_GLOBAL,
 		BYTE_CODE_LOAD_LOCAL,
 		BYTE_CODE_LOAD_REF,
@@ -36,7 +44,7 @@ namespace zetscript{
 		BYTE_CODE_LOAD_ZS_INT,
 		BYTE_CODE_LOAD_CLASS,
 		BYTE_CODE_LOAD_STACK_ELEMENT,
-		BYTE_CODE_LOAD_CONSTRUCTOR,
+
 
 		BYTE_CODE_STORE_CONST, // it stores and set stack only-read
 		BYTE_CODE_STORE, 	 // mov expression to var ( > 1 multiple)
@@ -177,8 +185,6 @@ namespace zetscript{
 	const char * byte_code_metamethod_to_symbol_str(ByteCodeMetamethod op);
 	int			 get_num_arguments_static_metamethod(ByteCodeMetamethod op);
 	int			 get_num_arguments_non_static_metamethod(ByteCodeMetamethod op);
-
-
 
 
 }

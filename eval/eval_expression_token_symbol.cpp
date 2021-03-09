@@ -481,6 +481,7 @@ namespace zetscript{
 				|| 	(post_operation == PostOperation::POST_OPERATION_DEC)
 			){
 				ByteCode byte_code_post_operation= ByteCode::BYTE_CODE_INVALID;
+				Instruction *last_load_instruction=&token_node_symbol.instructions[token_node_symbol.instructions.size()-1]->vm_instruction;
 
 				if(token_node_symbol.token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
 					EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"expected identifier after post operation \"%s\"",eval_data_post_operations[ post_operation].str);
@@ -518,6 +519,25 @@ namespace zetscript{
 						byte_code_post_operation
 					)
 				);
+
+				// change load by push stk
+				switch(last_load_instruction->byte_code){
+				case BYTE_CODE_LOAD_GLOBAL:
+					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+					break;
+				case BYTE_CODE_LOAD_LOCAL:
+					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_LOCAL;
+					break;
+				case BYTE_CODE_LOAD_REF:
+					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_REF;
+					break;
+				case BYTE_CODE_LOAD_THIS:
+					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_THIS;
+					break;
+				case BYTE_CODE_LOAD_MEMBER_VAR:
+					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_MEMBER_VAR;
+					break;
+				}
 			}
 
 
@@ -530,6 +550,8 @@ namespace zetscript{
 					EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"expected identifier before pre operation \"%s\"",eval_data_pre_operations[ pre_operation].str);
 				}
 
+				Instruction *last_load_instruction=&token_node_symbol.instructions[token_node_symbol.instructions.size()-1]->vm_instruction;
+
 				token_node_symbol.instructions.push_back(
 					new EvalInstruction(
 						pre_operation == PreOperation::PRE_OPERATION_NEG ? ByteCode::BYTE_CODE_NEG:
@@ -538,6 +560,25 @@ namespace zetscript{
 						ByteCode::BYTE_CODE_PRE_INC
 					)
 				);
+
+				// change load by push stk
+				switch(last_load_instruction->byte_code){
+				case BYTE_CODE_LOAD_GLOBAL:
+					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+					break;
+				case BYTE_CODE_LOAD_LOCAL:
+					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_LOCAL;
+					break;
+				case BYTE_CODE_LOAD_REF:
+					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_REF;
+					break;
+				case BYTE_CODE_LOAD_THIS:
+					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_THIS;
+					break;
+				case BYTE_CODE_LOAD_MEMBER_VAR:
+					last_load_instruction->byte_code=last_load_instruction->byte_code=BYTE_CODE_PUSH_STK_MEMBER_VAR;
+					break;
+				}
 			}
 
 

@@ -1,8 +1,14 @@
-0<6
+/*var a="a";
+var b=1;
+System::println(a+b+a)*/
 
-var a="a"
-	var b="b"
-System::println(a+1)
+var v=[0,1,2,3]
+
+for(var i=0; i < v.length; ++i){
+	System::println(i)
+}
+
+
 /*var v3=[1,2,3]+[4,5,6]
 
 for(var i=0; i < v3.length; i++){

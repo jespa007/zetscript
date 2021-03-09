@@ -19,7 +19,7 @@ namespace zetscript{
 
 		// Construct ...
 		static ScriptObjectObject * newScriptObjectObject(ZetScript	*_zs);
-		static ScriptObjectObject * newScriptObjectObjectAddStk(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2);
+		static ScriptObjectObject * newScriptObjectObjectAdd(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2);
 
 		ScriptObjectObject();
 
