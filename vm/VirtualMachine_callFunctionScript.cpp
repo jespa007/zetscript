@@ -493,10 +493,6 @@ load_element_object:
 						POP_ONE; // get var op1 and symbol op2
 					}
 
-					if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {
-						stk_result_op1=((StackElement *)stk_result_op1->stk_value);
-					}
-
 					if((stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT)!= MSK_STK_PROPERTY_SCRIPT_OBJECT)
 					{
 						VM_STOP_EXECUTE(
@@ -1090,10 +1086,6 @@ load_element_object:
 				continue;
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
 				 POP_TWO;
-
-				if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectObject::VAR_TYPE::OBJECT){
-					stk_result_op1=(StackElement *)stk_result_op1->stk_value; // stk_value is expect to contents a stack variable
-				}
 				switch((zs_int)stk_result_op2->stk_value){
 				case IDX_BUILTIN_TYPE_ZS_INT_PTR_C:
 					PUSH_BOOLEAN((stk_result_op1->properties & MSK_STK_PROPERTY_ZS_INT)!=0);
@@ -1260,17 +1252,8 @@ load_element_object:
 									}
 
 								}else{ // copy
-									unsigned short properties = stk_arg->properties;
-									if(properties & MSK_STK_PROPERTY_PTR_STK){
-										*stk_arg=*((StackElement *)stk_arg->stk_value);
-									}
-
 									if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==true) { // not passing by ref it gets its value
 										*stk_arg=*((ScriptObjectVarRef *)stk_arg->stk_value)->getStackElementPtr();
-
-										if(stk_arg->properties & MSK_STK_PROPERTY_PTR_STK){ // and because is a ref var, we get the value that apoint
-											*stk_arg=*((StackElement *)stk_arg->stk_value);
-										}
 									}
 
 
@@ -1447,10 +1430,6 @@ load_element_object:
 				continue;
 			 case  BYTE_CODE_RET:
 				for(StackElement *stk_it=stk_vm_current-1;stk_it>=stk_start;stk_it--){ // can return something. value is +1 from stack
-					if(stk_it->properties & MSK_STK_PROPERTY_PTR_STK){ // unpack
-						*stk_it=*((StackElement *)stk_it->stk_value); // unpack
-					}
-
 					// if scriptvariable and in the zeros list, deattach
 					if(stk_it->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 						if(!STK_IS_THIS(stk_it)){
@@ -1509,9 +1488,6 @@ load_element_object:
 					if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 						ScriptObjectClass *script_object_class=NULL;
 						StackElement *se=stk_result_op1;
-						if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK){
-							se=(StackElement *)(stk_result_op1->stk_value);
-						}
 
 						so_aux = (ScriptObject *)(se)->stk_value;
 
