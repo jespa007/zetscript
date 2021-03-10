@@ -85,12 +85,12 @@
 #include "scope/Scope.h"
 #include "scope/ScopeFactory.h"
 
-#include "extra/MathBuiltIn.h"
-#include "extra/SystemBuiltIn.h"
-#include "extra/StringBuiltIn.h"
-#include "extra/IntegerBuiltIn.h"
-#include "extra/FloatBuiltIn.h"
-#include "extra/JsonBuiltIn.h"
+#include "extra/MathModule.h"
+#include "extra/SystemMod.h"
+#include "extra/StringMod.h"
+#include "extra/IntegerMod.h"
+#include "extra/FloatBuiltin.h"
+#include "extra/JsonMod.h"
 
 #include "script/ScriptObject.h"
 #include "script/ScriptObjectString.h"
@@ -281,7 +281,7 @@ namespace zetscript{
 			ScriptObjectVector *vsv = ZS_NEW_OBJECT_VECTOR(zs_instance);
 
 			for ( unsigned i = 0; i < v.size(); i++){
-				StackElement *stk = vsv->newSlot();
+				StackElement *stk = vsv->newUserSlot();
 				//zs_int uvar = (zs_int)(v[i]);
 				*stk = zs_instance->convertVarToStackElement((zs_int)(v[i]),zs_instance->script_class_factory->getIdxClassFromItsNativeType(typeid(T).name()));
 			}
@@ -450,9 +450,9 @@ namespace zetscript{
 		bool eval_bool;
 		std::string eval_string;
 		int idx_current_global_variable_checkpoint;
-		MathBuiltIn math_built_in;
-		SystemBuiltIn 	system_built_in;
-		StringBuiltIn 	string_built_in;
+		MathModule math_built_in;
+		SystemMod 	system_built_in;
+		StringMod 	string_built_in;
 
 
 		//===================================================================================================

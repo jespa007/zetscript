@@ -123,7 +123,7 @@ namespace zetscript{
 		 * Built in register C Class, like ScriptObject,ScriptObjectString...
 		 */
 	/*	template<typename C>
-		void registerNativeClassBuiltIn(
+		void registerNativeClassBuiltin(
 			const std::string & class_name
 			, C * (*_constructor)()
 			, void (*_destructor)(C *)
@@ -198,7 +198,7 @@ namespace zetscript{
 
 		typedef struct{
 			const char *   type_str;
-			IdxBuiltInType  id;
+			IdxBuiltinType  id;
 		}PrimitiveType;
 
 		typedef struct{

@@ -400,7 +400,7 @@ namespace zetscript{
 		StackElement ret_obj;
 		const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(byte_code_metamethod);
 		const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
-		//zs_vector *stk_elements_builtin=NULL;
+		//zs_vector *stk_builtin_elements=NULL;
 		std::string error_found="";
 		zs_vector * list_props=NULL;
 		ScriptObjectClass *script_object_class=NULL;
@@ -459,7 +459,7 @@ namespace zetscript{
 		}
 
 		if(script_object_class->isNativeObject()){
-			list_props=script_object_class->getAllElements();//getFunctions();
+			list_props=script_object_class->getAllBuiltinElements();//getFunctions();
 
 			ptr_function_found = findFunction(
 				 calling_object
@@ -482,7 +482,7 @@ namespace zetscript{
 
 			else{ // try find non-static
 				// search for non-static
-				//stk_elements_builtin=script_object->getAllProperties();
+				//stk_builtin_elements=script_object->getAllProperties();
 
 				if((ptr_function_found = findFunction(
 					 calling_object
@@ -505,7 +505,7 @@ namespace zetscript{
 				}
 			}
 		}else{ // get first item...
-			StackElement * stk = script_object_class->getProperty(str_symbol_metamethod,NULL);
+			StackElement * stk = script_object_class->getUserProperty(str_symbol_metamethod,NULL);
 
 			if(stk == NULL){
 				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);

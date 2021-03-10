@@ -234,7 +234,7 @@ namespace zetscript{
 	 * Register C Class. Return index registered class
 	 */
 	/*template<typename C>
-	void ScriptClassFactory::registerNativeClassBuiltIn(
+	void ScriptClassFactory::registerNativeClassBuiltin(
 			const std::string & class_name
 			, C * (*_constructor)()
 			, void (*_destructor)(C *)

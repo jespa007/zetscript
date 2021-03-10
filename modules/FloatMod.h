@@ -8,8 +8,8 @@
 
 namespace zetscript{
 
-	class IntegerBuiltin{
+	class FloatMod{
 	public:
-		static zs_int parse(zs_float *number);
+		static zs_float parse(zs_int number);
 	};
 }

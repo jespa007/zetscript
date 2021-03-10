@@ -3,9 +3,13 @@
  *  See LICENSE file for details.
  */
 
-#include "zetscript.h"
+#pragma once
+
 
 namespace zetscript{
 
-	const zs_float MathBuiltin::PI=M_PI;
+	class IntegerMod{
+	public:
+		static zs_int parse(zs_float *number);
+	};
 }

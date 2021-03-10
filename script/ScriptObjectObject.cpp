@@ -15,26 +15,25 @@ namespace zetscript{
 	ScriptObjectObject * ScriptObjectObject::newScriptObjectObjectAdd(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
 		std::string error="";
 		ScriptObjectObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
-		//zs_map_iterator it_1=o1->map_property_keys->begin();
-		//zs_map_iterator it_2=o2->map_property_keys->begin();
+		//zs_map_iterator it_1=o1->map_user_property_keys->begin();
+		//zs_map_iterator it_2=o2->map_user_property_keys->begin();
 
 		for(auto it=o1->begin(); it.end();it.next()){
-			obj->addProperty(it.getKey(),error,o2->getElementAt(it.getValue()));
+			obj->addUserProperty(it.getKey(),error,o2->getUserElementAt(it.getValue()));
 		}
 
 		for(auto it=o2->begin(); it.end();it.next()){
-			obj->addProperty(it.getKey(),error,o2->getElementAt(it.getValue()));
+			obj->addUserProperty(it.getKey(),error,o2->getUserElementAt(it.getValue()));
 		}
 		return obj;
 	}
 
 	ScriptObjectObject::ScriptObjectObject(){
 		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT;
-		map_property_keys=new zs_map();
+		map_user_property_keys=new zs_map();
 	}
 
-
-	StackElement * ScriptObjectObject::addProperty(
+	StackElement * ScriptObjectObject::addUserProperty(
 			const std::string & symbol_value
 			,std::string & error
 			//, const ScriptFunction *info_function
@@ -74,7 +73,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		if(map_property_keys->exist(symbol_value.c_str())){
+		if(map_user_property_keys->exist(symbol_value.c_str())){
 			error=zs_strutils::format("\"%s\" symbol already exists",symbol_value.c_str());
 			return NULL;
 		}
@@ -95,31 +94,21 @@ namespace zetscript{
 		}
 
 		if(idx_stk_element != NULL){
-			*idx_stk_element=stk_elements.count;
+			*idx_stk_element=stk_user_elements.count;
 		}
 
 		std::string key_value = symbol_value;
-		map_property_keys->set(key_value.c_str(),stk_elements.count);
-		StackElement *new_stk=newSlot();
+		map_user_property_keys->set(key_value.c_str(),stk_user_elements.count);
+		StackElement *new_stk=newUserSlot();
 		*new_stk=si; //assign var
 		return new_stk;
 	}
 
-	int  ScriptObjectObject::getPropertyIdx(const std::string & property_name){//,bool only_var_name){
-
-		bool exists;
-		int idx_stk_element=this->map_property_keys->get(property_name.c_str(),exists);
-		if(exists){
-			return idx_stk_element;
-		}
-		return ZS_IDX_UNDEFINED;
-	}
-
 	zs_map_iterator ScriptObjectObject::begin(){
-		return this->map_property_keys->begin();
+		return this->map_user_property_keys->begin();
 	}
 
-	StackElement * ScriptObjectObject::getProperty(const std::string & property_name, int * idx){//,bool only_var_name){
+	StackElement * ScriptObjectObject::getUserProperty(const std::string & property_name, int * idx){//,bool only_var_name){
 
 		// special properties
 		/*if(property_name == "length"){
@@ -128,34 +117,44 @@ namespace zetscript{
 		}*/
 
 		bool exists;
-		zs_int idx_stk_element=this->map_property_keys->get(property_name.c_str(),exists);
+		zs_int idx_stk_element=this->map_user_property_keys->get(property_name.c_str(),exists);
 		if(exists){
 			if(idx!=NULL){
 				*idx=idx_stk_element;
 			}
 
-			return (StackElement *)stk_elements.items[idx_stk_element];
+			return (StackElement *)stk_user_elements.items[idx_stk_element];
 		}
 		return NULL;
 	}
 
+	StackElement 	* ScriptObjectObject::getProperty(const std::string & property_name, int * idx){
+		StackElement *stk=getBuiltinProperty(property_name, idx);
+		if(stk==NULL){
+			stk=getUserProperty(property_name,idx);
+		}
+
+		return stk;
+
+	}
+
 	bool ScriptObjectObject::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
 		bool exists=false;
-		zs_int idx_property = map_property_keys->get(property_name.c_str(),exists);
+		zs_int idx_property = map_user_property_keys->get(property_name.c_str(),exists);
 		if(!exists){
 			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"Property %s not exist",property_name.c_str());
 			return false;
 		}
 
-		if(!eraseElementAt(idx_property)){
+		if(!eraseUserElementAt(idx_property)){
 			return false;
 		}
-		map_property_keys->erase(property_name.c_str()); // erase also property key
+		map_user_property_keys->erase(property_name.c_str()); // erase also property key
 
 		return true;
 	}
 
 	ScriptObjectObject::~ScriptObjectObject(){
-		delete map_property_keys;
+		delete map_user_property_keys;
 	}
 }

@@ -46,12 +46,12 @@
 // -- Eval
 #include		"eval/eval.cpp"
 
-#include 		"extra/MathBuiltIn.cpp"
-#include 		"extra/SystemBuiltIn.cpp"
-#include 		"extra/StringBuiltIn.cpp"
-#include 		"extra/IntegerBuiltIn.cpp"
-#include 		"extra/FloatBuiltIn.cpp"
-#include 		"extra/JsonBuiltIn.cpp"
+#include 		"extra/MathModule.cpp"
+#include 		"extra/SystemMod.cpp"
+#include 		"extra/StringMod.cpp"
+#include 		"extra/IntegerMod.cpp"
+#include 		"extra/FloatBuiltin.cpp"
+#include 		"extra/JsonMod.cpp"
 
 
 #include		"zetscript.cpp"

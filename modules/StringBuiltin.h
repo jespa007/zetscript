@@ -5,7 +5,7 @@ namespace zetscript{
 
 	class ScriptObjectString;
 	class ScriptObjectVector;
-	class StringBuiltin{
+	class StringMod{
 	public:
 
 		static ScriptObjectString * formatSf(ZetScript *zs,StackElement *str, StackElement *args);

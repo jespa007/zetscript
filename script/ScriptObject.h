@@ -22,8 +22,9 @@ namespace zetscript{
 		//bool 				initSharedPtr();
 		//bool 				unrefSharedPtr(int _idx_current_call);
 		ZetScript      * 	getZetScript();
-		virtual StackElement 	* getProperty(const std::string & property_name, int * idx=NULL);
-		virtual StackElement * getElementAt(short idx);
+		StackElement 	* getBuiltinProperty(const std::string & property_name, int * idx=NULL);
+		int			   		getBuiltinPropertyIdx(const std::string & varname);
+		StackElement * getBuiltinElementAt(short idx);
 		virtual StackElement * addProperty(
 				const std::string & symbol_value
 				//, const ScriptFunction *info_function
@@ -31,9 +32,11 @@ namespace zetscript{
 				,std::string & error
 				,StackElement * stk_element = NULL
 				,int * idx_stk_element = NULL
-
 		);
-		virtual zs_vector * getAllElements();
+		virtual StackElement 	* getProperty(const std::string & property_name, int * idx=NULL);
+
+
+		zs_vector * getAllBuiltinElements();
 		ScriptClass * 	    getNativeScriptClass();
 		bool 				isNativeObject();
 		const std::string & getClassName();
@@ -48,12 +51,14 @@ namespace zetscript{
 		StackElement stk_this;
 
 		ZetScript 				*	zs; // 8
-		zs_vector				stk_elements_builtin;
-		zs_map					*map_property_keys_builtin; // to search faster each property by its name
+		zs_vector				stk_builtin_elements;
+		zs_map					*map_builtin_property_keys; // to search faster each property by its name
+
+		void init(ZetScript *zs);
 
 		StackElement 			stk_length;
-		StackElement 			* newSlotBuiltin();
-		StackElement * addPropertyBuiltIn(const std::string & symbol_value, StackElement stk=stk_undefined);
+		virtual StackElement * newBuiltinSlot();
+		virtual StackElement * addBuiltinProperty(const std::string & symbol_value, StackElement stk=stk_undefined);
 
 	};
 

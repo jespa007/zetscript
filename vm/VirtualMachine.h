@@ -169,7 +169,7 @@ namespace zetscript{
 			,Instruction * instruction
 			,bool is_constructor
 			,void *stk_elements_builtin_ptr // can be **stack_element from ScriptObjectObject stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
-			,int stk_elements_builtin_len // length of stk_elements_builtin
+			,int stk_elements_builtin_len // length of stk_builtin_elements
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args

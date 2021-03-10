@@ -183,7 +183,7 @@
 
 #define LOAD_FROM_STACK(offset,properties) \
 	 ((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? _stk_local_var+offset \
-	:((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? this_object->getElementAt(offset) \
+	:((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? this_object->getBuiltinElementAt(offset) \
 	:vm_stack + offset\
 
 #define POP_TWO \

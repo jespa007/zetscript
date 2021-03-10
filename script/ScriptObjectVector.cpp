@@ -41,16 +41,6 @@ namespace zetscript{
 		this->idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR;
 	}
 
-	void ScriptObjectVector::init(){
-		ScriptClass *script_class=getScriptClass();
-		//------------------------------------------------------------------------------
-		// pre-register built-in members...
-		for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
-			Symbol * symbol = (Symbol *)script_class->symbol_members->items[i];
-			addPropertyBuiltIn("push",{new FunctionMember(this,(ScriptFunction *)symbol->ref_ptr),MSK_STK_PROPERTY_FUNCTION_MEMBER | MSK_STK_PROPERTY_FUNCTION});
-		}
-	}
-
 	zs_vector * ScriptObjectVector::getAllElements(){ // return list of stack elements
 		return &stk_elements;
 	}

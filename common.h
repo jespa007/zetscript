@@ -77,7 +77,7 @@ namespace zetscript{
 		// !!! DO NOT DECLARE NOTHING HERE!! RESERVED FOR USER CLASSES !!!!!
 		// !!!
 		IDX_BUILTIN_TYPE_MAX
-	}IdxBuiltInType;
+	}IdxBuiltinType;
 
 
 	typedef void  (* PrintFunctionCallback)(const char *filename, int line, const  char  *string_text);

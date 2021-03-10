@@ -4,8 +4,8 @@ namespace zetscript{
 
 	class ScriptObjectString;
 	class ScriptObjectVector;
-	class StringBuiltin;
-	class SystemBuiltin{
+	class StringMod;
+	class SystemMod{
 	public:
 		static zs_int clock();
 		static zs_int readChar();

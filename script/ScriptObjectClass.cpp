@@ -59,14 +59,13 @@ namespace zetscript{
 			bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
 
 			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
-			if((se=addPropertyBuiltIn(
+			if((se=addBuiltinProperty(
 				symbol->name
 			))==NULL){
 				return;
 			}
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
-
 				se->stk_value=new FunctionMember(this,(ScriptFunction *)symbol->ref_ptr);
 				se->properties=MSK_STK_PROPERTY_FUNCTION_MEMBER | MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function member
 			}
@@ -126,6 +125,27 @@ namespace zetscript{
 
 		// only create symbols if not std::string or std::vector type to make it fast ...
 	}
+
+	/*StackElement *ScriptObjectClass::newSlotBuiltin(){
+		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
+		*stk=stk_undefined;
+		stk_builtin_elements.push_back((zs_int)stk);
+		return stk;
+	}
+
+	// built-in only for initialized
+	StackElement * ScriptObjectClass::addPropertyBuiltin(const std::string & symbol_value, StackElement stk){
+		std::string key_value = symbol_value;
+
+		// if ignore duplicate was true, map resets idx to the last function...
+		map_builtin_property_keys->set(key_value.c_str(),stk_builtin_elements.count);
+
+		StackElement *new_stk=newSlotBuiltin();
+		*new_stk=stk;
+
+  	    return new_stk;
+	}*/
+
 
 	ScriptFunction *ScriptObjectClass::getConstructorFunction(){
 

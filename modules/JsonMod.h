@@ -3,7 +3,7 @@
 namespace zetscript{
 	class ScriptObjectObject;
 	class ScriptObjectString;
-	class JsonBuiltin{
+	class JsonMod{
 
 		ScriptObjectObject * deserialize(ScriptObjectString *obj_str);
 		ScriptObjectString * serialize(ScriptObjectObject *obj,bool minimized);

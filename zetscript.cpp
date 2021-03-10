@@ -50,55 +50,55 @@ namespace zetscript{
 		// Register built in modules
 
 		// String
-		script_class_factory->registerNativeSingletonClass<StringBuiltIn>("StringBuiltIn");
-		script_class_factory->registerNativeMemberFunctionStatic<StringBuiltIn>("format",StringBuiltIn::formatSf);
+		script_class_factory->registerNativeSingletonClass<StringMod>("StringMod");
+		script_class_factory->registerNativeMemberFunctionStatic<StringMod>("format",StringMod::formatSf);
 
 		// Integer
-		script_class_factory->registerNativeSingletonClass<IntegerBuiltIn>("Integer");
-		script_class_factory->registerNativeMemberFunctionStatic<IntegerBuiltIn>("parse",IntegerBuiltIn::parse);
+		script_class_factory->registerNativeSingletonClass<IntegerMod>("Integer");
+		script_class_factory->registerNativeMemberFunctionStatic<IntegerMod>("parse",IntegerMod::parse);
 
 		// Float
-		script_class_factory->registerNativeSingletonClass<FloatBuiltIn>("Float");
-		script_class_factory->registerNativeMemberFunctionStatic<FloatBuiltIn>("parse",FloatBuiltIn::parse);
+		script_class_factory->registerNativeSingletonClass<FloatBuiltin>("Float");
+		script_class_factory->registerNativeMemberFunctionStatic<FloatBuiltin>("parse",FloatBuiltin::parse);
 
 
 		// Math
-		script_class_factory->registerNativeSingletonClass<MathBuiltIn>("Math");
-		script_class_factory->registerNativeStaticConstMember<MathBuiltIn>("PI",&MathBuiltIn::PI);
-		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("sin",MathBuiltIn::sin);
-		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("cos",MathBuiltIn::cos);
-		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("abs",MathBuiltIn::abs);
-		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("pow",MathBuiltIn::pow);
-		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("degToRad",MathBuiltIn::degToRad);
-		script_class_factory->registerNativeMemberFunctionStatic<MathBuiltIn>("random",MathBuiltIn::random);
+		script_class_factory->registerNativeSingletonClass<MathModule>("Math");
+		script_class_factory->registerNativeStaticConstMember<MathModule>("PI",&MathModule::PI);
+		script_class_factory->registerNativeMemberFunctionStatic<MathModule>("sin",MathModule::sin);
+		script_class_factory->registerNativeMemberFunctionStatic<MathModule>("cos",MathModule::cos);
+		script_class_factory->registerNativeMemberFunctionStatic<MathModule>("abs",MathModule::abs);
+		script_class_factory->registerNativeMemberFunctionStatic<MathModule>("pow",MathModule::pow);
+		script_class_factory->registerNativeMemberFunctionStatic<MathModule>("degToRad",MathModule::degToRad);
+		script_class_factory->registerNativeMemberFunctionStatic<MathModule>("random",MathModule::random);
 
 		// System
-		script_class_factory->registerNativeSingletonClass<SystemBuiltIn>("SystemBuiltIn");
-		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("readChar",SystemBuiltIn::readChar);
-		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("clock",SystemBuiltIn::clock);
-		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("print",SystemBuiltIn::printSf);
-		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("println",SystemBuiltIn::printlnSf);
-		script_class_factory->registerNativeMemberFunctionStatic<SystemBuiltIn>("eval",SystemBuiltIn::evalSf);
+		script_class_factory->registerNativeSingletonClass<SystemMod>("SystemMod");
+		script_class_factory->registerNativeMemberFunctionStatic<SystemMod>("readChar",SystemMod::readChar);
+		script_class_factory->registerNativeMemberFunctionStatic<SystemMod>("clock",SystemMod::clock);
+		script_class_factory->registerNativeMemberFunctionStatic<SystemMod>("print",SystemMod::printSf);
+		script_class_factory->registerNativeMemberFunctionStatic<SystemMod>("println",SystemMod::printlnSf);
+		script_class_factory->registerNativeMemberFunctionStatic<SystemMod>("eval",SystemMod::evalSf);
 
 		// Custom user function or classes
 		eval(
 			zs_strutils::format(
 				"static String::format(s,...args){"
-				"	StringBuiltIn::format(System::getZetScript(),s,args)" // passing this because is registered as static
+				"	StringMod::format(System::getZetScript(),s,args)" // passing this because is registered as static
 				"}"
 				""
 				"class System{\n"
 				"	static readChar(){"
-				"		return SystemBuiltIn::readChar()"
+				"		return SystemMod::readChar()"
 				"	}"
 				"	static clock(){"
-				"		return SystemBuiltIn::clock()"
+				"		return SystemMod::clock()"
 				"	}"
 				"	static print(s,...args){"
-				"		SystemBuiltIn::print(System::getZetScript(),s,args)"  // passing this because is registered as static
+				"		SystemMod::print(System::getZetScript(),s,args)"  // passing this because is registered as static
 				"	}"
 				"	static function println(s,...args){"
-				"		SystemBuiltIn::println(System::getZetScript(),s,args)"  // passing this because is registered as static
+				"		SystemMod::println(System::getZetScript(),s,args)"  // passing this because is registered as static
 				"	}"
 				"	static getZetScript(){"
 				"		return ptrToZetScriptPtr(0x%x);"

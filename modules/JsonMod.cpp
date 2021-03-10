@@ -31,15 +31,15 @@ namespace zetscript{
 			0
 	};
 
-	//#include "JsonBuiltinDeserialize.cpp"
-	#include "JsonBuiltinSerialize.cpp"
+	//#include "JsonModDeserialize.cpp"
+	#include "JsonModSerialize.cpp"
 
-	ScriptObjectObject * JsonBuiltin::deserialize(ScriptObjectString *str_json){
+	ScriptObjectObject * JsonMod::deserialize(ScriptObjectString *str_json){
 		// deserialize ...
 		return NULL;
 	}
 
-	ScriptObjectString * JsonBuiltin::serialize(ScriptObjectObject *obj,bool minimized){
+	ScriptObjectString * JsonMod::serialize(ScriptObjectObject *obj,bool minimized){
 		// iterate for all elements in the obj
 		return NULL;
 

@@ -18,7 +18,7 @@ namespace zetscript{
 			std::vector<T> v_out;
 			const char * dst_convert_type = typeid(T).name();
 			zs_float aux_flt;
-			zs_vector * elements = v_in->getAllElements();
+			zs_vector * elements = v_in->getAllUserElements();
 
 
 			for(unsigned i = 0; i < elements->count; i++){
@@ -67,21 +67,21 @@ namespace zetscript{
 
 		ScriptObjectVector();
 
-		virtual StackElement * 	getElementAt(short idx);
+		virtual StackElement * 	getUserElementAt(short idx);
 
 		virtual size_t length();
-		virtual zs_vector * getAllElements();
+		virtual zs_vector * getAllUserElements();
 
-		StackElement *			newSlot();
+		StackElement *			newUserSlot();
 		void 					push(StackElement  * stk);
 		StackElement *			pop();
 
 		virtual ~ScriptObjectVector();
 	protected:
-		zs_vector 			stk_elements;
+		zs_vector 			stk_user_elements;
 
 
-		bool 							eraseElementAt(short idx);
+		bool 							eraseUserElementAt(short idx);
 
 	private:
 		void init();
