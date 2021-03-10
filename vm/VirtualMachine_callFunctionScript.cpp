@@ -421,9 +421,9 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR: // direct load
 				PUSH_STK_PTR(this_object->getBuiltinElementAt(instruction->value_op2));
 				continue;
-
 			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
+				POP_TWO;
 				so_object_aux=NULL; \
 				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){ \
 					stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr(); \

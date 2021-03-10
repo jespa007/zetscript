@@ -1,6 +1,7 @@
 /*System::println(0)*/
-var v=["dadas","sdasdas"]
-var s=v.join();
+var v=[0]
+System::println(v[0])
+//var s=v.join();
 
 /*for(var i=0; i < v.length; i++){
 	System::println(v[i])
