@@ -34,12 +34,12 @@ namespace zetscript{
 	//#include "JsonBuiltinDeserialize.cpp"
 	#include "JsonBuiltinSerialize.cpp"
 
-	ScriptObjectObject * JsonBuiltIn::deserialize(ScriptObjectString *str_json){
+	ScriptObjectObject * JsonBuiltin::deserialize(ScriptObjectString *str_json){
 		// deserialize ...
 		return NULL;
 	}
 
-	ScriptObjectString * JsonBuiltIn::serialize(ScriptObjectObject *obj,bool minimized){
+	ScriptObjectString * JsonBuiltin::serialize(ScriptObjectObject *obj,bool minimized){
 		// iterate for all elements in the obj
 		return NULL;
 

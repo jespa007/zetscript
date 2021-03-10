@@ -7,5 +7,8 @@
 
 namespace zetscript{
 
-	const zs_float MathBuiltIn::PI=M_PI;
+	zs_float FloatBuiltin::parse(zs_int number){
+
+		return (zs_float)(number);
+	}
 }

@@ -3,7 +3,7 @@
 namespace zetscript{
 
 
-	ScriptObjectString * StringBuiltIn::formatSf(ZetScript *zs,StackElement *str, StackElement *args){
+	ScriptObjectString * StringBuiltin::formatSf(ZetScript *zs,StackElement *str, StackElement *args){
 		std::string first_param=str->toString();
 		ScriptObjectVector *sov=NULL;
 
