@@ -23,17 +23,14 @@ namespace zetscript{
 
 		ScriptObjectObject();
 
-		virtual StackElement * addUserProperty(
+		virtual StackElement * addProperty(
 				const std::string & symbol_value
 				//, const ScriptFunction *info_function
 				//, Instruction *src_instruction
 				,std::string & error
 				,StackElement * stk_element = NULL
 				,int * idx_stk_element = NULL
-
 		);
-
-		StackElement * 			getUserProperty(const std::string & property_name, int * idx=NULL);
 
 		virtual StackElement 	* getProperty(const std::string & property_name, int * idx=NULL);
 
@@ -49,6 +46,16 @@ namespace zetscript{
 
 		zs_map				*	map_user_property_keys; // to search faster each property by its name
 
+		StackElement * addUserProperty(
+				const std::string & symbol_value
+				//, const ScriptFunction *info_function
+				//, Instruction *src_instruction
+				,std::string & error
+				,StackElement * stk_element = NULL
+				,int * idx_stk_element = NULL
+		);
+
+		StackElement * 			getUserProperty(const std::string & property_name, int * idx=NULL);
 	};
 
 }

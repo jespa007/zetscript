@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	zs_int IntegerBuiltin::parse(zs_float *number){
+	zs_int IntegerMod::parse(zs_float *number){
 
 		return (zs_int)(*number);
 	}

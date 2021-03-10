@@ -81,10 +81,10 @@ namespace zetscript{
 			return;
 		}
 
-		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_STATIC) == 0){ // is function member  ...
+		if((calling_function->symbol.properties &  SYMBOL_PROPERTY_STATIC) == 0){ // is a function member  ...
 			if(this_object!= NULL){
 				StackElement *stk_prop_fun=NULL;
-				if((stk_prop_fun = this_object->getElementAt(calling_function->symbol.idx_position))==NULL){
+				if((stk_prop_fun = this_object->getBuiltinElementAt(calling_function->symbol.idx_position))==NULL){
 					return;
 				}
 				fun_ptr=((ScriptFunction *)stk_prop_fun->stk_value)->ref_native_function_ptr; // var ref holds function ptr
@@ -103,8 +103,7 @@ namespace zetscript{
 		zs_int param_this_object=0;
 		int idx_arg_start=0;
 
-		if(static_ref == false){ // member function is a lambda function that pass this object as first parameter, so this why static_ref == false but ...
-
+		if(static_ref == false){ // Is member function set as lambda function and save param_this_object for passing as first parameter in the PTR_FUNCTION_MEMBER_XXXX
 
 			if(this_object==NULL){
 				VM_ERROR_AND_RET("Internal error: Cannot set parameter as this object due this object is NULL");
@@ -117,9 +116,9 @@ namespace zetscript{
 			}
 		}else{
 
-			// special case that constructor is passed as static
+			// special case that this is passed in static ref function
 			if(		(calling_function->symbol.properties&SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS)
-					&& instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR
+			//		&& instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR
 					&& this_object!=NULL
 			){
 				idx_arg_start = 1;

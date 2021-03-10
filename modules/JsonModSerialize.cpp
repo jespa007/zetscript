@@ -23,7 +23,7 @@ namespace zetscript{
 					str_result += ",";
 				}
 
-				serialize_stk(str_result,vector->getElementAt(i),ident,is_formatted);
+				serialize_stk(str_result,vector->getUserElementAt(i),ident,is_formatted);
 			}
 			if (is_formatted){
 				ZS_JSON_SERIALIZE_NEW_LINE(str_result,ident);

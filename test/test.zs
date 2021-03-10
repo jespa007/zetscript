@@ -1,5 +1,10 @@
-var v=[0,1]
-v.push(2)
+/*System::println(0)*/
+var v=["dadas","sdasdas"]
+var s=v.join();
+
+/*for(var i=0; i < v.length; i++){
+	System::println(v[i])
+}*/
 
 /*var a="a";
 var b=1;

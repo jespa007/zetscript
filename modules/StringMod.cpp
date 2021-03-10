@@ -20,7 +20,7 @@ namespace zetscript{
 
 		if(sov != NULL){
 			for(unsigned i=0; i < sov->length(); i++){
-				first_param=zs_strutils::replace(first_param,zs_strutils::format("{%i}",i),sov->getElementAt(i)->toString());
+				first_param=zs_strutils::replace(first_param,zs_strutils::format("{%i}",i),sov->getUserElementAt(i)->toString());
 			}
 		}
 		//ScriptObjectString *str_in=(ScriptObjectString *)(str->var_ref);

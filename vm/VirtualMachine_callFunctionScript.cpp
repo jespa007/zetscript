@@ -240,9 +240,9 @@ stk_result_op1=--stk_vm_current;
 	stk_vm_current->properties=MSK_STK_PROPERTY_PTR_STK;\
 	stk_vm_current++;
 
-#define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(n_return,with_share)\
+#define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return, n_return,with_share)\
 	for(int i=0; i < n_return; i++){\
-		StackElement *stk_ret = --stk_vm_current;\
+		StackElement *stk_ret = stk_return+i;\
 		if(stk_ret->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){\
 			ScriptObject *sv=(ScriptObject *)stk_ret->stk_value;\
 			if(sv->shared_pointer == NULL){\
@@ -419,7 +419,7 @@ namespace zetscript{
 				PUSH_STK_PTR(this_object->getThisProperty());
 				continue;
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR: // direct load
-				PUSH_STK_PTR(this_object->getElementAt(instruction->value_op2));
+				PUSH_STK_PTR(this_object->getBuiltinElementAt(instruction->value_op2));
 				continue;
 
 			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:
@@ -439,7 +439,7 @@ namespace zetscript{
 							VM_STOP_EXECUTE("Expected std::vector-index as integer or std::string"); \
 						} \
 						/* determine object ...*/ \
-						if((stk_var =so_vector->getElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){ \
+						if((stk_var =so_vector->getUserElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){ \
 							goto lbl_exit_function; \
 						} \
 					} \
@@ -468,10 +468,10 @@ namespace zetscript{
 				*stk_vm_current++=*this_object->getThisProperty();
 				continue;
 			case BYTE_CODE_LOAD_MEMBER_VAR: // direct load
-				*stk_vm_current++=*this_object->getElementAt(instruction->value_op2);
+				*stk_vm_current++=*this_object->getBuiltinElementAt(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_CONSTRUCTOR:
-				*stk_vm_current++=*(((ScriptObjectClass *)((stk_vm_current-1)->stk_value))->getElementAt(instruction->value_op2));
+				*stk_vm_current++=*(((ScriptObjectClass *)((stk_vm_current-1)->stk_value))->getBuiltinElementAt(instruction->value_op2));
 				continue;
 
 			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
@@ -515,7 +515,7 @@ load_element_object:
 
 				}else{ // check whether if exist or not
 					if(instruction->value_op2>=0){ // on dynamic members fix idx when we find a C function
-						stk_var=this_object->getElementAt(instruction->value_op2);
+						stk_var=this_object->getBuiltinElementAt(instruction->value_op2);
 					}
 				}
 
@@ -632,7 +632,7 @@ load_element_object:
 									stk_src=(StackElement *)stk_result_op1->stk_value;
 								}
 
-								stk_dst=((ScriptObjectVector *)vec_obj)->newSlot();
+								stk_dst=((ScriptObjectVector *)vec_obj)->newUserSlot();
 							}
 						}
 
@@ -1145,6 +1145,7 @@ load_element_object:
 					bool calling_from_object_type=false;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
 					ScriptObject *calling_object = this_object;
+					uint16_t n_local_registered_symbols=0;
 					unsigned char n_args=instruction->value_op1; // number arguments will pass to this function
 					StackElement *stk_start_arg_call=(stk_vm_current-n_args);
 
@@ -1183,7 +1184,7 @@ load_element_object:
 							calling_from_object_type //scope_type&(MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
 						){
 							ignore_call= (is_constructor) && calling_object->isNativeObject() && n_args==0;
-							zs_vector * list_props=calling_object->getAllElements();//getFunctions();
+							zs_vector * list_props=calling_object->getAllBuiltinElements();//getFunctions();
 							stk_element_ptr=list_props->items;
 							stk_element_len=list_props->count;
 						}
@@ -1334,10 +1335,10 @@ load_element_object:
 
 								n_returned_args_afun=stk_vm_current-stk_def_afun_start;
 
-								CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(n_returned_args_afun,true) // we share pointer (true second arg) to not remove on pop in calling return
+								CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) // we share pointer (true second arg) to not remove on pop in calling return
 
 								// reset stack
-								stk_vm_current=stk_def_afun_start+1; // reset stack
+								stk_vm_current=stk_def_afun_start+1; // reset stack +1
 
 //								*stk_vm_current++=stk_def_afun_start[0]; // take only first return ...
 								break;
@@ -1356,6 +1357,7 @@ load_element_object:
 							,stk_start_arg_call
 							,n_args
 						);
+						n_local_registered_symbols=sf->registered_symbols->count;
 					}
 					else{ // C function
 						if((is_constructor && (sf->symbol.properties & SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS))
@@ -1372,11 +1374,11 @@ load_element_object:
 							,stk_start_arg_call
 							,n_args
 							,instruction
-							,(ScriptObjectClass *)calling_object
+							,calling_object
 						);
 
 						// restore stk_start_arg_call due in C args are not considered as local symbols (only for scripts)
-						stk_start_arg_call+=n_args;
+						n_local_registered_symbols=n_args;
 					}
 
 					if(vm_error == true){
@@ -1391,19 +1393,18 @@ load_element_object:
 
 
 					// calcule returned stack elements
-					StackElement *stk_return=(stk_start_arg_call+sf->registered_symbols->count );
+					StackElement *stk_return=(stk_start_arg_call+n_local_registered_symbols); // +1 points to starting return...
 					int n_returned_arguments_from_function=stk_vm_current-stk_return;
 
 					// setup all returned variables from function
 
-					CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(n_returned_arguments_from_function,false)
+					CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return,n_returned_arguments_from_function,false)
 
-					stk_vm_current=stk_start_arg_call-1; // reset stack
+					stk_vm_current=stk_start_arg_call-1; // set vm current before function pointer is
 
 					if(instruction->value_op2 == ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK) {
 						StackElement tmp;
 						// return all elements in reverse order in order to get right assignment ...
-
 						// reverse returned items
 						for(int i=0; i<(n_returned_arguments_from_function>>1); i++){
 							tmp=stk_return[n_returned_arguments_from_function-i-1];

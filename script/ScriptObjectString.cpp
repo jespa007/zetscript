@@ -9,7 +9,7 @@ namespace zetscript{
 
 	ScriptObjectString * ScriptObjectString::newScriptObjectString(ZetScript *zs, const std::string & str){
 		ScriptObjectString *so=new ScriptObjectString();
-		so->setZetScript(zs);
+		so->init(zs);
 		so->set(str);
 		return so;
 	}

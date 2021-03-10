@@ -177,10 +177,11 @@ namespace zetscript{
 
 								if(c_class != NULL){
 									//std::string error_cast;
-									if(c_class->idx_class==idx_builtin_type){
+									/*if(c_class->idx_class==idx_builtin_type){
 										val_ret=(zs_int)script_object_class->getNativeObject();
 									}
-									else if((val_ret=script_class_factory->doCast((zs_int)script_object_class->getNativeObject(),c_class->idx_class,idx_builtin_type))==0){//c_class->idx_class==idx_builtin_type){
+									else */
+									if((val_ret=script_class_factory->doCast((zs_int)script_object_class->getNativeObject(),c_class->idx_class,idx_builtin_type))==0){//c_class->idx_class==idx_builtin_type){
 										error = "cannot convert \""+zs_rtti::demangle(script_object_class->getNativePointerClassName())+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 										return false;
 									}
@@ -191,6 +192,8 @@ namespace zetscript{
 							}else{ // cannot convert...
 								error = "cannot convert \""+zs_rtti::demangle(script_object->getClassName())+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 							}
+						}else{ // get native object...
+							val_ret=(zs_int)script_object->getNativeObject();
 						}
 					}
 					break;

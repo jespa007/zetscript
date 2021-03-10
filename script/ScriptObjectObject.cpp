@@ -8,7 +8,7 @@ namespace zetscript{
 
 	ScriptObjectObject * ScriptObjectObject::newScriptObjectObject(ZetScript	*_zs){
 		ScriptObjectObject *ac= new ScriptObjectObject();
-		ac->setZetScript(_zs);
+		ac->init(_zs);
 		return ac;
 	}
 
@@ -104,10 +104,6 @@ namespace zetscript{
 		return new_stk;
 	}
 
-	zs_map_iterator ScriptObjectObject::begin(){
-		return this->map_user_property_keys->begin();
-	}
-
 	StackElement * ScriptObjectObject::getUserProperty(const std::string & property_name, int * idx){//,bool only_var_name){
 
 		// special properties
@@ -128,6 +124,19 @@ namespace zetscript{
 		return NULL;
 	}
 
+
+	StackElement * ScriptObjectObject::addProperty(
+			const std::string & symbol_value
+			//, const ScriptFunction *info_function
+			//, Instruction *src_instruction
+			,std::string & error
+			,StackElement * stk_element
+			,int * idx_stk_element
+
+	){
+		return addUserProperty(symbol_value,error,stk_element,idx_stk_element);
+	}
+
 	StackElement 	* ScriptObjectObject::getProperty(const std::string & property_name, int * idx){
 		StackElement *stk=getBuiltinProperty(property_name, idx);
 		if(stk==NULL){
@@ -137,6 +146,11 @@ namespace zetscript{
 		return stk;
 
 	}
+
+	zs_map_iterator ScriptObjectObject::begin(){
+		return this->map_user_property_keys->begin();
+	}
+
 
 	bool ScriptObjectObject::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
 		bool exists=false;

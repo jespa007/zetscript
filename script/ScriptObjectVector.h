@@ -81,10 +81,7 @@ namespace zetscript{
 		zs_vector 			stk_user_elements;
 
 
-		bool 							eraseUserElementAt(short idx);
-
-	private:
-		void init();
+		bool 				eraseUserElementAt(short idx);
 
 	};
 

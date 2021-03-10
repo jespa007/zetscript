@@ -505,7 +505,7 @@ namespace zetscript{
 				}
 			}
 		}else{ // get first item...
-			StackElement * stk = script_object_class->getUserProperty(str_symbol_metamethod,NULL);
+			StackElement * stk = script_object_class->getProperty(str_symbol_metamethod,NULL);
 
 			if(stk == NULL){
 				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);

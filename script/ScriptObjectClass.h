@@ -19,16 +19,16 @@ namespace zetscript{
 			Instruction 		*	instruction_new;
 			bool 					was_created_by_constructor;
 
-			static ScriptObjectClass * newScriptObjectClass(ZetScript *zs);
+			static ScriptObjectClass * newScriptObjectClass(ZetScript *_zs,short _idx_script_class,void *  _c_object=NULL);
 
 			ScriptObjectClass();
-			//ScriptObjectClass(ZetScript *zs, short idx_script_class,void *c_object=NULL);
+			void init(ZetScript *_zs, short _idx_script_class,void *_c_object);
 
 			/**
 			 * info_registered_class: scriptclass info
 			 * _c_object: pass C object reference (is not delete_c_object by default)
 			 */
-			void init(short idx_script_class,void *  _c_object=NULL);
+
 
 			bool isCreatedByContructor();
 			bool itHasSetMetamethod();

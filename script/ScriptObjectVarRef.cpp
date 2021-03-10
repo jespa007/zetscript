@@ -10,7 +10,7 @@ namespace zetscript{
 	ScriptObjectVarRef * ScriptObjectVarRef::newScriptObjectVarRef(ZetScript *zs,StackElement stk,int idx_call){
 		ScriptObjectVarRef *so=new ScriptObjectVarRef();
 		so->setStackElement(stk);
-		so->setZetScript(zs);
+		so->init(zs);
 		so->setIdxCall(idx_call);
 		return so;
 	}

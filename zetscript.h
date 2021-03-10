@@ -85,12 +85,12 @@
 #include "scope/Scope.h"
 #include "scope/ScopeFactory.h"
 
-#include "extra/MathModule.h"
-#include "extra/SystemMod.h"
-#include "extra/StringMod.h"
-#include "extra/IntegerMod.h"
-#include "extra/FloatBuiltin.h"
-#include "extra/JsonMod.h"
+#include "modules/MathMod.h"
+#include "modules/SystemMod.h"
+#include "modules/StringMod.h"
+#include "modules/IntegerMod.h"
+#include "modules/FloatMod.h"
+#include "modules/JsonMod.h"
 
 #include "script/ScriptObject.h"
 #include "script/ScriptObjectString.h"
@@ -450,9 +450,9 @@ namespace zetscript{
 		bool eval_bool;
 		std::string eval_string;
 		int idx_current_global_variable_checkpoint;
-		MathModule math_built_in;
-		SystemMod 	system_built_in;
-		StringMod 	string_built_in;
+		MathMod math_mod;
+		SystemMod 	system_mod;
+		StringMod 	string_mod;
 
 
 		//===================================================================================================

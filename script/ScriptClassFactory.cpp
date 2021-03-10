@@ -121,8 +121,8 @@ namespace zetscript{
 		ZS_REGISTER_FUNCTION(zs,"ptrToZetScriptPtr",ptrToZetScriptPtr);
 
 		// StringObjectVector
-		registerNativeMemberFunction<ScriptObjectVector>("push",&ScriptObjectVector::pushSf);
-		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVector::popSf);
+		registerNativeMemberFunctionStatic<ScriptObjectVector>("push",&ScriptObjectVector::pushSf);
+		registerNativeMemberFunctionStatic<ScriptObjectVector>("pop",&ScriptObjectVector::popSf);
 
 		zs->saveState();
 	}
@@ -328,8 +328,7 @@ namespace zetscript{
 				 break;
 			 default:
 				 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
-				 so = ScriptObjectClass::newScriptObjectClass(zs);
-				 so->init(rc->idx_class, value_object);
+				 so = ScriptObjectClass::newScriptObjectClass(zs,rc->idx_class, value_object);
 				 break;
 			 }
 		 }

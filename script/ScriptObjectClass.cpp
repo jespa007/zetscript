@@ -9,9 +9,9 @@
 
 namespace zetscript{
 
-	ScriptObjectClass * ScriptObjectClass::newScriptObjectClass(ZetScript *zs){
+	ScriptObjectClass * ScriptObjectClass::newScriptObjectClass(ZetScript *_zs, short _idx_script_class,void *_c_object){
 		ScriptObjectClass *sc=new ScriptObjectClass();
-		sc->setZetScript(zs);
+		sc->init(_zs,_idx_script_class,_c_object);
 		return sc;
 	}
 
@@ -43,7 +43,8 @@ namespace zetscript{
 	}
 
 
-	void ScriptObjectClass::init(short _idx_script_class,void *_c_object){
+	void ScriptObjectClass::init(ZetScript *_zs, short _idx_script_class,void *_c_object){
+		zs = _zs;
 		StackElement *se;
 		std::string error;
 		ScriptClass *sc=NULL;
