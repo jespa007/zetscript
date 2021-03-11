@@ -639,7 +639,7 @@ namespace zetscript{
 				,arg_info
 				, idx_return_type
 				, ref_ptr
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC  | SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC
 		);
 
 		if(symbol_sf == NULL){

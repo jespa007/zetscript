@@ -87,7 +87,6 @@
 
 #include "modules/MathMod.h"
 #include "modules/SystemMod.h"
-#include "modules/StringMod.h"
 #include "modules/IntegerMod.h"
 #include "modules/FloatMod.h"
 #include "modules/JsonMod.h"
@@ -99,6 +98,7 @@
 #include "script/ScriptObjectVectorIterator.h"
 #include "script/ScriptObjectObject.h"
 #include "script/ScriptObjectObjectIterator.h"
+#include "script/ScriptObjectDateTime.h"
 #include "script/ScriptObjectClass.h"
 #include "script/ScriptObjectVarRef.h"
 
@@ -452,7 +452,6 @@ namespace zetscript{
 		int idx_current_global_variable_checkpoint;
 		MathMod math_mod;
 		SystemMod 	system_mod;
-		StringMod 	string_mod;
 
 
 		//===================================================================================================

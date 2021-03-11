@@ -47,6 +47,7 @@ namespace zetscript{
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVector);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectClass);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVarRef);
+	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectDateTime);
 
 	ScriptClassFactory::ScriptClassFactory(ZetScript *_zs){
 		zs = _zs;
@@ -100,12 +101,16 @@ namespace zetscript{
 		// estructures
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
 
-		//classes
+		//------------------------
+		// BUILT-IN SCRIPT OBJECTS
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ZetScript,IDX_BUILTIN_TYPE_ZETSCRIPT);
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
 		REGISTER_BUILT_IN_CLASS("VarRef",ScriptObjectVarRef,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF);
 		REGISTER_BUILT_IN_CLASS("String",ScriptObjectString,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING);
 		REGISTER_BUILT_IN_CLASS("Vector",ScriptObjectVector,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR);
+		REGISTER_BUILT_IN_CLASS("DateTime",ScriptObjectDateTime,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME);
+		// BUILT-IN SCRIPT OBJECTS
+		//---------------------------
 		REGISTER_BUILT_IN_CLASS("Object",ScriptObjectObject,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT);
 		REGISTER_BUILT_IN_CLASS("Class",ScriptObjectClass,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS);
 		// !!!
@@ -120,9 +125,29 @@ namespace zetscript{
 
 		ZS_REGISTER_FUNCTION(zs,"ptrToZetScriptPtr",ptrToZetScriptPtr);
 
-		// StringObjectVector
-		registerNativeMemberFunctionStatic<ScriptObjectVector>("push",&ScriptObjectVector::pushSf);
-		registerNativeMemberFunctionStatic<ScriptObjectVector>("pop",&ScriptObjectVector::popSf);
+		//-------------------------
+		// Bind functions
+
+		// Vector
+		registerNativeMemberFunction<ScriptObjectVector>("push",&ScriptObjectVector::pushSf);
+		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVector::popSf);
+		registerNativeMemberFunction<ScriptObjectVector>("size",&ScriptObjectVector::sizeSf);
+
+		// String
+		registerNativeMemberFunctionStatic<ScriptObjectString>("formatSf",ScriptObjectString::formatSf);
+
+		// Vector
+		registerNativeMemberFunction<ScriptObjectObject>("clearSf",&ScriptObjectObject::clearSf);
+		registerNativeMemberFunction<ScriptObjectObject>("eraseSf",&ScriptObjectObject::eraseSf);
+		registerNativeMemberFunction<ScriptObjectObject>("containsSf",&ScriptObjectObject::containsSf);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("concatSf",ScriptObjectObject::concatSf);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("keysSf",ScriptObjectObject::keysSf);
+		//registerNativeMemberFunctionStatic<ScriptObjectObject>("iteratorSf",ScriptObjectObject::iteratorSf);
+
+		// DateTime
+		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowSf",ScriptObjectDateTime::nowSf);
+
+
 
 		zs->saveState();
 	}

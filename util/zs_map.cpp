@@ -105,8 +105,7 @@ namespace zetscript{
 		return lookup_node(key) != NULL;
 	}
 
-	zs_map::~zs_map(){
-
+	void zs_map::clear(){
 		for(unsigned i=0;i<this->count;i++){
 			zs_map_node * temp=this->list[i];
 
@@ -123,6 +122,12 @@ namespace zetscript{
 
 			}
 		}
+	}
+
+	zs_map::~zs_map(){
+
+		clear();
+
 		free(this->list);
 	}
 }

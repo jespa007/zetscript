@@ -22,6 +22,7 @@ namespace zetscript{
 		void 		set(const char * key,zs_int val);
 		zs_int 	get(const char * key, bool & exists);
 		void  		erase(const char * key);
+		void clear();
 
 		~zs_map();
 	private:

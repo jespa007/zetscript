@@ -6,14 +6,10 @@
 
 namespace zetscript{
 
-	void    			ScriptObjectVector::pushSf(ScriptObjectVector *sv,StackElement  * stk){
-		return sv->push(stk);
-	}
-
-	StackElement *  	ScriptObjectVector::popSf(ScriptObjectVector *sv){
-		return sv->pop();
-	}
-
+	//----------------------------------------------
+	//
+	// Helpers
+	//
 	ScriptObjectVector * ScriptObjectVector::newScriptObjectVector(ZetScript *zs){
 		ScriptObjectVector *sv=new ScriptObjectVector();
 		sv->init(zs);
@@ -35,6 +31,36 @@ namespace zetscript{
 
 		return so_vector;
 	}
+
+
+	void    			ScriptObjectVector::pushSf(ScriptObjectVector *sv,StackElement  * stk){
+		return sv->push(stk);
+	}
+
+	StackElement *  	ScriptObjectVector::popSf(ScriptObjectVector *sv){
+		return sv->pop();
+	}
+
+	zs_int 			ScriptObjectVector::sizeSf(ScriptObjectVector *sv){
+		return sv->stk_user_elements.count;
+	}
+
+	void 			ScriptObjectVector::insertAtSf(ScriptObjectVector *sv, zs_int idx,StackElement  * stk){
+
+	}
+
+	void 			ScriptObjectVector::eraseAtSf(ScriptObjectVector *sv, zs_int idx){
+		sv->eraseUserElementAt(idx);
+	}
+
+	void 			ScriptObjectVector::clearSf(ScriptObjectVector *sv){
+		sv->eraseAllUserElements();
+	}
+	//
+	// Helpers
+	//
+	//----------------------------------------------
+
 
 	ScriptObjectVector::ScriptObjectVector(){
 		this->idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR;
@@ -66,7 +92,6 @@ namespace zetscript{
 
 		if(idx >= stk_user_elements.count){
 			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"idx out of bounds (%i>=%i)",idx,stk_user_elements.count);
-			return false;
 		}
 
 		si=(StackElement *)stk_user_elements.items[idx];
@@ -114,6 +139,14 @@ namespace zetscript{
 		return true;
 	}
 
+	void ScriptObjectVector::eraseAllUserElements(){
+		while ( stk_user_elements.count!=0){
+			eraseUserElementAt(stk_user_elements.count-1);
+		}
+
+		stk_user_elements.clear();
+	}
+
 	StackElement *ScriptObjectVector::newUserSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk=stk_undefined;
@@ -144,13 +177,10 @@ namespace zetscript{
 		return stk_element;
 	}
 
+
 	ScriptObjectVector::~ScriptObjectVector(){
 
-		while ( stk_user_elements.count!=0){
-			eraseUserElementAt(stk_user_elements.count-1);
-		}
-
-		stk_user_elements.clear();
+		eraseAllUserElements();
 
 
 	}

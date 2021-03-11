@@ -6,13 +6,59 @@
 
 namespace zetscript{
 
+	//----------------------------------------------
+	//
+	// Helpers
+	//
 	ScriptObjectObject * ScriptObjectObject::newScriptObjectObject(ZetScript	*_zs){
 		ScriptObjectObject *ac= new ScriptObjectObject();
 		ac->init(_zs);
 		return ac;
 	}
 
-	ScriptObjectObject * ScriptObjectObject::newScriptObjectObjectAdd(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
+	ScriptObjectVector *ScriptObjectObject::keysSf(ScriptObjectObject *o1){
+		VirtualMachine *vm=o1->getZetScript()->getVirtualMachine();
+		ScriptObjectVector *sv= ZS_NEW_OBJECT_VECTOR(o1->getZetScript());
+
+		for(auto it=o1->begin(); !it.end(); it.next()){
+			StackElement *stk=sv->newUserSlot();
+			ScriptObjectString *so=ZS_NEW_OBJECT_STRING(o1->getZetScript());
+			so->set(it.getKey());
+
+			// create and share pointer
+			if(!vm->createSharedPointer(so)){
+				THROW_RUNTIME_ERROR("cannot creat shared pointer");
+			}
+			if(!vm->sharePointer(so)){
+				THROW_RUNTIME_ERROR("cannot share pointer");
+			}
+
+			stk->stk_value=so;
+			stk->properties = MSK_STK_PROPERTY_SCRIPT_OBJECT;
+		}
+
+		return sv;
+
+	}
+
+	/*static ScriptObjectObjectIterator *ScriptObjectObject::iteratorSf(ScriptObjectObject *o1){
+
+	}*/
+
+
+	bool ScriptObjectObject::containsSf(ScriptObjectObject *o1, std::string * key){
+		return o1->map_user_property_keys->exist(key->c_str());
+	}
+
+	void ScriptObjectObject::clearSf(ScriptObjectObject *o1){
+		o1->eraseAllUserProperties();
+	}
+
+	void ScriptObjectObject::eraseSf(ScriptObjectObject *o1, std::string * key){
+		o1->eraseUserProperty(*key);
+	}
+
+	ScriptObjectObject * ScriptObjectObject::concatSf(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
 		std::string error="";
 		ScriptObjectObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
 		//zs_map_iterator it_1=o1->map_user_property_keys->begin();
@@ -27,6 +73,10 @@ namespace zetscript{
 		}
 		return obj;
 	}
+	//
+	// Helpers
+	//
+	//----------------------------------------------
 
 	ScriptObjectObject::ScriptObjectObject(){
 		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT;
@@ -152,7 +202,7 @@ namespace zetscript{
 	}
 
 
-	bool ScriptObjectObject::eraseProperty(const std::string & property_name, const ScriptFunction *info_function){
+	bool ScriptObjectObject::eraseUserProperty(const std::string & property_name, const ScriptFunction *info_function){
 		bool exists=false;
 		zs_int idx_property = map_user_property_keys->get(property_name.c_str(),exists);
 		if(!exists){
@@ -166,6 +216,11 @@ namespace zetscript{
 		map_user_property_keys->erase(property_name.c_str()); // erase also property key
 
 		return true;
+	}
+
+	void ScriptObjectObject::eraseAllUserProperties(const ScriptFunction *info_function){
+		this->eraseAllUserElements();
+		map_user_property_keys->clear();
 	}
 
 	ScriptObjectObject::~ScriptObjectObject(){

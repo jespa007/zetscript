@@ -14,12 +14,23 @@ namespace zetscript{
 
 	public:
 
-		//----------------------
-		// public vars ...
-
-		// Construct ...
+		//----------------------------------------------
+		//
+		// Helpers
+		//
 		static ScriptObjectObject * newScriptObjectObject(ZetScript	*_zs);
-		static ScriptObjectObject * newScriptObjectObjectAdd(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2);
+
+		static ScriptObjectVector *keysSf(ScriptObjectObject *o1);
+		//static ScriptObjectObjectIterator *iteratorSf(ScriptObjectObject *o1);
+		static bool containsSf(ScriptObjectObject *o1, std::string * key);
+		static void clearSf(ScriptObjectObject *o1);
+		static void eraseSf(ScriptObjectObject *o1, std::string * key);
+		static ScriptObjectObject * concatSf(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2);
+		//
+		// Helpers
+		//
+		//----------------------------------------------
+
 
 		ScriptObjectObject();
 
@@ -37,7 +48,8 @@ namespace zetscript{
 		zs_map_iterator begin();
 
 
-		bool eraseProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
+		bool eraseUserProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
+		void eraseAllUserProperties(const ScriptFunction *info_function=NULL);
 
 
 		virtual ~ScriptObjectObject();

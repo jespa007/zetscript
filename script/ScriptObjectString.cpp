@@ -7,13 +7,16 @@
 
 namespace zetscript{
 
+	//----------------------------------------------
+	//
+	// Helpers
+	//
 	ScriptObjectString * ScriptObjectString::newScriptObjectString(ZetScript *zs, const std::string & str){
 		ScriptObjectString *so=new ScriptObjectString();
 		so->init(zs);
 		so->set(str);
 		return so;
 	}
-
 
 	ScriptObjectString *ScriptObjectString::newScriptObjectStringAddStk(ZetScript *zs,StackElement *stk_result_op1,StackElement *stk_result_op2){
 		ScriptObjectString *so_ref=NULL;
@@ -100,6 +103,89 @@ namespace zetscript{
 
 		return so_string;
 	}
+
+	ScriptObjectString * ScriptObjectString::formatSf(ZetScript *zs,StackElement *str, StackElement *args){
+		std::string first_param=str->toString();
+		ScriptObjectVector *sov=NULL;
+
+		if(args->properties & MSK_STK_PROPERTY_PTR_STK){
+			args=(StackElement *)args->stk_value;
+		}
+
+		if(args->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject *so=(ScriptObject *)args->stk_value;
+			if(so->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
+				sov=(ScriptObjectVector *)so;
+			}
+		}
+
+		if(sov != NULL){
+			for(unsigned i=0; i < sov->length(); i++){
+				first_param=zs_strutils::replace(first_param,zs_strutils::format("{%i}",i),sov->getUserElementAt(i)->toString());
+			}
+		}
+		//ScriptObjectString *str_in=(ScriptObjectString *)(str->var_ref);
+		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(zs);
+		str_out->set(first_param);//str_in->str_value;
+		return str_out;
+	}
+
+	zs_int ScriptObjectString::sizeSf(ScriptObjectString *so){
+		((std::string *)so->value)->size();
+	}
+
+	bool ScriptObjectString::existSf(ScriptObjectString *so, std::string *str){
+		return false;
+	}
+
+	bool ScriptObjectString::existSf(ScriptObjectString *so, zs_int ch){
+		return false;
+	}
+
+	void ScriptObjectString::clearSf(ScriptObjectString *so){
+		((std::string *)so->value)->clear();
+	}
+
+	void ScriptObjectString::removeAtSf(ScriptObjectString *so, zs_int idx){
+		((std::string *)so->value)->clear();
+	}
+
+	void ScriptObjectString::insertAtSf(ScriptObjectString *so, zs_int idx,zs_int ch){
+		std::string *str=((std::string *)so->value);
+		str->insert(str->begin()+idx,ch);
+	}
+
+	ScriptObjecVector * ScriptObjectString::splitSf(ScriptObjectString *so,zs_int ch){
+		VirtualMachine *vm=so->getZetScript()->getVirtualMachine();
+		ScriptObjectVector *sv=NEW_OBJECT_VECTOR(so->getZetScript());
+
+		auto v=zs_strutils::split(so->toString(),ch);
+
+		for(auto it=v.begin(); it!=v.end(); it++){
+			StackElement *stk=sv->newUserSlot();
+			ScriptObjectString *so=ZS_NEW_OBJECT_STRING(so->getZetScript());
+			so->set(*it);
+
+			// create and share pointer
+			if(!vm->createSharedPointer(so)){
+				THROW_RUNTIME_ERROR("cannot creat shared pointer");
+			}
+			if(!vm->sharePointer(so)){
+				THROW_RUNTIME_ERROR("cannot share pointer");
+			}
+
+			stk->stk_value=so;
+			stk->properties = MSK_STK_PROPERTY_SCRIPT_OBJECT;
+		}
+
+		return sv;
+	}
+
+
+	//
+	// Helpers
+	//
+	//----------------------------------------------
 
 	ScriptObjectString::ScriptObjectString(){
 		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING;

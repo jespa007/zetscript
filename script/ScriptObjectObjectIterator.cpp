@@ -7,33 +7,33 @@
 
 namespace zetscript{
 
-	ScriptObjectObjectClassIterator::ScriptObjectObjectClassIterator(){
+	ScriptObjectObjectIterator::ScriptObjectObjectIterator(){
 	}
 
 
-	void	 ScriptObjectObjectClassIterator::_nextSf(ScriptObjectObjectClassIterator *si){
+	void	 ScriptObjectObjectIterator::_nextSf(ScriptObjectObjectIterator *si){
 		si->_next();
 	}
 
-	StackElement	ScriptObjectObjectClassIterator::_getSf(ScriptObjectObjectClassIterator *si){
+	StackElement	ScriptObjectObjectIterator::_getSf(ScriptObjectObjectIterator *si){
 		return si->_get();
 	}
 
 
-	bool	 ScriptObjectObjectClassIterator::_endSf(ScriptObjectObjectClassIterator *si){
+	bool	 ScriptObjectObjectIterator::_endSf(ScriptObjectObjectIterator *si){
 		return si->_end();
 	}
 
-	bool	 ScriptObjectObjectClassIterator::_end(){
+	bool	 ScriptObjectObjectIterator::_end(){
 		return false;
 	}
 
-	StackElement	 ScriptObjectObjectClassIterator::_get(){
+	StackElement	 ScriptObjectObjectIterator::_get(){
 		return {};
 	}
 
 
-	void	 ScriptObjectObjectClassIterator::_next(){
+	void	 ScriptObjectObjectIterator::_next(){
 
 	}
 }

@@ -17,12 +17,13 @@
 
 
 #include 		"script/ScriptObject.cpp"
-#include 		"script/ScriptObjectObject.cpp"
-#include 		"script/ScriptObjectObjectIterator.cpp"
 #include		"script/ScriptObjectString.cpp"
 #include 		"script/ScriptObjectStringIterator.cpp"
 #include		"script/ScriptObjectVector.cpp"
 #include		"script/ScriptObjectVectorIterator.cpp"
+#include 		"script/ScriptObjectObject.cpp"
+#include 		"script/ScriptObjectObjectIterator.cpp"
+#include 		"script/ScriptObjectDateTime.cpp"
 #include 		"script/ScriptObjectClass.cpp"
 #include 		"script/ScriptObjectVarRef.cpp"
 
@@ -48,7 +49,6 @@
 
 #include 		"modules/MathMod.cpp"
 #include 		"modules/SystemMod.cpp"
-#include 		"modules/StringMod.cpp"
 #include 		"modules/IntegerMod.cpp"
 #include 		"modules/FloatMod.cpp"
 #include 		"modules/JsonMod.cpp"

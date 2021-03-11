@@ -49,14 +49,14 @@ namespace zetscript{
 	}
 
 	void SystemMod::printlnSf(ZetScript *zs,StackElement *str, StackElement *args){
-		ScriptObjectString *str_out=StringMod::formatSf(zs,str,args);
+		ScriptObjectString *str_out=ScriptObjectString::formatSf(zs,str,args);
 		printf("%s\n",str_out->toString().c_str());
 		delete str_out;
 	}
 
 
 	void SystemMod::printSf(ZetScript *zs,StackElement *str, StackElement *args){
-		ScriptObjectString *str_out=StringMod::formatSf(zs,str,args);
+		ScriptObjectString *str_out=ScriptObjectString::formatSf(zs,str,args);
 		printf("%s",str_out->toString().c_str());
 		delete str_out;
 	}
@@ -67,7 +67,7 @@ namespace zetscript{
 
 
 	void SystemMod::evalSf(ZetScript *zs,StackElement *str, StackElement *args){
-		ScriptObjectString *str_out=StringMod::formatSf(zs,str,args);
+		ScriptObjectString *str_out=ScriptObjectString::formatSf(zs,str,args);
 		printf("not implemented");
 		delete str_out;
 	}

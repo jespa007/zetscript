@@ -49,10 +49,6 @@ namespace zetscript{
 		//-------------------------
 		// Register built in modules
 
-		// String mod
-		script_class_factory->registerNativeSingletonClass<StringMod>("StringMod");
-		script_class_factory->registerNativeMemberFunctionStatic<StringMod>("format",StringMod::formatSf);
-
 		// Integer mod
 		script_class_factory->registerNativeSingletonClass<IntegerMod>("Integer");
 		script_class_factory->registerNativeMemberFunctionStatic<IntegerMod>("parse",IntegerMod::parse);
@@ -82,11 +78,20 @@ namespace zetscript{
 		// Custom user function or classes
 		eval(
 			zs_strutils::format(
-				"static String::format(s,...args){" // add static function format to String module
-				"	StringMod::format(System::getZetScript(),s,args)"
+				//------------------------------------------------
+				// Object
+				"static Object::concat(obj1,obj2){"
+				"	return Object::concatSf(System::getZetScript(),obj1,obj2)"
 				"}"
-				""
-				"class System{\n"  // System module
+
+				//------------------------------------------------
+				// String
+				"static String::format(s,...args){" // add static function format to String module
+				"	String::formatSf(System::getZetScript(),s,args)"
+				"}"
+				//------------------------------------------------
+				// System
+				"class System{\n"
 				"	static readChar(){"
 				"		return SystemMod::readChar()"
 				"	}"

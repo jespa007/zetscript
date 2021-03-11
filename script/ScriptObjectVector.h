@@ -11,19 +11,33 @@ namespace zetscript{
 	class CZetgine;
 	class  ScriptObjectVector: public ScriptObject{
 	public:
-		StackElement return_callc;
 
-		template<typename T>
-		static std::vector<T> 	to_std_vector(ScriptObjectVector *v_in);
-		static void    			push(ScriptObjectVector *sv,StackElement  * stk);
-		static StackElement *  	pop(ScriptObjectVector *sv);
-
+		//----------------------------------------------
+		//
+		// Helpers
+		//
 		static ScriptObjectVector * newScriptObjectVector(ZetScript *zs);
 		static ScriptObjectVector * newScriptObjectVectorAdd(ZetScript *zs,ScriptObjectVector *v1,ScriptObjectVector *v2);
+
+		template<typename T>
+		static std::vector<T> 	toStdVector(ScriptObjectVector *sv);
+		static void    			pushSf(ScriptObjectVector *sv,StackElement  * stk);
+		static StackElement *  	popSf(ScriptObjectVector *sv);
+		static zs_int 			sizeSf(ScriptObjectVector *sv);
+		static void 			insertAtSf(ScriptObjectVector *sv, zs_int idx,StackElement  * stk);
+		static void 			eraseAtSf(ScriptObjectVector *sv, zs_int idx);
+		static void 			clearSf(ScriptObjectVector *sv);
+
+		//
+		// Helpers
+		//
+		//----------------------------------------------
 
 		ScriptObjectVector();
 
 		virtual StackElement * 	getUserElementAt(short idx);
+		bool 				eraseUserElementAt(short idx);
+		void				eraseAllUserElements();
 
 		virtual size_t length();
 		virtual zs_vector * getAllUserElements();
@@ -37,7 +51,7 @@ namespace zetscript{
 		zs_vector 			stk_user_elements;
 
 
-		bool 				eraseUserElementAt(short idx);
+
 
 	};
 }

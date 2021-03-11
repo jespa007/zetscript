@@ -362,7 +362,7 @@ namespace zetscript{
 					&&
 					obj2->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
 				){
-					ScriptObjectObject *so_object=ScriptObjectObject::newScriptObjectObjectAdd(
+					ScriptObjectObject *so_object=ScriptObjectObject::concatSf(
 							this->zs
 							,(ScriptObjectObject *)obj1
 							,(ScriptObjectObject *)obj2
