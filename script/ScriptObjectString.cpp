@@ -131,7 +131,7 @@ namespace zetscript{
 	}
 
 	zs_int ScriptObjectString::sizeSf(ScriptObjectString *so){
-		((std::string *)so->value)->size();
+		return ((std::string *)so->value)->size();
 	}
 
 	bool ScriptObjectString::existSf(ScriptObjectString *so, std::string *str){
