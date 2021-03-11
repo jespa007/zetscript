@@ -146,8 +146,9 @@ namespace zetscript{
 		((std::string *)so->value)->clear();
 	}
 
-	void ScriptObjectString::removeAtSf(ScriptObjectString *so, zs_int idx){
-		((std::string *)so->value)->clear();
+	void ScriptObjectString::eraseAtSf(ScriptObjectString *so, zs_int idx){
+		std::string *str=((std::string *)so->value);
+		str->erase(str->begin()+idx);
 	}
 
 	void ScriptObjectString::insertAtSf(ScriptObjectString *so, zs_int idx,zs_int ch){
@@ -155,26 +156,26 @@ namespace zetscript{
 		str->insert(str->begin()+idx,ch);
 	}
 
-	ScriptObjecVector * ScriptObjectString::splitSf(ScriptObjectString *so,zs_int ch){
+	ScriptObjectVector * ScriptObjectString::splitSf(ScriptObjectString *so,zs_int ch_delim){
 		VirtualMachine *vm=so->getZetScript()->getVirtualMachine();
-		ScriptObjectVector *sv=NEW_OBJECT_VECTOR(so->getZetScript());
+		ScriptObjectVector *sv=ZS_NEW_OBJECT_VECTOR(so->getZetScript());
 
-		auto v=zs_strutils::split(so->toString(),ch);
+		auto v=zs_strutils::split(so->toString(),ch_delim);
 
 		for(auto it=v.begin(); it!=v.end(); it++){
 			StackElement *stk=sv->newUserSlot();
-			ScriptObjectString *so=ZS_NEW_OBJECT_STRING(so->getZetScript());
-			so->set(*it);
+			ScriptObjectString *so_partial=ZS_NEW_OBJECT_STRING(so->getZetScript());
+			so_partial->set(*it);
 
 			// create and share pointer
-			if(!vm->createSharedPointer(so)){
+			if(!vm->createSharedPointer(so_partial)){
 				THROW_RUNTIME_ERROR("cannot creat shared pointer");
 			}
-			if(!vm->sharePointer(so)){
+			if(!vm->sharePointer(so_partial)){
 				THROW_RUNTIME_ERROR("cannot share pointer");
 			}
 
-			stk->stk_value=so;
+			stk->stk_value=so_partial;
 			stk->properties = MSK_STK_PROPERTY_SCRIPT_OBJECT;
 		}
 

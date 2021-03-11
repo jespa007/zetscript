@@ -86,17 +86,17 @@ namespace zetscript{
 	}
 
 	StackElement * 			ScriptObject::getBuiltinProperty(const std::string & property_name, int * idx){
-		if(property_name == "length"){
+		/*if(property_name == "length"){
 			stk_length={(void *)this->length(),MSK_STK_PROPERTY_ZS_INT};
 			return &stk_length;
-		}else {
+		}else {*/
 			bool exists=false;
 			zs_int idx_stk=this->map_builtin_property_keys->get(property_name.c_str(),exists);
 
 			if(exists){
 				return (StackElement *)this->stk_builtin_elements.items[idx_stk];
 			}
-		}
+		//}
 		return NULL;
 	}
 

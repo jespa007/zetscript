@@ -224,6 +224,7 @@ Solved issues
 #266 Optimize using Push/Pop scope 
 > #267 Implement Builtin helper class Json
 > #269 Implement String methods 
+> #270 Get rid of C++ functions binding. Allow only C functions or optimized way
  
 //----------------------------------------------------------
 Version: 1.3.0

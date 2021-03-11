@@ -8,7 +8,7 @@
 
 
 namespace zetscript{
-	class ScriptObjectVector;
+
 	class  ScriptObjectString: public ScriptObject{
 
 	public:
@@ -25,9 +25,9 @@ namespace zetscript{
 		static bool existSf(ScriptObjectString *so, std::string *str);
 		static bool existSf(ScriptObjectString *so, zs_int ch);
 		static void clearSf(ScriptObjectString *so);
-		static void removeAtSf(ScriptObjectString *so, zs_int idx);
+		static void eraseAtSf(ScriptObjectString *so, zs_int idx);
 		static void insertAtSf(ScriptObjectString *so, zs_int idx,zs_int ch);
-		static ScriptObjecVector * splitSf(ScriptObjectString *so);
+		static ScriptObjectVector * splitSf(ScriptObjectString *so,zs_int ch_delim);
 		//
 		// Helpers
 		//

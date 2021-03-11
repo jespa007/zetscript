@@ -131,10 +131,17 @@ namespace zetscript{
 		// Vector
 		registerNativeMemberFunction<ScriptObjectVector>("push",&ScriptObjectVector::pushSf);
 		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVector::popSf);
+		registerNativeMemberFunction<ScriptObjectVector>("insertAt",&ScriptObjectVector::insertAtSf);
+		registerNativeMemberFunction<ScriptObjectVector>("eraseAt",&ScriptObjectVector::eraseAtSf);
 		registerNativeMemberFunction<ScriptObjectVector>("size",&ScriptObjectVector::sizeSf);
 
 		// String
 		registerNativeMemberFunctionStatic<ScriptObjectString>("formatSf",ScriptObjectString::formatSf);
+		registerNativeMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectString::eraseAtSf);
+		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectString::insertAtSf);
+		registerNativeMemberFunction<ScriptObjectString>("clearAt",ScriptObjectString::clearSf);
+		registerNativeMemberFunction<ScriptObjectString>("split",ScriptObjectString::splitSf);
+		registerNativeMemberFunction<ScriptObjectString>("size",&ScriptObjectString::sizeSf);
 
 		// Vector
 		registerNativeMemberFunction<ScriptObjectObject>("clearSf",&ScriptObjectObject::clearSf);
