@@ -28,7 +28,7 @@ Main improvements:
 -Implements multiple Return/Assignments
 -Anonymous functions created within class members can use "this" keyword to access all of those members.
 -Implements arguments with options: default, variable arguments and by reference
--Implements setter/getter for class
+-Implements setter/getter for member variables
 -Implements new keywords: typeof, const
 -Implements new operators: in
 -Implements builtin iterators for string, vector and anonymous/class objects
@@ -172,7 +172,7 @@ Solved issues
 #205 desglosse BYTE_LOAD to BYTE_LOAD_XXXX 
 #206 Override global functions 
 > #207 ScriptObjectString: Implement operator [] 
-> #208 Implement Float helper class
+#208 Implement Float helper class
 > #209 Implement Boolean helper class  
 #210 Fix check keyword delete
 > #211 Fix check directive import 
@@ -189,10 +189,10 @@ Solved issues
 #224 implement keyword static
 > #227 implement DateTime class
 > #215 Implement typeof operator
-> #229 Implement toJson(bool formated=false) for Vector and Object 
+#229 Implement toJson(bool formated=false) for Vector and Object 
 #230 Control return ScriptObject[String] values that are not deallocated by user 
 #231 register class passing C function constructor and destructor
-> #232 Implement class attribs 
+> #232 Implement setter/getter for member variables 
 > #233 Implement operator IN 
 #234 Back to class name constructor 
 #235 Make optional function keyword as member function class
@@ -215,16 +215,17 @@ Solved issues
 > #256 Make compatibility back loops, while, switch, pre/post increment etc 
 #257 Set as local variable not found in the block if declared after its using
 > #258 Access object properties by other type rather string feature
-> #259 Erase dinamic object properties/elements by remove operator feature
-> #261 zs_test: launch *.zs and check result from each test from files after do internal test improvement test
-> #262 Select compile double or float precision config
+#259 Erase user properties only by remove operator
+> #261 zs_test: test every single simple check to within script and then launch complex scripts and stop if any fails
+#262 Select compile double or float precision config
 #263 ScriptObjectString: Implement operator + feature feature
 #264 Implement passing args by reference
-> #265 Implement zs_test_strict
+#265 Implement zs_test_strict
 #266 Optimize using Push/Pop scope 
 > #267 Implement Builtin helper class Json
 > #269 Implement String methods 
 > #270 Get rid of C++ functions binding. Allow only C functions or optimized way
+#272 Separate built-in properties and user properties 
  
 //----------------------------------------------------------
 Version: 1.3.0
