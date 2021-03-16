@@ -52,8 +52,17 @@ namespace zetscript{
 					 if(ptr_var==0) return stk_result;
 					 stk_result=*((StackElement *)ptr_var);
 					 break;
+				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR:
+				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT:
+				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
+
+				     stk_result = {
+				    		 (void *)ptr_var
+							 ,MSK_STK_PROPERTY_SCRIPT_OBJECT
+					 };
+					 break;
 				 default:
-					 if(ptr_var==0) return stk_result;
+					 //if(ptr_var==0) return stk_result;
 					 stk_result = {
 							  script_class_factory->instanceScriptObjectClassByIdx(idx_builtin_type_var,(void *)ptr_var)
 							 ,MSK_STK_PROPERTY_SCRIPT_OBJECT

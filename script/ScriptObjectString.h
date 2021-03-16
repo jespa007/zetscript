@@ -22,7 +22,8 @@ namespace zetscript{
 
 
 		static zs_int sizeSf(ScriptObjectString *so);
-		static bool existSf(ScriptObjectString *so, std::string *str);
+		static bool containsSf(ScriptObjectString *so, std::string *str);
+		static bool containsSf(ScriptObjectString *so, zs_int ch);
 		static bool existSf(ScriptObjectString *so, zs_int ch);
 		static void clearSf(ScriptObjectString *so);
 		static void eraseAtSf(ScriptObjectString *so, zs_int idx);
@@ -46,7 +47,7 @@ namespace zetscript{
 
 
 	private:
-		std::string str_value;
+		std::string default_str_value;
 
 		void setup();
 	};

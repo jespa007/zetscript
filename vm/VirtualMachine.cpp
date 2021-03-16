@@ -198,6 +198,12 @@ namespace zetscript{
 		free(info);
 	}
 
+
+	void VirtualMachine::pushStackElement(StackElement stk){
+
+		*stk_vm_current++=stk;
+	}
+
 	bool VirtualMachine::setStackElementAt(unsigned int idx, StackElement stk){
 		if(idx >= VM_STACK_LOCAL_VAR_MAX){
 			VM_SET_USER_ERROR(this,"setStackElement: out of bounds");
@@ -222,11 +228,9 @@ namespace zetscript{
 		return NULL;
 	}
 
-
 	StackElement  * VirtualMachine::getLastStackValue(){
 		return (stk_vm_current-1);
 	}
-
 
 	VirtualMachine::~VirtualMachine(){
 

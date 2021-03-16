@@ -15,11 +15,8 @@ namespace zetscript{
 	zs_map::zs_map(){
 		this->count=HASH_MAP_SIZE;
 		this->list = (zs_map_node **)malloc(sizeof(zs_map_node*)*this->count);
+		memset(this->list,0,sizeof(zs_map_node*)*this->count);
 
-
-		for(unsigned i=0;i<this->count;i++){
-			this->list[i]=NULL;
-		}
 	}
 
 	zs_map_iterator zs_map::begin(){
@@ -80,9 +77,10 @@ namespace zetscript{
 	}
 
 	void 		zs_map::erase(const char * key){
+		uint8_t pos = hash_code(key);
 		zs_map_node * node=lookup_node(key);
 
-		if(node != NULL){
+		if(node == NULL){
 			THROW_RUNTIME_ERROR("Element %s not exist",key);
 			return;
 		}
@@ -90,13 +88,16 @@ namespace zetscript{
 		// not first...
 		if(node->previous != NULL){
 			node->previous->next=node->next; // link previous
+		}else{ // first, set first element as next
+			this->list[pos]=node->next;
 		}
 
 		// not last
 		if(node->next!=NULL){
-			node->next->previous=node->previous; // link next
+			node->next->previous=node->previous; // link previous-next
 		}
 
+		free(node->key);
 		free(node);
 
 	}
@@ -122,6 +123,7 @@ namespace zetscript{
 
 			}
 		}
+		memset(this->list,0,sizeof(zs_map_node*)*this->count);
 	}
 
 	zs_map::~zs_map(){

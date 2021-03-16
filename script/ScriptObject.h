@@ -54,11 +54,13 @@ namespace zetscript{
 		zs_vector				stk_builtin_elements;
 		zs_map					*map_builtin_property_keys; // to search faster each property by its name
 
+
 		void init(ZetScript *zs);
 
 		//StackElement 			stk_length;
 		virtual StackElement * newBuiltinSlot();
 		virtual StackElement * addBuiltinProperty(const std::string & symbol_value, StackElement stk=stk_undefined);
+		bool unrefAndFreeStackElementContainer(StackElement *si);
 
 	};
 

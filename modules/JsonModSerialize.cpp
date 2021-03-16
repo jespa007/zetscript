@@ -1,9 +1,9 @@
 
 namespace zetscript{
 
-#define ZS_JSON_SERIALIZE_NEW_LINE(str_value,ident) \
-	str_value += "\n";\
-	for (int k = 0; k < (ident); k++)	str_value += "\t";
+#define ZS_JSON_SERIALIZE_NEW_LINE(default_str_value,ident) \
+	default_str_value += "\n";\
+	for (int k = 0; k < (ident); k++)	default_str_value += "\t";
 
 	namespace json{
 

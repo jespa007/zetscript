@@ -37,16 +37,39 @@ namespace zetscript{
 		return sv->push(stk);
 	}
 
-	StackElement *  	ScriptObjectVector::popSf(ScriptObjectVector *sv){
-		return sv->pop();
+	void   	ScriptObjectVector::popSf(ScriptObjectVector *sv){
+		sv->pop();
 	}
 
 	zs_int 			ScriptObjectVector::sizeSf(ScriptObjectVector *sv){
 		return sv->stk_user_elements.count;
 	}
 
-	void 			ScriptObjectVector::insertAtSf(ScriptObjectVector *sv, zs_int idx,StackElement  * stk){
+	void 			ScriptObjectVector::insertAtSf(ScriptObjectVector *sv, zs_int idx,StackElement  * _stk){
 
+		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
+		*new_stk=*_stk;
+		ZetScript *zs=sv->zs;
+
+		// update n_refs +1
+		if(_stk->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject *so_param=(ScriptObject *)_stk->stk_value;
+			if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
+				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
+				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(zs);
+				if(!zs->getVirtualMachine()->createSharedPointer(sc)){
+					return;
+				}
+				sc->set(so_param->toString());
+				so_param=sc;
+				new_stk->stk_value=so_param; // update pointer
+			}
+
+			zs->getVirtualMachine()->sharePointer(so_param);
+
+		}
+
+		sv->stk_user_elements.insert(idx,(zs_int)new_stk);
 	}
 
 	void 			ScriptObjectVector::eraseAtSf(ScriptObjectVector *sv, zs_int idx){
@@ -55,6 +78,25 @@ namespace zetscript{
 
 	void 			ScriptObjectVector::clearSf(ScriptObjectVector *sv){
 		sv->eraseAllUserElements();
+	}
+
+	ScriptObjectString *		ScriptObjectVector::joinSf(ScriptObjectVector *sv, zs_int idx){
+		ScriptObjectString *so_ref=NULL;
+		//std::string *str;
+		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(sv->zs);
+		std::string *ptr_str=(std::string *)so_string->value;
+
+		for(unsigned i=0; i < sv->stk_user_elements.count;i++){
+			StackElement *stk=(StackElement *)sv->stk_user_elements.items[i];
+			if(i>0){
+				ptr_str->push_back(idx);
+			}
+			*ptr_str+=stk->toString();
+//			so_vector->push((StackElement *)v1->stk_user_elements.items[i]);
+
+		}
+
+		return so_string;
 	}
 	//
 	// Helpers
@@ -88,45 +130,18 @@ namespace zetscript{
 	bool ScriptObjectVector::eraseUserElementAt( short idx){//onst std::string & varname){
 
 		StackElement *si;
-		ScriptFunction * ir_fun;
+
 
 		if(idx >= stk_user_elements.count){
 			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"idx out of bounds (%i>=%i)",idx,stk_user_elements.count);
 		}
 
 		si=(StackElement *)stk_user_elements.items[idx];
-		unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(si->properties);
 
-		switch(var_type){
-
-			case MSK_STK_PROPERTY_BOOL:
-			case MSK_STK_PROPERTY_ZS_INT:
-			case MSK_STK_PROPERTY_UNDEFINED:
-			case MSK_STK_PROPERTY_ZS_FLOAT:
-				break;
-			case MSK_STK_PROPERTY_FUNCTION:
-				 ir_fun  = (ScriptFunction *)(si->stk_value);
-				break;
-			default: // properties ...
-
-				if(var_type & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					if(((si->properties & MSK_STK_PROPERTY_IS_VAR_C) != MSK_STK_PROPERTY_IS_VAR_C)
-						&& (si->stk_value != this) // ensure that property don't holds its same var.
-						&& (si->stk_value != 0)
-					  ){ // deallocate but not if is c or this ref
-
-						// remove property if not referenced anymore
-						if(!this->zs->getVirtualMachine()->unrefSharedScriptObjectAndRemoveIfZero((ScriptObject **)&si->stk_value)){
-							return false;
-						}
-
-					}
-				}
-				break;
-		}
+		ScriptObject::unrefAndFreeStackElementContainer(si);
 
 		// remove symbol on std::vector ...
-		free((void *)stk_user_elements.items[idx]);
+		//free((void *)stk_user_elements.items[idx]);
 		stk_user_elements.erase(idx);
 
 		/*if(stk_user_elements.count<idx_start_user_properties){
@@ -140,14 +155,15 @@ namespace zetscript{
 	}
 
 	void ScriptObjectVector::eraseAllUserElements(){
-		while ( stk_user_elements.count!=0){
-			eraseUserElementAt(stk_user_elements.count-1);
+		//while ( stk_user_elements.count!=0){
+		for(int i=0; i <stk_user_elements.count; i++){
+			ScriptObject::unrefAndFreeStackElementContainer((StackElement *)stk_user_elements.items[i]);
 		}
 
 		stk_user_elements.clear();
 	}
 
-	StackElement *ScriptObjectVector::newUserSlot(){
+	StackElement *ScriptObjectVector::pushNewUserSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk=stk_undefined;
 		stk_user_elements.push_back((zs_int)stk);
@@ -156,7 +172,7 @@ namespace zetscript{
 
 	void ScriptObjectVector::push(StackElement  * _stk){
 
-		StackElement *new_stk=newUserSlot();
+		StackElement *new_stk=pushNewUserSlot();
 		*new_stk=*_stk;
 
 		// update n_refs +1
@@ -165,16 +181,18 @@ namespace zetscript{
 		}
 	}
 
-	StackElement *ScriptObjectVector::pop(){
-		/*if(stk_user_elements.count<=idx_start_user_properties){
-			VM_SET_USER_ERROR(this->virtual_machine,"pop(): error stack already empty");
-			return NULL;
-		}*/
-		StackElement *stk_element=((StackElement *)stk_user_elements.items[stk_user_elements.count-1]);
+	void ScriptObjectVector::pop(){
+		// save last element...
+		StackElement stk_element=*((StackElement *)stk_user_elements.items[stk_user_elements.count-1]);
+
+		// erase
 		if(!eraseUserElementAt(stk_user_elements.count-1)){
-			return NULL;
+			return;
 		}
-		return stk_element;
+
+		// push current vm
+		this->zs->getVirtualMachine()->pushStackElement(stk_element);
+
 	}
 
 

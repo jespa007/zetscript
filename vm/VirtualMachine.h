@@ -58,6 +58,7 @@ namespace zetscript{
 
 		 bool setStackElementAt(unsigned int idx, StackElement stk);
 		 StackElement *getStkVmCurrent();
+		 void pushStackElement(StackElement stk);
 
 		StackElement *getLastStackValue();
 		StackElement * getStackElementAt(unsigned int idx_glb_element);

@@ -358,9 +358,9 @@ namespace zetscript{
 
 
 				if(
-					obj1->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
+					obj1->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
 					&&
-					obj2->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
+					obj2->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
 				){
 					ScriptObjectObject *so_object=ScriptObjectObject::concatSf(
 							this->zs
@@ -369,6 +369,7 @@ namespace zetscript{
 					);
 					createSharedPointer(so_object);
 					PUSH_OBJECT(so_object);
+					return true;
 				}
 			}
 			break;

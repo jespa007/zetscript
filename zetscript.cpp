@@ -79,12 +79,6 @@ namespace zetscript{
 		eval(
 			zs_strutils::format(
 				//------------------------------------------------
-				// Object
-				"static Object::concat(obj1,obj2){"
-				"	return Object::concatSf(System::getZetScript(),obj1,obj2)"
-				"}"
-
-				//------------------------------------------------
 				// String
 				"static String::format(s,...args){" // add static function format to String module
 				"	String::formatSf(System::getZetScript(),s,args)"

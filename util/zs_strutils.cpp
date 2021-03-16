@@ -350,7 +350,33 @@ namespace zetscript{
 
 			return str.substr(start_idx,end_idx);
 
-
 		}
+
+		bool contains(const std::string & input, const std::string & str_containts,StringComparer sc){
+
+			std::string s1=input;
+			std::string s2=str_containts;
+
+			if(sc==StringComparer::OrdinalIgnoreCase){
+				s1=to_lower(s1);
+				s2=to_lower(s2);
+			}
+
+			if (s1.find(s2) != std::string::npos) {
+				return true;
+			}
+			return false;
+		}
+
+		bool contains(const std::vector<std::string> & input, const std::string & str_containts,StringComparer sc){
+
+			for(unsigned i = 0; i < input.size(); i++){
+				if(contains(input,str_containts,sc)){
+					return true;
+				}
+			}
+			return false;
+		}
+
 	}
 }

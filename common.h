@@ -44,6 +44,7 @@ namespace zetscript{
 	class ScriptObjectClass;
 	//typedef unsigned char 									ClassTypeIdx;
 	typedef intptr_t zs_int;
+	typedef char zs_char;
 
 	typedef enum:short{
 
@@ -57,6 +58,7 @@ namespace zetscript{
 
 		IDX_BUILTIN_TYPE_ZS_INT_C,
 		IDX_BUILTIN_TYPE_ZS_INT_PTR_C,
+		IDX_BUILTIN_TYPE_CHAR_PTR_C,
 		IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C,
 		IDX_BUILTIN_TYPE_STRING_PTR_C,
 		IDX_BUILTIN_TYPE_BOOL_C,
@@ -66,7 +68,6 @@ namespace zetscript{
 		IDX_BUILTIN_TYPE_CONST_FLOAT_PTR_C,
 
 		IDX_BUILTIN_TYPE_STACK_ELEMENT,
-		IDX_BUILTIN_TYPE_ZETSCRIPT,
 		IDX_BUILTIN_TYPE_FUNCTION, // function a(){}
 		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF,
 		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING, // "string"
@@ -74,6 +75,7 @@ namespace zetscript{
 		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME, // DateTime
 		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT, //  {}
 		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS, // class A{}
+		IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT, // zetscript
 		// !!!
 		// !!! DO NOT DECLARE NOTHING HERE!! RESERVED FOR USER CLASSES !!!!!
 		// !!!

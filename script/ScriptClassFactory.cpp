@@ -90,6 +90,7 @@ namespace zetscript{
 		REGISTER_BUILT_IN_TYPE(void,IDX_BUILTIN_TYPE_VOID_C);
 		REGISTER_BUILT_IN_TYPE(zs_int,IDX_BUILTIN_TYPE_ZS_INT_C);
 		REGISTER_BUILT_IN_TYPE(zs_int *,IDX_BUILTIN_TYPE_ZS_INT_PTR_C);
+		REGISTER_BUILT_IN_TYPE(char *,IDX_BUILTIN_TYPE_CHAR_PTR_C);
 		REGISTER_BUILT_IN_TYPE(const char *,IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C);
 		REGISTER_BUILT_IN_TYPE(std::string *,IDX_BUILTIN_TYPE_STRING_PTR_C);
 		REGISTER_BUILT_IN_TYPE(bool,IDX_BUILTIN_TYPE_BOOL_C);
@@ -103,16 +104,23 @@ namespace zetscript{
 
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS
-		REGISTER_BUILT_IN_CLASS_SINGLETON(ZetScript,IDX_BUILTIN_TYPE_ZETSCRIPT);
+		// It self Script object
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
 		REGISTER_BUILT_IN_CLASS("VarRef",ScriptObjectVarRef,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF);
 		REGISTER_BUILT_IN_CLASS("String",ScriptObjectString,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING);
 		REGISTER_BUILT_IN_CLASS("Vector",ScriptObjectVector,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR);
 		REGISTER_BUILT_IN_CLASS("DateTime",ScriptObjectDateTime,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME);
 		// BUILT-IN SCRIPT OBJECTS
-		//---------------------------
+		//------------------------
+		// BUILT-IN SCRIPT OBJECTS CLASSES
+
 		REGISTER_BUILT_IN_CLASS("Object",ScriptObjectObject,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT);
 		REGISTER_BUILT_IN_CLASS("Class",ScriptObjectClass,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS);
+		// it needs script object class to have zetscript reference
+		REGISTER_BUILT_IN_CLASS_SINGLETON(ZetScript,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT);
+		// BUILT-IN SCRIPT OBJECTS CLASSES
+		//------------------------
+
 		// !!!
 		// !!! END REGISTER BUILT IN CLASSES AND TYPES
 		// !!! WARNING IT SHOULD BE IN THE SAME ORDER AS IS DEFINED IN COMMON.H
@@ -133,7 +141,9 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVector::popSf);
 		registerNativeMemberFunction<ScriptObjectVector>("insertAt",&ScriptObjectVector::insertAtSf);
 		registerNativeMemberFunction<ScriptObjectVector>("eraseAt",&ScriptObjectVector::eraseAtSf);
+		registerNativeMemberFunction<ScriptObjectVector>("clear",&ScriptObjectVector::clearSf);
 		registerNativeMemberFunction<ScriptObjectVector>("size",&ScriptObjectVector::sizeSf);
+		registerNativeMemberFunction<ScriptObjectVector>("join",&ScriptObjectVector::joinSf);
 
 		// String
 		registerNativeMemberFunctionStatic<ScriptObjectString>("formatSf",ScriptObjectString::formatSf);
@@ -142,13 +152,15 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectString>("clearAt",ScriptObjectString::clearSf);
 		registerNativeMemberFunction<ScriptObjectString>("split",ScriptObjectString::splitSf);
 		registerNativeMemberFunction<ScriptObjectString>("size",&ScriptObjectString::sizeSf);
+		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, std::string *)>(&ScriptObjectString::containsSf));
+		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectString::containsSf));
 
 		// Vector
-		registerNativeMemberFunction<ScriptObjectObject>("clearSf",&ScriptObjectObject::clearSf);
-		registerNativeMemberFunction<ScriptObjectObject>("eraseSf",&ScriptObjectObject::eraseSf);
-		registerNativeMemberFunction<ScriptObjectObject>("containsSf",&ScriptObjectObject::containsSf);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("concatSf",ScriptObjectObject::concatSf);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("keysSf",ScriptObjectObject::keysSf);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("clear",&ScriptObjectObject::clearSf);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("erase",&ScriptObjectObject::eraseSf);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("contains",&ScriptObjectObject::containsSf);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("concat",ScriptObjectObject::concatSf);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("keys",ScriptObjectObject::keysSf);
 		//registerNativeMemberFunctionStatic<ScriptObjectObject>("iteratorSf",ScriptObjectObject::iteratorSf);
 
 		// DateTime
@@ -343,25 +355,13 @@ namespace zetscript{
 		 ScriptClass *rc = getScriptClass(idx_class);
 
 		 if(rc != NULL){
-
 			 // Is a primitive ?
-			 switch(rc->idx_class){
-
-			 case IDX_BUILTIN_TYPE_VOID_C:
-			 case IDX_BUILTIN_TYPE_ZS_INT_PTR_C:
-			 case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
-			 case IDX_BUILTIN_TYPE_STRING_PTR_C:
-			 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
-			 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR:
-			 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT:
-			 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
-				 THROW_RUNTIME_ERROR("Internal error: An idx class was expected but it was %i",rc->idx_class);
-				 return NULL;
-				 break;
-			 default:
+			if(rc->idx_class > IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
 				 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
 				 so = ScriptObjectClass::newScriptObjectClass(zs,rc->idx_class, value_object);
-				 break;
+			}else{
+				 THROW_RUNTIME_ERROR("Internal error: An idx class was expected but it was %i",rc->idx_class);
+				 return NULL;
 			 }
 		 }
 		 return so;

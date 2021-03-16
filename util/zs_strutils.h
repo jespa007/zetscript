@@ -22,6 +22,11 @@ namespace zetscript{
 	namespace zs_strutils{
 
 		typedef enum{
+			Exactly=0,
+			OrdinalIgnoreCase=1
+		}StringComparer;
+
+		typedef enum{
 			NUMBER_TYPE_INVALID=0,
 			NUMBER_TYPE_HEXA,
 			NUMBER_TYPE_INT,
@@ -63,6 +68,10 @@ namespace zetscript{
 		void copy_from_ptr_diff(std::string & str_dst,const char *p1, const char *p2);
 
 		std::string substring(const std::string & str, size_t start_idx, size_t end_idx);
+
+		bool contains(const std::string & input, const std::string & str_containts,StringComparer sc=StringComparer::Exactly);
+		bool contains(const std::vector<std::string> & input, const std::string & str_containts,StringComparer sc=StringComparer::Exactly);
+
 
 	}
 }

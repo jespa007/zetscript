@@ -177,7 +177,7 @@ namespace zetscript{
 			}
 			else{ // must a number
 				// try read until next comma
-				char str_value[1024]={0};
+				char default_str_value[1024]={0};
 
 				str_end = advance_to_one_of_collection_of_char(str_current, (char *)end_char_standard_value, line);
 				bytes_readed = str_end - str_current;
@@ -187,12 +187,12 @@ namespace zetscript{
 
 				if (bytes_readed > 0) {
 					// copy string...
-					strncpy(str_value,str_current,bytes_readed);
+					strncpy(default_str_value,str_current,bytes_readed);
 					str_current+=bytes_readed;
 
 
 					float number_value = 0;
-					if(zetjsoncpp::zs_strutils::str_to_float(&number_value,str_value) == zetjsoncpp::zj_strutils::STR_2_NUMBER_SUCCESS){
+					if(zetjsoncpp::zs_strutils::str_to_float(&number_value,default_str_value) == zetjsoncpp::zj_strutils::STR_2_NUMBER_SUCCESS){
 						if(ptr_data!=NULL){
 							*((float *) ptr_data) = number_value;
 						}

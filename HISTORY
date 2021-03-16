@@ -167,11 +167,11 @@ Solved issues
 #200 Implement count variable
 #201 System.print: convert any stackelement in string if argument itself is not string var  
 #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
-> #203 Implement operator + object
-> #204 Implement indexs as ScriptObjectVector in ScriptObject 
+#203 Implement operator + object
+#204 Implement indexs as ScriptObjectVector in ScriptObject 
 #205 desglosse BYTE_LOAD to BYTE_LOAD_XXXX 
 #206 Override global functions 
-> #207 ScriptObjectString: Implement operator [] 
+#207 ScriptObjectString: Implement operator [] 
 #208 Implement Float helper class
 > #209 Implement Boolean helper class  
 #210 Fix check keyword delete
@@ -226,6 +226,7 @@ Solved issues
 > #269 Implement String methods 
 > #270 Get rid of C++ functions binding. Allow only C functions or optimized way
 #272 Separate built-in properties and user properties 
+> #276 Implement built-in iterators
  
 //----------------------------------------------------------
 Version: 1.3.0

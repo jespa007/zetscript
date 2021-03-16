@@ -281,7 +281,7 @@ namespace zetscript{
 			ScriptObjectVector *vsv = ZS_NEW_OBJECT_VECTOR(zs_instance);
 
 			for ( unsigned i = 0; i < v.size(); i++){
-				StackElement *stk = vsv->newUserSlot();
+				StackElement *stk = vsv->pushNewUserSlot();
 				//zs_int uvar = (zs_int)(v[i]);
 				*stk = zs_instance->convertVarToStackElement((zs_int)(v[i]),zs_instance->script_class_factory->getIdxClassFromItsNativeType(typeid(T).name()));
 			}

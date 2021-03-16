@@ -21,7 +21,7 @@ namespace zetscript{
 		ScriptObjectVector *sv= ZS_NEW_OBJECT_VECTOR(o1->getZetScript());
 
 		for(auto it=o1->begin(); !it.end(); it.next()){
-			StackElement *stk=sv->newUserSlot();
+			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so=ZS_NEW_OBJECT_STRING(o1->getZetScript());
 			so->set(it.getKey());
 
@@ -64,15 +64,16 @@ namespace zetscript{
 		//zs_map_iterator it_1=o1->map_user_property_keys->begin();
 		//zs_map_iterator it_2=o2->map_user_property_keys->begin();
 
-		for(auto it=o1->begin(); it.end();it.next()){
-			obj->addUserProperty(it.getKey(),error,o2->getUserElementAt(it.getValue()));
+		for(auto it=o1->begin(); !it.end();it.next()){
+			obj->addUserProperty(it.getKey(),error,(StackElement *)it.getValue());
 		}
 
-		for(auto it=o2->begin(); it.end();it.next()){
-			obj->addUserProperty(it.getKey(),error,o2->getUserElementAt(it.getValue()));
+		for(auto it=o2->begin(); !it.end();it.next()){
+			obj->addUserProperty(it.getKey(),error,(StackElement *)it.getValue());
 		}
 		return obj;
 	}
+
 	//
 	// Helpers
 	//
@@ -89,7 +90,7 @@ namespace zetscript{
 			//, const ScriptFunction *info_function
 			//,Instruction *src_instruction
 			,StackElement * sv
-			,int * idx_stk_element
+			//,int * idx_stk_element
 
 		){
 		StackElement si;
@@ -143,18 +144,20 @@ namespace zetscript{
 			si=stk_undefined;
 		}
 
-		if(idx_stk_element != NULL){
+		/*if(idx_stk_element != NULL){
 			*idx_stk_element=stk_user_elements.count;
-		}
+		}*/
 
 		std::string key_value = symbol_value;
-		map_user_property_keys->set(key_value.c_str(),stk_user_elements.count);
-		StackElement *new_stk=newUserSlot();
+		//StackElement *new_stk=pushNewUserSlot();
+		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
+		map_user_property_keys->set(key_value.c_str(),(zs_int)new_stk);
+
 		*new_stk=si; //assign var
 		return new_stk;
 	}
 
-	StackElement * ScriptObjectObject::getUserProperty(const std::string & property_name, int * idx){//,bool only_var_name){
+	StackElement * ScriptObjectObject::getUserProperty(const std::string & property_name/*, int * idx*/){//,bool only_var_name){
 
 		// special properties
 		/*if(property_name == "length"){
@@ -163,13 +166,14 @@ namespace zetscript{
 		}*/
 
 		bool exists;
-		zs_int idx_stk_element=this->map_user_property_keys->get(property_name.c_str(),exists);
+		StackElement *stk_element=(StackElement *)this->map_user_property_keys->get(property_name.c_str(),exists);
 		if(exists){
-			if(idx!=NULL){
+			/*if(idx!=NULL){
 				*idx=idx_stk_element;
 			}
 
-			return (StackElement *)stk_user_elements.items[idx_stk_element];
+			return (StackElement *)stk_user_elements.items[idx_stk_element];*/
+			return stk_element;
 		}
 		return NULL;
 	}
@@ -181,16 +185,16 @@ namespace zetscript{
 			//, Instruction *src_instruction
 			,std::string & error
 			,StackElement * stk_element
-			,int * idx_stk_element
+			/*,int * idx_stk_element*/
 
 	){
-		return addUserProperty(symbol_value,error,stk_element,idx_stk_element);
+		return addUserProperty(symbol_value,error/*,stk_element,idx_stk_element*/);
 	}
 
 	StackElement 	* ScriptObjectObject::getProperty(const std::string & property_name, int * idx){
 		StackElement *stk=getBuiltinProperty(property_name, idx);
 		if(stk==NULL){
-			stk=getUserProperty(property_name,idx);
+			stk=getUserProperty(property_name/*,idx*/);
 		}
 
 		return stk;
@@ -202,28 +206,36 @@ namespace zetscript{
 	}
 
 
-	bool ScriptObjectObject::eraseUserProperty(const std::string & property_name, const ScriptFunction *info_function){
+	bool ScriptObjectObject::eraseUserProperty(const std::string & property_name/*, const ScriptFunction *info_function*/){
 		bool exists=false;
-		zs_int idx_property = map_user_property_keys->get(property_name.c_str(),exists);
+		StackElement *stk_user_element = (StackElement *)map_user_property_keys->get(property_name.c_str(),exists);
 		if(!exists){
 			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"Property %s not exist",property_name.c_str());
 			return false;
 		}
 
-		if(!eraseUserElementAt(idx_property)){
+		/*if(!eraseUserElementAt(stk_user_element)){
 			return false;
-		}
+		}*/
+		free(stk_user_element);
+
 		map_user_property_keys->erase(property_name.c_str()); // erase also property key
 
 		return true;
 	}
 
-	void ScriptObjectObject::eraseAllUserProperties(const ScriptFunction *info_function){
-		this->eraseAllUserElements();
+	void ScriptObjectObject::eraseAllUserProperties(){
+		for(auto it=map_user_property_keys->begin(); !it.end(); it.next()){
+			StackElement *si=(StackElement *)it.getValue();
+			ScriptObject::unrefAndFreeStackElementContainer(si);
+		}
 		map_user_property_keys->clear();
+
 	}
 
 	ScriptObjectObject::~ScriptObjectObject(){
+		eraseAllUserProperties();
 		delete map_user_property_keys;
+
 	}
 }

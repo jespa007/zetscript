@@ -195,7 +195,7 @@
 		break;\
     case MSK_INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
 		 stk_result_op1=--stk_vm_current;\
-		 stk_result_op2=&stk_constant_aux;\
+		 stk_result_op2=&stk_aux;\
 		 stk_result_op2->stk_value=(void *)instruction->value_op2;\
 		 stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
          break;\
@@ -204,14 +204,14 @@
          stk_result_op2=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
          break;\
     case MSK_INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
-		 stk_result_op1=&stk_constant_aux;\
+		 stk_result_op1=&stk_aux;\
 		 stk_result_op1->stk_value=(void *)instruction->value_op2;\
 		 stk_result_op1->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
          stk_result_op2=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
          break;\
     case MSK_INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
         stk_result_op1=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
-		stk_result_op2=&stk_constant_aux;\
+		stk_result_op2=&stk_aux;\
 		stk_result_op2->stk_value=(void *)instruction->value_op2;\
 		stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
         break;\
@@ -280,7 +280,7 @@ namespace zetscript{
 		ScriptObjectClass *so_class_aux=NULL;
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
-		StackElement stk_constant_aux;
+		StackElement stk_aux=stk_undefined;
 		StackElement *stk_var;
 		const char *str_symbol=NULL,*str_aux=NULL;
 		Symbol * symbol_aux=NULL;
@@ -428,31 +428,49 @@ namespace zetscript{
 				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){ \
 					stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr(); \
 				} \
-				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){ \
+				/*if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){ \
 					so_object_aux = (ScriptObjectObject *)(stk_result_op1->stk_value); \
-				} \
+				}else{
+					VM_STOP_EXECUTE("Expected Object"); \
+				}*/
 				stk_var=NULL; \
-				if(so_object_aux != NULL){ \
-					if(so_object_aux->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){ \
-						ScriptObjectVector * so_vector = (ScriptObjectVector *)so_object_aux; \
-						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
-							VM_STOP_EXECUTE("Expected std::vector-index as integer or std::string"); \
-						} \
-						/* determine object ...*/ \
-						if((stk_var =so_vector->getUserElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){ \
-							goto lbl_exit_function; \
-						} \
-					} \
+				/*ScriptObjectVector * so_vector = (ScriptObjectVector *)so_object_aux;*/ \
+				if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
+					VM_STOP_EXECUTE("Expected integer index for Vector or String access"); \
 				} \
-				if(stk_var == NULL){ /* push undefined */ \
-					PUSH_UNDEFINED; \
-					continue; \
-				}
-				if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
-					*stk_vm_current++=*stk_var;
+				/* determine object ...*/ \
+				if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op1)){
+					ScriptObjectVector *so_vector=(ScriptObjectVector *)stk_result_op1->stk_value;
+					if((stk_var =so_vector->getUserElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){ \
+						goto lbl_exit_function; \
+					} \
+					if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
+						*stk_vm_current++=*stk_var;
+					}else{
+						PUSH_STK_PTR(stk_var);
+					}
 					continue;
+
+				}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
+					ScriptObjectString *so_string=(ScriptObjectString *)stk_result_op1->stk_value;
+					zs_char *ptr_char=(zs_char *)&((std::string *)so_string->value)->c_str()[STK_VALUE_TO_ZS_INT(stk_result_op2)];
+					/*if((stk_var =((std::string *)so_string->value) getUserElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){ \
+						goto lbl_exit_function; \
+					} */
+					if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
+						stk_vm_current->stk_value=(void *)((zs_int)(*ptr_char));
+						stk_vm_current->properties=MSK_STK_PROPERTY_ZS_INT;
+					}else{
+						stk_vm_current->stk_value=ptr_char;
+						stk_vm_current->properties=MSK_STK_PROPERTY_ZS_CHAR | MSK_STK_PROPERTY_IS_VAR_C;
+					}
+					stk_vm_current++;
+					continue;
+
+				}else{
+					VM_STOP_EXECUTE("Expected Vector or String object"); \
 				}
-				PUSH_STK_PTR(stk_var);
+
 				continue;
 			// load
 			case BYTE_CODE_LOAD_GLOBAL: // load variable ...
@@ -632,7 +650,7 @@ load_element_object:
 									stk_src=(StackElement *)stk_result_op1->stk_value;
 								}
 
-								stk_dst=((ScriptObjectVector *)vec_obj)->newUserSlot();
+								stk_dst=((ScriptObjectVector *)vec_obj)->pushNewUserSlot();
 							}
 						}
 
@@ -777,16 +795,19 @@ load_element_object:
 						stk_dst=stk_result_op2;
 
 						//---- get stk var
-						if(stk_dst->properties & MSK_STK_PROPERTY_PTR_STK) {
+						if((stk_dst->properties & MSK_STK_PROPERTY_PTR_STK)!=0
+						 ) {
 							stk_dst=(StackElement *)stk_dst->stk_value; // stk_value is expect to contents a stack variable
 						}else{
-							VM_STOP_EXECUTE("Expected l-value on assignment but it was type \"%s\"",stk_dst->typeStr());
+							if((stk_dst->properties & MSK_STK_PROPERTY_IS_VAR_C)==0){
+								VM_STOP_EXECUTE("Expected l-value on assignment but it was type \"%s\"",stk_dst->typeStr());
+							}
 						}
 
 						// we need primitive stackelement in order to assign...
-						if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectObject::VAR_TYPE::OBJECT){
+						/*if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectObject::VAR_TYPE::OBJECT){
 							stk_src=(StackElement *)stk_src->stk_value; // stk_value is expect to contents a stack variable
-						}
+						}*/
 
 						//---- get stk by it ref
 						// check if by ref
@@ -836,19 +857,32 @@ load_element_object:
 							void *copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update stk_value on save) */
 							void **stk_src_ref=&stk_src->stk_value;
 							void **stk_dst_ref=&stk_dst->stk_value;
-							if(stk_src->properties & MSK_STK_PROPERTY_IS_VAR_C){
+							if(stk_src->properties & MSK_STK_PROPERTY_IS_VAR_C){ // src is C pointer
 								stk_src_ref=(void **)((stk_src)->stk_value);
 							}
-							if(stk_dst->properties & MSK_STK_PROPERTY_IS_VAR_C){
-								if(!STK_VALUE_IS_FLOAT_OR_INT(stk_src) && STK_VALUE_IS_FLOAT_OR_INT(stk_dst)){
-									if(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src->properties) != GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties)
-									){
-										VM_STOP_EXECUTE("different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
-									}else{
-										if(
-											(stk_src->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT)
+							if(stk_dst->properties & MSK_STK_PROPERTY_IS_VAR_C){ // dst is a C pointer
+
+								// particular case
+								if(
+									    stk_dst->properties != stk_src->properties
+									&& (((stk_dst->properties & MSK_STK_PROPERTY_ZS_CHAR) && (stk_src->properties & MSK_STK_PROPERTY_ZS_INT))==0)){
+
+									 if(stk_dst->properties != stk_src->properties){
+	/*									   ((stk_src->properties & (MSK_STK_PROPERTY_ZS_FLOAT|MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_CHAR)) == 0)
+										&& ((stk_dst->properties & (MSK_STK_PROPERTY_ZS_FLOAT|MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_CHAR)) != 0)
+
+									 ) // dst is a primitive but src differs. Check error
+									 {*/
+										if(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties) != GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src->properties)
 										){
-											VM_STOP_EXECUTE("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator in order to make the proper operation.");
+											// check particular case
+											VM_STOP_EXECUTE("different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+										}else{ // is object
+											//if(
+											//	(stk_src->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT)
+											//){
+											VM_STOP_EXECUTE("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator (aka set metamethod) in order to perform assign operation");
+											//}
 										}
 									}
 								}
@@ -864,7 +898,9 @@ load_element_object:
 								stk_dst->properties=MSK_STK_PROPERTY_UNDEFINED;
 							}else if(type_var & MSK_STK_PROPERTY_ZS_INT){
 								stk_dst->properties=MSK_STK_PROPERTY_ZS_INT;
-								*((zs_int *)stk_dst_ref)=*((zs_int *)stk_src_ref);
+								old_stk_dst.properties &  MSK_STK_PROPERTY_ZS_CHAR?
+								*((zs_char *)stk_dst_ref)=*((zs_int *)stk_src_ref) & 0xff
+								:*((zs_int *)stk_dst_ref)=*((zs_int *)stk_src_ref);
 								if(copy_aux!=NULL)(*(zs_int *)copy_aux)=*((zs_int *)stk_src_ref);
 							}else if(type_var & MSK_STK_PROPERTY_ZS_FLOAT){
 								stk_dst->properties=MSK_STK_PROPERTY_ZS_FLOAT;
@@ -1260,7 +1296,7 @@ load_element_object:
 
 									if(stk_arg->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 										so_param=(ScriptObject *)stk_arg->stk_value;
-										if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
+										if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 											//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
 											ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(this->zs);
 											if(!createSharedPointer(sc)){

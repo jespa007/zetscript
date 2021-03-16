@@ -126,7 +126,7 @@ namespace zetscript{
 		}
 		//ScriptObjectString *str_in=(ScriptObjectString *)(str->var_ref);
 		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(zs);
-		str_out->set(first_param);//str_in->str_value;
+		str_out->set(first_param);//str_in->default_str_value;
 		return str_out;
 	}
 
@@ -134,9 +134,17 @@ namespace zetscript{
 		return ((std::string *)so->value)->size();
 	}
 
-	bool ScriptObjectString::existSf(ScriptObjectString *so, std::string *str){
-		return false;
+	bool ScriptObjectString::containsSf(ScriptObjectString *so, std::string *str){
+		return zs_strutils::contains(
+				*((std::string *)(so->value))
+				,*str
+		);
 	}
+
+	bool ScriptObjectString::containsSf(ScriptObjectString *so, zs_int ch){
+		return strchr(((std::string *)so->value)->c_str(),ch) != NULL;
+	}
+
 
 	bool ScriptObjectString::existSf(ScriptObjectString *so, zs_int ch){
 		return false;
@@ -163,7 +171,7 @@ namespace zetscript{
 		auto v=zs_strutils::split(so->toString(),ch_delim);
 
 		for(auto it=v.begin(); it!=v.end(); it++){
-			StackElement *stk=sv->newUserSlot();
+			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so_partial=ZS_NEW_OBJECT_STRING(so->getZetScript());
 			so_partial->set(*it);
 
@@ -190,8 +198,8 @@ namespace zetscript{
 
 	ScriptObjectString::ScriptObjectString(){
 		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING;
-		str_value = "";
-		value = &str_value;
+		default_str_value = "";
+		value = &default_str_value;
 	}
 
 	void ScriptObjectString::set(const std::string & s){

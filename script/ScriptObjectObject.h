@@ -10,7 +10,7 @@
 namespace zetscript{
 
 	class ZetScript;
-	class  ScriptObjectObject:public ScriptObjectVector{
+	class  ScriptObjectObject:public ScriptObject{
 
 	public:
 
@@ -25,6 +25,7 @@ namespace zetscript{
 		static bool containsSf(ScriptObjectObject *o1, std::string * key);
 		static void clearSf(ScriptObjectObject *o1);
 		static void eraseSf(ScriptObjectObject *o1, std::string * key);
+		//static void addSf(ScriptObjectObject *dst, ScriptObjectObject *o1);
 		static ScriptObjectObject * concatSf(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2);
 		//
 		// Helpers
@@ -40,7 +41,7 @@ namespace zetscript{
 				//, Instruction *src_instruction
 				,std::string & error
 				,StackElement * stk_element = NULL
-				,int * idx_stk_element = NULL
+				/*,int * idx_stk_element = NULL*/
 		);
 
 		virtual StackElement 	* getProperty(const std::string & property_name, int * idx=NULL);
@@ -48,8 +49,8 @@ namespace zetscript{
 		zs_map_iterator begin();
 
 
-		bool eraseUserProperty(const std::string & symbol_value, const ScriptFunction *info_function=NULL);
-		void eraseAllUserProperties(const ScriptFunction *info_function=NULL);
+		bool eraseUserProperty(const std::string & symbol_value);
+		void eraseAllUserProperties(/*const ScriptFunction *info_function=NULL*/);
 
 
 		virtual ~ScriptObjectObject();
@@ -64,10 +65,10 @@ namespace zetscript{
 				//, Instruction *src_instruction
 				,std::string & error
 				,StackElement * stk_element = NULL
-				,int * idx_stk_element = NULL
+			//	,int * idx_stk_element = NULL
 		);
 
-		StackElement * 			getUserProperty(const std::string & property_name, int * idx=NULL);
+		StackElement * 			getUserProperty(const std::string & property_name/*, int * idx=NULL*/);
 	};
 
 }

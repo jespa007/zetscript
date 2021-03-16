@@ -609,14 +609,14 @@ error_eval_keyword_var:
 							case BYTE_CODE_LOAD_UNDEFINED:
 								arg_info.default_var_value=stk_undefined;
 								break;
+							case BYTE_CODE_LOAD_ZS_INT:
+								arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_ZS_INT};
+								break;
 							case BYTE_CODE_LOAD_FLOAT:
 								arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_ZS_FLOAT};
 								break;
 							case BYTE_CODE_LOAD_BOOL:
 								arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_BOOL};
-								break;
-							case BYTE_CODE_LOAD_ZS_INT:
-								arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_ZS_INT};
 								break;
 							default: // else is an object so we'll create a function in order to return object or complex expression
 								create_anonymous_function_return_expression=true;

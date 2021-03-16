@@ -6,6 +6,43 @@
 
 namespace zetscript{
 
+	bool ScriptObject::unrefAndFreeStackElementContainer(StackElement *si){
+		ScriptFunction * ir_fun;
+		unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(si->properties);
+
+		switch(var_type){
+
+			case MSK_STK_PROPERTY_BOOL:
+			case MSK_STK_PROPERTY_ZS_INT:
+			case MSK_STK_PROPERTY_UNDEFINED:
+			case MSK_STK_PROPERTY_ZS_FLOAT:
+				break;
+			case MSK_STK_PROPERTY_FUNCTION:
+				 ir_fun  = (ScriptFunction *)(si->stk_value);
+				break;
+			default: // properties ...
+
+				if(var_type & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					if(((si->properties & MSK_STK_PROPERTY_IS_VAR_C) != MSK_STK_PROPERTY_IS_VAR_C)
+						&& (si->stk_value != this) // ensure that property don't holds its same var.
+						&& (si->stk_value != 0)
+					  ){ // deallocate but not if is c or this ref
+
+						// remove property if not referenced anymore
+						if(!zs->getVirtualMachine()->unrefSharedScriptObjectAndRemoveIfZero((ScriptObject **)&si->stk_value)){
+							return false;
+						}
+
+					}
+				}
+				break;
+		}
+
+		free(si);
+
+		return true;
+	}
+
 	ScriptObject::ScriptObject(){
 		idx_script_class=ZS_IDX_UNDEFINED;
 		shared_pointer=NULL;
