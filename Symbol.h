@@ -17,7 +17,7 @@ typedef enum {
 	SYMBOL_PROPERTY_C_OBJECT_REF 				= 0x1 << 3, // 0x04: ref_ptr holds C object
 	SYMBOL_PROPERTY_STATIC 						= 0x1 << 4, // 0x08: C function or C++ static functions
 	SYMBOL_PROPERTY_CONST 						= 0x1 << 5, // 0x10: This symbol is not assignable
-	SYMBOL_PROPERTY_IS_MEMBER_FUNCTION	= 0x1 << 6, // 0x20: will pass this object as first parameter
+	SYMBOL_PROPERTY_IS_MEMBER_FUNCTION			= 0x1 << 6, // 0x20: will pass this object as first parameter
 	SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME			= 0x1 << 7, // 0x40: for functions...
 	SYMBOL_PROPERTY_REF							= 0x1 << 8  // 0x80
 }SymbolProperty;
