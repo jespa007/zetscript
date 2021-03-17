@@ -114,7 +114,7 @@ Solved issues
 #137 Callback function support
 #138 remove all std::vector and std::string access on VM
 > #139 Implement const operator
-> #140 Implement Vector methods  
+#140 Implement Vector methods  
 #141 limit n params only for c functions 
 #142 Try to optimize bind function member 
 > #144 Implement System methods
@@ -138,7 +138,7 @@ Solved issues
 #164 implement length property built-in for get length of vector/dictionary/string instead of call size() 
 
 #168 When semicolon on expression is missing it shows wrong filename 
-> #169 Fix/Check metamethods 
+> #169 Fix/Check metamethods
 #170 Fix class 
 #171 test returns stack var with 0 refs (solved by #230, user is in charge to destroy lifetime objects) 
 #172 get rid super scope
@@ -150,7 +150,7 @@ Solved issues
 #180 Return vector or dictionary not deref its user properties 
 #181 Implement var args 
 > #182 Make ScriptVarStringr iterable like Vector 
-> #183 Implement Object helper class 
+#183 Implement Object methods
 #184 Implement + for Vector 
 #185 parser char as integer
 > #186 Implement StriptVarString methods
