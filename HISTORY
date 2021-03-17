@@ -228,6 +228,7 @@ Solved issues
 #272 Separate built-in properties and user properties
 #275 Change VirtualMachine class by struct and C functions  
 > #276 Implement built-in iterators
+> #277 optimize access stk_vm_current 
  
 //----------------------------------------------------------
 Version: 1.3.0
