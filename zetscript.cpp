@@ -20,12 +20,6 @@ namespace zetscript{
 	const char * k_str_stack_element_type=typeid(StackElement).name();
 
 
-	namespace eval {
-		void init();
-		void deinit();
-	}
-
-
 	ZetScript::ZetScript(){
 		eval_int=0;
 		eval_float=0;
@@ -34,15 +28,14 @@ namespace zetscript{
 		idx_current_global_variable_checkpoint=0;
 		constant_string_objects=NULL;
 
-		eval::init();
+		eval_init();
 		scope_factory = new ScopeFactory(this);
-		function_proxy_factory = new FunctionProxyFactory();
 		script_function_factory= new ScriptFunctionFactory(this);
 
-		virtual_machine = new VirtualMachine(this);
+		virtual_machine = vm_new(this);
 		script_class_factory = new ScriptClassFactory(this);
 		script_class_factory->init();
-		virtual_machine->init();
+		vm_init(virtual_machine);
 
 		script_class_factory->registerSystem();
 
@@ -235,7 +228,7 @@ namespace zetscript{
 
 		eval(str_to_eval.c_str());
 
-		StackElement *se=virtual_machine->getLastStackValue();
+		StackElement *se=vm_get_top_stack_element_from_stack(virtual_machine);
 
 		if(se != NULL){
 
@@ -256,7 +249,7 @@ namespace zetscript{
 
 		eval(str_to_eval.c_str());
 
-		StackElement *se=virtual_machine->getLastStackValue();
+		StackElement *se=vm_get_top_stack_element_from_stack(virtual_machine);
 
 		if(se != NULL){
 
@@ -274,7 +267,7 @@ namespace zetscript{
 
 	zs_float * ZetScript::evalFloatValue(const std::string & str_to_eval){
 		eval(str_to_eval.c_str());
-		StackElement *se=virtual_machine->getLastStackValue();
+		StackElement *se=vm_get_top_stack_element_from_stack(virtual_machine);
 
 		if(se != NULL){
 			if(se->properties & MSK_STK_PROPERTY_ZS_FLOAT){
@@ -293,7 +286,7 @@ namespace zetscript{
 		// eval and preserve zero shares to get value...
 		evalInternal(str_to_eval.c_str());
 
-		StackElement *se=virtual_machine->getLastStackValue();
+		StackElement *se=vm_get_top_stack_element_from_stack(virtual_machine);
 
 		if(se != NULL){
 
@@ -311,7 +304,7 @@ namespace zetscript{
 
 	void ZetScript::evalInternal(const char * code, unsigned short options, const char * filename)  {
 
-		eval::eval(this,code,filename);
+		eval_parse_and_compile(this,code,filename);
 
 		if(options & EvalOption::EVAL_OPTION_SHOW_USER_CODE){
 			printGeneratedCode(options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_CODE);
@@ -319,8 +312,9 @@ namespace zetscript{
 
 		if(options & EvalOption::EVAL_OPTION_EXECUTE){
 			// the first code to execute is the main function that in fact is a special member function inside our main class
-			virtual_machine->execute(
-					NULL
+			vm_execute(
+					virtual_machine
+					,NULL
 					,script_class_factory->getMainFunction()
 			);
 		}
@@ -385,7 +379,7 @@ namespace zetscript{
 		// remove all shared 0 pointers
 		if(main_function_object->registered_symbols->count > 0){
 			// set global top stack element
-			StackElement *vm_stk_element=&virtual_machine->getVmStackPtr()[main_function_object->registered_symbols->count-1];
+			StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[main_function_object->registered_symbols->count-1];
 
 			for (
 					int v = main_function_object->registered_symbols->count-1;
@@ -398,8 +392,8 @@ namespace zetscript{
 					var =((ScriptObjectObject *)(vm_stk_element->stk_value));
 					if(var){
 						if(var->shared_pointer != NULL){
-							if(!this->virtual_machine->unrefSharedScriptObject(var,IDX_CALL_STACK_MAIN)){
-								THROW_RUNTIME_ERROR("error clearing variables: %s",this->virtual_machine->getError());
+							if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
+								THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine));
 							}
 						}
 					}
@@ -410,7 +404,7 @@ namespace zetscript{
 			}
 		}
 
-		this->virtual_machine->removeEmptySharedPointers(IDX_CALL_STACK_MAIN);
+		vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
 	}
 
 	void ZetScript::setClearGlobalVariablesCheckpoint(){
@@ -442,10 +436,9 @@ namespace zetscript{
 		script_class_factory->clear(IDX_SCRIPT_CLASS_MAIN+1);*/
 
 		// clear objects...
-		delete virtual_machine;
+		vm_delete(virtual_machine);
 		delete scope_factory;
 		delete script_function_factory;
-		delete function_proxy_factory;
 		delete script_class_factory;
 
 		virtual_machine=NULL;
@@ -461,7 +454,7 @@ namespace zetscript{
 			delete constant_string_objects;
 		}
 
-		eval::deinit();
+		eval_deinit();
 
 
 	}

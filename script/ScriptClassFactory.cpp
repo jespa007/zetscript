@@ -53,7 +53,6 @@ namespace zetscript{
 		zs = _zs;
 		scope_factory = this->zs->getScopeFactory();
 		script_function_factory= this->zs->getScriptFunctionFactory();
-		function_proxy_factory= this->zs->getFunctionProxyFactory();
 		register_c_base_symbols=false;
 		main_function=NULL;
 		main_object=NULL;

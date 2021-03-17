@@ -57,7 +57,7 @@ namespace zetscript{
 			if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
 				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(zs);
-				if(!zs->getVirtualMachine()->createSharedPointer(sc)){
+				if(!vm_create_shared_pointer(zs->getVirtualMachine(),sc)){
 					return;
 				}
 				sc->set(so_param->toString());
@@ -65,7 +65,7 @@ namespace zetscript{
 				new_stk->stk_value=so_param; // update pointer
 			}
 
-			zs->getVirtualMachine()->sharePointer(so_param);
+			vm_share_pointer(zs->getVirtualMachine(),so_param);
 
 		}
 
@@ -177,7 +177,7 @@ namespace zetscript{
 
 		// update n_refs +1
 		if(_stk->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
-			this->zs->getVirtualMachine()->sharePointer(((ScriptObject *)(_stk->stk_value)));
+			vm_share_pointer(this->zs->getVirtualMachine(),(ScriptObject *)(_stk->stk_value));
 		}
 	}
 
@@ -191,7 +191,7 @@ namespace zetscript{
 		}
 
 		// push current vm
-		this->zs->getVirtualMachine()->pushStackElement(stk_element);
+		vm_push_stack_element(this->zs->getVirtualMachine(),stk_element);
 
 	}
 

@@ -227,8 +227,9 @@ namespace zetscript{
 			*f=((void *)(new std::function<void ()>(
 				[&,calling_obj,fun_obj](){
 					bool error=false;
-					virtual_machine->execute(
-						 calling_obj
+					vm_execute(
+						virtual_machine
+						,calling_obj
 						,fun_obj
 					);
 
@@ -247,8 +248,9 @@ namespace zetscript{
 						std::string error_str;
 						R ret_value;
 
-						StackElement stk = virtual_machine->execute(
-								 calling_obj
+						StackElement stk = vm_execute(
+								virtual_machine
+								,calling_obj
 								,fun_obj
 						);
 
@@ -282,8 +284,9 @@ namespace zetscript{
 							 convertVarToStackElement((zs_int)p1,idx_param1)
 					};
 
-					virtual_machine->execute(
-								 calling_obj
+					vm_execute(
+								virtual_machine
+								,calling_obj
 								,fun_obj
 								,args
 								,1);
@@ -311,8 +314,9 @@ namespace zetscript{
 								convertVarToStackElement((zs_int)p1,idx_param1)
 						};
 
-						StackElement stk = virtual_machine->execute(
-								 calling_obj
+						StackElement stk = vm_execute(
+								virtual_machine
+								,calling_obj
 								,fun_obj
 								,args
 								,1);
@@ -351,8 +355,9 @@ namespace zetscript{
 
 					};
 
-					virtual_machine->execute(
-						calling_obj
+					vm_execute(
+						virtual_machine
+						,calling_obj
 						,fun_obj
 						,args
 						,2
@@ -387,8 +392,9 @@ namespace zetscript{
 
 						};
 
-						StackElement stk = virtual_machine->execute(
-							 calling_obj
+						StackElement stk = vm_execute(
+							virtual_machine
+							,calling_obj
 							,fun_obj
 							,args
 							,2
@@ -434,8 +440,9 @@ namespace zetscript{
 							,convertVarToStackElement((zs_int)p3,idx_param3)
 					};
 
-					virtual_machine->execute(
-							 calling_obj
+					vm_execute(
+							virtual_machine
+							,calling_obj
 							,fun_obj
 							,args
 							,3
@@ -470,8 +477,9 @@ namespace zetscript{
 							,convertVarToStackElement((zs_int)p3,idx_param3)
 					};
 
-					StackElement stk = virtual_machine->execute(
-						 calling_obj
+					StackElement stk = vm_execute(
+						virtual_machine
+						,calling_obj
 						,fun_obj
 						,args
 						,3
@@ -517,11 +525,12 @@ namespace zetscript{
 							,convertVarToStackElement((zs_int)p4,idx_param4)
 					};
 
-					virtual_machine->execute(
-						calling_obj,
-						fun_obj,
-						args,
-						4
+					vm_execute(
+						virtual_machine
+						,calling_obj
+						,fun_obj
+						,args
+						,4
 					);
 
 				}
@@ -557,12 +566,12 @@ namespace zetscript{
 								,convertVarToStackElement((zs_int)p4,idx_param4)
 						};
 
-						StackElement stk = virtual_machine->execute(
-								calling_obj,
-								fun_obj,
-
-								args,
-								4);
+						StackElement stk = vm_execute(
+								virtual_machine
+								,calling_obj
+								,fun_obj
+								,args
+								,4);
 
 						if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
@@ -610,12 +619,12 @@ namespace zetscript{
 
 					};
 
-					virtual_machine->execute(
-							calling_obj,
-							fun_obj,
-
-							args,
-							5);
+					vm_execute(
+							virtual_machine
+							,calling_obj
+							,fun_obj
+							,args
+							,5);
 				}
 
 			)));
@@ -655,12 +664,12 @@ namespace zetscript{
 
 					};
 
-					StackElement stk = virtual_machine->execute(
-							calling_obj,
-							fun_obj,
-
-							args,
-							5);
+					StackElement stk = vm_execute(
+							virtual_machine
+							,calling_obj
+							,fun_obj
+							,args
+							,5);
 
 					if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
 						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
@@ -711,12 +720,12 @@ namespace zetscript{
 							,convertVarToStackElement((zs_int)p6,idx_param6)
 					};
 
-					virtual_machine->execute(
-							calling_obj,
-							fun_obj,
-
-							args,
-							6);
+					vm_execute(
+							 virtual_machine
+							,calling_obj
+							,fun_obj
+							,args
+							,6);
 				}
 
 			)));
@@ -756,10 +765,10 @@ namespace zetscript{
 								,convertVarToStackElement((zs_int)p6,idx_param6)
 						};
 
-						StackElement stk = virtual_machine->execute(
+						StackElement stk = vm_execute(
+								virtual_machine,
 								calling_obj,
 								fun_obj,
-
 								args,
 								6);
 
@@ -847,7 +856,7 @@ namespace zetscript{
 							Symbol * registered_symbol=(Symbol *)main_function->registered_symbols->items[j];
 							if(registered_symbol->name==symbol_to_find
 							&& registered_symbol->scope == MAIN_SCOPE(this)){
-								StackElement *stk = virtual_machine->getStackElementAt(j); // main_function->object_info.local_symbols.variable[j].
+								StackElement *stk = vm_get_stack_element_at(virtual_machine,j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
 									if(stk->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 										calling_obj=(ScriptObjectClass *)stk->stk_value;

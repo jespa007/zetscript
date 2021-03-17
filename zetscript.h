@@ -79,9 +79,6 @@
 #include "Instruction.h"
 #include "Symbol.h"
 
-#include "function_proxy/FunctionTraits.h"
-#include "function_proxy/FunctionProxyFactory.h"
-
 #include "scope/Scope.h"
 #include "scope/ScopeFactory.h"
 
@@ -102,6 +99,7 @@
 #include "script/ScriptObjectClass.h"
 #include "script/ScriptObjectVarRef.h"
 
+#include "script/ScriptFunctionTraits.h"
 #include "script/ScriptFunctionArg.h"
 #include "script/ScriptFunction.h"
 #include "script/ScriptClass.h"
@@ -154,7 +152,7 @@ namespace zetscript{
 
 
 
-	class VirtualMachine;
+	struct VirtualMachine;
 	class ScriptEval;
 	class ZetScript{
 
@@ -171,7 +169,6 @@ namespace zetscript{
 		ZetScript();
 
 		inline VirtualMachine * getVirtualMachine() { return virtual_machine;}
-		inline FunctionProxyFactory * getFunctionProxyFactory() { return function_proxy_factory;}
 		inline ScopeFactory * getScopeFactory() { return scope_factory;}
 		inline ScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
 		inline ScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
@@ -261,14 +258,6 @@ namespace zetscript{
 		template <typename C,typename F>
 		void registerMemberFunctionStatic(const char *function_name,F fun, const char *registered_file="",short registered_line=-1){
 			script_class_factory->registerNativeMemberFunctionStatic<C>(function_name,fun, registered_file, registered_line);
-		}
-
-		/**
-		 * Register C Member var
-		 */
-		template <typename C, typename R,typename T>
-		void registerMemberVariable(const char *var_name, R T::*var_pointer, const char *registered_file="",short registered_line=-1){
-			script_class_factory->registerNativeMemberVariable<C>(var_name,var_pointer,registered_file,registered_line);
 		}
 
 		//cpp binding
@@ -440,7 +429,6 @@ namespace zetscript{
 
 		//ScriptEval * eval_obj;
 		VirtualMachine * virtual_machine;
-		FunctionProxyFactory * function_proxy_factory;
 		ScopeFactory * scope_factory;
 		ScriptFunctionFactory *script_function_factory;
 		ScriptClassFactory *script_class_factory;
@@ -477,6 +465,6 @@ namespace zetscript{
 
 }
 
-#include	"vm/VirtualMachine.h"
+#include	"vm/vm.h"
 #include 	"zetscript.tcc"
 

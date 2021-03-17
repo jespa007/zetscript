@@ -137,17 +137,6 @@ namespace zetscript{
 
 		void registerNativeMemberSymbols();
 
-		/**
-		 * Register C Member var
-		 */
-		template <typename C, typename R,typename T>
-		void registerNativeMemberVariable(
-				const char *var_name
-				, R T::*var_pointer
-				 , const char *registered_file=""
-				,short registered_line=-1
-		);
-
 		template <typename C, typename R>
 		void registerNativeStaticConstMember(
 				const char *var_name
@@ -156,16 +145,6 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
-		/**
-		 * Register C Member function Class
-		 */
-		template < typename C, typename R, class T, typename..._A>
-		void registerNativeMemberFunction(
-				const char *function_name
-				,R (T:: *function_type)(_A...)
-				 , const char *registered_file=""
-				,short registered_line=-1
-		);
 
 		/**
 		 * Register C Member function static Class
@@ -210,7 +189,6 @@ namespace zetscript{
 		ZetScript 						*	zs;
 		ScopeFactory 					*	scope_factory;
 		ScriptFunctionFactory 			*	script_function_factory;
-		FunctionProxyFactory 			*	function_proxy_factory;
 		ScriptClass 					* 	main_object;
 		ScriptFunction 					* 	main_function;
 		std::map<short,std::map<short,ConversionType>> 	conversion_types;

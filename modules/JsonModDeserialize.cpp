@@ -59,7 +59,7 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		char *ignore_blanks(char *str, int &line) {
+		char *eval_ignore_blanks(char *str, int &line) {
 			char *aux_p = str;
 			bool end = false;
 			while(!end){
@@ -142,7 +142,7 @@ namespace zetscript{
 				json_deserialize_error(deserialize_data,str_start,line,"string value not closed");
 			}
 
-			return ignore_blanks(str_current+1, line);
+			return eval_ignore_blanks(str_current+1, line);
 		}
 
 		char * deserialize_json_var_value(
@@ -217,24 +217,24 @@ namespace zetscript{
 			char *str_current = (char *)str_start;
 			std::string error;
 
-			str_current = ignore_blanks(str_current, line);
+			str_current = eval_ignore_blanks(str_current, line);
 
 			if(*str_current != '['){
 				json_deserialize_error(deserialize_data,str_start,line,"A '[' was expected to parse JsonVarVector type");
 				return 0;
 			}
 
-			str_current = ignore_blanks(str_current+1, line);
+			str_current = eval_ignore_blanks(str_current+1, line);
 
 			if(*str_current != ']'){ // do parsing primitive...
 
 				do{
 					str_current=deserialize_json_var(deserialize_data,str_current,line,json_var);
 
-					str_current = ignore_blanks(str_current, line);
+					str_current = eval_ignore_blanks(str_current, line);
 
 					if(*str_current==','){
-						str_current = ignore_blanks(str_current+1, line);
+						str_current = eval_ignore_blanks(str_current+1, line);
 					}else if(*str_current!=']'){
 						json_deserialize_error(deserialize_data, str_current, line,  "Expected ',' or ']'");
 						return 0;
@@ -251,14 +251,14 @@ namespace zetscript{
 			std::string variable_name,key_id;
 			std::string error;
 
-			str_current = ignore_blanks(str_current, line);
+			str_current = eval_ignore_blanks(str_current, line);
 
 			if(*str_current != '{'){
 				json_deserialize_error(deserialize_data, str_start, line, "A '{' was expected to parse %s type",json_var!=NULL?json_var->getTypeStr():"");
 				return NULL;
 			}
 
-			str_current = ignore_blanks(str_current+1, line);
+			str_current = eval_ignore_blanks(str_current+1, line);
 
 			if(*str_current != '}'){ // do parsing object values...
 				do{
@@ -269,7 +269,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					str_current = ignore_blanks(str_current + 1, line);
+					str_current = eval_ignore_blanks(str_current + 1, line);
 
 					// get c property
 
@@ -277,10 +277,10 @@ namespace zetscript{
 					str_current=deserialize_json_var(deserialize_data, str_current, line, json_var_property);
 
 
-					str_current = ignore_blanks(str_current, line);
+					str_current = eval_ignore_blanks(str_current, line);
 
 					if(*str_current==','){
-						str_current = ignore_blanks(str_current+1, line);
+						str_current = eval_ignore_blanks(str_current+1, line);
 					}else if(*str_current!='}'){
 						json_deserialize_error(deserialize_data, str_current, line, "Expected ',' or '}'");
 						return NULL;
@@ -296,7 +296,7 @@ namespace zetscript{
 			// PRE: If json_var == NULL it parses but not saves
 			char * str_current = (char *)str_start;
 			std::string error="";
-			str_current = ignore_blanks(str_current, line);
+			str_current = eval_ignore_blanks(str_current, line);
 
 
 			//try to deduce ...

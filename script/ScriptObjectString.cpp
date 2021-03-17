@@ -176,10 +176,10 @@ namespace zetscript{
 			so_partial->set(*it);
 
 			// create and share pointer
-			if(!vm->createSharedPointer(so_partial)){
+			if(!vm_create_shared_pointer(vm,so_partial)){
 				THROW_RUNTIME_ERROR("cannot creat shared pointer");
 			}
-			if(!vm->sharePointer(so_partial)){
+			if(!vm_share_pointer(vm,so_partial)){
 				THROW_RUNTIME_ERROR("cannot share pointer");
 			}
 

@@ -39,7 +39,7 @@ namespace zetscript{
 				,var_name
 				,var_type
 				,(zs_int)var_ptr
-				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC)) != NULL
+				,SYMBOL_PROPERTY_C_OBJECT_REF)) != NULL
 		){
 			ZS_PRINT_DEBUG("Registered variable name: %s",var_name.c_str());
 		}
@@ -114,7 +114,7 @@ namespace zetscript{
 				,arg_info
 				,idx_return_type
 				,ref_ptr
-				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC
+				,SYMBOL_PROPERTY_C_OBJECT_REF
 			);
 
 		ZS_PRINT_DEBUG("Registered function name: %s",function_name);
@@ -387,62 +387,6 @@ namespace zetscript{
 		//----------------------------
 	}
 
-
-	/**
-	 * Register C Member var
-	 */
-	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
-	template <typename C, typename R,typename T>
-	void ScriptClassFactory::registerNativeMemberVariable(
-			const char *var_name
-			, R T::*var_pointer
-			, const char *registered_file
-			,short registered_line
-	) //unsigned int offset)
-	{
-		// to make compatible MSVC shared library
-		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
-
-		std::string var_type = typeid(R *).name(); // we need the pointer type ...
-		std::string error="";
-		std::string return_type;
-		//std::vector<std::string> params;
-		std::string str_class_name_ptr = typeid( C *).name();
-		zs_int ref_ptr=offsetOf<C>(var_pointer);
-		Symbol *symbol;
-
-		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
-
-		if(c_class == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
-		}
-
-		// 1. check all parameters ok.
-		// check valid parameters ...
-		if(getIdxClassFromItsNativeType(var_type) == -1){
-			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-					,c_class->symbol_class.name.c_str()
-					,var_name
-					,zs_rtti::demangle(typeid(R).name()).c_str());
-		}
-
-		// register variable...
-		symbol=c_class->registerNativeMemberVariable(
-				error
-				,registered_file
-				,registered_line
-				,var_name
-				,var_type
-				,ref_ptr
-				,SYMBOL_PROPERTY_C_OBJECT_REF
-
-		);
-
-		if(symbol == NULL){
-			THROW_RUNTIME_ERROR(error.c_str());
-		}
-	}
-
 	/**
 	 * Register C Member var
 	 */
@@ -498,75 +442,6 @@ namespace zetscript{
 		}
 	}
 
-	/**
-	 * Register C Member function Class
-	 */
-	template < typename C, typename R, class T, typename..._A>
-	void ScriptClassFactory::registerNativeMemberFunction(
-			const char *function_name
-			,R (T:: *function_type)(_A...)
-			, const char *registered_file
-			,short registered_line
-	)
-	{
-		// to make compatible MSVC shared library
-		std::string return_type;
-		std::vector<std::string> arg;
-		std::vector<ScriptFunctionArg> arg_info;
-		std::string error;
-		int idx_return_type=-1;
-		zs_int ref_ptr=0;
-		std::string str_class_name_ptr = typeid( C *).name();
-
-		ScriptClass * sc=getScriptClassByNativeClassPtr(str_class_name_ptr);
-
-		if(sc == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
-		}
-
-		// 1. check all parameters ok.
-		using Traits3 = FunctionTraits<decltype(function_type)>;
-		getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
-
-
-		// check valid parameters ...
-		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == ZS_IDX_UNDEFINED){
-			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name);
-		}
-
-		for(unsigned int i = 0; i < arg.size(); i++){
-			int idx_type=getIdxClassFromItsNativeType(arg[i]);
-
-			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
-				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
-			}
-
-			if(idx_type==ZS_IDX_UNDEFINED){
-				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,zs_rtti::demangle(arg[i]).c_str(),function_name);
-			}
-			arg_info.push_back({idx_type,arg[i]});
-		}
-
-		ref_ptr=((zs_int)function_proxy_factory->newProxyMemberFunction<C>(arg.size(),function_type));
-
-		// register member function...
-		Symbol *symbol = sc->registerNativeMemberFunction(
-				error
-				,registered_file
-				,registered_line
-				,function_name
-				,arg_info
-				,idx_return_type
-				,ref_ptr
-				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
-		);
-
-		if(symbol == NULL){
-			THROW_RUNTIME_ERROR(error.c_str());
-		}
-
-		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
-	}
 
 
 	/**
@@ -765,7 +640,7 @@ namespace zetscript{
 				, arg_info
 				, idx_return_type
 				, ref_ptr
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_SET_FIRST_PARAMETER_AS_THIS
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_IS_MEMBER_FUNCTION
 		);
 
 

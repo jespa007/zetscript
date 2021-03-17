@@ -29,7 +29,7 @@ namespace zetscript{
 					  ){ // deallocate but not if is c or this ref
 
 						// remove property if not referenced anymore
-						if(!zs->getVirtualMachine()->unrefSharedScriptObjectAndRemoveIfZero((ScriptObject **)&si->stk_value)){
+						if(!vm_unref_shared_script_object_and_remove_if_zero(zs->getVirtualMachine(),(ScriptObject **)&si->stk_value)){
 							return false;
 						}
 

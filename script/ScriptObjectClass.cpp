@@ -38,7 +38,7 @@ namespace zetscript{
 		}
 
 		if(sc->sf_field_initializer != NULL){ // execute if only script class
-			zs->getVirtualMachine()->execute(this,sc->sf_field_initializer);
+			vm_execute(zs->getVirtualMachine(),this,sc->sf_field_initializer);
 		}
 	}
 
@@ -206,7 +206,7 @@ namespace zetscript{
 						// capture string...
 						std::string aux=so->toString();
 						// ... destroy lifetime object we don't need anymore
-						this->zs->getVirtualMachine()->destroyLifetimeObject(so);
+						vm_destroy_life_time_object(this->zs->getVirtualMachine(),so);
 						// return
 						return aux;
 					}

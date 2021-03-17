@@ -378,13 +378,13 @@ namespace zetscript{
 			StackElement stk_global_var;
 			if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0){ // native variable
 				stk_global_var=convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr);
-				if(!zs->getVirtualMachine()->setStackElementAt(idx_position,stk_global_var)){
-					THROW_RUNTIME_ERROR(zs->getVirtualMachine()->getError().c_str());
+				if(!vm_set_stack_element_at(zs->getVirtualMachine(),idx_position,stk_global_var)){
+					THROW_RUNTIME_ERROR(vm_get_error(zs->getVirtualMachine()).c_str());
 				}
 			}else{ // script variable
-				StackElement *stk_global_var_ptr=zs->getVirtualMachine()->getStackElementAt(idx_position);
+				StackElement *stk_global_var_ptr=vm_get_stack_element_at(zs->getVirtualMachine(),idx_position);
 				if(stk_global_var_ptr==NULL){
-					THROW_RUNTIME_ERROR(zs->getVirtualMachine()->getError().c_str());
+					THROW_RUNTIME_ERROR(vm_get_error(zs->getVirtualMachine()).c_str());
 				}
 
 				// reset stack to undefined, it can have some garbage from previous operations...
@@ -457,8 +457,9 @@ namespace zetscript{
 
 			if(scope_block == MAIN_SCOPE(this)) { // global function
 				// set global stk var...
-				zs->getVirtualMachine()->setStackElementAt(
-					(int)idx_position
+				vm_set_stack_element_at(
+					zs->getVirtualMachine()
+					,(int)idx_position
 					,{
 						(void *)symbol->ref_ptr
 						,MSK_STK_PROPERTY_FUNCTION

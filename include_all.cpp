@@ -37,12 +37,8 @@
 #include		"scope/Scope.cpp"
 #include		"scope/ScopeFactory.cpp"
 
-
-//-- Function --
-#include		"function_proxy/FunctionProxyFactory.cpp"
-
 //-- VM --
-#include		"vm/VirtualMachine.cpp"
+#include		"vm/vm.cpp"
 
 // -- Eval
 #include		"eval/eval.cpp"

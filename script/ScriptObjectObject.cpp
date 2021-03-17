@@ -26,10 +26,10 @@ namespace zetscript{
 			so->set(it.getKey());
 
 			// create and share pointer
-			if(!vm->createSharedPointer(so)){
+			if(!vm_create_shared_pointer(vm,so)){
 				THROW_RUNTIME_ERROR("cannot creat shared pointer");
 			}
-			if(!vm->sharePointer(so)){
+			if(!vm_share_pointer(vm,so)){
 				THROW_RUNTIME_ERROR("cannot share pointer");
 			}
 
@@ -134,7 +134,7 @@ namespace zetscript{
 
 			// update n_refs +1
 			if(sv->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
-				if(zs->getVirtualMachine()->sharePointer(((ScriptObjectObject *)(sv->stk_value))) == false){
+				if(vm_share_pointer(zs->getVirtualMachine(),(ScriptObjectObject *)(sv->stk_value)) == false){
 					return NULL;
 				}
 			}
@@ -210,7 +210,7 @@ namespace zetscript{
 		bool exists=false;
 		StackElement *stk_user_element = (StackElement *)map_user_property_keys->get(property_name.c_str(),exists);
 		if(!exists){
-			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"Property %s not exist",property_name.c_str());
+			VM_SET_USER_ERROR(zs->getVirtualMachine(),"Property %s not exist",property_name.c_str());
 			return false;
 		}
 

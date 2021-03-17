@@ -9,7 +9,7 @@ namespace zetscript{
 		class ScriptClass;
 		class ScriptClass;
 		class ZetScript;
-		class VirtualMachine;
+		struct VirtualMachine;
 		class ScriptClassFactory;
 		class  ScriptObjectClass: public ScriptObjectObject{
 		public:

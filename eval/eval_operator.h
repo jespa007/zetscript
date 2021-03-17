@@ -48,59 +48,55 @@
 
 namespace zetscript{
 
-	namespace eval{
+	// operator enumerated as its precedence
+	typedef enum :unsigned char {
 
-		// operator enumerated as its precedence
-		typedef enum :unsigned char {
+		OPERATOR_UNKNOWN = 0,
 
-			OPERATOR_UNKNOWN = 0,
+		// ASSIGN
+		OPERATOR_ASSIGN, 										// =
+		OPERATOR_ASSIGN_ADD,									// += (first)
+		OPERATOR_ASSIGN_SUB, 									// -=
+		OPERATOR_ASSIGN_MUL, 									// *=
+		OPERATOR_ASSIGN_DIV, 									// /=
+		OPERATOR_ASSIGN_MOD, 									// %=
+		OPERATOR_ASSIGN_XOR,									// ^=
+		OPERATOR_ASSIGN_AND,									// &=
+		OPERATOR_ASSIGN_OR, 		 							// |=
+		OPERATOR_ASSIGN_SHIFT_LEFT, 							// <<=
+		OPERATOR_ASSIGN_SHIFT_RIGHT, 							// >>= (last)
 
-			// ASSIGN
-			OPERATOR_ASSIGN, 										// =
-			OPERATOR_ASSIGN_ADD,									// += (first)
-			OPERATOR_ASSIGN_SUB, 									// -=
-			OPERATOR_ASSIGN_MUL, 									// *=
-			OPERATOR_ASSIGN_DIV, 									// /=
-			OPERATOR_ASSIGN_MOD, 									// %=
-			OPERATOR_ASSIGN_XOR,									// ^=
-			OPERATOR_ASSIGN_AND,									// &=
-			OPERATOR_ASSIGN_OR, 		 							// |=
-			OPERATOR_ASSIGN_SHIFT_LEFT, 							// <<=
-			OPERATOR_ASSIGN_SHIFT_RIGHT, 							// >>= (last)
+		// TERNARY...
+		OPERATOR_TERNARY_IF,	// ?
+		OPERATOR_TERNARY_ELSE, 									// :
 
-			// TERNARY...
-			OPERATOR_TERNARY_IF,	// ?
-			OPERATOR_TERNARY_ELSE, 									// :
+		// LOGIC...
+		OPERATOR_LOGIC_AND,										// &&
+		OPERATOR_LOGIC_OR, 										// ||
 
-			// LOGIC...
-			OPERATOR_LOGIC_AND,										// &&
-			OPERATOR_LOGIC_OR, 										// ||
+		// RELATIONAL
+		OPERATOR_EQUAL, 									// ==
+		OPERATOR_NOT_EQUAL, 								// !=
+		OPERATOR_GTE, 									// >=
+		OPERATOR_LTE, 									// <=
+		OPERATOR_GT, 										// >
+		OPERATOR_LT, 										// <
 
-			// RELATIONAL
-			OPERATOR_EQUAL, 									// ==
-			OPERATOR_NOT_EQUAL, 								// !=
-			OPERATOR_GTE, 									// >=
-			OPERATOR_LTE, 									// <=
-			OPERATOR_GT, 										// >
-			OPERATOR_LT, 										// <
+		// ARITHMETIC
+		OPERATOR_ADD, 											// +
+		OPERATOR_SUB, 											// -
+		OPERATOR_XOR, 											// ^
+		OPERATOR_MUL, 											// *
+		OPERATOR_AND,		 									// &
+		OPERATOR_DIV, 											// /
+		OPERATOR_MOD, 											// %
+		OPERATOR_OR, 											// |
+		OPERATOR_SHIFT_LEFT, 									// <<
+		OPERATOR_SHIFT_RIGHT, 									// >>
 
-			// ARITHMETIC
-			OPERATOR_ADD, 											// +
-			OPERATOR_SUB, 											// -
-			OPERATOR_XOR, 											// ^
-			OPERATOR_MUL, 											// *
-			OPERATOR_AND,		 									// &
-			OPERATOR_DIV, 											// /
-			OPERATOR_MOD, 											// %
-			OPERATOR_OR, 											// |
-			OPERATOR_SHIFT_LEFT, 									// <<
-			OPERATOR_SHIFT_RIGHT, 									// >>
+		OPERATOR_INSTANCEOF, 									// instanceof
 
-			OPERATOR_INSTANCEOF, 									// instanceof
-
-			OPERATOR_MAX
-		}Operator;
-
-	}
+		OPERATOR_MAX
+	}Operator;
 
 };
