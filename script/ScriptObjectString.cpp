@@ -190,7 +190,31 @@ namespace zetscript{
 		return sv;
 	}
 
+	ScriptObjectVector * ScriptObjectString::splitSf(ScriptObjectString *so, std::string * str_token){
+		VirtualMachine *vm=so->getZetScript()->getVirtualMachine();
+		ScriptObjectVector *sv=ZS_NEW_OBJECT_VECTOR(so->getZetScript());
 
+		auto v=zs_strutils::split(so->toString(),*str_token);
+
+		for(auto it=v.begin(); it!=v.end(); it++){
+			StackElement *stk=sv->pushNewUserSlot();
+			ScriptObjectString *so_partial=ZS_NEW_OBJECT_STRING(so->getZetScript());
+			so_partial->set(*it);
+
+			// create and share pointer
+			if(!vm_create_shared_pointer(vm,so_partial)){
+				THROW_RUNTIME_ERROR("cannot creat shared pointer");
+			}
+			if(!vm_share_pointer(vm,so_partial)){
+				THROW_RUNTIME_ERROR("cannot share pointer");
+			}
+
+			stk->stk_value=so_partial;
+			stk->properties = MSK_STK_PROPERTY_SCRIPT_OBJECT;
+		}
+
+		return sv;
+	}
 	//
 	// Helpers
 	//

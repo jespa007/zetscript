@@ -362,6 +362,8 @@ namespace zetscript{
 
 		for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 			StackElement *stk_element=NULL;
+			ScriptFunction *irfs = NULL;
+			int this_as_first_parameter=0;
 
 			if(stk_element_are_vector_element_ptr){
 				stk_element=(StackElement *)(((zs_int *)stk_elements_builtin_ptr)[i]);//(StackElement *)list_symbols->items[i];
@@ -374,23 +376,29 @@ namespace zetscript{
 			}
 
 
-			ScriptFunction *irfs = (ScriptFunction *)stk_element->stk_value;
+			if(stk_element->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER ){
+				FunctionMember *fm=(FunctionMember *)stk_element->stk_value;
+				irfs=fm->so_function;
+				this_as_first_parameter=1;
+			}else{
+				irfs = (ScriptFunction *)stk_element->stk_value;
+			}
 			aux_string=irfs->symbol.name;
 
-			if((aux_string == symbol_to_find && irfs->params->count == n_args)){
+			if((aux_string == symbol_to_find && irfs->params->count == (n_args+this_as_first_parameter))){
 				if((irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;
 					int arg_idx_type=-1;
 					for( unsigned k = 0; k < n_args && all_check;k++){
 						StackElement *current_arg=&stk_arg[k];
-						arg_idx_type=((ScriptFunctionArg *)irfs->params->items[k])->idx_type;
+						arg_idx_type=((ScriptFunctionArg *)irfs->params->items[k+this_as_first_parameter])->idx_type;
 
 						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT){
 
-							unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(current_arg->properties);
+							//unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(current_arg->properties);
 
-							switch(var_type){
+							switch(current_arg->properties & MSK_STK_PROPERTY_TYPES){
 								default:
 									aux_string="unknow";
 									all_check=false;
@@ -467,9 +475,9 @@ namespace zetscript{
 				if(k>0){
 					args_str+=",";
 				}
-				unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(current_arg->properties);
+				//unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(current_arg->properties);
 
-				switch(var_type){
+				switch(current_arg->properties & MSK_STK_PROPERTY_TYPES){
 
 				default:
 					aux_string="unknow";
@@ -501,9 +509,9 @@ namespace zetscript{
 				}
 				args_str+=zs_rtti::demangle(aux_string);
 
-				if(var_type == MSK_STK_PROPERTY_ZS_INT
-				||var_type == MSK_STK_PROPERTY_ZS_FLOAT
-				||var_type == MSK_STK_PROPERTY_BOOL
+				if(current_arg->properties == MSK_STK_PROPERTY_ZS_INT
+				||current_arg->properties == MSK_STK_PROPERTY_ZS_FLOAT
+				||current_arg->properties == MSK_STK_PROPERTY_BOOL
 				){
 					args_str+=" [*] ";
 				}
@@ -511,6 +519,8 @@ namespace zetscript{
 
 			for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 				StackElement *stk_element=NULL;
+				ScriptFunction *irfs=NULL;
+
 				if(stk_element_are_vector_element_ptr){
 					stk_element=(StackElement *)(((zs_int *)stk_elements_builtin_ptr)[i]);//(StackElement *)list_symbols->items[i];
 				}else{
@@ -520,7 +530,12 @@ namespace zetscript{
 					continue;
 				}
 
-				ScriptFunction *irfs = (ScriptFunction *)stk_element->stk_value;
+				if(stk_element->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER ){
+					FunctionMember *fm=(FunctionMember *)stk_element->stk_value;
+					irfs=fm->so_function;
+				}else{
+					irfs = (ScriptFunction *)stk_element->stk_value;
+				}
 
 
 				if(irfs->symbol.name == symbol_to_find){

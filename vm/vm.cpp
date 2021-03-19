@@ -8,22 +8,6 @@
 
 namespace zetscript{
 
-	//===================================================================================================
-	//
-	// POINTER MANAGER ...
-	//
-
-	InfoSharedList zero_shares[MAX_FUNCTION_CALL]; // each function contains the number of local scriptvars vars that should or not removed.
-	InfoSharedList shared_vars; // global vector
-
-	//===================================================================================================
-
-	typedef struct{
-		ByteCode byte_code;
-		const char *str;
-	}OpCodeInfo;
-
-
 	struct VM_Foreach{
 		StackElement 		   	*key; // iterator element can be std::string or integer...
 		ScriptObjectObject	*ptr; // can be struct or std::vector...
@@ -325,6 +309,9 @@ namespace zetscript{
 			fprintf(stderr,"%s",error.c_str());
 
 		}
+
+		delete data;
+		free(vm);
 	}
 
 }

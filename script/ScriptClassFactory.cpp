@@ -148,8 +148,9 @@ namespace zetscript{
 		registerNativeMemberFunctionStatic<ScriptObjectString>("formatSf",ScriptObjectString::formatSf);
 		registerNativeMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectString::eraseAtSf);
 		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectString::insertAtSf);
-		registerNativeMemberFunction<ScriptObjectString>("clearAt",ScriptObjectString::clearSf);
-		registerNativeMemberFunction<ScriptObjectString>("split",ScriptObjectString::splitSf);
+		registerNativeMemberFunction<ScriptObjectString>("clear",ScriptObjectString::clearSf);
+		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, std::string *)>(ScriptObjectString::splitSf));
+		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, zs_int )>(ScriptObjectString::splitSf));
 		registerNativeMemberFunction<ScriptObjectString>("size",&ScriptObjectString::sizeSf);
 		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, std::string *)>(&ScriptObjectString::containsSf));
 		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectString::containsSf));

@@ -411,7 +411,6 @@ namespace zetscript{
 		idx_current_global_variable_checkpoint=this->script_class_factory->getMainFunction()->registered_symbols->count-1;
 	}
 
-
 	void ZetScript::clear(){
 
 		clearGlobalVariables();

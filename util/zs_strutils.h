@@ -52,6 +52,8 @@ namespace zetscript{
 
 		  std::vector<std::string> split(const std::string &s, char delim, std::vector<std::string> &elems);
 		  std::vector<std::string> split(const std::string &s, char delim);
+
+		 std::vector<std::string> split(const std::string &s_in, const std::string & delim);
 		 bool is_empty(const std::string & str);
 		 NumberType is_number(const std::string & test_str);
 		 bool 		 is_binary(const std::string & test_str);

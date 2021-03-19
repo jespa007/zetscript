@@ -1190,7 +1190,7 @@ load_element_object:
 				 {
 					ScriptFunction *sf = NULL;
 					StackElement *stk_function_ref=NULL;
-					bool calling_from_object_type=false;
+					//bool calling_from_object_type=false;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
 					ScriptObject *calling_object = this_object;
 					uint16_t n_local_registered_symbols=0;
@@ -1229,7 +1229,7 @@ load_element_object:
 						bool ignore_call=false;
 
 						if(
-							calling_from_object_type //scope_type&(MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
+							stk_function_ref->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER //scope_type&(MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
 						){
 							ignore_call= (is_constructor) && calling_object->isNativeObject() && n_args==0;
 							zs_vector * list_props=calling_object->getAllBuiltinElements();//getFunctions();
@@ -1449,7 +1449,6 @@ load_element_object:
 					int n_returned_arguments_from_function=data->stk_vm_current-stk_return;
 
 					// setup all returned variables from function
-
 					CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return,n_returned_arguments_from_function,false)
 
 					data->stk_vm_current=stk_start_arg_call-1; // set vm current before function pointer is
@@ -1567,8 +1566,8 @@ load_element_object:
 				continue;
 
 			 case BYTE_CODE_POP_SCOPE:
-				 POP_VM_SCOPE()
-				if((zero_shares+data->vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove
+				POP_VM_SCOPE()
+				if((data->zero_shares+data->vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove
 					vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 				}
 				continue;
@@ -1617,7 +1616,7 @@ load_element_object:
 				POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
 			}
 
-			if((zero_shares+data->vm_idx_call)->first!=NULL){
+			if((data->zero_shares+data->vm_idx_call)->first!=NULL){
 				vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 			}
 		}

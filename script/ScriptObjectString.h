@@ -29,6 +29,7 @@ namespace zetscript{
 		static void eraseAtSf(ScriptObjectString *so, zs_int idx);
 		static void insertAtSf(ScriptObjectString *so, zs_int idx,zs_int ch);
 		static ScriptObjectVector * splitSf(ScriptObjectString *so,zs_int ch_delim);
+		static ScriptObjectVector * splitSf(ScriptObjectString *so,std::string * str_token);
 		//
 		// Helpers
 		//
