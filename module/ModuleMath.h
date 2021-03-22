@@ -12,7 +12,7 @@
 
 namespace zetscript{
 
-	class MathMod{
+	class ModuleMath{
 	public:
 		static const zs_float PI;
 

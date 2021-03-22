@@ -1204,8 +1204,8 @@ load_element_object:
 						stk_function_ref=(StackElement *)stk_function_ref->stk_value;
 					}
 
-					if(stk_function_ref->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER){
-						FunctionMember *fm=(FunctionMember *)stk_function_ref->stk_value;
+					if(stk_function_ref->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION){
+						MemberFunction *fm=(MemberFunction *)stk_function_ref->stk_value;
 						calling_object=fm->so_object;
 						sf=fm->so_function;
 					}else{
@@ -1229,7 +1229,7 @@ load_element_object:
 						bool ignore_call=false;
 
 						if(
-							stk_function_ref->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER //scope_type&(MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
+							stk_function_ref->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION //scope_type&(MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
 						){
 							ignore_call= (is_constructor) && calling_object->isNativeObject() && n_args==0;
 							zs_vector * list_props=calling_object->getAllBuiltinElements();//getFunctions();
@@ -1411,7 +1411,7 @@ load_element_object:
 						n_local_registered_symbols=sf->registered_symbols->count;
 					}
 					else{ // C function
-						if(is_constructor) {// && (sf->symbol.properties & SYMBOL_PROPERTY_IS_MEMBER_FUNCTION))
+						if(is_constructor) {// && (sf->symbol.properties & SYMBOL_PROPERTY_MEMBER_FUNCTION))
 							calling_object= (ScriptObjectObject *)(stk_start_arg_call-2)->stk_value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
 						}
 

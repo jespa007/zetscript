@@ -111,16 +111,31 @@ namespace zetscript{
 		InfoSharedPointerNode *first, *last;
 	}InfoSharedList;
 
-	struct FunctionMember{
+	struct MemberFunction{
 	public:
 		ScriptFunction 		*so_function; // make function pointer first to make compatible with stk
 		ScriptObject		*so_object;
 
-		FunctionMember(
+		MemberFunction(
 				ScriptObject		*_so_object
 				,ScriptFunction 	*_so_function){
 			so_object = _so_object;
 			so_function= _so_function;
+		}
+	};
+
+	struct MemberAttribute{
+	public:
+		zs_vector *setter; // setter can have different parameter signature if in C++
+		 ScriptFunction *getter;
+
+		 MemberAttribute(){
+			 setter = new zs_vector();
+			 getter= NULL;
+		}
+
+		~MemberAttribute(){
+			delete setter;
 		}
 	};
 

@@ -51,7 +51,7 @@ namespace zetscript{
 			return;
 		}
 
-		/*if((calling_function->symbol.properties &  SYMBOL_PROPERTY_IS_MEMBER_FUNCTION)){ // is a function member  ...
+		/*if((calling_function->symbol.properties &  SYMBOL_PROPERTY_MEMBER_FUNCTION)){ // is a function member  ...
 			if(this_object!= NULL){
 				StackElement *stk_prop_fun=NULL;
 				if((stk_prop_fun = this_object->getBuiltinElementAt(calling_function->symbol.idx_position))==NULL){
@@ -91,7 +91,7 @@ namespace zetscript{
 		}else{*/
 
 			// special case that this is passed in static ref function
-			if(		(calling_function->symbol.properties&SYMBOL_PROPERTY_IS_MEMBER_FUNCTION)
+			if(		(calling_function->symbol.properties&SYMBOL_PROPERTY_MEMBER_FUNCTION)
 			//		&& instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR
 					&& this_object!=NULL
 			){

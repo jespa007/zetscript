@@ -7,11 +7,11 @@
 
 namespace zetscript{
 
-	zs_int SystemMod::clock(){
+	zs_int ModuleSystem::clock(){
 		return std::clock()*(1000.0f/CLOCKS_PER_SEC);
 	}
 
-	zs_int SystemMod::readChar(){
+	zs_int ModuleSystem::readChar(){
 			char buf=0;
 		#ifdef _WIN32
 			buf=getch();
@@ -48,25 +48,25 @@ namespace zetscript{
 		       return buf;
 	}
 
-	void SystemMod::printlnSf(ZetScript *zs,StackElement *str, StackElement *args){
+	void ModuleSystem::printlnSf(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::formatSf(zs,str,args);
 		printf("%s\n",str_out->toString().c_str());
 		delete str_out;
 	}
 
 
-	void SystemMod::printSf(ZetScript *zs,StackElement *str, StackElement *args){
+	void ModuleSystem::printSf(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::formatSf(zs,str,args);
 		printf("%s",str_out->toString().c_str());
 		delete str_out;
 	}
 
-	void SystemMod::makeReadOnly(StackElement *stk){
+	void ModuleSystem::makeReadOnly(StackElement *stk){
 		stk->properties|=MSK_STK_PROPERTY_READ_ONLY;
 	}
 
 
-	void SystemMod::evalSf(ZetScript *zs,StackElement *str, StackElement *args){
+	void ModuleSystem::evalSf(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::formatSf(zs,str,args);
 		printf("not implemented");
 		delete str_out;

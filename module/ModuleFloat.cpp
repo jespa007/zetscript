@@ -7,7 +7,7 @@
 
 namespace zetscript{
 
-	zs_float FloatMod::parse(zs_int number){
+	zs_float ModuleFloat::parse(zs_int number){
 
 		return (zs_float)(number);
 	}

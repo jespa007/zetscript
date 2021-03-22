@@ -5,7 +5,7 @@ namespace zetscript{
 	class ScriptObjectString;
 	class ScriptObjectVector;
 	class StringMod;
-	class SystemMod{
+	class ModuleSystem{
 	public:
 		static zs_int clock();
 		static zs_int readChar();

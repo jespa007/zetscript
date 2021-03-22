@@ -61,7 +61,7 @@ namespace zetscript{
 			// pre-register built-in members...
 			for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
 				Symbol * symbol = (Symbol *)script_class->symbol_members->items[i];
-				addBuiltinProperty(symbol->name.c_str(),{new FunctionMember(this,(ScriptFunction *)symbol->ref_ptr),MSK_STK_PROPERTY_FUNCTION_MEMBER | MSK_STK_PROPERTY_FUNCTION});
+				addBuiltinProperty(symbol->name.c_str(),{new MemberFunction(this,(ScriptFunction *)symbol->ref_ptr),MSK_STK_PROPERTY_MEMBER_FUNCTION | MSK_STK_PROPERTY_FUNCTION});
 			}
 		}
 
@@ -182,8 +182,10 @@ namespace zetscript{
 		// deallocate built-in function member objects
 		for(unsigned i=0; i< stk_builtin_elements.count; i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
-			if(stk->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER){
-				delete (FunctionMember *)stk->stk_value;
+			if(stk->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION){
+				delete (MemberFunction *)stk->stk_value;
+			}else if(stk->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE){
+				delete (MemberAttribute *)stk->stk_value;
 			}
 			free(stk);
 		}

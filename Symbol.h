@@ -12,14 +12,15 @@
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 typedef enum {
-	SYMBOL_PROPERTY_ATTRIB						= 0x1 << 1, // 0x01: ref_ptr holds structure get/set functions
-	SYMBOL_PROPERTY_FUNCTION					= 0x1 << 2, // 0x02: ref_ptr holds script function ptr
-	SYMBOL_PROPERTY_C_OBJECT_REF 				= 0x1 << 3, // 0x04: ref_ptr holds C object
-	SYMBOL_PROPERTY_STATIC 						= 0x1 << 4, // 0x08: C function or C++ static functions
-	SYMBOL_PROPERTY_CONST 						= 0x1 << 5, // 0x10: This symbol is not assignable
-	SYMBOL_PROPERTY_IS_MEMBER_FUNCTION			= 0x1 << 6, // 0x20: will pass this object as first parameter
-	SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME			= 0x1 << 7, // 0x40: for functions...
-	SYMBOL_PROPERTY_REF							= 0x1 << 8  // 0x80
+	SYMBOL_PROPERTY_ATTRIB						= 0x1 << 1, // 0x0001: ref_ptr holds structure get/set functions
+	SYMBOL_PROPERTY_FUNCTION					= 0x1 << 2, // 0x0002: ref_ptr holds script function ptr
+	SYMBOL_PROPERTY_C_OBJECT_REF 				= 0x1 << 3, // 0x0004: ref_ptr holds C object
+	SYMBOL_PROPERTY_STATIC 						= 0x1 << 4, // 0x0008: C function or C++ static functions
+	SYMBOL_PROPERTY_CONST 						= 0x1 << 5, // 0x0010: This symbol is not assignable
+	SYMBOL_PROPERTY_MEMBER_FUNCTION				= 0x1 << 6, // 0x0020: Member function
+	SYMBOL_PROPERTY_MEMBER_ATTRIBUTE			= 0x1 << 7, // 0x0040: Member attrib
+	SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME			= 0x1 << 8, // 0x0080: Deduce runtime functions becuse is C and it has functions with same name but different signature
+	SYMBOL_PROPERTY_REF							= 0x1 << 9  // 0x0100: Is a reference
 }SymbolProperty;
 
 #define IS_SYMBOL_VAR_MEMBER(s) ((s)->properties == 0)

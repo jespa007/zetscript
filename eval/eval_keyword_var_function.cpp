@@ -683,7 +683,7 @@ error_eval_keyword_var:
 				);
 
 				if(scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
-					symbol_sf->properties|=SYMBOL_PROPERTY_IS_MEMBER_FUNCTION;
+					symbol_sf->properties|=SYMBOL_PROPERTY_MEMBER_FUNCTION;
 				}
 			}
 

@@ -8,7 +8,7 @@
 
 namespace zetscript{
 
-	class FloatMod{
+	class ModuleFloat{
 	public:
 		static zs_float parse(zs_int number);
 	};

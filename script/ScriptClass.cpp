@@ -73,7 +73,7 @@ namespace zetscript{
 		);
 	}
 
-	Symbol				* 	ScriptClass::registerNativeMemberVariable(
+	Symbol				* 	ScriptClass::registerNativeMemberAttribute(
 		std::string & error
 		,const std::string & file
 		,short line
@@ -84,7 +84,7 @@ namespace zetscript{
 
 
 	){
-		return registerInternalMemberVariable(
+		return registerInternalNativeMemberAttribute(
 			error
 			,file
 			,line

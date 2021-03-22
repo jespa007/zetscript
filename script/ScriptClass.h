@@ -48,7 +48,7 @@ namespace zetscript{
 			,unsigned short symbol_properties
 		);
 
-		Symbol				* 	registerNativeMemberVariable(
+		Symbol				* 	registerNativeMemberAttribute(
 			std::string & error
 			,const std::string & file
 			,short line

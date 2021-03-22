@@ -43,30 +43,30 @@ namespace zetscript{
 		// Register built in modules
 
 		// Integer mod
-		script_class_factory->registerNativeSingletonClass<IntegerMod>("Integer");
-		script_class_factory->registerNativeMemberFunctionStatic<IntegerMod>("parse",IntegerMod::parse);
+		script_class_factory->registerNativeSingletonClass<ModuleInteger>("Integer");
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleInteger>("parse",ModuleInteger::parse);
 
 		// Float mod
-		script_class_factory->registerNativeSingletonClass<FloatMod>("Float");
-		script_class_factory->registerNativeMemberFunctionStatic<FloatMod>("parse",FloatMod::parse);
+		script_class_factory->registerNativeSingletonClass<ModuleFloat>("Float");
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleFloat>("parse",ModuleFloat::parse);
 
 		// Math mod
-		script_class_factory->registerNativeSingletonClass<MathMod>("Math");
-		script_class_factory->registerNativeStaticConstMember<MathMod>("PI",&MathMod::PI);
-		script_class_factory->registerNativeMemberFunctionStatic<MathMod>("sin",MathMod::sin);
-		script_class_factory->registerNativeMemberFunctionStatic<MathMod>("cos",MathMod::cos);
-		script_class_factory->registerNativeMemberFunctionStatic<MathMod>("abs",MathMod::abs);
-		script_class_factory->registerNativeMemberFunctionStatic<MathMod>("pow",MathMod::pow);
-		script_class_factory->registerNativeMemberFunctionStatic<MathMod>("degToRad",MathMod::degToRad);
-		script_class_factory->registerNativeMemberFunctionStatic<MathMod>("random",MathMod::random);
+		script_class_factory->registerNativeSingletonClass<ModuleMath>("Math");
+		script_class_factory->registerNativeStaticConstMember<ModuleMath>("PI",&ModuleMath::PI);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("sin",ModuleMath::sin);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("cos",ModuleMath::cos);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("abs",ModuleMath::abs);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("pow",ModuleMath::pow);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("degToRad",ModuleMath::degToRad);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("random",ModuleMath::random);
 
 		// System mod
-		script_class_factory->registerNativeSingletonClass<SystemMod>("SystemMod");
-		script_class_factory->registerNativeMemberFunctionStatic<SystemMod>("readChar",SystemMod::readChar);
-		script_class_factory->registerNativeMemberFunctionStatic<SystemMod>("clock",SystemMod::clock);
-		script_class_factory->registerNativeMemberFunctionStatic<SystemMod>("print",SystemMod::printSf);
-		script_class_factory->registerNativeMemberFunctionStatic<SystemMod>("println",SystemMod::printlnSf);
-		script_class_factory->registerNativeMemberFunctionStatic<SystemMod>("eval",SystemMod::evalSf);
+		script_class_factory->registerNativeSingletonClass<ModuleSystem>("ModuleSystem");
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("readChar",ModuleSystem::readChar);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("clock",ModuleSystem::clock);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("print",ModuleSystem::printSf);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("println",ModuleSystem::printlnSf);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("eval",ModuleSystem::evalSf);
 
 		// Custom user function or classes
 		eval(
@@ -80,16 +80,16 @@ namespace zetscript{
 				// System
 				"class System{\n"
 				"	static readChar(){"
-				"		return SystemMod::readChar()"
+				"		return ModuleSystem::readChar()"
 				"	}"
 				"	static clock(){"
-				"		return SystemMod::clock()"
+				"		return ModuleSystem::clock()"
 				"	}"
 				"	static print(s,...args){"
-				"		SystemMod::print(System::getZetScript(),s,args)"
+				"		ModuleSystem::print(System::getZetScript(),s,args)"
 				"	}"
 				"	static function println(s,...args){"
-				"		SystemMod::println(System::getZetScript(),s,args)"
+				"		ModuleSystem::println(System::getZetScript(),s,args)"
 				"	}"
 				"	static getZetScript(){"
 				"		return ptrToZetScriptPtr(0x%x);" // ptrToZetScript it gets current this

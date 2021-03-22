@@ -376,8 +376,8 @@ namespace zetscript{
 			}
 
 
-			if(stk_element->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER ){
-				FunctionMember *fm=(FunctionMember *)stk_element->stk_value;
+			if(stk_element->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION ){
+				MemberFunction *fm=(MemberFunction *)stk_element->stk_value;
 				irfs=fm->so_function;
 				this_as_first_parameter=1;
 			}else{
@@ -530,8 +530,8 @@ namespace zetscript{
 					continue;
 				}
 
-				if(stk_element->properties & MSK_STK_PROPERTY_FUNCTION_MEMBER ){
-					FunctionMember *fm=(FunctionMember *)stk_element->stk_value;
+				if(stk_element->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION ){
+					MemberFunction *fm=(MemberFunction *)stk_element->stk_value;
 					irfs=fm->so_function;
 				}else{
 					irfs = (ScriptFunction *)stk_element->stk_value;

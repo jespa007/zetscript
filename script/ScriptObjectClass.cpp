@@ -67,8 +67,8 @@ namespace zetscript{
 			}
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
-				se->stk_value=new FunctionMember(this,(ScriptFunction *)symbol->ref_ptr);
-				se->properties=MSK_STK_PROPERTY_FUNCTION_MEMBER | MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function member
+				se->stk_value=new MemberFunction(this,(ScriptFunction *)symbol->ref_ptr);
+				se->properties=MSK_STK_PROPERTY_MEMBER_FUNCTION | MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function member
 			}
 			else{ // var...
 

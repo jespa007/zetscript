@@ -43,11 +43,11 @@
 // -- Eval
 #include		"eval/eval.cpp"
 
-#include 		"modules/MathMod.cpp"
-#include 		"modules/SystemMod.cpp"
-#include 		"modules/IntegerMod.cpp"
-#include 		"modules/FloatMod.cpp"
-#include 		"modules/JsonMod.cpp"
+#include 		"module/ModuleMath.cpp"
+#include 		"module/ModuleSystem.cpp"
+#include 		"module/ModuleInteger.cpp"
+#include 		"module/ModuleFloat.cpp"
+#include 		"module/ModuleJson.cpp"
 
 
 #include		"zetscript.cpp"

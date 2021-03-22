@@ -211,12 +211,12 @@ ELSE()
  		util/zs_map.cpp
  		
  		# extra
- 		modules/MathMod.cpp
+ 		modules/ModuleMath.cpp
 		modules/StringMod.cpp
-		modules/SystemMod.cpp
-		modules/IntegerMod.cpp
-		modules/FloatMod.cpp
-		modules/JsonMod.cpp
+		modules/ModuleSystem.cpp
+		modules/ModuleInteger.cpp
+		modules/ModuleFloat.cpp
+		modules/ModuleJson.cpp
  		
  		# VM
  		vm/VirtualMachine.cpp
@@ -299,11 +299,11 @@ ELSE()
  		util/zs_map.h
  		
  		# extra
-		modules/FloatMod.h
-		modules/IntegerMod.h
-		modules/MathMod.h
+		modules/ModuleFloat.h
+		modules/ModuleInteger.h
+		modules/ModuleMath.h
 		modules/StringMod.h
-		modules/SystemMod.h
+		modules/ModuleSystem.h
 		
 		# script
 		script/ScriptClass.h

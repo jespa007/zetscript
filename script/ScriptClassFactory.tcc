@@ -308,7 +308,7 @@ namespace zetscript{
 		conversion_types[this_class->idx_class][idx_base_class]=[](zs_int entry){ return (zs_int)(B *)((C *)entry);};
 
 
-		if(register_c_base_symbols){ // by default is disabled. User has to re-register! --> increases time and binary!!!
+		//if(register_c_base_symbols){ // by default is disabled. User has to re-register! --> increases time and binary!!!
 			//----------------------------
 			//
 			// DERIVATE STATE
@@ -320,7 +320,7 @@ namespace zetscript{
 			ScriptClass *base_class = (ScriptClass *)script_classes->get(idx_base_class);
 
 			unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF;//| SYMBOL_PROPERTY_IS_DERIVATED;
-			if(std::is_polymorphic<B>::value==true){
+			/*if(std::is_polymorphic<B>::value==true){
 
 				//if((calling_function->symbol.properties & SYMBOL_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
 				THROW_RUNTIME_ERROR("class \"%s\" is polymorphic and cannot be processed due function/variable pointer it changes at runtime and could crash your application. You have two options:\n"
@@ -328,7 +328,7 @@ namespace zetscript{
 						"2. Rewrite all virtual functions/classes to no non-virtual and do virtual operation through C function pointers\n"
 						,(class_name+"::").c_str()
 				);
-			}
+			}*/
 
 			//derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC; // set as polymorphic and show error if you try to call a polymorphic function
 			// register all c vars symbols ...
@@ -359,7 +359,24 @@ namespace zetscript{
 						THROW_RUNTIME_ERROR(error.c_str());
 					}
 
-				}else{ // register built-in variable member
+				}else if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+					Symbol *symbol_result = this_class->registerNativeMemberAttribute(
+							error
+							,symbol_src->file
+							,symbol_src->line
+							,symbol_src->name
+							,symbol_src->str_native_type
+							,symbol_src->ref_ptr // it has a pointer to function that returns the right offset according initialized object
+							,symbol_src->properties
+							//, //derivated_symbol_info_properties
+					);
+
+					if(symbol_result == NULL){
+						THROW_RUNTIME_ERROR(error.c_str());
+					}
+				}
+
+					/*else{ // register built-in variable member
 
 					Symbol *symbol_result = this_class->registerNativeMemberVariable(
 							error
@@ -376,7 +393,7 @@ namespace zetscript{
 						THROW_RUNTIME_ERROR(error.c_str());
 					}
 
-				}
+				}*/
 			}
 
 		}
@@ -640,7 +657,7 @@ namespace zetscript{
 				, arg_info
 				, idx_return_type
 				, ref_ptr
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_IS_MEMBER_FUNCTION
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
 		);
 
 
