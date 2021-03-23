@@ -86,14 +86,13 @@ namespace zetscript{
 				// register info class ...
 				// check for named functions or vars...
 				while(*aux_p != '}' && *aux_p != 0){
-					/*char *test_attrib=aux_p;
+					char *test_attrib=aux_p;
 					if((test_attrib=eval_keyword_class_attrib(
 						eval_data
 						,aux_p
-						, line
-						,sc->symbol_class.scope // pass class scope
-					))==NULL){*/
-
+						,line
+						,sc // pass class
+					))==NULL){
 						// 1st. check whether eval a keyword...
 						key_w = eval_is_keyword(aux_p);
 
@@ -152,9 +151,9 @@ namespace zetscript{
 						if(aux_p == NULL){
 							return NULL;
 						}
-					/*}else{ // parsed detected an attrib
+					}else{ // parsed detected an attrib
 						aux_p = test_attrib;
-					}*/
+					}
 					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				}
 
@@ -280,11 +279,9 @@ namespace zetscript{
 			return NULL;
 		}
 
-		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+		IGNORE_BLANKS(aux_p,eval_data,end_var,line);
 
 		if(*aux_p=='{'){ // is a class attribute
-
-
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
@@ -315,11 +312,14 @@ namespace zetscript{
 						);
 						break;
 					default:
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword \"%s\" in attribute \"%s::%s\""
-								,eval_data_keywords[key_w].str
-								,class_attribute_name.c_str()
-								,attrib_name.c_str()
-								);
+						EVAL_ERROR_FILE_LINE(
+							eval_data->current_parsing_file
+							,line
+							,"unexpected keyword \"%s\" in attribute \"%s::%s\""
+							,eval_data_keywords[key_w].str
+							,class_attribute_name.c_str()
+							,attrib_name.c_str()
+						);
 					}
 
 					if(aux_p == NULL){
@@ -332,10 +332,12 @@ namespace zetscript{
 			}
 
 			if(*aux_p != '}'){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,attrib_start_line ,"expected '}' to end in attribute \"%s::%s\""
-						,class_attribute_name.c_str()
-						,attrib_name.c_str()
-						);
+				EVAL_ERROR_FILE_LINE(
+					eval_data->current_parsing_file,attrib_start_line
+					,"expected '}' to end in attribute \"%s::%s\""
+					,class_attribute_name.c_str()
+					,attrib_name.c_str()
+				);
 			}
 
 			return aux_p+1;
@@ -343,7 +345,6 @@ namespace zetscript{
 		}
 
 		return NULL;
-
 		// copy value
 		//zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
 

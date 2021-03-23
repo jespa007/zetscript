@@ -360,19 +360,42 @@ namespace zetscript{
 					}
 
 				}else if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
-					Symbol *symbol_result = this_class->registerNativeMemberAttribute(
-							error
-							,symbol_src->file
-							,symbol_src->line
-							,symbol_src->name
-							,symbol_src->str_native_type
-							,symbol_src->ref_ptr // it has a pointer to function that returns the right offset according initialized object
-							,symbol_src->properties
-							//, //derivated_symbol_info_properties
-					);
 
-					if(symbol_result == NULL){
-						THROW_RUNTIME_ERROR(error.c_str());
+					MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
+					ScriptFunction *sf_getter=ma_src->getter;
+					zs_vector *sf_setters=ma_src->setters;
+
+					// register getter and setter
+					if(sf_getter != NULL){
+						Symbol *symbol_result =this_class->registerNativeMemberAttributeGetter(
+								error
+								,symbol_src->file
+								,symbol_src->line
+								,symbol_src->name
+								,sf_getter->idx_return_type
+								,sf_getter->ref_native_function_ptr
+
+						);
+
+						if(symbol_result == NULL){
+							THROW_RUNTIME_ERROR(error.c_str());
+						}
+					}
+
+					for(unsigned i=0; i < sf_setters->count; i++){
+						ScriptFunction *sf_setter=(ScriptFunction *)sf_setters->items[i];
+						Symbol *symbol_result = this_class->registerNativeMemberAttributeSetter(
+								error
+								,symbol_src->file
+								,symbol_src->line
+								,symbol_src->name
+								,*((ScriptFunctionArg *)sf_setter->params->items[0])
+								,sf_setter->ref_native_function_ptr
+						);
+
+						if(symbol_result == NULL){
+							THROW_RUNTIME_ERROR(error.c_str());
+						}
 					}
 				}
 
@@ -393,8 +416,8 @@ namespace zetscript{
 						THROW_RUNTIME_ERROR(error.c_str());
 					}
 
-				}*/
-			}
+				}
+			}*/
 
 		}
 

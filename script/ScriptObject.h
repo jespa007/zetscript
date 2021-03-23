@@ -8,6 +8,53 @@
 
 namespace zetscript{
 
+	struct _InfoSharedList;
+	//struct EvalInstruction;
+
+	typedef struct _SharedPointerInfo {
+		ScriptObject 			*ptr_script_object_shared;
+		unsigned short 			n_shares;
+		_InfoSharedList *zero_shares;
+	} SharedPointerInfo;
+
+	typedef struct _InfoSharedPointerNode{
+		SharedPointerInfo data;
+	//		unsigned short currentStack;
+		_InfoSharedPointerNode *previous, *next;
+	} InfoSharedPointerNode;
+
+	typedef struct _InfoSharedList{
+		InfoSharedPointerNode *first, *last;
+	}InfoSharedList;
+
+	struct MemberFunction{
+	public:
+		ScriptFunction 		*so_function; // make function pointer first to make compatible with stk
+		ScriptObject		*so_object;
+
+		MemberFunction(
+				ScriptObject		*_so_object
+				,ScriptFunction 	*_so_function){
+			so_object = _so_object;
+			so_function= _so_function;
+		}
+	};
+
+	struct MemberAttribute{
+	public:
+		zs_vector *setters; // setter that contains a list of script functions C++
+		 ScriptFunction *getter; // getter
+
+		 MemberAttribute(){
+			 setters = new zs_vector();
+			 getter= NULL;
+		}
+
+		~MemberAttribute(){
+			delete setters;
+		}
+	};
+
 	class ScriptObject{
 	public:
 		InfoSharedPointerNode 	* 	shared_pointer; // 8

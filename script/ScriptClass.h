@@ -40,6 +40,8 @@ namespace zetscript{
 
 		 ScriptClass(ZetScript *_zs,short _idx_class,Symbol *_symbol_class);
 
+		//---------------------------------------------------
+		// VARIABLES
 		Symbol				* 	registerMemberVariable(
 			std::string & error
 			,const std::string & file
@@ -48,7 +50,7 @@ namespace zetscript{
 			,unsigned short symbol_properties
 		);
 
-		Symbol				* 	registerNativeMemberAttribute(
+		Symbol				* 	registerNativeMemberVariable(
 			std::string & error
 			,const std::string & file
 			,short line
@@ -58,8 +60,51 @@ namespace zetscript{
 			,unsigned short symbol_properties
 		);
 
+		//---------------------------------------------------
+		// ATTRIBUTES
+		Symbol				* 	registerNativeMemberAttributeSetter(
+			std::string & error
+			,const std::string & file
+			,short line
+			,const std::string & symbol_name
+			, ScriptFunctionArg arg_value
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_properties=0
+		);
+
+		Symbol				* 	registerNativeMemberAttributeGetter(
+			std::string & error
+			,const std::string & file
+			,short line
+			,const std::string & symbol_name
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_properties=0
+		);
+
+		Symbol				* 	registerMemberAttributeSetter(
+			std::string & error
+			,const std::string & file
+			,short line
+			,const std::string & symbol_name
+			, ScriptFunctionArg arg_value
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_properties=0
+		);
+
+		Symbol				* 	registerMemberAttributeGetter(
+			std::string & error
+			,const std::string & file
+			,short line
+			,const std::string & symbol_name
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_properties=0
+		);
+		//---------------------------------------------------
+		// FUNCTIONS
+
 		Symbol *	getSuperFunctionSymbol(Symbol *symbol);
-		Symbol *    getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
 		Symbol				* 	registerMemberFunction(
@@ -83,6 +128,10 @@ namespace zetscript{
 				, unsigned short properties=0
 
 		);
+
+		//---------------------------------------------------
+
+		Symbol *    getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 
 		//Symbol				* 	getMemberFunction(const std::string & function_name, unsigned int n_args);
 		bool isNativeClass();

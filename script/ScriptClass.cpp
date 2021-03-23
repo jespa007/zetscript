@@ -53,7 +53,8 @@ namespace zetscript{
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
 
 	}
-
+	//---------------------------------------------------
+	// VARIABLES
 	Symbol				* 	ScriptClass::registerMemberVariable(
 		std::string & error
 		,const std::string & file
@@ -73,7 +74,7 @@ namespace zetscript{
 		);
 	}
 
-	Symbol				* 	ScriptClass::registerNativeMemberAttribute(
+	Symbol				* 	ScriptClass::registerNativeMemberVariable(
 		std::string & error
 		,const std::string & file
 		,short line
@@ -84,7 +85,7 @@ namespace zetscript{
 
 
 	){
-		return registerInternalNativeMemberAttribute(
+		return registerInternalMemberVariable(
 			error
 			,file
 			,line
@@ -133,8 +134,35 @@ namespace zetscript{
 		symbol_members_built_in->push_back((zs_int)symbol);
 
 		return symbol;
-
 	}
+	//---------------------------------------------------
+	// ATTRIBUTES
+	Symbol				* 	ScriptClass::registerNativeMemberAttributeSetter(
+		std::string & error
+		,const std::string & file
+		,short line
+		,const std::string & symbol_name
+		, ScriptFunctionArg arg_value
+		,zs_int ref_ptr // c function
+		,unsigned short symbol_properties
+	){
+		return NULL;
+	}
+
+	Symbol				* 	ScriptClass::registerNativeMemberAttributeGetter(
+		std::string & error
+		,const std::string & file
+		,short line
+		,const std::string & symbol_name
+		, int idx_return_type
+		,zs_int ref_ptr // c function
+		,unsigned short symbol_properties
+	){
+		return NULL;
+	}
+
+	//---------------------------------------------------
+	// FUNCTIONS
 
 	Symbol *	ScriptClass::getSuperFunctionSymbol(Symbol *symbol){
 
@@ -146,34 +174,6 @@ namespace zetscript{
 			Symbol *symbol_member = (Symbol *)symbol_members->items[i];
 			if((symbol->name == symbol_member->name) && (symbol_member->properties & SYMBOL_PROPERTY_FUNCTION)){
 				return symbol_member;
-			}
-		}
-
-		return NULL;
-	}
-
-	Symbol				* 	ScriptClass::getSymbol(const std::string & symbol_name, char n_params,bool include_inherited_symbols){
-		bool only_symbol=n_params<0;
-		int idx_end=include_inherited_symbols==true?0:idx_starting_this_members;
-
-		for(
-				int i = (int)(symbol_members->count-1);
-				i >= idx_end
-				; i--
-		){
-
-			Symbol *member_symbol=(Symbol *)symbol_members->items[i];
-			if(member_symbol->name == symbol_name){
-				if(only_symbol){
-					return member_symbol;
-				}
-				if(member_symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // for C function symbols
-					ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
-					if((((int)n_params==sf->params->count) || (n_params==ANY_PARAMS_SYMBOL_ONLY))
-					 ){
-						return member_symbol;
-					}
-				}
 			}
 		}
 
@@ -208,7 +208,7 @@ namespace zetscript{
 			,const std::string & function_name
 			, std::vector<ScriptFunctionArg> args
 			, int idx_return_type
-			,zs_int ref_ptr
+			,zs_int ref_ptr // script function
 			, unsigned short symbol_properties
 
 	){
@@ -220,7 +220,7 @@ namespace zetscript{
 				,args
 				,symbol_properties
 				,idx_return_type
-				,ref_ptr
+				,(zs_int)ref_ptr
 		);
 
 	}
@@ -266,7 +266,7 @@ namespace zetscript{
 				,function_name
 				,params
 				,idx_return_type
-				,ref_ptr
+				,ref_ptr // c function
 				,symbol_properties|SYMBOL_PROPERTY_FUNCTION
 		);
 
@@ -344,7 +344,36 @@ namespace zetscript{
 
 		return function_symbol;
 	}
-	//-----
+	//---------------------------------------------------------
+	Symbol				* 	ScriptClass::getSymbol(const std::string & symbol_name, char n_params,bool include_inherited_symbols){
+		bool only_symbol=n_params<0;
+		int idx_end=include_inherited_symbols==true?0:idx_starting_this_members;
+
+		for(
+				int i = (int)(symbol_members->count-1);
+				i >= idx_end
+				; i--
+		){
+
+			Symbol *member_symbol=(Symbol *)symbol_members->items[i];
+			if(member_symbol->name == symbol_name){
+				if(only_symbol){
+					return member_symbol;
+				}
+				if(member_symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // for C function symbols
+					ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
+					if((((int)n_params==sf->params->count) || (n_params==ANY_PARAMS_SYMBOL_ONLY))
+					 ){
+						return member_symbol;
+					}
+				}
+			}
+		}
+
+		return NULL;
+	}
+
+
 	ScriptClass::~ScriptClass(){
 
 		if ((symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF) {
