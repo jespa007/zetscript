@@ -44,7 +44,7 @@ namespace zetscript{
 			,aux_p
 			,line
 			,scope_info
-			,true
+			,EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
 			,&symbol_object
 		))==NULL){
 			return NULL;

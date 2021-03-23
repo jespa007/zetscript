@@ -284,6 +284,9 @@ namespace zetscript{
 		if(*aux_p=='{'){ // is a class attribute
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+			Symbol *symbol=NULL;
+
+			Scope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
 
 			// here we only expect to have _set and _get functions
 
@@ -308,7 +311,9 @@ namespace zetscript{
 							eval_data
 							,aux_p
 							, line
-							,sc->symbol_class.scope // pass class scope
+							,scope_function // pass class scope
+							, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_ATTRIB
+							,&symbol
 						);
 						break;
 					default:
@@ -325,6 +330,15 @@ namespace zetscript{
 					if(aux_p == NULL){
 						return NULL;
 					}
+
+					// set getter/setter
+					if(strncmp(symbol->name.c_str(),"_set",4)==0){ // setter
+
+					} else if(strncmp(symbol->name.c_str(),"_get",4)==0){ // getter
+
+					}
+
+
 				/*}else{ // parsed detected an attrib
 					aux_p = test_attrib;
 				}*/

@@ -465,7 +465,6 @@ namespace zetscript{
 		}
 
 
-
 		// register variable...
 		symbol=c_class->registerNativeMemberVariable(
 				error

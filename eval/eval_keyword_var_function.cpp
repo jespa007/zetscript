@@ -378,8 +378,9 @@ error_eval_keyword_var:
 			, const char *s
 			, int & line
 			, Scope *scope_info
-			, bool allow_anonymous_function
+			, uint16_t properties // allow_anonymous_function attrib /anonymous, etc
 			, Symbol ** symbol_function
+
 		){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
@@ -394,12 +395,19 @@ error_eval_keyword_var:
 			is_static=true;
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 		}
+
+		// check class particular case
+
 		//Keyword key_w;
 		//
 		// check for keyword ...
 		if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_MAIN
-			&& scope_info->scope_base == scope_info
-			&& scope_info->scope_parent == NULL // is function member
+			&& ((  scope_info->scope_base == scope_info
+			      && scope_info->scope_parent == NULL
+			    )
+			   || (properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_ATTRIB)
+			  )
+			   // is function member
 			){ // class members are defined as functions
 			key_w=eval_is_keyword(aux_p);
 			if(key_w != Keyword::KEYWORD_FUNCTION){ // make it optional
@@ -486,7 +494,7 @@ error_eval_keyword_var:
 			}
 			else{ // name anonymous function
 
-				if(allow_anonymous_function==false){
+				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
 					// it return NULL telling to no eval function here. It will perform in expression instead (it also will create anonymous in there)
 					return NULL;
 				}
@@ -693,8 +701,6 @@ error_eval_keyword_var:
 
 			sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
-
-
 			eval_push_function(eval_data,sf);
 
 			// ok let's go to body..
@@ -710,8 +716,12 @@ error_eval_keyword_var:
 			//eval_check_scope(eval_data,scope_function);
 
 			eval_pop_function(eval_data);
+
+			return aux_p;
 		}
-		return aux_p;
+
+		return NULL;
+
 	}
 
 	char *  eval_keyword_return(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
