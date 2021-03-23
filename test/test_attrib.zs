@@ -25,8 +25,8 @@ class A{
 }
 
 var a=new A();
-System::println(a.attrib);
+System::println(a.a);
 a.a=1;
-System::println(a.attrib);
+System::println(a.a);
 
 

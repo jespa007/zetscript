@@ -99,7 +99,8 @@ namespace zetscript{
 		char *aux_p=(char *)symbol_value.c_str();
 		if(
 			   ('a' <= *aux_p && *aux_p <='z') ||
-			   ('A' <= *aux_p && *aux_p <='Z')
+			   ('A' <= *aux_p && *aux_p <='Z') ||
+			   (*aux_p=='_')
 
 
 			){ // let's see it has right chars...

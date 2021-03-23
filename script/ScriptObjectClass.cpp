@@ -80,6 +80,9 @@ namespace zetscript{
 				}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
 					se->stk_value=(void *)symbol->ref_ptr;
 					se->properties=MSK_STK_PROPERTY_PTR_STK;
+				}else if(symbol->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE){
+					se->stk_value=(void *)symbol->ref_ptr;
+					se->properties=MSK_STK_PROPERTY_MEMBER_ATTRIBUTE;
 				}
 			}
 		}

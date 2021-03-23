@@ -285,7 +285,7 @@ namespace zetscript{
 
 		ScriptObject *so_aux=NULL;
 		zs_float			f_aux_value1,f_aux_value2;
-		ScriptObject *so_object_aux=NULL;
+		//ScriptObject *so_object_aux=NULL;
 		ScriptObjectClass *so_class_aux=NULL;
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
@@ -433,7 +433,7 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
 				POP_TWO;
-				so_object_aux=NULL; \
+				so_aux=NULL; \
 				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){ \
 					stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr(); \
 				} \
@@ -498,7 +498,8 @@ namespace zetscript{
 				*data->stk_vm_current++=*this_object->getBuiltinElementAt(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_CONSTRUCTOR:
-				*data->stk_vm_current++=*(((ScriptObjectClass *)((data->stk_vm_current-1)->stk_value))->getBuiltinElementAt(instruction->value_op2));
+				so_class_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->stk_value);
+				*data->stk_vm_current++=*(so_class_aux->getBuiltinElementAt(instruction->value_op2));
 				continue;
 
 			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
@@ -508,7 +509,7 @@ namespace zetscript{
 load_element_object:
 
 				stk_var=NULL;
-				so_object_aux=this_object; // take this as default
+				so_aux=this_object; // take this as default
 				if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 
 					Instruction *previous_ins= (instruction-1);
@@ -536,7 +537,7 @@ load_element_object:
 
 					if(so_aux == NULL)
 					{
-						VM_STOP_EXECUTE("var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(so_object_aux,previous_ins));
+						VM_STOP_EXECUTE("var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(so_aux,previous_ins));
 					}
 
 
@@ -565,7 +566,7 @@ load_element_object:
 						if(instruction->properties & MSK_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST){
 							// save
 							//ScriptObjectObject *calling_object_info=(ScriptObjectObject *)stk_calling_object_info->stk_value;// calling object
-							if((stk_var=so_object_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
+							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
 								VM_STOP_EXECUTE(data->vm_error_str.c_str());
 							}
 							PUSH_STK_PTR(stk_var);

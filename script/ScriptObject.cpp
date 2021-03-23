@@ -159,9 +159,10 @@ namespace zetscript{
 			//, Instruction *src_instruction
 			,std::string & error
 			,StackElement * stk_element
-			,int * idx_stk_element
+			//,int * idx_stk_element
 
 	){
+		VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"addProperty is not implemented");
 		return NULL;
 	}
 
@@ -184,8 +185,6 @@ namespace zetscript{
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 			if(stk->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION){
 				delete (MemberFunction *)stk->stk_value;
-			}else if(stk->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE){
-				delete (MemberAttribute *)stk->stk_value;
 			}
 			free(stk);
 		}

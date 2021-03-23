@@ -285,12 +285,35 @@ namespace zetscript{
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			Symbol *symbol=NULL;
+			Symbol *symbol_attrib=NULL;
+			MemberAttribute *ma=NULL;
+			char *end_var;
+			std::string function_name;
+			std::string error;
 
-			Scope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
+
+			symbol_attrib=sc->registerMemberAttribute(
+					error
+					,eval_data->current_parsing_file
+					,line
+					,attrib_name
+			);
+
+			if(symbol_attrib == NULL){
+				EVAL_ERROR_FILE_LINE(
+					eval_data->current_parsing_file
+					,line
+					,error.c_str()
+				);
+			}
+
+			ma=(MemberAttribute *)symbol_attrib->ref_ptr;
+			//Scope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
 
 			// here we only expect to have _set and _get functions
 
 			while(*aux_p != '}' && *aux_p != 0){
+
 				/*char *test_attrib=aux_p;
 				if((test_attrib=eval_keyword_class_attrib(
 					eval_data
@@ -300,23 +323,78 @@ namespace zetscript{
 				))==NULL){*/
 					//sc->registerMemberAttrib();
 
+
 					// 1st. check whether eval a keyword...
 					Keyword key_w = eval_is_keyword(aux_p);
 
-					switch(key_w){
-					// functions
-					case Keyword::KEYWORD_FUNCTION:
-					case Keyword::KEYWORD_UNKNOWN:
-						aux_p = eval_keyword_function(
+					if(key_w == KEYWORD_FUNCTION){
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+					}
+
+					end_var=get_name_identifier_token(
 							eval_data
 							,aux_p
-							, line
-							,scope_function // pass class scope
-							, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_ATTRIB
-							,&symbol
+							,line
+							,function_name
+					);
+
+					if(end_var == NULL){
+						return NULL;
+					}
+
+					// set getter/setter
+					aux_p=end_var;
+
+					//switch(key_w){
+					// functions
+					//case Keyword::KEYWORD_FUNCTION:
+					//case Keyword::KEYWORD_UNKNOWN:
+					if((aux_p = eval_keyword_function(
+						eval_data
+						,aux_p
+						, line
+						,scope_info // pass class scope
+						, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_ATTRIB | EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
+						,&symbol
+					))==NULL){
+						return NULL;
+					}
+
+					if(function_name == "_set"){
+						if(ma->setters.count == 0){
+							ma->setters.push_back(symbol->ref_ptr);
+						}else{
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Attribute \"%s\" has already a setter"
+								,attrib_name.c_str()
+							);
+						}
+					}else if(function_name == "_get"){
+						if(ma->getter==NULL){
+							ma->getter=(ScriptFunction *)symbol->ref_ptr;
+						}else{
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Attribute \"%s\" has already a getter"
+								,attrib_name.c_str()
+							);
+						}
+					}else{
+
+						EVAL_ERROR_FILE_LINE(
+							eval_data->current_parsing_file
+							,line
+							,"unexpected metamethod \"%s\" in attribute \"%s::%s\""
+							,function_name.c_str()
+							,class_attribute_name.c_str()
+							,attrib_name.c_str()
 						);
-						break;
-					default:
+					}
+					//	break;
+					/*default:
 						EVAL_ERROR_FILE_LINE(
 							eval_data->current_parsing_file
 							,line
@@ -329,14 +407,7 @@ namespace zetscript{
 
 					if(aux_p == NULL){
 						return NULL;
-					}
-
-					// set getter/setter
-					if(strncmp(symbol->name.c_str(),"_set",4)==0){ // setter
-
-					} else if(strncmp(symbol->name.c_str(),"_get",4)==0){ // getter
-
-					}
+					}*/
 
 
 				/*}else{ // parsed detected an attrib

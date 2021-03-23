@@ -137,29 +137,85 @@ namespace zetscript{
 	}
 	//---------------------------------------------------
 	// ATTRIBUTES
-	Symbol				* 	ScriptClass::registerNativeMemberAttributeSetter(
+	Symbol *ScriptClass::registerMemberAttribute(
+			 std::string & error
+			,const std::string & file
+			,short line
+			,const std::string & attrib_name
+	){
+		Symbol *symbol_attrib=NULL;
+		if((symbol_attrib=getSymbol(attrib_name)) != NULL){ // we only search repeat symbols on this class ...
+			Symbol *existing_symbol;
+			if((existing_symbol=getSymbol(attrib_name)) != NULL){
+				error=zs_strutils::format("Attribute \"%s\" is already defined at [%s:%i]"
+					,attrib_name.c_str()
+					,zs_path::get_filename(file.c_str()).c_str()
+					,line
+					,zs_path::get_filename(existing_symbol->file.c_str()).c_str()
+					,existing_symbol->line
+				);
+			}
+			return NULL;
+		}
+
+
+		symbol_attrib = new Symbol();
+		symbol_attrib->name=attrib_name;
+		symbol_attrib->ref_ptr=(zs_int)(new MemberAttribute());
+		symbol_attrib->properties=SYMBOL_PROPERTY_MEMBER_ATTRIBUTE;
+		symbol_members->push_back((zs_int)symbol_attrib);
+		symbol_members_built_in->push_back((zs_int)symbol_attrib);
+
+		return symbol_attrib;
+	}
+
+	Symbol				* 	ScriptClass::registerMemberAttributeSetter(
 		std::string & error
 		,const std::string & file
 		,short line
-		,const std::string & symbol_name
-		, ScriptFunctionArg arg_value
-		,zs_int ref_ptr // c function
-		,unsigned short symbol_properties
+		,const std::string & attribute_name
+		,ScriptFunction *sf // it's the offset from pointer or a pointer directly
+	){
+
+
+		return NULL;
+	}
+
+	Symbol				* 	ScriptClass::registerMemberAttributeGetter(
+		std::string & error
+		,const std::string & file
+		,short line
+		,const std::string & attribute_name
+		,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 	){
 		return NULL;
 	}
 
-	Symbol				* 	ScriptClass::registerNativeMemberAttributeGetter(
+	/*Symbol				* 	ScriptClass::registerInternalMemberAttributeSetter(
 		std::string & error
 		,const std::string & file
 		,short line
-		,const std::string & symbol_name
-		, int idx_return_type
+		,const std::string & attribute_name
+		,ScriptFunctionArg arg_value
+		,zs_int ref_ptr // c function or symbol
+		,unsigned short symbol_properties
+
+	){
+		return NULL;
+	}
+
+	Symbol				* 	ScriptClass::registerInternalMemberAttributeGetter(
+		std::string & error
+		,const std::string & file
+		,short line
+		,const std::string & attribute_name
+		,zs_int ref // it's the offset from pointer or a pointer directly
+		,int idx_return_type
 		,zs_int ref_ptr // c function
 		,unsigned short symbol_properties
 	){
 		return NULL;
-	}
+	}*/
 
 	//---------------------------------------------------
 	// FUNCTIONS
@@ -394,6 +450,9 @@ namespace zetscript{
 
 		for(unsigned i=0; i < symbol_members_built_in->count; i++){
 			Symbol *symbol=(Symbol *)symbol_members_built_in->items[i];
+			if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+				delete (MemberAttribute *)symbol->ref_ptr;
+			}
 			delete symbol; // symbol variable member was created before
 		}
 		delete symbol_members_built_in;

@@ -62,11 +62,18 @@ namespace zetscript{
 
 		//---------------------------------------------------
 		// ATTRIBUTES
+		Symbol 				*	registerMemberAttribute(
+				 std::string & error
+				,const std::string & file
+				,short line
+				,const std::string & attrib_name
+		);
+
 		Symbol				* 	registerNativeMemberAttributeSetter(
 			std::string & error
 			,const std::string & file
 			,short line
-			,const std::string & symbol_name
+			,const std::string & attribute_name
 			, ScriptFunctionArg arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_properties=0
@@ -76,7 +83,7 @@ namespace zetscript{
 			std::string & error
 			,const std::string & file
 			,short line
-			,const std::string & symbol_name
+			,const std::string & attribute_name
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_properties=0
@@ -86,20 +93,16 @@ namespace zetscript{
 			std::string & error
 			,const std::string & file
 			,short line
-			,const std::string & symbol_name
-			, ScriptFunctionArg arg_value
-			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_properties=0
+			,const std::string & attribute_name
+			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 		);
 
 		Symbol				* 	registerMemberAttributeGetter(
 			std::string & error
 			,const std::string & file
 			,short line
-			,const std::string & symbol_name
-			, int idx_return_type
-			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_properties=0
+			,const std::string & attribute_name
+			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 		);
 		//---------------------------------------------------
 		// FUNCTIONS
@@ -145,6 +148,8 @@ namespace zetscript{
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
+
+
 		Symbol				* 	registerInternalMemberVariable(
 			std::string & error
 			,const std::string & file
@@ -165,6 +170,8 @@ namespace zetscript{
 			, int idx_return_type=ZS_IDX_UNDEFINED
 			,zs_int ref_ptr=0
 		);
+
+
 		//zs_map *num_native_functions;
 	};
 }

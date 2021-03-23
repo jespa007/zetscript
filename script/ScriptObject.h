@@ -42,16 +42,15 @@ namespace zetscript{
 
 	struct MemberAttribute{
 	public:
-		zs_vector *setters; // setter that contains a list of script functions C++
+		zs_vector setters; // setter that contains a list of script functions C++
 		 ScriptFunction *getter; // getter
 
 		 MemberAttribute(){
-			 setters = new zs_vector();
 			 getter= NULL;
 		}
 
 		~MemberAttribute(){
-			delete setters;
+
 		}
 	};
 
@@ -78,7 +77,7 @@ namespace zetscript{
 				//, Instruction *src_instruction
 				,std::string & error
 				,StackElement * stk_element = NULL
-				,int * idx_stk_element = NULL
+				//,int * idx_stk_element = NULL
 		);
 		virtual StackElement 	* getProperty(const std::string & property_name, int * idx=NULL);
 
