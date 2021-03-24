@@ -26,6 +26,7 @@ namespace zetscript{
 		static bool containsSf(ScriptObjectString *so, zs_int ch);
 		static bool existSf(ScriptObjectString *so, zs_int ch);
 		static void clearSf(ScriptObjectString *so);
+		static ScriptObjectString *replaceSf(ScriptObjectString *str_in,std::string *str_old, std::string *str_new);
 		static void eraseAtSf(ScriptObjectString *so, zs_int idx);
 		static void insertAtSf(ScriptObjectString *so, zs_int idx,zs_int ch);
 		static ScriptObjectVector * splitSf(ScriptObjectString *so,zs_int ch_delim);

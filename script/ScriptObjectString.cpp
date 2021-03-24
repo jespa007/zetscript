@@ -154,6 +154,12 @@ namespace zetscript{
 		((std::string *)so->value)->clear();
 	}
 
+	ScriptObjectString *ScriptObjectString::replaceSf(ScriptObjectString *str_in,std::string *str_old, std::string *str_new){
+		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(zs);
+		str_out->set(zs_strutils::replace(*((std::string *)str_in->value),str_old,str_new));
+		return str_out;
+	}
+
 	void ScriptObjectString::eraseAtSf(ScriptObjectString *so, zs_int idx){
 		std::string *str=((std::string *)so->value);
 		str->erase(str->begin()+idx);

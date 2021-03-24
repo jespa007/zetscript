@@ -562,6 +562,22 @@ load_element_object:
 							goto lbl_exit_function;
 						}
 
+						//------------------------------------------------------------------
+						vm_call_function_script(
+							 vm
+							,NULL
+							,(ScriptFunction *)param->default_var_value.stk_value
+							,stk_def_afun_start
+						);
+
+						n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
+
+						CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) // we share pointer (true second arg) to not remove on pop in calling return
+
+						// reset stack
+						data->stk_vm_current=stk_def_afun_start+1; // reset stack +1
+						//------------------------------------------------------------------
+
 						// pack member info for store information...
 						if(instruction->properties & MSK_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST){
 							// save
