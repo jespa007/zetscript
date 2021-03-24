@@ -153,7 +153,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
 	MESSAGE ("-- Toolchain: GNU")
 
-	set(COMPILE_TARGET_FLAGS " -O2 ")
+	set(COMPILE_TARGET_FLAGS " -O2")
 
 	IF ( "${TARGET}" STREQUAL "debug")
 		set(COMPILE_TARGET_FLAGS " -O0 -g ")

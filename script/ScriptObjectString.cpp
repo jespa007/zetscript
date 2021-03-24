@@ -155,8 +155,8 @@ namespace zetscript{
 	}
 
 	ScriptObjectString *ScriptObjectString::replaceSf(ScriptObjectString *str_in,std::string *str_old, std::string *str_new){
-		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(zs);
-		str_out->set(zs_strutils::replace(*((std::string *)str_in->value),str_old,str_new));
+		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(str_in->getZetScript());
+		str_out->set(zs_strutils::replace(*((std::string *)str_in->value),*str_old,*str_new));
 		return str_out;
 	}
 

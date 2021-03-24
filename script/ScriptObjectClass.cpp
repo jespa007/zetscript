@@ -67,7 +67,7 @@ namespace zetscript{
 			}
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
-				se->stk_value=new MemberFunction(this,(ScriptFunction *)symbol->ref_ptr);
+				se->stk_value=new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr);
 				se->properties=MSK_STK_PROPERTY_MEMBER_FUNCTION | MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function member
 			}
 			else{ // var...
@@ -80,8 +80,8 @@ namespace zetscript{
 				}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
 					se->stk_value=(void *)symbol->ref_ptr;
 					se->properties=MSK_STK_PROPERTY_PTR_STK;
-				}else if(symbol->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE){
-					se->stk_value=(void *)symbol->ref_ptr;
+				}else if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+					se->stk_value=new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr);
 					se->properties=MSK_STK_PROPERTY_MEMBER_ATTRIBUTE;
 				}
 			}
@@ -240,6 +240,13 @@ namespace zetscript{
 					).c_str()
 				);
 			//return false;
+		}
+
+		for(unsigned i=0; i< stk_builtin_elements.count; i++){
+			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
+			if(stk->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE){
+				delete (StackMemberAttribute *)stk->stk_value;
+			}
 		}
 
 	}

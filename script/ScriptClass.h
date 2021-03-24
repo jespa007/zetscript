@@ -9,6 +9,19 @@ namespace zetscript{
 /**
  * Stores the basic information to build a object through built AST structure
  */
+	struct MemberAttribute{
+	public:
+		zs_vector setters; // setter that contains a list of script functions C++
+		 ScriptFunction *getter; // getter
+
+		 MemberAttribute(){
+			 getter= NULL;
+		}
+
+		~MemberAttribute(){
+
+		}
+	};
 
 	class ScriptFunctionFactory;
 	class  ScriptClass{

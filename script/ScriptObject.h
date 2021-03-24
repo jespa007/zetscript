@@ -27,12 +27,13 @@ namespace zetscript{
 		InfoSharedPointerNode *first, *last;
 	}InfoSharedList;
 
-	struct MemberFunction{
+
+	struct StackMemberFunction{
 	public:
 		ScriptFunction 		*so_function; // make function pointer first to make compatible with stk
 		ScriptObject		*so_object;
 
-		MemberFunction(
+		StackMemberFunction(
 				ScriptObject		*_so_object
 				,ScriptFunction 	*_so_function){
 			so_object = _so_object;
@@ -40,17 +41,17 @@ namespace zetscript{
 		}
 	};
 
-	struct MemberAttribute{
+	struct MemberAttribute;
+	struct StackMemberAttribute{
 	public:
-		zs_vector setters; // setter that contains a list of script functions C++
-		 ScriptFunction *getter; // getter
+		MemberAttribute 	*member_attribute; // make function pointer first to make compatible with stk
+		ScriptObject		*so_object;
 
-		 MemberAttribute(){
-			 getter= NULL;
-		}
-
-		~MemberAttribute(){
-
+		StackMemberAttribute(
+				ScriptObject		*_so_object
+				,MemberAttribute 	*_member_attribute){
+			so_object = _so_object;
+			member_attribute= _member_attribute;
 		}
 	};
 

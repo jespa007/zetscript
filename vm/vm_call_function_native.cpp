@@ -247,7 +247,7 @@ namespace zetscript{
 				break;
 			}
 		}else if(calling_function->idx_return_type==IDX_BUILTIN_TYPE_FLOAT_C){ // we must do a float cast in order to get float return.
-			zs_float aux_flt;
+			zs_float aux_flt=0;
 			switch(n_args){
 			case 0:
 				aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();

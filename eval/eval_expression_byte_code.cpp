@@ -209,7 +209,7 @@ namespace zetscript{
 			if(last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS
 			||last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 				// .. add information last load that it will be stored
-				last_load_instruction->properties |= MSK_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST;
+				last_load_instruction->properties |= MSK_INSTRUCTION_ASSIGNABLE_PROPERTY;
 			}else{
 				last_load_instruction->byte_code=load_to_push_stk(last_load_instruction->byte_code);
 			}

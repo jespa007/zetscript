@@ -24,9 +24,15 @@ class A{
 	}		
 }
 
+
+function b(ref a){
+	System::println(a.a);	
+}
+
 var a=new A();
-System::println(a.a);
-a.a=1;
-System::println(a.a);
+b(a)
+
+/*a.a=1;
+System::println(a.a);*/
 
 

@@ -563,23 +563,9 @@ load_element_object:
 						}
 
 						//------------------------------------------------------------------
-						vm_call_function_script(
-							 vm
-							,NULL
-							,(ScriptFunction *)param->default_var_value.stk_value
-							,stk_def_afun_start
-						);
-
-						n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
-
-						CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) // we share pointer (true second arg) to not remove on pop in calling return
-
-						// reset stack
-						data->stk_vm_current=stk_def_afun_start+1; // reset stack +1
-						//------------------------------------------------------------------
 
 						// pack member info for store information...
-						if(instruction->properties & MSK_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST){
+						if(instruction->properties & MSK_INSTRUCTION_ASSIGNABLE_PROPERTY){
 							// save
 							//ScriptObjectObject *calling_object_info=(ScriptObjectObject *)stk_calling_object_info->stk_value;// calling object
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
@@ -596,6 +582,56 @@ load_element_object:
 							data->stk_vm_current++;
 						}
 						continue;
+					}else{
+						if(stk_var->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE){
+							if(instruction->properties & MSK_INSTRUCTION_ASSIGNABLE_PROPERTY){ // save information setter
+								VM_STOP_EXECUTE("setter not implemented");
+							}else{ // call getter if exist
+								StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->stk_value;
+								if(stk_ma->member_attribute->getter != NULL){
+
+									StackElement *stk_def_afun_start=data->stk_vm_current;
+									int n_returned_args_afun=0;
+
+
+									vm_call_function_script(
+										 vm
+										,stk_ma->so_object
+										,stk_ma->member_attribute->getter
+										,stk_def_afun_start
+									);
+
+									if(data->vm_error == true){
+										data->vm_error_callstack_str+=zs_strutils::format(
+											"\nat %s (file:%s line:%i)" // TODO: get full symbol ?
+											,stk_ma->member_attribute->getter->symbol.name.c_str()
+											,SFI_GET_FILE(calling_function,instruction)
+											,SFI_GET_LINE(calling_function,instruction)
+										);
+										goto lbl_exit_function;
+									}
+
+									n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
+
+									CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) // we share pointer (true second arg) to not remove on pop in calling return
+
+
+									stk_var=stk_def_afun_start;
+									data->stk_vm_current=stk_def_afun_start; // reset stack -11
+
+									/*if((data->stk_vm_current->properties & MSK_STK_PROPERTY_PTR_STK) == 0){ // it doesn't get the variable, it gets its content
+										data->stk_vm_current=((StackElement *)data->stk_vm_current->stk_value);
+									}
+									//if(data->stk_vm_current->properties & STK_
+
+									// reset stack
+
+									continue;*/
+								}
+
+							}
+
+						}
 					}
 				}
 
@@ -603,9 +639,9 @@ load_element_object:
 					*data->stk_vm_current++=*stk_var;
 				}
 				else{ // copy the content of this value
-					if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT){ // push
+					if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT){ // push ref because is gonna to be assigned
 						PUSH_STK_PTR(stk_var);
-					}else{ // load
+					}else{ // load its value for read
 						*data->stk_vm_current++=*((StackElement *)stk_var->stk_value);
 					}
 				}
@@ -1222,7 +1258,7 @@ load_element_object:
 					}
 
 					if(stk_function_ref->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION){
-						MemberFunction *fm=(MemberFunction *)stk_function_ref->stk_value;
+						StackMemberFunction *fm=(StackMemberFunction *)stk_function_ref->stk_value;
 						calling_object=fm->so_object;
 						sf=fm->so_function;
 					}else{
