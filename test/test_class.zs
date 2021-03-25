@@ -2,13 +2,15 @@
 class Test{
 	const MAX_NUM=9
 	
-	// pre create vars with initialization
+	// built-in member vars with optional initialization
 	var a,b=-1,c=-2
 
 	Test(a,b=-1,c=Test::MAX_NUM){
-		this.a=a; // init a (dynamic)
-		this.b=b
-		this.c=c
+		this.a=a; // init built-in
+		this.b=b; // init built-in
+		this.c=c;  // init built-in
+		this.d=-100; // a user property
+		this["e"]=-200; // another user property usign []
 		System::println("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} MAX_NUM:{6}"
 				,this.a
 				,this.b

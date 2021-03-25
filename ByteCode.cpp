@@ -243,7 +243,7 @@ namespace zetscript{
 		return "none";
 	}
 
-	int			 get_num_arguments_static_metamethod(ByteCodeMetamethod op){
+	int			 byte_code_get_num_arguments_static_metamethod(ByteCodeMetamethod op){
 		switch(op){
 			case BYTE_CODE_METAMETHOD_NOT:
 			case BYTE_CODE_METAMETHOD_NEG:
@@ -261,13 +261,13 @@ namespace zetscript{
 	}
 
 	int			 get_num_arguments_non_static_metamethod(ByteCodeMetamethod op){
-		return get_num_arguments_static_metamethod(op)-1;
+		return byte_code_get_num_arguments_static_metamethod(op)-1;
 	}
 
 
-	ByteCode			 load_to_push_stk(ByteCode op){
+	ByteCode			 byte_code_load_to_push_stk(ByteCode byte_code){
 	// load ptr var
-		switch(op){
+		switch(byte_code){
 			// load var content
 			case BYTE_CODE_LOAD_GLOBAL:return BYTE_CODE_PUSH_STK_GLOBAL;
 			case BYTE_CODE_LOAD_LOCAL:return BYTE_CODE_PUSH_STK_LOCAL;
@@ -282,8 +282,19 @@ namespace zetscript{
 				break;
 		}
 
-		return op;
+		return byte_code;
 
+	}
+
+	bool		 byte_code_is_load_type(ByteCode byte_code){
+		return byte_code==BYTE_CODE_LOAD_GLOBAL
+				|| byte_code==BYTE_CODE_LOAD_LOCAL
+				|| byte_code==BYTE_CODE_LOAD_REF
+				|| byte_code==BYTE_CODE_LOAD_THIS
+				|| byte_code==BYTE_CODE_LOAD_MEMBER_VAR
+				|| byte_code==BYTE_CODE_LOAD_ELEMENT_VECTOR
+				|| byte_code==BYTE_CODE_LOAD_ELEMENT_THIS
+				|| byte_code==BYTE_CODE_LOAD_ELEMENT_OBJECT;
 	}
 
 }

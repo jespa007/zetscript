@@ -209,9 +209,9 @@ namespace zetscript{
 			if(last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS
 			||last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 				// .. add information last load that it will be stored
-				last_load_instruction->properties |= MSK_INSTRUCTION_ASSIGNABLE_PROPERTY;
+				last_load_instruction->properties |= MSK_INSTRUCTION_USE_PUSH_STK;
 			}else{
-				last_load_instruction->byte_code=load_to_push_stk(last_load_instruction->byte_code);
+				last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
 			}
 
 			// ... add arithmetic operator byte code

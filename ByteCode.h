@@ -187,9 +187,10 @@ namespace zetscript{
 	const char * byte_code_to_operator_str(ByteCode op);
 	const char * byte_code_metamethod_to_operator_str(ByteCodeMetamethod op);
 	const char * byte_code_metamethod_to_symbol_str(ByteCodeMetamethod op);
-	int			 get_num_arguments_static_metamethod(ByteCodeMetamethod op);
+	int			 byte_code_get_num_arguments_static_metamethod(ByteCodeMetamethod op);
 	int			 get_num_arguments_non_static_metamethod(ByteCodeMetamethod op);
-	ByteCode	 swap_load_to_push_stk(ByteCode op);
+	ByteCode	 byte_code_load_to_push_stk(ByteCode op);
+	bool		 byte_code_is_load_type(ByteCode op);
 
 
 }

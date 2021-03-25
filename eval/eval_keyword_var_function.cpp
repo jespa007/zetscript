@@ -379,7 +379,8 @@ error_eval_keyword_var:
 			, int & line
 			, Scope *scope_info
 			, uint16_t properties // allow_anonymous_function attrib /anonymous, etc
-			, Symbol ** symbol_function
+			, Symbol ** result_symbol_function
+			, const std::string & custom_symbol_name
 
 		){
 
@@ -445,7 +446,7 @@ error_eval_keyword_var:
 
 			std::string function_name="";
 			//Scope *scope=scope_info;
-			bool is_anonymous=false;
+			//bool is_anonymous=false;
 
 			Scope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
 			ScriptFunction *sf=NULL;
@@ -499,7 +500,7 @@ error_eval_keyword_var:
 					return NULL;
 				}
 
-				is_anonymous=true;
+				//is_anonymous=true;
 
 				if(
 						scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)
@@ -656,8 +657,12 @@ error_eval_keyword_var:
 			}
 
 			// register function ...
-			if(is_anonymous){ // register named function...
-				function_name=eval_anonymous_function_name(sc!=NULL?sc->symbol_class.name:"");
+			if(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS){ // register named function...
+				if(custom_symbol_name != ""){
+					function_name=custom_symbol_name;
+				}else{
+					function_name=eval_anonymous_function_name(sc!=NULL?sc->symbol_class.name:"");
+				}
 			}
 
 
@@ -695,8 +700,8 @@ error_eval_keyword_var:
 				}
 			}
 
-			if(symbol_function != NULL){
-				*symbol_function=symbol_sf;
+			if(result_symbol_function != NULL){
+				*result_symbol_function=symbol_sf;
 			}
 
 			sf=(ScriptFunction *)symbol_sf->ref_ptr;

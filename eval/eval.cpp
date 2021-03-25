@@ -418,35 +418,34 @@ namespace zetscript{
 				}else{ // find global or static*/
 				if(instruction->symbol.scope != MAIN_SCOPE(eval_data)){ // find global symbol if not global
 					vis = eval_find_global_symbol(eval_data,*ptr_str_symbol_to_find);
-				}else{
-					if(instruction->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
-						char *str_start_class=(char *)ptr_str_symbol_to_find->c_str();
-						char *str_end_class=NULL;
+				}else{ // give the error properly
 
-						if((str_end_class=strstr(str_start_class,"::"))!=NULL){
-							char class_name[512]={0};
-							strncpy(class_name,str_start_class,str_end_class-str_start_class);
+					char *str_start_class=(char *)ptr_str_symbol_to_find->c_str();
+					char *str_end_class=NULL;
 
-							EVAL_ERROR_POP_FUNCTION(
-									instruction->instruction_source_info.file
-									,instruction->instruction_source_info.line
-									,"static symbol '%s' not exist in '%s'"
-									//,sf_class->symbol_class.name.c_str()
-									,str_end_class+2
-									,class_name
-							);
-						}
-						else{
-							EVAL_ERROR_POP_FUNCTION(
-									instruction->instruction_source_info.file
-									,instruction->instruction_source_info.line
-									,"symbol '%s' not defined"
-									//,sf_class->symbol_class.name.c_str()
-									,ptr_str_symbol_to_find->c_str()
-							);
-						}
+					if((str_end_class=strstr(str_start_class,"::"))!=NULL){
+						char class_name[512]={0};
+						strncpy(class_name,str_start_class,str_end_class-str_start_class);
 
+						EVAL_ERROR_POP_FUNCTION(
+								instruction->instruction_source_info.file
+								,instruction->instruction_source_info.line
+								,"static symbol '%s' not exist in '%s'"
+								//,sf_class->symbol_class.name.c_str()
+								,str_end_class+2
+								,class_name
+						);
 					}
+					else{
+						EVAL_ERROR_POP_FUNCTION(
+								instruction->instruction_source_info.file
+								,instruction->instruction_source_info.line
+								,"symbol '%s' not defined"
+								//,sf_class->symbol_class.name.c_str()
+								,ptr_str_symbol_to_find->c_str()
+						);
+					}
+
 				}
 				//}
 
@@ -455,8 +454,14 @@ namespace zetscript{
 						instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_FUNCTION;
 						instruction->vm_instruction.value_op2=(zs_int)(ScriptFunction *)vis->ref_ptr; // store script function
 					}
-					else{ // variable
-						instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_GLOBAL;
+					else{ // global variable
+
+						if(instruction->vm_instruction.properties & MSK_INSTRUCTION_USE_PUSH_STK){
+							instruction->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+						}else{
+							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_GLOBAL;
+						}
+
 						instruction->vm_instruction.value_op2=vis->idx_position;
 					}
 				}

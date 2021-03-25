@@ -20,7 +20,7 @@
 // properties shared by compiler + instruction ..
 typedef enum{
 
-	BIT_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST,												// 0x0001	// for create and store member
+	BIT_INSTRUCTION_USE_PUSH_STK,												// 0x0001	// for create and store member
 	BIT_INSTRUCTION_PROPERTY_ILOAD_K,														// 0x0002
 	BIT_INSTRUCTION_PROPERTY_ILOAD_R,														// 0x0004
 	BIT_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL,											// 0x0008   // for register access type
@@ -63,7 +63,7 @@ typedef enum{
 //#define GET_MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE(prop)		((prop)&MSK_INSTRUCTION_PROPERTY_SCOPE_TYPE)
 
 // BYTE_CODE_CALL TYPE
-#define MSK_INSTRUCTION_ASSIGNABLE_PROPERTY			(0x1 << BIT_INSTRUCTION_ADD_PROPERTY_IF_NOT_EXIST)
+#define MSK_INSTRUCTION_USE_PUSH_STK			(0x1 << BIT_INSTRUCTION_USE_PUSH_STK)
 
 #define MSK_INSTRUCTION_PROPERTY_ILOAD_K					(0x1 << BIT_INSTRUCTION_PROPERTY_ILOAD_K)
 #define MSK_INSTRUCTION_PROPERTY_ILOAD_R					(0x1 << BIT_INSTRUCTION_PROPERTY_ILOAD_R)
@@ -115,6 +115,7 @@ namespace zetscript{
 		bool isConstant();
 
 		std::string getConstantValueOp2ToString();
+
 
 	};
 

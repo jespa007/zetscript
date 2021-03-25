@@ -356,6 +356,7 @@ namespace zetscript{
 						,scope_info // pass class scope
 						, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_ATTRIB | EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
 						,&symbol
+						,attrib_name+"@"+function_name
 					))==NULL){
 						return NULL;
 					}

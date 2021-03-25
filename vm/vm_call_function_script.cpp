@@ -401,8 +401,14 @@ namespace zetscript{
 
 				if(symbol_aux != NULL){
 					if(symbol_aux->n_params==NO_PARAMS_SYMBOL_ONLY){ // variable
-						instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
-						PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
+						if(instruction->properties & MSK_INSTRUCTION_USE_PUSH_STK){
+							instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+							PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
+						}else{
+							instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
+							*data->stk_vm_current++=*(data->vm_stack+instruction->value_op2);
+						}
+
 					}else{ // function
 						// assign script function ...
 						instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
@@ -565,7 +571,7 @@ load_element_object:
 						//------------------------------------------------------------------
 
 						// pack member info for store information...
-						if(instruction->properties & MSK_INSTRUCTION_ASSIGNABLE_PROPERTY){
+						if(instruction->properties & MSK_INSTRUCTION_USE_PUSH_STK){
 							// save
 							//ScriptObjectObject *calling_object_info=(ScriptObjectObject *)stk_calling_object_info->stk_value;// calling object
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
@@ -584,7 +590,7 @@ load_element_object:
 						continue;
 					}else{
 						if(stk_var->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE){
-							if(instruction->properties & MSK_INSTRUCTION_ASSIGNABLE_PROPERTY){ // save information setter
+							if(instruction->properties & MSK_INSTRUCTION_USE_PUSH_STK){ // save information setter
 								VM_STOP_EXECUTE("setter not implemented");
 							}else{ // call getter if exist
 								StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->stk_value;
@@ -619,14 +625,6 @@ load_element_object:
 									stk_var=stk_def_afun_start;
 									data->stk_vm_current=stk_def_afun_start; // reset stack -11
 
-									/*if((data->stk_vm_current->properties & MSK_STK_PROPERTY_PTR_STK) == 0){ // it doesn't get the variable, it gets its content
-										data->stk_vm_current=((StackElement *)data->stk_vm_current->stk_value);
-									}
-									//if(data->stk_vm_current->properties & STK_
-
-									// reset stack
-
-									continue;*/
 								}
 
 							}
@@ -1314,7 +1312,7 @@ load_element_object:
 					// call function
 					if((sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 						// we pass everything by copy (TODO implement ref)
-						if(n_args > 0){
+						if(n_args > 0 && sf->params->count > 0){
 							StackElement *stk_arg=stk_start_arg_call;
 							ScriptObjectVector *var_args=NULL;
 							ScriptObject *so_param=NULL;

@@ -349,7 +349,7 @@ namespace zetscript{
 					ByteCodeMetamethod op=(ByteCodeMetamethod)i;
 					const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(op);
 					const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(op);
-					int min_args_static_metamethod=get_num_arguments_static_metamethod(op); // expected params for static function, n_args -1 else
+					int min_args_static_metamethod=byte_code_get_num_arguments_static_metamethod(op); // expected params for static function, n_args -1 else
 
 					Symbol *symbol_result;
 
