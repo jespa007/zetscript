@@ -55,7 +55,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:	return "LOAD_E@VEC"; // load element vector
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:	return "LOAD_E@OBJ"; // load element object
 			case BYTE_CODE_LOAD_FUNCTION:		return "LOAD_FUNCT"; // load function
-			case BYTE_CODE_LOAD_UNDEFINED:		return "LOAD_UNDEF"; // load undfined
+			case BYTE_CODE_LOAD_NULL:		return "LOAD_UNDEF"; // load undfined
 			case BYTE_CODE_LOAD_STACK_ELEMENT:	return "LOAD_STK"; // load stack element
 
 			case BYTE_CODE_LOAD_STRING:			return "LOAD_STR"; // load string
@@ -138,7 +138,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:	return "LOAD_EVEC"; // load element vector
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:	return "LOAD_EOBJ"; // load element object
 			case BYTE_CODE_LOAD_FUNCTION:		return "LOAD_FUNCT"; // load function
-			case BYTE_CODE_LOAD_UNDEFINED:		return "LOAD_UNDEF"; // load undfined
+			case BYTE_CODE_LOAD_NULL:		return "LOAD_UNDEF"; // load undfined
 			case BYTE_CODE_LOAD_STACK_ELEMENT:	return "LOAD_STK"; // load stack element
 			case BYTE_CODE_LOAD_STRING:			return "LOAD_STR"; // load string
 			case BYTE_CODE_LOAD_FLOAT:			return "LOAD_FLT"; // load float

@@ -387,7 +387,7 @@ namespace zetscript{
 					THROW_RUNTIME_ERROR(vm_get_error(zs->getVirtualMachine()).c_str());
 				}
 
-				// reset stack to undefined, it can have some garbage from previous operations...
+				// reset stack to null, it can have some garbage from previous operations...
 				stk_global_var_ptr->setUndefined();
 
 				symbol->ref_ptr=(zs_int)stk_global_var_ptr;

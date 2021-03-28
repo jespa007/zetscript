@@ -229,7 +229,8 @@ Solved issues
 #275 Change VirtualMachine class by struct and C functions  
 > #276 Implement built-in iterators
 #277 optimize access stk_vm_current 
- 
+#278 Rename undefined to null 
+
 //----------------------------------------------------------
 Version: 1.3.0
 Date: 30-03-2018

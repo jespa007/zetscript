@@ -14,7 +14,7 @@ namespace zetscript{
 
 			case MSK_STK_PROPERTY_BOOL:
 			case MSK_STK_PROPERTY_ZS_INT:
-			case MSK_STK_PROPERTY_UNDEFINED:
+			case MSK_STK_PROPERTY_NULL:
 			case MSK_STK_PROPERTY_ZS_FLOAT:
 				break;
 			case MSK_STK_PROPERTY_FUNCTION:

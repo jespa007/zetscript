@@ -83,10 +83,10 @@
 		PUSH_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
 	}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
 		PUSH_BOOLEAN(ZS_STRCMP(stk_result_op1->toString().c_str(), __C_OP__ ,stk_result_op2->toString().c_str()));\
-	}else if(  (stk_result_op1->properties==MSK_STK_PROPERTY_UNDEFINED || stk_result_op2->properties==MSK_STK_PROPERTY_UNDEFINED)\
+	}else if(  (stk_result_op1->properties==MSK_STK_PROPERTY_NULL || stk_result_op2->properties==MSK_STK_PROPERTY_NULL)\
 			&& (__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
 			){\
-		if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_UNDEFINED){\
+		if((stk_result_op1->properties&stk_result_op2->properties) == MSK_STK_PROPERTY_NULL){\
 			PUSH_BOOLEAN(true  __C_OP__  true);\
 		}else{\
 			PUSH_BOOLEAN(false);\
@@ -332,7 +332,7 @@ namespace zetscript{
 					ptr_aux->stk_value=(void *)symbol_aux->ref_ptr;
 					ptr_aux->properties=MSK_STK_PROPERTY_FUNCTION;
 				}else{
-					STK_SET_UNDEFINED(ptr_aux);		// undefined as default
+					STK_SET_NULL(ptr_aux);		// null as default
 				}
 				ptr_aux++;
 			}
@@ -415,7 +415,7 @@ namespace zetscript{
 						instruction->value_op2=symbol_aux->ref_ptr;
 						PUSH_FUNCTION(instruction->value_op2);
 					}
-				}else{ // load undefined as default!
+				}else{ // load null as default!
 					VM_STOP_EXECUTE("Symbol \"%s\" is not defined",str_symbol);
 				}
 
@@ -584,7 +584,7 @@ load_element_object:
 						}
 						else{
 							data->stk_vm_current->stk_value=0;
-							data->stk_vm_current->properties=MSK_STK_PROPERTY_UNDEFINED;
+							data->stk_vm_current->properties=MSK_STK_PROPERTY_NULL;
 							data->stk_vm_current++;
 						}
 						continue;
@@ -650,8 +650,8 @@ load_element_object:
 				}
 
 				continue;
-			case BYTE_CODE_LOAD_UNDEFINED:
-				PUSH_UNDEFINED;
+			case BYTE_CODE_LOAD_NULL:
+				PUSH_NULL;
 				continue;
 			case BYTE_CODE_LOAD_FUNCTION: // expect constant and function has the same behaviour...
 				PUSH_FUNCTION(instruction->value_op2);
@@ -953,10 +953,10 @@ load_element_object:
 							unsigned short type_var=stk_src->properties;
 
 							// init stk_dst
-							STK_SET_UNDEFINED(stk_dst);
+							STK_SET_NULL(stk_dst);
 
-							if(type_var == MSK_STK_PROPERTY_UNDEFINED){
-								stk_dst->properties=MSK_STK_PROPERTY_UNDEFINED;
+							if(type_var == MSK_STK_PROPERTY_NULL){
+								stk_dst->properties=MSK_STK_PROPERTY_NULL;
 							}else if(type_var & MSK_STK_PROPERTY_ZS_INT){
 								stk_dst->properties=MSK_STK_PROPERTY_ZS_INT;
 								old_stk_dst.properties &  MSK_STK_PROPERTY_ZS_CHAR?
@@ -1019,7 +1019,7 @@ load_element_object:
 
 						// check old dst value to unref if it was an object ...
 						switch(GET_MSK_STK_PROPERTY_TYPES(old_stk_dst.properties)){
-						case MSK_STK_PROPERTY_UNDEFINED:
+						case MSK_STK_PROPERTY_NULL:
 						case MSK_STK_PROPERTY_ZS_INT:
 						case MSK_STK_PROPERTY_ZS_FLOAT:
 						case MSK_STK_PROPERTY_BOOL:
@@ -1420,7 +1420,7 @@ load_element_object:
 							int n_returned_args_afun=0;
 
 							switch(param->default_var_value.properties){
-							case MSK_STK_PROPERTY_UNDEFINED:
+							case MSK_STK_PROPERTY_NULL:
 							case MSK_STK_PROPERTY_ZS_INT:
 							case MSK_STK_PROPERTY_BOOL:
 							case MSK_STK_PROPERTY_ZS_FLOAT:
@@ -1448,7 +1448,7 @@ load_element_object:
 								break;
 
 							}
-							//PUSH_UNDEFINED;
+							//PUSH_NULL;
 							n_args++;
 						}
 
@@ -1526,7 +1526,7 @@ load_element_object:
 							*data->stk_vm_current++= stk_return[0]; // only return first argument
 						}
 						else{
-							PUSH_UNDEFINED; // no return push undefined
+							PUSH_NULL; // no return push null
 						}
 					}
 				 }
@@ -1605,7 +1605,7 @@ load_element_object:
 							if(script_object_class->isCreatedByContructor()){
 								script_object_class->deleteNativeObjectOnDestroy(true);
 							}
-							STK_SET_UNDEFINED(se);
+							STK_SET_NULL(se);
 						}
 					}
 					else{

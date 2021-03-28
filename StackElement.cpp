@@ -2,11 +2,11 @@
 
 namespace zetscript{
 
-	extern const StackElement stk_undefined={0,MSK_STK_PROPERTY_UNDEFINED};
+	extern const StackElement stk_undefined={0,MSK_STK_PROPERTY_NULL};
 
 	const char * StackElement::typeStr(){
 		StackElement *stk=this;
-		const char * result="undefined";
+		const char * result="null";
 		if(STK_VALUE_IS_ZS_INT(stk))
 			result= "int";
 		else if(STK_VALUE_IS_FLOAT(stk))
@@ -33,7 +33,7 @@ namespace zetscript{
 	}
 
 	std::string StackElement::toString(){
-		std::string result="undefined";
+		std::string result="null";
 		StackElement *stk=this;
 
 		if(this->properties & MSK_STK_PROPERTY_PTR_STK){

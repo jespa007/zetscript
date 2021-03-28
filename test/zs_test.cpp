@@ -841,7 +841,7 @@ int main(int argc, char * argv[]) {
 	// TEST INT OPS
 	//
 
-	//ZetScript::getInstance()->eval("if(undefined){print(\"true\");}else{print(\"\");} }var prova=[]; prova.add(0); prova.size();");
+	//ZetScript::getInstance()->eval("if(null){print(\"true\");}else{print(\"\");} }var prova=[]; prova.add(0); prova.size();");
 
 	//TEST_NUMBER_EXPR("4.0*4;",16.0);
 	//exit(-1);

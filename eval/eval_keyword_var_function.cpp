@@ -614,7 +614,7 @@ error_eval_keyword_var:
 						Instruction *instruction=&instructions_default[0]->vm_instruction;
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
-						case BYTE_CODE_LOAD_UNDEFINED:
+						case BYTE_CODE_LOAD_NULL:
 							arg_info.default_var_value=stk_undefined;
 							break;
 						case BYTE_CODE_LOAD_ZS_INT:

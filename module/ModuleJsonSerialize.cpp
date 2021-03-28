@@ -95,7 +95,7 @@ namespace zetscript{
 			case MSK_STK_PROPERTY_ZS_INT:
 				str_result+=stk->toString();
 				break;
-			case MSK_STK_PROPERTY_UNDEFINED:
+			case MSK_STK_PROPERTY_NULL:
 				str_result+="null";
 				break;
 			case MSK_STK_PROPERTY_SCRIPT_OBJECT: // vector or object

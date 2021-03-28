@@ -1,7 +1,7 @@
 function add(a,b,c){
-	print("a:"+a+" b:"+b+" c:"+c+" c==undefined"+(c==undefined))
+	print("a:"+a+" b:"+b+" c:"+c+" c==null"+(c==null))
 	var d=a+b;
-	if(c!=undefined){
+	if(c!=null){
 		d+=c;
 	}
 	return d;

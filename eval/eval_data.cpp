@@ -532,8 +532,7 @@ namespace zetscript{
 		// avoid special literal words
 		if(symbol=="true"
 			|| symbol == "false"
-			|| symbol=="undefined"
-			|| symbol == "null"
+			|| symbol=="null"
 		){
 			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected \"%s\"", aux_p);
 		}

@@ -80,7 +80,7 @@ namespace zetscript{
 				aux++;
 				value=(zs_int)eval_data->zs->registerConstantScriptObjectString(default_str_value);
 				byte_code = ByteCode::BYTE_CODE_LOAD_STRING;
-			}else{ // is undefined,boolean or identifier
+			}else{ // is null,boolean or identifier
 				bool end=false;
 				while(!end){
 					pre=*aux;
@@ -91,8 +91,8 @@ namespace zetscript{
 					}
 				}
 
-				if(default_str_value=="undefined"){ // undefined literal
-					byte_code=ByteCode::BYTE_CODE_LOAD_UNDEFINED;
+				if(default_str_value=="null"){ // null literal
+					byte_code=ByteCode::BYTE_CODE_LOAD_NULL;
 				}else if((const_obj=zs_strutils::parse_bool(default_str_value))!=NULL){ // bool literal
 
 					bool value_bool = *((bool *)const_obj);

@@ -255,7 +255,7 @@ error_expression_main:
 			int left_size=(int)left_expressions.size();
 			int max_size=right_size>left_size?right_size:left_size;
 
-			// write right expressions in reverse order and the right one < left one, we push an undefined element
+			// write right expressions in reverse order and the right one < left one, we push an null element
 			for(int r=max_size-1; r >=0;r--){
 				if(r<right_size){
 					dst_instructions->insert(
@@ -266,7 +266,7 @@ error_expression_main:
 				}else{
 					dst_instructions->push_back(
 						new EvalInstruction(
-							BYTE_CODE_LOAD_UNDEFINED
+							BYTE_CODE_LOAD_NULL
 						)
 					);
 

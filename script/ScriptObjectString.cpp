@@ -63,8 +63,8 @@ namespace zetscript{
 			}
 
 			switch(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
-			//case MSK_STK_PROPERTY_UNDEFINED:
-			//	*(*str_dst_it)="undefined";
+			//case MSK_STK_PROPERTY_NULL:
+			//	*(*str_dst_it)="null";
 			//	break;
 			case MSK_STK_PROPERTY_ZS_INT:
 				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->stk_value);
@@ -82,8 +82,8 @@ namespace zetscript{
 				*(*str_dst_it)="class";
 				break;
 			default:
-				if(stk_src_item->properties==MSK_STK_PROPERTY_UNDEFINED){
-					*(*str_dst_it)="undefined";
+				if(stk_src_item->properties==MSK_STK_PROPERTY_NULL){
+					*(*str_dst_it)="null";
 				}else if(stk_src_item->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 					*(*str_dst_it)=((ScriptObjectObject *)(stk_src_item)->stk_value)->toString();
 				}

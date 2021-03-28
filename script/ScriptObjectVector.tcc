@@ -26,7 +26,7 @@ namespace zetscript{
 					}
 					break;
 				default:
-				case MSK_STK_PROPERTY_UNDEFINED:
+				case MSK_STK_PROPERTY_NULL:
 				case MSK_STK_PROPERTY_BOOL:
 				case MSK_STK_PROPERTY_FUNCTION:
 					THROW_RUNTIME_ERROR("type not implemented yet");

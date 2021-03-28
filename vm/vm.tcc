@@ -6,8 +6,8 @@
 
 #define IDX_CALL_STACK_MAIN 1
 
-#define PUSH_UNDEFINED \
-STK_SET_UNDEFINED(data->stk_vm_current++); \
+#define PUSH_NULL \
+STK_SET_NULL(data->stk_vm_current++); \
 
 #define PUSH_BOOLEAN(init_value) \
 data->stk_vm_current->stk_value=(void *)((zs_int)(init_value)); \
@@ -95,7 +95,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 				}\
 			}\
 		}\
-		STK_SET_UNDEFINED(stk_local_var);\
+		STK_SET_NULL(stk_local_var);\
 	}\
 	--data->vm_current_scope;\
 }
@@ -424,7 +424,7 @@ namespace zetscript{
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_BOOL_C;
 
 									break;
-								case MSK_STK_PROPERTY_UNDEFINED:
+								case MSK_STK_PROPERTY_NULL:
 									all_check=false;
 									break;
 								case MSK_STK_PROPERTY_SCRIPT_OBJECT:
@@ -491,7 +491,7 @@ namespace zetscript{
 				case MSK_STK_PROPERTY_BOOL:
 					aux_string=k_str_bool_type;
 					break;
-				case MSK_STK_PROPERTY_UNDEFINED:
+				case MSK_STK_PROPERTY_NULL:
 					aux_string="undefined";
 					break;
 				case MSK_STK_PROPERTY_SCRIPT_OBJECT:

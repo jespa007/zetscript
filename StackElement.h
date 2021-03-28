@@ -27,7 +27,7 @@ typedef enum:unsigned char {
 
 
 
-#define		MSK_STK_PROPERTY_UNDEFINED 			0 //(0x1 << BIT_STK_PROPERTY_ZS_UNDEFINED) // let's say a variable not defined...
+#define		MSK_STK_PROPERTY_NULL 			0 //(0x1 << BIT_STK_PROPERTY_ZS_UNDEFINED) // let's say a variable not defined...
 #define 	MSK_STK_PROPERTY_ZS_CHAR 			(0x1 << BIT_STK_PROPERTY_ZS_CHAR)
 #define		MSK_STK_PROPERTY_ZS_INT 			(0x1 << BIT_STK_PROPERTY_ZS_INT) // primitive int
 #define		MSK_STK_PROPERTY_ZS_FLOAT			(0x1 << BIT_STK_PROPERTY_ZS_FLOAT) // primitive number
@@ -86,7 +86,7 @@ enum:unsigned short {
 (stk->properties & MSK_STK_PROPERTY_BOOL)
 
 #define STK_VALUE_IS_UNDEFINED(stk) \
-(stk->properties & MSK_STK_PROPERTY_UNDEFINED)
+(stk->properties & MSK_STK_PROPERTY_NULL)
 
 #define STK_VALUE_IS_NULL(stk) \
 (stk->properties & MSK_STK_PROPERTY_NULL)
@@ -110,7 +110,7 @@ enum:unsigned short {
 #define STK_VALUE_TO_BOOL(ptr_result_instruction) \
 		(((bool)(ptr_result_instruction->stk_value)))
 
-#define STK_SET_UNDEFINED(stk) memset(stk,0,sizeof(StackElement))
+#define STK_SET_NULL(stk) memset(stk,0,sizeof(StackElement))
 //#define STK_ASSIGN(dst,src) memcpy(dst,src,sizeof(StackElement))
 
 namespace zetscript{

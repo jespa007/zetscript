@@ -1,11 +1,11 @@
 class Vector2{
 
 	constructor(_x,_y){
-		if(_x==undefined){
+		if(_x==null){
 			_x=0;
 		}
 		
-		if(_y==undefined){
+		if(_y==null){
 			_y=0;
 		}
 		
