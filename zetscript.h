@@ -221,13 +221,13 @@ namespace zetscript{
 		/**
 		 * Register C Class. Return index registered class
 		 */
-		template<typename C>
+		/*template<typename C>
 		void registerClass(const std::string & class_name, const char *registered_file="",short registered_line=-1){
 			script_class_factory->registerNativeClass<C>(class_name, registered_file,registered_line);
-		}
+		}*/
 
 		template<typename C>
-		void registerClassStatic(const std::string & class_name, C  * (*_constructor)(), void (*destructor)(C *), const char *registered_file="",short registered_line=-1){
+		void registerClass(const std::string & class_name, C  * (*_constructor)(), void (*destructor)(C *), const char *registered_file="",short registered_line=-1){
 			script_class_factory->registerNativeClassStatic<C>(class_name, _constructor, destructor, registered_file,registered_line);
 		}
 

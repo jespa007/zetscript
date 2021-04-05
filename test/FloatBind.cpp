@@ -1,6 +1,13 @@
 #include "FloatBind.h"
 
 
+Float *FloatBind::_new(){
+	return new Float();
+
+}
+void FloatBind::_delete(Float *_float){
+	delete _float;
+}
 
  void FloatBind::_set(Float *_this,zs_float *_n){
 	_this->n=*_n;

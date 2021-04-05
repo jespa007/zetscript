@@ -11,6 +11,9 @@ class Float;
 class FloatBind{
 public:
 
+	static Float *_new();
+	static void _delete(Float *);
+
 	static void _set(Float *_this,zs_float *_n);
 	static void _set(Float *_this, Float * _n);
 

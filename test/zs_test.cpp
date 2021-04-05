@@ -588,7 +588,7 @@ int main(int argc, char * argv[]) {
 	//TEST_NUMBER_EXPR("4.0*4;",16.0);
 	//exit(-1);
 	//int i= 0+ +1;
-	zs->registerClass<Float>("Float");
+	zs->registerClass<Float>("Float",FloatBind::_new,FloatBind::_delete);
 
 	zs->registerMemberFunction<Float>("Float",static_cast<void (*)(Float *,zs_float *)>(&FloatBind::_set));
 	zs->registerMemberFunction<Float>("Float",static_cast<void (*)(Float *,Float *)>(&FloatBind::_set));
@@ -624,7 +624,7 @@ int main(int argc, char * argv[]) {
 	zs->registerMemberFunction<Float>("_set",static_cast<void (*)(Float *,Float *)>(&FloatBind::_set));
 
 
-	zs->registerClass<Integer>("Integer");
+	zs->registerClass<Integer>("Integer",IntegerBind::_new,IntegerBind::_delete);
 	zs->registerMemberFunction<Integer>("Integer",static_cast<void (*)(Integer *,zs_int )>(&IntegerBind::_set));
 	zs->registerMemberFunction<Integer>("Integer",static_cast<void (*)(Integer *,Integer *)>(&IntegerBind::_set));
 	zs->registerMemberFunction<Integer>("toInt",&IntegerBind::toInt);

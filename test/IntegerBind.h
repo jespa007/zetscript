@@ -11,6 +11,9 @@ class Integer;
 class IntegerBind{
 public:
 
+	static Integer *_new();
+	static void _delete(Integer *);
+
 	static void _set(Integer *_this, zs_int _n);
 	static void _set(Integer *_this,Integer *_ci2);
 	static Integer * _add(Integer *n1, Integer *n2);

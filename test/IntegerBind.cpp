@@ -2,6 +2,15 @@
 #include "IntegerBind.h"
 
 
+Integer *IntegerBind::_new(){
+	return new Integer();
+
+}
+void IntegerBind::_delete(Integer *_integer){
+	delete _integer;
+}
+
+
  void IntegerBind::_set(Integer *_this, zs_int _n){
 	_this->n=_n;
 }
