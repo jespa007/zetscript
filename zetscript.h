@@ -221,12 +221,11 @@ namespace zetscript{
 		/**
 		 * Register C Class. Return index registered class
 		 */
-#ifndef __STRICT_STATIC_FUNCTIONS_ONLY__
 		template<typename C>
 		void registerClass(const std::string & class_name, const char *registered_file="",short registered_line=-1){
 			script_class_factory->registerNativeClass<C>(class_name, registered_file,registered_line);
 		}
-#endif
+
 		template<typename C>
 		void registerClassStatic(const std::string & class_name, C  * (*_constructor)(), void (*destructor)(C *), const char *registered_file="",short registered_line=-1){
 			script_class_factory->registerNativeClassStatic<C>(class_name, _constructor, destructor, registered_file,registered_line);
@@ -241,16 +240,15 @@ namespace zetscript{
 			script_class_factory->registerNativeBaseSymbols(r);
 		}
 
-
-#ifndef __STRICT_STATIC_FUNCTIONS_ONLY__
-		/**
-		 * Register Function Member Class
-		 */
-		template < typename C, typename R, class T, typename..._A>
-		void registerMemberFunction(const char *function_name,R (T:: *function_type)(_A...), const char *registered_file="",short registered_line=-1 ){
+		template <typename C,typename F>
+		void	registerMemberFunction(
+				const char *function_name
+				,F function_type
+				 , const char *registered_file=""
+				,short registered_line=-1
+		){
 			script_class_factory->registerNativeMemberFunction<C>(function_name,function_type, registered_file,registered_line );
 		}
-#endif
 
 		/**
 		 * Register Static Function Member Class

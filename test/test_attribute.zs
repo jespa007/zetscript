@@ -1,4 +1,5 @@
 class A{
+	var a=0
 	/*A(){
 		this.__a__=0;
 		this.__b__=0;
@@ -30,17 +31,21 @@ class A{
 }
 
 
-function c(a){
+//var h=0
+
+function c(ref a){
 	System::println(a);
 }
 
-function b(){
-	c(a)	
+function b(ref a){
+	//var h=0
+	c(a)
+	//System::println(a);	
 }
 
 var a=new A();
-b()
-
+b(a)
+//System::println(a)
 /*a.a=1;
 System::println(a.a);*/
 

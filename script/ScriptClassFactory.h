@@ -98,7 +98,7 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
-#ifndef __STRICT_STATIC_FUNCTIONS_ONLY__
+
 		/**
 		 * User Register C Class
 		 */
@@ -108,7 +108,7 @@ namespace zetscript{
 			, const char *registered_file=""
 			,short registered_line=-1
 		);
-#endif
+
 
 		template<typename C>
 		void registerNativeClassStatic(

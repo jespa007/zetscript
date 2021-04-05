@@ -178,7 +178,6 @@ namespace zetscript{
 		return irc;
 	}
 
-#ifndef __STRICT_STATIC_FUNCTIONS_ONLY__
 	/**
 	 * Register C Class. Return index registered class
 	 */
@@ -207,7 +206,6 @@ namespace zetscript{
 			delete (C *)p;
 		});
 	}
-#endif
 
 	/**
 	 * Register C Class. Return index registered class

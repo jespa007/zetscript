@@ -63,7 +63,7 @@ namespace zetscript{
 
 		// 4. add load/store/reset stack
 		idx_position=start_ptr-new_instructions;
-		*start_ptr++=Instruction(BYTE_CODE_LOAD_MEMBER_VAR,ZS_IDX_UNDEFINED,symbol_member_var->idx_position);
+		*start_ptr++=Instruction(BYTE_CODE_PUSH_STK_MEMBER_VAR,ZS_IDX_UNDEFINED,symbol_member_var->idx_position);
 		sf->instruction_source_info[idx_position]=InstructionSourceInfo(
 			eval_data->current_parsing_file
 			,symbol_member_var->line

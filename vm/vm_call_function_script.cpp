@@ -401,6 +401,7 @@ namespace zetscript{
 
 				if(symbol_aux != NULL){
 					if(symbol_aux->n_params==NO_PARAMS_SYMBOL_ONLY){ // variable
+						instruction->value_op2=symbol_aux->idx_position; // save idx pos
 						if(instruction->properties & MSK_INSTRUCTION_USE_PUSH_STK){
 							instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
 							PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
@@ -1334,7 +1335,7 @@ load_element_object:
 									if(STK_IS_SCRIPT_OBJECT_VAR_REF(check_ref)==false) { // create new
 
 										if((stk_arg->properties & MSK_STK_PROPERTY_PTR_STK) != MSK_STK_PROPERTY_PTR_STK){
-											VM_STOP_EXECUTE("Calling function \"%s\", parameter \"%i\": Passing argument by reference has to be variable",sf->symbol.name.c_str(),i+1);
+											VM_STOP_EXECUTE("Calling function \"%s\", parameter \"%i\": Passing argument by reference has to be variable (not attribute or property))",sf->symbol.name.c_str(),i+1);
 										}
 
 										ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg,data->vm_idx_call);
