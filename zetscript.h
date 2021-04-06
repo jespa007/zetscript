@@ -240,6 +240,15 @@ namespace zetscript{
 			script_class_factory->registerNativeBaseSymbols(r);
 		}
 
+		template<typename C,typename F>
+		void registerConstructor(
+				 F function_type
+				 , const char *registered_file=""
+				,short registered_line=-1){
+
+			script_class_factory->registerNativeConstructor<C>(function_type, registered_file,registered_line );
+		}
+
 		template <typename C,typename F>
 		void	registerMemberFunction(
 				const char *function_name

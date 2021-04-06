@@ -228,10 +228,13 @@ namespace zetscript{
 			case BYTE_CODE_JT:
 			case BYTE_CODE_JMP:
 			case BYTE_CODE_JE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%03i\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%03i (ins%c%i)\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,(int)((instruction-sfo->instructions)+instruction->value_op2)
+					,(int)(instruction->value_op2)>=0?'+':'-'
+					,(int)(instruction->value_op2)
+
 				);
 				break;
 			case BYTE_CODE_PUSH_SCOPE:

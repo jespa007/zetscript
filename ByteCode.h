@@ -143,7 +143,6 @@ namespace zetscript{
 		BYTE_CODE_METAMETHOD_ITER, // _iter
 		BYTE_CODE_METAMETHOD_NEXT, // _next
 		BYTE_CODE_METAMETHOD_END, // _end
-		BYTE_CODE_METAMETHOD_GET, // _getter
 		BYTE_CODE_METAMETHOD_EXIST, // _exist
 		BYTE_CODE_METAMETHOD_MAX
 	}ByteCodeMetamethod;
@@ -158,6 +157,18 @@ namespace zetscript{
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_VECTOR)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT)\
+)
+
+#define IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(byte_code) \
+(\
+  ((byte_code)==ByteCode::BYTE_CODE_FIND_VARIABLE)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_GLOBAL)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_LOCAL)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_THIS)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_MEMBER_VAR)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_ELEMENT_VECTOR)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_ELEMENT_THIS)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_ELEMENT_OBJECT)\
 )
 
 #define IS_BYTE_CODE_LOAD_CONSTANT(byte_code) \

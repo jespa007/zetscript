@@ -49,7 +49,7 @@ namespace zetscript{
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
 		script_class_factory=zs->getScriptClassFactory();
-		static_constructor_destructor=false;
+		//static_constructor_destructor=false;
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
 
 	}
@@ -147,10 +147,18 @@ namespace zetscript{
 		if((symbol_attrib=getSymbol(attrib_name)) != NULL){ // we only search repeat symbols on this class ...
 			Symbol *existing_symbol;
 			if((existing_symbol=getSymbol(attrib_name)) != NULL){
-				error=zs_strutils::format("Attribute \"%s\" is already defined at [%s:%i]"
+				const char *what="is already defined";
+				if((existing_symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE)==0){
+
+					if(existing_symbol->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION){
+						what="it conflicts with member function";
+					}else{
+						what="it conflicts with member variable";
+					}
+				}
+				error=zs_strutils::format("Attribute \"%s\" %s at [%s:%i]"
 					,attrib_name.c_str()
-					,zs_path::get_filename(file.c_str()).c_str()
-					,line
+					,what
 					,zs_path::get_filename(existing_symbol->file.c_str()).c_str()
 					,existing_symbol->line
 				);
@@ -432,7 +440,7 @@ namespace zetscript{
 
 	ScriptClass::~ScriptClass(){
 
-		if ((symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF) {
+		/*if ((symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == SYMBOL_PROPERTY_C_OBJECT_REF) {
 
 			if(this->static_constructor_destructor == false){
 				if (c_constructor !=NULL) {
@@ -446,7 +454,7 @@ namespace zetscript{
 				}
 			}
 
-		}
+		}*/
 
 		for(unsigned i=0; i < symbol_members_built_in->count; i++){
 			Symbol *symbol=(Symbol *)symbol_members_built_in->items[i];

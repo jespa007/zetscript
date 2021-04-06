@@ -717,6 +717,10 @@ error_eval_keyword_var:
 					,sf
 					,&args);
 
+			if(aux_p == NULL){
+				return NULL;
+			}
+
 			//
 			//eval_check_scope(eval_data,scope_function);
 

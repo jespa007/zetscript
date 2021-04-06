@@ -44,7 +44,7 @@ namespace zetscript{
 
 		void								* 	c_constructor;
 		void 								*	c_destructor;
-		bool								static_constructor_destructor;
+		//bool								static_constructor_destructor;
 		std::string 							str_class_ptr_type; // type_id().name();
 		zs_vector						   	*   idx_base_classes; // list of idx of classes base
 

@@ -30,18 +30,28 @@ namespace zetscript{
 
 	void eval_parse_and_compile(ZetScript *zs,const char * str, const char *  _filename, int _line){
 		EvalData *eval_data=new EvalData(zs);
+		char *aux_p=NULL;
 		int line =_line;
 		bool error;
 		std::string error_str;
 		eval_data->current_parsing_file=_filename;
 		eval_push_function(eval_data,MAIN_FUNCTION(eval_data));
-		eval_parse_and_compile_recursive(eval_data,str,line,MAIN_SCOPE(eval_data));
+		aux_p=eval_parse_and_compile_recursive(eval_data,str,line,MAIN_SCOPE(eval_data));
+		if(aux_p!=NULL){
+			if(*aux_p=='}'){
+				eval_data->error=true;
+				eval_data->error_str=ZS_LOG_FILE_LINE_STR(_filename,line)+zetscript::zs_strutils::format("unexpected ending block ('}')");
+			}
+		}
+
 		eval_pop_function(eval_data);
 
 		error=eval_data->error;
 		error_str=eval_data->error_str;
 
 		delete eval_data;
+
+
 
 		if(error){
 			THROW_EXCEPTION(error_str);

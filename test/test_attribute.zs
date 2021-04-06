@@ -1,8 +1,7 @@
 class A{
-	var a=0
-	/*A(){
-		this.__a__=0;
-		this.__b__=0;
+	A(){
+		this.__a__=10;
+		this.__b__=10;
 	}
 	
 	_set(_a){
@@ -27,12 +26,12 @@ class A{
 		_get(){
 			return __b__;
 		}
-	}*/		
+	}
 }
 
 
 //var h=0
-
+/*
 function c(ref a){
 	System::println(a);
 }
@@ -42,11 +41,11 @@ function b(ref a){
 	c(a)
 	//System::println(a);	
 }
-
+*/
 var a=new A();
-b(a)
-//System::println(a)
-/*a.a=1;
-System::println(a.a);*/
+//b(a)
+System::println(a.a)
+a.a=1;
+System::println(a.a);
 
 

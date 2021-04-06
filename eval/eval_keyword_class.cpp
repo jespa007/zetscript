@@ -93,6 +93,11 @@ namespace zetscript{
 						,line
 						,sc // pass class
 					))==NULL){
+
+						if(eval_data->error){
+							return NULL;
+						}
+
 						// 1st. check whether eval a keyword...
 						key_w = eval_is_keyword(aux_p);
 
@@ -295,14 +300,14 @@ namespace zetscript{
 			symbol_attrib=sc->registerMemberAttribute(
 					error
 					,eval_data->current_parsing_file
-					,line
+					,attrib_start_line
 					,attrib_name
 			);
 
 			if(symbol_attrib == NULL){
 				EVAL_ERROR_FILE_LINE(
 					eval_data->current_parsing_file
-					,line
+					,attrib_start_line
 					,error.c_str()
 				);
 			}

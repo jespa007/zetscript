@@ -590,8 +590,9 @@ int main(int argc, char * argv[]) {
 	//int i= 0+ +1;
 	zs->registerClass<Float>("Float",FloatBind::_new,FloatBind::_delete);
 
-	zs->registerMemberFunction<Float>("Float",static_cast<void (*)(Float *,zs_float *)>(&FloatBind::_set));
-	zs->registerMemberFunction<Float>("Float",static_cast<void (*)(Float *,Float *)>(&FloatBind::_set));
+	// constructor
+	zs->registerConstructor<Float>(static_cast<void (*)(Float *,zs_float *)>(&FloatBind::_set));
+	zs->registerConstructor<Float>(static_cast<void (*)(Float *,Float *)>(&FloatBind::_set));
 
 	zs->registerMemberFunction<Float>("toFloat",&FloatBind::toFloat);
 	//zs->registerMemberVariable<Float>("n",&Float::n);
@@ -625,8 +626,8 @@ int main(int argc, char * argv[]) {
 
 
 	zs->registerClass<Integer>("Integer",IntegerBind::_new,IntegerBind::_delete);
-	zs->registerMemberFunction<Integer>("Integer",static_cast<void (*)(Integer *,zs_int )>(&IntegerBind::_set));
-	zs->registerMemberFunction<Integer>("Integer",static_cast<void (*)(Integer *,Integer *)>(&IntegerBind::_set));
+	zs->registerConstructor<Integer>(static_cast<void (*)(Integer *,zs_int )>(&IntegerBind::_set));
+	zs->registerConstructor<Integer>(static_cast<void (*)(Integer *,Integer *)>(&IntegerBind::_set));
 	zs->registerMemberFunction<Integer>("toInt",&IntegerBind::toInt);
 //	zs->registerMemberVariable<Integer>("n",&Integer::n);
 

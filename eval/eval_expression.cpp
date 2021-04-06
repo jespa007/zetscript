@@ -275,6 +275,18 @@ error_expression_main:
 
 			// write left assignments...
 			for(int l=0; l < left_size;l++){
+
+				Instruction *last_load_instruction=&left_expressions[l]->at(left_expressions[l]->size()-1)->vm_instruction;
+
+				// if is a access property ...
+				if(last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS
+				||last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
+					// .. add information last load that it will be stored
+					last_load_instruction->properties |= MSK_INSTRUCTION_USE_PUSH_STK;
+				}else{
+					last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
+				}
+
 				dst_instructions->insert(
 						dst_instructions->end(),
 						left_expressions[l]->begin(),
@@ -294,7 +306,7 @@ error_expression_main:
 			for(int l=0; l < left_size;l++){
 				EvalInstruction *instruction = left_expressions[l]->at(left_expressions[l]->size()-1);
 
-				if(IS_BYTE_CODE_LOAD_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
+				if(IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
 					EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,instruction->instruction_source_info.line
 						,"\"%s\" is not allowed on left assignment multiple because '%s' is not literal. Left assignments has to be literals  (i.e a,b.c,b[0]. etc)"
 						,eval_data->current_parsing_file,instruction->instruction_source_info.ptr_str_symbol_name->c_str()

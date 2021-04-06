@@ -224,7 +224,7 @@ namespace zetscript{
 
 		irc->c_constructor = (void *)_constructor;
 		irc->c_destructor = (void *)_destructor;
-		irc->static_constructor_destructor = true;
+		//irc->static_constructor_destructor = true;
 	}
 
 
@@ -423,6 +423,24 @@ namespace zetscript{
 		// DERIVATE STATE
 		//
 		//----------------------------
+	}
+
+	/**
+	 * Register C Member constructor
+	 */
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeConstructor(
+			F function_type
+			, const char *registered_file
+			,short registered_line
+	){
+
+		std::string str_class_name_ptr = typeid( C *).name();
+		ScriptClass * c_class=	getScriptClassByNativeClassPtr(str_class_name_ptr);
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("class \"%s\" is not registered",str_class_name_ptr.c_str());
+		}
+		return registerNativeMemberFunction<C>(c_class->symbol_class.name.c_str(),function_type, registered_file,registered_line );
 	}
 
 	/**

@@ -137,6 +137,16 @@ namespace zetscript{
 
 		void registerNativeMemberSymbols();
 
+		/**
+		 * Register C Member constructor
+		 */
+		template <typename C,typename F>
+		void registerNativeConstructor(
+				F function_type
+				, const char *registered_file=""
+				,short registered_line=-1
+		);
+
 		template <typename C, typename R>
 		void registerNativeStaticConstMember(
 				const char *var_name
@@ -155,6 +165,8 @@ namespace zetscript{
 				,F ptr_function
 				, const char *registered_file=""
 				,short registered_line=-1);
+
+
 
 		/**
 		 * Register C function as function member

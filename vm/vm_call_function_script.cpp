@@ -746,7 +746,7 @@ load_element_object:
 						stk_dst=se;
 
 					}
-					else{ // can be assign or arithmetic and assing pop two parameters nothing ...
+					else{ // can be assign or arithmetic and assign pop two parameters nothing ...
 
 						n_elements_left=(char)instruction->value_op1;
 
@@ -845,11 +845,10 @@ load_element_object:
 
 								// push var again
 								*data->stk_vm_current++=stk_aux;
-
 							}
-						}
 
-						READ_TWO_POP_ONE
+							READ_TWO_POP_ONE
+						}
 
 	vm_store_next:
 						stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value

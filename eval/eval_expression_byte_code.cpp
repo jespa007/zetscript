@@ -249,7 +249,11 @@ namespace zetscript{
 			Instruction *last_instruction=NULL;
 
 			// insert JNT
+			int jnt_instructions_start=dst_instructions->size();
 			dst_instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
+			int jmp_instructions_start=0;
+			int body_size_if=0;
+			int body_size_else=0;
 
 			// eval ? part
 			aux_p=eval_expression_main(
@@ -273,9 +277,12 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
 			}
 
-			dst_instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
 
-			ei_ternary_if_jnt->vm_instruction.value_op2=dst_instructions->size()+dst_instructions->size();
+			jmp_instructions_start=dst_instructions->size();
+			dst_instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
+			body_size_if=dst_instructions->size()-jnt_instructions_start; // size body "if" takes jmp as part of it
+
+
 
 			// eval : part
 			aux_p=eval_expression_main(
@@ -289,12 +296,16 @@ namespace zetscript{
 				, n_recursion_level+1
 			);
 
+			body_size_else=dst_instructions->size()-jmp_instructions_start;
+
 			last_instruction=&dst_instructions->at(dst_instructions->size()-1)->vm_instruction;
 			if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
 				last_instruction->value_op2=ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK;
 			}
 
-			ei_ternary_else_jmp->vm_instruction.value_op2=dst_instructions->size()+dst_instructions->size();
+
+			ei_ternary_if_jnt->vm_instruction.value_op2=body_size_if; // +1 because
+			ei_ternary_else_jmp->vm_instruction.value_op2=body_size_else;
 
 		}else{
 			Instruction *last_instruction=&dst_instructions->at(dst_instructions->size()-1)->vm_instruction;

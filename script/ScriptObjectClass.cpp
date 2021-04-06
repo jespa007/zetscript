@@ -4,8 +4,8 @@
  */
 #include "zetscript.h"
 
-#define CALL_CONSTRUCTOR_CLASS(sc) ((sc->static_constructor_destructor)?(*((void *(*)())sc->c_constructor))():(*((std::function<void *()> *)(sc->c_constructor)))())
-#define CALL_DESTRUCTOR_CLASS(sc,obj) ((sc->static_constructor_destructor)?(*((void (*)(void *))sc->c_destructor))(obj):(*((std::function<void (void *)> *)(sc->c_destructor)))(obj))
+#define CALL_CONSTRUCTOR_CLASS(sc) (*((void *(*)())sc->c_constructor))()
+#define CALL_DESTRUCTOR_CLASS(sc,obj) (*((void (*)(void *))sc->c_destructor))(obj)
 
 namespace zetscript{
 
