@@ -2,6 +2,7 @@ class A{
 	A(){
 		this.__a__=10;
 		this.__b__=10;
+		this.__a__=10;
 	}
 	
 	_set(_a){
@@ -44,8 +45,8 @@ function b(ref a){
 */
 var a=new A();
 //b(a)
-System::println(a.a)
-a.a=1;
+//System::println(a.a)
+//a.a=1;
 System::println(a.a);
 
 

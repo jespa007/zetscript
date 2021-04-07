@@ -21,6 +21,10 @@ namespace zetscript{
 			result= "function";
 		else if(STK_VALUE_IS_CLASS(stk))
 			result= "class";
+		else if(STK_VALUE_IS_MEMBER_ATTRIBUTE(stk))
+			result= "member attribute";
+		else if(STK_VALUE_IS_MEMBER_FUNCTION(stk))
+			result= "member function";
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
 			if(this->properties & MSK_STK_PROPERTY_PTR_STK){

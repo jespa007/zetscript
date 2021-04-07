@@ -115,8 +115,8 @@ namespace zetscript{
 
 			 if((	   instruction->byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_VAR
 					|| instruction->byte_code==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS
-				)
-				==true){
+					|| instruction->byte_code==ByteCode::BYTE_CODE_PUSH_STK_ELEMENT_THIS
+			)){
 
 				// ... we create new instruction
 				 symbol_value="this."+symbol_value;
@@ -212,7 +212,10 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
 			case BYTE_CODE_LOAD_ELEMENT_THIS:
+			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:
+			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
 				//instruction_aux=instruction;
+
 				while((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 					instruction++;
 					symbol_value+=std::string(".")+SFI_GET_SYMBOL_NAME(sfo,instruction);
@@ -222,6 +225,7 @@ namespace zetscript{
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
+//					,((instruction-1)->properties & BIT_INSTRUCTION_USE_PUSH_STK)?"(PUSH)":""
 				);
 				break;
 			case BYTE_CODE_JNT:

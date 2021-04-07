@@ -97,6 +97,12 @@ enum:unsigned short {
 #define STK_VALUE_IS_CLASS(stk) \
 (stk->properties & MSK_STK_PROPERTY_CLASS)
 
+#define STK_VALUE_IS_MEMBER_ATTRIBUTE(stk) \
+(stk->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE)
+
+#define STK_VALUE_IS_MEMBER_FUNCTION(stk) \
+(stk->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION)
+
 #define STK_VALUE_IS_SCRIPT_VAR(stk) \
 (stk->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT)
 

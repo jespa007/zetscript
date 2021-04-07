@@ -591,9 +591,7 @@ load_element_object:
 						continue;
 					}else{
 						if(stk_var->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE){
-							if(instruction->properties & MSK_INSTRUCTION_USE_PUSH_STK){ // save information setter
-								VM_STOP_EXECUTE("setter not implemented");
-							}else{ // call getter if exist
+							if((instruction->properties & MSK_INSTRUCTION_USE_PUSH_STK)==0){ // call getter if exist
 								StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->stk_value;
 								if(stk_ma->member_attribute->getter != NULL){
 
@@ -638,7 +636,7 @@ load_element_object:
 					*data->stk_vm_current++=*stk_var;
 				}
 				else{ // copy the content of this value
-					if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT){ // push ref because is gonna to be assigned
+					if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT || instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_THIS){ // push ref because is gonna to be assigned
 						PUSH_STK_PTR(stk_var);
 					}else{ // load its value for read
 						*data->stk_vm_current++=*((StackElement *)stk_var->stk_value);
@@ -696,6 +694,7 @@ load_element_object:
 
 				{
 					bool assign_metamethod=false;
+
 					char n_elements_left=0;
 					StackElement *stk_multi_var_src=NULL;
 
@@ -756,7 +755,7 @@ load_element_object:
 
 							//stk_vm_current--; // set to 0
 
-							// set stack elements to the top
+							// check assigname stk and dec stk_aux
 							for(int i=0; i < n_elements_left; i++){
 
 								stk_aux--;
@@ -771,7 +770,7 @@ load_element_object:
 								}
 							}
 
-							stk_multi_var_src=stk_aux-n_elements_left-1;
+							stk_multi_var_src=stk_aux-n_elements_left-1; // now pos - n_elements
 							n_elements_left=n_elements_left-1;
 							stk_result_op2=--data->stk_vm_current;
 							stk_result_op1=++stk_multi_var_src;
@@ -854,63 +853,94 @@ load_element_object:
 						stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value
 						stk_dst=stk_result_op2;
 
+						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
+								stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->stk_value));
+						}
+
 						//---- get stk var
-						if((stk_dst->properties & MSK_STK_PROPERTY_PTR_STK)!=0
-						 ) {
+						if((stk_dst->properties & MSK_STK_PROPERTY_PTR_STK)!=0) {
 							stk_dst=(StackElement *)stk_dst->stk_value; // stk_value is expect to contents a stack variable
-						}else{
+
+							// check if by ref
+							if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_dst)){
+								stk_dst=(StackElement *)(STK_GET_STK_VAR_REF(stk_dst)->stk_value);
+							}
+							//-----------------------
+
+							if(stk_dst->properties & MSK_STK_PROPERTY_READ_ONLY){
+								VM_STOP_EXECUTE("Assignment to constant variable");
+							}
+
+							// ok load object pointer ...
+							if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
+
+								ScriptObjectClass *script_object_class=((ScriptObjectClass *)stk_dst->stk_value);
+
+								if(script_object_class->itHasSetMetamethod()){
+									if(vm_apply_metamethod(
+											vm
+											,calling_function
+											,instruction
+											,BYTE_CODE_METAMETHOD_SET
+											,stk_result_op1 // it contents variable to be assigned
+											,stk_result_op2 // it contects the result of expression or whatever
+									)==false){
+										goto lbl_exit_function;
+									}
+									assign_metamethod=true;
+								}
+
+								if(STK_IS_THIS(stk_dst)){
+									VM_STOP_EXECUTE("\"this\" is not assignable");
+								}
+							}
+						}else if((stk_dst->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE)!=0){
+
+							StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->stk_value;
+							if(stk_ma->member_attribute->setters.count > 0){
+								ScriptFunction *sf=(ScriptFunction *)stk_ma->member_attribute->setters.items[0];
+								StackElement *stk_vm_start=data->stk_vm_current;
+								StackElement *stk_arg=stk_vm_start+1;
+								*stk_arg=*stk_src;
+
+								if((sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
+									vm_call_function_script(
+										vm
+										,stk_ma->so_object
+										,sf
+										,stk_arg
+										,1
+									);
+								}else{ //
+									vm_call_function_native(
+											vm
+											,stk_ma->so_object
+											,sf
+											,stk_arg
+											,1
+											,instruction
+
+									);
+								}
+
+								// restore
+								data->stk_vm_current=stk_vm_start;
+
+								assign_metamethod=true;
+							}else{
+								VM_STOP_EXECUTE("Symbol X has not setter metamethod implemented");
+							}
+
+						}else {
 							if((stk_dst->properties & MSK_STK_PROPERTY_IS_VAR_C)==0){
 								VM_STOP_EXECUTE("Expected l-value on assignment but it was type \"%s\"",stk_dst->typeStr());
 							}
 						}
 
-						// we need primitive stackelement in order to assign...
-						/*if(stk_src->properties & MSK_STK_PROPERTY_PTR_STK) {// == ScriptObjectObject::VAR_TYPE::OBJECT){
-							stk_src=(StackElement *)stk_src->stk_value; // stk_value is expect to contents a stack variable
-						}*/
 
-						//---- get stk by it ref
-						// check if by ref
-						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
-							stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->stk_value));
-						}
-
-						// check if by ref
-						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_dst)){
-							stk_dst=(StackElement *)(STK_GET_STK_VAR_REF(stk_dst)->stk_value);
-						}
-						//-----------------------
-
-						if(stk_dst->properties & MSK_STK_PROPERTY_READ_ONLY){
-							VM_STOP_EXECUTE("Assignment to constant variable");
-						}
-
-						// ok load object pointer ...
-						if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
-
-							ScriptObjectClass *script_object_class=((ScriptObjectClass *)stk_dst->stk_value);
-
-							if(script_object_class->itHasSetMetamethod()){
-								if(vm_apply_metamethod(
-										vm
-										,calling_function
-										,instruction
-										,BYTE_CODE_METAMETHOD_SET
-										,stk_result_op1 // it contents variable to be assigned
-										,stk_result_op2 // it contects the result of expression or whatever
-								)==false){
-									goto lbl_exit_function;
-								}
-								assign_metamethod=true;
-							}
-
-							if(STK_IS_THIS(stk_dst)){
-								VM_STOP_EXECUTE("\"this\" is not assignable");
-							}
-						}
 					}
 
-					if(! assign_metamethod){
+					if(assign_metamethod==false){
 
 						StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 						{

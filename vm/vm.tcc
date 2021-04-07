@@ -755,7 +755,7 @@ namespace zetscript{
 		if(script_object_class->isNativeObject()){
 			list_props=script_object_class->getAllBuiltinElements();//getFunctions();
 
-			ptr_function_found = vm_find_function(
+			/*ptr_function_found = vm_find_function(
 				vm
 				,calling_object
 				,calling_function
@@ -766,7 +766,7 @@ namespace zetscript{
 				,str_symbol_metamethod
 				,stk_args
 				,n_stk_args
-			);
+			);*/
 
 
 
