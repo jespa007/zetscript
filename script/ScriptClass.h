@@ -18,7 +18,16 @@ namespace zetscript{
 			 getter= NULL;
 		}
 
+		 void addSetter(ScriptFunction *f){
+			 StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
+			 stk->stk_value=f;
+			 stk->properties=MSK_STK_PROPERTY_FUNCTION;
+		 }
+
 		~MemberAttribute(){
+			for(int i=0;i < setters.count; i++){
+				free((StackElement *)setters.items[i]);
+			}
 
 		}
 	};

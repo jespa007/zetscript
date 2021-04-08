@@ -685,7 +685,7 @@ namespace zetscript{
 		//std::string str_symbol_to_find="";
 		std::string str_stk_result_op1_full_definition="";
 		std::string str_stk_result_op2_full_definition="";
-		ScriptObjectClass *calling_object=NULL;
+		//ScriptObjectClass *calling_object=NULL;
 		ScriptClass *script_class_aux=NULL;
 		StackElement *stk_vm_current_backup,*stk_args;
 		int stk_element_len=0;
@@ -772,7 +772,7 @@ namespace zetscript{
 
 			if((ptr_function_found = vm_find_function(
 				vm
-				,calling_object
+				,NULL
 				,calling_function
 				,instruction
 				,false
@@ -814,7 +814,7 @@ namespace zetscript{
 		if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
 			vm_call_function_script(
 				vm
-				,calling_object
+				,NULL
 				,ptr_function_found
 				,stk_args
 				,n_stk_args
@@ -822,7 +822,7 @@ namespace zetscript{
 		}else{ //
 			vm_call_function_native(
 					vm
-					,calling_object
+					,NULL
 					,ptr_function_found
 					,stk_args
 					,n_stk_args
@@ -843,9 +843,8 @@ namespace zetscript{
 			if(stk_ret->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *sv=(ScriptObject *)stk_ret->stk_value;
 
-				if(byte_code_metamethod != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
-					((ScriptObjectClass *)(stk_ret->stk_value))->deleteNativeObjectOnDestroy(true);
-				}
+				// Auto destroy always C when ref == 0
+				((ScriptObjectClass *)(stk_ret->stk_value))->deleteNativeObjectOnDestroy(true);
 
 				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
 					if(!vm_create_shared_pointer(vm,sv)){

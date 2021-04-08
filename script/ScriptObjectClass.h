@@ -44,7 +44,7 @@ namespace zetscript{
 
 			virtual std::string toString();
 
-			~ScriptObjectClass();
+			virtual ~ScriptObjectClass();
 
 		protected:
 			void callConstructorBuiltin(ScriptClass *sc);

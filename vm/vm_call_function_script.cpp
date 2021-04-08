@@ -440,25 +440,19 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
 				POP_TWO;
-				so_aux=NULL; \
-				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){ \
-					stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr(); \
-				} \
-				/*if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){ \
-					so_object_aux = (ScriptObjectObject *)(stk_result_op1->stk_value); \
-				}else{
-					VM_STOP_EXECUTE("Expected Object"); \
-				}*/
-				stk_var=NULL; \
-				/*ScriptObjectVector * so_vector = (ScriptObjectVector *)so_object_aux;*/ \
+				so_aux=NULL;
+				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
+					stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr();
+				}
+				stk_var=NULL;
 				if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
-					VM_STOP_EXECUTE("Expected integer index for Vector or String access"); \
-				} \
-				/* determine object ...*/ \
+					VM_STOP_EXECUTE("Expected integer index for Vector or String access");
+				}
+				// determine object ...
 				if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op1)){
 					ScriptObjectVector *so_vector=(ScriptObjectVector *)stk_result_op1->stk_value;
-					if((stk_var =so_vector->getUserElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){ \
-						goto lbl_exit_function; \
+					if((stk_var =so_vector->getUserElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){
+						goto lbl_exit_function;
 					} \
 					if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
 						*data->stk_vm_current++=*stk_var;
@@ -470,9 +464,6 @@ namespace zetscript{
 				}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
 					ScriptObjectString *so_string=(ScriptObjectString *)stk_result_op1->stk_value;
 					zs_char *ptr_char=(zs_char *)&((std::string *)so_string->value)->c_str()[STK_VALUE_TO_ZS_INT(stk_result_op2)];
-					/*if((stk_var =((std::string *)so_string->value) getUserElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){ \
-						goto lbl_exit_function; \
-					} */
 					if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
 						data->stk_vm_current->stk_value=(void *)((zs_int)(*ptr_char));
 						data->stk_vm_current->properties=MSK_STK_PROPERTY_ZS_INT;
@@ -517,7 +508,7 @@ load_element_object:
 
 				stk_var=NULL;
 				so_aux=this_object; // take this as default
-				if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
+				if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT || instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT){
 
 					Instruction *previous_ins= (instruction-1);
 
@@ -548,40 +539,28 @@ load_element_object:
 					}
 
 
-				}else{ // check whether if exist or not
+				}else{ // if LOAD THIS OR PUSH_STK THIS ...
 					if(instruction->value_op2>=0){ // on dynamic members fix idx when we find a C function
 						stk_var=this_object->getBuiltinElementAt(instruction->value_op2);
 					}
 				}
 
 				if(stk_var==NULL){ // load element from object or dynamic member element from this
-					// get dynamic property
-					/*if(instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_CONSTRUCTOR){
-						str_symbol=(char *)so_object_aux->getScriptClass()->symbol_class.name.c_str(); //FUNCTION_MEMBER_CONSTRUCTOR_NAME;
-					}else{*/
-						str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
-					//}
+					str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
 					if((stk_var=so_aux->getProperty(str_symbol, &idx_stk_element)) == NULL){
-
 						// something went wrong
 						if(data->vm_error == true){
 							goto lbl_exit_function;
 						}
-
 						//------------------------------------------------------------------
-
 						// pack member info for store information...
 						if(instruction->properties & MSK_INSTRUCTION_USE_PUSH_STK){
 							// save
-							//ScriptObjectObject *calling_object_info=(ScriptObjectObject *)stk_calling_object_info->stk_value;// calling object
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
 								VM_STOP_EXECUTE(data->vm_error_str.c_str());
 							}
 							PUSH_STK_PTR(stk_var);
-							/*PUSH_CONST_CHAR(str_symbol);
-							PUSH_OBJECT(so_object_aux);
-							PUSH_ARRAY_STK(2);*/
 						}
 						else{
 							data->stk_vm_current->stk_value=0;
@@ -623,24 +602,17 @@ load_element_object:
 
 									stk_var=stk_def_afun_start;
 									data->stk_vm_current=stk_def_afun_start; // reset stack -11
-
 								}
-
 							}
-
 						}
 					}
 				}
 
-				if((stk_var->properties & MSK_STK_PROPERTY_PTR_STK) == 0){ // copy its value directly
+				// copy the content of this value
+				if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT || instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_THIS){ // push ref because is gonna to be assigned
+					PUSH_STK_PTR(stk_var);
+				}else{ // load its value for read
 					*data->stk_vm_current++=*stk_var;
-				}
-				else{ // copy the content of this value
-					if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT || instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_THIS){ // push ref because is gonna to be assigned
-						PUSH_STK_PTR(stk_var);
-					}else{ // load its value for read
-						*data->stk_vm_current++=*((StackElement *)stk_var->stk_value);
-					}
 				}
 
 				if((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){ // fast load access without pass through switch instruction
@@ -727,9 +699,6 @@ load_element_object:
 						}
 
 						obj = (ScriptObjectObject *)stk_object->stk_value;
-						/*if(obj->idx_script_class != IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT){ // push value ...
-							VM_STOP_EXECUTE("Internal: Expected object but is type \"%s\"",stk_object->typeStr());
-						}*/
 
 						if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
 							VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\"",stk_result_op1->typeStr());
@@ -760,12 +729,7 @@ load_element_object:
 
 								stk_aux--;
 
-								/*if(stk_aux->properties & MSK_STK_PROPERTY_ARRAY_STK){
-									if((zs_int)stk_aux->stk_value != 2){
-										VM_STOP_EXECUTE("Internal expected array stk = 2");
-									}
-									stk_aux-=2;
-								}else */if ((stk_aux->properties & MSK_STK_PROPERTY_PTR_STK) == 0){
+								if ((stk_aux->properties & MSK_STK_PROPERTY_PTR_STK) == 0){
 									VM_STOP_EXECUTE("Expected stk ptr");
 								}
 							}
@@ -853,52 +817,50 @@ load_element_object:
 						stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value
 						stk_dst=stk_result_op2;
 
-						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
-								stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->stk_value));
-						}
 
 						//---- get stk var
 						if((stk_dst->properties & MSK_STK_PROPERTY_PTR_STK)!=0) {
 							stk_dst=(StackElement *)stk_dst->stk_value; // stk_value is expect to contents a stack variable
-
-							// check if by ref
-							if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_dst)){
-								stk_dst=(StackElement *)(STK_GET_STK_VAR_REF(stk_dst)->stk_value);
+						}else {
+							if((stk_dst->properties & MSK_STK_PROPERTY_IS_VAR_C)==0){
+								VM_STOP_EXECUTE("Expected l-value on assignment but it was type \"%s\"",stk_dst->typeStr());
 							}
-							//-----------------------
+						}
 
-							if(stk_dst->properties & MSK_STK_PROPERTY_READ_ONLY){
-								VM_STOP_EXECUTE("Assignment to constant variable");
+						// check if by ref
+						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_dst)){
+							stk_dst=(StackElement *)(STK_GET_STK_VAR_REF(stk_dst)->stk_value);
+						}
+						//-----------------------
+						if(stk_dst->properties & MSK_STK_PROPERTY_READ_ONLY){
+							VM_STOP_EXECUTE("Assignment to constant variable");
+						}
+
+						// ok load object pointer ...
+						if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
+							ScriptObjectClass *script_object_class=((ScriptObjectClass *)stk_dst->stk_value);
+							if(script_object_class->itHasSetMetamethod()){
+								if(vm_apply_metamethod(
+										vm
+										,calling_function
+										,instruction
+										,BYTE_CODE_METAMETHOD_SET
+										,stk_result_op1 // it contents variable to be assigned
+										,stk_result_op2 // it contects the result of expression or whatever
+								)==false){
+									goto lbl_exit_function;
+								}
+								assign_metamethod=true;
 							}
 
-							// ok load object pointer ...
-							if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
-
-								ScriptObjectClass *script_object_class=((ScriptObjectClass *)stk_dst->stk_value);
-
-								if(script_object_class->itHasSetMetamethod()){
-									if(vm_apply_metamethod(
-											vm
-											,calling_function
-											,instruction
-											,BYTE_CODE_METAMETHOD_SET
-											,stk_result_op1 // it contents variable to be assigned
-											,stk_result_op2 // it contects the result of expression or whatever
-									)==false){
-										goto lbl_exit_function;
-									}
-									assign_metamethod=true;
-								}
-
-								if(STK_IS_THIS(stk_dst)){
-									VM_STOP_EXECUTE("\"this\" is not assignable");
-								}
+							if(STK_IS_THIS(stk_dst)){
+								VM_STOP_EXECUTE("\"this\" is not assignable");
 							}
 						}else if((stk_dst->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE)!=0){
-
 							StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->stk_value;
 							if(stk_ma->member_attribute->setters.count > 0){
-								ScriptFunction *sf=(ScriptFunction *)stk_ma->member_attribute->setters.items[0];
+								StackElement *stk_setter=(StackElement *)stk_ma->member_attribute->setters.items[0];
+								ScriptFunction *sf=(ScriptFunction *)stk_setter->stk_value;
 								StackElement *stk_vm_start=data->stk_vm_current;
 								StackElement *stk_arg=stk_vm_start+1;
 								*stk_arg=*stk_src;
@@ -931,16 +893,13 @@ load_element_object:
 								VM_STOP_EXECUTE("Symbol X has not setter metamethod implemented");
 							}
 
-						}else {
-							if((stk_dst->properties & MSK_STK_PROPERTY_IS_VAR_C)==0){
-								VM_STOP_EXECUTE("Expected l-value on assignment but it was type \"%s\"",stk_dst->typeStr());
-							}
 						}
-
-
 					}
 
 					if(assign_metamethod==false){
+						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
+							stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->stk_value));
+						}
 
 						StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 						{
@@ -959,11 +918,6 @@ load_element_object:
 									&& (((stk_dst->properties & MSK_STK_PROPERTY_ZS_CHAR) && (stk_src->properties & MSK_STK_PROPERTY_ZS_INT))==0)){
 
 									 if(stk_dst->properties != stk_src->properties){
-	/*									   ((stk_src->properties & (MSK_STK_PROPERTY_ZS_FLOAT|MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_CHAR)) == 0)
-										&& ((stk_dst->properties & (MSK_STK_PROPERTY_ZS_FLOAT|MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_CHAR)) != 0)
-
-									 ) // dst is a primitive but src differs. Check error
-									 {*/
 										if(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties) != GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src->properties)
 										){
 											// check particular case
@@ -1470,15 +1424,12 @@ load_element_object:
 
 								// reset stack
 								data->stk_vm_current=stk_def_afun_start+1; // reset stack +1
-
-//								*stk_vm_current++=stk_def_afun_start[0]; // take only first return ...
 								break;
 							default:
 								VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\"",param->default_var_value.typeStr());
 								break;
 
 							}
-							//PUSH_NULL;
 							n_args++;
 						}
 
@@ -1496,10 +1447,6 @@ load_element_object:
 							calling_object= (ScriptObjectObject *)(stk_start_arg_call-2)->stk_value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
 						}
 
-						/*if(calling_object != NULL && calling_object->idx_script_class<IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
-							VM_STOP_EXECUTE("Internal error, expected object class");
-						}*/
-
 						vm_call_function_native(
 							vm
 							,calling_object
@@ -1507,7 +1454,6 @@ load_element_object:
 							,stk_start_arg_call
 							,n_args
 							,instruction
-
 						);
 
 						// restore stk_start_arg_call due in C args are not considered as local symbols (only for scripts)
@@ -1523,7 +1469,6 @@ load_element_object:
 						);
 						goto lbl_exit_function;
 					}
-
 
 					// calcule returned stack elements
 					StackElement *stk_return=(stk_start_arg_call+n_local_registered_symbols); // +1 points to starting return...
@@ -1577,7 +1522,6 @@ load_element_object:
 							// and free
 							free(script_var->shared_pointer);
 							script_var->shared_pointer=NULL;
-
 						}
 					}
 				}
@@ -1683,7 +1627,6 @@ load_element_object:
 			 case BYTE_CODE_NEG_POST_DEC:
 				 PERFORM_POST_OPERATOR(-,--);
 				 continue;
-
 			}
 		 }
 
@@ -1696,14 +1639,11 @@ load_element_object:
 			while(vm_scope_start<(data->vm_current_scope)){
 				POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
 			}
-
 			if((data->zero_shares+data->vm_idx_call)->first!=NULL){
 				vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 			}
 		}
-
 		data->vm_idx_call--;
-
 		// POP STACK
 		//=========================
 	}

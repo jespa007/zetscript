@@ -232,14 +232,12 @@ namespace zetscript{
 
 		}
 
-//#ifdef __DEBUG__
 		if(!deallocated && was_created_by_constructor){
 			fprintf(stderr,"%s"
-					,zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
-							,SFI_GET_FILE_LINE(info_function_new, instruction_new)
-					).c_str()
-				);
-			//return false;
+				,zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
+						,SFI_GET_FILE_LINE(info_function_new, instruction_new)
+				).c_str()
+			);
 		}
 
 		for(unsigned i=0; i< stk_builtin_elements.count; i++){

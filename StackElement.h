@@ -49,7 +49,7 @@ typedef enum:unsigned char {
 #define STK_IS_SCRIPT_OBJECT_OBJECT(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT))
 #define STK_IS_SCRIPT_OBJECT_STRING(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING))
 #define STK_IS_SCRIPT_OBJECT_VECTOR(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR))
-#define STK_IS_SCRIPT_OBJECT_CLASS(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS))
+#define STK_IS_SCRIPT_OBJECT_CLASS(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class>IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS))
 #define STK_IS_SCRIPT_OBJECT_VAR_REF(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF))
 #define STK_GET_STK_VAR_REF(stk)  							(((ScriptObjectVarRef *)((stk))->stk_value)->getStackElementPtr())
 
