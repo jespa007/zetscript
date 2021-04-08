@@ -717,7 +717,7 @@ namespace zetscript{
 		}
 
 		// only C refs can check 2nd param
-		if(script_object_class == NULL) { // script null
+		if(script_object_class == NULL && stk_result_op2 != NULL) { // script null
 
 			if(((stk_result_op2->properties & MSK_STK_PROPERTY_PTR_STK))){
 				stk_result_op2 = (StackElement *)(stk_result_op2->stk_value);
@@ -728,23 +728,23 @@ namespace zetscript{
 			}
 		}
 
+		if(stk_result_op2 != NULL){
+			if(vm_apply_metamethod_primitive(
+						vm
+						 ,calling_function
+						,instruction
+						,byte_code_metamethod
+						,stk_result_op1
+						,stk_result_op2
+						, error
+				)){
+				return true;
+			}
 
-		if(vm_apply_metamethod_primitive(
-					vm
-					 ,calling_function
-					,instruction
-					,byte_code_metamethod
-					,stk_result_op1
-					,stk_result_op2
-					, error
-			)){
-			return true;
+			if(error == true){
+				return false;
+			}
 		}
-
-		if(error == true){
-			return false;
-		}
-
 
 
 		if(script_object_class == NULL){ // cannot perform operation
@@ -752,7 +752,7 @@ namespace zetscript{
 			goto apply_metamethod_error;
 		}
 
-		if(script_object_class->isNativeObject()){
+		if(script_object_class->isNativeObject()){ // because isNativeObject it can have more than one setter
 			list_props=script_object_class->getAllBuiltinElements();//getFunctions();
 
 			/*ptr_function_found = vm_find_function(
@@ -804,13 +804,6 @@ namespace zetscript{
 
 		}
 
-		// non static ignores first parameter and set calling object to allow this
-		/*if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
-			calling_object=script_object_class;
-			stk_args++;
-			n_stk_args--;
-		}*/
-
 		if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
 			vm_call_function_script(
 				vm
@@ -857,21 +850,10 @@ namespace zetscript{
 
 		ret_obj=stk_return[0];
 
-		/*if(STK_IS_SCRIPT_OBJECT_CLASS(&ret_obj)){ //
-
-			if(!((ScriptObject *)(ret_obj.stk_value))->initSharedPtr()){
-				return false;
-			}
-
-		}*/
-
 		// reset stack...
 		data->stk_vm_current=stk_vm_current_backup;
 
-		if(byte_code_metamethod != BYTE_CODE_METAMETHOD_SET){ /* Auto destroy C when ref == 0 */
-			*data->stk_vm_current++ = ret_obj;
-		}
-
+		*data->stk_vm_current++ = ret_obj;
 		return true;
 
 apply_metamethod_error:

@@ -131,7 +131,7 @@
 		}\
 	}\
 
-#define PERFORM_POST_OPERATOR(__PRE_OP__,__OPERATOR__) \
+#define PERFORM_POST_OPERATOR(__PRE_OP__,__OPERATOR__, __METAMETHOD__) \
 {\
 	stk_var=--data->stk_vm_current;\
 	stk_var=(StackElement *)((stk_var)->stk_value);\
@@ -149,12 +149,21 @@
 			(*((zs_float *)(ref)))__OPERATOR__;\
 			break;\
 	default:\
-		VM_STOP_EXECUTE(" Cannot perform pre/post operator (%s)",stk_var->typeStr());\
+		if(vm_apply_metamethod(\
+			vm\
+			,calling_function\
+			,instruction\
+			, __METAMETHOD__\
+			,stk_var\
+			,NULL\
+		)==false){\
+			goto lbl_exit_function;\
+		}\
 		break;\
 	}\
 }
 
-#define PERFORM_PRE_OPERATOR(__OPERATOR__) \
+#define PERFORM_PRE_OPERATOR(__OPERATOR__, __METAMETHOD__) \
 {\
 	stk_var=--data->stk_vm_current;\
 	stk_var=(StackElement *)((stk_var)->stk_value);\
@@ -172,7 +181,16 @@
 			PUSH_FLOAT(*((zs_float *)(ref)));\
 			break;\
 	default:\
-		VM_STOP_EXECUTE(" Cannot perform pre/post operator (%s)",stk_var->typeStr());\
+		if(vm_apply_metamethod(\
+			vm\
+			,calling_function\
+			,instruction\
+			, __METAMETHOD__\
+			,stk_var\
+			,NULL\
+		)==false){\
+			goto lbl_exit_function;\
+		}\
 		break;\
 	}\
 }
@@ -665,7 +683,8 @@ load_element_object:
 			case BYTE_CODE_STORE_SHR:
 
 				{
-					bool assign_metamethod=false;
+					zs_vector *lst_functions=NULL;
+					ScriptObject *obj_setter=NULL;
 
 					char n_elements_left=0;
 					StackElement *stk_multi_var_src=NULL;
@@ -814,6 +833,8 @@ load_element_object:
 						}
 
 	vm_store_next:
+						lst_functions=NULL;
+						obj_setter=NULL;
 						stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value
 						stk_dst=stk_result_op2;
 
@@ -840,17 +861,8 @@ load_element_object:
 						if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
 							ScriptObjectClass *script_object_class=((ScriptObjectClass *)stk_dst->stk_value);
 							if(script_object_class->itHasSetMetamethod()){
-								if(vm_apply_metamethod(
-										vm
-										,calling_function
-										,instruction
-										,BYTE_CODE_METAMETHOD_SET
-										,stk_result_op1 // it contents variable to be assigned
-										,stk_result_op2 // it contects the result of expression or whatever
-								)==false){
-									goto lbl_exit_function;
-								}
-								assign_metamethod=true;
+								lst_functions=script_object_class->getAllBuiltinElements();
+								obj_setter=script_object_class;
 							}
 
 							if(STK_IS_THIS(stk_dst)){
@@ -859,44 +871,75 @@ load_element_object:
 						}else if((stk_dst->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE)!=0){
 							StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->stk_value;
 							if(stk_ma->member_attribute->setters.count > 0){
-								StackElement *stk_setter=(StackElement *)stk_ma->member_attribute->setters.items[0];
-								ScriptFunction *sf=(ScriptFunction *)stk_setter->stk_value;
-								StackElement *stk_vm_start=data->stk_vm_current;
-								StackElement *stk_arg=stk_vm_start+1;
-								*stk_arg=*stk_src;
-
-								if((sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
-									vm_call_function_script(
-										vm
-										,stk_ma->so_object
-										,sf
-										,stk_arg
-										,1
-									);
-								}else{ //
-									vm_call_function_native(
-											vm
-											,stk_ma->so_object
-											,sf
-											,stk_arg
-											,1
-											,instruction
-
-									);
-								}
-
-								// restore
-								data->stk_vm_current=stk_vm_start;
-
-								assign_metamethod=true;
+								lst_functions=&stk_ma->member_attribute->setters;
+								obj_setter=stk_ma->so_object;
 							}else{
 								VM_STOP_EXECUTE("Symbol X has not setter metamethod implemented");
 							}
-
 						}
 					}
 
-					if(assign_metamethod==false){
+					if(lst_functions!=NULL){ // call metamethod
+						// find appropiate function
+						ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)lst_functions->items[0])->stk_value;//(ScriptFunction *)stk_setter->stk_value;
+						StackElement *stk_vm_start=data->stk_vm_current;
+						StackElement *stk_arg=stk_vm_start+1;
+						*stk_arg=*stk_src;
+
+						if(obj_setter->isNativeObject()){ // because object is native, we can have more than one _setter
+
+							if((ptr_function_found=vm_find_function(
+									vm
+									,obj_setter
+									,calling_function
+									,instruction
+									,false
+									,lst_functions
+									,lst_functions->count
+									,"_set" // symbol to find
+									,stk_arg
+									,1))==NULL){
+
+								VM_STOP_EXECUTE("cannot find metamethod \"_set\"");
+							}
+						}else if(lst_functions->count>1){
+							StackElement * stk = obj_setter->getProperty("_set",NULL);
+
+							if(stk == NULL){
+								VM_STOP_EXECUTE("Operator metamethod \"_set (aka =)\" is not implemented");
+							}
+
+							if((stk->properties & MSK_STK_PROPERTY_FUNCTION)==0){
+								VM_STOP_EXECUTE("Operator metamethod \"_set (aka =)\" is not function");
+							}
+
+							ptr_function_found=(ScriptFunction *)stk->stk_value;
+						}
+
+						if(ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+							vm_call_function_native(
+									vm
+									,obj_setter
+									,ptr_function_found
+									,stk_arg
+									,1
+									,instruction
+							);
+						}else{
+
+							vm_call_function_script(
+								vm
+								,obj_setter
+								,ptr_function_found
+								,stk_arg
+								,1
+							);
+						}
+
+						// restore
+						data->stk_vm_current=stk_vm_start;
+
+					}else{
 						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
 							stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->stk_value));
 						}
@@ -1610,22 +1653,22 @@ load_element_object:
 				 data->stk_vm_current=stk_start;
 				 continue;
 			 case BYTE_CODE_POST_INC:
-				 PERFORM_POST_OPERATOR(+,++);
+				 PERFORM_POST_OPERATOR(+,++,BYTE_CODE_METAMETHOD_NEXT);
 				 continue;
 			 case BYTE_CODE_POST_DEC:
-				 PERFORM_POST_OPERATOR(+,--);
+				 PERFORM_POST_OPERATOR(+,--,BYTE_CODE_METAMETHOD_PREVIOUS);
 				 continue;
 			 case BYTE_CODE_PRE_INC:
-				 PERFORM_PRE_OPERATOR(++);
+				 PERFORM_PRE_OPERATOR(++,BYTE_CODE_METAMETHOD_NEXT);
 				 continue;
 			 case BYTE_CODE_PRE_DEC:
-				 PERFORM_PRE_OPERATOR(--);
+				 PERFORM_PRE_OPERATOR(--,BYTE_CODE_METAMETHOD_PREVIOUS);
 				 continue;
 			 case BYTE_CODE_NEG_POST_INC:
-				 PERFORM_POST_OPERATOR(-,++);
+				 PERFORM_POST_OPERATOR(-,++,BYTE_CODE_METAMETHOD_NEXT);
 				 continue;
 			 case BYTE_CODE_NEG_POST_DEC:
-				 PERFORM_POST_OPERATOR(-,--);
+				 PERFORM_POST_OPERATOR(-,--,BYTE_CODE_METAMETHOD_PREVIOUS);
 				 continue;
 			}
 		 }
