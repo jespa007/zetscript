@@ -54,10 +54,12 @@ namespace zetscript{
 
 				}
 
-				aux_p=eval_block(eval_data,aux_p
+				if((aux_p=eval_block(eval_data,aux_p
 					,line
 					,scope_info
-				);
+				  ))==NULL){
+						return NULL;
+				}
 
 				int idx_end_block=eval_data->current_function->instructions.size();
 
@@ -101,12 +103,14 @@ namespace zetscript{
 						}
 
 						// eval else block
-						aux_p=eval_block(
+						if((aux_p=eval_block(
 								eval_data
 								,aux_p
 								,line
 								,scope_info
-						);
+						))==NULL){
+							return NULL;
+						}
 					}
 				}
 			}while(!end); // loop
@@ -231,6 +235,8 @@ namespace zetscript{
 								continue;
 							}
 
+							// compile the body
+							eval_data->current_function->parsing_switch++;
 							aux_p=eval_parse_and_compile_recursive(
 								eval_data
 								,aux_p
@@ -238,6 +244,7 @@ namespace zetscript{
 								, scope_info
 								, true // cancel eval when break or case is found...
 							);
+							eval_data->current_function->parsing_switch--;
 
 							if(aux_p == NULL){
 								goto eval_keyword_switch_error;

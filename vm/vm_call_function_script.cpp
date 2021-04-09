@@ -902,18 +902,20 @@ load_element_object:
 
 								VM_STOP_EXECUTE("cannot find metamethod \"_set\"");
 							}
-						}else if(lst_functions->count>1){
+						}else if(lst_functions->count>1){ // it has all member list
 							StackElement * stk = obj_setter->getProperty("_set",NULL);
 
 							if(stk == NULL){
 								VM_STOP_EXECUTE("Operator metamethod \"_set (aka =)\" is not implemented");
 							}
 
-							if((stk->properties & MSK_STK_PROPERTY_FUNCTION)==0){
+							if((stk->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION)==0){
 								VM_STOP_EXECUTE("Operator metamethod \"_set (aka =)\" is not function");
 							}
 
-							ptr_function_found=(ScriptFunction *)stk->stk_value;
+							StackMemberFunction *mf=(StackMemberFunction *)stk->stk_value;
+
+							ptr_function_found=mf->so_function;
 						}
 
 						if(ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){

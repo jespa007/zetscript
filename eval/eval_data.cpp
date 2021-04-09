@@ -182,12 +182,16 @@ namespace zetscript{
 
 		std::vector<EvalInstruction *>	 		instructions;
 		ScriptFunction 						*  	script_function;
+		int										parsing_loop;
+		int										parsing_switch;
 
 		// a set of instructions that relates with jmps instructions in current scope, just in case we have to insert push instruction later
 		//std::vector<EvalInstruction *>	 		jmp_instructions;
 
 		EvalFunction(ScriptFunction	* _script_function){
 			script_function=_script_function;
+			parsing_loop=0;
+			parsing_switch=0;
 		}
 
 		~EvalFunction(){
@@ -247,8 +251,9 @@ namespace zetscript{
 		ScriptClassFactory 				* 		script_class_factory;
 		EvalFunction					* 		current_function;
 		std::vector<EvalFunction *> 	  		functions;
+		int										parsing_loop;
 		//std::vector<std::vector<EvalInstruction *>>			loop_break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
-		std::vector<LoopBreakContinueInfo>		loop_break_continue_info; // number of continue_jmp_instructions collected (should managed only on loops)
+		//std::vector<LoopBreakContinueInfo>		loop_break_continue_info; // number of continue_jmp_instructions collected (should managed only on loops)
 		const char 						* 		current_parsing_file;
 		bool							  		error;
 		std::string								error_str;
@@ -262,6 +267,7 @@ namespace zetscript{
 			this->script_class_factory=zs->getScriptClassFactory();
 			error=false;
 			error_str="";
+			parsing_loop=0;
 		}
 	};
 

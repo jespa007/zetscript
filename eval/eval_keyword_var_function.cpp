@@ -709,15 +709,14 @@ error_eval_keyword_var:
 			eval_push_function(eval_data,sf);
 
 			// ok let's go to body..
-			aux_p = eval_block(
+			if((aux_p = eval_block(
 					eval_data
 					,aux_p
 					,line
 					,scope_info
 					,sf
-					,&args);
-
-			if(aux_p == NULL){
+					,&args)
+			)==NULL){
 				return NULL;
 			}
 

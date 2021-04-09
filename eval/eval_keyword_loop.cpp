@@ -30,7 +30,12 @@ namespace zetscript{
 
 		if(key_w == Keyword::KEYWORD_BREAK){
 
+			if(eval_data->current_function->parsing_loop <= 0 && eval_data->current_function->parsing_switch <= 0){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"break is only available on 'for', 'while' loops and switch");
+			}
+
 			int last_line_ok = line;
+
 			//EvalInstruction *jmp_instruction;
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
@@ -39,9 +44,9 @@ namespace zetscript{
 			//eval_new_loop_jmp_break(eval_data);
 			eval_data->current_function->instructions.push_back(
 					new EvalInstruction(
-							BYTE_CODE_JMP,
-							ZS_IDX_UNDEFINED,
-							ZS_IDX_INSTRUCTION_JMP_BREAK
+						BYTE_CODE_JMP,
+						ZS_IDX_UNDEFINED,
+						ZS_IDX_INSTRUCTION_JMP_BREAK
 					)
 			);
 		}
@@ -55,6 +60,10 @@ namespace zetscript{
 		key_w = eval_is_keyword(aux_p);
 
 		if(key_w == Keyword::KEYWORD_CONTINUE){
+
+			if(eval_data->current_function->parsing_loop <= 0){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"continue is only available on 'for' or 'while' loops");
+			}
 
 			int last_line_ok = line;
 			//EvalInstruction *jmp_instruction;
@@ -120,12 +129,18 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected while-block open block ('{') ");
 			}
 
-			aux_p=eval_block(
+			eval_data->current_function->parsing_loop++;
+
+			if((aux_p=eval_block(
 					eval_data
 					,aux_p
 					,line
-					,scope_info
-			);
+					,scope_info)
+			 	 ) == NULL){
+				return NULL;
+			}
+
+			eval_data->current_function->parsing_loop--;
 
 			// insert jmp instruction to begin condition while...
 			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JMP,ZS_IDX_UNDEFINED,idx_instruction_conditional_while));
@@ -169,12 +184,16 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected open block ('{') in do-while expression");
 			}
 
-			aux_p=eval_block(
+			eval_data->current_function->parsing_loop++;
+			if((aux_p=eval_block(
 					eval_data
 					,aux_p
 					,line
 					,scope_info
-			);
+			))==NULL){
+				return NULL;
+			}
+			eval_data->current_function->parsing_loop--;
 
 				// Finally evaluate conditional line ...
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -368,6 +387,7 @@ namespace zetscript{
 				}
 
 				// eval block ...
+				eval_data->current_function->parsing_loop++;
 				if((aux_p=eval_block(
 						eval_data
 						,aux_p
@@ -376,6 +396,7 @@ namespace zetscript{
 				))==NULL){
 					return NULL;
 				}
+				eval_data->current_function->parsing_loop--;
 
 				// insert post operations...
 				eval_data->current_function->instructions.insert(
