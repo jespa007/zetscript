@@ -11,7 +11,7 @@ var object={ // structure
 object.k=false;
 object["k"]=false;
 
-print("dictionary.k:"+object.k);
+System::println("dictionary.k:"+object.k);
 
 var obj1={a:1,b:2}
 var obj2={c:3,d:4}

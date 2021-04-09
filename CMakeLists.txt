@@ -214,8 +214,6 @@ ELSE()
  		modules/ModuleMath.cpp
 		modules/StringMod.cpp
 		modules/ModuleSystem.cpp
-		modules/ModuleInteger.cpp
-		modules/ModuleFloat.cpp
 		modules/ModuleJson.cpp
  		
  		# VM

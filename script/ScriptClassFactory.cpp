@@ -78,6 +78,39 @@ namespace zetscript{
 		return (ZetScript *)ptr;
 	}
 
+	zs_float parseFloat(zs_int number){
+
+		return (zs_float)(number);
+	}
+
+	zs_float parseFloat(std::string  *number_str){
+		zs_float result=0;
+		zs_float *result_ptr=zs_strutils::parse_float(*number_str);
+
+		if(result_ptr != NULL){
+			result=*result_ptr;
+			delete result_ptr;
+		}
+
+		return result;
+	}
+
+	zs_int parseInteger(zs_float *number){
+
+		return (zs_int)(*number);
+	}
+
+	zs_int parseInteger(std::string  *number_str){
+		zs_int result=0;
+		zs_int *result_ptr=zs_strutils::parse_int(*number_str);
+		if(result_ptr!=NULL){
+			result=*result_ptr;
+			delete result_ptr;
+		}
+		return result;
+	}
+
+
 	void ScriptClassFactory::registerSystem(){
 
 		// !!!
@@ -131,6 +164,12 @@ namespace zetscript{
 		// register c function's
 
 		ZS_REGISTER_FUNCTION(zs,"ptrToZetScriptPtr",ptrToZetScriptPtr);
+
+		ZS_REGISTER_FUNCTION(zs,"parseFloat",static_cast<zs_float (*)(zs_int)>(parseFloat));
+		ZS_REGISTER_FUNCTION(zs,"parseFloat",static_cast<zs_float (*)(std::string *)>(parseFloat));
+		ZS_REGISTER_FUNCTION(zs,"parseInteger",static_cast<zs_int (*)(zs_float *)>(parseInteger));
+		ZS_REGISTER_FUNCTION(zs,"parseInteger",static_cast<zs_int (*)(std::string *)>(parseInteger));
+
 
 		//-------------------------
 		// Bind functions

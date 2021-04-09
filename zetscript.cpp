@@ -42,13 +42,6 @@ namespace zetscript{
 		//-------------------------
 		// Register built in modules
 
-		// Integer mod
-		script_class_factory->registerNativeSingletonClass<ModuleInteger>("Integer");
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleInteger>("parse",ModuleInteger::parse);
-
-		// Float mod
-		script_class_factory->registerNativeSingletonClass<ModuleFloat>("Float");
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleFloat>("parse",ModuleFloat::parse);
 
 		// Math mod
 		script_class_factory->registerNativeSingletonClass<ModuleMath>("Math");

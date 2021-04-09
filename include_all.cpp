@@ -45,8 +45,6 @@
 
 #include 		"module/ModuleMath.cpp"
 #include 		"module/ModuleSystem.cpp"
-#include 		"module/ModuleInteger.cpp"
-#include 		"module/ModuleFloat.cpp"
 #include 		"module/ModuleJson.cpp"
 
 

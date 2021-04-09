@@ -84,8 +84,6 @@
 
 #include "module/ModuleMath.h"
 #include "module/ModuleSystem.h"
-#include "module/ModuleInteger.h"
-#include "module/ModuleFloat.h"
 #include "module/ModuleJson.h"
 
 #include "script/ScriptObject.h"
