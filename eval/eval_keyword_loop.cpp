@@ -9,7 +9,7 @@ namespace zetscript{
 	//
 	// LOOPS
 	//
-	void link_loop_break_continues(EvalData *eval_data,int idx_start){
+	void link_loop_break_continues(EvalData *eval_data,int idx_start, int idx_post_instruction_for_start=ZS_IDX_UNDEFINED){
 
 		int idx_end_instruction = eval_data->current_function->instructions.size();
 		for(int i=idx_start; i < idx_end_instruction;i++){
@@ -17,7 +17,12 @@ namespace zetscript{
 			if(ins->value_op2 == ZS_IDX_INSTRUCTION_JMP_BREAK){
 				ins->value_op2=idx_end_instruction-i;
 			}else if(ins->value_op2 == ZS_IDX_INSTRUCTION_JMP_CONTINUE){
-				ins->value_op2=i-idx_start;
+				if(idx_post_instruction_for_start != ZS_IDX_UNDEFINED){
+					ins->value_op2=idx_post_instruction_for_start-i;
+				}
+				else{
+					ins->value_op2=idx_start-i;
+				}
 			}
 		}
 	}
@@ -143,7 +148,12 @@ namespace zetscript{
 			eval_data->current_function->parsing_loop--;
 
 			// insert jmp instruction to begin condition while...
-			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JMP,ZS_IDX_UNDEFINED,idx_instruction_conditional_while));
+			eval_data->current_function->instructions.push_back(new EvalInstruction(
+					BYTE_CODE_JMP
+					,ZS_IDX_UNDEFINED
+					,-((int)(eval_data->current_function->instructions.size())-idx_instruction_conditional_while)
+				)
+			);
 
 			// update jnt instruction to jmp after jmp instruction...
 			ei_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size();
@@ -229,7 +239,10 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '(' do-while expression");
 			}
 			// insert jmp instruction to begin condition while...
-			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JT,ZS_IDX_UNDEFINED,idx_do_while_start));
+			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JT
+					,ZS_IDX_UNDEFINED
+					,-((int)(eval_data->current_function->instructions.size())-idx_do_while_start)
+			));
 
 			// catch all breaks in the while...
 			//link_breaks(eval_data);
@@ -249,7 +262,8 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		Keyword key_w;
 		int	 idx_instruction_for_start=ZS_IDX_UNDEFINED
-			,idx_instruction_for_after_condition=ZS_IDX_UNDEFINED;
+			,idx_instruction_for_after_condition=ZS_IDX_UNDEFINED
+			,idx_post_instruction_for_start=ZS_IDX_UNDEFINED;
 
 		EvalInstruction *ei_jnt=NULL; // conditional to end block
 		std::vector<EvalInstruction *> post_operations;
@@ -398,6 +412,8 @@ namespace zetscript{
 				}
 				eval_data->current_function->parsing_loop--;
 
+				idx_post_instruction_for_start=eval_data->current_function->instructions.size();
+
 				// insert post operations...
 				eval_data->current_function->instructions.insert(
 					eval_data->current_function->instructions.end()
@@ -420,7 +436,7 @@ namespace zetscript{
 				}
 
 				// catch all continues and set all jmps after processing block but before post operation...
-				link_loop_break_continues(eval_data,idx_instruction_for_start);
+				link_loop_break_continues(eval_data,idx_instruction_for_start,idx_post_instruction_for_start);
 
 				// true: We treat declared variables into for as another scope.
 				eval_check_scope(eval_data,new_scope);

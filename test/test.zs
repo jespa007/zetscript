@@ -20,13 +20,14 @@ a,b,c=false?f1():f2();*/
 	}*/
 
 //System::println("{0} {1} {2}",a,b,c)
-var i=0;
-//for(var i=0;i<10;i++)
-{
-	//System::println("dadas");
-	if(i>1000){
-		break;
-	}
+var j=0;
+//j=j+1;
+while(j < 10){
+	System::println("j:"+j);
+	j++;
+	//j++;
+	//j=j+1;
+
 }
 /*	}
 }*/

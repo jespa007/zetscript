@@ -527,7 +527,11 @@ namespace zetscript{
 			);
 
 			// change load by push because is mutable
-			last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
+			if(byte_code_is_load_type(last_load_instruction->byte_code)){
+				last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
+			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
+				last_load_instruction->properties=MSK_INSTRUCTION_USE_PUSH_STK;
+			}
 
 		}
 
@@ -553,7 +557,11 @@ namespace zetscript{
 			);
 
 			// change load by push because is mutable
-			last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
+			if(byte_code_is_load_type(last_load_instruction->byte_code)){
+				last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
+			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
+				last_load_instruction->properties=MSK_INSTRUCTION_USE_PUSH_STK;
+			}
 
 		}
 
