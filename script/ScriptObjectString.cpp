@@ -221,6 +221,37 @@ namespace zetscript{
 
 		return sv;
 	}
+
+	zs_int ScriptObjectString::indexOfSf(ScriptObjectString *so,zs_int search){
+		std::string *str=((std::string *)so->value);
+		std::string pattern="";
+		pattern+=(char)+search;
+		return zs_strutils::index_of(*str,pattern);
+		//str->indexOf
+	}
+
+	zs_int ScriptObjectString::indexOfSf(ScriptObjectString *so,std::string *search){
+		std::string *str=((std::string *)so->value);
+		return zs_strutils::index_of(*str,*search);
+	}
+
+	bool ScriptObjectString::startsWithSf(ScriptObjectString *so,std::string *prefix){
+		std::string *str=((std::string *)so->value);
+		return zs_strutils::starts_with(*str,*prefix);
+	}
+
+	bool ScriptObjectString::endsWithSf(ScriptObjectString *so,std::string *suffix){
+		std::string *str=((std::string *)so->value);
+		return zs_strutils::ends_with(*str,*suffix);
+	}
+
+	ScriptObjectString * ScriptObjectString::substringSf(ScriptObjectString *str_in,zs_int start,zs_int end){
+		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(str_in->getZetScript());
+		str_out->set(zs_strutils::substring(str_in->toString(),start,end));
+		return str_out;
+
+	}
+
 	//
 	// Helpers
 	//

@@ -139,7 +139,7 @@ namespace zetscript{
 							,eval_data->current_parsing_file
 							,args->at(i).line
 							,args->at(i).arg_name
-							,args->at(i).properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF?SYMBOL_PROPERTY_REF:0
+							,args->at(i).properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF?SYMBOL_PROPERTY_ARG_BY_REF:0
 						);
 
 

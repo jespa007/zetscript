@@ -31,6 +31,13 @@ namespace zetscript{
 		static void insertAtSf(ScriptObjectString *so, zs_int idx,zs_int ch);
 		static ScriptObjectVector * splitSf(ScriptObjectString *so,zs_int ch_delim);
 		static ScriptObjectVector * splitSf(ScriptObjectString *so,std::string * str_token);
+
+		static zs_int indexOfSf(ScriptObjectString *so,zs_int search);
+		static zs_int indexOfSf(ScriptObjectString *so,std::string *search);
+		static bool startsWithSf(ScriptObjectString *so,std::string *prefix);
+		static bool endsWithSf(ScriptObjectString *so,std::string *suffix);
+		static ScriptObjectString * substringSf(ScriptObjectString *str_in,zs_int start,zs_int end);
+
 		//
 		// Helpers
 		//

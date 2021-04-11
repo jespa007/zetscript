@@ -87,12 +87,15 @@ namespace zetscript{
 				// check for named functions or vars...
 				while(*aux_p != '}' && *aux_p != 0){
 					char *test_attrib=aux_p;
+					int test_line_attrib=line;
 					if((test_attrib=eval_keyword_class_attrib(
 						eval_data
 						,aux_p
 						,line
 						,sc // pass class
 					))==NULL){
+
+						line=test_line_attrib; // restore line
 
 						if(eval_data->error){
 							return NULL;
@@ -114,24 +117,13 @@ namespace zetscript{
 								);
 								break;
 						case Keyword::KEYWORD_UNKNOWN: // supposes a member function
-							if((test_attrib_s=eval_keyword_class_attrib(eval_data
+							// function member without function keyword
+							aux_p=eval_keyword_function(eval_data
 									,aux_p
-									, test_attrib_line
-									,sc
-							))!=NULL){
-								aux_p=test_attrib_s;
-								line=test_attrib_line;
-							}else{
-								if(eval_data->error){
-									return NULL;
-								}
-								// function member without function keyword
-								aux_p=eval_keyword_function(eval_data
-										,aux_p
-										, line
-										,sc->symbol_class.scope
-								);
-							}
+									, line
+									,sc->symbol_class.scope
+							);
+
 							break;
 						case Keyword::KEYWORD_VAR:
 						case Keyword::KEYWORD_CONST: // const symbol

@@ -313,7 +313,7 @@ namespace zetscript{
 						if(is_constant){ // make ptr as constant after variable is saved
 							EvalInstruction *eval_instruction;
 							eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(
-								BYTE_CODE_LOAD_GLOBAL
+								BYTE_CODE_PUSH_STK_GLOBAL
 							));
 
 							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;

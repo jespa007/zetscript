@@ -233,6 +233,7 @@ namespace zetscript{
 
 			if(key_w == Keyword::KEYWORD_NEW){
 				EvalInstruction *eval_instruction = NULL;
+				int start_line_new=line;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 				// try get symbol ...++++
 				aux_p=get_name_identifier_token(

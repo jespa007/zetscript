@@ -142,7 +142,7 @@ namespace zetscript{
 							byte_code= ByteCode::BYTE_CODE_LOAD_LOCAL;
 							value=vis->idx_position;
 
-							if((vis->properties & SYMBOL_PROPERTY_REF) == SYMBOL_PROPERTY_REF){
+							if((vis->properties & SYMBOL_PROPERTY_ARG_BY_REF) == SYMBOL_PROPERTY_ARG_BY_REF){
 								byte_code= ByteCode::BYTE_CODE_LOAD_REF;
 							}
 						}

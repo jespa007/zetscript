@@ -74,6 +74,6 @@ namespace zetscript{
 		bool contains(const std::string & input, const std::string & str_containts,StringComparer sc=StringComparer::Exactly);
 		bool contains(const std::vector<std::string> & input, const std::string & str_containts,StringComparer sc=StringComparer::Exactly);
 
-
+		int index_of(std::string& text, std::string& pattern);
 	}
 }

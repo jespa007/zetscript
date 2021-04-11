@@ -1,15 +1,6 @@
 #include "eval.h"
 
 
-#define IS_TOKEN_SIMPLIFIABLE(token) \
-(\
-	(token->instructions.size()==1)\
-	&& (\
-		token->instructions[0]->vm_instruction.isConstant()\
-	||  IS_BYTE_CODE_LOAD_LOCAL_GLOBAL_OR_FIND(token->instructions[0]->vm_instruction.byte_code)\
-	)\
-)
-
 namespace zetscript{
 
 	typedef struct{

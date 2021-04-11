@@ -49,6 +49,8 @@ namespace zetscript{
 		zs=NULL;
 		map_builtin_property_keys=new zs_map();
 		memset(&stk_this,0,sizeof(stk_this));
+		stk_this.stk_value=this;
+		stk_this.properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
 	}
 
 	void ScriptObject::init(ZetScript *_zs){

@@ -20,7 +20,7 @@ typedef enum {
 	SYMBOL_PROPERTY_MEMBER_FUNCTION				= 0x1 << 6, // 0x0020: Member function
 	SYMBOL_PROPERTY_MEMBER_ATTRIBUTE			= 0x1 << 7, // 0x0040: Member attrib
 	SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME			= 0x1 << 8, // 0x0080: Deduce runtime functions becuse is C and it has functions with same name but different signature
-	SYMBOL_PROPERTY_REF							= 0x1 << 9  // 0x0100: Is a reference
+	SYMBOL_PROPERTY_ARG_BY_REF							= 0x1 << 9,  // 0x0100: Is a reference
 }SymbolProperty;
 
 #define IS_SYMBOL_VAR_MEMBER(s) ((s)->properties == 0)

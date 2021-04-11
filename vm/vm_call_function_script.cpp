@@ -2,19 +2,31 @@
 #define PROCESS_MOD_OPERATION \
 	msk_properties=stk_result_op1->properties|stk_result_op2->properties;\
 	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
-			PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) % STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_FLOAT )){\
-		if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
-				ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
-				PUSH_FLOAT(fmod(STK_VALUE_TO_ZS_INT(stk_result_op1),f_aux_value2));\
-		}else{\
-				ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
-				PUSH_FLOAT(fmod(f_aux_value1 , STK_VALUE_TO_ZS_INT(stk_result_op2)));\
+		int op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
+		if(op2_int == 0){\
+			VM_STOP_EXECUTE("exception mod operation by 0");\
 		}\
+		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) % op2_int);\
+	}else if (STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
+		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
+		if(f_aux_value2 == 0){\
+			VM_STOP_EXECUTE("exception mod operation by 0");\
+		}\
+		PUSH_FLOAT(fmod(STK_VALUE_TO_ZS_INT(stk_result_op1),f_aux_value2));\
+	}else if (STK_VALUE_IS_FLOAT(stk_result_op1) && STK_VALUE_IS_ZS_INT(stk_result_op2)){\
+		int op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
+		if(op2_int == 0){\
+			VM_STOP_EXECUTE("exception mod operation by 0");\
+		}\
+		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
+		PUSH_FLOAT(fmod(f_aux_value1 , op2_int));\
 	}else if(msk_properties == MSK_STK_PROPERTY_ZS_FLOAT){\
-			ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
-			ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
-			PUSH_FLOAT(fmod(f_aux_value1 , f_aux_value2));\
+		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
+		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
+		if(f_aux_value2 == 0){\
+			VM_STOP_EXECUTE("exception mod operation by 0");\
+		}\
+		PUSH_FLOAT(fmod(f_aux_value1 , f_aux_value2));\
 	}else{\
 		if(vm_apply_metamethod(\
 			vm\
@@ -28,20 +40,58 @@
 		}\
 	}\
 
-
+#define PROCESS_ARITHMETIC_DIV_OPERATION \
+	msk_properties=stk_result_op1->properties|stk_result_op2->properties;\
+	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
+		int op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
+		if(op2_int == 0){\
+			VM_STOP_EXECUTE("exception div operation by 0");\
+		}\
+		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) / STK_VALUE_TO_ZS_INT(stk_result_op2));\
+	}else if(STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
+		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
+		if(f_aux_value2 == 0){\
+			VM_STOP_EXECUTE("exception div operation by 0");\
+		}\
+		PUSH_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) / f_aux_value2);\
+	}else if (STK_VALUE_IS_FLOAT(stk_result_op1) && STK_VALUE_IS_ZS_INT(stk_result_op2)){\
+		int op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
+		if(op2_int == 0){\
+			VM_STOP_EXECUTE("exception div operation by 0");\
+		}\
+		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
+		PUSH_FLOAT(f_aux_value1 / op2_int);\
+	}else if(msk_properties == MSK_STK_PROPERTY_ZS_FLOAT){\
+		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
+		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
+		if(f_aux_value2 == 0){\
+			VM_STOP_EXECUTE("exception div operation by 0");\
+		}\
+		PUSH_FLOAT(f_aux_value1 / f_aux_value2);\
+	}\
+	else{\
+		if(vm_apply_metamethod(\
+				vm\
+				,calling_function\
+				,instruction\
+				,BYTE_CODE_METAMETHOD_DIV\
+				,stk_result_op1\
+				,stk_result_op2\
+		)==false){\
+			goto lbl_exit_function;\
+		}\
+	}\
 
 #define PROCESS_ARITHMETIC_OPERATION(__C_OP__, __METAMETHOD__)\
 	msk_properties=stk_result_op1->properties|stk_result_op2->properties;\
 	if(msk_properties == MSK_STK_PROPERTY_ZS_INT){\
 		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
-	}else if (msk_properties == (MSK_STK_PROPERTY_ZS_INT | MSK_STK_PROPERTY_ZS_FLOAT )){\
-		if(STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
+	}else if(STK_VALUE_IS_ZS_INT(stk_result_op1) && STK_VALUE_IS_FLOAT(stk_result_op2)){\
 			ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
 			PUSH_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
-		}else{\
+	}else if (STK_VALUE_IS_FLOAT(stk_result_op1) && STK_VALUE_IS_ZS_INT(stk_result_op2)){\
 			ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
 			PUSH_FLOAT(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
-		}\
 	}else if(msk_properties == MSK_STK_PROPERTY_ZS_FLOAT){\
 		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->stk_value);\
 		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->stk_value);\
@@ -463,37 +513,75 @@ namespace zetscript{
 					stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr();
 				}
 				stk_var=NULL;
-				if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
+				/*if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
 					VM_STOP_EXECUTE("Expected integer index for Vector or String access");
-				}
+				}*/
 				// determine object ...
-				if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op1)){
-					ScriptObjectVector *so_vector=(ScriptObjectVector *)stk_result_op1->stk_value;
-					if((stk_var =so_vector->getUserElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){
-						goto lbl_exit_function;
-					} \
-					if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
-						*data->stk_vm_current++=*stk_var;
-					}else{
-						PUSH_STK_PTR(stk_var);
-					}
-					continue;
+				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					ScriptObject *obj=(ScriptObject *)stk_result_op1->stk_value;
+					if(		   obj->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR
+							|| obj->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
+							|| obj->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS
+					){
 
-				}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
-					ScriptObjectString *so_string=(ScriptObjectString *)stk_result_op1->stk_value;
-					zs_char *ptr_char=(zs_char *)&((std::string *)so_string->value)->c_str()[STK_VALUE_TO_ZS_INT(stk_result_op2)];
-					if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
-						data->stk_vm_current->stk_value=(void *)((zs_int)(*ptr_char));
-						data->stk_vm_current->properties=MSK_STK_PROPERTY_ZS_INT;
-					}else{
-						data->stk_vm_current->stk_value=ptr_char;
-						data->stk_vm_current->properties=MSK_STK_PROPERTY_ZS_CHAR | MSK_STK_PROPERTY_IS_VAR_C;
-					}
-					data->stk_vm_current++;
-					continue;
+						if(obj->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
+							ScriptObjectVector *so_vector=(ScriptObjectVector *)obj;
 
+							if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
+								VM_STOP_EXECUTE("Expected integer index for Vector access");
+							}
+
+							if((stk_var =so_vector->getUserElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){
+								goto lbl_exit_function;
+							} \
+						}
+						else{
+							ScriptObjectObject *so_object = (ScriptObjectObject *)obj;
+							if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==false){ \
+								VM_STOP_EXECUTE("Expected string for object access");
+							}
+							stk_var = so_object->getProperty(stk_result_op2->toString());
+							if(stk_var == NULL){
+								if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_VECTOR){
+									if((stk_var =so_object->addProperty(stk_result_op2->toString(), data->vm_error_str))==NULL){
+										VM_STOP_EXECUTE(data->vm_error_str.c_str());
+									}
+								}
+							}
+
+						}
+						if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
+							*data->stk_vm_current++=*stk_var;
+						}else{
+							PUSH_STK_PTR(stk_var);
+						}
+
+						continue;
+
+					}else if(obj->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
+						ScriptObjectString *so_string=(ScriptObjectString *)stk_result_op1->stk_value;
+
+						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
+							VM_STOP_EXECUTE("Expected integer index for String access");
+						}
+
+
+						zs_char *ptr_char=(zs_char *)&((std::string *)so_string->value)->c_str()[STK_VALUE_TO_ZS_INT(stk_result_op2)];
+						if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
+							data->stk_vm_current->stk_value=(void *)((zs_int)(*ptr_char));
+							data->stk_vm_current->properties=MSK_STK_PROPERTY_ZS_INT;
+						}else{ // push stk
+							data->stk_vm_current->stk_value=ptr_char;
+							data->stk_vm_current->properties=MSK_STK_PROPERTY_ZS_CHAR | MSK_STK_PROPERTY_IS_VAR_C;
+						}
+						data->stk_vm_current++;
+						continue;
+					}else{
+						VM_STOP_EXECUTE("Expected String,Vector or Object for access \"[]\" opertaion"); \
+					}
 				}else{
-					VM_STOP_EXECUTE("Expected Vector or String object"); \
+					VM_STOP_EXECUTE("Expected object for access \"[]\" opertaion"); \
+
 				}
 
 				continue;
@@ -802,7 +890,7 @@ load_element_object:
 									PROCESS_ARITHMETIC_OPERATION(*,BYTE_CODE_METAMETHOD_MUL);
 									break;
 								case BYTE_CODE_STORE_DIV:
-									PROCESS_ARITHMETIC_OPERATION(/,BYTE_CODE_METAMETHOD_DIV);
+									PROCESS_ARITHMETIC_DIV_OPERATION;
 									break;
 								case BYTE_CODE_STORE_MOD:
 									PROCESS_MOD_OPERATION;
@@ -942,6 +1030,8 @@ load_element_object:
 						data->stk_vm_current=stk_vm_start;
 
 					}else{
+
+
 						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
 							stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->stk_value));
 						}
@@ -1186,7 +1276,7 @@ load_element_object:
 				continue;
 			case BYTE_CODE_DIV: // /
 				POP_TWO;
-				PROCESS_ARITHMETIC_OPERATION(/, BYTE_CODE_METAMETHOD_DIV);
+				PROCESS_ARITHMETIC_DIV_OPERATION;
 				continue;
 			 case BYTE_CODE_MOD: // /
 				POP_TWO;
@@ -1381,11 +1471,14 @@ load_element_object:
 										stk_arg->properties=check_ref->properties;
 									}
 
-								}else{ // copy
+								}else{
+									if(stk_arg->properties & MSK_STK_PROPERTY_PTR_STK){ // get its value
+										*stk_arg=*(StackElement *)stk_arg->stk_value;
+									}
+
 									if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==true) { // not passing by ref it gets its value
 										*stk_arg=*((ScriptObjectVarRef *)stk_arg->stk_value)->getStackElementPtr();
 									}
-
 
 									if(stk_arg->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 										so_param=(ScriptObject *)stk_arg->stk_value;
@@ -1507,7 +1600,7 @@ load_element_object:
 
 					if(data->vm_error == true){
 						data->vm_error_callstack_str+=zs_strutils::format(
-							"\nat %s (file:%s line:%i)" // TODO: get full symbol ?
+							"\nat calling function %s (file:%s line:%i)" // TODO: get full symbol ?
 							,sf->symbol.name.c_str()
 							,SFI_GET_FILE(calling_function,instruction)
 							,SFI_GET_LINE(calling_function,instruction)

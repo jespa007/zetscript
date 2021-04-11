@@ -191,9 +191,17 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectString>("replace",ScriptObjectString::replaceSf);
 		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, std::string *)>(ScriptObjectString::splitSf));
 		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, zs_int )>(ScriptObjectString::splitSf));
-		registerNativeMemberFunction<ScriptObjectString>("size",&ScriptObjectString::sizeSf);
+		registerNativeMemberFunction<ScriptObjectString>("size",ScriptObjectString::sizeSf);
 		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, std::string *)>(&ScriptObjectString::containsSf));
 		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectString::containsSf));
+
+		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, std::string *)>(&ScriptObjectString::indexOfSf));
+		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectString::indexOfSf));
+
+		registerNativeMemberFunction<ScriptObjectString>("startsWith",ScriptObjectString::startsWithSf);
+		registerNativeMemberFunction<ScriptObjectString>("endsWith",ScriptObjectString::endsWithSf);
+		registerNativeMemberFunction<ScriptObjectString>("substring",ScriptObjectString::substringSf);
+
 
 		// Vector
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("clear",&ScriptObjectObject::clearSf);

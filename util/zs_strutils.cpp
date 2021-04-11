@@ -397,5 +397,19 @@ namespace zetscript{
 			return false;
 		}
 
+		int index_of(std::string& text, std::string& pattern)
+		{
+			// where appears the pattern in the text?
+			std::string::size_type loc = text.find(pattern, 0);
+			if (loc != std::string::npos)
+			{
+				return loc;
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
 	}
 }

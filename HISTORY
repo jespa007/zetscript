@@ -55,25 +55,20 @@ Solved issues
 #80 initialize vars within class doesn't tell any error or warning 
 #81 Fixed final parentesis/claudator lack detector 
 #82 Allow "this" do assign or pass parameter as well as any object 
-
 #85,#103 Implement for(..in..)  
 #86 Implement access vector element by string 
 #87 vector: Fixed error "push" strings into vector 
 #88 struct: Fixed fail to find none of its elements 
 #89 string as function parameter: Fixed doesn't parse \" within string
-
 #90 for: Support for no pre/conditional and post expressions.
 #91 Changed name vector::add by vector::push  
 #92 Support for StringVar to const char conversion as parameter into C function 
-
- 
 #94 for/while/switch: break support 
 #95 for: obligate to put "var" on pre for expression 
 #96 for: continue keyword support
 #98 removed statment concept 
 #99 register C constant feature
 #100 Improved virtual machine speed (Improved ~ x1.4) 
-
 #101 Adapt inheritance feature developed on 1.1.3 version
 #102 Bug: can use variable before define var itself
 > #103 Adapt foreach to for(.. in .. )
@@ -87,19 +82,16 @@ Solved issues
 #111 C stuff in the global scope when is reevaluated 
 #112 replace std::bind 
 #116 CMakeLists: Make permament static link and add -DFCOMPILE
-
 #114 Turn CZetScript class into helper functions inside zetscript namespace enhancement feature
 #115 Rename "zetscript" namespace to "zs"
 #117 Make MACROS register_C_XXXX all uppercase
- 
 #119 CEval as eval (all functions are C functions within zs member)
 #118 split CZetScriptUtils file in io_utils, path_utils, logger as static function
-
 #113 Replace try/catch by getError (canceled)
 #120 Put all common function used by user in zs namespace and the rest in zs::core
 #121 CEval,CScriptClassFactory and CZetScript as instanceable
 #122 Restore CScriptClassFactory
-> #124 Implement Integer helper class
+#124 Implement Integer helper class
 #125 Implement String helper class
 #126 Save pure c function instead of std::function for speed improvement
 #128 Implement register_c_function_as_member 
@@ -113,7 +105,7 @@ Solved issues
 #136 Clear unusued scopes
 #137 Callback function support
 #138 remove all std::vector and std::string access on VM
-> #139 Implement const operator
+#139 Implement const operator
 #140 Implement Vector methods  
 #141 limit n params only for c functions 
 #142 Try to optimize bind function member 
@@ -136,7 +128,6 @@ Solved issues
 #161 Merge symbol+functions in one container !!!
 #162 Implement eval Function object 
 #164 implement length property built-in for get length of vector/dictionary/string instead of call size() 
-
 #168 When semicolon on expression is missing it shows wrong filename 
 > #169 Fix/Check metamethods
 #170 Fix class 
@@ -153,9 +144,9 @@ Solved issues
 #183 Implement Object methods
 #184 Implement + for Vector 
 #185 parser char as integer
-> #186 Implement StriptVarString methods
+#186 Implement StriptVarString methods
 #187 Implement Console helper class
-> #189 give call stacktrace from exception 
+#189 give call stacktrace from exception 
 #190 eval_expression operator fails
 #192 Fix multiassigment 
 #193 Check fix ternari
@@ -180,7 +171,7 @@ Solved issues
 #213 Replace int by intptr
 #214 replace throw_script_error by other smart way to manage exceptions
 #216 Accept .,() and [] as operator 
-> #217 div/mod issues 
+#217 div/mod issues 
 #218 Encapsulate std::string in ScriptObjectString 
 > #219 Create iterator 
 #220 Set information for non-existant properties in store instruction 
@@ -192,7 +183,7 @@ Solved issues
 #229 Implement toJson(bool formated=false) for Vector and Object 
 #230 Control return ScriptObject[String] values that are not deallocated by user 
 #231 register class passing C function constructor and destructor
-> #232 Implement setter/getter for member variables 
+#232 Implement setter/getter for member variables 
 > #233 Implement operator IN 
 #234 Back to class name constructor 
 #235 Make optional function keyword as member function class
@@ -230,7 +221,7 @@ Solved issues
 > #276 Implement built-in iterators
 #277 optimize access stk_vm_current 
 #278 Rename undefined to null 
-> #279 Support array access for ScriptObjectObject 
+#279 Support array access for ScriptObjectObject 
 
 //----------------------------------------------------------
 Version: 1.3.0

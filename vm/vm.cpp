@@ -264,7 +264,7 @@ namespace zetscript{
 		if(data->vm_error){
 			// it was error so reset stack and stop execution ? ...
 			vm_do_stack_dump(vm);
-			throw std::runtime_error(data->vm_error_callstack_str+"\n"+data->vm_error_str);
+			throw std::runtime_error(data->vm_error_str+data->vm_error_callstack_str);
 		}else{
 			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+calling_function->registered_symbols->count);
 
