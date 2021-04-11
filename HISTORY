@@ -205,7 +205,7 @@ Solved issues
 #255 Set Strict Bind static funcions 
 > #256 Make compatibility back loops, while, switch, pre/post increment etc 
 #257 Set as local variable not found in the block if declared after its using
-> #258 Access object properties by other type rather string feature
+#258 Access object properties by other type rather string feature
 #259 Erase user properties only by remove operator
 > #261 zs_test: test every single simple check to within script and then launch complex scripts and stop if any fails
 #262 Select compile double or float precision config
