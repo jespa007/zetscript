@@ -53,7 +53,11 @@ typedef enum:unsigned char {
 #define STK_IS_SCRIPT_OBJECT_VAR_REF(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF))
 #define STK_GET_STK_VAR_REF(stk)  							(((ScriptObjectVarRef *)((stk))->stk_value)->getStackElementPtr())
 
-
+#define MSK_STK_OP1_BOOL_OP2_BOOL							((MSK_STK_PROPERTY_BOOL<<16)|MSK_STK_PROPERTY_BOOL)
+#define MSK_STK_OP1_ZS_INT_OP2_ZS_INT						((MSK_STK_PROPERTY_ZS_INT<<16)|MSK_STK_PROPERTY_ZS_INT)
+#define MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT						((MSK_STK_PROPERTY_ZS_INT<<16)|MSK_STK_PROPERTY_ZS_FLOAT)
+#define MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT						((MSK_STK_PROPERTY_ZS_FLOAT<<16)|MSK_STK_PROPERTY_ZS_INT)
+#define MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT					((MSK_STK_PROPERTY_ZS_FLOAT<<16)|MSK_STK_PROPERTY_ZS_FLOAT)
 
 enum:unsigned short {
 	MSK_STK_PROPERTY_IS_VAR_C = (0x1 << BIT_STK_PROPERTY_IS_VAR_C),
