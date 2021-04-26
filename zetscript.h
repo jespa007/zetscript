@@ -85,6 +85,7 @@
 #include "module/ModuleMath.h"
 #include "module/ModuleSystem.h"
 #include "module/ModuleJson.h"
+#include "module/ModuleConsole.h"
 
 #include "script/ScriptObject.h"
 #include "script/ScriptObjectString.h"

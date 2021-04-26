@@ -61,6 +61,7 @@ namespace zetscript{
 	void 			vm_destroy_life_time_object(VirtualMachine *vm,ScriptObject *script_object);
 	bool 			vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk);
 
+	void 			vm_set_error(VirtualMachine *vm,const std::string & str);
 	void 			vm_set_error_file_line(VirtualMachine *vm, const char *file, int line, const char *in_txt,...);
 	std::string 	vm_get_error(VirtualMachine *vm);
 

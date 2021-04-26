@@ -20,6 +20,6 @@ var j=
     	 a+1		//		a+1
     	 			//}
 // Should be j=3 and b=3 (b=a>4 ? a+5:a>3?a+4:a+2 --> it assigns the result of ternary which is correct. Note is not recommended doing assignations during  ) 
-System::println("j:{0} b:{1} c:{2}",j,b,c);
+Console::println("j:{0} b:{1} c:{2}",j,b,c);
 
 		  

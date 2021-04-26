@@ -6,8 +6,8 @@ class A{
 
 };
 
-System::println(A::a.a);
-System::println(A::a.b);
+Console::println(A::a.a);
+Console::println(A::a.b);
 
 
 

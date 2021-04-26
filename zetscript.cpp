@@ -53,13 +53,20 @@ namespace zetscript{
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("degToRad",ModuleMath::degToRad);
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("random",ModuleMath::random);
 
+		// Console mod
+		script_class_factory->registerNativeSingletonClass<ModuleConsole>("ModuleConsole");
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("readChar",ModuleConsole::readChar);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("print",ModuleConsole::print);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("println",ModuleConsole::println);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("error",ModuleConsole::error);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("errorln",ModuleConsole::errorln);
+
+
 		// System mod
 		script_class_factory->registerNativeSingletonClass<ModuleSystem>("ModuleSystem");
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("readChar",ModuleSystem::readChar);
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("clock",ModuleSystem::clock);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("print",ModuleSystem::printSf);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("println",ModuleSystem::printlnSf);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("eval",ModuleSystem::evalSf);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("eval",ModuleSystem::eval);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("assert",ModuleSystem::assert);
 
 		// Custom user function or classes
 		eval(
@@ -70,19 +77,32 @@ namespace zetscript{
 				"	String::formatSf(System::getZetScript(),s,args)"
 				"}"
 				//------------------------------------------------
+				// Console
+				"class Console{\n"
+				"	static readChar(){"
+				"		return ModuleConsole::readChar()"
+				"	}"
+				"	static print(s,...args){"
+				"		ModuleConsole::print(System::getZetScript(),s,args)"
+				"	}"
+				"	static println(s,...args){"
+				"		ModuleConsole::println(System::getZetScript(),s,args)"
+				"	}"
+				"	static error(s,...args){"
+				"		ModuleConsole::error(System::getZetScript(),s,args)"
+				"	}"
+				"	static errorln(s,...args){"
+				"		ModuleConsole::errorln(System::getZetScript(),s,args)"
+				"	}"
+				"}"
+				//------------------------------------------------
 				// System
 				"class System{\n"
-				"	static readChar(){"
-				"		return ModuleSystem::readChar()"
-				"	}"
 				"	static clock(){"
 				"		return ModuleSystem::clock()"
 				"	}"
-				"	static print(s,...args){"
-				"		ModuleSystem::print(System::getZetScript(),s,args)"
-				"	}"
-				"	static function println(s,...args){"
-				"		ModuleSystem::println(System::getZetScript(),s,args)"
+				"	static assert(check,s,...args){"
+				"		ModuleSystem::assert(System::getZetScript(),check,s,args)"
 				"	}"
 				"	static getZetScript(){"
 				"		return ptrToZetScriptPtr(0x%x);" // ptrToZetScript it gets current this

@@ -60,4 +60,4 @@ var obj=Json::deserialize(
 	"}"+
 );
 
-System::println("result:"+Json::serialize(obj))
+Console::println("result:"+Json::serialize(obj))

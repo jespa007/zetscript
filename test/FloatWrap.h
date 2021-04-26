@@ -8,7 +8,7 @@
 #include "Float.h"
 
 class Float;
-class FloatBind{
+class FloatWrap{
 public:
 
 	static Float *_new();

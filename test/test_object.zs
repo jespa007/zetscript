@@ -11,7 +11,7 @@ var object={ // structure
 object.k=false;
 object["k"]=false;
 
-System::println("dictionary.k:"+object.k);
+Console::println("dictionary.k:"+object.k);
 
 var obj1={a:1,b:2}
 var obj2={c:3,d:4}
@@ -20,22 +20,22 @@ var key1=Object::keys(obj1);
 var key2=Object::keys(obj2);
 
 for(var i=0; i < key1.size(); i++){
-	System::println(key1[i]);
+	Console::println(key1[i]);
 }
 
 for(var i=0; i < key1.size(); i++){
-	System::println(key1[i]);
+	Console::println(key1[i]);
 }
 
 if(Object::contains(obj1,"a")){
-	System::println("a exist")
+	Console::println("a exist")
 }
 
 var obj3=obj1+obj2;
 var key3=Object::keys(obj3);
 
 for(var i=0; i < key3.size(); i++){
-	System::println(key3[i]);
+	Console::println(key3[i]);
 }
 
 Object::clear(obj3)
@@ -43,7 +43,7 @@ Object::clear(obj3)
 key3=Object::keys(obj3);
 
 for(var i=0; i < key3.size(); i++){
-	System::println(key3[i]);
+	Console::println(key3[i]);
 }
 
 

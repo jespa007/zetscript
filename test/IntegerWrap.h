@@ -8,7 +8,7 @@
 #include "Integer.h"
 
 class Integer;
-class IntegerBind{
+class IntegerWrap{
 public:
 
 	static Integer *_new();

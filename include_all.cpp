@@ -46,6 +46,7 @@
 #include 		"module/ModuleMath.cpp"
 #include 		"module/ModuleSystem.cpp"
 #include 		"module/ModuleJson.cpp"
+#include 		"module/ModuleConsole.cpp"
 
 
 #include		"zetscript.cpp"

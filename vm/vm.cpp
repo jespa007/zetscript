@@ -131,17 +131,19 @@ namespace zetscript{
 		data->vm_error_str=str;
 	}
 
-	std::string vm_get_error(VirtualMachine *vm){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		return data->vm_error_str;
-	}
-
 	void vm_set_error_file_line(VirtualMachine *vm, const char *file, int line, const char *in_txt,...){
 
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 		vm_set_error(vm,zs_strutils::format("[%s:%i] %s",file,line,out_txt));
 	}
+
+	std::string vm_get_error(VirtualMachine *vm){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		return data->vm_error_str;
+	}
+
+
 
 	void vm_insert_life_time_object(VirtualMachine *vm, const char *file, int line, ScriptObject *script_object){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
