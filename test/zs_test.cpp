@@ -10,8 +10,8 @@ using namespace zetscript;
 #include "IntegerWrap.cpp"
 
 
-
 std::function<void ()> * test_2nd_script_call = NULL;
+ZetScript *zs = NULL;
 
 
 void test_function_1st_c_call(){
@@ -24,39 +24,57 @@ void test_function_1st_c_call(){
 
 
 // Usable AlmostEqual function
-bool floatValuesAreAlmostTheSame(zs_float A, zs_float B, int maxUlps=8)
+bool float_values_are_almost_the_same(zs_float A, zs_float B, int maxUlps=8)
 {
 	 return (fabs(A - B) <= FLT_EPSILON *2* std::max(fabs(A), fabs(B)));
 }
 
 
 
-#define TEST_ARITHMETIC_INTEGER_OP(val1, op, val2) \
+#define INLINE_OPERATION(val1,op,val2) {str_val1+ZS_STR(op)+str_val2+";", val1 op val2}
+
+//------------------------------------------------------------------------------------------------------------------------------------
+//
+// INTEGER OPERATIONS
+//
+#define TEST_ARITHMETIC_INT_EXPR(expr) test_arithmetic_int_expr(expr,ZS_STR(expr)";")
+void test_arithmetic_int_expr(zs_int expr,const char *str_expr)
 { \
-	zs_int *aux_value=NULL; \
-	std::string str= ZS_STR(val1) \
-				ZS_STR(op) \
-				" "\
-				ZS_STR(val2) \
-				";"; \
+	zs_int * aux_value=NULL; \
 	try{\
-		aux_value=zs->evalIntValue(str); \
-		if(aux_value!=NULL){ \
-			if(*aux_value != (val1 op val2)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,(int)*aux_value); \
+		aux_value=zs->evalIntValue(str_expr);\
+		if(aux_value != NULL){\
+			if(*aux_value != (expr)){ \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,expr,(int)*aux_value); \
 				exit(-1); \
 			} \
 		} \
 	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
+		fprintf(stderr,"error test \"%s\" : %s!\n",str_expr,ex.what()); \
 		exit(-1); \
 	}\
 }
 
-#define TEST_ARITHMETIC_CLASS_INTEGER_OP(val1, op, val2) \
-{ \
+#define TEST_INT_EXPR(str_expr, expected_value)
+void test_int_expr(const char *str_expr, zs_int expected_value) {
 	zs_int *aux_value=NULL; \
-	std::string str= "it1=("\
+	\
+	try{\
+		aux_value=zs->evalIntValue(str_expr);\
+		if(aux_value != NULL){\
+			if(*aux_value  != (expected_value)){ \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,expected_value,(int)*aux_value); \
+				exit(-1); \
+			} \
+		} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what()); \
+		exit(-1); \
+	}\
+}
+
+#define COMPLETE_TEST_ARITHMETIC_INTEGER_OP(val1,val2) test_arithmetic_integer_op(val1, val2, ZS_STR(val1), ZS_STR(val2)) 
+#define COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,val2)  test_arithmetic_integer_op(val1,val2,"it1=("\
 				"(i1=new Integer("\
 				ZS_STR(val1) \
 				"))"\
@@ -64,72 +82,121 @@ bool floatValuesAreAlmostTheSame(zs_float A, zs_float B, int maxUlps=8)
 				"(i2=new Integer("\
 				ZS_STR(val2) \
 				"))"\
-				");it2=it1.toInt();delete it1;delete i1;delete i2;it2;"; \
-	try{\
-		aux_value=zs->evalIntValue(str); \
-		if(aux_value!=NULL){ \
-			if( *aux_value != (val1 op val2)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,(int)*aux_value); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-			fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
-			exit(-1); \
-	}\
+				");it2=it1.toInt();delete it1;delete i1;delete i2;it2;")
+void test_arithmetic_integer_op(zs_int val1, zs_int val2,const std::string & str_val1, const std::string & str_val2){
+	struct _test_arithmetic_integer_op_data {
+		std::string str; zs_int val;\
+	}test_arithmetic_integer_op_data[] = {
+		INLINE_OPERATION(val1,+,val2)
+		,INLINE_OPERATION(val1,+,-val2)
+		,INLINE_OPERATION(-val1,+,val2)
+		,INLINE_OPERATION(-val1,+,-val2)
+		,INLINE_OPERATION(val1,-,val2)
+		,INLINE_OPERATION(val1,-,-val2)
+		,INLINE_OPERATION(-val1,-,val2)
+		,INLINE_OPERATION(-val1,-,-val2)
+
+		,INLINE_OPERATION(val1,*,val2)
+		,INLINE_OPERATION(val1,*,-val2)
+		,INLINE_OPERATION(-val1,*,val2)
+		,INLINE_OPERATION(-val1,*,-val2)
+		
+		,INLINE_OPERATION(val1, / ,val2)
+		,INLINE_OPERATION(val1, / ,-val2)
+		,INLINE_OPERATION(-val1, / ,val2)
+		,INLINE_OPERATION(-val1, / ,-val2)
+		
+		,INLINE_OPERATION(val1,%,val2)
+		,INLINE_OPERATION(val1,%,-val2)
+		,INLINE_OPERATION(-val1,%,val2)
+		,INLINE_OPERATION(-val1,%,-val2)
+		,INLINE_OPERATION(val1, &, val2)
+		,INLINE_OPERATION(val1, | , val2)
+		,INLINE_OPERATION(val1, >> , 1)
+		,INLINE_OPERATION(val1, << , 1)
+		,INLINE_OPERATION(val1, ^, val2)
+		, { "",0 }
+	};
+
+	// process
+	_test_arithmetic_integer_op_data *it_iod = test_arithmetic_integer_op_data;
+	while (it_iod->str.empty()) {
+
+		zs_int *aux_value = NULL;
+			try {
+			
+				aux_value = zs->evalIntValue(it_iod->str); \
+				if (aux_value != NULL) {
+				
+						if (*aux_value != (it_iod->val)) {
+						
+								fprintf(stderr, "error test \"%s\" expected %i but it was %i!\n", it_iod->str.c_str(), it_iod->val, (int)*aux_value);
+								exit(-1);
+						}
+				}
+		}
+		catch (std::exception & ex) {
+		
+				fprintf(stderr, "error test \"%s\" : %s!\n", it_iod->str, ex.what());
+				exit(-1);
+		}
+		it_iod++;
+	}
+
+
 }
 
-#define TEST_ARITHMETIC_FLOAT_OP(val1, op, val2) \
-{ \
-	zs_float expr=((zs_float)(val1) op (zs_float)(val2));\
-	zs_float * aux_value=NULL; \
-	std::string str= ZS_STR(val1) \
-				ZS_STR(op) \
-				" "\
-				ZS_STR(val2) \
-				";"; \
-	try{\
-		aux_value=zs->evalFloatValue(str); \
-		if(aux_value!=NULL){ \
-			if(!floatValuesAreAlmostTheSame(*aux_value,expr)){ \
-				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,*aux_value); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
-		exit(-1); \
-	}\
+
+//------------------------------------------------------------------------------------------------------------------------------------
+//
+// FLOAT OPERATIONS
+//
+#define TEST_FLOAT_EXPR(str_expr, expected_value)
+void test_float_expr(const char  *str_expr, zs_float expected_value) {
+	zs_float * aux_value=NULL;
+	aux_value=zs->evalFloatValue(str_expr);
+	try{
+		if(aux_value != NULL){
+			if(*aux_value  != (expected_value)){
+				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr,expected_value,*aux_value);
+				exit(-1);
+			}
+		}
+	}catch(std::exception & ex){
+		fprintf(stderr,"error test \"%s\" : %s!\n",str_expr,ex.what());
+		exit(-1);
+	}
 }
 
+#define TEST_ARITHMETIC_FLOAT_EXPR(val1) test_float_expression(val1,ZS_STR(val1)";")
+void test_float_expression(zs_float expr, const char *str_expr) {
 
-#define TEST_ARITHMETIC_FLOAT_MOD(val1, val2) \
-{ \
-	zs_float *aux_value=NULL; \
-	std::string str= ZS_STR(val1) \
-				"%" \
-				ZS_STR(val2) \
-				";"; \
-	try{\
-		aux_value=zs->evalFloatValue(str); \
-		if(aux_value!=NULL){ \
-			if(!floatValuesAreAlmostTheSame( *aux_value , fmod(val1,val2))){ \
-				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),*aux_value); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
-		exit(-1); \
-	}\
+	zs_float *aux_value = NULL;
+	try {
+		aux_value = zs->evalFloatValue(str_expr); 
+		if (aux_value != NULL) {
+			if (!float_values_are_almost_the_same(*aux_value, expr)) {
+				double error = fabs(fabs(*aux_value) - fabs(expr));
+					if (error > 0.001) { /* Only error if the difference is more than expected */
+						fprintf(stderr, "error test \"%s\" expected %f but it was %f!\n", str_expr, expr, *aux_value);
+							exit(-1);
+						}
+				else {
+					fprintf(stderr, "warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n", str_expr, expr, *aux_value);
+				
+				}
+			}
+		}
+	}
+	catch (std::exception & ex) {
+		fprintf(stderr, "error test \"%s\" : %s!\n", str_expr, ex.what());
+		exit(-1);
+	}
 }
 
-
-#define TEST_ARITHMETIC_CLASS_FLOAT_OP(val1, op, val2) \
-{ \
-	zs_float expr=((zs_float)(val1) op (zs_float)(val2));\
-	zs_float *aux_value=NULL; \
-	std::string str= "nt1=("\
+#define INLINE_FLOAT_MOD_OPERATION(val1,val2) {str_expression, fmod(val1,val2)}
+#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP(val1,val2) test_arithmetic_float_op(val1, val2, ZS_STR(val1), ZS_STR(val2))
+#define COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,val2) test_arithmetic_float_op(val1, val2, "nt1=("\
 				"(n1=new Float("\
 				ZS_STR(val1) \
 				"))"\
@@ -137,361 +204,135 @@ bool floatValuesAreAlmostTheSame(zs_float A, zs_float B, int maxUlps=8)
 				"(n2=new Float("\
 				ZS_STR(val2) \
 				"))"\
-				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;nt2;"; \
-	try{\
-		aux_value=zs->evalFloatValue(str); \
-		if(aux_value!=NULL){ \
-			if(!floatValuesAreAlmostTheSame(*aux_value,expr)){ \
-				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,*aux_value); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
-		exit(-1); \
-	}\
-}
+				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;nt2;") 
+void test_arithmetic_float_op(zs_float val1, zs_float val2, const std::string & str_val1, const std::string & str_val2) {
+	struct _test_arithmetic_float_op_data {
+		std::string str; zs_float val;
+	}test_arithmetic_float_op_data[] = {
+		INLINE_OPERATION(val1,+,val2)
+		,INLINE_OPERATION(val1,+,-val2)
+		,INLINE_OPERATION(-val1,+,val2)
+		,INLINE_OPERATION(-val1,+,-val2)
 
-#define TEST_ARITHMETIC_CLASS_FLOAT_MOD(val1, val2) \
-{ \
-	zs_float *aux_value=NULL; \
-	std::string str= "nt1=("\
-				"(n1=new Float("\
-				ZS_STR(val1) \
-				"))"\
-				"%" \
-				"(n2=new Float("\
-				ZS_STR(val2) \
-				"))"\
-				");nt2=nt1.toFloat();delete n1; delete n2;delete nt1;nt2;"; \
-	try{\
-		aux_value=zs->evalFloatValue(str);\
-		if(aux_value!=NULL){ \
-			if(!floatValuesAreAlmostTheSame(*aux_value  , fmod(val1,val2))){ \
-				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),*aux_value); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
-		exit(-1); \
-	}\
-}
+		,INLINE_OPERATION(val1,-,val2)
+		,INLINE_OPERATION(val1,-,-val2)
+		,INLINE_OPERATION(-val1,-,val2)
+		,INLINE_OPERATION(-val1,-,-val2)
 
+		,INLINE_OPERATION(val1,*,val2)
+		,INLINE_OPERATION(val1,*,-val2)
+		,INLINE_OPERATION(-val1,*,val2)
+		,INLINE_OPERATION(-val1,*,-val2)
 
-#define TEST_ARITHMETIC_STRING_OP(val1,op, val2) \
-{ \
-	std::string * aux_value=NULL; \
-	std::string str= ZS_STR(val1) \
-				ZS_STR(op) \
-				" "\
-				val2\
-				";"; \
-	std::string expected_str = std::string(val1) op val2;\
-	try{\
-		aux_value=zs->evalStringValue(str);\
-		if(aux_value!=NULL){ \
-			if(*aux_value!=expected_str){ \
-				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),expected_str.c_str(),aux_value->c_str()); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
-		exit(-1); \
-	}\
-}
+		,INLINE_OPERATION(val1, / ,val2)
+		,INLINE_OPERATION(val1, / ,-val2)
+		,INLINE_OPERATION(-val1, / ,val2)
+		,INLINE_OPERATION(-val1, / ,-val2)
+		, { "",0 }
+	};
 
+	struct _test_arithmetic_float_mod_op_data {
+		const char *str; zs_float val;
+	}test_arithmetic_float_mod_op_data[] = {
+		INLINE_FLOAT_MOD_OPERATION(val1,val2)
+		,INLINE_FLOAT_MOD_OPERATION(val1,-val2)
+		,INLINE_FLOAT_MOD_OPERATION(-val1,val2)
+		,INLINE_FLOAT_MOD_OPERATION(-val1,-val2)
+		, { 0,0 }
+	};
 
+	// process first part
+	_test_arithmetic_float_op_data *it_af = test_arithmetic_float_op_data;
+	while (it_af->str != 0) {
+		it_af++;
+	}
 
-#define COMPLETE_TEST_ARITHMETIC_INTEGER_OP(val1,val2) \
-		TEST_ARITHMETIC_INTEGER_OP(val1,+,val2); \
-		TEST_ARITHMETIC_INTEGER_OP(val1,+,-val2); \
-		TEST_ARITHMETIC_INTEGER_OP(-val1,+,val2); \
-		TEST_ARITHMETIC_INTEGER_OP(-val1,+,-val2); \
-		\
-		TEST_ARITHMETIC_INTEGER_OP(val1,-,val2); \
-		TEST_ARITHMETIC_INTEGER_OP(val1,-,-val2); \
-		TEST_ARITHMETIC_INTEGER_OP(-val1,-,val2); \
-		TEST_ARITHMETIC_INTEGER_OP(-val1,-,-val2); \
-		\
-		TEST_ARITHMETIC_INTEGER_OP(val1,*,val2); \
-		TEST_ARITHMETIC_INTEGER_OP(val1,*,-val2); \
-		TEST_ARITHMETIC_INTEGER_OP(-val1,*,val2); \
-		TEST_ARITHMETIC_INTEGER_OP(-val1,*,-val2); \
-		\
-		TEST_ARITHMETIC_INTEGER_OP(val1,/,val2); \
-		TEST_ARITHMETIC_INTEGER_OP(val1,/,-val2); \
-		TEST_ARITHMETIC_INTEGER_OP(-val1,/,val2); \
-		TEST_ARITHMETIC_INTEGER_OP(-val1,/,-val2); \
-		\
-		TEST_ARITHMETIC_INTEGER_OP(val1,%,val2); \
-		TEST_ARITHMETIC_INTEGER_OP(val1,%,-val2); \
-		TEST_ARITHMETIC_INTEGER_OP(-val1,%,val2); \
-		TEST_ARITHMETIC_INTEGER_OP(-val1,%,-val2);
+	_test_arithmetic_float_mod_op_data *it_afm = test_arithmetic_float_mod_op_data;
+	// process second part
+	while (it_afm->str != 0) {
+		it_afm++;
+	}
+	// process
 
-#define COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,val2) \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,+,val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,+,-val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(-val1,+,val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(-val1,+,-val2); \
+	// normal
+	/*try {
 		\
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,-,val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,-,-val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(-val1,-,val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(-val1,-,-val2); \
+			aux_value = zs->evalFloatValue(str); \
+			if (aux_value != NULL) {
+				\
+					if (!float_values_are_almost_the_same(*aux_value, expr)) {
+						\
+							fprintf(stderr, "error test \"%s\" expected %f but it was %f!\n", str, expr, *aux_value); \
+							exit(-1); \
+					} \
+			}\
+	}
+	catch (std::exception & ex) {
 		\
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,*,val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,*,-val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(-val1,*,val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(-val1,*,-val2); \
-		\
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,/,val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,/,-val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(-val1,/,val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(-val1,/,-val2); \
-		\
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,%,val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,%,-val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(-val1,%,val2); \
-		TEST_ARITHMETIC_CLASS_INTEGER_OP(-val1,%,-val2);
-
-
-#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP(val1,val2) \
-		TEST_ARITHMETIC_FLOAT_OP(val1,+,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(val1,+,-val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,+,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,+,-val2); \
-		\
-		TEST_ARITHMETIC_FLOAT_OP(val1,-,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(val1,-,-val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,-,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,-,-val2); \
-		\
-		TEST_ARITHMETIC_FLOAT_OP(val1,*,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(val1,*,-val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,*,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,*,-val2); \
-		\
-		TEST_ARITHMETIC_FLOAT_OP(val1,/,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(val1,/,-val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,/,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,/,-val2); \
-		\
-		TEST_ARITHMETIC_FLOAT_MOD(val1,val2); \
-		TEST_ARITHMETIC_FLOAT_MOD(val1,-val2); \
-		TEST_ARITHMETIC_FLOAT_MOD(-val1,val2); \
-		TEST_ARITHMETIC_FLOAT_MOD(-val1,-val2);
-
-#define COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,val2) \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,+,val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,+,-val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(-val1,+,val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(-val1,+,-val2); \
-		\
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,-,val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,-,-val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(-val1,-,val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(-val1,-,-val2); \
-		\
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,*,val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,*,-val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(-val1,*,val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(-val1,*,-val2); \
-		\
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,/,val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,/,-val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(-val1,/,val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_OP(-val1,/,-val2); \
-		\
-		TEST_ARITHMETIC_CLASS_FLOAT_MOD(val1,val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_MOD(val1,-val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_MOD(-val1,val2); \
-		TEST_ARITHMETIC_CLASS_FLOAT_MOD(-val1,-val2);
-
-#define COMPLETE_TEST_ARITHMETIC_BINARY_OP(val1, val2) \
-	TEST_ARITHMETIC_INTEGER_OP(val1,&,val2); \
-	TEST_ARITHMETIC_INTEGER_OP(val1,|,val2); \
-	TEST_ARITHMETIC_INTEGER_OP(val1,>>,1); \
-	TEST_ARITHMETIC_INTEGER_OP(val1,<<,1); \
-	TEST_ARITHMETIC_INTEGER_OP(val1,^,val2);
-
-
-#define COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_BINARY_OP(val1, val2) \
-	TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,&,val2); \
-	TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,|,val2); \
-	TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,>>,1); \
-	TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,<<,1); \
-	TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,^,val2);
-
-
-#define TEST_ARITHMETIC_OP(val1, op, val2) \
-{ \
-	zs_int aux_value=0; \
-	std::string str= ZS_STR(val1) \
-				ZS_STR(op) \
-				" "\
-				ZS_STR(val2) \
-				";"; \
-	try{\
-		if((aux_value=ZetScript::eval<f>(str)) != (val1 op val2)){ \
-			fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
+			fprintf(stderr, "error test \"%s\" : %s!\n", str, ex.what()); \
 			exit(-1); \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
-		exit(-1); \
-	}\
-}
+	} \*/
 
-#define TEST_ARITHMETIC_INT_EXPR(expr) \
-{ \
-	zs_int * aux_value=NULL; \
-	std::string str_expr= ZS_STR(expr)";"; \
-	\
-	try{\
-		aux_value=zs->evalIntValue(str_expr);\
-		if(aux_value != NULL){\
-			if(*aux_value != (expr)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,(int)*aux_value); \
-				exit(-1); \
+	// mod 
+	/*
+	try {
+		\
+			aux_value = zs->evalFloatValue(str); \
+			if (aux_value != NULL) {
+				\
+					if (!float_values_are_almost_the_same(*aux_value, fmod(val1, val2))) {
+						\
+							fprintf(stderr, "error test \"%s\" expected %f but it was %f!\n", str, fmod(val1, val2), *aux_value); \
+							exit(-1); \
+					} \
 			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str_expr.c_str(),ex.what()); \
-		exit(-1); \
-	}\
-}
-
-#define TEST_INT_EXPR(expr, expected_value) \
-{ \
-	zs_int *aux_value=NULL; \
-	\
-	try{\
-		aux_value=zs->evalIntValue(expr);\
-		if(aux_value != NULL){\
-			if(*aux_value  != (expected_value)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,(int)*aux_value); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",expr,ex.what()); \
-		exit(-1); \
-	}\
-}
-
-
-#define TEST_FLOAT_EXPR(expr, expected_value) \
-{ \
-	zs_float * aux_value=NULL; \
-	\
-	aux_value=zs->evalFloatValue(expr); \
-	try{\
-		if(aux_value != NULL){ \
-			if(*aux_value  != (expected_value)){ \
-				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,*aux_value); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",expr,ex.what()); \
-		exit(-1); \
-	}\
-}
-
-#define TEST_BOOL_EXPR(expr, expected_value) \
-{ \
-	bool *aux_value=NULL; \
-	\
-	try{\
-		aux_value=zs->evalBoolValue(expr);\
-		if(aux_value != NULL){ \
-			if(*aux_value  != (expected_value)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,*aux_value); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",expr,ex.what()); \
-		exit(-1); \
-	}\
-}
-
-#define TEST_STRING_EXPR(expr, expected_value) \
-{ \
-	std::string aux_value=""; \
-	\
-	try{\
-		if((aux_value=ZetScript::evalStringValue(expr))  != (expected_value)){ \
-			fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,expected_value,aux_value.c_str()); \
+	}
+	catch (std::exception & ex) {
+		\
+			fprintf(stderr, "error test \"%s\" : %s!\n", str.c_str(), ex.what()); \
 			exit(-1); \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",expr,ex.what()); \
-		exit(-1); \
-	}\
+	} / \
+		*/
 }
 
-#define TEST_NUMBER_EXPR(expr, expected_value) \
-{ \
-	zs_float *aux_value=NULL; \
-	\
-	try{\
-		aux_value=zs->evalFloatValue(expr);\
-		if(aux_value != NULL){ \
-			if(*aux_value  != (expected_value)){ \
-				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,*aux_value); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",expr,ex.what()); \
-		exit(-1); \
-	}\
+
+//------------------------------------------------------------------------------------------------------------------------------------
+//
+// BOOL OPERATIONS
+//
+#define TEST_BOOL_EXPR(str_expr, expected_value) test_bool_expr(str_expr, expected_value)
+void test_bool_expr(const char *str_expr, bool expected_value){ 
+	bool *aux_value=NULL; 
+	
+	try{
+		aux_value=zs->evalBoolValue(str_expr);
+		if(aux_value != NULL){
+			if(*aux_value  != (expected_value)){
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n", str_expr,expected_value,*aux_value);
+				exit(-1);
+			}
+		}
+	}catch(std::exception & ex){
+		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what());
+		exit(-1);
+	}
 }
 
-#define TEST_ARITHMETIC_FLOAT_EXPR(expr) \
-{ \
-	zs_float *aux_value=NULL; \
-	std::string str_expr= ZS_STR(expr)";"; \
-	\
-	try{\
-		aux_value=zs->evalFloatValue(str_expr); \
-		if(aux_value != NULL){ \
-			if(!floatValuesAreAlmostTheSame(*aux_value  , (zs_float)(expr))){ \
-				double error = fabs(fabs(*aux_value)-fabs(expr));\
-				if(error>0.001){ /* Only error if the difference is more than expected */\
-					fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,*aux_value); \
-					exit(-1); \
-				}else{\
-					fprintf(stderr,"warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n",str_expr.c_str(),expr,*aux_value); \
-				}\
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str_expr.c_str(),ex.what()); \
-		exit(-1); \
-	}\
-}
-
-#define TEST_ARITHMETIC_BOOL_EXPR(val1) \
-{ \
-	bool *aux_value=NULL; \
-	std::string str= ZS_STR(val1) \
-				";"; \
-	try{\
-		aux_value=zs->evalBoolValue(str);\
-		if(aux_value != NULL) { \
-			if(*aux_value != (val1)){ \
-				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",*aux_value?"true":"false"); \
-				exit(-1); \
-			} \
-		} \
-	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str.c_str(),ex.what()); \
-		exit(-1); \
-	}\
+#define TEST_ARITHMETIC_BOOL_EXPR(val1) test_bool_expression(val1,ZS_STR(val1)";")
+void test_bool_expression(bool expr, const char *str_expr){
+	bool *aux_value=NULL;
+	try{
+		aux_value=zs->evalBoolValue(str_expr);
+		if(aux_value != NULL) {
+			if(*aux_value != (expr)){
+				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n", str_expr,(expr)?"true":"false",*aux_value?"true":"false");
+				exit(-1);
+			}
+		}
+	}catch(std::exception & ex){
+		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what());
+		exit(-1); 
+	}
 }
 
 
@@ -530,12 +371,54 @@ bool floatValuesAreAlmostTheSame(zs_float A, zs_float B, int maxUlps=8)
 		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(false)); \
 		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(true));
 
+//------------------------------------------------------------------------------------------------------------------------------------
+//
+// STRING OPERATIONS
+//
+
+#define TEST_STRING_EXPR(str_expr, expected_value) test_string_expr(expected_value,str_expr)
+void test_string_expr(const char * expected_value, const char *str_expr){
+	
+	
+	try{
+		std::string *aux_value = zs->evalStringValue(str_expr);
+		if (aux_value != NULL) {
+			if ((*aux_value) != (expected_value)) {
+				fprintf(stderr, "error test \"%s\" expected \"%s\" but it was \"%s\"!\n", str_expr, expected_value, aux_value->c_str());
+				exit(-1);
+			}
+		}
+	}catch(std::exception & ex){
+		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what());
+		exit(-1);
+	}
+}
+
+#define TEST_ARITHMETIC_STRING_OP(val1,op, val2) test_arithmetic_string_op(std::string(val1) op val2,ZS_STR(val1)ZS_STR(op)val2";")
+void test_arithmetic_string_op(const std::string & expected_value, const char * str_expr){
+
+	std::string * aux_value=NULL; \
+	try{\
+		aux_value=zs->evalStringValue(str_expr);\
+		if(aux_value!=NULL){ \
+			if(*aux_value!= expected_value){ \
+				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str_expr, expected_value.c_str(),aux_value->c_str()); \
+				exit(-1); \
+			} \
+		} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what()); \
+		exit(-1); \
+	}\
+}
+
 int main(int argc, char * argv[]) {
 
 	int n_test=0;
 
-	ZetScript *zs=new ZetScript();
+	zs=new ZetScript();
 
+	// test external ops...
 /*	"test_arithmetic_operations.zs",
 	"test_binary_operations.zs",
 	"test_class.zs",
@@ -561,99 +444,100 @@ int main(int argc, char * argv[]) {
 	//TEST_NUMBER_EXPR("4.0*4;",16.0);
 	//exit(-1);
 	//int i= 0+ +1;
-	zs->registerClass<Float>("Float",FloatWrap::_new,FloatWrap::_delete);
+	zs->registerClass<Float>("Float",FloatWrap_New,FloatWrap_Delete);
 
 	// constructor
-	zs->registerConstructor<Float>(static_cast<void (*)(Float *,zs_float *)>(&FloatWrap::_set));
-	zs->registerConstructor<Float>(static_cast<void (*)(Float *,Float *)>(&FloatWrap::_set));
+	zs->registerConstructor<Float>(static_cast<void (*)(Float *,zs_float *)>(&FloatWrap_Set));
+	zs->registerConstructor<Float>(static_cast<void (*)(Float *,Float *)>(&FloatWrap_Set));
 
-	zs->registerMemberFunction<Float>("toFloat",&FloatWrap::toFloat);
+	zs->registerMemberFunction<Float>("_set",static_cast<void (*)(Float *,zs_float *)>(&FloatWrap_Set));
+	zs->registerMemberFunction<Float>("_set",static_cast<void (*)(Float *,Float *)>(&FloatWrap_Set));
+
+
+	zs->registerMemberFunction<Float>("toFloat",&FloatWrap_ToFloat);
 	//zs->registerMemberVariable<Float>("n",&Float::n);
 
 
-	zs->registerMemberFunctionStatic<Float>("_add",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap::_add));
-	zs->registerMemberFunctionStatic<Float>("_add",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap::_add));
-	zs->registerMemberFunctionStatic<Float>("_add",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap::_add));
+	zs->registerMemberFunctionStatic<Float>("_add",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap_Add));
+	zs->registerMemberFunctionStatic<Float>("_add",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap_Add));
+	zs->registerMemberFunctionStatic<Float>("_add",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap_Add));
 
-	zs->registerMemberFunctionStatic<Float>("_sub",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap::_sub));
-	zs->registerMemberFunctionStatic<Float>("_sub",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap::_sub));
-	zs->registerMemberFunctionStatic<Float>("_sub",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap::_sub));
-
-
-	zs->registerMemberFunctionStatic<Float>("_mul",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap::_mul));
-	zs->registerMemberFunctionStatic<Float>("_mul",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap::_mul));
-	zs->registerMemberFunctionStatic<Float>("_mul",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap::_mul));
-
-	zs->registerMemberFunctionStatic<Float>("_div",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap::_div));
-	zs->registerMemberFunctionStatic<Float>("_div",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap::_div));
-	zs->registerMemberFunctionStatic<Float>("_div",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap::_div));
-
-	zs->registerMemberFunctionStatic<Float>("_mod",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap::_mod));
-	zs->registerMemberFunctionStatic<Float>("_mod",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap::_mod));
-	zs->registerMemberFunctionStatic<Float>("_mod",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap::_mod));
-
-	zs->registerMemberFunctionStatic<Float>("_neg",static_cast<Float * (*)(Float *)>(&FloatWrap::_neg));
-
-	zs->registerMemberFunction<Float>("_set",static_cast<void (*)(Float *,zs_float *)>(&FloatWrap::_set));
-	zs->registerMemberFunction<Float>("_set",static_cast<void (*)(Float *,Float *)>(&FloatWrap::_set));
+	zs->registerMemberFunctionStatic<Float>("_sub",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap_Sub));
+	zs->registerMemberFunctionStatic<Float>("_sub",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap_Sub));
+	zs->registerMemberFunctionStatic<Float>("_sub",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap_Sub));
 
 
-	zs->registerClass<Integer>("Integer",IntegerWrap::_new,IntegerWrap::_delete);
-	zs->registerConstructor<Integer>(static_cast<void (*)(Integer *,zs_int )>(&IntegerWrap::_set));
-	zs->registerConstructor<Integer>(static_cast<void (*)(Integer *,Integer *)>(&IntegerWrap::_set));
-	zs->registerMemberFunction<Integer>("toInt",&IntegerWrap::toInt);
-//	zs->registerMemberVariable<Integer>("n",&Integer::n);
+	zs->registerMemberFunctionStatic<Float>("_mul",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap_Mul));
+	zs->registerMemberFunctionStatic<Float>("_mul",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap_Mul));
+	zs->registerMemberFunctionStatic<Float>("_mul",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap_Mul));
+
+	zs->registerMemberFunctionStatic<Float>("_div",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap_Div));
+	zs->registerMemberFunctionStatic<Float>("_div",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap_Div));
+	zs->registerMemberFunctionStatic<Float>("_div",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap_Div));
+
+	zs->registerMemberFunctionStatic<Float>("_mod",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap_Mod));
+	zs->registerMemberFunctionStatic<Float>("_mod",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap_Mod));
+	zs->registerMemberFunctionStatic<Float>("_mod",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap_Mod));
+
+	zs->registerMemberFunctionStatic<Float>("_neg",static_cast<Float * (*)(Float *)>(&FloatWrap_Neg));
 
 
-	zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap::_add));
-	zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap::_add));
-	zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap::_add));
+	zs->registerClass<Integer>("Integer",IntegerWrap_New,IntegerWrap_Delete);
+	zs->registerConstructor<Integer>(static_cast<void (*)(Integer *,zs_int )>(&IntegerWrap_Set));
+	zs->registerConstructor<Integer>(static_cast<void (*)(Integer *,Integer *)>(&IntegerWrap_Set));
+	zs->registerMemberFunction<Integer>("toInt",&IntegerWrap_ToInt);
 
-	zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap::_sub));
-	zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap::_sub));
-	zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap::_sub));
-
-
-	zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap::_mul));
-	zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap::_mul));
-	zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap::_mul));
-
-	zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap::_div));
-	zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap::_div));
-	zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap::_div));
-
-	zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap::_mod));
-	zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap::_mod));
-	zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap::_mod));
+	zs->registerMemberFunction<Integer>("_set",static_cast<void (*)(Integer *, zs_int)>(&IntegerWrap_Set));
+	zs->registerMemberFunction<Integer>("_set",static_cast<void (*)(Integer *,Integer *)>(&IntegerWrap_Set));
 
 
-	zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap::_shr));
-	zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap::_shr));
-	zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap::_shr));
+	zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap_Add));
+	zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap_Add));
+	zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap_Add));
+
+	zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap_Sub));
+	zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap_Sub));
+	zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap_Sub));
 
 
-	zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap::_shl));
-	zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap::_shl));
-	zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap::_shl));
+	zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap_Mul));
+	zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap_Mul));
+	zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap_Mul));
+
+	zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap_Div));
+	zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap_Div));
+	zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap_Div));
+
+	zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap_Mod));
+	zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap_Mod));
+	zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap_Mod));
 
 
-	zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap::_and));
-	zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap::_and));
-	zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap::_and));
-
-	zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap::_or));
-	zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap::_or));
-	zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap::_or));
-
-	zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap::_xor));
-	zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap::_xor));
-	zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap::_xor));
+	zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap_Shr));
+	zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap_Shr));
+	zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap_Shr));
 
 
-	zs->registerMemberFunctionStatic<Integer>("_neg",static_cast<Integer * (*)(Integer *)>(&IntegerWrap::_neg));
+	zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap_Shl));
+	zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap_Shl));
+	zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap_Shl));
 
-	zs->registerMemberFunction<Integer>("_set",static_cast<void (*)(Integer *, zs_int)>(&IntegerWrap::_set));
-	zs->registerMemberFunction<Integer>("_set",static_cast<void (*)(Integer *,Integer *)>(&IntegerWrap::_set));
+
+	zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap_And));
+	zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap_And));
+	zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap_And));
+
+	zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap_Or));
+	zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap_Or));
+	zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap_Or));
+
+	zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(zs_int,Integer * )>(&IntegerWrap_Xor));
+	zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(Integer *,zs_int)>(&IntegerWrap_Xor));
+	zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(Integer *,Integer * )>(&IntegerWrap_Xor));
+
+
+	zs->registerMemberFunctionStatic<Integer>("_neg",static_cast<Integer * (*)(Integer *)>(&IntegerWrap_Neg));
+
 
 
 	// unsinged
@@ -684,10 +568,7 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5,4.0); // op1 > op2
 
-	printf("%i. testing binary operations ...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x4,0x4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x4,0x5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x5,0x4); // op1 > op2
+
 
 
 	printf("%i. testing std::string...\n",++n_test);
@@ -738,9 +619,9 @@ int main(int argc, char * argv[]) {
 	TEST_INT_EXPR("i%=10;",5);
 
 	// test reassign and float
-	TEST_NUMBER_EXPR("i=2.0;",2.0f);
-	TEST_NUMBER_EXPR("i++;i;",3.0f);
-	TEST_NUMBER_EXPR("--i;i;",2.0f);
+	TEST_FLOAT_EXPR("i=2.0;",2.0f);
+	TEST_FLOAT_EXPR("i++;i;",3.0f);
+	TEST_FLOAT_EXPR("--i;i;",2.0f);
 
 	TEST_BOOL_EXPR("i=true;",true);
 	TEST_BOOL_EXPR("i=!i;",false);
@@ -788,11 +669,6 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(4.0,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(5.0,4.0); // op1 > op2
 	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(5.0,2.0e2); // op1 > op2
-
-	printf("%i. testing class Integer binary operations ...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_BINARY_OP(0x4,0x4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_BINARY_OP(0x4,0x5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_BINARY_OP(0x5,0x4); // op1 > op2
 
 
 	printf("%i. test consisten script-c-script calls ...\n",++n_test);

@@ -8,47 +8,42 @@
 #include "Integer.h"
 
 class Integer;
-class IntegerWrap{
-public:
+Integer *IntegerWrap_New();
+void IntegerWrap_Delete(Integer *_this);
+void IntegerWrap_Set(Integer *_this, zs_int _n);
+void IntegerWrap_Set(Integer *_this,Integer *_ci2);
+Integer * IntegerWrap_Add(Integer *n1, Integer *n2);
+Integer * IntegerWrap_Add(Integer *n1, zs_float n2);
+Integer * IntegerWrap_Add(Integer *n1, zs_int n2);
+Integer * IntegerWrap_Add(zs_int n1, Integer * n2);
+Integer * IntegerWrap_Sub(Integer *n1, Integer *n2);
+Integer * IntegerWrap_Sub(Integer *n1, zs_float n2);
+Integer * IntegerWrap_Sub(Integer *n1, zs_int n2);
+Integer * IntegerWrap_Sub(zs_int n1, Integer * n2);
+Integer * IntegerWrap_Div(Integer *n1, Integer *n2);
+Integer * IntegerWrap_Div(Integer *n1, zs_int n2);
+Integer * IntegerWrap_Div(zs_int n1, Integer *n2);
+Integer * IntegerWrap_Neg(Integer *n1);
+Integer * IntegerWrap_Mod(Integer *n1, Integer *n2);
+Integer * IntegerWrap_Mod(Integer *n1, zs_int n2);
+Integer * IntegerWrap_Mod(zs_int n1, Integer *n2);
+Integer * IntegerWrap_Mul(Integer *n1, Integer *n2);
+Integer * IntegerWrap_Mul(Integer *n1, zs_int n2);
+Integer * IntegerWrap_Mul(zs_int n1, Integer * n2);
+Integer * IntegerWrap_Shl(Integer *n1, Integer *n2);
+Integer * IntegerWrap_Shl(Integer *n1, zs_int n2);
+Integer * IntegerWrap_Shl(zs_int n1, Integer *n2);
+Integer * IntegerWrap_And(Integer *n1, Integer *n2);
+Integer * IntegerWrap_And(Integer *n1, zs_int n2);
+Integer * IntegerWrap_And(zs_int n1, Integer * n2);
+Integer * IntegerWrap_Or(Integer *n1, Integer *n2);
+Integer * IntegerWrap_Or(Integer *n1, zs_int n2);
+Integer * IntegerWrap_Or(zs_int n1, Integer * n2);
+Integer * IntegerWrap_Xor(Integer *n1, Integer *n2);
+Integer * IntegerWrap_Xor(Integer *n1, zs_int n2);
+Integer * IntegerWrap_Xor(zs_int n1, Integer * n2);
+Integer * IntegerWrap_Shr(Integer *n1, Integer *n2);
+Integer * IntegerWrap_Shr(Integer *n1, zs_int n2);
+Integer * IntegerWrap_Shr(zs_int n1, Integer *n2);
+zs_int IntegerWrap_ToInt(Integer *_this);
 
-	static Integer *_new();
-	static void _delete(Integer *);
-
-	static void _set(Integer *_this, zs_int _n);
-	static void _set(Integer *_this,Integer *_ci2);
-	static Integer * _add(Integer *n1, Integer *n2);
-	static Integer * _add(Integer *n1, zs_float n2);
-	static Integer * _add(Integer *n1, zs_int n2);
-	static Integer * _add(zs_int n1, Integer * n2);
-	static Integer * _sub(Integer *n1, Integer *n2);
-	static Integer * _sub(Integer *n1, zs_float n2);
-	static Integer * _sub(Integer *n1, zs_int n2);
-	static Integer * _sub(zs_int n1, Integer * n2);
-	static Integer * _div(Integer *n1, Integer *n2);
-	static Integer * _div(Integer *n1, zs_int n2);
-	static Integer * _div(zs_int n1, Integer *n2);
-	static Integer * _neg(Integer *n1);
-	static Integer * _mod(Integer *n1, Integer *n2);
-	static Integer * _mod(Integer *n1, zs_int n2);
-	static Integer * _mod(zs_int n1, Integer *n2);
-	static Integer * _mul(Integer *n1, Integer *n2);
-	static Integer * _mul(Integer *n1, zs_int n2);
-	static Integer * _mul(zs_int n1, Integer * n2);
-	static Integer * _shl(Integer *n1, Integer *n2);
-	static Integer * _shl(Integer *n1, zs_int n2);
-	static Integer * _shl(zs_int n1, Integer *n2);
-	static Integer * _and(Integer *n1, Integer *n2);
-	static Integer * _and(Integer *n1, zs_int n2);
-	static Integer * _and(zs_int n1, Integer * n2);
-	static Integer * _or(Integer *n1, Integer *n2);
-	static Integer * _or(Integer *n1, zs_int n2);
-	static Integer * _or(zs_int n1, Integer * n2);
-	static Integer * _xor(Integer *n1, Integer *n2);
-	static Integer * _xor(Integer *n1, zs_int n2);
-	static Integer * _xor(zs_int n1, Integer * n2);
-	static Integer * _shr(Integer *n1, Integer *n2);
-	static Integer * _shr(Integer *n1, zs_int n2);
-	static Integer * _shr(zs_int n1, Integer *n2);
-	static zs_int toInt(Integer *_this);
-
-};
