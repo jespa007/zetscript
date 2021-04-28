@@ -194,7 +194,7 @@ void test_float_expression(zs_float expr, const char *str_expr) {
 	}
 }
 
-#define INLINE_FLOAT_MOD_OPERATION(val1,val2) {std::string(str_val1)+"%"+str_val2, fmod(val1,val2)}
+#define INLINE_FLOAT_MOD_OPERATION(val1,val2) {zs_strutils::format(str_format,std::string(str_val1),"%",str_val2), (zs_float)fmod(val1,val2)}
 #define COMPLETE_TEST_ARITHMETIC_FLOAT_OP(val1,val2) test_arithmetic_float_op(val1, val2, ZS_STR(val1), ZS_STR(val2),"%s%s%s;")
 #define COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,val2) test_arithmetic_float_op(val1, val2, ZS_STR(val1), ZS_STR(val2),"nt1=("\
 				"(n1=new Float("\

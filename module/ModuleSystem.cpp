@@ -16,10 +16,13 @@ namespace zetscript{
 	}
 
 
-	void ModuleSystem::eval(ZetScript *zs,StackElement *str, StackElement *args){
-		ScriptObjectString *str_out=ScriptObjectString::formatSf(zs,str,args);
+	void ModuleSystem::eval(ZetScript *zs,StackElement *str_eval,StackElement *arg_names, StackElement *arg_values){
+		//ScriptObjectString *str_out=ScriptObjectString::formatSf(zs,str,arg_values);
+		// 1. Create anonymouse function
+		// 2. Eval
+		// 3. Call function passing all arg parameter
 		printf("not implemented");
-		delete str_out;
+		//delete str_out;
 	}
 
 	void ModuleSystem::assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){

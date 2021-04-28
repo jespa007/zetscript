@@ -56,7 +56,7 @@ namespace zetscript{
 		// Console mod
 		script_class_factory->registerNativeSingletonClass<ModuleConsole>("ModuleConsole");
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("readChar",ModuleConsole::readChar);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("print",ModuleConsole::print);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("out",ModuleConsole::out);
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("outln",ModuleConsole::outln);
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("error",ModuleConsole::error);
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("errorln",ModuleConsole::errorln);
