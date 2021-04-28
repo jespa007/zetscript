@@ -6,8 +6,8 @@ class A{
 
 };
 
-Console::println(A::a.a);
-Console::println(A::a.b);
+Console::outln(A::a.a);
+Console::outln(A::a.b);
 
 
 

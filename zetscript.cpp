@@ -57,7 +57,7 @@ namespace zetscript{
 		script_class_factory->registerNativeSingletonClass<ModuleConsole>("ModuleConsole");
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("readChar",ModuleConsole::readChar);
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("print",ModuleConsole::print);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("println",ModuleConsole::println);
+		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("outln",ModuleConsole::outln);
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("error",ModuleConsole::error);
 		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("errorln",ModuleConsole::errorln);
 
@@ -85,8 +85,8 @@ namespace zetscript{
 				"	static print(s,...args){"
 				"		ModuleConsole::print(System::getZetScript(),s,args)"
 				"	}"
-				"	static println(s,...args){"
-				"		ModuleConsole::println(System::getZetScript(),s,args)"
+				"	static outln(s,...args){"
+				"		ModuleConsole::outln(System::getZetScript(),s,args)"
 				"	}"
 				"	static error(s,...args){"
 				"		ModuleConsole::error(System::getZetScript(),s,args)"

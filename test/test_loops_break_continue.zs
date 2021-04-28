@@ -1,6 +1,6 @@
 
 // for
-Console::println("test for:");
+Console::outln("test for:");
 for(var i=0;i<20;i++){ 
 	if(i==1) { 
 		continue;
@@ -9,10 +9,10 @@ for(var i=0;i<20;i++){
 	if(i==10){
 		break;
 	}
-	Console::println("i:"+i);
+	Console::outln("i:"+i);
 }
 
-Console::println("test while:");
+Console::outln("test while:");
 var j=0;
 while(j < 10){
 	
@@ -26,11 +26,11 @@ while(j < 10){
 		break;
 	}
 	
-	Console::println("i:"+j);
+	Console::outln("i:"+j);
 	
 }
 
-Console::println("test do-while:");
+Console::outln("test do-while:");
 // do-while
 j=0;
 do{
@@ -43,5 +43,5 @@ do{
 	if(j==10){
 		break;
 	}
-	Console::println("j:"+j);
+	Console::outln("j:"+j);
 }while(j<20);

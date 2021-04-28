@@ -5,54 +5,54 @@ var v4=["s1","s2","s3","s4"]
 v1.push(3);
 
 for(var i=0; i < v1.size(); i++){
-	Console::println(v1[i]);
+	Console::outln(v1[i]);
 }
 
 var item=v1.pop();
 
 for(var i=0; i < v1.size(); i++){
-	Console::println(v1[i]);
+	Console::outln(v1[i]);
 }
 
-Console::println("---")
-Console::println(item)
-Console::println("---")
+Console::outln("---")
+Console::outln(item)
+Console::outln("---")
 
-//Console::println("---")
+//Console::outln("---")
 
 v2.insertAt(1,"string")
 
 for(var i=0; i < v2.size(); i++){
-	Console::println(v2[i]);
+	Console::outln(v2[i]);
 }
 
-Console::println("---")
+Console::outln("---")
 
 v2.eraseAt(1)
 
 for(var i=0; i < v2.size(); i++){
-	Console::println(v2[i]);
+	Console::outln(v2[i]);
 }
 
-Console::println("---")
+Console::outln("---")
 
 var v3=v1+v2
 
 for(var i=0; i < v3.size(); i++){
-	Console::println(v3[i]);
+	Console::outln(v3[i]);
 }
 
-Console::println("---")
+Console::outln("---")
 
 v3.clear()
 
 for(var i=0; i < v3.size(); i++){
-	Console::println(v3[i]);
+	Console::outln(v3[i]);
 }
 
-Console::println("---")
+Console::outln("---")
 
-Console::println(v4.join('_'))
+Console::outln(v4.join('_'))
 
 var v1d=["George",0,true]
 

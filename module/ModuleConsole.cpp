@@ -44,14 +44,14 @@ namespace zetscript{
 		       return buf;
 	}
 
-	void ModuleConsole::println(ZetScript *zs,StackElement *str, StackElement *args){
+	void ModuleConsole::outln(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::formatSf(zs,str,args);
 		fprintf(stdout,"%s\n",str_out->toString().c_str());
 		delete str_out;
 	}
 
 
-	void ModuleConsole::print(ZetScript *zs,StackElement *str, StackElement *args){
+	void ModuleConsole::out(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::formatSf(zs,str,args);
 		fprintf(stdout,"%s",str_out->toString().c_str());
 		delete str_out;

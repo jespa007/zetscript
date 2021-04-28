@@ -1,5 +1,5 @@
 function f3(a){
-	Console::println(a);
+	Console::outln(a);
 }
 
 function f2(a){

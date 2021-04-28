@@ -5,7 +5,7 @@ class A{
 	}
 	
 	_set(_a){
-		Console::println("assign this.__a__="+_a)
+		Console::outln("assign this.__a__="+_a)
 		this.__a__=_a
 	}
 	
@@ -33,10 +33,10 @@ class A{
 
 var a=new A();
 a=2;
-Console::println(a)
+Console::outln(a)
 a.a=1;
-Console::println(a.a);
+Console::outln(a.a);
 a=2
-Console::println(a.a);
+Console::outln(a.a);
 
 

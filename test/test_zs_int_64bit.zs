@@ -1,1 +1,1 @@
-Console::println(-2252400000);
+Console::outln(-2252400000);

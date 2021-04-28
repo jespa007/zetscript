@@ -3,57 +3,57 @@ function test_switch(a){
 
 	switch(a){
 	default:
-		Console::println("default ("+a+")")
+		Console::outln("default ("+a+")")
 		break
 	case - 1:
-		Console::println("-1")
+		Console::outln("-1")
 	case 0:
 	case 1:
-		Console::println("case 0,1")
+		Console::outln("case 0,1")
 	case 2:
 		{
 		var b
-		Console::println("case 2")
+		Console::outln("case 2")
 		}
 	case 3:{
 		var c,d,e=0
-		Console::println("case 3 {0} {1}",a,b,c)
+		Console::outln("case 3 {0} {1}",a,b,c)
 		break
 	}
 	case 4:
-		Console::println("case 4")
+		Console::outln("case 4")
 		break
 	case 5:
 		{
-			Console::println("case 5")
+			Console::outln("case 5")
 			break
 		}
 	}
 	
 }
-Console::println("--")
+Console::outln("--")
 test_switch(-2)
-Console::println("--")
+Console::outln("--")
 test_switch(-1)
-Console::println("--")
+Console::outln("--")
 test_switch(0)
-Console::println("--")
+Console::outln("--")
 test_switch(3)
-Console::println("--")
+Console::outln("--")
 test_switch(4)
-Console::println("--")
+Console::outln("--")
 
 var s="hello"
 
 switch(s){
 default:
-	Console::println("default-string")
+	Console::outln("default-string")
 	break
 case "hello":
-	Console::println("hello1")
+	Console::outln("hello1")
 	break
 case "bye":
-	Console::println("bye1")
+	Console::outln("bye1")
 	break
 	
 }
