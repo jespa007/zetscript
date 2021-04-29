@@ -6,7 +6,6 @@
 
 namespace zetscript{
 
-	 ScriptObjectString * 	ScriptObjectStringWrap_format(ZetScript *zs,StackElement *str, StackElement *args);
 	 zs_int 				ScriptObjectStringWrap_size(ScriptObjectString *so);
 	 bool 					ScriptObjectStringWrap_contains(ScriptObjectString *so, std::string *str);
 	 bool 					ScriptObjectStringWrap_contains(ScriptObjectString *so, zs_int ch);

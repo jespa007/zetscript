@@ -63,7 +63,7 @@ namespace zetscript{
 
 
 		// System mod
-		cl=script_class_factory->registerClass("ModuleSystem");
+		cl=script_class_factory->registerClass("System");
 		cl->registerNativeMemberFunctionStatic("clock",ModuleSystemWrap_clock);
 		cl->registerNativeMemberFunctionStatic("eval",ModuleSystemWrap_eval);
 		cl->registerNativeMemberFunctionStatic("assert",ModuleSystemWrap_assert);
@@ -78,35 +78,25 @@ namespace zetscript{
 				"}"
 				//------------------------------------------------
 				// Console
-				"class Console{\n"
-				"	static readChar(){"
-				"		return ModuleConsole::readChar()"
-				"	}"
-				"	static print(s,...args){"
-				"		ModuleConsole::print(System::getZetScript(),s,args)"
-				"	}"
-				"	static outln(s,...args){"
-				"		ModuleConsole::outln(System::getZetScript(),s,args)"
-				"	}"
-				"	static error(s,...args){"
-				"		ModuleConsole::error(System::getZetScript(),s,args)"
-				"	}"
-				"	static errorln(s,...args){"
-				"		ModuleConsole::errorln(System::getZetScript(),s,args)"
-				"	}"
+				"static Console::print(s,...args){"
+				"	Console::print(System::getZetScript(),s,args)"
+				"}"
+				"static Console::outln(s,...args){"
+				"	Console::outln(System::getZetScript(),s,args)"
+				"}"
+				"static Console::error(s,...args){"
+				"	Console::error(System::getZetScript(),s,args)"
+				"}"
+				"static Console::errorln(s,...args){"
+				"	Console::errorln(System::getZetScript(),s,args)"
 				"}"
 				//------------------------------------------------
 				// System
-				"class System{\n"
-				"	static clock(){"
-				"		return ModuleSystem::clock()"
-				"	}"
-				"	static assert(check,s,...args){"
-				"		ModuleSystem::assert(System::getZetScript(),check,s,args)"
-				"	}"
-				"	static getZetScript(){"
-				"		return ptrToZetScriptPtr(0x%x);" // ptrToZetScript it gets current this
-				"   }"
+				"static System::assert(check,s,...args){"
+				"	ModuleSystem::assert(System::getZetScript(),check,s,args)"
+				"}"
+				"static System::getZetScript(){"
+				"	return ptrToZetScriptPtr(0x%x);" // ptrToZetScript it gets current this
 				"}"
 			,
 			(void *)this

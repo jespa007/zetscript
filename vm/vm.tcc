@@ -653,7 +653,7 @@ namespace zetscript{
 					&&
 					obj2->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
 				){
-					ScriptObjectObject *so_object=ScriptObjectObjectWrap_concat(
+					ScriptObjectObject *so_object=ScriptObjectObject::concat(
 							data->zs
 							,(ScriptObjectObject *)obj1
 							,(ScriptObjectObject *)obj2

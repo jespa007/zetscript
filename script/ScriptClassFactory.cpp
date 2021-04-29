@@ -184,7 +184,7 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
 
 		// String
-		registerNativeMemberFunctionStatic<ScriptObjectString>("format",ScriptObjectStringWrap_format);
+		registerNativeMemberFunctionStatic<ScriptObjectString>("format",ScriptObjectString::format);
 		registerNativeMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectStringWrap_eraseAt);
 		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
 		registerNativeMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);
@@ -207,7 +207,7 @@ namespace zetscript{
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("clear",&ScriptObjectObjectWrap_clear);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("erase",&ScriptObjectObjectWrap_erase);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("contains",&ScriptObjectObjectWrap_contains);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("concat",ScriptObjectObjectWrap_concat);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("concat",ScriptObjectObject::concat);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("keys",ScriptObjectObjectWrap_keys);
 		//registerNativeMemberFunctionStatic<ScriptObjectObject>("iteratorSf",ScriptObjectObject::iteratorSf);
 

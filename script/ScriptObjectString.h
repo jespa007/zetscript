@@ -18,6 +18,7 @@ namespace zetscript{
 		//
 		static ScriptObjectString * newScriptObjectString(ZetScript *zs, const std::string & str="");
 		static ScriptObjectString * newScriptObjectStringAddStk(ZetScript *zs,StackElement *stk_result_op1,StackElement *stk_result_op2);
+		static ScriptObjectString * format(ZetScript *zs,StackElement *str, StackElement *args);
 
 		//
 		// Helpers

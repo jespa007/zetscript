@@ -16,7 +16,21 @@ namespace zetscript{
 		return ac;
 	}
 
+	ScriptObjectObject * ScriptObjectObject::concat(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
+		std::string error="";
+		ScriptObjectObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
+		//zs_map_iterator it_1=o1->map_user_property_keys->begin();
+		//zs_map_iterator it_2=o2->map_user_property_keys->begin();
 
+		for(auto it=o1->begin(); !it.end();it.next()){
+			obj->addUserProperty(it.getKey(),error,(StackElement *)it.getValue());
+		}
+
+		for(auto it=o2->begin(); !it.end();it.next()){
+			obj->addUserProperty(it.getKey(),error,(StackElement *)it.getValue());
+		}
+		return obj;
+	}
 
 	//
 	// Helpers

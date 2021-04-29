@@ -1,1 +1,1 @@
-print("hello world!");
+Console::outln("hello world!");
