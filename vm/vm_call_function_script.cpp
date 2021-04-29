@@ -968,7 +968,7 @@ load_element_object:
 						if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
 							ScriptObjectClass *script_object_class=((ScriptObjectClass *)stk_dst->stk_value);
 							if(script_object_class->itHasSetMetamethod()){
-								lst_functions=script_object_class->getAllBuiltinElements();
+								lst_functions=script_object_class->getStkBuiltinListElements();
 								obj_setter=script_object_class;
 							}
 
@@ -1421,7 +1421,7 @@ load_element_object:
 							stk_function_ref->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION //scope_type&(MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
 						){
 							ignore_call= (is_constructor) && calling_object->isNativeObject() && n_args==0;
-							zs_vector * list_props=calling_object->getAllBuiltinElements();//getFunctions();
+							zs_vector * list_props=calling_object->getStkBuiltinListElements();//getFunctions();
 							stk_element_ptr=list_props->items;
 							stk_element_len=list_props->count;
 						}

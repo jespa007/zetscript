@@ -33,71 +33,7 @@ namespace zetscript{
 	}
 
 
-	void    			ScriptObjectVector::pushSf(ScriptObjectVector *sv,StackElement  * stk){
-		return sv->push(stk);
-	}
 
-	void   	ScriptObjectVector::popSf(ScriptObjectVector *sv){
-		sv->pop();
-	}
-
-	zs_int 			ScriptObjectVector::sizeSf(ScriptObjectVector *sv){
-		return sv->stk_user_elements.count;
-	}
-
-	void 			ScriptObjectVector::insertAtSf(ScriptObjectVector *sv, zs_int idx,StackElement  * _stk){
-
-		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
-		*new_stk=*_stk;
-		ZetScript *zs=sv->zs;
-
-		// update n_refs +1
-		if(_stk->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
-			ScriptObject *so_param=(ScriptObject *)_stk->stk_value;
-			if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
-				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
-				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(zs);
-				if(!vm_create_shared_pointer(zs->getVirtualMachine(),sc)){
-					return;
-				}
-				sc->set(so_param->toString());
-				so_param=sc;
-				new_stk->stk_value=so_param; // update pointer
-			}
-
-			vm_share_pointer(zs->getVirtualMachine(),so_param);
-
-		}
-
-		sv->stk_user_elements.insert(idx,(zs_int)new_stk);
-	}
-
-	void 			ScriptObjectVector::eraseAtSf(ScriptObjectVector *sv, zs_int idx){
-		sv->eraseUserElementAt(idx);
-	}
-
-	void 			ScriptObjectVector::clearSf(ScriptObjectVector *sv){
-		sv->eraseAllUserElements();
-	}
-
-	ScriptObjectString *		ScriptObjectVector::joinSf(ScriptObjectVector *sv, zs_int idx){
-		ScriptObjectString *so_ref=NULL;
-		//std::string *str;
-		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(sv->zs);
-		std::string *ptr_str=(std::string *)so_string->value;
-
-		for(unsigned i=0; i < sv->stk_user_elements.count;i++){
-			StackElement *stk=(StackElement *)sv->stk_user_elements.items[i];
-			if(i>0){
-				ptr_str->push_back(idx);
-			}
-			*ptr_str+=stk->toString();
-//			so_vector->push((StackElement *)v1->stk_user_elements.items[i]);
-
-		}
-
-		return so_string;
-	}
 	//
 	// Helpers
 	//
@@ -108,7 +44,7 @@ namespace zetscript{
 		this->idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR;
 	}
 
-	zs_vector * ScriptObjectVector::getAllUserElements(){ // return list of stack elements
+	zs_vector * ScriptObjectVector::getStkUserListElements(){ // return list of stack elements
 		return &stk_user_elements;
 	}
 

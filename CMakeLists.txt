@@ -210,11 +210,10 @@ ELSE()
  		util/zs_vector.cpp
  		util/zs_map.cpp
  		
- 		# extra
- 		modules/ModuleMath.cpp
-		modules/StringMod.cpp
-		modules/ModuleSystem.cpp
-		modules/ModuleJson.cpp
+ 		# Modules
+ 		modules/ModuleMathWrap.cpp
+		modules/ModuleSystemWrap.cpp
+		modules/ModuleJsonWrap.cpp
  		
  		# VM
  		vm/VirtualMachine.cpp
@@ -233,12 +232,19 @@ ELSE()
 		script/ScriptObject.cpp
 		script/ScriptObjectVarRef.cpp
 		script/ScriptObjectString.cpp
+		script/ScriptObjectStringWrap.cpp
 		script/ScriptObjectStringIterator.cpp
+		script/ScriptObjectStringIteratorWrap.cpp
 		script/ScriptObjectVector.cpp
+		script/ScriptObjectVectorWrap.cpp
 		script/ScriptObjectVectorIterator.cpp
+		script/ScriptObjectVectorIteratorWrap.cpp
 		script/ScriptObjectObject.cpp
 		script/ScriptObjectObjectIterator.cpp
+		script/ScriptObjectObjectIteratorWrap.cpp
 		script/ScriptObjectClass.cpp
+		script/ScriptObjectDateTime.cpp
+		script/ScriptObjectDateTimeWrap.cpp
 				
 		script/ScriptClass.cpp
 		script/ScriptFunction.cpp

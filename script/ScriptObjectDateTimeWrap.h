@@ -2,10 +2,10 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-
-#include "zetscript.h"
+#pragma once
 
 namespace zetscript{
 
-	const zs_float ModuleMath::PI=M_PI;
+	ScriptObjectDateTime * ScriptObjectDateTimeWrap_now(ZetScript *_zs);
+
 }

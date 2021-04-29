@@ -18,12 +18,19 @@
 
 #include 		"script/ScriptObject.cpp"
 #include		"script/ScriptObjectString.cpp"
+#include		"script/ScriptObjectStringWrap.cpp"
 #include 		"script/ScriptObjectStringIterator.cpp"
+#include 		"script/ScriptObjectStringIteratorWrap.cpp"
 #include		"script/ScriptObjectVector.cpp"
+#include		"script/ScriptObjectVectorWrap.cpp"
 #include		"script/ScriptObjectVectorIterator.cpp"
+#include		"script/ScriptObjectVectorIteratorWrap.cpp"
 #include 		"script/ScriptObjectObject.cpp"
+#include 		"script/ScriptObjectObjectWrap.cpp"
 #include 		"script/ScriptObjectObjectIterator.cpp"
+#include 		"script/ScriptObjectObjectIteratorWrap.cpp"
 #include 		"script/ScriptObjectDateTime.cpp"
+#include 		"script/ScriptObjectDateTimeWrap.cpp"
 #include 		"script/ScriptObjectClass.cpp"
 #include 		"script/ScriptObjectVarRef.cpp"
 
@@ -43,10 +50,11 @@
 // -- Eval
 #include		"eval/eval.cpp"
 
-#include 		"module/ModuleMath.cpp"
-#include 		"module/ModuleSystem.cpp"
-#include 		"module/ModuleJson.cpp"
-#include 		"module/ModuleConsole.cpp"
+// -- Modules
+#include 		"module/ModuleMathWrap.cpp"
+#include 		"module/ModuleSystemWrap.cpp"
+#include 		"module/ModuleJsonWrap.cpp"
+#include 		"module/ModuleConsoleWrap.cpp"
 
 
 #include		"zetscript.cpp"

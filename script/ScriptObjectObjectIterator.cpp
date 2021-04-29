@@ -10,30 +10,16 @@ namespace zetscript{
 	ScriptObjectObjectIterator::ScriptObjectObjectIterator(){
 	}
 
-
-	void	 ScriptObjectObjectIterator::_nextSf(ScriptObjectObjectIterator *si){
-		si->_next();
-	}
-
-	StackElement	ScriptObjectObjectIterator::_getSf(ScriptObjectObjectIterator *si){
-		return si->_get();
-	}
-
-
-	bool	 ScriptObjectObjectIterator::_endSf(ScriptObjectObjectIterator *si){
-		return si->_end();
-	}
-
-	bool	 ScriptObjectObjectIterator::_end(){
+	bool	 ScriptObjectObjectIterator::end(){
 		return false;
 	}
 
-	StackElement	 ScriptObjectObjectIterator::_get(){
+	StackElement	 ScriptObjectObjectIterator::get(){
 		return {};
 	}
 
 
-	void	 ScriptObjectObjectIterator::_next(){
+	void	 ScriptObjectObjectIterator::next(){
 
 	}
 }

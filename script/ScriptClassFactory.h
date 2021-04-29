@@ -41,7 +41,7 @@ namespace zetscript{
 		 /**
 		  * Class management region
 		  */
-		ScriptClass * 					registerClass(const std::string & file, short line, const std::string & class_name, const std::string & base_class_name="");
+		ScriptClass * 					registerClass(const std::string & class_name, const std::string & base_class_name="",const std::string & file="", short line=-1);
 		ScriptClass * 					getScriptClass(short idx);
 		ScriptClass * 					getScriptClass(const std::string & name);
 		ScriptClass * 					getScriptClassByNativeClassPtr(const std::string & class_type);

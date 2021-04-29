@@ -73,6 +73,14 @@ namespace zetscript{
 			,unsigned short symbol_properties
 		);
 
+		template < typename R>
+		void registerNativeMemberVariableStaticConst(
+			const char *var_name
+			, const R var_pointer
+			, const char *registered_file=""
+			,short registered_line=-1
+		);
+
 		Symbol				* 	registerNativeMemberVariable(
 			std::string & error
 			,const std::string & file
@@ -155,6 +163,22 @@ namespace zetscript{
 
 		);
 
+		template <typename F>
+		void registerNativeMemberFunctionStatic(
+				const char *function_name
+				,F function_ptr
+				, const char *registered_file=""
+				,short registered_line=-1
+		);
+
+		template <typename F>
+		void registerNativeMemberFunction(
+				const char *function_name
+				,F function_type
+				, const char *registered_file=""
+				,short registered_line=-1
+		);
+
 		//---------------------------------------------------
 
 		Symbol *    getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
@@ -194,9 +218,12 @@ namespace zetscript{
 			,zs_int ref_ptr=0
 		);
 
+		short							getIdxClassFromItsNativeType(const std::string & s);
+		ScriptClass * 					getScriptClassByNativeClassPtr(const std::string & class_type);
 
 		//zs_map *num_native_functions;
 	};
 }
 
+#include "ScriptClass.tcc"
 

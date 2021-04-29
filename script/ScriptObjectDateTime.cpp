@@ -7,19 +7,12 @@
 
 namespace zetscript{
 
-
-	ScriptObjectDateTime * ScriptObjectDateTime::nowSf(ZetScript *_zs){
-		ScriptObjectDateTime *dt=newScriptObjectDateTime(_zs);
-		return dt;
-	}
-
 	ScriptObjectDateTime * ScriptObjectDateTime::newScriptObjectDateTime(ZetScript *_zs){
 		ScriptObjectDateTime *dt=new ScriptObjectDateTime();
 		dt->init(_zs);
 		return dt;
 
 	}
-
 
 	ScriptObjectDateTime::ScriptObjectDateTime(){
 		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME;

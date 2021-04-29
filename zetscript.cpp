@@ -44,29 +44,29 @@ namespace zetscript{
 
 
 		// Math mod
-		script_class_factory->registerNativeSingletonClass<ModuleMath>("Math");
-		script_class_factory->registerNativeStaticConstMember<ModuleMath>("PI",&ModuleMath::PI);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("sin",ModuleMath::sin);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("cos",ModuleMath::cos);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("abs",ModuleMath::abs);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("pow",ModuleMath::pow);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("degToRad",ModuleMath::degToRad);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleMath>("random",ModuleMath::random);
+		ScriptClass *cl=script_class_factory->registerClass("Math");
+		cl->registerNativeMemberVariableStaticConst("PI",&ModuleMathWrap_PI);
+		cl->registerNativeMemberFunctionStatic("sin",ModuleMathWrap_sin);
+		cl->registerNativeMemberFunctionStatic("cos",ModuleMathWrap_cos);
+		cl->registerNativeMemberFunctionStatic("abs",ModuleMathWrap_abs);
+		cl->registerNativeMemberFunctionStatic("pow",ModuleMathWrap_pow);
+		cl->registerNativeMemberFunctionStatic("degToRad",ModuleMathWrap_degToRad);
+		cl->registerNativeMemberFunctionStatic("random",ModuleMathWrap_random);
 
 		// Console mod
-		script_class_factory->registerNativeSingletonClass<ModuleConsole>("ModuleConsole");
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("readChar",ModuleConsole::readChar);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("out",ModuleConsole::out);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("outln",ModuleConsole::outln);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("error",ModuleConsole::error);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleConsole>("errorln",ModuleConsole::errorln);
+		cl=script_class_factory->registerClass("Console");
+		cl->registerNativeMemberFunctionStatic("readChar",ModuleConsoleWrap_readChar);
+		cl->registerNativeMemberFunctionStatic("out",ModuleConsoleWrap_out);
+		cl->registerNativeMemberFunctionStatic("outln",ModuleConsoleWrap_outln);
+		cl->registerNativeMemberFunctionStatic("error",ModuleConsoleWrap_error);
+		cl->registerNativeMemberFunctionStatic("errorln",ModuleConsoleWrap_errorln);
 
 
 		// System mod
-		script_class_factory->registerNativeSingletonClass<ModuleSystem>("ModuleSystem");
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("clock",ModuleSystem::clock);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("eval",ModuleSystem::eval);
-		script_class_factory->registerNativeMemberFunctionStatic<ModuleSystem>("assert",ModuleSystem::assert);
+		cl=script_class_factory->registerClass("ModuleSystem");
+		cl->registerNativeMemberFunctionStatic("clock",ModuleSystemWrap_clock);
+		cl->registerNativeMemberFunctionStatic("eval",ModuleSystemWrap_eval);
+		cl->registerNativeMemberFunctionStatic("assert",ModuleSystemWrap_assert);
 
 		// Custom user function or classes
 		eval(
@@ -74,7 +74,7 @@ namespace zetscript{
 				//------------------------------------------------
 				// String
 				"static String::format(s,...args){" // add static function format to String module
-				"	String::formatSf(System::getZetScript(),s,args)"
+				"	String::format(System::getZetScript(),s,args)"
 				"}"
 				//------------------------------------------------
 				// Console

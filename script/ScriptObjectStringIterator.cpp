@@ -10,22 +10,11 @@ namespace zetscript{
 	ScriptObjectStringIterator::ScriptObjectStringIterator(){
 	}
 
-
-
-	void	 ScriptObjectStringIterator::_nextSf(ScriptObjectStringIterator *si){
-		si->_next();
-	}
-
-	void	 ScriptObjectStringIterator::_next(){
+	void	 ScriptObjectStringIterator::next(){
 
 	}
 
-
-	bool	 ScriptObjectStringIterator::_endSf(ScriptObjectStringIterator *si){
-		return si->_end();
-	}
-
-	bool	 ScriptObjectStringIterator::_end(){
+	bool	 ScriptObjectStringIterator::end(){
 		return false;
 	}
 

@@ -653,7 +653,7 @@ namespace zetscript{
 					&&
 					obj2->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
 				){
-					ScriptObjectObject *so_object=ScriptObjectObject::concatSf(
+					ScriptObjectObject *so_object=ScriptObjectObjectWrap_concat(
 							data->zs
 							,(ScriptObjectObject *)obj1
 							,(ScriptObjectObject *)obj2
@@ -753,7 +753,7 @@ namespace zetscript{
 		}
 
 		if(script_object_class->isNativeObject()){ // because isNativeObject it can have more than one setter
-			list_props=script_object_class->getAllBuiltinElements();//getFunctions();
+			list_props=script_object_class->getStkBuiltinListElements();//getFunctions();
 
 			/*ptr_function_found = vm_find_function(
 				vm

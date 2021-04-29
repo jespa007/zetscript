@@ -151,7 +151,7 @@ namespace zetscript{
 		return this;
 	}
 
-	zs_vector * ScriptObject::getAllBuiltinElements(){
+	zs_vector * ScriptObject::getStkBuiltinListElements(){
 		return &stk_builtin_elements;
 	}
 

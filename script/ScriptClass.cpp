@@ -53,6 +53,15 @@ namespace zetscript{
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
 
 	}
+
+	short					ScriptClass::getIdxClassFromItsNativeType(const std::string & s){
+		return script_class_factory->getIdxClassFromItsNativeType(s);
+	}
+
+	ScriptClass * 			ScriptClass::getScriptClassByNativeClassPtr(const std::string & class_type){
+		return script_class_factory->getScriptClassByNativeClassPtr(class_type);
+	}
+
 	//---------------------------------------------------
 	// VARIABLES
 	Symbol				* 	ScriptClass::registerMemberVariable(
@@ -95,6 +104,7 @@ namespace zetscript{
 			,ref_ptr
 		);
 	}
+
 
 	Symbol				* 	ScriptClass::registerInternalMemberVariable(
 	    std::string & error

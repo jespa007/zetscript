@@ -83,7 +83,7 @@ namespace zetscript{
 		virtual StackElement 	* getProperty(const std::string & property_name, int * idx=NULL);
 
 
-		zs_vector * getAllBuiltinElements();
+		zs_vector * getStkBuiltinListElements();
 		ScriptClass * 	    getNativeScriptClass();
 		bool 				isNativeObject();
 		const std::string & getClassName();

@@ -34,7 +34,7 @@
 		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",ZS_STR(type_class));\
 		return;\
 	}else{\
-		ScriptClass *sc=registerClass(__FILE__,__LINE__,ZS_STR(type_class),"");\
+		ScriptClass *sc=registerClass(ZS_STR(type_class));\
 		sc->symbol_class.scope->is_c_node=true;\
 		sc->symbol_class.properties=SYMBOL_PROPERTY_C_OBJECT_REF;\
 		sc->str_class_ptr_type=(typeid(type_class).name());\
@@ -65,7 +65,7 @@ namespace zetscript{
 	void ScriptClassFactory::init(){
 		std::string error;
 		// ScriptFunctionFactory has to be created
-		main_object=registerClass(__FILE__, __LINE__,MAIN_SCRIPT_CLASS_NAME,""); // 0
+		main_object=registerClass(MAIN_SCRIPT_CLASS_NAME); // 0
 		MAIN_SCOPE(this)->script_class=main_object;
 
 		Symbol *symbol_main_function=main_object->registerMemberFunction(error,__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
@@ -172,47 +172,47 @@ namespace zetscript{
 
 
 		//-------------------------
-		// Bind functions
+		// Wrap functions
 
 		// Vector
-		registerNativeMemberFunction<ScriptObjectVector>("push",&ScriptObjectVector::pushSf);
-		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVector::popSf);
-		registerNativeMemberFunction<ScriptObjectVector>("insertAt",&ScriptObjectVector::insertAtSf);
-		registerNativeMemberFunction<ScriptObjectVector>("eraseAt",&ScriptObjectVector::eraseAtSf);
-		registerNativeMemberFunction<ScriptObjectVector>("clear",&ScriptObjectVector::clearSf);
-		registerNativeMemberFunction<ScriptObjectVector>("size",&ScriptObjectVector::sizeSf);
-		registerNativeMemberFunction<ScriptObjectVector>("join",&ScriptObjectVector::joinSf);
+		registerNativeMemberFunction<ScriptObjectVector>("push",&ScriptObjectVectorWrap_push);
+		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVectorWrap_pop);
+		registerNativeMemberFunction<ScriptObjectVector>("insertAt",&ScriptObjectVectorWrap_insertAt);
+		registerNativeMemberFunction<ScriptObjectVector>("eraseAt",&ScriptObjectVectorWrap_eraseAt);
+		registerNativeMemberFunction<ScriptObjectVector>("clear",&ScriptObjectVectorWrap_clear);
+		registerNativeMemberFunction<ScriptObjectVector>("size",&ScriptObjectVectorWrap_size);
+		registerNativeMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
 
 		// String
-		registerNativeMemberFunctionStatic<ScriptObjectString>("formatSf",ScriptObjectString::formatSf);
-		registerNativeMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectString::eraseAtSf);
-		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectString::insertAtSf);
-		registerNativeMemberFunction<ScriptObjectString>("clear",ScriptObjectString::clearSf);
-		registerNativeMemberFunction<ScriptObjectString>("replace",ScriptObjectString::replaceSf);
-		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, std::string *)>(ScriptObjectString::splitSf));
-		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, zs_int )>(ScriptObjectString::splitSf));
-		registerNativeMemberFunction<ScriptObjectString>("size",ScriptObjectString::sizeSf);
-		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, std::string *)>(&ScriptObjectString::containsSf));
-		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectString::containsSf));
+		registerNativeMemberFunctionStatic<ScriptObjectString>("format",ScriptObjectStringWrap_format);
+		registerNativeMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectStringWrap_eraseAt);
+		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
+		registerNativeMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);
+		registerNativeMemberFunction<ScriptObjectString>("replace",ScriptObjectStringWrap_replace);
+		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, std::string *)>(ScriptObjectStringWrap_split));
+		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, zs_int )>(ScriptObjectStringWrap_split));
+		registerNativeMemberFunction<ScriptObjectString>("size",ScriptObjectStringWrap_size);
+		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, std::string *)>(&ScriptObjectStringWrap_contains));
+		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_contains));
 
-		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, std::string *)>(&ScriptObjectString::indexOfSf));
-		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectString::indexOfSf));
+		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, std::string *)>(&ScriptObjectStringWrap_indexOf));
+		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_indexOf));
 
-		registerNativeMemberFunction<ScriptObjectString>("startsWith",ScriptObjectString::startsWithSf);
-		registerNativeMemberFunction<ScriptObjectString>("endsWith",ScriptObjectString::endsWithSf);
-		registerNativeMemberFunction<ScriptObjectString>("substring",ScriptObjectString::substringSf);
+		registerNativeMemberFunction<ScriptObjectString>("startsWith",ScriptObjectStringWrap_startsWith);
+		registerNativeMemberFunction<ScriptObjectString>("endsWith",ScriptObjectStringWrap_endsWith);
+		registerNativeMemberFunction<ScriptObjectString>("substring",ScriptObjectStringWrap_substring);
 
 
 		// Vector
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("clear",&ScriptObjectObject::clearSf);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("erase",&ScriptObjectObject::eraseSf);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("contains",&ScriptObjectObject::containsSf);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("concat",ScriptObjectObject::concatSf);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("keys",ScriptObjectObject::keysSf);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("clear",&ScriptObjectObjectWrap_clear);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("erase",&ScriptObjectObjectWrap_erase);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("contains",&ScriptObjectObjectWrap_contains);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("concat",ScriptObjectObjectWrap_concat);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("keys",ScriptObjectObjectWrap_keys);
 		//registerNativeMemberFunctionStatic<ScriptObjectObject>("iteratorSf",ScriptObjectObject::iteratorSf);
 
 		// DateTime
-		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowSf",ScriptObjectDateTime::nowSf);
+		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowSf",ScriptObjectDateTimeWrap_now);
 
 
 
@@ -244,10 +244,10 @@ namespace zetscript{
 	}
 
 	ScriptClass * ScriptClassFactory::registerClass(
-			const std::string & file
-			, short line
-			,const std::string & class_name
-			, const std::string & base_class_name
+			const std::string & class_name
+			 ,const std::string & base_class_name
+			 ,const std::string & file
+			 , short line
 	){
 		int  index;
 		ScriptClass *sci=NULL;

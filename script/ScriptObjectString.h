@@ -18,25 +18,6 @@ namespace zetscript{
 		//
 		static ScriptObjectString * newScriptObjectString(ZetScript *zs, const std::string & str="");
 		static ScriptObjectString * newScriptObjectStringAddStk(ZetScript *zs,StackElement *stk_result_op1,StackElement *stk_result_op2);
-		static ScriptObjectString * formatSf(ZetScript *zs,StackElement *str, StackElement *args);
-
-
-		static zs_int sizeSf(ScriptObjectString *so);
-		static bool containsSf(ScriptObjectString *so, std::string *str);
-		static bool containsSf(ScriptObjectString *so, zs_int ch);
-		static bool existSf(ScriptObjectString *so, zs_int ch);
-		static void clearSf(ScriptObjectString *so);
-		static ScriptObjectString *replaceSf(ScriptObjectString *str_in,std::string *str_old, std::string *str_new);
-		static void eraseAtSf(ScriptObjectString *so, zs_int idx);
-		static void insertAtSf(ScriptObjectString *so, zs_int idx,zs_int ch);
-		static ScriptObjectVector * splitSf(ScriptObjectString *so,zs_int ch_delim);
-		static ScriptObjectVector * splitSf(ScriptObjectString *so,std::string * str_token);
-
-		static zs_int indexOfSf(ScriptObjectString *so,zs_int search);
-		static zs_int indexOfSf(ScriptObjectString *so,std::string *search);
-		static bool startsWithSf(ScriptObjectString *so,std::string *prefix);
-		static bool endsWithSf(ScriptObjectString *so,std::string *suffix);
-		static ScriptObjectString * substringSf(ScriptObjectString *str_in,zs_int start,zs_int end);
 
 		//
 		// Helpers

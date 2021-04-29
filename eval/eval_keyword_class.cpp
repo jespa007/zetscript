@@ -65,10 +65,10 @@ namespace zetscript{
 			// register class
 			try{
 				sc=eval_data->script_class_factory->registerClass(
-					__FILE__
-					, __LINE__
-					, class_name
+					 class_name
 					,base_class_name
+					,__FILE__
+					, __LINE__
 				);
 			}catch(std::exception &ex){
 				eval_data->error=true;

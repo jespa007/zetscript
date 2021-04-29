@@ -21,13 +21,6 @@ namespace zetscript{
 
 		template<typename T>
 		static std::vector<T> 	toStdVector(ScriptObjectVector *sv);
-		static void    			pushSf(ScriptObjectVector *sv,StackElement  * stk);
-		static void   			popSf(ScriptObjectVector *sv);
-		static zs_int 			sizeSf(ScriptObjectVector *sv);
-		static void 			insertAtSf(ScriptObjectVector *sv, zs_int idx,StackElement  * stk);
-		static void 			eraseAtSf(ScriptObjectVector *sv, zs_int idx);
-		static void 			clearSf(ScriptObjectVector *sv);
-		static ScriptObjectString	*joinSf(ScriptObjectVector *sv, zs_int idx_char);
 
 		//
 		// Helpers
@@ -41,7 +34,7 @@ namespace zetscript{
 		void				eraseAllUserElements();
 
 		virtual size_t length();
-		virtual zs_vector * getAllUserElements();
+		virtual zs_vector * getStkUserListElements();
 
 		StackElement *			pushNewUserSlot();
 		void 					push(StackElement  * stk);

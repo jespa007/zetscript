@@ -32,14 +32,14 @@ namespace zetscript{
 	};
 
 	//#include "JsonModDeserialize.cpp"
-	#include "ModuleJsonSerialize.cpp"
+	#include "ModuleJsonWrapSerialize.cpp"
 
-	ScriptObjectObject * ModuleJson::deserialize(ScriptObjectString *str_json){
+	ScriptObjectObject * ModuleJsonWrap_deserialize(ScriptObjectString *str_json){
 		// deserialize ...
 		return NULL;
 	}
 
-	ScriptObjectString * ModuleJson::serialize(ScriptObjectObject *obj,bool minimized){
+	ScriptObjectString * ModuleJsonWrap_serialize(ScriptObjectObject *obj,bool minimized){
 		// iterate for all elements in the obj
 		return NULL;
 
