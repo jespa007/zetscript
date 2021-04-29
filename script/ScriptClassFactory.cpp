@@ -184,7 +184,7 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
 
 		// String
-		registerNativeMemberFunctionStatic<ScriptObjectString>("format",ScriptObjectString::format);
+		registerNativeMemberFunctionStatic<ScriptObjectString>("formatNative",ScriptObjectString::format);
 		registerNativeMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectStringWrap_eraseAt);
 		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
 		registerNativeMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);

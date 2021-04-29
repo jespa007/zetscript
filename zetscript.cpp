@@ -56,10 +56,10 @@ namespace zetscript{
 		// Console mod
 		cl=script_class_factory->registerClass("Console");
 		cl->registerNativeMemberFunctionStatic("readChar",ModuleConsoleWrap_readChar);
-		cl->registerNativeMemberFunctionStatic("out",ModuleConsoleWrap_out);
-		cl->registerNativeMemberFunctionStatic("outln",ModuleConsoleWrap_outln);
-		cl->registerNativeMemberFunctionStatic("error",ModuleConsoleWrap_error);
-		cl->registerNativeMemberFunctionStatic("errorln",ModuleConsoleWrap_errorln);
+		registerFunction("ModuleConsole_out",ModuleConsoleWrap_out);
+		registerFunction("ModuleConsole_outln",ModuleConsoleWrap_outln);
+		registerFunction("ModuleConsole_error",ModuleConsoleWrap_error);
+		registerFunction("ModuleConsole_errorln",ModuleConsoleWrap_errorln);
 
 
 		// System mod
@@ -74,26 +74,26 @@ namespace zetscript{
 				//------------------------------------------------
 				// String
 				"static String::format(s,...args){" // add static function format to String module
-				"	String::format(System::getZetScript(),s,args)"
+				"	String::formatNative(System::getZetScript(),s,args)"
 				"}"
 				//------------------------------------------------
 				// Console
 				"static Console::print(s,...args){"
-				"	Console::print(System::getZetScript(),s,args)"
+				"	ModuleConsole_print(System::getZetScript(),s,args)"
 				"}"
 				"static Console::outln(s,...args){"
-				"	Console::outln(System::getZetScript(),s,args)"
+				"	ModuleConsole_outln(System::getZetScript(),s,args)"
 				"}"
 				"static Console::error(s,...args){"
-				"	Console::error(System::getZetScript(),s,args)"
+				"	ModuleConsole_error(System::getZetScript(),s,args)"
 				"}"
 				"static Console::errorln(s,...args){"
-				"	Console::errorln(System::getZetScript(),s,args)"
+				"	ModuleConsole_errorln(System::getZetScript(),s,args)"
 				"}"
 				//------------------------------------------------
 				// System
 				"static System::assert(check,s,...args){"
-				"	ModuleSystem::assert(System::getZetScript(),check,s,args)"
+				"	ModuleSystem_assert(System::getZetScript(),check,s,args)"
 				"}"
 				"static System::getZetScript(){"
 				"	return ptrToZetScriptPtr(0x%x);" // ptrToZetScript it gets current this
