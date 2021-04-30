@@ -1,37 +1,21 @@
-
-//#define METAMETHOD_2_ARGS 2
-//#define METAMETHOD_1_ARGS 1
-
-// general
-
 #define IDX_CALL_STACK_MAIN 1
 
 #define PUSH_NULL \
 STK_SET_NULL(data->stk_vm_current++); \
 
 #define PUSH_BOOLEAN(init_value) \
-data->stk_vm_current->stk_value=(void *)((zs_int)(init_value)); \
+data->stk_vm_current->value=(void *)((zs_int)(init_value)); \
 data->stk_vm_current->properties=MSK_STK_PROPERTY_BOOL; \
 data->stk_vm_current++;
 
 
 #define PUSH_INTEGER(init_value) \
-data->stk_vm_current->stk_value=(void *)((zs_int)(init_value)); \
+data->stk_vm_current->value=(void *)((zs_int)(init_value)); \
 data->stk_vm_current->properties=MSK_STK_PROPERTY_ZS_INT; \
 data->stk_vm_current++;
 
-/*#define PUSH_ARRAY_STK(n_stk) \
-stk_vm_current->stk_value=(void *)((zs_int)(n_stk)); \
-stk_vm_current->properties=MSK_STK_PROPERTY_ARRAY_STK; \
-stk_vm_current++;
-
-#define PUSH_CONST_CHAR(const_char) \
-stk_vm_current->stk_value=(void *)((zs_int)(const_char)); \
-stk_vm_current->properties=MSK_STK_PROPERTY_CONST_CHAR; \
-stk_vm_current++;*/
-
 #define PUSH_OBJECT(obj_value) \
-data->stk_vm_current->stk_value=(void *)((zs_int)(obj_value)); \
+data->stk_vm_current->value=(void *)((zs_int)(obj_value)); \
 data->stk_vm_current->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT; \
 data->stk_vm_current++;
 
@@ -39,23 +23,23 @@ data->stk_vm_current++;
 #define PUSH_FLOAT(init_value) \
 {\
 	zs_float aux=(zs_float)(init_value); \
-	ZS_FLOAT_COPY(&data->stk_vm_current->stk_value,&aux); \
+	ZS_FLOAT_COPY(&data->stk_vm_current->value,&aux); \
 	data->stk_vm_current->properties=MSK_STK_PROPERTY_ZS_FLOAT; \
 	data->stk_vm_current++; \
 }
 
 #define PUSH_FUNCTION(ref) \
-data->stk_vm_current->stk_value=(void *)ref; \
+data->stk_vm_current->value=(void *)ref; \
 data->stk_vm_current->properties=MSK_STK_PROPERTY_FUNCTION; \
 data->stk_vm_current++;
 
 #define PUSH_CLASS(ref) \
-data->stk_vm_current->stk_value=(void *)ref; \
+data->stk_vm_current->value=(void *)ref; \
 data->stk_vm_current->properties=MSK_STK_PROPERTY_CLASS; \
 data->stk_vm_current++;
 
 // explains whether stk is this or not. Warning should be given as value and not as ptr
-#define STK_IS_THIS(stk) (this_object != NULL && (stk)->stk_value == this_object)
+#define STK_IS_THIS(stk) (this_object != NULL && (stk)->value == this_object)
 
 #define PRINT_DUAL_ERROR_OP(c)\
 std::string var_type1=stk_result_op1->typeStr(),\
@@ -88,7 +72,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 	for(int i = scope_symbols->count-1; i >=0 ; --i){\
 		StackElement *stk_local_var =stk_local_vars+((Symbol *)(symbols[i]))->idx_position;\
 		if((stk_local_var->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT)==MSK_STK_PROPERTY_SCRIPT_OBJECT){\
-			ScriptObject *so=(ScriptObject *)(stk_local_var->stk_value);\
+			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
 			if(so != NULL){\
 				if(vm_unref_shared_script_object(vm,so,data->vm_idx_call)==false){\
 					return;\
@@ -377,11 +361,11 @@ namespace zetscript{
 
 
 			if(stk_element->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION ){
-				StackMemberFunction *fm=(StackMemberFunction *)stk_element->stk_value;
+				StackMemberFunction *fm=(StackMemberFunction *)stk_element->value;
 				irfs=fm->so_function;
 				this_as_first_parameter=1;
 			}else{
-				irfs = (ScriptFunction *)stk_element->stk_value;
+				irfs = (ScriptFunction *)stk_element->value;
 			}
 			aux_string=irfs->symbol.name;
 
@@ -433,17 +417,17 @@ namespace zetscript{
 										idx_type=IDX_BUILTIN_TYPE_STRING_PTR_C;
 
 										all_check =
-											(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->stk_value!=0)
+											(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->value!=0)
 										  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
 									}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
-										ScriptObjectClass *var_object_class=((ScriptObjectClass *)current_arg->stk_value);
+										ScriptObjectClass *var_object_class=((ScriptObjectClass *)current_arg->value);
 										aux_string=var_object_class->getClassName();
 										if(arg_idx_type==idx_type){
 											all_check=true;
 										}
 									}else{
 										ScriptObject *var_object = NULL;
-										var_object=((ScriptObject *)current_arg->stk_value);
+										var_object=((ScriptObject *)current_arg->value);
 										aux_string=var_object->getClassName();
 										if(arg_idx_type==idx_type){
 											all_check=true;
@@ -497,13 +481,13 @@ namespace zetscript{
 				case MSK_STK_PROPERTY_SCRIPT_OBJECT:
 					if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
 						aux_string=k_str_string_type_ptr;
-						if(current_arg->stk_value==0){ /* is constant char */
+						if(current_arg->value==0){ /* is constant char */
 							aux_string=	k_str_const_char_type_ptr;
 						}
 					}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
-						aux_string = ((ScriptObjectClass *)current_arg->stk_value)->getNativePointerClassName();
+						aux_string = ((ScriptObjectClass *)current_arg->value)->getNativePointerClassName();
 					}else{ // object
-						aux_string = ((ScriptObject *)current_arg->stk_value)->getClassName();
+						aux_string = ((ScriptObject *)current_arg->value)->getClassName();
 					}
 					break;
 				}
@@ -531,10 +515,10 @@ namespace zetscript{
 				}
 
 				if(stk_element->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION ){
-					StackMemberFunction *fm=(StackMemberFunction *)stk_element->stk_value;
+					StackMemberFunction *fm=(StackMemberFunction *)stk_element->value;
 					irfs=fm->so_function;
 				}else{
-					irfs = (ScriptFunction *)stk_element->stk_value;
+					irfs = (ScriptFunction *)stk_element->value;
 				}
 
 
@@ -601,11 +585,11 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 
 		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
-			stk_result_op1=((ScriptObjectVarRef *)stk_result_op1->stk_value)->getStackElementPtr();
+			stk_result_op1=((ScriptObjectVarRef *)stk_result_op1->value)->getStackElementPtr();
 		}
 
 		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){
-			stk_result_op2=((ScriptObjectVarRef *)stk_result_op2->stk_value)->getStackElementPtr();
+			stk_result_op2=((ScriptObjectVarRef *)stk_result_op2->value)->getStackElementPtr();
 		}
 		//error=true;
 		switch(byte_code_metamethod){
@@ -627,8 +611,8 @@ namespace zetscript{
 			){
 				ScriptObjectVector *so_vector=ScriptObjectVector::newScriptObjectVectorAdd(
 						data->zs
-						,(ScriptObjectVector *)stk_result_op1->stk_value
-						,(ScriptObjectVector *)stk_result_op2->stk_value
+						,(ScriptObjectVector *)stk_result_op1->value
+						,(ScriptObjectVector *)stk_result_op2->value
 				);
 				vm_create_shared_pointer(vm,so_vector);
 				PUSH_OBJECT(so_vector);
@@ -640,11 +624,11 @@ namespace zetscript{
 				ScriptObject *obj2=NULL;
 
 				if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					obj1=(ScriptObject *)stk_result_op1->stk_value;
+					obj1=(ScriptObject *)stk_result_op1->value;
 				}
 
 				if(stk_result_op2->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					obj2=(ScriptObject *)stk_result_op2->stk_value;
+					obj2=(ScriptObject *)stk_result_op2->value;
 				}
 
 
@@ -696,7 +680,8 @@ namespace zetscript{
 		//zs_vector *stk_builtin_elements=NULL;
 		std::string error_found="";
 		zs_vector * list_props=NULL;
-		ScriptObjectClass *script_object_class=NULL;
+		ScriptObject *script_object=NULL;
+		std::string class_name_object_found="";
 		ScriptObjectClass *one_param_object_class = NULL;
 		int n_stk_args=byte_code_get_num_arguments_static_metamethod(byte_code_metamethod);
 		StackElement *stk_return=NULL;
@@ -709,22 +694,41 @@ namespace zetscript{
 		stk_vm_current_backup=stk_args=data->stk_vm_current;
 
 		if(stk_result_op1->properties & MSK_STK_PROPERTY_PTR_STK){
-			stk_result_op1 = (StackElement *)(stk_result_op1->stk_value);
+			stk_result_op1 = (StackElement *)(stk_result_op1->value);
 		}
 
-		if(STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op1)){
-			script_object_class = (ScriptObjectClass *)(stk_result_op1->stk_value);
+		if(
+				// allowed classes that accepts metamethods
+				STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op1)
+				|| STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk_result_op1)
+				|| STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk_result_op1)
+				|| STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk_result_op1)
+		){
+			script_object = (ScriptObjectClass *)(stk_result_op1->value);
+		}else if(stk_result_op1->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject * script_object_found=(ScriptObject *)stk_result_op1->value;
+			class_name_object_found=script_object_found->getClassName();
 		}
+
 
 		// only C refs can check 2nd param
-		if(script_object_class == NULL && stk_result_op2 != NULL) { // script null
+		if(script_object == NULL && stk_result_op2 != NULL) { // script null
 
 			if(((stk_result_op2->properties & MSK_STK_PROPERTY_PTR_STK))){
-				stk_result_op2 = (StackElement *)(stk_result_op2->stk_value);
+				stk_result_op2 = (StackElement *)(stk_result_op2->value);
 			}
 
-			if(STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op2)){
-				script_object_class = (ScriptObjectClass *)(stk_result_op2->stk_value);
+			// allowed classes that accepts metamethods
+			if(			STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op2)
+					|| STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk_result_op2)
+					|| STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk_result_op2)
+					|| STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk_result_op2)
+
+					){
+				script_object = (ScriptObject *)(stk_result_op2->value);
+			}else if(stk_result_op2->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+					ScriptObject *script_object_found=(ScriptObject *)stk_result_op2->value;
+					class_name_object_found=script_object_found->getClassName();
 			}
 		}
 
@@ -747,28 +751,17 @@ namespace zetscript{
 		}
 
 
-		if(script_object_class == NULL){ // cannot perform operation
-			error_found="";
+		if(script_object == NULL){ // cannot perform operation
+			if(class_name_object_found.empty()){
+				error_found=zs_strutils::format("Internal error: None of both stk values is an script object");
+			}else{
+				error_found=zs_strutils::format("Class \"%s\" is not allowed to have metamethods",class_name_object_found.c_str());
+			}
 			goto apply_metamethod_error;
 		}
 
-		if(script_object_class->isNativeObject()){ // because isNativeObject it can have more than one setter
-			list_props=script_object_class->getStkBuiltinListElements();//getFunctions();
-
-			/*ptr_function_found = vm_find_function(
-				vm
-				,calling_object
-				,calling_function
-				,instruction
-				,false
-				,(void *)list_props->items
-				,list_props->count
-				,str_symbol_metamethod
-				,stk_args
-				,n_stk_args
-			);*/
-
-
+		if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
+			list_props=script_object->getStkBuiltinListElements();//getFunctions();
 
 			if((ptr_function_found = vm_find_function(
 				vm
@@ -788,7 +781,7 @@ namespace zetscript{
 
 
 		}else{ // get first item...
-			StackElement * stk = script_object_class->getProperty(str_symbol_metamethod,NULL);
+			StackElement * stk = script_object->getProperty(str_symbol_metamethod,NULL);
 
 			if(stk == NULL){
 				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
@@ -800,7 +793,7 @@ namespace zetscript{
 				goto apply_metamethod_error;
 			}
 
-			ptr_function_found=(ScriptFunction *)stk->stk_value;
+			ptr_function_found=(ScriptFunction *)stk->value;
 
 		}
 
@@ -834,10 +827,10 @@ namespace zetscript{
 
 			// if a scriptvar --> init shared
 			if(stk_ret->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-				ScriptObject *sv=(ScriptObject *)stk_ret->stk_value;
+				ScriptObject *sv=(ScriptObject *)stk_ret->value;
 
 				// Auto destroy always C when ref == 0
-				((ScriptObjectClass *)(stk_ret->stk_value))->deleteNativeObjectOnDestroy(true);
+				((ScriptObjectClass *)(stk_ret->value))->deleteNativeObjectOnDestroy(true);
 
 				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
 					if(!vm_create_shared_pointer(vm,sv)){
@@ -847,6 +840,7 @@ namespace zetscript{
 			}
 			// ... and push result if not function constructor...
 		}
+
 
 		ret_obj=stk_return[0];
 
@@ -861,22 +855,19 @@ apply_metamethod_error:
 
 		if(n_stk_args==1){
 			VM_ERROR("cannot perform operation \"%s %s\". %s"
-				,byte_code_to_operator_str(instruction->byte_code)
+				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 				,stk_result_op1->toString().c_str()
 				,error_found.c_str()
 				);
 		}else{
 			VM_ERROR("cannot perform operation \"%s %s %s\". %s"
 				,stk_result_op1->toString().c_str()
-				,byte_code_to_operator_str(instruction->byte_code)
+				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 				,stk_result_op2->toString().c_str()
 				,error_found.c_str()
 				);
 		}
 
 		return false;
-
-
 	}
-
 }

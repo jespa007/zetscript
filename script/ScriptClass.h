@@ -20,7 +20,7 @@ namespace zetscript{
 
 		 void addSetter(ScriptFunction *f){
 			 StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
-			 stk->stk_value=f;
+			 stk->value=f;
 			 stk->properties=MSK_STK_PROPERTY_FUNCTION;
 			 setters.push_back((zs_int)stk);
 		 }

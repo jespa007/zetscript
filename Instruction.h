@@ -131,9 +131,10 @@ namespace zetscript{
 			ptr_str_symbol_name=NULL;
 			file="unknow_file";
 			line=-1;
+
 		}
 
-		InstructionSourceInfo(const char * _file, short _line,std::string *_ptr_str_symbol_name){
+		InstructionSourceInfo(const char * _file, short _line,std::string *_ptr_str_symbol_name=NULL){
 			file=_file;
 			line=_line;
 			ptr_str_symbol_name=_ptr_str_symbol_name;

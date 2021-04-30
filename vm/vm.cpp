@@ -279,14 +279,14 @@ namespace zetscript{
 				// if object add into lifetime till user delete it
 				if(stk_return.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 					// add generated
-					vm_insert_life_time_object(vm,file,line,(ScriptObjectObject *)stk_return.stk_value);
+					vm_insert_life_time_object(vm,file,line,(ScriptObjectObject *)stk_return.value);
 				}
 
 				// deallocate all returned variables from 1
 				for(int i=1; i < n_returned_arguments_from_function; i++){
 					StackElement stk_aux=ptr_stk_return[i];
 					if(stk_aux.properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-						delete (ScriptObject *)stk_aux.stk_value;
+						delete (ScriptObject *)stk_aux.value;
 					}
 				}
 			}

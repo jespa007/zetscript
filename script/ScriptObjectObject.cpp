@@ -93,7 +93,7 @@ namespace zetscript{
 
 			// update n_refs +1
 			if(sv->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
-				if(vm_share_pointer(zs->getVirtualMachine(),(ScriptObjectObject *)(sv->stk_value)) == false){
+				if(vm_share_pointer(vm,(ScriptObjectObject *)(sv->value)) == false){
 					return NULL;
 				}
 			}
@@ -120,7 +120,7 @@ namespace zetscript{
 
 		// special properties
 		/*if(property_name == "length"){
-			stk_count.stk_value=(void *)this->countUserProperties();
+			stk_count.value=(void *)this->countUserProperties();
 			return &stk_count;
 		}*/
 
@@ -173,7 +173,7 @@ namespace zetscript{
 		bool exists=false;
 		StackElement *stk_user_element = (StackElement *)map_user_property_keys->get(property_name.c_str(),exists);
 		if(!exists){
-			VM_SET_USER_ERROR(zs->getVirtualMachine(),"Property %s not exist",property_name.c_str());
+			VM_SET_USER_ERROR(vm,"Property %s not exist",property_name.c_str());
 			return false;
 		}
 

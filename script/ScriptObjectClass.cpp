@@ -38,7 +38,7 @@ namespace zetscript{
 		}
 
 		if(sc->sf_field_initializer != NULL){ // execute if only script class
-			vm_execute(zs->getVirtualMachine(),this,sc->sf_field_initializer);
+			vm_execute(vm,this,sc->sf_field_initializer);
 		}
 	}
 
@@ -67,7 +67,7 @@ namespace zetscript{
 			}
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
-				se->stk_value=new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr);
+				se->value=new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr);
 				se->properties=MSK_STK_PROPERTY_MEMBER_FUNCTION | MSK_STK_PROPERTY_FUNCTION; // tell stack element that is a function member
 			}
 			else{ // var...
@@ -78,10 +78,10 @@ namespace zetscript{
 					void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
 					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
 				}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
-					se->stk_value=(void *)symbol->ref_ptr;
+					se->value=(void *)symbol->ref_ptr;
 					se->properties=MSK_STK_PROPERTY_PTR_STK;
 				}else if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
-					se->stk_value=new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr);
+					se->value=new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr);
 					se->properties=MSK_STK_PROPERTY_MEMBER_ATTRIBUTE;
 				}
 			}
@@ -161,6 +161,10 @@ namespace zetscript{
 		return NULL;
 	}
 
+	bool ScriptObjectClass::itHasGetMetamethod(){
+		return getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_GET),NULL) != NULL;
+	}
+
 	bool ScriptObjectClass::itHasSetMetamethod(){
 		return getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET),NULL) != NULL;
 	}
@@ -194,22 +198,22 @@ namespace zetscript{
 
 		if(stk_function != NULL){ // get first element
 			if(stk_function->properties & MSK_STK_PROPERTY_FUNCTION){
-				ScriptFunction *ptr_function=(ScriptFunction *)stk_function->stk_value;
+				ScriptFunction *ptr_function=(ScriptFunction *)stk_function->value;
 				if((ptr_function->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
 
 					StackElement result=VM_EXECUTE(
-							this->zs->getVirtualMachine()
+							this->vm
 							,this
 							,ptr_function
 							,NULL
 							,0
 					);
 					if(STK_IS_SCRIPT_OBJECT_STRING(&result)){
-						ScriptObjectString *so=(ScriptObjectString *)result.stk_value;
+						ScriptObjectString *so=(ScriptObjectString *)result.value;
 						// capture string...
 						std::string aux=so->toString();
 						// ... destroy lifetime object we don't need anymore
-						vm_destroy_life_time_object(this->zs->getVirtualMachine(),so);
+						vm_destroy_life_time_object(this->vm,so);
 						// return
 						return aux;
 					}
@@ -243,7 +247,7 @@ namespace zetscript{
 		for(unsigned i=0; i< stk_builtin_elements.count; i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 			if(stk->properties & MSK_STK_PROPERTY_MEMBER_ATTRIBUTE){
-				delete (StackMemberAttribute *)stk->stk_value;
+				delete (StackMemberAttribute *)stk->value;
 			}
 		}
 

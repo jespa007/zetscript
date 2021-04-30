@@ -5,7 +5,7 @@
 #pragma once
 
 namespace zetscript{
-	StackElement 	ScriptObjectStringIteratorWrap_get(ScriptObjectStringIterator *si);
+	void 			ScriptObjectStringIteratorWrap_get(ScriptObjectStringIterator *si);
 	void			ScriptObjectStringIteratorWrap_next(ScriptObjectStringIterator *si);
 	bool			ScriptObjectStringIteratorWrap_end(ScriptObjectStringIterator *si);
 }

@@ -18,18 +18,18 @@ namespace zetscript{
 			case MSK_STK_PROPERTY_ZS_FLOAT:
 				break;
 			case MSK_STK_PROPERTY_FUNCTION:
-				 ir_fun  = (ScriptFunction *)(si->stk_value);
+				 ir_fun  = (ScriptFunction *)(si->value);
 				break;
 			default: // properties ...
 
 				if(var_type & MSK_STK_PROPERTY_SCRIPT_OBJECT){
 					if(((si->properties & MSK_STK_PROPERTY_IS_VAR_C) != MSK_STK_PROPERTY_IS_VAR_C)
-						&& (si->stk_value != this) // ensure that property don't holds its same var.
-						&& (si->stk_value != 0)
+						&& (si->value != this) // ensure that property don't holds its same var.
+						&& (si->value != 0)
 					  ){ // deallocate but not if is c or this ref
 
 						// remove property if not referenced anymore
-						if(!vm_unref_shared_script_object_and_remove_if_zero(zs->getVirtualMachine(),(ScriptObject **)&si->stk_value)){
+						if(!vm_unref_shared_script_object_and_remove_if_zero(vm,(ScriptObject **)&si->value)){
 							return false;
 						}
 
@@ -49,12 +49,14 @@ namespace zetscript{
 		zs=NULL;
 		map_builtin_property_keys=new zs_map();
 		memset(&stk_this,0,sizeof(stk_this));
-		stk_this.stk_value=this;
+		stk_this.value=this;
 		stk_this.properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
+		vm=NULL;
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
 		zs=_zs;
+		vm=_zs->getVirtualMachine();
 
 		// init builtin
 		if(idx_script_class >= IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && idx_script_class<IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
@@ -164,13 +166,13 @@ namespace zetscript{
 			//,int * idx_stk_element
 
 	){
-		VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"addProperty is not implemented");
+		VM_SET_USER_ERROR(vm,"addProperty is not implemented");
 		return NULL;
 	}
 
 	StackElement * ScriptObject::getBuiltinElementAt(short idx){
 		if(idx >= (int)stk_builtin_elements.count){
-			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"idx symbol index out of bounds (%i)",idx);
+			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
 
@@ -187,7 +189,7 @@ namespace zetscript{
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 
 			if(stk->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION){
-				delete (StackMemberFunction *)stk->stk_value;
+				delete (StackMemberFunction *)stk->value;
 			}
 			free(stk);
 		}

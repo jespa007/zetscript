@@ -9,6 +9,7 @@
 namespace zetscript{
 
 	struct _InfoSharedList;
+	struct VirtualMachine;
 	//struct EvalInstruction;
 
 	typedef struct _SharedPointerInfo {
@@ -98,6 +99,7 @@ namespace zetscript{
 		StackElement stk_this;
 
 		ZetScript 				*	zs; // 8
+		VirtualMachine 			*	vm; // 8
 		zs_vector				stk_builtin_elements;
 		zs_map					*map_builtin_property_keys; // to search faster each property by its name
 

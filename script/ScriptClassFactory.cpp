@@ -43,8 +43,11 @@
 namespace zetscript{
 
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectObject);
+	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectObjectIterator);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectString);
+	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectStringIterator);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVector);
+	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVectorIterator);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectClass);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVarRef);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectDateTime);
@@ -142,10 +145,16 @@ namespace zetscript{
 		REGISTER_BUILT_IN_CLASS("String",ScriptObjectString,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING);
 		REGISTER_BUILT_IN_CLASS("Vector",ScriptObjectVector,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR);
 		REGISTER_BUILT_IN_CLASS("DateTime",ScriptObjectDateTime,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME);
+
+		// Script object iterators
+		REGISTER_BUILT_IN_CLASS("StringIterator",ScriptObjectStringIterator,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR);
+		REGISTER_BUILT_IN_CLASS("VectorIterator",ScriptObjectVectorIterator,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR);
+		REGISTER_BUILT_IN_CLASS("ObjectIterator",ScriptObjectObjectIterator,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR);
+
+
 		// BUILT-IN SCRIPT OBJECTS
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS CLASSES
-
 		REGISTER_BUILT_IN_CLASS("Object",ScriptObjectObject,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT);
 		REGISTER_BUILT_IN_CLASS("Class",ScriptObjectClass,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS);
 		// it needs script object class to have zetscript reference
@@ -164,7 +173,6 @@ namespace zetscript{
 		// register c function's
 
 		ZS_REGISTER_FUNCTION(zs,"ptrToZetScriptPtr",ptrToZetScriptPtr);
-
 		ZS_REGISTER_FUNCTION(zs,"parseFloat",static_cast<zs_float (*)(zs_int)>(parseFloat));
 		ZS_REGISTER_FUNCTION(zs,"parseFloat",static_cast<zs_float (*)(std::string *)>(parseFloat));
 		ZS_REGISTER_FUNCTION(zs,"parseInteger",static_cast<zs_int (*)(zs_float *)>(parseInteger));
@@ -201,6 +209,12 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectString>("startsWith",ScriptObjectStringWrap_startsWith);
 		registerNativeMemberFunction<ScriptObjectString>("endsWith",ScriptObjectStringWrap_endsWith);
 		registerNativeMemberFunction<ScriptObjectString>("substring",ScriptObjectStringWrap_substring);
+		registerNativeMemberFunction<ScriptObjectString>("iter",ScriptObjectStringWrap_iter);
+
+		// StringIterator
+		registerNativeMemberFunction<ScriptObjectStringIterator>("_next",ScriptObjectStringIteratorWrap_next);
+		registerNativeMemberFunction<ScriptObjectStringIterator>("end",ScriptObjectStringIteratorWrap_end);
+		registerNativeMemberFunction<ScriptObjectStringIterator>("_get",ScriptObjectStringIteratorWrap_get);
 
 
 		// Vector

@@ -27,7 +27,7 @@ namespace zetscript{
 			if((this->byte_code == BYTE_CODE_LOAD_STRING) || (this->properties & MSK_INSTRUCTION_PROPERTY_STRING)){
 
 				stk=(StackElement *)this->value_op2;
-				obj = (ScriptObject *)stk->stk_value;
+				obj = (ScriptObject *)stk->value;
 
 			}else{
 				THROW_EXCEPTION("instruction is not constant string");

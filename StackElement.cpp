@@ -28,9 +28,9 @@ namespace zetscript{
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
 			if(this->properties & MSK_STK_PROPERTY_PTR_STK){
-				stk=(StackElement *)stk->stk_value;
+				stk=(StackElement *)stk->value;
 			}
-			result=((ScriptObjectObject *)stk->stk_value)->getClassName().c_str();
+			result=((ScriptObjectObject *)stk->value)->getClassName().c_str();
 		}
 
 		return result;
@@ -41,22 +41,22 @@ namespace zetscript{
 		StackElement *stk=this;
 
 		if(this->properties & MSK_STK_PROPERTY_PTR_STK){
-			stk=(StackElement *)stk->stk_value;
+			stk=(StackElement *)stk->value;
 		}
 
 		if(STK_VALUE_IS_ZS_INT(stk))
-			result= zs_strutils::zs_int_to_str((zs_int)stk->stk_value);
+			result= zs_strutils::zs_int_to_str((zs_int)stk->value);
 		else if(STK_VALUE_IS_FLOAT(stk))
-			result= zs_strutils::float_to_str(*((zs_float *)&stk->stk_value));
+			result= zs_strutils::float_to_str(*((zs_float *)&stk->value));
 		else if(STK_VALUE_IS_BOOLEAN(stk))
-			result= stk->stk_value?"true":"false";
+			result= stk->value?"true":"false";
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result= std::string("Function")+"@"+((ScriptFunction *)stk->stk_value)->symbol.name;
+			result= std::string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
 		else if(STK_VALUE_IS_CLASS(stk))
-			result= std::string("Class")+"@"+((ScriptClass *)stk->stk_value)->symbol_class.name;
+			result= std::string("Class")+"@"+((ScriptClass *)stk->value)->symbol_class.name;
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
-			result=((ScriptObjectObject *)stk->stk_value)->toString();
+			result=((ScriptObjectObject *)stk->value)->toString();
 		}
 
 		return result;

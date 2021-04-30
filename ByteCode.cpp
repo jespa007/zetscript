@@ -196,12 +196,11 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_XOR:		return  "^"; 		// binary xor
 			case	BYTE_CODE_METAMETHOD_SHL:		return  "<<"; 		// binary shift left
 			case	BYTE_CODE_METAMETHOD_SHR:		return  ">>"; 		// binary shift right
-			case	BYTE_CODE_METAMETHOD_SET:		return  "_set";		// _set
+			case	BYTE_CODE_METAMETHOD_SET:		return  "=";		// _set
+			case	BYTE_CODE_METAMETHOD_GET:		return  "_get";		// _get
 			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "_toString";// _toString
-			case 	BYTE_CODE_METAMETHOD_ITER: 		return  "_iter";	// _iter
-			case 	BYTE_CODE_METAMETHOD_NEXT: 		return  "_next";	// _next
-			case 	BYTE_CODE_METAMETHOD_END: 		return  "_end";		// _end
-			case 	BYTE_CODE_METAMETHOD_EXIST:		return  "_exist"; 	// _exist
+			case 	BYTE_CODE_METAMETHOD_NEXT: 		return  "++";	// _next
+			case 	BYTE_CODE_METAMETHOD_PREVIOUS: 	return  "--";// _previous
 			default:
 				return "none";
 		}
@@ -229,12 +228,10 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; 	// binary shift left
 			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; 	// binary shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; 	// _set
+			case	BYTE_CODE_METAMETHOD_GET:		return  "_get"; 	// _get
 			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_toString";// _toString
-			case 	BYTE_CODE_METAMETHOD_ITER: 		return  "_iter";	// _iter
 			case 	BYTE_CODE_METAMETHOD_NEXT: 		return  "_next";	// _next
 			case 	BYTE_CODE_METAMETHOD_PREVIOUS:	return  "_previous";// _previous
-			case 	BYTE_CODE_METAMETHOD_END: 		return  "_end";		// _end
-			case 	BYTE_CODE_METAMETHOD_EXIST:		return  "_exist"; 	// _exist
 			default:
 				return "none";
 		}
@@ -248,11 +245,8 @@ namespace zetscript{
 			case BYTE_CODE_METAMETHOD_NEG:
 			case BYTE_CODE_METAMETHOD_SET:
 			case BYTE_CODE_METAMETHOD_TO_STRING:
-			case BYTE_CODE_METAMETHOD_ITER:
 			case BYTE_CODE_METAMETHOD_NEXT:
 			case BYTE_CODE_METAMETHOD_PREVIOUS:
-			case BYTE_CODE_METAMETHOD_END:
-			case BYTE_CODE_METAMETHOD_EXIST:
 				return 1;
 		}
 

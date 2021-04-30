@@ -81,7 +81,7 @@ namespace zetscript{
 			int16_t var_type = 0;
 
 			if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk)){
-				stk=((ScriptObjectVarRef *)stk->stk_value)->getStackElementPtr();
+				stk=((ScriptObjectVarRef *)stk->value)->getStackElementPtr();
 			}
 
 			var_type = GET_MSK_STK_PROPERTY_TYPES(stk->properties);
@@ -107,7 +107,7 @@ namespace zetscript{
 					}
 				}
 
-				obj=((ScriptObject *)stk->stk_value);
+				obj=((ScriptObject *)stk->value);
 				switch(obj->idx_script_class){
 				case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
 					str_result+=std::string("\"") + ((ScriptObjectString *)obj)->toString() + "\"";

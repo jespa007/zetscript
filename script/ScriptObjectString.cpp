@@ -22,12 +22,12 @@ namespace zetscript{
 		ScriptObjectString *so_ref=NULL;
 		// we have to create an new string variable
 		if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
-			so_ref=(ScriptObjectString *)stk_result_op1->stk_value;
+			so_ref=(ScriptObjectString *)stk_result_op1->value;
 		}
 
 		if(so_ref == NULL){
 		   if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){
-			   so_ref=(ScriptObjectString *)stk_result_op2->stk_value;
+			   so_ref=(ScriptObjectString *)stk_result_op2->value;
 		   }else{
 			   THROW_RUNTIME_ERROR("Expected one of both operants as string var");
 		   }
@@ -59,7 +59,7 @@ namespace zetscript{
 		for(unsigned i=0; i < 2; i++){
 			StackElement *stk_src_item=(*stk_src_it);
 			if(stk_src_item->properties & MSK_STK_PROPERTY_PTR_STK){
-				stk_src_item=(StackElement *)stk_src_item->stk_value;
+				stk_src_item=(StackElement *)stk_src_item->value;
 			}
 
 			switch(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
@@ -67,13 +67,13 @@ namespace zetscript{
 			//	*(*str_dst_it)="null";
 			//	break;
 			case MSK_STK_PROPERTY_ZS_INT:
-				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->stk_value);
+				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->value);
 				break;
 			case MSK_STK_PROPERTY_ZS_FLOAT:
-				*(*str_dst_it)=zs_strutils::float_to_str(*((zs_float *)&((stk_src_item)->stk_value)));
+				*(*str_dst_it)=zs_strutils::float_to_str(*((zs_float *)&((stk_src_item)->value)));
 				break;
 			case MSK_STK_PROPERTY_BOOL:
-				*(*str_dst_it)=(stk_src_item)->stk_value == 0?"false":"true";
+				*(*str_dst_it)=(stk_src_item)->value == 0?"false":"true";
 				break;
 			case MSK_STK_PROPERTY_FUNCTION:
 				*(*str_dst_it)="function";
@@ -85,7 +85,7 @@ namespace zetscript{
 				if(stk_src_item->properties==MSK_STK_PROPERTY_NULL){
 					*(*str_dst_it)="null";
 				}else if(stk_src_item->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					*(*str_dst_it)=((ScriptObjectObject *)(stk_src_item)->stk_value)->toString();
+					*(*str_dst_it)=((ScriptObjectObject *)(stk_src_item)->value)->toString();
 				}
 				else{
 					*(*str_dst_it)="unknow";
@@ -110,11 +110,11 @@ namespace zetscript{
 		ScriptObjectVector *sov=NULL;
 
 		if(args->properties & MSK_STK_PROPERTY_PTR_STK){
-			args=(StackElement *)args->stk_value;
+			args=(StackElement *)args->value;
 		}
 
 		if(args->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-			ScriptObject *so=(ScriptObject *)args->stk_value;
+			ScriptObject *so=(ScriptObject *)args->value;
 			if(so->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
 				sov=(ScriptObjectVector *)so;
 			}

@@ -24,23 +24,24 @@ namespace zetscript{
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
 		*new_stk=*_stk;
 		ZetScript *zs=sv->getZetScript();
+		VirtualMachine *vm=sv->getZetScript()->getVirtualMachine();
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
 
 		// update n_refs +1
 		if(_stk->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
-			ScriptObject *so_param=(ScriptObject *)_stk->stk_value;
+			ScriptObject *so_param=(ScriptObject *)_stk->value;
 			if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
 				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(zs);
-				if(!vm_create_shared_pointer(zs->getVirtualMachine(),sc)){
+				if(!vm_create_shared_pointer(vm,sc)){
 					return;
 				}
 				sc->set(so_param->toString());
 				so_param=sc;
-				new_stk->stk_value=so_param; // update pointer
+				new_stk->value=so_param; // update pointer
 			}
 
-			vm_share_pointer(zs->getVirtualMachine(),so_param);
+			vm_share_pointer(vm,so_param);
 
 		}
 

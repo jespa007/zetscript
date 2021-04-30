@@ -56,7 +56,7 @@ namespace zetscript{
 
 	StackElement * ScriptObjectVector::getUserElementAt(short idx){
 		if(idx >= (int)stk_user_elements.count){
-			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"idx symbol index out of bounds (%i)",idx);
+			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
 
@@ -69,7 +69,7 @@ namespace zetscript{
 
 
 		if(idx >= stk_user_elements.count){
-			VM_SET_USER_ERROR(this->zs->getVirtualMachine(),"idx out of bounds (%i>=%i)",idx,stk_user_elements.count);
+			VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_user_elements.count);
 		}
 
 		si=(StackElement *)stk_user_elements.items[idx];
@@ -113,7 +113,7 @@ namespace zetscript{
 
 		// update n_refs +1
 		if(_stk->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
-			vm_share_pointer(this->zs->getVirtualMachine(),(ScriptObject *)(_stk->stk_value));
+			vm_share_pointer(vm,(ScriptObject *)(_stk->value));
 		}
 	}
 
@@ -127,7 +127,7 @@ namespace zetscript{
 		}
 
 		// push current vm
-		vm_push_stack_element(this->zs->getVirtualMachine(),stk_element);
+		vm_push_stack_element(vm,stk_element);
 
 	}
 

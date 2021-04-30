@@ -138,9 +138,17 @@ namespace zetscript{
 			 ScriptClass *rc=(ScriptClass *)script_classes->get(i);
 			 bool show_class=true;
 
+			 // ignore builtin implementations if not chosen ...
 			 if(show_system_code == false && (
 					 	rc->symbol_class.name == "System"
-					 ||	rc->symbol_class.name == "String"
+					||	rc->symbol_class.name == "String"
+					||	rc->symbol_class.name == "StringIterator"
+					||	rc->symbol_class.name == "Object"
+					||	rc->symbol_class.name == "ObjectIterator"
+					||	rc->symbol_class.name == "Console"
+					||	rc->symbol_class.name == "DateTime"
+					||	rc->symbol_class.name == "Vector"
+					||	rc->symbol_class.name == "VectorIterator"
 				)){
 				 show_class=false;
 			 }
@@ -208,10 +216,10 @@ namespace zetscript{
 		(*constant_string_objects)[const_name]=stk;
 
 		so=ZS_NEW_OBJECT_STRING(this);
-		// swap values stk_ref/stk_value
+		// swap values stk_ref/value
 		so->set(const_name);
 
-		stk->stk_value=so;
+		stk->value=so;
 		stk->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT | MSK_STK_PROPERTY_READ_ONLY;
 
 		return stk;
@@ -237,7 +245,7 @@ namespace zetscript{
 
 			if(se->properties & MSK_STK_PROPERTY_ZS_INT){
 
-				eval_int=(zs_int)se->stk_value;
+				eval_int=(zs_int)se->value;
 				return &eval_int;
 			}
 			else{
@@ -257,7 +265,7 @@ namespace zetscript{
 		if(se != NULL){
 
 			if(se->properties & MSK_STK_PROPERTY_BOOL){
-				eval_bool=(bool)((zs_int)se->stk_value);
+				eval_bool=(bool)((zs_int)se->value);
 				return &eval_bool;
 
 			}else{
@@ -274,7 +282,7 @@ namespace zetscript{
 
 		if(se != NULL){
 			if(se->properties & MSK_STK_PROPERTY_ZS_FLOAT){
-				eval_float = *((zs_float *)(&se->stk_value));
+				eval_float = *((zs_float *)(&se->value));
 				return &eval_float;
 			}
 			else{
@@ -295,7 +303,7 @@ namespace zetscript{
 
 			if(STK_IS_SCRIPT_OBJECT_STRING(se)){
 
-				eval_string = ((ScriptObjectString *)se->stk_value)->toString();
+				eval_string = ((ScriptObjectString *)se->value)->toString();
 				return &eval_string;
 			}
 			else{
@@ -392,7 +400,7 @@ namespace zetscript{
 				ScriptObjectObject *var = NULL;
 
 				if(vm_stk_element->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					var =((ScriptObjectObject *)(vm_stk_element->stk_value));
+					var =((ScriptObjectObject *)(vm_stk_element->value));
 					if(var){
 						if(var->shared_pointer != NULL){
 							if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
@@ -449,7 +457,7 @@ namespace zetscript{
 
 			for(std::map<std::string,StackElement *>::iterator it=constant_string_objects->begin();it!=constant_string_objects->end();it++){
 				StackElement *icv=it->second;
-				delete (ScriptObjectString *)icv->stk_value;
+				delete (ScriptObjectString *)icv->value;
 				delete icv;
 			}
 			constant_string_objects->clear();

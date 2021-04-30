@@ -57,7 +57,7 @@ namespace zetscript{
 				if((stk_prop_fun = this_object->getBuiltinElementAt(calling_function->symbol.idx_position))==NULL){
 					return;
 				}
-				fun_ptr=((ScriptFunction *)stk_prop_fun->stk_value)->ref_native_function_ptr; // var ref holds function ptr
+				fun_ptr=((ScriptFunction *)stk_prop_fun->value)->ref_native_function_ptr; // var ref holds function ptr
 			}else{
 				VM_SET_USER_ERROR(vm,"Internal error: expected object for function member");
 				return;

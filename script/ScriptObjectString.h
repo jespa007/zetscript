@@ -12,6 +12,7 @@ namespace zetscript{
 	class  ScriptObjectString: public ScriptObject{
 
 	public:
+
 		//----------------------------------------------
 		//
 		// Helpers
@@ -25,8 +26,9 @@ namespace zetscript{
 		//
 		//----------------------------------------------
 
-
 		void 		*	value;	// 8
+
+
 		ScriptObjectString();
 
 		void set(const std::string & s);
@@ -34,6 +36,8 @@ namespace zetscript{
 		virtual std::string toString();
 
 		ScriptObjectString *sub(ScriptObjectString *s1);
+
+
 	protected:
 
 

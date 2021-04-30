@@ -46,12 +46,15 @@ typedef enum:unsigned char {
 #define MSK_STK_PROPERTY_TYPES								((0x1<<BIT_STK_PROPERTY_MAX)-1)
 #define GET_MSK_STK_PROPERTY_TYPES(prop)					((prop)&MSK_STK_PROPERTY_TYPES)
 
-#define STK_IS_SCRIPT_OBJECT_OBJECT(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT))
-#define STK_IS_SCRIPT_OBJECT_STRING(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING))
-#define STK_IS_SCRIPT_OBJECT_VECTOR(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR))
-#define STK_IS_SCRIPT_OBJECT_CLASS(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class>IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS))
-#define STK_IS_SCRIPT_OBJECT_VAR_REF(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->stk_value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF))
-#define STK_GET_STK_VAR_REF(stk)  							(((ScriptObjectVarRef *)((stk))->stk_value)->getStackElementPtr())
+#define STK_IS_SCRIPT_OBJECT_OBJECT(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT))
+#define STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk)			(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR))
+#define STK_IS_SCRIPT_OBJECT_STRING(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING))
+#define STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk)			(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR))
+#define STK_IS_SCRIPT_OBJECT_VECTOR(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR))
+#define STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk)			(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR))
+#define STK_IS_SCRIPT_OBJECT_CLASS(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class>IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS))
+#define STK_IS_SCRIPT_OBJECT_VAR_REF(stk) 					(((stk)->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF))
+#define STK_GET_STK_VAR_REF(stk)  							(((ScriptObjectVarRef *)((stk))->value)->getStackElementPtr())
 
 #define MSK_STK_OP1_BOOL_OP2_BOOL							((MSK_STK_PROPERTY_BOOL<<16)|MSK_STK_PROPERTY_BOOL)
 #define MSK_STK_OP1_ZS_INT_OP2_ZS_INT						((MSK_STK_PROPERTY_ZS_INT<<16)|MSK_STK_PROPERTY_ZS_INT)
@@ -110,15 +113,11 @@ enum:unsigned short {
 #define STK_VALUE_IS_SCRIPT_VAR(stk) \
 (stk->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT)
 
-#define STK_VALUE_IS_VECTOR(stk) \
-(( stk->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT) &&\
- (((ScriptObjectObject *)(stk->stk_value))->idx_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR))
-
 #define STK_VALUE_TO_ZS_INT(ptr_result_instruction) \
-		((zs_int)((zs_int)(ptr_result_instruction->stk_value)))
+		((zs_int)((zs_int)(ptr_result_instruction->value)))
 
 #define STK_VALUE_TO_BOOL(ptr_result_instruction) \
-		(((bool)(ptr_result_instruction->stk_value)))
+		(((bool)(ptr_result_instruction->value)))
 
 #define STK_SET_NULL(stk) memset(stk,0,sizeof(StackElement))
 //#define STK_ASSIGN(dst,src) memcpy(dst,src,sizeof(StackElement))
@@ -129,7 +128,7 @@ namespace zetscript{
 
 	struct StackElement {
 		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
-		void * stk_value; // operable value
+		void * value; // operable value
 		//void * var_ref; // stack ref in case to assign new value.
 		uint16_t properties; // it tells its properties
 

@@ -10,9 +10,16 @@
 #define GET_SCRIPT_CLASS(data,idx_or_name)				((data->script_class_factory)->getScriptClass(idx_or_name))
 #define GET_SCRIPT_CLASS_NAME(data,idx) 				((data->script_class_factory)->getScriptClassName(idx))
 #define SCRIPT_CLASS_MAIN(data)							((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_MAIN))    // 0 is the main class
-#define SCRIPT_CLASS_STRING(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING))
+
+#define SCRIPT_OBJECT_STRING(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING))
+#define SCRIPT_OBJECT_STRING_ITERATOR(data)				((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR))
 //#define SCRIPT_CLASS_DICTIONARY(data)					((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_DICTIONARY))
-#define SCRIPT_CLASS_VECTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR))
+#define SCRIPT_OBJECT_VECTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR))
+#define SCRIPT_OBJECT_VECTOR_ITERATOR(data)				((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR))
+
+#define SCRIPT_OBJECT_OBJECT(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT))
+#define SCRIPT_OBJECT_OBJECT_ITERATOR(data)				((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR))
+
 //#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_FUNCTION))
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(data,s)		(data->script_class_factory)->getScriptClassByNativeClassPtr(s))    // 0 is the main class
 #define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_class_factory)->getScriptClass(idx)->str_class_ptr_type)

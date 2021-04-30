@@ -1,5 +1,7 @@
 var s="this is an string iterator"
-
+Console::outln("size:"+s.size());
 for(var it2=s.iter();!it2.end();it2++){
-   System::println(it2); // will print the content
+   //var v=it2
+   //Console::outln(v);
+   Console::outln(it2); // will print the content
 }

@@ -21,12 +21,12 @@ namespace zetscript{
 					 break;
 				 case IDX_BUILTIN_TYPE_FLOAT_C:
 					 stk_result.properties=MSK_STK_PROPERTY_ZS_FLOAT;//{};
-					 ZS_FLOAT_COPY(&stk_result.stk_value,&ptr_var);
+					 ZS_FLOAT_COPY(&stk_result.value,&ptr_var);
 					 break;
 				 case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
 					 if(ptr_var==0) return stk_result;
 					 stk_result.properties=MSK_STK_PROPERTY_ZS_FLOAT;//{};
-					 ZS_FLOAT_COPY(&stk_result.stk_value,&(*(zs_float *)ptr_var));
+					 ZS_FLOAT_COPY(&stk_result.value,&(*(zs_float *)ptr_var));
 					 break;
 				 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
 					 if(ptr_var==0) return stk_result;
@@ -53,8 +53,11 @@ namespace zetscript{
 					 stk_result=*((StackElement *)ptr_var);
 					 break;
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR:
+				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR:
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT:
+				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR:
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
+				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR:
 
 				     stk_result = {
 				    		 (void *)ptr_var
@@ -82,7 +85,7 @@ namespace zetscript{
 
 			// save return type ...
 			if(stack_element->properties & MSK_STK_PROPERTY_PTR_STK){
-				stack_element=((StackElement *)stack_element->stk_value);
+				stack_element=((StackElement *)stack_element->value);
 			}
 
 			if(idx_builtin_type == IDX_BUILTIN_TYPE_STACK_ELEMENT){
@@ -92,9 +95,9 @@ namespace zetscript{
 				switch(GET_MSK_STK_PROPERTY_TYPES(stack_element->properties)){
 				case MSK_STK_PROPERTY_BOOL:
 					if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_C){// *ScriptClass::k_str_bool_type){
-						val_ret=(zs_int)(stack_element->stk_value);
+						val_ret=(zs_int)(stack_element->value);
 					}else if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_PTR_C){//*ScriptClass::k_str_bool_type_ptr){
-						val_ret=(zs_int)(&stack_element->stk_value);
+						val_ret=(zs_int)(&stack_element->value);
 					}else{
 						error="cannot convert \""+zs_rtti::demangle((k_str_bool_type_ptr))+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 
@@ -105,15 +108,15 @@ namespace zetscript{
 				case MSK_STK_PROPERTY_ZS_FLOAT:
 					switch(idx_builtin_type){
 					case IDX_BUILTIN_TYPE_FLOAT_C:
-						ZS_FLOAT_COPY(&val_ret,&stack_element->stk_value);
+						ZS_FLOAT_COPY(&val_ret,&stack_element->value);
 						break;
 					case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
-						val_ret=(zs_int)(&stack_element->stk_value);
+						val_ret=(zs_int)(&stack_element->value);
 						break;
 					case IDX_BUILTIN_TYPE_ZS_INT_C:
 						{
 							int *aux_dst = ((int *)&val_ret);
-							zs_float *aux_src=(zs_float *)&stack_element->stk_value;
+							zs_float *aux_src=(zs_float *)&stack_element->value;
 							*aux_dst=(int)(*aux_src);
 						}
 						break;
@@ -125,13 +128,13 @@ namespace zetscript{
 				case MSK_STK_PROPERTY_ZS_INT:
 					switch(idx_builtin_type){
 					case IDX_BUILTIN_TYPE_ZS_INT_C:
-						val_ret=(zs_int)(stack_element->stk_value);
+						val_ret=(zs_int)(stack_element->value);
 						break;
 					case IDX_BUILTIN_TYPE_ZS_INT_PTR_C:
-						val_ret=(zs_int)(&stack_element->stk_value);
+						val_ret=(zs_int)(&stack_element->value);
 						break;
 					case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
-						ZS_FLOAT_COPY(&val_ret,stack_element->stk_value);
+						ZS_FLOAT_COPY(&val_ret,stack_element->value);
 						break;
 					default:
 						error= "cannot convert \"int\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
@@ -139,17 +142,17 @@ namespace zetscript{
 					}
 					break;
 				case MSK_STK_PROPERTY_FUNCTION:
-					val_ret=(zs_int)stack_element->stk_value;
+					val_ret=(zs_int)stack_element->value;
 					break;
 				default: // script variable by default ...
 
 					if(STK_IS_SCRIPT_OBJECT_STRING(stack_element)){ // string
-						if(stack_element->stk_value == 0){ // if not created try to create a tmp scriptvar it will be removed...
+						if(stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
 							error= "internal error var_ref is NULL";
 							return false;
 						}
 
-						so=(ScriptObjectString *)stack_element->stk_value;
+						so=(ScriptObjectString *)stack_element->value;
 
 						if(idx_builtin_type == IDX_BUILTIN_TYPE_STRING_PTR_C){
 							val_ret=(zs_int)(so->value);
@@ -161,7 +164,7 @@ namespace zetscript{
 						}
 					}else{ // object
 
-						script_object=(ScriptObject *)stack_element->stk_value;
+						script_object=(ScriptObject *)stack_element->value;
 						ScriptClass *c_class=NULL;
 						val_ret=(zs_int)script_object;;
 
@@ -859,7 +862,7 @@ namespace zetscript{
 								StackElement *stk = vm_get_stack_element_at(virtual_machine,j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
 									if(stk->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-										calling_obj=(ScriptObjectClass *)stk->stk_value;
+										calling_obj=(ScriptObjectClass *)stk->value;
 									}
 								}
 								else{
@@ -876,7 +879,7 @@ namespace zetscript{
 						se = calling_obj->getProperty(symbol_to_find);
 						if(se!=NULL){
 							if(se->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-								calling_obj=(ScriptObjectClass *)se->stk_value;
+								calling_obj=(ScriptObjectClass *)se->value;
 							}else{
 								THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
 							}
@@ -890,7 +893,7 @@ namespace zetscript{
 				is=calling_obj->getProperty(access_var[access_var.size()-1]);
 				if(is!=NULL){
 					if(is->properties & MSK_STK_PROPERTY_FUNCTION){
-						fun_obj=(ScriptFunction *)is->stk_value;
+						fun_obj=(ScriptFunction *)is->value;
 					}
 				}else{
 					THROW_RUNTIME_ERROR("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());

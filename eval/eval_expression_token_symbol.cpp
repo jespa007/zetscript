@@ -486,6 +486,7 @@ namespace zetscript{
 				(post_operation == PostOperation::POST_OPERATION_INC)
 			|| 	(post_operation == PostOperation::POST_OPERATION_DEC)
 		){
+			EvalInstruction *eval_instruction_post=NULL;
 			ByteCode byte_code_post_operation= ByteCode::BYTE_CODE_INVALID;
 			Instruction *last_load_instruction=&token_node_symbol.instructions[token_node_symbol.instructions.size()-1]->vm_instruction;
 
@@ -521,9 +522,14 @@ namespace zetscript{
 		   }
 
 			token_node_symbol.instructions.push_back(
-				new EvalInstruction(
+				eval_instruction_post=new EvalInstruction(
 					byte_code_post_operation
 				)
+			);
+
+			eval_instruction_post->instruction_source_info=InstructionSourceInfo(
+				eval_data->current_parsing_file
+				,line
 			);
 
 			// change load by push because is mutable
@@ -541,6 +547,8 @@ namespace zetscript{
 			|| 	(pre_operation == PreOperation::PRE_OPERATION_INC)
 			|| 	(pre_operation == PreOperation::PRE_OPERATION_DEC)
 		){
+			EvalInstruction *eval_instruction_pre=NULL;
+
 			if(token_node_symbol.token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
 				EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"expected identifier before pre operation \"%s\"",eval_data_pre_operations[ pre_operation].str);
 			}
@@ -548,12 +556,17 @@ namespace zetscript{
 			Instruction *last_load_instruction=&token_node_symbol.instructions[token_node_symbol.instructions.size()-1]->vm_instruction;
 
 			token_node_symbol.instructions.push_back(
-				new EvalInstruction(
+				eval_instruction_pre=new EvalInstruction(
 					pre_operation == PreOperation::PRE_OPERATION_NEG ? ByteCode::BYTE_CODE_NEG:
 					pre_operation == PreOperation::PRE_OPERATION_NOT ? ByteCode::BYTE_CODE_NOT:
 					pre_operation == PreOperation::PRE_OPERATION_DEC ? ByteCode::BYTE_CODE_PRE_DEC:
 					ByteCode::BYTE_CODE_PRE_INC
 				)
+			);
+
+			eval_instruction_pre->instruction_source_info=InstructionSourceInfo(
+				eval_data->current_parsing_file
+				,line
 			);
 
 			// change load by push because is mutable
