@@ -26,18 +26,6 @@ typedef enum:unsigned short {
 }StkProperty;
 
 
-/*
-#define		STK_PROPERTY_NULL 			0 //(0x1 << BIT_STK_PROPERTY_ZS_UNDEFINED) // let's say a variable not defined...
-#define 	STK_PROPERTY_ZS_CHAR 			(0x1 << BIT_STK_PROPERTY_ZS_CHAR)
-#define		STK_PROPERTY_ZS_INT 			(0x1 << BIT_STK_PROPERTY_ZS_INT) // primitive int
-#define		STK_PROPERTY_ZS_FLOAT			(0x1 << BIT_STK_PROPERTY_ZS_FLOAT) // primitive number
-#define		STK_PROPERTY_BOOL				(0x1 << BIT_STK_PROPERTY_BOOL) // primitive bool
-#define		STK_PROPERTY_FUNCTION			(0x1 << BIT_STK_PROPERTY_FUNCTION) // primitive function
-#define		STK_PROPERTY_MEMBER_FUNCTION 	(0x1 << BIT_STK_PROPERTY_MEMBER_FUNCTION) // function member
-#define		STK_PROPERTY_MEMBER_ATTRIBUTE 	(0x1 << BIT_STK_PROPERTY_MEMBER_ATTRIBUTE) // attribute member
-#define		STK_PROPERTY_CLASS				(0x1 << BIT_STK_PROPERTY_CLASS) // primitive function
-#define		STK_PROPERTY_SCRIPT_OBJECT		(0x1 << BIT_STK_PROPERTY_SCRIPT_OBJECT) // always is an script class...*/
-
 #define IS_STK_FUNCTION(stk)	((stk->properties & STK_PROPERTY_FUNCTION) || (stk->properties & STK_PROPERTY_MEMBER_FUNCTION))
 
 #define STK_PROPERTY_TYPE_PRIMITIVES					(STK_PROPERTY_FUNCTION-1)
@@ -61,16 +49,7 @@ typedef enum:unsigned short {
 #define MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT						((STK_PROPERTY_ZS_INT<<16)|STK_PROPERTY_ZS_FLOAT)
 #define MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT						((STK_PROPERTY_ZS_FLOAT<<16)|STK_PROPERTY_ZS_INT)
 #define MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT					((STK_PROPERTY_ZS_FLOAT<<16)|STK_PROPERTY_ZS_FLOAT)
-/*
-enum:unsigned short {
-	STK_PROPERTY_IS_VAR_C = 	(0x1 << BIT_STK_PROPERTY_IS_VAR_C),
-	STK_PROPERTY_PTR_STK = 		(0x1 << BIT_STK_PROPERTY_PTR_STK),
-	STK_PROPERTY_READ_ONLY = 	(0x1 << BIT_STK_PROPERTY_READ_ONLY),
-	//STK_PROPERTY_ARRAY_STK = (0x1 << BIT_STK_PROPERTY_ARRAY_STK),
-	//STK_PROPERTY_CONST_CHAR = 0xffff 	// special use const char
-	//STK_PROPERTY_RETURN = (0x1 << BIT_STK_PROPERTY_RETURN)
-};
-*/
+
 #define STK_PROPERTY_ZS_INT_PTR (STK_PROPERTY_IS_VAR_C | STK_PROPERTY_ZS_INT)
 #define STK_PROPERTY_FLOAT_PTR (STK_PROPERTY_IS_VAR_C | STK_PROPERTY_ZS_FLOAT)
 #define STK_PROPERTY_BOOL_PTR (STK_PROPERTY_IS_VAR_C | STK_PROPERTY_BOOL)
@@ -127,9 +106,7 @@ namespace zetscript{
 	#pragma pack(push, 1)
 
 	struct StackElement {
-		//VALUE_INSTRUCTION_TYPE 		type; // tells what kind of variable is. By default is object.
 		void * value; // operable value
-		//void * var_ref; // stack ref in case to assign new value.
 		uint16_t properties; // it tells its properties
 
 		// it gives stackelement as string (the result should be deleted)
