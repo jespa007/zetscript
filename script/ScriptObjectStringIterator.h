@@ -32,7 +32,7 @@ namespace zetscript{
 	private:
 
 		ScriptObjectString *so;
-		int idx;
+		zs_int idx;
 		StackElement stk_key;
 		StackElement stk_value;
 

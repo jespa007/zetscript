@@ -794,14 +794,14 @@ namespace zetscript{
 				goto apply_metamethod_error;
 			}
 
-			ptr_function_found=(ScriptFunction *)stk->value;
+			ptr_function_found=((StackMemberFunction *)stk->value)->so_function;
 
 		}
 
 		if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
 			vm_call_function_script(
 				vm
-				,NULL
+				,script_object
 				,ptr_function_found
 				,stk_args
 				,n_stk_args
@@ -809,7 +809,7 @@ namespace zetscript{
 		}else{ //
 			vm_call_function_native(
 					vm
-					,NULL
+					,script_object
 					,ptr_function_found
 					,stk_args
 					,n_stk_args

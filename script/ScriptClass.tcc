@@ -32,32 +32,18 @@ namespace zetscript{
 			}
 	}
 
-
-	/**
-	 * Register C Member function Class
-	 * like register function c but is added to member function list according type C
-	 */
 	template <typename F>
-	void ScriptClass::registerNativeMemberFunctionStatic(
+	int ScriptClass::getNativeMemberFunctionRetArgsTypes(
 			const char *function_name
-			,F function_ptr
-			, const char *registered_file
-			,short registered_line
+			,F ptr_function
+			,std::string & return_type
+			,std::vector<ScriptFunctionArg> & arg_info
 		)
 	{
-		// to make compatible MSVC shared library
-		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
-
-		std::string return_type;
-		std::string error;
-		std::vector<std::string> params;
-		std::vector<std::string> arg;
-		std::vector<ScriptFunctionArg> arg_info;
 		int idx_return_type=-1;
-		zs_int ref_ptr=0;
-
+		std::vector<std::string> arg;
 		// 1. check all parameters ok.
-		using Traits3 = FunctionTraits<decltype(function_ptr)>;
+		using Traits3 = FunctionTraits<decltype(ptr_function)>;
 		getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
 
 		if(arg.size()>MAX_NATIVE_FUNCTION_ARGS){
@@ -83,7 +69,57 @@ namespace zetscript{
 			arg_info.push_back({idx_type,arg[i]});
 		}
 
-		ref_ptr=(zs_int)function_ptr;
+		return idx_return_type;
+	}
+
+	/*
+	 * register C setter
+	 */
+	template <typename F>
+	void ScriptClass::registerNativeMemberAttributeSetter(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	/*
+	 * register C getter
+	 */
+	template <typename F>
+	void ScriptClass::registerNativeMemberAttributeGetter(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	/**
+	 * Register C Member function Class
+	 * like register function c but is added to member function list according type C
+	 */
+	template <typename F>
+	void ScriptClass::registerNativeMemberFunctionStatic(
+			const char *function_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+		)
+	{
+		// to make compatible MSVC shared library
+		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
+
+		std::string return_type;
+		std::string error;
+		std::vector<std::string> params;
+
+		std::vector<ScriptFunctionArg> arg_info;
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,arg_info);
 
 		// register member function...
 		Symbol * symbol_sf = this->registerNativeMemberFunction(
@@ -93,7 +129,7 @@ namespace zetscript{
 				,function_name
 				,arg_info
 				, idx_return_type
-				, ref_ptr
+				, (zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC
 		);
 
@@ -147,7 +183,7 @@ namespace zetscript{
 	template <typename F>
 	void ScriptClass::registerNativeMemberFunction(
 			const char *function_name
-			,F function_type
+			,F ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
@@ -156,59 +192,30 @@ namespace zetscript{
 
 		std::string return_type;
 		std::vector<std::string> params;
-		std::vector<std::string> arg;
 		std::vector<ScriptFunctionArg> arg_info;
-		int idx_return_type=-1;
 		zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 		Symbol *symbol;
 
 		// 1. check all parameters ok.
-		using Traits3 = FunctionTraits<decltype(function_type)>;
-		getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,arg_info);
 
-		if(arg.size()>MAX_NATIVE_FUNCTION_ARGS){
-			THROW_RUNTIME_ERROR("Max argyments reached");
-		}
-
-		if(arg.size()==0){
+		if(arg_info.size()==0){
 			THROW_RUNTIME_ERROR("registerNativeMemberFunction at least need first parameter that defines the object to add function %s",function_name);
 		}
 
-		ScriptClass * c_class_first_arg=	getScriptClassByNativeClassPtr(arg[0]);
+		ScriptClass * c_class_first_arg=	getScriptClass(arg_info[0].idx_type);
 		if(c_class_first_arg == NULL){
-			THROW_RUNTIME_ERROR("class %s is not registered",arg[0].c_str());
+			THROW_RUNTIME_ERROR("class %s is not registered",arg_info[0].arg_name.c_str());
 		}
 
 		if(c_class_first_arg->str_class_ptr_type !=  this->str_class_ptr_type){
-			THROW_RUNTIME_ERROR("first parameter is \"%s\" and should be the same type as the class (i.e \"%s\")",arg[0].c_str(),str_class_ptr_type.c_str());
+			THROW_RUNTIME_ERROR("first parameter is \"%s\" and should be the same type as the class (i.e \"%s\")",arg_info[0].arg_name.c_str(),str_class_ptr_type.c_str());
 		}
-
-
 
 		function_class_name = c_class_first_arg->symbol_class.name+"::"+function_name;
 
-		// check valid parameters ...
-		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){
-			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name);
-		}
-
-		for(unsigned int i = 0; i < arg.size(); i++){
-			int idx_type = getIdxClassFromItsNativeType(arg[i]);
-
-			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
-				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)",i,zs_rtti::demangle(arg[i]).c_str(),function_name,zs_rtti::demangle(arg[i]).c_str());
-			}
-
-			if(idx_type==ZS_IDX_UNDEFINED){
-				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered",i,zs_rtti::demangle(arg[i]).c_str(),function_name);
-			}
-
-			arg_info.push_back({idx_type,arg[i]});
-		}
-
-		ref_ptr=(zs_int)function_type;
 
 		// register member function...
 		symbol = this->registerNativeMemberFunction(
@@ -218,7 +225,7 @@ namespace zetscript{
 				, function_name
 				, arg_info
 				, idx_return_type
-				, ref_ptr
+				, (zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
 		);
 

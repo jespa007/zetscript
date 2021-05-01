@@ -42,9 +42,11 @@ namespace zetscript{
 			stk_value.value=(void *)(ch);
 		}
 
+		stk_key.value=(void *)idx;
+
 		// pass value through the stack
-		vm_push_stack_element(vm,stk_value);
 		vm_push_stack_element(vm,stk_key);
+		vm_push_stack_element(vm,stk_value); // last value/first value to get
 	}
 
 	void	 ScriptObjectStringIterator::next(){

@@ -55,6 +55,11 @@ namespace zetscript{
 
 	}
 
+	ScriptClass * 				ScriptClass::getScriptClass(short idx){
+		return script_class_factory->getScriptClass(idx);
+	}
+
+
 	short					ScriptClass::getIdxClassFromItsNativeType(const std::string & s){
 		return script_class_factory->getIdxClassFromItsNativeType(s);
 	}
@@ -200,6 +205,30 @@ namespace zetscript{
 		return NULL;
 	}
 
+	Symbol				* 	ScriptClass::registerNativeMemberAttributeSetter(
+			std::string & error
+			,const std::string & file
+			,short line
+			,const std::string & attribute_name
+			, ScriptFunctionArg arg_value
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_properties
+
+	){
+		return NULL;
+		/*return registerInternalMemberFunction(
+				error
+				, file
+				, line
+				,function_name
+				,args
+				,symbol_properties
+				,idx_return_type
+				,(zs_int)ref_ptr
+		);*/
+
+	}
+
 	Symbol				* 	ScriptClass::registerMemberAttributeGetter(
 		std::string & error
 		,const std::string & file
@@ -208,6 +237,30 @@ namespace zetscript{
 		,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 	){
 		return NULL;
+	}
+
+	Symbol				* 	ScriptClass::registerNativeMemberAttributeGetter(
+			std::string & error
+			,const std::string & file
+			,short line
+			,const std::string & attribute_name
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_properties
+
+	){
+		return NULL;
+		/*return registerInternalMemberFunction(
+				error
+				, file
+				, line
+				,function_name
+				,args
+				,symbol_properties
+				,idx_return_type
+				,(zs_int)ref_ptr
+		);*/
+
 	}
 
 	/*Symbol				* 	ScriptClass::registerInternalMemberAttributeSetter(
@@ -412,12 +465,12 @@ namespace zetscript{
 					}
 
 					// everything ok
-					if(op==BYTE_CODE_METAMETHOD_GET || op==BYTE_CODE_METAMETHOD_SET){
+					if(/*op==BYTE_CODE_METAMETHOD_GET || */op==BYTE_CODE_METAMETHOD_SET){
 						if(setter_getter == NULL){
 							setter_getter = new MemberAttribute();
 						}
 
-						if(op==BYTE_CODE_METAMETHOD_GET){ // getter
+						/*if(op==BYTE_CODE_METAMETHOD_GET){ // getter
 							if(setter_getter->getter==NULL){
 								setter_getter->getter=(ScriptFunction *)function_symbol->ref_ptr;
 							}else{
@@ -427,7 +480,7 @@ namespace zetscript{
 								);
 								return NULL;
 							}
-						}else{ // setter
+						}else*/{ // setter
 							if(setter_getter->setters.count>0 && ((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0)){
 								// error already set (script functions only can be set once)
 								error = zs_strutils::format("Setter \"%s::_set\" already set"

@@ -162,9 +162,9 @@ namespace zetscript{
 		return NULL;
 	}
 
-	bool ScriptObjectClass::itHasGetMetamethod(){
+	/*bool ScriptObjectClass::itHasGetMetamethod(){
 		return getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_GET),NULL) != NULL;
-	}
+	}*/
 
 	bool ScriptObjectClass::itHasSetMetamethod(){
 		return getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET),NULL) != NULL;
@@ -199,7 +199,7 @@ namespace zetscript{
 
 		if(stk_function != NULL){ // get first element
 			if(stk_function->properties & STK_PROPERTY_FUNCTION){
-				ScriptFunction *ptr_function=(ScriptFunction *)stk_function->value;
+				ScriptFunction *ptr_function=((StackMemberFunction *)stk_function)->so_function;
 				if((ptr_function->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
 
 					StackElement result=VM_EXECUTE(

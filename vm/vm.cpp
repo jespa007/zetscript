@@ -177,6 +177,11 @@ namespace zetscript{
 
 	void vm_push_stack_element(VirtualMachine *vm, StackElement stk){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		if(((data->stk_vm_current-data->vm_stack)+1)>=VM_STACK_LOCAL_VAR_MAX){
+
+			vm_set_error(vm,"Error MAXIMUM stack size reached");
+			return;
+		}
 		*data->stk_vm_current++=stk;
 	}
 

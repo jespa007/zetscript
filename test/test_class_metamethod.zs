@@ -13,10 +13,7 @@ class Vector2{
 				,this.y+v1.y);
 	}
 	
-	_get(){
-		return [this.x, this.y]; // return a vector instead of object itself
-	}
-	
+
 	_next(){
 		this.x++;
 		this.y++;
@@ -28,10 +25,11 @@ class Vector2{
 };
 
 var v=(new Vector2(1,2)+new Vector2(3,4));//+new Vector2()
+Console::outln(v);
 Console::outln(v++) // it will read vector [x,y] and postincrement
 Console::outln(v++) // it will read vector [x,y] and postincrement
 
-v=v+v; // concatenates vector because v reads a vector through _get.
+//v=v+v; // concatenates vector because v reads a vector through _get.
 
 
 Console::outln("key press: {0}",Console::readChar())

@@ -162,6 +162,25 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
+		template <typename C,typename F>
+		void registerNativeMemberAttributeSetter(
+				const char *attr_name
+				,F ptr_function_setter
+				, const char *registered_file
+				,short registered_line
+		);
+
+		/*
+		 * register attribute getter
+		 */
+		template <typename C,typename F>
+		void registerNativeMemberAttributeGetter(
+				const char *attr_name
+				,F ptr_function_getter
+				, const char *registered_file
+				,short registered_line
+		);
+
 
 		/**
 		 * Register C Member function static Class
@@ -179,7 +198,7 @@ namespace zetscript{
 		template <typename C,typename F>
 		void	registerNativeMemberFunction(
 				const char *function_name
-				,F function_type
+				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		);

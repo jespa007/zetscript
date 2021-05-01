@@ -495,8 +495,57 @@ namespace zetscript{
 		}
 	}
 
+		/*
+		 * register attribute setter
+		 */
+		template <typename C,typename F>
+		void ScriptClassFactory::registerNativeMemberAttributeSetter(
+				const char *attr_name
+				,F ptr_function_setter
+				, const char *registered_file
+				,short registered_line
+		){
+			std::string str_class_name_ptr = typeid( C *).name();
 
+			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
+			if(c_class == NULL){
+				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+			}
+
+			c_class->registerNativeMemberAttributeSetter<F>(
+				 attr_name
+				,ptr_function_setter
+				,registered_file
+				,registered_line
+			);
+		}
+
+		/*
+		 * register attribute getter
+		 */
+		template <typename C,typename F>
+		void ScriptClassFactory::registerNativeMemberAttributeGetter(
+				const char *attr_name
+				,F ptr_function_getter
+				, const char *registered_file
+				,short registered_line
+		){
+			std::string str_class_name_ptr = typeid( C *).name();
+
+			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+			if(c_class == NULL){
+				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+			}
+
+			c_class->registerNativeMemberAttributeGetter<F>(
+				 attr_name
+				,ptr_function_getter
+				,registered_file
+				,registered_line
+			);
+		}
 	/**
 	 * Register C Member function Class
 	 * like register function c but is added to member function list according type C
@@ -504,7 +553,7 @@ namespace zetscript{
 	template <typename C, typename F>
 	void ScriptClassFactory::registerNativeMemberFunctionStatic(
 			const char *function_name
-			,F function_ptr
+			,F ptr_function
 			, const char *registered_file
 			,short registered_line
 		)
@@ -522,7 +571,7 @@ namespace zetscript{
 		}
 
 		return c_class->registerNativeMemberFunctionStatic<F>(function_name
-				,function_ptr
+				,ptr_function
 				,registered_file
 				,registered_line);
 
@@ -535,7 +584,7 @@ namespace zetscript{
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberFunction(
 			const char *function_name
-			,F function_ptr
+			,F ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
@@ -549,7 +598,7 @@ namespace zetscript{
 
 		c_class->registerNativeMemberFunction<F>(
 			function_name
-			,function_ptr
+			,ptr_function
 			,registered_file
 			,registered_line
 		);

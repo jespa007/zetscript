@@ -1,4 +1,4 @@
-#define VM_INNER_ONLY_RETURN_CALL(so,sf,name)\
+#define VM_INNER_ONLY_RETURN_CALL(so,sf,name,reset)\
 {\
 StackElement *stk_def_afun_start=data->stk_vm_current;\
 int n_returned_args_afun=0;\
@@ -32,7 +32,9 @@ n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;\
 /* we share pointer (true second arg) to not remove on pop in calling return */\
 CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) \
 /* reset stack */\
-data->stk_vm_current=stk_def_afun_start; \
+if(reset){\
+	data->stk_vm_current=stk_def_afun_start; \
+}\
 }
 
 #define PROCESS_MOD_OPERATION \
@@ -431,16 +433,18 @@ namespace zetscript{
 		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
 		StackElement *ptr_aux = _stk_local_var+n_args;
 
+		data->stk_vm_current = stk_start;
+		data->vm_idx_call++;
+
 		if(instructions==NULL){
 			return;
 		}
 
-		if(stk_start+calling_function->min_stack_needed >= &data->vm_stack[VM_STACK_LOCAL_VAR_MAX-1]){
+		if(((data->stk_vm_current-data->vm_stack)+calling_function->min_stack_needed)>=VM_STACK_LOCAL_VAR_MAX){
 			VM_STOP_EXECUTE("Error MAXIMUM stack size reached");
 		}
 
-		data->stk_vm_current = stk_start;
-		data->vm_idx_call++;
+
 
 #ifdef __DEBUG__
 		ZS_PRINT_DEBUG("Executing function %s ...",calling_function->symbol.name.c_str());
@@ -739,6 +743,7 @@ load_element_object:
 											stk_ma->so_object
 											,stk_ma->member_attribute->getter
 											,stk_ma->member_attribute->getter->symbol.name.c_str()
+											,true
 									);
 									/*StackElement *stk_def_afun_start=data->stk_vm_current;
 									int n_returned_args_afun=0;
@@ -835,6 +840,7 @@ load_element_object:
 					ScriptObject *obj_setter=NULL;
 
 					char n_elements_left=0;
+					char n_dst_vars=0;
 					StackElement *stk_multi_var_src=NULL;
 
 					if(instruction->byte_code==BYTE_CODE_PUSH_VECTOR_ELEMENT){
@@ -905,18 +911,40 @@ load_element_object:
 
 						n_elements_left=(char)instruction->value_op1;
 
-						// TODO: check whether src variable it has a _getter
-						if((data->stk_vm_current-n_elements_left)->properties & STK_PROPERTY_SCRIPT_OBJECT){
-							// 0. check whether object it has getter
-							// 1. alloc tmp stk array with size many dst stk elements it has (n_elements_left)
-							// 2. copy n elements left to its reserved array
-							// 3. get function getter (only one)
-							// 4. invoke inline script function only return
-							// 5. push elements from tmp stk
-							// 6. free allocated tmp stk
-
+						//-------------------------------------------------
+						// GETTER NOT IMPLEMENTED DUE CONFLICTS !!!!
+						// Example: If you return an object from function and this object has the getter implemented it will return the value of this
+						// getter instead of the object... some times the programmer wants this behavior but it will struggle more develop.
+						/*n_dst_vars=n_elements_left;
+						if(n_dst_vars==ZS_IDX_UNDEFINED){
+							n_dst_vars=1;
 						}
 
+						// TODO: check whether src variable it has a _getter
+						if((data->stk_vm_current-n_dst_vars-1)->properties & STK_PROPERTY_SCRIPT_OBJECT){
+							// 0. check whether object it has getter
+							ScriptObject *so_read=(ScriptObject *)((data->stk_vm_current-n_dst_vars-1)->value);
+							ScriptFunction *sf_getter=so_read->getGetter();
+							if(sf_getter != NULL){
+								// 1. alloc tmp stk array with size many dst stk elements it has (n_dst_vars)
+								StackElement *stk_tmp=(StackElement *)malloc(sizeof(StackElement)*n_dst_vars);
+								// 2. copy n elements left to its reserved array
+								memcpy(stk_tmp,(data->stk_vm_current-n_dst_vars),sizeof(StackElement)*n_dst_vars);
+								// 4. invoke inline script function only return
+								// set vm_current to start of getter variable object
+								data->stk_vm_current=data->stk_vm_current-n_dst_vars-1;
+								// call getter and NOT reset stack after call (false)
+								VM_INNER_ONLY_RETURN_CALL(so_read,sf_getter,"_get",false);
+
+								// 5. push elements from tmp stk (starts -1 because after return it points to the last element +1, we want to point at the element)
+								memcpy(data->stk_vm_current-=1,stk_tmp,sizeof(StackElement)*n_dst_vars);
+								data->stk_vm_current+=n_dst_vars;
+								// 6. free allocated tmp stk
+								free(stk_tmp);
+							}
+						}*/
+
+						// check if multiassigment...
 						if(instruction->byte_code==BYTE_CODE_STORE && n_elements_left > 0){
 
 							StackElement *stk_aux=data->stk_vm_current;
@@ -1568,7 +1596,7 @@ load_element_object:
 									}
 
 								}else{
-re_evaluate_stk_arg:
+//re_evaluate_stk_arg:
 									if(stk_arg->properties & STK_PROPERTY_PTR_STK){ // get its value
 										*stk_arg=*(StackElement *)stk_arg->value;
 									}
@@ -1590,32 +1618,17 @@ re_evaluate_stk_arg:
 											so_param=sc;
 											stk_arg->value=(void *)sc;
 											stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
-										}else if((sf_getter=so_param->getGetter())!=NULL){
+										}/*else if((sf_getter=so_param->getGetter())!=NULL){
 											VM_INNER_ONLY_RETURN_CALL(
 													so_param
 													,sf_getter
-													,"_get")
+													,"_get"
+													,true)
 											// copy returned value if any
 											*stk_arg = *data->stk_vm_current;
 											so_param=NULL; // put NULL to not make it shared next it
 											goto re_evaluate_stk_arg; // because we want to check current
-											/*StackElement *stk_def_afun_start=data->stk_vm_current;
-											int n_returned_args_afun=0;
-											vm_call_function_script(
-												 vm
-												,so_param
-												,(ScriptFunction *)stk_getter->value
-												,stk_def_afun_start
-											);
-
-											n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
-
-											CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) // we share pointer (true second arg) to not remove on pop in calling return
-
-											// reset stack
-											data->stk_vm_current=stk_def_afun_start+1; // reset stack +1*/
-
-										}
+										}*/
 									}
 								}
 
@@ -1672,7 +1685,7 @@ re_evaluate_stk_arg:
 								*data->stk_vm_current++=param->default_var_value;
 								break;
 							case STK_PROPERTY_FUNCTION: // we call function in the middle of the function
-								VM_INNER_ONLY_RETURN_CALL(NULL,param->default_var_value.value,"default")
+								VM_INNER_ONLY_RETURN_CALL(NULL,param->default_var_value.value,"default",true)
 								data->stk_vm_current++;
 								/*vm_call_function_script(
 									 vm

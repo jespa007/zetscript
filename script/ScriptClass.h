@@ -65,7 +65,7 @@ namespace zetscript{
 		 ScriptClass(ZetScript *_zs,short _idx_class,Symbol *_symbol_class);
 
 		//---------------------------------------------------
-		// VARIABLES
+		// SCRIPT VARIABLES
 		Symbol				* 	registerMemberVariable(
 			std::string & error
 			,const std::string & file
@@ -82,6 +82,7 @@ namespace zetscript{
 			,short registered_line=-1
 		);
 
+
 		Symbol				* 	registerNativeMemberVariable(
 			std::string & error
 			,const std::string & file
@@ -93,12 +94,25 @@ namespace zetscript{
 		);
 
 		//---------------------------------------------------
+		//
 		// ATTRIBUTES
+		//
 		Symbol 				*	registerMemberAttribute(
 				 std::string & error
 				,const std::string & file
 				,short line
 				,const std::string & attrib_name
+		);
+		
+		//---------------
+		// SETTER
+
+		Symbol				* 	registerMemberAttributeSetter(
+			std::string & error
+			,const std::string & file
+			,short line
+			,const std::string & attribute_name
+			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 		);
 
 		Symbol				* 	registerNativeMemberAttributeSetter(
@@ -111,6 +125,28 @@ namespace zetscript{
 			,unsigned short symbol_properties=0
 		);
 
+		/*
+		 * register C setter
+		 */
+		template <typename F>
+		void registerNativeMemberAttributeSetter(
+				const char *attrib_name
+				,F ptr_function
+				, const char *registered_file
+				,short registered_line
+		);
+
+		//---------------
+		// GETTER
+
+		Symbol				* 	registerMemberAttributeGetter(
+			std::string & error
+			,const std::string & file
+			,short line
+			,const std::string & attribute_name
+			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
+		);
+
 		Symbol				* 	registerNativeMemberAttributeGetter(
 			std::string & error
 			,const std::string & file
@@ -121,21 +157,17 @@ namespace zetscript{
 			,unsigned short symbol_properties=0
 		);
 
-		Symbol				* 	registerMemberAttributeSetter(
-			std::string & error
-			,const std::string & file
-			,short line
-			,const std::string & attribute_name
-			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
+		/*
+		 * register C getter
+		 */
+		template <typename F>
+		void registerNativeMemberAttributeGetter(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
 		);
 
-		Symbol				* 	registerMemberAttributeGetter(
-			std::string & error
-			,const std::string & file
-			,short line
-			,const std::string & attribute_name
-			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
-		);
 		//---------------------------------------------------
 		// FUNCTIONS
 
@@ -219,6 +251,15 @@ namespace zetscript{
 			,zs_int ref_ptr=0
 		);
 
+		template <typename F>
+		int getNativeMemberFunctionRetArgsTypes(
+				const char *function_name
+				,F function_ptr
+				,std::string & return_type
+				,std::vector<ScriptFunctionArg> & arg_info
+		);
+
+		ScriptClass * 					getScriptClass(short idx_class);
 		short							getIdxClassFromItsNativeType(const std::string & s);
 		ScriptClass * 					getScriptClassByNativeClassPtr(const std::string & class_type);
 

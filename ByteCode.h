@@ -138,7 +138,7 @@ namespace zetscript{
 		BYTE_CODE_METAMETHOD_XOR, // logic xor
 		BYTE_CODE_METAMETHOD_SHL, // shift left
 		BYTE_CODE_METAMETHOD_SHR, // shift right
-		BYTE_CODE_METAMETHOD_GET, // get '='
+		//BYTE_CODE_METAMETHOD_GET, // get '='
 		BYTE_CODE_METAMETHOD_SET, // set '='
 		BYTE_CODE_METAMETHOD_TO_STRING, // toString
 		BYTE_CODE_METAMETHOD_NEXT, // _next

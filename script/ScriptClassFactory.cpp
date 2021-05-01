@@ -214,7 +214,7 @@ namespace zetscript{
 		// StringIterator
 		registerNativeMemberFunction<ScriptObjectStringIterator>("_next",ScriptObjectStringIteratorWrap_next);
 		registerNativeMemberFunction<ScriptObjectStringIterator>("end",ScriptObjectStringIteratorWrap_end);
-		registerNativeMemberFunction<ScriptObjectStringIterator>("_get",ScriptObjectStringIteratorWrap_get);
+		registerNativeMemberFunction<ScriptObjectStringIterator>("get",ScriptObjectStringIteratorWrap_get);
 
 
 		// Vector
