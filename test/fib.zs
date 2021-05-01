@@ -5,7 +5,7 @@ function fibR(n) {
 	if (n < 2) {
      	return n; 
     }
-    return fibR(n-2)+fibR(n-1);
+    return fibR(n-1)+fibR(n-2);
 }
 
 for(var i=0; i <10; i++){

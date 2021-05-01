@@ -345,7 +345,7 @@ namespace zetscript{
 			//bool is_local=false;
 			ptr_str_symbol_to_find=&instruction->symbol.name;
 
-			//is_static&=((instruction->vm_instruction.properties & MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)==0);
+			//is_static&=((instruction->vm_instruction.properties & INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)==0);
 			switch(instruction->vm_instruction.byte_code){
 			// convert relative to absolute jmp
 			/*case BYTE_CODE_JMP: // adds relative to absolute offset
@@ -403,7 +403,7 @@ namespace zetscript{
 						instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER_VAR;
 						instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
 						instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,std::string(symbol_sf_foundf->scope->script_class->symbol_class.name)+"::"+symbol_sf_foundf->name);
-						//instruction->vm_instruction.properties=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
+						//instruction->vm_instruction.properties=INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 
 					}else{ // is "this" symbol, check whether symbol is member
 
@@ -466,7 +466,7 @@ namespace zetscript{
 					}
 					else{ // global variable
 
-						if(instruction->vm_instruction.properties & MSK_INSTRUCTION_USE_PUSH_STK){
+						if(instruction->vm_instruction.properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
 							instruction->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
 						}else{
 							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_GLOBAL;
@@ -509,7 +509,7 @@ namespace zetscript{
 							if((vis=sf->getSymbol(sc_var->scope,*symbol_to_find))!=NULL){
 								instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_VARIABLE;
 								instruction->vm_instruction.value_op2=vis->idx_position;
-								instruction->vm_instruction.properties |=MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
+								instruction->vm_instruction.properties |=INSTRUCTION_PROPERTY_ACCESS_TYPE_LOCAL;
 								local_found=true;
 							}
 						}

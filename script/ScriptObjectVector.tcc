@@ -12,9 +12,9 @@ namespace zetscript{
 
 			StackElement *sv=elements->get(i);
 
-			switch(sv->properties & MSK_STK_PROPERTY_TYPE_PRIMITIVES)
+			switch(sv->properties & STK_PROPERTY_TYPE_PRIMITIVES)
 			{
-				case MSK_STK_PROPERTY_ZS_FLOAT:
+				case STK_PROPERTY_ZS_FLOAT:
 					if(ZS_STRCMP(dst_convert_type, ==,typeid(zs_float).name())){
 						ZS_FLOAT_COPY(&aux_flt, &sv->value);
 						v_out.push_back(aux_flt);
@@ -26,13 +26,13 @@ namespace zetscript{
 					}
 					break;
 				default:
-				case MSK_STK_PROPERTY_NULL:
-				case MSK_STK_PROPERTY_BOOL:
-				case MSK_STK_PROPERTY_FUNCTION:
+				case STK_PROPERTY_NULL:
+				case STK_PROPERTY_BOOL:
+				case STK_PROPERTY_FUNCTION:
 					THROW_RUNTIME_ERROR("type not implemented yet");
 					return v_out;
 					break;
-				case MSK_STK_PROPERTY_ZS_INT:
+				case STK_PROPERTY_ZS_INT:
 					if(ZS_STRCMP(dst_convert_type, ==,typeid(zs_int).name()) || ZS_STRCMP(dst_convert_type, ==,typeid(zs_float).name())){// typeid(int).name()) || ){
 						v_out.push_back((zs_int)sv->value);
 					}else{

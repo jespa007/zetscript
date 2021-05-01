@@ -25,7 +25,7 @@ namespace zetscript{
 			}
 
 			stk->value=so;
-			stk->properties = MSK_STK_PROPERTY_SCRIPT_OBJECT;
+			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
 		}
 
 		return sv;

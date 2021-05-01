@@ -38,7 +38,7 @@ namespace zetscript{
 			case BYTE_CODE_STORE_SHR: 	      	return "STORE_SHR"; // >>=
 			case BYTE_CODE_PUSH_STK_GLOBAL:		return "PUSH_STK_GLOBAL"; // push stk global
 			case BYTE_CODE_PUSH_STK_LOCAL:		return "PUSH_STK_LOCAL"; // push stk global
-			case BYTE_CODE_PUSH_STK_REF:		return "PUSH_STK_REF"; // push stk global
+			//case BYTE_CODE_PUSH_STK_REF:		return "PUSH_STK_REF"; // push stk global
 			case BYTE_CODE_PUSH_STK_THIS:		return "PUSH_STK_THIS"; // push stk global
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR:		return "PUSH_STK_MEMBER_VAR"; // push stk global
 			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:	return "PUSH_STK_E@VECTOR"; // load element vector
@@ -264,7 +264,7 @@ namespace zetscript{
 			// load var content
 			case BYTE_CODE_LOAD_GLOBAL:return BYTE_CODE_PUSH_STK_GLOBAL;
 			case BYTE_CODE_LOAD_LOCAL:return BYTE_CODE_PUSH_STK_LOCAL;
-			case BYTE_CODE_LOAD_REF:return BYTE_CODE_PUSH_STK_REF;
+			case BYTE_CODE_LOAD_REF:return BYTE_CODE_LOAD_REF; // PUSH STK NOT EXIST, IS A REF ITSELF
 			case BYTE_CODE_LOAD_THIS:return BYTE_CODE_PUSH_STK_THIS;
 			case BYTE_CODE_LOAD_MEMBER_VAR:return BYTE_CODE_PUSH_STK_MEMBER_VAR;
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:return BYTE_CODE_PUSH_STK_ELEMENT_VECTOR;

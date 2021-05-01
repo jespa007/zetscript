@@ -12,7 +12,7 @@ namespace zetscript{
 	}
 
 	void ModuleSystemWrap_makeReadOnly(StackElement *stk){
-		stk->properties|=MSK_STK_PROPERTY_READ_ONLY;
+		stk->properties|=STK_PROPERTY_READ_ONLY;
 	}
 
 	void ModuleSystemWrap_eval(ZetScript *zs,StackElement *str_eval,StackElement *object_args){

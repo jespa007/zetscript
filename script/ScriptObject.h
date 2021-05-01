@@ -62,8 +62,9 @@ namespace zetscript{
 		short						idx_script_class; // 2
 
 		ScriptObject();
-		void setZetScript(ZetScript	*_zs);
 
+		ScriptFunction *getGetter();
+		zs_vector *getSetterList();
 
 		virtual				size_t length();
 

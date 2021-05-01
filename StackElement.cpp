@@ -2,7 +2,7 @@
 
 namespace zetscript{
 
-	extern const StackElement stk_undefined={0,MSK_STK_PROPERTY_NULL};
+	extern const StackElement stk_undefined={0,STK_PROPERTY_NULL};
 
 	const char * StackElement::typeStr(){
 		StackElement *stk=this;
@@ -27,7 +27,7 @@ namespace zetscript{
 			result= "member function";
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
-			if(this->properties & MSK_STK_PROPERTY_PTR_STK){
+			if(this->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
 			}
 			result=((ScriptObjectObject *)stk->value)->getClassName().c_str();
@@ -40,7 +40,7 @@ namespace zetscript{
 		std::string result="null";
 		StackElement *stk=this;
 
-		if(this->properties & MSK_STK_PROPERTY_PTR_STK){
+		if(this->properties & STK_PROPERTY_PTR_STK){
 			stk=(StackElement *)stk->value;
 		}
 

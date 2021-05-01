@@ -173,8 +173,6 @@ namespace zetscript{
 				, const char *registered_file=""
 				,short registered_line=-1);
 
-
-
 		/**
 		 * Register C function as function member
 		 */

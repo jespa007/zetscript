@@ -92,7 +92,7 @@ namespace zetscript{
 			si = *sv;
 
 			// update n_refs +1
-			if(sv->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
+			if(sv->properties&STK_PROPERTY_SCRIPT_OBJECT){
 				if(vm_share_pointer(vm,(ScriptObjectObject *)(sv->value)) == false){
 					return NULL;
 				}

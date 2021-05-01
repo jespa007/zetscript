@@ -21,7 +21,7 @@ namespace zetscript{
 		 void addSetter(ScriptFunction *f){
 			 StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 			 stk->value=f;
-			 stk->properties=MSK_STK_PROPERTY_FUNCTION;
+			 stk->properties=STK_PROPERTY_FUNCTION;
 			 setters.push_back((zs_int)stk);
 		 }
 
@@ -47,6 +47,7 @@ namespace zetscript{
 		zs_vector *symbol_members; // a list of pre-registered C symbols to be added as stack element properties when class is instanced through scriptvar ( see ScriptObjectObject::createSymbols)
 		zs_vector *symbol_members_built_in; // it has static/const and internal of symbols. Only is destroyed when deletes the class...
 		ScriptFunction	*sf_field_initializer;
+		MemberAttribute			*setter_getter;
 		//zs_vector *function_members; // a list of function members (script as well as registered native functions) to be registered on create any scriptvar, see ScriptObjectObject::createSymbols)
 
 		//------------- VARIABLES STRUCT ---------------

@@ -114,7 +114,7 @@ namespace zetscript{
 
 			if(instruction->vm_instruction.byte_code == BYTE_CODE_LOAD_STRING){
 				start_ptr->byte_code = BYTE_CODE_NEW_STRING;
-				start_ptr->properties=MSK_INSTRUCTION_PROPERTY_STRING;
+				start_ptr->properties=INSTRUCTION_PROPERTY_STRING;
 			}
 
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
@@ -618,13 +618,13 @@ error_eval_keyword_var:
 							arg_info.default_var_value=stk_undefined;
 							break;
 						case BYTE_CODE_LOAD_ZS_INT:
-							arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_ZS_INT};
+							arg_info.default_var_value={(void *)instruction->value_op2,STK_PROPERTY_ZS_INT};
 							break;
 						case BYTE_CODE_LOAD_FLOAT:
-							arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_ZS_FLOAT};
+							arg_info.default_var_value={(void *)instruction->value_op2,STK_PROPERTY_ZS_FLOAT};
 							break;
 						case BYTE_CODE_LOAD_BOOL:
-							arg_info.default_var_value={(void *)instruction->value_op2,MSK_STK_PROPERTY_BOOL};
+							arg_info.default_var_value={(void *)instruction->value_op2,STK_PROPERTY_BOOL};
 							break;
 						default: // else is an object so we'll create a function in order to return object or complex expression
 							create_anonymous_function_return_expression=true;
@@ -636,7 +636,7 @@ error_eval_keyword_var:
 
 					if(create_anonymous_function_return_expression==true){
 						ScriptFunction *sf=eval_new_inline_anonymous_function(eval_data,&instructions_default);
-						arg_info.default_var_value={sf,MSK_STK_PROPERTY_FUNCTION};
+						arg_info.default_var_value={sf,STK_PROPERTY_FUNCTION};
 					}
 
 					// finally delete all evaluated code

@@ -84,21 +84,21 @@ namespace zetscript{
 				stk=((ScriptObjectVarRef *)stk->value)->getStackElementPtr();
 			}
 
-			var_type = GET_MSK_STK_PROPERTY_TYPES(stk->properties);
+			var_type = GET_STK_PROPERTY_TYPES(stk->properties);
 
 
 			switch(var_type){
 			default:
 				break;
-			case MSK_STK_PROPERTY_ZS_FLOAT:
-			case MSK_STK_PROPERTY_BOOL:
-			case MSK_STK_PROPERTY_ZS_INT:
+			case STK_PROPERTY_ZS_FLOAT:
+			case STK_PROPERTY_BOOL:
+			case STK_PROPERTY_ZS_INT:
 				str_result+=stk->toString();
 				break;
-			case MSK_STK_PROPERTY_NULL:
+			case STK_PROPERTY_NULL:
 				str_result+="null";
 				break;
-			case MSK_STK_PROPERTY_SCRIPT_OBJECT: // vector or object
+			case STK_PROPERTY_SCRIPT_OBJECT: // vector or object
 
 				if (is_formatted){
 					str_result += "\n";

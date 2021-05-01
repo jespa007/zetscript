@@ -51,14 +51,14 @@ namespace zetscript{
 	}
 
 #define GET_ILOAD_ACCESS_TYPE_STR(properties) \
- ((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? "Local"\
-:((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? "This"\
+ ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? "Local"\
+:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? "This"\
 :"Global"\
 
 
 #define GET_ILOAD_R_STR(properties,value) \
-	 ((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->registered_symbols->items[value])->name.c_str()\
-	:((properties) & MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_members->items[value])->name.c_str()\
+	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->registered_symbols->items[value])->name.c_str()\
+	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_members->items[value])->name.c_str()\
 	:((Symbol *)MAIN_FUNCTION(sfo)->registered_symbols->items[value])->name.c_str()\
 
 
@@ -122,33 +122,33 @@ namespace zetscript{
 				 symbol_value="this."+symbol_value;
 			}
 
-			switch(instruction->properties & MSK_INSTRUCTION_PROPERTY_ILOAD){
+			switch(instruction->properties & INSTRUCTION_PROPERTY_ILOAD){
 			default:
 				break;
-			case MSK_INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
+			case INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
 				 iload_info=zs_strutils::format("%s", instruction->getConstantValueOp2ToString().c_str());
 				 break;
-			case MSK_INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
+			case INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
 				 iload_info=zs_strutils::format("%s[\"%s\"]"
 					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				 break;
-			case MSK_INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
+			case INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
 			 	 iload_info=zs_strutils::format("%s,%s[\"%s\"]"
 					 ,instruction->getConstantValueOp2ToString().c_str()
 					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				break;
-			case MSK_INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
+			case INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
 				 iload_info=zs_strutils::format("%s[\"%s\"],%s"
 					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 					 ,instruction->getConstantValueOp2ToString().c_str()
 				 );
 				break;
-		   case MSK_INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
+		   case INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
 		   	   iload_info=zs_strutils::format("%s[\"%s\"],%s[\"%s\"]"
 		  			 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 		  			 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
@@ -185,7 +185,7 @@ namespace zetscript{
 
 			case BYTE_CODE_PUSH_STK_GLOBAL:
 			case BYTE_CODE_PUSH_STK_LOCAL:
-			case BYTE_CODE_PUSH_STK_REF:
+			//case BYTE_CODE_PUSH_STK_REF:
 			case BYTE_CODE_PUSH_STK_THIS:
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR:
 			case BYTE_CODE_LOAD_CONSTRUCTOR:
@@ -415,11 +415,13 @@ namespace zetscript{
 			,zs_int ref_ptr
 			, unsigned short properties
 	){
-		Symbol *symbol_found=NULL,*symbol=NULL;
+		Symbol *symbol_found=symbol_found=getSymbol(scope_block, function_name, NO_PARAMS_SYMBOL_ONLY),*symbol=NULL;
 
-		if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // is script function
-			//Symbol *existing_symbol;
-			if((symbol_found=getSymbol(scope_block, function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
+		if(symbol_found != NULL){ // symbol found
+			bool error = false;
+
+			// check the symbol to register is an script and symbol found is an already script function...
+			if(((symbol_found->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0) && ((properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0)){
 
 				if(symbol_found->scope != scope_block){
 
@@ -431,63 +433,75 @@ namespace zetscript{
 						,symbol_found->line
 					);
 				}
+
+				// override script function
+				symbol_found->n_params=NO_PARAMS_SYMBOL_ONLY;
+				ScriptFunction *sf = (ScriptFunction *)symbol_found->ref_ptr;
+				sf->clear();
+				sf->updateParams(params);
+				symbol_found->n_params=(char)params.size();
+				return symbol_found;
 			}
-		}
 
-		if(symbol_found != NULL){ // recreate function
-			symbol_found->n_params=NO_PARAMS_SYMBOL_ONLY;
-			ScriptFunction *sf = (ScriptFunction *)symbol_found->ref_ptr;
-			sf->clear();
-			sf->updateParams(params);
-			symbol_found->n_params=(char)params.size();
-			symbol=symbol_found;
-		}
-		else{
-			short idx_position=(short)registered_symbols->count;
-
-			symbol =  script_function_factory->newScriptFunction(
-					//---- Register data
-					 scope_block
-					,file
+			// else check that symbol found and function to register are C both...
+			if((symbol_found->properties & SYMBOL_PROPERTY_C_OBJECT_REF) && (properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
+				// C function can be overriden
+				THROW_RUNTIME_ERROR("Symbol \"%s\" defined at [%s:%i] is already defined at [%s:%i]"
+					,function_name.c_str()
+					,zs_path::get_filename(file.c_str()).c_str()
 					,line
-					//---- Function data
-					,idx_class 				// idx class which belongs to...
-					,registered_symbols->count // idx symbol ...
-					,function_name
-					,params
-					,idx_return_type
-					,ref_ptr
-					,properties
-			);
-
-			symbol->idx_position=idx_position;
-
-			if(scope_block == MAIN_SCOPE(this)) { // global function
-				// set global stk var...
-				vm_set_stack_element_at(
-					zs->getVirtualMachine()
-					,(int)idx_position
-					,{
-						(void *)symbol->ref_ptr
-						,MSK_STK_PROPERTY_FUNCTION
-					}
+					,zs_path::get_filename(symbol_found->file.c_str()).c_str()
+					,symbol_found->line
 				);
 			}
-
-			// register num symbols only for c symbols...
-			if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
-				Symbol *symbol_repeat=NULL;
-				if((symbol_repeat=getSymbol(
-					scope_block
-					,symbol->name
-					,(char)params.size()))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
-					((ScriptFunction *)symbol_repeat->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
-					((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
-				}
-			}
-
-			registered_symbols->push_back((zs_int)symbol);
 		}
+
+		// register new slot
+		short idx_position=(short)registered_symbols->count;
+
+		symbol =  script_function_factory->newScriptFunction(
+				//---- Register data
+				 scope_block
+				,file
+				,line
+				//---- Function data
+				,idx_class 				// idx class which belongs to...
+				,registered_symbols->count // idx symbol ...
+				,function_name
+				,params
+				,idx_return_type
+				,ref_ptr
+				,properties
+		);
+
+		symbol->idx_position=idx_position;
+
+		if(scope_block == MAIN_SCOPE(this)) { // global function
+			// set global stk var...
+			vm_set_stack_element_at(
+				zs->getVirtualMachine()
+				,(int)idx_position
+				,{
+					(void *)symbol->ref_ptr
+					,STK_PROPERTY_FUNCTION
+				}
+			);
+		}
+
+		// register num symbols only for c symbols...
+		if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+			Symbol *symbol_repeat=NULL;
+			if((symbol_repeat=getSymbol(
+				scope_block
+				,symbol->name
+				,(char)params.size()))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
+				((ScriptFunction *)symbol_repeat->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
+				((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
+			}
+		}
+
+		registered_symbols->push_back((zs_int)symbol);
+
 
 		return symbol;
 	}

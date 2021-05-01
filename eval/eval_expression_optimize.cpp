@@ -91,16 +91,16 @@ namespace zetscript{
 
 		switch(byte_code){
 		case BYTE_CODE_LOAD_ZS_INT:
-			return MSK_INSTRUCTION_PROPERTY_ZS_INT;
+			return INSTRUCTION_PROPERTY_ZS_INT;
 			break;
 		case BYTE_CODE_LOAD_BOOL:
-			return MSK_INSTRUCTION_PROPERTY_BOOL;
+			return INSTRUCTION_PROPERTY_BOOL;
 			break;
 		case BYTE_CODE_LOAD_FLOAT:
-			return MSK_INSTRUCTION_PROPERTY_ZS_FLOAT;
+			return INSTRUCTION_PROPERTY_ZS_FLOAT;
 			break;
 		case BYTE_CODE_LOAD_STRING:
-			return MSK_INSTRUCTION_PROPERTY_STRING;
+			return INSTRUCTION_PROPERTY_STRING;
 			break;
 		}
 
@@ -340,14 +340,14 @@ namespace zetscript{
 						,load_value_op2_1
 						,((load_value_op2_2 & 0xff) << 16) // pack value + properties
 						  | (
-								load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_2 == BYTE_CODE_LOAD_MEMBER_VAR ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+								load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
+								:load_byte_code_2 == BYTE_CODE_LOAD_MEMBER_VAR ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
 								:0
 							)
-						,MSK_INSTRUCTION_PROPERTY_ILOAD_RR
+						,INSTRUCTION_PROPERTY_ILOAD_RR
 						| (
-								load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_1 == BYTE_CODE_LOAD_MEMBER_VAR ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+								load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
+								:load_byte_code_1 == BYTE_CODE_LOAD_MEMBER_VAR ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
 								:0
 						)
 				);
@@ -361,10 +361,10 @@ namespace zetscript{
 						byte_code
 						,load_value_op2_1
 						,load_value_op2_2
-						,MSK_INSTRUCTION_PROPERTY_ILOAD_RK
+						,INSTRUCTION_PROPERTY_ILOAD_RK
 						| (
-								load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_1 == BYTE_CODE_LOAD_MEMBER_VAR ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+								load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
+								:load_byte_code_1 == BYTE_CODE_LOAD_MEMBER_VAR ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
 								:0
 						)
 						| k_properties
@@ -378,10 +378,10 @@ namespace zetscript{
 						byte_code
 						,load_value_op2_2
 						,load_value_op2_1
-						,MSK_INSTRUCTION_PROPERTY_ILOAD_KR
+						,INSTRUCTION_PROPERTY_ILOAD_KR
 						| (
-								load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_2 == BYTE_CODE_LOAD_MEMBER_VAR ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+								load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
+								:load_byte_code_2 == BYTE_CODE_LOAD_MEMBER_VAR ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
 								:0
 						)
 						| k_properties
@@ -398,7 +398,7 @@ namespace zetscript{
 							byte_code
 							, ZS_IDX_UNDEFINED
 							, load_value_op2_2
-							, MSK_INSTRUCTION_PROPERTY_ILOAD_K |k_properties
+							, INSTRUCTION_PROPERTY_ILOAD_K |k_properties
 					);
 
 				}else if(is_i2_R){
@@ -407,9 +407,9 @@ namespace zetscript{
 							byte_code
 							,load_value_op2_2
 							,ZS_IDX_UNDEFINED
-							,MSK_INSTRUCTION_PROPERTY_ILOAD_R | (
-									load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-									:load_byte_code_2 == BYTE_CODE_LOAD_MEMBER_VAR ? MSK_INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+							,INSTRUCTION_PROPERTY_ILOAD_R | (
+									load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
+									:load_byte_code_2 == BYTE_CODE_LOAD_MEMBER_VAR ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
 									:0
 							)
 					);

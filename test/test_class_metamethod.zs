@@ -1,14 +1,6 @@
 class Vector2{
 
-	constructor(_x,_y){
-		if(_x==null){
-			_x=0;
-		}
-		
-		if(_y==null){
-			_y=0;
-		}
-		
+	Vector2(_x=0,_y=0){
 		this.x=_x;
 		this.y=_y;
 	}

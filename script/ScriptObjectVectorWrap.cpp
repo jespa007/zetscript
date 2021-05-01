@@ -28,7 +28,7 @@ namespace zetscript{
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
 
 		// update n_refs +1
-		if(_stk->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
+		if(_stk->properties&STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so_param=(ScriptObject *)_stk->value;
 			if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove

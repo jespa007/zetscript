@@ -58,33 +58,33 @@ namespace zetscript{
 		// str1
 		for(unsigned i=0; i < 2; i++){
 			StackElement *stk_src_item=(*stk_src_it);
-			if(stk_src_item->properties & MSK_STK_PROPERTY_PTR_STK){
+			if(stk_src_item->properties & STK_PROPERTY_PTR_STK){
 				stk_src_item=(StackElement *)stk_src_item->value;
 			}
 
 			switch(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
-			//case MSK_STK_PROPERTY_NULL:
+			//case STK_PROPERTY_NULL:
 			//	*(*str_dst_it)="null";
 			//	break;
-			case MSK_STK_PROPERTY_ZS_INT:
+			case STK_PROPERTY_ZS_INT:
 				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->value);
 				break;
-			case MSK_STK_PROPERTY_ZS_FLOAT:
+			case STK_PROPERTY_ZS_FLOAT:
 				*(*str_dst_it)=zs_strutils::float_to_str(*((zs_float *)&((stk_src_item)->value)));
 				break;
-			case MSK_STK_PROPERTY_BOOL:
+			case STK_PROPERTY_BOOL:
 				*(*str_dst_it)=(stk_src_item)->value == 0?"false":"true";
 				break;
-			case MSK_STK_PROPERTY_FUNCTION:
+			case STK_PROPERTY_FUNCTION:
 				*(*str_dst_it)="function";
 				break;
-			case MSK_STK_PROPERTY_CLASS:
+			case STK_PROPERTY_CLASS:
 				*(*str_dst_it)="class";
 				break;
 			default:
-				if(stk_src_item->properties==MSK_STK_PROPERTY_NULL){
+				if(stk_src_item->properties==STK_PROPERTY_NULL){
 					*(*str_dst_it)="null";
-				}else if(stk_src_item->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+				}else if(stk_src_item->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					*(*str_dst_it)=((ScriptObjectObject *)(stk_src_item)->value)->toString();
 				}
 				else{
@@ -109,11 +109,11 @@ namespace zetscript{
 		std::string first_param=str->toString();
 		ScriptObjectVector *sov=NULL;
 
-		if(args->properties & MSK_STK_PROPERTY_PTR_STK){
+		if(args->properties & STK_PROPERTY_PTR_STK){
 			args=(StackElement *)args->value;
 		}
 
-		if(args->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+		if(args->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)args->value;
 			if(so->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
 				sov=(ScriptObjectVector *)so;

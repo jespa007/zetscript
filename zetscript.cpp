@@ -220,7 +220,7 @@ namespace zetscript{
 		so->set(const_name);
 
 		stk->value=so;
-		stk->properties=MSK_STK_PROPERTY_SCRIPT_OBJECT | MSK_STK_PROPERTY_READ_ONLY;
+		stk->properties=STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY;
 
 		return stk;
 
@@ -243,7 +243,7 @@ namespace zetscript{
 
 		if(se != NULL){
 
-			if(se->properties & MSK_STK_PROPERTY_ZS_INT){
+			if(se->properties & STK_PROPERTY_ZS_INT){
 
 				eval_int=(zs_int)se->value;
 				return &eval_int;
@@ -264,7 +264,7 @@ namespace zetscript{
 
 		if(se != NULL){
 
-			if(se->properties & MSK_STK_PROPERTY_BOOL){
+			if(se->properties & STK_PROPERTY_BOOL){
 				eval_bool=(bool)((zs_int)se->value);
 				return &eval_bool;
 
@@ -281,7 +281,7 @@ namespace zetscript{
 		StackElement *se=vm_get_top_stack_element_from_stack(virtual_machine);
 
 		if(se != NULL){
-			if(se->properties & MSK_STK_PROPERTY_ZS_FLOAT){
+			if(se->properties & STK_PROPERTY_ZS_FLOAT){
 				eval_float = *((zs_float *)(&se->value));
 				return &eval_float;
 			}
@@ -399,7 +399,7 @@ namespace zetscript{
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
 				ScriptObjectObject *var = NULL;
 
-				if(vm_stk_element->properties & MSK_STK_PROPERTY_SCRIPT_OBJECT){
+				if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					var =((ScriptObjectObject *)(vm_stk_element->value));
 					if(var){
 						if(var->shared_pointer != NULL){

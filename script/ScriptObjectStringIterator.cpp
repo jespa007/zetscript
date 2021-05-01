@@ -18,8 +18,8 @@ namespace zetscript{
 		so = NULL;
 		vm=NULL;
 		idx=0;
-		stk_key.properties=MSK_STK_PROPERTY_ZS_INT;
-		stk_value.properties=MSK_STK_PROPERTY_ZS_INT;
+		stk_key.properties=STK_PROPERTY_ZS_INT;
+		stk_value.properties=STK_PROPERTY_ZS_INT;
 	}
 
 	ScriptObjectStringIterator::ScriptObjectStringIterator(){

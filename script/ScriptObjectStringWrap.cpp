@@ -66,7 +66,7 @@ namespace zetscript{
 			}
 
 			stk->value=so_partial;
-			stk->properties = MSK_STK_PROPERTY_SCRIPT_OBJECT;
+			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
 		}
 
 		return sv;
@@ -92,7 +92,7 @@ namespace zetscript{
 			}
 
 			stk->value=so_partial;
-			stk->properties = MSK_STK_PROPERTY_SCRIPT_OBJECT;
+			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
 		}
 
 		return sv;

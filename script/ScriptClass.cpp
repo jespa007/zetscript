@@ -51,6 +51,7 @@ namespace zetscript{
 		script_class_factory=zs->getScriptClassFactory();
 		//static_constructor_destructor=false;
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
+		setter_getter=NULL;
 
 	}
 
@@ -409,6 +410,36 @@ namespace zetscript{
 							return NULL;
 						}
 					}
+
+					// everything ok
+					if(op==BYTE_CODE_METAMETHOD_GET || op==BYTE_CODE_METAMETHOD_SET){
+						if(setter_getter == NULL){
+							setter_getter = new MemberAttribute();
+						}
+
+						if(op==BYTE_CODE_METAMETHOD_GET){ // getter
+							if(setter_getter->getter==NULL){
+								setter_getter->getter=(ScriptFunction *)function_symbol->ref_ptr;
+							}else{
+								// error already set
+								error = zs_strutils::format("Getter \"%s::_get\" already set"
+										,symbol_class.name.c_str()
+								);
+								return NULL;
+							}
+						}else{ // setter
+							if(setter_getter->setters.count>0 && ((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0)){
+								// error already set (script functions only can be set once)
+								error = zs_strutils::format("Setter \"%s::_set\" already set"
+										,symbol_class.name.c_str()
+								);
+								return NULL;
+							}
+
+							setter_getter->setters.push_back(function_symbol->ref_ptr);
+						}
+					}
+
 					break;
 				}
 			}
@@ -481,6 +512,10 @@ namespace zetscript{
 
 
 		delete idx_base_classes;
+
+		if(setter_getter != NULL){
+			delete setter_getter;
+		}
 
 
 	}

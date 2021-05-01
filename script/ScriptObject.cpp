@@ -8,22 +8,22 @@ namespace zetscript{
 
 	bool ScriptObject::unrefAndFreeStackElementContainer(StackElement *si){
 		ScriptFunction * ir_fun;
-		unsigned short var_type = GET_MSK_STK_PROPERTY_TYPES(si->properties);
+		unsigned short var_type = GET_STK_PROPERTY_TYPES(si->properties);
 
 		switch(var_type){
 
-			case MSK_STK_PROPERTY_BOOL:
-			case MSK_STK_PROPERTY_ZS_INT:
-			case MSK_STK_PROPERTY_NULL:
-			case MSK_STK_PROPERTY_ZS_FLOAT:
+			case STK_PROPERTY_BOOL:
+			case STK_PROPERTY_ZS_INT:
+			case STK_PROPERTY_NULL:
+			case STK_PROPERTY_ZS_FLOAT:
 				break;
-			case MSK_STK_PROPERTY_FUNCTION:
+			case STK_PROPERTY_FUNCTION:
 				 ir_fun  = (ScriptFunction *)(si->value);
 				break;
 			default: // properties ...
 
-				if(var_type & MSK_STK_PROPERTY_SCRIPT_OBJECT){
-					if(((si->properties & MSK_STK_PROPERTY_IS_VAR_C) != MSK_STK_PROPERTY_IS_VAR_C)
+				if(var_type & STK_PROPERTY_SCRIPT_OBJECT){
+					if(((si->properties & STK_PROPERTY_IS_VAR_C) != STK_PROPERTY_IS_VAR_C)
 						&& (si->value != this) // ensure that property don't holds its same var.
 						&& (si->value != 0)
 					  ){ // deallocate but not if is c or this ref
@@ -50,7 +50,7 @@ namespace zetscript{
 		map_builtin_property_keys=new zs_map();
 		memset(&stk_this,0,sizeof(stk_this));
 		stk_this.value=this;
-		stk_this.properties=MSK_STK_PROPERTY_SCRIPT_OBJECT;
+		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
 	}
 
@@ -65,7 +65,7 @@ namespace zetscript{
 			// pre-register built-in members...
 			for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
 				Symbol * symbol = (Symbol *)script_class->symbol_members->items[i];
-				addBuiltinProperty(symbol->name.c_str(),{new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr),MSK_STK_PROPERTY_MEMBER_FUNCTION | MSK_STK_PROPERTY_FUNCTION});
+				addBuiltinProperty(symbol->name.c_str(),{new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr),STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION});
 			}
 		}
 
@@ -122,13 +122,35 @@ namespace zetscript{
 		return this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
 	}
 
+	ScriptFunction *ScriptObject::getGetter(){
+		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
+		MemberAttribute *member_attribute=script_class->setter_getter;
+
+		if(member_attribute !=NULL){
+			return member_attribute->getter;
+		}
+
+		return NULL;
+	}
+
+	zs_vector *ScriptObject::getSetterList(){
+		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
+		MemberAttribute *member_attribute=script_class->setter_getter;
+
+		if(member_attribute !=NULL){
+			return &member_attribute->setters;
+		}
+
+		return NULL;
+	}
+
 	ZetScript      * ScriptObject::getZetScript() {
 		return zs;
 	}
 
 	StackElement * 			ScriptObject::getBuiltinProperty(const std::string & property_name, int * idx){
 		/*if(property_name == "length"){
-			stk_length={(void *)this->length(),MSK_STK_PROPERTY_ZS_INT};
+			stk_length={(void *)this->length(),STK_PROPERTY_ZS_INT};
 			return &stk_length;
 		}else {*/
 			bool exists=false;
@@ -188,7 +210,7 @@ namespace zetscript{
 		for(unsigned i=0; i< stk_builtin_elements.count; i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 
-			if(stk->properties & MSK_STK_PROPERTY_MEMBER_FUNCTION){
+			if(stk->properties & STK_PROPERTY_MEMBER_FUNCTION){
 				delete (StackMemberFunction *)stk->value;
 			}
 			free(stk);

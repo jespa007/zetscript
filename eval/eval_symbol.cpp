@@ -120,7 +120,7 @@ namespace zetscript{
 
 							byte_code=BYTE_CODE_LOAD_ELEMENT_THIS;
 						}else{
-							byte_code= ByteCode::BYTE_CODE_LOAD_THIS;// MSK_INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
+							byte_code= ByteCode::BYTE_CODE_LOAD_THIS;// INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 						}
 					}else{
 						Symbol *vis=NULL;

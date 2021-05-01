@@ -1,14 +1,6 @@
-function f3(a){
-	Console::outln(a);
-}
+var s="this is an string iterator"
+var it2=s.iter();
+var k,v;
+k,v=it2
 
-function f2(a){
-	f3(a+3);
-}
 
-function f1(a){
-	f2(a);
-}
-
-var a=0;
-f1(a)

@@ -24,7 +24,7 @@ namespace zetscript{
 			ScriptObject *obj=NULL;
 			StackElement *stk=NULL;
 
-			if((this->byte_code == BYTE_CODE_LOAD_STRING) || (this->properties & MSK_INSTRUCTION_PROPERTY_STRING)){
+			if((this->byte_code == BYTE_CODE_LOAD_STRING) || (this->properties & INSTRUCTION_PROPERTY_STRING)){
 
 				stk=(StackElement *)this->value_op2;
 				obj = (ScriptObject *)stk->value;
@@ -39,7 +39,7 @@ namespace zetscript{
 
 		zs_float Instruction::getConstantFloat(){
 
-			if(((this->byte_code == BYTE_CODE_LOAD_FLOAT) || (this->properties & MSK_INSTRUCTION_PROPERTY_ZS_FLOAT))==false){
+			if(((this->byte_code == BYTE_CODE_LOAD_FLOAT) || (this->properties & INSTRUCTION_PROPERTY_ZS_FLOAT))==false){
 				THROW_EXCEPTION("instruction is not constant " ZS_STR(zs_float));
 			}
 
@@ -54,13 +54,13 @@ namespace zetscript{
 		std::string Instruction::getConstantValueOp2ToString(){
 			std::string value_op2_string="unknow value";
 
-			if(byte_code ==BYTE_CODE_LOAD_BOOL || (this->properties & MSK_INSTRUCTION_PROPERTY_BOOL) ){
+			if(byte_code ==BYTE_CODE_LOAD_BOOL || (this->properties & INSTRUCTION_PROPERTY_BOOL) ){
 				value_op2_string=this->value_op2 == 0 ? "false":"true";
-			}else if(byte_code==BYTE_CODE_LOAD_ZS_INT || (this->properties & MSK_INSTRUCTION_PROPERTY_ZS_INT)){
+			}else if(byte_code==BYTE_CODE_LOAD_ZS_INT || (this->properties & INSTRUCTION_PROPERTY_ZS_INT)){
 				value_op2_string=zs_strutils::zs_int_to_str(this->value_op2);
-			}else if(byte_code==BYTE_CODE_LOAD_FLOAT|| (this->properties & MSK_INSTRUCTION_PROPERTY_ZS_FLOAT)){
+			}else if(byte_code==BYTE_CODE_LOAD_FLOAT|| (this->properties & INSTRUCTION_PROPERTY_ZS_FLOAT)){
 				value_op2_string=zs_strutils::float_to_str(this->getConstantFloat());
-			}else if(byte_code==BYTE_CODE_LOAD_STRING || (this->properties & MSK_INSTRUCTION_PROPERTY_STRING)){
+			}else if(byte_code==BYTE_CODE_LOAD_STRING || (this->properties & INSTRUCTION_PROPERTY_STRING)){
 				value_op2_string="\""+this->getConstantString()+"\"";
 			}
 			return value_op2_string;

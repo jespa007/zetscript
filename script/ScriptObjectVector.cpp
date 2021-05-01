@@ -112,7 +112,7 @@ namespace zetscript{
 		*new_stk=*_stk;
 
 		// update n_refs +1
-		if(_stk->properties&MSK_STK_PROPERTY_SCRIPT_OBJECT){
+		if(_stk->properties&STK_PROPERTY_SCRIPT_OBJECT){
 			vm_share_pointer(vm,(ScriptObject *)(_stk->value));
 		}
 	}
