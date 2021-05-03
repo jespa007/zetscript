@@ -7,11 +7,15 @@
 
 namespace zetscript{
 
-	void	 ScriptObjectVectorIteratorWrap_next(ScriptObjectVectorIterator *si){
-		si->_next();
+	void	 ScriptObjectVectorIteratorWrap_get(ScriptObjectVectorIterator *vi){
+		vi->get();
 	}
 
-	bool	 ScriptObjectVectorIteratorWrap_end(ScriptObjectVectorIterator *si){
-		return si->_end();
+	void	 ScriptObjectVectorIteratorWrap_next(ScriptObjectVectorIterator *vi){
+		vi->next();
+	}
+
+	bool	 ScriptObjectVectorIteratorWrap_end(ScriptObjectVectorIterator *vi){
+		return vi->end();
 	}
 }

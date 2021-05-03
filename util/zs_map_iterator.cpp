@@ -2,13 +2,25 @@
 
 namespace zetscript{
 
+	void zs_map_iterator::setup(){
+		map=NULL;
+		current_node=NULL;
+		current_list=NULL;
+		idx_current_hash=0;
+	}
+
+	zs_map_iterator::zs_map_iterator(){
+		setup();
+
+	}
+
 	zs_map_iterator::zs_map_iterator(zs_map *_map){
+		setup();
 		map=_map;
 		current_node=NULL;
 		current_list=NULL;
 		idx_current_hash=0;
 		findNextListNotEmpty();
-
 	}
 
 	const char *zs_map_iterator::getKey(){

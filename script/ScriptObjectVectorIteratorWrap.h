@@ -3,8 +3,8 @@
  *  See LICENSE file for details.
  */
 namespace zetscript{
-	StackElement 	ScriptObjectVectorIteratorWrap_get(ScriptObjectVectorIterator *si);
-	void			ScriptObjectVectorIteratorWrap_next(ScriptObjectVectorIterator *si);
-	bool			ScriptObjectVectorIteratorWrap_end(ScriptObjectVectorIterator *si);
+	void 	ScriptObjectVectorIteratorWrap_get(ScriptObjectVectorIterator *vi);
+	void	ScriptObjectVectorIteratorWrap_next(ScriptObjectVectorIterator *vi);
+	bool	ScriptObjectVectorIteratorWrap_end(ScriptObjectVectorIterator *vi);
 
 }

@@ -1790,14 +1790,27 @@ load_element_object:
 
 							ScriptObject *script_var=(ScriptObject *)stk_it->value;
 
-							// deattach from zero shares if exist...
-							if(vm_deattach_shared_node(vm,script_var->shared_pointer->data.zero_shares,script_var->shared_pointer)==false){
-								goto lbl_exit_function;
+							if(script_var->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && (script_var->shared_pointer==NULL)){
+								// if is not shared is constant...
+								ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
+								sc->set(script_var->toString());
+								stk_it->properties=STK_PROPERTY_SCRIPT_OBJECT;
+								stk_it->value=sc;
+							}else{
+
+								if(script_var->shared_pointer->data.zero_shares==&data->zero_shares[data->vm_idx_call]){
+									// only removes all refs from local
+									if(vm_deattach_shared_node(vm,script_var->shared_pointer->data.zero_shares,script_var->shared_pointer)==false){
+										goto lbl_exit_function;
+									}
+										// Here we have n_shares == 0 so we can remove
+									free(script_var->shared_pointer);
+									script_var->shared_pointer=NULL;
+								}
+
+								//-------------------------------------------------------------------
 							}
 
-							// and free
-							free(script_var->shared_pointer);
-							script_var->shared_pointer=NULL;
 						}
 					}
 				}

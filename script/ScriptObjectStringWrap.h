@@ -26,8 +26,5 @@ namespace zetscript{
 	ScriptObjectString * 			ScriptObjectStringWrap_substring(ScriptObjectString *str_in,zs_int start,zs_int end);
 
 	ScriptObjectStringIterator *	StriptObjectStringWrap_iter(ScriptObjectString *str_in);
-	void							StriptObjectStringWrap_next();
-	void							StriptObjectStringWrap_end();
-	void							StriptObjectStringWrap_get();
 
 }

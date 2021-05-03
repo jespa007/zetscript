@@ -206,6 +206,7 @@ namespace zetscript{
 	}
 
 	ScriptObject::~ScriptObject(){
+
 		// deallocate built-in function member objects
 		for(unsigned i=0; i< stk_builtin_elements.count; i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
@@ -218,5 +219,6 @@ namespace zetscript{
 
 		stk_builtin_elements.clear();
 		delete map_builtin_property_keys;
+		//map_builtin_property_keys=NULL;
 	}
 }

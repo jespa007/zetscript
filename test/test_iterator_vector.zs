@@ -1,5 +1,7 @@
-var v=[a:1;b:2]
-
-for(var it2=v.iter();!it2.end();it2++){
-   System::println(it2); // will print the content
+var v=[1;"string",true]
+var k,v;
+Console::outln("size:"+v.size());
+for(var it=v.iter();!it.end();it._next()){
+	k,v=it.get();
+	Console::outln("k:{0} v:{1} ",k,v);
 }

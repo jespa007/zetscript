@@ -1,5 +1,7 @@
 var o={a:1;b:2}
-
-for(var it1=o.iter();!it1.end();it1++){
-   System::println(it); // will print the content as {key: X; value: Y }
+var k,v;
+Console::outln("size:"+o.size());
+for(var it=o.iter();!it.end();it._next()){
+	k,v=it.get();
+	Console::outln("k:{0} v:{1} ",k,v);
 }

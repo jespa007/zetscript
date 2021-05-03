@@ -5,8 +5,8 @@
 
 namespace zetscript{
 
-	StackElement 	ScriptObjectObjectIteratorWrap_get(ScriptObjectObjectIterator *si);
-	void			ScriptObjectObjectIteratorWrap_next(ScriptObjectObjectIterator *si);
-	bool			ScriptObjectObjectIteratorWrap_end(ScriptObjectObjectIterator *si);
+	void 			ScriptObjectObjectIteratorWrap_get(ScriptObjectObjectIterator *oi);
+	void			ScriptObjectObjectIteratorWrap_next(ScriptObjectObjectIterator *oi);
+	bool			ScriptObjectObjectIteratorWrap_end(ScriptObjectObjectIterator *oi);
 
 }

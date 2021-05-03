@@ -4,19 +4,39 @@
  */
 #pragma once
 
-namespace zetscript{
+#define ZS_NEW_OBJECT_VECTOR_ITERATOR(so) (ScriptObjectVectorIterator::newScriptObjectVectorIterator(so))
 
+namespace zetscript{
 
 	class  ScriptObjectVectorIterator:public ScriptObject{
 
 	public:
 
+		//----------------------------------------------
+		//
+		// Helpers
+		//
+		static ScriptObjectVectorIterator * newScriptObjectVectorIterator(ScriptObjectVector *vo);
+
+		//
+		// Helpers
+		//
+		//----------------------------------------------
+
 		ScriptObjectVectorIterator();
+		ScriptObjectVectorIterator(ScriptObjectVector *vo);
+		void get();
+		void next();
+		bool end();
 
-		StackElement _get();
-		void _next();
-		bool _end();
+	private:
 
+		ScriptObjectVector *vo;
+		zs_int idx;
+		StackElement stk_key;
+		StackElement stk_value;
+
+		void setup();
 	};
 
 }

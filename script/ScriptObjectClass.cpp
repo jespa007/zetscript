@@ -198,9 +198,11 @@ namespace zetscript{
 		StackElement *stk_function=getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING),NULL);
 
 		if(stk_function != NULL){ // get first element
-			if(stk_function->properties & STK_PROPERTY_FUNCTION){
-				ScriptFunction *ptr_function=((StackMemberFunction *)stk_function)->so_function;
+			if(stk_function->properties & (STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION)){
+				StackMemberFunction * smf=(StackMemberFunction *)stk_function->value;
+				ScriptFunction *ptr_function=smf->so_function;
 				if((ptr_function->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
+
 
 					StackElement result=VM_EXECUTE(
 							this->vm
@@ -209,6 +211,7 @@ namespace zetscript{
 							,NULL
 							,0
 					);
+
 					if(STK_IS_SCRIPT_OBJECT_STRING(&result)){
 						ScriptObjectString *so=(ScriptObjectString *)result.value;
 						// capture string...

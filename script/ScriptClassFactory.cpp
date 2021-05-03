@@ -182,6 +182,7 @@ namespace zetscript{
 		//-------------------------
 		// Wrap functions
 
+		//---------------------------------------------
 		// Vector
 		registerNativeMemberFunction<ScriptObjectVector>("push",&ScriptObjectVectorWrap_push);
 		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVectorWrap_pop);
@@ -191,6 +192,13 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectVector>("size",&ScriptObjectVectorWrap_size);
 		registerNativeMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
 
+		// VectorIterator
+		registerNativeMemberFunction<ScriptObjectVectorIterator>("_next",ScriptObjectVectorIteratorWrap_next);
+		registerNativeMemberFunction<ScriptObjectVectorIterator>("end",ScriptObjectVectorIteratorWrap_end);
+		registerNativeMemberFunction<ScriptObjectVectorIterator>("get",ScriptObjectVectorIteratorWrap_get);
+
+
+		//---------------------------------------------
 		// String
 		registerNativeMemberFunctionStatic<ScriptObjectString>("formatNative",ScriptObjectString::format);
 		registerNativeMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectStringWrap_eraseAt);
@@ -216,15 +224,21 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectStringIterator>("end",ScriptObjectStringIteratorWrap_end);
 		registerNativeMemberFunction<ScriptObjectStringIterator>("get",ScriptObjectStringIteratorWrap_get);
 
-
-		// Vector
+		//---------------------------------------------
+		// Object
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("clear",&ScriptObjectObjectWrap_clear);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("erase",&ScriptObjectObjectWrap_erase);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("contains",&ScriptObjectObjectWrap_contains);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("concat",ScriptObjectObject::concat);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("keys",ScriptObjectObjectWrap_keys);
-		//registerNativeMemberFunctionStatic<ScriptObjectObject>("iteratorSf",ScriptObjectObject::iteratorSf);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("iter",ScriptObjectObjectWrap_iter);
 
+		// ObjectIterator
+		registerNativeMemberFunction<ScriptObjectObjectIterator>("_next",ScriptObjectObjectIteratorWrap_next);
+		registerNativeMemberFunction<ScriptObjectObjectIterator>("end",ScriptObjectObjectIteratorWrap_end);
+		registerNativeMemberFunction<ScriptObjectObjectIterator>("get",ScriptObjectObjectIteratorWrap_get);
+
+		//---------------------------------------------
 		// DateTime
 		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowSf",ScriptObjectDateTimeWrap_now);
 

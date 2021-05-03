@@ -6,6 +6,7 @@ namespace zetscript{
 	class zs_map_iterator{
 	public:
 
+		zs_map_iterator();
 		zs_map_iterator(zs_map *map);
 		void next();
 		bool end();
@@ -21,6 +22,7 @@ namespace zetscript{
 		zs_int		value;
 
 
+		void setup();
 		void findNextListNotEmpty();
 		void setCurrentPair();
 	};

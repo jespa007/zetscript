@@ -73,4 +73,8 @@ namespace zetscript{
 
 		return so_string;
 	}
+
+	ScriptObjectVectorIterator * ScriptObjectVectorWrap_iter(ScriptObjectVector *so){
+		return ZS_NEW_OBJECT_VECTOR_ITERATOR(so);
+	}
 }

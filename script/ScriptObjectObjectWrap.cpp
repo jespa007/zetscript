@@ -49,4 +49,8 @@ namespace zetscript{
 		o1->eraseUserProperty(*key);
 	}
 
+	ScriptObjectObjectIterator * ScriptObjectObjectWrap_iter(ScriptObjectObject *oo){
+		return ZS_NEW_OBJECT_OBJECT_ITERATOR(oo);
+	}
+
 }
