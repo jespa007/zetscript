@@ -40,7 +40,7 @@ namespace zetscript{
 
 	#ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
 
-	#define print_vm_cr ZS_PRINT_INFO
+	#define print_vm_cr ZS_LOG_INFO
 	#else
 	#define print_vm_cr(s,...)
 	#endif
@@ -110,6 +110,8 @@ namespace zetscript{
 			if(!vm_insert_shared_node(vm,&data->shared_vars,_node)){
 				return false;
 			}
+
+			ZS_LOG_DEBUG("Share pointer %i:%p",_node->data.ptr_script_object_shared->idx_script_class,_node->data.ptr_script_object_shared);
 
 			// node is not in list of zero refs anymore...
 			_node->data.zero_shares=NULL;
@@ -287,15 +289,23 @@ namespace zetscript{
 					vm_insert_life_time_object(vm,file,line,(ScriptObjectObject *)stk_return.value);
 				}
 
+				// deinit vm variable...
+
+				ptr_stk_return->setUndefined();
 				// deallocate all returned variables from 1
 				for(int i=1; i < n_returned_arguments_from_function; i++){
 					StackElement stk_aux=ptr_stk_return[i];
 					if(stk_aux.properties & STK_PROPERTY_SCRIPT_OBJECT){
 						delete (ScriptObject *)stk_aux.value;
 					}
+					// deinit vm variable...
+					ptr_stk_return[i].setUndefined();
 				}
 			}
 		}
+
+		// Important restore stk!
+		data->stk_vm_current=stk_start;
 
 		return stk_return;
 	}

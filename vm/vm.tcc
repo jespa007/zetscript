@@ -258,6 +258,7 @@ namespace zetscript{
 					return;
 				}
 
+				//ZS_LOG_DEBUG("Deallocating %i:%p",current->data.ptr_script_object_shared->idx_script_class,current->data.ptr_script_object_shared);
 				delete current->data.ptr_script_object_shared;
 				current->data.ptr_script_object_shared=NULL;
 				free(current);
@@ -294,6 +295,7 @@ namespace zetscript{
 		if(vm_decrement_shared_nodes_and_dettach_if_zero(vm,_node,is_dettached)){
 
 			if(is_dettached == true){
+				//ZS_LOG_DEBUG("Deallocating %i:%p",_node->data.ptr_script_object_shared->idx_script_class,_node->data.ptr_script_object_shared);
 				delete _node->data.ptr_script_object_shared; // it deletes shared_script_object
 				free(_node);
 			}
@@ -688,7 +690,7 @@ namespace zetscript{
 		int n_returned_arguments_from_function=0;
 		//unsigned char n_args=instruction->value_op1; // number arguments will pass to this function
 		//StackElement *stk_start_arg_call=(stk_vm_current-n_args);
-
+		ret_obj.setUndefined();
 
 		// init stk
 		stk_vm_current_backup=stk_args=data->stk_vm_current;
@@ -821,29 +823,43 @@ namespace zetscript{
 		stk_return=(stk_args+ptr_function_found->registered_symbols->count );
 		n_returned_arguments_from_function=data->stk_vm_current-stk_return;
 
-		// setup all returned variables from function
-		for(int i=0; i < n_returned_arguments_from_function; i++){
 
-			StackElement *stk_ret = --data->stk_vm_current;
+		if(n_returned_arguments_from_function == 0){
+			switch(byte_code_metamethod){
+			case BYTE_CODE_METAMETHOD_PREVIOUS:
+			case BYTE_CODE_METAMETHOD_NEXT:
+				ret_obj.value=script_object;
+				ret_obj.properties=STK_PROPERTY_SCRIPT_OBJECT;
+				break;
+			}
 
-			// if a scriptvar --> init shared
-			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				ScriptObject *sv=(ScriptObject *)stk_ret->value;
+		}else{
 
-				// Auto destroy always C when ref == 0
-				((ScriptObjectClass *)(stk_ret->value))->deleteNativeObjectOnDestroy(true);
+			// setup all returned variables from function
+			for(int i=0; i < n_returned_arguments_from_function; i++){
 
-				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
-					if(!vm_create_shared_pointer(vm,sv)){
-						return false;
+				StackElement *stk_ret = --data->stk_vm_current;
+
+				// if a scriptvar --> init shared
+				if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					ScriptObject *sv=(ScriptObject *)stk_ret->value;
+
+					// Auto destroy always C when ref == 0
+					((ScriptObjectClass *)(stk_ret->value))->deleteNativeObjectOnDestroy(true);
+
+					if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
+						if(!vm_create_shared_pointer(vm,sv)){
+							return false;
+						}
 					}
 				}
+				// ... and push result if not function constructor...
 			}
-			// ... and push result if not function constructor...
+
+			ret_obj=stk_return[0];
 		}
 
 
-		ret_obj=stk_return[0];
 
 		// reset stack...
 		data->stk_vm_current=stk_vm_current_backup;

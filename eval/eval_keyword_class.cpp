@@ -76,7 +76,7 @@ namespace zetscript{
 				return NULL;
 			}
 
-			ZS_PRINT_DEBUG("registered class \"%s\" line %i ",class_name.c_str(), class_line);
+			ZS_LOG_DEBUG("registered class \"%s\" line %i ",class_name.c_str(), class_line);
 
 			if(*aux_p == '{' ){
 

@@ -7,7 +7,7 @@
 
 #ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
 
-#define print_eval_cr ZS_PRINT_DEBUG
+#define print_eval_cr ZS_LOG_DEBUG
 #else
 #define print_eval_cr(s,...)
 #endif
@@ -234,7 +234,7 @@ namespace zetscript{
 
 						zs_strutils::copy_from_ptr_diff(str_symbol,start_var,end_var);
 
-						ZS_PRINT_DEBUG("include file: %s",str_symbol);
+						ZS_LOG_DEBUG("include file: %s",str_symbol);
 
 						// save current file info...
 						eval_data->zs->evalFile(str_symbol);

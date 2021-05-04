@@ -41,7 +41,7 @@ namespace zetscript{
 				,(zs_int)var_ptr
 				,SYMBOL_PROPERTY_C_OBJECT_REF)) != NULL
 		){
-			ZS_PRINT_DEBUG("Registered variable name: %s",var_name.c_str());
+			ZS_LOG_DEBUG("Registered variable name: %s",var_name.c_str());
 		}
 	}
 
@@ -117,7 +117,7 @@ namespace zetscript{
 				,SYMBOL_PROPERTY_C_OBJECT_REF
 			);
 
-		ZS_PRINT_DEBUG("Registered function name: %s",function_name);
+		ZS_LOG_DEBUG("Registered function name: %s",function_name);
 	}
 
 	/**
@@ -173,7 +173,7 @@ namespace zetscript{
 		script_classes->push_back((zs_int)irc);
 
 		irc->idx_class=script_classes->count-1;
-		ZS_PRINT_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
+		ZS_LOG_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
 
 		return irc;
 	}

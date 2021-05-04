@@ -137,7 +137,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR(error.c_str());
 		}
 
-		ZS_PRINT_DEBUG("Registered member function name %s::%s",zs_rtti::demangle(typeid(C).name()).c_str(), function_name);
+		ZS_LOG_DEBUG("Registered member function name %s::%s",this->symbol_class.name.c_str(), function_name);
 
 		// check whether is static metamethod...
 		if(ZS_STRCMP(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET),!=,function_name)){
@@ -234,7 +234,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR(error.c_str());
 		}
 
-		ZS_PRINT_DEBUG("Registered C function %s as function member %s::%s",function_name, function_class_name.c_str(),function_name);
+		ZS_LOG_DEBUG("Registered C function %s as function member %s::%s",function_name, function_class_name.c_str(),function_name);
 	}
 
 }

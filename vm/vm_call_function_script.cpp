@@ -447,7 +447,7 @@ namespace zetscript{
 
 
 #ifdef __DEBUG__
-		ZS_PRINT_DEBUG("Executing function %s ...",calling_function->symbol.name.c_str());
+		ZS_LOG_DEBUG("Executing function %s ...",calling_function->symbol.name.c_str());
 #endif
 
 		// Init local vars ...
@@ -1928,11 +1928,13 @@ load_element_object:
 			while(vm_scope_start<data->vm_current_scope){
 				POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
 			}
-
-			if((data->zero_shares+data->vm_idx_call)->first!=NULL){
-				vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
-			}
 		}
+
+		if((data->zero_shares+data->vm_idx_call)->first!=NULL){
+			vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
+		}
+
+
 		data->vm_idx_call--;
 		// POP STACK
 		//=========================

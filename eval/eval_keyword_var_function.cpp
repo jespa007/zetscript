@@ -236,7 +236,7 @@ namespace zetscript{
 					}
 				}
 
-				ZS_PRINT_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
+				ZS_LOG_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
 
 				Keyword keyw = eval_is_keyword(variable_name.c_str());
 
