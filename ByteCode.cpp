@@ -241,12 +241,13 @@ namespace zetscript{
 
 	int			 byte_code_get_num_arguments_static_metamethod(ByteCodeMetamethod op){
 		switch(op){
-			case BYTE_CODE_METAMETHOD_NOT:
-			case BYTE_CODE_METAMETHOD_NEG:
-			case BYTE_CODE_METAMETHOD_SET:
 			case BYTE_CODE_METAMETHOD_TO_STRING:
 			case BYTE_CODE_METAMETHOD_NEXT:
 			case BYTE_CODE_METAMETHOD_PREVIOUS:
+			case BYTE_CODE_METAMETHOD_NOT:
+			case BYTE_CODE_METAMETHOD_NEG:
+				return 0;
+			case BYTE_CODE_METAMETHOD_SET:
 				return 1;
 		}
 

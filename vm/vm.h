@@ -28,25 +28,6 @@ namespace zetscript{
 	VirtualMachine *vm_new(ZetScript *zs);
 
 
-	/*void  vm_call_function_script(
-			VirtualMachine		* 	vm,
-			ScriptObject		* 	this_object,
-			ScriptFunction 		*	info_function,
-			StackElement 		* 	_stk_start_args,
-			//std::string 		* _ptrStartStr=NULL,
-			unsigned char 		n_args=0
-	);
-
-
-	 void  vm_call_function_native(
-		 VirtualMachine		* 	vm,
-		 const ScriptFunction *calling_function,
-		 StackElement *stk_arg_calling_function,
-		 unsigned char n_args,
-		 Instruction *ins,
-		 ScriptObject  * this_object
-	);*/
-
 	/**
 	 * Reserve for N vars. Return base pointer.
 	 */

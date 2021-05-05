@@ -180,9 +180,10 @@ namespace zetscript{
 	void  vm_call_function_native(
 		VirtualMachine *vm,
 		ScriptObject  * this_object,
-		const ScriptFunction *calling_function,
-		StackElement *stk_arg_calling_function,
+		const ScriptFunction *c_function,
+		StackElement *stk_arg_c_function,
 		unsigned char n_args,
+		const ScriptFunction *calling_function,
 		Instruction *instruction
 	);
 
@@ -693,7 +694,8 @@ namespace zetscript{
 		ret_obj.setUndefined();
 
 		// init stk
-		stk_vm_current_backup=stk_args=data->stk_vm_current;
+		stk_vm_current_backup=data->stk_vm_current;
+		stk_args=data->stk_vm_current+1;
 
 		if(stk_result_op1->properties & STK_PROPERTY_PTR_STK){
 			stk_result_op1 = (StackElement *)(stk_result_op1->value);
@@ -775,8 +777,8 @@ namespace zetscript{
 				,(void *)list_props->items
 				,list_props->count
 				,str_symbol_metamethod
-				,stk_args+1
-				,n_stk_args-1
+				,stk_args
+				,n_stk_args
 			)) == NULL){
 				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
 				goto apply_metamethod_error;
@@ -815,6 +817,7 @@ namespace zetscript{
 					,ptr_function_found
 					,stk_args
 					,n_stk_args
+					,calling_function
 					,instruction
 
 			);
@@ -865,7 +868,8 @@ namespace zetscript{
 		data->stk_vm_current=stk_vm_current_backup;
 
 		*data->stk_vm_current++ = ret_obj;
-		return true;
+
+		return data->vm_error == false;
 
 apply_metamethod_error:
 

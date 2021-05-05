@@ -191,6 +191,7 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectVector>("clear",&ScriptObjectVectorWrap_clear);
 		registerNativeMemberFunction<ScriptObjectVector>("size",&ScriptObjectVectorWrap_size);
 		registerNativeMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
+		registerNativeMemberFunction<ScriptObjectVector>("iter",&ScriptObjectVectorWrap_iter);
 
 		// VectorIterator
 		registerNativeMemberFunction<ScriptObjectVectorIterator>("_next",ScriptObjectVectorIteratorWrap_next);

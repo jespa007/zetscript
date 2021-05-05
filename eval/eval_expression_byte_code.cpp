@@ -155,7 +155,7 @@ namespace zetscript{
 		}
 
 		//--------------------------------------------------------------
-		// operator = found --> assign operators, load identifiers first
+		// operator assign = found --> assign operators, load identifiers first
 		for(int i=0; i < idx_start; i+=2){ // starting from assign operator if idx_start > 0 += 2 is because there's a symbol followed by its operator
 			EvalInstruction *instruction=NULL;
 			int idx_post_operation = i >> 1;
@@ -203,11 +203,11 @@ namespace zetscript{
 
 			}*/
 
+
 			if(byte_code_is_load_type(last_load_instruction->byte_code)){
 				last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
-				last_load_instruction->properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
 			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
-				last_load_instruction->properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
+				last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 			}
 
 			// ... add arithmetic operator byte code

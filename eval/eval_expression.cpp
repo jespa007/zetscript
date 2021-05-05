@@ -284,9 +284,12 @@ error_expression_main:
 					// .. add information last load that it will be stored
 					last_load_instruction->properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
 				}else{*/
+
+
 				if(byte_code_is_load_type(last_load_instruction->byte_code)){
 					last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
-					last_load_instruction->properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
+				}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
+					last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 				}
 				//}
 

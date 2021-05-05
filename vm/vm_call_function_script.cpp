@@ -9,6 +9,7 @@ if(((ScriptFunction *)sf)->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){\
 			,((ScriptFunction *)sf)\
 			,stk_def_afun_start\
 			,0\
+			,calling_function\
 			,instruction\
 	);\
 }else{\
@@ -1136,6 +1137,7 @@ load_element_object:
 									,ptr_function_found
 									,stk_arg
 									,1
+									,calling_function
 									,instruction
 							);
 						}else{
@@ -1729,6 +1731,7 @@ load_element_object:
 							,sf
 							,stk_start_arg_call
 							,n_args
+							,calling_function
 							,instruction
 						);
 

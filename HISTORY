@@ -164,7 +164,7 @@ Solved issues
 #206 Override global functions 
 #207 ScriptObjectString: Implement operator [] 
 #208 Implement Float helper class
-> #209 Implement Boolean helper class  
+#209 Implement Boolean helper class  
 #210 Fix check keyword delete
 > #211 Fix check directive import 
 #212 Fix accessors betwen assigns 
@@ -173,7 +173,7 @@ Solved issues
 #216 Accept .,() and [] as operator 
 #217 div/mod issues 
 #218 Encapsulate std::string in ScriptObjectString 
-> #219 Create iterator 
+#219 Create iterator 
 #220 Set information for non-existant properties in store instruction 
 #222 do as an option to show system functions 
 #223 get static function through class 
@@ -218,7 +218,7 @@ Solved issues
 #270 Get rid of C++ functions binding. Allow only C functions or optimized way
 #272 Separate built-in properties and user properties
 #275 Change VirtualMachine class by struct and C functions  
-> #276 Implement built-in iterators
+#276 Implement built-in iterators
 #277 optimize access stk_vm_current 
 #278 Rename undefined to null 
 #279 Support array access for ScriptObjectObject 
