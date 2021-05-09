@@ -73,6 +73,9 @@ namespace zetscript{
 			return ByteCode::BYTE_CODE_LTE;
 		case Operator::OPERATOR_INSTANCEOF:
 			return ByteCode::BYTE_CODE_INSTANCEOF;
+		case Operator::OPERATOR_IN:
+			return ByteCode::BYTE_CODE_IN;
+
 		}
 
 

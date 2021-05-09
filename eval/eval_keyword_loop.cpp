@@ -309,7 +309,7 @@ namespace zetscript{
 								,new_scope
 								,&eval_data->current_function->instructions
 								,{}
-								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK
+								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK | EVAL_EXPRESSION_BREAK_ON_IN_OPERATOR
 						))==NULL){
 							return NULL;
 						}
@@ -318,8 +318,10 @@ namespace zetscript{
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				key_w = eval_is_keyword(aux_p);
+				/*key_w = eval_is_keyword(aux_p);
 				if(key_w == Keyword::KEYWORD_IN){
+
+
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[Keyword::KEYWORD_IN].str),line);
 
@@ -337,7 +339,7 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"CREATE ITERATOR TODOOO ");
 					//eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_IT_INI));
 				}
-				else{ // expects conditional and post (i.e for(;;) )
+				else*/{ // expects conditional and post (i.e for(;;) )
 					if(*aux_p != ';'){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected ';'");
 					}
@@ -400,8 +402,11 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '{' for begin block");
 				}
 
-				// eval block ...
+
+				// increase the parsing_loop in order to take account for continues and breaks
 				eval_data->current_function->parsing_loop++;
+
+				// eval block ...
 				if((aux_p=eval_block(
 						eval_data
 						,aux_p
@@ -410,6 +415,8 @@ namespace zetscript{
 				))==NULL){
 					return NULL;
 				}
+
+				// parsing_loop--
 				eval_data->current_function->parsing_loop--;
 
 				idx_post_instruction_for_start=eval_data->current_function->instructions.size();

@@ -17,23 +17,33 @@
 
 
 
-#define EVAL_ERROR_POP_FUNCTION(file,line,s,...)	eval_data->error=true;\
-													eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-													ok=FALSE;\
-													goto lbl_exit_pop_function;
+#define EVAL_ERROR_POP_FUNCTION(file,line,s,...)			eval_data->error=true;\
+															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															ok=FALSE;\
+															goto lbl_exit_pop_function;
 
 
-#define EVAL_ERROR_EXPRESSION_MAIN(file,line,s,...)		eval_data->error=true;\
-														eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-														goto error_expression_main;\
+#define EVAL_ERROR_SUB_EXPRESSION(file,line,s,...)			eval_data->error=true;\
+															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															goto eval_error_sub_expression;\
 
-#define EVAL_ERROR_EXPRESSION(file,line,s,...)		eval_data->error=true;\
-													eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-													goto error_expression_delete_only_vectors;\
+#define EVAL_ERROR_EXPRESSION(file,line,s,...)				eval_data->error=true;\
+															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															goto eval_error_expression_delete_left_right_sub_expressions;\
 
-#define EVAL_ERROR_KEYWORD_SWITCH(file,line,s,...)		eval_data->error=true;\
-														eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-														goto eval_keyword_switch_error;\
+#define EVAL_ERROR_KEYWORD_SWITCH(file,line,s,...)			eval_data->error=true;\
+															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															goto eval_keyword_switch_error;\
+
+#define EVAL_ERROR_BYTE_CODE_FILE_LINE(file,line,s,...)		eval_data->error=true;\
+															aux_p=NULL;\
+															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															goto eval_error_byte_code;\
+
+#define EVAL_ERROR_BYTE_CODE(s,...)							eval_data->error=true;\
+															aux_p=NULL;\
+															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															goto eval_error_byte_code;\
 
 
 #define IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) (Operator::OPERATOR_ASSIGN_ADD<=(c) && (c)<=Operator::OPERATOR_ASSIGN_SHIFT_RIGHT)
@@ -46,6 +56,7 @@ namespace zetscript{
 		EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT=0x1<<2, // do not allow a,b,c=0,0,0
 		EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR=0x1<<3, // break when any assign operator (i.e, =, +=, -=, ...) is found
 		EVAL_EXPRESSION_ON_MAIN_BLOCK=0x1<<4,
+		EVAL_EXPRESSION_BREAK_ON_IN_OPERATOR=0x1<<5,
 		//EVAL_EXPRESSION_PROPERTY_SIMPLIFY=0x1<<5 // it will simplify expressions without assignment like that a+1, but keep calling functions but not push return values
 	}EvalExpressionProperty;
 
@@ -55,7 +66,6 @@ namespace zetscript{
 		KEYWORD_IF,
 		KEYWORD_ELSE,
 		KEYWORD_FOR,
-		KEYWORD_IN,
 		KEYWORD_WHILE,
 		KEYWORD_DO_WHILE,
 		KEYWORD_VAR,
@@ -120,6 +130,7 @@ namespace zetscript{
 		PRE_OPERATION_DEC_INC_INVALID,	// -+ or +-
 		// one chars here!
 		PRE_OPERATION_NOT, 		// ! (for boolean)
+		PRE_OPERATION_TYPEOF, 	//
 		PRE_OPERATION_POS, 		// + (just ignore)
 		PRE_OPERATION_NEG	, 	// -
 		PRE_OPERATION_MAX
@@ -319,6 +330,7 @@ namespace zetscript{
 	bool 	is_operator_logic_gte(const char *s)				{return ((*s=='>') && (*(s+1)=='='));}
 	bool 	is_operator_logic_lte(const char *s)				{return ((*s=='<') && (*(s+1)=='='));}
 	bool 	is_operator_logic_not(const char *s)				{return ((*s=='!') && (*(s+1)!='='));}
+	bool 	is_operator_typeof(const char *s)					{return strncmp("typeof",s,6) == 0;}
 	bool 	is_operation_dec(const char *s)						{return ((*s=='-') && (*(s+1)=='-'));}
 	bool 	is_operation_inc(const char *s)						{return ((*s=='+') && (*(s+1)=='+'));}
 	bool 	is_operation_dec_inc_invalid(const char *s)			{return ((*s=='-') && (*(s+1)=='+')) || ((*s=='+') && (*(s+1)=='-'));}
@@ -326,6 +338,7 @@ namespace zetscript{
 	bool 	is_comment_block_start(char *s)						{return ((*s=='/') && (*(s+1)=='*'));}
 	bool 	is_comment_block_end(char *s)						{return ((*s=='*') && (*(s+1)=='/'));}
 	bool 	is_operator_instanceof(const char *s)				{return strncmp("instanceof",s,10) == 0;}
+	bool 	is_operator_in(const char *s)						{if(is_operator_instanceof(s)) { return false;} return strncmp("in",s,2) == 0;}
 	Keyword eval_is_keyword(const char *c);
 
 	char *advance_to_end_block_comment(char *aux_p, int &line){
@@ -785,9 +798,11 @@ namespace zetscript{
 		eval_data_operators[OPERATOR_GTE]={OPERATOR_GTE, ">=",is_operator_logic_gte};
 		eval_data_operators[OPERATOR_LTE]={OPERATOR_LTE, "<=",is_operator_logic_lte};
 		eval_data_operators[OPERATOR_INSTANCEOF]={OPERATOR_INSTANCEOF, "instanceof",is_operator_instanceof};
+		eval_data_operators[OPERATOR_IN]={OPERATOR_IN, "in",is_operator_in};
 
 
 		eval_data_pre_operations[PRE_OPERATION_NOT]={PRE_OPERATION_NOT, "!",is_operator_logic_not};
+		eval_data_pre_operations[PRE_OPERATION_TYPEOF]={PRE_OPERATION_TYPEOF, "typeof",is_operator_typeof};
 		eval_data_pre_operations[PRE_OPERATION_POS]={PRE_OPERATION_POS, "+",is_operator_add};
 		eval_data_pre_operations[PRE_OPERATION_NEG]={PRE_OPERATION_NEG, "-",is_operator_sub};
 		eval_data_pre_operations[PRE_OPERATION_DEC]={PRE_OPERATION_DEC, "--",is_operation_dec};
@@ -834,7 +849,6 @@ namespace zetscript{
 		eval_data_keywords[KEYWORD_CLASS] = {KEYWORD_CLASS,"class",NULL};
 		eval_data_keywords[KEYWORD_NEW] = {KEYWORD_NEW,"new", NULL};
 		eval_data_keywords[KEYWORD_DELETE] = {KEYWORD_DELETE,"delete",eval_keyword_delete};
-		eval_data_keywords[KEYWORD_IN] = {KEYWORD_IN,"in",NULL};
 		eval_data_keywords[KEYWORD_REF] = {KEYWORD_REF,"ref",NULL};
 		eval_data_keywords[KEYWORD_VARIABLE_ARGS] = {KEYWORD_VARIABLE_ARGS,"...",NULL};
 

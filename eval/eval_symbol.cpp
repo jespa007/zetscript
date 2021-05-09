@@ -16,6 +16,7 @@ namespace zetscript{
 		zs_int value = ZS_IDX_UNDEFINED;
 		ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 		token_node_symbol->token_type = TokenType::TOKEN_TYPE_LITERAL;
+		token_node_symbol->line=line;
 		void *get_obj=NULL,*const_obj=NULL;
 		char *aux=(char *)start_word;
 		std::string default_str_value="";

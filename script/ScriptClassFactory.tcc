@@ -153,7 +153,7 @@ namespace zetscript{
 		}
 
 		idx_class=script_classes->count;
-		scope = scope_factory->newScope(NULL,true);
+		scope = scope_factory->newScope(ZS_IDX_UNDEFINED,NULL,true);
 		symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_SYMBOL_ONLY);
 
 		irc = new ScriptClass(zs,idx_class,symbol);

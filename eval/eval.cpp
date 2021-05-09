@@ -44,7 +44,7 @@ namespace zetscript{
 			}
 		}
 
-		eval_pop_function(eval_data);
+		eval_process_current_function(eval_data);
 
 		error=eval_data->error;
 		error_str=eval_data->error_str;
@@ -57,11 +57,11 @@ namespace zetscript{
 
 	}
 
-	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function){
-		Scope *new_scope = NEW_SCOPE(eval_data,scope_parent);
+	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_scope_function){
+		Scope *new_scope = NEW_SCOPE(eval_data,eval_data->current_function->script_function->idx_script_function,scope_parent);
 		scope_parent->registered_scopes->push_back((zs_int)new_scope);
-		new_scope->is_scope_function=is_function;
-		if(is_function){
+		new_scope->is_scope_function=is_scope_function;
+		if(is_scope_function){
 			new_scope->tmp_idx_instruction_push_scope=0;
 		}
 		else{
@@ -288,9 +288,20 @@ namespace zetscript{
 
 	}
 
-	int eval_pop_function(EvalData *eval_data){
+	void eval_pop_current_function(EvalData *eval_data){
+		// delete and popback function information...
+		delete eval_data->current_function;
+		eval_data->functions.pop_back();
 
-		char class_aux[512]={0},member_aux[512]={0};
+		eval_data->current_function = NULL;
+		if(eval_data->functions.size() > 0){
+			eval_data->current_function = eval_data->functions.at(eval_data->functions.size()-1);
+		}
+
+	}
+
+	int eval_process_current_function(EvalData *eval_data){
+
 		std::string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
 		ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
@@ -452,21 +463,11 @@ namespace zetscript{
 
 
 			sf->instruction_source_info[i]=instruction_info;
-
 		}
 
 lbl_exit_pop_function:
 
-		// delete and popback function information...
-		delete eval_data->current_function;
-		eval_data->functions.pop_back();
-
-		eval_data->current_function = NULL;
-		if(eval_data->functions.size() > 0){
-			eval_data->current_function = eval_data->functions.at(eval_data->functions.size()-1);
-		}
-
-
+		eval_pop_current_function(eval_data);
 
 		return ok;
 	}

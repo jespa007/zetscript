@@ -37,7 +37,7 @@ namespace zetscript{
 		//--------------------------------------------------------------------
 		// Functions
 
-		Scope(ZetScript * _zs, Scope * _scope_parent=NULL,bool is_c_node=false);
+		Scope(ZetScript * _zs, int idx_sf, Scope * _scope_parent=NULL,bool is_c_node=false);
 
 		//--------------------------------------------------------------------
 		// Register functions
@@ -55,6 +55,8 @@ namespace zetscript{
 
 		void setScriptClass(ScriptClass *sc);
 		ScriptClass * getScriptClass();
+		int getIdxScriptFunction();
+
 		unsigned int			numRegisteredSymbolsAsVariable();
 		~Scope();
 
@@ -62,6 +64,7 @@ namespace zetscript{
 
 		ZetScript *zs;
 		ScopeFactory *scope_factory;
+		int 			idx_script_function;
 
 		Symbol * getSymbolRecursive(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		Symbol * getSymbolRecursiveDownScope(const std::string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);

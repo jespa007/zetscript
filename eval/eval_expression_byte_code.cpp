@@ -9,7 +9,7 @@ namespace zetscript{
 		TokenNode			*token_node;
 	}AssignTokenInformation;
 
-	char * eval_expression_main(
+	char * eval_sub_expression(
 			EvalData *eval_data
 			,const char *s
 			, int & line
@@ -142,7 +142,8 @@ namespace zetscript{
 		std::vector<AssignTokenInformation> assing_tokens;
 		int idx_start=0;
 		int idx_end=(int)(expression_tokens->size()-1);
-		std::vector<std::vector<EvalInstruction *>> assign_instructions_post_expression;
+		std::vector<std::vector<EvalInstruction *>> assign_loader_instructions_post_expression;
+		std::vector<EvalInstruction *> assign_store_instruction_post_expression;
 
 		// search for assign
 		for(int i=idx_end; i >= 0; i--){
@@ -170,38 +171,32 @@ namespace zetscript{
 				&&	(IS_OPERATOR_TYPE_ASSIGN(operator_type))
 
 				)){ // ... save all assignables from operator split
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,token_node_operator->line,"Operation \"%s\" in assignment is not allowed",eval_data_operators[operator_type].str);
+				EVAL_ERROR_BYTE_CODE_FILE_LINE(eval_data->current_parsing_file,token_node_operator->line,"Operation \"%s\" in assignment is not allowed",eval_data_operators[operator_type].str);
 			}
 
 			// should be identifier...
 			if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal \"%s\" is not allowed",token_node_symbol->value.c_str());
+				EVAL_ERROR_BYTE_CODE_FILE_LINE(eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal \"%s\" is not allowed",token_node_symbol->value.c_str());
 			}
 
-			assign_instructions_post_expression.push_back({});
+			assign_loader_instructions_post_expression.push_back({});
 
 
 			// add instructions related about its accessors...
 			for(unsigned j=0;j<token_node_symbol->instructions.size();j++){
 				EvalInstruction *ei_load_assign_instruction=token_node_symbol->instructions[j];
 				if(ei_load_assign_instruction->vm_instruction.byte_code ==  BYTE_CODE_CALL){
-					EVAL_ERROR_FILE_LINE(
+					EVAL_ERROR_BYTE_CODE_FILE_LINE(
 							eval_data->current_parsing_file
 							,ei_load_assign_instruction->instruction_source_info.line
 							,"Calling a function in left assignment is not allowed");
 				}
-				assign_instructions_post_expression[idx_post_operation].push_back(token_node_symbol->instructions[j]);
+				assign_loader_instructions_post_expression[idx_post_operation].push_back(token_node_symbol->instructions[j]);
 			}
 
 			// get last instruction...
-			Instruction *last_load_instruction=&assign_instructions_post_expression[idx_post_operation][assign_instructions_post_expression[idx_post_operation].size()-1]->vm_instruction;
+			Instruction *last_load_instruction=&assign_loader_instructions_post_expression[idx_post_operation][assign_loader_instructions_post_expression[idx_post_operation].size()-1]->vm_instruction;
 
-			// if is a access property ...
-			/*if(last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS
-			||last_load_instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
-				// .. add information last load that it will be stored
-
-			}*/
 
 
 			if(byte_code_is_load_type(last_load_instruction->byte_code)){
@@ -211,7 +206,7 @@ namespace zetscript{
 			}
 
 			// ... add arithmetic operator byte code
-			assign_instructions_post_expression[idx_post_operation].push_back(instruction=new EvalInstruction(
+			assign_store_instruction_post_expression.push_back(instruction=new EvalInstruction(
 					eval_operator_to_byte_code(operator_type)
 			));
 
@@ -235,7 +230,7 @@ namespace zetscript{
 				, idx_end
 			);
 		}catch(std::exception & error){
-			EVAL_ERROR(error.what());
+			EVAL_ERROR_BYTE_CODE(error.what());
 		}
 
 		// if ends with ternary then continues performing expressions
@@ -252,7 +247,7 @@ namespace zetscript{
 			int body_size_else=0;
 
 			// eval ? part
-			aux_p=eval_expression_main(
+			if((aux_p=eval_sub_expression(
 				eval_data
 				,aux_p+1
 				, line
@@ -261,7 +256,9 @@ namespace zetscript{
 				, std::vector<char>{}
 				, properties
 				, n_recursion_level+1
-			);
+			))==NULL){
+				goto eval_error_byte_code;
+			}
 
 			last_instruction=&dst_instructions->at(dst_instructions->size()-1)->vm_instruction;
 			if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
@@ -270,7 +267,7 @@ namespace zetscript{
 
 			// TODO: JEB Check whether expression is constant true/false
 			if(*aux_p != ':'){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
+				EVAL_ERROR_BYTE_CODE_FILE_LINE(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
 			}
 
 
@@ -281,7 +278,7 @@ namespace zetscript{
 
 
 			// eval : part
-			aux_p=eval_expression_main(
+			if((aux_p=eval_sub_expression(
 				eval_data
 				, aux_p+1
 				, line
@@ -290,7 +287,9 @@ namespace zetscript{
 				, std::vector<char>{}
 				, properties
 				, n_recursion_level+1
-			);
+			))==NULL){
+				goto eval_error_byte_code;
+			}
 
 			body_size_else=dst_instructions->size()-jmp_instructions_start;
 
@@ -312,14 +311,31 @@ namespace zetscript{
 		//--------------------------------------------------------------
 
 		// ... finally save store operators
-		for(int i=(int)(assign_instructions_post_expression.size()-1); i >=0 ;i--){
+		for(int i=(int)(assign_loader_instructions_post_expression.size()-1); i >=0 ;i--){
+			//loaders
 			dst_instructions->insert(
 				dst_instructions->end()
-				,assign_instructions_post_expression[i].begin()
-				,assign_instructions_post_expression[i].end()
+				,assign_loader_instructions_post_expression[i].begin()
+				,assign_loader_instructions_post_expression[i].end()
+			);
+
+			// push back assign operator
+			dst_instructions->push_back(
+				assign_store_instruction_post_expression[i]
 			);
 		}
+
 		return aux_p;
+
+eval_error_byte_code:
+
+		// only delete the new ones
+		for(unsigned i=0; i < assign_store_instruction_post_expression.size(); i++){
+			delete assign_store_instruction_post_expression[i];
+		}
+
+		return NULL;
+
 	}
 
 }

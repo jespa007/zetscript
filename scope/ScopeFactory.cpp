@@ -8,12 +8,15 @@ namespace zetscript{
 	ScopeFactory::ScopeFactory(ZetScript *zs){
 		this->zs=zs;
 		this->scopes = new zs_vector;
-		main_scope = newScope(NULL,false); // create global scope (scope 0)
+		main_scope=newScope(IDX_SCRIPT_FUNCTION_MAIN,NULL,false); // create global scope (scope 0)
 		idx_clear_checkpoint=1;  // start from MAIN scope
 	}
 
-	Scope *	 ScopeFactory::newScope(Scope * scope_parent,bool is_c_node){
-		Scope * scope_node = new Scope(this->zs,scope_parent,is_c_node);
+
+
+
+	Scope *	 ScopeFactory::newScope(int idx_sf,Scope * scope_parent,bool is_c_node){
+		Scope * scope_node = new Scope(this->zs,idx_sf,scope_parent,is_c_node);
 		scopes->push_back((zs_int)scope_node);
 		return scope_node;
 	}

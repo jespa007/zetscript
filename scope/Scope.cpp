@@ -11,10 +11,11 @@
 namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------
-	Scope::Scope(ZetScript * _zs, Scope * _scope_parent, bool _is_c_node){
+	Scope::Scope(ZetScript * _zs,int idx_sf, Scope * _scope_parent, bool _is_c_node){
 		scope_parent = _scope_parent;
 		is_c_node = _is_c_node;
 		script_class=NULL;
+		idx_script_function=idx_sf;
 		unusued=false;
 		zs=_zs;
 		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
@@ -22,12 +23,17 @@ namespace zetscript{
 		registered_scopes=new zs_vector;
 		registered_symbols=new zs_vector;
 
-		if(_scope_parent == NULL){ // first node...
+		if(_scope_parent == NULL){ // first node (it should be a class)...
 			scope_base = this;
-		}else{
+		}else{ // others...
 			scope_base = scope_parent->scope_base;
 			script_class=scope_parent->script_class; // propagate script class
+
+			if(idx_script_function==ZS_IDX_UNDEFINED){ // May be is a block containing if-else, for, etc --> propagate current script function
+				idx_script_function=scope_parent->idx_script_function;
+			}
 		}
+
 
 		n_registered_symbols_as_variables=0;
 		is_scope_function=false;
@@ -43,6 +49,10 @@ namespace zetscript{
 
 	ScriptClass * Scope::getScriptClass(){
 		return scope_base->script_class;
+	}
+
+	int Scope::getIdxScriptFunction(){
+		return idx_script_function;
 	}
 
 	void						   Scope::markAsUnusued(){
@@ -117,8 +127,8 @@ namespace zetscript{
 
 		if(scope_direction_repeated_symbols==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction_repeated_symbols==ScopeDirection::SCOPE_DIRECTION_DOWN){
 			if(
-					this->scope_parent != NULL			 	 // it says that is the end of scopes
-					&& this->scope_parent != MAIN_SCOPE(this) // avoid find symbols to global scope. If not found in local it will try link global on eval_pop_function
+					   this->scope_parent != NULL			 	 // it says that is the end of scopes
+					&& this->scope_parent->getIdxScriptFunction() == idx_script_function // Only check repeated symbols in the same function scope context.
 			){
 				return this->scope_parent->getSymbol(str_symbol,n_params,ScopeDirection::SCOPE_DIRECTION_DOWN);
 			}
@@ -128,7 +138,7 @@ namespace zetscript{
 			for(unsigned i = 0; i < registered_scopes->count; i++){
 				Scope *s=(Scope *)registered_scopes->items[i];
 
-				if(s->is_scope_function == false){ // avoid local scope functions ...
+				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
 					Symbol *sv=s->getSymbol(str_symbol,n_params,ScopeDirection::SCOPE_DIRECTION_UP);
 
 					if(sv != NULL) {

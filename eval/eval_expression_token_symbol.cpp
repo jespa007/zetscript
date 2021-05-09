@@ -85,7 +85,7 @@ namespace zetscript{
 				EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_data_pre_operations[pre_operation].str);
 			}
 
-			if((aux_p=eval_expression_main(
+			if((aux_p=eval_sub_expression(
 					eval_data
 					,aux_p+1
 					, line
@@ -298,7 +298,7 @@ namespace zetscript{
 
 						last_line_ok=line;
 
-						if((aux_p = eval_expression_main(
+						if((aux_p = eval_sub_expression(
 								eval_data
 								,aux_p
 								,line
@@ -342,7 +342,7 @@ namespace zetscript{
 					aux_p++;
 					break;
 				case '[': // std::vector access
-					if((aux_p = eval_expression_main(
+					if((aux_p = eval_sub_expression(
 							eval_data
 							,aux_p+1
 							,line
@@ -538,14 +538,13 @@ namespace zetscript{
 			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
 				last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 			}
-
 		}
-
 
 		if(		(pre_operation == PreOperation::PRE_OPERATION_NEG)
 			|| 	(pre_operation == PreOperation::PRE_OPERATION_NOT)
 			|| 	(pre_operation == PreOperation::PRE_OPERATION_INC)
 			|| 	(pre_operation == PreOperation::PRE_OPERATION_DEC)
+			|| 	(pre_operation == PreOperation::PRE_OPERATION_TYPEOF)
 		){
 			EvalInstruction *eval_instruction_pre=NULL;
 
@@ -560,6 +559,7 @@ namespace zetscript{
 					pre_operation == PreOperation::PRE_OPERATION_NEG ? ByteCode::BYTE_CODE_NEG:
 					pre_operation == PreOperation::PRE_OPERATION_NOT ? ByteCode::BYTE_CODE_NOT:
 					pre_operation == PreOperation::PRE_OPERATION_DEC ? ByteCode::BYTE_CODE_PRE_DEC:
+					pre_operation == PreOperation::PRE_OPERATION_TYPEOF ? ByteCode::BYTE_CODE_TYPEOF:
 					ByteCode::BYTE_CODE_PRE_INC
 				)
 			);
@@ -578,8 +578,6 @@ namespace zetscript{
 
 		}
 
-
-
 		// finally push token node symbol
 		expression_tokens->push_back(token_node_symbol);
 
@@ -589,6 +587,7 @@ error_expression_token_symbol:
 
 		for(unsigned kk=0;kk<token_node_symbol.instructions.size();kk++){
 			delete token_node_symbol.instructions[kk];
+			token_node_symbol.instructions[kk]=NULL;
 		}
 
 		return NULL;

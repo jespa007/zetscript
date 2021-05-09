@@ -241,7 +241,7 @@ namespace zetscript{
 				Keyword keyw = eval_is_keyword(variable_name.c_str());
 
 				if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Cannot use symbol name as reserverd symbol \"%s\"",eval_data_keywords[keyw].str);
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected keyword \"%s\" after var",eval_data_keywords[keyw].str);
 				}
 
 				// register symbol...
@@ -717,13 +717,14 @@ error_eval_keyword_var:
 					,sf
 					,&args)
 			)==NULL){
+				// deallocate current function
+				eval_pop_current_function(eval_data);
 				return NULL;
 			}
 
 			//
 			//eval_check_scope(eval_data,scope_function);
-
-			eval_pop_function(eval_data);
+			eval_process_current_function(eval_data);
 
 			return aux_p;
 		}

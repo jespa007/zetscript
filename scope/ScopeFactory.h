@@ -6,16 +6,17 @@
 
 #define IDX_SCRIPT_SCOPE_MAIN				0
 #define MAIN_SCOPE(data)					((data->scope_factory))->getMainScope()
-#define NEW_SCOPE(data,scope_parent)		((data->scope_factory))->newScope(scope_parent)
+#define NEW_SCOPE(data,sf,scope_parent)		((data->scope_factory))->newScope(sf,scope_parent)
 
 
 namespace zetscript{
 
+	class ScriptFunctionFactory;
 	class ScopeFactory{
 		public:
 			ScopeFactory(ZetScript 		*zs);
 
-			Scope	    				*	newScope(Scope * scope_parent=NULL,bool is_c_node=false);
+			Scope	    				*	newScope(int idx_sf,Scope * scope_parent=NULL,bool is_c_node=false);
 			Scope 						* 	getMainScope(){return main_scope;}
 			zs_vector 					* 	getScopes();
 			void clear(int _idx_start=ZS_IDX_UNDEFINED);

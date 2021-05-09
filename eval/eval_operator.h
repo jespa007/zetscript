@@ -16,6 +16,8 @@
 || 	(operator_type) == OPERATOR_LTE \
 || 	(operator_type) == OPERATOR_GT \
 || 	(operator_type) == OPERATOR_LT \
+|| 	(operator_type) == OPERATOR_IN \
+|| 	(operator_type) == OPERATOR_INSTANCEOF \
 )
 
 #define OPERATOR_GROUP_2(operator_type) \
@@ -95,6 +97,7 @@ namespace zetscript{
 		OPERATOR_SHIFT_RIGHT, 									// >>
 
 		OPERATOR_INSTANCEOF, 									// instanceof
+		OPERATOR_IN,		 									// in
 
 		OPERATOR_MAX
 	}Operator;

@@ -114,6 +114,8 @@ namespace zetscript{
 		BYTE_CODE_POST_DEC,
 		BYTE_CODE_NEG_POST_DEC,
 		BYTE_CODE_RESET_STACK, // just in case there's no assignment on left or after last assignment
+		BYTE_CODE_TYPEOF,
+		BYTE_CODE_IN,
 		//---------------------------
 		BYTE_CODE_INVALID=255,
 

@@ -140,7 +140,7 @@ Solved issues
 #179 Bug if-else fails {max scope reached} 
 #180 Return vector or dictionary not deref its user properties 
 #181 Implement var args 
-> #182 Make ScriptVarStringr iterable like Vector 
+#182 Make ScriptVarStringr iterable like Vector 
 #183 Implement Object methods
 #184 Implement + for Vector 
 #185 parser char as integer
