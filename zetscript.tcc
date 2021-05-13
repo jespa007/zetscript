@@ -827,7 +827,9 @@ namespace zetscript{
 
 			for(unsigned int i = 0; i < arg.size(); i++){
 				if(script_class_factory->getIdxClassFromItsNativeType(arg[i])==-1){
-					THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for bind function not registered",i,zs_rtti::demangle(arg[i]).c_str());
+					THROW_RUNTIME_ERROR("Argument %i type \"%s\" for bind function not registered"
+							,i+1
+							,zs_rtti::demangle(arg[i]).c_str());
 					return NULL;
 				}
 			}

@@ -8,6 +8,7 @@
 #include 		"util/zs_vector.cpp"
 #include 		"util/zs_map.cpp"
 #include 		"util/zs_map_iterator.cpp"
+#include 		"util/zs_uuid.cpp"
 
 #include		"exception.cpp"
 #include 		"Symbol.cpp"

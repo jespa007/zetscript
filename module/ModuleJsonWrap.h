@@ -6,6 +6,6 @@ namespace zetscript{
 	class ModuleJson{
 
 		ScriptObjectObject * deserialize(ScriptObjectString *obj_str);
-		ScriptObjectString * serialize(ScriptObjectObject *obj,bool minimized);
+		ScriptObjectString * serialize(ScriptObjectObject *obj,bool *minimized);
 	};
 }

@@ -1,8 +1,15 @@
 #include "eval.h"
 
 
+#define MAX_FOR_IN_VARIABLES	10
+
 namespace zetscript{
 
+	static int n_anonymous_iterator=0;
+
+	std::string eval_anonymous_iterator_name(){
+		return "_@iter_"+zs_strutils::zs_int_to_str(n_anonymous_iterator++);
+	}
 
 
 	//------------------------------------------------------------------------------------------------------------------------------------------
@@ -261,11 +268,13 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		Keyword key_w;
+		bool is_for_in=false;
 		int	 idx_instruction_for_start=ZS_IDX_UNDEFINED
-			,idx_instruction_for_after_condition=ZS_IDX_UNDEFINED
+			,idx_instruction_for_after_jnz_condition=ZS_IDX_UNDEFINED
 			,idx_post_instruction_for_start=ZS_IDX_UNDEFINED;
 
 		EvalInstruction *ei_jnt=NULL; // conditional to end block
+		EvalInstruction *ei_it;
 		std::vector<EvalInstruction *> post_operations;
 
 		// check for keyword ...
@@ -290,56 +299,274 @@ namespace zetscript{
 				if(*aux_p != ';'){ // there's some var Init...
 					// Init node ...
 					Keyword key_w = eval_is_keyword(aux_p);
+					bool check_for_in=true;
 
 					if(key_w == KEYWORD_VAR){
-						if((aux_p = eval_keyword_var(
+						check_for_in=false;
+						char *aux_test=NULL;
+						int line_test=line;
+						if((aux_test = eval_keyword_var(
 								eval_data
 								,aux_p
-								,line
+								,line_test
 								,new_scope
+								, EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR
 						))==NULL){
 							return NULL;
 						}
+
+						// check if any instructions...
+						check_for_in=
+								(idx_instruction_for_start==((int)eval_data->current_function->instructions.size())
+										&&
+								(is_operator(aux_p))!=Operator::OPERATOR_IN);
+
+						if(check_for_in  == true){ // restore
+							aux_p+=strlen(eval_data_keywords[KEYWORD_VAR].str);
+						}else{
+							aux_p=aux_test;
+							line=line_test;
+						}
 					}
-					else{
-						if((aux_p = eval_expression(
+
+					if(key_w != KEYWORD_VAR || check_for_in){
+						std::vector<EvalInstruction *> ei_init_vars_for;
+						std::vector<EvalInstruction> ei_init_vars_for_st[MAX_FOR_IN_VARIABLES];
+						is_for_in=false;
+						int n_for_in_vars=1;
+						char *test_aux;
+						int test_line=line;
+						// eval expression and not optimize to convert load in op to load from iterator
+						if((test_aux = eval_expression(
 								eval_data
 								,aux_p
-								,line
+								,test_line
 								,new_scope
-								,&eval_data->current_function->instructions
+								,&ei_init_vars_for //eval_data->current_function->instructions
 								,{}
-								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK | EVAL_EXPRESSION_BREAK_ON_IN_OPERATOR
+								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK | EVAL_EXPRESSION_FOR_IN_VARIABLES
 						))==NULL){
 							return NULL;
+						}
+
+						// copy per each variable detected...
+						for(unsigned j=0; j<ei_init_vars_for.size();j++){
+							if(n_for_in_vars<MAX_FOR_IN_VARIABLES){
+								EvalInstruction *ins=ei_init_vars_for[j];
+								if(ins->vm_instruction.byte_code == BYTE_CODE_RESET_STACK){
+									if(j < (ei_init_vars_for.size()-1)){ // is not last variable
+										n_for_in_vars++;
+									}
+								}else{
+									ei_init_vars_for_st[n_for_in_vars-1].push_back(*ins);
+								}
+							}
+							delete ei_init_vars_for[j];
+						}
+
+						if(n_for_in_vars>=MAX_FOR_IN_VARIABLES){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error max for-in variables reached (Max: %i)",MAX_FOR_IN_VARIABLES);
+						}
+
+						ei_init_vars_for.clear();
+
+						if(is_operator(test_aux)==Operator::OPERATOR_IN){
+							EvalInstruction *ei_aux=NULL;
+							is_for_in=true;
+							// all check instructions
+							for(int i=0; i < n_for_in_vars && is_for_in == true;i++){
+								size_t end=ei_init_vars_for_st[i].size();// +2: expects operator in & reset stack at the end
+								if(end == 0){
+									is_for_in=false;
+									break;
+								}
+
+								EvalInstruction *ptr_ei_init_vars_for_st=&ei_init_vars_for_st[i][0];
+
+								for(unsigned j=0; j<end && is_for_in == true;j++){
+									Instruction *ins=&ptr_ei_init_vars_for_st->vm_instruction;
+									is_for_in&=(byte_code_is_load_type(ins->byte_code) || (ins->byte_code == BYTE_CODE_FIND_VARIABLE));
+									ptr_ei_init_vars_for_st++;
+								}
+
+								if(is_for_in){
+									Instruction *last_load_instruction=&ei_init_vars_for_st[i][end-1].vm_instruction;
+									if(byte_code_is_load_type(last_load_instruction->byte_code)){
+										last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
+									}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
+										last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
+									}
+								}
+
+
+
+							}
+
+							if(is_for_in){
+								Symbol *symbol_iterator;
+								std::vector<EvalInstruction *> ei_load_iterator;
+								std::vector<EvalInstruction> ei_load_iterator_st;
+								EvalInstruction ei_iterator;
+								// set aux_p as test_aux
+								line=test_line;
+								IGNORE_BLANKS(aux_p,eval_data,test_aux+strlen(eval_data_operators[OPERATOR_IN].str),line);
+
+								// eval iterator variable
+								if((aux_p = eval_expression(
+										eval_data
+										,aux_p
+										,line
+										,new_scope
+										,&ei_load_iterator //eval_data->current_function->instructions
+										,{')'}
+								))==NULL){
+									// delete unusued vars_for
+									return NULL;
+								}
+
+								for(unsigned j=0; j<ei_load_iterator.size();j++){
+									ei_load_iterator_st.push_back(*ei_load_iterator[j]);
+									delete ei_load_iterator[j];
+								}
+								ei_init_vars_for.clear();
+
+								// 1. create iterator symbol
+								if((symbol_iterator=eval_data->current_function->script_function->registerLocalVariable(
+										new_scope
+										, eval_data->current_parsing_file
+										, line
+										, eval_anonymous_iterator_name()
+									))==NULL){
+									return NULL;
+								};
+
+								ei_iterator.vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
+								ei_iterator.vm_instruction.value_op1=ZS_IDX_UNDEFINED;
+								ei_iterator.vm_instruction.value_op2=symbol_iterator->idx_position;
+								ei_iterator.symbol=*symbol_iterator;
+								ei_iterator.instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, symbol_iterator->name);
+
+
+								// 2. emit iterator init
+								for(unsigned i=0; i < ei_load_iterator_st.size(); i++){
+									eval_data->current_function->instructions.push_back(
+										new EvalInstruction(ei_load_iterator_st[i])
+									);
+								}
+
+								eval_data->current_function->instructions.push_back(
+										ei_aux=new EvalInstruction(ei_iterator)
+								);
+
+								// change load by push stk because we have to store iterator variable returned by iter()
+								ei_aux->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_LOCAL;
+
+								eval_data->current_function->instructions.push_back(
+									new EvalInstruction(BYTE_CODE_IT_INIT)
+								);
+
+								idx_instruction_for_start=(int)(eval_data->current_function->instructions.size());
+
+								// 3. emit iterator condition end
+								eval_data->current_function->instructions.push_back(
+										ei_aux=new EvalInstruction(ei_iterator)
+								);
+
+
+								// load object end symbol
+								eval_data->current_function->instructions.push_back(
+									ei_aux=new EvalInstruction(BYTE_CODE_LOAD_ELEMENT_OBJECT)
+								);
+								ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "end");
+
+								// call
+								eval_data->current_function->instructions.push_back(
+									new EvalInstruction(BYTE_CODE_CALL,0)
+								);
+
+								eval_data->current_function->instructions.push_back(ei_jnt=new EvalInstruction(BYTE_CODE_JNT));
+
+								idx_instruction_for_after_jnz_condition=(int)(eval_data->current_function->instructions.size());
+
+								// push as many null as n left vars -1
+								for(int i=0; i < n_for_in_vars-1;i++){
+									eval_data->current_function->instructions.push_back(
+										ei_aux=new EvalInstruction(BYTE_CODE_LOAD_NULL)
+									);
+								}
+
+								// load v
+								eval_data->current_function->instructions.push_back(
+										ei_aux=new EvalInstruction(ei_iterator)
+								);
+
+								// v._get
+								eval_data->current_function->instructions.push_back(
+									ei_aux=new EvalInstruction(BYTE_CODE_LOAD_ELEMENT_OBJECT)
+								);
+
+								ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "get");
+
+								// call
+								eval_data->current_function->instructions.push_back(
+									new EvalInstruction(BYTE_CODE_CALL,0)
+								);
+
+
+								// load k,v
+								for(int i=0; i < n_for_in_vars;i++){
+									for(unsigned j=0; j<ei_init_vars_for_st[i].size();j++){
+										eval_data->current_function->instructions.push_back(new EvalInstruction(ei_init_vars_for_st[i][j]));
+									}
+								}
+
+								// store...
+								eval_data->current_function->instructions.push_back(
+									new EvalInstruction(BYTE_CODE_STORE,2)
+								);
+
+								// 4. emit post operation
+								post_operations.push_back(
+										ei_aux=new EvalInstruction(ei_iterator)
+								);
+
+								// load object end symbol
+								post_operations.push_back(
+									ei_aux=new EvalInstruction(BYTE_CODE_LOAD_ELEMENT_OBJECT)
+								);
+
+								ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_next");
+
+								// call
+								post_operations.push_back(
+									new EvalInstruction(BYTE_CODE_CALL,0)
+								);
+
+
+							}else{ // is not for-in re eval for in with no in-break
+								// delete
+								if((aux_p = eval_expression(
+										eval_data
+										,aux_p
+										,line
+										,new_scope
+										,&eval_data->current_function->instructions
+										,{}
+										,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK
+								))==NULL){
+									return NULL;
+								}
+							}
 						}
 					}
 				}
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				/*key_w = eval_is_keyword(aux_p);
-				if(key_w == Keyword::KEYWORD_IN){
-
-
-
-					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[Keyword::KEYWORD_IN].str),line);
-
-					if((aux_p = eval_expression(
-							eval_data
-							,(const char *)aux_p
-							,line
-							,new_scope
-							,&eval_data->current_function->instructions
-					))==NULL){
-						return NULL;
-					}
-
-					// init it and vector/object
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"CREATE ITERATOR TODOOO ");
-					//eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_IT_INI));
-				}
-				else*/{ // expects conditional and post (i.e for(;;) )
+				if(is_for_in){
+					ZS_LOG_INFO("IS FOR IN");
+				}else{
+				  // expects conditional and post (i.e for(;;) )
 					if(*aux_p != ';'){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected ';'");
 					}
@@ -366,7 +593,7 @@ namespace zetscript{
 
 							eval_data->current_function->instructions.push_back(ei_jnt=new EvalInstruction(BYTE_CODE_JNT));
 
-							idx_instruction_for_after_condition=(int)(eval_data->current_function->instructions.size());
+							idx_instruction_for_after_jnz_condition=(int)(eval_data->current_function->instructions.size());
 						}
 					}
 
@@ -392,6 +619,7 @@ namespace zetscript{
 						}
 					}
 				}
+
 
 				if(*aux_p != ')'){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected ')'");
@@ -439,7 +667,7 @@ namespace zetscript{
 
 				// update jnt instruction to jmp after jmp instruction...
 				if(ei_jnt != NULL){ // infinite loop
-					ei_jnt->vm_instruction.value_op2=(eval_data->current_function->instructions.size()-idx_instruction_for_after_condition)+1;
+					ei_jnt->vm_instruction.value_op2=(eval_data->current_function->instructions.size()-idx_instruction_for_after_jnz_condition)+1;
 				}
 
 				// catch all continues and set all jmps after processing block but before post operation...

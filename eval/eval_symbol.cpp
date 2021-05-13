@@ -127,11 +127,13 @@ namespace zetscript{
 						Symbol *vis=NULL;
 
 						// should be an identifier and should be find after eval function or at runtime...
-						check_identifier_name_expression_ok(
+						if(check_identifier_name_expression_ok(
 							eval_data
 							,default_str_value
 							,line
-						);
+						)==FALSE){
+							return NULL;
+						}
 
 						// try to find local or global
 						/*if(scope_info == MAIN_SCOPE(eval_data)){ // symbol in global scope

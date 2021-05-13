@@ -50,6 +50,7 @@ namespace zetscript{
 			, int & line
 			, Scope *scope_info
 			, std::vector<TokenNode> *expression_tokens
+			,TokenNode *last_operator_token_node
 			, uint16_t properties
 			, int n_recursive_level
 		){
@@ -181,7 +182,21 @@ namespace zetscript{
 						,&token_node_symbol
 						,pre_operation
 				)) == NULL){
-					goto error_expression_token_symbol;
+					if(last_operator_token_node->operator_type!=OPERATOR_UNKNOWN){
+						EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
+								eval_data->current_parsing_file
+								,last_accessor_line
+								,"Expected literal or identifier after operator '%s'"
+								,eval_data_operators[last_operator_token_node->operator_type].str
+						);
+					}else{
+						EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
+								eval_data->current_parsing_file
+								,last_accessor_line
+								,"Expected literal or identifier"
+						);
+					}
+
 				}
 
 				if(token_node_symbol.token_type == TokenType::TOKEN_TYPE_IDENTIFIER){

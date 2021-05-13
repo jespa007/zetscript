@@ -32,8 +32,6 @@ namespace zetscript{
 	 * Reserve for N vars. Return base pointer.
 	 */
 
-	//const char * toString(StackElement * index);
-
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
 	bool 			vm_share_pointer(VirtualMachine *vm,ScriptObject *_obj);
 	bool 			vm_create_shared_pointer(VirtualMachine *vm,ScriptObject *_obj);
@@ -57,55 +55,6 @@ namespace zetscript{
 		,const char 	*	file=NULL
 		,int 				line=-1
 	);
-	//std::string  convertStackElementVarTypeToStr(StackElement stk_v)
-
-
-	/*inline bool vm_insert_shared_node							(VirtualMachine		* 	vm,InfoSharedList * list, InfoSharedPointerNode *_node);
-	inline bool vm_deattach_shared_Node							(VirtualMachine		* 	vm,InfoSharedList * list, InfoSharedPointerNode *_node);
-	inline bool vm_decrement_shared_nodes_and_dettach_if_zero	(VirtualMachine		* 	vm,InfoSharedPointerNode *_node, bool & is_dettached);
-	void 		vm_insert_life_time_object						(VirtualMachine 	* 	vm,const char *file, int line, ScriptObject *script_object);
-
-
-	inline ScriptFunction *  vm_find_function(
-		VirtualMachine		* 	vm
-		,ScriptObject *calling_object
-		,ScriptFunction *info_function
-		,Instruction * instruction
-		,bool is_constructor
-		,void *stk_elements_builtin_ptr // can be **stack_element from ScriptObjectObject stk_properties/metamethods or can be *StackElement from global -i.e vm_stack-)...
-		,int stk_elements_builtin_len // length of stk_builtin_elements
-		,const std::string & symbol_to_find
-		,StackElement *stk_arg
-		,unsigned char n_args
-	);
-
-
-	inline bool vm_apply_metamethod_primitive(
-		VirtualMachine		* 	vm
-		,ScriptFunction *info_function
-		,Instruction *instruction
-		,ByteCodeMetamethod op_code_methamethod
-		,StackElement *stk_result_op1
-		,StackElement *stk_result_op2
-		, bool & error
-	);
-
-	inline bool vm_apply_metamethod(
-		 VirtualMachine		* 	vm
-		,ScriptFunction *info_function
-		,Instruction *instruction
-		,ByteCodeMetamethod op_code_methamethod
-		,StackElement *stk_result_op1
-		,StackElement *stk_result_op2
-	);
-
-	//inline StackElement performAddString(StackElement *stk_result_op1,StackElement *stk_result_op2);
-	//inline StackElement performSubString(StackElement *stk_result_op1,StackElement *stk_result_op2);
-
-	void 				vm_do_stack_dump(VirtualMachine		* 	vm);*/
-
-
-
 }
 
 

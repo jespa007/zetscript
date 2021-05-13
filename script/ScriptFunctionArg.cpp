@@ -10,6 +10,14 @@ namespace zetscript{
 		default_var_value=stk_undefined;
 	}
 
+	ScriptFunctionArg::ScriptFunctionArg(std::string _arg_name){
+		idx_type=ZS_IDX_UNDEFINED;
+		arg_name=_arg_name;
+		line=ZS_IDX_UNDEFINED;
+		properties=0;
+		default_var_value=stk_undefined;
+	}
+
 	ScriptFunctionArg::ScriptFunctionArg(int _idx_type, std::string _arg_name){
 		idx_type=_idx_type;
 		arg_name=_arg_name;

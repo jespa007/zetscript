@@ -1,3 +1,6 @@
+
+
+
 #define IDX_CALL_STACK_MAIN 1
 
 #define PUSH_NULL \
@@ -83,8 +86,65 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 	}\
 	--data->vm_current_scope;\
 }
-	
 
+#define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return, n_return,with_share)\
+	for(int i=0; i < n_return; i++){\
+		StackElement *stk_ret = stk_return+i;\
+		if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){\
+			ScriptObject *sv=(ScriptObject *)stk_ret->value;\
+			if(sv->shared_pointer == NULL){\
+				if(!vm_create_shared_pointer(vm,sv)){\
+					goto lbl_exit_function;\
+				}\
+				if(with_share==true){\
+					if(!vm_share_pointer(vm,sv)){\
+						goto lbl_exit_function;\
+					}\
+				}\
+			}\
+		}\
+	}
+
+	
+#define VM_INNER_ONLY_RETURN_CALL(so,sf,name,reset)\
+{\
+StackElement *stk_def_afun_start=data->stk_vm_current;\
+int n_returned_args_afun=0;\
+if(((ScriptFunction *)sf)->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){\
+	vm_call_function_native(\
+			vm\
+			,so\
+			,((ScriptFunction *)sf)\
+			,stk_def_afun_start\
+			,0\
+			,calling_function\
+			,instruction\
+	);\
+}else{\
+	vm_call_function_script(\
+		vm\
+		,so\
+		,((ScriptFunction *)sf)\
+		,stk_def_afun_start\
+	);\
+}\
+if(data->vm_error == true){ \
+    data->vm_error_callstack_str+=zs_strutils::format(\
+        "\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */ \
+        , name \
+        ,SFI_GET_FILE(calling_function,instruction)\
+        ,SFI_GET_LINE(calling_function,instruction)\
+    );\
+    goto lbl_exit_function;\
+}\
+n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;\
+/* we share pointer (true second arg) to not remove on pop in calling return */\
+CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) \
+/* reset stack */\
+if(reset){\
+	data->stk_vm_current=stk_def_afun_start; \
+}\
+}
 
 namespace zetscript{
 
@@ -169,12 +229,17 @@ namespace zetscript{
 		}
 	};
 
+	//-----------------------------------------
+	//
+	// PROTOTIPES
+	//
+
 	void vm_call_function_script(
 				VirtualMachine			* vm,
 				ScriptObject			* this_object,
 				ScriptFunction 			* calling_function,
 				StackElement 		  	* _stk_local_var,
-				unsigned char 			n_args
+				unsigned char 			n_args=0
 	);
 
 	void  vm_call_function_native(
@@ -891,4 +956,90 @@ apply_metamethod_error:
 
 		return false;
 	}
+
+
+	inline void vm_iterator_init(VirtualMachine *vm
+			 ,ScriptFunction *calling_function
+			,Instruction *instruction
+			,StackElement *stk_result_op1
+			,StackElement *stk_result_op2){
+
+		// stk_op1 expects to be stk
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		ScriptFunction *sf_iter=NULL;
+		StackElement *stk_sf_iter;
+
+		// stk_op2 expects to be obj with container
+
+		if((stk_result_op2->properties & STK_PROPERTY_PTR_STK) == false){
+			VM_ERROR("internal: Expected stk");
+			return;
+		}
+
+		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
+			VM_ERROR("internal: Expected object");
+			return;
+		}
+
+		stk_result_op2 = (StackElement *)(stk_result_op2->value);
+		ScriptObject *obj=(ScriptObject *)stk_result_op1->value;
+
+		stk_sf_iter=obj->getProperty("iter",NULL);
+
+		if(stk_sf_iter != NULL){
+
+			if(stk_sf_iter->properties & (STK_PROPERTY_FUNCTION | STK_PROPERTY_MEMBER_FUNCTION)){
+				StackMemberFunction *smf=(StackMemberFunction *)stk_sf_iter->value;
+
+				VM_INNER_ONLY_RETURN_CALL(
+						smf->so_object
+						,smf->so_function
+						,"iter"
+						,true
+				);
+
+				// ok stk_vm_current holds the iter object
+				if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
+					VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'",data->stk_vm_current->toString().c_str());
+					return;
+				}
+
+				obj=(ScriptObject *)data->stk_vm_current->value;
+
+				// check all functions...
+				if((obj->getProperty("get",NULL))==NULL){
+					VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getClassName().c_str());
+					return;
+				}
+
+				if((obj->getProperty("_next",NULL))==NULL){
+					VM_ERROR("IteratorObject '%s' does not implement '_next' function",obj->getClassName().c_str());
+					return;
+				}
+
+				if((obj->getProperty("end",NULL))==NULL){
+					VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getClassName().c_str());
+					return;
+				}
+
+				// everything allright store and share pointer
+				*stk_result_op2=*data->stk_vm_current;
+
+				//vm_share_pointer(vm,obj);
+
+			}else{
+				VM_ERROR("Symbol 'iter' is not a function",obj->getClassName().c_str());
+			}
+		}
+		else{
+			VM_ERROR("Object not implements 'iter' ",obj->getClassName().c_str());
+		}
+
+		// get iterator...
+lbl_exit_function:
+
+		return;
+
+	}
 }
+

@@ -79,8 +79,7 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:		return "PUSH_ATTR"; // New object (CREATE)
 			case BYTE_CODE_NEW_OBJECT:				return "NEW_OBJ"; // New object (CREATE)
 			case BYTE_CODE_NEW_STRING:				return "NEW_STR";
-			case BYTE_CODE_IT_END: 					return "IT_END"; // BYTE_CODE_IT_CHK_END
-			case BYTE_CODE_IT_NEXT:					return "IT_NEXT"; // BYTE_CODE_SET_AND_NEXT
+			case BYTE_CODE_IT_INIT: 				return "IT_INIT"; // BYTE_CODE_IT_CHK_END
 			case BYTE_CODE_STORE_CONST:				return "STORE_CONST"; // BYTE_CODE_STORE_CONST
 			case BYTE_CODE_PRE_INC:					return "PRE_INC"; // ++i
 			case BYTE_CODE_PRE_DEC:					return "PRE_DEC"; // --i
@@ -135,12 +134,12 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_GLOBAL:			return "LOAD_GLOBAL"; // load type var
 			case BYTE_CODE_LOAD_LOCAL:			return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_THIS:			return "LOAD_THIS"; // load type var
-			case BYTE_CODE_LOAD_MEMBER_VAR:			return "LOAD_MEMBER"; // load type var
+			case BYTE_CODE_LOAD_MEMBER_VAR:		return "LOAD_MEMBER"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      	return "LOAD_???"; // load to find global
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:	return "LOAD_EVEC"; // load element vector
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:	return "LOAD_EOBJ"; // load element object
 			case BYTE_CODE_LOAD_FUNCTION:		return "LOAD_FUNCT"; // load function
-			case BYTE_CODE_LOAD_NULL:		return "LOAD_NULL"; // load undfined
+			case BYTE_CODE_LOAD_NULL:			return "LOAD_NULL"; // load undfined
 			case BYTE_CODE_LOAD_STACK_ELEMENT:	return "LOAD_STK"; // load stack element
 			case BYTE_CODE_LOAD_STRING:			return "LOAD_STR"; // load string
 			case BYTE_CODE_LOAD_FLOAT:			return "LOAD_FLT"; // load float
@@ -161,8 +160,7 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_SCOPE: 			return "PUSH_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:	return "PUSH_ATTR"; // New object (CREATE)
 			case BYTE_CODE_NEW_OBJECT:			return "NEW_OBJ"; // New object (CREATE)
-			case BYTE_CODE_IT_END: 				return "IT_END"; // BYTE_CODE_IT_CHK_END
-			case BYTE_CODE_IT_NEXT:				return "IT_NEXT"; // BYTE_CODE_SET_AND_NEXT
+			case BYTE_CODE_IT_INIT: 			return "IT_INIT"; // BYTE_CODE_IT_CHK_END
 			case BYTE_CODE_STORE_CONST:			return "STORE_CONST"; // BYTE_CODE_STORE_CONST
 			case BYTE_CODE_PRE_INC:				return "PRE_INC"; // ++i
 			case BYTE_CODE_PRE_DEC:				return "PRE_DEC"; // --i

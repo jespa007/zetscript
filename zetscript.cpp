@@ -61,12 +61,17 @@ namespace zetscript{
 		registerFunction("ModuleConsole_error",ModuleConsoleWrap_error);
 		registerFunction("ModuleConsole_errorln",ModuleConsoleWrap_errorln);
 
-
 		// System mod
 		cl=script_class_factory->registerClass("System");
 		cl->registerNativeMemberFunctionStatic("clock",ModuleSystemWrap_clock);
 		cl->registerNativeMemberFunctionStatic("eval",ModuleSystemWrap_eval);
 		cl->registerNativeMemberFunctionStatic("assert",ModuleSystemWrap_assert);
+
+		// Json mod
+		cl=script_class_factory->registerClass("Json");
+		cl->registerNativeMemberFunctionStatic("ModuleJson_serialize",ModuleJsonWrap_serialize);
+		cl->registerNativeMemberFunctionStatic("ModuleJson_deserialize",ModuleJsonWrap_deserialize);
+
 
 		// Custom user function or classes
 		eval(
@@ -98,6 +103,7 @@ namespace zetscript{
 				"static System::getZetScript(){"
 				"	return ptrToZetScriptPtr(0x%x);" // ptrToZetScript it gets current this
 				"}"
+
 			,
 			(void *)this
 			)
@@ -313,9 +319,15 @@ namespace zetscript{
 		return NULL;
 	}
 
-	void ZetScript::evalInternal(const char * code, unsigned short options, const char * filename)  {
+	StackElement ZetScript::evalInternal(const char * code, unsigned short options, const char * filename)  {
+		ScriptFunction *sf_main=MAIN_FUNCTION(this);
+		Scope *sc_main=MAIN_SCOPE(this);
+		StackElement stk_ret;
 
-		eval_parse_and_compile(this,code,filename);
+		stk_ret.setUndefined();
+
+
+		eval_parse_and_compile(this,sf_main,code,filename);
 
 		if(options & EvalOption::EVAL_OPTION_SHOW_USER_CODE){
 			printGeneratedCode(options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_CODE);
@@ -323,22 +335,27 @@ namespace zetscript{
 
 		if(options & EvalOption::EVAL_OPTION_EXECUTE){
 			// the first code to execute is the main function that in fact is a special member function inside our main class
-			vm_execute(
+			stk_ret=vm_execute(
 					virtual_machine
 					,NULL
 					,script_class_factory->getMainFunction()
 			);
 		}
+
+		return stk_ret;
 	}
 
-	void ZetScript::eval(const std::string & code, unsigned short options, const char * filename)  {
+	StackElement ZetScript::eval(const std::string & code, unsigned short options, const char * filename)  {
 
-		evalInternal(code.c_str(), options, filename);
+		return evalInternal(code.c_str(), options, filename);
 	}
 
-	void ZetScript::evalFile(const std::string &  filename, unsigned short options){
+	StackElement ZetScript::evalFile(const std::string &  filename, unsigned short options){
 		//int idx_file=-1;
+		StackElement stk_ret;
 		char *buf_tmp=NULL;
+
+		stk_ret.setUndefined();
 
 		if(!isFilenameAlreadyParsed(filename)){
 			ParsedFile ps;
@@ -351,7 +368,7 @@ namespace zetscript{
 				bool error=false;
 				std::string error_str;
 				try{
-					evalInternal(buf_tmp,options,filename.c_str());
+					stk_ret=evalInternal(buf_tmp,options,filename.c_str());
 				}
 				catch(std::exception & e){
 					error=true;
@@ -376,6 +393,8 @@ namespace zetscript{
 		if(buf_tmp!=NULL){
 			free(buf_tmp);
 		}
+
+		return stk_ret;
 	}
 
 	void ZetScript::getScriptObject(const std::string &function_access,ScriptObjectClass **calling_obj,ScriptFunction **fun_obj ){

@@ -209,6 +209,7 @@ ELSE()
  		util/zs_strutils.cpp
  		util/zs_vector.cpp
  		util/zs_map.cpp
+ 		util/zs_uuid.cpp
  		
  		# Modules
  		modules/ModuleMathWrap.cpp
@@ -301,30 +302,44 @@ ELSE()
  		util/zs_strutils.h
  		util/zs_vector.h
  		util/zs_map.h
+ 		util/zs_uuid.h
+ 		util/zs_map_iterator.h
  		
  		# extra
-		modules/ModuleFloat.h
-		modules/ModuleInteger.h
-		modules/ModuleMath.h
-		modules/StringMod.h
-		modules/ModuleSystem.h
+		modules/ModuleMathWrap.h
+		modules/ModuleSystemWrap.h
+		modules/ModuleConsoleWrap.h
+		modules/ModuleJsonDeserializeWrap.h
+		modules/ModuleJsonSerializeWrap.h
 		
 		# script
 		script/ScriptClass.h
+		script/ScriptClass.tcc
 		script/ScriptClassFactory.h
 		script/ScriptClassFactory.tcc
 		script/ScriptFunction.h
+		script/ScriptFunction.tcc
 		script/ScriptFunctionArg.h
 		script/ScriptFunctionFactory.h
+		script/ScriptFunctionTraits.h
 		script/ScriptObject.h
 		script/ScriptObjectObject.h
+		script/ScriptObjectObjectWrap.h
 		script/ScriptObjectObjectIterator.h
+		script/ScriptObjectObjectIteratorwrap.h
 		script/ScriptObjectClass.h
 		script/ScriptObjectString.h
+		script/ScriptObjectStringWrap.h
 		script/ScriptObjectStringIterator.h
+		script/ScriptObjectStringIteratorWrap.h
 		script/ScriptObjectVarRef.h
 		script/ScriptObjectVector.h
+		script/ScriptObjectVector.tcc
+		script/ScriptObjectVectorwrap.h
 		script/ScriptObjectVectorIterator.h
+		script/ScriptObjectVectorIteratorWrap.h
+		script/ScriptObjectDateTime.h
+		script/ScriptObjectDateTimeWrap.h
 		
 		# function proxy
 		function_proxy/FunctionProxyFactory.h

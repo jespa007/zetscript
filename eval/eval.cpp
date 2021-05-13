@@ -28,14 +28,19 @@
 
 namespace zetscript{
 
-	void eval_parse_and_compile(ZetScript *zs,const char * str, const char *  _filename, int _line){
+	void eval_parse_and_compile(ZetScript *zs
+			, ScriptFunction *sf
+			,const char * str
+			, const char *  _filename
+			, int _line
+		){
 		EvalData *eval_data=new EvalData(zs);
 		char *aux_p=NULL;
 		int line =_line;
 		bool error;
 		std::string error_str;
 		eval_data->current_parsing_file=_filename;
-		eval_push_function(eval_data,MAIN_FUNCTION(eval_data));
+		eval_push_function(eval_data,sf);
 		aux_p=eval_parse_and_compile_recursive(eval_data,str,line,MAIN_SCOPE(eval_data));
 		if(aux_p!=NULL){
 			if(*aux_p=='}'){
@@ -44,7 +49,7 @@ namespace zetscript{
 			}
 		}
 
-		eval_process_current_function(eval_data);
+		eval_pop_and_compile_function(eval_data);
 
 		error=eval_data->error;
 		error_str=eval_data->error_str;
@@ -54,8 +59,20 @@ namespace zetscript{
 		if(error){
 			THROW_EXCEPTION(error_str);
 		}
-
 	}
+
+/*	void eval_parse_and_compile_anonymous(ZetScript *zs,const char * str, const char *  _filename, int _line){
+		ScriptFunction *sf_main=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
+		Scope *sc_main=zs->getScopeFactory()->getMainScope();
+		// 1. create a function from main
+		eval_parse_and_compile(zs,str,_filename,_line,NULL,sc_main);
+	}
+
+	void eval_parse_and_compile_main(ZetScript *zs,const char * str, const char *  _filename, int _line){
+		ScriptFunction *sf_main=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
+		Scope *sc_main=zs->getScopeFactory()->getMainScope();
+		eval_parse_and_compile(zs,str,_filename,_line,sf_main,sc_main);
+	}*/
 
 	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_scope_function){
 		Scope *new_scope = NEW_SCOPE(eval_data,eval_data->current_function->script_function->idx_script_function,scope_parent);
@@ -300,7 +317,7 @@ namespace zetscript{
 
 	}
 
-	int eval_process_current_function(EvalData *eval_data){
+	int eval_pop_and_compile_function(EvalData *eval_data){
 
 		std::string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;

@@ -2,6 +2,7 @@
 
 namespace zetscript{
 
+	#define EVAL_KEYWORD_VAR_ALLOW_IN 0x1
 
 	static int n_anonymous_function=0;
 
@@ -144,7 +145,7 @@ namespace zetscript{
 	//  VAR/FUNCTION
 	//
 
-	char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
+	char * eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, uint16_t properties){
 		// PRE: if ifc != NULL will accept expression, if NULL it means that no expression is allowed and it will add into scriptclass
 		// check for keyword ...
 		char *aux_p = (char *)s;
@@ -351,7 +352,9 @@ namespace zetscript{
 
 			// after variable declaration is expected to have any keyword but is not valid any operator,
 			if((ending_op=is_operator(aux_p))!=Operator::OPERATOR_UNKNOWN){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected '%s' within variable initialization",eval_data_operators[ending_op].str)
+				if((properties & EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR) && ending_op != Operator::OPERATOR_IN){
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected '%s' within variable initialization",eval_data_operators[ending_op].str)
+				}
 			}
 
 			return aux_p;
@@ -724,7 +727,7 @@ error_eval_keyword_var:
 
 			//
 			//eval_check_scope(eval_data,scope_function);
-			eval_process_current_function(eval_data);
+			eval_pop_and_compile_function(eval_data);
 
 			return aux_p;
 		}

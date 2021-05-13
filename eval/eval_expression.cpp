@@ -34,7 +34,7 @@ namespace zetscript{
 		//int last_line_ok=0;
 		std::string identifier_value="";
 		Operator operator_type = Operator::OPERATOR_UNKNOWN;
-		TokenNode 	operator_token_node;
+		TokenNode 	operator_token_node, last_operator_token_node;
 
 
 		int last_line_ok;
@@ -70,6 +70,7 @@ namespace zetscript{
 						,line
 						,scope_info
 						,&expression_tokens
+						,&last_operator_token_node
 						,properties
 						,n_recursive_level))==NULL){
 					goto eval_error_sub_expression;
@@ -92,6 +93,7 @@ namespace zetscript{
 				|| operator_type==Operator::OPERATOR_TERNARY_IF
 				|| operator_type==Operator::OPERATOR_TERNARY_ELSE
 				|| ((operator_type==Operator::OPERATOR_ASSIGN) && (properties & EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR))
+				|| ((operator_type==Operator::OPERATOR_IN) && (properties & EVAL_EXPRESSION_FOR_IN_VARIABLES))
 				|| ( new_line_break && (operator_type==Operator::OPERATOR_UNKNOWN ))){ // if not operator and carry return found is behaves as end expression
 					break;
 				}
@@ -105,6 +107,8 @@ namespace zetscript{
 				operator_token_node.line=line;
 				operator_token_node.operator_type=operator_type;
 				operator_token_node.token_type=TokenType::TOKEN_TYPE_OPERATOR;
+
+				last_operator_token_node=operator_token_node;
 
 				// push operator token
 				expression_tokens.push_back(operator_token_node);
@@ -202,6 +206,7 @@ eval_error_sub_expression:
 			, uint16_t properties
 
 		){
+		uint16_t additional_properties_first_recursive=properties&EVAL_EXPRESSION_FOR_IN_VARIABLES?EVAL_EXPRESSION_FOR_IN_VARIABLES:0;
 		std::vector<EvalInstruction *>  ternary_end_jmp;
 		std::vector<std::vector<EvalInstruction *> *> 	left_sub_expressions; // we will write all instructions here as aux, and later will assign to dst_instructions
 		std::vector<std::vector<EvalInstruction *>*> 	right_sub_expressions; // right/left assigment
@@ -251,9 +256,14 @@ eval_error_sub_expression:
 					, scope_info
 					, expression // it's saving to instructions...
 					,{}
-					,properties | (idx==0?EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR:0)
+					,properties | (idx==0?EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR|additional_properties_first_recursive:0)
 				))==NULL){
 					goto eval_error_expression_delete_left_right_sub_expressions;
+				}
+
+				// special case to break
+				if((additional_properties_first_recursive & EVAL_EXPRESSION_FOR_IN_VARIABLES) && (is_operator(aux_p) == OPERATOR_IN)){
+					break;
 				}
 
 				only_load_left_expression&=eval_check_all_instruction_only_load_op(left_sub_expressions[0]);
@@ -337,11 +347,24 @@ eval_error_sub_expression:
 					(*it)->begin(),
 					(*it)->end()
 				);
+
+				// special case for catching vars for-in...
+				if(properties & EVAL_EXPRESSION_FOR_IN_VARIABLES){
+					dst_instructions->push_back(
+						new EvalInstruction(
+								BYTE_CODE_RESET_STACK
+						)
+					);
+				}
 			}
 		}
 
 
-		if(properties & (EVAL_EXPRESSION_ON_MAIN_BLOCK)){ //
+		if(	((properties & (EVAL_EXPRESSION_ON_MAIN_BLOCK))==true)
+						&&
+			// special case for catching vars for-in...
+			((properties & (EVAL_EXPRESSION_FOR_IN_VARIABLES))==false)
+		){ //
 			dst_instructions->push_back(
 				new EvalInstruction(
 						BYTE_CODE_RESET_STACK

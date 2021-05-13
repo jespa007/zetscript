@@ -86,16 +86,16 @@ namespace zetscript{
 			StackElement default_value=stk_undefined;
 
 			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
-				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
-						,i
+				THROW_RUNTIME_ERROR("Argument %i type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
+						,i+1
 						,zs_rtti::demangle(str_arg[i]).c_str()
 						,function_name
 						,zs_rtti::demangle(str_arg[i]).c_str());
 			}
 
 			if(idx_type ==ZS_IDX_UNDEFINED){
-				THROW_RUNTIME_ERROR("Argument (%i) type \"%s\" for function \"%s\" not registered"
-						,i
+				THROW_RUNTIME_ERROR("Argument %i type \"%s\" for function \"%s\" not registered"
+						,i+1
 						,zs_rtti::demangle(str_arg[i]).c_str()
 						,function_name);
 			}

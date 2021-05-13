@@ -299,7 +299,12 @@ namespace zetscript{
 		return result_instruction;
 	}
 
-	EvalInstruction *eval_expression_optimize(EvalData *eval_data,Scope *scope_info,TokenNode   *token_operation, std::vector<EvalInstruction *> *instructions){
+	EvalInstruction *eval_expression_optimize(
+			EvalData *eval_data
+			,Scope *scope_info
+			,TokenNode   *token_operation
+			, std::vector<EvalInstruction *> *instructions
+	){
 		size_t size_instructions=instructions->size();
 		EvalInstruction *instruction=NULL;
 		bool is_i1_K=false;

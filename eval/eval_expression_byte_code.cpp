@@ -31,6 +31,7 @@ namespace zetscript{
 			, std::vector<EvalInstruction *> *instructions
 			, int idx_start
 			, int idx_end
+			, uint16_t properties
 	){
 		EvalInstruction *instruction=NULL;
 		int 			idx_split=-1;
@@ -88,6 +89,7 @@ namespace zetscript{
 			,instructions
 			,idx_start
 			,idx_split-1
+			,properties
 		);
 
 		// perform right side op...
@@ -98,18 +100,20 @@ namespace zetscript{
 			,instructions
 			,idx_split+1
 			,idx_end
+			,properties
 		);
 
 		//------------------------------------------------------------------------------------
 		// OPTIMIZATION PART: Try to simplify 2 ops into one op
 		//byte_code=convert_operator_to_byte_code(split_node->operator_type);
-
-		if((instruction=eval_expression_optimize(eval_data,scope,split_node, instructions))==NULL){ // cannot be simplified...
-		// push operator byte code...
+		if((instruction=eval_expression_optimize(eval_data,scope,split_node, instructions))==NULL){
+		 	// cannot be simplified...
+			// push operator byte code...
 			instruction=new EvalInstruction(
-					eval_operator_to_byte_code(split_node->operator_type)
+				eval_operator_to_byte_code(split_node->operator_type)
 			);
 		}
+
 
 		instructions->push_back(
 				instruction
@@ -228,6 +232,7 @@ namespace zetscript{
 				, dst_instructions
 				, idx_start
 				, idx_end
+				, properties
 			);
 		}catch(std::exception & error){
 			EVAL_ERROR_BYTE_CODE(error.what());

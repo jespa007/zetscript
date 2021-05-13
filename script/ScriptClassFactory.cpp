@@ -241,7 +241,7 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// DateTime
-		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowSf",ScriptObjectDateTimeWrap_now);
+		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("now",ScriptObjectDateTimeWrap_now);
 
 
 

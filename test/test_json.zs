@@ -10,7 +10,7 @@ var obj=Json::deserialize(
 	        "\"c++\","+
 	        "\"ruby\""+
 	      "],"+
-	    "// Tab indent size"+"+
+	    "// Tab indent size"+
 	    "\"indent\" : { \"length\" : 3, \"use_space\": true },"+
 	    "// set of languages"+
 	    "\"languages\":[{"+
@@ -57,7 +57,7 @@ var obj=Json::deserialize(
 				"]"+
 			"}"+
 		"}"+
-	"}"+
+	"}"
 );
 
 Console::outln("result:"+Json::serialize(obj))

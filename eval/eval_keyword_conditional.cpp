@@ -184,17 +184,19 @@ namespace zetscript{
 								}
 
 								// capture constant value (should be a constant -not a identifier in any case-)
-								aux_p=eval_symbol(
+								if((aux_p=eval_symbol(
 									eval_data
 									,aux_p
 									,line
 									,scope_info
 									,&token_symbol
 									,pre_operation
-								);
+								))==NULL){
+									EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line," expected literal after 'case'");
+								}
 
 								if(token_symbol.token_type != TOKEN_TYPE_LITERAL){
-									EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"'case' only accepts literals");
+									EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line," expected literal after 'case'");
 								}
 
 								// insert a pair of instructions...

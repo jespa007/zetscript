@@ -71,7 +71,7 @@
 #include "util/zs_vector.h"
 #include "util/zs_map_iterator.h"
 #include "util/zs_map.h"
-
+#include "util/zs_uuid.h"
 
 
 #include "exception.h"
@@ -184,8 +184,8 @@ namespace zetscript{
 
 		void	setCallbackOnError(PrintFunctionCallback _fun);
 
-		void 			eval(const std::string & expresion,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE, const char * filename="");
-		void 			evalFile(const std::string & filename,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE);
+		StackElement	eval(const std::string & expresion,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE, const char * filename="");
+		StackElement	evalFile(const std::string & filename,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE);
 		zs_int * 		evalIntValue(const std::string & str_to_eval);
 		bool * 			evalBoolValue(const std::string & str_to_eval);
 		zs_float * 		evalFloatValue(const std::string & str_to_eval);
@@ -518,7 +518,7 @@ namespace zetscript{
 		//void printGeneratedCode(ScriptFunction *sfo);
 
 		//----
-		void evalInternal(const char * code, unsigned short options=EVAL_OPTION_EXECUTE, const char * filename=NULL);
+		StackElement evalInternal(const char * code, unsigned short options=EVAL_OPTION_EXECUTE, const char * filename=NULL);
 
 		// FUNCTIONS
 		static 									void  print(const char *s);

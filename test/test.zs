@@ -10,16 +10,30 @@ Console::outln("k:{0} v:{1}",k,v);*/
 function f1()
 {
 	
-	
-	if(true){
+	Console::outln("dadasda");
+	/*if(true){
 		var k,v
 	}
 	
-	var k,v
+	var k,v*/
 }
 
 
+function f1(){
+	Console::outln("dadasda1");
+	
+	function f2(){
+		
+	}
+	
+	f2();
+	
+	
+}
 
+var f1=0;
+
+f1();
 
 
 

@@ -39,7 +39,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	ScriptObjectString * ModuleJsonWrap_serialize(ScriptObjectObject *obj,bool minimized){
+	ScriptObjectString * ModuleJsonWrap_serialize(ScriptObjectObject *obj,bool *minimized){
 		// iterate for all elements in the obj
 		return NULL;
 

@@ -1,42 +1,4 @@
-#define VM_INNER_ONLY_RETURN_CALL(so,sf,name,reset)\
-{\
-StackElement *stk_def_afun_start=data->stk_vm_current;\
-int n_returned_args_afun=0;\
-if(((ScriptFunction *)sf)->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){\
-	vm_call_function_native(\
-			vm\
-			,so\
-			,((ScriptFunction *)sf)\
-			,stk_def_afun_start\
-			,0\
-			,calling_function\
-			,instruction\
-	);\
-}else{\
-	vm_call_function_script(\
-		vm\
-		,so\
-		,((ScriptFunction *)sf)\
-		,stk_def_afun_start\
-	);\
-}\
-if(data->vm_error == true){ \
-    data->vm_error_callstack_str+=zs_strutils::format(\
-        "\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */ \
-        , name \
-        ,SFI_GET_FILE(calling_function,instruction)\
-        ,SFI_GET_LINE(calling_function,instruction)\
-    );\
-    goto lbl_exit_function;\
-}\
-n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;\
-/* we share pointer (true second arg) to not remove on pop in calling return */\
-CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) \
-/* reset stack */\
-if(reset){\
-	data->stk_vm_current=stk_def_afun_start; \
-}\
-}
+
 
 #define PROCESS_MOD_OPERATION \
 	msk_properties=(stk_result_op1->properties<<16)|stk_result_op2->properties;\
@@ -369,23 +331,6 @@ stk_result_op1=--data->stk_vm_current;
 	data->stk_vm_current->properties=STK_PROPERTY_PTR_STK;\
 	data->stk_vm_current++;
 
-#define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return, n_return,with_share)\
-	for(int i=0; i < n_return; i++){\
-		StackElement *stk_ret = stk_return+i;\
-		if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){\
-			ScriptObject *sv=(ScriptObject *)stk_ret->value;\
-			if(sv->shared_pointer == NULL){\
-				if(!vm_create_shared_pointer(vm,sv)){\
-					goto lbl_exit_function;\
-				}\
-				if(with_share==true){\
-					if(!vm_share_pointer(vm,sv)){\
-						goto lbl_exit_function;\
-					}\
-				}\
-			}\
-		}\
-	}
 
 
 
@@ -396,7 +341,7 @@ namespace zetscript{
 			ScriptObject			* this_object,
 			ScriptFunction 			* calling_function,
 			StackElement 		  	* _stk_local_var,
-			unsigned char 			n_args=0
+			unsigned char 			n_args
 	    ){
 
 		VirtualMachineData *data = (VirtualMachineData*)vm->data;
@@ -835,7 +780,6 @@ load_element_object:
 			case BYTE_CODE_STORE_BITWISE_XOR:
 			case BYTE_CODE_STORE_SHL:
 			case BYTE_CODE_STORE_SHR:
-
 				{
 					zs_vector *lst_functions=NULL;
 					ScriptObject *obj_setter=NULL;
@@ -1321,6 +1265,14 @@ load_element_object:
 						*data->stk_vm_current++=*stk_dst;
 					}
 				}
+				continue;
+			 case BYTE_CODE_IT_INIT:
+				POP_TWO;
+				vm_iterator_init(vm
+						,calling_function
+						,instruction
+						,stk_result_op1
+						,stk_result_op2);
 				continue;
 			case BYTE_CODE_EQU:  // ==
 				POP_TWO;
@@ -1888,16 +1840,6 @@ load_element_object:
 					vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 				}
 				continue;
-			 case BYTE_CODE_IT_NEXT:
-				 VM_STOP_EXECUTE("BYTE_CODE_SET_AND_NEXT TODOOOOO!",
-					 SFI_GET_SYMBOL_NAME(calling_function,instruction)
-				);
-				 continue;
-			 case BYTE_CODE_IT_END:
-				 VM_STOP_EXECUTE("BYTE_CODE_IT_CHK_END TODOOOOO!",
-				 SFI_GET_SYMBOL_NAME(calling_function,instruction)
-				);
-				 continue;
 			 case BYTE_CODE_RESET_STACK:
 				 data->stk_vm_current=stk_start;
 				 continue;

@@ -43,11 +43,14 @@ namespace zetscript{
 			case KEYWORD_CLASS:
 				return  eval_keyword_class(eval_data,s,line,scope_info);
 				break;
+			case KEYWORD_VAR:
+				return  eval_keyword_var(eval_data,s,line,scope_info);
+				break;
 			default:
 				if(eval_data_keywords[keyw].eval_fun != NULL){
 					return (*eval_data_keywords[keyw].eval_fun)(eval_data,s,line,scope_info);
 				}else{
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected \"%s\" keyword",eval_data_keywords[keyw].str);
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected '%s' keyword",eval_data_keywords[keyw].str);
 				}
 				break;
 			}

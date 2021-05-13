@@ -56,7 +56,8 @@ namespace zetscript{
 		EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT=0x1<<2, // do not allow a,b,c=0,0,0
 		EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR=0x1<<3, // break when any assign operator (i.e, =, +=, -=, ...) is found
 		EVAL_EXPRESSION_ON_MAIN_BLOCK=0x1<<4,
-		EVAL_EXPRESSION_BREAK_ON_IN_OPERATOR=0x1<<5,
+		EVAL_EXPRESSION_FOR_IN_VARIABLES=0x1<<5,
+		//EVAL_EXPRESSION_NO_OPTIMIZE=0x1<<5
 		//EVAL_EXPRESSION_PROPERTY_SIMPLIFY=0x1<<5 // it will simplify expressions without assignment like that a+1, but keep calling functions but not push return values
 	}EvalExpressionProperty;
 
@@ -545,7 +546,7 @@ namespace zetscript{
 		Keyword kw;
 
 		if((kw=eval_is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected \"%s\" keyword", aux_p);
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected '%s' keyword", aux_p);
 		}
 
 		// avoid special literal words
@@ -553,7 +554,7 @@ namespace zetscript{
 			|| symbol == "false"
 			|| symbol=="null"
 		){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected \"%s\"", aux_p);
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected '%s'", aux_p);
 		}
 
 		// the rest is checked here...
@@ -572,7 +573,7 @@ namespace zetscript{
 				aux_p++;
 			}
 		}else{
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," expected symbol");
+			return FALSE;
 		}
 
 		return TRUE;
@@ -827,8 +828,8 @@ namespace zetscript{
 		// Init keywords...
 
 		eval_data_keywords[KEYWORD_UNKNOWN] = {KEYWORD_UNKNOWN, NULL,NULL};
-		eval_data_keywords[KEYWORD_VAR] = {KEYWORD_VAR,"var",eval_keyword_var};
-		eval_data_keywords[KEYWORD_CONST] = {KEYWORD_CONST,"const",eval_keyword_var};
+		eval_data_keywords[KEYWORD_VAR] = {KEYWORD_VAR,"var",NULL};
+		eval_data_keywords[KEYWORD_CONST] = {KEYWORD_CONST,"const",NULL};
 		eval_data_keywords[KEYWORD_STATIC] = {KEYWORD_STATIC,"static",NULL};
 		eval_data_keywords[KEYWORD_IF] = {KEYWORD_IF,"if",eval_keyword_if_else};
 		eval_data_keywords[KEYWORD_ELSE] = {KEYWORD_ELSE,"else",NULL};
