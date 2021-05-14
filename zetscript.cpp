@@ -64,13 +64,14 @@ namespace zetscript{
 		// System mod
 		cl=script_class_factory->registerClass("System");
 		cl->registerNativeMemberFunctionStatic("clock",ModuleSystemWrap_clock);
-		cl->registerNativeMemberFunctionStatic("eval",ModuleSystemWrap_eval);
-		cl->registerNativeMemberFunctionStatic("assert",ModuleSystemWrap_assert);
+		cl->registerNativeMemberFunctionStatic("ModuleSystemWrap_eval",ModuleSystemWrap_eval);
+		cl->registerNativeMemberFunctionStatic("ModuleSystem_assert",ModuleSystemWrap_assert);
 
 		// Json mod
 		cl=script_class_factory->registerClass("Json");
-		cl->registerNativeMemberFunctionStatic("ModuleJson_serialize",ModuleJsonWrap_serialize);
-		cl->registerNativeMemberFunctionStatic("ModuleJson_deserialize",ModuleJsonWrap_deserialize);
+		cl->registerNativeMemberFunctionStatic("serialize",static_cast<ScriptObjectString * (*)(ScriptObjectObject *)>(ModuleJsonWrap_serialize));
+		cl->registerNativeMemberFunctionStatic("serialize",static_cast<ScriptObjectString * (*)(ScriptObjectObject *, bool *)>(ModuleJsonWrap_serialize));
+		cl->registerNativeMemberFunctionStatic("deserialize",ModuleJsonWrap_deserialize);
 
 
 		// Custom user function or classes
@@ -99,6 +100,9 @@ namespace zetscript{
 				// System
 				"static System::assert(check,s,...args){"
 				"	ModuleSystem_assert(System::getZetScript(),check,s,args)"
+				"}"
+				"static System::eval(s,params){"
+				"	ModuleSystem_eval(System::getZetScript(),s,params)"
 				"}"
 				"static System::getZetScript(){"
 				"	return ptrToZetScriptPtr(0x%x);" // ptrToZetScript it gets current this

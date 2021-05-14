@@ -38,7 +38,7 @@ namespace zetscript{
 				 case IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C:
 				 case IDX_BUILTIN_TYPE_STRING_PTR_C:
 
-					 if(ptr_var==0) return stk_result;
+					 if(ptr_var!=0) return stk_result;
 
 					 so=ZS_NEW_OBJECT_STRING(this);
 					 if(idx_builtin_type_var==IDX_BUILTIN_TYPE_STRING_PTR_C){
@@ -58,11 +58,12 @@ namespace zetscript{
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR:
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR:
-
-				     stk_result = {
-				    		 (void *)ptr_var
-							 ,STK_PROPERTY_SCRIPT_OBJECT
+					 if(ptr_var==0) return stk_result;
+					stk_result = {
+						 (void *)ptr_var
+						 ,STK_PROPERTY_SCRIPT_OBJECT
 					 };
+
 					 break;
 				 default:
 					 //if(ptr_var==0) return stk_result;
@@ -146,24 +147,7 @@ namespace zetscript{
 					break;
 				default: // script variable by default ...
 
-					if(STK_IS_SCRIPT_OBJECT_STRING(stack_element)){ // string
-						if(stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
-							error= "internal error var_ref is NULL";
-							return false;
-						}
-
-						so=(ScriptObjectString *)stack_element->value;
-
-						if(idx_builtin_type == IDX_BUILTIN_TYPE_STRING_PTR_C){
-							val_ret=(zs_int)(so->value);
-						}else if (idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
-							val_ret=(zs_int)(((std::string *)(so->value))->c_str());
-						}else{
-							error= "cannot convert \""+zs_rtti::demangle((k_str_string_type_ptr))+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
-							return false;
-						}
-					}else{ // object
-
+					if(stack_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						script_object=(ScriptObject *)stack_element->value;
 						ScriptClass *c_class=NULL;
 						val_ret=(zs_int)script_object;;
@@ -174,25 +158,26 @@ namespace zetscript{
 						}
 
 						if(idx_builtin_type!=script_object->idx_script_class){
-							if(script_object->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
 
-								if(idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
-									val_ret=(zs_int)((ScriptObjectString *)script_object)->toString().c_str();
-								}else if(idx_builtin_type == IDX_BUILTIN_TYPE_STRING_PTR_C){
-									val_ret=(zs_int)((ScriptObjectString *)script_object)->value;
-								}else{ // cannot convert string object to c
+							if(script_object->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){ // string
+								if(stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
+									error= "internal error var_ref is NULL";
+									return false;
+								}
 
+								if(idx_builtin_type == IDX_BUILTIN_TYPE_STRING_PTR_C){
+									val_ret=(zs_int)(((ScriptObjectString *)script_object)->value);
+								}else if (idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
+									val_ret=(zs_int)(((std::string *)(((ScriptObjectString *)script_object)))->c_str());
+								}else{
+									error= "cannot convert \""+zs_rtti::demangle((k_str_string_type_ptr))+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
+									return false;
 								}
 							}else if(script_object->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
 								ScriptObjectClass *script_object_class = (ScriptObjectClass *)script_object;
 								c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
 
 								if(c_class != NULL){
-									//std::string error_cast;
-									/*if(c_class->idx_class==idx_builtin_type){
-										val_ret=(zs_int)script_object_class->getNativeObject();
-									}
-									else */
 									if((val_ret=script_class_factory->doCast((zs_int)script_object_class->getNativeObject(),c_class->idx_class,idx_builtin_type))==0){//c_class->idx_class==idx_builtin_type){
 										error = "cannot convert \""+zs_rtti::demangle(script_object_class->getNativePointerClassName())+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
 										return false;
@@ -207,6 +192,9 @@ namespace zetscript{
 						}else{ // get native object...
 							val_ret=(zs_int)script_object->getNativeObject();
 						}
+					}else{
+						error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+						return false;
 					}
 					break;
 				}

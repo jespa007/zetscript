@@ -393,14 +393,41 @@ namespace zetscript{
 		return false;
 	}
 
+	typedef enum {
+		FIND_FUNCTION_ELEMENT_LIST_TYPE_STK_GLOBAL=0,
+		FIND_FUNCTION_ELEMENT_LIST_TYPE_STK_MEMBER,
+		FIND_FUNCTION_ELEMENT_LIST_TYPE_FUNCTION
+
+	}StkListSymbolType;
+
+#define EXTRACT_FUNCTION_INFO\
+	if(class_obj!=NULL){ /* get elements from class */ \
+		Symbol *symbol = (Symbol *)(((zs_int *)stk_elements_builtin_ptr)[i]);\
+		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
+			irfs = (ScriptFunction *)symbol->ref_ptr;\
+		}\
+	}else{ \
+		StackElement *stk_element=&((StackElement *)stk_elements_builtin_ptr)[i]; \
+		if(stk_element->properties & STK_PROPERTY_FUNCTION){\
+			if(stk_element->properties & STK_PROPERTY_MEMBER_FUNCTION ){\
+				StackMemberFunction *fm=(StackMemberFunction *)stk_element->value;\
+				irfs=fm->so_function;\
+				this_as_first_parameter=1;\
+			}else{\
+				irfs = (ScriptFunction *)stk_element->value;\
+			}\
+		}\
+	}\
+	if(irfs==NULL) continue;
+
 	inline ScriptFunction * vm_find_function(
 			VirtualMachine *vm
-			,ScriptObject *calling_object
+			,ScriptClass *class_obj // if NULL is MainClass
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
 			,bool is_constructor
-			,void *stk_elements_builtin_ptr // vector of properties
-			,int stk_elements_builtin_len // vector of properties
+			//,void *stk_elements_builtin_ptr // vector of properties
+			//,int stk_elements_builtin_len // vector of properties
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
@@ -410,31 +437,23 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
+
+		void *stk_elements_builtin_ptr= data->vm_stack;// vector of properties
+		int stk_elements_builtin_len=  data->main_function_object->registered_symbols->count;// vector of properties
+
+		if(class_obj != NULL){
+			stk_elements_builtin_ptr=class_obj->symbol_members->items;
+			stk_elements_builtin_len=class_obj->symbol_members->count;
+
+		}
 		bool stk_element_are_vector_element_ptr=stk_elements_builtin_ptr!=data->vm_stack;
 
 		for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-			StackElement *stk_element=NULL;
 			ScriptFunction *irfs = NULL;
 			int this_as_first_parameter=0;
 
-			if(stk_element_are_vector_element_ptr){
-				stk_element=(StackElement *)(((zs_int *)stk_elements_builtin_ptr)[i]);//(StackElement *)list_symbols->items[i];
-			}else{
-				stk_element=&((StackElement *)stk_elements_builtin_ptr)[i];
-			}
+			EXTRACT_FUNCTION_INFO
 
-			if((stk_element->properties & STK_PROPERTY_FUNCTION) == 0){
-				continue;
-			}
-
-
-			if(stk_element->properties & STK_PROPERTY_MEMBER_FUNCTION ){
-				StackMemberFunction *fm=(StackMemberFunction *)stk_element->value;
-				irfs=fm->so_function;
-				this_as_first_parameter=1;
-			}else{
-				irfs = (ScriptFunction *)stk_element->value;
-			}
 			aux_string=irfs->symbol.name;
 
 			if((aux_string == symbol_to_find && irfs->params->count == (n_args+this_as_first_parameter))){
@@ -544,7 +563,7 @@ namespace zetscript{
 					aux_string=k_str_bool_type;
 					break;
 				case STK_PROPERTY_NULL:
-					aux_string="undefined";
+					aux_string="null";
 					break;
 				case STK_PROPERTY_SCRIPT_OBJECT:
 					if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
@@ -570,24 +589,10 @@ namespace zetscript{
 			}
 
 			for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-				StackElement *stk_element=NULL;
+				int this_as_first_parameter=0;
 				ScriptFunction *irfs=NULL;
 
-				if(stk_element_are_vector_element_ptr){
-					stk_element=(StackElement *)(((zs_int *)stk_elements_builtin_ptr)[i]);//(StackElement *)list_symbols->items[i];
-				}else{
-					stk_element=&((StackElement *)stk_elements_builtin_ptr)[i];
-				}
-				if((stk_element->properties & STK_PROPERTY_FUNCTION)== 0){
-					continue;
-				}
-
-				if(stk_element->properties & STK_PROPERTY_MEMBER_FUNCTION ){
-					StackMemberFunction *fm=(StackMemberFunction *)stk_element->value;
-					irfs=fm->so_function;
-				}else{
-					irfs = (ScriptFunction *)stk_element->value;
-				}
+				EXTRACT_FUNCTION_INFO
 
 
 				if(irfs->symbol.name == symbol_to_find){
@@ -595,8 +600,8 @@ namespace zetscript{
 					if(n_candidates == 0){
 						str_candidates+="\tPossible candidates are:\n\n";
 					}
-					str_candidates+="\t\t-"+(calling_object==NULL?""
-							:calling_object->idx_script_class!=IDX_BUILTIN_TYPE_MAIN?(calling_object->getClassName()+"::")
+					str_candidates+="\t\t-"+(class_obj==NULL?""
+							:class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->symbol_class.name+"::")
 							:"")+irfs->symbol.name+"(";
 
 					for(unsigned a = 0; a < irfs->params->count; a++){
@@ -606,7 +611,7 @@ namespace zetscript{
 
 						if(irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 							str_candidates+=zs_rtti::demangle(
-									GET_IDX_2_CLASS_C_STR(data,((ScriptFunctionArg *)irfs->params->items[a])->idx_type
+								GET_IDX_2_CLASS_C_STR(data,((ScriptFunctionArg *)irfs->params->items[a])->idx_type
 							));
 						}else{ /* typic var ... */
 							str_candidates+="arg"+zs_strutils::zs_int_to_str(a+1);
@@ -620,8 +625,8 @@ namespace zetscript{
 			if(n_candidates == 0){
 				VM_ERROR("Cannot find %s \"%s%s(%s)\".\n\n",
 						is_constructor ? "constructor":"function",
-						calling_object==NULL?"":calling_object->idx_script_class!=IDX_BUILTIN_TYPE_MAIN?(calling_object->getClassName()+"::").c_str():"",
-								calling_function->getInstructionSymbolName(instruction),
+								class_obj==NULL?"":class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->symbol_class.name+"::").c_str():"",
+								symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 						args_str.c_str()
 				);
 
@@ -630,8 +635,8 @@ namespace zetscript{
 			else{
 				VM_ERROR("Cannot match %s \"%s%s(%s)\" .\n\n%s",
 					is_constructor ? "constructor":"function",
-					calling_object==NULL?"":calling_object->idx_script_class!=IDX_BUILTIN_TYPE_MAIN?(calling_object->getClassName()+"::").c_str():"",
-							calling_function->getInstructionSymbolName(instruction),
+							class_obj==NULL?"":class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->symbol_class.name+"::").c_str():"",
+									symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 					args_str.c_str(),
 					str_candidates.c_str());
 				return NULL;
@@ -831,16 +836,16 @@ namespace zetscript{
 		}
 
 		if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
-			list_props=script_object->getStkBuiltinListElements();//getFunctions();
+			//list_props=script_object->getStkBuiltinListElements();//getFunctions();
 
 			if((ptr_function_found = vm_find_function(
 				vm
-				,NULL
+				,data->script_class_factory->getScriptClass(script_object->idx_script_class)
 				,calling_function
 				,instruction
 				,false
-				,(void *)list_props->items
-				,list_props->count
+				//,(void *)list_props->items
+				//,list_props->count
 				,str_symbol_metamethod
 				,stk_args
 				,n_stk_args

@@ -1046,12 +1046,12 @@ load_element_object:
 
 							if((ptr_function_found=vm_find_function(
 									vm
-									,obj_setter
+									,data->script_class_factory->getScriptClass(obj_setter->idx_script_class)
 									,calling_function
 									,instruction
 									,false
-									,lst_functions
-									,lst_functions->count
+									//,lst_functions
+									//,lst_functions->count
 									,"_set" // symbol to find
 									,stk_arg
 									,1))==NULL){
@@ -1475,35 +1475,46 @@ load_element_object:
 					// if a c function that it has more than 1 symbol with same number of parameters, so we have to solve and get the right one...
 					if(sf->symbol.properties & SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME){
 
-						void *stk_element_ptr=data->vm_stack;
-						int stk_element_len = data->main_function_object->registered_symbols->count;
+						ScriptClass *sc=NULL;
+						//void *stk_element_ptr=data->vm_stack;
+						//int stk_element_len = data->main_function_object->registered_symbols->count;
 						bool ignore_call=false;
 
 						if(
 							stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION //scope_type&(INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
 						){
 							ignore_call= (is_constructor) && calling_object->isNativeObject() && n_args==0;
-							zs_vector * list_props=calling_object->getStkBuiltinListElements();//getFunctions();
+							sc=data->script_class_factory->getScriptClass(calling_object->idx_script_class);
+							/*zs_vector * list_props=calling_object->getStkBuiltinListElements();//getFunctions();
 							stk_element_ptr=list_props->items;
-							stk_element_len=list_props->count;
+							stk_element_len=list_props->count;*/
+						}else if(sf->idx_class != IDX_SCRIPT_CLASS_MAIN
+								&& (sf->symbol.properties & (SYMBOL_PROPERTY_FUNCTION|SYMBOL_PROPERTY_STATIC))
+						){
+							sc=data->script_class_factory->getScriptClass(sf->idx_class);
+							/*ScriptClass *sc=data->script_class_factory->getScriptClass(sf->idx_class);
+							stk_element_ptr=sc->symbol_members->items;
+							stk_element_len=sc->symbol_members->count;*/
 						}
+
 
 						if(ignore_call == false)
 						{
 							ScriptFunction *sf_aux;
 							if((sf_aux=vm_find_function(
 									vm
-									,calling_object
+									,sc
 									,calling_function
 									,instruction
 									,is_constructor
-									,stk_element_ptr
-									,stk_element_len
+									//,stk_element_ptr
+									//,stk_element_len
 									,sf->symbol.name // symbol to find
 									,stk_start_arg_call
 									,n_args))==NULL){
 
-								VM_STOP_EXECUTE("cannot find function \"%s\"",sf->symbol.name.c_str());
+								//VM_STOP_EXECUTE("cannot find function \"%s\"",sf->symbol.name.c_str());
+								goto lbl_exit_function;
 							}
 							sf=sf_aux;
 						}
