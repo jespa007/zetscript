@@ -266,8 +266,8 @@ namespace zetscript{
 
 									EvalInstruction *ei_break_jmp=new EvalInstruction(
 											BYTE_CODE_JMP
-											,ZS_IDX_UNDEFINED
 											,ZS_IDX_INSTRUCTION_JMP_BREAK
+											,0
 									);
 									eval_data->current_function->instructions.push_back(ei_break_jmp);
 									ei_break_jmps.push_back(ei_break_jmp);
@@ -337,7 +337,8 @@ namespace zetscript{
 							offset_end_instruction=eval_data->current_function->instructions.size();
 							for(unsigned i=idx_start_instruction; i < eval_data->current_function->instructions.size();i++){
 								Instruction *ins=&eval_data->current_function->instructions[i]->vm_instruction;
-								if(ins->value_op2==ZS_IDX_INSTRUCTION_JMP_BREAK){
+								if(ins->value_op1==ZS_IDX_INSTRUCTION_JMP_BREAK){
+									ins->value_op1=ZS_IDX_UNDEFINED;
 									ins->value_op2=offset_end_instruction-i;
 								}
 							}

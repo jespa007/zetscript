@@ -2,10 +2,9 @@
 
 //k.a,v.b
 
-var v=[];
-var k,t
-for( k,t in v){
-	// Console::outln("e:"+e);
+var values=[0,10];
+for(var k,v in values){
+	 Console::outln("v {0}",v);
 }
 /*for(var iter=v.iter();iter.end();iter++){
 	k,v=iter.get()

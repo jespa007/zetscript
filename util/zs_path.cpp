@@ -2,6 +2,13 @@
 
 namespace zetscript{
 	namespace zs_path{
+		std::string  get_directory(const std::string & _path) {
+			size_t pos = _path.find_last_of("\\/");
+			 return (std::string::npos == pos)
+				 ? ""
+				 : _path.substr(0, pos);
+		}
+
 		std::string  get_filename(const std::string & _path) {
 		  size_t found;
 		  std::string ss=_path;

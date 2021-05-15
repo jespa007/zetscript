@@ -43,6 +43,7 @@ namespace zetscript{
 			case KEYWORD_CLASS:
 				return  eval_keyword_class(eval_data,s,line,scope_info);
 				break;
+			case KEYWORD_CONST:
 			case KEYWORD_VAR:
 				return  eval_keyword_var(eval_data,s,line,scope_info);
 				break;

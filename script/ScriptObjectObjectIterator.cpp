@@ -44,8 +44,9 @@ namespace zetscript{
 
 		stk_key.value=ScriptObjectString::newScriptObjectString(this->zs,it.getKey());
 		// pass value through the stack
-		vm_push_stack_element(vm,stk_key);
+
 		vm_push_stack_element(vm,*((StackElement *)it.getValue())); // last value/first value to get
+		vm_push_stack_element(vm,stk_key);
 	}
 
 

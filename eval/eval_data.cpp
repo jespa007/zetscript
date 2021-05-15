@@ -301,8 +301,8 @@ namespace zetscript{
 
 	bool	is_operator_ternary_if(const char *s)				{return *s=='?';}
 	bool 	is_operator_ternary_else(const char *s)				{return *s==':';}
-	bool 	is_operator_add(const char *s)						{return	*s=='+'; }// && (*(s+1)!='+') && (*(s+1)!='='));}
-	bool 	is_operator_sub(const char *s)						{return	(*s=='-');}// && (*(s+1)!='-') && (*(s+1)!='='));}
+	bool 	is_operator_add(const char *s)						{return	((*s=='+') && (*(s+1)!='+'));}// && (*(s+1)!='+') && (*(s+1)!='='));}
+	bool 	is_operator_sub(const char *s)						{return	((*s=='-') && (*(s+1)!='-'));}// && (*(s+1)!='-') && (*(s+1)!='='));}
 	bool 	is_operator_mul(const char *s)						{return ((*s=='*') && (*(s+1)!='='));}
 	bool 	is_operator_div(const char *s)						{return ((*s=='/') && (*(s+1)!='='));}
 	bool 	is_operator_mod(const char *s)						{return ((*s=='%') && (*(s+1)!='='));}
@@ -331,15 +331,37 @@ namespace zetscript{
 	bool 	is_operator_logic_gte(const char *s)				{return ((*s=='>') && (*(s+1)=='='));}
 	bool 	is_operator_logic_lte(const char *s)				{return ((*s=='<') && (*(s+1)=='='));}
 	bool 	is_operator_logic_not(const char *s)				{return ((*s=='!') && (*(s+1)!='='));}
-	bool 	is_operator_typeof(const char *s)					{return strncmp("typeof",s,6) == 0;}
+
 	bool 	is_operation_dec(const char *s)						{return ((*s=='-') && (*(s+1)=='-'));}
 	bool 	is_operation_inc(const char *s)						{return ((*s=='+') && (*(s+1)=='+'));}
 	bool 	is_operation_dec_inc_invalid(const char *s)			{return ((*s=='-') && (*(s+1)=='+')) || ((*s=='+') && (*(s+1)=='-'));}
 	bool 	is_comment_single_line(char *s)						{return	((*s=='/') && (*(s+1)=='/'));}
 	bool 	is_comment_block_start(char *s)						{return ((*s=='/') && (*(s+1)=='*'));}
 	bool 	is_comment_block_end(char *s)						{return ((*s=='*') && (*(s+1)=='/'));}
-	bool 	is_operator_instanceof(const char *s)				{return strncmp("instanceof",s,10) == 0;}
-	bool 	is_operator_in(const char *s)						{if(is_operator_instanceof(s)) { return false;} return strncmp("in",s,2) == 0;}
+
+	// complex operators...
+	bool 	is_operator_typeof(const char *s){
+
+		if(strncmp("typeof",s,6)==0){
+			char *aux_p=((char *)s+6);
+			return *aux_p==' ' || *aux_p=='\r' || *aux_p=='\n';
+		}
+		return false;
+	}
+	bool 	is_operator_instanceof(const char *s){
+		if(strncmp("instanceof",s,10) == 0){
+			char *aux_p=((char *)s+10);
+			return *aux_p==' ' || *aux_p=='\r' || *aux_p=='\n';
+		}
+		return false;
+	}
+	bool 	is_operator_in(const char *s)						{
+		if(strncmp("in",s,2) == 0){
+			char *aux_p=((char *)s+2);
+			return *aux_p==' ' || *aux_p=='\r' || *aux_p=='\n';
+		}
+		return false;
+	}
 	Keyword eval_is_keyword(const char *c);
 
 	char *advance_to_end_block_comment(char *aux_p, int &line){
@@ -516,7 +538,8 @@ namespace zetscript{
 	}
 
 	bool  is_end_symbol_token(char *s, char pre=0){
-		return is_operator(s)!=Operator::OPERATOR_UNKNOWN
+
+		return    is_operator(s)!=Operator::OPERATOR_UNKNOWN
 			   || is_post_operation(s)!=PostOperation::POST_OPERATION_UNKNOWN
 			   || is_separator(s)!=Separator::SEPARATOR_UNKNOWN
 			   || is_special_char(s)

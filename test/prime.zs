@@ -19,5 +19,5 @@ function primes(n)
     return count;
 }
 
-var start=System.clock();
-print("primes: " + primes(200000) + " time:"+(System.clock()-start)+"ms");
+var start=System::clock();
+Console::outln("primes: " + primes(200000) + " time:"+(System::clock()-start)+"ms");

@@ -44,6 +44,7 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:	return "PUSH_STK_E@VECTOR"; // load element vector
 			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:	return "PUSH_STK_E@THIS"; // load element object
 			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:	return "PUSH_STK_E@OBJ"; // load element object
+
 			case BYTE_CODE_LOAD_GLOBAL:				return "LOAD_GLOBAL"; // load type var
 			case BYTE_CODE_LOAD_LOCAL:				return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_REF:				return "LOAD_REF"; // load type var
@@ -292,5 +293,4 @@ namespace zetscript{
 				|| byte_code==BYTE_CODE_LOAD_ELEMENT_THIS
 				|| byte_code==BYTE_CODE_LOAD_ELEMENT_OBJECT;
 	}
-
 }

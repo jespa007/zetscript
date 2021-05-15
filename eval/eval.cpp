@@ -227,10 +227,19 @@ namespace zetscript{
 
 						zs_strutils::copy_from_ptr_diff(str_symbol,start_var,end_var);
 
-						ZS_LOG_DEBUG("include file: %s",str_symbol);
+						ZS_LOG_DEBUG("include file: %s",str_symbol.c_str());
 
 						// save current file info...
-						eval_data->zs->evalFile(str_symbol);
+						if(!zs_file::exists(str_symbol)){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error: file '%s' not exist",str_symbol.c_str(),str_symbol.c_str());
+						}
+
+
+						try{
+							eval_data->zs->evalFile(str_symbol);
+						}catch(std::exception & ex){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"\nFrom import file '%s': %s",str_symbol.c_str(),ex.what());
+						}
 
 						aux++;// advance ..
 						break;
@@ -321,7 +330,9 @@ namespace zetscript{
 
 		std::string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
-		ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
+		ScriptClass *sc_sf = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
+		ScriptClass *sc_found=NULL;
+		int sum_stk_load_stk=0;
 
 		if(sf->instructions != NULL){
 			free(sf->instructions);
@@ -351,17 +362,55 @@ namespace zetscript{
 
 			//is_static&=((instruction->vm_instruction.properties & INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)==0);
 			switch(instruction->vm_instruction.byte_code){
+
+			// LOAD
+			case BYTE_CODE_LOAD_GLOBAL:
+			case BYTE_CODE_LOAD_LOCAL:
+			case BYTE_CODE_LOAD_REF:
+			case BYTE_CODE_LOAD_THIS:
+			case BYTE_CODE_LOAD_MEMBER_VAR:
+			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
+			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
+			// PUSH_STK
+			case BYTE_CODE_PUSH_STK_GLOBAL:
+			case BYTE_CODE_PUSH_STK_LOCAL:
+			case BYTE_CODE_PUSH_STK_THIS:
+			case BYTE_CODE_PUSH_STK_MEMBER_VAR:
+			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:
+			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:
+			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
+				// CONSTRUCTOR
+			case BYTE_CODE_LOAD_CONSTRUCTOR:
+
+				// load constants
+			case BYTE_CODE_LOAD_FUNCTION:
+			case BYTE_CODE_LOAD_NULL:
+			case BYTE_CODE_LOAD_STRING:
+			case BYTE_CODE_LOAD_FLOAT:
+			case BYTE_CODE_LOAD_BOOL:
+			case BYTE_CODE_LOAD_ZS_INT:
+			case BYTE_CODE_LOAD_STACK_ELEMENT:
+				sum_stk_load_stk++;
+				break;
+			case BYTE_CODE_RESET_STACK: // <-- reset stack
+			case BYTE_CODE_CALL: // <-- reset stack
+				if(sf->min_stack_needed<sum_stk_load_stk){
+					sf->min_stack_needed=sum_stk_load_stk;
+				}
+				sum_stk_load_stk=0; // and reset stack
+				break;
 			case BYTE_CODE_LOAD_ELEMENT_THIS:
+					sum_stk_load_stk++;
 				// try to solve symbol...
 					if(*ptr_str_symbol_to_find == SYMBOL_VALUE_SUPER){
 						// get current function name and find first ancestor in heritance
 						Symbol *symbol_sf_foundf=NULL;
 						std::string target_name;
 
-						bool is_constructor = sf->symbol.name == sf_class->symbol_class.name;
+						bool is_constructor = sf->symbol.name == sc_sf->symbol_class.name;
 
 						for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
-							Symbol *symbol_member = (Symbol *)sf_class->symbol_members->items[i];
+							Symbol *symbol_member = (Symbol *)sc_sf->symbol_members->items[i];
 							bool match_names=false;
 							if(is_constructor==true){
 								if(symbol_member->scope == NULL){ // is constant...
@@ -390,7 +439,7 @@ namespace zetscript{
 									instruction->instruction_source_info.file
 									,instruction->instruction_source_info.line
 									,"Cannot find parent function %s::%s"
-									,sf_class->symbol_class.name.c_str()
+									,sc_sf->symbol_class.name.c_str()
 									,sf->symbol.name.c_str()
 							);
 						}
@@ -402,7 +451,7 @@ namespace zetscript{
 
 						if(instruction->vm_instruction.value_op2 == ZS_IDX_UNDEFINED){
 							// is automatically created on vm...
-							Symbol *symbol_function=sf_class->getSymbol(*ptr_str_symbol_to_find,ANY_PARAMS_SYMBOL_ONLY);
+							Symbol *symbol_function=sc_sf->getSymbol(*ptr_str_symbol_to_find,ANY_PARAMS_SYMBOL_ONLY);
 							if(symbol_function!=NULL){
 								// functions always loads dynamically because we can have an override function
 								// so we don't load as member in a fix position else is a member variable ...
@@ -416,14 +465,18 @@ namespace zetscript{
 				//}
 					break;
 			case BYTE_CODE_FIND_VARIABLE:
-				if(instruction->symbol.scope != MAIN_SCOPE(eval_data)){ // find global symbol if not global
+				sum_stk_load_stk++;
+				 if((sc_found= eval_data->script_class_factory->getScriptClass(*ptr_str_symbol_to_find))!= NULL){ // check if class
+					instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_CLASS;
+					instruction->vm_instruction.value_op2=sc_found->idx_class;
+				 }else if(instruction->symbol.scope != MAIN_SCOPE(eval_data)){ // find global symbol if not global
 					vis = eval_find_global_symbol(eval_data,*ptr_str_symbol_to_find);
 				}else{ // give the error properly
 
 					char *str_start_class=(char *)ptr_str_symbol_to_find->c_str();
 					char *str_end_class=NULL;
 
-					if((str_end_class=strstr(str_start_class,"::"))!=NULL){
+					if((str_end_class=strstr(str_start_class,"::"))!=NULL){ // static access
 						char class_name[512]={0};
 						strncpy(class_name,str_start_class,str_end_class-str_start_class);
 
@@ -435,12 +488,11 @@ namespace zetscript{
 								,str_end_class+2
 								,class_name
 						);
-					}
-					else{
+					}else{
 						EVAL_ERROR_POP_FUNCTION(
 								instruction->instruction_source_info.file
 								,instruction->instruction_source_info.line
-								,"symbol '%s' not defined"
+								,"Symbol '%s' not defined"
 								//,sf_class->symbol_class.name.c_str()
 								,ptr_str_symbol_to_find->c_str()
 						);
@@ -485,6 +537,13 @@ namespace zetscript{
 lbl_exit_pop_function:
 
 		eval_pop_current_function(eval_data);
+
+		// update min stk needed
+		if(sf->min_stack_needed<sum_stk_load_stk){
+			sf->min_stack_needed=sum_stk_load_stk;
+		}
+
+
 
 		return ok;
 	}

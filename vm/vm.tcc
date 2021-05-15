@@ -393,18 +393,15 @@ namespace zetscript{
 		return false;
 	}
 
-	typedef enum {
-		FIND_FUNCTION_ELEMENT_LIST_TYPE_STK_GLOBAL=0,
-		FIND_FUNCTION_ELEMENT_LIST_TYPE_STK_MEMBER,
-		FIND_FUNCTION_ELEMENT_LIST_TYPE_FUNCTION
-
-	}StkListSymbolType;
 
 #define EXTRACT_FUNCTION_INFO\
 	if(class_obj!=NULL){ /* get elements from class */ \
 		Symbol *symbol = (Symbol *)(((zs_int *)stk_elements_builtin_ptr)[i]);\
 		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
 			irfs = (ScriptFunction *)symbol->ref_ptr;\
+			if(symbol->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION ){\
+				this_as_first_parameter=1;\
+			}\
 		}\
 	}else{ \
 		StackElement *stk_element=&((StackElement *)stk_elements_builtin_ptr)[i]; \
@@ -944,19 +941,26 @@ namespace zetscript{
 apply_metamethod_error:
 
 
-		if(n_stk_args==1){
-			VM_ERROR("cannot perform operation \"%s %s\". %s"
-				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_result_op1->toString().c_str()
-				,error_found.c_str()
-				);
-		}else{
+		if(stk_result_op1!=NULL && stk_result_op2!=NULL){
 			VM_ERROR("cannot perform operation \"%s %s %s\". %s"
 				,stk_result_op1->toString().c_str()
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 				,stk_result_op2->toString().c_str()
 				,error_found.c_str()
 				);
+
+		}else if(stk_result_op1!=NULL){
+			VM_ERROR("cannot perform operation \"%s %s\". %s"
+				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+				,stk_result_op1->toString().c_str()
+				,error_found.c_str()
+			);
+
+		}else{
+			VM_ERROR("cannot perform operation \"%s\". %s"
+				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+				,error_found.c_str()
+			);
 		}
 
 		return false;

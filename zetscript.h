@@ -27,6 +27,11 @@
 
 #endif
 
+#ifdef _WIN32
+#include <direct.h>
+#endif
+
+
 #include        <memory.h>
 #include        <math.h>
 #include        <random>
@@ -71,6 +76,7 @@
 #include "util/zs_vector.h"
 #include "util/zs_map_iterator.h"
 #include "util/zs_map.h"
+#include "util/zs_dir.h"
 
 #include "exception.h"
 #include "ByteCode.h"

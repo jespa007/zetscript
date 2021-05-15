@@ -72,7 +72,7 @@ Solved issues
 #100 Improved virtual machine speed (Improved ~ x1.4) 
 #101 Adapt inheritance feature developed on 1.1.3 version
 #102 Bug: can use variable before define var itself
-> #103 Adapt foreach to for(.. in .. )
+#103 Adapt foreach to for(.. in .. )
 #104 optimize embeded container ScriptVariable 
 #105 Get rid AST Node limitation
 #106 Study whether is posible parse + compile in single step 
@@ -167,7 +167,7 @@ Solved issues
 #208 Implement Float helper class
 #209 Implement Boolean helper class  
 #210 Fix check keyword delete
-> #211 Fix check directive import 
+#211 Fix check directive import 
 #212 Fix accessors betwen assigns 
 #213 Replace int by intptr
 #214 replace throw_script_error by other smart way to manage exceptions

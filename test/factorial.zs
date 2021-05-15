@@ -6,4 +6,4 @@ function factorial(n){
     }
 }
 
-print("f:"+factorial(5));
+Console::outln("f:"+factorial(5));

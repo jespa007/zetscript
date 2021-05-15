@@ -8,6 +8,7 @@
 #include 		"util/zs_vector.cpp"
 #include 		"util/zs_map.cpp"
 #include 		"util/zs_map_iterator.cpp"
+#include 		"util/zs_dir.cpp"
 
 #include		"exception.cpp"
 #include 		"Symbol.cpp"
@@ -55,6 +56,8 @@
 #include 		"module/ModuleSystemWrap.cpp"
 #include 		"module/ModuleJsonWrap.cpp"
 #include 		"module/ModuleConsoleWrap.cpp"
+
+
 
 
 #include		"zetscript.cpp"

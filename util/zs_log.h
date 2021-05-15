@@ -10,17 +10,6 @@
 #define ZS_LOG_DEBUG(s, ...)
 #endif
 
-/*
-//#define zs_print_error(s, ...) 			ZetScript::log::print(__FILE__,__LINE__,ZetScript::zs_strutils::ZS_LOG_LEVEL_ERROR	, false,s, ##__VA_ARGS__)
-#define zs_print_warning(s, ...)   		ZetScript::zs_log::print(__FILE__,__LINE__,ZetScript::zs_log::ZS_LOG_LEVEL_WARNING	, false,s, ##__VA_ARGS__)
-#define zs_print_info(s, ...)   		ZetScript::zs_log::print(__FILE__,__LINE__,ZetScript::zs_log::ZS_LOG_LEVEL_INFO	, false,s, ##__VA_ARGS__)
-#ifdef __ZETSCRIPT_VERBOSE_MESSAGE__
-#define zs_print_debug(s, ...)   		ZetScript::zs_log::print(__FILE__,__LINE__,ZetScript::zs_log::ZS_LOG_LEVEL_DEBUG	, false,s, ##__VA_ARGS__)
-#else
-#define zs_print_debug(s, ...)
-#endif
-*/
-
 namespace zetscript{
 	namespace zs_log{
 

@@ -360,10 +360,10 @@ eval_error_sub_expression:
 		}
 
 
-		if(	((properties & (EVAL_EXPRESSION_ON_MAIN_BLOCK))==true)
+		if(	((properties & (EVAL_EXPRESSION_ON_MAIN_BLOCK))!=0)
 						&&
 			// special case for catching vars for-in...
-			((properties & (EVAL_EXPRESSION_FOR_IN_VARIABLES))==false)
+			((properties & (EVAL_EXPRESSION_FOR_IN_VARIABLES))==0)
 		){ //
 			dst_instructions->push_back(
 				new EvalInstruction(

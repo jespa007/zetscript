@@ -39,7 +39,7 @@ namespace zetscript{
 		}*/
 
 		symbol_members=new zs_vector();
-		symbol_members_built_in=new zs_vector();
+		symbol_members_allocated=new zs_vector();
 //		symbol_members_static=new zs_vector();
 
 		idx_base_classes=new zs_vector;
@@ -147,7 +147,7 @@ namespace zetscript{
 		symbol->properties=symbol_properties;
 
 		symbol_members->push_back((zs_int)symbol);
-		symbol_members_built_in->push_back((zs_int)symbol);
+		symbol_members_allocated->push_back((zs_int)symbol);
 
 		return symbol;
 	}
@@ -188,7 +188,7 @@ namespace zetscript{
 		symbol_attrib->ref_ptr=(zs_int)(new MemberAttribute());
 		symbol_attrib->properties=SYMBOL_PROPERTY_MEMBER_ATTRIBUTE;
 		symbol_members->push_back((zs_int)symbol_attrib);
-		symbol_members_built_in->push_back((zs_int)symbol_attrib);
+		symbol_members_allocated->push_back((zs_int)symbol_attrib);
 
 		return symbol_attrib;
 	}
@@ -550,14 +550,14 @@ namespace zetscript{
 
 		}*/
 
-		for(unsigned i=0; i < symbol_members_built_in->count; i++){
-			Symbol *symbol=(Symbol *)symbol_members_built_in->items[i];
+		for(unsigned i=0; i < symbol_members_allocated->count; i++){
+			Symbol *symbol=(Symbol *)symbol_members_allocated->items[i];
 			if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 				delete (MemberAttribute *)symbol->ref_ptr;
 			}
 			delete symbol; // symbol variable member was created before
 		}
-		delete symbol_members_built_in;
+		delete symbol_members_allocated;
 
 		// delete symbol vector...
 		delete symbol_members;

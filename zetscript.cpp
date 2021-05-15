@@ -65,7 +65,7 @@ namespace zetscript{
 		cl=script_class_factory->registerClass("System");
 		cl->registerNativeMemberFunctionStatic("clock",ModuleSystemWrap_clock);
 		cl->registerNativeMemberFunctionStatic("ModuleSystemWrap_eval",ModuleSystemWrap_eval);
-		cl->registerNativeMemberFunctionStatic("ModuleSystem_assert",ModuleSystemWrap_assert);
+		cl->registerNativeMemberFunctionStatic("assertNative",ModuleSystemWrap_assert);
 
 		// Json mod
 		cl=script_class_factory->registerClass("Json");
@@ -99,7 +99,7 @@ namespace zetscript{
 				//------------------------------------------------
 				// System
 				"static System::assert(check,s,...args){"
-				"	ModuleSystem_assert(System::getZetScript(),check,s,args)"
+				"	System::assertNative(System::getZetScript(),check,s,args)"
 				"}"
 				"static System::eval(s,params){"
 				"	ModuleSystem_eval(System::getZetScript(),s,params)"
@@ -369,6 +369,9 @@ namespace zetscript{
 			size_t n_bytes;
 
 			if((buf_tmp=zs_file::read(filename, n_bytes))!=NULL){
+				// file exist and can read ... set current pwd
+				zs_dir::set_current_directory(zs_path::get_directory(filename));
+
 				bool error=false;
 				std::string error_str;
 				try{

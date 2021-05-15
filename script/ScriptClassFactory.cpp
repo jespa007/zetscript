@@ -331,7 +331,7 @@ namespace zetscript{
 					Symbol *new_symbol=new Symbol();
 					*new_symbol = *symbol;
 					sci->symbol_members->push_back((zs_int)new_symbol);
-					sci->symbol_members_built_in->push_back((zs_int)new_symbol);
+					sci->symbol_members_allocated->push_back((zs_int)new_symbol);
 				}
 
 				// set idx starting member

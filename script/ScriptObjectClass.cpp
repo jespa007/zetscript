@@ -60,6 +60,7 @@ namespace zetscript{
 			bool is_script_function=symbol->properties & SYMBOL_PROPERTY_FUNCTION;
 			bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
 
+
 			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
 			if((se=addBuiltinProperty(
 				symbol->name
@@ -79,7 +80,7 @@ namespace zetscript{
 					void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
 					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
 				}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
-					se->value=(void *)symbol->ref_ptr;
+					se->value=vm_get_stack_elements(this->vm) + symbol->ref_ptr; // load from global stk
 					se->properties=STK_PROPERTY_PTR_STK;
 				}else if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 					se->value=new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr);

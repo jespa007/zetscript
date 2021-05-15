@@ -1357,7 +1357,51 @@ load_element_object:
 				continue;
 			case BYTE_CODE_DIV: // /
 				POP_TWO;
-				PROCESS_ARITHMETIC_DIV_OPERATION;
+				//PROCESS_ARITHMETIC_DIV_OPERATION;
+				msk_properties=(stk_result_op1->properties<<16)|stk_result_op2->properties;\
+				switch(msk_properties){\
+				case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
+					op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
+					if(op2_int == 0){\
+						VM_STOP_EXECUTE("exception div operation by 0");\
+					}\
+					PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) / STK_VALUE_TO_ZS_INT(stk_result_op2));\
+					break;\
+				case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
+					ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->value);\
+					if(f_aux_value2 == 0){\
+						VM_STOP_EXECUTE("exception div operation by 0");\
+					}\
+					PUSH_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) / f_aux_value2);\
+					break;\
+				case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
+					op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
+					if(op2_int == 0){\
+						VM_STOP_EXECUTE("exception div operation by 0");\
+					}\
+					ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
+					PUSH_FLOAT(f_aux_value1 / op2_int);\
+					break;\
+				case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
+					ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
+					ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->value);\
+					if(f_aux_value2 == 0){\
+						VM_STOP_EXECUTE("exception div operation by 0");\
+					}\
+					PUSH_FLOAT(f_aux_value1 / f_aux_value2);\
+					break;\
+				default:\
+					if(vm_apply_metamethod(\
+							vm\
+							,calling_function\
+							,instruction\
+							,BYTE_CODE_METAMETHOD_DIV\
+							,stk_result_op1\
+							,stk_result_op2\
+					)==false){\
+						goto lbl_exit_function;\
+					}\
+				}\
 				continue;
 			 case BYTE_CODE_MOD: // /
 				POP_TWO;
@@ -1443,7 +1487,7 @@ load_element_object:
 					StackElement *stk_function_ref=NULL;
 					//bool calling_from_object_type=false;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
-					ScriptObject *calling_object = this_object;
+					ScriptObject *calling_object = NULL;
 					uint16_t n_local_registered_symbols=0;
 					unsigned char n_args=instruction->value_op1; // number arguments will pass to this function
 					StackElement *stk_start_arg_call=(data->stk_vm_current-n_args);

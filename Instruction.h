@@ -6,8 +6,8 @@
 #pragma once
 
 #define ZS_IDX_INSTRUCTION_OP2_THIS							-4
-#define ZS_IDX_INSTRUCTION_JMP_BREAK						-6
-#define ZS_IDX_INSTRUCTION_JMP_CONTINUE						-7
+#define ZS_IDX_INSTRUCTION_JMP_BREAK						(uint8_t)(-6)
+#define ZS_IDX_INSTRUCTION_JMP_CONTINUE						(uint8_t)(-7)
 #define ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK				-10
 
 
@@ -48,16 +48,16 @@ namespace zetscript{
 	struct Instruction {
 
 		ByteCode byte_code;
-		unsigned char value_op1;
+		uint8_t value_op1;
 		zs_int value_op2;
-		unsigned short properties;
+		uint16_t properties;
 
 		Instruction();
 
 		Instruction(ByteCode _byte_code
-		 ,unsigned char _value_op1=ZS_IDX_UNDEFINED
+		 ,uint8_t _value_op1=ZS_IDX_UNDEFINED
 		 ,zs_int _value_op2=ZS_IDX_UNDEFINED
-		 ,unsigned short _properties=0
+		 ,uint16_t _properties=0
 		 );
 
 		std::string getConstantString();

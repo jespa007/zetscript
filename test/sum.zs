@@ -8,4 +8,4 @@ for (var i = 1; i <= 1000000; ++i) {
         sum += 1.0 / ((i) * i);
     }
 }
-print("sum:"+sum);
+Console::outln("sum:"+sum);

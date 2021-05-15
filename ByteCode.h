@@ -27,6 +27,7 @@ namespace zetscript{
 
 
 		// load var content
+		BYTE_CODE_LOAD_CLASS,
 		BYTE_CODE_LOAD_GLOBAL,
 		BYTE_CODE_LOAD_LOCAL,
 		BYTE_CODE_LOAD_REF,
@@ -46,7 +47,7 @@ namespace zetscript{
 		BYTE_CODE_LOAD_FLOAT,
 		BYTE_CODE_LOAD_BOOL,
 		BYTE_CODE_LOAD_ZS_INT,
-		BYTE_CODE_LOAD_CLASS,
+
 		BYTE_CODE_LOAD_STACK_ELEMENT,
 
 
@@ -202,6 +203,7 @@ namespace zetscript{
 	int			 get_num_arguments_non_static_metamethod(ByteCodeMetamethod op);
 	ByteCode	 byte_code_load_to_push_stk(ByteCode op);
 	bool		 byte_code_is_load_type(ByteCode op);
+
 
 
 }

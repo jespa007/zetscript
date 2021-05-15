@@ -3,6 +3,15 @@
 namespace zetscript{
 	namespace zs_file{
 
+		bool exists(const std::string & filename){
+			FILE  *fp;
+			if((fp  =  fopen(filename.c_str(),"r")) != NULL){
+				fclose(fp);
+				return true;
+			}
+			return false;
+		}
+
 		char * read(const std::string &  filename, size_t & n_bytes_readed){
 
 			int  length, readed_elements;
