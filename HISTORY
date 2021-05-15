@@ -128,7 +128,8 @@ Solved issues
 > #160 Update Invader ZetScript 2.0 
 #161 Merge symbol+functions in one container !!!
 #162 Implement eval Function object 
-#164 implement length property built-in for get length of vector/dictionary/string instead of call size() 
+#164 implement length property built-in for get length of vector/dictionary/string instead of call size()
+#166 control the increment of vm_stk_current/vm_str_current  
 #168 When semicolon on expression is missing it shows wrong filename 
 > #169 Fix/Check metamethods
 #170 Fix class 
