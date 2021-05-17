@@ -437,7 +437,7 @@ namespace zetscript{
 				}
 
 				main_function_object->registered_symbols->pop_back();
-				*vm_stk_element--=stk_undefined;
+				*vm_stk_element--=k_stk_undefined;
 			}
 		}
 

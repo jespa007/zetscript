@@ -134,7 +134,7 @@ namespace zetscript{
 
 	/*StackElement *ScriptObjectClass::newSlotBuiltin(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
-		*stk=stk_undefined;
+		*stk=k_stk_undefined;
 		stk_builtin_elements.push_back((zs_int)stk);
 		return stk;
 	}

@@ -119,7 +119,7 @@ namespace zetscript{
 	#pragma pack(pop)
 
 
-	extern const StackElement stk_undefined;
+	extern const StackElement k_stk_undefined;
 
 
 

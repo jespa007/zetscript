@@ -618,7 +618,7 @@ error_eval_keyword_var:
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
 						case BYTE_CODE_LOAD_NULL:
-							arg_info.default_var_value=stk_undefined;
+							arg_info.default_var_value=k_stk_undefined;
 							break;
 						case BYTE_CODE_LOAD_ZS_INT:
 							arg_info.default_var_value={(void *)instruction->value_op2,STK_PROPERTY_ZS_INT};

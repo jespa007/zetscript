@@ -5,7 +5,7 @@
 
 //#include "zetscript.h"
 
-#define json_deserialize_error
+
 
 namespace zetscript{
 
@@ -30,7 +30,7 @@ namespace zetscript{
 				0
 		};
 
-		char *deserialize_stk_json_element(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element);
+		char *deserialize_recursive(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element);
 
 		bool is_single_comment(char *str){
 
@@ -59,7 +59,9 @@ namespace zetscript{
 		char *advance_to_char(char *str,char c) {
 			char *aux_p = str;
 			// make compatible windows format (\r)...
-			while(*aux_p!='\n' && *aux_p!='\r' && *aux_p!=0 && (*aux_p !=(c) )) aux_p++;
+			while(*aux_p!='\n' && *aux_p!='\r' && *aux_p!=0 && (*aux_p !=(c) )) {
+				aux_p++;
+			}
 
 			if(*aux_p=='\r')
 				aux_p++;
@@ -141,6 +143,30 @@ namespace zetscript{
 			return aux_p;
 		}
 
+		void json_deserialize_error(JsonDeserializeData *deserialize_data,const char *str_from,int _line,const char *str,...){
+
+			char  what_msg[ZS_MAX_STR_BUFFER]={0};
+			char  error_description[ZS_MAX_STR_BUFFER] = { 0 };
+			va_list  ap;
+			va_start(ap,  str);
+			vsprintf(error_description,  str,  ap);
+			va_end(ap);
+			char *aux=(char *)str_from-1;
+			std::string filename="";
+			int n=0;
+			if(deserialize_data->filename!=NULL){
+				filename=zs_path::get_filename(deserialize_data->filename);
+			}
+
+			if(deserialize_data->filename != NULL  && *deserialize_data->filename != 0){
+				sprintf(what_msg,"[file:%s line:%i] %s",deserialize_data->filename, _line, (char *)error_description);
+			}else{
+				sprintf(what_msg,"[line:%i] %s",_line,error_description);
+			}
+
+			THROW_EXCEPTION(what_msg);
+		}
+
 		char * read_string_between_quotes(JsonDeserializeData *deserialize_data, const char *str_start,int & line, std::string * str_out){
 			char *str_current = (char *) str_start;
 			size_t str_size;
@@ -168,7 +194,7 @@ namespace zetscript{
 			return eval_ignore_blanks(str_current+1, line);
 		}
 
-		char * deserialize_stk_json_value(
+		char * deserialize_value(
 			JsonDeserializeData *deserialize_data
 			,const char *str_start
 			, int & line
@@ -231,7 +257,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		char * deserialize_stk_json_vector(
+		char * deserialize_vector(
 				JsonDeserializeData *deserialize_data
 				,const char *str_start
 				, int & line
@@ -252,7 +278,7 @@ namespace zetscript{
 			if(*str_current != ']'){ // do parsing primitive...
 
 				do{
-					str_current=deserialize_stk_json_element(deserialize_data,str_current,line,stk_json_element);
+					str_current=deserialize_recursive(deserialize_data,str_current,line,stk_json_element);
 
 					str_current = eval_ignore_blanks(str_current, line);
 
@@ -269,7 +295,7 @@ namespace zetscript{
 			return str_current+1;
 		}
 
-		char * deserialize_stk_json_object(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element) {
+		char * deserialize_object(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element) {
 			char *str_current = (char *)str_start;
 			std::string variable_name,key_id;
 			std::string error;
@@ -297,7 +323,7 @@ namespace zetscript{
 					// get c property
 
 
-					str_current=deserialize_stk_json_element(deserialize_data, str_current, line, stk_json_property);
+					str_current=deserialize_recursive(deserialize_data, str_current, line, stk_json_property);
 
 
 					str_current = eval_ignore_blanks(str_current, line);
@@ -315,23 +341,37 @@ namespace zetscript{
 			return str_current+1;
 		}
 
-		char * deserialize_stk_json_element(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element) {
+		char * deserialize_recursive(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element) {
 			// PRE: If json_var == NULL it parses but not saves
 			char * str_current = (char *)str_start;
-			std::string error="";
 			str_current = eval_ignore_blanks(str_current, line);
 
 
 			//try to deduce ...
 			if(*str_current == '['){ // try parse vector
-				str_current=deserialize_stk_json_vector(deserialize_data, str_current, line,stk_json_element);
+				str_current=deserialize_vector(deserialize_data, str_current, line,stk_json_element);
 			}else if(*str_current == '{') {// try parse object
-				str_current=deserialize_stk_json_object(deserialize_data, str_current, line,stk_json_element);
+				str_current=deserialize_object(deserialize_data, str_current, line,stk_json_element);
 			}else{ // try parse value
-				str_current=deserialize_stk_json_value(deserialize_data, str_current,line,stk_json_element);
+				str_current=deserialize_value(deserialize_data, str_current,line,stk_json_element);
 			}
 
 			return str_current;
+		}
+
+		StackElement deserialize(const std::string & str) {
+			const char *str_start=str.c_str();
+			JsonDeserializeData deserialize_data;
+			deserialize_data.filename=NULL;
+			deserialize_data.str_start=str_start;
+			int line=1;
+			StackElement stk_return=k_stk_undefined;
+
+			deserialize_recursive(&deserialize_data,str_start,line,&stk_return);
+
+			return stk_return;
+
+
 		}
 
 

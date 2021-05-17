@@ -109,7 +109,7 @@ namespace zetscript{
 
 		//StackElement 			stk_length;
 		virtual StackElement * newBuiltinSlot();
-		virtual StackElement * addBuiltinProperty(const std::string & symbol_value, StackElement stk=stk_undefined);
+		virtual StackElement * addBuiltinProperty(const std::string & symbol_value, StackElement stk=k_stk_undefined);
 		bool unrefAndFreeStackElementContainer(StackElement *si);
 
 	};

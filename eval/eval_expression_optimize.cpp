@@ -168,11 +168,15 @@ namespace zetscript{
 		case BYTE_CODE_ADD: // int & int/int & float/float&float
 
 			if(i1->byte_code == BYTE_CODE_LOAD_STRING && i2->isConstant()){
-				result_op_str=zs_strutils::format("%s%s",i1->getConstantString().c_str(),i2->getConstantValueOp2ToString().c_str());
+				result_op_str=zs_strutils::format("%s%s"
+						,i1->getConstantString().c_str()
+						,i2->byte_code==BYTE_CODE_LOAD_STRING?i2->getConstantString().c_str():i2->getConstantValueOp2ToString().c_str());
 				result_bc=BYTE_CODE_LOAD_STRING;
 			}
 			else if(i1->isConstant() && i2->byte_code == BYTE_CODE_LOAD_STRING){
-				result_op_str=zs_strutils::format("%s%s",i1->getConstantValueOp2ToString().c_str(),i2->getConstantString().c_str());
+				result_op_str=zs_strutils::format("%s%s"
+						,i1->byte_code==BYTE_CODE_LOAD_STRING?i1->getConstantString().c_str():i1->getConstantValueOp2ToString().c_str()
+						,i2->getConstantString().c_str());
 				result_bc=BYTE_CODE_LOAD_STRING;
 			}else{
 				PERFORM_ARITHMETIC_OPERATION(+);

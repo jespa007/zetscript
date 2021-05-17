@@ -359,7 +359,7 @@ namespace zetscript{
 		ScriptObjectClass *so_class_aux=NULL;
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
-		StackElement stk_aux=stk_undefined;
+		StackElement stk_aux=k_stk_undefined;
 		StackElement *stk_var;
 		const char *str_symbol=NULL,*str_aux=NULL;
 		Symbol * symbol_aux=NULL;

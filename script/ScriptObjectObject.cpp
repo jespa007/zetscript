@@ -100,7 +100,7 @@ namespace zetscript{
 
 		}else{
 
-			si=stk_undefined;
+			si=k_stk_undefined;
 		}
 
 		/*if(idx_stk_element != NULL){

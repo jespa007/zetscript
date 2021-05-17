@@ -83,7 +83,7 @@ namespace zetscript{
 
 		for(unsigned int i = 0; i < str_arg.size(); i++){
 			int idx_type = getIdxClassFromItsNativeType(str_arg[i]);
-			StackElement default_value=stk_undefined;
+			StackElement default_value=k_stk_undefined;
 
 			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument %i type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
