@@ -19,11 +19,13 @@ namespace zetscript{
 		ScriptFunction *sf_main=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 		ScriptObjectString *so_str_eval=NULL;
 		ScriptObjectObject *oo_param=NULL;
-		StackElement stk_ret;
 		std::vector<ScriptFunctionArg> function_args;
 		std::string str_param_name;
 		ScriptFunction *sf;
 		std::vector<StackElement> stk_params;
+		StackElement stk_ret=k_stk_undefined;
+		const char *str_start=NULL;
+		std::string str_unescaped_source="";
 
 		// Example of use,
 		// System::eval("a+b",{a:1,b:2})
@@ -60,18 +62,33 @@ namespace zetscript{
 		);
 
 		sf=(ScriptFunction *)symbol_sf->ref_ptr;
-
+		str_unescaped_source=zs_strutils::unescape(stk_so_str_eval->toString());
+		str_start=str_unescaped_source.c_str();
 		// 2. Call zetscript->eval this function
-		eval_parse_and_compile(zs,sf,stk_so_str_eval->toString().c_str());
+		try{
+			eval_parse_and_compile(zs,sf,str_start);
+		}catch(std::exception & ex){
+			vm_set_error(zs->getVirtualMachine(),std::string("eval error:")+ex.what());
+			return;
+		}
+
+		// check if there's a reset stack at the end and set as end function in order to get last value stk ...
+		if(sf->instructions_len>2){
+			if(sf->instructions[sf->instructions_len-2].byte_code == BYTE_CODE_RESET_STACK){
+				sf->instructions[sf->instructions_len-2].byte_code =BYTE_CODE_END_FUNCTION;
+			}
+		}
 
 		// 3. Call function passing all arg parameter
-		vm_execute(
+		stk_ret=vm_execute(
 			zs->getVirtualMachine()
 			 ,NULL
 			 ,sf
 			 ,stk_params.data()
 			 ,stk_params.size()
 		);
+
+		vm_push_stack_element(zs->getVirtualMachine(),stk_ret);
 
 	}
 

@@ -69,17 +69,11 @@ typedef enum:unsigned short {
 #define STK_VALUE_IS_ZS_INT(stk) \
 (stk->properties & STK_PROPERTY_ZS_INT)
 
-#define STK_VALUE_IS_CHAR_PTR(stk) \
-(stk->properties & STK_PROPERTY_TYPE_CHAR_PTR)
-
 #define STK_VALUE_IS_BOOLEAN(stk) \
 (stk->properties & STK_PROPERTY_BOOL)
 
-#define STK_VALUE_IS_UNDEFINED(stk) \
-(stk->properties & STK_PROPERTY_NULL)
-
 #define STK_VALUE_IS_NULL(stk) \
-(stk->properties & STK_PROPERTY_NULL)
+(stk->properties == 0)
 
 #define STK_VALUE_IS_FUNCTION(stk) \
 (stk->properties & STK_PROPERTY_FUNCTION)

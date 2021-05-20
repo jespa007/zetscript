@@ -1344,6 +1344,7 @@ load_element_object:
 				POP_ONE;
 				data->stk_vm_current->value=(void *)stk_result_op1->typeOf();
 				data->stk_vm_current->properties=STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C;
+				data->stk_vm_current++;
 				continue;
 			case BYTE_CODE_ADD: // +
 				POP_TWO;

@@ -110,7 +110,7 @@ Solved issues
 #140 Implement Vector methods  
 #141 limit n params only for c functions 
 #142 Try to optimize bind function member 
-> #144 Implement System helper class PART1
+#144 Implement System helper class PART1
 #145 Implement eval Vector object
 #146 Implement eval Dictionary object
 #147 Implement bind class const static variable
@@ -180,7 +180,7 @@ Solved issues
 #222 do as an option to show system functions 
 #223 get static function through class 
 #224 implement keyword static
-> #215 Implement typeof operator
+#215 Implement typeof operator
 > #227 implement DateTime class
 #229 Implement toJson(bool formated=false) for Vector and Object 
 #230 Control return ScriptObject[String] values that are not deallocated by user 

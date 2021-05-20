@@ -102,7 +102,7 @@ namespace zetscript{
 				"	System::assertNative(System::getZetScript(),check,s,args)"
 				"}"
 				"static System::eval(s,params){"
-				"	System::eval_native(System::getZetScript(),s,params)"
+				"	return System::eval_native(System::getZetScript(),s,params)"
 				"}"
 				"static System::getZetScript(){"
 				"	return ptrToZetScriptPtr(0x%x);" // ptrToZetScript it gets current this
@@ -165,6 +165,7 @@ namespace zetscript{
 					||	rc->symbol_class.name == "DateTime"
 					||	rc->symbol_class.name == "Vector"
 					||	rc->symbol_class.name == "VectorIterator"
+					||	rc->symbol_class.name == "Json"
 				)){
 				 show_class=false;
 			 }
@@ -332,9 +333,8 @@ namespace zetscript{
 	StackElement ZetScript::evalInternal(const char * code, unsigned short options, const char * filename)  {
 		ScriptFunction *sf_main=MAIN_FUNCTION(this);
 		Scope *sc_main=MAIN_SCOPE(this);
-		StackElement stk_ret;
+		StackElement stk_ret=k_stk_undefined;
 
-		stk_ret.setUndefined();
 
 
 		eval_parse_and_compile(this,sf_main,code,filename);

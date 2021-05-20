@@ -15,24 +15,28 @@ namespace zetscript{
 			result= "zs_float";
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= "bool";
+		else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk))
+			result= "ScriptObjectObject";
 		else if(STK_IS_SCRIPT_OBJECT_STRING(stk))
-			result= "@StringObject";
+			result= "ScriptObjectString";
 		else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk))
-			result= "@VectorObject";
+			result= "ScriptObjectVector";
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result= "@Function";
+			result= "ScriptFunction";
 		else if(STK_VALUE_IS_CLASS(stk))
-			result= "@Class";
+			result= "ScriptClass";
 		else if(STK_VALUE_IS_MEMBER_ATTRIBUTE(stk))
-			result= "@MemberAttribute";
+			result= "MemberAttribute";
 		else if(STK_VALUE_IS_MEMBER_FUNCTION(stk))
-			result= "@MemberFunction";
-		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
-
-			if(this->properties & STK_PROPERTY_PTR_STK){
+			result= "MemberFunction";
+		else{
+			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
 			}
-			result=((ScriptObjectObject *)stk->value)->getClassName().c_str();
+
+			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				result=((ScriptObjectObject *)stk->value)->getClassName().c_str();
+			}
 		}
 
 		return result;
@@ -46,7 +50,9 @@ namespace zetscript{
 			stk=(StackElement *)stk->value;
 		}
 
-		if(STK_VALUE_IS_ZS_INT(stk))
+		if((stk->properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C))
+			result= (const char *)stk->value;
+		else if(STK_VALUE_IS_ZS_INT(stk))
 			result= zs_strutils::zs_int_to_str((zs_int)stk->value);
 		else if(STK_VALUE_IS_ZS_FLOAT(stk))
 			result= zs_strutils::float_to_str(*((zs_float *)&stk->value));
