@@ -64,13 +64,13 @@ namespace zetscript{
 		// System mod
 		cl=script_class_factory->registerClass("System");
 		cl->registerNativeMemberFunctionStatic("clock",ModuleSystemWrap_clock);
-		cl->registerNativeMemberFunctionStatic("ModuleSystemWrap_eval",ModuleSystemWrap_eval);
-		cl->registerNativeMemberFunctionStatic("assertNative",ModuleSystemWrap_assert);
+		cl->registerNativeMemberFunctionStatic("eval_native",ModuleSystemWrap_eval);
+		cl->registerNativeMemberFunctionStatic("assert_native",ModuleSystemWrap_assert);
 
 		// Json mod
 		cl=script_class_factory->registerClass("Json");
-		cl->registerNativeMemberFunctionStatic("serialize",static_cast<ScriptObjectString * (*)(ScriptObjectObject *)>(ModuleJsonWrap_serialize));
-		cl->registerNativeMemberFunctionStatic("serialize",static_cast<ScriptObjectString * (*)(ScriptObjectObject *, bool *)>(ModuleJsonWrap_serialize));
+		cl->registerNativeMemberFunctionStatic("serialize_native",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(ModuleJsonWrap_serialize));
+		cl->registerNativeMemberFunctionStatic("serialize_native",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(ModuleJsonWrap_serialize));
 		cl->registerNativeMemberFunctionStatic("deserialize",ModuleJsonWrap_deserialize);
 
 
@@ -80,7 +80,7 @@ namespace zetscript{
 				//------------------------------------------------
 				// String
 				"static String::format(s,...args){" // add static function format to String module
-				"	String::formatNative(System::getZetScript(),s,args)"
+				"	String::format_native(System::getZetScript(),s,args)"
 				"}"
 				//------------------------------------------------
 				// Console
@@ -102,11 +102,17 @@ namespace zetscript{
 				"	System::assertNative(System::getZetScript(),check,s,args)"
 				"}"
 				"static System::eval(s,params){"
-				"	ModuleSystem_eval(System::getZetScript(),s,params)"
+				"	System::eval_native(System::getZetScript(),s,params)"
 				"}"
 				"static System::getZetScript(){"
 				"	return ptrToZetScriptPtr(0x%x);" // ptrToZetScript it gets current this
 				"}"
+				//------------------------------------------------
+				// System
+				"static Json::serialize(stk,formatted=true){"
+				"	Json::serialize_native(System::getZetScript(),stk,formatted)"
+				"}"
+
 
 			,
 			(void *)this

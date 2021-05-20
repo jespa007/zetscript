@@ -5,12 +5,12 @@ var obj=Json::deserialize(
 	    "\"encoding\" : \"UTF-8\",\n"+
 	    "\"number\": 3.34E-5,\n"+
 	    "// Plug-ins loaded at start-up\n"+
-	    "\"plug-ins\" : [\n"+
+	   /* "\"plug-ins\" : [\n"+
 	        "\"python\",\n"+
 	        "\"c++\",\n"+
 	        "\"ruby\"\n"+
-	      "],\n"+
-	    "// Tab indent size\n"+
+	      "],\n"+*/
+	   /* "// Tab indent size\n"+
 	    "\"indent\" : { \"length\" : 3, \"use_space\": true },\n"+
 	    "// set of languages\n"+
 	    "\"languages\":[{\n"+
@@ -56,9 +56,9 @@ var obj=Json::deserialize(
 					",0.0,0.0,0.0,0\n"+
 				"]\n"+
 			"}\n"+
-		"}\n"+
+		"}\n"+*/
 	"}"
 );
 
-Console::outln("result:"+Json::serialize(obj))
+Console::outln("result:"+Json::serialize({ii:0}))
 

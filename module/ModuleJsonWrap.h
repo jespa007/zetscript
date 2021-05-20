@@ -5,6 +5,6 @@ namespace zetscript{
 	class ScriptObjectString;
 
 	void ModuleJsonWrap_deserialize(ScriptObjectString *str_json);
-	ScriptObjectString * ModuleJsonWrap_serialize(ScriptObjectObject *obj,bool *minimized);
-	ScriptObjectString * ModuleJsonWrap_serialize(ScriptObjectObject *obj);
+	ScriptObjectString * ModuleJsonWrap_serialize(ZetScript *zs,StackElement *stk,bool *minimized);
+	ScriptObjectString * ModuleJsonWrap_serialize(ZetScript *zs,StackElement *stk);
 }

@@ -563,8 +563,10 @@ namespace zetscript{
 		){
 			EvalInstruction *eval_instruction_pre=NULL;
 
-			if(token_node_symbol.token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-				EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"expected identifier before pre operation \"%s\"",eval_data_pre_operations[ pre_operation].str);
+			if(pre_operation != PreOperation::PRE_OPERATION_TYPEOF){
+				if(token_node_symbol.token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
+					EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"expected identifier before pre operation \"%s\"",eval_data_pre_operations[ pre_operation].str);
+				}
 			}
 
 			Instruction *last_load_instruction=&token_node_symbol.instructions[token_node_symbol.instructions.size()-1]->vm_instruction;

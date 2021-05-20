@@ -201,7 +201,7 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// String
-		registerNativeMemberFunctionStatic<ScriptObjectString>("formatNative",ScriptObjectString::format);
+		registerNativeMemberFunctionStatic<ScriptObjectString>("format_native",ScriptObjectString::format);
 		registerNativeMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectStringWrap_eraseAt);
 		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
 		registerNativeMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);

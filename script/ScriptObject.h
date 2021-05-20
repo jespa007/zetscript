@@ -68,8 +68,6 @@ namespace zetscript{
 
 		virtual				size_t length();
 
-		//bool 				initSharedPtr();
-		//bool 				unrefSharedPtr(int _idx_current_call);
 		ZetScript      * 	getZetScript();
 		StackElement 	* getBuiltinProperty(const std::string & property_name, int * idx=NULL);
 		int			   		getBuiltinPropertyIdx(const std::string & varname);

@@ -566,9 +566,7 @@ namespace zetscript{
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				if(is_for_in){
-					ZS_LOG_INFO("IS FOR IN");
-				}else{
+				if(is_for_in == false){
 				  // expects conditional and post (i.e for(;;) )
 					if(*aux_p != ';'){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected ';'");

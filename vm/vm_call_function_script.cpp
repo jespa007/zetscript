@@ -124,9 +124,6 @@
 		}\
 	}\
 
-
-
-
 #define PROCESS_COMPARE_OPERATION(__C_OP__, __METAMETHOD__)\
 	msk_properties=(stk_result_op1->properties<<16)|stk_result_op2->properties;\
 	switch(msk_properties){\
@@ -637,7 +634,7 @@ load_element_object:
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-							,stk_result_op1->typeStr()
+							,stk_result_op1->typeOf()
 						);
 					}
 
@@ -833,13 +830,13 @@ load_element_object:
 						ScriptObjectObject *obj = NULL;
 						StackElement *stk_object=(data->stk_vm_current-1);
 						if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_object) == 0){
-							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_object->typeStr());
+							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_object->typeOf());
 						}
 
 						obj = (ScriptObjectObject *)stk_object->value;
 
 						if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
-							VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\"",stk_result_op1->typeStr());
+							VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\"",stk_result_op1->typeOf());
 						}
 								// op1 is now the src value ...
 						StackElement *se=NULL;
@@ -1001,7 +998,7 @@ load_element_object:
 							stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
 						}else {
 							if((stk_dst->properties & STK_PROPERTY_IS_VAR_C)==0){
-								VM_STOP_EXECUTE("Expected l-value on assignment but it was type \"%s\"",stk_dst->typeStr());
+								VM_STOP_EXECUTE("Expected l-value on assignment but it was type \"%s\"",stk_dst->typeOf());
 							}
 						}
 
@@ -1204,7 +1201,7 @@ load_element_object:
 									}
 								}
 							}else{
-								VM_STOP_EXECUTE("(internal) cannot determine var type %s",stk_src->typeStr());
+								VM_STOP_EXECUTE("(internal) cannot determine var type %s",stk_src->typeOf());
 							}
 							if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 						}
@@ -1342,6 +1339,11 @@ load_element_object:
 						goto lbl_exit_function;
 					}
 				}
+				continue;
+			case BYTE_CODE_TYPEOF:
+				POP_ONE;
+				data->stk_vm_current->value=(void *)stk_result_op1->typeOf();
+				data->stk_vm_current->properties=STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C;
 				continue;
 			case BYTE_CODE_ADD: // +
 				POP_TWO;
@@ -1711,7 +1713,7 @@ load_element_object:
 								data->stk_vm_current=stk_def_afun_start+1; // reset stack +1*/
 								break;
 							default:
-								VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\"",param->default_var_value.typeStr());
+								VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\"",param->default_var_value.typeOf());
 								break;
 
 							}
@@ -1882,7 +1884,7 @@ load_element_object:
 						}
 					}
 					else{
-						VM_STOP_EXECUTE("Error deleting \"%s\". cannot perform delete on variables type \"%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_result_op1->typeStr());
+						VM_STOP_EXECUTE("Error deleting \"%s\". cannot perform delete on variables type \"%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_result_op1->typeOf());
 					}
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:
@@ -1915,6 +1917,10 @@ load_element_object:
 				 continue;
 			 case BYTE_CODE_NEG_POST_DEC:
 				 PERFORM_POST_OPERATOR(-,--,BYTE_CODE_METAMETHOD_PREVIOUS);
+				 continue;
+			 case BYTE_CODE_IN:
+				 POP_TWO;
+				 ZS_LOG_INFO("Check %s in %s",stk_result_op1->toString().c_str(), stk_result_op2->toString().c_str());
 				 continue;
 			}
 		 }

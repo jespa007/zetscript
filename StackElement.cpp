@@ -4,27 +4,29 @@ namespace zetscript{
 
 	extern const StackElement k_stk_undefined={0,STK_PROPERTY_NULL};
 
-	const char * StackElement::typeStr(){
+	const char * StackElement::typeOf(){
 		StackElement *stk=this;
-		const char * result="null";
-		if(STK_VALUE_IS_ZS_INT(stk))
-			result= "int";
-		else if(STK_VALUE_IS_FLOAT(stk))
-			result= "float";
+		const char * result="unknown";
+		if(STK_VALUE_IS_NULL(stk))
+			result= "null";
+		else if(STK_VALUE_IS_ZS_INT(stk))
+			result= "zs_int";
+		else if(STK_VALUE_IS_ZS_FLOAT(stk))
+			result= "zs_float";
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= "bool";
 		else if(STK_IS_SCRIPT_OBJECT_STRING(stk))
-			result= "string";
+			result= "@StringObject";
 		else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk))
-			result= "vector";
+			result= "@VectorObject";
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result= "function";
+			result= "@Function";
 		else if(STK_VALUE_IS_CLASS(stk))
-			result= "class";
+			result= "@Class";
 		else if(STK_VALUE_IS_MEMBER_ATTRIBUTE(stk))
-			result= "member attribute";
+			result= "@MemberAttribute";
 		else if(STK_VALUE_IS_MEMBER_FUNCTION(stk))
-			result= "member function";
+			result= "@MemberFunction";
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
 			if(this->properties & STK_PROPERTY_PTR_STK){
@@ -46,7 +48,7 @@ namespace zetscript{
 
 		if(STK_VALUE_IS_ZS_INT(stk))
 			result= zs_strutils::zs_int_to_str((zs_int)stk->value);
-		else if(STK_VALUE_IS_FLOAT(stk))
+		else if(STK_VALUE_IS_ZS_FLOAT(stk))
 			result= zs_strutils::float_to_str(*((zs_float *)&stk->value));
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= stk->value?"true":"false";

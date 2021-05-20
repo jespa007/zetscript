@@ -14,8 +14,8 @@ namespace zetscript{
 		typedef struct{
 			const char *filename;
 			const char *str_start;
-			bool error;
 			std::string str_error;
+			ZetScript *zs;
 		}JsonDeserializeData;
 
 
@@ -30,7 +30,7 @@ namespace zetscript{
 				0
 		};
 
-		char *deserialize_recursive(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element);
+		char *deserialize(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element);
 
 		bool is_single_comment(char *str){
 
@@ -164,7 +164,9 @@ namespace zetscript{
 				sprintf(what_msg,"[line:%i] %s",_line,error_description);
 			}
 
-			THROW_EXCEPTION(what_msg);
+			deserialize_data->str_error=what_msg;
+
+			//THROW_EXCEPTION(what_msg);
 		}
 
 		char * read_string_between_quotes(JsonDeserializeData *deserialize_data, const char *str_start,int & line, std::string * str_out){
@@ -185,10 +187,12 @@ namespace zetscript{
 				}
 			}else{
 				json_deserialize_error(deserialize_data,str_start,line,"expected string value");
+				return NULL;
 			}
 
 			if(*str_current != '\"'){
 				json_deserialize_error(deserialize_data,str_start,line,"string value not closed");
+				return NULL;
 			}
 
 			return eval_ignore_blanks(str_current+1, line);
@@ -207,22 +211,26 @@ namespace zetscript{
 			int bytes_readed=0;
 			char *str_end=NULL;
 			bool ok=false;
-			void *ptr_data=NULL;
 
 			if (*str_current == '\"') {// try string ...
-				std::string *str_aux=(std::string *)ptr_data;
-				str_current=read_string_between_quotes(deserialize_data,str_current,line,str_aux);
+				std::string str_aux;
+				if((str_current=read_string_between_quotes(deserialize_data,str_current,line,&str_aux))==NULL){
+					return NULL;
+				}
+				ScriptObject *so=ScriptObjectString::newScriptObjectString(deserialize_data->zs, str_aux);
+				vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),so);
+				stk_json_element->value=so;
+				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
+
 			}
 			else if (strncmp(str_current, "true", 4)==0) { // true detected ...
-				if(ptr_data != NULL){
-					*((bool *) ptr_data)= true;
-				}
+				stk_json_element->properties=STK_PROPERTY_BOOL;
+				stk_json_element->value=(void *)((zs_int)(true));
 				str_current+=4;
 			}
 			else if (strncmp(str_current, "false", 5) == 0) {// boolean detected
-				if(ptr_data != NULL){
-					*((bool *) ptr_data) = false;
-				}
+				stk_json_element->properties=STK_PROPERTY_BOOL;
+				stk_json_element->value=(void *)((zs_int)(false));
 				str_current+=5;
 			}
 			else{ // must a number
@@ -242,19 +250,16 @@ namespace zetscript{
 
 					zs_float *number_value = 0;
 					if((number_value=zs_strutils::parse_float(default_str_value)) != NULL){
-						*((float *) ptr_data) = *number_value;
+						ZS_FLOAT_COPY(&stk_json_element->value,number_value);
 						delete number_value;
 
 					}
+				}else{
+					json_deserialize_error(deserialize_data,str_start,line,"Cannot deduce json value. Json value can be Number,Boolean,String, Vector or Object");
+					return NULL;
 				}
 			}
-
-			// if the parse was ok or json_var was not found we advance anyway
-			if(ok || stk_json_element == NULL){
-				return str_current;
-			}
-
-			return NULL;
+			return str_current;
 		}
 
 		char * deserialize_vector(
@@ -265,12 +270,26 @@ namespace zetscript{
 				){
 			char *str_current = (char *)str_start;
 			std::string error;
+			ScriptObjectVector *vo;
+			StackElement *stk_element=NULL;
+
 
 			str_current = eval_ignore_blanks(str_current, line);
 
 			if(*str_current != '['){
 				json_deserialize_error(deserialize_data,str_start,line,"A '[' was expected to parse JsonVarVector type");
-				return 0;
+				return NULL;
+			}
+
+			// ok, we create object
+			if(stk_json_element != NULL && stk_json_element->properties==0){
+				vo=ScriptObjectVector::newScriptObjectVector(deserialize_data->zs);
+				vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),vo);
+				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
+				stk_json_element->value=vo;
+			}else{
+				json_deserialize_error(deserialize_data, str_start, line, "Internal error: A null stackelement expected");
+				return NULL;
 			}
 
 			str_current = eval_ignore_blanks(str_current+1, line);
@@ -278,7 +297,10 @@ namespace zetscript{
 			if(*str_current != ']'){ // do parsing primitive...
 
 				do{
-					str_current=deserialize_recursive(deserialize_data,str_current,line,stk_json_element);
+					// add new element,
+					stk_element=vo->pushNewUserSlot();
+
+					str_current=deserialize(deserialize_data,str_current,line,stk_element);
 
 					str_current = eval_ignore_blanks(str_current, line);
 
@@ -286,7 +308,7 @@ namespace zetscript{
 						str_current = eval_ignore_blanks(str_current+1, line);
 					}else if(*str_current!=']'){
 						json_deserialize_error(deserialize_data, str_current, line,  "Expected ',' or ']'");
-						return 0;
+						return NULL;
 					}
 
 				}while(*str_current != ']');
@@ -299,13 +321,27 @@ namespace zetscript{
 			char *str_current = (char *)str_start;
 			std::string variable_name,key_id;
 			std::string error;
+			ScriptObjectObject *so;
+			StackElement *stk_element=NULL;
 
 			str_current = eval_ignore_blanks(str_current, line);
 
 			if(*str_current != '{'){
-				json_deserialize_error(deserialize_data, str_start, line, "A '{' was expected to parse %s type",stk_json_element!=NULL?stk_json_element->typeStr():"");
+				json_deserialize_error(deserialize_data, str_start, line, "A '{' was expected to parse %s type",stk_json_element!=NULL?stk_json_element->typeOf():"");
 				return NULL;
 			}
+
+			// ok, we create object
+			if(stk_json_element != NULL && stk_json_element->properties==0){
+				so=ScriptObjectObject::newScriptObjectObject(deserialize_data->zs);
+				vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),so);
+				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
+				stk_json_element->value=so;
+			}else{
+				json_deserialize_error(deserialize_data, str_start, line, "Internal error: A null stackelement expected");
+				return NULL;
+			}
+
 
 			str_current = eval_ignore_blanks(str_current+1, line);
 
@@ -320,10 +356,15 @@ namespace zetscript{
 
 					str_current = eval_ignore_blanks(str_current + 1, line);
 
-					// get c property
+					// create property... //get c property
+					if((stk_element=so->addProperty(key_id,error)) == NULL){
+						json_deserialize_error(deserialize_data, str_current, line, error.c_str());
+						return NULL;
+					}
 
-
-					str_current=deserialize_recursive(deserialize_data, str_current, line, stk_json_property);
+					if((str_current=deserialize(deserialize_data, str_current, line, stk_element))==NULL){
+						return NULL;
+					}
 
 
 					str_current = eval_ignore_blanks(str_current, line);
@@ -341,7 +382,7 @@ namespace zetscript{
 			return str_current+1;
 		}
 
-		char * deserialize_recursive(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element) {
+		char * deserialize(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element) {
 			// PRE: If json_var == NULL it parses but not saves
 			char * str_current = (char *)str_start;
 			str_current = eval_ignore_blanks(str_current, line);
@@ -358,23 +399,6 @@ namespace zetscript{
 
 			return str_current;
 		}
-
-		StackElement deserialize(const std::string & str) {
-			const char *str_start=str.c_str();
-			JsonDeserializeData deserialize_data;
-			deserialize_data.filename=NULL;
-			deserialize_data.str_start=str_start;
-			int line=1;
-			StackElement stk_return=k_stk_undefined;
-
-			deserialize_recursive(&deserialize_data,str_start,line,&stk_return);
-
-			return stk_return;
-
-
-		}
-
-
 	}
 
 }

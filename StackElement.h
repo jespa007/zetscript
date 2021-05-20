@@ -57,8 +57,12 @@ typedef enum:unsigned short {
 #define STK_PROPERTY_RUNTIME					(((0x1<<(MAX_BIT_RUNTIME-BIT_STK_PROPERTY_IS_VAR_C))-1)<<(BIT_STK_PROPERTY_IS_VAR_C))
 #define GET_STK_PROPERTY_RUNTIME(prop)			((prop)&STK_PROPERTY_RUNTIME)
 
+#define STK_VALUE_IS_ZS_NULL(stk) \
+(stk->properties == 0)
+
+
 // Check types
-#define STK_VALUE_IS_FLOAT(stk) \
+#define STK_VALUE_IS_ZS_FLOAT(stk) \
 (stk->properties & STK_PROPERTY_ZS_FLOAT)
 
 
@@ -110,7 +114,7 @@ namespace zetscript{
 		uint16_t properties; // it tells its properties
 
 		// it gives stackelement as string (the result should be deleted)
-		const char * typeStr();
+		const char * typeOf();
 		std::string toString();
 		void setUndefined();
 
