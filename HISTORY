@@ -215,7 +215,7 @@ Solved issues
 #264 Implement passing args by reference
 #265 Implement zs_test_strict
 #266 Optimize using Push/Pop scope 
-> #267 Implement Builtin helper class Json
+#267 Implement Builtin helper class Json
 #269 Implement String methods 
 #270 Get rid of C++ functions binding. Allow only C functions or optimized way
 #272 Separate built-in properties and user properties

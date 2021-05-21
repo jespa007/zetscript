@@ -251,8 +251,8 @@ namespace zetscript{
 					zs_float *number_value = 0;
 					if((number_value=zs_strutils::parse_float(default_str_value)) != NULL){
 						ZS_FLOAT_COPY(&stk_json_element->value,number_value);
+						stk_json_element->properties=STK_PROPERTY_ZS_FLOAT;
 						delete number_value;
-
 					}
 				}else{
 					json_deserialize_error(deserialize_data,str_start,line,"Cannot deduce json value. Json value can be Number,Boolean,String, Vector or Object");

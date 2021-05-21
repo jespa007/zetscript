@@ -110,7 +110,7 @@ namespace zetscript{
 				//------------------------------------------------
 				// System
 				"static Json::serialize(stk){"
-				"	Json::serialize_native(System::getZetScript(),stk)"
+				"	return Json::serialize_native(System::getZetScript(),stk)"
 				"}"
 
 
