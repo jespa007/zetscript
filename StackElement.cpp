@@ -10,9 +10,9 @@ namespace zetscript{
 		if(STK_VALUE_IS_NULL(stk))
 			result= "null";
 		else if(STK_VALUE_IS_ZS_INT(stk))
-			result= "zs_int";
+			result= "int";
 		else if(STK_VALUE_IS_ZS_FLOAT(stk))
-			result= "zs_float";
+			result= "float";
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= "bool";
 		else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk))
@@ -59,9 +59,9 @@ namespace zetscript{
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= stk->value?"true":"false";
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result= std::string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
+			result= std::string("ScriptFunction")+"@"+((ScriptFunction *)stk->value)->symbol.name;
 		else if(STK_VALUE_IS_CLASS(stk))
-			result= std::string("Class")+"@"+((ScriptClass *)stk->value)->symbol_class.name;
+			result= std::string("ScriptClass")+"@"+((ScriptClass *)stk->value)->symbol_class.name;
 		else if(STK_VALUE_IS_SCRIPT_VAR(stk)){
 
 			result=((ScriptObjectObject *)stk->value)->toString();

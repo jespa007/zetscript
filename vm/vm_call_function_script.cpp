@@ -1342,8 +1342,10 @@ load_element_object:
 				continue;
 			case BYTE_CODE_TYPEOF:
 				POP_ONE;
-				data->stk_vm_current->value=(void *)stk_result_op1->typeOf();
-				data->stk_vm_current->properties=STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C;
+				so_aux=ScriptObjectString::newScriptObjectString(data->zs,stk_result_op1->typeOf());
+				vm_create_shared_pointer(vm,so_aux);
+				data->stk_vm_current->value=so_aux;
+				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				data->stk_vm_current++;
 				continue;
 			case BYTE_CODE_ADD: // +

@@ -49,7 +49,7 @@ namespace zetscript{
 			}
 		}
 
-		eval_pop_and_compile_function(eval_data);
+		eval_pop_and_setup_function(eval_data);
 
 		error=eval_data->error;
 		error_str=eval_data->error_str;
@@ -326,7 +326,7 @@ namespace zetscript{
 
 	}
 
-	int eval_pop_and_compile_function(EvalData *eval_data){
+	int eval_pop_and_setup_function(EvalData *eval_data){
 
 		std::string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
