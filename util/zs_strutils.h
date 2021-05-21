@@ -18,6 +18,8 @@ if(n==ZS_MAX_STR_BUFFER){\
 }\
 va_end(ap);}
 
+#define ZS_CONST_STR_IS_EMPTY(str) ((str)==NULL || (*(str))==0)
+
 namespace zetscript{
 	namespace zs_strutils{
 

@@ -275,7 +275,7 @@ namespace zetscript{
 	ScriptClass * ScriptClassFactory::registerClass(
 			const std::string & class_name
 			 ,const std::string & base_class_name
-			 ,const std::string & file
+			 ,const char * file
 			 , short line
 	){
 		int  index;

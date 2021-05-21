@@ -8,10 +8,11 @@ var object={ // structure
 
 
 // add property test
-object.k=false;
-object["k"]=false;
+//object.k=false;
+//Console::outln("object.k:"+object.k);
 
-Console::outln("dictionary.k:"+object.k);
+object["general.info"]=false;
+Console::outln("object[\"general.info\"]:"+object["general.info"]);
 
 var obj1={a:1,b:2}
 var obj2={c:3,d:4}

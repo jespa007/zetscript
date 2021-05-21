@@ -6,8 +6,8 @@
 
 #define MAIN_SCRIPT_FUNCTION_NAME 		"@MainFunction"
 #define IDX_SCRIPT_FUNCTION_MAIN		0
-#define NEW_SCRIPT_FUNCTION(data)		((data->script_function_factory))->newScriptFunction
-#define GET_SCRIPT_FUNCTION(data,idx)	((data->script_function_factory))->getScriptFunction(idx)
+#define NEW_SCRIPT_FUNCTION(data)		(((data)->script_function_factory))->newScriptFunction
+#define GET_SCRIPT_FUNCTION(data,idx)	(((data)->script_function_factory))->getScriptFunction(idx)
 #define MAIN_FUNCTION(data)				GET_SCRIPT_FUNCTION(data,IDX_SCRIPT_FUNCTION_MAIN)
 
 namespace zetscript{
@@ -27,7 +27,7 @@ namespace zetscript{
 			Symbol 			*	newScriptFunction(
 				//--- Register information
 				  Scope *scope
-				, const std::string & file
+				, const char * file
 				, short line
 				//--- Function data
 			    , int idx_class

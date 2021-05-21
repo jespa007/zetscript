@@ -727,7 +727,7 @@ error_eval_keyword_var:
 
 			//
 			//eval_check_scope(eval_data,scope_function);
-			eval_pop_and_setup_function(eval_data);
+			eval_pop_and_compile_function(eval_data);
 
 			return aux_p;
 		}

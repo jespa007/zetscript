@@ -46,8 +46,8 @@ namespace zetscript{
 		 * register/search symbol info
 		 * @n_params:
 		 */
-		Symbol * addSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params);
-		Symbol * registerSymbol(const std::string & file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, ScopeDirection scope_direction_repeated_symbols=ScopeDirection::SCOPE_DIRECTION_BOTH);
+		Symbol * addSymbol(const char * file, short line,const std::string & symbol_name, char n_params);
+		Symbol * registerSymbol(const char * file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, ScopeDirection scope_direction_repeated_symbols=ScopeDirection::SCOPE_DIRECTION_BOTH);
 		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, ScopeDirection scope_direction_repeated_symbols=ScopeDirection::SCOPE_DIRECTION_BOTH);
 
 		void						    markAsUnusued();

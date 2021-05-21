@@ -300,7 +300,10 @@ namespace zetscript{
 					// add new element,
 					stk_element=vo->pushNewUserSlot();
 
-					str_current=deserialize(deserialize_data,str_current,line,stk_element);
+					if((str_current=deserialize(deserialize_data,str_current,line,stk_element))==NULL){
+						return NULL;
+					}
+
 
 					str_current = eval_ignore_blanks(str_current, line);
 
@@ -341,7 +344,6 @@ namespace zetscript{
 				json_deserialize_error(deserialize_data, str_start, line, "Internal error: A null stackelement expected");
 				return NULL;
 			}
-
 
 			str_current = eval_ignore_blanks(str_current+1, line);
 

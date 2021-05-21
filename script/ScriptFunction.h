@@ -48,9 +48,9 @@ namespace zetscript{
 		//  SYMBOL-INSTRUCTION
 		std::map<short,InstructionSourceInfo> instruction_source_info; // std::map that gives symbol with at instruction idx given
 
-		short 		 getInstructionLine(Instruction * ins);
-		const char * getInstructionSymbolName(Instruction * ins);
-		const char * getInstructionSourceFile(Instruction * ins);
+		short 				getInstructionLine(Instruction * ins);
+		const char * 		getInstructionSymbolName(Instruction * ins);
+		const char *		getInstructionSourceFile(Instruction * ins);
 
 		//  DEBUG
 		//-----------
@@ -65,7 +65,7 @@ namespace zetscript{
 		 */
 		Symbol *registerLocalArgument(
 				 Scope * scope_block
-				, const std::string & file
+				, const char * file
 				, short line
 				, const std::string & symbol_name
 				, uint16_t properties
@@ -76,7 +76,7 @@ namespace zetscript{
 		 */
 		Symbol *  registerLocalVariable(
 				 Scope * scope_block
-				, const std::string & file
+				, const char * file
 				, short line
 				, const std::string & symbol_name
 				, const std::string & str_native_type=""
@@ -92,7 +92,7 @@ namespace zetscript{
 		 */
 		Symbol * registerLocalFunction(
 				  Scope * scope_block
-				, const std::string & file
+				, const char * file
 				, short line
 				, const std::string & function_name
 				, std::vector<ScriptFunctionArg> args={}

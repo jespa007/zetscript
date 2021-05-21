@@ -29,19 +29,48 @@
 namespace zetscript{
 
 	void eval_parse_and_compile(ZetScript *zs
-			, ScriptFunction *sf
-			,const char * str
+			,const char * str_code
 			, const char *  _filename
 			, int _line
+			, ScriptFunction *_sf
+			, std::vector<ScriptFunctionArg> * function_args
+
+
 		){
 		EvalData *eval_data=new EvalData(zs);
 		char *aux_p=NULL;
 		int line =_line;
 		bool error;
 		std::string error_str;
+		Scope *scope_info=MAIN_SCOPE(eval_data);
 		eval_data->current_parsing_file=_filename;
+		ScriptFunction *sf = _sf == NULL?MAIN_FUNCTION(eval_data):_sf;
+
+
+		if(sf != MAIN_FUNCTION(eval_data)){
+			scope_info = zs->getScopeFactory()->newScope(sf->idx_script_function,MAIN_SCOPE(eval_data));
+			MAIN_SCOPE(eval_data)->registered_scopes->push_back((zs_int)scope_info);
+
+			if(function_args != NULL){
+
+				// register args as part of stack...
+				for(unsigned i=0; i < function_args->size(); i++){
+
+					sf->registerLocalArgument(
+						scope_info
+						,""
+						,-1
+						,function_args->at(i).arg_name
+						,0
+					);
+
+				}
+			}
+		}
+
 		eval_push_function(eval_data,sf);
-		aux_p=eval_parse_and_compile_recursive(eval_data,str,line,MAIN_SCOPE(eval_data));
+
+		aux_p=eval_parse_and_compile_recursive(eval_data,str_code,line,scope_info);
 		if(aux_p!=NULL){
 			if(*aux_p=='}'){
 				eval_data->error=true;
@@ -49,7 +78,24 @@ namespace zetscript{
 			}
 		}
 
-		eval_pop_and_setup_function(eval_data);
+		if(sf != MAIN_FUNCTION(eval_data)){ // is anonyomuse function
+			if(scope_info->n_registered_symbols_as_variables > 0){ // if there's local symbols insert push/pop scope for there symbols
+
+					eval_data->current_function->instructions.insert(
+							eval_data->current_function->instructions.begin()
+							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope_info)
+					);
+
+					// and finally insert pop scope
+					eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_POP_SCOPE,0));
+
+			}
+			else{ // remove scope
+				scope_info->markAsUnusued();
+			}
+		}
+
+		eval_pop_and_compile_function(eval_data);
 
 		error=eval_data->error;
 		error_str=eval_data->error_str;
@@ -326,7 +372,7 @@ namespace zetscript{
 
 	}
 
-	int eval_pop_and_setup_function(EvalData *eval_data){
+	int eval_pop_and_compile_function(EvalData *eval_data){
 
 		std::string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
@@ -436,7 +482,7 @@ namespace zetscript{
 						// ok get the super function...
 						if(symbol_sf_foundf == NULL){
 							EVAL_ERROR_POP_FUNCTION(
-									instruction->instruction_source_info.file
+									eval_data->current_parsing_file
 									,instruction->instruction_source_info.line
 									,"Cannot find parent function %s::%s"
 									,sc_sf->symbol_class.name.c_str()
@@ -481,7 +527,7 @@ namespace zetscript{
 						strncpy(class_name,str_start_class,str_end_class-str_start_class);
 
 						EVAL_ERROR_POP_FUNCTION(
-								instruction->instruction_source_info.file
+								eval_data->current_parsing_file
 								,instruction->instruction_source_info.line
 								,"static symbol '%s' not exist in '%s'"
 								//,sf_class->symbol_class.name.c_str()
@@ -490,7 +536,7 @@ namespace zetscript{
 						);
 					}else{
 						EVAL_ERROR_POP_FUNCTION(
-								instruction->instruction_source_info.file
+								eval_data->current_parsing_file
 								,instruction->instruction_source_info.line
 								,"Symbol '%s' not defined"
 								//,sf_class->symbol_class.name.c_str()

@@ -73,7 +73,7 @@ namespace zetscript{
 	}
 
 	Symbol *  Scope::addSymbol(
-		const std::string & file
+		const char * file
 		,short line
 		, const std::string & symbol_name
 		, char n_params){
@@ -96,12 +96,12 @@ namespace zetscript{
 	//
 	// SCOPE VARIABLE MANAGEMENT
 	//
-	Symbol * Scope::registerSymbol(const std::string & file,short line, const std::string & symbol_name, char n_params, ScopeDirection check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbol(const char * file,short line, const std::string & symbol_name, char n_params, ScopeDirection check_repeated_symbols_direction){
 		Symbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 		if((p_irv = getSymbol(symbol_name,n_params,check_repeated_symbols_direction))!=NULL){ // check whether symbol is already registered ...
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				THROW_SCRIPT_ERROR(file.c_str(),line," error symbol \"%s\" already registered at %s:%i", symbol_name.c_str(),p_irv->file.c_str(),p_irv->line);
+				THROW_SCRIPT_ERROR(file,line," error symbol \"%s\" already registered at %s:%i", symbol_name.c_str(),p_irv->file,p_irv->line);
 			}else{
 				THROW_RUNTIME_ERROR(" error symbol \"%s\" already registered as C++", symbol_name.c_str());
 			}

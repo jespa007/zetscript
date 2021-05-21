@@ -68,7 +68,7 @@ namespace zetscript{
 		// SCRIPT VARIABLES
 		Symbol				* 	registerMemberVariable(
 			std::string & error
-			,const std::string & file
+			,const char * file
 			,short line
 			,const std::string & symbol_name
 			,unsigned short symbol_properties
@@ -85,7 +85,7 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberVariable(
 			std::string & error
-			,const std::string & file
+			,const char * file
 			,short line
 			,const std::string & symbol_name
 			,const std::string & str_native_type
@@ -99,7 +99,7 @@ namespace zetscript{
 		//
 		Symbol 				*	registerMemberAttribute(
 				 std::string & error
-				,const std::string & file
+				,const char * file
 				,short line
 				,const std::string & attrib_name
 		);
@@ -109,7 +109,7 @@ namespace zetscript{
 
 		Symbol				* 	registerMemberAttributeSetter(
 			std::string & error
-			,const std::string & file
+			,const char * file
 			,short line
 			,const std::string & attribute_name
 			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
@@ -117,7 +117,7 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberAttributeSetter(
 			std::string & error
-			,const std::string & file
+			,const char * file
 			,short line
 			,const std::string & attribute_name
 			, ScriptFunctionArg arg_value
@@ -141,7 +141,7 @@ namespace zetscript{
 
 		Symbol				* 	registerMemberAttributeGetter(
 			std::string & error
-			,const std::string & file
+			,const char * file
 			,short line
 			,const std::string & attribute_name
 			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
@@ -149,7 +149,7 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberAttributeGetter(
 			std::string & error
-			,const std::string & file
+			,const char * file
 			,short line
 			,const std::string & attribute_name
 			, int idx_return_type
@@ -176,7 +176,7 @@ namespace zetscript{
 
 		Symbol				* 	registerMemberFunction(
 				std::string & error
-				,const std::string & file
+				,const char * file
 				, short line
 				,const std::string & function_name
 				, std::vector<ScriptFunctionArg> args={}
@@ -186,7 +186,7 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberFunction(
 				 std::string & error
-				,const std::string & file
+				,const char * file
 				, short line
 				,const std::string & function_name
 				, std::vector<ScriptFunctionArg> args={}
@@ -232,7 +232,7 @@ namespace zetscript{
 
 		Symbol				* 	registerInternalMemberVariable(
 			std::string & error
-			,const std::string & file
+			,const char *file
 			, short line
 			,const std::string & symbol_name
 			, unsigned short properties
@@ -242,7 +242,7 @@ namespace zetscript{
 
 		Symbol				* 	registerInternalMemberFunction(
 		      std::string & error
-			, const std::string & file
+			, const char * file
 			, short line
 			,const std::string & function_name
 			, std::vector<ScriptFunctionArg> args

@@ -29,7 +29,7 @@ namespace zetscript{
 
 	class	ZetScript;
 	struct Symbol {
-		std::string file;   // file where symbol was registered
+		const char *file;   // file where symbol was registered
 		short  line;		// line where symbol was registered
 		short  idx_position;  // used as position where local var/function is located VM (VM reserves space required for all vars)
 

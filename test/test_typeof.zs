@@ -2,10 +2,6 @@ class A{}
 
 var a=new A()
 
-System::eval("a")
-//typeof a
-
-/*
 var test_typeof=[
 	"typeof 0"
 	,"typeof 1.0"
@@ -17,6 +13,6 @@ var test_typeof=[
 
 for(var i in test_typeof){
 	Console::outln("{0}:{1}",i,System::eval(i))
-}*/
+}
 
 

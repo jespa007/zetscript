@@ -72,7 +72,7 @@ namespace zetscript{
 	// VARIABLES
 	Symbol				* 	ScriptClass::registerMemberVariable(
 		std::string & error
-		,const std::string & file
+		,const char * file
 		,short line
 		,const std::string & symbol_name
 
@@ -91,7 +91,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberVariable(
 		std::string & error
-		,const std::string & file
+		,const char * file
 		,short line
 		,const std::string & symbol_name
 		,const std::string & str_native_type
@@ -114,7 +114,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerInternalMemberVariable(
 	    std::string & error
-		,const std::string & file
+		,const char * file
 		,short line
 		,const std::string & symbol_name
 		,unsigned short symbol_properties
@@ -155,7 +155,7 @@ namespace zetscript{
 	// ATTRIBUTES
 	Symbol *ScriptClass::registerMemberAttribute(
 			 std::string & error
-			,const std::string & file
+			,const char * file
 			,short line
 			,const std::string & attrib_name
 	){
@@ -175,7 +175,7 @@ namespace zetscript{
 				error=zs_strutils::format("Attribute \"%s\" %s at [%s:%i]"
 					,attrib_name.c_str()
 					,what
-					,zs_path::get_filename(existing_symbol->file.c_str()).c_str()
+					,zs_path::get_filename(existing_symbol->file).c_str()
 					,existing_symbol->line
 				);
 			}
@@ -195,7 +195,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerMemberAttributeSetter(
 		std::string & error
-		,const std::string & file
+		,const char * file
 		,short line
 		,const std::string & attribute_name
 		,ScriptFunction *sf // it's the offset from pointer or a pointer directly
@@ -207,7 +207,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributeSetter(
 			std::string & error
-			,const std::string & file
+			,const char * file
 			,short line
 			,const std::string & attribute_name
 			, ScriptFunctionArg arg_value
@@ -231,7 +231,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerMemberAttributeGetter(
 		std::string & error
-		,const std::string & file
+		,const char * file
 		,short line
 		,const std::string & attribute_name
 		,ScriptFunction *sf // it's the offset from pointer or a pointer directly
@@ -241,7 +241,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributeGetter(
 			std::string & error
-			,const std::string & file
+			,const char *file
 			,short line
 			,const std::string & attribute_name
 			, int idx_return_type
@@ -310,7 +310,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerMemberFunction(
 			 std::string & error
-			,const std::string & file
+			,const char * file
 			, short line
 			,const std::string & function_name
 			, std::vector<ScriptFunctionArg> args
@@ -331,7 +331,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberFunction(
 			std::string & error
-			,const std::string & file
+			,const char * file
 			, short line
 			,const std::string & function_name
 			, std::vector<ScriptFunctionArg> args
@@ -355,7 +355,7 @@ namespace zetscript{
 
 	Symbol * ScriptClass::registerInternalMemberFunction(
 		std::string & error
-		, const std::string & file
+		, const char * file
 		, short line
 		, const std::string & function_name
 		, std::vector<ScriptFunctionArg> params
@@ -371,9 +371,9 @@ namespace zetscript{
 				if((existing_symbol=getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
 					error=zs_strutils::format("Function \"%s\" is already defined at [%s:%i]"
 						,function_name.c_str()
-						,zs_path::get_filename(file.c_str()).c_str()
+						,zs_path::get_filename(file).c_str()
 						,line
-						,zs_path::get_filename(existing_symbol->file.c_str()).c_str()
+						,zs_path::get_filename(existing_symbol->file).c_str()
 						,existing_symbol->line
 					);
 				}
@@ -433,7 +433,7 @@ namespace zetscript{
 								,function_name.c_str()
 								,symbol_result->scope->script_class->symbol_class.name.c_str()
 								,function_name.c_str()
-								,zs_path::get_filename(symbol_result->file.c_str()).c_str()
+								,zs_path::get_filename(symbol_result->file).c_str()
 								,symbol_result->line
 							);
 							return NULL;

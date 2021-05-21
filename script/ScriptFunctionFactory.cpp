@@ -16,7 +16,7 @@ namespace zetscript{
 	Symbol *		 ScriptFunctionFactory::newScriptFunction(
 			//--- Register data
 			  Scope *scope
-			, const std::string & file
+			, const char * file
 			, short line
 			//--- Function data
 			, int idx_class

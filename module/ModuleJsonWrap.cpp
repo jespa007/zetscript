@@ -28,7 +28,8 @@ namespace zetscript{
 		if(json::deserialize(&deserialize_data,deserialize_data.str_start,line,&return_stack_element)==NULL){
 			vm_set_error(vm,std::string("Error deserialize:")+deserialize_data.str_error);
 			if(return_stack_element.properties & STK_PROPERTY_SCRIPT_OBJECT){
-				delete (ScriptObject *)return_stack_element.value;
+				ScriptObject *so=(ScriptObject *)return_stack_element.value;
+				vm_unref_shared_script_object_and_remove_if_zero(vm,&so);
 			}
 			return_stack_element=k_stk_undefined;
 		}

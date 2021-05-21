@@ -5,8 +5,8 @@
 #pragma once
 
 #define IDX_SCRIPT_SCOPE_MAIN				0
-#define MAIN_SCOPE(data)					((data->scope_factory))->getMainScope()
-#define NEW_SCOPE(data,sf,scope_parent)		((data->scope_factory))->newScope(sf,scope_parent)
+#define MAIN_SCOPE(data)					(((data)->scope_factory))->getMainScope()
+#define NEW_SCOPE(data,sf,scope_parent)		(((data)->scope_factory))->newScope(sf,scope_parent)
 
 
 namespace zetscript{

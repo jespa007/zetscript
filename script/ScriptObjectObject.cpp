@@ -54,7 +54,8 @@ namespace zetscript{
 		StackElement si;
 		bool error_symbol=false;
 
-		char *aux_p=(char *)symbol_value.c_str();
+		// we allow any char to allow varaibles string maps
+		/*char *aux_p=(char *)symbol_value.c_str();
 		if(
 			   ('a' <= *aux_p && *aux_p <='z') ||
 			   ('A' <= *aux_p && *aux_p <='Z') ||
@@ -81,7 +82,7 @@ namespace zetscript{
 		if(error_symbol){
 			error=zs_strutils::format("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
 			return NULL;
-		}
+		}*/
 
 		if(map_user_property_keys->exist(symbol_value.c_str())){
 			error=zs_strutils::format("\"%s\" symbol already exists",symbol_value.c_str());

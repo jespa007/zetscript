@@ -70,7 +70,7 @@ namespace zetscript{
 		// Json mod
 		cl=script_class_factory->registerClass("Json");
 		cl->registerNativeMemberFunctionStatic("serialize_native",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(ModuleJsonWrap_serialize));
-		cl->registerNativeMemberFunctionStatic("serialize_native",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(ModuleJsonWrap_serialize));
+		//cl->registerNativeMemberFunctionStatic("serialize_native",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(ModuleJsonWrap_serialize));
 		cl->registerNativeMemberFunctionStatic("deserialize",ModuleJsonWrap_deserialize);
 
 
@@ -109,8 +109,8 @@ namespace zetscript{
 				"}"
 				//------------------------------------------------
 				// System
-				"static Json::serialize(stk,formatted=true){"
-				"	Json::serialize_native(System::getZetScript(),stk,formatted)"
+				"static Json::serialize(stk){"
+				"	Json::serialize_native(System::getZetScript(),stk)"
 				"}"
 
 
@@ -187,20 +187,11 @@ namespace zetscript{
 	 // FILE MANAGEMENT
 	bool ZetScript::isFilenameAlreadyParsed(const std::string & filename){
 		for(unsigned i = 0; i < parsed_files.size(); i++){
-			if(parsed_files.at(i).filename==filename){
+			if(parsed_files.at(i)->filename==filename){
 				return true;
 			}
 		}
 		return false;
-	}
-
-	const char * ZetScript::getParsedFilenameFromIdx(unsigned idx){
-
-		if(idx >= parsed_files.size()){
-			THROW_RUNTIME_ERROR("out of bounds");
-			return DEFAULT_NO_FILENAME;
-		}
-		return parsed_files.at(idx).filename.c_str();
 	}
 
 	//-----------------------------------------------------------------------------------------------------------------------------------------
@@ -337,7 +328,7 @@ namespace zetscript{
 
 
 
-		eval_parse_and_compile(this,sf_main,code,filename);
+		eval_parse_and_compile(this,code,filename);
 
 		if(options & EvalOption::EVAL_OPTION_SHOW_USER_CODE){
 			printGeneratedCode(options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_CODE);
@@ -368,9 +359,10 @@ namespace zetscript{
 		stk_ret.setUndefined();
 
 		if(!isFilenameAlreadyParsed(filename)){
-			ParsedFile ps;
-			ps.filename = filename;
+			ParsedFile *ps=new ParsedFile();
+			ps->filename = filename;
 			parsed_files.push_back(ps);
+			const char * const_file_char=ps->filename.c_str();
 			//idx_file=parsed_files.size()-1;
 			size_t n_bytes;
 
@@ -381,7 +373,7 @@ namespace zetscript{
 				bool error=false;
 				std::string error_str;
 				try{
-					stk_ret=evalInternal(buf_tmp,options,filename.c_str());
+					stk_ret=evalInternal(buf_tmp,options,const_file_char);
 				}
 				catch(std::exception & e){
 					error=true;
@@ -448,10 +440,20 @@ namespace zetscript{
 		}
 
 		vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
+
+
 	}
 
 	void ZetScript::setClearGlobalVariablesCheckpoint(){
 		idx_current_global_variable_checkpoint=this->script_class_factory->getMainFunction()->registered_symbols->count-1;
+	}
+
+	void ZetScript::resetParsedFiles(){
+		for(auto it=parsed_files.begin();it!=parsed_files.end();it++){
+			delete *it;
+		}
+
+		parsed_files.clear();
 	}
 
 	void ZetScript::clear(){
@@ -461,6 +463,8 @@ namespace zetscript{
 		scope_factory->clear();
 		script_function_factory->clear();
 		script_class_factory->clear();
+
+		resetParsedFiles();
 	}
 
 	void ZetScript::saveState(){
@@ -498,6 +502,7 @@ namespace zetscript{
 
 		eval_deinit();
 
+		resetParsedFiles();
 
 	}
 }

@@ -202,7 +202,6 @@ namespace zetscript{
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
 		bool isFilenameAlreadyParsed(const std::string & filename);
-		const char * getParsedFilenameFromIdx(unsigned idx);
 		//-----------------------------------------------
 
 		void 						setPrintOutCallback(void (*)(const char *));
@@ -480,6 +479,7 @@ namespace zetscript{
 		/**
 		* clear: clear compile information.
 		*/
+		void reset();
 		void clear();
 		void saveState();
 
@@ -497,7 +497,7 @@ namespace zetscript{
 		//--------
 		// VARS
 		std::map<std::string,StackElement *> 	 	*constant_string_objects;
-		std::vector<ParsedFile> 			 		parsed_files;
+		std::vector<ParsedFile *> 			 		parsed_files;
 
 		//ScriptEval * eval_obj;
 		VirtualMachine * virtual_machine;
@@ -522,7 +522,7 @@ namespace zetscript{
 		//void printGeneratedCode(ScriptFunction *sfo);
 
 		//----
-		StackElement evalInternal(const char * code, unsigned short options=EVAL_OPTION_EXECUTE, const char * filename=NULL);
+		StackElement evalInternal(const char * code, unsigned short options=EVAL_OPTION_EXECUTE, const char  *filename="");
 
 		// FUNCTIONS
 		static 									void  print(const char *s);
@@ -530,6 +530,7 @@ namespace zetscript{
 		static 									void (* print_out_callback)(const char *);
 
 		void setClearGlobalVariablesCheckpoint();
+		void resetParsedFiles();
 		void clearGlobalVariables(int _idx_start=ZS_IDX_UNDEFINED);
 
 

@@ -320,19 +320,20 @@ namespace zetscript{
 		return "unknown";
 	}
 
-	const char * ScriptFunction::getInstructionSourceFile(Instruction * ins){
+	const char *ScriptFunction::getInstructionSourceFile(Instruction * ins){
 
 		InstructionSourceInfo *info=getInstructionInfo(ins);
 
 		if(info!=NULL){
 			return info->file;
 		}
+
 		return "unknown";
 	}
 
 	Symbol * ScriptFunction::registerLocalArgument(
 			 Scope * scope_block
-			, const std::string & file
+			, const char *file
 			, short line
 			, const std::string & symbol_name
 			, uint16_t properties
@@ -356,7 +357,7 @@ namespace zetscript{
 
 	Symbol * ScriptFunction::registerLocalVariable(
 			 Scope * scope_block
-			, const std::string & file
+			, const char * file
 			, short line
 			, const std::string & symbol_name
 			, const std::string & str_native_type
@@ -407,7 +408,7 @@ namespace zetscript{
 
 	Symbol * ScriptFunction::registerLocalFunction(
 			 Scope * scope_block
-			,const std::string & file
+			,const char *file
 			, short line
 			, const std::string & function_name
 			, std::vector<ScriptFunctionArg> params
@@ -416,20 +417,28 @@ namespace zetscript{
 			, unsigned short properties
 	){
 		Symbol *symbol_found=symbol_found=getSymbol(scope_block, function_name, NO_PARAMS_SYMBOL_ONLY),*symbol=NULL;
+		std::string current_file_line=ZS_CONST_STR_IS_EMPTY(file)?
+							zs_strutils::format("[line %i]",line):
+							zs_strutils::format("[%s:%i]",zs_path::get_filename(file).c_str(),line);
+
+
 
 		if(symbol_found != NULL){ // symbol found
 			bool error = false;
+			std::string symbol_file_line=ZS_CONST_STR_IS_EMPTY(symbol_found->file)?
+					zs_strutils::format("[line %i]",line):
+					zs_strutils::format("[%s:%i]",zs_path::get_filename(symbol_found->file).c_str(),line);
 
 			// check the symbol to register is an script and symbol found is an already script function...
 			if(((symbol_found->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0) && ((properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0)){
 
 				if(symbol_found->scope != scope_block){
 
-					THROW_RUNTIME_ERROR("Symbol \"%s\" defined at [%s:%i] is already defined at [%s:%i]"
+					THROW_RUNTIME_ERROR("Symbol \"%s\" defined at %s is already defined at %s"
 						,function_name.c_str()
-						,zs_path::get_filename(file.c_str()).c_str()
+						,current_file_line.c_str()
 						,line
-						,zs_path::get_filename(symbol_found->file.c_str()).c_str()
+						,symbol_file_line.c_str()
 						,symbol_found->line
 					);
 				}
@@ -446,11 +455,11 @@ namespace zetscript{
 			// else check that symbol found and function to register are C both...
 			if((symbol_found->properties & SYMBOL_PROPERTY_C_OBJECT_REF) && (properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
 				// C function can be overriden
-				THROW_RUNTIME_ERROR("Symbol \"%s\" defined at [%s:%i] is already defined at [%s:%i]"
+				THROW_RUNTIME_ERROR("Symbol \"%s\" defined at %s is already defined at %s"
 					,function_name.c_str()
-					,zs_path::get_filename(file.c_str()).c_str()
+					,current_file_line.c_str()
 					,line
-					,zs_path::get_filename(symbol_found->file.c_str()).c_str()
+					,symbol_file_line.c_str()
 					,symbol_found->line
 				);
 			}

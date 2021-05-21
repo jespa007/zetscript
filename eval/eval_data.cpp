@@ -266,12 +266,12 @@ namespace zetscript{
 		int										parsing_loop;
 		//std::vector<std::vector<EvalInstruction *>>			loop_break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
 		//std::vector<LoopBreakContinueInfo>		loop_break_continue_info; // number of continue_jmp_instructions collected (should managed only on loops)
-		const char 						* 		current_parsing_file;
+		const char *					 		current_parsing_file;
 		bool							  		error;
 		std::string								error_str;
 
 		EvalData(ZetScript * _zs){
-			current_parsing_file=NULL;
+			current_parsing_file="";
 			current_function=NULL;
 			this->zs=_zs;
 			this->script_function_factory=zs->getScriptFunctionFactory();

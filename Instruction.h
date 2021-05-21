@@ -73,17 +73,17 @@ namespace zetscript{
 
 	struct InstructionSourceInfo {
 
-		const char * file;
+		const char *file;
 		short line;
 		std::string * ptr_str_symbol_name; // should be deallocated
 
 		InstructionSourceInfo(){
 			ptr_str_symbol_name=NULL;
-			file="unknow_file";
+			file="";
 			line=-1;
 		}
 
-		InstructionSourceInfo(const char * _file, short _line,std::string *_ptr_str_symbol_name=NULL){
+		InstructionSourceInfo(const char * _file,short _line,std::string *_ptr_str_symbol_name=NULL){
 			file=_file;
 			line=_line;
 			ptr_str_symbol_name=_ptr_str_symbol_name;

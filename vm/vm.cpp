@@ -133,6 +133,17 @@ namespace zetscript{
 		data->vm_error_str=str;
 	}
 
+	std::string vm_get_str_error(VirtualMachine *vm){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		return data->vm_error_str;
+	}
+
+
+	bool vm_it_has_error(VirtualMachine *vm){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		return data->vm_error;
+	}
+
 	void vm_set_error_file_line(VirtualMachine *vm, const char *file, int line, const char *in_txt,...){
 
 		char out_txt[ZS_MAX_STR_BUFFER];
@@ -315,9 +326,8 @@ namespace zetscript{
 		if(data->lifetime_object.size()>0){
 
 			std::string error="\n\nSome lifetime objects created by virtual machine were not destroyed:\n\n";
-
 			for(auto it=data->lifetime_object.begin(); it !=data->lifetime_object.end();it++ ){
-				error+=zs_strutils::format("* Object lifetime created at [%s:%i] was not destroyed \n",zs_path::get_filename(it->second->file).c_str(),it->second->line);
+				error+=zs_strutils::format("* Object lifetime created at [%s:%i] was not destroyed \n",zs_path::get_filename(it->second->file==NULL?"unknown":it->second->file).c_str(),it->second->line);
 			}
 
 			error+="\n\n";
