@@ -136,7 +136,9 @@
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,f)	(zs)->registerMemberAttributeSetter<class_type>(s,f,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,f)	(zs)->registerMemberAttributeGetter<class_type>(s,f,__FILE__, __LINE__)
 
-#define ZS_REGISTER_CONSTANT_INT(zs,constant_name,v)			(zs)->registerConstantIntValue(constant_name,v)
+#define ZS_REGISTER_CONSTANT_INT(zs,constant_name,i)			(zs)->registerConstantIntValue(constant_name,i)
+#define ZS_REGISTER_CONSTANT_STRING(zs,constant_name,s)			(zs)->registerConstantStringValue(constant_name,s)
+#define ZS_REGISTER_CONSTANT_BOOLEAN(zs,constant_name,b)		(zs)->registerConstantBooleanValue(constant_name,b)
 
 namespace zetscript{
 
@@ -198,6 +200,16 @@ namespace zetscript{
 		// CONSTANT TOOLS
 		StackElement * getRegisteredConstantScriptObjectString(const std::string & const_name);
 		StackElement * registerConstantScriptObjectString(const std::string & const_name);
+
+		StackElement * getRegisteredConstantBoolean(const std::string & key_name);
+		StackElement * registerConstantBoolean(const std::string & key_name, bool value);
+
+		StackElement * getRegisteredConstantInt(const std::string & key_name);
+		StackElement * registerConstantInt(const std::string & key_name, zs_int value);
+
+		StackElement * getRegisteredConstantFloat(const std::string & key_name);
+		StackElement * registerConstantFloat(const std::string & key_name, zs_float value);
+
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT

@@ -234,6 +234,31 @@ namespace zetscript{
 
 	}
 
+	StackElement * ZetScript::registerConstantBoolean(const std::string & key_name, bool value){
+
+	}
+
+	StackElement * ZetScript::getRegisteredConstantBoolean(const std::string & key_name){
+
+	}
+
+	StackElement * ZetScript::registerConstantInt(const std::string & key_name, zs_int value){
+
+	}
+
+	StackElement * ZetScript::getRegisteredConstantInt(const std::string & key_name){
+
+	}
+
+
+	StackElement * ZetScript::getRegisteredConstantFloat(const std::string & key_name){
+
+	}
+
+	StackElement * ZetScript::registerConstantFloat(const std::string & key_name, zs_float value){
+
+	}
+
 	// CONSTANT MANAGEMENT
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
