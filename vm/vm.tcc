@@ -462,9 +462,16 @@ namespace zetscript{
 						StackElement *current_arg=&stk_arg[k];
 						arg_idx_type=((ScriptFunctionArg *)irfs->params->items[k+this_as_first_parameter])->idx_type;
 
-						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT){
+						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT
+								 /*&&
+						((current_arg->properties & STK_PROPERTY_PTR_STK) == 0)*/
+								){
 
 							//unsigned short var_type = GET_STK_PROPERTY_TYPES(current_arg->properties);
+							if(current_arg->properties & STK_PROPERTY_PTR_STK){
+								current_arg=(StackElement *)current_arg->value;
+							}
+
 
 							switch(current_arg->properties & STK_PROPERTY_TYPES){
 								default:
@@ -492,9 +499,9 @@ namespace zetscript{
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_BOOL_C;
 
 									break;
-								case STK_PROPERTY_NULL:
+								/*case STK_PROPERTY_NULL:
 									all_check=false;
-									break;
+									break;*/
 								case STK_PROPERTY_SCRIPT_OBJECT:
 
 									if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
@@ -535,6 +542,7 @@ namespace zetscript{
 			int n_candidates=0;
 			std::string str_candidates="";
 			std::string args_str = "";
+			int arg_idx_type=-1;
 			/* get arguments... */
 
 			for( unsigned k = 0; k < n_args;k++){
@@ -544,36 +552,41 @@ namespace zetscript{
 					args_str+=",";
 				}
 				//unsigned short var_type = GET_STK_PROPERTY_TYPES(current_arg->properties);
+				if(current_arg->properties & STK_PROPERTY_PTR_STK){
+					aux_string="StackElement";
+				}
+				else{
 
-				switch(current_arg->properties & STK_PROPERTY_TYPES){
+					switch(current_arg->properties & STK_PROPERTY_TYPES){
 
-				default:
-					aux_string="unknow";
-					break;
-				case STK_PROPERTY_ZS_INT:
-					aux_string=k_str_zs_int_type;
-					break;
-				case STK_PROPERTY_ZS_FLOAT:
-					aux_string=k_str_float_type;
-					break;
-				case STK_PROPERTY_BOOL:
-					aux_string=k_str_bool_type;
-					break;
-				case STK_PROPERTY_NULL:
-					aux_string="null";
-					break;
-				case STK_PROPERTY_SCRIPT_OBJECT:
-					if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
-						aux_string=k_str_string_type_ptr;
-						if(current_arg->value==0){ /* is constant char */
-							aux_string=	k_str_const_char_type_ptr;
+					default:
+						aux_string="unknow";
+						break;
+					case STK_PROPERTY_ZS_INT:
+						aux_string=k_str_zs_int_type;
+						break;
+					case STK_PROPERTY_ZS_FLOAT:
+						aux_string=k_str_float_type;
+						break;
+					case STK_PROPERTY_BOOL:
+						aux_string=k_str_bool_type;
+						break;
+					case STK_PROPERTY_NULL:
+						aux_string="null";
+						break;
+					case STK_PROPERTY_SCRIPT_OBJECT:
+						if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
+							aux_string=k_str_string_type_ptr;
+							if(current_arg->value==0){ /* is constant char */
+								aux_string=	k_str_const_char_type_ptr;
+							}
+						}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
+							aux_string = ((ScriptObjectClass *)current_arg->value)->getNativePointerClassName();
+						}else{ // object
+							aux_string = ((ScriptObject *)current_arg->value)->getClassName();
 						}
-					}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
-						aux_string = ((ScriptObjectClass *)current_arg->value)->getNativePointerClassName();
-					}else{ // object
-						aux_string = ((ScriptObject *)current_arg->value)->getClassName();
+						break;
 					}
-					break;
 				}
 				args_str+=zs_rtti::demangle(aux_string);
 

@@ -45,3 +45,19 @@ do{
 	}
 	Console::outln("j:"+j);
 }while(j<20);
+
+Console::outln("test for:");
+for(var i=0;i<10;i++){
+	for(var k=0;k<20;k++){ 
+		if(k==1) { 
+			continue;
+		}
+		
+		if(k==10){
+			break;
+		}
+		
+		Console::outln("i:{0} k:{1}",i,k);
+	}
+	//Console::outln("i:"+i);
+}

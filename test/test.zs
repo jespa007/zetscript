@@ -1,8 +1,2 @@
-class A{
-	A(){
-		Console::outln("")
-	}
-}
-
-new A()
-//Console::outln("-")
+var obj={}
+obj.k=0

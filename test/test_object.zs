@@ -8,7 +8,7 @@ var object={ // structure
 
 
 // add property test
-//object.k=false;
+object.k=false;
 //Console::outln("object.k:"+object.k);
 
 object["general.info"]=false;

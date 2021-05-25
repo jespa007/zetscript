@@ -663,7 +663,8 @@ load_element_object:
 						}
 						//------------------------------------------------------------------
 						// pack member info for store information...
-						if(instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
+						if(   instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT
+						  ||  instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_THIS){
 							// save
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
 								VM_STOP_EXECUTE(data->vm_error_str.c_str());

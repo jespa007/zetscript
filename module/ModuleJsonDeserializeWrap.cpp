@@ -304,7 +304,6 @@ namespace zetscript{
 						return NULL;
 					}
 
-
 					str_current = eval_ignore_blanks(str_current, line);
 
 					if(*str_current==','){

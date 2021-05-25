@@ -14,10 +14,6 @@ namespace zetscript{
 
 			str_result+="[";
 
-			if (is_formatted){
-				ZS_JSON_SERIALIZE_NEW_LINE(str_result,ident+1);
-			}
-
 			for (unsigned i = 0; i < vector->length(); i++) {
 				if (i > 0) {
 					str_result += ",";
@@ -25,23 +21,23 @@ namespace zetscript{
 
 				serialize_stk(str_result,vector->getUserElementAt(i),ident,is_formatted);
 			}
-			if (is_formatted){
-				ZS_JSON_SERIALIZE_NEW_LINE(str_result,ident);
-			}
 			str_result+="]";
 		}
 
 		void serialize_object(std::string & str_result, ScriptObjectObject *obj, int ident, bool is_formatted){
 			int k=0;
 
-			str_result += "{";
-
-			if (is_formatted){
+			/*if(is_formatted){
 				str_result += "\n";
-			}
+				for (int i = 0; i < (ident); i++){
+					str_result += "\t";
+				}
+			}*/
+			str_result += "{";
 
 			for(auto it=obj->begin();!it.end();it.next(),k++){
 				if (is_formatted){
+					str_result += "\n";
 					for (int i = 0; i <= (ident); i++){
 						str_result += "\t";
 					}
@@ -51,29 +47,21 @@ namespace zetscript{
 					str_result += ",";
 				}
 
-
 				str_result += "\"" + std::string(it.getKey())+ "\":";
 
-				serialize_stk(str_result, (StackElement *)it.getValue(), ident,is_formatted);
-
-
-				if (is_formatted){
-					str_result += "\n";
-				}
+				serialize_stk(str_result, (StackElement *)it.getValue(), ident+1,is_formatted);
 
 			}
 
-			if (is_formatted){
-				for (int i = 0; i < ident; i++){
+			if(is_formatted){
+				str_result += "\n";
+				for (int i = 0; i < (ident); i++){
 					str_result += "\t";
 				}
 			}
 
 			str_result += "}";
 
-			if (is_formatted){
-				"\n";
-			}
 		}
 
 		void serialize_stk(std::string & str_result, StackElement *stk, int ident,bool is_formatted){
@@ -100,12 +88,12 @@ namespace zetscript{
 				break;
 			case STK_PROPERTY_SCRIPT_OBJECT: // vector or object
 
-				if (is_formatted){
+				/*if (is_formatted){
 					str_result += "\n";
-					for (int i = 0; i <= ident; i++){
+					for (int i = 0; i < ident; i++){
 						str_result += "\t";
 					}
-				}
+				}*/
 
 				obj=((ScriptObject *)stk->value);
 				switch(obj->idx_script_class){

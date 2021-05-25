@@ -61,5 +61,5 @@ var obj=Json::deserialize(
 );
 
 
-Console::outln("result:"+Json::serialize(obj))
+Console::outln("result:"+Json::serialize(obj,true))
 

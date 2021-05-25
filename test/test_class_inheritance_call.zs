@@ -11,11 +11,12 @@ class Test{
 		this.c=c;  // init built-in
 		this.d=-100; // a user property
 		this["e"]=-200; // another user property usign []
-		Console::outln("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} MAX_NUM:{6}"
+		Console::outln("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.d:{4} MAX_NUM:{5}"
 				,this.a
 				,this.b
 				,this.c
 				,this.d
+				,this.e
 				,Test::MAX_NUM);
 		
 	}

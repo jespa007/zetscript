@@ -70,7 +70,7 @@ namespace zetscript{
 		// Json mod
 		cl=script_class_factory->registerClass("Json");
 		cl->registerNativeMemberFunctionStatic("serialize_native",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(ModuleJsonWrap_serialize));
-		//cl->registerNativeMemberFunctionStatic("serialize_native",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(ModuleJsonWrap_serialize));
+		cl->registerNativeMemberFunctionStatic("serialize_native",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(ModuleJsonWrap_serialize));
 		cl->registerNativeMemberFunctionStatic("deserialize",ModuleJsonWrap_deserialize);
 
 
@@ -109,8 +109,8 @@ namespace zetscript{
 				"}"
 				//------------------------------------------------
 				// System
-				"static Json::serialize(stk){"
-				"	return Json::serialize_native(System::getZetScript(),stk)"
+				"static Json::serialize(stk,formatted=false){"
+				"	return Json::serialize_native(System::getZetScript(),stk,formatted)"
 				"}"
 
 

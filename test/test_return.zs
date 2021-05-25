@@ -43,9 +43,9 @@ var v=ret_value();
 var c=ret_variable();
 var s=ret_struct();
 
-print("a.i:"+a.i);
-print("e:"+e);
-print("s:"+s.b);
-print("v:"+v);
-print("c.i:"+c.i);
-print("ret_variable().i:"+ret_variable().i);
+Console::outln("a.i:"+a.i);
+Console::outln("e:"+e);
+Console::outln("s:"+s.b);
+Console::outln("v:"+v);
+Console::outln("c.i:"+c.i);
+Console::outln("ret_variable().i:"+ret_variable().i);
