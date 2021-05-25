@@ -11,7 +11,6 @@ namespace zetscript{
 	zs_int 							ScriptObjectStringWrap_size(ScriptObjectString *so);
 	bool 							ScriptObjectStringWrap_contains(ScriptObjectString *so, std::string *str);
 	bool 							ScriptObjectStringWrap_contains(ScriptObjectString *so, zs_int ch);
-	bool 							ScriptObjectStringWrap_exist(ScriptObjectString *so, zs_int ch);
 	void 							ScriptObjectStringWrap_clear(ScriptObjectString *so);
 	ScriptObjectString *			ScriptObjectStringWrap_replace(ScriptObjectString *str_in,std::string *str_old, std::string *str_new);
 	void 							ScriptObjectStringWrap_eraseAt(ScriptObjectString *so, zs_int idx);

@@ -15,5 +15,6 @@ namespace zetscript{
 	void 							ScriptObjectVectorWrap_clear(ScriptObjectVector *sv);
 	ScriptObjectString			*	ScriptObjectVectorWrap_join(ScriptObjectVector *sv, zs_int idx_char);
 	ScriptObjectVectorIterator 	* 	ScriptObjectVectorWrap_iter(ScriptObjectVector *so);
+	bool 							ScriptObjectVectorWrap_contains(ScriptObjectVector *so, StackElement *stk);
 
 }

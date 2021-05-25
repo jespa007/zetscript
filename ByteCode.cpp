@@ -204,6 +204,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "_toString";// _toString
 			case 	BYTE_CODE_METAMETHOD_NEXT: 		return  "++";	// _next
 			case 	BYTE_CODE_METAMETHOD_PREVIOUS: 	return  "--";// _previous
+			case 	BYTE_CODE_METAMETHOD_IN: 		return  "in";// in
 			default:
 				return "none";
 		}
@@ -235,6 +236,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_toString";// _toString
 			case 	BYTE_CODE_METAMETHOD_NEXT: 		return  "_next";	// _next
 			case 	BYTE_CODE_METAMETHOD_PREVIOUS:	return  "_previous";// _previous
+			case 	BYTE_CODE_METAMETHOD_IN: 		return  "_in";// 	_in
 			default:
 				return "none";
 		}
@@ -251,6 +253,7 @@ namespace zetscript{
 			case BYTE_CODE_METAMETHOD_NEG:
 				return 0;
 			case BYTE_CODE_METAMETHOD_SET:
+			case BYTE_CODE_METAMETHOD_IN:
 				return 1;
 		}
 

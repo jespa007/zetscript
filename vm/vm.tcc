@@ -775,7 +775,7 @@ namespace zetscript{
 
 		// init stk
 		stk_vm_current_backup=data->stk_vm_current;
-		stk_args=data->stk_vm_current+1;
+		stk_args=data->stk_vm_current;
 
 		if(stk_result_op1->properties & STK_PROPERTY_PTR_STK){
 			stk_result_op1 = (StackElement *)(stk_result_op1->value);
@@ -857,7 +857,7 @@ namespace zetscript{
 				//,(void *)list_props->items
 				//,list_props->count
 				,str_symbol_metamethod
-				,stk_args
+				,stk_args+1 // +1 because we include all parameters (include object, i.e 1st parameter)
 				,n_stk_args
 			)) == NULL){
 				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
@@ -895,7 +895,7 @@ namespace zetscript{
 					vm
 					,script_object
 					,ptr_function_found
-					,stk_args
+					,stk_args+1 // +1 because we include all parameters (include object, i.e 1st parameter)
 					,n_stk_args
 					,calling_function
 					,instruction
@@ -1062,6 +1062,86 @@ lbl_exit_function:
 
 		return;
 
+	}
+
+	inline bool vm_perform_in_operator(
+			VirtualMachine *vm
+			 ,ScriptFunction *calling_function
+			,Instruction *instruction
+			, StackElement *stk_result_op1
+			, StackElement *stk_result_op2){
+		std::string error="";
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+
+		if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject *so_aux=(ScriptObject *)stk_result_op2->value;
+
+			switch(so_aux->idx_script_class){
+			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
+			if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
+				PUSH_BOOLEAN(
+					ScriptObjectStringWrap_contains(
+						((ScriptObjectString *)so_aux)
+						,(zs_int)stk_result_op1->value
+					)
+				);
+			}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
+				std::string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
+				PUSH_BOOLEAN(
+					ScriptObjectStringWrap_contains(
+						(ScriptObjectString *)so_aux
+						,&str_op1)
+				);
+			}else{
+				error="operand is not 'zs_int' or 'ScriptObjectString' type";
+			}
+			break;
+			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR: // check whether value exists...
+			//PUSH_BOOLEAN(((ScriptObjectVector *)so_aux)->exists(stk_result_op1));
+			PUSH_BOOLEAN(
+				ScriptObjectVectorWrap_contains(
+					(ScriptObjectVector *)so_aux,stk_result_op1
+				)
+			);
+			break;
+			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
+			 if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				std::string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
+				PUSH_BOOLEAN(
+					ScriptObjectObjectWrap_contains(
+						(ScriptObjectObject *)so_aux,&str_op1
+					)
+				);
+
+			 }else{
+			 }
+			break;
+			default:
+				// TODO:
+				if(vm_apply_metamethod(
+						vm,
+						calling_function,
+						instruction,
+						BYTE_CODE_METAMETHOD_IN,
+						stk_result_op2,
+						stk_result_op1
+				)==false){
+					return false;
+				}
+				//PUSH_BOOLEAN(false);
+			break;
+			}
+		}else{
+			error="second operand is not iterable or not implements _in metamethod";
+
+		}
+
+		if(error.empty()==false){
+			VM_ERROR("Cannot perform operation 'in' because %s",error.c_str());
+			return false;
+		}
+
+		return true;
 	}
 }
 

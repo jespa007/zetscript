@@ -145,6 +145,7 @@ namespace zetscript{
 		BYTE_CODE_METAMETHOD_TO_STRING, // toString
 		BYTE_CODE_METAMETHOD_NEXT, // _next
 		BYTE_CODE_METAMETHOD_PREVIOUS, // _previous
+		BYTE_CODE_METAMETHOD_IN, // in
 		BYTE_CODE_METAMETHOD_MAX
 	}ByteCodeMetamethod;
 

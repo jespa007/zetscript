@@ -77,4 +77,35 @@ namespace zetscript{
 	ScriptObjectVectorIterator * ScriptObjectVectorWrap_iter(ScriptObjectVector *so){
 		return ZS_NEW_OBJECT_VECTOR_ITERATOR(so);
 	}
+
+	bool 							ScriptObjectVectorWrap_contains(ScriptObjectVector *sv, StackElement *stk_to_compare){
+		bool found=false;
+
+		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
+
+		for(unsigned i=0; i < stk_user_list_elements->count && found == false;i++){
+			StackElement *stk_element=(StackElement *)stk_user_list_elements->items[i];
+			switch(stk_to_compare->properties & stk_element->properties){ // match element
+			case STK_PROPERTY_BOOL:
+			case STK_PROPERTY_ZS_INT:
+			case STK_PROPERTY_ZS_FLOAT:
+				found= (stk_element->value == stk_to_compare->value);
+				break;
+			case STK_PROPERTY_SCRIPT_OBJECT: // compare objects?
+
+				if(
+					   ((ScriptObject *)stk_to_compare->value)->idx_script_class ==
+					   ((ScriptObject *)stk_element->value)->idx_script_class
+					   ){
+					// particular case string
+					if(((ScriptObject *)stk_to_compare->value)->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
+						found=stk_to_compare->toString()==stk_element->toString();
+					}
+				}
+				break;
+			}
+
+		}
+		return found;
+	}
 }

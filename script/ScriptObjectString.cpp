@@ -106,7 +106,8 @@ namespace zetscript{
 
 
 	ScriptObjectString * ScriptObjectString::format(ZetScript *zs, StackElement *str, StackElement *args){
-		std::string first_param=str->toString();
+		// transform '\"' to '"','\n' to carry returns, etc
+		std::string first_param=zs_strutils::unescape(str->toString());
 		ScriptObjectVector *sov=NULL;
 
 		if(args->properties & STK_PROPERTY_PTR_STK){
@@ -143,7 +144,7 @@ namespace zetscript{
 	}
 
 	void ScriptObjectString::set(const std::string & s){
-		*((std::string *)value) = s;
+		*((std::string *)value) = zs_strutils::unescape(s);
 	}
 
 	std::string ScriptObjectString::toString(){

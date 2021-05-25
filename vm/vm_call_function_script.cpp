@@ -1924,49 +1924,14 @@ load_element_object:
 				 continue;
 			 case BYTE_CODE_IN:
 				 POP_TWO;
-				 if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					 	so_aux=(ScriptObject *)stk_result_op2->value;
-
-					 	switch(so_aux->idx_script_class){
-					 	case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
-					 		if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
-					 			PUSH_BOOLEAN(
-					 				ScriptObjectStringWrap_exist(
-					 					((ScriptObjectString *)so_aux)
-										,(zs_int)stk_result_op1->value
-									)
-								);
-					 		}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
-					 			std::string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
-					 			PUSH_BOOLEAN(
-					 				ScriptObjectStringWrap_containts(
-					 					(ScriptObjectString *)so_aux
-					 					,&str_op1)
-								);
-					 		}else{
-					 			VM_STOP_EXECUTE("Cannot perform operation 'in' on string because 1st operand is not 'zs_int' or 'ScriptObjectString' type");//'%s in %s'",stk_result_op1->toString().c_str(),stk_result_op2->toString().c_str());
-					 		}
-					 		break;
-					 	case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR: // check whether value exists...
-					 		//PUSH_BOOLEAN(((ScriptObjectVector *)so_aux)->exists(stk_result_op1));
-					 		PUSH_BOOLEAN(
-								ScriptObjectVectorWrap_contains(
-									(ScriptObjectObject *)so_aux,stk_result_op1
-								)
-							);
-					 		break;
-					 	case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
-					 		PUSH_BOOLEAN(
-					 			ScriptObjectObjectWrap_containts(
-					 				(ScriptObjectObject *)so_aux,stk_result_op1
-								)
-							);
-					 		break;
-					 	case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS: // check whether _exist function member exists
-					 		break;
-					 	}
+				 if(vm_perform_in_operator(
+						 vm
+						 ,calling_function
+						 ,instruction
+						 ,stk_result_op1
+						 ,stk_result_op2)==false){
+					goto lbl_exit_function;
 				 }
-				 VM_STOP_EXECUTE("Cannot perform operation 'in' because second operand is not iterable or not implements _exists metamethod");//'%s in %s'",stk_result_op1->toString().c_str(),stk_result_op2->toString().c_str());
 				 continue;
 			}
 		 }
