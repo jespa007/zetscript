@@ -623,7 +623,7 @@ error_eval_keyword_var:
 						case BYTE_CODE_LOAD_ZS_INT:
 							arg_info.default_var_value={(void *)instruction->value_op2,STK_PROPERTY_ZS_INT};
 							break;
-						case BYTE_CODE_LOAD_FLOAT:
+						case BYTE_CODE_LOAD_ZS_FLOAT:
 							arg_info.default_var_value={(void *)instruction->value_op2,STK_PROPERTY_ZS_FLOAT};
 							break;
 						case BYTE_CODE_LOAD_BOOL:

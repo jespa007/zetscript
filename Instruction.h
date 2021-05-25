@@ -10,6 +10,8 @@
 #define ZS_IDX_INSTRUCTION_JMP_CONTINUE						(uint8_t)(-7)
 #define ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK				-10
 
+#define INSTRUCTION_IS_STRING(ins)							((ins)->byte_code==BYTE_CODE_LOAD_STRING || ((ins)->properties & INSTRUCTION_PROPERTY_STRING))
+#define INSTRUCTION_IS_ZS_INT(ins)							((ins)->byte_code==BYTE_CODE_LOAD_ZS_INT || ((ins)->properties & INSTRUCTION_PROPERTY_ZS_INT))
 
 
 // properties shared by compiler + instruction ..
@@ -62,6 +64,7 @@ namespace zetscript{
 
 		std::string getConstantString();
 		zs_float getConstantFloat();
+		zs_int getConstantInt();
 		bool isConstant();
 
 		std::string getConstantValueOp2ToString();

@@ -60,7 +60,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_STACK_ELEMENT:		return "LOAD_STK"; // load stack element
 
 			case BYTE_CODE_LOAD_STRING:				return "LOAD_STR"; // load string
-			case BYTE_CODE_LOAD_FLOAT:				return "LOAD_FLT"; // load float
+			case BYTE_CODE_LOAD_ZS_FLOAT:				return "LOAD_FLT"; // load float
 			case BYTE_CODE_LOAD_BOOL:				return "LOAD_BOOL"; // load bool
 			case BYTE_CODE_LOAD_ZS_INT:				return "LOAD_INT"; // load zs_int
 			case BYTE_CODE_LOAD_CLASS:				return "LOAD_CLASS"; // load to find
@@ -143,7 +143,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_NULL:			return "LOAD_NULL"; // load undfined
 			case BYTE_CODE_LOAD_STACK_ELEMENT:	return "LOAD_STK"; // load stack element
 			case BYTE_CODE_LOAD_STRING:			return "LOAD_STR"; // load string
-			case BYTE_CODE_LOAD_FLOAT:			return "LOAD_FLT"; // load float
+			case BYTE_CODE_LOAD_ZS_FLOAT:			return "LOAD_FLT"; // load float
 			case BYTE_CODE_LOAD_BOOL:			return "LOAD_BOOL"; // load bool
 			case BYTE_CODE_LOAD_ZS_INT:			return "LOAD_INT"; // load zs_int
 			case BYTE_CODE_LOAD_CLASS:			return "LOAD_CLASS"; // load to find
@@ -170,8 +170,8 @@ namespace zetscript{
 			case BYTE_CODE_POST_DEC:			return "POST_DEC"; // i--
 			case BYTE_CODE_NEG_POST_DEC:		return "NEG_POST_DEC"; // -i--
 			case BYTE_CODE_RESET_STACK:			return "RESET_STACK"; // POP ONE AND IT MARKS END EXPRESSION
-			case BYTE_CODE_TYPEOF:				return "TYPEOF"; // POP ONE AND IT MARKS END EXPRESSION
-			case BYTE_CODE_IN:					return "IN"; // POP ONE AND IT MARKS END EXPRESSION
+			case BYTE_CODE_TYPEOF:				return "typeof"; // POP ONE AND IT MARKS END EXPRESSION
+			case BYTE_CODE_IN:					return "in"; // POP ONE AND IT MARKS END EXPRESSION
 
 			default:
 				break;

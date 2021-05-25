@@ -39,11 +39,21 @@ namespace zetscript{
 
 		zs_float Instruction::getConstantFloat(){
 
-			if(((this->byte_code == BYTE_CODE_LOAD_FLOAT) || (this->properties & INSTRUCTION_PROPERTY_ZS_FLOAT))==false){
+			if(((this->byte_code == BYTE_CODE_LOAD_ZS_FLOAT) || (this->properties & INSTRUCTION_PROPERTY_ZS_FLOAT))==false){
 				THROW_EXCEPTION("instruction is not constant " ZS_STR(zs_float));
 			}
 
 			return *((zs_float *)&this->value_op2);
+
+		}
+
+		zs_int Instruction::getConstantInt(){
+
+			if(((this->byte_code == BYTE_CODE_LOAD_ZS_INT) || (this->properties & INSTRUCTION_PROPERTY_ZS_INT))==false){
+				THROW_EXCEPTION("instruction is not constant " ZS_STR(zs_int));
+			}
+
+			return (zs_int)this->value_op2;
 
 		}
 
@@ -58,7 +68,7 @@ namespace zetscript{
 				value_op2_string=this->value_op2 == 0 ? "false":"true";
 			}else if(byte_code==BYTE_CODE_LOAD_ZS_INT || (this->properties & INSTRUCTION_PROPERTY_ZS_INT)){
 				value_op2_string=zs_strutils::zs_int_to_str(this->value_op2);
-			}else if(byte_code==BYTE_CODE_LOAD_FLOAT|| (this->properties & INSTRUCTION_PROPERTY_ZS_FLOAT)){
+			}else if(byte_code==BYTE_CODE_LOAD_ZS_FLOAT|| (this->properties & INSTRUCTION_PROPERTY_ZS_FLOAT)){
 				value_op2_string=zs_strutils::float_to_str(this->getConstantFloat());
 			}else if(byte_code==BYTE_CODE_LOAD_STRING || (this->properties & INSTRUCTION_PROPERTY_STRING)){
 				value_op2_string="\""+this->getConstantString()+"\"";

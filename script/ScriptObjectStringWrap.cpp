@@ -22,10 +22,6 @@ namespace zetscript{
 	}
 
 
-	bool ScriptObjectStringWrap_exist(ScriptObjectString *so, zs_int ch){
-		return false;
-	}
-
 	void ScriptObjectStringWrap_clear(ScriptObjectString *so){
 		((std::string *)so->value)->clear();
 	}

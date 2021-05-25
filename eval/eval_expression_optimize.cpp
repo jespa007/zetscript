@@ -6,20 +6,20 @@
 	if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
 		result_op_zs_int=(i1->value_op2) ARITHMETIC_OP (i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_ZS_INT;\
-	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){\
 		result_op_float=(i1->value_op2) ARITHMETIC_OP (*((zs_float *)&i2->value_op2));\
 		ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
-		result_bc=BYTE_CODE_LOAD_FLOAT;\
-	}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
+		result_bc=BYTE_CODE_LOAD_ZS_FLOAT;\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
 		result_op_float=(*((zs_float *)&i1->value_op2)) ARITHMETIC_OP (i2->value_op2);\
 		ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
-		result_bc=BYTE_CODE_LOAD_FLOAT;\
-	}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
+		result_bc=BYTE_CODE_LOAD_ZS_FLOAT;\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){\
 		result_op_float=(*((zs_float *)&i1->value_op2)) ARITHMETIC_OP (*((zs_float *)&i2->value_op2));\
 		ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
-		result_bc=BYTE_CODE_LOAD_FLOAT;\
+		result_bc=BYTE_CODE_LOAD_ZS_FLOAT;\
 	}else{\
-		THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform arithmetic operation %s '%s' %s"\
+		THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform arithmetic operation '%s %s %s'"\
 				,eval_data->current_parsing_file\
 				,token_operator->line\
 				,i1->getConstantValueOp2ToString().c_str()\
@@ -35,20 +35,20 @@
 	}else if(i1->byte_code == BYTE_CODE_LOAD_BOOL && i2->byte_code == BYTE_CODE_LOAD_BOOL){\
 		result_op_bool=(i1->value_op2)__COMPARE_OP__(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
-	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){\
 		result_op_float=(i1->value_op2)__COMPARE_OP__*((zs_float *)&i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
-	}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
 		result_op_bool=*((zs_float *)&i1->value_op2)__COMPARE_OP__(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
-	}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){\
+	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){\
 		result_op_bool=*((zs_float *)&i1->value_op2)__COMPARE_OP__ *((zs_float *)&i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else if( i1->byte_code == BYTE_CODE_LOAD_STRING && i2->byte_code==BYTE_CODE_LOAD_STRING){\
 		result_op_bool=ZS_STRCMP(i1->getConstantValueOp2ToString().c_str(), __COMPARE_OP__ ,i2->getConstantValueOp2ToString().c_str());\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else{\
-		THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform compare operation %s '%s' %s"\
+		THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform compare operation '%s %s %s'"\
 			,eval_data->current_parsing_file\
 			,token_operator->line\
 			,i1->getConstantValueOp2ToString().c_str()\
@@ -61,7 +61,7 @@
 		result_op_zs_int=(i1->value_op2)BINARY_OP(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_ZS_INT;\
 	}else{\
-		THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform binary operation %s '%s' %s"\
+		THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform binary operation '%s %s %s'"\
 				,eval_data->current_parsing_file\
 				,token_operator->line\
 				,i1->getConstantValueOp2ToString().c_str()\
@@ -74,7 +74,7 @@
 		result_op_bool=(i1->value_op2)LOGIC_OP(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else{\
-		THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform boolean operation %s '%s' %s"\
+		THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform boolean operation '%s %s %s'"\
 				,eval_data->current_parsing_file\
 				,token_operator->line\
 				,i1->getConstantValueOp2ToString().c_str()\
@@ -96,7 +96,7 @@ namespace zetscript{
 		case BYTE_CODE_LOAD_BOOL:
 			return INSTRUCTION_PROPERTY_BOOL;
 			break;
-		case BYTE_CODE_LOAD_FLOAT:
+		case BYTE_CODE_LOAD_ZS_FLOAT:
 			return INSTRUCTION_PROPERTY_ZS_FLOAT;
 			break;
 		case BYTE_CODE_LOAD_STRING:
@@ -208,20 +208,20 @@ namespace zetscript{
 			if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
 				result_op_zs_int=(i1->value_op2)%(i2->value_op2);
 				result_bc=BYTE_CODE_LOAD_ZS_INT;
-			}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
+			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
 				result_op_float=fmod(*((zs_float *)&i1->value_op2),(i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
-				result_bc=BYTE_CODE_LOAD_FLOAT;
-			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
+				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
+			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){
 				result_op_float=fmod(*((zs_float *)&i1->value_op2),(i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
-				result_bc=BYTE_CODE_LOAD_FLOAT;
-			}else if(i1->byte_code == BYTE_CODE_LOAD_FLOAT && i2->byte_code == BYTE_CODE_LOAD_FLOAT){
+				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
+			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){
 				result_op_float=fmod(*((zs_float *)&i1->value_op2), *((zs_float *)&i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
-				result_bc=BYTE_CODE_LOAD_FLOAT;
+				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else{
-				THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform constant operation %s '/' %s"
+				THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform constant operation '%s % %s'"
 						,eval_data->current_parsing_file
 						,token_operator->line
 						,i1->getConstantValueOp2ToString().c_str()
@@ -263,9 +263,35 @@ namespace zetscript{
 		case BYTE_CODE_NOT_EQU:
 			PERFORM_ARITHMETIC_OPERATION(!=);
 			break;
+		case BYTE_CODE_IN:
+			if(INSTRUCTION_IS_ZS_INT(i1) && INSTRUCTION_IS_STRING(i2)){
+				result_op_bool=strchr(i2->getConstantString().c_str(),i1->getConstantInt()) != NULL;
+				result_bc=BYTE_CODE_LOAD_BOOL;
+			}else if(INSTRUCTION_IS_STRING(i1) && INSTRUCTION_IS_STRING(i2)){
+				result_op_bool=zs_strutils::contains(i2->getConstantString(),i1->getConstantString());
+				result_bc=BYTE_CODE_LOAD_BOOL;
+			}
+			else{
+				THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform constant operation '%s in %s'"
+									,eval_data->current_parsing_file
+									,token_operator->line
+									,i1->getConstantValueOp2ToString().c_str()
+									,i2->getConstantValueOp2ToString().c_str()));
+			}
+			break;
+		default:
+			//THROW_EXCEPTION(zs_strutils::format("cannot perform K '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
+			THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform constant operation '%s %s %s'"
+									,eval_data->current_parsing_file
+									,token_operator->line
+									,i1->getConstantValueOp2ToString().c_str()
+									,byte_code_to_operator_str(byte_code)
+									,i2->getConstantValueOp2ToString().c_str()));
+			break;
+/*			break;
 		default:
 			THROW_EXCEPTION(zs_strutils::format("const operation KK '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
-			break;
+			break;*/
 		}
 
 
@@ -277,7 +303,7 @@ namespace zetscript{
 					,result_op_zs_int
 			);
 			break;
-		case BYTE_CODE_LOAD_FLOAT:
+		case BYTE_CODE_LOAD_ZS_FLOAT:
 			result_instruction=new EvalInstruction(
 					result_bc
 					,ZS_IDX_UNDEFINED

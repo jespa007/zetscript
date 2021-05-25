@@ -44,7 +44,7 @@ namespace zetscript{
 		BYTE_CODE_LOAD_FUNCTION,
 		BYTE_CODE_LOAD_NULL,
 		BYTE_CODE_LOAD_STRING,
-		BYTE_CODE_LOAD_FLOAT,
+		BYTE_CODE_LOAD_ZS_FLOAT,
 		BYTE_CODE_LOAD_BOOL,
 		BYTE_CODE_LOAD_ZS_INT,
 
@@ -176,7 +176,7 @@ namespace zetscript{
 (\
    ((byte_code)== BYTE_CODE_LOAD_BOOL) \
 || ((byte_code)== BYTE_CODE_LOAD_ZS_INT) \
-|| ((byte_code)== BYTE_CODE_LOAD_FLOAT) \
+|| ((byte_code)== BYTE_CODE_LOAD_ZS_FLOAT) \
 || ((byte_code)== BYTE_CODE_LOAD_STRING) \
 )
 

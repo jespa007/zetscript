@@ -36,6 +36,8 @@ namespace zetscript{
 		virtual size_t length();
 		virtual zs_vector * getStkUserListElements();
 
+		bool exists(StackElement  * stk);
+
 		StackElement *			pushNewUserSlot();
 		void 					push(StackElement  * stk);
 		void 					pop();

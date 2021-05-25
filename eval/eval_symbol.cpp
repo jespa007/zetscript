@@ -50,7 +50,7 @@ namespace zetscript{
 
 				delete (zs_float *)const_obj;
 				ZS_FLOAT_COPY(&value,&value_flt);
-				byte_code = ByteCode::BYTE_CODE_LOAD_FLOAT;
+				byte_code = ByteCode::BYTE_CODE_LOAD_ZS_FLOAT;
 			}
 			else{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unable to parse literal \"%s\"",default_str_value.c_str());
