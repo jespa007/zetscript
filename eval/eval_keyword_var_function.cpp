@@ -261,16 +261,16 @@ namespace zetscript{
 					}
 
 					if( is_const_member_or_var_member){
-						symbol_member_variable=sc_var_member_extension->registerMemberVariable(
-							error
-							,eval_data->current_parsing_file
-							,line
-							,variable_name
-							,is_constant?SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC : 0
-						);
+						try{
+							symbol_member_variable=sc_var_member_extension->registerMemberVariable(
+								variable_name
+								,is_constant?SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC : 0
+								,eval_data->current_parsing_file
+								,line
+							);
 
-						if(symbol_member_variable==NULL){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"%s",error.c_str());
+						}catch(std::exception & ex){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"%s",ex.what());
 						}
 
 						if(is_constant == true){
@@ -675,18 +675,18 @@ error_eval_keyword_var:
 
 			//--- OP
 			if(sc!=NULL){ // register as variable member...
-				symbol_sf=sc->registerMemberFunction(
-						error
-						,eval_data->current_parsing_file
-						,line
-						,function_name
-						,args
-						,is_static?SYMBOL_PROPERTY_STATIC:0
-				);
-
-				if(symbol_sf == NULL){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,error.c_str());
+				try{
+					symbol_sf=sc->registerMemberFunction(
+							function_name
+							,args
+							,is_static?SYMBOL_PROPERTY_STATIC:0
+							,eval_data->current_parsing_file
+							,line
+					);
+				}catch(std::exception & ex){
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,ex.what());
 				}
+
 
 			}
 			else{ // register as local variable in the function...

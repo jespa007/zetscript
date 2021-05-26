@@ -26,7 +26,7 @@ namespace zetscript{
 		eval_string="";
 		eval_bool = false;
 		idx_current_global_variable_checkpoint=0;
-		constant_string_objects=NULL;
+		stk_constants=NULL;
 
 		eval_init();
 		scope_factory = new ScopeFactory(this);
@@ -197,31 +197,105 @@ namespace zetscript{
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 	//
 	// CONSTANT MANAGEMENT
-
-	StackElement *ZetScript::getRegisteredConstantScriptObjectString(const std::string & const_name){
-
-		if(constant_string_objects==NULL){
-			constant_string_objects=new std::map<std::string,StackElement *>();
-		}
-
-		if((constant_string_objects)->count(const_name) == 1){
-			return (constant_string_objects)->at(const_name);
-		}
-		return NULL;
-	}
-
-	StackElement * ZetScript::registerConstantScriptObjectString(const std::string & const_name){
-
+	//
+	// CONSTANT BOOLEAN
+	StackElement * ZetScript::registerConstantBool(const std::string & key_name, bool value){
 		StackElement *stk=NULL;
 		ScriptObjectString *so=NULL;
 
-		if((stk = getRegisteredConstantScriptObjectString(const_name))!=NULL){
-			return stk;
+		if((stk = getRegisteredConstant(key_name))!=NULL){
+			if(stk->properties & (STK_PROPERTY_BOOL | STK_PROPERTY_READ_ONLY)){
+				return stk;
+			}
+			else{
+				// throw
+				THROW_RUNTIME_ERROR("Cannot register constant '%s' as 'bool', because is already registered as '%s'",key_name.c_str(),stk->typeOf());
+			}
+
 		}
 
 		stk=new StackElement;
 
-		(*constant_string_objects)[const_name]=stk;
+		(*stk_constants)[key_name]=stk;
+
+		stk->value=(void *)value;
+		stk->properties=STK_PROPERTY_BOOL | STK_PROPERTY_READ_ONLY;
+
+		return stk;
+	}
+
+	//-----------------------------------------------------------------------------------------
+	// CONSTANT INTEGER
+	StackElement * ZetScript::registerConstantInt(const std::string & key_name, zs_int value){
+		StackElement *stk=NULL;
+		ScriptObjectString *so=NULL;
+
+		if((stk = getRegisteredConstant(key_name))!=NULL){
+			if(stk->properties & (STK_PROPERTY_ZS_INT | STK_PROPERTY_READ_ONLY)){
+				return stk;
+			}
+			else{
+				// throw
+				THROW_RUNTIME_ERROR("Cannot register constant '%s' as 'int', because is already registered as '%s'",key_name.c_str(),stk->typeOf());
+			}
+
+		}
+
+		stk=new StackElement;
+
+		(*stk_constants)[key_name]=stk;
+
+		stk->value=(void *)value;
+		stk->properties=STK_PROPERTY_ZS_INT | STK_PROPERTY_READ_ONLY;
+
+		return stk;
+	}
+	//-----------------------------------------------------------------------------------------
+	// CONSTANT FLOAT
+	StackElement * ZetScript::registerConstantFloat(const std::string & key_name, zs_float value){
+		StackElement *stk=NULL;
+		ScriptObjectString *so=NULL;
+
+		if((stk = getRegisteredConstant(key_name))!=NULL){
+			if(stk->properties & (STK_PROPERTY_ZS_FLOAT | STK_PROPERTY_READ_ONLY)){
+				return stk;
+			}
+			else{
+				// throw
+				THROW_RUNTIME_ERROR("Cannot register constant '%s' as 'float', because is already registered as '%s'",key_name.c_str(),stk->typeOf());
+			}
+		}
+
+		stk=new StackElement;
+
+		(*stk_constants)[key_name]=stk;
+
+		ZS_FLOAT_COPY(&stk->value,&value);
+
+		stk->properties=STK_PROPERTY_ZS_FLOAT | STK_PROPERTY_READ_ONLY;
+
+		return stk;
+	}
+	//-----------------------------------------------------------------------------------------
+	// CONSTANT STRING
+	StackElement * ZetScript::registerConstantString(const std::string & key_name,const std::string & const_name){
+
+		StackElement *stk=NULL;
+		ScriptObjectString *so=NULL;
+
+		if((stk = getRegisteredConstant(key_name))!=NULL){
+			if(stk->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY)){
+				return stk;
+			}
+			else{
+				// throw
+				THROW_RUNTIME_ERROR("Cannot register constant '%s' as 'ScriptObjectString', because is already registered as '%s'",key_name.c_str(),stk->typeOf());
+			}
+		}
+
+		stk=new StackElement;
+
+		(*stk_constants)[key_name]=stk;
 
 		so=ZS_NEW_OBJECT_STRING(this);
 		// swap values stk_ref/value
@@ -234,31 +308,20 @@ namespace zetscript{
 
 	}
 
-	StackElement * ZetScript::registerConstantBoolean(const std::string & key_name, bool value){
+	StackElement *ZetScript::getRegisteredConstant(const std::string & key_name){
 
-	}
+		if(stk_constants==NULL){
+			stk_constants=new std::map<std::string,StackElement *>();
+		}
 
-	StackElement * ZetScript::getRegisteredConstantBoolean(const std::string & key_name){
-
-	}
-
-	StackElement * ZetScript::registerConstantInt(const std::string & key_name, zs_int value){
-
-	}
-
-	StackElement * ZetScript::getRegisteredConstantInt(const std::string & key_name){
-
+		if((stk_constants)->count(key_name) == 1){
+			return (stk_constants)->at(key_name);
+		}
+		return NULL;
 	}
 
 
-	StackElement * ZetScript::getRegisteredConstantFloat(const std::string & key_name){
-
-	}
-
-	StackElement * ZetScript::registerConstantFloat(const std::string & key_name, zs_float value){
-
-	}
-
+	//
 	// CONSTANT MANAGEMENT
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
@@ -514,15 +577,17 @@ namespace zetscript{
 
 		virtual_machine=NULL;
 
-		if(constant_string_objects != NULL){
+		if(stk_constants != NULL){
 
-			for(std::map<std::string,StackElement *>::iterator it=constant_string_objects->begin();it!=constant_string_objects->end();it++){
-				StackElement *icv=it->second;
-				delete (ScriptObjectString *)icv->value;
-				delete icv;
+			for(std::map<std::string,StackElement *>::iterator it=stk_constants->begin();it!=stk_constants->end();it++){
+				StackElement *stk=it->second;
+				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					delete (ScriptObjectString *)stk->value;
+				}
+				delete stk;
 			}
-			constant_string_objects->clear();
-			delete constant_string_objects;
+			stk_constants->clear();
+			delete stk_constants;
 		}
 
 		eval_deinit();

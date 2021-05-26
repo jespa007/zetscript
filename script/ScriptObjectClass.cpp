@@ -24,7 +24,7 @@ namespace zetscript{
 		c_object = NULL;
 		created_object = NULL;
 		idx_script_class = IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS;
-		delete_c_object = false; // --> user is responsible to delete C objects!
+		delete_c_object_on_destroy = false; // --> user is responsible to delete C objects!
 		script_class_native=NULL;
 	}
 
@@ -103,6 +103,7 @@ namespace zetscript{
 				created_object = CALL_CONSTRUCTOR_CLASS(script_class); // (*script_class->c_constructor)();
 				was_created_by_constructor=true;
 				c_object = created_object;
+				delete_c_object_on_destroy=true;
 			}else {
 				sc=script_class;
 				// get first class with c inheritance...
@@ -115,6 +116,7 @@ namespace zetscript{
 							created_object =  CALL_CONSTRUCTOR_CLASS(sc); //(*sc->c_constructor)();
 							was_created_by_constructor=true;
 							c_object = created_object;
+							delete_c_object_on_destroy=true;
 						}
 					}
 				}
@@ -173,7 +175,7 @@ namespace zetscript{
 
 	void ScriptObjectClass::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
 		created_object=NULL;
-		if((this->delete_c_object = _delete_on_destroy)==true){
+		if((this->delete_c_object_on_destroy = _delete_on_destroy)==true){
 			created_object=c_object;
 		}
 	}
@@ -233,17 +235,12 @@ namespace zetscript{
 		ScriptClass *script_class=getScriptClass();
 
 
-		bool deallocated = false;
-		if(created_object != 0 && delete_c_object){
+
+		if(created_object != 0 && delete_c_object_on_destroy){
 			 // only erases pointer if basic type or user/auto delete is required ...
 			CALL_DESTRUCTOR_CLASS(script_class_native,created_object);//(*(script_class_native->c_destructor))(created_object);
-			deallocated=true;
-
-		}
-
-		if(!deallocated && was_created_by_constructor){
-			fprintf(stderr,"%s"
-				,zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
+		}else if(was_created_by_constructor){
+			fprintf(stderr,zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
 						,SFI_GET_FILE_LINE(info_function_new, instruction_new)
 				).c_str()
 			);

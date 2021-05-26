@@ -26,7 +26,7 @@ namespace zetscript{
 
 			/**
 			 * info_registered_class: scriptclass info
-			 * _c_object: pass C object reference (is not delete_c_object by default)
+			 * _c_object: pass C object reference (is not delete_c_object_on_destroy by default)
 			 */
 
 
@@ -60,7 +60,7 @@ namespace zetscript{
 			//ScriptClass *script_class;
 
 			ScriptClass * script_class_native;
-			bool delete_c_object;
+			bool delete_c_object_on_destroy;
 
 			void * created_object;
 			void * c_object;

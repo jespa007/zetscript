@@ -71,7 +71,9 @@ namespace zetscript{
 		main_object=registerClass(MAIN_SCRIPT_CLASS_NAME); // 0
 		MAIN_SCOPE(this)->script_class=main_object;
 
-		Symbol *symbol_main_function=main_object->registerMemberFunction(error,__FILE__,__LINE__,MAIN_SCRIPT_FUNCTION_NAME);
+		Symbol *symbol_main_function=main_object->registerMemberFunction(
+				MAIN_SCRIPT_FUNCTION_NAME
+		);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
 
 		idx_clear_checkpoint=1; // by default restore till main class.
@@ -346,11 +348,7 @@ namespace zetscript{
 				Symbol *symbol_field_initializer=NULL;
 
 				symbol_field_initializer=sci->registerMemberFunction(
-						error
-						,__FILE__
-						,__LINE__
-						,zs_strutils::format("__@field_initializer_%s_@__",sci->symbol_class.name.c_str())
-						,{}
+					zs_strutils::format("__@field_initializer_%s_@__",sci->symbol_class.name.c_str())
 				);
 
 				sci->sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;

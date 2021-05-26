@@ -288,20 +288,21 @@ namespace zetscript{
 			std::string function_name;
 			std::string error;
 
+			try{
+				symbol_attrib=sc->registerMemberAttribute(
+						 attrib_name
+						,eval_data->current_parsing_file
+						,attrib_start_line
 
-			symbol_attrib=sc->registerMemberAttribute(
-					error
-					,eval_data->current_parsing_file
-					,attrib_start_line
-					,attrib_name
-			);
+				);
+			}catch(std::exception & ex){
 
-			if(symbol_attrib == NULL){
 				EVAL_ERROR_FILE_LINE(
 					eval_data->current_parsing_file
 					,attrib_start_line
-					,error.c_str()
+					,ex.what()
 				);
+
 			}
 
 			ma=(MemberAttribute *)symbol_attrib->ref_ptr;

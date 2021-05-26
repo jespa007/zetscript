@@ -136,9 +136,10 @@
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,f)	(zs)->registerMemberAttributeSetter<class_type>(s,f,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,f)	(zs)->registerMemberAttributeGetter<class_type>(s,f,__FILE__, __LINE__)
 
-#define ZS_REGISTER_CONSTANT_INT(zs,constant_name,i)			(zs)->registerConstantIntValue(constant_name,i)
-#define ZS_REGISTER_CONSTANT_STRING(zs,constant_name,s)			(zs)->registerConstantStringValue(constant_name,s)
-#define ZS_REGISTER_CONSTANT_BOOLEAN(zs,constant_name,b)		(zs)->registerConstantBooleanValue(constant_name,b)
+#define ZS_REGISTER_CONSTANT_INT(zs,constant_name,i)			(zs)->registerConstantString(constant_name,i)
+#define ZS_REGISTER_CONSTANT_STRING(zs,constant_name,s)			(zs)->registerConstantInt(constant_name,s)
+#define ZS_REGISTER_CONSTANT_FLOAT(zs,constant_name,b)			(zs)->registerConstantFloat(constant_name,b)
+#define ZS_REGISTER_CONSTANT_BOOL(zs,constant_name,b)			(zs)->registerConstantBool(constant_name,b)
 
 namespace zetscript{
 
@@ -198,18 +199,11 @@ namespace zetscript{
 		std::string * 	evalStringValue(const std::string & str_to_eval);
 
 		// CONSTANT TOOLS
-		StackElement * getRegisteredConstantScriptObjectString(const std::string & const_name);
-		StackElement * registerConstantScriptObjectString(const std::string & const_name);
-
-		StackElement * getRegisteredConstantBoolean(const std::string & key_name);
-		StackElement * registerConstantBoolean(const std::string & key_name, bool value);
-
-		StackElement * getRegisteredConstantInt(const std::string & key_name);
+		StackElement * registerConstantString(const std::string & key_name,const std::string & const_name);
+		StackElement * registerConstantBool(const std::string & key_name, bool value);
 		StackElement * registerConstantInt(const std::string & key_name, zs_int value);
-
-		StackElement * getRegisteredConstantFloat(const std::string & key_name);
 		StackElement * registerConstantFloat(const std::string & key_name, zs_float value);
-
+		StackElement * getRegisteredConstant(const std::string & const_name);
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
@@ -251,8 +245,8 @@ namespace zetscript{
 		}*/
 
 		template<typename C>
-		void registerClass(const std::string & class_name, C  * (*_constructor)(), void (*destructor)(C *), const char *registered_file="",short registered_line=-1){
-			script_class_factory->registerNativeClassStatic<C>(class_name, _constructor, destructor, registered_file,registered_line);
+		void registerClass(const std::string & class_name, C  * (*_constructor)(), void (*_destructor)(C *), const char *registered_file="",short registered_line=-1){
+			script_class_factory->registerNativeClassStatic<C>(class_name, _constructor, _destructor, registered_file,registered_line);
 		}
 
 		template<class C, class B>
@@ -322,7 +316,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerMemberAttributeSetter<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberAttributeSetter<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
@@ -332,7 +326,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerMemberAttributeGetter<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberAttributeGetter<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		/**
@@ -508,7 +502,7 @@ namespace zetscript{
 
 		//--------
 		// VARS
-		std::map<std::string,StackElement *> 	 	*constant_string_objects;
+		std::map<std::string,StackElement *> 	 	*stk_constants;
 		std::vector<ParsedFile *> 			 		parsed_files;
 
 		//ScriptEval * eval_obj;

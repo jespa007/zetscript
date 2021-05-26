@@ -71,60 +71,53 @@ namespace zetscript{
 	//---------------------------------------------------
 	// VARIABLES
 	Symbol				* 	ScriptClass::registerMemberVariable(
-		std::string & error
+		const std::string & symbol_name
+		,unsigned short symbol_properties
 		,const char * file
 		,short line
-		,const std::string & symbol_name
-
-		,unsigned short symbol_properties
-
 	){
 		return registerInternalMemberVariable(
-			error
-			,file
-			,line
-			,symbol_name
+			symbol_name
 			,symbol_properties
 			,symbol_name
+			,0
+			,file
+			,line
 		);
 	}
 
 	Symbol				* 	ScriptClass::registerNativeMemberVariable(
-		std::string & error
-		,const char * file
-		,short line
-		,const std::string & symbol_name
+		 const std::string & symbol_name
 		,const std::string & str_native_type
 		,zs_int ref_ptr
 		,unsigned short symbol_properties
-
-
+		,const char * file
+		,short line
 	){
 		return registerInternalMemberVariable(
-			error
-			,file
-			,line
-			,symbol_name
+			symbol_name
 			,symbol_properties
 			,str_native_type
 			,ref_ptr
+			,file
+			,line
 		);
 	}
 
 
 	Symbol				* 	ScriptClass::registerInternalMemberVariable(
-	    std::string & error
-		,const char * file
-		,short line
-		,const std::string & symbol_name
+		const std::string & symbol_name
 		,unsigned short symbol_properties
 		,const std::string & str_native_type
 		,zs_int ref_ptr
+		,const char * file
+		,short line
+
 	){
 		// ref_ptr: as natives is the inc pointer when object is created or stack_element pointer for static/const
 
 		if(getSymbol(symbol_name)!=NULL){
-			error=zs_strutils::format("Variable \"%s\" already registered",symbol_name.c_str());
+			THROW_RUNTIME_ERROR("Variable \"%s\" already registered",symbol_name.c_str());
 			return NULL;
 		}
 
@@ -154,32 +147,31 @@ namespace zetscript{
 	//---------------------------------------------------
 	// ATTRIBUTES
 	Symbol *ScriptClass::registerMemberAttribute(
-			 std::string & error
+			 const std::string & attrib_name
 			,const char * file
 			,short line
-			,const std::string & attrib_name
+
+
 	){
 		Symbol *symbol_attrib=NULL;
-		if((symbol_attrib=getSymbol(attrib_name)) != NULL){ // we only search repeat symbols on this class ...
-			Symbol *existing_symbol;
-			if((existing_symbol=getSymbol(attrib_name)) != NULL){
-				const char *what="is already defined";
-				if((existing_symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE)==0){
+		if((symbol_attrib=getSymbol(attrib_name)) != NULL){ // give an error  ...
+			//Symbol *existing_symbol;
+			//if((existing_symbol=getSymbol(attrib_name)) != NULL){
+			const char *what="is already defined";
+			if((symbol_attrib->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE)==0){
 
-					if(existing_symbol->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION){
-						what="it conflicts with member function";
-					}else{
-						what="it conflicts with member variable";
-					}
+				if(symbol_attrib->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION){
+					what="it conflicts with member function";
+				}else{
+					what="it conflicts with member variable";
 				}
-				error=zs_strutils::format("Attribute \"%s\" %s at [%s:%i]"
-					,attrib_name.c_str()
-					,what
-					,zs_path::get_filename(existing_symbol->file).c_str()
-					,existing_symbol->line
-				);
 			}
-			return NULL;
+			THROW_RUNTIME_ERROR(file,line,"Attribute \"%s\" %s at [%s:%i]"
+				,attrib_name.c_str()
+				,what
+				,zs_path::get_filename(symbol_attrib->file).c_str()
+				,symbol_attrib->line
+			);
 		}
 
 
@@ -193,7 +185,7 @@ namespace zetscript{
 		return symbol_attrib;
 	}
 
-	Symbol				* 	ScriptClass::registerMemberAttributeSetter(
+	/*Symbol				* 	ScriptClass::registerMemberAttributeSetter(
 		std::string & error
 		,const char * file
 		,short line
@@ -203,16 +195,16 @@ namespace zetscript{
 
 
 		return NULL;
-	}
+	}*/
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributeSetter(
-			std::string & error
-			,const char * file
-			,short line
-			,const std::string & attribute_name
+			const std::string & attribute_name
 			, ScriptFunctionArg arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_properties
+			,const char * file
+			,short line
+
 
 	){
 		return NULL;
@@ -229,24 +221,23 @@ namespace zetscript{
 
 	}
 
-	Symbol				* 	ScriptClass::registerMemberAttributeGetter(
-		std::string & error
+	/*Symbol				* 	ScriptClass::registerMemberAttributeGetter(
+		const std::string & attribute_name
+		,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 		,const char * file
 		,short line
-		,const std::string & attribute_name
-		,ScriptFunction *sf // it's the offset from pointer or a pointer directly
+
 	){
 		return NULL;
-	}
+	}*/
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributeGetter(
-			std::string & error
-			,const char *file
-			,short line
-			,const std::string & attribute_name
+			 const std::string & attribute_name
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_properties
+			,const char *file
+			,short line
 
 	){
 		return NULL;
@@ -309,59 +300,59 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerMemberFunction(
-			 std::string & error
-			,const char * file
-			, short line
-			,const std::string & function_name
+			 const std::string & function_name
 			, std::vector<ScriptFunctionArg> args
 			, unsigned short symbol_properties
+			,const char * file
+			, short line
+
 
 
 	){
 		return registerInternalMemberFunction(
-				 error
-				, file
-				,  line
-				,function_name
+				 function_name
 				, args
 				, symbol_properties
+				,ZS_IDX_UNDEFINED
+				,0
+				, file
+				,  line
 
 		);
 	}
 
 	Symbol				* 	ScriptClass::registerNativeMemberFunction(
-			std::string & error
-			,const char * file
-			, short line
-			,const std::string & function_name
+			const std::string & function_name
 			, std::vector<ScriptFunctionArg> args
 			, int idx_return_type
 			,zs_int ref_ptr // script function
 			, unsigned short symbol_properties
+			,const char * file
+			, short line
 
 	){
 		return registerInternalMemberFunction(
-				error
-				, file
-				, line
-				,function_name
+				 function_name
 				,args
 				,symbol_properties
 				,idx_return_type
 				,(zs_int)ref_ptr
+				, file
+				, line
+
 		);
 
 	}
 
 	Symbol * ScriptClass::registerInternalMemberFunction(
-		std::string & error
-		, const char * file
-		, short line
-		, const std::string & function_name
+		 const std::string & function_name
 		, std::vector<ScriptFunctionArg> params
 		, unsigned short symbol_properties
 		, int idx_return_type
 		,zs_int ref_ptr
+		, const char * file
+		, short line
+
 
 	){
 
@@ -369,7 +360,7 @@ namespace zetscript{
 			if(getSymbol(function_name,(char)params.size(),false) != NULL){ // we only search repeat symbols on this class ...
 				Symbol *existing_symbol;
 				if((existing_symbol=getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
-					error=zs_strutils::format("Function \"%s\" is already defined at [%s:%i]"
+					THROW_RUNTIME_ERROR("Function \"%s\" is already defined at [%s:%i]"
 						,function_name.c_str()
 						,zs_path::get_filename(file).c_str()
 						,line
@@ -428,7 +419,7 @@ namespace zetscript{
 					// can be one parameter or 0 params...
 					if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
 						if((symbol_result=getSymbol(function_name,(char)params.size())) != NULL){
-							error = zs_strutils::format("Metamethod \"%s::%s\" is already defined at \"%s::%s\" (%s:%i). Metamethods cannot be override"
+							THROW_RUNTIME_ERROR("Metamethod \"%s::%s\" is already defined at \"%s::%s\" (%s:%i). Metamethods cannot be override"
 								,symbol_class.name.c_str()
 								,function_name.c_str()
 								,symbol_result->scope->script_class->symbol_class.name.c_str()
@@ -443,7 +434,7 @@ namespace zetscript{
 					// metamethod in script side are not static
 					if(function_symbol->properties & SYMBOL_PROPERTY_STATIC){
 						if(function_symbol->n_params<min_args_static_metamethod){
-							error = zs_strutils::format("Static metamethod %s (aka %s) should have at least %i parameter/s"
+							THROW_RUNTIME_ERROR("Static metamethod %s (aka %s) should have at least %i parameter/s"
 								,str_symbol_metamethod
 								,byte_code_metamethod_operator_str
 								,min_args_static_metamethod
@@ -455,7 +446,7 @@ namespace zetscript{
 					else {
 						min_args_static_metamethod=get_num_arguments_non_static_metamethod(op);
 						if(function_symbol->n_params< min_args_static_metamethod){ // non-static functions pass this object as first parameter
-							error = zs_strutils::format("Non static metamethod %s (aka %s) should have at least %i parameter/s"
+							THROW_RUNTIME_ERROR("Non static metamethod %s (aka %s) should have at least %i parameter/s"
 								,str_symbol_metamethod
 								,byte_code_metamethod_operator_str
 								,min_args_static_metamethod
@@ -483,7 +474,7 @@ namespace zetscript{
 						}else*/{ // setter
 							if(setter_getter->setters.count>0 && ((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0)){
 								// error already set (script functions only can be set once)
-								error = zs_strutils::format("Setter \"%s::_set\" already set"
+								THROW_RUNTIME_ERROR("Setter \"%s::_set\" already set"
 										,symbol_class.name.c_str()
 								);
 								return NULL;

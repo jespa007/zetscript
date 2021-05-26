@@ -343,19 +343,14 @@ namespace zetscript{
 					}
 
 					Symbol *symbol_result = this_class->registerNativeMemberFunction(
-						error,
-						script_function->symbol.file,
-						script_function->symbol.line,
 						script_function->symbol.name,
 						params,
 						script_function->idx_return_type,
 						script_function->symbol.ref_ptr, // it contains script function pointer
-						script_function->symbol.properties //derivated_symbol_info_properties
+						script_function->symbol.properties, //derivated_symbol_info_properties
+						script_function->symbol.file,
+						script_function->symbol.line
 					);
-
-					if(symbol_result == NULL){
-						THROW_RUNTIME_ERROR(error.c_str());
-					}
 
 				}else if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 
@@ -366,34 +361,25 @@ namespace zetscript{
 					// register getter and setter
 					if(sf_getter != NULL){
 						Symbol *symbol_result =this_class->registerNativeMemberAttributeGetter(
-								error
-								,symbol_src->file
-								,symbol_src->line
-								,symbol_src->name
+								symbol_src->name
 								,sf_getter->idx_return_type
 								,sf_getter->ref_native_function_ptr
-
+								,symbol_src->properties
+								,symbol_src->file
+								,symbol_src->line
 						);
-
-						if(symbol_result == NULL){
-							THROW_RUNTIME_ERROR(error.c_str());
-						}
 					}
 
 					for(unsigned i=0; i < sf_setters->count; i++){
 						ScriptFunction *sf_setter=(ScriptFunction *)sf_setters->items[i];
 						Symbol *symbol_result = this_class->registerNativeMemberAttributeSetter(
-								error
-								,symbol_src->file
-								,symbol_src->line
-								,symbol_src->name
+								symbol_src->name
 								,*((ScriptFunctionArg *)sf_setter->params->items[0])
 								,sf_setter->ref_native_function_ptr
+								,sf_setter->symbol.properties
+								,symbol_src->file
+								,symbol_src->line
 						);
-
-						if(symbol_result == NULL){
-							THROW_RUNTIME_ERROR(error.c_str());
-						}
 					}
 				}
 
@@ -481,18 +467,15 @@ namespace zetscript{
 
 		// register variable...
 		symbol=c_class->registerNativeMemberVariable(
-				error
-				,registered_file
-				,registered_line
-				,var_name
+				var_name
 				,var_type
 				,(zs_int)var_pointer
 				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST
+				,registered_file
+				,registered_line
 		);
 
-		if(symbol == NULL){
-			THROW_RUNTIME_ERROR(error.c_str());
-		}
+
 	}
 
 		/*

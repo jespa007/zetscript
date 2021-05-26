@@ -76,6 +76,7 @@ namespace zetscript{
 		// Inline object: two possibles uses {a:1,b:2}["a"] or {a:1, b:2}.a
 		char *aux_p = (char *)s;
 		std::string symbol_value;
+		std::string str_key;
 		int lineSymbol;
 		//std::string key_value;
 		StackElement *stk_key_object;
@@ -123,8 +124,9 @@ namespace zetscript{
 			}
 
 			 // register constant...
-			if((stk_key_object = eval_data->zs->getRegisteredConstantScriptObjectString(symbol_value))==NULL){
-				stk_key_object=eval_data->zs->registerConstantScriptObjectString(symbol_value);
+			str_key=std::string("\"")+symbol_value+"\"";
+			if((stk_key_object = eval_data->zs->getRegisteredConstant(str_key))==NULL){
+				stk_key_object=eval_data->zs->registerConstantString(str_key,symbol_value);
 			 }
 
 			// add instruction...

@@ -18,18 +18,13 @@ namespace zetscript{
 
 			// register variable...
 			Symbol *symbol=this->registerNativeMemberVariable(
-					error
-					,registered_file
-					,registered_line
-					,var_name
+					var_name
 					,var_type
 					,(zs_int)var_pointer
 					,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST
+					,registered_file
+					,registered_line
 			);
-
-			if(symbol == NULL){
-				THROW_RUNTIME_ERROR(error.c_str());
-			}
 	}
 
 	template <typename F>
@@ -89,7 +84,25 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		std::string return_type;
+		std::vector<std::string> params;
+		std::vector<ScriptFunctionArg> arg_info;
+		zs_int ref_ptr=0;
+		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		std::string error;
+		Symbol *symbol;
 
+		// 1. check all parameters ok.
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+
+		Symbol *symbol_result = registerNativeMemberAttributeSetter(
+				attrib_name
+				,arg_info[0]
+				,(zs_int)ptr_function
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				,registered_file
+				,registered_line
+		);
 	}
 
 	/*
@@ -102,7 +115,25 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		std::string return_type;
+		std::vector<std::string> params;
+		std::vector<ScriptFunctionArg> arg_info;
+		zs_int ref_ptr=0;
+		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		std::string error;
+		Symbol *symbol;
 
+		// 1. check all parameters ok.
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+
+		Symbol *symbol_result = registerNativeMemberAttributeGetter(
+				 attrib_name
+				,idx_return_type
+				,(zs_int)ptr_function
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				,registered_file
+				,registered_line
+		);
 	}
 
 	/**
@@ -130,19 +161,18 @@ namespace zetscript{
 
 		// register member function...
 		Symbol * symbol_sf = this->registerNativeMemberFunction(
-				error
-				,registered_file
-				,registered_line
-				,function_name
+				 function_name
 				,arg_info
 				, idx_return_type
 				, (zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC
+				,registered_file
+				,registered_line
+
 		);
 
-		if(symbol_sf == NULL){
-			THROW_RUNTIME_ERROR(error.c_str());
-		}
+
+
 
 		ZS_LOG_DEBUG("Registered member function name %s::%s",this->symbol_class.name.c_str(), function_name);
 
@@ -226,20 +256,15 @@ namespace zetscript{
 
 		// register member function...
 		symbol = this->registerNativeMemberFunction(
-				error
-				,registered_file
-				, registered_line
-				, function_name
+				 function_name
 				, arg_info
 				, idx_return_type
 				, (zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				,registered_file
+				, registered_line
 		);
 
-
-		if(symbol == NULL){
-			THROW_RUNTIME_ERROR(error.c_str());
-		}
 
 		ZS_LOG_DEBUG("Registered C function %s as function member %s::%s",function_name, function_class_name.c_str(),function_name);
 	}

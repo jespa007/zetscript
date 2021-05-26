@@ -67,11 +67,11 @@ namespace zetscript{
 		//---------------------------------------------------
 		// SCRIPT VARIABLES
 		Symbol				* 	registerMemberVariable(
-			std::string & error
-			,const char * file
-			,short line
-			,const std::string & symbol_name
+			 const std::string & symbol_name
 			,unsigned short symbol_properties
+			,const char * file=""
+			,short line=-1
+
 		);
 
 		template < typename R>
@@ -84,13 +84,13 @@ namespace zetscript{
 
 
 		Symbol				* 	registerNativeMemberVariable(
-			std::string & error
-			,const char * file
-			,short line
-			,const std::string & symbol_name
+			 const std::string & symbol_name
 			,const std::string & str_native_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_properties
+			,const char * file=""
+			,short line=-1
+
 		);
 
 		//---------------------------------------------------
@@ -98,31 +98,31 @@ namespace zetscript{
 		// ATTRIBUTES
 		//
 		Symbol 				*	registerMemberAttribute(
-				 std::string & error
-				,const char * file
-				,short line
-				,const std::string & attrib_name
+				const std::string & attrib_name
+				,const char * file=""
+				,short line=-1
+
 		);
 		
 		//---------------
 		// SETTER
 
-		Symbol				* 	registerMemberAttributeSetter(
+		/*Symbol				* 	registerMemberAttributeSetter(
 			std::string & error
 			,const char * file
 			,short line
 			,const std::string & attribute_name
 			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
-		);
+		);*/
 
 		Symbol				* 	registerNativeMemberAttributeSetter(
-			std::string & error
-			,const char * file
-			,short line
-			,const std::string & attribute_name
+			const std::string & attribute_name
 			, ScriptFunctionArg arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_properties=0
+			,unsigned short symbol_properties
+			,const char * file=""
+			,short line=-1
+
 		);
 
 		/*
@@ -132,29 +132,29 @@ namespace zetscript{
 		void registerNativeMemberAttributeSetter(
 				const char *attrib_name
 				,F ptr_function
-				, const char *registered_file
-				,short registered_line
+				, const char *registered_file=""
+				,short registered_line=-1
 		);
 
 		//---------------
 		// GETTER
 
-		Symbol				* 	registerMemberAttributeGetter(
+		/*Symbol				* 	registerMemberAttributeGetter(
 			std::string & error
 			,const char * file
 			,short line
 			,const std::string & attribute_name
 			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
-		);
+		);*/
 
 		Symbol				* 	registerNativeMemberAttributeGetter(
-			std::string & error
-			,const char * file
-			,short line
-			,const std::string & attribute_name
+			const std::string & attribute_name
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_properties=0
+			,unsigned short symbol_properties
+			,const char * file=""
+			,short line=-1
+
 		);
 
 		/*
@@ -175,24 +175,24 @@ namespace zetscript{
 		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
 		Symbol				* 	registerMemberFunction(
-				std::string & error
-				,const char * file
-				, short line
-				,const std::string & function_name
+				 const std::string & function_name
 				, std::vector<ScriptFunctionArg> args={}
 				, unsigned short properties=0
+				,const char * file = ""
+				, short line=-1
+
 
 		);
 
 		Symbol				* 	registerNativeMemberFunction(
-				 std::string & error
-				,const char * file
-				, short line
-				,const std::string & function_name
-				, std::vector<ScriptFunctionArg> args={}
-				, int idx_return_type=ZS_IDX_UNDEFINED
+				 const std::string & function_name
+				,std::vector<ScriptFunctionArg> args={}
+				,int idx_return_type=ZS_IDX_UNDEFINED
 				,zs_int ref_ptr=0
-				, unsigned short properties=0
+				,unsigned short properties=0
+				,const char * file=""
+				,short line=-1
+
 
 		);
 
@@ -231,24 +231,24 @@ namespace zetscript{
 
 
 		Symbol				* 	registerInternalMemberVariable(
-			std::string & error
-			,const char *file
-			, short line
-			,const std::string & symbol_name
+			const std::string & symbol_name
 			, unsigned short properties
 			,const std::string & str_native_type=""
 			,zs_int ref_ptr=0 // it's the offset from pointer or a pointer directly
+			,const char *file=""
+			, short line=-1
+
 		);
 
 		Symbol				* 	registerInternalMemberFunction(
-		      std::string & error
-			, const char * file
-			, short line
-			,const std::string & function_name
+			 const std::string & function_name
 			, std::vector<ScriptFunctionArg> args
 			, unsigned short properties=0
 			, int idx_return_type=ZS_IDX_UNDEFINED
 			,zs_int ref_ptr=0
+			, const char * file=""
+			, short line=-1
+
 		);
 
 		template <typename F>

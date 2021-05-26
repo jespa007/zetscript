@@ -79,7 +79,7 @@ namespace zetscript{
 					 zs_strutils::copy_from_ptr_diff(default_str_value,start_word+1,aux);
 				}
 				aux++;
-				value=(zs_int)eval_data->zs->registerConstantScriptObjectString(default_str_value);
+				value=(zs_int)eval_data->zs->registerConstantString(std::string("\"")+default_str_value+"\"",default_str_value);
 				byte_code = ByteCode::BYTE_CODE_LOAD_STRING;
 			}else{ // is null,boolean or identifier
 				bool end=false;
@@ -135,13 +135,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						// try to find local or global
-						/*if(scope_info == MAIN_SCOPE(eval_data)){ // symbol in global scope
-							if( (vis=eval_find_global_symbol(eval_data,default_str_value) )!= NULL){ // global symbol found
-								byte_code= ByteCode::BYTE_CODE_LOAD_GLOBAL;
-								value=vis->idx_position;
-							}
-						}else*/ if((vis=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy
+						if((vis=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy
 							byte_code= ByteCode::BYTE_CODE_LOAD_LOCAL;
 							value=vis->idx_position;
 

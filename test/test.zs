@@ -1,8 +1,7 @@
 class A{
 	_in(k){
-		return k<10;
+		return k < 10
 	}
 }
-var a=new A()
 
-0 in new A()
+Console::outln("{0}",0 in new A())

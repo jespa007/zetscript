@@ -6,54 +6,55 @@
 
 using namespace zetscript;
 
-class MyClass{
-public:
-	int data1;
+#include "MyClass.h"
+#include "MyClassWrap.h"
+#include "MyClassExtend.h"
+#include "MyClassExtendWrap.h"
 
-	MyClass(){
-		this->data1=5;
-	}
-
-	void function0(){
-		printf("function0\n");
-	}
-
-	void function1(int arg){
-		this->data1 = arg;
-		printf("int argument is %i\n",this->data1);
-	}
-
-};
-
-class MyClassExtend:public MyClass{
-public:
-	zs_float data2;
-
-	void function2(zs_float *arg){
-		this->data2 = *arg;
-		printf("Float argument is %.02f\n",this->data2);
-	}
-};
 
 int main(){
 
 	ZetScript *zs=new ZetScript();
 
-	zs->registerNativeClass<MyClass>("MyClass"); // register MyClass with name MyClass in script side.
-	zs->registerNativeClass<MyClassExtend>("MyClassExtend"); // register MyClassExtend with name MyClassExtend in script side.
+	// register MyClass with name MyClass in script side.
+	zs->registerClass<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
 
-	zs->registerNativeMemberVariable<MyClass>("data1",&MyClass::data1); // register data1 named data1 in script side as variable member.
-	zs->registerNativeMemberFunction<MyClass>("function0",&MyClass::function0); // register function0 named function1 in script side as function member.
-	zs->registerNativeMemberFunction<MyClass>("function1",&MyClass::function1); // register function1 named function1 in script side as function member.
+	 // register MyClassExtend with name MyClassExtend in script side.
+	zs->registerClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
+
+	// register data1 named data1 in script side as variable member and read/write.
+	zs->registerMemberAttributeSetter<MyClass>("data1",&MyClassWrap_data1_set);
+	zs->registerMemberAttributeGetter<MyClass>("data1",&MyClassWrap_data1_get);
+
+	// register data2 named data1 in script side as variable member (only read).
+	zs->registerMemberAttributeGetter<MyClass>("data2",&MyClassWrap_data2_get);
+
+	// register data1 named data1 in script side as variable member (only write).
+	zs->registerMemberAttributeSetter<MyClass>("data3",&MyClassWrap_data3_set);
+
+	// register function0 named function1 in script side as function member.
+	/*zs->registerNativeMemberFunction<MyClass>("function0",&MyClass::function0);
+
+	// register function1 named function1 in script side as function member.
+	zs->registerNativeMemberFunction<MyClass>("function1",&MyClass::function1);
 
 
-	zs->registerNativeMemberVariable<MyClassExtend>("data2",&MyClassExtend::data2); // register data2 named data1 in script side as variable member.
-	zs->registerNativeMemberFunction<MyClassExtend>("function2",&MyClassExtend::function2); // register function2 named function2 in script side as function member.
+	// register data2 named data1 in script side as variable member.
+	zs->registerNativeMemberVariable<MyClassExtend>("data2",&MyClassExtend::data2);
 
+	// register function2 named function2 in script side as function member.
+	zs->registerNativeMemberFunction<MyClassExtend>("function2",&MyClassExtend::function2);
 
-	zs->nativeClassInheritsFrom<MyClassExtend,MyClass>(); // once all vars and functions are registered, tell that MyClassExtend is base of MyClass
+	// once all vars and functions are registered, tell that MyClassExtend is base of MyClass
+	zs->nativeClassInheritsFrom<MyClassExtend,MyClass>();
+*/
 
 	zs->eval(
+			"var myclass = new MyClass();\n"
+			"Console::outln(myclass.data1);\n"
+	);
+
+	/*zs->eval(
 		"class ScriptMyClassExtend:MyClassExtend{\n"
 		"	var data3;\n"
 		"	function function0(){\n"
@@ -78,7 +79,7 @@ int main(){
 		"print(\"data1:\"+myclass.data1);\n" // it prints "data1:12"
 		"print(\"data2:\"+myclass.data2);\n" // it prints "data2:0.5"
 		"delete myclass;\n" // delete script var with c pointers attached inside.
-	);
+	);*/
 
 	delete zs;
 

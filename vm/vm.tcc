@@ -857,7 +857,7 @@ namespace zetscript{
 				//,(void *)list_props->items
 				//,list_props->count
 				,str_symbol_metamethod
-				,stk_args+1 // +1 because we include all parameters (include object, i.e 1st parameter)
+				,stk_args // +1 because we include all parameters (include object, i.e 1st parameter)
 				,n_stk_args
 			)) == NULL){
 				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
@@ -895,7 +895,7 @@ namespace zetscript{
 					vm
 					,script_object
 					,ptr_function_found
-					,stk_args+1 // +1 because we include all parameters (include object, i.e 1st parameter)
+					,stk_args // +1 because we include all parameters (include object, i.e 1st parameter)
 					,n_stk_args
 					,calling_function
 					,instruction

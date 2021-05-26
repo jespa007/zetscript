@@ -289,7 +289,14 @@ IF ( "${FCOMPILE}" STREQUAL "ON")
 	add_executable(zs_test${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
 	)	
-	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})	
+	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+	
+	# register_class
+	add_executable(register_class${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/register_class.cpp
+	)	
+	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})	
+		
 ELSE()
 
 	SET(
