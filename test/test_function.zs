@@ -1,5 +1,5 @@
 function add(a,b,c){
-	print("a:"+a+" b:"+b+" c:"+c+" c==null"+(c==null))
+	Console::outln("a:"+a+" b:"+b+" c:"+c+" c==null "+(c==null))
 	var d=a+b;
 	if(c!=null){
 		d+=c;
@@ -9,6 +9,6 @@ function add(a,b,c){
 
 var add_function_obj=add;
 
-print("fun1:"+add_function_obj(30,40)+ " fun2:"+add_function_obj(5,60,5));
+Console::outln("fun1:"+add_function_obj(30,40)+ " fun2:"+add_function_obj(5,60,5));
 
 

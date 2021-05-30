@@ -14,6 +14,8 @@ var test_instanceof=[
 	,"true instanceof bool"
 	,"[0,1,2] instanceof ScriptObjectVector"
 	,"{'a':0,'b':1} instanceof ScriptObjectObject"
+	,"\"abc\" instanceof ScriptObjectString"
+	,"new A() instanceof A"
 ];
 
 

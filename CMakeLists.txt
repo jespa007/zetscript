@@ -116,14 +116,6 @@ endif()
 
 message("-- Library type: " ${LIBRARY_TYPE_CREATION})
 
-IF ("${STRICT_STATIC_FUNCTIONS_ONLY}" STREQUAL "ON")
-	message("-- Strict static functions only: ON")
-	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__STRICT_STATIC_FUNCTIONS_ONLY__")
-ELSE()
-	message("-- Strict static functions only: OFF")
-ENDIF()
-
-
 #
 # COMMON PARAMS
 #

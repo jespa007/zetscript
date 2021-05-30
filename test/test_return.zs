@@ -47,5 +47,5 @@ Console::outln("a.i:"+a.i);
 Console::outln("e:"+e);
 Console::outln("s:"+s.b);
 Console::outln("v:"+v);
-Console::outln("c.i:"+c.i);
+//Console::outln("c.i:"+c.i);
 Console::outln("ret_variable().i:"+ret_variable().i);

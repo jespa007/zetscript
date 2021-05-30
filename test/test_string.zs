@@ -6,7 +6,7 @@ var v=s3.split("---")
 
 Console::outln("----")
 for(var i=0; i < s1.size(); i++){
-	//Console::outln(s1[i]);
+	Console::outln(s1[i]);
 }
 
 Console::outln("----")

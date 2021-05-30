@@ -24,8 +24,7 @@ class Vector2{
 };
 
 //var v1=new Vector2(1,2)
-//var v2=(new Vector2(3,4))+(new Vector2(5,6))
-var v=new Vector2()
+var v=(new Vector2(3,4))+(new Vector2(5,6))
 //Console::outln(v._toString());
 //Console::outln(v++) // it will read vector [x,y] and postincrement
 Console::outln(v++)
