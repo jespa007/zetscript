@@ -683,7 +683,7 @@ load_element_object:
 								StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->value;
 								if(stk_ma->member_attribute->getter != NULL){
 
-									VM_INNER_ONLY_RETURN_CALL(
+									VM_INNER_CALL_ONLY_RETURN(
 											stk_ma->so_object
 											,stk_ma->member_attribute->getter
 											,stk_ma->member_attribute->getter->symbol.name.c_str()
@@ -877,7 +877,7 @@ load_element_object:
 								// set vm_current to start of getter variable object
 								data->stk_vm_current=data->stk_vm_current-n_dst_vars-1;
 								// call getter and NOT reset stack after call (false)
-								VM_INNER_ONLY_RETURN_CALL(so_read,sf_getter,"_get",false);
+								VM_INNER_CALL_ONLY_RETURN(so_read,sf_getter,"_get",false);
 
 								// 5. push elements from tmp stk (starts -1 because after return it points to the last element +1, we want to point at the element)
 								memcpy(data->stk_vm_current-=1,stk_tmp,sizeof(StackElement)*n_dst_vars);
@@ -1271,6 +1271,9 @@ load_element_object:
 						,instruction
 						,stk_result_op1
 						,stk_result_op2);
+				if(data->vm_error) {
+					goto lbl_exit_function;
+				}
 				continue;
 			case BYTE_CODE_EQU:  // ==
 				POP_TWO;
@@ -1512,7 +1515,7 @@ load_element_object:
 					}else{
 
 						if((stk_function_ref->properties & (STK_PROPERTY_FUNCTION))==0){
-							VM_STOP_EXECUTE("%s is not function or not exist",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+							VM_STOP_EXECUTE("'%s' is not function or not exist",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 						}
 
 						sf=(ScriptFunction *)stk_function_ref->value;
@@ -1634,7 +1637,7 @@ load_element_object:
 											stk_arg->value=(void *)sc;
 											stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
 										}/*else if((sf_getter=so_param->getGetter())!=NULL){
-											VM_INNER_ONLY_RETURN_CALL(
+											VM_INNER_CALL_ONLY_RETURN(
 													so_param
 													,sf_getter
 													,"_get"
@@ -1700,7 +1703,7 @@ load_element_object:
 								*data->stk_vm_current++=param->default_var_value;
 								break;
 							case STK_PROPERTY_FUNCTION: // we call function in the middle of the function
-								VM_INNER_ONLY_RETURN_CALL(NULL,param->default_var_value.value,"default",true)
+								VM_INNER_CALL_ONLY_RETURN(NULL,param->default_var_value.value,"default",true)
 								data->stk_vm_current++;
 								/*vm_call_function_script(
 									 vm

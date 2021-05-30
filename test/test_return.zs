@@ -8,44 +8,39 @@ class A{
 	}
 };
 
+// test all almost return cases
+var test_ret=[
+	function (){return -10;}
+	,function (){var b=-10;return b;}
+	,function (){return 1,2,3;}
+	,function (){var a,b,c; a,b,c=1,2,3;return a,b,c}
+	,function (){return "abc";}
+	,function (){var b="abc";return b;}
+	,function (){return [5,3];}
+	,function (){var b=[5,3];return b;}
+	,function (){return 5+3;}
+	,function (){var b=5+3;return b;}
+	,function (){return {a:10,b:"10"};}
+	,function (){var b={a:10,b:"10"}; return b;}
+	,function (){return new A(10);}
+	,function(){var b=new A(10);return b;}
+	,function (){return new A(10).return_this();}
+	,function(){var b=new A(10);return b.return_this();}
+];
 
-function ret_vect(){
-	return new A(10); 
+function return_test_from_function(f){
+	return f()
 }
 
-function ret_expr(){
-	return 5+3;
+Console::outln("return test:")
+
+for(var f in test_ret){
+	Console::outln(f())
 }
 
-function ret_multiple(i){
-	return 1+i,2+i,3+i;
+Console::outln("return test from function:")
+
+
+for(var f in test_ret){
+	Console::outln(return_test_from_function(f()))
 }
-
-function ret_value(){
-	return -10;
-}
-
-function ret_struct(){
-	return {a:10,b:"10"};
-}
-
-function ret_variable(){
-	var b=new A(10);
-	
-	return b;
-}
-
-var n1,n2,n3;
-n1,n2,n3=ret_multiple(10);
-var a=ret_vect();
-var e=ret_expr();
-var v=ret_value();
-var c=ret_variable();
-var s=ret_struct();
-
-Console::outln("a.i:"+a.i);
-Console::outln("e:"+e);
-Console::outln("s:"+s.b);
-Console::outln("v:"+v);
-//Console::outln("c.i:"+c.i);
-Console::outln("ret_variable().i:"+ret_variable().i);

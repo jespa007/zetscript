@@ -193,6 +193,10 @@ namespace zetscript{
 				}
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			}
+			else if(*aux_p == ','){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: unexpected ','");
+			}
+
 			aux_p=eval_expression(
 					eval_data
 					,aux_p

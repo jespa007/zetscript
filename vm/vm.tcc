@@ -105,8 +105,10 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 		}\
 	}
 
-	
-#define VM_INNER_ONLY_RETURN_CALL(so,sf,name,reset)\
+#define VM_INNER_CALL_ONLY_RETURN(so,sf,name,reset) VM_INNER_CALL(so,sf,name,reset,0,true)
+
+
+#define VM_INNER_CALL(so,sf,name,reset,n_args,goto_on_error)\
 {\
 StackElement *stk_def_afun_start=data->stk_vm_current;\
 int n_returned_args_afun=0;\
@@ -116,7 +118,7 @@ if(((ScriptFunction *)sf)->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){\
 			,so\
 			,((ScriptFunction *)sf)\
 			,stk_def_afun_start\
-			,0\
+			,n_args\
 			,calling_function\
 			,instruction\
 	);\
@@ -126,6 +128,7 @@ if(((ScriptFunction *)sf)->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){\
 		,so\
 		,((ScriptFunction *)sf)\
 		,stk_def_afun_start\
+		,n_args\
 	);\
 }\
 if(data->vm_error == true){ \
@@ -135,7 +138,9 @@ if(data->vm_error == true){ \
         ,SFI_GET_FILE(calling_function,instruction)\
         ,SFI_GET_LINE(calling_function,instruction)\
     );\
-    goto lbl_exit_function;\
+    if(goto_on_error){\
+    	goto lbl_exit_function;\
+    }\
 }\
 n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;\
 /* we share pointer (true second arg) to not remove on pop in calling return */\
@@ -703,31 +708,27 @@ namespace zetscript{
 				return true;
 			}
 			else{ // try object
-				ScriptObject *obj1=NULL;
-				ScriptObject *obj2=NULL;
-
-				if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					obj1=(ScriptObject *)stk_result_op1->value;
-				}
-
-				if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					obj2=(ScriptObject *)stk_result_op2->value;
-				}
-
 
 				if(
-					obj1->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
-					&&
-					obj2->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
+						(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)
+					&&	(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)
 				){
-					ScriptObjectObject *so_object=ScriptObjectObject::concat(
-							data->zs
-							,(ScriptObjectObject *)obj1
-							,(ScriptObjectObject *)obj2
-					);
-					vm_create_shared_pointer(vm,so_object);
-					PUSH_OBJECT(so_object);
-					return true;
+					ScriptObject *obj1=(ScriptObject *)stk_result_op1->value;
+					ScriptObject *obj2=(ScriptObject *)stk_result_op2->value;
+
+					if(   obj1->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
+					   && obj2->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
+					){
+
+						ScriptObjectObject *so_object=ScriptObjectObject::concat(
+								data->zs
+								,(ScriptObjectObject *)obj1
+								,(ScriptObjectObject *)obj2
+						);
+						vm_create_shared_pointer(vm,so_object);
+						PUSH_OBJECT(so_object);
+						return true;
+					}
 				}
 			}
 			break;
@@ -999,8 +1000,11 @@ apply_metamethod_error:
 		}
 
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
-			VM_ERROR("internal: Expected object");
-			return;
+			//VM_ERROR("internal: Expected object");
+			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
+				VM_ERROR("Variable '%s' it doesn't implements iterator",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+				return;
+			}
 		}
 
 		stk_result_op2 = (StackElement *)(stk_result_op2->value);
@@ -1012,13 +1016,30 @@ apply_metamethod_error:
 
 			if(stk_sf_iter->properties & (STK_PROPERTY_FUNCTION | STK_PROPERTY_MEMBER_FUNCTION)){
 				StackMemberFunction *smf=(StackMemberFunction *)stk_sf_iter->value;
+				ScriptObject *so_object=smf->so_object;
+				StackElement *stk_start=data->stk_vm_current;
+				int n_args=0;
 
-				VM_INNER_ONLY_RETURN_CALL(
-						smf->so_object
+				if(smf->so_function->symbol.properties & SYMBOL_PROPERTY_STATIC){
+					n_args=1;
+
+					// only stores and not increment (++ ) in order to start the stk arg
+					*data->stk_vm_current={so_object,STK_PROPERTY_SCRIPT_OBJECT};
+					so_object=NULL;
+				}
+
+				VM_INNER_CALL(
+						so_object
 						,smf->so_function
 						,"iter"
 						,true
+						,n_args
+						,false
 				);
+
+				if(data->vm_error){
+					return;
+				}
 
 				// ok stk_vm_current holds the iter object
 				if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){

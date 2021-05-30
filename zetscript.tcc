@@ -100,7 +100,7 @@ namespace zetscript{
 					}else if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_PTR_C){//*ScriptClass::k_str_bool_type_ptr){
 						val_ret=(zs_int)(&stack_element->value);
 					}else{
-						error="cannot convert \""+zs_rtti::demangle((k_str_bool_type_ptr))+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
+						error="cannot convert '"+zs_rtti::demangle((k_str_bool_type_ptr))+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
 
 						return false;
 					}
@@ -122,7 +122,7 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error="cannot convert \""+zs_rtti::demangle((k_str_float_type_ptr))+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
+						error="cannot convert '"+zs_rtti::demangle((k_str_float_type_ptr))+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
 						return false;
 					}
 					break;
@@ -138,7 +138,7 @@ namespace zetscript{
 						ZS_FLOAT_COPY(&val_ret,stack_element->value);
 						break;
 					default:
-						error= "cannot convert \"int\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
+						error= "cannot convert 'int' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
 						return false;
 					}
 					break;
@@ -170,7 +170,7 @@ namespace zetscript{
 								}else if (idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
 									val_ret=(zs_int)(((std::string *)(((ScriptObjectString *)script_object)))->c_str());
 								}else{
-									error= "cannot convert \""+zs_rtti::demangle((k_str_string_type_ptr))+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
+									error= "cannot convert '"+zs_rtti::demangle((k_str_string_type_ptr))+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
 									return false;
 								}
 							}else if(script_object->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
@@ -179,7 +179,7 @@ namespace zetscript{
 
 								if(c_class != NULL){
 									if((val_ret=script_class_factory->doCast((zs_int)script_object_class->getNativeObject(),c_class->idx_class,idx_builtin_type))==0){//c_class->idx_class==idx_builtin_type){
-										error = "cannot convert \""+zs_rtti::demangle(script_object_class->getNativePointerClassName())+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
+										error = "cannot convert '"+zs_rtti::demangle(script_object_class->getNativePointerClassName())+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
 										return false;
 									}
 								}else{ // ScriptObjectClass ?
@@ -187,13 +187,13 @@ namespace zetscript{
 									return false;
 								}
 							}else{ // cannot convert...
-								error = "cannot convert \""+zs_rtti::demangle(script_object->getClassName())+"\" to \""+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"\"";
+								error = "cannot convert '"+zs_rtti::demangle(script_object->getClassName())+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
 							}
 						}else{ // get native object...
 							val_ret=(zs_int)script_object->getNativeObject();
 						}
 					}else{
-						error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+						error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)).c_str());
 						return false;
 					}
 					break;
@@ -809,13 +809,13 @@ namespace zetscript{
 
 			// 2. check valid parameters ...
 			if((idx_return_type=script_class_factory->getIdxClassFromItsNativeType(return_type)) == -1){
-				THROW_RUNTIME_ERROR("Return type \"%s\" for bind function not registered",zs_rtti::demangle(return_type).c_str());
+				THROW_RUNTIME_ERROR("Return type '%s' for bind function not registered",zs_rtti::demangle(return_type).c_str());
 				return NULL;
 			}
 
 			for(unsigned int i = 0; i < arg.size(); i++){
 				if(script_class_factory->getIdxClassFromItsNativeType(arg[i])==-1){
-					THROW_RUNTIME_ERROR("Argument %i type \"%s\" for bind function not registered"
+					THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"
 							,i+1
 							,zs_rtti::demangle(arg[i]).c_str());
 					return NULL;
@@ -862,7 +862,7 @@ namespace zetscript{
 						}
 
 						if(calling_obj == NULL){
-							THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+							THROW_RUNTIME_ERROR("error evaluating '%s'. Variable name '%s' doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						}
 
 					}else{ // we have got the calling_obj from last iteration ...
@@ -871,11 +871,11 @@ namespace zetscript{
 							if(se->properties & STK_PROPERTY_SCRIPT_OBJECT){
 								calling_obj=(ScriptObjectClass *)se->value;
 							}else{
-								THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" not script variable",function_access.c_str(),symbol_to_find.c_str());
+								THROW_RUNTIME_ERROR("error evaluating '%s'. Variable name '%s' not script variable",function_access.c_str(),symbol_to_find.c_str());
 							}
 						}
 						else{
-							THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+							THROW_RUNTIME_ERROR("error evaluating '%s'. Variable name '%s' doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						}
 					}
 				}
@@ -886,7 +886,7 @@ namespace zetscript{
 						fun_obj=(ScriptFunction *)is->value;
 					}
 				}else{
-					THROW_RUNTIME_ERROR("error evaluating \"%s\". Cannot find function \"%s\"",function_access.c_str(),access_var[access_var.size()-1].c_str());
+					THROW_RUNTIME_ERROR("error evaluating '%s'. Cannot find function '%s'",function_access.c_str(),access_var[access_var.size()-1].c_str());
 				}
 
 			}else{ // some function in main function
@@ -904,7 +904,7 @@ namespace zetscript{
 			}
 
 			if(fun_obj==NULL){
-				THROW_RUNTIME_ERROR("error evaluating \"%s\". Variable name \"%s\" is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str());
+				THROW_RUNTIME_ERROR("error evaluating '%s'. Variable name '%s' is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str());
 			}
 
 

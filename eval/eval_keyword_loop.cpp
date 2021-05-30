@@ -465,8 +465,15 @@ namespace zetscript{
 								ei_aux->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_LOCAL;
 
 								eval_data->current_function->instructions.push_back(
-									new EvalInstruction(BYTE_CODE_IT_INIT)
+										ei_aux=new EvalInstruction(
+											BYTE_CODE_IT_INIT
+									)
 								);
+
+
+
+								ei_aux->instruction_source_info=ei_load_iterator_st[ei_load_iterator_st.size()-1].instruction_source_info;
+
 
 								idx_instruction_for_start=(int)(eval_data->current_function->instructions.size());
 
