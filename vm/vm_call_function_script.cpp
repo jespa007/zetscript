@@ -1809,6 +1809,7 @@ load_element_object:
 
 							ScriptObject *script_var=(ScriptObject *)stk_it->value;
 
+							//special case for constant string object (they don't are shared elements)
 							if(script_var->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && (script_var->shared_pointer==NULL)){
 								// if is not shared is constant...
 								ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
@@ -1817,12 +1818,21 @@ load_element_object:
 								stk_it->value=sc;
 							}else{
 
-								if(script_var->shared_pointer->data.zero_shares==&data->zero_shares[data->vm_idx_call]){
+								if(script_var->shared_pointer->data.created_idx_call==data->vm_idx_call){ // the variable was created in this function ctx
 									// only removes all refs from local
-									if(vm_deattach_shared_node(vm,script_var->shared_pointer->data.zero_shares,script_var->shared_pointer)==false){
-										goto lbl_exit_function;
+									if(script_var->shared_pointer->data.n_shares == 0){ // removes from zero shares to not to be removed automatically on pop scope
+										if(vm_deattach_shared_node(vm,&data->zero_shares[script_var->shared_pointer->data.created_idx_call],script_var->shared_pointer)==false){
+											goto lbl_exit_function;
+										}
 									}
-										// Here we have n_shares == 0 so we can remove
+									else{
+										// other wise remove from shared vars
+										if(vm_deattach_shared_node(vm,&data->shared_vars,script_var->shared_pointer)==false){
+												goto lbl_exit_function;
+										}
+									}
+
+									// free shared pointer and set as NULL and is returned as new object
 									free(script_var->shared_pointer);
 									script_var->shared_pointer=NULL;
 								}

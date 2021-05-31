@@ -66,6 +66,7 @@
 #include "config.h"
 #include "StackElement.h"
 #include "common.h"
+#include "BuiltinType.h"
 
 // utils
 #include "util/zs_strutils.h"
@@ -141,6 +142,7 @@
 #define ZS_REGISTER_CONSTANT_FLOAT(zs,constant_name,b)			(zs)->registerConstantFloat(constant_name,b)
 #define ZS_REGISTER_CONSTANT_BOOL(zs,constant_name,b)			(zs)->registerConstantBool(constant_name,b)
 
+
 namespace zetscript{
 
 	typedef enum{
@@ -152,7 +154,7 @@ namespace zetscript{
 
 	extern const char *	k_str_void_type;				// 	typeid(void).name()
 	extern const char * k_str_zs_int_type_ptr;			//	typeid(zs_int *).name()
-	extern const char * k_str_const_zs_int_type_ptr;	//	typeid(int *).name()
+	extern const char * k_str_const_zs_int_type_ptr;	//	typeid(zs_int *).name()
 	extern const char * k_str_float_type_ptr;			//	typeid(zs_float *).name()
 	extern const char * k_str_const_float_type_ptr;		//	typeid(zs_float *).name()
 	extern const char * k_str_string_type_ptr;			//	typeid(std::string *).name()
@@ -188,8 +190,6 @@ namespace zetscript{
 		inline ScopeFactory * getScopeFactory() { return scope_factory;}
 		inline ScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
 		inline ScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
-
-		void	setCallbackOnError(PrintFunctionCallback _fun);
 
 		StackElement	eval(const std::string & expresion,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE, const char * filename="");
 		StackElement	evalFile(const std::string & filename,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE);
@@ -475,7 +475,7 @@ namespace zetscript{
 		void getScriptObject(const std::string &function_access,ScriptObjectClass **calling_obj,ScriptFunction **fun_obj );
 
 		template <  typename F>
-		std::function<F> * bindScriptFunction(const std::string & function_access);
+		std::function<F> * bindScriptFunction(const std::string & function_access, const char *file="", int line=-1);
 
 		template <  typename F>
 		std::function<F> * bindScriptFunction(ScriptFunction *sf, ScriptObjectClass *calling_object=NULL);

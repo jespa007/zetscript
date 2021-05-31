@@ -168,7 +168,7 @@ void test_float_expr(const char  *str_expr, zs_float expected_value) {
 	}
 }
 
-#define TEST_ARITHMETIC_FLOAT_EXPR(val1) test_float_expression(val1,ZS_STR(val1)";")
+#define TEST_ARITHMETIC_FLOAT_EXPR(val1) test_float_expression((zs_float)(val1),ZS_STR(val1)";")
 void test_float_expression(zs_float expr, const char *str_expr) {
 
 	zs_float *aux_value = NULL;

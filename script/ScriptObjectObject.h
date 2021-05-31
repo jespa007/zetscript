@@ -57,7 +57,7 @@ namespace zetscript{
 
 		zs_map				*	map_user_property_keys; // to search faster each property by its name
 
-		StackElement * 			getUserProperty(const std::string & property_name/*, int * idx=NULL*/);
+		StackElement * 			getUserProperty(const std::string & property_name);
 	};
 
 }

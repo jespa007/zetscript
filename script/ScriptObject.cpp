@@ -181,11 +181,8 @@ namespace zetscript{
 
 	StackElement * ScriptObject::addProperty(
 			const std::string & symbol_value
-			//, const ScriptFunction *info_function
-			//, Instruction *src_instruction
 			,std::string & error
 			,StackElement * stk_element
-			//,int * idx_stk_element
 
 	){
 		VM_SET_USER_ERROR(vm,"addProperty is not implemented");

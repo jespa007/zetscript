@@ -109,7 +109,7 @@ namespace zetscript{
 		);*/
 
 		// add data stk_vm_current
-		size_t stk_start_size=stk_params.size();
+		uint8_t stk_start_size=(uint8_t)stk_params.size();
 		StackElement *stk_vm_current=vm_get_current_stack_element(vm);
 		StackElement *stk_start=stk_vm_current;//vm data->stk_vm_current;
 		for(unsigned i = 0; i < stk_start_size; i++){

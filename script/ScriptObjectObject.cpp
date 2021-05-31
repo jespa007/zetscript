@@ -45,44 +45,10 @@ namespace zetscript{
 	StackElement * ScriptObjectObject::addUserProperty(
 			const std::string & symbol_value
 			,std::string & error
-			//, const ScriptFunction *info_function
-			//,Instruction *src_instruction
 			,StackElement * sv
-			//,int * idx_stk_element
-
 		){
 		StackElement si;
 		bool error_symbol=false;
-
-		// we allow any char to allow varaibles string maps
-		/*char *aux_p=(char *)symbol_value.c_str();
-		if(
-			   ('a' <= *aux_p && *aux_p <='z') ||
-			   ('A' <= *aux_p && *aux_p <='Z') ||
-			   (*aux_p=='_')
-
-
-			){ // let's see it has right chars...
-				aux_p++;
-				while((*aux_p!=0) && (
-					  ('a' <= *aux_p && *aux_p <='z') ||
-					  ('0' <= *aux_p && *aux_p <='9') ||
-					  (*aux_p=='_') ||
-					  ('A' <= *aux_p && *aux_p <='Z'))){
-					aux_p++;
-				}
-
-				if((*aux_p!=0)){
-					error_symbol=true;
-				}
-		}else{
-			error_symbol=true;
-		}
-
-		if(error_symbol){
-			error=zs_strutils::format("invalid symbol name \"%s\". Check it doesn't start with 0-9, it has no spaces, and it has no special chars like :,;,-,(,),[,], etc.",symbol_value.c_str());
-			return NULL;
-		}*/
 
 		if(map_user_property_keys->exist(symbol_value.c_str())){
 			error=zs_strutils::format("\"%s\" symbol already exists",symbol_value.c_str());
@@ -117,13 +83,7 @@ namespace zetscript{
 		return new_stk;
 	}
 
-	StackElement * ScriptObjectObject::getUserProperty(const std::string & property_name/*, int * idx*/){//,bool only_var_name){
-
-		// special properties
-		/*if(property_name == "length"){
-			stk_count.value=(void *)this->countUserProperties();
-			return &stk_count;
-		}*/
+	StackElement * ScriptObjectObject::getUserProperty(const std::string & property_name){
 
 		bool exists;
 		StackElement *stk_element=(StackElement *)this->map_user_property_keys->get(property_name.c_str(),exists);
@@ -141,14 +101,10 @@ namespace zetscript{
 
 	StackElement * ScriptObjectObject::addProperty(
 			const std::string & symbol_value
-			//, const ScriptFunction *info_function
-			//, Instruction *src_instruction
 			,std::string & error
 			,StackElement * stk_element
-			/*,int * idx_stk_element*/
-
 	){
-		return addUserProperty(symbol_value,error/*,stk_element,idx_stk_element*/);
+		return addUserProperty(symbol_value,error);
 	}
 
 	StackElement 	* ScriptObjectObject::getProperty(const std::string & property_name, int * idx){

@@ -76,7 +76,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 		StackElement *stk_local_var =stk_local_vars+((Symbol *)(symbols[i]))->idx_position;\
 		if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)==STK_PROPERTY_SCRIPT_OBJECT){\
 			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
-			if(so != NULL){\
+			if(so != NULL && so->shared_pointer!=NULL){\
 				if(vm_unref_shared_script_object(vm,so,data->vm_idx_call)==false){\
 					return;\
 				}\
@@ -384,8 +384,8 @@ namespace zetscript{
 			bool is_dettached=false;
 			if(vm_decrement_shared_nodes_and_dettach_if_zero(vm,shared_pointer,is_dettached)){
 				if(is_dettached){
-					shared_pointer->data.zero_shares=&data->zero_shares[idx_current_call];
-					if(!vm_insert_shared_node(vm,shared_pointer->data.zero_shares,shared_pointer)){ // insert to zero shares vector to remove automatically on ending scope
+					shared_pointer->data.created_idx_call=idx_current_call;
+					if(!vm_insert_shared_node(vm,&data->zero_shares[shared_pointer->data.created_idx_call],shared_pointer)){ // insert to zero shares vector to remove automatically on ending scope
 						return false;
 					}
 				}

@@ -90,7 +90,6 @@ namespace zetscript{
 		zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
-		Symbol *symbol;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
@@ -121,7 +120,6 @@ namespace zetscript{
 		zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
-		Symbol *symbol;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);

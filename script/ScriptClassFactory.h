@@ -36,6 +36,8 @@ namespace zetscript{
 	class ScriptClass;
 	class ZetScript;
 
+	typedef zs_int (*ConversionType)(zs_int);
+
 
 	class ScriptClassFactory{
 
@@ -213,7 +215,7 @@ namespace zetscript{
 
 		typedef struct{
 			const char *   type_str;
-			IdxBuiltinType  id;
+			BuiltinType  id;
 		}PrimitiveType;
 
 		typedef struct{

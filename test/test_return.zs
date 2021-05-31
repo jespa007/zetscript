@@ -42,5 +42,5 @@ Console::outln("return test from function:")
 
 
 for(var f in test_ret){
-	Console::outln(return_test_from_function(f()))
+	Console::outln(return_test_from_function(f))
 }

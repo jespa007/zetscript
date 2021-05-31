@@ -55,7 +55,7 @@ include_directories (
 	${PROJECT_SOURCE_DIR}
 )
 
-file(GLOB_RECURSE INCS "*.h")
+file(GLOB_RECURSE INCS "*.h,*.tcc")
 
 
 message("-- Install drectory: " ${CMAKE_INSTALL_PREFIX})
@@ -272,10 +272,10 @@ IF ( "${FCOMPILE}" STREQUAL "ON")
 	target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 	
 	# test_script_call
-	#add_executable(test_script_call${POST_NAME}
-	#	${PROJECT_SOURCE_DIR}/test/test_script_call.cpp
-	#)	
-	#target_link_libraries(test_script_call${POST_NAME} zetscript${POST_NAME})
+	add_executable(test_script_call${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/test_script_call.cpp
+	)	
+	target_link_libraries(test_script_call${POST_NAME} zetscript${POST_NAME})
 	
 	# zs_test
 	add_executable(zs_test${POST_NAME}
@@ -356,6 +356,7 @@ ELSE()
 		
 		
 		# main
+		BuiltinType.h
 		ByteCode.h
 		common.h
 		config.h

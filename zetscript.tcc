@@ -116,9 +116,9 @@ namespace zetscript{
 						break;
 					case IDX_BUILTIN_TYPE_ZS_INT_C:
 						{
-							int *aux_dst = ((int *)&val_ret);
+							zs_int *aux_dst = ((zs_int *)&val_ret);
 							zs_float *aux_src=(zs_float *)&stack_element->value;
-							*aux_dst=(int)(*aux_src);
+							*aux_dst=(zs_int)(*aux_src);
 						}
 						break;
 					default:
@@ -830,7 +830,7 @@ namespace zetscript{
 
 
 		template <  typename F>
-		std::function<F> * ZetScript::bindScriptFunction(const std::string & function_access)
+		std::function<F> * ZetScript::bindScriptFunction(const std::string & function_access, const char *file, int line)
 		{
 			ScriptFunction * fun_obj=NULL;
 			ScriptObjectClass *calling_obj=NULL;
@@ -856,13 +856,13 @@ namespace zetscript{
 									}
 								}
 								else{
-									THROW_RUNTIME_ERROR("cannot access i (%i)",j);
+									::zetscript::exception::throw_runtime_error(file,line,"Cannot bind script function '%s': cannot access i (%i)",function_access.c_str(),j);
 								}
 							}
 						}
 
 						if(calling_obj == NULL){
-							THROW_RUNTIME_ERROR("error evaluating '%s'. Variable name '%s' doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+							::zetscript::exception::throw_runtime_error(file,line,"Cannot bind script function '%s': Variable name '%s' doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						}
 
 					}else{ // we have got the calling_obj from last iteration ...
@@ -871,22 +871,22 @@ namespace zetscript{
 							if(se->properties & STK_PROPERTY_SCRIPT_OBJECT){
 								calling_obj=(ScriptObjectClass *)se->value;
 							}else{
-								THROW_RUNTIME_ERROR("error evaluating '%s'. Variable name '%s' not script variable",function_access.c_str(),symbol_to_find.c_str());
+								::zetscript::exception::throw_runtime_error(file,line,"Cannot bind script function '%s': Variable name '%s' not script variable",function_access.c_str(),symbol_to_find.c_str());
 							}
 						}
 						else{
-							THROW_RUNTIME_ERROR("error evaluating '%s'. Variable name '%s' doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+							::zetscript::exception::throw_runtime_error(file,line,"Cannot bind script function '%s': Variable name '%s' doesn't exist",function_access.c_str(),symbol_to_find.c_str());
 						}
 					}
 				}
 
 				is=calling_obj->getProperty(access_var[access_var.size()-1]);
 				if(is!=NULL){
-					if(is->properties & STK_PROPERTY_FUNCTION){
-						fun_obj=(ScriptFunction *)is->value;
+					if(is->properties & (STK_PROPERTY_FUNCTION | STK_PROPERTY_MEMBER_FUNCTION)){
+						fun_obj=((StackMemberFunction *)is->value)->so_function;
 					}
 				}else{
-					THROW_RUNTIME_ERROR("error evaluating '%s'. Cannot find function '%s'",function_access.c_str(),access_var[access_var.size()-1].c_str());
+					::zetscript::exception::throw_runtime_error(file,line,"Cannot bind script function '%s': Cannot find function '%s'",function_access.c_str(),access_var[access_var.size()-1].c_str());
 				}
 
 			}else{ // some function in main function
@@ -904,11 +904,14 @@ namespace zetscript{
 			}
 
 			if(fun_obj==NULL){
-				THROW_RUNTIME_ERROR("error evaluating '%s'. Variable name '%s' is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str());
+				::zetscript::exception::throw_runtime_error(file,line,"Cannot bind script function '%s': Variable name '%s' is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str());
 			}
 
-
-			return bindScriptFunction<F>(fun_obj,calling_obj);
+			try{
+				return bindScriptFunction<F>(fun_obj,calling_obj);
+			}catch(std::exception & ex){
+				::zetscript::exception::throw_runtime_error(file,line,"Cannot bind script function '%s': %s",function_access.c_str(),ex.what());
+			}
 
 		}
 }

@@ -277,7 +277,6 @@ namespace zetscript{
 			,idx_post_instruction_for_start=ZS_IDX_UNDEFINED;
 
 		EvalInstruction *ei_jnt=NULL,*ei_jmp=NULL; // conditional to end block
-		EvalInstruction *ei_it;
 		std::vector<EvalInstruction *> post_operations;
 
 		// check for keyword ...

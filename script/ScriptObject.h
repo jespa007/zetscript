@@ -10,12 +10,15 @@ namespace zetscript{
 
 	struct _InfoSharedList;
 	struct VirtualMachine;
+	class ScriptObject;
+	class ScriptFunction;
 	//struct EvalInstruction;
 
 	typedef struct _SharedPointerInfo {
 		ScriptObject 			*ptr_script_object_shared;
 		unsigned short 			n_shares;
-		_InfoSharedList *zero_shares;
+		//_InfoSharedList *zero_shares;
+		int						created_idx_call;
 	} SharedPointerInfo;
 
 	typedef struct _InfoSharedPointerNode{
@@ -74,11 +77,8 @@ namespace zetscript{
 		StackElement * getBuiltinElementAt(short idx);
 		virtual StackElement * addProperty(
 				const std::string & symbol_value
-				//, const ScriptFunction *info_function
-				//, Instruction *src_instruction
 				,std::string & error
 				,StackElement * stk_element = NULL
-				//,int * idx_stk_element = NULL
 		);
 		virtual StackElement 	* getProperty(const std::string & property_name, int * idx=NULL);
 

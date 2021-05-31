@@ -28,6 +28,7 @@ typedef enum:unsigned short  {
 namespace zetscript{
 
 	class	ZetScript;
+	class 	Scope;
 	struct Symbol {
 		const char *file;   // file where symbol was registered
 		short  line;		// line where symbol was registered

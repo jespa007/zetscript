@@ -11,8 +11,8 @@ namespace zetscript{
 				return "std::string*";
 			}
 
-			if(name == std::string(typeid(int *).name())){
-					return "int*";
+			if(name == std::string(typeid(zs_int *).name())){
+					return "zs_int*";
 				}
 
 			if(name == std::string(typeid(bool *).name())){

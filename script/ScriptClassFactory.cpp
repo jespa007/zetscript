@@ -482,7 +482,7 @@ namespace zetscript{
 
 	int ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const std::string & str_native_type){
 
-		// 1. we have to handle primitives like void, (int *), (bool *),(zs_float *) and (std::string *).
+		// 1. we have to handle primitives like void, (zs_int *), (bool *),(zs_float *) and (std::string *).
 		 // 2. Check for rest registered C classes...
 		 for(unsigned i = 0; i < script_classes->count; i++){
 			 ScriptClass * sc=(ScriptClass *)script_classes->get(i);

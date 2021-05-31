@@ -15,6 +15,7 @@ namespace zetscript{
 
 	class ScopeFactory;
 	class ZetScript;
+	class ScriptClass;
 	class  Scope{
 	public:
 

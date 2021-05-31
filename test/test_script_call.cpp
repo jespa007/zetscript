@@ -7,11 +7,11 @@ ZetScript *zs=NULL;
 
 void test_callback(ScriptFunction *script_function){
 	zs_float param1=1.0;
-	int param2=2.0;
+	zs_int param2=2.0;
 	bool param3=true;
 	std::string *s;
 
-	auto callback_function = zs->bindScriptFunction<std::string * (zs_float *, int *, bool *)>(script_function);
+	auto callback_function = zs->bindScriptFunction<std::string * (zs_float *, zs_int *, bool *)>(script_function);
 
 	// call the function...
 	s=(*callback_function)(&param1,&param2,&param3);
@@ -34,13 +34,13 @@ int main(){
 		zs->eval(
 			"class Test{\n"
 			"	function1(arg){\n"
-			"		print(\"calling Test.Function:\"+arg);\n"
+			"		Console::outln(\"calling Test.Function:\"+arg);\n"
 			"	}\n"
 			"};\n"
 			"\n"
 			"function delete_test(){\n"
 			"	delete test;\n"
-			"	print(\"test variable was deleted\");\n"
+			"	Console::outln(\"test variable was deleted\");\n"
 			"}\n"
 			"var test=new Test();\n"
 			"test_callback(function(a,b,c){\n"
@@ -50,7 +50,7 @@ int main(){
 		);
 
 		std::function<void()>  * delete_test=zs->bindScriptFunction<void ()>("delete_test"); // instance function delete_test function.
-		std::function<void(int)> * test_function1=zs->bindScriptFunction<void (int)>("test.function1"); // instance member function test.function1.
+		std::function<void(zs_int)> * test_function1=zs->bindScriptFunction<void (zs_int)>("test.function1"); // instance member function test.function1.
 
 		(*test_function1)(10); // it calls "test.function" member function with 10 as parameter.
 		(*delete_test)(); // it calls "delete_test" function with no parameters

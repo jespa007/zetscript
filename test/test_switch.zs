@@ -17,7 +17,7 @@ function test_switch(a){
 		}
 	case 3:{
 		var c,d,e=0
-		Console::outln("case 3 {0} {1}",a,b,c)
+		Console::outln("case 3 {0} {1}",a,c)
 		break
 	}
 	case 4:

@@ -68,10 +68,10 @@ namespace zetscript{
 			_node->next=NULL;
 			_node->data.n_shares=0;
 			_node->data.ptr_script_object_shared=_obj;
-			_node->data.zero_shares=&data->zero_shares[data->vm_idx_call]; // it saves the zeros nodes where was set
+			_node->data.created_idx_call=data->vm_idx_call; // it saves the zeros nodes where was set
 
 			// insert node into shared nodes ...
-			if(!vm_insert_shared_node(vm,_node->data.zero_shares,_node)){
+			if(!vm_insert_shared_node(vm,&data->zero_shares[data->vm_idx_call],_node)){
 				return false;
 			}
 			_obj->shared_pointer=_node;
@@ -102,7 +102,7 @@ namespace zetscript{
 		if(move_to_shared_list){
 
 			// Mov to shared pointer...
-			if(!vm_deattach_shared_node(vm,_node->data.zero_shares,_node)){
+			if(!vm_deattach_shared_node(vm,&data->zero_shares[_node->data.created_idx_call],_node)){
 				return false;
 			}
 			// update current stack due different levels from functions!
@@ -113,8 +113,6 @@ namespace zetscript{
 
 			ZS_LOG_DEBUG("Share pointer %i:%p",_node->data.ptr_script_object_shared->idx_script_class,_node->data.ptr_script_object_shared);
 
-			// node is not in list of zero refs anymore...
-			_node->data.zero_shares=NULL;
 		}
 		return true;
 	}

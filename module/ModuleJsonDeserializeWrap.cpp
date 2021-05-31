@@ -171,7 +171,6 @@ namespace zetscript{
 
 		char * read_string_between_quotes(JsonDeserializeData *deserialize_data, const char *str_start,int & line, std::string * str_out){
 			char *str_current = (char *) str_start;
-			size_t str_size;
 
 			if(str_out != NULL){
 				*str_out="";
