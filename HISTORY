@@ -229,6 +229,7 @@ Solved issues
 #284 Seffault when native function returns object as NULL 
 #285 No finding static function 
 > #287 Some optimizations 
+> #288 ScriptStringObject::format: First implementation format argument with ':' 
 
 //----------------------------------------------------------
 Version: 1.3.0
