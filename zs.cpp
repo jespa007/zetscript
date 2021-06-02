@@ -19,7 +19,7 @@ int main(int argc, char * argv[]) {
 	ZetScript *zs = new ZetScript();
 
 	if (argc > 1) {
-		unsigned short eval_options=zetscript::EvalOption::EVAL_OPTION_EXECUTE;
+		unsigned short eval_options=0;
 		std::string file;
 
 		for(int i=1; i < argc; i++){
@@ -29,12 +29,11 @@ int main(int argc, char * argv[]) {
 			case 1:
 
 				if(strcmp(argv[i],"--no-execute")==0){
-					eval_options &= ~zetscript::EvalOption::EVAL_OPTION_EXECUTE;
+					eval_options |= zetscript::EvalOption::EVAL_OPTION_NO_EXECUTE;
 				}else if(strcmp(argv[i],"--show-code")==0){
 					eval_options|=zetscript::EvalOption::EVAL_OPTION_SHOW_USER_CODE;
 				}else if(strcmp(argv[i],"--show-code-system")==0){
 					eval_options|=zetscript::EvalOption::EVAL_OPTION_SHOW_SYSTEM_CODE;
-
 				}else if(strcmp(argv[i],"--version")==0){
 					printf(ZETSCRIP_COPYRIGHT);
 					exit(0);

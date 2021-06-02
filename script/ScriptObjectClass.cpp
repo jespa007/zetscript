@@ -220,7 +220,7 @@ namespace zetscript{
 						// capture string...
 						std::string aux=so->toString();
 						// ... destroy lifetime object we don't need anymore
-						vm_destroy_life_time_object(this->vm,so);
+						vm_unref_lifetime_object(this->vm,so);
 						// return
 						return aux;
 					}

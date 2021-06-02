@@ -100,13 +100,6 @@ namespace zetscript{
 		}
 
 		// 3. Call function passing all arg parameter
-		/*vm_execute(
-			zs->getVirtualMachine()
-			 ,NULL
-			 ,sf
-			 ,stk_params.data()
-			 ,stk_params.size()
-		);*/
 
 		// add data stk_vm_current
 		uint8_t stk_start_size=(uint8_t)stk_params.size();

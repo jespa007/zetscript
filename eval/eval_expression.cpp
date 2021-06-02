@@ -63,8 +63,40 @@ namespace zetscript{
 
 			for(;;){ // it eats identifier/constant operator, etc
 
+				if(last_operator_token_node.operator_type == Operator::OPERATOR_INSTANCEOF){ // retrieve a
+					TokenNode token_node_type;
+					std::string str_type;
+					bool type_end=false;
+					while(!type_end){
+						char pre=*aux_p;
+						str_type += (*aux_p++);
 
-				if((aux_p = eval_expression_token_symbol(
+						if(is_end_symbol_token(aux_p,pre)){
+							type_end=true;
+						}
+					}
+
+					if(check_identifier_name_expression_ok(
+						eval_data
+						,str_type
+						,line
+					)==FALSE){
+						goto eval_error_sub_expression;
+					}
+
+					token_node_type.instructions.push_back(
+							new EvalInstruction(
+									BYTE_CODE_LOAD_STRING,ZS_IDX_UNDEFINED,(zs_int)eval_data->zs->registerStkStringObject(str_type,str_type)
+							)
+					);
+
+					expression_tokens.push_back(
+							token_node_type
+					);
+					//last_operator_token_node->value=str_type;
+					//EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"expected a class-type after 'instanceof' operator");
+				}
+				else if((aux_p = eval_expression_token_symbol(
 						eval_data
 						,aux_p
 						,line

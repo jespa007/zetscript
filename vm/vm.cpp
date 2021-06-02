@@ -156,7 +156,7 @@ namespace zetscript{
 
 
 
-	void vm_insert_life_time_object(VirtualMachine *vm, const char *file, int line, ScriptObject *script_object){
+	void vm_insert_lifetime_object(VirtualMachine *vm, const char *file, int line, ScriptObject *script_object){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		InfoLifetimeObject *info = (InfoLifetimeObject *)malloc(sizeof(InfoLifetimeObject));
 
@@ -164,10 +164,16 @@ namespace zetscript{
 		info->line=line;
 		info->script_object=script_object;
 
+		if(script_object->shared_pointer != NULL){
+			if(script_object->shared_pointer->data.n_shares > 0){
+				script_object->shared_pointer->data.n_shares++;
+			}
+		}
+
 		data->lifetime_object[script_object]=info;
 	}
 
-	void vm_destroy_life_time_object(VirtualMachine *vm,ScriptObject *script_object){
+	void vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		if(data->lifetime_object.count(script_object)==0){
 			THROW_RUNTIME_ERROR("Cannot find stack element lifetime");
@@ -177,7 +183,11 @@ namespace zetscript{
 
 		data->lifetime_object.erase(script_object);
 
-		delete info->script_object;
+		if(info->script_object->shared_pointer!=NULL){
+			vm_unref_shared_script_object_and_remove_if_zero(vm,&script_object);
+		}else{
+			delete script_object;
+		}
 		free(info);
 	}
 
@@ -245,7 +255,13 @@ namespace zetscript{
 		StackElement *stk_start=NULL;
 
 
-		if(data->vm_idx_call==0){ // set stack and Init vars for first call...
+		if(
+			   calling_function->idx_class==IDX_SCRIPT_CLASS_MAIN
+			&& calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN){ // set stack and Init vars for first call...
+
+			if(data->vm_idx_call != 0){
+				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0");
+			}
 
 			data->vm_error=false;
 			data->vm_error_str="";
@@ -259,10 +275,14 @@ namespace zetscript{
 			}
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
-			stk_start=data->stk_vm_current;
+			if(data->vm_idx_call == 0){
+				data->vm_idx_call=1; // is calling from application set as 1 to make sure it not become conflict with global vars
+			}
 
+			stk_start=data->stk_vm_current;
+			StackElement *stk_aux=stk_start;
 			for(unsigned i = 0; i < n_stk_params; i++){
-				*stk_start++=stk_params[i];
+				*stk_aux++=stk_params[i];
 			}
 		}
 
@@ -295,7 +315,7 @@ namespace zetscript{
 				// if object add into lifetime till user delete it
 				if(stk_return.properties & STK_PROPERTY_SCRIPT_OBJECT){
 					// add generated
-					vm_insert_life_time_object(vm,file,line,(ScriptObjectObject *)stk_return.value);
+					vm_insert_lifetime_object(vm,file,line,(ScriptObjectObject *)stk_return.value);
 				}
 
 				// deinit vm variable...
@@ -325,11 +345,11 @@ namespace zetscript{
 
 			std::string error="\n\nSome lifetime objects created by virtual machine were not destroyed:\n\n";
 			for(auto it=data->lifetime_object.begin(); it !=data->lifetime_object.end();it++ ){
-				error+=zs_strutils::format("* Object lifetime created at [%s:%i] was not destroyed \n",zs_path::get_filename(it->second->file==NULL?"unknown":it->second->file).c_str(),it->second->line);
+				error+=zs_strutils::format("* Object lifetime from a calling function created at [%s:%i] was not destroyed \n",zs_path::get_filename(it->second->file).c_str(),it->second->line);
 			}
 
 			error+="\n\n";
-			//error+="\nPlease destroy lifetime objects through destroyLifetimeObject() before destroy zetscript to avoid this exception\n";
+			//error+="\nPlease destroy lifetime objects through unrefLifetimeObject() before destroy zetscript to avoid this exception\n";
 
 			fprintf(stderr,"%s",error.c_str());
 

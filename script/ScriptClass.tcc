@@ -53,7 +53,7 @@ namespace zetscript{
 		for(unsigned int i = 0; i < arg.size(); i++){
 			int idx_type = getIdxClassFromItsNativeType(arg[i]);
 
-			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
+			if(idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument %i type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
 						,i+1
 						,zs_rtti::demangle(arg[i]).c_str()

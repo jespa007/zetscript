@@ -132,9 +132,9 @@ namespace zetscript{
 		REGISTER_BUILT_IN_TYPE(std::string *,IDX_BUILTIN_TYPE_STRING_PTR_C);
 		REGISTER_BUILT_IN_TYPE(bool,IDX_BUILTIN_TYPE_BOOL_C);
 		REGISTER_BUILT_IN_TYPE(bool *,IDX_BUILTIN_TYPE_BOOL_PTR_C);
-		REGISTER_BUILT_IN_TYPE(zs_float,IDX_BUILTIN_TYPE_FLOAT_C);
-		REGISTER_BUILT_IN_TYPE(zs_float *,IDX_BUILTIN_TYPE_FLOAT_PTR_C);
-		REGISTER_BUILT_IN_TYPE(const zs_float *,IDX_BUILTIN_TYPE_CONST_FLOAT_PTR_C);
+		REGISTER_BUILT_IN_TYPE(zs_float,IDX_BUILTIN_TYPE_ZS_FLOAT_C);
+		REGISTER_BUILT_IN_TYPE(zs_float *,IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C);
+		REGISTER_BUILT_IN_TYPE(const zs_float *,IDX_BUILTIN_TYPE_CONST_ZS_FLOAT_PTR_C);
 
 		// estructures
 		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
@@ -256,6 +256,68 @@ namespace zetscript{
 		register_c_base_symbols = _register;
 	}
 
+	//--------------------------------------------------------------------------------------------------------------------------------------------
+	// REGISTER CONSTANTS
+	//
+
+	void ScriptClassFactory::registerConstant(const std::string & var_name, zs_int value, const char *registered_file, short registered_line){
+		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
+			MAIN_SCOPE(this)
+			, registered_file
+			, registered_line
+			, var_name
+		);
+
+		StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
+		stk->value=(void *)value;
+		stk->properties=STK_PROPERTY_ZS_INT|STK_PROPERTY_READ_ONLY;
+	}
+
+	void ScriptClassFactory::registerConstant(const std::string & var_name, bool value, const char *registered_file, short registered_line){
+		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
+			MAIN_SCOPE(this)
+			, registered_file
+			, registered_line
+			, var_name
+		);
+
+		StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
+		stk->value=(void *)value;
+		stk->properties=STK_PROPERTY_BOOL|STK_PROPERTY_READ_ONLY;
+	}
+
+	void ScriptClassFactory::registerConstant(const std::string & var_name, zs_float value, const char *registered_file, short registered_line){
+		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
+			MAIN_SCOPE(this)
+			, registered_file
+			, registered_line
+			, var_name
+		);
+
+		StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
+		ZS_FLOAT_COPY(&stk->value,&value);
+		stk->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_READ_ONLY;
+	}
+
+
+
+	void ScriptClassFactory::registerConstant(const std::string & var_name, const std::string & v, const char *registered_file, short registered_line){
+		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
+			MAIN_SCOPE(this)
+			, registered_file
+			, registered_line
+			, var_name
+		);
+
+		StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
+		*stk=*(zs->registerStkStringObject(var_name,v));
+	}
+
+
+	// REGISTER CONSTANTS
+	//--------------------------------------------------------------------------------------------------------------------------------------------
+
+
 	void ScriptClassFactory::clear(short _idx_start){
 		short idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
@@ -274,6 +336,24 @@ namespace zetscript{
 		idx_clear_checkpoint = script_classes->count-1;
 	}
 
+	void ScriptClassFactory::checkClassName(const std::string & class_name){
+
+		if(script_classes->count>=MAX_REGISTER_CLASSES){
+			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
+		}
+
+		if(class_name.empty()){
+			THROW_RUNTIME_ERROR("Class name empty");
+		}
+
+		if(zs->getScriptFunctionFactory()->getScriptFunctions()->count > 0){
+			Symbol *main_function_symbol=NULL;
+			if((main_function_symbol=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN)->getSymbol(scope_factory->getMainScope(),class_name))!=NULL){
+				THROW_RUNTIME_ERROR("Class name '%s' collides with symbol defined at [%s:%i]",class_name.c_str(),main_function_symbol->file,main_function_symbol->line);
+			}
+		}
+	}
+
 	ScriptClass * ScriptClassFactory::registerClass(
 			const std::string & class_name
 			 ,const std::string & base_class_name
@@ -282,16 +362,9 @@ namespace zetscript{
 	){
 		int  index;
 		ScriptClass *sci=NULL;
+		//ScriptFunction *main_function=NULL;//zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 
-		if(script_classes->count>=MAX_REGISTER_CLASSES){
-			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
-			return NULL;
-		}
-
-		if(class_name.empty()){
-			THROW_RUNTIME_ERROR("Class name empty");
-			return NULL;
-		}
+		checkClassName(class_name);
 
 		if((index = getIdxScriptClassInternal(class_name))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
 
@@ -368,6 +441,21 @@ namespace zetscript{
 
 	std::map<short, std::map<short, ConversionType>>  *	 ScriptClassFactory::getConversionTypes() {
 		return & conversion_types;
+	}
+
+	int ScriptClassFactory::getBuiltinTypeOrClass(const std::string & name){
+		ScriptClass *sc;
+
+		if(name == "int"){
+			return IDX_BUILTIN_TYPE_ZS_INT_C;
+		}else if(name == "float"){
+			return IDX_BUILTIN_TYPE_ZS_FLOAT_C;
+		}
+		else if((sc=getScriptClass(name))!=NULL){
+			return sc->idx_class;
+		}
+
+		return ZS_IDX_UNDEFINED;
 	}
 
 	ScriptClass 	* ScriptClassFactory::getScriptClass(short idx){

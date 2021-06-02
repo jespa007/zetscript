@@ -99,6 +99,12 @@ namespace zetscript{
 	Symbol * Scope::registerSymbol(const char * file,short line, const std::string & symbol_name, char n_params, ScopeDirection check_repeated_symbols_direction){
 		Symbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
+		// check if you register a class...
+		// check if symbol collides also with built in type...
+		if(zs->getScriptClassFactory()->getBuiltinTypeOrClass(symbol_name) != ZS_IDX_UNDEFINED){
+			THROW_RUNTIME_ERROR(file,line,"Symbol name '%s' is conflicting with a builtin type or class",symbol_name.c_str());
+		}
+
 		if((p_irv = getSymbol(symbol_name,n_params,check_repeated_symbols_direction))!=NULL){ // check whether symbol is already registered ...
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
 				THROW_SCRIPT_ERROR(file,line," error symbol \"%s\" already registered at %s:%i", symbol_name.c_str(),p_irv->file,p_irv->line);
@@ -106,6 +112,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR(" error symbol \"%s\" already registered as C++", symbol_name.c_str());
 			}
 		}
+
 
 		return addSymbol(file, line, symbol_name, n_params);
 	}

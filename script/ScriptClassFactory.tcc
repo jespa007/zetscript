@@ -3,6 +3,7 @@
 
 namespace zetscript{
 
+
 	/**
 	 * Register C variable
 	 */
@@ -85,7 +86,7 @@ namespace zetscript{
 			int idx_type = getIdxClassFromItsNativeType(str_arg[i]);
 			StackElement default_value=k_stk_undefined;
 
-			if(idx_type==IDX_BUILTIN_TYPE_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
+			if(idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument %i type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
 						,i+1
 						,zs_rtti::demangle(str_arg[i]).c_str()
@@ -137,16 +138,7 @@ namespace zetscript{
 		Scope * scope = NULL;
 		Symbol *symbol=NULL;
 
-		if(size>=MAX_REGISTER_CLASSES){
-			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
-		}
-
-		// after MAX_BASIC_CLASS_TYPES all registered C classes should follow a registered C class ...
-
-		if(isClassRegistered(class_name)){
-			THROW_RUNTIME_ERROR("Class name '%s' is already registered", class_name.c_str());
-		}
-
+		checkClassName(class_name);
 
 		if(getIdxNativeRegisteredClass(str_class_name_ptr)!=ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("Native class '%s' is already registered",zs_rtti::demangle(typeid( T).name()).c_str());

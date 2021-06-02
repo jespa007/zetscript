@@ -126,27 +126,30 @@
 #define ZETSCRIPT_PATCH_VERSION 0
 
 
-#define ZS_CLASS_INHERITS_FROM(zs,C,B)							(zs)->classInheritsFrom<C,B>()
-#define ZS_REGISTER_FUNCTION(zs,text,s) 						(zs)->registerFunction(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_VARIABLE(zs,text,s) 						(zs)->registerVariable(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_CLASS(zs,class_type,s) 						(zs)->registerClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)			(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,f)	(zs)->registerMemberFunctionStatic<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,f)			(zs)->registerMemberFunction<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,f)			(zs)->registerMemberFunction<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,f)	(zs)->registerMemberAttributeSetter<class_type>(s,f,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,f)	(zs)->registerMemberAttributeGetter<class_type>(s,f,__FILE__, __LINE__)
+#define ZS_CLASS_INHERITS_FROM(zs,C,B)									(zs)->classInheritsFrom<C,B>()
+#define ZS_REGISTER_FUNCTION(zs,text,s) 								(zs)->registerFunction(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_VARIABLE(zs,text,s) 								(zs)->registerVariable(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_CLASS(zs,class_type,s) 								(zs)->registerClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)					(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)		(zs)->registerMemberFunctionStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)			(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)			(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributeSetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributeGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_BIND_SCRIPT_FUNCTION(zs,_T,access_name)						(zs)->bindScriptFunction<_T>(access_name, __FILE__, __LINE__)
+#define	ZS_UNREF_LIFETIME_OBJECT(zs,so)									(zs)->unrefLifetimeObject(so);
 
-#define ZS_REGISTER_CONSTANT_INT(zs,constant_name,i)			(zs)->registerConstantString(constant_name,i)
-#define ZS_REGISTER_CONSTANT_STRING(zs,constant_name,s)			(zs)->registerConstantInt(constant_name,s)
-#define ZS_REGISTER_CONSTANT_FLOAT(zs,constant_name,b)			(zs)->registerConstantFloat(constant_name,b)
-#define ZS_REGISTER_CONSTANT_BOOL(zs,constant_name,b)			(zs)->registerConstantBool(constant_name,b)
+
+#define ZS_REGISTER_CONSTANT_INT(zs,constant_name,i)					(zs)->registerStkStringObject(constant_name,i)
+#define ZS_REGISTER_CONSTANT_STRING(zs,constant_name,s)					(zs)->registerConstantInt(constant_name,s)
+#define ZS_REGISTER_CONSTANT_FLOAT(zs,constant_name,b)					(zs)->registerConstantFloat(constant_name,b)
+#define ZS_REGISTER_CONSTANT_BOOL(zs,constant_name,b)					(zs)->registerConstantBool(constant_name,b)
 
 
 namespace zetscript{
 
 	typedef enum{
-		EVAL_OPTION_EXECUTE=0x1<<0,
+		EVAL_OPTION_NO_EXECUTE=0x1<<0,
 		EVAL_OPTION_SHOW_USER_CODE=0x1<<1,
 		EVAL_OPTION_SHOW_SYSTEM_CODE=0x1<<2,
 	}EvalOption;
@@ -191,19 +194,19 @@ namespace zetscript{
 		inline ScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
 		inline ScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
 
-		StackElement	eval(const std::string & expresion,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE, const char * filename="");
-		StackElement	evalFile(const std::string & filename,unsigned short options=EvalOption::EVAL_OPTION_EXECUTE);
+		StackElement	eval(const std::string & expresion,unsigned short options=0, const char * filename="");
+		StackElement	evalFile(const std::string & filename,unsigned short options=0);
 		zs_int * 		evalIntValue(const std::string & str_to_eval);
 		bool * 			evalBoolValue(const std::string & str_to_eval);
 		zs_float * 		evalFloatValue(const std::string & str_to_eval);
 		std::string * 	evalStringValue(const std::string & str_to_eval);
 
 		// CONSTANT TOOLS
-		StackElement * registerConstantString(const std::string & key_name,const std::string & const_name);
-		StackElement * registerConstantBool(const std::string & key_name, bool value);
+		StackElement * registerStkStringObject(const std::string & key_name,const std::string & const_name);
+		/*StackElement * registerConstantBool(const std::string & key_name, bool value);
 		StackElement * registerConstantInt(const std::string & key_name, zs_int value);
-		StackElement * registerConstantFloat(const std::string & key_name, zs_float value);
-		StackElement * getRegisteredConstant(const std::string & const_name);
+		StackElement * registerConstantFloat(const std::string & key_name, zs_float value);*/
+		StackElement * getStkStringObject(const std::string & const_name);
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
@@ -216,9 +219,25 @@ namespace zetscript{
 		 * Register C variable
 		 */
 		template <typename V>
-		 void registerVariable(const std::string & var_str,V var_ptr, const char *registered_file="",short registered_line=-1){
-			 script_class_factory->registerNativeGlobalVariable(var_str,var_ptr, registered_file, registered_line);
+		 void registerVariable(const std::string & var_name,V var_ptr, const char *registered_file="",short registered_line=-1){
+			 script_class_factory->registerNativeGlobalVariable(var_name,var_ptr, registered_file, registered_line);
 		 }
+
+		void registerConstant(const std::string & var_name, zs_int value, const char *registered_file="", short registered_line=-1){
+			script_class_factory->registerConstant(var_name,value, registered_file, registered_line);
+		}
+
+		void registerConstant(const std::string & var_name, bool value, const char *registered_file="", short registered_line=-1){
+			script_class_factory->registerConstant(var_name,value, registered_file, registered_line);
+		}
+
+		void registerConstant(const std::string & var_name, zs_float value, const char *registered_file="", short registered_line=-1){
+			script_class_factory->registerConstant(var_name,value, registered_file, registered_line);
+		}
+
+		void registerConstant(const std::string & var_name, const std::string & value, const char *registered_file="", short registered_line=-1){
+			script_class_factory->registerConstant(var_name,value, registered_file, registered_line);
+		}
 
 		/**
 		 * Register C function
@@ -342,6 +361,8 @@ namespace zetscript{
 		inline StackElement convertVarToStackElement(zs_int var_ptr, short idx_builtin_type);
 		inline bool convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, zs_int *result, std::string & error);
 
+		inline void unrefLifetimeObject(ScriptObject *so);
+
 		template<typename T>
 		static ScriptObjectVector * convertStdVectorToScriptObjectVector(const std::vector<T> & v,ZetScript *zs_instance){
 			ScriptObjectVector *vsv = ZS_NEW_OBJECT_VECTOR(zs_instance);
@@ -360,12 +381,12 @@ namespace zetscript{
 		// 0 PARAMS
 		//
 		template <typename R,typename T>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<std::is_same<R,void>::value>::type;
 
 
 		template <typename R,typename T>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<!std::is_same<R,void>::value>::type;
 
 
@@ -375,12 +396,12 @@ namespace zetscript{
 		//
 		// template for last parameter argIdx == 1
 		template<typename R,typename T,  typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f ,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun ,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type;
 
 
 		template<typename R,typename T,  typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f ,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun ,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type;
 
 
@@ -390,12 +411,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 2
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type;
 
 
@@ -405,12 +426,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 3
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type;
 
 
@@ -421,12 +442,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 4
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type;
 
 
@@ -436,13 +457,13 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 5
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type;
 
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type;
 
 		//--------------------------------------------------------------------------------------------------------------------
@@ -451,12 +472,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 6
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 6)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(void **f,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type;
 
 		//
@@ -464,12 +485,12 @@ namespace zetscript{
 		//--------------------------------------------------------------------------------------------------------------------
 
 		 template <typename F, std::size_t... Is>
-		 auto bindScriptFunctionBuilderBase(void **f, ScriptObjectClass *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto bindScriptFunctionBuilderBase(const char *file,int line,void **ptr_fun, ScriptObjectClass *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity > 0)>::type;
 
 
 		 template <typename F, std::size_t... Is>
-		 auto bindScriptFunctionBuilderBase(void **f, ScriptObjectClass *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto bindScriptFunctionBuilderBase(const char *file,int line,void **ptr_fun, ScriptObjectClass *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity == 0)>::type;
 
 		void getScriptObject(const std::string &function_access,ScriptObjectClass **calling_obj,ScriptFunction **fun_obj );
@@ -478,7 +499,11 @@ namespace zetscript{
 		std::function<F> * bindScriptFunction(const std::string & function_access, const char *file="", int line=-1);
 
 		template <  typename F>
-		std::function<F> * bindScriptFunction(ScriptFunction *sf, ScriptObjectClass *calling_object=NULL);
+		std::function<F> * bindScriptFunction(ScriptFunction *sf, ScriptObjectClass *calling_object, const char *file="", int line=-1);
+
+		template <  typename F>
+		std::function<F> * bindScriptFunction(ScriptFunction *sf, const char *file="", int line=-1);
+
 
 
 		//-----------------------------------------------------------------------------------------------------------------------
@@ -528,7 +553,7 @@ namespace zetscript{
 		//void printGeneratedCode(ScriptFunction *sfo);
 
 		//----
-		StackElement evalInternal(const char * code, unsigned short options=EVAL_OPTION_EXECUTE, const char  *filename="");
+		StackElement evalInternal(const char * code, unsigned short options=0, const char  *filename="");
 
 		// FUNCTIONS
 		static 									void  print(const char *s);

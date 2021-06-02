@@ -9,14 +9,18 @@ void test_callback(ScriptFunction *script_function){
 	zs_float param1=1.0;
 	zs_int param2=2.0;
 	bool param3=true;
-	std::string *s;
 
-	auto callback_function = zs->bindScriptFunction<std::string * (zs_float *, zs_int *, bool *)>(script_function);
+	// transform script function to c++ function...
+	auto callback_function = ZS_BIND_SCRIPT_FUNCTION(zs,ScriptObjectString * (zs_float *, zs_int *, bool *),script_function);
 
 	// call the function...
-	s=(*callback_function)(&param1,&param2,&param3);
+	auto so=(*callback_function)(&param1,&param2,&param3);
 
-	printf("string result %s",s->c_str());
+	// print the results...
+	std::cout << "calling function result: " << so->toString() << std::endl;
+
+	// unref string object lifetime when is not used anymore
+	ZS_UNREF_LIFETIME_OBJECT(zs,so);
 
 	// delete function...
 	delete callback_function;
@@ -34,7 +38,8 @@ int main(){
 		zs->eval(
 			"class Test{\n"
 			"	function1(arg){\n"
-			"		Console::outln(\"calling Test.Function:\"+arg);\n"
+			"       var a=10;\n"
+			"		Console::outln(\"calling Test.Function:\"+arg+\" a:\"+a);\n"
 			"	}\n"
 			"};\n"
 			"\n"
@@ -44,7 +49,7 @@ int main(){
 			"}\n"
 			"var test=new Test();\n"
 			"test_callback(function(a,b,c){\n"
-			"		return \"result a:\"+a+\"b:\"+b+\"c:\"+c;\n"
+			"		return \"result a:\"+a+\" b:\"+b+\" c:\"+c;\n"
 			"});\n"
 			""
 		);

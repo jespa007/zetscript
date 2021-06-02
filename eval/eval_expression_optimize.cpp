@@ -316,7 +316,7 @@ namespace zetscript{
 			result_instruction=new EvalInstruction(
 					result_bc
 					,ZS_IDX_UNDEFINED
-					,(zs_int)eval_data->zs->registerConstantString(str_constant_key,result_op_str)
+					,(zs_int)eval_data->zs->registerStkStringObject(str_constant_key,result_op_str)
 			);
 			break;
 		case BYTE_CODE_LOAD_BOOL:
@@ -355,8 +355,16 @@ namespace zetscript{
 		is_i1_K=i1->vm_instruction.isConstant();
 		is_i2_K=i2->vm_instruction.isConstant();
 
-		// can be computed, yeah!
-		if(is_i1_K && is_i2_K){
+		// can be reduce the number of bytes codes down to 2, yeah!
+		if(token_operation->operator_type == OPERATOR_INSTANCEOF){
+			instruction=new EvalInstruction(
+					BYTE_CODE_INSTANCEOF
+					,ZS_IDX_UNDEFINED
+					,i2->vm_instruction.value_op2
+			);
+			i1=i2; // swap instruction to erase...
+			n_eval_ops=1;
+		}else if(is_i1_K && is_i2_K){
 			instruction=eval_expression_perform_KK_operation(eval_data,token_operation,i1,i2);
 			n_eval_ops=2;
 		}else{ // try KR/RK/RR/k or R

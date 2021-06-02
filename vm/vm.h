@@ -36,7 +36,7 @@ namespace zetscript{
 	bool 			vm_share_pointer(VirtualMachine *vm,ScriptObject *_obj);
 	bool 			vm_create_shared_pointer(VirtualMachine *vm,ScriptObject *_obj);
 	inline bool 	vm_unref_shared_script_object_and_remove_if_zero(VirtualMachine *vm,ScriptObject **so);
-	void 			vm_destroy_life_time_object(VirtualMachine *vm,ScriptObject *script_object);
+	void 			vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object);
 	bool 			vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk);
 
 	void 			vm_set_error(VirtualMachine *vm,const std::string & str);
@@ -53,7 +53,7 @@ namespace zetscript{
 		,ScriptFunction *	calling_function
 		,StackElement 	*  	stk_params=NULL
 		,unsigned char		n_stk_params=0
-		,const char 	*	file=NULL
+		,const char 	*	file=""
 		,int 				line=-1
 	);
 }

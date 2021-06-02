@@ -358,9 +358,11 @@ namespace zetscript{
 		StackElement *stk_result_op2=NULL;
 		StackElement stk_aux=k_stk_undefined;
 		StackElement *stk_var;
+		ScriptClass *test_class=NULL;
 		const char *str_symbol=NULL,*str_aux=NULL;
 		Symbol * symbol_aux=NULL;
 		int idx_stk_element;
+		int idx_test_class;
 		unsigned short pre_post_properties=0;
 		unsigned short scope_type=0;
 		uint32_t msk_properties=0;
@@ -394,7 +396,7 @@ namespace zetscript{
 #endif
 
 		// Init local vars ...
-		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN && (data->vm_idx_call > 1)){
+		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
 
 			for(unsigned i = n_args; i < (symbols_count); i++){ // from n_args, setup local vars
 				symbol_aux=(Symbol *)registered_symbols->items[i];
@@ -426,16 +428,16 @@ namespace zetscript{
 				str_symbol=SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
 				if((str_aux=strstr(str_symbol,"::")) != NULL){ // static access
-					ScriptClass *static_class=NULL;
+
 					std::string static_error;
 					char copy_aux[512]={0};
 
 					// get class
 					strncpy(copy_aux,str_symbol,str_aux-str_symbol);
 
-					static_class=data->zs->getScriptClassFactory()->getScriptClass(copy_aux);
+					test_class=data->zs->getScriptClassFactory()->getScriptClass(copy_aux);
 
-					if(static_class==NULL){
+					if(test_class==NULL){
 						VM_STOP_EXECUTE("Cannot link static access '%s' class '%s' not exist"
 							,str_symbol
 							,copy_aux
@@ -448,7 +450,7 @@ namespace zetscript{
 					//get member
 					strcpy(copy_aux,str_aux);
 
-					symbol_aux=static_class->getSymbol(copy_aux); // ... and member as well we can define the instruction here
+					symbol_aux=test_class->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 
 					if(symbol_aux == NULL){
 						VM_STOP_EXECUTE("Cannot link static access '%s' class '%s' not exist"
@@ -1366,51 +1368,7 @@ load_element_object:
 				continue;
 			case BYTE_CODE_DIV: // /
 				POP_TWO;
-				//PROCESS_ARITHMETIC_DIV_OPERATION;
-				msk_properties=(stk_result_op1->properties<<16)|stk_result_op2->properties;\
-				switch(msk_properties){\
-				case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
-					op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
-					if(op2_int == 0){\
-						VM_STOP_EXECUTE("exception div operation by 0");\
-					}\
-					PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) / STK_VALUE_TO_ZS_INT(stk_result_op2));\
-					break;\
-				case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
-					ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->value);\
-					if(f_aux_value2 == 0){\
-						VM_STOP_EXECUTE("exception div operation by 0");\
-					}\
-					PUSH_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) / f_aux_value2);\
-					break;\
-				case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
-					op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
-					if(op2_int == 0){\
-						VM_STOP_EXECUTE("exception div operation by 0");\
-					}\
-					ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
-					PUSH_FLOAT(f_aux_value1 / op2_int);\
-					break;\
-				case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
-					ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
-					ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->value);\
-					if(f_aux_value2 == 0){\
-						VM_STOP_EXECUTE("exception div operation by 0");\
-					}\
-					PUSH_FLOAT(f_aux_value1 / f_aux_value2);\
-					break;\
-				default:\
-					if(vm_apply_metamethod(\
-							vm\
-							,calling_function\
-							,instruction\
-							,BYTE_CODE_METAMETHOD_DIV\
-							,stk_result_op1\
-							,stk_result_op2\
-					)==false){\
-						goto lbl_exit_function;\
-					}\
-				}\
+				PROCESS_ARITHMETIC_DIV_OPERATION;
 				continue;
 			 case BYTE_CODE_MOD: // /
 				POP_TWO;
@@ -1437,15 +1395,19 @@ load_element_object:
 				PROCESS_BINARY_OPERATION(<<, BYTE_CODE_METAMETHOD_SHL);
 				continue;
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
-				 POP_TWO;
-				switch((zs_int)stk_result_op2->value){
-				case IDX_BUILTIN_TYPE_ZS_INT_PTR_C:
+				 POP_ONE;
+
+				switch(idx_test_class=data->script_class_factory->getBuiltinTypeOrClass(instruction->getConstantValueOp2ToString())){
+				case ZS_IDX_UNDEFINED:
+					VM_STOP_EXECUTE("type '%s' does not exist ",instruction->getConstantValueOp2ToString().c_str());
+					break;
+				case IDX_BUILTIN_TYPE_ZS_INT_C:
 					PUSH_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
 					break;
-				case IDX_BUILTIN_TYPE_FLOAT_PTR_C:
+				case IDX_BUILTIN_TYPE_ZS_FLOAT_C:
 					PUSH_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT)!=0);
 					break;
-				case IDX_BUILTIN_TYPE_BOOL_PTR_C:
+				case IDX_BUILTIN_TYPE_BOOL_C:
 					PUSH_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_BOOL)!=0);
 					break;
 				case IDX_BUILTIN_TYPE_FUNCTION:
@@ -1455,7 +1417,7 @@ load_element_object:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						bool b = data->script_class_factory->isClassInheritsFrom(			//
 								((ScriptObjectObject *)(stk_result_op1->value))->idx_script_class // A
-								, (zs_int)stk_result_op2->value				// B
+								, idx_test_class			// B
 						);
 						PUSH_BOOLEAN(b);
 					}else{

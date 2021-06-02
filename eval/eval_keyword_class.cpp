@@ -197,6 +197,7 @@ namespace zetscript{
 						,line
 						,member_symbol
 				);
+
 				return aux_p;
 			}else{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class %s not found",class_name.c_str());

@@ -112,6 +112,7 @@ namespace zetscript{
 			instruction=new EvalInstruction(
 				eval_operator_to_byte_code(split_node->operator_type)
 			);
+
 		}
 
 

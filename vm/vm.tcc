@@ -488,12 +488,12 @@ namespace zetscript{
 									all_check=
 											arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_PTR_C
 										  ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_C
-										  ||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C;
+										  ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C;
 									break;
 								case STK_PROPERTY_ZS_FLOAT:
-									idx_type=IDX_BUILTIN_TYPE_FLOAT_PTR_C;
-									all_check=arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_PTR_C
-											||arg_idx_type==IDX_BUILTIN_TYPE_FLOAT_C
+									idx_type=IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C;
+									all_check=arg_idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C
+											||arg_idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C
 											||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_PTR_C
 										    ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_C;
 									break;

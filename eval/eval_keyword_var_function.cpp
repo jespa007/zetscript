@@ -242,7 +242,7 @@ namespace zetscript{
 				Keyword keyw = eval_is_keyword(variable_name.c_str());
 
 				if(keyw != Keyword::KEYWORD_UNKNOWN){ // a keyword was detected...
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected keyword \"%s\" after var",eval_data_keywords[keyw].str);
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected keyword '%s' after var",eval_data_keywords[keyw].str);
 				}
 
 				// register symbol...
@@ -493,6 +493,7 @@ error_eval_keyword_var:
 					// copy value
 					//zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
 				}
+
 				aux_p=end_var;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 			}

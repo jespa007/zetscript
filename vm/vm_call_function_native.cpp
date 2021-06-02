@@ -222,7 +222,7 @@ namespace zetscript{
 				);
 				break;
 			}
-		}else if(c_function->idx_return_type==IDX_BUILTIN_TYPE_FLOAT_C){ // we must do a float cast in order to get float return.
+		}else if(c_function->idx_return_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
 			zs_float aux_flt=0;
 			switch(n_args){
 			case 0:

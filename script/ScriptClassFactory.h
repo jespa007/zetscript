@@ -53,6 +53,7 @@ namespace zetscript{
 		ScriptClass * 					registerClass(const std::string & class_name, const std::string & base_class_name="",const char * file="", short line=-1);
 		ScriptClass * 					getScriptClass(short idx);
 		ScriptClass * 					getScriptClass(const std::string & name);
+		int								getBuiltinTypeOrClass(const std::string & name);
 		ScriptClass * 					getScriptClassByNativeClassPtr(const std::string & class_type);
 		const char 	* 					getScriptClassName(short idx);
 		void							classInheritsFrom(const std::string & the_class,const std::string & the_base_class);
@@ -85,6 +86,11 @@ namespace zetscript{
 			 , const char *registered_file=""
 			 ,short registered_line=-1
 		);
+
+		void registerConstant(const std::string & var_name, zs_int value, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const std::string & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const std::string & var_name, bool value, const char *registered_file="", short registered_line=-1);
+		void registerConstant(const std::string & var_name, const std::string & v, const char *registered_file="", short registered_line=-1);
 
 		/**
 		 * Register C function
@@ -237,7 +243,7 @@ namespace zetscript{
 		bool register_c_base_symbols;
 		int 			idx_clear_checkpoint;
 
-
+		void							checkClassName(const std::string & class_name);
 		PrimitiveType *					getPrimitiveTypeFromStr(const std::string & str);
 
 		std::map<short, std::map<short, ConversionType>>

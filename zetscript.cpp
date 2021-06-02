@@ -194,96 +194,15 @@ namespace zetscript{
 		return false;
 	}
 
-	//-----------------------------------------------------------------------------------------------------------------------------------------
-	//
-	// CONSTANT MANAGEMENT
-	//
-	// CONSTANT BOOLEAN
-	StackElement * ZetScript::registerConstantBool(const std::string & key_name, bool value){
-		StackElement *stk=NULL;
-		ScriptObjectString *so=NULL;
-
-		if((stk = getRegisteredConstant(key_name))!=NULL){
-			if(stk->properties & (STK_PROPERTY_BOOL | STK_PROPERTY_READ_ONLY)){
-				return stk;
-			}
-			else{
-				// throw
-				THROW_RUNTIME_ERROR("Cannot register constant '%s' as 'bool', because is already registered as '%s'",key_name.c_str(),stk->typeOf());
-			}
-
-		}
-
-		stk=new StackElement;
-
-		(*stk_constants)[key_name]=stk;
-
-		stk->value=(void *)value;
-		stk->properties=STK_PROPERTY_BOOL | STK_PROPERTY_READ_ONLY;
-
-		return stk;
-	}
 
 	//-----------------------------------------------------------------------------------------
-	// CONSTANT INTEGER
-	StackElement * ZetScript::registerConstantInt(const std::string & key_name, zs_int value){
-		StackElement *stk=NULL;
-		ScriptObjectString *so=NULL;
-
-		if((stk = getRegisteredConstant(key_name))!=NULL){
-			if(stk->properties & (STK_PROPERTY_ZS_INT | STK_PROPERTY_READ_ONLY)){
-				return stk;
-			}
-			else{
-				// throw
-				THROW_RUNTIME_ERROR("Cannot register constant '%s' as 'int', because is already registered as '%s'",key_name.c_str(),stk->typeOf());
-			}
-
-		}
-
-		stk=new StackElement;
-
-		(*stk_constants)[key_name]=stk;
-
-		stk->value=(void *)value;
-		stk->properties=STK_PROPERTY_ZS_INT | STK_PROPERTY_READ_ONLY;
-
-		return stk;
-	}
-	//-----------------------------------------------------------------------------------------
-	// CONSTANT FLOAT
-	StackElement * ZetScript::registerConstantFloat(const std::string & key_name, zs_float value){
-		StackElement *stk=NULL;
-		ScriptObjectString *so=NULL;
-
-		if((stk = getRegisteredConstant(key_name))!=NULL){
-			if(stk->properties & (STK_PROPERTY_ZS_FLOAT | STK_PROPERTY_READ_ONLY)){
-				return stk;
-			}
-			else{
-				// throw
-				THROW_RUNTIME_ERROR("Cannot register constant '%s' as 'float', because is already registered as '%s'",key_name.c_str(),stk->typeOf());
-			}
-		}
-
-		stk=new StackElement;
-
-		(*stk_constants)[key_name]=stk;
-
-		ZS_FLOAT_COPY(&stk->value,&value);
-
-		stk->properties=STK_PROPERTY_ZS_FLOAT | STK_PROPERTY_READ_ONLY;
-
-		return stk;
-	}
-	//-----------------------------------------------------------------------------------------
-	// CONSTANT STRING
-	StackElement * ZetScript::registerConstantString(const std::string & key_name,const std::string & const_name){
+	// STK STRING OBJECT
+	StackElement * ZetScript::registerStkStringObject(const std::string & key_name,const std::string & const_name){
 
 		StackElement *stk=NULL;
 		ScriptObjectString *so=NULL;
 
-		if((stk = getRegisteredConstant(key_name))!=NULL){
+		if((stk = getStkStringObject(key_name))!=NULL){
 			if(stk->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY)){
 				return stk;
 			}
@@ -308,7 +227,7 @@ namespace zetscript{
 
 	}
 
-	StackElement *ZetScript::getRegisteredConstant(const std::string & key_name){
+	StackElement *ZetScript::getStkStringObject(const std::string & key_name){
 
 		if(stk_constants==NULL){
 			stk_constants=new std::map<std::string,StackElement *>();
@@ -321,8 +240,25 @@ namespace zetscript{
 	}
 
 
+	void registerConstant(const std::string & var_name, zs_int value, const char *registered_file, short registered_line){
+
+	}
+
+	void registerConstant(const std::string & var_name, zs_float value, const char *registered_file, short registered_line){
+
+	}
+
+	void registerConstant(const std::string & var_name, bool value, const char *registered_file, short registered_line){
+
+	}
+
+	void registerConstant(const std::string & var_name, const std::string v, const char *registered_file, short registered_line){
+
+	}
+
+
 	//
-	// CONSTANT MANAGEMENT
+	// STK STRING OBJECT
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 	void ZetScript::setPrintOutCallback(void (* _printout_callback)(const char *)){
@@ -422,7 +358,7 @@ namespace zetscript{
 			printGeneratedCode(options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_CODE);
 		}
 
-		if(options & EvalOption::EVAL_OPTION_EXECUTE){
+		if((options & EvalOption::EVAL_OPTION_NO_EXECUTE)==0){
 			// the first code to execute is the main function that in fact is a special member function inside our main class
 			stk_ret=vm_execute(
 					virtual_machine

@@ -282,7 +282,8 @@ namespace zetscript{
 
 
 						try{
-							eval_data->zs->evalFile(str_symbol);
+							// compile but not execute, it will execute the last eval
+							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE);
 						}catch(std::exception & ex){
 							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"\nFrom import file '%s': %s",str_symbol.c_str(),ex.what());
 						}

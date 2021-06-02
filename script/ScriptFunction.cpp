@@ -268,6 +268,9 @@ namespace zetscript{
 					,instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK?"all":"1"
 				);
 				break;
+			case BYTE_CODE_INSTANCEOF:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tINSTANCEOF\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
+				break;
 			default:
 
 				if(iload_info != ""){

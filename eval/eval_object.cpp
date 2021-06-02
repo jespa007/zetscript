@@ -125,8 +125,8 @@ namespace zetscript{
 
 			 // register constant...
 			str_key=std::string("\"")+symbol_value+"\"";
-			if((stk_key_object = eval_data->zs->getRegisteredConstant(str_key))==NULL){
-				stk_key_object=eval_data->zs->registerConstantString(str_key,symbol_value);
+			if((stk_key_object = eval_data->zs->getStkStringObject(str_key))==NULL){
+				stk_key_object=eval_data->zs->registerStkStringObject(str_key,symbol_value);
 			 }
 
 			// add instruction...

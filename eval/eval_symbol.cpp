@@ -79,7 +79,7 @@ namespace zetscript{
 					 zs_strutils::copy_from_ptr_diff(default_str_value,start_word+1,aux);
 				}
 				aux++;
-				value=(zs_int)eval_data->zs->registerConstantString(std::string("\"")+default_str_value+"\"",default_str_value);
+				value=(zs_int)eval_data->zs->registerStkStringObject(std::string("\"")+default_str_value+"\"",default_str_value);
 				byte_code = ByteCode::BYTE_CODE_LOAD_STRING;
 			}else{ // is null,boolean or identifier
 				bool end=false;

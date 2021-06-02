@@ -24,7 +24,7 @@ namespace zetscript{
 			ScriptObject *obj=NULL;
 			StackElement *stk=NULL;
 
-			if((this->byte_code == BYTE_CODE_LOAD_STRING) || (this->properties & INSTRUCTION_PROPERTY_STRING)){
+			if((this->byte_code == BYTE_CODE_LOAD_STRING) || (this->properties & INSTRUCTION_PROPERTY_STRING) || (byte_code == BYTE_CODE_INSTANCEOF)){
 
 				stk=(StackElement *)this->value_op2;
 				obj = (ScriptObject *)stk->value;
@@ -72,6 +72,8 @@ namespace zetscript{
 				value_op2_string=zs_strutils::float_to_str(this->getConstantFloat());
 			}else if(byte_code==BYTE_CODE_LOAD_STRING || (this->properties & INSTRUCTION_PROPERTY_STRING)){
 				value_op2_string="\""+this->getConstantString()+"\"";
+			}else if(byte_code==BYTE_CODE_INSTANCEOF){
+				value_op2_string=this->getConstantString();
 			}
 			return value_op2_string;
 		}
