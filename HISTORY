@@ -230,6 +230,7 @@ Solved issues
 #285 No finding static function 
 > #287 Some optimizations 
 > #288 ScriptStringObject::format: First implementation format argument with ':' 
+> #289 Example bind "object" from C code
 
 //----------------------------------------------------------
 Version: 1.3.0
