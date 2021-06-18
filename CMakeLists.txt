@@ -288,6 +288,13 @@ IF ( "${FCOMPILE}" STREQUAL "ON")
 		${PROJECT_SOURCE_DIR}/test/test_register_class.cpp
 	)	
 	target_link_libraries(test_register_class${POST_NAME} zetscript${POST_NAME})	
+	
+	# register_c_module
+	add_executable(test_register_c_module${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/test_register_c_module.cpp
+		${PROJECT_SOURCE_DIR}/test/CModule.c
+	)	
+	target_link_libraries(test_register_c_module${POST_NAME} zetscript${POST_NAME})	
 		
 ELSE()
 
