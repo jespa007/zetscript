@@ -1,18 +1,18 @@
 
 // for
 Console::outln("test for:");
-for(var i=0;i < 10; i++){ 
-	Console::outln("i:"+i);
+for(var i=0,j=0;i < 10; i++,j+=2){ 
+	Console::outln("i:"+i+" j:"+j);
 }
 
 Console::outln("test while:");
-var j=0;
+var k=0;
 while(j < 10){
-	Console::outln("j:"+j++);
+	Console::outln("k:"+k++);
 }
 
 Console::outln("test do-while:");
-j=0;
+k=0;
 do{
-	Console::outln("j:"+j++);
-}while(j<10);
+	Console::outln("k:"+k++);
+}while(k<10);

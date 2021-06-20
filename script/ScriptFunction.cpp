@@ -520,10 +520,12 @@ namespace zetscript{
 
 	Symbol *	 ScriptFunction::getSymbol(Scope * scope,const std::string & symbol_name,  char n_params){
 
+		if(scope == NULL) return NULL;
+
 		bool only_symbol=n_params<0;
 		// from last value to first to get last override function...
-		for(int i = (int)(registered_symbols->count-1); i >= 0 ; i--){
-			Symbol *symbol=(Symbol *)registered_symbols->items[i];
+		for(int i = (int)(scope->registered_symbols->count-1); i >= 0 ; i--){
+			Symbol *symbol=(Symbol *)scope->registered_symbols->items[i];
 			if(symbol->name == symbol_name){
 				if(only_symbol){
 					return symbol;
@@ -540,6 +542,11 @@ namespace zetscript{
 				}
 			}
 		}
+
+		if(scope!=this->symbol.scope){
+			 return ScriptFunction::getSymbol(scope->scope_parent,symbol_name, n_params);
+		}
+
 		return NULL;
 	}
 
