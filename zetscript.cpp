@@ -240,19 +240,19 @@ namespace zetscript{
 	}
 
 
-	void registerConstant(const std::string & var_name, zs_int value, const char *registered_file, short registered_line){
+	void registerConstantVariable(const std::string & var_name, zs_int value, const char *registered_file, short registered_line){
 
 	}
 
-	void registerConstant(const std::string & var_name, zs_float value, const char *registered_file, short registered_line){
+	void registerConstantVariable(const std::string & var_name, zs_float value, const char *registered_file, short registered_line){
 
 	}
 
-	void registerConstant(const std::string & var_name, bool value, const char *registered_file, short registered_line){
+	void registerConstantVariable(const std::string & var_name, bool value, const char *registered_file, short registered_line){
 
 	}
 
-	void registerConstant(const std::string & var_name, const std::string v, const char *registered_file, short registered_line){
+	void registerConstantVariable(const std::string & var_name, const std::string v, const char *registered_file, short registered_line){
 
 	}
 

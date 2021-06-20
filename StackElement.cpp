@@ -16,15 +16,22 @@ namespace zetscript{
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= "bool";
 		else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk))
-			result= "ScriptObjectObject";
+			result= "Object";
 		else if(STK_IS_SCRIPT_OBJECT_STRING(stk))
-			result= "ScriptObjectString";
+			result= "String";
 		else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk))
-			result= "ScriptObjectVector";
+			result= "Vector";
+		else if(STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk))
+			result= "ObjectItarator";
+		else if(STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk))
+			result= "StringItarator";
+		else if(STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk))
+			result= "VectorItarator";
+
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result= "ScriptFunction";
+			result= "Function";
 		else if(STK_VALUE_IS_CLASS(stk))
-			result= "ScriptClass";
+			result= "Class";
 		else if(STK_VALUE_IS_MEMBER_ATTRIBUTE(stk))
 			result= "MemberAttribute";
 		else if(STK_VALUE_IS_MEMBER_FUNCTION(stk))

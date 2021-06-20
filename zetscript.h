@@ -140,10 +140,7 @@
 #define	ZS_UNREF_LIFETIME_OBJECT(zs,so)									(zs)->unrefLifetimeObject(so);
 
 
-#define ZS_REGISTER_CONSTANT_INT(zs,constant_name,i)					(zs)->registerStkStringObject(constant_name,i)
-#define ZS_REGISTER_CONSTANT_STRING(zs,constant_name,s)					(zs)->registerConstantInt(constant_name,s)
-#define ZS_REGISTER_CONSTANT_FLOAT(zs,constant_name,b)					(zs)->registerConstantFloat(constant_name,b)
-#define ZS_REGISTER_CONSTANT_BOOL(zs,constant_name,b)					(zs)->registerConstantBool(constant_name,b)
+#define ZS_REGISTER_CONSTANT_VAR(zs,constant_name,v)					(zs)->registerConstantVariable(constant_name,v,__FILE__,__LINE__)
 
 
 namespace zetscript{
@@ -223,21 +220,26 @@ namespace zetscript{
 			 script_class_factory->registerNativeGlobalVariable(var_name,var_ptr, registered_file, registered_line);
 		 }
 
-		void registerConstant(const std::string & var_name, zs_int value, const char *registered_file="", short registered_line=-1){
-			script_class_factory->registerConstant(var_name,value, registered_file, registered_line);
+		void registerConstantVariable(const std::string & var_name, int value, const char *registered_file="", short registered_line=-1){
+			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void registerConstant(const std::string & var_name, bool value, const char *registered_file="", short registered_line=-1){
-			script_class_factory->registerConstant(var_name,value, registered_file, registered_line);
+		void registerConstantVariable(const std::string & var_name, bool value, const char *registered_file="", short registered_line=-1){
+			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void registerConstant(const std::string & var_name, zs_float value, const char *registered_file="", short registered_line=-1){
-			script_class_factory->registerConstant(var_name,value, registered_file, registered_line);
+		void registerConstantVariable(const std::string & var_name, zs_float value, const char *registered_file="", short registered_line=-1){
+			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void registerConstant(const std::string & var_name, const std::string & value, const char *registered_file="", short registered_line=-1){
-			script_class_factory->registerConstant(var_name,value, registered_file, registered_line);
+		void registerConstantVariable(const std::string & var_name, const std::string & value, const char *registered_file="", short registered_line=-1){
+			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
+
+		void registerConstantVariable(const std::string & var_name, const char *value, const char *registered_file="", short registered_line=-1){
+			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+		}
+
 
 		/**
 		 * Register C function

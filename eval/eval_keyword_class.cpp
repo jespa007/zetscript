@@ -161,7 +161,7 @@ namespace zetscript{
 				return aux_p+1;
 
 			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '{' to start class declaration\"%s\"",class_name.c_str());
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration\"%s\"",class_name.c_str());
 			}
 		}
 		return NULL;

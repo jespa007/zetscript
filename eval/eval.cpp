@@ -297,7 +297,8 @@ namespace zetscript{
 
 					end_expr=aux;
 				}
-			}else if(*aux == '{') { // eval block
+			}else if(*aux == '{' && (eval_object_test(eval_data,aux,line) == false)) { // can be a block or object...
+
 
 				// 2nd. check whether eval a block
 				end_expr = eval_block(

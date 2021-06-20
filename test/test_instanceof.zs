@@ -1,10 +1,13 @@
 class A{
-	_in(k){
-		if(k<10 || k > 20){
-			return false;
-		}
-		return true;
-	}
+
+}
+
+class B extends A{
+
+	
+}
+
+class C{
 	
 }
 
@@ -12,10 +15,14 @@ var test_instanceof=[
 	"0 instanceof int"
 	,"0.0 instanceof float"
 	,"true instanceof bool"
-	,"[0,1,2] instanceof ScriptObjectVector"
-	,"{'a':0,'b':1} instanceof ScriptObjectObject"
-	,"\"abc\" instanceof ScriptObjectString"
+	,"[0,1,2] instanceof Vector"
+	,"\"abc\" instanceof String"
 	,"new A() instanceof A"
+	,"new B() instanceof A"
+	,"new B() instanceof B"
+	,"new C() instanceof B"
+	,"{a:0,b:1} instanceof Object"
+	
 ];
 
 

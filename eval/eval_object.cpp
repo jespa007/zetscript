@@ -72,6 +72,12 @@ namespace zetscript{
 		return aux_p;
 	}
 
+	bool eval_object_test(EvalData *eval_data,const char *s){
+		if(*aux_p != '{'){ // go for final ...
+
+		}
+	}
+
 	char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
 		// Inline object: two possibles uses {a:1,b:2}["a"] or {a:1, b:2}.a
 		char *aux_p = (char *)s;
@@ -120,7 +126,7 @@ namespace zetscript{
 			);
 
 			if(zs_strutils::is_empty(symbol_value)){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected property name");
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error Object: expected property name");
 			}
 
 			 // register constant...
@@ -139,7 +145,7 @@ namespace zetscript{
 			 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			 if(*aux_p != ':'){ // expected : ...
-				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected ':' after property name");
+				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error Object: expected ':' after property name");
 			 }
 
 			 aux_p++;

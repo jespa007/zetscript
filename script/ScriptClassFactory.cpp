@@ -260,7 +260,7 @@ namespace zetscript{
 	// REGISTER CONSTANTS
 	//
 
-	void ScriptClassFactory::registerConstant(const std::string & var_name, zs_int value, const char *registered_file, short registered_line){
+	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, int value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -269,11 +269,11 @@ namespace zetscript{
 		);
 
 		StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
-		stk->value=(void *)value;
+		stk->value=(void *)((zs_int)value);
 		stk->properties=STK_PROPERTY_ZS_INT|STK_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptClassFactory::registerConstant(const std::string & var_name, bool value, const char *registered_file, short registered_line){
+	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, bool value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -286,7 +286,7 @@ namespace zetscript{
 		stk->properties=STK_PROPERTY_BOOL|STK_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptClassFactory::registerConstant(const std::string & var_name, zs_float value, const char *registered_file, short registered_line){
+	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, zs_float value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -301,7 +301,7 @@ namespace zetscript{
 
 
 
-	void ScriptClassFactory::registerConstant(const std::string & var_name, const std::string & v, const char *registered_file, short registered_line){
+	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, const std::string & v, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -311,6 +311,10 @@ namespace zetscript{
 
 		StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
 		*stk=*(zs->registerStkStringObject(var_name,v));
+	}
+
+	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, const char * v, const char *registered_file, short registered_line){
+		registerConstantVariable(var_name, std::string(v), registered_file, registered_line);
 	}
 
 

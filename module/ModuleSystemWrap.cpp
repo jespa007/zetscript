@@ -88,6 +88,8 @@ namespace zetscript{
 		try{
 			eval_parse_and_compile(zs,str_start,NULL,1,sf,&function_args);
 		}catch(std::exception & ex){
+			delete sf;
+			delete symbol_sf;
 			vm_set_error(zs->getVirtualMachine(),std::string("eval error:")+ex.what());
 			return;
 		}

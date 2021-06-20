@@ -7,7 +7,7 @@ for(var i=0,j=0;i < 10; i++,j+=2){
 
 Console::outln("test while:");
 var k=0;
-while(j < 10){
+while(k < 10){
 	Console::outln("k:"+k++);
 }
 

@@ -87,10 +87,11 @@ namespace zetscript{
 			 ,short registered_line=-1
 		);
 
-		void registerConstant(const std::string & var_name, zs_int value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const std::string & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const std::string & var_name, bool value, const char *registered_file="", short registered_line=-1);
-		void registerConstant(const std::string & var_name, const std::string & v, const char *registered_file="", short registered_line=-1);
+		void registerConstantVariable(const std::string & var_name, int value, const char *registered_file="", short registered_line=-1);
+		void registerConstantVariable(const std::string & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
+		void registerConstantVariable(const std::string & var_name, bool value, const char *registered_file="", short registered_line=-1);
+		void registerConstantVariable(const std::string & var_name, const std::string & v, const char *registered_file="", short registered_line=-1);
+		void registerConstantVariable(const std::string & var_name, const char * v, const char *registered_file="", short registered_line=-1);
 
 		/**
 		 * Register C function
