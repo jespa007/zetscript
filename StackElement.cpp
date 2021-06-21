@@ -73,7 +73,6 @@ namespace zetscript{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
 			}
-
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				result=((ScriptObject *)stk->value)->toString();
 			}

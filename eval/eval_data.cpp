@@ -769,7 +769,7 @@ namespace zetscript{
 
 				return aux_p;
 		}else{
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected identifier");
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Invalid or unexpected token");
 		}
 		return NULL;
 	}

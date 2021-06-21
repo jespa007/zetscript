@@ -297,7 +297,7 @@ namespace zetscript{
 
 					end_expr=aux;
 				}
-			}else if(*aux == '{' && (eval_object_test(eval_data,aux,line) == false)) { // can be a block or object...
+			}else if(*aux == '{' && (eval_object_test(eval_data,aux) == false)) { // can be a block or object...
 
 
 				// 2nd. check whether eval a block
@@ -516,7 +516,7 @@ namespace zetscript{
 				sum_stk_load_stk++;
 				 if((sc_found= eval_data->script_class_factory->getScriptClass(*ptr_str_symbol_to_find))!= NULL){ // check if class
 					instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_CLASS;
-					instruction->vm_instruction.value_op2=sc_found->idx_class;
+					instruction->vm_instruction.value_op2=sc_found;
 				 }else if(instruction->symbol.scope != MAIN_SCOPE(eval_data)){ // find global symbol if not global
 					vis = eval_find_global_symbol(eval_data,*ptr_str_symbol_to_find);
 				}else{ // give the error properly

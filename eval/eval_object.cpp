@@ -72,10 +72,67 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	bool eval_object_test(EvalData *eval_data,const char *s){
-		if(*aux_p != '{'){ // go for final ...
+	char * eval_object_identifier(EvalData *eval_data,const char *s, int line, std::string & symbol_value){
+		char *aux_p = (char *)s;
+		symbol_value="";
+		// get identifier with quotes...
+		if(*aux_p == '\"'){
+			aux_p++;
+			bool end=false;
+			for(;;){
+				if(((*aux_p=='\"' && *(aux_p-1)!= '\\')|| *aux_p==0 || *aux_p=='\n')){
+					break;
+				}else{
+					symbol_value+=*aux_p;
+				}
+				aux_p++;
+			}
+
+			if(*aux_p!='\"'){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"string not ends with '\"'");
+			}
+
+			aux_p++;
+		}
+		else{ // without quotes
+
+			aux_p=get_name_identifier_token(
+					eval_data
+					,aux_p
+					,line
+					,symbol_value
+			);
 
 		}
+
+		return aux_p;
+	}
+
+	bool eval_object_test(EvalData *eval_data,const char *s){
+		char *aux_p = (char *)s;
+		int line=0;
+		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+		if(*aux_p == '{'){ // go for final ...
+			std::string symbol_value;
+			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
+			if(*aux_p == '}')
+				return true;
+
+			aux_p=eval_object_identifier(eval_data,aux_p,line,symbol_value);
+
+
+			if(eval_data->error == true){
+				return false;
+			}
+
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+			return (*aux_p == ':' && *(aux_p+1) != ':');
+		}
+
+		return false;
 	}
 
 	char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
@@ -118,12 +175,8 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: \"%s\" keyword is not allowed as property name",eval_data_keywords[keyw].str);
 			}
 
-			aux_p=get_name_identifier_token(
-					eval_data
-					,aux_p
-					,line
-					,symbol_value
-			);
+			// get identifier with quotes...
+			aux_p=eval_object_identifier(eval_data,aux_p,line,symbol_value);
 
 			if(zs_strutils::is_empty(symbol_value)){
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error Object: expected property name");
