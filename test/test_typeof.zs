@@ -11,6 +11,7 @@ var test_typeof=[
 	,"typeof a"
 ];
 
+
 for(var i in test_typeof){
 	Console::outln("{0}:{1}",i,System::eval(i))
 }

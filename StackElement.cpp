@@ -22,11 +22,11 @@ namespace zetscript{
 		else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk))
 			result= "Vector";
 		else if(STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk))
-			result= "ObjectItarator";
+			result= "ObjectIterator";
 		else if(STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk))
-			result= "StringItarator";
+			result= "StringIterator";
 		else if(STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk))
-			result= "VectorItarator";
+			result= "VectorIterator";
 
 		else if(STK_VALUE_IS_FUNCTION(stk))
 			result= "Function";
@@ -66,9 +66,9 @@ namespace zetscript{
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= stk->value?"true":"false";
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result= std::string("ScriptFunction")+"@"+((ScriptFunction *)stk->value)->symbol.name;
+			result= std::string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
 		else if(STK_VALUE_IS_CLASS(stk))
-			result= std::string("ScriptClass")+"@"+((ScriptClass *)stk->value)->symbol_class.name;
+			result= std::string("Class")+"@"+((ScriptClass *)stk->value)->symbol_class.name;
 		else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;

@@ -199,7 +199,7 @@ namespace zetscript{
 	}
 
 	std::string ScriptObject::toString(){
-		return "ScriptObject@"+getClassName();
+		return "Object@"+getClassName();
 	}
 
 	ScriptObject::~ScriptObject(){

@@ -55,6 +55,7 @@
 #include 		<string.h>
 #include 		<map>
 #include 		<cstddef>
+#include 		<time.h>       /* time_t, struct tm, time, gmtime */
 
 #include 		<type_traits>
 

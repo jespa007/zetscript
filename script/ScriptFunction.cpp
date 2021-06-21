@@ -346,7 +346,7 @@ namespace zetscript{
 		StackElement *se=NULL;
 
 
-		if((symbol=scope_block->registerSymbol(file,line, symbol_name, NO_PARAMS_SYMBOL_ONLY,  ScopeDirection::SCOPE_DIRECTION_CURRENT))==NULL){
+		if((symbol=scope_block->registerSymbol(file,line, symbol_name, NO_PARAMS_SYMBOL_ONLY,  SCOPE_DIRECTION_CURRENT))==NULL){
 				return NULL;
 		}
 

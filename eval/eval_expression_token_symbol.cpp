@@ -205,7 +205,7 @@ namespace zetscript{
 
 						if(*aux_p != 0 && *aux_p==':'){
 
-							if(*(aux_p+1)==':'){ // class static
+							if(*(aux_p+1)==':'){ //  static access
 
 								// the first item is the class
 								std::string static_access_value=token_node_symbol.value,class_element;
@@ -218,7 +218,7 @@ namespace zetscript{
 
 								last_accessor_line=line;
 								if(get_accessor_name(eval_data, &aux_p, line,class_element) == false){
-									goto error_expression_token_symbol;
+									EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Expected identifier after '::'");
 								}
 
 								static_access_value+="::"+class_element;
@@ -238,12 +238,12 @@ namespace zetscript{
 												EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
 														eval_data->current_parsing_file
 														,line
-														,"Symbol \"%s\" %s"
+														,"Symbol '%s' %s"
 														,static_access_value.c_str()
 														,static_error.c_str());
 											}
 										}else{
-											EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Symbol \"%s\" is not static",static_access_value.c_str());
+											EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Symbol '%s' is not static",static_access_value.c_str());
 										}
 									}
 								} // --> in eval::pop_function will be find

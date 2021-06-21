@@ -6,12 +6,13 @@
 
 namespace zetscript{
 
-	typedef enum{
-		SCOPE_DIRECTION_CURRENT=0,
-		SCOPE_DIRECTION_DOWN,
-		SCOPE_DIRECTION_UP,
-		SCOPE_DIRECTION_BOTH
-	}ScopeDirection;
+
+#define SCOPE_DIRECTION_CURRENT					0x1
+#define SCOPE_DIRECTION_DOWN					0x2
+#define	SCOPE_DIRECTION_UP						0x4
+//#define	SCOPE_DIRECTION_AVOID_MAIN_SCOPE		0x8
+#define SCOPE_DIRECTION_BOTH					(SCOPE_DIRECTION_DOWN | SCOPE_DIRECTION_UP)
+
 
 	class ScopeFactory;
 	class ZetScript;
@@ -48,8 +49,8 @@ namespace zetscript{
 		 * @n_params:
 		 */
 		Symbol * addSymbol(const char * file, short line,const std::string & symbol_name, char n_params);
-		Symbol * registerSymbol(const char * file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, ScopeDirection scope_direction_repeated_symbols=ScopeDirection::SCOPE_DIRECTION_BOTH);
-		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, ScopeDirection scope_direction_repeated_symbols=ScopeDirection::SCOPE_DIRECTION_BOTH);
+		Symbol * registerSymbol(const char * file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, uint16_t scope_direction_repeated_symbols=SCOPE_DIRECTION_BOTH);
+		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, uint16_t scope_direction_repeated_symbols=SCOPE_DIRECTION_BOTH);
 
 		void						    markAsUnusued();
 

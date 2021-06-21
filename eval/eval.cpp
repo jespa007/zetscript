@@ -299,6 +299,9 @@ namespace zetscript{
 				}
 			}else if(*aux == '{' && (eval_object_test(eval_data,aux) == false)) { // can be a block or object...
 
+				if(eval_data->error){
+					return NULL;
+				}
 
 				// 2nd. check whether eval a block
 				end_expr = eval_block(
@@ -338,7 +341,7 @@ namespace zetscript{
 	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find){
 
 		EvalFunction *sf=eval_data->current_function;
-		Symbol * sc_var = scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,ScopeDirection::SCOPE_DIRECTION_DOWN);
+		Symbol * sc_var = scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,SCOPE_DIRECTION_DOWN);
 
 		if(sc_var != NULL){ // local symbol found
 
@@ -516,7 +519,7 @@ namespace zetscript{
 				sum_stk_load_stk++;
 				 if((sc_found= eval_data->script_class_factory->getScriptClass(*ptr_str_symbol_to_find))!= NULL){ // check if class
 					instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_CLASS;
-					instruction->vm_instruction.value_op2=sc_found;
+					instruction->vm_instruction.value_op2=(zs_int)sc_found;
 				 }else if(instruction->symbol.scope != MAIN_SCOPE(eval_data)){ // find global symbol if not global
 					vis = eval_find_global_symbol(eval_data,*ptr_str_symbol_to_find);
 				}else{ // give the error properly

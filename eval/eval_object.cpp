@@ -201,17 +201,24 @@ namespace zetscript{
 				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error Object: expected ':' after property name");
 			 }
 
-			 aux_p++;
+			 IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
+			 if(*aux_p == '}'){
+				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error Object: unexpected '}' ");
+			 }
+
 
 			 // go to variable...
-			 aux_p=eval_expression(
+			 if((aux_p=eval_expression(
 					 eval_data
 					 ,aux_p
 					 ,line
 					 ,scope_info
 					 ,instructions
 					 ,std::vector<char>{}
-			);
+			))==NULL){
+				 return NULL;
+			 }
 
 			 // push attr (push a element pair)
 			 instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_OBJECT_ELEMENT));

@@ -10,6 +10,7 @@
 #endif
 
 #define ZS_IDX_UNDEFINED 						-1
+#define ZS_IDX_EVAL_FUNCTION					-10
 #define MAX_NATIVE_FUNCTION_ARGS				6
 
 #define GET_METAMETHOD(m)														((this->zs))->getMetamethod(m)

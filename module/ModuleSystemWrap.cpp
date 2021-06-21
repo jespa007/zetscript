@@ -73,7 +73,7 @@ namespace zetscript{
 		 sf=new	ScriptFunction(
 				zs
 				,IDX_SCRIPT_CLASS_MAIN
-				,ZS_IDX_UNDEFINED
+				,ZS_IDX_EVAL_FUNCTION
 				,function_args
 				,ZS_IDX_UNDEFINED
 				,symbol_sf

@@ -96,7 +96,7 @@ namespace zetscript{
 	//
 	// SCOPE VARIABLE MANAGEMENT
 	//
-	Symbol * Scope::registerSymbol(const char * file,short line, const std::string & symbol_name, char n_params, ScopeDirection check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbol(const char * file,short line, const std::string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
 		Symbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 		// check if you register a class...
@@ -117,7 +117,7 @@ namespace zetscript{
 		return addSymbol(file, line, symbol_name, n_params);
 	}
 
-	Symbol * Scope::getSymbol(const std::string & str_symbol, char n_params, ScopeDirection scope_direction_repeated_symbols){
+	Symbol * Scope::getSymbol(const std::string & str_symbol, char n_params, uint16_t scope_direction){
 
 		Symbol *sv=NULL;
 
@@ -132,21 +132,22 @@ namespace zetscript{
 			}
 		}
 
-		if(scope_direction_repeated_symbols==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction_repeated_symbols==ScopeDirection::SCOPE_DIRECTION_DOWN){
+		if(scope_direction&SCOPE_DIRECTION_DOWN){
 			if(
 					   this->scope_parent != NULL			 	 // it says that is the end of scopes
 					&& this->scope_parent->getIdxScriptFunction() == idx_script_function // Only check repeated symbols in the same function scope context.
 			){
-				return this->scope_parent->getSymbol(str_symbol,n_params,ScopeDirection::SCOPE_DIRECTION_DOWN);
+				//uint16_t avoid_main=scope_direction & SCOPE_DIRECTION_AVOID_MAIN_SCOPE ? SCOPE_DIRECTION_AVOID_MAIN_SCOPE:0;
+				return this->scope_parent->getSymbol(str_symbol,n_params,SCOPE_DIRECTION_DOWN);
 			}
 		}
 
-		if(scope_direction_repeated_symbols==ScopeDirection::SCOPE_DIRECTION_BOTH || scope_direction_repeated_symbols==ScopeDirection::SCOPE_DIRECTION_UP){
+		if(scope_direction&SCOPE_DIRECTION_UP){
 			for(unsigned i = 0; i < registered_scopes->count; i++){
 				Scope *s=(Scope *)registered_scopes->items[i];
 
 				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
-					Symbol *sv=s->getSymbol(str_symbol,n_params,ScopeDirection::SCOPE_DIRECTION_UP);
+					Symbol *sv=s->getSymbol(str_symbol,n_params,SCOPE_DIRECTION_UP);
 
 					if(sv != NULL) {
 						return sv;
