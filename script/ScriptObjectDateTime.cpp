@@ -4,6 +4,13 @@
  */
 #include "zetscript.h"
 
+#define ONE_YEAR_DAYS 		86400*365 //24 hours * 60 mins * 60 secs
+
+#define ONE_DAY_SECS 		86400 //24 hours * 60 mins * 60 secs
+#define ONE_HOUR_SECS  		3600 //60 mins * 60 secs
+#define ONE_MINUTE_SECS 	60 // 60 secs
+
+//https://github.com/jeremydumais/CPP-DateTime-library/blob/master/src/datetime.h
 
 namespace zetscript{
 
@@ -53,28 +60,7 @@ namespace zetscript{
 
 	bool ScriptObjectDateTime::isLeapYear(int year)
 	{
-		 if(!(year % 4))
-		    {
-		        if(!(year % 100))
-		        {
-		            if(!(year % 400))
-		            {
-		                return true;
-		            }
-		            else
-		            {
-		                return false;
-		            }
-		        }
-		        else
-		        {
-		            return true;
-		        }
-		    }
-		    else
-		    {
-		        return false;
-		    }
+		return ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
 	}
 
 	bool ScriptObjectDateTime::isLeapYear() const
@@ -91,148 +77,88 @@ namespace zetscript{
 
 	int ScriptObjectDateTime::maxDay(int month, int year)
 	{
-		//the code below was done by me
-		if (isLeapYear(year) && month == 2)
-		{
-			maxDay = 29;
-			return maxDay;
+		if(month == 0 || month == 2 || month == 4 || month == 6 || month == 7 || month == 9 || month == 11){
+		        return 31;
+		}else if(month == 3 || month == 5 || month == 8 || month == 10){
+				return 30;
+		}else if (isLeapYear(year)){
+				return 29;
 		}
-		switch (month)
-		{
-		case 1:
-		case 3:
-		case 5:
-		case 7:
-		case 8:
-		case 10:
-		case 12:
+		return 28;
+	}
 
-				maxDay = 31;
-				break;
+	void ScriptObjectDateTime::addSeconds(int nb_seconds)
+	{
+		struct tm *tm_new_time;
+		//errno_t err;
+		time_t new_seconds = mktime(timeInfo) + nb_seconds;
+		delete timeInfo;
 
-		case 4:
-		case 6:
-		case 9:
-		case 11:
+		tm_new_time = localtime(&new_seconds);
 
-				maxDay = 30;
-				break;
-
-		}
-	//this has been modified.
-	//Use the DAYS_PER_MONTH array
-	return 31;
+		timeInfo = new tm();
+		_copy_from(tm_new_time);
 	}
 
 
-	void ScriptObjectDateTime::addDay(bool forward)
-	{
-		if forward == true;
-	{
-		if today.day = 1;
-		{
-			++today._month;
-		}
-		if today._month > 12;
-		{
-			today._month = 1;
-			++today._year;
-		}
-	}
-	else
-	{
-		if (today._day > 1)
-		{
-			--today._day;
-			addDay = _today;
-		}
-		else
-		{
-			--today._month;
-
-		if (today._month == 0;)
-		{
-			today._month = 12;
-			-- toda._year
-		}
-			today._day = maxDay (today._month, today._year)
-		}
-
-//this has been already modified and will hopefully work.
-	}
+	void ScriptObjectDateTime::addDays(int nb_days)	{
+		addSeconds(nb_days * ONE_DAY_SECS);
 	}
 
 
 	bool ScriptObjectDateTime::isLeapDay(int day, int month, int year)
-	{if (date.day == 29 && date.month is 2 && leapyear(date.year))
 	{
-		leapday = true;
-	}
-	else
-	{
-		leapday = false;
-	}
-//this has been modified.
-return false;
+		return day == 29 && month == 1 && isLeapYear(year);
 	}
 
 
 	void ScriptObjectDateTime::addYears(int years)
-	{//the code below was done by me
-		if (years == 0)
-		{
-			return;
-		}
-		if (today == leapday && (today + years) != leaday)
-		{
-			today._day = 28;
-		}
-		today.year = today.year + years;
+	{
+		addDays(ONE_YEAR_DAYS*years);
 	}
 
 	void ScriptObjectDateTime::addMonths(int months)
-	{//the code below was done by me
-		if (months == 0)
-		{
-			return;
-		{
-		deltayears = months/12;
-		deltamonths = months % 12;
+	{
+		if (months == 0) return;
+
+		int deltayears = months/12;
+		int deltamonths = months % 12;
+		int newmonth=0;
 		if (months > 0)
 		{
-			if (today._month + deltamonths > 12)
+			if (_month + deltamonths > 12)
 			{
-			++deltayears
-			newmonth = (today._month + deltamonths) - 12;
+				++deltayears;
+				newmonth = (_month + deltamonths) - 12;
 			}
 			else
 			{
-				newmonth = today.month + deltamonths;
+				newmonth = _month + deltamonths;
 			}
 		}
 		else //months is negative
 		{
-			if (today._month + deltamonths < 1)
+			if (_month + deltamonths < 1)
 			{
 				--deltayears;
-				newmonth = today._month + deltamonths + 12;
+				newmonth = _month + deltamonths + 12;
 			}
 			else
 			{
-				newmonth = today._month + deltamonths;
+				newmonth = _month + deltamonths;
 			}
 		}
-		if (today._day > maxDay(newmonth, today._year + deltayears)
+		if (_day > maxDay(newmonth, _year + deltayears))
 		{
-			today._day = maxDay;
+			_day = maxDay(_month,_year);
 		}
-		today._year = today._year + deltayears
-		today._month = newmonth
+		_year = _year + deltayears;
+		_month = newmonth;
 	}
 
 	void ScriptObjectDateTime::addDays(int days)
 	{//the code below was done by me
-		if(days < 0)
+		/*if(days < 0)
 		{
 			for (count = -1; count--)
 			{
@@ -243,7 +169,7 @@ return false;
 			for (count = 1; count++)
 			{
 				addDay(today, true)
-			}
+			}*/
 	}
 
 }

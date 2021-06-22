@@ -11,12 +11,12 @@ void MyClassWrap_data1_set(MyClass *_this, zs_int v){
 	_this->data1=v;
 }
 
-int MyClassWrap_data1_get(MyClass *_this){
+zs_int MyClassWrap_data1_get(MyClass *_this){
 	return _this->data1;
 }
 //--------------------------------------------------------
 // GET for data2 (only read)
-int MyClassWrap_data2_get(MyClass *_this){
+zs_int MyClassWrap_data2_get(MyClass *_this){
 	return _this->data2;
 }
 //--------------------------------------------------------
