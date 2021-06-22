@@ -185,7 +185,7 @@ namespace zetscript{
 		return symbol_attrib;
 	}
 
-	/*Symbol				* 	ScriptClass::registerMemberAttributeSetter(
+	/*Symbol				* 	ScriptClass::registerSetterMemberAttribute(
 		std::string & error
 		,const char * file
 		,short line
@@ -197,7 +197,7 @@ namespace zetscript{
 		return NULL;
 	}*/
 
-	Symbol				* 	ScriptClass::registerNativeMemberAttributeSetter(
+	Symbol				* 	ScriptClass::registerNativeSetterMemberAttribute(
 			const std::string & attribute_name
 			, ScriptFunctionArg arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
@@ -221,7 +221,7 @@ namespace zetscript{
 
 	}
 
-	/*Symbol				* 	ScriptClass::registerMemberAttributeGetter(
+	/*Symbol				* 	ScriptClass::registerGetterMemberAttribute(
 		const std::string & attribute_name
 		,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 		,const char * file
@@ -231,7 +231,7 @@ namespace zetscript{
 		return NULL;
 	}*/
 
-	Symbol				* 	ScriptClass::registerNativeMemberAttributeGetter(
+	Symbol				* 	ScriptClass::registerNativeGetterMemberAttribute(
 			 const std::string & attribute_name
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly

@@ -352,7 +352,7 @@ namespace zetscript{
 
 					// register getter and setter
 					if(sf_getter != NULL){
-						Symbol *symbol_result =this_class->registerNativeMemberAttributeGetter(
+						Symbol *symbol_result =this_class->registerNativeGetterMemberAttribute(
 								symbol_src->name
 								,sf_getter->idx_return_type
 								,sf_getter->ref_native_function_ptr
@@ -364,7 +364,7 @@ namespace zetscript{
 
 					for(unsigned i=0; i < sf_setters->count; i++){
 						ScriptFunction *sf_setter=(ScriptFunction *)sf_setters->items[i];
-						Symbol *symbol_result = this_class->registerNativeMemberAttributeSetter(
+						Symbol *symbol_result = this_class->registerNativeSetterMemberAttribute(
 								symbol_src->name
 								,*((ScriptFunctionArg *)sf_setter->params->items[0])
 								,sf_setter->ref_native_function_ptr
@@ -474,7 +474,7 @@ namespace zetscript{
 		 * register attribute setter
 		 */
 		template <typename C,typename F>
-		void ScriptClassFactory::registerNativeMemberAttributeSetter(
+		void ScriptClassFactory::registerNativeSetterMemberAttribute(
 				const char *attr_name
 				,F ptr_function_setter
 				, const char *registered_file
@@ -488,7 +488,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 			}
 
-			c_class->registerNativeMemberAttributeSetter<F>(
+			c_class->registerNativeSetterMemberAttribute<F>(
 				 attr_name
 				,ptr_function_setter
 				,registered_file
@@ -500,7 +500,7 @@ namespace zetscript{
 		 * register attribute getter
 		 */
 		template <typename C,typename F>
-		void ScriptClassFactory::registerNativeMemberAttributeGetter(
+		void ScriptClassFactory::registerNativeGetterMemberAttribute(
 				const char *attr_name
 				,F ptr_function_getter
 				, const char *registered_file
@@ -514,7 +514,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 			}
 
-			c_class->registerNativeMemberAttributeGetter<F>(
+			c_class->registerNativeGetterMemberAttribute<F>(
 				 attr_name
 				,ptr_function_getter
 				,registered_file

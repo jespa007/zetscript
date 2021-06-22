@@ -244,6 +244,30 @@ namespace zetscript{
 		//---------------------------------------------
 		// DateTime
 		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("now",ScriptObjectDateTimeWrap_now);
+		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowUtc",ScriptObjectDateTimeWrap_nowUtc);
+
+		registerNativeMemberFunction<ScriptObjectDateTime>("_add",ScriptObjectDateTimeWrap_add);
+		registerNativeMemberFunction<ScriptObjectDateTime>("_sub",ScriptObjectDateTimeWrap_sub);
+
+		registerNativeMemberFunction<ScriptObjectDateTime>("addSeconds",ScriptObjectDateTimeWrap_addSeconds);
+		registerNativeMemberFunction<ScriptObjectDateTime>("addMinutes",ScriptObjectDateTimeWrap_addMinutes);
+		registerNativeMemberFunction<ScriptObjectDateTime>("addHours",ScriptObjectDateTimeWrap_addHours);
+		registerNativeMemberFunction<ScriptObjectDateTime>("addDays",ScriptObjectDateTimeWrap_addDays);
+		registerNativeMemberFunction<ScriptObjectDateTime>("addMonths",ScriptObjectDateTimeWrap_addMonths);
+		registerNativeMemberFunction<ScriptObjectDateTime>("addYears",ScriptObjectDateTimeWrap_addYears);
+
+
+		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("week_day",ScriptObjectDateTimeWrap_get_week_day);
+		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("month_day",ScriptObjectDateTimeWrap_get_month_day);
+		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("year_day",ScriptObjectDateTimeWrap_get_year_day);
+
+		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("second",ScriptObjectDateTimeWrap_get_second);
+		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("minute",ScriptObjectDateTimeWrap_get_minute);
+		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("hour",ScriptObjectDateTimeWrap_get_hour);
+
+		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("day",ScriptObjectDateTimeWrap_get_day);
+		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("month",ScriptObjectDateTimeWrap_get_month);
+		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("year",ScriptObjectDateTimeWrap_get_year);
 
 
 

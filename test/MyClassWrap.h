@@ -7,21 +7,21 @@ MyClass *MyClassWrap_new(){
 
 //--------------------------------------------------------
 // GET/SET for data1 (read & write)
-void MyClassWrap_data1_set(MyClass *_this, zs_int v){
+void MyClassWrap_set_data1(MyClass *_this, zs_int v){
 	_this->data1=v;
 }
 
-zs_int MyClassWrap_data1_get(MyClass *_this){
+zs_int MyClassWrap_get_data1(MyClass *_this){
 	return _this->data1;
 }
 //--------------------------------------------------------
 // GET for data2 (only read)
-zs_int MyClassWrap_data2_get(MyClass *_this){
+zs_int MyClassWrap_get_data2(MyClass *_this){
 	return _this->data2;
 }
 //--------------------------------------------------------
 // SET for data3 (only write)
-void MyClassWrap_data3_set(MyClass *_this, zs_int v){
+void MyClassWrap_set_data3(MyClass *_this, zs_int v){
 	_this->data3=v;
 }
 

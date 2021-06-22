@@ -21,155 +21,91 @@ namespace zetscript{
 
 	}
 
+	//----------------------------
+
 	ScriptObjectDateTime::ScriptObjectDateTime(){
 		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME;
-		//now_tm=gmtime(NULL);
-	    time_t t = time(0);   // get time now
-	    struct tm * now = localtime( & t );
-
-		_second=now->tm_sec;
-		_minute=now->tm_min;
-		_hour=now->tm_hour;
-
-		_day=now->tm_mday;
-		_month=now->tm_mon;
-		_year=now->tm_year;
-
-		  //struct tm* now_tm;
 	}
 
-	bool ScriptObjectDateTime::isValid() const
+
+	void ScriptObjectDateTime::addSeconds(int _seconds)
 	{
-		if(_month < MIN_MONTH || _month > MAX_MONTH)
-		    {
-		        std::cerr << "Invalid date " << std::endl;
-		        return false;
-		    }
-		    int daysThisMonth = maxDay(_month, _year);
-
-		    if(_day < MIN_DAY || _day > daysThisMonth)
-		    {
-		        std::cerr << "Invalid date " << std::endl;
-		        return false;
-
-		    }
-
-
-		    return true;
+		datetime.add_seconds(_seconds);
 	}
 
-	bool ScriptObjectDateTime::isLeapYear(int year)
+	void ScriptObjectDateTime::addMinutes(int _minutes)
 	{
-		return ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
+		datetime.add_minutes(_minutes);
 	}
 
-	bool ScriptObjectDateTime::isLeapYear() const
+	void ScriptObjectDateTime::addHours(int _hours)
 	{
-	    return isLeapYear(_year);
+		datetime.add_hours(_hours);
 	}
 
-	bool ScriptObjectDateTime::isLeapDay() const
+
+	void ScriptObjectDateTime::addDays(int _days)	{
+		datetime.add_days(_days);
+	}
+
+	void ScriptObjectDateTime::addMonths(int _months)
 	{
-	    return isLeapDay(_day, _month, _year);
+		datetime.add_months(_months);
 	}
 
-
-
-	int ScriptObjectDateTime::maxDay(int month, int year)
+	void ScriptObjectDateTime::addYears(int _years)
 	{
-		if(month == 0 || month == 2 || month == 4 || month == 6 || month == 7 || month == 9 || month == 11){
-		        return 31;
-		}else if(month == 3 || month == 5 || month == 8 || month == 10){
-				return 30;
-		}else if (isLeapYear(year)){
-				return 29;
-		}
-		return 28;
+		datetime.add_months(_years);
 	}
 
-	void ScriptObjectDateTime::addSeconds(int nb_seconds)
+
+	int ScriptObjectDateTime::getWeekDay() const
 	{
-		struct tm *tm_new_time;
-		//errno_t err;
-		time_t new_seconds = mktime(timeInfo) + nb_seconds;
-		delete timeInfo;
-
-		tm_new_time = localtime(&new_seconds);
-
-		timeInfo = new tm();
-		_copy_from(tm_new_time);
+		return datetime.get_week_day();
 	}
 
-
-	void ScriptObjectDateTime::addDays(int nb_days)	{
-		addSeconds(nb_days * ONE_DAY_SECS);
-	}
-
-
-	bool ScriptObjectDateTime::isLeapDay(int day, int month, int year)
+	int ScriptObjectDateTime::getMonthDay() const
 	{
-		return day == 29 && month == 1 && isLeapYear(year);
+		return datetime.get_month_day();
+	}
+
+	int ScriptObjectDateTime::getYearDay() const{
+		return datetime.get_year_day();
 	}
 
 
-	void ScriptObjectDateTime::addYears(int years)
+	int ScriptObjectDateTime::getSecond() const
 	{
-		addDays(ONE_YEAR_DAYS*years);
+		return datetime.get_second();
 	}
 
-	void ScriptObjectDateTime::addMonths(int months)
+	int ScriptObjectDateTime::getMinute() const{
+		return datetime.get_minute();
+	}
+
+	int ScriptObjectDateTime::getHour() const{
+		return datetime.get_hour();
+	}
+
+	int ScriptObjectDateTime::getDay() const
 	{
-		if (months == 0) return;
-
-		int deltayears = months/12;
-		int deltamonths = months % 12;
-		int newmonth=0;
-		if (months > 0)
-		{
-			if (_month + deltamonths > 12)
-			{
-				++deltayears;
-				newmonth = (_month + deltamonths) - 12;
-			}
-			else
-			{
-				newmonth = _month + deltamonths;
-			}
-		}
-		else //months is negative
-		{
-			if (_month + deltamonths < 1)
-			{
-				--deltayears;
-				newmonth = _month + deltamonths + 12;
-			}
-			else
-			{
-				newmonth = _month + deltamonths;
-			}
-		}
-		if (_day > maxDay(newmonth, _year + deltayears))
-		{
-			_day = maxDay(_month,_year);
-		}
-		_year = _year + deltayears;
-		_month = newmonth;
+		return datetime.get_day();
 	}
 
-	void ScriptObjectDateTime::addDays(int days)
-	{//the code below was done by me
-		/*if(days < 0)
-		{
-			for (count = -1; count--)
-			{
-				addDay(today, false)
-			}
-		}
-		else
-			for (count = 1; count++)
-			{
-				addDay(today, true)
-			}*/
+	int ScriptObjectDateTime::getMonth() const{
+		return datetime.get_month();
+	}
+
+	int ScriptObjectDateTime::getYear() const{
+		return datetime.get_year();
+	}
+
+	std::string ScriptObjectDateTime::toString(const std::string & _format){
+		return datetime.to_string(_format);
+	}
+
+	std::string ScriptObjectDateTime::toString(){
+		return datetime.to_string();
 	}
 
 }

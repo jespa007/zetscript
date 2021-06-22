@@ -9,6 +9,9 @@
 #include 		"util/zs_map.cpp"
 #include 		"util/zs_map_iterator.cpp"
 #include 		"util/zs_dir.cpp"
+#include 		"util/zs_timespan.cpp"
+#include 		"util/zs_datetime.cpp"
+
 
 #include		"exception.cpp"
 #include 		"Symbol.cpp"

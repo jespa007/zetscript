@@ -107,7 +107,7 @@ namespace zetscript{
 		//---------------
 		// SETTER
 
-		/*Symbol				* 	registerMemberAttributeSetter(
+		/*Symbol				* 	registerSetterMemberAttribute(
 			std::string & error
 			,const char * file
 			,short line
@@ -115,7 +115,7 @@ namespace zetscript{
 			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 		);*/
 
-		Symbol				* 	registerNativeMemberAttributeSetter(
+		Symbol				* 	registerNativeSetterMemberAttribute(
 			const std::string & attribute_name
 			, ScriptFunctionArg arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
@@ -129,7 +129,7 @@ namespace zetscript{
 		 * register C setter
 		 */
 		template <typename F>
-		void registerNativeMemberAttributeSetter(
+		void registerNativeSetterMemberAttribute(
 				const char *attrib_name
 				,F ptr_function
 				, const char *registered_file=""
@@ -139,7 +139,7 @@ namespace zetscript{
 		//---------------
 		// GETTER
 
-		/*Symbol				* 	registerMemberAttributeGetter(
+		/*Symbol				* 	registerGetterMemberAttribute(
 			std::string & error
 			,const char * file
 			,short line
@@ -147,7 +147,7 @@ namespace zetscript{
 			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 		);*/
 
-		Symbol				* 	registerNativeMemberAttributeGetter(
+		Symbol				* 	registerNativeGetterMemberAttribute(
 			const std::string & attribute_name
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
@@ -161,7 +161,7 @@ namespace zetscript{
 		 * register C getter
 		 */
 		template <typename F>
-		void registerNativeMemberAttributeGetter(
+		void registerNativeGetterMemberAttribute(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file

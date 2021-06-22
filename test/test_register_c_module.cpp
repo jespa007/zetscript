@@ -23,14 +23,14 @@ int main(){
 	/*zs->registerClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
 
 	// register data1 named data1 in script side as variable member and read/write.
-	zs->registerMemberAttributeSetter<MyClass>("data1",&MyClassWrap_data1_set);
-	zs->registerMemberAttributeGetter<MyClass>("data1",&MyClassWrap_data1_get);
+	zs->registerSetterMemberAttribute<MyClass>("data1",&MyClassWrap_data1_set);
+	zs->registerGetterMemberAttribute<MyClass>("data1",&MyClassWrap_data1_get);
 
 	// register data2 named data1 in script side as variable member (only read).
-	zs->registerMemberAttributeGetter<MyClass>("data2",&MyClassWrap_data2_get);
+	zs->registerGetterMemberAttribute<MyClass>("data2",&MyClassWrap_data2_get);
 
 	// register data1 named data1 in script side as variable member (only write).
-	zs->registerMemberAttributeSetter<MyClass>("data3",&MyClassWrap_data3_set);
+	zs->registerSetterMemberAttribute<MyClass>("data3",&MyClassWrap_data3_set);
 
 	// register function0 named function1 in script side as function member.*/
 	/*zs->registerNativeMemberFunction<MyClass>("function0",&MyClass::function0);

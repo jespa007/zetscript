@@ -17,38 +17,34 @@ namespace zetscript{
 
 		ScriptObjectDateTime();
 
-		bool isValid() const;
-
-		bool isLeapYear() const;
-		bool isLeapDay() const;
-
-		int getYear() const {if(isValid() == false){} return _year;}
-		int getMonth() const {if(isValid() == false){} return _month;}
-		int getDay() const {if(isValid() == false){} return _day;}
 
 
-		void addDay(bool forward);
-
-
-
-		void addYears(int years);
-		void addMonths(int months);
+		void addSeconds(int _seconds);
+		void addMinutes(int _minutes);
+		void addHours(int _hours);
 		void addDays(int days);
+		void addMonths(int months);
+		void addYears(int years);
+
+		int getWeekDay() const;
+		int getMonthDay() const;
+		int getYearDay() const;
+
+		int getSecond() const;
+		int getMinute() const;
+		int getHour() const;
+		int getDay() const;
+		int getMonth() const;
+		int getYear() const;
+
+		std::string toString(const std::string & _format);
+		virtual std::string toString();
 
 	protected:
 
-		int _second;
-		int _minute;
-		int _hour;
+		zs_datetime datetime;
 
-		int _year;
-		int _month;
-		int _day;
-		static const std::string MONTH_STRINGS[];
-		static const int DAYS_PER_MONTH[];
-		static const int MIN_MONTH = 1;
-		static const int MAX_MONTH = 12;
-		static const int MIN_DAY = 1;
+		bool isLeapYear() const;
 	};
 
 }

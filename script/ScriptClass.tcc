@@ -78,7 +78,7 @@ namespace zetscript{
 	 * register C setter
 	 */
 	template <typename F>
-	void ScriptClass::registerNativeMemberAttributeSetter(
+	void ScriptClass::registerNativeSetterMemberAttribute(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -94,7 +94,7 @@ namespace zetscript{
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
 
-		Symbol *symbol_result = registerNativeMemberAttributeSetter(
+		Symbol *symbol_result = registerNativeSetterMemberAttribute(
 				attrib_name
 				,arg_info[0]
 				,(zs_int)ptr_function
@@ -108,7 +108,7 @@ namespace zetscript{
 	 * register C getter
 	 */
 	template <typename F>
-	void ScriptClass::registerNativeMemberAttributeGetter(
+	void ScriptClass::registerNativeGetterMemberAttribute(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -124,7 +124,7 @@ namespace zetscript{
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
 
-		Symbol *symbol_result = registerNativeMemberAttributeGetter(
+		Symbol *symbol_result = registerNativeGetterMemberAttribute(
 				 attrib_name
 				,idx_return_type
 				,(zs_int)ptr_function

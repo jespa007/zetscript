@@ -79,6 +79,8 @@
 #include "util/zs_map_iterator.h"
 #include "util/zs_map.h"
 #include "util/zs_dir.h"
+#include "util/zs_timespan.h"
+#include "util/zs_datetime.h"
 
 #include "exception.h"
 #include "ByteCode.h"
@@ -135,8 +137,8 @@
 #define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)		(zs)->registerMemberFunctionStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)			(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)			(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributeSetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributeGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)	(zs)->registerSetterMemberAttribute<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)	(zs)->registerGetterMemberAttribute<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_BIND_SCRIPT_FUNCTION(zs,_T,access_name)						(zs)->bindScriptFunction<_T>(access_name, __FILE__, __LINE__)
 #define	ZS_UNREF_LIFETIME_OBJECT(zs,so)									(zs)->unrefLifetimeObject(so);
 
@@ -332,23 +334,23 @@ namespace zetscript{
 
 
 		template <typename C,typename F>
-		void	registerMemberAttributeSetter(
+		void	registerSetterMemberAttribute(
 				const char *attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberAttributeSetter<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeSetterMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberAttributeGetter(
+		void	registerGetterMemberAttribute(
 				const char *attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberAttributeGetter<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeGetterMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		/**

@@ -172,22 +172,22 @@ namespace zetscript{
 		);
 
 		template <typename C,typename F>
-		void registerNativeMemberAttributeSetter(
+		void registerNativeSetterMemberAttribute(
 				const char *attr_name
 				,F ptr_function_setter
-				, const char *registered_file
-				,short registered_line
+				, const char *registered_file=""
+				,short registered_line=-1
 		);
 
 		/*
 		 * register attribute getter
 		 */
 		template <typename C,typename F>
-		void registerNativeMemberAttributeGetter(
+		void registerNativeGetterMemberAttribute(
 				const char *attr_name
 				,F ptr_function_getter
-				, const char *registered_file
-				,short registered_line
+				, const char *registered_file=NULL
+				,short registered_line=-1
 		);
 
 

@@ -201,7 +201,9 @@ ELSE()
  		util/zs_strutils.cpp
  		util/zs_vector.cpp
  		util/zs_map.cpp
- 		util/zs_uuid.cpp
+ 		util/zs_timespan.cpp
+		util/zs_datetime.cpp
+ 		
  		
  		# Modules
  		modules/ModuleMathWrap.cpp
@@ -316,6 +318,9 @@ ELSE()
  		util/zs_map.h
  		util/zs_uuid.h
  		util/zs_map_iterator.h
+ 		util/zs_timespan.h
+		util/zs_datetime.h
+ 		
  		
  		# extra
 		modules/ModuleMathWrap.h
