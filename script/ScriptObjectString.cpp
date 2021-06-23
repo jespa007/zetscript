@@ -7,6 +7,12 @@
 
 namespace zetscript{
 
+/*	typedef struct{
+		int index;
+		int alignment;
+		const char *format_string;
+	}FormatItem;*/
+
 	//----------------------------------------------
 	//
 	// Helpers
@@ -107,8 +113,10 @@ namespace zetscript{
 
 	ScriptObjectString * ScriptObjectString::format(ZetScript *zs, StackElement *str, StackElement *args){
 		// transform '\"' to '"','\n' to carry returns, etc
-		std::string first_param=zs_strutils::unescape(str->toString());
+		std::string str_input=zs_strutils::unescape(str->toString());
 		ScriptObjectVector *sov=NULL;
+		std::string str_num_aux;
+		zs_int *ptr_idx_num=NULL;
 
 		if(args->properties & STK_PROPERTY_PTR_STK){
 			args=(StackElement *)args->value;
@@ -122,13 +130,102 @@ namespace zetscript{
 		}
 
 		if(sov != NULL){
-			for(unsigned i=0; i < sov->length(); i++){
-				first_param=zs_strutils::replace(first_param,zs_strutils::format("{%i}",i),sov->getUserElementAt(i)->toString());
+			// Tokenize all formatting items...
+			char *str_begin=(char *)str_input.c_str();
+
+			while((str_begin=strchr(str_begin,'{'))!=NULL){
+
+				str_begin=str_begin+1; // ignore '{'
+				char *str_end=strchr(str_begin,'}');
+
+				if(str_end != NULL){ // analize...
+
+					str_num_aux="";
+					char *str_begin_alignment=strchr(str_begin,',');
+					char *str_begin_format_string=strchr(str_begin,':');
+					char *str_end_index=NULL;
+					char *str_end_aligment=NULL;
+					int idx_num=-1;
+					int alignmen=-1;
+					char *format_string=NULL;
+
+					if(str_begin_alignment == NULL && str_begin_format_string==NULL){ // no aligment/no format string
+						str_end_index=str_end;
+					}else if(str_begin_alignment!=NULL && str_begin_format_string == NULL){ // aligment/no format string
+						str_end_index=str_begin_alignment;
+						str_end_aligment=str_end;
+					}else if(str_begin_alignment==NULL && str_begin_format_string != NULL){ // no aligment/ format string
+						str_end_index=str_begin_format_string;
+					}else if(str_begin_alignment < str_begin_format_string){ // aligment/ format string
+						str_end_index=str_begin_alignment;
+						str_end_aligment=str_begin_format_string;
+					}
+
+
+					if(str_end_index!=NULL){ // index was found
+
+						// try to convert str to index...
+						for(;str_begin<str_end_index;){
+							str_num_aux+=*str_begin++;
+						}
+
+						if((ptr_idx_num=zs_strutils::parse_int(str_num_aux))!=NULL){
+							idx_num=*ptr_idx_num;
+							delete ptr_idx_num;
+							ptr_idx_num=NULL;
+
+							// get alignment ...
+							if(str_begin_alignment != NULL && str_end_aligment !=NULL){
+								str_num_aux="";
+								str_begin_alignment=str_begin_alignment+1;
+								// try to convert str to index...
+								for(;str_begin_alignment<str_end_aligment;){
+									str_num_aux+=*str_begin_alignment++;
+								}
+
+								if((ptr_idx_num=zs_strutils::parse_int(str_num_aux))!=NULL){
+									alignmen=*ptr_idx_num;
+									delete ptr_idx_num;
+									ptr_idx_num=NULL;
+								}
+							}
+
+							// finally get the format ...
+							if(str_begin_format_string != NULL){
+								str_begin_format_string=str_begin_format_string+1;
+								size_t format_len=str_end-str_begin_format_string;
+								if(format_len>0){
+									format_string=(char *)malloc(format_len*sizeof(char)+1);
+									memset(format_string,0,format_len*sizeof(char)+1);
+									strncpy(format_string,str_begin_format_string,format_len);
+								}
+							}
+
+
+							if(idx_num >=0 ){
+
+								/*FormatItem *item=(FormatItem *)malloc(sizeof(FormatItem));
+								item->index=idx_num;*/
+								printf("idx=>[%i] aligment=>[%i] format=>[%s]\n",idx_num,alignmen,format_string==NULL?"":format_string);
+
+								if(format_string != NULL){
+									free(format_string);
+								}
+							}
+						}
+					}
+					str_begin = str_end+1;
+				}
 			}
+
+			/*for(unsigned i=0; i < sov->length(); i++){
+
+				//first_param=zs_strutils::replace(first_param,zs_strutils::format("{%i}",i),sov->getUserElementAt(i)->toString());
+			}*/
 		}
 		//ScriptObjectString *str_in=(ScriptObjectString *)(str->var_ref);
 		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(zs);
-		str_out->set(first_param);//str_in->default_str_value;
+		str_out->set(str_input);//str_in->default_str_value;
 		return str_out;
 	}
 

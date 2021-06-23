@@ -29,63 +29,63 @@ namespace zetscript{
 	}
 
 	void 					ScriptObjectDateTimeWrap_addSeconds(ScriptObjectDateTime *_this,zs_int _seconds){
-		_this->addSeconds(_seconds);
+		_this->datetime.add_seconds(_seconds);
 	}
 
 	void 					ScriptObjectDateTimeWrap_addMinutes(ScriptObjectDateTime *_this,zs_int _minutes){
-		_this->addMinutes(_minutes);
+		_this->datetime.add_minutes(_minutes);
 	}
 
 	void 					ScriptObjectDateTimeWrap_addHours(ScriptObjectDateTime *_this,zs_int _hours){
-		_this->addHours(_hours);
+		_this->datetime.add_hours(_hours);
 	}
 
 	void 					ScriptObjectDateTimeWrap_addDays(ScriptObjectDateTime *_this,zs_int _days){
-		_this->addDays(_days);
+		_this->datetime.add_days(_days);
 	}
 
 	void 					ScriptObjectDateTimeWrap_addMonths(ScriptObjectDateTime *_this,zs_int _months){
-		_this->addMonths(_months);
+		_this->datetime.add_months(_months);
 	}
 
 	void 					ScriptObjectDateTimeWrap_addYears(ScriptObjectDateTime *_this,zs_int _years){
-		_this->addYears(_years);
+		_this->datetime.add_years(_years);
 	}
 
 	zs_int 					ScriptObjectDateTimeWrap_get_week_day(ScriptObjectDateTime *_this){
-		return  _this->getWeekDay();
+		return  _this->datetime.get_week_day();
 	}
 
 	zs_int 					ScriptObjectDateTimeWrap_get_month_day(ScriptObjectDateTime *_this){
-		return  _this->getMonthDay();
+		return  _this->datetime.get_month_day();
 	}
 
 	zs_int 					ScriptObjectDateTimeWrap_get_year_day(ScriptObjectDateTime *_this){
-		return  _this->getYearDay();
+		return  _this->datetime.get_year_day();
 	}
 
 	zs_int 					ScriptObjectDateTimeWrap_get_second(ScriptObjectDateTime *_this){
-		return  _this->getSecond();
+		return  _this->datetime.get_second();
 	}
 
 	zs_int 					ScriptObjectDateTimeWrap_get_minute(ScriptObjectDateTime *_this){
-		return  _this->getMinute();
+		return  _this->datetime.get_minute();
 	}
 
 	zs_int 					ScriptObjectDateTimeWrap_get_hour(ScriptObjectDateTime *_this){
-		return  _this->getHour();
+		return  _this->datetime.get_hour();
 	}
 
 
 	zs_int 					ScriptObjectDateTimeWrap_get_day(ScriptObjectDateTime *_this){
-		return  _this->getDay();
+		return  _this->datetime.get_day();
 	}
 
 	zs_int 					ScriptObjectDateTimeWrap_get_month(ScriptObjectDateTime *_this){
-		return  _this->getMonth();
+		return  _this->datetime.get_month();
 	}
 
 	zs_int 					ScriptObjectDateTimeWrap_get_year(ScriptObjectDateTime *_this){
-		return  _this->getYear();
+		return  _this->datetime.get_year();
 	}
 }
