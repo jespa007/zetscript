@@ -58,6 +58,7 @@ namespace zetscript{
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR:
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR:
+				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME:
 					 if(ptr_var==0) return stk_result;
 					stk_result = {
 						 (void *)ptr_var
@@ -68,7 +69,7 @@ namespace zetscript{
 				 default:
 					 //if(ptr_var==0) return stk_result;
 					 stk_result = {
-							  script_class_factory->instanceScriptObjectClassByIdx(idx_builtin_type_var,(void *)ptr_var)
+							  script_class_factory->instanceScriptObjectByClassIdx(idx_builtin_type_var,(void *)ptr_var)
 							 ,STK_PROPERTY_SCRIPT_OBJECT
 					 };
 					 break;

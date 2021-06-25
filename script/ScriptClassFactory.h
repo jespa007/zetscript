@@ -6,7 +6,7 @@
 
 
 #define IDX_SCRIPT_CLASS_MAIN							0
-#define NEW_CLASS_VAR_BY_IDX(data,idx)					((data->script_class_factory)->instanceScriptObjectClassByIdx(idx))
+#define NEW_OBJECT_VAR_BY_CLASS_IDX(data,idx)			((data->script_class_factory)->instanceScriptObjectByClassIdx(idx))
 #define GET_SCRIPT_CLASS(data,idx_or_name)				((data->script_class_factory)->getScriptClass(idx_or_name))
 #define GET_SCRIPT_CLASS_NAME(data,idx) 				((data->script_class_factory)->getScriptClassName(idx))
 #define SCRIPT_CLASS_MAIN(data)							((data->script_class_factory)->getScriptClass(IDX_BUILTIN_TYPE_MAIN))    // 0 is the main class
@@ -71,8 +71,8 @@ namespace zetscript{
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
-		ScriptObjectClass 			* 			instanceScriptObjectClassByClassName(const std::string & class_name);
-		ScriptObjectClass 			* 			instanceScriptObjectClassByIdx(short  idx_class, void * value_object = NULL);
+		ScriptObject 			* 			instanceScriptObjectByClassName(const std::string & class_name);
+		ScriptObject 			* 			instanceScriptObjectByClassIdx(short  idx_class, void * value_object = NULL);
 
 		void 							registerNativeBaseSymbols(bool _register);
 

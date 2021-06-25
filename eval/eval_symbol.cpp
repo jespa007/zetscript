@@ -30,7 +30,7 @@ namespace zetscript{
 				 ,default_str_value
 		))!=NULL){ // int/bool/float, etc
 
-			if((const_obj=zs_strutils::parse_int(default_str_value))!=NULL){ // int literal
+			if((const_obj=zs_strutils::parse_zs_int(default_str_value))!=NULL){ // int literal
 				value = *((zs_int *)const_obj);
 				if(pre_operation==PreOperation::PRE_OPERATION_NEG){
 					pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
@@ -40,7 +40,7 @@ namespace zetscript{
 				delete (zs_int *)const_obj;
 				byte_code = ByteCode::BYTE_CODE_LOAD_ZS_INT;
 
-			}else if((const_obj=zs_strutils::parse_float(default_str_value))!=NULL){ // float literal
+			}else if((const_obj=zs_strutils::parse_zs_float(default_str_value))!=NULL){ // float literal
 				zs_float value_flt = *((zs_float *)const_obj);
 
 				if(pre_operation==PreOperation::PRE_OPERATION_NEG){

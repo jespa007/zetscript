@@ -119,7 +119,7 @@ namespace zetscript{
 			const std::string & attribute_name
 			, ScriptFunctionArg arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_properties
+			,unsigned short symbol_getter_function_properties
 			,const char * file=""
 			,short line=-1
 
@@ -151,7 +151,7 @@ namespace zetscript{
 			const std::string & attribute_name
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_properties
+			,unsigned short symbol_getter_function_properties
 			,const char * file=""
 			,short line=-1
 

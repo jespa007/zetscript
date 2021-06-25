@@ -15,6 +15,7 @@ namespace zetscript{
 		ScriptObjectDateTime();
 
 		virtual std::string toString();
+		std::string toString(const std::string & _format);
 
 	protected:
 

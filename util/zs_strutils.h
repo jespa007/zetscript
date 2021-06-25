@@ -36,12 +36,12 @@ namespace zetscript{
 		}NumberType;
 
 		 bool  		* parse_bool(const std::string & );
-		 zs_int		* parse_int(const std::string & );
-		 zs_float	* parse_float(const std::string & );
+		 zs_int		* parse_zs_int(const std::string & );
+		 zs_float	* parse_zs_float(const std::string & );
 
 
-		 std::string zs_int_to_str(zs_int number);
-		 std::string float_to_str(zs_float number);
+		 std::string zs_int_to_str(zs_int _number, const std::string & _format = "");
+		 std::string zs_float_to_str(zs_float _number, const std::string & _format = "");
 		 std::string to_lower(const std::string & str);
 		 std::string to_upper(const std::string & str);
 		 std::wstring to_wstring(const std::string &s);

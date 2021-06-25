@@ -90,7 +90,7 @@ namespace zetscript{
 
 	zs_float parseFloat(std::string  *number_str){
 		zs_float result=0;
-		zs_float *result_ptr=zs_strutils::parse_float(*number_str);
+		zs_float *result_ptr=zs_strutils::parse_zs_float(*number_str);
 
 		if(result_ptr != NULL){
 			result=*result_ptr;
@@ -107,7 +107,7 @@ namespace zetscript{
 
 	zs_int parseInteger(std::string  *number_str){
 		zs_int result=0;
-		zs_int *result_ptr=zs_strutils::parse_int(*number_str);
+		zs_int *result_ptr=zs_strutils::parse_zs_int(*number_str);
 		if(result_ptr!=NULL){
 			result=*result_ptr;
 			delete result_ptr;
@@ -203,7 +203,7 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// String
-		registerNativeMemberFunctionStatic<ScriptObjectString>("format_native",ScriptObjectString::format);
+		registerNativeMemberFunctionStatic<ScriptObjectString>("formatNative",ScriptObjectString::format);
 		registerNativeMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectStringWrap_eraseAt);
 		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
 		registerNativeMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);
@@ -243,8 +243,8 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// DateTime
-		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("now",ScriptObjectDateTimeWrap_now);
-		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowUtc",ScriptObjectDateTimeWrap_nowUtc);
+		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowNative",ScriptObjectDateTimeWrap_now);
+		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowUtcNative",ScriptObjectDateTimeWrap_nowUtc);
 
 		registerNativeMemberFunction<ScriptObjectDateTime>("_add",ScriptObjectDateTimeWrap_add);
 		registerNativeMemberFunction<ScriptObjectDateTime>("_sub",ScriptObjectDateTimeWrap_sub);
@@ -528,32 +528,51 @@ namespace zetscript{
 		return getIdxScriptClassInternal(v) != ZS_IDX_UNDEFINED;
 	}
 
-	ScriptObjectClass *		ScriptClassFactory::instanceScriptObjectClassByClassName(const std::string & class_name){
+	ScriptObject *		ScriptClassFactory::instanceScriptObjectByClassName(const std::string & class_name){
 		 // 0. Search class info ...
 		 ScriptClass * rc = getScriptClass(class_name);
 
 		 if(rc != NULL){
-			 return instanceScriptObjectClassByIdx(rc->idx_class);
+			 return instanceScriptObjectByClassIdx(rc->idx_class);
 		 }
 		 return NULL;
 	 }
 
-	 ScriptObjectClass 		 * ScriptClassFactory::instanceScriptObjectClassByIdx(short idx_class, void * value_object){
+	 ScriptObject 		 * ScriptClassFactory::instanceScriptObjectByClassIdx(short idx_class, void * value_object){
 
-		 ScriptObjectClass *so=NULL;
+		 ScriptObject *so=NULL;
 
 		 // 0. Search class info ...
 		 ScriptClass *rc = getScriptClass(idx_class);
 
 		 if(rc != NULL){
 			 // Is a primitive ?
-			if(rc->idx_class > IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
-				 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
-				 so = ScriptObjectClass::newScriptObjectClass(zs,rc->idx_class, value_object);
-			}else{
-				 THROW_RUNTIME_ERROR("Internal error: An idx class was expected but it was %i",rc->idx_class);
-				 return NULL;
-			 }
+			switch(rc->idx_class){
+			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING: // "String"
+				so=ScriptObjectString::newScriptObjectString(zs);
+				break;
+			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR: // Vector []
+				so=ScriptObjectVector::newScriptObjectVector(zs);
+				break;
+			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME: // DateTime
+				so=ScriptObjectDateTime::newScriptObjectDateTime(zs);
+				break;
+			// Object & class
+			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT: //  Object {}
+				so=ScriptObjectObject::newScriptObjectObject(zs);
+				break;
+
+			default:
+
+				if(rc->idx_class > IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
+					 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
+					 so = ScriptObjectClass::newScriptObjectClass(zs,rc->idx_class, value_object);
+				}else{
+					 THROW_RUNTIME_ERROR("Internal error: An idx class was expected but it was %i",rc->idx_class);
+					 return NULL;
+				 }
+				break;
+		 	 }
 		 }
 		 return so;
 	 }

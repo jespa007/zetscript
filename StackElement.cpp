@@ -49,7 +49,7 @@ namespace zetscript{
 		return result;
 	}
 
-	std::string StackElement::toString(){
+	std::string StackElement::toString(const std::string & _format ){
 		std::string result="null";
 		StackElement *stk=this;
 
@@ -60,9 +60,9 @@ namespace zetscript{
 		if((stk->properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C))
 			result= (const char *)stk->value;
 		else if(STK_VALUE_IS_ZS_INT(stk))
-			result= zs_strutils::zs_int_to_str((zs_int)stk->value);
+			result= zs_strutils::zs_int_to_str((zs_int)stk->value,_format);
 		else if(STK_VALUE_IS_ZS_FLOAT(stk))
-			result= zs_strutils::float_to_str(*((zs_float *)&stk->value));
+			result= zs_strutils::zs_float_to_str(*((zs_float *)&stk->value));
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result= stk->value?"true":"false";
 		else if(STK_VALUE_IS_FUNCTION(stk))
@@ -74,7 +74,15 @@ namespace zetscript{
 				stk=(StackElement *)stk->value;
 			}
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				result=((ScriptObject *)stk->value)->toString();
+				ScriptObject *so=(ScriptObject *)stk->value;
+				switch(so->idx_script_class){
+				case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME:
+					result=((ScriptObjectDateTime *)so)->toString(_format);
+					break;
+				default:
+					result=so->toString();
+					break;
+				}
 			}
 		}
 

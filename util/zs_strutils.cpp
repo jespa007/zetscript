@@ -13,7 +13,7 @@ namespace zetscript{
 			return std::string(_sformat_buffer);
 		}
 
-		zs_int *  parse_int(const std::string & val){
+		zs_int *  parse_zs_int(const std::string & val){
 			zs_int *n=NULL;
 			NumberType number_type = is_number(val);
 			zs_int value=0;
@@ -57,7 +57,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		zs_float *  parse_float(const std::string & s){
+		zs_float *  parse_zs_float(const std::string & s){
 
 			char *end;
 			char *data=(char *)s.c_str();
@@ -79,27 +79,22 @@ namespace zetscript{
 			return new zs_float(l);
 		}
 
-		std::string zs_int_to_str(zs_int number){
+		std::string zs_int_to_str(zs_int _number, const std::string & _format){
 
 			std::string result="0";
 			bool negative=false;
 
-			if(number < 0){
+			if(_number < 0){
 				negative=true;
-				number=-number;
+				_number=-_number;
 			}
 
-			if(number != 0){
+			if(_number != 0){
 				result="";
-				while(number != 0){
-					result+=((number%10)+'0');
-					number*=0.1;
+				while(_number != 0){
+					result+=((_number%10)+'0');
+					_number*=0.1;
 				}
-			}
-
-			// is negative ?
-			if(negative){
-				result+="-";
 			}
 
 			// reverse result
@@ -111,15 +106,43 @@ namespace zetscript{
 				result[i]=aux1;
 			}
 
+			// check format ...
+			if(_format.size()>0){
+				std::string sf=zs_strutils::to_lower(_format);
+				char *it_str=(char *)sf.c_str();
+
+				if(*it_str == 'd'){ // decimal
+					zs_int *zs_int_aux=NULL;
+					zs_int num_zeros=0;
+					if((zs_int_aux=parse_zs_int(it_str+1))!=NULL){
+						num_zeros=*zs_int_aux;
+						delete zs_int_aux;
+						zs_int_aux=NULL;
+						int len=num_zeros-(int)result.length();
+
+						// append zeros to the beginning
+						for(int i=0; i < len; i++){
+							result="0"+result;
+						}
+					}
+					it_str++;
+				}
+			}
+
+			// is negative...
+			if(negative){
+				result="-"+result;
+			}
+
 		   return result;
 
 		}
 
-		std::string float_to_str(zs_float number){
+		std::string zs_float_to_str(zs_float _number, const std::string & _format){
 
 			char float_str[100];
 
-			sprintf(float_str,"%f",number);
+			sprintf(float_str,"%f",_number);
 
 		   return std::string(float_str);
 		}

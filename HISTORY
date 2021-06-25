@@ -181,7 +181,7 @@ Solved issues
 #223 get static function through class 
 #224 implement keyword static
 #215 Implement typeof operator
-> #227 implement DateTime class
+#227 implement DateTime class
 #229 Implement toJson(bool formated=false) for Vector and Object 
 #230 Control return ScriptObject[String] values that are not deallocated by user 
 #231 register class passing C function constructor and destructor
@@ -229,7 +229,7 @@ Solved issues
 #284 Seffault when native function returns object as NULL 
 #285 No finding static function 
 > #287 Some optimizations 
-> #288 ScriptStringObject::format: First implementation format argument with ':' 
+#288 ScriptStringObject::format: First implementation format argument with ':' 
 > #289 Example bind "object" from C code
 
 //----------------------------------------------------------

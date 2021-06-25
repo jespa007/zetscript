@@ -65,7 +65,11 @@ namespace zetscript{
 			// pre-register built-in members...
 			for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
 				Symbol * symbol = (Symbol *)script_class->symbol_members->items[i];
-				addBuiltinProperty(symbol->name.c_str(),{new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr),STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION});
+				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+					addBuiltinProperty(symbol->name.c_str(),{new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr),STK_PROPERTY_MEMBER_ATTRIBUTE});
+				}else{
+					addBuiltinProperty(symbol->name.c_str(),{new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr),STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION});
+				}
 			}
 		}
 

@@ -15,6 +15,7 @@ namespace zetscript{
 
 	ScriptObjectDateTime * 	ScriptObjectDateTimeWrap_nowUtc(ZetScript *_zs){
 		ScriptObjectDateTime *dt=ScriptObjectDateTime::newScriptObjectDateTime(_zs);
+		dt->datetime.set_utc();
 		return dt;
 	}
 

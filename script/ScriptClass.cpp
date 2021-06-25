@@ -201,13 +201,22 @@ namespace zetscript{
 			const std::string & attribute_name
 			, ScriptFunctionArg arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_properties
+			,unsigned short symbol_getter_function_properties
 			,const char * file
 			,short line
 
 
 	){
-		return NULL;
+		Symbol *symbol_attrib=NULL;
+		MemberAttribute *ma=NULL;
+
+		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		}
+
+		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
+
+		return symbol_attrib;
 		/*return registerInternalMemberFunction(
 				error
 				, file
@@ -235,12 +244,44 @@ namespace zetscript{
 			 const std::string & attribute_name
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_properties
+			,unsigned short symbol_getter_function_properties
 			,const char *file
 			,short line
 
 	){
-		return NULL;
+
+		Symbol *symbol_attrib=NULL;
+		Symbol *symbol_function=NULL;
+
+		MemberAttribute *ma=NULL;
+		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		}
+
+		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
+
+		if(ma->getter != NULL){
+
+			THROW_RUNTIME_ERROR(file,line,"Attribute \"%s\" has already a getter"
+				,attribute_name.c_str()
+			);
+		}
+
+
+		symbol_function=registerNativeMemberFunction(
+				attribute_name+"@_get",
+				std::vector<ScriptFunctionArg>{},
+				idx_return_type,
+				ref_ptr,
+				symbol_getter_function_properties,
+				file,
+				line
+		);
+
+		ma->getter=(ScriptFunction *)symbol_function->ref_ptr;
+
+
+		return symbol_attrib;
 		/*return registerInternalMemberFunction(
 				error
 				, file

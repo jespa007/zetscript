@@ -73,7 +73,7 @@ namespace zetscript{
 			case BYTE_CODE_NEW_VECTOR: 				return "NEW_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT: 	return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 					return "RET"; // Value pop for stdvector
-			case BYTE_CODE_NEW_CLASS: 				return "NEW_CLASS"; // New object (CREATE)
+			case BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE: 				return "NEW_CLASS"; // New object (CREATE)
 			case BYTE_CODE_DELETE:					return "DELETE";
 			case BYTE_CODE_POP_SCOPE: 				return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 				return "PUSH_SCOPE"; // New object (CREATE)
@@ -155,7 +155,7 @@ namespace zetscript{
 			case BYTE_CODE_NEW_VECTOR: 			return "NEW_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT: return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 				return "RET"; // Value pop for stdvector
-			case BYTE_CODE_NEW_CLASS: 			return "NEW_CLASS"; // New object (CREATE)
+			case BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE: 			return "NEW_CLASS"; // New object (CREATE)
 			case BYTE_CODE_DELETE:				return "DELETE";
 			case BYTE_CODE_POP_SCOPE: 			return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 			return "PUSH_SCOPE"; // New object (CREATE)

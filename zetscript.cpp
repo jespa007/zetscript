@@ -83,6 +83,15 @@ namespace zetscript{
 				"	String::formatNative(System::getZetScript(),s,args)"
 				"}"
 				//------------------------------------------------
+				// DateTime
+				"static DateTime::now(zs){" // add static function format to String module
+				"	return DateTime::nowNative(System::getZetScript())"
+				"}"
+
+				"static DateTime::nowUtc(zs){" // add static function format to String module
+				"	return DateTime::nowUtcNative(System::getZetScript())"
+				"}"
+				//------------------------------------------------
 				// Console
 				"static Console::print(s,...args){"
 				"	ModuleConsole_print(System::getZetScript(),s,args)"

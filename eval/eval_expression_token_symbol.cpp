@@ -308,7 +308,15 @@ namespace zetscript{
 							if(*aux_p != ','){
 								EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,last_line_ok ,"Expected ',' or ')'");
 							}
-							aux_p++;
+
+							IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
+							if(*aux_p == ')'){ // unexpected ) but is ok anyway
+								break;
+								//EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,last_line_ok ,"Expected a value parameter after ','");
+							}
+
+
 						}
 
 						last_line_ok=line;

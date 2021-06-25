@@ -76,7 +76,7 @@ namespace zetscript{
 				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->value);
 				break;
 			case STK_PROPERTY_ZS_FLOAT:
-				*(*str_dst_it)=zs_strutils::float_to_str(*((zs_float *)&((stk_src_item)->value)));
+				*(*str_dst_it)=zs_strutils::zs_float_to_str(*((zs_float *)&((stk_src_item)->value)));
 				break;
 			case STK_PROPERTY_BOOL:
 				*(*str_dst_it)=(stk_src_item)->value == 0?"false":"true";
@@ -114,9 +114,16 @@ namespace zetscript{
 	ScriptObjectString * ScriptObjectString::format(ZetScript *zs, StackElement *str, StackElement *args){
 		// transform '\"' to '"','\n' to carry returns, etc
 		std::string str_input=zs_strutils::unescape(str->toString());
+		std::string str_result;
 		ScriptObjectVector *sov=NULL;
 		std::string str_num_aux;
+		std::string str_format;
+		bool error=false;
+		std::string str_error="";
+
+
 		zs_int *ptr_idx_num=NULL;
+
 
 		if(args->properties & STK_PROPERTY_PTR_STK){
 			args=(StackElement *)args->value;
@@ -129,25 +136,36 @@ namespace zetscript{
 			}
 		}
 
-		if(sov != NULL){
+		if(sov == NULL){ // no params, direct result
+			str_result=str_input;
+		}else{
 			// Tokenize all formatting items...
-			char *str_begin=(char *)str_input.c_str();
+			char *str_start=(char *)str_input.c_str();
+			char *str_it=(char *)str_input.c_str();
+			char *str_begin=str_it;
+			char *str_end=NULL;
+			bool ok=true;
 
-			while((str_begin=strchr(str_begin,'{'))!=NULL){
+			while(ok && !error){
+				ok=(str_begin=strchr(str_it,'{'))!=NULL;
+				if(ok){
+					ok&=(str_end=strchr(str_begin+1,'}'))!=NULL;
+				}
 
-				str_begin=str_begin+1; // ignore '{'
-				char *str_end=strchr(str_begin,'}');
+				if(ok){
+					str_result+=str_input.substr(str_it-str_start,str_begin-str_it);
 
-				if(str_end != NULL){ // analize...
+					str_begin=str_begin+1; // ignore '{'
 
 					str_num_aux="";
+					str_format="";
 					char *str_begin_alignment=strchr(str_begin,',');
 					char *str_begin_format_string=strchr(str_begin,':');
 					char *str_end_index=NULL;
 					char *str_end_aligment=NULL;
 					int idx_num=-1;
 					int alignmen=-1;
-					char *format_string=NULL;
+					char *ptr_str_format_string=NULL;
 
 					if(str_begin_alignment == NULL && str_begin_format_string==NULL){ // no aligment/no format string
 						str_end_index=str_end;
@@ -163,18 +181,21 @@ namespace zetscript{
 
 
 					if(str_end_index!=NULL){ // index was found
-
+						char *str_it_idx=str_begin;
 						// try to convert str to index...
-						for(;str_begin<str_end_index;){
-							str_num_aux+=*str_begin++;
+						for(;str_it_idx<str_end_index;){
+							str_num_aux+=*str_it_idx++;
 						}
 
-						if((ptr_idx_num=zs_strutils::parse_int(str_num_aux))!=NULL){
+						//----------------------------------------------------------
+						// INDEX ...
+						if((ptr_idx_num=zs_strutils::parse_zs_int(str_num_aux))!=NULL){
 							idx_num=*ptr_idx_num;
 							delete ptr_idx_num;
 							ptr_idx_num=NULL;
 
-							// get alignment ...
+							//----------------------------------------------------------
+							// ALIGNMENT ...
 							if(str_begin_alignment != NULL && str_end_aligment !=NULL){
 								str_num_aux="";
 								str_begin_alignment=str_begin_alignment+1;
@@ -183,38 +204,60 @@ namespace zetscript{
 									str_num_aux+=*str_begin_alignment++;
 								}
 
-								if((ptr_idx_num=zs_strutils::parse_int(str_num_aux))!=NULL){
+								if((ptr_idx_num=zs_strutils::parse_zs_int(str_num_aux))!=NULL){
 									alignmen=*ptr_idx_num;
 									delete ptr_idx_num;
 									ptr_idx_num=NULL;
 								}
 							}
-
-							// finally get the format ...
+							// ALIGNMENT ...
+							//----------------------------------------------------------
+							// FORMAT ...
 							if(str_begin_format_string != NULL){
 								str_begin_format_string=str_begin_format_string+1;
 								size_t format_len=str_end-str_begin_format_string;
 								if(format_len>0){
-									format_string=(char *)malloc(format_len*sizeof(char)+1);
-									memset(format_string,0,format_len*sizeof(char)+1);
-									strncpy(format_string,str_begin_format_string,format_len);
+									ptr_str_format_string=(char *)malloc(format_len*sizeof(char)+1);
+									memset(ptr_str_format_string,0,format_len*sizeof(char)+1);
+									strncpy(ptr_str_format_string,str_begin_format_string,format_len);
 								}
 							}
+							// FORMAT ...
+							//----------------------------------------------------------
 
+							if(idx_num >=0 && idx_num<(int)sov->length()){ // print
+								std::string str_format_results="";
+								if(ptr_str_format_string != NULL){
+									str_format=ptr_str_format_string;
+								}
 
-							if(idx_num >=0 ){
+								str_format_results=sov->getUserElementAt(idx_num)->toString(str_format);
 
+								str_result+=str_format_results;
 								/*FormatItem *item=(FormatItem *)malloc(sizeof(FormatItem));
 								item->index=idx_num;*/
-								printf("idx=>[%i] aligment=>[%i] format=>[%s]\n",idx_num,alignmen,format_string==NULL?"":format_string);
+								//printf("idx=>[%i] aligment=>[%i] format=>[%s]\n",idx_num,alignmen,format_string==NULL?"":format_string);
 
-								if(format_string != NULL){
-									free(format_string);
-								}
+
+
+							}else{ // copy parameter between '{}'
+								char *str_from=(str_begin-1);
+								str_result+=str_input.substr(str_from-str_start,str_end-str_from+1);
+								//error=true;
+								//str_error="Index must be greater than or equal to zero and less than the size of the argument list.";
+							}
+
+							if(ptr_str_format_string != NULL){
+								free(ptr_str_format_string);
 							}
 						}
+						// INDEX ...
+						//----------------------------------------------------------
 					}
-					str_begin = str_end+1;
+					str_it = str_end+1; // ignore '}'
+				}else{ // copy current position up to end
+					str_end=str_start+str_input.size();
+					str_result+=str_input.substr(str_it-str_start,str_end-str_it);
 				}
 			}
 
@@ -223,9 +266,17 @@ namespace zetscript{
 				//first_param=zs_strutils::replace(first_param,zs_strutils::format("{%i}",i),sov->getUserElementAt(i)->toString());
 			}*/
 		}
+
+		if(error){
+			vm_set_error(zs->getVirtualMachine(),str_error.c_str());
+			return NULL;
+		}
+
 		//ScriptObjectString *str_in=(ScriptObjectString *)(str->var_ref);
 		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(zs);
-		str_out->set(str_input);//str_in->default_str_value;
+		str_out->set(str_result);//str_in->default_str_value;
+
+
 		return str_out;
 	}
 

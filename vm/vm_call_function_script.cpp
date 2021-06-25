@@ -353,7 +353,7 @@ namespace zetscript{
 		ScriptObject *so_aux=NULL;
 		zs_float			f_aux_value1,f_aux_value2;
 		//ScriptObject *so_object_aux=NULL;
-		ScriptObjectClass *so_class_aux=NULL;
+
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
 		StackElement stk_aux=k_stk_undefined;
@@ -606,8 +606,8 @@ namespace zetscript{
 				*data->stk_vm_current++=*this_object->getBuiltinElementAt(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_CONSTRUCTOR:
-				so_class_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
-				*data->stk_vm_current++=*(so_class_aux->getBuiltinElementAt(instruction->value_op2));
+				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
+				*data->stk_vm_current++=*(so_aux->getBuiltinElementAt(instruction->value_op2));
 				continue;
 
 			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
@@ -622,7 +622,7 @@ load_element_object:
 
 					Instruction *previous_ins= (instruction-1);
 
-					if(previous_ins->byte_code == BYTE_CODE_NEW_CLASS){
+					if(previous_ins->byte_code == BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE){
 						stk_result_op1=(data->stk_vm_current-1);
 					}
 					else{
@@ -1806,15 +1806,20 @@ load_element_object:
 					}
 				}
 				goto lbl_exit_function;
-			 case  BYTE_CODE_NEW_CLASS:
-				 	so_class_aux=NEW_CLASS_VAR_BY_IDX(data,instruction->value_op1);
+			 case  BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE:
 
-					if(!vm_create_shared_pointer(vm,so_class_aux)){
+				 	 so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,instruction->value_op1);
+
+					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
 					}
-					so_class_aux->info_function_new=calling_function;
-					so_class_aux->instruction_new=instruction;
-					(*data->stk_vm_current++)={so_class_aux,STK_PROPERTY_SCRIPT_OBJECT};
+
+					if(so_aux->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
+						ScriptObjectClass *so_class_aux=(ScriptObjectClass *)so_aux;
+						so_class_aux->info_function_new=calling_function;
+						so_class_aux->instruction_new=instruction;
+					}
+					(*data->stk_vm_current++)={so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new std::vector object...
 					so_aux=ZS_NEW_OBJECT_VECTOR(data->zs);

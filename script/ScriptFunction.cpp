@@ -160,7 +160,7 @@ namespace zetscript{
 
 			switch(instruction->byte_code){
 
-			case  BYTE_CODE_NEW_CLASS:
+			case  BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)

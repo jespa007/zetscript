@@ -69,7 +69,7 @@ namespace zetscript{
 			}else if(byte_code==BYTE_CODE_LOAD_ZS_INT || (this->properties & INSTRUCTION_PROPERTY_ZS_INT)){
 				value_op2_string=zs_strutils::zs_int_to_str(this->value_op2);
 			}else if(byte_code==BYTE_CODE_LOAD_ZS_FLOAT|| (this->properties & INSTRUCTION_PROPERTY_ZS_FLOAT)){
-				value_op2_string=zs_strutils::float_to_str(this->getConstantFloat());
+				value_op2_string=zs_strutils::zs_float_to_str(this->getConstantFloat());
 			}else if(byte_code==BYTE_CODE_LOAD_STRING || (this->properties & INSTRUCTION_PROPERTY_STRING)){
 				value_op2_string="\""+this->getConstantString()+"\"";
 			}else if(byte_code==BYTE_CODE_INSTANCEOF){

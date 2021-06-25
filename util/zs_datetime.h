@@ -14,6 +14,8 @@ namespace zetscript{
 		zs_datetime(zs_datetime&& other) noexcept; //Move constructor
 		zs_datetime& operator=(zs_datetime&& other) noexcept; //Move assignement
 		virtual ~zs_datetime();
+
+		void set_utc();
 		friend std::ostream& operator<<(std::ostream &os, const zs_datetime &dt);
 		friend bool operator<(const zs_datetime &mdt, const zs_datetime &odt);
 		friend bool operator>(const zs_datetime &mdt, const zs_datetime &odt);

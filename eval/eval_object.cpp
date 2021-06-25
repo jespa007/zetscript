@@ -321,7 +321,7 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
 				}
 
-				instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_CLASS));
+				instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE));
 
 				eval_instruction->vm_instruction.value_op1=sc->idx_class;
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);

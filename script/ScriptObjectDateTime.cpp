@@ -29,4 +29,8 @@ namespace zetscript{
 		return datetime.to_string();
 	}
 
+	std::string ScriptObjectDateTime::toString(const std::string & _format){
+		return datetime.to_string(_format);
+	}
+
 }

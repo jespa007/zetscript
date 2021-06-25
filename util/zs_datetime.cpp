@@ -101,6 +101,13 @@ namespace zetscript{
 		other.timeInfo = nullptr;
 	}
 
+	void zs_datetime::set_utc(){
+		time_t rawtime;
+		time (&rawtime);
+		struct tm *tm_now = gmtime(&rawtime);
+		_copy_from(tm_now);
+	}
+
 	//Move assignement operator
 	zs_datetime& zs_datetime::operator=(zs_datetime&& other) noexcept
 	{
@@ -135,12 +142,13 @@ namespace zetscript{
 
 	}
 
-	std::string zs_datetime::to_string(const std::string& format) const
+	std::string zs_datetime::to_string(const std::string& _format) const
 	{
 		std::string retVal;
+		std::string format=zs_strutils::to_lower(_format);
 
 		if (strcmp(format.c_str(), "") == 0) {
-			THROW_RUNTIME_ERROR("format");
+			return to_string();
 		}
 		std::string pattern_temp;
 		for (unsigned int index_char = 0; index_char < format.length(); index_char++) {

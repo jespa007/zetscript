@@ -46,28 +46,37 @@ namespace zetscript{
 
 	void ModuleConsoleWrap_outln(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
-		fprintf(stdout,"%s\n",str_out->toString().c_str());
-		delete str_out;
+		if(str_out!=NULL){
+			fprintf(stdout,"%s\n",str_out->toString().c_str());
+			delete str_out;
+		}
 	}
 
 
 	void ModuleConsoleWrap_out(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
-		fprintf(stdout,"%s",str_out->toString().c_str());
-		delete str_out;
+		if(str_out!=NULL){
+			fprintf(stdout,"%s",str_out->toString().c_str());
+			delete str_out;
+		}
+
 	}
 
 	void ModuleConsoleWrap_errorln(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
-		fprintf(stderr,"%s\n",str_out->toString().c_str());
-		delete str_out;
+		if(str_out!=NULL){
+			fprintf(stderr,"%s\n",str_out->toString().c_str());
+			delete str_out;
+		}
 	}
 
 
 	void ModuleConsoleWrap_error(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
-		fprintf(stderr,"%s",str_out->toString().c_str());
-		delete str_out;
+		if(str_out!=NULL){
+			fprintf(stderr,"%s",str_out->toString().c_str());
+			delete str_out;
+		}
 	}
 
 
