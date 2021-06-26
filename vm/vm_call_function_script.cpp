@@ -691,34 +691,9 @@ load_element_object:
 											,stk_ma->member_attribute->getter->symbol.name.c_str()
 											,true
 									);
-									/*StackElement *stk_def_afun_start=data->stk_vm_current;
-									int n_returned_args_afun=0;
 
-
-									vm_call_function_script(
-										 vm
-										,stk_ma->so_object
-										,stk_ma->member_attribute->getter
-										,stk_def_afun_start
-									);
-
-									if(data->vm_error == true){
-										data->vm_error_callstack_str+=zs_strutils::format(
-											"\nat %s (file:%s line:%i)" // TODO: get full symbol ?
-											,stk_ma->member_attribute->getter->symbol.name.c_str()
-											,SFI_GET_FILE(calling_function,instruction)
-											,SFI_GET_LINE(calling_function,instruction)
-										);
-										goto lbl_exit_function;
-									}
-
-									n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
-
-									CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) // we share pointer (true second arg) to not remove on pop in calling return
-
-
-									stk_var=stk_def_afun_start;
-									data->stk_vm_current=stk_def_afun_start; // reset stack -11*/
+									data->stk_vm_current++;
+									continue;
 								}
 							}
 						}

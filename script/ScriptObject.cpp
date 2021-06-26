@@ -214,6 +214,8 @@ namespace zetscript{
 
 			if(stk->properties & STK_PROPERTY_MEMBER_FUNCTION){
 				delete (StackMemberFunction *)stk->value;
+			}else if(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
+				delete (StackMemberAttribute *)stk->value;
 			}
 			free(stk);
 		}

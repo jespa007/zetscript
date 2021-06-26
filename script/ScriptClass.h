@@ -117,7 +117,7 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeSetterMemberAttribute(
 			const std::string & attribute_name
-			, ScriptFunctionArg arg_value
+			, std::vector<ScriptFunctionArg> arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties
 			,const char * file=""
@@ -149,6 +149,7 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeGetterMemberAttribute(
 			const std::string & attribute_name
+			,std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties

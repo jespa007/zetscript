@@ -529,7 +529,18 @@ namespace zetscript{
 
 					if((str_end_class=strstr(str_start_class,"::"))!=NULL){ // static access
 						char class_name[512]={0};
+
 						strncpy(class_name,str_start_class,str_end_class-str_start_class);
+
+
+						if(eval_data->script_class_factory->getScriptClass(class_name) == NULL){
+							EVAL_ERROR_POP_FUNCTION(
+									eval_data->current_parsing_file
+									,instruction->instruction_source_info.line
+									,"class '%s' not exist"
+									,class_name
+							);
+						}
 
 						EVAL_ERROR_POP_FUNCTION(
 								eval_data->current_parsing_file

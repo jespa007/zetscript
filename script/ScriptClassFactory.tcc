@@ -352,8 +352,16 @@ namespace zetscript{
 
 					// register getter and setter
 					if(sf_getter != NULL){
+						std::vector<ScriptFunctionArg> arg_info;
+
+						for(int i=0; i < sf_getter->params->count; i++){
+							arg_info.push_back(*((ScriptFunctionArg *)sf_getter->params->items[i]));
+						}
+
+
 						Symbol *symbol_result =this_class->registerNativeGetterMemberAttribute(
 								symbol_src->name
+								,arg_info
 								,sf_getter->idx_return_type
 								,sf_getter->ref_native_function_ptr
 								,symbol_src->properties
@@ -363,10 +371,18 @@ namespace zetscript{
 					}
 
 					for(unsigned i=0; i < sf_setters->count; i++){
+						std::vector<ScriptFunctionArg> arg_info;
 						ScriptFunction *sf_setter=(ScriptFunction *)sf_setters->items[i];
+
+
+						for(int i=0; i < sf_setter->params->count; i++){
+							arg_info.push_back(*((ScriptFunctionArg *)sf_setter->params->items[i]));
+						}
+
+
 						Symbol *symbol_result = this_class->registerNativeSetterMemberAttribute(
 								symbol_src->name
-								,*((ScriptFunctionArg *)sf_setter->params->items[0])
+								,arg_info
 								,sf_setter->ref_native_function_ptr
 								,sf_setter->symbol.properties
 								,symbol_src->file

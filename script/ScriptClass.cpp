@@ -199,7 +199,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeSetterMemberAttribute(
 			const std::string & attribute_name
-			, ScriptFunctionArg arg_value
+			, std::vector<ScriptFunctionArg> arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties
 			,const char * file
@@ -209,6 +209,7 @@ namespace zetscript{
 	){
 		Symbol *symbol_attrib=NULL;
 		MemberAttribute *ma=NULL;
+		Symbol *symbol_function=NULL;
 
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
 			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
@@ -216,7 +217,21 @@ namespace zetscript{
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
 
+
+		symbol_function=registerNativeMemberFunction(
+				attribute_name+"@_set",
+				arg_value,
+				IDX_BUILTIN_TYPE_VOID_C,
+				ref_ptr,
+				symbol_getter_function_properties,
+				file,
+				line
+		);
+
+		ma->setters.push_back((zs_int)symbol_function->ref_ptr);
+
 		return symbol_attrib;
+
 		/*return registerInternalMemberFunction(
 				error
 				, file
@@ -242,12 +257,12 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeGetterMemberAttribute(
 			 const std::string & attribute_name
+			 , std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties
 			,const char *file
 			,short line
-
 	){
 
 		Symbol *symbol_attrib=NULL;
@@ -267,10 +282,9 @@ namespace zetscript{
 			);
 		}
 
-
 		symbol_function=registerNativeMemberFunction(
 				attribute_name+"@_get",
-				std::vector<ScriptFunctionArg>{},
+				arg_value,
 				idx_return_type,
 				ref_ptr,
 				symbol_getter_function_properties,
@@ -279,7 +293,6 @@ namespace zetscript{
 		);
 
 		ma->getter=(ScriptFunction *)symbol_function->ref_ptr;
-
 
 		return symbol_attrib;
 		/*return registerInternalMemberFunction(

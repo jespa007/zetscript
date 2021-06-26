@@ -246,12 +246,6 @@ namespace zetscript{
 			);
 		}
 
-		for(unsigned i=0; i< stk_builtin_elements.count; i++){
-			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
-			if(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
-				delete (StackMemberAttribute *)stk->value;
-			}
-		}
 
 	}
 
