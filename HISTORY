@@ -231,6 +231,7 @@ Solved issues
 > #287 Some optimizations 
 #288 ScriptStringObject::format: First implementation format argument with ':' 
 > #289 Example bind "object" from C code
+> #290 Json::serialize: expose attributes metamethods that implements getters 
 
 //----------------------------------------------------------
 Version: 1.3.0

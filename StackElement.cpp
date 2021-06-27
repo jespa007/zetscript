@@ -75,14 +75,7 @@ namespace zetscript{
 			}
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk->value;
-				switch(so->idx_script_class){
-				case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME:
-					result=((ScriptObjectDateTime *)so)->toString(_format);
-					break;
-				default:
-					result=so->toString();
-					break;
-				}
+				result=so->toString(_format);
 			}
 		}
 

@@ -361,7 +361,7 @@ namespace zetscript{
 		ScriptClass *test_class=NULL;
 		const char *str_symbol=NULL,*str_aux=NULL;
 		Symbol * symbol_aux=NULL;
-		int idx_stk_element;
+		//int idx_stk_element;
 		int idx_test_class;
 		unsigned short pre_post_properties=0;
 		unsigned short scope_type=0;
@@ -658,7 +658,7 @@ load_element_object:
 				if(stk_var==NULL){ // load element from object or dynamic member element from this
 					str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
-					if((stk_var=so_aux->getProperty(str_symbol, &idx_stk_element)) == NULL){
+					if((stk_var=so_aux->getProperty(str_symbol)) == NULL){
 						// something went wrong
 						if(data->vm_error == true){
 							goto lbl_exit_function;
@@ -1034,7 +1034,7 @@ load_element_object:
 								VM_STOP_EXECUTE("cannot find metamethod \"_set\"");
 							}
 						}else if(lst_functions->count>1){ // it has all member list
-							StackElement * stk = obj_setter->getProperty("_set",NULL);
+							StackElement * stk = obj_setter->getProperty("_set");
 
 							if(stk == NULL){
 								VM_STOP_EXECUTE("Operator metamethod \"_set (aka =)\" is not implemented");

@@ -867,7 +867,7 @@ namespace zetscript{
 
 
 		}else{ // get first item...
-			StackElement * stk = script_object->getProperty(str_symbol_metamethod,NULL);
+			StackElement * stk = script_object->getProperty(str_symbol_metamethod);
 
 			if(stk == NULL){
 				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
@@ -1010,7 +1010,7 @@ apply_metamethod_error:
 		stk_result_op2 = (StackElement *)(stk_result_op2->value);
 		ScriptObject *obj=(ScriptObject *)stk_result_op1->value;
 
-		stk_sf_iter=obj->getProperty("iter",NULL);
+		stk_sf_iter=obj->getProperty("iter");
 
 		if(stk_sf_iter != NULL){
 
@@ -1050,17 +1050,17 @@ apply_metamethod_error:
 				obj=(ScriptObject *)data->stk_vm_current->value;
 
 				// check all functions...
-				if((obj->getProperty("get",NULL))==NULL){
+				if((obj->getProperty("get"))==NULL){
 					VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getClassName().c_str());
 					return;
 				}
 
-				if((obj->getProperty("_next",NULL))==NULL){
+				if((obj->getProperty("_next"))==NULL){
 					VM_ERROR("IteratorObject '%s' does not implement '_next' function",obj->getClassName().c_str());
 					return;
 				}
 
-				if((obj->getProperty("end",NULL))==NULL){
+				if((obj->getProperty("end"))==NULL){
 					VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getClassName().c_str());
 					return;
 				}

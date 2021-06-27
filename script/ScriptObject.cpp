@@ -83,7 +83,7 @@ namespace zetscript{
 	}
 
 
-	int  ScriptObject::getBuiltinPropertyIdx(const std::string & property_name){//,bool only_var_name){
+	/*int  ScriptObject::getBuiltinPropertyIdx(const std::string & property_name){//,bool only_var_name){
 
 		bool exists;
 		int idx_stk_element=this->map_builtin_property_keys->get(property_name.c_str(),exists);
@@ -91,17 +91,17 @@ namespace zetscript{
 			return idx_stk_element;
 		}
 		return ZS_IDX_UNDEFINED;
-	}
+	}*/
 
 	// built-in only for initialized
 	StackElement * ScriptObject::addBuiltinProperty(const std::string & symbol_value, StackElement stk){
 		std::string key_value = symbol_value;
 
 		// if ignore duplicate was true, map resets idx to the last function...
-		map_builtin_property_keys->set(key_value.c_str(),stk_builtin_elements.count);
-
 		StackElement *new_stk=newBuiltinSlot();
 		*new_stk=stk;
+
+		map_builtin_property_keys->set(key_value.c_str(),(zs_int)new_stk);
 
   	    return new_stk;
 	}
@@ -152,23 +152,23 @@ namespace zetscript{
 		return zs;
 	}
 
-	StackElement * 			ScriptObject::getBuiltinProperty(const std::string & property_name, int * idx){
+	StackElement * 			ScriptObject::getBuiltinProperty(const std::string & property_name){
 		/*if(property_name == "length"){
 			stk_length={(void *)this->length(),STK_PROPERTY_ZS_INT};
 			return &stk_length;
 		}else {*/
 			bool exists=false;
-			zs_int idx_stk=this->map_builtin_property_keys->get(property_name.c_str(),exists);
+			StackElement  *stk_item=(StackElement  *)this->map_builtin_property_keys->get(property_name.c_str(),exists);
 
 			if(exists){
-				return (StackElement *)this->stk_builtin_elements.items[idx_stk];
+				return stk_item;
 			}
 		//}
 		return NULL;
 	}
 
-	StackElement 	* ScriptObject::getProperty(const std::string & property_name, int * idx){
-		return getBuiltinProperty(property_name,idx);
+	StackElement 	* ScriptObject::getProperty(const std::string & property_name){
+		return getBuiltinProperty(property_name);
 	}
 
 	StackElement *ScriptObject::getThisProperty(){
@@ -202,7 +202,7 @@ namespace zetscript{
 		return (StackElement *)stk_builtin_elements.items[idx];
 	}
 
-	std::string ScriptObject::toString(){
+	std::string ScriptObject::toString(const std::string & _format){
 		return "Object@"+getClassName();
 	}
 

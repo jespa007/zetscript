@@ -50,7 +50,6 @@ namespace zetscript{
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVectorIterator);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectClass);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVarRef);
-	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectDateTime);
 
 	ScriptClassFactory::ScriptClassFactory(ZetScript *_zs){
 		zs = _zs;
@@ -146,7 +145,6 @@ namespace zetscript{
 		REGISTER_BUILT_IN_CLASS("VarRef",ScriptObjectVarRef,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF);
 		REGISTER_BUILT_IN_CLASS("String",ScriptObjectString,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING);
 		REGISTER_BUILT_IN_CLASS("Vector",ScriptObjectVector,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR);
-		REGISTER_BUILT_IN_CLASS("DateTime",ScriptObjectDateTime,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME);
 
 		// Script object iterators
 		REGISTER_BUILT_IN_CLASS("StringIterator",ScriptObjectStringIterator,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR);
@@ -241,33 +239,7 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectObjectIterator>("end",ScriptObjectObjectIteratorWrap_end);
 		registerNativeMemberFunction<ScriptObjectObjectIterator>("get",ScriptObjectObjectIteratorWrap_get);
 
-		//---------------------------------------------
-		// DateTime
-		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowNative",ScriptObjectDateTimeWrap_now);
-		registerNativeMemberFunctionStatic<ScriptObjectDateTime>("nowUtcNative",ScriptObjectDateTimeWrap_nowUtc);
 
-		registerNativeMemberFunction<ScriptObjectDateTime>("_add",ScriptObjectDateTimeWrap_add);
-		registerNativeMemberFunction<ScriptObjectDateTime>("_sub",ScriptObjectDateTimeWrap_sub);
-
-		registerNativeMemberFunction<ScriptObjectDateTime>("addSeconds",ScriptObjectDateTimeWrap_addSeconds);
-		registerNativeMemberFunction<ScriptObjectDateTime>("addMinutes",ScriptObjectDateTimeWrap_addMinutes);
-		registerNativeMemberFunction<ScriptObjectDateTime>("addHours",ScriptObjectDateTimeWrap_addHours);
-		registerNativeMemberFunction<ScriptObjectDateTime>("addDays",ScriptObjectDateTimeWrap_addDays);
-		registerNativeMemberFunction<ScriptObjectDateTime>("addMonths",ScriptObjectDateTimeWrap_addMonths);
-		registerNativeMemberFunction<ScriptObjectDateTime>("addYears",ScriptObjectDateTimeWrap_addYears);
-
-
-		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("week_day",ScriptObjectDateTimeWrap_get_week_day);
-		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("month_day",ScriptObjectDateTimeWrap_get_month_day);
-		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("year_day",ScriptObjectDateTimeWrap_get_year_day);
-
-		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("second",ScriptObjectDateTimeWrap_get_second);
-		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("minute",ScriptObjectDateTimeWrap_get_minute);
-		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("hour",ScriptObjectDateTimeWrap_get_hour);
-
-		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("day",ScriptObjectDateTimeWrap_get_day);
-		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("month",ScriptObjectDateTimeWrap_get_month);
-		registerNativeGetterMemberAttribute<ScriptObjectDateTime>("year",ScriptObjectDateTimeWrap_get_year);
 
 
 
@@ -553,9 +525,6 @@ namespace zetscript{
 				break;
 			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR: // Vector []
 				so=ScriptObjectVector::newScriptObjectVector(zs);
-				break;
-			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME: // DateTime
-				so=ScriptObjectDateTime::newScriptObjectDateTime(zs);
 				break;
 			// Object & class
 			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT: //  Object {}

@@ -72,15 +72,15 @@ namespace zetscript{
 		virtual				size_t length();
 
 		ZetScript      * 	getZetScript();
-		StackElement 	* getBuiltinProperty(const std::string & property_name, int * idx=NULL);
-		int			   		getBuiltinPropertyIdx(const std::string & varname);
+		StackElement 	* getBuiltinProperty(const std::string & property_name);
+		//int			   		getBuiltinPropertyIdx(const std::string & varname);
 		StackElement * getBuiltinElementAt(short idx);
 		virtual StackElement * addProperty(
 				const std::string & symbol_value
 				,std::string & error
 				,StackElement * stk_element = NULL
 		);
-		virtual StackElement 	* getProperty(const std::string & property_name, int * idx=NULL);
+		virtual StackElement 	* getProperty(const std::string & property_name);
 
 
 		zs_vector * getStkBuiltinListElements();
@@ -90,7 +90,7 @@ namespace zetscript{
 		ScriptClass * 	    getScriptClass();
 		StackElement 	*getThisProperty();
 		virtual void	*getNativeObject();
-		virtual std::string toString();
+		virtual std::string toString(const std::string & _format="");
 
 		virtual ~ScriptObject();
 	protected:

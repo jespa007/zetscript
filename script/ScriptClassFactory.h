@@ -127,7 +127,7 @@ namespace zetscript{
 
 
 		template<typename C>
-		void registerNativeClassStatic(
+		ScriptClass * registerNativeClassStatic(
 			const std::string & class_name
 			, C * (*_constructor)()
 			, void (*_destructor)(C *)

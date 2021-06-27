@@ -33,7 +33,7 @@ namespace zetscript{
 
 		void set(const std::string & s);
 		virtual size_t length();
-		virtual std::string toString();
+		virtual std::string toString(const std::string & _format="");
 
 		ScriptObjectString *sub(ScriptObjectString *s1);
 

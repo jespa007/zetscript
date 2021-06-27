@@ -39,7 +39,7 @@ namespace zetscript{
 
 	ScriptObjectString * ModuleJsonWrap_serialize(ZetScript *zs,StackElement  *stk,bool *minimized){
 		// iterate for all elements in the obj
-		return ScriptObjectString::newScriptObjectString(zs,json::serialize(stk,*minimized));
+		return ScriptObjectString::newScriptObjectString(zs,json::serialize(zs,stk,*minimized));
 	}
 
 	ScriptObjectString * ModuleJsonWrap_serialize(ZetScript *zs,StackElement *stk){

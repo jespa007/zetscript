@@ -203,7 +203,7 @@ namespace zetscript{
 	 * Register C Class. Return index registered class
 	 */
 	template<typename C>
-	void ScriptClassFactory::registerNativeClassStatic(
+	ScriptClass * ScriptClassFactory::registerNativeClassStatic(
 			const std::string & class_name
 			, C * (*_constructor)()
 			, void (*_destructor)(C *)
@@ -211,11 +211,13 @@ namespace zetscript{
 			,short registered_line
 	){//, const std::string & base_class_name=""){
 
-		ScriptClass *irc =registerNativeSingletonClass<C>(class_name);
+		ScriptClass *sc =registerNativeSingletonClass<C>(class_name);
 		// get class...
 
-		irc->c_constructor = (void *)_constructor;
-		irc->c_destructor = (void *)_destructor;
+		sc->c_constructor = (void *)_constructor;
+		sc->c_destructor = (void *)_destructor;
+
+		return sc;
 		//irc->static_constructor_destructor = true;
 	}
 

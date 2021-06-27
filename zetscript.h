@@ -94,6 +94,7 @@
 #include "module/ModuleSystemWrap.h"
 #include "module/ModuleJsonWrap.h"
 #include "module/ModuleConsoleWrap.h"
+#include "module/ModuleDateTimeWrap.h"
 
 #include "script/ScriptObject.h"
 #include "script/ScriptObjectString.h"
@@ -108,8 +109,6 @@
 #include "script/ScriptObjectObjectWrap.h"
 #include "script/ScriptObjectObjectIterator.h"
 #include "script/ScriptObjectObjectIteratorWrap.h"
-#include "script/ScriptObjectDateTime.h"
-#include "script/ScriptObjectDateTimeWrap.h"
 #include "script/ScriptObjectClass.h"
 #include "script/ScriptObjectVarRef.h"
 
@@ -269,8 +268,8 @@ namespace zetscript{
 		}*/
 
 		template<typename C>
-		void registerClass(const std::string & class_name, C  * (*_constructor)(), void (*_destructor)(C *), const char *registered_file="",short registered_line=-1){
-			script_class_factory->registerNativeClassStatic<C>(class_name, _constructor, _destructor, registered_file,registered_line);
+		ScriptClass * registerClass(const std::string & class_name, C  * (*_constructor)(), void (*_destructor)(C *), const char *registered_file="",short registered_line=-1){
+			return script_class_factory->registerNativeClassStatic<C>(class_name, _constructor, _destructor, registered_file,registered_line);
 		}
 
 		template<class C, class B>

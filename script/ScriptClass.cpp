@@ -483,6 +483,13 @@ namespace zetscript{
 							);
 							return NULL;
 						}
+					}else if(op == BYTE_CODE_METAMETHOD_TO_STRING && idx_return_type != IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
+						THROW_RUNTIME_ERROR("Metamethod \"%s::%s\" should return ScriptObjectString *"
+								,symbol_class.name.c_str()
+								,function_name.c_str()
+
+							);
+							return NULL;
 					}
 
 					// metamethod in script side are not static

@@ -40,11 +40,12 @@ namespace zetscript{
 						,StackElement * stk_element = NULL
 				);
 
-		virtual StackElement 	* getProperty(const std::string & property_name, int * idx=NULL);
+		virtual StackElement 	* getProperty(const std::string & property_name);
 
 		bool existUserProperty(const std::string & property_name);
 
 		zs_map_iterator begin();
+		zs_map_iterator begin_builtin();
 
 
 		bool eraseUserProperty(const std::string & symbol_value);

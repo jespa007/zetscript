@@ -33,8 +33,6 @@
 #include 		"script/ScriptObjectObjectWrap.cpp"
 #include 		"script/ScriptObjectObjectIterator.cpp"
 #include 		"script/ScriptObjectObjectIteratorWrap.cpp"
-#include 		"script/ScriptObjectDateTime.cpp"
-#include 		"script/ScriptObjectDateTimeWrap.cpp"
 #include 		"script/ScriptObjectClass.cpp"
 #include 		"script/ScriptObjectVarRef.cpp"
 
@@ -59,6 +57,7 @@
 #include 		"module/ModuleSystemWrap.cpp"
 #include 		"module/ModuleJsonWrap.cpp"
 #include 		"module/ModuleConsoleWrap.cpp"
+#include 		"module/ModuleDateTimeWrap.cpp"
 
 
 

@@ -274,35 +274,35 @@ IF ( "${FCOMPILE}" STREQUAL "ON")
 	target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 	
 	# test_script_call
-	add_executable(test_script_call${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/test_script_call.cpp
-	)	
-	target_link_libraries(test_script_call${POST_NAME} zetscript${POST_NAME})
+	#add_executable(test_script_call${POST_NAME}
+	#	${PROJECT_SOURCE_DIR}/test/test_script_call.cpp
+	#)	
+	#target_link_libraries(test_script_call${POST_NAME} zetscript${POST_NAME})
 	
 	# zs_test
-	add_executable(zs_test${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/zs_test.cpp
-	)	
-	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+	#add_executable(zs_test${POST_NAME}
+	#	${PROJECT_SOURCE_DIR}/test/zs_test.cpp
+	#)	
+	#target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
 	
 	# register_class
-	add_executable(test_register_class${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/test_register_class.cpp
-	)	
-	target_link_libraries(test_register_class${POST_NAME} zetscript${POST_NAME})	
+	#add_executable(test_register_class${POST_NAME}
+	#	${PROJECT_SOURCE_DIR}/test/test_register_class.cpp
+	#)	
+	#target_link_libraries(test_register_class${POST_NAME} zetscript${POST_NAME})	
 	
 	# register_c_module
-	add_executable(test_register_c_module${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/test_register_c_module.cpp
-		${PROJECT_SOURCE_DIR}/test/CModule.c
-	)	
-	target_link_libraries(test_register_c_module${POST_NAME} zetscript${POST_NAME})	
+	#add_executable(test_register_c_module${POST_NAME}
+	#	${PROJECT_SOURCE_DIR}/test/test_register_c_module.cpp
+	#	${PROJECT_SOURCE_DIR}/test/CModule.c
+	#)	
+	#target_link_libraries(test_register_c_module${POST_NAME} zetscript${POST_NAME})	
 	
 	# test_register_constant
-	add_executable(test_register_constant${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/test_register_constant.cpp
-	)	
-	target_link_libraries(test_register_constant${POST_NAME} zetscript${POST_NAME})		
+	#add_executable(test_register_constant${POST_NAME}
+	#	${PROJECT_SOURCE_DIR}/test/test_register_constant.cpp
+	#)	
+	#target_link_libraries(test_register_constant${POST_NAME} zetscript${POST_NAME})		
 		
 ELSE()
 

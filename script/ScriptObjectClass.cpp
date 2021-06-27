@@ -170,7 +170,7 @@ namespace zetscript{
 	}*/
 
 	bool ScriptObjectClass::itHasSetMetamethod(){
-		return getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET),NULL) != NULL;
+		return getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET)) != NULL;
 	}
 
 	void ScriptObjectClass::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
@@ -196,32 +196,40 @@ namespace zetscript{
 		 return script_class_native;
 	}
 
-	std::string ScriptObjectClass::toString(){
+	std::string ScriptObjectClass::toString(const std::string & _format){
 		// check whether toString is implemented...
-		StackElement *stk_function=getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING),NULL);
-
+		StackElement *stk_function=getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
+		std::string aux="";
 		if(stk_function != NULL){ // get first element
 			if(stk_function->properties & (STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION)){
 				StackMemberFunction * smf=(StackMemberFunction *)stk_function->value;
 				ScriptFunction *ptr_function=smf->so_function;
 				if((ptr_function->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
 
+					if((ptr_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
 
-					StackElement result=VM_EXECUTE(
-							this->vm
-							,this
-							,ptr_function
-							,NULL
-							,0
-					);
+						StackElement result=VM_EXECUTE(
+								this->vm
+								,this
+								,ptr_function
+								,NULL
+								,0
+						);
 
-					if(STK_IS_SCRIPT_OBJECT_STRING(&result)){
-						ScriptObjectString *so=(ScriptObjectString *)result.value;
-						// capture string...
-						std::string aux=so->toString();
-						// ... destroy lifetime object we don't need anymore
-						vm_unref_lifetime_object(this->vm,so);
-						// return
+						if(STK_IS_SCRIPT_OBJECT_STRING(&result)){
+							ScriptObjectString *so=(ScriptObjectString *)result.value;
+							// capture string...
+							aux=so->toString(_format);
+							// ... destroy lifetime object we don't need anymore
+							vm_unref_lifetime_object(this->vm,so);
+							// return
+							return aux;
+						}
+					}else{ // expect return an scriptobjectstring
+
+						ScriptObjectString *so=((ScriptObjectString * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
+						aux=so->toString(_format);
+						delete so;
 						return aux;
 					}
 				}

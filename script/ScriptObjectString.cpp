@@ -260,11 +260,6 @@ namespace zetscript{
 					str_result+=str_input.substr(str_it-str_start,str_end-str_it);
 				}
 			}
-
-			/*for(unsigned i=0; i < sov->length(); i++){
-
-				//first_param=zs_strutils::replace(first_param,zs_strutils::format("{%i}",i),sov->getUserElementAt(i)->toString());
-			}*/
 		}
 
 		if(error){
@@ -295,7 +290,7 @@ namespace zetscript{
 		*((std::string *)value) = zs_strutils::unescape(s);
 	}
 
-	std::string ScriptObjectString::toString(){
+	std::string ScriptObjectString::toString(const std::string & _format){
 		return *((std::string *)value);
 	}
 

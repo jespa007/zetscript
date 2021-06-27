@@ -58,7 +58,6 @@ namespace zetscript{
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR:
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR:
-				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_DATETIME:
 					 if(ptr_var==0) return stk_result;
 					stk_result = {
 						 (void *)ptr_var

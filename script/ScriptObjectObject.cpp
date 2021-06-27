@@ -107,8 +107,8 @@ namespace zetscript{
 		return addUserProperty(symbol_value,error);
 	}
 
-	StackElement 	* ScriptObjectObject::getProperty(const std::string & property_name, int * idx){
-		StackElement *stk=getBuiltinProperty(property_name, idx);
+	StackElement 	* ScriptObjectObject::getProperty(const std::string & property_name){
+		StackElement *stk=getBuiltinProperty(property_name);
 		if(stk==NULL){
 			stk=getUserProperty(property_name/*,idx*/);
 		}
@@ -124,6 +124,11 @@ namespace zetscript{
 	zs_map_iterator ScriptObjectObject::begin(){
 		return this->map_user_property_keys->begin();
 	}
+
+	zs_map_iterator ScriptObjectObject::begin_builtin(){
+		return this->map_builtin_property_keys->begin();
+	}
+
 
 
 	bool ScriptObjectObject::eraseUserProperty(const std::string & property_name/*, const ScriptFunction *info_function*/){
