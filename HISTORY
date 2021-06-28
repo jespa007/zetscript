@@ -218,6 +218,7 @@ Solved issues
 #267 Implement Builtin helper class Json
 #269 Implement String methods 
 #270 Get rid of C++ functions binding. Allow only C functions or optimized way
+#271 Register member variables through getter/setter instead of the variable 
 #272 Separate built-in properties and user properties
 #275 Change VirtualMachine class by struct and C functions  
 #276 Implement built-in iterators

@@ -10,6 +10,7 @@ namespace zetscript{
 	void 	ModuleSystemWrap_makeReadOnly(StackElement *stk);
 	void 	ModuleSystemWrap_eval(ZetScript *zs,StackElement *str_eval,StackElement *object_args);
 	void 	ModuleSystemWrap_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args);
+	void 	ModuleSystemWrap_error(ZetScript *zs, StackElement *str, StackElement *args);
 
 }
 

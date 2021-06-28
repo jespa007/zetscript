@@ -138,14 +138,15 @@
 			<target name="CMake Debug" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>-H. -Bbuild/gcc -DTARGET=debug -DFCOMPILE=ON -DMEMMANAGER=ON -DFLOAT_PRECISION=DOUBLE</buildTarget>
+				<buildTarget>-H. -Bbuild/gcc -DTARGET=debug -DFCOMPILE=ON -DFLOAT_PRECISION=DOUBLE</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 			<target name="CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
-				<buildTarget>-H. -Bbuild/gcc -DTARGET=release -DFCOMPILE=ON -DMEMMANAGER=OFF</buildTarget>
+				<buildArguments/>
+				<buildTarget>-H. -Bbuild/gcc -DTARGET=release -DFCOMPILE=ON</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

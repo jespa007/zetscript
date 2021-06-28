@@ -66,6 +66,7 @@ namespace zetscript{
 		cl->registerNativeMemberFunctionStatic("clock",ModuleSystemWrap_clock);
 		cl->registerNativeMemberFunctionStatic("evalNative",ModuleSystemWrap_eval);
 		cl->registerNativeMemberFunctionStatic("assertNative",ModuleSystemWrap_assert);
+		cl->registerNativeMemberFunctionStatic("errorNative",ModuleSystemWrap_error);
 
 		// Json mod
 		cl=script_class_factory->registerClass("Json");
@@ -138,6 +139,9 @@ namespace zetscript{
 				// System
 				"static System::assert(check,s,...args){"
 				"	System::assertNative(System::getZetScript(),check,s,args)"
+				"}"
+				"static System::error(s,...args){"
+				"	System::errorNative(System::getZetScript(),s,args)"
 				"}"
 				"static System::eval(s,params){"
 				"	return System::evalNative(System::getZetScript(),s,params)"
@@ -459,7 +463,6 @@ namespace zetscript{
 				if(error){
 					THROW_EXCEPTION(error_str.c_str());
 				}
-
 			}
 
 		}else{

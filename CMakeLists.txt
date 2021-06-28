@@ -91,7 +91,7 @@ else()
     	MESSAGE ("-- Plataform: Unknown" )
 	endif()
 	
-	IF ("${MEMMANAGER}" STREQUAL "ON")
+	IF ( "${TARGET}" STREQUAL "debug")
 		message("-- Memmanager: ON (Warning execution time could be slow)")
 		SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__MEMMANAGER__")
 		include_directories (
