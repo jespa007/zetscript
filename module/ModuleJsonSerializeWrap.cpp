@@ -43,9 +43,16 @@ namespace zetscript{
 			for(auto mi=map_iterators.begin();mi!=map_iterators.end();mi++){
 				int k=0;
 				for(;!mi->end();mi->next()){
+
 					StackElement *stk_se=(StackElement *)mi->getValue();
 					// only check if is not function. If is an attribute an implements get, call
 					if((stk_se->properties & STK_PROPERTY_FUNCTION) == 0){
+						bool created_object=false;
+						bool getter_found=false;
+						StackElement *ptr_stk_param;
+						StackElement stk_getter_result=k_stk_undefined;
+
+
 						if (is_formatted){
 							str_result += "\n";
 							for (int i = 0; i <= (ident); i++){
@@ -59,7 +66,63 @@ namespace zetscript{
 
 						str_result += "\"" + std::string(mi->getKey())+ "\":";
 
-						serialize_stk(zs, str_result, (StackElement *)mi->getValue(), ident+1,is_formatted);
+						// if attribute we have to call script or native...
+						if(stk_se->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
+
+							StackMemberAttribute *sma=(StackMemberAttribute *)stk_se->value;
+							ScriptFunction *ptr_function=sma->member_attribute->getter;
+							if(ptr_function!=NULL && obj->idx_script_class>IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
+
+								getter_found=true;
+
+								if((ptr_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
+
+
+									stk_getter_result=VM_EXECUTE(
+											zs->getVirtualMachine()
+											,obj
+											,ptr_function
+											,NULL
+											,0
+									);
+
+
+								}else{ // expect return an scriptobjectstring
+									void *c_object = ((ScriptObjectClass *)obj)->getNativeObject();
+									zs_int result=((zs_int (*)(void *))(ptr_function->ref_native_function_ptr))(c_object);
+									stk_getter_result=zs->convertVarToStackElement(result,ptr_function->idx_return_type);
+									/*switch(ptr_function->idx_return_type){
+									case IDX_BUILTIN_TYPE_ZS_INT_C: // int
+										stk_getter_result.
+										break;
+									case IDX_BUILTIN_TYPE_ZS_FLOAT_C: // float
+										break;
+									case : // bool
+										break;
+									default: // obj
+										break;
+									}*/
+								}
+
+								ptr_stk_param=&stk_getter_result;
+							}
+						}
+
+						if(getter_found == false){
+							ptr_stk_param=(StackElement *)mi->getValue();
+						}
+
+
+						serialize_stk(zs, str_result, ptr_stk_param, ident+1,is_formatted);
+
+
+						if(stk_getter_result.properties & STK_PROPERTY_SCRIPT_OBJECT){
+							vm_unref_lifetime_object(zs->getVirtualMachine(),(ScriptObject *)stk_getter_result.value);
+
+						}
+
+
+
 						k++;
 					}
 				}

@@ -290,7 +290,7 @@ namespace zetscript{
 		*((std::string *)value) = zs_strutils::unescape(s);
 	}
 
-	std::string ScriptObjectString::toString(const std::string & _format){
+	std::string ScriptObjectString::toString(){
 		return *((std::string *)value);
 	}
 

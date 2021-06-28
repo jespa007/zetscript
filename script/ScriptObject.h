@@ -90,7 +90,7 @@ namespace zetscript{
 		ScriptClass * 	    getScriptClass();
 		StackElement 	*getThisProperty();
 		virtual void	*getNativeObject();
-		virtual std::string toString(const std::string & _format="");
+		virtual std::string toString();
 
 		virtual ~ScriptObject();
 	protected:

@@ -49,7 +49,7 @@ namespace zetscript{
 
 	void zs_map_iterator::next(){
 
-		if(current_node->next == current_node->previous){ // set current list as null for next search
+		if(current_node->next == current_node->previous || current_node->next == NULL){ // set current list as null for next search
 			current_list=NULL;
 		}else{
 			current_node =current_node->next;

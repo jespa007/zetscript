@@ -75,7 +75,11 @@ namespace zetscript{
 			}
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk->value;
-				result=so->toString(_format);
+				if(so->getClassName() == "DateTime"){
+					result=((zs_datetime *)((ScriptObjectClass *)so)->getNativeObject())->to_string(_format);
+				}else{
+					result=so->toString();
+				}
 			}
 		}
 

@@ -202,7 +202,7 @@ namespace zetscript{
 		return (StackElement *)stk_builtin_elements.items[idx];
 	}
 
-	std::string ScriptObject::toString(const std::string & _format){
+	std::string ScriptObject::toString(){
 		return "Object@"+getClassName();
 	}
 

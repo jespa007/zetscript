@@ -196,7 +196,7 @@ namespace zetscript{
 		 return script_class_native;
 	}
 
-	std::string ScriptObjectClass::toString(const std::string & _format){
+	std::string ScriptObjectClass::toString(){
 		// check whether toString is implemented...
 		StackElement *stk_function=getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
 		std::string aux="";
@@ -219,7 +219,7 @@ namespace zetscript{
 						if(STK_IS_SCRIPT_OBJECT_STRING(&result)){
 							ScriptObjectString *so=(ScriptObjectString *)result.value;
 							// capture string...
-							aux=so->toString(_format);
+							aux=so->toString();
 							// ... destroy lifetime object we don't need anymore
 							vm_unref_lifetime_object(this->vm,so);
 							// return
@@ -228,7 +228,7 @@ namespace zetscript{
 					}else{ // expect return an scriptobjectstring
 
 						ScriptObjectString *so=((ScriptObjectString * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
-						aux=so->toString(_format);
+						aux=so->toString();
 						delete so;
 						return aux;
 					}
