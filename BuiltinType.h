@@ -56,4 +56,6 @@ namespace zetscript{
 
 	BuiltinType	is_built_in_type(const char *s);
 
+
+
 }

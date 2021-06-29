@@ -138,7 +138,7 @@ Solved issues
 #173 Manage this context automatically on anonymouse function created on class
 #175 Arguments as E/S 
 #174 Expression optimization: Evaluate constant operations
-#177 Implement saveCurrentState
+> #177 Implement saveCurrentState
 #179 Bug if-else fails {max scope reached} 
 #180 Return vector or dictionary not deref its user properties 
 #181 Implement var args 
@@ -156,7 +156,7 @@ Solved issues
 #195 Change ScriptVar by ScriptObject and remove ScriptVarDictionnary
 #196 Do not extend property when it access 
 #197 Avoid vector/string objects to add properties through string 
-> #199 Check fix instanceof 
+#199 Check fix instanceof 
 #200 Implement count variable
 #201 System.print: convert any stackelement in string if argument itself is not string var  
 #202 getSymbolRecursive it iterates twice if scope direction is set as ScopeDirection::SCOPE_DIRECTION_BOTH Fix
@@ -186,7 +186,7 @@ Solved issues
 #230 Control return ScriptObject[String] values that are not deallocated by user 
 #231 register class passing C function constructor and destructor
 #232 Implement setter/getter for member variables 
-> #233 Implement operator IN 
+#233 Implement operator IN 
 #234 Back to class name constructor 
 #235 Make optional function keyword as member function class
 #236 Implement sequence expressions

@@ -273,11 +273,11 @@ namespace zetscript{
 
 						zs_strutils::copy_from_ptr_diff(str_symbol,start_var,end_var);
 
-						ZS_LOG_DEBUG("include file: %s",str_symbol.c_str());
+						ZS_LOG_DEBUG("import file: %s",str_symbol.c_str());
 
 						// save current file info...
 						if(!zs_file::exists(str_symbol)){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error: file '%s' not exist",str_symbol.c_str(),str_symbol.c_str());
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error import: file '%s' not exist",str_symbol.c_str(),str_symbol.c_str());
 						}
 
 
