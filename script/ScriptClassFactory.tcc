@@ -340,7 +340,7 @@ namespace zetscript{
 						script_function->symbol.name,
 						params,
 						script_function->idx_return_type,
-						script_function->symbol.ref_ptr, // it contains script function pointer
+						script_function->ref_native_function_ptr, // it contains script function pointer
 						script_function->symbol.properties, //derivated_symbol_info_properties
 						script_function->symbol.file,
 						script_function->symbol.line

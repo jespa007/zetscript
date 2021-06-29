@@ -120,7 +120,7 @@ namespace zetscript{
 
 		// modifug
 		if(vm_it_has_error(zs->getVirtualMachine())){
-			std::string error=vm_get_str_error(zs->getVirtualMachine());
+			std::string error=vm_get_error(zs->getVirtualMachine());
 			vm_set_error(zs->getVirtualMachine(),zs_strutils::format("eval error %s",error.c_str()));
 		}
 

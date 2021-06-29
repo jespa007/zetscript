@@ -131,12 +131,6 @@ namespace zetscript{
 		data->vm_error_str=str;
 	}
 
-	std::string vm_get_str_error(VirtualMachine *vm){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		return data->vm_error_str;
-	}
-
-
 	bool vm_it_has_error(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		return data->vm_error;

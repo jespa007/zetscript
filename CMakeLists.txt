@@ -73,6 +73,7 @@ if(MSVC)
 	add_definitions(/wd4244)
 
 else()
+	MESSAGE ("-- Toolchain: GNU")
 
 	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra")
    
@@ -82,9 +83,6 @@ else()
 		
 		set(CMAKE_LEGACY_MINGW_WIN32 0)
 		set(CMAKE_PREFIX_PATH "$ENV{MINGWDIR}/local32/lib")
- 
-		SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} ")
-  
 	elseif(UNIX)
     	MESSAGE ("-- Plataform: UNIX" )
     else()
@@ -92,6 +90,9 @@ else()
 	endif()
 	
 	IF ( "${TARGET}" STREQUAL "debug")
+	
+		set(COMPILE_TARGET_FLAGS " -O0 -g ")
+	
 		IF( EXISTS ../memmgr )
 			message("-- Memmanager: ON")
 			SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__MEMMANAGER__")
@@ -105,27 +106,18 @@ else()
 	   	endif()
 		
 	ELSE()
+		set(COMPILE_TARGET_FLAGS " -O2")
 		message("-- Memmanager: OFF")
 	ENDIF()
 	
-	MESSAGE ("-- Toolchain: GNU")
-
-	set(COMPILE_TARGET_FLAGS " -O2")
-
-	IF ( "${TARGET}" STREQUAL "debug")
-		set(COMPILE_TARGET_FLAGS " -O0 -g ")
-	ENDIF ()
 	
+
 	IF ( "${32BIT}" STREQUAL "ON")
 		MESSAGE ("-- Architecture: 32bit")
 		set(COMPILE_TARGET_FLAGS " ${COMPILE_TARGET_FLAGS} -m32 ")
 	ELSE ()
 		MESSAGE ("-- Architecture: 64bit")
 	ENDIF()
-
-	SET(CMAKE_C_FLAGS " ")
-	SET(CMAKE_CXX_FLAGS   " ${COMPILE_TARGET_FLAGS} ${COMPILE_COMMON_FLAGS}  " )
-	
 
 	#Redefine output dir ...
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/${TARGET})
@@ -161,6 +153,10 @@ IF ( "${TARGET}" STREQUAL "debug")
 	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__DEBUG__ ")
 ENDIF()
 
+SET(CMAKE_C_FLAGS " ")
+SET(CMAKE_CXX_FLAGS   " ${COMPILE_TARGET_FLAGS} ${COMPILE_COMMON_FLAGS}  " )
+
+
 #
 # COMMON PARAMS
 #
@@ -184,6 +180,7 @@ ELSE()
 	set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	
 		# Utils
+		util/zs_dir.cpp
  		util/zs_file.cpp
  		util/zs_log.cpp
  		util/zs_path.cpp
@@ -191,51 +188,51 @@ ELSE()
  		util/zs_strutils.cpp
  		util/zs_vector.cpp
  		util/zs_map.cpp
+ 		util/zs_map_iterator.cpp
  		util/zs_timespan.cpp
 		util/zs_datetime.cpp
  		
  		
  		# Modules
- 		modules/ModuleMathWrap.cpp
-		modules/ModuleSystemWrap.cpp
-		modules/ModuleJsonWrap.cpp
+ 		module/ModuleMathWrap.cpp
+		module/ModuleSystemWrap.cpp
+		module/ModuleJsonWrap.cpp
+		module/ModuleDateTimeWrap.cpp
+		module/ModuleConsoleWrap.cpp
  		
  		# VM
- 		vm/VirtualMachine.cpp
+ 		vm/vm.cpp
  		
 		# Eval		
 		eval/eval.cpp
 		
-		# Function
-		function_proxy/FunctionProxyFactory.cpp 		
-		
+	
  		# Scope
  		scope/Scope.cpp
 		scope/ScopeFactory.cpp
 				
 		 # Script
-		script/ScriptObject.cpp
-		script/ScriptObjectVarRef.cpp
-		script/ScriptObjectString.cpp
-		script/ScriptObjectStringWrap.cpp
-		script/ScriptObjectStringIterator.cpp
-		script/ScriptObjectStringIteratorWrap.cpp
-		script/ScriptObjectVector.cpp
-		script/ScriptObjectVectorWrap.cpp
-		script/ScriptObjectVectorIterator.cpp
-		script/ScriptObjectVectorIteratorWrap.cpp
-		script/ScriptObjectObject.cpp
-		script/ScriptObjectObjectIterator.cpp
-		script/ScriptObjectObjectIteratorWrap.cpp
-		script/ScriptObjectClass.cpp
-		script/ScriptObjectDateTime.cpp
-		script/ScriptObjectDateTimeWrap.cpp
-				
 		script/ScriptClass.cpp
+		script/ScriptClassFactory.cpp
 		script/ScriptFunction.cpp
 		script/ScriptFunctionArg.cpp
 		script/ScriptFunctionFactory.cpp
-		script/ScriptClassFactory.cpp
+		script/ScriptObject.cpp
+		script/ScriptObjectClass.cpp
+		script/ScriptObjectObject.cpp
+		script/ScriptObjectObjectIterator.cpp
+		script/ScriptObjectObjectIteratorWrap.cpp
+		script/ScriptObjectObjectWrap.cpp
+		script/ScriptObjectString.cpp
+		script/ScriptObjectStringIterator.cpp
+		script/ScriptObjectStringIteratorWrap.cpp
+		script/ScriptObjectStringWrap.cpp
+		script/ScriptObjectVarRef.cpp
+		script/ScriptObjectVector.cpp
+		script/ScriptObjectVectorIterator.cpp
+		script/ScriptObjectVectorIteratorWrap.cpp
+		script/ScriptObjectVectorWrap.cpp
+
 		 		 		
  		# Core
  		StackElement.cpp
@@ -275,7 +272,7 @@ IF ( "${FCOMPILE}" STREQUAL "ON")
 	#)	
 	#target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
 	
-	# register_class
+	# test_register_class
 	add_executable(test_register_class${POST_NAME}
 		${PROJECT_SOURCE_DIR}/test/test_register_class.cpp
 	)	
@@ -300,6 +297,7 @@ ELSE()
 		HS
 		# Utils
  		util/zs_file.h
+ 		util/zs_dir.h
  		util/zs_log.h
  		util/zs_path.h
  		util/zs_rtti.h
@@ -313,11 +311,14 @@ ELSE()
  		
  		
  		# extra
-		modules/ModuleMathWrap.h
-		modules/ModuleSystemWrap.h
-		modules/ModuleConsoleWrap.h
-		modules/ModuleJsonDeserializeWrap.h
-		modules/ModuleJsonSerializeWrap.h
+		module/ModuleMathWrap.h
+		module/ModuleSystemWrap.h
+		module/ModuleConsoleWrap.h
+		module/ModuleJsonWrap.h
+		module/ModuleJsonDeserializeWrap.h
+		module/ModuleJsonSerializeWrap.h
+		module/ModuleDateTimeWrap.h
+		
 		
 		# script
 		script/ScriptClass.h
@@ -325,42 +326,33 @@ ELSE()
 		script/ScriptClassFactory.h
 		script/ScriptClassFactory.tcc
 		script/ScriptFunction.h
-		script/ScriptFunction.tcc
 		script/ScriptFunctionArg.h
 		script/ScriptFunctionFactory.h
 		script/ScriptFunctionTraits.h
 		script/ScriptObject.h
-		script/ScriptObjectObject.h
-		script/ScriptObjectObjectWrap.h
-		script/ScriptObjectObjectIterator.h
-		script/ScriptObjectObjectIteratorwrap.h
 		script/ScriptObjectClass.h
+		script/ScriptObjectObject.h
+		script/ScriptObjectObjectIterator.h
+		script/ScriptObjectObjectIteratorWrap.h
+		script/ScriptObjectObjectWrap.h
 		script/ScriptObjectString.h
-		script/ScriptObjectStringWrap.h
 		script/ScriptObjectStringIterator.h
 		script/ScriptObjectStringIteratorWrap.h
+		script/ScriptObjectStringWrap.h
 		script/ScriptObjectVarRef.h
 		script/ScriptObjectVector.h
 		script/ScriptObjectVector.tcc
-		script/ScriptObjectVectorwrap.h
 		script/ScriptObjectVectorIterator.h
 		script/ScriptObjectVectorIteratorWrap.h
-		script/ScriptObjectDateTime.h
-		script/ScriptObjectDateTimeWrap.h
-		
-		# function proxy
-		function_proxy/FunctionProxyFactory.h
-		function_proxy/FunctionProxyFactory.h
-		function_proxy/FunctionProxyFactory.tcc
-		function_proxy/FunctionTraits.h
-		
+		script/ScriptObjectVectorWrap.h
+				
 		# scope
 		scope/Scope.h
 		scope/ScopeFactory.h
 		
 		# vm
-		vm/VirtualMachine.h
-		vm/VirtualMachine.tcc
+		vm/vm.h
+		vm/vm.tcc
 		
 		
 		# main
@@ -401,26 +393,26 @@ ELSE()
 	
 	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
 	
-	# register_variables
-	add_executable(register_variable${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/register_variable.cpp
+	# test_register_variables
+	add_executable(test_register_variable${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/test_register_variable.cpp
 	)	
 	
-	target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_register_variable${POST_NAME} zetscript${POST_NAME})
 	
-	# register_functions
-	add_executable(register_function${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/register_function.cpp
+	# test_register_functions
+	add_executable(test_register_function${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/test_register_function.cpp
 	)	
 	
-	target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_register_function${POST_NAME} zetscript${POST_NAME})
 	
-	# register_class
-	add_executable(register_class${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/register_class.cpp
+	# test_register_class
+	add_executable(test_register_class${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/test_register_class.cpp
 	)	
 	
-	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_register_class${POST_NAME} zetscript${POST_NAME})
 	
 	# function_script_call
 	add_executable(test_script_call${POST_NAME}
@@ -431,11 +423,11 @@ ELSE()
 	
 	
 	# register_constants
-	add_executable(register_constant${POST_NAME}
-		${PROJECT_SOURCE_DIR}/test/register_constant.cpp
+	add_executable(test_register_constant${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/test_register_constant.cpp
 	)
 	
-	target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_register_constant${POST_NAME} zetscript${POST_NAME})
 	
 	INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
 		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib

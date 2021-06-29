@@ -29,6 +29,8 @@ namespace zetscript{
 		}
 	};
 
+	void	eval_init();
+
 	char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,ScriptFunction *sf=NULL,std::vector<ScriptFunctionArg> * args=NULL);
 	char * 	eval_parse_and_compile_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case=false);
 	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function=false);
@@ -40,5 +42,7 @@ namespace zetscript{
 
 	bool 	eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,std::string & static_error);
 	void 	eval_parse_and_compile(ZetScript *zs,const char * str_code, const char *  _filename="", int _line=1,ScriptFunction *sf=NULL,std::vector<ScriptFunctionArg> *function_args=NULL);
+
+	void	eval_deinit();
 
 }

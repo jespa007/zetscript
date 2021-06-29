@@ -179,6 +179,7 @@ namespace zetscript{
 		symbol_attrib->name=attrib_name;
 		symbol_attrib->ref_ptr=(zs_int)(new MemberAttribute());
 		symbol_attrib->properties=SYMBOL_PROPERTY_MEMBER_ATTRIBUTE;
+		symbol_attrib->idx_position=symbol_members->count;
 		symbol_members->push_back((zs_int)symbol_attrib);
 		symbol_members_allocated->push_back((zs_int)symbol_attrib);
 

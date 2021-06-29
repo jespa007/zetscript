@@ -271,7 +271,7 @@
 
 #define LOAD_FROM_STACK(offset,properties) \
 	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? _stk_local_var+offset \
-	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? this_object->getBuiltinElementAt(offset) \
+	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? vm_load_this_element(vm,this_object,calling_function,instruction,offset) \
 	:data->vm_stack + offset\
 
 #define POP_TWO \
@@ -332,6 +332,14 @@ stk_result_op1=--data->stk_vm_current;
 
 
 namespace zetscript{
+
+	StackElement *vm_load_this_element(
+		VirtualMachine			* vm
+		,ScriptObject			* this_object
+		,ScriptFunction 		* calling_function
+		,Instruction			*instruction
+		,short idx
+	);
 
 	void vm_call_function_script(
 			VirtualMachine			* vm,
@@ -603,7 +611,7 @@ namespace zetscript{
 				*data->stk_vm_current++=*this_object->getThisProperty();
 				continue;
 			case BYTE_CODE_LOAD_MEMBER_VAR: // direct load
-				*data->stk_vm_current++=*this_object->getBuiltinElementAt(instruction->value_op2);
+				*data->stk_vm_current++=*vm_load_this_element(vm,this_object,calling_function,instruction,instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_CONSTRUCTOR:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
@@ -1910,5 +1918,35 @@ load_element_object:
 		data->vm_idx_call--;
 		// POP STACK
 		//=========================
+	}
+
+	StackElement *vm_load_this_element(
+			VirtualMachine			* vm
+			,ScriptObject			* this_object
+			,ScriptFunction 		* calling_function
+			,Instruction			*instruction
+			,short	idx
+			){
+		VirtualMachineData *data = (VirtualMachineData*)vm->data;
+		StackElement *stk_var=this_object->getBuiltinElementAt(idx);
+
+		if(stk_var->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
+			StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->value;
+			if(stk_ma->member_attribute->getter != NULL){
+
+				VM_INNER_CALL_ONLY_RETURN(
+						stk_ma->so_object
+						,stk_ma->member_attribute->getter
+						,stk_ma->member_attribute->getter->symbol.name.c_str()
+						,true
+				);
+
+				stk_var=data->stk_vm_current;
+			}
+		}
+
+lbl_exit_function:
+
+		return stk_var;
 	}
 }

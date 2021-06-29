@@ -35,6 +35,7 @@ namespace zetscript{
 			bool itHasSetMetamethod();
 			void deleteNativeObjectOnDestroy(bool _delete_on_destroy);
 
+
 			virtual void * getNativeObject();
 			ScriptClass * getNativeScriptClass();
 

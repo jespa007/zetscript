@@ -134,6 +134,7 @@ namespace zetscript{
 		// only create symbols if not std::string or std::vector type to make it fast ...
 	}
 
+
 	/*StackElement *ScriptObjectClass::newSlotBuiltin(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk=k_stk_undefined;

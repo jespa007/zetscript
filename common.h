@@ -6,7 +6,7 @@
 
 
 #ifdef __DEBUG__ // incoment __ZETSCRIPT_VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
-//#define __ZETSCRIPT_VERBOSE_MESSAGE__
+#define __ZETSCRIPT_VERBOSE_MESSAGE__
 #endif
 
 #define ZS_IDX_UNDEFINED 						-1
