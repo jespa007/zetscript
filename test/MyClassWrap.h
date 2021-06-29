@@ -25,6 +25,15 @@ void MyClassWrap_set_data3(MyClass *_this, zs_int v){
 	_this->data3=v;
 }
 
+void MyClassWrap_function0(MyClass *_this){
+	_this->function0();
+}
+
+// register function1 named function1 in script side as function member.
+void MyClassWrap_function1(MyClass *_this, zs_int v){
+	_this->function1(v);
+}
+
 void MyClassWrap_delete(MyClass *_this){
 	delete _this;
 }

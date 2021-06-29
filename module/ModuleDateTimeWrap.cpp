@@ -82,7 +82,6 @@ namespace zetscript{
 		return  _this->get_hour();
 	}
 
-
 	zs_int 					ModuleDateTimeWrap_get_day(zs_datetime *_this){
 		return  _this->get_day();
 	}

@@ -35,7 +35,7 @@ MACRO(INSTALL_HEADERS_WITH_DIRECTORY HEADER_LIST)
 
 ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
 
-#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
 #
 # COMMON PARAMS
 #
@@ -92,57 +92,22 @@ else()
 	endif()
 	
 	IF ( "${TARGET}" STREQUAL "debug")
-		message("-- Memmanager: ON (Warning execution time could be slow)")
-		SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__MEMMANAGER__")
-		include_directories (
-			../memmgr
-		)
+		IF( EXISTS ../memmgr )
+			message("-- Memmanager: ON")
+			SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__MEMMANAGER__")
+			include_directories (
+				../memmgr
+			)
 		
-	   	set(ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ../memmgr/memmgr.cpp)
+	   		set(ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ../memmgr/memmgr.cpp)
+	   	else()
+	   		message("-- Memmanager: OFF (../memmgr not exist)")
+	   	endif()
 		
 	ELSE()
 		message("-- Memmanager: OFF")
 	ENDIF()
 	
-
-endif()
-
-
-#set library generation as static by default
-set( LIBRARY_TYPE_CREATION "STATIC" )
-if(BUILD_SHARED_LIBS)
-	set( LIBRARY_TYPE_CREATION "SHARED" )
-endif()
-
-message("-- Library type: " ${LIBRARY_TYPE_CREATION})
-
-#
-# COMMON PARAMS
-#
-#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#
-# RELEASE PARAMS
-#
-
-
-IF ( "${TARGET}" STREQUAL "")
-   SET ( TARGET "release" )
-ENDIF ()
-
-set( POST_NAME "")
-IF ( "${TARGET}" STREQUAL "debug")
-	set( POST_NAME "_d")
-ENDIF()
- 
-MESSAGE ("-- Target: " ${TARGET})
-
-IF ( "${TARGET}" STREQUAL "debug")
-	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__DEBUG__ ")
-ENDIF()
-
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-
 	MESSAGE ("-- Toolchain: GNU")
 
 	set(COMPILE_TARGET_FLAGS " -O2")
@@ -166,17 +131,42 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/${TARGET})
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/${TARGET})
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/${TARGET})
-	LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+	LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})	
 	
+
 endif()
 
 
+#set library generation as static by default
+set( LIBRARY_TYPE_CREATION "STATIC" )
+if(BUILD_SHARED_LIBS)
+	set( LIBRARY_TYPE_CREATION "SHARED" )
+endif()
+
+message("-- Library type: " ${LIBRARY_TYPE_CREATION})
+
+
+IF ( "${TARGET}" STREQUAL "")
+   SET ( TARGET "release" )
+ENDIF ()
+
+set( POST_NAME "")
+IF ( "${TARGET}" STREQUAL "debug")
+	set( POST_NAME "_d")
+ENDIF()
+ 
+MESSAGE ("-- Target: " ${TARGET})
+
+IF ( "${TARGET}" STREQUAL "debug")
+	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__DEBUG__ ")
+ENDIF()
+
 #
-# RELEASE PARAMS
+# COMMON PARAMS
 #
-#----------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
 #
-# SOURCE UTILS
+# COMPILE PARAMS
 #
 
 # Library
@@ -286,10 +276,10 @@ IF ( "${FCOMPILE}" STREQUAL "ON")
 	#target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
 	
 	# register_class
-	#add_executable(test_register_class${POST_NAME}
-	#	${PROJECT_SOURCE_DIR}/test/test_register_class.cpp
-	#)	
-	#target_link_libraries(test_register_class${POST_NAME} zetscript${POST_NAME})	
+	add_executable(test_register_class${POST_NAME}
+		${PROJECT_SOURCE_DIR}/test/test_register_class.cpp
+	)	
+	target_link_libraries(test_register_class${POST_NAME} zetscript${POST_NAME})	
 	
 	# register_c_module
 	#add_executable(test_register_c_module${POST_NAME}
@@ -450,8 +440,8 @@ ELSE()
 	INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
 		ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
 		RUNTIME DESTINATION  	${CMAKE_INSTALL_PREFIX}/bin
-    	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
-    	PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
+		LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib
+		PUBLIC_HEADER DESTINATION	${CMAKE_INSTALL_PREFIX}/includes
 	)
 
 ENDIF()

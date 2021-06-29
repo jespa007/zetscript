@@ -211,6 +211,7 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		std::string symbol_value;
 		Keyword key_w;
+		Symbol *symbol_found=NULL;
 		EvalInstruction *eval_instruction;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -230,8 +231,22 @@ namespace zetscript{
 			);
 
 			eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(BYTE_CODE_FIND_VARIABLE));
-			eval_instruction->symbol.name=symbol_value;
-			eval_instruction->symbol.scope=scope_info;
+
+			if(scope_info == MAIN_SCOPE(eval_data)){ // find global symbol if global scope
+				symbol_found = eval_find_global_symbol(eval_data,symbol_value);
+
+				if(symbol_found != NULL){
+					eval_instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
+					eval_instruction->vm_instruction.value_op2=symbol_found->idx_position;
+					eval_instruction->symbol=*symbol_found;
+				}
+			}
+
+			if(symbol_found == NULL){
+				eval_instruction->symbol.name=symbol_value;
+				eval_instruction->symbol.scope=scope_info;
+			}
+
 
 			eval_instruction->instruction_source_info=InstructionSourceInfo(
 				 eval_data->current_parsing_file

@@ -350,7 +350,7 @@ namespace zetscript{
 
 					MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
 					ScriptFunction *sf_getter=ma_src->getter;
-					zs_vector *sf_setters=ma_src->setters;
+					zs_vector *sf_setters=&ma_src->setters;
 
 					// register getter and setter
 					if(sf_getter != NULL){
