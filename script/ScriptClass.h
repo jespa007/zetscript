@@ -4,6 +4,9 @@
  */
 #pragma once
 
+#define ZS_PREFIX_SYMBOL_NAME_SETTER	"_set@"
+#define ZS_PREFIX_SYMBOL_NAME_GETTER	"_get@"
+
 namespace zetscript{
 
 /**

@@ -52,8 +52,8 @@ namespace zetscript{
 
 		for(unsigned int i = 0; i < arg.size(); i++){
 			int idx_type = getIdxClassFromItsNativeType(arg[i]);
-
-			if(idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
+			// exception: These variables are registered but not allowed to pass throught parameter
+			if(idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C || idx_type == IDX_BUILTIN_TYPE_STRING_C){
 				THROW_RUNTIME_ERROR("Argument %i type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
 						,i+1
 						,zs_rtti::demangle(arg[i]).c_str()
@@ -268,7 +268,7 @@ namespace zetscript{
 		);
 
 
-		ZS_LOG_DEBUG("Registered C function '%s' as function member '%s::%s'",function_name, function_class_name.c_str(),function_name);
+		ZS_LOG_DEBUG("Registered C function '%s' as function member '%s'",function_name, function_class_name.c_str());
 	}
 
 }

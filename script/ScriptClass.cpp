@@ -220,7 +220,7 @@ namespace zetscript{
 
 
 		symbol_function=registerNativeMemberFunction(
-				attribute_name+"@_set",
+				ZS_PREFIX_SYMBOL_NAME_SETTER+attribute_name,
 				arg_value,
 				IDX_BUILTIN_TYPE_VOID_C,
 				ref_ptr,
@@ -284,7 +284,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				attribute_name+"@_get",
+				ZS_PREFIX_SYMBOL_NAME_GETTER+attribute_name,
 				arg_value,
 				idx_return_type,
 				ref_ptr,
@@ -484,8 +484,8 @@ namespace zetscript{
 							);
 							return NULL;
 						}
-					}else if(op == BYTE_CODE_METAMETHOD_TO_STRING && idx_return_type != IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
-						THROW_RUNTIME_ERROR("Metamethod \"%s::%s\" should return ScriptObjectString *"
+					}else if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(idx_return_type == IDX_BUILTIN_TYPE_STRING_PTR_C || idx_return_type == IDX_BUILTIN_TYPE_STRING_C) ){
+						THROW_RUNTIME_ERROR("Metamethod \"%s::%s\" should return std::string * or std::string *"
 								,symbol_class.name.c_str()
 								,function_name.c_str()
 
@@ -605,6 +605,9 @@ namespace zetscript{
 
 		for(unsigned i=0; i < symbol_members_allocated->count; i++){
 			Symbol *symbol=(Symbol *)symbol_members_allocated->items[i];
+#ifdef __DEBUG__
+			ZS_LOG_DEBUG("Deallocating member attribute '%s::%s'",this->symbol_class.name.c_str(),symbol->name.c_str());
+#endif
 			if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 				delete (MemberAttribute *)symbol->ref_ptr;
 			}

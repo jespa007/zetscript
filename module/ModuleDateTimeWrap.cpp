@@ -56,10 +56,8 @@ namespace zetscript{
 		return  _this->get_week_day();
 	}
 
-	ScriptObjectString		*ModuleDateTimeWrap_toString(zs_datetime *_this){
-		ScriptObjectString *so=new ScriptObjectString();
-		so->set(_this->to_string());
-		return so;
+	std::string		ModuleDateTimeWrap_toString(zs_datetime *_this){
+		return _this->to_string();
 	}
 
 	zs_int 					ModuleDateTimeWrap_get_month_day(zs_datetime *_this){

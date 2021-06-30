@@ -328,48 +328,76 @@ namespace zetscript{
 
 				Symbol *symbol_src = (Symbol *)base_class->symbol_members->items[i];
 
-				if(symbol_src->properties & SYMBOL_PROPERTY_FUNCTION){ // is function
-					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
-					// build params...
-					std::vector<ScriptFunctionArg> params;
-					for(unsigned j=0; j < script_function->params->count;j++){
-						params.push_back(*((ScriptFunctionArg *) script_function->params->items[j]));
-					}
+				if((symbol_src->properties & SYMBOL_PROPERTY_FUNCTION)!=0 ){ // is function
 
-					Symbol *symbol_result = this_class->registerNativeMemberFunction(
-						script_function->symbol.name,
-						params,
-						script_function->idx_return_type,
-						script_function->ref_native_function_ptr, // it contains script function pointer
-						script_function->symbol.properties, //derivated_symbol_info_properties
-						script_function->symbol.file,
-						script_function->symbol.line
-					);
+					bool is_setter_or_getter_function = 	zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_SETTER)
+														||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_GETTER);
+
+					// we have to know whether function member is or not getter/setter because we create them in the attribute member case. If not, we could have
+					// duplicated symbols.
+					if(is_setter_or_getter_function == false){
+
+						ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
+						// build params...
+						std::vector<ScriptFunctionArg> params;
+						for(unsigned j=0; j < script_function->params->count;j++){
+							params.push_back(*((ScriptFunctionArg *) script_function->params->items[j]));
+						}
+
+						Symbol *symbol_result = this_class->registerNativeMemberFunction(
+							script_function->symbol.name,
+							params,
+							script_function->idx_return_type,
+							script_function->ref_native_function_ptr, // it contains script function pointer
+							script_function->symbol.properties, //derivated_symbol_info_properties
+							script_function->symbol.file,
+							script_function->symbol.line
+						);
+					}
 
 				}else if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 
 					MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
+					MemberAttribute *ma_dst=NULL;
 					ScriptFunction *sf_getter=ma_src->getter;
 					zs_vector *sf_setters=&ma_src->setters;
+					Symbol *symbol_attribute=NULL;
+					Symbol *symbol_function=NULL;
+
+					symbol_attribute=this_class->registerMemberAttribute(symbol_src->name,symbol_src->file,symbol_src->line);
+					ma_dst=(MemberAttribute *)symbol_attribute->ref_ptr;
+
 
 					// register getter and setter
 					if(sf_getter != NULL){
+
 						std::vector<ScriptFunctionArg> arg_info;
 
 						for(int i=0; i < sf_getter->params->count; i++){
 							arg_info.push_back(*((ScriptFunctionArg *)sf_getter->params->items[i]));
 						}
 
-
-						Symbol *symbol_result =this_class->registerNativeGetterMemberAttribute(
+						/*this_class->registerNativeGetterMemberAttribute(
 								symbol_src->name
 								,arg_info
 								,sf_getter->idx_return_type
 								,sf_getter->ref_native_function_ptr
-								,symbol_src->properties
+								,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
 								,symbol_src->file
 								,symbol_src->line
+						);*/
+						symbol_function=this_class->registerNativeMemberFunction(
+								sf_getter->symbol.name,
+								arg_info,
+								sf_getter->idx_return_type,
+								sf_getter->ref_native_function_ptr,
+								sf_getter->symbol.properties,
+								sf_getter->symbol.file,
+								sf_getter->symbol.line
 						);
+
+						ma_dst->getter=(ScriptFunction *)symbol_function->ref_ptr;
+
 					}
 
 					for(unsigned i=0; i < sf_setters->count; i++){
@@ -382,14 +410,26 @@ namespace zetscript{
 						}
 
 
-						Symbol *symbol_result = this_class->registerNativeSetterMemberAttribute(
+						/*this_class->registerNativeSetterMemberAttribute(
 								symbol_src->name
 								,arg_info
 								,sf_setter->ref_native_function_ptr
-								,sf_setter->symbol.properties
+								,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
 								,symbol_src->file
 								,symbol_src->line
+						);*/
+
+						symbol_function=this_class->registerNativeMemberFunction(
+								sf_setter->symbol.name,
+								arg_info,
+								sf_setter->idx_return_type,
+								sf_setter->ref_native_function_ptr,
+								sf_setter->symbol.properties,
+								sf_setter->symbol.file,
+								sf_setter->symbol.line
 						);
+
+						ma_dst->addSetter((ScriptFunction *)symbol_function->ref_ptr);
 					}
 				}
 

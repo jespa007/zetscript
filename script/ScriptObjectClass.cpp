@@ -97,13 +97,14 @@ namespace zetscript{
 		c_object = _c_object;
 		script_class_native=NULL;
 
-		if(c_object == NULL){ // if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
+		if(c_object == NULL){
+			// if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
 			if(script_class->isNativeClass()){
 				script_class_native=script_class;
 				created_object = CALL_CONSTRUCTOR_CLASS(script_class); // (*script_class->c_constructor)();
 				was_created_by_constructor=true;
 				c_object = created_object;
-				delete_c_object_on_destroy=true;
+				delete_c_object_on_destroy=true; // destroy object when class is destroyed. It will be safe (in principle)
 			}else {
 				sc=script_class;
 				// get first class with c inheritance...
@@ -116,7 +117,7 @@ namespace zetscript{
 							created_object =  CALL_CONSTRUCTOR_CLASS(sc); //(*sc->c_constructor)();
 							was_created_by_constructor=true;
 							c_object = created_object;
-							delete_c_object_on_destroy=true;
+							delete_c_object_on_destroy=true; // destroy object when class is destroyed. It will be safe (in principle)
 						}
 					}
 				}
@@ -133,7 +134,6 @@ namespace zetscript{
 
 		// only create symbols if not std::string or std::vector type to make it fast ...
 	}
-
 
 	/*StackElement *ScriptObjectClass::newSlotBuiltin(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
@@ -224,17 +224,30 @@ namespace zetscript{
 							// ... destroy lifetime object we don't need anymore
 							vm_unref_lifetime_object(this->vm,so);
 							// return
-							return aux;
 						}
 					}else{ // expect return an scriptobjectstring
+						std::string *str=NULL;
+						switch(ptr_function->idx_return_type){
+						case IDX_BUILTIN_TYPE_STRING_C:
+								aux=((std::string (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
+								break;
+						case IDX_BUILTIN_TYPE_STRING_PTR_C:
+								str=((std::string * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
+								if(str == NULL){
+									THROW_RUNTIME_ERROR("toString: str NULL");
+								}
+								aux=*str;
+								break;
+						default:
+							THROW_RUNTIME_ERROR("toString: expected std::string or *std::string");
+							break;
+						}
 
-						ScriptObjectString *so=((ScriptObjectString * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
-						aux=so->toString();
-						delete so;
-						return aux;
 					}
 				}
 			}
+
+			return aux;
 		}
 
 		return ScriptObjectObject::toString();

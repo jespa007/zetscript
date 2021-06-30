@@ -67,7 +67,7 @@ int main(){
 			"	function function1(arg){\n"
 			"		var i=this.data1;\n"
 			"		super(this.data1+arg);\n"
-			"		print(\"result => \"+i+\"+\"+arg+\"=\"+this.data1);\n"
+			"		Console::outln(\"result => \"+i+\"+\"+arg+\"=\"+this.data1);\n"
 			"   }\n"
 			"};\n"
 			"class ScriptMyClassExtend2 extends ScriptMyClassExtend{\n"
@@ -82,7 +82,7 @@ int main(){
 			"myclass.function2(0.5);\n" // it prints "Float argument is 0.5"
 			"Console::outln(\"data1:\"+myclass.data1);\n" // it prints "data1:12"
 			"Console::outln(\"data2:\"+myclass.data2);\n" // it prints "data2:0.5"
-			"delete myclass;\n" // delete script var with c pointers attached inside.
+			//"delete myclass;\n" // delete script var with c pointers attached inside.
 		);
 
 	}catch(std::exception & ex){

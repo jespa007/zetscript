@@ -219,7 +219,7 @@ namespace zetscript{
 
 		bool starts_with(const std::string & str, const std::string & starting){
 			if (str.length() >= starting.length()) {
-				return (0 == str.compare (0+starting.length(), starting.length(), starting));
+				return strncmp(str.c_str(),starting.c_str(),starting.size())==0;
 			}
 			return false;
 		}

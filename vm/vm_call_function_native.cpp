@@ -31,6 +31,14 @@
 #define PTR_FUNCTION_RET_BOOL_PARAM5(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_BOOL_PARAM6(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
+#define PTR_FUNCTION_RET_STRING_PARAM0(f) ((std::string (*)())(f))
+#define PTR_FUNCTION_RET_STRING_PARAM1(f) ((std::string (*)(zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM2(f) ((std::string (*)(zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM3(f) ((std::string (*)(zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM4(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM5(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM6(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+
 namespace zetscript{
 
 	void  vm_call_function_native(
@@ -46,12 +54,14 @@ namespace zetscript{
 
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		zs_int  fun_ptr = c_function->ref_native_function_ptr;
+		std::string str_aux;
 
 		if((c_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
 			VM_SET_USER_ERROR(vm,"Internal error: Function not native");
 			return;
 		}
 
+		int idx_return_type=c_function->idx_return_type;
 		zs_int converted_param[MAX_NATIVE_FUNCTION_ARGS];
 		zs_int result=0;
 		StackElement *stk_arg_current;
@@ -59,6 +69,7 @@ namespace zetscript{
 		int this_param=0;
 		zs_int param_this_object=0;
 		int idx_arg_start=0;
+
 
 		// special case that this is passed in static ref function
 		if(this_object!=NULL){
@@ -223,31 +234,31 @@ namespace zetscript{
 				break;
 			}
 		}else if(c_function->idx_return_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
-			zs_float aux_flt=0;
+			std::string str_aux;
 			switch(n_args){
 			case 0:
-				aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();
+				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();
 				break;
 			case 1:
-				aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM1(fun_ptr)(
+				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM1(fun_ptr)(
 					converted_param[0]
 				);
 				break;
 			case 2:
-				aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM2(fun_ptr)(
+				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM2(fun_ptr)(
 					converted_param[0]
 					,converted_param[1]
 				);
 				break;
 			case 3:
-				aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM3(fun_ptr)(
+				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM3(fun_ptr)(
 					converted_param[0]
 					,converted_param[1]
 					,converted_param[2]
 				);
 				break;
 			case 4:
-				aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM4(fun_ptr)(
+				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM4(fun_ptr)(
 					converted_param[0]
 					,converted_param[1]
 					,converted_param[2]
@@ -255,7 +266,7 @@ namespace zetscript{
 				);
 				break;
 			case 5:
-				aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM5(fun_ptr)(
+				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM5(fun_ptr)(
 					converted_param[0]
 					,converted_param[1]
 					,converted_param[2]
@@ -264,7 +275,7 @@ namespace zetscript{
 				);
 				break;
 			case 6:
-				aux_flt=PTR_FUNCTION_RET_FLOAT_PARAM6(fun_ptr)(
+				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM6(fun_ptr)(
 					converted_param[0]
 					 ,converted_param[1]
 					 ,converted_param[2]
@@ -275,7 +286,62 @@ namespace zetscript{
 				break;
 			}
 
-			ZS_FLOAT_COPY(&result, &aux_flt);
+		}else if(c_function->idx_return_type==IDX_BUILTIN_TYPE_STRING_C){ // we must do a float cast in order to get float return.
+
+			switch(n_args){
+			case 0:
+				str_aux=PTR_FUNCTION_RET_STRING_PARAM0(fun_ptr)();
+				break;
+			case 1:
+				str_aux=PTR_FUNCTION_RET_STRING_PARAM1(fun_ptr)(
+					converted_param[0]
+				);
+				break;
+			case 2:
+				str_aux=PTR_FUNCTION_RET_STRING_PARAM2(fun_ptr)(
+					converted_param[0]
+					,converted_param[1]
+				);
+				break;
+			case 3:
+				str_aux=PTR_FUNCTION_RET_STRING_PARAM3(fun_ptr)(
+					converted_param[0]
+					,converted_param[1]
+					,converted_param[2]
+				);
+				break;
+			case 4:
+				str_aux=PTR_FUNCTION_RET_STRING_PARAM4(fun_ptr)(
+					converted_param[0]
+					,converted_param[1]
+					,converted_param[2]
+					,converted_param[3]
+				);
+				break;
+			case 5:
+				str_aux=PTR_FUNCTION_RET_STRING_PARAM5(fun_ptr)(
+					converted_param[0]
+					,converted_param[1]
+					,converted_param[2]
+					,converted_param[3]
+					,converted_param[4]
+				);
+				break;
+			case 6:
+				str_aux=PTR_FUNCTION_RET_STRING_PARAM6(fun_ptr)(
+					converted_param[0]
+					 ,converted_param[1]
+					 ,converted_param[2]
+					 ,converted_param[3]
+					 ,converted_param[4]
+					,converted_param[5]
+				);
+				break;
+			}
+
+			result=(zs_int)&str_aux;
+			idx_return_type=IDX_BUILTIN_TYPE_STRING_PTR_C;
+
 		}else{ // generic pointer or int
 
 			switch(n_args){
@@ -330,6 +396,6 @@ namespace zetscript{
 			}
 		}
 
-		*data->stk_vm_current++=data->zs->convertVarToStackElement(result,c_function->idx_return_type);
+		*data->stk_vm_current++=data->zs->convertVarToStackElement(result,idx_return_type);
 	}
 }

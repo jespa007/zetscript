@@ -128,6 +128,7 @@ namespace zetscript{
 		REGISTER_BUILT_IN_TYPE(zs_int *,IDX_BUILTIN_TYPE_ZS_INT_PTR_C);
 		REGISTER_BUILT_IN_TYPE(char *,IDX_BUILTIN_TYPE_CHAR_PTR_C);
 		REGISTER_BUILT_IN_TYPE(const char *,IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C);
+		REGISTER_BUILT_IN_TYPE(std::string,IDX_BUILTIN_TYPE_STRING_C);
 		REGISTER_BUILT_IN_TYPE(std::string *,IDX_BUILTIN_TYPE_STRING_PTR_C);
 		REGISTER_BUILT_IN_TYPE(bool,IDX_BUILTIN_TYPE_BOOL_C);
 		REGISTER_BUILT_IN_TYPE(bool *,IDX_BUILTIN_TYPE_BOOL_PTR_C);
@@ -402,11 +403,26 @@ namespace zetscript{
 
 				// 1. extend all symbols from base class
 				for(int i=0; i < base_class->symbol_members->count; i++){
-					Symbol *symbol=(Symbol *)base_class->symbol_members->items[i];
+					Symbol *symbol_src=(Symbol *)base_class->symbol_members->items[i];
 					Symbol *new_symbol=new Symbol();
-					*new_symbol = *symbol;
+
+					*new_symbol = *symbol_src;
+
+					// attribs has to be copy MemberAttribute...
+					if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+						MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
+						MemberAttribute *ma_dst=new MemberAttribute;
+						ma_dst->getter=ma_src->getter;
+						for(unsigned i=0; i < ma_src->setters.count;i++){
+							ma_dst->addSetter((ScriptFunction *)ma_src->setters.items[i]);
+
+						}
+						new_symbol->ref_ptr=(zs_int)ma_dst;
+					}
+
 					sci->symbol_members->push_back((zs_int)new_symbol);
 					sci->symbol_members_allocated->push_back((zs_int)new_symbol);
+
 				}
 
 				// set idx starting member
