@@ -90,8 +90,20 @@ int main(int argc, char * argv[]) {
 		do{
 			printf("zs>");
 			std::getline(std::cin,expression);
+			if(expression=="clear"){
+				printf("Clearing symbols...\n");
+				zs->clear();
+				continue;
+			}
+
+			if(expression=="save"){
+				printf("Saving state...\n");
+				zs->saveState();
+				continue;
+			}
 
 			exit = expression=="exit" || expression=="quit";
+
 			if(!exit){ // evaluate expression
 
 				try{

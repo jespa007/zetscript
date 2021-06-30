@@ -145,5 +145,6 @@ namespace zetscript{
 		delete str_out;
 
 	}
+
 }
 
