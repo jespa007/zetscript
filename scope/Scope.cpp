@@ -159,6 +159,22 @@ namespace zetscript{
 		return NULL;
 	}
 
+	bool Scope::unregisterSymbol(const std::string & str_symbol){
+		Symbol *sv=NULL;
+		for(unsigned i = 0; i < registered_symbols->count; i++){
+			sv=(Symbol *)registered_symbols->items[i];
+			if(
+			   ( sv->name == str_symbol )
+			){
+				delete sv;
+				registered_symbols->erase(i); // erase symbol scope
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	unsigned int Scope::numRegisteredSymbolsAsVariable(){
 		unsigned int n_registered_symbols_as_variables=0;
 		for(unsigned i=0; i < this->registered_symbols->count; i++){

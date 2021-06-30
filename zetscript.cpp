@@ -497,6 +497,7 @@ namespace zetscript{
 					v--) {
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
 				ScriptObjectObject *var = NULL;
+				symbol->scope->unregisterSymbol(symbol->name);
 
 				if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					var =((ScriptObjectObject *)(vm_stk_element->value));

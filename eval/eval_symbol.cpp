@@ -1,3 +1,6 @@
+#define SYMBOL_VALUE_THIS				"this"
+#define SYMBOL_VALUE_SUPER				"super"
+
 namespace zetscript{
 
 

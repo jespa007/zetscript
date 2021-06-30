@@ -51,6 +51,7 @@ namespace zetscript{
 		Symbol * addSymbol(const char * file, short line,const std::string & symbol_name, char n_params);
 		Symbol * registerSymbol(const char * file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, uint16_t scope_direction_repeated_symbols=SCOPE_DIRECTION_BOTH);
 		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, uint16_t scope_direction_repeated_symbols=SCOPE_DIRECTION_BOTH);
+		bool 	unregisterSymbol(const std::string & str_symbol);
 
 		void						    markAsUnusued();
 

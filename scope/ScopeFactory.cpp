@@ -37,6 +37,7 @@ namespace zetscript{
 			delete info_scope;
 			scopes->pop_back();
 		}
+
 	}
 
 	void ScopeFactory::setClearCheckpoint(){
