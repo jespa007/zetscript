@@ -482,7 +482,7 @@ namespace zetscript{
 	}
 
 	void ZetScript::clearGlobalVariables(int _idx_start){
-
+		std::string global_symbol;
 		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start;
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
 
@@ -495,9 +495,13 @@ namespace zetscript{
 					int v = main_function_object->registered_symbols->count-1;
 					v >= idx_start;
 					v--) {
+
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
+				global_symbol=symbol->name;
 				ScriptObjectObject *var = NULL;
-				symbol->scope->unregisterSymbol(symbol->name);
+				if(MAIN_SCOPE(this)->unregisterSymbol(symbol->name)==false){
+					THROW_RUNTIME_ERROR("internal error : %s symbol expected to be on the main scope",global_symbol.c_str());
+				}
 
 				if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					var =((ScriptObjectObject *)(vm_stk_element->value));
@@ -544,7 +548,11 @@ namespace zetscript{
 	}
 
 	void ZetScript::saveState(){
-
+		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
+		idx_current_global_variable_checkpoint=main_function_object->registered_symbols->count-1;
+		scope_factory->saveState();
+		script_function_factory->saveState();
+		script_class_factory->saveState();
 	}
 
 	ZetScript::~ZetScript(){

@@ -91,7 +91,7 @@ namespace zetscript{
 		}
 	}
 
-	void ScriptFunctionFactory::setClearCheckpoint(){
+	void ScriptFunctionFactory::saveState(){
 		idx_clear_checkpoint = script_functions->count-1;
 	}
 

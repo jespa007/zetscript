@@ -45,7 +45,7 @@ namespace zetscript{
 			 void	setScriptFunction(short idx, ScriptFunction *sf);
 
 			void clear(int _idx_start = ZS_IDX_UNDEFINED);
-			void setClearCheckpoint();
+			void saveState();
 
 			~ScriptFunctionFactory();
 

@@ -20,7 +20,7 @@ namespace zetscript{
 			Scope 						* 	getMainScope(){return main_scope;}
 			zs_vector 					* 	getScopes();
 			void clear(int _idx_start=ZS_IDX_UNDEFINED);
-			void setClearCheckpoint();
+			void saveState();
 
 			~ScopeFactory();
 

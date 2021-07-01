@@ -333,7 +333,7 @@ namespace zetscript{
 		}
 	}
 
-	void ScriptClassFactory::setClearCheckpoint(){
+	void ScriptClassFactory::saveState(){
 		idx_clear_checkpoint = script_classes->count-1;
 	}
 

@@ -40,7 +40,7 @@ namespace zetscript{
 
 	}
 
-	void ScopeFactory::setClearCheckpoint(){
+	void ScopeFactory::saveState(){
 		idx_clear_checkpoint=scopes->count-1;
 	}
 

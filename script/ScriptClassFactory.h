@@ -213,7 +213,7 @@ namespace zetscript{
 		);
 
 		void 	clear(short _idx_start=ZS_IDX_UNDEFINED);
-		void 	setClearCheckpoint();
+		void 	saveState();
 
 
 		~ScriptClassFactory();
