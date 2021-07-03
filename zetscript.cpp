@@ -313,7 +313,7 @@ namespace zetscript{
 	// STK STRING OBJECT
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
-	void ZetScript::setPrintOutCallback(void (* _printout_callback)(const char *)){
+	/*void ZetScript::setPrintOutCallback(void (* _printout_callback)(const char *)){
 		print_out_callback=_printout_callback;
 	}
 
@@ -395,7 +395,7 @@ namespace zetscript{
 			}
 		}
 		return NULL;
-	}
+	}*/
 
 	StackElement ZetScript::evalInternal(const char * code, unsigned short options, const char * filename)  {
 		ScriptFunction *sf_main=MAIN_FUNCTION(this);

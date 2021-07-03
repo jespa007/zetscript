@@ -28,7 +28,7 @@
 	}
 
 
-#define PERFORM_COMPARE_OPERATION(__COMPARE_OP__, __METAMETHOD__) \
+#define PERFORM_COMPARE_OPERATION(__COMPARE_OP__) \
 	if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
 		result_op_bool=(i1->value_op2)__COMPARE_OP__(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
@@ -239,6 +239,13 @@ namespace zetscript{
 		case BYTE_CODE_BITWISE_XOR:
 			PERFORM_BINARY_OPERATION(^);
 			break;
+		case BYTE_CODE_SHL:
+			PERFORM_BINARY_OPERATION(<<);
+			break;
+		case BYTE_CODE_SHR:
+			PERFORM_BINARY_OPERATION(>>);
+			break;
+
 		// logic ops
 		case BYTE_CODE_LOGIC_AND:
 			PERFORM_LOGIC_OPERATION(&&);
@@ -246,23 +253,24 @@ namespace zetscript{
 		case BYTE_CODE_LOGIC_OR:
 			PERFORM_LOGIC_OPERATION(||);
 			break;
+		// compare op
 		case BYTE_CODE_LT:
-			PERFORM_ARITHMETIC_OPERATION(<);
+			PERFORM_COMPARE_OPERATION(<);
 			break;
 		case BYTE_CODE_GT:
-			PERFORM_ARITHMETIC_OPERATION(>);
+			PERFORM_COMPARE_OPERATION(>);
 			break;
 		case BYTE_CODE_GTE:
-			PERFORM_ARITHMETIC_OPERATION(>=);
+			PERFORM_COMPARE_OPERATION(>=);
 			break;
 		case BYTE_CODE_LTE:
-			PERFORM_ARITHMETIC_OPERATION(<=);
+			PERFORM_COMPARE_OPERATION(<=);
 			break;
 		case BYTE_CODE_EQU:
-			PERFORM_ARITHMETIC_OPERATION(==);
+			PERFORM_COMPARE_OPERATION(==);
 			break;
 		case BYTE_CODE_NOT_EQU:
-			PERFORM_ARITHMETIC_OPERATION(!=);
+			PERFORM_COMPARE_OPERATION(!=);
 			break;
 		case BYTE_CODE_IN:
 			if(INSTRUCTION_IS_ZS_INT(i1) && INSTRUCTION_IS_STRING(i2)){
@@ -274,20 +282,22 @@ namespace zetscript{
 			}
 			else{
 				THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform constant operation '%s in %s'"
-									,eval_data->current_parsing_file
-									,token_operator->line
-									,i1->getConstantValueOp2ToString().c_str()
-									,i2->getConstantValueOp2ToString().c_str()));
+					,eval_data->current_parsing_file
+					,token_operator->line
+					,i1->getConstantValueOp2ToString().c_str()
+					,i2->getConstantValueOp2ToString().c_str())
+				);
 			}
 			break;
 		default:
 			//THROW_EXCEPTION(zs_strutils::format("cannot perform K '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
 			THROW_EXCEPTION(zs_strutils::format("[%s:%i] I don't know how to perform constant operation '%s %s %s'"
-									,eval_data->current_parsing_file
-									,token_operator->line
-									,i1->getConstantValueOp2ToString().c_str()
-									,byte_code_to_operator_str(byte_code)
-									,i2->getConstantValueOp2ToString().c_str()));
+				,eval_data->current_parsing_file
+				,token_operator->line
+				,i1->getConstantValueOp2ToString().c_str()
+				,byte_code_to_operator_str(byte_code)
+				,i2->getConstantValueOp2ToString().c_str())
+			);
 			break;
 /*			break;
 		default:

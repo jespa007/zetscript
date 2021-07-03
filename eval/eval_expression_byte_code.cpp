@@ -67,7 +67,7 @@ namespace zetscript{
 			if(expression_tokens->at(i).token_type == TokenType::TOKEN_TYPE_OPERATOR){
 				unsigned char idx_group=get_operator_type_group(expression_tokens->at(i).operator_type);
 
-				if(idx_group < idx_group_split){
+				if(idx_group <= idx_group_split){
 					idx_group_split=idx_group;
 					idx_split=i;
 				}
@@ -75,7 +75,7 @@ namespace zetscript{
 		}
 
 		if(idx_split == -1){
-			THROW_RUNTIME_ERROR("Unexpected error");
+			THROW_RUNTIME_ERROR("Cannot fint operator");
 		}
 
 		// split left/right by operator precedence...

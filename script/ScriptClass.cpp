@@ -474,7 +474,7 @@ namespace zetscript{
 					// can be one parameter or 0 params...
 					if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
 						if((symbol_result=getSymbol(function_name,(char)params.size())) != NULL){
-							THROW_RUNTIME_ERROR("Metamethod \"%s::%s\" is already defined at \"%s::%s\" (%s:%i). Metamethods cannot be override"
+							THROW_RUNTIME_ERROR("Metamethod '%s::%s' is already defined at '%s::%s' (%s:%i). Metamethods cannot be override"
 								,symbol_class.name.c_str()
 								,function_name.c_str()
 								,symbol_result->scope->script_class->symbol_class.name.c_str()
@@ -485,7 +485,7 @@ namespace zetscript{
 							return NULL;
 						}
 					}else if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(idx_return_type == IDX_BUILTIN_TYPE_STRING_PTR_C || idx_return_type == IDX_BUILTIN_TYPE_STRING_C) ){
-						THROW_RUNTIME_ERROR("Metamethod \"%s::%s\" should return std::string * or std::string *"
+						THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return std::string * or std::string *"
 								,symbol_class.name.c_str()
 								,function_name.c_str()
 

@@ -196,10 +196,10 @@ namespace zetscript{
 
 		StackElement	eval(const std::string & expresion,unsigned short options=0, const char * filename="");
 		StackElement	evalFile(const std::string & filename,unsigned short options=0);
-		zs_int * 		evalIntValue(const std::string & str_to_eval);
-		bool * 			evalBoolValue(const std::string & str_to_eval);
-		zs_float * 		evalFloatValue(const std::string & str_to_eval);
-		std::string * 	evalStringValue(const std::string & str_to_eval);
+		//zs_int * 		evalIntValue(const std::string & str_to_eval);
+		//bool * 			evalBoolValue(const std::string & str_to_eval);
+		//zs_float * 		evalFloatValue(const std::string & str_to_eval);
+		//std::string * 	evalStringValue(const std::string & str_to_eval);
 
 		// CONSTANT TOOLS
 		StackElement * registerStkStringObject(const std::string & key_name,const std::string & const_name);
@@ -213,7 +213,7 @@ namespace zetscript{
 		bool isFilenameAlreadyParsed(const std::string & filename);
 		//-----------------------------------------------
 
-		void 						setPrintOutCallback(void (*)(const char *));
+		//void 						setPrintOutCallback(void (*)(const char *));
 
 		/**
 		 * Register C variable

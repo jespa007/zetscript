@@ -107,9 +107,13 @@ namespace zetscript{
 
 		if((p_irv = getSymbol(symbol_name,n_params,check_repeated_symbols_direction))!=NULL){ // check whether symbol is already registered ...
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
-				THROW_RUNTIME_ERROR_FILE_LINE(file,line," error symbol \"%s\" already registered at %s:%i", symbol_name.c_str(),p_irv->file,p_irv->line);
+				if(p_irv->file == NULL || *p_irv->file==0){
+					THROW_RUNTIME_ERROR_FILE_LINE(file,line," error symbol '%s' already registered", symbol_name.c_str());
+				}else{
+					THROW_RUNTIME_ERROR_FILE_LINE(file,line," error symbol '%s' already registered at %s:%i", symbol_name.c_str(),p_irv->file,p_irv->line);
+				}
 			}else{
-				THROW_RUNTIME_ERROR(" error symbol \"%s\" already registered as C++", symbol_name.c_str());
+				THROW_RUNTIME_ERROR(" error symbol '%s' already registered as C++", symbol_name.c_str());
 			}
 		}
 

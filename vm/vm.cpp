@@ -226,10 +226,10 @@ namespace zetscript{
 		return NULL;
 	}
 
-	StackElement * 	vm_get_top_stack_element_from_stack(VirtualMachine *vm){
+	/*StackElement * 	vm_get_top_stack_element_from_stack(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		return (data->stk_vm_current-1);
-	}
+		return (data->stk_vm_current);
+	}*/
 
 	StackElement vm_execute(
 		VirtualMachine *vm
