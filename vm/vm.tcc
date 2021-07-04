@@ -767,7 +767,7 @@ namespace zetscript{
 		ScriptObject *script_object=NULL;
 		std::string class_name_object_found="";
 		ScriptObjectClass *one_param_object_class = NULL;
-		int n_stk_args=byte_code_get_num_arguments_static_metamethod(byte_code_metamethod);
+		int n_stk_args=byte_code_metamethod_get_num_arguments(byte_code_metamethod);
 		StackElement *stk_return=NULL;
 		int n_returned_arguments_from_function=0;
 		//unsigned char n_args=instruction->value_op1; // number arguments will pass to this function

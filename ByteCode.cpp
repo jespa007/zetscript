@@ -244,7 +244,7 @@ namespace zetscript{
 		return "none";
 	}
 
-	int			 byte_code_get_num_arguments_static_metamethod(ByteCodeMetamethod op){
+	int			 byte_code_metamethod_get_num_arguments(ByteCodeMetamethod op){
 		switch(op){
 			case BYTE_CODE_METAMETHOD_TO_STRING:
 			case BYTE_CODE_METAMETHOD_NEXT:
@@ -260,9 +260,36 @@ namespace zetscript{
 		return 2;
 	}
 
-	int			 get_num_arguments_non_static_metamethod(ByteCodeMetamethod op){
-		return byte_code_get_num_arguments_static_metamethod(op)-1;
+	bool		 byte_code_metamethod_should_be_static(ByteCodeMetamethod op){
+
+		switch(op){
+		case BYTE_CODE_METAMETHOD_EQU:
+		case BYTE_CODE_METAMETHOD_NOT_EQU:
+		case BYTE_CODE_METAMETHOD_LT:
+		case BYTE_CODE_METAMETHOD_LTE:
+		case BYTE_CODE_METAMETHOD_GT:
+		case BYTE_CODE_METAMETHOD_GTE:
+		case BYTE_CODE_METAMETHOD_ADD:
+		case BYTE_CODE_METAMETHOD_SUB:
+		case BYTE_CODE_METAMETHOD_DIV:
+		case BYTE_CODE_METAMETHOD_MUL:
+		case BYTE_CODE_METAMETHOD_MOD:
+		case BYTE_CODE_METAMETHOD_AND:
+		case BYTE_CODE_METAMETHOD_OR:
+		case BYTE_CODE_METAMETHOD_XOR:
+		case BYTE_CODE_METAMETHOD_SHL:
+		case BYTE_CODE_METAMETHOD_SHR:
+			return true;
+			break;
+		default:
+			break;
+		}
+		return false;
 	}
+
+	/*int			 get_num_arguments_non_metamethod(ByteCodeMetamethod op){
+		return byte_code_get_num_arguments_static_metamethod(op)-1;
+	}*/
 
 
 	ByteCode			 byte_code_load_to_push_stk(ByteCode byte_code){

@@ -467,14 +467,26 @@ namespace zetscript{
 					ByteCodeMetamethod op=(ByteCodeMetamethod)i;
 					const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(op);
 					const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(op);
-					int min_args_static_metamethod=byte_code_get_num_arguments_static_metamethod(op); // expected params for static function, n_args -1 else
+					int n_args_static_metamethod=byte_code_metamethod_get_num_arguments(op); // expected params for static function, n_args -1 else
 
 					Symbol *symbol_result;
 
 					// can be one parameter or 0 params...
-					if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
+					if(byte_code_metamethod_should_be_static(op) && ((symbol_properties & SYMBOL_PROPERTY_STATIC)==0)){
+						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as static instead of member"
+							,symbol_class.name.c_str()
+							,function_name.c_str()
+						);
+						return NULL;
+					}else if((byte_code_metamethod_should_be_static(op)==false) && ((symbol_properties & SYMBOL_PROPERTY_STATIC))){
+						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as member instead of static"
+							,symbol_class.name.c_str()
+							,function_name.c_str()
+						);
+						return NULL;
+					}else if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
 						if((symbol_result=getSymbol(function_name,(char)params.size())) != NULL){
-							THROW_RUNTIME_ERROR("Metamethod \"%s::%s\" is already defined at \"%s::%s\" (%s:%i). Metamethods cannot be override"
+							THROW_RUNTIME_ERROR("Metamethod '%s::%s' is already defined at '%s::%s' (%s:%i). Metamethods cannot be override"
 								,symbol_class.name.c_str()
 								,function_name.c_str()
 								,symbol_result->scope->script_class->symbol_class.name.c_str()
@@ -485,7 +497,7 @@ namespace zetscript{
 							return NULL;
 						}
 					}else if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(idx_return_type == IDX_BUILTIN_TYPE_STRING_PTR_C || idx_return_type == IDX_BUILTIN_TYPE_STRING_C) ){
-						THROW_RUNTIME_ERROR("Metamethod \"%s::%s\" should return std::string * or std::string *"
+						THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return std::string * or std::string *"
 								,symbol_class.name.c_str()
 								,function_name.c_str()
 
@@ -495,23 +507,23 @@ namespace zetscript{
 
 					// metamethod in script side are not static
 					if(function_symbol->properties & SYMBOL_PROPERTY_STATIC){
-						if(function_symbol->n_params<min_args_static_metamethod){
-							THROW_RUNTIME_ERROR("Static metamethod %s (aka %s) should have at least %i parameter/s"
+						if(function_symbol->n_params<n_args_static_metamethod){
+							THROW_RUNTIME_ERROR("Static metamethod '%s' (aka '%s') should have at least %i parameter/s"
 								,str_symbol_metamethod
 								,byte_code_metamethod_operator_str
-								,min_args_static_metamethod
+								,n_args_static_metamethod
 							);
 
 							return NULL;
 						}
 					}
 					else {
-						min_args_static_metamethod=get_num_arguments_non_static_metamethod(op);
-						if(function_symbol->n_params< min_args_static_metamethod){ // non-static functions pass this object as first parameter
-							THROW_RUNTIME_ERROR("Non static metamethod %s (aka %s) should have at least %i parameter/s"
+
+						if(function_symbol->n_params< (n_args_static_metamethod+1)){ // non-static functions pass this object as first parameter
+							THROW_RUNTIME_ERROR("Non static metamethod '%s' (aka '%s') should have at least %i parameter/s"
 								,str_symbol_metamethod
 								,byte_code_metamethod_operator_str
-								,min_args_static_metamethod
+								,n_args_static_metamethod
 							);
 							return NULL;
 						}
@@ -536,7 +548,7 @@ namespace zetscript{
 						}else*/{ // setter
 							if(setter_getter->setters.count>0 && ((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0)){
 								// error already set (script functions only can be set once)
-								THROW_RUNTIME_ERROR("Setter \"%s::_set\" already set"
+								THROW_RUNTIME_ERROR("Setter '%s::_set' already set"
 										,symbol_class.name.c_str()
 								);
 								return NULL;

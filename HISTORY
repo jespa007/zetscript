@@ -234,6 +234,7 @@ Solved issues
 > #289 Example bind "object" from C code
 #290 Json::serialize: expose attributes metamethods that implements getters 
 #291 vm_call_function_native: Support std::string return type
+> #292 Make mandatory use of static function for operator metamethods with two args
 
 //----------------------------------------------------------
 Version: 1.3.0
