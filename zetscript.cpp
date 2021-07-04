@@ -77,8 +77,8 @@ namespace zetscript{
 		// DateTime
 		cl=registerClass<zs_datetime>("DateTime",ModuleDateTimeWrap_new,ModuleDateTimeWrap_delete);
 
-		registerMemberFunction<zs_datetime>("_add",ModuleDateTimeWrap_add);
-		registerMemberFunction<zs_datetime>("_sub",ModuleDateTimeWrap_sub);
+		registerMemberFunctionStatic<zs_datetime>("_add",ModuleDateTimeWrap_add);
+		registerMemberFunctionStatic<zs_datetime>("_sub",ModuleDateTimeWrap_sub);
 
 		registerMemberFunction<zs_datetime>("setUtc",ModuleDateTimeWrap_setUtc);
 
