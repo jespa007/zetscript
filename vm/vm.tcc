@@ -740,8 +740,8 @@ namespace zetscript{
 	}
 
 	inline bool vm_apply_metamethod(
-			VirtualMachine *vm
-		 ,ScriptFunction *calling_function
+		VirtualMachine *vm
+		,ScriptFunction *calling_function
 		,Instruction *instruction
 		,ByteCodeMetamethod byte_code_metamethod
 		,StackElement *stk_result_op1
@@ -783,11 +783,11 @@ namespace zetscript{
 		}
 
 		if(
-				// allowed classes that accepts metamethods
-				STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op1)
-				|| STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk_result_op1)
-				|| STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk_result_op1)
-				|| STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk_result_op1)
+			// allowed classes that accepts metamethods
+			STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op1)
+			|| STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk_result_op1)
+			|| STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk_result_op1)
+			|| STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk_result_op1)
 		){
 			script_object = (ScriptObjectClass *)(stk_result_op1->value);
 		}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -819,14 +819,14 @@ namespace zetscript{
 
 		if(stk_result_op2 != NULL){
 			if(vm_apply_metamethod_primitive(
-						vm
-						 ,calling_function
-						,instruction
-						,byte_code_metamethod
-						,stk_result_op1
-						,stk_result_op2
-						, error
-				)){
+				vm
+				 ,calling_function
+				,instruction
+				,byte_code_metamethod
+				,stk_result_op1
+				,stk_result_op2
+				, error
+			)){
 				return true;
 			}
 
@@ -861,7 +861,7 @@ namespace zetscript{
 				,stk_args // +1 because we include all parameters (include object, i.e 1st parameter)
 				,n_stk_args
 			)) == NULL){
-				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
+				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
 				goto apply_metamethod_error;
 			}
 
@@ -870,12 +870,12 @@ namespace zetscript{
 			StackElement * stk = script_object->getProperty(str_symbol_metamethod);
 
 			if(stk == NULL){
-				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
+				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
 				goto apply_metamethod_error;
 			}
 
 			if((stk->properties & STK_PROPERTY_FUNCTION)==0){
-				error_found=zs_strutils::format("Operator metamethod \"%s (aka %s)\" is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
+				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
 				goto apply_metamethod_error;
 			}
 
@@ -943,8 +943,6 @@ namespace zetscript{
 			ret_obj=stk_return[0];
 		}
 
-
-
 		// reset stack...
 		data->stk_vm_current=stk_vm_current_backup;
 
@@ -954,24 +952,23 @@ namespace zetscript{
 
 apply_metamethod_error:
 
-
 		if(stk_result_op1!=NULL && stk_result_op2!=NULL){
-			VM_ERROR("cannot perform operation \"%s %s %s\". %s"
+			VM_ERROR("cannot perform operation '%s %s %s'. %s"
 				,stk_result_op1->toString().c_str()
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 				,stk_result_op2->toString().c_str()
 				,error_found.c_str()
-				);
+			);
 
 		}else if(stk_result_op1!=NULL){
-			VM_ERROR("cannot perform operation \"%s %s\". %s"
+			VM_ERROR("cannot perform operation '%s %s'. %s"
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 				,stk_result_op1->toString().c_str()
 				,error_found.c_str()
 			);
 
 		}else{
-			VM_ERROR("cannot perform operation \"%s\". %s"
+			VM_ERROR("cannot perform operation '%s'. %s"
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 				,error_found.c_str()
 			);

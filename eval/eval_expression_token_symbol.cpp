@@ -108,8 +108,10 @@ namespace zetscript{
 
 			if(pre_operation==PreOperation::PRE_OPERATION_NEG){
 				token_node_symbol.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
+				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}else if(pre_operation==PreOperation::PRE_OPERATION_NOT){
 				token_node_symbol.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NOT));
+				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}
 
 			token_node_symbol.token_type=TokenType::TOKEN_TYPE_SUBEXPRESSION;
@@ -555,7 +557,7 @@ namespace zetscript{
 				,line
 			);
 
-			// change load by push because is mutable
+			// if post inc/dec hange load by push because is mutable
 			if(byte_code_is_load_type(last_load_instruction->byte_code)){
 				last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
 			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
@@ -594,11 +596,17 @@ namespace zetscript{
 				,line
 			);
 
-			// change load by push because is mutable
-			if(byte_code_is_load_type(last_load_instruction->byte_code)){
-				last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
-			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
-				last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
+
+			// if pre inc/dec change load by push because is mutable
+			if(
+				(pre_operation == PreOperation::PRE_OPERATION_INC)
+			|| 	(pre_operation == PreOperation::PRE_OPERATION_DEC)){
+
+				if(byte_code_is_load_type(last_load_instruction->byte_code)){
+					last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
+				}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
+					last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
+				}
 			}
 
 		}

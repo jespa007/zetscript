@@ -1,28 +1,22 @@
 
  
-
 cmake CMakeList.txt
 
+=Custom toolchain=
 
-=Custom install=
-
-Install Visual Studio (2017)
-=====================
+==Visual Studio==
+===Visual Studio 2017===
 
 cmake CMakeList.txt -G "Visual Studio 15 2017 [arch]"
 
 
-Install MINGW
-=============
+==MINGW==
 
 cmake CMakeList.txt -G "MinGW Makefiles"
 
-Install Linux
-=============
+=Install=
 
-cmake CMakeList.txt
-
-prefix directory install
+==Prefix directory install==
 
 cmake CMakeList.txt -DCMAKE_INSTALL_PREFIX:PATH=(PATH_TO_INSTALL)
 

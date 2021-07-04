@@ -17,19 +17,19 @@ void IntegerWrap_set(Integer *_this,Integer *_ci2){
 	 _this->n = _ci2->n;
 }
 
-Integer * IntegerWrap_add(Integer *n1, Integer *n2){
+Integer * IntegerWrap_add(Integer *_this,Integer *n1, Integer *n2){
 	return new Integer(n1->n + n2->n);
 }
 
-Integer * IntegerWrap_add(Integer *n1, zs_float n2){
+Integer * IntegerWrap_add(Integer *_this,Integer *n1, zs_float n2){
 	return new Integer((int)(n1->n + n2));
 }
 
-Integer * IntegerWrap_add(Integer *n1, zs_int n2){
+Integer * IntegerWrap_add(Integer *_this,Integer *n1, zs_int n2){
 	return new Integer(n1->n + n2);
 }
 
-Integer * IntegerWrap_add(zs_int n1, Integer * n2){
+Integer * IntegerWrap_add(Integer *_this,zs_int n1, Integer * n2){
 	return new Integer(n1 + n2->n);
 }
 
