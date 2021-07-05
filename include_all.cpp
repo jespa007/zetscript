@@ -13,7 +13,7 @@
 #include 		"util/zs_datetime.cpp"
 
 
-#include		"exception.cpp"
+#include		"zs_exception.cpp"
 #include 		"Symbol.cpp"
 #include 		"StackElement.cpp"
 #include 		"ByteCode.cpp"

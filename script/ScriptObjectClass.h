@@ -58,8 +58,6 @@ namespace zetscript{
 			/**
 			 * This variable tells whether is pointer function or not.
 			 */
-			//ScriptClass *script_class;
-
 			ScriptClass * script_class_native;
 			bool delete_c_object_on_destroy;
 

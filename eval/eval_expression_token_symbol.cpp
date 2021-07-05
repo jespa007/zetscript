@@ -104,7 +104,7 @@ namespace zetscript{
 				EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"Expected ')'");
 			}
 
-			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+			aux_p=aux_p+1;
 
 			if(pre_operation==PreOperation::PRE_OPERATION_NEG){
 				token_node_symbol.instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));

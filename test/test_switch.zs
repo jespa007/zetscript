@@ -1,5 +1,4 @@
 function test_switch(a){
-	
 
 	switch(a){
 	default:

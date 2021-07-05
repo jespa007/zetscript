@@ -9,13 +9,13 @@
 
 class Integer;
 Integer *IntegerWrap_new();
-void IntegerWrap_delete(Integer *_this);
+
 void IntegerWrap_set(Integer *_this, zs_int _n);
 void IntegerWrap_set(Integer *_this,Integer *_ci2);
-Integer * IntegerWrap_add(Integer *_this,Integer *n1, Integer *n2);
-Integer * IntegerWrap_add(Integer *_this,Integer *n1, zs_float n2);
-Integer * IntegerWrap_add(Integer *_this,Integer *n1, zs_int n2);
-Integer * IntegerWrap_add(Integer *_this,zs_int n1, Integer * n2);
+Integer * IntegerWrap_add(Integer *n1, Integer *n2);
+Integer * IntegerWrap_add(Integer *n1, zs_float n2);
+Integer * IntegerWrap_add(Integer *n1, zs_int n2);
+Integer * IntegerWrap_add(zs_int n1, Integer * n2);
 Integer * IntegerWrap_sub(Integer *n1, Integer *n2);
 Integer * IntegerWrap_sub(Integer *n1, zs_float n2);
 Integer * IntegerWrap_sub(Integer *n1, zs_int n2);
@@ -47,3 +47,4 @@ Integer * IntegerWrap_shr(Integer *n1, zs_int n2);
 Integer * IntegerWrap_shr(zs_int n1, Integer *n2);
 zs_int IntegerWrap_toInt(Integer *_this);
 
+void IntegerWrap_delete(Integer *_this);

@@ -770,8 +770,6 @@ namespace zetscript{
 		int n_stk_args=byte_code_metamethod_get_num_arguments(byte_code_metamethod);
 		StackElement *stk_return=NULL;
 		int n_returned_arguments_from_function=0;
-		//unsigned char n_args=instruction->value_op1; // number arguments will pass to this function
-		//StackElement *stk_start_arg_call=(stk_vm_current-n_args);
 		ret_obj.setUndefined();
 
 		// init stk
@@ -847,18 +845,14 @@ namespace zetscript{
 		}
 
 		if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
-			//list_props=script_object->getStkBuiltinListElements();//getFunctions();
-
 			if((ptr_function_found = vm_find_function(
 				vm
 				,data->script_class_factory->getScriptClass(script_object->idx_script_class)
 				,calling_function
 				,instruction
 				,false
-				//,(void *)list_props->items
-				//,list_props->count
 				,str_symbol_metamethod
-				,stk_args // +1 because we include all parameters (include object, i.e 1st parameter)
+				,stk_args
 				,n_stk_args
 			)) == NULL){
 				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
@@ -894,9 +888,9 @@ namespace zetscript{
 		}else{ //
 			vm_call_function_native(
 					vm
-					,script_object
+					,ptr_function_found->symbol.properties & SYMBOL_PROPERTY_STATIC ? NULL:script_object
 					,ptr_function_found
-					,stk_args // +1 because we include all parameters (include object, i.e 1st parameter)
+					,stk_args
 					,n_stk_args
 					,calling_function
 					,instruction
@@ -1064,7 +1058,6 @@ apply_metamethod_error:
 
 				// everything allright store and share pointer
 				*stk_result_op2=*data->stk_vm_current;
-
 				//vm_share_pointer(vm,obj);
 
 			}else{

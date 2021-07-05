@@ -314,6 +314,10 @@
 stk_result_op2=--data->stk_vm_current;\
 stk_result_op1=(data->stk_vm_current-1);
 
+#define READ_TWO_POP_TWO \
+stk_result_op2=--data->stk_vm_current;\
+stk_result_op1=--data->stk_vm_current;
+
 #define POP_ONE \
 stk_result_op1=--data->stk_vm_current;
 
@@ -327,8 +331,6 @@ stk_result_op1=--data->stk_vm_current;
 	data->stk_vm_current->value=(stk_ptr);\
 	data->stk_vm_current->properties=STK_PROPERTY_PTR_STK;\
 	data->stk_vm_current++;
-
-
 
 
 namespace zetscript{
@@ -396,8 +398,6 @@ namespace zetscript{
 		if(((data->stk_vm_current-data->vm_stack)+calling_function->min_stack_needed)>=VM_STACK_LOCAL_VAR_MAX){
 			VM_STOP_EXECUTE("Error MAXIMUM stack size reached");
 		}
-
-
 
 #ifdef __DEBUG__
 		ZS_LOG_DEBUG("Executing function %s ...",calling_function->symbol.name.c_str());
@@ -965,7 +965,7 @@ load_element_object:
 								*data->stk_vm_current++=stk_aux;
 							}
 
-							READ_TWO_POP_ONE
+							READ_TWO_POP_TWO
 						}
 
 	vm_store_next:
@@ -1435,7 +1435,6 @@ load_element_object:
 
 			 case  BYTE_CODE_CALL_CONSTRUCTOR:
 			 case  BYTE_CODE_CALL: // calling function after all of args are processed...
-
 				 {
 					ScriptFunction *sf = NULL;
 					StackElement *stk_function_ref=NULL;
@@ -1627,7 +1626,6 @@ load_element_object:
 										}
 									}
 								}
-
 								stk_arg++;
 							}
 						}

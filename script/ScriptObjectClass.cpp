@@ -47,7 +47,7 @@ namespace zetscript{
 		zs = _zs;
 		StackElement *se;
 		std::string error;
-		ScriptClass *sc=NULL;
+
 		vm=zs->getVirtualMachine();
 
 		idx_script_class=_idx_script_class;
@@ -97,64 +97,33 @@ namespace zetscript{
 		c_object = _c_object;
 		script_class_native=NULL;
 
-		if(c_object == NULL){
-			// if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
-			if(script_class->isNativeClass()){
-				script_class_native=script_class;
-				created_object = CALL_CONSTRUCTOR_CLASS(script_class); // (*script_class->c_constructor)();
-				was_created_by_constructor=true;
-				c_object = created_object;
-				delete_c_object_on_destroy=true; // destroy object when class is destroyed. It will be safe (in principle)
-			}else {
-				sc=script_class;
-				// get first class with c inheritance...
-
-				while((sc->idx_base_classes->count>0) && (script_class_native==NULL)){
-					sc=this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]); // get base class (only first in script because has single inheritance)...
-					if(sc->isNativeClass()){ // we found the native script class!
-						script_class_native=sc;
-						if(sc->c_constructor!=NULL){ // if not null is class, else is singleton or static class already created
-							created_object =  CALL_CONSTRUCTOR_CLASS(sc); //(*sc->c_constructor)();
-							was_created_by_constructor=true;
-							c_object = created_object;
-							delete_c_object_on_destroy=true; // destroy object when class is destroyed. It will be safe (in principle)
-						}
-					}
+		// search native class
+		if(script_class->isNativeClass()){
+			script_class_native=script_class;
+		}else {
+			ScriptClass *sc=script_class;
+			// get first class with c inheritance...
+			while((sc->idx_base_classes->count>0) && (script_class_native==NULL)){
+				sc=this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]); // get base class (only first in script because has single inheritance)...
+				if(sc->isNativeClass()){ // we found the native script class!
+					script_class_native=sc;
+					break;
 				}
-
 			}
+		}
 
+		// create object if class is native or it derives from a native class
+		if(c_object == NULL && script_class_native != NULL){
+			// if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
+			created_object = CALL_CONSTRUCTOR_CLASS(script_class_native); // (*script_class->c_constructor)();
+			was_created_by_constructor=true;
+			c_object = created_object;
+			delete_c_object_on_destroy=true; // destroy object when class is destroyed. It will be safe (in principle)
 		}
 
 		// execute init var
-		//sc=script_class;
 		callConstructorBuiltin(script_class);
-
-
-
-		// only create symbols if not std::string or std::vector type to make it fast ...
 	}
-
-	/*StackElement *ScriptObjectClass::newSlotBuiltin(){
-		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
-		*stk=k_stk_undefined;
-		stk_builtin_elements.push_back((zs_int)stk);
-		return stk;
-	}
-
-	// built-in only for initialized
-	StackElement * ScriptObjectClass::addPropertyBuiltin(const std::string & symbol_value, StackElement stk){
-		std::string key_value = symbol_value;
-
-		// if ignore duplicate was true, map resets idx to the last function...
-		map_builtin_property_keys->set(key_value.c_str(),stk_builtin_elements.count);
-
-		StackElement *new_stk=newSlotBuiltin();
-		*new_stk=stk;
-
-  	    return new_stk;
-	}*/
-
 
 	ScriptFunction *ScriptObjectClass::getConstructorFunction(){
 
@@ -165,10 +134,6 @@ namespace zetscript{
 
 		return NULL;
 	}
-
-	/*bool ScriptObjectClass::itHasGetMetamethod(){
-		return getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_GET),NULL) != NULL;
-	}*/
 
 	bool ScriptObjectClass::itHasSetMetamethod(){
 		return getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET)) != NULL;
@@ -242,21 +207,16 @@ namespace zetscript{
 							THROW_RUNTIME_ERROR("toString: expected std::string or *std::string");
 							break;
 						}
-
 					}
 				}
 			}
-
 			return aux;
 		}
-
 		return ScriptObjectObject::toString();
 	}
 
 	ScriptObjectClass::~ScriptObjectClass(){
 		ScriptClass *script_class=getScriptClass();
-
-
 
 		if(created_object != 0 && delete_c_object_on_destroy){
 			 // only erases pointer if basic type or user/auto delete is required ...
@@ -267,9 +227,5 @@ namespace zetscript{
 				).c_str()
 			);
 		}
-
-
 	}
-
-
 }

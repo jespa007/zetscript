@@ -12,13 +12,10 @@ namespace zetscript{
 	const char * k_str_const_char_type_ptr=typeid(const char *).name();
 	const char * k_str_bool_type_ptr=typeid(bool *).name();
 	const char * k_str_const_bool_type_ptr=typeid(const bool *).name();
-	//const char * k_str_zs_int_type=typeid(zs_int).name();
-	//const char * k_str_unsigned_int_type=typeid(unsigned int).name();
 	const char * k_str_zs_int_type=typeid(zs_int).name();
 	const char * k_str_float_type=typeid(zs_float).name();
 	const char * k_str_bool_type=typeid(bool).name();
 	const char * k_str_stack_element_type=typeid(StackElement).name();
-
 
 	ZetScript::ZetScript(){
 		eval_int=0;
@@ -41,7 +38,6 @@ namespace zetscript{
 
 		//-------------------------
 		// Register built in modules
-
 
 		// Math mod
 		ScriptClass *cl=script_class_factory->registerClass("Math");
@@ -171,10 +167,6 @@ namespace zetscript{
 			)
 		);
 
-
-	/*	zs->eval("function test_function(){ print(\"hola\")}",false);
-		zs->eval("class TestClass{test(){print(\"hola\")}} var test_class=new TestClass()",false);*/
-
 		saveState();
 	}
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -234,8 +226,6 @@ namespace zetscript{
 	 }
 	 // PRINT ASM INFO
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	//--------------------------------
 	 // FILE MANAGEMENT
 	bool ZetScript::isFilenameAlreadyParsed(const std::string & filename){
 		for(unsigned i = 0; i < parsed_files.size(); i++){
@@ -245,8 +235,6 @@ namespace zetscript{
 		}
 		return false;
 	}
-
-
 	//-----------------------------------------------------------------------------------------
 	// STK STRING OBJECT
 	StackElement * ZetScript::registerStkStringObject(const std::string & key_name,const std::string & const_name){
@@ -313,96 +301,10 @@ namespace zetscript{
 	// STK STRING OBJECT
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
-	/*void ZetScript::setPrintOutCallback(void (* _printout_callback)(const char *)){
-		print_out_callback=_printout_callback;
-	}
-
-	void (* ZetScript::print_out_callback)(const char *) = NULL;
-
-	zs_int * ZetScript::evalIntValue(const std::string & str_to_eval){
-
-		eval(str_to_eval.c_str());
-
-		StackElement *se=vm_get_top_stack_element_from_stack(virtual_machine);
-
-		if(se != NULL){
-
-			if(se->properties & STK_PROPERTY_ZS_INT){
-
-				eval_int=(zs_int)se->value;
-				return &eval_int;
-			}
-			else{
-				THROW_RUNTIME_ERROR("evalIntValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
-			}
-		}
-
-		return NULL;
-	}
-
-	bool * ZetScript::evalBoolValue(const std::string & str_to_eval){
-
-		eval(str_to_eval.c_str());
-
-		StackElement *se=vm_get_top_stack_element_from_stack(virtual_machine);
-
-		if(se != NULL){
-
-			if(se->properties & STK_PROPERTY_BOOL){
-				eval_bool=(bool)((zs_int)se->value);
-				return &eval_bool;
-
-			}else{
-				THROW_RUNTIME_ERROR("evalBoolValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
-			}
-		}
-
-		return NULL;
-	}
-
-	zs_float * ZetScript::evalFloatValue(const std::string & str_to_eval){
-		eval(str_to_eval.c_str());
-		StackElement *se=vm_get_top_stack_element_from_stack(virtual_machine);
-
-		if(se != NULL){
-			if(se->properties & STK_PROPERTY_ZS_FLOAT){
-				eval_float = *((zs_float *)(&se->value));
-				return &eval_float;
-			}
-			else{
-				THROW_RUNTIME_ERROR("evalFloatValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
-			}
-		}
-		return NULL;
-	}
-
-	std::string * ZetScript::evalStringValue(const std::string & str_to_eval){
-
-		// eval and preserve zero shares to get value...
-		evalInternal(str_to_eval.c_str());
-
-		StackElement *se=vm_get_top_stack_element_from_stack(virtual_machine);
-
-		if(se != NULL){
-
-			if(STK_IS_SCRIPT_OBJECT_STRING(se)){
-
-				eval_string = ((ScriptObjectString *)se->value)->toString();
-				return &eval_string;
-			}
-			else{
-				THROW_RUNTIME_ERROR("evalStringValue(...): Error evaluating \"%s\". Property:0x%X",str_to_eval.c_str(),se->properties);
-			}
-		}
-		return NULL;
-	}*/
-
 	StackElement ZetScript::evalInternal(const char * code, unsigned short options, const char * filename)  {
 		ScriptFunction *sf_main=MAIN_FUNCTION(this);
 		Scope *sc_main=MAIN_SCOPE(this);
 		StackElement stk_ret=k_stk_undefined;
-
-
 
 		eval_parse_and_compile(this,code,filename);
 
@@ -520,8 +422,6 @@ namespace zetscript{
 		}
 
 		vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
-
-
 	}
 
 	void ZetScript::setClearGlobalVariablesCheckpoint(){
@@ -532,7 +432,6 @@ namespace zetscript{
 		for(auto it=parsed_files.begin();it!=parsed_files.end();it++){
 			delete *it;
 		}
-
 		parsed_files.clear();
 	}
 
@@ -556,14 +455,8 @@ namespace zetscript{
 	}
 
 	ZetScript::~ZetScript(){
-
 		// delete system and string...
-		//eval("/*delete System;*/delete String;");
-
 		clearGlobalVariables(0);
-		/*scope_factory->clear(IDX_SCRIPT_SCOPE_MAIN+1);
-		script_function_factory->clear(IDX_SCRIPT_FUNCTION_MAIN+1);
-		script_class_factory->clear(IDX_SCRIPT_CLASS_MAIN+1);*/
 
 		// clear objects...
 		vm_delete(virtual_machine);
@@ -589,6 +482,5 @@ namespace zetscript{
 		eval_deinit();
 
 		resetParsedFiles();
-
 	}
 }

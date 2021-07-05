@@ -83,7 +83,7 @@
 #include "util/zs_timespan.h"
 #include "util/zs_datetime.h"
 
-#include "exception.h"
+#include "zs_exception.h"
 #include "ByteCode.h"
 #include "Instruction.h"
 #include "Symbol.h"
@@ -196,25 +196,15 @@ namespace zetscript{
 
 		StackElement	eval(const std::string & expresion,unsigned short options=0, const char * filename="");
 		StackElement	evalFile(const std::string & filename,unsigned short options=0);
-		//zs_int * 		evalIntValue(const std::string & str_to_eval);
-		//bool * 			evalBoolValue(const std::string & str_to_eval);
-		//zs_float * 		evalFloatValue(const std::string & str_to_eval);
-		//std::string * 	evalStringValue(const std::string & str_to_eval);
 
 		// CONSTANT TOOLS
 		StackElement * registerStkStringObject(const std::string & key_name,const std::string & const_name);
-		/*StackElement * registerConstantBool(const std::string & key_name, bool value);
-		StackElement * registerConstantInt(const std::string & key_name, zs_int value);
-		StackElement * registerConstantFloat(const std::string & key_name, zs_float value);*/
 		StackElement * getStkStringObject(const std::string & const_name);
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
 		bool isFilenameAlreadyParsed(const std::string & filename);
 		//-----------------------------------------------
-
-		//void 						setPrintOutCallback(void (*)(const char *));
-
 		/**
 		 * Register C variable
 		 */
@@ -243,7 +233,6 @@ namespace zetscript{
 			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-
 		/**
 		 * Register C function
 		 */
@@ -263,10 +252,6 @@ namespace zetscript{
 		/**
 		 * Register C Class. Return index registered class
 		 */
-		/*template<typename C>
-		void registerClass(const std::string & class_name, const char *registered_file="",short registered_line=-1){
-			script_class_factory->registerNativeClass<C>(class_name, registered_file,registered_line);
-		}*/
 
 		template<typename C>
 		ScriptClass * registerClass(const std::string & class_name, C  * (*_constructor)(), void (*_destructor)(C *), const char *registered_file="",short registered_line=-1){
@@ -303,34 +288,34 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-				void	registerMemberVariableSetter(
-						const char *var_name
-						,F ptr_function
-						 , const char *registered_file=""
-						,short registered_line=-1
-				){
-					script_class_factory->registerMemberVariableSetter<C>(var_name,ptr_function, registered_file,registered_line );
-				}
+		void	registerMemberVariableSetter(
+				const char *var_name
+				,F ptr_function
+				 , const char *registered_file=""
+				,short registered_line=-1
+		){
+			script_class_factory->registerMemberVariableSetter<C>(var_name,ptr_function, registered_file,registered_line );
+		}
 
 		template <typename C,typename F>
-				void	registerMemberVariableGetter(
-						const char *var_name
-						,F ptr_function
-						 , const char *registered_file=""
-						,short registered_line=-1
-				){
-					script_class_factory->registerMemberVariableGetter<C>(var_name,ptr_function, registered_file,registered_line );
-				}
+		void	registerMemberVariableGetter(
+				const char *var_name
+				,F ptr_function
+				 , const char *registered_file=""
+				,short registered_line=-1
+		){
+			script_class_factory->registerMemberVariableGetter<C>(var_name,ptr_function, registered_file,registered_line );
+		}
 
 		template <typename C,typename F>
-				void	registerMemberFunction(
-						const char *function_name
-						,F function_type
-						 , const char *registered_file=""
-						,short registered_line=-1
-				){
-					script_class_factory->registerNativeMemberFunction<C>(function_name,function_type, registered_file,registered_line );
-				}
+		void	registerMemberFunction(
+				const char *function_name
+				,F function_type
+				 , const char *registered_file=""
+				,short registered_line=-1
+		){
+			script_class_factory->registerNativeMemberFunction<C>(function_name,function_type, registered_file,registered_line );
+		}
 
 
 		template <typename C,typename F>
@@ -546,17 +531,10 @@ namespace zetscript{
 		bool eval_bool;
 		std::string eval_string;
 		int idx_current_global_variable_checkpoint;
-		//ModuleMath math_mod;
-		//ModuleSystem 	system_mod;
-
 
 		//===================================================================================================
 		//
 		// PRINT ASM INFO
-//		std::string getStrMovVar(Instruction * iao);
-
-		//void printGeneratedCode(ScriptFunction *sfo);
-
 		//----
 		StackElement evalInternal(const char * code, unsigned short options=0, const char  *filename="");
 

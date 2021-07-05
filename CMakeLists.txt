@@ -238,7 +238,7 @@ ELSE()
  		StackElement.cpp
  		Instruction.cpp
  		ByteCode.cpp
- 		exception.cpp
+ 		zs_exception.cpp
  		Symbol.cpp
 		zetscript.cpp
 	
@@ -353,7 +353,7 @@ ELSE()
 		ByteCode.h
 		common.h
 		config.h
-		exception.h
+		zs_exception.h
 		Instruction.h
 		StackElement.h
 		Symbol.h
