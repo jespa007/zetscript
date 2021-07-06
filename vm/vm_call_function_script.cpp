@@ -1839,6 +1839,10 @@ load_element_object:
 			 case  BYTE_CODE_DELETE:
 					POP_ONE;
 					//script_var
+					if(stk_result_op1->properties & STK_PROPERTY_PTR_STK){
+						stk_result_op1=(StackElement *)stk_result_op1->value;
+					}
+
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						ScriptObjectClass *script_object_class=NULL;
 						StackElement *se=stk_result_op1;
@@ -1849,7 +1853,7 @@ load_element_object:
 							goto lbl_exit_function;
 						}
 
-						if(so_aux->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS)
+						if(so_aux->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS)
 						{ // max ...
 							script_object_class=(ScriptObjectClass *)so_aux;
 
@@ -1860,7 +1864,7 @@ load_element_object:
 						}
 					}
 					else{
-						VM_STOP_EXECUTE("Error deleting \"%s\". cannot perform delete on variables type \"%s\"",SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_result_op1->typeOf());
+						VM_STOP_EXECUTE("Error deleting '%s' of type '%s'. 'delete' is only allowed on object types",SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_result_op1->typeOf());
 					}
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:
