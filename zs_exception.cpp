@@ -15,7 +15,7 @@ namespace zetscript {
 		if(_file==0||*_file==0){
 			sprintf(what_msg,"line %i: %s", _line, (char *)error_description.c_str());
 		}else{
-			sprintf(what_msg,"[%s:%i]: %s",_file, _line, (char *)error_description.c_str());
+			sprintf(what_msg,"[%s:%i]: %s",zs_path::get_filename(_file).c_str(), _line, (char *)error_description.c_str());
 		}
 
 	}

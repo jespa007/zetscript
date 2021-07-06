@@ -615,7 +615,11 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_LOAD_CONSTRUCTOR:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
-				*data->stk_vm_current++=*(so_aux->getBuiltinElementAt(instruction->value_op2));
+				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
+					*data->stk_vm_current++=k_stk_undefined;
+				}else{
+					*data->stk_vm_current++=*(so_aux->getBuiltinElementAt(instruction->value_op2));
+				}
 				continue;
 
 			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
@@ -640,11 +644,12 @@ load_element_object:
 					if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)!= STK_PROPERTY_SCRIPT_OBJECT)
 					{
 						VM_STOP_EXECUTE(
-							"Cannot perform access operation [ ... %s.%s ]. Expected \"%s\" as object but is type \"%s\""
+							"Cannot perform access operation [ ... %s.%s ]. Expected '%s' as object but is type '%s' %s"
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 							,stk_result_op1->typeOf()
+							,stk_result_op1->typeOf() == "Class"? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 						);
 					}
 
@@ -1459,6 +1464,11 @@ load_element_object:
 					}else{
 
 						if((stk_function_ref->properties & (STK_PROPERTY_FUNCTION))==0){
+							if(is_constructor){ // constructor was not found so we do nothing
+								// reset stack (ignore all pushed data in the stack)
+								data->stk_vm_current=stk_start_arg_call-1;
+								continue;
+							}
 							VM_STOP_EXECUTE("'%s' is not function or not exist",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 						}
 
@@ -1715,7 +1725,8 @@ load_element_object:
 					// setup all returned variables from function
 					CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return,n_returned_arguments_from_function,false)
 
-					data->stk_vm_current=stk_start_arg_call-1; // set vm current before function pointer is
+					// reset vm current before function pointer is
+					data->stk_vm_current=stk_start_arg_call-1;
 
 					if(instruction->value_op2 == ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK) {
 						StackElement tmp;

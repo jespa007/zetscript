@@ -366,7 +366,6 @@ namespace zetscript{
 		if(vm_decrement_shared_nodes_and_dettach_if_zero(vm,_node,is_dettached)){
 
 			if(is_dettached == true){
-				//ZS_LOG_DEBUG("Deallocating %i:%p",_node->data.ptr_script_object_shared->idx_script_class,_node->data.ptr_script_object_shared);
 				delete _node->data.ptr_script_object_shared; // it deletes shared_script_object
 				free(_node);
 			}

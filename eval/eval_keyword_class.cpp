@@ -232,13 +232,11 @@ namespace zetscript{
 
 			eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(BYTE_CODE_FIND_VARIABLE));
 
-			if(scope_info == MAIN_SCOPE(eval_data)){ // find global symbol if global scope
-				symbol_found = eval_find_global_symbol(eval_data,symbol_value);
-
-				if(symbol_found != NULL){
-					eval_instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
-					eval_instruction->vm_instruction.value_op2=symbol_found->idx_position;
-					eval_instruction->symbol=*symbol_found;
+			if((symbol_found = eval_find_local_symbol(eval_data,scope_info,symbol_value)) != NULL){
+				eval_instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
+				eval_instruction->vm_instruction.value_op2=symbol_found->idx_position;
+				if((symbol_found->properties & (SYMBOL_PROPERTY_ARG_BY_REF)) == SYMBOL_PROPERTY_ARG_BY_REF){
+					eval_instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_REF;
 				}
 			}
 

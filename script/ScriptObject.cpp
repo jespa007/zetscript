@@ -194,7 +194,7 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObject::getBuiltinElementAt(short idx){
-		if(idx >= (int)stk_builtin_elements.count){
+		if(idx >= (int)stk_builtin_elements.count || idx < 0){
 			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}

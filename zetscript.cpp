@@ -402,7 +402,7 @@ namespace zetscript{
 				global_symbol=symbol->name;
 				ScriptObjectObject *var = NULL;
 				if(MAIN_SCOPE(this)->unregisterSymbol(symbol->name)==false){
-					THROW_RUNTIME_ERROR("internal error : %s symbol expected to be on the main scope",global_symbol.c_str());
+					continue; // not global so we can ignore
 				}
 
 				if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){

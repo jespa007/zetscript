@@ -189,6 +189,8 @@ namespace zetscript{
 							// ... destroy lifetime object we don't need anymore
 							vm_unref_lifetime_object(this->vm,so);
 							// return
+						}else{
+							aux=result.toString();
 						}
 					}else{ // expect return an scriptobjectstring
 						std::string *str=NULL;

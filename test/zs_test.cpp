@@ -228,7 +228,7 @@ void test_float_expression(zs_float expr, const char *str_expr) {
 				"(n2=new Float("\
 				"%s" \
 				"))"\
-				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;nt2;")
+				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;return nt2;")
 void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_format) {
 	struct _test_arithmetic_float_op_data {
 		std::string str; zs_float val;
@@ -547,8 +547,8 @@ int main(int argc, char * argv[]) {
 
 	//----------------------
 	// TEST (erase on exit)
-    zs->eval("var i1,i2,it1,it2,n1,n2,nt1,nt2");
-	/*zs->eval("it1=("\
+    /*zs->eval("var i1,i2,it1,it2,n1,n2,nt1,nt2");
+	zs->eval("it1=("\
 				"(i1=new Integer("\
 				"4" \
 				"))"\
@@ -560,12 +560,12 @@ int main(int argc, char * argv[]) {
 
 	//COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,2); // op1==op2
 
-	zs->eval("it1=((i1=new Integer(4))+(i2=new Integer(-4)));it2=it1.toInt();delete it1;delete i1;delete i2;return it2;");*/
+	zs->eval("it1=((i1=new Integer(4))+(i2=new Integer(-4)));it2=it1.toInt();delete it1;delete i1;delete i2;return it2;");
 	printf("%i. testing class Integer arithmetic operations...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(5,4); // op1 > op2
-	return 0;
+	return 0;*/
 
 	// unsinged
 	printf("%i. testing arithmetic operations integer...\n",++n_test);

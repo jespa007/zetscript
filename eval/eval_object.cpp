@@ -330,16 +330,16 @@ namespace zetscript{
 				 // get constructor function
 				 constructor_function=sc->getSymbol(class_name); // FUNCTION_MEMBER_CONSTRUCTOR_NAME
 
-				 if(constructor_function != NULL){
+				 //if(constructor_function != NULL){
 					 // insert load function ...
-					 instructions->push_back(
-						eval_instruction=new EvalInstruction(
-							 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR
-							 ,ZS_IDX_UNDEFINED
-							 ,constructor_function->idx_position
-						)
-					 );
-				 }
+				 instructions->push_back(
+					eval_instruction=new EvalInstruction(
+						 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR
+						 ,ZS_IDX_UNDEFINED
+						 ,constructor_function != NULL?constructor_function->idx_position:ZS_IDX_UNDEFINED
+					)
+				 );
+				 //}
 
 				 eval_instruction->instruction_source_info=InstructionSourceInfo(
 					 eval_data->current_parsing_file
@@ -379,17 +379,17 @@ namespace zetscript{
 				 }while(*aux_p != ')');
 
 				 // if constructor function found insert call function...
-				  if(constructor_function != NULL){
-					 instructions->push_back(
-							 eval_instruction=new EvalInstruction(
-							  BYTE_CODE_CALL_CONSTRUCTOR
-							 ,n_args
-						)
-					 );
+				 // if(constructor_function != NULL){
+				 instructions->push_back(
+						 eval_instruction=new EvalInstruction(
+						  BYTE_CODE_CALL_CONSTRUCTOR
+						 ,n_args
+					)
+				 );
 
-					 eval_instruction->instruction_source_info.file=eval_data->current_parsing_file;
-					 eval_instruction->instruction_source_info.line=start_line;
-				  }
+				 eval_instruction->instruction_source_info.file=eval_data->current_parsing_file;
+				 eval_instruction->instruction_source_info.line=start_line;
+				//  }
 
 
 				return aux_p+1; // ignore last )

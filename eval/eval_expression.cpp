@@ -121,7 +121,7 @@ namespace zetscript{
 
 				keyword_type=eval_is_keyword(aux_p);
 
-				if(	is_end_expression(aux_p)
+				if(	is_end_expression_or_keyword(eval_data,aux_p,line)
 				|| operator_type==Operator::OPERATOR_TERNARY_IF
 				|| operator_type==Operator::OPERATOR_TERNARY_ELSE
 				|| ((operator_type==Operator::OPERATOR_ASSIGN) && (properties & EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR))
