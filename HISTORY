@@ -236,6 +236,7 @@ Solved issues
 #291 vm_call_function_native: Support std::string return type
 #292 Make mandatory use of static function for operator metamethods with two args
 > #293 Make operation with assigment operations it does indefined behaviour on calling funcionts and its results
+> #294 undefined behaviour when call delete 
 
 
 //----------------------------------------------------------

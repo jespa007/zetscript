@@ -234,31 +234,31 @@ namespace zetscript{
 				break;
 			}
 		}else if(c_function->idx_return_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
-			std::string str_aux;
+			zs_float float_aux;
 			switch(n_args){
 			case 0:
-				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();
+				float_aux=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();
 				break;
 			case 1:
-				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM1(fun_ptr)(
+				float_aux=PTR_FUNCTION_RET_FLOAT_PARAM1(fun_ptr)(
 					converted_param[0]
 				);
 				break;
 			case 2:
-				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM2(fun_ptr)(
+				float_aux=PTR_FUNCTION_RET_FLOAT_PARAM2(fun_ptr)(
 					converted_param[0]
 					,converted_param[1]
 				);
 				break;
 			case 3:
-				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM3(fun_ptr)(
+				float_aux=PTR_FUNCTION_RET_FLOAT_PARAM3(fun_ptr)(
 					converted_param[0]
 					,converted_param[1]
 					,converted_param[2]
 				);
 				break;
 			case 4:
-				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM4(fun_ptr)(
+				float_aux=PTR_FUNCTION_RET_FLOAT_PARAM4(fun_ptr)(
 					converted_param[0]
 					,converted_param[1]
 					,converted_param[2]
@@ -266,7 +266,7 @@ namespace zetscript{
 				);
 				break;
 			case 5:
-				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM5(fun_ptr)(
+				float_aux=PTR_FUNCTION_RET_FLOAT_PARAM5(fun_ptr)(
 					converted_param[0]
 					,converted_param[1]
 					,converted_param[2]
@@ -275,7 +275,7 @@ namespace zetscript{
 				);
 				break;
 			case 6:
-				str_aux=PTR_FUNCTION_RET_FLOAT_PARAM6(fun_ptr)(
+				float_aux=PTR_FUNCTION_RET_FLOAT_PARAM6(fun_ptr)(
 					converted_param[0]
 					 ,converted_param[1]
 					 ,converted_param[2]
@@ -285,6 +285,8 @@ namespace zetscript{
 				);
 				break;
 			}
+
+			ZS_FLOAT_COPY(&result,&float_aux);
 
 		}else if(c_function->idx_return_type==IDX_BUILTIN_TYPE_STRING_C){ // we must do a float cast in order to get float return.
 

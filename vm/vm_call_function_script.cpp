@@ -1860,12 +1860,14 @@ load_element_object:
 							if(script_object_class->isCreatedByContructor()){
 								script_object_class->deleteNativeObjectOnDestroy(true);
 							}
-							STK_SET_NULL(se);
+
 						}
+
+						STK_SET_NULL(se);
 					}
-					else{
+					/*else{
 						VM_STOP_EXECUTE("Error deleting '%s' of type '%s'. 'delete' is only allowed on object types",SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_result_op1->typeOf());
-					}
+					}*/
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:
 				PUSH_VM_SCOPE(instruction->value_op2,calling_function,_stk_local_var,instruction->value_op1);

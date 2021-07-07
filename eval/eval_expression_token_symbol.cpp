@@ -270,7 +270,12 @@ namespace zetscript{
 		IGNORE_BLANKS(test_aux_p,eval_data,aux_p,test_line);
 
 		// eval accessor element (supose that was a preinsert a load instruction for identifier )...
-		if(is_access_punctuator(aux_p)){
+		if(is_access_punctuator(test_aux_p)){
+
+			// set test
+			aux_p=test_aux_p;
+			line=test_line;
+
 			std::string accessor_name="",
 						last_accessor_value=token_node_symbol.value;
 

@@ -686,7 +686,7 @@ int main(int argc, char * argv[]) {
 				"test_function_1st_c_call();\n"
 			"}\n"
 			"function test_2nd_script_call(){\n"
-				"System::print(\"2nd call script\");\n"
+				"Console::outln(\"2nd call script\");\n"
 			"}");
 
 	std::function<void ()> * test_1st_script_call=zs->bindScriptFunction<void ()>("test_1st_script_call");
