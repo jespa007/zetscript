@@ -336,10 +336,19 @@ namespace zetscript{
 	void vm_delete(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		if(data->lifetime_object.size()>0){
+			std::string created_at="";
+			std::string end="";
 
 			std::string error="\n\nSome lifetime objects created by virtual machine were not destroyed:\n\n";
 			for(auto it=data->lifetime_object.begin(); it !=data->lifetime_object.end();it++ ){
-				error+=zs_strutils::format("* Object lifetime from a calling function created at [%s:%i] was not destroyed \n",zs_path::get_filename(it->second->file).c_str(),it->second->line);
+				created_at="";
+				end="";
+				if((it->second->file == 0 || *it->second->file==0)){
+					end="Tip: Use ZS_EVAL in order to get file:line where the object was created";
+				}else{
+					zs_strutils::format(" from a calling function created at [%s:%i]",zs_path::get_filename(it->second->file).c_str(),it->second->line);
+				}
+				error+=zs_strutils::format("* Created object lifetime%s was not destroyed. %s \n",created_at.c_str(),end.c_str());
 			}
 
 			error+="\n\n";

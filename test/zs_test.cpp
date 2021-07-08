@@ -428,13 +428,15 @@ void test_arithmetic_string_op(const std::string & expected_value, const char * 
 
 
 	try{\
-		StackElement stk = zs->eval(std::string("return ")+str_expr);
+		StackElement stk = ZS_EVAL(zs,std::string("return ")+str_expr);
 		if(STK_IS_SCRIPT_OBJECT_STRING(&stk)){
 			ScriptObjectString *so=(ScriptObjectString *)stk.value;
 			if (so->toString() != std::string(expected_value)) {
 				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str_expr, expected_value.c_str(), so->toString().c_str()); \
 				exit(-1); \
 			} \
+			// destroy lifetime object when is not needed
+			//zs->unrefLifetimeObject(so);
 		}else{
 			fprintf(stderr,"error test \"%s\" expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk.typeOf());
 			exit(-1);
@@ -594,7 +596,6 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,4.0); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5,4.0); // op1 > op2
-
 
 
 

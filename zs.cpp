@@ -36,6 +36,9 @@ Integer *_add_Integer(Integer *_n1, Integer * _n2){
 	return new Integer(_n1->n+_n2->n);
 }
 
+std::string _to_string(Integer *_n){
+	return zs_strutils::zs_int_to_str(_n->n);
+}
 
 void delete_Integer(Integer *_this){
 	delete _this;
@@ -47,6 +50,7 @@ int main(int argc, char * argv[]) {
 
 	zs->registerClass<Integer>("Integer",new_Integer,delete_Integer);
 	zs->registerMemberFunctionStatic<Integer>("_add",_add_Integer);
+	zs->registerMemberFunction<Integer>("_toString",_to_string);
 
 	if (argc > 1) {
 		unsigned short eval_options=0;
