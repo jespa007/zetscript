@@ -301,7 +301,7 @@ namespace zetscript{
 	// STK STRING OBJECT
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
-	StackElement ZetScript::evalInternal(const char * code, unsigned short options, const char * filename)  {
+	StackElement ZetScript::evalInternal(const char * code, unsigned short options, const char * filename, const char *__invoke_file__, int __invoke_line__)  {
 		ScriptFunction *sf_main=MAIN_FUNCTION(this);
 		Scope *sc_main=MAIN_SCOPE(this);
 		StackElement stk_ret=k_stk_undefined;
@@ -318,18 +318,22 @@ namespace zetscript{
 					virtual_machine
 					,NULL
 					,script_class_factory->getMainFunction()
+					,NULL
+					,0
+					, __invoke_file__
+					,__invoke_line__
 			);
 		}
 
 		return stk_ret;
 	}
 
-	StackElement ZetScript::eval(const std::string & code, unsigned short options, const char * filename)  {
+	StackElement ZetScript::eval(const std::string & code, unsigned short options, const char * filename, const char *__invoke_file__, int __invoke_line__)  {
 
-		return evalInternal(code.c_str(), options, filename);
+		return evalInternal(code.c_str(), options, filename,__invoke_file__,__invoke_line__);
 	}
 
-	StackElement ZetScript::evalFile(const std::string &  filename, unsigned short options){
+	StackElement ZetScript::evalFile(const std::string &  filename, unsigned short options, const char *__invoke_file__, int __invoke_line__){
 		//int idx_file=-1;
 		StackElement stk_ret;
 		char *buf_tmp=NULL;
@@ -351,7 +355,7 @@ namespace zetscript{
 				bool error=false;
 				std::string error_str;
 				try{
-					stk_ret=evalInternal(buf_tmp,options,const_file_char);
+					stk_ret=evalInternal(buf_tmp,options,const_file_char,__invoke_file__,__invoke_line__);
 				}
 				catch(std::exception & e){
 					error=true;

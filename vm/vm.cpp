@@ -339,17 +339,18 @@ namespace zetscript{
 			std::string created_at="";
 			std::string end="";
 
-			std::string error="\n\nSome lifetime objects created by virtual machine were not destroyed:\n\n";
+			std::string error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
 			for(auto it=data->lifetime_object.begin(); it !=data->lifetime_object.end();it++ ){
 				created_at="";
 				end="";
 				if((it->second->file == 0 || *it->second->file==0)){
-					end="Tip: Use ZS_EVAL in order to get file:line where the object was created";
+					end="Tip: Use ZS_EVAL in order to get file:line where the lifetime object was returned";
 				}else{
-					zs_strutils::format(" from a calling function created at [%s:%i]",zs_path::get_filename(it->second->file).c_str(),it->second->line);
+					created_at=zs_strutils::format(" at [%s:%i]",zs_path::get_filename(it->second->file).c_str(),it->second->line);
 				}
-				error+=zs_strutils::format("* Created object lifetime%s was not destroyed. %s \n",created_at.c_str(),end.c_str());
+				error+=zs_strutils::format("* Returned lifetime object%s was not unreferenced. %s \n",created_at.c_str(),end.c_str());
 			}
+			error+="\n\nLifetime objects returned by virtual machine must be unreferenced by calling 'unrefLifetimeObject' \n\n";
 
 			error+="\n\n";
 			//error+="\nPlease destroy lifetime objects through unrefLifetimeObject() before destroy zetscript to avoid this exception\n";

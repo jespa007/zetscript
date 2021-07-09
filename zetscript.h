@@ -141,6 +141,7 @@
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)	(zs)->registerGetterMemberAttribute<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_BIND_SCRIPT_FUNCTION(zs,_T,access_name)						(zs)->bindScriptFunction<_T>(access_name, __FILE__, __LINE__)
 #define	ZS_UNREF_LIFETIME_OBJECT(zs,so)									(zs)->unrefLifetimeObject(so);
+#define ZS_EVAL(zs,s) 													(zs)->eval(s,0,"",__FILE__,__LINE__)
 
 
 #define ZS_REGISTER_CONSTANT_VAR(zs,constant_name,v)					(zs)->registerConstantVariable(constant_name,v,__FILE__,__LINE__)
@@ -194,8 +195,8 @@ namespace zetscript{
 		inline ScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
 		inline ScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
 
-		StackElement	eval(const std::string & expresion,unsigned short options=0, const char * filename="");
-		StackElement	evalFile(const std::string & filename,unsigned short options=0);
+		StackElement	eval(const std::string & expresion,unsigned short options=0, const char * filename="", const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	evalFile(const std::string & filename,unsigned short options=0, const char *__invoke_file__="", int __invoke_line__=-1);
 
 		// CONSTANT TOOLS
 		StackElement * registerStkStringObject(const std::string & key_name,const std::string & const_name);
@@ -536,7 +537,7 @@ namespace zetscript{
 		//
 		// PRINT ASM INFO
 		//----
-		StackElement evalInternal(const char * code, unsigned short options=0, const char  *filename="");
+		StackElement evalInternal(const char * code, unsigned short options=0, const char  *filename="", const char *__invoke_file__="", int __invoke_line__=-1);
 
 		// FUNCTIONS
 		static 									void  print(const char *s);
