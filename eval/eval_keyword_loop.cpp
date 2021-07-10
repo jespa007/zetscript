@@ -406,12 +406,24 @@ namespace zetscript{
 
 							if(is_for_in){
 								Symbol *symbol_iterator;
-								std::vector<EvalInstruction *> ei_load_iterator;
-								std::vector<EvalInstruction> ei_load_iterator_st;
+								Operator tst_op_aux;
+								std::vector<EvalInstruction *> ei_load_container_identifier;
+								std::vector<EvalInstruction> ei_load_container_identifier_st;
 								EvalInstruction ei_iterator;
 								// set aux_p as test_aux
 								line=test_line;
 								IGNORE_BLANKS(aux_p,eval_data,test_aux+strlen(eval_data_operators[OPERATOR_IN].str),line);
+
+
+
+								if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
+									EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for-in': unexpected operator '%s' after 'in' ",eval_data_operators[tst_op_aux].str);
+								}
+
+								if((key_w=eval_is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
+									EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for-in': unexpected '%s' after 'in' ",eval_data_keywords[key_w].str);
+								}
+
 
 								// eval iterator variable
 								if((aux_p = eval_expression(
@@ -419,17 +431,27 @@ namespace zetscript{
 										,aux_p
 										,line
 										,new_scope
-										,&ei_load_iterator //eval_data->current_function->instructions
-										,{')'}
+										,&ei_load_container_identifier //eval_data->current_function->instructions
+										,{}
+										,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
 								))==NULL){
 									// delete unusued vars_for
 									return NULL;
 								}
 
-								for(unsigned j=0; j<ei_load_iterator.size();j++){
-									ei_load_iterator_st.push_back(*ei_load_iterator[j]);
-									delete ei_load_iterator[j];
+								for(unsigned j=0; j<ei_load_container_identifier.size();j++){
+									ei_load_container_identifier_st.push_back(*ei_load_container_identifier[j]);
+									delete ei_load_container_identifier[j];
 								}
+
+								if(*aux_p!=')'){
+									if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
+										EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for-in': unexpected operator '%s' after container identifier ",eval_data_operators[tst_op_aux].str);
+									}else{
+										EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for-in': expected ')' after container identifier ");
+									}
+								}
+
 								ei_init_vars_for.clear();
 
 								// 1. create iterator symbol
@@ -450,9 +472,9 @@ namespace zetscript{
 
 
 								// 2. emit iterator init
-								for(unsigned i=0; i < ei_load_iterator_st.size(); i++){
+								for(unsigned i=0; i < ei_load_container_identifier_st.size(); i++){
 									eval_data->current_function->instructions.push_back(
-										new EvalInstruction(ei_load_iterator_st[i])
+										new EvalInstruction(ei_load_container_identifier_st[i])
 									);
 								}
 
@@ -471,7 +493,7 @@ namespace zetscript{
 
 
 
-								ei_aux->instruction_source_info=ei_load_iterator_st[ei_load_iterator_st.size()-1].instruction_source_info;
+								ei_aux->instruction_source_info=ei_load_container_identifier_st[ei_load_container_identifier_st.size()-1].instruction_source_info;
 
 
 								idx_instruction_for_start=(int)(eval_data->current_function->instructions.size());

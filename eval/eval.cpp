@@ -42,6 +42,8 @@ namespace zetscript{
 		int line =_line;
 		bool error;
 		std::string error_str;
+		const char *error_file="";
+		int error_line=-1;
 		Scope *scope_info=MAIN_SCOPE(eval_data);
 		eval_data->current_parsing_file=_filename;
 		ScriptFunction *sf = _sf == NULL?MAIN_FUNCTION(eval_data):_sf;
@@ -99,11 +101,13 @@ namespace zetscript{
 
 		error=eval_data->error;
 		error_str=eval_data->error_str;
+		error_file=eval_data->error_file;
+		error_line=eval_data->error_line;
 
 		delete eval_data;
 
 		if(error){
-			THROW_EXCEPTION(error_str);
+			THROW_SCRIPT_ERROR_FILE_LINE(error_file,error_line,error_str.c_str());
 		}
 	}
 
@@ -284,6 +288,8 @@ namespace zetscript{
 						try{
 							// compile but not execute, it will execute the last eval
 							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE);
+						}catch(zs_exception & ex){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"\nFrom import %s line %i: %s",ex.getErrorSourceFilename().c_str(),ex.getErrorLine(),ex.getErrorDescription().c_str());
 						}catch(std::exception & ex){
 							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"\nFrom import file '%s': %s",str_symbol.c_str(),ex.what());
 						}
@@ -398,7 +404,7 @@ namespace zetscript{
 		sf->instructions = (PtrInstruction)malloc(total_size_bytes);
 		memset(sf->instructions, 0, total_size_bytes);
 		//bool is_static = eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC;
-		int ok=TRUE;
+		int ok=FALSE;
 		//int idx_instruction=0;
 
 
@@ -486,12 +492,13 @@ namespace zetscript{
 
 						// ok get the super function...
 						if(symbol_sf_foundf == NULL){
-							EVAL_ERROR_POP_FUNCTION(
-									eval_data->current_parsing_file
-									,instruction->instruction_source_info.line
-									,"Cannot find parent function %s::%s"
-									,sc_sf->symbol_class.name.c_str()
-									,sf->symbol.name.c_str()
+							EVAL_ERROR_FILE_LINE_AND_GOTO(
+								lbl_exit_pop_function
+								,eval_data->current_parsing_file
+								,instruction->instruction_source_info.line
+								,"Cannot find parent function %s::%s"
+								,sc_sf->symbol_class.name.c_str()
+								,sf->symbol.name.c_str()
 							);
 						}
 						instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER_VAR;
@@ -534,16 +541,18 @@ namespace zetscript{
 
 
 						if(eval_data->script_class_factory->getScriptClass(class_name) == NULL){
-							EVAL_ERROR_POP_FUNCTION(
-									eval_data->current_parsing_file
+							EVAL_ERROR_FILE_LINE_AND_GOTO(
+									lbl_exit_pop_function
+									,eval_data->current_parsing_file
 									,instruction->instruction_source_info.line
 									,"class '%s' not exist"
 									,class_name
 							);
 						}
 
-						EVAL_ERROR_POP_FUNCTION(
-								eval_data->current_parsing_file
+						EVAL_ERROR_FILE_LINE_AND_GOTO(
+								lbl_exit_pop_function
+								,eval_data->current_parsing_file
 								,instruction->instruction_source_info.line
 								,"static symbol '%s' not exist in '%s'"
 								//,sf_class->symbol_class.name.c_str()
@@ -551,8 +560,9 @@ namespace zetscript{
 								,class_name
 						);
 					}else{
-						EVAL_ERROR_POP_FUNCTION(
-								eval_data->current_parsing_file
+						EVAL_ERROR_FILE_LINE_AND_GOTO(
+								lbl_exit_pop_function
+								,eval_data->current_parsing_file
 								,instruction->instruction_source_info.line
 								,"Symbol '%s' not defined"
 								//,sf_class->symbol_class.name.c_str()
@@ -595,6 +605,8 @@ namespace zetscript{
 
 			sf->instruction_source_info[i]=instruction_info;
 		}
+
+		ok=TRUE;
 
 lbl_exit_pop_function:
 

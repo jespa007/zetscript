@@ -838,7 +838,7 @@ namespace zetscript{
 				// Because script elements can return "null" due undefined properties, do not show any error to not confuse.
 				// If is an internal error, fix!
 			}else{
-				error_found=zs_strutils::format("Class \"%s\" is not allowed to have metamethods",class_name_object_found.c_str());
+				error_found=zs_strutils::format("\"%s\" cannot perform metamethod",class_name_object_found.c_str());
 			}
 			goto apply_metamethod_error;
 		}

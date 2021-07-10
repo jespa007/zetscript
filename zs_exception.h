@@ -13,7 +13,7 @@
 #else*/
 //#define THROW_EXCEPTION					throw
 #define THROW_RUNTIME_ERROR(s,...)							::zetscript::throw_script_error(__FILENAME__,__LINE__,s, ##__VA_ARGS__)
-#define THROW_RUNTIME_ERROR_FILE_LINE(file,line,s,...)		::zetscript::throw_script_error(file,line,s, ##__VA_ARGS__)
+#define THROW_SCRIPT_ERROR_FILE_LINE(file,line,s,...)		::zetscript::throw_script_error(file,line,s, ##__VA_ARGS__)
 //#define THROW_RUNTIME_ERROR 			throw std::runtime_error
 #define THROW_SCRIPT_ERROR 									::zetscript::zs_exception::throw_script_error
 #define THROW_EXCEPTION(s)									throw std::runtime_error(s)
@@ -36,9 +36,9 @@ namespace zetscript {
 
 			int getErrorLine();
 
-			const char * getErrorDescription();
+			const std::string & getErrorDescription();
 
-			const char * getErrorSourceFilename();
+			const std::string & getErrorSourceFilename();
 
 	};
 

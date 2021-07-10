@@ -126,12 +126,13 @@ namespace zetscript{
 				|| operator_type==Operator::OPERATOR_TERNARY_ELSE
 				|| ((operator_type==Operator::OPERATOR_ASSIGN) && (properties & EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR))
 				|| ((operator_type==Operator::OPERATOR_IN) && (properties & EVAL_EXPRESSION_FOR_IN_VARIABLES))
+				|| (properties & EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL)
 				|| ( new_line_break && (operator_type==Operator::OPERATOR_UNKNOWN ))){ // if not operator and carry return found is behaves as end expression
 					break;
 				}
 
 				if(operator_type==Operator::OPERATOR_UNKNOWN){
-					EVAL_ERROR_SUB_EXPRESSION(eval_data->current_parsing_file,line ,"Expected operator");
+					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_sub_expression,eval_data->current_parsing_file,line ,"Expected operator");
 				}
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_operators[operator_type].str),line);
@@ -174,12 +175,12 @@ namespace zetscript{
 
 			if(found == false){
 				size_t len=aux_p-start_expression_str;
-				EVAL_ERROR_SUB_EXPRESSION(eval_data->current_parsing_file,start_expression_line,"%s at the end of expression %10s...",expected_ending_str.c_str(),zs_strutils::substring(start_expression_str,0,len).c_str());
+				EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_sub_expression,eval_data->current_parsing_file,start_expression_line,"%s at the end of expression %10s...",expected_ending_str.c_str(),zs_strutils::substring(start_expression_str,0,len).c_str());
 			}
 		}
 
 		if(aux_p==0){
-			EVAL_ERROR_SUB_EXPRESSION(eval_data->current_parsing_file,line ,"Unexpected end of file");
+			EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_sub_expression,eval_data->current_parsing_file,line ,"Unexpected end of file");
 		}
 
 		// here convert each expression token to byte code
@@ -363,7 +364,7 @@ eval_error_sub_expression:
 
 				if(IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
 					const char *str_symbol=instruction->instruction_source_info.ptr_str_symbol_name==NULL?"unknow":instruction->instruction_source_info.ptr_str_symbol_name->c_str();
-					EVAL_ERROR_EXPRESSION(eval_data->current_parsing_file,instruction->instruction_source_info.line
+					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_expression_delete_left_right_sub_expressions,eval_data->current_parsing_file,instruction->instruction_source_info.line
 						,"\"%s\" is not allowed on left assignment multiple because '%s' is not literal. Left assignments has to be literals  (i.e a,b.c,b[0]. etc)"
 						,str_symbol
 						,str_symbol

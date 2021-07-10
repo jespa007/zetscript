@@ -26,6 +26,19 @@ namespace zetscript {
 	}
 
 
+	int zs_exception::getErrorLine(){
+		return line;
+	}
+
+	const std::string & zs_exception::getErrorDescription(){
+		return this->error_description;
+	}
+
+	const std::string & zs_exception::getErrorSourceFilename(){
+		return this->file;
+	}
+
+
 	zs_exception_error::zs_exception_error(const char *  _file, int _line, const char * _error):zs_exception(_file,  _line, _error,"ERR"){}
 
 

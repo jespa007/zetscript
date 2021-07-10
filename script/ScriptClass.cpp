@@ -148,7 +148,7 @@ namespace zetscript{
 					what="it conflicts with member variable";
 				}
 			}
-			THROW_RUNTIME_ERROR_FILE_LINE(file,line,"Attribute \"%s\" %s at [%s:%i]"
+			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute \"%s\" %s at [%s:%i]"
 				,attrib_name.c_str()
 				,what
 				,zs_path::get_filename(symbol_attrib->file).c_str()
@@ -226,7 +226,7 @@ namespace zetscript{
 
 		if(ma->getter != NULL){
 
-			THROW_RUNTIME_ERROR_FILE_LINE(file,line,"Attribute \"%s\" has already a getter"
+			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute \"%s\" has already a getter"
 				,attribute_name.c_str()
 			);
 		}

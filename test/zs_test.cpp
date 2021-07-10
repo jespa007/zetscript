@@ -436,7 +436,7 @@ void test_arithmetic_string_op(const std::string & expected_value, const char * 
 				exit(-1); \
 			} \
 			// destroy lifetime object when is not needed
-			//zs->unrefLifetimeObject(so);
+			zs->unrefLifetimeObject(so);
 		}else{
 			fprintf(stderr,"error test \"%s\" expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk.typeOf());
 			exit(-1);

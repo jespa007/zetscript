@@ -351,13 +351,22 @@ namespace zetscript{
 			if((buf_tmp=zs_file::read(filename, n_bytes))!=NULL){
 				// file exist and can read ... set current pwd
 				zs_dir::set_current_directory(zs_path::get_directory(filename));
+				std::string error_str="";
+				std::string error_file="";
+
 
 				bool error=false;
-				std::string error_str;
+
+
+				int error_line=-1;
 				try{
 					stk_ret=evalInternal(buf_tmp,options,const_file_char,__invoke_file__,__invoke_line__);
-				}
-				catch(std::exception & e){
+				}catch(zs_exception & e){
+					error=true;
+					error_file=e.getErrorSourceFilename();
+					error_line=e.getErrorLine();
+					error_str=e.getErrorDescription();
+				}catch(std::exception & e){
 					error=true;
 					error_str=e.what();
 				}
@@ -367,7 +376,11 @@ namespace zetscript{
 				buf_tmp=NULL;
 
 				if(error){
-					THROW_EXCEPTION(error_str.c_str());
+					if(!zs_strutils::is_empty(error_file)){
+						THROW_SCRIPT_ERROR_FILE_LINE(error_file.c_str(),error_line,error_str.c_str());
+					}else{
+						THROW_EXCEPTION(error_str.c_str());
+					}
 				}
 			}
 

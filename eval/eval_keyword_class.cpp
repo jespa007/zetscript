@@ -220,17 +220,61 @@ namespace zetscript{
 		key_w = eval_is_keyword(aux_p);
 
 		if(key_w == Keyword::KEYWORD_DELETE){
+			Operator tst_op_aux;
+			std::vector<EvalInstruction *> ei_load_delete_identifier;
+			std::vector<EvalInstruction> ei_load_delete_identifier_st;
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
-			aux_p=get_name_identifier_token(
+			if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'delete': unexpected '%s' after delete ",eval_data_operators[tst_op_aux].str);
+			}
+
+			key_w=eval_is_keyword(aux_p);
+			if(key_w!=Keyword::KEYWORD_UNKNOWN && key_w!=Keyword::KEYWORD_THIS){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'delete': unexpected '%s' after delete ",eval_data_keywords[key_w].str);
+			}
+
+			if((aux_p = eval_expression(
+					eval_data
+					,aux_p
+					,line
+					,scope_info
+					,&eval_data->current_function->instructions
+					,{}
+					,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
+			))==NULL){
+				// delete unusued vars_for
+				return NULL;
+			}
+
+			/*for(unsigned j=0; j<ei_load_delete_identifier.size();j++){
+				ei_load_delete_identifier_st.push_back(*ei_load_delete_identifier[j]);
+				delete ei_load_delete_identifier[j];
+			}*/
+
+
+			if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'delete': unexpected operator '%s' after delete identifier ",eval_data_operators[tst_op_aux].str);
+			}
+
+			/*aux_p=get_name_identifier_token(
 					eval_data
 					,aux_p
 					,line
 					,symbol_value
-			);
+			);*/
 
-			eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(BYTE_CODE_FIND_VARIABLE));
+			// get last instruction...
+			eval_instruction = eval_data->current_function->instructions[eval_data->current_function->instructions.size()-1];
+			ByteCode  byte_code=eval_instruction->vm_instruction.byte_code;
+			if(byte_code==BYTE_CODE_FIND_VARIABLE){
+				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
+			}else if(byte_code_is_load_type(byte_code)){
+				eval_instruction->vm_instruction.byte_code=byte_code_load_to_push_stk(byte_code);
+			}
+
+			/*eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(BYTE_CODE_FIND_VARIABLE));
 
 			if((symbol_found = eval_find_local_symbol(eval_data,scope_info,symbol_value)) != NULL){
 
@@ -243,9 +287,9 @@ namespace zetscript{
 
 			if(eval_instruction->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
 				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
-			}
+			}*/
 
-			if(symbol_found == NULL){
+			/*if(symbol_found == NULL){
 				eval_instruction->symbol.name=symbol_value;
 				eval_instruction->symbol.scope=scope_info;
 			}
@@ -255,9 +299,10 @@ namespace zetscript{
 				 eval_data->current_parsing_file
 				 ,line
 				 ,get_mapped_name(eval_data,symbol_value)
-			);
+			);*/
 
 			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
+			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RESET_STACK));
 
 			return aux_p;
 		}

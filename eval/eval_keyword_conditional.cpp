@@ -192,11 +192,11 @@ namespace zetscript{
 									,&token_symbol
 									,pre_operation
 								))==NULL){
-									EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line," expected literal after 'case'");
+									EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line," expected literal after 'case'");
 								}
 
 								if(token_symbol.token_type != TOKEN_TYPE_LITERAL){
-									EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line," expected literal after 'case'");
+									EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line," expected literal after 'case'");
 								}
 
 								// insert a pair of instructions...
@@ -209,7 +209,7 @@ namespace zetscript{
 
 							}else if(key_w == KEYWORD_DEFAULT){
 								if(jmp_default!=NULL){
-									EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"there's an already 'default' case");
+									EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"there's an already 'default' case");
 								}
 
 								jmp_default=new EvalInstruction(
@@ -223,11 +223,11 @@ namespace zetscript{
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 							}else{
-								EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"Expected 'case' or 'default' keyword");
+								EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Expected 'case' or 'default' keyword");
 							}
 
 							if(*aux_p!=':'){
-								EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"Expected ':' ");
+								EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Expected ':' ");
 							}
 
 							// ignore :
@@ -275,7 +275,7 @@ namespace zetscript{
 
 
 							}else if(is_default){
-								EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"'default' needs a 'break' at the end");
+								EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"'default' needs a 'break' at the end");
 							}
 
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -283,7 +283,7 @@ namespace zetscript{
 						}
 
 						if(*aux_p != '}'){
-							EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"Expected '}' switch");
+							EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Expected '}' switch");
 						}
 
 						// end instruction
@@ -366,11 +366,11 @@ namespace zetscript{
 						return aux_p+1;
 					}
 					else{
-						EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"Expected '{' begin switch block");
+						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Expected '{' begin switch block");
 					}
 			}
 			else{
-				EVAL_ERROR_KEYWORD_SWITCH(eval_data->current_parsing_file,line,"Expected '(' switch ");
+				EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Expected '(' switch ");
 			}
 		}
 

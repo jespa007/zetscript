@@ -176,12 +176,12 @@ namespace zetscript{
 				&&	(IS_OPERATOR_TYPE_ASSIGN(operator_type))
 
 				)){ // ... save all assignables from operator split
-				EVAL_ERROR_BYTE_CODE_FILE_LINE(eval_data->current_parsing_file,token_node_operator->line,"Operation \"%s\" in assignment is not allowed",eval_data_operators[operator_type].str);
+				EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_byte_code,eval_data->current_parsing_file,token_node_operator->line,"Operation \"%s\" in assignment is not allowed",eval_data_operators[operator_type].str);
 			}
 
 			// should be identifier...
 			if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-				EVAL_ERROR_BYTE_CODE_FILE_LINE(eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal \"%s\" is not allowed",token_node_symbol->value.c_str());
+				EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_byte_code,eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal \"%s\" is not allowed",token_node_symbol->value.c_str());
 			}
 
 			assign_loader_instructions_post_expression.push_back({});
@@ -191,8 +191,9 @@ namespace zetscript{
 			for(unsigned j=0;j<token_node_symbol->instructions.size();j++){
 				EvalInstruction *ei_load_assign_instruction=token_node_symbol->instructions[j];
 				if(ei_load_assign_instruction->vm_instruction.byte_code ==  BYTE_CODE_CALL){
-					EVAL_ERROR_BYTE_CODE_FILE_LINE(
-							eval_data->current_parsing_file
+					EVAL_ERROR_FILE_LINE_AND_GOTO(
+							eval_error_byte_code
+							,eval_data->current_parsing_file
 							,ei_load_assign_instruction->instruction_source_info.line
 							,"Calling a function in left assignment is not allowed");
 				}
@@ -273,7 +274,7 @@ namespace zetscript{
 
 			// TODO: JEB Check whether expression is constant true/false
 			if(*aux_p != ':'){
-				EVAL_ERROR_BYTE_CODE_FILE_LINE(eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
+				EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_byte_code,eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
 			}
 
 

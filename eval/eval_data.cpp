@@ -3,11 +3,15 @@
 #define IGNORE_BLANKS(aux_p,eval_data,s,line) 	if((aux_p=zetscript::eval_ignore_blanks(eval_data,(s),line))==NULL) return 0
 #define RESULT_LITERAL_VALUE 					(number_part[0]+number_part[1]+number_part[2]).c_str()
 #define EVAL_ERROR_FILE_LINE(file,line,s,...)	eval_data->error=true;\
-												eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+												eval_data->error_file=file;\
+												eval_data->error_line=line;\
+												eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 												return 0;
 
 #define EVAL_ERROR_TOKEN_SYMBOL(file,line,s,...)	eval_data->error=true;\
-													eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+													eval_data->error_file=file;\
+													eval_data->error_line=line;\
+													eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 													goto lbl_eval_error_token_symbol;
 
 
@@ -17,28 +21,39 @@
 
 
 
-#define EVAL_ERROR_POP_FUNCTION(file,line,s,...)			eval_data->error=true;\
-															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-															ok=FALSE;\
-															goto lbl_exit_pop_function;
 
 
+#define EVAL_ERROR_FILE_LINE_AND_GOTO(my_goto,file,line,s,...)			eval_data->error=true;\
+																		eval_data->error_file=file;\
+																		eval_data->error_line=line;\
+																		eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+																		goto my_goto;
+
+
+/*
 #define EVAL_ERROR_SUB_EXPRESSION(file,line,s,...)			eval_data->error=true;\
-															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															eval_data->error_file=file;\
+															eval_data->error_line=line;\
+															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 															goto eval_error_sub_expression;\
 
 #define EVAL_ERROR_EXPRESSION(file,line,s,...)				eval_data->error=true;\
-															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															eval_data->error_file=file;\
+															eval_data->error_line=line;\
+															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 															goto eval_error_expression_delete_left_right_sub_expressions;\
 
 #define EVAL_ERROR_KEYWORD_SWITCH(file,line,s,...)			eval_data->error=true;\
-															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															eval_data->error_file=file;\
+															eval_data->error_line=line;\
+															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 															goto eval_keyword_switch_error;\
 
 #define EVAL_ERROR_BYTE_CODE_FILE_LINE(file,line,s,...)		eval_data->error=true;\
 															aux_p=NULL;\
 															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 															goto eval_error_byte_code;\
+*/
 
 #define EVAL_ERROR_BYTE_CODE(s,...)							eval_data->error=true;\
 															aux_p=NULL;\
@@ -57,6 +72,7 @@ namespace zetscript{
 		EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR=0x1<<3, // break when any assign operator (i.e, =, +=, -=, ...) is found
 		EVAL_EXPRESSION_ON_MAIN_BLOCK=0x1<<4,
 		EVAL_EXPRESSION_FOR_IN_VARIABLES=0x1<<5,
+		EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL=0x1<<6
 		//EVAL_EXPRESSION_NO_OPTIMIZE=0x1<<5
 		//EVAL_EXPRESSION_PROPERTY_SIMPLIFY=0x1<<5 // it will simplify expressions without assignment like that a+1, but keep calling functions but not push return values
 	}EvalExpressionProperty;
@@ -269,6 +285,8 @@ namespace zetscript{
 		const char *					 		current_parsing_file;
 		bool							  		error;
 		std::string								error_str;
+		const char *error_file;
+		int error_line;
 
 		EvalData(ZetScript * _zs){
 			current_parsing_file="";
@@ -280,6 +298,8 @@ namespace zetscript{
 			error=false;
 			error_str="";
 			parsing_loop=0;
+			error_file="";
+			error_line=-1;
 		}
 	};
 
