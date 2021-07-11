@@ -384,10 +384,10 @@ namespace zetscript{
 				}
 			}
 
-		}else{
+		}/*else{
 			// already parsed
 			THROW_RUNTIME_ERROR("Filename \"%s\" already parsed",filename);
-		}
+		}*/
 
 		if(buf_tmp!=NULL){
 			free(buf_tmp);
@@ -466,7 +466,7 @@ namespace zetscript{
 		script_function_factory->clear();
 		script_class_factory->clear();
 
-		vm_init(this->virtual_machine,this);
+		vm_reset_idx_call(this->virtual_machine);
 		resetParsedFiles();
 	}
 

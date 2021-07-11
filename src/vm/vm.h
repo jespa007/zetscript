@@ -33,6 +33,7 @@ namespace zetscript{
 	 */
 
 	void			vm_init(VirtualMachine *vm, ZetScript *_zs);
+	void 			vm_reset_idx_call(VirtualMachine *vm);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
 	bool 			vm_share_pointer(VirtualMachine *vm,ScriptObject *_obj);
 	bool 			vm_create_shared_pointer(VirtualMachine *vm,ScriptObject *_obj);

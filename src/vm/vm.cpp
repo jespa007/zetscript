@@ -57,6 +57,11 @@ namespace zetscript{
 		data->main_class_object = SCRIPT_CLASS_MAIN(data);
 	}
 
+	void vm_reset_idx_call(VirtualMachine *vm){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		data->vm_idx_call=0;
+	}
+
 	//============================================================================================================================================
 	// POINTER MANANAGER
 	bool vm_create_shared_pointer(VirtualMachine *vm,ScriptObject *_obj){
