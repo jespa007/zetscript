@@ -106,6 +106,7 @@ else()
 	   	endif()
 		
 	ELSE()
+		set(TARGET "release")
 		set(COMPILE_TARGET_FLAGS " -O2")
 		message("-- Memmanager: OFF")
 	ENDIF()
