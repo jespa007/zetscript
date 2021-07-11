@@ -42,7 +42,7 @@ namespace zetscript{
 		int line =_line;
 		bool error;
 		std::string error_str;
-		const char *error_file="";
+		std::string error_file="";
 		int error_line=-1;
 		Scope *scope_info=MAIN_SCOPE(eval_data);
 		eval_data->current_parsing_file=_filename;
@@ -258,7 +258,7 @@ namespace zetscript{
 				std::string str_symbol;
 				if(directive != Directive::DIRECTIVE_UNKNOWN){
 					switch(directive){
-					case DIRECTIVE_INCLUDE:
+					case DIRECTIVE_IMPORT:
 						aux += strlen(eval_data_directives[directive].str);
 						IGNORE_BLANKS(aux,eval_data,aux,line);
 						if(*aux != '\"'){
@@ -289,9 +289,9 @@ namespace zetscript{
 							// compile but not execute, it will execute the last eval
 							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE);
 						}catch(zs_exception & ex){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"\nFrom import %s line %i: %s",ex.getErrorSourceFilename().c_str(),ex.getErrorLine(),ex.getErrorDescription().c_str());
+							EVAL_ERROR_FILE_LINE(str_symbol,ex.getErrorLine(),ex.getErrorDescription().c_str());
 						}catch(std::exception & ex){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"\nFrom import file '%s': %s",str_symbol.c_str(),ex.what());
+							EVAL_ERROR("%s : %s",str_symbol.c_str(),ex.what());
 						}
 
 						aux++;// advance ..

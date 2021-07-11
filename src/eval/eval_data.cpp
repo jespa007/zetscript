@@ -112,7 +112,7 @@ namespace zetscript{
 	typedef enum
 		:unsigned char {
 		DIRECTIVE_UNKNOWN = 0,
-		DIRECTIVE_INCLUDE,
+		DIRECTIVE_IMPORT,
 		DIRECTIVE_MAX
 	}Directive;
 
@@ -285,7 +285,7 @@ namespace zetscript{
 		const char *					 		current_parsing_file;
 		bool							  		error;
 		std::string								error_str;
-		const char *error_file;
+		std::string								error_file;
 		int error_line;
 
 		EvalData(ZetScript * _zs){
@@ -898,7 +898,7 @@ namespace zetscript{
 
 		// DIRECTIVES
 		eval_data_directives[DIRECTIVE_UNKNOWN]={DIRECTIVE_UNKNOWN, NULL};
-		eval_data_directives[DIRECTIVE_INCLUDE]={DIRECTIVE_INCLUDE, "import"};
+		eval_data_directives[DIRECTIVE_IMPORT]={DIRECTIVE_IMPORT, "import"};
 
 		compiled_symbol_name=new std::map<std::string,std::string *>;
 

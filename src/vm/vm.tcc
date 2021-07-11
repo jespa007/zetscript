@@ -208,6 +208,10 @@ namespace zetscript{
 		StackElement stk_aux;
 
 		VirtualMachineData(ZetScript *_zs){
+			reset(_zs);
+		}
+
+		void reset(ZetScript *_zs){
 			memset(&zero_shares,0,sizeof(zero_shares));
 			memset(&shared_vars,0,sizeof(shared_vars));
 			memset(&vm_stack,0,sizeof(vm_stack));

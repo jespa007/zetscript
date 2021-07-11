@@ -31,7 +31,7 @@ namespace zetscript {
 			char what_msg[ZS_MAX_STR_BUFFER];
 		public:
 
-			zs_exception(const char *  _file, int _line, const char * _error_description, const char *_error_type);
+			zs_exception(const std::string &   _file, int _line, const char * _error_description, const char *_error_type);
 			virtual const char* what() const noexcept;
 
 			int getErrorLine();
@@ -45,10 +45,10 @@ namespace zetscript {
 	class zs_exception_error: public zs_exception{
 	public:
 
-		zs_exception_error(const char *  _file, int _line, const char * _error);
+		zs_exception_error(const std::string &   _file, int _line, const char * _error);
 	};
 
-	void throw_script_error(const char *scrip_filename, int script_line, const char *in_txt,...);
+	void throw_script_error(const std::string & scrip_filename, int script_line, const char *in_txt,...);
 	//void throw_runtime_error(const char *filename, int line, const char *in_txt,...);
 
 }

@@ -46,16 +46,16 @@ namespace zetscript{
 	#endif
 
 
-	void vm_init(VirtualMachine *vm){
+	void vm_init(VirtualMachine *vm,ZetScript *_zs){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		data->reset(_zs);
 		// script class factory should be created and initialized
-		data->script_function_factory=data->zs->getScriptFunctionFactory();
-		data->script_class_factory=data->zs->getScriptClassFactory();
-		data->scope_factory = data->zs->getScopeFactory();
+		data->script_function_factory=_zs->getScriptFunctionFactory();
+		data->script_class_factory=_zs->getScriptClassFactory();
+		data->scope_factory = _zs->getScopeFactory();
 		data->main_function_object = MAIN_FUNCTION(data);
 		data->main_class_object = SCRIPT_CLASS_MAIN(data);
 	}
-
 
 	//============================================================================================================================================
 	// POINTER MANANAGER
@@ -254,7 +254,7 @@ namespace zetscript{
 			&& calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN){ // set stack and Init vars for first call...
 
 			if(data->vm_idx_call != 0){
-				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0");
+				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",data->vm_idx_call);
 			}
 
 			data->vm_error=false;

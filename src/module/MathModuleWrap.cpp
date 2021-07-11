@@ -7,29 +7,29 @@
 
 namespace zetscript{
 
-	const zs_float ModuleMathWrap_PI=M_PI;
+	const zs_float MathModuleWrap_PI=M_PI;
 
-	 zs_float ModuleMathWrap_degToRad(zs_float *deg){
+	 zs_float MathModuleWrap_degToRad(zs_float *deg){
 		return (*deg*M_PI)/180.0f;
 	}
 
-	 zs_float ModuleMathWrap_sin(zs_float *rad){
+	 zs_float MathModuleWrap_sin(zs_float *rad){
 		return sinf(*rad);
 	}
 
-	 zs_float ModuleMathWrap_cos(zs_float *rad){
+	 zs_float MathModuleWrap_cos(zs_float *rad){
 		return cosf(*rad);
 	}
 
-	 zs_float ModuleMathWrap_abs(zs_float *n){
+	 zs_float MathModuleWrap_abs(zs_float *n){
 		return fabs(*n);
 	}
 
-	 zs_float ModuleMathWrap_pow(zs_float *base, zs_float *exp){
+	 zs_float MathModuleWrap_pow(zs_float *base, zs_float *exp){
 		return powf(*base,*exp);
 	}
 
-	 zs_float ModuleMathWrap_random(){
+	 zs_float MathModuleWrap_random(){
 		return rand()*ONE_OVER_RAND_MAX;
 	}
 }

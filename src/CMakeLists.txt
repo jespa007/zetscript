@@ -195,11 +195,11 @@ ELSE()
  		
  		
  		# Modules
- 		module/ModuleMathWrap.cpp
-		module/ModuleSystemWrap.cpp
-		module/ModuleJsonWrap.cpp
-		module/ModuleDateTimeWrap.cpp
-		module/ModuleConsoleWrap.cpp
+ 		module/MathModuleWrap.cpp
+		module/SystemModuleWrap.cpp
+		module/JsonModuleWrap.cpp
+		module/DateTimeModuleWrap.cpp
+		module/ConsoleModuleWrap.cpp
  		
  		# VM
  		vm/vm.cpp
@@ -305,13 +305,13 @@ ELSE()
  		
  		
  		# extra
-		module/ModuleMathWrap.h
-		module/ModuleSystemWrap.h
-		module/ModuleConsoleWrap.h
-		module/ModuleJsonWrap.h
-		module/ModuleJsonDeserializeWrap.h
-		module/ModuleJsonSerializeWrap.h
-		module/ModuleDateTimeWrap.h
+		module/MathModuleWrap.h
+		module/SystemModuleWrap.h
+		module/ConsoleModuleWrap.h
+		module/JsonModuleWrap.h
+		module/JsonModuleDeserializeWrap.h
+		module/JsonModuleSerializeWrap.h
+		module/DateTimeModuleWrap.h
 		
 		
 		# script

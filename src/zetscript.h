@@ -91,11 +91,11 @@
 #include "scope/Scope.h"
 #include "scope/ScopeFactory.h"
 
-#include "module/ModuleMathWrap.h"
-#include "module/ModuleSystemWrap.h"
-#include "module/ModuleJsonWrap.h"
-#include "module/ModuleConsoleWrap.h"
-#include "module/ModuleDateTimeWrap.h"
+#include "module/MathModuleWrap.h"
+#include "module/SystemModuleWrap.h"
+#include "module/JsonModuleWrap.h"
+#include "module/ConsoleModuleWrap.h"
+#include "module/DateTimeModuleWrap.h"
 
 #include "script/ScriptObject.h"
 #include "script/ScriptObjectString.h"

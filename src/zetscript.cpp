@@ -32,7 +32,7 @@ namespace zetscript{
 		virtual_machine = vm_new(this);
 		script_class_factory = new ScriptClassFactory(this);
 		script_class_factory->init();
-		vm_init(virtual_machine);
+		vm_init(virtual_machine,this);
 
 		script_class_factory->registerSystem();
 
@@ -41,64 +41,64 @@ namespace zetscript{
 
 		// Math mod
 		ScriptClass *cl=script_class_factory->registerClass("Math");
-		cl->registerNativeMemberVariableStaticConst("PI",&ModuleMathWrap_PI);
-		cl->registerNativeMemberFunctionStatic("sin",ModuleMathWrap_sin);
-		cl->registerNativeMemberFunctionStatic("cos",ModuleMathWrap_cos);
-		cl->registerNativeMemberFunctionStatic("abs",ModuleMathWrap_abs);
-		cl->registerNativeMemberFunctionStatic("pow",ModuleMathWrap_pow);
-		cl->registerNativeMemberFunctionStatic("degToRad",ModuleMathWrap_degToRad);
-		cl->registerNativeMemberFunctionStatic("random",ModuleMathWrap_random);
+		cl->registerNativeMemberVariableStaticConst("PI",&MathModuleWrap_PI);
+		cl->registerNativeMemberFunctionStatic("sin",MathModuleWrap_sin);
+		cl->registerNativeMemberFunctionStatic("cos",MathModuleWrap_cos);
+		cl->registerNativeMemberFunctionStatic("abs",MathModuleWrap_abs);
+		cl->registerNativeMemberFunctionStatic("pow",MathModuleWrap_pow);
+		cl->registerNativeMemberFunctionStatic("degToRad",MathModuleWrap_degToRad);
+		cl->registerNativeMemberFunctionStatic("random",MathModuleWrap_random);
 
 		// Console mod
 		cl=script_class_factory->registerClass("Console");
-		cl->registerNativeMemberFunctionStatic("readChar",ModuleConsoleWrap_readChar);
-		registerFunction("ModuleConsole_out",ModuleConsoleWrap_out);
-		registerFunction("ModuleConsole_outln",ModuleConsoleWrap_outln);
-		registerFunction("ModuleConsole_error",ModuleConsoleWrap_error);
-		registerFunction("ModuleConsole_errorln",ModuleConsoleWrap_errorln);
+		cl->registerNativeMemberFunctionStatic("readChar",ConsoleModuleWrap_readChar);
+		cl->registerNativeMemberFunctionStatic("outNative",ConsoleModuleWrap_out);
+		cl->registerNativeMemberFunctionStatic("outlnNative",ConsoleModuleWrap_outln);
+		cl->registerNativeMemberFunctionStatic("errorNative",ConsoleModuleWrap_error);
+		cl->registerNativeMemberFunctionStatic("errorlnNative",ConsoleModuleWrap_errorln);
 
 		// System mod
 		cl=script_class_factory->registerClass("System");
-		cl->registerNativeMemberFunctionStatic("clock",ModuleSystemWrap_clock);
-		cl->registerNativeMemberFunctionStatic("evalNative",ModuleSystemWrap_eval);
-		cl->registerNativeMemberFunctionStatic("assertNative",ModuleSystemWrap_assert);
-		cl->registerNativeMemberFunctionStatic("errorNative",ModuleSystemWrap_error);
+		cl->registerNativeMemberFunctionStatic("clock",SystemModuleWrap_clock);
+		cl->registerNativeMemberFunctionStatic("evalNative",SystemModuleWrap_eval);
+		cl->registerNativeMemberFunctionStatic("assertNative",SystemModuleWrap_assert);
+		cl->registerNativeMemberFunctionStatic("errorNative",SystemModuleWrap_error);
 
 		// Json mod
 		cl=script_class_factory->registerClass("Json");
-		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(ModuleJsonWrap_serialize));
-		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(ModuleJsonWrap_serialize));
-		cl->registerNativeMemberFunctionStatic("deserialize",ModuleJsonWrap_deserialize);
+		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(JsonModuleWrap_serialize));
+		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModuleWrap_serialize));
+		cl->registerNativeMemberFunctionStatic("deserialize",JsonModuleWrap_deserialize);
 		//---------------------------------------------
 		// DateTime
-		cl=registerClass<zs_datetime>("DateTime",ModuleDateTimeWrap_new,ModuleDateTimeWrap_delete);
+		cl=registerClass<zs_datetime>("DateTime",DateTimeModuleWrap_new,DateTimeModuleWrap_delete);
 
-		registerMemberFunctionStatic<zs_datetime>("_add",ModuleDateTimeWrap_add);
-		registerMemberFunctionStatic<zs_datetime>("_sub",ModuleDateTimeWrap_sub);
+		registerMemberFunctionStatic<zs_datetime>("_add",DateTimeModuleWrap_add);
+		registerMemberFunctionStatic<zs_datetime>("_sub",DateTimeModuleWrap_sub);
 
-		registerMemberFunction<zs_datetime>("setUtc",ModuleDateTimeWrap_setUtc);
+		registerMemberFunction<zs_datetime>("setUtc",DateTimeModuleWrap_setUtc);
 
-		registerMemberFunction<zs_datetime>("addSeconds",ModuleDateTimeWrap_addSeconds);
-		registerMemberFunction<zs_datetime>("addMinutes",ModuleDateTimeWrap_addMinutes);
-		registerMemberFunction<zs_datetime>("addHours",ModuleDateTimeWrap_addHours);
-		registerMemberFunction<zs_datetime>("addDays",ModuleDateTimeWrap_addDays);
-		registerMemberFunction<zs_datetime>("addMonths",ModuleDateTimeWrap_addMonths);
-		registerMemberFunction<zs_datetime>("addYears",ModuleDateTimeWrap_addYears);
+		registerMemberFunction<zs_datetime>("addSeconds",DateTimeModuleWrap_addSeconds);
+		registerMemberFunction<zs_datetime>("addMinutes",DateTimeModuleWrap_addMinutes);
+		registerMemberFunction<zs_datetime>("addHours",DateTimeModuleWrap_addHours);
+		registerMemberFunction<zs_datetime>("addDays",DateTimeModuleWrap_addDays);
+		registerMemberFunction<zs_datetime>("addMonths",DateTimeModuleWrap_addMonths);
+		registerMemberFunction<zs_datetime>("addYears",DateTimeModuleWrap_addYears);
 
 		// metamethods...
-		registerMemberFunction<zs_datetime>("_toString",ModuleDateTimeWrap_toString);
+		registerMemberFunction<zs_datetime>("_toString",DateTimeModuleWrap_toString);
 
-		registerGetterMemberAttribute<zs_datetime>("week_day",ModuleDateTimeWrap_get_week_day);
-		registerGetterMemberAttribute<zs_datetime>("month_day",ModuleDateTimeWrap_get_month_day);
-		registerGetterMemberAttribute<zs_datetime>("year_day",ModuleDateTimeWrap_get_year_day);
+		registerGetterMemberAttribute<zs_datetime>("week_day",DateTimeModuleWrap_get_week_day);
+		registerGetterMemberAttribute<zs_datetime>("month_day",DateTimeModuleWrap_get_month_day);
+		registerGetterMemberAttribute<zs_datetime>("year_day",DateTimeModuleWrap_get_year_day);
 
-		registerGetterMemberAttribute<zs_datetime>("second",ModuleDateTimeWrap_get_second);
-		registerGetterMemberAttribute<zs_datetime>("minute",ModuleDateTimeWrap_get_minute);
-		registerGetterMemberAttribute<zs_datetime>("hour",ModuleDateTimeWrap_get_hour);
+		registerGetterMemberAttribute<zs_datetime>("second",DateTimeModuleWrap_get_second);
+		registerGetterMemberAttribute<zs_datetime>("minute",DateTimeModuleWrap_get_minute);
+		registerGetterMemberAttribute<zs_datetime>("hour",DateTimeModuleWrap_get_hour);
 
-		registerGetterMemberAttribute<zs_datetime>("day",ModuleDateTimeWrap_get_day);
-		registerGetterMemberAttribute<zs_datetime>("month",ModuleDateTimeWrap_get_month);
-		registerGetterMemberAttribute<zs_datetime>("year",ModuleDateTimeWrap_get_year);
+		registerGetterMemberAttribute<zs_datetime>("day",DateTimeModuleWrap_get_day);
+		registerGetterMemberAttribute<zs_datetime>("month",DateTimeModuleWrap_get_month);
+		registerGetterMemberAttribute<zs_datetime>("year",DateTimeModuleWrap_get_year);
 
 		// Custom user function or classes
 		eval(
@@ -119,17 +119,17 @@ namespace zetscript{
 				"}"
 				//------------------------------------------------
 				// Console
-				"static Console::print(s,...args){"
-				"	ModuleConsole_print(System::getZetScript(),s,args)"
+				"static Console::out(s,...args){"
+				"	Console::outNative(System::getZetScript(),s,args)"
 				"}"
 				"static Console::outln(s,...args){"
-				"	ModuleConsole_outln(System::getZetScript(),s,args)"
+				"	Console::outlnNative(System::getZetScript(),s,args)"
 				"}"
 				"static Console::error(s,...args){"
-				"	ModuleConsole_error(System::getZetScript(),s,args)"
+				"	Console::errorNative(System::getZetScript(),s,args)"
 				"}"
 				"static Console::errorln(s,...args){"
-				"	ModuleConsole_errorln(System::getZetScript(),s,args)"
+				"	Console::errorlnNative(System::getZetScript(),s,args)"
 				"}"
 				//------------------------------------------------
 				// System
@@ -404,6 +404,11 @@ namespace zetscript{
 		std::string global_symbol;
 		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start;
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
+		Scope *main_scope=MAIN_SCOPE(this);
+
+		if(main_scope->registered_symbols->count != main_function_object->registered_symbols->count){
+			THROW_RUNTIME_ERROR("Internal: main_scope and main_functions should have same symbols (scope:%i fun:%i)",main_scope->registered_symbols->count,main_function_object->registered_symbols->count);
+		}
 
 		// remove all shared 0 pointers
 		if(main_function_object->registered_symbols->count > 0){
@@ -418,9 +423,9 @@ namespace zetscript{
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
 				global_symbol=symbol->name;
 				ScriptObjectObject *var = NULL;
-				if(MAIN_SCOPE(this)->unregisterSymbol(symbol->name)==false){
+				/*if(MAIN_SCOPE(this)->unregisterSymbol(symbol->name)==false){
 					continue; // not global so we can ignore
-				}
+				}*/
 
 				if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					var =((ScriptObjectObject *)(vm_stk_element->value));
@@ -437,6 +442,7 @@ namespace zetscript{
 				*vm_stk_element--=k_stk_undefined;
 			}
 		}
+
 
 		vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
 	}
@@ -460,6 +466,7 @@ namespace zetscript{
 		script_function_factory->clear();
 		script_class_factory->clear();
 
+		vm_init(this->virtual_machine,this);
 		resetParsedFiles();
 	}
 

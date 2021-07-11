@@ -163,6 +163,11 @@ namespace zetscript{
 					char *str_begin_format_string=strchr(str_begin,':');
 					char *str_end_index=NULL;
 					char *str_end_aligment=NULL;
+
+					if(str_begin_alignment >= str_end ) str_begin_alignment=NULL;
+					if(str_begin_format_string >= str_end ) str_begin_format_string=NULL;
+
+
 					int idx_num=-1;
 					int alignmen=-1;
 					char *ptr_str_format_string=NULL;

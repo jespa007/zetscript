@@ -9,15 +9,15 @@ namespace zetscript{
 
 	static int n_eval_function=0;
 
-	zs_int ModuleSystemWrap_clock(){
+	zs_int SystemModuleWrap_clock(){
 		return std::clock()*(1000.0f/CLOCKS_PER_SEC);
 	}
 
-	void ModuleSystemWrap_makeReadOnly(StackElement *stk){
+	void SystemModuleWrap_makeReadOnly(StackElement *stk){
 		stk->properties|=STK_PROPERTY_READ_ONLY;
 	}
 
-	void ModuleSystemWrap_eval(ZetScript *zs,StackElement *stk_so_str_eval,StackElement *stk_oo_param){
+	void SystemModuleWrap_eval(ZetScript *zs,StackElement *stk_so_str_eval,StackElement *stk_oo_param){
 		ScriptFunction *sf_main=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 		ScriptObjectString *so_str_eval=NULL;
 		ScriptObjectObject *oo_param=NULL;
@@ -131,7 +131,7 @@ namespace zetscript{
 
 	}
 
-	void ModuleSystemWrap_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){
+	void SystemModuleWrap_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){
 		if(*chk_assert == false){
 			ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 			vm_set_error(zs->getVirtualMachine(),str_out->toString().c_str());
@@ -139,7 +139,7 @@ namespace zetscript{
 		}
 	}
 
-	void ModuleSystemWrap_error(ZetScript *zs, StackElement *str, StackElement *args){
+	void SystemModuleWrap_error(ZetScript *zs, StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 		vm_set_error(zs->getVirtualMachine(),str_out->toString().c_str());
 		delete str_out;
