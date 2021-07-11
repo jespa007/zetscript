@@ -171,20 +171,21 @@ namespace zetscript{
 							key_w = eval_is_keyword(aux_p);
 							if(key_w == KEYWORD_CASE){
 
-								TokenNode token_symbol;
-								PreOperation pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
+								std::vector<EvalInstruction *> aux_instructions;
+								//TokenNode token_symbol;
+								//PreOperation pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 
 
 								// ignore case
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 
-								if((pre_operation = is_pre_operation(aux_p))!=PreOperation::PRE_OPERATION_UNKNOWN){
+								/*if((pre_operation = is_pre_operation(aux_p))!=PreOperation::PRE_OPERATION_UNKNOWN){
 									IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_pre_operations[pre_operation].str),line);
-								}
+								}*/
 
 								// capture constant value (should be a constant -not a identifier in any case-)
-								if((aux_p=eval_symbol(
+								/*if((aux_p=eval_symbol(
 									eval_data
 									,aux_p
 									,line
@@ -192,15 +193,34 @@ namespace zetscript{
 									,&token_symbol
 									,pre_operation
 								))==NULL){
-									EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line," expected literal after 'case'");
+									EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line," expected constant or literal after 'case'");
 								}
 
 								if(token_symbol.token_type != TOKEN_TYPE_LITERAL){
-									EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line," expected literal after 'case'");
+									EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line," expected constant or literal after 'case'");
+								}*/
+
+								// get token symbol
+								if((aux_p = eval_expression(
+										eval_data
+										,aux_p
+										,line
+										,scope_info
+										,&aux_instructions
+										,{':'}
+										,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
+								))==NULL){
+									// delete unusued vars_for
+									return NULL;
 								}
 
 								// insert a pair of instructions...
-								ei_cases.push_back(token_symbol.instructions[0]);
+								ei_cases.insert(
+										ei_cases.end()
+										,aux_instructions.begin()
+										,aux_instructions.end()
+								);
+										//token_symbol.instructions[0]);
 								ei_cases.push_back(new EvalInstruction(
 										BYTE_CODE_JE
 										,ZS_IDX_UNDEFINED
@@ -209,7 +229,7 @@ namespace zetscript{
 
 							}else if(key_w == KEYWORD_DEFAULT){
 								if(jmp_default!=NULL){
-									EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"there's an already 'default' case");
+									EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: there's an already 'default' case");
 								}
 
 								jmp_default=new EvalInstruction(
@@ -223,11 +243,11 @@ namespace zetscript{
 								IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 							}else{
-								EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Expected 'case' or 'default' keyword");
+								EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: Expected 'case' or 'default' keyword");
 							}
 
 							if(*aux_p!=':'){
-								EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Expected ':' ");
+								EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: Expected ':' ");
 							}
 
 							// ignore :
@@ -275,7 +295,7 @@ namespace zetscript{
 
 
 							}else if(is_default){
-								EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"'default' needs a 'break' at the end");
+								EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch:'default' needs a 'break' at the end");
 							}
 
 							IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -283,7 +303,7 @@ namespace zetscript{
 						}
 
 						if(*aux_p != '}'){
-							EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Expected '}' switch");
+							EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: Expected '}' end switch");
 						}
 
 						// end instruction
@@ -366,11 +386,11 @@ namespace zetscript{
 						return aux_p+1;
 					}
 					else{
-						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Expected '{' begin switch block");
+						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: Expected '{' begin switch block");
 					}
 			}
 			else{
-				EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Expected '(' switch ");
+				EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: Expected '(' conditional switch ");
 			}
 		}
 

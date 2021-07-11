@@ -205,64 +205,60 @@ namespace zetscript{
 					token_node_symbol.instructions[0]->symbol.scope=scope_info;
 					EvalInstruction *instruction = token_node_symbol.instructions[0];
 
-						if(*aux_p != 0 && *aux_p==':'){
+					if(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':'){ //  static access
 
-							if(*(aux_p+1)==':'){ //  static access
+							// the first item is the class
+							std::string static_access_value=token_node_symbol.value,class_element;
+							Symbol *member_symbol=NULL;
 
-								// the first item is the class
-								std::string static_access_value=token_node_symbol.value,class_element;
-								Symbol *member_symbol=NULL;
+							ScriptClass *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol.value);
 
-								ScriptClass *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol.value);
+							//do{
+							IGNORE_BLANKS(aux_p,eval_data,aux_p+2,line);
 
-								//do{
-								IGNORE_BLANKS(aux_p,eval_data,aux_p+2,line);
-
-								last_accessor_line=line;
-								if(get_accessor_name(eval_data, &aux_p, line,class_element) == false){
-									EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Expected identifier after '::'");
-								}
-
-								static_access_value+="::"+class_element;
-
-								//}while(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':' && n_static_access < max_static_access);
-
-								// override
-								token_node_symbol.value=static_access_value;
-
-								if(sc != NULL){ // if class exist ...
-
-									member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
-
-									if(member_symbol != NULL){
-										if(member_symbol->properties & SYMBOL_PROPERTY_STATIC){
-											if(!eval_set_instruction_static_symbol(&instruction->vm_instruction,member_symbol,static_error)){
-												EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
-														eval_data->current_parsing_file
-														,line
-														,"Symbol '%s' %s"
-														,static_access_value.c_str()
-														,static_error.c_str());
-											}
-										}else{
-											EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Symbol '%s' is not static",static_access_value.c_str());
-										}
-									}
-								} // --> in eval::pop_function will be find
-							}else{
-								EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Incomplete static access operator");
+							last_accessor_line=line;
+							if(get_accessor_name(eval_data, &aux_p, line,class_element) == false){
+								EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Expected identifier after '::'");
 							}
+
+							static_access_value+="::"+class_element;
+
+							//}while(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':' && n_static_access < max_static_access);
+
+							// override
+							token_node_symbol.value=static_access_value;
+
+							if(sc != NULL){ // if class exist ...
+
+								member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
+
+								if(member_symbol != NULL){
+									if(member_symbol->properties & SYMBOL_PROPERTY_STATIC){
+										if(!eval_set_instruction_static_symbol(&instruction->vm_instruction,member_symbol,static_error)){
+											EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
+													eval_data->current_parsing_file
+													,line
+													,"Symbol '%s' %s"
+													,static_access_value.c_str()
+													,static_error.c_str());
+										}
+									}else{
+										EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Symbol '%s' is not static",static_access_value.c_str());
+									}
+								}
+							} // --> in eval::pop_function will be find
+
 						}
-					}
+				}
 
-					token_node_symbol.instructions[0]->symbol.name=token_node_symbol.value;
+				token_node_symbol.instructions[0]->symbol.name=token_node_symbol.value;
 
-					// add info to add as symbol value ...
-					token_node_symbol.instructions[0]->instruction_source_info = InstructionSourceInfo(
-						eval_data->current_parsing_file
-						,line
-						,get_mapped_name(eval_data,token_node_symbol.value)
-					);
+				// add info to add as symbol value ...
+				token_node_symbol.instructions[0]->instruction_source_info = InstructionSourceInfo(
+					eval_data->current_parsing_file
+					,line
+					,get_mapped_name(eval_data,token_node_symbol.value)
+				);
 
 			}
 		}

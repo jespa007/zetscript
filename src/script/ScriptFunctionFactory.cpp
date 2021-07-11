@@ -80,7 +80,7 @@ namespace zetscript{
 
 		for(
 			int v=script_functions->count-1;
-			v >= idx_start; // avoid delete main function
+			v > idx_start; // avoid delete main function
 			v--
 		){
 

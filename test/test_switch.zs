@@ -1,3 +1,5 @@
+const CASE_3=3;
+
 function test_switch(a){
 
 	switch(a){
@@ -14,7 +16,7 @@ function test_switch(a){
 		var b
 		Console::outln("case 2")
 		}
-	case 3:{
+	case - CASE_3:{
 		var c,d,e=0
 		Console::outln("case 3 {0} {1}",a,c)
 		break

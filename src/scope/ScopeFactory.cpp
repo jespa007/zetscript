@@ -36,7 +36,7 @@ namespace zetscript{
 
 		for(
 			int v=scopes->count-1;
-			v >= idx_start; // avoid main scope
+			v > idx_start; // avoid main scope
 			v--
 		){
 			Scope * info_scope = (Scope *)scopes->get(v);
@@ -47,7 +47,7 @@ namespace zetscript{
 		// remove all symbols/scopes registered main scope till idx_start
 		for (
 				int v = main_scope->registered_symbols->count-1;
-				v >= idx_start_global_registered_symbols;
+				v > idx_start_global_registered_symbols;
 				v--) {
 			delete (Symbol *)main_scope->registered_symbols->items[v];
 			main_scope->registered_symbols->pop_back();
@@ -56,7 +56,7 @@ namespace zetscript{
 		// erase all sub scopes in the main scope
 		for (
 				int v = main_scope->registered_scopes->count-1;
-				v >= idx_start_global_scopes ;
+				v > idx_start_global_scopes ;
 				v--) {
 			//delete (Scope *)main_scope->registered_scopes->items[v];
 			main_scope->registered_scopes->pop_back();

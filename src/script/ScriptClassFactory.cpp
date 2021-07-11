@@ -324,7 +324,7 @@ namespace zetscript{
 
 		for(
 			int v=script_classes->count-1;
-			v >= idx_start; // avoid main class
+			v > idx_start; // avoid main class
 			v--
 		){
 			ScriptClass * sc = (ScriptClass *)script_classes->get(v);

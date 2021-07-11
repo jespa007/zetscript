@@ -417,7 +417,7 @@ namespace zetscript{
 
 			for (
 					int v = main_function_object->registered_symbols->count-1;
-					v >= idx_start;
+					v > idx_start;
 					v--) {
 
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
