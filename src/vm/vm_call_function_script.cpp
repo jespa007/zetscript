@@ -1,7 +1,7 @@
 
 
 #define PROCESS_MOD_OPERATION \
-	msk_properties=(stk_result_op1->properties<<16)|stk_result_op2->properties;\
+	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
 		op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
@@ -47,7 +47,7 @@
 	}\
 
 #define PROCESS_ARITHMETIC_DIV_OPERATION \
-	msk_properties=(stk_result_op1->properties<<16)|stk_result_op2->properties;\
+	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
 		op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
@@ -93,7 +93,7 @@
 	}\
 
 #define PROCESS_ARITHMETIC_OPERATION(__C_OP__, __METAMETHOD__)\
-	msk_properties=(stk_result_op1->properties<<16)|stk_result_op2->properties;\
+	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
 		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
@@ -125,7 +125,7 @@
 	}\
 
 #define PROCESS_COMPARE_OPERATION(__C_OP__, __METAMETHOD__)\
-	msk_properties=(stk_result_op1->properties<<16)|stk_result_op2->properties;\
+	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
 		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
@@ -173,7 +173,7 @@
 
 
 #define PROCESS_LOGIC_OPERATION(__C_OP__)\
-	if((stk_result_op1->properties&stk_result_op2->properties) == STK_PROPERTY_BOOL){\
+	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_BOOL){\
 		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}else{\
 		PRINT_DUAL_ERROR_OP(ZS_STR(__C_OP__));\
@@ -182,7 +182,7 @@
 
 
 #define PROCESS_BINARY_OPERATION(__C_OP__, __METAMETHOD__)\
-	if((stk_result_op1->properties&stk_result_op2->properties) == STK_PROPERTY_ZS_INT){\
+	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_ZS_INT){\
 		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}else{\
 		if(vm_apply_metamethod(\
