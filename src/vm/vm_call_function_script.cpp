@@ -692,23 +692,22 @@ load_element_object:
 							data->stk_vm_current++;
 						}
 						continue;
-					}else{
-						if(stk_var->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
-							if((instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0){ // call getter if exist
-								StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->value;
-								if(stk_ma->member_attribute->getter != NULL){
+					}else if(
+						   ((stk_var->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)!=0)
+						&& (instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT  ||  instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS)
+						&& (instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0){ // call getter if exist
+							StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->value;
+							if(stk_ma->member_attribute->getter != NULL){
 
-									VM_INNER_CALL_ONLY_RETURN(
-											stk_ma->so_object
-											,stk_ma->member_attribute->getter
-											,stk_ma->member_attribute->getter->symbol.name.c_str()
-											,true
-									);
+								VM_INNER_CALL_ONLY_RETURN(
+										stk_ma->so_object
+										,stk_ma->member_attribute->getter
+										,stk_ma->member_attribute->getter->symbol.name.c_str()
+										,true
+								);
 
-									data->stk_vm_current++;
-									continue;
-								}
-							}
+								data->stk_vm_current++;
+								continue;
 						}
 					}
 				}
@@ -1040,11 +1039,12 @@ load_element_object:
 									,false
 									//,lst_functions
 									//,lst_functions->count
-									,"_set" // symbol to find
+									,"_set@" // symbol to find
 									,stk_arg
 									,1))==NULL){
 
-								VM_STOP_EXECUTE("cannot find metamethod \"_set\"");
+
+								VM_STOP_EXECUTE("Attribute '%s' does not implement setter function",((StackMemberAttribute *)stk_dst->value)->member_attribute->attribute_name.c_str());
 							}
 						}else if(lst_functions->count>1){ // it has all member list
 							StackElement * stk = obj_setter->getProperty("_set");
@@ -1456,6 +1456,7 @@ load_element_object:
 					if(stk_function_ref->properties & STK_PROPERTY_PTR_STK){
 						stk_function_ref=(StackElement *)stk_function_ref->value;
 					}
+
 
 					if(stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
 						StackMemberFunction *fm=(StackMemberFunction *)stk_function_ref->value;

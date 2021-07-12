@@ -1,4 +1,4 @@
-const CASE_3=3;
+
 
 function test_switch(a){
 
@@ -59,6 +59,31 @@ case "bye":
 	
 }
 
+
+const CASE_3=3
+
+var obj={
+    a:0
+    ,b:1
+}
+
+var g=-CASE_3
+
+switch(g){
+case 0:
+Console::outln("0")
+case -CASE_3:
+    Console::outln("CASE_3")
+case obj.a : 
+    Console::outln("a {0}",g)
+break;
+case obj.b : 
+    Console::outln("b")
+break;
+default:
+    Console::outln("default: {0}",g)
+break;
+}
 
 
 

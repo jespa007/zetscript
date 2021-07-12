@@ -83,3 +83,43 @@ Float * FloatWrap_mul(zs_float *n1, Float *n2){
 zs_float FloatWrap_toFloat(Float *_this){
 	 return _this->n;
 }
+
+
+void FloatWrap_register(ZetScript *_zs){
+	_zs->registerClass<Float>("Float",FloatWrap_new,FloatWrap_delete);
+
+	// constructor
+	_zs->registerConstructor<Float>(static_cast<void (*)(Float *,zs_float *)>(&FloatWrap_set));
+	_zs->registerConstructor<Float>(static_cast<void (*)(Float *,Float *)>(&FloatWrap_set));
+
+	_zs->registerMemberFunction<Float>("_set",static_cast<void (*)(Float *,zs_float *)>(&FloatWrap_set));
+	_zs->registerMemberFunction<Float>("_set",static_cast<void (*)(Float *,Float *)>(&FloatWrap_set));
+
+
+	_zs->registerMemberFunction<Float>("toFloat",&FloatWrap_toFloat);
+	//_zs->registerMemberVariable<Float>("n",&Float::n);
+
+
+	_zs->registerMemberFunctionStatic<Float>("_add",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap_add));
+	_zs->registerMemberFunctionStatic<Float>("_add",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap_add));
+	_zs->registerMemberFunctionStatic<Float>("_add",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap_add));
+
+	_zs->registerMemberFunctionStatic<Float>("_sub",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap_sub));
+	_zs->registerMemberFunctionStatic<Float>("_sub",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap_sub));
+	_zs->registerMemberFunctionStatic<Float>("_sub",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap_sub));
+
+
+	_zs->registerMemberFunctionStatic<Float>("_mul",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap_mul));
+	_zs->registerMemberFunctionStatic<Float>("_mul",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap_mul));
+	_zs->registerMemberFunctionStatic<Float>("_mul",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap_mul));
+
+	_zs->registerMemberFunctionStatic<Float>("_div",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap_div));
+	_zs->registerMemberFunctionStatic<Float>("_div",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap_div));
+	_zs->registerMemberFunctionStatic<Float>("_div",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap_div));
+
+	_zs->registerMemberFunctionStatic<Float>("_mod",static_cast<Float * (*)(zs_float *,Float * )>(&FloatWrap_mod));
+	_zs->registerMemberFunctionStatic<Float>("_mod",static_cast<Float * (*)(Float *,zs_float *)>(&FloatWrap_mod));
+	_zs->registerMemberFunctionStatic<Float>("_mod",static_cast<Float * (*)(Float *,Float * )>(&FloatWrap_mod));
+
+	_zs->registerMemberFunction<Float>("_neg",static_cast<Float * (*)(Float *)>(&FloatWrap_neg));
+}

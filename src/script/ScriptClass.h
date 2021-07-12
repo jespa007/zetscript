@@ -16,9 +16,11 @@ namespace zetscript{
 	public:
 		zs_vector setters; // setter that contains a list of script functions C++
 		 ScriptFunction *getter; // getter
+		 std::string attribute_name;
 
-		 MemberAttribute(){
+		 MemberAttribute(const std::string & _attribute_name){
 			 getter= NULL;
+			 attribute_name=_attribute_name;
 		}
 
 		 void addSetter(ScriptFunction *f){

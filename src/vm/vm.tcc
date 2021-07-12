@@ -443,6 +443,8 @@ namespace zetscript{
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
 
+		bool is_set_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
+
 		void *stk_elements_builtin_ptr= data->vm_stack;// vector of properties
 		int stk_elements_builtin_len=  data->main_function_object->registered_symbols->count;// vector of properties
 
@@ -461,7 +463,11 @@ namespace zetscript{
 
 			aux_string=irfs->symbol.name;
 
-			if((aux_string == symbol_to_find && irfs->params->count == (n_args+this_as_first_parameter))){
+			bool symbol_equals=
+								aux_string == symbol_to_find
+								|| (is_set_metamethod && zs_strutils::starts_with(aux_string,"_set@"));
+
+			if((symbol_equals && irfs->params->count == (n_args+this_as_first_parameter))){
 				if((irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;

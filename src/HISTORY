@@ -36,6 +36,7 @@ Main improvements:
 -Implements builtin classes: DateTime
 -Implements builtin Helper classes: System, Math, Integer,Json and String
 -"function" keyword to declare function member is not mandatory within the class
+-switch allow expressions in the case statement
 
 Solved issues
  
@@ -235,8 +236,9 @@ Solved issues
 #290 Json::serialize: expose attributes metamethods that implements getters 
 #291 vm_call_function_native: Support std::string return type
 #292 Make mandatory use of static function for operator metamethods with two args
-> #293 Make operation with assigment operations it does indefined behaviour on calling funcionts and its results
-> #294 undefined behaviour when call delete 
+#293 Make operation with assigment operations it does indefined behaviour on calling funcionts and its results
+#294 undefined behaviour when call delete 
+#295 Allow switch to have expressions/variables in the case 
 
 
 //----------------------------------------------------------

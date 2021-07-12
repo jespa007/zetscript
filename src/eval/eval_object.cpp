@@ -335,10 +335,19 @@ namespace zetscript{
 				 instructions->push_back(
 					eval_instruction=new EvalInstruction(
 						 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR
-						 ,ZS_IDX_UNDEFINED
-						 ,constructor_function != NULL?constructor_function->idx_position:ZS_IDX_UNDEFINED
 					)
 				 );
+
+				 if(constructor_function != NULL){
+					 if(constructor_function->properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // it will call the apropiate function according its args
+						 constructor_function->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
+					 }else{ // script function there's no problem with the number of args
+					 	 eval_instruction->vm_instruction.value_op2=constructor_function->idx_position;
+					 }
+
+				 }
+
+				 //ok check whether the symbol is native function ... the number of args should match with
 				 //}
 
 				 eval_instruction->instruction_source_info=InstructionSourceInfo(
@@ -379,7 +388,6 @@ namespace zetscript{
 				 }while(*aux_p != ')');
 
 				 // if constructor function found insert call function...
-				 // if(constructor_function != NULL){
 				 instructions->push_back(
 						 eval_instruction=new EvalInstruction(
 						  BYTE_CODE_CALL_CONSTRUCTOR

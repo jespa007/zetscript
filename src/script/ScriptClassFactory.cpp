@@ -411,7 +411,7 @@ namespace zetscript{
 					// attribs has to be copy MemberAttribute...
 					if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 						MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
-						MemberAttribute *ma_dst=new MemberAttribute;
+						MemberAttribute *ma_dst=new MemberAttribute(ma_src->attribute_name);
 						ma_dst->getter=ma_src->getter;
 						for(unsigned i=0; i < ma_src->setters.count;i++){
 							ma_dst->addSetter((ScriptFunction *)ma_src->setters.items[i]);
