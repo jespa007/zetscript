@@ -28,13 +28,13 @@ namespace zetscript{
 		script_class_native=NULL;
 	}
 
-	void ScriptObjectClass::callConstructorBuiltin(ScriptClass *sc ){
+	void ScriptObjectClass::callConstructorMemberVariables(ScriptClass *sc ){
 		if(sc == NULL){
 			return;
 		}
 
 		if(sc->idx_base_classes->count>0){
-			callConstructorBuiltin(this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]));
+			callConstructorMemberVariables(this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]));
 		}
 
 		if(sc->sf_field_initializer != NULL){ // execute if only script class
@@ -121,8 +121,8 @@ namespace zetscript{
 			delete_c_object_on_destroy=true; // destroy object when class is destroyed. It will be safe (in principle)
 		}
 
-		// execute init var
-		callConstructorBuiltin(script_class);
+		// execute init for variable members (not dynamic)
+		callConstructorMemberVariables(script_class);
 	}
 
 	ScriptFunction *ScriptObjectClass::getConstructorFunction(){

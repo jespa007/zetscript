@@ -22,18 +22,18 @@ namespace zetscript{
 				break;
 			default: // properties ...
 
-				if(var_type & STK_PROPERTY_SCRIPT_OBJECT){
-					if(((si->properties & STK_PROPERTY_IS_VAR_C) != STK_PROPERTY_IS_VAR_C)
-						&& (si->value != this) // ensure that property don't holds its same var.
-						&& (si->value != 0)
-					  ){ // deallocate but not if is c or this ref
+				if( (var_type & STK_PROPERTY_SCRIPT_OBJECT)
+					//if(((si->properties & STK_PROPERTY_IS_VAR_C) != STK_PROPERTY_IS_VAR_C)
+					&&(si->value != this) // ensure that property don't holds its same var.
+					&& (si->value != 0)
+				 ){ // deallocate but not if is c or this ref
 
 						// remove property if not referenced anymore
 						if(!vm_unref_shared_script_object_and_remove_if_zero(vm,(ScriptObject **)&si->value)){
 							return false;
 						}
 
-					}
+					//}
 				}
 				break;
 		}
@@ -216,6 +216,16 @@ namespace zetscript{
 				delete (StackMemberFunction *)stk->value;
 			}else if(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
 				delete (StackMemberAttribute *)stk->value;
+			}else if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced
+				if((stk->value != this) // ensure that property don't holds its same var.
+					&& (stk->value != 0)
+				  ){ // deallocate but not if is c or this ref
+
+					// remove property if not referenced anymore
+					vm_unref_shared_script_object_and_remove_if_zero(vm,(ScriptObject **)&stk->value);
+
+
+				}
 			}
 			free(stk);
 		}

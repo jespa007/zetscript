@@ -255,8 +255,8 @@ namespace zetscript{
 
 
 		if(
-			   calling_function->idx_class==IDX_SCRIPT_CLASS_MAIN
-			&& calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN){ // set stack and Init vars for first call...
+			calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN
+		){ // set stack and Init vars for first call...
 
 			if(data->vm_idx_call != 0){
 				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",data->vm_idx_call);
@@ -267,18 +267,24 @@ namespace zetscript{
 			data->vm_error_callstack_str="";
 
 			stk_start=data->vm_stack;
+			n_stk_params=data->main_function_object->registered_symbols->count;
 
 			// calls script function from C : preserve stack space for global vars to avoid
-			if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
-				stk_start=&data->vm_stack[data->main_function_object->registered_symbols->count];
-			}
+			//stk_start=&data->vm_stack[data->main_function_object->registered_symbols->count];
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
-			if(data->vm_idx_call == 0){
+            if(data->vm_idx_call == 0){
 				data->vm_idx_call=1; // is calling from application set as 1 to make sure it not become conflict with global vars
 			}
 
+			StackElement *min_stk=&data->vm_stack[data->main_function_object->registered_symbols->count];
 			stk_start=data->stk_vm_current;
+
+			if(stk_start<min_stk){ // control: not overwrite global symbols
+				// this could happen when you call script function from native c++, so this control is needed
+				stk_start=min_stk;
+			}
+
 			StackElement *stk_aux=stk_start;
 			for(unsigned i = 0; i < n_stk_params; i++){
 				*stk_aux++=stk_params[i];

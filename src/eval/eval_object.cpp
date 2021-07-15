@@ -272,6 +272,10 @@ namespace zetscript{
 					,std::vector<char>{}
 					);
 
+			if(aux_p==NULL){
+				return 0;
+			}
+
 			// vpush
 			instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_VECTOR_ELEMENT));
 
@@ -304,7 +308,7 @@ namespace zetscript{
 		if(key_w != Keyword::KEYWORD_UNKNOWN){
 
 			if(key_w == Keyword::KEYWORD_NEW){
-				EvalInstruction *eval_instruction = NULL;
+				EvalInstruction *ei_load_function_constructor = NULL,*eval_instruction=NULL;
 				int start_line_new=line;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 				// try get symbol ...++++
@@ -328,29 +332,18 @@ namespace zetscript{
 
 				 // call function if there's any constructor function
 				 // get constructor function
-				 constructor_function=sc->getSymbol(class_name); // FUNCTION_MEMBER_CONSTRUCTOR_NAME
+
 
 				 //if(constructor_function != NULL){
 					 // insert load function ...
 				 instructions->push_back(
-					eval_instruction=new EvalInstruction(
+				    ei_load_function_constructor=new EvalInstruction(
 						 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR
 					)
 				 );
 
-				 if(constructor_function != NULL){
-					 if(constructor_function->properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // it will call the apropiate function according its args
-						 constructor_function->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
-					 }else{ // script function there's no problem with the number of args
-					 	 eval_instruction->vm_instruction.value_op2=constructor_function->idx_position;
-					 }
 
-				 }
-
-				 //ok check whether the symbol is native function ... the number of args should match with
-				 //}
-
-				 eval_instruction->instruction_source_info=InstructionSourceInfo(
+				 ei_load_function_constructor->instruction_source_info=InstructionSourceInfo(
 					 eval_data->current_parsing_file
 					 ,line
 					 ,get_mapped_name(eval_data,class_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
@@ -394,6 +387,30 @@ namespace zetscript{
 						 ,n_args
 					)
 				 );
+
+
+				 // check constructor symbol
+				 constructor_function=sc->getSymbol(class_name);
+
+				 if(constructor_function != NULL){
+					 // set idx function found
+					 if((constructor_function->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){  // is a script constructor so only set idx
+						 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
+					 }else{// is a native constructor, find a constructor if it passes one or more args
+						 if(n_args > 0){ // we have to find our custom function to call after object is created
+							 constructor_function=sc->getSymbol(class_name,n_args+1); //GET FUNCTION_MEMBER_CONSTRUCTOR_NAME. +1 Is because we include _this paramaters always in the call (is memeber function)!
+							 if(constructor_function == NULL){
+								 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Cannot find any constructor function '%s' with '%i' parameters",class_name.c_str(),n_args);
+							 }
+							 // override idx
+							 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
+							 constructor_function->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
+							 ei_load_function_constructor->vm_instruction.value_op1=n_args+1;
+						 }
+					 }
+
+				 }
+
 
 				 eval_instruction->instruction_source_info.file=eval_data->current_parsing_file;
 				 eval_instruction->instruction_source_info.line=start_line;

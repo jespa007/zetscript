@@ -49,7 +49,7 @@ namespace zetscript{
 			virtual ~ScriptObjectClass();
 
 		protected:
-			void callConstructorBuiltin(ScriptClass *sc);
+			void callConstructorMemberVariables(ScriptClass *sc);
 			//virtual StackElement * newSlotBuiltin();
 			//virtual StackElement * addPropertyBuiltin(const std::string & symbol_value, StackElement stk=k_stk_undefined);
 
