@@ -190,6 +190,51 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
+		/*
+		 * register attribute post_inc
+		 */
+		template <typename C,typename F>
+		void registerNativePostIncrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function_getter
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		/*
+		 * register attribute post_dec
+		 */
+		template <typename C,typename F>
+		void registerNativePostDecrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function_getter
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		/*
+		 * register attribute pre_inc
+		 */
+		template <typename C,typename F>
+		void registerNativePreIncrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function_getter
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		/*
+		 * register attribute pre_dec
+		 */
+		template <typename C,typename F>
+		void registerNativePreDecrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function_getter
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+
 
 		/**
 		 * Register C Member function static Class

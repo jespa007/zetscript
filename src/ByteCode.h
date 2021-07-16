@@ -140,7 +140,7 @@ namespace zetscript{
 		BYTE_CODE_INSTANCEOF,
 		BYTE_CODE_JMP,
 		BYTE_CODE_JNT, // goto if not true ... goes end to conditional.
-		BYTE_CODE_JE, //
+		BYTE_CODE_JE_CASE, //
 		BYTE_CODE_JT, // goto if true ... goes end to conditional.
 		BYTE_CODE_CALL, // call function...
 		BYTE_CODE_CALL_CONSTRUCTOR, // call function...
@@ -190,8 +190,10 @@ namespace zetscript{
 		BYTE_CODE_METAMETHOD_NEG, // -a
 		BYTE_CODE_METAMETHOD_SET, // set '='
 		BYTE_CODE_METAMETHOD_TO_STRING, // toString
-		BYTE_CODE_METAMETHOD_NEXT, // _next
-		BYTE_CODE_METAMETHOD_PREVIOUS, // _previous
+		BYTE_CODE_METAMETHOD_POST_INC, // i++
+		BYTE_CODE_METAMETHOD_POST_DEC, // i--
+		BYTE_CODE_METAMETHOD_PRE_INC, // ++i
+		BYTE_CODE_METAMETHOD_PRE_DEC, // --i
 		BYTE_CODE_METAMETHOD_IN, // special metamethod in
 		BYTE_CODE_METAMETHOD_MAX
 	}ByteCodeMetamethod;

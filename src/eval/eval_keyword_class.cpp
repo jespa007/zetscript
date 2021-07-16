@@ -431,6 +431,50 @@ namespace zetscript{
 								,attrib_name.c_str()
 							);
 						}
+					}else if(function_name == "_post_inc"){
+						if(ma->getter==NULL){
+							ma->post_inc=(ScriptFunction *)symbol->ref_ptr;
+						}else{
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Attribute \"%s\" has already a post increment (aka i++) metamethod"
+								,attrib_name.c_str()
+							);
+						}
+					}else if(function_name == "_post_dec"){
+						if(ma->getter==NULL){
+							ma->post_dec=(ScriptFunction *)symbol->ref_ptr;
+						}else{
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Attribute \"%s\" has already a post decrement (aka i--) metamethod"
+								,attrib_name.c_str()
+							);
+						}
+					}else if(function_name == "_pre_inc"){
+						if(ma->getter==NULL){
+							ma->pre_inc=(ScriptFunction *)symbol->ref_ptr;
+						}else{
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Attribute \"%s\" has already  a pre increment (aka ++i) metamethod"
+								,attrib_name.c_str()
+							);
+						}
+					}else if(function_name == "_pre_dec"){
+						if(ma->getter==NULL){
+							ma->pre_dec=(ScriptFunction *)symbol->ref_ptr;
+						}else{
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Attribute \"%s\" has already a pre decrement (aka --i) metamethod"
+								,attrib_name.c_str()
+							);
+						}
 					}else{
 
 						EVAL_ERROR_FILE_LINE(

@@ -134,6 +134,9 @@ namespace zetscript{
 
 			// insert instruction if evaluated expression
 			eval_data->current_function->instructions.push_back(ei_jnt=new EvalInstruction(BYTE_CODE_JNT));
+			ei_jnt->instruction_source_info.file=eval_data->current_parsing_file;
+			ei_jnt->instruction_source_info.line=line;
+
 
 
 			zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr);
@@ -190,6 +193,7 @@ namespace zetscript{
 		key_w = eval_is_keyword(aux_p);
 
 		if(key_w == Keyword::KEYWORD_DO_WHILE){
+			EvalInstruction *ei_aux=NULL;
 
 			aux_p += strlen(eval_data_keywords[key_w].str);
 
@@ -249,10 +253,13 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'do-while': Expected '('");
 			}
 			// insert jmp instruction to begin condition while...
-			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_JT
+			eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JT
 					,ZS_IDX_UNDEFINED
 					,-((int)(eval_data->current_function->instructions.size())-idx_do_while_start)
 			));
+
+			ei_aux->instruction_source_info.file=eval_data->current_parsing_file;
+			ei_aux->instruction_source_info.line=line;
 
 			// catch all breaks in the while...
 			//link_breaks(eval_data);
@@ -516,6 +523,8 @@ namespace zetscript{
 								);
 
 								eval_data->current_function->instructions.push_back(ei_jnt=new EvalInstruction(BYTE_CODE_JT));
+								ei_jnt->instruction_source_info.file=eval_data->current_parsing_file;
+								ei_jnt->instruction_source_info.line=line;
 
 								idx_instruction_for_after_jnz_condition=(int)(eval_data->current_function->instructions.size());
 
@@ -621,6 +630,9 @@ namespace zetscript{
 							}
 
 							eval_data->current_function->instructions.push_back(ei_jnt=new EvalInstruction(BYTE_CODE_JNT));
+							ei_jnt->instruction_source_info.file=eval_data->current_parsing_file;
+							ei_jnt->instruction_source_info.line=line;
+
 
 							idx_instruction_for_after_jnz_condition=(int)(eval_data->current_function->instructions.size());
 						}

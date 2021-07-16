@@ -6,6 +6,10 @@
 
 #define ZS_PREFIX_SYMBOL_NAME_SETTER	"_set@"
 #define ZS_PREFIX_SYMBOL_NAME_GETTER	"_get@"
+#define ZS_PREFIX_SYMBOL_NAME_POST_INC	"_post_inc@"
+#define ZS_PREFIX_SYMBOL_NAME_POST_DEC	"_post_dec@"
+#define ZS_PREFIX_SYMBOL_NAME_PRE_INC	"_pre_inc@"
+#define ZS_PREFIX_SYMBOL_NAME_PRE_DEC	"_pre_dec@"
 
 namespace zetscript{
 
@@ -15,11 +19,15 @@ namespace zetscript{
 	struct MemberAttribute{
 	public:
 		zs_vector setters; // setter that contains a list of script functions C++
-		 ScriptFunction *getter; // getter
+		 ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec; // getter
 		 std::string attribute_name;
 
 		 MemberAttribute(const std::string & _attribute_name){
 			 getter= NULL;
+			 post_inc=NULL;
+			 post_dec=NULL;
+			 pre_inc=NULL;
+			 pre_dec=NULL;
 			 attribute_name=_attribute_name;
 		}
 
@@ -163,11 +171,87 @@ namespace zetscript{
 
 		);
 
+
+		Symbol				* 	registerNativePostIncrementMemberAttribute(
+			const std::string & attribute_name
+			,std::vector<ScriptFunctionArg> arg_value
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_post_inc_function_properties
+			,const char * file=""
+			,short line=-1
+
+		);
+
+		Symbol				* 	registerNativePostDecrementMemberAttribute(
+			const std::string & attribute_name
+			,std::vector<ScriptFunctionArg> arg_value
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_post_dec_function_properties
+			,const char * file=""
+			,short line=-1
+
+		);
+
+		Symbol				* 	registerNativePreIncrementMemberAttribute(
+			const std::string & attribute_name
+			,std::vector<ScriptFunctionArg> arg_value
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_pre_inc_function_properties
+			,const char * file=""
+			,short line=-1
+
+		);
+
+		Symbol				* 	registerNativePreDecrementMemberAttribute(
+			const std::string & attribute_name
+			,std::vector<ScriptFunctionArg> arg_value
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_pre_dec_function_properties
+			,const char * file=""
+			,short line=-1
+
+		);
 		/*
 		 * register C getter
 		 */
 		template <typename F>
 		void registerNativeGetterMemberAttribute(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+		);
+
+		template <typename F>
+		void registerNativePostIncrementMemberAttribute(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+		);
+
+		template <typename F>
+		void registerNativePostDecrementMemberAttribute(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+		);
+
+		template <typename F>
+		void registerNativePreIncrementMemberAttribute(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+		);
+
+		template <typename F>
+		void registerNativePreDecrementMemberAttribute(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -264,6 +348,7 @@ namespace zetscript{
 				,std::string & return_type
 				,std::vector<ScriptFunctionArg> & arg_info
 		);
+
 
 		ScriptClass * 					getScriptClass(short idx_class);
 		short							getIdxClassFromItsNativeType(const std::string & s);

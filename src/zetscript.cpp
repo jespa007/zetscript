@@ -320,6 +320,7 @@ namespace zetscript{
 					,script_class_factory->getMainFunction()
 					,NULL
 					,0
+					,0
 					, __invoke_file__
 					,__invoke_line__
 			);
@@ -466,7 +467,6 @@ namespace zetscript{
 		script_function_factory->clear();
 		script_class_factory->clear();
 
-		vm_reset_idx_call(this->virtual_machine);
 		resetParsedFiles();
 	}
 

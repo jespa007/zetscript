@@ -61,11 +61,11 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 				if(info_registered_class){
 					ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs,info_registered_class->idx_class,ptr_variable);
 
-
 					return{
 							var,
 							STK_PROPERTY_SCRIPT_OBJECT
 					};
+
 				}else{
 					THROW_RUNTIME_ERROR("Native symbol \"%s\" has type \"%s\" that is not registered",symbol->name.c_str(),symbol->str_native_type.c_str());
 				}

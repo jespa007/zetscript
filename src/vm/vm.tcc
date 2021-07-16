@@ -208,10 +208,6 @@ namespace zetscript{
 		StackElement stk_aux;
 
 		VirtualMachineData(ZetScript *_zs){
-			reset(_zs);
-		}
-
-		void reset(ZetScript *_zs){
 			memset(&zero_shares,0,sizeof(zero_shares));
 			memset(&shared_vars,0,sizeof(shared_vars));
 			memset(&vm_stack,0,sizeof(vm_stack));
@@ -236,6 +232,7 @@ namespace zetscript{
 			vm_error=false;
 			vm_error_str="";
 		}
+
 	};
 
 	//-----------------------------------------
@@ -776,10 +773,14 @@ namespace zetscript{
 		ScriptObject *script_object=NULL;
 		std::string class_name_object_found="";
 		ScriptObjectClass *one_param_object_class = NULL;
+		StackMemberAttribute *stk_ma=NULL;
 		int n_stk_args=byte_code_metamethod_get_num_arguments(byte_code_metamethod);
 		StackElement *stk_return=NULL;
 		int n_returned_arguments_from_function=0;
+
+
 		ret_obj.setUndefined();
+
 
 		// init stk
 		stk_vm_current_backup=data->stk_vm_current;
@@ -800,6 +801,38 @@ namespace zetscript{
 		}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject * script_object_found=(ScriptObject *)stk_result_op1->value;
 			class_name_object_found=script_object_found->getClassName();
+		}else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){ // in principle attribute member metamethod only contemplates pre/post inc/dec operators
+			stk_ma= (StackMemberAttribute *)stk_result_op1->value;
+			script_object = stk_ma->so_object;
+
+
+			switch(byte_code_metamethod){
+			case BYTE_CODE_METAMETHOD_POST_INC: // i++
+				ptr_function_found=stk_ma->member_attribute->post_inc;
+				error_found=zs_strutils::format("Member attribute '%s' has not implemented metamethod _post_inc (aka '%s++') ",stk_ma->member_attribute->attribute_name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
+				break;
+			case BYTE_CODE_METAMETHOD_POST_DEC: // i--
+				ptr_function_found=stk_ma->member_attribute->post_dec;
+				error_found=zs_strutils::format("Member attribute '%s' has not implemented metamethod _post_dec (aka '%s--') ",stk_ma->member_attribute->attribute_name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
+				break;
+			case BYTE_CODE_METAMETHOD_PRE_INC: // ++i
+				ptr_function_found=stk_ma->member_attribute->pre_inc;
+				error_found=zs_strutils::format("Member attribute '%s' has not implemented metamethod _pre_inc (aka '++%s')",stk_ma->member_attribute->attribute_name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
+				break;
+			case BYTE_CODE_METAMETHOD_PRE_DEC: // --i
+				ptr_function_found=stk_ma->member_attribute->pre_dec;
+				error_found=zs_strutils::format("Member attribute '%s' has not implemented metamethod _pre_dec (aka '--%s')",stk_ma->member_attribute->attribute_name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
+				break;
+			default:
+				error_found=zs_strutils::format("Internal error: unexpected metamethod for attribute '%s'",stk_ma->member_attribute->attribute_name.c_str());
+				goto apply_metamethod_error;
+			}
+
+			if(ptr_function_found == NULL){
+				goto apply_metamethod_error;
+			}
+
+
 		}
 
 
@@ -824,7 +857,7 @@ namespace zetscript{
 			}
 		}
 
-		if(stk_result_op2 != NULL){
+		if(stk_result_op1 != NULL && stk_result_op2 != NULL && stk_ma==NULL){
 			if(vm_apply_metamethod_primitive(
 				vm
 				 ,calling_function
@@ -848,43 +881,51 @@ namespace zetscript{
 				// Because script elements can return "null" due undefined properties, do not show any error to not confuse.
 				// If is an internal error, fix!
 			}else{
-				error_found=zs_strutils::format("\"%s\" cannot perform metamethod",class_name_object_found.c_str());
+				if(instruction->byte_code == BYTE_CODE_JE_CASE){
+					error_found=zs_strutils::format("Unable to perform '==' operator for case conditional");
+				}else{
+					error_found=zs_strutils::format("\"%s\" cannot perform metamethod",class_name_object_found.c_str());
+				}
 			}
 			goto apply_metamethod_error;
 		}
 
-		if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
-			if((ptr_function_found = vm_find_function(
-				vm
-				,data->script_class_factory->getScriptClass(script_object->idx_script_class)
-				,calling_function
-				,instruction
-				,false
-				,str_symbol_metamethod
-				,stk_args
-				,n_stk_args
-			)) == NULL){
-				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
-				goto apply_metamethod_error;
+		if(ptr_function_found == NULL){
+
+			if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
+				if((ptr_function_found = vm_find_function(
+					vm
+					,data->script_class_factory->getScriptClass(script_object->idx_script_class)
+					,calling_function
+					,instruction
+					,false
+					,str_symbol_metamethod
+					,stk_args
+					,n_stk_args
+				)) == NULL){
+					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
+					goto apply_metamethod_error;
+				}
+
+
+			}else{ // get first item...
+				StackElement * stk = script_object->getProperty(str_symbol_metamethod);
+
+				if(stk == NULL){
+					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
+					goto apply_metamethod_error;
+				}
+
+				if((stk->properties & STK_PROPERTY_FUNCTION)==0){
+					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
+					goto apply_metamethod_error;
+				}
+
+				ptr_function_found=((StackMemberFunction *)stk->value)->so_function;
+
 			}
-
-
-		}else{ // get first item...
-			StackElement * stk = script_object->getProperty(str_symbol_metamethod);
-
-			if(stk == NULL){
-				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
-				goto apply_metamethod_error;
-			}
-
-			if((stk->properties & STK_PROPERTY_FUNCTION)==0){
-				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
-				goto apply_metamethod_error;
-			}
-
-			ptr_function_found=((StackMemberFunction *)stk->value)->so_function;
-
 		}
+
 
 		if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
 			vm_call_function_script(
@@ -911,40 +952,44 @@ namespace zetscript{
 		n_returned_arguments_from_function=data->stk_vm_current-stk_return;
 
 
-		if(n_returned_arguments_from_function == 0){
+
+		/*if(n_returned_arguments_from_function == 0){
 			switch(byte_code_metamethod){
-			case BYTE_CODE_METAMETHOD_PREVIOUS:
-			case BYTE_CODE_METAMETHOD_NEXT:
+			case BYTE_CODE_METAMETHOD_POST_INC:
+			case BYTE_CODE_METAMETHOD_POST_DEC:
+			case BYTE_CODE_METAMETHOD_PRE_INC:
+			case BYTE_CODE_METAMETHOD_PRE_DEC:
+
 				ret_obj.value=script_object;
 				ret_obj.properties=STK_PROPERTY_SCRIPT_OBJECT;
 				break;
 			}
 
-		}else{
+		}else{*/
 
-			// setup all returned variables from function
-			for(int i=0; i < n_returned_arguments_from_function; i++){
+		// setup all returned variables from function
+		for(int i=0; i < n_returned_arguments_from_function; i++){
 
-				StackElement *stk_ret = --data->stk_vm_current;
+			StackElement *stk_ret = --data->stk_vm_current;
 
-				// if a scriptvar --> init shared
-				if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					ScriptObject *sv=(ScriptObject *)stk_ret->value;
+			// if a scriptvar --> init shared
+			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				ScriptObject *sv=(ScriptObject *)stk_ret->value;
 
-					// Auto destroy always C when ref == 0
-					((ScriptObjectClass *)(stk_ret->value))->deleteNativeObjectOnDestroy(true);
+				// Auto destroy always C when ref == 0
+				((ScriptObjectClass *)(stk_ret->value))->deleteNativeObjectOnDestroy(true);
 
-					if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
-						if(!vm_create_shared_pointer(vm,sv)){
-							return false;
-						}
+				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
+					if(!vm_create_shared_pointer(vm,sv)){
+						return false;
 					}
 				}
-				// ... and push result if not function constructor...
 			}
-
-			ret_obj=stk_return[0];
+			// ... and push result if not function constructor...
 		}
+
+		ret_obj=stk_return[0];
+		//}
 
 		// reset stack...
 		data->stk_vm_current=stk_vm_current_backup;
@@ -954,6 +999,7 @@ namespace zetscript{
 		return data->vm_error == false;
 
 apply_metamethod_error:
+
 
 		if(stk_result_op1!=NULL && stk_result_op2!=NULL){
 			VM_ERROR("cannot perform operation '%s %s %s'. %s"

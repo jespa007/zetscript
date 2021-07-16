@@ -204,6 +204,7 @@ namespace zetscript{
 		return symbol_attrib;
 	}
 
+
 	Symbol				* 	ScriptClass::registerNativeGetterMemberAttribute(
 			 const std::string & attribute_name
 			 , std::vector<ScriptFunctionArg> arg_value
@@ -242,6 +243,178 @@ namespace zetscript{
 		);
 
 		ma->getter=(ScriptFunction *)symbol_function->ref_ptr;
+
+		return symbol_attrib;
+	}
+
+	Symbol				* 	ScriptClass::registerNativePostIncrementMemberAttribute(
+			 const std::string & attribute_name
+			 , std::vector<ScriptFunctionArg> arg_value
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_post_inc_function_properties
+			,const char *file
+			,short line
+	){
+
+		Symbol *symbol_attrib=NULL;
+		Symbol *symbol_function=NULL;
+
+		MemberAttribute *ma=NULL;
+		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		}
+
+		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
+
+		if(ma->post_inc != NULL){
+
+			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute '%s' has already a post increment (aka '%s++') metamethod"
+				,attribute_name.c_str()
+				,attribute_name.c_str()
+			);
+		}
+
+		symbol_function=registerNativeMemberFunction(
+				ZS_PREFIX_SYMBOL_NAME_POST_INC+attribute_name,
+				arg_value,
+				idx_return_type,
+				ref_ptr,
+				symbol_post_inc_function_properties,
+				file,
+				line
+		);
+
+		ma->post_inc=(ScriptFunction *)symbol_function->ref_ptr;
+
+		return symbol_attrib;
+	}
+
+	Symbol				* 	ScriptClass::registerNativePostDecrementMemberAttribute(
+			 const std::string & attribute_name
+			 , std::vector<ScriptFunctionArg> arg_value
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_post_dec_function_properties
+			,const char *file
+			,short line
+	){
+
+		Symbol *symbol_attrib=NULL;
+		Symbol *symbol_function=NULL;
+
+		MemberAttribute *ma=NULL;
+		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		}
+
+		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
+
+		if(ma->post_dec != NULL){
+
+			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute '%s' has already a post decrement (aka '%s--') metamethod"
+				,attribute_name.c_str()
+				,attribute_name.c_str()
+			);
+		}
+
+		symbol_function=registerNativeMemberFunction(
+				ZS_PREFIX_SYMBOL_NAME_POST_DEC+attribute_name,
+				arg_value,
+				idx_return_type,
+				ref_ptr,
+				symbol_post_dec_function_properties,
+				file,
+				line
+		);
+
+		ma->post_dec=(ScriptFunction *)symbol_function->ref_ptr;
+
+		return symbol_attrib;
+	}
+
+	Symbol				* 	ScriptClass::registerNativePreIncrementMemberAttribute(
+			 const std::string & attribute_name
+			 , std::vector<ScriptFunctionArg> arg_value
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_pre_inc_function_properties
+			,const char *file
+			,short line
+	){
+
+		Symbol *symbol_attrib=NULL;
+		Symbol *symbol_function=NULL;
+
+		MemberAttribute *ma=NULL;
+		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		}
+
+		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
+
+		if(ma->pre_inc != NULL){
+
+			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute '%s' has already a post increment (aka '++%s') metamethod"
+				,attribute_name.c_str()
+				,attribute_name.c_str()
+			);
+		}
+
+		symbol_function=registerNativeMemberFunction(
+				ZS_PREFIX_SYMBOL_NAME_PRE_INC+attribute_name,
+				arg_value,
+				idx_return_type,
+				ref_ptr,
+				symbol_pre_inc_function_properties,
+				file,
+				line
+		);
+
+		ma->pre_inc=(ScriptFunction *)symbol_function->ref_ptr;
+
+		return symbol_attrib;
+	}
+
+	Symbol				* 	ScriptClass::registerNativePreDecrementMemberAttribute(
+			 const std::string & attribute_name
+			 , std::vector<ScriptFunctionArg> arg_value
+			, int idx_return_type
+			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short symbol_pre_dec_function_properties
+			,const char *file
+			,short line
+	){
+
+		Symbol *symbol_attrib=NULL;
+		Symbol *symbol_function=NULL;
+
+		MemberAttribute *ma=NULL;
+		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		}
+
+		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
+
+		if(ma->post_dec != NULL){
+
+			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute '%s' has already a pre decrement (aka '--%s') metamethod"
+				,attribute_name.c_str()
+				,attribute_name.c_str()
+			);
+		}
+
+		symbol_function=registerNativeMemberFunction(
+				ZS_PREFIX_SYMBOL_NAME_PRE_DEC+attribute_name,
+				arg_value,
+				idx_return_type,
+				ref_ptr,
+				symbol_pre_dec_function_properties,
+				file,
+				line
+		);
+
+		ma->pre_dec=(ScriptFunction *)symbol_function->ref_ptr;
 
 		return symbol_attrib;
 	}

@@ -68,7 +68,7 @@ namespace zetscript{
 				stk_src_item=(StackElement *)stk_src_item->value;
 			}
 
-			switch(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
+			/*switch(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
 			//case STK_PROPERTY_NULL:
 			//	*(*str_dst_it)="null";
 			//	break;
@@ -81,24 +81,18 @@ namespace zetscript{
 			case STK_PROPERTY_BOOL:
 				*(*str_dst_it)=(stk_src_item)->value == 0?"false":"true";
 				break;
-			case STK_PROPERTY_FUNCTION:
-				*(*str_dst_it)="function";
-				break;
-			case STK_PROPERTY_CLASS:
-				*(*str_dst_it)="class";
-				break;
 			default:
 				if(stk_src_item->properties==STK_PROPERTY_NULL){
 					*(*str_dst_it)="null";
 				}else if(stk_src_item->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					*(*str_dst_it)=((ScriptObjectObject *)(stk_src_item)->value)->toString();
 				}
-				else{
-					*(*str_dst_it)="unknow";
-				}
+				else{*/
+					*(*str_dst_it)=stk_src_item->toString();
+				/*}
 
 				break;
-			}
+			}*/
 
 			str_dst_it++;
 			stk_src_it++;

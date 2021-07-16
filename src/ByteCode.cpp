@@ -67,7 +67,7 @@ namespace zetscript{
 			case BYTE_CODE_JMP:         			return "JMP"; // Unconditional jump.
 			case BYTE_CODE_JNT:         			return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          			return "JT"; // goto if true ... goes end to conditional.
-			case BYTE_CODE_JE:						return "JE"; // goto if equal ... goes end to conditional.
+			case BYTE_CODE_JE_CASE:					return "JE_CASE"; // je case equal ... goes end to conditional.
 			case BYTE_CODE_CALL: 					return "CALL"; // calling function after all of arguments are processed...
 			case BYTE_CODE_CALL_CONSTRUCTOR: 		return "CALL_CTOR"; // calling function after all of arguments are processed...
 			case BYTE_CODE_NEW_VECTOR: 				return "NEW_VEC"; // Vector object (CREATE)
@@ -150,7 +150,7 @@ namespace zetscript{
 			case BYTE_CODE_JMP:         		return "JMP"; // Unconditional jump.
 			case BYTE_CODE_JNT:         		return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          		return "JT"; // goto if true ... goes end to conditional.
-			case BYTE_CODE_JE:					return "JE"; // goto if equal ... goes end to conditional.
+			case BYTE_CODE_JE_CASE:					return "JE"; // goto if equal ... goes end to conditional.
 			case BYTE_CODE_CALL: 				return "CALL"; // calling function after all of arguments are processed...
 			case BYTE_CODE_NEW_VECTOR: 			return "NEW_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT: return "VPUSH"; // Value push for stdvector
@@ -202,9 +202,11 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SET:		return  "=";		// _set
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get";		// _get
 			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "_toString";// _toString
-			case 	BYTE_CODE_METAMETHOD_NEXT: 		return  "++";	// _next
-			case 	BYTE_CODE_METAMETHOD_PREVIOUS: 	return  "--";// _previous
-			case 	BYTE_CODE_METAMETHOD_IN: 		return  "in";// in
+			case 	BYTE_CODE_METAMETHOD_POST_INC: 	return  "++";		// i++
+			case 	BYTE_CODE_METAMETHOD_POST_DEC: 	return  "--";		//  i--
+			case 	BYTE_CODE_METAMETHOD_PRE_INC: 	return  "++";		// ++i
+			case 	BYTE_CODE_METAMETHOD_PRE_DEC: 	return  "--";		// --i
+			case 	BYTE_CODE_METAMETHOD_IN: 		return  "in";		// in
 			default:
 				return "none";
 		}
@@ -234,9 +236,11 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; 	// _set
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get"; 	// _get
 			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_toString";// _toString
-			case 	BYTE_CODE_METAMETHOD_NEXT: 		return  "_next";	// _next
-			case 	BYTE_CODE_METAMETHOD_PREVIOUS:	return  "_previous";// _previous
-			case 	BYTE_CODE_METAMETHOD_IN: 		return  "_in";// 	_in
+			case 	BYTE_CODE_METAMETHOD_POST_INC: 	return  "_post_inc";// i++
+			case 	BYTE_CODE_METAMETHOD_POST_DEC:	return  "_post_dec";// i--
+			case 	BYTE_CODE_METAMETHOD_PRE_INC: 	return  "_pre_inc";	// ++i
+			case 	BYTE_CODE_METAMETHOD_PRE_DEC:	return  "_pre_dec";	// --i
+			case 	BYTE_CODE_METAMETHOD_IN: 		return  "_in";		// 	_in
 			default:
 				return "none";
 		}
@@ -247,8 +251,10 @@ namespace zetscript{
 	int			 byte_code_metamethod_get_num_arguments(ByteCodeMetamethod op){
 		switch(op){
 			case BYTE_CODE_METAMETHOD_TO_STRING:
-			case BYTE_CODE_METAMETHOD_NEXT:
-			case BYTE_CODE_METAMETHOD_PREVIOUS:
+			case BYTE_CODE_METAMETHOD_POST_INC:
+			case BYTE_CODE_METAMETHOD_POST_DEC:
+			case BYTE_CODE_METAMETHOD_PRE_INC:
+			case BYTE_CODE_METAMETHOD_PRE_DEC:
 			case BYTE_CODE_METAMETHOD_NOT:
 			case BYTE_CODE_METAMETHOD_NEG:
 				return 0;

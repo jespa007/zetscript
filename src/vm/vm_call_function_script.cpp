@@ -720,7 +720,8 @@ load_element_object:
 				}
 
 				if((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){ // fast load access without pass through switch instruction
-					instruction++;
+					instruction++; // we have to inc current instruction...
+					instruction_it++; //... and instruction iterator
 					goto load_element_object;
 				}
 
@@ -903,6 +904,7 @@ load_element_object:
 
 
 							if(IS_BYTE_CODE_STORE_WITH_OPERATION(instruction->byte_code)){ // arithmetic
+								StackElement stk_op1,stk_op2;
 								StackElement stk_aux=*(data->stk_vm_current-1); // save dst value
 								// get value
 
@@ -929,6 +931,38 @@ load_element_object:
 								if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){
 									stk_result_op2=(StackElement *)(STK_GET_STK_VAR_REF(stk_result_op2)->value);
 								}
+
+								 if((stk_result_op1->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)){
+									StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_result_op1->value;
+									if(stk_ma->member_attribute->getter != NULL){
+
+										VM_INNER_CALL_ONLY_RETURN(
+												stk_ma->so_object
+												,stk_ma->member_attribute->getter
+												,stk_ma->member_attribute->getter->symbol.name.c_str()
+												,true
+										);
+
+										stk_op1=*data->stk_vm_current;
+										stk_result_op1=&stk_op1;
+									}
+								 }
+
+								 if((stk_result_op2->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)){
+									StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_result_op2->value;
+									if(stk_ma->member_attribute->getter != NULL){
+
+										VM_INNER_CALL_ONLY_RETURN(
+												stk_ma->so_object
+												,stk_ma->member_attribute->getter
+												,stk_ma->member_attribute->getter->symbol.name.c_str()
+												,true
+										);
+
+										stk_op2=*data->stk_vm_current;
+										stk_result_op2=&stk_op2;
+									}
+								 }
 
 
 								switch(instruction->byte_code){
@@ -1301,6 +1335,10 @@ load_element_object:
 				POP_ONE;
 				if(stk_result_op1->properties & STK_PROPERTY_BOOL){ // operation will result as integer.
 					PUSH_BOOLEAN((!((bool)(stk_result_op1->value))));
+				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
+					PUSH_BOOLEAN((!((zs_int)(stk_result_op1->value))));
+				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
+					PUSH_BOOLEAN((!(*((zs_float *)(&stk_result_op1->value)))==0));
 				}else{
 					if(vm_apply_metamethod(
 						vm
@@ -1308,7 +1346,7 @@ load_element_object:
 						,instruction
 						,BYTE_CODE_METAMETHOD_NOT
 						,stk_result_op1
-						,stk_result_op2
+						,NULL
 					)==false){
 						goto lbl_exit_function;
 					}
@@ -1328,7 +1366,7 @@ load_element_object:
 							,instruction
 							,BYTE_CODE_METAMETHOD_NEG
 							,stk_result_op1
-							,stk_result_op2
+							,NULL
 					)){
 						goto lbl_exit_function;
 					}
@@ -1419,17 +1457,23 @@ load_element_object:
 				continue;
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				POP_ONE;
+				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_result_op1->toString().c_str());
+				}
 				if(stk_result_op1->value == 0){
 					instruction_it=instruction+instruction->value_op2;
 				}
 				continue;
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				POP_ONE;
+				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_result_op1->toString().c_str());
+				}
 				if(stk_result_op1->value != 0){
 					instruction_it=instruction+instruction->value_op2;
 				}
 				continue;
-			case BYTE_CODE_JE:  // especial j for switch
+			case BYTE_CODE_JE_CASE:  // especial j for switch
 				READ_TWO_POP_ONE; // reads switch value and case value
 				PROCESS_COMPARE_OPERATION(==, BYTE_CODE_METAMETHOD_EQU);
 				POP_ONE; // retrieve result...
@@ -1884,22 +1928,22 @@ load_element_object:
 				 data->stk_vm_current=stk_start;
 				 continue;
 			 case BYTE_CODE_POST_INC:
-				 PERFORM_POST_OPERATOR(+,++,BYTE_CODE_METAMETHOD_NEXT);
+				 PERFORM_POST_OPERATOR(+,++,BYTE_CODE_METAMETHOD_POST_INC);
 				 continue;
 			 case BYTE_CODE_POST_DEC:
-				 PERFORM_POST_OPERATOR(+,--,BYTE_CODE_METAMETHOD_PREVIOUS);
+				 PERFORM_POST_OPERATOR(+,--,BYTE_CODE_METAMETHOD_POST_DEC);
 				 continue;
 			 case BYTE_CODE_PRE_INC:
-				 PERFORM_PRE_OPERATOR(++,BYTE_CODE_METAMETHOD_NEXT);
+				 PERFORM_PRE_OPERATOR(++,BYTE_CODE_METAMETHOD_PRE_INC);
 				 continue;
 			 case BYTE_CODE_PRE_DEC:
-				 PERFORM_PRE_OPERATOR(--,BYTE_CODE_METAMETHOD_PREVIOUS);
+				 PERFORM_PRE_OPERATOR(--,BYTE_CODE_METAMETHOD_PRE_DEC);
 				 continue;
 			 case BYTE_CODE_NEG_POST_INC:
-				 PERFORM_POST_OPERATOR(-,++,BYTE_CODE_METAMETHOD_NEXT);
+				 PERFORM_POST_OPERATOR(-,++,BYTE_CODE_METAMETHOD_POST_INC);
 				 continue;
 			 case BYTE_CODE_NEG_POST_DEC:
-				 PERFORM_POST_OPERATOR(-,--,BYTE_CODE_METAMETHOD_PREVIOUS);
+				 PERFORM_POST_OPERATOR(-,--,BYTE_CODE_METAMETHOD_POST_DEC);
 				 continue;
 			 case BYTE_CODE_IN:
 				 POP_TWO;

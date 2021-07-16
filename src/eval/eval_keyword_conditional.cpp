@@ -49,6 +49,9 @@ namespace zetscript{
 
 				// insert instruction if evaluated expression
 				eval_data->current_function->instructions.push_back(ei_aux=new EvalInstruction(BYTE_CODE_JNT));
+				ei_aux->instruction_source_info.file=eval_data->current_parsing_file;
+				ei_aux->instruction_source_info.line=line;
+
 				if_jnt=ei_aux;
 				int idx_start_block=eval_data->current_function->instructions.size();
 				//ei_jmps.push_back(ei_aux);
@@ -209,6 +212,7 @@ namespace zetscript{
 				// search for case or default...
 				key_w = eval_is_keyword(aux_p);
 				if(key_w == KEYWORD_CASE){
+					int line_case=line;
 					EvalInstructionCase eval_instruction_case;
 					//std::vector<EvalInstruction *> aux_instructions;
 					//TokenNode token_symbol;
@@ -239,6 +243,7 @@ namespace zetscript{
 						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line," expected constant or literal after 'case'");
 					}*/
 
+
 					// get token symbol
 					if((aux_p = eval_expression(
 							eval_data
@@ -257,10 +262,14 @@ namespace zetscript{
 					//token_symbol.instructions[0]);
 
 					eval_instruction_case.je_instruction=new EvalInstruction(
-							BYTE_CODE_JE
+							BYTE_CODE_JE_CASE
 							,ZS_IDX_UNDEFINED
 							,((int)(eval_data->current_function->instructions.size()))-idx_start_instruction	 // offset
 					);
+
+					eval_instruction_case.je_instruction->instruction_source_info.line=line_case;
+					eval_instruction_case.je_instruction->instruction_source_info.file=eval_data->current_parsing_file;
+
 
 					ei_cases.push_back(eval_instruction_case);
 

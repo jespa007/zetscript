@@ -13,11 +13,15 @@
 #define NO_PARAMS std::vector<StackElement>{}
 #define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectObject * (const std::vector<ScriptObjectObject *> & param)>
 
-#define VM_EXECUTE(vm,o,f,stk,n)	vm_execute(vm,o,f,stk,n,__FILE__,__LINE__)
+#define VM_EXECUTE(vm,o,f,stk,n)	vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
 #define VM_ERROR(s,...)				data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
 #define VM_ERROR_AND_RET(s,...)		data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return;
 #define VM_STOP_EXECUTE(s,...)		data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
 #define VM_SET_USER_ERROR(vm,s,...)	vm_set_error_file_line(vm,__FILE__,__LINE__, s, ##__VA_ARGS__)
+
+
+#define VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE	0x1
+
 
 namespace zetscript{
 
@@ -33,7 +37,6 @@ namespace zetscript{
 	 */
 
 	void			vm_init(VirtualMachine *vm, ZetScript *_zs);
-	void 			vm_reset_idx_call(VirtualMachine *vm);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
 	bool 			vm_share_pointer(VirtualMachine *vm,ScriptObject *_obj);
 	bool 			vm_create_shared_pointer(VirtualMachine *vm,ScriptObject *_obj);
@@ -58,6 +61,7 @@ namespace zetscript{
 		,ScriptFunction *	calling_function
 		,StackElement 	*  	stk_params=NULL
 		,unsigned char		n_stk_params=0
+		,unsigned short 	properties=0
 		,const char 	*	file=""
 		,int 				line=-1
 	);

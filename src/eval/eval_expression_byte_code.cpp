@@ -247,6 +247,8 @@ namespace zetscript{
 			// insert JNT
 			int jnt_instructions_start=dst_instructions->size();
 			dst_instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
+			ei_ternary_if_jnt->instruction_source_info.file=eval_data->current_parsing_file;
+			ei_ternary_if_jnt->instruction_source_info.line=line;
 			int jmp_instructions_start=0;
 			int body_size_if=0;
 			int body_size_else=0;

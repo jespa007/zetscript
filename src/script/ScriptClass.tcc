@@ -139,6 +139,130 @@ namespace zetscript{
 		);
 	}
 
+	/*
+	 * register C post increment
+	 */
+	template <typename F>
+	void ScriptClass::registerNativePostIncrementMemberAttribute(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+		std::string return_type;
+		std::vector<std::string> params;
+		std::vector<ScriptFunctionArg> arg_info;
+		zs_int ref_ptr=0;
+		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		std::string error;
+
+		// 1. check all parameters ok.
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+
+		Symbol *symbol_result = registerNativePostIncrementMemberAttribute(
+				 attrib_name
+				 ,arg_info
+				,idx_return_type
+				,(zs_int)ptr_function
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				,registered_file
+				,registered_line
+		);
+	}
+
+	/*
+	 * register C post decrement
+	 */
+	template <typename F>
+	void ScriptClass::registerNativePostDecrementMemberAttribute(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+		std::string return_type;
+		std::vector<std::string> params;
+		std::vector<ScriptFunctionArg> arg_info;
+		zs_int ref_ptr=0;
+		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		std::string error;
+
+		// 1. check all parameters ok.
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+
+		Symbol *symbol_result = registerNativePostDecrementMemberAttribute(
+				 attrib_name
+				 ,arg_info
+				,idx_return_type
+				,(zs_int)ptr_function
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				,registered_file
+				,registered_line
+		);
+	}
+
+	/*
+	 * register C pre increment
+	 */
+	template <typename F>
+	void ScriptClass::registerNativePreIncrementMemberAttribute(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+		std::string return_type;
+		std::vector<std::string> params;
+		std::vector<ScriptFunctionArg> arg_info;
+		zs_int ref_ptr=0;
+		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		std::string error;
+
+		// 1. check all parameters ok.
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+
+		Symbol *symbol_result = registerNativePreIncrementMemberAttribute(
+				 attrib_name
+				 ,arg_info
+				,idx_return_type
+				,(zs_int)ptr_function
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				,registered_file
+				,registered_line
+		);
+	}
+
+	/*
+	 * register C pre decrement
+	 */
+	template <typename F>
+	void ScriptClass::registerNativePreDecrementMemberAttribute(
+			const char *attrib_name
+			,F ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+		std::string return_type;
+		std::vector<std::string> params;
+		std::vector<ScriptFunctionArg> arg_info;
+		zs_int ref_ptr=0;
+		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		std::string error;
+
+		// 1. check all parameters ok.
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+
+		Symbol *symbol_result = registerNativePreDecrementMemberAttribute(
+				 attrib_name
+				 ,arg_info
+				,idx_return_type
+				,(zs_int)ptr_function
+				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				,registered_file
+				,registered_line
+		);
+	}
+
 	/**
 	 * Register C Member function Class
 	 * like register function c but is added to member function list according type C

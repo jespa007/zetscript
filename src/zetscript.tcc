@@ -173,7 +173,7 @@ namespace zetscript{
 									error= "cannot convert '"+zs_rtti::demangle((k_str_string_type_ptr))+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
 									return false;
 								}
-							}else if(script_object->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
+							}else if(script_object->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
 								ScriptObjectClass *script_object_class = (ScriptObjectClass *)script_object;
 								c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
 
@@ -188,6 +188,7 @@ namespace zetscript{
 								}
 							}else{ // cannot convert...
 								error = "cannot convert '"+zs_rtti::demangle(script_object->getClassName())+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
+								return false;
 							}
 						}else{ // get native object...
 							val_ret=(zs_int)script_object->getNativeObject();
@@ -228,6 +229,7 @@ namespace zetscript{
 						,fun_obj
 						,NULL
 						,0
+						,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 						,file
 						,line
 					);
@@ -253,6 +255,7 @@ namespace zetscript{
 								,fun_obj
 								,NULL
 								,0
+								,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line
 						);
@@ -293,6 +296,7 @@ namespace zetscript{
 								,fun_obj
 								,args
 								,1
+								,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line);
 				}
@@ -325,6 +329,7 @@ namespace zetscript{
 								,fun_obj
 								,args
 								,1
+								,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line);
 
@@ -368,6 +373,7 @@ namespace zetscript{
 						,fun_obj
 						,args
 						,2
+						,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 						,file
 						,line
 					);
@@ -407,6 +413,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,2
+							,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line
 						);
@@ -457,6 +464,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,3
+							,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line
 					);
@@ -496,6 +504,7 @@ namespace zetscript{
 						,fun_obj
 						,args
 						,3
+						,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 						,file
 						,line
 					);
@@ -546,6 +555,7 @@ namespace zetscript{
 						,fun_obj
 						,args
 						,4
+						,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 						,file
 						,line
 					);
@@ -589,6 +599,7 @@ namespace zetscript{
 								,fun_obj
 								,args
 								,4
+								,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line
 								);
@@ -645,6 +656,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,5
+							,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line);
 				}
@@ -692,6 +704,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,5
+							,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line);
 
@@ -750,6 +763,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,6
+							,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line);
 				}
@@ -797,6 +811,7 @@ namespace zetscript{
 								fun_obj,
 								args,
 								6
+								,VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line);
 

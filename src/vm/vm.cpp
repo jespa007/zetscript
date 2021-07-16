@@ -48,18 +48,13 @@ namespace zetscript{
 
 	void vm_init(VirtualMachine *vm,ZetScript *_zs){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		data->reset(_zs);
+
 		// script class factory should be created and initialized
 		data->script_function_factory=_zs->getScriptFunctionFactory();
 		data->script_class_factory=_zs->getScriptClassFactory();
 		data->scope_factory = _zs->getScopeFactory();
 		data->main_function_object = MAIN_FUNCTION(data);
 		data->main_class_object = SCRIPT_CLASS_MAIN(data);
-	}
-
-	void vm_reset_idx_call(VirtualMachine *vm){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		data->vm_idx_call=0;
 	}
 
 	//============================================================================================================================================
@@ -242,6 +237,7 @@ namespace zetscript{
 		 ,ScriptFunction 	*	calling_function
 		 ,StackElement 		*  	stk_params
 		 ,unsigned	char  		n_stk_params
+		 ,unsigned short		properties
 		 ,const char *file
 		 ,int line
 	){
@@ -256,11 +252,14 @@ namespace zetscript{
 
 		if(
 			calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN
+			&& ((properties & VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE) == 0)
 		){ // set stack and Init vars for first call...
+
 
 			if(data->vm_idx_call != 0){
 				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",data->vm_idx_call);
 			}
+
 
 			data->vm_error=false;
 			data->vm_error_str="";
@@ -273,16 +272,21 @@ namespace zetscript{
 			//stk_start=&data->vm_stack[data->main_function_object->registered_symbols->count];
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
-            if(data->vm_idx_call == 0){
+            /*if(data->vm_idx_call == 0){
 				data->vm_idx_call=1; // is calling from application set as 1 to make sure it not become conflict with global vars
+			}*/
+			stk_start=data->stk_vm_current;
+			StackElement *min_stk=&data->vm_stack[data->main_function_object->registered_symbols->count];
+
+			if (properties & VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE){
+				data->vm_idx_call = 1;
+				stk_start=min_stk;
 			}
 
-			StackElement *min_stk=&data->vm_stack[data->main_function_object->registered_symbols->count];
-			stk_start=data->stk_vm_current;
 
 			if(stk_start<min_stk){ // control: not overwrite global symbols
 				// this could happen when you call script function from native c++, so this control is needed
-				stk_start=min_stk;
+				THROW_RUNTIME_ERROR("Internal: stk_start < min_stk");
 			}
 
 			StackElement *stk_aux=stk_start;
@@ -340,6 +344,10 @@ namespace zetscript{
 
 		// Important restore stk!
 		data->stk_vm_current=stk_start;
+
+		if((properties & VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE)){ // restore idx_call
+			data->vm_idx_call=0;
+		}
 
 		return stk_return;
 	}

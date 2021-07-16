@@ -239,6 +239,7 @@ Solved issues
 #293 Make operation with assigment operations it does indefined behaviour on calling funcionts and its results
 #294 undefined behaviour when call delete 
 #295 Allow switch to have expressions/variables in the case 
+#296 Create inc/dec metamethods and include in attribute metamethods 
 
 
 //----------------------------------------------------------

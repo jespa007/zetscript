@@ -57,19 +57,24 @@ namespace zetscript{
 			stk=(StackElement *)stk->value;
 		}
 
-		if((stk->properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C))
+		if((stk->properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)){
 			result= (const char *)stk->value;
-		else if(STK_VALUE_IS_ZS_INT(stk))
+		}else if(STK_VALUE_IS_ZS_INT(stk)){
 			result= zs_strutils::zs_int_to_str((zs_int)stk->value,_format);
-		else if(STK_VALUE_IS_ZS_FLOAT(stk))
+		}else if(STK_VALUE_IS_ZS_FLOAT(stk)){
 			result= zs_strutils::zs_float_to_str(*((zs_float *)&stk->value));
-		else if(STK_VALUE_IS_BOOLEAN(stk))
+		}else if(STK_VALUE_IS_BOOLEAN(stk)){
 			result= stk->value?"true":"false";
-		else if(STK_VALUE_IS_FUNCTION(stk))
-			result= std::string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
-		else if(STK_VALUE_IS_CLASS(stk))
+		}else if(STK_VALUE_IS_FUNCTION(stk)){
+			if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
+				StackMemberFunction *stk_mf=(StackMemberFunction *)stk->value;
+				result= std::string("FunctionMember")+"@"+stk_mf->so_object->getClassName()+"::"+stk_mf->so_function->symbol.name;
+			}else{ // normal function
+				result= std::string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
+			}
+		}else if(STK_VALUE_IS_CLASS(stk)){
 			result= std::string("Class")+"@"+((ScriptClass *)stk->value)->symbol_class.name;
-		else{
+		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
 			}

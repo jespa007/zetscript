@@ -339,6 +339,46 @@ namespace zetscript{
 			script_class_factory->registerNativeGetterMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
+		template <typename C,typename F>
+		void	registerPostIncrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function
+				 , const char *registered_file=""
+				,short registered_line=-1
+		){
+			script_class_factory->registerNativePostIncrementMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
+		}
+
+		template <typename C,typename F>
+		void	registerPostDecrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function
+				 , const char *registered_file=""
+				,short registered_line=-1
+		){
+			script_class_factory->registerNativePostDecrementMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
+		}
+
+		template <typename C,typename F>
+		void	registerPreIncrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function
+				 , const char *registered_file=""
+				,short registered_line=-1
+		){
+			script_class_factory->registerNativePreIncrementMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
+		}
+
+		template <typename C,typename F>
+		void	registerPreDecrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function
+				 , const char *registered_file=""
+				,short registered_line=-1
+		){
+			script_class_factory->registerNativePreDecrementMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
+		}
+
 		/**
 		 * Register Static Function Member Class
 		 */

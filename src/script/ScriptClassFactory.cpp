@@ -413,6 +413,11 @@ namespace zetscript{
 						MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
 						MemberAttribute *ma_dst=new MemberAttribute(ma_src->attribute_name);
 						ma_dst->getter=ma_src->getter;
+						ma_dst->post_inc=ma_src->post_inc;
+						ma_dst->post_dec=ma_src->post_dec;
+						ma_dst->pre_inc=ma_src->pre_inc;
+						ma_dst->pre_dec=ma_src->pre_dec;
+
 						for(unsigned i=0; i < ma_src->setters.count;i++){
 							ma_dst->addSetter((ScriptFunction *)ma_src->setters.items[i]);
 
@@ -577,6 +582,11 @@ namespace zetscript{
 
 		ScriptClass *class_src = getScriptClass(idx_class_src);
 		ScriptClass *class_dst = getScriptClass(idx_class_dst);
+
+		// trivial case
+		if(class_src->idx_class == class_dst->idx_class){
+			return obj;
+		}
 
 		//local_map_type_conversion
 		if(conversion_types.count(idx_class_src) == 0){

@@ -330,12 +330,17 @@ namespace zetscript{
 
 				if((symbol_src->properties & SYMBOL_PROPERTY_FUNCTION)!=0 ){ // is function
 
-					bool is_setter_or_getter_function = 	zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_SETTER)
-														||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_GETTER);
+					bool is_metamethod_function = 	zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_SETTER)
+												||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_GETTER)
+												||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_POST_INC)
+												||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_POST_DEC)
+												||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_PRE_INC)
+												||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_PRE_DEC)
+												;
 
 					// we have to know whether function member is or not getter/setter because we create them in the attribute member case. If not, we could have
 					// duplicated symbols.
-					if(is_setter_or_getter_function == false){
+					if(is_metamethod_function == false){
 
 						ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
 						// build params...
@@ -579,6 +584,111 @@ namespace zetscript{
 				,registered_line
 			);
 		}
+
+		/*
+		 * register attribute post_increment
+		 */
+		template <typename C,typename F>
+		void ScriptClassFactory::registerNativePostIncrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function_post_increment
+				, const char *registered_file
+				,short registered_line
+		){
+			std::string str_class_name_ptr = typeid( C *).name();
+
+			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+			if(c_class == NULL){
+				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+			}
+
+			c_class->registerNativePostIncrementMemberAttribute<F>(
+				 attr_name
+				,ptr_function_post_increment
+				,registered_file
+				,registered_line
+			);
+		}
+
+		/*
+		 * register attribute post_decrement
+		 */
+		template <typename C,typename F>
+		void ScriptClassFactory::registerNativePostDecrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function_post_decrement
+				, const char *registered_file
+				,short registered_line
+		){
+			std::string str_class_name_ptr = typeid( C *).name();
+
+			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+			if(c_class == NULL){
+				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+			}
+
+			c_class->registerNativePostDecrementMemberAttribute<F>(
+				 attr_name
+				,ptr_function_post_decrement
+				,registered_file
+				,registered_line
+			);
+		}
+
+		/*
+		 * register attribute pre_increment
+		 */
+		template <typename C,typename F>
+		void ScriptClassFactory::registerNativePreIncrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function_pre_increment
+				, const char *registered_file
+				,short registered_line
+		){
+			std::string str_class_name_ptr = typeid( C *).name();
+
+			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+			if(c_class == NULL){
+				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+			}
+
+			c_class->registerNativePreIncrementMemberAttribute<F>(
+				 attr_name
+				,ptr_function_pre_increment
+				,registered_file
+				,registered_line
+			);
+		}
+
+		/*
+		 * register attribute pre_decrement
+		 */
+		template <typename C,typename F>
+		void ScriptClassFactory::registerNativePreDecrementMemberAttribute(
+				const char *attr_name
+				,F ptr_function_pre_decrement
+				, const char *registered_file
+				,short registered_line
+		){
+			std::string str_class_name_ptr = typeid( C *).name();
+
+			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+			if(c_class == NULL){
+				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+			}
+
+			c_class->registerNativePreDecrementMemberAttribute<F>(
+				 attr_name
+				,ptr_function_pre_decrement
+				,registered_file
+				,registered_line
+			);
+		}
+
 	/**
 	 * Register C Member function Class
 	 * like register function c but is added to member function list according type C
