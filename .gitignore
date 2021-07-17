@@ -2,6 +2,7 @@
 /build/
 /CMakeFiles/
 /bin/
+/.settings/
 *.cmake
 CMakeCache.txt
 Makefile
