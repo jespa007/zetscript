@@ -195,7 +195,7 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectVector>("iter",&ScriptObjectVectorWrap_iter);
 
 		// VectorIterator
-		registerNativeMemberFunction<ScriptObjectVectorIterator>("_next",ScriptObjectVectorIteratorWrap_next);
+		registerNativeMemberFunction<ScriptObjectVectorIterator>("_post_inc",ScriptObjectVectorIteratorWrap_next);
 		registerNativeMemberFunction<ScriptObjectVectorIterator>("end",ScriptObjectVectorIteratorWrap_end);
 		registerNativeMemberFunction<ScriptObjectVectorIterator>("get",ScriptObjectVectorIteratorWrap_get);
 
@@ -222,7 +222,7 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectString>("iter",ScriptObjectStringWrap_iter);
 
 		// StringIterator
-		registerNativeMemberFunction<ScriptObjectStringIterator>("_next",ScriptObjectStringIteratorWrap_next);
+		registerNativeMemberFunction<ScriptObjectStringIterator>("_post_inc",ScriptObjectStringIteratorWrap_next);
 		registerNativeMemberFunction<ScriptObjectStringIterator>("end",ScriptObjectStringIteratorWrap_end);
 		registerNativeMemberFunction<ScriptObjectStringIterator>("get",ScriptObjectStringIteratorWrap_get);
 
@@ -236,7 +236,7 @@ namespace zetscript{
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("iter",ScriptObjectObjectWrap_iter);
 
 		// ObjectIterator
-		registerNativeMemberFunction<ScriptObjectObjectIterator>("_next",ScriptObjectObjectIteratorWrap_next);
+		registerNativeMemberFunction<ScriptObjectObjectIterator>("_post_inc",ScriptObjectObjectIteratorWrap_next);
 		registerNativeMemberFunction<ScriptObjectObjectIterator>("end",ScriptObjectObjectIteratorWrap_end);
 		registerNativeMemberFunction<ScriptObjectObjectIterator>("get",ScriptObjectObjectIteratorWrap_get);
 

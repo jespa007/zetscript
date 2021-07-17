@@ -1101,8 +1101,8 @@ apply_metamethod_error:
 					return;
 				}
 
-				if((obj->getProperty("_next"))==NULL){
-					VM_ERROR("IteratorObject '%s' does not implement '_next' function",obj->getClassName().c_str());
+				if((obj->getProperty("_post_inc"))==NULL){
+					VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getClassName().c_str());
 					return;
 				}
 
