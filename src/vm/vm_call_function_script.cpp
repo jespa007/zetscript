@@ -152,10 +152,10 @@
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_NULL || stk_result_op2->properties==STK_PROPERTY_NULL)\
 				&& (__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
 				){\
-			if((stk_result_op1->properties&stk_result_op2->properties) == STK_PROPERTY_NULL){\
-				PUSH_BOOLEAN(true  __C_OP__  true);\
+			if((stk_result_op1->properties == 0) && (stk_result_op2->properties == 0)){\
+				PUSH_BOOLEAN(__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU);\
 			}else{\
-				PUSH_BOOLEAN(false);\
+				PUSH_BOOLEAN(__METAMETHOD__ != BYTE_CODE_METAMETHOD_EQU);\
 			}\
 		}else{\
 			if(vm_apply_metamethod(\
