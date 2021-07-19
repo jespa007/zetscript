@@ -120,7 +120,7 @@ namespace zetscript{
 		//---------------
 		// SETTER
 
-		/*Symbol				* 	registerSetterMemberAttribute(
+		/*Symbol				* 	registerMemberAttributeSetter(
 			std::string & error
 			,const char * file
 			,short line
@@ -128,7 +128,7 @@ namespace zetscript{
 			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 		);*/
 
-		Symbol				* 	registerNativeSetterMemberAttribute(
+		Symbol				* 	registerNativeMemberAttributeSetter(
 			const std::string & attribute_name
 			, std::vector<ScriptFunctionArg> arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
@@ -142,7 +142,7 @@ namespace zetscript{
 		 * register C setter
 		 */
 		template <typename F>
-		void registerNativeSetterMemberAttribute(
+		void registerNativeMemberAttributeSetter(
 				const char *attrib_name
 				,F ptr_function
 				, const char *registered_file=""
@@ -152,7 +152,7 @@ namespace zetscript{
 		//---------------
 		// GETTER
 
-		/*Symbol				* 	registerGetterMemberAttribute(
+		/*Symbol				* 	registerMemberAttributeGetter(
 			std::string & error
 			,const char * file
 			,short line
@@ -160,7 +160,7 @@ namespace zetscript{
 			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
 		);*/
 
-		Symbol				* 	registerNativeGetterMemberAttribute(
+		Symbol				* 	registerNativeMemberAttributeGetter(
 			const std::string & attribute_name
 			,std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
@@ -172,7 +172,7 @@ namespace zetscript{
 		);
 
 
-		Symbol				* 	registerNativePostIncrementMemberAttribute(
+		Symbol				* 	registerNativeMemberAttributePostIncrement(
 			const std::string & attribute_name
 			,std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
@@ -183,7 +183,7 @@ namespace zetscript{
 
 		);
 
-		Symbol				* 	registerNativePostDecrementMemberAttribute(
+		Symbol				* 	registerNativeMemberAttributePostDecrement(
 			const std::string & attribute_name
 			,std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
@@ -194,7 +194,7 @@ namespace zetscript{
 
 		);
 
-		Symbol				* 	registerNativePreIncrementMemberAttribute(
+		Symbol				* 	registerNativeMemberAttributePreIncrement(
 			const std::string & attribute_name
 			,std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
@@ -205,7 +205,7 @@ namespace zetscript{
 
 		);
 
-		Symbol				* 	registerNativePreDecrementMemberAttribute(
+		Symbol				* 	registerNativeMemberAttributePreDecrement(
 			const std::string & attribute_name
 			,std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
@@ -219,7 +219,7 @@ namespace zetscript{
 		 * register C getter
 		 */
 		template <typename F>
-		void registerNativeGetterMemberAttribute(
+		void registerNativeMemberAttributeGetter(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -227,7 +227,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerNativePostIncrementMemberAttribute(
+		void registerNativeMemberAttributePostIncrement(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -235,7 +235,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerNativePostDecrementMemberAttribute(
+		void registerNativeMemberAttributePostDecrement(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -243,7 +243,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerNativePreIncrementMemberAttribute(
+		void registerNativeMemberAttributePreIncrement(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -251,7 +251,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerNativePreDecrementMemberAttribute(
+		void registerNativeMemberAttributePreDecrement(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file

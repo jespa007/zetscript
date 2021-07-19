@@ -7,7 +7,7 @@
 
 namespace zetscript{
 
-	zs_int ConsoleModuleWrap_readChar(){
+	zs_int ConsoleModule_readChar(){
 			char buf=0;
 		#ifdef _WIN32
 			buf=getch();
@@ -44,7 +44,7 @@ namespace zetscript{
 		       return buf;
 	}
 
-	void ConsoleModuleWrap_outln(ZetScript *zs,StackElement *str, StackElement *args){
+	void ConsoleModule_outln(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s\n",str_out->toString().c_str());
@@ -53,7 +53,7 @@ namespace zetscript{
 	}
 
 
-	void ConsoleModuleWrap_out(ZetScript *zs,StackElement *str, StackElement *args){
+	void ConsoleModule_out(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s",str_out->toString().c_str());
@@ -62,7 +62,7 @@ namespace zetscript{
 
 	}
 
-	void ConsoleModuleWrap_errorln(ZetScript *zs,StackElement *str, StackElement *args){
+	void ConsoleModule_errorln(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stderr,"%s\n",str_out->toString().c_str());
@@ -71,7 +71,7 @@ namespace zetscript{
 	}
 
 
-	void ConsoleModuleWrap_error(ZetScript *zs,StackElement *str, StackElement *args){
+	void ConsoleModule_error(ZetScript *zs,StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stderr,"%s",str_out->toString().c_str());

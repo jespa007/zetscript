@@ -172,7 +172,7 @@ namespace zetscript{
 		);
 
 		template <typename C,typename F>
-		void registerNativeSetterMemberAttribute(
+		void registerNativeMemberAttributeSetter(
 				const char *attr_name
 				,F ptr_function_setter
 				, const char *registered_file=""
@@ -183,7 +183,7 @@ namespace zetscript{
 		 * register attribute getter
 		 */
 		template <typename C,typename F>
-		void registerNativeGetterMemberAttribute(
+		void registerNativeMemberAttributeGetter(
 				const char *attr_name
 				,F ptr_function_getter
 				, const char *registered_file=NULL
@@ -194,7 +194,7 @@ namespace zetscript{
 		 * register attribute post_inc
 		 */
 		template <typename C,typename F>
-		void registerNativePostIncrementMemberAttribute(
+		void registerNativeMemberAttributePostIncrement(
 				const char *attr_name
 				,F ptr_function_getter
 				, const char *registered_file=NULL
@@ -205,7 +205,7 @@ namespace zetscript{
 		 * register attribute post_dec
 		 */
 		template <typename C,typename F>
-		void registerNativePostDecrementMemberAttribute(
+		void registerNativeMemberAttributePostDecrement(
 				const char *attr_name
 				,F ptr_function_getter
 				, const char *registered_file=NULL
@@ -216,7 +216,7 @@ namespace zetscript{
 		 * register attribute pre_inc
 		 */
 		template <typename C,typename F>
-		void registerNativePreIncrementMemberAttribute(
+		void registerNativeMemberAttributePreIncrement(
 				const char *attr_name
 				,F ptr_function_getter
 				, const char *registered_file=NULL
@@ -227,7 +227,7 @@ namespace zetscript{
 		 * register attribute pre_dec
 		 */
 		template <typename C,typename F>
-		void registerNativePreDecrementMemberAttribute(
+		void registerNativeMemberAttributePreDecrement(
 				const char *attr_name
 				,F ptr_function_getter
 				, const char *registered_file=NULL

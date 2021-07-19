@@ -42,7 +42,7 @@ data->stk_vm_current->properties=STK_PROPERTY_CLASS; \
 data->stk_vm_current++;
 
 // explains whether stk is this or not. Warning should be given as value and not as ptr
-#define STK_IS_THIS(stk) (this_object != NULL && (stk)->value == this_object)
+#define IS_STK_THIS(stk) (this_object != NULL && (stk)->value == this_object)
 
 #define PRINT_DUAL_ERROR_OP(c)\
 std::string var_type1=stk_result_op1->typeOf(),\

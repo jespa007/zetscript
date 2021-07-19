@@ -24,6 +24,10 @@
 #define FALSE 0
 #endif
 
+#ifndef MAX_PATH
+#define MAX_PATH 4096
+#endif
+
 namespace zetscript{
 	typedef intptr_t zs_int;
 	typedef char zs_char;

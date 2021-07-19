@@ -78,7 +78,7 @@ namespace zetscript{
 	 * register C setter
 	 */
 	template <typename F>
-	void ScriptClass::registerNativeSetterMemberAttribute(
+	void ScriptClass::registerNativeMemberAttributeSetter(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -98,7 +98,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Error register setter attrib '%s': should return void ",attrib_name);
 		}
 
-		Symbol *symbol_result = registerNativeSetterMemberAttribute(
+		Symbol *symbol_result = registerNativeMemberAttributeSetter(
 				attrib_name
 				,arg_info
 				,(zs_int)ptr_function
@@ -112,7 +112,7 @@ namespace zetscript{
 	 * register C getter
 	 */
 	template <typename F>
-	void ScriptClass::registerNativeGetterMemberAttribute(
+	void ScriptClass::registerNativeMemberAttributeGetter(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -128,7 +128,7 @@ namespace zetscript{
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
 
-		Symbol *symbol_result = registerNativeGetterMemberAttribute(
+		Symbol *symbol_result = registerNativeMemberAttributeGetter(
 				 attrib_name
 				 ,arg_info
 				,idx_return_type
@@ -143,7 +143,7 @@ namespace zetscript{
 	 * register C post increment
 	 */
 	template <typename F>
-	void ScriptClass::registerNativePostIncrementMemberAttribute(
+	void ScriptClass::registerNativeMemberAttributePostIncrement(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -159,7 +159,7 @@ namespace zetscript{
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
 
-		Symbol *symbol_result = registerNativePostIncrementMemberAttribute(
+		Symbol *symbol_result = registerNativeMemberAttributePostIncrement(
 				 attrib_name
 				 ,arg_info
 				,idx_return_type
@@ -174,7 +174,7 @@ namespace zetscript{
 	 * register C post decrement
 	 */
 	template <typename F>
-	void ScriptClass::registerNativePostDecrementMemberAttribute(
+	void ScriptClass::registerNativeMemberAttributePostDecrement(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -190,7 +190,7 @@ namespace zetscript{
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
 
-		Symbol *symbol_result = registerNativePostDecrementMemberAttribute(
+		Symbol *symbol_result = registerNativeMemberAttributePostDecrement(
 				 attrib_name
 				 ,arg_info
 				,idx_return_type
@@ -205,7 +205,7 @@ namespace zetscript{
 	 * register C pre increment
 	 */
 	template <typename F>
-	void ScriptClass::registerNativePreIncrementMemberAttribute(
+	void ScriptClass::registerNativeMemberAttributePreIncrement(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -221,7 +221,7 @@ namespace zetscript{
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
 
-		Symbol *symbol_result = registerNativePreIncrementMemberAttribute(
+		Symbol *symbol_result = registerNativeMemberAttributePreIncrement(
 				 attrib_name
 				 ,arg_info
 				,idx_return_type
@@ -236,7 +236,7 @@ namespace zetscript{
 	 * register C pre decrement
 	 */
 	template <typename F>
-	void ScriptClass::registerNativePreDecrementMemberAttribute(
+	void ScriptClass::registerNativeMemberAttributePreDecrement(
 			const char *attrib_name
 			,F ptr_function
 			, const char *registered_file
@@ -252,7 +252,7 @@ namespace zetscript{
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
 
-		Symbol *symbol_result = registerNativePreDecrementMemberAttribute(
+		Symbol *symbol_result = registerNativeMemberAttributePreDecrement(
 				 attrib_name
 				 ,arg_info
 				,idx_return_type

@@ -41,7 +41,7 @@ namespace zetscript{
 		StackElement *			pushNewUserSlot();
 		void 					push(StackElement  * stk);
 		void 					pop();
-
+		virtual std::string toString();
 		virtual ~ScriptObjectVector();
 	protected:
 		zs_vector 			stk_user_elements;

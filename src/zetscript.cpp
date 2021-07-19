@@ -41,28 +41,28 @@ namespace zetscript{
 
 		// Math mod
 		ScriptClass *cl=script_class_factory->registerClass("Math");
-		cl->registerNativeMemberVariableStaticConst("PI",&MathModuleWrap_PI);
-		cl->registerNativeMemberFunctionStatic("sin",MathModuleWrap_sin);
-		cl->registerNativeMemberFunctionStatic("cos",MathModuleWrap_cos);
-		cl->registerNativeMemberFunctionStatic("abs",MathModuleWrap_abs);
-		cl->registerNativeMemberFunctionStatic("pow",MathModuleWrap_pow);
-		cl->registerNativeMemberFunctionStatic("degToRad",MathModuleWrap_degToRad);
-		cl->registerNativeMemberFunctionStatic("random",MathModuleWrap_random);
+		cl->registerNativeMemberVariableStaticConst("PI",&MathModule_PI);
+		cl->registerNativeMemberFunctionStatic("sin",MathModule_sin);
+		cl->registerNativeMemberFunctionStatic("cos",MathModule_cos);
+		cl->registerNativeMemberFunctionStatic("abs",MathModule_abs);
+		cl->registerNativeMemberFunctionStatic("pow",MathModule_pow);
+		cl->registerNativeMemberFunctionStatic("degToRad",MathModule_degToRad);
+		cl->registerNativeMemberFunctionStatic("random",MathModule_random);
 
 		// Console mod
 		cl=script_class_factory->registerClass("Console");
-		cl->registerNativeMemberFunctionStatic("readChar",ConsoleModuleWrap_readChar);
-		cl->registerNativeMemberFunctionStatic("outNative",ConsoleModuleWrap_out);
-		cl->registerNativeMemberFunctionStatic("outlnNative",ConsoleModuleWrap_outln);
-		cl->registerNativeMemberFunctionStatic("errorNative",ConsoleModuleWrap_error);
-		cl->registerNativeMemberFunctionStatic("errorlnNative",ConsoleModuleWrap_errorln);
+		cl->registerNativeMemberFunctionStatic("readChar",ConsoleModule_readChar);
+		cl->registerNativeMemberFunctionStatic("outNative",ConsoleModule_out);
+		cl->registerNativeMemberFunctionStatic("outlnNative",ConsoleModule_outln);
+		cl->registerNativeMemberFunctionStatic("errorNative",ConsoleModule_error);
+		cl->registerNativeMemberFunctionStatic("errorlnNative",ConsoleModule_errorln);
 
 		// System mod
 		cl=script_class_factory->registerClass("System");
-		cl->registerNativeMemberFunctionStatic("clock",SystemModuleWrap_clock);
-		cl->registerNativeMemberFunctionStatic("evalNative",SystemModuleWrap_eval);
-		cl->registerNativeMemberFunctionStatic("assertNative",SystemModuleWrap_assert);
-		cl->registerNativeMemberFunctionStatic("errorNative",SystemModuleWrap_error);
+		cl->registerNativeMemberFunctionStatic("clock",SystemModule_clock);
+		cl->registerNativeMemberFunctionStatic("evalNative",SystemModule_eval);
+		cl->registerNativeMemberFunctionStatic("assertNative",SystemModule_assert);
+		cl->registerNativeMemberFunctionStatic("errorNative",SystemModule_error);
 
 		// Json mod
 		cl=script_class_factory->registerClass("Json");
@@ -88,17 +88,17 @@ namespace zetscript{
 		// metamethods...
 		registerMemberFunction<zs_datetime>("_toString",DateTimeModuleWrap_toString);
 
-		registerGetterMemberAttribute<zs_datetime>("week_day",DateTimeModuleWrap_get_week_day);
-		registerGetterMemberAttribute<zs_datetime>("month_day",DateTimeModuleWrap_get_month_day);
-		registerGetterMemberAttribute<zs_datetime>("year_day",DateTimeModuleWrap_get_year_day);
+		registerMemberAttributeGetter<zs_datetime>("week_day",DateTimeModuleWrap_get_week_day);
+		registerMemberAttributeGetter<zs_datetime>("month_day",DateTimeModuleWrap_get_month_day);
+		registerMemberAttributeGetter<zs_datetime>("year_day",DateTimeModuleWrap_get_year_day);
 
-		registerGetterMemberAttribute<zs_datetime>("second",DateTimeModuleWrap_get_second);
-		registerGetterMemberAttribute<zs_datetime>("minute",DateTimeModuleWrap_get_minute);
-		registerGetterMemberAttribute<zs_datetime>("hour",DateTimeModuleWrap_get_hour);
+		registerMemberAttributeGetter<zs_datetime>("second",DateTimeModuleWrap_get_second);
+		registerMemberAttributeGetter<zs_datetime>("minute",DateTimeModuleWrap_get_minute);
+		registerMemberAttributeGetter<zs_datetime>("hour",DateTimeModuleWrap_get_hour);
 
-		registerGetterMemberAttribute<zs_datetime>("day",DateTimeModuleWrap_get_day);
-		registerGetterMemberAttribute<zs_datetime>("month",DateTimeModuleWrap_get_month);
-		registerGetterMemberAttribute<zs_datetime>("year",DateTimeModuleWrap_get_year);
+		registerMemberAttributeGetter<zs_datetime>("day",DateTimeModuleWrap_get_day);
+		registerMemberAttributeGetter<zs_datetime>("month",DateTimeModuleWrap_get_month);
+		registerMemberAttributeGetter<zs_datetime>("year",DateTimeModuleWrap_get_year);
 
 		// Custom user function or classes
 		eval(
@@ -280,7 +280,7 @@ namespace zetscript{
 	}
 
 
-	void registerConstantVariable(const std::string & var_name, zs_int value, const char *registered_file, short registered_line){
+	/*void registerConstantVariable(const std::string & var_name, zs_int value, const char *registered_file, short registered_line){
 
 	}
 
@@ -294,7 +294,7 @@ namespace zetscript{
 
 	void registerConstantVariable(const std::string & var_name, const std::string v, const char *registered_file, short registered_line){
 
-	}
+	}*/
 
 
 	//
@@ -406,16 +406,14 @@ namespace zetscript{
 		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start;
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
-
-		if(main_scope->registered_symbols->count != main_function_object->registered_symbols->count){
-			THROW_RUNTIME_ERROR("Internal: main_scope and main_functions should have same symbols (scope:%i fun:%i)",main_scope->registered_symbols->count,main_function_object->registered_symbols->count);
-		}
+		//int n_global_symbols_cleared=0;
+		VirtualMachine *vm=this->virtual_machine;
+		//int total_main_scope_symbols_before_clear=main_scope->registered_symbols->count;
 
 		// remove all shared 0 pointers
 		if(main_function_object->registered_symbols->count > 0){
 			// set global top stack element
 			StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[main_function_object->registered_symbols->count-1];
-
 			for (
 					int v = main_function_object->registered_symbols->count-1;
 					v > idx_start;
@@ -424,19 +422,24 @@ namespace zetscript{
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
 				global_symbol=symbol->name;
 				ScriptObjectObject *var = NULL;
-				/*if(MAIN_SCOPE(this)->unregisterSymbol(symbol->name)==false){
-					continue; // not global so we can ignore
-				}*/
 
-				if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					var =((ScriptObjectObject *)(vm_stk_element->value));
-					if(var){
-						if(var->shared_pointer != NULL){
-							if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
-								THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine));
+				if(symbol->scope == main_scope){
+				//	n_global_symbols_cleared++;
+					if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
+						var =((ScriptObjectObject *)(vm_stk_element->value));
+						if(var){
+							if(var->shared_pointer != NULL){
+								if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
+									THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine));
+								}
 							}
 						}
 					}
+
+					if(main_scope->unregisterSymbol(global_symbol) == false){
+						THROW_RUNTIME_ERROR("error clearing variables: globa symbol '%s' not exist",global_symbol.c_str());
+					}
+
 				}
 
 				main_function_object->registered_symbols->pop_back();
@@ -445,12 +448,16 @@ namespace zetscript{
 		}
 
 
-		vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
+		/*if(n_global_symbols_cleared != total_main_scope_symbols_before_clear){
+			THROW_RUNTIME_ERROR("Internal: main_scope and main_functions should have same symbols (fun:%i scope:%i)",n_global_symbols_cleared,total_main_scope_symbols_before_clear);
+		}*/
+
+		vm_remove_empty_shared_pointers(vm,IDX_CALL_STACK_MAIN);
 	}
 
-	void ZetScript::setClearGlobalVariablesCheckpoint(){
+	/*void ZetScript::setClearGlobalVariablesCheckpoint(){
 		idx_current_global_variable_checkpoint=this->script_class_factory->getMainFunction()->registered_symbols->count-1;
-	}
+	}*/
 
 	void ZetScript::resetParsedFiles(){
 		for(auto it=parsed_files.begin();it!=parsed_files.end();it++){

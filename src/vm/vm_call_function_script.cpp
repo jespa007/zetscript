@@ -1032,22 +1032,24 @@ load_element_object:
 						}
 
 						// ok load object pointer ...
-						if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
-							ScriptObjectClass *script_object_class=((ScriptObjectClass *)stk_dst->value);
-							if((lst_functions=script_object_class->getSetterList())!=NULL){
-								obj_setter=script_object_class;
-							}
+						if(IS_STK_THIS(stk_dst)==false){
+							if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
+								ScriptObjectClass *script_object_class=((ScriptObjectClass *)stk_dst->value);
+								if((lst_functions=script_object_class->getSetterList())!=NULL){
+									obj_setter=script_object_class;
+								}
 
-							if(STK_IS_THIS(stk_dst)){
-								VM_STOP_EXECUTE("\"this\" is not assignable");
-							}
-						}else if((stk_dst->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)!=0){
-							StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_dst->value;
-							if(stk_ma->member_attribute->setters.count > 0){
-								lst_functions=&stk_ma->member_attribute->setters;
-								obj_setter=stk_ma->so_object;
-							}else{
-								VM_STOP_EXECUTE("Symbol X has not setter metamethod implemented");
+								/*if(IS_STK_THIS(stk_dst)){
+									VM_STOP_EXECUTE("\"this\" is not assignable");
+								}*/
+							}else if((stk_dst->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)!=0){
+								StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_dst->value;
+								if(stk_ma->member_attribute->setters.count > 0){
+									lst_functions=&stk_ma->member_attribute->setters;
+									obj_setter=stk_ma->so_object;
+								}else{
+									VM_STOP_EXECUTE("Symbol X has not setter metamethod implemented");
+								}
 							}
 						}
 					}
@@ -1219,7 +1221,7 @@ load_element_object:
 									stk_dst->value=so_aux;
 									stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
-									if(!STK_IS_THIS(stk_src)){ // do not share this!
+									if(!IS_STK_THIS(stk_src)){ // do not share this!
 										if(!vm_share_pointer(vm,so_aux)){
 											goto lbl_exit_function;
 										}
@@ -1245,7 +1247,7 @@ load_element_object:
 								if(old_stk_dst.value!=NULL){ // it had a pointer (no constant)...
 									if(! // if not...
 										(old_stk_dst.value == stk_dst->value)  // ... same ref ...
-									||  (STK_IS_THIS(&old_stk_dst)) // ... or this
+									||  (IS_STK_THIS(&old_stk_dst)) // ... or this
 									   // ... do share/unshare
 									){
 
@@ -1586,13 +1588,12 @@ load_element_object:
 							for(;i < n_args && end_args==false;i++){
 								so_param=NULL; // script object we passing
 								uint16_t sfa_properties=((ScriptFunctionArg *)sf->params->items[function_param])->properties;// ((ScriptFunctionArg *)(*function_param))->properties;
+								if((sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF)){ // create or pass the var ref object...
 
-								if(sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF){ // create or pass the var ref object...
-
-									//StackElement *check_ref=stk_arg;
-									/*if(stk_arg->properties & STK_PROPERTY_PTR_STK){
+									StackElement *check_ref=stk_arg;
+									if(stk_arg->properties & STK_PROPERTY_PTR_STK){
 										check_ref=(StackElement *)check_ref->value;
-									}*/
+									}
 
 									// because arg by ref is always loaded directly we have the object stk...
 									if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false) { // create new
@@ -1622,7 +1623,9 @@ load_element_object:
 										*stk_arg=*((ScriptObjectVarRef *)stk_arg->value)->getStackElementPtr();
 									}
 
-									if(stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT){
+									bool is_stk_this = IS_STK_THIS(stk_arg);
+
+									if((stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT)  && (is_stk_this==false)){
 										so_param=(ScriptObject *)stk_arg->value;
 										ScriptFunction *sf_getter=NULL;
 										if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
@@ -1669,7 +1672,7 @@ load_element_object:
 										stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
 									}else{ // not push in var arg
 
-										if(so_param != NULL){ // share n+1 to function
+										if(so_param != NULL && (so_param!=this_object)){ // share n+1 to function if not this
 											if(!vm_share_pointer(vm,so_param)){ // we share pointer +1 to not remove on pop in calling return
 												goto lbl_exit_function;
 											}
@@ -1804,7 +1807,7 @@ load_element_object:
 				for(StackElement *stk_it=data->stk_vm_current-1;stk_it>=stk_start;stk_it--){ // can return something. value is +1 from stack
 					// if scriptvariable and in the zeros list, deattach
 					if(stk_it->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						if(!STK_IS_THIS(stk_it)){
+						if(!IS_STK_THIS(stk_it)){
 
 							ScriptObject *script_var=(ScriptObject *)stk_it->value;
 

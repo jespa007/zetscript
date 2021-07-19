@@ -168,7 +168,7 @@ namespace zetscript{
 		return symbol_attrib;
 	}
 
-	Symbol				* 	ScriptClass::registerNativeSetterMemberAttribute(
+	Symbol				* 	ScriptClass::registerNativeMemberAttributeSetter(
 			const std::string & attribute_name
 			, std::vector<ScriptFunctionArg> arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
@@ -205,7 +205,7 @@ namespace zetscript{
 	}
 
 
-	Symbol				* 	ScriptClass::registerNativeGetterMemberAttribute(
+	Symbol				* 	ScriptClass::registerNativeMemberAttributeGetter(
 			 const std::string & attribute_name
 			 , std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
@@ -247,7 +247,7 @@ namespace zetscript{
 		return symbol_attrib;
 	}
 
-	Symbol				* 	ScriptClass::registerNativePostIncrementMemberAttribute(
+	Symbol				* 	ScriptClass::registerNativeMemberAttributePostIncrement(
 			 const std::string & attribute_name
 			 , std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
@@ -290,7 +290,7 @@ namespace zetscript{
 		return symbol_attrib;
 	}
 
-	Symbol				* 	ScriptClass::registerNativePostDecrementMemberAttribute(
+	Symbol				* 	ScriptClass::registerNativeMemberAttributePostDecrement(
 			 const std::string & attribute_name
 			 , std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
@@ -333,7 +333,7 @@ namespace zetscript{
 		return symbol_attrib;
 	}
 
-	Symbol				* 	ScriptClass::registerNativePreIncrementMemberAttribute(
+	Symbol				* 	ScriptClass::registerNativeMemberAttributePreIncrement(
 			 const std::string & attribute_name
 			 , std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type
@@ -376,7 +376,7 @@ namespace zetscript{
 		return symbol_attrib;
 	}
 
-	Symbol				* 	ScriptClass::registerNativePreDecrementMemberAttribute(
+	Symbol				* 	ScriptClass::registerNativeMemberAttributePreDecrement(
 			 const std::string & attribute_name
 			 , std::vector<ScriptFunctionArg> arg_value
 			, int idx_return_type

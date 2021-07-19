@@ -201,9 +201,19 @@ namespace zetscript{
 			}
 
 			// get last instruction...
-			Instruction *last_load_instruction=&assign_loader_instructions_post_expression[idx_post_operation][assign_loader_instructions_post_expression[idx_post_operation].size()-1]->vm_instruction;
+			EvalInstruction *ei_last_load_instruction=assign_loader_instructions_post_expression[idx_post_operation][assign_loader_instructions_post_expression[idx_post_operation].size()-1];
+			Instruction *last_load_instruction=&ei_last_load_instruction->vm_instruction;
 
 			if(byte_code_is_load_type(last_load_instruction->byte_code)){
+
+				if(last_load_instruction->byte_code==BYTE_CODE_LOAD_THIS){
+					EVAL_ERROR_FILE_LINE_AND_GOTO(
+						eval_error_byte_code
+						,eval_data->current_parsing_file
+						,ei_last_load_instruction->instruction_source_info.line
+						,"'this' is not assignable");
+				}
+
 				last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
 			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
 				last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;

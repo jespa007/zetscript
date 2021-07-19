@@ -37,8 +37,8 @@ int main(int argc, char * argv[]) {
 	ZetScript *zs = new ZetScript();
 
 	zs->registerClass<Integer>("Integer",IntegerWrap_new,IntegerWrap_delete);
-	zs->registerSetterMemberAttribute<Integer>("i",IntegerWrap_set);
-	zs->registerGetterMemberAttribute<Integer>("i",IntegerWrap_get);
+	zs->registerMemberAttributeSetter<Integer>("i",IntegerWrap_set);
+	zs->registerMemberAttributeGetter<Integer>("i",IntegerWrap_get);
 
 
 	if (argc > 1) {

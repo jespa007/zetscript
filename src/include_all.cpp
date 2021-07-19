@@ -53,11 +53,11 @@
 #include		"eval/eval.cpp"
 
 // -- Modules
-#include 		"module/MathModuleWrap.cpp"
-#include 		"module/SystemModuleWrap.cpp"
-#include 		"module/JsonModuleWrap.cpp"
-#include 		"module/ConsoleModuleWrap.cpp"
-#include 		"module/DateTimeModuleWrap.cpp"
+#include 		"module/MathModule.cpp"
+#include 		"module/SystemModule.cpp"
+#include 		"module/JsonModule.cpp"
+#include 		"module/ConsoleModule.cpp"
+#include 		"module/DateTimeModule.cpp"
 
 
 

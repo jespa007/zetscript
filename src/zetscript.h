@@ -91,11 +91,11 @@
 #include "scope/Scope.h"
 #include "scope/ScopeFactory.h"
 
-#include "module/MathModuleWrap.h"
-#include "module/SystemModuleWrap.h"
-#include "module/JsonModuleWrap.h"
-#include "module/ConsoleModuleWrap.h"
-#include "module/DateTimeModuleWrap.h"
+#include "module/MathModule.h"
+#include "module/SystemModule.h"
+#include "module/JsonModule.h"
+#include "module/ConsoleModule.h"
+#include "module/DateTimeModule.h"
 
 #include "script/ScriptObject.h"
 #include "script/ScriptObjectString.h"
@@ -129,16 +129,23 @@
 #define ZETSCRIPT_PATCH_VERSION 0
 
 
-#define ZS_CLASS_INHERITS_FROM(zs,C,B)									(zs)->classInheritsFrom<C,B>()
-#define ZS_REGISTER_FUNCTION(zs,text,s) 								(zs)->registerFunction(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_VARIABLE(zs,text,s) 								(zs)->registerVariable(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_CLASS(zs,class_type,s) 								(zs)->registerClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)					(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)		(zs)->registerMemberFunctionStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)			(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)			(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)	(zs)->registerSetterMemberAttribute<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)	(zs)->registerGetterMemberAttribute<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_CLASS_INHERITS_FROM(zs,C,B)											(zs)->classInheritsFrom<C,B>()
+#define ZS_REGISTER_FUNCTION(zs,text,s) 										(zs)->registerFunction(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_VARIABLE(zs,text,s) 										(zs)->registerVariable(text,s,__FILE__, __LINE__)
+#define ZS_REGISTER_CLASS(zs,class_type,s) 										(zs)->registerClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)							(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)				(zs)->registerMemberFunctionStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberAttributeSetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberAttributeGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_INCREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributePostIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_DECREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributePostDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberAttributePreIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberAttributePreDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+
+
+
 #define ZS_BIND_SCRIPT_FUNCTION(zs,_T,access_name)						(zs)->bindScriptFunction<_T>(access_name, __FILE__, __LINE__)
 #define	ZS_UNREF_LIFETIME_OBJECT(zs,so)									(zs)->unrefLifetimeObject(so);
 #define ZS_EVAL(zs,s) 													(zs)->eval(s,0,"",__FILE__,__LINE__)
@@ -289,26 +296,6 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	registerMemberVariableSetter(
-				const char *var_name
-				,F ptr_function
-				 , const char *registered_file=""
-				,short registered_line=-1
-		){
-			script_class_factory->registerMemberVariableSetter<C>(var_name,ptr_function, registered_file,registered_line );
-		}
-
-		template <typename C,typename F>
-		void	registerMemberVariableGetter(
-				const char *var_name
-				,F ptr_function
-				 , const char *registered_file=""
-				,short registered_line=-1
-		){
-			script_class_factory->registerMemberVariableGetter<C>(var_name,ptr_function, registered_file,registered_line );
-		}
-
-		template <typename C,typename F>
 		void	registerMemberFunction(
 				const char *function_name
 				,F function_type
@@ -320,63 +307,63 @@ namespace zetscript{
 
 
 		template <typename C,typename F>
-		void	registerSetterMemberAttribute(
+		void	registerMemberAttributeSetter(
 				const char *attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeSetterMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberAttributeSetter<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerGetterMemberAttribute(
+		void	registerMemberAttributeGetter(
 				const char *attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeGetterMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberAttributeGetter<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerPostIncrementMemberAttribute(
+		void	registerMemberAttributePostIncrement(
 				const char *attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativePostIncrementMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberAttributePostIncrement<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerPostDecrementMemberAttribute(
+		void	registerMemberAttributePostDecrement(
 				const char *attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativePostDecrementMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberAttributePostDecrement<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerPreIncrementMemberAttribute(
+		void	registerMemberAttributePreIncrement(
 				const char *attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativePreIncrementMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberAttributePreIncrement<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerPreDecrementMemberAttribute(
+		void	registerMemberAttributePreDecrement(
 				const char *attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativePreDecrementMemberAttribute<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberAttributePreDecrement<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		/**
@@ -584,7 +571,7 @@ namespace zetscript{
 
 		static 									void (* print_out_callback)(const char *);
 
-		void setClearGlobalVariablesCheckpoint();
+		//void setClearGlobalVariablesCheckpoint();
 		void resetParsedFiles();
 		void clearGlobalVariables(int _idx_start=ZS_IDX_UNDEFINED);
 

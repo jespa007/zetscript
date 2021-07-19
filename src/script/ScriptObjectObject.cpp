@@ -158,6 +158,11 @@ namespace zetscript{
 
 	}
 
+	std::string ScriptObjectObject::toString(){
+		StackElement stk={this,STK_PROPERTY_SCRIPT_OBJECT};
+		return json::serialize(zs,&stk,true);
+	}
+
 	ScriptObjectObject::~ScriptObjectObject(){
 		eraseAllUserProperties();
 		delete map_user_property_keys;

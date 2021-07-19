@@ -970,5 +970,7 @@ namespace zetscript{
 				THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': %s",function_access.c_str(),ex.what());
 			}
 
+			return NULL;
+
 		}
 }

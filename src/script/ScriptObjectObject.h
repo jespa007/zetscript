@@ -51,7 +51,7 @@ namespace zetscript{
 		bool eraseUserProperty(const std::string & symbol_value);
 		void eraseAllUserProperties(/*const ScriptFunction *info_function=NULL*/);
 
-
+		virtual std::string toString();
 		virtual ~ScriptObjectObject();
 
 	protected:

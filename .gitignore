@@ -1,8 +1,9 @@
+/.settings/
 /.vscode/
 /build/
 /CMakeFiles/
 /bin/
-/.settings/
+/src/config.h
 *.cmake
 CMakeCache.txt
 Makefile

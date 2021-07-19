@@ -5,8 +5,8 @@
 
 #include "zetscript.h"
 
-#include "JsonDeserializeModuleWrap.cpp"
-#include "JsonSerializeModuleWrap.cpp"
+#include "JsonDeserializeModule.cpp"
+#include "JsonSerializeModule.cpp"
 
 
 namespace zetscript{

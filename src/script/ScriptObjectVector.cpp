@@ -131,6 +131,11 @@ namespace zetscript{
 
 	}
 
+	std::string ScriptObjectVector::toString(){
+		StackElement stk={this,STK_PROPERTY_SCRIPT_OBJECT};
+		return json::serialize(zs,&stk,true);
+	}
+
 
 	ScriptObjectVector::~ScriptObjectVector(){
 

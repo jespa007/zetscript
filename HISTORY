@@ -240,6 +240,7 @@ Solved issues
 #294 undefined behaviour when call delete 
 #295 Allow switch to have expressions/variables in the case 
 #296 Create inc/dec metamethods and include in attribute metamethods 
+> #297 Vector/Object & class by default it gives all public members in json format by default 
 
 
 //----------------------------------------------------------
