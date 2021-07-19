@@ -492,9 +492,10 @@ namespace zetscript{
 
 		// clear objects...
 		vm_delete(virtual_machine);
-		delete scope_factory;
+		
 		delete script_function_factory;
 		delete script_class_factory;
+		delete scope_factory;
 
 		virtual_machine=NULL;
 

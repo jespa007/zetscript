@@ -199,7 +199,7 @@ namespace zetscript{
 				line
 		);
 
-		ma->setters.push_back((zs_int)symbol_function->ref_ptr);
+		ma->addSetter((ScriptFunction *)symbol_function->ref_ptr);
 
 		return symbol_attrib;
 	}

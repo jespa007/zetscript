@@ -154,7 +154,7 @@ SET(CMAKE_CXX_FLAGS   " ${COMPILE_TARGET_FLAGS} ${COMPILE_COMMON_FLAGS}  " )
 #
 
 # Library
-IF ( "${FCOMPILE}" STREQUAL "ON")
+IF (FCOMPILE)
 
 	MESSAGE ("-- Fast compile: ON" )
 
@@ -259,7 +259,7 @@ add_executable(zs${POST_NAME}
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 
 
-IF ( "${FCOMPILE}" STREQUAL "ON")
+IF (FCOMPILE)
 
 	
 	# test_script_call
