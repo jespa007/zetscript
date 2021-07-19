@@ -419,11 +419,12 @@ namespace zetscript{
 					v > idx_start;
 					v--) {
 
-				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->items[v];
-				global_symbol=symbol->name;
+				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->pop_back();//(Symbol *)main_function_object->registered_symbols->items[v];
+
 				ScriptObjectObject *var = NULL;
 
 				if(symbol->scope == main_scope){
+					global_symbol=symbol->name;
 				//	n_global_symbols_cleared++;
 					if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						var =((ScriptObjectObject *)(vm_stk_element->value));
@@ -442,7 +443,7 @@ namespace zetscript{
 
 				}
 
-				main_function_object->registered_symbols->pop_back();
+				//;
 				*vm_stk_element--=k_stk_undefined;
 			}
 		}
