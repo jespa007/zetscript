@@ -154,84 +154,33 @@ SET(CMAKE_CXX_FLAGS   " ${COMPILE_TARGET_FLAGS} ${COMPILE_COMMON_FLAGS}  " )
 #
 
 # Library
-IF (FCOMPILE)
 
-	MESSAGE ("-- Fast compile: ON" )
 
-	set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
-		include_all.cpp
-	)
-ELSE()
+set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 
-	MESSAGE ("-- Fast compile: OFF" )
-
-	set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
+	# Utils
+	util/zs_util.cpp
 	
-		# Utils
-		util/zs_dir.cpp
- 		util/zs_file.cpp
- 		util/zs_log.cpp
- 		util/zs_path.cpp
- 		util/zs_rtti.cpp
- 		util/zs_strutils.cpp
- 		util/zs_vector.cpp
- 		util/zs_map.cpp
- 		util/zs_map_iterator.cpp
- 		util/zs_timespan.cpp
-		util/zs_datetime.cpp
- 		
- 		
- 		# Modules
- 		module/MathModule.cpp
-		module/SystemModule.cpp
-		module/JsonModule.cpp
-		module/DateTimeModule.cpp
-		module/ConsoleModule.cpp
- 		
- 		# VM
- 		vm/vm.cpp
- 		
-		# Eval		
-		eval/eval.cpp
+	# Modules
+	module/zs_module.cpp
+	
+	# VM
+	vm/vm.cpp
+	
+	# Eval		
+	eval/eval.cpp
 		
-	
- 		# Scope
- 		scope/Scope.cpp
-		scope/ScopeFactory.cpp
-				
-		 # Script
-		script/ScriptClass.cpp
-		script/ScriptClassFactory.cpp
-		script/ScriptFunction.cpp
-		script/ScriptFunctionArg.cpp
-		script/ScriptFunctionFactory.cpp
-		script/ScriptObject.cpp
-		script/ScriptObjectClass.cpp
-		script/ScriptObjectObject.cpp
-		script/ScriptObjectObjectIterator.cpp
-		script/ScriptObjectObjectIteratorWrap.cpp
-		script/ScriptObjectObjectWrap.cpp
-		script/ScriptObjectString.cpp
-		script/ScriptObjectStringIterator.cpp
-		script/ScriptObjectStringIteratorWrap.cpp
-		script/ScriptObjectStringWrap.cpp
-		script/ScriptObjectVarRef.cpp
-		script/ScriptObjectVector.cpp
-		script/ScriptObjectVectorIterator.cpp
-		script/ScriptObjectVectorIteratorWrap.cpp
-		script/ScriptObjectVectorWrap.cpp
+	# Scope
+	scope/zs_scope.cpp
+			
+	 # Script
+	script/zs_script.cpp 
 
-		 		 		
- 		# Core
- 		StackElement.cpp
- 		Instruction.cpp
- 		ByteCode.cpp
- 		zs_exception.cpp
- 		Symbol.cpp
-		zetscript.cpp
-	
-	)
-ENDIF()
+	# Core
+	zetscript.cpp
+
+)
+
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -259,86 +208,58 @@ add_executable(zs${POST_NAME}
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 
 
-IF (FCOMPILE)
+# zs_test
+add_executable(zs_test${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../test/zs_test.cpp
+)
 
-	
-	# test_script_call
-	#add_executable(test_script_call${POST_NAME}
-	#	${PROJECT_SOURCE_DIR}/../test/test_script_call.cpp
-	#)	
-	#target_link_libraries(test_script_call${POST_NAME} zetscript${POST_NAME})
-	
-	# zs_test
-	add_executable(zs_test${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/zs_test.cpp
-	)	
-	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
-	
-	# test_register_class
-	add_executable(test_register_class${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_register_class.cpp
-	)	
-	target_link_libraries(test_register_class${POST_NAME} zetscript${POST_NAME})	
-	
-	# test_register_constant
-	#add_executable(test_register_constant${POST_NAME}
-	#	${PROJECT_SOURCE_DIR}/../test/test_register_constant.cpp
-	#)	
-	#target_link_libraries(test_register_constant${POST_NAME} zetscript${POST_NAME})
-	
-ELSE()
-	# zs_test
-	add_executable(zs_test${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/zs_test.cpp
-	)
-	
-	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
-	
-	# helloworld
-	add_executable(helloworld${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/helloworld.cpp
-	)
-	
-	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
-	
-	# test_register_variables
-	add_executable(test_register_variable${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_register_variable.cpp
-	)	
-	
-	target_link_libraries(test_register_variable${POST_NAME} zetscript${POST_NAME})
-	
-	# test_register_functions
-	add_executable(test_register_function${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_register_function.cpp
-	)	
-	
-	target_link_libraries(test_register_function${POST_NAME} zetscript${POST_NAME})
-	
-	# test_register_class
-	add_executable(test_register_class${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_register_class.cpp
-	)	
-	
-	target_link_libraries(test_register_class${POST_NAME} zetscript${POST_NAME})
-	
-	# function_script_call
-	add_executable(test_script_call${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_script_call.cpp
-	)
-	
-	target_link_libraries(test_script_call${POST_NAME} zetscript${POST_NAME})
-	
-	
-	# register_constants
-	add_executable(test_register_constant${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_register_constant.cpp
-	)
-	
-	target_link_libraries(test_register_constant${POST_NAME} zetscript${POST_NAME})
+target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+
+# helloworld
+add_executable(helloworld${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../test/helloworld.cpp
+)
+
+target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
+
+# test_register_variables
+add_executable(test_register_variable${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../test/test_register_variable.cpp
+)	
+
+target_link_libraries(test_register_variable${POST_NAME} zetscript${POST_NAME})
+
+# test_register_functions
+add_executable(test_register_function${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../test/test_register_function.cpp
+)	
+
+target_link_libraries(test_register_function${POST_NAME} zetscript${POST_NAME})
+
+# test_register_class
+add_executable(test_register_class${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../test/test_register_class.cpp
+)	
+
+target_link_libraries(test_register_class${POST_NAME} zetscript${POST_NAME})
+
+# function_script_call
+add_executable(test_script_call${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../test/test_script_call.cpp
+)
+
+target_link_libraries(test_script_call${POST_NAME} zetscript${POST_NAME})
 
 
-ENDIF()
+# register_constants
+add_executable(test_register_constant${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../test/test_register_constant.cpp
+)
+
+target_link_libraries(test_register_constant${POST_NAME} zetscript${POST_NAME})
+
+
+
 
 SET(
 	HS

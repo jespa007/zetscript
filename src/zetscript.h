@@ -71,54 +71,21 @@
 
 
 // utils
-#include "util/zs_strutils.h"
-#include "util/zs_file.h"
-#include "util/zs_log.h"
-#include "util/zs_rtti.h"
-#include "util/zs_path.h"
-#include "util/zs_vector.h"
-#include "util/zs_map_iterator.h"
-#include "util/zs_map.h"
-#include "util/zs_dir.h"
-#include "util/zs_timespan.h"
-#include "util/zs_datetime.h"
+#include "util/zs_util.h"
 
 #include "zs_exception.h"
 #include "ByteCode.h"
 #include "Instruction.h"
 #include "Symbol.h"
 
-#include "scope/Scope.h"
-#include "scope/ScopeFactory.h"
 
-#include "module/MathModule.h"
-#include "module/SystemModule.h"
-#include "module/JsonModule.h"
-#include "module/ConsoleModule.h"
-#include "module/DateTimeModule.h"
+#include "scope/zs_scope.h"
+#include "module/zs_module.h"
+#include "script/zs_script.h"
 
-#include "script/ScriptObject.h"
-#include "script/ScriptObjectString.h"
-#include "script/ScriptObjectStringWrap.h"
-#include "script/ScriptObjectStringIterator.h"
-#include "script/ScriptObjectStringIteratorWrap.h"
-#include "script/ScriptObjectVector.h"
-#include "script/ScriptObjectVectorWrap.h"
-#include "script/ScriptObjectVectorIterator.h"
-#include "script/ScriptObjectVectorIteratorWrap.h"
-#include "script/ScriptObjectObject.h"
-#include "script/ScriptObjectObjectWrap.h"
-#include "script/ScriptObjectObjectIterator.h"
-#include "script/ScriptObjectObjectIteratorWrap.h"
-#include "script/ScriptObjectClass.h"
-#include "script/ScriptObjectVarRef.h"
 
-#include "script/ScriptFunctionTraits.h"
-#include "script/ScriptFunctionArg.h"
-#include "script/ScriptFunction.h"
-#include "script/ScriptClass.h"
-#include "script/ScriptFunctionFactory.h"
-#include "script/ScriptClassFactory.h"
+
+
 
 #include "eval/eval.h"
 #include "zetscript.h"
@@ -229,9 +196,14 @@ namespace zetscript{
 			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void registerConstantVariable(const std::string & var_name, zs_float value, const char *registered_file="", short registered_line=-1){
+		void registerConstantVariable(const std::string & var_name, float value, const char *registered_file="", short registered_line=-1){
 			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
+
+		void registerConstantVariable(const std::string & var_name, double value, const char *registered_file="", short registered_line=-1){
+			script_class_factory->registerConstantVariable(var_name,(float)value, registered_file, registered_line);
+		}
+
 
 		void registerConstantVariable(const std::string & var_name, const std::string & value, const char *registered_file="", short registered_line=-1){
 			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);

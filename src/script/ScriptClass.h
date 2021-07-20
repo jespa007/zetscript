@@ -16,46 +16,6 @@ namespace zetscript{
 /**
  * Stores the basic information to build a object through built AST structure
  */
-	struct MemberAttribute{
-	public:
-		zs_vector setters; // setter that contains a list of script functions C++
-		 ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec; // getter
-		 std::string attribute_name;
-
-		 MemberAttribute(const std::string & _attribute_name){
-			 getter= NULL;
-			 post_inc=NULL;
-			 post_dec=NULL;
-			 pre_inc=NULL;
-			 pre_dec=NULL;
-			 attribute_name=_attribute_name;
-		}
-
-		 void addSetter(ScriptFunction *f){
-
-			 StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
-			 stk->value=f;
-			 stk->properties=STK_PROPERTY_FUNCTION;
-			 setters.push_back((zs_int)stk);
-		 }
-
-		~MemberAttribute(){
-
-			for(int i=0;i < setters.count; i++){
-				StackElement *stk_el=(StackElement *)setters.items[i];
-				free(stk_el);
-			}
-
-			setters.clear();
-			getter = NULL;
-			post_inc = NULL;
-			post_dec = NULL;
-			pre_inc = NULL;
-			pre_dec = NULL;
-
-
-		}
-	};
 
 	class ScriptFunctionFactory;
 	class  ScriptClass{

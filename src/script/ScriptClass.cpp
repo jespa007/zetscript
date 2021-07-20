@@ -200,7 +200,6 @@ namespace zetscript{
 		);
 
 		ma->addSetter((ScriptFunction *)symbol_function->ref_ptr);
-
 		return symbol_attrib;
 	}
 
@@ -621,7 +620,7 @@ namespace zetscript{
 							);
 							return NULL;
 						}
-						setter_getter->setters.push_back(function_symbol->ref_ptr);
+						setter_getter->addSetter((ScriptFunction *)function_symbol->ref_ptr);
 					}
 
 					break;

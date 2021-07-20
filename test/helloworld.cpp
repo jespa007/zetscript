@@ -14,7 +14,7 @@ int main(){
 
 	ZetScript *zs = new ZetScript();
 
-	zs->registerNativeGlobalFunction("say_helloworld",say_helloworld);
+	zs->registerFunction("say_helloworld",say_helloworld);
 
 	zs->eval("say_helloworld();"); // Call c function and prints hello world!
 

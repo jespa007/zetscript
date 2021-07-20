@@ -17,14 +17,14 @@ namespace zetscript{
 		std::string error;
 
 			// register variable...
-			Symbol *symbol=this->registerNativeMemberVariable(
-					var_name
-					,var_type
-					,(zs_int)var_pointer
-					,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST
-					,registered_file
-					,registered_line
-			);
+		Symbol *symbol=this->registerNativeMemberVariable(
+				var_name
+				,var_type
+				,(zs_int)var_pointer
+				,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC | SYMBOL_PROPERTY_CONST
+				,registered_file
+				,registered_line
+		);
 	}
 
 	template <typename F>

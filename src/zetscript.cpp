@@ -1,5 +1,12 @@
 #include "zetscript.h"
 
+
+#include "ByteCode.cpp"
+#include "Instruction.cpp"
+#include "StackElement.cpp"
+#include "Symbol.cpp"
+#include "zs_exception.cpp"
+
 namespace zetscript{
 
 	const char * k_str_void_type =typeid(void).name();

@@ -419,7 +419,7 @@ namespace zetscript{
 						ma_dst->pre_dec=ma_src->pre_dec;
 
 						for(unsigned i=0; i < ma_src->setters.count;i++){
-							ma_dst->addSetter((ScriptFunction *)ma_src->setters.items[i]);
+							ma_dst->addSetter((ScriptFunction *)(((StackElement *)ma_src->setters.items[i])->value));
 
 						}
 						new_symbol->ref_ptr=(zs_int)ma_dst;
