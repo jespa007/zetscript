@@ -431,7 +431,7 @@ namespace zetscript{
 				ScriptObjectObject *var = NULL;
 
 				if(symbol->scope == main_scope){
-					global_symbol=symbol->name;
+					//global_symbol=symbol->name;
 				//	n_global_symbols_cleared++;
 					if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						var =((ScriptObjectObject *)(vm_stk_element->value));
@@ -444,8 +444,8 @@ namespace zetscript{
 						}
 					}
 
-					if(main_scope->unregisterSymbol(global_symbol) == false){
-						THROW_RUNTIME_ERROR("error clearing variables: globa symbol '%s' not exist",global_symbol.c_str());
+					if(main_scope->unregisterSymbol(symbol) == false){
+						THROW_RUNTIME_ERROR("error clearing variables: global symbol '%s' not exist",symbol->name.c_str());
 					}
 
 				}

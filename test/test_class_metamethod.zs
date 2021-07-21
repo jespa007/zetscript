@@ -6,16 +6,17 @@ class Vector2{
 	}
 	
 	// defines _add metamethod...
-	/*_add(v1){
+	static _add(v1,v2){
 		
 		return new Vector2(
-				this.x+v1.x
-				,this.y+v1.y);
+				v1.x+v2.x
+				,v1.y+v2.y);
 	}
-	*/
-	_next(){
+	
+	_next1(){
 		this.x++;
 		this.y++;
+		//return this;
 	}
 
 	_toString(){ // a way to have a custom string output
@@ -24,10 +25,12 @@ class Vector2{
 };
 
 //var v1=new Vector2(1,2)
+
 var v=(new Vector2(3,4))+(new Vector2(5,6))
+
 //Console::outln(v._toString());
 //Console::outln(v++) // it will read vector [x,y] and postincrement
-Console::outln(v++)
+v++
 //Console::outln(v++) // it will read vector [x,y] and postincrement
 
 //v=v+v; // concatenates vector because v reads a vector through _get.

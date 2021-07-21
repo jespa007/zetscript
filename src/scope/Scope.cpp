@@ -163,12 +163,12 @@ namespace zetscript{
 		return NULL;
 	}
 
-	bool Scope::unregisterSymbol(const std::string & str_symbol){
+	bool Scope::unregisterSymbol(Symbol *symbol){
 		Symbol *sv=NULL;
 		for(unsigned i = 0; i < registered_symbols->count; i++){
 			sv=(Symbol *)registered_symbols->items[i];
 			if(
-			   ( sv->name == str_symbol )
+			   ( sv == symbol )
 			){
 				delete sv;
 				registered_symbols->erase(i); // erase symbol scope

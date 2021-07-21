@@ -275,6 +275,7 @@ SET(
 	util/zs_map_iterator.h
 	util/zs_timespan.h
 	util/zs_datetime.h
+	util/zs_util.h
 	
 	#eval
 	eval/eval_keyword.h
@@ -288,9 +289,11 @@ SET(
 	module/ConsoleModule.h
 	module/JsonModule.h
 	module/DateTimeModule.h
+	module/zs_module.h
 	
 	
 	# script
+	script/MemberAttribute.h
 	script/ScriptClass.h
 	script/ScriptClass.tcc
 	script/ScriptClassFactory.h
@@ -315,10 +318,12 @@ SET(
 	script/ScriptObjectVectorIterator.h
 	script/ScriptObjectVectorIteratorWrap.h
 	script/ScriptObjectVectorWrap.h
+	script/zs_script.h
 			
 	# scope
 	scope/Scope.h
 	scope/ScopeFactory.h
+	scope/zs_scope.h
 	
 	# vm
 	vm/vm.h
