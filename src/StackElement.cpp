@@ -49,6 +49,32 @@ namespace zetscript{
 		return result;
 	}
 
+	std::string StackElement::toPrimitiveStringOrTypeOf(){
+
+		std::string result="null";
+		StackElement *stk=this;
+
+
+		if(this->properties & STK_PROPERTY_PTR_STK){
+			stk=(StackElement *)stk->value;
+		}
+
+		if(((stk->properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C))
+			|| STK_VALUE_IS_ZS_INT(stk)
+			|| STK_VALUE_IS_ZS_FLOAT(stk)
+			|| STK_VALUE_IS_BOOLEAN(stk)
+			|| STK_VALUE_IS_FUNCTION(stk)
+			|| STK_VALUE_IS_CLASS(stk)){
+			result=toString();
+		}else if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject *so=(ScriptObject *)stk->value;
+
+			result= "Object@"+((ScriptObjectObject *)stk->value)->getClassName();
+		}
+
+		return result;
+	}
+
 	std::string StackElement::toString(const std::string & _format ){
 		std::string result="null";
 		StackElement *stk=this;
@@ -75,9 +101,6 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_CLASS(stk)){
 			result= std::string("Class")+"@"+((ScriptClass *)stk->value)->symbol_class.name;
 		}else{
-			if(stk->properties & STK_PROPERTY_PTR_STK){
-				stk=(StackElement *)stk->value;
-			}
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk->value;
 				if(so->getClassName() == "DateTime"){

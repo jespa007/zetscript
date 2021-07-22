@@ -13,10 +13,10 @@ class Vector2{
 				,v1.y+v2.y);
 	}
 	
-	_next1(){
+	_post_inc(){
 		this.x++;
 		this.y++;
-		//return this;
+		return this;
 	}
 
 	_toString(){ // a way to have a custom string output
@@ -29,8 +29,8 @@ class Vector2{
 var v=(new Vector2(3,4))+(new Vector2(5,6))
 
 //Console::outln(v._toString());
-//Console::outln(v++) // it will read vector [x,y] and postincrement
-v++
+Console::outln(v++) // it will read vector [x,y] and postincrement
+//v++
 //Console::outln(v++) // it will read vector [x,y] and postincrement
 
 //v=v+v; // concatenates vector because v reads a vector through _get.

@@ -1003,16 +1003,16 @@ apply_metamethod_error:
 
 		if(stk_result_op1!=NULL && stk_result_op2!=NULL){
 			VM_ERROR("cannot perform operation '%s %s %s'. %s"
-				,stk_result_op1->toString().c_str()
+				,stk_result_op1->toPrimitiveStringOrTypeOf().c_str()
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_result_op2->toString().c_str()
+				,stk_result_op2->toPrimitiveStringOrTypeOf()
 				,error_found.c_str()
 			);
 
 		}else if(stk_result_op1!=NULL){
 			VM_ERROR("cannot perform operation '%s %s'. %s"
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_result_op1->toString().c_str()
+				,stk_result_op1->toPrimitiveStringOrTypeOf().c_str()
 				,error_found.c_str()
 			);
 
@@ -1089,7 +1089,7 @@ apply_metamethod_error:
 
 				// ok stk_vm_current holds the iter object
 				if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
-					VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'",data->stk_vm_current->toString().c_str());
+					VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'",data->stk_vm_current->toPrimitiveStringOrTypeOf().c_str());
 					return;
 				}
 

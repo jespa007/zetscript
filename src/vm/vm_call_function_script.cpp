@@ -1460,7 +1460,7 @@ load_element_object:
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				POP_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_result_op1->toString().c_str());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_result_op1->toPrimitiveStringOrTypeOf().c_str());
 				}
 				if(stk_result_op1->value == 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1469,7 +1469,7 @@ load_element_object:
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				POP_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_result_op1->toString().c_str());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_result_op1->toPrimitiveStringOrTypeOf().c_str());
 				}
 				if(stk_result_op1->value != 0){
 					instruction_it=instruction+instruction->value_op2;
