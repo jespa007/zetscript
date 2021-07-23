@@ -364,7 +364,7 @@ namespace zetscript{
 
 					MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
 					MemberAttribute *ma_dst=NULL;
-					ScriptFunction *sf_getter=ma_src->getter;
+
 					zs_vector *sf_setters=&ma_src->setters;
 					Symbol *symbol_attribute=NULL;
 					Symbol *symbol_function=NULL;
@@ -373,41 +373,54 @@ namespace zetscript{
 					ma_dst=(MemberAttribute *)symbol_attribute->ref_ptr;
 
 
+					struct _AttribMethodIt{
+						ScriptFunction **dst;
+						ScriptFunction *src;
+					}attrib_methods[]={
+						{&ma_dst->getter,ma_src->getter}
+						,{&ma_dst->post_inc,ma_src->post_inc}
+						,{&ma_dst->post_dec,ma_src->post_dec}
+						,{&ma_dst->pre_inc,ma_src->pre_inc}
+						,{&ma_dst->pre_dec,ma_src->pre_dec}
+						,{0,0}
+					};
+
+					_AttribMethodIt *it=attrib_methods;
+
 					// register getter and setter
-					if(sf_getter != NULL){
+					while(it->dst!=0){
 
-						std::vector<ScriptFunctionArg> arg_info;
+						*it->dst = NULL; // init to null
 
-						for(int i=0; i < sf_getter->params->count; i++){
-							arg_info.push_back(*((ScriptFunctionArg *)sf_getter->params->items[i]));
+						if(it->src!=0){ // we have src method
+
+							std::vector<ScriptFunctionArg> arg_info;
+
+							for(int i=0; i < it->src->params->count; i++){
+								arg_info.push_back(*((ScriptFunctionArg *)it->src->params->items[i]));
+							}
+
+							symbol_function=this_class->registerNativeMemberFunction(
+									it->src->symbol.name,
+									arg_info,
+									it->src->idx_return_type,
+									it->src->ref_native_function_ptr,
+									it->src->symbol.properties,
+									it->src->symbol.file,
+									it->src->symbol.line
+							);
+
+							*it->dst=(ScriptFunction *)symbol_function->ref_ptr;
 						}
 
-						/*this_class->registerNativeMemberAttributeGetter(
-								symbol_src->name
-								,arg_info
-								,sf_getter->idx_return_type
-								,sf_getter->ref_native_function_ptr
-								,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
-								,symbol_src->file
-								,symbol_src->line
-						);*/
-						symbol_function=this_class->registerNativeMemberFunction(
-								sf_getter->symbol.name,
-								arg_info,
-								sf_getter->idx_return_type,
-								sf_getter->ref_native_function_ptr,
-								sf_getter->symbol.properties,
-								sf_getter->symbol.file,
-								sf_getter->symbol.line
-						);
-
-						ma_dst->getter=(ScriptFunction *)symbol_function->ref_ptr;
+						it++;
 
 					}
 
 					for(unsigned i=0; i < sf_setters->count; i++){
 						std::vector<ScriptFunctionArg> arg_info;
-						ScriptFunction *sf_setter=(ScriptFunction *)sf_setters->items[i];
+						StackElement *stk_setter=(StackElement *)sf_setters->items[i];
+						ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
 
 
 						for(int i=0; i < sf_setter->params->count; i++){

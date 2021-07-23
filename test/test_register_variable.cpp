@@ -12,9 +12,9 @@ void say_helloworld(){
 
 int main(){
 
-	int 	int_var = 10;
+	zs_int 		int_var = 10;
 	zs_float 	float_var = 0.5;
-	bool 	bool_var = true;
+	bool 		bool_var = true;
 	std::string	string_var = "in c++";
 
 	ZetScript *zs = new ZetScript(); // instance ZetScript
@@ -29,10 +29,10 @@ int main(){
 		"float_var+=5;"
 		"bool_var=!bool_var;"
 		"string_var+=\" and in script\";"
-		"print(\"int_var:\"+int_var);"       // prints "int_var:0"
-		"print(\"float_var:\"+float_var);"   // prints "float_var:5.500000"
-		"print(\"bool_var:\"+bool_var);"     // prints "bool_var:false"
-		"print(\"string_var:\"+string_var);" // prints "string_var:in c++ and in script"
+		"Console::outln(\"int_var:\"+int_var);"       // prints "int_var:0"
+		"Console::outln(\"float_var:\"+float_var);"   // prints "float_var:5.500000"
+		"Console::outln(\"bool_var:\"+bool_var);"     // prints "bool_var:false"
+		"Console::outln(\"string_var:\"+string_var);" // prints "string_var:in c++ and in script"
 	);
 
 	delete zs;
