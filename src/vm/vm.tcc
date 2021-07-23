@@ -953,7 +953,7 @@ namespace zetscript{
 
 
 
-		/*if(n_returned_arguments_from_function == 0){
+		if(n_returned_arguments_from_function == 0){ // return itself
 			switch(byte_code_metamethod){
 			case BYTE_CODE_METAMETHOD_POST_INC:
 			case BYTE_CODE_METAMETHOD_POST_DEC:
@@ -965,30 +965,31 @@ namespace zetscript{
 				break;
 			}
 
-		}else{*/
+		}else{
 
-		// setup all returned variables from function
-		for(int i=0; i < n_returned_arguments_from_function; i++){
+			// setup all returned variables from function
+			for(int i=0; i < n_returned_arguments_from_function; i++){
 
-			StackElement *stk_ret = --data->stk_vm_current;
+				StackElement *stk_ret = --data->stk_vm_current;
 
-			// if a scriptvar --> init shared
-			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				ScriptObject *sv=(ScriptObject *)stk_ret->value;
+				// if a scriptvar --> init shared
+				if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					ScriptObject *sv=(ScriptObject *)stk_ret->value;
 
-				// Auto destroy always C when ref == 0
-				((ScriptObjectClass *)(stk_ret->value))->deleteNativeObjectOnDestroy(true);
+					// Auto destroy always C when ref == 0
+					((ScriptObjectClass *)(stk_ret->value))->deleteNativeObjectOnDestroy(true);
 
-				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
-					if(!vm_create_shared_pointer(vm,sv)){
-						return false;
+					if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
+						if(!vm_create_shared_pointer(vm,sv)){
+							return false;
+						}
 					}
 				}
+				// ... and push result if not function constructor...
 			}
-			// ... and push result if not function constructor...
-		}
 
-		ret_obj=stk_return[0];
+			ret_obj=stk_return[0];
+		}
 		//}
 
 		// reset stack...
@@ -1003,16 +1004,16 @@ apply_metamethod_error:
 
 		if(stk_result_op1!=NULL && stk_result_op2!=NULL){
 			VM_ERROR("cannot perform operation '%s %s %s'. %s"
-				,stk_result_op1->toPrimitiveStringOrTypeOf().c_str()
+				,stk_result_op1->typeOf()
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_result_op2->toPrimitiveStringOrTypeOf()
+				,stk_result_op2->typeOf()
 				,error_found.c_str()
 			);
 
 		}else if(stk_result_op1!=NULL){
 			VM_ERROR("cannot perform operation '%s %s'. %s"
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_result_op1->toPrimitiveStringOrTypeOf().c_str()
+				,stk_result_op1->typeOf()
 				,error_found.c_str()
 			);
 
@@ -1089,7 +1090,7 @@ apply_metamethod_error:
 
 				// ok stk_vm_current holds the iter object
 				if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
-					VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'",data->stk_vm_current->toPrimitiveStringOrTypeOf().c_str());
+					VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'",data->stk_vm_current->typeOf());
 					return;
 				}
 

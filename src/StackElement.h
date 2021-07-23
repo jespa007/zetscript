@@ -108,12 +108,11 @@ namespace zetscript{
 		uint16_t properties; // it tells its properties
 
 		// it gives stackelement as string (the result should be deleted)
-		const char * typeOf();
-		std::string toString(const std::string & _format="");
-		std::string toPrimitiveStringOrTypeOf();
-		void setUndefined();
-		zs_int		toInt();
-		zs_float	toFloat();
+		const char * 	typeOf();
+		std::string 	toString(const std::string & _format="");
+		void 			setUndefined();
+		zs_int			toInt();
+		zs_float		toFloat();
 
 	};
 

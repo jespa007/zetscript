@@ -16,7 +16,6 @@ class Vector2{
 	_post_inc(){
 		this.x++;
 		this.y++;
-		return this;
 	}
 
 	_toString(){ // a way to have a custom string output
