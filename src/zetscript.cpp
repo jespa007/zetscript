@@ -341,7 +341,7 @@ namespace zetscript{
 		return evalInternal(code.c_str(), options, filename,__invoke_file__,__invoke_line__);
 	}
 
-	StackElement ZetScript::evalFile(const std::string &  filename, unsigned short options, const char *__invoke_file__, int __invoke_line__){
+	StackElement ZetScript::evalFile(const std::string &  filename, unsigned short eval_options, const char *__invoke_file__, int __invoke_line__){
 		//int idx_file=-1;
 		StackElement stk_ret;
 		char *buf_tmp=NULL;
@@ -350,6 +350,7 @@ namespace zetscript{
 
 		if(!isFilenameAlreadyParsed(filename)){
 			ParsedFile *ps=new ParsedFile();
+			std::string current_directory="";
 			ps->filename = filename;
 			parsed_files.push_back(ps);
 			const char * const_file_char=ps->filename.c_str();
@@ -358,7 +359,10 @@ namespace zetscript{
 
 			if((buf_tmp=zs_file::read(filename, n_bytes))!=NULL){
 				// file exist and can read ... set current pwd
-				zs_dir::set_current_directory(zs_path::get_directory(filename));
+				//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
+				current_directory = zs_dir::get_current_directory();
+				zs_dir::chdir(zs_path::get_directory(filename));
+				//}
 				std::string error_str="";
 				std::string error_file="";
 
@@ -368,7 +372,7 @@ namespace zetscript{
 
 				int error_line=-1;
 				try{
-					stk_ret=evalInternal(buf_tmp,options,const_file_char,__invoke_file__,__invoke_line__);
+					stk_ret=evalInternal(buf_tmp,eval_options,const_file_char,__invoke_file__,__invoke_line__);
 				}catch(zs_exception & e){
 					error=true;
 					error_file=e.getErrorSourceFilename();
@@ -378,6 +382,11 @@ namespace zetscript{
 					error=true;
 					error_str=e.what();
 				}
+
+				// restore previous directory
+				//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
+				zs_dir::chdir(current_directory);
+				//}
 
 				// deallocate before throw errors...
 				free(buf_tmp);
@@ -414,17 +423,22 @@ namespace zetscript{
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
 		//int n_global_symbols_cleared=0;
-		VirtualMachine *vm=this->virtual_machine;
+		//VirtualMachine *vm=this->virtual_machine;
 		//int total_main_scope_symbols_before_clear=main_scope->registered_symbols->count;
+
+		// clear all stack element to null
+		//&vm_get_stack_elements(virtual_machine)[main_function_object->registered_symbols->count-1];
 
 		// remove all shared 0 pointers
 		if(main_function_object->registered_symbols->count > 0){
+			int idx_stk_start_element=main_function_object->registered_symbols->count-1;
+			//StackElement *vm_stack=&vm_get_stack_elements(virtual_machine);
 			// set global top stack element
 			StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[main_function_object->registered_symbols->count-1];
 			for (
-					int v = main_function_object->registered_symbols->count-1;
+					int v = idx_stk_start_element;
 					v > idx_start;
-					v--) {
+					v--,vm_stk_element--) {
 
 				Symbol *symbol=(Symbol *)main_function_object->registered_symbols->pop_back();//(Symbol *)main_function_object->registered_symbols->items[v];
 
@@ -451,8 +465,16 @@ namespace zetscript{
 				}
 
 				//;
-				*vm_stk_element--=k_stk_undefined;
+				*vm_stk_element=k_stk_undefined;
 			}
+
+			// reset stk_vm_current ...
+			//VirtualMachineData *data=(VirtualMachineData *)virtual_machine->data;
+			//data->stk_vm_current=vm_stk_element;
+			// clear all garbage
+			StackElement *vm_stack=vm_get_stack_elements(virtual_machine);
+			memset(vm_stack+idx_stk_start_element,0,sizeof(StackElement)*(VM_STACK_LOCAL_VAR_MAX-idx_stk_start_element));
+
 		}
 
 
@@ -460,7 +482,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Internal: main_scope and main_functions should have same symbols (fun:%i scope:%i)",n_global_symbols_cleared,total_main_scope_symbols_before_clear);
 		}*/
 
-		vm_remove_empty_shared_pointers(vm,IDX_CALL_STACK_MAIN);
+		vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
 	}
 
 	/*void ZetScript::setClearGlobalVariablesCheckpoint(){

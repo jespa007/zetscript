@@ -8,14 +8,14 @@
 		if(op2_int == 0){\
 			VM_STOP_EXECUTE("exception mod operation by 0");\
 		}\
-		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) % op2_int);\
+		PUSH_STK_ZS_INT(STK_VALUE_TO_ZS_INT(stk_result_op1) % op2_int);\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
 		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->value);\
 		if(f_aux_value2 == 0){\
 			VM_STOP_EXECUTE("exception mod operation by 0");\
 		}\
-		PUSH_FLOAT(fmod(STK_VALUE_TO_ZS_INT(stk_result_op1),f_aux_value2));\
+		PUSH_STK_ZS_FLOAT(fmod(STK_VALUE_TO_ZS_INT(stk_result_op1),f_aux_value2));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
 		op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
@@ -23,7 +23,7 @@
 			VM_STOP_EXECUTE("exception mod operation by 0");\
 		}\
 		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
-		PUSH_FLOAT(fmod(f_aux_value1 , op2_int));\
+		PUSH_STK_ZS_FLOAT(fmod(f_aux_value1 , op2_int));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
 		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
@@ -31,7 +31,7 @@
 		if(f_aux_value2 == 0){\
 			VM_STOP_EXECUTE("exception mod operation by 0");\
 		}\
-		PUSH_FLOAT(fmod(f_aux_value1 , f_aux_value2));\
+		PUSH_STK_ZS_FLOAT(fmod(f_aux_value1 , f_aux_value2));\
 		break;\
 	default:\
 		if(vm_apply_metamethod(\
@@ -54,14 +54,14 @@
 		if(op2_int == 0){\
 			VM_STOP_EXECUTE("exception div operation by 0");\
 		}\
-		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) / STK_VALUE_TO_ZS_INT(stk_result_op2));\
+		PUSH_STK_ZS_INT(STK_VALUE_TO_ZS_INT(stk_result_op1) / STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
 		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->value);\
 		if(f_aux_value2 == 0){\
 			VM_STOP_EXECUTE("exception div operation by 0");\
 		}\
-		PUSH_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) / f_aux_value2);\
+		PUSH_STK_ZS_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) / f_aux_value2);\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
 		op2_int=STK_VALUE_TO_ZS_INT(stk_result_op2);\
@@ -69,7 +69,7 @@
 			VM_STOP_EXECUTE("exception div operation by 0");\
 		}\
 		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
-		PUSH_FLOAT(f_aux_value1 / op2_int);\
+		PUSH_STK_ZS_FLOAT(f_aux_value1 / op2_int);\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
 		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
@@ -77,7 +77,7 @@
 		if(f_aux_value2 == 0){\
 			VM_STOP_EXECUTE("exception div operation by 0");\
 		}\
-		PUSH_FLOAT(f_aux_value1 / f_aux_value2);\
+		PUSH_STK_ZS_FLOAT(f_aux_value1 / f_aux_value2);\
 		break;\
 	default:\
 		if(vm_apply_metamethod(\
@@ -96,20 +96,20 @@
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
-		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
+		PUSH_STK_ZS_INT(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
 		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->value);\
-		PUSH_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
+		PUSH_STK_ZS_FLOAT(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
 		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
-		PUSH_FLOAT(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
+		PUSH_STK_ZS_FLOAT(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
 		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
 		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->value);\
-		PUSH_FLOAT(f_aux_value1 __C_OP__ f_aux_value2);\
+		PUSH_STK_ZS_FLOAT(f_aux_value1 __C_OP__ f_aux_value2);\
 		break;\
 	default:\
 		if(vm_apply_metamethod(\
@@ -128,34 +128,34 @@
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
-		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
+		PUSH_STK_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		break;\
 	case MSK_STK_OP1_BOOL_OP2_BOOL:\
-		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
+		PUSH_STK_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
 		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->value);\
-		PUSH_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
+		PUSH_STK_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ f_aux_value2);\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
 		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
-		PUSH_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
+		PUSH_STK_BOOLEAN(f_aux_value1 __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
 		ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);\
 		ZS_FLOAT_COPY(&f_aux_value2,&stk_result_op2->value);\
-		PUSH_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
+		PUSH_STK_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
 		break;\
 	default:\
 		if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
-			PUSH_BOOLEAN(ZS_STRCMP(stk_result_op1->toString().c_str(), __C_OP__ ,stk_result_op2->toString().c_str()));\
+			PUSH_STK_BOOLEAN(ZS_STRCMP(stk_result_op1->toString().c_str(), __C_OP__ ,stk_result_op2->toString().c_str()));\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_NULL || stk_result_op2->properties==STK_PROPERTY_NULL)\
 				&& (__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
 				){\
 			if((stk_result_op1->properties == 0) && (stk_result_op2->properties == 0)){\
-				PUSH_BOOLEAN(__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU);\
+				PUSH_STK_BOOLEAN(__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU);\
 			}else{\
-				PUSH_BOOLEAN(__METAMETHOD__ != BYTE_CODE_METAMETHOD_EQU);\
+				PUSH_STK_BOOLEAN(__METAMETHOD__ != BYTE_CODE_METAMETHOD_EQU);\
 			}\
 		}else{\
 			if(vm_apply_metamethod(\
@@ -174,7 +174,7 @@
 
 #define PROCESS_LOGIC_OPERATION(__C_OP__)\
 	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_BOOL){\
-		PUSH_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
+		PUSH_STK_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}else{\
 		PRINT_DUAL_ERROR_OP(ZS_STR(__C_OP__));\
 		goto lbl_exit_function;\
@@ -183,7 +183,7 @@
 
 #define PROCESS_BINARY_OPERATION(__C_OP__, __METAMETHOD__)\
 	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_ZS_INT){\
-		PUSH_INTEGER(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
+		PUSH_STK_ZS_INT(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 	}else{\
 		if(vm_apply_metamethod(\
 			vm\
@@ -207,11 +207,11 @@
 	}\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_var)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
-			PUSH_INTEGER(__PRE_OP__(*((zs_int *)(ref))));\
+			PUSH_STK_ZS_INT(__PRE_OP__(*((zs_int *)(ref))));\
 			(*((zs_int *)(ref)))__OPERATOR__;\
 			break;\
 	case STK_PROPERTY_ZS_FLOAT:\
-			PUSH_FLOAT(__PRE_OP__(*((zs_float *)(ref))));\
+			PUSH_STK_ZS_FLOAT(__PRE_OP__(*((zs_float *)(ref))));\
 			(*((zs_float *)(ref)))__OPERATOR__;\
 			break;\
 	default:\
@@ -240,11 +240,11 @@
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_var)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
 			(*((zs_int *)(ref)))__OPERATOR__;\
-			PUSH_INTEGER(*((zs_int *)(ref)));\
+			PUSH_STK_ZS_INT(*((zs_int *)(ref)));\
 			break;\
 	case STK_PROPERTY_ZS_FLOAT:\
 			(*((zs_float *)(ref)))__OPERATOR__;\
-			PUSH_FLOAT(*((zs_float *)(ref)));\
+			PUSH_STK_ZS_FLOAT(*((zs_float *)(ref)));\
 			break;\
 	default:\
 		if(vm_apply_metamethod(\
@@ -406,7 +406,7 @@ namespace zetscript{
 		// Init local vars ...
 		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
 
-			for(unsigned i = n_args; i < (symbols_count); i++){ // from n_args, setup local vars
+			for(unsigned i = n_args; i < (symbols_count); ++i,++ptr_aux){ // from n_args, setup local vars
 				symbol_aux=(Symbol *)registered_symbols->items[i];
 				if(symbol_aux->properties & SYMBOL_PROPERTY_FUNCTION){
 					ptr_aux->value=(void *)symbol_aux->ref_ptr;
@@ -414,7 +414,6 @@ namespace zetscript{
 				}else{
 					STK_SET_NULL(ptr_aux);		// null as default
 				}
-				ptr_aux++;
 			}
 		}
 
@@ -494,7 +493,7 @@ namespace zetscript{
 						// assign script function ...
 						instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
 						instruction->value_op2=symbol_aux->ref_ptr;
-						PUSH_FUNCTION(instruction->value_op2);
+						PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
 					}
 				}else{ // load null as default!
 					VM_STOP_EXECUTE("Symbol \"%s\" is not defined",str_symbol);
@@ -727,10 +726,10 @@ load_element_object:
 
 				continue;
 			case BYTE_CODE_LOAD_NULL:
-				PUSH_NULL;
+				PUSH_STK_NULL;
 				continue;
 			case BYTE_CODE_LOAD_FUNCTION: // expect constant and function has the same behaviour...
-				PUSH_FUNCTION(instruction->value_op2);
+				PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_ZS_INT:
 				data->stk_vm_current->value=(void *)instruction->value_op2;
@@ -752,7 +751,7 @@ load_element_object:
 				*data->stk_vm_current++=*((StackElement *)instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_CLASS:
-				PUSH_CLASS(instruction->value_op2);
+				PUSH_STK_SCRIPT_CLASS(instruction->value_op2);
 				continue;
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT:
@@ -1075,12 +1074,15 @@ load_element_object:
 									,false
 									//,lst_functions
 									//,lst_functions->count
-									,"_set@" // symbol to find
+									,STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)?"_set":"_set@" // symbol to find
 									,stk_arg
 									,1))==NULL){
-
-
-								VM_STOP_EXECUTE("Attribute '%s' does not implement setter function",((StackMemberAttribute *)stk_dst->value)->member_attribute->attribute_name.c_str());
+								if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
+									VM_STOP_EXECUTE("Class '%s' does not implement setter function",((ScriptObject *)stk_dst->value)->getScriptClass()->symbol_class.name.c_str());
+								}else{
+									StackMemberAttribute * stk_ma=((StackMemberAttribute *)stk_dst->value);
+									VM_STOP_EXECUTE("Attribute '%s::%s' does not implement setter function",stk_ma->so_object->getScriptClass()->symbol_class.name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
+								}
 							}
 						}else if(lst_functions->count>1){ // it has all member list
 							StackElement * stk = obj_setter->getProperty("_set");
@@ -1187,7 +1189,7 @@ load_element_object:
 								stk_dst->properties=STK_PROPERTY_BOOL;
 								*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);
 								if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)stk_src_ref);
-							}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_CLASS) ){
+							}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_SCRIPT_CLASS) ){
 								*stk_dst=*stk_src;
 							}else if(type_var & STK_PROPERTY_SCRIPT_OBJECT){
 
@@ -1336,11 +1338,11 @@ load_element_object:
 			case BYTE_CODE_NOT: // !
 				POP_ONE;
 				if(stk_result_op1->properties & STK_PROPERTY_BOOL){ // operation will result as integer.
-					PUSH_BOOLEAN((!((bool)(stk_result_op1->value))));
+					PUSH_STK_BOOLEAN((!((bool)(stk_result_op1->value))));
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
-					PUSH_BOOLEAN((!((zs_int)(stk_result_op1->value))));
+					PUSH_STK_BOOLEAN((!((zs_int)(stk_result_op1->value))));
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
-					PUSH_BOOLEAN((!(*((zs_float *)(&stk_result_op1->value)))==0));
+					PUSH_STK_BOOLEAN((!(*((zs_float *)(&stk_result_op1->value)))==0));
 				}else{
 					if(vm_apply_metamethod(
 						vm
@@ -1357,10 +1359,10 @@ load_element_object:
 			case BYTE_CODE_NEG: // -
 				POP_ONE;
 				if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){ // operation will result as integer.
-					PUSH_INTEGER((-((zs_int)(stk_result_op1->value))));
+					PUSH_STK_ZS_INT((-((zs_int)(stk_result_op1->value))));
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
 					ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);
-					PUSH_FLOAT(-f_aux_value1);
+					PUSH_STK_ZS_FLOAT(-f_aux_value1);
 				}else{ // try metamethod ...
 					if(!vm_apply_metamethod(
 							vm
@@ -1430,16 +1432,16 @@ load_element_object:
 					VM_STOP_EXECUTE("type '%s' does not exist ",instruction->getConstantValueOp2ToString().c_str());
 					break;
 				case IDX_BUILTIN_TYPE_ZS_INT_C:
-					PUSH_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
+					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
 					break;
 				case IDX_BUILTIN_TYPE_ZS_FLOAT_C:
-					PUSH_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT)!=0);
+					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT)!=0);
 					break;
 				case IDX_BUILTIN_TYPE_BOOL_C:
-					PUSH_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_BOOL)!=0);
+					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_BOOL)!=0);
 					break;
 				case IDX_BUILTIN_TYPE_FUNCTION:
-					PUSH_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_FUNCTION)!=0);
+					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_FUNCTION)!=0);
 					break;
 				default:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -1447,9 +1449,9 @@ load_element_object:
 								((ScriptObjectObject *)(stk_result_op1->value))->idx_script_class // A
 								, idx_test_class			// B
 						);
-						PUSH_BOOLEAN(b);
+						PUSH_STK_BOOLEAN(b);
 					}else{
-						PUSH_BOOLEAN(false);
+						PUSH_STK_BOOLEAN(false);
 					}
 					break;
 				}
@@ -1576,18 +1578,20 @@ load_element_object:
 
 					// call function
 					if((sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
+
 						// we pass everything by copy (TODO implement ref)
 						if(n_args > 0 && sf->params->count > 0){
 							StackElement *stk_arg=stk_start_arg_call;
 							ScriptObjectVector *var_args=NULL;
 							ScriptObject *so_param=NULL;
 							bool end_args=false;
-							int function_param=0;//&sf->params->items[0];
+							//int function_param=0;//&sf->params->items[0];
 							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
-							int i=0;
-							for(;i < n_args && end_args==false;i++){
+							zs_int *sf_params_items=sf->params->items;
+
+							for(int i=0;i < n_args && end_args==false;++i){
 								so_param=NULL; // script object we passing
-								uint16_t sfa_properties=((ScriptFunctionArg *)sf->params->items[function_param])->properties;// ((ScriptFunctionArg *)(*function_param))->properties;
+								uint16_t sfa_properties=((ScriptFunctionArg *)(*sf_params_items))->properties;// ((ScriptFunctionArg *)(*function_param))->properties;
 								if((sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF)){ // create or pass the var ref object...
 
 									StackElement *check_ref=stk_arg;
@@ -1678,7 +1682,7 @@ load_element_object:
 											}
 										}
 
-										function_param++;
+										sf_params_items++;
 										if(i+1 >= (int)effective_args){
 											end_args=true;
 										}
@@ -1690,8 +1694,9 @@ load_element_object:
 
 						// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 						// will be ignored always.
-						for(unsigned i = n_args; i < sf->params->count; i++){
-							ScriptFunctionArg *param=(ScriptFunctionArg *)sf->params->items[i];
+
+						for(unsigned i = n_args; i < sf->params->count; ++i){
+							ScriptFunctionArg *param=(ScriptFunctionArg *)(sf->params->items[i]);
 							//StackElement *stk_def_afun_start=data->stk_vm_current;
 							//param->default_var_value;
 							//int n_returned_args_afun=0;
@@ -1798,7 +1803,7 @@ load_element_object:
 							*data->stk_vm_current++= stk_return[0]; // only return first argument
 						}
 						else{
-							PUSH_NULL; // no return push null
+							PUSH_STK_NULL; // no return push null
 						}
 					}
 				 }
@@ -1913,9 +1918,6 @@ load_element_object:
 
 						STK_SET_NULL(se);
 					}
-					/*else{
-						VM_STOP_EXECUTE("Error deleting '%s' of type '%s'. 'delete' is only allowed on object types",SFI_GET_SYMBOL_NAME(calling_function,instruction-1),stk_result_op1->typeOf());
-					}*/
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:
 				PUSH_VM_SCOPE(instruction->value_op2,calling_function,_stk_local_var,instruction->value_op1);
@@ -1966,11 +1968,8 @@ load_element_object:
 
 		//=========================
 		// POP STACK
-		if(vm_scope_start<data->vm_current_scope){ // if main function only remove empty shared pointers but preserve global variables!)
-			// pop all scopes
-			while(vm_scope_start<data->vm_current_scope){
-				POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
-			}
+		while(vm_scope_start<data->vm_current_scope){
+			POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
 		}
 
 		if((data->zero_shares+data->vm_idx_call)->first!=NULL){

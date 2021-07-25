@@ -169,7 +169,7 @@ namespace zetscript{
 			);
 
 			// update jnt instruction to jmp after jmp instruction...
-			ei_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size();
+			ei_jnt->vm_instruction.value_op2=eval_data->current_function->instructions.size()-idx_instruction_conditional_while-1; // +1 jmp
 
 			// catch all breaks in the while...
 			link_loop_break_continues(eval_data,idx_instruction_conditional_while);

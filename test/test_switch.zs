@@ -1,4 +1,4 @@
-
+const CASE_3=3
 
 function test_switch(a){
 
@@ -59,8 +59,6 @@ case "bye":
 	
 }
 
-
-const CASE_3=3
 
 var obj={
     a:0

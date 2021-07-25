@@ -41,20 +41,19 @@ namespace zetscript{
 			v > idx_start; // avoid main scope
 			v--
 		){
-			Scope * info_scope = (Scope *)scopes->get(v);
+			Scope * info_scope = (Scope *)scopes->pop_back();//(Scope *)scopes->get(v);
 			delete info_scope;
-			scopes->pop_back();
 		}
 
-		// erase all sub scopes in the main scope
+		// erase all local scopes in the main scope
 		for (
 				int v = main_scope->registered_scopes->count-1;
 				v > idx_start_global_scopes ;
 				v--) {
-			//delete (Scope *)main_scope->registered_scopes->items[v];
+			// Only pop-back, don't delete because they were deleted on previous loop
 			main_scope->registered_scopes->pop_back();
-		}
 
+		}
 
 		//clearGlobalSymbols();
 	}

@@ -24,7 +24,7 @@ class A{
 			this.__b__=value;
 		}
 		_get(){
-			return __b__;
+			return this.__b__;
 		}
 	}
 }

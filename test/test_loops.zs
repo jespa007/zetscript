@@ -1,5 +1,6 @@
 
 // for
+
 Console::outln("test for:");
 for(var i=0,j=0;i < 10; i++,j+=2){ 
 	Console::outln("i:"+i+" j:"+j);

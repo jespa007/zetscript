@@ -3,27 +3,27 @@
 
 #define IDX_CALL_STACK_MAIN 1
 
-#define PUSH_NULL \
+#define PUSH_STK_NULL \
 STK_SET_NULL(data->stk_vm_current++); \
 
-#define PUSH_BOOLEAN(init_value) \
+#define PUSH_STK_BOOLEAN(init_value) \
 data->stk_vm_current->value=(void *)((zs_int)(init_value)); \
 data->stk_vm_current->properties=STK_PROPERTY_BOOL; \
 data->stk_vm_current++;
 
 
-#define PUSH_INTEGER(init_value) \
+#define PUSH_STK_ZS_INT(init_value) \
 data->stk_vm_current->value=(void *)((zs_int)(init_value)); \
 data->stk_vm_current->properties=STK_PROPERTY_ZS_INT; \
 data->stk_vm_current++;
 
-#define PUSH_OBJECT(obj_value) \
+#define PUSH_STK_SCRIPT_OBJECT(obj_value) \
 data->stk_vm_current->value=(void *)((zs_int)(obj_value)); \
 data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT; \
 data->stk_vm_current++;
 
 
-#define PUSH_FLOAT(init_value) \
+#define PUSH_STK_ZS_FLOAT(init_value) \
 {\
 	zs_float aux=(zs_float)(init_value); \
 	ZS_FLOAT_COPY(&data->stk_vm_current->value,&aux); \
@@ -31,14 +31,14 @@ data->stk_vm_current++;
 	data->stk_vm_current++; \
 }
 
-#define PUSH_FUNCTION(ref) \
+#define PUSH_STK_SCRIPT_FUNCTION(ref) \
 data->stk_vm_current->value=(void *)ref; \
 data->stk_vm_current->properties=STK_PROPERTY_FUNCTION; \
 data->stk_vm_current++;
 
-#define PUSH_CLASS(ref) \
+#define PUSH_STK_SCRIPT_CLASS(ref) \
 data->stk_vm_current->value=(void *)ref; \
-data->stk_vm_current->properties=STK_PROPERTY_CLASS; \
+data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_CLASS; \
 data->stk_vm_current++;
 
 // explains whether stk is this or not. Warning should be given as value and not as ptr
@@ -64,25 +64,23 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 
 // defer all local vars
 #define POP_VM_SCOPE()\
- if(data->vm_scope>=data->vm_current_scope){\
-	VM_SET_USER_ERROR(vm,"internal error: trying to pop at the bottom");\
-}\
 {\
 	VM_Scope *vm_check_scope=(data->vm_current_scope-1);\
 	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
 	zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
 	zs_int *symbols					=scope_symbols->items;\
-	for(int i = scope_symbols->count-1; i >=0 ; --i){\
-		StackElement *stk_local_var =stk_local_vars+((Symbol *)(symbols[i]))->idx_position;\
-		if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)==STK_PROPERTY_SCRIPT_OBJECT){\
-			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
+	StackElement stk_local_var;\
+	for(int i = scope_symbols->count-1; i >=0 ; --i,++symbols){\
+		stk_local_var =*(stk_local_vars+((Symbol *)(*symbols))->idx_position);\
+		if((stk_local_var.properties & STK_PROPERTY_SCRIPT_OBJECT)){\
+			ScriptObject *so=(ScriptObject *)(stk_local_var.value);\
 			if(so != NULL && so->shared_pointer!=NULL){\
 				if(vm_unref_shared_script_object(vm,so,data->vm_idx_call)==false){\
 					return;\
 				}\
 			}\
 		}\
-		STK_SET_NULL(stk_local_var);\
+		STK_SET_NULL(&stk_local_var);\
 	}\
 	--data->vm_current_scope;\
 }
@@ -440,7 +438,7 @@ namespace zetscript{
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
 
-		bool is_set_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
+		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
 
 		void *stk_elements_builtin_ptr= data->vm_stack;// vector of properties
 		int stk_elements_builtin_len=  data->main_function_object->registered_symbols->count;// vector of properties
@@ -462,7 +460,7 @@ namespace zetscript{
 
 			bool symbol_equals=
 								aux_string == symbol_to_find
-								|| (is_set_metamethod && zs_strutils::starts_with(aux_string,"_set@"));
+								|| (is_set_attrib_metamethod && zs_strutils::starts_with(aux_string,"_set@"));
 
 			if((symbol_equals && irfs->params->count == (n_args+this_as_first_parameter))){
 				if((irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
@@ -695,7 +693,7 @@ namespace zetscript{
 			){
 				ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(data->zs,stk_result_op1,stk_result_op2);
 				vm_create_shared_pointer(vm,so_string);
-				PUSH_OBJECT(so_string);
+				PUSH_STK_SCRIPT_OBJECT(so_string);
 				return true;
 			}
 			else if(
@@ -709,7 +707,7 @@ namespace zetscript{
 						,(ScriptObjectVector *)stk_result_op2->value
 				);
 				vm_create_shared_pointer(vm,so_vector);
-				PUSH_OBJECT(so_vector);
+				PUSH_STK_SCRIPT_OBJECT(so_vector);
 
 				return true;
 			}
@@ -732,7 +730,7 @@ namespace zetscript{
 								,(ScriptObjectObject *)obj2
 						);
 						vm_create_shared_pointer(vm,so_object);
-						PUSH_OBJECT(so_object);
+						PUSH_STK_SCRIPT_OBJECT(so_object);
 						return true;
 					}
 				}
@@ -1146,7 +1144,7 @@ lbl_exit_function:
 			switch(so_aux->idx_script_class){
 			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
-				PUSH_BOOLEAN(
+				PUSH_STK_BOOLEAN(
 					ScriptObjectStringWrap_contains(
 						((ScriptObjectString *)so_aux)
 						,(zs_int)stk_result_op1->value
@@ -1154,7 +1152,7 @@ lbl_exit_function:
 				);
 			}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
 				std::string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
-				PUSH_BOOLEAN(
+				PUSH_STK_BOOLEAN(
 					ScriptObjectStringWrap_contains(
 						(ScriptObjectString *)so_aux
 						,&str_op1)
@@ -1164,8 +1162,8 @@ lbl_exit_function:
 			}
 			break;
 			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR: // check whether value exists...
-			//PUSH_BOOLEAN(((ScriptObjectVector *)so_aux)->exists(stk_result_op1));
-			PUSH_BOOLEAN(
+			//PUSH_STK_BOOLEAN(((ScriptObjectVector *)so_aux)->exists(stk_result_op1));
+			PUSH_STK_BOOLEAN(
 				ScriptObjectVectorWrap_contains(
 					(ScriptObjectVector *)so_aux,stk_result_op1
 				)
@@ -1174,7 +1172,7 @@ lbl_exit_function:
 			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				std::string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
-				PUSH_BOOLEAN(
+				PUSH_STK_BOOLEAN(
 					ScriptObjectObjectWrap_contains(
 						(ScriptObjectObject *)so_aux,&str_op1
 					)
@@ -1195,7 +1193,7 @@ lbl_exit_function:
 				)==false){
 					return false;
 				}
-				//PUSH_BOOLEAN(false);
+				//PUSH_STK_BOOLEAN(false);
 			break;
 			}
 		}else{

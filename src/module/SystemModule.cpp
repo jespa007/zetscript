@@ -30,6 +30,7 @@ namespace zetscript{
 		Scope *main_scope=zs->getScopeFactory()->getMainScope();
 		std::string str_unescaped_source="";
 		VirtualMachine *vm=zs->getVirtualMachine();
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		Symbol *symbol_sf=NULL;
 
 		// Example of use,
@@ -51,8 +52,14 @@ namespace zetscript{
 
 			// catch parameters...
 			for(auto it=oo_param->begin(); !it.end(); it.next()){
+				StackElement stk=*((StackElement *)it.getValue());
 				function_args.push_back(ScriptFunctionArg(it.getKey()));
-				stk_params.push_back(*((StackElement *)it.getValue()));
+				stk_params.push_back(stk);
+
+				if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){
+					// inc number of ref as standard in pass object args
+					((ScriptObject *)stk.value)->shared_pointer->data.n_shares++;
+				}
 			}
 		}
 
@@ -95,19 +102,34 @@ namespace zetscript{
 		}
 
 		// check if there's a reset stack at the end and set as end function in order to get last value stk ...
-		if(sf->instructions_len>2){
-			if(sf->instructions[sf->instructions_len-2].byte_code == BYTE_CODE_RESET_STACK){
-				sf->instructions[sf->instructions_len-2].byte_code =BYTE_CODE_RET;
+		/*if(sf->instructions_len>2){
+			if(sf->instructions[sf->instructions_len-2].byte_code != BYTE_CODE_RET){
+				size_t new_buf_len=sf->instructions_len+2;
+				Instruction *new_buf=(Instruction *)malloc(new_buf_len*sizeof(Instruction));
+				memset(new_buf,0,new_buf_len*sizeof(Instruction));
+				memcpy(new_buf,sf->instructions,sf->instructions_len*sizeof(Instruction));
+				// free old ptr
+				free(sf->instructions);
+
+				// assign ret null
+				new_buf[new_buf_len-3].byte_code=BYTE_CODE_LOAD_NULL;
+				new_buf[new_buf_len-2].byte_code=BYTE_CODE_RET;
+
+				sf->instructions=new_buf;
+				sf->instructions_len=new_buf_len;
+
+
+
 			}
-		}
+		}*/
 
 		// 3. Call function passing all arg parameter
 
-		// add data stk_vm_current
-		uint8_t stk_start_size=(uint8_t)stk_params.size();
+		// pass data to stk_vm_current
+		uint8_t stk_n_params=(uint8_t)stk_params.size();
 		StackElement *stk_vm_current=vm_get_current_stack_element(vm);
 		StackElement *stk_start=stk_vm_current;//vm data->stk_vm_current;
-		for(unsigned i = 0; i < stk_start_size; i++){
+		for(unsigned i = 0; i < stk_n_params; i++){
 			*stk_start++=stk_params[i];
 		}
 
@@ -116,7 +138,7 @@ namespace zetscript{
 			NULL,
 			sf,
 			stk_vm_current,
-			stk_start_size);
+			stk_n_params);
 
 		// modifug
 		if(vm_it_has_error(zs->getVirtualMachine())){
@@ -128,6 +150,18 @@ namespace zetscript{
 
 		 delete sf;
 		 delete symbol_sf;
+
+
+		int n_ret_args=vm_get_current_stack_element(vm)-stk_vm_current;
+		stk_start=stk_vm_current;
+
+		// overwrite first entered params due are the objects passed before and now are undefined
+		for(int i = 0; i < n_ret_args-stk_n_params; i++){
+			*stk_start++=*(stk_vm_current+stk_n_params+i);
+		}
+
+		// avoid pass params
+		data->stk_vm_current-=stk_n_params;
 
 	}
 

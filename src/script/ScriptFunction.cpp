@@ -20,6 +20,7 @@ namespace zetscript{
 		ref_native_function_ptr=_ref_native_function_ptr;
 
 		instructions=NULL;
+		instructions_len = 0;
 
 		symbol=*_symbol;
 

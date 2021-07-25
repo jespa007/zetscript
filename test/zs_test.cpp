@@ -304,7 +304,7 @@ void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_form
 					exit(-1);
 				}
 			}else{
-				fprintf(stderr,"error test \"%s\" expected float but it was '%s'!\n",it_afm->str,stk.typeOf());
+				fprintf(stderr,"error test \"%s\" expected float but it was '%s'!\n",it_afm->str.c_str(),stk.typeOf());
 				exit(-1);
 			}
 		}
@@ -453,31 +453,9 @@ int main(int argc, char * argv[]) {
 
 	zs=new ZetScript();
 
-	FloatWrap_register(zs);
+	// register wraps
+	/*FloatWrap_register(zs);
 	IntegerWrap_register(zs);
-
-
-	//----------------------
-	// TEST (erase on exit)
-    /*zs->eval("var i1,i2,it1,it2,n1,n2,nt1,nt2");
-	zs->eval("it1=("\
-				"(i1=new Integer("\
-				"4" \
-				"))"\
-				"+" \
-				"(i2=new Integer("\
-				"4" \
-				"))"\
-			");it2=it1.toInt();delete it1;delete i1;delete i2;return it2;");
-
-	//COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,2); // op1==op2
-
-	zs->eval("it1=((i1=new Integer(4))+(i2=new Integer(-4)));it2=it1.toInt();delete it1;delete i1;delete i2;return it2;");
-	printf("%i. testing class Integer arithmetic operations...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(5,4); // op1 > op2
-	return 0;*/
 
 	// unsinged
 	printf("%i. testing arithmetic operations integer...\n",++n_test);
@@ -506,8 +484,6 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,4.0); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5,4.0); // op1 > op2
-
-
 
 	printf("%i. testing std::string...\n",++n_test);
 	TEST_ARITHMETIC_STRING_OP("test_",+,"100"); // concatenate int
@@ -540,12 +516,11 @@ int main(int argc, char * argv[]) {
 	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
 
 	// test declare var int/bool/std::string/number
-	printf("%i. testing primitive var\n",++n_test);
+	printf("%i. testing primitive var\n",++n_test);*/
 
+	//zs->eval("var i=\"s\"");
 
-	zs->eval("var i");
-
-	TEST_INT_EXPR("var i=1;",1);
+	/*TEST_INT_EXPR("var i=1;",1);
 	TEST_INT_EXPR("i++;i;",2);
 	TEST_INT_EXPR("++i;i;",3);
 	TEST_INT_EXPR("i--;i;",2);
@@ -572,11 +547,11 @@ int main(int argc, char * argv[]) {
 
 	printf("%i. test if-else ...\n",++n_test);
 	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}i;",10);
-	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}i;",11);
+	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}i;",11);*/
 
-	zs->eval("var i1,i2,it1,it2,n1,n2,nt1,nt2");
+	//zs->eval("var i1=\"s\",i2=\"s\",it1=\"s\",it2=\"s\",n1=\"s\",n2=\"s\",nt1=\"s\",nt2=\"s\"");
 
-	printf("%i. testing class Integer arithmetic operations...\n",++n_test);
+	/*printf("%i. testing class Integer arithmetic operations...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(5,4); // op1 > op2
@@ -608,8 +583,60 @@ int main(int argc, char * argv[]) {
 	}
 
 	delete test_1st_script_call;
-	delete test_2nd_script_call;
+	delete test_2nd_script_call;*/
 
+
+	// test all external tests...
+	const char *test_files[]={
+		//"test/test_assert_error.zs"
+		/*"test/test_assign.zs"
+		,"test/test_class_attribute.zs"
+		,"test/test_class_inheritance_call.zs"
+		,"test/test_class_metamethod.zs"
+		,"test/test_const.zs"
+		,"test/test_datetime.zs"
+		,"test/test_eval.zs"
+		,"test/test_for_in_object.zs"
+		,"test/test_for_in_string.zs"
+		,"test/test_for_in_vector.zs"
+		,"test/test_function_arg_by_ref.zs"
+		,"test/test_function_arg_default.zs"
+		,"test/test_function.zs"
+		,"test/test_if_else.zs"
+		,"test/test_import.zs"
+		,"test/test_in.zs"
+		,"test/test_instanceof.zs"
+		,"test/test_iterator_object.zs"
+		,"test/test_iterator_string.zs"
+		,*/"test/test_iterator_vector.zs"
+		/*,"test/test_json.zs"
+		,"test/test_loops_break_continue.zs"
+		,"test/test_loops.zs"
+		,"test/test_object.zs"
+		,"test/test_return.zs"
+		,"test/test_string.zs"
+		,"test/test_switch.zs"
+		,"test/test_ternary.zs"
+		,"test/test_typeof.zs"
+		,"test/test_vector.zs"
+		,"test/test_zs_int.zs"*/
+		,0
+	};
+
+	printf("======================================\n");
+	printf("Testing all zetscript samples\n");
+
+	char **it=(char **)test_files;
+	int total=sizeof(test_files)/sizeof(char **);
+	int n=1;
+
+	while(*it!=0){
+		// clear all vars in order to no have conflict with previous evaluations
+		zs->clear();
+		printf("Evaluating %i/%i:'%s'\n",n++,total,*it);
+		zs->evalFile(*it);
+		it++;
+	}
 
 	printf("All tests passed OK!\n");
 

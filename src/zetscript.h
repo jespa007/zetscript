@@ -121,14 +121,8 @@
 #define ZS_REGISTER_CONSTANT_VAR(zs,constant_name,v)					(zs)->registerConstantVariable(constant_name,v,__FILE__,__LINE__)
 
 
+
 namespace zetscript{
-
-	typedef enum{
-		EVAL_OPTION_NO_EXECUTE=0x1<<0,
-		EVAL_OPTION_SHOW_USER_CODE=0x1<<1,
-		EVAL_OPTION_SHOW_SYSTEM_CODE=0x1<<2,
-	}EvalOption;
-
 
 	extern const char *	k_str_void_type;				// 	typeid(void).name()
 	extern const char * k_str_zs_int_type_ptr;			//	typeid(zs_int *).name()
@@ -146,7 +140,14 @@ namespace zetscript{
 	extern const char * k_str_bool_type;				//	typeid(bool).name()
 	extern const char * k_str_stack_element_type;		//	typeid(bool).name()
 
+	typedef enum{
 
+		EVAL_OPTION_NO_EXECUTE					=0x1
+		,EVAL_OPTION_SHOW_USER_CODE				=0x2
+		,EVAL_OPTION_SHOW_SYSTEM_CODE			=0x4
+		,EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY		=0x8
+
+	}EvalOption;
 
 	struct VirtualMachine;
 	class ScriptEval;

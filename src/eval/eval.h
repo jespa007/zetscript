@@ -5,6 +5,7 @@
 
 namespace zetscript{
 
+
 	struct EvalInstruction{
 		Instruction 					vm_instruction;
 		Symbol							symbol;

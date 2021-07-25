@@ -4,16 +4,21 @@
 
 #ifdef _WIN32
 // MSDN recommends against using getcwd & chdir names
+#ifndef __getcwd__
 #define __getcwd__ _getcwd
+#endif
+#ifndef __chdir__
 #define __chdir__ _chdir
+#endif
 #else
-#define getcwd getcwd
+#ifndef __chdir__
 #define __chdir__ chdir
+#endif
 #endif
 
 namespace zetscript{
 	namespace zs_dir{
-		bool set_current_directory(const std::string & _path){
+		bool chdir(const std::string & _path){
 			if(__chdir__(_path.c_str())==-1) {
 				return false;
 			}
