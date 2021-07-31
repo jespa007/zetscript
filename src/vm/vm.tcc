@@ -69,18 +69,18 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
 	zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
 	zs_int *symbols					=scope_symbols->items;\
-	StackElement stk_local_var;\
+	StackElement *stk_local_var;\
 	for(int i = scope_symbols->count-1; i >=0 ; --i,++symbols){\
-		stk_local_var =*(stk_local_vars+((Symbol *)(*symbols))->idx_position);\
-		if((stk_local_var.properties & STK_PROPERTY_SCRIPT_OBJECT)){\
-			ScriptObject *so=(ScriptObject *)(stk_local_var.value);\
+		stk_local_var =(stk_local_vars+((Symbol *)(*symbols))->idx_position);\
+		if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
+			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
 			if(so != NULL && so->shared_pointer!=NULL){\
 				if(vm_unref_shared_script_object(vm,so,data->vm_idx_call)==false){\
 					return;\
 				}\
 			}\
 		}\
-		STK_SET_NULL(&stk_local_var);\
+		STK_SET_NULL(stk_local_var);\
 	}\
 	--data->vm_current_scope;\
 }

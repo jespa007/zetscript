@@ -73,7 +73,7 @@ void test_arithmetic_int_expr(zs_int expr,const char *str_expr)
 	}\
 }
 
-#define TEST_INT_EXPR(str_expr, expected_value)
+#define TEST_INT_EXPR(str_expr, expected_value) test_int_expr(str_expr, expected_value)
 void test_int_expr(const char *str_expr, zs_int expected_value) {
 	try{\
 		StackElement stk=zs->eval(str_expr);\
@@ -167,7 +167,7 @@ void test_arithmetic_integer_op(zs_int val1, zs_int val2, const char *str_format
 //
 // FLOAT OPERATIONS
 //
-#define TEST_FLOAT_EXPR(str_expr, expected_value)
+#define TEST_FLOAT_EXPR(str_expr, expected_value) test_float_expr(str_expr, expected_value)
 void test_float_expr(const char  *str_expr, zs_float expected_value) {
 	try{
 		StackElement stk=zs->eval(str_expr);
@@ -323,7 +323,7 @@ void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_form
 #define TEST_BOOL_EXPR(str_expr, expected_value) test_bool_expr(str_expr, expected_value)
 void test_bool_expr(const char *str_expr, bool expected_value){ 
 	try{
-		StackElement stk = zs->eval(std::string("return ")+str_expr);
+		StackElement stk = zs->eval(str_expr);
 		if(stk.properties & STK_PROPERTY_BOOL){
 			if((bool)stk.value  != (expected_value)){
 				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n", str_expr,expected_value,(bool)stk.value);
@@ -454,7 +454,7 @@ int main(int argc, char * argv[]) {
 	zs=new ZetScript();
 
 	// register wraps
-	/*FloatWrap_register(zs);
+	FloatWrap_register(zs);
 	IntegerWrap_register(zs);
 
 	// unsinged
@@ -516,42 +516,43 @@ int main(int argc, char * argv[]) {
 	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
 
 	// test declare var int/bool/std::string/number
-	printf("%i. testing primitive var\n",++n_test);*/
+	printf("%i. testing primitive var\n",++n_test);
 
-	//zs->eval("var i=\"s\"");
+	// decalre vars
+	zs->eval("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
 
-	/*TEST_INT_EXPR("var i=1;",1);
-	TEST_INT_EXPR("i++;i;",2);
-	TEST_INT_EXPR("++i;i;",3);
-	TEST_INT_EXPR("i--;i;",2);
-	TEST_INT_EXPR("--i;i;",1);
+	TEST_INT_EXPR("i=1;return i;",1);
+	TEST_INT_EXPR("i++;return i;",2);
+	TEST_INT_EXPR("++i;return i;",3);
+	TEST_INT_EXPR("i--;return i;",2);
+	TEST_INT_EXPR("--i;return i;",1);
 
 
-	TEST_INT_EXPR("i=10;i*=10;",100);
-	TEST_INT_EXPR("i/=10;",10);
-	TEST_INT_EXPR("i+=10;",20);
-	TEST_INT_EXPR("i-=5;",15);
-	TEST_INT_EXPR("i%=10;",5);
+	TEST_INT_EXPR("i=10;i*=10;return i;",100);
+	TEST_INT_EXPR("i/=10;return i;",10);
+	TEST_INT_EXPR("i+=10;return i;",20);
+	TEST_INT_EXPR("i-=5;return i;",15);
+	TEST_INT_EXPR("i%=10;return i;",5);
 
 	// test reassign and float
-	TEST_FLOAT_EXPR("i=2.0;",2.0f);
-	TEST_FLOAT_EXPR("i++;i;",3.0f);
-	TEST_FLOAT_EXPR("--i;i;",2.0f);
+	TEST_FLOAT_EXPR("i=2.0;return i;",2.0f);
+	TEST_FLOAT_EXPR("i++;return i;",3.0f);
+	TEST_FLOAT_EXPR("--i;return i;",2.0f);
 
-	TEST_BOOL_EXPR("i=true;",true);
-	TEST_BOOL_EXPR("i=!i;",false);
-	TEST_BOOL_EXPR("i==i;",true);
-	TEST_BOOL_EXPR("i!=i;",false);
-	TEST_BOOL_EXPR("i=!i;",true);
+	TEST_BOOL_EXPR("i=true;return i;",true);
+	TEST_BOOL_EXPR("i=!i;return i;",false);
+	TEST_BOOL_EXPR("return i==i;",true);
+	TEST_BOOL_EXPR("return i!=i;",false);
+	TEST_BOOL_EXPR("i=!i;return i;",true);
 
 
 	printf("%i. test if-else ...\n",++n_test);
-	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}i;",10);
-	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}i;",11);*/
+	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}return i;",10);
+	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}return i;",11);
 
 	//zs->eval("var i1=\"s\",i2=\"s\",it1=\"s\",it2=\"s\",n1=\"s\",n2=\"s\",nt1=\"s\",nt2=\"s\"");
 
-	/*printf("%i. testing class Integer arithmetic operations...\n",++n_test);
+	printf("%i. testing class Integer arithmetic operations...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(5,4); // op1 > op2
@@ -583,13 +584,13 @@ int main(int argc, char * argv[]) {
 	}
 
 	delete test_1st_script_call;
-	delete test_2nd_script_call;*/
+	delete test_2nd_script_call;
 
 
 	// test all external tests...
 	const char *test_files[]={
 		//"test/test_assert_error.zs"
-		/*"test/test_assign.zs"
+		"test/test_assign.zs"
 		,"test/test_class_attribute.zs"
 		,"test/test_class_inheritance_call.zs"
 		,"test/test_class_metamethod.zs"
@@ -608,8 +609,8 @@ int main(int argc, char * argv[]) {
 		,"test/test_instanceof.zs"
 		,"test/test_iterator_object.zs"
 		,"test/test_iterator_string.zs"
-		,*/"test/test_iterator_vector.zs"
-		/*,"test/test_json.zs"
+		,"test/test_iterator_vector.zs"
+		//,"test/test_json.zs"
 		,"test/test_loops_break_continue.zs"
 		,"test/test_loops.zs"
 		,"test/test_object.zs"
@@ -619,7 +620,7 @@ int main(int argc, char * argv[]) {
 		,"test/test_ternary.zs"
 		,"test/test_typeof.zs"
 		,"test/test_vector.zs"
-		,"test/test_zs_int.zs"*/
+		,"test/test_zs_int.zs"
 		,0
 	};
 
