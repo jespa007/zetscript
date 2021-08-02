@@ -2,247 +2,34 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "CZetScript.h"
+#include "zetscript.h"
 
 using namespace zetscript;
 
-class CNumber{
-public:
-
-	float n;
-	CNumber(){
-		n=0;
-	}
-
-	CNumber(float _n){
-		n=_n;
-	}
-
-
-	void _set(CNumber * _n){
-		n=_n->n;
-	}
-
-	void _set(float *_n){
-		n=*_n;
-	}
-
-	static CNumber * _add(CNumber *n1, CNumber *n2){
-		return new CNumber(n1->n + n2->n);
-	}
-
-	static CNumber * _add(CNumber *n1, float *n2){
-		return new CNumber(n1->n + *n2);
-	}
-
-	static CNumber * _add(float *n1, CNumber *n2){
-		return new CNumber(*n1 + n2->n);
-	}
-
-	static CNumber * _neg(CNumber *n1){
-		return new CNumber(-n1->n);
-	}
-
-	static CNumber * _div(CNumber *n1, CNumber *n2){
-		return new CNumber(n1->n / n2->n);
-	}
-
-	static CNumber * _div(CNumber *n1, float *n2){
-		return new CNumber(n1->n / *n2);
-	}
-
-	static CNumber * _div(float *n1, CNumber *n2){
-		return new CNumber(*n1 / n2->n);
-	}
-
-	static CNumber * _mod(CNumber *n1, CNumber *n2){
-		return new CNumber(fmod(n1->n ,n2->n));
-	}
-
-	static CNumber * _mod(CNumber *n1, float *n2){
-		return new CNumber(fmod(n1->n, *n2));
-	}
-
-	static CNumber * _mod(float *n1, CNumber *n2){
-		return new CNumber(fmod(*n1 ,n2->n));
-	}
-
-	static CNumber * _mul(CNumber *n1, CNumber *n2){
-		return new CNumber(n1->n * n2->n);
-	}
-
-	static CNumber * _mul(CNumber *n1, float *n2){
-		return new CNumber(n1->n * *n2);
-	}
-
-	static CNumber * _mul(float *n1, CNumber *n2){
-		return new CNumber(*n1 * n2->n);
-	}
-
-	float toFloat(){
-		return n;
-	}
-
-};
-
-class CInteger{
-public:
-
-	int n;
-	CInteger(){
-		n=0;
-	}
-
-	CInteger(int _n){
-		n=_n;
-	}
-
-	void ScriptConstructor(int _n){
-		n=_n;
-	}
-
-	void _set(int i){
-		this->n = i;
-	}
-
-	void _set(CInteger *_ci2){
-		this->n = _ci2->n;
-	}
-
-
-	static CInteger * _add(CInteger *n1, CInteger *n2){
-		return new CInteger(n1->n + n2->n);
-	}
-
-	static CInteger * _add(CInteger *n1, float n2){
-		return new CInteger((int)(n1->n + n2));
-	}
-
-	static CInteger * _add(CInteger *n1, int n2){
-		return new CInteger(n1->n + n2);
-	}
-
-	static CInteger * _add(int n1, CInteger * n2){
-		return new CInteger(n1 + n2->n);
-	}
-
-	static CInteger * _div(CInteger *n1, CInteger *n2){
-		return new CInteger(n1->n / n2->n);
-	}
-
-	static CInteger * _div(CInteger *n1, int n2){
-		return new CInteger(n1->n / n2);
-	}
-
-	static CInteger * _div(int n1, CInteger *n2){
-		return new CInteger(n1 / n2->n);
-	}
-
-
-
-	static CInteger * _neg(CInteger *n1){
-		return new CInteger(-n1->n);
-	}
-
-
-	static CInteger * _mod(CInteger *n1, CInteger *n2){
-		return new CInteger(n1->n % n2->n);
-	}
-
-	static CInteger * _mod(CInteger *n1, int n2){
-		return new CInteger(fmod(n1->n, n2));
-	}
-
-	static CInteger * _mod(int n1, CInteger *n2){
-		return new CInteger(n1 % n2->n);
-	}
-
-	static CInteger * _mul(CInteger *n1, CInteger *n2){
-		return new CInteger(n1->n * n2->n);
-	}
-
-	static CInteger * _mul(CInteger *n1, int n2){
-		return new CInteger(n1->n * n2);
-	}
-
-	static CInteger * _mul(int n1, CInteger * n2){
-		return new CInteger(n1 * n2->n);
-	}
-
-	static CInteger * _shl(CInteger *n1, CInteger *n2){
-		return new CInteger(n1->n << n2->n);
-	}
-
-	static CInteger * _shl(CInteger *n1, int n2){
-		return new CInteger(n1->n << n2);
-	}
-
-	static CInteger * _shl(int n1, CInteger *n2){
-		return new CInteger(n1 << n2->n);
-	}
-
-	static CInteger * _and(CInteger *n1, CInteger *n2){
-		return new CInteger(n1->n & n2->n);
-	}
-
-	static CInteger * _and(CInteger *n1, int n2){
-		return new CInteger(n1->n & n2);
-	}
-
-	static CInteger * _and(int n1, CInteger * n2){
-		return new CInteger(n1 & n2->n);
-	}
-
-	static CInteger * _or(CInteger *n1, CInteger *n2){
-		return new CInteger(n1->n | n2->n);
-	}
-
-	static CInteger * _or(CInteger *n1, int n2){
-		return new CInteger(n1->n | n2);
-	}
-
-	static CInteger * _or(int n1, CInteger * n2){
-		return new CInteger(n1 | n2->n);
-	}
-
-
-	static CInteger * _xor(CInteger *n1, CInteger *n2){
-		return new CInteger(n1->n ^ n2->n);
-	}
-
-	static CInteger * _xor(CInteger *n1, int n2){
-		return new CInteger(n1->n ^ n2);
-	}
-
-	static CInteger * _xor(int n1, CInteger * n2){
-		return new CInteger(n1 ^ n2->n);
-	}
-
-
-	static CInteger * _shr(CInteger *n1, CInteger *n2){
-		return new CInteger(n1->n >> n2->n);
-	}
-
-	static CInteger * _shr(CInteger *n1, int n2){
-		return new CInteger(n1->n >> n2);
-	}
-
-	static CInteger * _shr(int n1, CInteger *n2){
-		return new CInteger(n1 >> n2->n);
-	}
-
-
-	int toInt(){
-		return n;
-	}
-
-	~CInteger(){
-	}
-
-};
+#include "FloatWrap.cpp"
+#include "IntegerWrap.cpp"
 
 
 std::function<void ()> * test_2nd_script_call = NULL;
+ZetScript *zs = NULL;
+
+std::string to_string(bool _b){
+	return _b?"true":"false";
+}
+
+std::string to_string(zs_int _i){
+	return zs_strutils::zs_int_to_str(_i);
+}
+
+std::string to_string(zs_float _f){
+	return zs_strutils::zs_float_to_str(_f);
+}
+
+std::string to_string(const std::string & _s){
+	return _s;
+}
+
+
 
 
 void test_function_1st_c_call(){
@@ -253,380 +40,324 @@ void test_function_1st_c_call(){
 	 }
 }
 
-
-class CNumber2:public CNumber {
-
-};
-
-class CNumber3 :public CNumber {
-
-};
-
-
-
-
 // Usable AlmostEqual function
-bool FloatValuesAreAlmostTheSame(float A, float B, int maxUlps=8)
+bool float_values_are_almost_the_same(zs_float A, zs_float B, int maxUlps=8)
 {
-	 return (fabs(A - B) <= FLT_EPSILON *2* std::max(fabs(A), fabs(B)));
-    // Make sure maxUlps is non-negative and small enough that the
-    // default NAN won't compare as equal to anything.
-    /*assert(maxUlps > 0 && maxUlps < 4 * 1024 * 1024);
-    //intptr_t aInt = *(int*)&A;
-    int aInt;
-    memcpy(&aInt,&A,sizeof(int));
-    // Make aInt lexicographically ordered as a twos-complement int
-    if ((int)aInt < 0)
-        aInt = (int)(0x80000000 - aInt);
-    // Make bInt lexicographically ordered as a twos-complement int
-    int bInt;// = *(int*)&B;
-    memcpy(&bInt,&B,sizeof(int));
-    if (bInt < 0)
-        bInt = 0x80000000 - bInt;
-    int intDiff = abs(aInt - bInt);
-    if (intDiff <= maxUlps)^
-        return true;
-    return false;*/
+	return (fabs(A - B) <= FLT_EPSILON *2* std::max(fabs(A), fabs(B)));
 }
 
 
+#define INLINE_OPERATION(val1,op,val2) {zs_strutils::format(str_format,to_string(val1).c_str(),ZS_STR(op),to_string(val2).c_str()), (val1) op (val2)}
 
-#define TEST_ARITHMETIC_INT_OP(val1, op, val2) \
+//------------------------------------------------------------------------------------------------------------------------------------
+//
+// INTEGER OPERATIONS
+//
+#define TEST_ARITHMETIC_INT_EXPR(expr) test_arithmetic_int_expr(expr,ZS_STR(expr))
+void test_arithmetic_int_expr(zs_int expr,const char *str_expr)
 { \
-	int aux_value=0; \
-	string str= STR(val1) \
-				STR(op) \
-				STR(val2) \
-				";"; \
-	if((aux_value=CZetScript::eval_int(str)) != (val1 op val2)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
-		exit(-1); \
-	} \
-}
-
-#define TEST_ARITHMETIC_CINTEGER_OP(val1, op, val2) \
-{ \
-	int aux_value=0; \
-	string str= "it1=("\
-				"(i1=new CInteger("\
-				STR(val1) \
-				"))"\
-				STR(op) \
-				"(i2=new CInteger("\
-				STR(val2) \
-				"))"\
-				");it2=it1.toInt();delete it1;delete i1;delete i2;it2;"; \
-	if((aux_value=CZetScript::eval_int(str)) != (val1 op val2)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
-		exit(-1); \
-	} \
-}
-
-#define TEST_ARITHMETIC_FLOAT_OP(val1, op, val2) \
-{ \
-	float expr=((float)(val1) op (float)(val2));\
-	float aux_value=0; \
-	string str= STR(val1) \
-				STR(op) \
-				STR(val2) \
-				";"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str),expr)){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,aux_value); \
-		exit(-1); \
-	} \
-}
-
-
-#define TEST_ARITHMETIC_FLOAT_MOD(val1, val2) \
-{ \
-	float aux_value=0; \
-	string str= STR(val1) \
-				"%" \
-				STR(val2) \
-				";"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str)  , fmod(val1,val2))){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
-		exit(-1); \
-	} \
-}
-
-
-#define TEST_ARITHMETIC_CNUMBER_OP(val1, op, val2) \
-{ \
-	float expr=((float)(val1) op (float)(val2));\
-	float aux_value=0; \
-	string str= "nt1=("\
-				"(n1=new CNumber("\
-				STR(val1) \
-				"))"\
-				STR(op) \
-				"(n2=new CNumber("\
-				STR(val2) \
-				"))"\
-				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;nt2;"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str),expr)){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),expr,aux_value); \
-		exit(-1); \
-	} \
-}
-
-#define TEST_ARITHMETIC_CNUMBER_MOD(val1, val2) \
-{ \
-	float aux_value=0; \
-	string str= "nt1=("\
-				"(n1=new CNumber("\
-				STR(val1) \
-				"))"\
-				"%" \
-				"(n2=new CNumber("\
-				STR(val2) \
-				"))"\
-				");nt2=nt1.toFloat();delete n1; delete n2;delete nt1;nt2;"; \
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str)  , fmod(val1,val2))){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str.c_str(),fmod(val1,val2),aux_value); \
-		exit(-1); \
-	} \
-}
-
-
-#define TEST_ARITHMETIC_STRING_OP(val1,op, val2) \
-{ \
-	string aux_value=""; \
-	string str= STR(val1) \
-				STR(op) \
-				val2\
-				";"; \
-	string expected_str = string(val1) op val2;\
-	if((aux_value=CZetScript::eval_string(str))!=expected_str.c_str()){ \
-		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),expected_str.c_str(),aux_value.c_str()); \
-		exit(-1); \
-	} \
-}
-
-
-
-#define COMPLETE_TEST_ARITHMETIC_INT_OP(val1,val2) \
-		TEST_ARITHMETIC_INT_OP(val1,+,val2); \
-		TEST_ARITHMETIC_INT_OP(val1,+,-val2); \
-		TEST_ARITHMETIC_INT_OP(-val1,+,val2); \
-		TEST_ARITHMETIC_INT_OP(-val1,+,-val2); \
-		\
-		TEST_ARITHMETIC_INT_OP(val1,-,val2); \
-		TEST_ARITHMETIC_INT_OP(val1,-,-val2); \
-		TEST_ARITHMETIC_INT_OP(-val1,-,val2); \
-		TEST_ARITHMETIC_INT_OP(-val1,-,-val2); \
-		\
-		TEST_ARITHMETIC_INT_OP(val1,*,val2); \
-		TEST_ARITHMETIC_INT_OP(val1,*,-val2); \
-		TEST_ARITHMETIC_INT_OP(-val1,*,val2); \
-		TEST_ARITHMETIC_INT_OP(-val1,*,-val2); \
-		\
-		TEST_ARITHMETIC_INT_OP(val1,/,val2); \
-		TEST_ARITHMETIC_INT_OP(val1,/,-val2); \
-		TEST_ARITHMETIC_INT_OP(-val1,/,val2); \
-		TEST_ARITHMETIC_INT_OP(-val1,/,-val2); \
-		\
-		TEST_ARITHMETIC_INT_OP(val1,%,val2); \
-		TEST_ARITHMETIC_INT_OP(val1,%,-val2); \
-		TEST_ARITHMETIC_INT_OP(-val1,%,val2); \
-		TEST_ARITHMETIC_INT_OP(-val1,%,-val2);
-
-#define COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(val1,val2) \
-		TEST_ARITHMETIC_CINTEGER_OP(val1,+,val2);
-/*
-TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(-val1,+,val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(-val1,+,-val2); \
-		\
-		TEST_ARITHMETIC_CINTEGER_OP(val1,-,val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(val1,-,-val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(-val1,-,val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(-val1,-,-val2); \
-		\
-		TEST_ARITHMETIC_CINTEGER_OP(val1,*,val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(val1,*,-val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(-val1,*,val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(-val1,*,-val2); \
-		\
-		TEST_ARITHMETIC_CINTEGER_OP(val1,/,val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(val1,/,-val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(-val1,/,val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(-val1,/,-val2); \
-		\
-		TEST_ARITHMETIC_CINTEGER_OP(val1,%,val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(val1,%,-val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(-val1,%,val2); \
-		TEST_ARITHMETIC_CINTEGER_OP(-val1,%,-val2);
-*/
-
-#define COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(val1,val2) \
-		TEST_ARITHMETIC_CNUMBER_OP(val1,+,val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(val1,+,-val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(-val1,+,val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(-val1,+,-val2); \
-		\
-		TEST_ARITHMETIC_CNUMBER_OP(val1,-,val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(val1,-,-val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(-val1,-,val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(-val1,-,-val2); \
-		\
-		TEST_ARITHMETIC_CNUMBER_OP(val1,*,val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(val1,*,-val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(-val1,*,val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(-val1,*,-val2); \
-		\
-		TEST_ARITHMETIC_CNUMBER_OP(val1,/,val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(val1,/,-val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(-val1,/,val2); \
-		TEST_ARITHMETIC_CNUMBER_OP(-val1,/,-val2); \
-		\
-		TEST_ARITHMETIC_CNUMBER_MOD(val1,val2); \
-		TEST_ARITHMETIC_CNUMBER_MOD(val1,-val2); \
-		TEST_ARITHMETIC_CNUMBER_MOD(-val1,val2); \
-		TEST_ARITHMETIC_CNUMBER_MOD(-val1,-val2);
-
-#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP(val1,val2) \
-		TEST_ARITHMETIC_FLOAT_OP(val1,+,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(val1,+,-val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,+,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,+,-val2); \
-		\
-		TEST_ARITHMETIC_FLOAT_OP(val1,-,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(val1,-,-val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,-,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,-,-val2); \
-		\
-		TEST_ARITHMETIC_FLOAT_OP(val1,*,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(val1,*,-val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,*,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,*,-val2); \
-		\
-		TEST_ARITHMETIC_FLOAT_OP(val1,/,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(val1,/,-val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,/,val2); \
-		TEST_ARITHMETIC_FLOAT_OP(-val1,/,-val2); \
-		\
-		TEST_ARITHMETIC_FLOAT_MOD(val1,val2); \
-		TEST_ARITHMETIC_FLOAT_MOD(val1,-val2); \
-		TEST_ARITHMETIC_FLOAT_MOD(-val1,val2); \
-		TEST_ARITHMETIC_FLOAT_MOD(-val1,-val2);
-
-#define COMPLETE_TEST_ARITHMETIC_BINARY_OP(val1, val2) \
-	TEST_ARITHMETIC_INT_OP(val1,&,val2); \
-	TEST_ARITHMETIC_INT_OP(val1,|,val2); \
-	TEST_ARITHMETIC_INT_OP(val1,>>,1); \
-	TEST_ARITHMETIC_INT_OP(val1,<<,1); \
-	TEST_ARITHMETIC_INT_OP(val1,^,val2);
-
-
-#define COMPLETE_TEST_ARITHMETIC_CINTEGER_BINARY_OP(val1, val2) \
-	TEST_ARITHMETIC_CINTEGER_OP(val1,&,val2); \
-	TEST_ARITHMETIC_CINTEGER_OP(val1,|,val2); \
-	TEST_ARITHMETIC_CINTEGER_OP(val1,>>,1); \
-	TEST_ARITHMETIC_CINTEGER_OP(val1,<<,1); \
-	TEST_ARITHMETIC_CINTEGER_OP(val1,^,val2);
-
-
-#define TEST_ARITHMETIC_OP(val1, op, val2) \
-{ \
-	int aux_value=0; \
-	string str= STR(val1) \
-				STR(op) \
-				STR(val2) \
-				";"; \
-	if((aux_value=CZetScript::eval<f>(str)) != (val1 op val2)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str.c_str(),val1 op val2,aux_value); \
-		exit(-1); \
-	} \
-}
-
-#define TEST_ARITHMETIC_INT_EXPR(expr) \
-{ \
-	int aux_value=0; \
-	string str_expr= STR(expr)";"; \
-	\
-	if((aux_value=CZetScript::eval_int(str_expr))  != (expr)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr.c_str(),expr,aux_value); \
-		exit(-1); \
-	} \
-}
-
-#define TEST_INT_EXPR(expr, expected_value) \
-{ \
-	int aux_value=0; \
-	\
-	if((aux_value=CZetScript::eval_int(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
-		exit(-1); \
-	} \
-}
-
-
-#define TEST_FLOAT_EXPR(expr, expected_value) \
-{ \
-	float aux_value=0; \
-	\
-	if((aux_value=CZetScript::eval_float(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,aux_value); \
-		exit(-1); \
-	} \
-}
-
-#define TEST_BOOL_EXPR(expr, expected_value) \
-{ \
-	bool aux_value=false; \
-	\
-	if((aux_value=CZetScript::eval_bool(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",expr,expected_value,aux_value); \
-		exit(-1); \
-	} \
-}
-
-#define TEST_STRING_EXPR(expr, expected_value) \
-{ \
-	string aux_value=""; \
-	\
-	if((aux_value=CZetScript::eval_string(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected \"%s\" but it was \"%s\"!\n",expr,expected_value,aux_value.c_str()); \
-		exit(-1); \
-	} \
-}
-
-#define TEST_NUMBER_EXPR(expr, expected_value) \
-{ \
-	float aux_value=0.0f; \
-	\
-	if((aux_value=CZetScript::eval_float(expr))  != (expected_value)){ \
-		fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",expr,expected_value,aux_value); \
-		exit(-1); \
-	} \
-}
-
-#define TEST_ARITHMETIC_FLOAT_EXPR(expr) \
-{ \
-	float aux_value=0; \
-	string str_expr= STR(expr)";"; \
-	\
-	if(!FloatValuesAreAlmostTheSame(aux_value=CZetScript::eval_float(str_expr)  , (expr))){ \
-		double error = fabs(fabs(aux_value)-fabs(expr));\
-		if(error>0.001){ /* Only error if the difference is more than expected */\
-			fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr.c_str(),expr,aux_value); \
-			exit(-1); \
+	try{\
+		StackElement stk=zs->eval(std::string("return ")+str_expr);\
+		if(stk.properties & STK_PROPERTY_ZS_INT){\
+			if((zs_int)stk.value != expr){ \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,expr,(zs_int)stk.value); \
+				exit(-1); \
+			} \
 		}else{\
-			fprintf(stderr,"warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n",str_expr.c_str(),expr,aux_value); \
-		}\
-	} \
+			fprintf(stderr,"error test \"%s\" expected int but it was '%s'!\n",str_expr,stk.typeOf()); \
+			exit(-1); \
+		} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n",str_expr,ex.what()); \
+		exit(-1); \
+	}\
 }
 
-#define TEST_ARITHMETIC_BOOL_EXPR(val1) \
-{ \
-	bool aux_value=false; \
-	string str= STR(val1) \
-				";"; \
-	if((aux_value=CZetScript::eval_bool(str)) != (val1)){ \
-		fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str.c_str(),(val1)?"true":"false",aux_value?"true":"false"); \
+#define TEST_INT_EXPR(str_expr, expected_value) test_int_expr(str_expr, expected_value)
+void test_int_expr(const char *str_expr, zs_int expected_value) {
+	try{\
+		StackElement stk=zs->eval(str_expr);\
+		if(stk.properties & STK_PROPERTY_ZS_INT){\
+			if((zs_int)stk.value  != (expected_value)){ \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,expected_value,(zs_int)stk.value); \
+				exit(-1); \
+			} \
+		}else{\
+			fprintf(stderr,"error test \"%s\" expected int but it was '%s'!\n",str_expr,stk.typeOf()); \
+			exit(-1); \
+		} \
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what()); \
 		exit(-1); \
-	} \
+	}\
+}
+
+#define COMPLETE_TEST_ARITHMETIC_INTEGER_OP(val1,val2) test_arithmetic_integer_op(val1, val2, "return %s%s%s")
+#define COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,val2)  test_arithmetic_integer_op(val1,val2,"it1=("\
+				"(i1=new Integer("\
+				"%s" \
+				"))"\
+				"%s" \
+				"(i2=new Integer("\
+				"%s" \
+				"))"\
+				");\n" \
+				"it2=it1.toInt();\n" \
+				/*"delete it1;\n" \
+				 "delete i1;\n"*/ \
+				"delete i2;\n" \
+				"return it2;\n" \
+	)
+void test_arithmetic_integer_op(zs_int val1, zs_int val2, const char *str_format){
+	struct _test_arithmetic_integer_op_data {
+		std::string str; zs_int val;\
+	}test_arithmetic_integer_op_data[] = {
+		INLINE_OPERATION(val1,+,val2)
+		,INLINE_OPERATION(val1,+,-val2)
+		,INLINE_OPERATION(-val1,+,val2)
+		,INLINE_OPERATION(-val1,+,-val2)
+		,INLINE_OPERATION(val1,-,val2)
+		,INLINE_OPERATION(-val1,-,val2)
+
+		,INLINE_OPERATION(val1,*,val2)
+		,INLINE_OPERATION(val1,*,-val2)
+		,INLINE_OPERATION(-val1,*,val2)
+		,INLINE_OPERATION(-val1,*,-val2)
+		
+		,INLINE_OPERATION(val1, / ,val2)
+		,INLINE_OPERATION(val1, / ,-val2)
+		,INLINE_OPERATION(-val1, / ,val2)
+		,INLINE_OPERATION(-val1, / ,-val2)
+		
+		,INLINE_OPERATION(val1,%,val2)
+		,INLINE_OPERATION(val1,%,-val2)
+		,INLINE_OPERATION(-val1,%,val2)
+		,INLINE_OPERATION(-val1,%,-val2)
+		,INLINE_OPERATION(val1, &, val2)
+		,INLINE_OPERATION(val1, | , val2)
+		,INLINE_OPERATION(val1, >> , (zs_int)1)
+		,INLINE_OPERATION(val1, << , (zs_int)1)
+		,INLINE_OPERATION(val1, ^, val2)
+		, { "",0 }
+	};
+
+	// process
+	_test_arithmetic_integer_op_data *it_iod = test_arithmetic_integer_op_data;
+	while (!it_iod->str.empty()) {
+		try {
+			StackElement stk=zs->eval(it_iod->str); \
+			if (stk.properties & STK_PROPERTY_ZS_INT) {
+				if ((zs_int)stk.value != (it_iod->val)) {
+					fprintf(stderr, "error test \"%s\" expected %i but it was %i!\n", it_iod->str.c_str(), it_iod->val,(zs_int)stk.value);
+					exit(-1);
+				}
+			}else{
+				fprintf(stderr,"error test \"%s\" expected int but it was '%s'!\n",it_iod->str.c_str(),stk.typeOf()); \
+				exit(-1); \
+			}
+		}
+		catch (std::exception & ex) {
+			fprintf(stderr, "error test \"%s\" : %s!\n", it_iod->str.c_str(), ex.what());
+			exit(-1);
+		}
+		it_iod++;
+	}
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+//
+// FLOAT OPERATIONS
+//
+#define TEST_FLOAT_EXPR(str_expr, expected_value) test_float_expr(str_expr, expected_value)
+void test_float_expr(const char  *str_expr, zs_float expected_value) {
+	try{
+		StackElement stk=zs->eval(str_expr);
+		if(stk.properties & STK_PROPERTY_ZS_FLOAT){
+			zs_float result;
+			ZS_FLOAT_COPY(&result,&stk.value);
+			if(result  != (expected_value)){
+				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr,expected_value,result);
+				exit(-1);
+			}
+		}else{
+			fprintf(stderr,"error test \"%s\" expected float but it was '%s'!\n",str_expr,stk.typeOf());
+			exit(-1);
+		}
+	}catch(std::exception & ex){
+		fprintf(stderr,"error test \"%s\" : %s!\n",str_expr,ex.what());
+		exit(-1);
+	}
+}
+
+#define TEST_ARITHMETIC_FLOAT_EXPR(val1) test_float_expression((zs_float)(val1),ZS_STR(val1)";")
+void test_float_expression(zs_float expr, const char *str_expr) {
+
+	try {
+		StackElement stk=zs->eval(std::string("return ")+str_expr);
+		if(stk.properties & STK_PROPERTY_ZS_FLOAT){
+			zs_float result;
+			ZS_FLOAT_COPY(&result,&stk.value);
+			if (!float_values_are_almost_the_same(result, expr)) {
+				double error = fabs(fabs(result) - fabs(expr));
+					if (error > 0.001) { /* Only error if the difference is more than expected */
+						fprintf(stderr, "error test \"%s\" expected %f but it was %f!\n", str_expr, expr, result);
+							exit(-1);
+						}
+				else {
+					fprintf(stderr, "warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n", str_expr, expr, result);
+				
+				}
+			}
+		}else{
+			fprintf(stderr,"error test \"%s\" expected float but it was '%s'!\n",str_expr,stk.typeOf());
+			exit(-1);
+		}
+	}
+	catch (std::exception & ex) {
+		fprintf(stderr, "error test \"%s\" : %s!\n", str_expr, ex.what());
+		exit(-1);
+	}
+}
+
+#define INLINE_FLOAT_MOD_OPERATION(val1,val2) {zs_strutils::format(str_format,to_string(val1).c_str(),"%",to_string(val2).c_str()), (zs_float)fmod(val1,val2)}
+#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP(val1,val2) test_arithmetic_float_op(val1, val2,"return %s%s%s")
+#define COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,val2) test_arithmetic_float_op(val1, val2,"nt1=("\
+				"(n1=new Float("\
+				"%s" \
+				"))"\
+				"%s" \
+				"(n2=new Float("\
+				"%s" \
+				"))"\
+				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;return nt2;")
+void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_format) {
+	struct _test_arithmetic_float_op_data {
+		std::string str; zs_float val;
+	}test_arithmetic_float_op_data[] = {
+		INLINE_OPERATION(val1,+,val2)
+		,INLINE_OPERATION(val1,+,-val2)
+		,INLINE_OPERATION(-val1,+,val2)
+		,INLINE_OPERATION(-val1,+,-val2)
+
+		,INLINE_OPERATION(val1,-,val2)
+		,INLINE_OPERATION(-val1,-,val2)
+
+
+		,INLINE_OPERATION(val1,*,val2)
+		,INLINE_OPERATION(val1,*,-val2)
+		,INLINE_OPERATION(-val1,*,val2)
+		,INLINE_OPERATION(-val1,*,-val2)
+
+		,INLINE_OPERATION(val1, / ,val2)
+		,INLINE_OPERATION(val1, / ,-val2)
+		,INLINE_OPERATION(-val1, / ,val2)
+		,INLINE_OPERATION(-val1, / ,-val2)
+		, { "",0 }
+	};
+
+	struct _test_arithmetic_float_mod_op_data {
+		std::string str; zs_float val;
+	}test_arithmetic_float_mod_op_data[] = {
+		INLINE_FLOAT_MOD_OPERATION(val1,val2)
+		,INLINE_FLOAT_MOD_OPERATION(val1,-val2)
+		,INLINE_FLOAT_MOD_OPERATION(-val1,val2)
+		,INLINE_FLOAT_MOD_OPERATION(-val1,-val2)
+		, { "",0 }
+	};
+
+	// process first part
+	_test_arithmetic_float_op_data *it_af = test_arithmetic_float_op_data;
+	while (!it_af->str.empty()) {
+		try {
+			StackElement stk = zs->eval(it_af->str);
+			if(stk.properties & STK_PROPERTY_ZS_FLOAT){
+				zs_float result;
+				ZS_FLOAT_COPY(&result,&stk.value);
+					
+				if (!float_values_are_almost_the_same(result, it_af->val)) {
+
+						fprintf(stderr, "error test \"%s\" expected %f but it was %f!\n", it_af->str.c_str(), it_af->val, result);
+						exit(-1);
+				}
+			}else{
+				fprintf(stderr,"error test \"%s\" expected float but it was '%s'!\n",it_af->str.c_str(),stk.typeOf());
+				exit(-1);
+			}
+		}
+		catch (std::exception & ex) {
+				fprintf(stderr, "error test \"%s\" : %s!\n", it_af->str.c_str(), ex.what());
+				exit(-1); 
+		}
+		it_af++;
+	}
+
+	_test_arithmetic_float_mod_op_data *it_afm = test_arithmetic_float_mod_op_data;
+
+	// process second part
+	while (!it_afm->str.empty()) {
+		try {
+			StackElement stk = zs->eval(it_afm->str);
+			if(stk.properties & STK_PROPERTY_ZS_FLOAT){
+				zs_float result;
+				ZS_FLOAT_COPY(&result,&stk.value);
+				if (!float_values_are_almost_the_same(result, it_afm->val)) {
+					fprintf(stderr, "error test \"%s\" expected %f but it was %f!\n", it_afm->str.c_str(), it_afm->val, result); \
+					exit(-1);
+				}
+			}else{
+				fprintf(stderr,"error test \"%s\" expected float but it was '%s'!\n",it_afm->str.c_str(),stk.typeOf());
+				exit(-1);
+			}
+		}
+		catch (std::exception & ex) {
+			fprintf(stderr, "error test \"%s\" : %s!\n", it_afm->str.c_str(), ex.what());
+			exit(-1);
+		}
+		it_afm++;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------
+//
+// BOOL OPERATIONS
+//
+#define TEST_BOOL_EXPR(str_expr, expected_value) test_bool_expr(str_expr, expected_value)
+void test_bool_expr(const char *str_expr, bool expected_value){ 
+	try{
+		StackElement stk = zs->eval(str_expr);
+		if(stk.properties & STK_PROPERTY_BOOL){
+			if((bool)stk.value  != (expected_value)){
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n", str_expr,expected_value,(bool)stk.value);
+				exit(-1);
+			}
+		}else{
+			fprintf(stderr,"error test \"%s\" expected bool but it was '%s'!\n",str_expr,stk.typeOf());
+			exit(-1);
+		}
+	}catch(std::exception & ex){
+		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what());
+		exit(-1);
+	}
+}
+
+#define TEST_ARITHMETIC_BOOL_EXPR(val1) test_bool_expression(val1,ZS_STR(val1))
+void test_bool_expression(bool expr, const char *str_expr){
+
+	try{
+		StackElement stk = zs->eval(std::string("return ")+str_expr);
+		if(stk.properties & STK_PROPERTY_BOOL){
+			if((bool)stk.value  != (expr)){
+				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n", str_expr,(expr)?"true":"false",(bool)stk.value?"true":"false");
+				exit(-1);
+			}
+		}else{
+			fprintf(stderr,"error test \"%s\" expected bool but it was '%s'!\n",str_expr,stk.typeOf());
+			exit(-1);
+
+		}
+	}catch(std::exception & ex){
+		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what());
+		exit(-1); 
+	}
 }
 
 
@@ -665,157 +396,96 @@ TEST_ARITHMETIC_CINTEGER_OP(val1,+,-val2); \
 		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(false)); \
 		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(true));
 
+//------------------------------------------------------------------------------------------------------------------------------------
+//
+// STRING OPERATIONS
+//
+
+#define TEST_STRING_EXPR(str_expr, expected_value) test_string_expr(expected_value,str_expr)
+void test_string_expr(const char * expected_value, const char *str_expr){
+	
+	
+	try{
+		StackElement stk = zs->eval(std::string("return ")+str_expr);
+		if(STK_IS_SCRIPT_OBJECT_STRING(&stk)){
+			ScriptObjectString *so=(ScriptObjectString *)stk.value;
+			if (so->toString() != std::string(expected_value)) {
+				fprintf(stderr, "error test \"%s\" expected \"%s\" but it was \"%s\"!\n", str_expr, expected_value, so->toString().c_str());
+				exit(-1);
+			}
+		}else{
+			fprintf(stderr,"error test \"%s\" expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk.typeOf());
+			exit(-1);
+		}
+	}catch(std::exception & ex){
+		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what());
+		exit(-1);
+	}
+}
+
+#define TEST_ARITHMETIC_STRING_OP(val1,op, val2) test_arithmetic_string_op(std::string(val1) op val2,ZS_STR(val1)ZS_STR(op)val2)
+void test_arithmetic_string_op(const std::string & expected_value, const char * str_expr){
+
+
+	try{\
+		StackElement stk = ZS_EVAL(zs,std::string("return ")+str_expr);
+		if(STK_IS_SCRIPT_OBJECT_STRING(&stk)){
+			ScriptObjectString *so=(ScriptObjectString *)stk.value;
+			if (so->toString() != std::string(expected_value)) {
+				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str_expr, expected_value.c_str(), so->toString().c_str()); \
+				exit(-1); \
+			} \
+			// destroy lifetime object when is not needed
+			zs->unrefLifetimeObject(so);
+		}else{
+			fprintf(stderr,"error test \"%s\" expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk.typeOf());
+			exit(-1);
+		}
+	}catch(std::exception & ex){\
+		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what()); \
+		exit(-1); \
+	}\
+}
+
 int main(int argc, char * argv[]) {
-
-
-	printf("vm:%lu\n",sizeof(CVirtualMachine));
 
 	int n_test=0;
 
-	CZetScript::getInstance();
+	zs=new ZetScript();
 
-/*	"test_arithmetic_operations.zs",
-	"test_binary_operations.zs",
-	"test_class.zs",
-	"test_for.zs",
-	"test_function.zs",
-	"test_if_else.zs",
-	"test_logic_operations.zs",
-	"test_metamethod.zs",
-	"test_recursion.zs",
-	"test_struct.zs",
-	"test_switch.zs",
-	"test_ternari.zs",
-	"test_vector.zs",
-	"test_while.zs"*/
-
-	//------------------------------------------
-	//
-	// TEST INT OPS
-	//
-
-	//CZetScript::getInstance()->eval("if(undefined){print(\"true\");}else{print(\"\");} }var prova=[]; prova.add(0); prova.size();");
-
-	//TEST_NUMBER_EXPR("4.0*4;",16.0);
-	//exit(-1);
-	//int i= 0+ +1;
-	if(!register_C_Class<CNumber>("CNumber")) return -1;
-
-	if(!register_C_FunctionMember<CNumber>("CNumber",static_cast<void (CNumber::*)(float *)>(&CNumber::_set))) return -1;
-	if(!register_C_FunctionMember<CNumber>("toFloat",&CNumber::toFloat)) return -1;
-	if(!register_C_VariableMember<CNumber>("n",&CNumber::n)) return -1;
-
-
-	if(!register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_add))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_add))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_add",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_add))) return -1;
-
-	if(!register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mul))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mul))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_mul",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mul))) return -1;
-
-	if(!register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_div))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_div))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_div",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_div))) return -1;
-
-	if(!register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(float *,CNumber * )>(&CNumber::_mod))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,float *)>(&CNumber::_mod))) return -1;
-	if(!register_C_StaticFunctionMember<CNumber>("_mod",static_cast<CNumber * (*)(CNumber *,CNumber * )>(&CNumber::_mod))) return -1;
-
-	if(!register_C_StaticFunctionMember<CNumber>("_neg",static_cast<CNumber * (*)(CNumber *)>(&CNumber::_neg))) return -1;
-
-	if(!register_C_FunctionMember<CNumber>("_set",static_cast<void (CNumber::*)(float *)>(&CNumber::_set))) return -1;
-	if(!register_C_FunctionMember<CNumber>("_set",static_cast<void (CNumber::*)(CNumber *)>(&CNumber::_set))) return -1;
-
-
-
-	if(!register_C_Class<CInteger>("CInteger")) return -1;
-	if(!register_C_FunctionMember<CInteger>("CInteger",&CInteger::ScriptConstructor)) return -1;
-	if(!register_C_FunctionMember<CInteger>("toInt",&CInteger::toInt)) return -1;
-	if(!register_C_VariableMember<CInteger>("n",&CInteger::n)) return -1;
-
-
-	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_add))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_add))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_add",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_add))) return -1;
-
-	if(!register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mul))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mul))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_mul",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mul))) return -1;
-
-	if(!register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_div))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_div))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_div",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_div))) return -1;
-
-	if(!register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_mod))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_mod))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_mod",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_mod))) return -1;
-
-
-	if(!register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shr))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shr))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_shr",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shr))) return -1;
-
-
-	if(!register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_shl))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_shl))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_shl",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_shl))) return -1;
-
-
-	if(!register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_and))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_and))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_and",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_and))) return -1;
-
-	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_or))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_or))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_or",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_or))) return -1;
-
-	if(!register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(int,CInteger * )>(&CInteger::_xor))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,int)>(&CInteger::_xor))) return -1;
-	if(!register_C_StaticFunctionMember<CInteger>("_xor",static_cast<CInteger * (*)(CInteger *,CInteger * )>(&CInteger::_xor))) return -1;
-
-
-	if(!register_C_StaticFunctionMember<CInteger>("_neg",static_cast<CInteger * (*)(CInteger *)>(&CInteger::_neg))) return -1;
-
-	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(int)>(&CInteger::_set))) return -1;
-	if(!register_C_FunctionMember<CInteger>("_set",static_cast<void (CInteger::*)(CInteger *)>(&CInteger::_set))) return -1;
-
+	// register wraps
+	FloatWrap_register(zs);
+	IntegerWrap_register(zs);
 
 	// unsinged
-	printf("%i. testing arithmetic CInteger...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_INT_OP(4,4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_INT_OP(4,5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_INT_OP(5,4); // op1 > op2
+	printf("%i. testing arithmetic operations integer...\n",++n_test);
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(4,4); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(4,5); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(5,4); // op1 > op2
 
 
-	printf("%i. testing arithmetic hexa (int)...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_INT_OP(0x4,0x4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_INT_OP(0x4,0x5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_INT_OP(0x5,0x4); // op1 > op2
+	printf("%i. testing arithmetic operations hexa (int)...\n",++n_test);
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(0x4,0x4); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(0x4,0x5); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(0x5,0x4); // op1 > op2
 
-	printf("%i. testing arithmetic float ...\n",++n_test);
+	printf("%i. testing arithmetic operations float ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,4.0); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,4.0); // op1 > op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,2.0e2); // op1 > op2
 
-	printf("%i. testing arithmetic float vs int ...\n",++n_test);
+	printf("%i. testing arithmetic operations float vs int ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,5); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,4); // op1 > op2
 
-	printf("%i. testing arithmetic int vs float ...\n",++n_test);
+	printf("%i. testing arithmetic operations int vs float ...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,4.0); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5,4.0); // op1 > op2
 
-	printf("%i. testing binary op ...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x4,0x4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x4,0x5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_BINARY_OP(0x5,0x4); // op1 > op2
-
-
-	printf("%i. testing string...\n",++n_test);
+	printf("%i. testing std::string...\n",++n_test);
 	TEST_ARITHMETIC_STRING_OP("test_",+,"100"); // concatenate int
 	TEST_ARITHMETIC_STRING_OP("test_",+,"-100"); // concatenate -int
 	TEST_ARITHMETIC_STRING_OP("test_",+,"100.000000"); // concatenate float
@@ -829,13 +499,13 @@ int main(int argc, char * argv[]) {
 	TEST_ARITHMETIC_FLOAT_EXPR((((2.0+2.0*(5.0-6.1))*1000.0))/100.0);
 
 	// test bool compare ...
-	printf("%i. testing compare op ...\n",++n_test);
+	printf("%i. testing compare operations ...\n",++n_test);
 	COMPLETE_TEST_COMPARE_OP(10,10);
 	COMPLETE_TEST_COMPARE_OP(15,10);
 	COMPLETE_TEST_COMPARE_OP(10,15);
 
 	// test logic and/or ...
-	printf("%i. testing logic op ...\n",++n_test);
+	printf("%i. testing logic operations ...\n",++n_test);
 	COMPLETE_TEST_LOGIC_OP(10,10);
 	COMPLETE_TEST_LOGIC_OP(15,10);
 	COMPLETE_TEST_LOGIC_OP(10,15);
@@ -845,90 +515,69 @@ int main(int argc, char * argv[]) {
 	TEST_ARITHMETIC_BOOL_EXPR(!(true && !false) || false);
 	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
 
-	// test declare var int/bool/string/number
+	// test declare var int/bool/std::string/number
 	printf("%i. testing primitive var\n",++n_test);
 
+	// decalre vars
+	zs->eval("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
+
+	TEST_INT_EXPR("i=1;return i;",1);
+	TEST_INT_EXPR("i++;return i;",2);
+	TEST_INT_EXPR("++i;return i;",3);
+	TEST_INT_EXPR("i--;return i;",2);
+	TEST_INT_EXPR("--i;return i;",1);
 
 
-
-	TEST_INT_EXPR("var i=1;",1);
-	TEST_INT_EXPR("i++;i;",2);
-	TEST_INT_EXPR("++i;i;",3);
-	TEST_INT_EXPR("i--;i;",2);
-	TEST_INT_EXPR("--i;i;",1);
-
-
-	TEST_INT_EXPR("i=10;i*=10;",100);
-	TEST_INT_EXPR("i/=10;",10);
-	TEST_INT_EXPR("i+=10;",20);
-	TEST_INT_EXPR("i-=5;",15);
-	TEST_INT_EXPR("i%=10;",5);
+	TEST_INT_EXPR("i=10;i*=10;return i;",100);
+	TEST_INT_EXPR("i/=10;return i;",10);
+	TEST_INT_EXPR("i+=10;return i;",20);
+	TEST_INT_EXPR("i-=5;return i;",15);
+	TEST_INT_EXPR("i%=10;return i;",5);
 
 	// test reassign and float
-	TEST_NUMBER_EXPR("i=2.0;",2.0f);
-	TEST_NUMBER_EXPR("i++;i;",3.0f);
-	TEST_NUMBER_EXPR("--i;i;",2.0f);
+	TEST_FLOAT_EXPR("i=2.0;return i;",2.0f);
+	TEST_FLOAT_EXPR("i++;return i;",3.0f);
+	TEST_FLOAT_EXPR("--i;return i;",2.0f);
 
-	TEST_BOOL_EXPR("i=true;",true);
-	TEST_BOOL_EXPR("i=!i;",false);
-	TEST_BOOL_EXPR("i==i;",true);
-	TEST_BOOL_EXPR("i!=i;",false);
-	//TEST_BOOL_EXPR("i=!i;",true);
+	TEST_BOOL_EXPR("i=true;return i;",true);
+	TEST_BOOL_EXPR("i=!i;return i;",false);
+	TEST_BOOL_EXPR("return i==i;",true);
+	TEST_BOOL_EXPR("return i!=i;",false);
+	TEST_BOOL_EXPR("i=!i;return i;",true);
 
-
-	/*printf("%i. testing vector var ...\n",++n_test);
-
-	TEST_INT_EXPR("var v=[3,true,2.0,\"is_a_string\"];v.size();",4); // <-- crash if no constructor defined new CInteger(x)!
-	TEST_INT_EXPR("v[0];",3);
-	TEST_BOOL_EXPR("v[1];",true);
-	TEST_NUMBER_EXPR("v[2];",2.0);
-	TEST_STRING_EXPR("v[3];","is_a_string");
-	//TEST_INT_EXPR("v[4].n;",5);// <-- error !!!
-	//TEST_NUMBER_EXPR("v[5].n;",10.0f);
-
-	// test adding ...
-
-	printf("%i. testing struct var ...\n",++n_test);
-
-	TEST_INT_EXPR("var s={i:3,b:true,n:2.0,s:\"is_a_string\",o:new CInteger(5)};s.size();",5);
-	TEST_BOOL_EXPR("s.b;",true);
-	TEST_NUMBER_EXPR("s.n;",2.0);
-	TEST_STRING_EXPR("s.s;","is_a_string");
-//	TEST_BOOL_EXPR("s.o.instanceof(MyObject);",true);
-
-	printf("%i. testing metamethod integer ...\n",++n_test);
-	TEST_INT_EXPR("var mt=new CInteger(5);mt=0+1+2+mt+4+5;mt.n;",17);*/
 
 	printf("%i. test if-else ...\n",++n_test);
-	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}i;",10);
-	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}i;",11);
+	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}return i;",10);
+	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}return i;",11);
 
-	CZetScript::getInstance()->eval("var i1,i2,it1,it2,n1,n2,nt1,nt2;");
+	//zs->eval("var i1=\"s\",i2=\"s\",it1=\"s\",it2=\"s\",n1=\"s\",n2=\"s\",nt1=\"s\",nt2=\"s\"");
 
-	printf("%i. testing cinteger ops...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(4,5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_CINTEGER_OP(5,4); // op1 > op2
+	printf("%i. testing class Integer arithmetic operations...\n",++n_test);
+	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,4); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,5); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(5,4); // op1 > op2
 
-	printf("%i. testing cnumber float ...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(4.0,4.0); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(4.0,5.0); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(5.0,4.0); // op1 > op2
-	COMPLETE_TEST_ARITHMETIC_CNUMBER_OP(5.0,2.0e2); // op1 > op2
-
-	printf("%i. testing binary cinteger op ...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_CINTEGER_BINARY_OP(0x4,0x4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_CINTEGER_BINARY_OP(0x4,0x5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_CINTEGER_BINARY_OP(0x5,0x4); // op1 > op2
+	printf("%i. testing class Float arithmetic operations ...\n",++n_test);
+	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(4.0,4.0); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(4.0,5.0); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(5.0,4.0); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(5.0,2.0e2); // op1 > op2
 
 
 	printf("%i. test consisten script-c-script calls ...\n",++n_test);
+	zs->registerFunction("test_function_1st_c_call",test_function_1st_c_call);
 	// test calling script-c-script-c
-	register_C_Function("test_function_1st_c_call",test_function_1st_c_call);
-	CZetScript::getInstance()->eval("function test_1st_script_call(){ print (\"Hello from script\");test_function_1st_c_call();}\nfunction test_2nd_script_call(){print(\"2nd call script\");}");
 
-	std::function<void ()> * test_1st_script_call=bind_function<void ()>("test_1st_script_call");
-	test_2nd_script_call=bind_function<void ()>("test_2nd_script_call");
+	zs->eval("function test_1st_script_call(){\n"
+				"Console::outln (\"Hello from script\");\n"
+				"test_function_1st_c_call();\n"
+			"}\n"
+			"function test_2nd_script_call(){\n"
+				"Console::outln(\"2nd call script\");\n"
+			"}");
+
+	std::function<void ()> * test_1st_script_call=zs->bindScriptFunction<void ()>("test_1st_script_call");
+	test_2nd_script_call=zs->bindScriptFunction<void ()>("test_2nd_script_call");
 
 	if(test_1st_script_call){
 		(*test_1st_script_call)();
@@ -938,12 +587,64 @@ int main(int argc, char * argv[]) {
 	delete test_2nd_script_call;
 
 
+	// test all external tests...
+	const char *test_files[]={
+		//"test/test_assert_error.zs"
+		"test/test_assign.zs"
+		,"test/test_class_attribute.zs"
+		,"test/test_class_inheritance_call.zs"
+		,"test/test_class_metamethod.zs"
+		,"test/test_const.zs"
+		,"test/test_datetime.zs"
+		,"test/test_eval.zs"
+		,"test/test_for_in_object.zs"
+		,"test/test_for_in_string.zs"
+		,"test/test_for_in_vector.zs"
+		,"test/test_function_arg_by_ref.zs"
+		,"test/test_function_arg_default.zs"
+		,"test/test_function.zs"
+		,"test/test_if_else.zs"
+		,"test/test_import.zs"
+		,"test/test_in.zs"
+		,"test/test_instanceof.zs"
+		,"test/test_iterator_object.zs"
+		,"test/test_iterator_string.zs"
+		,"test/test_iterator_vector.zs"
+		,"test/test_json.zs"
+		,"test/test_loops_break_continue.zs"
+		,"test/test_loops.zs"
+		,"test/test_object.zs"
+		,"test/test_return.zs"
+		,"test/test_string.zs"
+		,"test/test_switch.zs"
+		,"test/test_ternary.zs"
+		,"test/test_typeof.zs"
+		,"test/test_vector.zs"
+		,"test/test_zs_int.zs"
+		,0
+	};
+
+	printf("======================================\n");
+	printf("Testing all zetscript samples\n");
+
+	char **it=(char **)test_files;
+	int total=sizeof(test_files)/sizeof(char **);
+	int n=1;
+
+	while(*it!=0){
+		// clear all vars in order to no have conflict with previous evaluations
+		zs->clear();
+		printf("Evaluating %i/%i:'%s'\n",n++,total,*it);
+		zs->evalFile(*it);
+		it++;
+	}
+
 	printf("All tests passed OK!\n");
 
-	CZetScript::destroy();
+	delete zs;
 
 #ifdef __MEMMANAGER__
-  MEM_ViewStatus();
+	MEMMGR_print_status();
 #endif
 
 	return 0;

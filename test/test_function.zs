@@ -1,67 +1,14 @@
-function fun(){}
-
-fun();
-
-/*
-
-
-class  A{
-	var fun;
-	var a;
-	function A(){
-		
-		var obj=this;
-		
-		//this=30;
-		
-		obj.a=20;
-		
-		print("a:"+this.a);
-		
-		//this.a=10;
-		//print ("g:"+this.a);
-		this.fun=(function(obj1){ print ("g:"+obj1.a);});
+function add(a,b,c){
+	Console::outln("a:"+a+" b:"+b+" c:"+c+" c==null "+(c==null))
+	var d=a+b;
+	if(c!=null){
+		d+=c;
 	}
-	
-	function print2(){
-		this.fun(this);
-	}
-};
-
-
-class B:A
-{
-	//var a;
-	
-	function B(){
-		super();
-		//this.a=20;
-	}
-};*/
-
-/*
-function add(
-		a
-		,b
-		,c){
-	return a+b+c;
+	return d;
 }
-
-function add(a,b){
-	return a+b;
-}
-
 
 var add_function_obj=add;
 
-if(add_function_obj(30,40)<add_function_obj(10,0)){
-	print("lower");
-}else{
-	print("higher");
-}*/
-/*
+Console::outln("fun1:"+add_function_obj(30,40)+ " fun2:"+add_function_obj(5,60,5));
 
-var d=new B();
 
-d.print2();
-*/

@@ -1,6 +1,6 @@
 var sum = 0.0;
 
-for (var i = 1; i <= 100000; ++i) {
+for (var i = 1; i <= 1000000; ++i) {
     if (i % 2 == 0) {
         sum += 1.0 / i;
     }
@@ -8,5 +8,4 @@ for (var i = 1; i <= 100000; ++i) {
         sum += 1.0 / ((i) * i);
     }
 }
-
-print("sum:"+sum);
+Console::outln("sum:"+sum);

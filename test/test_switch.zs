@@ -1,50 +1,86 @@
+const CASE_3=3
+
 function test_switch(a){
-	
 
 	switch(a){
 	default:
-		print("default ("+a+")");
-		break;
+		Console::outln("default ("+a+")")
+		break
+	case - 1:
+		Console::outln("-1")
 	case 0:
 	case 1:
-		print("case 01");
+		Console::outln("case 0,1")
 	case 2:
-		print("case 2");
-	case 3:
-		print("case 3");
-		break;
+		{
+		var b
+		Console::outln("case 2")
+		}
+	case - CASE_3:{
+		var c,d,e=0
+		Console::outln("case 3 {0} {1}",a,c)
+		break
+	}
 	case 4:
-		print("case 4");
-		break;
+		Console::outln("case 4")
+		break
 	case 5:
-		print("case 5");
-		break;
+		{
+			Console::outln("case 5")
+			break
+		}
 	}
 	
 }
+Console::outln("--")
+test_switch(-2)
+Console::outln("--")
+test_switch(-1)
+Console::outln("--")
+test_switch(0)
+Console::outln("--")
+test_switch(3)
+Console::outln("--")
+test_switch(4)
+Console::outln("--")
 
-test_switch(-1);
-print("--");
-test_switch(0);
-print("--");
-test_switch(3);
-print("--");
-test_switch(4);
-print("--");
-
-var s="hello";
+var s="hello"
 
 switch(s){
 default:
-	print("default-string");
-	break;
+	Console::outln("default-string")
+	break
 case "hello":
-	print("hello1");
-	break;
+	Console::outln("hello1")
+	break
 case "bye":
-	print("bye1");
-	break;
+	Console::outln("bye1")
+	break
 	
+}
+
+
+var obj={
+    a:0
+    ,b:1
+}
+
+var g=-CASE_3
+
+switch(g){
+case 0:
+Console::outln("0")
+case -CASE_3:
+    Console::outln("CASE_3")
+case obj.a : 
+    Console::outln("a {0}",g)
+break;
+case obj.b : 
+    Console::outln("b")
+break;
+default:
+    Console::outln("default: {0}",g)
+break;
 }
 
 
