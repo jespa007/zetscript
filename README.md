@@ -305,6 +305,50 @@ public:
 	}
 };
 
+//-------------------------------------------------
+// wraping functions for MyClass
+
+MyClass *MyClassWrap_new(){
+	return new MyClass;
+}
+
+//--------------------------------------------------------
+// GET/SET for data1 (read & write)
+void MyClassWrap_set_data1(MyClass *_this, zs_int v){
+	_this->data1=v;
+}
+
+zs_int MyClassWrap_get_data1(MyClass *_this){
+	return _this->data1;
+}
+//--------------------------------------------------------
+// GET for data2 (only read)
+zs_int MyClassWrap_get_data2(MyClass *_this){
+	return _this->data2;
+}
+//--------------------------------------------------------
+// SET for data3 (only write)
+void MyClassWrap_set_data3(MyClass *_this, zs_int v){
+	_this->data3=v;
+}
+
+void MyClassWrap_function0(MyClass *_this){
+	_this->function0();
+}
+
+// register function1 named function1 in script side as function member.
+void MyClassWrap_function1(MyClass *_this, zs_int v){
+	_this->function1(v);
+}
+
+void MyClassWrap_delete(MyClass *_this){
+	delete _this;
+}
+
+// wraping functions for MyClass
+//-------------------------------------------------
+
+
 class MyClassExtend:public MyClass{
 public:
 	float data2;
@@ -315,39 +359,109 @@ public:
 	}
 };
 
+//-------------------------------------------------
+// wraping functions for MyClassExtend
+
+MyClassExtend *MyClassExtendWrap_new(){
+	return new MyClassExtend;
+}
+
+zs_int MyClassExtendWrap_get_data4(MyClassExtend *_this){
+	return _this->data4;
+}
+
+void MyClassExtendWrap_set_data4(MyClassExtend *_this, zs_int v){
+	_this->data4=v;
+}
+
+void MyClassExtendWrap_function2(MyClassExtend *_this, zs_float *f){
+	_this->function2(*f);
+}
+
+void MyClassExtendWrap_delete(MyClassExtend *_this){
+	delete _this;
+}
+
+// wraping functions for MyClassExtend
+//-------------------------------------------------
+
 int main(){
 
 	ZetScript *zs = new ZetScript(); // instance zetscript
 	
-    	// register MyClass with name MyClass in script side.
-	zs->registerClass&lt;MyClass&gt;(&quot;MyClass&quot;); 
+	try{
 
-    	// register MyClassExtend with name MyClassExtend in script side.
-	zs->registerClass&lt;MyClassExtend&gt;(&quot;MyClassExtend&quot;); 
-	
-    	// tell that MyClassExtend is base of MyClass
-	classInheritsFrom&lt;MyClassExtend,MyClass&gt;(); 
+		// register MyClass with name MyClass in script side.
+		zs->registerClass<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
 
-    	// register data1 named data1 in script side as variable member.
-	register_C_VariableMember&lt;MyClassExtend&gt;(&quot;data1&quot;,&amp;MyClass::data1); 
+		 // register MyClassExtend with name MyClassExtend in script side.
+		zs->registerClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
 
-    	// register function1 named function1 in script side as function member.
-	zs->registerMemberFunction&lt;MyClassExtend&gt;(&quot;function1&quot;,&amp;MyClass::function1); 
+		// register data1 named data1 in script side as variable member and read/write.
+		zs->registerMemberAttributeSetter<MyClass>("data1",&MyClassWrap_set_data1);
+		zs->registerMemberAttributeGetter<MyClass>("data1",&MyClassWrap_get_data1);
 
-    	// register data2 named data1 in script side as variable member.
-	register_C_VariableMember&lt;MyClassExtend&gt;(&quot;data2&quot;,&amp;MyClassExtend::data2); 
+		// register data2 named data1 in script side as variable member (only read).
+		zs->registerMemberAttributeGetter<MyClass>("data2",&MyClassWrap_get_data2);
 
-    	// register function2 named function2 in script side as function member.
-	zs->registerMemberFunction&lt;MyClassExtend&gt;(&quot;function2&quot;,&amp;MyClassExtend::function2); 
+		// register data1 named data1 in script side as variable member (only write).
+		zs->registerMemberAttributeSetter<MyClass>("data3",&MyClassWrap_set_data3);
 
-	zs-&gt;eval(
-		&quot;var myclass = new MyClassExtend();&quot; // instances MyClassExtend
-		&quot;myclass.function1(12);&quot; // it prints &quot;Int argument is 12&quot;
-		&quot;myclass.function2(0.5);&quot; // it prints &quot;Float argument is 0.5&quot;
-		&quot;Console::outln(\&quot;data1:\&quot;+myclass.data1);&quot; // it prints &quot;data1:12&quot;
-		&quot;Console::outln(\&quot;data2:\&quot;+myclass.data2);&quot; // it prints &quot;data2:0.5&quot;
-		&quot;delete myclass;&quot; // delete script var with c pointers attached inside.
-	);
+		// register function0 named function1 in script side as function member.
+		zs->registerMemberFunction<MyClass>("function0",&MyClassWrap_function0);
+
+		// register function1 named function1 in script side as function member.
+		zs->registerMemberFunction<MyClass>("function1",&MyClassWrap_function1);
+
+
+		// register data2 named data1 in script side as variable member.
+		zs->registerMemberAttributeSetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
+		zs->registerMemberAttributeGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
+
+		// register function2 named function2 in script side as function member.
+		zs->registerMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);
+
+		// once all vars and functions are registered, tell that MyClassExtend is base of MyClass
+		zs->classInheritsFrom<MyClassExtend,MyClass>();
+
+	}catch(std::exception & ex){
+		fprintf(stderr,"register error: %s\n",ex.what());
+		exit(-1);
+	}
+
+	try{
+
+		zs->eval(
+			"class ScriptMyClassExtend extends MyClassExtend{\n"
+			"	var data5;\n"
+			"	function function0(){\n"
+			"		super();\n"
+			"   }\n"
+			"	function function1(arg){\n"
+			"		var i=this.data1;\n"
+			"		super(this.data1+arg);\n"
+			"		Console::outln(\"result => \"+i+\"+\"+arg+\"=\"+this.data1);\n"
+			"   }\n"
+			"};\n"
+			"class ScriptMyClassExtend2 extends ScriptMyClassExtend{\n"
+			"	var data6;\n"
+			"	function function5(arg){\n"
+			"		var i=this.data1;\n"
+			"   }\n"
+			"};\n"
+			"var myclass = new ScriptMyClassExtend2();\n" // instances MyClassExtend
+			"myclass.function0();\n" // it prints "function0"
+			"myclass.function1(12);\n" // it prints "Int argument is 12"
+			"myclass.function2(0.5);\n" // it prints "Float argument is 0.5"
+			"Console::outln(\"data1:\"+myclass.data1);\n" // it prints "data1:12"
+			"Console::outln(\"data2:\"+myclass.data2);\n" // it prints "data2:0.5"
+		);
+
+	}catch(std::exception & ex){
+		fprintf(stderr,"runtime error: %s\n",ex.what());
+		exit(-1);
+
+	}
 	
 	delete zs;
 
@@ -452,24 +566,48 @@ public:
 	void set(int _n){
 		this-&gt;num=_n;
 	}
-	static MyNumber * _add(MyNumber *op1, MyNumber *op2){
-		return new MyNumber(op1-&gt;num + op2-&gt;num);
-	}
 };
+
+//-------------------------------------------------
+// wraping functions
+
+MyNumber *MyNumberWrap_new(){
+	return new MyNumber;
+}
+
+zs_int MyNumberWrap_num_get(MyNumber *_this, zs_int _num){
+	return _this->num;
+}
+
+void MyNumberWrap_set(MyNumber *_this, zs_int _num){
+	_this->num=_num;
+}
+
+MyNumber * MyNumberWrap_add(MyNumber *op1, MyNumber *op2){
+	return new MyNumber(op1-&gt;num + op2-&gt;num);
+}
+
+void MyNumberWrap_delete(MyNumber *_this){
+	delete _this;
+}
+	
+// wrapping functions
+//----------------------------------------------------
+
 int main(){
 	ZetScript *zs = new ZetScript();
 
 	// register class MyNumber
-	zs->registerClass&lt;MyNumber&gt;(&quot;MyNumber&quot;);
+	zs->registerClass&lt;MyNumber&gt;(&quot;MyNumber&quot;,MyNumberWrap_new,MyNumberWrap_delete);
 
-	// register variable member num
-	register_C_VariableMember&lt;MyNumber&gt;(&quot;num&quot;,&amp;MyNumber::num);
+	// register member attribute getter (only read)
+	zs->registerMemberAttributeGetter&lt;MyNumber&gt;(&quot;num&quot;,&amp;MyNumberWrap_num_get);
 
 	// register constructor through function MyNumber::set
-	zs->registerMemberFunction&lt;MyNumber&gt;(&quot;MyNumber&quot;,&amp;MyNumber:: set);
+	zs->registerMemberFunction&lt;MyNumber&gt;(&quot;MyNumber&quot;,&amp;MyNumberWrap_set);
 
 	// register static function _add as metamethod
-	zs->registerMemberFunctionStatic&lt;MyNumber&gt;(&quot;_add&quot;,&amp;MyNumber::_add);
+	zs->registerMemberFunctionStatic&lt;MyNumber&gt;(&quot;_add&quot;,&amp;MyNumberWrap_add);
 
 	try{
 		zs-&gt;eval(
