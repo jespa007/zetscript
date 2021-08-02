@@ -261,16 +261,16 @@ using namespace zetscript;
 int main(){
 
     int i=10;
-	string	string_var = &quot;in c++&quot;;
+	std::string	string_var = &quot;in c++&quot;;
 &nbsp;   bool b=false;
-&nbsp;   float f=5.0;
+&nbsp;   zs_float f=5.0;
 
 	ZetScript *zs = new ZetScript(); // instance zetscript
 
-    register_C_Variable(&quot;i&quot;,i); // it registers int variable called i
-    register_C_Variable(&quot;b&quot;,b); // it registers bool var ble called b
-    register_C_Variable(&quot;f&quot;,f); // it registers float variable called f
-	register_C_Variable(&quot;string_var&quot;,string_var); // it registers string variable called string_var
+    zs->registerVariable(&quot;i&quot;,i); // it registers int variable called i
+    zs->registerVariable(&quot;b&quot;,b); // it registers bool var ble called b
+    zs->registerVariable(&quot;f&quot;,f); // it registers float variable called f
+	zs->registerVariable(&quot;string_var&quot;,string_var); // it registers string variable called string_var
 
 	zs-&gt;eval(
         &quot;i+=10;&quot; // i+=10 =&gt; i=20
@@ -278,7 +278,10 @@ int main(){
         &quot;f+=10.5;&quot; // f+=10.5 =&gt; f = 15.5
 		&quot;string_var+=\&quot; and in script\&quot;;&quot; // concatenates &quot; and in script
 		&quot;Console::outln(\&quot;string_var:\&quot;+string_var);&quot; // prints &quot;string_var:in c++ and in script
+		
 	);
+	
+	delete zs;
 	return 0;
 }</pre>
 
@@ -346,6 +349,8 @@ int main(){
 		&quot;Console::outln(\&quot;data2:\&quot;+myclass.data2);&quot; // it prints &quot;data2:0.5&quot;
 		&quot;delete myclass;&quot; // delete script var with c pointers attached inside.
 	);
+	
+	delete zs;
 
 	return 0;
 }</pre>
