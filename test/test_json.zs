@@ -1,11 +1,11 @@
-var obj=Json::deserialize("[\"deserialize\"]")
-// Configuration options\n"+
-	/*"{\n"+
+var obj=Json::deserialize(
+	   "// Configuration options\n"+
+	 "{\n"+
 	    "// Default encoding for text\n"+
 	    "\"encoding\" : \"UTF-8\",\n"+
 	    "\"number\": 3.34E-5\n"+
 	    "// Plug-ins loaded at start-up\n"+
-	    ,"\"plug_ins\" : [\n"+
+	    ",\"plug_ins\" : [\n"+
 	        "\"python\",\n"+
 	        "\"c++\",\n"+
 	        "\"ruby\"\n"+
@@ -30,9 +30,9 @@ var obj=Json::deserialize("[\"deserialize\"]")
 		"},{\n"+
 		    "\"code\" : \"zh-CN\",\n"+
 		    "\"general_texts\": {\n"+
-	            "\"general.hello_word\":\"你好词\"\n"+
-	            ",\"general.yes\":\"是\"\n"+
-	           " ,\"general.no\":\"没有\"\n"+
+	            "\"general.hello_word\":\"ä½ å¥½è¯�\"\n"+
+	            ",\"general.yes\":\"æ˜¯\"\n"+
+	           " ,\"general.no\":\"æ²¡æœ‰\"\n"+
 	        "}\n"+
 		"}]\n"+
 		"// set of interpolators\n"+
@@ -58,9 +58,7 @@ var obj=Json::deserialize("[\"deserialize\"]")
 			"}\n"+
 		"}\n"+
 	"}"
-);*/
+);
 
-//Json::serialize(obj,true)
-
-//Console::outln("result:"+Json::serialize(obj,true))
+Console::outln("result:"+Json::serialize(obj,true))
 

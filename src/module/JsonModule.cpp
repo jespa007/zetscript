@@ -23,6 +23,7 @@ namespace zetscript{
 		deserialize_data.filename=NULL;
 		deserialize_data.str_start=str.c_str();
 		deserialize_data.zs=zs;
+		deserialize_data.first_element=&return_stack_element;
 		int line=1;
 
 		if(json::deserialize(&deserialize_data,deserialize_data.str_start,line,&return_stack_element)==NULL){

@@ -26,13 +26,6 @@ namespace zetscript{
 
 		void serialize_object(ZetScript *zs,ScriptObject *this_object, std::string & str_result, ScriptObjectObject *obj, int ident, bool is_formatted){
 
-
-			/*if(is_formatted){
-				str_result += "\n";
-				for (int i = 0; i < (ident); i++){
-					str_result += "\t";
-				}
-			}*/
 			str_result += "{";
 
 			std::vector<zs_map_iterator> map_iterators={
@@ -91,17 +84,7 @@ namespace zetscript{
 									void *c_object = ((ScriptObjectClass *)obj)->getNativeObject();
 									zs_int result=((zs_int (*)(void *))(ptr_function->ref_native_function_ptr))(c_object);
 									stk_getter_result=zs->convertVarToStackElement(result,ptr_function->idx_return_type);
-									/*switch(ptr_function->idx_return_type){
-									case IDX_BUILTIN_TYPE_ZS_INT_C: // int
-										stk_getter_result.
-										break;
-									case IDX_BUILTIN_TYPE_ZS_FLOAT_C: // float
-										break;
-									case : // bool
-										break;
-									default: // obj
-										break;
-									}*/
+
 								}
 
 								ptr_stk_param=&stk_getter_result;
@@ -112,23 +95,16 @@ namespace zetscript{
 							ptr_stk_param=(StackElement *)mi->getValue();
 						}
 
-
 						serialize_stk(zs,this_object, str_result, ptr_stk_param, ident+1,is_formatted);
-
 
 						if(stk_getter_result.properties & STK_PROPERTY_SCRIPT_OBJECT){
 							vm_unref_lifetime_object(zs->getVirtualMachine(),(ScriptObject *)stk_getter_result.value);
 
 						}
-
-
-
 						k++;
 					}
 				}
 			}
-
-
 
 			if(is_formatted){
 				str_result += "\n";
@@ -136,9 +112,7 @@ namespace zetscript{
 					str_result += "\t";
 				}
 			}
-
 			str_result += "}";
-
 		}
 
 		void serialize_stk(ZetScript *zs, ScriptObject *this_object,std::string & str_result, StackElement *stk, int ident,bool is_formatted){
@@ -150,7 +124,6 @@ namespace zetscript{
 			}
 
 			var_type = GET_STK_PROPERTY_TYPES(stk->properties);
-
 
 			switch(var_type){
 			default:
@@ -164,13 +137,6 @@ namespace zetscript{
 				str_result+="null";
 				break;
 			case STK_PROPERTY_SCRIPT_OBJECT: // vector or object
-
-				/*if (is_formatted){
-					str_result += "\n";
-					for (int i = 0; i < ident; i++){
-						str_result += "\t";
-					}
-				}*/
 
 				obj=((ScriptObject *)stk->value);
 				switch(obj->idx_script_class){

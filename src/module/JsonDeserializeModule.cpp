@@ -15,6 +15,7 @@ namespace zetscript{
 			const char *filename;
 			const char *str_start;
 			std::string str_error;
+			StackElement *first_element;
 			ZetScript *zs;
 		}JsonDeserializeData;
 
@@ -217,7 +218,18 @@ namespace zetscript{
 					return NULL;
 				}
 				ScriptObject *so=ScriptObjectString::newScriptObjectString(deserialize_data->zs, str_aux);
-				vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),so);
+				if(vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),so)==false){
+					json_deserialize_error(deserialize_data,str_start,line,"cannot create shared pointer for string object");
+					return NULL;
+				}
+
+				//
+				if(stk_json_element != deserialize_data->first_element){
+					if(vm_share_pointer(deserialize_data->zs->getVirtualMachine(),so) == false){
+						json_deserialize_error(deserialize_data,str_start,line,"cannot share pointer for string object");
+						return NULL;
+					}
+				}
 				stk_json_element->value=so;
 				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
@@ -283,7 +295,19 @@ namespace zetscript{
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
 				vo=ScriptObjectVector::newScriptObjectVector(deserialize_data->zs);
-				vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),vo);
+				if(vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),vo) == false){
+					json_deserialize_error(deserialize_data, str_start, line, "Cannot create shared poiner for vector object");
+					return NULL;
+				}
+
+				if(stk_json_element != deserialize_data->first_element){
+
+					if(vm_share_pointer(deserialize_data->zs->getVirtualMachine(),vo) == false){
+						json_deserialize_error(deserialize_data,str_start,line,"cannot share pointer for vector object");
+						return NULL;
+					}
+				}
+
 				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				stk_json_element->value=vo;
 			}else{
@@ -335,7 +359,18 @@ namespace zetscript{
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
 				so=ScriptObjectObject::newScriptObjectObject(deserialize_data->zs);
-				vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),so);
+				if(vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),so) == false){
+					json_deserialize_error(deserialize_data, str_start, line, "Cannot create shared pointer for object");
+					return NULL;
+				}
+
+				if(stk_json_element != deserialize_data->first_element){
+					if(vm_share_pointer(deserialize_data->zs->getVirtualMachine(),so) == false){
+						json_deserialize_error(deserialize_data,str_start,line,"cannot share pointer for object");
+						return NULL;
+					}
+				}
+
 				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				stk_json_element->value=so;
 			}else{
