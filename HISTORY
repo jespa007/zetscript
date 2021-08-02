@@ -1,9 +1,7 @@
 
 
 //----------------------------------------------------------
-Version: 2.1.0
-Date: XX-09-2020
-
+TODOS
 
 #79 Implement coroutines 
 #165 try eval expressions as constant 
@@ -13,7 +11,7 @@ Date: XX-09-2020
 > #226 implement Stream class
 > #242 compile code/load compiled code feature  (*.zsc)
 > #246 Erase code never execute or temporal expresion that will never assigned
-
+> #287 Some optimizations
 
 //----------------------------------------------------------
 Version: 2.0.0
@@ -126,13 +124,13 @@ Solved issues
 #157 Fix +=,-=,/= etc operator
 > #159 Update manual ZetScript 2.0  
 > #158 Update doc CodeProject ZetScript 2.0 
-> #160 Update Invader ZetScript 2.0 
+#160 Update Invader ZetScript 2.0 
 #161 Merge symbol+functions in one container !!!
 #162 Implement eval Function object 
 #164 implement length property built-in for get length of vector/dictionary/string instead of call size()
 #166 control the increment of vm_stk_current/vm_str_current  
 #168 When semicolon on expression is missing it shows wrong filename 
-> #169 Fix/Check metamethods
+#169 Fix/Check metamethods
 #170 Fix class 
 #171 test returns stack var with 0 refs (solved by #230, user is in charge to destroy lifetime objects) 
 #172 get rid super scope
@@ -210,7 +208,7 @@ Solved issues
 #257 Set as local variable not found in the block if declared after its using
 #258 Access object properties by other type rather string feature
 #259 Erase user properties only by remove operator
-> #261 zs_test: test every single simple check to within script and then launch complex scripts and stop if any fails
+#261 zs_test: test every single simple check to within script and then launch complex scripts and stop if any fails
 #262 Select compile double or float precision config
 #263 ScriptObjectString: Implement operator + feature feature
 #264 Implement passing args by reference
@@ -230,7 +228,6 @@ Solved issues
 #282 Improve the meaning of printing errors 
 #284 Seffault when native function returns object as NULL 
 #285 No finding static function 
-> #287 Some optimizations 
 #288 ScriptStringObject::format: First implementation format argument with ':' 
 #289 Example bind "object" from C code
 #290 Json::serialize: expose attributes metamethods that implements getters 
