@@ -454,7 +454,7 @@ int main(int argc, char * argv[]) {
 	zs=new ZetScript();
 
 	// register wraps
-	FloatWrap_register(zs);
+	/*FloatWrap_register(zs);
 	IntegerWrap_register(zs);
 
 	// unsinged
@@ -584,13 +584,13 @@ int main(int argc, char * argv[]) {
 	}
 
 	delete test_1st_script_call;
-	delete test_2nd_script_call;
+	delete test_2nd_script_call;*/
 
 
 	// test all external tests...
 	const char *test_files[]={
 		//"test/test_assert_error.zs"
-		"test/test_assign.zs"
+		/*"test/test_assign.zs"
 		,"test/test_class_attribute.zs"
 		,"test/test_class_inheritance_call.zs"
 		,"test/test_class_metamethod.zs"
@@ -610,9 +610,9 @@ int main(int argc, char * argv[]) {
 		,"test/test_iterator_object.zs"
 		,"test/test_iterator_string.zs"
 		,"test/test_iterator_vector.zs"
-		//,"test/test_json.zs"
+		,*/"test/test_json.zs"
 		,"test/test_loops_break_continue.zs"
-		,"test/test_loops.zs"
+		/*,"test/test_loops.zs"
 		,"test/test_object.zs"
 		,"test/test_return.zs"
 		,"test/test_string.zs"
@@ -620,7 +620,7 @@ int main(int argc, char * argv[]) {
 		,"test/test_ternary.zs"
 		,"test/test_typeof.zs"
 		,"test/test_vector.zs"
-		,"test/test_zs_int.zs"
+		,"test/test_zs_int.zs"*/
 		,0
 	};
 

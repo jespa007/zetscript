@@ -1,19 +1,19 @@
-var obj=Json::deserialize(
-	"// Configuration options\n"+
-	"{\n"+
+var obj=Json::deserialize("[\"deserialize\"]")
+// Configuration options\n"+
+	/*"{\n"+
 	    "// Default encoding for text\n"+
 	    "\"encoding\" : \"UTF-8\",\n"+
-	    "\"number\": 3.34E-5,\n"+
+	    "\"number\": 3.34E-5\n"+
 	    "// Plug-ins loaded at start-up\n"+
-	    "\"plug_ins\" : [\n"+
+	    ,"\"plug_ins\" : [\n"+
 	        "\"python\",\n"+
 	        "\"c++\",\n"+
 	        "\"ruby\"\n"+
-	      "],\n"+
+	      "]\n"+
 	    "// Tab indent size\n"+
-	    "\"indent\" : { \"length\" : 3, \"use_space\": true },\n"+
+	    ",\"indent\" : { \"length\" : 3, \"use_space\": true }\n"+
 	    "// set of languages\n"+
-	    "\"languages\":[{\n"+
+	    ",\"languages\":[{\n"+
 	        "\"code\" : \"en\",\n"+
 		    "\"general_texts\": {\n"+
 	            "\"general.hello_word\":\"Hello world!\"\n"+
@@ -58,8 +58,9 @@ var obj=Json::deserialize(
 			"}\n"+
 		"}\n"+
 	"}"
-);
+);*/
 
+//Json::serialize(obj,true)
 
-Console::outln("result:"+Json::serialize(obj,true))
+//Console::outln("result:"+Json::serialize(obj,true))
 
