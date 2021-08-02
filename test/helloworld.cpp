@@ -12,11 +12,13 @@ void say_helloworld(){
 
 int main(){
 
-	ZetScript *zs = new ZetScript();
+	ZetScript *zs = new ZetScript(); // create zetscript instance
 
 	zs->registerFunction("say_helloworld",say_helloworld);
 
 	zs->eval("say_helloworld();"); // Call c function and prints hello world!
+
+	delete zs; // destroy zetscript instance when not used anymore
 
 	return 0;
 }

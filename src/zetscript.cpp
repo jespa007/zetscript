@@ -452,7 +452,7 @@ namespace zetscript{
 						if(var){
 							if(var->shared_pointer != NULL){
 								if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
-									THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine));
+									THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
 								}
 							}
 						}
