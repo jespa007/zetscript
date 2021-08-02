@@ -21,7 +21,7 @@
 <p>A&nbsp;helloworld in shown in the following code,</p>
 
 <pre lang="c++">
-#include &quot;CZetScript.h&quot;
+#include &quot;ZetScript.h&quot;
 
 using namespace zetscript;
 
@@ -31,7 +31,7 @@ void say_helloworld(){
 
 int main(){
 
-	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+	ZetScript *zs = ZetScript::getInstance(); // instance zetscript
 
 	register_C_Function(&quot;say_helloworld&quot;,say_helloworld);
 
@@ -198,16 +198,16 @@ var t=new TestExtended(); // instances TestExtended class</pre>
 
 <h3>Calling script function from c++</h3>
 
-<p>Once you have evaluated the script you can call function script from c++&nbsp;<b>until up 6 parameters</b>. To call script function from c++ it can be done through the function&nbsp;<i>CZetScript::bind_function</i>. Just pass the name of the function with the c++ template casting and it creates an std::function that links the script function. Also it is possible to link/call function member from instancied object on global scope.</p>
+<p>Once you have evaluated the script you can call function script from c++&nbsp;<b>until up 6 parameters</b>. To call script function from c++ it can be done through the function&nbsp;<i>ZetScript::bind_function</i>. Just pass the name of the function with the c++ template casting and it creates an std::function that links the script function. Also it is possible to link/call function member from instancied object on global scope.</p>
 
 <pre lang="c++">
-#include &quot;CZetScript.h&quot;
+#include &quot;ZetScript.h&quot;
 
 using namespace zetscript;
 
 int main(){
 
-	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+	ZetScript *zs = ZetScript::getInstance(); // instance zetscript
 
 	zs-&gt;eval(
 		&quot;class Test{&quot;
@@ -253,7 +253,7 @@ int main(){
 <p>Zetscrip can bind basic C&nbsp;types as int, float, bool and string types to operate in the script side.</p>
 
 <pre lang="c++">
-#include &quot;CZetScript.h&quot;
+#include &quot;ZetScript.h&quot;
 
 using namespace zetscript;
 
@@ -264,7 +264,7 @@ int main(){
 &nbsp;   bool b=false;
 &nbsp;   float f=5.0;
 
-	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+	ZetScript *zs = ZetScript::getInstance(); // instance zetscript
 
     register_C_Variable(&quot;i&quot;,i); // it registers int variable called i
     register_C_Variable(&quot;b&quot;,b); // it registers bool var ble called b
@@ -286,7 +286,7 @@ int main(){
 <p>Binding C++ class in Zetscript is done easyly with&nbsp;<i>register_C_Class</i>&nbsp;method. To bind variables and functions members it can be done through <i>register_C_VariableMember</i>&nbsp;and&nbsp;<i>register_C_FunctionMember</i>&nbsp;respectively. In script you can instance the C++ class in script side through operator&nbsp;<strong><i>new</i></strong>. When the instanced C Class variable is not used anymore the user has to delete it with operator&nbsp;<i><strong>delete</strong>.</i></p>
 
 <pre lang="c++">
-#include &quot;CZetScript.h&quot;
+#include &quot;ZetScript.h&quot;
 
 using namespace zetscript;
 
@@ -312,7 +312,7 @@ public:
 
 int main(){
 
-	CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+	ZetScript *zs = ZetScript::getInstance(); // instance zetscript
 	
     // register MyClass with name MyClass in script side.
 	register_C_Class&lt;MyClass&gt;(&quot;MyClass&quot;); 
@@ -431,7 +431,7 @@ print(&quot;n1 (&quot;+n1.num+&quot;) n2 (&quot;+n2.num+&quot;) = &quot;+n3.num)
 <p>the same can be applied for C++ class. We have to register _add function in the C++ object,</p>
 
 <pre lang="c++">
-#include &quot;CZetScript.h&quot;
+#include &quot;ZetScript.h&quot;
 
 using namespace zetscript;
 
@@ -452,7 +452,7 @@ public:
 &nbsp;&nbsp; &nbsp;}
 };
 int main(){
-&nbsp;&nbsp; &nbsp;CZetScript *zs = CZetScript::getInstance();
+&nbsp;&nbsp; &nbsp;ZetScript *zs = new ZetScript();
 
 &nbsp;&nbsp; &nbsp;// register class MyNumber
 &nbsp;&nbsp; &nbsp;register_C_Class&lt;MyNumber&gt;(&quot;MyNumber&quot;);
