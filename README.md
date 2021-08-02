@@ -31,7 +31,7 @@ void say_helloworld(){
 
 int main(){
 
-	ZetScript *zs = ZetScript::getInstance(); // instance zetscript
+	ZetScript *zs = new ZetScript(); // instance zetscript
 
 	register_C_Function(&quot;say_helloworld&quot;,say_helloworld);
 
@@ -65,17 +65,17 @@ cmake CMakeLists.txt</pre>
 
 <h3>Built-in types</h3>
 
-<p>Zetscript has a built in basic types like integers, numbers, booleans and containers as vectors and structures.</p>
+<p>Zetscript has a built in basic types like integers, numbers, booleans, strings, vectors and objects.</p>
 
 <pre lang="javascript">
 var i=10; //integer
 var f=0.5; // number
-var s=&quot;a string&quot;; // string
+var s=&quot;a string&quot;; // string object
 var b=true; // boolean
 
 var vector=[1,0.5, &quot;a string&quot;, true]; // vector
 
-var struct={ // structure
+var object={ // script object
 	i: 10,
 	f: 0.5,
 	s: &quot;a string&quot;,
@@ -109,22 +109,22 @@ var i= 0; // global var (never is destroyed when is declared)
 // if-else conditional
 var number=5;
 if(number &lt; 10){
-	print(&quot;number less than 10&quot;);
+	Console::outln(&quot;number less than 10&quot;);
 }else{
-	print(&quot;number greater equal than 10&quot;);
+	Console::outln(&quot;number greater equal than 10&quot;);
 }
 
 // switch conditional
 switch(number){
 case 0:
 case 1: 
-	print(&quot;number is 0 or 1&quot;);
+	Console::outln(&quot;number is 0 or 1&quot;);
 	break;
 case 2:
-	print(&quot;number is 2&quot;);
+	Console::outln(&quot;number is 2&quot;);
 	break;
 default:
-	print(&quot;number is : &quot;+number);
+	Console::outln(&quot;number is : &quot;+number);
 	break;
 }</pre>
 
@@ -136,19 +136,19 @@ default:
 var i=0;
 // while loop
 while(i &lt; 10){
-	print(&quot;i:&quot;+i);
+	Console::outln(&quot;i:&quot;+i);
 	i++;
 }
 
 // do-while loop
 do{
-	print(&quot;i:&quot;+i);
+	Console::outln(&quot;i:&quot;+i);
 	i++;
 }while(i &lt; 20);
 
 // for loop
 for(var j=0; j &lt; 10; j++){
-	print(&quot;j:&quot;+i);
+	Console::outln(&quot;j:&quot;+i);
 }
 
 </pre>
@@ -162,9 +162,9 @@ for(var j=0; j &lt; 10; j++){
 class Test{
 	var data1;
 	
-	function function1(a){
+	function1(a){
 		this.data1 =a;
-		print(&quot;calling from Test. Data1:&quot;+this.data1);
+		Console::outln(&quot;calling from Test. Data1:&quot;+this.data1);
 	}
 };
 
@@ -178,17 +178,17 @@ function Test::function2(){
 
 // A inheritance class example. 
 // TestExtended inherites data1,data2,function1 and function2. 
-class TestExtended: Test{
+class TestExtended extends Test{
 	var data3;
-	function function1(a){
+	function1(a){
 		super(2); // it calls Test::function1(2)
 		this.data1+=5; // Now data1=5+2 = 7
-		print(&quot;calling from TestExtended. Data1:&quot;+this.data1);
+		Console::outln(&quot;calling from TestExtended. Data1:&quot;+this.data1);
 	}
 	
-	function function3(){ // 
+	function3(){ // 
 		this.data3=6;
-		print(&quot;data3 is &quot;+this.data3);
+		Console::outln(&quot;data3 is &quot;+this.data3);
 	}
 };
 
@@ -198,7 +198,7 @@ var t=new TestExtended(); // instances TestExtended class</pre>
 
 <h3>Calling script function from c++</h3>
 
-<p>Once you have evaluated the script you can call function script from c++&nbsp;<b>until up 6 parameters</b>. To call script function from c++ it can be done through the function&nbsp;<i>ZetScript::bind_function</i>. Just pass the name of the function with the c++ template casting and it creates an std::function that links the script function. Also it is possible to link/call function member from instancied object on global scope.</p>
+<p>Once you have evaluated the script you can call function script from c++&nbsp;<b>until up 6 parameters</b>. To call script function from c++ it can be done through the function&nbsp;<i>ZetScript::zs->bindFunction</i>. Just pass the name of the function with the c++ template casting and it creates an std::function that links the script function. Also it is possible to link/call function member from instancied object on global scope.</p>
 
 <pre lang="c++">
 #include &quot;ZetScript.h&quot;
@@ -207,19 +207,19 @@ using namespace zetscript;
 
 int main(){
 
-	ZetScript *zs = ZetScript::getInstance(); // instance zetscript
+	ZetScript zs = new ZetScript(); // instance zetscript
 
 	zs-&gt;eval(
 		&quot;class Test{&quot;
 		&quot;	var data1;&quot;
 		&quot;	function function1(arg){&quot;
-		&quot;		print(\&quot;calling Test.Function:\&quot;+arg);&quot;
+		&quot;		Console::outln(\&quot;calling Test.Function:\&quot;+arg);&quot;
 		&quot;	}&quot;
 		&quot;};&quot;
 		&quot;&quot;
 		&quot;function delete_test(){&quot;
 		&quot;	delete test;&quot;
-		&quot;	print(\&quot;test variable was deleted\&quot;);&quot;
+		&quot;	Console::outln(\&quot;test variable was deleted\&quot;);&quot;
 		&quot;}&quot;
 		&quot;&quot;
 		&quot;var test=new Test();&quot;
@@ -227,10 +227,10 @@ int main(){
 
 	
     // instance function delete_test function.
-	std::function&lt;void()&gt;  * delete_test=bind_function&lt;void ()&gt;(&quot;delete_test&quot;); 
+	std::function&lt;void()&gt;  * delete_test=zs->bindFunction&lt;void ()&gt;(&quot;delete_test&quot;); 
 
     // instance member function test.function1.
-	std::function&lt;void(int)&gt; * test_function1=bind_function&lt;void (int)&gt;(&quot;test.function1&quot;); 
+	std::function&lt;void(int)&gt; * test_function1=zs->bindFunction&lt;void (int)&gt;(&quot;test.function1&quot;); 
 	
     // it calls &quot;test.function&quot; member function with 10 as parameter.
 	(*test_function1)(10); 
@@ -241,6 +241,7 @@ int main(){
 	// delete functions when they are used anymore
 	delete 	test_function1;
 	delete 	delete_test;
+	delete  zs;
 
 }</pre>
 
@@ -264,7 +265,7 @@ int main(){
 &nbsp;   bool b=false;
 &nbsp;   float f=5.0;
 
-	ZetScript *zs = ZetScript::getInstance(); // instance zetscript
+	ZetScript *zs = new ZetScript(); // instance zetscript
 
     register_C_Variable(&quot;i&quot;,i); // it registers int variable called i
     register_C_Variable(&quot;b&quot;,b); // it registers bool var ble called b
@@ -276,14 +277,14 @@ int main(){
         &quot;b=!b;&quot; //  b=!b  =&gt; b=true
         &quot;f+=10.5;&quot; // f+=10.5 =&gt; f = 15.5
 		&quot;string_var+=\&quot; and in script\&quot;;&quot; // concatenates &quot; and in script
-		&quot;print(\&quot;string_var:\&quot;+string_var);&quot; // prints &quot;string_var:in c++ and in script
+		&quot;Console::outln(\&quot;string_var:\&quot;+string_var);&quot; // prints &quot;string_var:in c++ and in script
 	);
 	return 0;
 }</pre>
 
 <h3>Bind C++ classes and its members</h3>
 
-<p>Binding C++ class in Zetscript is done easyly with&nbsp;<i>register_C_Class</i>&nbsp;method. To bind variables and functions members it can be done through <i>register_C_VariableMember</i>&nbsp;and&nbsp;<i>register_C_FunctionMember</i>&nbsp;respectively. In script you can instance the C++ class in script side through operator&nbsp;<strong><i>new</i></strong>. When the instanced C Class variable is not used anymore the user has to delete it with operator&nbsp;<i><strong>delete</strong>.</i></p>
+<p>Binding C++ class in Zetscript is done easyly with&nbsp;<i>zs->registerClass</i>&nbsp;method. To bind variables and functions members it can be done through <i>register_C_VariableMember</i>&nbsp;and&nbsp;<i>zs->registerMemberFunction</i>&nbsp;respectively. In script you can instance the C++ class in script side through operator&nbsp;<strong><i>new</i></strong>. When the instanced C Class variable is not used anymore the user has to delete it with operator&nbsp;<i><strong>delete</strong>.</i></p>
 
 <pre lang="c++">
 #include &quot;ZetScript.h&quot;
@@ -312,28 +313,28 @@ public:
 
 int main(){
 
-	ZetScript *zs = ZetScript::getInstance(); // instance zetscript
+	ZetScript *zs = new ZetScript(); // instance zetscript
 	
     // register MyClass with name MyClass in script side.
-	register_C_Class&lt;MyClass&gt;(&quot;MyClass&quot;); 
+	zs->registerClass&lt;MyClass&gt;(&quot;MyClass&quot;); 
 
     // register MyClassExtend with name MyClassExtend in script side.
-	register_C_Class&lt;MyClassExtend&gt;(&quot;MyClassExtend&quot;); 
+	zs->registerClass&lt;MyClassExtend&gt;(&quot;MyClassExtend&quot;); 
 	
     // tell that MyClassExtend is base of MyClass
-	class_C_baseof&lt;MyClassExtend,MyClass&gt;(); 
+	classInheritsFrom&lt;MyClassExtend,MyClass&gt;(); 
 
     // register data1 named data1 in script side as variable member.
 	register_C_VariableMember&lt;MyClassExtend&gt;(&quot;data1&quot;,&amp;MyClass::data1); 
 
     // register function1 named function1 in script side as function member.
-	register_C_FunctionMember&lt;MyClassExtend&gt;(&quot;function1&quot;,&amp;MyClass::function1); 
+	zs->registerMemberFunction&lt;MyClassExtend&gt;(&quot;function1&quot;,&amp;MyClass::function1); 
 
     // register data2 named data1 in script side as variable member.
 	register_C_VariableMember&lt;MyClassExtend&gt;(&quot;data2&quot;,&amp;MyClassExtend::data2); 
 
     // register function2 named function2 in script side as function member.
-	register_C_FunctionMember&lt;MyClassExtend&gt;(&quot;function2&quot;,&amp;MyClassExtend::function2); 
+	zs->registerMemberFunction&lt;MyClassExtend&gt;(&quot;function2&quot;,&amp;MyClassExtend::function2); 
 
 
 
@@ -341,8 +342,8 @@ int main(){
 		&quot;var myclass = new MyClassExtend();&quot; // instances MyClassExtend
 		&quot;myclass.function1(12);&quot; // it prints &quot;Int argument is 12&quot;
 		&quot;myclass.function2(0.5);&quot; // it prints &quot;Float argument is 0.5&quot;
-		&quot;print(\&quot;data1:\&quot;+myclass.data1);&quot; // it prints &quot;data1:12&quot;
-		&quot;print(\&quot;data2:\&quot;+myclass.data2);&quot; // it prints &quot;data2:0.5&quot;
+		&quot;Console::outln(\&quot;data1:\&quot;+myclass.data1);&quot; // it prints &quot;data1:12&quot;
+		&quot;Console::outln(\&quot;data2:\&quot;+myclass.data2);&quot; // it prints &quot;data2:0.5&quot;
 		&quot;delete myclass;&quot; // delete script var with c pointers attached inside.
 	);
 
@@ -358,9 +359,9 @@ int main(){
 <p>From list 1.2 we present an example script that <em>ScripMyClassExtends </em>class is inherited by <em>MyClassExtends </em>class (from C++),</p>
 
 <pre lang="javascript">
-class ScriptMyClassExtended: MyClassExtend{ // &lt;-- inheritances MyClassExtend (c++)
-  function function1(arg1){
-    print(&quot;script argument is &quot;+arg1)
+class ScriptMyClassExtended extends MyClassExtend{ // &lt;-- inheritances MyClassExtend (c++)
+  function1(arg1){
+    Console::outln(&quot;script argument is &quot;+arg1)
     super(this.data1+arg1); // &lt;-- calls MyClassExtend::function1 (c++) from list 1.2
   }
 }
@@ -409,13 +410,13 @@ c++ argument is 15 </pre>
 
 <p>For example, if in script side we want to do the operation + for an object we have to declare the function _add with two parameters, as we can see in the following code,</p>
 
-<pre lang="c++">
+<pre lang="javascript">
 class MyNumber{
   var num;
-  function MyNumber(_n){
+  MyNumber(_n){
     this.num=_n;
   }
-  function _add(op1,op2){
+  static _add(op1,op2){
     return new MyNumber(op1.num+op2.num);
   }
 };
@@ -424,7 +425,7 @@ var n1 = new MyNumber (20);
 var n2 = new MyNumber (10);
 var n3 =n1+n2;
 
-print(&quot;n1 (&quot;+n1.num+&quot;) n2 (&quot;+n2.num+&quot;) = &quot;+n3.num);</pre>
+Console::outln(&quot;n1 (&quot;+n1.num+&quot;) n2 (&quot;+n2.num+&quot;) = &quot;+n3.num);</pre>
 
 <p style="text-align: center"><em>List 1.4</em></p>
 
@@ -455,24 +456,26 @@ int main(){
 &nbsp;&nbsp; &nbsp;ZetScript *zs = new ZetScript();
 
 &nbsp;&nbsp; &nbsp;// register class MyNumber
-&nbsp;&nbsp; &nbsp;register_C_Class&lt;MyNumber&gt;(&quot;MyNumber&quot;);
+&nbsp;&nbsp; &nbsp;zs->registerClass&lt;MyNumber&gt;(&quot;MyNumber&quot;);
 
 &nbsp;&nbsp; &nbsp;// register variable member num
 &nbsp;&nbsp; &nbsp;register_C_VariableMember&lt;MyNumber&gt;(&quot;num&quot;,&amp;MyNumber::num);
 
 &nbsp;&nbsp; &nbsp;// register constructor through function MyNumber::set
-&nbsp;&nbsp; &nbsp;register_C_FunctionMember&lt;MyNumber&gt;(&quot;MyNumber&quot;,&amp;MyNumber:: set);
+&nbsp;&nbsp; &nbsp;zs->registerMemberFunction&lt;MyNumber&gt;(&quot;MyNumber&quot;,&amp;MyNumber:: set);
 
 &nbsp;&nbsp; &nbsp;// register static function _add as metamethod
-&nbsp;&nbsp; &nbsp;register_C_StaticFunctionMember&lt;MyNumber&gt;(&quot;_add&quot;,&amp;MyNumber::_add);
+&nbsp;&nbsp; &nbsp;zs->registerMemberFunctionStatic&lt;MyNumber&gt;(&quot;_add&quot;,&amp;MyNumber::_add);
 &nbsp;&nbsp; &nbsp;
-&nbsp;&nbsp; &nbsp;if(!zs-&gt;eval(
+&nbsp;&nbsp; &nbsp;try{
+&nbsp;&nbsp; &nbsp;zs-&gt;eval(
 &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&quot;var n1 = new MyNumber (20);\n&quot;
 &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&quot;var n2 = new MyNumber (10); \n&quot;
 &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&quot;var n3 =n1+n2; \n &quot;
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&quot;print(\&quot;n1 (\&quot;+n1.num+\&quot;) + n2 (\&quot;+n2.num+\&quot;) = \&quot;+n3.num);\n&quot;
-&nbsp;&nbsp; &nbsp;)){
-&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;fprintf(stderr,ZS_GET_ERROR_MSG());
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&quot;Console::outln(\&quot;n1 (\&quot;+n1.num+\&quot;) + n2 (\&quot;+n2.num+\&quot;) = \&quot;+n3.num);\n&quot;
+&nbsp;&nbsp; &nbsp;);
+}catch(std::exception & ex){
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;fprintf(stderr,ex.what());
 &nbsp;&nbsp; &nbsp;}
 &nbsp;&nbsp; &nbsp;return 0;
 }
@@ -488,7 +491,7 @@ int main(){
 <p><strong>Note that the codes</strong>&nbsp;shown at list 1.4 and 1.5 the _add function is static due operates from two objects and it doesn&#39;t the object member itself.</p>
 </blockquote>
 
-<h2>Save/Restore state</h2>
+<h2>Save state/Clear</h2>
 
 <p>Sometimes is useful to reset the script cleaning global variables or restore&nbsp;from one point&nbsp;when, for example,&nbsp;C++&nbsp;application is restarted.</p>
 
@@ -497,12 +500,12 @@ int main(){
 <p>To save current state we have to invoke <em>CState::saveState</em>. This function returns an index that tells compiled state index saved.</p>
 
 <pre>
-int idx=CState::saveState()</pre>
+zs->saveState()</pre>
 
-<p>To restore a previous state we have to invoke CState::restoreState passing compiled state index.</p>
+<p>To clear current state and restore all registered variables/functions/classes,etc after last save state invoke **clear**</p>
 
 <pre>
-CState::setState(idx)</pre>
+zs->clear()</pre>
 
 <p>&nbsp;</p>
 
