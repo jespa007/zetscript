@@ -97,7 +97,6 @@ else()
 		message("-- Mingw path: $ENV{MINGWDIR} ")
 		
 		set(CMAKE_LEGACY_MINGW_WIN32 0)
-		set(CMAKE_PREFIX_PATH "$ENV{MINGWDIR}/local32/lib")
 	elseif(UNIX)
     	MESSAGE ("-- Plataform: UNIX" )
     else()
@@ -198,10 +197,7 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 
 	# Core
 	zetscript.cpp
-
 )
-
-
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 # LINKING PARAMS
