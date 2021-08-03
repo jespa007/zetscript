@@ -8,38 +8,10 @@
 
 using namespace zetscript;
 
-class Integer{
-public:
-	int i;
-
-};
-
-Integer * IntegerWrap_new(){
-	return new Integer();
-}
-
-void IntegerWrap_set(Integer *_this, zs_int _i){
-	printf("new value");
-}
-
-zs_int IntegerWrap_get(Integer *_this){
-	return -1;
-}
-
-
-void IntegerWrap_delete(Integer *_this){
-	delete _this;
-}
-
 
 int main(int argc, char * argv[]) {
 
 	ZetScript *zs = new ZetScript();
-
-	zs->registerClass<Integer>("Integer",IntegerWrap_new,IntegerWrap_delete);
-	zs->registerMemberAttributeSetter<Integer>("i",IntegerWrap_set);
-	zs->registerMemberAttributeGetter<Integer>("i",IntegerWrap_get);
-
 
 	if (argc > 1) {
 		unsigned short eval_options=0;

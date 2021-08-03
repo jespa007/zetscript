@@ -361,7 +361,7 @@ namespace zetscript{
 				// file exist and can read ... set current pwd
 				//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
 				current_directory = zs_dir::get_current_directory();
-				zs_dir::chdir(zs_path::get_directory(filename));
+				zs_dir::change_dir(zs_path::get_directory(filename));
 				//}
 				std::string error_str="";
 				std::string error_file="";
@@ -385,7 +385,7 @@ namespace zetscript{
 
 				// restore previous directory
 				//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
-				zs_dir::chdir(current_directory);
+				zs_dir::change_dir(current_directory);
 				//}
 
 				// deallocate before throw errors...

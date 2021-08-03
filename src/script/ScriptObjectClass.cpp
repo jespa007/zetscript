@@ -224,7 +224,7 @@ namespace zetscript{
 			 // only erases pointer if basic type or user/auto delete is required ...
 			CALL_DESTRUCTOR_CLASS(script_class_native,created_object);//(*(script_class_native->c_destructor))(created_object);
 		}else if(was_created_by_constructor){
-			fprintf(stderr,zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
+			fprintf(stderr,"%s",zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
 						,SFI_GET_FILE_LINE(info_function_new, instruction_new)
 				).c_str()
 			);
