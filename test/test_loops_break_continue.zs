@@ -12,6 +12,7 @@ for(var i=0;i<20;i++){
 	Console::outln("i:"+i);
 }
 
+// while
 Console::outln("test while:");
 var j=0;
 while(j < 10){
@@ -30,8 +31,8 @@ while(j < 10){
 	
 }
 
+//do-while
 Console::outln("test do-while:");
-// do-while
 j=0;
 do{
 	j++;
