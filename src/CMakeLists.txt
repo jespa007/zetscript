@@ -60,11 +60,12 @@ include_directories (
 file(GLOB_RECURSE INCS "${PROJECT_SOURCE_DIR}/*.h,${PROJECT_SOURCE_DIR}/*.tcc")
 
 
-message("-- Install drectory: " ${CMAKE_INSTALL_PREFIX})
+message("-- Install directory: " ${CMAKE_INSTALL_PREFIX})
 
 set(ZETSCRIPT_LIB_SRCS "")
 
 if(MSVC)
+	SET(COMPILER "msvc")
 	MESSAGE ("-- Plataform: MSVC" )
 	
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -77,8 +78,8 @@ if(MSVC)
 	# warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
 	add_definitions(/EHsc)
 	
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 	
 	
 	if(BUILD_SHARED_LIBS)
@@ -88,15 +89,11 @@ if(MSVC)
 	endif()
 	
 else()
-	MESSAGE ("-- Toolchain: GNU")
 
-	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra")
+	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra")
    
 	if (MINGW)
 		MESSAGE("-- Plataform: MINGW" )
-		message("-- Mingw path: $ENV{MINGWDIR} ")
-		
-		set(CMAKE_LEGACY_MINGW_WIN32 0)
 	elseif(UNIX)
     	MESSAGE ("-- Plataform: UNIX" )
     else()
@@ -109,7 +106,7 @@ else()
 	
 		IF( EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr )
 			message("-- Memmanager: ON")
-			SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__MEMMANAGER__")
+			SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__MEMMANAGER__")
 			include_directories (
 				${PROJECT_SOURCE_DIR}/../../memmgr
 			)
@@ -127,9 +124,9 @@ else()
 	
 
 	#Redefine output dir ...
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET})
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${TARGET})
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${TARGET})
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${TARGET})
 	LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})	
 	
 
@@ -157,11 +154,10 @@ ENDIF()
 MESSAGE ("-- Target: " ${TARGET})
 
 IF ( "${TARGET}" STREQUAL "debug")
-	SET( COMPILE_COMMON_FLAGS " ${COMPILE_COMMON_FLAGS} -D__DEBUG__ ")
+	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__DEBUG__ ")
 ENDIF()
 
-SET(CMAKE_C_FLAGS " ")
-SET(CMAKE_CXX_FLAGS   " ${COMPILE_TARGET_FLAGS} ${COMPILE_COMMON_FLAGS}  " )
+SET(CMAKE_CXX_FLAGS   " ${COMPILE_TARGET_FLAGS} ${COMMON_CXX_PARAMS}  " )
 
 
 #
@@ -359,7 +355,6 @@ SET(
 	
 
 INSTALL_HEADERS_WITH_DIRECTORY(HS)
-
 	
 	
 INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}

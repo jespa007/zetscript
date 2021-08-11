@@ -3,10 +3,6 @@
  *  See LICENSE file for details.
  */
 
-//#include "zetscript.h"
-
-
-
 namespace zetscript{
 
 	namespace json{
@@ -230,18 +226,18 @@ namespace zetscript{
 						return NULL;
 					}
 				}
-				stk_json_element->value=so;
+				stk_json_element->value=(intptr_t)so;
 				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
 			}
 			else if (strncmp(str_current, "true", 4)==0) { // true detected ...
 				stk_json_element->properties=STK_PROPERTY_BOOL;
-				stk_json_element->value=(void *)((zs_int)(true));
+				stk_json_element->value=true;
 				str_current+=4;
 			}
 			else if (strncmp(str_current, "false", 5) == 0) {// boolean detected
 				stk_json_element->properties=STK_PROPERTY_BOOL;
-				stk_json_element->value=(void *)((zs_int)(false));
+				stk_json_element->value=false;
 				str_current+=5;
 			}
 			else{ // must a number
@@ -309,7 +305,7 @@ namespace zetscript{
 				}
 
 				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
-				stk_json_element->value=vo;
+				stk_json_element->value=(intptr_t)vo;
 			}else{
 				json_deserialize_error(deserialize_data, str_start, line, "Internal error: A null stackelement expected");
 				return NULL;
@@ -372,7 +368,7 @@ namespace zetscript{
 				}
 
 				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
-				stk_json_element->value=so;
+				stk_json_element->value=(intptr_t)so;
 			}else{
 				json_deserialize_error(deserialize_data, str_start, line, "Internal error: A null stackelement expected");
 				return NULL;

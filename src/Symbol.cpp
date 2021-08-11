@@ -8,24 +8,24 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 
 			if(k_str_zs_int_type_ptr==symbol->str_native_type){
 				return {
-						ptr_variable,
+						(zs_int)ptr_variable,
 						STK_PROPERTY_ZS_INT_PTR
 				};
 
 			}else if(k_str_const_zs_int_type_ptr==symbol->str_native_type){
 				return {
-						ptr_variable,
+						(zs_int)ptr_variable,
 						STK_PROPERTY_ZS_INT_PTR|STK_PROPERTY_READ_ONLY
 				};
 
 			}else if(k_str_float_type_ptr==symbol->str_native_type){
 				return {
-						ptr_variable,
+						(zs_int)ptr_variable,
 						STK_PROPERTY_FLOAT_PTR
 				};
 			}else if(k_str_const_float_type_ptr==symbol->str_native_type){
 				return {
-						ptr_variable,
+						(zs_int)ptr_variable,
 						STK_PROPERTY_FLOAT_PTR|STK_PROPERTY_READ_ONLY
 				};
 			}else if(  k_str_char_type_ptr==symbol->str_native_type
@@ -42,17 +42,17 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 
 				*((std::string *)(s->value))=input_s;
 				return {
-					(void *)(s),
+					(zs_int)(s),
 					STK_PROPERTY_SCRIPT_OBJECT
 				};
 			}else if(k_str_bool_type_ptr==symbol->str_native_type){
 				return {
-						ptr_variable,
+						(zs_int)ptr_variable,
 						STK_PROPERTY_BOOL_PTR
 				};
 			}else if(k_str_const_bool_type_ptr==symbol->str_native_type){
 				return {
-						ptr_variable,
+						(zs_int)ptr_variable,
 						STK_PROPERTY_BOOL_PTR|STK_PROPERTY_READ_ONLY
 				};
 			}else{
@@ -62,7 +62,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 					ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs,info_registered_class->idx_class,ptr_variable);
 
 					return{
-							var,
+							(zs_int)var,
 							STK_PROPERTY_SCRIPT_OBJECT
 					};
 

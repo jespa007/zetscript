@@ -102,8 +102,9 @@ namespace zetscript{
 		}
 
 		// check if there's a reset stack at the end and set as end function in order to get last value stk ...
-		/*if(sf->instructions_len>2){
+		if(sf->instructions_len>2){
 			if(sf->instructions[sf->instructions_len-2].byte_code != BYTE_CODE_RET){
+				int offset_rst_stack=sf->instructions[sf->instructions_len-2].byte_code == BYTE_CODE_RESET_STACK ? 1:0;
 				size_t new_buf_len=sf->instructions_len+2;
 				Instruction *new_buf=(Instruction *)malloc(new_buf_len*sizeof(Instruction));
 				memset(new_buf,0,new_buf_len*sizeof(Instruction));
@@ -112,8 +113,8 @@ namespace zetscript{
 				free(sf->instructions);
 
 				// assign ret null
-				new_buf[new_buf_len-3].byte_code=BYTE_CODE_LOAD_NULL;
-				new_buf[new_buf_len-2].byte_code=BYTE_CODE_RET;
+				new_buf[new_buf_len-3-offset_rst_stack].byte_code=BYTE_CODE_LOAD_NULL;
+				new_buf[new_buf_len-2-offset_rst_stack].byte_code=BYTE_CODE_RET;
 
 				sf->instructions=new_buf;
 				sf->instructions_len=new_buf_len;
@@ -121,7 +122,7 @@ namespace zetscript{
 
 
 			}
-		}*/
+		}
 
 		// 3. Call function passing all arg parameter
 

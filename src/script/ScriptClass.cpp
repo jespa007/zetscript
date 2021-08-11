@@ -128,7 +128,7 @@ namespace zetscript{
 	}
 	//---------------------------------------------------
 	// ATTRIBUTES
-	Symbol *ScriptClass::registerMemberAttribute(
+	Symbol *ScriptClass::registerAttributeMember(
 			 const std::string & attrib_name
 			,const char * file
 			,short line
@@ -183,7 +183,7 @@ namespace zetscript{
 		Symbol *symbol_function=NULL;
 
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+			symbol_attrib=registerAttributeMember(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -219,7 +219,7 @@ namespace zetscript{
 
 		MemberAttribute *ma=NULL;
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+			symbol_attrib=registerAttributeMember(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -261,7 +261,7 @@ namespace zetscript{
 
 		MemberAttribute *ma=NULL;
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+			symbol_attrib=registerAttributeMember(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -304,7 +304,7 @@ namespace zetscript{
 
 		MemberAttribute *ma=NULL;
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+			symbol_attrib=registerAttributeMember(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -347,7 +347,7 @@ namespace zetscript{
 
 		MemberAttribute *ma=NULL;
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+			symbol_attrib=registerAttributeMember(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -390,7 +390,7 @@ namespace zetscript{
 
 		MemberAttribute *ma=NULL;
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+			symbol_attrib=registerAttributeMember(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -437,7 +437,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol				* 	ScriptClass::registerMemberFunction(
+	Symbol				* 	ScriptClass::registerFunctionMember(
 			 const std::string & function_name
 			, std::vector<ScriptFunctionArg> args
 			, unsigned short symbol_properties

@@ -98,7 +98,7 @@ namespace zetscript{
 		 */
 		 template <typename F>
 		 void registerNativeGlobalFunction(
-			 const char * function_name
+			const std::string &  function_name
 			 ,F function_ptr
 			 , const char *registered_file=""
 			,short registered_line=-1
@@ -165,7 +165,7 @@ namespace zetscript{
 
 		template <typename C, typename R>
 		void registerNativeStaticConstMember(
-				const char *var_name
+				const std::string & var_name
 				, const R var_pointer
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -173,7 +173,7 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void registerNativeMemberAttributeSetter(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_setter
 				, const char *registered_file=""
 				,short registered_line=-1
@@ -184,7 +184,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberAttributeGetter(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_getter
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -195,7 +195,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberAttributePostIncrement(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_getter
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -206,7 +206,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberAttributePostDecrement(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_getter
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -217,7 +217,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberAttributePreIncrement(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_getter
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -228,7 +228,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberAttributePreDecrement(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_getter
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -241,7 +241,7 @@ namespace zetscript{
 		 */
 		template <typename C, typename F>
 		void registerNativeMemberFunctionStatic(
-				const char *function_name
+				const std::string & function_name
 				,F ptr_function
 				, const char *registered_file=""
 				,short registered_line=-1);
@@ -251,7 +251,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void	registerNativeMemberFunction(
-				const char *function_name
+				const std::string & function_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1

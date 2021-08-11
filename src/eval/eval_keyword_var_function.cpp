@@ -622,13 +622,13 @@ error_eval_keyword_var:
 							arg_info.default_var_value=k_stk_undefined;
 							break;
 						case BYTE_CODE_LOAD_ZS_INT:
-							arg_info.default_var_value={(void *)instruction->value_op2,STK_PROPERTY_ZS_INT};
+							arg_info.default_var_value={instruction->value_op2,STK_PROPERTY_ZS_INT};
 							break;
 						case BYTE_CODE_LOAD_ZS_FLOAT:
-							arg_info.default_var_value={(void *)instruction->value_op2,STK_PROPERTY_ZS_FLOAT};
+							arg_info.default_var_value={instruction->value_op2,STK_PROPERTY_ZS_FLOAT};
 							break;
 						case BYTE_CODE_LOAD_BOOL:
-							arg_info.default_var_value={(void *)instruction->value_op2,STK_PROPERTY_BOOL};
+							arg_info.default_var_value={instruction->value_op2,STK_PROPERTY_BOOL};
 							break;
 						default: // else is an object so we'll create a function in order to return object or complex expression
 							create_anonymous_function_return_expression=true;
@@ -640,7 +640,7 @@ error_eval_keyword_var:
 
 					if(create_anonymous_function_return_expression==true){
 						ScriptFunction *sf=eval_new_inline_anonymous_function(eval_data,&instructions_default);
-						arg_info.default_var_value={sf,STK_PROPERTY_FUNCTION};
+						arg_info.default_var_value={(zs_int)sf,STK_PROPERTY_FUNCTION};
 					}
 
 					// finally delete all evaluated code
@@ -677,7 +677,7 @@ error_eval_keyword_var:
 			//--- OP
 			if(sc!=NULL){ // register as variable member...
 				try{
-					symbol_sf=sc->registerMemberFunction(
+					symbol_sf=sc->registerFunctionMember(
 							function_name
 							,args
 							,is_static?SYMBOL_PROPERTY_STATIC:0

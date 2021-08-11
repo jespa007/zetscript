@@ -50,8 +50,8 @@ namespace zetscript{
 	struct Instruction {
 
 		ByteCode byte_code;
-		uint8_t value_op1;
-		zs_int value_op2;
+		uint8_t  value_op1;
+		zs_int 	value_op2;
 		uint16_t properties;
 
 		Instruction();

@@ -61,7 +61,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("cannot share pointer");
 			}
 
-			stk->value=so_partial;
+			stk->value=(zs_int)so_partial;
 			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
 		}
 
@@ -87,7 +87,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("cannot share pointer");
 			}
 
-			stk->value=so_partial;
+			stk->value=(zs_int)so_partial;
 			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
 		}
 

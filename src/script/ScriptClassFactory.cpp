@@ -70,7 +70,7 @@ namespace zetscript{
 		main_object=registerClass(MAIN_SCRIPT_CLASS_NAME); // 0
 		MAIN_SCOPE(this)->script_class=main_object;
 
-		Symbol *symbol_main_function=main_object->registerMemberFunction(
+		Symbol *symbol_main_function=main_object->registerFunctionMember(
 				MAIN_SCRIPT_FUNCTION_NAME
 		);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
@@ -266,7 +266,7 @@ namespace zetscript{
 		);
 
 		StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
-		stk->value=(void *)((zs_int)value);
+		stk->value=value;
 		stk->properties=STK_PROPERTY_ZS_INT|STK_PROPERTY_READ_ONLY;
 	}
 
@@ -279,7 +279,7 @@ namespace zetscript{
 		);
 
 		StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
-		stk->value=(void *)value;
+		stk->value=value;
 		stk->properties=STK_PROPERTY_BOOL|STK_PROPERTY_READ_ONLY;
 	}
 
@@ -441,7 +441,7 @@ namespace zetscript{
 				std::string error="";
 				Symbol *symbol_field_initializer=NULL;
 
-				symbol_field_initializer=sci->registerMemberFunction(
+				symbol_field_initializer=sci->registerFunctionMember(
 					zs_strutils::format("__@field_initializer_%s_@__",sci->symbol_class.name.c_str())
 				);
 

@@ -15,7 +15,7 @@ typedef enum:unsigned short {
 	STK_PROPERTY_FUNCTION			=0x0010,
 	STK_PROPERTY_MEMBER_FUNCTION	=0x0020,
 	STK_PROPERTY_MEMBER_ATTRIBUTE	=0x0040,
-	STK_PROPERTY_SCRIPT_CLASS				=0x0080,
+	STK_PROPERTY_SCRIPT_CLASS		=0x0080,
 	STK_PROPERTY_SCRIPT_OBJECT		=0x0100,
 	STK_PROPERTY_MAX				=0x0200,
 	//-- VM RUNTIME
@@ -104,8 +104,8 @@ namespace zetscript{
 	#pragma pack(push, 1)
 
 	struct StackElement {
-		void * value; // operable value
-		uint16_t properties; // it tells its properties
+		zs_int 			value; // operable value
+		uint16_t 		properties; // it tells its properties
 
 		// it gives stackelement as string (the result should be deleted)
 		const char * 	typeOf();

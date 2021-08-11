@@ -24,7 +24,7 @@ namespace zetscript{
 
 				if( (var_type & STK_PROPERTY_SCRIPT_OBJECT)
 					//if(((si->properties & STK_PROPERTY_IS_VAR_C) != STK_PROPERTY_IS_VAR_C)
-					&&(si->value != this) // ensure that property don't holds its same var.
+					&&(si->value != (zs_int)this) // ensure that property don't holds its same var.
 					&& (si->value != 0)
 				 ){ // deallocate but not if is c or this ref
 
@@ -49,7 +49,7 @@ namespace zetscript{
 		zs=NULL;
 		map_builtin_property_keys=new zs_map();
 		memset(&stk_this,0,sizeof(stk_this));
-		stk_this.value=this;
+		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
 	}
@@ -66,9 +66,9 @@ namespace zetscript{
 			for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
 				Symbol * symbol = (Symbol *)script_class->symbol_members->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
-					addBuiltinProperty(symbol->name.c_str(),{new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr),STK_PROPERTY_MEMBER_ATTRIBUTE});
+					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_ATTRIBUTE});
 				}else{
-					addBuiltinProperty(symbol->name.c_str(),{new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr),STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION});
+					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION});
 				}
 			}
 		}
@@ -217,7 +217,7 @@ namespace zetscript{
 			}else if(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
 				delete (StackMemberAttribute *)stk->value;
 			}else if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced
-				if((stk->value != this) // ensure that property don't holds its same var.
+				if((stk->value != (zs_int)this) // ensure that property don't holds its same var.
 					&& (stk->value != 0)
 				  ){ // deallocate but not if is c or this ref
 

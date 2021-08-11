@@ -42,7 +42,7 @@ namespace zetscript{
 		if(oo==NULL) return;
 		if(it.end()) return;
 
-		stk_key.value=ScriptObjectString::newScriptObjectString(this->zs,it.getKey());
+		stk_key.value=(zs_int)ScriptObjectString::newScriptObjectString(this->zs,it.getKey());
 		// pass value through the stack
 
 		vm_push_stack_element(vm,*((StackElement *)it.getValue())); // last value/first value to get

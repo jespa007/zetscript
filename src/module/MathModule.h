@@ -8,7 +8,7 @@
 #define M_PI 3.1415926535897932384626433832795f
 #endif 
 
-#define ONE_OVER_RAND_MAX	(1.0f/(float)(RAND_MAX))
+
 
 namespace zetscript{
 

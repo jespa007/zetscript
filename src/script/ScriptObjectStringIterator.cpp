@@ -39,10 +39,10 @@ namespace zetscript{
 		if(idx < (int)str_ref->size()){
 			// set value
 			zs_int ch=str_ref->at(idx);
-			stk_value.value=(void *)(ch);
+			stk_value.value=ch;
 		}
 
-		stk_key.value=(void *)idx;
+		stk_key.value=idx;
 
 		// pass value through the stack
 

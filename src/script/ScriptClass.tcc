@@ -6,7 +6,7 @@ namespace zetscript{
 
 	template < typename R>
 	void ScriptClass::registerNativeMemberVariableStaticConst(
-			const char *var_name
+			const std::string & var_name
 			, const R var_pointer
 			, const char *registered_file
 			,short registered_line)
@@ -29,7 +29,7 @@ namespace zetscript{
 
 	template <typename F>
 	int ScriptClass::getNativeMemberFunctionRetArgsTypes(
-			const char *function_name
+			const std::string & function_name
 			,F ptr_function
 			,std::string & return_type
 			,std::vector<ScriptFunctionArg> & arg_info
@@ -79,7 +79,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributeSetter(
-			const char *attrib_name
+			const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -87,7 +87,7 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> params;
 		std::vector<ScriptFunctionArg> arg_info;
-		zs_int ref_ptr=0;
+		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
@@ -98,7 +98,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Error register setter attrib '%s': should return void ",attrib_name);
 		}
 
-		Symbol *symbol_result = registerNativeMemberAttributeSetter(
+		registerNativeMemberAttributeSetter(
 				attrib_name
 				,arg_info
 				,(zs_int)ptr_function
@@ -113,7 +113,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributeGetter(
-			const char *attrib_name
+			const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -121,14 +121,14 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> params;
 		std::vector<ScriptFunctionArg> arg_info;
-		zs_int ref_ptr=0;
+		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
 
-		Symbol *symbol_result = registerNativeMemberAttributeGetter(
+		registerNativeMemberAttributeGetter(
 				 attrib_name
 				 ,arg_info
 				,idx_return_type
@@ -144,7 +144,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributePostIncrement(
-			const char *attrib_name
+			const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -152,7 +152,7 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> params;
 		std::vector<ScriptFunctionArg> arg_info;
-		zs_int ref_ptr=0;
+		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
@@ -175,7 +175,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributePostDecrement(
-			const char *attrib_name
+			const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -183,7 +183,7 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> params;
 		std::vector<ScriptFunctionArg> arg_info;
-		zs_int ref_ptr=0;
+		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
@@ -206,7 +206,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributePreIncrement(
-			const char *attrib_name
+			const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -214,7 +214,7 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> params;
 		std::vector<ScriptFunctionArg> arg_info;
-		zs_int ref_ptr=0;
+		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
@@ -237,7 +237,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributePreDecrement(
-			const char *attrib_name
+			const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -245,7 +245,7 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> params;
 		std::vector<ScriptFunctionArg> arg_info;
-		zs_int ref_ptr=0;
+		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
@@ -269,7 +269,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberFunctionStatic(
-			const char *function_name
+			const std::string & function_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -301,13 +301,13 @@ namespace zetscript{
 
 
 
-		ZS_LOG_DEBUG("Registered member function name %s::%s",this->symbol_class.name.c_str(), function_name);
+		ZS_LOG_DEBUG("Registered member function name %s::%s",this->symbol_class.name.c_str(), function_name.c_str());
 
 		// check whether is static metamethod...
-		if(ZS_STRCMP(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET),!=,function_name)){
+		if(ZS_STRCMP(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET),!=,function_name.c_str())){
 
 			for(int i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
-				if(ZS_STRCMP(byte_code_metamethod_to_symbol_str((ByteCodeMetamethod)i),==,function_name)){
+				if(ZS_STRCMP(byte_code_metamethod_to_symbol_str((ByteCodeMetamethod)i),==,function_name.c_str())){
 
 					// check if they are gte,gt,equ, not_equ, lt, lte
 					if(  i == BYTE_CODE_METAMETHOD_EQU //STRCMP(function_name, == ,"_equ")
@@ -346,7 +346,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberFunction(
-			const char *function_name
+			const std::string & function_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -357,11 +357,9 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> params;
 		std::vector<ScriptFunctionArg> arg_info;
-		zs_int ref_ptr=0;
 		std::string error;
-		Symbol *symbol;
-		std::string class_name=this->symbol_class.name;
-		std::string function_class_name = class_name+"::"+function_name;
+		
+		std::string function_class_name = this->symbol_class.name+"::"+function_name;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,arg_info);
@@ -381,7 +379,7 @@ namespace zetscript{
 
 
 		// register member function...
-		symbol = this->registerNativeMemberFunction(
+		this->registerNativeMemberFunction(
 				 function_name
 				, arg_info
 				, idx_return_type

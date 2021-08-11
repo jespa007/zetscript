@@ -51,7 +51,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClassFactory::registerNativeGlobalFunction(
-			const char * function_name
+			const std::string &  function_name
 			,F function_ptr
 			, const char *registered_file
 			,short registered_line)
@@ -84,7 +84,7 @@ namespace zetscript{
 
 		for(unsigned int i = 0; i < str_arg.size(); i++){
 			int idx_type = getIdxClassFromItsNativeType(str_arg[i]);
-			StackElement default_value=k_stk_undefined;
+			//StackElement default_value=k_stk_undefined;
 
 			if(idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C){
 				THROW_RUNTIME_ERROR("Argument %i type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
@@ -133,7 +133,7 @@ namespace zetscript{
 
 		ScriptClass *irc=NULL;
 		std::string str_class_name_ptr = typeid( T *).name();
-		int size=script_classes->count;
+		//int size=script_classes->count;
 		int idx_class=ZS_IDX_UNDEFINED;
 		Scope * scope = NULL;
 		Symbol *symbol=NULL;
@@ -311,8 +311,8 @@ namespace zetscript{
 
 			ScriptClass *base_class = (ScriptClass *)script_classes->get(idx_base_class);
 
-			unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF;//| SYMBOL_PROPERTY_IS_DERIVATED;
-			/*if(std::is_polymorphic<B>::value==true){
+			/*unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF;//| SYMBOL_PROPERTY_IS_DERIVATED;
+			if(std::is_polymorphic<B>::value==true){
 
 				//if((calling_function->symbol.properties & SYMBOL_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
 				THROW_RUNTIME_ERROR("class \"%s\" is polymorphic and cannot be processed due function/variable pointer it changes at runtime and could crash your application. You have two options:\n"
@@ -349,7 +349,7 @@ namespace zetscript{
 							params.push_back(*((ScriptFunctionArg *) script_function->params->items[j]));
 						}
 
-						Symbol *symbol_result = this_class->registerNativeMemberFunction(
+						this_class->registerNativeMemberFunction(
 							script_function->symbol.name,
 							params,
 							script_function->idx_return_type,
@@ -369,7 +369,7 @@ namespace zetscript{
 					Symbol *symbol_attribute=NULL;
 					Symbol *symbol_function=NULL;
 
-					symbol_attribute=this_class->registerMemberAttribute(symbol_src->name,symbol_src->file,symbol_src->line);
+					symbol_attribute=this_class->registerAttributeMember(symbol_src->name,symbol_src->file,symbol_src->line);
 					ma_dst=(MemberAttribute *)symbol_attribute->ref_ptr;
 
 
@@ -494,7 +494,7 @@ namespace zetscript{
 		if(c_class == NULL){
 			THROW_RUNTIME_ERROR("class \"%s\" is not registered",str_class_name_ptr.c_str());
 		}
-		return registerNativeMemberFunction<C>(c_class->symbol_class.name.c_str(),function_type, registered_file,registered_line );
+		return registerNativeMemberFunction<C>(c_class->symbol_class.name,function_type, registered_file,registered_line );
 	}
 
 	/**
@@ -503,7 +503,7 @@ namespace zetscript{
 	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
 	template <typename C, typename R>
 	void ScriptClassFactory::registerNativeStaticConstMember(
-			const char *var_name
+			const std::string & var_name
 			, const R var_pointer
 			, const char *registered_file
 			,short registered_line) //unsigned int offset)
@@ -551,7 +551,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void ScriptClassFactory::registerNativeMemberAttributeSetter(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_setter
 				, const char *registered_file
 				,short registered_line
@@ -577,7 +577,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void ScriptClassFactory::registerNativeMemberAttributeGetter(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_getter
 				, const char *registered_file
 				,short registered_line
@@ -603,7 +603,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void ScriptClassFactory::registerNativeMemberAttributePostIncrement(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_post_increment
 				, const char *registered_file
 				,short registered_line
@@ -629,7 +629,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void ScriptClassFactory::registerNativeMemberAttributePostDecrement(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_post_decrement
 				, const char *registered_file
 				,short registered_line
@@ -655,7 +655,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void ScriptClassFactory::registerNativeMemberAttributePreIncrement(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_pre_increment
 				, const char *registered_file
 				,short registered_line
@@ -681,7 +681,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void ScriptClassFactory::registerNativeMemberAttributePreDecrement(
-				const char *attr_name
+				const std::string & attr_name
 				,F ptr_function_pre_decrement
 				, const char *registered_file
 				,short registered_line
@@ -708,7 +708,7 @@ namespace zetscript{
 	 */
 	template <typename C, typename F>
 	void ScriptClassFactory::registerNativeMemberFunctionStatic(
-			const char *function_name
+			const std::string & function_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -739,7 +739,7 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberFunction(
-			const char *function_name
+			const std::string & function_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line

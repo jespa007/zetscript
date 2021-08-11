@@ -38,7 +38,7 @@ namespace zetscript{
 				}
 				sc->set(so_param->toString());
 				so_param=sc;
-				new_stk->value=so_param; // update pointer
+				new_stk->value=(zs_int)so_param; // update pointer
 			}
 
 			vm_share_pointer(vm,so_param);

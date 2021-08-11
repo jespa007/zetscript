@@ -25,28 +25,28 @@ int main(){
 		zs->registerClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
 
 		// register data1 named data1 in script side as variable member and read/write.
-		zs->registerMemberAttributeSetter<MyClass>("data1",&MyClassWrap_set_data1);
-		zs->registerMemberAttributeGetter<MyClass>("data1",&MyClassWrap_get_data1);
+		zs->registerAttributeMemberSetter<MyClass>("data1",&MyClassWrap_set_data1);
+		zs->registerAttributeMemberGetter<MyClass>("data1",&MyClassWrap_get_data1);
 
 		// register data2 named data1 in script side as variable member (only read).
-		zs->registerMemberAttributeGetter<MyClass>("data2",&MyClassWrap_get_data2);
+		zs->registerAttributeMemberGetter<MyClass>("data2",&MyClassWrap_get_data2);
 
 		// register data1 named data1 in script side as variable member (only write).
-		zs->registerMemberAttributeSetter<MyClass>("data3",&MyClassWrap_set_data3);
+		zs->registerAttributeMemberSetter<MyClass>("data3",&MyClassWrap_set_data3);
 
 		// register function0 named function1 in script side as function member.
-		zs->registerMemberFunction<MyClass>("function0",&MyClassWrap_function0);
+		zs->registerFunctionMember<MyClass>("function0",&MyClassWrap_function0);
 
 		// register function1 named function1 in script side as function member.
-		zs->registerMemberFunction<MyClass>("function1",&MyClassWrap_function1);
+		zs->registerFunctionMember<MyClass>("function1",&MyClassWrap_function1);
 
 
 		// register data2 named data1 in script side as variable member.
-		zs->registerMemberAttributeSetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
-		zs->registerMemberAttributeGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
+		zs->registerAttributeMemberSetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
+		zs->registerAttributeMemberGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
 
 		// register function2 named function2 in script side as function member.
-		zs->registerMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);
+		zs->registerFunctionMember<MyClassExtend>("function2",&MyClassExtendWrap_function2);
 
 		// once all vars and functions are registered, tell that MyClassExtend is base of MyClass
 		zs->classInheritsFrom<MyClassExtend,MyClass>();

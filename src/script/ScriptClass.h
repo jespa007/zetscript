@@ -60,7 +60,7 @@ namespace zetscript{
 
 		template < typename R>
 		void registerNativeMemberVariableStaticConst(
-			const char *var_name
+			const std::string & var_name
 			, const R var_pointer
 			, const char *registered_file=""
 			,short registered_line=-1
@@ -81,7 +81,7 @@ namespace zetscript{
 		//
 		// ATTRIBUTES
 		//
-		Symbol 				*	registerMemberAttribute(
+		Symbol 				*	registerAttributeMember(
 				const std::string & attrib_name
 				,const char * file=""
 				,short line=-1
@@ -91,7 +91,7 @@ namespace zetscript{
 		//---------------
 		// SETTER
 
-		/*Symbol				* 	registerMemberAttributeSetter(
+		/*Symbol				* 	registerAttributeMemberSetter(
 			std::string & error
 			,const char * file
 			,short line
@@ -114,7 +114,7 @@ namespace zetscript{
 		 */
 		template <typename F>
 		void registerNativeMemberAttributeSetter(
-				const char *attrib_name
+				const std::string & attrib_name
 				,F ptr_function
 				, const char *registered_file=""
 				,short registered_line=-1
@@ -123,7 +123,7 @@ namespace zetscript{
 		//---------------
 		// GETTER
 
-		/*Symbol				* 	registerMemberAttributeGetter(
+		/*Symbol				* 	registerAttributeMemberGetter(
 			std::string & error
 			,const char * file
 			,short line
@@ -191,7 +191,7 @@ namespace zetscript{
 		 */
 		template <typename F>
 		void registerNativeMemberAttributeGetter(
-			const char *attrib_name
+				const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -199,7 +199,7 @@ namespace zetscript{
 
 		template <typename F>
 		void registerNativeMemberAttributePostIncrement(
-			const char *attrib_name
+				const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -207,7 +207,7 @@ namespace zetscript{
 
 		template <typename F>
 		void registerNativeMemberAttributePostDecrement(
-			const char *attrib_name
+				const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -215,7 +215,7 @@ namespace zetscript{
 
 		template <typename F>
 		void registerNativeMemberAttributePreIncrement(
-			const char *attrib_name
+				const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -223,7 +223,7 @@ namespace zetscript{
 
 		template <typename F>
 		void registerNativeMemberAttributePreDecrement(
-			const char *attrib_name
+				const std::string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -235,7 +235,7 @@ namespace zetscript{
 		Symbol *	getSuperFunctionSymbol(Symbol *symbol);
 		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
-		Symbol				* 	registerMemberFunction(
+		Symbol				* 	registerFunctionMember(
 				 const std::string & function_name
 				, std::vector<ScriptFunctionArg> args={}
 				, unsigned short properties=0
@@ -259,7 +259,7 @@ namespace zetscript{
 
 		template <typename F>
 		void registerNativeMemberFunctionStatic(
-				const char *function_name
+				const std::string & function_name
 				,F function_ptr
 				, const char *registered_file=""
 				,short registered_line=-1
@@ -267,7 +267,7 @@ namespace zetscript{
 
 		template <typename F>
 		void registerNativeMemberFunction(
-				const char *function_name
+				const std::string & function_name
 				,F function_type
 				, const char *registered_file=""
 				,short registered_line=-1
@@ -314,7 +314,7 @@ namespace zetscript{
 
 		template <typename F>
 		int getNativeMemberFunctionRetArgsTypes(
-				const char *function_name
+				const std::string & function_name
 				,F function_ptr
 				,std::string & return_type
 				,std::vector<ScriptFunctionArg> & arg_info
