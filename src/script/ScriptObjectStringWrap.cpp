@@ -123,6 +123,10 @@ namespace zetscript{
 		return str_out;
 	}
 
+	void 							ScriptObjectStringWrap_append(ScriptObjectString *str_in,ScriptObjectString *str_append){
+		*(std::string *)str_in->value+=*(std::string *)(str_append->value);
+	}
+
 	ScriptObjectStringIterator * ScriptObjectStringWrap_iter(ScriptObjectString *so){
 		return ZS_NEW_OBJECT_STRING_ITERATOR(so);
 	}

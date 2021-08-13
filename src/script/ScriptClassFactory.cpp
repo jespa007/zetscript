@@ -219,6 +219,8 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectString>("startsWith",ScriptObjectStringWrap_startsWith);
 		registerNativeMemberFunction<ScriptObjectString>("endsWith",ScriptObjectStringWrap_endsWith);
 		registerNativeMemberFunction<ScriptObjectString>("substring",ScriptObjectStringWrap_substring);
+		registerNativeMemberFunction<ScriptObjectString>("append",ScriptObjectStringWrap_append);
+
 		registerNativeMemberFunction<ScriptObjectString>("iter",ScriptObjectStringWrap_iter);
 
 		// StringIterator

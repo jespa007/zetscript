@@ -68,31 +68,7 @@ namespace zetscript{
 				stk_src_item=(StackElement *)stk_src_item->value;
 			}
 
-			/*switch(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src_item->properties)){
-			//case STK_PROPERTY_NULL:
-			//	*(*str_dst_it)="null";
-			//	break;
-			case STK_PROPERTY_ZS_INT:
-				*(*str_dst_it)=zs_strutils::zs_int_to_str((zs_int)(stk_src_item)->value);
-				break;
-			case STK_PROPERTY_ZS_FLOAT:
-				*(*str_dst_it)=zs_strutils::zs_float_to_str(*((zs_float *)&((stk_src_item)->value)));
-				break;
-			case STK_PROPERTY_BOOL:
-				*(*str_dst_it)=(stk_src_item)->value == 0?"false":"true";
-				break;
-			default:
-				if(stk_src_item->properties==STK_PROPERTY_NULL){
-					*(*str_dst_it)="null";
-				}else if(stk_src_item->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					*(*str_dst_it)=((ScriptObjectObject *)(stk_src_item)->value)->toString();
-				}
-				else{*/
-					*(*str_dst_it)=stk_src_item->toString();
-				/*}
-
-				break;
-			}*/
+			*(*str_dst_it)=stk_src_item->toString();
 
 			str_dst_it++;
 			stk_src_it++;
