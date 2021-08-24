@@ -6,18 +6,18 @@ namespace zetscript{
 
 	bool	zs_vector::push_back_slot(){
 		if (this->_size == 0) {
-			this->_size = 10;
+			this->_size = ZS_VECTOR_N_SLOT_ELEMENTS;
 			this->items = (zs_int *)malloc(sizeof(zs_int) * this->_size);
 			memset(this->items, '\0', sizeof(zs_int) * this->_size);
 		}
 		// condition to increase this->items:
 		// last slot exhausted
 		if (this->_size ==this->count) {
-			if((this->_size+10) >= ZS_MAX_ELEMENTS_VECTOR){
+			if((this->_size+ZS_VECTOR_N_SLOT_ELEMENTS) >= ZS_MAX_ELEMENTS_VECTOR){
 				THROW_RUNTIME_ERROR("Max elements vector");
 				return false;
 			}
-			this->_size += 10;
+			this->_size += ZS_VECTOR_N_SLOT_ELEMENTS;
 			this->items =(zs_int *) realloc(this->items, sizeof(zs_int) * this->_size);
 		}
 

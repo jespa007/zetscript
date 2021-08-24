@@ -138,16 +138,6 @@ namespace zetscript{
 		/**
 		 * Built in register C Class, like ScriptObject,ScriptObjectString...
 		 */
-	/*	template<typename C>
-		void registerNativeClassBuiltin(
-			const std::string & class_name
-			, C * (*_constructor)()
-			, void (*_destructor)(C *)
-			, const char *registered_file=""
-			, short registered_line=-1
-		);
-*/
-
 		template<class C, class B>
 		void nativeClassInheritsFrom();
 

@@ -22,13 +22,13 @@ namespace zetscript{
 	class ScriptFunction {
 	public:
 
-		Symbol 	  		symbol;	 		// function registered by scope
-		int				idx_class; 		// which class belongs to...
-		short 			idx_script_function;		// idx_script_function from factory
-		int 			idx_return_type; 			// idx return type
-		zs_int 			ref_native_function_ptr;
-		zs_vector 	* 	params;  // std::vector<FunctionArg> tells var arg name or var type name (in of C )
-		int				min_stack_needed;
+		Symbol 	  			symbol;	 		// function registered by scope
+		int					idx_class; 		// which class belongs to...
+		short 				idx_script_function;		// idx_script_function from factory
+		int 				idx_return_type; 			// idx return type
+		zs_int 				ref_native_function_ptr;
+		zs_vector 			*params;
+		int					min_stack_needed;
 
 		PtrInstruction  instructions; // The set of byte code instructions that executes the function
 
@@ -36,7 +36,7 @@ namespace zetscript{
 		size_t			instructions_len;
 
 		// local symbols for class or function...
-		zs_vector   *	registered_symbols; // registered symbols
+		zs_vector   		*registered_symbols; // registered symbols
 
 		ScriptFunction(
 				ZetScript *_zs

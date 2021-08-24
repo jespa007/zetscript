@@ -168,7 +168,6 @@ namespace zetscript{
 		// !!! WARNING IT SHOULD BE IN THE SAME ORDER AS IS DEFINED IN COMMON.H
 		// !!!
 
-
 		//------------------------------------------------------------------------------------------------------------
 		// Let's register functions,...
 		// register c function's
@@ -178,7 +177,6 @@ namespace zetscript{
 		ZS_REGISTER_FUNCTION(zs,"parseFloat",static_cast<zs_float (*)(std::string *)>(parseFloat));
 		ZS_REGISTER_FUNCTION(zs,"parseInteger",static_cast<zs_int (*)(zs_float *)>(parseInteger));
 		ZS_REGISTER_FUNCTION(zs,"parseInteger",static_cast<zs_int (*)(std::string *)>(parseInteger));
-
 
 		//-------------------------
 		// Wrap functions
@@ -242,14 +240,8 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectObjectIterator>("end",ScriptObjectObjectIteratorWrap_end);
 		registerNativeMemberFunction<ScriptObjectObjectIterator>("get",ScriptObjectObjectIteratorWrap_get);
 
-
-
-
-
 		zs->saveState();
 	}
-
-
 
 	void ScriptClassFactory::registerNativeBaseSymbols(bool _register){
 		register_c_base_symbols = _register;
@@ -298,8 +290,6 @@ namespace zetscript{
 		stk->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_READ_ONLY;
 	}
 
-
-
 	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, const std::string & v, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
@@ -316,10 +306,8 @@ namespace zetscript{
 		registerConstantVariable(var_name, std::string(v), registered_file, registered_line);
 	}
 
-
 	// REGISTER CONSTANTS
 	//--------------------------------------------------------------------------------------------------------------------------------------------
-
 
 	void ScriptClassFactory::clear(short _idx_start){
 		short idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
@@ -365,7 +353,6 @@ namespace zetscript{
 	){
 		int  index;
 		ScriptClass *sci=NULL;
-		//ScriptFunction *main_function=NULL;//zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 
 		checkClassName(class_name);
 
@@ -381,7 +368,6 @@ namespace zetscript{
 			scope->setScriptClass(sci);
 
 			sci->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
-			//sci->symbol_class=*symbol;
 
 			script_classes->push_back((zs_int)sci);
 

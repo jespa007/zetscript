@@ -4,6 +4,7 @@
 #include 		"zs_rtti.cpp"
 #include 		"zs_strutils.cpp"
 #include 		"zs_vector.cpp"
+//#include 		"zs_vector_fast.cpp"
 #include 		"zs_map.cpp"
 #include 		"zs_map_iterator.cpp"
 #include 		"zs_dir.cpp"

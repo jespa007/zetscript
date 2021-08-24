@@ -4,6 +4,7 @@
 #include "zs_rtti.h"
 #include "zs_path.h"
 #include "zs_vector.h"
+//#include "zs_vector_fast.h"
 #include "zs_map_iterator.h"
 #include "zs_map.h"
 #include "zs_dir.h"
