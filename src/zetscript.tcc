@@ -14,10 +14,10 @@ namespace zetscript{
 					break;
 				 case IDX_BUILTIN_TYPE_ZS_INT_PTR_C:
 					 if(ptr_var==0) return stk_result;
-					 stk_result={(void *)(*((zs_int *)ptr_var)),STK_PROPERTY_ZS_INT};
+					 stk_result={(*((zs_int *)ptr_var)),STK_PROPERTY_ZS_INT};
 					 break;
 				 case IDX_BUILTIN_TYPE_ZS_INT_C:
-					 stk_result={(void *)(((zs_int)ptr_var)),STK_PROPERTY_ZS_INT};
+					 stk_result={(((zs_int)ptr_var)),STK_PROPERTY_ZS_INT};
 					 break;
 				 case IDX_BUILTIN_TYPE_ZS_FLOAT_C:
 					 stk_result.properties=STK_PROPERTY_ZS_FLOAT;//{};
@@ -30,10 +30,10 @@ namespace zetscript{
 					 break;
 				 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
 					 if(ptr_var==0) return stk_result;
-					 stk_result={(void *)(*((bool *)ptr_var)),STK_PROPERTY_BOOL};
+					 stk_result={(*((bool *)ptr_var)),STK_PROPERTY_BOOL};
 					 break;
 				 case IDX_BUILTIN_TYPE_BOOL_C:
-					 stk_result={(void *)(((bool)ptr_var)),STK_PROPERTY_BOOL};
+					 stk_result={(((bool)ptr_var)),STK_PROPERTY_BOOL};
 					 break;
 				 case IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C:
 				 case IDX_BUILTIN_TYPE_STRING_PTR_C:
@@ -46,7 +46,7 @@ namespace zetscript{
 
 					 }
 
-					 stk_result={so,STK_PROPERTY_SCRIPT_OBJECT};
+					 stk_result={(intptr_t)so,STK_PROPERTY_SCRIPT_OBJECT};
 					 break;
 				 case IDX_BUILTIN_TYPE_STACK_ELEMENT:
 					 if(ptr_var==0) return stk_result;
@@ -60,7 +60,7 @@ namespace zetscript{
 				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR:
 					 if(ptr_var==0) return stk_result;
 					stk_result = {
-						 (void *)ptr_var
+						 (intptr_t)ptr_var
 						 ,STK_PROPERTY_SCRIPT_OBJECT
 					 };
 
@@ -68,7 +68,7 @@ namespace zetscript{
 				 default:
 					 //if(ptr_var==0) return stk_result;
 					 stk_result = {
-							  script_class_factory->instanceScriptObjectByClassIdx(idx_builtin_type_var,(void *)ptr_var)
+							 (intptr_t) script_class_factory->instanceScriptObjectByClassIdx(idx_builtin_type_var,(void *)ptr_var)
 							 ,STK_PROPERTY_SCRIPT_OBJECT
 					 };
 					 break;
@@ -79,7 +79,7 @@ namespace zetscript{
 
 		bool ZetScript::convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, zs_int *ptr_var, std::string & error){
 			zs_int val_ret=0;
-			ScriptObjectString *so=NULL;
+			//ScriptObjectString *so=NULL;
 
 			ScriptObject *script_object=NULL;
 

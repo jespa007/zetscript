@@ -24,7 +24,6 @@ var test_in=[
 	,"b2 in [3,2,1,1,\"abc\",0,true]"
 	,"\"a\" in {k:'a',a:0}"
 	,"\"b\" in {k:'a',a:0}"
-	//0 in 10 // <-- invalid (2n is not iterator)
 	,"\"abc\" in \"aaaabcdef\""
 	,"\"abce\" in \"aaaabcdef\""
 	,"'a' in \"jdkjakdkk\""

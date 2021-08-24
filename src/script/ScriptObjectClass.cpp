@@ -69,7 +69,7 @@ namespace zetscript{
 			}
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
-				se->value=new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr);
+				se->value=(zs_int)(new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr));
 				se->properties=STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION; // tell stack element that is a function member
 			}
 			else{ // var...
@@ -80,10 +80,10 @@ namespace zetscript{
 					void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
 					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
 				}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
-					se->value=vm_get_stack_elements(this->vm) + symbol->ref_ptr; // load from global stk
+					se->value=(zs_int)(vm_get_stack_elements(this->vm) + symbol->ref_ptr); // load from global stk
 					se->properties=STK_PROPERTY_PTR_STK;
 				}else if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
-					se->value=new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr);
+					se->value=(zs_int)(new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr));
 					se->properties=STK_PROPERTY_MEMBER_ATTRIBUTE;
 				}
 			}
@@ -224,7 +224,7 @@ namespace zetscript{
 			 // only erases pointer if basic type or user/auto delete is required ...
 			CALL_DESTRUCTOR_CLASS(script_class_native,created_object);//(*(script_class_native->c_destructor))(created_object);
 		}else if(was_created_by_constructor){
-			fprintf(stderr,zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
+			fprintf(stderr,"%s",zs_strutils::format("[%s:%i] Allocated C pointer not deallocated"
 						,SFI_GET_FILE_LINE(info_function_new, instruction_new)
 				).c_str()
 			);

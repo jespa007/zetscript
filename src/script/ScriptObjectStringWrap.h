@@ -24,6 +24,8 @@ namespace zetscript{
 	bool 							ScriptObjectStringWrap_endsWith(ScriptObjectString *so,std::string *suffix);
 	ScriptObjectString * 			ScriptObjectStringWrap_substring(ScriptObjectString *str_in,zs_int start,zs_int end);
 
+	void 							ScriptObjectStringWrap_append(ScriptObjectString *str_in,ScriptObjectString *str_append);
+
 	ScriptObjectStringIterator *	ScriptObjectStringWrap_iter(ScriptObjectString *str_in);
 
 

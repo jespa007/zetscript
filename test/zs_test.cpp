@@ -60,7 +60,7 @@ void test_arithmetic_int_expr(zs_int expr,const char *str_expr)
 		StackElement stk=zs->eval(std::string("return ")+str_expr);\
 		if(stk.properties & STK_PROPERTY_ZS_INT){\
 			if((zs_int)stk.value != expr){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,expr,(zs_int)stk.value); \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,(int)expr,int(((zs_int)stk.value))); \
 				exit(-1); \
 			} \
 		}else{\
@@ -79,7 +79,7 @@ void test_int_expr(const char *str_expr, zs_int expected_value) {
 		StackElement stk=zs->eval(str_expr);\
 		if(stk.properties & STK_PROPERTY_ZS_INT){\
 			if((zs_int)stk.value  != (expected_value)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,expected_value,(zs_int)stk.value); \
+				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,(int)expected_value,(int)((zs_int)stk.value)); \
 				exit(-1); \
 			} \
 		}else{\
@@ -148,7 +148,7 @@ void test_arithmetic_integer_op(zs_int val1, zs_int val2, const char *str_format
 			StackElement stk=zs->eval(it_iod->str); \
 			if (stk.properties & STK_PROPERTY_ZS_INT) {
 				if ((zs_int)stk.value != (it_iod->val)) {
-					fprintf(stderr, "error test \"%s\" expected %i but it was %i!\n", it_iod->str.c_str(), it_iod->val,(zs_int)stk.value);
+					fprintf(stderr, "error test \"%s\" expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zs_int)stk.value));
 					exit(-1);
 				}
 			}else{

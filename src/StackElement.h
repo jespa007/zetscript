@@ -104,8 +104,8 @@ namespace zetscript{
 	#pragma pack(push, 1)
 
 	struct StackElement {
-		void * value; // operable value
-		uint16_t properties; // it tells its properties
+		zs_int 			value; // operable value
+		uint16_t 		properties; // it tells its properties
 
 		// it gives stackelement as string (the result should be deleted)
 		const char * 	typeOf();

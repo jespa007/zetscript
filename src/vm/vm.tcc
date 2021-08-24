@@ -7,18 +7,18 @@
 STK_SET_NULL(data->stk_vm_current++); \
 
 #define PUSH_STK_BOOLEAN(init_value) \
-data->stk_vm_current->value=(void *)((zs_int)(init_value)); \
+data->stk_vm_current->value=init_value; \
 data->stk_vm_current->properties=STK_PROPERTY_BOOL; \
 data->stk_vm_current++;
 
 
 #define PUSH_STK_ZS_INT(init_value) \
-data->stk_vm_current->value=(void *)((zs_int)(init_value)); \
+data->stk_vm_current->value=init_value; \
 data->stk_vm_current->properties=STK_PROPERTY_ZS_INT; \
 data->stk_vm_current++;
 
 #define PUSH_STK_SCRIPT_OBJECT(obj_value) \
-data->stk_vm_current->value=(void *)((zs_int)(obj_value)); \
+data->stk_vm_current->value=(zs_int)obj_value; \
 data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT; \
 data->stk_vm_current++;
 
@@ -32,17 +32,17 @@ data->stk_vm_current++;
 }
 
 #define PUSH_STK_SCRIPT_FUNCTION(ref) \
-data->stk_vm_current->value=(void *)ref; \
+data->stk_vm_current->value=ref; \
 data->stk_vm_current->properties=STK_PROPERTY_FUNCTION; \
 data->stk_vm_current++;
 
 #define PUSH_STK_SCRIPT_CLASS(ref) \
-data->stk_vm_current->value=(void *)ref; \
+data->stk_vm_current->value=ref; \
 data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_CLASS; \
 data->stk_vm_current++;
 
 // explains whether stk is this or not. Warning should be given as value and not as ptr
-#define IS_STK_THIS(stk) (this_object != NULL && (stk)->value == this_object)
+#define IS_STK_THIS(stk) (this_object != NULL && (stk)->value == (zs_int)(this_object))
 
 #define PRINT_DUAL_ERROR_OP(c)\
 std::string var_type1=stk_result_op1->typeOf(),\
@@ -67,12 +67,11 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 {\
 	VM_Scope *vm_check_scope=(data->vm_current_scope-1);\
 	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
-	zs_vector_fast *scope_symbols=vm_check_scope->scope->registered_variable_symbols;\
-	Symbols *symbols					=scope_symbols->items;\
-	size_t count=scope_symbols->count;\
+	zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
+	zs_int *symbols					=scope_symbols->items;\
 	StackElement *stk_local_var;\
-	while(count--){ \
-		stk_local_var =stk_local_vars+(symbols+count)->idx_position;\
+	for(int i = scope_symbols->count-1; i >=0 ; --i,++symbols){\
+		stk_local_var =(stk_local_vars+((Symbol *)(*symbols))->idx_position);\
 		if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
 			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
 			if(so != NULL && so->shared_pointer!=NULL){\
@@ -427,6 +426,8 @@ namespace zetscript{
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
 			,bool is_constructor
+			//,void *stk_elements_builtin_ptr // vector of properties
+			//,int stk_elements_builtin_len // vector of properties
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
@@ -436,6 +437,7 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
+		int this_as_first_parameter=0;
 
 		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
 
@@ -447,11 +449,11 @@ namespace zetscript{
 			stk_elements_builtin_len=class_obj->symbol_members->count;
 
 		}
-		bool stk_element_are_vector_element_ptr=stk_elements_builtin_ptr!=data->vm_stack;
+		//bool stk_element_are_vector_element_ptr=stk_elements_builtin_ptr!=data->vm_stack;
 
 		for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 			ScriptFunction *irfs = NULL;
-			int this_as_first_parameter=0;
+			this_as_first_parameter=0;
 
 			EXTRACT_FUNCTION_INFO
 
@@ -550,7 +552,7 @@ namespace zetscript{
 			int n_candidates=0;
 			std::string str_candidates="";
 			std::string args_str = "";
-			int arg_idx_type=-1;
+			//int arg_idx_type=-1;
 			/* get arguments... */
 
 			for( unsigned k = 0; k < n_args;k++){
@@ -607,7 +609,7 @@ namespace zetscript{
 			}
 
 			for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-				int this_as_first_parameter=0;
+				this_as_first_parameter=0;
 				ScriptFunction *irfs=NULL;
 
 				EXTRACT_FUNCTION_INFO
@@ -757,17 +759,19 @@ namespace zetscript{
 		std::string str_stk_result_op1_full_definition="";
 		std::string str_stk_result_op2_full_definition="";
 		//ScriptObjectClass *calling_object=NULL;
-		ScriptClass *script_class_aux=NULL;
+		//ScriptClass *script_class_aux=NULL;
 		StackElement *stk_vm_current_backup,*stk_args;
-		int stk_element_len=0;
+		//int stk_element_len=0;
 		ScriptFunction *ptr_function_found=NULL;
 		StackElement ret_obj;
 		const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(byte_code_metamethod);
 		const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
+		//zs_vector *stk_builtin_elements=NULL;
 		std::string error_found="";
+		//zs_vector * list_props=NULL;
 		ScriptObject *script_object=NULL;
 		std::string class_name_object_found="";
-		ScriptObjectClass *one_param_object_class = NULL;
+		//ScriptObjectClass *one_param_object_class = NULL;
 		StackMemberAttribute *stk_ma=NULL;
 		int n_stk_args=byte_code_metamethod_get_num_arguments(byte_code_metamethod);
 		StackElement *stk_return=NULL;
@@ -955,10 +959,13 @@ namespace zetscript{
 			case BYTE_CODE_METAMETHOD_PRE_INC:
 			case BYTE_CODE_METAMETHOD_PRE_DEC:
 
-				ret_obj.value=script_object;
+				ret_obj.value=(uintptr_t)script_object;
 				ret_obj.properties=STK_PROPERTY_SCRIPT_OBJECT;
 				break;
+			default:
+				break;				
 			}
+
 
 		}else{
 
@@ -1031,7 +1038,7 @@ apply_metamethod_error:
 
 		// stk_op1 expects to be stk
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		ScriptFunction *sf_iter=NULL;
+		//ScriptFunction *sf_iter=NULL;
 		StackElement *stk_sf_iter;
 
 		// stk_op2 expects to be obj with container
@@ -1059,14 +1066,14 @@ apply_metamethod_error:
 			if(stk_sf_iter->properties & (STK_PROPERTY_FUNCTION | STK_PROPERTY_MEMBER_FUNCTION)){
 				StackMemberFunction *smf=(StackMemberFunction *)stk_sf_iter->value;
 				ScriptObject *so_object=smf->so_object;
-				StackElement *stk_start=data->stk_vm_current;
+				//StackElement *stk_start=data->stk_vm_current;
 				int n_args=0;
 
 				if(smf->so_function->symbol.properties & SYMBOL_PROPERTY_STATIC){
 					n_args=1;
 
 					// only stores and not increment (++ ) in order to start the stk arg
-					*data->stk_vm_current={so_object,STK_PROPERTY_SCRIPT_OBJECT};
+					*data->stk_vm_current={(intptr_t)so_object,STK_PROPERTY_SCRIPT_OBJECT};
 					so_object=NULL;
 				}
 

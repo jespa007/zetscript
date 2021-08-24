@@ -6,6 +6,7 @@ class A{
 
 };
 
+Console::outln(c);
 Console::outln(A::b); // <-- demostrates static access const var
 Console::outln(A::a); // <-- demostrates static access const allocated class
 Console::outln(A::a.a); //<-- the constant 'a' itself

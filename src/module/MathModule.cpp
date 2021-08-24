@@ -5,6 +5,8 @@
 
 #include "zetscript.h"
 
+#define ZS_ONE_OVER_RAND_MAX	(1.0f/(float)(RAND_MAX))
+
 namespace zetscript{
 
 	const zs_float MathModule_PI=M_PI;
@@ -30,6 +32,6 @@ namespace zetscript{
 	}
 
 	 zs_float MathModule_random(){
-		return rand()*ONE_OVER_RAND_MAX;
+		return rand()*ZS_ONE_OVER_RAND_MAX;
 	}
 }

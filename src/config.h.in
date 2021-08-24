@@ -5,7 +5,9 @@
  * These values are automatically set according to their cmake variables.
  */
 
-typedef ${ZS_FLOAT_TYPE} 	zs_float;
+namespace zetscript{
+	typedef ${ZS_FLOAT_TYPE} 	zs_float;
+}
 
 #define ZS_FLOAT_COPY(dst_ptr, src_ptr) memcpy((void *)(dst_ptr),(void *)(src_ptr),sizeof(zs_float))
 

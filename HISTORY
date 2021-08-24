@@ -1,9 +1,7 @@
 
 
 //----------------------------------------------------------
-Version: 2.1.0
-Date: XX-09-2020
-
+TODOS
 
 #79 Implement coroutines 
 #165 try eval expressions as constant 
@@ -13,7 +11,7 @@ Date: XX-09-2020
 > #226 implement Stream class
 > #242 compile code/load compiled code feature  (*.zsc)
 > #246 Erase code never execute or temporal expresion that will never assigned
-> #287 Some optimizations 
+> #287 Some optimizations
 
 //----------------------------------------------------------
 Version: 2.0.0
@@ -22,7 +20,7 @@ Date: XX-08-2021 (Expected to finish on 27 August)
 Main improvements: 
 
 -Massive update that rewrites a internal architecture, organize and clean code
--VM speed up ~x2.5
+-VM speed up ~x2
 -VM save memory stack ~x2
 -Optimize size/compile times for binding c++ functions ~x2
 -ZetScript can be instanced more than once
@@ -126,13 +124,13 @@ Solved issues
 #157 Fix +=,-=,/= etc operator
 > #159 Update manual ZetScript 2.0  
 > #158 Update doc CodeProject ZetScript 2.0 
-> #160 Update Invader ZetScript 2.0 
+#160 Update Invader ZetScript 2.0 
 #161 Merge symbol+functions in one container !!!
 #162 Implement eval Function object 
 #164 implement length property built-in for get length of vector/dictionary/string instead of call size()
 #166 control the increment of vm_stk_current/vm_str_current  
 #168 When semicolon on expression is missing it shows wrong filename 
-> #169 Fix/Check metamethods
+#169 Fix/Check metamethods
 #170 Fix class 
 #171 test returns stack var with 0 refs (solved by #230, user is in charge to destroy lifetime objects) 
 #172 get rid super scope
@@ -240,11 +238,7 @@ Solved issues
 #295 Allow switch to have expressions/variables in the case 
 #296 Create inc/dec metamethods and include in attribute metamethods 
 #297 Vector/Object & class by default it gives all public members in json format by default when prints or do toString()
-> #298 Do not store function members in ScriptObject improvement
-> #299 Do not allocate for attribute member in script object
-> #300 Convert zs_vectors to arrays variable symbols in places where is possible
-> #301 Solve inherited class call overrided function
- 
+
 
 //----------------------------------------------------------
 Version: 1.3.0

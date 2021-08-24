@@ -7,4 +7,5 @@
 *.cmake
 CMakeCache.txt
 Makefile
+/config.h
 

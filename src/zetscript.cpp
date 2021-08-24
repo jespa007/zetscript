@@ -80,32 +80,32 @@ namespace zetscript{
 		// DateTime
 		cl=registerClass<zs_datetime>("DateTime",DateTimeModuleWrap_new,DateTimeModuleWrap_delete);
 
-		registerMemberFunctionStatic<zs_datetime>("_add",DateTimeModuleWrap_add);
-		registerMemberFunctionStatic<zs_datetime>("_sub",DateTimeModuleWrap_sub);
+		registerFunctionMemberStatic<zs_datetime>("_add",DateTimeModuleWrap_add);
+		registerFunctionMemberStatic<zs_datetime>("_sub",DateTimeModuleWrap_sub);
 
-		registerMemberFunction<zs_datetime>("setUtc",DateTimeModuleWrap_setUtc);
+		registerFunctionMember<zs_datetime>("setUtc",DateTimeModuleWrap_setUtc);
 
-		registerMemberFunction<zs_datetime>("addSeconds",DateTimeModuleWrap_addSeconds);
-		registerMemberFunction<zs_datetime>("addMinutes",DateTimeModuleWrap_addMinutes);
-		registerMemberFunction<zs_datetime>("addHours",DateTimeModuleWrap_addHours);
-		registerMemberFunction<zs_datetime>("addDays",DateTimeModuleWrap_addDays);
-		registerMemberFunction<zs_datetime>("addMonths",DateTimeModuleWrap_addMonths);
-		registerMemberFunction<zs_datetime>("addYears",DateTimeModuleWrap_addYears);
+		registerFunctionMember<zs_datetime>("addSeconds",DateTimeModuleWrap_addSeconds);
+		registerFunctionMember<zs_datetime>("addMinutes",DateTimeModuleWrap_addMinutes);
+		registerFunctionMember<zs_datetime>("addHours",DateTimeModuleWrap_addHours);
+		registerFunctionMember<zs_datetime>("addDays",DateTimeModuleWrap_addDays);
+		registerFunctionMember<zs_datetime>("addMonths",DateTimeModuleWrap_addMonths);
+		registerFunctionMember<zs_datetime>("addYears",DateTimeModuleWrap_addYears);
 
 		// metamethods...
-		registerMemberFunction<zs_datetime>("_toString",DateTimeModuleWrap_toString);
+		registerFunctionMember<zs_datetime>("_toString",DateTimeModuleWrap_toString);
 
-		registerMemberAttributeGetter<zs_datetime>("week_day",DateTimeModuleWrap_get_week_day);
-		registerMemberAttributeGetter<zs_datetime>("month_day",DateTimeModuleWrap_get_month_day);
-		registerMemberAttributeGetter<zs_datetime>("year_day",DateTimeModuleWrap_get_year_day);
+		registerAttributeMemberGetter<zs_datetime>("week_day",DateTimeModuleWrap_get_week_day);
+		registerAttributeMemberGetter<zs_datetime>("month_day",DateTimeModuleWrap_get_month_day);
+		registerAttributeMemberGetter<zs_datetime>("year_day",DateTimeModuleWrap_get_year_day);
 
-		registerMemberAttributeGetter<zs_datetime>("second",DateTimeModuleWrap_get_second);
-		registerMemberAttributeGetter<zs_datetime>("minute",DateTimeModuleWrap_get_minute);
-		registerMemberAttributeGetter<zs_datetime>("hour",DateTimeModuleWrap_get_hour);
+		registerAttributeMemberGetter<zs_datetime>("second",DateTimeModuleWrap_get_second);
+		registerAttributeMemberGetter<zs_datetime>("minute",DateTimeModuleWrap_get_minute);
+		registerAttributeMemberGetter<zs_datetime>("hour",DateTimeModuleWrap_get_hour);
 
-		registerMemberAttributeGetter<zs_datetime>("day",DateTimeModuleWrap_get_day);
-		registerMemberAttributeGetter<zs_datetime>("month",DateTimeModuleWrap_get_month);
-		registerMemberAttributeGetter<zs_datetime>("year",DateTimeModuleWrap_get_year);
+		registerAttributeMemberGetter<zs_datetime>("day",DateTimeModuleWrap_get_day);
+		registerAttributeMemberGetter<zs_datetime>("month",DateTimeModuleWrap_get_month);
+		registerAttributeMemberGetter<zs_datetime>("year",DateTimeModuleWrap_get_year);
 
 		// Custom user function or classes
 		eval(
@@ -267,7 +267,7 @@ namespace zetscript{
 		// swap values stk_ref/value
 		so->set(const_name);
 
-		stk->value=so;
+		stk->value=(zs_int)so;
 		stk->properties=STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY;
 
 		return stk;
@@ -361,7 +361,7 @@ namespace zetscript{
 				// file exist and can read ... set current pwd
 				//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
 				current_directory = zs_dir::get_current_directory();
-				zs_dir::chdir(zs_path::get_directory(filename));
+				zs_dir::change_dir(zs_path::get_directory(filename));
 				//}
 				std::string error_str="";
 				std::string error_file="";
@@ -385,7 +385,7 @@ namespace zetscript{
 
 				// restore previous directory
 				//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
-				zs_dir::chdir(current_directory);
+				zs_dir::change_dir(current_directory);
 				//}
 
 				// deallocate before throw errors...
@@ -452,7 +452,7 @@ namespace zetscript{
 						if(var){
 							if(var->shared_pointer != NULL){
 								if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
-									THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine));
+									THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
 								}
 							}
 						}

@@ -40,7 +40,7 @@ namespace zetscript{
 			stk_value=*((StackElement *)vo->getUserElementAt(idx));
 		}
 
-		stk_key.value=(void *)idx;
+		stk_key.value=idx;
 
 		// pass value through the stack
 

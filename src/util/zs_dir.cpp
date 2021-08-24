@@ -18,7 +18,7 @@
 
 namespace zetscript{
 	namespace zs_dir{
-		bool chdir(const std::string & _path){
+		bool change_dir(const std::string & _path){
 			if(__chdir__(_path.c_str())==-1) {
 				return false;
 			}

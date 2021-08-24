@@ -61,7 +61,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("cannot share pointer");
 			}
 
-			stk->value=so_partial;
+			stk->value=(zs_int)so_partial;
 			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
 		}
 
@@ -87,7 +87,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("cannot share pointer");
 			}
 
-			stk->value=so_partial;
+			stk->value=(zs_int)so_partial;
 			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
 		}
 
@@ -121,6 +121,10 @@ namespace zetscript{
 		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(str_in->getZetScript());
 		str_out->set(zs_strutils::substring(str_in->toString(),start,end));
 		return str_out;
+	}
+
+	void 							ScriptObjectStringWrap_append(ScriptObjectString *str_in,ScriptObjectString *str_append){
+		*(std::string *)str_in->value+=*(std::string *)(str_append->value);
 	}
 
 	ScriptObjectStringIterator * ScriptObjectStringWrap_iter(ScriptObjectString *so){

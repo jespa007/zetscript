@@ -495,7 +495,7 @@ namespace zetscript{
 				zs->getVirtualMachine()
 				,(int)idx_position
 				,{
-					(void *)symbol->ref_ptr
+					symbol->ref_ptr
 					,STK_PROPERTY_FUNCTION
 				}
 			);

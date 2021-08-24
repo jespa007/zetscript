@@ -70,13 +70,12 @@ namespace zetscript{
 
 								if((ptr_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
 
-
 									stk_getter_result=VM_EXECUTE(
-											zs->getVirtualMachine()
-											,obj
-											,ptr_function
-											,NULL
-											,0
+										zs->getVirtualMachine()
+										,obj
+										,ptr_function
+										,NULL
+										,0
 									);
 
 
@@ -119,9 +118,14 @@ namespace zetscript{
 			ScriptObject *obj=NULL;
 			int16_t var_type = 0;
 
+			if(stk->properties & STK_PROPERTY_PTR_STK){
+				stk=(StackElement *)stk->value;
+			}
+
 			if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk)){
 				stk=((ScriptObjectVarRef *)stk->value)->getStackElementPtr();
 			}
+
 
 			var_type = GET_STK_PROPERTY_TYPES(stk->properties);
 

@@ -284,7 +284,7 @@
     case INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
 		 stk_result_op1=--data->stk_vm_current;\
 		 stk_result_op2=&stk_aux;\
-		 stk_result_op2->value=(void *)instruction->value_op2;\
+		 stk_result_op2->value=instruction->value_op2;\
 		 stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
          break;\
     case INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
@@ -293,14 +293,14 @@
          break;\
     case INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
 		 stk_result_op1=&stk_aux;\
-		 stk_result_op1->value=(void *)instruction->value_op2;\
+		 stk_result_op1->value=instruction->value_op2;\
 		 stk_result_op1->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
          stk_result_op2=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
          break;\
     case INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
         stk_result_op1=LOAD_FROM_STACK(instruction->value_op1,instruction->properties);\
 		stk_result_op2=&stk_aux;\
-		stk_result_op2->value=(void *)instruction->value_op2;\
+		stk_result_op2->value=instruction->value_op2;\
 		stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
         break;\
    case INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
@@ -328,7 +328,7 @@ stk_result_op1=--data->stk_vm_current;
 
 
 #define PUSH_STK_PTR(stk_ptr) \
-	data->stk_vm_current->value=(stk_ptr);\
+	data->stk_vm_current->value=(intptr_t)(stk_ptr);\
 	data->stk_vm_current->properties=STK_PROPERTY_PTR_STK;\
 	data->stk_vm_current++;
 
@@ -383,8 +383,8 @@ namespace zetscript{
 		Instruction *instruction_it=instructions;
 		VM_Scope * vm_scope_start=data->vm_current_scope; // save current scope...
 		Scope * scope = calling_function->symbol.scope;// ast->idx_scope;
-		Symbol *registered_symbols=calling_function->registered_symbols->items;
-		unsigned symbols_count=calling_function->registered_symbols->count;
+		zs_vector *registered_symbols=calling_function->registered_symbols;
+		unsigned symbols_count=registered_symbols->count;
 		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
 		StackElement *ptr_aux = _stk_local_var+n_args;
 
@@ -407,9 +407,9 @@ namespace zetscript{
 		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
 
 			for(unsigned i = n_args; i < (symbols_count); ++i,++ptr_aux){ // from n_args, setup local vars
-
-				if((registered_symbols+i)->properties & SYMBOL_PROPERTY_FUNCTION){
-					ptr_aux->value=(void *)symbol_aux->ref_ptr;
+				symbol_aux=(Symbol *)registered_symbols->items[i];
+				if(symbol_aux->properties & SYMBOL_PROPERTY_FUNCTION){
+					ptr_aux->value=symbol_aux->ref_ptr;
 					ptr_aux->properties=STK_PROPERTY_FUNCTION;
 				}else{
 					STK_SET_NULL(ptr_aux);		// null as default
@@ -579,10 +579,10 @@ namespace zetscript{
 
 						zs_char *ptr_char=(zs_char *)&((std::string *)so_string->value)->c_str()[STK_VALUE_TO_ZS_INT(stk_result_op2)];
 						if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
-							data->stk_vm_current->value=(void *)((zs_int)(*ptr_char));
+							data->stk_vm_current->value=((zs_int)(*ptr_char));
 							data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;
 						}else{ // push stk
-							data->stk_vm_current->value=ptr_char;
+							data->stk_vm_current->value=(zs_int)ptr_char;
 							data->stk_vm_current->properties=STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C;
 						}
 						data->stk_vm_current++;
@@ -732,17 +732,17 @@ load_element_object:
 				PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_ZS_INT:
-				data->stk_vm_current->value=(void *)instruction->value_op2;
+				data->stk_vm_current->value=instruction->value_op2;
 				data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;
 				data->stk_vm_current++;
 				continue;
 			case BYTE_CODE_LOAD_ZS_FLOAT:
-				data->stk_vm_current->value=(void *)instruction->value_op2;
+				data->stk_vm_current->value=instruction->value_op2;
 				data->stk_vm_current->properties=STK_PROPERTY_ZS_FLOAT;
 				data->stk_vm_current++;
 				continue;
 			case BYTE_CODE_LOAD_BOOL:
-				data->stk_vm_current->value=(void *)instruction->value_op2;
+				data->stk_vm_current->value=instruction->value_op2;
 				data->stk_vm_current->properties=STK_PROPERTY_BOOL;
 				data->stk_vm_current++;
 				continue;
@@ -768,7 +768,7 @@ load_element_object:
 			case BYTE_CODE_STORE_SHL:
 			case BYTE_CODE_STORE_SHR:
 				{
-					zs_vector_fast *lst_functions=NULL;
+					zs_vector *lst_functions=NULL;
 					ScriptObject *obj_setter=NULL;
 
 					char n_elements_left=0;
@@ -895,8 +895,8 @@ load_element_object:
 
 							stk_multi_var_src=stk_aux-n_elements_left-1; // now pos - n_elements
 							n_elements_left=n_elements_left-1;
-							stk_result_op2=--data->stk_vm_current; // dst to save
-							stk_result_op1=++stk_multi_var_src; // src
+							stk_result_op2=--data->stk_vm_current;
+							stk_result_op1=++stk_multi_var_src;
 
 
 						}else{
@@ -1139,10 +1139,10 @@ load_element_object:
 						{
 
 							void *copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
-							void **stk_src_ref=&stk_src->value;
-							void **stk_dst_ref=&stk_dst->value;
+							zs_int *stk_src_ref=&stk_src->value;
+							zs_int *stk_dst_ref=&stk_dst->value;
 							if(stk_src->properties & STK_PROPERTY_IS_VAR_C){ // src is C pointer
-								stk_src_ref=(void **)((stk_src)->value);
+								stk_src_ref=(zs_int *)((stk_src)->value);
 							}
 							if(stk_dst->properties & STK_PROPERTY_IS_VAR_C){ // dst is a C pointer
 
@@ -1165,7 +1165,7 @@ load_element_object:
 										}
 									}
 								}
-								stk_dst_ref=(void **)((stk_dst)->value);
+								stk_dst_ref=(zs_int *)((stk_dst)->value);
 								copy_aux=&((stk_dst)->value);
 							}
 							unsigned short type_var=stk_src->properties;
@@ -1199,7 +1199,7 @@ load_element_object:
 									if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
 										str_object=(ScriptObjectString *)stk_dst->value;
 									}else{ // Generates a std::string var
-										stk_dst->value=str_object= ZS_NEW_OBJECT_STRING(data->zs);
+										stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));
 										stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
 										// create shared ptr
@@ -1220,7 +1220,7 @@ load_element_object:
 
 									so_aux=(ScriptObject *)stk_src->value;
 
-									stk_dst->value=so_aux;
+									stk_dst->value=(intptr_t)so_aux;
 									stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
 									if(!IS_STK_THIS(stk_src)){ // do not share this!
@@ -1246,7 +1246,7 @@ load_element_object:
 						case STK_PROPERTY_SCRIPT_OBJECT: // we are getting script vars ...
 
 							if((old_stk_dst.properties & (STK_PROPERTY_IS_VAR_C))==(STK_PROPERTY_IS_VAR_C)==0){ // is not C class
-								if(old_stk_dst.value!=NULL){ // it had a pointer (no constant)...
+								if(old_stk_dst.value!=0){ // it had a pointer (no constant)...
 									if(! // if not...
 										(old_stk_dst.value == stk_dst->value)  // ... same ref ...
 									||  (IS_STK_THIS(&old_stk_dst)) // ... or this
@@ -1380,7 +1380,7 @@ load_element_object:
 				POP_ONE;
 				so_aux=ScriptObjectString::newScriptObjectString(data->zs,stk_result_op1->typeOf());
 				vm_create_shared_pointer(vm,so_aux);
-				data->stk_vm_current->value=so_aux;
+				data->stk_vm_current->value=(zs_int)so_aux;
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				data->stk_vm_current++;
 				continue;
@@ -1541,10 +1541,16 @@ load_element_object:
 						){
 							ignore_call= (is_constructor) && calling_object->isNativeObject() && n_args==0;
 							sc=data->script_class_factory->getScriptClass(calling_object->idx_script_class);
+							/*zs_vector * list_props=calling_object->getStkBuiltinListElements();//getFunctions();
+							stk_element_ptr=list_props->items;
+							stk_element_len=list_props->count;*/
 						}else if(sf->idx_class != IDX_SCRIPT_CLASS_MAIN
 								&& (sf->symbol.properties & (SYMBOL_PROPERTY_FUNCTION|SYMBOL_PROPERTY_STATIC))
 						){
 							sc=data->script_class_factory->getScriptClass(sf->idx_class);
+							/*ScriptClass *sc=data->script_class_factory->getScriptClass(sf->idx_class);
+							stk_element_ptr=sc->symbol_members->items;
+							stk_element_len=sc->symbol_members->count;*/
 						}
 
 
@@ -1557,6 +1563,8 @@ load_element_object:
 									,calling_function
 									,instruction
 									,is_constructor
+									//,stk_element_ptr
+									//,stk_element_len
 									,sf->symbol.name // symbol to find
 									,stk_start_arg_call
 									,n_args))==NULL){
@@ -1579,11 +1587,11 @@ load_element_object:
 							bool end_args=false;
 							//int function_param=0;//&sf->params->items[0];
 							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
-							ScriptFunctionArg *sf_params_items=sf->params->items;
+							zs_int *sf_params_items=sf->params->items;
 
 							for(int i=0;i < n_args && end_args==false;++i){
 								so_param=NULL; // script object we passing
-								uint16_t sfa_properties=sf_params_items->properties;// ((ScriptFunctionArg *)(*function_param))->properties;
+								uint16_t sfa_properties=((ScriptFunctionArg *)(*sf_params_items))->properties;// ((ScriptFunctionArg *)(*function_param))->properties;
 								if((sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF)){ // create or pass the var ref object...
 
 									StackElement *check_ref=stk_arg;
@@ -1603,7 +1611,7 @@ load_element_object:
 											goto lbl_exit_function;
 										}
 										so_param=sc;
-										stk_arg->value=(void *)sc;
+										stk_arg->value=(intptr_t)sc;
 										stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
 									}else{ // is a var ref already, keep its reference ...
 										so_param=(ScriptObject *)stk_arg->value;
@@ -1632,9 +1640,19 @@ load_element_object:
 											}
 											sc->set(stk_arg->toString());
 											so_param=sc;
-											stk_arg->value=(void *)sc;
+											stk_arg->value=(zs_int)sc;
 											stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
-										}
+										}/*else if((sf_getter=so_param->getGetter())!=NULL){
+											VM_INNER_CALL_ONLY_RETURN(
+													so_param
+													,sf_getter
+													,"_get"
+													,true)
+											// copy returned value if any
+											*stk_arg = *data->stk_vm_current;
+											so_param=NULL; // put NULL to not make it shared next it
+											goto re_evaluate_stk_arg; // because we want to check current
+										}*/
 									}
 								}
 
@@ -1654,7 +1672,7 @@ load_element_object:
 										// push first arg
 										var_args->push(stk_arg);
 										// replace for vector type...
-										stk_arg->value=(void *)var_args;
+										stk_arg->value=(zs_int)var_args;
 										stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
 									}else{ // not push in var arg
 
@@ -1693,6 +1711,19 @@ load_element_object:
 							case STK_PROPERTY_FUNCTION: // we call function in the middle of the function
 								VM_INNER_CALL_ONLY_RETURN(NULL,param->default_var_value.value,"default",true)
 								data->stk_vm_current++;
+								/*vm_call_function_script(
+									 vm
+									,NULL
+									,(ScriptFunction *)param->default_var_value.value
+									,stk_def_afun_start
+								);
+
+								n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
+
+								CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) // we share pointer (true second arg) to not remove on pop in calling return
+
+								// reset stack
+								data->stk_vm_current=stk_def_afun_start+1; // reset stack +1*/
 								break;
 							default:
 								VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\"",param->default_var_value.typeOf());
@@ -1791,7 +1822,7 @@ load_element_object:
 								ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
 								sc->set(script_var->toString());
 								stk_it->properties=STK_PROPERTY_SCRIPT_OBJECT;
-								stk_it->value=sc;
+								stk_it->value=(zs_int)sc;
 							}else{
 
 								if(script_var->shared_pointer->data.created_idx_call==data->vm_idx_call){ // the variable was created in this function ctx
@@ -1833,21 +1864,21 @@ load_element_object:
 						so_class_aux->info_function_new=calling_function;
 						so_class_aux->instruction_new=instruction;
 					}
-					(*data->stk_vm_current++)={so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new std::vector object...
 					so_aux=ZS_NEW_OBJECT_VECTOR(data->zs);
 					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
 					}
-					(*data->stk_vm_current++)={so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new std::vector object...
 				 	so_aux=ZS_NEW_OBJECT_OBJECT(data->zs);
 					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
 					}
-					(*data->stk_vm_current++)={so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 
 			 case  BYTE_CODE_NEW_STRING: // Create new std::vector object...
@@ -1856,7 +1887,7 @@ load_element_object:
 						goto lbl_exit_function;
 					}
 
-					(*data->stk_vm_current++)={so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_DELETE:
 					POP_ONE;
