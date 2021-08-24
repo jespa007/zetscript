@@ -500,7 +500,6 @@ namespace zetscript{
 	/**
 	 * Register C Member var
 	 */
-	//<o, decltype(o::s)>(STR(s),ZetScript::offset_of(&o::s)) &CVar::mierda
 	template <typename C, typename R>
 	void ScriptClassFactory::registerNativeStaticConstMember(
 			const char *var_name

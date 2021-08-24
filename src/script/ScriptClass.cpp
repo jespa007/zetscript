@@ -132,13 +132,10 @@ namespace zetscript{
 			 const std::string & attrib_name
 			,const char * file
 			,short line
-
-
 	){
 		Symbol *symbol_attrib=NULL;
 		if((symbol_attrib=getSymbol(attrib_name)) != NULL){ // give an error  ...
-			//Symbol *existing_symbol;
-			//if((existing_symbol=getSymbol(attrib_name)) != NULL){
+
 			const char *what="is already defined";
 			if((symbol_attrib->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE)==0){
 

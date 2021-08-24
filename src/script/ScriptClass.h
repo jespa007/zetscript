@@ -28,8 +28,9 @@ namespace zetscript{
 		Symbol 			symbol_class;		// info symbol class
 
 		//zs_vector *symbol_members_static; // register a collection of symbols to be deleted at the end...
-		zs_vector *symbol_members; // a list of pre-registered C symbols to be added as stack element properties when class is instanced through scriptvar ( see ScriptObjectObject::createSymbols)
-		zs_vector *symbol_members_allocated; // it has static/const and internal of symbols. Only is destroyed when deletes the class...
+		zs_vector *symbol_function_members; // a list of registered function members
+		zs_vector *symbol_variable_members; // a list of registered variable members
+		zs_vector *symbol_members_allocated; // a list of allocated symbols due attribute members or extending members from base class
 		ScriptFunction	*sf_field_initializer;
 		MemberAttribute			*setter_getter;
 		//zs_vector *function_members; // a list of function members (script as well as registered native functions) to be registered on create any scriptvar, see ScriptObjectObject::createSymbols)
@@ -90,15 +91,6 @@ namespace zetscript{
 		
 		//---------------
 		// SETTER
-
-		/*Symbol				* 	registerMemberAttributeSetter(
-			std::string & error
-			,const char * file
-			,short line
-			,const std::string & attribute_name
-			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
-		);*/
-
 		Symbol				* 	registerNativeMemberAttributeSetter(
 			const std::string & attribute_name
 			, std::vector<ScriptFunctionArg> arg_value
@@ -122,15 +114,6 @@ namespace zetscript{
 
 		//---------------
 		// GETTER
-
-		/*Symbol				* 	registerMemberAttributeGetter(
-			std::string & error
-			,const char * file
-			,short line
-			,const std::string & attribute_name
-			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
-		);*/
-
 		Symbol				* 	registerNativeMemberAttributeGetter(
 			const std::string & attribute_name
 			,std::vector<ScriptFunctionArg> arg_value

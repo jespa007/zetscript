@@ -67,11 +67,12 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 {\
 	VM_Scope *vm_check_scope=(data->vm_current_scope-1);\
 	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
-	zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
-	zs_int *symbols					=scope_symbols->items;\
+	zs_vector_fast *scope_symbols=vm_check_scope->scope->registered_variable_symbols;\
+	Symbols *symbols					=scope_symbols->items;\
+	size_t count=scope_symbols->count;\
 	StackElement *stk_local_var;\
-	for(int i = scope_symbols->count-1; i >=0 ; --i,++symbols){\
-		stk_local_var =(stk_local_vars+((Symbol *)(*symbols))->idx_position);\
+	while(count--){ \
+		stk_local_var =stk_local_vars+(symbols+count)->idx_position;\
 		if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
 			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
 			if(so != NULL && so->shared_pointer!=NULL){\
@@ -426,8 +427,6 @@ namespace zetscript{
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
 			,bool is_constructor
-			//,void *stk_elements_builtin_ptr // vector of properties
-			//,int stk_elements_builtin_len // vector of properties
 			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
@@ -765,9 +764,7 @@ namespace zetscript{
 		StackElement ret_obj;
 		const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(byte_code_metamethod);
 		const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
-		//zs_vector *stk_builtin_elements=NULL;
 		std::string error_found="";
-		zs_vector * list_props=NULL;
 		ScriptObject *script_object=NULL;
 		std::string class_name_object_found="";
 		ScriptObjectClass *one_param_object_class = NULL;
