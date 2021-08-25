@@ -27,7 +27,6 @@ namespace zetscript{
 			result= "StringIterator";
 		else if(STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk))
 			result= "VectorIterator";
-
 		else if(STK_VALUE_IS_FUNCTION(stk))
 			result= "Function";
 		else if(STK_VALUE_IS_CLASS(stk))

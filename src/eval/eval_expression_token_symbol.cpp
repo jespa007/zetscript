@@ -59,6 +59,7 @@ namespace zetscript{
 		TokenNode token_node_symbol;
 		std::vector<EvalInstruction *> arg_instruction;
 		EvalInstruction *instruction_token=NULL;
+		EvalInstruction *last_instruction_token=NULL;
 		PreOperation pre_operation = PreOperation::PRE_OPERATION_UNKNOWN;
 		PostOperation post_operation=PostOperation::POST_OPERATION_UNKNOWN;
 		int last_accessor_line=line;
@@ -300,6 +301,13 @@ namespace zetscript{
 					n_params=0;
 					last_line_ok=line;
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+					if(last_instruction_token != NULL){
+						if(last_instruction_token->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_MEMBER_VAR){
+							last_instruction_token->vm_instruction.properties|=INSTRUCTION_PROPERTY_MEMBER_FUNCTION_CALLER;
+						}else if(last_instruction_token->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_THIS){
+							last_instruction_token->vm_instruction.byte_code = ByteCode::BYTE_CODE_LOAD_THIS_SOFM;
+						}
+					}
 
 					// eval all calling arguments
 					while(*aux_p != ')'){
@@ -475,6 +483,7 @@ namespace zetscript{
 
 				// not first access anymore...
 				last_accessor_value=accessor_name;
+				last_instruction_token=instruction_token;
 
 				it_accessor_token++;
 

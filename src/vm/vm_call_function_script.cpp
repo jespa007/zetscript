@@ -609,6 +609,15 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_THIS: // load variable ...
 				*data->stk_vm_current++=*this_object->getThisProperty();
 				continue;
+			case BYTE_CODE_LOAD_THIS_SOFM:
+				data->stk_vm_current->value=this_object;
+				data->stk_vm_current->properies=STK_PROPERTY_SCRIPT_OBJECT;
+				data->stk_vm_current++;
+				data->stk_vm_current->value=this_object->getScriptClass()->getSymbolFunctionMemberByIdx(instruction->value_op2);
+				data->stk_vm_current->properies=STK_PROPERTY_MEMBER_FUNCTION;
+				data->stk_vm_current++;
+				break;
+				continue;
 			case BYTE_CODE_LOAD_MEMBER_VAR: // direct load
 				*data->stk_vm_current++=*vm_load_this_element(vm,this_object,calling_function,instruction,instruction->value_op2);
 				continue;
@@ -1085,19 +1094,17 @@ load_element_object:
 								}
 							}
 						}else if(lst_functions->count>1){ // it has all member list
-							StackElement * stk = obj_setter->getProperty("_set");
+							Symbol * symbol_setter = obj_setter->getScriptClass()->getSymbol("_set");
 
-							if(stk == NULL){
+							if(symbol_setter == NULL){
 								VM_STOP_EXECUTE("Operator metamethod \"_set (aka =)\" is not implemented");
 							}
 
-							if((stk->properties & STK_PROPERTY_MEMBER_FUNCTION)==0){
+							if((symbol_setter->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION)==0){
 								VM_STOP_EXECUTE("Operator metamethod \"_set (aka =)\" is not function");
 							}
 
-							StackMemberFunction *mf=(StackMemberFunction *)stk->value;
-
-							ptr_function_found=mf->so_function;
+							ptr_function_found=(ScriptFunction *)symbol_setter->ref_ptr;
 						}
 
 						if(ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
@@ -1507,9 +1514,13 @@ load_element_object:
 
 
 					if(stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
-						StackMemberFunction *fm=(StackMemberFunction *)stk_function_ref->value;
-						calling_object=fm->so_object;
-						sf=fm->so_function;
+					  Symbol *symbol=(Symbol *)stk_function_ref->value;
+					  calling_object=((stk_start_arg_call-2))->value; // its supposed to have the object
+					  sf=(ScriptFunction *)symbol->ref_ptr;
+					}else if(STK_IS_SCRIPT_OBJECT_FUNCTION_MEMBER(stk_function_ref)){
+					  ScriptObjectFunctionMember *sofm=(  ScriptObjectFunctionMember *)stk_function_ref->value;
+					  calling_object=sofm->so_object;
+					  sf=sofm->so_function;
 					}else{
 
 						if((stk_function_ref->properties & (STK_PROPERTY_FUNCTION))==0){
@@ -1851,6 +1862,17 @@ load_element_object:
 					}
 				}
 				goto lbl_exit_function;
+			 case  BYTE_CODE_NEW_SOFM:
+
+				 so_aux==ZS_NEW_OBJECT_FUNCTION_MEMBER(data->zs);
+
+				 if(!vm_create_shared_pointer(vm,so_aux)){
+				 		goto lbl_exit_function;
+				 }
+				 data->stk_vm_current->value=(zs_int)so_aux;
+				 data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+				 data->stk_vm_current++;
+				 continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE:
 
 				 	 so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,instruction->value_op1);
@@ -1871,7 +1893,9 @@ load_element_object:
 					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
 					}
-					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+					data->stk_vm_current->value=(zs_int)so_aux;
+					data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+					data->stk_vm_current++;
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new std::vector object...
 				 	so_aux=ZS_NEW_OBJECT_OBJECT(data->zs);

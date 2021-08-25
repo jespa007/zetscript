@@ -100,15 +100,15 @@
 #define ZS_REGISTER_VARIABLE(zs,text,s) 										(zs)->registerVariable(text,s,__FILE__, __LINE__)
 #define ZS_REGISTER_CLASS(zs,class_type,s) 										(zs)->registerClass<class_type>(s,__FILE__, __LINE__)
 #define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)							(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_FUNCTION_MEMBER_STATIC(zs,class_type,s,ptr_fun)				(zs)->registerFunctionMemberStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerFunctionMember<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerFunctionMember<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_ATTRIBUTE_MEMBER_SETTER(zs,class_type,s,ptr_fun)			(zs)->registerAttributeMemberSetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_ATTRIBUTE_MEMBER_GETTER(zs,class_type,s,ptr_fun)			(zs)->registerAttributeMemberGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_ATTRIBUTE_MEMBER_POST_INCREMENT(zs,class_type,s,ptr_fun)	(zs)->registerAttributeMemberPostIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_ATTRIBUTE_MEMBER_POST_DECREMENT(zs,class_type,s,ptr_fun)	(zs)->registerAttributeMemberPostDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_ATTRIBUTE_MEMBER_PRE_INCREMENT(zs,class_type,s,ptr_fun)		(zs)->registerAttributeMemberPreIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_ATTRIBUTE_MEMBER_PRE_DECREMENT(zs,class_type,s,ptr_fun)		(zs)->registerAttributeMemberPreDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)				(zs)->registerMemberFunctionStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberAttributeSetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberAttributeGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_INCREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributePostIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_DECREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributePostDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberAttributePreIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberAttributePreDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
 
 
 
@@ -268,7 +268,7 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	registerFunctionMember(
+		void	registerMemberFunction(
 				const std::string & function_name
 				,F function_type
 				 , const char *registered_file=""
@@ -279,7 +279,7 @@ namespace zetscript{
 
 
 		template <typename C,typename F>
-		void	registerAttributeMemberSetter(
+		void	registerMemberAttributeSetter(
 				const std::string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
@@ -289,7 +289,7 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	registerAttributeMemberGetter(
+		void	registerMemberAttributeGetter(
 				const std::string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
@@ -299,7 +299,7 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	registerAttributeMemberPostIncrement(
+		void	registerMemberAttributePostIncrement(
 				const std::string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
@@ -309,7 +309,7 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	registerAttributeMemberPostDecrement(
+		void	registerMemberAttributePostDecrement(
 				const std::string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
@@ -319,7 +319,7 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	registerAttributeMemberPreIncrement(
+		void	registerMemberAttributePreIncrement(
 				const std::string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
@@ -329,7 +329,7 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	registerAttributeMemberPreDecrement(
+		void	registerMemberAttributePreDecrement(
 				const std::string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
@@ -342,7 +342,7 @@ namespace zetscript{
 		 * Register Static Function Member Class
 		 */
 		template <typename C,typename F>
-		void registerFunctionMemberStatic(const std::string & function_name,F fun, const char *registered_file="",short registered_line=-1){
+		void registerMemberFunctionStatic(const std::string & function_name,F fun, const char *registered_file="",short registered_line=-1){
 			script_class_factory->registerNativeMemberFunctionStatic<C>(function_name,fun, registered_file, registered_line);
 		}
 

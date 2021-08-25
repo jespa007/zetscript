@@ -369,7 +369,7 @@ namespace zetscript{
 					Symbol *symbol_attribute=NULL;
 					Symbol *symbol_function=NULL;
 
-					symbol_attribute=this_class->registerAttributeMember(symbol_src->name,symbol_src->file,symbol_src->line);
+					symbol_attribute=this_class->registerMemberAttribute(symbol_src->name,symbol_src->file,symbol_src->line);
 					ma_dst=(MemberAttribute *)symbol_attribute->ref_ptr;
 
 

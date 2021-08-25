@@ -22,29 +22,25 @@ namespace zetscript{
 
 	public:
 
-		int				idx_starting_this_members;
 		int 			idx_class; 	// registered class idx
 
 		Symbol 			symbol_class;		// info symbol class
 
-		//zs_vector *symbol_members_static; // register a collection of symbols to be deleted at the end...
-		zs_vector *symbol_members; // a list of pre-registered C symbols to be added as stack element properties when class is instanced through scriptvar ( see ScriptObjectObject::createSymbols)
+		zs_vector *symbol_variable_members; // symbol_variable_members
+		zs_vector *symbol_function_members; // symbol_function_members
 		zs_vector *symbol_members_allocated; // it has static/const and internal of symbols. Only is destroyed when deletes the class...
 		ScriptFunction	*sf_field_initializer;
 		MemberAttribute			*setter_getter;
-		//zs_vector *function_members; // a list of function members (script as well as registered native functions) to be registered on create any scriptvar, see ScriptObjectObject::createSymbols)
 
 		//------------- VARIABLES STRUCT ---------------
 		int							idx_function_member_constructor;
 
 		void								* 	c_constructor;
 		void 								*	c_destructor;
-		//bool								static_constructor_destructor;
 		std::string 							str_class_ptr_type; // type_id().name();
 		zs_vector						   	*   idx_base_classes; // list of idx of classes base
 
 
-		//zs_vector 			*metamethod_operator[BYTE_CODE_METAMETHOD_MAX]; // overrided metamethod
 
 		 ScriptClass(ZetScript *_zs,short _idx_class,Symbol *_symbol_class);
 
@@ -81,7 +77,7 @@ namespace zetscript{
 		//
 		// ATTRIBUTES
 		//
-		Symbol 				*	registerAttributeMember(
+		Symbol 				*	registerMemberAttribute(
 				const std::string & attrib_name
 				,const char * file=""
 				,short line=-1
@@ -90,15 +86,6 @@ namespace zetscript{
 		
 		//---------------
 		// SETTER
-
-		/*Symbol				* 	registerAttributeMemberSetter(
-			std::string & error
-			,const char * file
-			,short line
-			,const std::string & attribute_name
-			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
-		);*/
-
 		Symbol				* 	registerNativeMemberAttributeSetter(
 			const std::string & attribute_name
 			, std::vector<ScriptFunctionArg> arg_value
@@ -122,15 +109,6 @@ namespace zetscript{
 
 		//---------------
 		// GETTER
-
-		/*Symbol				* 	registerAttributeMemberGetter(
-			std::string & error
-			,const char * file
-			,short line
-			,const std::string & attribute_name
-			,ScriptFunction *sf // it's the offset from pointer or a pointer directly
-		);*/
-
 		Symbol				* 	registerNativeMemberAttributeGetter(
 			const std::string & attribute_name
 			,std::vector<ScriptFunctionArg> arg_value
@@ -139,7 +117,6 @@ namespace zetscript{
 			,unsigned short symbol_getter_function_properties
 			,const char * file=""
 			,short line=-1
-
 		);
 
 
@@ -151,7 +128,6 @@ namespace zetscript{
 			,unsigned short symbol_post_inc_function_properties
 			,const char * file=""
 			,short line=-1
-
 		);
 
 		Symbol				* 	registerNativeMemberAttributePostDecrement(
@@ -162,7 +138,6 @@ namespace zetscript{
 			,unsigned short symbol_post_dec_function_properties
 			,const char * file=""
 			,short line=-1
-
 		);
 
 		Symbol				* 	registerNativeMemberAttributePreIncrement(
@@ -173,7 +148,6 @@ namespace zetscript{
 			,unsigned short symbol_pre_inc_function_properties
 			,const char * file=""
 			,short line=-1
-
 		);
 
 		Symbol				* 	registerNativeMemberAttributePreDecrement(
@@ -235,14 +209,12 @@ namespace zetscript{
 		Symbol *	getSuperFunctionSymbol(Symbol *symbol);
 		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
-		Symbol				* 	registerFunctionMember(
+		Symbol				* 	registerMemberFunction(
 				 const std::string & function_name
 				, std::vector<ScriptFunctionArg> args={}
 				, unsigned short properties=0
 				,const char * file = ""
 				, short line=-1
-
-
 		);
 
 		Symbol				* 	registerNativeMemberFunction(
@@ -253,8 +225,6 @@ namespace zetscript{
 				,unsigned short properties=0
 				,const char * file=""
 				,short line=-1
-
-
 		);
 
 		template <typename F>
@@ -276,8 +246,10 @@ namespace zetscript{
 		//---------------------------------------------------
 
 		Symbol *    getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
+		Symbol *    getSymbolVariableMember(const std::string & symbol_name, bool include_inherited_symbols=true);
+		Symbol *    getSymbolFunctionMember(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
+		Symbol *    getSymbolFunctionMemberByIdx(int idx);
 
-		//Symbol				* 	getMemberFunction(const std::string & function_name, unsigned int n_args);
 		bool isNativeClass();
 		bool isNativeSingletonClass();
 
@@ -289,7 +261,8 @@ namespace zetscript{
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
-
+		int						idx_starting_this_function_members;
+		int						idx_starting_this_variable_members;
 
 		Symbol				* 	registerInternalMemberVariable(
 			const std::string & symbol_name
@@ -320,12 +293,9 @@ namespace zetscript{
 				,std::vector<ScriptFunctionArg> & arg_info
 		);
 
-
 		ScriptClass * 					getScriptClass(short idx_class);
 		short							getIdxClassFromItsNativeType(const std::string & s);
 		ScriptClass * 					getScriptClassByNativeClassPtr(const std::string & class_type);
-
-		//zs_map *num_native_functions;
 	};
 }
 

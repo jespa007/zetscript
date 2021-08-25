@@ -1,4 +1,5 @@
 #include "ScriptObject.h"
+#include "ScriptObjectFunctionMember.h"
 #include "ScriptObjectString.h"
 #include "ScriptObjectStringWrap.h"
 #include "ScriptObjectStringIterator.h"

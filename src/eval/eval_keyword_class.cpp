@@ -353,7 +353,7 @@ namespace zetscript{
 			std::string error;
 
 			try{
-				symbol_attrib=sc->registerAttributeMember(
+				symbol_attrib=sc->registerMemberAttribute(
 						 attrib_name
 						,eval_data->current_parsing_file
 						,attrib_start_line

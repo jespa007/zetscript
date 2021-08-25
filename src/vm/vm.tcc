@@ -67,7 +67,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 {\
 	VM_Scope *vm_check_scope=(data->vm_current_scope-1);\
 	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
-	zs_vector *scope_symbols=vm_check_scope->scope->registered_symbols;\
+	zs_vector *scope_symbols=vm_check_scope->scope->registered_variable_symbols;\
 	zs_int *symbols					=scope_symbols->items;\
 	StackElement *stk_local_var;\
 	for(int i = scope_symbols->count-1; i >=0 ; --i,++symbols){\
@@ -408,14 +408,12 @@ namespace zetscript{
 		}\
 	}else{ \
 		StackElement *stk_element=&((StackElement *)stk_elements_builtin_ptr)[i]; \
-		if(stk_element->properties & STK_PROPERTY_FUNCTION){\
-			if(stk_element->properties & STK_PROPERTY_MEMBER_FUNCTION ){\
-				StackMemberFunction *fm=(StackMemberFunction *)stk_element->value;\
-				irfs=fm->so_function;\
-				this_as_first_parameter=1;\
-			}else{\
+		if(STK_IS_SCRIPT_FUNCTION_MEMBER_OBJECT(stk_element)){\
+			ScriptFunctionMemberObject *fm=(ScriptFunctionMemberObject  *)stk_element->value;\
+			irfs=fm->so_function;\
+			this_as_first_parameter=1;\
+		}else if(stk_element->properties & STK_PROPERTY_FUNCTION){\
 				irfs = (ScriptFunction *)stk_element->value;\
-			}\
 		}\
 	}\
 	if(irfs==NULL) continue;
@@ -755,23 +753,17 @@ namespace zetscript{
 	) {
 		bool error=false;
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		//std::string str_symbol_to_find="";
 		std::string str_stk_result_op1_full_definition="";
 		std::string str_stk_result_op2_full_definition="";
-		//ScriptObjectClass *calling_object=NULL;
-		//ScriptClass *script_class_aux=NULL;
 		StackElement *stk_vm_current_backup,*stk_args;
 		//int stk_element_len=0;
 		ScriptFunction *ptr_function_found=NULL;
 		StackElement ret_obj;
 		const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(byte_code_metamethod);
 		const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
-		//zs_vector *stk_builtin_elements=NULL;
 		std::string error_found="";
-		//zs_vector * list_props=NULL;
 		ScriptObject *script_object=NULL;
 		std::string class_name_object_found="";
-		//ScriptObjectClass *one_param_object_class = NULL;
 		StackMemberAttribute *stk_ma=NULL;
 		int n_stk_args=byte_code_metamethod_get_num_arguments(byte_code_metamethod);
 		StackElement *stk_return=NULL;
@@ -908,19 +900,20 @@ namespace zetscript{
 
 
 			}else{ // get first item...
-				StackElement * stk = script_object->getProperty(str_symbol_metamethod);
+				ScriptClass *sc=script_object->getScriptClass();
+				Symbol * symbol = sc->getSymbolFunctionMember(str_symbol_metamethod);
 
-				if(stk == NULL){
+				if(symbol == NULL){
 					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
 					goto apply_metamethod_error;
 				}
 
-				if((stk->properties & STK_PROPERTY_FUNCTION)==0){
+				if(symbol->properties & (SYMBOL_PROPERTY_FUNCTION | SYMBOL_PROPERTY_MEMBER_FUNCTION) == 0){
 					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
 					goto apply_metamethod_error;
 				}
 
-				ptr_function_found=((StackMemberFunction *)stk->value)->so_function;
+				ptr_function_found=(ScriptFunction *)symbol->ref_ptr;
 
 			}
 		}
@@ -1039,7 +1032,7 @@ apply_metamethod_error:
 		// stk_op1 expects to be stk
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		//ScriptFunction *sf_iter=NULL;
-		StackElement *stk_sf_iter;
+		Symbol *symbol_iter;
 
 		// stk_op2 expects to be obj with container
 
@@ -1058,18 +1051,19 @@ apply_metamethod_error:
 
 		stk_result_op2 = (StackElement *)(stk_result_op2->value);
 		ScriptObject *obj=(ScriptObject *)stk_result_op1->value;
+		ScriptClass *sc=obj->getScriptClass();
 
-		stk_sf_iter=obj->getProperty("iter");
+		symbol_iter=sc->getSymbol("iter");
 
-		if(stk_sf_iter != NULL){
+		if(symbol_iter != NULL){
 
-			if(stk_sf_iter->properties & (STK_PROPERTY_FUNCTION | STK_PROPERTY_MEMBER_FUNCTION)){
-				StackMemberFunction *smf=(StackMemberFunction *)stk_sf_iter->value;
-				ScriptObject *so_object=smf->so_object;
+			if(symbol_iter->properties & (SYMBOL_PROPERTY_FUNCTION | SYMBOL_PROPERTY_MEMBER_FUNCTION)){
+				ScriptFunction *so_function=(ScriptFunction *)symbol_iter->ref_ptr;
+				ScriptObject *so_object=obj;
 				//StackElement *stk_start=data->stk_vm_current;
 				int n_args=0;
 
-				if(smf->so_function->symbol.properties & SYMBOL_PROPERTY_STATIC){
+				if(symbol_iter->properties & SYMBOL_PROPERTY_STATIC){
 					n_args=1;
 
 					// only stores and not increment (++ ) in order to start the stk arg
@@ -1079,7 +1073,7 @@ apply_metamethod_error:
 
 				VM_INNER_CALL(
 						so_object
-						,smf->so_function
+						,so_function
 						,"iter"
 						,true
 						,n_args

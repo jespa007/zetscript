@@ -78,6 +78,7 @@ namespace zetscript{
 		BYTE_CODE_LOAD_LOCAL,
 		BYTE_CODE_LOAD_REF,
 		BYTE_CODE_LOAD_THIS,
+		BYTE_CODE_LOAD_THIS_SOFM,
 		BYTE_CODE_LOAD_MEMBER_VAR,
 		BYTE_CODE_LOAD_ELEMENT_VECTOR,
 		BYTE_CODE_LOAD_ELEMENT_THIS,
@@ -162,6 +163,7 @@ namespace zetscript{
 		BYTE_CODE_RESET_STACK, // just in case there's no assignment on left or after last assignment
 		BYTE_CODE_TYPEOF,
 		BYTE_CODE_IN,
+		BYTE_CODE_NEW_SOFM,
 		//---------------------------
 		BYTE_CODE_INVALID=255,
 

@@ -1,4 +1,5 @@
 #include 		"ScriptObject.cpp"
+#include 		"ScriptObjectFunctionMember.cpp"
 #include		"ScriptObjectString.cpp"
 #include		"ScriptObjectStringWrap.cpp"
 #include 		"ScriptObjectStringIterator.cpp"

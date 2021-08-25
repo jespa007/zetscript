@@ -49,6 +49,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL:				return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_REF:				return "LOAD_REF"; // load type var
 			case BYTE_CODE_LOAD_THIS:				return "LOAD_THIS"; // load type var
+			case BYTE_CODE_LOAD_THIS_SOFM: 			return "THIS_LOAD_FMO";
 			case BYTE_CODE_LOAD_CONSTRUCTOR:		return "LOAD_CTOR"; // load type var
 			case BYTE_CODE_LOAD_MEMBER_VAR:			return "LOAD_MEMBER"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      		return "LOAD_???"; // load to find global
@@ -80,6 +81,7 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:		return "PUSH_ATTR"; // New object (CREATE)
 			case BYTE_CODE_NEW_OBJECT:				return "NEW_OBJ"; // New object (CREATE)
 			case BYTE_CODE_NEW_STRING:				return "NEW_STR";
+			case BYTE_CODE_NEW_SOFM: 				return "NEW_FMO";
 			case BYTE_CODE_IT_INIT: 				return "IT_INIT"; // BYTE_CODE_IT_CHK_END
 			case BYTE_CODE_STORE_CONST:				return "STORE_CONST"; // BYTE_CODE_STORE_CONST
 			case BYTE_CODE_PRE_INC:					return "PRE_INC"; // ++i
@@ -91,6 +93,7 @@ namespace zetscript{
 			case BYTE_CODE_RESET_STACK:				return "RESET_STACK"; // POP ONE AND IT MARKS END EXPRESSION
 			case BYTE_CODE_TYPEOF:					return "TYPEOF"; // POP ONE AND IT MARKS END EXPRESSION
 			case BYTE_CODE_IN:						return "IN"; // POP ONE AND IT MARKS END EXPRESSION
+
 
 			default:
 				break;

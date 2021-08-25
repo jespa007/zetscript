@@ -50,6 +50,7 @@ namespace zetscript{
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVectorIterator);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectClass);
 	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVarRef);
+	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectMemberFunction);
 
 	ScriptClassFactory::ScriptClassFactory(ZetScript *_zs){
 		zs = _zs;
@@ -70,7 +71,7 @@ namespace zetscript{
 		main_object=registerClass(MAIN_SCRIPT_CLASS_NAME); // 0
 		MAIN_SCOPE(this)->script_class=main_object;
 
-		Symbol *symbol_main_function=main_object->registerFunctionMember(
+		Symbol *symbol_main_function=main_object->registerMemberFunction(
 				MAIN_SCRIPT_FUNCTION_NAME
 		);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
@@ -144,6 +145,7 @@ namespace zetscript{
 		// It self Script object
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
 		REGISTER_BUILT_IN_CLASS("VarRef",ScriptObjectVarRef,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF);
+		REGISTER_BUILT_IN_CLASS("FunctionMember",ScriptObjectFunctionMember,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER);
 		REGISTER_BUILT_IN_CLASS("String",ScriptObjectString,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING);
 		REGISTER_BUILT_IN_CLASS("Vector",ScriptObjectVector,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR);
 
@@ -429,7 +431,7 @@ namespace zetscript{
 				std::string error="";
 				Symbol *symbol_field_initializer=NULL;
 
-				symbol_field_initializer=sci->registerFunctionMember(
+				symbol_field_initializer=sci->registerMemberFunction(
 					zs_strutils::format("__@field_initializer_%s_@__",sci->symbol_class.name.c_str())
 				);
 

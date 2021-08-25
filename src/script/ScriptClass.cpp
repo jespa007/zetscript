@@ -128,7 +128,7 @@ namespace zetscript{
 	}
 	//---------------------------------------------------
 	// ATTRIBUTES
-	Symbol *ScriptClass::registerAttributeMember(
+	Symbol *ScriptClass::registerMemberAttribute(
 			 const std::string & attrib_name
 			,const char * file
 			,short line
@@ -180,7 +180,7 @@ namespace zetscript{
 		Symbol *symbol_function=NULL;
 
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerAttributeMember(attribute_name,file,line);
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -216,7 +216,7 @@ namespace zetscript{
 
 		MemberAttribute *ma=NULL;
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerAttributeMember(attribute_name,file,line);
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -258,7 +258,7 @@ namespace zetscript{
 
 		MemberAttribute *ma=NULL;
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerAttributeMember(attribute_name,file,line);
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -301,7 +301,7 @@ namespace zetscript{
 
 		MemberAttribute *ma=NULL;
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerAttributeMember(attribute_name,file,line);
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -344,7 +344,7 @@ namespace zetscript{
 
 		MemberAttribute *ma=NULL;
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerAttributeMember(attribute_name,file,line);
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -387,7 +387,7 @@ namespace zetscript{
 
 		MemberAttribute *ma=NULL;
 		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerAttributeMember(attribute_name,file,line);
+			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
@@ -434,7 +434,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol				* 	ScriptClass::registerFunctionMember(
+	Symbol				* 	ScriptClass::registerMemberFunction(
 			 const std::string & function_name
 			, std::vector<ScriptFunctionArg> args
 			, unsigned short symbol_properties
@@ -630,32 +630,68 @@ namespace zetscript{
 		return function_symbol;
 	}
 	//---------------------------------------------------------
-	Symbol				* 	ScriptClass::getSymbol(const std::string & symbol_name, char n_params,bool include_inherited_symbols){
-		bool only_symbol=n_params<0;
-		int idx_end=include_inherited_symbols==true?0:idx_starting_this_members;
+	Symbol *    ScriptClass::getSymbolVariableMember(const std::string & symbol_name, bool include_inherited_symbols){
+		int idx_end=include_inherited_symbols==true?0:idx_starting_this_variable_members;
 
 		for(
-				int i = (int)(symbol_members->count-1);
+				int i = (int)(symbol_variable_members->count-1);
 				i >= idx_end
 				; i--
 		){
+			Symbol *member_symbol=(Symbol *)symbol_variable_members->items[i];
+			if(member_symbol->name == symbol_name){
+				return member_symbol;
+			}
+		}
 
-			Symbol *member_symbol=(Symbol *)symbol_members->items[i];
+		return NULL;
+	}
+
+	Symbol *    ScriptClass::getSymbolFunctionMember(const std::string & symbol_name, char n_params, bool include_inherited_symbols){
+		bool only_symbol=n_params<0;
+		int idx_end=include_inherited_symbols==true?0:idx_starting_this_function_members;
+
+		for(
+				int i = (int)(symbol_function_members->count-1);
+				i >= idx_end
+				; i--
+		){
+			Symbol *member_symbol=(Symbol *)symbol_function_members->items[i];
 			if(member_symbol->name == symbol_name){
 				if(only_symbol){
 					return member_symbol;
 				}
-				if(member_symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // for C function symbols
-					ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
-					if((((int)n_params==sf->params->count) || (n_params==ANY_PARAMS_SYMBOL_ONLY))
-					 ){
-						return member_symbol;
-					}
+
+				ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
+				if((((int)n_params==sf->params->count) || (n_params==ANY_PARAMS_SYMBOL_ONLY))
+				 ){
+					return member_symbol;
 				}
 			}
 		}
 
 		return NULL;
+	}
+
+	Symbol				* 	ScriptClass::getSymbol(const std::string & symbol_name, char n_params,bool include_inherited_symbols){
+
+		Symbol *symbol=NULL;
+
+		if((symbol=getSymbolVariableMember(symbol_name,include_inherited_symbols))==NULL){
+			symbol=getSymbolFunctionMember(symbol_name,n_params,include_inherited_symbols);
+		}
+
+		return symbol;
+	}
+
+	Symbol *    ScriptClass::getSymbolFunctionMemberByIdx(int _idx){
+		if(_idx < 0 || _idx >= symbol_function_members->count){
+			THROW_RUNTIME_ERROR("index out of bound"
+					,symbol_class.name.c_str()
+			);
+			return NULL;
+		}
+		return symbol_function_members->items[_idx];
 	}
 
 

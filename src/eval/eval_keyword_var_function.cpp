@@ -677,7 +677,7 @@ error_eval_keyword_var:
 			//--- OP
 			if(sc!=NULL){ // register as variable member...
 				try{
-					symbol_sf=sc->registerFunctionMember(
+					symbol_sf=sc->registerMemberFunction(
 							function_name
 							,args
 							,is_static?SYMBOL_PROPERTY_STATIC:0
