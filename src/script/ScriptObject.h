@@ -32,7 +32,7 @@ namespace zetscript{
 	}InfoSharedList;
 
 
-	/*struct StackMemberFunction{
+	struct StackMemberFunction{
 	public:
 		ScriptFunction 		*so_function; // make function pointer first to make compatible with stk
 		ScriptObject		*so_object;
@@ -43,10 +43,10 @@ namespace zetscript{
 			so_object = _so_object;
 			so_function= _so_function;
 		}
-	};*/
+	};
 
 	struct MemberAttribute;
-	/*struct StackMemberAttribute{
+	struct StackMemberAttribute{
 	public:
 		MemberAttribute 	*member_attribute; // make function pointer first to make compatible with stk
 		ScriptObject		*so_object;
@@ -57,7 +57,7 @@ namespace zetscript{
 			so_object = _so_object;
 			member_attribute= _member_attribute;
 		}
-	};*/
+	};
 
 	class ScriptObject{
 	public:

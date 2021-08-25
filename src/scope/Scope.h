@@ -24,7 +24,7 @@ namespace zetscript{
 		bool is_scope_function; // this will ignore symbols within scopes where functions starts to avoid conflicts with global functions...
 		ScriptClass *script_class;
 		int tmp_idx_instruction_push_scope;
-		//unsigned int n_registered_symbols_as_variables;
+		unsigned int n_registered_symbols_as_variables;
 		// This flag is used to remove usign eraseUnusedScopes...
 		bool unusued;
 		//void		*eval_scope_tmp; // aux variable used on evaluation
