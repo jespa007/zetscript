@@ -25,7 +25,8 @@ namespace zetscript{
 		symbol=*_symbol;
 
 		// local symbols for class or function...
-		registered_symbols=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
+		symbol_registered_variables=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
+		symbol_registered_functions=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
 		//registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
 		params = new zs_vector();
 

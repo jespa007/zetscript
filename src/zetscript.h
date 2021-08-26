@@ -531,6 +531,7 @@ namespace zetscript{
 		bool eval_bool;
 		std::string eval_string;
 		int idx_current_global_variable_checkpoint;
+		int idx_current_global_function_checkpoint;
 
 		//===================================================================================================
 		//
@@ -545,7 +546,7 @@ namespace zetscript{
 
 		//void setClearGlobalVariablesCheckpoint();
 		void resetParsedFiles();
-		void clearGlobalVariables(int _idx_start=ZS_IDX_UNDEFINED);
+		void clearGlobalVariables(int _idx_start_variable=ZS_IDX_UNDEFINED, int _idx_start_function=ZS_IDX_UNDEFINED);
 
 
 	};

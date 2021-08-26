@@ -76,6 +76,7 @@ namespace zetscript{
 		const char * file
 		,short line
 		, const std::string & symbol_name
+		, char n_params
 		){
 		Symbol *irv = new Symbol();
 		irv->name = symbol_name;

@@ -63,8 +63,8 @@ namespace zetscript{
 			ScriptClass *script_class=getScriptClass();
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
-			for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
-				Symbol * symbol = (Symbol *)script_class->symbol_members->items[i];
+			for ( unsigned i = 0; i < script_class->symbol_member_variables->count; i++){
+				Symbol * symbol = (Symbol *)script_class->symbol_member_variables->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_ATTRIBUTE});
 				}/*else{

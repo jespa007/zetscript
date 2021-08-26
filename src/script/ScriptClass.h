@@ -31,6 +31,9 @@ namespace zetscript{
 		zs_vector *symbol_member_variables_allocated;
 		ScriptFunction	*sf_field_initializer;
 		MemberAttribute			*setter_getter;
+		int						idx_starting_this_member_functions;
+		int						idx_starting_this_member_variables;
+
 
 		//------------- VARIABLES STRUCT ---------------
 		int							idx_function_member_constructor;
@@ -260,9 +263,6 @@ namespace zetscript{
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
-
-		int						idx_starting_this_member_functions;
-		int						idx_starting_this_member_variables;
 
 		Symbol				* 	registerInternalMemberVariable(
 			const std::string & symbol_name

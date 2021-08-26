@@ -161,15 +161,14 @@ namespace zetscript{
 
 	std::string ScriptObjectClass::toString(){
 		// check whether toString is implemented...
-		Symbol *symbol_function=getScriptClass()->getMemberFunction(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
+		Symbol *symbol_function=getScriptClass()->getSymbol(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
 		std::string aux="";
 		if(symbol_function != NULL){ // get first element
 			if(symbol_function->properties & (SYMBOL_PROPERTY_MEMBER_FUNCTION | SYMBOL_PROPERTY_FUNCTION)){
-				StackMemberFunction * smf=(StackMemberFunction *)stk_function->value;
-				ScriptFunction *ptr_function=smf->so_function;
-				if((ptr_function->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){
+				ScriptFunction *ptr_function=(ScriptFunction *)symbol_function->ref_ptr;
+				if((symbol_function->properties & SYMBOL_PROPERTY_STATIC) == 0){
 
-					if((ptr_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
+					if((symbol_function->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
 
 						StackElement result=VM_EXECUTE(
 								this->vm

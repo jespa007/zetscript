@@ -124,7 +124,7 @@ namespace zetscript{
 		symbol->properties=symbol_properties;
 
 		symbol_member_variables->push_back((zs_int)symbol);
-		symbol_member_variables_allocated->push_back((zs_int)symbol_attrib);
+		symbol_member_variables_allocated->push_back((zs_int)symbol);
 
 		return symbol;
 	}

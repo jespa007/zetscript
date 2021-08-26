@@ -940,7 +940,7 @@ namespace zetscript{
 				symbol_sfm=calling_obj->getScriptClass()->getSymbolMemberFunction(access_var[access_var.size()-1]);
 				if(symbol_sfm!=NULL){
 					if(symbol_sfm->properties & (SYMBOL_PROPERTY_FUNCTION | SYMBOL_PROPERTY_MEMBER_FUNCTION)){
-						fun_obj=symbol_sfm->ref_ptr;
+						fun_obj=(ScriptFunction *)symbol_sfm->ref_ptr;
 					}
 				}else{
 					THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': Cannot find function '%s'",function_access.c_str(),access_var[access_var.size()-1].c_str());

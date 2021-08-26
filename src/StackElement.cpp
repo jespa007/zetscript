@@ -66,8 +66,8 @@ namespace zetscript{
 			result= stk->value?"true":"false";
 		}else if(STK_VALUE_IS_FUNCTION(stk)){
 			if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
-				StackMemberFunction *stk_mf=(StackMemberFunction *)stk->value;
-				result= std::string("FunctionMember")+"@"+stk_mf->so_object->getClassName()+"::"+stk_mf->so_function->symbol.name;
+				ScriptFunction *sf=(ScriptFunction *)stk->value;
+				result= std::string("FunctionMember")+"@"+"UnknowClass(TODO)"+"::"+sf->symbol.name;
 			}else{ // normal function
 				result= std::string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
 			}
