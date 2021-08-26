@@ -39,7 +39,6 @@ namespace zetscript{
 			virtual void * getNativeObject();
 			ScriptClass * getNativeScriptClass();
 
-			Symbol *		getSymbolMemberByIdx(int idx_symbol_member);
 			const std::string & getNativePointerClassName();
 
 			ScriptFunction *getConstructorFunction();

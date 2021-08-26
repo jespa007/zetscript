@@ -26,9 +26,9 @@ namespace zetscript{
 
 		Symbol 			symbol_class;		// info symbol class
 
-		zs_vector *symbol_variable_members; // symbol_variable_members
-		zs_vector *symbol_function_members; // symbol_function_members
-		zs_vector *symbol_members_allocated; // it has static/const and internal of symbols. Only is destroyed when deletes the class...
+		zs_vector *symbol_member_variables; // symbol_member_variable:  It can be attribute members or script member vars
+		zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
+		zs_vector *symbol_member_variables_allocated;
 		ScriptFunction	*sf_field_initializer;
 		MemberAttribute			*setter_getter;
 
@@ -247,8 +247,8 @@ namespace zetscript{
 
 		Symbol *    getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 		Symbol *    getSymbolVariableMember(const std::string & symbol_name, bool include_inherited_symbols=true);
-		Symbol *    getSymbolFunctionMember(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
-		Symbol *    getSymbolFunctionMemberByIdx(int idx);
+		Symbol *    getSymbolMemberFunction(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
+
 
 		bool isNativeClass();
 		bool isNativeSingletonClass();
@@ -261,8 +261,8 @@ namespace zetscript{
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
-		int						idx_starting_this_function_members;
-		int						idx_starting_this_variable_members;
+		int						idx_starting_this_member_functions;
+		int						idx_starting_this_member_variables;
 
 		Symbol				* 	registerInternalMemberVariable(
 			const std::string & symbol_name

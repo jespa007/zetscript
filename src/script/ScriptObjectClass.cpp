@@ -54,11 +54,11 @@ namespace zetscript{
 		ScriptClass *script_class=getScriptClass();
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
-		for ( unsigned i = 0; i < script_class->symbol_members->count; i++){
+		for ( unsigned i = 0; i < script_class->symbol_member_variables->count; i++){
 
-			Symbol * symbol = (Symbol *)script_class->symbol_members->items[i];
-			bool is_script_function=symbol->properties & SYMBOL_PROPERTY_FUNCTION;
-			bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
+			Symbol * symbol = (Symbol *)script_class->symbol_member_variables->items[i];
+			//bool is_script_function=symbol->properties & SYMBOL_PROPERTY_FUNCTION;
+			//bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
 
 
 			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
@@ -68,11 +68,12 @@ namespace zetscript{
 				return;
 			}
 
-			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
+			/*if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
 				se->value=(zs_int)(new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr));
 				se->properties=STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION; // tell stack element that is a function member
 			}
-			else{ // var...
+			else
+			{ // var... */
 
 				if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
 				{
@@ -86,7 +87,7 @@ namespace zetscript{
 					se->value=(zs_int)(new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr));
 					se->properties=STK_PROPERTY_MEMBER_ATTRIBUTE;
 				}
-			}
+			//}
 		}
 
 		//-------------------------------------------------------------------------------
@@ -129,7 +130,7 @@ namespace zetscript{
 
 		ScriptClass *script_class=getScriptClass();
 		if(script_class->idx_function_member_constructor != ZS_IDX_UNDEFINED){
-			return (ScriptFunction *)script_class->symbol_members->items[script_class->idx_function_member_constructor];
+			return (ScriptFunction *)script_class->symbol_member_functions->items[script_class->idx_function_member_constructor];
 		}
 
 		return NULL;
@@ -146,10 +147,6 @@ namespace zetscript{
 		}
 	}
 
-	Symbol * ScriptObjectClass::getSymbolMemberByIdx(int idx){
-		return (Symbol *)getScriptClass()->symbol_members->items[idx];
-	}
-
 	void * ScriptObjectClass::getNativeObject(){
 		return c_object;
 	}
@@ -164,10 +161,10 @@ namespace zetscript{
 
 	std::string ScriptObjectClass::toString(){
 		// check whether toString is implemented...
-		StackElement *stk_function=getProperty(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
+		Symbol *symbol_function=getScriptClass()->getMemberFunction(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
 		std::string aux="";
-		if(stk_function != NULL){ // get first element
-			if(stk_function->properties & (STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION)){
+		if(symbol_function != NULL){ // get first element
+			if(symbol_function->properties & (SYMBOL_PROPERTY_MEMBER_FUNCTION | SYMBOL_PROPERTY_FUNCTION)){
 				StackMemberFunction * smf=(StackMemberFunction *)stk_function->value;
 				ScriptFunction *ptr_function=smf->so_function;
 				if((ptr_function->symbol.properties & SYMBOL_PROPERTY_STATIC) == 0){

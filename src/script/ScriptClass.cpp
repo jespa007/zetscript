@@ -27,10 +27,12 @@ namespace zetscript{
 		c_constructor=NULL;
 		idx_function_member_constructor =ZS_IDX_UNDEFINED;
 		idx_class=_idx_class;
-		idx_starting_this_members=0;
+		idx_starting_this_member_variables=0;
+		idx_starting_this_member_functions=0;
 		symbol_class=*_symbol_class;
-		symbol_members=new zs_vector();
-		symbol_members_allocated=new zs_vector();
+		symbol_member_variables=new zs_vector();
+		symbol_member_functions=new zs_vector();
+		symbol_member_variables_allocated=new zs_vector();
 
 		idx_base_classes=new zs_vector;
 
@@ -114,15 +116,15 @@ namespace zetscript{
 		// copy class symbol props...
 		symbol->file=file;
 		symbol->line=line;
-		symbol->idx_position=symbol_members->count;
+		symbol->idx_position=symbol_member_variables->count;
 		symbol->n_params=NO_PARAMS_SYMBOL_ONLY;
 		symbol->ref_ptr=ref_ptr;
 		symbol->name=symbol_name;
 		symbol->str_native_type = str_native_type;
 		symbol->properties=symbol_properties;
 
-		symbol_members->push_back((zs_int)symbol);
-		symbol_members_allocated->push_back((zs_int)symbol);
+		symbol_member_variables->push_back((zs_int)symbol);
+		symbol_member_variables_allocated->push_back((zs_int)symbol_attrib);
 
 		return symbol;
 	}
@@ -158,9 +160,9 @@ namespace zetscript{
 		symbol_attrib->name=attrib_name;
 		symbol_attrib->ref_ptr=(zs_int)(new MemberAttribute(attrib_name));
 		symbol_attrib->properties=SYMBOL_PROPERTY_MEMBER_ATTRIBUTE;
-		symbol_attrib->idx_position=symbol_members->count;
-		symbol_members->push_back((zs_int)symbol_attrib);
-		symbol_members_allocated->push_back((zs_int)symbol_attrib);
+		symbol_attrib->idx_position=symbol_member_variables->count;
+		symbol_member_variables->push_back((zs_int)symbol_attrib);
+		symbol_member_variables_allocated->push_back((zs_int)symbol_attrib);
 
 		return symbol_attrib;
 	}
@@ -425,7 +427,7 @@ namespace zetscript{
 		}
 
 		for(int i = symbol->idx_position-1; i >=0; i--){
-			Symbol *symbol_member = (Symbol *)symbol_members->items[i];
+			Symbol *symbol_member = (Symbol *)symbol_member_functions->items[i];
 			if((symbol->name == symbol_member->name) && (symbol_member->properties & SYMBOL_PROPERTY_FUNCTION)){
 				return symbol_member;
 			}
@@ -507,7 +509,7 @@ namespace zetscript{
 			}
 		}
 
-		int idx_position=symbol_members->count;
+		int idx_position=symbol_member_functions->count;
 
 		Symbol *function_symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
@@ -625,20 +627,20 @@ namespace zetscript{
 			}
 		}
 
-		symbol_members->push_back((zs_int)function_symbol);
+		symbol_member_functions->push_back((zs_int)function_symbol);
 
 		return function_symbol;
 	}
 	//---------------------------------------------------------
 	Symbol *    ScriptClass::getSymbolVariableMember(const std::string & symbol_name, bool include_inherited_symbols){
-		int idx_end=include_inherited_symbols==true?0:idx_starting_this_variable_members;
+		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_variables;
 
 		for(
-				int i = (int)(symbol_variable_members->count-1);
+				int i = (int)(symbol_member_variables->count-1);
 				i >= idx_end
 				; i--
 		){
-			Symbol *member_symbol=(Symbol *)symbol_variable_members->items[i];
+			Symbol *member_symbol=(Symbol *)symbol_member_variables->items[i];
 			if(member_symbol->name == symbol_name){
 				return member_symbol;
 			}
@@ -647,16 +649,16 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol *    ScriptClass::getSymbolFunctionMember(const std::string & symbol_name, char n_params, bool include_inherited_symbols){
+	Symbol *    ScriptClass::getSymbolMemberFunction(const std::string & symbol_name, char n_params, bool include_inherited_symbols){
 		bool only_symbol=n_params<0;
-		int idx_end=include_inherited_symbols==true?0:idx_starting_this_function_members;
+		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_functions;
 
 		for(
-				int i = (int)(symbol_function_members->count-1);
+				int i = (int)(symbol_member_functions->count-1);
 				i >= idx_end
 				; i--
 		){
-			Symbol *member_symbol=(Symbol *)symbol_function_members->items[i];
+			Symbol *member_symbol=(Symbol *)symbol_member_functions->items[i];
 			if(member_symbol->name == symbol_name){
 				if(only_symbol){
 					return member_symbol;
@@ -678,27 +680,16 @@ namespace zetscript{
 		Symbol *symbol=NULL;
 
 		if((symbol=getSymbolVariableMember(symbol_name,include_inherited_symbols))==NULL){
-			symbol=getSymbolFunctionMember(symbol_name,n_params,include_inherited_symbols);
+			symbol=getSymbolMemberFunction(symbol_name,n_params,include_inherited_symbols);
 		}
 
 		return symbol;
 	}
 
-	Symbol *    ScriptClass::getSymbolFunctionMemberByIdx(int _idx){
-		if(_idx < 0 || _idx >= symbol_function_members->count){
-			THROW_RUNTIME_ERROR("index out of bound"
-					,symbol_class.name.c_str()
-			);
-			return NULL;
-		}
-		return symbol_function_members->items[_idx];
-	}
-
-
 	ScriptClass::~ScriptClass(){
 
-		for(unsigned i=0; i < symbol_members_allocated->count; i++){
-			Symbol *symbol=(Symbol *)symbol_members_allocated->items[i];
+		for(unsigned i=0; i < symbol_member_variables_allocated->count; i++){
+			Symbol *symbol=(Symbol *)symbol_member_variables_allocated->items[i];
 #ifdef __DEBUG__
 			ZS_LOG_DEBUG("Deallocating member attribute '%s::%s'",this->symbol_class.name.c_str(),symbol->name.c_str());
 #endif
@@ -707,11 +698,13 @@ namespace zetscript{
 			}
 			delete symbol; // symbol variable member was created before
 		}
-		delete symbol_members_allocated;
+		delete symbol_member_variables_allocated;
 
 		// delete symbol vector...
-		delete symbol_members;
-		symbol_members=NULL;
+		delete symbol_member_variables;
+		delete symbol_member_functions;
+		symbol_member_variables=NULL;
+		symbol_member_functions=NULL;
 
 
 		delete idx_base_classes;

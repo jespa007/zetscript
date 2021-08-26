@@ -81,7 +81,7 @@ namespace zetscript{
 		}
 
 		if(sf != MAIN_FUNCTION(eval_data)){ // is anonyomuse function
-			if(scope_info->n_registered_symbols_as_variables > 0){ // if there's local symbols insert push/pop scope for there symbols
+			if(scope_info->symbol_registered_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
 
 					eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.begin()
@@ -139,7 +139,7 @@ namespace zetscript{
 	}
 
 	void eval_check_scope(EvalData *eval_data, Scope *scope){
-		if(scope->n_registered_symbols_as_variables > 0){ // if there's local symbols insert push/pop scope for there symbols
+		if(scope->symbol_registered_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
 			if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 				eval_data->current_function->instructions.insert(
 						eval_data->current_function->instructions.begin()+scope->tmp_idx_instruction_push_scope
@@ -457,6 +457,7 @@ namespace zetscript{
 				sum_stk_load_stk=0; // and reset stack
 				break;
 			case BYTE_CODE_LOAD_ELEMENT_THIS:
+
 					sum_stk_load_stk++;
 				// try to solve symbol...
 					if(*ptr_str_symbol_to_find == SYMBOL_VALUE_SUPER){
@@ -467,7 +468,7 @@ namespace zetscript{
 						bool is_constructor = sf->symbol.name == sc_sf->symbol_class.name;
 
 						for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
-							Symbol *symbol_member = (Symbol *)sc_sf->symbol_members->items[i];
+							Symbol *symbol_member = (Symbol *)sc_sf->symbol_member_functions->items[i];
 							bool match_names=false;
 							if(is_constructor==true){
 								if(symbol_member->scope == NULL){ // is constant...
@@ -478,16 +479,15 @@ namespace zetscript{
 								match_names=symbol_member->name==sf->symbol.name;
 							}
 
-							if(symbol_member->properties & SYMBOL_PROPERTY_FUNCTION){
-								ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
-								bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
-								if(
-										(match_names)
-									&& (match_params)
-									){
-									symbol_sf_foundf = symbol_member;
-								}
+							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
+							bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
+							if(
+									(match_names)
+								&& (match_params)
+								){
+								symbol_sf_foundf = symbol_member;
 							}
+
 						}
 
 						// ok get the super function...
@@ -506,7 +506,7 @@ namespace zetscript{
 						instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,std::string(symbol_sf_foundf->scope->script_class->symbol_class.name)+"::"+symbol_sf_foundf->name);
 
 					}else{ // is "this" symbol, check whether symbol is member
-
+						// TODO: review load function member !!
 						if(instruction->vm_instruction.value_op2 == ZS_IDX_UNDEFINED){
 							// is automatically created on vm...
 							Symbol *symbol_function=sc_sf->getSymbol(*ptr_str_symbol_to_find,ANY_PARAMS_SYMBOL_ONLY);
@@ -519,8 +519,8 @@ namespace zetscript{
 								}
 							}
 						}
+						// TODO: review load function member !!
 					}
-				//}
 					break;
 			case BYTE_CODE_FIND_VARIABLE:
 				sum_stk_load_stk++;

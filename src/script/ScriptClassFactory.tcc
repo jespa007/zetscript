@@ -324,43 +324,46 @@ namespace zetscript{
 
 			//derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC; // set as polymorphic and show error if you try to call a polymorphic function
 			// register all c vars symbols ...
-			for(unsigned i = 0; i < base_class->symbol_members->count; i++){
+			for(unsigned i = 0; i < base_class->symbol_member_functions->count; i++){
 
-				Symbol *symbol_src = (Symbol *)base_class->symbol_members->items[i];
+				Symbol *symbol_src = (Symbol *)base_class->symbol_member_functions->items[i];
 
-				if((symbol_src->properties & SYMBOL_PROPERTY_FUNCTION)!=0 ){ // is function
+				bool is_metamethod_function = 	zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_SETTER)
+											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_GETTER)
+											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_POST_INC)
+											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_POST_DEC)
+											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_PRE_INC)
+											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_PRE_DEC)
+											;
 
-					bool is_metamethod_function = 	zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_SETTER)
-												||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_GETTER)
-												||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_POST_INC)
-												||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_POST_DEC)
-												||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_PRE_INC)
-												||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_PRE_DEC)
-												;
+				// we have to know whether function member is or not getter/setter because we create them in the attribute member case. If not, we could have
+				// duplicated symbols.
+				if(is_metamethod_function == false){
 
-					// we have to know whether function member is or not getter/setter because we create them in the attribute member case. If not, we could have
-					// duplicated symbols.
-					if(is_metamethod_function == false){
-
-						ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
-						// build params...
-						std::vector<ScriptFunctionArg> params;
-						for(unsigned j=0; j < script_function->params->count;j++){
-							params.push_back(*((ScriptFunctionArg *) script_function->params->items[j]));
-						}
-
-						this_class->registerNativeMemberFunction(
-							script_function->symbol.name,
-							params,
-							script_function->idx_return_type,
-							script_function->ref_native_function_ptr, // it contains script function pointer
-							script_function->symbol.properties, //derivated_symbol_info_properties
-							script_function->symbol.file,
-							script_function->symbol.line
-						);
+					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
+					// build params...
+					std::vector<ScriptFunctionArg> params;
+					for(unsigned j=0; j < script_function->params->count;j++){
+						params.push_back(*((ScriptFunctionArg *) script_function->params->items[j]));
 					}
 
-				}else if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+					this_class->registerNativeMemberFunction(
+						script_function->symbol.name,
+						params,
+						script_function->idx_return_type,
+						script_function->ref_native_function_ptr, // it contains script function pointer
+						script_function->symbol.properties, //derivated_symbol_info_properties
+						script_function->symbol.file,
+						script_function->symbol.line
+					);
+				}
+			}
+
+
+			for(unsigned i = 0; i < base_class->symbol_member_variables->count; i++){
+				Symbol *symbol_src = (Symbol *)base_class->symbol_member_variables->items[i];
+
+				if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 
 					MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
 					MemberAttribute *ma_dst=NULL;
@@ -450,27 +453,6 @@ namespace zetscript{
 						ma_dst->addSetter((ScriptFunction *)symbol_function->ref_ptr);
 					}
 				}
-
-					/*else{ // register built-in variable member
-
-					Symbol *symbol_result = this_class->registerNativeMemberVariable(
-							error
-							,symbol_src->file
-							,symbol_src->line
-							,symbol_src->name
-							,symbol_src->str_native_type
-							,symbol_src->ref_ptr // it has a pointer to function that returns the right offset according initialized object
-							,symbol_src->properties
-							//, //derivated_symbol_info_properties
-					);
-
-					if(symbol_result == NULL){
-						THROW_RUNTIME_ERROR(error.c_str());
-					}
-
-				}
-			}*/
-
 		}
 
 		//

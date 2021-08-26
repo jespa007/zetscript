@@ -21,7 +21,8 @@ namespace zetscript{
 		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
 		scope_factory=_zs->getScopeFactory();
 		registered_scopes=new zs_vector;
-		registered_symbols=new zs_vector;
+		symbol_registered_variables=new zs_vector;
+		symbol_registered_functions=new zs_vector;
 
 		if(_scope_parent == NULL){ // first node (it should be a class)...
 			scope_base = this;
@@ -34,8 +35,6 @@ namespace zetscript{
 			}
 		}
 
-
-		n_registered_symbols_as_variables=0;
 		is_scope_function=false;
 	}
 
@@ -72,25 +71,27 @@ namespace zetscript{
 		unusued=true;
 	}
 
+
 	Symbol *  Scope::addSymbol(
 		const char * file
 		,short line
 		, const std::string & symbol_name
-		, char n_params){
+		){
 		Symbol *irv = new Symbol();
 		irv->name = symbol_name;
 		irv->file	 = file;
 		irv->line 	 = line;
 		irv->scope=  this;
-		irv->n_params=n_params;
+		irv->n_params=NO_PARAMS_SYMBOL_ONLY;
 
 		if(irv->n_params == NO_PARAMS_SYMBOL_ONLY){
-			n_registered_symbols_as_variables++;
+			symbol_registered_variables->push_back((zs_int)irv);
+		}else{
+			symbol_registered_functions->push_back((zs_int)irv);
 		}
-
-		registered_symbols->push_back((zs_int)irv);
 		return irv;
 	}
+
 
 	//-----------------------------------------------------------------------------------------------------------
 	//
@@ -126,8 +127,17 @@ namespace zetscript{
 		Symbol *sv=NULL;
 
 		// for each variable in current scope ...
-		for(unsigned i = 0; i < registered_symbols->count; i++){
-			sv=(Symbol *)registered_symbols->items[i];
+		for(unsigned i = 0; i < symbol_registered_variables->count; i++){
+			sv=(Symbol *)symbol_registered_variables->items[i];
+			if(
+				   ( sv->name == str_symbol )
+			){
+				return sv;
+			}
+		}
+
+		for(unsigned i = 0; i < symbol_registered_functions->count; i++){
+			sv=(Symbol *)symbol_registered_variables->items[i];
 			if(
 				   ( sv->name == str_symbol )
 			   &&  ( sv->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY )
@@ -135,6 +145,7 @@ namespace zetscript{
 				return sv;
 			}
 		}
+
 
 		if(scope_direction&SCOPE_DIRECTION_DOWN){
 			if(
@@ -165,29 +176,29 @@ namespace zetscript{
 
 	bool Scope::unregisterSymbol(Symbol *symbol){
 		Symbol *sv=NULL;
-		for(unsigned i = 0; i < registered_symbols->count; i++){
-			sv=(Symbol *)registered_symbols->items[i];
+		for(unsigned i = 0; i < symbol_registered_functions->count; i++){
+			sv=(Symbol *)symbol_registered_functions->items[i];
 			if(
 			   ( sv == symbol )
 			){
 				delete sv;
-				registered_symbols->erase(i); // erase symbol scope
+				symbol_registered_functions->erase(i); // erase symbol scope
+				return true;
+			}
+		}
+
+		for(unsigned i = 0; i < symbol_registered_variables->count; i++){
+			sv=(Symbol *)symbol_registered_variables->items[i];
+			if(
+			   ( sv == symbol )
+			){
+				delete sv;
+				symbol_registered_variables->erase(i); // erase symbol scope
 				return true;
 			}
 		}
 
 		return false;
-	}
-
-	unsigned int Scope::numRegisteredSymbolsAsVariable(){
-		unsigned int n_registered_symbols_as_variables=0;
-		for(unsigned i=0; i < this->registered_symbols->count; i++){
-			Symbol *symbol = (Symbol *)this->registered_symbols->items[i];
-
-		}
-
-		return n_registered_symbols_as_variables;
-
 	}
 
 	//-----------------------------------------------------------------------------------------------------------
@@ -198,10 +209,16 @@ namespace zetscript{
 		registered_scopes=NULL;
 
 		// delete local local_symbols found...
-		for(unsigned i = 0; i < registered_symbols->count; i++){
-			delete (Symbol *)registered_symbols->items[i];
+		for(unsigned i = 0; i < symbol_registered_functions->count; i++){
+			delete (Symbol *)symbol_registered_functions->items[i];
 		}
-		delete registered_symbols;
-		registered_symbols=NULL;
+
+		for(unsigned i = 0; i < symbol_registered_variables->count; i++){
+			delete (Symbol *)symbol_registered_variables->items[i];
+		}
+		delete symbol_registered_variables;
+		delete symbol_registered_functions;
+		symbol_registered_functions=NULL;
+		symbol_registered_variables=NULL;
 	}
 }

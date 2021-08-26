@@ -10,7 +10,8 @@ namespace zetscript{
 		this->scopes = new zs_vector;
 		main_scope=newScope(IDX_SCRIPT_FUNCTION_MAIN,NULL,false); // create global scope (scope 0)
 		idx_clear_checkpoint=1;  // start from MAIN scope
-		idx_clear_global_checkpoint_global_registered_symbols=0;
+		idx_clear_global_checkpoint_global_symbol_registered_variables=0;
+		idx_clear_global_checkpoint_global_symbol_registered_functions=0;
 		idx_clear_global_checkpoint_global_scopes=0;
 
 	}
@@ -63,7 +64,9 @@ namespace zetscript{
 		idx_clear_checkpoint=scopes->count-1;
 
 
-		idx_clear_global_checkpoint_global_registered_symbols=main_scope->registered_symbols->count-1;
+		idx_clear_global_checkpoint_global_symbol_registered_variables=main_scope->symbol_registered_variables->count-1;
+		idx_clear_global_checkpoint_global_symbol_registered_functions=main_scope->symbol_registered_functions->count-1;
+
 		idx_clear_global_checkpoint_global_scopes=main_scope->registered_scopes->count-1;
 
 	}

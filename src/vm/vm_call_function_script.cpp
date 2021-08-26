@@ -383,7 +383,7 @@ namespace zetscript{
 		Instruction *instruction_it=instructions;
 		VM_Scope * vm_scope_start=data->vm_current_scope; // save current scope...
 		Scope * scope = calling_function->symbol.scope;// ast->idx_scope;
-		zs_vector *registered_symbols=calling_function->registered_symbols;
+		zs_vector *registered_symbols=calling_function->symbol_registered_variables;
 		unsigned symbols_count=registered_symbols->count;
 		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
 		StackElement *ptr_aux = _stk_local_var+n_args;
@@ -610,11 +610,11 @@ namespace zetscript{
 				*data->stk_vm_current++=*this_object->getThisProperty();
 				continue;
 			case BYTE_CODE_LOAD_THIS_SOFM:
-				data->stk_vm_current->value=this_object;
-				data->stk_vm_current->properies=STK_PROPERTY_SCRIPT_OBJECT;
+				data->stk_vm_current->value=(zs_int)this_object;
+				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				data->stk_vm_current++;
-				data->stk_vm_current->value=this_object->getScriptClass()->getSymbolFunctionMemberByIdx(instruction->value_op2);
-				data->stk_vm_current->properies=STK_PROPERTY_MEMBER_FUNCTION;
+				data->stk_vm_current->value=(zs_int)((Symbol *)this_object->getScriptClass()->symbol_member_functions->items[instruction->value_op2])->ref_ptr;
+				data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 				data->stk_vm_current++;
 				break;
 				continue;
@@ -634,6 +634,9 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
 			case BYTE_CODE_LOAD_ELEMENT_THIS:
+				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				// TODO: Review jespada load function member
+
 load_element_object:
 
 				stk_var=NULL;
@@ -732,6 +735,8 @@ load_element_object:
 					instruction_it++; //... and instruction iterator
 					goto load_element_object;
 				}
+				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				// TODO: Review jespada load function
 
 				continue;
 			case BYTE_CODE_LOAD_NULL:
@@ -1515,10 +1520,10 @@ load_element_object:
 
 					if(stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
 					  Symbol *symbol=(Symbol *)stk_function_ref->value;
-					  calling_object=((stk_start_arg_call-2))->value; // its supposed to have the object
+					  calling_object=(ScriptObject *)((stk_start_arg_call-2))->value; // its supposed to have the object
 					  sf=(ScriptFunction *)symbol->ref_ptr;
-					}else if(STK_IS_SCRIPT_OBJECT_FUNCTION_MEMBER(stk_function_ref)){
-					  ScriptObjectFunctionMember *sofm=(  ScriptObjectFunctionMember *)stk_function_ref->value;
+					}else if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_function_ref)){
+					  ScriptObjectMemberFunction *sofm=(  ScriptObjectMemberFunction *)stk_function_ref->value;
 					  calling_object=sofm->so_object;
 					  sf=sofm->so_function;
 					}else{
@@ -1751,7 +1756,7 @@ load_element_object:
 							,stk_start_arg_call
 							,n_args
 						);
-						n_local_registered_symbols=sf->registered_symbols->count;
+						n_local_registered_symbols=sf->symbol_registered_variables->count;
 					}
 					else{ // C function
 						if(is_constructor) {// && (sf->symbol.properties & SYMBOL_PROPERTY_MEMBER_FUNCTION))
@@ -1864,7 +1869,7 @@ load_element_object:
 				goto lbl_exit_function;
 			 case  BYTE_CODE_NEW_SOFM:
 
-				 so_aux==ZS_NEW_OBJECT_FUNCTION_MEMBER(data->zs);
+				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs);
 
 				 if(!vm_create_shared_pointer(vm,so_aux)){
 				 		goto lbl_exit_function;

@@ -5,16 +5,16 @@
 
 #pragma once
 
-#define ZS_NEW_OBJECT_FUNCTION_MEMBER(zs) (ScriptObjectVector::newScriptObjectFunctionMember(zs))
+#define ZS_NEW_OBJECT_MEMBER_FUNCTION(zs) (ScriptObjectMemberFunction::newScriptObjectMemberFunction(zs))
 
 namespace zetscript{
-	class ScriptObjectFunctionMember:public ScriptObject{
+	class ScriptObjectMemberFunction:public ScriptObject{
 	public:
 		//----------------------------------------------
 		//
 		// Helpers
 		//
-		static ScriptObjectFunctionMember * newScriptObjectFunctionMember(ZetScript *zs);
+		static ScriptObjectMemberFunction * newScriptObjectMemberFunction(ZetScript *zs);
 
 		ScriptFunction *so_function;
 		ScriptObject *so_object;

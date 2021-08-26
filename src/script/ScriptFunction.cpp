@@ -58,16 +58,16 @@ namespace zetscript{
 
 
 #define GET_ILOAD_R_STR(properties,value) \
-	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->registered_symbols->items[value])->name.c_str()\
-	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_members->items[value])->name.c_str()\
-	:((Symbol *)MAIN_FUNCTION(sfo)->registered_symbols->items[value])->name.c_str()\
+	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->symbol_registered_variables->items[value])->name.c_str()\
+	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_member_variables->items[value])->name.c_str()\
+	:((Symbol *)MAIN_FUNCTION(sfo)->symbol_registered_variables->items[value])->name.c_str()\
 
 
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc){
 
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
-		zs_vector * m_vf = sfo->registered_symbols;
+		zs_vector * m_vf = sfo->symbol_registered_variables;
 
 		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
@@ -343,7 +343,7 @@ namespace zetscript{
 			, uint16_t properties
 	){
 		Symbol * symbol=NULL;
-		short idx_position=(short)registered_symbols->count;
+		short idx_position=(short)symbol_registered_variables->count;
 		StackElement *se=NULL;
 
 
@@ -354,7 +354,7 @@ namespace zetscript{
 		symbol->properties=properties;
 		symbol->idx_position = idx_position;
 
-		registered_symbols->push_back((zs_int)symbol);
+		symbol_registered_variables->push_back((zs_int)symbol);
 
 		return symbol;
 	}
@@ -371,7 +371,7 @@ namespace zetscript{
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
 
 		Symbol * symbol=NULL;
-		short idx_position=(short)registered_symbols->count;
+		short idx_position=(short)symbol_registered_variables->count;
 		StackElement *se=NULL;
 
 		if((symbol=scope_block->registerSymbol(file,line, symbol_name /*,var_node*/))==NULL){
@@ -384,7 +384,7 @@ namespace zetscript{
 		symbol->properties = properties;
 		symbol->idx_position = idx_position;
 
-		registered_symbols->push_back((zs_int)symbol);
+		symbol_registered_variables->push_back((zs_int)symbol);
 
 		if(scope_block == MAIN_SCOPE(this)) { // is global var ...
 			StackElement stk_global_var;
@@ -470,7 +470,7 @@ namespace zetscript{
 		}
 
 		// register new slot
-		short idx_position=(short)registered_symbols->count;
+		short idx_position=(short)symbol_registered_functions->count;
 
 		symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
@@ -479,7 +479,7 @@ namespace zetscript{
 				,line
 				//---- Function data
 				,idx_class 				// idx class which belongs to...
-				,registered_symbols->count // idx symbol ...
+				,symbol_registered_functions->count // idx symbol ...
 				,function_name
 				,params
 				,idx_return_type
@@ -513,7 +513,7 @@ namespace zetscript{
 			}
 		}
 
-		registered_symbols->push_back((zs_int)symbol);
+		symbol_registered_functions->push_back((zs_int)symbol);
 
 
 		return symbol;
@@ -525,12 +525,19 @@ namespace zetscript{
 
 		bool only_symbol=n_params<0;
 		// from last value to first to get last override function...
-		for(int i = (int)(scope->registered_symbols->count-1); i >= 0 ; i--){
-			Symbol *symbol=(Symbol *)scope->registered_symbols->items[i];
+		for(int i = (int)(scope->symbol_registered_variables->count-1); i >= 0 ; i--){
+			Symbol *symbol=(Symbol *)scope->symbol_registered_variables->items[i];
+			if(symbol->name == symbol_name){
+					return symbol;
+			}
+		}
+
+		for(int i = (int)(scope->symbol_registered_functions->count-1); i >= 0 ; i--){
+			Symbol *symbol=(Symbol *)scope->symbol_registered_functions->items[i];
 			if(symbol->name == symbol_name){
 				if(only_symbol){
 					return symbol;
-				}else if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
+				}else{
 					ScriptFunction *current_sf=(ScriptFunction *)symbol->ref_ptr;
 					if(
 
@@ -573,7 +580,8 @@ namespace zetscript{
 
 	void ScriptFunction::clear(){
 		// delete symbols refs from scope...
-		registered_symbols->clear();
+		symbol_registered_functions->clear();
+		symbol_registered_variables->clear();
 
 		// delete arg info variables...
 		clearParams();
@@ -592,8 +600,11 @@ namespace zetscript{
 		delete params;
 		params=NULL;
 
-		delete registered_symbols;
-		registered_symbols=NULL;
+		delete symbol_registered_functions;
+		symbol_registered_functions=NULL;
+
+		delete symbol_registered_variables;
+		symbol_registered_variables=NULL;
 	}
 
 }

@@ -24,15 +24,13 @@ namespace zetscript{
 		bool is_scope_function; // this will ignore symbols within scopes where functions starts to avoid conflicts with global functions...
 		ScriptClass *script_class;
 		int tmp_idx_instruction_push_scope;
-		unsigned int n_registered_symbols_as_variables;
-		// This flag is used to remove usign eraseUnusedScopes...
+
 		bool unusued;
-		//void		*eval_scope_tmp; // aux variable used on evaluation
 		Scope 		*scope_parent, *scope_base;
 
 		zs_vector				*registered_scopes;  // local scopes from starting block { }
-		zs_vector				*registered_variable_symbols; // variable symbols from starting block { }
-		zs_vector				*registered_function_symbols; // function symbols from starting block { }
+		zs_vector				*symbol_registered_variables; // variable symbols from starting block { }
+		zs_vector				*symbol_registered_functions; // function symbols from starting block { }
 
 		//--------------------------------------------------------------------
 		// Functions
@@ -47,6 +45,7 @@ namespace zetscript{
 		 * @n_params:
 		 */
 		Symbol * addSymbol(const char * file, short line,const std::string & symbol_name, char n_params);
+
 		Symbol * registerSymbol(const char * file, short line,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, uint16_t scope_direction_repeated_symbols=SCOPE_DIRECTION_BOTH);
 		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, uint16_t scope_direction_repeated_symbols=SCOPE_DIRECTION_BOTH);
 		bool 	unregisterSymbol(Symbol *symbol);
@@ -58,7 +57,7 @@ namespace zetscript{
 		ScriptClass * getScriptClass();
 		int getIdxScriptFunction();
 
-		unsigned int			numRegisteredSymbolsAsVariable();
+
 		~Scope();
 
 	private:

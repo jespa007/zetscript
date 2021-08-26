@@ -145,7 +145,7 @@ namespace zetscript{
 		// It self Script object
 		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
 		REGISTER_BUILT_IN_CLASS("VarRef",ScriptObjectVarRef,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF);
-		REGISTER_BUILT_IN_CLASS("FunctionMember",ScriptObjectFunctionMember,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER);
+		REGISTER_BUILT_IN_CLASS("FunctionMember",ScriptObjectMemberFunction,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER);
 		REGISTER_BUILT_IN_CLASS("String",ScriptObjectString,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING);
 		REGISTER_BUILT_IN_CLASS("Vector",ScriptObjectVector,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR);
 
@@ -392,8 +392,17 @@ namespace zetscript{
 
 
 				// 1. extend all symbols from base class
-				for(int i=0; i < base_class->symbol_members->count; i++){
-					Symbol *symbol_src=(Symbol *)base_class->symbol_members->items[i];
+				for(int i=0; i < base_class->symbol_member_functions->count; i++){
+					Symbol *symbol_src=(Symbol *)base_class->symbol_member_functions->items[i];
+					sci->symbol_member_functions->push_back((zs_int)symbol_src);
+				}
+
+				// set idx starting member
+				sci->idx_starting_this_member_functions=sci->symbol_member_functions->count;
+
+				// 1. extend all symbols from base class
+				for(int i=0; i < base_class->symbol_member_variables->count; i++){
+					Symbol *symbol_src=(Symbol *)base_class->symbol_member_variables->items[i];
 					Symbol *new_symbol=new Symbol();
 
 					*new_symbol = *symbol_src;
@@ -415,13 +424,13 @@ namespace zetscript{
 						new_symbol->ref_ptr=(zs_int)ma_dst;
 					}
 
-					sci->symbol_members->push_back((zs_int)new_symbol);
-					sci->symbol_members_allocated->push_back((zs_int)new_symbol);
+					sci->symbol_member_variables->push_back((zs_int)new_symbol);
+					sci->symbol_member_variables_allocated->push_back((zs_int)new_symbol);
 
 				}
 
 				// set idx starting member
-				sci->idx_starting_this_members=sci->symbol_members->count;
+				sci->idx_starting_this_member_variables=sci->symbol_member_variables->count;
 
 				// 2. set idx base class...
 				sci->idx_base_classes->push_back(base_class->idx_class);

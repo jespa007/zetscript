@@ -6,15 +6,15 @@
 
 namespace zetscript{
 
-	ScriptObjectFunctionMember * ScriptObjectFunctionMember::newScriptObjectFunctionMember(ZetScript *zs){
-		ScriptObjectFunctionMember *sofm=new ScriptObjectFunctionMember();
+	ScriptObjectMemberFunction * ScriptObjectMemberFunction::newScriptObjectMemberFunction(ZetScript *zs){
+		ScriptObjectMemberFunction *sofm=new ScriptObjectMemberFunction();
 		sofm->init(zs);
 
 		return sofm;
 
 	}
 
-	ScriptObjectFunctionMember::ScriptObjectFunctionMember(){
+	ScriptObjectMemberFunction::ScriptObjectMemberFunction(){
 		this->so_function=NULL;
 		this->so_object=NULL;
 

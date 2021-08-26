@@ -67,7 +67,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 {\
 	VM_Scope *vm_check_scope=(data->vm_current_scope-1);\
 	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
-	zs_vector *scope_symbols=vm_check_scope->scope->registered_variable_symbols;\
+	zs_vector *scope_symbols=vm_check_scope->scope->symbol_registered_variables;\
 	zs_int *symbols					=scope_symbols->items;\
 	StackElement *stk_local_var;\
 	for(int i = scope_symbols->count-1; i >=0 ; --i,++symbols){\
@@ -408,8 +408,8 @@ namespace zetscript{
 		}\
 	}else{ \
 		StackElement *stk_element=&((StackElement *)stk_elements_builtin_ptr)[i]; \
-		if(STK_IS_SCRIPT_FUNCTION_MEMBER_OBJECT(stk_element)){\
-			ScriptFunctionMemberObject *fm=(ScriptFunctionMemberObject  *)stk_element->value;\
+		if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_element)){\
+			ScriptObjectMemberFunction *fm=(ScriptObjectMemberFunction  *)stk_element->value;\
 			irfs=fm->so_function;\
 			this_as_first_parameter=1;\
 		}else if(stk_element->properties & STK_PROPERTY_FUNCTION){\
@@ -439,12 +439,12 @@ namespace zetscript{
 
 		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
 
-		void *stk_elements_builtin_ptr= data->vm_stack;// vector of properties
-		int stk_elements_builtin_len=  data->main_function_object->registered_symbols->count;// vector of properties
+		void *stk_elements_builtin_ptr= data->main_function_object->symbol_registered_functions->items;// vector of symbols
+		int stk_elements_builtin_len=  data->main_function_object->symbol_registered_functions->count;// vector of symbols
 
 		if(class_obj != NULL){
-			stk_elements_builtin_ptr=class_obj->symbol_members->items;
-			stk_elements_builtin_len=class_obj->symbol_members->count;
+			stk_elements_builtin_ptr=class_obj->symbol_member_functions->items;
+			stk_elements_builtin_len=class_obj->symbol_member_functions->count;
 
 		}
 		//bool stk_element_are_vector_element_ptr=stk_elements_builtin_ptr!=data->vm_stack;
@@ -901,7 +901,7 @@ namespace zetscript{
 
 			}else{ // get first item...
 				ScriptClass *sc=script_object->getScriptClass();
-				Symbol * symbol = sc->getSymbolFunctionMember(str_symbol_metamethod);
+				Symbol * symbol = sc->getSymbolMemberFunction(str_symbol_metamethod);
 
 				if(symbol == NULL){
 					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
@@ -940,7 +940,7 @@ namespace zetscript{
 			);
 		}
 
-		stk_return=(stk_args+ptr_function_found->registered_symbols->count );
+		stk_return=(stk_args+ptr_function_found->symbol_registered_variables->count );
 		n_returned_arguments_from_function=data->stk_vm_current-stk_return;
 
 

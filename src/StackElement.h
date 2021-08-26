@@ -42,7 +42,7 @@ typedef enum:unsigned short {
 #define STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR))
 #define STK_IS_SCRIPT_OBJECT_CLASS(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class>IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS))
 #define STK_IS_SCRIPT_OBJECT_VAR_REF(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF))
-#define STK_IS_SCRIPT_OBJECT_FUNCTION_MEMBER(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER))
+#define STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER))
 #define STK_GET_STK_VAR_REF(stk)  						(((ScriptObjectVarRef *)((stk))->value)->getStackElementPtr())
 
 #define MSK_STK_OP1_BOOL_OP2_BOOL						((STK_PROPERTY_BOOL<<16)|STK_PROPERTY_BOOL)
