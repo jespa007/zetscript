@@ -410,7 +410,7 @@ namespace zetscript{
 					}
 
 					if(function_name == "_set"){
-						if(ma->setters.count == 0){
+						if(ma->setters.size() == 0){
 							ma->addSetter((ScriptFunction *)symbol->ref_ptr);
 						}else{
 							EVAL_ERROR_FILE_LINE(

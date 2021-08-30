@@ -20,9 +20,9 @@ namespace zetscript{
 		zs=_zs;
 		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
 		scope_factory=_zs->getScopeFactory();
-		registered_scopes=new zs_vector;
-		symbol_registered_variables=new zs_vector;
-		symbol_registered_functions=new zs_vector;
+		registered_scopes=new std::vector<Scope *>();
+		symbol_registered_variables=new std::vector<Symbol *>();
+		symbol_registered_functions=new std::vector<Symbol *>();
 
 		if(_scope_parent == NULL){ // first node (it should be a class)...
 			scope_base = this;
@@ -58,9 +58,9 @@ namespace zetscript{
 
 		// because no variables in there...
 		if(scope_parent != NULL){
-			for(unsigned i=0;i < registered_scopes->count; i++){
-				Scope *current_scope=(Scope *)registered_scopes->items[i];
-				scope_parent->registered_scopes->push_back((zs_int)current_scope);
+			for(unsigned i=0;i < registered_scopes->size(); i++){
+				Scope *current_scope=(Scope *)registered_scopes->at(i);
+				scope_parent->registered_scopes->push_back(current_scope);
 				current_scope->scope_parent = scope_parent;
 			}
 
@@ -86,9 +86,9 @@ namespace zetscript{
 		irv->n_params=NO_PARAMS_SYMBOL_ONLY;
 
 		if(irv->n_params == NO_PARAMS_SYMBOL_ONLY){
-			symbol_registered_variables->push_back((zs_int)irv);
+			symbol_registered_variables->push_back(irv);
 		}else{
-			symbol_registered_functions->push_back((zs_int)irv);
+			symbol_registered_functions->push_back(irv);
 		}
 		return irv;
 	}
@@ -128,8 +128,8 @@ namespace zetscript{
 		Symbol *sv=NULL;
 
 		// for each variable in current scope ...
-		for(unsigned i = 0; i < symbol_registered_variables->count; i++){
-			sv=(Symbol *)symbol_registered_variables->items[i];
+		for(unsigned i = 0; i < symbol_registered_variables->size(); i++){
+			sv=(Symbol *)symbol_registered_variables->at(i);
 			if(
 				   ( sv->name == str_symbol )
 			){
@@ -137,8 +137,8 @@ namespace zetscript{
 			}
 		}
 
-		for(unsigned i = 0; i < symbol_registered_functions->count; i++){
-			sv=(Symbol *)symbol_registered_variables->items[i];
+		for(unsigned i = 0; i < symbol_registered_functions->size(); i++){
+			sv=(Symbol *)symbol_registered_variables->at(i);
 			if(
 				   ( sv->name == str_symbol )
 			   &&  ( sv->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY )
@@ -159,8 +159,8 @@ namespace zetscript{
 		}
 
 		if(scope_direction&SCOPE_DIRECTION_UP){
-			for(unsigned i = 0; i < registered_scopes->count; i++){
-				Scope *s=(Scope *)registered_scopes->items[i];
+			for(unsigned i = 0; i < registered_scopes->size(); i++){
+				Scope *s=(Scope *)registered_scopes->at(i);
 
 				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
 					Symbol *sv=s->getSymbol(str_symbol,n_params,SCOPE_DIRECTION_UP);
@@ -177,24 +177,24 @@ namespace zetscript{
 
 	bool Scope::unregisterSymbol(Symbol *symbol){
 		Symbol *sv=NULL;
-		for(unsigned i = 0; i < symbol_registered_functions->count; i++){
-			sv=(Symbol *)symbol_registered_functions->items[i];
+		for(unsigned i = 0; i < symbol_registered_functions->size(); i++){
+			sv=(Symbol *)symbol_registered_functions->at(i);
 			if(
 			   ( sv == symbol )
 			){
 				delete sv;
-				symbol_registered_functions->erase(i); // erase symbol scope
+				symbol_registered_functions->erase(symbol_registered_functions->begin()+i); // erase symbol scope
 				return true;
 			}
 		}
 
-		for(unsigned i = 0; i < symbol_registered_variables->count; i++){
-			sv=(Symbol *)symbol_registered_variables->items[i];
+		for(unsigned i = 0; i < symbol_registered_variables->size(); i++){
+			sv=(Symbol *)symbol_registered_variables->at(i);
 			if(
 			   ( sv == symbol )
 			){
 				delete sv;
-				symbol_registered_variables->erase(i); // erase symbol scope
+				symbol_registered_variables->erase(symbol_registered_functions->begin()+i); // erase symbol scope
 				return true;
 			}
 		}
@@ -210,12 +210,12 @@ namespace zetscript{
 		registered_scopes=NULL;
 
 		// delete local local_symbols found...
-		for(unsigned i = 0; i < symbol_registered_functions->count; i++){
-			delete (Symbol *)symbol_registered_functions->items[i];
+		for(unsigned i = 0; i < symbol_registered_functions->size(); i++){
+			delete (Symbol *)symbol_registered_functions->at(i);
 		}
 
-		for(unsigned i = 0; i < symbol_registered_variables->count; i++){
-			delete (Symbol *)symbol_registered_variables->items[i];
+		for(unsigned i = 0; i < symbol_registered_variables->size(); i++){
+			delete (Symbol *)symbol_registered_variables->at(i);
 		}
 		delete symbol_registered_variables;
 		delete symbol_registered_functions;

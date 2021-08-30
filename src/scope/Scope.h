@@ -28,9 +28,9 @@ namespace zetscript{
 		bool unusued;
 		Scope 		*scope_parent, *scope_base;
 
-		zs_vector				*registered_scopes;  // local scopes from starting block { }
-		zs_vector				*symbol_registered_variables; // variable symbols from starting block { }
-		zs_vector				*symbol_registered_functions; // function symbols from starting block { }
+		std::vector<Scope *>				*registered_scopes;  // local scopes from starting block { }
+		std::vector<Symbol *>				*symbol_registered_variables; // variable symbols from starting block { }
+		std::vector<Symbol *>				*symbol_registered_functions; // function symbols from starting block { }
 
 		//--------------------------------------------------------------------
 		// Functions

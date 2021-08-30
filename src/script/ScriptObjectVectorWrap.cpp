@@ -25,7 +25,7 @@ namespace zetscript{
 		*new_stk=*_stk;
 		ZetScript *zs=sv->getZetScript();
 		VirtualMachine *vm=sv->getZetScript()->getVirtualMachine();
-		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
+		std::vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
 
 		// update n_refs +1
 		if(_stk->properties&STK_PROPERTY_SCRIPT_OBJECT){
@@ -45,7 +45,7 @@ namespace zetscript{
 
 		}
 
-		stk_user_list_elements->insert(idx,(zs_int)new_stk);
+		stk_user_list_elements->insert(stk_user_list_elements->begin()+idx,new_stk);
 	}
 
 	void 			ScriptObjectVectorWrap_eraseAt(ScriptObjectVector *sv, zs_int idx){
@@ -61,10 +61,10 @@ namespace zetscript{
 		//std::string *str;
 		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(sv->getZetScript());
 		std::string *ptr_str=(std::string *)so_string->value;
-		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
+		std::vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
 
-		for(unsigned i=0; i < stk_user_list_elements->count;i++){
-			StackElement *stk=(StackElement *)stk_user_list_elements->items[i];
+		for(unsigned i=0; i < stk_user_list_elements->size();i++){
+			StackElement *stk=(StackElement *)stk_user_list_elements->at(i);
 			if(i>0){
 				ptr_str->push_back(idx);
 			}
@@ -81,10 +81,10 @@ namespace zetscript{
 	bool 							ScriptObjectVectorWrap_contains(ScriptObjectVector *sv, StackElement *stk_to_compare){
 		bool found=false;
 
-		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
+		std::vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
 
-		for(unsigned i=0; i < stk_user_list_elements->count && found == false;i++){
-			StackElement *stk_element=(StackElement *)stk_user_list_elements->items[i];
+		for(unsigned i=0; i < stk_user_list_elements->size() && found == false;i++){
+			StackElement *stk_element=(StackElement *)stk_user_list_elements->at(i);
 			switch(stk_to_compare->properties & stk_element->properties){ // match element
 			case STK_PROPERTY_BOOL:
 			case STK_PROPERTY_ZS_INT:

@@ -4,7 +4,7 @@ namespace zetscript{
 
 	class MemberAttribute{
 	public:
-		zs_vector setters; // setter that contains a list of script functions C++
+		std::vector<StackElement *> setters; // setter that contains a list of script functions C++
 		 ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec; // getter
 		 std::string attribute_name;
 

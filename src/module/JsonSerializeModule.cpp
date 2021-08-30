@@ -26,18 +26,23 @@ namespace zetscript{
 
 		void serialize_object(ZetScript *zs,ScriptObject *this_object, std::string & str_result, ScriptObjectObject *obj, int ident, bool is_formatted){
 
+			typedef struct{
+				std::map<std::string,StackElement *>::iterator ini;
+				std::map<std::string,StackElement *>::iterator end;
+			}IteratorObjectInfo;
+
 			str_result += "{";
 
-			std::vector<zs_map_iterator> map_iterators={
-					obj->begin_builtin()
-					,obj->begin()
+			std::vector<IteratorObjectInfo> map_iterators={
+					(IteratorObjectInfo){obj->begin_builtin(),obj->end_builtin()}
+					,(IteratorObjectInfo){obj->begin(),obj->end()}
 			};
 
 			for(auto mi=map_iterators.begin();mi!=map_iterators.end();mi++){
 				int k=0;
-				for(;!mi->end();mi->next()){
+				for(auto it=mi->ini;it!=mi->end;it++){
 
-					StackElement *stk_se=(StackElement *)mi->getValue();
+					StackElement *stk_se=it->second;
 					// only check if is not function. If is an attribute an implements get, call
 					if((stk_se->properties & STK_PROPERTY_FUNCTION) == 0){
 						bool created_object=false;
@@ -57,7 +62,7 @@ namespace zetscript{
 							str_result += ",";
 						}
 
-						str_result += "\"" + std::string(mi->getKey())+ "\":";
+						str_result += "\"" + it->first+ "\":";
 
 						// if attribute we have to call script or native...
 						if(stk_se->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
@@ -91,7 +96,7 @@ namespace zetscript{
 						}
 
 						if(getter_found == false){
-							ptr_stk_param=(StackElement *)mi->getValue();
+							ptr_stk_param=it->second;
 						}
 
 						serialize_stk(zs,this_object, str_result, ptr_stk_param, ident+1,is_formatted);

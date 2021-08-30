@@ -181,7 +181,7 @@ namespace zetscript{
 	 // PRINT ASM INFO
 	 void ZetScript::printGeneratedCode(bool show_system_code){
 
-		 zs_vector *script_classes=script_class_factory->getScriptClasses();
+		 std::vector<ScriptClass *> *script_classes=script_class_factory->getScriptClasses();
 		 // for all classes print code...
 		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
 
@@ -189,8 +189,8 @@ namespace zetscript{
 		 ScriptFunction::printGeneratedCode(sf_main);
 
 		 // print defined functions in main function
-		 for(unsigned j =0; j < sf_main->symbol_registered_functions->count; j++){
-			Symbol *symbol=(Symbol *)sf_main->symbol_registered_functions->items[j];
+		 for(unsigned j =0; j < sf_main->symbol_registered_functions->size(); j++){
+			Symbol *symbol=(Symbol *)sf_main->symbol_registered_functions->at(j);
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 
@@ -202,8 +202,8 @@ namespace zetscript{
 			}
 		}
 
-		 for(unsigned i = 1; i < script_classes->count; i++){
-			 ScriptClass *rc=(ScriptClass *)script_classes->get(i);
+		 for(unsigned i = 1; i < script_classes->size(); i++){
+			 ScriptClass *rc=(ScriptClass *)script_classes->at(i);
 			 bool show_class=true;
 
 			 // ignore builtin implementations if not chosen ...
@@ -223,8 +223,8 @@ namespace zetscript{
 			 }
 
 			 if(show_class){
-				 for(unsigned f = 0; f < rc->symbol_member_functions->count; f++){
-					 Symbol *symbol=(Symbol *)rc->symbol_member_functions->items[f];
+				 for(unsigned f = 0; f < rc->symbol_member_functions->size(); f++){
+					 Symbol *symbol=(Symbol *)rc->symbol_member_functions->at(f);
 					 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,rc);
 
 				 }
@@ -424,14 +424,15 @@ namespace zetscript{
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
 
-		int idx_stk_start_function_element=main_function_object->symbol_registered_functions->count-1;
+		int idx_stk_start_function_element=main_function_object->symbol_registered_functions->size()-1;
 		// unregister all global functions
 		for (
 				int v = idx_stk_start_function_element;
 				v > idx_start_function;
 				v--) {
 
-			Symbol *symbol=(Symbol *)main_function_object->symbol_registered_functions->pop_back();//(Symbol *)main_function_object->registered_symbols->items[v];
+			Symbol *symbol=main_function_object->symbol_registered_functions->at(v);
+			main_function_object->symbol_registered_functions->pop_back();//(Symbol *)main_function_object->registered_symbols->items[v];
 
 			if(symbol->scope == main_scope){
 				if(main_scope->unregisterSymbol(symbol) == false){
@@ -448,17 +449,18 @@ namespace zetscript{
 		//&vm_get_stack_elements(virtual_machine)[main_function_object->registered_symbols->count-1];
 
 		// remove all shared 0 pointers
-		if(main_function_object->symbol_registered_variables->count > 0){
-			int idx_stk_start_element=main_function_object->symbol_registered_variables->count-1;
+		if(main_function_object->symbol_registered_variables->size() > 0){
+			int idx_stk_start_element=main_function_object->symbol_registered_variables->size()-1;
 			//StackElement *vm_stack=&vm_get_stack_elements(virtual_machine);
 			// set global top stack element
-			StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[main_function_object->symbol_registered_variables->count-1];
+			StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[main_function_object->symbol_registered_variables->size()-1];
 			for (
 					int v = idx_stk_start_element;
 					v > idx_start_variable;
 					v--,vm_stk_element--) {
 
-				Symbol *symbol=(Symbol *)main_function_object->symbol_registered_variables->pop_back();//(Symbol *)main_function_object->registered_symbols->items[v];
+				Symbol *symbol=(Symbol *)main_function_object->symbol_registered_variables->at(v);
+				main_function_object->symbol_registered_variables->pop_back();//(Symbol *)main_function_object->registered_symbols->items[v];
 
 				ScriptObjectObject *var = NULL;
 
@@ -527,8 +529,8 @@ namespace zetscript{
 
 	void ZetScript::saveState(){
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
-		idx_current_global_variable_checkpoint=main_function_object->symbol_registered_variables->count-1;
-		idx_current_global_function_checkpoint=main_function_object->symbol_registered_functions->count-1;
+		idx_current_global_variable_checkpoint=main_function_object->symbol_registered_variables->size()-1;
+		idx_current_global_function_checkpoint=main_function_object->symbol_registered_functions->size()-1;
 		scope_factory->saveState();
 		script_function_factory->saveState();
 		script_class_factory->saveState();

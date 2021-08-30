@@ -67,13 +67,13 @@ namespace zetscript{
 		ScriptObject();
 
 		ScriptFunction *getGetter();
-		zs_vector *getSetterList();
+		std::vector<StackElement *> *getSetterList();
 
 		virtual				size_t length();
 
 		ZetScript      * 	getZetScript();
 		StackElement 	* getBuiltinProperty(const std::string & property_name);
-		//int			   		getBuiltinPropertyIdx(const std::string & varname);
+
 
 		StackElement * getBuiltinElementAt(short idx);
 		virtual StackElement * addProperty(
@@ -84,7 +84,7 @@ namespace zetscript{
 		virtual StackElement 	* getProperty(const std::string & property_name);
 
 
-		zs_vector * getStkBuiltinListElements();
+		std::vector<StackElement *> * getStkBuiltinListElements();
 		ScriptClass * 	    getNativeScriptClass();
 		bool 				isNativeObject();
 		const std::string & getClassName();
@@ -98,10 +98,10 @@ namespace zetscript{
 
 		StackElement stk_this;
 
-		ZetScript 				*	zs; // 8
-		VirtualMachine 			*	vm; // 8
-		zs_vector				stk_builtin_elements;
-		zs_map					*map_builtin_property_keys; // to search faster each property by its name
+		ZetScript 								*zs; // 8
+		VirtualMachine 							*vm; // 8
+		std::vector<StackElement *>				stk_builtin_elements;
+		std::map<std::string,StackElement *>	*map_builtin_property_keys; // to search faster each property by its name
 
 
 		void init(ZetScript *zs);

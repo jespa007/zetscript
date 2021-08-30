@@ -22,12 +22,12 @@ namespace zetscript{
 		//zs_map_iterator it_1=o1->map_user_property_keys->begin();
 		//zs_map_iterator it_2=o2->map_user_property_keys->begin();
 
-		for(auto it=o1->begin(); !it.end();it.next()){
-			obj->addUserProperty(it.getKey(),error,(StackElement *)it.getValue());
+		for(auto it=o1->begin(); it!=o1->end();it++){
+			obj->addUserProperty(it->first,error,it->second);
 		}
 
-		for(auto it=o2->begin(); !it.end();it.next()){
-			obj->addUserProperty(it.getKey(),error,(StackElement *)it.getValue());
+		for(auto it=o2->begin(); it!=o2->end();it++){
+			obj->addUserProperty(it->first,error,it->second);
 		}
 		return obj;
 	}
@@ -39,7 +39,7 @@ namespace zetscript{
 
 	ScriptObjectObject::ScriptObjectObject(){
 		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT;
-		map_user_property_keys=new zs_map();
+		map_user_property_keys=new std::map<std::string,StackElement *>();
 	}
 
 	StackElement * ScriptObjectObject::addUserProperty(
@@ -50,7 +50,7 @@ namespace zetscript{
 		StackElement si;
 		bool error_symbol=false;
 
-		if(map_user_property_keys->exist(symbol_value.c_str())){
+		if(map_user_property_keys->count(symbol_value.c_str())>=1){
 			error=zs_strutils::format("\"%s\" symbol already exists",symbol_value.c_str());
 			return NULL;
 		}
@@ -77,7 +77,7 @@ namespace zetscript{
 		std::string key_value = symbol_value;
 		//StackElement *new_stk=pushNewUserSlot();
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
-		map_user_property_keys->set(key_value.c_str(),(zs_int)new_stk);
+		(*map_user_property_keys)[key_value.c_str()]=new_stk;
 
 		*new_stk=si; //assign var
 		return new_stk;
@@ -85,17 +85,7 @@ namespace zetscript{
 
 	StackElement * ScriptObjectObject::getUserProperty(const std::string & property_name){
 
-		bool exists;
-		StackElement *stk_element=(StackElement *)this->map_user_property_keys->get(property_name.c_str(),exists);
-		if(exists){
-			/*if(idx!=NULL){
-				*idx=idx_stk_element;
-			}
-
-			return (StackElement *)stk_user_elements.items[idx_stk_element];*/
-			return stk_element;
-		}
-		return NULL;
+		return this->map_user_property_keys->at(property_name.c_str());
 	}
 
 
@@ -118,30 +108,36 @@ namespace zetscript{
 	}
 
 	bool ScriptObjectObject::existUserProperty(const std::string & property_name){
-		return map_user_property_keys->exist(property_name.c_str());
+		return map_user_property_keys->count(property_name.c_str()) > 1;
 	}
 
-	zs_map_iterator ScriptObjectObject::begin(){
+	std::map<std::string,StackElement *>::iterator ScriptObjectObject::begin(){
 		return this->map_user_property_keys->begin();
 	}
 
-	zs_map_iterator ScriptObjectObject::begin_builtin(){
+	std::map<std::string,StackElement *>::iterator ScriptObjectObject::begin_builtin(){
 		return this->map_builtin_property_keys->begin();
+	}
+
+	std::map<std::string,StackElement *>::iterator ScriptObjectObject::end(){
+		return this->map_user_property_keys->end();
+	}
+
+	std::map<std::string,StackElement *>::iterator ScriptObjectObject::end_builtin(){
+		return this->map_builtin_property_keys->end();
 	}
 
 
 
 	bool ScriptObjectObject::eraseUserProperty(const std::string & property_name/*, const ScriptFunction *info_function*/){
 		bool exists=false;
-		StackElement *stk_user_element = (StackElement *)map_user_property_keys->get(property_name.c_str(),exists);
-		if(!exists){
+		StackElement *stk_user_element = (StackElement *)map_user_property_keys->at(property_name.c_str());
+		if(stk_user_element == NULL){
 			VM_SET_USER_ERROR(vm,"Property %s not exist",property_name.c_str());
 			return false;
 		}
 
-		/*if(!eraseUserElementAt(stk_user_element)){
-			return false;
-		}*/
+
 		free(stk_user_element);
 
 		map_user_property_keys->erase(property_name.c_str()); // erase also property key
@@ -150,8 +146,8 @@ namespace zetscript{
 	}
 
 	void ScriptObjectObject::eraseAllUserProperties(){
-		for(auto it=map_user_property_keys->begin(); !it.end(); it.next()){
-			StackElement *si=(StackElement *)it.getValue();
+		for(auto it=map_user_property_keys->begin(); it!=map_user_property_keys->end(); it++){
+			StackElement *si=it->second;
 			ScriptObject::unrefAndFreeStackElementContainer(si);
 		}
 		map_user_property_keys->clear();

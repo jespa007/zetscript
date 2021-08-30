@@ -67,10 +67,10 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 {\
 	VM_Scope *vm_check_scope=(data->vm_current_scope-1);\
 	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
-	zs_vector *scope_symbols=vm_check_scope->scope->symbol_registered_variables;\
-	zs_int *symbols					=scope_symbols->items;\
+	std::vector<Symbol *> *scope_symbols=vm_check_scope->scope->symbol_registered_variables;\
+	Symbol **symbols					=scope_symbols->data();\
 	StackElement *stk_local_var;\
-	for(int i = scope_symbols->count-1; i >=0 ; --i,++symbols){\
+	for(int i = scope_symbols->size()-1; i >=0 ; --i,++symbols){\
 		stk_local_var =(stk_local_vars+((Symbol *)(*symbols))->idx_position);\
 		if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
 			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
@@ -439,12 +439,12 @@ namespace zetscript{
 
 		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
 
-		void *stk_elements_builtin_ptr= data->main_function_object->symbol_registered_functions->items;// vector of symbols
-		int stk_elements_builtin_len=  data->main_function_object->symbol_registered_functions->count;// vector of symbols
+		void *stk_elements_builtin_ptr= data->main_function_object->symbol_registered_functions->data();// vector of symbols
+		int stk_elements_builtin_len=  data->main_function_object->symbol_registered_functions->size();// vector of symbols
 
 		if(class_obj != NULL){
-			stk_elements_builtin_ptr=class_obj->symbol_member_functions->items;
-			stk_elements_builtin_len=class_obj->symbol_member_functions->count;
+			stk_elements_builtin_ptr=class_obj->symbol_member_functions->data();
+			stk_elements_builtin_len=class_obj->symbol_member_functions->size();
 
 		}
 		//bool stk_element_are_vector_element_ptr=stk_elements_builtin_ptr!=data->vm_stack;
@@ -461,14 +461,14 @@ namespace zetscript{
 								aux_string == symbol_to_find
 								|| (is_set_attrib_metamethod && zs_strutils::starts_with(aux_string,"_set@"));
 
-			if((symbol_equals && irfs->params->count == (n_args+this_as_first_parameter))){
+			if((symbol_equals && (int)irfs->params->size() == (n_args+this_as_first_parameter))){
 				if((irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;
 					int arg_idx_type=-1;
 					for( unsigned k = 0; k < n_args && all_check;k++){
 						StackElement *current_arg=&stk_arg[k];
-						arg_idx_type=((ScriptFunctionArg *)irfs->params->items[k+this_as_first_parameter])->idx_type;
+						arg_idx_type=((ScriptFunctionArg *)irfs->params->at(k+this_as_first_parameter))->idx_type;
 
 						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT
 								 /*&&
@@ -622,14 +622,14 @@ namespace zetscript{
 							:class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->symbol_class.name+"::")
 							:"")+irfs->symbol.name+"(";
 
-					for(unsigned a = 0; a < irfs->params->count; a++){
+					for(unsigned a = 0; a < irfs->params->size(); a++){
 						if(a>0){
 							str_candidates+=",";
 						}
 
 						if(irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 							str_candidates+=zs_rtti::demangle(
-								GET_IDX_2_CLASS_C_STR(data,((ScriptFunctionArg *)irfs->params->items[a])->idx_type
+								GET_IDX_2_CLASS_C_STR(data,((ScriptFunctionArg *)irfs->params->at(a))->idx_type
 							));
 						}else{ /* typic var ... */
 							str_candidates+="arg"+zs_strutils::zs_int_to_str(a+1);
@@ -940,7 +940,7 @@ namespace zetscript{
 			);
 		}
 
-		stk_return=(stk_args+ptr_function_found->symbol_registered_variables->count );
+		stk_return=(stk_args+ptr_function_found->symbol_registered_variables->size() );
 		n_returned_arguments_from_function=data->stk_vm_current-stk_return;
 
 

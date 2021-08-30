@@ -25,10 +25,10 @@ namespace zetscript{
 		symbol=*_symbol;
 
 		// local symbols for class or function...
-		symbol_registered_variables=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
-		symbol_registered_functions=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
+		symbol_registered_variables=new std::vector<Symbol *>(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
+		symbol_registered_functions=new std::vector<Symbol *>(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
 		//registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
-		params = new zs_vector();
+		params = new std::vector<ScriptFunctionArg *>();
 
 		updateParams(_params);
 
@@ -40,8 +40,6 @@ namespace zetscript{
 
 		min_stack_needed=0;
 
-		//num_native_functions=new zs_map;
-		//function_should_be_deduced_at_runtime=false;
 	}
 
 	InstructionSourceInfo * ScriptFunction::getInstructionInfo(Instruction *instruction){
@@ -59,16 +57,16 @@ namespace zetscript{
 
 
 #define GET_ILOAD_R_STR(properties,value) \
-	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->symbol_registered_variables->items[value])->name.c_str()\
-	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_member_variables->items[value])->name.c_str()\
-	:((Symbol *)MAIN_FUNCTION(sfo)->symbol_registered_variables->items[value])->name.c_str()\
+	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->symbol_registered_variables->at(value))->name.c_str()\
+	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_member_variables->at(value))->name.c_str()\
+	:((Symbol *)MAIN_FUNCTION(sfo)->symbol_registered_variables->at(value))->name.c_str()\
 
 
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc){
 
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
-		zs_vector * m_vf = sfo->symbol_registered_variables;
+		std::vector<Symbol *> * m_vf = sfo->symbol_registered_variables;
 
 		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
@@ -344,7 +342,7 @@ namespace zetscript{
 			, uint16_t properties
 	){
 		Symbol * symbol=NULL;
-		short idx_position=(short)symbol_registered_variables->count;
+		short idx_position=(short)symbol_registered_variables->size();
 		StackElement *se=NULL;
 
 
@@ -355,7 +353,7 @@ namespace zetscript{
 		symbol->properties=properties;
 		symbol->idx_position = idx_position;
 
-		symbol_registered_variables->push_back((zs_int)symbol);
+		symbol_registered_variables->push_back(symbol);
 
 		return symbol;
 	}
@@ -372,7 +370,7 @@ namespace zetscript{
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
 
 		Symbol * symbol=NULL;
-		short idx_position=(short)symbol_registered_variables->count;
+		short idx_position=(short)symbol_registered_variables->size();
 		StackElement *se=NULL;
 
 		if((symbol=scope_block->registerSymbol(file,line, symbol_name /*,var_node*/))==NULL){
@@ -385,7 +383,7 @@ namespace zetscript{
 		symbol->properties = properties;
 		symbol->idx_position = idx_position;
 
-		symbol_registered_variables->push_back((zs_int)symbol);
+		symbol_registered_variables->push_back(symbol);
 
 		if(scope_block == MAIN_SCOPE(this)) { // is global var ...
 			StackElement stk_global_var;
@@ -471,7 +469,7 @@ namespace zetscript{
 		}
 
 		// register new slot
-		short idx_position=(short)symbol_registered_functions->count;
+		short idx_position=(short)symbol_registered_functions->size();
 
 		symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
@@ -480,7 +478,7 @@ namespace zetscript{
 				,line
 				//---- Function data
 				,idx_class 				// idx class which belongs to...
-				,symbol_registered_functions->count // idx symbol ...
+				,symbol_registered_functions->size() // idx symbol ...
 				,function_name
 				,params
 				,idx_return_type
@@ -514,7 +512,7 @@ namespace zetscript{
 			}
 		}
 
-		symbol_registered_functions->push_back((zs_int)symbol);
+		symbol_registered_functions->push_back(symbol);
 
 
 		return symbol;
@@ -526,15 +524,15 @@ namespace zetscript{
 
 		bool only_symbol=n_params<0;
 		// from last value to first to get last override function...
-		for(int i = (int)(scope->symbol_registered_variables->count-1); i >= 0 ; i--){
-			Symbol *symbol=(Symbol *)scope->symbol_registered_variables->items[i];
+		for(int i = (int)(scope->symbol_registered_variables->size()-1); i >= 0 ; i--){
+			Symbol *symbol=(Symbol *)scope->symbol_registered_variables->at(i);
 			if(symbol->name == symbol_name){
 					return symbol;
 			}
 		}
 
-		for(int i = (int)(scope->symbol_registered_functions->count-1); i >= 0 ; i--){
-			Symbol *symbol=(Symbol *)scope->symbol_registered_functions->items[i];
+		for(int i = (int)(scope->symbol_registered_functions->size()-1); i >= 0 ; i--){
+			Symbol *symbol=(Symbol *)scope->symbol_registered_functions->at(i);
 			if(symbol->name == symbol_name){
 				if(only_symbol){
 					return symbol;
@@ -542,7 +540,7 @@ namespace zetscript{
 					ScriptFunction *current_sf=(ScriptFunction *)symbol->ref_ptr;
 					if(
 
-					 (n_params == (int)current_sf->params->count)
+					 (n_params == (int)current_sf->params->size())
 					 && (scope ==  NULL?true:(scope == current_sf->symbol.scope))
 					 ){
 					// set first script function found...
@@ -560,8 +558,8 @@ namespace zetscript{
 	}
 
 	void ScriptFunction::clearParams(){
-		for(unsigned i=0; i < params->count; i++){
-			ScriptFunctionArg * function_param=(ScriptFunctionArg *)params->items[i];
+		for(unsigned i=0; i < params->size(); i++){
+			ScriptFunctionArg * function_param=(ScriptFunctionArg *)params->at(i);
 			delete function_param;
 		}
 
@@ -575,7 +573,7 @@ namespace zetscript{
 
 		// insert new args...
 		for(unsigned i = 0; i < _params.size(); i++){
-			params->push_back((zs_int)(new ScriptFunctionArg(_params[i])));
+			params->push_back(new ScriptFunctionArg(_params[i]));
 		}
 	}
 

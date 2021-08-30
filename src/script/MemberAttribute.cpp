@@ -16,13 +16,13 @@ namespace zetscript{
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		stk->value=(zs_int)f;
 		stk->properties=STK_PROPERTY_FUNCTION;
-		setters.push_back((zs_int)stk);
+		setters.push_back(stk);
 	}
 
 	MemberAttribute::~MemberAttribute(){
 
-		for(int i=0;i < setters.count; i++){
-			StackElement *stk_el=(StackElement *)setters.items[i];
+		for(unsigned i=0;i < setters.size(); i++){
+			StackElement *stk_el=(StackElement *)setters.at(i);
 			free(stk_el);
 		}
 

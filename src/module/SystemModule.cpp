@@ -50,10 +50,11 @@ namespace zetscript{
 
 			oo_param=(ScriptObjectObject *)stk_oo_param->value;
 
+
 			// catch parameters...
-			for(auto it=oo_param->begin(); !it.end(); it.next()){
-				StackElement stk=*((StackElement *)it.getValue());
-				function_args.push_back(ScriptFunctionArg(it.getKey()));
+			for(auto it=oo_param->begin(); it!=oo_param->end(); it++){
+				StackElement stk=*it->second;
+				function_args.push_back(ScriptFunctionArg(it->first));
 				stk_params.push_back(stk);
 
 				if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){

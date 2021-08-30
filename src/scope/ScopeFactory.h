@@ -18,7 +18,7 @@ namespace zetscript{
 
 			Scope	    				*	newScope(int idx_sf,Scope * scope_parent=NULL,bool is_c_node=false);
 			Scope 						* 	getMainScope(){return main_scope;}
-			zs_vector 					* 	getScopes();
+			std::vector<Scope *>		* 	getScopes();
 			void clear();
 			void saveState();
 
@@ -31,7 +31,7 @@ namespace zetscript{
 			/**
 			 * Vector of script scopes. This std::vector is removed when ZetScript reevaluates all scrips.
 			 */
-			zs_vector 		 *scopes;
+			std::vector<Scope *> 		 *scopes;
 			Scope *main_scope;
 			int idx_clear_checkpoint;
 			int idx_clear_global_checkpoint_global_symbol_registered_variables;
