@@ -26,16 +26,23 @@ namespace zetscript{
 
 		void serialize_object(ZetScript *zs,ScriptObject *this_object, std::string & str_result, ScriptObjectObject *obj, int ident, bool is_formatted){
 
-			typedef struct{
+			struct IteratorObjectInfo{
 				std::map<std::string,StackElement *>::iterator ini;
 				std::map<std::string,StackElement *>::iterator end;
-			}IteratorObjectInfo;
+
+				IteratorObjectInfo(const std::map<std::string, StackElement *>::iterator & _ini,
+					const std::map<std::string, StackElement *>::iterator & _end
+				) {
+					ini = _ini;
+					end = _end;
+				}
+			};
 
 			str_result += "{";
 
 			std::vector<IteratorObjectInfo> map_iterators={
-					(IteratorObjectInfo){obj->begin_builtin(),obj->end_builtin()}
-					,(IteratorObjectInfo){obj->begin(),obj->end()}
+					IteratorObjectInfo(obj->begin_builtin(),obj->end_builtin())
+					,IteratorObjectInfo(obj->begin(),obj->end())
 			};
 
 			for(auto mi=map_iterators.begin();mi!=map_iterators.end();mi++){

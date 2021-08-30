@@ -83,7 +83,7 @@ namespace zetscript{
 		irv->file	 = file;
 		irv->line 	 = line;
 		irv->scope=  this;
-		irv->n_params=NO_PARAMS_SYMBOL_ONLY;
+		irv->n_params=n_params;
 
 		if(irv->n_params == NO_PARAMS_SYMBOL_ONLY){
 			symbol_registered_variables->push_back(irv);
@@ -138,7 +138,7 @@ namespace zetscript{
 		}
 
 		for(unsigned i = 0; i < symbol_registered_functions->size(); i++){
-			sv=(Symbol *)symbol_registered_variables->at(i);
+			sv=(Symbol *)symbol_registered_functions->at(i);
 			if(
 				   ( sv->name == str_symbol )
 			   &&  ( sv->n_params == n_params || n_params == NO_PARAMS_SYMBOL_ONLY )

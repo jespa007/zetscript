@@ -82,8 +82,6 @@ namespace zetscript{
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-				// TODO: Register class and baseof
-				// register info class ...
 				// check for named functions or vars...
 				while(*aux_p != '}' && *aux_p != 0){
 					char *test_attrib=aux_p;

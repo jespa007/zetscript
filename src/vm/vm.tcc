@@ -398,22 +398,11 @@ namespace zetscript{
 
 
 #define EXTRACT_FUNCTION_INFO\
-	if(class_obj!=NULL){ /* get elements from class */ \
-		Symbol *symbol = (Symbol *)(((zs_int *)stk_elements_builtin_ptr)[i]);\
-		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
-			irfs = (ScriptFunction *)symbol->ref_ptr;\
-			if(symbol->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION ){\
-				this_as_first_parameter=1;\
-			}\
-		}\
-	}else{ \
-		StackElement *stk_element=&((StackElement *)stk_elements_builtin_ptr)[i]; \
-		if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_element)){\
-			ScriptObjectMemberFunction *fm=(ScriptObjectMemberFunction  *)stk_element->value;\
-			irfs=fm->so_function;\
+	Symbol *symbol = stk_elements_builtin_ptr[i];\
+	if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
+		irfs = (ScriptFunction *)symbol->ref_ptr;\
+		if(symbol->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION ){\
 			this_as_first_parameter=1;\
-		}else if(stk_element->properties & STK_PROPERTY_FUNCTION){\
-				irfs = (ScriptFunction *)stk_element->value;\
 		}\
 	}\
 	if(irfs==NULL) continue;
@@ -439,7 +428,7 @@ namespace zetscript{
 
 		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
 
-		void *stk_elements_builtin_ptr= data->main_function_object->symbol_registered_functions->data();// vector of symbols
+		Symbol **stk_elements_builtin_ptr= data->main_function_object->symbol_registered_functions->data();// vector of symbols
 		int stk_elements_builtin_len=  data->main_function_object->symbol_registered_functions->size();// vector of symbols
 
 		if(class_obj != NULL){
