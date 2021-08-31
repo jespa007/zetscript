@@ -13,7 +13,7 @@ void show_usage(){
 	printf(
 	"usage: zs [options] [script]\n"
 	"Available options:\n"
-	"  --show-code       	Shows the Bytecode generated\n"
+	"  --show-bc       	    Shows the Bytecode generated\n"
 	"  --no-execute			Compiles the script but no execute\n"
 	"  --version       		Shows ZetScript version\n"
 	);

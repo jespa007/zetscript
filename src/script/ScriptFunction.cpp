@@ -421,7 +421,7 @@ namespace zetscript{
 			,zs_int ref_ptr
 			, unsigned short properties
 	){
-		Symbol *symbol_found=symbol_found=getSymbol(scope_block, function_name, NO_PARAMS_SYMBOL_ONLY),*symbol=NULL;
+		Symbol *symbol_found=getSymbol(scope_block, function_name, NO_PARAMS_SYMBOL_ONLY),*symbol=NULL;
 		std::string current_file_line=ZS_CONST_STR_IS_EMPTY(file)?
 							zs_strutils::format("[line %i]",line):
 							zs_strutils::format("[%s:%i]",zs_path::get_filename(file).c_str(),line);
@@ -509,8 +509,10 @@ namespace zetscript{
 				scope_block
 				,symbol->name
 				,(char)params.size()))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
-				((ScriptFunction *)symbol_repeat->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
-				((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
+				if(symbol != symbol_repeat){
+					((ScriptFunction *)symbol_repeat->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
+					((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
+				}
 			}
 		}
 
@@ -525,11 +527,14 @@ namespace zetscript{
 		if(scope == NULL) return NULL;
 
 		bool only_symbol=n_params<0;
-		// from last value to first to get last override function...
-		for(int i = (int)(scope->symbol_registered_variables->count-1); i >= 0 ; i--){
-			Symbol *symbol=(Symbol *)scope->symbol_registered_variables->items[i];
-			if(symbol->name == symbol_name){
-					return symbol;
+
+		if(only_symbol){
+			// from last value to first to get last override function...
+			for(int i = (int)(scope->symbol_registered_variables->count-1); i >= 0 ; i--){
+				Symbol *symbol=(Symbol *)scope->symbol_registered_variables->items[i];
+				if(symbol->name == symbol_name){
+						return symbol;
+				}
 			}
 		}
 

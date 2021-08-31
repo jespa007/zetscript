@@ -67,10 +67,12 @@ namespace zetscript{
 					 break;
 				 default:
 					 //if(ptr_var==0) return stk_result;
-					 stk_result = {
-							 (intptr_t) script_class_factory->instanceScriptObjectByClassIdx(idx_builtin_type_var,(void *)ptr_var)
-							 ,STK_PROPERTY_SCRIPT_OBJECT
-					 };
+					 if(ptr_var != 0){
+						 stk_result = {
+								 (intptr_t) script_class_factory->instanceScriptObjectByClassIdx(idx_builtin_type_var,(void *)ptr_var)
+								 ,STK_PROPERTY_SCRIPT_OBJECT
+						 };
+					 }
 					 break;
 				}
 
