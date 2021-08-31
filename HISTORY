@@ -12,6 +12,7 @@ TODOS
 > #242 compile code/load compiled code feature  (*.zsc)
 > #246 Erase code never execute or temporal expresion that will never assigned
 > #287 Some optimizations
+> #302 Optimize zs_map
 
 //----------------------------------------------------------
 Version: 2.0.0
@@ -33,8 +34,8 @@ Main improvements:
 -Implements builtin iterators for string, vector and anonymous/class objects
 -Implements builtin classes: DateTime
 -Implements builtin Helper classes: System, Math, Integer,Json and String
--"function" keyword to declare function member is not mandatory within the class
--switch allow expressions in the case statement
+-The use of "function" keyword in function members are not mandatory
+-switch-case eval expressions
 
 Solved issues
  
@@ -240,8 +241,9 @@ Solved issues
 #297 Vector/Object & class by default it gives all public members in json format by default when prints or do toString()
 > #298 Do not store function members in ScriptObject 
 > #299 Do not allocate for attribute member in script object 
-> #300 Instead of zs_vector, cache symbols and other stuff after eval function 
-> #301 Solve inherited class call overrided function 
+> #300 Use linear array instead of zs_vector in vm runtime 
+> #301 Solve inherited class call overrided function
+ 
 
 //----------------------------------------------------------
 Version: 1.3.0

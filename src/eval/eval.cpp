@@ -509,7 +509,7 @@ namespace zetscript{
 						// TODO: review load function member !!
 						if(instruction->vm_instruction.value_op2 == ZS_IDX_UNDEFINED){
 							// is automatically created on vm...
-							Symbol *symbol_function=sc_sf->getSymbol(*ptr_str_symbol_to_find,ANY_PARAMS_SYMBOL_ONLY);
+							Symbol *symbol_function=sc_sf->getSymbol(*ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY);
 							if(symbol_function!=NULL){
 								// functions always loads dynamically because we can have an override function
 								// so we don't load as member in a fix position else is a member variable ...

@@ -665,7 +665,7 @@ namespace zetscript{
 				}
 
 				ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
-				if((((int)n_params==sf->params->count) || (n_params==ANY_PARAMS_SYMBOL_ONLY))
+				if((((int)n_params==sf->params->count) || (n_params==NO_PARAMS_SYMBOL_ONLY))
 				 ){
 					return member_symbol;
 				}
