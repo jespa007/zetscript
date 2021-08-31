@@ -44,13 +44,8 @@ namespace zetscript{
 
 		bool existUserProperty(const std::string & property_name);
 
-		std::map<std::string,StackElement *>::iterator begin();
-
-		std::map<std::string,StackElement *>::iterator end();
-
-		std::map<std::string,StackElement *>::iterator begin_builtin();
-
-		std::map<std::string,StackElement *>::iterator end_builtin();
+		zs_map_iterator begin();
+		zs_map_iterator begin_builtin();
 
 
 		bool eraseUserProperty(const std::string & symbol_value);
@@ -61,7 +56,7 @@ namespace zetscript{
 
 	protected:
 
-		std::map<std::string,StackElement *>			*	map_user_property_keys; // to search faster each property by its name
+		zs_map				*	map_user_property_keys; // to search faster each property by its name
 
 		StackElement * 			getUserProperty(const std::string & property_name);
 	};

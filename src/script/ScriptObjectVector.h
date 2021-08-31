@@ -29,12 +29,12 @@ namespace zetscript{
 
 		ScriptObjectVector();
 
-		virtual StackElement * 	getUserElementAt(int idx);
-		bool 				eraseUserElementAt(int idx);
+		virtual StackElement * 	getUserElementAt(short idx);
+		bool 				eraseUserElementAt(short idx);
 		void				eraseAllUserElements();
 
 		virtual size_t length();
-		virtual std::vector<StackElement *> * getStkUserListElements();
+		virtual zs_vector * getStkUserListElements();
 
 		bool exists(StackElement  * stk);
 
@@ -44,7 +44,7 @@ namespace zetscript{
 		virtual std::string toString();
 		virtual ~ScriptObjectVector();
 	protected:
-		std::vector<StackElement *> 			stk_user_elements;
+		zs_vector 			stk_user_elements;
 
 
 

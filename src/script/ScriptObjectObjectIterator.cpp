@@ -35,22 +35,22 @@ namespace zetscript{
 
 
 	bool	 ScriptObjectObjectIterator::end(){
-		return it == oo->end();
+		return it.end();
 	}
 
 	void	 ScriptObjectObjectIterator::get(){
 		if(oo==NULL) return;
-		if(end()) return;
+		if(it.end()) return;
 
-		stk_key.value=(zs_int)ScriptObjectString::newScriptObjectString(this->zs,it->first);
+		stk_key.value=(zs_int)ScriptObjectString::newScriptObjectString(this->zs,it.getKey());
 		// pass value through the stack
 
-		vm_push_stack_element(vm,*(it->second)); // last value/first value to get
+		vm_push_stack_element(vm,*((StackElement *)it.getValue())); // last value/first value to get
 		vm_push_stack_element(vm,stk_key);
 	}
 
 
 	void	 ScriptObjectObjectIterator::next(){
-		it++;
+		it.next();
 	}
 }

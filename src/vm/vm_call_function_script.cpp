@@ -383,8 +383,8 @@ namespace zetscript{
 		Instruction *instruction_it=instructions;
 		VM_Scope * vm_scope_start=data->vm_current_scope; // save current scope...
 		Scope * scope = calling_function->symbol.scope;// ast->idx_scope;
-		std::vector<Symbol *> *registered_symbols=calling_function->symbol_registered_variables;
-		unsigned symbols_count=registered_symbols->size();
+		zs_vector *registered_symbols=calling_function->symbol_registered_variables;
+		unsigned symbols_count=registered_symbols->count;
 		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
 		StackElement *ptr_aux = _stk_local_var+n_args;
 
@@ -407,7 +407,7 @@ namespace zetscript{
 		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
 
 			for(unsigned i = n_args; i < (symbols_count); ++i,++ptr_aux){ // from n_args, setup local vars
-				symbol_aux=(Symbol *)registered_symbols->at(i);
+				symbol_aux=(Symbol *)registered_symbols->items[i];
 				if(symbol_aux->properties & SYMBOL_PROPERTY_FUNCTION){
 					ptr_aux->value=symbol_aux->ref_ptr;
 					ptr_aux->properties=STK_PROPERTY_FUNCTION;
@@ -613,7 +613,7 @@ namespace zetscript{
 				data->stk_vm_current->value=(zs_int)this_object;
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				data->stk_vm_current++;
-				data->stk_vm_current->value=(zs_int)((Symbol *)this_object->getScriptClass()->symbol_member_functions->at(instruction->value_op2))->ref_ptr;
+				data->stk_vm_current->value=(zs_int)((Symbol *)this_object->getScriptClass()->symbol_member_functions->items[instruction->value_op2])->ref_ptr;
 				data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 				data->stk_vm_current++;
 				break;
@@ -782,7 +782,7 @@ load_element_object:
 			case BYTE_CODE_STORE_SHL:
 			case BYTE_CODE_STORE_SHR:
 				{
-					std::vector<StackElement *> *lst_functions=NULL;
+					zs_vector *lst_functions=NULL;
 					ScriptObject *obj_setter=NULL;
 
 					char n_elements_left=0;
@@ -1057,7 +1057,7 @@ load_element_object:
 								}*/
 							}else if((stk_dst->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)!=0){
 								StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_dst->value;
-								if(stk_ma->member_attribute->setters.size() > 0){
+								if(stk_ma->member_attribute->setters.count > 0){
 									lst_functions=&stk_ma->member_attribute->setters;
 									obj_setter=stk_ma->so_object;
 								}else{
@@ -1073,7 +1073,7 @@ load_element_object:
 					//
 					if(lst_functions!=NULL){ // setter list not null
 						// find appropiate function
-						ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)lst_functions->at(0))->value;//(ScriptFunction *)stk_setter->value;
+						ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)lst_functions->items[0])->value;//(ScriptFunction *)stk_setter->value;
 						StackElement *stk_vm_start=data->stk_vm_current;
 						StackElement *stk_arg=stk_vm_start+1;
 						*stk_arg=*stk_src;
@@ -1098,7 +1098,7 @@ load_element_object:
 									VM_STOP_EXECUTE("Attribute '%s::%s' does not implement setter function",stk_ma->so_object->getScriptClass()->symbol_class.name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
 								}
 							}
-						}else if(lst_functions->size()>1){ // it has all member list
+						}else if(lst_functions->count>1){ // it has all member list
 							Symbol * symbol_setter = obj_setter->getScriptClass()->getSymbol("_set");
 
 							if(symbol_setter == NULL){
@@ -1557,10 +1557,16 @@ load_element_object:
 						){
 							ignore_call= (is_constructor) && calling_object->isNativeObject() && n_args==0;
 							sc=data->script_class_factory->getScriptClass(calling_object->idx_script_class);
+							/*zs_vector * list_props=calling_object->getStkBuiltinListElements();//getFunctions();
+							stk_element_ptr=list_props->items;
+							stk_element_len=list_props->count;*/
 						}else if(sf->idx_class != IDX_SCRIPT_CLASS_MAIN
 								&& (sf->symbol.properties & (SYMBOL_PROPERTY_FUNCTION|SYMBOL_PROPERTY_STATIC))
 						){
 							sc=data->script_class_factory->getScriptClass(sf->idx_class);
+							/*ScriptClass *sc=data->script_class_factory->getScriptClass(sf->idx_class);
+							stk_element_ptr=sc->symbol_members->items;
+							stk_element_len=sc->symbol_members->count;*/
 						}
 
 
@@ -1590,14 +1596,14 @@ load_element_object:
 					if((sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 
 						// we pass everything by copy (TODO implement ref)
-						if(n_args > 0 && sf->params->size() > 0){
+						if(n_args > 0 && sf->params->count > 0){
 							StackElement *stk_arg=stk_start_arg_call;
 							ScriptObjectVector *var_args=NULL;
 							ScriptObject *so_param=NULL;
 							bool end_args=false;
 							//int function_param=0;//&sf->params->items[0];
-							int effective_args=n_args < sf->params->size() ? n_args:sf->params->size();
-							ScriptFunctionArg **sf_params_items=sf->params->data();
+							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
+							zs_int *sf_params_items=sf->params->items;
 
 							for(int i=0;i < n_args && end_args==false;++i){
 								so_param=NULL; // script object we passing
@@ -1705,8 +1711,8 @@ load_element_object:
 						// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 						// will be ignored always.
 
-						for(unsigned i = n_args; i < sf->params->size(); ++i){
-							ScriptFunctionArg *param=(ScriptFunctionArg *)(sf->params->at(i));
+						for(unsigned i = n_args; i < sf->params->count; ++i){
+							ScriptFunctionArg *param=(ScriptFunctionArg *)(sf->params->items[i]);
 							//StackElement *stk_def_afun_start=data->stk_vm_current;
 							//param->default_var_value;
 							//int n_returned_args_afun=0;
@@ -1750,7 +1756,7 @@ load_element_object:
 							,stk_start_arg_call
 							,n_args
 						);
-						n_local_registered_symbols=sf->symbol_registered_variables->size();
+						n_local_registered_symbols=sf->symbol_registered_variables->count;
 					}
 					else{ // C function
 						if(is_constructor) {// && (sf->symbol.properties & SYMBOL_PROPERTY_MEMBER_FUNCTION))

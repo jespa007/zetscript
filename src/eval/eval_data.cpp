@@ -29,6 +29,32 @@
 																		eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 																		goto my_goto;
 
+
+/*
+#define EVAL_ERROR_SUB_EXPRESSION(file,line,s,...)			eval_data->error=true;\
+															eval_data->error_file=file;\
+															eval_data->error_line=line;\
+															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															goto eval_error_sub_expression;\
+
+#define EVAL_ERROR_EXPRESSION(file,line,s,...)				eval_data->error=true;\
+															eval_data->error_file=file;\
+															eval_data->error_line=line;\
+															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															goto eval_error_expression_delete_left_right_sub_expressions;\
+
+#define EVAL_ERROR_KEYWORD_SWITCH(file,line,s,...)			eval_data->error=true;\
+															eval_data->error_file=file;\
+															eval_data->error_line=line;\
+															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															goto eval_keyword_switch_error;\
+
+#define EVAL_ERROR_BYTE_CODE_FILE_LINE(file,line,s,...)		eval_data->error=true;\
+															aux_p=NULL;\
+															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															goto eval_error_byte_code;\
+*/
+
 #define EVAL_ERROR_BYTE_CODE(s,...)							eval_data->error=true;\
 															aux_p=NULL;\
 															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\

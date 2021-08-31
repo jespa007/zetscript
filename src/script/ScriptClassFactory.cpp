@@ -4,7 +4,7 @@
 #define MAIN_SCRIPT_CLASS_NAME 				"@MainClass"
 
 #define REGISTER_BUILT_IN_STRUCT(type_class, idx_class)\
-	if(script_classes->size()!=idx_class){\
+	if(script_classes->count!=idx_class){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
@@ -12,7 +12,7 @@
 
 
 #define REGISTER_BUILT_IN_CLASS(name_class, type_class, idx_class)\
-	if(script_classes->size()!=idx_class){\
+	if(script_classes->count!=idx_class){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
@@ -23,14 +23,14 @@
 	registerNativeClassStatic<type_class>(name_class,type_class##_new,type_class##_delete);
 
 #define REGISTER_BUILT_IN_CLASS_SINGLETON(type_class, idx_class)\
-	if(script_classes->size()!=idx_class){\
+	if(script_classes->count!=idx_class){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	registerNativeSingletonClass<type_class>(ZS_STR(type_class));
 
 #define REGISTER_BUILT_IN_TYPE(type_class, idx_class)\
-	if(script_classes->size()!=idx_class){\
+	if(script_classes->count!=idx_class){\
 		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",ZS_STR(type_class));\
 		return;\
 	}else{\
@@ -59,7 +59,7 @@ namespace zetscript{
 		register_c_base_symbols=false;
 		main_function=NULL;
 		main_object=NULL;
-		script_classes=new std::vector<ScriptClass *>;
+		script_classes=new zs_vector;
 		main_object=NULL;
 		main_function=NULL;
 		idx_clear_checkpoint=0;
@@ -315,23 +315,23 @@ namespace zetscript{
 		short idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
-			int v=script_classes->size()-1;
+			int v=script_classes->count-1;
 			v > idx_start; // avoid main class
 			v--
 		){
-			ScriptClass * sc = (ScriptClass *)script_classes->at(v);
+			ScriptClass * sc = (ScriptClass *)script_classes->get(v);
 			delete sc;
 			script_classes->pop_back();
 		}
 	}
 
 	void ScriptClassFactory::saveState(){
-		idx_clear_checkpoint = script_classes->size()-1;
+		idx_clear_checkpoint = script_classes->count-1;
 	}
 
 	void ScriptClassFactory::checkClassName(const std::string & class_name){
 
-		if(script_classes->size()>=MAX_REGISTER_CLASSES){
+		if(script_classes->count>=MAX_REGISTER_CLASSES){
 			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
 		}
 
@@ -339,7 +339,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Class name empty");
 		}
 
-		if(zs->getScriptFunctionFactory()->getScriptFunctions()->size() > 0){
+		if(zs->getScriptFunctionFactory()->getScriptFunctions()->count > 0){
 			Symbol *main_function_symbol=NULL;
 			if((main_function_symbol=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN)->getSymbol(scope_factory->getMainScope(),class_name))!=NULL){
 				THROW_RUNTIME_ERROR("Class name '%s' collides with symbol defined at [%s:%i]",class_name.c_str(),main_function_symbol->file,main_function_symbol->line);
@@ -366,19 +366,19 @@ namespace zetscript{
 			// register symbol on main scope...
 			Symbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_SYMBOL_ONLY);
 
-			sci = new ScriptClass(this->zs,script_classes->size(),symbol);
+			sci = new ScriptClass(this->zs,script_classes->count,symbol);
 			scope->setScriptClass(sci);
 
 			sci->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
 
-			script_classes->push_back(sci);
+			script_classes->push_back((zs_int)sci);
 
 			if(base_class_name != ""){
 
 				ScriptClass *base_class=NULL;
 
-				if(sci->idx_base_classes->size() > 0){
-					ScriptClass *match_class=getScriptClass(sci->idx_base_classes->at(0));
+				if(sci->idx_base_classes->count > 0){
+					ScriptClass *match_class=getScriptClass(sci->idx_base_classes->items[0]);
 					THROW_RUNTIME_ERROR("Class \"%s\" already is inherited from \"%s\"",class_name.c_str(),match_class->symbol_class.name.c_str());
 				}
 
@@ -392,17 +392,17 @@ namespace zetscript{
 
 
 				// 1. extend all symbols from base class
-				for(unsigned i=0; i < base_class->symbol_member_functions->size(); i++){
-					Symbol *symbol_src=(Symbol *)base_class->symbol_member_functions->at(i);
-					sci->symbol_member_functions->push_back(symbol_src);
+				for(int i=0; i < base_class->symbol_member_functions->count; i++){
+					Symbol *symbol_src=(Symbol *)base_class->symbol_member_functions->items[i];
+					sci->symbol_member_functions->push_back((zs_int)symbol_src);
 				}
 
 				// set idx starting member
-				sci->idx_starting_this_member_functions=sci->symbol_member_functions->size();
+				sci->idx_starting_this_member_functions=sci->symbol_member_functions->count;
 
 				// 1. extend all symbols from base class
-				for(unsigned i=0; i < base_class->symbol_member_variables->size(); i++){
-					Symbol *symbol_src=(Symbol *)base_class->symbol_member_variables->at(i);
+				for(int i=0; i < base_class->symbol_member_variables->count; i++){
+					Symbol *symbol_src=(Symbol *)base_class->symbol_member_variables->items[i];
 					Symbol *new_symbol=new Symbol();
 
 					*new_symbol = *symbol_src;
@@ -417,20 +417,20 @@ namespace zetscript{
 						ma_dst->pre_inc=ma_src->pre_inc;
 						ma_dst->pre_dec=ma_src->pre_dec;
 
-						for(unsigned i=0; i < ma_src->setters.size();i++){
-							ma_dst->addSetter((ScriptFunction *)(((StackElement *)ma_src->setters.at(i))->value));
+						for(unsigned i=0; i < ma_src->setters.count;i++){
+							ma_dst->addSetter((ScriptFunction *)(((StackElement *)ma_src->setters.items[i])->value));
 
 						}
 						new_symbol->ref_ptr=(zs_int)ma_dst;
 					}
 
-					sci->symbol_member_variables->push_back(new_symbol);
-					sci->symbol_member_variables_allocated->push_back(new_symbol);
+					sci->symbol_member_variables->push_back((zs_int)new_symbol);
+					sci->symbol_member_variables_allocated->push_back((zs_int)new_symbol);
 
 				}
 
 				// set idx starting member
-				sci->idx_starting_this_member_variables=sci->symbol_member_variables->size();
+				sci->idx_starting_this_member_variables=sci->symbol_member_variables->count;
 
 				// 2. set idx base class...
 				sci->idx_base_classes->push_back(base_class->idx_class);
@@ -455,7 +455,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	std::vector<ScriptClass *> * ScriptClassFactory::getScriptClasses(){
+	zs_vector * ScriptClassFactory::getScriptClasses(){
 		return script_classes;
 	}
 
@@ -483,21 +483,21 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("ScriptClass node out of bound");
 			return NULL;
 		}
-		return (ScriptClass *)script_classes->at(idx);
+		return (ScriptClass *)script_classes->get(idx);
 	}
 
 	ScriptClass 	* ScriptClassFactory::getScriptClass(const std::string & class_name){
 		int idx;
 		if((idx = getIdxScriptClassInternal(class_name))!=ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
-			return (ScriptClass *)script_classes->at(idx);
+			return (ScriptClass *)script_classes->get(idx);
 		}
 		return NULL;
 	}
 
 	ScriptClass *ScriptClassFactory::getScriptClassByNativeClassPtr(const std::string & class_type){
 
-		for(unsigned i = 0; i < script_classes->size(); i++){
-			ScriptClass * sc=(ScriptClass *)script_classes->at(i);
+		for(unsigned i = 0; i < script_classes->count; i++){
+			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
 			if(class_type == sc->str_class_ptr_type){//metadata_info.object_info.symbol_info.str_native_type){
 				return sc;
 			}
@@ -507,8 +507,8 @@ namespace zetscript{
 
 	int ScriptClassFactory::getIdxScriptClassInternal(const std::string & class_name){
 
-		for(unsigned i = 0; i < script_classes->size(); i++){
-			ScriptClass * sc=(ScriptClass *)script_classes->at(i);
+		for(unsigned i = 0; i < script_classes->count; i++){
+			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
 			if(class_name == sc->symbol_class.name){
 				return i;
 			}
@@ -568,8 +568,8 @@ namespace zetscript{
 
 	short ScriptClassFactory::getIdxNativeRegisteredClass(const std::string & str_classPtr){
 		// ok check str_native_type
-		for(unsigned i = 0; i < script_classes->size(); i++){
-			ScriptClass * sc=(ScriptClass *)script_classes->at(i);
+		for(unsigned i = 0; i < script_classes->count; i++){
+			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
 			if(sc->str_class_ptr_type == str_classPtr){
 				return i;
 			}
@@ -603,7 +603,7 @@ namespace zetscript{
 
 	const char * ScriptClassFactory::getScriptClassName(short idx){
 		if(idx != ZS_IDX_UNDEFINED){
-			ScriptClass *sc=(ScriptClass *)script_classes->at(idx);
+			ScriptClass *sc=(ScriptClass *)script_classes->get(idx);
 			return sc->symbol_class.name.c_str();
 		}
 		 return "class_unknow";
@@ -613,8 +613,8 @@ namespace zetscript{
 
 		// 1. we have to handle primitives like void, (zs_int *), (bool *),(zs_float *) and (std::string *).
 		 // 2. Check for rest registered C classes...
-		 for(unsigned i = 0; i < script_classes->size(); i++){
-			 ScriptClass * sc=(ScriptClass *)script_classes->at(i);
+		 for(unsigned i = 0; i < script_classes->count; i++){
+			 ScriptClass * sc=(ScriptClass *)script_classes->get(i);
 			 if(sc->str_class_ptr_type==str_native_type)
 			 {
 				 return i;
@@ -634,10 +634,10 @@ namespace zetscript{
 			return true;
 		}
 
-		ScriptClass *sc=(ScriptClass *)script_classes->at(idx_class);
+		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_class);
 
-		for(unsigned i=0; i < sc->idx_base_classes->size(); i++){
-			if(isClassInheritsFrom(sc->idx_base_classes->at(i),idx_base_class)){
+		for(unsigned i=0; i < sc->idx_base_classes->count; i++){
+			if(isClassInheritsFrom(sc->idx_base_classes->items[i],idx_base_class)){
 				return true;
 			}
 		}
@@ -647,9 +647,9 @@ namespace zetscript{
 
 	ScriptClassFactory::~ScriptClassFactory(){
 		// we have to destroy all allocated constructor/destructor ...
-		for (unsigned i = 0; i < script_classes->size(); i++) {
+		for (unsigned i = 0; i < script_classes->count; i++) {
 
-			delete (ScriptClass *)script_classes->at(i);
+			delete (ScriptClass *)script_classes->get(i);
 		}
 		script_classes->clear();
 

@@ -60,7 +60,7 @@ namespace zetscript{
 		bool							isClassInheritsFrom(short idx_class,short idx_base_class);
 		short							getIdxClassFromItsNativeType(const std::string & s);
 		short		 					getIdxNativeRegisteredClass(const std::string & str_classPtr);
-		std::vector<ScriptClass *>	*	getScriptClasses();
+		zs_vector	* 					getScriptClasses();
 
 		bool 							isClassRegistered(const std::string & v);
 
@@ -261,11 +261,11 @@ namespace zetscript{
 		}PrimitiveType;
 
 		typedef struct{
-			PrimitiveType 						*return_type;
-			std::vector<ScriptFunctionArg *>	params;
+			PrimitiveType 				*return_type;
+			zs_vector					params;
 		}RegisterFunction;
 
-		std::vector<ScriptClass *> 		*   script_classes;
+		zs_vector 						*   script_classes;
 		ZetScript 						*	zs;
 		ScopeFactory 					*	scope_factory;
 		ScriptFunctionFactory 			*	script_function_factory;

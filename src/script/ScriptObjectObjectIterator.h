@@ -32,7 +32,7 @@ namespace zetscript{
 	private:
 
 		ScriptObjectObject *oo;
-		std::map<std::string,StackElement *>::iterator it;
+		zs_map_iterator it;
 		StackElement stk_key;
 
 

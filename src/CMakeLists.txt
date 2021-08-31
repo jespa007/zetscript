@@ -280,6 +280,9 @@ SET(
 	util/zs_path.h
 	util/zs_rtti.h
 	util/zs_strutils.h
+	util/zs_vector.h
+	util/zs_map.h
+	util/zs_map_iterator.h
 	util/zs_timespan.h
 	util/zs_datetime.h
 	util/zs_util.h

@@ -5,11 +5,11 @@ namespace zetscript{
 	ScriptFunctionFactory::ScriptFunctionFactory(ZetScript *_zs){
 		zs = _zs;
 		scope_factory = _zs->getScopeFactory();
-		script_functions = new std::vector<ScriptFunction *>();
+		script_functions = new zs_vector();
 		idx_clear_checkpoint = 1; // by default MAIN function
 	}
 
-	std::vector<ScriptFunction *> 	*ScriptFunctionFactory::getScriptFunctions(){
+	zs_vector 	*ScriptFunctionFactory::getScriptFunctions(){
 		return script_functions;
 	}
 
@@ -37,7 +37,7 @@ namespace zetscript{
 				,(char)args.size()
 		);
 
-		short idx_script_function = script_functions->size();
+		short idx_script_function = script_functions->count;
 
 		// sets local function information...
 		symbol->idx_position = _idx_position; // idx local/member function
@@ -54,24 +54,24 @@ namespace zetscript{
 		);
 
 		symbol->ref_ptr = (zs_int)script_function;		  // ptr function
-		script_functions->push_back(script_function);
+		script_functions->push_back((zs_int)script_function);
 		return symbol;
 	}
 
 	void	ScriptFunctionFactory::setScriptFunction(short idx, ScriptFunction *sf){
-		if(idx < 0 || (unsigned)idx >= script_functions->size()){
+		if(idx < 0 || (unsigned)idx >= script_functions->count){
 			THROW_RUNTIME_ERROR("script function idx node out of bound");
 		}
 
-		script_functions->at(idx)=sf;
+		script_functions->items[idx]=(zs_int)sf;
 	}
 
 	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){
-		if(idx < 0 || (unsigned)idx >= script_functions->size()){
+		if(idx < 0 || (unsigned)idx >= script_functions->count){
 			THROW_RUNTIME_ERROR("script function idx node out of bound");
 			return NULL;
 		}
-		return (ScriptFunction 	*)script_functions->at(idx);
+		return (ScriptFunction 	*)script_functions->items[idx];
 	}
 
 	void ScriptFunctionFactory::clear(int _idx_start){
@@ -79,12 +79,12 @@ namespace zetscript{
 		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
-			int v=script_functions->size()-1;
+			int v=script_functions->count-1;
 			v > idx_start; // avoid delete main function
 			v--
 		){
 
-			ScriptFunction * info_function = (ScriptFunction * )script_functions->at(v);
+			ScriptFunction * info_function = (ScriptFunction * )script_functions->items[v];
 			delete info_function;
 			script_functions->pop_back();
 
@@ -92,13 +92,13 @@ namespace zetscript{
 	}
 
 	void ScriptFunctionFactory::saveState(){
-		idx_clear_checkpoint = script_functions->size()-1;
+		idx_clear_checkpoint = script_functions->count-1;
 	}
 
 	ScriptFunctionFactory::~ScriptFunctionFactory(){
 		// erases all functions...
-		for(unsigned i = 0;i < script_functions->size();i++){
-			ScriptFunction * info_function = (ScriptFunction *)script_functions->at(i);
+		for(unsigned i = 0;i < script_functions->count;i++){
+			ScriptFunction * info_function = (ScriptFunction *)script_functions->items[i];
 
 			if (info_function->instructions != NULL) {
 

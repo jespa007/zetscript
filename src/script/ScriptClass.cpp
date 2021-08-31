@@ -30,11 +30,11 @@ namespace zetscript{
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
 		symbol_class=*_symbol_class;
-		symbol_member_variables=new std::vector<Symbol *>();
-		symbol_member_functions=new std::vector<Symbol *>();
-		symbol_member_variables_allocated=new std::vector<Symbol *>();
+		symbol_member_variables=new zs_vector();
+		symbol_member_functions=new zs_vector();
+		symbol_member_variables_allocated=new zs_vector();
 
-		idx_base_classes=new std::vector<int>;
+		idx_base_classes=new zs_vector;
 
 		// factories
 		zs = _zs;
@@ -116,15 +116,15 @@ namespace zetscript{
 		// copy class symbol props...
 		symbol->file=file;
 		symbol->line=line;
-		symbol->idx_position=symbol_member_variables->size();
+		symbol->idx_position=symbol_member_variables->count;
 		symbol->n_params=NO_PARAMS_SYMBOL_ONLY;
 		symbol->ref_ptr=ref_ptr;
 		symbol->name=symbol_name;
 		symbol->str_native_type = str_native_type;
 		symbol->properties=symbol_properties;
 
-		symbol_member_variables->push_back(symbol);
-		symbol_member_variables_allocated->push_back(symbol);
+		symbol_member_variables->push_back((zs_int)symbol);
+		symbol_member_variables_allocated->push_back((zs_int)symbol);
 
 		return symbol;
 	}
@@ -160,9 +160,9 @@ namespace zetscript{
 		symbol_attrib->name=attrib_name;
 		symbol_attrib->ref_ptr=(zs_int)(new MemberAttribute(attrib_name));
 		symbol_attrib->properties=SYMBOL_PROPERTY_MEMBER_ATTRIBUTE;
-		symbol_attrib->idx_position=symbol_member_variables->size();
-		symbol_member_variables->push_back(symbol_attrib);
-		symbol_member_variables_allocated->push_back(symbol_attrib);
+		symbol_attrib->idx_position=symbol_member_variables->count;
+		symbol_member_variables->push_back((zs_int)symbol_attrib);
+		symbol_member_variables_allocated->push_back((zs_int)symbol_attrib);
 
 		return symbol_attrib;
 	}
@@ -427,7 +427,7 @@ namespace zetscript{
 		}
 
 		for(int i = symbol->idx_position-1; i >=0; i--){
-			Symbol *symbol_member = (Symbol *)symbol_member_functions->at(i);
+			Symbol *symbol_member = (Symbol *)symbol_member_functions->items[i];
 			if((symbol->name == symbol_member->name) && (symbol_member->properties & SYMBOL_PROPERTY_FUNCTION)){
 				return symbol_member;
 			}
@@ -509,7 +509,7 @@ namespace zetscript{
 			}
 		}
 
-		int idx_position=symbol_member_functions->size();
+		int idx_position=symbol_member_functions->count;
 
 		Symbol *function_symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
@@ -612,7 +612,7 @@ namespace zetscript{
 							setter_getter = new MemberAttribute(symbol_class.name);
 						}
 
-							if(setter_getter->setters.size()>0 && ((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0)){
+							if(setter_getter->setters.count>0 && ((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0)){
 							// error already set (script functions only can be set once)
 							THROW_RUNTIME_ERROR("Setter '%s::_set' already set"
 									,symbol_class.name.c_str()
@@ -627,7 +627,7 @@ namespace zetscript{
 			}
 		}
 
-		symbol_member_functions->push_back(function_symbol);
+		symbol_member_functions->push_back((zs_int)function_symbol);
 
 		return function_symbol;
 	}
@@ -636,11 +636,11 @@ namespace zetscript{
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_variables;
 
 		for(
-				int i = (int)(symbol_member_variables->size()-1);
+				int i = (int)(symbol_member_variables->count-1);
 				i >= idx_end
 				; i--
 		){
-			Symbol *member_symbol=(Symbol *)symbol_member_variables->at(i);
+			Symbol *member_symbol=(Symbol *)symbol_member_variables->items[i];
 			if(member_symbol->name == symbol_name){
 				return member_symbol;
 			}
@@ -654,18 +654,19 @@ namespace zetscript{
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_functions;
 
 		for(
-				int i = (int)(symbol_member_functions->size()-1);
+				int i = (int)(symbol_member_functions->count-1);
 				i >= idx_end
 				; i--
 		){
-			Symbol *member_symbol=symbol_member_functions->at(i);
+			Symbol *member_symbol=(Symbol *)symbol_member_functions->items[i];
 			if(member_symbol->name == symbol_name){
 				if(only_symbol){
 					return member_symbol;
 				}
 
 				ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
-				if((n_params==(char)sf->params->size()) || (n_params==ANY_PARAMS_SYMBOL_ONLY)){
+				if((((int)n_params==sf->params->count) || (n_params==ANY_PARAMS_SYMBOL_ONLY))
+				 ){
 					return member_symbol;
 				}
 			}
@@ -687,8 +688,8 @@ namespace zetscript{
 
 	ScriptClass::~ScriptClass(){
 
-		for(unsigned i=0; i < symbol_member_variables_allocated->size(); i++){
-			Symbol *symbol=(Symbol *)symbol_member_variables_allocated->at(i);
+		for(unsigned i=0; i < symbol_member_variables_allocated->count; i++){
+			Symbol *symbol=(Symbol *)symbol_member_variables_allocated->items[i];
 #ifdef __DEBUG__
 			ZS_LOG_DEBUG("Deallocating member attribute '%s::%s'",this->symbol_class.name.c_str(),symbol->name.c_str());
 #endif

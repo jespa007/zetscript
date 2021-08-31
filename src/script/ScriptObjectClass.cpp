@@ -33,8 +33,8 @@ namespace zetscript{
 			return;
 		}
 
-		if(sc->idx_base_classes->size()>0){
-			callConstructorMemberVariables(this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->at(0)));
+		if(sc->idx_base_classes->count>0){
+			callConstructorMemberVariables(this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]));
 		}
 
 		if(sc->sf_field_initializer != NULL){ // execute if only script class
@@ -54,9 +54,9 @@ namespace zetscript{
 		ScriptClass *script_class=getScriptClass();
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
-		for ( unsigned i = 0; i < script_class->symbol_member_variables->size(); i++){
+		for ( unsigned i = 0; i < script_class->symbol_member_variables->count; i++){
 
-			Symbol * symbol = (Symbol *)script_class->symbol_member_variables->at(i);
+			Symbol * symbol = (Symbol *)script_class->symbol_member_variables->items[i];
 			//bool is_script_function=symbol->properties & SYMBOL_PROPERTY_FUNCTION;
 			//bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
 
@@ -104,8 +104,8 @@ namespace zetscript{
 		}else {
 			ScriptClass *sc=script_class;
 			// get first class with c inheritance...
-			while((sc->idx_base_classes->size()>0) && (script_class_native==NULL)){
-				sc=this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->at(0)); // get base class (only first in script because has single inheritance)...
+			while((sc->idx_base_classes->count>0) && (script_class_native==NULL)){
+				sc=this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]); // get base class (only first in script because has single inheritance)...
 				if(sc->isNativeClass()){ // we found the native script class!
 					script_class_native=sc;
 					break;
@@ -130,7 +130,7 @@ namespace zetscript{
 
 		ScriptClass *script_class=getScriptClass();
 		if(script_class->idx_function_member_constructor != ZS_IDX_UNDEFINED){
-			return (ScriptFunction *)script_class->symbol_member_functions->at(script_class->idx_function_member_constructor);
+			return (ScriptFunction *)script_class->symbol_member_functions->items[script_class->idx_function_member_constructor];
 		}
 
 		return NULL;

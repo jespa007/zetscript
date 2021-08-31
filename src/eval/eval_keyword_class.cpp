@@ -82,6 +82,8 @@ namespace zetscript{
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
+				// TODO: Register class and baseof
+				// register info class ...
 				// check for named functions or vars...
 				while(*aux_p != '}' && *aux_p != 0){
 					char *test_attrib=aux_p;
@@ -408,7 +410,7 @@ namespace zetscript{
 					}
 
 					if(function_name == "_set"){
-						if(ma->setters.size() == 0){
+						if(ma->setters.count == 0){
 							ma->addSetter((ScriptFunction *)symbol->ref_ptr);
 						}else{
 							EVAL_ERROR_FILE_LINE(

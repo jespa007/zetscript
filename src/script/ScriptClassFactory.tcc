@@ -144,7 +144,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Native class '%s' is already registered",zs_rtti::demangle(typeid( T).name()).c_str());
 		}
 
-		idx_class=script_classes->size();
+		idx_class=script_classes->count;
 		scope = scope_factory->newScope(ZS_IDX_UNDEFINED,NULL,true);
 		symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_SYMBOL_ONLY);
 
@@ -162,9 +162,9 @@ namespace zetscript{
 
 		irc->c_constructor = NULL;
 		irc->c_destructor = NULL;
-		script_classes->push_back(irc);
+		script_classes->push_back((zs_int)irc);
 
-		irc->idx_class=script_classes->size()-1;
+		irc->idx_class=script_classes->count-1;
 		ZS_LOG_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
 
 		return irc;
@@ -283,17 +283,17 @@ namespace zetscript{
 			ScriptClass * base_class=getScriptClass(sc->idx_base_class);
 			THROW_RUNTIME_ERROR("C++ class \"%s\" already is inherited from \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class->str_class_ptr_type).c_str());
 		}*/
-		ScriptClass *sc=script_classes->at(idx_register_class);
+		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_register_class);
 
-		for(unsigned i=0; i < sc->idx_base_classes->size(); i++){
-			sc=getScriptClass(sc->idx_base_classes->at(i)); // get base class...
+		for(unsigned i=0; i < sc->idx_base_classes->count; i++){
+			sc=getScriptClass(sc->idx_base_classes->items[i]); // get base class...
 			if(sc->str_class_ptr_type ==base_class_name_ptr){
 				THROW_RUNTIME_ERROR("C++ class \"%s\" already base of \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
 			}
 		}
 
 
-		ScriptClass *this_class = script_classes->at(idx_register_class);
+		ScriptClass *this_class = (ScriptClass *)script_classes->get(idx_register_class);
 		this_class->idx_base_classes->push_back(idx_base_class);
 
 		// add conversion type for this class
@@ -309,7 +309,7 @@ namespace zetscript{
 			// https://stackoverflow.com/questions/48572734/is-possible-do-a-later-function-binding-knowing-its-function-type-and-later-the
 			//
 
-			ScriptClass *base_class = (ScriptClass *)script_classes->at(idx_base_class);
+			ScriptClass *base_class = (ScriptClass *)script_classes->get(idx_base_class);
 
 			/*unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF;//| SYMBOL_PROPERTY_IS_DERIVATED;
 			if(std::is_polymorphic<B>::value==true){
@@ -324,9 +324,9 @@ namespace zetscript{
 
 			//derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC; // set as polymorphic and show error if you try to call a polymorphic function
 			// register all c vars symbols ...
-			for(unsigned i = 0; i < base_class->symbol_member_functions->size(); i++){
+			for(unsigned i = 0; i < base_class->symbol_member_functions->count; i++){
 
-				Symbol *symbol_src = (Symbol *)base_class->symbol_member_functions->at(i);
+				Symbol *symbol_src = (Symbol *)base_class->symbol_member_functions->items[i];
 
 				bool is_metamethod_function = 	zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_SETTER)
 											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_GETTER)
@@ -343,8 +343,8 @@ namespace zetscript{
 					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
 					// build params...
 					std::vector<ScriptFunctionArg> params;
-					for(unsigned j=0; j < script_function->params->size();j++){
-						params.push_back(*((ScriptFunctionArg *) script_function->params->at(j)));
+					for(unsigned j=0; j < script_function->params->count;j++){
+						params.push_back(*((ScriptFunctionArg *) script_function->params->items[j]));
 					}
 
 					this_class->registerNativeMemberFunction(
@@ -360,15 +360,15 @@ namespace zetscript{
 			}
 
 
-			for(unsigned i = 0; i < base_class->symbol_member_variables->size(); i++){
-				Symbol *symbol_src = (Symbol *)base_class->symbol_member_variables->at(i);
+			for(unsigned i = 0; i < base_class->symbol_member_variables->count; i++){
+				Symbol *symbol_src = (Symbol *)base_class->symbol_member_variables->items[i];
 
 				if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 
 					MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
 					MemberAttribute *ma_dst=NULL;
 
-					std::vector<StackElement *> *sf_setters=&ma_src->setters;
+					zs_vector *sf_setters=&ma_src->setters;
 					Symbol *symbol_attribute=NULL;
 					Symbol *symbol_function=NULL;
 
@@ -399,8 +399,8 @@ namespace zetscript{
 
 							std::vector<ScriptFunctionArg> arg_info;
 
-							for(unsigned i=0; i < it->src->params->size(); i++){
-								arg_info.push_back(*((ScriptFunctionArg *)it->src->params->at(i)));
+							for(int i=0; i < it->src->params->count; i++){
+								arg_info.push_back(*((ScriptFunctionArg *)it->src->params->items[i]));
 							}
 
 							symbol_function=this_class->registerNativeMemberFunction(
@@ -420,15 +420,25 @@ namespace zetscript{
 
 					}
 
-					for(unsigned i=0; i < sf_setters->size(); i++){
+					for(unsigned i=0; i < sf_setters->count; i++){
 						std::vector<ScriptFunctionArg> arg_info;
-						StackElement *stk_setter=(StackElement *)sf_setters->at(i);
+						StackElement *stk_setter=(StackElement *)sf_setters->items[i];
 						ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
 
 
-						for(unsigned i=0; i < sf_setter->params->size(); i++){
-							arg_info.push_back(*((ScriptFunctionArg *)sf_setter->params->at(i)));
+						for(int i=0; i < sf_setter->params->count; i++){
+							arg_info.push_back(*((ScriptFunctionArg *)sf_setter->params->items[i]));
 						}
+
+
+						/*this_class->registerNativeMemberAttributeSetter(
+								symbol_src->name
+								,arg_info
+								,sf_setter->ref_native_function_ptr
+								,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+								,symbol_src->file
+								,symbol_src->line
+						);*/
 
 						symbol_function=this_class->registerNativeMemberFunction(
 								sf_setter->symbol.name,

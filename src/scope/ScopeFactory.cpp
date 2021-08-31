@@ -7,7 +7,7 @@ namespace zetscript{
 
 	ScopeFactory::ScopeFactory(ZetScript *zs){
 		this->zs=zs;
-		this->scopes = new std::vector<Scope *>;
+		this->scopes = new zs_vector;
 		main_scope=newScope(IDX_SCRIPT_FUNCTION_MAIN,NULL,false); // create global scope (scope 0)
 		idx_clear_checkpoint=1;  // start from MAIN scope
 		idx_clear_global_checkpoint_global_symbol_registered_variables=0;
@@ -21,11 +21,11 @@ namespace zetscript{
 
 	Scope *	 ScopeFactory::newScope(int idx_sf,Scope * scope_parent,bool is_c_node){
 		Scope * scope_node = new Scope(this->zs,idx_sf,scope_parent,is_c_node);
-		scopes->push_back(scope_node);
+		scopes->push_back((zs_int)scope_node);
 		return scope_node;
 	}
 
-	std::vector<Scope *> 	*		ScopeFactory::getScopes(){
+	zs_vector 	*		ScopeFactory::getScopes(){
 		return scopes;
 	}
 
@@ -38,43 +38,83 @@ namespace zetscript{
 		std::string global_symbol="";
 
 		for(
-			int v=scopes->size()-1;
+			int v=scopes->count-1;
 			v > idx_start; // avoid main scope
 			v--
 		){
-			Scope * info_scope=scopes->at(v);
+			Scope * info_scope = (Scope *)scopes->pop_back();//(Scope *)scopes->get(v);
 			delete info_scope;
-			scopes->pop_back();
 		}
 
 		// erase all local scopes in the main scope
 		for (
-				int v = main_scope->registered_scopes->size()-1;
+				int v = main_scope->registered_scopes->count-1;
 				v > idx_start_global_scopes ;
 				v--) {
 			// Only pop-back, don't delete because they were deleted on previous loop
 			main_scope->registered_scopes->pop_back();
 
 		}
+
+		//clearGlobalSymbols();
 	}
 
 	void ScopeFactory::saveState(){
-		Scope *main_scope= (Scope *)this->scopes->at(IDX_SCRIPT_SCOPE_MAIN);
-		idx_clear_checkpoint=scopes->size()-1;
+		Scope *main_scope= (Scope *)this->scopes->items[IDX_SCRIPT_SCOPE_MAIN];
+		idx_clear_checkpoint=scopes->count-1;
 
 
-		idx_clear_global_checkpoint_global_symbol_registered_variables=main_scope->symbol_registered_variables->size()-1;
-		idx_clear_global_checkpoint_global_symbol_registered_functions=main_scope->symbol_registered_functions->size()-1;
+		idx_clear_global_checkpoint_global_symbol_registered_variables=main_scope->symbol_registered_variables->count-1;
+		idx_clear_global_checkpoint_global_symbol_registered_functions=main_scope->symbol_registered_functions->count-1;
 
-		idx_clear_global_checkpoint_global_scopes=main_scope->registered_scopes->size()-1;
+		idx_clear_global_checkpoint_global_scopes=main_scope->registered_scopes->count-1;
 
 	}
+/*
+	void ScopeFactory::clearGlobalSymbols(int _idx_start){
+		int idx_start_global_registered_symbols=_idx_start==ZS_IDX_UNDEFINED?idx_clear_global_checkpoint_global_registered_symbols:_idx_start;
+		Scope *main_scope= (Scope *)this->scopes->items[IDX_SCRIPT_SCOPE_MAIN];
+		VirtualMachine *vm=this->zs->getVirtualMachine();
+		StackElement *vm_stk_element=&vm_get_stack_elements(vm)[main_scope->registered_symbols->count-1];
+
+		// remove all symbols/scopes registered main scope till idx_start
+		for (
+				int v = main_scope->registered_symbols->count-1;
+				v > idx_start_global_registered_symbols;
+				v--) {
+			//delete (Symbol *)main_scope->registered_symbols->items[v];
+			//main_scope->registered_symbols->pop_back();
+			Symbol *symbol=(Symbol *)main_scope->registered_symbols->items[v];
+			//global_symbol=symbol->name;
+			ScriptObjectObject *var = NULL;
+
+
+			if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				var =((ScriptObjectObject *)(vm_stk_element->value));
+				if(var){
+					if(var->shared_pointer != NULL){
+						if(!vm_unref_shared_script_object(vm,var,IDX_CALL_STACK_MAIN)){
+							THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(vm));
+						}
+					}
+				}
+			}
+			delete symbol;
+			main_scope->registered_symbols->pop_back();
+			*vm_stk_element--=k_stk_undefined;
+		}
+
+
+	}
+*/
 
 	ScopeFactory::~ScopeFactory(){
 
+		//clearGlobalSymbols(0);
+
 		// destroy all nodes ...
-		for(unsigned i = 0; i < scopes->size(); i++){
-			delete (Scope *)scopes->at(i);
+		for(unsigned i = 0; i < scopes->count; i++){
+			delete (Scope *)scopes->get(i);
 		}
 		scopes->clear();
 

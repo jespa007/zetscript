@@ -47,7 +47,7 @@ namespace zetscript{
 		idx_script_class=ZS_IDX_UNDEFINED;
 		shared_pointer=NULL;
 		zs=NULL;
-		map_builtin_property_keys=new std::map<std::string,StackElement *>();
+		map_builtin_property_keys=new zs_map();
 		memset(&stk_this,0,sizeof(stk_this));
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -63,8 +63,8 @@ namespace zetscript{
 			ScriptClass *script_class=getScriptClass();
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
-			for ( unsigned i = 0; i < script_class->symbol_member_variables->size(); i++){
-				Symbol * symbol = (Symbol *)script_class->symbol_member_variables->at(i);
+			for ( unsigned i = 0; i < script_class->symbol_member_variables->count; i++){
+				Symbol * symbol = (Symbol *)script_class->symbol_member_variables->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_ATTRIBUTE});
 				}/*else{
@@ -78,10 +78,20 @@ namespace zetscript{
 	StackElement *ScriptObject::newBuiltinSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk=k_stk_undefined;
-		stk_builtin_elements.push_back(stk);
+		stk_builtin_elements.push_back((zs_int)stk);
 		return stk;
 	}
 
+
+	/*int  ScriptObject::getBuiltinPropertyIdx(const std::string & property_name){//,bool only_var_name){
+
+		bool exists;
+		int idx_stk_element=this->map_builtin_property_keys->get(property_name.c_str(),exists);
+		if(exists){
+			return idx_stk_element;
+		}
+		return ZS_IDX_UNDEFINED;
+	}*/
 
 	// built-in only for initialized
 	StackElement * ScriptObject::addBuiltinProperty(const std::string & symbol_value, StackElement stk){
@@ -91,7 +101,7 @@ namespace zetscript{
 		StackElement *new_stk=newBuiltinSlot();
 		*new_stk=stk;
 
-		(*map_builtin_property_keys)[key_value.c_str()]=new_stk;
+		map_builtin_property_keys->set(key_value.c_str(),(zs_int)new_stk);
 
   	    return new_stk;
 	}
@@ -127,7 +137,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	std::vector<StackElement *> *ScriptObject::getSetterList(){
+	zs_vector *ScriptObject::getSetterList(){
 		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
 		MemberAttribute *member_attribute=script_class->setter_getter;
 
@@ -143,13 +153,17 @@ namespace zetscript{
 	}
 
 	StackElement * 			ScriptObject::getBuiltinProperty(const std::string & property_name){
+		/*if(property_name == "length"){
+			stk_length={(void *)this->length(),STK_PROPERTY_ZS_INT};
+			return &stk_length;
+		}else {*/
+			bool exists=false;
+			StackElement  *stk_item=(StackElement  *)this->map_builtin_property_keys->get(property_name.c_str(),exists);
 
-		bool exists=this->map_builtin_property_keys->count(property_name.c_str())>=1;
-
-		if(exists){
-			return (StackElement  *)this->map_builtin_property_keys->at(property_name.c_str());
-		}
-
+			if(exists){
+				return stk_item;
+			}
+		//}
 		return NULL;
 	}
 
@@ -165,7 +179,7 @@ namespace zetscript{
 		return this;
 	}
 
-	std::vector<StackElement *> * ScriptObject::getStkBuiltinListElements(){
+	zs_vector * ScriptObject::getStkBuiltinListElements(){
 		return &stk_builtin_elements;
 	}
 
@@ -180,12 +194,12 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObject::getBuiltinElementAt(short idx){
-		if(idx >= (int)stk_builtin_elements.size() || idx < 0){
+		if(idx >= (int)stk_builtin_elements.count || idx < 0){
 			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
 
-		return (StackElement *)stk_builtin_elements.at(idx);
+		return (StackElement *)stk_builtin_elements.items[idx];
 	}
 
 	std::string ScriptObject::toString(){
@@ -195,8 +209,8 @@ namespace zetscript{
 	ScriptObject::~ScriptObject(){
 
 		// deallocate built-in function member objects
-		for(unsigned i=0; i< stk_builtin_elements.size(); i++){
-			StackElement *stk=(StackElement *)stk_builtin_elements.at(i);
+		for(unsigned i=0; i< stk_builtin_elements.count; i++){
+			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 
 			/*if(stk->properties & STK_PROPERTY_MEMBER_FUNCTION){
 				delete (StackMemberFunction *)stk->value;

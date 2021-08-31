@@ -22,7 +22,7 @@ namespace zetscript{
 			 * Set/Get ScriptClass Node by its idx, regarding current state.
 			 */
 			//static void 								setVectorScriptFunctionObjectNode(std::vector<ScriptFunction *> 	* set_vec);
-			std::vector<ScriptFunction *> 	*	getScriptFunctions();
+			zs_vector 	*	getScriptFunctions();
 
 			Symbol 			*	newScriptFunction(
 				//--- Register information
@@ -52,7 +52,7 @@ namespace zetscript{
 		private:
 			ZetScript 						* 	zs;
 			ScopeFactory 					* 	scope_factory;
-			std::vector<ScriptFunction *>	*   script_functions;
+			zs_vector 						*   script_functions;
 			int idx_clear_checkpoint;
 	};
 
