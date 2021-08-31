@@ -315,8 +315,8 @@ namespace zetscript{
 
 		eval_parse_and_compile(this,code,filename);
 
-		if(options & EvalOption::EVAL_OPTION_SHOW_USER_CODE){
-			printGeneratedCode(options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_CODE);
+		if(options & EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE){
+			printGeneratedCode(options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_BYTE_CODE);
 		}
 
 		if((options & EvalOption::EVAL_OPTION_NO_EXECUTE)==0){
