@@ -352,10 +352,10 @@ namespace zetscript{
 		if(sc_var != NULL){ // local symbol found
 
 			if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
-				return sf->script_function->getSymbol(sc_var->scope,symbol_to_find);
+				return sc_var->scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY, SCOPE_DIRECTION_DOWN);
 			}
 			else{ // symbol is function...
-				return sf->script_function->getSymbol(sc_var->scope,symbol_to_find,NO_PARAMS_SYMBOL_ONLY);
+				return sc_var->scope->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY, SCOPE_DIRECTION_DOWN);
 			}
 		}
 
@@ -367,7 +367,7 @@ namespace zetscript{
 	Symbol *eval_find_global_symbol(EvalData *eval_data, const std::string & symbol_to_find){
 
 		// try find global variable...
-		return eval_data->zs->getScriptClassFactory()->getMainFunction()->getSymbol(MAIN_SCOPE(eval_data),symbol_to_find);
+		return MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY,SCOPE_DIRECTION_DOWN);
 
 	}
 

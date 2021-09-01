@@ -90,8 +90,6 @@ namespace zetscript{
 		);
 
 
-		Symbol *  getSymbol(Scope *scope,const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
-
 		/* Registers a function.
 		 * Desc: Inserts function at custom scope. It returns the idx std::vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
 		 */

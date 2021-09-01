@@ -475,7 +475,7 @@ namespace zetscript{
 					}
 
 				}else{
-					symbol_aux = data->main_function_object->getSymbol(MAIN_SCOPE(data),str_symbol);//, NO_PARAMS_SYMBOL_ONLY, ScopeDirection::SCOPE_DIRECTION_DOWN);
+					symbol_aux = MAIN_SCOPE(data)->getSymbol(str_symbol, NO_PARAMS_SYMBOL_ONLY, SCOPE_DIRECTION_DOWN);
 				}
 
 				if(symbol_aux != NULL){

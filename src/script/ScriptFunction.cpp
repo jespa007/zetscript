@@ -421,7 +421,7 @@ namespace zetscript{
 			,zs_int ref_ptr
 			, unsigned short properties
 	){
-		Symbol *symbol_found=getSymbol(scope_block, function_name, NO_PARAMS_SYMBOL_ONLY),*symbol=NULL;
+		Symbol *symbol_found=scope_block->getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY,SCOPE_DIRECTION_DOWN),*symbol=NULL;
 		std::string current_file_line=ZS_CONST_STR_IS_EMPTY(file)?
 							zs_strutils::format("[line %i]",line):
 							zs_strutils::format("[%s:%i]",zs_path::get_filename(file).c_str(),line);
@@ -505,10 +505,11 @@ namespace zetscript{
 		// register num symbols only for c symbols...
 		if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 			Symbol *symbol_repeat=NULL;
-			if((symbol_repeat=getSymbol(
-				scope_block
-				,symbol->name
-				,(char)params.size()))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
+			if((symbol_repeat=scope_block->getSymbol(
+				 symbol->name
+				,(char)params.size()
+				,SCOPE_DIRECTION_DOWN
+			))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
 				if(symbol != symbol_repeat){
 					((ScriptFunction *)symbol_repeat->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
 					((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
@@ -520,48 +521,6 @@ namespace zetscript{
 
 
 		return symbol;
-	}
-
-	Symbol *	 ScriptFunction::getSymbol(Scope * scope,const std::string & symbol_name,  char n_params){
-
-		if(scope == NULL) return NULL;
-
-		bool only_symbol=n_params<0;
-
-		if(only_symbol){
-			// from last value to first to get last override function...
-			for(int i = (int)(scope->symbol_registered_variables->count-1); i >= 0 ; i--){
-				Symbol *symbol=(Symbol *)scope->symbol_registered_variables->items[i];
-				if(symbol->name == symbol_name){
-						return symbol;
-				}
-			}
-		}
-
-		for(int i = (int)(scope->symbol_registered_functions->count-1); i >= 0 ; i--){
-			Symbol *symbol=(Symbol *)scope->symbol_registered_functions->items[i];
-			if(symbol->name == symbol_name){
-				if(only_symbol){
-					return symbol;
-				}else{
-					ScriptFunction *current_sf=(ScriptFunction *)symbol->ref_ptr;
-					if(
-
-					 (n_params == (int)current_sf->params->count)
-					 && (scope ==  NULL?true:(scope == current_sf->symbol.scope))
-					 ){
-					// set first script function found...
-						return symbol;
-					}
-				}
-			}
-		}
-
-		if(scope!=this->symbol.scope){
-			 return ScriptFunction::getSymbol(scope->scope_parent,symbol_name, n_params);
-		}
-
-		return NULL;
 	}
 
 	void ScriptFunction::clearParams(){

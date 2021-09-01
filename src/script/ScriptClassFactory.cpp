@@ -341,7 +341,7 @@ namespace zetscript{
 
 		if(zs->getScriptFunctionFactory()->getScriptFunctions()->count > 0){
 			Symbol *main_function_symbol=NULL;
-			if((main_function_symbol=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN)->getSymbol(scope_factory->getMainScope(),class_name))!=NULL){
+			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(class_name,NO_PARAMS_SYMBOL_ONLY,SCOPE_DIRECTION_DOWN))!=NULL){
 				THROW_RUNTIME_ERROR("Class name '%s' collides with symbol defined at [%s:%i]",class_name.c_str(),main_function_symbol->file,main_function_symbol->line);
 			}
 		}
