@@ -490,31 +490,10 @@ namespace zetscript{
 
 		symbol->idx_position=idx_position;
 
-		if(scope_block == MAIN_SCOPE(this)) { // global function
-			// set global stk var...
-			vm_set_stack_element_at(
-				zs->getVirtualMachine()
-				,(int)idx_position
-				,{
-					symbol->ref_ptr
-					,STK_PROPERTY_FUNCTION
-				}
-			);
-		}
-
 		// register num symbols only for c symbols...
-		if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
-			Symbol *symbol_repeat=NULL;
-			if((symbol_repeat=scope_block->getSymbol(
-				 symbol->name
-				,(char)params.size()
-				,SCOPE_DIRECTION_DOWN
-			))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
-				if(symbol != symbol_repeat){
-					((ScriptFunction *)symbol_repeat->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
-					((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
-				}
-			}
+		if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF != 0) && symbol_found!=NULL){
+			((ScriptFunction *)symbol_found->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
+			((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
 		}
 
 		symbol_registered_functions->push_back((zs_int)symbol);
