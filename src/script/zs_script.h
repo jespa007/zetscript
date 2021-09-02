@@ -16,9 +16,10 @@
 #include "ScriptObjectVarRef.h"
 
 #include "ScriptFunctionTraits.h"
-#include "ScriptFunctionArg.h"
+#include "ScriptFunctionParam.h"
 #include "ScriptFunction.h"
 #include "MemberAttribute.h"
 #include "ScriptClass.h"
 #include "ScriptFunctionFactory.h"
 #include "ScriptClassFactory.h"
+

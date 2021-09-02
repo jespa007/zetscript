@@ -461,14 +461,14 @@ namespace zetscript{
 								aux_string == symbol_to_find
 								|| (is_set_attrib_metamethod && zs_strutils::starts_with(aux_string,"_set@"));
 
-			if((symbol_equals && irfs->params->count == (n_args+this_as_first_parameter))){
+			if((symbol_equals && ((int)irfs->params_count == (n_args+this_as_first_parameter)))){
 				if((irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;
 					int arg_idx_type=-1;
 					for( unsigned k = 0; k < n_args && all_check;k++){
 						StackElement *current_arg=&stk_arg[k];
-						arg_idx_type=((ScriptFunctionArg *)irfs->params->items[k+this_as_first_parameter])->idx_type;
+						arg_idx_type=irfs->params[k+this_as_first_parameter].idx_type;
 
 						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT
 								 /*&&
@@ -622,15 +622,15 @@ namespace zetscript{
 							:class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->symbol_class.name+"::")
 							:"")+irfs->symbol.name+"(";
 
-					for(unsigned a = 0; a < irfs->params->count; a++){
+					for(unsigned a = 0; a < irfs->params_count; a++){
 						if(a>0){
 							str_candidates+=",";
 						}
 
 						if(irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 							str_candidates+=zs_rtti::demangle(
-								GET_IDX_2_CLASS_C_STR(data,((ScriptFunctionArg *)irfs->params->items[a])->idx_type
-							));
+								GET_IDX_2_CLASS_C_STR(data,irfs->params[a].idx_type)
+							);
 						}else{ /* typic var ... */
 							str_candidates+="arg"+zs_strutils::zs_int_to_str(a+1);
 						}

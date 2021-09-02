@@ -18,7 +18,7 @@
 #include		"ScriptFunctionFactory.cpp"
 #include		"ScriptClassFactory.cpp"
 //#include		"ScriptContext.cpp"
+#include		"ScriptFunctionParam.cpp"
 #include		"ScriptFunction.cpp"
-#include		"ScriptFunctionArg.cpp"
 #include 		"MemberAttribute.cpp"
 #include		"ScriptClass.cpp"

@@ -22,7 +22,7 @@ namespace zetscript{
 			, int idx_class
 			, short _idx_position
 			, const std::string & function_name
-			, std::vector<ScriptFunctionArg> args
+			, std::vector<ScriptFunctionParam> args
 			, int idx_return_type
 			, zs_int ref_native_function_ptr
 			, unsigned short properties

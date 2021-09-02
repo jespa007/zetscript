@@ -549,7 +549,7 @@ namespace zetscript{
 
 								// call, return all
 								eval_data->current_function->instructions.push_back(
-									new EvalInstruction(BYTE_CODE_CALL,0,ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK)
+									new EvalInstruction(BYTE_CODE_CALL,0,0,INSTRUCTION_PROPERTY_RETURN_ALL_STACK)
 								);
 
 

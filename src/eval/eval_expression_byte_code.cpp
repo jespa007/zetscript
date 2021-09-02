@@ -279,7 +279,7 @@ namespace zetscript{
 
 			last_instruction=&dst_instructions->at(dst_instructions->size()-1)->vm_instruction;
 			if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
-				last_instruction->value_op2=ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK;
+				last_instruction->properties|=INSTRUCTION_PROPERTY_RETURN_ALL_STACK;
 			}
 
 			// TODO: JEB Check whether expression is constant true/false
@@ -312,7 +312,7 @@ namespace zetscript{
 
 			last_instruction=&dst_instructions->at(dst_instructions->size()-1)->vm_instruction;
 			if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
-				last_instruction->value_op2=ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK;
+				last_instruction->properties|=INSTRUCTION_PROPERTY_RETURN_ALL_STACK;
 			}
 
 
@@ -322,7 +322,7 @@ namespace zetscript{
 		}else{
 			Instruction *last_instruction=&dst_instructions->at(dst_instructions->size()-1)->vm_instruction;
 			if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
-				last_instruction->value_op2=ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK;
+				last_instruction->properties|=INSTRUCTION_PROPERTY_RETURN_ALL_STACK;
 			}
 		}
 		//--------------------------------------------------------------

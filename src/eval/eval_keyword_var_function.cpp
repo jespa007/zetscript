@@ -431,16 +431,16 @@ error_eval_keyword_var:
 
 
 		if(key_w == Keyword::KEYWORD_FUNCTION || is_static){
-			ScriptFunctionArg arg_info;
+			ScriptFunctionParam param_info;
 			//bool var_args=false;
 			int n_arg=0;
 			char *end_var = NULL;
-			std::string arg_value;
+			std::string param_value;
 			std::string error;
 			//size_t advance_chars=0;
 
 
-			std::vector<ScriptFunctionArg> args={};
+			std::vector<ScriptFunctionParam> args={};
 			std::string conditional_str;
 			Symbol *symbol_sf=NULL;
 
@@ -523,7 +523,7 @@ error_eval_keyword_var:
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 			while(*aux_p != 0 && *aux_p != ')'){
-				arg_info=ScriptFunctionArg();
+				param_info=ScriptFunctionParam();
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				Keyword kw_arg=Keyword::KEYWORD_UNKNOWN;
 
@@ -539,20 +539,20 @@ error_eval_keyword_var:
 				}
 
 				// capture line where argument is...
-				arg_info.line=line;
+				param_info.line=line;
 
 
 
 				if(*aux_p=='.' && *(aux_p+1)=='.' && *(aux_p+2)=='.'){// eval_is_keyword(aux_p)==KEYWORD_REF){
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+3,line);
-					arg_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS;
+					param_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS;
 				}else{
 					switch(kw_arg=eval_is_keyword(aux_p)){
 					case Keyword::KEYWORD_UNKNOWN:
 						break;
 					case KEYWORD_REF:
 						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[KEYWORD_REF].str),line);
-						arg_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF;
+						param_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF;
 						break;
 					default:
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: unexpected keyword \"%s\"",eval_data_keywords[kw_arg].str);
@@ -565,7 +565,7 @@ error_eval_keyword_var:
 					 eval_data
 					,aux_p
 					,line
-					,arg_value
+					,param_value
 				);
 
 				if(end_var == NULL){
@@ -573,21 +573,21 @@ error_eval_keyword_var:
 				}
 
 				// copy value
-				zs_strutils::copy_from_ptr_diff(arg_value,aux_p,end_var);
+				zs_strutils::copy_from_ptr_diff(param_value,aux_p,end_var);
 				// ok register symbol into the object function ...
-				arg_info.arg_name=arg_value;
+				param_info.param_name=param_value;
 
 
 				aux_p=end_var;
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				if((arg_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS) && *aux_p!=')'){
+				if((param_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS) && *aux_p!=')'){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected ')' after variable argument declaration");
 				}
 				else if(*aux_p=='='){ // default argument...
 
-					if(arg_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF ){
+					if(param_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF ){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Arguments by reference cannot set a default argument");
 					}
 
@@ -619,16 +619,16 @@ error_eval_keyword_var:
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
 						case BYTE_CODE_LOAD_NULL:
-							arg_info.default_var_value=k_stk_undefined;
+							param_info.default_param_value=k_stk_undefined;
 							break;
 						case BYTE_CODE_LOAD_ZS_INT:
-							arg_info.default_var_value={instruction->value_op2,STK_PROPERTY_ZS_INT};
+							param_info.default_param_value={instruction->value_op2,STK_PROPERTY_ZS_INT};
 							break;
 						case BYTE_CODE_LOAD_ZS_FLOAT:
-							arg_info.default_var_value={instruction->value_op2,STK_PROPERTY_ZS_FLOAT};
+							param_info.default_param_value={instruction->value_op2,STK_PROPERTY_ZS_FLOAT};
 							break;
 						case BYTE_CODE_LOAD_BOOL:
-							arg_info.default_var_value={instruction->value_op2,STK_PROPERTY_BOOL};
+							param_info.default_param_value={instruction->value_op2,STK_PROPERTY_BOOL};
 							break;
 						default: // else is an object so we'll create a function in order to return object or complex expression
 							create_anonymous_function_return_expression=true;
@@ -640,7 +640,7 @@ error_eval_keyword_var:
 
 					if(create_anonymous_function_return_expression==true){
 						ScriptFunction *sf=eval_new_inline_anonymous_function(eval_data,&instructions_default);
-						arg_info.default_var_value={(zs_int)sf,STK_PROPERTY_FUNCTION};
+						param_info.default_param_value={(zs_int)sf,STK_PROPERTY_FUNCTION};
 					}
 
 					// finally delete all evaluated code
@@ -650,7 +650,7 @@ error_eval_keyword_var:
 
 				}
 
-				args.push_back(arg_info);
+				args.push_back(param_info);
 			}
 
 			aux_p++;

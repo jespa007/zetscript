@@ -8,7 +8,7 @@ namespace zetscript{
 			ZetScript * _zs
 			,int _idx_class
 			,short _idx_script_function
-			, std::vector<ScriptFunctionArg> _params
+			, std::vector<ScriptFunctionParam> _params
 			,int _idx_return_type
 			,Symbol *_symbol
 			, zs_int _ref_native_function_ptr
@@ -28,7 +28,8 @@ namespace zetscript{
 		symbol_registered_variables=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
 		symbol_registered_functions=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
 		//registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
-		params = new zs_vector();
+		params = NULL;//new zs_vector();
+		params_count = 0;
 
 		updateParams(_params);
 
@@ -267,7 +268,7 @@ namespace zetscript{
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,instruction->value_op1
-					,instruction->value_op2==ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK?"all":"1"
+					,instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK?"all":"1"
 				);
 				break;
 			case BYTE_CODE_INSTANCEOF:
@@ -416,7 +417,7 @@ namespace zetscript{
 			,const char *file
 			, short line
 			, const std::string & function_name
-			, std::vector<ScriptFunctionArg> params
+			, std::vector<ScriptFunctionParam> params
 			, int idx_return_type
 			,zs_int ref_ptr
 			, unsigned short properties
@@ -503,23 +504,25 @@ namespace zetscript{
 	}
 
 	void ScriptFunction::clearParams(){
-		for(unsigned i=0; i < params->count; i++){
-			ScriptFunctionArg * function_param=(ScriptFunctionArg *)params->items[i];
-			delete function_param;
-		}
 
-		params->clear();
+		delete [] params;
+		params_count=0;
+
 	}
 
 
-	void ScriptFunction::updateParams(std::vector<ScriptFunctionArg> _params){
+	void ScriptFunction::updateParams(std::vector<ScriptFunctionParam> _params){
 		// delete existing args...
 		clearParams();
 
+		params=new ScriptFunctionParam[_params.size()];
+
 		// insert new args...
 		for(unsigned i = 0; i < _params.size(); i++){
-			params->push_back((zs_int)(new ScriptFunctionArg(_params[i])));
+			params[i]=ScriptFunctionParam(_params[i]);
 		}
+
+		params_count = _params.size();
 	}
 
 	void ScriptFunction::clear(){

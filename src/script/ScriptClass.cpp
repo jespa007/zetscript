@@ -169,7 +169,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributeSetter(
 			const std::string & attribute_name
-			, std::vector<ScriptFunctionArg> arg_value
+			, std::vector<ScriptFunctionParam> arg_value
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties
 			,const char * file
@@ -205,7 +205,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributeGetter(
 			 const std::string & attribute_name
-			 , std::vector<ScriptFunctionArg> arg_value
+			 , std::vector<ScriptFunctionParam> arg_value
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties
@@ -247,7 +247,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePostIncrement(
 			 const std::string & attribute_name
-			 , std::vector<ScriptFunctionArg> arg_value
+			 , std::vector<ScriptFunctionParam> arg_value
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_post_inc_function_properties
@@ -290,7 +290,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePostDecrement(
 			 const std::string & attribute_name
-			 , std::vector<ScriptFunctionArg> arg_value
+			 , std::vector<ScriptFunctionParam> arg_value
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_post_dec_function_properties
@@ -333,7 +333,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePreIncrement(
 			 const std::string & attribute_name
-			 , std::vector<ScriptFunctionArg> arg_value
+			 , std::vector<ScriptFunctionParam> arg_value
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_pre_inc_function_properties
@@ -376,7 +376,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePreDecrement(
 			 const std::string & attribute_name
-			 , std::vector<ScriptFunctionArg> arg_value
+			 , std::vector<ScriptFunctionParam> arg_value
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_pre_dec_function_properties
@@ -438,7 +438,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerMemberFunction(
 			 const std::string & function_name
-			, std::vector<ScriptFunctionArg> args
+			, std::vector<ScriptFunctionParam> args
 			, unsigned short symbol_properties
 			,const char * file
 			, short line
@@ -460,7 +460,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberFunction(
 			const std::string & function_name
-			, std::vector<ScriptFunctionArg> args
+			, std::vector<ScriptFunctionParam> args
 			, int idx_return_type
 			,zs_int ref_ptr // script function
 			, unsigned short symbol_properties
@@ -483,7 +483,7 @@ namespace zetscript{
 
 	Symbol * ScriptClass::registerInternalMemberFunction(
 		 const std::string & function_name
-		, std::vector<ScriptFunctionArg> params
+		, std::vector<ScriptFunctionParam> params
 		, unsigned short symbol_properties
 		, int idx_return_type
 		,zs_int ref_ptr
@@ -665,7 +665,7 @@ namespace zetscript{
 				}
 
 				ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
-				if((((int)n_params==sf->params->count) || (n_params==NO_PARAMS_SYMBOL_ONLY))
+				if(((n_params==(char)sf->params_count) || (n_params==NO_PARAMS_SYMBOL_ONLY))
 				 ){
 					return member_symbol;
 				}

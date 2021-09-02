@@ -309,7 +309,7 @@ SET(
 	script/ScriptClassFactory.h
 	script/ScriptClassFactory.tcc
 	script/ScriptFunction.h
-	script/ScriptFunctionArg.h
+	script/ScriptFunctionParam.h
 	script/ScriptFunctionFactory.h
 	script/ScriptFunctionTraits.h
 	script/ScriptObject.h

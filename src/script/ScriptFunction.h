@@ -27,7 +27,8 @@ namespace zetscript{
 		short 				idx_script_function;		// idx_script_function from factory
 		int 				idx_return_type; 			// idx return type
 		zs_int 				ref_native_function_ptr;
-		zs_vector 			*params;
+		ScriptFunctionParam	*params;
+		size_t 				params_count;
 		int					min_stack_needed;
 
 		PtrInstruction  instructions; // The set of byte code instructions that executes the function
@@ -43,7 +44,7 @@ namespace zetscript{
 				ZetScript *_zs
 				,int _idx_class
 				,short _idx_script_function
-				, std::vector<ScriptFunctionArg> _params
+				, std::vector<ScriptFunctionParam> _params
 				,int  idx_return_type
 				, Symbol *symbol
 				, zs_int _ref_native_function_ptr
@@ -98,7 +99,7 @@ namespace zetscript{
 				, const char * file
 				, short line
 				, const std::string & function_name
-				, std::vector<ScriptFunctionArg> args={}
+				, std::vector<ScriptFunctionParam> args={}
 				, int idx_return_type=ZS_IDX_UNDEFINED
 				, zs_int ref_ptr=0
 				, unsigned short properties=0
@@ -107,7 +108,7 @@ namespace zetscript{
 		~ScriptFunction();
 
 	protected:
-		void updateParams(std::vector<ScriptFunctionArg> args);
+		void updateParams(std::vector<ScriptFunctionParam> args);
 		void clear();
 
 	private:

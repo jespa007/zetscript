@@ -101,23 +101,22 @@ namespace zetscript{
 			VM_ERROR_AND_RET("Null function");
 		}
 
-		if((char)c_function->params->count != (n_args-this_param)){
-			VM_ERROR_AND_RET("Native function \"%s\" expects %i arguments but it passed %i arguments",c_function->symbol.name.c_str(),c_function->params->count,n_args-this_param);
+		if((char)c_function->params_count != (n_args-this_param)){
+			VM_ERROR_AND_RET("Native function \"%s\" expects %i arguments but it passed %i arguments",c_function->symbol.name.c_str(),c_function->params_count,n_args-this_param);
 		}
 
-		if(c_function->params->count > MAX_NATIVE_FUNCTION_ARGS){
-			VM_ERROR_AND_RET("Reached max param for C function (Current: %i Max Allowed: %i)",c_function->params->count,MAX_NATIVE_FUNCTION_ARGS);
+		if(c_function->params_count > MAX_NATIVE_FUNCTION_ARGS){
+			VM_ERROR_AND_RET("Reached max param for C function (Current: %i Max Allowed: %i)",c_function->params_count,MAX_NATIVE_FUNCTION_ARGS);
 		}
 
 		// convert parameters script to c...
 		for(unsigned char  i = idx_arg_start; i < n_args;i++){
 
 			stk_arg_current=&stk_arg_c_function[i-idx_arg_start];
-			ScriptFunctionArg *function_param=(ScriptFunctionArg *)c_function->params->items[i];
 
 			if(!data->zs->convertStackElementToVar(
 					stk_arg_current
-					,function_param->idx_type
+					,c_function->params[i].idx_type
 					,(zs_int *)&converted_param[i]
 					,data->vm_error_str
 			)){

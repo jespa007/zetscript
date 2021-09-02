@@ -60,7 +60,7 @@ namespace zetscript{
 		std::string return_type;
 		std::vector<std::string> str_arg;
 
-		std::vector<ScriptFunctionArg> arg_info;
+		std::vector<ScriptFunctionParam> param_info;
 		zs_int ref_ptr=0;
 
 		if(main_function == NULL){
@@ -101,7 +101,7 @@ namespace zetscript{
 						,function_name);
 			}
 
-			arg_info.push_back(ScriptFunctionArg(idx_type,str_arg[i]));
+			param_info.push_back(ScriptFunctionParam(idx_type,str_arg[i]));
 		}
 
 		ref_ptr=(zs_int)function_ptr;
@@ -112,7 +112,7 @@ namespace zetscript{
 				,registered_file
 				,registered_line
 				,function_name
-				,arg_info
+				,param_info
 				,idx_return_type
 				,ref_ptr
 				,SYMBOL_PROPERTY_C_OBJECT_REF
@@ -342,9 +342,9 @@ namespace zetscript{
 
 					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
 					// build params...
-					std::vector<ScriptFunctionArg> params;
-					for(unsigned j=0; j < script_function->params->count;j++){
-						params.push_back(*((ScriptFunctionArg *) script_function->params->items[j]));
+					std::vector<ScriptFunctionParam> params;
+					for(unsigned j=0; j < script_function->params_count;j++){
+						params.push_back(script_function->params[j]);
 					}
 
 					this_class->registerNativeMemberFunction(
@@ -397,15 +397,15 @@ namespace zetscript{
 
 						if(it->src!=0){ // we have src method
 
-							std::vector<ScriptFunctionArg> arg_info;
+							std::vector<ScriptFunctionParam> param_info;
 
-							for(int i=0; i < it->src->params->count; i++){
-								arg_info.push_back(*((ScriptFunctionArg *)it->src->params->items[i]));
+							for(int i=0; i < it->src->params_count; i++){
+								param_info.push_back(it->src->params[i]);
 							}
 
 							symbol_function=this_class->registerNativeMemberFunction(
 									it->src->symbol.name,
-									arg_info,
+									param_info,
 									it->src->idx_return_type,
 									it->src->ref_native_function_ptr,
 									it->src->symbol.properties,
@@ -421,19 +421,19 @@ namespace zetscript{
 					}
 
 					for(unsigned i=0; i < sf_setters->count; i++){
-						std::vector<ScriptFunctionArg> arg_info;
+						std::vector<ScriptFunctionParam> param_info;
 						StackElement *stk_setter=(StackElement *)sf_setters->items[i];
 						ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
 
 
-						for(int i=0; i < sf_setter->params->count; i++){
-							arg_info.push_back(*((ScriptFunctionArg *)sf_setter->params->items[i]));
+						for(int i=0; i < sf_setter->params_count; i++){
+							param_info.push_back(sf_setter->params[i]);
 						}
 
 
 						/*this_class->registerNativeMemberAttributeSetter(
 								symbol_src->name
-								,arg_info
+								,param_info
 								,sf_setter->ref_native_function_ptr
 								,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
 								,symbol_src->file
@@ -442,7 +442,7 @@ namespace zetscript{
 
 						symbol_function=this_class->registerNativeMemberFunction(
 								sf_setter->symbol.name,
-								arg_info,
+								param_info,
 								sf_setter->idx_return_type,
 								sf_setter->ref_native_function_ptr,
 								sf_setter->symbol.properties,

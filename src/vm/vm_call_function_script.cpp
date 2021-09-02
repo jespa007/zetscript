@@ -1503,7 +1503,6 @@ load_element_object:
 				 {
 					ScriptFunction *sf = NULL;
 					StackElement *stk_function_ref=NULL;
-					//bool calling_from_object_type=false;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
 					ScriptObject *calling_object = NULL;
 					uint16_t n_local_registered_symbols=0;
@@ -1548,8 +1547,6 @@ load_element_object:
 					if(sf->symbol.properties & SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME){
 
 						ScriptClass *sc=NULL;
-						//void *stk_element_ptr=data->vm_stack;
-						//int stk_element_len = data->main_function_object->registered_symbols->count;
 						bool ignore_call=false;
 
 						if(
@@ -1557,16 +1554,10 @@ load_element_object:
 						){
 							ignore_call= (is_constructor) && calling_object->isNativeObject() && n_args==0;
 							sc=data->script_class_factory->getScriptClass(calling_object->idx_script_class);
-							/*zs_vector * list_props=calling_object->getStkBuiltinListElements();//getFunctions();
-							stk_element_ptr=list_props->items;
-							stk_element_len=list_props->count;*/
 						}else if(sf->idx_class != IDX_SCRIPT_CLASS_MAIN
 								&& (sf->symbol.properties & (SYMBOL_PROPERTY_FUNCTION|SYMBOL_PROPERTY_STATIC))
 						){
 							sc=data->script_class_factory->getScriptClass(sf->idx_class);
-							/*ScriptClass *sc=data->script_class_factory->getScriptClass(sf->idx_class);
-							stk_element_ptr=sc->symbol_members->items;
-							stk_element_len=sc->symbol_members->count;*/
 						}
 
 
@@ -1579,13 +1570,9 @@ load_element_object:
 									,calling_function
 									,instruction
 									,is_constructor
-									//,stk_element_ptr
-									//,stk_element_len
 									,sf->symbol.name // symbol to find
 									,stk_start_arg_call
 									,n_args))==NULL){
-
-								//VM_STOP_EXECUTE("cannot find function \"%s\"",sf->symbol.name.c_str());
 								goto lbl_exit_function;
 							}
 							sf=sf_aux;
@@ -1596,18 +1583,17 @@ load_element_object:
 					if((sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 
 						// we pass everything by copy (TODO implement ref)
-						if(n_args > 0 && sf->params->count > 0){
+						if(n_args > 0 && sf->params_count > 0){
 							StackElement *stk_arg=stk_start_arg_call;
 							ScriptObjectVector *var_args=NULL;
 							ScriptObject *so_param=NULL;
 							bool end_args=false;
-							//int function_param=0;//&sf->params->items[0];
-							int effective_args=n_args < sf->params->count ? n_args:sf->params->count;
-							zs_int *sf_params_items=sf->params->items;
-
-							for(int i=0;i < n_args && end_args==false;++i){
+							int effective_args=n_args < sf->params_count ? n_args:sf->params_count;
+							ScriptFunctionParam *sf_param=sf->params;
+							int i=0;
+							for(int i=0;i < n_args;++i){
 								so_param=NULL; // script object we passing
-								uint16_t sfa_properties=((ScriptFunctionArg *)(*sf_params_items))->properties;// ((ScriptFunctionArg *)(*function_param))->properties;
+								uint16_t sfa_properties=sf_param->properties;// ((ScriptFunctionParam *)(*function_param))->properties;
 								if((sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF)){ // create or pass the var ref object...
 
 									StackElement *check_ref=stk_arg;
@@ -1634,7 +1620,6 @@ load_element_object:
 									}
 
 								}else{
-//re_evaluate_stk_arg:
 									if(stk_arg->properties & STK_PROPERTY_PTR_STK){ // get its value
 										*stk_arg=*(StackElement *)stk_arg->value;
 									}
@@ -1658,17 +1643,7 @@ load_element_object:
 											so_param=sc;
 											stk_arg->value=(zs_int)sc;
 											stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
-										}/*else if((sf_getter=so_param->getGetter())!=NULL){
-											VM_INNER_CALL_ONLY_RETURN(
-													so_param
-													,sf_getter
-													,"_get"
-													,true)
-											// copy returned value if any
-											*stk_arg = *data->stk_vm_current;
-											so_param=NULL; // put NULL to not make it shared next it
-											goto re_evaluate_stk_arg; // because we want to check current
-										}*/
+										}
 									}
 								}
 
@@ -1698,9 +1673,9 @@ load_element_object:
 											}
 										}
 
-										sf_params_items++;
+										sf_param++;
 										if(i+1 >= (int)effective_args){
-											end_args=true;
+											break;
 										}
 									}
 								}
@@ -1711,38 +1686,25 @@ load_element_object:
 						// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 						// will be ignored always.
 
-						for(unsigned i = n_args; i < sf->params->count; ++i){
-							ScriptFunctionArg *param=(ScriptFunctionArg *)(sf->params->items[i]);
+						for(unsigned i = n_args; i < sf->params_count; ++i){
+							ScriptFunctionParam *param=sf->params+i;
 							//StackElement *stk_def_afun_start=data->stk_vm_current;
 							//param->default_var_value;
 							//int n_returned_args_afun=0;
 
-							switch(param->default_var_value.properties){
+							switch(param->default_param_value.properties){
 							case STK_PROPERTY_NULL:
 							case STK_PROPERTY_ZS_INT:
 							case STK_PROPERTY_BOOL:
 							case STK_PROPERTY_ZS_FLOAT:
-								*data->stk_vm_current++=param->default_var_value;
+								*data->stk_vm_current++=param->default_param_value;
 								break;
 							case STK_PROPERTY_FUNCTION: // we call function in the middle of the function
-								VM_INNER_CALL_ONLY_RETURN(NULL,param->default_var_value.value,"default",true)
+								VM_INNER_CALL_ONLY_RETURN(NULL,param->default_param_value.value,"default",true)
 								data->stk_vm_current++;
-								/*vm_call_function_script(
-									 vm
-									,NULL
-									,(ScriptFunction *)param->default_var_value.value
-									,stk_def_afun_start
-								);
-
-								n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
-
-								CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) // we share pointer (true second arg) to not remove on pop in calling return
-
-								// reset stack
-								data->stk_vm_current=stk_def_afun_start+1; // reset stack +1*/
 								break;
 							default:
-								VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\"",param->default_var_value.typeOf());
+								VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\"",param->default_param_value.typeOf());
 								break;
 
 							}
@@ -1797,7 +1759,7 @@ load_element_object:
 					// reset vm current before function pointer is
 					data->stk_vm_current=stk_start_arg_call-1;
 
-					if(instruction->value_op2 == ZS_IDX_INSTRUCTION_OP2_RETURN_ALL_STACK) {
+					if(instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK) {
 						StackElement tmp;
 						// return all elements in reverse order in order to get right assignment ...
 						// reverse returned items

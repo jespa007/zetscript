@@ -32,7 +32,7 @@ namespace zetscript{
 			const std::string & function_name
 			,F ptr_function
 			,std::string & return_type
-			,std::vector<ScriptFunctionArg> & arg_info
+			,std::vector<ScriptFunctionParam> & param_info
 		)
 	{
 		int idx_return_type=-1;
@@ -68,7 +68,7 @@ namespace zetscript{
 						,function_name);
 			}
 
-			arg_info.push_back({idx_type,arg[i]});
+			param_info.push_back({idx_type,arg[i]});
 		}
 
 		return idx_return_type;
@@ -86,13 +86,13 @@ namespace zetscript{
 	){
 		std::string return_type;
 		std::vector<std::string> params;
-		std::vector<ScriptFunctionArg> arg_info;
+		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
 		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
 
 		if(idx_return_type != IDX_BUILTIN_TYPE_VOID_C){
 			THROW_RUNTIME_ERROR("Error register setter attrib '%s': should return void ",attrib_name);
@@ -100,7 +100,7 @@ namespace zetscript{
 
 		registerNativeMemberAttributeSetter(
 				attrib_name
-				,arg_info
+				,param_info
 				,(zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
 				,registered_file
@@ -120,17 +120,17 @@ namespace zetscript{
 	){
 		std::string return_type;
 		std::vector<std::string> params;
-		std::vector<ScriptFunctionArg> arg_info;
+		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
 		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
 
 		registerNativeMemberAttributeGetter(
 				 attrib_name
-				 ,arg_info
+				 ,param_info
 				,idx_return_type
 				,(zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
@@ -151,17 +151,17 @@ namespace zetscript{
 	){
 		std::string return_type;
 		std::vector<std::string> params;
-		std::vector<ScriptFunctionArg> arg_info;
+		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
 		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
 
 		Symbol *symbol_result = registerNativeMemberAttributePostIncrement(
 				 attrib_name
-				 ,arg_info
+				 ,param_info
 				,idx_return_type
 				,(zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
@@ -182,17 +182,17 @@ namespace zetscript{
 	){
 		std::string return_type;
 		std::vector<std::string> params;
-		std::vector<ScriptFunctionArg> arg_info;
+		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
 		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
 
 		Symbol *symbol_result = registerNativeMemberAttributePostDecrement(
 				 attrib_name
-				 ,arg_info
+				 ,param_info
 				,idx_return_type
 				,(zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
@@ -213,17 +213,17 @@ namespace zetscript{
 	){
 		std::string return_type;
 		std::vector<std::string> params;
-		std::vector<ScriptFunctionArg> arg_info;
+		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
 		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
 
 		Symbol *symbol_result = registerNativeMemberAttributePreIncrement(
 				 attrib_name
-				 ,arg_info
+				 ,param_info
 				,idx_return_type
 				,(zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
@@ -244,17 +244,17 @@ namespace zetscript{
 	){
 		std::string return_type;
 		std::vector<std::string> params;
-		std::vector<ScriptFunctionArg> arg_info;
+		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
 		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
 		std::string error;
 
 		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,arg_info);
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
 
 		Symbol *symbol_result = registerNativeMemberAttributePreDecrement(
 				 attrib_name
-				 ,arg_info
+				 ,param_info
 				,idx_return_type
 				,(zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
@@ -282,14 +282,14 @@ namespace zetscript{
 		std::string error;
 		std::vector<std::string> params;
 
-		std::vector<ScriptFunctionArg> arg_info;
+		std::vector<ScriptFunctionParam> param_info;
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,arg_info);
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,param_info);
 
 		// register member function...
 		Symbol * symbol_sf = this->registerNativeMemberFunction(
 				 function_name
-				,arg_info
+				,param_info
 				, idx_return_type
 				, (zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC
@@ -356,32 +356,32 @@ namespace zetscript{
 
 		std::string return_type;
 		std::vector<std::string> params;
-		std::vector<ScriptFunctionArg> arg_info;
+		std::vector<ScriptFunctionParam> param_info;
 		std::string error;
 		
 		std::string function_class_name = this->symbol_class.name+"::"+function_name;
 
 		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,arg_info);
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,param_info);
 
-		if(arg_info.size()==0){
+		if(param_info.size()==0){
 			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s'",function_class_name.c_str(),this->symbol_class.str_native_type.c_str(),this->symbol_class.str_native_type.c_str());
 		}
 
-		ScriptClass * c_class_first_arg=	getScriptClass(arg_info[0].idx_type);
+		ScriptClass * c_class_first_arg=	getScriptClass(param_info[0].idx_type);
 		if(c_class_first_arg == NULL){
 			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s')",function_class_name.c_str(),this->symbol_class.str_native_type.c_str(),this->symbol_class.str_native_type.c_str());
 		}
 
 		if(c_class_first_arg->str_class_ptr_type !=  this->str_class_ptr_type){
-			THROW_RUNTIME_ERROR("register native member function '%s::%s': expected to have FIRST parameter as pointer type '%s' but it was '%s')",function_class_name.c_str(),this->symbol_class.str_native_type.c_str(),this->symbol_class.str_native_type.c_str(),arg_info[0].arg_name.c_str());
+			THROW_RUNTIME_ERROR("register native member function '%s::%s': expected to have FIRST parameter as pointer type '%s' but it was '%s')",function_class_name.c_str(),this->symbol_class.str_native_type.c_str(),this->symbol_class.str_native_type.c_str(),param_info[0].param_name.c_str());
 		}
 
 
 		// register member function...
 		this->registerNativeMemberFunction(
 				 function_name
-				, arg_info
+				, param_info
 				, idx_return_type
 				, (zs_int)ptr_function
 				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION

@@ -21,7 +21,7 @@ namespace zetscript{
 		ScriptFunction *sf_main=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 		ScriptObjectString *so_str_eval=NULL;
 		ScriptObjectObject *oo_param=NULL;
-		std::vector<ScriptFunctionArg> function_args;
+		std::vector<ScriptFunctionParam> function_args;
 		std::string str_param_name;
 		ScriptFunction *sf;
 		std::vector<StackElement> stk_params;
@@ -53,7 +53,7 @@ namespace zetscript{
 			// catch parameters...
 			for(auto it=oo_param->begin(); !it.end(); it.next()){
 				StackElement stk=*((StackElement *)it.getValue());
-				function_args.push_back(ScriptFunctionArg(it.getKey()));
+				function_args.push_back(ScriptFunctionParam(it.getKey()));
 				stk_params.push_back(stk);
 
 				if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){
