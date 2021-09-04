@@ -28,6 +28,8 @@
 
 namespace zetscript{
 
+	int eval_link_unresolved_symbols(EvalData *eval_data);
+
 	void eval_parse_and_compile(ZetScript *zs
 			,const char * str_code
 			, const char *  _filename
@@ -83,13 +85,13 @@ namespace zetscript{
 		if(sf != MAIN_FUNCTION(eval_data)){ // is anonyomuse function
 			if(scope_info->symbol_registered_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
 
-					eval_data->current_function->instructions.insert(
+					/*eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.begin()
 							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope_info)
-					);
+					);*/
 
 					// and finally insert pop scope
-					eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_POP_SCOPE,0));
+					//eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_POP_SCOPE,0));
 
 			}
 			else{ // remove scope
@@ -99,6 +101,11 @@ namespace zetscript{
 
 		eval_pop_and_compile_function(eval_data);
 
+		if(eval_data->error == false){
+			eval_link_unresolved_symbols(eval_data);
+		}
+
+		// link unresolved functions...
 		error=eval_data->error;
 		error_str=eval_data->error_str;
 		error_file=eval_data->error_file;
@@ -109,6 +116,121 @@ namespace zetscript{
 		if(error){
 			THROW_SCRIPT_ERROR_FILE_LINE(error_file,error_line,error_str.c_str());
 		}
+	}
+
+	int eval_link_unresolved_symbols(EvalData *eval_data){
+		ScriptClass *sc_found=NULL;
+		if(eval_data->unresolved_symbols.size() > 0){
+			UnresolvedInstructionInfo *unresolved_instruction_it=eval_data->unresolved_symbols.data();
+			const char *str_aux=NULL;
+
+
+			for(unsigned i=0;i < eval_data->unresolved_symbols.size();i++,unresolved_instruction_it++){
+				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(unresolved_instruction_it->calling_function,unresolved_instruction_it->instruction);
+				const char *instruction_file=SFI_GET_FILE(unresolved_instruction_it->calling_function,unresolved_instruction_it->instruction);
+				int instruction_line=SFI_GET_LINE(unresolved_instruction_it->calling_function,unresolved_instruction_it->instruction);
+				Symbol *symbol_found=NULL;
+				 if((sc_found= eval_data->script_class_factory->getScriptClass(ptr_str_symbol_to_find))!= NULL){ // check if class
+					 unresolved_instruction_it->instruction->byte_code=BYTE_CODE_LOAD_CLASS;
+					 unresolved_instruction_it->instruction->value_op2=(zs_int)sc_found;
+				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
+					 std::string static_error;
+					char copy_aux[512]={0};
+
+					// get class
+					strncpy(copy_aux,ptr_str_symbol_to_find,str_aux-ptr_str_symbol_to_find);
+
+					sc_found=eval_data->zs->getScriptClassFactory()->getScriptClass(copy_aux);
+
+					if(sc_found==NULL){
+						EVAL_ERROR_FILE_LINE(
+							instruction_file
+							,instruction_line
+							,"Cannot link static access '%s' class '%s' not exist"
+							,ptr_str_symbol_to_find
+							,copy_aux
+						);
+					}
+
+					// advance ::
+					str_aux+=2;
+
+					//get member
+					strcpy(copy_aux,str_aux);
+
+					symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
+
+					if(symbol_found == NULL){
+						EVAL_ERROR_FILE_LINE(
+							instruction_file
+							,instruction_line
+							,"Cannot link static access '%s' member '%s' not exist"
+							,ptr_str_symbol_to_find
+							,copy_aux
+						);
+					}
+
+				 }else 	if((symbol_found = eval_find_global_symbol(eval_data,ptr_str_symbol_to_find))==NULL){ // give the error properly
+
+					char *str_start_class=(char *)ptr_str_symbol_to_find;
+					char *str_end_class=NULL;
+
+					if((str_end_class=strstr(str_start_class,"::"))!=NULL){ // static access
+						char class_name[512]={0};
+
+						strncpy(class_name,str_start_class,str_end_class-str_start_class);
+
+
+						if(eval_data->script_class_factory->getScriptClass(class_name) == NULL){
+							EVAL_ERROR_FILE_LINE(
+									instruction_file
+									,instruction_line
+									,"class '%s' not exist"
+									,class_name
+							);
+						}
+
+						EVAL_ERROR_FILE_LINE(
+								instruction_file
+								,instruction_line
+								,"static symbol '%s' not exist in '%s'"
+								,str_end_class+2
+								,class_name
+						);
+					}else{
+						EVAL_ERROR_FILE_LINE(
+								instruction_file
+								,instruction_line
+								,"Symbol '%s' not defined"
+								,ptr_str_symbol_to_find
+						);
+					}
+
+				}
+
+				if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
+					if(unresolved_instruction_it->instruction->byte_code==BYTE_CODE_FIND_VARIABLE){
+						unresolved_instruction_it->instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+					}else{
+						unresolved_instruction_it->instruction->byte_code=BYTE_CODE_IMMEDIATE_CALL;
+					}
+					unresolved_instruction_it->instruction->value_op2=(zs_int)(ScriptFunction *)symbol_found->ref_ptr; // store script function
+				}
+				else{ // global variable
+
+					if(unresolved_instruction_it->instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
+						unresolved_instruction_it->instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+					}else{
+						unresolved_instruction_it->instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
+					}
+
+					unresolved_instruction_it->instruction->value_op2=symbol_found->idx_position;
+				}
+
+			}
+		}
+
+		return 1;
 	}
 
 /*	void eval_parse_and_compile_anonymous(ZetScript *zs,const char * str, const char *  _filename, int _line){
@@ -205,7 +327,9 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '}' ");
 				}
 
-				eval_check_scope(eval_data,new_scope_info);
+				if(is_function == false){
+					eval_check_scope(eval_data,new_scope_info);
+				}
 				return aux_p+1;
 			}
 		}
@@ -405,6 +529,7 @@ namespace zetscript{
 		memset(sf->instructions, 0, total_size_bytes);
 		//bool is_static = eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC;
 		int ok=FALSE;
+		const char *str_aux=NULL;
 		//int idx_instruction=0;
 
 
@@ -523,71 +648,10 @@ namespace zetscript{
 					}
 					break;
 			case BYTE_CODE_FIND_VARIABLE:
-				sum_stk_load_stk++;
-				 if((sc_found= eval_data->script_class_factory->getScriptClass(*ptr_str_symbol_to_find))!= NULL){ // check if class
-					instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_CLASS;
-					instruction->vm_instruction.value_op2=(zs_int)sc_found;
-				 }else if(instruction->symbol.scope != MAIN_SCOPE(eval_data)){ // find global symbol if not global
-					vis = eval_find_global_symbol(eval_data,*ptr_str_symbol_to_find);
-				}else{ // give the error properly
-
-					char *str_start_class=(char *)ptr_str_symbol_to_find->c_str();
-					char *str_end_class=NULL;
-
-					if((str_end_class=strstr(str_start_class,"::"))!=NULL){ // static access
-						char class_name[512]={0};
-
-						strncpy(class_name,str_start_class,str_end_class-str_start_class);
-
-
-						if(eval_data->script_class_factory->getScriptClass(class_name) == NULL){
-							EVAL_ERROR_FILE_LINE_AND_GOTO(
-									lbl_exit_pop_function
-									,eval_data->current_parsing_file
-									,instruction->instruction_source_info.line
-									,"class '%s' not exist"
-									,class_name
-							);
-						}
-
-						EVAL_ERROR_FILE_LINE_AND_GOTO(
-								lbl_exit_pop_function
-								,eval_data->current_parsing_file
-								,instruction->instruction_source_info.line
-								,"static symbol '%s' not exist in '%s'"
-								//,sf_class->symbol_class.name.c_str()
-								,str_end_class+2
-								,class_name
-						);
-					}else{
-						EVAL_ERROR_FILE_LINE_AND_GOTO(
-								lbl_exit_pop_function
-								,eval_data->current_parsing_file
-								,instruction->instruction_source_info.line
-								,"Symbol '%s' not defined"
-								//,sf_class->symbol_class.name.c_str()
-								,ptr_str_symbol_to_find->c_str()
-						);
-					}
-
-				}
-				//}
-
-				if(vis != NULL){
-					if(vis->properties & SYMBOL_PROPERTY_FUNCTION){
-						instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_FUNCTION;
-						instruction->vm_instruction.value_op2=(zs_int)(ScriptFunction *)vis->ref_ptr; // store script function
-					}
-					else{ // global variable
-
-						if(instruction->vm_instruction.properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
-							instruction->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
-						}else{
-							instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_GLOBAL;
-						}
-
-						instruction->vm_instruction.value_op2=vis->idx_position;
-					}
+			case BYTE_CODE_FIND_IMMEDIATE_CALL:
+				eval_data->unresolved_symbols.push_back(UnresolvedInstructionInfo(&sf->instructions[i],sf));
+				if(instruction->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
+					sum_stk_load_stk++;
 				}
 				break;
 			}

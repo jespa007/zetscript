@@ -19,6 +19,7 @@ namespace zetscript{
 	void vm_do_stack_dump(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		// derefer all variables in all scopes (except main )...
+		// TODO: do stack dump from current vm_stk
 		while(data->vm_scope<(data->vm_current_scope)){
 			POP_VM_SCOPE();
 		}

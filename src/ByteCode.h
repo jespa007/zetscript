@@ -60,6 +60,7 @@ namespace zetscript{
 		// ARITMETHIC OPERATORS.
 		BYTE_CODE_END_FUNCTION = 0,
 		BYTE_CODE_FIND_VARIABLE,
+		BYTE_CODE_FIND_IMMEDIATE_CALL,
 
 		// load ptr var
 		BYTE_CODE_PUSH_STK_GLOBAL,
@@ -144,6 +145,7 @@ namespace zetscript{
 		BYTE_CODE_JE_CASE, //
 		BYTE_CODE_JT, // goto if true ... goes end to conditional.
 		BYTE_CODE_CALL, // call function...
+		BYTE_CODE_IMMEDIATE_CALL, // call function...
 		BYTE_CODE_CALL_CONSTRUCTOR, // call function...
 		BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE, // new operator...
 		BYTE_CODE_DELETE,

@@ -399,7 +399,7 @@ namespace zetscript{
 
 							std::vector<ScriptFunctionParam> param_info;
 
-							for(int i=0; i < it->src->params_count; i++){
+							for(unsigned i=0; i < it->src->params_count; i++){
 								param_info.push_back(it->src->params[i]);
 							}
 
@@ -426,7 +426,7 @@ namespace zetscript{
 						ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
 
 
-						for(int i=0; i < sf_setter->params_count; i++){
+						for(unsigned i=0; i < sf_setter->params_count; i++){
 							param_info.push_back(sf_setter->params[i]);
 						}
 

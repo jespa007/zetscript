@@ -45,6 +45,11 @@ namespace zetscript{
 	}
 
 	void ConsoleModule_outln(ZetScript *zs,StackElement *str, StackElement *args){
+		if(str->properties==0){
+			fprintf(stdout,"\n");
+			return;
+		}
+
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s\n",str_out->toString().c_str());
@@ -63,6 +68,11 @@ namespace zetscript{
 	}
 
 	void ConsoleModule_errorln(ZetScript *zs,StackElement *str, StackElement *args){
+		if(str->properties==0){
+			fprintf(stderr,"\n");
+			return;
+		}
+
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stderr,"%s\n",str_out->toString().c_str());
@@ -72,6 +82,10 @@ namespace zetscript{
 
 
 	void ConsoleModule_error(ZetScript *zs,StackElement *str, StackElement *args){
+		if(str->properties==0){
+			return;
+		}
+
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stderr,"%s",str_out->toString().c_str());

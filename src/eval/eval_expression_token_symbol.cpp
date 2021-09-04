@@ -208,6 +208,9 @@ namespace zetscript{
 
 					if(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':'){ //  static access
 
+							// mark symbol as static
+							//token_node_symbol.instructions[0]->symbol.properties |= SYMBOL_PROPERTY_STATIC;
+
 							// the first item is the class
 							std::string static_access_value=token_node_symbol.value,class_element;
 							Symbol *member_symbol=NULL;
@@ -290,11 +293,12 @@ namespace zetscript{
 				switch(*aux_p){
 				case '(': // is a function call
 
-					if(	it_accessor_token==0
-							&& token_node_symbol.value == SYMBOL_VALUE_SUPER
-							&& scope_info == MAIN_SCOPE(eval_data)
-					){
-						EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"\"super\" is not allowed here");
+					if(	it_accessor_token==0){
+						if(
+								token_node_symbol.value == SYMBOL_VALUE_SUPER
+								&& scope_info == MAIN_SCOPE(eval_data)){
+							EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"\"super\" is not allowed here");
+						}
 
 					}
 
@@ -372,7 +376,17 @@ namespace zetscript{
 						n_params++;
 					}
 
-					byte_code=ByteCode::BYTE_CODE_CALL;
+					if(	it_accessor_token==0
+							&&
+					(token_node_symbol.instructions[0]->vm_instruction.byte_code==BYTE_CODE_LOAD_FUNCTION
+								||
+						token_node_symbol.instructions[0]->vm_instruction.byte_code==BYTE_CODE_FIND_VARIABLE)
+					){
+						byte_code=ByteCode::BYTE_CODE_IMMEDIATE_CALL;
+					}
+					else{
+						byte_code=ByteCode::BYTE_CODE_CALL;
+					}
 					aux_p++;
 					break;
 				case '[': // std::vector access
@@ -458,6 +472,16 @@ namespace zetscript{
 				}
 
 				switch(byte_code){
+				case BYTE_CODE_IMMEDIATE_CALL:
+					instruction_token->vm_instruction.value_op1=n_params;
+					if((instruction_token->vm_instruction.value_op2=token_node_symbol.instructions[0]->vm_instruction.value_op2)==ZS_IDX_UNDEFINED){
+						instruction_token->vm_instruction.byte_code=BYTE_CODE_FIND_IMMEDIATE_CALL;
+					}
+					instruction_token->symbol=token_node_symbol.instructions[0]->symbol;
+					instruction_token->instruction_source_info= token_node_symbol.instructions[0]->instruction_source_info;
+					delete token_node_symbol.instructions[0];
+					token_node_symbol.instructions.erase(token_node_symbol.instructions.begin()+0);
+					break;
 				case BYTE_CODE_CALL:
 					instruction_token->vm_instruction.value_op1=n_params;
 

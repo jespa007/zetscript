@@ -272,6 +272,18 @@ namespace zetscript{
 		int	idx_instruction_start_loop;
 	}LoopBreakContinueInfo;
 
+
+	struct UnresolvedInstructionInfo{
+		Instruction *instruction;
+		ScriptFunction *calling_function;
+
+		UnresolvedInstructionInfo(Instruction *_instruction, ScriptFunction *_calling_function){
+			instruction = _instruction;
+			calling_function = _calling_function;
+		}
+
+	};
+
 	struct EvalData{
 		ZetScript 						* 		zs;
 		ScopeFactory 					* 		scope_factory;
@@ -279,6 +291,7 @@ namespace zetscript{
 		ScriptClassFactory 				* 		script_class_factory;
 		EvalFunction					* 		current_function;
 		std::vector<EvalFunction *> 	  		functions;
+		std::vector<UnresolvedInstructionInfo>	unresolved_symbols;
 		int										parsing_loop;
 		//std::vector<std::vector<EvalInstruction *>>			loop_break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
 		//std::vector<LoopBreakContinueInfo>		loop_break_continue_info; // number of continue_jmp_instructions collected (should managed only on loops)

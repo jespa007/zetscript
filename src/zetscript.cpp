@@ -74,39 +74,39 @@ namespace zetscript{
 
 		// Json mod
 		cl=script_class_factory->registerClass("Json");
-		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(JsonModuleWrap_serialize));
-		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModuleWrap_serialize));
-		cl->registerNativeMemberFunctionStatic("deserialize",JsonModuleWrap_deserialize);
+		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
+		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
+		cl->registerNativeMemberFunctionStatic("deserialize",JsonModule_deserialize);
 		//---------------------------------------------
 		// DateTime
-		cl=registerClass<zs_datetime>("DateTime",DateTimeModuleWrap_new,DateTimeModuleWrap_delete);
+		cl=registerClass<zs_datetime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
 
-		registerMemberFunctionStatic<zs_datetime>("_add",DateTimeModuleWrap_add);
-		registerMemberFunctionStatic<zs_datetime>("_sub",DateTimeModuleWrap_sub);
+		registerMemberFunctionStatic<zs_datetime>("_add",DateTimeModule_add);
+		registerMemberFunctionStatic<zs_datetime>("_sub",DateTimeModule_sub);
 
-		registerMemberFunction<zs_datetime>("setUtc",DateTimeModuleWrap_setUtc);
+		registerMemberFunction<zs_datetime>("setUtc",DateTimeModule_setUtc);
 
-		registerMemberFunction<zs_datetime>("addSeconds",DateTimeModuleWrap_addSeconds);
-		registerMemberFunction<zs_datetime>("addMinutes",DateTimeModuleWrap_addMinutes);
-		registerMemberFunction<zs_datetime>("addHours",DateTimeModuleWrap_addHours);
-		registerMemberFunction<zs_datetime>("addDays",DateTimeModuleWrap_addDays);
-		registerMemberFunction<zs_datetime>("addMonths",DateTimeModuleWrap_addMonths);
-		registerMemberFunction<zs_datetime>("addYears",DateTimeModuleWrap_addYears);
+		registerMemberFunction<zs_datetime>("addSeconds",DateTimeModule_addSeconds);
+		registerMemberFunction<zs_datetime>("addMinutes",DateTimeModule_addMinutes);
+		registerMemberFunction<zs_datetime>("addHours",DateTimeModule_addHours);
+		registerMemberFunction<zs_datetime>("addDays",DateTimeModule_addDays);
+		registerMemberFunction<zs_datetime>("addMonths",DateTimeModule_addMonths);
+		registerMemberFunction<zs_datetime>("addYears",DateTimeModule_addYears);
 
 		// metamethods...
-		registerMemberFunction<zs_datetime>("_toString",DateTimeModuleWrap_toString);
+		registerMemberFunction<zs_datetime>("_toString",DateTimeModule_toString);
 
-		registerMemberAttributeGetter<zs_datetime>("week_day",DateTimeModuleWrap_get_week_day);
-		registerMemberAttributeGetter<zs_datetime>("month_day",DateTimeModuleWrap_get_month_day);
-		registerMemberAttributeGetter<zs_datetime>("year_day",DateTimeModuleWrap_get_year_day);
+		registerMemberAttributeGetter<zs_datetime>("week_day",DateTimeModule_get_week_day);
+		registerMemberAttributeGetter<zs_datetime>("month_day",DateTimeModule_get_month_day);
+		registerMemberAttributeGetter<zs_datetime>("year_day",DateTimeModule_get_year_day);
 
-		registerMemberAttributeGetter<zs_datetime>("second",DateTimeModuleWrap_get_second);
-		registerMemberAttributeGetter<zs_datetime>("minute",DateTimeModuleWrap_get_minute);
-		registerMemberAttributeGetter<zs_datetime>("hour",DateTimeModuleWrap_get_hour);
+		registerMemberAttributeGetter<zs_datetime>("second",DateTimeModule_get_second);
+		registerMemberAttributeGetter<zs_datetime>("minute",DateTimeModule_get_minute);
+		registerMemberAttributeGetter<zs_datetime>("hour",DateTimeModule_get_hour);
 
-		registerMemberAttributeGetter<zs_datetime>("day",DateTimeModuleWrap_get_day);
-		registerMemberAttributeGetter<zs_datetime>("month",DateTimeModuleWrap_get_month);
-		registerMemberAttributeGetter<zs_datetime>("year",DateTimeModuleWrap_get_year);
+		registerMemberAttributeGetter<zs_datetime>("day",DateTimeModule_get_day);
+		registerMemberAttributeGetter<zs_datetime>("month",DateTimeModule_get_month);
+		registerMemberAttributeGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 		// Custom user function or classes
 		eval(
@@ -118,12 +118,14 @@ namespace zetscript{
 				"}"
 				//------------------------------------------------
 				// DateTime
-				"static DateTime::now(zs){" // add static function format to String module
-				"	return DateTime::nowNative(System::getZetScript())"
+				"static DateTime::now(zs){" // add static function now
+				"	return new DateTime()"
 				"}"
 
-				"static DateTime::nowUtc(zs){" // add static function format to String module
-				"	return DateTime::nowUtcNative(System::getZetScript())"
+				"static DateTime::nowUtc(zs){" // add static function nowUtc
+				"   var t=new DateTime();"
+				"   t.setUtc()"
+				"   return t;"
 				"}"
 				//------------------------------------------------
 				// Console

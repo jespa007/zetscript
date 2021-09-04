@@ -162,9 +162,7 @@ namespace zetscript{
 
 	struct VM_Scope{
 		Scope				*scope;
-		ScriptFunction 		*script_function;
 		StackElement 		*stk_local_vars;
-		unsigned char 		properties;
 	};
 
 

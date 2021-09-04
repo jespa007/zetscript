@@ -261,12 +261,10 @@
 	}\
 }
 
-#define PUSH_VM_SCOPE(_scope,_ptr_info_function, _ptr_local_var,_properties)\
+#define PUSH_VM_SCOPE(_scope, _ptr_local_var)\
 	if(data->vm_current_scope >=  data->vm_scope_max){THROW_RUNTIME_ERROR("reached max scope");}\
 	data->vm_current_scope->scope=(Scope *)_scope;\
-	data->vm_current_scope->script_function=_ptr_info_function;\
 	data->vm_current_scope->stk_local_vars=_ptr_local_var;\
-	data->vm_current_scope->properties=_properties;\
 	data->vm_current_scope++;\
 
 #define LOAD_FROM_STACK(offset,properties) \
@@ -371,6 +369,19 @@ namespace zetscript{
 		ScriptClass *test_class=NULL;
 		const char *str_symbol=NULL,*str_aux=NULL;
 		Symbol * symbol_aux=NULL;
+		//------------------------------------------------
+		// SFCALL
+		ScriptFunction 	*sf_call_script_function = NULL;
+		unsigned char 	 sf_call_n_args=0; // number arguments will pass to this function
+		StackElement 	*sf_call_stk_start_arg_call=NULL;
+		ScriptObject 	*sf_call_calling_object = NULL;
+		bool			 sf_call_is_constructor=false;
+		uint16_t 		 sf_call_n_local_registered_symbols=0;
+		bool 			 sf_call_is_member_function=false;
+		StackElement 	*sf_call_stk_return=NULL;
+		int 			sf_call_n_returned_arguments_from_function=0;
+		// SFCALL
+		//------------------------------------------------
 		//int idx_stk_element;
 		int idx_test_class;
 		unsigned short pre_post_properties=0;
@@ -405,8 +416,12 @@ namespace zetscript{
 
 		// Init local vars ...
 		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
+			if(symbols_count > 0){
+				PUSH_VM_SCOPE(calling_function->symbol.scope,_stk_local_var);
+			}
+		}
 
-			for(unsigned i = n_args; i < (symbols_count); ++i,++ptr_aux){ // from n_args, setup local vars
+			/*for(unsigned i = n_args; i < (symbols_count); ++i,++ptr_aux){ // from n_args, setup local vars
 				symbol_aux=(Symbol *)registered_symbols->items[i];
 				if(symbol_aux->properties & SYMBOL_PROPERTY_FUNCTION){
 					ptr_aux->value=symbol_aux->ref_ptr;
@@ -415,7 +430,7 @@ namespace zetscript{
 					STK_SET_NULL(ptr_aux);		// null as default
 				}
 			}
-		}
+		}*/
 
 		//-----------------------------------------------------------------------------------------------------------------------
 		//
@@ -430,8 +445,7 @@ namespace zetscript{
 				VM_STOP_EXECUTE("byte code \"%s\" not implemented",byte_code_to_str(instruction->byte_code));
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
-			case BYTE_CODE_FIND_VARIABLE:
-
+			/*	VM_STOP_EXECUTE("unexpected find code \"%s\"",byte_code_to_str(instruction->byte_code));
 				str_symbol=SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
 				if((str_aux=strstr(str_symbol,"::")) != NULL){ // static access
@@ -490,8 +504,9 @@ namespace zetscript{
 						}
 
 					}else{ // function
+						VM_STOP_EXECUTE("Symbol \"%s\" to find expected as variable but it was function",str_symbol);
 						// assign script function ...
-						instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+						/*instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
 						instruction->value_op2=symbol_aux->ref_ptr;
 						PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
 					}
@@ -499,7 +514,7 @@ namespace zetscript{
 					VM_STOP_EXECUTE("Symbol \"%s\" is not defined",str_symbol);
 				}
 
-				continue;
+				continue;*/
 			// store
 			case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
 				PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
@@ -1498,66 +1513,218 @@ load_element_object:
 				}
 				continue;
 
+			 case BYTE_CODE_FIND_IMMEDIATE_CALL:
+				 // TODO: May the function is null, so it has to discover for first time
+
+
+			 case  BYTE_CODE_IMMEDIATE_CALL: // calling function after all of args are processed...
+
+				 sf_call_calling_object = NULL;
+				 sf_call_script_function=(ScriptFunction *)instruction->value_op2;
+				 sf_call_n_args=instruction->value_op1; // number arguments will pass to this function
+				 sf_call_stk_start_arg_call=(data->stk_vm_current-sf_call_n_args);
+				 goto execute_function;
 			 case  BYTE_CODE_CALL_CONSTRUCTOR:
 			 case  BYTE_CODE_CALL: // calling function after all of args are processed...
 				 {
-					ScriptFunction *sf = NULL;
+					sf_call_script_function=NULL;
 					StackElement *stk_function_ref=NULL;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
-					ScriptObject *calling_object = NULL;
-					uint16_t n_local_registered_symbols=0;
-					unsigned char n_args=instruction->value_op1; // number arguments will pass to this function
-					StackElement *stk_start_arg_call=(data->stk_vm_current-n_args);
+					sf_call_calling_object = NULL;
+					sf_call_stk_start_arg_call=(data->stk_vm_current-sf_call_n_args);
+					sf_call_n_args=instruction->value_op1; // number arguments will pass to this function
+					stk_function_ref = ((sf_call_stk_start_arg_call-1));
 
-					stk_function_ref = ((stk_start_arg_call-1));
-					bool is_constructor=instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR;
 
 					if(stk_function_ref->properties & STK_PROPERTY_PTR_STK){
 						stk_function_ref=(StackElement *)stk_function_ref->value;
 					}
 
-
 					if(stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
 					  Symbol *symbol=(Symbol *)stk_function_ref->value;
-					  calling_object=(ScriptObject *)((stk_start_arg_call-2))->value; // its supposed to have the object
-					  sf=(ScriptFunction *)symbol->ref_ptr;
+					  sf_call_calling_object=(ScriptObject *)((sf_call_stk_start_arg_call-2))->value; // its supposed to have the object
+					  sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
 					}else if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_function_ref)){
 					  ScriptObjectMemberFunction *sofm=(  ScriptObjectMemberFunction *)stk_function_ref->value;
-					  calling_object=sofm->so_object;
-					  sf=sofm->so_function;
+					  sf_call_calling_object=sofm->so_object;
+					  sf_call_script_function=sofm->so_function;
 					}else{
 
 						if((stk_function_ref->properties & (STK_PROPERTY_FUNCTION))==0){
-							if(is_constructor){ // constructor was not found so we do nothing
+							if(instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR){ // constructor was not found so we do nothing
 								// reset stack (ignore all pushed data in the stack)
-								data->stk_vm_current=stk_start_arg_call-1;
+								data->stk_vm_current=sf_call_stk_start_arg_call-1;
 								continue;
 							}
 							VM_STOP_EXECUTE("'%s' is not function or not exist",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 						}
 
-						sf=(ScriptFunction *)stk_function_ref->value;
+						sf_call_script_function=(ScriptFunction *)stk_function_ref->value;
 					}
 
-					if(sf == NULL){
-						VM_STOP_EXECUTE("internal error ScriptFunction null");
+					sf_call_is_member_function=stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION;
+				 }
+execute_function:
+
+				sf_call_n_local_registered_symbols=0;
+
+				// if a c function that it has more than 1 symbol with same number of parameters, so we have to solve and get the right one...
+				// call function
+				if((sf_call_script_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
+
+					// we pass everything by copy (TODO implement ref)
+					if(n_args > 0 && sf_call_script_function->params_count > 0){
+						StackElement *stk_arg=sf_call_stk_start_arg_call;
+						ScriptObjectVector *var_args=NULL;
+						ScriptObject *so_param=NULL;
+						bool end_args=false;
+						int effective_args=n_args < sf_call_script_function->params_count ? n_args:sf_call_script_function->params_count;
+						ScriptFunctionParam *sf_param=sf_call_script_function->params;
+						int i=0;
+						for(int i=0;i < n_args;++i){
+							so_param=NULL; // script object we passing
+							uint16_t sfa_properties=sf_param->properties;// ((ScriptFunctionParam *)(*function_param))->properties;
+							if((sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF)){ // create or pass the var ref object...
+
+								StackElement *check_ref=stk_arg;
+								if(stk_arg->properties & STK_PROPERTY_PTR_STK){
+									check_ref=(StackElement *)check_ref->value;
+								}
+
+								// because arg by ref is always loaded directly we have the object stk...
+								if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false) { // create new
+
+									if((stk_arg->properties & STK_PROPERTY_PTR_STK) != STK_PROPERTY_PTR_STK){
+										VM_STOP_EXECUTE("Calling function \"%s\", parameter \"%i\": Passing argument by reference has to be variable (not attribute or property))",sf_call_script_function->symbol.name.c_str(),i+1);
+									}
+
+									ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg,data->vm_idx_call);
+									if(!vm_create_shared_pointer(vm,sc)){
+										goto lbl_exit_function;
+									}
+									so_param=sc;
+									stk_arg->value=(intptr_t)sc;
+									stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
+								}else{ // is a var ref already, keep its reference ...
+									so_param=(ScriptObject *)stk_arg->value;
+								}
+
+							}else{
+								if(stk_arg->properties & STK_PROPERTY_PTR_STK){ // get its value
+									*stk_arg=*(StackElement *)stk_arg->value;
+								}
+
+								if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==true) { // not passing by ref it gets its value
+									*stk_arg=*((ScriptObjectVarRef *)stk_arg->value)->getStackElementPtr();
+								}
+
+								bool is_stk_this = IS_STK_THIS(stk_arg);
+
+								if((stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT)  && (is_stk_this==false)){
+									so_param=(ScriptObject *)stk_arg->value;
+									ScriptFunction *sf_getter=NULL;
+									if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
+										//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
+										ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
+										if(!vm_create_shared_pointer(vm,sc)){
+											goto lbl_exit_function;
+										}
+										sc->set(stk_arg->toString());
+										so_param=sc;
+										stk_arg->value=(zs_int)sc;
+										stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
+									}
+								}
+							}
+
+							if(var_args!=NULL){
+								var_args->push(stk_arg); // we do not share pointer here due is already added in a vector
+							}else{
+								if(sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS){ // enter var args
+									var_args=ZS_NEW_OBJECT_VECTOR(data->zs);
+									if(!vm_create_shared_pointer(vm,var_args)){
+										goto lbl_exit_function;
+									}
+
+									if(!vm_share_pointer(vm,var_args)){ // we share pointer +1 to not remove on pop in calling return
+										goto lbl_exit_function;
+									}
+
+									// push first arg
+									var_args->push(stk_arg);
+									// replace for vector type...
+									stk_arg->value=(zs_int)var_args;
+									stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
+								}else{ // not push in var arg
+
+									if(so_param != NULL && (so_param!=this_object)){ // share n+1 to function if not this
+										if(!vm_share_pointer(vm,so_param)){ // we share pointer +1 to not remove on pop in calling return
+											goto lbl_exit_function;
+										}
+									}
+
+									sf_param++;
+									if(i+1 >= (int)effective_args){
+										break;
+									}
+								}
+							}
+							stk_arg++;
+						}
 					}
 
-					// if a c function that it has more than 1 symbol with same number of parameters, so we have to solve and get the right one...
-					if(sf->symbol.properties & SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME){
+					// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
+					// will be ignored always.
+
+					for(unsigned i = n_args; i < sf_call_script_function->params_count; ++i){
+						ScriptFunctionParam *param=sf_call_script_function->params+i;
+						//StackElement *stk_def_afun_start=data->stk_vm_current;
+						//param->default_var_value;
+						//int n_returned_args_afun=0;
+
+						switch(param->default_param_value.properties){
+						case STK_PROPERTY_NULL:
+						case STK_PROPERTY_ZS_INT:
+						case STK_PROPERTY_BOOL:
+						case STK_PROPERTY_ZS_FLOAT:
+							*data->stk_vm_current++=param->default_param_value;
+							break;
+						case STK_PROPERTY_FUNCTION: // we call function in the middle of the function
+							VM_INNER_CALL_ONLY_RETURN(NULL,param->default_param_value.value,"default",true)
+							data->stk_vm_current++;
+							break;
+						default:
+							VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\"",param->default_param_value.typeOf());
+							break;
+
+						}
+						n_args++;
+					}
+
+					vm_call_function_script(
+						vm
+						,sf_call_calling_object
+						,sf_call_script_function
+						,sf_call_stk_start_arg_call
+						,sf_call_n_args
+					);
+					sf_call_n_local_registered_symbols=sf_call_script_function->symbol_registered_variables->count;
+				}
+				else{ // C function
+					if(sf_call_script_function->symbol.properties & SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME){
 
 						ScriptClass *sc=NULL;
 						bool ignore_call=false;
 
 						if(
-							stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION //scope_type&(INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
+							sf_call_is_member_function //scope_type&(INSTRUCTION_PROPERTY_ACCESS_TYPE_FIELD|INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)
 						){
-							ignore_call= (is_constructor) && calling_object->isNativeObject() && n_args==0;
-							sc=data->script_class_factory->getScriptClass(calling_object->idx_script_class);
-						}else if(sf->idx_class != IDX_SCRIPT_CLASS_MAIN
-								&& (sf->symbol.properties & (SYMBOL_PROPERTY_FUNCTION|SYMBOL_PROPERTY_STATIC))
+							ignore_call= (sf_call_is_constructor) && sf_call_calling_object->isNativeObject() && sf_call_n_args==0;
+							sc=data->script_class_factory->getScriptClass(sf_call_calling_object->idx_script_class);
+						}else if(sf_call_script_function->idx_class != IDX_SCRIPT_CLASS_MAIN
+								&& (sf_call_script_function->symbol.properties & (SYMBOL_PROPERTY_FUNCTION|SYMBOL_PROPERTY_STATIC))
 						){
-							sc=data->script_class_factory->getScriptClass(sf->idx_class);
+							sc=data->script_class_factory->getScriptClass(sf_call_script_function->idx_class);
 						}
 
 
@@ -1569,222 +1736,81 @@ load_element_object:
 									,sc
 									,calling_function
 									,instruction
-									,is_constructor
-									,sf->symbol.name // symbol to find
-									,stk_start_arg_call
+									,sf_call_is_constructor
+									,sf_call_script_function->symbol.name // symbol to find
+									,sf_call_stk_start_arg_call
 									,n_args))==NULL){
 								goto lbl_exit_function;
 							}
-							sf=sf_aux;
+							sf_call_script_function=sf_aux;
 						}
 					}
 
-					// call function
-					if((sf->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 
-						// we pass everything by copy (TODO implement ref)
-						if(n_args > 0 && sf->params_count > 0){
-							StackElement *stk_arg=stk_start_arg_call;
-							ScriptObjectVector *var_args=NULL;
-							ScriptObject *so_param=NULL;
-							bool end_args=false;
-							int effective_args=n_args < sf->params_count ? n_args:sf->params_count;
-							ScriptFunctionParam *sf_param=sf->params;
-							int i=0;
-							for(int i=0;i < n_args;++i){
-								so_param=NULL; // script object we passing
-								uint16_t sfa_properties=sf_param->properties;// ((ScriptFunctionParam *)(*function_param))->properties;
-								if((sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF)){ // create or pass the var ref object...
-
-									StackElement *check_ref=stk_arg;
-									if(stk_arg->properties & STK_PROPERTY_PTR_STK){
-										check_ref=(StackElement *)check_ref->value;
-									}
-
-									// because arg by ref is always loaded directly we have the object stk...
-									if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false) { // create new
-
-										if((stk_arg->properties & STK_PROPERTY_PTR_STK) != STK_PROPERTY_PTR_STK){
-											VM_STOP_EXECUTE("Calling function \"%s\", parameter \"%i\": Passing argument by reference has to be variable (not attribute or property))",sf->symbol.name.c_str(),i+1);
-										}
-
-										ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg,data->vm_idx_call);
-										if(!vm_create_shared_pointer(vm,sc)){
-											goto lbl_exit_function;
-										}
-										so_param=sc;
-										stk_arg->value=(intptr_t)sc;
-										stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
-									}else{ // is a var ref already, keep its reference ...
-										so_param=(ScriptObject *)stk_arg->value;
-									}
-
-								}else{
-									if(stk_arg->properties & STK_PROPERTY_PTR_STK){ // get its value
-										*stk_arg=*(StackElement *)stk_arg->value;
-									}
-
-									if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==true) { // not passing by ref it gets its value
-										*stk_arg=*((ScriptObjectVarRef *)stk_arg->value)->getStackElementPtr();
-									}
-
-									bool is_stk_this = IS_STK_THIS(stk_arg);
-
-									if((stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT)  && (is_stk_this==false)){
-										so_param=(ScriptObject *)stk_arg->value;
-										ScriptFunction *sf_getter=NULL;
-										if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
-											//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
-											ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
-											if(!vm_create_shared_pointer(vm,sc)){
-												goto lbl_exit_function;
-											}
-											sc->set(stk_arg->toString());
-											so_param=sc;
-											stk_arg->value=(zs_int)sc;
-											stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
-										}
-									}
-								}
-
-								if(var_args!=NULL){
-									var_args->push(stk_arg); // we do not share pointer here due is already added in a vector
-								}else{
-									if(sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS){ // enter var args
-										var_args=ZS_NEW_OBJECT_VECTOR(data->zs);
-										if(!vm_create_shared_pointer(vm,var_args)){
-											goto lbl_exit_function;
-										}
-
-										if(!vm_share_pointer(vm,var_args)){ // we share pointer +1 to not remove on pop in calling return
-											goto lbl_exit_function;
-										}
-
-										// push first arg
-										var_args->push(stk_arg);
-										// replace for vector type...
-										stk_arg->value=(zs_int)var_args;
-										stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
-									}else{ // not push in var arg
-
-										if(so_param != NULL && (so_param!=this_object)){ // share n+1 to function if not this
-											if(!vm_share_pointer(vm,so_param)){ // we share pointer +1 to not remove on pop in calling return
-												goto lbl_exit_function;
-											}
-										}
-
-										sf_param++;
-										if(i+1 >= (int)effective_args){
-											break;
-										}
-									}
-								}
-								stk_arg++;
-							}
-						}
-
-						// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
-						// will be ignored always.
-
-						for(unsigned i = n_args; i < sf->params_count; ++i){
-							ScriptFunctionParam *param=sf->params+i;
-							//StackElement *stk_def_afun_start=data->stk_vm_current;
-							//param->default_var_value;
-							//int n_returned_args_afun=0;
-
-							switch(param->default_param_value.properties){
-							case STK_PROPERTY_NULL:
-							case STK_PROPERTY_ZS_INT:
-							case STK_PROPERTY_BOOL:
-							case STK_PROPERTY_ZS_FLOAT:
-								*data->stk_vm_current++=param->default_param_value;
-								break;
-							case STK_PROPERTY_FUNCTION: // we call function in the middle of the function
-								VM_INNER_CALL_ONLY_RETURN(NULL,param->default_param_value.value,"default",true)
-								data->stk_vm_current++;
-								break;
-							default:
-								VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\"",param->default_param_value.typeOf());
-								break;
-
-							}
-							n_args++;
-						}
-
-						vm_call_function_script(
-							vm
-							,calling_object
-							,sf
-							,stk_start_arg_call
-							,n_args
-						);
-						n_local_registered_symbols=sf->symbol_registered_variables->count;
-					}
-					else{ // C function
-						if(is_constructor) {// && (sf->symbol.properties & SYMBOL_PROPERTY_MEMBER_FUNCTION))
-							calling_object= (ScriptObjectObject *)(stk_start_arg_call-2)->value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
-						}
-
-						vm_call_function_native(
-							vm
-							,calling_object
-							,sf
-							,stk_start_arg_call
-							,n_args
-							,calling_function
-							,instruction
-						);
-
-						// restore stk_start_arg_call due in C args are not considered as local symbols (only for scripts)
-						n_local_registered_symbols=n_args;
+					if(sf_call_is_constructor) {// && (sf->symbol.properties & SYMBOL_PROPERTY_MEMBER_FUNCTION))
+						sf_call_calling_object= (ScriptObjectObject *)(sf_call_stk_start_arg_call-2)->value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
 					}
 
-					if(data->vm_error == true){
-						data->vm_error_callstack_str+=zs_strutils::format(
-							"\nat calling function %s (file:%s line:%i)" // TODO: get full symbol ?
-							,sf->symbol.name.c_str()
-							,SFI_GET_FILE(calling_function,instruction)
-							,SFI_GET_LINE(calling_function,instruction)
-						);
-						goto lbl_exit_function;
+					vm_call_function_native(
+						vm
+						,sf_call_calling_object
+						,sf_call_script_function
+						,sf_call_stk_start_arg_call
+						,sf_call_n_args
+						,calling_function
+						,instruction
+					);
+
+					// restore stk_start_arg_call due in C args are not considered as local symbols (only for scripts)
+					sf_call_n_local_registered_symbols=sf_call_n_args;
+				}
+
+				if(data->vm_error == true){
+					data->vm_error_callstack_str+=zs_strutils::format(
+						"\nat calling function %s (file:%s line:%i)" // TODO: get full symbol ?
+						,sf_call_script_function->symbol.name.c_str()
+						,SFI_GET_FILE(calling_function,instruction)
+						,SFI_GET_LINE(calling_function,instruction)
+					);
+					goto lbl_exit_function;
+				}
+
+				// calcule returned stack elements
+				sf_call_stk_return=(sf_call_stk_start_arg_call+sf_call_n_local_registered_symbols); // +1 points to starting return...
+				sf_call_n_returned_arguments_from_function=data->stk_vm_current-sf_call_stk_return;
+
+				// setup all returned variables from function
+				CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function,false)
+
+				// reset vm current before function pointer is
+				data->stk_vm_current=sf_call_stk_start_arg_call-(instruction->byte_code==BYTE_CODE_IMMEDIATE_CALL?0:1);
+
+				if(instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK) {
+					StackElement tmp;
+					// return all elements in reverse order in order to get right assignment ...
+					// reverse returned items
+					for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
+						tmp=sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1];
+						sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
+						sf_call_stk_return[i]=tmp;
 					}
 
-					// calcule returned stack elements
-					StackElement *stk_return=(stk_start_arg_call+n_local_registered_symbols); // +1 points to starting return...
-					int n_returned_arguments_from_function=data->stk_vm_current-stk_return;
+					// copy to vm stack
+					data->stk_vm_current=sf_call_stk_start_arg_call-(instruction->byte_code==BYTE_CODE_IMMEDIATE_CALL?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
-					// setup all returned variables from function
-					CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return,n_returned_arguments_from_function,false)
-
-					// reset vm current before function pointer is
-					data->stk_vm_current=stk_start_arg_call-1;
-
-					if(instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK) {
-						StackElement tmp;
-						// return all elements in reverse order in order to get right assignment ...
-						// reverse returned items
-						for(int i=0; i<(n_returned_arguments_from_function>>1); i++){
-							tmp=stk_return[n_returned_arguments_from_function-i-1];
-							stk_return[n_returned_arguments_from_function-i-1]=stk_return[i];
-							stk_return[i]=tmp;
-						}
-
-						// copy to vm stack
-						data->stk_vm_current=stk_start_arg_call-1;//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
-
-						for(int i=0;i<n_returned_arguments_from_function;i++){
-							*data->stk_vm_current++= *stk_return++; // only return first argument
-						}
-
-					}else if(instruction->byte_code!=BYTE_CODE_CALL_CONSTRUCTOR){ // return only first element
-						if(n_returned_arguments_from_function > 0){
-							*data->stk_vm_current++= stk_return[0]; // only return first argument
-						}
-						else{
-							PUSH_STK_NULL; // no return push null
-						}
+					for(int i=0;i<sf_call_n_returned_arguments_from_function;i++){
+						*data->stk_vm_current++= *sf_call_stk_return++; // only return first argument
 					}
-				 }
+
+				}else if(instruction->byte_code!=BYTE_CODE_CALL_CONSTRUCTOR){ // return only first element
+					if(sf_call_n_returned_arguments_from_function > 0){
+						*data->stk_vm_current++= sf_call_stk_return[0]; // only return first argument
+					}
+					else{
+						PUSH_STK_NULL; // no return push null
+					}
+				}
+
 				continue;
 			 case  BYTE_CODE_RET:
 				for(StackElement *stk_it=data->stk_vm_current-1;stk_it>=stk_start;stk_it--){ // can return something. value is +1 from stack
@@ -1911,7 +1937,7 @@ load_element_object:
 					}
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:
-				PUSH_VM_SCOPE(instruction->value_op2,calling_function,_stk_local_var,instruction->value_op1);
+				PUSH_VM_SCOPE(instruction->value_op2,_stk_local_var);
 				continue;
 
 			 case BYTE_CODE_POP_SCOPE:

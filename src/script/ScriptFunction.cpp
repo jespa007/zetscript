@@ -263,6 +263,16 @@ namespace zetscript{
 					,instruction->value_op1
 				);
 				break;
+			case BYTE_CODE_FIND_IMMEDIATE_CALL:
+			case BYTE_CODE_IMMEDIATE_CALL:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\targ:%i ret:%s\n"
+					,idx_instruction
+					,byte_code_to_str(instruction->byte_code)
+					,symbol_value.c_str()
+					,instruction->value_op1
+					,instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK?"all":"1"
+				);
+				break;
 			case BYTE_CODE_CALL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\targ:%i ret:%s\n"
 					,idx_instruction
@@ -417,7 +427,7 @@ namespace zetscript{
 			,const char *file
 			, short line
 			, const std::string & function_name
-			, std::vector<ScriptFunctionParam> params
+			, std::vector<ScriptFunctionParam> _params
 			, int idx_return_type
 			,zs_int ref_ptr
 			, unsigned short properties
@@ -453,8 +463,8 @@ namespace zetscript{
 				symbol_found->n_params=NO_PARAMS_SYMBOL_ONLY;
 				ScriptFunction *sf = (ScriptFunction *)symbol_found->ref_ptr;
 				sf->clear();
-				sf->updateParams(params);
-				symbol_found->n_params=(char)params.size();
+				sf->updateParams(_params);
+				symbol_found->n_params=(char)_params.size();
 				return symbol_found;
 			}
 
@@ -483,7 +493,7 @@ namespace zetscript{
 				,idx_class 				// idx class which belongs to...
 				,symbol_registered_functions->count // idx symbol ...
 				,function_name
-				,params
+				,_params
 				,idx_return_type
 				,ref_ptr
 				,properties
@@ -507,6 +517,7 @@ namespace zetscript{
 
 		delete [] params;
 		params_count=0;
+		params=NULL;
 
 	}
 
@@ -544,7 +555,8 @@ namespace zetscript{
 	ScriptFunction::~ScriptFunction(){
 		clear();
 
-		delete params;
+		delete [] params;
+		params_count=0;
 		params=NULL;
 
 		delete symbol_registered_functions;

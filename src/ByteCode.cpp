@@ -53,6 +53,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_CONSTRUCTOR:		return "LOAD_CTOR"; // load type var
 			case BYTE_CODE_LOAD_MEMBER_VAR:			return "LOAD_MEMBER"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      		return "LOAD_???"; // load to find global
+			case BYTE_CODE_FIND_IMMEDIATE_CALL:		return "ICALL???"; // load to find local/global function
 			case BYTE_CODE_LOAD_ELEMENT_THIS:		return "LOAD_E@THIS"; // load element object
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:		return "LOAD_E@VEC"; // load element vector
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:		return "LOAD_E@OBJ"; // load element object
@@ -61,7 +62,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_STACK_ELEMENT:		return "LOAD_STK"; // load stack element
 
 			case BYTE_CODE_LOAD_STRING:				return "LOAD_STR"; // load string
-			case BYTE_CODE_LOAD_ZS_FLOAT:				return "LOAD_FLT"; // load float
+			case BYTE_CODE_LOAD_ZS_FLOAT:			return "LOAD_FLT"; // load float
 			case BYTE_CODE_LOAD_BOOL:				return "LOAD_BOOL"; // load bool
 			case BYTE_CODE_LOAD_ZS_INT:				return "LOAD_INT"; // load zs_int
 			case BYTE_CODE_LOAD_CLASS:				return "LOAD_CLASS"; // load to find
@@ -70,6 +71,7 @@ namespace zetscript{
 			case BYTE_CODE_JT:          			return "JT"; // goto if true ... goes end to conditional.
 			case BYTE_CODE_JE_CASE:					return "JE_CASE"; // je case equal ... goes end to conditional.
 			case BYTE_CODE_CALL: 					return "CALL"; // calling function after all of arguments are processed...
+			case BYTE_CODE_IMMEDIATE_CALL:			return "ICALL"; // immediate call
 			case BYTE_CODE_CALL_CONSTRUCTOR: 		return "CALL_CTOR"; // calling function after all of arguments are processed...
 			case BYTE_CODE_NEW_VECTOR: 				return "NEW_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT: 	return "VPUSH"; // Value push for stdvector

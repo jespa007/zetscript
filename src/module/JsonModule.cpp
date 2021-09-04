@@ -13,7 +13,7 @@ namespace zetscript{
 
 
 
-	void JsonModuleWrap_deserialize(ScriptObjectString *str_json){
+	void JsonModule_deserialize(ScriptObjectString *str_json){
 		// deserialize ...
 		ZetScript *zs=str_json->getZetScript();
 		std::string str=zs_strutils::unescape(str_json->toString());
@@ -38,15 +38,15 @@ namespace zetscript{
 		vm_push_stack_element(vm,return_stack_element);
 	}
 
-	ScriptObjectString * JsonModuleWrap_serialize(ZetScript *zs,StackElement  *stk,bool *minimized){
+	ScriptObjectString * JsonModule_serialize(ZetScript *zs,StackElement  *stk,bool *minimized){
 		// iterate for all elements in the obj
 		return ScriptObjectString::newScriptObjectString(zs,json::serialize(zs,stk,*minimized));
 	}
 
-	ScriptObjectString * JsonModuleWrap_serialize(ZetScript *zs,StackElement *stk){
+	ScriptObjectString * JsonModule_serialize(ZetScript *zs,StackElement *stk){
 		// iterate for all elements in the obj
 		bool minimize=false;
-		return JsonModuleWrap_serialize(zs,stk,&minimize);
+		return JsonModule_serialize(zs,stk,&minimize);
 
 	}
 }
