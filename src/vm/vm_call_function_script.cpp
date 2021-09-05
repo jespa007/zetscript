@@ -418,19 +418,10 @@ namespace zetscript{
 		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
 			if(symbols_count > 0){
 				PUSH_VM_SCOPE(calling_function->symbol.scope,_stk_local_var);
+				// I have to clear variables on each function ?
+				//memset(ptr_aux,0,sizeof(StackElement)*symbols_count);
 			}
 		}
-
-			/*for(unsigned i = n_args; i < (symbols_count); ++i,++ptr_aux){ // from n_args, setup local vars
-				symbol_aux=(Symbol *)registered_symbols->items[i];
-				if(symbol_aux->properties & SYMBOL_PROPERTY_FUNCTION){
-					ptr_aux->value=symbol_aux->ref_ptr;
-					ptr_aux->properties=STK_PROPERTY_FUNCTION;
-				}else{
-					STK_SET_NULL(ptr_aux);		// null as default
-				}
-			}
-		}*/
 
 		//-----------------------------------------------------------------------------------------------------------------------
 		//
@@ -445,76 +436,6 @@ namespace zetscript{
 				VM_STOP_EXECUTE("byte code \"%s\" not implemented",byte_code_to_str(instruction->byte_code));
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
-			/*	VM_STOP_EXECUTE("unexpected find code \"%s\"",byte_code_to_str(instruction->byte_code));
-				str_symbol=SFI_GET_SYMBOL_NAME(calling_function,instruction);
-
-				if((str_aux=strstr(str_symbol,"::")) != NULL){ // static access
-
-					std::string static_error;
-					char copy_aux[512]={0};
-
-					// get class
-					strncpy(copy_aux,str_symbol,str_aux-str_symbol);
-
-					test_class=data->zs->getScriptClassFactory()->getScriptClass(copy_aux);
-
-					if(test_class==NULL){
-						VM_STOP_EXECUTE("Cannot link static access '%s' class '%s' not exist"
-							,str_symbol
-							,copy_aux
-						);
-					}
-
-					// advance ::
-					str_aux+=2;
-
-					//get member
-					strcpy(copy_aux,str_aux);
-
-					symbol_aux=test_class->getSymbol(copy_aux); // ... and member as well we can define the instruction here
-
-					if(symbol_aux == NULL){
-						VM_STOP_EXECUTE("Cannot link static access '%s' class '%s' not exist"
-							,str_symbol
-							,copy_aux
-						);
-					}
-
-					if(!eval_set_instruction_static_symbol(instruction,symbol_aux,static_error)){
-
-						VM_STOP_EXECUTE("Symbol \"%s\" %s"
-							,str_symbol
-							,static_error.c_str()
-						);
-					}
-
-				}else{
-					symbol_aux = MAIN_SCOPE(data)->getSymbol(str_symbol, NO_PARAMS_SYMBOL_ONLY, SCOPE_DIRECTION_DOWN);
-				}
-
-				if(symbol_aux != NULL){
-					if(symbol_aux->n_params==NO_PARAMS_SYMBOL_ONLY){ // variable
-						instruction->value_op2=symbol_aux->idx_position; // save idx pos
-						if(instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
-							instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
-							PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
-						}else{
-							instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
-							*data->stk_vm_current++=*(data->vm_stack+instruction->value_op2);
-						}
-
-					}else{ // function
-						VM_STOP_EXECUTE("Symbol \"%s\" to find expected as variable but it was function",str_symbol);
-						// assign script function ...
-						/*instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
-						instruction->value_op2=symbol_aux->ref_ptr;
-						PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
-					}
-				}else{ // load null as default!
-					VM_STOP_EXECUTE("Symbol \"%s\" is not defined",str_symbol);
-				}
-
-				continue;*/
 			// store
 			case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
 				PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
@@ -522,9 +443,6 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_LOCAL: // load variable ...
 				PUSH_STK_PTR(_stk_local_var+instruction->value_op2);
 				continue;
-/*			case BYTE_CODE_PUSH_STK_REF:
-				PUSH_STK_PTR(_stk_local_var+instruction->value_op2);
-				continue;*/
 			case BYTE_CODE_PUSH_STK_THIS: // load variable ...
 				PUSH_STK_PTR(this_object->getThisProperty());
 				continue;
@@ -1512,11 +1430,6 @@ load_element_object:
 					instruction_it=instruction+instruction->value_op2;
 				}
 				continue;
-
-			 case BYTE_CODE_FIND_IMMEDIATE_CALL:
-				 // TODO: May the function is null, so it has to discover for first time
-
-
 			 case  BYTE_CODE_IMMEDIATE_CALL: // calling function after all of args are processed...
 
 				 sf_call_calling_object = NULL;
@@ -1573,15 +1486,15 @@ execute_function:
 				if((sf_call_script_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 
 					// we pass everything by copy (TODO implement ref)
-					if(n_args > 0 && sf_call_script_function->params_count > 0){
+					if(sf_call_n_args > 0 && sf_call_script_function->params_count > 0){
 						StackElement *stk_arg=sf_call_stk_start_arg_call;
 						ScriptObjectVector *var_args=NULL;
 						ScriptObject *so_param=NULL;
 						bool end_args=false;
-						int effective_args=n_args < sf_call_script_function->params_count ? n_args:sf_call_script_function->params_count;
+						int effective_args=sf_call_n_args < sf_call_script_function->params_count ? sf_call_n_args:sf_call_script_function->params_count;
 						ScriptFunctionParam *sf_param=sf_call_script_function->params;
 						int i=0;
-						for(int i=0;i < n_args;++i){
+						for(int i=0;i < sf_call_n_args;++i){
 							so_param=NULL; // script object we passing
 							uint16_t sfa_properties=sf_param->properties;// ((ScriptFunctionParam *)(*function_param))->properties;
 							if((sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF)){ // create or pass the var ref object...
@@ -1676,7 +1589,7 @@ execute_function:
 					// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 					// will be ignored always.
 
-					for(unsigned i = n_args; i < sf_call_script_function->params_count; ++i){
+					for(unsigned i = sf_call_n_args; i < sf_call_script_function->params_count; ++i){
 						ScriptFunctionParam *param=sf_call_script_function->params+i;
 						//StackElement *stk_def_afun_start=data->stk_vm_current;
 						//param->default_var_value;
@@ -1698,7 +1611,7 @@ execute_function:
 							break;
 
 						}
-						n_args++;
+						sf_call_n_args++;
 					}
 
 					vm_call_function_script(
@@ -1739,7 +1652,7 @@ execute_function:
 									,sf_call_is_constructor
 									,sf_call_script_function->symbol.name // symbol to find
 									,sf_call_stk_start_arg_call
-									,n_args))==NULL){
+									,sf_call_n_args))==NULL){
 								goto lbl_exit_function;
 							}
 							sf_call_script_function=sf_aux;

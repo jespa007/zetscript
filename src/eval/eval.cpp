@@ -652,6 +652,8 @@ namespace zetscript{
 				eval_data->unresolved_symbols.push_back(UnresolvedInstructionInfo(&sf->instructions[i],sf));
 				if(instruction->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
 					sum_stk_load_stk++;
+				}else{
+					sum_stk_load_stk=0; // call function reset stk
 				}
 				break;
 			}

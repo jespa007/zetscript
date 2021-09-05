@@ -420,22 +420,6 @@ namespace zetscript{
 	//---------------------------------------------------
 	// FUNCTIONS
 
-	Symbol *	ScriptClass::getSuperFunctionSymbol(Symbol *symbol){
-
-		if((symbol->properties & SYMBOL_PROPERTY_FUNCTION) == 0){
-			THROW_RUNTIME_ERROR("internal error: symbol is not a function");
-		}
-
-		for(int i = symbol->idx_position-1; i >=0; i--){
-			Symbol *symbol_member = (Symbol *)symbol_member_functions->items[i];
-			if((symbol->name == symbol_member->name) && (symbol_member->properties & SYMBOL_PROPERTY_FUNCTION)){
-				return symbol_member;
-			}
-		}
-
-		return NULL;
-	}
-
 	Symbol				* 	ScriptClass::registerMemberFunction(
 			 const std::string & function_name
 			, std::vector<ScriptFunctionParam> args

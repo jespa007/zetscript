@@ -265,7 +265,7 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_FIND_IMMEDIATE_CALL:
 			case BYTE_CODE_IMMEDIATE_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\targ:%i ret:%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\targ:%i ret:%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()

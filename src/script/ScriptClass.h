@@ -208,8 +208,6 @@ namespace zetscript{
 
 		//---------------------------------------------------
 		// FUNCTIONS
-
-		Symbol *	getSuperFunctionSymbol(Symbol *symbol);
 		unsigned 	getNumNativeFunctions(const std::string & function_name);
 
 		Symbol				* 	registerMemberFunction(
