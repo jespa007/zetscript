@@ -37,8 +37,8 @@ namespace zetscript{
 		size_t			instructions_len;
 
 		// local symbols for class or function...
-		zs_vector   		*symbol_registered_variables; // registered variable symbols
-		zs_vector   		*symbol_registered_functions; // registered variable symbols
+		//zs_vector   		*symbol_registered_variables; // registered variable symbols
+		//zs_vector   		*symbol_registered_functions; // registered variable symbols
 
 		ScriptFunction(
 				ZetScript *_zs

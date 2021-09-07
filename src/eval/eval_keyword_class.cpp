@@ -248,22 +248,9 @@ namespace zetscript{
 				return NULL;
 			}
 
-			/*for(unsigned j=0; j<ei_load_delete_identifier.size();j++){
-				ei_load_delete_identifier_st.push_back(*ei_load_delete_identifier[j]);
-				delete ei_load_delete_identifier[j];
-			}*/
-
-
 			if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'delete': unexpected operator '%s' after delete identifier ",eval_data_operators[tst_op_aux].str);
 			}
-
-			/*aux_p=get_name_identifier_token(
-					eval_data
-					,aux_p
-					,line
-					,symbol_value
-			);*/
 
 			// get last instruction...
 			eval_instruction = eval_data->current_function->instructions[eval_data->current_function->instructions.size()-1];
@@ -273,33 +260,6 @@ namespace zetscript{
 			}else if(byte_code_is_load_type(byte_code)){
 				eval_instruction->vm_instruction.byte_code=byte_code_load_to_push_stk(byte_code);
 			}
-
-			/*eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(BYTE_CODE_FIND_VARIABLE));
-
-			if((symbol_found = eval_find_local_symbol(eval_data,scope_info,symbol_value)) != NULL){
-
-				eval_instruction->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_LOCAL;
-				eval_instruction->vm_instruction.value_op2=symbol_found->idx_position;
-				if((symbol_found->properties & (SYMBOL_PROPERTY_ARG_BY_REF)) == SYMBOL_PROPERTY_ARG_BY_REF){
-					eval_instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_REF;
-				}
-			}
-
-			if(eval_instruction->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
-				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
-			}*/
-
-			/*if(symbol_found == NULL){
-				eval_instruction->symbol.name=symbol_value;
-				eval_instruction->symbol.scope=scope_info;
-			}
-
-
-			eval_instruction->instruction_source_info=InstructionSourceInfo(
-				 eval_data->current_parsing_file
-				 ,line
-				 ,get_mapped_name(eval_data,symbol_value)
-			);*/
 
 			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
 			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RESET_STACK));

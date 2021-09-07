@@ -26,9 +26,9 @@ namespace zetscript{
 
 		Symbol 			symbol_class;		// info symbol class
 
-		zs_vector *symbol_member_variables; // symbol_member_variable:  It can be attribute members or script member vars
-		zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
-		zs_vector *symbol_member_variables_allocated;
+		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be attribute members or script member vars
+		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
+		//zs_vector *symbol_member_variables_allocated;
 		ScriptFunction	*sf_field_initializer;
 		MemberAttribute			*setter_getter;
 		int						idx_starting_this_member_functions;

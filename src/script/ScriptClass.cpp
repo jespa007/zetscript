@@ -30,9 +30,9 @@ namespace zetscript{
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
 		symbol_class=*_symbol_class;
-		symbol_member_variables=new zs_vector();
-		symbol_member_functions=new zs_vector();
-		symbol_member_variables_allocated=new zs_vector();
+		//symbol_member_variables=new zs_vector();
+		//symbol_member_functions=new zs_vector();
+		//symbol_member_variables_allocated=new zs_vector();
 
 		idx_base_classes=new zs_vector;
 
@@ -95,7 +95,6 @@ namespace zetscript{
 		);
 	}
 
-
 	Symbol				* 	ScriptClass::registerInternalMemberVariable(
 		const std::string & symbol_name
 		,unsigned short symbol_properties
@@ -154,7 +153,6 @@ namespace zetscript{
 				,symbol_attrib->line
 			);
 		}
-
 
 		symbol_attrib = new Symbol();
 		symbol_attrib->name=attrib_name;

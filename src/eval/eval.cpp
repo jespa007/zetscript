@@ -233,19 +233,6 @@ namespace zetscript{
 		return 1;
 	}
 
-/*	void eval_parse_and_compile_anonymous(ZetScript *zs,const char * str, const char *  _filename, int _line){
-		ScriptFunction *sf_main=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
-		Scope *sc_main=zs->getScopeFactory()->getMainScope();
-		// 1. create a function from main
-		eval_parse_and_compile(zs,str,_filename,_line,NULL,sc_main);
-	}
-
-	void eval_parse_and_compile_main(ZetScript *zs,const char * str, const char *  _filename, int _line){
-		ScriptFunction *sf_main=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
-		Scope *sc_main=zs->getScopeFactory()->getMainScope();
-		eval_parse_and_compile(zs,str,_filename,_line,sf_main,sc_main);
-	}*/
-
 	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_scope_function){
 		Scope *new_scope = NEW_SCOPE(eval_data,eval_data->current_function->script_function->idx_script_function,scope_parent);
 		scope_parent->registered_scopes->push_back((zs_int)new_scope);
@@ -268,8 +255,6 @@ namespace zetscript{
 						,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope)
 				);
 
-				//inc_jmp_codes(eval_data,idx_instruction_start,(int)(eval_data->current_function->instructions.size()),1);
-
 				// and finally insert pop scope
 				eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_POP_SCOPE,0));
 			}
@@ -289,8 +274,6 @@ namespace zetscript{
 		// check for keyword ...
 		if(*aux_p == '{'){
 			bool is_function = sf!=NULL && args != NULL;
-			//int idx_instruction_start_block=(int)(eval_data->current_function->instructions.size());
-
 			aux_p++;
 
 			new_scope_info = eval_new_scope(eval_data,scope_info,is_function); // special case... ast is created later ...

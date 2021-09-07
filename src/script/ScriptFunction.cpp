@@ -25,8 +25,8 @@ namespace zetscript{
 		symbol=*_symbol;
 
 		// local symbols for class or function...
-		symbol_registered_variables=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
-		symbol_registered_functions=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
+		//symbol_registered_variables=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
+		//symbol_registered_functions=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
 		//registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
 		params = NULL;//new zs_vector();
 		params_count = 0;
@@ -383,7 +383,7 @@ namespace zetscript{
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
 
 		Symbol * symbol=NULL;
-		short idx_position=(short)symbol_registered_variables->count;
+		//short idx_position=(short)symbol_registered_variables->count;
 		StackElement *se=NULL;
 
 		if((symbol=scope_block->registerSymbol(file,line, symbol_name /*,var_node*/))==NULL){
@@ -394,11 +394,11 @@ namespace zetscript{
 		//scope_symbol->symbol=scope_symbol;
 		symbol->str_native_type = str_native_type;
 		symbol->properties = properties;
-		symbol->idx_position = idx_position;
+		//symbol->idx_position = idx_position;
 
-		symbol_registered_variables->push_back((zs_int)symbol);
+		//symbol_registered_variables->push_back((zs_int)symbol);
 
-		if(scope_block == MAIN_SCOPE(this)) { // is global var ...
+		/*if(scope_block == MAIN_SCOPE(this)) { // is global var ...
 			StackElement stk_global_var;
 			if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0){ // native variable
 				stk_global_var=convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr);
@@ -417,7 +417,7 @@ namespace zetscript{
 				symbol->ref_ptr=(zs_int)stk_global_var_ptr;
 
 			}
-		}
+		}*/
 
 		return symbol;
 	}
@@ -482,7 +482,7 @@ namespace zetscript{
 		}
 
 		// register new slot
-		short idx_position=(short)symbol_registered_functions->count;
+		//short idx_position=(short)symbol_registered_functions->count;
 
 		symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
