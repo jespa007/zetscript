@@ -61,10 +61,11 @@ namespace zetscript{
 		// init builtin
 		if(idx_script_class >= IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && idx_script_class<IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
 			ScriptClass *script_class=getScriptClass();
+			zs_vector *symbol_vars=script_class->symbol_class.scope->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
-			for ( unsigned i = 0; i < script_class->symbol_member_variables->count; i++){
-				Symbol * symbol = (Symbol *)script_class->symbol_member_variables->items[i];
+			for ( unsigned i = 0; i < symbol_vars->count; i++){
+				Symbol * symbol = (Symbol *)symbol_vars->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_ATTRIBUTE});
 				}/*else{

@@ -25,7 +25,7 @@ namespace zetscript{
 		symbol=*_symbol;
 
 		// local symbols for class or function...
-		//symbol_registered_variables=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
+		symbol_variables=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
 		//symbol_registered_functions=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
 		//registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
 		params = NULL;//new zs_vector();
@@ -60,16 +60,16 @@ namespace zetscript{
 
 
 #define GET_ILOAD_R_STR(properties,value) \
-	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->symbol_registered_variables->items[value])->name.c_str()\
+	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->symbol_variables->items[value])->name.c_str()\
 	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_member_variables->items[value])->name.c_str()\
-	:((Symbol *)MAIN_FUNCTION(sfo)->symbol_registered_variables->items[value])->name.c_str()\
+	:((Symbol *)MAIN_FUNCTION(sfo)->symbol_variables->items[value])->name.c_str()\
 
 
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc){
 
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
-		zs_vector * m_vf = sfo->symbol_registered_variables;
+		zs_vector * m_vf = sfo->symbol_variables;
 
 		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
@@ -355,7 +355,7 @@ namespace zetscript{
 			, uint16_t properties
 	){
 		Symbol * symbol=NULL;
-		short idx_position=(short)symbol_registered_variables->count;
+		short idx_position=(short)symbol_variables->count;
 		StackElement *se=NULL;
 
 
@@ -366,7 +366,7 @@ namespace zetscript{
 		symbol->properties=properties;
 		symbol->idx_position = idx_position;
 
-		symbol_registered_variables->push_back((zs_int)symbol);
+		symbol_variables->push_back((zs_int)symbol);
 
 		return symbol;
 	}
@@ -383,7 +383,7 @@ namespace zetscript{
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
 
 		Symbol * symbol=NULL;
-		//short idx_position=(short)symbol_registered_variables->count;
+		//short idx_position=(short)symbol_variables->count;
 		StackElement *se=NULL;
 
 		if((symbol=scope_block->registerSymbol(file,line, symbol_name /*,var_node*/))==NULL){
@@ -396,7 +396,7 @@ namespace zetscript{
 		symbol->properties = properties;
 		//symbol->idx_position = idx_position;
 
-		//symbol_registered_variables->push_back((zs_int)symbol);
+		//symbol_variables->push_back((zs_int)symbol);
 
 		/*if(scope_block == MAIN_SCOPE(this)) { // is global var ...
 			StackElement stk_global_var;
@@ -538,8 +538,8 @@ namespace zetscript{
 
 	void ScriptFunction::clear(){
 		// delete symbols refs from scope...
-		symbol_registered_functions->clear();
-		symbol_registered_variables->clear();
+		//symbol_registered_functions->clear();
+		symbol_variables->clear();
 
 		// delete arg info variables...
 		clearParams();
@@ -559,11 +559,11 @@ namespace zetscript{
 		params_count=0;
 		params=NULL;
 
-		delete symbol_registered_functions;
-		symbol_registered_functions=NULL;
+		//delete symbol_registered_functions;
+		//symbol_registered_functions=NULL;
 
-		delete symbol_registered_variables;
-		symbol_registered_variables=NULL;
+		delete symbol_variables;
+		symbol_variables=NULL;
 	}
 
 }

@@ -65,13 +65,12 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 // defer all local vars
 #define POP_VM_SCOPE()\
 {\
-	VM_Scope *vm_check_scope=(data->vm_current_scope-1);\
-	StackElement         * stk_local_vars	=vm_check_scope->stk_local_vars;\
-	zs_vector *scope_symbols=vm_check_scope->scope->symbol_registered_variables;\
-	zs_int *symbols					=scope_symbols->items;\
-	StackElement *stk_local_var;\
-	for(int i = scope_symbols->count-1; i >=0 ; --i,++symbols){\
-		stk_local_var =(stk_local_vars+((Symbol *)(*symbols))->idx_position);\
+	Scope *scope=*data->vm_current_scope_function->scope_current;\
+	StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
+	zs_vector *scope_symbols=scope->symbol_variables;\
+	StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\
+	int count=scope_symbols->count;\
+	while(count--){\
 		if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
 			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
 			if(so != NULL && so->shared_pointer!=NULL){\
@@ -81,8 +80,9 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 			}\
 		}\
 		STK_SET_NULL(stk_local_var);\
+		stk_local_var++;\
 	}\
-	--data->vm_current_scope;\
+	--data->vm_current_scope_function->scope_current;\
 }
 
 #define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return, n_return,with_share)\
@@ -160,14 +160,14 @@ namespace zetscript{
 	}InfoLifetimeObject;
 
 
-	struct VM_Scope{
-		Scope				*scope;
+	struct VM_ScopeFunction{
+		Scope				*scope[MAX_INNER_SCOPES_FUNCTION];
+		Scope				**scope_current;
 		StackElement 		*stk_local_vars;
 	};
 
 
 	struct VirtualMachineData{
-		//char				str_aux[8192];
 		//===================================================================================================
 		//
 		// POINTER MANAGER ...
@@ -181,9 +181,8 @@ namespace zetscript{
 		 bool				vm_error;
 		 std::string 		vm_error_str;
 		 std::string 		vm_error_callstack_str;
-		 VM_Scope			*vm_current_scope;
-		 VM_Scope			vm_scope[VM_SCOPE_MAX];
-		 VM_Scope			*vm_scope_max;
+		 VM_ScopeFunction	*vm_current_scope_function;
+		 VM_ScopeFunction	vm_scope_function[MAX_FUNCTION_CALL];
 
 		 StackElement     					vm_stack[VM_STACK_LOCAL_VAR_MAX];
 		 std::map<void *,InfoLifetimeObject *>	lifetime_object;
@@ -210,11 +209,9 @@ namespace zetscript{
 
 			vm_idx_call=0;
 			stk_vm_current=NULL;
-			vm_current_scope = vm_scope;
+			vm_current_scope_function = vm_scope_function;
 
 			idx_last_statment=0;
-
-			vm_scope_max = &vm_scope[VM_SCOPE_MAX-1];
 
 			main_function_object = NULL;
 			main_class_object=NULL;
@@ -437,12 +434,12 @@ namespace zetscript{
 
 		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
 
-		void *stk_elements_builtin_ptr= data->main_function_object->symbol_registered_functions->items;// vector of symbols
-		int stk_elements_builtin_len=  data->main_function_object->symbol_registered_functions->count;// vector of symbols
+		void *stk_elements_builtin_ptr= data->main_function_object->symbol.scope->symbol_functions->items;// vector of symbols
+		int stk_elements_builtin_len=  data->main_function_object->symbol.scope->symbol_functions->count;// vector of symbols
 
 		if(class_obj != NULL){
-			stk_elements_builtin_ptr=class_obj->symbol_member_functions->items;
-			stk_elements_builtin_len=class_obj->symbol_member_functions->count;
+			stk_elements_builtin_ptr=class_obj->symbol_class.scope->symbol_functions->items;
+			stk_elements_builtin_len=class_obj->symbol_class.scope->symbol_functions->count;
 
 		}
 		//bool stk_element_are_vector_element_ptr=stk_elements_builtin_ptr!=data->vm_stack;
@@ -938,7 +935,7 @@ namespace zetscript{
 			);
 		}
 
-		stk_return=(stk_args+ptr_function_found->symbol_registered_variables->count );
+		stk_return=(stk_args+ptr_function_found->symbol.scope->symbol_variables->count );
 		n_returned_arguments_from_function=data->stk_vm_current-stk_return;
 
 

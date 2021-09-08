@@ -146,7 +146,7 @@ namespace zetscript{
 
 		idx_class=script_classes->count;
 		scope = scope_factory->newScope(ZS_IDX_UNDEFINED,NULL,true);
-		symbol=scope->registerSymbol(registered_file,registered_line,class_name, NO_PARAMS_SYMBOL_ONLY);
+		symbol=MAIN_SCOPE(this)->registerSymbolClass(registered_file,registered_line,class_name);
 
 		irc = new ScriptClass(zs,idx_class,symbol);
 		scope->setScriptClass(irc);
@@ -310,6 +310,8 @@ namespace zetscript{
 			//
 
 			ScriptClass *base_class = (ScriptClass *)script_classes->get(idx_base_class);
+			zs_vector *base_vars=base_class->symbol_class.scope->symbol_variables;
+			zs_vector *base_functions=base_class->symbol_class.scope->symbol_variables;
 
 			/*unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF;//| SYMBOL_PROPERTY_IS_DERIVATED;
 			if(std::is_polymorphic<B>::value==true){
@@ -324,9 +326,9 @@ namespace zetscript{
 
 			//derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC; // set as polymorphic and show error if you try to call a polymorphic function
 			// register all c vars symbols ...
-			for(unsigned i = 0; i < base_class->symbol_member_functions->count; i++){
+			for(unsigned i = 0; i < base_functions->count; i++){
 
-				Symbol *symbol_src = (Symbol *)base_class->symbol_member_functions->items[i];
+				Symbol *symbol_src = (Symbol *)base_functions->items[i];
 
 				bool is_metamethod_function = 	zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_SETTER)
 											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_GETTER)
@@ -360,8 +362,8 @@ namespace zetscript{
 			}
 
 
-			for(unsigned i = 0; i < base_class->symbol_member_variables->count; i++){
-				Symbol *symbol_src = (Symbol *)base_class->symbol_member_variables->items[i];
+			for(unsigned i = 0; i < base_vars->count; i++){
+				Symbol *symbol_src = (Symbol *)base_vars->items[i];
 
 				if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 

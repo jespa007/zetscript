@@ -20,7 +20,7 @@ namespace zetscript{
 			, short line
 			//--- Function data
 			, int idx_class
-			, short _idx_position
+			//, short _idx_position
 			, const std::string & function_name
 			, std::vector<ScriptFunctionParam> args
 			, int idx_return_type
@@ -30,7 +30,7 @@ namespace zetscript{
 
 		Symbol *symbol=NULL;
 
-		symbol=scope->addSymbol(
+		symbol=scope->registerSymbolFunction(
 				file
 				,line
 				,function_name
@@ -40,7 +40,7 @@ namespace zetscript{
 		short idx_script_function = script_functions->count;
 
 		// sets local function information...
-		symbol->idx_position = _idx_position; // idx local/member function
+		//symbol->idx_position = _idx_position; // idx local/member function
 		symbol->properties = properties | SYMBOL_PROPERTY_FUNCTION;
 
 		ScriptFunction *script_function = new ScriptFunction(

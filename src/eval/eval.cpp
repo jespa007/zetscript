@@ -83,7 +83,7 @@ namespace zetscript{
 		}
 
 		if(sf != MAIN_FUNCTION(eval_data)){ // is anonyomuse function
-			if(scope_info->symbol_registered_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
+			if(scope_info->symbol_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
 
 					/*eval_data->current_function->instructions.insert(
 							eval_data->current_function->instructions.begin()
@@ -248,7 +248,7 @@ namespace zetscript{
 	}
 
 	void eval_check_scope(EvalData *eval_data, Scope *scope){
-		if(scope->symbol_registered_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
+		if(scope->symbol_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
 			if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 				eval_data->current_function->instructions.insert(
 						eval_data->current_function->instructions.begin()+scope->tmp_idx_instruction_push_scope
@@ -576,7 +576,7 @@ namespace zetscript{
 						bool is_constructor = sf->symbol.name == sc_sf->symbol_class.name;
 
 						for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
-							Symbol *symbol_member = (Symbol *)sc_sf->symbol_member_functions->items[i];
+							Symbol *symbol_member = (Symbol *)sc_sf->symbol_class.scope->symbol_functions->items[i];
 							bool match_names=false;
 							if(is_constructor==true){
 								if(symbol_member->scope == NULL){ // is constant...

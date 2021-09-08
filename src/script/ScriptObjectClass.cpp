@@ -52,11 +52,12 @@ namespace zetscript{
 
 		idx_script_class=_idx_script_class;
 		ScriptClass *script_class=getScriptClass();
+		zs_vector *member_vars=script_class->symbol_class.scope->symbol_variables;
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
-		for ( unsigned i = 0; i < script_class->symbol_member_variables->count; i++){
+		for ( unsigned i = 0; i < member_vars->count; i++){
 
-			Symbol * symbol = (Symbol *)script_class->symbol_member_variables->items[i];
+			Symbol * symbol = (Symbol *)member_vars->items[i];
 			//bool is_script_function=symbol->properties & SYMBOL_PROPERTY_FUNCTION;
 			//bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
 
@@ -130,7 +131,7 @@ namespace zetscript{
 
 		ScriptClass *script_class=getScriptClass();
 		if(script_class->idx_function_member_constructor != ZS_IDX_UNDEFINED){
-			return (ScriptFunction *)script_class->symbol_member_functions->items[script_class->idx_function_member_constructor];
+			return (ScriptFunction *)script_class->symbol_class.scope->symbol_functions->items[script_class->idx_function_member_constructor];
 		}
 
 		return NULL;

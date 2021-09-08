@@ -904,8 +904,9 @@ namespace zetscript{
 				for(unsigned i=0; i < access_var.size()-1; i++){
 					std::string symbol_to_find=access_var[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
-						for(unsigned j = 0; j < main_function->symbol_registered_functions->count && calling_obj==NULL; j++){
-							Symbol * registered_symbol=(Symbol *)main_function->symbol_registered_functions->items[j];
+						zs_vector *list_functions=main_function->symbol.scope->symbol_functions;
+						for(unsigned j = 0; j < list_functions->count && calling_obj==NULL; j++){
+							Symbol * registered_symbol=(Symbol *)list_functions->items[j];
 							if(registered_symbol->name==symbol_to_find
 							&& registered_symbol->scope == MAIN_SCOPE(this)){
 								StackElement *stk = vm_get_stack_element_at(virtual_machine,j); // main_function->object_info.local_symbols.variable[j].
@@ -950,8 +951,9 @@ namespace zetscript{
 
 			}else{ // some function in main function
 				std::string symbol_to_find=access_var[0];
-				for(unsigned i = 0; i < main_function->symbol_registered_functions->count && fun_obj==NULL; i++){
-					Symbol *symbol=(Symbol *)main_function->symbol_registered_functions->items[i];
+				zs_vector *list_functions=main_function->symbol.scope->symbol_functions;
+				for(unsigned i = 0; i < list_functions->count && fun_obj==NULL; i++){
+					Symbol *symbol=(Symbol *)list_functions->items[i];
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
 					if(		aux_fun_obj->symbol.name  == symbol_to_find
 					  && aux_fun_obj->symbol.scope == MAIN_SCOPE(this)){

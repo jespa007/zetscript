@@ -1,7 +1,6 @@
 #pragma once
 
 #define VM_STACK_LOCAL_VAR_MAX				256
-#define VM_SCOPE_MAX						64
 #define MAX_FUNCTION_CALL 					128
 #define MAX_SHARES_VARIABLE 				256
 

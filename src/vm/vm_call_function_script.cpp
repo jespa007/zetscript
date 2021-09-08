@@ -261,11 +261,9 @@
 	}\
 }
 
-#define PUSH_VM_SCOPE(_scope, _ptr_local_var)\
-	if(data->vm_current_scope >=  data->vm_scope_max){THROW_RUNTIME_ERROR("reached max scope");}\
-	data->vm_current_scope->scope=(Scope *)_scope;\
-	data->vm_current_scope->stk_local_vars=_ptr_local_var;\
-	data->vm_current_scope++;\
+#define PUSH_VM_SCOPE(_scope)\
+	 *data->vm_current_scope_function->scope=(Scope *)_scope;\
+	 data->vm_current_scope_function++;\
 
 #define LOAD_FROM_STACK(offset,properties) \
 	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? _stk_local_var+offset \
@@ -376,7 +374,7 @@ namespace zetscript{
 		StackElement 	*sf_call_stk_start_arg_call=NULL;
 		ScriptObject 	*sf_call_calling_object = NULL;
 		bool			 sf_call_is_constructor=false;
-		uint16_t 		 sf_call_n_local_registered_symbols=0;
+		uint16_t 		 sf_call_n_local_symbols=0;
 		bool 			 sf_call_is_member_function=false;
 		StackElement 	*sf_call_stk_return=NULL;
 		int 			sf_call_n_returned_arguments_from_function=0;
@@ -392,12 +390,12 @@ namespace zetscript{
 		StackElement *stk_src=NULL;
 		Instruction *instructions=calling_function->instructions; // starting instruction
 		Instruction *instruction_it=instructions;
-		VM_Scope * vm_scope_start=data->vm_current_scope; // save current scope...
+		//VM_ScopeFunction * vm_scope_start=data->vm_current_scope_function; // save current scope...
 		Scope * scope = calling_function->symbol.scope;// ast->idx_scope;
-		zs_vector *registered_symbols=calling_function->symbol_registered_variables;
+		zs_vector *registered_symbols=calling_function->symbol_variables;
 		unsigned symbols_count=registered_symbols->count;
 		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
-		StackElement *ptr_aux = _stk_local_var+n_args;
+
 
 		data->stk_vm_current = stk_start;
 		data->vm_idx_call++;
@@ -417,7 +415,11 @@ namespace zetscript{
 		// Init local vars ...
 		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
 			if(symbols_count > 0){
-				PUSH_VM_SCOPE(calling_function->symbol.scope,_stk_local_var);
+				data->vm_current_scope_function++;
+				data->vm_current_scope_function->scope_current=data->vm_current_scope_function->scope;
+				data->vm_current_scope_function->stk_local_vars=_stk_local_var;
+				PUSH_VM_SCOPE(calling_function->symbol.scope);
+
 				// I have to clear variables on each function ?
 				//memset(ptr_aux,0,sizeof(StackElement)*symbols_count);
 			}
@@ -546,7 +548,7 @@ namespace zetscript{
 				data->stk_vm_current->value=(zs_int)this_object;
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				data->stk_vm_current++;
-				data->stk_vm_current->value=(zs_int)((Symbol *)this_object->getScriptClass()->symbol_member_functions->items[instruction->value_op2])->ref_ptr;
+				data->stk_vm_current->value=(zs_int)((Symbol *)this_object->getScriptClass()->symbol_class.scope->symbol_functions->items[instruction->value_op2])->ref_ptr;
 				data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 				data->stk_vm_current++;
 				break;
@@ -1479,7 +1481,7 @@ load_element_object:
 				 }
 execute_function:
 
-				sf_call_n_local_registered_symbols=0;
+				sf_call_n_local_symbols=0;
 
 				// if a c function that it has more than 1 symbol with same number of parameters, so we have to solve and get the right one...
 				// call function
@@ -1621,7 +1623,7 @@ execute_function:
 						,sf_call_stk_start_arg_call
 						,sf_call_n_args
 					);
-					sf_call_n_local_registered_symbols=sf_call_script_function->symbol_registered_variables->count;
+					sf_call_n_local_symbols=sf_call_script_function->symbol_variables->count;
 				}
 				else{ // C function
 					if(sf_call_script_function->symbol.properties & SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME){
@@ -1675,7 +1677,7 @@ execute_function:
 					);
 
 					// restore stk_start_arg_call due in C args are not considered as local symbols (only for scripts)
-					sf_call_n_local_registered_symbols=sf_call_n_args;
+					sf_call_n_local_symbols=sf_call_n_args;
 				}
 
 				if(data->vm_error == true){
@@ -1689,7 +1691,7 @@ execute_function:
 				}
 
 				// calcule returned stack elements
-				sf_call_stk_return=(sf_call_stk_start_arg_call+sf_call_n_local_registered_symbols); // +1 points to starting return...
+				sf_call_stk_return=(sf_call_stk_start_arg_call+sf_call_n_local_symbols); // +1 points to starting return...
 				sf_call_n_returned_arguments_from_function=data->stk_vm_current-sf_call_stk_return;
 
 				// setup all returned variables from function
@@ -1850,7 +1852,7 @@ execute_function:
 					}
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:
-				PUSH_VM_SCOPE(instruction->value_op2,_stk_local_var);
+				PUSH_VM_SCOPE(instruction->value_op2);
 				continue;
 
 			 case BYTE_CODE_POP_SCOPE:
@@ -1898,7 +1900,7 @@ execute_function:
 
 		//=========================
 		// POP STACK
-		while(vm_scope_start<data->vm_current_scope){
+		while(data->vm_current_scope_function->scope_current < data->vm_current_scope_function->scope){
 			POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
 		}
 
@@ -1908,6 +1910,7 @@ execute_function:
 
 
 		data->vm_idx_call--;
+		data->vm_current_scope_function--;
 		// POP STACK
 		//=========================
 	}

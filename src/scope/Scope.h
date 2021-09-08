@@ -12,7 +12,7 @@ namespace zetscript{
 #define	CHECK_REPEATED_SYMBOLS_UP					0x4
 //#define	SCOPE_DIRECTION_AVOID_MAIN_SCOPE		0x8
 #define CHECK_REPEATED_SYMBOLS_UP_AND_DOWN			(CHECK_REPEATED_SYMBOLS_DOWN | CHECK_REPEATED_SYMBOLS_UP)
-
+#define MAX_INNER_SCOPES_FUNCTION					10
 
 	class ScopeFactory;
 	class ZetScript;
@@ -29,9 +29,9 @@ namespace zetscript{
 		Scope 		*scope_parent, *scope_base;
 
 		zs_vector				*registered_scopes;  // local scopes from starting block { }
-		zs_vector				*symbol_registered_variables; // variable symbols from starting block { }
-		zs_vector				*symbol_registered_functions; // function symbols from starting block { }
-		zs_vector				*symbol_registered_classes; // function symbols from starting block { }
+		zs_vector				*symbol_variables; // variable symbols from starting block { }
+		zs_vector				*symbol_functions; // function symbols from starting block { }
+		zs_vector				*symbol_classes; // function symbols from starting block { }
 
 		//--------------------------------------------------------------------
 		// Functions
@@ -60,6 +60,7 @@ namespace zetscript{
 		void setScriptClass(ScriptClass *sc);
 		ScriptClass * getScriptClass();
 		int getIdxScriptFunction();
+		int maxInnerScopes();
 
 
 		~Scope();
@@ -75,6 +76,8 @@ namespace zetscript{
 		Symbol * getSymbolRecursive(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		Symbol * getSymbolRecursiveDownScope(const std::string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		Symbol * getSymbolRecursiveUpScope(const std::string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
+
+		int maxInnerScopesRecursive(Scope *sc, int n);
 
 
 	};

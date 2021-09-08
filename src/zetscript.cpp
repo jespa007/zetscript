@@ -187,12 +187,15 @@ namespace zetscript{
 		 // for all classes print code...
 		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
 
+		 // list functions
+		 zs_vector *symbol_functions=sf_main->symbol.scope->symbol_functions;
+
 		 // print main function
 		 ScriptFunction::printGeneratedCode(sf_main);
 
 		 // print defined functions in main function
-		 for(unsigned j =0; j < sf_main->symbol_registered_functions->count; j++){
-			Symbol *symbol=(Symbol *)sf_main->symbol_registered_functions->items[j];
+		 for(unsigned j =0; j < symbol_functions->count; j++){
+			Symbol *symbol=(Symbol *)symbol_functions->items[j];
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 
@@ -225,8 +228,9 @@ namespace zetscript{
 			 }
 
 			 if(show_class){
-				 for(unsigned f = 0; f < rc->symbol_member_functions->count; f++){
-					 Symbol *symbol=(Symbol *)rc->symbol_member_functions->items[f];
+				 symbol_functions=rc->symbol_class.scope->symbol_functions;
+				 for(unsigned f = 0; f < symbol_functions->count; f++){
+					 Symbol *symbol=(Symbol *)symbol_functions->items[f];
 					 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,rc);
 
 				 }
@@ -422,18 +426,19 @@ namespace zetscript{
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
 		std::string global_symbol;
 		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
-		int idx_start_function = _idx_start_function == ZS_IDX_UNDEFINED ?  idx_current_global_function_checkpoint:_idx_start_function;
+		//int idx_start_function = _idx_start_function == ZS_IDX_UNDEFINED ?  idx_current_global_function_checkpoint:_idx_start_function;
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
+		zs_vector *symbol_variables=main_function_object->symbol_variables;
 
-		int idx_stk_start_function_element=main_function_object->symbol_registered_functions->count-1;
+		/*int idx_stk_start_function_element=symbol_functions->count-1;
 		// unregister all global functions
 		for (
 				int v = idx_stk_start_function_element;
 				v > idx_start_function;
 				v--) {
 
-			Symbol *symbol=(Symbol *)main_function_object->symbol_registered_functions->pop_back();//(Symbol *)main_function_object->registered_symbols->items[v];
+			//Symbol *symbol=(Symbol *)main_function_object->symbol_registered_functions->pop_back();//(Symbol *)main_function_object->registered_symbols->items[v];
 
 			if(symbol->scope == main_scope){
 				if(main_scope->unregisterSymbol(symbol) == false){
@@ -441,7 +446,7 @@ namespace zetscript{
 				}
 			}
 
-		}
+		}*/
 		//int n_global_symbols_cleared=0;
 		//VirtualMachine *vm=this->virtual_machine;
 		//int total_main_scope_symbols_before_clear=main_scope->registered_symbols->count;
@@ -450,17 +455,17 @@ namespace zetscript{
 		//&vm_get_stack_elements(virtual_machine)[main_function_object->registered_symbols->count-1];
 
 		// remove all shared 0 pointers
-		if(main_function_object->symbol_registered_variables->count > 0){
-			int idx_stk_start_element=main_function_object->symbol_registered_variables->count-1;
+		if(symbol_variables->count > 0){
+			int idx_stk_start_element=symbol_variables->count-1;
 			//StackElement *vm_stack=&vm_get_stack_elements(virtual_machine);
 			// set global top stack element
-			StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[main_function_object->symbol_registered_variables->count-1];
+			StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[symbol_variables->count-1];
 			for (
 					int v = idx_stk_start_element;
 					v > idx_start_variable;
 					v--,vm_stk_element--) {
 
-				Symbol *symbol=(Symbol *)main_function_object->symbol_registered_variables->pop_back();//(Symbol *)main_function_object->registered_symbols->items[v];
+				Symbol *symbol=(Symbol *)symbol_variables->items[idx_stk_start_element];//(Symbol *)main_function_object->registered_symbols->items[v];
 
 				ScriptObjectObject *var = NULL;
 
@@ -529,8 +534,8 @@ namespace zetscript{
 
 	void ZetScript::saveState(){
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
-		idx_current_global_variable_checkpoint=main_function_object->symbol_registered_variables->count-1;
-		idx_current_global_function_checkpoint=main_function_object->symbol_registered_functions->count-1;
+		idx_current_global_variable_checkpoint=main_function_object->symbol_variables->count-1;
+		//idx_current_global_function_checkpoint=main_function_object->symbol_functions->count-1;
 		scope_factory->saveState();
 		script_function_factory->saveState();
 		script_class_factory->saveState();

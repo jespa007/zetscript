@@ -31,7 +31,7 @@ namespace zetscript{
 				, short line
 				//--- Function data
 			    , int idx_class
-				, short idx_local_function
+				//, short idx_local_function
 				, const std::string & function_name
 				, std::vector<ScriptFunctionParam> args
 				, int idx_return_type=ZS_IDX_UNDEFINED

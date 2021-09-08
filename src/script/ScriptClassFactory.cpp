@@ -341,7 +341,7 @@ namespace zetscript{
 
 		if(zs->getScriptFunctionFactory()->getScriptFunctions()->count > 0){
 			Symbol *main_function_symbol=NULL;
-			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(class_name,NO_PARAMS_SYMBOL_ONLY,SCOPE_DIRECTION_DOWN))!=NULL){
+			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(class_name,NO_PARAMS_SYMBOL_ONLY,CHECK_REPEATED_SYMBOLS_DOWN))!=NULL){
 				THROW_RUNTIME_ERROR("Class name '%s' collides with symbol defined at [%s:%i]",class_name.c_str(),main_function_symbol->file,main_function_symbol->line);
 			}
 		}
@@ -364,7 +364,7 @@ namespace zetscript{
 			Scope * scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL);
 
 			// register symbol on main scope...
-			Symbol *symbol=scope->registerSymbol(file,line,class_name, NO_PARAMS_SYMBOL_ONLY);
+			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolClass(file,line,class_name);
 
 			sci = new ScriptClass(this->zs,script_classes->count,symbol);
 			scope->setScriptClass(sci);
@@ -392,20 +392,38 @@ namespace zetscript{
 
 
 				// 1. extend all symbols from base class
-				for(int i=0; i < base_class->symbol_member_functions->count; i++){
-					Symbol *symbol_src=(Symbol *)base_class->symbol_member_functions->items[i];
-					sci->symbol_member_functions->push_back((zs_int)symbol_src);
+				zs_vector *symbol_functions=base_class->symbol_class.scope->symbol_functions;
+				for(int i=0; i < symbol_functions->count; i++){
+					Symbol *symbol_src=(Symbol *)symbol_functions->items[i];
+					Symbol *symbol_dst=scope->registerSymbolFunction(
+							symbol_src->file
+							,symbol_src->line
+							,symbol_src->name
+							,symbol_src->n_params
+					);
+
+					symbol_dst->ref_ptr=symbol_src->ref_ptr;
+					symbol_dst->properties=symbol_src->properties;
+
+//					sci->symbol_member_functions->push_back((zs_int)symbol_src);
 				}
 
 				// set idx starting member
-				sci->idx_starting_this_member_functions=sci->symbol_member_functions->count;
+				sci->idx_starting_this_member_functions=sci->symbol_functions->count;
 
 				// 1. extend all symbols from base class
-				for(int i=0; i < base_class->symbol_member_variables->count; i++){
-					Symbol *symbol_src=(Symbol *)base_class->symbol_member_variables->items[i];
-					Symbol *new_symbol=new Symbol();
+				zs_vector *symbol_variables=base_class->symbol_class.scope->symbol_variables;
+				for(int i=0; i < symbol_variables->count; i++){
+					Symbol *symbol_src=(Symbol *)symbol_variables->items[i];
+					Symbol *symbol_dst=scope->registerSymbolVariable(
+							symbol_src->file
+							,symbol_src->line
+							,symbol_src->name
+					);
 
-					*new_symbol = *symbol_src;
+					symbol_dst->ref_ptr=symbol_src->ref_ptr;
+					symbol_dst->properties=symbol_src->properties;
+
 
 					// attribs has to be copy MemberAttribute...
 					if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
@@ -421,11 +439,13 @@ namespace zetscript{
 							ma_dst->addSetter((ScriptFunction *)(((StackElement *)ma_src->setters.items[i])->value));
 
 						}
-						new_symbol->ref_ptr=(zs_int)ma_dst;
+
+						sci->symbol_member_variables_allocated->push_back((zs_int)ma_dst);
+						symbol_dst->ref_ptr=(zs_int)ma_dst;
 					}
 
-					sci->symbol_member_variables->push_back((zs_int)new_symbol);
-					sci->symbol_member_variables_allocated->push_back((zs_int)new_symbol);
+
+
 
 				}
 

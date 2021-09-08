@@ -28,6 +28,10 @@
 #define MAX_PATH 4096
 #endif
 
+#ifndef MAX
+#define MAX(a,b) (a)>(b)?(a):(b)
+#endif
+
 namespace zetscript{
 	typedef intptr_t zs_int;
 	typedef char zs_char;

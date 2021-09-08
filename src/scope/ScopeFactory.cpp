@@ -59,8 +59,8 @@ namespace zetscript{
 		idx_clear_checkpoint=scopes->count-1;
 
 
-		idx_clear_global_checkpoint_global_symbol_registered_variables=main_scope->symbol_registered_variables->count-1;
-		idx_clear_global_checkpoint_global_symbol_registered_functions=main_scope->symbol_registered_functions->count-1;
+		idx_clear_global_checkpoint_global_symbol_registered_variables=main_scope->symbol_variables->count-1;
+		idx_clear_global_checkpoint_global_symbol_registered_functions=main_scope->symbol_functions->count-1;
 
 		idx_clear_global_checkpoint_global_scopes=main_scope->registered_scopes->count-1;
 
