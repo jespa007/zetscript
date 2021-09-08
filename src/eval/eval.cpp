@@ -454,15 +454,15 @@ namespace zetscript{
 	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find){
 
 		EvalFunction *sf=eval_data->current_function;
-		Symbol * sc_var = scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,SCOPE_DIRECTION_DOWN);
+		Symbol * sc_var = scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,CHECK_REPEATED_SYMBOLS_DOWN);
 
 		if(sc_var != NULL){ // local symbol found
 
 			if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
-				return sc_var->scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY, SCOPE_DIRECTION_DOWN);
+				return sc_var->scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY, CHECK_REPEATED_SYMBOLS_DOWN);
 			}
 			else{ // symbol is function...
-				return sc_var->scope->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY, SCOPE_DIRECTION_DOWN);
+				return sc_var->scope->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY, CHECK_REPEATED_SYMBOLS_DOWN);
 			}
 		}
 
@@ -474,7 +474,7 @@ namespace zetscript{
 	Symbol *eval_find_global_symbol(EvalData *eval_data, const std::string & symbol_to_find){
 
 		// try find global variable...
-		return MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY,SCOPE_DIRECTION_DOWN);
+		return MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY,CHECK_REPEATED_SYMBOLS_DOWN);
 
 	}
 

@@ -23,6 +23,7 @@ namespace zetscript{
 		registered_scopes=new zs_vector;
 		symbol_registered_variables=new zs_vector;
 		symbol_registered_functions=new zs_vector;
+		symbol_registered_classes=new zs_vector;
 
 		if(_scope_parent == NULL){ // first node (it should be a class)...
 			scope_base = this;
@@ -71,34 +72,7 @@ namespace zetscript{
 		unusued=true;
 	}
 
-
-	Symbol *  Scope::addSymbol(
-		const char * file
-		,short line
-		, const std::string & symbol_name
-		, char n_params
-		){
-		Symbol *irv = new Symbol();
-		irv->name = symbol_name;
-		irv->file	 = file;
-		irv->line 	 = line;
-		irv->scope=  this;
-		irv->n_params=n_params;
-
-		if(irv->n_params == NO_PARAMS_SYMBOL_ONLY){
-			symbol_registered_variables->push_back((zs_int)irv);
-		}else{
-			symbol_registered_functions->push_back((zs_int)irv);
-		}
-		return irv;
-	}
-
-
-	//-----------------------------------------------------------------------------------------------------------
-	//
-	// SCOPE VARIABLE MANAGEMENT
-	//
-	Symbol * Scope::registerSymbol(const char * file,short line, const std::string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
+	void Scope::checkPreRegisterSymbol(const char * file,short line, const std::string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
 		Symbol *p_irv=NULL;//idxAstNode=-1;// * irv;
 
 		// check if you register a class...
@@ -118,6 +92,87 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR(" error symbol '%s' already registered as C++", symbol_name.c_str());
 			}
 		}
+	}
+
+	Symbol * Scope::registerSymbolClass(const char * _file,short _line, const std::string & _symbol_name, uint16_t _check_repeated_symbols_direction){
+
+		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
+
+		Symbol *symbol 		= new Symbol();
+		symbol->idx_position=symbol_registered_classes->count();
+		symbol->name 		= _symbol_name;
+		symbol->file	 	= _file;
+		symbol->line 	 	= _line;
+		symbol->scope		=  this;
+
+		symbol_registered_classes->push_back((zs_int)symbol);
+
+		return symbol;
+
+
+	}
+
+	Symbol * Scope::registerSymbolVariable(const char * _file,short _line, const std::string & _symbol_name, NO_PARAMS_SYMBOL_ONLY,uint16_t _check_repeated_symbols_direction){
+
+		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
+
+		Symbol *symbol 		= new Symbol();
+		symbol->idx_position=symbol_registered_variables->count();
+		symbol->name 		= _symbol_name;
+		symbol->file	 	= _file;
+		symbol->line 	 	= _line;
+		symbol->scope		=  this;
+		symbol->n_params	=_n_params;
+
+		symbol_registered_variables->push_back((zs_int)symbol);
+
+		return symbol;
+	}
+
+	Symbol * Scope::registerSymbolFunction(const char * _file,short _line, const std::string & _symbol_name, char _n_params, uint16_t _check_repeated_symbols_direction){
+		checkPreRegisterSymbol(_file, _line, _symbol_name,  _n_params,_check_repeated_symbols_direction);
+
+		Symbol *symbol 		= new Symbol();
+		symbol->idx_position=symbol_registered_functions->count();
+		symbol->name 		= _symbol_name;
+		symbol->file	 	= _file;
+		symbol->line 	 	= _line;
+		symbol->scope		=  this;
+		symbol->n_params	=_n_params;
+
+		symbol_registered_functions->push_back((zs_int)symbol);
+
+		return symbol;
+	}
+
+
+	/*Symbol *  Scope::addSymbol(
+		const char * file
+		,short line
+		, const std::string & symbol_name
+		, char n_params
+		){
+		Symbol *irv = new Symbol();
+		irv->name = symbol_name;
+		irv->file	 = file;
+		irv->line 	 = line;
+		irv->scope=  this;
+		irv->n_params=n_params;
+
+		if(irv->n_params == NO_PARAMS_SYMBOL_ONLY){
+			symbol_registered_variables->push_back((zs_int)irv);
+		}else{
+			symbol_registered_functions->push_back((zs_int)irv);
+		}
+		return irv;
+	}*/
+
+
+	//-----------------------------------------------------------------------------------------------------------
+	//
+	// SCOPE VARIABLE MANAGEMENT
+	//
+
 
 
 		return addSymbol(file, line, symbol_name, n_params);
@@ -128,6 +183,15 @@ namespace zetscript{
 		Symbol *sv=NULL;
 
 		// for each variable in current scope ...
+		for(unsigned i = 0; i < symbol_registered_classes->count; i++){
+			sv=(Symbol *)symbol_registered_classes->items[i];
+			if(
+				   ( sv->name == str_symbol )
+			){
+				return sv;
+			}
+		}
+
 		for(unsigned i = 0; i < symbol_registered_variables->count; i++){
 			sv=(Symbol *)symbol_registered_variables->items[i];
 			if(
@@ -148,22 +212,22 @@ namespace zetscript{
 		}
 
 
-		if(scope_direction&SCOPE_DIRECTION_DOWN){
+		if(scope_direction&CHECK_REPEATED_SYMBOLS_DOWN){
 			if(
 					   this->scope_parent != NULL			 	 // it says that is the end of scopes
 					&& this->scope_parent->getIdxScriptFunction() == idx_script_function // Only check repeated symbols in the same function scope context.
 			){
 				//uint16_t avoid_main=scope_direction & SCOPE_DIRECTION_AVOID_MAIN_SCOPE ? SCOPE_DIRECTION_AVOID_MAIN_SCOPE:0;
-				return this->scope_parent->getSymbol(str_symbol,n_params,SCOPE_DIRECTION_DOWN);
+				return this->scope_parent->getSymbol(str_symbol,n_params,CHECK_REPEATED_SYMBOLS_DOWN);
 			}
 		}
 
-		if(scope_direction&SCOPE_DIRECTION_UP){
+		if(scope_direction&CHECK_REPEATED_SYMBOLS_UP){
 			for(unsigned i = 0; i < registered_scopes->count; i++){
 				Scope *s=(Scope *)registered_scopes->items[i];
 
 				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
-					Symbol *sv=s->getSymbol(str_symbol,n_params,SCOPE_DIRECTION_UP);
+					Symbol *sv=s->getSymbol(str_symbol,n_params,CHECK_REPEATED_SYMBOLS_UP);
 
 					if(sv != NULL) {
 						return sv;
@@ -210,6 +274,11 @@ namespace zetscript{
 		registered_scopes=NULL;
 
 		// delete local local_symbols found...
+		for(unsigned i = 0; i < symbol_registered_classes->count; i++){
+			delete (Symbol *)symbol_registered_classes->items[i];
+		}
+
+
 		for(unsigned i = 0; i < symbol_registered_functions->count; i++){
 			delete (Symbol *)symbol_registered_functions->items[i];
 		}
@@ -217,9 +286,13 @@ namespace zetscript{
 		for(unsigned i = 0; i < symbol_registered_variables->count; i++){
 			delete (Symbol *)symbol_registered_variables->items[i];
 		}
+
 		delete symbol_registered_variables;
 		delete symbol_registered_functions;
+		delete symbol_registered_classes;
+
 		symbol_registered_functions=NULL;
 		symbol_registered_variables=NULL;
+		symbol_registered_classes=NULL;
 	}
 }

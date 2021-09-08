@@ -55,12 +55,6 @@ namespace zetscript{
 		token_node->value=eval_instruction->symbol.name=symbol_object->name;
 		eval_instruction->symbol.scope=scope_info;
 
-		/*eval_instruction->link_symbol_first_access=LinkSymbolFirstAccess(
-				eval_data->current_function->script_function->idx_script_function
-				,scope_info
-				,token_node->value
-		);*/
-
 		eval_instruction->instruction_source_info= InstructionSourceInfo(
 			eval_data->current_parsing_file
 			,line

@@ -43,6 +43,7 @@ namespace zetscript{
 		script_class_factory=zs->getScriptClassFactory();
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
 		setter_getter=NULL;
+		scope=NULL;
 
 	}
 
