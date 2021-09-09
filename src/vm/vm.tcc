@@ -438,8 +438,8 @@ namespace zetscript{
 		int stk_elements_builtin_len=  data->main_function_object->symbol.scope->symbol_functions->count;// vector of symbols
 
 		if(class_obj != NULL){
-			stk_elements_builtin_ptr=class_obj->symbol_class.scope->symbol_functions->items;
-			stk_elements_builtin_len=class_obj->symbol_class.scope->symbol_functions->count;
+			stk_elements_builtin_ptr=class_obj->class_scope->symbol_functions->items;
+			stk_elements_builtin_len=class_obj->class_scope->symbol_functions->count;
 
 		}
 		//bool stk_element_are_vector_element_ptr=stk_elements_builtin_ptr!=data->vm_stack;
@@ -614,7 +614,7 @@ namespace zetscript{
 						str_candidates+="\tPossible candidates are:\n\n";
 					}
 					str_candidates+="\t\t-"+(class_obj==NULL?""
-							:class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->symbol_class.name+"::")
+							:class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->class_name+"::")
 							:"")+irfs->symbol.name+"(";
 
 					for(unsigned a = 0; a < irfs->params_count; a++){
@@ -638,7 +638,7 @@ namespace zetscript{
 			if(n_candidates == 0){
 				VM_ERROR("Cannot find %s \"%s%s(%s)\".\n\n",
 						is_constructor ? "constructor":"function",
-								class_obj==NULL?"":class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->symbol_class.name+"::").c_str():"",
+								class_obj==NULL?"":class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->class_name+"::").c_str():"",
 								symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 						args_str.c_str()
 				);
@@ -648,7 +648,7 @@ namespace zetscript{
 			else{
 				VM_ERROR("Cannot match %s \"%s%s(%s)\" .\n\n%s",
 					is_constructor ? "constructor":"function",
-							class_obj==NULL?"":class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->symbol_class.name+"::").c_str():"",
+							class_obj==NULL?"":class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->class_name+"::").c_str():"",
 									symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 					args_str.c_str(),
 					str_candidates.c_str());

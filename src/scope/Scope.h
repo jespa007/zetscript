@@ -4,15 +4,16 @@
  */
 #pragma once
 
-namespace zetscript{
-
-
-#define CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL		0x1
-#define CHECK_REPEATED_SYMBOLS_DOWN					0x2
-#define	CHECK_REPEATED_SYMBOLS_UP					0x4
+#define REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL		0x1
+#define REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN				0x2
+#define	REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP				0x4
+#define	REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS				0x8 // special case for c functions that can have same parameters but diferent signatures
 //#define	SCOPE_DIRECTION_AVOID_MAIN_SCOPE		0x8
-#define CHECK_REPEATED_SYMBOLS_UP_AND_DOWN			(CHECK_REPEATED_SYMBOLS_DOWN | CHECK_REPEATED_SYMBOLS_UP)
+#define REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN		(REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN | REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP)
 #define MAX_INNER_SCOPES_FUNCTION					10
+
+
+namespace zetscript{
 
 	class ScopeFactory;
 	class ZetScript;
@@ -47,10 +48,10 @@ namespace zetscript{
 		 */
 		//Symbol * addSymbol(const char * file, short line,const std::string & symbol_name, char n_params);
 
-		Symbol * registerSymbolVariable(const char * file, short line,const std::string & symbol_name, uint16_t _check_repeteaded_symbols=CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
-		Symbol * registerSymbolFunction(const char * file, short line,const std::string & symbol_name, char n_params, uint16_t _check_repeteaded_symbols=CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
-		Symbol * registerSymbolClass(const char * file, short line,const std::string & symbol_name, uint16_t _check_repeteaded_symbols=CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
-		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, uint16_t _check_repeteaded_symbols=CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
+		Symbol * registerSymbolVariable(const char * file, short line,const std::string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
+		Symbol * registerSymbolFunction(const char * file, short line,const std::string & symbol_name, char n_params, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
+		Symbol * registerSymbolClass(const char * file, short line,const std::string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
+		Symbol * getSymbol(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
 
 		bool 	unregisterSymbol(Symbol *symbol);
 

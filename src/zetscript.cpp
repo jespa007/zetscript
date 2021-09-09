@@ -208,30 +208,30 @@ namespace zetscript{
 		}
 
 		 for(unsigned i = 1; i < script_classes->count; i++){
-			 ScriptClass *rc=(ScriptClass *)script_classes->get(i);
+			 ScriptClass *sc=(ScriptClass *)script_classes->get(i);
 			 bool show_class=true;
 
 			 // ignore builtin implementations if not chosen ...
 			 if(show_system_code == false && (
-					 	rc->symbol_class.name == "System"
-					||	rc->symbol_class.name == "String"
-					||	rc->symbol_class.name == "StringIterator"
-					||	rc->symbol_class.name == "Object"
-					||	rc->symbol_class.name == "ObjectIterator"
-					||	rc->symbol_class.name == "Console"
-					||	rc->symbol_class.name == "DateTime"
-					||	rc->symbol_class.name == "Vector"
-					||	rc->symbol_class.name == "VectorIterator"
-					||	rc->symbol_class.name == "Json"
+					 	sc->class_name == "System"
+					||	sc->class_name == "String"
+					||	sc->class_name == "StringIterator"
+					||	sc->class_name == "Object"
+					||	sc->class_name == "ObjectIterator"
+					||	sc->class_name == "Console"
+					||	sc->class_name == "DateTime"
+					||	sc->class_name == "Vector"
+					||	sc->class_name == "VectorIterator"
+					||	sc->class_name == "Json"
 				)){
 				 show_class=false;
 			 }
 
 			 if(show_class){
-				 symbol_functions=rc->symbol_class.scope->symbol_functions;
+				 symbol_functions=sc->class_scope->symbol_functions;
 				 for(unsigned f = 0; f < symbol_functions->count; f++){
 					 Symbol *symbol=(Symbol *)symbol_functions->items[f];
-					 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,rc);
+					 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,sc);
 
 				 }
 			 }

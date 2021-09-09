@@ -82,7 +82,7 @@ namespace zetscript{
 			}else if(this_object->idx_script_class != IDX_SCRIPT_CLASS_MAIN){
 				VM_ERROR_AND_RET("Function \"%s\" is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e \"%s::%s\")\""
 						,c_function->symbol.name.c_str()
-						,this_object->getScriptClass()->symbol_class.name.c_str()
+						,this_object->getScriptClass()->class_name.c_str()
 						,c_function->symbol.name.c_str()
 						,c_function->symbol.name.c_str()
 						);

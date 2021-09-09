@@ -61,7 +61,7 @@ namespace zetscript{
 
 #define GET_ILOAD_R_STR(properties,value) \
 	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->symbol_variables->items[value])->name.c_str()\
-	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_class.scope->symbol_variables->items[value])->name.c_str()\
+	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->class_scope->symbol_variables->items[value])->name.c_str()\
 	:((Symbol *)MAIN_FUNCTION(sfo)->symbol_variables->items[value])->name.c_str()\
 
 
@@ -88,7 +88,7 @@ namespace zetscript{
 			symbol_ref=sfo->symbol.name;
 		}else{ // is a class
 			symbol_ref=sfo->symbol.name;//+std::string("::")+std::string("????");
-			class_str=sc->symbol_class.name+"::";
+			class_str=sc->class_name+"::";
 		}
 
 
@@ -359,7 +359,7 @@ namespace zetscript{
 		StackElement *se=NULL;
 
 
-		if((symbol=scope_block->registerSymbolVariable(file,line, symbol_name, CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL))==NULL){
+		if((symbol=scope_block->registerSymbolVariable(file,line, symbol_name, REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL))==NULL){
 				return NULL;
 		}
 
@@ -432,22 +432,23 @@ namespace zetscript{
 			,zs_int ref_ptr
 			, unsigned short properties
 	){
-		Symbol *symbol_found=scope_block->getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY,CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
+		Symbol *symbol_found=scope_block->getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
 		std::string current_file_line=ZS_CONST_STR_IS_EMPTY(file)?
 							zs_strutils::format("[line %i]",line):
 							zs_strutils::format("[%s:%i]",zs_path::get_filename(file).c_str(),line);
 
 
 
-		if(symbol_found != NULL){ // symbol found
+		if(symbol_found != NULL){ // C symbol found
 			bool error = false;
 			std::string symbol_file_line=ZS_CONST_STR_IS_EMPTY(symbol_found->file)?
 					zs_strutils::format("[line %i]",line):
 					zs_strutils::format("[%s:%i]",zs_path::get_filename(symbol_found->file).c_str(),line);
 
-			// check the symbol to register is an script and symbol found is an already script function...
+			// if both symbols (i.e the one to insert and the one found) are script functions...
 			if(((symbol_found->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0) && ((properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0)){
 
+				// if exist override, but should be in the same scope
 				if(symbol_found->scope != scope_block){
 
 					THROW_RUNTIME_ERROR("Symbol \"%s\" defined at %s is already defined at %s"
@@ -460,7 +461,6 @@ namespace zetscript{
 				}
 
 				// override script function
-				symbol_found->n_params=NO_PARAMS_SYMBOL_ONLY;
 				ScriptFunction *sf = (ScriptFunction *)symbol_found->ref_ptr;
 				sf->clear();
 				sf->updateParams(_params);
@@ -468,7 +468,7 @@ namespace zetscript{
 				return symbol_found;
 			}
 
-			// else check that symbol found and function to register are C both...
+			// else if both symbol are not C, error...
 			if((symbol_found->properties & SYMBOL_PROPERTY_C_OBJECT_REF) && (properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
 				// C function can be overriden
 				THROW_RUNTIME_ERROR("Symbol \"%s\" defined at %s is already defined at %s"

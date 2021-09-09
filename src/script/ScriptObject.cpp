@@ -61,7 +61,7 @@ namespace zetscript{
 		// init builtin
 		if(idx_script_class >= IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && idx_script_class<IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
 			ScriptClass *script_class=getScriptClass();
-			zs_vector *symbol_vars=script_class->symbol_class.scope->symbol_variables;
+			zs_vector *symbol_vars=script_class->class_scope->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
 			for ( unsigned i = 0; i < symbol_vars->count; i++){
@@ -112,7 +112,7 @@ namespace zetscript{
 	}
 
 	const std::string & ScriptObject::getClassName(){
-		return getScriptClass()->symbol_class.name;
+		return getScriptClass()->class_name;
 	}
 
 	const std::string & ScriptObjectClass::getNativePointerClassName(){
@@ -120,7 +120,7 @@ namespace zetscript{
 	}
 
 	bool ScriptObject::isNativeObject(){
-		 return (getScriptClass()->symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0;
+		 return (getScriptClass()->properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0;
 	}
 
 	ScriptClass * ScriptObject::getScriptClass(){

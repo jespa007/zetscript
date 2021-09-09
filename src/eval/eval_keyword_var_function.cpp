@@ -191,7 +191,7 @@ namespace zetscript{
 				scope_var = MAIN_SCOPE(eval_data);
 
 				if(sc!=NULL){
-					pre_variable_name=sc->symbol_class.name+"::";
+					pre_variable_name=sc->class_name+"::";
 				}
 			}else if(sc != NULL){
 				sf_field_initializer=sc->sf_field_initializer;
@@ -337,7 +337,7 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->symbol_class.name.c_str()).c_str():""
+							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->class_name.c_str()).c_str():""
 							,variable_name.c_str());
 				}
 
@@ -665,7 +665,7 @@ error_eval_keyword_var:
 				if(custom_symbol_name != ""){
 					function_name=custom_symbol_name;
 				}else{
-					function_name=eval_anonymous_function_name(sc!=NULL?sc->symbol_class.name:"");
+					function_name=eval_anonymous_function_name(sc!=NULL?sc->class_name:"");
 				}
 			}
 

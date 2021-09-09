@@ -72,7 +72,7 @@ namespace zetscript{
 				result= std::string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
 			}
 		}else if(STK_VALUE_IS_CLASS(stk)){
-			result= std::string("Class")+"@"+((ScriptClass *)stk->value)->symbol_class.name;
+			result= std::string("Class")+"@"+((ScriptClass *)stk->value)->class_name;
 		}else{
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk->value;

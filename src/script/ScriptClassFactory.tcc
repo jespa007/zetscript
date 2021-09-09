@@ -131,7 +131,7 @@ namespace zetscript{
 			,short registered_line
 	){//, const std::string & base_class_name=""){
 
-		ScriptClass *irc=NULL;
+		ScriptClass *sc=NULL;
 		std::string str_class_name_ptr = typeid( T *).name();
 		//int size=script_classes->count;
 		int idx_class=ZS_IDX_UNDEFINED;
@@ -148,26 +148,26 @@ namespace zetscript{
 		scope = scope_factory->newScope(ZS_IDX_UNDEFINED,NULL,true);
 		symbol=MAIN_SCOPE(this)->registerSymbolClass(registered_file,registered_line,class_name);
 
-		irc = new ScriptClass(zs,idx_class,symbol);
-		scope->setScriptClass(irc);
+		sc = new ScriptClass(zs,idx_class,class_name,scope,str_class_name_ptr,SCRIPT_CLASS_PROPERTY_C_OBJECT_REF);
+		scope->setScriptClass(sc);
 
 		//irc->symbol_class=*symbol;
 
 		// in C there's no script constructor ...
-		irc->idx_function_member_constructor=ZS_IDX_UNDEFINED;
+		sc->idx_function_member_constructor=ZS_IDX_UNDEFINED;
 		// allow dynamic constructor in function its parameters ...
 
-		irc->str_class_ptr_type=str_class_name_ptr;
-		irc->symbol_class.properties|=SYMBOL_PROPERTY_C_OBJECT_REF;
+		//irc->str_class_ptr_type=str_class_name_ptr;
+		//irc->symbol_class.properties|=SYMBOL_PROPERTY_C_OBJECT_REF;
 
-		irc->c_constructor = NULL;
-		irc->c_destructor = NULL;
-		script_classes->push_back((zs_int)irc);
+		sc->c_constructor = NULL;
+		sc->c_destructor = NULL;
+		script_classes->push_back((zs_int)sc);
 
-		irc->idx_class=script_classes->count-1;
+		sc->idx_class=script_classes->count-1;
 		ZS_LOG_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
 
-		return irc;
+		return sc;
 	}
 
 	/**
@@ -310,8 +310,8 @@ namespace zetscript{
 			//
 
 			ScriptClass *base_class = (ScriptClass *)script_classes->get(idx_base_class);
-			zs_vector *base_vars=base_class->symbol_class.scope->symbol_variables;
-			zs_vector *base_functions=base_class->symbol_class.scope->symbol_variables;
+			zs_vector *base_vars=base_class->class_scope->symbol_variables;
+			zs_vector *base_functions=base_class->class_scope->symbol_variables;
 
 			/*unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF;//| SYMBOL_PROPERTY_IS_DERIVATED;
 			if(std::is_polymorphic<B>::value==true){
@@ -478,7 +478,7 @@ namespace zetscript{
 		if(c_class == NULL){
 			THROW_RUNTIME_ERROR("class \"%s\" is not registered",str_class_name_ptr.c_str());
 		}
-		return registerNativeMemberFunction<C>(c_class->symbol_class.name,function_type, registered_file,registered_line );
+		return registerNativeMemberFunction<C>(c_class->class_name,function_type, registered_file,registered_line );
 	}
 
 	/**
@@ -511,7 +511,7 @@ namespace zetscript{
 		// check valid parameters ...
 		if(getIdxClassFromItsNativeType(var_type) == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-					,c_class->symbol_class.name.c_str()
+					,c_class->class_name.c_str()
 					,var_name
 					,zs_rtti::demangle(typeid(R).name()).c_str());
 		}

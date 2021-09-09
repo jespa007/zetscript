@@ -548,7 +548,7 @@ namespace zetscript{
 				data->stk_vm_current->value=(zs_int)this_object;
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				data->stk_vm_current++;
-				data->stk_vm_current->value=(zs_int)((Symbol *)this_object->getScriptClass()->symbol_class.scope->symbol_functions->items[instruction->value_op2])->ref_ptr;
+				data->stk_vm_current->value=(zs_int)((Symbol *)this_object->getScriptClass()->class_scope->symbol_functions->items[instruction->value_op2])->ref_ptr;
 				data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 				data->stk_vm_current++;
 				break;
@@ -1027,10 +1027,14 @@ load_element_object:
 									,stk_arg
 									,1))==NULL){
 								if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
-									VM_STOP_EXECUTE("Class '%s' does not implement setter function",((ScriptObject *)stk_dst->value)->getScriptClass()->symbol_class.name.c_str());
+									VM_STOP_EXECUTE("Class '%s' does not implement setter function"
+											,((ScriptObject *)stk_dst->value)->getScriptClass()->class_name.c_str()
+								);
 								}else{
 									StackMemberAttribute * stk_ma=((StackMemberAttribute *)stk_dst->value);
-									VM_STOP_EXECUTE("Attribute '%s::%s' does not implement setter function",stk_ma->so_object->getScriptClass()->symbol_class.name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
+									VM_STOP_EXECUTE("Attribute '%s::%s' does not implement setter function"
+											,stk_ma->so_object->getScriptClass()->class_name.c_str()
+											,stk_ma->member_attribute->attribute_name.c_str());
 								}
 							}
 						}else if(lst_functions->count>1){ // it has all member list

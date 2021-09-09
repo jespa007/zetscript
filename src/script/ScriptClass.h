@@ -11,6 +11,8 @@
 #define ZS_PREFIX_SYMBOL_NAME_PRE_INC	"_pre_inc@"
 #define ZS_PREFIX_SYMBOL_NAME_PRE_DEC	"_pre_dec@"
 
+#define SCRIPT_CLASS_PROPERTY_C_OBJECT_REF	0x1
+
 namespace zetscript{
 
 /**
@@ -24,7 +26,10 @@ namespace zetscript{
 
 		int 			idx_class; 	// registered class idx
 
-		Symbol 			symbol_class;		// info symbol class
+		std::string 	class_name;		// info symbol class
+		Scope			*class_scope;
+		std::string 	str_class_ptr_type; // type_id().name();
+		uint16_t		properties;
 
 		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be attribute members or script member vars
 		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
@@ -40,12 +45,19 @@ namespace zetscript{
 
 		void								* 	c_constructor;
 		void 								*	c_destructor;
-		std::string 							str_class_ptr_type; // type_id().name();
+
 		zs_vector						   	*   idx_base_classes; // list of idx of classes base
 
 
 
-		 ScriptClass(ZetScript *_zs,short _idx_class,Symbol *_symbol_class);
+
+		 ScriptClass(ZetScript *_zs
+				 ,short _idx_class
+				 , std::string _name
+				 , Scope *_scope
+				 ,std::string  str_class_ptr_type=TYPE_SCRIPT_VARIABLE
+				 ,uint16_t _properties=0
+		);
 
 		//---------------------------------------------------
 		// SCRIPT VARIABLES

@@ -454,15 +454,15 @@ namespace zetscript{
 	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find){
 
 		EvalFunction *sf=eval_data->current_function;
-		Symbol * sc_var = scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,CHECK_REPEATED_SYMBOLS_DOWN);
+		Symbol * sc_var = scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 
 		if(sc_var != NULL){ // local symbol found
 
 			if(sc_var->n_params==NO_PARAMS_SYMBOL_ONLY){ // symbol is variable...
-				return sc_var->scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY, CHECK_REPEATED_SYMBOLS_DOWN);
+				return sc_var->scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY, REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 			}
 			else{ // symbol is function...
-				return sc_var->scope->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY, CHECK_REPEATED_SYMBOLS_DOWN);
+				return sc_var->scope->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY, REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 			}
 		}
 
@@ -474,7 +474,7 @@ namespace zetscript{
 	Symbol *eval_find_global_symbol(EvalData *eval_data, const std::string & symbol_to_find){
 
 		// try find global variable...
-		return MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY,CHECK_REPEATED_SYMBOLS_DOWN);
+		return MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 
 	}
 
@@ -573,16 +573,16 @@ namespace zetscript{
 						Symbol *symbol_sf_foundf=NULL;
 						std::string target_name;
 
-						bool is_constructor = sf->symbol.name == sc_sf->symbol_class.name;
+						bool is_constructor = sf->symbol.name == sc_sf->class_name;
 
 						for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
-							Symbol *symbol_member = (Symbol *)sc_sf->symbol_class.scope->symbol_functions->items[i];
+							Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[i];
 							bool match_names=false;
 							if(is_constructor==true){
 								if(symbol_member->scope == NULL){ // is constant...
 									continue;
 								}
-								match_names=symbol_member->scope->script_class->symbol_class.name==symbol_member->name;
+								match_names=symbol_member->scope->script_class->class_name==symbol_member->name;
 							}else{
 								match_names=symbol_member->name==sf->symbol.name;
 							}
@@ -605,13 +605,13 @@ namespace zetscript{
 								,eval_data->current_parsing_file
 								,instruction->instruction_source_info.line
 								,"Cannot find parent function %s::%s"
-								,sc_sf->symbol_class.name.c_str()
+								,sc_sf->class_name.c_str()
 								,sf->symbol.name.c_str()
 							);
 						}
 						instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER_VAR;
 						instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
-						instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,std::string(symbol_sf_foundf->scope->script_class->symbol_class.name)+"::"+symbol_sf_foundf->name);
+						instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,std::string(symbol_sf_foundf->scope->script_class->class_name)+"::"+symbol_sf_foundf->name);
 
 					}else{ // is "this" symbol, check whether symbol is member
 						// TODO: review load function member !!

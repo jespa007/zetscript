@@ -92,7 +92,7 @@ namespace zetscript{
 	}
 
 	void Scope::checkPreRegisterSymbol(const char * file,short line, const std::string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
-		Symbol *p_irv=NULL;//idxAstNode=-1;// * irv;
+		Symbol *p_irv=NULL;
 
 		// check if you register a class...
 		// check if symbol collides also with built in type...
@@ -149,7 +149,9 @@ namespace zetscript{
 	}
 
 	Symbol * Scope::registerSymbolFunction(const char * _file,short _line, const std::string & _symbol_name, char _n_params, uint16_t _check_repeated_symbols_direction){
-		checkPreRegisterSymbol(_file, _line, _symbol_name,  _n_params,_check_repeated_symbols_direction);
+		if((_check_repeated_symbols_direction & REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS)==0){
+			checkPreRegisterSymbol(_file, _line, _symbol_name,  _n_params,_check_repeated_symbols_direction);
+		}
 
 		Symbol *symbol 		= new Symbol();
 		symbol->idx_position=symbol_functions->count;
@@ -228,22 +230,22 @@ namespace zetscript{
 		}
 
 
-		if(scope_direction&CHECK_REPEATED_SYMBOLS_DOWN){
+		if(scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN){
 			if(
 					   this->scope_parent != NULL			 	 // it says that is the end of scopes
 					&& this->scope_parent->getIdxScriptFunction() == idx_script_function // Only check repeated symbols in the same function scope context.
 			){
 				//uint16_t avoid_main=scope_direction & SCOPE_DIRECTION_AVOID_MAIN_SCOPE ? SCOPE_DIRECTION_AVOID_MAIN_SCOPE:0;
-				return this->scope_parent->getSymbol(str_symbol,n_params,CHECK_REPEATED_SYMBOLS_DOWN);
+				return this->scope_parent->getSymbol(str_symbol,n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 			}
 		}
 
-		if(scope_direction&CHECK_REPEATED_SYMBOLS_UP){
+		if(scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP){
 			for(unsigned i = 0; i < registered_scopes->count; i++){
 				Scope *s=(Scope *)registered_scopes->items[i];
 
 				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
-					Symbol *sv=s->getSymbol(str_symbol,n_params,CHECK_REPEATED_SYMBOLS_UP);
+					Symbol *sv=s->getSymbol(str_symbol,n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP);
 
 					if(sv != NULL) {
 						return sv;

@@ -35,8 +35,8 @@
 		return;\
 	}else{\
 		ScriptClass *sc=registerClass(ZS_STR(type_class));\
-		sc->symbol_class.scope->is_c_node=true;\
-		sc->symbol_class.properties=SYMBOL_PROPERTY_C_OBJECT_REF;\
+		sc->class_scope->is_c_node=true;\
+		sc->properties=SCRIPT_CLASS_PROPERTY_C_OBJECT_REF;\
 		sc->str_class_ptr_type=(typeid(type_class).name());\
 	}
 
@@ -341,7 +341,7 @@ namespace zetscript{
 
 		if(zs->getScriptFunctionFactory()->getScriptFunctions()->count > 0){
 			Symbol *main_function_symbol=NULL;
-			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(class_name,NO_PARAMS_SYMBOL_ONLY,CHECK_REPEATED_SYMBOLS_DOWN))!=NULL){
+			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(class_name,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN))!=NULL){
 				THROW_RUNTIME_ERROR("Class name '%s' collides with symbol defined at [%s:%i]",class_name.c_str(),main_function_symbol->file,main_function_symbol->line);
 			}
 		}
@@ -366,10 +366,10 @@ namespace zetscript{
 			// register symbol on main scope...
 			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolClass(file,line,class_name);
 
-			sc = new ScriptClass(this->zs,script_classes->count,symbol);
+			sc = new ScriptClass(this->zs,script_classes->count, class_name, scope);
 			scope->setScriptClass(sc);
 
-			sc->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
+			//sc->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
 
 			script_classes->push_back((zs_int)sc);
 
@@ -379,7 +379,9 @@ namespace zetscript{
 
 				if(sc->idx_base_classes->count > 0){
 					ScriptClass *match_class=getScriptClass(sc->idx_base_classes->items[0]);
-					THROW_RUNTIME_ERROR("Class \"%s\" already is inherited from \"%s\"",class_name.c_str(),match_class->symbol_class.name.c_str());
+					THROW_RUNTIME_ERROR("Class \"%s\" already is inherited from \"%s\""
+							,class_name.c_str()
+							,match_class->class_name.c_str());
 				}
 
 				if((base_class = getScriptClass(base_class_name)) == NULL){
@@ -392,7 +394,7 @@ namespace zetscript{
 
 
 				// 1. extend all symbols from base class
-				zs_vector *symbol_functions=base_class->symbol_class.scope->symbol_functions;
+				zs_vector *symbol_functions=base_class->class_scope->symbol_functions;
 				for(int i=0; i < symbol_functions->count; i++){
 					Symbol *symbol_src=(Symbol *)symbol_functions->items[i];
 					Symbol *symbol_dst=scope->registerSymbolFunction(
@@ -409,10 +411,10 @@ namespace zetscript{
 				}
 
 				// set idx starting member
-				sc->idx_starting_this_member_functions=sc->symbol_class.scope->symbol_functions->count;
+				sc->idx_starting_this_member_functions=sc->class_scope->symbol_functions->count;
 
 				// 1. extend all symbols from base class
-				zs_vector *symbol_variables=base_class->symbol_class.scope->symbol_variables;
+				zs_vector *symbol_variables=base_class->class_scope->symbol_variables;
 				for(int i=0; i < symbol_variables->count; i++){
 					Symbol *symbol_src=(Symbol *)symbol_variables->items[i];
 					Symbol *symbol_dst=scope->registerSymbolVariable(
@@ -446,7 +448,7 @@ namespace zetscript{
 				}
 
 				// set idx starting member
-				sc->idx_starting_this_member_variables=sc->symbol_class.scope->symbol_variables->count;
+				sc->idx_starting_this_member_variables=sc->class_scope->symbol_variables->count;
 
 				// 2. set idx base class...
 				sc->idx_base_classes->push_back(base_class->idx_class);
@@ -457,7 +459,7 @@ namespace zetscript{
 				Symbol *symbol_field_initializer=NULL;
 
 				symbol_field_initializer=sc->registerMemberFunction(
-					zs_strutils::format("__@field_initializer_%s_@__",sc->symbol_class.name.c_str())
+					zs_strutils::format("__@field_initializer_%s_@__",sc->class_name.c_str())
 				);
 
 				sc->sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;
@@ -524,7 +526,7 @@ namespace zetscript{
 
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
-			if(class_name == sc->symbol_class.name){
+			if(class_name == sc->class_name){
 				return i;
 			}
 		}
@@ -619,7 +621,7 @@ namespace zetscript{
 	const char * ScriptClassFactory::getScriptClassName(short idx){
 		if(idx != ZS_IDX_UNDEFINED){
 			ScriptClass *sc=(ScriptClass *)script_classes->get(idx);
-			return sc->symbol_class.name.c_str();
+			return sc->class_name.c_str();
 		}
 		 return "class_unknow";
 	}

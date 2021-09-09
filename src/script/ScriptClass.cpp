@@ -8,18 +8,23 @@ namespace zetscript{
 
 	bool ScriptClass::isNativeClass(){
 
-		 return ((symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0);
+		 return ((properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0);
 	}
 
 	bool ScriptClass::isNativeSingletonClass(){
-		 return ((symbol_class.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != 0)
+		 return ((properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0)
 				 	 &&
 				this->c_constructor == NULL;
 
 	}
 	//------------------------------------------------------------
 
-	ScriptClass::ScriptClass(ZetScript *_zs,short _idx_class,Symbol *_symbol_class){
+	ScriptClass::ScriptClass(ZetScript *_zs
+			,short _idx_class
+			, std::string _class_name
+			, Scope *_class_scope
+			,std::string  _str_class_ptr_type
+			,uint16_t _properties){
 		sf_field_initializer=NULL;
 
 		str_class_ptr_type="";
@@ -29,7 +34,11 @@ namespace zetscript{
 		idx_class=_idx_class;
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
-		symbol_class=*_symbol_class;
+		//symbol_class=*_symbol_class;
+		class_name=_class_name;
+		class_scope=_class_scope;
+		str_class_ptr_type=_str_class_ptr_type;
+
 		//symbol_member_variables=new zs_vector();
 		//symbol_member_functions=new zs_vector();
 		allocated_member_attributes=new zs_vector();
@@ -43,6 +52,7 @@ namespace zetscript{
 		script_class_factory=zs->getScriptClassFactory();
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
 		setter_getter=NULL;
+		properties=_properties;
 
 	}
 
@@ -104,24 +114,20 @@ namespace zetscript{
 		,short line
 
 	){
-		// ref_ptr: as natives is the inc pointer when object is created or stack_element pointer for static/const
 		if(getSymbol(symbol_name)!=NULL){
 			THROW_RUNTIME_ERROR("Variable \"%s\" already registered",symbol_name.c_str());
 			return NULL;
 		}
 
-		Symbol *symbol=new Symbol;
+		Symbol *symbol=class_scope->registerSymbolVariable(
+				file
+				,line
+				,symbol_name
+		);
 
-		// copy class symbol props...
-		symbol->file=file;
-		symbol->line=line;
-		//symbol->idx_position=symbol_member_variables->count;
-		symbol->n_params=NO_PARAMS_SYMBOL_ONLY;
 		symbol->ref_ptr=ref_ptr;
-		symbol->name=symbol_name;
 		symbol->str_native_type = str_native_type;
 		symbol->properties=symbol_properties;
-
 		return symbol;
 	}
 	//---------------------------------------------------
@@ -151,12 +157,9 @@ namespace zetscript{
 			);
 		}
 
-		symbol_attrib = new Symbol();
-		symbol_attrib->name=attrib_name;
+		symbol_attrib = class_scope->registerSymbolVariable(file,line,attrib_name);
 		symbol_attrib->ref_ptr=(zs_int)(new MemberAttribute(attrib_name));
 		symbol_attrib->properties=SYMBOL_PROPERTY_MEMBER_ATTRIBUTE;
-		//symbol_attrib->idx_position=symbol_member_variables->count;
-		//symbol_member_variables->push_back((zs_int)symbol_attrib);
 		allocated_member_attributes->push_back(symbol_attrib->ref_ptr);
 
 		return symbol_attrib;
@@ -473,6 +476,7 @@ namespace zetscript{
 	){
 
 		if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
+
 			if(getSymbol(function_name,(char)params.size(),false) != NULL){ // we only search repeat symbols on this class ...
 				Symbol *existing_symbol;
 				if((existing_symbol=getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
@@ -492,7 +496,7 @@ namespace zetscript{
 
 		Symbol *function_symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
-				symbol_class.scope
+				class_scope
 				,file
 				,line
 				//---- Function data
@@ -518,7 +522,7 @@ namespace zetscript{
 
 
 		// constructor...
-		if(function_name == this->symbol_class.name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
+		if(function_name == this->class_name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
 			idx_function_member_constructor = function_symbol->idx_position;
 		}
 		else{
@@ -536,13 +540,13 @@ namespace zetscript{
 					// can be one parameter or 0 params...
 					if(byte_code_metamethod_should_be_static(op) && ((symbol_properties & SYMBOL_PROPERTY_STATIC)==0)){
 						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as static instead of member"
-							,symbol_class.name.c_str()
+							,class_name.c_str()
 							,function_name.c_str()
 						);
 						return NULL;
 					}else if((byte_code_metamethod_should_be_static(op)==false) && ((symbol_properties & SYMBOL_PROPERTY_STATIC))){
 						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as member instead of static"
-							,symbol_class.name.c_str()
+							,class_name.c_str()
 							,function_name.c_str()
 						);
 						return NULL;
@@ -553,9 +557,9 @@ namespace zetscript{
 						if((symbol_result=getSymbol(function_name,(char)params.size())) != NULL){
 
 							THROW_RUNTIME_ERROR("Metamethod '%s::%s' is already defined at '%s::%s' (%s:%i). Metamethods cannot be override"
-								,symbol_class.name.c_str()
+								,class_name.c_str()
 								,function_name.c_str()
-								,symbol_result->scope->script_class->symbol_class.name.c_str()
+								,symbol_result->scope->script_class->class_name.c_str()
 								,function_name.c_str()
 								,zs_path::get_filename(symbol_result->file).c_str()
 								,symbol_result->line
@@ -565,7 +569,7 @@ namespace zetscript{
 					}else{ // native
 						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(idx_return_type == IDX_BUILTIN_TYPE_STRING_PTR_C || idx_return_type == IDX_BUILTIN_TYPE_STRING_C) ){
 							THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return std::string * or std::string *"
-								,symbol_class.name.c_str()
+								,class_name.c_str()
 								,function_name.c_str()
 							);
 							return NULL;
@@ -588,13 +592,13 @@ namespace zetscript{
 					// everything ok
 					if(/*op==BYTE_CODE_METAMETHOD_GET || */op==BYTE_CODE_METAMETHOD_SET){
 						if(setter_getter == NULL){
-							setter_getter = new MemberAttribute(symbol_class.name);
+							setter_getter = new MemberAttribute(class_name);
 						}
 
 							if(setter_getter->setters.count>0 && ((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0)){
 							// error already set (script functions only can be set once)
 							THROW_RUNTIME_ERROR("Setter '%s::_set' already set"
-									,symbol_class.name.c_str()
+									,class_name.c_str()
 							);
 							return NULL;
 						}
@@ -606,14 +610,12 @@ namespace zetscript{
 			}
 		}
 
-		//symbol_member_functions->push_back((zs_int)function_symbol);
-
 		return function_symbol;
 	}
 	//---------------------------------------------------------
 	Symbol *    ScriptClass::getSymbolVariableMember(const std::string & symbol_name, bool include_inherited_symbols){
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_variables;
-		zs_vector *list=this->symbol_class.scope->symbol_variables;
+		zs_vector *list=this->class_scope->symbol_variables;
 
 		for(
 				int i = (int)(list->count-1);
@@ -632,7 +634,7 @@ namespace zetscript{
 	Symbol *    ScriptClass::getSymbolMemberFunction(const std::string & symbol_name, char n_params, bool include_inherited_symbols){
 		bool only_symbol=n_params<0;
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_functions;
-		zs_vector *symbol_functions=this->symbol_class.scope->symbol_functions;
+		zs_vector *symbol_functions=this->class_scope->symbol_functions;
 
 		for(
 				int i = (int)(symbol_functions->count-1);
@@ -672,7 +674,7 @@ namespace zetscript{
 		for(unsigned i=0; i < allocated_member_attributes->count; i++){
 			Symbol *symbol=(Symbol *)allocated_member_attributes->items[i];
 #ifdef __DEBUG__
-			ZS_LOG_DEBUG("Deallocating member attribute '%s::%s'",this->symbol_class.name.c_str(),symbol->name.c_str());
+			ZS_LOG_DEBUG("Deallocating member attribute '%s::%s'",this->name.c_str(),symbol->name.c_str());
 #endif
 			if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 				delete (MemberAttribute *)symbol->ref_ptr;

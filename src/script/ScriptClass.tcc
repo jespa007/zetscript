@@ -301,7 +301,7 @@ namespace zetscript{
 
 
 
-		ZS_LOG_DEBUG("Registered member function name %s::%s",this->symbol_class.name.c_str(), function_name.c_str());
+		ZS_LOG_DEBUG("Registered member function name %s::%s",this->name.c_str(), function_name.c_str());
 
 		// check whether is static metamethod...
 		if(ZS_STRCMP(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET),!=,function_name.c_str())){
@@ -321,14 +321,14 @@ namespace zetscript{
 						// return type must be bool...
 						if(ZS_STRCMP(return_type.c_str(), != ,typeid(bool).name())){
 							THROW_RUNTIME_ERROR("error registering metamethod %s::%s. Expected return bool but it was %s",
-									this->symbol_class.name.c_str(),
+									this->class_name.c_str(),
 									function_name,
 									zs_rtti::demangle(return_type.c_str()).c_str());
 						}
 					}else if((return_type != this->str_class_ptr_type) && (i!= BYTE_CODE_METAMETHOD_SET)){
 
 						THROW_RUNTIME_ERROR("error registering metamethod %s::%s. Expected return %s but it was %s",
-								this->symbol_class.name.c_str(),
+								this->class_name.c_str(),
 								function_name,
 								zs_rtti::demangle(return_type.c_str()).c_str());
 					}
@@ -359,22 +359,35 @@ namespace zetscript{
 		std::vector<ScriptFunctionParam> param_info;
 		std::string error;
 		
-		std::string function_class_name = this->symbol_class.name+"::"+function_name;
+		std::string function_class_name = this->class_name+"::"+function_name;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,param_info);
 
 		if(param_info.size()==0){
-			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s'",function_class_name.c_str(),this->symbol_class.str_native_type.c_str(),this->symbol_class.str_native_type.c_str());
+			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s'"
+				,function_class_name.c_str()
+				,this->str_class_ptr_type.c_str()
+				,this->str_class_ptr_type.c_str()
+			);
 		}
 
 		ScriptClass * c_class_first_arg=	getScriptClass(param_info[0].idx_type);
 		if(c_class_first_arg == NULL){
-			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s')",function_class_name.c_str(),this->symbol_class.str_native_type.c_str(),this->symbol_class.str_native_type.c_str());
+			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s')"
+				,function_class_name.c_str()
+				,this->str_class_ptr_type.c_str()
+				,this->str_class_ptr_type.c_str()
+			);
 		}
 
 		if(c_class_first_arg->str_class_ptr_type !=  this->str_class_ptr_type){
-			THROW_RUNTIME_ERROR("register native member function '%s::%s': expected to have FIRST parameter as pointer type '%s' but it was '%s')",function_class_name.c_str(),this->symbol_class.str_native_type.c_str(),this->symbol_class.str_native_type.c_str(),param_info[0].param_name.c_str());
+			THROW_RUNTIME_ERROR("register native member function '%s::%s': expected to have FIRST parameter as pointer type '%s' but it was '%s')"
+				,function_class_name.c_str()
+				,this->str_class_ptr_type.c_str()
+				,this->str_class_ptr_type.c_str()
+				,param_info[0].param_name.c_str()
+			);
 		}
 
 

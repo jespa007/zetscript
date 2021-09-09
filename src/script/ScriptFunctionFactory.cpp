@@ -35,6 +35,7 @@ namespace zetscript{
 				,line
 				,function_name
 				,(char)args.size()
+				,properties & SYMBOL_PROPERTY_C_OBJECT_REF? REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS:REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
 		);
 
 		short idx_script_function = script_functions->count;

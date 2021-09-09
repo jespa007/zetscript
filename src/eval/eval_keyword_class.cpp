@@ -113,7 +113,7 @@ namespace zetscript{
 									eval_data
 									,aux_p
 									, line
-									,sc->symbol_class.scope // pass class scope
+									,sc->class_scope // pass class scope
 								);
 								break;
 						case Keyword::KEYWORD_UNKNOWN: // supposes a member function
@@ -121,7 +121,7 @@ namespace zetscript{
 							aux_p=eval_keyword_function(eval_data
 									,aux_p
 									, line
-									,sc->symbol_class.scope
+									,sc->class_scope
 							);
 
 							break;
@@ -131,7 +131,7 @@ namespace zetscript{
 									eval_data
 									,aux_p
 									, line
-									,sc->symbol_class.scope // pass class scope
+									,sc->class_scope // pass class scope
 								);
 
 								if(aux_p != NULL){ // particular case where var declaration ends with ';'
@@ -281,8 +281,8 @@ namespace zetscript{
 		char *end_var = NULL;
 		std::string attrib_name="";
 		int attrib_start_line;
-		std::string class_attribute_name=sc->symbol_class.name;
-		Scope *scope_info=sc->symbol_class.scope;
+		std::string class_attribute_name=sc->class_name;
+		Scope *scope_info=sc->class_scope;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
