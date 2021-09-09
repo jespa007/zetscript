@@ -61,7 +61,7 @@ namespace zetscript{
 
 #define GET_ILOAD_R_STR(properties,value) \
 	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->symbol_variables->items[value])->name.c_str()\
-	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_member_variables->items[value])->name.c_str()\
+	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->symbol_class.scope->symbol_variables->items[value])->name.c_str()\
 	:((Symbol *)MAIN_FUNCTION(sfo)->symbol_variables->items[value])->name.c_str()\
 
 
@@ -359,7 +359,7 @@ namespace zetscript{
 		StackElement *se=NULL;
 
 
-		if((symbol=scope_block->registerSymbol(file,line, symbol_name, NO_PARAMS_SYMBOL_ONLY,  SCOPE_DIRECTION_CURRENT))==NULL){
+		if((symbol=scope_block->registerSymbolVariable(file,line, symbol_name, CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL))==NULL){
 				return NULL;
 		}
 
@@ -386,7 +386,7 @@ namespace zetscript{
 		//short idx_position=(short)symbol_variables->count;
 		StackElement *se=NULL;
 
-		if((symbol=scope_block->registerSymbol(file,line, symbol_name /*,var_node*/))==NULL){
+		if((symbol=scope_block->registerSymbolVariable(file,line, symbol_name ))==NULL){
 				return NULL;
 		}
 
@@ -432,7 +432,7 @@ namespace zetscript{
 			,zs_int ref_ptr
 			, unsigned short properties
 	){
-		Symbol *symbol_found=scope_block->getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY,SCOPE_DIRECTION_DOWN),*symbol=NULL;
+		Symbol *symbol_found=scope_block->getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY,CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
 		std::string current_file_line=ZS_CONST_STR_IS_EMPTY(file)?
 							zs_strutils::format("[line %i]",line):
 							zs_strutils::format("[%s:%i]",zs_path::get_filename(file).c_str(),line);
@@ -491,7 +491,7 @@ namespace zetscript{
 				,line
 				//---- Function data
 				,idx_class 				// idx class which belongs to...
-				,symbol_registered_functions->count // idx symbol ...
+				//,symbol_registered_functions->count // idx symbol ...
 				,function_name
 				,_params
 				,idx_return_type
@@ -499,7 +499,7 @@ namespace zetscript{
 				,properties
 		);
 
-		symbol->idx_position=idx_position;
+		//symbol->idx_position=idx_position;
 
 		// register num symbols only for c symbols...
 		if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF != 0) && symbol_found!=NULL){
@@ -507,7 +507,7 @@ namespace zetscript{
 			((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
 		}
 
-		symbol_registered_functions->push_back((zs_int)symbol);
+		//symbol_registered_functions->push_back((zs_int)symbol);
 
 
 		return symbol;

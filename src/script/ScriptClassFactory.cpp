@@ -354,7 +354,7 @@ namespace zetscript{
 			 , short line
 	){
 		int  index;
-		ScriptClass *sci=NULL;
+		ScriptClass *sc=NULL;
 
 		checkClassName(class_name);
 
@@ -366,19 +366,19 @@ namespace zetscript{
 			// register symbol on main scope...
 			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolClass(file,line,class_name);
 
-			sci = new ScriptClass(this->zs,script_classes->count,symbol);
-			scope->setScriptClass(sci);
+			sc = new ScriptClass(this->zs,script_classes->count,symbol);
+			scope->setScriptClass(sc);
 
-			sci->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
+			sc->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
 
-			script_classes->push_back((zs_int)sci);
+			script_classes->push_back((zs_int)sc);
 
 			if(base_class_name != ""){
 
 				ScriptClass *base_class=NULL;
 
-				if(sci->idx_base_classes->count > 0){
-					ScriptClass *match_class=getScriptClass(sci->idx_base_classes->items[0]);
+				if(sc->idx_base_classes->count > 0){
+					ScriptClass *match_class=getScriptClass(sc->idx_base_classes->items[0]);
 					THROW_RUNTIME_ERROR("Class \"%s\" already is inherited from \"%s\"",class_name.c_str(),match_class->symbol_class.name.c_str());
 				}
 
@@ -409,7 +409,7 @@ namespace zetscript{
 				}
 
 				// set idx starting member
-				sci->idx_starting_this_member_functions=sci->symbol_functions->count;
+				sc->idx_starting_this_member_functions=sc->symbol_class.scope->symbol_functions->count;
 
 				// 1. extend all symbols from base class
 				zs_vector *symbol_variables=base_class->symbol_class.scope->symbol_variables;
@@ -440,35 +440,30 @@ namespace zetscript{
 
 						}
 
-						sci->symbol_member_variables_allocated->push_back((zs_int)ma_dst);
+						sc->allocated_member_attributes->push_back((zs_int)ma_dst);
 						symbol_dst->ref_ptr=(zs_int)ma_dst;
 					}
-
-
-
-
 				}
 
 				// set idx starting member
-				sci->idx_starting_this_member_variables=sci->symbol_member_variables->count;
+				sc->idx_starting_this_member_variables=sc->symbol_class.scope->symbol_variables->count;
 
 				// 2. set idx base class...
-				sci->idx_base_classes->push_back(base_class->idx_class);
+				sc->idx_base_classes->push_back(base_class->idx_class);
 			}
 
-			if(sci->idx_class != IDX_SCRIPT_CLASS_MAIN){ // main class has no field initializers and reserve first function as main function
+			if(sc->idx_class != IDX_SCRIPT_CLASS_MAIN){ // main class has no field initializers and reserve first function as main function
 				std::string error="";
 				Symbol *symbol_field_initializer=NULL;
 
-				symbol_field_initializer=sci->registerMemberFunction(
-					zs_strutils::format("__@field_initializer_%s_@__",sci->symbol_class.name.c_str())
+				symbol_field_initializer=sc->registerMemberFunction(
+					zs_strutils::format("__@field_initializer_%s_@__",sc->symbol_class.name.c_str())
 				);
 
-				sci->sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;
-
+				sc->sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;
 			}
 
-			return sci;
+			return sc;
 		}else{
 			THROW_RUNTIME_ERROR("class \"%s\" already registered",class_name.c_str());
 		}
