@@ -15,7 +15,6 @@ namespace zetscript{
 		 return ((properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0)
 				 	 &&
 				this->c_constructor == NULL;
-
 	}
 	//------------------------------------------------------------
 
@@ -34,13 +33,9 @@ namespace zetscript{
 		idx_class=_idx_class;
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
-		//symbol_class=*_symbol_class;
 		class_name=_class_name;
 		class_scope=_class_scope;
 		str_class_ptr_type=_str_class_ptr_type;
-
-		//symbol_member_variables=new zs_vector();
-		//symbol_member_functions=new zs_vector();
 		allocated_member_attributes=new zs_vector();
 
 		idx_base_classes=new zs_vector;
@@ -672,24 +667,11 @@ namespace zetscript{
 	ScriptClass::~ScriptClass(){
 
 		for(unsigned i=0; i < allocated_member_attributes->count; i++){
-			Symbol *symbol=(Symbol *)allocated_member_attributes->items[i];
-#ifdef __DEBUG__
-			ZS_LOG_DEBUG("Deallocating member attribute '%s::%s'",this->name.c_str(),symbol->name.c_str());
-#endif
-			if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
-				delete (MemberAttribute *)symbol->ref_ptr;
-			}
-			delete symbol; // symbol variable member was created before
+			MemberAttribute *ma=(MemberAttribute *)allocated_member_attributes->items[i];
+			delete ma;
 		}
+
 		delete allocated_member_attributes;
-
-		// delete symbol vector...
-		//delete symbol_member_variables;
-		//delete symbol_member_functions;
-		//symbol_member_variables=NULL;
-		//symbol_member_functions=NULL;
-
-
 		delete idx_base_classes;
 
 		if(setter_getter != NULL){

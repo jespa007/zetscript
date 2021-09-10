@@ -555,13 +555,6 @@ namespace zetscript{
 	ScriptFunction::~ScriptFunction(){
 		clear();
 
-		delete [] params;
-		params_count=0;
-		params=NULL;
-
-		//delete symbol_registered_functions;
-		//symbol_registered_functions=NULL;
-
 		delete symbol_variables;
 		symbol_variables=NULL;
 	}

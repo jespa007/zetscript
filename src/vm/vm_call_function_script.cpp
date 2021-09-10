@@ -413,16 +413,12 @@ namespace zetscript{
 #endif
 
 		// Init local vars ...
-		if(calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN){
-			if(symbols_count > 0){
-				data->vm_current_scope_function++;
-				data->vm_current_scope_function->scope_current=data->vm_current_scope_function->scope;
-				data->vm_current_scope_function->stk_local_vars=_stk_local_var;
-				PUSH_VM_SCOPE(calling_function->symbol.scope);
-
-				// I have to clear variables on each function ?
-				//memset(ptr_aux,0,sizeof(StackElement)*symbols_count);
-			}
+		data->vm_current_scope_function->scope_current = NULL;
+		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (symbols_count > 0)){
+			data->vm_current_scope_function++;
+			data->vm_current_scope_function->scope_current=data->vm_current_scope_function->scope+1;
+			data->vm_current_scope_function->stk_local_vars=_stk_local_var;
+			PUSH_VM_SCOPE(calling_function->symbol.scope);
 		}
 
 		//-----------------------------------------------------------------------------------------------------------------------
@@ -1904,8 +1900,29 @@ execute_function:
 
 		//=========================
 		// POP STACK
-		while(data->vm_current_scope_function->scope_current < data->vm_current_scope_function->scope){
-			POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
+		while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
+			//POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
+
+			{\
+				Scope *scope=*data->vm_current_scope_function->scope_current-1;\
+				StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
+				zs_vector *scope_symbols=scope->symbol_variables;\
+				StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\
+				int count=scope_symbols->count;\
+				while(count--){\
+					if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
+						ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
+						if(so != NULL && so->shared_pointer!=NULL){\
+							if(vm_unref_shared_script_object(vm,so,data->vm_idx_call)==false){\
+								return;\
+							}\
+						}\
+					}\
+					STK_SET_NULL(stk_local_var);\
+					stk_local_var++;\
+				}\
+				--data->vm_current_scope_function->scope_current;\
+			}
 		}
 
 		if((data->zero_shares+data->vm_idx_call)->first!=NULL){
