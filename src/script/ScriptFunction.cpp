@@ -25,7 +25,7 @@ namespace zetscript{
 		symbol=*_symbol;
 
 		// local symbols for class or function...
-		symbol_variables=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
+		local_variables=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
 		//symbol_registered_functions=new zs_vector(); // std::vector<ScopeSymbolInfo> member variables to be copied in every new instance
 		//registered_functions=new zs_vector(); // std::vector<ScriptFunction *> idx member functions (from main std::vector collection)
 		params = NULL;//new zs_vector();
@@ -60,16 +60,16 @@ namespace zetscript{
 
 
 #define GET_ILOAD_R_STR(properties,value) \
-	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->symbol_variables->items[value])->name.c_str()\
+	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->local_variables->items[value])->name.c_str()\
 	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->class_scope->symbol_variables->items[value])->name.c_str()\
-	:((Symbol *)MAIN_FUNCTION(sfo)->symbol_variables->items[value])->name.c_str()\
+	:((Symbol *)MAIN_FUNCTION(sfo)->local_variables->items[value])->name.c_str()\
 
 
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc){
 
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
-		zs_vector * m_vf = sfo->symbol_variables;
+		zs_vector * m_vf = sfo->local_variables;
 
 		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
@@ -355,7 +355,7 @@ namespace zetscript{
 			, uint16_t properties
 	){
 		Symbol * symbol=NULL;
-		short idx_position=(short)symbol_variables->count;
+		short idx_position=(short)local_variables->count;
 		StackElement *se=NULL;
 
 
@@ -366,7 +366,7 @@ namespace zetscript{
 		symbol->properties=properties;
 		symbol->idx_position = idx_position;
 
-		symbol_variables->push_back((zs_int)symbol);
+		local_variables->push_back((zs_int)symbol);
 
 		return symbol;
 	}
@@ -539,7 +539,7 @@ namespace zetscript{
 	void ScriptFunction::clear(){
 		// delete symbols refs from scope...
 		//symbol_registered_functions->clear();
-		symbol_variables->clear();
+		local_variables->clear();
 
 		// delete arg info variables...
 		clearParams();
@@ -555,8 +555,8 @@ namespace zetscript{
 	ScriptFunction::~ScriptFunction(){
 		clear();
 
-		delete symbol_variables;
-		symbol_variables=NULL;
+		delete local_variables;
+		local_variables=NULL;
 	}
 
 }

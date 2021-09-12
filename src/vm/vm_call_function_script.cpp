@@ -392,8 +392,8 @@ namespace zetscript{
 		Instruction *instruction_it=instructions;
 		//VM_ScopeFunction * vm_scope_start=data->vm_current_scope_function; // save current scope...
 		Scope * scope = calling_function->symbol.scope;// ast->idx_scope;
-		zs_vector *registered_symbols=calling_function->symbol_variables;
-		unsigned symbols_count=registered_symbols->count;
+		zs_vector *local_variables=calling_function->local_variables;
+		unsigned symbols_count=local_variables->count;
 		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
 
 
@@ -1623,7 +1623,7 @@ execute_function:
 						,sf_call_stk_start_arg_call
 						,sf_call_n_args
 					);
-					sf_call_n_local_symbols=sf_call_script_function->symbol_variables->count;
+					sf_call_n_local_symbols=sf_call_script_function->local_variables->count;
 				}
 				else{ // C function
 					if(sf_call_script_function->symbol.properties & SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME){

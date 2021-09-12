@@ -20,7 +20,7 @@ namespace zetscript{
 		zs=_zs;
 		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
 		scope_factory=_zs->getScopeFactory();
-		registered_scopes=new zs_vector;
+		scopes=new zs_vector;
 		symbol_variables=new zs_vector;
 		symbol_functions=new zs_vector;
 		symbol_classes=new zs_vector;
@@ -55,36 +55,50 @@ namespace zetscript{
 		return idx_script_function;
 	}
 
-	int Scope::maxInnerScopesRecursive(Scope *sc, int n){
+	int Scope::numInnerScopesRecursive(Scope *sc, int n){
 
-		if(sc->registered_scopes->count==0){ // trivial case
-			return n;
+		if(sc->scope_parent!=NULL){
+			return numInnerScopesRecursive(sc->scope_parent, n+1);
 		}
 
-		int max_n=n;
-		for(unsigned i = 0; i < sc->registered_scopes->count; i++){
-			max_n=MAX(max_n,maxInnerScopesRecursive(sc, n+1));
-		}
-
-		return max_n;
+		return n;
 	}
 
 
-	int Scope::maxInnerScopes(){
-		return maxInnerScopesRecursive(this,1);
+	int Scope::numInnerScopes(){
+		return numInnerScopesRecursive(this,1);
 	}
+
+	int Scope::countVariables(bool _recursive){
+		if(_recursive){
+			return Scope::countVariablesRecursive(this);
+		}
+
+		return this->symbol_variables->count;
+
+	}
+
+	int Scope::countVariablesRecursive(Scope *_sc){
+		int n_total=this->symbol_variables->count;
+		for(int i=0; i < this->scopes->count; i++){
+			n_total+=Scope::countVariablesRecursive(this->scopes->items[i]);
+		}
+
+		return n_total;
+	}
+
 
 	void						   Scope::markAsUnusued(){
 
 		// because no variables in there...
 		if(scope_parent != NULL){
-			for(unsigned i=0;i < registered_scopes->count; i++){
-				Scope *current_scope=(Scope *)registered_scopes->items[i];
-				scope_parent->registered_scopes->push_back((zs_int)current_scope);
+			for(unsigned i=0;i < scopes->count; i++){
+				Scope *current_scope=(Scope *)scopes->items[i];
+				scope_parent->scopes->push_back((zs_int)current_scope);
 				current_scope->scope_parent = scope_parent;
 			}
 
-			registered_scopes->clear();
+			scopes->clear();
 		}
 
 		// mark as unused, late we can remove safely check unusued flag...
@@ -241,8 +255,8 @@ namespace zetscript{
 		}
 
 		if(scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP){
-			for(unsigned i = 0; i < registered_scopes->count; i++){
-				Scope *s=(Scope *)registered_scopes->items[i];
+			for(unsigned i = 0; i < scopes->count; i++){
+				Scope *s=(Scope *)scopes->items[i];
 
 				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
 					Symbol *sv=s->getSymbol(str_symbol,n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP);
@@ -288,8 +302,8 @@ namespace zetscript{
 	Scope::~Scope(){
 
 		// delete scope found
-		delete registered_scopes;
-		registered_scopes=NULL;
+		delete scopes;
+		scopes=NULL;
 
 		// delete local local_symbols found...
 		for(unsigned i = 0; i < symbol_classes->count; i++){

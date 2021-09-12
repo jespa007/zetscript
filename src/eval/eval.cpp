@@ -53,7 +53,7 @@ namespace zetscript{
 
 		if(sf != MAIN_FUNCTION(eval_data)){
 			scope_info = zs->getScopeFactory()->newScope(sf->idx_script_function,MAIN_SCOPE(eval_data));
-			MAIN_SCOPE(eval_data)->registered_scopes->push_back((zs_int)scope_info);
+			MAIN_SCOPE(eval_data)->scopes->push_back((zs_int)scope_info);
 
 			if(function_args != NULL){
 
@@ -235,7 +235,7 @@ namespace zetscript{
 
 	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_scope_function){
 		Scope *new_scope = NEW_SCOPE(eval_data,eval_data->current_function->script_function->idx_script_function,scope_parent);
-		scope_parent->registered_scopes->push_back((zs_int)new_scope);
+		scope_parent->scopes->push_back((zs_int)new_scope);
 		new_scope->is_scope_function=is_scope_function;
 		if(is_scope_function){
 			new_scope->tmp_idx_instruction_push_scope=0;
@@ -275,6 +275,10 @@ namespace zetscript{
 		if(*aux_p == '{'){
 			bool is_function = sf!=NULL && args != NULL;
 			aux_p++;
+
+			if(scope_info->numInnerScopes() >= MAX_INNER_SCOPES_FUNCTION){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Reacged max scopes (Max: %i)",MAX_INNER_SCOPES_FUNCTION);
+			}
 
 			new_scope_info = eval_new_scope(eval_data,scope_info,is_function); // special case... ast is created later ...
 
@@ -490,6 +494,7 @@ namespace zetscript{
 
 	}
 
+
 	int eval_pop_and_compile_function(EvalData *eval_data){
 
 		std::string static_error;
@@ -514,6 +519,17 @@ namespace zetscript{
 		int ok=FALSE;
 		const char *str_aux=NULL;
 		//int idx_instruction=0;
+		{
+			eval_data->current_function->script_function->local_variables->clear();/*_len=eval_data->current_function->script_function->symbol.scope->numVariables();
+			eval_data->current_function->variables=malloc(sizeof(Symbol)*eval_data->current_function->variables_len);*/
+			size_t n_variables=eval_data->current_function->script_function->symbol.scope->countVariables(true);
+
+
+
+		}
+
+
+
 
 
 		for(unsigned i=0; i < eval_data->current_function->instructions.size(); i++){

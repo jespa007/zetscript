@@ -221,7 +221,7 @@ namespace zetscript{
 
 	StackElement * vm_get_stack_element_at(VirtualMachine *vm,unsigned int idx_glb_element){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(idx_glb_element < data->main_function_object->symbol_variables->count){
+		if(idx_glb_element < data->main_function_object->local_variables->count){
 			return &data->vm_stack[idx_glb_element];
 		}else{
 			VM_SET_USER_ERROR(vm,"getStackElement: out of bounds");
@@ -269,7 +269,7 @@ namespace zetscript{
 			data->vm_error_callstack_str="";
 
 			stk_start=data->vm_stack;
-			n_stk_params=data->main_function_object->symbol_variables->count;
+			n_stk_params=data->main_function_object->local_variables->count;
 
 			// calls script function from C : preserve stack space for global vars to avoid
 			//stk_start=&data->vm_stack[data->main_function_object->registered_symbols->count];
@@ -279,7 +279,7 @@ namespace zetscript{
 				data->vm_idx_call=1; // is calling from application set as 1 to make sure it not become conflict with global vars
 			}*/
 			stk_start=data->stk_vm_current;
-			StackElement *min_stk=&data->vm_stack[data->main_function_object->symbol_variables->count];
+			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->count];
 
 			if (properties & VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE){
 				data->vm_idx_call = 1;
@@ -312,7 +312,7 @@ namespace zetscript{
 			vm_do_stack_dump(vm);
 			throw std::runtime_error(data->vm_error_str+data->vm_error_callstack_str);
 		}else{
-			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+calling_function->symbol_variables->count);
+			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+calling_function->local_variables->count);
 
 			if(n_returned_arguments_from_function > 0){
 

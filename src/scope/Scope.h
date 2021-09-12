@@ -29,7 +29,7 @@ namespace zetscript{
 		bool unusued;
 		Scope 		*scope_parent, *scope_base;
 
-		zs_vector				*registered_scopes;  // local scopes from starting block { }
+		zs_vector				*scopes;  // local scopes from starting block { }
 		zs_vector				*symbol_variables; // variable symbols from starting block { }
 		zs_vector				*symbol_functions; // function symbols from starting block { }
 		zs_vector				*symbol_classes; // function symbols from starting block { }
@@ -61,7 +61,9 @@ namespace zetscript{
 		void setScriptClass(ScriptClass *sc);
 		ScriptClass * getScriptClass();
 		int getIdxScriptFunction();
-		int maxInnerScopes();
+		int numInnerScopes();
+
+		int countVariables(bool _recursive=false);
 
 
 		~Scope();
@@ -78,7 +80,8 @@ namespace zetscript{
 		Symbol * getSymbolRecursiveDownScope(const std::string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		Symbol * getSymbolRecursiveUpScope(const std::string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
 
-		int maxInnerScopesRecursive(Scope *sc, int n);
+		int numInnerScopesRecursive(Scope *sc, int n);
+		int countVariablesRecursive(Scope *sc);
 
 
 	};

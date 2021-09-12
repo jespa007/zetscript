@@ -44,11 +44,11 @@ namespace zetscript{
 
 		// erase all local scopes in the main scope
 		for (
-				int v = main_scope->registered_scopes->count-1;
+				int v = main_scope->scopes->count-1;
 				v > idx_start_global_scopes ;
 				v--) {
 			// Only pop-back, don't delete because they were deleted on previous loop
-			main_scope->registered_scopes->pop_back();
+			main_scope->scopes->pop_back();
 
 		}
 		//clearGlobalSymbols();
@@ -62,7 +62,7 @@ namespace zetscript{
 		idx_clear_global_checkpoint_global_symbol_registered_variables=main_scope->symbol_variables->count-1;
 		idx_clear_global_checkpoint_global_symbol_registered_functions=main_scope->symbol_functions->count-1;
 
-		idx_clear_global_checkpoint_global_scopes=main_scope->registered_scopes->count-1;
+		idx_clear_global_checkpoint_global_scopes=main_scope->scopes->count-1;
 
 	}
 /*
