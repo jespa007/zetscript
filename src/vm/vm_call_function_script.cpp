@@ -262,8 +262,7 @@
 }
 
 #define PUSH_VM_SCOPE(_scope)\
-	 *data->vm_current_scope_function->scope=(Scope *)_scope;\
-	 data->vm_current_scope_function++;\
+	 *data->vm_current_scope_function->scope_current++=(Scope *)_scope;
 
 #define LOAD_FROM_STACK(offset,properties) \
 	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? _stk_local_var+offset \
@@ -414,10 +413,11 @@ namespace zetscript{
 
 		// Init local vars ...
 		data->vm_current_scope_function->scope_current = NULL;
+		data->vm_current_scope_function++;
+		data->vm_current_scope_function->scope_current=data->vm_current_scope_function->scope;
+		data->vm_current_scope_function->stk_local_vars=_stk_local_var;
+
 		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (symbols_count > 0)){
-			data->vm_current_scope_function++;
-			data->vm_current_scope_function->scope_current=data->vm_current_scope_function->scope+1;
-			data->vm_current_scope_function->stk_local_vars=_stk_local_var;
 			PUSH_VM_SCOPE(calling_function->symbol.scope);
 		}
 
@@ -1904,7 +1904,7 @@ execute_function:
 			//POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
 
 			{\
-				Scope *scope=*data->vm_current_scope_function->scope_current-1;\
+				Scope *scope=*(data->vm_current_scope_function->scope_current-1);\
 				StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
 				zs_vector *scope_symbols=scope->symbol_variables;\
 				StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\

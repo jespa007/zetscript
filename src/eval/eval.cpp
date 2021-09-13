@@ -281,6 +281,10 @@ namespace zetscript{
 			new_scope_info = eval_new_scope(eval_data,scope_info,is_function); // special case... ast is created later ...
 
 			if(is_function){
+
+				// set scope to the function
+				sf->symbol.scope=new_scope_info;
+
 				// register args as part of stack...
 				for(unsigned i=0; i < args->size(); i++){
 					try{
@@ -535,9 +539,7 @@ namespace zetscript{
 
 		if(n_var_fun != n_var_scope){
 			EVAL_ERROR(
-				__FILE__
-				,__LINE__
-				, "internal: n_var_fun != n_var_scope (%i!=%i)"
+				 "internal: n_var_fun != n_var_scope (%i!=%i)"
 				,n_var_fun
 				,n_var_scope
 			);
