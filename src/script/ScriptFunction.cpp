@@ -59,9 +59,6 @@ namespace zetscript{
 :"Global"\
 
 
-#define ILOAD_ACCESS_IS_GLOBAL(properies) \
- ((properties) & (INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) == 0)
-
 
 
 

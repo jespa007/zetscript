@@ -81,7 +81,7 @@ namespace zetscript{
 	int Scope::countVariablesRecursive(Scope *_sc){
 		int n_total=this->symbol_variables->count;
 		for(int i=0; i < this->scopes->count; i++){
-			n_total+=Scope::countVariablesRecursive(this->scopes->items[i]);
+			n_total+=Scope::countVariablesRecursive((Scope *)this->scopes->items[i]);
 		}
 
 		return n_total;
