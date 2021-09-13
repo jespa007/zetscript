@@ -494,6 +494,39 @@ namespace zetscript{
 
 	}
 
+	void eval_create_lookup_linear_local_var_recursive(Scope  *current_scope, short *lookup_table, int & n_variable){
+		for(int i=0; i < current_scope->symbol_variables->count; i++){
+			Symbol *s=current_scope->symbol_variables->items[i];
+			lookup_linear_stk[s->idx_position]=n_variable++;
+		}
+
+		for(int i=0; i < current_scope->scopes->count; i++){
+			eval_create_looktup_linear_local_var_recursive(current_scope->scopes->items[i],lookup_table,n_variable);
+		}
+	}
+
+	short *eval_create_lookup_linear_local_var(ScriptFunction *sf){
+		int n_var_fun=eval_data->current_function->script_function->local_variables->count();
+		int n_var_scope=eval_data->current_function->script_function->symbol.scope->countVariables(true);
+
+		if(n_var_fun != n_var_scope){
+			EVAL_ERROR(
+				 "internal: n_var_fun != n_var_scope (%i!=%i)"
+				,n_var_fun
+				,n_var_scope
+			);
+		}
+
+		short *lookup_linear_stk=(short *)malloc(sizeof(short)*n_var_fun);
+		Scope *current_scope=eval_data->current_function->script_function->symbol.scope;
+		int n_variable=0;
+
+		eval_create_stk_local_variable_lookup_recursive(current_scope,lookup_linear_stk,n_variable)
+
+
+		free(lookup_linear_stk);
+	}
+
 
 	int eval_pop_and_compile_function(EvalData *eval_data){
 
@@ -518,18 +551,8 @@ namespace zetscript{
 		//bool is_static = eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC;
 		int ok=FALSE;
 		const char *str_aux=NULL;
-		//int idx_instruction=0;
-		{
-			eval_data->current_function->script_function->local_variables->clear();/*_len=eval_data->current_function->script_function->symbol.scope->numVariables();
-			eval_data->current_function->variables=malloc(sizeof(Symbol)*eval_data->current_function->variables_len);*/
-			size_t n_variables=eval_data->current_function->script_function->symbol.scope->countVariables(true);
 
-
-
-		}
-
-
-
+		short *lookup_table=eval_create_lookup_linear_local_var(sf);
 
 
 		for(unsigned i=0; i < eval_data->current_function->instructions.size(); i++){
@@ -546,7 +569,6 @@ namespace zetscript{
 
 			// LOAD
 			case BYTE_CODE_LOAD_GLOBAL:
-			case BYTE_CODE_LOAD_LOCAL:
 			case BYTE_CODE_LOAD_REF:
 			case BYTE_CODE_LOAD_THIS:
 			case BYTE_CODE_LOAD_MEMBER_VAR:
@@ -657,6 +679,70 @@ namespace zetscript{
 				break;
 			}
 
+
+			// add any instruction that references global instruction
+			ByteCode byte_code=instruction->vm_instruction.byte_code;
+			uint16_t properties_1=instruction->vm_instruction.properties;
+			uint16_t properties_2=instruction->vm_instruction.value_op2 & 0xffff;
+			if(
+					byte_code == BYTE_CODE_LOAD_GLOBAL
+					|| byte_code == BYTE_CODE_PUSH_STK_GLOBAL
+					|| ((properties_1 & INSTRUCTION_PROPERTY_ILOAD_R) && ILOAD_ACCESS_IS_GLOBAL(properties_1))
+					|| ((properties_1 & INSTRUCTION_PROPERTY_ILOAD_KR) && ILOAD_ACCESS_IS_GLOBAL(properties_1))
+					|| ((properties_1 & INSTRUCTION_PROPERTY_ILOAD_RK) && ILOAD_ACCESS_IS_GLOBAL(properties_1))
+					|| ((properties_1 & INSTRUCTION_PROPERTY_ILOAD_RR) && ILOAD_ACCESS_IS_GLOBAL(properties_1))
+					|| ((properties_1 & INSTRUCTION_PROPERTY_ILOAD_RR) && ILOAD_ACCESS_IS_GLOBAL(properties_2))
+
+			){
+				eval_data->global_ref_instructions.push_back(instruction);
+			}else{ // local ?
+				switch(byte_code){ // reallocate instructions
+				case BYTE_CODE_LOAD_GLOBAL:
+				case BYTE_CODE_LOAD_REF:
+				case BYTE_CODE_PUSH_STK_LOCAL:
+					instruction->vm_instruction.value_op2=lookup_table[instruction->vm_instruction.value_op2];
+					break;
+				default:
+					// check if local access
+					if( (properties_1 & (INSTRUCTION_PROPERTY_ILOAD_R | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL))
+							==
+						(INSTRUCTION_PROPERTY_ILOAD_R | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)){
+
+						instruction->vm_instruction.value_op2=lookup_table[instruction->vm_instruction.value_op2];
+
+
+					}else if((properties_1 & (INSTRUCTION_PROPERTY_ILOAD_KR| INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL))
+							==
+						(INSTRUCTION_PROPERTY_ILOAD_KR| INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)
+					){
+
+						instruction->vm_instruction.value_op1=lookup_table[instruction->vm_instruction.value_op1];
+
+					}else if((properties_1 & (INSTRUCTION_PROPERTY_ILOAD_RK| INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL))
+								==
+						(INSTRUCTION_PROPERTY_ILOAD_RK| INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)
+					){
+						instruction->vm_instruction.value_op1=lookup_table[instruction->vm_instruction.value_op1];
+
+					}else{
+						if ((properties_1 & (INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL))
+											==
+							(INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)
+						){
+							instruction->vm_instruction.value_op1=lookup_table[instruction->vm_instruction.value_op1];
+						}
+
+						if ((properties_2 & (INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL))
+											==
+							(INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)
+						){
+							instruction->vm_instruction.value_op2=(lookup_table[instruction->vm_instruction.value_op2>>16]<<16) | properties_2;
+						}
+					}
+				}
+
+			}
+
 			// save instruction ...
 			sf->instructions[i]=instruction->vm_instruction;
 
@@ -670,6 +756,15 @@ namespace zetscript{
 
 			sf->instruction_source_info[i]=instruction_info;
 		}
+
+		// update variables symbol...
+		for(int i=0; i < sf->local_variables->count; i++){
+			// swap ??
+			sf->local_variables->items[i]=lookup_table[sf->local_variables->items[i]];
+		}
+
+
+		free(lookup_table);
 
 		ok=TRUE;
 

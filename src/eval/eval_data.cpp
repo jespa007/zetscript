@@ -292,6 +292,7 @@ namespace zetscript{
 		EvalFunction					* 		current_function;
 		std::vector<EvalFunction *> 	  		functions;
 		std::vector<UnresolvedInstructionInfo>	unresolved_symbols;
+		std::vector<Instruction *> 				global_ref_instructions;
 		int										parsing_loop;
 		//std::vector<std::vector<EvalInstruction *>>			loop_break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
 		//std::vector<LoopBreakContinueInfo>		loop_break_continue_info; // number of continue_jmp_instructions collected (should managed only on loops)

@@ -59,6 +59,12 @@ namespace zetscript{
 :"Global"\
 
 
+#define ILOAD_ACCESS_IS_GLOBAL(properies) \
+ ((properties) & (INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) == 0)
+
+
+
+
 #define GET_ILOAD_R_STR(properties,value) \
 	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->local_variables->items[value])->name.c_str()\
 	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->class_scope->symbol_variables->items[value])->name.c_str()\
