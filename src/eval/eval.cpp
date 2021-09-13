@@ -36,9 +36,7 @@ namespace zetscript{
 			, int _line
 			, ScriptFunction *_sf
 			, std::vector<ScriptFunctionParam> * function_args
-
-
-		){
+	){
 		EvalData *eval_data=new EvalData(zs);
 		char *aux_p=NULL;
 		int line =_line;
