@@ -65,7 +65,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 // defer all local vars
 #define POP_VM_SCOPE()\
 {\
-	Scope *scope=*data->vm_current_scope_function->scope_current;\
+	Scope *scope=*(data->vm_current_scope_function->scope_current-1);\
 	StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
 	zs_vector *scope_symbols=scope->symbol_variables;\
 	StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\

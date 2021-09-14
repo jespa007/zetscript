@@ -35,16 +35,10 @@
 #include        <memory.h>
 #include        <math.h>
 #include        <vector>
-#include        <stack>
 #include		<regex>
 #include        <new>
-#include        <iostream>
 #include 		<functional>
-#include 		<sstream>
 #include 		<string>
-#include 		<cstring>
-#include 		<list>
-#include 		<utility>
 #include 		<float.h>
 #include 		<cstdarg>
 #include 		<stdexcept>
@@ -83,11 +77,7 @@
 #include "script/zs_script.h"
 
 
-
-
-
 #include "eval/eval.h"
-#include "zetscript.h"
 
 
 #define ZETSCRIPT_VERSION_MAJOR 2

@@ -2,9 +2,12 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "zetscript.h"
+#include 		"zetscript.h"
+//#include        <iostream> //--> loads 244KB
 
 #define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2021 Jordi Espada\n",ZETSCRIPT_VERSION_MAJOR,ZETSCRIPT_VERSION_MINOR,ZETSCRIPT_VERSION_PATCH
+
+#define STR_EQUAL(a,b) (strcmp(a,b)==0)
 
 using namespace zetscript;
 
@@ -21,6 +24,7 @@ void show_usage(){
 
 
 int main(int argc, char * argv[]) {
+
 
 	ZetScript *zs = new ZetScript();
 	std::string file="";
@@ -65,34 +69,48 @@ int main(int argc, char * argv[]) {
 	if(zs_strutils::is_empty(file)){ // run interactive console
 
 		bool exit = false;
-		std::string expression;
+		char *expression=NULL;
+		size_t expression_len=0;
+		int readed_bytes=0;
 		printf(ZETSCRIP_COPYRIGHT);
 		printf("\n");
 
+
 		do{
 			printf("zs>");
-			std::getline(std::cin,expression);
-			if(expression=="clear"){
+			readed_bytes=zs_io::getline(&expression,&expression_len,stdin);
+
+			if(readed_bytes==-1){
+				continue;
+			}
+
+			if(STR_EQUAL(expression,"clear")){
 				printf("Clearing symbols...\n");
 				zs->clear();
 				continue;
 			}
 
-			if(expression=="save"){
+			if(STR_EQUAL(expression,"save")){
 				printf("Saving state...\n");
 				zs->saveState();
 				continue;
 			}
 
-			exit = expression=="exit" || expression=="quit";
+			exit = STR_EQUAL(expression,"exit") || STR_EQUAL(expression,"quit");
 
 			if(!exit){ // evaluate expression
 
 				try{
-					zs->eval(expression.c_str());
+					zs->eval(expression);
 				}catch(std::exception & ex){
 					fprintf(stderr,"%s\n",ex.what());
 				}
+			}
+
+			expression_len=0;
+			if(expression != NULL){
+				free(expression);
+				expression=NULL;
 			}
 
 		}while(!exit);// && (instr[++idx_ptr] != NULL));

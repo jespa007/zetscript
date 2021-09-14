@@ -17,7 +17,7 @@ void test_callback(ScriptFunction *script_function){
 	auto so=(*callback_function)(&param1,&param2,&param3);
 
 	// print the results...
-	std::cout << "calling function result: " << so->toString() << std::endl;
+	printf("calling function result: %s\n",so->toString().c_str());
 
 	// unref string object lifetime when is not used anymore
 	ZS_UNREF_LIFETIME_OBJECT(zs,so);
