@@ -365,6 +365,6 @@ INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
 )
 
 # copy tests to
-configure_files(${PROJECT_SOURCE_DIR}/../test ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/test )
-configure_files(${PROJECT_SOURCE_DIR}/../test/import ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/test/import )
+configure_files(${PROJECT_SOURCE_DIR}/../samples ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/samples )
+configure_files(${PROJECT_SOURCE_DIR}/../samples/import ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/samples/import )
 
