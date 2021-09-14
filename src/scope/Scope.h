@@ -13,6 +13,12 @@
 #define MAX_INNER_SCOPES_FUNCTION					10
 
 
+#define SCOPE_PROPERTY_IS_C_OBJECT_REF		0x1
+#define SCOPE_PROPERTY_IS_SCOPE_FUNCTION	0x2
+#define SCOPE_PROPERTY_IS_SCOPE_CLASS		0x4
+#define SCOPE_PROPERTY_UNUSUED				0x8
+
+
 namespace zetscript{
 
 	class ScopeFactory;
@@ -20,14 +26,14 @@ namespace zetscript{
 	class ScriptClass;
 	class  Scope{
 	public:
-
-		bool is_c_node;
-		bool is_scope_function; // this will ignore symbols within scopes where functions starts to avoid conflicts with global functions...
+		uint16_t properties;
+		//bool is_c_node;
+		//bool is_scope_function; // this will ignore symbols within scopes where functions starts to avoid conflicts with global functions...
 		ScriptClass *script_class;
 		int tmp_idx_instruction_push_scope;
 
-		bool unusued;
-		Scope 		*scope_parent, *scope_base;
+
+		Scope 					*scope_parent, *scope_base;
 
 		zs_vector				*scopes;  // local scopes from starting block { }
 		zs_vector				*symbol_variables; // variable symbols from starting block { }
@@ -37,7 +43,7 @@ namespace zetscript{
 		//--------------------------------------------------------------------
 		// Functions
 
-		Scope(ZetScript * _zs, int idx_sf, Scope * _scope_parent=NULL,bool is_c_node=false);
+		Scope(ZetScript * _zs, int idx_sf, Scope * _scope_parent=NULL,uint16_t _properties=0);
 
 		//--------------------------------------------------------------------
 		// Register functions

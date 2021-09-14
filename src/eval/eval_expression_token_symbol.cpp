@@ -296,7 +296,7 @@ namespace zetscript{
 					if(	it_accessor_token==0){
 						if(
 								token_node_symbol.value == SYMBOL_VALUE_SUPER
-								&& scope_info == MAIN_SCOPE(eval_data)){
+								&& scope_info->script_class->idx_class == IDX_SCRIPT_CLASS_MAIN){
 							EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"\"super\" is not allowed here");
 						}
 
@@ -433,7 +433,7 @@ namespace zetscript{
 							EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"\"this\" cannot be used in static functions");
 						}
 
-						if(scope_info == MAIN_SCOPE(eval_data)){
+						if(scope_info->script_class->idx_class == IDX_SCRIPT_CLASS_MAIN){
 							EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"\"this\" is not allowed here");
 						}
 

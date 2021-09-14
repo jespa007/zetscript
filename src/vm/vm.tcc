@@ -870,7 +870,10 @@ namespace zetscript{
 				if(instruction->byte_code == BYTE_CODE_JE_CASE){
 					error_found=zs_strutils::format("Unable to perform '==' operator for case conditional");
 				}else{
-					error_found=zs_strutils::format("\"%s\" cannot perform metamethod",class_name_object_found.c_str());
+					error_found=zs_strutils::format("Type \"%s\" does not implements metamethod '%s'"
+						,class_name_object_found.c_str()
+						,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
+					);
 				}
 			}
 			goto apply_metamethod_error;
@@ -993,7 +996,9 @@ apply_metamethod_error:
 
 
 		if(stk_result_op1!=NULL && stk_result_op2!=NULL){
-			VM_ERROR("cannot perform operation '%s %s %s'. %s"
+			VM_ERROR("Metamethod operation '%s' (aka %s) failed performing operation by types '%s' %s '%s': %s"
+				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+				,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
 				,stk_result_op1->typeOf()
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 				,stk_result_op2->typeOf()

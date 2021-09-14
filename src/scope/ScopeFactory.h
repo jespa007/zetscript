@@ -4,9 +4,10 @@
  */
 #pragma once
 
-#define IDX_SCRIPT_SCOPE_MAIN				0
-#define MAIN_SCOPE(data)					(((data)->scope_factory))->getMainScope()
-#define NEW_SCOPE(data,sf,scope_parent)		(((data)->scope_factory))->newScope(sf,scope_parent)
+#define IDX_SCRIPT_SCOPE_MAIN										0
+#define MAIN_SCOPE(data)											(((data)->scope_factory))->getMainScope()
+#define NEW_SCOPE(data,idx_function,scope_parent,properties)		(((data)->scope_factory))->newScope(idx_function,scope_parent,properties)
+#define CLEAR_UNUSUED_SCOPES(data)									(((data)->scope_factory))->clearUnusuedScopes()
 
 
 namespace zetscript{
@@ -16,10 +17,11 @@ namespace zetscript{
 		public:
 			ScopeFactory(ZetScript 		*zs);
 
-			Scope	    				*	newScope(int idx_sf,Scope * scope_parent=NULL,bool is_c_node=false);
+			Scope	    				*	newScope(int idx_sf,Scope * scope_parent=NULL,uint16_t _properties=0);
 			Scope 						* 	getMainScope(){return main_scope;}
 			zs_vector 					* 	getScopes();
 			void clear();
+			void clearUnusuedScopes();
 			void saveState();
 
 			~ScopeFactory();

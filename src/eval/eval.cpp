@@ -50,7 +50,7 @@ namespace zetscript{
 
 
 		if(sf != MAIN_FUNCTION(eval_data)){
-			scope_info = zs->getScopeFactory()->newScope(sf->idx_script_function,MAIN_SCOPE(eval_data));
+			scope_info = NEW_SCOPE(eval_data,sf->idx_script_function,MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 			MAIN_SCOPE(eval_data)->scopes->push_back((zs_int)scope_info);
 
 			if(function_args != NULL){
@@ -96,6 +96,8 @@ namespace zetscript{
 				scope_info->markAsUnusued();
 			}
 		}
+
+		CLEAR_UNUSUED_SCOPES(eval_data);
 
 		eval_pop_and_compile_function(eval_data);
 
@@ -232,9 +234,14 @@ namespace zetscript{
 	}
 
 	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_scope_function){
-		Scope *new_scope = NEW_SCOPE(eval_data,eval_data->current_function->script_function->idx_script_function,scope_parent);
+		Scope *new_scope = NEW_SCOPE(
+				eval_data
+				,eval_data->current_function->script_function->idx_script_function
+				,scope_parent
+				,is_scope_function?SCOPE_PROPERTY_IS_SCOPE_FUNCTION:0
+		);
+
 		scope_parent->scopes->push_back((zs_int)new_scope);
-		new_scope->is_scope_function=is_scope_function;
 		if(is_scope_function){
 			new_scope->tmp_idx_instruction_push_scope=0;
 		}
@@ -471,17 +478,13 @@ namespace zetscript{
 				return sc_var->scope->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY, REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 			}
 		}
-
 		// try find global variable...
-
 		return NULL;
 	}
 
 	Symbol *eval_find_global_symbol(EvalData *eval_data, const std::string & symbol_to_find){
-
 		// try find global variable...
 		return MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
-
 	}
 
 	void eval_pop_current_function(EvalData *eval_data){
@@ -505,10 +508,13 @@ namespace zetscript{
 		}
 
 		for(int i=0; i < current_scope->scopes->count; i++){
-			bool ok=eval_all_local_variables_in_scopes_already_sorted((Scope *)current_scope->scopes->items[i],idx_local_variable);
+			Scope *scope=(Scope *)current_scope->scopes->items[i];
+			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
+				bool ok=eval_all_local_variables_in_scopes_already_sorted(scope,idx_local_variable);
 
-			if(ok == false){
-				return false;
+				if(ok == false){
+					return false;
+				}
 			}
 		}
 
@@ -522,15 +528,20 @@ namespace zetscript{
 		}
 
 		for(int i=0; i < current_scope->scopes->count; i++){
-			eval_fill_lookup_local_variable((Scope *)current_scope->scopes->items[i],lookup_table,n_variable);
+			Scope *scope=(Scope *)current_scope->scopes->items[i];
+			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
+				eval_fill_lookup_local_variable(scope,lookup_table,n_variable);
+			}
 		}
 	}
 
 	short *eval_create_lookup_sorted_table_local_variables(EvalData *eval_data){
 
 		ScriptFunction *sf = eval_data->current_function->script_function;
+		Scope *sc=sf->symbol.scope;
+
 		int n_local_variable=0;
-		if(eval_all_local_variables_in_scopes_already_sorted(sf->symbol.scope,n_local_variable)== true){
+		if(eval_all_local_variables_in_scopes_already_sorted(sf->symbol.scope,n_local_variable) == true){
 			return NULL;
 		}
 
@@ -569,13 +580,12 @@ namespace zetscript{
 		}
 
 		// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
-		//eval_data->current_function->instructions.size() + 1
 		size_t len=eval_data->current_function->instructions.size() + 1; // +1 for end instruction
 		size_t total_size_bytes = (len) * sizeof(Instruction);
 		sf->instructions_len=len;
 		sf->instructions = (PtrInstruction)malloc(total_size_bytes);
 		memset(sf->instructions, 0, total_size_bytes);
-		//bool is_static = eval_data->current_function->script_function->symbol.properties & SYMBOL_PROPERTY_STATIC;
+
 		int ok=FALSE;
 		const char *str_aux=NULL;
 		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data);

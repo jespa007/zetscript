@@ -386,7 +386,7 @@ namespace zetscript{
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
 
 		Symbol * symbol=NULL;
-		//short idx_position=(short)symbol_variables->count;
+		short idx_position=(short)local_variables->count;
 		StackElement *se=NULL;
 
 		if((symbol=scope_block->registerSymbolVariable(file,line, symbol_name ))==NULL){
@@ -397,8 +397,9 @@ namespace zetscript{
 		//scope_symbol->symbol=scope_symbol;
 		symbol->str_native_type = str_native_type;
 		symbol->properties = properties;
-		//symbol->idx_position = idx_position;
+		symbol->idx_position = idx_position;
 
+		local_variables->push_back((zs_int)symbol);
 		//symbol_variables->push_back((zs_int)symbol);
 
 		/*if(scope_block == MAIN_SCOPE(this)) { // is global var ...

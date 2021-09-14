@@ -145,7 +145,7 @@ namespace zetscript{
 		}
 
 		idx_class=script_classes->count;
-		scope = scope_factory->newScope(ZS_IDX_UNDEFINED,NULL,true);
+		scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		symbol=MAIN_SCOPE(this)->registerSymbolClass(registered_file,registered_line,class_name);
 
 		sc = new ScriptClass(zs,idx_class,class_name,scope,str_class_name_ptr,SCRIPT_CLASS_PROPERTY_C_OBJECT_REF);

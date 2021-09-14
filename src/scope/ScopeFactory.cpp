@@ -7,7 +7,7 @@ namespace zetscript{
 	ScopeFactory::ScopeFactory(ZetScript *zs){
 		this->zs=zs;
 		this->scopes = new zs_vector;
-		main_scope=newScope(IDX_SCRIPT_FUNCTION_MAIN,NULL,false); // create global scope (scope 0)
+		main_scope=newScope(IDX_SCRIPT_FUNCTION_MAIN,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
 		idx_clear_checkpoint=1;  // start from MAIN scope
 		idx_clear_global_checkpoint_global_symbol_registered_variables=0;
 		idx_clear_global_checkpoint_global_symbol_registered_functions=0;
@@ -15,14 +15,27 @@ namespace zetscript{
 		idx_clear_global_checkpoint_global_scopes=0;
 	}
 
-	Scope *	 ScopeFactory::newScope(int idx_sf,Scope * scope_parent,bool is_c_node){
-		Scope * scope_node = new Scope(this->zs,idx_sf,scope_parent,is_c_node);
+	Scope *	 ScopeFactory::newScope(int idx_sf,Scope * scope_parent,uint16_t _properties){
+		Scope * scope_node = new Scope(this->zs,idx_sf,scope_parent,_properties);
 		scopes->push_back((zs_int)scope_node);
 		return scope_node;
 	}
 
 	zs_vector 	*		ScopeFactory::getScopes(){
 		return scopes;
+	}
+
+	void ScopeFactory::clearUnusuedScopes(){
+		int v=0;
+		while(v<scopes->count){
+			Scope *scope=(Scope *)scopes->items[v];
+			if(scope->properties & SCOPE_PROPERTY_UNUSUED){
+				scopes->erase(v);
+			}else{
+				++v;
+			}
+		}
+
 	}
 
 	void ScopeFactory::clear(){

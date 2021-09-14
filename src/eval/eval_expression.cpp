@@ -24,8 +24,6 @@ namespace zetscript{
 			, uint16_t properties // uint16_t properties
 			, int n_recursive_level
 			//, std::vector<EvalInstruction *> 	*only_call_instructions
-
-
 		){
 		// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.

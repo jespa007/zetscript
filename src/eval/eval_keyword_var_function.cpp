@@ -448,12 +448,7 @@ error_eval_keyword_var:
 
 
 			std::string function_name="";
-			//Scope *scope=scope_info;
-			//bool is_anonymous=false;
-
-			Scope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
 			ScriptFunction *sf=NULL;
-
 			// advance keyword...
 			//aux_p += advance_chars;
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -726,8 +721,6 @@ error_eval_keyword_var:
 				return NULL;
 			}
 
-			//
-			//eval_check_scope(eval_data,scope_function);
 			eval_pop_and_compile_function(eval_data);
 
 			return aux_p;

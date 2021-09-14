@@ -118,7 +118,7 @@ else()
 		
 	ELSE()
 		set(TARGET "release")
-		set(COMPILE_TARGET_FLAGS " -march=native -O2 ")
+		set(COMPILE_TARGET_FLAGS " -march=native -Os ")
 		message("-- Memmanager: OFF")
 	ENDIF()
 	
@@ -222,53 +222,53 @@ target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 
 # zs_test
 add_executable(zs_test${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../test/zs_test.cpp
+	test/zs_test.cpp
 )
 
 target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
 
 # helloworld
 add_executable(helloworld${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../test/helloworld.cpp
+	${PROJECT_SOURCE_DIR}/../samples/helloworld.cpp
 )
 
 target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
 
 # test_register_variables
-add_executable(test_register_variable${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../test/test_register_variable.cpp
+add_executable(register_variable${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../samples/register_variable.cpp
 )	
 
-target_link_libraries(test_register_variable${POST_NAME} zetscript${POST_NAME})
+target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
 
 # test_register_functions
-add_executable(test_register_function${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../test/test_register_function.cpp
+add_executable(register_function${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../samples/register_function.cpp
 )	
 
-target_link_libraries(test_register_function${POST_NAME} zetscript${POST_NAME})
+target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})
 
 # test_register_class
-add_executable(test_register_class${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../test/test_register_class.cpp
+add_executable(register_class${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../samples/register_class.cpp
 )	
 
-target_link_libraries(test_register_class${POST_NAME} zetscript${POST_NAME})
+target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
 
 # function_script_call
-add_executable(test_script_call${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../test/test_script_call.cpp
+add_executable(script_call${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../samples/script_call.cpp
 )
 
-target_link_libraries(test_script_call${POST_NAME} zetscript${POST_NAME})
+target_link_libraries(script_call${POST_NAME} zetscript${POST_NAME})
 
 
 # register_constants
-add_executable(test_register_constant${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../test/test_register_constant.cpp
+add_executable(register_constant${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../samples/register_constant.cpp
 )
 
-target_link_libraries(test_register_constant${POST_NAME} zetscript${POST_NAME})
+target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
 
 
 SET(
@@ -365,6 +365,6 @@ INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
 )
 
 # copy tests to
-configure_files(${PROJECT_SOURCE_DIR}/../samples ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/samples )
-configure_files(${PROJECT_SOURCE_DIR}/../samples/import ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/samples/import )
+configure_files(${PROJECT_SOURCE_DIR}/../samples/script ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/samples )
+configure_files(${PROJECT_SOURCE_DIR}/../samples/script/import ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/samples/import )
 

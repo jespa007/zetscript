@@ -35,7 +35,7 @@
 		return;\
 	}else{\
 		ScriptClass *sc=registerClass(ZS_STR(type_class));\
-		sc->class_scope->is_c_node=true;\
+		sc->class_scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		sc->properties=SCRIPT_CLASS_PROPERTY_C_OBJECT_REF;\
 		sc->str_class_ptr_type=(typeid(type_class).name());\
 	}
@@ -75,6 +75,7 @@ namespace zetscript{
 				MAIN_SCRIPT_FUNCTION_NAME
 		);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
+		main_function->symbol.scope=MAIN_SCOPE(this);
 
 		idx_clear_checkpoint=1; // by default restore till main class.
 	}
@@ -361,7 +362,7 @@ namespace zetscript{
 		if((index = getIdxScriptClassInternal(class_name))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
 
 			// BYTE_CODE_NEW SCOPE C and register ...
-			Scope * scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL);
+			Scope * scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
 
 			// register symbol on main scope...
 			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolClass(file,line,class_name);

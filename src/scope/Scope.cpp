@@ -11,12 +11,11 @@
 namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------
-	Scope::Scope(ZetScript * _zs,int idx_sf, Scope * _scope_parent, bool _is_c_node){
+	Scope::Scope(ZetScript * _zs,int idx_sf, Scope * _scope_parent, uint16_t _properties){
 		scope_parent = _scope_parent;
-		is_c_node = _is_c_node;
+		properties = _properties;
 		script_class=NULL;
 		idx_script_function=idx_sf;
-		unusued=false;
 		zs=_zs;
 		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
 		scope_factory=_zs->getScopeFactory();
@@ -35,8 +34,6 @@ namespace zetscript{
 				idx_script_function=scope_parent->idx_script_function;
 			}
 		}
-
-		is_scope_function=false;
 	}
 
 	void Scope::setScriptClass(ScriptClass *sc){
@@ -90,7 +87,7 @@ namespace zetscript{
 
 	void						   Scope::markAsUnusued(){
 
-		// because no variables in there...
+		// because no variables in there it moves all scopes in the parent ...
 		if(scope_parent != NULL){
 			for(unsigned i=0;i < scopes->count; i++){
 				Scope *current_scope=(Scope *)scopes->items[i];
@@ -102,7 +99,7 @@ namespace zetscript{
 		}
 
 		// mark as unused, late we can remove safely check unusued flag...
-		unusued=true;
+		this->properties|=SCOPE_PROPERTY_UNUSUED;
 	}
 
 	void Scope::checkPreRegisterSymbol(const char * file,short line, const std::string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
