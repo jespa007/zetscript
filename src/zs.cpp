@@ -27,7 +27,7 @@ int main(int argc, char * argv[]) {
 
 
 	ZetScript *zs = new ZetScript();
-	std::string file="";
+	const char *file="";
 	unsigned short eval_options=0;
 
 	if (argc > 1) {
@@ -133,7 +133,7 @@ int main(int argc, char * argv[]) {
 				fprintf(stderr,"%s\n",ex.what());
 			}
 		}else{
-			fprintf(stderr,"file '%s' not exits\n",file.c_str());
+			fprintf(stderr,"file '%s' not exits\n",file);
 		}
 	}
 

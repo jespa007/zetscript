@@ -105,7 +105,7 @@ else()
 		set(COMPILE_TARGET_FLAGS " -O0 -g ")
 	
 		IF( EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr )
-			message("-- Memmanager: ON")
+			message("-- Memmanager: Yes")
 			SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__MEMMANAGER__")
 			include_directories (
 				${PROJECT_SOURCE_DIR}/../../memmgr
@@ -119,7 +119,7 @@ else()
 	ELSE()
 		set(TARGET "release")
 		set(COMPILE_TARGET_FLAGS " -march=native -Os ")
-		message("-- Memmanager: OFF")
+		message("-- Memmanager: No")
 	ENDIF()
 	
 
@@ -220,8 +220,8 @@ add_executable(zs${POST_NAME}
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 
 
-if ((COMPILE_TEST_SUIT) OR (NOT DEFINED COMPILE_TEST_SUIT)) #COMPILE_TEST_SUIT OR (NOT DEFINED ${COMPILE_TEST_SUIT}))
-	MESSAGE ("-- Build test suit: Yes")
+if ((SUITTEST) OR (NOT DEFINED SUITTEST))
+	MESSAGE ("-- Suittest: Yes")
 
 	# zs_test
 	add_executable(zs_test${POST_NAME}
@@ -273,7 +273,7 @@ if ((COMPILE_TEST_SUIT) OR (NOT DEFINED COMPILE_TEST_SUIT)) #COMPILE_TEST_SUIT O
 	
 	target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
 else()
-	MESSAGE ("-- Build test suit: No")
+	MESSAGE ("-- Suittest: No")
 endif()
 
 
