@@ -220,55 +220,62 @@ add_executable(zs${POST_NAME}
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 
 
-# zs_test
-add_executable(zs_test${POST_NAME}
-	test/zs_test.cpp
-)
+if ((COMPILE_TEST_SUIT) OR (NOT DEFINED COMPILE_TEST_SUIT)) #COMPILE_TEST_SUIT OR (NOT DEFINED ${COMPILE_TEST_SUIT}))
+	MESSAGE ("-- Build test suit: Yes")
 
-target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+	# zs_test
+	add_executable(zs_test${POST_NAME}
+		test/zs_test.cpp
+	)
+	
+	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+	
+	# helloworld
+	add_executable(helloworld${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/helloworld.cpp
+	)
+	
+	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
+	
+	# test_register_variables
+	add_executable(register_variable${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/register_variable.cpp
+	)	
+	
+	target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
+	
+	# test_register_functions
+	add_executable(register_function${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/register_function.cpp
+	)	
+	
+	target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})
+	
+	# test_register_class
+	add_executable(register_class${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/register_class.cpp
+	)	
+	
+	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
+	
+	# function_script_call
+	add_executable(script_call${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/script_call.cpp
+	)
+	
+	target_link_libraries(script_call${POST_NAME} zetscript${POST_NAME})
+	
+	
+	# register_constants
+	add_executable(register_constant${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/register_constant.cpp
+	)
+	
+	target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
+else()
+	MESSAGE ("-- Build test suit: No")
+endif()
 
-# helloworld
-add_executable(helloworld${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../samples/helloworld.cpp
-)
-
-target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
-
-# test_register_variables
-add_executable(register_variable${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../samples/register_variable.cpp
-)	
-
-target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
-
-# test_register_functions
-add_executable(register_function${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../samples/register_function.cpp
-)	
-
-target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})
-
-# test_register_class
-add_executable(register_class${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../samples/register_class.cpp
-)	
-
-target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
-
-# function_script_call
-add_executable(script_call${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../samples/script_call.cpp
-)
-
-target_link_libraries(script_call${POST_NAME} zetscript${POST_NAME})
-
-
-# register_constants
-add_executable(register_constant${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../samples/register_constant.cpp
-)
-
-target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
 
 
 SET(
