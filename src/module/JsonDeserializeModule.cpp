@@ -174,12 +174,13 @@ namespace zetscript{
 			}
 
 			if (*str_current == '\"'){ // try to single quote...
-				str_current++;
+				char *start=++str_current;
 				while(*str_current!='\n' && *str_current!='\r' && *str_current!=0 &&  (*str_current=='\"' && *(str_current-1)!='\\')==false){
-					if(str_out != NULL){
-						(*str_out)+=*str_current;
-					}
 					str_current++;
+				}
+
+				if(str_out != NULL){
+					str_out->append(start,start-str_current);
 				}
 			}else{
 				json_deserialize_error(deserialize_data,str_start,line,"expected string value");

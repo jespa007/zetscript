@@ -45,7 +45,7 @@ namespace zetscript{
 		 zs_string to_lower(const zs_string & str);
 		 zs_string to_upper(const zs_string & str);
 		 std::wstring to_wstring(const zs_string &s);
-		  zs_string  format(const  char  *string_text, ...);
+		 zs_string  format(const  char  *string_text, ...);
 
 		 bool ends_with(const zs_string & str, const zs_string & ending);
 		 bool starts_with(const zs_string & str, const zs_string & starting);
@@ -71,7 +71,6 @@ namespace zetscript{
 		 */
 		void copy_from_ptr_diff(zs_string & str_dst,const char *p1, const char *p2);
 
-		zs_string substring(const zs_string & str, size_t start_idx, size_t end_idx);
 
 		bool contains(const zs_string & input, const zs_string & str_containts,StringComparer sc=StringComparer::Exactly);
 		bool contains(const std::vector<zs_string> & input, const zs_string & str_containts,StringComparer sc=StringComparer::Exactly);

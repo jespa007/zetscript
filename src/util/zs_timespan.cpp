@@ -57,7 +57,7 @@ namespace zetscript{
 		return  (days * 60 * 60 * 24) + (hours * 60 * 60) + (minutes * 60) + seconds;
 	}
 
-	bool operator<(const zs_timespan &mts, const zs_timespan &ots)
+	bool zs_timespan::operator<(const zs_timespan &mts, const zs_timespan &ots)
 	{
 		if (mts.days < ots.days) {
 			return true;
@@ -84,22 +84,22 @@ namespace zetscript{
         return false;
 	}
 
-	bool operator>(const zs_timespan &mts, const zs_timespan &ots)
+	bool zs_timespan::operator>(const zs_timespan &mts, const zs_timespan &ots)
 	{
 		return ots < mts;
 	}
 
-	bool operator<=(const zs_timespan &mts, const zs_timespan &ots)
+	bool zs_timespan::operator<=(const zs_timespan &mts, const zs_timespan &ots)
 	{
 		return !(mts > ots);
 	}
 
-	bool operator>=(const zs_timespan &mts, const zs_timespan &ots)
+	bool zs_timespan::operator>=(const zs_timespan &mts, const zs_timespan &ots)
 	{
 		return !(mts < ots);
 	}
 
-	bool operator==(const zs_timespan &mts, const zs_timespan &ots)
+	bool zs_timespan::operator==(const zs_timespan &mts, const zs_timespan &ots)
 	{
 		return mts.days == ots.days &&
 			mts.hours == ots.hours &&
@@ -107,7 +107,7 @@ namespace zetscript{
 			mts.seconds == ots.seconds;
 	}
 
-	bool operator!=(const zs_timespan &mts, const zs_timespan &ots)
+	bool zs_timespan::operator!=(const zs_timespan &mts, const zs_timespan &ots)
 	{
 		return !(mts == ots);
 	}

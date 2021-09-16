@@ -22,7 +22,7 @@ namespace zetscript{
 			}else if(number_type == NumberType::NUMBER_TYPE_HEXA){
 				value=strtoll (val.c_str(), NULL, 16);
 			}else if(is_binary(val)){
-				zs_string binary = val.substr(0,val.size()-1);
+				zs_string binary = val.substr(0,val.length()-1);
 				value=strtoll (binary.c_str(), NULL, 2);
 			}
 			else{
@@ -107,7 +107,7 @@ namespace zetscript{
 			}
 
 			// check format ...
-			if(_format.size()>0){
+			if(_format.length()>0){
 				zs_string sf=zs_strutils::to_lower(_format);
 				char *it_str=(char *)sf.c_str();
 
@@ -150,15 +150,16 @@ namespace zetscript{
 		zs_string to_lower(const zs_string & str){
 
 			zs_string ret = str;
-			for(unsigned short l = 0; l < ret.size();l++)
+			for(unsigned short l = 0; l < ret.length();l++){
 				ret[l] = tolower(ret[l]);
+			}
 			return ret;
 		}
 
 		zs_string to_upper(const zs_string & str){
 
 			zs_string ret = str;
-			for(unsigned short l = 0; l < ret.size();l++)
+			for(unsigned short l = 0; l < ret.length();l++)
 				ret[l] = toupper(ret[l]);
 			return ret;
 		}
@@ -189,8 +190,6 @@ namespace zetscript{
 		std::vector<zs_string> split(const zs_string &s_in, const zs_string & delim) {
 		    std::vector<zs_string> elems;
 		    zs_string s = s_in;
-
-
 		    size_t pos = 0;
 		    zs_string token;
 		    while ((pos = s.find(delim)) != zs_string::npos) {
@@ -210,8 +209,12 @@ namespace zetscript{
 		}
 
 		bool ends_with(const zs_string & str, const zs_string & ending){
-			if (str.length() >= ending.length()) {
-				return (0 == str.compare (str.length() - ending.length(), ending.length(), ending));
+			size_t len_str=str.length();
+			size_t len_end_str=ending.length();
+			if(len_end_str<=len_str){
+				const char *p1=str.c_str()+len_str-len_end_str;
+				const char *p2=ending.c_str();
+				return strcmp(p1,p2)==0;
 			}
 
 			return false;
@@ -219,15 +222,16 @@ namespace zetscript{
 
 		bool starts_with(const zs_string & str, const zs_string & starting){
 			if (str.length() >= starting.length()) {
-				return strncmp(str.c_str(),starting.c_str(),starting.size())==0;
+				return strncmp(str.c_str(),starting.c_str(),starting.length())==0;
 			}
 			return false;
 		}
 
 		zs_string replace(const zs_string & input_str, const zs_string & str_old, const zs_string & str_new){
 			zs_string str = input_str;
-			size_t start_pos = 0;
-			while((start_pos = str.find(str_old, start_pos)) != zs_string::npos) {
+			char *start_pos=NULL;
+
+			while((start_pos = strstr(start_pos,str_old.c_str())) != NULL) {
 				str.replace(start_pos, str_old.length(), str_new);
 				start_pos += str_new.length(); // Handles case where 'str_new' is a substring of 'str_old'
 			}
@@ -350,7 +354,7 @@ namespace zetscript{
 		int count(const zs_string & s,char c){
 			int n_items=0;
 
-			for(unsigned i=0; i < s.size(); i++)
+			for(unsigned i=0; i < s.length(); i++)
 				if(s[i] == c)
 					n_items++;
 
@@ -378,19 +382,6 @@ namespace zetscript{
 			strncpy(aux_str_copy,p1,var_length);
 
 			str_dst=aux_str_copy;
-
-		}
-
-		zs_string substring(const zs_string & str, size_t start_idx, size_t end_idx){
-			if(end_idx > str.length()){
-				THROW_RUNTIME_ERROR("substring: end end_idx out of bounds");
-			}
-
-			if(start_idx >= end_idx){
-				THROW_RUNTIME_ERROR("substring: start_idx >= end_idx");
-			}
-
-			return str.substr(start_idx,end_idx);
 
 		}
 

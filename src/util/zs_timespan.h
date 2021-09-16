@@ -14,12 +14,12 @@ namespace zetscript
 		int get_total_minutes() const;
 		int get_total_seconds() const;
 		//Operators
-		 friend bool operator<(const zs_timespan &mts, const zs_timespan &ots);
-		 friend bool operator>(const zs_timespan &mts, const zs_timespan &ots);
-		 friend bool operator<=(const zs_timespan &mts, const zs_timespan &ots);
-		 friend bool operator>=(const zs_timespan &mts, const zs_timespan &ots);
-		 friend bool operator==(const zs_timespan &mts, const zs_timespan &ots);
-		 friend bool operator!=(const zs_timespan &mts, const zs_timespan &ots);
+		friend bool operator<(const zs_timespan &mts, const zs_timespan &ots);
+		friend bool operator>(const zs_timespan &mts, const zs_timespan &ots);
+		friend bool operator<=(const zs_timespan &mts, const zs_timespan &ots);
+		friend bool operator>=(const zs_timespan &mts, const zs_timespan &ots);
+		friend bool operator==(const zs_timespan &mts, const zs_timespan &ots);
+		friend bool operator!=(const zs_timespan &mts, const zs_timespan &ots);
 	private:
 		int days;
 		int hours;
