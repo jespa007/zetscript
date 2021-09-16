@@ -13,7 +13,7 @@ namespace zetscript{
 		return  is_access_punctuator(s) || (*s==':' && *(s+1)==':');
 	}
 
-	bool get_accessor_name(EvalData *eval_data, char **aux_p, int line, std::string & accessor_name){
+	bool get_accessor_name(EvalData *eval_data, char **aux_p, int line, zs_string & accessor_name){
 		//char *aux_p = s;
 		accessor_name="";
 		while(!is_end_symbol_token(*aux_p)){ // get name...
@@ -22,7 +22,7 @@ namespace zetscript{
 		return check_identifier_name_expression_ok(eval_data,accessor_name,line) == TRUE;
 	}
 
-	bool eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,std::string & static_error){
+	bool eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,zs_string & static_error){
 		bool ok=true;
 		if(static_symbol->properties & SYMBOL_PROPERTY_STATIC){ // it should be constant type ...
 
@@ -64,7 +64,7 @@ namespace zetscript{
 		PostOperation post_operation=PostOperation::POST_OPERATION_UNKNOWN;
 		int last_accessor_line=line;
 		int last_line_ok=line;
-		std::string static_error;
+		zs_string static_error;
 
 		// check pre operator (-,+,!,-- or ++)
 		switch(pre_operation=is_pre_operation(aux_p)){
@@ -212,7 +212,7 @@ namespace zetscript{
 							//token_node_symbol.instructions[0]->symbol.properties |= SYMBOL_PROPERTY_STATIC;
 
 							// the first item is the class
-							std::string static_access_value=token_node_symbol.value,class_element;
+							zs_string static_access_value=token_node_symbol.value,class_element;
 							Symbol *member_symbol=NULL;
 
 							ScriptClass *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol.value);
@@ -276,7 +276,7 @@ namespace zetscript{
 			aux_p=test_aux_p;
 			line=test_line;
 
-			std::string accessor_name="",
+			zs_string accessor_name="",
 						last_accessor_value=token_node_symbol.value;
 
 			char n_params=0;

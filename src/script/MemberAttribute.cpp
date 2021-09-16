@@ -2,7 +2,7 @@
 
 namespace zetscript{
 
-	MemberAttribute::MemberAttribute(const std::string & _attribute_name){
+	MemberAttribute::MemberAttribute(const zs_string & _attribute_name){
 		getter= NULL;
 		post_inc=NULL;
 		post_dec=NULL;

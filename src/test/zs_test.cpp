@@ -13,19 +13,19 @@ using namespace zetscript;
 std::function<void ()> * test_2nd_script_call = NULL;
 ZetScript *zs = NULL;
 
-std::string to_string(bool _b){
+zs_string to_string(bool _b){
 	return _b?"true":"false";
 }
 
-std::string to_string(zs_int _i){
+zs_string to_string(zs_int _i){
 	return zs_strutils::zs_int_to_str(_i);
 }
 
-std::string to_string(zs_float _f){
+zs_string to_string(zs_float _f){
 	return zs_strutils::zs_float_to_str(_f);
 }
 
-std::string to_string(const std::string & _s){
+zs_string to_string(const zs_string & _s){
 	return _s;
 }
 
@@ -57,7 +57,7 @@ bool float_values_are_almost_the_same(zs_float A, zs_float B, int maxUlps=8)
 void test_arithmetic_int_expr(zs_int expr,const char *str_expr)
 { \
 	try{\
-		StackElement stk=zs->eval(std::string("return ")+str_expr);\
+		StackElement stk=zs->eval(zs_string("return ")+str_expr);\
 		if(stk.properties & STK_PROPERTY_ZS_INT){\
 			if((zs_int)stk.value != expr){ \
 				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,(int)expr,int(((zs_int)stk.value))); \
@@ -110,7 +110,7 @@ void test_int_expr(const char *str_expr, zs_int expected_value) {
 	)
 void test_arithmetic_integer_op(zs_int val1, zs_int val2, const char *str_format){
 	struct _test_arithmetic_integer_op_data {
-		std::string str; zs_int val;\
+		zs_string str; zs_int val;\
 	}test_arithmetic_integer_op_data[] = {
 		INLINE_OPERATION(val1,+,val2)
 		,INLINE_OPERATION(val1,+,-val2)
@@ -192,7 +192,7 @@ void test_float_expr(const char  *str_expr, zs_float expected_value) {
 void test_float_expression(zs_float expr, const char *str_expr) {
 
 	try {
-		StackElement stk=zs->eval(std::string("return ")+str_expr);
+		StackElement stk=zs->eval(zs_string("return ")+str_expr);
 		if(stk.properties & STK_PROPERTY_ZS_FLOAT){
 			zs_float result;
 			ZS_FLOAT_COPY(&result,&stk.value);
@@ -231,7 +231,7 @@ void test_float_expression(zs_float expr, const char *str_expr) {
 				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;return nt2;")
 void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_format) {
 	struct _test_arithmetic_float_op_data {
-		std::string str; zs_float val;
+		zs_string str; zs_float val;
 	}test_arithmetic_float_op_data[] = {
 		INLINE_OPERATION(val1,+,val2)
 		,INLINE_OPERATION(val1,+,-val2)
@@ -255,7 +255,7 @@ void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_form
 	};
 
 	struct _test_arithmetic_float_mod_op_data {
-		std::string str; zs_float val;
+		zs_string str; zs_float val;
 	}test_arithmetic_float_mod_op_data[] = {
 		INLINE_FLOAT_MOD_OPERATION(val1,val2)
 		,INLINE_FLOAT_MOD_OPERATION(val1,-val2)
@@ -343,7 +343,7 @@ void test_bool_expr(const char *str_expr, bool expected_value){
 void test_bool_expression(bool expr, const char *str_expr){
 
 	try{
-		StackElement stk = zs->eval(std::string("return ")+str_expr);
+		StackElement stk = zs->eval(zs_string("return ")+str_expr);
 		if(stk.properties & STK_PROPERTY_BOOL){
 			if((bool)stk.value  != (expr)){
 				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n", str_expr,(expr)?"true":"false",(bool)stk.value?"true":"false");
@@ -406,10 +406,10 @@ void test_string_expr(const char * expected_value, const char *str_expr){
 	
 	
 	try{
-		StackElement stk = zs->eval(std::string("return ")+str_expr);
+		StackElement stk = zs->eval(zs_string("return ")+str_expr);
 		if(STK_IS_SCRIPT_OBJECT_STRING(&stk)){
 			ScriptObjectString *so=(ScriptObjectString *)stk.value;
-			if (so->toString() != std::string(expected_value)) {
+			if (so->toString() != zs_string(expected_value)) {
 				fprintf(stderr, "error test \"%s\" expected \"%s\" but it was \"%s\"!\n", str_expr, expected_value, so->toString().c_str());
 				exit(-1);
 			}
@@ -423,15 +423,15 @@ void test_string_expr(const char * expected_value, const char *str_expr){
 	}
 }
 
-#define TEST_ARITHMETIC_STRING_OP(val1,op, val2) test_arithmetic_string_op(std::string(val1) op val2,ZS_STR(val1)ZS_STR(op)val2)
-void test_arithmetic_string_op(const std::string & expected_value, const char * str_expr){
+#define TEST_ARITHMETIC_STRING_OP(val1,op, val2) test_arithmetic_string_op(zs_string(val1) op val2,ZS_STR(val1)ZS_STR(op)val2)
+void test_arithmetic_string_op(const zs_string & expected_value, const char * str_expr){
 
 
 	try{\
-		StackElement stk = ZS_EVAL(zs,std::string("return ")+str_expr);
+		StackElement stk = ZS_EVAL(zs,zs_string("return ")+str_expr);
 		if(STK_IS_SCRIPT_OBJECT_STRING(&stk)){
 			ScriptObjectString *so=(ScriptObjectString *)stk.value;
-			if (so->toString() != std::string(expected_value)) {
+			if (so->toString() != zs_string(expected_value)) {
 				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str_expr, expected_value.c_str(), so->toString().c_str()); \
 				exit(-1); \
 			} \
@@ -485,7 +485,7 @@ int main(int argc, char * argv[]) {
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,5.0); // op1 < op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5,4.0); // op1 > op2
 
-	printf("%i. testing std::string...\n",++n_test);
+	printf("%i. testing zs_string...\n",++n_test);
 	TEST_ARITHMETIC_STRING_OP("test_",+,"100"); // concatenate int
 	TEST_ARITHMETIC_STRING_OP("test_",+,"-100"); // concatenate -int
 	TEST_ARITHMETIC_STRING_OP("test_",+,"100.000000"); // concatenate float
@@ -515,7 +515,7 @@ int main(int argc, char * argv[]) {
 	TEST_ARITHMETIC_BOOL_EXPR(!(true && !false) || false);
 	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
 
-	// test declare var int/bool/std::string/number
+	// test declare var int/bool/zs_string/number
 	printf("%i. testing primitive var\n",++n_test);
 
 	// decalre vars

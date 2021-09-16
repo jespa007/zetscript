@@ -7,9 +7,9 @@ namespace zetscript{
 	class	ScriptObjectObjectIterator;
 
 	ScriptObjectVector *			ScriptObjectObjectWrap_keys(ScriptObjectObject *o1);
-	bool 							ScriptObjectObjectWrap_contains(ScriptObjectObject *o1, std::string * key);
+	bool 							ScriptObjectObjectWrap_contains(ScriptObjectObject *o1, zs_string * key);
 	void 							ScriptObjectObjectWrap_clear(ScriptObjectObject *o1);
-	void 							ScriptObjectObjectWrap_erase(ScriptObjectObject *o1, std::string * key);
+	void 							ScriptObjectObjectWrap_erase(ScriptObjectObject *o1, zs_string * key);
 	ScriptObjectObjectIterator * 	ScriptObjectObjectWrap_iter(ScriptObjectObject *oo);
 
 

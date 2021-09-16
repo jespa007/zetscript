@@ -162,7 +162,7 @@ namespace zetscript{
 
 		char *aux_p = (char *)s;
 		Scope *scope_case=NULL;
-		std::string val;
+		zs_string val;
 		Keyword key_w;//,key_w2;
 		std::vector<EvalInstruction *> 		ei_switch_condition; // switch condition
 		std::vector<EvalInstructionCase> 	ei_cases; // stores all conditional instructions at begin

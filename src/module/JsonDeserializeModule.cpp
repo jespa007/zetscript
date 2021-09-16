@@ -10,7 +10,7 @@ namespace zetscript{
 		typedef struct{
 			const char *filename;
 			const char *str_start;
-			std::string str_error;
+			zs_string str_error;
 			StackElement *first_element;
 			ZetScript *zs;
 		}JsonDeserializeData;
@@ -149,7 +149,7 @@ namespace zetscript{
 			vsprintf(error_description,  str,  ap);
 			va_end(ap);
 			char *aux=(char *)str_from-1;
-			std::string filename="";
+			zs_string filename="";
 			int n=0;
 			if(deserialize_data->filename!=NULL){
 				filename=zs_path::get_filename(deserialize_data->filename);
@@ -166,7 +166,7 @@ namespace zetscript{
 			//THROW_EXCEPTION(what_msg);
 		}
 
-		char * read_string_between_quotes(JsonDeserializeData *deserialize_data, const char *str_start,int & line, std::string * str_out){
+		char * read_string_between_quotes(JsonDeserializeData *deserialize_data, const char *str_start,int & line, zs_string * str_out){
 			char *str_current = (char *) str_start;
 
 			if(str_out != NULL){
@@ -209,7 +209,7 @@ namespace zetscript{
 			bool ok=false;
 
 			if (*str_current == '\"') {// try string ...
-				std::string str_aux;
+				zs_string str_aux;
 				if((str_current=read_string_between_quotes(deserialize_data,str_current,line,&str_aux))==NULL){
 					return NULL;
 				}
@@ -276,7 +276,7 @@ namespace zetscript{
 				,StackElement *stk_json_element
 				){
 			char *str_current = (char *)str_start;
-			std::string error;
+			zs_string error;
 			ScriptObjectVector *vo;
 			StackElement *stk_element=NULL;
 
@@ -340,8 +340,8 @@ namespace zetscript{
 
 		char * deserialize_object(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element) {
 			char *str_current = (char *)str_start;
-			std::string variable_name,key_id;
-			std::string error;
+			zs_string variable_name,key_id;
+			zs_string error;
 			ScriptObjectObject *so;
 			StackElement *stk_element=NULL;
 

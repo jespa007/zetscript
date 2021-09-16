@@ -3,7 +3,7 @@
 namespace zetscript{
 	namespace zs_file{
 
-		bool exists(const std::string & filename){
+		bool exists(const zs_string & filename){
 			FILE  *fp;
 			if((fp  =  fopen(filename.c_str(),"r")) != NULL){
 				fclose(fp);
@@ -12,7 +12,7 @@ namespace zetscript{
 			return false;
 		}
 
-		char * read(const std::string &  filename, size_t & n_bytes_readed){
+		char * read(const zs_string &  filename, size_t & n_bytes_readed){
 
 			int  length, readed_elements;
 			FILE  *fp;
@@ -46,7 +46,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		int  size(const  std::string & filename)
+		int  size(const  zs_string & filename)
 		{
 			int  ini,  end;
 			FILE  *fp;

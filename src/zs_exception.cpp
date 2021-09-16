@@ -7,7 +7,7 @@
 
 namespace zetscript {
 
-	zs_exception::zs_exception(const std::string &  _file, int _line, const char * _error_description, const char *_error_type){
+	zs_exception::zs_exception(const zs_string &  _file, int _line, const char * _error_description, const char *_error_type){
 		error_type=_error_type;
 		file=_file;
 		line=_line;
@@ -30,19 +30,19 @@ namespace zetscript {
 		return line;
 	}
 
-	const std::string & zs_exception::getErrorDescription(){
+	const zs_string & zs_exception::getErrorDescription(){
 		return this->error_description;
 	}
 
-	const std::string & zs_exception::getErrorSourceFilename(){
+	const zs_string & zs_exception::getErrorSourceFilename(){
 		return this->file;
 	}
 
 
-	zs_exception_error::zs_exception_error(const std::string &  _file, int _line, const char * _error):zs_exception(_file,  _line, _error,"ERR"){}
+	zs_exception_error::zs_exception_error(const zs_string &  _file, int _line, const char * _error):zs_exception(_file,  _line, _error,"ERR"){}
 
 
-	void throw_script_error(const std::string & script_filename, int script_line, const char *in_txt,...){
+	void throw_script_error(const zs_string & script_filename, int script_line, const char *in_txt,...){
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 

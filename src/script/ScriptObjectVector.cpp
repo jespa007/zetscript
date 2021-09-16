@@ -63,7 +63,7 @@ namespace zetscript{
 		return (StackElement *)stk_user_elements.items[idx];
 	}
 
-	bool ScriptObjectVector::eraseUserElementAt( short idx){//onst std::string & varname){
+	bool ScriptObjectVector::eraseUserElementAt( short idx){//onst zs_string & varname){
 
 		StackElement *si;
 
@@ -131,7 +131,7 @@ namespace zetscript{
 
 	}
 
-	std::string ScriptObjectVector::toString(){
+	zs_string ScriptObjectVector::toString(){
 		StackElement stk={(zs_int)this,STK_PROPERTY_SCRIPT_OBJECT};
 		return json::serialize(zs,&stk,true);
 	}

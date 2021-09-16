@@ -37,10 +37,10 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 
 				if(k_str_string_type_ptr==symbol->str_native_type){
 					s->value=(void *)ptr_variable;
-					input_s=(char *)(((std::string *)ptr_variable)->c_str());
+					input_s=(char *)(((zs_string *)ptr_variable)->c_str());
 				}
 
-				*((std::string *)(s->value))=input_s;
+				*((zs_string *)(s->value))=input_s;
 				return {
 					(zs_int)(s),
 					STK_PROPERTY_SCRIPT_OBJECT

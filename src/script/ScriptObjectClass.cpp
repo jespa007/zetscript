@@ -46,7 +46,7 @@ namespace zetscript{
 	void ScriptObjectClass::init(ZetScript *_zs, short _idx_script_class,void *_c_object){
 		zs = _zs;
 		StackElement *se;
-		std::string error;
+		zs_string error;
 
 		vm=zs->getVirtualMachine();
 
@@ -160,10 +160,10 @@ namespace zetscript{
 		 return script_class_native;
 	}
 
-	std::string ScriptObjectClass::toString(){
+	zs_string ScriptObjectClass::toString(){
 		// check whether toString is implemented...
 		Symbol *symbol_function=getScriptClass()->getSymbol(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
-		std::string aux="";
+		zs_string aux="";
 		if(symbol_function != NULL){ // get first element
 			if(symbol_function->properties & (SYMBOL_PROPERTY_MEMBER_FUNCTION | SYMBOL_PROPERTY_FUNCTION)){
 				ScriptFunction *ptr_function=(ScriptFunction *)symbol_function->ref_ptr;
@@ -190,20 +190,20 @@ namespace zetscript{
 							aux=result.toString();
 						}
 					}else{ // expect return an scriptobjectstring
-						std::string *str=NULL;
+						zs_string *str=NULL;
 						switch(ptr_function->idx_return_type){
 						case IDX_BUILTIN_TYPE_STRING_C:
-								aux=((std::string (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
+								aux=((zs_string (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
 								break;
 						case IDX_BUILTIN_TYPE_STRING_PTR_C:
-								str=((std::string * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
+								str=((zs_string * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
 								if(str == NULL){
 									THROW_RUNTIME_ERROR("toString: str NULL");
 								}
 								aux=*str;
 								break;
 						default:
-							THROW_RUNTIME_ERROR("toString: expected std::string or *std::string");
+							THROW_RUNTIME_ERROR("toString: expected zs_string or *zs_string");
 							break;
 						}
 					}

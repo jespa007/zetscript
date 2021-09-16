@@ -116,20 +116,20 @@ namespace zetscript{
 	// Dynaminc unpack parameter function ...
 	// template for last parameter ArgIdx == 1
 	template <size_t ArgIdx, typename F, typename... Args>
-	auto getArgTypes( std::vector<std::string> & params)
+	auto getArgTypes( std::vector<zs_string> & params)
 		-> typename std::enable_if<ArgIdx == 1>::type
 	{
-		std::string parameter_type=typeid(typename F::template Argument<ArgIdx-1>::type).name();
+		zs_string parameter_type=typeid(typename F::template Argument<ArgIdx-1>::type).name();
 		params.insert(params.begin()+0,parameter_type);
 	}
 
 	// template when parameters ArgIdx > 1
 	template <size_t ArgIdx, typename F, typename... Args>
-	auto getArgTypes(std::vector<std::string> & params)
+	auto getArgTypes(std::vector<zs_string> & params)
 		-> typename std::enable_if<(ArgIdx > 1)>::type
 	{
 
-		std::string parameter_type=typeid(typename F::template Argument<ArgIdx-1>::type).name();
+		zs_string parameter_type=typeid(typename F::template Argument<ArgIdx-1>::type).name();
 		params.insert(params.begin()+0,parameter_type);
 		getArgTypes<ArgIdx - 1,F, Args...>( params);
 	}
@@ -137,14 +137,14 @@ namespace zetscript{
 
 	// trivial case when parameters (ArgIdx == 0).
 	template <size_t ArgIdx, typename F>
-	auto getArgTypes(std::vector<std::string> & params)
+	auto getArgTypes(std::vector<zs_string> & params)
 	-> typename std::enable_if<(ArgIdx == 0)>::type
 	{
 		 // NO ARGS CASE
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(int i,std::string & returnType, std::vector<std::string> & type_params, IndexSequence<Is...>)
+	auto getParamsFunction(int i,zs_string & returnType, std::vector<zs_string> & type_params, IndexSequence<Is...>)
 	-> typename std::enable_if<(_F::arity > 0)>::type
 	{
 		returnType = typeid(typename _F::return_type).name();
@@ -152,7 +152,7 @@ namespace zetscript{
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(int i,std::string & returnType, std::vector<std::string> & type_params, IndexSequence<Is...>)
+	auto getParamsFunction(int i,zs_string & returnType, std::vector<zs_string> & type_params, IndexSequence<Is...>)
 	-> typename std::enable_if<(_F::arity == 0)>::type
 	{
 		returnType = typeid(typename _F::return_type).name();

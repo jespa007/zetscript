@@ -66,7 +66,7 @@ namespace zetscript{
 	}
 
 	void ScriptClassFactory::init(){
-		std::string error;
+		zs_string error;
 		// ScriptFunctionFactory has to be created
 		main_object=registerClass(MAIN_SCRIPT_CLASS_NAME); // 0
 		MAIN_SCOPE(this)->script_class=main_object;
@@ -89,7 +89,7 @@ namespace zetscript{
 		return (zs_float)(number);
 	}
 
-	zs_float parseFloat(std::string  *number_str){
+	zs_float parseFloat(zs_string  *number_str){
 		zs_float result=0;
 		zs_float *result_ptr=zs_strutils::parse_zs_float(*number_str);
 
@@ -106,7 +106,7 @@ namespace zetscript{
 		return (zs_int)(*number);
 	}
 
-	zs_int parseInteger(std::string  *number_str){
+	zs_int parseInteger(zs_string  *number_str){
 		zs_int result=0;
 		zs_int *result_ptr=zs_strutils::parse_zs_int(*number_str);
 		if(result_ptr!=NULL){
@@ -130,8 +130,8 @@ namespace zetscript{
 		REGISTER_BUILT_IN_TYPE(zs_int *,IDX_BUILTIN_TYPE_ZS_INT_PTR_C);
 		REGISTER_BUILT_IN_TYPE(char *,IDX_BUILTIN_TYPE_CHAR_PTR_C);
 		REGISTER_BUILT_IN_TYPE(const char *,IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C);
-		REGISTER_BUILT_IN_TYPE(std::string,IDX_BUILTIN_TYPE_STRING_C);
-		REGISTER_BUILT_IN_TYPE(std::string *,IDX_BUILTIN_TYPE_STRING_PTR_C);
+		REGISTER_BUILT_IN_TYPE(zs_string,IDX_BUILTIN_TYPE_STRING_C);
+		REGISTER_BUILT_IN_TYPE(zs_string *,IDX_BUILTIN_TYPE_STRING_PTR_C);
 		REGISTER_BUILT_IN_TYPE(bool,IDX_BUILTIN_TYPE_BOOL_C);
 		REGISTER_BUILT_IN_TYPE(bool *,IDX_BUILTIN_TYPE_BOOL_PTR_C);
 		REGISTER_BUILT_IN_TYPE(zs_float,IDX_BUILTIN_TYPE_ZS_FLOAT_C);
@@ -177,9 +177,9 @@ namespace zetscript{
 
 		ZS_REGISTER_FUNCTION(zs,"ptrToZetScriptPtr",ptrToZetScriptPtr);
 		ZS_REGISTER_FUNCTION(zs,"parseFloat",static_cast<zs_float (*)(zs_int)>(parseFloat));
-		ZS_REGISTER_FUNCTION(zs,"parseFloat",static_cast<zs_float (*)(std::string *)>(parseFloat));
+		ZS_REGISTER_FUNCTION(zs,"parseFloat",static_cast<zs_float (*)(zs_string *)>(parseFloat));
 		ZS_REGISTER_FUNCTION(zs,"parseInteger",static_cast<zs_int (*)(zs_float *)>(parseInteger));
-		ZS_REGISTER_FUNCTION(zs,"parseInteger",static_cast<zs_int (*)(std::string *)>(parseInteger));
+		ZS_REGISTER_FUNCTION(zs,"parseInteger",static_cast<zs_int (*)(zs_string *)>(parseInteger));
 
 		//-------------------------
 		// Wrap functions
@@ -208,13 +208,13 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
 		registerNativeMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);
 		registerNativeMemberFunction<ScriptObjectString>("replace",ScriptObjectStringWrap_replace);
-		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, std::string *)>(ScriptObjectStringWrap_split));
+		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, zs_string *)>(ScriptObjectStringWrap_split));
 		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, zs_int )>(ScriptObjectStringWrap_split));
 		registerNativeMemberFunction<ScriptObjectString>("size",ScriptObjectStringWrap_size);
-		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, std::string *)>(&ScriptObjectStringWrap_contains));
+		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_contains));
 		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_contains));
 
-		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, std::string *)>(&ScriptObjectStringWrap_indexOf));
+		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_indexOf));
 		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_indexOf));
 
 		registerNativeMemberFunction<ScriptObjectString>("startsWith",ScriptObjectStringWrap_startsWith);
@@ -254,7 +254,7 @@ namespace zetscript{
 	// REGISTER CONSTANTS
 	//
 
-	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, int value, const char *registered_file, short registered_line){
+	void ScriptClassFactory::registerConstantVariable(const zs_string & var_name, int value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -267,7 +267,7 @@ namespace zetscript{
 		stk->properties=STK_PROPERTY_ZS_INT|STK_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, bool value, const char *registered_file, short registered_line){
+	void ScriptClassFactory::registerConstantVariable(const zs_string & var_name, bool value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -280,7 +280,7 @@ namespace zetscript{
 		stk->properties=STK_PROPERTY_BOOL|STK_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, zs_float value, const char *registered_file, short registered_line){
+	void ScriptClassFactory::registerConstantVariable(const zs_string & var_name, zs_float value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -293,7 +293,7 @@ namespace zetscript{
 		stk->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, const std::string & v, const char *registered_file, short registered_line){
+	void ScriptClassFactory::registerConstantVariable(const zs_string & var_name, const zs_string & v, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -305,8 +305,8 @@ namespace zetscript{
 		*stk=*(zs->registerStkStringObject(var_name,v));
 	}
 
-	void ScriptClassFactory::registerConstantVariable(const std::string & var_name, const char * v, const char *registered_file, short registered_line){
-		registerConstantVariable(var_name, std::string(v), registered_file, registered_line);
+	void ScriptClassFactory::registerConstantVariable(const zs_string & var_name, const char * v, const char *registered_file, short registered_line){
+		registerConstantVariable(var_name, zs_string(v), registered_file, registered_line);
 	}
 
 	// REGISTER CONSTANTS
@@ -330,7 +330,7 @@ namespace zetscript{
 		idx_clear_checkpoint = script_classes->count-1;
 	}
 
-	void ScriptClassFactory::checkClassName(const std::string & class_name){
+	void ScriptClassFactory::checkClassName(const zs_string & class_name){
 
 		if(script_classes->count>=MAX_REGISTER_CLASSES){
 			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
@@ -349,8 +349,8 @@ namespace zetscript{
 	}
 
 	ScriptClass * ScriptClassFactory::registerClass(
-			const std::string & class_name
-			 ,const std::string & base_class_name
+			const zs_string & class_name
+			 ,const zs_string & base_class_name
 			 ,const char * file
 			 , short line
 	){
@@ -456,7 +456,7 @@ namespace zetscript{
 			}
 
 			if(sc->idx_class != IDX_SCRIPT_CLASS_MAIN){ // main class has no field initializers and reserve first function as main function
-				std::string error="";
+				zs_string error="";
 				Symbol *symbol_field_initializer=NULL;
 
 				symbol_field_initializer=sc->registerMemberFunction(
@@ -477,11 +477,11 @@ namespace zetscript{
 		return script_classes;
 	}
 
-	std::map<short, std::map<short, ConversionType>>  *	 ScriptClassFactory::getConversionTypes() {
+	zs_map  *	 ScriptClassFactory::getConversionTypes() {
 		return & conversion_types;
 	}
 
-	int ScriptClassFactory::getBuiltinTypeOrClass(const std::string & name){
+	int ScriptClassFactory::getBuiltinTypeOrClass(const zs_string & name){
 		ScriptClass *sc;
 
 		if(name == "int"){
@@ -504,7 +504,7 @@ namespace zetscript{
 		return (ScriptClass *)script_classes->get(idx);
 	}
 
-	ScriptClass 	* ScriptClassFactory::getScriptClass(const std::string & class_name){
+	ScriptClass 	* ScriptClassFactory::getScriptClass(const zs_string & class_name){
 		int idx;
 		if((idx = getIdxScriptClassInternal(class_name))!=ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
 			return (ScriptClass *)script_classes->get(idx);
@@ -512,7 +512,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	ScriptClass *ScriptClassFactory::getScriptClassByNativeClassPtr(const std::string & class_type){
+	ScriptClass *ScriptClassFactory::getScriptClassByNativeClassPtr(const zs_string & class_type){
 
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
@@ -523,7 +523,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	int ScriptClassFactory::getIdxScriptClassInternal(const std::string & class_name){
+	int ScriptClassFactory::getIdxScriptClassInternal(const zs_string & class_name){
 
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
@@ -534,11 +534,11 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	bool ScriptClassFactory::isClassRegistered(const std::string & v){
+	bool ScriptClassFactory::isClassRegistered(const zs_string & v){
 		return getIdxScriptClassInternal(v) != ZS_IDX_UNDEFINED;
 	}
 
-	ScriptObject *		ScriptClassFactory::instanceScriptObjectByClassName(const std::string & class_name){
+	ScriptObject *		ScriptClassFactory::instanceScriptObjectByClassName(const zs_string & class_name){
 		 // 0. Search class info ...
 		 ScriptClass * rc = getScriptClass(class_name);
 
@@ -584,7 +584,7 @@ namespace zetscript{
 		 return so;
 	 }
 
-	short ScriptClassFactory::getIdxNativeRegisteredClass(const std::string & str_classPtr){
+	short ScriptClassFactory::getIdxNativeRegisteredClass(const zs_string & str_classPtr){
 		// ok check str_native_type
 		for(unsigned i = 0; i < script_classes->count; i++){
 			ScriptClass * sc=(ScriptClass *)script_classes->get(i);
@@ -595,7 +595,7 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	zs_int ScriptClassFactory::doCast(zs_int obj, short idx_class_src, short idx_class_dst/*, std::string & error*/){//c_class->idx_class,idx_return_type){
+	zs_int ScriptClassFactory::doCast(zs_int obj, short idx_class_src, short idx_class_dst/*, zs_string & error*/){//c_class->idx_class,idx_return_type){
 
 		ScriptClass *class_src = getScriptClass(idx_class_src);
 		ScriptClass *class_dst = getScriptClass(idx_class_dst);
@@ -627,9 +627,9 @@ namespace zetscript{
 		 return "class_unknow";
 	}
 
-	int ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const std::string & str_native_type){
+	int ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const zs_string & str_native_type){
 
-		// 1. we have to handle primitives like void, (zs_int *), (bool *),(zs_float *) and (std::string *).
+		// 1. we have to handle primitives like void, (zs_int *), (bool *),(zs_float *) and (zs_string *).
 		 // 2. Check for rest registered C classes...
 		 for(unsigned i = 0; i < script_classes->count; i++){
 			 ScriptClass * sc=(ScriptClass *)script_classes->get(i);
@@ -642,7 +642,7 @@ namespace zetscript{
 		 return ZS_IDX_UNDEFINED;
 	 }
 
-	short 			ScriptClassFactory::getIdxClassFromItsNativeType(const std::string & str_native_type){
+	short 			ScriptClassFactory::getIdxClassFromItsNativeType(const zs_string & str_native_type){
 		return getIdxScriptInternalFrom_C_Type(str_native_type);
 	}
 

@@ -31,13 +31,13 @@
 #define PTR_FUNCTION_RET_BOOL_PARAM5(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_BOOL_PARAM6(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
-#define PTR_FUNCTION_RET_STRING_PARAM0(f) ((std::string (*)())(f))
-#define PTR_FUNCTION_RET_STRING_PARAM1(f) ((std::string (*)(zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM2(f) ((std::string (*)(zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM3(f) ((std::string (*)(zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM4(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM5(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM6(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM0(f) ((zs_string (*)())(f))
+#define PTR_FUNCTION_RET_STRING_PARAM1(f) ((zs_string (*)(zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM2(f) ((zs_string (*)(zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM3(f) ((zs_string (*)(zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM4(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM5(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM6(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 namespace zetscript{
 
@@ -54,7 +54,7 @@ namespace zetscript{
 
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		zs_int  fun_ptr = c_function->ref_native_function_ptr;
-		std::string str_aux;
+		zs_string str_aux;
 
 		if((c_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
 			VM_SET_USER_ERROR(vm,"Internal error: Function not native");

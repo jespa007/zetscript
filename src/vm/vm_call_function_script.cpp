@@ -508,7 +508,7 @@ namespace zetscript{
 						}
 
 
-						zs_char *ptr_char=(zs_char *)&((std::string *)so_string->value)->c_str()[STK_VALUE_TO_ZS_INT(stk_result_op2)];
+						zs_char *ptr_char=(zs_char *)&((zs_string *)so_string->value)->c_str()[STK_VALUE_TO_ZS_INT(stk_result_op2)];
 						if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
 							data->stk_vm_current->value=((zs_int)(*ptr_char));
 							data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;
@@ -1145,7 +1145,7 @@ load_element_object:
 
 									if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
 										str_object=(ScriptObjectString *)stk_dst->value;
-									}else{ // Generates a std::string var
+									}else{ // Generates a zs_string var
 										stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));
 										stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 

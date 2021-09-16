@@ -12,7 +12,7 @@ namespace zetscript{
 
 
 	char * 	eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
-	char * 	eval_keyword_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, uint16_t properties=0,Symbol ** result_symbol_function=NULL, const std::string  & custom_symbol_name="");
+	char * 	eval_keyword_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, uint16_t properties=0,Symbol ** result_symbol_function=NULL, const zs_string  & custom_symbol_name="");
 	char * 	eval_keyword_var(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, uint16_t properties = 0);
 	char * 	eval_keyword_if_else(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);
 	char * 	eval_keyword_while(EvalData *eval_data,const char *s,int & line,  Scope *scope_info);

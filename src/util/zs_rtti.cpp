@@ -2,30 +2,30 @@
 
 namespace zetscript{
 	namespace zs_rtti{
-		std::string demangle(const std::string & name) {
+		zs_string demangle(const zs_string & name) {
 
 		#ifdef _MSC_VER // visual studio doesn't support this.
 			return name;
 		#else
-			if(name == std::string(typeid(std::string *).name())){
-				return "std::string*";
+			if(name == zs_string(typeid(zs_string *).name())){
+				return "zs_string*";
 			}
 
-			if(name == std::string(typeid(zs_int *).name())){
+			if(name == zs_string(typeid(zs_int *).name())){
 					return "zs_int*";
 				}
 
-			if(name == std::string(typeid(bool *).name())){
+			if(name == zs_string(typeid(bool *).name())){
 					return "bool*";
 				}
 
-			if(name == std::string(typeid(zs_float *).name())){
+			if(name == zs_string(typeid(zs_float *).name())){
 					return ZS_STR(zs_float)"*";
 				}
 
 
-			if(name == std::string(typeid(std::string).name())){
-				return "std::string";
+			if(name == zs_string(typeid(zs_string).name())){
+				return "zs_string";
 			}
 
 			int status = -4; // some arbitrary value to eliminate the compiler warning

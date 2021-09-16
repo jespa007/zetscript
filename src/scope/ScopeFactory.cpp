@@ -44,7 +44,7 @@ namespace zetscript{
 		int idx_start_global_scopes=idx_clear_global_checkpoint_global_scopes;
 
 
-		std::string global_symbol="";
+		zs_string global_symbol="";
 
 		for(
 			int v=scopes->count-1;

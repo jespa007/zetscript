@@ -15,14 +15,14 @@ int main(){
 	zs_int 		int_var = 10;
 	zs_float 	float_var = 0.5;
 	bool 		bool_var = true;
-	std::string	string_var = "in c++";
+	zs_string	string_var = "in c++";
 
 	ZetScript *zs = new ZetScript(); // instance ZetScript
 
 	zs->registerVariable("int_var",&int_var); // it takes int *
 	zs->registerVariable("float_var",&float_var); // it takes float *
 	zs->registerVariable("bool_var",&bool_var); // it takes bool *
-	zs->registerVariable("string_var",&string_var); // it takes std::string *
+	zs->registerVariable("string_var",&string_var); // it takes zs_string *
 
 	zs->eval(
 		"int_var+=5;"

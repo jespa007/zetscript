@@ -48,8 +48,8 @@ namespace zetscript{
 		return result;
 	}
 
-	std::string StackElement::toString(const std::string & _format ){
-		std::string result="null";
+	zs_string StackElement::toString(const zs_string & _format ){
+		zs_string result="null";
 		StackElement *stk=this;
 
 		if(this->properties & STK_PROPERTY_PTR_STK){
@@ -67,12 +67,12 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_FUNCTION(stk)){
 			if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 				ScriptFunction *sf=(ScriptFunction *)stk->value;
-				result= std::string("FunctionMember")+"@"+"UnknowClass(TODO)"+"::"+sf->symbol.name;
+				result= zs_string("FunctionMember")+"@"+"UnknowClass(TODO)"+"::"+sf->symbol.name;
 			}else{ // normal function
-				result= std::string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
+				result= zs_string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
 			}
 		}else if(STK_VALUE_IS_CLASS(stk)){
-			result= std::string("Class")+"@"+((ScriptClass *)stk->value)->class_name;
+			result= zs_string("Class")+"@"+((ScriptClass *)stk->value)->class_name;
 		}else{
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk->value;

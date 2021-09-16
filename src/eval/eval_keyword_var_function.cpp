@@ -6,7 +6,7 @@ namespace zetscript{
 
 	static int n_anonymous_function=0;
 
-	std::string eval_anonymous_function_name(const std::string &pre_name=""){
+	zs_string eval_anonymous_function_name(const zs_string &pre_name=""){
 		return "_@afun_"+(pre_name==""?"":pre_name+"_")+zs_strutils::zs_int_to_str(n_anonymous_function++);
 	}
 
@@ -87,7 +87,7 @@ namespace zetscript{
 
 	ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,std::vector<EvalInstruction *> *eval_instructions){
 
-		std::string function_name=eval_anonymous_function_name("defval");
+		zs_string function_name=eval_anonymous_function_name("defval");
 		Instruction *instructions=NULL,*start_ptr=NULL;
 		size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
@@ -165,8 +165,8 @@ namespace zetscript{
 			char *start_var=NULL,*end_var=NULL;
 			int start_line=0;
 			ScriptClass *sc=NULL;
-			std::string s_aux,variable_name,pre_variable_name="";
-			std::string error="";
+			zs_string s_aux,variable_name,pre_variable_name="";
+			zs_string error="";
 			Symbol *symbol_variable=NULL,*symbol_member_variable=NULL;
 			is_constant=key_w == Keyword::KEYWORD_CONST;
 			Operator ending_op=Operator::OPERATOR_UNKNOWN;
@@ -383,7 +383,7 @@ error_eval_keyword_var:
 			, Scope *scope_info
 			, uint16_t properties // allow_anonymous_function attrib /anonymous, etc
 			, Symbol ** result_symbol_function
-			, const std::string & custom_symbol_name
+			, const zs_string & custom_symbol_name
 
 		){
 
@@ -435,19 +435,19 @@ error_eval_keyword_var:
 			//bool var_args=false;
 			int n_arg=0;
 			char *end_var = NULL;
-			std::string param_value;
-			std::string error;
+			zs_string param_value;
+			zs_string error;
 			//size_t advance_chars=0;
 
 
 			std::vector<ScriptFunctionParam> args={};
-			std::string conditional_str;
+			zs_string conditional_str;
 			Symbol *symbol_sf=NULL;
 
 			Symbol * irv=NULL;
 
 
-			std::string function_name="";
+			zs_string function_name="";
 			ScriptFunction *sf=NULL;
 			// advance keyword...
 			//aux_p += advance_chars;
@@ -734,7 +734,7 @@ error_eval_keyword_var:
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		Keyword key_w;
-		std::string s_aux;
+		zs_string s_aux;
 
 		key_w = eval_is_keyword(aux_p);
 

@@ -10,7 +10,7 @@ namespace zetscript{
 		default_param_value=k_stk_undefined;
 	}
 
-	ScriptFunctionParam::ScriptFunctionParam(std::string _param_name){
+	ScriptFunctionParam::ScriptFunctionParam(zs_string _param_name){
 		idx_type=ZS_IDX_UNDEFINED;
 		param_name=_param_name;
 		line=ZS_IDX_UNDEFINED;
@@ -18,7 +18,7 @@ namespace zetscript{
 		default_param_value=k_stk_undefined;
 	}
 
-	ScriptFunctionParam::ScriptFunctionParam(int _idx_type, std::string _param_name){
+	ScriptFunctionParam::ScriptFunctionParam(int _idx_type, zs_string _param_name){
 		idx_type=_idx_type;
 		param_name=_param_name;
 		line=ZS_IDX_UNDEFINED;

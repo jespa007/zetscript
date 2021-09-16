@@ -110,7 +110,7 @@ namespace zetscript{
 
 		// it gives stackelement as string (the result should be deleted)
 		const char * 	typeOf();
-		std::string 	toString(const std::string & _format="");
+		zs_string 	toString(const zs_string & _format="");
 		void 			setUndefined();
 		zs_int			toInt();
 		zs_float		toFloat();

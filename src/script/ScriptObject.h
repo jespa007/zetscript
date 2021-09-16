@@ -72,26 +72,26 @@ namespace zetscript{
 		virtual				size_t length();
 
 		ZetScript      * 	getZetScript();
-		StackElement 	* getBuiltinProperty(const std::string & property_name);
-		//int			   		getBuiltinPropertyIdx(const std::string & varname);
+		StackElement 	* getBuiltinProperty(const zs_string & property_name);
+		//int			   		getBuiltinPropertyIdx(const zs_string & varname);
 
 		StackElement * getBuiltinElementAt(short idx);
 		virtual StackElement * addProperty(
-				const std::string & symbol_value
-				,std::string & error
+				const zs_string & symbol_value
+				,zs_string & error
 				,StackElement * stk_element = NULL
 		);
-		virtual StackElement 	* getProperty(const std::string & property_name);
+		virtual StackElement 	* getProperty(const zs_string & property_name);
 
 
 		zs_vector * getStkBuiltinListElements();
 		ScriptClass * 	    getNativeScriptClass();
 		bool 				isNativeObject();
-		const std::string & getClassName();
+		const zs_string & getClassName();
 		ScriptClass * 	    getScriptClass();
 		StackElement 	*getThisProperty();
 		virtual void	*getNativeObject();
-		virtual std::string toString();
+		virtual zs_string toString();
 
 		virtual ~ScriptObject();
 	protected:
@@ -108,7 +108,7 @@ namespace zetscript{
 
 		//StackElement 			stk_length;
 		virtual StackElement * newBuiltinSlot();
-		virtual StackElement * addBuiltinProperty(const std::string & symbol_value, StackElement stk=k_stk_undefined);
+		virtual StackElement * addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 		bool unrefAndFreeStackElementContainer(StackElement *si);
 
 	};

@@ -102,7 +102,7 @@ namespace zetscript{
 		this->properties|=SCOPE_PROPERTY_UNUSUED;
 	}
 
-	void Scope::checkPreRegisterSymbol(const char * file,short line, const std::string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
+	void Scope::checkPreRegisterSymbol(const char * file,short line, const zs_string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
 		Symbol *p_irv=NULL;
 
 		// check if you register a class...
@@ -124,7 +124,7 @@ namespace zetscript{
 		}
 	}
 
-	Symbol * Scope::registerSymbolClass(const char * _file,short _line, const std::string & _symbol_name, uint16_t _check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbolClass(const char * _file,short _line, const zs_string & _symbol_name, uint16_t _check_repeated_symbols_direction){
 
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
@@ -142,7 +142,7 @@ namespace zetscript{
 
 	}
 
-	Symbol * Scope::registerSymbolVariable(const char * _file,short _line, const std::string & _symbol_name ,uint16_t _check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbolVariable(const char * _file,short _line, const zs_string & _symbol_name ,uint16_t _check_repeated_symbols_direction){
 
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
@@ -159,7 +159,7 @@ namespace zetscript{
 		return symbol;
 	}
 
-	Symbol * Scope::registerSymbolFunction(const char * _file,short _line, const std::string & _symbol_name, char _n_params, uint16_t _check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbolFunction(const char * _file,short _line, const zs_string & _symbol_name, char _n_params, uint16_t _check_repeated_symbols_direction){
 		if((_check_repeated_symbols_direction & REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS)==0){
 			checkPreRegisterSymbol(_file, _line, _symbol_name,  _n_params,_check_repeated_symbols_direction);
 		}
@@ -182,7 +182,7 @@ namespace zetscript{
 	/*Symbol *  Scope::addSymbol(
 		const char * file
 		,short line
-		, const std::string & symbol_name
+		, const zs_string & symbol_name
 		, char n_params
 		){
 		Symbol *irv = new Symbol();
@@ -207,7 +207,7 @@ namespace zetscript{
 	//
 
 
-	Symbol * Scope::getSymbol(const std::string & str_symbol, char n_params, uint16_t scope_direction){
+	Symbol * Scope::getSymbol(const zs_string & str_symbol, char n_params, uint16_t scope_direction){
 
 		Symbol *sv=NULL;
 

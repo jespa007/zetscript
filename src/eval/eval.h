@@ -41,7 +41,7 @@ namespace zetscript{
 	void 	eval_pop_current_function(EvalData *eval_data);
 	void    eval_generate_byte_code_field_initializer(EvalData *data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions, Symbol *symbol_member_var);
 
-	bool 	eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,std::string & static_error);
+	bool 	eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,zs_string & static_error);
 	void 	eval_parse_and_compile(ZetScript *zs,const char * str_code, const char *  _filename="", int _line=1,ScriptFunction *sf=NULL,std::vector<ScriptFunctionParam> *function_args=NULL);
 
 	void	eval_deinit();

@@ -17,7 +17,7 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	ScriptObjectString * ScriptObjectString::newScriptObjectString(ZetScript *zs, const std::string & str){
+	ScriptObjectString * ScriptObjectString::newScriptObjectString(ZetScript *zs, const zs_string & str){
 		ScriptObjectString *so=new ScriptObjectString();
 		so->init(zs);
 		so->set(str);
@@ -40,15 +40,15 @@ namespace zetscript{
 		}
 
 
-		//std::string *str;
+		//zs_string *str;
 		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(zs);
 
 
 
-		std::string str1;
-		std::string str2;
+		zs_string str1;
+		zs_string str2;
 
-		std::string * str_dst[]={
+		zs_string * str_dst[]={
 			   &str1,
 			   &str2
 		};
@@ -58,7 +58,7 @@ namespace zetscript{
 			   stk_result_op2
 		};
 
-		std::string  ** str_dst_it=str_dst;
+		zs_string  ** str_dst_it=str_dst;
 		StackElement ** stk_src_it=stk_src;
 
 		// str1
@@ -83,13 +83,13 @@ namespace zetscript{
 
 	ScriptObjectString * ScriptObjectString::format(ZetScript *zs, StackElement *str, StackElement *args){
 		// transform '\"' to '"','\n' to carry returns, etc
-		std::string str_input=zs_strutils::unescape(str->toString());
-		std::string str_result;
+		zs_string str_input=zs_strutils::unescape(str->toString());
+		zs_string str_result;
 		ScriptObjectVector *sov=NULL;
-		std::string str_num_aux;
-		std::string str_format;
+		zs_string str_num_aux;
+		zs_string str_format;
 		bool error=false;
-		std::string str_error="";
+		zs_string str_error="";
 
 
 		zs_int *ptr_idx_num=NULL;
@@ -201,7 +201,7 @@ namespace zetscript{
 							//----------------------------------------------------------
 
 							if(idx_num >=0 && idx_num<(int)sov->length()){ // print
-								std::string str_format_results="";
+								zs_string str_format_results="";
 								if(ptr_str_format_string != NULL){
 									str_format=ptr_str_format_string;
 								}
@@ -261,20 +261,20 @@ namespace zetscript{
 		value = &default_str_value;
 	}
 
-	void ScriptObjectString::set(const std::string & s){
-		*((std::string *)value) = zs_strutils::unescape(s);
+	void ScriptObjectString::set(const zs_string & s){
+		*((zs_string *)value) = zs_strutils::unescape(s);
 	}
 
-	std::string ScriptObjectString::toString(){
-		return *((std::string *)value);
+	zs_string ScriptObjectString::toString(){
+		return *((zs_string *)value);
 	}
 
 	size_t ScriptObjectString::length(){
-		return ((std::string *)value)->size();
+		return ((zs_string *)value)->size();
 	}
 
 	ScriptObjectString *ScriptObjectString::sub(ScriptObjectString *s1){
-		//std::string *str;
+		//zs_string *str;
 		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(this->zs);
 		so_string->set(zs_strutils::replace(this->toString(),s1->toString(),""));
 		return so_string;

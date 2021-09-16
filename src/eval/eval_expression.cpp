@@ -25,12 +25,12 @@ namespace zetscript{
 			, int n_recursive_level
 			//, std::vector<EvalInstruction *> 	*only_call_instructions
 		){
-		// PRE: s is current std::string to eval. This function tries to eval an expression like i+1; and generates binary ast.
+		// PRE: s is current zs_string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.
 		std::vector<TokenNode> expression_tokens;
 		Keyword keyword_type;
 		//int last_line_ok=0;
-		std::string identifier_value="";
+		zs_string identifier_value="";
 		Operator operator_type = Operator::OPERATOR_UNKNOWN;
 		TokenNode 	operator_token_node, last_operator_token_node;
 
@@ -43,7 +43,7 @@ namespace zetscript{
 		bool new_line_break=false;
 		char *test_ignore_blanks=NULL,*test_char_carry_return=NULL;
 
-		std::string error_accessor_tokens;
+		zs_string error_accessor_tokens;
 
 
 		IGNORE_BLANKS(aux_p,eval_data,s,line);
@@ -63,7 +63,7 @@ namespace zetscript{
 
 				if(last_operator_token_node.operator_type == Operator::OPERATOR_INSTANCEOF){ // retrieve a
 					TokenNode token_node_type;
-					std::string str_type;
+					zs_string str_type;
 					bool type_end=false;
 					while(!type_end){
 						char pre=*aux_p;
@@ -151,7 +151,7 @@ namespace zetscript{
 		}
 
 		if(expected_ending_char.size() > 0) { // throw error ...
-			std::string expected_ending_str="Expected ";
+			zs_string expected_ending_str="Expected ";
 			bool found=false;
 
 			for(unsigned i=0; i < expected_ending_char.size() && found==false; i++){
@@ -164,7 +164,7 @@ namespace zetscript{
 
 
 					}
-					expected_ending_str+=std::string("\"")+expected_ending_char[i]+"\"";
+					expected_ending_str+=zs_string("\"")+expected_ending_char[i]+"\"";
 				}
 				else {
 					found=true;

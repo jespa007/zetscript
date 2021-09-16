@@ -18,16 +18,16 @@
 
 namespace zetscript{
 	namespace zs_dir{
-		bool change_dir(const std::string & _path){
+		bool change_dir(const zs_string & _path){
 			if(__chdir__(_path.c_str())==-1) {
 				return false;
 			}
 			return true;
 		}
 
-		std::string get_current_directory(){
+		zs_string get_current_directory(){
 			char cwd[MAX_PATH]={0};
-			std::string ret="";
+			zs_string ret="";
 			if (getcwd(cwd,MAX_PATH) ==NULL){
 				THROW_RUNTIME_ERROR("getcwd() error");
 			}

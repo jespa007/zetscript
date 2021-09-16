@@ -9,7 +9,7 @@
 namespace zetscript{
 
 	struct VM_Foreach{
-		StackElement 		   	*key; // iterator element can be std::string or integer...
+		StackElement 		   	*key; // iterator element can be zs_string or integer...
 		ScriptObjectObject	*ptr; // can be struct or std::vector...
 		unsigned int 		   	idx_current;
 
@@ -128,7 +128,7 @@ namespace zetscript{
 		return data->current_call_c_function;
 	}
 
-	void vm_set_error(VirtualMachine *vm,const std::string & str){
+	void vm_set_error(VirtualMachine *vm,const zs_string & str){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		data->vm_error = true;
 		data->vm_error_str=str;
@@ -146,7 +146,7 @@ namespace zetscript{
 		vm_set_error(vm,zs_strutils::format("[%s:%i] %s",file,line,out_txt));
 	}
 
-	std::string vm_get_error(VirtualMachine *vm){
+	zs_string vm_get_error(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		return data->vm_error_str;
 	}
@@ -354,10 +354,10 @@ namespace zetscript{
 	void vm_delete(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		if(data->lifetime_object.size()>0){
-			std::string created_at="";
-			std::string end="";
+			zs_string created_at="";
+			zs_string end="";
 
-			std::string error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
+			zs_string error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
 			for(auto it=data->lifetime_object.begin(); it !=data->lifetime_object.end();it++ ){
 				created_at="";
 				end="";

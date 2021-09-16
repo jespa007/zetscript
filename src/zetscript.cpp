@@ -14,7 +14,7 @@ namespace zetscript{
 	const char * k_str_const_zs_int_type_ptr=typeid(const zs_int *).name();
 	const char * k_str_float_type_ptr=typeid(zs_float *).name();
 	const char * k_str_const_float_type_ptr=typeid(const zs_float *).name();
-	const char * k_str_string_type_ptr=typeid(std::string *).name();
+	const char * k_str_string_type_ptr=typeid(zs_string *).name();
 	const char * k_str_char_type_ptr=typeid(char *).name();
 	const char * k_str_const_char_type_ptr=typeid(const char *).name();
 	const char * k_str_bool_type_ptr=typeid(bool *).name();
@@ -43,6 +43,8 @@ namespace zetscript{
 		vm_init(virtual_machine,this);
 
 		script_class_factory->registerSystem();
+
+		stk_constants=new zs_map();
 
 		//-------------------------
 		// Register built in modules
@@ -240,7 +242,7 @@ namespace zetscript{
 	 // PRINT ASM INFO
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // FILE MANAGEMENT
-	bool ZetScript::isFilenameAlreadyParsed(const std::string & filename){
+	bool ZetScript::isFilenameAlreadyParsed(const zs_string & filename){
 		for(unsigned i = 0; i < parsed_files.size(); i++){
 			if(parsed_files.at(i)->filename==filename){
 				return true;
@@ -250,7 +252,7 @@ namespace zetscript{
 	}
 	//-----------------------------------------------------------------------------------------
 	// STK STRING OBJECT
-	StackElement * ZetScript::registerStkStringObject(const std::string & key_name,const std::string & const_name){
+	StackElement * ZetScript::registerStkStringObject(const zs_string & key_name,const zs_string & const_name){
 
 		StackElement *stk=NULL;
 		ScriptObjectString *so=NULL;
@@ -280,11 +282,8 @@ namespace zetscript{
 
 	}
 
-	StackElement *ZetScript::getStkStringObject(const std::string & key_name){
+	StackElement *ZetScript::getStkStringObject(const zs_string & key_name){
 
-		if(stk_constants==NULL){
-			stk_constants=new std::map<std::string,StackElement *>();
-		}
 
 		if((stk_constants)->count(key_name) == 1){
 			return (stk_constants)->at(key_name);
@@ -293,19 +292,19 @@ namespace zetscript{
 	}
 
 
-	/*void registerConstantVariable(const std::string & var_name, zs_int value, const char *registered_file, short registered_line){
+	/*void registerConstantVariable(const zs_string & var_name, zs_int value, const char *registered_file, short registered_line){
 
 	}
 
-	void registerConstantVariable(const std::string & var_name, zs_float value, const char *registered_file, short registered_line){
+	void registerConstantVariable(const zs_string & var_name, zs_float value, const char *registered_file, short registered_line){
 
 	}
 
-	void registerConstantVariable(const std::string & var_name, bool value, const char *registered_file, short registered_line){
+	void registerConstantVariable(const zs_string & var_name, bool value, const char *registered_file, short registered_line){
 
 	}
 
-	void registerConstantVariable(const std::string & var_name, const std::string v, const char *registered_file, short registered_line){
+	void registerConstantVariable(const zs_string & var_name, const zs_string v, const char *registered_file, short registered_line){
 
 	}*/
 
@@ -342,12 +341,12 @@ namespace zetscript{
 		return stk_ret;
 	}
 
-	StackElement ZetScript::eval(const std::string & code, unsigned short options, const char * filename, const char *__invoke_file__, int __invoke_line__)  {
+	StackElement ZetScript::eval(const zs_string & code, unsigned short options, const char * filename, const char *__invoke_file__, int __invoke_line__)  {
 
 		return evalInternal(code.c_str(), options, filename,__invoke_file__,__invoke_line__);
 	}
 
-	StackElement ZetScript::evalFile(const std::string &  filename, unsigned short eval_options, const char *__invoke_file__, int __invoke_line__){
+	StackElement ZetScript::evalFile(const zs_string &  filename, unsigned short eval_options, const char *__invoke_file__, int __invoke_line__){
 		//int idx_file=-1;
 		StackElement stk_ret;
 		char *buf_tmp=NULL;
@@ -356,7 +355,7 @@ namespace zetscript{
 
 		if(!isFilenameAlreadyParsed(filename)){
 			ParsedFile *ps=new ParsedFile();
-			std::string current_directory="";
+			zs_string current_directory="";
 			ps->filename = filename;
 			parsed_files.push_back(ps);
 			const char * const_file_char=ps->filename.c_str();
@@ -369,8 +368,8 @@ namespace zetscript{
 				current_directory = zs_dir::get_current_directory();
 				zs_dir::change_dir(zs_path::get_directory(filename));
 				//}
-				std::string error_str="";
-				std::string error_file="";
+				zs_string error_str="";
+				zs_string error_file="";
 
 
 				bool error=false;
@@ -419,12 +418,12 @@ namespace zetscript{
 		return stk_ret;
 	}
 
-	void ZetScript::getScriptObject(const std::string &function_access,ScriptObjectClass **calling_obj,ScriptFunction **fun_obj ){
+	void ZetScript::getScriptObject(const zs_string &function_access,ScriptObjectClass **calling_obj,ScriptFunction **fun_obj ){
 
 	}
 
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
-		std::string global_symbol;
+		zs_string global_symbol;
 		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
 		//int idx_start_function = _idx_start_function == ZS_IDX_UNDEFINED ?  idx_current_global_function_checkpoint:_idx_start_function;
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
@@ -556,7 +555,7 @@ namespace zetscript{
 
 		if(stk_constants != NULL){
 
-			for(std::map<std::string,StackElement *>::iterator it=stk_constants->begin();it!=stk_constants->end();it++){
+			for(std::map<zs_string,StackElement *>::iterator it=stk_constants->begin();it!=stk_constants->end();it++){
 				StackElement *stk=it->second;
 				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					delete (ScriptObjectString *)stk->value;

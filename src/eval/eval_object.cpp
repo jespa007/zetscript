@@ -2,8 +2,8 @@ namespace zetscript{
 
 	int n_anonymouse_function=0;
 
-	//std::string * 	get_mapped_name(EvalData *eval_data,const std::string * symbol_name);
-	std::string * get_mapped_name(EvalData *eval_data,const std::string & s);
+	//zs_string * 	get_mapped_name(EvalData *eval_data,const zs_string * symbol_name);
+	zs_string * get_mapped_name(EvalData *eval_data,const zs_string & s);
 	char 		*	eval_expression(
 			EvalData *eval_data
 			,const char *s
@@ -66,7 +66,7 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	char * eval_object_identifier(EvalData *eval_data,const char *s, int line, std::string & symbol_value){
+	char * eval_object_identifier(EvalData *eval_data,const char *s, int line, zs_string & symbol_value){
 		char *aux_p = (char *)s;
 		symbol_value="";
 		// get identifier with quotes...
@@ -108,7 +108,7 @@ namespace zetscript{
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 		if(*aux_p == '{'){ // go for final ...
-			std::string symbol_value;
+			zs_string symbol_value;
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 			if(*aux_p == '}')
@@ -132,10 +132,10 @@ namespace zetscript{
 	char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
 		// Inline object: two possibles uses {a:1,b:2}["a"] or {a:1, b:2}.a
 		char *aux_p = (char *)s;
-		std::string symbol_value;
-		std::string str_key;
+		zs_string symbol_value;
+		zs_string str_key;
 		int lineSymbol;
-		//std::string key_value;
+		//zs_string key_value;
 		StackElement *stk_key_object;
 		Keyword keyw;
 
@@ -177,7 +177,7 @@ namespace zetscript{
 			}
 
 			 // register constant...
-			str_key=std::string("\"")+symbol_value+"\"";
+			str_key=zs_string("\"")+symbol_value+"\"";
 			if((stk_key_object = eval_data->zs->getStkStringObject(str_key))==NULL){
 				stk_key_object=eval_data->zs->registerStkStringObject(str_key,symbol_value);
 			 }
@@ -286,7 +286,7 @@ namespace zetscript{
 	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
 		// Inline new : (new A(4+5)).toString()
 		char *aux_p = (char *)s;
-		std::string class_name;
+		zs_string class_name;
 		ScriptClass *sc=NULL;
 		int n_args=0;
 		Symbol *constructor_function=NULL;

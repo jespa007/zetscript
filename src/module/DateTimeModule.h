@@ -23,7 +23,7 @@ namespace zetscript{
 	void 				DateTimeModule_addMonths(zs_datetime *_this,zs_int _months);
 	void 				DateTimeModule_addYears(zs_datetime *_this,zs_int _years);
 
-	std::string			DateTimeModule_toString(zs_datetime *_this);
+	zs_string			DateTimeModule_toString(zs_datetime *_this);
 
 	zs_int 				DateTimeModule_get_week_day(zs_datetime *_this);
 	zs_int 				DateTimeModule_get_month_day(zs_datetime *_this);

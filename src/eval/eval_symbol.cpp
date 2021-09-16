@@ -4,7 +4,7 @@
 namespace zetscript{
 
 
-	// to std::string utils ...
+	// to zs_string utils ...
 	char * eval_symbol(EvalData *eval_data
 			,const char *start_word
 			, int line
@@ -22,7 +22,7 @@ namespace zetscript{
 		token_node_symbol->line=line;
 		void *get_obj=NULL,*const_obj=NULL;
 		char *aux=(char *)start_word;
-		std::string default_str_value="";
+		zs_string default_str_value="";
 		 bool error=false;
 //			 unsigned short instruction_properties=0;
 
@@ -59,14 +59,14 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unable to parse literal \"%s\"",default_str_value.c_str());
 			}
 
-		}else{ // if not number,integer, hex, bit then is a literal std::string, boolean or identifier...
+		}else{ // if not number,integer, hex, bit then is a literal zs_string, boolean or identifier...
 
 			 if(eval_data->error){
 				 return NULL;
 			 }
 
 			 aux=(char *)start_word;
-			 // try eval identifier, boolean, std::string ...
+			 // try eval identifier, boolean, zs_string ...
 			char pre=0;
 			if(*aux=='\"'){
 
@@ -82,7 +82,7 @@ namespace zetscript{
 					 zs_strutils::copy_from_ptr_diff(default_str_value,start_word+1,aux);
 				}
 				aux++;
-				value=(zs_int)eval_data->zs->registerStkStringObject(std::string("\"")+default_str_value+"\"",default_str_value);
+				value=(zs_int)eval_data->zs->registerStkStringObject(zs_string("\"")+default_str_value+"\"",default_str_value);
 				byte_code = ByteCode::BYTE_CODE_LOAD_STRING;
 			}else{ // is null,boolean or identifier
 				bool end=false;

@@ -185,7 +185,7 @@ namespace zetscript{
 		PreOperation   					pre_operation; // !,+,-,--,++
 		Operator  						operator_type;
 
-		std::string 					value; // token value content
+		zs_string 					value; // token value content
 		int 							line;
 		std::vector<EvalInstruction *> 	instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
 		bool are_instructions_moved;
@@ -298,8 +298,8 @@ namespace zetscript{
 		//std::vector<LoopBreakContinueInfo>		loop_break_continue_info; // number of continue_jmp_instructions collected (should managed only on loops)
 		const char *					 		current_parsing_file;
 		bool							  		error;
-		std::string								error_str;
-		std::string								error_file;
+		zs_string								error_str;
+		zs_string								error_file;
 		int error_line;
 
 		EvalData(ZetScript * _zs){
@@ -326,12 +326,12 @@ namespace zetscript{
 
 
 	bool g_init_eval=false;
-	std::map<std::string,std::string *>	 	*compiled_symbol_name=NULL;
+	zs_map	 	*compiled_symbol_name=NULL;
 
 
 	char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,  Scope *scope_info,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
-	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find);
-	Symbol *eval_find_global_symbol(EvalData *eval_data, const std::string & symbol_to_find);
+	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const zs_string & symbol_to_find);
+	Symbol *eval_find_global_symbol(EvalData *eval_data, const zs_string & symbol_to_find);
 
 	bool	is_operator_ternary_if(const char *s)				{return *s=='?';}
 	bool 	is_operator_ternary_else(const char *s)				{return *s==':';}
@@ -564,9 +564,9 @@ namespace zetscript{
 		return Directive::DIRECTIVE_UNKNOWN;
 	}
 
-	std::string * get_mapped_name(EvalData *eval_data,const std::string & s){
+	zs_string * get_mapped_name(EvalData *eval_data,const zs_string & s){
 		if(compiled_symbol_name->count(s)==0){
-			(*compiled_symbol_name)[s]=new std::string (s);
+			(*compiled_symbol_name)[s]=new zs_string (s);
 		}
 		return (*compiled_symbol_name)[s];
 	}
@@ -597,7 +597,7 @@ namespace zetscript{
 		return false;
 	}
 
-	int  check_identifier_name_expression_ok(EvalData *eval_data,const std::string & symbol, int line){
+	int  check_identifier_name_expression_ok(EvalData *eval_data,const zs_string & symbol, int line){
 
 		char *aux_p = (char *)symbol.c_str();
 		Keyword kw;
@@ -636,12 +636,12 @@ namespace zetscript{
 		return TRUE;
 	}
 
-	char * parse_literal_number(EvalData *eval_data,const char *s, int & line, std::string & value){
-		// PRE: a std::string given...
+	char * parse_literal_number(EvalData *eval_data,const char *s, int & line, zs_string & value){
+		// PRE: a zs_string given...
 		char *aux_p = NULL;
 		bool end=false;
 		int current_part=0;
-		std::string number_part[3];
+		zs_string number_part[3];
 		//value="";
 		bool is_hexa=false;
 		bool is01s=true;
@@ -780,7 +780,7 @@ namespace zetscript{
 		// POST: detects integer/binary/fractional/hexa
 	}
 
-	char *  get_name_identifier_token(EvalData *eval_data,const char *s, int line, std::string & name){
+	char *  get_name_identifier_token(EvalData *eval_data,const char *s, int line, zs_string & name){
 
 		char *aux_p = (char *)s;
 		name="";
@@ -914,7 +914,7 @@ namespace zetscript{
 		eval_data_directives[DIRECTIVE_UNKNOWN]={DIRECTIVE_UNKNOWN, NULL};
 		eval_data_directives[DIRECTIVE_IMPORT]={DIRECTIVE_IMPORT, "import"};
 
-		compiled_symbol_name=new std::map<std::string,std::string *>;
+		compiled_symbol_name=new zs_map();//std::map<zs_string,zs_string *>;
 
 		g_init_eval=true;
 	}
@@ -922,7 +922,7 @@ namespace zetscript{
 	void eval_deinit(){
 		if(g_init_eval){
 
-			for(std::map<std::string,std::string *>::iterator it=compiled_symbol_name->begin();it!=compiled_symbol_name->end(); it++){
+			for(std::map<zs_string,zs_string *>::iterator it=compiled_symbol_name->begin();it!=compiled_symbol_name->end(); it++){
 				delete it->second;
 			}
 

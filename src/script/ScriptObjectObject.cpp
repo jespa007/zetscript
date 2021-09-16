@@ -17,7 +17,7 @@ namespace zetscript{
 	}
 
 	ScriptObjectObject * ScriptObjectObject::concat(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
-		std::string error="";
+		zs_string error="";
 		ScriptObjectObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
 		//zs_map_iterator it_1=o1->map_user_property_keys->begin();
 		//zs_map_iterator it_2=o2->map_user_property_keys->begin();
@@ -43,8 +43,8 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObjectObject::addUserProperty(
-			const std::string & symbol_value
-			,std::string & error
+			const zs_string & symbol_value
+			,zs_string & error
 			,StackElement * sv
 		){
 		StackElement si;
@@ -74,7 +74,7 @@ namespace zetscript{
 			*idx_stk_element=stk_user_elements.count;
 		}*/
 
-		std::string key_value = symbol_value;
+		zs_string key_value = symbol_value;
 		//StackElement *new_stk=pushNewUserSlot();
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
 		map_user_property_keys->set(key_value.c_str(),(zs_int)new_stk);
@@ -83,7 +83,7 @@ namespace zetscript{
 		return new_stk;
 	}
 
-	StackElement * ScriptObjectObject::getUserProperty(const std::string & property_name){
+	StackElement * ScriptObjectObject::getUserProperty(const zs_string & property_name){
 
 		bool exists;
 		StackElement *stk_element=(StackElement *)this->map_user_property_keys->get(property_name.c_str(),exists);
@@ -100,14 +100,14 @@ namespace zetscript{
 
 
 	StackElement * ScriptObjectObject::addProperty(
-			const std::string & symbol_value
-			,std::string & error
+			const zs_string & symbol_value
+			,zs_string & error
 			,StackElement * stk_element
 	){
 		return addUserProperty(symbol_value,error);
 	}
 
-	StackElement 	* ScriptObjectObject::getProperty(const std::string & property_name){
+	StackElement 	* ScriptObjectObject::getProperty(const zs_string & property_name){
 		StackElement *stk=getBuiltinProperty(property_name);
 		if(stk==NULL){
 			stk=getUserProperty(property_name/*,idx*/);
@@ -117,7 +117,7 @@ namespace zetscript{
 
 	}
 
-	bool ScriptObjectObject::existUserProperty(const std::string & property_name){
+	bool ScriptObjectObject::existUserProperty(const zs_string & property_name){
 		return map_user_property_keys->exist(property_name.c_str());
 	}
 
@@ -131,7 +131,7 @@ namespace zetscript{
 
 
 
-	bool ScriptObjectObject::eraseUserProperty(const std::string & property_name/*, const ScriptFunction *info_function*/){
+	bool ScriptObjectObject::eraseUserProperty(const zs_string & property_name/*, const ScriptFunction *info_function*/){
 		bool exists=false;
 		StackElement *stk_user_element = (StackElement *)map_user_property_keys->get(property_name.c_str(),exists);
 		if(!exists){
@@ -158,7 +158,7 @@ namespace zetscript{
 
 	}
 
-	std::string ScriptObjectObject::toString(){
+	zs_string ScriptObjectObject::toString(){
 		StackElement stk={(zs_int)this,STK_PROPERTY_SCRIPT_OBJECT};
 		return json::serialize(zs,&stk,true);
 	}

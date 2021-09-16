@@ -128,7 +128,7 @@ namespace zetscript{
 		return ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
 	}
 
-	std::string zs_datetime::to_string() const
+	zs_string zs_datetime::to_string() const
 	{
 		char retVal[128] = "";
 		sprintf(static_cast<char *>(retVal), "%d-%02d-%02d %02d:%02d:%02d",
@@ -138,19 +138,19 @@ namespace zetscript{
 			get_hour(),
 			get_minute(),
 			get_second());
-		return std::string(static_cast<char *>(retVal));
+		return zs_string(static_cast<char *>(retVal));
 
 	}
 
-	std::string zs_datetime::to_string(const std::string& _format) const
+	zs_string zs_datetime::to_string(const zs_string& _format) const
 	{
-		std::string retVal;
-		std::string format=zs_strutils::to_lower(_format);
+		zs_string retVal;
+		zs_string format=zs_strutils::to_lower(_format);
 
 		if (strcmp(format.c_str(), "") == 0) {
 			return to_string();
 		}
-		std::string pattern_temp;
+		zs_string pattern_temp;
 		for (unsigned int index_char = 0; index_char < format.length(); index_char++) {
 			bool is_letter = false;
 			//Check if the character is a valid pattern char
@@ -264,18 +264,18 @@ namespace zetscript{
 				pattern_temp += format[index_char];
 			}
 		}
-		return std::string(retVal);
+		return zs_string(retVal);
 
 	}
 
-	std::string zs_datetime::to_shortdate_string() const
+	zs_string zs_datetime::to_shortdate_string() const
 	{
 		char retVal[128] = "";
 		sprintf(static_cast<char *>(retVal), "%d-%02d-%02d",
 			get_year(),
 			get_month(),
 			get_day());
-		return std::string(static_cast<char *>(retVal));
+		return zs_string(static_cast<char *>(retVal));
 	}
 
 	int zs_datetime::get_year() const
@@ -398,7 +398,7 @@ namespace zetscript{
 		timeInfo->tm_yday = otm->tm_yday;
 	}
 
-	zs_datetime zs_datetime::parse(const std::string& format, const std::string& value)
+	zs_datetime zs_datetime::parse(const zs_string& format, const zs_string& value)
 	{
 		int year = 1970, month = 1, day = 1, hour = 0, minute = 0, second = 0;
 
@@ -406,7 +406,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("format");
 		}
 
-		std::string pattern_temp;
+		zs_string pattern_temp;
 		int pattern_firstindex = 0;
 		bool is_letter = false;
 		period day_period = period::undefined;
@@ -451,7 +451,7 @@ namespace zetscript{
 						ptr_date_section = &second;
 					}
 					if (pattern_temp == "tt") { //Day period
-						std::string period_str = value.substr(pattern_firstindex, pattern_temp.length());
+						zs_string period_str = value.substr(pattern_firstindex, pattern_temp.length());
 						if (strcmp(period_str.c_str(), "AM") == 0) {
 							day_period = period::AM;
 						}
@@ -478,14 +478,14 @@ namespace zetscript{
 		return zs_datetime(year, month, day, hour, minute, second, day_period);
 	}
 
-	int zs_datetime::_parse_intvalue(const std::string &pattern, int index, size_t mask_length, const std::string &parse_str)
+	int zs_datetime::_parse_intvalue(const zs_string &pattern, int index, size_t mask_length, const zs_string &parse_str)
 	{
 		long converted_value;
 		int ret_val;
 		char *end;
 		const char *parse_str_chr;
 
-		std::string value_parsed = parse_str.substr(index, mask_length);
+		zs_string value_parsed = parse_str.substr(index, mask_length);
 		parse_str_chr = value_parsed.c_str();
 		converted_value = strtol(parse_str_chr, &end, 10);
 		if (parse_str_chr == end) {

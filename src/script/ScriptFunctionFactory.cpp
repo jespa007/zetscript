@@ -21,7 +21,7 @@ namespace zetscript{
 			//--- Function data
 			, int idx_class
 			//, short _idx_position
-			, const std::string & function_name
+			, const zs_string & function_name
 			, std::vector<ScriptFunctionParam> args
 			, int idx_return_type
 			, zs_int ref_native_function_ptr

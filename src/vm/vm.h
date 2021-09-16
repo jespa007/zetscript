@@ -44,9 +44,9 @@ namespace zetscript{
 	bool 			vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk);
 
 
-	void 			vm_set_error(VirtualMachine *vm,const std::string & str);
+	void 			vm_set_error(VirtualMachine *vm,const zs_string & str);
 	void 			vm_set_error_file_line(VirtualMachine *vm, const char *file, int line, const char *in_txt,...);
-	std::string 	vm_get_error(VirtualMachine *vm);
+	zs_string 	vm_get_error(VirtualMachine *vm);
 	
 	bool 			vm_it_has_error(VirtualMachine *vm);
 

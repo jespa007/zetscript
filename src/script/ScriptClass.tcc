@@ -6,15 +6,15 @@ namespace zetscript{
 
 	template < typename R>
 	void ScriptClass::registerNativeMemberVariableStaticConst(
-			const std::string & var_name
+			const zs_string & var_name
 			, const R var_pointer
 			, const char *registered_file
 			,short registered_line)
 	{
 			// to make compatible MSVC shared library
 			//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
-		std::string var_type = typeid(R).name();
-		std::string error;
+		zs_string var_type = typeid(R).name();
+		zs_string error;
 
 			// register variable...
 		Symbol *symbol=this->registerNativeMemberVariable(
@@ -29,14 +29,14 @@ namespace zetscript{
 
 	template <typename F>
 	int ScriptClass::getNativeMemberFunctionRetArgsTypes(
-			const std::string & function_name
+			const zs_string & function_name
 			,F ptr_function
-			,std::string & return_type
+			,zs_string & return_type
 			,std::vector<ScriptFunctionParam> & param_info
 		)
 	{
 		int idx_return_type=-1;
-		std::vector<std::string> arg;
+		std::vector<zs_string> arg;
 		// 1. check all parameters ok.
 		using Traits3 = FunctionTraits<decltype(ptr_function)>;
 		getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
@@ -79,17 +79,17 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributeSetter(
-			const std::string & attrib_name
+			const zs_string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
-		std::string return_type;
-		std::vector<std::string> params;
+		zs_string return_type;
+		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
-		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
-		std::string error;
+		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string error;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
@@ -113,17 +113,17 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributeGetter(
-			const std::string & attrib_name
+			const zs_string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
-		std::string return_type;
-		std::vector<std::string> params;
+		zs_string return_type;
+		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
-		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
-		std::string error;
+		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string error;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
@@ -144,17 +144,17 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributePostIncrement(
-			const std::string & attrib_name
+			const zs_string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
-		std::string return_type;
-		std::vector<std::string> params;
+		zs_string return_type;
+		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
-		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
-		std::string error;
+		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string error;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
@@ -175,17 +175,17 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributePostDecrement(
-			const std::string & attrib_name
+			const zs_string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
-		std::string return_type;
-		std::vector<std::string> params;
+		zs_string return_type;
+		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
-		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
-		std::string error;
+		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string error;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
@@ -206,17 +206,17 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributePreIncrement(
-			const std::string & attrib_name
+			const zs_string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
-		std::string return_type;
-		std::vector<std::string> params;
+		zs_string return_type;
+		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
-		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
-		std::string error;
+		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string error;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
@@ -237,17 +237,17 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberAttributePreDecrement(
-			const std::string & attrib_name
+			const zs_string & attrib_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
-		std::string return_type;
-		std::vector<std::string> params;
+		zs_string return_type;
+		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
 		//zs_int ref_ptr=0;
-		std::string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
-		std::string error;
+		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string error;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(attrib_name,ptr_function,return_type,param_info);
@@ -269,7 +269,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberFunctionStatic(
-			const std::string & function_name
+			const zs_string & function_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -278,9 +278,9 @@ namespace zetscript{
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
 
-		std::string return_type;
-		std::string error;
-		std::vector<std::string> params;
+		zs_string return_type;
+		zs_string error;
+		std::vector<zs_string> params;
 
 		std::vector<ScriptFunctionParam> param_info;
 
@@ -346,7 +346,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberFunction(
-			const std::string & function_name
+			const zs_string & function_name
 			,F ptr_function
 			, const char *registered_file
 			,short registered_line
@@ -354,12 +354,12 @@ namespace zetscript{
 		// to make compatible MSVC shared library
 		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
 
-		std::string return_type;
-		std::vector<std::string> params;
+		zs_string return_type;
+		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
-		std::string error;
+		zs_string error;
 		
-		std::string function_class_name = this->class_name+"::"+function_name;
+		zs_string function_class_name = this->class_name+"::"+function_name;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,param_info);

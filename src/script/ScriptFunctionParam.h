@@ -9,14 +9,14 @@ namespace zetscript{
 
 	struct ScriptFunctionParam{
 		int idx_type;
-		std::string param_name; //arg c++ type or arg name
+		zs_string param_name; //arg c++ type or arg name
 		int line;
 		uint16_t properties;
 		StackElement default_param_value; // constant int/float/bool/string or anonymous function that return an expression or other object
 
 		ScriptFunctionParam();
-		ScriptFunctionParam(std::string _param_name);
-		ScriptFunctionParam(int _idx_type, std::string _param_name);
+		ScriptFunctionParam(zs_string _param_name);
+		ScriptFunctionParam(int _idx_type, zs_string _param_name);
 		ScriptFunctionParam( const ScriptFunctionParam & _function_param);
 	};
 }

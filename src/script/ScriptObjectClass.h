@@ -39,18 +39,18 @@ namespace zetscript{
 			virtual void * getNativeObject();
 			ScriptClass * getNativeScriptClass();
 
-			const std::string & getNativePointerClassName();
+			const zs_string & getNativePointerClassName();
 
 			ScriptFunction *getConstructorFunction();
 
-			virtual std::string toString();
+			virtual zs_string toString();
 
 			virtual ~ScriptObjectClass();
 
 		protected:
 			void callConstructorMemberVariables(ScriptClass *sc);
 			//virtual StackElement * newSlotBuiltin();
-			//virtual StackElement * addPropertyBuiltin(const std::string & symbol_value, StackElement stk=k_stk_undefined);
+			//virtual StackElement * addPropertyBuiltin(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 
 
 		private:

@@ -29,36 +29,36 @@ namespace zetscript{
 		ScriptObjectObject();
 
 		virtual StackElement * addProperty(
-				const std::string & symbol_value
-				,std::string & error
+				const zs_string & symbol_value
+				,zs_string & error
 				,StackElement * stk_element = NULL
 		);
 
 		StackElement * addUserProperty(
-						const std::string & symbol_value
-						,std::string & error
+						const zs_string & symbol_value
+						,zs_string & error
 						,StackElement * stk_element = NULL
 				);
 
-		virtual StackElement 	* getProperty(const std::string & property_name);
+		virtual StackElement 	* getProperty(const zs_string & property_name);
 
-		bool existUserProperty(const std::string & property_name);
+		bool existUserProperty(const zs_string & property_name);
 
 		zs_map_iterator begin();
 		zs_map_iterator begin_builtin();
 
 
-		bool eraseUserProperty(const std::string & symbol_value);
+		bool eraseUserProperty(const zs_string & symbol_value);
 		void eraseAllUserProperties(/*const ScriptFunction *info_function=NULL*/);
 
-		virtual std::string toString();
+		virtual zs_string toString();
 		virtual ~ScriptObjectObject();
 
 	protected:
 
 		zs_map				*	map_user_property_keys; // to search faster each property by its name
 
-		StackElement * 			getUserProperty(const std::string & property_name);
+		StackElement * 			getUserProperty(const zs_string & property_name);
 	};
 
 }

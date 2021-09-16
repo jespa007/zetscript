@@ -82,15 +82,15 @@ namespace zetscript{
 			return;
 		}
 
-		std::string symbol_ref="????";
-		std::string class_str="";
-		std::string symbol_value="";
-		std::string iload_info="";
+		zs_string symbol_ref="????";
+		zs_string class_str="";
+		zs_string symbol_value="";
+		zs_string iload_info="";
 
 		if(sc==NULL){ // no class is a function on a global scope
 			symbol_ref=sfo->symbol.name;
 		}else{ // is a class
-			symbol_ref=sfo->symbol.name;//+std::string("::")+std::string("????");
+			symbol_ref=sfo->symbol.name;//+zs_string("::")+zs_string("????");
 			class_str=sc->class_name+"::";
 		}
 
@@ -224,7 +224,7 @@ namespace zetscript{
 
 				while((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
 					instruction++;
-					symbol_value+=std::string(".")+SFI_GET_SYMBOL_NAME(sfo,instruction);
+					symbol_value+=zs_string(".")+SFI_GET_SYMBOL_NAME(sfo,instruction);
 				}
 
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
@@ -354,7 +354,7 @@ namespace zetscript{
 			 Scope * scope_block
 			, const char *file
 			, short line
-			, const std::string & symbol_name
+			, const zs_string & symbol_name
 			, uint16_t properties
 	){
 		Symbol * symbol=NULL;
@@ -378,8 +378,8 @@ namespace zetscript{
 			 Scope * scope_block
 			, const char * file
 			, short line
-			, const std::string & symbol_name
-			, const std::string & str_native_type
+			, const zs_string & symbol_name
+			, const zs_string & str_native_type
 			, zs_int ref_ptr
 			, unsigned short properties
 	){
@@ -430,14 +430,14 @@ namespace zetscript{
 			 Scope * scope_block
 			,const char *file
 			, short line
-			, const std::string & function_name
+			, const zs_string & function_name
 			, std::vector<ScriptFunctionParam> _params
 			, int idx_return_type
 			,zs_int ref_ptr
 			, unsigned short properties
 	){
 		Symbol *symbol_found=scope_block->getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
-		std::string current_file_line=ZS_CONST_STR_IS_EMPTY(file)?
+		zs_string current_file_line=ZS_CONST_STR_IS_EMPTY(file)?
 							zs_strutils::format("[line %i]",line):
 							zs_strutils::format("[%s:%i]",zs_path::get_filename(file).c_str(),line);
 
@@ -445,7 +445,7 @@ namespace zetscript{
 
 		if(symbol_found != NULL){ // C symbol found
 			bool error = false;
-			std::string symbol_file_line=ZS_CONST_STR_IS_EMPTY(symbol_found->file)?
+			zs_string symbol_file_line=ZS_CONST_STR_IS_EMPTY(symbol_found->file)?
 					zs_strutils::format("[line %i]",line):
 					zs_strutils::format("[%s:%i]",zs_path::get_filename(symbol_found->file).c_str(),line);
 

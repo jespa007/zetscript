@@ -37,7 +37,7 @@ namespace zetscript{
 	}*/
 
 
-	bool ScriptObjectObjectWrap_contains(ScriptObjectObject *o1, std::string * key){
+	bool ScriptObjectObjectWrap_contains(ScriptObjectObject *o1, zs_string * key){
 		return o1->existUserProperty(key->c_str());
 	}
 
@@ -45,7 +45,7 @@ namespace zetscript{
 		o1->eraseAllUserProperties();
 	}
 
-	void ScriptObjectObjectWrap_erase(ScriptObjectObject *o1, std::string * key){
+	void ScriptObjectObjectWrap_erase(ScriptObjectObject *o1, zs_string * key){
 		o1->eraseUserProperty(*key);
 	}
 

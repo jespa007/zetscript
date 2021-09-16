@@ -7,10 +7,10 @@ namespace zetscript{
 
 	namespace json{
 
-		void serialize_stk(ZetScript *zs,ScriptObject *this_object,std::string & str_result, StackElement *stk, int ident,bool is_formatted);
+		void serialize_stk(ZetScript *zs,ScriptObject *this_object,zs_string & str_result, StackElement *stk, int ident,bool is_formatted);
 
 
-		void serialize_vector(ZetScript *zs,ScriptObject *this_object,std::string & str_result, ScriptObjectVector * vector,int ident, bool is_formatted){
+		void serialize_vector(ZetScript *zs,ScriptObject *this_object,zs_string & str_result, ScriptObjectVector * vector,int ident, bool is_formatted){
 
 			str_result+="[";
 
@@ -24,7 +24,7 @@ namespace zetscript{
 			str_result+="]";
 		}
 
-		void serialize_object(ZetScript *zs,ScriptObject *this_object, std::string & str_result, ScriptObjectObject *obj, int ident, bool is_formatted){
+		void serialize_object(ZetScript *zs,ScriptObject *this_object, zs_string & str_result, ScriptObjectObject *obj, int ident, bool is_formatted){
 
 			str_result += "{";
 
@@ -57,7 +57,7 @@ namespace zetscript{
 							str_result += ",";
 						}
 
-						str_result += "\"" + std::string(mi->getKey())+ "\":";
+						str_result += "\"" + zs_string(mi->getKey())+ "\":";
 
 						// if attribute we have to call script or native...
 						if(stk_se->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
@@ -114,7 +114,7 @@ namespace zetscript{
 			str_result += "}";
 		}
 
-		void serialize_stk(ZetScript *zs, ScriptObject *this_object,std::string & str_result, StackElement *stk, int ident,bool is_formatted){
+		void serialize_stk(ZetScript *zs, ScriptObject *this_object,zs_string & str_result, StackElement *stk, int ident,bool is_formatted){
 			ScriptObject *obj=NULL;
 			int16_t var_type = 0;
 
@@ -145,7 +145,7 @@ namespace zetscript{
 				obj=((ScriptObject *)stk->value);
 				switch(obj->idx_script_class){
 				case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
-					str_result+=std::string("\"") + ((ScriptObjectString *)obj)->toString() + "\"";
+					str_result+=zs_string("\"") + ((ScriptObjectString *)obj)->toString() + "\"";
 					break;
 				case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR:
 					serialize_vector(zs, this_object, str_result,(ScriptObjectVector *)obj,ident,is_formatted);
@@ -167,8 +167,8 @@ namespace zetscript{
 			}
 		}
 
-		std::string serialize(ZetScript *zs, StackElement *stk, bool is_formatted){
-			std::string serialized_stk="";
+		zs_string serialize(ZetScript *zs, StackElement *stk, bool is_formatted){
+			zs_string serialized_stk="";
 
 			if(
 					(stk->properties & STK_PROPERTY_SCRIPT_OBJECT)

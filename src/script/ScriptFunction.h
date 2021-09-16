@@ -52,7 +52,7 @@ namespace zetscript{
 
 		//-----------
 		//  SYMBOL-INSTRUCTION
-		std::map<short,InstructionSourceInfo> instruction_source_info; // std::map that gives symbol with at instruction idx given
+		zs_map 				*instruction_source_info; // std::map that gives symbol with at instruction idx given
 
 		short 				getInstructionLine(Instruction * ins);
 		const char * 		getInstructionSymbolName(Instruction * ins);
@@ -63,7 +63,7 @@ namespace zetscript{
 
 		static void printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc=NULL);
 
-		int existArgumentName(const std::string & arg_name);
+		int existArgumentName(const zs_string & arg_name);
 
 
 		/* Registers argument variable
@@ -73,7 +73,7 @@ namespace zetscript{
 				 Scope * scope_block
 				, const char * file
 				, short line
-				, const std::string & symbol_name
+				, const zs_string & symbol_name
 				, uint16_t properties
 		);
 
@@ -84,8 +84,8 @@ namespace zetscript{
 				 Scope * scope_block
 				, const char * file
 				, short line
-				, const std::string & symbol_name
-				, const std::string & str_native_type=""
+				, const zs_string & symbol_name
+				, const zs_string & str_native_type=""
 				, zs_int ref_ptr=0
 				, unsigned short properties=0
 		);
@@ -98,7 +98,7 @@ namespace zetscript{
 				  Scope * scope_block
 				, const char * file
 				, short line
-				, const std::string & function_name
+				, const zs_string & function_name
 				, std::vector<ScriptFunctionParam> args={}
 				, int idx_return_type=ZS_IDX_UNDEFINED
 				, zs_int ref_ptr=0
@@ -117,7 +117,7 @@ namespace zetscript{
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
-		static std::string formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
+		static zs_string formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
 		InstructionSourceInfo * getInstructionInfo(Instruction *instruction);
 		void clearParams();
 

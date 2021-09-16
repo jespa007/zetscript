@@ -41,8 +41,8 @@ namespace zetscript{
 		char *aux_p=NULL;
 		int line =_line;
 		bool error;
-		std::string error_str;
-		std::string error_file="";
+		zs_string error_str;
+		zs_string error_file="";
 		int error_line=-1;
 		Scope *scope_info=MAIN_SCOPE(eval_data);
 		eval_data->current_parsing_file=_filename;
@@ -134,7 +134,7 @@ namespace zetscript{
 					 unresolved_instruction_it->instruction->byte_code=BYTE_CODE_LOAD_CLASS;
 					 unresolved_instruction_it->instruction->value_op2=(zs_int)sc_found;
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
-					 std::string static_error;
+					 zs_string static_error;
 					char copy_aux[512]={0};
 
 					// get class
@@ -375,7 +375,7 @@ namespace zetscript{
 			}else if((directive = is_directive(aux)) != Directive::DIRECTIVE_UNKNOWN){ // eval directive
 				// try directive ...
 				char *start_var,* end_var;
-				std::string str_symbol;
+				zs_string str_symbol;
 				if(directive != Directive::DIRECTIVE_UNKNOWN){
 					switch(directive){
 					case DIRECTIVE_IMPORT:
@@ -464,7 +464,7 @@ namespace zetscript{
 		eval_data->functions.push_back(eval_data->current_function=new EvalFunction(script_function));
 	}
 
-	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find){
+	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const zs_string & symbol_to_find){
 
 		EvalFunction *sf=eval_data->current_function;
 		Symbol * sc_var = scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
@@ -482,7 +482,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol *eval_find_global_symbol(EvalData *eval_data, const std::string & symbol_to_find){
+	Symbol *eval_find_global_symbol(EvalData *eval_data, const zs_string & symbol_to_find){
 		// try find global variable...
 		return MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 	}
@@ -568,7 +568,7 @@ namespace zetscript{
 
 	int eval_pop_and_compile_function(EvalData *eval_data){
 
-		std::string static_error;
+		zs_string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
 		ScriptClass *sc_sf = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 		ScriptClass *sc_found=NULL;
@@ -595,7 +595,7 @@ namespace zetscript{
 
 			Symbol *vis=NULL;
 			EvalInstruction *instruction = eval_data->current_function->instructions[i];
-			std::string *ptr_str_symbol_to_find=NULL;
+			zs_string *ptr_str_symbol_to_find=NULL;
 			ScriptClass *sc_aux=NULL;
 			//bool is_local=false;
 			ptr_str_symbol_to_find=&instruction->symbol.name;
@@ -645,7 +645,7 @@ namespace zetscript{
 					if(*ptr_str_symbol_to_find == SYMBOL_VALUE_SUPER){
 						// get current function name and find first ancestor in heritance
 						Symbol *symbol_sf_foundf=NULL;
-						std::string target_name;
+						zs_string target_name;
 
 						bool is_constructor = sf->symbol.name == sc_sf->class_name;
 
@@ -685,7 +685,7 @@ namespace zetscript{
 						}
 						instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER_VAR;
 						instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
-						instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,std::string(symbol_sf_foundf->scope->script_class->class_name)+"::"+symbol_sf_foundf->name);
+						instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_class->class_name)+"::"+symbol_sf_foundf->name);
 
 					}else{ // is "this" symbol, check whether symbol is member
 						// TODO: review load function member !!

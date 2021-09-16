@@ -35,7 +35,7 @@ namespace zetscript{
 
 	void ScriptObjectStringIterator::get(){
 		if(so==NULL) return;
-		std::string *str_ref=(std::string *)so->value;
+		zs_string *str_ref=(zs_string *)so->value;
 		if(idx < (int)str_ref->size()){
 			// set value
 			zs_int ch=str_ref->at(idx);

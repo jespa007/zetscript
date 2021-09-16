@@ -45,7 +45,7 @@ data->stk_vm_current++;
 #define IS_STK_THIS(stk) (this_object != NULL && (stk)->value == (zs_int)(this_object))
 
 #define PRINT_DUAL_ERROR_OP(c)\
-std::string var_type1=stk_result_op1->typeOf(),\
+zs_string var_type1=stk_result_op1->typeOf(),\
 	   var_type2=stk_result_op2->typeOf();\
 \
 	VM_ERROR("cannot perform operator \"%s\" %s \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
@@ -54,7 +54,7 @@ std::string var_type1=stk_result_op1->typeOf(),\
 		var_type2.c_str());\
 
 #define PRINT_ERROR_OP(c)\
-	std::string var_type1=stk_result_op1->typeOf();\
+	zs_string var_type1=stk_result_op1->typeOf();\
 \
 VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 	c,\
@@ -179,13 +179,13 @@ namespace zetscript{
 		//===================================================================================================
 
 		 bool				vm_error;
-		 std::string 		vm_error_str;
-		 std::string 		vm_error_callstack_str;
+		 zs_string 		vm_error_str;
+		 zs_string 		vm_error_callstack_str;
 		 VM_ScopeFunction	*vm_current_scope_function;
 		 VM_ScopeFunction	vm_scope_function[MAX_FUNCTION_CALL];
 
 		 StackElement     					vm_stack[VM_STACK_LOCAL_VAR_MAX];
-		 std::map<void *,InfoLifetimeObject *>	lifetime_object;
+		 zs_map								lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		StackElement *stk_vm_current;
@@ -421,7 +421,7 @@ namespace zetscript{
 			,bool is_constructor
 			//,void *stk_elements_builtin_ptr // vector of properties
 			//,int stk_elements_builtin_len // vector of properties
-			,const std::string & symbol_to_find
+			,const zs_string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
 		) {
@@ -429,7 +429,7 @@ namespace zetscript{
 		// by default search over global functions...
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		ScriptFunction * ptr_function_found=NULL;
-		std::string aux_string;
+		zs_string aux_string;
 		int this_as_first_parameter=0;
 
 		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
@@ -543,8 +543,8 @@ namespace zetscript{
 
 		if(ptr_function_found == NULL){
 			int n_candidates=0;
-			std::string str_candidates="";
-			std::string args_str = "";
+			zs_string str_candidates="";
+			zs_string args_str = "";
 			//int arg_idx_type=-1;
 			/* get arguments... */
 
@@ -748,17 +748,17 @@ namespace zetscript{
 	) {
 		bool error=false;
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		std::string str_stk_result_op1_full_definition="";
-		std::string str_stk_result_op2_full_definition="";
+		zs_string str_stk_result_op1_full_definition="";
+		zs_string str_stk_result_op2_full_definition="";
 		StackElement *stk_vm_current_backup,*stk_args;
 		//int stk_element_len=0;
 		ScriptFunction *ptr_function_found=NULL;
 		StackElement ret_obj;
 		const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(byte_code_metamethod);
 		const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
-		std::string error_found="";
+		zs_string error_found="";
 		ScriptObject *script_object=NULL;
-		std::string class_name_object_found="";
+		zs_string class_name_object_found="";
 		StackMemberAttribute *stk_ma=NULL;
 		int n_stk_args=byte_code_metamethod_get_num_arguments(byte_code_metamethod);
 		StackElement *stk_return=NULL;
@@ -1133,7 +1133,7 @@ lbl_exit_function:
 			,Instruction *instruction
 			, StackElement *stk_result_op1
 			, StackElement *stk_result_op2){
-		std::string error="";
+		zs_string error="";
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 
 		if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -1149,7 +1149,7 @@ lbl_exit_function:
 					)
 				);
 			}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
-				std::string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
+				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
 				PUSH_STK_BOOLEAN(
 					ScriptObjectStringWrap_contains(
 						(ScriptObjectString *)so_aux
@@ -1169,7 +1169,7 @@ lbl_exit_function:
 			break;
 			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				std::string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
+				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
 				PUSH_STK_BOOLEAN(
 					ScriptObjectObjectWrap_contains(
 						(ScriptObjectObject *)so_aux,&str_op1

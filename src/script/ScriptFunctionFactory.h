@@ -32,14 +32,14 @@ namespace zetscript{
 				//--- Function data
 			    , int idx_class
 				//, short idx_local_function
-				, const std::string & function_name
+				, const zs_string & function_name
 				, std::vector<ScriptFunctionParam> args
 				, int idx_return_type=ZS_IDX_UNDEFINED
 				, zs_int ref_native_function_ptr=0
 				, unsigned short properties=0
 			);
 
-			 bool							checkCanregisterNativeFunction(const std::string & function_name);
+			 bool							checkCanregisterNativeFunction(const zs_string & function_name);
 
 			 ScriptFunction 			* 	getScriptFunction(int idx);
 			 void	setScriptFunction(short idx, ScriptFunction *sf);

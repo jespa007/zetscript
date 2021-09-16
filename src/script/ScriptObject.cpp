@@ -84,7 +84,7 @@ namespace zetscript{
 	}
 
 
-	/*int  ScriptObject::getBuiltinPropertyIdx(const std::string & property_name){//,bool only_var_name){
+	/*int  ScriptObject::getBuiltinPropertyIdx(const zs_string & property_name){//,bool only_var_name){
 
 		bool exists;
 		int idx_stk_element=this->map_builtin_property_keys->get(property_name.c_str(),exists);
@@ -95,8 +95,8 @@ namespace zetscript{
 	}*/
 
 	// built-in only for initialized
-	StackElement * ScriptObject::addBuiltinProperty(const std::string & symbol_value, StackElement stk){
-		std::string key_value = symbol_value;
+	StackElement * ScriptObject::addBuiltinProperty(const zs_string & symbol_value, StackElement stk){
+		zs_string key_value = symbol_value;
 
 		// if ignore duplicate was true, map resets idx to the last function...
 		StackElement *new_stk=newBuiltinSlot();
@@ -111,11 +111,11 @@ namespace zetscript{
 		return 0;
 	}
 
-	const std::string & ScriptObject::getClassName(){
+	const zs_string & ScriptObject::getClassName(){
 		return getScriptClass()->class_name;
 	}
 
-	const std::string & ScriptObjectClass::getNativePointerClassName(){
+	const zs_string & ScriptObjectClass::getNativePointerClassName(){
 		return getScriptClass()->str_class_ptr_type;
 	}
 
@@ -153,7 +153,7 @@ namespace zetscript{
 		return zs;
 	}
 
-	StackElement * 			ScriptObject::getBuiltinProperty(const std::string & property_name){
+	StackElement * 			ScriptObject::getBuiltinProperty(const zs_string & property_name){
 		/*if(property_name == "length"){
 			stk_length={(void *)this->length(),STK_PROPERTY_ZS_INT};
 			return &stk_length;
@@ -168,7 +168,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	StackElement 	* ScriptObject::getProperty(const std::string & property_name){
+	StackElement 	* ScriptObject::getProperty(const zs_string & property_name){
 		return getBuiltinProperty(property_name);
 	}
 
@@ -185,8 +185,8 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObject::addProperty(
-			const std::string & symbol_value
-			,std::string & error
+			const zs_string & symbol_value
+			,zs_string & error
 			,StackElement * stk_element
 
 	){
@@ -203,7 +203,7 @@ namespace zetscript{
 		return (StackElement *)stk_builtin_elements.items[idx];
 	}
 
-	std::string ScriptObject::toString(){
+	zs_string ScriptObject::toString(){
 		return "Object@"+getClassName();
 	}
 

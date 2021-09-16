@@ -15,8 +15,8 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		int class_line;
-		std::string class_name;
-		std::string base_class_name="";
+		zs_string class_name;
+		zs_string base_class_name="";
 		ScriptClass *sc;
 		Keyword key_w;
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -167,10 +167,10 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,std::string & member_symbol){
+	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,zs_string & member_symbol){
 
 		char *aux_p = (char *)s;
-		std::string class_name;
+		zs_string class_name;
 		*sc=NULL;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -209,7 +209,7 @@ namespace zetscript{
 	char * eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		std::string symbol_value;
+		zs_string symbol_value;
 		Keyword key_w;
 		Symbol *symbol_found=NULL;
 		EvalInstruction *eval_instruction;
@@ -279,9 +279,9 @@ namespace zetscript{
 
 		char *aux_p = (char *)s;
 		char *end_var = NULL;
-		std::string attrib_name="";
+		zs_string attrib_name="";
 		int attrib_start_line;
-		std::string class_attribute_name=sc->class_name;
+		zs_string class_attribute_name=sc->class_name;
 		Scope *scope_info=sc->class_scope;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -309,8 +309,8 @@ namespace zetscript{
 			Symbol *symbol_attrib=NULL;
 			MemberAttribute *ma=NULL;
 			char *end_var;
-			std::string function_name;
-			std::string error;
+			zs_string function_name;
+			zs_string error;
 
 			try{
 				symbol_attrib=sc->registerMemberAttribute(

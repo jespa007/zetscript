@@ -58,9 +58,9 @@ namespace zetscript{
 
 	ScriptObjectString *		ScriptObjectVectorWrap_join(ScriptObjectVector *sv, zs_int idx){
 		ScriptObjectString *so_ref=NULL;
-		//std::string *str;
+		//zs_string *str;
 		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(sv->getZetScript());
-		std::string *ptr_str=(std::string *)so_string->value;
+		zs_string *ptr_str=(zs_string *)so_string->value;
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
 
 		for(unsigned i=0; i < stk_user_list_elements->count;i++){

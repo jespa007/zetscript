@@ -7,6 +7,7 @@
 //#include "zs_vector_fast.h"
 #include "zs_map_iterator.h"
 #include "zs_map.h"
+#include "zs_string.h"
 #include "zs_dir.h"
 #include "zs_timespan.h"
 #include "zs_datetime.h"

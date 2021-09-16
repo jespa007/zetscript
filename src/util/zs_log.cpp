@@ -8,7 +8,7 @@ namespace zetscript{
 			//FILE *log_std=stdout;
 
 			FILE *std_type = stdout;
-			std::string filename = "";
+			zs_string filename = "";
 
 			switch (level)
 			{

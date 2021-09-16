@@ -65,12 +65,12 @@ namespace zetscript{
 		 ,uint16_t _properties=0
 		 );
 
-		std::string getConstantString();
+		zs_string getConstantString();
 		zs_float getConstantFloat();
 		zs_int getConstantInt();
 		bool isConstant();
 
-		std::string getConstantValueOp2ToString();
+		zs_string getConstantValueOp2ToString();
 
 
 	};
@@ -81,7 +81,7 @@ namespace zetscript{
 
 		const char *file;
 		short line;
-		std::string * ptr_str_symbol_name; // should be deallocated
+		zs_string * ptr_str_symbol_name; // should be deallocated
 
 		InstructionSourceInfo(){
 			ptr_str_symbol_name=NULL;
@@ -89,7 +89,7 @@ namespace zetscript{
 			line=-1;
 		}
 
-		InstructionSourceInfo(const char * _file,short _line,std::string *_ptr_str_symbol_name=NULL){
+		InstructionSourceInfo(const char * _file,short _line,zs_string *_ptr_str_symbol_name=NULL){
 			file=_file;
 			line=_line;
 			ptr_str_symbol_name=_ptr_str_symbol_name;

@@ -7,7 +7,7 @@ namespace zetscript{
 
 	static int n_anonymous_iterator=0;
 
-	std::string eval_anonymous_iterator_name(){
+	zs_string eval_anonymous_iterator_name(){
 		return "_@iter_"+zs_strutils::zs_int_to_str(n_anonymous_iterator++);
 	}
 
@@ -102,7 +102,7 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		char *end_expr;
-		std::string start_symbol;
+		zs_string start_symbol;
 		Keyword key_w;
 		int idx_instruction_conditional_while;
 		EvalInstruction *ei_jnt; // conditional to end block
@@ -184,7 +184,7 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		char *end_expr;
-		std::string start_symbol;
+		zs_string start_symbol;
 		Keyword key_w;
 		int idx_do_while_start;
 		int idx_do_while_conditional;

@@ -56,7 +56,7 @@ namespace zetscript{
 		return  _this->get_week_day();
 	}
 
-	std::string		DateTimeModule_toString(zs_datetime *_this){
+	zs_string		DateTimeModule_toString(zs_datetime *_this){
 		return _this->to_string();
 	}
 

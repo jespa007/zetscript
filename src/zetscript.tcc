@@ -3,7 +3,7 @@ namespace zetscript{
 		// Helpers...
 		 StackElement ZetScript::convertVarToStackElement(zs_int ptr_var, short idx_builtin_type_var){
 			//zs_int ptr_var = (zs_int)input_var;
-				std::string s_return_value;
+				zs_string s_return_value;
 				StackElement stk_result=k_stk_undefined;
 				ScriptObjectString *so=NULL;
 
@@ -79,7 +79,7 @@ namespace zetscript{
 				return stk_result;
 		}
 
-		bool ZetScript::convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, zs_int *ptr_var, std::string & error){
+		bool ZetScript::convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, zs_int *ptr_var, zs_string & error){
 			zs_int val_ret=0;
 			//ScriptObjectString *so=NULL;
 
@@ -170,7 +170,7 @@ namespace zetscript{
 								if(idx_builtin_type == IDX_BUILTIN_TYPE_STRING_PTR_C){
 									val_ret=(zs_int)(((ScriptObjectString *)script_object)->value);
 								}else if (idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
-									val_ret=(zs_int)(((std::string *)(((ScriptObjectString *)script_object)))->c_str());
+									val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());
 								}else{
 									error= "cannot convert '"+zs_rtti::demangle((k_str_string_type_ptr))+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
 									return false;
@@ -248,7 +248,7 @@ namespace zetscript{
 
 			*ptr_fun=((void *)(new std::function<R ()>(
 				[&,file,line,calling_obj,fun_obj,idx_return](){
-						std::string error_str;
+						zs_string error_str;
 						R ret_value;
 
 						StackElement stk = vm_execute(
@@ -319,7 +319,7 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1](Param1 p1){
 
 						R ret_value;
-						std::string error_str;
+						zs_string error_str;
 
 						StackElement args[1]={
 								convertVarToStackElement((zs_int)p1,idx_param1)
@@ -401,7 +401,7 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2](Param1 p1,Param2 p2){
 
 						R ret_value;
-						std::string error_str;
+						zs_string error_str;
 
 						StackElement args[2]={
 								 convertVarToStackElement((zs_int)p1,idx_param1)
@@ -492,7 +492,7 @@ namespace zetscript{
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3](Param1 p1,Param2 p2,Param3 p3){
 					R ret_value;
-					std::string error_str;
+					zs_string error_str;
 
 					StackElement args[3]={
 							 convertVarToStackElement((zs_int)p1,idx_param1)
@@ -586,7 +586,7 @@ namespace zetscript{
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3,Param4)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4](Param1 p1,Param2 p2,Param3 p3,Param4 p4){
 						R ret_value;
-						std::string error_str;
+						zs_string error_str;
 
 						StackElement args[4]={
 								 convertVarToStackElement((zs_int)p1,idx_param1)
@@ -689,7 +689,7 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5){
 
 					R ret_value;
-					std::string error_str;
+					zs_string error_str;
 
 					StackElement args[5]={
 							 convertVarToStackElement((zs_int)p1,idx_param1)
@@ -796,7 +796,7 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5,Param6 p6){
 
 						R ret_value;
-						std::string error_str;
+						zs_string error_str;
 
 						StackElement args[6]={
 								 convertVarToStackElement((zs_int)p1,idx_param1)
@@ -850,9 +850,9 @@ namespace zetscript{
 		template <  typename F>
 		std::function<F> * ZetScript::bindScriptFunction(ScriptFunction *fun,ScriptObjectClass *calling_obj, const char *file, int line){
 
-			std::string return_type;
-			std::vector<std::string> params;
-			std::vector<std::string> arg;
+			zs_string return_type;
+			std::vector<zs_string> params;
+			std::vector<zs_string> arg;
 			int idx_return_type=-1;
 			void *ptr=NULL;
 
@@ -889,11 +889,11 @@ namespace zetscript{
 
 
 		template <  typename F>
-		std::function<F> * ZetScript::bindScriptFunction(const std::string & function_access, const char *file, int line)
+		std::function<F> * ZetScript::bindScriptFunction(const zs_string & function_access, const char *file, int line)
 		{
 			ScriptFunction * fun_obj=NULL;
 			ScriptObjectClass *calling_obj=NULL;
-			std::vector<std::string> access_var = zs_strutils::split(function_access,'.');
+			std::vector<zs_string> access_var = zs_strutils::split(function_access,'.');
 			ScriptFunction * main_function = script_class_factory->getMainFunction();
 			StackElement *se=NULL;
 			Symbol *symbol_sfm=NULL;
@@ -902,7 +902,7 @@ namespace zetscript{
 			// 1. some variable in main function ...
 			if(access_var.size()>1){
 				for(unsigned i=0; i < access_var.size()-1; i++){
-					std::string symbol_to_find=access_var[i];
+					zs_string symbol_to_find=access_var[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
 						zs_vector *list_functions=main_function->symbol.scope->symbol_functions;
 						for(unsigned j = 0; j < list_functions->count && calling_obj==NULL; j++){
@@ -950,7 +950,7 @@ namespace zetscript{
 				}
 
 			}else{ // some function in main function
-				std::string symbol_to_find=access_var[0];
+				zs_string symbol_to_find=access_var[0];
 				zs_vector *list_functions=main_function->symbol.scope->symbol_functions;
 				for(unsigned i = 0; i < list_functions->count && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->items[i];

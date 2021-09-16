@@ -22,13 +22,13 @@ namespace zetscript{
 		ScriptObjectString *so_str_eval=NULL;
 		ScriptObjectObject *oo_param=NULL;
 		std::vector<ScriptFunctionParam> function_args;
-		std::string str_param_name;
+		zs_string str_param_name;
 		ScriptFunction *sf;
 		std::vector<StackElement> stk_params;
 		StackElement stk_ret=k_stk_undefined;
 		const char *str_start=NULL;
 		Scope *main_scope=zs->getScopeFactory()->getMainScope();
-		std::string str_unescaped_source="";
+		zs_string str_unescaped_source="";
 		VirtualMachine *vm=zs->getVirtualMachine();
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		Symbol *symbol_sf=NULL;
@@ -97,7 +97,7 @@ namespace zetscript{
 		}catch(std::exception & ex){
 			delete sf;
 			delete symbol_sf;
-			vm_set_error(zs->getVirtualMachine(),std::string("eval error:")+ex.what());
+			vm_set_error(zs->getVirtualMachine(),zs_string("eval error:")+ex.what());
 			return;
 		}
 
@@ -143,7 +143,7 @@ namespace zetscript{
 
 		// modifug
 		if(vm_it_has_error(zs->getVirtualMachine())){
-			std::string error=vm_get_error(zs->getVirtualMachine());
+			zs_string error=vm_get_error(zs->getVirtualMachine());
 			vm_set_error(zs->getVirtualMachine(),zs_strutils::format("eval error %s",error.c_str()));
 		}
 

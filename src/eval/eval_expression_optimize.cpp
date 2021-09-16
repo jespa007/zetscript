@@ -151,8 +151,8 @@ namespace zetscript{
 		zs_float  result_op_float=0;
 		zs_int result_op_zs_int=0;
 		bool	result_op_bool=false;
-		std::string result_op_str="";
-		std::string str_constant_key="";
+		zs_string result_op_str="";
+		zs_string str_constant_key="";
 		EvalInstruction *result_instruction=NULL;
 		ByteCode result_bc=ByteCode::BYTE_CODE_INVALID;
 		Instruction *i1=&ei1->vm_instruction;
@@ -322,7 +322,7 @@ namespace zetscript{
 			);
 			break;
 		case BYTE_CODE_LOAD_STRING:
-			str_constant_key=std::string("\"")+result_op_str+"\"";
+			str_constant_key=zs_string("\"")+result_op_str+"\"";
 			result_instruction=new EvalInstruction(
 					result_bc
 					,ZS_IDX_UNDEFINED
