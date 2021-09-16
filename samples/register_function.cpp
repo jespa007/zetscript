@@ -6,7 +6,7 @@
 
 using namespace zetscript;
 
-int add(int op1, int op2){
+zs_int add(zs_int op1, zs_int op2){
 	return op1+op2;
 }
 
@@ -20,7 +20,7 @@ int main(){
 
 	ZetScript *zs = new ZetScript(); // instance ZetScript
 
-	zs->registerFunction("add",static_cast<int (*)(int,int)>(add));
+	zs->registerFunction("add",static_cast<zs_int (*)(zs_int,zs_int)>(add));
 	zs->registerFunction("add",static_cast<zs_float (*)(zs_float *,zs_float *)>(add));
 
 
