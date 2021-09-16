@@ -24,7 +24,7 @@ namespace zetscript{
 
 
 			zs_string fName(file);
-				size_t pos = fName.rfind(".");
+				size_t pos = fName.find_last_of(".");
 				if(pos == zs_string::npos)  //No extension.
 					return fName;
 

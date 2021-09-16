@@ -55,15 +55,13 @@
 #include "memmgr.h"
 #endif
 
+// utils
 #include "config.h"
 #include "common.h"
-#include "BuiltinType.h"
-#include "StackElement.h"
-
-
-// utils
 #include "util/zs_util.h"
 
+#include "BuiltinType.h"
+#include "StackElement.h"
 #include "zs_exception.h"
 #include "ByteCode.h"
 #include "Instruction.h"

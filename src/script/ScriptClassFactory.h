@@ -271,7 +271,7 @@ namespace zetscript{
 		ScriptFunctionFactory 			*	script_function_factory;
 		ScriptClass 					* 	main_object;
 		ScriptFunction 					* 	main_function;
-		zs_map 							*	conversion_types;
+		zs_map_int 						*	conversion_types;
 
 		/*
 			 * register_c_base_symbols it tells to register functions/variable member already registered on base classes. Only works if class is not polymorphic (i.e there's no any virtual functions involved)

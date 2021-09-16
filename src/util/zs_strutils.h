@@ -44,16 +44,13 @@ namespace zetscript{
 		 zs_string zs_float_to_str(zs_float _number, const zs_string & _format = "");
 		 zs_string to_lower(const zs_string & str);
 		 zs_string to_upper(const zs_string & str);
-		 std::wstring to_wstring(const zs_string &s);
 		 zs_string  format(const  char  *string_text, ...);
 
 		 bool ends_with(const zs_string & str, const zs_string & ending);
 		 bool starts_with(const zs_string & str, const zs_string & starting);
 		 zs_string replace(const zs_string & str_input, const zs_string & old_word, const zs_string & new_word);
 
-
-		  std::vector<zs_string> split(const zs_string &s, char delim, std::vector<zs_string> &elems);
-		  std::vector<zs_string> split(const zs_string &s, char delim);
+		 std::vector<zs_string> split(const zs_string &s, char delim);
 
 		 std::vector<zs_string> split(const zs_string &s_in, const zs_string & delim);
 		 bool is_empty(const zs_string & str);

@@ -297,7 +297,7 @@ namespace zetscript{
 		this_class->idx_base_classes->push_back(idx_base_class);
 
 		// add conversion type for this class
-		conversion_types[this_class->idx_class][idx_base_class]=[](zs_int entry){ return (zs_int)(B *)((C *)entry);};
+		((zs_map_int *)conversion_types->get(this_class->idx_class))->set(idx_base_class,(zs_int)(new std::function<zs_int (zs_int entry)>([](zs_int entry){ return (zs_int)(B *)((C *)entry);})));
 
 
 		//if(register_c_base_symbols){ // by default is disabled. User has to re-register! --> increases time and binary!!!

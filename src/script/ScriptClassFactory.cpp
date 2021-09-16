@@ -63,6 +63,7 @@ namespace zetscript{
 		main_object=NULL;
 		main_function=NULL;
 		idx_clear_checkpoint=0;
+		conversion_types=new zs_map_int();
 	}
 
 	void ScriptClassFactory::init(){
@@ -478,7 +479,7 @@ namespace zetscript{
 	}
 
 	zs_map  *	 ScriptClassFactory::getConversionTypes() {
-		return & conversion_types;
+		return  conversion_types;
 	}
 
 	int ScriptClassFactory::getBuiltinTypeOrClass(const zs_string & name){
@@ -672,5 +673,6 @@ namespace zetscript{
 		script_classes->clear();
 
 		delete script_classes;
+		delete conversion_types;
 	}
 }

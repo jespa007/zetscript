@@ -164,27 +164,22 @@ namespace zetscript{
 			return ret;
 		}
 
-		std::wstring to_wstring(const zs_string& s)
-		{
-			std::wstring wsTmp(s.begin(), s.end());
-			return wsTmp;
-		}
 		//------------------------------------------------------------------------------------------------------------------------
+		std::vector<zs_string> split(const zs_string &s_in, char delim) {
+		    std::vector<zs_string> elems;
+		    //zs_string s = s_in;
+		    char *pos=(char *)s_in.c_str();
+		    zs_string token;
+		    while((pos=strchr(pos,delim))!=NULL) {
+		        token = s_in.substr(0, pos-s_in.c_str());
+		        elems.push_back(token);
+		        pos++;
+		//        std::cout << token << std::endl;
+		        //s.erase(0, pos + delim.length());
+		    }
 
-		std::vector<zs_string> split(const zs_string &s, char delim, std::vector<zs_string> &elems) {
-			zs_stringstream ss(s);
-			zs_string item;
-			while (std::getline(ss, item, delim)) {
-				elems.push_back(item);
-			}
-			return elems;
-		}
-
-
-		std::vector<zs_string> split(const zs_string &s, char delim) {
-			std::vector<zs_string> elems;
-			split(s, delim, elems);
-			return elems;
+		    //std::cout << s << std::endl;
+		    return elems;
 		}
 
 		std::vector<zs_string> split(const zs_string &s_in, const zs_string & delim) {
@@ -414,7 +409,7 @@ namespace zetscript{
 		int index_of(zs_string& text, zs_string& pattern)
 		{
 			// where appears the pattern in the text?
-			zs_string::size_type loc = text.find(pattern, 0);
+			size_t loc = text.find(pattern, 0);
 			if (loc != zs_string::npos)
 			{
 				return loc;
@@ -428,10 +423,11 @@ namespace zetscript{
 
 		zs_string unescape(const zs_string & s)	{
 			zs_string res;
-			zs_string::const_iterator it = s.begin();
-			while (it != s.end()) {
+			char *it = (char *)s.c_str();
+			char *end= (char *)s.c_str()+s.length();
+			while (it != end) {
 				char c = *it++;
-				if (c == '\\' && it != s.end())	{
+				if (c == '\\' && it != end)	{
 					switch (*it++) {
 						case '\\': c = '\\'; break;
 						case 'n': c = '\n'; break;
