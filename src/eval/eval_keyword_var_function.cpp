@@ -752,7 +752,6 @@ error_eval_keyword_var:
 					,&eval_data->current_function->instructions
 					,{}
 					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION
-					//,std::vector<char>{';'}
 			))!= NULL){
 
 				eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RET));

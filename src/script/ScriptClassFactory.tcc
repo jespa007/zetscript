@@ -492,12 +492,9 @@ namespace zetscript{
 			,short registered_line) //unsigned int offset)
 	{
 		// to make compatible MSVC shared library
-		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
-
 		zs_string var_type = typeid(R).name(); // we need the pointer type ...
 		zs_string return_type;
 		zs_string error;
-		//std::vector<zs_string> params;
 		zs_string str_class_name_ptr = typeid( C *).name();
 		Symbol *symbol;
 
@@ -698,8 +695,6 @@ namespace zetscript{
 		)
 	{
 		// to make compatible MSVC shared library
-		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
-
 		zs_string str_class_name_ptr = typeid( C *).name();
 
 

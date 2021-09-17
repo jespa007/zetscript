@@ -77,21 +77,12 @@ namespace zetscript{
 		ScriptObject::unrefAndFreeStackElementContainer(si);
 
 		// remove symbol on std::vector ...
-		//free((void *)stk_user_elements.items[idx]);
 		stk_user_elements.erase(idx);
-
-		/*if(stk_user_elements.count<idx_start_user_properties){
-			lenght_user_properties=0; // invalidate any user property
-		}
-		else{
-			lenght_user_properties=stk_user_elements.count-idx_start_user_properties;
-		}*/
 
 		return true;
 	}
 
 	void ScriptObjectVector::eraseAllUserElements(){
-		//while ( stk_user_elements.count!=0){
 		for(int i=0; i <stk_user_elements.count; i++){
 			ScriptObject::unrefAndFreeStackElementContainer((StackElement *)stk_user_elements.items[i]);
 		}

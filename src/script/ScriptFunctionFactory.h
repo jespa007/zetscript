@@ -21,7 +21,6 @@ namespace zetscript{
 			/**
 			 * Set/Get ScriptClass Node by its idx, regarding current state.
 			 */
-			//static void 								setVectorScriptFunctionObjectNode(std::vector<ScriptFunction *> 	* set_vec);
 			zs_vector 	*	getScriptFunctions();
 
 			Symbol 			*	newScriptFunction(

@@ -65,13 +65,6 @@ namespace zetscript{
 
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
-		/*Symbol *symbol_sf=sf_main->registerLocalFunction(
-				main_scope
-				,""
-				, -1
-				, eval_anonymous_function_name()
-				, function_args
-		);*/
 		symbol_sf=new Symbol(
 				);
 

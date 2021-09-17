@@ -85,10 +85,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
-		//zs_int ref_ptr=0;
-		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string function_class_name;
 		zs_string error;
 
 		// 1. check all parameters ok.
@@ -119,10 +117,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
-		//zs_int ref_ptr=0;
-		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string function_class_name;
 		zs_string error;
 
 		// 1. check all parameters ok.
@@ -150,10 +146,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
-		//zs_int ref_ptr=0;
-		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string function_class_name;
 		zs_string error;
 
 		// 1. check all parameters ok.
@@ -181,10 +175,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
-		//zs_int ref_ptr=0;
-		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string function_class_name;
 		zs_string error;
 
 		// 1. check all parameters ok.
@@ -212,10 +204,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
-		//zs_int ref_ptr=0;
-		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string function_class_name;
 		zs_string error;
 
 		// 1. check all parameters ok.
@@ -243,10 +233,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
-		//zs_int ref_ptr=0;
-		zs_string function_class_name;// = zs_rtti::demangle(typeid(T).name())+"::"+function_name;
+		zs_string function_class_name;
 		zs_string error;
 
 		// 1. check all parameters ok.
@@ -276,12 +264,8 @@ namespace zetscript{
 		)
 	{
 		// to make compatible MSVC shared library
-		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
-
 		zs_string return_type;
 		zs_string error;
-		std::vector<zs_string> params;
-
 		std::vector<ScriptFunctionParam> param_info;
 
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,param_info);
@@ -352,10 +336,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		// to make compatible MSVC shared library
-		//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
-
 		zs_string return_type;
-		std::vector<zs_string> params;
 		std::vector<ScriptFunctionParam> param_info;
 		zs_string error;
 		

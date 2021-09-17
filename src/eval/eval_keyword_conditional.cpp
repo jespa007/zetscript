@@ -214,35 +214,9 @@ namespace zetscript{
 				if(key_w == KEYWORD_CASE){
 					int line_case=line;
 					EvalInstructionCase eval_instruction_case;
-					//std::vector<EvalInstruction *> aux_instructions;
-					//TokenNode token_symbol;
-					//PreOperation pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
-
 
 					// ignore case
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
-
-
-					/*if((pre_operation = is_pre_operation(aux_p))!=PreOperation::PRE_OPERATION_UNKNOWN){
-						IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_pre_operations[pre_operation].str),line);
-					}*/
-
-					// capture constant value (should be a constant -not a identifier in any case-)
-					/*if((aux_p=eval_symbol(
-						eval_data
-						,aux_p
-						,line
-						,scope_info
-						,&token_symbol
-						,pre_operation
-					))==NULL){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line," expected constant or literal after 'case'");
-					}
-
-					if(token_symbol.token_type != TOKEN_TYPE_LITERAL){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line," expected constant or literal after 'case'");
-					}*/
-
 
 					// get token symbol
 					if((aux_p = eval_expression(
@@ -259,8 +233,6 @@ namespace zetscript{
 					}
 
 					// insert a pair of instructions...
-					//token_symbol.instructions[0]);
-
 					eval_instruction_case.je_instruction=new EvalInstruction(
 							BYTE_CODE_JE_CASE
 							,ZS_IDX_UNDEFINED
