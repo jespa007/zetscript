@@ -28,7 +28,7 @@ namespace zetscript{
 
 			str_result += "{";
 
-			std::vector<zs_map_iterator> map_iterators={
+			zs_vector<zs_map_iterator> map_iterators={
 					obj->begin_builtin()
 					,obj->begin()
 			};

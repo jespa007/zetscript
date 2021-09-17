@@ -32,17 +32,17 @@ namespace zetscript{
 
 	void	eval_init();
 
-	char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,ScriptFunction *sf=NULL,std::vector<ScriptFunctionParam> * args=NULL);
+	char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,ScriptFunction *sf=NULL,zs_vector<ScriptFunctionParam> * args=NULL);
 	char * 	eval_parse_and_compile_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case=false);
 	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function=false);
 	void 	eval_check_scope(EvalData *eval_data, Scope *scope);
 	void 	eval_push_function(EvalData *eval_data,ScriptFunction *script_function);
 	int 	eval_pop_and_compile_function(EvalData *eval_data);
 	void 	eval_pop_current_function(EvalData *eval_data);
-	void    eval_generate_byte_code_field_initializer(EvalData *data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions, Symbol *symbol_member_var);
+	void    eval_generate_byte_code_field_initializer(EvalData *data, ScriptFunction *sf, zs_vector<EvalInstruction *> *instructions, Symbol *symbol_member_var);
 
 	bool 	eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,zs_string & static_error);
-	void 	eval_parse_and_compile(ZetScript *zs,const char * str_code, const char *  _filename="", int _line=1,ScriptFunction *sf=NULL,std::vector<ScriptFunctionParam> *function_args=NULL);
+	void 	eval_parse_and_compile(ZetScript *zs,const char * str_code, const char *  _filename="", int _line=1,ScriptFunction *sf=NULL,zs_vector<ScriptFunctionParam> *function_args=NULL);
 
 	void	eval_deinit();
 

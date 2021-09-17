@@ -345,7 +345,7 @@ namespace zetscript{
 			EvalData *eval_data
 			,Scope *scope_info
 			,TokenNode   *token_operation
-			, std::vector<EvalInstruction *> *instructions
+			, zs_vector<EvalInstruction *> *instructions
 	){
 		size_t size_instructions=instructions->size();
 		EvalInstruction *instruction=NULL;

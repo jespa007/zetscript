@@ -19,15 +19,14 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, std::vector<EvalInstruction *> 	* instructions
-			, std::vector<char> expected_ending_char
-			, uint16_t properties // uint16_t properties
+			, zs_vector<EvalInstruction *> 	* instructions
+			, char *expected_ending_char
+			, uint16_t properties
 			, int n_recursive_level
-			//, std::vector<EvalInstruction *> 	*only_call_instructions
 		){
 		// PRE: s is current zs_string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.
-		std::vector<TokenNode> expression_tokens;
+		zs_vector<TokenNode> expression_tokens;
 		Keyword keyword_type;
 		//int last_line_ok=0;
 		zs_string identifier_value="";
@@ -215,14 +214,13 @@ eval_error_sub_expression:
 
 	}
 
-	bool eval_check_all_instruction_only_load_op(std::vector<EvalInstruction *> * instructions){
+	bool eval_check_all_instruction_only_load_op(zs_vector<EvalInstruction *> * instructions){
 		// is load or find variable
 		for(unsigned i=0;i < instructions->size(); i++){
 			Instruction *ei=&instructions->at(i)->vm_instruction;
 			if(((byte_code_is_load_type(ei->byte_code) || ei->byte_code == BYTE_CODE_FIND_VARIABLE))==false){
 				return false;
 			}
-
 		}
 		return true;
 	}
@@ -232,18 +230,18 @@ eval_error_sub_expression:
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, std::vector<EvalInstruction *> 	* dst_instructions
-			, std::vector<char> expected_ending_char
+			, zs_vector<EvalInstruction *> 	* dst_instructions
+			, char *expected_ending_char
 			, uint16_t properties
 
 		){
 		uint16_t additional_properties_first_recursive=properties&EVAL_EXPRESSION_FOR_IN_VARIABLES?EVAL_EXPRESSION_FOR_IN_VARIABLES:0;
-		std::vector<EvalInstruction *>  ternary_end_jmp;
-		std::vector<std::vector<EvalInstruction *> *> 	left_sub_expressions; // we will write all instructions here as aux, and later will assign to dst_instructions
-		std::vector<std::vector<EvalInstruction *>*> 	right_sub_expressions; // right/left assigment
-		//std::vector<EvalInstruction *> only_call_instructions;
+		zs_vector<EvalInstruction *>  ternary_end_jmp;
+		zs_vector<zs_vector<EvalInstruction *> *> 	left_sub_expressions; // we will write all instructions here as aux, and later will assign to dst_instructions
+		zs_vector<zs_vector<EvalInstruction *>*> 	right_sub_expressions; // right/left assigment
+
 		bool not_assignment=false;
-		std::vector<EvalInstruction *> *first_sub_expression=new std::vector<EvalInstruction *>;
+		zs_vector<EvalInstruction *> *first_sub_expression=new zs_vector<EvalInstruction *>;
 
 		left_sub_expressions.push_back(first_sub_expression);
 
@@ -265,7 +263,7 @@ eval_error_sub_expression:
 		if(((properties & EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION)!=0) && (*aux_p == ','))
 		{
 			// preserve each set of instructions of each expressions
-			std::vector<EvalInstruction *> *expression=NULL;//[2]; // right/left assigment
+			zs_vector<EvalInstruction *> *expression=NULL;
 
 			int idx=0;
 			bool only_load_left_expression=eval_check_all_instruction_only_load_op(left_sub_expressions[0]);
@@ -273,9 +271,9 @@ eval_error_sub_expression:
 			do{
 
 				if(idx==0) { // left expressions
-					left_sub_expressions.push_back(expression=new std::vector<EvalInstruction *>);
+					left_sub_expressions.push_back(expression=new zs_vector<EvalInstruction *>);
 				}else{ // right expressions
-					right_sub_expressions.push_back(expression=new std::vector<EvalInstruction *>);
+					right_sub_expressions.push_back(expression=new zs_vector<EvalInstruction *>);
 				}
 
 
@@ -286,7 +284,7 @@ eval_error_sub_expression:
 					, line
 					, scope_info
 					, expression // it's saving to instructions...
-					,{}
+					,NULL
 					,properties | (idx==0?EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR|additional_properties_first_recursive:0)
 				))==NULL){
 					goto eval_error_expression_delete_left_right_sub_expressions;

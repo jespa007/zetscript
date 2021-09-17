@@ -731,7 +731,7 @@ load_element_object:
 						// ]
 						//
 
-						POP_ONE; // only pops the value, the last is the std::vector variable itself
+						POP_ONE; // only pops the value, the last is the vector variable itself
 						ScriptObjectObject *vec_obj = NULL;
 						if((data->stk_vm_current-1)->properties & STK_PROPERTY_SCRIPT_OBJECT){
 							vec_obj = (ScriptObjectObject *)(data->stk_vm_current-1)->value;
@@ -747,7 +747,7 @@ load_element_object:
 						}
 
 						if(vec_obj==NULL){
-							VM_STOP_EXECUTE("Expected std::vector object");
+							VM_STOP_EXECUTE("Expected vector object");
 						}
 					}else if(instruction->byte_code==BYTE_CODE_PUSH_OBJECT_ELEMENT){
 
@@ -1796,7 +1796,7 @@ execute_function:
 					}
 					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
-			 case BYTE_CODE_NEW_VECTOR: // Create new std::vector object...
+			 case BYTE_CODE_NEW_VECTOR: // Create new vector...
 					so_aux=ZS_NEW_OBJECT_VECTOR(data->zs);
 					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
@@ -1805,7 +1805,7 @@ execute_function:
 					data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 					data->stk_vm_current++;
 					continue;
-			 case  BYTE_CODE_NEW_OBJECT: // Create new std::vector object...
+			 case  BYTE_CODE_NEW_OBJECT: // Create new object...
 				 	so_aux=ZS_NEW_OBJECT_OBJECT(data->zs);
 					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
@@ -1813,7 +1813,7 @@ execute_function:
 					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 
-			 case  BYTE_CODE_NEW_STRING: // Create new std::vector object...
+			 case  BYTE_CODE_NEW_STRING: // Create new string...
 				 so_aux= ScriptObjectString::newScriptObjectString(data->zs,instruction->getConstantValueOp2ToString());
 					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;

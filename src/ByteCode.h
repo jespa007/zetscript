@@ -111,7 +111,7 @@ namespace zetscript{
 		BYTE_CODE_STORE_BITWISE_XOR, //
 		BYTE_CODE_STORE_SHL, //
 		BYTE_CODE_STORE_SHR, //
-		BYTE_CODE_PUSH_VECTOR_ELEMENT, // Value push for std::vector
+		BYTE_CODE_PUSH_VECTOR_ELEMENT, // Value push for vector
 		BYTE_CODE_PUSH_OBJECT_ELEMENT,
 		//-------------------------------
 		// OPERATIONS

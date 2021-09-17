@@ -4,7 +4,7 @@ namespace zetscript{
 
 	typedef struct{
 		EvalInstruction *je_instruction;
-		std::vector<EvalInstruction *> load_symbol_instructions;
+		zs_vector<EvalInstruction *> load_symbol_instructions;
 	}EvalInstructionCase;
 
 	//------------------------------------------------------------------------------------------------------------------------------------------
@@ -15,11 +15,11 @@ namespace zetscript{
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		char *end_expr;//,*start_symbol;
+		char *end_expr;
 		Keyword key_w;
-		//std::vector<EvalInstruction *> ei_jmps;
+
 		EvalInstruction *if_jnt;
-		std::vector<EvalInstruction *> else_end_jmp;
+		zs_vector<EvalInstruction *> else_end_jmp;
 		EvalInstruction *ei_aux;
 		bool end=true;
 
@@ -44,7 +44,7 @@ namespace zetscript{
 						,line
 						,scope_info
 						,&eval_data->current_function->instructions
-						,std::vector<char>{')'}
+						,")"
 				);
 
 				// insert instruction if evaluated expression
@@ -133,7 +133,7 @@ namespace zetscript{
 	}
 
 
-	void eval_switch_deallocate(std::vector<EvalInstruction *> & ei_switch_condition,std::vector<EvalInstructionCase> & _ei_cases,EvalInstruction **_jmp_default){
+	void eval_switch_deallocate(zs_vector<EvalInstruction *> & ei_switch_condition,zs_vector<EvalInstructionCase> & _ei_cases,EvalInstruction **_jmp_default){
 
 		// deallocate condition
 		for(unsigned i=0; i < ei_switch_condition.size(); i++){
@@ -164,9 +164,9 @@ namespace zetscript{
 		Scope *scope_case=NULL;
 		zs_string val;
 		Keyword key_w;//,key_w2;
-		std::vector<EvalInstruction *> 		ei_switch_condition; // switch condition
-		std::vector<EvalInstructionCase> 	ei_cases; // stores all conditional instructions at begin
-		std::vector<EvalInstruction *>  	ei_break_jmps; // breaks or if condition not satisfies nothing (there's no default)
+		zs_vector<EvalInstruction *> 		ei_switch_condition; // switch condition
+		zs_vector<EvalInstructionCase> 		ei_cases; // stores all conditional instructions at begin
+		zs_vector<EvalInstruction *>  		ei_break_jmps; // breaks or if condition not satisfies nothing (there's no default)
 		EvalInstruction *jmp_default = NULL;
 
 		// check for keyword ...
@@ -192,7 +192,7 @@ namespace zetscript{
 				,line
 				,scope_info
 				,&ei_switch_condition
-				,std::vector<char>{')'}
+				,")"
 			);
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);

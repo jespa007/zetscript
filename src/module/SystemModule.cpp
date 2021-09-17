@@ -21,10 +21,10 @@ namespace zetscript{
 		ScriptFunction *sf_main=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 		ScriptObjectString *so_str_eval=NULL;
 		ScriptObjectObject *oo_param=NULL;
-		std::vector<ScriptFunctionParam> function_args;
+		zs_vector<ScriptFunctionParam> function_args;
 		zs_string str_param_name;
 		ScriptFunction *sf;
-		std::vector<StackElement> stk_params;
+		zs_vector<StackElement> stk_params;
 		StackElement stk_ret=k_stk_undefined;
 		const char *str_start=NULL;
 		Scope *main_scope=zs->getScopeFactory()->getMainScope();

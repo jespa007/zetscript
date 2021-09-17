@@ -221,8 +221,8 @@ namespace zetscript{
 
 		if(key_w == Keyword::KEYWORD_DELETE){
 			Operator tst_op_aux;
-			std::vector<EvalInstruction *> ei_load_delete_identifier;
-			std::vector<EvalInstruction> ei_load_delete_identifier_st;
+			zs_vector<EvalInstruction *> ei_load_delete_identifier;
+			zs_vector<EvalInstruction> ei_load_delete_identifier_st;
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 

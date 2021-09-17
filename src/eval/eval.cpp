@@ -35,7 +35,7 @@ namespace zetscript{
 			, const char *  _filename
 			, int _line
 			, ScriptFunction *_sf
-			, std::vector<ScriptFunctionParam> * function_args
+			, zs_vector<ScriptFunctionParam> * function_args
 	){
 		EvalData *eval_data=new EvalData(zs);
 		char *aux_p=NULL;
@@ -269,7 +269,7 @@ namespace zetscript{
 		}
 	}
 
-	char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, ScriptFunction *sf,std::vector<ScriptFunctionParam> * args){
+	char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, ScriptFunction *sf,zs_vector<ScriptFunctionParam> * args){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 

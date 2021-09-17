@@ -187,7 +187,7 @@ namespace zetscript{
 
 		zs_string 					value; // token value content
 		int 							line;
-		std::vector<EvalInstruction *> 	instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
+		zs_vector<EvalInstruction *> 	instructions; // byte code load literal/identifier(can be anonymous function), zs_vector/struct.
 		bool are_instructions_moved;
 
 		TokenNode(){
@@ -208,14 +208,12 @@ namespace zetscript{
 
 	struct EvalFunction{
 
-		std::vector<EvalInstruction *>	 		instructions;
+		zs_vector<EvalInstruction *>	 		instructions;
 		ScriptFunction 						*  	script_function;
 		int										parsing_loop;
 		int										parsing_switch;
 
 		// a set of instructions that relates with jmps instructions in current scope, just in case we have to insert push instruction later
-		//std::vector<EvalInstruction *>	 		jmp_instructions;
-
 		EvalFunction(ScriptFunction	* _script_function){
 			script_function=_script_function;
 			parsing_loop=0;
@@ -268,8 +266,8 @@ namespace zetscript{
 	} EvalSeparator;
 
 	typedef struct{
-		std::vector<EvalInstruction *> break_jmps;
-		int	idx_instruction_start_loop;
+		zs_vector<EvalInstruction *> 	break_jmps;
+		int								idx_instruction_start_loop;
 	}LoopBreakContinueInfo;
 
 
@@ -290,17 +288,16 @@ namespace zetscript{
 		ScriptFunctionFactory 			* 		script_function_factory;
 		ScriptClassFactory 				* 		script_class_factory;
 		EvalFunction					* 		current_function;
-		std::vector<EvalFunction *> 	  		functions;
-		std::vector<UnresolvedInstructionInfo>	unresolved_symbols;
-		std::vector<Instruction *> 				global_ref_instructions;
+		zs_vector<EvalFunction *> 	  			functions;
+		zs_vector<UnresolvedInstructionInfo>	unresolved_symbols;
+		zs_vector<Instruction *> 				global_ref_instructions;
 		int										parsing_loop;
-		//std::vector<std::vector<EvalInstruction *>>			loop_break_jmp_instructions; // number of break_jmp_instructions collected (should managed on loops or switches)
-		//std::vector<LoopBreakContinueInfo>		loop_break_continue_info; // number of continue_jmp_instructions collected (should managed only on loops)
+
 		const char *					 		current_parsing_file;
 		bool							  		error;
 		zs_string								error_str;
 		zs_string								error_file;
-		int error_line;
+		int 									error_line;
 
 		EvalData(ZetScript * _zs){
 			current_parsing_file="";

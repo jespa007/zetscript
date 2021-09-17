@@ -8,8 +8,8 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			, int & line
-			, Scope *scope_info, std::vector<EvalInstruction *> 	* instructions
-			, std::vector<char>expected_ending_char={} // expecting ending char when expression finish (by default not check or 0)
+			, Scope *scope_info, zs_vector<EvalInstruction *> 	* instructions
+			, char *expected_ending_char=NULL // expecting ending char when expression finish (by default not check or 0)
 			, uint16_t properties = 0
 	);
 
@@ -19,7 +19,7 @@ namespace zetscript{
 	char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, TokenNode *token_node){
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 		EvalInstruction *eval_instruction;
-		std::vector<EvalInstruction *> 	* instructions=&token_node->instructions;
+		zs_vector<EvalInstruction *> 	* instructions=&token_node->instructions;
 		char *aux_p = (char *)s;
 		unsigned short instruction_properties=0; // global by default ...
 		Symbol *symbol_object=NULL;
@@ -129,7 +129,7 @@ namespace zetscript{
 		return false;
 	}
 
-	char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
+	char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector<EvalInstruction *> 		*	instructions){
 		// Inline object: two possibles uses {a:1,b:2}["a"] or {a:1, b:2}.a
 		char *aux_p = (char *)s;
 		zs_string symbol_value;
@@ -209,7 +209,6 @@ namespace zetscript{
 					 ,line
 					 ,scope_info
 					 ,instructions
-					 ,std::vector<char>{}
 			))==NULL){
 				 return NULL;
 			 }
@@ -227,7 +226,7 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvalInstruction *> *	instructions){
+	char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  zs_vector<EvalInstruction *> *	instructions){
 		// Inline vector: [0,1,2,3][0]+23
 		char * aux_p=NULL;
 		IGNORE_BLANKS(aux_p,eval_data,s,line);
@@ -263,8 +262,7 @@ namespace zetscript{
 					,line
 					,scope_info
 					,instructions
-					,std::vector<char>{}
-					);
+			);
 
 			if(aux_p==NULL){
 				return 0;
@@ -283,7 +281,7 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *> 		*	instructions){
+	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector<EvalInstruction *> 		*	instructions){
 		// Inline new : (new A(4+5)).toString()
 		char *aux_p = (char *)s;
 		zs_string class_name;
@@ -324,12 +322,6 @@ namespace zetscript{
 				eval_instruction->vm_instruction.value_op1=sc->idx_class;
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				 // call function if there's any constructor function
-				 // get constructor function
-
-
-				 //if(constructor_function != NULL){
-					 // insert load function ...
 				 instructions->push_back(
 				    ei_load_function_constructor=new EvalInstruction(
 						 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR
@@ -361,7 +353,7 @@ namespace zetscript{
 								  ,line
 								  ,scope_info
 								  ,instructions
-								  ,std::vector<char>{',',')'}
+								  ,",)"
 						  );
 
 						  if(aux_p == NULL){

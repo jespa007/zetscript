@@ -49,7 +49,7 @@ namespace zetscript{
 			, char *s
 			, int & line
 			, Scope *scope_info
-			, std::vector<TokenNode> *expression_tokens
+			, zs_vector<TokenNode> *expression_tokens
 			,TokenNode *last_operator_token_node
 			, uint16_t properties
 			, int n_recursive_level
@@ -57,7 +57,7 @@ namespace zetscript{
 		char *aux_p = s,*test_aux_p;//, *test_s=NULL;
 		int first_line=line,test_line=line;
 		TokenNode token_node_symbol;
-		std::vector<EvalInstruction *> arg_instruction;
+		zs_vector<EvalInstruction *> arg_instruction;
 		EvalInstruction *instruction_token=NULL;
 		EvalInstruction *last_instruction_token=NULL;
 		PreOperation pre_operation = PreOperation::PRE_OPERATION_UNKNOWN;
@@ -89,13 +89,13 @@ namespace zetscript{
 
 			if((aux_p=eval_sub_expression(
 					eval_data
-					,aux_p+1
+					, aux_p+1
 					, line
 					, scope_info
 					, &token_node_symbol.instructions
-					,std::vector<char>{}
-					,properties
-					,n_recursive_level+1
+					, NULL
+					, properties
+					, n_recursive_level+1
 				)
 			)== NULL){
 				goto error_expression_token_symbol;
@@ -121,7 +121,7 @@ namespace zetscript{
 
 			Keyword keyword_type=eval_is_keyword(aux_p);
 
-			if(*aux_p=='['){ // std::vector object...
+			if(*aux_p=='['){ // vector ...
 				if((aux_p=eval_object_vector(
 					eval_data
 					,aux_p
@@ -132,7 +132,7 @@ namespace zetscript{
 					goto error_expression_token_symbol;
 				}
 				token_node_symbol.token_type = TokenType::TOKEN_TYPE_VECTOR;
-			}else if(*aux_p=='{'){ // struct object ...
+			}else if(*aux_p=='{'){ // object ...
 
 				if((aux_p=eval_object(
 					eval_data
@@ -342,7 +342,7 @@ namespace zetscript{
 								,line
 								,scope_info
 								,&arg_instruction//token_node_symbol.instructions
-								,std::vector<char>{}
+								,NULL
 								,properties // avoid load ref, to avoid pass 2 reference
 								,n_recursive_level+1
 						))==NULL){
@@ -389,14 +389,14 @@ namespace zetscript{
 					}
 					aux_p++;
 					break;
-				case '[': // std::vector access
+				case '[': // vector access
 					if((aux_p = eval_sub_expression(
 							eval_data
 							,aux_p+1
 							,line
 							,scope_info
 							,&token_node_symbol.instructions
-							,std::vector<char>{}
+							,NULL
 							,properties
 							,n_recursive_level+1
 					))==NULL){

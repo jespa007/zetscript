@@ -129,7 +129,7 @@ namespace zetscript{
 					,line
 					,scope_info
 					,&eval_data->current_function->instructions
-					,std::vector<char>{')'}
+					,")"
 			);
 
 			// insert instruction if evaluated expression
@@ -243,7 +243,7 @@ namespace zetscript{
 						,line
 						,scope_info
 						,&eval_data->current_function->instructions
-						,std::vector<char>{')'}
+						,")"
 				)) != NULL){
 					zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr);
 				}else{
@@ -284,7 +284,7 @@ namespace zetscript{
 			,idx_post_instruction_for_start=ZS_IDX_UNDEFINED;
 
 		EvalInstruction *ei_jnt=NULL,*ei_jmp=NULL; // conditional to end block
-		std::vector<EvalInstruction *> post_operations;
+		zs_vector<EvalInstruction *> post_operations;
 
 		// check for keyword ...
 		key_w = eval_is_keyword(aux_p);
@@ -339,8 +339,8 @@ namespace zetscript{
 					}
 
 					if(key_w != KEYWORD_VAR || check_for_in){
-						std::vector<EvalInstruction *> ei_init_vars_for;
-						std::vector<EvalInstruction> ei_init_vars_for_st[MAX_FOR_IN_VARIABLES];
+						zs_vector<EvalInstruction *> ei_init_vars_for;
+						zs_vector<EvalInstruction> ei_init_vars_for_st[MAX_FOR_IN_VARIABLES];
 						is_for_in=false;
 						int n_for_in_vars=1;
 						char *test_aux;
@@ -352,7 +352,7 @@ namespace zetscript{
 								,test_line
 								,new_scope
 								,&ei_init_vars_for //eval_data->current_function->instructions
-								,{}
+								,NULL
 								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK | EVAL_EXPRESSION_FOR_IN_VARIABLES
 						))==NULL){
 							return NULL;
@@ -414,8 +414,8 @@ namespace zetscript{
 							if(is_for_in){
 								Symbol *symbol_iterator;
 								Operator tst_op_aux;
-								std::vector<EvalInstruction *> ei_load_container_identifier;
-								std::vector<EvalInstruction> ei_load_container_identifier_st;
+								zs_vector<EvalInstruction *> ei_load_container_identifier;
+								zs_vector<EvalInstruction> ei_load_container_identifier_st;
 								EvalInstruction ei_iterator;
 								// set aux_p as test_aux
 								line=test_line;

@@ -76,7 +76,7 @@ namespace zetscript{
 
 		ScriptObject::unrefAndFreeStackElementContainer(si);
 
-		// remove symbol on std::vector ...
+		// remove symbol on vector ...
 		stk_user_elements.erase(idx);
 
 		return true;

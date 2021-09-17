@@ -11,7 +11,7 @@ namespace zetscript{
 	}
 
 
-	void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions, Symbol *symbol_member_var){
+	void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, zs_vector<EvalInstruction *> *instructions, Symbol *symbol_member_var){
 
 		// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
 		PtrInstruction new_instructions=NULL;
@@ -85,7 +85,7 @@ namespace zetscript{
 		instructions->clear();
 	}
 
-	ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,std::vector<EvalInstruction *> *eval_instructions){
+	ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector<EvalInstruction *> *eval_instructions){
 
 		zs_string function_name=eval_anonymous_function_name("defval");
 		Instruction *instructions=NULL,*start_ptr=NULL;
@@ -150,7 +150,7 @@ namespace zetscript{
 		// check for keyword ...
 		char *aux_p = (char *)s;
 		Keyword key_w = eval_is_keyword(s);
-		std::vector<EvalInstruction *> member_var_init_instructions;
+		zs_vector<EvalInstruction *> member_var_init_instructions;
 
 		if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
 			bool is_static = false,
@@ -440,7 +440,7 @@ error_eval_keyword_var:
 			//size_t advance_chars=0;
 
 
-			std::vector<ScriptFunctionParam> args={};
+			zs_vector<ScriptFunctionParam> args;
 			zs_string conditional_str;
 			Symbol *symbol_sf=NULL;
 
@@ -485,8 +485,6 @@ error_eval_keyword_var:
 					if(end_var == NULL){
 						return NULL;
 					}
-					// copy value
-					//zs_strutils::copy_from_ptr_diff(function_name,aux_p,end_var);
 				}
 
 				aux_p=end_var;
@@ -498,8 +496,6 @@ error_eval_keyword_var:
 					// it return NULL telling to no eval function here. It will perform in expression instead (it also will create anonymous in there)
 					return NULL;
 				}
-
-				//is_anonymous=true;
 
 				if(
 						scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)
@@ -586,7 +582,7 @@ error_eval_keyword_var:
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Arguments by reference cannot set a default argument");
 					}
 
-					std::vector<EvalInstruction *> instructions_default;
+					zs_vector<EvalInstruction *> instructions_default;
 					bool create_anonymous_function_return_expression=false;
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -663,11 +659,6 @@ error_eval_keyword_var:
 					function_name=eval_anonymous_function_name(sc!=NULL?sc->class_name:"");
 				}
 			}
-
-
-			/*if(resulted_function_name!=NULL){ // save generated function name...
-				*resulted_function_name=function_name;
-			}*/
 
 			//--- OP
 			if(sc!=NULL){ // register as variable member...

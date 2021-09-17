@@ -851,8 +851,8 @@ namespace zetscript{
 		std::function<F> * ZetScript::bindScriptFunction(ScriptFunction *fun,ScriptObjectClass *calling_obj, const char *file, int line){
 
 			zs_string return_type;
-			std::vector<zs_string> params;
-			std::vector<zs_string> arg;
+			zs_vector<zs_string> params;
+			zs_vector<zs_string> arg;
 			int idx_return_type=-1;
 			void *ptr=NULL;
 
@@ -893,7 +893,7 @@ namespace zetscript{
 		{
 			ScriptFunction * fun_obj=NULL;
 			ScriptObjectClass *calling_obj=NULL;
-			std::vector<zs_string> access_var = zs_strutils::split(function_access,'.');
+			zs_vector<zs_string> access_var = zs_strutils::split(function_access,'.');
 			ScriptFunction * main_function = script_class_factory->getMainFunction();
 			StackElement *se=NULL;
 			Symbol *symbol_sfm=NULL;

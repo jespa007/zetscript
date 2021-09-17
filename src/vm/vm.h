@@ -9,8 +9,8 @@
 #define SET_BOOLEAN_RETURN(b) 	CURRENT_VM->setBooleanReturnValue(b)
 #define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
 
-#define NO_PARAMS std::vector<StackElement>{}
-#define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectObject * (const std::vector<ScriptObjectObject *> & param)>
+#define NO_PARAMS zs_vector<StackElement>{}
+#define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectObject * (const zs_vector<ScriptObjectObject *> & param)>
 
 #define VM_EXECUTE(vm,o,f,stk,n)	vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
 #define VM_ERROR(s,...)				data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);

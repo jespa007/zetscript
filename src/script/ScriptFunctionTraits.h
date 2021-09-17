@@ -116,7 +116,7 @@ namespace zetscript{
 	// Dynaminc unpack parameter function ...
 	// template for last parameter ArgIdx == 1
 	template <size_t ArgIdx, typename F, typename... Args>
-	auto getArgTypes( std::vector<zs_string> & params)
+	auto getArgTypes( zs_vector<zs_string> & params)
 		-> typename std::enable_if<ArgIdx == 1>::type
 	{
 		zs_string parameter_type=typeid(typename F::template Argument<ArgIdx-1>::type).name();
@@ -125,7 +125,7 @@ namespace zetscript{
 
 	// template when parameters ArgIdx > 1
 	template <size_t ArgIdx, typename F, typename... Args>
-	auto getArgTypes(std::vector<zs_string> & params)
+	auto getArgTypes(zs_vector<zs_string> & params)
 		-> typename std::enable_if<(ArgIdx > 1)>::type
 	{
 
@@ -137,14 +137,14 @@ namespace zetscript{
 
 	// trivial case when parameters (ArgIdx == 0).
 	template <size_t ArgIdx, typename F>
-	auto getArgTypes(std::vector<zs_string> & params)
+	auto getArgTypes(zs_vector<zs_string> & params)
 	-> typename std::enable_if<(ArgIdx == 0)>::type
 	{
 		 // NO ARGS CASE
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(int i,zs_string & returnType, std::vector<zs_string> & type_params, IndexSequence<Is...>)
+	auto getParamsFunction(int i,zs_string & returnType, zs_vector<zs_string> & type_params, IndexSequence<Is...>)
 	-> typename std::enable_if<(_F::arity > 0)>::type
 	{
 		returnType = typeid(typename _F::return_type).name();
@@ -152,7 +152,7 @@ namespace zetscript{
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(int i,zs_string & returnType, std::vector<zs_string> & type_params, IndexSequence<Is...>)
+	auto getParamsFunction(int i,zs_string & returnType, zs_vector<zs_string> & type_params, IndexSequence<Is...>)
 	-> typename std::enable_if<(_F::arity == 0)>::type
 	{
 		returnType = typeid(typename _F::return_type).name();

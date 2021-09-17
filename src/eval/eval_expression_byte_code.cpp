@@ -14,11 +14,10 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, std::vector<EvalInstruction *> 	* instructions
-			, std::vector<char> expected_ending_char={}
+			, zs_vector<EvalInstruction *> 	* instructions
+			, char *expected_ending_char=NULL
 			, uint16_t properties=0 // uint16_t properties
 			, int n_recursive_level=0
-			//, std::vector<EvalInstruction *> *only_call_instructions=NULL
 	);
 
 
@@ -27,8 +26,8 @@ namespace zetscript{
 	void eval_expression_tokens_to_byte_code(
 			  EvalData *eval_data
 			, Scope *scope
-			, std::vector<TokenNode> * expression_tokens
-			, std::vector<EvalInstruction *> *instructions
+			, zs_vector<TokenNode> 			* 	expression_tokens
+			, zs_vector<EvalInstruction *> 	*	instructions
 			, int idx_start
 			, int idx_end
 			, uint16_t properties
@@ -36,7 +35,7 @@ namespace zetscript{
 		EvalInstruction *instruction=NULL;
 		int 			idx_split=-1;
 		TokenNode      *split_node = NULL;
-		Operator 	op_split=Operator::OPERATOR_MAX;
+		Operator 			op_split=Operator::OPERATOR_MAX;
 		EvalInstruction *left_eval_constant=NULL;
 		EvalInstruction *right_eval_constant=NULL;
 		unsigned char 	idx_group_split=OPERATOR_GROUP_MAX;
@@ -135,20 +134,18 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, std::vector<EvalInstruction *> *dst_instructions
-			, std::vector<TokenNode> * expression_tokens
+			, zs_vector<EvalInstruction *> *dst_instructions
+			, zs_vector<TokenNode> * expression_tokens
 			, uint16_t properties
 			, int n_recursion_level
-
-			//, std::vector<EvalInstruction *> *only_call_instructions
 		){
 
 		char *aux_p=(char *)s;
-		std::vector<AssignTokenInformation> assing_tokens;
+		zs_vector<AssignTokenInformation> assing_tokens;
 		int idx_start=0;
 		int idx_end=(int)(expression_tokens->size()-1);
-		std::vector<std::vector<EvalInstruction *>> assign_loader_instructions_post_expression;
-		std::vector<EvalInstruction *> assign_store_instruction_post_expression;
+		zs_vector<zs_vector<EvalInstruction *>> assign_loader_instructions_post_expression;
+		zs_vector<EvalInstruction *> assign_store_instruction_post_expression;
 
 		// search for assign
 		for(int i=idx_end; i >= 0; i--){
@@ -270,7 +267,7 @@ namespace zetscript{
 				, line
 				, scope_info
 				, dst_instructions
-				, std::vector<char>{}
+				, NULL
 				, properties
 				, n_recursion_level+1
 			))==NULL){
@@ -301,7 +298,7 @@ namespace zetscript{
 				, line
 				, scope_info
 				, dst_instructions
-				, std::vector<char>{}
+				, NULL
 				, properties
 				, n_recursion_level+1
 			))==NULL){

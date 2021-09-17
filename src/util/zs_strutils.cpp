@@ -165,8 +165,8 @@ namespace zetscript{
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
-		std::vector<zs_string> split(const zs_string &s_in, char delim) {
-		    std::vector<zs_string> elems;
+		zs_vector<zs_string> split(const zs_string &s_in, char delim) {
+		    zs_vector<zs_string> elems;
 		    //zs_string s = s_in;
 		    char *pos=(char *)s_in.c_str();
 		    zs_string token;
@@ -182,8 +182,8 @@ namespace zetscript{
 		    return elems;
 		}
 
-		std::vector<zs_string> split(const zs_string &s_in, const zs_string & delim) {
-		    std::vector<zs_string> elems;
+		zs_vector<zs_string> split(const zs_string &s_in, const zs_string & delim) {
+		    zs_vector<zs_string> elems;
 		    zs_string s = s_in;
 		    size_t pos = 0;
 		    zs_string token;
@@ -396,7 +396,7 @@ namespace zetscript{
 			return false;
 		}
 
-		bool contains(const std::vector<zs_string> & input, const zs_string & str_containts,StringComparer sc){
+		bool contains(const zs_vector<zs_string> & input, const zs_string & str_containts,StringComparer sc){
 
 			for(unsigned i = 0; i < input.size(); i++){
 				if(contains(input,str_containts,sc)){

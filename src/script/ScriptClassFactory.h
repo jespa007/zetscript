@@ -64,7 +64,6 @@ namespace zetscript{
 
 		bool 							isClassRegistered(const zs_string & v);
 
-		zs_int							doCast(zs_int obj, short idx_class_src, short idx_class_dst/*, zs_string & error*/);
 		inline ScriptClass * 			getMainObject() { return main_object;}
 		inline ScriptFunction * 		getMainFunction() { return main_function;}
 
@@ -271,7 +270,6 @@ namespace zetscript{
 		ScriptFunctionFactory 			*	script_function_factory;
 		ScriptClass 					* 	main_object;
 		ScriptFunction 					* 	main_function;
-		zs_map_int 						*	conversion_types;
 
 		/*
 			 * register_c_base_symbols it tells to register functions/variable member already registered on base classes. Only works if class is not polymorphic (i.e there's no any virtual functions involved)
@@ -282,8 +280,6 @@ namespace zetscript{
 		void							checkClassName(const zs_string & class_name);
 		PrimitiveType *					getPrimitiveTypeFromStr(const zs_string & str);
 
-		std::map<short, std::map<short, ConversionType>>
-					*  					getConversionTypes();
 
 		void 							registerPrimitiveTypes();
 

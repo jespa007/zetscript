@@ -63,7 +63,6 @@ namespace zetscript{
 		main_object=NULL;
 		main_function=NULL;
 		idx_clear_checkpoint=0;
-		conversion_types=new zs_map_int();
 	}
 
 	void ScriptClassFactory::init(){
@@ -478,10 +477,6 @@ namespace zetscript{
 		return script_classes;
 	}
 
-	zs_map  *	 ScriptClassFactory::getConversionTypes() {
-		return  conversion_types;
-	}
-
 	int ScriptClassFactory::getBuiltinTypeOrClass(const zs_string & name){
 		ScriptClass *sc;
 
@@ -596,30 +591,6 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	zs_int ScriptClassFactory::doCast(zs_int obj, short idx_class_src, short idx_class_dst/*, zs_string & error*/){//c_class->idx_class,idx_return_type){
-
-		ScriptClass *class_src = getScriptClass(idx_class_src);
-		ScriptClass *class_dst = getScriptClass(idx_class_dst);
-
-		// trivial case
-		if(class_src->idx_class == class_dst->idx_class){
-			return obj;
-		}
-
-		//local_map_type_conversion
-		if(conversion_types.count(idx_class_src) == 0){
-			//error=zs_strutils::format("There's no type src conversion class \"%s\".",zs_rtti::demangle(class_src->str_class_ptr_type).c_str());
-			return 0;
-		}
-
-		if((conversion_types)[idx_class_src].count(idx_class_dst) == 0){
-			//error=zs_strutils::format("There's no dest conversion class \"%s\".",zs_rtti::demangle(class_dst->str_class_ptr_type).c_str());
-			return 0;
-		}
-
-		return (conversion_types)[idx_class_src][idx_class_dst](obj);
-	}
-
 	const char * ScriptClassFactory::getScriptClassName(short idx){
 		if(idx != ZS_IDX_UNDEFINED){
 			ScriptClass *sc=(ScriptClass *)script_classes->get(idx);
@@ -673,6 +644,5 @@ namespace zetscript{
 		script_classes->clear();
 
 		delete script_classes;
-		delete conversion_types;
 	}
 }

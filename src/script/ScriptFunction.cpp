@@ -8,7 +8,8 @@ namespace zetscript{
 			ZetScript * _zs
 			,int _idx_class
 			,short _idx_script_function
-			, std::vector<ScriptFunctionParam> _params
+			, ScriptFunctionParam *_params
+			, size_t _params_len
 			,int _idx_return_type
 			,Symbol *_symbol
 			, zs_int _ref_native_function_ptr
@@ -29,7 +30,7 @@ namespace zetscript{
 		params = NULL;//new zs_vector();
 		params_count = 0;
 
-		updateParams(_params);
+		updateParams(_params,_params_len);
 
 		// factories
 		zs = _zs;
@@ -429,7 +430,8 @@ namespace zetscript{
 			,const char *file
 			, short line
 			, const zs_string & function_name
-			, std::vector<ScriptFunctionParam> _params
+			, ScriptFunctionParam *_params
+			,size_t _params_len
 			, int idx_return_type
 			,zs_int ref_ptr
 			, unsigned short properties
@@ -524,18 +526,15 @@ namespace zetscript{
 	}
 
 
-	void ScriptFunction::updateParams(std::vector<ScriptFunctionParam> _params){
+	void ScriptFunction::updateParams(
+			ScriptFunctionParam *_params
+			,size_t _params_len
+	){
 		// delete existing args...
 		clearParams();
 
-		params=new ScriptFunctionParam[_params.size()];
-
-		// insert new args...
-		for(unsigned i = 0; i < _params.size(); i++){
-			params[i]=ScriptFunctionParam(_params[i]);
-		}
-
-		params_count = _params.size();
+		params=_params;
+		params_count = _params_len;
 	}
 
 	void ScriptFunction::clear(){

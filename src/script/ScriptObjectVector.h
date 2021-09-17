@@ -20,7 +20,7 @@ namespace zetscript{
 		static ScriptObjectVector * newScriptObjectVectorAdd(ZetScript *zs,ScriptObjectVector *v1,ScriptObjectVector *v2);
 
 		template<typename T>
-		static std::vector<T> 	toStdVector(ScriptObjectVector *sv);
+		static zs_vector<T> 	toStdVector(ScriptObjectVector *sv);
 
 		//
 		// Helpers

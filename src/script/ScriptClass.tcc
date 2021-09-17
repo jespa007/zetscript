@@ -11,8 +11,7 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line)
 	{
-			// to make compatible MSVC shared library
-			//std::vector<ScriptClass *> * script_classes = getVecScriptClassNode();
+		// to make compatible MSVC shared library
 		zs_string var_type = typeid(R).name();
 		zs_string error;
 
@@ -32,11 +31,12 @@ namespace zetscript{
 			const zs_string & function_name
 			,F ptr_function
 			,zs_string & return_type
-			,std::vector<ScriptFunctionParam> & param_info
+			,ScriptFunctionParam **param_info
+			,size_t & param_info_len
 		)
 	{
 		int idx_return_type=-1;
-		std::vector<zs_string> arg;
+		zs_vector<zs_string> arg;
 		// 1. check all parameters ok.
 		using Traits3 = FunctionTraits<decltype(ptr_function)>;
 		getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
@@ -49,6 +49,9 @@ namespace zetscript{
 		if((idx_return_type=getIdxClassFromItsNativeType(return_type)) == -1){
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type).c_str(),function_name);
 		}
+
+		*param_info=(ScriptFunctionParam *)malloc(sizeof(ScriptFunctionParam)*arg.size());
+		param_info_len=arg.size();
 
 		for(unsigned int i = 0; i < arg.size(); i++){
 			int idx_type = getIdxClassFromItsNativeType(arg[i]);
@@ -68,8 +71,11 @@ namespace zetscript{
 						,function_name);
 			}
 
-			param_info.push_back({idx_type,arg[i]});
+			(*param_info)[i]={idx_type,arg[i]};
+			//param_info.push_back({idx_type,arg[i]});
 		}
+
+
 
 		return idx_return_type;
 	}
@@ -85,7 +91,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<ScriptFunctionParam> param_info;
+		ScriptFunctionParam *param_info=NULL;
+		size_t param_info_len=0;
 		zs_string function_class_name;
 		zs_string error;
 
@@ -117,7 +124,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<ScriptFunctionParam> param_info;
+		ScriptFunctionParam *param_info=NULL;
+		size_t param_info_len=0;
 		zs_string function_class_name;
 		zs_string error;
 
@@ -146,7 +154,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<ScriptFunctionParam> param_info;
+		ScriptFunctionParam *param_info=NULL;
+		size_t param_info_len=0;
 		zs_string function_class_name;
 		zs_string error;
 
@@ -175,7 +184,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<ScriptFunctionParam> param_info;
+		ScriptFunctionParam *param_info=NULL;
+		size_t param_info_len=0;
 		zs_string function_class_name;
 		zs_string error;
 
@@ -204,7 +214,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<ScriptFunctionParam> param_info;
+		ScriptFunctionParam *param_info=NULL;
+		size_t param_info_len=0;
 		zs_string function_class_name;
 		zs_string error;
 
@@ -233,7 +244,8 @@ namespace zetscript{
 			,short registered_line
 	){
 		zs_string return_type;
-		std::vector<ScriptFunctionParam> param_info;
+		ScriptFunctionParam *param_info=NULL;
+		size_t param_info_len=0;
 		zs_string function_class_name;
 		zs_string error;
 
@@ -266,7 +278,9 @@ namespace zetscript{
 		// to make compatible MSVC shared library
 		zs_string return_type;
 		zs_string error;
-		std::vector<ScriptFunctionParam> param_info;
+		ScriptFunctionParam *param_info=NULL;
+		size_t param_info_len=0;
+
 
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(function_name,ptr_function,return_type,param_info);
 
@@ -337,7 +351,9 @@ namespace zetscript{
 	){
 		// to make compatible MSVC shared library
 		zs_string return_type;
-		std::vector<ScriptFunctionParam> param_info;
+		ScriptFunctionParam *param_info=NULL;
+		size_t param_info_len=0;
+
 		zs_string error;
 		
 		zs_string function_class_name = this->class_name+"::"+function_name;

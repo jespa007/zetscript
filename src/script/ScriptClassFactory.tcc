@@ -58,9 +58,11 @@ namespace zetscript{
 	{
 		int idx_return_type=-1;
 		zs_string return_type;
-		std::vector<zs_string> str_arg;
+		zs_vector<zs_string> str_arg;
 
-		std::vector<ScriptFunctionParam> param_info;
+		ScriptFunctionParam *param_info=NULL;
+		size_t param_info_len=0;
+
 		zs_int ref_ptr=0;
 
 		if(main_function == NULL){
@@ -296,10 +298,6 @@ namespace zetscript{
 		ScriptClass *this_class = (ScriptClass *)script_classes->get(idx_register_class);
 		this_class->idx_base_classes->push_back(idx_base_class);
 
-		// add conversion type for this class
-		((zs_map_int *)conversion_types->get(this_class->idx_class))->set(idx_base_class,(zs_int)(new std::function<zs_int (zs_int entry)>([](zs_int entry){ return (zs_int)(B *)((C *)entry);})));
-
-
 		//if(register_c_base_symbols){ // by default is disabled. User has to re-register! --> increases time and binary!!!
 			//----------------------------
 			//
@@ -344,10 +342,11 @@ namespace zetscript{
 
 					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
 					// build params...
-					std::vector<ScriptFunctionParam> params;
-					for(unsigned j=0; j < script_function->params_count;j++){
-						params.push_back(script_function->params[j]);
-					}
+					ScriptFunctionParam *params=(ScriptFunctionParam *)malloc(script_function->params_count*sizeof(ScriptFunctionParam));
+					size_t param_info_len=script_function->params_count;
+
+					mempcy(params,script_function->params,script_function->params_count*sizeof(ScriptFunctionParam));
+
 
 					this_class->registerNativeMemberFunction(
 						script_function->symbol.name,
@@ -399,11 +398,10 @@ namespace zetscript{
 
 						if(it->src!=0){ // we have src method
 
-							std::vector<ScriptFunctionParam> param_info;
+							ScriptFunctionParam*param_info=malloc(it->src->params_count*sizeof(ScriptFunctionParam));
+							size_t param_info_len=it->src->params_count;
+							memcpy(param_info,it->src->params,it->src->params_count*sizeof(ScriptFunctionParam));
 
-							for(unsigned i=0; i < it->src->params_count; i++){
-								param_info.push_back(it->src->params[i]);
-							}
 
 							symbol_function=this_class->registerNativeMemberFunction(
 									it->src->symbol.name,
@@ -423,24 +421,14 @@ namespace zetscript{
 					}
 
 					for(unsigned i=0; i < sf_setters->count; i++){
-						std::vector<ScriptFunctionParam> param_info;
+
+
 						StackElement *stk_setter=(StackElement *)sf_setters->items[i];
 						ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
+						ScriptFunctionParam *param_info=(ScriptFunctionParam *)malloc(sf_setter->params_count*sizeof(ScriptFunctionParam));
+						size_t param_info_len=sf_setter->params_count;
 
-
-						for(unsigned i=0; i < sf_setter->params_count; i++){
-							param_info.push_back(sf_setter->params[i]);
-						}
-
-
-						/*this_class->registerNativeMemberAttributeSetter(
-								symbol_src->name
-								,param_info
-								,sf_setter->ref_native_function_ptr
-								,SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
-								,symbol_src->file
-								,symbol_src->line
-						);*/
+						mempcy(param_info,sf_setter->params,sf_setter->params_count*sizeof(ScriptFunctionParam));
 
 						symbol_function=this_class->registerNativeMemberFunction(
 								sf_setter->symbol.name,

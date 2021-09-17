@@ -31,7 +31,7 @@ namespace zetscript{
 			ZetScript 					*zs;
 
 			/**
-			 * Vector of script scopes. This std::vector is removed when ZetScript reevaluates all scrips.
+			 * Vector of script scopes.
 			 */
 			zs_vector 		 *scopes;
 			Scope *main_scope;

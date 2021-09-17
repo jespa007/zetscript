@@ -1,8 +1,8 @@
 namespace zetscript{
 
 	template<typename T>
-	std::vector<T> ScriptObjectVector::toStdVector(ScriptObjectVector *v_in){
-		std::vector<T> v_out;
+	zs_vector<T> ScriptObjectVector::toStdVector(ScriptObjectVector *v_in){
+		zs_vector<T> v_out;
 		const char * dst_convert_type = typeid(T).name();
 		zs_float aux_flt;
 		zs_vector * elements = v_in->getStkUserListElements();
@@ -21,7 +21,7 @@ namespace zetscript{
 					}else if(ZS_STRCMP(dst_convert_type, ==,typeid(zs_int).name())){
 						v_out.push_back((zs_int)sv->value);
 					}else{
-						THROW_RUNTIME_ERROR("Error trying to cast element on std::vector<%s>",ZS_STR(zs_float));
+						THROW_RUNTIME_ERROR("Error trying to cast element on zs_vector<%s>",ZS_STR(zs_float));
 						return v_out;
 					}
 					break;
@@ -36,7 +36,7 @@ namespace zetscript{
 					if(ZS_STRCMP(dst_convert_type, ==,typeid(zs_int).name()) || ZS_STRCMP(dst_convert_type, ==,typeid(zs_float).name())){// typeid(int).name()) || ){
 						v_out.push_back((zs_int)sv->value);
 					}else{
-						THROW_RUNTIME_ERROR("Error trying to cast element on std::vector<zs_int>");
+						THROW_RUNTIME_ERROR("Error trying to cast element on zs_vector<zs_int>");
 						return v_out;
 					}
 					break;
