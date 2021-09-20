@@ -161,14 +161,6 @@ namespace zetscript{
 		POST_OPERATION_MAX
 	}PostOperation;
 
-	/*typedef enum :unsigned char {
-		PRE_POST_SELF_OPERATION_UNKNOWN=0,
-		PRE_POST_SELF_OPERATION_INC,		// ++
-		PRE_POST_SELF_OPERATION_DEC,		// --
-		PRE_POST_SELF_OPERATION_INVALID,	// +- or -+
-		PRE_POST_SELF_OPERATION_MAX
-	}PrePostSelfOperation;*/
-
 	typedef enum :unsigned char {
 		SEPARATOR_UNKNOWN=0,
 		SEPARATOR_COMA,				// ,
@@ -185,9 +177,9 @@ namespace zetscript{
 		PreOperation   					pre_operation; // !,+,-,--,++
 		Operator  						operator_type;
 
-		zs_string 					value; // token value content
+		zs_string 						value; // token value content
 		int 							line;
-		zs_vector<EvalInstruction *> 	instructions; // byte code load literal/identifier(can be anonymous function), zs_vector/struct.
+		zs_vector 						eval_instructions; // byte code load literal/identifier(can be anonymous function), zs_vector/struct.
 		bool are_instructions_moved;
 
 		TokenNode(){
@@ -201,14 +193,14 @@ namespace zetscript{
 			token_type=TokenType::TOKEN_TYPE_UNKNOWN;
 			operator_type=Operator::OPERATOR_UNKNOWN;
 			pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
-			instructions.clear();
+			eval_instructions.clear();
 		}
 	};
 
 
 	struct EvalFunction{
 
-		zs_vector<EvalInstruction *>	 		instructions;
+		zs_vector						 		eval_instructions;
 		ScriptFunction 						*  	script_function;
 		int										parsing_loop;
 		int										parsing_switch;
@@ -221,8 +213,8 @@ namespace zetscript{
 		}
 
 		~EvalFunction(){
-			for(unsigned i=0; i< instructions.size(); i++){
-				delete instructions[i];
+			for(unsigned i=0; i< eval_instructions.count; i++){
+				delete (EvalInstruction *)eval_instructions.items[i];
 			}
 		}
 	};
@@ -231,7 +223,6 @@ namespace zetscript{
 	typedef struct {
 		Directive id;
 		const char *str;
-		//char * (*parse_fun)(const char *, int &, Scope *, PASTNode *);
 	} EvalDirective;
 
 
@@ -266,7 +257,7 @@ namespace zetscript{
 	} EvalSeparator;
 
 	typedef struct{
-		zs_vector<EvalInstruction *> 	break_jmps;
+		zs_vector 						ei_break_jmps;
 		int								idx_instruction_start_loop;
 	}LoopBreakContinueInfo;
 
@@ -288,9 +279,9 @@ namespace zetscript{
 		ScriptFunctionFactory 			* 		script_function_factory;
 		ScriptClassFactory 				* 		script_class_factory;
 		EvalFunction					* 		current_function;
-		zs_vector<EvalFunction *> 	  			functions;
-		zs_vector<UnresolvedInstructionInfo>	unresolved_symbols;
-		zs_vector<Instruction *> 				global_ref_instructions;
+		zs_vector				 	  			eval_functions;
+		zs_vector								unresolved_symbols; // UnresolvedInstructionInfo
+		zs_vector				 				global_ref_instructions; // Instruction
 		int										parsing_loop;
 
 		const char *					 		current_parsing_file;
@@ -562,10 +553,11 @@ namespace zetscript{
 	}
 
 	zs_string * get_mapped_name(EvalData *eval_data,const zs_string & s){
-		if(compiled_symbol_name->count(s)==0){
-			(*compiled_symbol_name)[s]=new zs_string (s);
+		zs_int e=compiled_symbol_name->get(s.c_str());
+		if(e==0){
+			compiled_symbol_name->set(s.c_str(),(zs_int)(new zs_string (s)));
 		}
-		return (*compiled_symbol_name)[s];
+		return ((zs_string *)e);
 	}
 
 	bool  is_end_symbol_token(char *s, char pre=0){
@@ -718,7 +710,7 @@ namespace zetscript{
 
 			if(is_float && (*aux_p == 'e' || *aux_p == 'E')){ // exponencial part ?
 
-				if(current_part == 1 && number_part[current_part].size()>1){
+				if(current_part == 1 && number_part[current_part].length()>1){
 					current_part=2;
 					number_part[current_part]+=*aux_p++;
 					if(*(aux_p)=='+' || *(aux_p)=='-'){
@@ -919,8 +911,8 @@ namespace zetscript{
 	void eval_deinit(){
 		if(g_init_eval){
 
-			for(std::map<zs_string,zs_string *>::iterator it=compiled_symbol_name->begin();it!=compiled_symbol_name->end(); it++){
-				delete it->second;
+			for(auto it=compiled_symbol_name->begin();!it.end(); it.next()){
+				delete (zs_string *)it.getValue();
 			}
 
 			delete compiled_symbol_name;

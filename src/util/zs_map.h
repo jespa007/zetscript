@@ -20,7 +20,7 @@ namespace zetscript{
 		zs_map_iterator begin();
 		bool		exist(const char * key);
 		void 		set(const char * key,zs_int val);
-		zs_int 	get(const char * key, bool & exists);
+		zs_int 		get(const char * key, bool * exists=NULL);
 		void  		erase(const char * key);
 		void clear();
 

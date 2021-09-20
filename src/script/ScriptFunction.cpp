@@ -46,10 +46,8 @@ namespace zetscript{
 
 	InstructionSourceInfo * ScriptFunction::getInstructionInfo(Instruction *instruction){
 		short idx= (instruction-this->instructions);///sizeof(Instruction *);
-		if(instruction_source_info.count(idx)==1){
-			return &instruction_source_info[idx];
-		}
-		return NULL;
+		//if(instruction_source_info.items[idx]==1){
+		return instruction_source_info->items[idx];
 	}
 
 #define GET_ILOAD_ACCESS_TYPE_STR(properties) \
@@ -555,6 +553,10 @@ namespace zetscript{
 
 	ScriptFunction::~ScriptFunction(){
 		clear();
+
+		for(unsigned i=0; i < instruction_source_info.count; i++){
+			delete (InstructionSourceInfo *)instruction_source_info.items[i]
+		}
 
 		delete local_variables;
 		local_variables=NULL;

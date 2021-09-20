@@ -54,7 +54,7 @@ namespace zetscript{
 
 		//-----------
 		//  SYMBOL-INSTRUCTION
-		zs_map 				*instruction_source_info; // std::map that gives symbol with at instruction idx given
+		zs_vector 			instruction_source_info; // std::map that gives symbol with at instruction idx given
 
 		short 				getInstructionLine(Instruction * ins);
 		const char * 		getInstructionSymbolName(Instruction * ins);

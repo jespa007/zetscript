@@ -6,6 +6,10 @@ namespace zetscript{
 	class zs_map_iterator{
 	public:
 
+		const char *key;
+		zs_int		value;
+
+
 		zs_map_iterator();
 		zs_map_iterator(zs_map *map);
 		void next();
@@ -18,8 +22,6 @@ namespace zetscript{
 		zs_map_node *current_list;
 		zs_map *map;
 		int idx_current_hash;
-		const char *key;
-		zs_int		value;
 
 
 		void setup();

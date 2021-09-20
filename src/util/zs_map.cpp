@@ -64,12 +64,17 @@ namespace zetscript{
 		node->val = val;
 	}
 
-	zs_int 	zs_map::get(const char * key, bool & exists){
+	zs_int 	zs_map::get(const char * key, bool * exists){
 		zs_map_node * node=lookup_node(key);
-		exists=false;
+
+		if(exists!=NULL){
+			*exists=false;
+		}
 
 		if(node != NULL){
-			exists=true;
+			if(exists){
+				*exists=true;
+			}
 			return node->val;
 		}
 

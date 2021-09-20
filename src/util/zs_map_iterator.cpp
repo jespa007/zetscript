@@ -23,13 +23,6 @@ namespace zetscript{
 		findNextListNotEmpty();
 	}
 
-	const char *zs_map_iterator::getKey(){
-		return key;
-	}
-
-	zs_int zs_map_iterator::getValue(){
-		return value;
-	}
 
 	void zs_map_iterator::setCurrentPair(){
 		key=current_node->key;

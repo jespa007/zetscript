@@ -8,7 +8,7 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			, int & line
-			, Scope *scope_info, zs_vector<EvalInstruction *> 	* instructions
+			, Scope *scope_info, zs_vector 	* eval_instructions
 			, char *expected_ending_char=NULL // expecting ending char when expression finish (by default not check or 0)
 			, uint16_t properties = 0
 	);
@@ -19,7 +19,7 @@ namespace zetscript{
 	char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, TokenNode *token_node){
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 		EvalInstruction *eval_instruction;
-		zs_vector<EvalInstruction *> 	* instructions=&token_node->instructions;
+		zs_vector 	* eval_instructions=&token_node->instructions;
 		char *aux_p = (char *)s;
 		unsigned short instruction_properties=0; // global by default ...
 		Symbol *symbol_object=NULL;

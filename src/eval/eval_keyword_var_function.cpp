@@ -85,11 +85,11 @@ namespace zetscript{
 		instructions->clear();
 	}
 
-	ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector<EvalInstruction *> *eval_instructions){
+	ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector *eval_instructions){
 
 		zs_string function_name=eval_anonymous_function_name("defval");
 		Instruction *instructions=NULL,*start_ptr=NULL;
-		size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
+		size_t instructions_len=(eval_instructions->count+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
 
 		Symbol * symbol_sf=MAIN_FUNCTION(eval_data)->registerLocalFunction(
@@ -106,8 +106,8 @@ namespace zetscript{
 		memset(start_ptr,0,instructions_total_bytes);
 		sf->instructions_len=instructions_len;
 
-		for(unsigned i=0; i < eval_instructions->size(); i++){
-			EvalInstruction *instruction = eval_instructions->at(i);
+		for(unsigned i=0; i < eval_instructions->count; i++){
+			EvalInstruction *instruction = (EvalInstruction *)eval_instructions->items[i];
 			InstructionSourceInfo instruction_info=instruction->instruction_source_info;
 
 			// save instruction ...
@@ -121,7 +121,7 @@ namespace zetscript{
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 			instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
 
-			sf->instruction_source_info[i]=instruction_info;
+			sf->instruction_source_info->push_back(new InstructionSourceInfo(instruction_info));
 
 			start_ptr++;
 
@@ -150,7 +150,7 @@ namespace zetscript{
 		// check for keyword ...
 		char *aux_p = (char *)s;
 		Keyword key_w = eval_is_keyword(s);
-		zs_vector<EvalInstruction *> member_var_init_instructions;
+		zs_vector ei_member_var_init;
 
 		if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
 			bool is_static = false,
@@ -298,7 +298,7 @@ namespace zetscript{
 						,is_var_member_or_const?aux_p+1:start_var
 						,aux_line
 						,scope_var
-						,is_var_member?&member_var_init_instructions:&eval_data->current_function->instructions
+						,is_var_member?&ei_member_var_init:&eval_data->current_function->instructions
 						,{}
 					))==NULL){
 						goto error_eval_keyword_var;
@@ -306,14 +306,14 @@ namespace zetscript{
 
 					if(is_var_member){ // check load and set find
 
-						eval_generate_byte_code_field_initializer(eval_data,sf_field_initializer,&member_var_init_instructions,symbol_member_variable);
+						eval_generate_byte_code_field_initializer(eval_data,sf_field_initializer,&ei_member_var_init,symbol_member_variable);
 
-						member_var_init_instructions.clear();
+						ei_member_var_init.clear();
 					}
 					else{
 						if(is_constant){ // make ptr as constant after variable is saved
 							EvalInstruction *eval_instruction;
-							eval_data->current_function->instructions.push_back(eval_instruction=new EvalInstruction(
+							eval_data->current_function->eval_instructions.push_back(eval_instruction=new EvalInstruction(
 								BYTE_CODE_PUSH_STK_GLOBAL
 							));
 
@@ -322,13 +322,13 @@ namespace zetscript{
 							eval_instruction->symbol.name=pre_variable_name+variable_name;
 							eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
 
-							eval_data->current_function->instructions.push_back(new EvalInstruction(
+							eval_data->current_function->eval_instructions.push_back(new EvalInstruction(
 								BYTE_CODE_STORE_CONST
 							));
 						}
 
 						// finally we insert reset stack
-						eval_data->current_function->instructions.push_back(new EvalInstruction(
+						eval_data->current_function->eval_instructions.push_back(new EvalInstruction(
 							BYTE_CODE_RESET_STACK
 						));
 					}
@@ -361,11 +361,11 @@ namespace zetscript{
 		}
 
 error_eval_keyword_var:
-		for(size_t i=0; i < member_var_init_instructions.size(); i++){
-			delete member_var_init_instructions[i];
+		for(size_t i=0; i < ei_member_var_init.count; i++){
+			delete (EvalInstruction *)ei_member_var_init.items[i];
 		}
 
-		member_var_init_instructions.clear();
+		ei_member_var_init.clear();
 
 		return NULL;
 	}
