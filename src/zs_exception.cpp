@@ -12,7 +12,9 @@ namespace zetscript {
 		file=_file;
 		line=_line;
 		error_description=_error_description;
-		if(zs_strutils::is_empty(_file)){
+		if(_file.empty() && _line == ZS_IDX_UNDEFINED){
+			sprintf(what_msg,"%s", (char *)error_description.c_str());
+		}else if(_file.empty()){
 			sprintf(what_msg,"line %i: %s", _line, (char *)error_description.c_str());
 		}else{
 			sprintf(what_msg,"[%s:%i] %s",zs_path::get_filename(_file).c_str(), _line, (char *)error_description.c_str());
@@ -49,12 +51,18 @@ namespace zetscript {
 		throw zs_exception_error(script_filename,script_line,out_txt);
 	}
 
-	/*void throw_runtime_error(const char *filename, int line, const char *in_txt,...){
+	void throw_runtime_error(const char *in_txt,...){
+		char out_txt[ZS_MAX_STR_BUFFER];
+		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
+		throw zs_exception_error("",-1,out_txt);
+	}
+
+	void throw_exception(const char *filename, int line, const char *in_txt,...){
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 
-		throw zs_exception_error(filename,line,out_txt);
-	}*/
+		throw zs_exception_error("",ZS_IDX_UNDEFINED,out_txt);
+	}
 
 
 

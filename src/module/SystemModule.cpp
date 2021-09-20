@@ -21,10 +21,11 @@ namespace zetscript{
 		ScriptFunction *sf_main=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 		ScriptObjectString *so_str_eval=NULL;
 		ScriptObjectObject *oo_param=NULL;
-		zs_vector<ScriptFunctionParam> function_args;
+		ScriptFunctionParam *function_params=NULL;
+		size_t 				 function_params_len=0;
 		zs_string str_param_name;
 		ScriptFunction *sf;
-		zs_vector<StackElement> stk_params;
+		zs_vector stk_params;
 		StackElement stk_ret=k_stk_undefined;
 		const char *str_start=NULL;
 		Scope *main_scope=zs->getScopeFactory()->getMainScope();
@@ -51,14 +52,18 @@ namespace zetscript{
 			oo_param=(ScriptObjectObject *)stk_oo_param->value;
 
 			// catch parameters...
-			for(auto it=oo_param->begin(); !it.end(); it.next()){
-				StackElement stk=*((StackElement *)it.getValue());
-				function_args.push_back(ScriptFunctionParam(it.getKey()));
-				stk_params.push_back(stk);
+			function_params_len=oo_param->length();
+			function_params=(ScriptFunctionParam *)malloc(sizeof(ScriptFunctionParam)*function_params_len);
+			int i=0;
 
-				if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){
+			for(auto it=oo_param->begin(); !it.end(); it.next()){
+				StackElement *stk=((StackElement *)it.getValue());
+				function_params[i]=ScriptFunctionParam(it.getKey());
+				stk_params.push_back((zs_int)stk);
+
+				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					// inc number of ref as standard in pass object args
-					((ScriptObject *)stk.value)->shared_pointer->data.n_shares++;
+					((ScriptObject *)stk->value)->shared_pointer->data.n_shares++;
 				}
 			}
 		}
@@ -74,7 +79,8 @@ namespace zetscript{
 				zs
 				,IDX_SCRIPT_CLASS_MAIN
 				,ZS_IDX_EVAL_FUNCTION
-				,function_args
+				,function_params
+				,function_params_len
 				,ZS_IDX_UNDEFINED
 				,symbol_sf
 				,0
@@ -86,7 +92,7 @@ namespace zetscript{
 		// 2. Call zetscript->eval this function
 
 		try{
-			eval_parse_and_compile(zs,str_start,NULL,1,sf,&function_args);
+			eval_parse_and_compile(zs,str_start,NULL,1,sf,function_params,function_params_len);
 		}catch(std::exception & ex){
 			delete sf;
 			delete symbol_sf;
@@ -120,11 +126,11 @@ namespace zetscript{
 		// 3. Call function passing all arg parameter
 
 		// pass data to stk_vm_current
-		uint8_t stk_n_params=(uint8_t)stk_params.size();
+		uint8_t stk_n_params=(uint8_t)stk_params.count;
 		StackElement *stk_vm_current=vm_get_current_stack_element(vm);
 		StackElement *stk_start=stk_vm_current;//vm data->stk_vm_current;
 		for(unsigned i = 0; i < stk_n_params; i++){
-			*stk_start++=stk_params[i];
+			*stk_start++=*((StackElement *)stk_params.items[i]);
 		}
 
 		vm_call_function_script(

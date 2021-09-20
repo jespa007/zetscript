@@ -165,14 +165,14 @@ namespace zetscript{
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
-		zs_vector<zs_string> split(const zs_string &s_in, char delim) {
-		    zs_vector<zs_string> elems;
+		zs_vector split(const zs_string &s_in, char delim) {
+		    zs_vector elems;
 		    //zs_string s = s_in;
 		    char *pos=(char *)s_in.c_str();
 		    zs_string token;
 		    while((pos=strchr(pos,delim))!=NULL) {
 		        token = s_in.substr(0, pos-s_in.c_str());
-		        elems.push_back(token);
+		        elems.push_back((zs_int)(new zs_string(token)));
 		        pos++;
 		//        std::cout << token << std::endl;
 		        //s.erase(0, pos + delim.length());
@@ -182,20 +182,18 @@ namespace zetscript{
 		    return elems;
 		}
 
-		zs_vector<zs_string> split(const zs_string &s_in, const zs_string & delim) {
-		    zs_vector<zs_string> elems;
+		zs_vector split(const zs_string &s_in, const zs_string & delim) {
+		    zs_vector elems;
 		    zs_string s = s_in;
 		    size_t pos = 0;
 		    zs_string token;
 		    while ((pos = s.find(delim)) != zs_string::npos) {
 		        token = s.substr(0, pos);
-		        elems.push_back(token);
-		//        std::cout << token << std::endl;
+		        elems.push_back((zs_int)(new zs_string(token)));
 		        s.erase(0, pos + delim.length());
 		    }
 
-		    elems.push_back(s);
-		    //std::cout << s << std::endl;
+		    elems.push_back((zs_int)(new zs_string(s)));
 		    return elems;
 		}
 
@@ -227,7 +225,7 @@ namespace zetscript{
 			char *start_pos=NULL;
 
 			while((start_pos = strstr(start_pos,str_old.c_str())) != NULL) {
-				str.replace(start_pos, str_old.length(), str_new);
+				str.replace(start_pos-str.c_str(), str_old.length(), str_new);
 				start_pos += str_new.length(); // Handles case where 'str_new' is a substring of 'str_old'
 			}
 
@@ -396,10 +394,10 @@ namespace zetscript{
 			return false;
 		}
 
-		bool contains(const zs_vector<zs_string> & input, const zs_string & str_containts,StringComparer sc){
+		bool contains(const zs_vector & input, const zs_string & str_containts,StringComparer sc){
 
-			for(unsigned i = 0; i < input.size(); i++){
-				if(contains(input,str_containts,sc)){
+			for(unsigned i = 0; i < input.count; i++){
+				if(contains(*(zs_string *)input.items[i],str_containts,sc)){
 					return true;
 				}
 			}

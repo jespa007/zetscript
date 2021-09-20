@@ -47,6 +47,8 @@ namespace zetscript{
 		zs_map_iterator begin();
 		zs_map_iterator begin_builtin();
 
+		virtual size_t	length();
+
 
 		bool eraseUserProperty(const zs_string & symbol_value);
 		void eraseAllUserProperties(/*const ScriptFunction *info_function=NULL*/);

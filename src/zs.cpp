@@ -7,7 +7,6 @@
 
 #define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2021 Jordi Espada\n",ZETSCRIPT_VERSION_MAJOR,ZETSCRIPT_VERSION_MINOR,ZETSCRIPT_VERSION_PATCH
 
-#define STR_EQUAL(a,b) (strcmp(a,b)==0)
 
 using namespace zetscript;
 
@@ -65,8 +64,8 @@ int main(int argc, char * argv[]) {
 	}
 
 
-	// evaluate file
-	if(zs_strutils::is_empty(file)){ // run interactive console
+	// if file is empty run interactive console
+	if(*file==0){
 
 		bool exit = false;
 		char *expression=NULL;
@@ -84,19 +83,19 @@ int main(int argc, char * argv[]) {
 				continue;
 			}
 
-			if(STR_EQUAL(expression,"clear")){
+			if(ZS_STRCMP(expression,==,"clear")){
 				printf("Clearing symbols...\n");
 				zs->clear();
 				continue;
 			}
 
-			if(STR_EQUAL(expression,"save")){
+			if(ZS_STRCMP(expression,==,"save")){
 				printf("Saving state...\n");
 				zs->saveState();
 				continue;
 			}
 
-			exit = STR_EQUAL(expression,"exit") || STR_EQUAL(expression,"quit");
+			exit = ZS_STRCMP(expression,==,"exit") || ZS_STRCMP(expression,==,"quit");
 
 			if(!exit){ // evaluate expression
 

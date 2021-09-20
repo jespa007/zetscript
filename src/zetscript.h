@@ -339,18 +339,6 @@ namespace zetscript{
 
 		inline void unrefLifetimeObject(ScriptObject *so);
 
-		template<typename T>
-		static ScriptObjectVector * convertStdVectorToScriptObjectVector(const zs_vector<T> & v,ZetScript *zs_instance){
-			ScriptObjectVector *vsv = ZS_NEW_OBJECT_VECTOR(zs_instance);
-
-			for ( unsigned i = 0; i < v.size(); i++){
-				StackElement *stk = vsv->pushNewUserSlot();
-				//zs_int uvar = (zs_int)(v[i]);
-				*stk = zs_instance->convertVarToStackElement((zs_int)(v[i]),zs_instance->script_class_factory->getIdxClassFromItsNativeType(typeid(T).name()));
-			}
-
-			return vsv;
-		}
 
 		//--------------------------------------------------------------------------------------------------------------------
 		//
@@ -504,7 +492,7 @@ namespace zetscript{
 		//--------
 		// VARS
 		zs_map 	 								*stk_constants;
-		zs_vector<ParsedFile *> 			 	parsed_files;
+		zs_vector 			 					parsed_files;
 
 		//ScriptEval * eval_obj;
 		VirtualMachine * virtual_machine;

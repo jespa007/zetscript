@@ -35,7 +35,8 @@ namespace zetscript{
 			, const char *  _filename
 			, int _line
 			, ScriptFunction *_sf
-			, zs_vector<ScriptFunctionParam> * function_args
+			, ScriptFunctionParam * function_params
+			, size_t function_params_len
 	){
 		EvalData *eval_data=new EvalData(zs);
 		char *aux_p=NULL;
@@ -53,16 +54,16 @@ namespace zetscript{
 			scope_info = NEW_SCOPE(eval_data,sf->idx_script_function,MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 			MAIN_SCOPE(eval_data)->scopes->push_back((zs_int)scope_info);
 
-			if(function_args != NULL){
+			if(function_params != NULL){
 
 				// register args as part of stack...
-				for(unsigned i=0; i < function_args->size(); i++){
+				for(unsigned i=0; i < function_params_len; i++){
 
 					sf->registerLocalArgument(
 						scope_info
 						,""
 						,-1
-						,function_args->at(i).param_name
+						,function_params[i].name
 						,0
 					);
 

@@ -185,7 +185,7 @@ namespace zetscript{
 		 VM_ScopeFunction	vm_scope_function[MAX_FUNCTION_CALL];
 
 		 StackElement     					vm_stack[VM_STACK_LOCAL_VAR_MAX];
-		 zs_map								lifetime_object;
+		 zs_vector							lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		StackElement *stk_vm_current;
@@ -442,7 +442,6 @@ namespace zetscript{
 			stk_elements_builtin_len=class_obj->class_scope->symbol_functions->count;
 
 		}
-		//bool stk_element_are_vector_element_ptr=stk_elements_builtin_ptr!=data->vm_stack;
 
 		for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 			ScriptFunction *irfs = NULL;
@@ -547,12 +546,11 @@ namespace zetscript{
 			zs_string args_str = "";
 			//int arg_idx_type=-1;
 			/* get arguments... */
-
 			for( unsigned k = 0; k < n_args;k++){
 				StackElement *current_arg=&stk_arg[k];
 
 				if(k>0){
-					args_str+=",";
+					args_str.append(",");
 				}
 				//unsigned short var_type = GET_STK_PROPERTY_TYPES(current_arg->properties);
 				if(current_arg->properties & STK_PROPERTY_PTR_STK){
@@ -591,13 +589,14 @@ namespace zetscript{
 						break;
 					}
 				}
-				args_str+=zs_rtti::demangle(aux_string);
+
+				args_str.append(zs_rtti::demangle(aux_string.c_str()));
 
 				if(current_arg->properties == STK_PROPERTY_ZS_INT
 				||current_arg->properties == STK_PROPERTY_ZS_FLOAT
 				||current_arg->properties == STK_PROPERTY_BOOL
 				){
-					args_str+=" [*] ";
+					args_str.append(" [*] ");
 				}
 			}
 
@@ -611,15 +610,24 @@ namespace zetscript{
 				if(irfs->symbol.name == symbol_to_find){
 
 					if(n_candidates == 0){
-						str_candidates+="\tPossible candidates are:\n\n";
+						str_candidates.append("\tPossible candidates are:\n\n");
 					}
-					str_candidates+="\t\t-"+(class_obj==NULL?""
-							:class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->class_name+"::")
-							:"")+irfs->symbol.name+"(";
+					str_candidates.append("\t\t-");
+
+					// class if not mail
+					if(class_obj!=NULL && class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN){
+						str_candidates.append(class_obj->class_name.c_str());
+						str_candidates.append("::");
+					}
+
+					// function name
+					str_candidates.append(irfs->symbol.name.c_str());
+					str_candidates.append("(");
+
 
 					for(unsigned a = 0; a < irfs->params_count; a++){
 						if(a>0){
-							str_candidates+=",";
+							str_candidates.append(",");
 						}
 
 						if(irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){
@@ -627,10 +635,11 @@ namespace zetscript{
 								GET_IDX_2_CLASS_C_STR(data,irfs->params[a].idx_type)
 							);
 						}else{ /* typic var ... */
-							str_candidates+="arg"+zs_strutils::zs_int_to_str(a+1);
+							str_candidates.append("arg");
+							str_candidates.append(zs_strutils::zs_int_to_str(a+1));
 						}
 					}
-					str_candidates+=");\n";
+					str_candidates.append(");\n");
 					n_candidates++;
 				}
 			}

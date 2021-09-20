@@ -19,8 +19,7 @@ namespace zetscript{
 		static ScriptObjectVector * newScriptObjectVector(ZetScript *zs);
 		static ScriptObjectVector * newScriptObjectVectorAdd(ZetScript *zs,ScriptObjectVector *v1,ScriptObjectVector *v2);
 
-		template<typename T>
-		static zs_vector<T> 	toStdVector(ScriptObjectVector *sv);
+		static zs_vector 	toVector(ScriptObjectVector *sv);
 
 		//
 		// Helpers
@@ -51,5 +50,3 @@ namespace zetscript{
 
 	};
 }
-
-#include "ScriptObjectVector.tcc"

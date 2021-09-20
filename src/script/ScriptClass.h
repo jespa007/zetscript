@@ -26,9 +26,9 @@ namespace zetscript{
 
 		int 			idx_class; 	// registered class idx
 
-		zs_string 	class_name;		// info symbol class
+		zs_string 		class_name;		// info symbol class
 		Scope			*class_scope;
-		zs_string 	str_class_ptr_type; // type_id().name();
+		const char 		*str_class_ptr_type; // type_id().name();
 		uint16_t		properties;
 
 		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be attribute members or script member vars
@@ -105,7 +105,8 @@ namespace zetscript{
 		// SETTER
 		Symbol				* 	registerNativeMemberAttributeSetter(
 			const zs_string & attribute_name
-			, zs_vector<ScriptFunctionParam> arg_value
+			,ScriptFunctionParam *args
+			,size_t args_len
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties
 			,const char * file=""
@@ -128,7 +129,8 @@ namespace zetscript{
 		// GETTER
 		Symbol				* 	registerNativeMemberAttributeGetter(
 			const zs_string & attribute_name
-			,zs_vector<ScriptFunctionParam> arg_value
+			,ScriptFunctionParam *args
+			,size_t args_len
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties
@@ -139,7 +141,8 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberAttributePostIncrement(
 			const zs_string & attribute_name
-			,zs_vector<ScriptFunctionParam> arg_value
+			,ScriptFunctionParam *args
+			,size_t args_len
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_post_inc_function_properties
@@ -149,7 +152,8 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberAttributePostDecrement(
 			const zs_string & attribute_name
-			,zs_vector<ScriptFunctionParam> arg_value
+			,ScriptFunctionParam *args
+			,size_t args_len
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_post_dec_function_properties
@@ -159,7 +163,8 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberAttributePreIncrement(
 			const zs_string & attribute_name
-			,zs_vector<ScriptFunctionParam> arg_value
+			,ScriptFunctionParam *args
+			,size_t args_len
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_pre_inc_function_properties
@@ -169,7 +174,8 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberAttributePreDecrement(
 			const zs_string & attribute_name
-			,zs_vector<ScriptFunctionParam> arg_value
+			,ScriptFunctionParam *args
+			,size_t args_len
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_pre_dec_function_properties
@@ -226,7 +232,8 @@ namespace zetscript{
 
 		Symbol				* 	registerMemberFunction(
 				 const zs_string & function_name
-				, zs_vector<ScriptFunctionParam> args={}
+				,ScriptFunctionParam *args=NULL
+				,size_t args_len=0
 				, unsigned short properties=0
 				,const char * file = ""
 				, short line=-1
@@ -234,7 +241,8 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberFunction(
 				 const zs_string & function_name
-				,zs_vector<ScriptFunctionParam> args={}
+				,ScriptFunctionParam *args=NULL
+				,size_t args_len=0
 				,int idx_return_type=ZS_IDX_UNDEFINED
 				,zs_int ref_ptr=0
 				,unsigned short properties=0
@@ -288,7 +296,8 @@ namespace zetscript{
 
 		Symbol				* 	registerInternalMemberFunction(
 			 const zs_string & function_name
-			, zs_vector<ScriptFunctionParam> args
+			,ScriptFunctionParam *args
+			,size_t args_len
 			, unsigned short properties=0
 			, int idx_return_type=ZS_IDX_UNDEFINED
 			, zs_int ref_ptr=0
@@ -301,8 +310,10 @@ namespace zetscript{
 		int getNativeMemberFunctionRetArgsTypes(
 				const zs_string & function_name
 				,F function_ptr
-				,zs_string & return_type
-				,zs_vector<ScriptFunctionParam> & arg_info
+				,const char * return_type
+				,ScriptFunctionParam **args
+				,size_t *args_len
+
 		);
 
 		ScriptClass * 					getScriptClass(short idx_class);

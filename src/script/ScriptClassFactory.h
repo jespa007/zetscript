@@ -58,7 +58,7 @@ namespace zetscript{
 		const char 	* 					getScriptClassName(short idx);
 		void							classInheritsFrom(const zs_string & the_class,const zs_string & the_base_class);
 		bool							isClassInheritsFrom(short idx_class,short idx_base_class);
-		short							getIdxClassFromItsNativeType(const zs_string & s);
+		short							getIdxClassFromItsNativeType(const char * s);
 		short		 					getIdxNativeRegisteredClass(const zs_string & str_classPtr);
 		zs_vector	* 					getScriptClasses();
 
@@ -284,7 +284,7 @@ namespace zetscript{
 		void 							registerPrimitiveTypes();
 
 		int								getIdxScriptClassInternal(const zs_string & class_name);
-		int								getIdxScriptInternalFrom_C_Type(const zs_string & str_native_type);
+		int								getIdxScriptInternalFrom_C_Type(const char * str_native_type);
 
 		void 							setup();
 		void 							internalPrintError(const char *s);

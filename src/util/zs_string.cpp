@@ -35,7 +35,7 @@ namespace zetscript{
 	}
 
 	zs_string& zs_string::operator+=(const zs_string& obj){
-		append(obj.buf,obj.size);
+		append(obj.buf);
 	    return *this;
 	}
 
@@ -142,7 +142,7 @@ namespace zetscript{
 		return strcmp(_s1,_s2.c_str())!=0;
 	}
 
-	zs_string zs_string::substr (size_t pos = 0, size_t len) const{
+	zs_string zs_string::substr (size_t pos, size_t len) const{
 
 		if(len == npos){
 			len=pos+size-len;
@@ -163,8 +163,6 @@ namespace zetscript{
 
 	zs_string zs_string::replace(size_t _pos, size_t _len, const zs_string & to_replace){
 		zs_string str;
-
-
 
 		return str;
 	}
@@ -214,10 +212,10 @@ namespace zetscript{
 		return find(_s.c_str(),pos);
 	}
 
-	size_t zs_string::find_last(const char *_s, size_t pos) const{
+	size_t zs_string::find_last_of(const char *_s, size_t pos) const{
 
-		if(pos < size && pos >= 0){
-			size_t idx=MIN(pos,size-1);
+		if(pos < size){
+			int idx=MIN(pos,size-1);
 
 			do{
 				size_t len=strlen(_s);
@@ -233,10 +231,14 @@ namespace zetscript{
 		return npos;
 	}
 
-
 	void zs_string::append(const char *_buf, size_t _len){
 
-		size_t new_size=this->size+_len;
+		size_t len=_len;
+		if(len == npos){
+			len=strlen(_buf);
+		}
+
+		size_t new_size=this->size+len;
 		char *new_buf=(char *)malloc(new_size+1);
 		sprintf(new_buf,"%s%s",this->buf,_buf);
 
@@ -244,6 +246,10 @@ namespace zetscript{
 
 	    this->buf=new_buf;
 	    this->size=new_size;
+	}
+
+	void zs_string::append(const zs_string &_s){
+		zs_string::append(_s.buf);
 	}
 
 	void zs_string::append(char _c){

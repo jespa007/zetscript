@@ -102,7 +102,11 @@ namespace zetscript{
 					}else if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_PTR_C){//*ScriptClass::k_str_bool_type_ptr){
 						val_ret=(zs_int)(&stack_element->value);
 					}else{
-						error="cannot convert '"+zs_rtti::demangle((k_str_bool_type_ptr))+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
+						error="cannot convert '";
+						error.append(zs_rtti::demangle((k_str_bool_type_ptr)));
+						error.append("' to '");
+						error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+						error.append("'");
 
 						return false;
 					}
@@ -124,7 +128,11 @@ namespace zetscript{
 						}
 						break;
 					default:
-						error="cannot convert '"+zs_rtti::demangle((k_str_float_type_ptr))+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
+						error="cannot convert '";
+						error.append(zs_rtti::demangle((k_str_float_type_ptr)));
+						error.append("' to '");
+						error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+						error.append("'");
 						return false;
 					}
 					break;
@@ -140,7 +148,9 @@ namespace zetscript{
 						ZS_FLOAT_COPY(&val_ret,stack_element->value);
 						break;
 					default:
-						error= "cannot convert 'int' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
+						error= "cannot convert 'int' to '";
+						error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+						error.append("'");
 						return false;
 					}
 					break;
@@ -172,7 +182,11 @@ namespace zetscript{
 								}else if (idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
 									val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());
 								}else{
-									error= "cannot convert '"+zs_rtti::demangle((k_str_string_type_ptr))+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
+									error= "cannot convert '";
+									error.append(zs_rtti::demangle((k_str_string_type_ptr)));
+									error.append("' to '");
+									error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+									error.append("'");
 									return false;
 								}
 							}else if(script_object->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
@@ -180,23 +194,36 @@ namespace zetscript{
 								c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
 
 								if(c_class != NULL){
-									if((val_ret=script_class_factory->doCast((zs_int)script_object_class->getNativeObject(),c_class->idx_class,idx_builtin_type))==0){//c_class->idx_class==idx_builtin_type){
-										error = "cannot convert '"+zs_rtti::demangle(script_object_class->getNativePointerClassName())+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
+									if((val_ret=c_class->isDerivedFrom(
+											idx_builtin_type
+										))==0
+									){//c_class->idx_class==idx_builtin_type){
+										error = "cannot convert '";
+										error.append(zs_rtti::demangle(script_object_class->getNativePointerClassName()));
+										error.append("' to '");
+										error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+										error.append("'");
 										return false;
 									}
 								}else{ // ScriptObjectClass ?
-									error = " Error calling function, no C-object parameter! Unexpected script variable ("+zs_rtti::demangle(script_object->getClassName())+")";
+									error = " Error calling function, no C-object parameter! Unexpected script variable (";
+									error.append(zs_rtti::demangle(script_object->getClassName().c_str()));
+									error.append(")");
 									return false;
 								}
 							}else{ // cannot convert...
-								error = "cannot convert '"+zs_rtti::demangle(script_object->getClassName())+"' to '"+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type))+"'";
+								error = "cannot convert '";
+								error.append(zs_rtti::demangle(script_object->getClassName().c_str()));
+								error.append("' to '");
+								error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+								error.append("'");
 								return false;
 							}
 						}else{ // get native object...
 							val_ret=(zs_int)script_object->getNativeObject();
 						}
 					}else{
-						error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)).c_str());
+						error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
 						return false;
 					}
 					break;
@@ -850,28 +877,28 @@ namespace zetscript{
 		template <  typename F>
 		std::function<F> * ZetScript::bindScriptFunction(ScriptFunction *fun,ScriptObjectClass *calling_obj, const char *file, int line){
 
-			zs_string return_type;
-			zs_vector<zs_string> params;
-			zs_vector<zs_string> arg;
+			const char *return_type;
+			zs_vector params;
 			int idx_return_type=-1;
 			void *ptr=NULL;
 
 
 			// 1. check all parameters ok.
-			using Traits3 = FunctionTraits<F>;//decltype(function_type)>;
-			getParamsFunction<Traits3>(0,return_type, arg, MakeIndexSequence<Traits3::arity>{});
+			using Traits3 = FunctionTraits<F>;
+			getParamsFunction<Traits3>(0,&return_type, params, MakeIndexSequence<Traits3::arity>{});
 
 			// 2. check valid parameters ...
 			if((idx_return_type=script_class_factory->getIdxClassFromItsNativeType(return_type)) == -1){
-				THROW_RUNTIME_ERROR("Return type '%s' for bind function not registered",zs_rtti::demangle(return_type).c_str());
+				THROW_RUNTIME_ERROR("Return type '%s' for bind function not registered",zs_rtti::demangle(return_type));
 				return NULL;
 			}
 
-			for(unsigned int i = 0; i < arg.size(); i++){
-				if(script_class_factory->getIdxClassFromItsNativeType(arg[i])==-1){
+			for(unsigned int i = 0; i < params.count; i++){
+				const char *param=params.items[i];
+				if(script_class_factory->getIdxClassFromItsNativeType(param)==-1){
 					THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"
 							,i+1
-							,zs_rtti::demangle(arg[i]).c_str());
+							,zs_rtti::demangle(param));
 					return NULL;
 				}
 			}
@@ -893,21 +920,21 @@ namespace zetscript{
 		{
 			ScriptFunction * fun_obj=NULL;
 			ScriptObjectClass *calling_obj=NULL;
-			zs_vector<zs_string> access_var = zs_strutils::split(function_access,'.');
+			zs_vector access_var = zs_strutils::split(function_access,'.');
 			ScriptFunction * main_function = script_class_factory->getMainFunction();
 			StackElement *se=NULL;
 			Symbol *symbol_sfm=NULL;
 
 
 			// 1. some variable in main function ...
-			if(access_var.size()>1){
-				for(unsigned i=0; i < access_var.size()-1; i++){
-					zs_string symbol_to_find=access_var[i];
+			if(access_var.count>1){
+				for(unsigned i=0; i < access_var.count-1; i++){
+					zs_string *symbol_to_find=(zs_string *)access_var.items[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
 						zs_vector *list_functions=main_function->symbol.scope->symbol_functions;
 						for(unsigned j = 0; j < list_functions->count && calling_obj==NULL; j++){
 							Symbol * registered_symbol=(Symbol *)list_functions->items[j];
-							if(registered_symbol->name==symbol_to_find
+							if(registered_symbol->name==*symbol_to_find
 							&& registered_symbol->scope == MAIN_SCOPE(this)){
 								StackElement *stk = vm_get_stack_element_at(virtual_machine,j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
@@ -916,46 +943,76 @@ namespace zetscript{
 									}
 								}
 								else{
-									THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': cannot access i (%i)",function_access.c_str(),j);
+									THROW_SCRIPT_ERROR_FILE_LINE(
+											file
+											,line
+											,"Cannot bind script function '%s': cannot access i (%i)"
+											,function_access.c_str()
+											,j
+									);
 								}
 							}
 						}
 
 						if(calling_obj == NULL){
-							THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': Variable name '%s' doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+							THROW_SCRIPT_ERROR_FILE_LINE(
+									file
+									,line
+									,"Cannot bind script function '%s': Variable name '%s' doesn't exist"
+									,function_access.c_str()
+									,symbol_to_find->c_str()
+							);
 						}
 
 					}else{ // we have got the calling_obj from last iteration ...
-						se = calling_obj->getProperty(symbol_to_find);
+						se = calling_obj->getProperty(*symbol_to_find);
 						if(se!=NULL){
 							if(se->properties & STK_PROPERTY_SCRIPT_OBJECT){
 								calling_obj=(ScriptObjectClass *)se->value;
 							}else{
-								THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': Variable name '%s' not script variable",function_access.c_str(),symbol_to_find.c_str());
+								THROW_SCRIPT_ERROR_FILE_LINE(
+										file
+										,line
+										,"Cannot bind script function '%s': Variable name '%s' not script variable"
+										,function_access.c_str()
+										,symbol_to_find->c_str()
+								);
 							}
 						}
 						else{
-							THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': Variable name '%s' doesn't exist",function_access.c_str(),symbol_to_find.c_str());
+							THROW_SCRIPT_ERROR_FILE_LINE(
+								file
+								,line
+								,"Cannot bind script function '%s': Variable name '%s' doesn't exist"
+								,function_access.c_str()
+								,symbol_to_find->c_str()
+							);
 						}
 					}
 				}
 
-				symbol_sfm=calling_obj->getScriptClass()->getSymbolMemberFunction(access_var[access_var.size()-1]);
+				symbol_sfm=calling_obj->getScriptClass()->getSymbolMemberFunction(*((zs_string *)access_var.items[access_var.count-1]));
 				if(symbol_sfm!=NULL){
 					if(symbol_sfm->properties & (SYMBOL_PROPERTY_FUNCTION | SYMBOL_PROPERTY_MEMBER_FUNCTION)){
 						fun_obj=(ScriptFunction *)symbol_sfm->ref_ptr;
 					}
 				}else{
-					THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': Cannot find function '%s'",function_access.c_str(),access_var[access_var.size()-1].c_str());
+					THROW_SCRIPT_ERROR_FILE_LINE(
+							file
+							,line
+							,"Cannot bind script function '%s': Cannot find function '%s'"
+							,function_access
+							,((zs_string *)(access_var.items[access_var.count-1]))->c_str()
+					);
 				}
 
 			}else{ // some function in main function
-				zs_string symbol_to_find=access_var[0];
+				zs_string *symbol_to_find=(zs_string *)access_var.items[0];
 				zs_vector *list_functions=main_function->symbol.scope->symbol_functions;
 				for(unsigned i = 0; i < list_functions->count && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->items[i];
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
-					if(		aux_fun_obj->symbol.name  == symbol_to_find
+					if(		aux_fun_obj->symbol.name  == *symbol_to_find
 					  && aux_fun_obj->symbol.scope == MAIN_SCOPE(this)){
 						fun_obj=aux_fun_obj;
 					}
@@ -964,9 +1021,14 @@ namespace zetscript{
 			}
 
 			if(fun_obj==NULL){
-				THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': Variable name '%s' is not function type",function_access.c_str(),access_var[access_var.size()-1].c_str());
+				THROW_SCRIPT_ERROR_FILE_LINE(
+						file
+						,line
+						,"Cannot bind script function '%s': Variable name '%s' is not function type"
+						,function_access.c_str()
+						,((zs_string *)access_var.items[access_var.count-1])->c_str()
+				);
 			}
-
 			try{
 				return bindScriptFunction<F>(fun_obj,calling_obj,file,line);
 			}catch(std::exception & ex){

@@ -115,7 +115,7 @@ namespace zetscript{
 		return getScriptClass()->class_name;
 	}
 
-	const zs_string & ScriptObjectClass::getNativePointerClassName(){
+	const char * ScriptObjectClass::getNativePointerClassName(){
 		return getScriptClass()->str_class_ptr_type;
 	}
 

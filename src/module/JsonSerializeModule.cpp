@@ -28,13 +28,14 @@ namespace zetscript{
 
 			str_result += "{";
 
-			zs_vector<zs_map_iterator> map_iterators={
+			zs_map_iterator map_iterators[2]={
 					obj->begin_builtin()
 					,obj->begin()
 			};
 
-			for(auto mi=map_iterators.begin();mi!=map_iterators.end();mi++){
+			for(int i=0; i < 2; i++){//zs_map_iterator *it=map_iterators;mi!=map_iterators.end();mi++){
 				int k=0;
+				zs_map_iterator *mi=&map_iterators[i];
 				for(;!mi->end();mi->next()){
 
 					StackElement *stk_se=(StackElement *)mi->getValue();

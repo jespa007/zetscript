@@ -50,10 +50,10 @@ namespace zetscript{
 		 bool starts_with(const zs_string & str, const zs_string & starting);
 		 zs_string replace(const zs_string & str_input, const zs_string & old_word, const zs_string & new_word);
 
-		 zs_vector<zs_string> split(const zs_string &s, char delim);
+		 zs_vector split(const zs_string &s, char delim);
 
-		 zs_vector<zs_string> split(const zs_string &s_in, const zs_string & delim);
-		 bool is_empty(const zs_string & str);
+		 zs_vector split(const zs_string &s_in, const zs_string & delim);
+
 		 NumberType is_number(const zs_string & test_str);
 		 bool 		 is_binary(const zs_string & test_str);
 
@@ -70,7 +70,7 @@ namespace zetscript{
 
 
 		bool contains(const zs_string & input, const zs_string & str_containts,StringComparer sc=StringComparer::Exactly);
-		bool contains(const zs_vector<zs_string> & input, const zs_string & str_containts,StringComparer sc=StringComparer::Exactly);
+		bool contains(const zs_vector & input, const zs_string & str_containts,StringComparer sc=StringComparer::Exactly);
 
 		int index_of(zs_string& text, zs_string& pattern);
 

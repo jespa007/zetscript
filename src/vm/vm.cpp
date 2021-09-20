@@ -167,18 +167,29 @@ namespace zetscript{
 			}
 		}
 
-		data->lifetime_object[script_object]=info;
+		data->lifetime_object.push_back((zs_int)info);
+	}
+
+	int vm_find_lifetime_object(VirtualMachine *vm,ScriptObject *script_object){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		for(unsigned i=0; i < data->lifetime_object.count; i++){
+			InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[i];
+			if(info->script_object==script_object){
+				return i;
+			}
+		}
+
+		return ZS_IDX_UNDEFINED;
 	}
 
 	void vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(data->lifetime_object.count(script_object)==0){
+		int idx = ZS_IDX_UNDEFINED;
+		if((idx=vm_find_lifetime_object(vm,script_object))==ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("Cannot find stack element lifetime");
 		}
-
-		InfoLifetimeObject *info = data->lifetime_object[script_object];
-
-		data->lifetime_object.erase(script_object);
+		InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[idx];
+		data->lifetime_object.erase(idx);
 
 		if(info->script_object->shared_pointer!=NULL){
 			vm_unref_shared_script_object_and_remove_if_zero(vm,&script_object);
@@ -310,7 +321,10 @@ namespace zetscript{
 		if(data->vm_error){
 			// it was error so reset stack and stop execution ? ...
 			vm_do_stack_dump(vm);
-			throw std::runtime_error(data->vm_error_str+data->vm_error_callstack_str);
+			zs_string total_error=data->vm_error_str;
+			total_error.append(data->vm_error_callstack_str);
+
+			throw_exception(total_error.c_str());
 		}else{
 			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+calling_function->local_variables->count);
 
@@ -353,25 +367,27 @@ namespace zetscript{
 
 	void vm_delete(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(data->lifetime_object.size()>0){
+		if(data->lifetime_object.count>0){
 			zs_string created_at="";
 			zs_string end="";
 
 			zs_string error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
-			for(auto it=data->lifetime_object.begin(); it !=data->lifetime_object.end();it++ ){
+			for(unsigned i=0; i < data->lifetime_object.count;i++ ){
+				InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[i];
 				created_at="";
 				end="";
-				if((it->second->file == 0 || *it->second->file==0)){
+
+				if((info->file == 0 || *info->file==0)){
 					end="Tip: Use ZS_EVAL in order to get file:line where the lifetime object was returned";
 				}else{
-					created_at=zs_strutils::format(" at [%s:%i]",zs_path::get_filename(it->second->file).c_str(),it->second->line);
+					created_at=zs_strutils::format(" at [%s:%i]",zs_path::get_filename(info->file).c_str(),info->line);
 				}
 				error+=zs_strutils::format("* Returned lifetime object%s was not unreferenced. %s \n",created_at.c_str(),end.c_str());
+
 			}
 			error+="\n\nLifetime objects returned by virtual machine must be unreferenced by calling 'unrefLifetimeObject' \n\n";
 
 			error+="\n\n";
-			//error+="\nPlease destroy lifetime objects through unrefLifetimeObject() before destroy zetscript to avoid this exception\n";
 
 			fprintf(stderr,"%s",error.c_str());
 

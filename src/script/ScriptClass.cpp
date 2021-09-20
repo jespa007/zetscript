@@ -54,7 +54,7 @@ namespace zetscript{
 	bool ScriptClass::isDerivedFrom(short idx_class){
 		for(unsigned i=0; i < this->idx_base_classes->count; i++){
 			if(this->idx_base_classes->items[i]==idx_class){
-				return false;
+				return true;
 			}
 		}
 
@@ -66,7 +66,7 @@ namespace zetscript{
 	}
 
 
-	short					ScriptClass::getIdxClassFromItsNativeType(const zs_string & s){
+	short					ScriptClass::getIdxClassFromItsNativeType(const char * s){
 		return script_class_factory->getIdxClassFromItsNativeType(s);
 	}
 

@@ -599,7 +599,7 @@ namespace zetscript{
 		 return "class_unknow";
 	}
 
-	int ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const zs_string & str_native_type){
+	int ScriptClassFactory::getIdxScriptInternalFrom_C_Type(const char * str_native_type){
 
 		// 1. we have to handle primitives like void, (zs_int *), (bool *),(zs_float *) and (zs_string *).
 		 // 2. Check for rest registered C classes...
@@ -614,7 +614,7 @@ namespace zetscript{
 		 return ZS_IDX_UNDEFINED;
 	 }
 
-	short 			ScriptClassFactory::getIdxClassFromItsNativeType(const zs_string & str_native_type){
+	short 			ScriptClassFactory::getIdxClassFromItsNativeType(const char * str_native_type){
 		return getIdxScriptInternalFrom_C_Type(str_native_type);
 	}
 

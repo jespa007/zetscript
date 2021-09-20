@@ -177,13 +177,13 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	util/zs_util.cpp
 	
 	# Modules
-	#module/zs_module.cpp
+	module/zs_module.cpp
 	
 	# VM
-	#vm/vm.cpp
+	vm/vm.cpp
 	
 	# Eval		
-	#eval/eval.cpp
+	eval/eval.cpp
 		
 	# Scope
 	#scope/zs_scope.cpp

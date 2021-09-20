@@ -129,6 +129,9 @@ namespace zetscript{
 		return this->map_builtin_property_keys->begin();
 	}
 
+	virtual size_t	ScriptObjectObject::length(){
+		return this->map_builtin_property_keys->count;
+	}
 
 
 	bool ScriptObjectObject::eraseUserProperty(const zs_string & property_name/*, const ScriptFunction *info_function*/){
