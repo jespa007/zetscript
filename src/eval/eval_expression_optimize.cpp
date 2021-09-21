@@ -345,9 +345,9 @@ namespace zetscript{
 			EvalData *eval_data
 			,Scope *scope_info
 			,TokenNode   *token_operation
-			, zs_vector<EvalInstruction *> *instructions
+			, zs_vector *eval_instructions
 	){
-		size_t size_instructions=instructions->size();
+		size_t size_instructions=eval_instructions->count;
 		EvalInstruction *instruction=NULL;
 		bool is_i1_K=false;
 		bool is_i2_K=false;
@@ -359,8 +359,8 @@ namespace zetscript{
 			return NULL;
 		}
 
-		EvalInstruction *i1=instructions->at(size_instructions-2);
-		EvalInstruction *i2=instructions->at(size_instructions-1);
+		EvalInstruction *i1=(EvalInstruction *)eval_instructions->items[size_instructions-2];
+		EvalInstruction *i2=(EvalInstruction *)eval_instructions->items[size_instructions-1];
 
 		is_i1_K=i1->vm_instruction.isConstant();
 		is_i2_K=i2->vm_instruction.isConstant();
@@ -486,10 +486,9 @@ namespace zetscript{
 		}
 
 		// erase last two instructions
-		instructions->resize(instructions->size()-n_eval_ops);
+		eval_instructions->resize(eval_instructions->count-n_eval_ops);
 
 		// and push the new one
-
 		return instruction;
 
 	}

@@ -38,7 +38,7 @@ namespace zetscript{
 				zs_map_iterator *mi=&map_iterators[i];
 				for(;!mi->end();mi->next()){
 
-					StackElement *stk_se=(StackElement *)mi->getValue();
+					StackElement *stk_se=(StackElement *)mi->value;
 					// only check if is not function. If is an attribute an implements get, call
 					if((stk_se->properties & STK_PROPERTY_FUNCTION) == 0){
 						bool created_object=false;
@@ -58,7 +58,7 @@ namespace zetscript{
 							str_result += ",";
 						}
 
-						str_result += "\"" + zs_string(mi->getKey())+ "\":";
+						str_result += "\"" + zs_string(mi->key)+ "\":";
 
 						// if attribute we have to call script or native...
 						if(stk_se->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
@@ -92,7 +92,7 @@ namespace zetscript{
 						}
 
 						if(getter_found == false){
-							ptr_stk_param=(StackElement *)mi->getValue();
+							ptr_stk_param=(StackElement *)mi->value;
 						}
 
 						serialize_stk(zs,this_object, str_result, ptr_stk_param, ident+1,is_formatted);

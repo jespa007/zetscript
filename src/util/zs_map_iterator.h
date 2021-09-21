@@ -14,8 +14,7 @@ namespace zetscript{
 		zs_map_iterator(zs_map *map);
 		void next();
 		bool end();
-		const char *getKey();
-		zs_int getValue();
+
 
 	private:
 		zs_map_node *current_node;

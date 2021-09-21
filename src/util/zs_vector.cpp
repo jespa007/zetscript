@@ -77,6 +77,21 @@ namespace zetscript{
 		return item;
 	}
 
+	void zs_vector::resize(size_t _size){
+		if (_size==0) {
+			THROW_RUNTIME_ERROR("_size 0");
+			return;
+		}
+
+		this->items=(zs_int *)realloc(this->items,_size*sizeof(zs_int));
+
+		if(this->items == NULL){
+			THROW_RUNTIME_ERROR("NULL pointer");
+			return;
+		}
+
+	}
+
 	bool zs_vector::push_back(zs_int e){
 		if(push_back_slot()){
 			this->items[this->count-1] = e; // add element to end list...
@@ -85,11 +100,19 @@ namespace zetscript{
 		return false;
 	}
 
-	void zs_vector::concat(zs_vector *list){
-		if( list!=NULL) {
-			for(unsigned i=0; i <  list->count; i++){
-				push_back(list->items[i]);
+	void zs_vector::concat(zs_vector * list){
+		if( list!=NULL && list->count>0) {
+
+			if(this->_size<=(list->count+count)){
+				_size=list->count+count;
+				zs_int *new_items=(zs_int *)realloc(items,sizeof(size_t)*_size);
+				memcpy(new_items+count,list->items,list->count*sizeof(size_t));
+				this->items=new_items;
+			}else{
+				memcpy(items+count,list->items,list->count*sizeof(size_t));
 			}
+
+			count+=list->count;
 		}
 	}
 

@@ -9,7 +9,7 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info, zs_vector 	* eval_instructions
-			, char *expected_ending_char=NULL // expecting ending char when expression finish (by default not check or 0)
+			, const char *expected_ending_char=NULL // expecting ending char when expression finish (by default not check or 0)
 			, uint16_t properties = 0
 	);
 
@@ -19,7 +19,7 @@ namespace zetscript{
 	char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, TokenNode *token_node){
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 		EvalInstruction *eval_instruction;
-		zs_vector 	* eval_instructions=&token_node->instructions;
+		zs_vector 	* eval_instructions=&token_node->eval_instructions;
 		char *aux_p = (char *)s;
 		unsigned short instruction_properties=0; // global by default ...
 		Symbol *symbol_object=NULL;
@@ -32,12 +32,12 @@ namespace zetscript{
 			}
 		}
 
-		instructions->push_back(eval_instruction=new EvalInstruction(
+		eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(
 				byte_code
 				,ZS_IDX_UNDEFINED
 				,ZS_IDX_UNDEFINED
 				,instruction_properties
-		));
+		)));
 
 		if((aux_p=eval_keyword_function(
 			eval_data
@@ -129,7 +129,7 @@ namespace zetscript{
 		return false;
 	}
 
-	char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector<EvalInstruction *> 		*	instructions){
+	char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector	*	eval_instructions){
 		// Inline object: two possibles uses {a:1,b:2}["a"] or {a:1, b:2}.a
 		char *aux_p = (char *)s;
 		zs_string symbol_value;
@@ -144,7 +144,7 @@ namespace zetscript{
 		}
 
 		// instance object ...
-		instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_OBJECT));
+		eval_instructions->push_back((zs_int)(new EvalInstruction(BYTE_CODE_NEW_OBJECT)));
 
 		// this solve problem void structs...
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -172,7 +172,7 @@ namespace zetscript{
 			// get identifier with quotes...
 			aux_p=eval_object_identifier(eval_data,aux_p,line,symbol_value);
 
-			if(zs_strutils::is_empty(symbol_value)){
+			if(symbol_value.empty()){
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error Object: expected property name");
 			}
 
@@ -183,11 +183,11 @@ namespace zetscript{
 			 }
 
 			// add instruction...
-			instructions->push_back(
+			eval_instructions->push_back((zs_int)(
 					new EvalInstruction(ByteCode::BYTE_CODE_LOAD_STRING
 					,ZS_IDX_UNDEFINED
 					,(zs_int)stk_key_object
-			));
+			)));
 
 			 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -208,13 +208,13 @@ namespace zetscript{
 					 ,aux_p
 					 ,line
 					 ,scope_info
-					 ,instructions
+					 ,eval_instructions
 			))==NULL){
 				 return NULL;
 			 }
 
 			 // push attr (push a element pair)
-			 instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_OBJECT_ELEMENT));
+			 eval_instructions->push_back((zs_int)(new EvalInstruction(BYTE_CODE_PUSH_OBJECT_ELEMENT)));
 
 			 v_elements++;
 		}
@@ -226,7 +226,7 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  zs_vector<EvalInstruction *> *	instructions){
+	char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  zs_vector * eval_instructions){
 		// Inline vector: [0,1,2,3][0]+23
 		char * aux_p=NULL;
 		IGNORE_BLANKS(aux_p,eval_data,s,line);
@@ -236,7 +236,7 @@ namespace zetscript{
 		}
 
 		// declare vector ...
-		instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_VECTOR));
+		eval_instructions->push_back((zs_int)(new EvalInstruction(BYTE_CODE_NEW_VECTOR)));
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 		unsigned v_elements=0;
@@ -261,7 +261,7 @@ namespace zetscript{
 					,aux_p
 					,line
 					,scope_info
-					,instructions
+					,eval_instructions
 			);
 
 			if(aux_p==NULL){
@@ -269,7 +269,7 @@ namespace zetscript{
 			}
 
 			// vpush
-			instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_VECTOR_ELEMENT));
+			eval_instructions->push_back((zs_int)(new EvalInstruction(BYTE_CODE_PUSH_VECTOR_ELEMENT)));
 
 			v_elements++;
 		}
@@ -281,7 +281,7 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector<EvalInstruction *> 		*	instructions){
+	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector	*	eval_instructions){
 		// Inline new : (new A(4+5)).toString()
 		char *aux_p = (char *)s;
 		zs_string class_name;
@@ -317,16 +317,16 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
 				}
 
-				instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE));
+				eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE)));
 
 				eval_instruction->vm_instruction.value_op1=sc->idx_class;
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				 instructions->push_back(
+				 eval_instructions->push_back((zs_int)(
 				    ei_load_function_constructor=new EvalInstruction(
 						 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR
 					)
-				 );
+				 ));
 
 
 				 ei_load_function_constructor->instruction_source_info=InstructionSourceInfo(
@@ -352,7 +352,7 @@ namespace zetscript{
 								  ,aux_p
 								  ,line
 								  ,scope_info
-								  ,instructions
+								  ,eval_instructions
 								  ,",)"
 						  );
 
@@ -367,11 +367,12 @@ namespace zetscript{
 				 }while(*aux_p != ')');
 
 				 // if constructor function found insert call function...
-				 instructions->push_back(
-						 eval_instruction=new EvalInstruction(
-						  BYTE_CODE_CALL_CONSTRUCTOR
-						 ,n_args
-					)
+				 eval_instructions->push_back((zs_int)(
+							 eval_instruction=new EvalInstruction(
+							  BYTE_CODE_CALL_CONSTRUCTOR
+							 ,n_args
+						 )
+				 	 )
 				 );
 
 

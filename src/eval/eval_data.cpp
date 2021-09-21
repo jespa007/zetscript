@@ -912,7 +912,7 @@ namespace zetscript{
 		if(g_init_eval){
 
 			for(auto it=compiled_symbol_name->begin();!it.end(); it.next()){
-				delete (zs_string *)it.getValue();
+				delete (zs_string *)it.value;
 			}
 
 			delete compiled_symbol_name;

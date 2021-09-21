@@ -64,6 +64,9 @@ namespace zetscript {
 		throw zs_exception_error("",ZS_IDX_UNDEFINED,out_txt);
 	}
 
+	void throw_exception(const zs_string & in_txt){
+		throw zs_exception_error("",ZS_IDX_UNDEFINED,in_txt);
+	}
 
 
 };

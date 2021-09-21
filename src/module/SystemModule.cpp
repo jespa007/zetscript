@@ -57,8 +57,8 @@ namespace zetscript{
 			int i=0;
 
 			for(auto it=oo_param->begin(); !it.end(); it.next()){
-				StackElement *stk=((StackElement *)it.getValue());
-				function_params[i]=ScriptFunctionParam(it.getKey());
+				StackElement *stk=((StackElement *)it.value);
+				function_params[i]=ScriptFunctionParam(it.key);
 				stk_params.push_back((zs_int)stk);
 
 				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
