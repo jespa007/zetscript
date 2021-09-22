@@ -189,32 +189,6 @@ namespace zetscript{
 	}
 
 
-	/**
-	 * Register C Class. Return index registered class
-	 */
-	/*template<typename C>
-	void ScriptClassFactory::registerNativeClassBuiltin(
-			const zs_string & class_name
-			, C * (*_constructor)()
-			, void (*_destructor)(C *)
-			, const char *registered_file
-			,short registered_line
-	){//, const zs_string & base_class_name=""){
-
-		ScriptClass *irc =registerNativeSingletonClass<C>(class_name);
-
-		if(irc->idx_class >= IDX_BUILTIN_TYPE_MAX){
-			THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",irc->str_class_ptr_type.c_str());
-		}
-
-
-		irc->c_constructor = (void *)_constructor;
-		irc->c_destructor = (void *)_destructor;
-		irc->static_constructor_destructor = true;
-		//put the constructor/destructor...
-	}*/
-
-
 
 	template<class C,class B>
 	void ScriptClassFactory::nativeClassInheritsFrom(){
@@ -307,16 +281,16 @@ namespace zetscript{
 
 					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
 					// build params...
-					ScriptFunctionParam *params=(ScriptFunctionParam *)malloc(script_function->params_count*sizeof(ScriptFunctionParam));
-					size_t param_info_len=script_function->params_count;
 
-					memcpy(params,script_function->params,script_function->params_count*sizeof(ScriptFunctionParam));
+
+					ScriptFunctionParam *params=ScriptFunctionParam::cloneFromScriptFunction(script_function);
+					size_t params_len=script_function->params_count;
 
 
 					this_class->registerNativeMemberFunction(
 						script_function->symbol.name,
 						params,
-						script_function->params_count,
+						params_len,
 						script_function->idx_return_type,
 						script_function->ref_native_function_ptr, // it contains script function pointer
 						script_function->symbol.properties, //derivated_symbol_info_properties
@@ -364,14 +338,17 @@ namespace zetscript{
 
 						if(it->src!=0){ // we have src method
 
-							ScriptFunctionParam*param_info=malloc(it->src->params_count*sizeof(ScriptFunctionParam));
-							size_t param_info_len=it->src->params_count;
-							memcpy(param_info,it->src->params,it->src->params_count*sizeof(ScriptFunctionParam));
+							//ScriptFunctionParam*param_info=malloc(it->src->params_count*sizeof(ScriptFunctionParam));
+							//size_t param_info_len=it->src->params_count;
+							//memcpy(param_info,it->src->params,it->src->params_count*sizeof(ScriptFunctionParam));
+							ScriptFunctionParam *params=ScriptFunctionParam::cloneFromScriptFunction(it->src);
+							size_t params_len=it->src->params_count;
 
 
 							symbol_function=this_class->registerNativeMemberFunction(
 									it->src->symbol.name,
-									param_info,
+									params,
+									params_len,
 									it->src->idx_return_type,
 									it->src->ref_native_function_ptr,
 									it->src->symbol.properties,
@@ -391,15 +368,16 @@ namespace zetscript{
 
 						StackElement *stk_setter=(StackElement *)sf_setters->items[i];
 						ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
-						ScriptFunctionParam *param_info=(ScriptFunctionParam *)malloc(sf_setter->params_count*sizeof(ScriptFunctionParam));
-						size_t param_info_len=sf_setter->params_count;
-
-						memcpy(param_info,sf_setter->params,sf_setter->params_count*sizeof(ScriptFunctionParam));
+						//ScriptFunctionParam *param_info=(ScriptFunctionParam *)malloc(sf_setter->params_count*sizeof(ScriptFunctionParam));
+						//size_t param_info_len=sf_setter->params_count;
+						//memcpy(param_info,sf_setter->params,sf_setter->params_count*sizeof(ScriptFunctionParam));
+						ScriptFunctionParam *params=ScriptFunctionParam::cloneFromScriptFunction(sf_setter);
+						size_t params_len=it->src->params_count;
 
 						symbol_function=this_class->registerNativeMemberFunction(
 								sf_setter->symbol.name,
-								param_info,
-								param_info_len,
+								params,
+								params_len,
 								sf_setter->idx_return_type,
 								sf_setter->ref_native_function_ptr,
 								sf_setter->symbol.properties,

@@ -4,6 +4,8 @@
 
 namespace zetscript{
 
+	size_t zs_vector::npos=-1;
+
 	bool	zs_vector::push_back_slot(){
 		if (this->_size == 0) {
 			this->_size = ZS_VECTOR_N_SLOT_ELEMENTS;
@@ -101,19 +103,55 @@ namespace zetscript{
 	}
 
 	void zs_vector::concat(zs_vector * list){
-		if( list!=NULL && list->count>0) {
+		insert(count,list, list->count);
+	}
 
-			if(this->_size<=(list->count+count)){
-				_size=list->count+count;
-				zs_int *new_items=(zs_int *)realloc(items,sizeof(size_t)*_size);
-				memcpy(new_items+count,list->items,list->count*sizeof(size_t));
-				this->items=new_items;
-			}else{
-				memcpy(items+count,list->items,list->count*sizeof(size_t));
-			}
+	void 		zs_vector::insert(uint16_t  idx,zs_vector  * list, size_t n_list_elements_to_copy){
 
-			count+=list->count;
+
+		if(list==NULL) THROW_RUNTIME_ERROR("list == NULL");
+		if(list->count==0) THROW_RUNTIME_ERROR("list has no elements to insert");
+
+		if(n_list_elements_to_copy == npos){
+			n_list_elements_to_copy=list->count;
 		}
+
+
+		if(list->count < n_list_elements_to_copy) THROW_RUNTIME_ERROR("there's more elements than the list to insert: list->count (%i) < n_list_elements_to_copy (%i)",list->count,n_list_elements_to_copy);
+		if(idx > count) THROW_RUNTIME_ERROR("idx position to insert out of bounds: idx (%i) >= count(%i)",idx,count);
+
+
+		// needs to resize
+		if(this->_size<=(n_list_elements_to_copy+count)){
+			_size=n_list_elements_to_copy+count;
+		}
+
+		zs_int *new_items=(zs_int *)malloc(sizeof(zs_int)*_size);
+
+		// 1st part
+		if(idx > 0){
+			memcpy(new_items,items,idx*sizeof(zs_int));
+		}
+
+		// middle
+		memcpy(new_items+idx,list->items,n_list_elements_to_copy*sizeof(zs_int));
+
+
+		// last
+		memcpy(new_items+n_list_elements_to_copy+idx,items+idx,(count-idx)*sizeof(zs_int));
+
+		// free old
+		free(items);
+
+		// update new
+		items=new_items;
+
+
+
+
+		this->items=new_items;
+
+		count+=list->count;
 	}
 
 	void 		zs_vector::insert(uint16_t  idx, zs_int e){

@@ -8,7 +8,8 @@ namespace zetscript{
 			EvalData *eval_data
 			,const char *s
 			, int & line
-			, Scope *scope_info, zs_vector 	* eval_instructions
+			, Scope *scope_info
+			, zs_vector 	* eval_instructions
 			, const char *expected_ending_char=NULL // expecting ending char when expression finish (by default not check or 0)
 			, uint16_t properties = 0
 	);

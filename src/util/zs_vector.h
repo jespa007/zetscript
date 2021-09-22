@@ -6,6 +6,8 @@ namespace zetscript{
 
 	class zs_vector{
 	public:
+
+		static size_t npos;
 		//public
 		zs_int* items;
 		uint16_t count; //number of items
@@ -21,6 +23,7 @@ namespace zetscript{
 		 */
 		bool 		push_back( zs_int e);
 		void 		concat(zs_vector  * list);
+		void 		insert(uint16_t  idx,zs_vector  * list, size_t n_list_elements_to_copy=npos);
 		/**
 		 * Insert item at position idx.
 		 */

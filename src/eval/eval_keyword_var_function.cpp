@@ -11,7 +11,7 @@ namespace zetscript{
 	}
 
 
-	void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, zs_vector<EvalInstruction *> *instructions, Symbol *symbol_member_var){
+	void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, zs_vector *eval_instructions, Symbol *symbol_member_var){
 
 		// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
 		PtrInstruction new_instructions=NULL;
@@ -19,7 +19,7 @@ namespace zetscript{
 		size_t new_instructions_len=0;
 		size_t new_instructions_total_bytes=0;
 		Instruction * start_ptr=NULL;
-		int n_elements_to_add=instructions->size();
+		int n_elements_to_add=eval_instructions->count;
 
 		n_elements_to_add=n_elements_to_add+3; // +3 for load/store/reset stack
 
@@ -42,34 +42,34 @@ namespace zetscript{
 
 
 		// 3. copy eval instructions
-		for(unsigned i=0; i < instructions->size(); i++){
-			EvalInstruction *instruction = instructions->at(i);
+		for(unsigned i=0; i < eval_instructions->count; i++){
+			EvalInstruction *eval_instruction = (EvalInstruction *)eval_instructions->items[i];
 			// save instruction ...
-			*start_ptr=instruction->vm_instruction;
+			*start_ptr=eval_instruction->vm_instruction;
 
 			//------------------------------------
 			// symbol value to save at runtime ...
-			InstructionSourceInfo instruction_info=instruction->instruction_source_info;
+			InstructionSourceInfo instruction_info=eval_instruction->instruction_source_info;
 
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
-			instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
+			instruction_info.ptr_str_symbol_name=eval_instruction->instruction_source_info.ptr_str_symbol_name;
 
-			sf->instruction_source_info[i]=instruction_info;
+			sf->instruction_source_info.items[i]=(zs_int)(new InstructionSourceInfo(instruction_info));
 
 			start_ptr++;
 
-			delete instruction; // do not need eval instruction any more
+			delete eval_instruction; // do not need eval instruction any more
 
 		}
 
 		// 4. add load/store/reset stack
 		idx_position=start_ptr-new_instructions;
 		*start_ptr++=Instruction(BYTE_CODE_PUSH_STK_MEMBER_VAR,ZS_IDX_UNDEFINED,symbol_member_var->idx_position);
-		sf->instruction_source_info[idx_position]=InstructionSourceInfo(
+		sf->instruction_source_info.items[idx_position]=(zs_int)(new InstructionSourceInfo(
 			eval_data->current_parsing_file
 			,symbol_member_var->line
 			,get_mapped_name(eval_data,symbol_member_var->name)
-		);
+		));
 
 
 		*start_ptr++=Instruction(BYTE_CODE_STORE);
@@ -82,7 +82,7 @@ namespace zetscript{
 		sf->instructions=new_instructions;
 		sf->instructions_len=new_instructions_len;
 
-		instructions->clear();
+		eval_instructions->clear();
 	}
 
 	ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector *eval_instructions){
@@ -121,7 +121,9 @@ namespace zetscript{
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 			instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
 
-			sf->instruction_source_info->push_back(new InstructionSourceInfo(instruction_info));
+			sf->instruction_source_info.push_back((zs_int)(
+				new InstructionSourceInfo(instruction_info))
+			);
 
 			start_ptr++;
 
@@ -298,7 +300,7 @@ namespace zetscript{
 						,is_var_member_or_const?aux_p+1:start_var
 						,aux_line
 						,scope_var
-						,is_var_member?&ei_member_var_init:&eval_data->current_function->instructions
+						,is_var_member?&ei_member_var_init:&eval_data->current_function->eval_instructions
 						,{}
 					))==NULL){
 						goto error_eval_keyword_var;
@@ -313,8 +315,10 @@ namespace zetscript{
 					else{
 						if(is_constant){ // make ptr as constant after variable is saved
 							EvalInstruction *eval_instruction;
-							eval_data->current_function->eval_instructions.push_back(eval_instruction=new EvalInstruction(
-								BYTE_CODE_PUSH_STK_GLOBAL
+							eval_data->current_function->eval_instructions.push_back((zs_int)(
+									eval_instruction=new EvalInstruction(
+											BYTE_CODE_PUSH_STK_GLOBAL
+									)
 							));
 
 							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
@@ -322,14 +326,18 @@ namespace zetscript{
 							eval_instruction->symbol.name=pre_variable_name+variable_name;
 							eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
 
-							eval_data->current_function->eval_instructions.push_back(new EvalInstruction(
-								BYTE_CODE_STORE_CONST
+							eval_data->current_function->eval_instructions.push_back((zs_int)(
+									new EvalInstruction(
+											BYTE_CODE_STORE_CONST
+									)
 							));
 						}
 
 						// finally we insert reset stack
-						eval_data->current_function->eval_instructions.push_back(new EvalInstruction(
-							BYTE_CODE_RESET_STACK
+						eval_data->current_function->eval_instructions.push_back((zs_int)(
+								new EvalInstruction(
+										BYTE_CODE_RESET_STACK
+								)
 						));
 					}
 
@@ -440,7 +448,7 @@ error_eval_keyword_var:
 			//size_t advance_chars=0;
 
 
-			zs_vector<ScriptFunctionParam> args;
+			zs_vector script_function_params;
 			zs_string conditional_str;
 			Symbol *symbol_sf=NULL;
 
@@ -518,7 +526,7 @@ error_eval_keyword_var:
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				Keyword kw_arg=Keyword::KEYWORD_UNKNOWN;
 
-				if(args.size()>0){
+				if(script_function_params.count>0){
 					if(*aux_p != ','){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected function argument separator ','");
 					}
@@ -566,7 +574,7 @@ error_eval_keyword_var:
 				// copy value
 				zs_strutils::copy_from_ptr_diff(param_value,aux_p,end_var);
 				// ok register symbol into the object function ...
-				param_info.param_name=param_value;
+				param_info.name=zs_string(param_value);
 
 
 				aux_p=end_var;
@@ -582,7 +590,7 @@ error_eval_keyword_var:
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Arguments by reference cannot set a default argument");
 					}
 
-					zs_vector<EvalInstruction *> instructions_default;
+					zs_vector ei_instructions_default;
 					bool create_anonymous_function_return_expression=false;
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -592,21 +600,21 @@ error_eval_keyword_var:
 							,aux_p
 							,line
 							,MAIN_SCOPE(eval_data)
-							,&instructions_default
+							,&ei_instructions_default
 					);
 
 					if(aux_p==NULL){
 						return NULL;
 					}
 
-					if(instructions_default.size() == 0){ // expected expression
+					if(ei_instructions_default.count == 0){ // expected expression
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error:  expected expression after '='");
 					}
 
 					// copy evaluated instruction
 					// convert instruction to stk_element
-					if(instructions_default.size() == 1){
-						Instruction *instruction=&instructions_default[0]->vm_instruction;
+					if(ei_instructions_default.count == 1){
+						Instruction *instruction=&((EvalInstruction *)ei_instructions_default.items[0])->vm_instruction;
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
 						case BYTE_CODE_LOAD_NULL:
@@ -630,18 +638,20 @@ error_eval_keyword_var:
 					}
 
 					if(create_anonymous_function_return_expression==true){
-						ScriptFunction *sf=eval_new_inline_anonymous_function(eval_data,&instructions_default);
+						ScriptFunction *sf=eval_new_inline_anonymous_function(eval_data,&ei_instructions_default);
 						param_info.default_param_value={(zs_int)sf,STK_PROPERTY_FUNCTION};
 					}
 
 					// finally delete all evaluated code
-					for(unsigned i=0; i < instructions_default.size(); i++){
-						delete instructions_default[i];
+					for(unsigned i=0; i < ei_instructions_default.count; i++){
+						delete (EvalInstruction *)ei_instructions_default.items[i];
 					}
 
 				}
 
-				args.push_back(param_info);
+				script_function_params.push_back((zs_int)(
+						new ScriptFunctionParam(param_info)
+				));
 			}
 
 			aux_p++;
@@ -660,12 +670,25 @@ error_eval_keyword_var:
 				}
 			}
 
+			ScriptFunctionParam *params=ScriptFunctionParam::convertFromVector(script_function_params);
+			size_t params_len=script_function_params.count;
+
+			// remove collected script function params
+			for(unsigned i=0; i < script_function_params.count; i++){
+				delete (ScriptFunctionParam *)script_function_params.items[i];
+			}
+
 			//--- OP
 			if(sc!=NULL){ // register as variable member...
+
+
+
 				try{
+
 					symbol_sf=sc->registerMemberFunction(
 							function_name
-							,args
+							,params
+							,params_len
 							,is_static?SYMBOL_PROPERTY_STATIC:0
 							,eval_data->current_parsing_file
 							,line
@@ -682,7 +705,8 @@ error_eval_keyword_var:
 					, eval_data->current_parsing_file
 					, line
 					, function_name
-					, args
+					, params
+					, params_len
 				);
 
 				if(scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
@@ -705,7 +729,9 @@ error_eval_keyword_var:
 					,line
 					,scope_info
 					,sf
-					,&args)
+					,params
+					,params_len
+				)
 			)==NULL){
 				// deallocate current function
 				eval_pop_current_function(eval_data);
@@ -740,12 +766,14 @@ error_eval_keyword_var:
 					,aux_p
 					, line
 					, scope_info
-					,&eval_data->current_function->instructions
+					,&eval_data->current_function->eval_instructions
 					,{}
 					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION
 			))!= NULL){
 
-				eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RET));
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+					new EvalInstruction(BYTE_CODE_RET)
+				));
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				return aux_p;

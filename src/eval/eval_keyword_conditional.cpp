@@ -136,16 +136,17 @@ namespace zetscript{
 	void eval_switch_deallocate(zs_vector & ei_switch_condition,zs_vector & _eic_cases,EvalInstruction **_ei_jmp_default){
 
 		// deallocate condition
-		for(unsigned i=0; i < ei_switch_condition.size(); i++){
-			delete ei_switch_condition[i];
+		for(unsigned i=0; i < ei_switch_condition.count; i++){
+			delete (EvalInstruction *)ei_switch_condition.items[i];
 		}
 		ei_switch_condition.clear();
 
 		// deallocate all cases
-		for(unsigned i=0; i < _ei_cases.size(); i++){
+		for(unsigned i=0; i < _eic_cases.count; i++){
 			delete ((EvalInstructionCase *)_eic_cases.items[i])->ei_je_instruction;
-			for(unsigned j=0; j < ((EvalInstructionCase *)_eic_cases.items[i])->ei_load_symbols.count; j++){
-				delete ((EvalInstructionCase *)_eic_cases[i])->ei_load_symbols.items[j];
+			EvalInstructionCase * eic_current=((EvalInstructionCase *)_eic_cases.items[i]);
+			for(unsigned j=0; j < eic_current->ei_load_symbols.count; j++){
+				delete (EvalInstruction *)(eic_current->ei_load_symbols.items[j]);
 			}
 		}
 		_eic_cases.clear();
@@ -164,10 +165,10 @@ namespace zetscript{
 		Scope *scope_case=NULL;
 		zs_string val;
 		Keyword key_w;//,key_w2;
-		zs_vector<EvalInstruction *> 		ei_switch_condition; // switch condition
-		zs_vector<EvalInstructionCase> 		ei_cases; // stores all conditional instructions at begin
-		zs_vector<EvalInstruction *>  		ei_break_jmps; // breaks or if condition not satisfies nothing (there's no default)
-		EvalInstruction *jmp_default = NULL;
+		zs_vector 		ei_switch_condition; // switch condition
+		zs_vector 		eic_cases; // stores all conditional instructions at begin
+		zs_vector  		ei_break_jmps; // breaks or if condition not satisfies nothing (there's no default)
+		EvalInstruction *ei_jmp_default = NULL;
 
 		// check for keyword ...
 		key_w = eval_is_keyword(aux_p);
@@ -202,7 +203,7 @@ namespace zetscript{
 			}
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-			jmp_default=NULL;
+			ei_jmp_default=NULL;
 
 			//int n_default=0;
 
@@ -225,7 +226,7 @@ namespace zetscript{
 							,line
 							,scope_info
 							,&eval_instruction_case->ei_load_symbols
-							,{':'}
+							,":"
 							,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
 					))==NULL){
 						// delete unusued vars_for
@@ -243,20 +244,20 @@ namespace zetscript{
 					eval_instruction_case->ei_je_instruction->instruction_source_info.file=eval_data->current_parsing_file;
 
 
-					ei_cases.push_back((zs_int)eval_instruction_case);
+					eic_cases.push_back((zs_int)eval_instruction_case);
 
 					// update size cases
 					size_ei_cases+=(eval_instruction_case->ei_load_symbols.count+1); // +1 is for je (i.e je_instruction)
 
 				}else if(key_w == KEYWORD_DEFAULT){
-					if(jmp_default!=NULL){
+					if(ei_jmp_default!=NULL){
 						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: there's an already 'default' case");
 					}
 
-					jmp_default=new EvalInstruction(
+					ei_jmp_default=new EvalInstruction(
 							BYTE_CODE_JMP
 							,ZS_IDX_UNDEFINED
-							,((int)(eval_data->current_function->instructions.count))-idx_start_instruction+1	 // offset
+							,((int)(eval_data->current_function->eval_instructions.count))-idx_start_instruction+1	 // offset
 					);
 
 					is_default=true;
@@ -310,7 +311,7 @@ namespace zetscript{
 								,0
 						);
 						eval_data->current_function->eval_instructions.push_back((zs_int)ei_break_jmp);
-						ei_break_jmps.eval_push_back((zs_int)ei_break_jmp);
+						ei_break_jmps.push_back((zs_int)ei_break_jmp);
 					}
 
 
@@ -329,7 +330,7 @@ namespace zetscript{
 			// end instruction
 			int offset_end_instruction=((int)(eval_data->current_function->eval_instructions.count))-idx_start_instruction;
 
-			if(offset_end_instruction > 0 && ei_cases.size()> 0){ // there's conditions to manage
+			if(offset_end_instruction > 0 && eic_cases.count > 0){ // there's conditions to manage
 
 				//EvalInstruction *jmp_after_je_cases;
 
@@ -339,8 +340,8 @@ namespace zetscript{
 				int size_ei_cases_and_switch_expression = size_ei_cases+size_ei_switch_condition+1; // +1 for jmp default if there's no default
 				int total_instructions_switch=offset_end_instruction+size_ei_cases_and_switch_expression; // total instructions switch
 
-				if(jmp_default == NULL){ // no default found so, we insert a default jmp to the end
-					jmp_default=new EvalInstruction(
+				if(ei_jmp_default == NULL){ // no default found so, we insert a default jmp to the end
+					ei_jmp_default=new EvalInstruction(
 					BYTE_CODE_JMP
 					,ZS_IDX_UNDEFINED
 					,total_instructions_switch-size_ei_cases-size_ei_switch_condition
@@ -349,27 +350,26 @@ namespace zetscript{
 
 				// 1. Insert eval instructions for switch condition
 				eval_data->current_function->eval_instructions.insert(
-						eval_data->current_function->instructions.begin()+idx_start_instruction,
-						ei_switch_condition.begin(),
-						ei_switch_condition.end()
+						idx_start_instruction
+						,&ei_switch_condition
 				);
 
 				// 2. insert all cases found first from start + offset size instruction cases found
-				for(unsigned i=0; i < ei_cases.size(); i++){
-					Instruction *ins=&ei_cases[i].je_instruction->vm_instruction; // load je
+				for(unsigned i=0; i < eic_cases.count; i++){
+					EvalInstructionCase *eic_case=(EvalInstructionCase *) eic_cases.items[i];
+					Instruction *ins=&eic_case->ei_je_instruction->vm_instruction; // load je
 
-					eval_data->current_function->instructions.insert(
-							eval_data->current_function->instructions.begin()+idx_start_instruction+size_ei_switch_condition+offset_ei_case,
-							ei_cases[i].load_symbol_instructions.begin(),
-							ei_cases[i].load_symbol_instructions.end()
+					eval_data->current_function->eval_instructions.insert(
+							idx_start_instruction+size_ei_switch_condition+offset_ei_case,
+							&eic_case->ei_load_symbols
 					);
 
-					offset_ei_case+=(ei_cases[i].load_symbol_instructions.size()); // load instruction token
+					offset_ei_case+=(eic_case->ei_load_symbols.count); // load instruction token
 
 					// insert je...
-					eval_data->current_function->instructions.insert(
-							eval_data->current_function->instructions.begin()+idx_start_instruction+size_ei_switch_condition+offset_ei_case,
-							ei_cases[i].je_instruction
+					eval_data->current_function->eval_instructions.insert(
+							idx_start_instruction+size_ei_switch_condition+offset_ei_case,
+							(zs_int)eic_case->ei_je_instruction
 					);
 
 					offset_ei_case++; // je + 1
@@ -378,14 +378,14 @@ namespace zetscript{
 				}
 
 				// 3. insert last jmp to default or end switch
-				eval_data->current_function->instructions.insert(
-						eval_data->current_function->instructions.begin()+idx_start_instruction+size_ei_switch_condition+size_ei_cases,
-						jmp_default
+				eval_data->current_function->eval_instructions.insert(
+						idx_start_instruction+size_ei_switch_condition+size_ei_cases,
+						(zs_int)ei_jmp_default
 				);
 
-				offset_end_instruction=eval_data->current_function->instructions.size();
-				for(unsigned i=idx_start_instruction; i < eval_data->current_function->instructions.size();i++){
-					Instruction *ins=&eval_data->current_function->instructions[i]->vm_instruction;
+				offset_end_instruction=eval_data->current_function->eval_instructions.count;
+				for(unsigned i=idx_start_instruction; i < eval_data->current_function->eval_instructions.count;i++){
+					Instruction *ins=&((EvalInstruction *)eval_data->current_function->eval_instructions.items[i])->vm_instruction;
 					if(ins->value_op1==ZS_IDX_INSTRUCTION_JMP_BREAK){
 						ins->value_op1=ZS_IDX_UNDEFINED;
 						ins->value_op2=offset_end_instruction-i;
@@ -394,7 +394,7 @@ namespace zetscript{
 
 			}else{
 
-				eval_switch_deallocate(ei_switch_condition,ei_cases,&jmp_default);
+				eval_switch_deallocate(ei_switch_condition,eic_cases,&ei_jmp_default);
 
 			}
 
@@ -405,7 +405,7 @@ namespace zetscript{
 
 eval_keyword_switch_error:
 
-		eval_switch_deallocate(ei_switch_condition,ei_cases,&jmp_default);
+		eval_switch_deallocate(ei_switch_condition,eic_cases,&ei_jmp_default);
 
 		return NULL;
 	}
