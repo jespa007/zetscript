@@ -658,6 +658,8 @@ error_expression_token_symbol:
 			token_node_symbol->eval_instructions.items[kk]=0;
 		}
 
+		delete token_node_symbol;
+
 		return NULL;
 	}
 }

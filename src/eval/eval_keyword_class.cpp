@@ -221,8 +221,6 @@ namespace zetscript{
 
 		if(key_w == Keyword::KEYWORD_DELETE){
 			Operator tst_op_aux;
-			zs_vector<EvalInstruction *> ei_load_delete_identifier;
-			zs_vector<EvalInstruction> ei_load_delete_identifier_st;
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
@@ -240,7 +238,7 @@ namespace zetscript{
 					,aux_p
 					,line
 					,scope_info
-					,&eval_data->current_function->instructions
+					,&eval_data->current_function->eval_instructions
 					,{}
 					,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
 			))==NULL){
@@ -253,7 +251,7 @@ namespace zetscript{
 			}
 
 			// get last instruction...
-			eval_instruction = eval_data->current_function->instructions[eval_data->current_function->instructions.size()-1];
+			eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.count-1];
 			ByteCode  byte_code=eval_instruction->vm_instruction.byte_code;
 			if(byte_code==BYTE_CODE_FIND_VARIABLE){
 				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
@@ -261,8 +259,8 @@ namespace zetscript{
 				eval_instruction->vm_instruction.byte_code=byte_code_load_to_push_stk(byte_code);
 			}
 
-			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
-			eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_RESET_STACK));
+			eval_data->current_function->eval_instructions.push_back((zs_int)(new EvalInstruction(BYTE_CODE_DELETE)));
+			eval_data->current_function->eval_instructions.push_back((zs_int)(new EvalInstruction(BYTE_CODE_RESET_STACK)));
 
 			return aux_p;
 		}
