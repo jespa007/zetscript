@@ -28,7 +28,7 @@ namespace zetscript{
 		// local symbols for class or function...
 		local_variables=new zs_vector();
 		params = NULL;//new zs_vector();
-		params_count = 0;
+		params_len = 0;
 
 		updateParams(_params,_params_len);
 
@@ -47,7 +47,7 @@ namespace zetscript{
 	InstructionSourceInfo * ScriptFunction::getInstructionInfo(Instruction *instruction){
 		short idx= (instruction-this->instructions);///sizeof(Instruction *);
 		//if(instruction_source_info.items[idx]==1){
-		return instruction_source_info->items[idx];
+		return (InstructionSourceInfo *)instruction_source_info.items[idx];
 	}
 
 #define GET_ILOAD_ACCESS_TYPE_STR(properties) \
@@ -465,8 +465,8 @@ namespace zetscript{
 				// override script function
 				ScriptFunction *sf = (ScriptFunction *)symbol_found->ref_ptr;
 				sf->clear();
-				sf->updateParams(_params);
-				symbol_found->n_params=(char)_params.size();
+				sf->updateParams(_params,_params_len);
+				symbol_found->n_params=(char)_params_len;
 				return symbol_found;
 			}
 
@@ -518,7 +518,7 @@ namespace zetscript{
 	void ScriptFunction::clearParams(){
 
 		delete [] params;
-		params_count=0;
+		params_len=0;
 		params=NULL;
 
 	}
@@ -532,7 +532,7 @@ namespace zetscript{
 		clearParams();
 
 		params=_params;
-		params_count = _params_len;
+		params_len = _params_len;
 	}
 
 	void ScriptFunction::clear(){
@@ -555,7 +555,7 @@ namespace zetscript{
 		clear();
 
 		for(unsigned i=0; i < instruction_source_info.count; i++){
-			delete (InstructionSourceInfo *)instruction_source_info.items[i]
+			delete (InstructionSourceInfo *)instruction_source_info.items[i];
 		}
 
 		delete local_variables;

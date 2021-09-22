@@ -455,7 +455,7 @@ namespace zetscript{
 								aux_string == symbol_to_find
 								|| (is_set_attrib_metamethod && zs_strutils::starts_with(aux_string,"_set@"));
 
-			if((symbol_equals && ((int)irfs->params_count == (n_args+this_as_first_parameter)))){
+			if((symbol_equals && ((int)irfs->params_len == (n_args+this_as_first_parameter)))){
 				if((irfs->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;
@@ -625,7 +625,7 @@ namespace zetscript{
 					str_candidates.append("(");
 
 
-					for(unsigned a = 0; a < irfs->params_count; a++){
+					for(unsigned a = 0; a < irfs->params_len; a++){
 						if(a>0){
 							str_candidates.append(",");
 						}

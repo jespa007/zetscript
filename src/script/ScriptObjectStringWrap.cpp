@@ -7,7 +7,7 @@
 namespace zetscript{
 
 	zs_int ScriptObjectStringWrap_size(ScriptObjectString *so){
-		return ((zs_string *)so->value)->size();
+		return ((zs_string *)so->value)->length();
 	}
 
 	bool ScriptObjectStringWrap_contains(ScriptObjectString *so, zs_string *str){
@@ -34,12 +34,12 @@ namespace zetscript{
 
 	void ScriptObjectStringWrap_eraseAt(ScriptObjectString *so, zs_int idx){
 		zs_string *str=((zs_string *)so->value);
-		str->erase(str->begin()+idx);
+		str->erase(idx);
 	}
 
 	void ScriptObjectStringWrap_insertAt(ScriptObjectString *so, zs_int idx,zs_int ch){
 		zs_string *str=((zs_string *)so->value);
-		str->insert(str->begin()+idx,ch);
+		str->insert(idx,ch);
 	}
 
 	ScriptObjectVector * ScriptObjectStringWrap_split(ScriptObjectString *so,zs_int ch_delim){
@@ -48,10 +48,11 @@ namespace zetscript{
 
 		auto v=zs_strutils::split(so->toString(),ch_delim);
 
-		for(auto it=v.begin(); it!=v.end(); it++){
+		for(unsigned i=0; i<v.count; i++){
+
 			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so_partial=ZS_NEW_OBJECT_STRING(so->getZetScript());
-			so_partial->set(*it);
+			so_partial->set(*(zs_string *)v.items[i]);
 
 			// create and share pointer
 			if(!vm_create_shared_pointer(vm,so_partial)){
@@ -74,10 +75,10 @@ namespace zetscript{
 
 		auto v=zs_strutils::split(so->toString(),*str_token);
 
-		for(auto it=v.begin(); it!=v.end(); it++){
+		for(unsigned i=0; i<v.count; i++){
 			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so_partial=ZS_NEW_OBJECT_STRING(so->getZetScript());
-			so_partial->set(*it);
+			so_partial->set(*((zs_string *)v.items[i]));
 
 			// create and share pointer
 			if(!vm_create_shared_pointer(vm,so_partial)){
@@ -119,7 +120,7 @@ namespace zetscript{
 
 	ScriptObjectString * ScriptObjectStringWrap_substring(ScriptObjectString *str_in,zs_int start,zs_int end){
 		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(str_in->getZetScript());
-		str_out->set(zs_strutils::substring(str_in->toString(),start,end));
+		str_out->set(str_in->toString().substr(start,end));
 		return str_out;
 	}
 

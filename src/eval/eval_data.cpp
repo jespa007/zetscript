@@ -281,7 +281,7 @@ namespace zetscript{
 		EvalFunction					* 		current_function;
 		zs_vector				 	  			eval_functions;
 		zs_vector								unresolved_symbols; // UnresolvedInstructionInfo
-		zs_vector				 				global_ref_instructions; // Instruction
+		zs_vector				 				global_ref_instructions; // Eval Instruction
 		int										parsing_loop;
 
 		const char *					 		current_parsing_file;

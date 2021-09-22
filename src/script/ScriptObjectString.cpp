@@ -231,7 +231,7 @@ namespace zetscript{
 					}
 					str_it = str_end+1; // ignore '}'
 				}else{ // copy current position up to end
-					str_end=str_start+str_input.size();
+					str_end=str_start+str_input.length();
 					str_result+=str_input.substr(str_it-str_start,str_end-str_it);
 				}
 			}
@@ -270,7 +270,7 @@ namespace zetscript{
 	}
 
 	size_t ScriptObjectString::length(){
-		return ((zs_string *)value)->size();
+		return ((zs_string *)value)->length();
 	}
 
 	ScriptObjectString *ScriptObjectString::sub(ScriptObjectString *s1){

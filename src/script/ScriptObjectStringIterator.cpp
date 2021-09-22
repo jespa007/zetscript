@@ -36,7 +36,7 @@ namespace zetscript{
 	void ScriptObjectStringIterator::get(){
 		if(so==NULL) return;
 		zs_string *str_ref=(zs_string *)so->value;
-		if(idx < (int)str_ref->size()){
+		if(idx < (int)str_ref->length()){
 			// set value
 			zs_int ch=str_ref->at(idx);
 			stk_value.value=ch;

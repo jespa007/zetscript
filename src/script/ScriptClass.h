@@ -55,7 +55,7 @@ namespace zetscript{
 				 ,short _idx_class
 				 , zs_string _name
 				 , Scope *_scope
-				 ,zs_string  str_class_ptr_type=TYPE_SCRIPT_VARIABLE
+				 ,const char *  str_class_ptr_type=TYPE_SCRIPT_VARIABLE
 				 ,uint16_t _properties=0
 		);
 
@@ -105,8 +105,8 @@ namespace zetscript{
 		// SETTER
 		Symbol				* 	registerNativeMemberAttributeSetter(
 			const zs_string & attribute_name
-			,ScriptFunctionParam *args
-			,size_t args_len
+			,ScriptFunctionParam *_param
+			,size_t _param_len
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties
 			,const char * file=""
@@ -317,7 +317,7 @@ namespace zetscript{
 		);
 
 		ScriptClass * 					getScriptClass(short idx_class);
-		short							getIdxClassFromItsNativeType(const zs_string & s);
+		short							getIdxClassFromItsNativeType(const char  * s);
 		ScriptClass * 					getScriptClassByNativeClassPtr(const zs_string & class_type);
 	};
 }

@@ -121,19 +121,20 @@ namespace zetscript{
 
 	int eval_link_unresolved_symbols(EvalData *eval_data){
 		ScriptClass *sc_found=NULL;
-		if(eval_data->unresolved_symbols.size() > 0){
-			UnresolvedInstructionInfo *unresolved_instruction_it=eval_data->unresolved_symbols.data();
+		if(eval_data->unresolved_symbols.count > 0){
+			zs_int *it=eval_data->unresolved_symbols.items;
 			const char *str_aux=NULL;
 
 
-			for(unsigned i=0;i < eval_data->unresolved_symbols.size();i++,unresolved_instruction_it++){
-				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(unresolved_instruction_it->calling_function,unresolved_instruction_it->instruction);
-				const char *instruction_file=SFI_GET_FILE(unresolved_instruction_it->calling_function,unresolved_instruction_it->instruction);
-				int instruction_line=SFI_GET_LINE(unresolved_instruction_it->calling_function,unresolved_instruction_it->instruction);
+			for(unsigned i=0;i < eval_data->unresolved_symbols.count;i++,it++){
+				UnresolvedInstructionInfo *unresolved_instruction=(UnresolvedInstructionInfo *)*it;
+				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(unresolved_instruction->calling_function,unresolved_instruction->instruction);
+				const char *instruction_file=SFI_GET_FILE(unresolved_instruction->calling_function,unresolved_instruction->instruction);
+				int instruction_line=SFI_GET_LINE(unresolved_instruction->calling_function,unresolved_instruction->instruction);
 				Symbol *symbol_found=NULL;
 				 if((sc_found= eval_data->script_class_factory->getScriptClass(ptr_str_symbol_to_find))!= NULL){ // check if class
-					 unresolved_instruction_it->instruction->byte_code=BYTE_CODE_LOAD_CLASS;
-					 unresolved_instruction_it->instruction->value_op2=(zs_int)sc_found;
+					 unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_CLASS;
+					 unresolved_instruction->instruction->value_op2=(zs_int)sc_found;
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
 					 zs_string static_error;
 					char copy_aux[512]={0};
@@ -210,22 +211,22 @@ namespace zetscript{
 				}
 
 				if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
-					if(unresolved_instruction_it->instruction->byte_code==BYTE_CODE_FIND_VARIABLE){
-						unresolved_instruction_it->instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+					if(unresolved_instruction->instruction->byte_code==BYTE_CODE_FIND_VARIABLE){
+						unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
 					}else{
-						unresolved_instruction_it->instruction->byte_code=BYTE_CODE_IMMEDIATE_CALL;
+						unresolved_instruction->instruction->byte_code=BYTE_CODE_IMMEDIATE_CALL;
 					}
-					unresolved_instruction_it->instruction->value_op2=(zs_int)(ScriptFunction *)symbol_found->ref_ptr; // store script function
+					unresolved_instruction->instruction->value_op2=(zs_int)(ScriptFunction *)symbol_found->ref_ptr; // store script function
 				}
 				else{ // global variable
 
-					if(unresolved_instruction_it->instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
-						unresolved_instruction_it->instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+					if(unresolved_instruction->instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
+						unresolved_instruction->instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
 					}else{
-						unresolved_instruction_it->instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
+						unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
 					}
 
-					unresolved_instruction_it->instruction->value_op2=symbol_found->idx_position;
+					unresolved_instruction->instruction->value_op2=symbol_found->idx_position;
 				}
 
 			}
@@ -247,7 +248,7 @@ namespace zetscript{
 			new_scope->tmp_idx_instruction_push_scope=0;
 		}
 		else{
-			new_scope->tmp_idx_instruction_push_scope=(int)eval_data->current_function->instructions.size();
+			new_scope->tmp_idx_instruction_push_scope=(int)eval_data->current_function->eval_instructions.count;
 		}
 
 		return new_scope;
@@ -256,13 +257,17 @@ namespace zetscript{
 	void eval_check_scope(EvalData *eval_data, Scope *scope){
 		if(scope->symbol_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
 			if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
-				eval_data->current_function->instructions.insert(
-						eval_data->current_function->instructions.begin()+scope->tmp_idx_instruction_push_scope
-						,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope)
+				eval_data->current_function->eval_instructions.insert(
+						scope->tmp_idx_instruction_push_scope
+						,(zs_int)(
+								new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope)
+						)
 				);
 
 				// and finally insert pop scope
-				eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_POP_SCOPE,0));
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+						new EvalInstruction(BYTE_CODE_POP_SCOPE,0)
+				));
 			}
 		}
 		else{ // remove scope
@@ -279,7 +284,7 @@ namespace zetscript{
 
 		// check for keyword ...
 		if(*aux_p == '{'){
-			bool is_function = sf!=NULL && args != NULL;
+			bool is_function = sf!=NULL && params != NULL;
 			aux_p++;
 
 			if(scope_info->numInnerScopes() >= MAX_INNER_SCOPES_FUNCTION){
@@ -445,8 +450,8 @@ namespace zetscript{
 					,aux
 					,line
 					, scope_info
-					,&eval_data->current_function->instructions
-					,{}
+					,&eval_data->current_function->eval_instructions
+					,""
 					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT | EVAL_EXPRESSION_ON_MAIN_BLOCK
 				);
 			}
@@ -462,7 +467,9 @@ namespace zetscript{
 	}
 
 	void eval_push_function(EvalData *eval_data,ScriptFunction *script_function){
-		eval_data->functions.push_back(eval_data->current_function=new EvalFunction(script_function));
+		eval_data->eval_functions.push_back((zs_int)(
+				eval_data->current_function=new EvalFunction(script_function)
+		));
 	}
 
 	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const zs_string & symbol_to_find){
@@ -491,11 +498,11 @@ namespace zetscript{
 	void eval_pop_current_function(EvalData *eval_data){
 		// delete and popback function information...
 		delete eval_data->current_function;
-		eval_data->functions.pop_back();
+		eval_data->eval_functions.pop_back();
 
 		eval_data->current_function = NULL;
-		if(eval_data->functions.size() > 0){
-			eval_data->current_function = eval_data->functions.at(eval_data->functions.size()-1);
+		if(eval_data->eval_functions.count > 0){
+			eval_data->current_function = (EvalFunction *)eval_data->eval_functions.items[eval_data->eval_functions.count-1];
 		}
 
 	}
@@ -581,7 +588,7 @@ namespace zetscript{
 		}
 
 		// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
-		size_t len=eval_data->current_function->instructions.size() + 1; // +1 for end instruction
+		size_t len=eval_data->current_function->eval_instructions.count + 1; // +1 for end instruction
 		size_t total_size_bytes = (len) * sizeof(Instruction);
 		sf->instructions_len=len;
 		sf->instructions = (PtrInstruction)malloc(total_size_bytes);
@@ -592,10 +599,10 @@ namespace zetscript{
 		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data);
 
 
-		for(unsigned i=0; i < eval_data->current_function->instructions.size(); i++){
+		for(unsigned i=0; i < eval_data->current_function->eval_instructions.count; i++){
 
 			Symbol *vis=NULL;
-			EvalInstruction *instruction = eval_data->current_function->instructions[i];
+			EvalInstruction *instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[i];
 			zs_string *ptr_str_symbol_to_find=NULL;
 			ScriptClass *sc_aux=NULL;
 			//bool is_local=false;
@@ -708,7 +715,9 @@ namespace zetscript{
 			case BYTE_CODE_FIND_VARIABLE:
 			case BYTE_CODE_FIND_IMMEDIATE_CALL:
 				// add instruction reference to solve later
-				eval_data->unresolved_symbols.push_back(UnresolvedInstructionInfo(&sf->instructions[i],sf));
+				eval_data->unresolved_symbols.push_back((zs_int)(
+						new UnresolvedInstructionInfo(&sf->instructions[i],sf)
+				));
 				if(instruction->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
 					sum_stk_load_stk++;
 				}else{
@@ -736,7 +745,9 @@ namespace zetscript{
 						|| ((properties_1 & INSTRUCTION_PROPERTY_ILOAD_RR) && (INSTRUCTION_PROPERTY_ILOAD_ACCESS_IS_GLOBAL(properties_1) || INSTRUCTION_PROPERTY_ILOAD_ACCESS_IS_GLOBAL(properties_2))) // RR
 				){
 					// add instruction reference to solve later
-					eval_data->global_ref_instructions.push_back(&sf->instructions[i]);
+					eval_data->global_ref_instructions.push_back((zs_int)(
+							&sf->instructions[i]
+					));
 				}else{ // local ?
 					switch(byte_code){ // reallocate instructions
 					case BYTE_CODE_LOAD_LOCAL:
@@ -797,7 +808,7 @@ namespace zetscript{
 			instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
 
 
-			sf->instruction_source_info[i]=instruction_info;
+			sf->instruction_source_info.items[i]=(zs_int)(new InstructionSourceInfo(instruction_info));
 		}
 
 		if(lookup_sorted_table_local_variables != NULL){

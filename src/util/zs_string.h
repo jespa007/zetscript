@@ -23,6 +23,12 @@ namespace zetscript{
 	    char& operator[] (size_t pos);
 	    const char& operator[] (size_t pos) const;
 
+	    char& at (size_t pos);
+	    const char& at (size_t pos) const;
+
+	    void clear();
+
+
 	    zs_string  substr (size_t pos = 0, size_t len = npos) const;
 
 	    // +
@@ -53,6 +59,8 @@ namespace zetscript{
 		void append(const zs_string & _s);
 
 		void erase(size_t _pos, size_t _len);
+		void erase(size_t _pos);
+		void insert(size_t _pos, char _c);
 
 		bool empty() const;
 

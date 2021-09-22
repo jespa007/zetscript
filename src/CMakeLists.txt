@@ -186,10 +186,10 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	eval/eval.cpp
 		
 	# Scope
-	#scope/zs_scope.cpp
+	scope/zs_scope.cpp
 			
-	 # Script
-	#script/zs_script.cpp 
+	# Script
+	script/zs_script.cpp 
 
 	# Core
 	#zetscript.cpp

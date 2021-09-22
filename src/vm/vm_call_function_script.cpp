@@ -1488,12 +1488,12 @@ execute_function:
 				if((sf_call_script_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 
 					// we pass everything by copy (TODO implement ref)
-					if(sf_call_n_args > 0 && sf_call_script_function->params_count > 0){
+					if(sf_call_n_args > 0 && sf_call_script_function->params_len > 0){
 						StackElement *stk_arg=sf_call_stk_start_arg_call;
 						ScriptObjectVector *var_args=NULL;
 						ScriptObject *so_param=NULL;
 						bool end_args=false;
-						int effective_args=sf_call_n_args < sf_call_script_function->params_count ? sf_call_n_args:sf_call_script_function->params_count;
+						int effective_args=sf_call_n_args < sf_call_script_function->params_len ? sf_call_n_args:sf_call_script_function->params_len;
 						ScriptFunctionParam *sf_param=sf_call_script_function->params;
 						int i=0;
 						for(int i=0;i < sf_call_n_args;++i){
@@ -1591,7 +1591,7 @@ execute_function:
 					// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 					// will be ignored always.
 
-					for(unsigned i = sf_call_n_args; i < sf_call_script_function->params_count; ++i){
+					for(unsigned i = sf_call_n_args; i < sf_call_script_function->params_len; ++i){
 						ScriptFunctionParam *param=sf_call_script_function->params+i;
 						//StackElement *stk_def_afun_start=data->stk_vm_current;
 						//param->default_var_value;

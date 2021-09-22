@@ -87,6 +87,22 @@ namespace zetscript{
     	return buf[pos];
     }
 
+    char& zs_string::at (size_t pos){
+    	if(pos>=size) THROW_EXCEPTION("zs_string::at out of bounds");
+
+    	return buf[pos];
+    }
+
+    const char& zs_string::at (size_t pos) const{
+    	if(pos>=size) THROW_EXCEPTION("zs_string::at out of bounds");
+
+    	return buf[pos];
+    }
+
+    void zs_string::clear(){
+    	this->__cleanup__();
+    }
+
     zs_string zs_string::newFromTwo(const char *_s1, const char *_s2) {
 		zs_string s; // create a new string named 's'
 		size_t len1=strlen(_s1);
@@ -177,34 +193,56 @@ namespace zetscript{
 		return str;
 	}
 
+	void zs_string::erase(size_t _pos){
+		erase(_pos,1);
+	}
+
+	void zs_string::insert(size_t _pos, char _c){
+		if(_pos>=this->size) THROW_RUNTIME_ERROR("erase: _pos(%i) >= size(%i)",_pos,size);
+
+		size_t new_size = size + 1;
+		char *new_buf = (char *)malloc(new_size + 1); // allocate memory to keep the concatenated string
+		memset(new_buf,0,new_size);
+
+		if(_pos > 0){
+			strncpy(new_buf, buf+_pos, _pos); // copy the 1st string
+		}
+		*(new_buf+_pos)=_c;
+
+		strncpy(new_buf+_pos+1, buf+_pos, size-_pos);
+
+		free(buf);
+
+		buf=new_buf;
+		size=new_size;
+
+
+	}
+
+
 	void zs_string::erase(size_t _pos, size_t _len){
 
-		/*size_t end_pos=size;
+		if(_pos>=this->size) THROW_RUNTIME_ERROR("erase: _pos(%i) >= size(%i)",_pos,size);
+		if((_pos+_len)>this->size) THROW_RUNTIME_ERROR("erase: _pos(%i)+_len(%i) >= size(%i)",_pos,_len,size);
 
-		if(_len != npos){
-			end_pos=_pos+_len;
+		size_t new_size=size-_len;
+		char *new_buf=(char *)malloc(new_size*sizeof(char)+1);
+		memset(new_buf,0,new_size+1);
+
+		// 1st copy
+		if(_pos>0){
+			memcpy(new_buf,buf,_pos);
 		}
 
-		size_t strlen_end_cpy=size-(_pos+_len);
+		// last
+		memcpy(new_buf, buf+_pos+_len,size-_len-_pos);
 
-		if((_pos+_len) >= size){
-			THROW_RUNTIME_ERROR("erase: pos+len >= size (%i+%i>=%i)",_pos,_len,size);
-		}
+		free(buf);
 
-		size_t new_size=this->size-_len;
-		char *new_buf=(char *)malloc(new_size+1);
-		if(_pos > 0){
-			strncpy(new_buf,buf,_pos);
-		}
+		size=new_size;
+		buf=new_buf;
 
-		if(end_pos!=this->size-1){
-			strncpy(new_buf,buf+end_pos,strlen_end_cpy);
-		}
 
-		__cleanup__(); // cleanup any existing data
-
-	    this->buf=new_buf;
-	    this->size=new_size;*/
 	}
 
 	size_t zs_string::find(const char *_s, size_t pos) const{

@@ -66,7 +66,7 @@ namespace zetscript{
 		for(unsigned i=0; i < stk_user_list_elements->count;i++){
 			StackElement *stk=(StackElement *)stk_user_list_elements->items[i];
 			if(i>0){
-				ptr_str->push_back(idx);
+				ptr_str->append((char)idx);
 			}
 			*ptr_str+=stk->toString();
 		}

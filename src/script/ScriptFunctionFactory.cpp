@@ -36,7 +36,7 @@ namespace zetscript{
 				file
 				,line
 				,function_name
-				,(char)args.size()
+				,_params_len
 				,properties & SYMBOL_PROPERTY_C_OBJECT_REF? REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS:REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
 		);
 
@@ -50,7 +50,8 @@ namespace zetscript{
 				zs
 				,idx_class
 				,idx_script_function
-				,args
+				,_params
+				,_params_len
 				,idx_return_type
 				,symbol
 				,ref_native_function_ptr

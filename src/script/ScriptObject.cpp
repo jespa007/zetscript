@@ -159,7 +159,7 @@ namespace zetscript{
 			return &stk_length;
 		}else {*/
 			bool exists=false;
-			StackElement  *stk_item=(StackElement  *)this->map_builtin_property_keys->get(property_name.c_str(),exists);
+			StackElement  *stk_item=(StackElement  *)this->map_builtin_property_keys->get(property_name.c_str(),&exists);
 
 			if(exists){
 				return stk_item;

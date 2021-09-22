@@ -99,7 +99,7 @@ namespace zetscript{
 	){//, const zs_string & base_class_name=""){
 
 		ScriptClass *sc=NULL;
-		zs_string str_class_name_ptr = typeid( T *).name();
+		const char * str_class_name_ptr = typeid( T *).name();
 		//int size=script_classes->count;
 		int idx_class=ZS_IDX_UNDEFINED;
 		Scope * scope = NULL;
@@ -284,7 +284,7 @@ namespace zetscript{
 
 
 					ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(script_function);
-					size_t params_len=script_function->params_count;
+					size_t params_len=script_function->params_len;
 
 
 					this_class->registerNativeMemberFunction(
@@ -338,11 +338,11 @@ namespace zetscript{
 
 						if(it->src!=0){ // we have src method
 
-							//ScriptFunctionParam*param_info=malloc(it->src->params_count*sizeof(ScriptFunctionParam));
-							//size_t param_info_len=it->src->params_count;
-							//memcpy(param_info,it->src->params,it->src->params_count*sizeof(ScriptFunctionParam));
+							//ScriptFunctionParam*param_info=malloc(it->src->params_len*sizeof(ScriptFunctionParam));
+							//size_t param_info_len=it->src->params_len;
+							//memcpy(param_info,it->src->params,it->src->params_len*sizeof(ScriptFunctionParam));
 							ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(it->src);
-							size_t params_len=it->src->params_count;
+							size_t params_len=it->src->params_len;
 
 
 							symbol_function=this_class->registerNativeMemberFunction(
@@ -368,11 +368,11 @@ namespace zetscript{
 
 						StackElement *stk_setter=(StackElement *)sf_setters->items[i];
 						ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
-						//ScriptFunctionParam *param_info=(ScriptFunctionParam *)malloc(sf_setter->params_count*sizeof(ScriptFunctionParam));
-						//size_t param_info_len=sf_setter->params_count;
-						//memcpy(param_info,sf_setter->params,sf_setter->params_count*sizeof(ScriptFunctionParam));
+						//ScriptFunctionParam *param_info=(ScriptFunctionParam *)malloc(sf_setter->params_len*sizeof(ScriptFunctionParam));
+						//size_t param_info_len=sf_setter->params_len;
+						//memcpy(param_info,sf_setter->params,sf_setter->params_len*sizeof(ScriptFunctionParam));
 						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
-						size_t params_len=it->src->params_count;
+						size_t params_len=it->src->params_len;
 
 						symbol_function=this_class->registerNativeMemberFunction(
 								sf_setter->symbol.name,

@@ -14,7 +14,7 @@ namespace zetscript{
 		for(auto it=o1->begin(); !it.end(); it.next()){
 			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so=ZS_NEW_OBJECT_STRING(o1->getZetScript());
-			so->set(it.getKey());
+			so->set(it.key);
 
 			// create and share pointer
 			if(!vm_create_shared_pointer(vm,so)){
