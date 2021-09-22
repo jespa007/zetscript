@@ -116,6 +116,16 @@ namespace zetscript{
 		return zs_string::newFromTwo(_s1.buf,_s2);
 	}
 
+	zs_string operator+(const zs_string & _s1, char _s2){
+		char tmp[]={_s2,0};
+		return zs_string::newFromTwo(_s1.buf,tmp);
+	}
+
+	zs_string operator+(char  _s1, const zs_string & _s2){
+		char tmp[]={_s1,0};
+		return zs_string::newFromTwo(tmp,_s2.buf);
+	}
+
 	// ==
 	bool operator==(const zs_string & _s1, const zs_string &_s2){
 		return strcmp(_s1.c_str(),_s2.c_str())==0;

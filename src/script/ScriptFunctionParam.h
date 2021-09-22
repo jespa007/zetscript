@@ -19,7 +19,7 @@ namespace zetscript{
 		ScriptFunctionParam(int _idx_type, const zs_string & _name);
 		ScriptFunctionParam( const ScriptFunctionParam & _function_param);
 
-		static ScriptFunctionParam *createArrayFromVector(const zs_vector  & _s);
-		static ScriptFunctionParam *createArrayFromScriptFunction(const scriptFunction * sf);
+		static ScriptFunctionParam *createArrayFromVector(const zs_vector  * _s);
+		static ScriptFunctionParam *createArrayFromScriptFunction(const ScriptFunction * sf);
 	};
 }

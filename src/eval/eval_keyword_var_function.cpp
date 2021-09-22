@@ -670,7 +670,7 @@ error_eval_keyword_var:
 				}
 			}
 
-			ScriptFunctionParam *params=ScriptFunctionParam::convertFromVector(script_function_params);
+			ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromVector(&script_function_params);
 			size_t params_len=script_function_params.count;
 
 			// remove collected script function params

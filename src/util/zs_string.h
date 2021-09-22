@@ -30,6 +30,9 @@ namespace zetscript{
 		friend zs_string operator+(const zs_string & _s1, const char *_s2);
 		friend zs_string operator+(const char * _s1, const zs_string & _s2);
 
+		friend zs_string operator+(const zs_string & _s1, char _s2);
+		friend zs_string operator+(char  _s1, const zs_string & _s2);
+
 		// ==
 		friend bool operator==(const zs_string & _s1, const zs_string &_s2);
 		friend bool operator==(const zs_string & _s1, const char *_s2);

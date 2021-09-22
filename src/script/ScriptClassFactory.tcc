@@ -283,7 +283,7 @@ namespace zetscript{
 					// build params...
 
 
-					ScriptFunctionParam *params=ScriptFunctionParam::cloneFromScriptFunction(script_function);
+					ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(script_function);
 					size_t params_len=script_function->params_count;
 
 
@@ -341,7 +341,7 @@ namespace zetscript{
 							//ScriptFunctionParam*param_info=malloc(it->src->params_count*sizeof(ScriptFunctionParam));
 							//size_t param_info_len=it->src->params_count;
 							//memcpy(param_info,it->src->params,it->src->params_count*sizeof(ScriptFunctionParam));
-							ScriptFunctionParam *params=ScriptFunctionParam::cloneFromScriptFunction(it->src);
+							ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(it->src);
 							size_t params_len=it->src->params_count;
 
 
@@ -371,7 +371,7 @@ namespace zetscript{
 						//ScriptFunctionParam *param_info=(ScriptFunctionParam *)malloc(sf_setter->params_count*sizeof(ScriptFunctionParam));
 						//size_t param_info_len=sf_setter->params_count;
 						//memcpy(param_info,sf_setter->params,sf_setter->params_count*sizeof(ScriptFunctionParam));
-						ScriptFunctionParam *params=ScriptFunctionParam::cloneFromScriptFunction(sf_setter);
+						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
 						size_t params_len=it->src->params_count;
 
 						symbol_function=this_class->registerNativeMemberFunction(
