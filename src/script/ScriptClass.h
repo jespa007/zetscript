@@ -306,15 +306,6 @@ namespace zetscript{
 
 		);
 
-		template <typename F>
-		int getNativeMemberFunctionRetArgsTypes(
-				const zs_string & function_name
-				,F function_ptr
-				,const char * return_type
-				,ScriptFunctionParam **args
-				,size_t *args_len
-
-		);
 
 		ScriptClass * 					getScriptClass(short idx_class);
 		short							getIdxClassFromItsNativeType(const char  * s);

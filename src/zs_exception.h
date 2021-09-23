@@ -39,7 +39,7 @@ namespace zetscript {
 	};
 
 	void throw_script_error(const zs_string & scrip_filename, int script_line, const char *in_txt,...);
-	void throw_exception(const char *in_txt,...);
+	void throw_exception(const char *filename, int line,const char *in_txt,...);
 	void throw_exception(const zs_string & in_txt);
 
 }

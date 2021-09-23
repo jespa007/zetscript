@@ -246,7 +246,7 @@ eval_error_sub_expression:
 			, int & line
 			, Scope *scope_info
 			, zs_vector 	* dst_instructions
-			, char *expected_ending_char
+			, const char *expected_ending_char
 			, uint16_t properties
 
 		){

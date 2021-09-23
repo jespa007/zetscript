@@ -359,7 +359,12 @@ namespace zetscript{
 		StackElement *se=NULL;
 
 
-		if((symbol=scope_block->registerSymbolVariable(file,line, symbol_name, REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL))==NULL){
+		if((symbol=scope_block->registerSymbolVariable(
+				file
+				,line
+				, symbol_name
+				, REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL
+		))==NULL){
 				return NULL;
 		}
 

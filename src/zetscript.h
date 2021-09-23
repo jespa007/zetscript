@@ -203,8 +203,8 @@ namespace zetscript{
 		 * Register C function
 		 */
 		template <typename F>
-		void registerFunction( const zs_string & function_name,F function_ptr, const char *registered_file="",short registered_line=-1){
-			script_class_factory->registerNativeGlobalFunction( function_name,function_ptr, registered_file,registered_line);
+		void registerFunction( const zs_string & function_name,F ptr_function, const char *registered_file="",short registered_line=-1){
+			script_class_factory->registerNativeGlobalFunction( function_name,ptr_function, registered_file,registered_line);
 		}
 
 		/**

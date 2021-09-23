@@ -55,21 +55,20 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line)
 	{
-		zs_string return_type;
 		zs_string error;
-		ScriptFunctionParam *param_info=NULL;
-		size_t param_info_len=0;
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
 
 		if(main_function == NULL){
 			THROW_RUNTIME_ERROR("main function is not created");
 		}
 
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				function_name
+				this
+				,function_name
 				,ptr_function
-				,return_type
-				,&param_info
-				,&param_info_len
+				,&params
+				,&params_len
 		);
 
 		// Init struct...
@@ -78,10 +77,10 @@ namespace zetscript{
 				,registered_file
 				,registered_line
 				,function_name
-				,param_info
-				,param_info_len
+				,params
+				,params_len
 				,idx_return_type
-				,ptr_function
+				,(zs_int)ptr_function
 				,SYMBOL_PROPERTY_C_OBJECT_REF
 			);
 
@@ -338,9 +337,9 @@ namespace zetscript{
 
 						if(it->src!=0){ // we have src method
 
-							//ScriptFunctionParam*param_info=malloc(it->src->params_len*sizeof(ScriptFunctionParam));
-							//size_t param_info_len=it->src->params_len;
-							//memcpy(param_info,it->src->params,it->src->params_len*sizeof(ScriptFunctionParam));
+							//ScriptFunctionParam*params=malloc(it->src->params_len*sizeof(ScriptFunctionParam));
+							//size_t params_len=it->src->params_len;
+							//memcpy(params,it->src->params,it->src->params_len*sizeof(ScriptFunctionParam));
 							ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(it->src);
 							size_t params_len=it->src->params_len;
 
@@ -368,9 +367,9 @@ namespace zetscript{
 
 						StackElement *stk_setter=(StackElement *)sf_setters->items[i];
 						ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
-						//ScriptFunctionParam *param_info=(ScriptFunctionParam *)malloc(sf_setter->params_len*sizeof(ScriptFunctionParam));
-						//size_t param_info_len=sf_setter->params_len;
-						//memcpy(param_info,sf_setter->params,sf_setter->params_len*sizeof(ScriptFunctionParam));
+						//ScriptFunctionParam *params=(ScriptFunctionParam *)malloc(sf_setter->params_len*sizeof(ScriptFunctionParam));
+						//size_t params_len=sf_setter->params_len;
+						//memcpy(params,sf_setter->params,sf_setter->params_len*sizeof(ScriptFunctionParam));
 						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
 						size_t params_len=it->src->params_len;
 

@@ -243,8 +243,8 @@ namespace zetscript{
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // FILE MANAGEMENT
 	bool ZetScript::isFilenameAlreadyParsed(const zs_string & filename){
-		for(unsigned i = 0; i < parsed_files.size(); i++){
-			if(parsed_files.at(i)->filename==filename){
+		for(unsigned i = 0; i < parsed_files.count; i++){
+			if(((ParsedFile *)parsed_files.items[i])->filename==filename){
 				return true;
 			}
 		}
@@ -269,7 +269,7 @@ namespace zetscript{
 
 		stk=new StackElement;
 
-		(*stk_constants)[key_name]=stk;
+		stk_constants->set(key_name.c_str(),(zs_int)stk);
 
 		so=ZS_NEW_OBJECT_STRING(this);
 		// swap values stk_ref/value
@@ -283,12 +283,7 @@ namespace zetscript{
 	}
 
 	StackElement *ZetScript::getStkStringObject(const zs_string & key_name){
-
-
-		if((stk_constants)->count(key_name) == 1){
-			return (stk_constants)->at(key_name);
-		}
-		return NULL;
+		return (StackElement *)stk_constants->get(key_name.c_str());
 	}
 
 
@@ -357,7 +352,7 @@ namespace zetscript{
 			ParsedFile *ps=new ParsedFile();
 			zs_string current_directory="";
 			ps->filename = filename;
-			parsed_files.push_back(ps);
+			parsed_files.push_back((zs_int)ps);
 			const char * const_file_char=ps->filename.c_str();
 			//idx_file=parsed_files.size()-1;
 			size_t n_bytes;
@@ -398,7 +393,7 @@ namespace zetscript{
 				buf_tmp=NULL;
 
 				if(error){
-					if(!zs_strutils::is_empty(error_file)){
+					if(error_file.empty()==false){
 						THROW_SCRIPT_ERROR_FILE_LINE(error_file.c_str(),error_line,error_str.c_str());
 					}else{
 						THROW_EXCEPTION(error_str.c_str());
@@ -514,8 +509,8 @@ namespace zetscript{
 	}*/
 
 	void ZetScript::resetParsedFiles(){
-		for(auto it=parsed_files.begin();it!=parsed_files.end();it++){
-			delete *it;
+		for(unsigned i=0;i<parsed_files.count;i++){
+			delete ((ParsedFile *)parsed_files.items[i]);
 		}
 		parsed_files.clear();
 	}
@@ -555,8 +550,8 @@ namespace zetscript{
 
 		if(stk_constants != NULL){
 
-			for(std::map<zs_string,StackElement *>::iterator it=stk_constants->begin();it!=stk_constants->end();it++){
-				StackElement *stk=it->second;
+			for(auto it=stk_constants->begin();!it.end();it.next()){//std::map<zs_string,StackElement *>::iterator it=stk_constants->begin();it!=stk_constants->end();it++){
+				StackElement *stk=(StackElement *)it.value;
 				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					delete (ScriptObjectString *)stk->value;
 				}

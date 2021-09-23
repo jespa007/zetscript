@@ -192,7 +192,7 @@ set( ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${INCS}
 	script/zs_script.cpp 
 
 	# Core
-	#zetscript.cpp
+	zetscript.cpp
 )
 
 #-------------------------------------------------------------------------------------------------------------------------------------

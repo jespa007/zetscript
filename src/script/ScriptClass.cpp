@@ -172,8 +172,8 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributeSetter(
 			const zs_string & attribute_name
-			,ScriptFunctionParam *_param
-			,size_t _param_len
+			,ScriptFunctionParam *params
+			,size_t params_len
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties
 			,const char * file
@@ -194,7 +194,8 @@ namespace zetscript{
 
 		symbol_function=registerNativeMemberFunction(
 				ZS_PREFIX_SYMBOL_NAME_SETTER+attribute_name,
-				arg_value,
+				params,
+				params_len,
 				IDX_BUILTIN_TYPE_VOID_C,
 				ref_ptr,
 				symbol_getter_function_properties,
@@ -209,7 +210,8 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributeGetter(
 			 const zs_string & attribute_name
-			 , zs_vector<ScriptFunctionParam> arg_value
+			 , ScriptFunctionParam *params
+			 ,size_t params_len
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_getter_function_properties
@@ -236,7 +238,8 @@ namespace zetscript{
 
 		symbol_function=registerNativeMemberFunction(
 				ZS_PREFIX_SYMBOL_NAME_GETTER+attribute_name,
-				arg_value,
+				params,
+				params_len,
 				idx_return_type,
 				ref_ptr,
 				symbol_getter_function_properties,
@@ -251,7 +254,8 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePostIncrement(
 			 const zs_string & attribute_name
-			 , zs_vector<ScriptFunctionParam> arg_value
+			 , ScriptFunctionParam *params
+			 ,size_t params_len
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_post_inc_function_properties
@@ -279,7 +283,8 @@ namespace zetscript{
 
 		symbol_function=registerNativeMemberFunction(
 				ZS_PREFIX_SYMBOL_NAME_POST_INC+attribute_name,
-				arg_value,
+				params,
+				params_len,
 				idx_return_type,
 				ref_ptr,
 				symbol_post_inc_function_properties,
@@ -294,7 +299,8 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePostDecrement(
 			 const zs_string & attribute_name
-			 , zs_vector<ScriptFunctionParam> arg_value
+			 , ScriptFunctionParam *params
+			 ,size_t params_len
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_post_dec_function_properties
@@ -322,7 +328,8 @@ namespace zetscript{
 
 		symbol_function=registerNativeMemberFunction(
 				ZS_PREFIX_SYMBOL_NAME_POST_DEC+attribute_name,
-				arg_value,
+				params,
+				params_len,
 				idx_return_type,
 				ref_ptr,
 				symbol_post_dec_function_properties,
@@ -337,7 +344,8 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePreIncrement(
 			 const zs_string & attribute_name
-			 , zs_vector<ScriptFunctionParam> arg_value
+			 , ScriptFunctionParam *params
+			 ,size_t params_len
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_pre_inc_function_properties
@@ -365,7 +373,8 @@ namespace zetscript{
 
 		symbol_function=registerNativeMemberFunction(
 				ZS_PREFIX_SYMBOL_NAME_PRE_INC+attribute_name,
-				arg_value,
+				params,
+				params_len,
 				idx_return_type,
 				ref_ptr,
 				symbol_pre_inc_function_properties,
@@ -380,7 +389,8 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePreDecrement(
 			 const zs_string & attribute_name
-			 , zs_vector<ScriptFunctionParam> arg_value
+			 , ScriptFunctionParam *params
+			 ,size_t params_len
 			, int idx_return_type
 			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short symbol_pre_dec_function_properties
@@ -408,7 +418,8 @@ namespace zetscript{
 
 		symbol_function=registerNativeMemberFunction(
 				ZS_PREFIX_SYMBOL_NAME_PRE_DEC+attribute_name,
-				arg_value,
+				params,
+				params_len,
 				idx_return_type,
 				ref_ptr,
 				symbol_pre_dec_function_properties,
@@ -426,7 +437,8 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerMemberFunction(
 			 const zs_string & function_name
-			, zs_vector<ScriptFunctionParam> args
+			 , ScriptFunctionParam *params
+			 ,size_t params_len
 			, unsigned short symbol_properties
 			,const char * file
 			, short line
@@ -436,7 +448,8 @@ namespace zetscript{
 	){
 		return registerInternalMemberFunction(
 				 function_name
-				, args
+				, params
+				,params_len
 				, symbol_properties
 				,ZS_IDX_UNDEFINED
 				,0
@@ -448,7 +461,8 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberFunction(
 			const zs_string & function_name
-			, zs_vector<ScriptFunctionParam> args
+			 , ScriptFunctionParam *params
+			 ,size_t params_len
 			, int idx_return_type
 			,zs_int ref_ptr // script function
 			, unsigned short symbol_properties
@@ -458,7 +472,8 @@ namespace zetscript{
 	){
 		return registerInternalMemberFunction(
 				 function_name
-				,args
+				,params
+				,params_len
 				,symbol_properties
 				,idx_return_type
 				,(zs_int)ref_ptr
@@ -471,7 +486,8 @@ namespace zetscript{
 
 	Symbol * ScriptClass::registerInternalMemberFunction(
 		 const zs_string & function_name
-		, zs_vector<ScriptFunctionParam> params
+		 , ScriptFunctionParam *params
+		 ,size_t params_len
 		, unsigned short symbol_properties
 		, int idx_return_type
 		,zs_int ref_ptr
@@ -483,7 +499,7 @@ namespace zetscript{
 
 		if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
 
-			if(getSymbol(function_name,(char)params.size(),false) != NULL){ // we only search repeat symbols on this class ...
+			if(getSymbol(function_name,(char)params_len,false) != NULL){ // we only search repeat symbols on this class ...
 				Symbol *existing_symbol;
 				if((existing_symbol=getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
 					THROW_RUNTIME_ERROR("Function \"%s\" is already defined at [%s:%i]"
@@ -510,6 +526,7 @@ namespace zetscript{
 				//,idx_position // idx position ...
 				,function_name
 				,params
+				,params_len
 				,idx_return_type
 				,ref_ptr // c function
 				,symbol_properties|SYMBOL_PROPERTY_FUNCTION
@@ -560,7 +577,7 @@ namespace zetscript{
 
 					if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // non-native
 
-						if((symbol_result=getSymbol(function_name,(char)params.size())) != NULL){
+						if((symbol_result=getSymbol(function_name,(char)params_len)) != NULL){
 
 							THROW_RUNTIME_ERROR("Metamethod '%s::%s' is already defined at '%s::%s' (%s:%i). Metamethods cannot be override"
 								,class_name.c_str()
