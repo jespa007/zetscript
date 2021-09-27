@@ -8,10 +8,13 @@ function fibR(n) {
     return fibR(n-1)+fibR(n-2)
 }
 
-for(var i=0; i <10; i++){
+fibR(34)
+/*
+//for(var i=0; i <10; i++)
+//{
 	var start=System::clock()
 	Console::outln("fib: {0} time: {1} ms", fibR(34),System::clock()-start);
-}
-
+//}
+*/
 
 

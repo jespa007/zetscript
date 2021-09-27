@@ -13,6 +13,8 @@ namespace zetscript{
 	{
 		size = strlen(buffer);
 		buf = (char *)malloc(size + 1); // + 1 for the keeping the null character
+		memset(buf,0,size + 1);
+
 		strncpy_s(buf, size + 1, buffer, size); // copy from the incoming buffer to character buffer of the new object
 	}
 
@@ -20,6 +22,8 @@ namespace zetscript{
 	{
 		size = obj.size;
 		buf = (char *)malloc(size + 1); // + 1 for the keeping the null character
+		memset(buf,0,size + 1);
+
 		strncpy_s(buf, size + 1, obj.buf, size); // copy from the incoming buffer to character buffer of the new object
 	}
 
@@ -30,6 +34,8 @@ namespace zetscript{
 		// Copy data from the newly assigned zs_string object
 		size = obj.size;
 		buf = (char *)malloc(size + 1); // + 1 for the keeping the null character
+		memset(buf,0,size + 1);
+
 		strncpy_s(buf, size + 1, obj.buf, size); // copy from the incoming buffer to character buffer of the new object
 		return *this;
 	}
@@ -118,6 +124,7 @@ namespace zetscript{
 
 		s.size = len1 + len2;
 		s.buf = (char *)malloc(s.size + 1); // allocate memory to keep the concatenated string
+		memset(s.buf,0,s.size + 1);
 
 		if(_s1!=NULL) strncpy(s.buf, _s1, len1); // copy the 1st string
 		if(_s2!=NULL) strncpy(s.buf + len1, _s2, len2);
@@ -180,15 +187,17 @@ namespace zetscript{
 	zs_string zs_string::substr (size_t pos, size_t len) const{
 
 		if(len == npos){
-			len=pos+size-len;
+			len=size-pos;
 		}
 
-		if((pos+len) >= size){
+		if((pos+len) > size){
 			THROW_RUNTIME_ERROR("substring: pos+len >= size (%i+%i>=%i)",pos,len,size);
 		}
 
 		zs_string str;
 		str.buf=(char *)malloc(len+1);
+		memset(str.buf,0,len + 1);
+
 		str.size=len;
 		strncpy(str.buf,this->buf+pos,len);
 		return str;
@@ -211,7 +220,7 @@ namespace zetscript{
 
 		size_t new_size = size + 1;
 		char *new_buf = (char *)malloc(new_size + 1); // allocate memory to keep the concatenated string
-		memset(new_buf,0,new_size);
+		memset(new_buf,0,new_size+1);
 
 		if(_pos > 0){
 			strncpy(new_buf, buf+_pos, _pos); // copy the 1st string
@@ -271,6 +280,10 @@ namespace zetscript{
 
 	size_t zs_string::find_last_of(const char *_s, size_t pos) const{
 
+		if(pos == npos){
+			pos=size-1;
+		}
+
 		if(pos < size){
 			int idx=MIN(pos,size-1);
 
@@ -297,7 +310,10 @@ namespace zetscript{
 
 		size_t new_size=this->size+len;
 		char *new_buf=(char *)malloc(new_size+1);
-		sprintf(new_buf,"%s%s",this->buf,_buf);
+		memset(new_buf,0,new_size + 1);
+
+		strncpy(new_buf,this->buf,this->size);
+		strncpy(new_buf+this->size,_buf,len);
 
 		__cleanup__(); // cleanup any existing data
 

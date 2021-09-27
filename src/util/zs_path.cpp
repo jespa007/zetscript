@@ -13,8 +13,9 @@ namespace zetscript{
 		  size_t found;
 		  zs_string ss=_path;
 		  found=_path.find_last_of("/\\");
-		  if((int)found != -1)
+		  if(found != zs_string::npos){
 			  ss= _path.substr(found+1);
+		  }
 		  return ss;
 		}
 

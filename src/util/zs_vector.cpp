@@ -117,8 +117,9 @@ namespace zetscript{
 	void 		zs_vector::insert(uint16_t  idx,zs_vector  * list, size_t n_list_elements_to_copy){
 
 
-		if(list==NULL) THROW_RUNTIME_ERROR("list == NULL");
-		if(list->count==0) THROW_RUNTIME_ERROR("list has no elements to insert");
+		if(list==NULL || list->count==0) { // not insert
+			return;
+		}
 
 		if(n_list_elements_to_copy == npos){
 			n_list_elements_to_copy=list->count;
