@@ -182,7 +182,37 @@ namespace zetscript{
 		saveState();
 	}
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-	 // PRINT ASM INFO
+	 // PRINT INFO
+
+	void ZetScript::printAllStructSizes(){
+		printf("ZetScript:%i\n"
+				"VirtualMachineData:%i\n"
+				"ScriptClass:%i\n"
+				"ScriptFunction:%i\n"
+				"StackElement:%i\n"
+				"Symbol:%i\n"
+				"Scope:%i\n"
+				"ScriptObject:%i\n"
+				"ScriptObjectString:%i\n"
+				"ScriptObjectVector:%i\n"
+				"ScriptObjectObject:%i\n"
+				"ScriptObjectClass:%i\n"
+				,sizeof(ZetScript)
+				,sizeof(VirtualMachineData)
+				,sizeof(ScriptClass)
+				,sizeof(ScriptFunction)
+				,sizeof(StackElement)
+				,sizeof(Symbol)
+				,sizeof(Scope)
+				,sizeof(ScriptObject)
+				,sizeof(ScriptObjectString)
+				,sizeof(ScriptObjectVector)
+				,sizeof(ScriptObjectObject)
+				,sizeof(ScriptObjectClass)
+			);
+	}
+
+
 	 void ZetScript::printGeneratedCode(bool show_system_code){
 
 		 zs_vector *script_classes=script_class_factory->getScriptClasses();

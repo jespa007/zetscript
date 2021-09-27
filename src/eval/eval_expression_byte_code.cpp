@@ -107,9 +107,7 @@ namespace zetscript{
 			eval_instruction=new EvalInstruction(
 				eval_operator_to_byte_code(split_node->operator_type)
 			);
-
 		}
-
 
 		eval_instructions->push_back(
 				(zs_int)eval_instruction
@@ -123,6 +121,13 @@ namespace zetscript{
 				,split_node->line
 				,NULL
 		);
+	}
+
+	void eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_vector & zs_ei_assign_loader_instructions_post_expression){
+		for(unsigned i=0; i<zs_ei_assign_loader_instructions_post_expression.count; i++ ){
+			delete (zs_vector *)zs_ei_assign_loader_instructions_post_expression.items[i];
+		}
+		zs_ei_assign_loader_instructions_post_expression.clear();
 	}
 
 	char * eval_expression_to_byte_code(
@@ -334,6 +339,8 @@ namespace zetscript{
 			);
 		}
 
+		eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
+
 		return aux_p;
 
 eval_error_byte_code:
@@ -342,6 +349,8 @@ eval_error_byte_code:
 		for(unsigned i=0; i < ei_assign_store_instruction_post_expression.count; i++){
 			delete (EvalInstruction *)ei_assign_store_instruction_post_expression.items[i];
 		}
+
+		eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
 
 		return NULL;
 

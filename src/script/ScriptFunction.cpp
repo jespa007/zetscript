@@ -333,18 +333,16 @@ namespace zetscript{
 		if(info!=NULL && info->ptr_str_symbol_name!=NULL){
 			return info->ptr_str_symbol_name->c_str();
 		}
-		return "unknown";
+		return "unknown_symbol";
 	}
 
 	const char *ScriptFunction::getInstructionSourceFile(Instruction * ins){
-
 		InstructionSourceInfo *info=getInstructionInfo(ins);
 
 		if(info!=NULL){
 			return info->file;
 		}
-
-		return "unknown";
+		return "unknown_file";
 	}
 
 	Symbol * ScriptFunction::registerLocalArgument(
@@ -489,8 +487,6 @@ namespace zetscript{
 		}
 
 		// register new slot
-		//short idx_position=(short)symbol_registered_functions->count;
-
 		symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
 				 scope_block
@@ -498,15 +494,13 @@ namespace zetscript{
 				,line
 				//---- Function data
 				,idx_class 				// idx class which belongs to...
-				//,symbol_registered_functions->count // idx symbol ...
 				,function_name
 				,_params
+				,_params_len
 				,idx_return_type
 				,ref_ptr
 				,properties
 		);
-
-		//symbol->idx_position=idx_position;
 
 		// register num symbols only for c symbols...
 		if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF != 0) && symbol_found!=NULL){
@@ -514,17 +508,16 @@ namespace zetscript{
 			((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
 		}
 
-		//symbol_registered_functions->push_back((zs_int)symbol);
-
-
 		return symbol;
 	}
 
 	void ScriptFunction::clearParams(){
 
-		delete [] params;
-		params_len=0;
-		params=NULL;
+		if(params != NULL){
+			delete [] params;
+			params_len=0;
+			params=NULL;
+		}
 
 	}
 
@@ -535,7 +528,6 @@ namespace zetscript{
 	){
 		// delete existing args...
 		clearParams();
-
 		params=_params;
 		params_len = _params_len;
 	}

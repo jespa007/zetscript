@@ -94,6 +94,12 @@ namespace zetscript{
 			line=_line;
 			ptr_str_symbol_name=_ptr_str_symbol_name;
 		}
+
+		InstructionSourceInfo(const InstructionSourceInfo & instruction_source_info){
+			ptr_str_symbol_name=instruction_source_info.ptr_str_symbol_name;
+			file=instruction_source_info.file;
+			line=instruction_source_info.line;
+		}
 	};
 
 	typedef Instruction *PtrInstruction;

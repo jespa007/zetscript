@@ -14,6 +14,14 @@ namespace zetscript{
 		return false;
 	}
 
+	void eval_deallocate_tokens(zs_vector 	& token_nodes){
+		for(unsigned i=0; i < token_nodes.count; i++){
+			delete (TokenNode *)token_nodes.items[i];
+		}
+
+		token_nodes.clear();
+	}
+
 	char * eval_sub_expression(
 			EvalData *eval_data
 			,const char *s
@@ -60,7 +68,7 @@ namespace zetscript{
 
 			for(;;){ // it eats identifier/constant operator, etc
 
-				if(last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF){ // retrieve a
+				if(last_operator_token_node != NULL && (last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){ // retrieve a
 					TokenNode *token_node_type=new TokenNode();
 					zs_string str_type;
 					bool type_end=false;
@@ -211,6 +219,8 @@ namespace zetscript{
 			}
 		}
 
+		eval_deallocate_tokens(token_nodes);
+
 		// last character is a separator so it return increments by 1
 		return aux_p;
 
@@ -225,6 +235,9 @@ eval_error_sub_expression:
 				}
 			}
 		}
+
+		eval_deallocate_tokens(token_nodes);
+
 		return NULL;
 
 	}
@@ -437,10 +450,11 @@ eval_error_expression_delete_left_right_sub_expressions:
 		// we delete all instructions for left
 		for(unsigned le=0; le<zs_ei_left_sub_expressions.count; le++){ // delete left expressions and vectors
 			zs_vector *ie_left_sub_expression=(zs_vector *)zs_ei_left_sub_expressions.items[le];
-			for(auto e=0 //delete expressions
+			for(unsigned e=0 //delete expressions
 					; e<ie_left_sub_expression->count
 					; e++){
-					delete (EvalInstruction *)ie_left_sub_expression->items[e];
+				EvalInstruction *ei=(EvalInstruction *)ie_left_sub_expression->items[e];
+				delete ei;
 			}
 
 			delete ie_left_sub_expression;

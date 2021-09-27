@@ -24,7 +24,6 @@ void show_usage(){
 
 int main(int argc, char * argv[]) {
 
-
 	ZetScript *zs = new ZetScript();
 	const char *file="";
 	unsigned short eval_options=0;

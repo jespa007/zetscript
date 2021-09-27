@@ -8,10 +8,10 @@ namespace zetscript{
 	 */
 	template<typename V>
 	 void  ScriptClassFactory::registerNativeGlobalVariable(
-			 const zs_string & var_name
-			 ,V var_ptr
-			 , const char *registered_file
-			 ,short registered_line)
+		 const zs_string & var_name
+		 ,V var_ptr
+		 ,const char *registered_file
+		 ,short registered_line)
 	{
 		//Scope *scope;
 		const char *var_type = typeid(V).name(); // we need the pointer type ...
@@ -50,10 +50,10 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClassFactory::registerNativeGlobalFunction(
-			const zs_string &  function_name
-			,F ptr_function
-			, const char *registered_file
-			,short registered_line)
+		const zs_string &  function_name
+		,F ptr_function
+		,const char *registered_file
+		,short registered_line)
 	{
 		zs_string error;
 		ScriptFunctionParam *params=NULL;
@@ -92,9 +92,9 @@ namespace zetscript{
 	 */
 	template<class T>
 	ScriptClass * ScriptClassFactory::registerNativeSingletonClass(
-			const zs_string & class_name
-			, const char *registered_file
-			,short registered_line
+		const zs_string & class_name
+		,const char *registered_file
+		,short registered_line
 	){//, const zs_string & base_class_name=""){
 
 		ScriptClass *sc=NULL;
@@ -102,7 +102,7 @@ namespace zetscript{
 		//int size=script_classes->count;
 		int idx_class=ZS_IDX_UNDEFINED;
 		Scope * scope = NULL;
-		Symbol *symbol=NULL;
+
 
 		checkClassName(class_name);
 
@@ -112,20 +112,14 @@ namespace zetscript{
 
 		idx_class=script_classes->count;
 		scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
-		symbol=MAIN_SCOPE(this)->registerSymbolClass(registered_file,registered_line,class_name);
+		MAIN_SCOPE(this)->registerSymbolClass(registered_file,registered_line,class_name);
 
 		sc = new ScriptClass(zs,idx_class,class_name,scope,str_class_name_ptr,SCRIPT_CLASS_PROPERTY_C_OBJECT_REF);
 		scope->setScriptClass(sc);
 
-		//irc->symbol_class=*symbol;
-
 		// in C there's no script constructor ...
 		sc->idx_function_member_constructor=ZS_IDX_UNDEFINED;
 		// allow dynamic constructor in function its parameters ...
-
-		//irc->str_class_ptr_type=str_class_name_ptr;
-		//irc->symbol_class.properties|=SYMBOL_PROPERTY_C_OBJECT_REF;
-
 		sc->c_constructor = NULL;
 		sc->c_destructor = NULL;
 		script_classes->push_back((zs_int)sc);
@@ -141,15 +135,14 @@ namespace zetscript{
 	 */
 	template<typename C>
 	void ScriptClassFactory::registerNativeClass(
-			const zs_string & class_name
-			, const char *registered_file
-			,short registered_line
-	){//, const zs_string & base_class_name=""){
+		const zs_string & class_name
+		,const char *registered_file
+		,short registered_line
+	){
 
 		ScriptClass *irc =registerNativeSingletonClass<C>(class_name);
+
 		// get class...
-
-
 		if(irc->idx_class < IDX_BUILTIN_TYPE_MAX && irc->idx_class != IDX_BUILTIN_TYPE_STACK_ELEMENT){
 			THROW_RUNTIME_ERROR("The class to register \"%s\"  should not built in class",irc->str_class_ptr_type);
 		}
@@ -170,27 +163,29 @@ namespace zetscript{
 	 */
 	template<typename C>
 	ScriptClass * ScriptClassFactory::registerNativeClassStatic(
-			const zs_string & class_name
-			, C * (*_constructor)()
-			, void (*_destructor)(C *)
-			, const char *registered_file
-			,short registered_line
-	){//, const zs_string & base_class_name=""){
+		const zs_string & class_name
+		,C * (*_constructor)()
+		,void (*_destructor)(C *)
+		,const char *registered_file
+		,short registered_line
+	){
 
-		ScriptClass *sc =registerNativeSingletonClass<C>(class_name);
+		ScriptClass *sc =registerNativeSingletonClass<C>(
+				class_name
+				,registered_file
+				,registered_line
+		);
+
 		// get class...
-
 		sc->c_constructor = (void *)_constructor;
 		sc->c_destructor = (void *)_destructor;
 
 		return sc;
-		//irc->static_constructor_destructor = true;
 	}
-
-
 
 	template<class C,class B>
 	void ScriptClassFactory::nativeClassInheritsFrom(){
+
 		const char *base_class_name=typeid(B).name();
 		const char * base_class_name_ptr=typeid(B *).name();
 		const char * class_name=typeid(C).name();
@@ -218,11 +213,6 @@ namespace zetscript{
 		}
 
 		// now only allows one inheritance!
-		/*
-		if(sc->idx_base_class != ZS_INVALID_CLASS){
-			ScriptClass * base_class=getScriptClass(sc->idx_base_class);
-			THROW_RUNTIME_ERROR("C++ class \"%s\" already is inherited from \"%s\" ",zs_rtti::demangle(class_name).c_str(), zs_rtti::demangle(base_class->str_class_ptr_type).c_str());
-		}*/
 		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_register_class);
 
 		for(unsigned i=0; i < sc->idx_base_classes->count; i++){
@@ -232,161 +222,136 @@ namespace zetscript{
 			}
 		}
 
-
 		ScriptClass *this_class = (ScriptClass *)script_classes->get(idx_register_class);
 		this_class->idx_base_classes->push_back(idx_base_class);
 
-		//if(register_c_base_symbols){ // by default is disabled. User has to re-register! --> increases time and binary!!!
-			//----------------------------
-			//
-			// DERIVATE STATE
-			//
-			// disabled for polymorphic classes because its function pointer std::map change at runtime)
-			// https://stackoverflow.com/questions/48572734/is-possible-do-a-later-function-binding-knowing-its-function-type-and-later-the
-			//
+		//----------------------------
+		//
+		// DERIVATE STATE
+		//
 
-			ScriptClass *base_class = (ScriptClass *)script_classes->get(idx_base_class);
-			zs_vector *base_vars=base_class->class_scope->symbol_variables;
-			zs_vector *base_functions=base_class->class_scope->symbol_variables;
+		ScriptClass *base_class = (ScriptClass *)script_classes->get(idx_base_class);
+		zs_vector *base_vars=base_class->class_scope->symbol_variables;
+		zs_vector *base_functions=base_class->class_scope->symbol_variables;
 
-			/*unsigned short derivated_symbol_info_properties=SYMBOL_PROPERTY_C_OBJECT_REF;//| SYMBOL_PROPERTY_IS_DERIVATED;
-			if(std::is_polymorphic<B>::value==true){
+		// register all c vars symbols ...
+		for(unsigned i = 0; i < base_functions->count; i++){
 
-				//if((calling_function->symbol.properties & SYMBOL_PROPERTY_IS_POLYMORPHIC)){ // cannot call...
-				THROW_RUNTIME_ERROR("class \"%s\" is polymorphic and cannot be processed due function/variable pointer it changes at runtime and could crash your application. You have two options:\n"
-						"1. Set registerNativeBaseSymbols(false) and  re-register the function using REGISTER_NATIVE_FUNCTION_MEMBER\n"
-						"2. Rewrite all virtual functions/classes to no non-virtual and do virtual operation through C function pointers\n"
-						,(class_name+"::").c_str()
+			Symbol *symbol_src = (Symbol *)base_functions->items[i];
+
+			bool is_metamethod_function = 	zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_SETTER)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_GETTER)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_POST_INC)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_POST_DEC)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_PRE_INC)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_PRE_DEC)
+										;
+
+			// we have to know whether function member is or not getter/setter because we create them in the attribute member case. If not, we could have
+			// duplicated symbols.
+			if(is_metamethod_function == false){
+
+				ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
+				// build params...
+
+
+				ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(script_function);
+				size_t params_len=script_function->params_len;
+
+
+				this_class->registerNativeMemberFunction(
+					script_function->symbol.name,
+					params,
+					params_len,
+					script_function->idx_return_type,
+					script_function->ref_native_function_ptr, // it contains script function pointer
+					script_function->symbol.properties, //derivated_symbol_info_properties
+					script_function->symbol.file,
+					script_function->symbol.line
 				);
-			}*/
-
-			//derivated_symbol_info_properties|=SYMBOL_PROPERTY_IS_POLYMORPHIC; // set as polymorphic and show error if you try to call a polymorphic function
-			// register all c vars symbols ...
-			for(unsigned i = 0; i < base_functions->count; i++){
-
-				Symbol *symbol_src = (Symbol *)base_functions->items[i];
-
-				bool is_metamethod_function = 	zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_SETTER)
-											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_GETTER)
-											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_POST_INC)
-											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_POST_DEC)
-											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_PRE_INC)
-											||  zs_strutils::starts_with(symbol_src->name,ZS_PREFIX_SYMBOL_NAME_PRE_DEC)
-											;
-
-				// we have to know whether function member is or not getter/setter because we create them in the attribute member case. If not, we could have
-				// duplicated symbols.
-				if(is_metamethod_function == false){
-
-					ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
-					// build params...
-
-
-					ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(script_function);
-					size_t params_len=script_function->params_len;
-
-
-					this_class->registerNativeMemberFunction(
-						script_function->symbol.name,
-						params,
-						params_len,
-						script_function->idx_return_type,
-						script_function->ref_native_function_ptr, // it contains script function pointer
-						script_function->symbol.properties, //derivated_symbol_info_properties
-						script_function->symbol.file,
-						script_function->symbol.line
-					);
-				}
 			}
+		}
 
 
-			for(unsigned i = 0; i < base_vars->count; i++){
-				Symbol *symbol_src = (Symbol *)base_vars->items[i];
+		for(unsigned i = 0; i < base_vars->count; i++){
+			Symbol *symbol_src = (Symbol *)base_vars->items[i];
 
-				if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+			if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 
-					MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
-					MemberAttribute *ma_dst=NULL;
+				MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
+				MemberAttribute *ma_dst=NULL;
 
-					zs_vector *sf_setters=&ma_src->setters;
-					Symbol *symbol_attribute=NULL;
-					Symbol *symbol_function=NULL;
+				zs_vector *sf_setters=&ma_src->setters;
+				Symbol *symbol_attribute=NULL;
+				Symbol *symbol_function=NULL;
 
-					symbol_attribute=this_class->registerMemberAttribute(symbol_src->name,symbol_src->file,symbol_src->line);
-					ma_dst=(MemberAttribute *)symbol_attribute->ref_ptr;
-
-
-					struct _AttribMethodIt{
-						ScriptFunction **dst;
-						ScriptFunction *src;
-					}attrib_methods[]={
-						{&ma_dst->getter,ma_src->getter}
-						,{&ma_dst->post_inc,ma_src->post_inc}
-						,{&ma_dst->post_dec,ma_src->post_dec}
-						,{&ma_dst->pre_inc,ma_src->pre_inc}
-						,{&ma_dst->pre_dec,ma_src->pre_dec}
-						,{0,0}
-					};
-
-					_AttribMethodIt *it=attrib_methods;
-
-					// register getter and setter
-					while(it->dst!=0){
-
-						*it->dst = NULL; // init to null
-
-						if(it->src!=0){ // we have src method
-
-							//ScriptFunctionParam*params=malloc(it->src->params_len*sizeof(ScriptFunctionParam));
-							//size_t params_len=it->src->params_len;
-							//memcpy(params,it->src->params,it->src->params_len*sizeof(ScriptFunctionParam));
-							ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(it->src);
-							size_t params_len=it->src->params_len;
+				symbol_attribute=this_class->registerMemberAttribute(symbol_src->name,symbol_src->file,symbol_src->line);
+				ma_dst=(MemberAttribute *)symbol_attribute->ref_ptr;
 
 
-							symbol_function=this_class->registerNativeMemberFunction(
-									it->src->symbol.name,
-									params,
-									params_len,
-									it->src->idx_return_type,
-									it->src->ref_native_function_ptr,
-									it->src->symbol.properties,
-									it->src->symbol.file,
-									it->src->symbol.line
-							);
+				struct _AttribMethodIt{
+					ScriptFunction **dst;
+					ScriptFunction *src;
+				}attrib_methods[]={
+					{&ma_dst->getter,ma_src->getter}
+					,{&ma_dst->post_inc,ma_src->post_inc}
+					,{&ma_dst->post_dec,ma_src->post_dec}
+					,{&ma_dst->pre_inc,ma_src->pre_inc}
+					,{&ma_dst->pre_dec,ma_src->pre_dec}
+					,{0,0}
+				};
 
-							*it->dst=(ScriptFunction *)symbol_function->ref_ptr;
-						}
+				_AttribMethodIt *it=attrib_methods;
 
-						it++;
+				// register getter and setter
+				while(it->dst!=0){
 
-					}
+					*it->dst = NULL; // init to null
 
-					for(unsigned i=0; i < sf_setters->count; i++){
+					if(it->src!=0){ // we have src method
 
-
-						StackElement *stk_setter=(StackElement *)sf_setters->items[i];
-						ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
-						//ScriptFunctionParam *params=(ScriptFunctionParam *)malloc(sf_setter->params_len*sizeof(ScriptFunctionParam));
-						//size_t params_len=sf_setter->params_len;
-						//memcpy(params,sf_setter->params,sf_setter->params_len*sizeof(ScriptFunctionParam));
-						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
+						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(it->src);
 						size_t params_len=it->src->params_len;
 
 						symbol_function=this_class->registerNativeMemberFunction(
-								sf_setter->symbol.name,
+								it->src->symbol.name,
 								params,
 								params_len,
-								sf_setter->idx_return_type,
-								sf_setter->ref_native_function_ptr,
-								sf_setter->symbol.properties,
-								sf_setter->symbol.file,
-								sf_setter->symbol.line
+								it->src->idx_return_type,
+								it->src->ref_native_function_ptr,
+								it->src->symbol.properties,
+								it->src->symbol.file,
+								it->src->symbol.line
 						);
 
-						ma_dst->addSetter((ScriptFunction *)symbol_function->ref_ptr);
+						*it->dst=(ScriptFunction *)symbol_function->ref_ptr;
 					}
+					it++;
 				}
+
+				for(unsigned i=0; i < sf_setters->count; i++){
+
+
+					StackElement *stk_setter=(StackElement *)sf_setters->items[i];
+					ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
+
+					ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
+					size_t params_len=it->src->params_len;
+
+					symbol_function=this_class->registerNativeMemberFunction(
+							sf_setter->symbol.name,
+							params,
+							params_len,
+							sf_setter->idx_return_type,
+							sf_setter->ref_native_function_ptr,
+							sf_setter->symbol.properties,
+							sf_setter->symbol.file,
+							sf_setter->symbol.line
+					);
+
+					ma_dst->addSetter((ScriptFunction *)symbol_function->ref_ptr);
+				}
+			}
 		}
 
 		//
@@ -400,9 +365,9 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeConstructor(
-			F function_type
-			, const char *registered_file
-			,short registered_line
+		F function_type
+		,const char *registered_file
+		,short registered_line
 	){
 
 		zs_string str_class_name_ptr = typeid( C *).name();
@@ -419,8 +384,8 @@ namespace zetscript{
 	template <typename C, typename R>
 	void ScriptClassFactory::registerNativeStaticConstMember(
 			const zs_string & var_name
-			, const R var_pointer
-			, const char *registered_file
+			,const R var_pointer
+			,const char *registered_file
 			,short registered_line) //unsigned int offset)
 	{
 		// to make compatible MSVC shared library
@@ -454,165 +419,163 @@ namespace zetscript{
 				,registered_file
 				,registered_line
 		);
-
-
 	}
 
-		/*
-		 * register attribute setter
-		 */
-		template <typename C,typename F>
-		void ScriptClassFactory::registerNativeMemberAttributeSetter(
-				const zs_string & attr_name
-				,F ptr_function_setter
-				, const char *registered_file
-				,short registered_line
-		){
-			zs_string str_class_name_ptr = typeid( C *).name();
+	/*
+	 * register attribute setter
+	 */
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberAttributeSetter(
+		const zs_string & attr_name
+		,F ptr_function_setter
+		,const char *registered_file
+		,short registered_line
+	){
+		zs_string str_class_name_ptr = typeid( C *).name();
 
-			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
-			if(c_class == NULL){
-				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
-			}
-
-			c_class->registerNativeMemberAttributeSetter<F>(
-				 attr_name
-				,ptr_function_setter
-				,registered_file
-				,registered_line
-			);
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		/*
-		 * register attribute getter
-		 */
-		template <typename C,typename F>
-		void ScriptClassFactory::registerNativeMemberAttributeGetter(
-				const zs_string & attr_name
-				,F ptr_function_getter
-				, const char *registered_file
-				,short registered_line
-		){
-			zs_string str_class_name_ptr = typeid( C *).name();
+		c_class->registerNativeMemberAttributeSetter<F>(
+			 attr_name
+			,ptr_function_setter
+			,registered_file
+			,registered_line
+		);
+	}
 
-			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+	/*
+	 * register attribute getter
+	 */
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberAttributeGetter(
+		const zs_string & attr_name
+		,F ptr_function_getter
+		,const char *registered_file
+		,short registered_line
+	){
+		zs_string str_class_name_ptr = typeid( C *).name();
 
-			if(c_class == NULL){
-				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
-			}
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
-			c_class->registerNativeMemberAttributeGetter<F>(
-				 attr_name
-				,ptr_function_getter
-				,registered_file
-				,registered_line
-			);
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		/*
-		 * register attribute post_increment
-		 */
-		template <typename C,typename F>
-		void ScriptClassFactory::registerNativeMemberAttributePostIncrement(
-				const zs_string & attr_name
-				,F ptr_function_post_increment
-				, const char *registered_file
-				,short registered_line
-		){
-			zs_string str_class_name_ptr = typeid( C *).name();
+		c_class->registerNativeMemberAttributeGetter<F>(
+			 attr_name
+			,ptr_function_getter
+			,registered_file
+			,registered_line
+		);
+	}
 
-			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+	/*
+	 * register attribute post_increment
+	 */
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberAttributePostIncrement(
+		const zs_string & attr_name
+		,F ptr_function_post_increment
+		,const char *registered_file
+		,short registered_line
+	){
+		zs_string str_class_name_ptr = typeid( C *).name();
 
-			if(c_class == NULL){
-				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
-			}
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
-			c_class->registerNativeMemberAttributePostIncrement<F>(
-				 attr_name
-				,ptr_function_post_increment
-				,registered_file
-				,registered_line
-			);
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		/*
-		 * register attribute post_decrement
-		 */
-		template <typename C,typename F>
-		void ScriptClassFactory::registerNativeMemberAttributePostDecrement(
-				const zs_string & attr_name
-				,F ptr_function_post_decrement
-				, const char *registered_file
-				,short registered_line
-		){
-			zs_string str_class_name_ptr = typeid( C *).name();
+		c_class->registerNativeMemberAttributePostIncrement<F>(
+			 attr_name
+			,ptr_function_post_increment
+			,registered_file
+			,registered_line
+		);
+	}
 
-			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+	/*
+	 * register attribute post_decrement
+	 */
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberAttributePostDecrement(
+			const zs_string & attr_name
+			,F ptr_function_post_decrement
+			,const char *registered_file
+			,short registered_line
+	){
+		zs_string str_class_name_ptr = typeid( C *).name();
 
-			if(c_class == NULL){
-				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
-			}
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
-			c_class->registerNativeMemberAttributePostDecrement<F>(
-				 attr_name
-				,ptr_function_post_decrement
-				,registered_file
-				,registered_line
-			);
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		/*
-		 * register attribute pre_increment
-		 */
-		template <typename C,typename F>
-		void ScriptClassFactory::registerNativeMemberAttributePreIncrement(
-				const zs_string & attr_name
-				,F ptr_function_pre_increment
-				, const char *registered_file
-				,short registered_line
-		){
-			zs_string str_class_name_ptr = typeid( C *).name();
+		c_class->registerNativeMemberAttributePostDecrement<F>(
+			 attr_name
+			,ptr_function_post_decrement
+			,registered_file
+			,registered_line
+		);
+	}
 
-			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+	/*
+	 * register attribute pre_increment
+	 */
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberAttributePreIncrement(
+			const zs_string & attr_name
+			,F ptr_function_pre_increment
+			,const char *registered_file
+			,short registered_line
+	){
+		zs_string str_class_name_ptr = typeid( C *).name();
 
-			if(c_class == NULL){
-				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
-			}
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
-			c_class->registerNativeMemberAttributePreIncrement<F>(
-				 attr_name
-				,ptr_function_pre_increment
-				,registered_file
-				,registered_line
-			);
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		/*
-		 * register attribute pre_decrement
-		 */
-		template <typename C,typename F>
-		void ScriptClassFactory::registerNativeMemberAttributePreDecrement(
-				const zs_string & attr_name
-				,F ptr_function_pre_decrement
-				, const char *registered_file
-				,short registered_line
-		){
-			zs_string str_class_name_ptr = typeid( C *).name();
+		c_class->registerNativeMemberAttributePreIncrement<F>(
+			 attr_name
+			,ptr_function_pre_increment
+			,registered_file
+			,registered_line
+		);
+	}
 
-			ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+	/*
+	 * register attribute pre_decrement
+	 */
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberAttributePreDecrement(
+			const zs_string & attr_name
+			,F ptr_function_pre_decrement
+			,const char *registered_file
+			,short registered_line
+	){
+		zs_string str_class_name_ptr = typeid( C *).name();
 
-			if(c_class == NULL){
-				THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
-			}
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
-			c_class->registerNativeMemberAttributePreDecrement<F>(
-				 attr_name
-				,ptr_function_pre_decrement
-				,registered_file
-				,registered_line
-			);
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
+
+		c_class->registerNativeMemberAttributePreDecrement<F>(
+			 attr_name
+			,ptr_function_pre_decrement
+			,registered_file
+			,registered_line
+		);
+	}
 
 	/**
 	 * Register C Member function Class
@@ -620,11 +583,11 @@ namespace zetscript{
 	 */
 	template <typename C, typename F>
 	void ScriptClassFactory::registerNativeMemberFunctionStatic(
-			const zs_string & function_name
-			,F ptr_function
-			, const char *registered_file
-			,short registered_line
-		)
+		const zs_string & function_name
+		,F ptr_function
+		,const char *registered_file
+		,short registered_line
+	)
 	{
 		// to make compatible MSVC shared library
 		zs_string str_class_name_ptr = typeid( C *).name();
@@ -649,10 +612,10 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberFunction(
-			const zs_string & function_name
-			,F ptr_function
-			, const char *registered_file
-			,short registered_line
+		const zs_string & function_name
+		,F ptr_function
+		,const char *registered_file
+		,short registered_line
 	){
 		zs_string str_class_name_ptr = typeid( C *).name();
 

@@ -478,7 +478,6 @@ namespace zetscript{
 			return NULL;
 		}
 
-
 		// remove last two instructions from vector
 		delete i1;
 		if(n_eval_ops == 2){

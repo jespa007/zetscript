@@ -670,12 +670,9 @@ namespace zetscript{
 
 	inline bool vm_apply_metamethod_primitive(
 			VirtualMachine *vm
-			,ScriptFunction *calling_function
-			,Instruction *instruction
 			,ByteCodeMetamethod byte_code_metamethod
 			,StackElement *stk_result_op1
 			,StackElement *stk_result_op2
-			, bool & error
 	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 
@@ -755,7 +752,6 @@ namespace zetscript{
 		,StackElement *stk_result_op2
 	
 	) {
-		bool error=false;
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		zs_string str_stk_result_op1_full_definition="";
 		zs_string str_stk_result_op2_full_definition="";
@@ -855,18 +851,11 @@ namespace zetscript{
 		if(stk_result_op1 != NULL && stk_result_op2 != NULL && stk_ma==NULL){
 			if(vm_apply_metamethod_primitive(
 				vm
-				 ,calling_function
-				,instruction
 				,byte_code_metamethod
 				,stk_result_op1
 				,stk_result_op2
-				, error
 			)){
 				return true;
-			}
-
-			if(error == true){
-				return false;
 			}
 		}
 
@@ -915,7 +904,7 @@ namespace zetscript{
 					goto apply_metamethod_error;
 				}
 
-				if(symbol->properties & (SYMBOL_PROPERTY_FUNCTION | SYMBOL_PROPERTY_MEMBER_FUNCTION) == 0){
+				if((symbol->properties & (SYMBOL_PROPERTY_FUNCTION | SYMBOL_PROPERTY_MEMBER_FUNCTION)) == 0){
 					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
 					goto apply_metamethod_error;
 				}
@@ -924,7 +913,6 @@ namespace zetscript{
 
 			}
 		}
-
 
 		if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
 			vm_call_function_script(

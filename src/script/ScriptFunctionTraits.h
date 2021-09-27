@@ -140,11 +140,12 @@ namespace zetscript{
 	auto getArgTypes(zs_vector & params)
 	-> typename std::enable_if<(ArgIdx == 0)>::type
 	{
+		ZS_UNUSUED_PARAM(params);
 		 // NO ARGS CASE
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(int i,const char ** return_type, zs_vector & type_params, IndexSequence<Is...>)
+	auto getParamsFunction(const char ** return_type, zs_vector & type_params, IndexSequence<Is...>)
 	-> typename std::enable_if<(_F::arity > 0)>::type
 	{
 		*return_type = typeid(typename _F::return_type).name();
@@ -152,7 +153,7 @@ namespace zetscript{
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(int i,const char ** return_type, zs_vector & type_params, IndexSequence<Is...>)
+	auto getParamsFunction(const char ** return_type, zs_vector & type_params, IndexSequence<Is...>)
 	-> typename std::enable_if<(_F::arity == 0)>::type
 	{
 		*return_type = typeid(typename _F::return_type).name();
@@ -173,7 +174,7 @@ namespace zetscript{
 		zs_vector args;
 		// 1. check all parameters ok.
 		using Traits3 = FunctionTraits<decltype(ptr_function)>;
-		getParamsFunction<Traits3>(0, &return_type, args, MakeIndexSequence<Traits3::arity>{});
+		getParamsFunction<Traits3>(&return_type, args, MakeIndexSequence<Traits3::arity>{});
 
 		if(args.count>MAX_NATIVE_FUNCTION_ARGS){
 			THROW_RUNTIME_ERROR("Max arguments reached");
@@ -184,7 +185,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Return type \"%s\" for function \"%s\" not registered",zs_rtti::demangle(return_type),function_name);
 		}
 
-		*params=(ScriptFunctionParam *)malloc(sizeof(ScriptFunctionParam)*args.count);
+		*params=new ScriptFunctionParam[args.count];
 		*params_len=args.count;
 
 		for(unsigned int i = 0; i < args.count; i++){

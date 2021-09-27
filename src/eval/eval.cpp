@@ -125,7 +125,6 @@ namespace zetscript{
 			zs_int *it=eval_data->unresolved_symbols.items;
 			const char *str_aux=NULL;
 
-
 			for(unsigned i=0;i < eval_data->unresolved_symbols.count;i++,it++){
 				UnresolvedInstructionInfo *unresolved_instruction=(UnresolvedInstructionInfo *)*it;
 				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(unresolved_instruction->calling_function,unresolved_instruction->instruction);
@@ -207,29 +206,37 @@ namespace zetscript{
 								,ptr_str_symbol_to_find
 						);
 					}
-
 				}
 
-				if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
-					if(unresolved_instruction->instruction->byte_code==BYTE_CODE_FIND_VARIABLE){
-						unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
-					}else{
-						unresolved_instruction->instruction->byte_code=BYTE_CODE_IMMEDIATE_CALL;
+				if(symbol_found !=NULL){
+
+					if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
+						if(unresolved_instruction->instruction->byte_code==BYTE_CODE_FIND_VARIABLE){
+							unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+						}else{
+							unresolved_instruction->instruction->byte_code=BYTE_CODE_IMMEDIATE_CALL;
+						}
+						unresolved_instruction->instruction->value_op2=(zs_int)(ScriptFunction *)symbol_found->ref_ptr; // store script function
 					}
-					unresolved_instruction->instruction->value_op2=(zs_int)(ScriptFunction *)symbol_found->ref_ptr; // store script function
-				}
-				else{ // global variable
+					else{ // global variable
 
-					if(unresolved_instruction->instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
-						unresolved_instruction->instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
-					}else{
-						unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
+						if(unresolved_instruction->instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
+							unresolved_instruction->instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+						}else{
+							unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
+						}
+
+						unresolved_instruction->instruction->value_op2=symbol_found->idx_position;
 					}
-
-					unresolved_instruction->instruction->value_op2=symbol_found->idx_position;
 				}
+
+
+				// deallocate item
+				delete unresolved_instruction;
 
 			}
+
+			eval_data->unresolved_symbols.clear();
 		}
 
 		return 1;
@@ -451,7 +458,7 @@ namespace zetscript{
 					,line
 					, scope_info
 					,&eval_data->current_function->eval_instructions
-					,""
+					,NULL
 					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT | EVAL_EXPRESSION_ON_MAIN_BLOCK
 				);
 			}
@@ -588,7 +595,8 @@ namespace zetscript{
 		}
 
 		// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
-		size_t len=eval_data->current_function->eval_instructions.count + 1; // +1 for end instruction
+		size_t count =eval_data->current_function->eval_instructions.count;
+		size_t len=count + 1; // +1 for end instruction
 		size_t total_size_bytes = (len) * sizeof(Instruction);
 		sf->instructions_len=len;
 		sf->instructions = (PtrInstruction)malloc(total_size_bytes);
@@ -597,19 +605,17 @@ namespace zetscript{
 		int ok=FALSE;
 		const char *str_aux=NULL;
 		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data);
+		zs_int *ei_it=eval_data->current_function->eval_instructions.items;
 
-
-		for(unsigned i=0; i < eval_data->current_function->eval_instructions.count; i++){
+		for(unsigned i=0; i < count; i++){
 
 			Symbol *vis=NULL;
-			EvalInstruction *instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[i];
+			EvalInstruction *eval_instruction = (EvalInstruction *)(*ei_it++);
 			zs_string *ptr_str_symbol_to_find=NULL;
 			ScriptClass *sc_aux=NULL;
-			//bool is_local=false;
-			ptr_str_symbol_to_find=&instruction->symbol.name;
+			ptr_str_symbol_to_find=&eval_instruction->symbol.name;
 
-			//is_static&=((instruction->vm_instruction.properties & INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS)==0);
-			switch(instruction->vm_instruction.byte_code){
+			switch(eval_instruction->vm_instruction.byte_code){
 
 			// LOAD
 			case BYTE_CODE_LOAD_GLOBAL:
@@ -647,78 +653,77 @@ namespace zetscript{
 				sum_stk_load_stk=0; // and reset stack
 				break;
 			case BYTE_CODE_LOAD_ELEMENT_THIS:
-
-					sum_stk_load_stk++;
+				sum_stk_load_stk++;
 				// try to solve symbol...
-					if(*ptr_str_symbol_to_find == SYMBOL_VALUE_SUPER){
-						// get current function name and find first ancestor in heritance
-						Symbol *symbol_sf_foundf=NULL;
-						zs_string target_name;
+				if(*ptr_str_symbol_to_find == SYMBOL_VALUE_SUPER){
+					// get current function name and find first ancestor in heritance
+					Symbol *symbol_sf_foundf=NULL;
+					zs_string target_name;
 
-						bool is_constructor = sf->symbol.name == sc_sf->class_name;
+					bool is_constructor = sf->symbol.name == sc_sf->class_name;
 
-						for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
-							Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[i];
-							bool match_names=false;
-							if(is_constructor==true){
-								if(symbol_member->scope == NULL){ // is constant...
-									continue;
-								}
-								match_names=symbol_member->scope->script_class->class_name==symbol_member->name;
-							}else{
-								match_names=symbol_member->name==sf->symbol.name;
+					for(int i = sf->symbol.idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
+						Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[i];
+						bool match_names=false;
+						if(is_constructor==true){
+							if(symbol_member->scope == NULL){ // is constant...
+								continue;
 							}
-
-							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
-							bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
-							if(
-									(match_names)
-								&& (match_params)
-								){
-								symbol_sf_foundf = symbol_member;
-							}
-
+							match_names=symbol_member->scope->script_class->class_name==symbol_member->name;
+						}else{
+							match_names=symbol_member->name==sf->symbol.name;
 						}
 
-						// ok get the super function...
-						if(symbol_sf_foundf == NULL){
-							EVAL_ERROR_FILE_LINE_AND_GOTO(
-								lbl_exit_pop_function
-								,eval_data->current_parsing_file
-								,instruction->instruction_source_info.line
-								,"Cannot find parent function %s::%s"
-								,sc_sf->class_name.c_str()
-								,sf->symbol.name.c_str()
-							);
+						ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
+						bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
+						if(
+								(match_names)
+							&& (match_params)
+							){
+							symbol_sf_foundf = symbol_member;
 						}
-						instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER_VAR;
-						instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
-						instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_class->class_name)+"::"+symbol_sf_foundf->name);
 
-					}else{ // is "this" symbol, check whether symbol is member
-						// TODO: review load function member !!
-						if(instruction->vm_instruction.value_op2 == ZS_IDX_UNDEFINED){
-							// is automatically created on vm...
-							Symbol *symbol_function=sc_sf->getSymbol(*ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY);
-							if(symbol_function!=NULL){
-								// functions always loads dynamically because we can have an override function
-								// so we don't load as member in a fix position else is a member variable ...
-								if((symbol_function->properties & SYMBOL_PROPERTY_FUNCTION) == 0){ // if not function set as load immediate
-									instruction->vm_instruction.value_op2=symbol_function->idx_position;
-									instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_VAR; // immediate load
-								}
-							}
-						}
-						// TODO: review load function member !!
 					}
-					break;
+
+					// ok get the super function...
+					if(symbol_sf_foundf == NULL){
+						EVAL_ERROR_FILE_LINE_AND_GOTO(
+							lbl_exit_pop_function
+							,eval_data->current_parsing_file
+							,eval_instruction->instruction_source_info.line
+							,"Cannot find parent function %s::%s"
+							,sc_sf->class_name.c_str()
+							,sf->symbol.name.c_str()
+						);
+					}
+					eval_instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER_VAR;
+					eval_instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
+					eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_class->class_name)+"::"+symbol_sf_foundf->name);
+
+				}else{ // is "this" symbol, check whether symbol is member
+					// TODO: review load function member !!
+					if(eval_instruction->vm_instruction.value_op2 == ZS_IDX_UNDEFINED){
+						// is automatically created on vm...
+						Symbol *symbol_function=sc_sf->getSymbol(*ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY);
+						if(symbol_function!=NULL){
+							// functions always loads dynamically because we can have an override function
+							// so we don't load as member in a fix position else is a member variable ...
+							if((symbol_function->properties & SYMBOL_PROPERTY_FUNCTION) == 0){ // if not function set as load immediate
+								eval_instruction->vm_instruction.value_op2=symbol_function->idx_position;
+								eval_instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_VAR; // immediate load
+							}
+						}
+					}
+					// TODO: review load function member !!
+				}
+				break;
 			case BYTE_CODE_FIND_VARIABLE:
 			case BYTE_CODE_FIND_IMMEDIATE_CALL:
 				// add instruction reference to solve later
 				eval_data->unresolved_symbols.push_back((zs_int)(
 						new UnresolvedInstructionInfo(&sf->instructions[i],sf)
 				));
-				if(instruction->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
+				if(eval_instruction->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
 					sum_stk_load_stk++;
 				}else{
 					sum_stk_load_stk=0; // call function reset stk
@@ -726,16 +731,12 @@ namespace zetscript{
 				break;
 			}
 
-
 			//------------------------ SORT ALL LOCAL VARIABLES
-
-
-
 			if(lookup_sorted_table_local_variables != NULL){
 				// add any instruction that references global instruction
-				ByteCode byte_code=instruction->vm_instruction.byte_code;
-				uint16_t properties_1=instruction->vm_instruction.properties;
-				uint16_t properties_2=(uint16_t)(instruction->vm_instruction.value_op2 & 0xffff);
+				ByteCode byte_code=eval_instruction->vm_instruction.byte_code;
+				uint16_t properties_1=eval_instruction->vm_instruction.properties;
+				uint16_t properties_2=(uint16_t)(eval_instruction->vm_instruction.value_op2 & 0xffff);
 				if(
 						byte_code == BYTE_CODE_LOAD_GLOBAL
 						|| byte_code == BYTE_CODE_PUSH_STK_GLOBAL
@@ -753,7 +754,7 @@ namespace zetscript{
 					case BYTE_CODE_LOAD_LOCAL:
 					case BYTE_CODE_LOAD_REF:
 					case BYTE_CODE_PUSH_STK_LOCAL:
-						instruction->vm_instruction.value_op2=lookup_sorted_table_local_variables[instruction->vm_instruction.value_op2];
+						eval_instruction->vm_instruction.value_op2=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op2];
 						break;
 					default:
 						// check if local access
@@ -761,7 +762,7 @@ namespace zetscript{
 								==
 							(INSTRUCTION_PROPERTY_ILOAD_R | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)){
 
-							instruction->vm_instruction.value_op2=lookup_sorted_table_local_variables[instruction->vm_instruction.value_op2];
+							eval_instruction->vm_instruction.value_op2=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op2];
 
 
 						}else if((properties_1 & (INSTRUCTION_PROPERTY_ILOAD_KR| INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)) // KR
@@ -769,46 +770,44 @@ namespace zetscript{
 							(INSTRUCTION_PROPERTY_ILOAD_KR| INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)
 						){
 
-							instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[instruction->vm_instruction.value_op1];
+							eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
 
 						}else if((properties_1 & (INSTRUCTION_PROPERTY_ILOAD_RK| INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)) // RK
 									==
 							(INSTRUCTION_PROPERTY_ILOAD_RK| INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)
 						){
-							instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[instruction->vm_instruction.value_op1];
+							eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
 
 						}else{ // is RR
 							if ((properties_1 & (INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL))
 												==
 								(INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)
 							){
-								instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[instruction->vm_instruction.value_op1];
+								eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
 							}
 
 							if ((properties_2 & (INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL))
 												==
 								(INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)
 							){
-								instruction->vm_instruction.value_op2=(lookup_sorted_table_local_variables[instruction->vm_instruction.value_op2>>16]<<16) | properties_2;
+								eval_instruction->vm_instruction.value_op2=(lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op2>>16]<<16) | properties_2;
 							}
 						}
 					}
 				}
 			}
 			//------------------------ SORT ALL LOCAL VARIABLES
-
 			// save instruction ...
-			sf->instructions[i]=instruction->vm_instruction;
+			sf->instructions[i]=eval_instruction->vm_instruction;
 
 			//------------------------------------
 			// symbol value to save at runtime ...
-			InstructionSourceInfo instruction_info=instruction->instruction_source_info;
+			InstructionSourceInfo instruction_info=eval_instruction->instruction_source_info;
 
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
-			instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
+			instruction_info.ptr_str_symbol_name=eval_instruction->instruction_source_info.ptr_str_symbol_name;
 
-
-			sf->instruction_source_info.items[i]=(zs_int)(new InstructionSourceInfo(instruction_info));
+			sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(instruction_info)));
 		}
 
 		if(lookup_sorted_table_local_variables != NULL){

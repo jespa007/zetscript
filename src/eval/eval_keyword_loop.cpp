@@ -438,7 +438,7 @@ namespace zetscript{
 										,line
 										,new_scope
 										,&ei_load_container_identifier //eval_data->current_function->instructions
-										,""
+										,NULL
 										,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
 								))==NULL){
 									// delete unusued vars_for

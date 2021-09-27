@@ -140,12 +140,17 @@ namespace zetscript{
 
 	public:
 
+
 		//===================================================================================================
 		//
-		// PRINT BYTE CODE INFO
+		// PRINT INFO
+
+		static void printAllStructSizes();
+
+
 		void printGeneratedCode(bool show_system_code=false);
 
-		// PRINT BYTE CODE INFO
+		// PRINT  INFO
 		//---------------------------------------------------------------------------------------------------------------------------------------
 
 		ZetScript();

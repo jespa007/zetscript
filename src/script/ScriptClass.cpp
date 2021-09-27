@@ -523,7 +523,6 @@ namespace zetscript{
 				,line
 				//---- Function data
 				,idx_class 				// idx class which belongs to...
-				//,idx_position // idx position ...
 				,function_name
 				,params
 				,params_len

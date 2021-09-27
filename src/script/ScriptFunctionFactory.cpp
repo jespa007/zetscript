@@ -20,11 +20,9 @@ namespace zetscript{
 			, short line
 			//--- Function data
 			, int idx_class
-			//, short _idx_position
 			, const zs_string & function_name
 			, ScriptFunctionParam *_params
 			,size_t _params_len
-
 			, int idx_return_type
 			, zs_int ref_native_function_ptr
 			, unsigned short properties
@@ -43,7 +41,6 @@ namespace zetscript{
 		short idx_script_function = script_functions->count;
 
 		// sets local function information...
-		//symbol->idx_position = _idx_position; // idx local/member function
 		symbol->properties = properties | SYMBOL_PROPERTY_FUNCTION;
 
 		ScriptFunction *script_function = new ScriptFunction(

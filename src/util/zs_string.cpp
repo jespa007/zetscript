@@ -105,13 +105,22 @@ namespace zetscript{
 
     zs_string zs_string::newFromTwo(const char *_s1, const char *_s2) {
 		zs_string s; // create a new string named 's'
-		size_t len1=strlen(_s1);
-		size_t len2=strlen(_s2);
+		size_t len1=0;
+		size_t len2=0;
+
+		if(_s1!=NULL){
+			len1=strlen(_s1);
+		}
+
+		if(_s2!=NULL){
+			len2=strlen(_s2);
+		}
 
 		s.size = len1 + len2;
 		s.buf = (char *)malloc(s.size + 1); // allocate memory to keep the concatenated string
-		strncpy(s.buf, _s1, len1); // copy the 1st string
-		strncpy(s.buf + len1, _s2, len2);
+
+		if(_s1!=NULL) strncpy(s.buf, _s1, len1); // copy the 1st string
+		if(_s2!=NULL) strncpy(s.buf + len1, _s2, len2);
 
 		return s;
     }

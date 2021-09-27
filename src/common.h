@@ -37,6 +37,11 @@
 #define MIN(a,b) (a)<(b)?(a):(b)
 #endif
 
+#define 	ZS_UNUSUED_PARAM(x) 				((void)(x))
+#define 	ZS_UNUSUED_2PARAMS(x1,x2) 			((void)(x1),(void)(x2))
+#define 	ZS_UNUSUED_3PARAMS(x1,x2,x3) 		((void)(x1),(void)(x2),(void)(x3))
+#define 	ZS_UNUSUED_4PARAMS(x1,x2,x3,x4)		((void)(x1),(void)(x2),(void)(x3),(void)(x4))
+
 namespace zetscript{
 	typedef intptr_t zs_int;
 	typedef char zs_char;

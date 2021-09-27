@@ -152,7 +152,6 @@ namespace zetscript{
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
-		//symbol->n_params	=NO_PARAMS_SYMBOL_ONLY;
 
 		symbol_variables->push_back((zs_int)symbol);
 
@@ -179,33 +178,10 @@ namespace zetscript{
 	}
 
 
-	/*Symbol *  Scope::addSymbol(
-		const char * file
-		,short line
-		, const zs_string & symbol_name
-		, char n_params
-		){
-		Symbol *irv = new Symbol();
-		irv->name = symbol_name;
-		irv->file	 = file;
-		irv->line 	 = line;
-		irv->scope=  this;
-		irv->n_params=n_params;
-
-		if(irv->n_params == NO_PARAMS_SYMBOL_ONLY){
-			symbol_variables->push_back((zs_int)irv);
-		}else{
-			symbol_functions->push_back((zs_int)irv);
-		}
-		return irv;
-	}*/
-
-
 	//-----------------------------------------------------------------------------------------------------------
 	//
 	// SCOPE VARIABLE MANAGEMENT
 	//
-
 
 	Symbol * Scope::getSymbol(const zs_string & str_symbol, char n_params, uint16_t scope_direction){
 

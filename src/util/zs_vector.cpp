@@ -79,18 +79,26 @@ namespace zetscript{
 		return item;
 	}
 
-	void zs_vector::resize(size_t _size){
-		if (_size==0) {
-			THROW_RUNTIME_ERROR("_size 0");
+	void zs_vector::resize(size_t _new_size){
+		if (_new_size==0) {
+			if(this->items!=NULL){
+				free(this->items);
+				this->items=NULL;
+				this->count=0;
+				this->_size=0;
+			}
 			return;
 		}
 
-		this->items=(zs_int *)realloc(this->items,_size*sizeof(zs_int));
+		this->items=(zs_int *)realloc(this->items,_new_size*sizeof(zs_int));
 
 		if(this->items == NULL){
-			THROW_RUNTIME_ERROR("NULL pointer");
+			THROW_RUNTIME_ERROR("Cannot resize zs_vector to %i bytes",_new_size);
 			return;
 		}
+
+		this->_size=_new_size;
+		this->count=_new_size;
 
 	}
 
@@ -129,28 +137,22 @@ namespace zetscript{
 		zs_int *new_items=(zs_int *)malloc(sizeof(zs_int)*_size);
 
 		// 1st part
-		if(idx > 0){
-			memcpy(new_items,items,idx*sizeof(zs_int));
-		}
+		memcpy(new_items,items,idx*sizeof(zs_int));
 
 		// middle
 		memcpy(new_items+idx,list->items,n_list_elements_to_copy*sizeof(zs_int));
 
 
 		// last
-		memcpy(new_items+n_list_elements_to_copy+idx,items+idx,(count-idx)*sizeof(zs_int));
+		memcpy(new_items+idx+n_list_elements_to_copy,items+idx,(count-idx)*sizeof(zs_int));
 
 		// free old
-		free(items);
+		if(items != NULL){
+			free(items);
+		}
 
 		// update new
 		items=new_items;
-
-
-
-
-		this->items=new_items;
-
 		count+=list->count;
 	}
 

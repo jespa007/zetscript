@@ -185,7 +185,7 @@ namespace zetscript{
 						,token_node_symbol
 						,pre_operation
 				)) == NULL){
-					if(last_operator_token_node->operator_type!=OPERATOR_UNKNOWN){
+					if(last_operator_token_node!=NULL && last_operator_token_node->operator_type!=OPERATOR_UNKNOWN){
 						EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
 								eval_data->current_parsing_file
 								,last_accessor_line
@@ -213,8 +213,6 @@ namespace zetscript{
 					if(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':'){ //  static access
 
 							// mark symbol as static
-							//token_node_symbol->instructions[0]->symbol.properties |= SYMBOL_PROPERTY_STATIC;
-
 							// the first item is the class
 							zs_string static_access_value=token_node_symbol->value,class_element;
 							Symbol *member_symbol=NULL;

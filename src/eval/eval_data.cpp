@@ -552,10 +552,12 @@ namespace zetscript{
 		return Directive::DIRECTIVE_UNKNOWN;
 	}
 
-	zs_string * get_mapped_name(EvalData *eval_data,const zs_string & s){
-		zs_int e=compiled_symbol_name->get(s.c_str());
+	zs_string * get_mapped_name(EvalData *eval_data,const zs_string & _mapped_name){
+		zs_int e=compiled_symbol_name->get(_mapped_name.c_str());
 		if(e==0){
-			compiled_symbol_name->set(s.c_str(),(zs_int)(new zs_string (s)));
+			zs_string *s=new zs_string (_mapped_name);
+			compiled_symbol_name->set(s->c_str(),(zs_int)(s));
+			e=(zs_int)s;
 		}
 		return ((zs_string *)e);
 	}

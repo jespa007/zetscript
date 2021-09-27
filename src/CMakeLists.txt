@@ -118,7 +118,7 @@ else()
 		
 	ELSE()
 		set(TARGET "release")
-		set(COMPILE_TARGET_FLAGS " -march=native -Os ")
+		set(COMPILE_TARGET_FLAGS " -march=native -O0 -g ")
 		message("-- Memmanager: No")
 	ENDIF()
 	
