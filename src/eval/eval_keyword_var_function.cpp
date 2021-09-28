@@ -29,8 +29,8 @@ namespace zetscript{
 
 		new_instructions_len = sf->instructions_len+(n_elements_to_add);
 		new_instructions_total_bytes=new_instructions_len* sizeof(Instruction);
-		new_instructions=(Instruction *)malloc(new_instructions_total_bytes);
-		memset(new_instructions, 0, new_instructions_total_bytes);
+		new_instructions=(Instruction *)ZS_MALLOC(new_instructions_total_bytes);
+
 
 		start_ptr=new_instructions+sf->instructions_len;
 
@@ -102,8 +102,8 @@ namespace zetscript{
 		ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
 		// fill all instructions
-		start_ptr=sf->instructions=(Instruction *)malloc(instructions_total_bytes); // +1 is for return
-		memset(start_ptr,0,instructions_total_bytes);
+		start_ptr=sf->instructions=(Instruction *)ZS_MALLOC(instructions_total_bytes); // +1 is for return
+
 		sf->instructions_len=instructions_len;
 
 		for(unsigned i=0; i < eval_instructions->count; i++){

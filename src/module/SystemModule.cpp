@@ -53,7 +53,7 @@ namespace zetscript{
 
 			// catch parameters...
 			function_params_len=oo_param->length();
-			function_params=(ScriptFunctionParam *)malloc(sizeof(ScriptFunctionParam)*function_params_len);
+			function_params=(ScriptFunctionParam *)ZS_MALLOC(sizeof(ScriptFunctionParam)*function_params_len);
 			int i=0;
 
 			for(auto it=oo_param->begin(); !it.end(); it.next()){
@@ -105,8 +105,7 @@ namespace zetscript{
 			if(sf->instructions[sf->instructions_len-2].byte_code != BYTE_CODE_RET){
 				int offset_rst_stack=sf->instructions[sf->instructions_len-2].byte_code == BYTE_CODE_RESET_STACK ? 1:0;
 				size_t new_buf_len=sf->instructions_len+2;
-				Instruction *new_buf=(Instruction *)malloc(new_buf_len*sizeof(Instruction));
-				memset(new_buf,0,new_buf_len*sizeof(Instruction));
+				Instruction *new_buf=(Instruction *)ZS_MALLOC(new_buf_len*sizeof(Instruction));
 				memcpy(new_buf,sf->instructions,sf->instructions_len*sizeof(Instruction));
 				// free old ptr
 				free(sf->instructions);

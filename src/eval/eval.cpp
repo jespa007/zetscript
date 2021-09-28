@@ -30,6 +30,19 @@ namespace zetscript{
 
 	int eval_link_unresolved_symbols(EvalData *eval_data);
 
+	void eval_deleta_link_unresolved_symbols(EvalData *eval_data){
+		if(eval_data->unresolved_symbols.count > 0){
+
+			zs_int *it=eval_data->unresolved_symbols.items;
+			for(unsigned i=0;i < eval_data->unresolved_symbols.count;i++,it++){
+				UnresolvedInstructionInfo *unresolved_instruction=(UnresolvedInstructionInfo *)*it;
+				delete unresolved_instruction;
+			}
+
+			eval_data->unresolved_symbols.clear();
+		}
+	}
+
 	void eval_parse_and_compile(ZetScript *zs
 			,const char * str_code
 			, const char *  _filename
@@ -105,6 +118,8 @@ namespace zetscript{
 		if(eval_data->error == false){
 			eval_link_unresolved_symbols(eval_data);
 		}
+
+		eval_deleta_link_unresolved_symbols(eval_data);
 
 		// link unresolved functions...
 		error=eval_data->error;
@@ -230,13 +245,8 @@ namespace zetscript{
 					}
 				}
 
-
 				// deallocate item
-				delete unresolved_instruction;
-
 			}
-
-			eval_data->unresolved_symbols.clear();
 		}
 
 		return 1;
@@ -295,7 +305,7 @@ namespace zetscript{
 			aux_p++;
 
 			if(scope_info->numInnerScopes() >= MAX_INNER_SCOPES_FUNCTION){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Reacged max scopes (Max: %i)",MAX_INNER_SCOPES_FUNCTION);
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Reached max scopes (Max: %i)",MAX_INNER_SCOPES_FUNCTION);
 			}
 
 			new_scope_info = eval_new_scope(eval_data,scope_info,is_function); // special case... ast is created later ...
@@ -571,7 +581,7 @@ namespace zetscript{
 			);
 		}
 
-		short *lookup_linear_stk=(short *)malloc(sizeof(short)*n_var_fun);
+		short *lookup_linear_stk=(short *)ZS_MALLOC(sizeof(short)*n_var_fun);
 		Scope *current_scope=sf->symbol.scope;
 		n_local_variable=0;
 
@@ -599,8 +609,8 @@ namespace zetscript{
 		size_t len=count + 1; // +1 for end instruction
 		size_t total_size_bytes = (len) * sizeof(Instruction);
 		sf->instructions_len=len;
-		sf->instructions = (PtrInstruction)malloc(total_size_bytes);
-		memset(sf->instructions, 0, total_size_bytes);
+		sf->instructions = (PtrInstruction)ZS_MALLOC(total_size_bytes);
+
 
 		int ok=FALSE;
 		const char *str_aux=NULL;

@@ -77,8 +77,7 @@ namespace zetscript{
 	}
 
 	StackElement *ScriptObject::newBuiltinSlot(){
-		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
-		*stk=k_stk_undefined;
+		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
 		stk_builtin_elements.push_back((zs_int)stk);
 		return stk;
 	}

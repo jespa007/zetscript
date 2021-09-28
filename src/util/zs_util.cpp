@@ -11,3 +11,4 @@
 #include 	"zs_timespan.cpp"
 #include 	"zs_datetime.cpp"
 #include 	"zs_io.cpp"
+#include 	"zs_mem.cpp"

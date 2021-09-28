@@ -92,7 +92,6 @@ namespace zetscript{
 		}
 
 
-
 		printf("-------------------------------------------------------\n");
 		printf("\nCode for function \"%s%s\" (Required stack: %i)\n\n",class_str.c_str(),symbol_ref.c_str(),sfo->min_stack_needed);
 

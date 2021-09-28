@@ -102,7 +102,7 @@ else()
 	
 	IF ( "${TARGET}" STREQUAL "debug")
 	
-		set(COMPILE_TARGET_FLAGS " -O0 -g ")
+		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -O0 -g ")
 	
 		IF( EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr )
 			message("-- Memmanager: Yes")
@@ -118,7 +118,7 @@ else()
 		
 	ELSE()
 		set(TARGET "release")
-		set(COMPILE_TARGET_FLAGS " -march=native -O2 ")
+		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -march=native -O2 ")
 		message("-- Memmanager: No")
 	ENDIF()
 	
@@ -157,7 +157,7 @@ IF ( "${TARGET}" STREQUAL "debug")
 	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__DEBUG__ ")
 ENDIF()
 
-SET(CMAKE_CXX_FLAGS   " ${COMPILE_TARGET_FLAGS} ${COMMON_CXX_PARAMS}  " )
+SET(CMAKE_CXX_FLAGS   " ${COMMON_CXX_PARAMS}  " )
 
 
 #
@@ -293,6 +293,7 @@ SET(
 	util/zs_timespan.h
 	util/zs_datetime.h
 	util/zs_util.h
+	util/zs_mem.h
 	
 	#eval
 	eval/eval_keyword.h

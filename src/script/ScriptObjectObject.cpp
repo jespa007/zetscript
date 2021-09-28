@@ -76,7 +76,7 @@ namespace zetscript{
 
 		zs_string key_value = symbol_value;
 		//StackElement *new_stk=pushNewUserSlot();
-		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
+		StackElement *new_stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
 		map_user_property_keys->set(key_value.c_str(),(zs_int)new_stk);
 
 		*new_stk=si; //assign var

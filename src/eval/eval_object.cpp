@@ -96,6 +96,7 @@ namespace zetscript{
 					,aux_p
 					,line
 					,symbol_value
+					,false
 			);
 
 		}
@@ -112,13 +113,18 @@ namespace zetscript{
 			zs_string symbol_value;
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-			if(*aux_p == '}')
-				return true;
+			if(*aux_p == '}'){ // Empty {} is a block
+				return false;
+			}
 
 			aux_p=eval_object_identifier(eval_data,aux_p,line,symbol_value);
 
 
 			if(eval_data->error == true){
+				return false;
+			}
+
+			if(aux_p == NULL){
 				return false;
 			}
 

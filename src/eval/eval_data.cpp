@@ -771,7 +771,7 @@ namespace zetscript{
 		// POST: detects integer/binary/fractional/hexa
 	}
 
-	char *  get_name_identifier_token(EvalData *eval_data,const char *s, int line, zs_string & name){
+	char *  get_name_identifier_token(EvalData *eval_data,const char *s, int line, zs_string & name, bool _throw_error=true){
 
 		char *aux_p = (char *)s;
 		name="";
@@ -794,7 +794,9 @@ namespace zetscript{
 
 				return aux_p;
 		}else{
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Invalid or unexpected token");
+			if(_throw_error){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Invalid or unexpected token");
+			}
 		}
 		return NULL;
 	}

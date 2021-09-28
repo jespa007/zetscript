@@ -13,7 +13,7 @@ namespace zetscript{
 
 	void MemberAttribute::addSetter(ScriptFunction *f){
 
-		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
+		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
 		stk->value=(zs_int)f;
 		stk->properties=STK_PROPERTY_FUNCTION;
 		setters.push_back((zs_int)stk);

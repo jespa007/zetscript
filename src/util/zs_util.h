@@ -11,3 +11,4 @@
 #include "zs_timespan.h"
 #include "zs_datetime.h"
 #include "zs_io.h"
+#include "zs_mem.h"

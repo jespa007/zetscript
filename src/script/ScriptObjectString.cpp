@@ -192,8 +192,7 @@ namespace zetscript{
 								str_begin_format_string=str_begin_format_string+1;
 								size_t format_len=str_end-str_begin_format_string;
 								if(format_len>0){
-									ptr_str_format_string=(char *)malloc(format_len*sizeof(char)+1);
-									memset(ptr_str_format_string,0,format_len*sizeof(char)+1);
+									ptr_str_format_string=(char *)ZS_MALLOC(format_len*sizeof(char)+1);
 									strncpy(ptr_str_format_string,str_begin_format_string,format_len);
 								}
 							}
@@ -209,11 +208,6 @@ namespace zetscript{
 								str_format_results=sov->getUserElementAt(idx_num)->toString(str_format);
 
 								str_result+=str_format_results;
-								/*FormatItem *item=(FormatItem *)malloc(sizeof(FormatItem));
-								item->index=idx_num;*/
-								//printf("idx=>[%i] aligment=>[%i] format=>[%s]\n",idx_num,alignmen,format_string==NULL?"":format_string);
-
-
 
 							}else{ // copy parameter between '{}'
 								char *str_from=(str_begin-1);

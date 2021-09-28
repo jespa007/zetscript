@@ -79,6 +79,7 @@ namespace zetscript{
 			case BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE:return "NEW_CLASS"; // New object (CREATE)
 			case BYTE_CODE_DELETE:					return "DELETE";
 			case BYTE_CODE_POP_SCOPE: 				return "POP_SCOPE"; // New object (CREATE)
+			case BYTE_CODE_POP_SCOPE_CHK_NO_SHARES:	return "POP_SCOPE_CHK_NO_SHARES"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 				return "PUSH_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:		return "PUSH_ATTR"; // New object (CREATE)
 			case BYTE_CODE_NEW_OBJECT:				return "NEW_OBJ"; // New object (CREATE)
@@ -163,6 +164,7 @@ namespace zetscript{
 			case BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE:return "NEW_CLASS"; // New object (CREATE)
 			case BYTE_CODE_DELETE:					return "DELETE";
 			case BYTE_CODE_POP_SCOPE: 				return "POP_SCOPE"; // New object (CREATE)
+			case BYTE_CODE_POP_SCOPE_CHK_NO_SHARES:	return "POP_SCOPE_CHK_NO_SHARES"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 				return "PUSH_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_OBJECT_ELEMENT:		return "PUSH_ATTR"; // New object (CREATE)
 			case BYTE_CODE_NEW_OBJECT:				return "NEW_OBJ"; // New object (CREATE)

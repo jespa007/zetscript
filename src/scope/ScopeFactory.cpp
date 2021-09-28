@@ -26,16 +26,35 @@ namespace zetscript{
 	}
 
 	void ScopeFactory::clearUnusuedScopes(){
-		int v=0;
-		while(v<scopes->count){
+		int v=scopes->count-1;
+		while(v>=0){
 			Scope *scope=(Scope *)scopes->items[v];
-			if(scope->properties & SCOPE_PROPERTY_UNUSUED){
+
+
+			if(scope!=NULL  // scope can be NULL due it was erased before by the removing parent (I don't know whether this is a correct way)
+					&&
+			(scope->properties & SCOPE_PROPERTY_UNUSUED)){
+				// search parent element
+				if(scope != NULL){
+					if(scope->scope_parent != NULL){
+						// remove child from parent to
+						zs_vector *childs=scope->scope_parent->scopes;
+						for(int i=0; i < childs->count; i++){
+							Scope *child=(Scope *)childs->items[i];
+							if(child==scope){
+								childs->erase(i);
+								break;
+							}
+						}
+					}
+
+					delete scope;
+				}
 				scopes->erase(v);
 			}else{
-				++v;
+				--v;
 			}
 		}
-
 	}
 
 	void ScopeFactory::clear(){

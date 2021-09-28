@@ -1881,6 +1881,11 @@ execute_function:
 					vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 				}
 				continue;
+			 case BYTE_CODE_POP_SCOPE_CHK_NO_SHARES:
+				if((data->zero_shares+data->vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove
+					vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
+				}
+				continue;
 			 case BYTE_CODE_RESET_STACK:
 				 data->stk_vm_current=stk_start;
 				 continue;
