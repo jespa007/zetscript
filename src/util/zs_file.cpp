@@ -22,8 +22,7 @@ namespace zetscript{
 				if((length = size(filename)) != -1) {
 
 					n_bytes_readed=length+1;
-					char *buffer = (char *)malloc(n_bytes_readed);
-					memset(buffer,0,length+1 );
+					char *buffer = (char *)ZS_MALLOC(n_bytes_readed);
 					readed_elements = fread(buffer, 1, length, fp);
 
 					if(readed_elements != length) {

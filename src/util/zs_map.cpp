@@ -14,8 +14,7 @@ namespace zetscript{
 
 	zs_map::zs_map(){
 		this->count=HASH_MAP_SIZE;
-		this->list = (zs_map_node **)malloc(sizeof(zs_map_node*)*this->count);
-		memset(this->list,0,sizeof(zs_map_node*)*this->count);
+		this->list = (zs_map_node **)ZS_MALLOC(sizeof(zs_map_node*)*this->count);
 
 	}
 
@@ -44,12 +43,12 @@ namespace zetscript{
 		if((node=lookup_node(key))==NULL){
 			uint8_t pos = hash_code(key);
 			zs_map_node *first_node = this->list[pos];
-			node = (zs_map_node *)malloc(sizeof(zs_map_node));
+			node = (zs_map_node *)ZS_MALLOC(sizeof(zs_map_node));
 
 			// insert node at the end (not ordered)
 			size_t key_len=strlen(key)+1;
-			node->key = (char *)malloc(key_len);
-			memset(node->key,0,key_len);
+			node->key = (char *)ZS_MALLOC(key_len);
+
 			strcpy(node->key,key);
 			node->val = val;
 			node->next = first_node;

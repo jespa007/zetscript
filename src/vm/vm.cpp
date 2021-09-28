@@ -32,7 +32,7 @@ namespace zetscript{
 
 	VirtualMachine *vm_new(ZetScript *_zs){
 
-		VirtualMachine *vm = (VirtualMachine *)malloc(sizeof(VirtualMachine));
+		VirtualMachine *vm = (VirtualMachine *)ZS_MALLOC(sizeof(VirtualMachine));
 		VirtualMachineData *data = new VirtualMachineData(_zs);
 		vm->data=data;
 
@@ -65,7 +65,7 @@ namespace zetscript{
 	bool vm_create_shared_pointer(VirtualMachine *vm,ScriptObject *_obj){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		if(_obj->shared_pointer == NULL){
-			InfoSharedPointerNode *_node = (InfoSharedPointerNode *)malloc(sizeof(InfoSharedPointerNode));
+			InfoSharedPointerNode *_node = (InfoSharedPointerNode *)ZS_MALLOC(sizeof(InfoSharedPointerNode));
 			// init
 			_node->previous=NULL;
 			_node->next=NULL;
@@ -155,7 +155,7 @@ namespace zetscript{
 
 	void vm_insert_lifetime_object(VirtualMachine *vm, const char *file, int line, ScriptObject *script_object){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		InfoLifetimeObject *info = (InfoLifetimeObject *)malloc(sizeof(InfoLifetimeObject));
+		InfoLifetimeObject *info = (InfoLifetimeObject *)ZS_MALLOC(sizeof(InfoLifetimeObject));
 
 		info->file=file;
 		info->line=line;

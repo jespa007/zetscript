@@ -453,7 +453,7 @@ namespace zetscript{
 		//int idx_start_function = _idx_start_function == ZS_IDX_UNDEFINED ?  idx_current_global_function_checkpoint:_idx_start_function;
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
-		zs_vector *global_variables=main_function_object->local_variables;
+		zs_vector *local_variables=main_function_object->local_variables;
 
 		/*int idx_stk_start_function_element=symbol_functions->count-1;
 		// unregister all global functions
@@ -479,23 +479,21 @@ namespace zetscript{
 		//&vm_get_stack_elements(virtual_machine)[main_function_object->registered_symbols->count-1];
 
 		// remove all shared 0 pointers
-		if(global_variables->count > 0){
-			int idx_stk_start_element=global_variables->count-1;
+		if(local_variables->count > 0){
+			int idx_stk_start_element=local_variables->count-1;
 			//StackElement *vm_stack=&vm_get_stack_elements(virtual_machine);
 			// set global top stack element
-			StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[global_variables->count-1];
+			StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[local_variables->count-1];
 			for (
 					int v = idx_stk_start_element;
-					v > idx_start_variable;
+					v >= idx_start_variable;
 					v--,vm_stk_element--) {
 
-				Symbol *symbol=(Symbol *)global_variables->items[idx_stk_start_element];//(Symbol *)main_function_object->registered_symbols->items[v];
+				Symbol *symbol=(Symbol *)local_variables->items[idx_stk_start_element];//(Symbol *)main_function_object->registered_symbols->items[v];
 
 				ScriptObjectObject *var = NULL;
 
-				if(symbol->scope == main_scope){
-					//global_symbol=symbol->name;
-				//	n_global_symbols_cleared++;
+				if(symbol->scope == main_scope){ // if variable in global scope
 					if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						var =((ScriptObjectObject *)(vm_stk_element->value));
 						if(var){

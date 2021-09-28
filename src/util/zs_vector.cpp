@@ -9,8 +9,7 @@ namespace zetscript{
 	bool	zs_vector::push_back_slot(){
 		if (this->_size == 0) {
 			this->_size = ZS_VECTOR_N_SLOT_ELEMENTS;
-			this->items = (zs_int *)malloc(sizeof(zs_int) * this->_size);
-			memset(this->items, '\0', sizeof(zs_int) * this->_size);
+			this->items = (zs_int *)ZS_MALLOC(sizeof(zs_int) * this->_size);
 		}
 		// condition to increase this->items:
 		// last slot exhausted
@@ -135,7 +134,7 @@ namespace zetscript{
 			_size=n_list_elements_to_copy+count;
 		}
 
-		zs_int *new_items=(zs_int *)malloc(sizeof(zs_int)*_size);
+		zs_int *new_items=(zs_int *)ZS_MALLOC(sizeof(zs_int)*_size);
 
 		// 1st part
 		memcpy(new_items,items,idx*sizeof(zs_int));

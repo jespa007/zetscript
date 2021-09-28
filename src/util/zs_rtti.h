@@ -2,7 +2,7 @@
 
 namespace zetscript{
 	namespace zs_rtti{
-		const char * demangle(const char * name);
+		zs_string  demangle(const char * name);
 
 	}
 }
