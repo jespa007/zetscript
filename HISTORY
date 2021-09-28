@@ -16,12 +16,12 @@ TODOS
 
 //----------------------------------------------------------
 Version: 2.0.0
-Date: XX-08-2021 (Expected to finish on 27 August)
+Date: XX-08-2021 (Expected to finish on end of november)
 
 Main improvements: 
 
 -Massive update that rewrites a internal architecture, organize and clean code
--VM speed up ~x2
+-VM speed up ~x2.5
 -VM save memory stack ~x2
 -Optimize size/compile times for binding c++ functions ~x2
 -ZetScript can be instanced more than once

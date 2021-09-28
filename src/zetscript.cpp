@@ -185,18 +185,18 @@ namespace zetscript{
 	 // PRINT INFO
 
 	void ZetScript::printAllStructSizes(){
-		printf("ZetScript:%i\n"
-				"VirtualMachineData:%i\n"
-				"ScriptClass:%i\n"
-				"ScriptFunction:%i\n"
-				"StackElement:%i\n"
-				"Symbol:%i\n"
-				"Scope:%i\n"
-				"ScriptObject:%i\n"
-				"ScriptObjectString:%i\n"
-				"ScriptObjectVector:%i\n"
-				"ScriptObjectObject:%i\n"
-				"ScriptObjectClass:%i\n"
+		printf("ZetScript:%lu\n"
+				"VirtualMachineData:%lu\n"
+				"ScriptClass:%lu\n"
+				"ScriptFunction:%lu\n"
+				"StackElement:%lu\n"
+				"Symbol:%lu\n"
+				"Scope:%lu\n"
+				"ScriptObject:%lu\n"
+				"ScriptObjectString:%lu\n"
+				"ScriptObjectVector:%lu\n"
+				"ScriptObjectObject:%lu\n"
+				"ScriptObjectClass:%lu\n"
 				,sizeof(ZetScript)
 				,sizeof(VirtualMachineData)
 				,sizeof(ScriptClass)

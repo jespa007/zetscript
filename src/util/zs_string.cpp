@@ -13,7 +13,7 @@ namespace zetscript{
 	{
 		size = strlen(buffer);
 		buf = (char *)ZS_MALLOC(size + 1); // + 1 for the keeping the null character
-		strncpy_s(buf, size + 1, buffer, size); // copy from the incoming buffer to character buffer of the new object
+		strncpy(buf, buffer, size); // copy from the incoming buffer to character buffer of the new object
 	}
 
 	zs_string::zs_string(const zs_string & obj) // copy constructor
@@ -21,7 +21,7 @@ namespace zetscript{
 		size = obj.size;
 		buf = (char *)ZS_MALLOC(size + 1); // + 1 for the keeping the null character
 
-		strncpy_s(buf, size + 1, obj.buf, size); // copy from the incoming buffer to character buffer of the new object
+		strncpy(buf,obj.buf, size); // copy from the incoming buffer to character buffer of the new object
 	}
 
 	zs_string& zs_string::operator=(const zs_string & obj) // copy assignment
@@ -32,7 +32,7 @@ namespace zetscript{
 		size = obj.size;
 		buf = (char *)ZS_MALLOC(size + 1); // + 1 for the keeping the null character
 
-		strncpy_s(buf, size + 1, obj.buf, size); // copy from the incoming buffer to character buffer of the new object
+		strncpy(buf, obj.buf, size); // copy from the incoming buffer to character buffer of the new object
 		return *this;
 	}
 
