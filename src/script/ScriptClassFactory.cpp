@@ -8,7 +8,7 @@
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeClassStatic<type_class>(ZS_STR(type_class),NULL,NULL);
+	registerNativeClass<type_class>(ZS_STR(type_class),NULL,NULL);
 
 
 #define REGISTER_BUILT_IN_CLASS(name_class, type_class, idx_class)\
@@ -20,7 +20,7 @@
 		THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeClassStatic<type_class>(name_class,type_class##_new,type_class##_delete);
+	registerNativeClass<type_class>(name_class,type_class##_new,type_class##_delete);
 
 #define REGISTER_BUILT_IN_CLASS_SINGLETON(type_class, idx_class)\
 	if(script_classes->count!=idx_class){\

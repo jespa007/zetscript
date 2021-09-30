@@ -84,7 +84,7 @@
 #define ZS_CLASS_INHERITS_FROM(zs,C,B)											(zs)->classInheritsFrom<C,B>()
 #define ZS_REGISTER_FUNCTION(zs,text,s) 										(zs)->registerFunction(text,s,__FILE__, __LINE__)
 #define ZS_REGISTER_VARIABLE(zs,text,s) 										(zs)->registerVariable(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_CLASS(zs,class_type,s) 										(zs)->registerClass<class_type>(s,__FILE__, __LINE__)
+#define ZS_REGISTER_CLASS(zs,class_type,s,ptr_fun_new, ptr_fun_del)				(zs)->registerClass<class_type>(s,ptr_fun_new,ptr_fun_del,__FILE__, __LINE__)
 #define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)							(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)				(zs)->registerMemberFunctionStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
@@ -229,7 +229,7 @@ namespace zetscript{
 
 		template<typename C>
 		ScriptClass * registerClass(const zs_string & class_name, C  * (*_constructor)(), void (*_destructor)(C *), const char *registered_file="",short registered_line=-1){
-			return script_class_factory->registerNativeClassStatic<C>(class_name, _constructor, _destructor, registered_file,registered_line);
+			return script_class_factory->registerNativeClass<C>(class_name, _constructor, _destructor, registered_file,registered_line);
 		}
 
 		template<class C, class B>

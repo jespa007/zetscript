@@ -133,7 +133,7 @@ namespace zetscript{
 	/**
 	 * Register C Class. Return index registered class
 	 */
-	template<typename C>
+	/*template<typename C>
 	void ScriptClassFactory::registerNativeClass(
 		const zs_string & class_name
 		,const char *registered_file
@@ -156,13 +156,13 @@ namespace zetscript{
 		irc->c_destructor = new std::function<void (void *)>([=](void *p){
 			delete (C *)p;
 		});
-	}
+	}*/
 
 	/**
 	 * Register C Class. Return index registered class
 	 */
 	template<typename C>
-	ScriptClass * ScriptClassFactory::registerNativeClassStatic(
+	ScriptClass * ScriptClassFactory::registerNativeClass(
 		const zs_string & class_name
 		,C * (*_constructor)()
 		,void (*_destructor)(C *)
