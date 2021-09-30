@@ -96,6 +96,9 @@
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberAttributePreIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberAttributePreDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
 
+#define ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(obj_type) \
+ obj_type * obj_type##_new(){ return new obj_type();} \
+ void obj_type##_delete(obj_type *ptr){ delete  (obj_type *)(ptr);}
 
 
 #define ZS_BIND_SCRIPT_FUNCTION(zs,_T,access_name)						(zs)->bindScriptFunction<_T>(access_name, __FILE__, __LINE__)

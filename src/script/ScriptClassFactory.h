@@ -24,11 +24,6 @@
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(data,s)		(data->script_class_factory)->getScriptClassByNativeClassPtr(s))    // 0 is the main class
 #define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_class_factory)->getScriptClass(idx)->str_class_ptr_type)
 
-#define ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(obj_type) \
- obj_type * obj_type##_new(){ return new obj_type();} \
- void obj_type##_delete(obj_type *ptr){ delete  (obj_type *)(ptr);}
-
-
 
 namespace zetscript{
 
