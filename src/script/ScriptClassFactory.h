@@ -112,14 +112,6 @@ namespace zetscript{
 		/**
 		 * User Register C Class
 		 */
-		/*template<typename C>
-		void registerNativeClass(
-			const zs_string & class_name
-			, const char *registered_file=""
-			,short registered_line=-1
-		);*/
-
-
 		template<typename C>
 		ScriptClass * registerNativeClass(
 			const zs_string & class_name

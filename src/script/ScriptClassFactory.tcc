@@ -133,34 +133,6 @@ namespace zetscript{
 	/**
 	 * Register C Class. Return index registered class
 	 */
-	/*template<typename C>
-	void ScriptClassFactory::registerNativeClass(
-		const zs_string & class_name
-		,const char *registered_file
-		,short registered_line
-	){
-
-		ScriptClass *irc =registerNativeSingletonClass<C>(class_name);
-
-		// get class...
-		if(irc->idx_class < IDX_BUILTIN_TYPE_MAX && irc->idx_class != IDX_BUILTIN_TYPE_STACK_ELEMENT){
-			THROW_RUNTIME_ERROR("The class to register \"%s\"  should not built in class",irc->str_class_ptr_type);
-		}
-
-		//put the constructor/destructor...
-		irc->c_constructor = new std::function<void *()>([=](){
-			C *t=new C();
-			return t;
-		});
-
-		irc->c_destructor = new std::function<void (void *)>([=](void *p){
-			delete (C *)p;
-		});
-	}*/
-
-	/**
-	 * Register C Class. Return index registered class
-	 */
 	template<typename C>
 	ScriptClass * ScriptClassFactory::registerNativeClass(
 		const zs_string & class_name
