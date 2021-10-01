@@ -71,7 +71,7 @@ namespace zetscript{
 		cl=script_class_factory->registerClass("System");
 		cl->registerNativeMemberFunctionStatic("clock",SystemModule_clock);
 		cl->registerNativeMemberFunctionStatic("evalNative",SystemModule_eval);
-		cl->registerNativeMemberFunctionStatic("assertNative",SystemModule_assert);
+		//cl->registerNativeMemberFunctionStatic("assertNative",SystemModule_assert);
 		cl->registerNativeMemberFunctionStatic("errorNative",SystemModule_error);
 
 		// Json mod
@@ -146,7 +146,9 @@ namespace zetscript{
 				//------------------------------------------------
 				// System
 				"static System::assert(check,s,...args){"
-				"	System::assertNative(System::getZetScript(),check,s,args)"
+				"	if((typeof check)!=bool){"
+				"		System::errorNative(System::getZetScript(),\"Error, executing  'System::assert' first parameter must be boolean but it was {0}\",typeof check)"
+				"	}"
 				"}"
 				"static System::error(s,...args){"
 				"	System::errorNative(System::getZetScript(),s,args)"

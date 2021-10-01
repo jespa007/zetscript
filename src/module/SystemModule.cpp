@@ -164,13 +164,13 @@ namespace zetscript{
 
 	}
 
-	void SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){
+	/*void SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){
 		if(*chk_assert == false){
 			ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 			vm_set_error(zs->getVirtualMachine(),str_out->toString().c_str());
 			delete str_out;
 		}
-	}
+	}*/
 
 	void SystemModule_error(ZetScript *zs, StackElement *str, StackElement *args){
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);

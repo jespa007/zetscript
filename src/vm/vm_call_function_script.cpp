@@ -1642,7 +1642,6 @@ execute_function:
 							sc=data->script_class_factory->getScriptClass(sf_call_script_function->idx_class);
 						}
 
-
 						if(ignore_call == false)
 						{
 							ScriptFunction *sf_aux;
@@ -1681,12 +1680,16 @@ execute_function:
 				}
 
 				if(data->vm_error == true){
-					data->vm_error_callstack_str+=zs_strutils::format(
-						"\nat calling function %s (file:%s line:%i)" // TODO: get full symbol ?
-						,sf_call_script_function->symbol.name.c_str()
-						,SFI_GET_FILE(calling_function,instruction)
-						,SFI_GET_LINE(calling_function,instruction)
-					);
+					// if System::assert -> not add in callstack trace
+					if(((this_object != NULL &&  this_object->getClassName()=="System") && (calling_function->symbol.name=="assert")
+					)==false){
+						data->vm_error_callstack_str+=zs_strutils::format(
+							"\nat calling function %s (file:%s line:%i)" // TODO: get full symbol ?
+							,sf_call_script_function->symbol.name.c_str()
+							,SFI_GET_FILE(calling_function,instruction)
+							,SFI_GET_LINE(calling_function,instruction)
+						);
+					}
 					goto lbl_exit_function;
 				}
 
