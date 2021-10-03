@@ -29,15 +29,15 @@
 	}\
 	registerNativeSingletonClass<type_class>(ZS_STR(type_class));
 
-#define REGISTER_BUILT_IN_TYPE(type_class, idx_class)\
+#define REGISTER_BUILT_IN_TYPE(type, idx_class)\
 	if(script_classes->count!=idx_class){\
 		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",ZS_STR(type_class));\
 		return;\
 	}else{\
-		ScriptClass *sc=registerClass(ZS_STR(type_class));\
+		ScriptClass *sc=registerClass(ZS_STR(type));\
 		sc->class_scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		sc->properties=SCRIPT_CLASS_PROPERTY_C_OBJECT_REF;\
-		sc->str_class_ptr_type=(typeid(type_class).name());\
+		sc->str_class_ptr_type=(typeid(type).name());\
 	}
 
 namespace zetscript{
@@ -365,10 +365,11 @@ namespace zetscript{
 			Scope * scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
 
 			// register symbol on main scope...
-			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolClass(file,line,class_name);
+			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolType(file,line,class_name);
 
 			sc = new ScriptClass(this->zs,script_classes->count, class_name, scope);
 			scope->setScriptClass(sc);
+			symbol->ref_ptr=(zs_int)sc;
 
 			//sc->str_class_ptr_type = TYPE_SCRIPT_VARIABLE;
 
@@ -431,7 +432,7 @@ namespace zetscript{
 					// attribs has to be copy MemberAttribute...
 					if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 						MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
-						MemberAttribute *ma_dst=new MemberAttribute(ma_src->attribute_name);
+						MemberAttribute *ma_dst=new MemberAttribute(sc,ma_src->attribute_name);
 						ma_dst->getter=ma_src->getter;
 						ma_dst->post_inc=ma_src->post_inc;
 						ma_dst->post_dec=ma_src->post_dec;

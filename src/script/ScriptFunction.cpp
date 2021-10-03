@@ -70,6 +70,7 @@ namespace zetscript{
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
 		zs_vector * m_vf = sfo->local_variables;
+		ZetScript *zs=sfo->zs;
 
 		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
@@ -282,6 +283,9 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_INSTANCEOF:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\tINSTANCEOF\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
+				break;
+			case BYTE_CODE_LOAD_TYPE_INFO:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_TYPE_INFO\t%s\n",idx_instruction,zs->getScriptClassFactory()->getScriptClassName(instruction->value_op2));
 				break;
 			default:
 

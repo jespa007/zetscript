@@ -146,9 +146,10 @@ namespace zetscript{
 				const char *instruction_file=SFI_GET_FILE(unresolved_instruction->calling_function,unresolved_instruction->instruction);
 				int instruction_line=SFI_GET_LINE(unresolved_instruction->calling_function,unresolved_instruction->instruction);
 				Symbol *symbol_found=NULL;
-				 if((sc_found= eval_data->script_class_factory->getScriptClass(ptr_str_symbol_to_find))!= NULL){ // check if class
-					 unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_CLASS;
-					 unresolved_instruction->instruction->value_op2=(zs_int)sc_found;
+				short idx_sc_found=ZS_IDX_UNDEFINED;
+				if((idx_sc_found= eval_data->script_class_factory->getBuiltinTypeOrClass(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if class
+					 unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_TYPE_INFO;
+					 unresolved_instruction->instruction->value_op2=idx_sc_found;
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
 					 zs_string static_error;
 					char copy_aux[512]={0};

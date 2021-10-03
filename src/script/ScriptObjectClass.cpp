@@ -187,7 +187,7 @@ namespace zetscript{
 							vm_unref_lifetime_object(this->vm,so);
 							// return
 						}else{
-							aux=result.toString();
+							aux=stk_to_string(zs,&result);
 						}
 					}else{ // expect return an scriptobjectstring
 						zs_string *str=NULL;

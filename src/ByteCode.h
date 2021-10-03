@@ -74,7 +74,7 @@ namespace zetscript{
 
 
 		// load var content
-		BYTE_CODE_LOAD_CLASS,
+		BYTE_CODE_LOAD_TYPE_INFO,
 		BYTE_CODE_LOAD_GLOBAL,
 		BYTE_CODE_LOAD_LOCAL,
 		BYTE_CODE_LOAD_REF,

@@ -65,7 +65,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_ZS_FLOAT:			return "LOAD_FLT"; // load float
 			case BYTE_CODE_LOAD_BOOL:				return "LOAD_BOOL"; // load bool
 			case BYTE_CODE_LOAD_ZS_INT:				return "LOAD_INT"; // load zs_int
-			case BYTE_CODE_LOAD_CLASS:				return "LOAD_CLASS"; // load to find
+			case BYTE_CODE_LOAD_TYPE_INFO:			return "LOAD_TYPE_INFO"; // load to find
 			case BYTE_CODE_JMP:         			return "JMP"; // Unconditional jump.
 			case BYTE_CODE_JNT:         			return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          			return "JT"; // goto if true ... goes end to conditional.
@@ -152,7 +152,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_ZS_FLOAT:			return "LOAD_FLT"; // load float
 			case BYTE_CODE_LOAD_BOOL:				return "LOAD_BOOL"; // load bool
 			case BYTE_CODE_LOAD_ZS_INT:				return "LOAD_INT"; // load zs_int
-			case BYTE_CODE_LOAD_CLASS:				return "LOAD_CLASS"; // load to find
+			case BYTE_CODE_LOAD_TYPE_INFO:			return "LOAD_TYPE_INFO"; // load to find
 			case BYTE_CODE_JMP:         			return "JMP"; // Unconditional jump.
 			case BYTE_CODE_JNT:         			return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          			return "JT"; // goto if true ... goes end to conditional.

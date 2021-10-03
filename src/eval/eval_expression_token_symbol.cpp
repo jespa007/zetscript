@@ -272,7 +272,7 @@ namespace zetscript{
 		IGNORE_BLANKS(test_aux_p,eval_data,aux_p,test_line);
 
 		// eval accessor element (supose that was a preinsert a load instruction for identifier )...
-		if(is_access_punctuator(test_aux_p)){
+		if(is_access_punctuator(test_aux_p) && token_node_symbol->token_type==TokenType::TOKEN_TYPE_IDENTIFIER){
 
 			// set test
 			aux_p=test_aux_p;

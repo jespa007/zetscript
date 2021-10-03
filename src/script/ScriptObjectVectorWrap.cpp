@@ -62,13 +62,14 @@ namespace zetscript{
 		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(sv->getZetScript());
 		zs_string *ptr_str=(zs_string *)so_string->value;
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
+		ZetScript *zs=sv->getZetScript();
 
 		for(unsigned i=0; i < stk_user_list_elements->count;i++){
 			StackElement *stk=(StackElement *)stk_user_list_elements->items[i];
 			if(i>0){
 				ptr_str->append((char)idx);
 			}
-			*ptr_str+=stk->toString();
+			ptr_str->append(stk_to_string(zs,stk));
 		}
 
 		return so_string;
@@ -80,7 +81,7 @@ namespace zetscript{
 
 	bool 							ScriptObjectVectorWrap_contains(ScriptObjectVector *sv, StackElement *stk_to_compare){
 		bool found=false;
-
+		ZetScript *zs=sv->getZetScript();
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
 
 		for(unsigned i=0; i < stk_user_list_elements->count && found == false;i++){
@@ -99,7 +100,7 @@ namespace zetscript{
 					   ){
 					// particular case string
 					if(((ScriptObject *)stk_to_compare->value)->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
-						found=stk_to_compare->toString()==stk_element->toString();
+						found=stk_to_string(zs,stk_to_compare)==stk_to_string(zs,stk_element);
 					}
 				}
 				break;

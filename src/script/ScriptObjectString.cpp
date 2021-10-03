@@ -68,7 +68,7 @@ namespace zetscript{
 				stk_src_item=(StackElement *)stk_src_item->value;
 			}
 
-			*(*str_dst_it)=stk_src_item->toString();
+			*(*str_dst_it)=stk_to_string(zs, stk_src_item);
 
 			str_dst_it++;
 			stk_src_it++;
@@ -81,9 +81,9 @@ namespace zetscript{
 	}
 
 
-	ScriptObjectString * ScriptObjectString::format(ZetScript *zs, StackElement *str, StackElement *args){
+	ScriptObjectString * ScriptObjectString::format(ZetScript *zs, StackElement *stk_str_obj, StackElement *args){
 		// transform '\"' to '"','\n' to carry returns, etc
-		zs_string str_input=zs_strutils::unescape(str->toString());
+		zs_string str_input=zs_strutils::unescape(stk_to_string(zs, stk_str_obj));
 		zs_string str_result;
 		ScriptObjectVector *sov=NULL;
 		zs_string str_num_aux;
@@ -205,7 +205,7 @@ namespace zetscript{
 									str_format=ptr_str_format_string;
 								}
 
-								str_format_results=sov->getUserElementAt(idx_num)->toString(str_format);
+								str_format_results=stk_to_string(zs,sov->getUserElementAt(idx_num),str_format);
 
 								str_result+=str_format_results;
 

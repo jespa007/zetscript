@@ -38,7 +38,7 @@ namespace zetscript{
 		zs_vector				*scopes;  // local scopes from starting block { }
 		zs_vector				*symbol_variables; // variable symbols from starting block { }
 		zs_vector				*symbol_functions; // function symbols from starting block { }
-		zs_vector				*symbol_classes; // function symbols from starting block { }
+		zs_vector				*symbol_types; // function symbols from starting block { }
 
 		//--------------------------------------------------------------------
 		// Functions
@@ -56,7 +56,7 @@ namespace zetscript{
 
 		Symbol * registerSymbolVariable(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
 		Symbol * registerSymbolFunction(const char * file, short line,const zs_string & symbol_name, char n_params, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
-		Symbol * registerSymbolClass(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
+		Symbol * registerSymbolType(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
 		Symbol * getSymbol(
 				const zs_string & var_name
 				, char n_params=NO_PARAMS_SYMBOL_ONLY

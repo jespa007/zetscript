@@ -2,13 +2,14 @@
 
 namespace zetscript{
 
-	MemberAttribute::MemberAttribute(const zs_string & _attribute_name){
+	MemberAttribute::MemberAttribute(ScriptClass *_script_class,const zs_string & _attribute_name){
 		getter= NULL;
 		post_inc=NULL;
 		post_dec=NULL;
 		pre_inc=NULL;
 		pre_dec=NULL;
 		attribute_name=_attribute_name;
+		script_class=_script_class;
 	}
 
 	void MemberAttribute::addSetter(ScriptFunction *f){

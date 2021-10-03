@@ -22,7 +22,7 @@ namespace zetscript{
 		scopes=new zs_vector;
 		symbol_variables=new zs_vector;
 		symbol_functions=new zs_vector;
-		symbol_classes=new zs_vector;
+		symbol_types=new zs_vector;
 
 		if(_scope_parent == NULL){ // first node (it should be a class)...
 			scope_base = this;
@@ -108,7 +108,7 @@ namespace zetscript{
 		// check if you register a class...
 		// check if symbol collides also with built in type...
 		if(zs->getScriptClassFactory()->getBuiltinTypeOrClass(symbol_name) != ZS_IDX_UNDEFINED){
-			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Symbol name '%s' is conflicting with a builtin type or class",symbol_name.c_str());
+			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved builtin-type or defined class",symbol_name.c_str());
 		}
 
 		if((p_irv = getSymbol(symbol_name,n_params,check_repeated_symbols_direction))!=NULL){ // check whether symbol is already registered ...
@@ -124,19 +124,19 @@ namespace zetscript{
 		}
 	}
 
-	Symbol * Scope::registerSymbolClass(const char * _file,short _line, const zs_string & _symbol_name, uint16_t _check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbolType(const char * _file,short _line, const zs_string & _symbol_name, uint16_t _check_repeated_symbols_direction){
 
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
 		Symbol *symbol 		= new Symbol();
-		symbol->idx_position=symbol_classes->count;
+		symbol->idx_position=symbol_types->count;
 		symbol->name 		= _symbol_name;
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
-		symbol->properties |=SYMBOL_PROPERTY_CLASS;
+		symbol->properties |=SYMBOL_PROPERTY_TYPE;
 
-		symbol_classes->push_back((zs_int)symbol);
+		symbol_types->push_back((zs_int)symbol);
 
 		return symbol;
 
@@ -188,8 +188,8 @@ namespace zetscript{
 		Symbol *sv=NULL;
 
 		// for each variable in current scope ...
-		for(unsigned i = 0; i < symbol_classes->count; i++){
-			sv=(Symbol *)symbol_classes->items[i];
+		for(unsigned i = 0; i < symbol_types->count; i++){
+			sv=(Symbol *)symbol_types->items[i];
 			if(
 				   ( sv->name == str_symbol )
 			){
@@ -279,8 +279,8 @@ namespace zetscript{
 		scopes=NULL;
 
 		// delete local local_symbols found...
-		for(unsigned i = 0; i < symbol_classes->count; i++){
-			delete (Symbol *)symbol_classes->items[i];
+		for(unsigned i = 0; i < symbol_types->count; i++){
+			delete (Symbol *)symbol_types->items[i];
 		}
 
 
@@ -294,10 +294,10 @@ namespace zetscript{
 
 		delete symbol_variables;
 		delete symbol_functions;
-		delete symbol_classes;
+		delete symbol_types;
 
 		symbol_functions=NULL;
 		symbol_variables=NULL;
-		symbol_classes=NULL;
+		symbol_types=NULL;
 	}
 }

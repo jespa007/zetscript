@@ -21,12 +21,12 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 			}else if(k_str_float_type_ptr==symbol->str_native_type){
 				return {
 						(zs_int)ptr_variable,
-						STK_PROPERTY_FLOAT_PTR
+						STK_PROPERTY_ZS_FLOAT_PTR
 				};
 			}else if(k_str_const_float_type_ptr==symbol->str_native_type){
 				return {
 						(zs_int)ptr_variable,
-						STK_PROPERTY_FLOAT_PTR|STK_PROPERTY_READ_ONLY
+						STK_PROPERTY_ZS_FLOAT_PTR|STK_PROPERTY_READ_ONLY
 				};
 			}else if(  k_str_char_type_ptr==symbol->str_native_type
 					|| k_str_const_char_type_ptr==symbol->str_native_type

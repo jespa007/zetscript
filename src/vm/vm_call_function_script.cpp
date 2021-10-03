@@ -148,7 +148,7 @@
 		break;\
 	default:\
 		if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
-			PUSH_STK_BOOLEAN(ZS_STRCMP(stk_result_op1->toString().c_str(), __C_OP__ ,stk_result_op2->toString().c_str()));\
+			PUSH_STK_BOOLEAN(ZS_STRCMP(stk_to_string(data->zs, stk_result_op1).c_str(), __C_OP__ ,stk_to_string(data->zs,stk_result_op2).c_str()));\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_NULL || stk_result_op2->properties==STK_PROPERTY_NULL)\
 				&& (__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
 				){\
@@ -482,10 +482,10 @@ namespace zetscript{
 							if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==false){ \
 								VM_STOP_EXECUTE("Expected string for object access");
 							}
-							stk_var = so_object->getProperty(stk_result_op2->toString());
+							stk_var = so_object->getProperty(stk_to_string(data->zs, stk_result_op2));
 							if(stk_var == NULL){
 								if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_VECTOR){
-									if((stk_var =so_object->addProperty(stk_result_op2->toString(), data->vm_error_str))==NULL){
+									if((stk_var =so_object->addProperty(stk_to_string(data->zs, stk_result_op2), data->vm_error_str))==NULL){
 										VM_STOP_EXECUTE(data->vm_error_str.c_str());
 									}
 								}
@@ -590,8 +590,8 @@ load_element_object:
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-							,stk_result_op1->typeOf()
-							,stk_result_op1->typeOf() == "Class"? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+							,stk_typeof(data->zs,stk_result_op1).c_str()
+							,zs_strutils::starts_with(stk_typeof(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 						);
 					}
 
@@ -695,8 +695,8 @@ load_element_object:
 			case BYTE_CODE_LOAD_STRING:
 				*data->stk_vm_current++=*((StackElement *)instruction->value_op2);
 				continue;
-			case BYTE_CODE_LOAD_CLASS:
-				PUSH_STK_SCRIPT_CLASS(instruction->value_op2);
+			case BYTE_CODE_LOAD_TYPE_INFO:
+				PUSH_STK_TYPE_INFO(instruction->value_op2);
 				continue;
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT:
@@ -765,19 +765,21 @@ load_element_object:
 						ScriptObjectObject *obj = NULL;
 						StackElement *stk_object=(data->stk_vm_current-1);
 						if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_object) == 0){
-							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_object->typeOf());
+							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_typeof(data->zs,stk_object).c_str());
 						}
 
 						obj = (ScriptObjectObject *)stk_object->value;
 
 						if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
-							VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\"",stk_result_op1->typeOf());
+							VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\""
+									,stk_typeof(data->zs,stk_result_op1).c_str()
+							);
 						}
 								// op1 is now the src value ...
 						StackElement *se=NULL;
 						//const char *str = (const char *)stk_result_op1->value;
 						stk_src=stk_result_op2;
-						if((se =obj->addProperty(stk_result_op1->toString(),data->vm_error_str))==NULL){
+						if((se =obj->addProperty(stk_to_string(data->zs, stk_result_op1),data->vm_error_str))==NULL){
 							VM_STOP_EXECUTE(data->vm_error_str.c_str());
 						}
 
@@ -966,7 +968,9 @@ load_element_object:
 							stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
 						}else {
 							if((stk_dst->properties & STK_PROPERTY_IS_VAR_C)==0){
-								VM_STOP_EXECUTE("Expected l-value on assignment but it was type \"%s\"",stk_dst->typeOf());
+								VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
+										,stk_typeof(data->zs,stk_dst).c_str()
+								);
 							}
 						}
 
@@ -1136,7 +1140,7 @@ load_element_object:
 								stk_dst->properties=STK_PROPERTY_BOOL;
 								*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);
 								if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)stk_src_ref);
-							}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_SCRIPT_CLASS) ){
+							}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE_INFO) ){
 								*stk_dst=*stk_src;
 							}else if(type_var & STK_PROPERTY_SCRIPT_OBJECT){
 
@@ -1161,7 +1165,7 @@ load_element_object:
 										//-------------------------------------
 									}
 
-									str_object->set(stk_src->toString());
+									str_object->set(stk_to_string(data->zs, stk_src));
 
 								}else{ // object we pass its reference
 
@@ -1177,7 +1181,9 @@ load_element_object:
 									}
 								}
 							}else{
-								VM_STOP_EXECUTE("(internal) cannot determine var type %s",stk_src->typeOf());
+								VM_STOP_EXECUTE("(internal) cannot determine var type %s"
+									,stk_typeof(data->zs,stk_src).c_str()
+								);
 							}
 							if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 						}
@@ -1325,7 +1331,7 @@ load_element_object:
 				continue;
 			case BYTE_CODE_TYPEOF:
 				POP_ONE;
-				so_aux=ScriptObjectString::newScriptObjectString(data->zs,stk_result_op1->typeOf());
+				so_aux=ScriptObjectString::newScriptObjectString(data->zs,stk_typeof(data->zs,stk_result_op1));
 				vm_create_shared_pointer(vm,so_aux);
 				data->stk_vm_current->value=(zs_int)so_aux;
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -1409,7 +1415,7 @@ load_element_object:
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				POP_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_result_op1->typeOf());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_typeof(data->zs,stk_result_op1).c_str());
 				}
 				if(stk_result_op1->value == 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1418,7 +1424,7 @@ load_element_object:
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				POP_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_result_op1->typeOf());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_typeof(data->zs,stk_result_op1).c_str());
 				}
 				if(stk_result_op1->value != 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1544,7 +1550,7 @@ execute_function:
 										if(!vm_create_shared_pointer(vm,sc)){
 											goto lbl_exit_function;
 										}
-										sc->set(stk_arg->toString());
+										sc->set(stk_to_string(data->zs,stk_arg));
 										so_param=sc;
 										stk_arg->value=(zs_int)sc;
 										stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -1609,7 +1615,8 @@ execute_function:
 							data->stk_vm_current++;
 							break;
 						default:
-							VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\"",param->default_param_value.typeOf());
+							VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\""
+									,stk_typeof(data->zs,&param->default_param_value).c_str());
 							break;
 
 						}

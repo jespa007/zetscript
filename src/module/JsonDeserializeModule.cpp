@@ -27,7 +27,7 @@ namespace zetscript{
 				0
 		};
 
-		char *deserialize(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element);
+		char *deserialize(JsonDeserializeData *data, const char * str_start, int & line,StackElement *stk_json_element);
 
 		bool is_single_comment(char *str){
 
@@ -140,7 +140,7 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		void json_deserialize_error(JsonDeserializeData *deserialize_data,const char *str_from,int _line,const char *str,...){
+		void json_deserialize_error(JsonDeserializeData *data,const char *str_from,int _line,const char *str,...){
 
 			char  what_msg[ZS_MAX_STR_BUFFER]={0};
 			char  error_description[ZS_MAX_STR_BUFFER] = { 0 };
@@ -151,22 +151,22 @@ namespace zetscript{
 			char *aux=(char *)str_from-1;
 			zs_string filename="";
 			int n=0;
-			if(deserialize_data->filename!=NULL){
-				filename=zs_path::get_filename(deserialize_data->filename);
+			if(data->filename!=NULL){
+				filename=zs_path::get_filename(data->filename);
 			}
 
-			if(deserialize_data->filename != NULL  && *deserialize_data->filename != 0){
-				sprintf(what_msg,"[file:%s line:%i] %s",deserialize_data->filename, _line, (char *)error_description);
+			if(data->filename != NULL  && *data->filename != 0){
+				sprintf(what_msg,"[file:%s line:%i] %s",data->filename, _line, (char *)error_description);
 			}else{
 				sprintf(what_msg,"[line:%i] %s",_line,error_description);
 			}
 
-			deserialize_data->str_error=what_msg;
+			data->str_error=what_msg;
 
 			//THROW_EXCEPTION(what_msg);
 		}
 
-		char * read_string_between_quotes(JsonDeserializeData *deserialize_data, const char *str_start,int & line, zs_string * str_out){
+		char * read_string_between_quotes(JsonDeserializeData *data, const char *str_start,int & line, zs_string * str_out){
 			char *str_current = (char *) str_start;
 
 			if(str_out != NULL){
@@ -183,12 +183,12 @@ namespace zetscript{
 					str_out->append(start,start-str_current);
 				}
 			}else{
-				json_deserialize_error(deserialize_data,str_start,line,"expected string value");
+				json_deserialize_error(data,str_start,line,"expected string value");
 				return NULL;
 			}
 
 			if(*str_current != '\"'){
-				json_deserialize_error(deserialize_data,str_start,line,"string value not closed");
+				json_deserialize_error(data,str_start,line,"string value not closed");
 				return NULL;
 			}
 
@@ -196,7 +196,7 @@ namespace zetscript{
 		}
 
 		char * deserialize_value(
-			JsonDeserializeData *deserialize_data
+			JsonDeserializeData *data
 			,const char *str_start
 			, int & line
 			, StackElement *stk_json_element
@@ -211,19 +211,19 @@ namespace zetscript{
 
 			if (*str_current == '\"') {// try string ...
 				zs_string str_aux;
-				if((str_current=read_string_between_quotes(deserialize_data,str_current,line,&str_aux))==NULL){
+				if((str_current=read_string_between_quotes(data,str_current,line,&str_aux))==NULL){
 					return NULL;
 				}
-				ScriptObject *so=ScriptObjectString::newScriptObjectString(deserialize_data->zs, str_aux);
-				if(vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),so)==false){
-					json_deserialize_error(deserialize_data,str_start,line,"cannot create shared pointer for string object");
+				ScriptObject *so=ScriptObjectString::newScriptObjectString(data->zs, str_aux);
+				if(vm_create_shared_pointer(data->zs->getVirtualMachine(),so)==false){
+					json_deserialize_error(data,str_start,line,"cannot create shared pointer for string object");
 					return NULL;
 				}
 
 				//
-				if(stk_json_element != deserialize_data->first_element){
-					if(vm_share_pointer(deserialize_data->zs->getVirtualMachine(),so) == false){
-						json_deserialize_error(deserialize_data,str_start,line,"cannot share pointer for string object");
+				if(stk_json_element != data->first_element){
+					if(vm_share_pointer(data->zs->getVirtualMachine(),so) == false){
+						json_deserialize_error(data,str_start,line,"cannot share pointer for string object");
 						return NULL;
 					}
 				}
@@ -263,7 +263,7 @@ namespace zetscript{
 						delete number_value;
 					}
 				}else{
-					json_deserialize_error(deserialize_data,str_start,line,"Cannot deduce json value. Json value can be Number,Boolean,String, Vector or Object");
+					json_deserialize_error(data,str_start,line,"Cannot deduce json value. Json value can be Number,Boolean,String, Vector or Object");
 					return NULL;
 				}
 			}
@@ -271,7 +271,7 @@ namespace zetscript{
 		}
 
 		char * deserialize_vector(
-				JsonDeserializeData *deserialize_data
+				JsonDeserializeData *data
 				,const char *str_start
 				, int & line
 				,StackElement *stk_json_element
@@ -285,22 +285,22 @@ namespace zetscript{
 			str_current = eval_ignore_blanks(str_current, line);
 
 			if(*str_current != '['){
-				json_deserialize_error(deserialize_data,str_start,line,"A '[' was expected to parse JsonVarVector type");
+				json_deserialize_error(data,str_start,line,"A '[' was expected to parse JsonVarVector type");
 				return NULL;
 			}
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				vo=ScriptObjectVector::newScriptObjectVector(deserialize_data->zs);
-				if(vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),vo) == false){
-					json_deserialize_error(deserialize_data, str_start, line, "Cannot create shared poiner for vector object");
+				vo=ScriptObjectVector::newScriptObjectVector(data->zs);
+				if(vm_create_shared_pointer(data->zs->getVirtualMachine(),vo) == false){
+					json_deserialize_error(data, str_start, line, "Cannot create shared poiner for vector object");
 					return NULL;
 				}
 
-				if(stk_json_element != deserialize_data->first_element){
+				if(stk_json_element != data->first_element){
 
-					if(vm_share_pointer(deserialize_data->zs->getVirtualMachine(),vo) == false){
-						json_deserialize_error(deserialize_data,str_start,line,"cannot share pointer for vector object");
+					if(vm_share_pointer(data->zs->getVirtualMachine(),vo) == false){
+						json_deserialize_error(data,str_start,line,"cannot share pointer for vector object");
 						return NULL;
 					}
 				}
@@ -308,7 +308,7 @@ namespace zetscript{
 				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				stk_json_element->value=(intptr_t)vo;
 			}else{
-				json_deserialize_error(deserialize_data, str_start, line, "Internal error: A null stackelement expected");
+				json_deserialize_error(data, str_start, line, "Internal error: A null stackelement expected");
 				return NULL;
 			}
 
@@ -320,7 +320,7 @@ namespace zetscript{
 					// add new element,
 					stk_element=vo->pushNewUserSlot();
 
-					if((str_current=deserialize(deserialize_data,str_current,line,stk_element))==NULL){
+					if((str_current=deserialize(data,str_current,line,stk_element))==NULL){
 						return NULL;
 					}
 
@@ -329,7 +329,7 @@ namespace zetscript{
 					if(*str_current==','){
 						str_current = eval_ignore_blanks(str_current+1, line);
 					}else if(*str_current!=']'){
-						json_deserialize_error(deserialize_data, str_current, line,  "Expected ',' or ']'");
+						json_deserialize_error(data, str_current, line,  "Expected ',' or ']'");
 						return NULL;
 					}
 
@@ -339,7 +339,7 @@ namespace zetscript{
 			return str_current+1;
 		}
 
-		char * deserialize_object(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element) {
+		char * deserialize_object(JsonDeserializeData *data, const char * str_start, int & line,StackElement *stk_json_element) {
 			char *str_current = (char *)str_start;
 			zs_string variable_name,key_id;
 			zs_string error;
@@ -349,21 +349,25 @@ namespace zetscript{
 			str_current = eval_ignore_blanks(str_current, line);
 
 			if(*str_current != '{'){
-				json_deserialize_error(deserialize_data, str_start, line, "A '{' was expected to parse %s type",stk_json_element!=NULL?stk_json_element->typeOf():"");
+				json_deserialize_error(data
+						, str_start
+						, line
+						, "A '{' was expected to parse %s type"
+						,stk_json_element!=NULL?stk_typeof(data->zs,stk_json_element).c_str():"");
 				return NULL;
 			}
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				so=ScriptObjectObject::newScriptObjectObject(deserialize_data->zs);
-				if(vm_create_shared_pointer(deserialize_data->zs->getVirtualMachine(),so) == false){
-					json_deserialize_error(deserialize_data, str_start, line, "Cannot create shared pointer for object");
+				so=ScriptObjectObject::newScriptObjectObject(data->zs);
+				if(vm_create_shared_pointer(data->zs->getVirtualMachine(),so) == false){
+					json_deserialize_error(data, str_start, line, "Cannot create shared pointer for object");
 					return NULL;
 				}
 
-				if(stk_json_element != deserialize_data->first_element){
-					if(vm_share_pointer(deserialize_data->zs->getVirtualMachine(),so) == false){
-						json_deserialize_error(deserialize_data,str_start,line,"cannot share pointer for object");
+				if(stk_json_element != data->first_element){
+					if(vm_share_pointer(data->zs->getVirtualMachine(),so) == false){
+						json_deserialize_error(data,str_start,line,"cannot share pointer for object");
 						return NULL;
 					}
 				}
@@ -371,7 +375,7 @@ namespace zetscript{
 				stk_json_element->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				stk_json_element->value=(intptr_t)so;
 			}else{
-				json_deserialize_error(deserialize_data, str_start, line, "Internal error: A null stackelement expected");
+				json_deserialize_error(data, str_start, line, "Internal error: A null stackelement expected");
 				return NULL;
 			}
 
@@ -380,9 +384,9 @@ namespace zetscript{
 			if(*str_current != '}'){ // do parsing object values...
 				do{
 					StackElement *stk_json_property=NULL;
-					str_current =read_string_between_quotes(deserialize_data, str_current, line, &key_id);
+					str_current =read_string_between_quotes(data, str_current, line, &key_id);
 					if (*str_current != ':') {// ok check value
-						json_deserialize_error(deserialize_data, str_current, line, "Error ':' expected");
+						json_deserialize_error(data, str_current, line, "Error ':' expected");
 						return NULL;
 					}
 
@@ -390,11 +394,11 @@ namespace zetscript{
 
 					// create property... //get c property
 					if((stk_element=so->addProperty(key_id,error)) == NULL){
-						json_deserialize_error(deserialize_data, str_current, line, error.c_str());
+						json_deserialize_error(data, str_current, line, error.c_str());
 						return NULL;
 					}
 
-					if((str_current=deserialize(deserialize_data, str_current, line, stk_element))==NULL){
+					if((str_current=deserialize(data, str_current, line, stk_element))==NULL){
 						return NULL;
 					}
 
@@ -404,7 +408,7 @@ namespace zetscript{
 					if(*str_current==','){
 						str_current = eval_ignore_blanks(str_current+1, line);
 					}else if(*str_current!='}'){
-						json_deserialize_error(deserialize_data, str_current, line, "Expected ',' or '}'");
+						json_deserialize_error(data, str_current, line, "Expected ',' or '}'");
 						return NULL;
 					}
 
@@ -414,7 +418,7 @@ namespace zetscript{
 			return str_current+1;
 		}
 
-		char * deserialize(JsonDeserializeData *deserialize_data, const char * str_start, int & line,StackElement *stk_json_element) {
+		char * deserialize(JsonDeserializeData *data, const char * str_start, int & line,StackElement *stk_json_element) {
 			// PRE: If json_var == NULL it parses but not saves
 			char * str_current = (char *)str_start;
 			str_current = eval_ignore_blanks(str_current, line);
@@ -422,11 +426,11 @@ namespace zetscript{
 
 			//try to deduce ...
 			if(*str_current == '['){ // try parse vector
-				str_current=deserialize_vector(deserialize_data, str_current, line,stk_json_element);
+				str_current=deserialize_vector(data, str_current, line,stk_json_element);
 			}else if(*str_current == '{') {// try parse object
-				str_current=deserialize_object(deserialize_data, str_current, line,stk_json_element);
+				str_current=deserialize_object(data, str_current, line,stk_json_element);
 			}else{ // try parse value
-				str_current=deserialize_value(deserialize_data, str_current,line,stk_json_element);
+				str_current=deserialize_value(data, str_current,line,stk_json_element);
 			}
 
 			return str_current;

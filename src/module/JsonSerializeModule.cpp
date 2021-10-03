@@ -2,8 +2,8 @@
 namespace zetscript{
 
 #define ZS_JSON_SERIALIZE_NEW_LINE(default_str_value,ident) \
-	default_str_value += "\n";\
-	for (int k = 0; k < (ident); k++)	default_str_value += "\t";
+	default_str_value.append('\n');\
+	for (int k = 0; k < (ident); k++)	default_str_value.append('\t');
 
 	namespace json{
 
@@ -12,21 +12,21 @@ namespace zetscript{
 
 		void serialize_vector(ZetScript *zs,ScriptObject *this_object,zs_string & str_result, ScriptObjectVector * vector,int ident, bool is_formatted){
 
-			str_result+="[";
+			str_result.append('[');
 
 			for (unsigned i = 0; i < vector->length(); i++) {
 				if (i > 0) {
-					str_result += ",";
+					str_result.append(',');
 				}
 
 				serialize_stk(zs,this_object,str_result,vector->getUserElementAt(i),ident,is_formatted);
 			}
-			str_result+="]";
+			str_result.append(']');
 		}
 
 		void serialize_object(ZetScript *zs,ScriptObject *this_object, zs_string & str_result, ScriptObjectObject *obj, int ident, bool is_formatted){
 
-			str_result += "{";
+			str_result.append('{');
 
 			zs_map_iterator map_iterators[2]={
 					obj->begin_builtin()
@@ -48,17 +48,17 @@ namespace zetscript{
 
 
 						if (is_formatted){
-							str_result += "\n";
+							str_result.append('\n');
 							for (int i = 0; i <= (ident); i++){
-								str_result += "\t";
+								str_result.append('\t');
 							}
 						}
 
 						if (k>0){
-							str_result += ",";
+							str_result.append(',');
 						}
 
-						str_result += "\"" + zs_string(mi->key)+ "\":";
+						str_result.append("\"" + zs_string(mi->key)+ "\":");
 
 						// if attribute we have to call script or native...
 						if(stk_se->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
@@ -107,12 +107,12 @@ namespace zetscript{
 			}
 
 			if(is_formatted){
-				str_result += "\n";
+				str_result.append('\n');
 				for (int i = 0; i < (ident); i++){
-					str_result += "\t";
+					str_result.append('\t');
 				}
 			}
-			str_result += "}";
+			str_result.append('}');
 		}
 
 		void serialize_stk(ZetScript *zs, ScriptObject *this_object,zs_string & str_result, StackElement *stk, int ident,bool is_formatted){
@@ -136,17 +136,17 @@ namespace zetscript{
 			case STK_PROPERTY_ZS_FLOAT:
 			case STK_PROPERTY_BOOL:
 			case STK_PROPERTY_ZS_INT:
-				str_result+=stk->toString();
+				str_result.append(stk_to_string(zs,stk));
 				break;
 			case STK_PROPERTY_NULL:
-				str_result+="null";
+				str_result.append("null");
 				break;
 			case STK_PROPERTY_SCRIPT_OBJECT: // vector or object
 
 				obj=((ScriptObject *)stk->value);
 				switch(obj->idx_script_class){
 				case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
-					str_result+=zs_string("\"") + ((ScriptObjectString *)obj)->toString() + "\"";
+					str_result.append(zs_string("\"") + ((ScriptObjectString *)obj)->toString() + "\"");
 					break;
 				case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR:
 					serialize_vector(zs, this_object, str_result,(ScriptObjectVector *)obj,ident,is_formatted);
@@ -159,7 +159,7 @@ namespace zetscript{
 							serialize_object(zs,this_object,str_result,(ScriptObjectObject *)obj,ident,is_formatted);
 						}
 						else{
-							str_result+="\"Object@"+this_object->getClassName()+"\"";
+							str_result.append("\"Object@"+this_object->getClassName()+"\"");
 						}
 					}
 					break;

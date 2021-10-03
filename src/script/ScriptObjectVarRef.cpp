@@ -38,7 +38,7 @@ namespace zetscript{
 	}
 
 	zs_string ScriptObjectVarRef::toString(const zs_string _format){
-		return stk_var_ref.toString(_format);
+		return stk_to_string(zs,&stk_var_ref,_format);
 	}
 
 

@@ -12,18 +12,15 @@ namespace zetscript{
 	struct VirtualMachine;
 	class ScriptObject;
 	class ScriptFunction;
-	//struct EvalInstruction;
 
 	typedef struct _SharedPointerInfo {
 		ScriptObject 			*ptr_script_object_shared;
 		unsigned short 			n_shares;
-		//_InfoSharedList *zero_shares;
 		int						created_idx_call;
 	} SharedPointerInfo;
 
 	typedef struct _InfoSharedPointerNode{
 		SharedPointerInfo data;
-	//		unsigned short currentStack;
 		_InfoSharedPointerNode *previous, *next;
 	} InfoSharedPointerNode;
 
@@ -31,19 +28,6 @@ namespace zetscript{
 		InfoSharedPointerNode *first, *last;
 	}InfoSharedList;
 
-
-	/*struct StackMemberFunction{
-	public:
-		ScriptFunction 		*so_function; // make function pointer first to make compatible with stk
-		ScriptObject		*so_object;
-
-		StackMemberFunction(
-				ScriptObject		*_so_object
-				,ScriptFunction 	*_so_function){
-			so_object = _so_object;
-			so_function= _so_function;
-		}
-	};*/
 
 	struct MemberAttribute;
 	struct StackMemberAttribute{
@@ -73,7 +57,6 @@ namespace zetscript{
 
 		ZetScript      * 	getZetScript();
 		StackElement 	* getBuiltinProperty(const zs_string & property_name);
-		//int			   		getBuiltinPropertyIdx(const zs_string & varname);
 
 		StackElement * getBuiltinElementAt(short idx);
 		virtual StackElement * addProperty(
@@ -106,7 +89,6 @@ namespace zetscript{
 
 		void init(ZetScript *zs);
 
-		//StackElement 			stk_length;
 		virtual StackElement * newBuiltinSlot();
 		virtual StackElement * addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 		bool unrefAndFreeStackElementContainer(StackElement *si);

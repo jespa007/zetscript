@@ -163,7 +163,7 @@ namespace zetscript{
 		}
 
 		symbol_attrib = class_scope->registerSymbolVariable(file,line,attrib_name);
-		symbol_attrib->ref_ptr=(zs_int)(new MemberAttribute(attrib_name));
+		symbol_attrib->ref_ptr=(zs_int)(new MemberAttribute(this,attrib_name));
 		symbol_attrib->properties=SYMBOL_PROPERTY_MEMBER_ATTRIBUTE;
 		allocated_member_attributes->push_back(symbol_attrib->ref_ptr);
 
@@ -614,7 +614,7 @@ namespace zetscript{
 					// everything ok
 					if(/*op==BYTE_CODE_METAMETHOD_GET || */op==BYTE_CODE_METAMETHOD_SET){
 						if(setter_getter == NULL){
-							setter_getter = new MemberAttribute(class_name);
+							setter_getter = new MemberAttribute(this,class_name);
 						}
 
 							if(setter_getter->setters.count>0 && ((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0)){
