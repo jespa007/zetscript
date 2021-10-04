@@ -590,8 +590,8 @@ load_element_object:
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-							,stk_typeof(data->zs,stk_result_op1).c_str()
-							,zs_strutils::starts_with(stk_typeof(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+							,stk_typeof_str(data->zs,stk_result_op1).c_str()
+							,zs_strutils::starts_with(stk_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 						);
 					}
 
@@ -765,14 +765,14 @@ load_element_object:
 						ScriptObjectObject *obj = NULL;
 						StackElement *stk_object=(data->stk_vm_current-1);
 						if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_object) == 0){
-							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_typeof(data->zs,stk_object).c_str());
+							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_typeof_str(data->zs,stk_object).c_str());
 						}
 
 						obj = (ScriptObjectObject *)stk_object->value;
 
 						if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
 							VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\""
-									,stk_typeof(data->zs,stk_result_op1).c_str()
+									,stk_typeof_str(data->zs,stk_result_op1).c_str()
 							);
 						}
 								// op1 is now the src value ...
@@ -969,7 +969,7 @@ load_element_object:
 						}else {
 							if((stk_dst->properties & STK_PROPERTY_IS_VAR_C)==0){
 								VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
-										,stk_typeof(data->zs,stk_dst).c_str()
+										,stk_typeof_str(data->zs,stk_dst).c_str()
 								);
 							}
 						}
@@ -1182,7 +1182,7 @@ load_element_object:
 								}
 							}else{
 								VM_STOP_EXECUTE("(internal) cannot determine var type %s"
-									,stk_typeof(data->zs,stk_src).c_str()
+									,stk_typeof_str(data->zs,stk_src).c_str()
 								);
 							}
 							if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
@@ -1331,7 +1331,7 @@ load_element_object:
 				continue;
 			case BYTE_CODE_TYPEOF:
 				POP_ONE;
-				so_aux=ScriptObjectString::newScriptObjectString(data->zs,stk_typeof(data->zs,stk_result_op1));
+				so_aux=ScriptObjectString::newScriptObjectString(data->zs,stk_typeof_str(data->zs,stk_result_op1));
 				vm_create_shared_pointer(vm,so_aux);
 				data->stk_vm_current->value=(zs_int)so_aux;
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -1415,7 +1415,7 @@ load_element_object:
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				POP_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_typeof(data->zs,stk_result_op1).c_str());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_typeof_str(data->zs,stk_result_op1).c_str());
 				}
 				if(stk_result_op1->value == 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1424,7 +1424,7 @@ load_element_object:
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				POP_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_typeof(data->zs,stk_result_op1).c_str());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_typeof_str(data->zs,stk_result_op1).c_str());
 				}
 				if(stk_result_op1->value != 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1616,7 +1616,7 @@ execute_function:
 							break;
 						default:
 							VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\""
-									,stk_typeof(data->zs,&param->default_param_value).c_str());
+									,stk_typeof_str(data->zs,&param->default_param_value).c_str());
 							break;
 
 						}

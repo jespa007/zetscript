@@ -4,7 +4,7 @@ namespace zetscript{
 
 	extern const StackElement k_stk_undefined={0,STK_PROPERTY_NULL};
 
-	zs_string stk_typeof(ZetScript *_zs, StackElement *_stk){
+	zs_string stk_typeof_str(ZetScript *_zs, StackElement *_stk){
 		StackElement *stk=_stk;
 		zs_string result="unknow";
 
@@ -115,5 +115,28 @@ namespace zetscript{
 
 	void StackElement::setUndefined(){
 		*this=k_stk_undefined;
+	}
+
+	StackElement	StackElement::typeOf(){
+		StackElement *stk= this;
+		StackElement result={0,0};
+
+		if(stk->properties & STK_PROPERTY_PTR_STK){
+			stk=(StackElement *)stk->value;
+		}
+
+		if(STK_VALUE_IS_ZS_INT(stk)){
+			result.value=IDX_BUILTIN_TYPE_ZS_INT_C;
+		}else if(STK_VALUE_IS_ZS_FLOAT(stk)){
+			result.value=IDX_BUILTIN_TYPE_ZS_FLOAT_C;
+		}else if(STK_VALUE_IS_BOOLEAN(stk)){
+			result.value=IDX_BUILTIN_TYPE_BOOL_C;
+		}else if(STK_PROPERTY_SCRIPT_OBJECT(stk)){
+			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				result.value=((ScriptObjectObject *)stk->value)->getScriptClass()->idx_class;
+			}
+		}
+
+		return result;
 	}
 }

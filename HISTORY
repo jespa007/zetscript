@@ -249,6 +249,7 @@ Solved issues
 #306 Get rid PUSH/POP begining function optimitzation
 #307 link symbols on instructions BYTE_CODE_FIND_VARIABLE/BYTE_CODE_FIND_IMMEDIATE_CALL
 #308 Save memory: get rid of std::string and std::map 
+> #309 Create new from type info stk variable 
  
 
 //----------------------------------------------------------

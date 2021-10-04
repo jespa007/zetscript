@@ -297,7 +297,7 @@ namespace zetscript{
 				// throw
 				THROW_RUNTIME_ERROR(
 						"Cannot register constant '%s' as 'ScriptObjectString', because is already registered as '%s'"
-						,key_name.c_str(),stk_typeof(this,stk)
+						,key_name.c_str(),stk_typeof_str(this,stk)
 						);
 			}
 		}

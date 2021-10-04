@@ -353,7 +353,7 @@ namespace zetscript{
 						, str_start
 						, line
 						, "A '{' was expected to parse %s type"
-						,stk_json_element!=NULL?stk_typeof(data->zs,stk_json_element).c_str():"");
+						,stk_json_element!=NULL?stk_typeof_str(data->zs,stk_json_element).c_str():"");
 				return NULL;
 			}
 

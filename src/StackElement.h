@@ -70,7 +70,7 @@ typedef enum:unsigned short {
 #define STK_VALUE_IS_TYPE_INFO(stk) 					(stk->properties & STK_PROPERTY_TYPE_INFO)
 #define STK_VALUE_IS_MEMBER_ATTRIBUTE(stk) 				(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)
 #define STK_VALUE_IS_MEMBER_FUNCTION(stk) 				(stk->properties & STK_PROPERTY_MEMBER_FUNCTION)
-#define STK_VALUE_IS_SCRIPT_VAR(stk) 					(stk->properties & STK_PROPERTY_SCRIPT_OBJECT)
+#define STK_VALUE_IS_SCRIPT_OBJECT(stk) 				(stk->properties & STK_PROPERTY_SCRIPT_OBJECT)
 
 #define STK_VALUE_TO_ZS_INT(ptr_result_instruction) 	((zs_int)((zs_int)(ptr_result_instruction->value)))
 #define STK_VALUE_TO_BOOL(ptr_result_instruction) 		(((bool)(ptr_result_instruction->value)))
@@ -93,12 +93,13 @@ namespace zetscript{
 		zs_int			toInt();
 		zs_float		toFloat();
 
-
+		zs_int			typeOf();
 
 	};
 
 	zs_string 		stk_to_string(ZetScript *_zs, StackElement *_stk,const zs_string & _format="");
-	zs_string		stk_typeof(ZetScript *_zs, StackElement *_stk);
+	zs_string		stk_typeof_str(ZetScript *_zs, StackElement *_stk);
+
 
 	#pragma pack(pop)
 
