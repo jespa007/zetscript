@@ -1,6 +1,3 @@
-#define 				MAX_REGISTER_CLASSES 	100
-
-
 namespace zetscript{
 
 	/**

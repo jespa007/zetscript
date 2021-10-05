@@ -4,7 +4,7 @@ namespace zetscript{
 		 StackElement ZetScript::convertVarToStackElement(zs_int ptr_var, short idx_builtin_type_var){
 			//zs_int ptr_var = (zs_int)input_var;
 				zs_string s_return_value;
-				StackElement stk_result=k_stk_undefined;
+				StackElement stk_result=k_stk_null;
 				ScriptObjectString *so=NULL;
 
 				//int idx_builtin_type=getIdxClassFromItsNativeType(typeid(T).name());

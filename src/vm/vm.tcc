@@ -45,8 +45,8 @@ data->stk_vm_current++;
 #define IS_STK_THIS(stk) (this_object != NULL && (stk)->value == (zs_int)(this_object))
 
 #define PRINT_DUAL_ERROR_OP(c)\
-zs_string var_type1=stk_to_str_typeof(data->zs,stk_result_op1),\
-	   var_type2=stk_to_str_typeof(data->zs,stk_result_op2);\
+zs_string var_type1=stk_to_typeof_str(data->zs,stk_result_op1),\
+	   var_type2=stk_to_typeof_str(data->zs,stk_result_op2);\
 \
 	VM_ERROR("cannot perform operator \"%s\" %s \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 		var_type1.c_str(),\
@@ -54,7 +54,7 @@ zs_string var_type1=stk_to_str_typeof(data->zs,stk_result_op1),\
 		var_type2.c_str());\
 
 #define PRINT_ERROR_OP(c)\
-	zs_string var_type1=stk_to_str_typeof(data->zs,stk_result_op1);\
+	zs_string var_type1=stk_to_typeof_str(data->zs,stk_result_op1);\
 \
 VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 	c,\
@@ -996,16 +996,16 @@ apply_metamethod_error:
 			VM_ERROR("Metamethod operation '%s' (aka %s) failed performing operation by types '%s' %s '%s': %s"
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 				,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
-				,stk_to_str_typeof(data->zs,stk_result_op1).c_str()
+				,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_to_str_typeof(data->zs,stk_result_op2).c_str()
+				,stk_to_typeof_str(data->zs,stk_result_op2).c_str()
 				,error_found.c_str()
 			);
 
 		}else if(stk_result_op1!=NULL){
 			VM_ERROR("cannot perform operation '%s %s'. %s"
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_to_str_typeof(data->zs,stk_result_op1).c_str()
+				,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
 				,error_found.c_str()
 			);
 
@@ -1084,7 +1084,7 @@ apply_metamethod_error:
 				// ok stk_vm_current holds the iter object
 				if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
 					VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'"
-							,stk_to_str_typeof(data->zs,data->stk_vm_current).c_str());
+							,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str());
 					return;
 				}
 

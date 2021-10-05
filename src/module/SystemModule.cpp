@@ -26,7 +26,7 @@ namespace zetscript{
 		zs_string str_param_name;
 		ScriptFunction *sf;
 		zs_vector stk_params;
-		StackElement stk_ret=k_stk_undefined;
+		StackElement stk_ret=k_stk_null;
 		const char *str_start=NULL;
 		Scope *main_scope=zs->getScopeFactory()->getMainScope();
 		zs_string str_unescaped_source="";
@@ -40,7 +40,7 @@ namespace zetscript{
 			vm_set_error(
 					zs->getVirtualMachine()
 					,zs_strutils::format("eval error:expected ScriptObjectString as first parameter but the typeof is '%s'"
-							,stk_to_str_typeof(data->zs,stk_so_str_eval).c_str())
+							,stk_to_typeof_str(data->zs,stk_so_str_eval).c_str())
 			);
 			return;
 		}
@@ -52,7 +52,7 @@ namespace zetscript{
 				vm_set_error(
 						zs->getVirtualMachine()
 						,zs_strutils::format("eval error:expected ScriptObjectObject as second parameter but the typeof is '%'"
-								,stk_to_str_typeof(data->zs,stk_oo_param).c_str())
+								,stk_to_typeof_str(data->zs,stk_oo_param).c_str())
 				);
 				return;
 			}

@@ -257,10 +257,10 @@ namespace zetscript{
 	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		if(calling_function->instructions == NULL){ // no instructions do not execute
-			return k_stk_undefined;
+			return k_stk_null;
 		}
 
-		StackElement stk_return=k_stk_undefined;
+		StackElement stk_return=k_stk_null;
 		StackElement *stk_start=NULL;
 
 

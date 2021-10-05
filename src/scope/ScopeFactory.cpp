@@ -128,7 +128,7 @@ namespace zetscript{
 			}
 			delete symbol;
 			main_scope->registered_symbols->pop_back();
-			*vm_stk_element--=k_stk_undefined;
+			*vm_stk_element--=k_stk_null;
 		}
 
 

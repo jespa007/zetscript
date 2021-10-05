@@ -296,7 +296,7 @@ namespace zetscript{
 		int n_args=0;
 		Symbol *constructor_function=NULL;
 		int start_line=line;
-		bool new_object_by_value=false;
+
 
 		Keyword key_w;
 
@@ -309,6 +309,7 @@ namespace zetscript{
 
 			if(key_w == Keyword::KEYWORD_NEW){
 				EvalInstruction *ei_load_function_constructor = NULL,*eval_instruction=NULL;
+				EvalInstruction *eval_instruction_new_object_by_value=NULL;
 				int start_line_new=line;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 				// try get symbol ...++++
@@ -322,7 +323,7 @@ namespace zetscript{
 				sc=GET_SCRIPT_CLASS(eval_data,symbol_name);
 
 				if(sc==NULL){
-					new_object_by_value=true;
+
 					ByteCode byte_code_load=BYTE_CODE_FIND_VARIABLE;
 					Symbol *vis=NULL;
 					uintptr_t value=ZS_IDX_UNDEFINED;
@@ -342,7 +343,7 @@ namespace zetscript{
 					 );
 
 
-					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE)));
+					eval_instructions->push_back((zs_int)(eval_instruction_new_object_by_value=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE)));
 					//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
 				}else{
 
@@ -352,17 +353,19 @@ namespace zetscript{
 
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				 eval_instructions->push_back((zs_int)(
-					ei_load_function_constructor=new EvalInstruction(
-						 ByteCode::BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR
-					)
-				 ));
+				 if(eval_instruction_new_object_by_value==NULL){
+					 eval_instructions->push_back((zs_int)(
+						ei_load_function_constructor=new EvalInstruction(
+							 ByteCode::BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR
+						)
+					 ));
 
-				 ei_load_function_constructor->instruction_source_info=InstructionSourceInfo(
-					 eval_data->current_parsing_file
-					 ,line
-					 ,get_mapped_name(eval_data,symbol_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
-				 );
+					 ei_load_function_constructor->instruction_source_info=InstructionSourceInfo(
+						 eval_data->current_parsing_file
+						 ,line
+						 ,get_mapped_name(eval_data,symbol_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+					 );
+				 }
 
 
 				 if(*aux_p != '('){
@@ -405,7 +408,7 @@ namespace zetscript{
 				 	 )
 				 );
 
-				 if(new_object_by_value==false){
+				 if(eval_instruction_new_object_by_value==NULL){
 					 // check constructor symbol
 					 constructor_function=sc->getSymbol(symbol_name);
 
@@ -427,6 +430,8 @@ namespace zetscript{
 						 }
 
 					 }
+				 }else{
+					 eval_instruction_new_object_by_value->vm_instruction.value_op1=n_args;
 				 }
 
 

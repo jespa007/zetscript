@@ -100,13 +100,13 @@ namespace zetscript{
 	};
 
 	zs_string 		stk_to_str(ZetScript *_zs, StackElement *_stk,const zs_string & _format="");
-	zs_string		stk_to_str_typeof(ZetScript *_zs, StackElement *_stk);
+	zs_string		stk_to_typeof_str(ZetScript *_zs, StackElement *_stk);
 
 
 	#pragma pack(pop)
 
 
-	extern const StackElement k_stk_undefined;
+	extern const StackElement k_stk_null;
 
 
 

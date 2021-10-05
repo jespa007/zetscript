@@ -130,13 +130,6 @@
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
 		PUSH_STK_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		break;\
-	case MSK_STK_OP1_TYPE_OP2_TYPE:\
-		if(__METAMETHOD__ ==BYTE_CODE_METAMETHOD_EQU){\
-			PUSH_STK_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) == STK_VALUE_TO_ZS_INT(stk_result_op2));\
-		}else{\
-			VM_STOP_EXECUTE("Only relational operation '==' can be used for typeof");\
-		}\
-		break;\
 	case MSK_STK_OP1_BOOL_OP2_BOOL:\
 		PUSH_STK_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 		break;\
@@ -154,7 +147,19 @@
 		PUSH_STK_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
 		break;\
 	default:\
-		if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
+		if(STK_VALUE_IS_TYPE(stk_result_op1) || STK_VALUE_IS_TYPE(stk_result_op2)){\
+			if(__METAMETHOD__ ==BYTE_CODE_METAMETHOD_EQU){\
+				if(STK_VALUE_IS_NULL(stk_result_op1) && (STK_VALUE_IS_TYPE(stk_result_op2)&&(stk_result_op2->value==IDX_TYPE_NULL))){\
+					PUSH_STK_BOOLEAN(true);\
+				}else if((STK_VALUE_IS_TYPE(stk_result_op1) && stk_result_op1->value==IDX_TYPE_NULL) && STK_VALUE_IS_NULL(stk_result_op2)){\
+					PUSH_STK_BOOLEAN(true);\
+				}else{\
+					PUSH_STK_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) == STK_VALUE_TO_ZS_INT(stk_result_op2));\
+				}\
+			}else{\
+				PUSH_STK_BOOLEAN(false);\
+			}\
+		}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
 			PUSH_STK_BOOLEAN(ZS_STRCMP(stk_to_str(data->zs, stk_result_op1).c_str(), __C_OP__ ,stk_to_str(data->zs,stk_result_op2).c_str()));\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_NULL || stk_result_op2->properties==STK_PROPERTY_NULL)\
 				&& (__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
@@ -368,7 +373,9 @@ namespace zetscript{
 
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
-		StackElement stk_aux=k_stk_undefined;
+		StackElement stk_aux;
+		stk_aux.properties=0;
+		stk_aux.value=0;
 		StackElement *stk_var;
 		ScriptClass *test_class=NULL;
 		const char *str_symbol=NULL,*str_aux=NULL;
@@ -562,7 +569,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
 				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
-					*data->stk_vm_current++=k_stk_undefined;
+					PUSH_STK_NULL;
 				}else{
 					*data->stk_vm_current++=*(so_aux->getBuiltinElementAt(instruction->value_op2));
 				}
@@ -597,8 +604,8 @@ load_element_object:
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-							,stk_to_str_typeof(data->zs,stk_result_op1).c_str()
-							,zs_strutils::starts_with(stk_to_str_typeof(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+							,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+							,zs_strutils::starts_with(stk_to_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 						);
 					}
 
@@ -772,14 +779,14 @@ load_element_object:
 						ScriptObjectObject *obj = NULL;
 						StackElement *stk_object=(data->stk_vm_current-1);
 						if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_object) == 0){
-							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_to_str_typeof(data->zs,stk_object).c_str());
+							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_to_typeof_str(data->zs,stk_object).c_str());
 						}
 
 						obj = (ScriptObjectObject *)stk_object->value;
 
 						if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
 							VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\""
-									,stk_to_str_typeof(data->zs,stk_result_op1).c_str()
+									,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
 							);
 						}
 								// op1 is now the src value ...
@@ -976,7 +983,7 @@ load_element_object:
 						}else {
 							if((stk_dst->properties & STK_PROPERTY_IS_VAR_C)==0){
 								VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
-										,stk_to_str_typeof(data->zs,stk_dst).c_str()
+										,stk_to_typeof_str(data->zs,stk_dst).c_str()
 								);
 							}
 						}
@@ -1189,7 +1196,7 @@ load_element_object:
 								}
 							}else{
 								VM_STOP_EXECUTE("(internal) cannot determine var type %s"
-									,stk_to_str_typeof(data->zs,stk_src).c_str()
+									,stk_to_typeof_str(data->zs,stk_src).c_str()
 								);
 							}
 							if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
@@ -1418,7 +1425,7 @@ load_element_object:
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				POP_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_str_typeof(data->zs,stk_result_op1).c_str());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_typeof_str(data->zs,stk_result_op1).c_str());
 				}
 				if(stk_result_op1->value == 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1427,7 +1434,7 @@ load_element_object:
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				POP_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_str_typeof(data->zs,stk_result_op1).c_str());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_typeof_str(data->zs,stk_result_op1).c_str());
 				}
 				if(stk_result_op1->value != 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1619,7 +1626,7 @@ execute_function:
 							break;
 						default:
 							VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\""
-									,stk_to_str_typeof(data->zs,&param->default_param_value).c_str());
+									,stk_to_typeof_str(data->zs,&param->default_param_value).c_str());
 							break;
 
 						}
@@ -1809,6 +1816,60 @@ execute_function:
 					}
 					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
+			 case  BYTE_CODE_NEW_OBJECT_BY_VALUE:
+				 	 POP_ONE;
+				 	 if(STK_VALUE_IS_TYPE(stk_result_op1)){
+				 		 Symbol *constructor_function=NULL;
+				 		 so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,stk_result_op1->value);
+
+						if(!vm_create_shared_pointer(vm,so_aux)){
+							goto lbl_exit_function;
+						}
+
+						data->stk_vm_current->value=(zs_int)so_aux;
+						data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+						data->stk_vm_current++;
+
+						if(so_aux->idx_script_class>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
+							ScriptClass *sc=so_aux->getScriptClass();
+							ScriptObjectClass *so_class_aux=(ScriptObjectClass *)so_aux;
+							so_class_aux->info_function_new=calling_function;
+							so_class_aux->instruction_new=instruction;
+
+							// check for constructor
+							 constructor_function=sc->getSymbolMemberFunction(sc->class_name);
+
+							 if(constructor_function != NULL){
+								 data->stk_vm_current->value=(zs_int)constructor_function;
+								 data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION|STK_PROPERTY_FUNCTION;
+								 data->stk_vm_current++;
+								 // set idx function found
+								 /*if((constructor_function->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){  // is a script constructor so only set idx
+									 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
+								 }else{// is a native constructor, find a constructor if it passes one or more args
+									 if(n_args > 0){ // we have to find our custom function to call after object is created
+										 constructor_function=sc->getSymbol(symbol_name,n_args+1); //GET FUNCTION_MEMBER_CONSTRUCTOR_NAME. +1 Is because we include _this paramaters always in the call (is memeber function)!
+										 if(constructor_function == NULL){
+											 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Cannot find any constructor function '%s' with '%i' parameters",symbol_name.c_str(),n_args);
+										 }
+										 // override idx
+										 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
+										 constructor_function->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
+										 ei_load_function_constructor->vm_instruction.value_op1=n_args+1;
+									 }
+								 }*/
+
+							 }
+						}
+
+						if(constructor_function == NULL){
+							PUSH_STK_NULL;
+						}
+
+				 	 }else{
+				 		 VM_ERROR("var '%s' expected as 'type' but it was '%s'",SFI_GET_SYMBOL_NAME(calling_function,instruction), stk_to_typeof_str(data->zs,stk_result_op1));
+				 	 }
+				 	 continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new vector...
 					so_aux=ZS_NEW_OBJECT_VECTOR(data->zs);
 					if(!vm_create_shared_pointer(vm,so_aux)){

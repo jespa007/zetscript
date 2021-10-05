@@ -297,7 +297,7 @@ namespace zetscript{
 				// throw
 				THROW_RUNTIME_ERROR(
 						"Cannot register constant '%s' as 'ScriptObjectString', because is already registered as '%s'"
-						,key_name.c_str(),stk_to_str_typeof(this,stk)
+						,key_name.c_str(),stk_to_typeof_str(this,stk)
 						);
 			}
 		}
@@ -346,7 +346,7 @@ namespace zetscript{
 	StackElement ZetScript::evalInternal(const char * code, unsigned short options, const char * filename, const char *__invoke_file__, int __invoke_line__)  {
 		ScriptFunction *sf_main=MAIN_FUNCTION(this);
 		Scope *sc_main=MAIN_SCOPE(this);
-		StackElement stk_ret=k_stk_undefined;
+		StackElement stk_ret=k_stk_null;
 
 		eval_parse_and_compile(this,code,filename);
 
@@ -517,7 +517,7 @@ namespace zetscript{
 				}
 
 				//;
-				*vm_stk_element=k_stk_undefined;
+				*vm_stk_element=k_stk_null;
 			}
 
 			// reset stk_vm_current ...

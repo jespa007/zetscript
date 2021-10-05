@@ -44,7 +44,7 @@ namespace zetscript{
 						bool created_object=false;
 						bool getter_found=false;
 						StackElement *ptr_stk_param;
-						StackElement stk_getter_result=k_stk_undefined;
+						StackElement stk_getter_result=k_stk_null;
 
 
 						if (is_formatted){

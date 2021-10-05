@@ -2,9 +2,9 @@
 
 namespace zetscript{
 
-	extern const StackElement k_stk_undefined={0,STK_PROPERTY_NULL};
+	extern const StackElement k_stk_null={0,STK_PROPERTY_NULL};
 
-	zs_string stk_to_str_typeof(ZetScript *_zs, StackElement *_stk){
+	zs_string stk_to_typeof_str(ZetScript *_zs, StackElement *_stk){
 		StackElement *stk=_stk;
 		zs_string result="unknow";
 
@@ -116,7 +116,7 @@ namespace zetscript{
 	}
 
 	void StackElement::setUndefined(){
-		*this=k_stk_undefined;
+		*this=k_stk_null;
 	}
 
 	StackElement	StackElement::typeOf(){

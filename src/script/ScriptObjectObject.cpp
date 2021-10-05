@@ -67,7 +67,7 @@ namespace zetscript{
 
 		}else{
 
-			si=k_stk_undefined;
+			si=k_stk_null;
 		}
 
 		/*if(idx_stk_element != NULL){
