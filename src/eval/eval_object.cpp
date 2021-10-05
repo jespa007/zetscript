@@ -344,6 +344,12 @@ namespace zetscript{
 
 
 					eval_instructions->push_back((zs_int)(eval_instruction_new_object_by_value=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE)));
+					eval_instruction_new_object_by_value->instruction_source_info=InstructionSourceInfo(
+							 eval_data->current_parsing_file
+							 ,line
+							 ,get_mapped_name(eval_data,symbol_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+						 );
+
 					//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
 				}else{
 

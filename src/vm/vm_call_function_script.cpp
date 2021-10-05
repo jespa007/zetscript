@@ -1867,7 +1867,7 @@ execute_function:
 						}
 
 				 	 }else{
-				 		 VM_ERROR("var '%s' expected as 'type' but it was '%s'",SFI_GET_SYMBOL_NAME(calling_function,instruction), stk_to_typeof_str(data->zs,stk_result_op1));
+				 		 VM_ERROR("var '%s' expected as 'type' but it was '%s'",SFI_GET_SYMBOL_NAME(calling_function,instruction), stk_to_typeof_str(data->zs,stk_result_op1).c_str());
 				 	 }
 				 	 continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new vector...
