@@ -23,7 +23,7 @@ namespace zetscript{
 	//	script_class = NULL;
 		c_object = NULL;
 		created_object = NULL;
-		idx_script_class = IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS;
+		idx_script_class = IDX_TYPE_SCRIPT_OBJECT_CLASS;
 		delete_c_object_on_destroy = false; // --> user is responsible to delete C objects!
 		script_class_native=NULL;
 	}
@@ -187,15 +187,15 @@ namespace zetscript{
 							vm_unref_lifetime_object(this->vm,so);
 							// return
 						}else{
-							aux=stk_to_string(zs,&result);
+							aux=stk_to_str(zs,&result);
 						}
 					}else{ // expect return an scriptobjectstring
 						zs_string *str=NULL;
 						switch(ptr_function->idx_return_type){
-						case IDX_BUILTIN_TYPE_STRING_C:
+						case IDX_TYPE_STRING_C:
 								aux=((zs_string (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
 								break;
-						case IDX_BUILTIN_TYPE_STRING_PTR_C:
+						case IDX_TYPE_STRING_PTR_C:
 								str=((zs_string * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
 								if(str == NULL){
 									THROW_RUNTIME_ERROR("toString: str NULL");

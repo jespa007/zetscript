@@ -192,7 +192,7 @@ namespace zetscript{
 			const char *param=(const char *)args.items[i];
 			int idx_type = script_class_factory->getIdxClassFromItsNativeType(param);
 			// exception: These variables are registered but not allowed to pass throught parameter
-			if(idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C || idx_type==IDX_BUILTIN_TYPE_BOOL_C || idx_type == IDX_BUILTIN_TYPE_STRING_C){
+			if(idx_type==IDX_TYPE_ZS_FLOAT_C || idx_type==IDX_TYPE_BOOL_C || idx_type == IDX_TYPE_STRING_C){
 				THROW_RUNTIME_ERROR("Argument %i type \"%s\" for function \"%s\" is not supported as parameter, you should use pointer instead (i.e %s *)"
 						,i+1
 						,zs_rtti::demangle(param)

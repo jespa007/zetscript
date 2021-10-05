@@ -10,54 +10,54 @@ namespace zetscript{
 				//int idx_builtin_type=getIdxClassFromItsNativeType(typeid(T).name());
 				// save return type ...
 				switch(idx_builtin_type_var){
-				 case IDX_BUILTIN_TYPE_VOID_C:
+				 case IDX_TYPE_VOID_C:
 					break;
-				 case IDX_BUILTIN_TYPE_ZS_INT_PTR_C:
+				 case IDX_TYPE_ZS_INT_PTR_C:
 					 if(ptr_var==0) return stk_result;
 					 stk_result={(*((zs_int *)ptr_var)),STK_PROPERTY_ZS_INT};
 					 break;
-				 case IDX_BUILTIN_TYPE_ZS_INT_C:
+				 case IDX_TYPE_ZS_INT_C:
 					 stk_result={(((zs_int)ptr_var)),STK_PROPERTY_ZS_INT};
 					 break;
-				 case IDX_BUILTIN_TYPE_ZS_FLOAT_C:
+				 case IDX_TYPE_ZS_FLOAT_C:
 					 stk_result.properties=STK_PROPERTY_ZS_FLOAT;//{};
 					 ZS_FLOAT_COPY(&stk_result.value,&ptr_var);
 					 break;
-				 case IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C:
+				 case IDX_TYPE_ZS_FLOAT_PTR_C:
 					 if(ptr_var==0) return stk_result;
 					 stk_result.properties=STK_PROPERTY_ZS_FLOAT;//{};
 					 ZS_FLOAT_COPY(&stk_result.value,&(*(zs_float *)ptr_var));
 					 break;
-				 case IDX_BUILTIN_TYPE_BOOL_PTR_C:
+				 case IDX_TYPE_BOOL_PTR_C:
 					 if(ptr_var==0) return stk_result;
 					 stk_result={(*((bool *)ptr_var)),STK_PROPERTY_BOOL};
 					 break;
-				 case IDX_BUILTIN_TYPE_BOOL_C:
+				 case IDX_TYPE_BOOL_C:
 					 stk_result={(((bool)ptr_var)),STK_PROPERTY_BOOL};
 					 break;
-				 case IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C:
-				 case IDX_BUILTIN_TYPE_STRING_PTR_C:
+				 case IDX_TYPE_CONST_CHAR_PTR_C:
+				 case IDX_TYPE_STRING_PTR_C:
 
 					 if(ptr_var!=0) return stk_result;
 
 					 so=ZS_NEW_OBJECT_STRING(this);
-					 if(idx_builtin_type_var==IDX_BUILTIN_TYPE_STRING_PTR_C){
+					 if(idx_builtin_type_var==IDX_TYPE_STRING_PTR_C){
 						so->value=(void *)ptr_var;
 
 					 }
 
 					 stk_result={(intptr_t)so,STK_PROPERTY_SCRIPT_OBJECT};
 					 break;
-				 case IDX_BUILTIN_TYPE_STACK_ELEMENT:
+				 case IDX_TYPE_STACK_ELEMENT:
 					 if(ptr_var==0) return stk_result;
 					 stk_result=*((StackElement *)ptr_var);
 					 break;
-				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR:
-				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR:
-				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT:
-				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR:
-				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING:
-				 case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR:
+				 case IDX_TYPE_SCRIPT_OBJECT_VECTOR:
+				 case IDX_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR:
+				 case IDX_TYPE_SCRIPT_OBJECT_OBJECT:
+				 case IDX_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR:
+				 case IDX_TYPE_SCRIPT_OBJECT_STRING:
+				 case IDX_TYPE_SCRIPT_OBJECT_STRING_ITERATOR:
 					 if(ptr_var==0) return stk_result;
 					stk_result = {
 						 (intptr_t)ptr_var
@@ -91,15 +91,15 @@ namespace zetscript{
 				stack_element=((StackElement *)stack_element->value);
 			}
 
-			if(idx_builtin_type == IDX_BUILTIN_TYPE_STACK_ELEMENT){
+			if(idx_builtin_type == IDX_TYPE_STACK_ELEMENT){
 				val_ret=(zs_int)stack_element;
 			}else{
 
 				switch(GET_STK_PROPERTY_TYPES(stack_element->properties)){
 				case STK_PROPERTY_BOOL:
-					if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_C){// *ScriptClass::k_str_bool_type){
+					if(idx_builtin_type == IDX_TYPE_BOOL_C){// *ScriptClass::k_str_bool_type){
 						val_ret=(zs_int)(stack_element->value);
-					}else if(idx_builtin_type == IDX_BUILTIN_TYPE_BOOL_PTR_C){//*ScriptClass::k_str_bool_type_ptr){
+					}else if(idx_builtin_type == IDX_TYPE_BOOL_PTR_C){//*ScriptClass::k_str_bool_type_ptr){
 						val_ret=(zs_int)(&stack_element->value);
 					}else{
 						error="cannot convert '";
@@ -114,13 +114,13 @@ namespace zetscript{
 					break;
 				case STK_PROPERTY_ZS_FLOAT:
 					switch(idx_builtin_type){
-					case IDX_BUILTIN_TYPE_ZS_FLOAT_C:
+					case IDX_TYPE_ZS_FLOAT_C:
 						ZS_FLOAT_COPY(&val_ret,&stack_element->value);
 						break;
-					case IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C:
+					case IDX_TYPE_ZS_FLOAT_PTR_C:
 						val_ret=(zs_int)(&stack_element->value);
 						break;
-					case IDX_BUILTIN_TYPE_ZS_INT_C:
+					case IDX_TYPE_ZS_INT_C:
 						{
 							zs_int *aux_dst = ((zs_int *)&val_ret);
 							zs_float *aux_src=(zs_float *)&stack_element->value;
@@ -138,13 +138,13 @@ namespace zetscript{
 					break;
 				case STK_PROPERTY_ZS_INT:
 					switch(idx_builtin_type){
-					case IDX_BUILTIN_TYPE_ZS_INT_C:
+					case IDX_TYPE_ZS_INT_C:
 						val_ret=(zs_int)(stack_element->value);
 						break;
-					case IDX_BUILTIN_TYPE_ZS_INT_PTR_C:
+					case IDX_TYPE_ZS_INT_PTR_C:
 						val_ret=(zs_int)(&stack_element->value);
 						break;
-					case IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C:
+					case IDX_TYPE_ZS_FLOAT_PTR_C:
 						ZS_FLOAT_COPY(&val_ret,stack_element->value);
 						break;
 					default:
@@ -171,15 +171,15 @@ namespace zetscript{
 
 						if(idx_builtin_type!=script_object->idx_script_class){
 
-							if(script_object->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){ // string
+							if(script_object->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
 								if(stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
 									error= "internal error var_ref is NULL";
 									return false;
 								}
 
-								if(idx_builtin_type == IDX_BUILTIN_TYPE_STRING_PTR_C){
+								if(idx_builtin_type == IDX_TYPE_STRING_PTR_C){
 									val_ret=(zs_int)(((ScriptObjectString *)script_object)->value);
-								}else if (idx_builtin_type == IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C){
+								}else if (idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
 									val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());
 								}else{
 									error= "cannot convert '";
@@ -189,7 +189,7 @@ namespace zetscript{
 									error.append("'");
 									return false;
 								}
-							}else if(script_object->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
+							}else if(script_object->idx_script_class>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
 								ScriptObjectClass *script_object_class = (ScriptObjectClass *)script_object;
 								c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
 

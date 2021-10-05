@@ -68,7 +68,7 @@ namespace zetscript{
 				stk_src_item=(StackElement *)stk_src_item->value;
 			}
 
-			*(*str_dst_it)=stk_to_string(zs, stk_src_item);
+			*(*str_dst_it)=stk_to_str(zs, stk_src_item);
 
 			str_dst_it++;
 			stk_src_it++;
@@ -83,7 +83,7 @@ namespace zetscript{
 
 	ScriptObjectString * ScriptObjectString::format(ZetScript *zs, StackElement *stk_str_obj, StackElement *args){
 		// transform '\"' to '"','\n' to carry returns, etc
-		zs_string str_input=zs_strutils::unescape(stk_to_string(zs, stk_str_obj));
+		zs_string str_input=zs_strutils::unescape(stk_to_str(zs, stk_str_obj));
 		zs_string str_result;
 		ScriptObjectVector *sov=NULL;
 		zs_string str_num_aux;
@@ -101,7 +101,7 @@ namespace zetscript{
 
 		if(args->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)args->value;
-			if(so->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
+			if(so->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 				sov=(ScriptObjectVector *)so;
 			}
 		}
@@ -205,7 +205,7 @@ namespace zetscript{
 									str_format=ptr_str_format_string;
 								}
 
-								str_format_results=stk_to_string(zs,sov->getUserElementAt(idx_num),str_format);
+								str_format_results=stk_to_str(zs,sov->getUserElementAt(idx_num),str_format);
 
 								str_result+=str_format_results;
 
@@ -250,7 +250,7 @@ namespace zetscript{
 	//----------------------------------------------
 
 	ScriptObjectString::ScriptObjectString(){
-		idx_script_class=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING;
+		idx_script_class=IDX_TYPE_SCRIPT_OBJECT_STRING;
 		default_str_value = "";
 		value = &default_str_value;
 	}

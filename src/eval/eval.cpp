@@ -145,10 +145,21 @@ namespace zetscript{
 				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(unresolved_instruction->calling_function,unresolved_instruction->instruction);
 				const char *instruction_file=SFI_GET_FILE(unresolved_instruction->calling_function,unresolved_instruction->instruction);
 				int instruction_line=SFI_GET_LINE(unresolved_instruction->calling_function,unresolved_instruction->instruction);
+
+
+				if(ptr_str_symbol_to_find==NULL){
+					EVAL_ERROR_FILE_LINE(
+						instruction_file
+						,instruction_line
+						,"Cannot find symbol name at instruction %i"
+						,unresolved_instruction->instruction-unresolved_instruction->calling_function->instructions
+					);
+				}
+
 				Symbol *symbol_found=NULL;
 				short idx_sc_found=ZS_IDX_UNDEFINED;
 				if((idx_sc_found= eval_data->script_class_factory->getBuiltinTypeOrClass(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if class
-					 unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_TYPE_INFO;
+					 unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_TYPE;
 					 unresolved_instruction->instruction->value_op2=idx_sc_found;
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
 					 zs_string static_error;
@@ -644,7 +655,7 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:
 			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
 				// CONSTRUCTOR
-			case BYTE_CODE_LOAD_CONSTRUCTOR:
+			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
 
 				// load constants
 			case BYTE_CODE_LOAD_FUNCTION:

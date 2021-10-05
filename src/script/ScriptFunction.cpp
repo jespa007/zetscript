@@ -163,7 +163,7 @@ namespace zetscript{
 
 			switch(instruction->byte_code){
 
-			case  BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE:
+			case  BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
@@ -191,7 +191,7 @@ namespace zetscript{
 			//case BYTE_CODE_PUSH_STK_REF:
 			case BYTE_CODE_PUSH_STK_THIS:
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR:
-			case BYTE_CODE_LOAD_CONSTRUCTOR:
+			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
 			case BYTE_CODE_LOAD_FUNCTION:
 			case BYTE_CODE_FIND_VARIABLE:
 			case BYTE_CODE_LOAD_REF:
@@ -284,8 +284,8 @@ namespace zetscript{
 			case BYTE_CODE_INSTANCEOF:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\tINSTANCEOF\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
 				break;
-			case BYTE_CODE_LOAD_TYPE_INFO:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_TYPE_INFO\t%s\n",idx_instruction,zs->getScriptClassFactory()->getScriptClassName(instruction->value_op2));
+			case BYTE_CODE_LOAD_TYPE:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_TYPE\t%s\n",idx_instruction,zs->getScriptClassFactory()->getScriptClassName(instruction->value_op2));
 				break;
 			default:
 
@@ -336,7 +336,7 @@ namespace zetscript{
 		if(info!=NULL && info->ptr_str_symbol_name!=NULL){
 			return info->ptr_str_symbol_name->c_str();
 		}
-		return "unknown_symbol";
+		return NULL;
 	}
 
 	const char *ScriptFunction::getInstructionSourceFile(Instruction * ins){

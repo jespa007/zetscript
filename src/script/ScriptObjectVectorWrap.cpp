@@ -30,7 +30,7 @@ namespace zetscript{
 		// update n_refs +1
 		if(_stk->properties&STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so_param=(ScriptObject *)_stk->value;
-			if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
+			if(so_param->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
 				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(zs);
 				if(!vm_create_shared_pointer(vm,sc)){
@@ -69,7 +69,7 @@ namespace zetscript{
 			if(i>0){
 				ptr_str->append((char)idx);
 			}
-			ptr_str->append(stk_to_string(zs,stk));
+			ptr_str->append(stk_to_str(zs,stk));
 		}
 
 		return so_string;
@@ -99,8 +99,8 @@ namespace zetscript{
 					   ((ScriptObject *)stk_element->value)->idx_script_class
 					   ){
 					// particular case string
-					if(((ScriptObject *)stk_to_compare->value)->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
-						found=stk_to_string(zs,stk_to_compare)==stk_to_string(zs,stk_element);
+					if(((ScriptObject *)stk_to_compare->value)->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_STRING){
+						found=stk_to_str(zs,stk_to_compare)==stk_to_str(zs,stk_element);
 					}
 				}
 				break;

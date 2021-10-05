@@ -176,7 +176,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check class scope...
-			if(scope_var->script_class->idx_class != IDX_BUILTIN_TYPE_MAIN
+			if(scope_var->script_class->idx_class != IDX_TYPE_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // class members are defined as functions
@@ -413,7 +413,7 @@ error_eval_keyword_var:
 		//Keyword key_w;
 		//
 		// check for keyword ...
-		if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_MAIN
+		if(scope_info->script_class->idx_class != IDX_TYPE_MAIN
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )
@@ -680,34 +680,38 @@ error_eval_keyword_var:
 
 			//--- OP
 			if(sc!=NULL){ // register as variable member...
-
-
-
 				try{
-
 					symbol_sf=sc->registerMemberFunction(
 							function_name
 							,params
 							,params_len
-							,is_static?SYMBOL_PROPERTY_STATIC:0
+							,is_static?SYMBOL_PROPERTY_STATIC:SYMBOL_PROPERTY_MEMBER_FUNCTION
 							,eval_data->current_parsing_file
 							,line
 					);
 				}catch(std::exception & ex){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,ex.what());
+					delete [] params;
+
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,ex.what());
 				}
 
 
 			}
 			else{ // register as local variable in the function...
-				symbol_sf=eval_data->current_function->script_function->registerLocalFunction(
-					 scope_info
-					, eval_data->current_parsing_file
-					, line
-					, function_name
-					, params
-					, params_len
-				);
+				try{
+					symbol_sf=eval_data->current_function->script_function->registerLocalFunction(
+						 scope_info
+						, eval_data->current_parsing_file
+						, line
+						, function_name
+						, params
+						, params_len
+					);
+				}catch(std::exception & ex){
+					delete [] params;
+
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,ex.what());
+				}
 
 				if(scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
 					symbol_sf->properties|=SYMBOL_PROPERTY_MEMBER_FUNCTION;

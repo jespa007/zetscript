@@ -29,13 +29,21 @@ namespace zetscript{
 		){
 
 		Symbol *symbol=NULL;
+		uint16_t properties_register_symbol=properties & SYMBOL_PROPERTY_C_OBJECT_REF? REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS:REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
+
+
+		// try to not check if function name is constructor
+		if((properties & SYMBOL_PROPERTY_MEMBER_FUNCTION) && (function_name == zs->getScriptClassFactory()->getScriptClassName(idx_class))){
+			properties_register_symbol|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
+		}
+
 
 		symbol=scope->registerSymbolFunction(
 				file
 				,line
 				,function_name
 				,_params_len
-				,properties & SYMBOL_PROPERTY_C_OBJECT_REF? REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS:REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
+				,properties_register_symbol
 		);
 
 		short idx_script_function = script_functions->count;

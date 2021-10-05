@@ -50,7 +50,7 @@ namespace zetscript{
 				,&params_len
 		);
 
-		if(idx_return_type != IDX_BUILTIN_TYPE_VOID_C){
+		if(idx_return_type != IDX_TYPE_VOID_C){
 			THROW_RUNTIME_ERROR("Error register setter attrib '%s': should return void ",attrib_name);
 		}
 

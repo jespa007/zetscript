@@ -349,7 +349,7 @@ SET(
 	
 	
 	# main
-	BuiltinType.h
+	Type.h
 	ByteCode.h
 	common.h
 	config.h

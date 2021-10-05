@@ -74,7 +74,7 @@ namespace zetscript{
 
 
 		// load var content
-		BYTE_CODE_LOAD_TYPE_INFO,
+		BYTE_CODE_LOAD_TYPE,
 		BYTE_CODE_LOAD_GLOBAL,
 		BYTE_CODE_LOAD_LOCAL,
 		BYTE_CODE_LOAD_REF,
@@ -86,7 +86,7 @@ namespace zetscript{
 		BYTE_CODE_LOAD_ELEMENT_OBJECT,
 
 		// special load
-		BYTE_CODE_LOAD_CONSTRUCTOR,
+		BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR,
 
 		// load constants
 		BYTE_CODE_LOAD_FUNCTION,
@@ -147,7 +147,8 @@ namespace zetscript{
 		BYTE_CODE_CALL, // call function...
 		BYTE_CODE_IMMEDIATE_CALL, // call function...
 		BYTE_CODE_CALL_CONSTRUCTOR, // call function...
-		BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE, // new operator...
+		BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE, // new operator...
+		BYTE_CODE_NEW_OBJECT_BY_VALUE, // new operator...
 		BYTE_CODE_DELETE,
 		BYTE_CODE_NEW_VECTOR, // Vector object
 		BYTE_CODE_NEW_OBJECT,

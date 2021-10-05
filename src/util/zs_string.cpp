@@ -11,6 +11,7 @@ namespace zetscript{
 
 	zs_string::zs_string(const char * const buffer) // constructor
 	{
+		if(buffer==NULL){return;} // do not create string from NULL pointers
 		size = strlen(buffer);
 		buf = (char *)ZS_MALLOC(size + 1); // + 1 for the keeping the null character
 		strncpy(buf, buffer, size); // copy from the incoming buffer to character buffer of the new object

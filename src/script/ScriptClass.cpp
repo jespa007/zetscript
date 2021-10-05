@@ -196,7 +196,7 @@ namespace zetscript{
 				ZS_PREFIX_SYMBOL_NAME_SETTER+attribute_name,
 				params,
 				params_len,
-				IDX_BUILTIN_TYPE_VOID_C,
+				IDX_TYPE_VOID_C,
 				ref_ptr,
 				symbol_getter_function_properties,
 				file,
@@ -442,9 +442,6 @@ namespace zetscript{
 			, unsigned short symbol_properties
 			,const char * file
 			, short line
-
-
-
 	){
 		return registerInternalMemberFunction(
 				 function_name
@@ -589,7 +586,7 @@ namespace zetscript{
 							return NULL;
 						}
 					}else{ // native
-						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(idx_return_type == IDX_BUILTIN_TYPE_STRING_PTR_C || idx_return_type == IDX_BUILTIN_TYPE_STRING_C) ){
+						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(idx_return_type == IDX_TYPE_STRING_PTR_C || idx_return_type == IDX_TYPE_STRING_C) ){
 							THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
 								,class_name.c_str()
 								,function_name.c_str()

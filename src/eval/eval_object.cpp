@@ -28,7 +28,7 @@ namespace zetscript{
 
 		if(scope_info->scope_parent!=NULL){// is within function ?
 
-			if(scope_info->script_class->idx_class != IDX_BUILTIN_TYPE_MAIN){ // function object as function member because it will use this inside
+			if(scope_info->script_class->idx_class != IDX_TYPE_MAIN){ // function object as function member because it will use this inside
 				byte_code=ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS;
 			}
 		}
@@ -291,11 +291,12 @@ namespace zetscript{
 	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector	*	eval_instructions){
 		// Inline new : (new A(4+5)).toString()
 		char *aux_p = (char *)s;
-		zs_string class_name;
+		zs_string symbol_name;
 		ScriptClass *sc=NULL;
 		int n_args=0;
 		Symbol *constructor_function=NULL;
 		int start_line=line;
+		bool new_object_by_value=false;
 
 		Keyword key_w;
 
@@ -315,32 +316,54 @@ namespace zetscript{
 						eval_data
 						,aux_p
 						,line
-						,class_name
+						,symbol_name
 				);
 
-				sc=GET_SCRIPT_CLASS(eval_data,class_name);
+				sc=GET_SCRIPT_CLASS(eval_data,symbol_name);
 
 				if(sc==NULL){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
+					new_object_by_value=true;
+					ByteCode byte_code_load=BYTE_CODE_FIND_VARIABLE;
+					Symbol *vis=NULL;
+					uintptr_t value=ZS_IDX_UNDEFINED;
+					// check whether local or global var...
+					if((vis=eval_find_local_symbol(eval_data,scope_info,symbol_name)) != NULL){ // local sy
+						if((vis->properties & BYTE_CODE_LOAD_LOCAL)){
+							byte_code_load= ByteCode::BYTE_CODE_LOAD_LOCAL;
+							value=vis->idx_position;
+						}
+					}
+
+					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(byte_code_load,ZS_IDX_UNDEFINED,value)));
+					eval_instruction->instruction_source_info=InstructionSourceInfo(
+						 eval_data->current_parsing_file
+						 ,line
+						 ,get_mapped_name(eval_data,symbol_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+					 );
+
+
+					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE)));
+					//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
+				}else{
+
+					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE)));
+					eval_instruction->vm_instruction.value_op1=sc->idx_class;
 				}
 
-				eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE)));
-
-				eval_instruction->vm_instruction.value_op1=sc->idx_class;
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				 eval_instructions->push_back((zs_int)(
-				    ei_load_function_constructor=new EvalInstruction(
-						 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR
+					ei_load_function_constructor=new EvalInstruction(
+						 ByteCode::BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR
 					)
 				 ));
-
 
 				 ei_load_function_constructor->instruction_source_info=InstructionSourceInfo(
 					 eval_data->current_parsing_file
 					 ,line
-					 ,get_mapped_name(eval_data,class_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+					 ,get_mapped_name(eval_data,symbol_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
 				 );
+
 
 				 if(*aux_p != '('){
 					 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_data_keywords[key_w].str);
@@ -382,27 +405,28 @@ namespace zetscript{
 				 	 )
 				 );
 
+				 if(new_object_by_value==false){
+					 // check constructor symbol
+					 constructor_function=sc->getSymbol(symbol_name);
 
-				 // check constructor symbol
-				 constructor_function=sc->getSymbol(class_name);
-
-				 if(constructor_function != NULL){
-					 // set idx function found
-					 if((constructor_function->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){  // is a script constructor so only set idx
-						 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
-					 }else{// is a native constructor, find a constructor if it passes one or more args
-						 if(n_args > 0){ // we have to find our custom function to call after object is created
-							 constructor_function=sc->getSymbol(class_name,n_args+1); //GET FUNCTION_MEMBER_CONSTRUCTOR_NAME. +1 Is because we include _this paramaters always in the call (is memeber function)!
-							 if(constructor_function == NULL){
-								 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Cannot find any constructor function '%s' with '%i' parameters",class_name.c_str(),n_args);
-							 }
-							 // override idx
+					 if(constructor_function != NULL){
+						 // set idx function found
+						 if((constructor_function->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){  // is a script constructor so only set idx
 							 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
-							 constructor_function->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
-							 ei_load_function_constructor->vm_instruction.value_op1=n_args+1;
+						 }else{// is a native constructor, find a constructor if it passes one or more args
+							 if(n_args > 0){ // we have to find our custom function to call after object is created
+								 constructor_function=sc->getSymbol(symbol_name,n_args+1); //GET FUNCTION_MEMBER_CONSTRUCTOR_NAME. +1 Is because we include _this paramaters always in the call (is memeber function)!
+								 if(constructor_function == NULL){
+									 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Cannot find any constructor function '%s' with '%i' parameters",symbol_name.c_str(),n_args);
+								 }
+								 // override idx
+								 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
+								 constructor_function->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
+								 ei_load_function_constructor->vm_instruction.value_op1=n_args+1;
+							 }
 						 }
-					 }
 
+					 }
 				 }
 
 

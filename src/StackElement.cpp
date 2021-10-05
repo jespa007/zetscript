@@ -4,33 +4,33 @@ namespace zetscript{
 
 	extern const StackElement k_stk_undefined={0,STK_PROPERTY_NULL};
 
-	zs_string stk_typeof_str(ZetScript *_zs, StackElement *_stk){
+	zs_string stk_to_str_typeof(ZetScript *_zs, StackElement *_stk){
 		StackElement *stk=_stk;
 		zs_string result="unknow";
 
 		if(STK_VALUE_IS_NULL(stk))
-			result="null";
+			result=ZS_TYPE_NAME_NULL; //"null";
 		else if(STK_VALUE_IS_ZS_INT(stk))
-			result="zs_int";
+			result=ZS_TYPE_NAME_INT;
 		else if(STK_VALUE_IS_ZS_FLOAT(stk))
-			result="zs_float";
+			result=ZS_TYPE_NAME_FLOAT;
 		else if(STK_VALUE_IS_BOOLEAN(stk))
-			result="bool";
-		else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk))
-			result="Object";
+			result=ZS_TYPE_NAME_BOOL;
 		else if(STK_IS_SCRIPT_OBJECT_STRING(stk))
-			result="String";
+			result=ZS_TYPE_NAME_OBJECT_STRING;
 		else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk))
-			result="Vector";
-		else if(STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk))
-			result="ObjectIterator";
+			result=ZS_TYPE_NAME_OBJECT_VECTOR;
+		else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk))
+			result=ZS_TYPE_NAME_OBJECT_OBJECT;
 		else if(STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk))
-			result="StringIterator";
+			result=ZS_TYPE_NAME_OBJECT_STRING_ITERATOR;
 		else if(STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk))
-			result="VectorIterator";
+			result=ZS_TYPE_NAME_OBJECT_VECTOR_ITERATOR;
+		else if(STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk))
+			result=ZS_TYPE_NAME_OBJECT_OBJECT_ITERATOR;
 		else if(STK_VALUE_IS_FUNCTION(stk))
 			result=zs_string("fun@")+((ScriptFunction *)stk->value)->symbol.name;
-		else if(STK_VALUE_IS_TYPE_INFO(stk)) // is a class
+		else if(STK_VALUE_IS_TYPE(stk)) // is a class
 			result=zs_string("type@")+_zs->getScriptClassFactory()->getScriptClassName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_ATTRIBUTE(stk)){
 			MemberAttribute *ma=(MemberAttribute *)stk->value;
@@ -51,15 +51,17 @@ namespace zetscript{
 		return result;
 	}
 
-	zs_string stk_to_string(ZetScript *_zs, StackElement *_stk, const zs_string & _format ){
-		zs_string result="null";
+	zs_string stk_to_str(ZetScript *_zs, StackElement *_stk, const zs_string & _format ){
+		zs_string result="unknown";
 		StackElement *stk=_stk;
 
 		if(stk->properties & STK_PROPERTY_PTR_STK){
 			stk=(StackElement *)stk->value;
 		}
 
-		if((stk->properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)){
+		if(STK_VALUE_IS_NULL(stk)){
+			result=ZS_TYPE_NAME_NULL;
+		}else if((stk->properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)){
 			result= (const char *)stk->value;
 		}else if(STK_VALUE_IS_ZS_INT(stk)){
 			result= zs_strutils::zs_int_to_str((zs_int)stk->value,_format);
@@ -74,7 +76,7 @@ namespace zetscript{
 			}else{ // normal function
 				result= zs_string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
 			}
-		}else if(STK_VALUE_IS_TYPE_INFO(stk)){
+		}else if(STK_VALUE_IS_TYPE(stk)){
 			result= zs_string("type")+"@"+_zs->getScriptClassFactory()->getScriptClassName(stk->value);
 		}else{
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -119,22 +121,22 @@ namespace zetscript{
 
 	StackElement	StackElement::typeOf(){
 		StackElement *stk= this;
-		StackElement result={0,0};
+		StackElement result={-1,STK_PROPERTY_TYPE};
 
 		if(stk->properties & STK_PROPERTY_PTR_STK){
 			stk=(StackElement *)stk->value;
 		}
 
-		if(STK_VALUE_IS_ZS_INT(stk)){
-			result.value=IDX_BUILTIN_TYPE_ZS_INT_C;
+		if(STK_VALUE_IS_NULL(stk)){
+			result.value=IDX_TYPE_NULL;
+		}else if(STK_VALUE_IS_ZS_INT(stk)){
+			result.value=IDX_TYPE_ZS_INT_C;
 		}else if(STK_VALUE_IS_ZS_FLOAT(stk)){
-			result.value=IDX_BUILTIN_TYPE_ZS_FLOAT_C;
+			result.value=IDX_TYPE_ZS_FLOAT_C;
 		}else if(STK_VALUE_IS_BOOLEAN(stk)){
-			result.value=IDX_BUILTIN_TYPE_BOOL_C;
-		}else if(STK_PROPERTY_SCRIPT_OBJECT(stk)){
-			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				result.value=((ScriptObjectObject *)stk->value)->getScriptClass()->idx_class;
-			}
+			result.value=IDX_TYPE_BOOL_C;
+		}else if(STK_VALUE_IS_SCRIPT_OBJECT(stk)){
+			result.value=((ScriptObjectObject *)stk->value)->getScriptClass()->idx_class;
 		}
 
 		return result;

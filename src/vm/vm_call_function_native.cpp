@@ -128,7 +128,7 @@ namespace zetscript{
 			}
 		}
 
-		if(c_function->idx_return_type == IDX_BUILTIN_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
+		if(c_function->idx_return_type == IDX_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
 
 			switch(n_args){
 			case 0:
@@ -181,7 +181,7 @@ namespace zetscript{
 				break;
 			}
 
-		}else if(c_function->idx_return_type==IDX_BUILTIN_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
+		}else if(c_function->idx_return_type==IDX_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
 			switch(n_args){
 			case 0:
 				result=PTR_FUNCTION_RET_BOOL_PARAM0(fun_ptr)();
@@ -232,7 +232,7 @@ namespace zetscript{
 				);
 				break;
 			}
-		}else if(c_function->idx_return_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
+		}else if(c_function->idx_return_type==IDX_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
 			zs_float float_aux;
 			switch(n_args){
 			case 0:
@@ -287,7 +287,7 @@ namespace zetscript{
 
 			ZS_FLOAT_COPY(&result,&float_aux);
 
-		}else if(c_function->idx_return_type==IDX_BUILTIN_TYPE_STRING_C){ // we must do a float cast in order to get float return.
+		}else if(c_function->idx_return_type==IDX_TYPE_STRING_C){ // we must do a float cast in order to get float return.
 
 			switch(n_args){
 			case 0:
@@ -341,7 +341,7 @@ namespace zetscript{
 			}
 
 			result=(zs_int)&str_aux;
-			idx_return_type=IDX_BUILTIN_TYPE_STRING_PTR_C;
+			idx_return_type=IDX_TYPE_STRING_PTR_C;
 
 		}else{ // generic pointer or int
 

@@ -130,6 +130,13 @@
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
 		PUSH_STK_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 		break;\
+	case MSK_STK_OP1_TYPE_OP2_TYPE:\
+		if(__METAMETHOD__ ==BYTE_CODE_METAMETHOD_EQU){\
+			PUSH_STK_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) == STK_VALUE_TO_ZS_INT(stk_result_op2));\
+		}else{\
+			VM_STOP_EXECUTE("Only relational operation '==' can be used for typeof");\
+		}\
+		break;\
 	case MSK_STK_OP1_BOOL_OP2_BOOL:\
 		PUSH_STK_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 		break;\
@@ -148,7 +155,7 @@
 		break;\
 	default:\
 		if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
-			PUSH_STK_BOOLEAN(ZS_STRCMP(stk_to_string(data->zs, stk_result_op1).c_str(), __C_OP__ ,stk_to_string(data->zs,stk_result_op2).c_str()));\
+			PUSH_STK_BOOLEAN(ZS_STRCMP(stk_to_str(data->zs, stk_result_op1).c_str(), __C_OP__ ,stk_to_str(data->zs,stk_result_op2).c_str()));\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_NULL || stk_result_op2->properties==STK_PROPERTY_NULL)\
 				&& (__METAMETHOD__ == BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
 				){\
@@ -461,12 +468,12 @@ namespace zetscript{
 				// determine object ...
 				if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					ScriptObject *obj=(ScriptObject *)stk_result_op1->value;
-					if(		   obj->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR
-							|| obj->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
-							|| obj->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS
+					if(		   obj->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_VECTOR
+							|| obj->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_OBJECT
+							|| obj->idx_script_class>=IDX_TYPE_SCRIPT_OBJECT_CLASS
 					){
 
-						if(obj->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){
+						if(obj->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 							ScriptObjectVector *so_vector=(ScriptObjectVector *)obj;
 
 							if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
@@ -482,10 +489,10 @@ namespace zetscript{
 							if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==false){ \
 								VM_STOP_EXECUTE("Expected string for object access");
 							}
-							stk_var = so_object->getProperty(stk_to_string(data->zs, stk_result_op2));
+							stk_var = so_object->getProperty(stk_to_str(data->zs, stk_result_op2));
 							if(stk_var == NULL){
 								if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_VECTOR){
-									if((stk_var =so_object->addProperty(stk_to_string(data->zs, stk_result_op2), data->vm_error_str))==NULL){
+									if((stk_var =so_object->addProperty(stk_to_str(data->zs, stk_result_op2), data->vm_error_str))==NULL){
 										VM_STOP_EXECUTE(data->vm_error_str.c_str());
 									}
 								}
@@ -500,7 +507,7 @@ namespace zetscript{
 
 						continue;
 
-					}else if(obj->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING){
+					}else if(obj->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_STRING){
 						ScriptObjectString *so_string=(ScriptObjectString *)stk_result_op1->value;
 
 						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
@@ -552,7 +559,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_MEMBER_VAR: // direct load
 				*data->stk_vm_current++=*vm_load_this_element(vm,this_object,calling_function,instruction,instruction->value_op2);
 				continue;
-			case BYTE_CODE_LOAD_CONSTRUCTOR:
+			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
 				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
 					*data->stk_vm_current++=k_stk_undefined;
@@ -576,7 +583,7 @@ load_element_object:
 
 					Instruction *previous_ins= (instruction-1);
 
-					if(previous_ins->byte_code == BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE){
+					if(previous_ins->byte_code == BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE){
 						stk_result_op1=(data->stk_vm_current-1);
 					}
 					else{
@@ -590,8 +597,8 @@ load_element_object:
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-							,stk_typeof_str(data->zs,stk_result_op1).c_str()
-							,zs_strutils::starts_with(stk_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+							,stk_to_str_typeof(data->zs,stk_result_op1).c_str()
+							,zs_strutils::starts_with(stk_to_str_typeof(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 						);
 					}
 
@@ -695,8 +702,8 @@ load_element_object:
 			case BYTE_CODE_LOAD_STRING:
 				*data->stk_vm_current++=*((StackElement *)instruction->value_op2);
 				continue;
-			case BYTE_CODE_LOAD_TYPE_INFO:
-				PUSH_STK_TYPE_INFO(instruction->value_op2);
+			case BYTE_CODE_LOAD_TYPE:
+				PUSH_STK_TYPE(instruction->value_op2);
 				continue;
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_PUSH_VECTOR_ELEMENT:
@@ -735,7 +742,7 @@ load_element_object:
 						ScriptObjectObject *vec_obj = NULL;
 						if((data->stk_vm_current-1)->properties & STK_PROPERTY_SCRIPT_OBJECT){
 							vec_obj = (ScriptObjectObject *)(data->stk_vm_current-1)->value;
-							if(vec_obj->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
+							if(vec_obj->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
 								// op1 is now the src value ...
 								stk_src=stk_result_op1;
 								if(stk_src->properties & STK_PROPERTY_PTR_STK){
@@ -765,21 +772,21 @@ load_element_object:
 						ScriptObjectObject *obj = NULL;
 						StackElement *stk_object=(data->stk_vm_current-1);
 						if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_object) == 0){
-							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_typeof_str(data->zs,stk_object).c_str());
+							VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_to_str_typeof(data->zs,stk_object).c_str());
 						}
 
 						obj = (ScriptObjectObject *)stk_object->value;
 
 						if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
 							VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\""
-									,stk_typeof_str(data->zs,stk_result_op1).c_str()
+									,stk_to_str_typeof(data->zs,stk_result_op1).c_str()
 							);
 						}
 								// op1 is now the src value ...
 						StackElement *se=NULL;
 						//const char *str = (const char *)stk_result_op1->value;
 						stk_src=stk_result_op2;
-						if((se =obj->addProperty(stk_to_string(data->zs, stk_result_op1),data->vm_error_str))==NULL){
+						if((se =obj->addProperty(stk_to_str(data->zs, stk_result_op1),data->vm_error_str))==NULL){
 							VM_STOP_EXECUTE(data->vm_error_str.c_str());
 						}
 
@@ -969,7 +976,7 @@ load_element_object:
 						}else {
 							if((stk_dst->properties & STK_PROPERTY_IS_VAR_C)==0){
 								VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
-										,stk_typeof_str(data->zs,stk_dst).c_str()
+										,stk_to_str_typeof(data->zs,stk_dst).c_str()
 								);
 							}
 						}
@@ -1140,7 +1147,7 @@ load_element_object:
 								stk_dst->properties=STK_PROPERTY_BOOL;
 								*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);
 								if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)stk_src_ref);
-							}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE_INFO) ){
+							}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE) ){
 								*stk_dst=*stk_src;
 							}else if(type_var & STK_PROPERTY_SCRIPT_OBJECT){
 
@@ -1165,7 +1172,7 @@ load_element_object:
 										//-------------------------------------
 									}
 
-									str_object->set(stk_to_string(data->zs, stk_src));
+									str_object->set(stk_to_str(data->zs, stk_src));
 
 								}else{ // object we pass its reference
 
@@ -1182,7 +1189,7 @@ load_element_object:
 								}
 							}else{
 								VM_STOP_EXECUTE("(internal) cannot determine var type %s"
-									,stk_typeof_str(data->zs,stk_src).c_str()
+									,stk_to_str_typeof(data->zs,stk_src).c_str()
 								);
 							}
 							if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
@@ -1331,11 +1338,7 @@ load_element_object:
 				continue;
 			case BYTE_CODE_TYPEOF:
 				POP_ONE;
-				so_aux=ScriptObjectString::newScriptObjectString(data->zs,stk_typeof_str(data->zs,stk_result_op1));
-				vm_create_shared_pointer(vm,so_aux);
-				data->stk_vm_current->value=(zs_int)so_aux;
-				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
-				data->stk_vm_current++;
+				*data->stk_vm_current++=stk_result_op1->typeOf();
 				continue;
 			case BYTE_CODE_ADD: // +
 				POP_TWO;
@@ -1384,16 +1387,16 @@ load_element_object:
 				case ZS_IDX_UNDEFINED:
 					VM_STOP_EXECUTE("type '%s' does not exist ",instruction->getConstantValueOp2ToString().c_str());
 					break;
-				case IDX_BUILTIN_TYPE_ZS_INT_C:
+				case IDX_TYPE_ZS_INT_C:
 					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
 					break;
-				case IDX_BUILTIN_TYPE_ZS_FLOAT_C:
+				case IDX_TYPE_ZS_FLOAT_C:
 					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT)!=0);
 					break;
-				case IDX_BUILTIN_TYPE_BOOL_C:
+				case IDX_TYPE_BOOL_C:
 					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_BOOL)!=0);
 					break;
-				case IDX_BUILTIN_TYPE_FUNCTION:
+				case IDX_TYPE_FUNCTION:
 					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_FUNCTION)!=0);
 					break;
 				default:
@@ -1415,7 +1418,7 @@ load_element_object:
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				POP_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_typeof_str(data->zs,stk_result_op1).c_str());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_str_typeof(data->zs,stk_result_op1).c_str());
 				}
 				if(stk_result_op1->value == 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1424,7 +1427,7 @@ load_element_object:
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				POP_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_typeof_str(data->zs,stk_result_op1).c_str());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_str_typeof(data->zs,stk_result_op1).c_str());
 				}
 				if(stk_result_op1->value != 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1544,13 +1547,13 @@ execute_function:
 								if((stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT)  && (is_stk_this==false)){
 									so_param=(ScriptObject *)stk_arg->value;
 									ScriptFunction *sf_getter=NULL;
-									if(so_param->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
+									if(so_param->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 										//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
 										ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
 										if(!vm_create_shared_pointer(vm,sc)){
 											goto lbl_exit_function;
 										}
-										sc->set(stk_to_string(data->zs,stk_arg));
+										sc->set(stk_to_str(data->zs,stk_arg));
 										so_param=sc;
 										stk_arg->value=(zs_int)sc;
 										stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -1616,7 +1619,7 @@ execute_function:
 							break;
 						default:
 							VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\""
-									,stk_typeof_str(data->zs,&param->default_param_value).c_str());
+									,stk_to_str_typeof(data->zs,&param->default_param_value).c_str());
 							break;
 
 						}
@@ -1746,7 +1749,7 @@ execute_function:
 							ScriptObject *script_var=(ScriptObject *)stk_it->value;
 
 							//special case for constant string object (they don't are shared elements)
-							if(script_var->idx_script_class == IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && (script_var->shared_pointer==NULL)){
+							if(script_var->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_STRING && (script_var->shared_pointer==NULL)){
 								// if is not shared is constant...
 								ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
 								sc->set(script_var->toString());
@@ -1791,7 +1794,7 @@ execute_function:
 				 data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				 data->stk_vm_current++;
 				 continue;
-			 case  BYTE_CODE_NEW_OBJECT_BY_CLASS_TYPE:
+			 case  BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:
 
 				 	 so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,instruction->value_op1);
 
@@ -1799,7 +1802,7 @@ execute_function:
 						goto lbl_exit_function;
 					}
 
-					if(so_aux->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
+					if(so_aux->idx_script_class>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
 						ScriptObjectClass *so_class_aux=(ScriptObjectClass *)so_aux;
 						so_class_aux->info_function_new=calling_function;
 						so_class_aux->instruction_new=instruction;
@@ -1848,7 +1851,7 @@ execute_function:
 							goto lbl_exit_function;
 						}
 
-						if(so_aux->idx_script_class>=IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS)
+						if(so_aux->idx_script_class>=IDX_TYPE_SCRIPT_OBJECT_CLASS)
 						{ // max ...
 							script_object_class=(ScriptObjectClass *)so_aux;
 

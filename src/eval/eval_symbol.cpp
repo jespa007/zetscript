@@ -141,7 +141,7 @@ namespace zetscript{
 
 						if((vis=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy
 							if((vis->properties & SYMBOL_PROPERTY_TYPE)){
-								byte_code= ByteCode::BYTE_CODE_LOAD_TYPE_INFO;
+								byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
 								value=((ScriptClass *)vis->ref_ptr)->idx_class;
 							}else{
 								if(vis->properties & SYMBOL_PROPERTY_FUNCTION){

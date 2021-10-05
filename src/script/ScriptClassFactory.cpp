@@ -16,7 +16,7 @@
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	if(idx_class >= IDX_BUILTIN_TYPE_MAX){\
+	if(idx_class >= IDX_TYPE_MAX){\
 		THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",ZS_STR(type_class));\
 		return;\
 	}\
@@ -125,44 +125,46 @@ namespace zetscript{
 		// !!!
 
 		// primitives
-		REGISTER_BUILT_IN_TYPE(void,IDX_BUILTIN_TYPE_VOID_C);
-		REGISTER_BUILT_IN_TYPE(zs_int,IDX_BUILTIN_TYPE_ZS_INT_C);
-		REGISTER_BUILT_IN_TYPE(zs_int *,IDX_BUILTIN_TYPE_ZS_INT_PTR_C);
-		REGISTER_BUILT_IN_TYPE(char *,IDX_BUILTIN_TYPE_CHAR_PTR_C);
-		REGISTER_BUILT_IN_TYPE(const char *,IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C);
-		REGISTER_BUILT_IN_TYPE(zs_string,IDX_BUILTIN_TYPE_STRING_C);
-		REGISTER_BUILT_IN_TYPE(zs_string *,IDX_BUILTIN_TYPE_STRING_PTR_C);
-		REGISTER_BUILT_IN_TYPE(bool,IDX_BUILTIN_TYPE_BOOL_C);
-		REGISTER_BUILT_IN_TYPE(bool *,IDX_BUILTIN_TYPE_BOOL_PTR_C);
-		REGISTER_BUILT_IN_TYPE(zs_float,IDX_BUILTIN_TYPE_ZS_FLOAT_C);
-		REGISTER_BUILT_IN_TYPE(zs_float *,IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C);
-		REGISTER_BUILT_IN_TYPE(const zs_float *,IDX_BUILTIN_TYPE_CONST_ZS_FLOAT_PTR_C);
+		REGISTER_BUILT_IN_TYPE(ZS_TYPE_NAME_NULL,IDX_TYPE_NULL);
+		REGISTER_BUILT_IN_TYPE(void,IDX_TYPE_VOID_C);
+		REGISTER_BUILT_IN_TYPE(zs_int,IDX_TYPE_ZS_INT_C);
+		REGISTER_BUILT_IN_TYPE(zs_int *,IDX_TYPE_ZS_INT_PTR_C);
+		REGISTER_BUILT_IN_TYPE(char *,IDX_TYPE_CHAR_PTR_C);
+		REGISTER_BUILT_IN_TYPE(const char *,IDX_TYPE_CONST_CHAR_PTR_C);
+		REGISTER_BUILT_IN_TYPE(zs_string,IDX_TYPE_STRING_C);
+		REGISTER_BUILT_IN_TYPE(zs_string *,IDX_TYPE_STRING_PTR_C);
+		REGISTER_BUILT_IN_TYPE(bool,IDX_TYPE_BOOL_C);
+		REGISTER_BUILT_IN_TYPE(bool *,IDX_TYPE_BOOL_PTR_C);
+		REGISTER_BUILT_IN_TYPE(zs_float,IDX_TYPE_ZS_FLOAT_C);
+		REGISTER_BUILT_IN_TYPE(zs_float *,IDX_TYPE_ZS_FLOAT_PTR_C);
+		REGISTER_BUILT_IN_TYPE(const zs_float *,IDX_TYPE_CONST_ZS_FLOAT_PTR_C);
 
 		// estructures
-		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_BUILTIN_TYPE_STACK_ELEMENT);
+		REGISTER_BUILT_IN_STRUCT(StackElement,IDX_TYPE_STACK_ELEMENT);
+
 
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS
 		// It self Script object
-		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_BUILTIN_TYPE_FUNCTION);
-		REGISTER_BUILT_IN_CLASS("VarRef",ScriptObjectVarRef,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF);
-		REGISTER_BUILT_IN_CLASS("FunctionMember",ScriptObjectMemberFunction,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER);
-		REGISTER_BUILT_IN_CLASS("String",ScriptObjectString,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING);
-		REGISTER_BUILT_IN_CLASS("Vector",ScriptObjectVector,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR);
+		REGISTER_BUILT_IN_CLASS_SINGLETON(ScriptFunction,IDX_TYPE_FUNCTION);
+		REGISTER_BUILT_IN_CLASS(ZS_TYPE_NAME_OBJECT_VAR_REF,ScriptObjectVarRef,IDX_TYPE_SCRIPT_OBJECT_VAR_REF);
+		REGISTER_BUILT_IN_CLASS(ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER,ScriptObjectMemberFunction,IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER);
+		REGISTER_BUILT_IN_CLASS(ZS_TYPE_NAME_OBJECT_STRING,ScriptObjectString,IDX_TYPE_SCRIPT_OBJECT_STRING);
+		REGISTER_BUILT_IN_CLASS(ZS_TYPE_NAME_OBJECT_VECTOR,ScriptObjectVector,IDX_TYPE_SCRIPT_OBJECT_VECTOR);
 
 		// Script object iterators
-		REGISTER_BUILT_IN_CLASS("StringIterator",ScriptObjectStringIterator,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR);
-		REGISTER_BUILT_IN_CLASS("VectorIterator",ScriptObjectVectorIterator,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR);
-		REGISTER_BUILT_IN_CLASS("ObjectIterator",ScriptObjectObjectIterator,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR);
+		REGISTER_BUILT_IN_CLASS(ZS_TYPE_NAME_OBJECT_STRING_ITERATOR,ScriptObjectStringIterator,IDX_TYPE_SCRIPT_OBJECT_STRING_ITERATOR);
+		REGISTER_BUILT_IN_CLASS(ZS_TYPE_NAME_OBJECT_VECTOR_ITERATOR,ScriptObjectVectorIterator,IDX_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR);
+		REGISTER_BUILT_IN_CLASS(ZS_TYPE_NAME_OBJECT_OBJECT_ITERATOR,ScriptObjectObjectIterator,IDX_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR);
 
 
 		// BUILT-IN SCRIPT OBJECTS
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS CLASSES
-		REGISTER_BUILT_IN_CLASS("Object",ScriptObjectObject,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT);
-		REGISTER_BUILT_IN_CLASS("Class",ScriptObjectClass,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS);
+		REGISTER_BUILT_IN_CLASS(ZS_TYPE_NAME_OBJECT_OBJECT,ScriptObjectObject,IDX_TYPE_SCRIPT_OBJECT_OBJECT);
+		REGISTER_BUILT_IN_CLASS("Class",ScriptObjectClass,IDX_TYPE_SCRIPT_OBJECT_CLASS);
 		// it needs script object class to have zetscript reference
-		REGISTER_BUILT_IN_CLASS_SINGLETON(ZetScript,IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT);
+		REGISTER_BUILT_IN_CLASS_SINGLETON(ZetScript,IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT);
 		// BUILT-IN SCRIPT OBJECTS CLASSES
 		//------------------------
 
@@ -360,14 +362,21 @@ namespace zetscript{
 		checkClassName(class_name);
 
 		if((index = getIdxScriptClassInternal(class_name))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
+			uint16_t properties_register_scope=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
+			index=script_classes->count;
 
+			// To avoid built-int conflict bool type
+			if(index==IDX_TYPE_BOOL_C){
+				properties_register_scope|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
+			}
 			// BYTE_CODE_NEW SCOPE C and register ...
 			Scope * scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
 
 			// register symbol on main scope...
-			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolType(file,line,class_name);
 
-			sc = new ScriptClass(this->zs,script_classes->count, class_name, scope);
+			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolType(file,line,class_name,properties_register_scope);
+
+			sc = new ScriptClass(this->zs,index, class_name, scope);
 			scope->setScriptClass(sc);
 			symbol->ref_ptr=(zs_int)sc;
 
@@ -481,12 +490,15 @@ namespace zetscript{
 	int ScriptClassFactory::getBuiltinTypeOrClass(const zs_string & name){
 		ScriptClass *sc;
 
-		if(name == "int"){
-			return IDX_BUILTIN_TYPE_ZS_INT_C;
-		}else if(name == "float"){
-			return IDX_BUILTIN_TYPE_ZS_FLOAT_C;
-		}
-		else if((sc=getScriptClass(name))!=NULL){
+		if(name == ZS_TYPE_NAME_NULL){
+			return IDX_TYPE_NULL;
+		}else if(name == ZS_TYPE_NAME_INT){
+			return IDX_TYPE_ZS_INT_C;
+		}else if(name == ZS_TYPE_NAME_FLOAT){
+			return IDX_TYPE_ZS_FLOAT_C;
+		}else if(name == ZS_TYPE_NAME_BOOL){
+			return IDX_TYPE_BOOL_C;
+		}else if((sc=getScriptClass(name))!=NULL){
 			return sc->idx_class;
 		}
 
@@ -555,20 +567,20 @@ namespace zetscript{
 		 if(rc != NULL){
 			 // Is a primitive ?
 			switch(rc->idx_class){
-			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING: // "String"
+			case IDX_TYPE_SCRIPT_OBJECT_STRING: // "String"
 				so=ScriptObjectString::newScriptObjectString(zs);
 				break;
-			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR: // Vector []
+			case IDX_TYPE_SCRIPT_OBJECT_VECTOR: // Vector []
 				so=ScriptObjectVector::newScriptObjectVector(zs);
 				break;
 			// Object & class
-			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT: //  Object {}
+			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: //  Object {}
 				so=ScriptObjectObject::newScriptObjectObject(zs);
 				break;
 
 			default:
 
-				if(rc->idx_class > IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
+				if(rc->idx_class > IDX_TYPE_SCRIPT_OBJECT_CLASS){
 					 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
 					 so = ScriptObjectClass::newScriptObjectClass(zs,rc->idx_class, value_object);
 				}else{

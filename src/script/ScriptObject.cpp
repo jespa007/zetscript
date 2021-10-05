@@ -59,7 +59,7 @@ namespace zetscript{
 		vm=_zs->getVirtualMachine();
 
 		// init builtin
-		if(idx_script_class >= IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING && idx_script_class<IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS){
+		if(idx_script_class >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_script_class<IDX_TYPE_SCRIPT_OBJECT_CLASS){
 			ScriptClass *script_class=getScriptClass();
 			zs_vector *symbol_vars=script_class->class_scope->symbol_variables;
 			//------------------------------------------------------------------------------

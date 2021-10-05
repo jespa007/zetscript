@@ -36,17 +36,17 @@ data->stk_vm_current->value=ref; \
 data->stk_vm_current->properties=STK_PROPERTY_FUNCTION; \
 data->stk_vm_current++;
 
-#define PUSH_STK_TYPE_INFO(ref) \
+#define PUSH_STK_TYPE(ref) \
 data->stk_vm_current->value=ref; \
-data->stk_vm_current->properties=STK_PROPERTY_TYPE_INFO; \
+data->stk_vm_current->properties=STK_PROPERTY_TYPE; \
 data->stk_vm_current++;
 
 // explains whether stk is this or not. Warning should be given as value and not as ptr
 #define IS_STK_THIS(stk) (this_object != NULL && (stk)->value == (zs_int)(this_object))
 
 #define PRINT_DUAL_ERROR_OP(c)\
-zs_string var_type1=stk_typeof_str(data->zs,stk_result_op1),\
-	   var_type2=stk_typeof_str(data->zs,stk_result_op2);\
+zs_string var_type1=stk_to_str_typeof(data->zs,stk_result_op1),\
+	   var_type2=stk_to_str_typeof(data->zs,stk_result_op2);\
 \
 	VM_ERROR("cannot perform operator \"%s\" %s \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
 		var_type1.c_str(),\
@@ -54,7 +54,7 @@ zs_string var_type1=stk_typeof_str(data->zs,stk_result_op1),\
 		var_type2.c_str());\
 
 #define PRINT_ERROR_OP(c)\
-	zs_string var_type1=stk_typeof_str(data->zs,stk_result_op1);\
+	zs_string var_type1=stk_to_str_typeof(data->zs,stk_result_op1);\
 \
 VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
 	c,\
@@ -464,7 +464,7 @@ namespace zetscript{
 						StackElement *current_arg=&stk_arg[k];
 						arg_idx_type=irfs->params[k+this_as_first_parameter].idx_type;
 
-						if(arg_idx_type!=IDX_BUILTIN_TYPE_STACK_ELEMENT
+						if(arg_idx_type!=IDX_TYPE_STACK_ELEMENT
 								 /*&&
 						((current_arg->properties & STK_PROPERTY_PTR_STK) == 0)*/
 								){
@@ -481,24 +481,24 @@ namespace zetscript{
 									all_check=false;
 									break;
 								case STK_PROPERTY_ZS_INT:
-									idx_type=IDX_BUILTIN_TYPE_ZS_INT_PTR_C;
+									idx_type=IDX_TYPE_ZS_INT_PTR_C;
 									all_check=
-											arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_PTR_C
-										  ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_C
-										  ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C;
+											arg_idx_type==IDX_TYPE_ZS_INT_PTR_C
+										  ||arg_idx_type==IDX_TYPE_ZS_INT_C
+										  ||arg_idx_type==IDX_TYPE_ZS_FLOAT_PTR_C;
 									break;
 								case STK_PROPERTY_ZS_FLOAT:
-									idx_type=IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C;
-									all_check=arg_idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_PTR_C
-											||arg_idx_type==IDX_BUILTIN_TYPE_ZS_FLOAT_C
-											||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_PTR_C
-										    ||arg_idx_type==IDX_BUILTIN_TYPE_ZS_INT_C;
+									idx_type=IDX_TYPE_ZS_FLOAT_PTR_C;
+									all_check=arg_idx_type==IDX_TYPE_ZS_FLOAT_PTR_C
+											||arg_idx_type==IDX_TYPE_ZS_FLOAT_C
+											||arg_idx_type==IDX_TYPE_ZS_INT_PTR_C
+										    ||arg_idx_type==IDX_TYPE_ZS_INT_C;
 									break;
 								case STK_PROPERTY_BOOL:
-									idx_type=IDX_BUILTIN_TYPE_BOOL_PTR_C;
+									idx_type=IDX_TYPE_BOOL_PTR_C;
 									all_check=
-											arg_idx_type==IDX_BUILTIN_TYPE_BOOL_PTR_C
-										  ||arg_idx_type==IDX_BUILTIN_TYPE_BOOL_C;
+											arg_idx_type==IDX_TYPE_BOOL_PTR_C
+										  ||arg_idx_type==IDX_TYPE_BOOL_C;
 
 									break;
 								/*case STK_PROPERTY_NULL:
@@ -507,11 +507,11 @@ namespace zetscript{
 								case STK_PROPERTY_SCRIPT_OBJECT:
 
 									if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
-										idx_type=IDX_BUILTIN_TYPE_STRING_PTR_C;
+										idx_type=IDX_TYPE_STRING_PTR_C;
 
 										all_check =
-											(	arg_idx_type==IDX_BUILTIN_TYPE_STRING_PTR_C && current_arg->value!=0)
-										  ||	arg_idx_type==IDX_BUILTIN_TYPE_CONST_CHAR_PTR_C;
+											(	arg_idx_type==IDX_TYPE_STRING_PTR_C && current_arg->value!=0)
+										  ||	arg_idx_type==IDX_TYPE_CONST_CHAR_PTR_C;
 									}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
 										ScriptObjectClass *var_object_class=((ScriptObjectClass *)current_arg->value);
 										aux_string=var_object_class->getClassName();
@@ -615,7 +615,7 @@ namespace zetscript{
 					str_candidates.append("\t\t-");
 
 					// class if not mail
-					if(class_obj!=NULL && class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN){
+					if(class_obj!=NULL && class_obj->idx_class!=IDX_TYPE_MAIN){
 						str_candidates.append(class_obj->class_name.c_str());
 						str_candidates.append("::");
 					}
@@ -647,7 +647,7 @@ namespace zetscript{
 			if(n_candidates == 0){
 				VM_ERROR("Cannot find %s \"%s%s(%s)\".\n\n",
 						is_constructor ? "constructor":"function",
-								class_obj==NULL?"":class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->class_name+"::").c_str():"",
+								class_obj==NULL?"":class_obj->idx_class!=IDX_TYPE_MAIN?(class_obj->class_name+"::").c_str():"",
 								symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 						args_str.c_str()
 				);
@@ -657,7 +657,7 @@ namespace zetscript{
 			else{
 				VM_ERROR("Cannot match %s \"%s%s(%s)\" .\n\n%s",
 					is_constructor ? "constructor":"function",
-							class_obj==NULL?"":class_obj->idx_class!=IDX_BUILTIN_TYPE_MAIN?(class_obj->class_name+"::").c_str():"",
+							class_obj==NULL?"":class_obj->idx_class!=IDX_TYPE_MAIN?(class_obj->class_name+"::").c_str():"",
 									symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 					args_str.c_str(),
 					str_candidates.c_str());
@@ -720,8 +720,8 @@ namespace zetscript{
 					ScriptObject *obj1=(ScriptObject *)stk_result_op1->value;
 					ScriptObject *obj2=(ScriptObject *)stk_result_op2->value;
 
-					if(   obj1->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
-					   && obj2->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT
+					if(   obj1->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_OBJECT
+					   && obj2->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_OBJECT
 					){
 
 						ScriptObjectObject *so_object=ScriptObjectObject::concat(
@@ -996,16 +996,16 @@ apply_metamethod_error:
 			VM_ERROR("Metamethod operation '%s' (aka %s) failed performing operation by types '%s' %s '%s': %s"
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 				,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
-				,stk_typeof_str(data->zs,stk_result_op1).c_str()
+				,stk_to_str_typeof(data->zs,stk_result_op1).c_str()
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_typeof_str(data->zs,stk_result_op2).c_str()
+				,stk_to_str_typeof(data->zs,stk_result_op2).c_str()
 				,error_found.c_str()
 			);
 
 		}else if(stk_result_op1!=NULL){
 			VM_ERROR("cannot perform operation '%s %s'. %s"
 				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_typeof_str(data->zs,stk_result_op1).c_str()
+				,stk_to_str_typeof(data->zs,stk_result_op1).c_str()
 				,error_found.c_str()
 			);
 
@@ -1084,7 +1084,7 @@ apply_metamethod_error:
 				// ok stk_vm_current holds the iter object
 				if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
 					VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'"
-							,stk_typeof_str(data->zs,data->stk_vm_current).c_str());
+							,stk_to_str_typeof(data->zs,data->stk_vm_current).c_str());
 					return;
 				}
 
@@ -1138,7 +1138,7 @@ lbl_exit_function:
 			ScriptObject *so_aux=(ScriptObject *)stk_result_op2->value;
 
 			switch(so_aux->idx_script_class){
-			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
+			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
 				PUSH_STK_BOOLEAN(
 					ScriptObjectStringWrap_contains(
@@ -1157,7 +1157,7 @@ lbl_exit_function:
 				error="operand is not 'zs_int' or 'ScriptObjectString' type";
 			}
 			break;
-			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR: // check whether value exists...
+			case IDX_TYPE_SCRIPT_OBJECT_VECTOR: // check whether value exists...
 			//PUSH_STK_BOOLEAN(((ScriptObjectVector *)so_aux)->exists(stk_result_op1));
 			PUSH_STK_BOOLEAN(
 				ScriptObjectVectorWrap_contains(
@@ -1165,7 +1165,7 @@ lbl_exit_function:
 				)
 			);
 			break;
-			case IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
+			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
 				PUSH_STK_BOOLEAN(

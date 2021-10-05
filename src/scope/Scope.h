@@ -4,19 +4,20 @@
  */
 #pragma once
 
-#define REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL		0x1
-#define REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN				0x2
-#define	REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP				0x4
-#define	REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS				0x8 // special case for c functions that can have same parameters but diferent signatures
+#define REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL		0x01
+#define REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN				0x02
+#define	REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP				0x04
+#define	REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS				0x08 // special case for c functions that can have same parameters but diferent signatures
+#define	REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS					0x10 // special case for c functions that can have same parameters but diferent signatures
 //#define	SCOPE_DIRECTION_AVOID_MAIN_SCOPE		0x8
 #define REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN		(REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN | REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP)
-#define MAX_INNER_SCOPES_FUNCTION					10
+#define MAX_INNER_SCOPES_FUNCTION								10
 
 
-#define SCOPE_PROPERTY_IS_C_OBJECT_REF		0x1
-#define SCOPE_PROPERTY_IS_SCOPE_FUNCTION	0x2
-#define SCOPE_PROPERTY_IS_SCOPE_CLASS		0x4
-#define SCOPE_PROPERTY_UNUSUED				0x8
+#define SCOPE_PROPERTY_IS_C_OBJECT_REF							0x1
+#define SCOPE_PROPERTY_IS_SCOPE_FUNCTION						0x2
+#define SCOPE_PROPERTY_IS_SCOPE_CLASS							0x4
+#define SCOPE_PROPERTY_UNUSUED									0x8
 
 
 namespace zetscript{
@@ -52,8 +53,6 @@ namespace zetscript{
 		 * register/search symbol info
 		 * @n_params:
 		 */
-		//Symbol * addSymbol(const char * file, short line,const zs_string & symbol_name, char n_params);
-
 		Symbol * registerSymbolVariable(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
 		Symbol * registerSymbolFunction(const char * file, short line,const zs_string & symbol_name, char n_params, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
 		Symbol * registerSymbolType(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);

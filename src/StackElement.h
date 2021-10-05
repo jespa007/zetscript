@@ -6,16 +6,17 @@
 
 // properties shared by compiler + VM
 typedef enum:unsigned short {
-	//-- COMPILER/VM TYPE VAR
+	//---------- BEGIN PRIMITIVE TYPES HERE--------------------
 	STK_PROPERTY_NULL				=0x0000,
 	STK_PROPERTY_ZS_CHAR			=0x0001,
 	STK_PROPERTY_ZS_INT				=0x0002,
 	STK_PROPERTY_ZS_FLOAT			=0x0004,
 	STK_PROPERTY_BOOL				=0x0008,
-	STK_PROPERTY_FUNCTION			=0x0010,
-	STK_PROPERTY_MEMBER_FUNCTION	=0x0020,
-	STK_PROPERTY_MEMBER_ATTRIBUTE	=0x0040,
-	STK_PROPERTY_TYPE_INFO			=0x0080,
+	STK_PROPERTY_TYPE				=0x0010,
+	//---------- END PRIMITIVE TYPES HERE--------------------
+	STK_PROPERTY_FUNCTION			=0x0020,
+	STK_PROPERTY_MEMBER_FUNCTION	=0x0040,
+	STK_PROPERTY_MEMBER_ATTRIBUTE	=0x0080,
 	STK_PROPERTY_SCRIPT_OBJECT		=0x0100,
 	STK_PROPERTY_MAX				=0x0200,
 	//-- VM RUNTIME
@@ -34,15 +35,15 @@ typedef enum:unsigned short {
 #define STK_PROPERTY_TYPES								(STK_PROPERTY_MAX-1)
 #define GET_STK_PROPERTY_TYPES(prop)					((prop)&STK_PROPERTY_TYPES)
 
-#define STK_IS_SCRIPT_OBJECT_OBJECT(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT))
-#define STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR))
-#define STK_IS_SCRIPT_OBJECT_STRING(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING))
-#define STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_STRING_ITERATOR))
-#define STK_IS_SCRIPT_OBJECT_VECTOR(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR))
-#define STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR))
-#define STK_IS_SCRIPT_OBJECT_CLASS(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class>IDX_BUILTIN_TYPE_SCRIPT_OBJECT_CLASS))
-#define STK_IS_SCRIPT_OBJECT_VAR_REF(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_VAR_REF))
-#define STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_BUILTIN_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER))
+#define STK_IS_SCRIPT_OBJECT_OBJECT(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_OBJECT))
+#define STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR))
+#define STK_IS_SCRIPT_OBJECT_STRING(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_STRING))
+#define STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_STRING_ITERATOR))
+#define STK_IS_SCRIPT_OBJECT_VECTOR(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_VECTOR))
+#define STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR))
+#define STK_IS_SCRIPT_OBJECT_CLASS(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class>IDX_TYPE_SCRIPT_OBJECT_CLASS))
+#define STK_IS_SCRIPT_OBJECT_VAR_REF(stk) 				(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_VAR_REF))
+#define STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk)		(((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT) && (((ScriptObject *)(stk)->value)->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER))
 #define STK_GET_STK_VAR_REF(stk)  						(((ScriptObjectVarRef *)((stk))->value)->getStackElementPtr())
 
 #define MSK_STK_OP1_BOOL_OP2_BOOL						((STK_PROPERTY_BOOL<<16)|STK_PROPERTY_BOOL)
@@ -50,6 +51,7 @@ typedef enum:unsigned short {
 #define MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT					((STK_PROPERTY_ZS_INT<<16)|STK_PROPERTY_ZS_FLOAT)
 #define MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT					((STK_PROPERTY_ZS_FLOAT<<16)|STK_PROPERTY_ZS_INT)
 #define MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT				((STK_PROPERTY_ZS_FLOAT<<16)|STK_PROPERTY_ZS_FLOAT)
+#define MSK_STK_OP1_TYPE_OP2_TYPE						((STK_PROPERTY_TYPE<<16)	|STK_PROPERTY_TYPE)
 
 #define STK_PROPERTY_ZS_INT_PTR 						(STK_PROPERTY_IS_VAR_C | STK_PROPERTY_ZS_INT)
 #define STK_PROPERTY_ZS_FLOAT_PTR 						(STK_PROPERTY_IS_VAR_C | STK_PROPERTY_ZS_FLOAT)
@@ -67,7 +69,7 @@ typedef enum:unsigned short {
 #define STK_VALUE_IS_BOOLEAN(stk) 						(stk->properties & STK_PROPERTY_BOOL)
 #define STK_VALUE_IS_NULL(stk) 							(stk->properties == 0)
 #define STK_VALUE_IS_FUNCTION(stk) 						(stk->properties & STK_PROPERTY_FUNCTION)
-#define STK_VALUE_IS_TYPE_INFO(stk) 					(stk->properties & STK_PROPERTY_TYPE_INFO)
+#define STK_VALUE_IS_TYPE(stk) 							(stk->properties & STK_PROPERTY_TYPE)
 #define STK_VALUE_IS_MEMBER_ATTRIBUTE(stk) 				(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)
 #define STK_VALUE_IS_MEMBER_FUNCTION(stk) 				(stk->properties & STK_PROPERTY_MEMBER_FUNCTION)
 #define STK_VALUE_IS_SCRIPT_OBJECT(stk) 				(stk->properties & STK_PROPERTY_SCRIPT_OBJECT)
@@ -93,12 +95,12 @@ namespace zetscript{
 		zs_int			toInt();
 		zs_float		toFloat();
 
-		zs_int			typeOf();
+		StackElement	typeOf();
 
 	};
 
-	zs_string 		stk_to_string(ZetScript *_zs, StackElement *_stk,const zs_string & _format="");
-	zs_string		stk_typeof_str(ZetScript *_zs, StackElement *_stk);
+	zs_string 		stk_to_str(ZetScript *_zs, StackElement *_stk,const zs_string & _format="");
+	zs_string		stk_to_str_typeof(ZetScript *_zs, StackElement *_stk);
 
 
 	#pragma pack(pop)

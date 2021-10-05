@@ -111,7 +111,7 @@ namespace zetscript{
 		registerMemberAttributeGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 		// Custom user function or classes
-		/*eval(
+		eval(
 			zs_strutils::format(
 				//------------------------------------------------
 				// String
@@ -179,7 +179,7 @@ namespace zetscript{
 			,
 			(void *)this
 			)
-		);*/
+		);
 
 		saveState();
 	}
@@ -297,7 +297,7 @@ namespace zetscript{
 				// throw
 				THROW_RUNTIME_ERROR(
 						"Cannot register constant '%s' as 'ScriptObjectString', because is already registered as '%s'"
-						,key_name.c_str(),stk_typeof_str(this,stk)
+						,key_name.c_str(),stk_to_str_typeof(this,stk)
 						);
 			}
 		}

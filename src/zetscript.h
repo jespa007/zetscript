@@ -60,7 +60,7 @@
 #include "common.h"
 #include "util/zs_util.h"
 
-#include "BuiltinType.h"
+#include "Type.h"
 #include "StackElement.h"
 #include "zs_exception.h"
 #include "ByteCode.h"
