@@ -592,9 +592,14 @@ namespace zetscript{
 
 		char *aux_p = (char *)symbol.c_str();
 		Keyword kw;
+		Operator op;
 
 		if((kw=eval_is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected '%s' keyword", aux_p);
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected '%s' keyword", eval_data_keywords[kw].str);
+		}
+
+		if((op=is_operator(aux_p))!=Operator::OPERATOR_UNKNOWN){
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected '%s' operator",  eval_data_operators[op].str);
 		}
 
 		// avoid special literal words
@@ -813,7 +818,7 @@ namespace zetscript{
 		memset(eval_data_separators,0,sizeof(eval_data_separators));
 		memset(eval_data_keywords,0,sizeof(eval_data_keywords));
 
-		eval_data_operators[OPERATOR_UNKNOWN]={OPERATOR_UNKNOWN, "none",NULL};
+		eval_data_operators[OPERATOR_UNKNOWN]={OPERATOR_UNKNOWN, "unknown-operator",NULL};
 
 		eval_data_operators[OPERATOR_ADD]={OPERATOR_ADD, "+",is_operator_add};
 		eval_data_operators[OPERATOR_SUB]={OPERATOR_SUB, "-",is_operator_sub};

@@ -68,7 +68,17 @@ namespace zetscript{
 
 			for(;;){ // it eats identifier/constant operator, etc
 
-				if(last_operator_token_node != NULL && (last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){ // retrieve a
+				/*if(last_operator_token_node != NULL && (last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){ // retrieve a
+					Keyword kw;
+					Operator op;
+					if((kw=eval_is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
+						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_sub_expression,eval_data->current_parsing_file,line," Unexpected '%s' keyword after 'instanceof'", eval_data_keywords[kw].str);
+					}
+
+					if((op=is_operator(aux_p))!=Operator::OPERATOR_UNKNOWN){
+						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_sub_expression,eval_data->current_parsing_file,line," Unexpected '%s' operator after 'instanceof'",  eval_data_operators[op].str);
+					}
+
 					TokenNode *token_node_type=new TokenNode();
 					zs_string str_type;
 					bool type_end=false;
@@ -86,14 +96,19 @@ namespace zetscript{
 						,str_type
 						,line
 					)==FALSE){
-						goto eval_error_sub_expression;
+						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_sub_expression,eval_data->current_parsing_file,line ,"Symbol '%s' is not valid",str_type.c_str());
+
 					}
 
-					token_node_type->eval_instructions.push_back((zs_int)(
-							new EvalInstruction(
-									BYTE_CODE_LOAD_STRING,ZS_IDX_UNDEFINED,(zs_int)eval_data->zs->registerStkStringObject(str_type,str_type)
-							)
-					));
+					ScriptClass *sc=eval_data->script_class_factory->getScriptClass(str_type);
+
+					if(sc == NULL){
+						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_sub_expression,eval_data->current_parsing_file,line ,"Type '%s' is not defined"
+								,str_type.c_str());
+					}
+
+					((EvalInstruction *)last_operator_token_node->eval_instructions.items[0])->vm_instruction.value_op2=sc->idx_class;
+
 
 					token_nodes.push_back((zs_int)(
 							token_node_type
@@ -101,7 +116,8 @@ namespace zetscript{
 					//last_operator_token_node->value=str_type;
 					//EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"expected a class-type after 'instanceof' operator");
 				}
-				else if((aux_p = eval_expression_token_symbol(
+				else */
+				if((aux_p = eval_expression_token_symbol(
 						eval_data
 						,aux_p
 						,line
@@ -137,7 +153,8 @@ namespace zetscript{
 				}
 
 				if(operator_type==Operator::OPERATOR_UNKNOWN){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_sub_expression,eval_data->current_parsing_file,line ,"Expected operator");
+					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_sub_expression,eval_data->current_parsing_file,line ,"Expected operator after '%s'"
+							,((TokenNode *)token_nodes.items[token_nodes.count-1])->value.c_str());
 				}
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_operators[operator_type].str),line);
@@ -148,6 +165,8 @@ namespace zetscript{
 				operator_token_node->token_type=TokenType::TOKEN_TYPE_OPERATOR;
 
 				last_operator_token_node=operator_token_node;
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_operators[operator_type].str),line);
 
 				// push operator token
 				token_nodes.push_back((zs_int)(

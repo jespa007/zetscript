@@ -333,6 +333,8 @@ namespace zetscript{
 							byte_code_load= ByteCode::BYTE_CODE_LOAD_LOCAL;
 							value=vis->idx_position;
 						}
+					}else{ // class not found!
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not defined",symbol_name.c_str());
 					}
 
 					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(byte_code_load,ZS_IDX_UNDEFINED,value)));
@@ -351,7 +353,10 @@ namespace zetscript{
 						 );
 
 					//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
-				}else{
+				}else{ // known type
+					if(!eval_data->script_class_factory->isClassInstanceable(sc->idx_class)){
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getClassName());
+					}
 
 					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE)));
 					eval_instruction->vm_instruction.value_op1=sc->idx_class;

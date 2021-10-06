@@ -38,14 +38,17 @@ namespace zetscript{
 				}
 
 				// eval conditional expression
-				end_expr = eval_expression(
+				if((end_expr = eval_expression(
 						eval_data
 						,aux_p+1
 						,line
 						,scope_info
 						,&eval_data->current_function->eval_instructions
 						,")"
-				);
+				))==NULL){
+					return 0;
+				}
+
 
 				// insert instruction if evaluated expression
 				eval_data->current_function->eval_instructions.push_back((zs_int)(ei_aux=new EvalInstruction(BYTE_CODE_JNT)));

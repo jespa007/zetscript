@@ -47,12 +47,14 @@ namespace zetscript{
 		  */
 		ScriptClass * 					registerClass(const zs_string & class_name, const zs_string & base_class_name="",const char * file="", short line=-1);
 		ScriptClass * 					getScriptClass(short idx);
+
 		ScriptClass * 					getScriptClass(const zs_string & name);
 		int								getBuiltinTypeOrClass(const zs_string & name);
 		ScriptClass * 					getScriptClassByNativeClassPtr(const zs_string & class_type);
 		const char 	* 					getScriptClassName(short idx);
 		void							classInheritsFrom(const zs_string & the_class,const zs_string & the_base_class);
 		bool							isClassInheritsFrom(short idx_class,short idx_base_class);
+		bool							isClassInstanceable(short idx_class);
 		short							getIdxClassFromItsNativeType(const char * s);
 		short		 					getIdxNativeRegisteredClass(const zs_string & str_classPtr);
 		zs_vector	* 					getScriptClasses();

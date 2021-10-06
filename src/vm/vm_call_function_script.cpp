@@ -394,7 +394,6 @@ namespace zetscript{
 		// SFCALL
 		//------------------------------------------------
 		//int idx_stk_element;
-		int idx_test_class;
 		unsigned short pre_post_properties=0;
 		unsigned short scope_type=0;
 		uint32_t msk_properties=0;
@@ -1388,11 +1387,11 @@ load_element_object:
 				PROCESS_BINARY_OPERATION(<<, BYTE_CODE_METAMETHOD_SHL);
 				continue;
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
-				 POP_ONE;
+				 POP_TWO;
 
-				switch(idx_test_class=data->script_class_factory->getBuiltinTypeOrClass(instruction->getConstantValueOp2ToString())){
+				switch(stk_result_op2->value){
 				case ZS_IDX_UNDEFINED:
-					VM_STOP_EXECUTE("type '%s' does not exist ",instruction->getConstantValueOp2ToString().c_str());
+					VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 					break;
 				case IDX_TYPE_ZS_INT_C:
 					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
@@ -1410,7 +1409,7 @@ load_element_object:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						bool b = data->script_class_factory->isClassInheritsFrom(			//
 								((ScriptObjectObject *)(stk_result_op1->value))->idx_script_class // A
-								, idx_test_class			// B
+								, instruction->value_op2			// B
 						);
 						PUSH_STK_BOOLEAN(b);
 					}else{
@@ -1819,7 +1818,13 @@ execute_function:
 			 case  BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				 	 POP_ONE;
 				 	 if(STK_VALUE_IS_TYPE(stk_result_op1)){
+				 		ScriptClass *sc=data->script_class_factory->getScriptClass(stk_result_op1->value);
+						if(!data->script_class_factory->isClassInstanceable(stk_result_op1->value)){
+							VM_STOP_EXECUTE("'%s' type is not object instanceable",sc->getClassName());
+						}
+
 				 		 Symbol *constructor_function=NULL;
+
 				 		 so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,stk_result_op1->value);
 
 						if(!vm_create_shared_pointer(vm,so_aux)){
@@ -1831,7 +1836,7 @@ execute_function:
 						data->stk_vm_current++;
 
 						if(so_aux->idx_script_class>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
-							ScriptClass *sc=so_aux->getScriptClass();
+
 							ScriptObjectClass *so_class_aux=(ScriptObjectClass *)so_aux;
 							so_class_aux->info_function_new=calling_function;
 							so_class_aux->instruction_new=instruction;
@@ -1867,7 +1872,7 @@ execute_function:
 						}
 
 				 	 }else{
-				 		 VM_ERROR("var '%s' expected as 'type' but it was '%s'",SFI_GET_SYMBOL_NAME(calling_function,instruction), stk_to_typeof_str(data->zs,stk_result_op1).c_str());
+				 		VM_STOP_EXECUTE("var '%s' expected as 'type' but it was '%s'",SFI_GET_SYMBOL_NAME(calling_function,instruction), stk_to_typeof_str(data->zs,stk_result_op1).c_str());
 				 	 }
 				 	 continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new vector...

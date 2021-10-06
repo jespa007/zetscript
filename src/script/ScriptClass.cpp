@@ -688,6 +688,18 @@ namespace zetscript{
 		return symbol;
 	}
 
+	const char *ScriptClass::getClassName(){
+		if(idx_class==IDX_TYPE_ZS_INT_C){
+			return "int";
+		}else if(idx_class==IDX_TYPE_ZS_FLOAT_C){
+			return "float";
+		}
+
+		return class_name.c_str();
+	}
+
+
+
 	ScriptClass::~ScriptClass(){
 
 		for(unsigned i=0; i < allocated_member_attributes->count; i++){

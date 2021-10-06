@@ -188,14 +188,14 @@ namespace zetscript{
 					if(last_operator_token_node!=NULL && last_operator_token_node->operator_type!=OPERATOR_UNKNOWN){
 						EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
 								eval_data->current_parsing_file
-								,last_accessor_line
+								,last_operator_token_node->line
 								,"Expected literal or identifier after operator '%s'"
 								,eval_data_operators[last_operator_token_node->operator_type].str
 						);
 					}else{
 						EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
 								eval_data->current_parsing_file
-								,last_accessor_line
+								,last_operator_token_node->line
 								,"Expected literal or identifier"
 						);
 					}

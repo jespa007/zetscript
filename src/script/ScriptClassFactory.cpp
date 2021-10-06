@@ -658,6 +658,23 @@ namespace zetscript{
 		return false;
 	}
 
+	bool							ScriptClassFactory::isClassInstanceable(short idx_class){
+
+
+
+
+		if(
+				idx_class==IDX_TYPE_SCRIPT_OBJECT_STRING
+				|| idx_class==IDX_TYPE_SCRIPT_OBJECT_VECTOR
+				|| idx_class==IDX_TYPE_SCRIPT_OBJECT_OBJECT
+				|| idx_class>=IDX_TYPE_MAX
+		){
+			return true;
+		}
+
+		return false;
+	}
+
 	ScriptClassFactory::~ScriptClassFactory(){
 		// we have to destroy all allocated constructor/destructor ...
 		for (unsigned i = 0; i < script_classes->count; i++) {

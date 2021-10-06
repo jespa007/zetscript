@@ -272,6 +272,7 @@ namespace zetscript{
 		Symbol *    getSymbolVariableMember(const zs_string & symbol_name, bool include_inherited_symbols=true);
 		Symbol *    getSymbolMemberFunction(const zs_string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 
+		const char *getClassName();
 
 		bool isNativeClass();
 		bool isNativeSingletonClass();
