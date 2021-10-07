@@ -111,7 +111,7 @@ namespace zetscript{
 		registerMemberAttributeGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 		// Custom user function or classes
-		/*eval(
+		eval(
 			zs_strutils::format(
 				//------------------------------------------------
 				// String
@@ -146,9 +146,14 @@ namespace zetscript{
 				//------------------------------------------------
 				// System
 				"static System::assert(check,s,...args){"
-				"	if((typeof check)!=bool){"
-				"		System::errorNative(System::getZetScript(),\"Error, executing  'System::assert' first parameter must be boolean but it was {0}\",typeof check)"
+				"	if((typeof check)==bool){"
+				"		System::errorNative(System::getZetScript(),\"Error, executing  'System::assert' first parameter must be boolean but it was {0}\",[typeof check])"
+				"		return;"
 				"	}"
+				"	if(check==false){"
+				"		System::errorNative(System::getZetScript(),\"Assert error: \"+s,args)"
+				"	}"
+				""
 				"}"
 				"static System::error(s,...args){"
 				"	System::errorNative(System::getZetScript(),s,args)"
@@ -179,7 +184,7 @@ namespace zetscript{
 			,
 			(void *)this
 			)
-		);*/
+		);
 
 		saveState();
 	}

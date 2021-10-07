@@ -244,12 +244,9 @@ namespace zetscript{
 
 				);
 				break;
+			// just the name of op
+			case BYTE_CODE_INSTANCEOF:
 			case BYTE_CODE_PUSH_SCOPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
-					,idx_instruction
-					,byte_code_to_str(instruction->byte_code)
-				);
-				break;
 			case BYTE_CODE_POP_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 					,idx_instruction
@@ -280,9 +277,6 @@ namespace zetscript{
 					,instruction->value_op1
 					,instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK?"all":"1"
 				);
-				break;
-			case BYTE_CODE_INSTANCEOF:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tINSTANCEOF\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
 				break;
 			case BYTE_CODE_LOAD_TYPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_TYPE\t%s\n",idx_instruction,zs->getScriptClassFactory()->getScriptClassName(instruction->value_op2));

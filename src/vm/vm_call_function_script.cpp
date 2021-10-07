@@ -148,13 +148,13 @@
 		break;\
 	default:\
 		if(STK_VALUE_IS_TYPE(stk_result_op1) || STK_VALUE_IS_TYPE(stk_result_op2)){\
-			if(__METAMETHOD__ ==BYTE_CODE_METAMETHOD_EQU){\
-				if(STK_VALUE_IS_NULL(stk_result_op1) && (STK_VALUE_IS_TYPE(stk_result_op2)&&(stk_result_op2->value==IDX_TYPE_NULL))){\
+			if(__METAMETHOD__ ==BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ ==BYTE_CODE_METAMETHOD_NOT_EQU){\
+				if(STK_VALUE_IS_NULL(stk_result_op1) && (STK_VALUE_IS_TYPE(stk_result_op2)&&(stk_result_op2->value __C_OP__ IDX_TYPE_NULL))){\
 					PUSH_STK_BOOLEAN(true);\
-				}else if((STK_VALUE_IS_TYPE(stk_result_op1) && stk_result_op1->value==IDX_TYPE_NULL) && STK_VALUE_IS_NULL(stk_result_op2)){\
+				}else if((STK_VALUE_IS_TYPE(stk_result_op1) && stk_result_op1->value __C_OP__ IDX_TYPE_NULL) && STK_VALUE_IS_NULL(stk_result_op2)){\
 					PUSH_STK_BOOLEAN(true);\
 				}else{\
-					PUSH_STK_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) == STK_VALUE_TO_ZS_INT(stk_result_op2));\
+					PUSH_STK_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
 				}\
 			}else{\
 				PUSH_STK_BOOLEAN(false);\
@@ -1409,7 +1409,7 @@ load_element_object:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						bool b = data->script_class_factory->isClassInheritsFrom(			//
 								((ScriptObjectObject *)(stk_result_op1->value))->idx_script_class // A
-								, instruction->value_op2			// B
+								, stk_result_op2->value			// B
 						);
 						PUSH_STK_BOOLEAN(b);
 					}else{
