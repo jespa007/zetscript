@@ -212,49 +212,63 @@ namespace zetscript{
 
 					if(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':'){ //  static access
 
-							// mark symbol as static
-							// the first item is the class
-							zs_string static_access_value=token_node_symbol->value,class_element;
-							Symbol *member_symbol=NULL;
+						// mark symbol as static
+						// the first item is the class
+						zs_string static_access_value=token_node_symbol->value,class_element;
+						Symbol *member_symbol=NULL;
 
-							ScriptClass *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol->value);
+						ScriptClass *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol->value);
 
-							//do{
-							IGNORE_BLANKS(aux_p,eval_data,aux_p+2,line);
+						//do{
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+2,line);
 
-							last_accessor_line=line;
-							if(get_accessor_name(eval_data, &aux_p, line,class_element) == false){
-								EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Expected identifier after '::'");
-							}
-
-							static_access_value+="::"+class_element;
-
-							//}while(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':' && n_static_access < max_static_access);
-
-							// override
-							token_node_symbol->value=static_access_value;
-
-							if(sc != NULL){ // if class exist ...
-
-								member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
-
-								if(member_symbol != NULL){
-									if(member_symbol->properties & SYMBOL_PROPERTY_STATIC){
-										if(!eval_set_instruction_static_symbol(&eval_instruction->vm_instruction,member_symbol,static_error)){
-											EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
-													eval_data->current_parsing_file
-													,line
-													,"Symbol '%s' %s"
-													,static_access_value.c_str()
-													,static_error.c_str());
-										}
-									}else{
-										EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Symbol '%s' is not static",static_access_value.c_str());
-									}
-								}
-							} // --> in eval::pop_function will be find
-
+						last_accessor_line=line;
+						if(get_accessor_name(eval_data, &aux_p, line,class_element) == false){
+							EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Expected identifier after '::'");
 						}
+
+						static_access_value+="::"+class_element;
+
+						//}while(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':' && n_static_access < max_static_access);
+
+						// override
+						token_node_symbol->value=static_access_value;
+
+						if(sc != NULL){ // if class exist ...
+
+							member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
+
+							if(member_symbol != NULL){
+								if(member_symbol->properties & SYMBOL_PROPERTY_STATIC){
+									if(!eval_set_instruction_static_symbol(&eval_instruction->vm_instruction,member_symbol,static_error)){
+										EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(
+												eval_data->current_parsing_file
+												,line
+												,"Symbol '%s' %s"
+												,static_access_value.c_str()
+												,static_error.c_str());
+									}
+								}else{
+									EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"Symbol '%s' is not static",static_access_value.c_str());
+								}
+							}
+						} // --> in eval::pop_function will be find
+
+					}else{ // check if only gets the type
+
+						ScriptClass *sc=eval_data->script_class_factory->getScriptClass(token_node_symbol->value);
+						Instruction *instruction=&((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction;
+						if(sc != NULL){
+							if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
+								EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"expected a type after 'instanceof'");
+							}else if(instruction->byte_code==ByteCode::BYTE_CODE_FIND_VARIABLE){
+
+								instruction->byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
+								instruction->value_op2=sc->idx_class;
+							}
+						}
+
+					}
 				}
 
 				ei_first_token_node->symbol.name=token_node_symbol->value;
@@ -609,6 +623,11 @@ namespace zetscript{
 			if(pre_operation != PreOperation::PRE_OPERATION_TYPEOF){
 				if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
 					EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"expected identifier before pre operation \"%s\"",eval_data_pre_operations[ pre_operation].str);
+				}
+			}else{
+				// check is not type
+				if(eval_data->script_class_factory->getScriptClass(token_node_symbol->value)!=NULL){
+					EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line ,"expected variable after 'typeof' but it was a type");
 				}
 			}
 

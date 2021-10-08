@@ -138,27 +138,24 @@ namespace zetscript{
 							return NULL;
 						}
 
+						ScriptClass *sc=eval_data->script_class_factory->getScriptClass(default_str_value);
 
 						if((vis=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy
-							if((vis->properties & SYMBOL_PROPERTY_TYPE)){
-								ScriptClass *sc=eval_data->script_class_factory->getScriptClass(default_str_value);
-								byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
-								value=sc->idx_class;
+
+							if(vis->properties & SYMBOL_PROPERTY_FUNCTION){
+								byte_code= ByteCode::BYTE_CODE_LOAD_FUNCTION;
+								value=vis->ref_ptr;
+
 							}else{
-								if(vis->properties & SYMBOL_PROPERTY_FUNCTION){
-									byte_code= ByteCode::BYTE_CODE_LOAD_FUNCTION;
-									value=vis->ref_ptr;
+								byte_code= ByteCode::BYTE_CODE_LOAD_LOCAL;
+								value=vis->idx_position;
 
-								}else{
-									byte_code= ByteCode::BYTE_CODE_LOAD_LOCAL;
-									value=vis->idx_position;
-
-									if((vis->properties & SYMBOL_PROPERTY_ARG_BY_REF) == SYMBOL_PROPERTY_ARG_BY_REF){
-										byte_code= ByteCode::BYTE_CODE_LOAD_REF;
-									}
-
+								if((vis->properties & SYMBOL_PROPERTY_ARG_BY_REF) == SYMBOL_PROPERTY_ARG_BY_REF){
+									byte_code= ByteCode::BYTE_CODE_LOAD_REF;
 								}
+
 							}
+
 						}
 
 					}

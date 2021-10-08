@@ -147,11 +147,11 @@
 		PUSH_STK_BOOLEAN(f_aux_value1 __C_OP__ f_aux_value2);\
 		break;\
 	default:\
-		if(STK_VALUE_IS_TYPE(stk_result_op1) || STK_VALUE_IS_TYPE(stk_result_op2)){\
+		if(STK_VALUE_IS_TYPE(stk_result_op1)){\
 			if(__METAMETHOD__ ==BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ ==BYTE_CODE_METAMETHOD_NOT_EQU){\
-				if(STK_VALUE_IS_NULL(stk_result_op1) && (STK_VALUE_IS_TYPE(stk_result_op2)&&(stk_result_op2->value __C_OP__ IDX_TYPE_NULL))){\
+				if((stk_result_op1->value == IDX_TYPE_NULL) && (stk_result_op1->properties == 0) && (__METAMETHOD__ ==BYTE_CODE_METAMETHOD_EQU)){\
 					PUSH_STK_BOOLEAN(true);\
-				}else if((STK_VALUE_IS_TYPE(stk_result_op1) && stk_result_op1->value __C_OP__ IDX_TYPE_NULL) && STK_VALUE_IS_NULL(stk_result_op2)){\
+				}else if((stk_result_op1->value == IDX_TYPE_NULL) && (stk_result_op1->properties != 0) && (__METAMETHOD__ ==BYTE_CODE_METAMETHOD_NOT_EQU)){\
 					PUSH_STK_BOOLEAN(true);\
 				}else{\
 					PUSH_STK_BOOLEAN(STK_VALUE_TO_ZS_INT(stk_result_op1) __C_OP__ STK_VALUE_TO_ZS_INT(stk_result_op2));\
@@ -1697,7 +1697,7 @@ execute_function:
 
 				if(data->vm_error == true){
 					// if System::assert -> not add in callstack trace
-					if(((this_object != NULL &&  this_object->getClassName()=="System") && (calling_function->symbol.name=="assert")
+					if(((calling_function->symbol.name=="assert") && (sf_call_script_function->symbol.name=="errorNative")
 					)==false){
 						data->vm_error_callstack_str+=zs_strutils::format(
 							"\nat calling function %s (file:%s line:%i)" // TODO: get full symbol ?

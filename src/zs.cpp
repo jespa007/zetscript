@@ -43,9 +43,9 @@ int main(int argc, char * argv[]) {
 					eval_options |= zetscript::EvalOption::EVAL_OPTION_NO_EXECUTE;
 				}else if(strcmp(argv[idx_arg],"--show-bc")==0){
 					eval_options|=zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE;
-				}else if(strcmp(argv[idx_arg],"--show-all-bc")==0){
+				}else if(strcmp(argv[idx_arg],"--show-bc-all")==0){
 					eval_options|=(zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE|zetscript::EvalOption::EVAL_OPTION_SHOW_SYSTEM_BYTE_CODE);
-				}else if(strcmp(argv[idx_arg],"--show-system-bc")==0){
+				}else if(strcmp(argv[idx_arg],"--show-bc-system")==0){
 					eval_options|=zetscript::EvalOption::EVAL_OPTION_SHOW_SYSTEM_BYTE_CODE;
 				}else if(strcmp(argv[idx_arg],"--version")==0){
 					printf(ZETSCRIP_COPYRIGHT);
