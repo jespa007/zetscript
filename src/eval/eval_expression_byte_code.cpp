@@ -277,7 +277,7 @@ namespace zetscript{
 			}
 
 			last_instruction=&(((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction);
-			if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+			if((n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
 				last_instruction->properties|=INSTRUCTION_PROPERTY_RETURN_ALL_STACK;
 			}
 
@@ -310,7 +310,7 @@ namespace zetscript{
 			body_size_else=dst_instructions->count-jmp_instructions_start;
 
 			last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction;
-			if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+			if((n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
 				last_instruction->properties|=INSTRUCTION_PROPERTY_RETURN_ALL_STACK;
 			}
 
@@ -320,7 +320,7 @@ namespace zetscript{
 
 		}else{
 			Instruction *last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction;
-			if((n_recursion_level == 0) && (last_instruction->byte_code == BYTE_CODE_CALL) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+			if((n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
 				last_instruction->properties|=INSTRUCTION_PROPERTY_RETURN_ALL_STACK;
 			}
 		}

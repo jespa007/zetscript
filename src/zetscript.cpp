@@ -177,8 +177,6 @@ namespace zetscript{
 				"   dt.setUtc();"
 				"   return dt; "
 				"}"
-
-
 			,
 			(void *)this
 			)
@@ -461,88 +459,65 @@ namespace zetscript{
 		//int idx_start_function = _idx_start_function == ZS_IDX_UNDEFINED ?  idx_current_global_function_checkpoint:_idx_start_function;
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
-		zs_vector *local_variables=main_function_object->local_variables;
+		zs_vector *local_variables=main_function_object->local_variables+idx_start_variable;
+		zs_vector *global_symbol_variables= main_scope->symbol_variables+idx_start_variable;
 
-		/*int idx_stk_start_function_element=symbol_functions->count-1;
-		// unregister all global functions
-		for (
-				int v = idx_stk_start_function_element;
-				v > idx_start_function;
-				v--) {
+		if(local_variables->count != global_symbol_variables->count){
+			THROW_RUNTIME_ERROR("error clearing global variables: global symbols doesn't match global stackelements (%i!=%i)",local_variables->count,global_symbol_variables->count);
+		}
 
-			//Symbol *symbol=(Symbol *)main_function_object->symbol_registered_functions->pop_back();//(Symbol *)main_function_object->registered_symbols->items[v];
-
-			if(symbol->scope == main_scope){
-				if(main_scope->unregisterSymbol(symbol) == false){
-					THROW_RUNTIME_ERROR("error clearing variables: global symbol '%s' not exist",symbol->name.c_str());
-				}
-			}
-
-		}*/
-		//int n_global_symbols_cleared=0;
-		//VirtualMachine *vm=this->virtual_machine;
-		//int total_main_scope_symbols_before_clear=main_scope->registered_symbols->count;
-
-		// clear all stack element to null
-		//&vm_get_stack_elements(virtual_machine)[main_function_object->registered_symbols->count-1];
+		int v=local_variables->count-1;
 
 		// remove all shared 0 pointers
 		if(local_variables->count > 0){
-			int idx_stk_start_element=local_variables->count-1;
-			//StackElement *vm_stack=&vm_get_stack_elements(virtual_machine);
-			// set global top stack element
-			StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[local_variables->count-1];
 			for (
-					int v = idx_stk_start_element;
-					v >= idx_start_variable;
-					v--,vm_stk_element--) {
+				;v>=idx_start_variable;
+			) {
 
-				Symbol *symbol=(Symbol *)local_variables->items[idx_stk_start_element];//(Symbol *)main_function_object->registered_symbols->items[v];
+				StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[v];
+
+				Symbol *symbol=(Symbol *)local_variables->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
 
 				ScriptObjectObject *var = NULL;
 
-				if(symbol->scope == main_scope){ // if variable in global scope
-					if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						var =((ScriptObjectObject *)(vm_stk_element->value));
-						if(var){
-							if(var->shared_pointer != NULL){
-								if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
-									THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
-								}
+				if(symbol->scope != main_scope){ // if variable in global scope
+					THROW_RUNTIME_ERROR("error clearing global variable: '%s'is not global",symbol->name.c_str());
+				}
+
+				if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					var =((ScriptObjectObject *)(vm_stk_element->value));
+					if(var){
+						if(var->shared_pointer != NULL){
+							if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
+								THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
 							}
 						}
 					}
-
-					if(main_scope->unregisterSymbol(symbol) == false){
-						THROW_RUNTIME_ERROR("error clearing variables: global symbol '%s' not exist",symbol->name.c_str());
-					}
-
 				}
 
-				//;
 				*vm_stk_element=k_stk_null;
+
+				// erase unused global symbol
+				delete symbol;
+
+				--v;
 			}
 
-			// reset stk_vm_current ...
-			//VirtualMachineData *data=(VirtualMachineData *)virtual_machine->data;
-			//data->stk_vm_current=vm_stk_element;
 			// clear all garbage
 			StackElement *vm_stack=vm_get_stack_elements(virtual_machine);
-			memset(vm_stack+idx_stk_start_element,0,sizeof(StackElement)*(VM_STACK_LOCAL_VAR_MAX-idx_stk_start_element));
+			memset(vm_stack+idx_start_variable,0,sizeof(StackElement)*(VM_STACK_LOCAL_VAR_MAX-idx_start_variable));
+
+			// erase global elements that they weren't saved...
+			int resize=local_variables->count-(local_variables->count-idx_start_variable);
+			local_variables->resize(resize);
+			global_symbol_variables->resize(resize);
 
 		}
 
 
-		/*if(n_global_symbols_cleared != total_main_scope_symbols_before_clear){
-			THROW_RUNTIME_ERROR("Internal: main_scope and main_functions should have same symbols (fun:%i scope:%i)",n_global_symbols_cleared,total_main_scope_symbols_before_clear);
-		}*/
-
 		vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
 	}
 
-	/*void ZetScript::setClearGlobalVariablesCheckpoint(){
-		idx_current_global_variable_checkpoint=this->script_class_factory->getMainFunction()->registered_symbols->count-1;
-	}*/
 
 	void ZetScript::resetParsedFiles(){
 		for(unsigned i=0;i<parsed_files.count;i++){
