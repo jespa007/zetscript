@@ -2,7 +2,6 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-
 #include "zetscript.h"
 
 #define ZS_ONE_OVER_RAND_MAX	(1.0f/(float)(RAND_MAX))

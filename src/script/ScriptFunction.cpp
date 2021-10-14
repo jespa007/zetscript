@@ -1,6 +1,20 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #include "zetscript.h"
 
 #define FORMAT_PRINT_INSTRUCTION "%04i"
+
+#define GET_ILOAD_ACCESS_TYPE_STR(properties) \
+ ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? "Local"\
+:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? "This"\
+:"Global"\
+
+#define GET_ILOAD_R_STR(properties,value) \
+	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->local_variables->items[value])->name.c_str()\
+	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->class_scope->symbol_variables->items[value])->name.c_str()\
+	:((Symbol *)MAIN_FUNCTION(sfo)->local_variables->items[value])->name.c_str()\
 
 namespace zetscript{
 
@@ -40,8 +54,6 @@ namespace zetscript{
 
 		min_stack_needed=0;
 
-		//num_native_functions=new zs_map;
-		//function_should_be_deduced_at_runtime=false;
 	}
 
 	InstructionSourceInfo * ScriptFunction::getInstructionInfo(Instruction *instruction){
@@ -49,21 +61,6 @@ namespace zetscript{
 		//if(instruction_source_info.items[idx]==1){
 		return (InstructionSourceInfo *)instruction_source_info.items[idx];
 	}
-
-#define GET_ILOAD_ACCESS_TYPE_STR(properties) \
- ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? "Local"\
-:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? "This"\
-:"Global"\
-
-
-
-
-
-#define GET_ILOAD_R_STR(properties,value) \
-	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->local_variables->items[value])->name.c_str()\
-	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->class_scope->symbol_variables->items[value])->name.c_str()\
-	:((Symbol *)MAIN_FUNCTION(sfo)->local_variables->items[value])->name.c_str()\
-
 
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc){
 

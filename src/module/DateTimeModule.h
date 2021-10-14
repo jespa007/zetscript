@@ -4,9 +4,6 @@
  */
 #pragma once
 
-
-
-
 namespace zetscript{
 
 	// member functions

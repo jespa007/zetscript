@@ -1,6 +1,7 @@
-
-
-
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #define IDX_CALL_STACK_MAIN 1
 
 #define PUSH_STK_NULL \

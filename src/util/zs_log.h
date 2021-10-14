@@ -1,3 +1,7 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #pragma once
 
 #define ZS_LOG_FILE_LINE_STR(file,line)		(file==NULL||*file==0?zetscript::zs_strutils::format("line %i: ",line):zetscript::zs_strutils::format("%s:%i: ",zs_path::get_filename(file).c_str(),line))

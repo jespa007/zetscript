@@ -1,5 +1,7 @@
-
-
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #define PROCESS_MOD_OPERATION \
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\

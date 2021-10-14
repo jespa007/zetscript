@@ -1,3 +1,7 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #pragma once
 
 #define ZS_VECTOR_N_SLOT_ELEMENTS 10

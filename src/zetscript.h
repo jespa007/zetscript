@@ -1,3 +1,7 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #pragma once
 
 #include        <stdlib.h>
@@ -88,7 +92,6 @@
 #define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)							(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)				(zs)->registerMemberFunctionStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberAttributeSetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberAttributeGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_INCREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributePostIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
@@ -96,9 +99,25 @@
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberAttributePreIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberAttributePreDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
 
-#define ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(obj_type) \
- obj_type * obj_type##_new(){ return new obj_type();} \
- void obj_type##_delete(obj_type *ptr){ delete  (obj_type *)(ptr);}
+
+#define CLASS_INHERITS_FROM(C,B)														ZS_CLASS_INHERITS_FROM(zs,C,B)
+#define REGISTER_FUNCTION(text,s) 														ZS_REGISTER_FUNCTION(zs,text,s)
+#define REGISTER_VARIABLE(text,s) 														ZS_REGISTER_VARIABLE(zs,s)
+#define REGISTER_CLASS(class_type,s)													ZS_REGISTER_CLASS(zs,s,class_type##"Wrap_New", class_type##"Wrap_Delete")
+#define REGISTER_SINGLETON_CLASS(class_type,s)											ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)
+#define REGISTER_MEMBER_FUNCTION_STATIC(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_FUNCTION(class_type,s,ptr_fun)									ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_ATTRIBUTE_SETTER(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_ATTRIBUTE_GETTER(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_ATTRIBUTE_POST_INCREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_ATTRIBUTE_POST_INCREMENT(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_ATTRIBUTE_POST_DECREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_ATTRIBUTE_POST_DECREMENT(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(zs,class_type,s,ptr_fun)
+
+
+#define ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(class_type) \
+ class_type * class_type##Wrap_New(){ return new class_type();} \
+ void class_type##Wrap_Delete(class_type *ptr){ delete  (class_type *)(ptr);}
 
 
 #define ZS_BIND_SCRIPT_FUNCTION(zs,_T,access_name)						(zs)->bindScriptFunction<_T>(access_name, __FILE__, __LINE__)

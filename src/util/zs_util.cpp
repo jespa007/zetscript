@@ -1,3 +1,7 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #include	"zs_file.cpp"
 #include 	"zs_log.cpp"
 #include 	"zs_path.cpp"

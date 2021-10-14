@@ -1,4 +1,7 @@
-
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #define MAX_REGISTER_LENGTH	128
 
 

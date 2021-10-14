@@ -1,3 +1,7 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #pragma once
 
 #define OPERATOR_GROUP_0(operator_type) \

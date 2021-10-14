@@ -1,9 +1,9 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #ifndef ZS_CONFIG_H
 #define ZS_CONFIG_H
-
-/*
- * These values are automatically set according to their cmake variables.
- */
 
 namespace zetscript{
 	typedef ${ZS_FLOAT_TYPE} 	zs_float;

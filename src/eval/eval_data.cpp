@@ -1,5 +1,7 @@
-
-
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #define IGNORE_BLANKS(aux_p,eval_data,s,line) 	if((aux_p=zetscript::eval_ignore_blanks(eval_data,(s),line))==NULL) return 0
 #define RESULT_LITERAL_VALUE 					(number_part[0]+number_part[1]+number_part[2]).c_str()
 #define EVAL_ERROR_FILE_LINE(file,line,s,...)	eval_data->error=true;\

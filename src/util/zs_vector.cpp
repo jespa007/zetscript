@@ -1,3 +1,7 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #include "../zetscript.h"
 
 #define ZS_MAX_ELEMENTS_VECTOR	16000

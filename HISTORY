@@ -23,18 +23,18 @@ Main improvements:
 -Massive update that rewrites a internal architecture, organize and clean code
 -VM speed up ~x2.5
 -VM save memory stack ~x2
--Optimize size/compile times for binding c++ functions ~x2
+-Optimize size/compile times ~x2
 -ZetScript can be instanced more than once
 -Implements multiple Return/Assignments
--Anonymous functions created within class members can use "this" keyword to access all of those members.
+-Anonymous functions created within class an use "this" keyword in its body.
 -Implements arguments with options: default, variable arguments and by reference
 -Implements setter/getter for member variables
--Implements new keywords: typeof, const
--Implements new operators: in
--Implements builtin iterators for string, vector and anonymous/class objects
--Implements builtin classes: DateTime
--Implements builtin Helper classes: System, Math, Integer,Json and String
--The use of "function" keyword in function members are not mandatory
+-Implements keywords 'const'
+-Implements operators 'in','typeof'
+-Implements builtin iterators for String, Vector and anonymous/class objects
+-Implements builtin obj: 'DateTime'
+-Implements builtin modules: 'System', 'Math', 'Json' and 'String'
+-The use of "function" keyword on class function members are not mandatory
 -switch-case eval expressions
 
 Solved issues

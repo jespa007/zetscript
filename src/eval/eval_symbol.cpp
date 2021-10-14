@@ -1,3 +1,7 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #define SYMBOL_VALUE_THIS				"this"
 #define SYMBOL_VALUE_SUPER				"super"
 

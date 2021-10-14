@@ -1,6 +1,8 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #include "zetscript.h"
-
-
 
 #ifdef _WIN32
 // MSDN recommends against using getcwd & chdir names

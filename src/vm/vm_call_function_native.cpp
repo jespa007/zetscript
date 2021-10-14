@@ -1,4 +1,7 @@
-// STATIC REFERENCES
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #define PTR_FUNCTION_VOID_PARAM0(f) ((void (*)())(f))
 #define PTR_FUNCTION_VOID_PARAM1(f) ((void (*)(zs_int))(f))
 #define PTR_FUNCTION_VOID_PARAM2(f) ((void (*)(zs_int,zs_int))(f))

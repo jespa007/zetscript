@@ -1,3 +1,7 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #include "zetscript.h"
 
 
@@ -21,7 +25,7 @@
 		THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeClass<type_class>(name_class,type_class##_new,type_class##_delete);
+	registerNativeClass<type_class>(name_class,type_class##Wrap_New,type_class##Wrap_Delete);
 
 #define SCF_REGISTER_SINGLETON_CLASS(type_class, idx_class)\
 	if(script_classes->count!=idx_class){\
@@ -51,15 +55,15 @@
 
 namespace zetscript{
 
-	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectObject);
-	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectObjectIterator);
-	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectString);
-	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectStringIterator);
-	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVector);
-	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVectorIterator);
-	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectClass);
-	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectVarRef);
-	ZS_STATIC_CONSTRUCTOR_DESTRUCTOR(ScriptObjectMemberFunction);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectObject);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectObjectIterator);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectString);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectStringIterator);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectVector);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectVectorIterator);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectClass);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectVarRef);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectMemberFunction);
 
 	ScriptClassFactory::ScriptClassFactory(ZetScript *_zs){
 		zs = _zs;

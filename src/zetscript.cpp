@@ -1,5 +1,8 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #include "zetscript.h"
-
 
 #include "ByteCode.cpp"
 #include "Instruction.cpp"
@@ -111,7 +114,7 @@ namespace zetscript{
 		registerMemberAttributeGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 		// Custom user function or classes
-		eval(
+		/*eval(
 			zs_strutils::format(
 				//------------------------------------------------
 				// String
@@ -180,7 +183,7 @@ namespace zetscript{
 			,
 			(void *)this
 			)
-		);
+		);*/
 
 		saveState();
 	}

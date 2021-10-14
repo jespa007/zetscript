@@ -1,4 +1,7 @@
-
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 namespace zetscript{
 
 #define ZS_JSON_SERIALIZE_NEW_LINE(default_str_value,ident) \
