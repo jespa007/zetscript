@@ -44,7 +44,7 @@ namespace zetscript{
 				ZetScript *_zs
 				,int _idx_class
 				,short _idx_script_function
-				, ScriptFunctionParam *_params
+				, ScriptFunctionParam **_params
 				,size_t _params_len
 
 				,int  idx_return_type
@@ -101,7 +101,7 @@ namespace zetscript{
 				, const char * file
 				, short line
 				, const zs_string & function_name
-				, ScriptFunctionParam *_params=NULL
+				, ScriptFunctionParam **_params=NULL
 				,size_t _params_len=0
 				, int idx_return_type=ZS_IDX_UNDEFINED
 				, zs_int ref_ptr=0
@@ -111,7 +111,7 @@ namespace zetscript{
 		~ScriptFunction();
 
 	protected:
-		void updateParams(			ScriptFunctionParam *_params
+		void updateParams(			ScriptFunctionParam **_params
 				,size_t _params_len
 );
 		void clear();

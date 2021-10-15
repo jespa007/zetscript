@@ -32,7 +32,7 @@ namespace zetscript{
 			    , int idx_class
 				//, short idx_local_function
 				, const zs_string & function_name
-				, ScriptFunctionParam *_params
+				, ScriptFunctionParam **_params
 				,size_t _params_len
 
 				, int idx_return_type=ZS_IDX_UNDEFINED

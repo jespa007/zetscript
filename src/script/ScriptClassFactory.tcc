@@ -78,7 +78,7 @@ namespace zetscript{
 				,registered_file
 				,registered_line
 				,function_name
-				,params
+				,&params
 				,params_len
 				,idx_return_type
 				,(zs_int)ptr_function
@@ -234,7 +234,7 @@ namespace zetscript{
 
 				this_class->registerNativeMemberFunction(
 					script_function->symbol.name,
-					params,
+					&params,
 					params_len,
 					script_function->idx_return_type,
 					script_function->ref_native_function_ptr, // it contains script function pointer
@@ -288,7 +288,7 @@ namespace zetscript{
 
 						symbol_function=this_class->registerNativeMemberFunction(
 								it->src->symbol.name,
-								params,
+								&params,
 								params_len,
 								it->src->idx_return_type,
 								it->src->ref_native_function_ptr,
@@ -313,7 +313,7 @@ namespace zetscript{
 
 					symbol_function=this_class->registerNativeMemberFunction(
 							sf_setter->symbol.name,
-							params,
+							&params,
 							params_len,
 							sf_setter->idx_return_type,
 							sf_setter->ref_native_function_ptr,

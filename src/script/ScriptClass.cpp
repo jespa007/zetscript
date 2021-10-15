@@ -82,6 +82,7 @@ namespace zetscript{
 		,const char * file
 		,short line
 	){
+
 		return registerInternalMemberVariable(
 			symbol_name
 			,symbol_properties
@@ -171,13 +172,13 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributeSetter(
-			const zs_string & attribute_name
-			,ScriptFunctionParam *params
-			,size_t params_len
-			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_getter_function_properties
-			,const char * file
-			,short line
+			const zs_string & _attribute_name
+			,ScriptFunctionParam **_params
+			,size_t _params_len
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short _symbol_getter_function_properties
+			,const char * _file
+			,short _line
 
 
 	){
@@ -185,22 +186,22 @@ namespace zetscript{
 		MemberAttribute *ma=NULL;
 		Symbol *symbol_function=NULL;
 
-		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		if((symbol_attrib=getSymbol(_attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(_attribute_name,_file,_line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
 
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_SETTER+attribute_name,
-				params,
-				params_len,
+				ZS_PREFIX_SYMBOL_NAME_SETTER+_attribute_name,
+				_params,
+				_params_len,
 				IDX_TYPE_VOID_C,
-				ref_ptr,
-				symbol_getter_function_properties,
-				file,
-				line
+				_ref_ptr,
+				_symbol_getter_function_properties,
+				_file,
+				_line
 		);
 
 		ma->addSetter((ScriptFunction *)symbol_function->ref_ptr);
@@ -209,42 +210,42 @@ namespace zetscript{
 
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributeGetter(
-			 const zs_string & attribute_name
-			 , ScriptFunctionParam *params
-			 ,size_t params_len
-			, int idx_return_type
-			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_getter_function_properties
-			,const char *file
-			,short line
+			 const zs_string & _attribute_name
+			 , ScriptFunctionParam **_params
+			 ,size_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short _symbol_getter_function_properties
+			,const char *_file
+			,short _line
 	){
 
 		Symbol *symbol_attrib=NULL;
 		Symbol *symbol_function=NULL;
 
 		MemberAttribute *ma=NULL;
-		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		if((symbol_attrib=getSymbol(_attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(_attribute_name,_file,_line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
 
 		if(ma->getter != NULL){
 
-			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute \"%s\" has already a getter"
-				,attribute_name.c_str()
+			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Attribute \"%s\" has already a getter"
+				,_attribute_name.c_str()
 			);
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_GETTER+attribute_name,
-				params,
-				params_len,
-				idx_return_type,
-				ref_ptr,
-				symbol_getter_function_properties,
-				file,
-				line
+				ZS_PREFIX_SYMBOL_NAME_GETTER+_attribute_name,
+				_params,
+				_params_len,
+				_idx_return_type,
+				_ref_ptr,
+				_symbol_getter_function_properties,
+				_file,
+				_line
 		);
 
 		ma->getter=(ScriptFunction *)symbol_function->ref_ptr;
@@ -253,43 +254,43 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePostIncrement(
-			 const zs_string & attribute_name
-			 , ScriptFunctionParam *params
-			 ,size_t params_len
-			, int idx_return_type
-			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_post_inc_function_properties
-			,const char *file
-			,short line
+			 const zs_string & _attribute_name
+			 , ScriptFunctionParam **_params
+			 ,size_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short _symbol_post_inc_function_properties
+			,const char *_file
+			,short _line
 	){
 
 		Symbol *symbol_attrib=NULL;
 		Symbol *symbol_function=NULL;
 
 		MemberAttribute *ma=NULL;
-		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		if((symbol_attrib=getSymbol(_attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(_attribute_name,_file,_line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
 
 		if(ma->post_inc != NULL){
 
-			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute '%s' has already a post increment (aka '%s++') metamethod"
-				,attribute_name.c_str()
-				,attribute_name.c_str()
+			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Attribute '%s' has already a post increment (aka '%s++') metamethod"
+				,_attribute_name.c_str()
+				,_attribute_name.c_str()
 			);
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_POST_INC+attribute_name,
-				params,
-				params_len,
-				idx_return_type,
-				ref_ptr,
-				symbol_post_inc_function_properties,
-				file,
-				line
+				ZS_PREFIX_SYMBOL_NAME_POST_INC+_attribute_name,
+				_params,
+				_params_len,
+				_idx_return_type,
+				_ref_ptr,
+				_symbol_post_inc_function_properties,
+				_file,
+				_line
 		);
 
 		ma->post_inc=(ScriptFunction *)symbol_function->ref_ptr;
@@ -298,43 +299,43 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePostDecrement(
-			 const zs_string & attribute_name
-			 , ScriptFunctionParam *params
-			 ,size_t params_len
-			, int idx_return_type
-			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_post_dec_function_properties
-			,const char *file
-			,short line
+			 const zs_string & _attribute_name
+			 , ScriptFunctionParam **_params
+			 ,size_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short _symbol_post_dec_function_properties
+			,const char *_file
+			,short _line
 	){
 
 		Symbol *symbol_attrib=NULL;
 		Symbol *symbol_function=NULL;
 
 		MemberAttribute *ma=NULL;
-		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		if((symbol_attrib=getSymbol(_attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(_attribute_name,_file,_line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
 
 		if(ma->post_dec != NULL){
 
-			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute '%s' has already a post decrement (aka '%s--') metamethod"
-				,attribute_name.c_str()
-				,attribute_name.c_str()
+			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Attribute '%s' has already a post decrement (aka '%s--') metamethod"
+				,_attribute_name.c_str()
+				,_attribute_name.c_str()
 			);
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_POST_DEC+attribute_name,
-				params,
-				params_len,
-				idx_return_type,
-				ref_ptr,
-				symbol_post_dec_function_properties,
-				file,
-				line
+				ZS_PREFIX_SYMBOL_NAME_POST_DEC+_attribute_name,
+				_params,
+				_params_len,
+				_idx_return_type,
+				_ref_ptr,
+				_symbol_post_dec_function_properties,
+				_file,
+				_line
 		);
 
 		ma->post_dec=(ScriptFunction *)symbol_function->ref_ptr;
@@ -343,43 +344,43 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePreIncrement(
-			 const zs_string & attribute_name
-			 , ScriptFunctionParam *params
-			 ,size_t params_len
-			, int idx_return_type
-			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_pre_inc_function_properties
-			,const char *file
-			,short line
+			 const zs_string & _attribute_name
+			 , ScriptFunctionParam **_params
+			 ,size_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short _symbol_pre_inc_function_properties
+			,const char *_file
+			,short _line
 	){
 
 		Symbol *symbol_attrib=NULL;
 		Symbol *symbol_function=NULL;
 
 		MemberAttribute *ma=NULL;
-		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		if((symbol_attrib=getSymbol(_attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(_attribute_name,_file,_line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
 
 		if(ma->pre_inc != NULL){
 
-			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute '%s' has already a post increment (aka '++%s') metamethod"
-				,attribute_name.c_str()
-				,attribute_name.c_str()
+			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Attribute '%s' has already a post increment (aka '++%s') metamethod"
+				,_attribute_name.c_str()
+				,_attribute_name.c_str()
 			);
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_PRE_INC+attribute_name,
-				params,
-				params_len,
-				idx_return_type,
-				ref_ptr,
-				symbol_pre_inc_function_properties,
-				file,
-				line
+				ZS_PREFIX_SYMBOL_NAME_PRE_INC+_attribute_name,
+				_params,
+				_params_len,
+				_idx_return_type,
+				_ref_ptr,
+				_symbol_pre_inc_function_properties,
+				_file,
+				_line
 		);
 
 		ma->pre_inc=(ScriptFunction *)symbol_function->ref_ptr;
@@ -388,43 +389,43 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerNativeMemberAttributePreDecrement(
-			 const zs_string & attribute_name
-			 , ScriptFunctionParam *params
-			 ,size_t params_len
-			, int idx_return_type
-			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_pre_dec_function_properties
-			,const char *file
-			,short line
+			 const zs_string & _attribute_name
+			 , ScriptFunctionParam **_params
+			 ,size_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short _symbol_pre_dec_function_properties
+			,const char *_file
+			,short _line
 	){
 
 		Symbol *symbol_attrib=NULL;
 		Symbol *symbol_function=NULL;
 
 		MemberAttribute *ma=NULL;
-		if((symbol_attrib=getSymbol(attribute_name)) == NULL){
-			symbol_attrib=registerMemberAttribute(attribute_name,file,line);
+		if((symbol_attrib=getSymbol(_attribute_name)) == NULL){
+			symbol_attrib=registerMemberAttribute(_attribute_name,_file,_line);
 		}
 
 		ma=(MemberAttribute *)symbol_attrib->ref_ptr;
 
 		if(ma->post_dec != NULL){
 
-			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Attribute '%s' has already a pre decrement (aka '--%s') metamethod"
-				,attribute_name.c_str()
-				,attribute_name.c_str()
+			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Attribute '%s' has already a pre decrement (aka '--%s') metamethod"
+				,_attribute_name.c_str()
+				,_attribute_name.c_str()
 			);
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_PRE_DEC+attribute_name,
-				params,
-				params_len,
-				idx_return_type,
-				ref_ptr,
-				symbol_pre_dec_function_properties,
-				file,
-				line
+				ZS_PREFIX_SYMBOL_NAME_PRE_DEC+_attribute_name,
+				_params,
+				_params_len,
+				_idx_return_type,
+				_ref_ptr,
+				_symbol_pre_dec_function_properties,
+				_file,
+				_line
 		);
 
 		ma->pre_dec=(ScriptFunction *)symbol_function->ref_ptr;
@@ -437,7 +438,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerMemberFunction(
 			 const zs_string & function_name
-			 , ScriptFunctionParam *params
+			 , ScriptFunctionParam **params
 			 ,size_t params_len
 			, unsigned short symbol_properties
 			,const char * file
@@ -457,25 +458,25 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptClass::registerNativeMemberFunction(
-			const zs_string & function_name
-			 , ScriptFunctionParam *params
-			 ,size_t params_len
-			, int idx_return_type
-			,zs_int ref_ptr // script function
-			, unsigned short symbol_properties
-			,const char * file
-			, short line
+			const zs_string & _function_name
+			 , ScriptFunctionParam **_params
+			 ,size_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // script function
+			, unsigned short _symbol_properties
+			,const char * _file
+			, short _line
 
 	){
 		return registerInternalMemberFunction(
-				 function_name
-				,params
-				,params_len
-				,symbol_properties
-				,idx_return_type
-				,(zs_int)ref_ptr
-				, file
-				, line
+				 _function_name
+				,_params
+				,_params_len
+				,_symbol_properties
+				,_idx_return_type
+				,(zs_int)_ref_ptr
+				, _file
+				, _line
 
 		);
 
@@ -483,7 +484,7 @@ namespace zetscript{
 
 	Symbol * ScriptClass::registerInternalMemberFunction(
 		 const zs_string & function_name
-		 , ScriptFunctionParam *params
+		 , ScriptFunctionParam **params
 		 ,size_t params_len
 		, unsigned short symbol_properties
 		, int idx_return_type
@@ -510,8 +511,6 @@ namespace zetscript{
 				return NULL;
 			}
 		}
-
-		//int idx_position=symbol_member_functions->count;
 
 		Symbol *function_symbol =  script_function_factory->newScriptFunction(
 				//---- Register data

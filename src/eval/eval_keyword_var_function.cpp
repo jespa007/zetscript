@@ -687,14 +687,17 @@ error_eval_keyword_var:
 				try{
 					symbol_sf=sc->registerMemberFunction(
 							function_name
-							,params
+							,&params
 							,params_len
 							,is_static?SYMBOL_PROPERTY_STATIC:SYMBOL_PROPERTY_MEMBER_FUNCTION
 							,eval_data->current_parsing_file
 							,line
 					);
 				}catch(std::exception & ex){
-					delete [] params;
+					if(params != NULL){
+						delete [] params;
+					}
+
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,ex.what());
 				}
@@ -708,11 +711,13 @@ error_eval_keyword_var:
 						, eval_data->current_parsing_file
 						, line
 						, function_name
-						, params
+						, &params
 						, params_len
 					);
 				}catch(std::exception & ex){
-					delete [] params;
+					if(params != NULL){
+						delete [] params;
+					}
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,ex.what());
 				}

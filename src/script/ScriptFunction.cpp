@@ -22,13 +22,18 @@ namespace zetscript{
 			ZetScript * _zs
 			,int _idx_class
 			,short _idx_script_function
-			, ScriptFunctionParam *_params
+			, ScriptFunctionParam **_params
 			, size_t _params_len
 			,int _idx_return_type
 			,Symbol *_symbol
 			, zs_int _ref_native_function_ptr
 		) {
 		// function data...
+		if(_symbol->name=="_set"){
+			int i=0;
+			i++;
+		}
+
 		idx_class=_idx_class;
 		idx_script_function=_idx_script_function;
 		idx_return_type = _idx_return_type;
@@ -425,7 +430,7 @@ namespace zetscript{
 			,const char *file
 			, short line
 			, const zs_string & function_name
-			, ScriptFunctionParam *_params
+			, ScriptFunctionParam **_params
 			,size_t _params_len
 			, int idx_return_type
 			,zs_int ref_ptr
@@ -517,13 +522,19 @@ namespace zetscript{
 
 
 	void ScriptFunction::updateParams(
-			ScriptFunctionParam *_params
+			ScriptFunctionParam **_params
 			,size_t _params_len
 	){
+		if(_params == NULL){
+			return;
+		}
 		// delete existing args...
 		clearParams();
-		params=_params;
+		params=*_params;
 		params_len = _params_len;
+
+		// mark ptr that was assigned. Now ScriptFunction is in charge to deallocate
+		*_params=NULL;
 	}
 
 	void ScriptFunction::clear(){

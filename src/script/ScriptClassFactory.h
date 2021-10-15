@@ -110,7 +110,6 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
-
 		/**
 		 * User Register C Class
 		 */
@@ -211,8 +210,6 @@ namespace zetscript{
 				, const char *registered_file=NULL
 				,short registered_line=-1
 		);
-
-
 
 		/**
 		 * Register C Member function static Class

@@ -91,7 +91,7 @@ namespace zetscript{
 				zs
 				,IDX_SCRIPT_CLASS_MAIN
 				,ZS_IDX_EVAL_FUNCTION
-				,function_params
+				,&function_params
 				,function_params_len
 				,ZS_IDX_UNDEFINED
 				,symbol_sf
