@@ -262,13 +262,16 @@ namespace zetscript{
 						ScriptClass *sc=eval_data->script_class_factory->getScriptClass(token_node_symbol->value);
 						Instruction *instruction=&((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction;
 						if(sc != NULL){
-							if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
-								EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"expected a type after 'instanceof'");
-							}else if(instruction->byte_code==ByteCode::BYTE_CODE_FIND_VARIABLE){
+							if(instruction->byte_code==ByteCode::BYTE_CODE_FIND_VARIABLE){
 
 								instruction->byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
 								instruction->value_op2=sc->idx_class;
 							}
+						}else{
+							if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
+								EVAL_ERROR_EXPRESSION_TOKEN_SYMBOL(eval_data->current_parsing_file,line,"expected a type after 'instanceof'");
+							}
+
 						}
 
 					}

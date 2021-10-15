@@ -4,6 +4,13 @@
  */
 #pragma once
 
+#define ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_SETTER		"_set@"
+#define ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_GETTER		"_get@"
+#define ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_POST_INC	"_post_inc@"
+#define ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_POST_DEC	"_post_dec@"
+#define ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_PRE_INC		"_pre_inc@"
+#define ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_PRE_DEC		"_pre_dec@"
+
 namespace zetscript{
 
 	class MemberAttribute{

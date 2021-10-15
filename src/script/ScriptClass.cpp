@@ -194,7 +194,7 @@ namespace zetscript{
 
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_SETTER+_attribute_name,
+				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_SETTER+_attribute_name,
 				_params,
 				_params_len,
 				IDX_TYPE_VOID_C,
@@ -238,7 +238,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_GETTER+_attribute_name,
+				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_GETTER+_attribute_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -283,7 +283,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_POST_INC+_attribute_name,
+				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_POST_INC+_attribute_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -328,7 +328,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_POST_DEC+_attribute_name,
+				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_POST_DEC+_attribute_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -373,7 +373,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_PRE_INC+_attribute_name,
+				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_PRE_INC+_attribute_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -418,7 +418,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_PREFIX_SYMBOL_NAME_PRE_DEC+_attribute_name,
+				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_PRE_DEC+_attribute_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -536,9 +536,6 @@ namespace zetscript{
 			}
 		}
 
-		// register
-
-
 		// constructor...
 		if(function_name == this->class_name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
 			idx_function_member_constructor = function_symbol->idx_position;
@@ -553,7 +550,7 @@ namespace zetscript{
 					int n_args_static_metamethod=byte_code_metamethod_get_num_arguments(op); // expected params for static function, n_args -1 else
 					int this_arg=0;
 
-					Symbol *symbol_result;
+					Symbol *symbol_result=NULL;
 
 					// can be one parameter or 0 params...
 					if(byte_code_metamethod_should_be_static(op) && ((symbol_properties & SYMBOL_PROPERTY_STATIC)==0)){
@@ -570,21 +567,8 @@ namespace zetscript{
 						return NULL;
 					}
 
-					if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // non-native
-
-						if((symbol_result=getSymbol(function_name,(char)params_len)) != NULL){
-
-							THROW_RUNTIME_ERROR("Metamethod '%s::%s' is already defined at '%s::%s' (%s:%i). Metamethods cannot be override"
-								,class_name.c_str()
-								,function_name.c_str()
-								,symbol_result->scope->script_class->class_name.c_str()
-								,function_name.c_str()
-								,zs_path::get_filename(symbol_result->file).c_str()
-								,symbol_result->line
-							);
-							return NULL;
-						}
-					}else{ // native
+					// native
+					if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ // if-native
 						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(idx_return_type == IDX_TYPE_STRING_PTR_C || idx_return_type == IDX_TYPE_STRING_C) ){
 							THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
 								,class_name.c_str()
@@ -592,14 +576,15 @@ namespace zetscript{
 							);
 							return NULL;
 						}
+
+						if(symbol_properties & SYMBOL_PROPERTY_MEMBER_FUNCTION){
+							this_arg=1;
+						}
 					}
-
-
-					this_arg=(symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)&& ((symbol_properties & SYMBOL_PROPERTY_STATIC)==0)?1:0;
 
 					if(function_symbol->n_params< (n_args_static_metamethod+this_arg)){ // non-static functions pass this object as first parameter
 						THROW_RUNTIME_ERROR("%s metamethod '%s' (aka '%s') should have at least %i parameter/s"
-							,(symbol_properties & SYMBOL_PROPERTY_STATIC)?"Static":"Member"
+							,(symbol_properties & SYMBOL_PROPERTY_MEMBER_FUNCTION)?"Member":"Static"
 							,str_symbol_metamethod
 							,byte_code_metamethod_operator_str
 							,n_args_static_metamethod
@@ -607,13 +592,14 @@ namespace zetscript{
 						return NULL;
 					}
 
+
 					// everything ok
 					if(/*op==BYTE_CODE_METAMETHOD_GET || */op==BYTE_CODE_METAMETHOD_SET){
 						if(setter_getter == NULL){
 							setter_getter = new MemberAttribute(this,class_name);
 						}
 
-							if(setter_getter->setters.count>0 && ((function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0)){
+							if(setter_getter->setters.count>0){
 							// error already set (script functions only can be set once)
 							THROW_RUNTIME_ERROR("Setter '%s::_set' already set"
 									,class_name.c_str()

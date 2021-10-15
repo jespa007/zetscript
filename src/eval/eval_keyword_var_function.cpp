@@ -727,6 +727,13 @@ error_eval_keyword_var:
 				}
 			}
 
+			//-------------------------
+			// IMPORTANT NOTE:
+			// Due params var is NULL here because it was marked as assigned at ScriptFunction::updateParams. Reassign params variable again ...
+			params=((ScriptFunction *)symbol_sf->ref_ptr)->params;
+			//
+			//-------------------------
+
 			if(result_symbol_function != NULL){
 				*result_symbol_function=symbol_sf;
 			}
