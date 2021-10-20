@@ -11,8 +11,8 @@ class A{
 	
 	static _equ(_obj1,_obj2){
 		
-		Console::outln("_obj1.__a__="+_obj1.__a__)
-		Console::outln("_obj2.__a__="+_obj2)
+		Console::outln("_obj1.__a__={0}",_obj1.__a__)
+		Console::outln("_obj2.__a__={0}",_obj2)
 		
 		if((_obj1 instanceof A)
 				   &&

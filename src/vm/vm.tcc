@@ -288,7 +288,6 @@ namespace zetscript{
 		}
 		else{ // dettach and attach next...
 			// [1]<->[2]<-> ...[P]<->[C]<->[N]...[M-1]<->[M]
-			//InfoSharedPointerNode *aux_node=_node;
 			if(_node == list->first){
 				list->first=_node->next;
 			}
@@ -324,7 +323,6 @@ namespace zetscript{
 					return;
 				}
 
-				//ZS_LOG_DEBUG("Deallocating %i:%p",current->data.ptr_script_object_shared->idx_script_class,current->data.ptr_script_object_shared);
 				delete current->data.ptr_script_object_shared;
 				current->data.ptr_script_object_shared=NULL;
 				free(current);

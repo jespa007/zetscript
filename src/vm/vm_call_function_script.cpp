@@ -572,7 +572,9 @@ namespace zetscript{
 				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
 					PUSH_STK_NULL;
 				}else{
-					*data->stk_vm_current++=*(so_aux->getBuiltinElementAt(instruction->value_op2));
+					data->stk_vm_current->value= so_aux->getScriptClass()->class_scope->symbol_functions->items[instruction->value_op2];
+					data->stk_vm_current->properties=STK_PROPERTY_FUNCTION|STK_PROPERTY_MEMBER_FUNCTION;
+					data->stk_vm_current++;
 				}
 				continue;
 
