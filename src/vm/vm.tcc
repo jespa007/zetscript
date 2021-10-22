@@ -780,6 +780,10 @@ namespace zetscript{
 			stk_result_op1 = (StackElement *)(stk_result_op1->value);
 		}
 
+		if(stk_result_op2->properties & STK_PROPERTY_PTR_STK){
+			stk_result_op2 = (StackElement *)(stk_result_op2->value);
+		}
+
 		if(
 			// allowed classes that accepts metamethods
 			STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op1)
@@ -878,9 +882,9 @@ namespace zetscript{
 
 		//------------------------------------
 		// push stk results...
-		*stk_args=*stk_result_op1;
+		*data->stk_vm_current++=*stk_result_op1;
 		if(n_stk_args==2){
-			*(stk_args+1)=*stk_result_op2;
+			*data->stk_vm_current++=*stk_result_op2;
 		}
 		//------------------------------------
 
@@ -922,6 +926,18 @@ namespace zetscript{
 		}
 
 		if((ptr_function_found->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
+			// we have to share any object to avoid be removed on function exit
+			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				if(vm_share_pointer(vm,(ScriptObject *)stk_result_op1->value)==false){
+					goto apply_metamethod_error;
+				}
+			}
+			if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				if(vm_share_pointer(vm,(ScriptObject *)stk_result_op2->value)==false){
+					goto apply_metamethod_error;
+				}
+			}
+
 			vm_call_function_script(
 				vm
 				,script_object

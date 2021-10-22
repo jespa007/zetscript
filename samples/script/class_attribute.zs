@@ -5,14 +5,11 @@ class A{
 	}
 	
 	_set(_a){
-		Console::outln("assign this.__a__="+_a)
 		this.__a__=_a
 	}
 	
 	static _equ(_obj1,_obj2){
 		
-		Console::outln("_obj1.__a__={0}",_obj1.__a__)
-		Console::outln("_obj2.__a__={0}",_obj2)
 		
 		if((_obj1 instanceof A)
 				   &&
@@ -34,22 +31,22 @@ class A{
 				
 	}
 	
-	// attribute
+	// attributes
 	a{
 		_set(value){
-			this.__a__=value;
+			this.__attrib_a__=value;
 		}
 		_get(){
-			return this.__a__;
+			return this.__attrib_a__;
 		}
 	}	
 	
 	b{
 		_set(value){
-			this.__b__=value;
+			this.__attrib_b__=value;
 		}
 		_get(){
-			return this.__b__;
+			return this.__attrib_b__;
 		}
 	}
 }
@@ -58,17 +55,10 @@ class A{
 
 var a=new A();
 a=1;
-var c=a.__a__
-System::assert(a==2,"a!=1 (a:{0})",c)
+System::assert(a==1,"a!=1")
 a.a=2;
-System::assert(a.a==1,"a.a!=2");
+System::assert(a.a==2,"a.a!=2");
 a.b=3
-System::assert(a.a==2,"a.b!=3");
-a=4;
-System::assert(a==2,"a!=4")
-a.a=5;
-System::assert(a.a==4,"a.a!=5");
-a.b=6
-System::assert(a.a==5,"a.b!=6");
+System::assert(a.b==3,"a.b!=3");
 
 
