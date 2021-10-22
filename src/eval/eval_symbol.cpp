@@ -159,9 +159,7 @@ namespace zetscript{
 								}
 
 							}
-
 						}
-
 					}
 				}
 			}

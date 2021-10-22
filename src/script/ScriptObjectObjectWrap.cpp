@@ -31,7 +31,7 @@ namespace zetscript{
 
 	}
 
-	/*static ScriptObjectObjectIterator *ScriptObjectObjectWrap_iteratorSf(ScriptObjectObject *o1){
+	/*static ScriptObjectIteratorObject *ScriptObjectObjectWrap_iteratorSf(ScriptObjectObject *o1){
 
 	}*/
 
@@ -48,8 +48,8 @@ namespace zetscript{
 		o1->eraseUserProperty(*key);
 	}
 
-	ScriptObjectObjectIterator * ScriptObjectObjectWrap_iter(ScriptObjectObject *oo){
-		return ZS_NEW_OBJECT_OBJECT_ITERATOR(oo);
+	ScriptObjectIteratorObject * ScriptObjectObjectWrap_iter(ScriptObjectObject *oo){
+		return ZS_NEW_OBJECT_ITERATOR_OBJECT(oo);
 	}
 
 }

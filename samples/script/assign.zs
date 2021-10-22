@@ -10,17 +10,6 @@ function ret_expression_sequence_2(){
 var a,b,c,d,e,f;
 a,b,c,d,e,f=0,1,2,[0,1,2,3];
 
-/*%a,b,c=0,1,2%
-[a,b,c=0,1,2]
-(a,b,c=0,1,2)
-{a,b,c=0,1,2}
-*a,b,c=0,1,2*
-!a,b,c=0,1,2!
-$a,b,c=0,1,2$
-<a,b,c=0,1,2>*/
-
-
-
 // test 1: equal assigment
 a,b,c=0,1,2
 System::assert(a==0,"Test1. a!=0");

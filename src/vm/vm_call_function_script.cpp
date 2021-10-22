@@ -1391,9 +1391,9 @@ load_element_object:
 				PROCESS_BINARY_OPERATION(<<, BYTE_CODE_METAMETHOD_SHL);
 				continue;
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
-				 POP_TWO;
+				 POP_ONE;
 
-				switch(stk_result_op2->value){
+				switch(instruction->value_op2){
 				case ZS_IDX_UNDEFINED:
 					VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 					break;
@@ -1413,7 +1413,7 @@ load_element_object:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						bool b = data->script_class_factory->isClassInheritsFrom(			//
 								((ScriptObjectObject *)(stk_result_op1->value))->idx_script_class // A
-								, stk_result_op2->value			// B
+								, instruction->value_op2		// B
 						);
 						PUSH_STK_BOOLEAN(b);
 					}else{
@@ -1703,8 +1703,18 @@ execute_function:
 					// if System::assert -> not add in callstack trace
 					if(((calling_function->symbol.name=="assert") && (sf_call_script_function->symbol.name=="errorNative")
 					)==false){
+						const char *str_class_owner=NULL;
+						if(	(sf_call_script_function->symbol.properties & SYMBOL_PROPERTY_MEMBER_FUNCTION)!=0
+								||
+							(sf_call_script_function->symbol.properties & SYMBOL_PROPERTY_STATIC)!=0
+						){
+							str_class_owner=data->script_class_factory->getScriptClass(sf_call_script_function->idx_class)->class_name.c_str();
+						}
+
 						data->vm_error_callstack_str+=zs_strutils::format(
-							"\nat calling function %s (file:%s line:%i)" // TODO: get full symbol ?
+							"\nat calling function %s%s%s (file:%s line:%i)" // TODO: get full symbol ?
+							,str_class_owner==NULL?"":str_class_owner
+							,str_class_owner==NULL?"":"::"
 							,sf_call_script_function->symbol.name.c_str()
 							,SFI_GET_FILE(calling_function,instruction)
 							,SFI_GET_LINE(calling_function,instruction)

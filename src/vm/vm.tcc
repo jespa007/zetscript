@@ -783,9 +783,9 @@ namespace zetscript{
 		if(
 			// allowed classes that accepts metamethods
 			STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op1)
-			|| STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk_result_op1)
-			|| STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk_result_op1)
-			|| STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk_result_op1)
+			|| STK_IS_SCRIPT_OBJECT_ITERATOR_STRING(stk_result_op1)
+			|| STK_IS_SCRIPT_OBJECT_ITERATOR_VECTOR(stk_result_op1)
+			|| STK_IS_SCRIPT_OBJECT_ITERATOR_OBJECT(stk_result_op1)
 		){
 			script_object = (ScriptObjectClass *)(stk_result_op1->value);
 		}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -835,9 +835,9 @@ namespace zetscript{
 
 			// allowed classes that accepts metamethods
 			if(			STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op2)
-					|| STK_IS_SCRIPT_OBJECT_STRING_ITERATOR(stk_result_op2)
-					|| STK_IS_SCRIPT_OBJECT_VECTOR_ITERATOR(stk_result_op2)
-					|| STK_IS_SCRIPT_OBJECT_OBJECT_ITERATOR(stk_result_op2)
+					|| STK_IS_SCRIPT_OBJECT_ITERATOR_STRING(stk_result_op2)
+					|| STK_IS_SCRIPT_OBJECT_ITERATOR_VECTOR(stk_result_op2)
+					|| STK_IS_SCRIPT_OBJECT_ITERATOR_OBJECT(stk_result_op2)
 
 					){
 				script_object = (ScriptObject *)(stk_result_op2->value);
@@ -875,6 +875,14 @@ namespace zetscript{
 			}
 			goto apply_metamethod_error;
 		}
+
+		//------------------------------------
+		// push stk results...
+		*stk_args=*stk_result_op1;
+		if(n_stk_args==2){
+			*(stk_args+1)=*stk_result_op2;
+		}
+		//------------------------------------
 
 		if(ptr_function_found == NULL){
 

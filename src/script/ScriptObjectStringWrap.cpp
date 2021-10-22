@@ -128,7 +128,7 @@ namespace zetscript{
 		*(zs_string *)str_in->value+=*(zs_string *)(str_append->value);
 	}
 
-	ScriptObjectStringIterator * ScriptObjectStringWrap_iter(ScriptObjectString *so){
-		return ZS_NEW_OBJECT_STRING_ITERATOR(so);
+	ScriptObjectIteratorString * ScriptObjectStringWrap_iter(ScriptObjectString *so){
+		return ZS_NEW_OBJECT_ITERATOR_STRING(so);
 	}
 }

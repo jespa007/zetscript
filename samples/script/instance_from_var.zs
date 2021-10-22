@@ -5,9 +5,13 @@ class A{
 }
 
 // it loads type of A into variable type_a
-var Object=A;
+var type_a=A;
 
 
 // it can create instances from vars that contains a type
 new type_a();
+
+if(type_a == A){
+	Console::outln("type_a is typeof A")
+}
 

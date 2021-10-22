@@ -74,8 +74,8 @@ namespace zetscript{
 		return so_string;
 	}
 
-	ScriptObjectVectorIterator * ScriptObjectVectorWrap_iter(ScriptObjectVector *so){
-		return ZS_NEW_OBJECT_VECTOR_ITERATOR(so);
+	ScriptObjectIteratorVector * ScriptObjectVectorWrap_iter(ScriptObjectVector *so){
+		return ZS_NEW_OBJECT_ITERATOR_VECTOR(so);
 	}
 
 	bool 							ScriptObjectVectorWrap_contains(ScriptObjectVector *sv, StackElement *stk_to_compare){

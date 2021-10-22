@@ -13,9 +13,9 @@
 #define ZS_TYPE_NAME_OBJECT_OBJECT 				"Object"
 #define ZS_TYPE_NAME_OBJECT_VAR_REF 			"VarRef"
 #define ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER 	"FunctionMember"
-#define ZS_TYPE_NAME_OBJECT_STRING_ITERATOR 	"StringIterator"
-#define ZS_TYPE_NAME_OBJECT_VECTOR_ITERATOR 	"VectorIterator"
-#define ZS_TYPE_NAME_OBJECT_OBJECT_ITERATOR 	"ObjectIterator"
+#define ZS_TYPE_NAME_OBJECT_ITERATOR_STRING 	"IteratorString"
+#define ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR 	"IteratorVector"
+#define ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"
 
 namespace zetscript{
 
@@ -52,9 +52,9 @@ namespace zetscript{
 		IDX_TYPE_SCRIPT_OBJECT_VECTOR, // Vector []
 
 		// Iterator
-		IDX_TYPE_SCRIPT_OBJECT_STRING_ITERATOR, // "StringIterator"
-		IDX_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR, // VectorIterator []
-		IDX_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR, // ObjectIterator
+		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING, // "IteratorString"
+		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR, // IteratorVector []
+		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT, // IteratorObject
 
 		// Object & class
 		IDX_TYPE_SCRIPT_OBJECT_OBJECT, //  Object {}

@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	class	ScriptObjectStringIterator;
+	class	ScriptObjectIteratorString;
 
 	zs_int 							ScriptObjectStringWrap_size(ScriptObjectString *so);
 	bool 							ScriptObjectStringWrap_contains(ScriptObjectString *so, zs_string *str);
@@ -26,7 +26,7 @@ namespace zetscript{
 
 	void 							ScriptObjectStringWrap_append(ScriptObjectString *str_in,ScriptObjectString *str_append);
 
-	ScriptObjectStringIterator *	ScriptObjectStringWrap_iter(ScriptObjectString *str_in);
+	ScriptObjectIteratorString *	ScriptObjectStringWrap_iter(ScriptObjectString *str_in);
 
 
 }

@@ -12,13 +12,13 @@
 #define SCRIPT_CLASS_MAIN(data)							((data->script_class_factory)->getScriptClass(IDX_TYPE_MAIN))    // 0 is the main class
 
 #define SCRIPT_OBJECT_STRING(data)						((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_STRING))
-#define SCRIPT_OBJECT_STRING_ITERATOR(data)				((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_STRING_ITERATOR))
+#define SCRIPT_OBJECT_ITERATOR_STRING(data)				((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))
 //#define SCRIPT_CLASS_DICTIONARY(data)					((data->script_class_factory)->getScriptClass(IDX_TYPE_DICTIONARY))
 #define SCRIPT_OBJECT_VECTOR(data)						((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_VECTOR))
-#define SCRIPT_OBJECT_VECTOR_ITERATOR(data)				((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR))
+#define SCRIPT_OBJECT_ITERATOR_VECTOR(data)				((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR))
 
 #define SCRIPT_OBJECT_OBJECT(data)						((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_OBJECT))
-#define SCRIPT_OBJECT_OBJECT_ITERATOR(data)				((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR))
+#define SCRIPT_OBJECT_ITERATOR_OBJECT(data)				((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT))
 
 //#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_class_factory)->getScriptClass(IDX_TYPE_FUNCTION))
 #define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(data,s)		(data->script_class_factory)->getScriptClassByNativeClassPtr(s))    // 0 is the main class

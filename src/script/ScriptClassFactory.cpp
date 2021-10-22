@@ -56,11 +56,11 @@
 namespace zetscript{
 
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectObject);
-	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectObjectIterator);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectIteratorObject);
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectString);
-	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectStringIterator);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectIteratorString);
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectVector);
-	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectVectorIterator);
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectIteratorVector);
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectClass);
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectVarRef);
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectMemberFunction);
@@ -167,9 +167,9 @@ namespace zetscript{
 		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_VECTOR,ScriptObjectVector,IDX_TYPE_SCRIPT_OBJECT_VECTOR);
 
 		// Script object iterators
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_STRING_ITERATOR,ScriptObjectStringIterator,IDX_TYPE_SCRIPT_OBJECT_STRING_ITERATOR);
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_VECTOR_ITERATOR,ScriptObjectVectorIterator,IDX_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR);
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_OBJECT_ITERATOR,ScriptObjectObjectIterator,IDX_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR);
+		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_STRING,ScriptObjectIteratorString,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING);
+		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR,ScriptObjectIteratorVector,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR);
+		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT,ScriptObjectIteratorObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT);
 
 
 		// BUILT-IN SCRIPT OBJECTS
@@ -211,10 +211,10 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
 		registerNativeMemberFunction<ScriptObjectVector>("iter",&ScriptObjectVectorWrap_iter);
 
-		// VectorIterator
-		registerNativeMemberFunction<ScriptObjectVectorIterator>("_post_inc",ScriptObjectVectorIteratorWrap_next);
-		registerNativeMemberFunction<ScriptObjectVectorIterator>("end",ScriptObjectVectorIteratorWrap_end);
-		registerNativeMemberFunction<ScriptObjectVectorIterator>("get",ScriptObjectVectorIteratorWrap_get);
+		// IteratorVector
+		registerNativeMemberFunction<ScriptObjectIteratorVector>("_post_inc",ScriptObjectIteratorVectorWrap_next);
+		registerNativeMemberFunction<ScriptObjectIteratorVector>("end",ScriptObjectIteratorVectorWrap_end);
+		registerNativeMemberFunction<ScriptObjectIteratorVector>("get",ScriptObjectIteratorVectorWrap_get);
 
 
 		//---------------------------------------------
@@ -240,10 +240,10 @@ namespace zetscript{
 
 		registerNativeMemberFunction<ScriptObjectString>("iter",ScriptObjectStringWrap_iter);
 
-		// StringIterator
-		registerNativeMemberFunction<ScriptObjectStringIterator>("_post_inc",ScriptObjectStringIteratorWrap_next);
-		registerNativeMemberFunction<ScriptObjectStringIterator>("end",ScriptObjectStringIteratorWrap_end);
-		registerNativeMemberFunction<ScriptObjectStringIterator>("get",ScriptObjectStringIteratorWrap_get);
+		// IteratorString
+		registerNativeMemberFunction<ScriptObjectIteratorString>("_post_inc",ScriptObjectIteratorStringWrap_next);
+		registerNativeMemberFunction<ScriptObjectIteratorString>("end",ScriptObjectIteratorStringWrap_end);
+		registerNativeMemberFunction<ScriptObjectIteratorString>("get",ScriptObjectIteratorStringWrap_get);
 
 		//---------------------------------------------
 		// Object
@@ -254,10 +254,10 @@ namespace zetscript{
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("keys",ScriptObjectObjectWrap_keys);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("iter",ScriptObjectObjectWrap_iter);
 
-		// ObjectIterator
-		registerNativeMemberFunction<ScriptObjectObjectIterator>("_post_inc",ScriptObjectObjectIteratorWrap_next);
-		registerNativeMemberFunction<ScriptObjectObjectIterator>("end",ScriptObjectObjectIteratorWrap_end);
-		registerNativeMemberFunction<ScriptObjectObjectIterator>("get",ScriptObjectObjectIteratorWrap_get);
+		// IteratorObject
+		registerNativeMemberFunction<ScriptObjectIteratorObject>("_post_inc",ScriptObjectIteratorObjectWrap_next);
+		registerNativeMemberFunction<ScriptObjectIteratorObject>("end",ScriptObjectIteratorObjectWrap_end);
+		registerNativeMemberFunction<ScriptObjectIteratorObject>("get",ScriptObjectIteratorObjectWrap_get);
 
 		zs->saveState();
 	}

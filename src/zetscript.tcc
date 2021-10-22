@@ -57,11 +57,11 @@ namespace zetscript{
 					 stk_result=*((StackElement *)ptr_var);
 					 break;
 				 case IDX_TYPE_SCRIPT_OBJECT_VECTOR:
-				 case IDX_TYPE_SCRIPT_OBJECT_VECTOR_ITERATOR:
+				 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR:
 				 case IDX_TYPE_SCRIPT_OBJECT_OBJECT:
-				 case IDX_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR:
+				 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT:
 				 case IDX_TYPE_SCRIPT_OBJECT_STRING:
-				 case IDX_TYPE_SCRIPT_OBJECT_STRING_ITERATOR:
+				 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING:
 					 if(ptr_var==0) return stk_result;
 					stk_result = {
 						 (intptr_t)ptr_var

@@ -4,7 +4,7 @@
  */
 namespace zetscript{
 
-	class	ScriptObjectVectorIterator;
+	class	ScriptObjectIteratorVector;
 
 	void    						ScriptObjectVectorWrap_push(ScriptObjectVector *sv,StackElement  * stk);
 	void   							ScriptObjectVectorWrap_pop(ScriptObjectVector *sv);
@@ -13,7 +13,7 @@ namespace zetscript{
 	void 							ScriptObjectVectorWrap_eraseAt(ScriptObjectVector *sv, zs_int idx);
 	void 							ScriptObjectVectorWrap_clear(ScriptObjectVector *sv);
 	ScriptObjectString			*	ScriptObjectVectorWrap_join(ScriptObjectVector *sv, zs_int idx_char);
-	ScriptObjectVectorIterator 	* 	ScriptObjectVectorWrap_iter(ScriptObjectVector *so);
+	ScriptObjectIteratorVector 	* 	ScriptObjectVectorWrap_iter(ScriptObjectVector *so);
 	bool 							ScriptObjectVectorWrap_contains(ScriptObjectVector *so, StackElement *stk);
 
 }

@@ -4,11 +4,11 @@
  */
 #pragma once
 
-#define ZS_NEW_OBJECT_VECTOR_ITERATOR(so) (ScriptObjectVectorIterator::newScriptObjectVectorIterator(so))
+#define ZS_NEW_OBJECT_ITERATOR_VECTOR(so) (ScriptObjectIteratorVector::newScriptObjectIteratorVector(so))
 
 namespace zetscript{
 
-	class  ScriptObjectVectorIterator:public ScriptObject{
+	class  ScriptObjectIteratorVector:public ScriptObject{
 
 	public:
 
@@ -16,15 +16,15 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ScriptObjectVectorIterator * newScriptObjectVectorIterator(ScriptObjectVector *vo);
+		static ScriptObjectIteratorVector * newScriptObjectIteratorVector(ScriptObjectVector *vo);
 
 		//
 		// Helpers
 		//
 		//----------------------------------------------
 
-		ScriptObjectVectorIterator();
-		ScriptObjectVectorIterator(ScriptObjectVector *vo);
+		ScriptObjectIteratorVector();
+		ScriptObjectIteratorVector(ScriptObjectVector *vo);
 		void get();
 		void next();
 		bool end();

@@ -9,7 +9,7 @@
 
 //typedef tInfoStatementOp *PInfoStatementOp;
 typedef enum:unsigned short  {
-	SYMBOL_PROPERTY_TYPE						= 0x0001,// ref_ptr holds structure get/set functions
+	SYMBOL_PROPERTY_TYPE						= 0x0001,// symbol is type
 	SYMBOL_PROPERTY_FUNCTION					= 0x0002,// ref_ptr holds script function ptr
 	SYMBOL_PROPERTY_C_OBJECT_REF 				= 0x0004,// ref_ptr holds C object
 	SYMBOL_PROPERTY_STATIC 						= 0x0008,// C function or C++ static functions

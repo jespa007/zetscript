@@ -323,18 +323,18 @@ SET(
 	script/ScriptObject.h
 	script/ScriptObjectClass.h
 	script/ScriptObjectObject.h
-	script/ScriptObjectObjectIterator.h
-	script/ScriptObjectObjectIteratorWrap.h
+	script/ScriptObjectIteratorObject.h
+	script/ScriptObjectIteratorObjectWrap.h
 	script/ScriptObjectObjectWrap.h
 	script/ScriptObjectString.h
-	script/ScriptObjectStringIterator.h
-	script/ScriptObjectStringIteratorWrap.h
+	script/ScriptObjectIteratorString.h
+	script/ScriptObjectIteratorStringWrap.h
 	script/ScriptObjectStringWrap.h
 	script/ScriptObjectVarRef.h
 	script/ScriptObjectVector.h
 	script/ScriptObjectVector.tcc
-	script/ScriptObjectVectorIterator.h
-	script/ScriptObjectVectorIteratorWrap.h
+	script/ScriptObjectIteratorVector.h
+	script/ScriptObjectIteratorVectorWrap.h
 	script/ScriptObjectVectorWrap.h
 	script/zs_script.h
 			

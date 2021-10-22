@@ -31,32 +31,6 @@
 																		eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 																		goto my_goto;
 
-
-/*
-#define EVAL_ERROR_SUB_EXPRESSION(file,line,s,...)			eval_data->error=true;\
-															eval_data->error_file=file;\
-															eval_data->error_line=line;\
-															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-															goto eval_error_sub_expression;\
-
-#define EVAL_ERROR_EXPRESSION(file,line,s,...)				eval_data->error=true;\
-															eval_data->error_file=file;\
-															eval_data->error_line=line;\
-															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-															goto eval_error_expression_delete_left_right_sub_expressions;\
-
-#define EVAL_ERROR_KEYWORD_SWITCH(file,line,s,...)			eval_data->error=true;\
-															eval_data->error_file=file;\
-															eval_data->error_line=line;\
-															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-															goto eval_keyword_switch_error;\
-
-#define EVAL_ERROR_BYTE_CODE_FILE_LINE(file,line,s,...)		eval_data->error=true;\
-															aux_p=NULL;\
-															eval_data->error_str=ZS_LOG_FILE_LINE_STR(file,line)+zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-															goto eval_error_byte_code;\
-*/
-
 #define EVAL_ERROR_BYTE_CODE(s,...)							eval_data->error=true;\
 															aux_p=NULL;\
 															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
@@ -69,14 +43,12 @@
 namespace zetscript{
 
 	typedef enum{
-		EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION=0x1<<1, // it tells is a regular expression in eval or in post operation for
-		EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT=0x1<<2, // do not allow a,b,c=0,0,0
-		EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR=0x1<<3, // break when any assign operator (i.e, =, +=, -=, ...) is found
-		EVAL_EXPRESSION_ON_MAIN_BLOCK=0x1<<4,
-		EVAL_EXPRESSION_FOR_IN_VARIABLES=0x1<<5,
-		EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL=0x1<<6
-		//EVAL_EXPRESSION_NO_OPTIMIZE=0x1<<5
-		//EVAL_EXPRESSION_PROPERTY_SIMPLIFY=0x1<<5 // it will simplify expressions without assignment like that a+1, but keep calling functions but not push return values
+		EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION		=0x1<<1, // it tells is a regular expression in eval or in post operation for
+		EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT		=0x1<<2, // do not allow a,b,c=0,0,0
+		EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR	=0x1<<3, // break when any assign operator (i.e, =, +=, -=, ...) is found
+		EVAL_EXPRESSION_ON_MAIN_BLOCK					=0x1<<4,
+		EVAL_EXPRESSION_FOR_IN_VARIABLES				=0x1<<5,
+		EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL				=0x1<<6
 	}EvalExpressionProperty;
 
 	typedef enum
@@ -97,8 +69,6 @@ namespace zetscript{
 		KEYWORD_CONTINUE,
 		KEYWORD_RETURN,
 		KEYWORD_FUNCTION,
-		//KEYWORD_ANONYMOUS_FUNCTION,
-		//KEYWORD_ATTRIB,
 		KEYWORD_CLASS,
 		KEYWORD_DELETE,
 		KEYWORD_REF,

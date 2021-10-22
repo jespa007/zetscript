@@ -117,6 +117,11 @@ namespace zetscript{
 			 return false;
 		 }
 
+		 // is a type, not register. Note may be we could optimize but generally we are doing ops between registers
+		 if(eval_data->script_class_factory->getScriptClass(i1->symbol.name)!=NULL){
+			return false;
+		}
+
 		 load_value_op2=i1->vm_instruction.value_op2;
 		 load_byte_code=i1->vm_instruction.byte_code;
 
@@ -369,7 +374,7 @@ namespace zetscript{
 		is_i2_K=i2->vm_instruction.isConstant();
 
 		// can be reduce the number of bytes codes down to 2, yeah!
-		/*if(token_operation->operator_type == OPERATOR_INSTANCEOF){
+		if(token_operation->operator_type == OPERATOR_INSTANCEOF){
 			instruction=new EvalInstruction(
 					BYTE_CODE_INSTANCEOF
 					,ZS_IDX_UNDEFINED
@@ -377,8 +382,7 @@ namespace zetscript{
 			);
 			i1=i2; // swap instruction to erase...
 			n_eval_ops=1;
-		}else*/
-		if(is_i1_K && is_i2_K){
+		}else if(is_i1_K && is_i2_K){
 			instruction=eval_expression_perform_KK_operation(eval_data,token_operation,i1,i2);
 			n_eval_ops=2;
 		}else{ // try KR/RK/RR/k or R

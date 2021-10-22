@@ -7,24 +7,24 @@
 
 namespace zetscript{
 
-	ScriptObjectObjectIterator * ScriptObjectObjectIterator::newScriptObjectObjectIterator(ScriptObjectObject *_oo){
-		ScriptObjectObjectIterator *oi= new ScriptObjectObjectIterator(_oo);
+	ScriptObjectIteratorObject * ScriptObjectIteratorObject::newScriptObjectIteratorObject(ScriptObjectObject *_oo){
+		ScriptObjectIteratorObject *oi= new ScriptObjectIteratorObject(_oo);
 		return oi;
 	}
 
-	void ScriptObjectObjectIterator::setup(){
-			idx_script_class=IDX_TYPE_SCRIPT_OBJECT_OBJECT_ITERATOR;
+	void ScriptObjectIteratorObject::setup(){
+			idx_script_class=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT;
 			oo = NULL;
 			vm=NULL;
 			stk_key.setUndefined();
 			stk_key.properties=STK_PROPERTY_SCRIPT_OBJECT;
 	}
 
-	ScriptObjectObjectIterator::ScriptObjectObjectIterator(){
+	ScriptObjectIteratorObject::ScriptObjectIteratorObject(){
 		setup();
 	}
 
-	ScriptObjectObjectIterator::ScriptObjectObjectIterator(ScriptObjectObject *_oo){
+	ScriptObjectIteratorObject::ScriptObjectIteratorObject(ScriptObjectObject *_oo){
 		setup();
 		// setup object
 		this->init(_oo->getZetScript());
@@ -34,11 +34,11 @@ namespace zetscript{
 	}
 
 
-	bool	 ScriptObjectObjectIterator::end(){
+	bool	 ScriptObjectIteratorObject::end(){
 		return it.end();
 	}
 
-	void	 ScriptObjectObjectIterator::get(){
+	void	 ScriptObjectIteratorObject::get(){
 		if(oo==NULL) return;
 		if(it.end()) return;
 
@@ -49,7 +49,7 @@ namespace zetscript{
 	}
 
 
-	void	 ScriptObjectObjectIterator::next(){
+	void	 ScriptObjectIteratorObject::next(){
 		it.next();
 	}
 }

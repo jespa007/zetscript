@@ -6,16 +6,19 @@
 #include 		"ScriptObjectMemberFunction.cpp"
 #include		"ScriptObjectString.cpp"
 #include		"ScriptObjectStringWrap.cpp"
-#include 		"ScriptObjectStringIterator.cpp"
-#include 		"ScriptObjectStringIteratorWrap.cpp"
 #include		"ScriptObjectVector.cpp"
 #include		"ScriptObjectVectorWrap.cpp"
-#include		"ScriptObjectVectorIterator.cpp"
-#include		"ScriptObjectVectorIteratorWrap.cpp"
 #include 		"ScriptObjectObject.cpp"
 #include 		"ScriptObjectObjectWrap.cpp"
-#include 		"ScriptObjectObjectIterator.cpp"
-#include 		"ScriptObjectObjectIteratorWrap.cpp"
+
+#include 		"ScriptObjectIteratorObject.cpp"
+#include 		"ScriptObjectIteratorObjectWrap.cpp"
+#include 		"ScriptObjectIteratorString.cpp"
+#include 		"ScriptObjectIteratorStringWrap.cpp"
+#include		"ScriptObjectIteratorVector.cpp"
+#include		"ScriptObjectIteratorVectorWrap.cpp"
+
+
 #include 		"ScriptObjectClass.cpp"
 #include 		"ScriptObjectVarRef.cpp"
 

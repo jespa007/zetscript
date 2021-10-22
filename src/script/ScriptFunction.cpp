@@ -149,7 +149,8 @@ namespace zetscript{
 				 );
 				break;
 		   case INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
-		   	   iload_info=zs_strutils::format("%s[\"%s\"],%s[\"%s\"]"
+		   	   iload_info=zs_strutils::format(
+		   			 "%s[\"%s\"],%s[\"%s\"]"
 		  			 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 		  			 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 		  			 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->value_op2)
@@ -225,7 +226,6 @@ namespace zetscript{
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
-//					,((instruction-1)->properties & BIT_INSTRUCTION_USE_PUSH_STK)?"(PUSH)":""
 				);
 				break;
 			case BYTE_CODE_JNT:
@@ -242,9 +242,14 @@ namespace zetscript{
 				);
 				break;
 			// just the name of op
-			case BYTE_CODE_INSTANCEOF:
 			case BYTE_CODE_PUSH_SCOPE:
 			case BYTE_CODE_POP_SCOPE:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
+					,idx_instruction
+					,byte_code_to_str(instruction->byte_code)
+				);
+				break;
+			case BYTE_CODE_INSTANCEOF:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
@@ -287,7 +292,6 @@ namespace zetscript{
 						,iload_info.c_str()
 					);
 				}else{
-
 					if(n_ops==0){
 						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 							idx_instruction

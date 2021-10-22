@@ -7,14 +7,14 @@
 
 namespace zetscript{
 
-	ScriptObjectStringIterator * ScriptObjectStringIterator::newScriptObjectStringIterator(ScriptObjectString *_so){
-		ScriptObjectStringIterator *si= new ScriptObjectStringIterator(_so);
+	ScriptObjectIteratorString * ScriptObjectIteratorString::newScriptObjectIteratorString(ScriptObjectString *_so){
+		ScriptObjectIteratorString *si= new ScriptObjectIteratorString(_so);
 		return si;
 	}
 
 
-	void ScriptObjectStringIterator::setup(){
-		idx_script_class=IDX_TYPE_SCRIPT_OBJECT_STRING_ITERATOR;
+	void ScriptObjectIteratorString::setup(){
+		idx_script_class=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING;
 		so = NULL;
 		vm=NULL;
 		idx=0;
@@ -22,18 +22,18 @@ namespace zetscript{
 		stk_value.properties=STK_PROPERTY_ZS_INT;
 	}
 
-	ScriptObjectStringIterator::ScriptObjectStringIterator(){
+	ScriptObjectIteratorString::ScriptObjectIteratorString(){
 		setup();
 	}
 
-	ScriptObjectStringIterator::ScriptObjectStringIterator(ScriptObjectString *_so){
+	ScriptObjectIteratorString::ScriptObjectIteratorString(ScriptObjectString *_so){
 		setup();
 		// setup object
 		this->init(_so->getZetScript());
 		so=_so;
 	}
 
-	void ScriptObjectStringIterator::get(){
+	void ScriptObjectIteratorString::get(){
 		if(so==NULL) return;
 		zs_string *str_ref=(zs_string *)so->value;
 		if(idx < (int)str_ref->length()){
@@ -50,14 +50,14 @@ namespace zetscript{
 		vm_push_stack_element(vm,stk_key);
 	}
 
-	void	 ScriptObjectStringIterator::next(){
+	void	 ScriptObjectIteratorString::next(){
 		if(so==NULL) return;
 		if(idx<(int)so->length()){
 			idx++;
 		}
 	}
 
-	bool	 ScriptObjectStringIterator::end(){
+	bool	 ScriptObjectIteratorString::end(){
 		if(so==NULL) false;
 		return idx >= (int)so->length();
 	}

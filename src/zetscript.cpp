@@ -253,13 +253,13 @@ namespace zetscript{
 			 if(show_system_code == false && (
 					 	sc->class_name == "System"
 					||	sc->class_name == "String"
-					||	sc->class_name == "StringIterator"
+					||	sc->class_name == "IteratorString"
 					||	sc->class_name == "Object"
-					||	sc->class_name == "ObjectIterator"
+					||	sc->class_name == "IteratorObject"
 					||	sc->class_name == "Console"
 					||	sc->class_name == "DateTime"
 					||	sc->class_name == "Vector"
-					||	sc->class_name == "VectorIterator"
+					||	sc->class_name == "IteratorVector"
 					||	sc->class_name == "Json"
 				)){
 				 show_class=false;
