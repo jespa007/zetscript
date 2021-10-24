@@ -58,7 +58,7 @@ namespace zetscript{
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 			instruction_info.ptr_str_symbol_name=eval_instruction->instruction_source_info.ptr_str_symbol_name;
 
-			sf->instruction_source_info.items[i]=(zs_int)(new InstructionSourceInfo(instruction_info));
+			sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(instruction_info)));
 
 			start_ptr++;
 
