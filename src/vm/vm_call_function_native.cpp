@@ -59,7 +59,7 @@ namespace zetscript{
 		zs_int  fun_ptr = c_function->ref_native_function_ptr;
 		zs_string str_aux;
 
-		if((c_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
+		if((c_function->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){
 			VM_SET_USER_ERROR(vm,"Internal error: Function not native");
 			return;
 		}
@@ -77,17 +77,17 @@ namespace zetscript{
 		// special case that this is passed in static ref function
 		if(this_object!=NULL){
 			if(
-				(c_function->symbol.properties&SYMBOL_PROPERTY_MEMBER_FUNCTION)
+				(c_function->symbol->properties&SYMBOL_PROPERTY_MEMBER_FUNCTION)
 			){
 				idx_arg_start = 1;
 				n_args++;
 				converted_param[0]=(zs_int)this_object->getNativeObject();
 			}else if(this_object->idx_script_class != IDX_SCRIPT_CLASS_MAIN){
 				VM_ERROR_AND_RET("Function \"%s\" is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e \"%s::%s\")\""
-						,c_function->symbol.name.c_str()
+						,c_function->symbol->name.c_str()
 						,this_object->getScriptClass()->class_name.c_str()
-						,c_function->symbol.name.c_str()
-						,c_function->symbol.name.c_str()
+						,c_function->symbol->name.c_str()
+						,c_function->symbol->name.c_str()
 						);
 			}
 		}
@@ -96,7 +96,7 @@ namespace zetscript{
 			VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
 		}
 
-		if((c_function->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
+		if((c_function->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF) {
 			VM_ERROR_AND_RET("Function is not registered as C");
 		}
 
@@ -105,7 +105,10 @@ namespace zetscript{
 		}
 
 		if((char)c_function->params_len != (n_args-this_param)){
-			VM_ERROR_AND_RET("Native function \"%s\" expects %i arguments but it passed %i arguments",c_function->symbol.name.c_str(),c_function->params_len,n_args-this_param);
+			VM_ERROR_AND_RET("Native function \"%s\" expects %i arguments but it passed %i arguments"
+					,c_function->symbol->name.c_str()
+					,c_function->params_len
+					,n_args-this_param);
 		}
 
 		if(c_function->params_len > MAX_NATIVE_FUNCTION_ARGS){
@@ -124,7 +127,7 @@ namespace zetscript{
 					,data->vm_error_str
 			)){
 				VM_ERROR_AND_RET("Function \"%s\", param %i: %s",
-					c_function->symbol.name.c_str(),
+					c_function->symbol->name.c_str(),
 					i,
 					data->vm_error_str.c_str()
 				);

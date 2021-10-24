@@ -58,6 +58,7 @@ namespace zetscript{
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 			instruction_info.ptr_str_symbol_name=eval_instruction->instruction_source_info.ptr_str_symbol_name;
 
+			// add instruction source information...
 			sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(instruction_info)));
 
 			start_ptr++;
@@ -69,11 +70,11 @@ namespace zetscript{
 		// 4. add load/store/reset stack
 		idx_position=start_ptr-new_instructions;
 		*start_ptr++=Instruction(BYTE_CODE_PUSH_STK_MEMBER_VAR,ZS_IDX_UNDEFINED,symbol_member_var->idx_position);
-		sf->instruction_source_info.items[idx_position]=(zs_int)(new InstructionSourceInfo(
+		sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(
 			eval_data->current_parsing_file
 			,symbol_member_var->line
 			,get_mapped_name(eval_data,symbol_member_var->name)
-		));
+		)));
 
 
 		*start_ptr++=Instruction(BYTE_CODE_STORE);
@@ -482,6 +483,10 @@ error_eval_keyword_var:
 						,&sc
 						,function_name
 				   );
+
+				   if(sc!=NULL){ // scope is the class
+					   scope_info=sc->class_scope;
+				   }
 				}
 
 				// not member function, so is normal function ...

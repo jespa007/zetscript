@@ -37,7 +37,7 @@ namespace zetscript{
 		instructions=NULL;
 		instructions_len = 0;
 
-		symbol=*_symbol;
+		symbol=_symbol;
 
 		// local symbols for class or function...
 		local_variables=new zs_vector();
@@ -69,7 +69,7 @@ namespace zetscript{
 		zs_vector * m_vf = sfo->local_variables;
 		ZetScript *zs=sfo->zs;
 
-		if(sfo->symbol.properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
+		if(sfo->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
 		}
 
@@ -83,9 +83,9 @@ namespace zetscript{
 		zs_string iload_info="";
 
 		if(sc==NULL){ // no class is a function on a global scope
-			symbol_ref=sfo->symbol.name;
+			symbol_ref=sfo->symbol->name;
 		}else{ // is a class
-			symbol_ref=sfo->symbol.name;//+zs_string("::")+zs_string("????");
+			symbol_ref=sfo->symbol->name;//+zs_string("::")+zs_string("????");
 			class_str=sc->class_name+"::";
 		}
 
@@ -502,8 +502,8 @@ namespace zetscript{
 
 		// register num symbols only for c symbols...
 		if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF != 0) && symbol_found!=NULL){
-			((ScriptFunction *)symbol_found->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
-			((ScriptFunction *)symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
+			((ScriptFunction *)symbol_found->ref_ptr)->symbol->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
+			((ScriptFunction *)symbol->ref_ptr)->symbol->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
 		}
 
 		return symbol;

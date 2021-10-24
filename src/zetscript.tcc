@@ -935,7 +935,7 @@ namespace zetscript{
 				for(unsigned i=0; i < access_var.count-1; i++){
 					zs_string *symbol_to_find=(zs_string *)access_var.items[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
-						zs_vector *list_functions=main_function->symbol.scope->symbol_functions;
+						zs_vector *list_functions=main_function->symbol->scope->symbol_functions;
 						for(unsigned j = 0; j < list_functions->count && calling_obj==NULL; j++){
 							Symbol * registered_symbol=(Symbol *)list_functions->items[j];
 							if(registered_symbol->name==*symbol_to_find
@@ -1012,12 +1012,12 @@ namespace zetscript{
 
 			}else{ // some function in main function
 				zs_string *symbol_to_find=(zs_string *)access_var.items[0];
-				zs_vector *list_functions=main_function->symbol.scope->symbol_functions;
+				zs_vector *list_functions=main_function->symbol->scope->symbol_functions;
 				for(unsigned i = 0; i < list_functions->count && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->items[i];
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
-					if(		aux_fun_obj->symbol.name  == *symbol_to_find
-					  && aux_fun_obj->symbol.scope == MAIN_SCOPE(this)){
+					if(		aux_fun_obj->symbol->name  == *symbol_to_find
+					  && aux_fun_obj->symbol->scope == MAIN_SCOPE(this)){
 						fun_obj=aux_fun_obj;
 					}
 

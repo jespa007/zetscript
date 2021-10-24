@@ -531,14 +531,15 @@ namespace zetscript{
 		if(function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
 			Symbol *symbol_repeat=NULL;
 			if((symbol_repeat=getSymbol(function_symbol->name,NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
-				((ScriptFunction *)symbol_repeat->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
-				((ScriptFunction *)function_symbol->ref_ptr)->symbol.properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
+				symbol_repeat->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
+				function_symbol->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
 			}
 		}
 
 		// constructor...
 		if(function_name == this->class_name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
 			idx_function_member_constructor = function_symbol->idx_position;
+			function_symbol->properties|=SYMBOL_PROPERTY_CONSTRUCTOR;
 		}
 		else{
 			// check metamethod function...

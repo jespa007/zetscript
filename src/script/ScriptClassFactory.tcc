@@ -233,14 +233,14 @@ namespace zetscript{
 
 
 				this_class->registerNativeMemberFunction(
-					script_function->symbol.name,
+					script_function->symbol->name,
 					&params,
 					params_len,
 					script_function->idx_return_type,
 					script_function->ref_native_function_ptr, // it contains script function pointer
-					script_function->symbol.properties, //derivated_symbol_info_properties
-					script_function->symbol.file,
-					script_function->symbol.line
+					script_function->symbol->properties, //derivated_symbol_info_properties
+					script_function->symbol->file,
+					script_function->symbol->line
 				);
 			}
 		}
@@ -312,14 +312,14 @@ namespace zetscript{
 					size_t params_len=it->src->params_len;
 
 					symbol_function=this_class->registerNativeMemberFunction(
-							sf_setter->symbol.name,
+							sf_setter->symbol->name,
 							&params,
 							params_len,
 							sf_setter->idx_return_type,
 							sf_setter->ref_native_function_ptr,
-							sf_setter->symbol.properties,
-							sf_setter->symbol.file,
-							sf_setter->symbol.line
+							sf_setter->symbol->properties,
+							sf_setter->symbol->file,
+							sf_setter->symbol->line
 					);
 
 					ma_dst->addSetter((ScriptFunction *)symbol_function->ref_ptr);

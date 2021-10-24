@@ -33,7 +33,7 @@ namespace zetscript{
 		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT;
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result=zs_string("fun@")+((ScriptFunction *)stk->value)->symbol.name;
+			result=zs_string("fun@")+((ScriptFunction *)stk->value)->symbol->name;
 		else if(STK_VALUE_IS_TYPE(stk)) // is a class
 			result=zs_string("type@")+_zs->getScriptClassFactory()->getScriptClassName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_ATTRIBUTE(stk)){
@@ -41,7 +41,7 @@ namespace zetscript{
 			result="_mattr@"+ma->script_class->class_name+"::"+ma->attribute_name;
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			ScriptFunction *sf=((ScriptFunction *)stk->value);
-			result="_mfun@"+sf->symbol.scope->script_class->class_name+"@"+sf->symbol.name;
+			result="_mfun@"+sf->symbol->scope->script_class->class_name+"@"+sf->symbol->name;
 		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
@@ -76,9 +76,9 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_FUNCTION(stk)){
 			if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 				ScriptFunction *sf=(ScriptFunction *)stk->value;
-				result= zs_string("FunctionMember")+"@"+"UnknowClass(TODO)"+"::"+sf->symbol.name;
+				result= zs_string("FunctionMember")+"@"+"UnknowClass(TODO)"+"::"+sf->symbol->name;
 			}else{ // normal function
-				result= zs_string("Function")+"@"+((ScriptFunction *)stk->value)->symbol.name;
+				result= zs_string("Function")+"@"+((ScriptFunction *)stk->value)->symbol->name;
 			}
 		}else if(STK_VALUE_IS_TYPE(stk)){
 			result= zs_string("type")+"@"+_zs->getScriptClassFactory()->getScriptClassName(stk->value);

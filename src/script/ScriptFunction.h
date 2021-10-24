@@ -22,7 +22,7 @@ namespace zetscript{
 	class ScriptFunction {
 	public:
 
-		Symbol 	  			symbol;	 		// function registered by scope
+		Symbol 	  			*symbol;	 		// function registered by scope
 		int					idx_class; 		// which class belongs to...
 		short 				idx_script_function;		// idx_script_function from factory
 		int 				idx_return_type; 			// idx return type
