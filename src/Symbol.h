@@ -14,11 +14,8 @@ typedef enum:unsigned short  {
 	SYMBOL_PROPERTY_C_OBJECT_REF 				= 0x0004,// ref_ptr holds C object
 	SYMBOL_PROPERTY_STATIC 						= 0x0008,// C function or C++ static functions
 	SYMBOL_PROPERTY_CONST 						= 0x0010,// This symbol is not assignable
-	SYMBOL_PROPERTY_MEMBER_FUNCTION				= 0x0020,// Member function
-	SYMBOL_PROPERTY_MEMBER_ATTRIBUTE			= 0x0040,// Member attrib
-	SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME			= 0x0080,// Deduce runtime functions becuse is C and it has functions with same name but different signature
-	SYMBOL_PROPERTY_ARG_BY_REF					= 0x0100,// Is a reference
-	SYMBOL_PROPERTY_CONSTRUCTOR					= 0x0200 // Is a reference
+	SYMBOL_PROPERTY_MEMBER_ATTRIBUTE			= 0x0020,// Member attrib
+	SYMBOL_PROPERTY_ARG_BY_REF					= 0x0040,// Is a reference
 }SymbolProperty;
 
 #define IS_SYMBOL_VAR_MEMBER(s) ((s)->properties == 0)

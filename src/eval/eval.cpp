@@ -319,12 +319,12 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Reached max scopes (Max: %i)",MAX_INNER_SCOPES_FUNCTION);
 			}
 
-			new_scope_info = eval_new_scope(eval_data,scope_info,is_function); // special case... ast is created later ...
+			new_scope_info = eval_new_scope(eval_data,scope_info,is_function);
 
 			if(is_function){
 
 				// set scope to the function
-				sf->symbol->scope=new_scope_info;
+				sf->function_scope=new_scope_info;
 
 				// register args as part of stack...
 				for(unsigned i=0; i < params_len; i++){
@@ -336,7 +336,6 @@ namespace zetscript{
 							,params[i].name
 							,params[i].properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF?SYMBOL_PROPERTY_ARG_BY_REF:0
 						);
-
 
 					}catch(std::exception & ex){
 						eval_data->error=true;

@@ -59,7 +59,7 @@ namespace zetscript{
 				,&params
 				,params_len
 				,(zs_int)ptr_function
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				,registered_file
 				,registered_line
 		);
@@ -95,7 +95,7 @@ namespace zetscript{
 				 ,params_len
 				,idx_return_type
 				,(zs_int)_ptr_function
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				,_registered_file
 				,_registered_line
 		);
@@ -130,7 +130,7 @@ namespace zetscript{
 				 ,params_len
 				,idx_return_type
 				,(zs_int)_ptr_function
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				,_registered_file
 				,_registered_line
 		);
@@ -165,7 +165,7 @@ namespace zetscript{
 				 ,params_len
 				,idx_return_type
 				,(zs_int)_ptr_function
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				,_registered_file
 				,_registered_line
 		);
@@ -200,7 +200,7 @@ namespace zetscript{
 				 ,params_len
 				,idx_return_type
 				,(zs_int)_ptr_function
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				,_registered_file
 				,_registered_line
 		);
@@ -235,7 +235,7 @@ namespace zetscript{
 				 ,params_len
 				,idx_return_type
 				,(zs_int)_ptr_function
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_MEMBER_FUNCTION
+				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				,_registered_file
 				,_registered_line
 		);

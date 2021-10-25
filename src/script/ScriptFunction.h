@@ -4,6 +4,14 @@
  */
 #pragma once
 
+typedef enum{
+	FUNCTION_PROPERTY_C_OBJECT_REF			= 0x0001, // function is C
+	FUNCTION_PROPERTY_MEMBER_FUNCTION		= 0x0002,// Member function
+	FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME		= 0x0004,// Deduce runtime functions becuse is C and it has functions with same name but different signature
+	FUNCTION_PROPERTY_CONSTRUCTOR			= 0x0008 // Is a reference
+}FunctionProperty;
+
+
 #define SFI_GET_FILE_LINE(__FUNC__,__INS__) 	((zetscript::ScriptFunction *)__FUNC__)->getInstructionSourceFile(__INS__), ((zetscript::ScriptFunction *)__FUNC__)->getInstructionLine(__INS__)
 #define SFI_GET_FILE(__FUNC__,__INS__) 			((zetscript::ScriptFunction *)__FUNC__)->getInstructionSourceFile(__INS__)
 #define SFI_GET_LINE(__FUNC__,__INS__)			((zetscript::ScriptFunction *)__FUNC__)->getInstructionLine(__INS__)
@@ -22,7 +30,11 @@ namespace zetscript{
 	class ScriptFunction {
 	public:
 
-		Symbol 	  			*symbol;	 		// function registered by scope
+		zs_string			function_name;
+		Scope				*function_scope;
+		uint16_t			properties;
+
+		//Symbol 	  			symbol;	 		// function registered by scope
 		int					idx_class; 		// which class belongs to...
 		short 				idx_script_function;		// idx_script_function from factory
 		int 				idx_return_type; 			// idx return type
@@ -38,7 +50,6 @@ namespace zetscript{
 
 		// local symbols for class or function...
 		zs_vector   		*local_variables; // registered variable symbols
-		//zs_vector   		*symbol_registered_functions; // registered variable symbols
 
 		ScriptFunction(
 				ZetScript *_zs
