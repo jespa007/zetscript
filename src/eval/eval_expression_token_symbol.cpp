@@ -442,7 +442,7 @@ namespace zetscript{
 					if(it_accessor_token==0 && token_node_symbol->value == SYMBOL_VALUE_THIS){ // check first symbol at first...
 						ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_class);
 
-						if(eval_data->current_function->script_function->symbol->properties & SYMBOL_PROPERTY_STATIC){
+						if(eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_STATIC){
 							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"\"this\" cannot be used in static functions");
 						}
 

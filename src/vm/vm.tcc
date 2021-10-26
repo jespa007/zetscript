@@ -111,7 +111,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 {\
 StackElement *stk_def_afun_start=data->stk_vm_current;\
 int n_returned_args_afun=0;\
-if(((ScriptFunction *)sf)->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){\
+if(((ScriptFunction *)sf)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
 	vm_call_function_native(\
 			vm\
 			,so\
@@ -396,7 +396,7 @@ namespace zetscript{
 		Symbol *symbol = (Symbol *)(((zs_int *)stk_elements_builtin_ptr)[i]);\
 		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
 			irfs = (ScriptFunction *)symbol->ref_ptr;\
-			if(symbol->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION ){\
+			if(irfs->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION ){\
 				this_as_first_parameter=1;\
 			}\
 		}\
@@ -433,8 +433,8 @@ namespace zetscript{
 
 		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
 
-		void *stk_elements_builtin_ptr= data->main_function_object->symbol->scope->symbol_functions->items;// vector of symbols
-		int stk_elements_builtin_len=  data->main_function_object->symbol->scope->symbol_functions->count;// vector of symbols
+		void *stk_elements_builtin_ptr= data->main_function_object->function_scope->symbol_functions->items;// vector of symbols
+		int stk_elements_builtin_len=  data->main_function_object->function_scope->symbol_functions->count;// vector of symbols
 
 		if(class_obj != NULL){
 			stk_elements_builtin_ptr=class_obj->class_scope->symbol_functions->items;
@@ -448,14 +448,14 @@ namespace zetscript{
 
 			EXTRACT_FUNCTION_INFO
 
-			aux_string=irfs->symbol->name;
+			aux_string=irfs->function_name;
 
 			bool symbol_equals=
 								aux_string == symbol_to_find
 								|| (is_set_attrib_metamethod && zs_strutils::starts_with(aux_string,"_set@"));
 
 			if((symbol_equals && ((int)irfs->params_len == (n_args+this_as_first_parameter)))){
-				if((irfs->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
+				if((irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;
 					int arg_idx_type=-1;
@@ -606,7 +606,7 @@ namespace zetscript{
 				EXTRACT_FUNCTION_INFO
 
 
-				if(irfs->symbol->name == symbol_to_find){
+				if(irfs->function_name == symbol_to_find){
 
 					if(n_candidates == 0){
 						str_candidates.append("\tPossible candidates are:\n\n");
@@ -620,7 +620,7 @@ namespace zetscript{
 					}
 
 					// function name
-					str_candidates.append(irfs->symbol->name.c_str());
+					str_candidates.append(irfs->function_name.c_str());
 					str_candidates.append("(");
 
 
@@ -629,7 +629,7 @@ namespace zetscript{
 							str_candidates.append(",");
 						}
 
-						if(irfs->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+						if(irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 							str_candidates+=zs_rtti::demangle(
 								GET_IDX_2_CLASS_C_STR(data,irfs->params[a].idx_type)
 							);
@@ -915,7 +915,9 @@ namespace zetscript{
 					goto apply_metamethod_error;
 				}
 
-				if((symbol->properties & (SYMBOL_PROPERTY_FUNCTION | SYMBOL_PROPERTY_MEMBER_FUNCTION)) == 0){
+				ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
+
+				if((sf->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) == 0){
 					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
 					goto apply_metamethod_error;
 				}
@@ -925,7 +927,7 @@ namespace zetscript{
 			}
 		}
 
-		if((ptr_function_found->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
+		if((ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 			// we have to share any object to avoid be removed on function exit
 			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				if(vm_share_pointer(vm,(ScriptObject *)stk_result_op1->value)==false){
@@ -948,7 +950,7 @@ namespace zetscript{
 		}else{ //
 			vm_call_function_native(
 					vm
-					,ptr_function_found->symbol->properties & SYMBOL_PROPERTY_STATIC ? NULL:script_object
+					,ptr_function_found->properties & FUNCTION_PROPERTY_STATIC ? NULL:script_object
 					,ptr_function_found
 					,stk_args
 					,n_stk_args
@@ -958,7 +960,7 @@ namespace zetscript{
 			);
 		}
 
-		stk_return=(stk_args+ptr_function_found->symbol->scope->symbol_variables->count );
+		stk_return=(stk_args+ptr_function_found->function_scope->symbol_variables->count );
 		n_returned_arguments_from_function=data->stk_vm_current-stk_return;
 
 
@@ -1073,69 +1075,66 @@ apply_metamethod_error:
 		ScriptObject *obj=(ScriptObject *)stk_result_op1->value;
 		ScriptClass *sc=obj->getScriptClass();
 
-		symbol_iter=sc->getSymbol("iter");
+		symbol_iter=sc->getSymbolMemberFunction("iter");
 
 		if(symbol_iter != NULL){
 
-			if(symbol_iter->properties & (SYMBOL_PROPERTY_FUNCTION | SYMBOL_PROPERTY_MEMBER_FUNCTION)){
-				ScriptFunction *so_function=(ScriptFunction *)symbol_iter->ref_ptr;
-				ScriptObject *so_object=obj;
-				//StackElement *stk_start=data->stk_vm_current;
-				int n_args=0;
+			ScriptFunction *so_function=(ScriptFunction *)symbol_iter->ref_ptr;
+			ScriptObject *so_object=obj;
 
-				if(symbol_iter->properties & SYMBOL_PROPERTY_STATIC){
-					n_args=1;
+			int n_args=0;
 
-					// only stores and not increment (++ ) in order to start the stk arg
-					*data->stk_vm_current={(intptr_t)so_object,STK_PROPERTY_SCRIPT_OBJECT};
-					so_object=NULL;
-				}
+			if(symbol_iter->properties & SYMBOL_PROPERTY_STATIC){
+				n_args=1;
 
-				VM_INNER_CALL(
-						so_object
-						,so_function
-						,"iter"
-						,true
-						,n_args
-						,false
-				);
-
-				if(data->vm_error){
-					return;
-				}
-
-				// ok stk_vm_current holds the iter object
-				if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
-					VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'"
-							,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str());
-					return;
-				}
-
-				obj=(ScriptObject *)data->stk_vm_current->value;
-
-				// check all functions...
-				if((obj->getProperty("get"))==NULL){
-					VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getClassName().c_str());
-					return;
-				}
-
-				if((obj->getProperty("_post_inc"))==NULL){
-					VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getClassName().c_str());
-					return;
-				}
-
-				if((obj->getProperty("end"))==NULL){
-					VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getClassName().c_str());
-					return;
-				}
-
-				// everything allright store and share pointer
-				*stk_result_op2=*data->stk_vm_current;
-				//vm_share_pointer(vm,obj);
-
-			}else{
-				VM_ERROR("Symbol 'iter' is not a function",obj->getClassName().c_str());
+				// only stores and not increment (++ ) in order to start the stk arg
+				*data->stk_vm_current={(intptr_t)so_object,STK_PROPERTY_SCRIPT_OBJECT};
+				so_object=NULL;
 			}
+
+			VM_INNER_CALL(
+					so_object
+					,so_function
+					,"iter"
+					,true
+					,n_args
+					,false
+			);
+
+			if(data->vm_error){
+				return;
+			}
+
+			// ok stk_vm_current holds the iter object
+			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
+				VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'"
+						,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str());
+				return;
+			}
+
+			obj=(ScriptObject *)data->stk_vm_current->value;
+
+			// check all functions...
+			if((obj->getProperty("get"))==NULL){
+				VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getClassName().c_str());
+				return;
+			}
+
+			if((obj->getProperty("_post_inc"))==NULL){
+				VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getClassName().c_str());
+				return;
+			}
+
+			if((obj->getProperty("end"))==NULL){
+				VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getClassName().c_str());
+				return;
+			}
+
+			// everything allright store and share pointer
+			*stk_result_op2=*data->stk_vm_current;
+			//vm_share_pointer(vm,obj);
+
+
 		}
 		else{
 			VM_ERROR("Object not implements 'iter' ",obj->getClassName().c_str());

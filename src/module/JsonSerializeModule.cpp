@@ -72,7 +72,7 @@ namespace zetscript{
 
 								getter_found=true;
 
-								if((ptr_function->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
+								if((ptr_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 
 									stk_getter_result=VM_EXECUTE(
 										zs->getVirtualMachine()

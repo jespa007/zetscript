@@ -6,9 +6,10 @@
 
 typedef enum{
 	FUNCTION_PROPERTY_C_OBJECT_REF			= 0x0001, // function is C
-	FUNCTION_PROPERTY_MEMBER_FUNCTION		= 0x0002,// Member function
-	FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME		= 0x0004,// Deduce runtime functions becuse is C and it has functions with same name but different signature
-	FUNCTION_PROPERTY_CONSTRUCTOR			= 0x0008 // Is a reference
+	FUNCTION_PROPERTY_STATIC				= 0x0002,
+	FUNCTION_PROPERTY_MEMBER_FUNCTION		= 0x0004,// Member function
+	FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME		= 0x0008,// Deduce runtime functions becuse is C and it has functions with same name but different signature
+	FUNCTION_PROPERTY_CONSTRUCTOR			= 0x0010 // Is a reference
 }FunctionProperty;
 
 
@@ -34,10 +35,11 @@ namespace zetscript{
 		Scope				*function_scope;
 		uint16_t			properties;
 
-		//Symbol 	  			symbol;	 		// function registered by scope
-		int					idx_class; 		// which class belongs to...
-		short 				idx_script_function;		// idx_script_function from factory
-		int 				idx_return_type; 			// idx return type
+		//Symbol 	  			symbol;	 			// function registered by scope
+		short 				idx_script_function;	// idx_script_function from factory
+		int					idx_class; 				// which class belongs to...
+		int					idx_position;			// idx position in array
+		int 				idx_return_type; 		// idx return type
 		zs_int 				ref_native_function_ptr;
 		ScriptFunctionParam	*params;
 		size_t 				params_len;
@@ -53,14 +55,16 @@ namespace zetscript{
 
 		ScriptFunction(
 				ZetScript *_zs
+				, Scope *_scope_function
+				,int _idx_script_function
 				,int _idx_class
-				,short _idx_script_function
+				,int _idx_position
+				,const zs_string & function_name
 				, ScriptFunctionParam **_params
 				,size_t _params_len
-
 				,int  idx_return_type
-				, Symbol *symbol
 				, zs_int _ref_native_function_ptr
+				, uint16_t _properties
 		);
 
 		//-----------

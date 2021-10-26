@@ -18,7 +18,7 @@ typedef enum:unsigned short  {
 	SYMBOL_PROPERTY_ARG_BY_REF					= 0x0040,// Is a reference
 }SymbolProperty;
 
-#define IS_SYMBOL_VAR_MEMBER(s) ((s)->properties == 0)
+#define IS_SYMBOL_VAR_MEMBER(s) 		((s)->properties == 0)
 
 namespace zetscript{
 

@@ -23,8 +23,9 @@ namespace zetscript{
 			, const char * file
 			, short line
 			//--- Function data
-			, int idx_class
-			, const zs_string & function_name
+			, int _idx_class
+			, int _idx_position
+			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
 			,size_t _params_len
 			, int idx_return_type
@@ -37,7 +38,7 @@ namespace zetscript{
 
 
 		// try to not check if function name is constructor
-		if((properties & SYMBOL_PROPERTY_MEMBER_FUNCTION) && (function_name == zs->getScriptClassFactory()->getScriptClassName(idx_class))){
+		if((properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && (_function_name == zs->getScriptClassFactory()->getScriptClassName(_idx_class))){
 			properties_register_symbol|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 		}
 
@@ -45,25 +46,26 @@ namespace zetscript{
 		symbol=scope->registerSymbolFunction(
 				file
 				,line
-				,function_name
+				,_function_name
 				,_params_len
-				,properties_register_symbol
+				,SYMBOL_PROPERTY_FUNCTION
 		);
 
 		short idx_script_function = script_functions->count;
 
-		// sets local function information...
-		symbol->properties = properties | SYMBOL_PROPERTY_FUNCTION;
 
 		ScriptFunction *script_function = new ScriptFunction(
 				zs
-				,idx_class
+				,scope
 				,idx_script_function
+				,_idx_class
+				,_idx_position
+				,_function_name
 				,_params
 				,_params_len
 				,idx_return_type
-				,symbol
 				,ref_native_function_ptr
+				,properties
 		);
 
 		symbol->ref_ptr = (zs_int)script_function;		  // ptr function

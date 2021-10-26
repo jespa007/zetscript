@@ -20,24 +20,29 @@ namespace zetscript{
 
 	ScriptFunction::ScriptFunction(
 			ZetScript * _zs
+			,Scope *_scope_function
 			,int _idx_class
 			,short _idx_script_function
+			,int _idx_position
+			,const zs_string & _function_name
 			, ScriptFunctionParam **_params
 			, size_t _params_len
 			,int _idx_return_type
-			,Symbol *_symbol
 			, zs_int _ref_native_function_ptr
+			,uitn16_t _properties
 		) {
 		// function data...
 		idx_class=_idx_class;
+		function_name=_function_name;
 		idx_script_function=_idx_script_function;
+		idx_position = _idx_position
 		idx_return_type = _idx_return_type;
 		ref_native_function_ptr=_ref_native_function_ptr;
+		properties = _properties;
 
 		instructions=NULL;
 		instructions_len = 0;
 
-		symbol=_symbol;
 
 		// local symbols for class or function...
 		local_variables=new zs_vector();
@@ -69,7 +74,7 @@ namespace zetscript{
 		zs_vector * m_vf = sfo->local_variables;
 		ZetScript *zs=sfo->zs;
 
-		if(sfo->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
+		if(sfo->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
 		}
 
@@ -83,9 +88,9 @@ namespace zetscript{
 		zs_string iload_info="";
 
 		if(sc==NULL){ // no class is a function on a global scope
-			symbol_ref=sfo->symbol->name;
+			symbol_ref=sfo->function_name;
 		}else{ // is a class
-			symbol_ref=sfo->symbol->name;//+zs_string("::")+zs_string("????");
+			symbol_ref=sfo->function_name;//+zs_string("::")+zs_string("????");
 			class_str=sc->class_name+"::";
 		}
 

@@ -30,7 +30,7 @@ namespace zetscript{
 				, short line
 				//--- Function data
 			    , int idx_class
-				//, short idx_local_function
+				, int idx_position
 				, const zs_string & function_name
 				, ScriptFunctionParam **_params
 				,size_t _params_len

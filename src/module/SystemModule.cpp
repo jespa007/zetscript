@@ -82,19 +82,22 @@ namespace zetscript{
 
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
-		symbol_sf=new Symbol(
-				);
+		/*symbol_sf=new Symbol(
+				);*/
 
-		symbol_sf->name=zs_strutils::format("eval@",n_eval_function++);
+		zs_string  function_name=zs_strutils::format("eval@",n_eval_function++);
 
 		 sf=new	ScriptFunction(
 				zs
+				,NULL
 				,IDX_SCRIPT_CLASS_MAIN
 				,ZS_IDX_EVAL_FUNCTION
+				,-1
+				,function_name
 				,&function_params
 				,function_params_len
 				,ZS_IDX_UNDEFINED
-				,symbol_sf
+				,0
 				,0
 		);
 

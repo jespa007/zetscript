@@ -149,7 +149,7 @@ namespace zetscript{
 			const char *what="is already defined";
 			if((symbol_attrib->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE)==0){
 
-				if(symbol_attrib->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION){
+				if(symbol_attrib->properties & SYMBOL_PROPERTY_FUNCTION){
 					what="it conflicts with member function";
 				}else{
 					what="it conflicts with member variable";
@@ -486,7 +486,7 @@ namespace zetscript{
 		 const zs_string & function_name
 		 , ScriptFunctionParam **params
 		 ,size_t params_len
-		, unsigned short symbol_properties
+		, unsigned short _function_properties
 		, int idx_return_type
 		,zs_int ref_ptr
 		, const char * file
@@ -495,7 +495,7 @@ namespace zetscript{
 
 	){
 
-		if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
+		if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
 
 			if(getSymbol(function_name,(char)params_len,false) != NULL){ // we only search repeat symbols on this class ...
 				Symbol *existing_symbol;
@@ -524,22 +524,26 @@ namespace zetscript{
 				,params_len
 				,idx_return_type
 				,ref_ptr // c function
-				,symbol_properties|SYMBOL_PROPERTY_FUNCTION
+				,_function_properties
 		);
 
+		ScriptFunction *sf_current=(ScriptFunction *)function_symbol->ref_ptr;
+
 		// register num function symbols only for c symbols...
-		if(function_symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+		if(function_symbol->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 			Symbol *symbol_repeat=NULL;
-			if((symbol_repeat=getSymbol(function_symbol->name,NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
-				symbol_repeat->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
-				function_symbol->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
+			if((symbol_repeat=this->getSymbolMemberFunction(function_symbol->name,NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
+				ScriptFunction *sf_repeat=(ScriptFunction *)symbol_repeat->ref_ptr;
+
+				sf_repeat->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME;
+				sf_current->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME;
 			}
 		}
 
 		// constructor...
 		if(function_name == this->class_name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
 			idx_function_member_constructor = function_symbol->idx_position;
-			function_symbol->properties|=SYMBOL_PROPERTY_CONSTRUCTOR;
+			sf_current->properties|=FUNCTION_PROPERTY_CONSTRUCTOR;
 		}
 		else{
 			// check metamethod function...
@@ -554,13 +558,13 @@ namespace zetscript{
 					Symbol *symbol_result=NULL;
 
 					// can be one parameter or 0 params...
-					if(byte_code_metamethod_should_be_static(op) && ((symbol_properties & SYMBOL_PROPERTY_STATIC)==0)){
+					if(byte_code_metamethod_should_be_static(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){
 						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as static instead of member"
 							,class_name.c_str()
 							,function_name.c_str()
 						);
 						return NULL;
-					}else if((byte_code_metamethod_should_be_static(op)==false) && ((symbol_properties & SYMBOL_PROPERTY_STATIC))){
+					}else if((byte_code_metamethod_should_be_static(op)==false) && ((_function_properties & FUNCTION_PROPERTY_STATIC))){
 						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as member instead of static"
 							,class_name.c_str()
 							,function_name.c_str()
@@ -569,7 +573,7 @@ namespace zetscript{
 					}
 
 					// native
-					if((symbol_properties & SYMBOL_PROPERTY_C_OBJECT_REF)){ // if-native
+					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
 						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(idx_return_type == IDX_TYPE_STRING_PTR_C || idx_return_type == IDX_TYPE_STRING_C) ){
 							THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
 								,class_name.c_str()
@@ -578,14 +582,14 @@ namespace zetscript{
 							return NULL;
 						}
 
-						if(symbol_properties & SYMBOL_PROPERTY_MEMBER_FUNCTION){
+						if(_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION){
 							this_arg=1;
 						}
 					}
 
 					if(function_symbol->n_params< (n_args_static_metamethod+this_arg)){ // non-static functions pass this object as first parameter
 						THROW_RUNTIME_ERROR("%s metamethod '%s' (aka '%s') should have at least %i parameter/s"
-							,(symbol_properties & SYMBOL_PROPERTY_MEMBER_FUNCTION)?"Member":"Static"
+							,(_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)?"Member":"Static"
 							,str_symbol_metamethod
 							,byte_code_metamethod_operator_str
 							,n_args_static_metamethod

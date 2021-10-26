@@ -573,15 +573,15 @@ namespace zetscript{
 	short *eval_create_lookup_sorted_table_local_variables(EvalData *eval_data){
 
 		ScriptFunction *sf = eval_data->current_function->script_function;
-		Scope *sc=sf->symbol->scope;
+		Scope *sc=sf->function_scope;
 
 		int n_local_variable=0;
-		if(eval_all_local_variables_in_scopes_already_sorted(sf->symbol->scope,n_local_variable) == true){
+		if(eval_all_local_variables_in_scopes_already_sorted(sf->function_scope,n_local_variable) == true){
 			return NULL;
 		}
 
 		int n_var_fun=sf->local_variables->count;
-		int n_var_scope=sf->symbol->scope->countVariables(true);
+		int n_var_scope=sf->function_scope->countVariables(true);
 
 		if(n_var_fun != n_var_scope){
 			EVAL_ERROR(
@@ -592,7 +592,7 @@ namespace zetscript{
 		}
 
 		short *lookup_linear_stk=(short *)ZS_MALLOC(sizeof(short)*n_var_fun);
-		Scope *current_scope=sf->symbol->scope;
+		Scope *current_scope=sf->function_scope;
 		n_local_variable=0;
 
 		eval_fill_lookup_local_variable(current_scope,lookup_linear_stk,n_local_variable);
@@ -682,16 +682,16 @@ namespace zetscript{
 
 					//bool is_constructor = sf->symbol.name == sc_sf->class_name;
 
-					for(int i = sf->symbol->idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
+					for(int i = sf->idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
 						Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[i];
 						bool match_names=false;
-						if((sf->symbol->properties &  SYMBOL_PROPERTY_CONSTRUCTOR) != 0){
+						if((sf->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
 							/*if(symbol_member->scope == NULL){ // is constant...
 								continue;
 							}*/
-							match_names=( symbol_member->properties & SYMBOL_PROPERTY_CONSTRUCTOR) != 0;//symbol_member->scope->script_class->class_name==symbol_member->name;
+							match_names=( symbol_member->properties & FUNCTION_PROPERTY_CONSTRUCTOR) != 0;//symbol_member->scope->script_class->class_name==symbol_member->name;
 						}else{
-							match_names=symbol_member->name==sf->symbol->name;
+							match_names=symbol_member->name==sf->function_name;
 						}
 
 						ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
@@ -707,7 +707,7 @@ namespace zetscript{
 
 					// ok get the super function...
 					if(symbol_sf_foundf == NULL){
-						if((sf->symbol->properties &  SYMBOL_PROPERTY_CONSTRUCTOR) != 0){
+						if((sf->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
 							EVAL_ERROR_FILE_LINE_AND_GOTO(
 								lbl_exit_pop_function
 								,eval_data->current_parsing_file
@@ -722,7 +722,7 @@ namespace zetscript{
 								,eval_instruction->instruction_source_info.line
 								,"Cannot find parent function '%s::%s'"
 								,sc_sf->class_name.c_str()
-								,sf->symbol->name.c_str()
+								,sf->function_name.c_str()
 							);
 						}
 					}

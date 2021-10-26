@@ -162,10 +162,11 @@ namespace zetscript{
 
 	zs_string ScriptObjectClass::toString(){
 		// check whether toString is implemented...
-		Symbol *symbol_function=getScriptClass()->getSymbol(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
+		Symbol *symbol_function=getScriptClass()->getSymbolMemberFunction(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
 		zs_string aux="";
 		if(symbol_function != NULL){ // get first element
-			if(symbol_function->properties & (SYMBOL_PROPERTY_MEMBER_FUNCTION | SYMBOL_PROPERTY_FUNCTION)){
+			//if(symbol_function->properties & (SYMBOL_PROPERTY_MEMBER_FUNCTION | SYMBOL_PROPERTY_FUNCTION))
+			//{
 				ScriptFunction *ptr_function=(ScriptFunction *)symbol_function->ref_ptr;
 				if((symbol_function->properties & SYMBOL_PROPERTY_STATIC) == 0){
 
@@ -208,7 +209,7 @@ namespace zetscript{
 						}
 					}
 				}
-			}
+			//}
 			return aux;
 		}
 		return ScriptObjectObject::toString();

@@ -439,7 +439,7 @@ namespace zetscript{
 								 }
 								 // override idx
 								 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
-								 constructor_function->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
+								 constructor_function->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
 								 ei_load_function_constructor->vm_instruction.value_op1=n_args+1;
 							 }
 						 }

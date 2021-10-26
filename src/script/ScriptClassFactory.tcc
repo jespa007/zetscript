@@ -233,14 +233,14 @@ namespace zetscript{
 
 
 				this_class->registerNativeMemberFunction(
-					script_function->symbol->name,
+					script_function->function_name,
 					&params,
 					params_len,
 					script_function->idx_return_type,
 					script_function->ref_native_function_ptr, // it contains script function pointer
-					script_function->symbol->properties, //derivated_symbol_info_properties
-					script_function->symbol->file,
-					script_function->symbol->line
+					script_function->properties, //derivated_symbol_info_properties
+					symbol_src->file,
+					symbol_src->line
 				);
 			}
 		}
@@ -263,8 +263,8 @@ namespace zetscript{
 
 
 				struct _AttribMethodIt{
-					ScriptFunction **dst;
-					ScriptFunction *src;
+					ScriptFunction **dst_function;
+					ScriptFunction *src_function;
 				}attrib_methods[]={
 					{&ma_dst->getter,ma_src->getter}
 					,{&ma_dst->post_inc,ma_src->post_inc}
@@ -277,27 +277,27 @@ namespace zetscript{
 				_AttribMethodIt *it=attrib_methods;
 
 				// register getter and setter
-				while(it->dst!=0){
+				while(it->dst_function!=0){
 
-					*it->dst = NULL; // init to null
+					*it->dst_function= NULL; // init to null
 
-					if(it->src!=0){ // we have src method
+					if(it->src_function!=0){ // we have src method
 
 						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(it->src);
-						size_t params_len=it->src->params_len;
+						size_t params_len=it->src_function->params_len;
 
 						symbol_function=this_class->registerNativeMemberFunction(
-								it->src->symbol.name,
+								it->src_function->function_name,
 								&params,
 								params_len,
-								it->src->idx_return_type,
-								it->src->ref_native_function_ptr,
-								it->src->symbol.properties,
-								it->src->symbol.file,
-								it->src->symbol.line
+								it->src_function->idx_return_type,
+								it->src_function->ref_native_function_ptr,
+								it->src_function->properties
+								//it->src_function->symbol.file,
+								//it->src_function->symbol.line
 						);
 
-						*it->dst=(ScriptFunction *)symbol_function->ref_ptr;
+						*it->dst_function=(ScriptFunction *)symbol_function->ref_ptr;
 					}
 					it++;
 				}
@@ -309,17 +309,17 @@ namespace zetscript{
 					ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
 
 					ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
-					size_t params_len=it->src->params_len;
+					size_t params_len=it->src_function->params_len;
 
 					symbol_function=this_class->registerNativeMemberFunction(
-							sf_setter->symbol->name,
+							sf_setter->function_name,
 							&params,
 							params_len,
 							sf_setter->idx_return_type,
 							sf_setter->ref_native_function_ptr,
-							sf_setter->symbol->properties,
-							sf_setter->symbol->file,
-							sf_setter->symbol->line
+							sf_setter->properties
+							//sf_setter->symbol->file,
+							//sf_setter->symbol->line
 					);
 
 					ma_dst->addSetter((ScriptFunction *)symbol_function->ref_ptr);

@@ -405,7 +405,7 @@ namespace zetscript{
 		Instruction *instructions=calling_function->instructions; // starting instruction
 		Instruction *instruction_it=instructions;
 		//VM_ScopeFunction * vm_scope_start=data->vm_current_scope_function; // save current scope...
-		Scope * scope = calling_function->symbol->scope;// ast->idx_scope;
+		Scope * scope = calling_function->function_scope;// ast->idx_scope;
 		zs_vector *local_variables=calling_function->local_variables;
 		unsigned symbols_count=local_variables->count;
 		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
@@ -433,7 +433,7 @@ namespace zetscript{
 		data->vm_current_scope_function->stk_local_vars=_stk_local_var;
 
 		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (symbols_count > 0)){
-			PUSH_VM_SCOPE(calling_function->symbol->scope);
+			PUSH_VM_SCOPE(calling_function->function_scope);
 		}
 
 		//-----------------------------------------------------------------------------------------------------------------------
@@ -661,7 +661,7 @@ load_element_object:
 								VM_INNER_CALL_ONLY_RETURN(
 										stk_ma->so_object
 										,stk_ma->member_attribute->getter
-										,stk_ma->member_attribute->getter->symbol->name.c_str()
+										,stk_ma->member_attribute->getter->function_name.c_str()
 										,true
 								);
 
@@ -902,7 +902,7 @@ load_element_object:
 										VM_INNER_CALL_ONLY_RETURN(
 												stk_ma->so_object
 												,stk_ma->member_attribute->getter
-												,stk_ma->member_attribute->getter->symbol->name.c_str()
+												,stk_ma->member_attribute->getter->function_name.c_str()
 												,true
 										);
 
@@ -918,7 +918,7 @@ load_element_object:
 										VM_INNER_CALL_ONLY_RETURN(
 												stk_ma->so_object
 												,stk_ma->member_attribute->getter
-												,stk_ma->member_attribute->getter->symbol->name.c_str()
+												,stk_ma->member_attribute->getter->function_name.c_str()
 												,true
 										);
 
@@ -1061,14 +1061,14 @@ load_element_object:
 								VM_STOP_EXECUTE("Operator metamethod \"_set (aka =)\" is not implemented");
 							}
 
-							if((symbol_setter->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION)==0){
+							if((symbol_setter->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)==0){
 								VM_STOP_EXECUTE("Operator metamethod \"_set (aka =)\" is not function");
 							}
 
 							ptr_function_found=(ScriptFunction *)symbol_setter->ref_ptr;
 						}
 
-						if(ptr_function_found->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF){
+						if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 							vm_call_function_native(
 									vm
 									,obj_setter
@@ -1504,7 +1504,7 @@ execute_function:
 
 				// if a c function that it has more than 1 symbol with same number of parameters, so we have to solve and get the right one...
 				// call function
-				if((sf_call_script_function->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
+				if((sf_call_script_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 
 					// we pass everything by copy (TODO implement ref)
 					if(sf_call_n_args > 0 && sf_call_script_function->params_len > 0){
@@ -1530,7 +1530,7 @@ execute_function:
 
 									if((stk_arg->properties & STK_PROPERTY_PTR_STK) != STK_PROPERTY_PTR_STK){
 										VM_STOP_EXECUTE("Calling function \"%s\", parameter \"%i\": Passing argument by reference has to be variable (not attribute or property))"
-												,sf_call_script_function->symbol->name.c_str(),i+1);
+												,sf_call_script_function->function_name.c_str(),i+1);
 									}
 
 									ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg,data->vm_idx_call);
@@ -1647,7 +1647,7 @@ execute_function:
 					sf_call_n_local_symbols=sf_call_script_function->local_variables->count;
 				}
 				else{ // C function
-					if(sf_call_script_function->symbol->properties & SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME){
+					if(sf_call_script_function->properties & FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME){
 
 						ScriptClass *sc=NULL;
 						bool ignore_call=false;
@@ -1658,7 +1658,7 @@ execute_function:
 							ignore_call= (sf_call_is_constructor) && sf_call_calling_object->isNativeObject() && sf_call_n_args==0;
 							sc=data->script_class_factory->getScriptClass(sf_call_calling_object->idx_script_class);
 						}else if(sf_call_script_function->idx_class != IDX_SCRIPT_CLASS_MAIN
-								&& (sf_call_script_function->symbol->properties & (SYMBOL_PROPERTY_FUNCTION|SYMBOL_PROPERTY_STATIC))
+								&& (sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)
 						){
 							sc=data->script_class_factory->getScriptClass(sf_call_script_function->idx_class);
 						}
@@ -1672,7 +1672,7 @@ execute_function:
 									,calling_function
 									,instruction
 									,sf_call_is_constructor
-									,sf_call_script_function->symbol->name // symbol to find
+									,sf_call_script_function->function_name // symbol to find
 									,sf_call_stk_start_arg_call
 									,sf_call_n_args))==NULL){
 								goto lbl_exit_function;
@@ -1702,12 +1702,12 @@ execute_function:
 
 				if(data->vm_error == true){
 					// if System::assert -> not add in callstack trace
-					if(((calling_function->symbol->name=="assert") && (sf_call_script_function->symbol->name=="errorNative")
+					if(((calling_function->function_name=="assert") && (sf_call_script_function->function_name=="errorNative")
 					)==false){
 						const char *str_class_owner=NULL;
-						if(	(sf_call_script_function->symbol->properties & SYMBOL_PROPERTY_MEMBER_FUNCTION)!=0
+						if(	(sf_call_script_function->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!=0
 								||
-							(sf_call_script_function->symbol->properties & SYMBOL_PROPERTY_STATIC)!=0
+							(sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)!=0
 						){
 							str_class_owner=data->script_class_factory->getScriptClass(sf_call_script_function->idx_class)->class_name.c_str();
 						}
@@ -1716,7 +1716,7 @@ execute_function:
 							"\nat calling function %s%s%s (file:%s line:%i)" // TODO: get full symbol ?
 							,str_class_owner==NULL?"":str_class_owner
 							,str_class_owner==NULL?"":"::"
-							,sf_call_script_function->symbol->name.c_str()
+							,sf_call_script_function->function_name.c_str()
 							,SFI_GET_FILE(calling_function,instruction)
 							,SFI_GET_LINE(calling_function,instruction)
 						);
@@ -2032,7 +2032,7 @@ execute_function:
 				VM_INNER_CALL_ONLY_RETURN(
 						stk_ma->so_object
 						,stk_ma->member_attribute->getter
-						,stk_ma->member_attribute->getter->symbol->name.c_str()
+						,stk_ma->member_attribute->getter->function_name.c_str()
 						,true
 				);
 

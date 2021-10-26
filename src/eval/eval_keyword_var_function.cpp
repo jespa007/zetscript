@@ -694,7 +694,7 @@ error_eval_keyword_var:
 							function_name
 							,&params
 							,params_len
-							,is_static?SYMBOL_PROPERTY_STATIC:SYMBOL_PROPERTY_MEMBER_FUNCTION
+							,is_static?FUNCTION_PROPERTY_STATIC:FUNCTION_PROPERTY_MEMBER_FUNCTION
 							,eval_data->current_parsing_file
 							,line
 					);
@@ -728,7 +728,7 @@ error_eval_keyword_var:
 				}
 
 				if(scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
-					symbol_sf->properties|=SYMBOL_PROPERTY_MEMBER_FUNCTION;
+					((ScriptFunction *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
 				}
 			}
 

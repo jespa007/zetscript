@@ -88,7 +88,7 @@ namespace zetscript{
 				MAIN_SCRIPT_FUNCTION_NAME
 		);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
-		main_function->symbol->scope=MAIN_SCOPE(this);
+		main_function->function_scope=MAIN_SCOPE(this);
 
 		idx_clear_checkpoint=1; // by default restore till main class.
 	}
