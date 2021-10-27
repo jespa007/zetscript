@@ -226,7 +226,7 @@ namespace zetscript{
 		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
 
 		 // list functions
-		 zs_vector *symbol_functions=sf_main->symbol->scope->symbol_functions;
+		 zs_vector *symbol_functions=sf_main->function_scope->symbol_functions;
 
 		 // print main function
 		 ScriptFunction::printGeneratedCode(sf_main);
@@ -239,7 +239,7 @@ namespace zetscript{
 
 				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
 
-				if(( local_sf->symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) != SYMBOL_PROPERTY_C_OBJECT_REF){
+				if(( local_sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF){
 					ScriptFunction::printGeneratedCode(local_sf);
 				}
 			}

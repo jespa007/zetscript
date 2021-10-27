@@ -76,9 +76,9 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_FUNCTION(stk)){
 			if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 				ScriptFunction *sf=(ScriptFunction *)stk->value;
-				result= zs_string("FunctionMember")+"@"+"UnknowClass(TODO)"+"::"+sf->symbol->name;
+				result= zs_string("FunctionMember")+"@"+"UnknowClass(TODO)"+"::"+sf->function_name;
 			}else{ // normal function
-				result= zs_string("Function")+"@"+((ScriptFunction *)stk->value)->symbol->name;
+				result= zs_string("Function")+"@"+((ScriptFunction *)stk->value)->function_name;
 			}
 		}else if(STK_VALUE_IS_TYPE(stk)){
 			result= zs_string("type")+"@"+_zs->getScriptClassFactory()->getScriptClassName(stk->value);

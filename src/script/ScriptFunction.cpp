@@ -22,20 +22,20 @@ namespace zetscript{
 			ZetScript * _zs
 			,Scope *_scope_function
 			,int _idx_class
-			,short _idx_script_function
+			,int _idx_script_function
 			,int _idx_position
 			,const zs_string & _function_name
 			, ScriptFunctionParam **_params
 			, size_t _params_len
 			,int _idx_return_type
 			, zs_int _ref_native_function_ptr
-			,uitn16_t _properties
+			,uint16_t _properties
 		) {
 		// function data...
 		idx_class=_idx_class;
 		function_name=_function_name;
 		idx_script_function=_idx_script_function;
-		idx_position = _idx_position
+		idx_position = _idx_position;
 		idx_return_type = _idx_return_type;
 		ref_native_function_ptr=_ref_native_function_ptr;
 		properties = _properties;
@@ -438,7 +438,7 @@ namespace zetscript{
 			,size_t _params_len
 			, int idx_return_type
 			,zs_int ref_ptr
-			, unsigned short properties
+			, unsigned short _function_properties
 	){
 		Symbol *symbol_found=scope_block->getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
 		zs_string current_file_line=ZS_CONST_STR_IS_EMPTY(file)?
@@ -447,14 +447,23 @@ namespace zetscript{
 
 
 
-		if(symbol_found != NULL){ // C symbol found
+		if(symbol_found != NULL){ // symbol found
 			bool error = false;
 			zs_string symbol_file_line=ZS_CONST_STR_IS_EMPTY(symbol_found->file)?
 					zs_strutils::format("[line %i]",line):
 					zs_strutils::format("[%s:%i]",zs_path::get_filename(symbol_found->file).c_str(),line);
 
+			// first symbol repeted is a variable ? --> error
+
+			ScriptFunction *sf_found=NULL;
+			if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
+				sf_found=(ScriptFunction *)symbol_found->href_ptr;
+			}
+
+			bool error_symbol|=
+
 			// if both symbols (i.e the one to insert and the one found) are script functions...
-			if(((symbol_found->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0) && ((properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0)){
+			if(((symbol_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) && ((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 
 				// if exist override, but should be in the same scope
 				if(symbol_found->scope != scope_block){
@@ -507,8 +516,8 @@ namespace zetscript{
 
 		// register num symbols only for c symbols...
 		if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF != 0) && symbol_found!=NULL){
-			((ScriptFunction *)symbol_found->ref_ptr)->symbol->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
-			((ScriptFunction *)symbol->ref_ptr)->symbol->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME;
+			((ScriptFunction *)symbol_found->ref_ptr)->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
+			((ScriptFunction *)symbol->ref_ptr)->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME;
 		}
 
 		return symbol;
