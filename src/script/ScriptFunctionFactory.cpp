@@ -36,9 +36,20 @@ namespace zetscript{
 		uint16_t _symbol_check_repeated=_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF? REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS:REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
 
 
-		// try to not check if function name is constructor
-		if((_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && (_function_name == zs->getScriptClassFactory()->getScriptClassName(_idx_class))){
-			_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
+		// try to not check if function name is constructor or is function member but different class scope
+		if((_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)){
+			Symbol *p_irv = _scope->getSymbol(_function_name);
+			ScriptFunction *sf_repeaded=NULL;
+			if(p_irv!=NULL && (p_irv->properties & SYMBOL_PROPERTY_FUNCTION)){
+				sf_repeaded=(ScriptFunction *)p_irv->ref_ptr;
+				if((sf_repeaded->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && sf_repeaded->idx_class != _idx_class){
+					_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS;
+				}
+			}
+
+			if(_function_name == zs->getScriptClassFactory()->getScriptClassName(_idx_class)){
+				_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
+			}
 		}
 
 		symbol=_scope->registerSymbolFunction(

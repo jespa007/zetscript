@@ -437,22 +437,22 @@ namespace zetscript{
 	// FUNCTIONS
 
 	Symbol				* 	ScriptClass::registerMemberFunction(
-			 const zs_string & function_name
-			 , ScriptFunctionParam **params
-			 ,size_t params_len
-			, unsigned short symbol_properties
-			,const char * file
-			, short line
+			 const zs_string & _function_name
+			 , ScriptFunctionParam **_params
+			 ,size_t _params_len
+			, unsigned short _function_properties
+			,const char * _file
+			, short _line
 	){
 		return registerInternalMemberFunction(
-				 function_name
-				, params
-				,params_len
-				, symbol_properties
+				 _function_name
+				, _params
+				,_params_len
+				, _function_properties
 				,ZS_IDX_UNDEFINED
 				,0
-				, file
-				,  line
+				, _file
+				,  _line
 
 		);
 	}

@@ -68,9 +68,7 @@ namespace zetscript{
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_ATTRIBUTE});
-				}/*else{
-					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION});
-				}*/
+				}
 			}
 		}
 
@@ -212,9 +210,6 @@ namespace zetscript{
 		for(unsigned i=0; i< stk_builtin_elements.count; i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 
-			/*if(stk->properties & STK_PROPERTY_MEMBER_FUNCTION){
-				delete (StackMemberFunction *)stk->value;
-			}else*/
 			if(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
 				delete (StackMemberAttribute *)stk->value;
 			}else if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced

@@ -38,10 +38,11 @@ namespace zetscript{
 			result=zs_string("type@")+_zs->getScriptClassFactory()->getScriptClassName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_ATTRIBUTE(stk)){
 			MemberAttribute *ma=(MemberAttribute *)stk->value;
-			result="_mattr@"+ma->script_class->class_name+"::"+ma->attribute_name;
+			result="attr@"+ma->script_class->class_name+"::"+ma->attribute_name;
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
-			ScriptFunction *sf=((ScriptFunction *)stk->value);
-			result="_mfun@"+sf->function_scope->script_class->class_name+"@"+sf->function_name;
+			Symbol *symbol=((Symbol *)stk->value);
+			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
+			result="fun@"+sf->function_scope->script_class->class_name+"::"+sf->function_name;
 		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;

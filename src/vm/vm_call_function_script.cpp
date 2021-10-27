@@ -573,7 +573,7 @@ namespace zetscript{
 					PUSH_STK_NULL;
 				}else{
 					data->stk_vm_current->value= so_aux->getScriptClass()->class_scope->symbol_functions->items[instruction->value_op2];
-					data->stk_vm_current->properties=STK_PROPERTY_FUNCTION|STK_PROPERTY_MEMBER_FUNCTION;
+					data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 					data->stk_vm_current++;
 				}
 				continue;
@@ -1157,7 +1157,7 @@ load_element_object:
 								stk_dst->properties=STK_PROPERTY_BOOL;
 								*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);
 								if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)stk_src_ref);
-							}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE) ){
+							}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
 								*stk_dst=*stk_src;
 							}else if(type_var & STK_PROPERTY_SCRIPT_OBJECT){
 
@@ -1861,7 +1861,7 @@ execute_function:
 
 							 if(constructor_function != NULL){
 								 data->stk_vm_current->value=(zs_int)constructor_function;
-								 data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION|STK_PROPERTY_FUNCTION;
+								 data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 								 data->stk_vm_current++;
 								 // set idx function found
 								 /*if((constructor_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){  // is a script constructor so only set idx
