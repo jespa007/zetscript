@@ -460,10 +460,9 @@ namespace zetscript{
 				sf_found=(ScriptFunction *)symbol_found->href_ptr;
 			}
 
-			bool error_symbol|=
 
 			// if both symbols (i.e the one to insert and the one found) are script functions...
-			if(((symbol_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) && ((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
+			if(sf_found==NULL || ((sf_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) && ((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 
 				// if exist override, but should be in the same scope
 				if(symbol_found->scope != scope_block){
