@@ -21,8 +21,8 @@ namespace zetscript{
 	ScriptFunction::ScriptFunction(
 			ZetScript * _zs
 			,Scope *_scope_function
-			,int _idx_class
 			,int _idx_script_function
+			,int _idx_class
 			,int _idx_position
 			,const zs_string & _function_name
 			, ScriptFunctionParam **_params
@@ -403,119 +403,91 @@ namespace zetscript{
 		symbol->idx_position = idx_position;
 
 		local_variables->push_back((zs_int)symbol);
-		//symbol_variables->push_back((zs_int)symbol);
-
-		/*if(scope_block == MAIN_SCOPE(this)) { // is global var ...
-			StackElement stk_global_var;
-			if((properties & SYMBOL_PROPERTY_C_OBJECT_REF)!=0){ // native variable
-				stk_global_var=convertSymbolToStackElement(this->zs,symbol,(void *)ref_ptr);
-				if(!vm_set_stack_element_at(zs->getVirtualMachine(),idx_position,stk_global_var)){
-					THROW_RUNTIME_ERROR(vm_get_error(zs->getVirtualMachine()).c_str());
-				}
-			}else{ // script variable
-				StackElement *stk_global_var_ptr=vm_get_stack_element_at(zs->getVirtualMachine(),idx_position);
-				if(stk_global_var_ptr==NULL){
-					THROW_RUNTIME_ERROR(vm_get_error(zs->getVirtualMachine()).c_str());
-				}
-
-				// reset stack to null, it can have some garbage from previous operations...
-				stk_global_var_ptr->setUndefined();
-
-				symbol->ref_ptr=(zs_int)stk_global_var_ptr;
-
-			}
-		}*/
 
 		return symbol;
 	}
 
 	Symbol * ScriptFunction::registerLocalFunction(
-			 Scope * scope_block
-			,const char *file
-			, short line
-			, const zs_string & function_name
+			 Scope * _scope_block
+			,const char *_file
+			, short _line
+			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
 			,size_t _params_len
-			, int idx_return_type
-			,zs_int ref_ptr
+			, int _idx_return_type
+			,zs_int _ref_ptr
 			, unsigned short _function_properties
 	){
-		Symbol *symbol_found=scope_block->getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
-		zs_string current_file_line=ZS_CONST_STR_IS_EMPTY(file)?
-							zs_strutils::format("[line %i]",line):
-							zs_strutils::format("[%s:%i]",zs_path::get_filename(file).c_str(),line);
+		Symbol *symbol_repeat=_scope_block->getSymbol(_function_name, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
+		zs_string current_file_line=ZS_CONST_STR_IS_EMPTY(_file)?
+							zs_strutils::format("[line %i]",_line):
+							zs_strutils::format("[%s:%i]",zs_path::get_filename(_file).c_str(),_line);
 
 
 
-		if(symbol_found != NULL){ // symbol found
-			bool error = false;
-			zs_string symbol_file_line=ZS_CONST_STR_IS_EMPTY(symbol_found->file)?
-					zs_strutils::format("[line %i]",line):
-					zs_strutils::format("[%s:%i]",zs_path::get_filename(symbol_found->file).c_str(),line);
+		if(symbol_repeat != NULL){ // symbol found
+			ScriptFunction *sf_repeat=NULL;
 
-			// first symbol repeted is a variable ? --> error
+			zs_string symbol_file_line=ZS_CONST_STR_IS_EMPTY(symbol_repeat->file)?
+					zs_strutils::format("[line %i]",_line):
+					zs_strutils::format("[%s:%i]",zs_path::get_filename(symbol_repeat->file).c_str(),_line);
 
-			ScriptFunction *sf_found=NULL;
-			if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
-				sf_found=(ScriptFunction *)symbol_found->href_ptr;
+
+			if(symbol_repeat->properties & SYMBOL_PROPERTY_FUNCTION){
+				sf_repeat=(ScriptFunction *)symbol_repeat->ref_ptr;
 			}
 
+			if((sf_repeat == NULL) // repeat symbol is variable
+							||
+			// .. or both are not script neither c ref
+			(sf_repeat->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != (_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)
+							||
+			// ... or both are script but not in the same scope
+			((((sf_repeat->properties | _function_properties) & FUNCTION_PROPERTY_C_OBJECT_REF) == 0) && 	(symbol_repeat->scope != _scope_block) )
 
-			// if both symbols (i.e the one to insert and the one found) are script functions...
-			if(sf_found==NULL || ((sf_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) && ((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
-
+			) // repeat symbol are not both c or script funtions
+			{
 				// if exist override, but should be in the same scope
-				if(symbol_found->scope != scope_block){
-
-					THROW_RUNTIME_ERROR("Symbol \"%s\" defined at %s is already defined at %s"
-						,function_name.c_str()
-						,current_file_line.c_str()
-						,line
-						,symbol_file_line.c_str()
-						,symbol_found->line
-					);
-				}
-
-				// override script function
-				ScriptFunction *sf = (ScriptFunction *)symbol_found->ref_ptr;
-				sf->clear();
-				sf->updateParams(_params,_params_len);
-				symbol_found->n_params=(char)_params_len;
-				return symbol_found;
-			}
-
-			// else if both symbol are not C, error...
-			if((symbol_found->properties & SYMBOL_PROPERTY_C_OBJECT_REF) && (properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
-				// C function can be overriden
 				THROW_RUNTIME_ERROR("Symbol \"%s\" defined at %s is already defined at %s"
 					,function_name.c_str()
 					,current_file_line.c_str()
-					,line
+					,_line
 					,symbol_file_line.c_str()
-					,symbol_found->line
+					,symbol_repeat->line
 				);
 			}
+
+			if(((sf_repeat->properties | _function_properties) & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
+				// override script function
+				ScriptFunction *sf = (ScriptFunction *)symbol_repeat->ref_ptr;
+				sf->clear();
+				sf->updateParams(_params,_params_len);
+				symbol_repeat->n_params=(char)_params_len;
+				return symbol_repeat;
+			}
+
+			// from here... function should be both as c ref, mark function property to deduce at runtme
+			((ScriptFunction *)symbol_repeat->ref_ptr)->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME; //
 		}
 
 		// register new slot
 		symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
-				 scope_block
-				,file
-				,line
+				 _scope_block
+				,_file
+				,_line
 				//---- Function data
-				,idx_class 				// idx class which belongs to...
-				,function_name
+				,idx_class 				// idx class is the same which this function belongs to...
+				,_function_name
 				,_params
 				,_params_len
-				,idx_return_type
-				,ref_ptr
-				,properties
+				,_idx_return_type
+				,_ref_ptr
+				,_function_properties
 		);
 
 		// register num symbols only for c symbols...
-		if((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF != 0) && symbol_found!=NULL){
-			((ScriptFunction *)symbol_found->ref_ptr)->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME; // mark the function found (only matters for first time)
+		if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF != 0) && symbol_repeat!=NULL){
 			((ScriptFunction *)symbol->ref_ptr)->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME;
 		}
 

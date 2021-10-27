@@ -684,18 +684,18 @@ namespace zetscript{
 
 					for(int i = sf->idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
 						Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[i];
+						ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 						bool match_names=false;
 						if((sf->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
 							/*if(symbol_member->scope == NULL){ // is constant...
 								continue;
 							}*/
-							match_names=( symbol_member->properties & FUNCTION_PROPERTY_CONSTRUCTOR) != 0;//symbol_member->scope->script_class->class_name==symbol_member->name;
+							match_names=( sf_member->properties & FUNCTION_PROPERTY_CONSTRUCTOR) != 0;//symbol_member->scope->script_class->class_name==symbol_member->name;
 						}else{
 							match_names=symbol_member->name==sf->function_name;
 						}
 
-						ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
-						bool match_params=(symbol_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
+						bool match_params=(sf_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
 						if(
 								(match_names)
 							&& (match_params)

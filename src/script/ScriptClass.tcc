@@ -274,7 +274,7 @@ namespace zetscript{
 				,params_len
 				, idx_return_type
 				, (zs_int)ptr_function
-				, SYMBOL_PROPERTY_C_OBJECT_REF | SYMBOL_PROPERTY_STATIC
+				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC
 				,registered_file
 				,registered_line
 

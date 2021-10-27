@@ -429,7 +429,7 @@ namespace zetscript{
 
 					 if(constructor_function != NULL){
 						 // set idx function found
-						 if((constructor_function->properties & SYMBOL_PROPERTY_C_OBJECT_REF)==0){  // is a script constructor so only set idx
+						 if((constructor_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){  // is a script constructor so only set idx
 							 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
 						 }else{// is a native constructor, find a constructor if it passes one or more args
 							 if(n_args > 0){ // we have to find our custom function to call after object is created

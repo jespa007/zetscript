@@ -483,27 +483,27 @@ namespace zetscript{
 	}
 
 	Symbol * ScriptClass::registerInternalMemberFunction(
-		 const zs_string & function_name
-		 , ScriptFunctionParam **params
-		 ,size_t params_len
+		 const zs_string & _function_name
+		 , ScriptFunctionParam **_params
+		 ,size_t _params_len
 		, unsigned short _function_properties
-		, int idx_return_type
-		,zs_int ref_ptr
-		, const char * file
-		, short line
+		, int _idx_return_type
+		,zs_int _ref_ptr
+		, const char * _file
+		, short _line
 
 
 	){
 
 		if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
 
-			if(getSymbol(function_name,(char)params_len,false) != NULL){ // we only search repeat symbols on this class ...
+			if(getSymbol(_function_name,(char)_params_len,false) != NULL){ // we only search repeat symbols on this class ...
 				Symbol *existing_symbol;
-				if((existing_symbol=getSymbol(function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
-					THROW_RUNTIME_ERROR("Function \"%s\" is already defined at [%s:%i]"
-						,function_name.c_str()
-						,zs_path::get_filename(file).c_str()
-						,line
+				if((existing_symbol=getSymbol(_function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
+					THROW_RUNTIME_ERROR("Function member \"%s\" is already defined at [%s:%i]"
+						,_function_name.c_str()
+						,zs_path::get_filename(_file).c_str()
+						,_line
 						,zs_path::get_filename(existing_symbol->file).c_str()
 						,existing_symbol->line
 					);
@@ -515,24 +515,24 @@ namespace zetscript{
 		Symbol *function_symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
 				class_scope
-				,file
-				,line
+				,_file
+				,_line
 				//---- Function data
 				,idx_class 				// idx class which belongs to...
-				,function_name
-				,params
-				,params_len
-				,idx_return_type
-				,ref_ptr // c function
+				,_function_name
+				,_params
+				,_params_len
+				,_idx_return_type
+				,_ref_ptr // c function
 				,_function_properties
 		);
 
 		ScriptFunction *sf_current=(ScriptFunction *)function_symbol->ref_ptr;
 
 		// register num function symbols only for c symbols...
-		if(function_symbol->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+		if(sf_current->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 			Symbol *symbol_repeat=NULL;
-			if((symbol_repeat=this->getSymbolMemberFunction(function_symbol->name,NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
+			if((symbol_repeat=this->getSymbolMemberFunction(_function_name,NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
 				ScriptFunction *sf_repeat=(ScriptFunction *)symbol_repeat->ref_ptr;
 
 				sf_repeat->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME;
@@ -541,14 +541,14 @@ namespace zetscript{
 		}
 
 		// constructor...
-		if(function_name == this->class_name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
+		if(_function_name == this->class_name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
 			idx_function_member_constructor = function_symbol->idx_position;
 			sf_current->properties|=FUNCTION_PROPERTY_CONSTRUCTOR;
 		}
 		else{
 			// check metamethod function...
 			for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
-				if(ZS_STRCMP(byte_code_metamethod_to_symbol_str((ByteCodeMetamethod)i),==,function_name.c_str())){
+				if(ZS_STRCMP(byte_code_metamethod_to_symbol_str((ByteCodeMetamethod)i),==,_function_name.c_str())){
 					ByteCodeMetamethod op=(ByteCodeMetamethod)i;
 					const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(op);
 					const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(op);
@@ -561,23 +561,23 @@ namespace zetscript{
 					if(byte_code_metamethod_should_be_static(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){
 						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as static instead of member"
 							,class_name.c_str()
-							,function_name.c_str()
+							,_function_name.c_str()
 						);
 						return NULL;
 					}else if((byte_code_metamethod_should_be_static(op)==false) && ((_function_properties & FUNCTION_PROPERTY_STATIC))){
 						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as member instead of static"
 							,class_name.c_str()
-							,function_name.c_str()
+							,_function_name.c_str()
 						);
 						return NULL;
 					}
 
 					// native
 					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
-						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(idx_return_type == IDX_TYPE_STRING_PTR_C || idx_return_type == IDX_TYPE_STRING_C) ){
+						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(_idx_return_type == IDX_TYPE_STRING_PTR_C || _idx_return_type == IDX_TYPE_STRING_C) ){
 							THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
 								,class_name.c_str()
-								,function_name.c_str()
+								,_function_name.c_str()
 							);
 							return NULL;
 						}

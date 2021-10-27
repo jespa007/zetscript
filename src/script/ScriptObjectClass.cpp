@@ -69,26 +69,19 @@ namespace zetscript{
 				return;
 			}
 
-			/*if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
-				se->value=(zs_int)(new StackMemberFunction(this,(ScriptFunction *)symbol->ref_ptr));
-				se->properties=STK_PROPERTY_MEMBER_FUNCTION | STK_PROPERTY_FUNCTION; // tell stack element that is a function member
+			if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
+			{
+				// we know the type object so we assign the pointer ...
+				void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
+				*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
+			}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
+				se->value=(zs_int)(vm_get_stack_elements(this->vm) + symbol->ref_ptr); // load from global stk
+				se->properties=STK_PROPERTY_PTR_STK;
+			}else if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+				se->value=(zs_int)(new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr));
+				se->properties=STK_PROPERTY_MEMBER_ATTRIBUTE;
 			}
-			else
-			{ // var... */
 
-				if(symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) //if(IS_CLASS_C)
-				{
-					// we know the type object so we assign the pointer ...
-					void *ptr_variable=(void *)((zs_int)this->c_object + symbol->ref_ptr);
-					*se=convertSymbolToStackElement(this->zs,symbol,ptr_variable);
-				}else if(symbol->properties & (SYMBOL_PROPERTY_CONST)){ // stack element
-					se->value=(zs_int)(vm_get_stack_elements(this->vm) + symbol->ref_ptr); // load from global stk
-					se->properties=STK_PROPERTY_PTR_STK;
-				}else if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
-					se->value=(zs_int)(new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr));
-					se->properties=STK_PROPERTY_MEMBER_ATTRIBUTE;
-				}
-			//}
 		}
 
 		//-------------------------------------------------------------------------------
@@ -168,9 +161,9 @@ namespace zetscript{
 			//if(symbol_function->properties & (SYMBOL_PROPERTY_MEMBER_FUNCTION | SYMBOL_PROPERTY_FUNCTION))
 			//{
 				ScriptFunction *ptr_function=(ScriptFunction *)symbol_function->ref_ptr;
-				if((symbol_function->properties & SYMBOL_PROPERTY_STATIC) == 0){
+				if((ptr_function->properties & FUNCTION_PROPERTY_STATIC) == 0){
 
-					if((symbol_function->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0){
+					if((ptr_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 
 						StackElement result=VM_EXECUTE(
 								this->vm

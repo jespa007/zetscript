@@ -19,53 +19,54 @@ namespace zetscript{
 
 	Symbol *		 ScriptFunctionFactory::newScriptFunction(
 			//--- Register data
-			  Scope *scope
-			, const char * file
-			, short line
+			  Scope *_scope
+			, const char * _file
+			, short _line
 			//--- Function data
 			, int _idx_class
-			, int _idx_position
 			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
 			,size_t _params_len
-			, int idx_return_type
-			, zs_int ref_native_function_ptr
-			, unsigned short properties
+			, int _idx_return_type
+			, zs_int _ref_native_function_ptr
+			, unsigned short _function_properties
 		){
 
 		Symbol *symbol=NULL;
-		uint16_t properties_register_symbol=properties & SYMBOL_PROPERTY_C_OBJECT_REF? REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS:REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
+		uint16_t _symbol_check_repeated=_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF? REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS:REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
 
 
 		// try to not check if function name is constructor
-		if((properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && (_function_name == zs->getScriptClassFactory()->getScriptClassName(_idx_class))){
-			properties_register_symbol|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
+		if((_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && (_function_name == zs->getScriptClassFactory()->getScriptClassName(_idx_class))){
+			_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 		}
 
-
-		symbol=scope->registerSymbolFunction(
-				file
-				,line
+		symbol=_scope->registerSymbolFunction(
+				_file
+				,_line
 				,_function_name
 				,_params_len
-				,SYMBOL_PROPERTY_FUNCTION
+				,_symbol_check_repeated
 		);
+
+		if(_function_properties & FUNCTION_PROPERTY_STATIC){
+			symbol->properties|=SYMBOL_PROPERTY_STATIC;
+		}
 
 		short idx_script_function = script_functions->count;
 
-
 		ScriptFunction *script_function = new ScriptFunction(
 				zs
-				,scope
+				,_scope
 				,idx_script_function
 				,_idx_class
-				,_idx_position
+				, symbol->idx_position
 				,_function_name
 				,_params
 				,_params_len
-				,idx_return_type
-				,ref_native_function_ptr
-				,properties
+				,_idx_return_type
+				,_ref_native_function_ptr
+				,_function_properties
 		);
 
 		symbol->ref_ptr = (zs_int)script_function;		  // ptr function

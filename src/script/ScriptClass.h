@@ -4,7 +4,9 @@
  */
 #pragma once
 
-#define SCRIPT_CLASS_PROPERTY_C_OBJECT_REF	0x1
+typedef enum{
+	SCRIPT_CLASS_PROPERTY_C_OBJECT_REF=0x1
+}ScriptClassProperty;
 
 namespace zetscript{
 

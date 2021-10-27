@@ -54,7 +54,7 @@ namespace zetscript{
 		 * @n_params:
 		 */
 		Symbol * registerSymbolVariable(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
-		Symbol * registerSymbolFunction(const char * file, short line,const zs_string & symbol_name, char n_params, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
+		Symbol * registerSymbolFunction(const char * file, short line,const zs_string & symbol_name, char n_params,uint16_t  _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
 		Symbol * registerSymbolType(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
 		Symbol * getSymbol(
 				const zs_string & var_name
