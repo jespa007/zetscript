@@ -641,7 +641,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_GLOBAL:
 			case BYTE_CODE_LOAD_REF:
 			case BYTE_CODE_LOAD_THIS:
-			case BYTE_CODE_LOAD_MEMBER_VAR:
+			case BYTE_CODE_LOAD_MEMBER_VARIABLE:
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
 			// PUSH_STK
@@ -664,6 +664,10 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_ZS_INT:
 			case BYTE_CODE_LOAD_STACK_ELEMENT:
 				sum_stk_load_stk++;
+				break;
+			case BYTE_CODE_LOAD_MEMBER_FUNCTION:
+				sum_stk_load_stk++; // obj
+				sum_stk_load_stk++; // function
 				break;
 			case BYTE_CODE_RESET_STACK: // <-- reset stack
 			case BYTE_CODE_CALL: // <-- reset stack
@@ -726,7 +730,7 @@ namespace zetscript{
 							);
 						}
 					}
-					eval_instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER_VAR;
+					eval_instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER_FUNCTION;
 					eval_instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
 					eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_class->class_name)+"::"+symbol_sf_foundf->name);
 
@@ -740,7 +744,9 @@ namespace zetscript{
 							// so we don't load as member in a fix position else is a member variable ...
 							if((symbol_function->properties & SYMBOL_PROPERTY_FUNCTION) == 0){ // if not function set as load immediate
 								eval_instruction->vm_instruction.value_op2=symbol_function->idx_position;
-								eval_instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_VAR; // immediate load
+								eval_instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_VARIABLE; // immediate load
+							}else{
+								eval_instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_FUNCTION; // immediate load
 							}
 						}
 					}

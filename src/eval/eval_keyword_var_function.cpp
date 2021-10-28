@@ -78,7 +78,10 @@ namespace zetscript{
 
 
 		*start_ptr++=Instruction(BYTE_CODE_STORE);
+		sf->instruction_source_info.push_back(0);
+
 		*start_ptr++=Instruction(BYTE_CODE_RESET_STACK);
+		sf->instruction_source_info.push_back(0);
 
 		if(sf->instructions != NULL){
 			free(sf->instructions); // deallocate last allocated instructions
@@ -139,6 +142,7 @@ namespace zetscript{
 		start_ptr->byte_code=BYTE_CODE_RET;
 		start_ptr->value_op1=ZS_IDX_UNDEFINED;
 		start_ptr->value_op2=ZS_IDX_UNDEFINED;
+		sf->instruction_source_info.push_back(0);
 
 		eval_instructions->clear();
 

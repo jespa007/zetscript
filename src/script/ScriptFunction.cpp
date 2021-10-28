@@ -118,8 +118,9 @@ namespace zetscript{
 				 n_ops++;
 			 }
 
-			 if((	   instruction->byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_VAR
+			 if((	   instruction->byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_VARIABLE
 					|| instruction->byte_code==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS
+					|| instruction->byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_FUNCTION
 					|| instruction->byte_code==ByteCode::BYTE_CODE_PUSH_STK_ELEMENT_THIS
 			)){
 
@@ -201,7 +202,8 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL:
 			case BYTE_CODE_LOAD_THIS:
 			case BYTE_CODE_LOAD_GLOBAL:
-			case BYTE_CODE_LOAD_MEMBER_VAR:
+			case BYTE_CODE_LOAD_MEMBER_VARIABLE:
+			case BYTE_CODE_LOAD_MEMBER_FUNCTION:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
@@ -541,7 +543,10 @@ namespace zetscript{
 		clear();
 
 		for(unsigned i=0; i < instruction_source_info.count; i++){
-			delete (InstructionSourceInfo *)instruction_source_info.items[i];
+			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_info.items[i];
+			if(isi != NULL){
+				delete isi;
+			}
 		}
 
 		delete local_variables;

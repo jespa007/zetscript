@@ -53,9 +53,9 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL:							return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_REF:							return "LOAD_REF"; // load type var
 			case BYTE_CODE_LOAD_THIS:							return "LOAD_THIS"; // load type var
-			case BYTE_CODE_LOAD_THIS_SOFM: 						return "THIS_LOAD_FMO";
 			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:	return "LOAD_CTOR"; // load type var
-			case BYTE_CODE_LOAD_MEMBER_VAR:						return "LOAD_MEMBER"; // load type var
+			case BYTE_CODE_LOAD_MEMBER_VARIABLE:				return "LOAD_MEMBER_VARIABLE"; // load type var
+			case BYTE_CODE_LOAD_MEMBER_FUNCTION:				return "LOAD_MEMBER_FUNCTION"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      					return "LOAD_???"; // load to find global
 			case BYTE_CODE_FIND_IMMEDIATE_CALL:					return "ICALL???"; // load to find local/global function
 			case BYTE_CODE_LOAD_ELEMENT_THIS:					return "LOAD_E@THIS"; // load element object
@@ -146,7 +146,8 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_GLOBAL:				return "LOAD_GLOBAL"; // load type var
 			case BYTE_CODE_LOAD_LOCAL:				return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_THIS:				return "LOAD_THIS"; // load type var
-			case BYTE_CODE_LOAD_MEMBER_VAR:			return "LOAD_MEMBER"; // load type var
+			case BYTE_CODE_LOAD_MEMBER_VARIABLE:	return "LOAD_MEMBER_VAR"; // load type var
+			case BYTE_CODE_LOAD_MEMBER_FUNCTION:	return "LOAD_MEMBER_FUN"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      		return "LOAD_???"; // load to find global
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:		return "LOAD_EVEC"; // load element vector
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:		return "LOAD_EOBJ"; // load element object
@@ -157,7 +158,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_ZS_FLOAT:			return "LOAD_FLT"; // load float
 			case BYTE_CODE_LOAD_BOOL:				return "LOAD_BOOL"; // load bool
 			case BYTE_CODE_LOAD_ZS_INT:				return "LOAD_INT"; // load zs_int
-			case BYTE_CODE_LOAD_TYPE:			return "LOAD_TYPE"; // load to find
+			case BYTE_CODE_LOAD_TYPE:				return "LOAD_TYPE"; // load to find
 			case BYTE_CODE_JMP:         			return "JMP"; // Unconditional jump.
 			case BYTE_CODE_JNT:         			return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          			return "JT"; // goto if true ... goes end to conditional.
@@ -318,7 +319,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL:return BYTE_CODE_PUSH_STK_LOCAL;
 			case BYTE_CODE_LOAD_REF:return BYTE_CODE_LOAD_REF; // PUSH STK NOT EXIST, IS A REF ITSELF
 			case BYTE_CODE_LOAD_THIS:return BYTE_CODE_PUSH_STK_THIS;
-			case BYTE_CODE_LOAD_MEMBER_VAR:return BYTE_CODE_PUSH_STK_MEMBER_VAR;
+			case BYTE_CODE_LOAD_MEMBER_VARIABLE:return BYTE_CODE_PUSH_STK_MEMBER_VAR;
 			case BYTE_CODE_LOAD_ELEMENT_VECTOR:return BYTE_CODE_PUSH_STK_ELEMENT_VECTOR;
 			case BYTE_CODE_LOAD_ELEMENT_THIS:return BYTE_CODE_PUSH_STK_ELEMENT_THIS;
 			case BYTE_CODE_LOAD_ELEMENT_OBJECT:return BYTE_CODE_PUSH_STK_ELEMENT_OBJECT;
@@ -336,7 +337,7 @@ namespace zetscript{
 				|| byte_code==BYTE_CODE_LOAD_LOCAL
 				|| byte_code==BYTE_CODE_LOAD_REF
 				|| byte_code==BYTE_CODE_LOAD_THIS
-				|| byte_code==BYTE_CODE_LOAD_MEMBER_VAR
+				|| byte_code==BYTE_CODE_LOAD_MEMBER_VARIABLE
 				|| byte_code==BYTE_CODE_LOAD_ELEMENT_VECTOR
 				|| byte_code==BYTE_CODE_LOAD_ELEMENT_THIS
 				|| byte_code==BYTE_CODE_LOAD_ELEMENT_OBJECT;

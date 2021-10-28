@@ -555,16 +555,15 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_THIS: // load variable ...
 				*data->stk_vm_current++=*this_object->getThisProperty();
 				continue;
-			case BYTE_CODE_LOAD_THIS_SOFM:
+			case BYTE_CODE_LOAD_MEMBER_FUNCTION:// direct load
 				data->stk_vm_current->value=(zs_int)this_object;
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				data->stk_vm_current++;
-				data->stk_vm_current->value=(zs_int)((Symbol *)this_object->getScriptClass()->class_scope->symbol_functions->items[instruction->value_op2])->ref_ptr;
+				data->stk_vm_current->value=(zs_int)((Symbol *)this_object->getScriptClass()->class_scope->symbol_functions->items[instruction->value_op2]);
 				data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 				data->stk_vm_current++;
-				break;
 				continue;
-			case BYTE_CODE_LOAD_MEMBER_VAR: // direct load
+			case BYTE_CODE_LOAD_MEMBER_VARIABLE: // direct load
 				*data->stk_vm_current++=*vm_load_this_element(vm,this_object,calling_function,instruction,instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
@@ -1465,8 +1464,8 @@ load_element_object:
 					StackElement *stk_function_ref=NULL;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
 					sf_call_calling_object = NULL;
-					sf_call_stk_start_arg_call=(data->stk_vm_current-sf_call_n_args);
 					sf_call_n_args=instruction->value_op1; // number arguments will pass to this function
+					sf_call_stk_start_arg_call=(data->stk_vm_current-sf_call_n_args);
 					stk_function_ref = ((sf_call_stk_start_arg_call-1));
 
 

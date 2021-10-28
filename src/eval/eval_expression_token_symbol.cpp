@@ -323,10 +323,10 @@ namespace zetscript{
 					last_line_ok=line;
 					IGNORE_BLANKS_AND_GOTO(error_expression_token_symbol,aux_p,eval_data,aux_p+1,line);
 					if(last_instruction_token != NULL){
-						if(last_instruction_token->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_MEMBER_VAR){
+						if(last_instruction_token->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_MEMBER_VARIABLE){
 							last_instruction_token->vm_instruction.properties|=INSTRUCTION_PROPERTY_MEMBER_FUNCTION_CALLER;
 						}else if(last_instruction_token->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_THIS){
-							last_instruction_token->vm_instruction.byte_code = ByteCode::BYTE_CODE_LOAD_THIS_SOFM;
+							last_instruction_token->vm_instruction.byte_code = ByteCode::BYTE_CODE_LOAD_MEMBER_FUNCTION;
 						}
 					}
 
@@ -461,12 +461,11 @@ namespace zetscript{
 						if(symbol_member != NULL){ // is member
 							// functions always loads dynamically because we can have an override function
 							// so we don't load as member in a fix position else is a variable ...
-							if((symbol_member->properties & SYMBOL_PROPERTY_FUNCTION) == 0){
-
+							if((symbol_member->properties & SYMBOL_PROPERTY_FUNCTION)==0){
 								instruction_value2=symbol_member->idx_position;
-
-								// override byte code
-								byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_VAR;
+								byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_VARIABLE;
+							}else{
+								byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_FUNCTION;
 							}
 						}
 
@@ -475,7 +474,8 @@ namespace zetscript{
 				}
 
 				// if not load element from this ...
-				if((	   byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_VAR
+				if((	   byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_VARIABLE
+						|| byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_FUNCTION
 						|| byte_code==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS
 					)
 					==false){
