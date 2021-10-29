@@ -206,7 +206,7 @@ namespace zetscript{
 			EvalInstruction *ei_last_load_instruction=(EvalInstruction *)ei_assign_loader_instructions_post_expression->items[ei_assign_loader_instructions_post_expression->count-1];
 			Instruction *last_load_instruction=&ei_last_load_instruction->vm_instruction;
 
-			if(byte_code_is_load_type(last_load_instruction->byte_code)){
+			if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
 
 				if(last_load_instruction->byte_code==BYTE_CODE_LOAD_THIS){
 					EVAL_ERROR_FILE_LINE_AND_GOTO(
@@ -216,7 +216,7 @@ namespace zetscript{
 						,"'this' is not assignable");
 				}
 
-				last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
+				last_load_instruction->byte_code=byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
 			}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
 				last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 			}

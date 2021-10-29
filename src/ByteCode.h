@@ -12,9 +12,9 @@
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_LOCAL)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_THIS)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_MEMBER_VAR)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_VECTOR)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_VECTOR_ITEM)\
 ||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_OBJECT)\
+||((byte_code)==ByteCode::BYTE_CODE_LOAD_OBJECT_ITEM)\
 )
 
 #define IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(byte_code) \
@@ -24,9 +24,9 @@
 ||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_LOCAL)\
 ||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_THIS)\
 ||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_MEMBER_VAR)\
-||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_ELEMENT_VECTOR)\
-||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_ELEMENT_THIS)\
-||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_ELEMENT_OBJECT)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_VECTOR_ITEM)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_THIS_VARIABLE)\
+||((byte_code)==ByteCode::BYTE_CODE_PUSH_STK_OBJECT_ITEM)\
 )
 
 #define IS_BYTE_CODE_LOAD_CONSTANT(byte_code) \
@@ -42,7 +42,7 @@
    ((byte_code)== BYTE_CODE_LOAD_LOCAL) \
 || ((byte_code)== BYTE_CODE_FIND_VARIABLE) \
 || ((byte_code)== BYTE_CODE_LOAD_GLOBAL)\
-|| ((byte_code)== BYTE_CODE_LOAD_MEMBER_VARIABLE)\
+|| ((byte_code)== BYTE_CODE_LOAD_THIS_VARIABLE)\
 )
 
 #define IS_BYTE_CODE_OPERATION(byte_code) 		(BYTE_CODE_EQU <=(byte_code) && (byte_code)<= BYTE_CODE_SHR)
@@ -68,9 +68,10 @@ namespace zetscript{
 		//BYTE_CODE_PUSH_STK_REF,
 		BYTE_CODE_PUSH_STK_THIS,
 		BYTE_CODE_PUSH_STK_MEMBER_VAR,
-		BYTE_CODE_PUSH_STK_ELEMENT_VECTOR,
-		BYTE_CODE_PUSH_STK_ELEMENT_THIS,
-		BYTE_CODE_PUSH_STK_ELEMENT_OBJECT,
+		BYTE_CODE_PUSH_STK_VECTOR_ITEM,
+		BYTE_CODE_PUSH_STK_THIS_VARIABLE,
+		BYTE_CODE_PUSH_STK_THIS_FUNCTION,
+		BYTE_CODE_PUSH_STK_OBJECT_ITEM,
 
 
 		// load var content
@@ -79,11 +80,10 @@ namespace zetscript{
 		BYTE_CODE_LOAD_LOCAL,
 		BYTE_CODE_LOAD_REF,
 		BYTE_CODE_LOAD_THIS,
-		BYTE_CODE_LOAD_MEMBER_VARIABLE,
-		BYTE_CODE_LOAD_MEMBER_FUNCTION,
-		BYTE_CODE_LOAD_ELEMENT_VECTOR,
-		BYTE_CODE_LOAD_ELEMENT_THIS,
-		BYTE_CODE_LOAD_ELEMENT_OBJECT,
+		BYTE_CODE_LOAD_VECTOR_ITEM,
+		BYTE_CODE_LOAD_THIS_VARIABLE,
+		BYTE_CODE_LOAD_THIS_FUNCTION,
+		BYTE_CODE_LOAD_OBJECT_ITEM,
 
 		// special load
 		BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR,
@@ -111,8 +111,8 @@ namespace zetscript{
 		BYTE_CODE_STORE_BITWISE_XOR, //
 		BYTE_CODE_STORE_SHL, //
 		BYTE_CODE_STORE_SHR, //
-		BYTE_CODE_PUSH_VECTOR_ELEMENT, // Value push for vector
-		BYTE_CODE_PUSH_OBJECT_ELEMENT,
+		BYTE_CODE_PUSH_VECTOR_ITEM, // Value push for vector
+		BYTE_CODE_PUSH_OBJECT_ITEM,
 		//-------------------------------
 		// OPERATIONS
 		//
@@ -213,8 +213,8 @@ namespace zetscript{
 	int			 byte_code_metamethod_get_num_arguments(ByteCodeMetamethod op);
 	bool		 byte_code_metamethod_should_be_static(ByteCodeMetamethod op);
 	//int			 get_num_arguments_non_metamethod(ByteCodeMetamethod op);
-	ByteCode	 byte_code_load_to_push_stk(ByteCode op);
-	bool		 byte_code_is_load_type(ByteCode op);
+	ByteCode	 byte_code_load_var_type_to_push_stk(ByteCode op);
+	bool		 byte_code_is_load_var_type(ByteCode op);
 
 
 

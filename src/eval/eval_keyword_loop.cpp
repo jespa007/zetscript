@@ -400,14 +400,14 @@ namespace zetscript{
 
 								for(unsigned j=0; j<end && is_for_in == true;j++){
 									Instruction *ins=&ptr_ei_init_vars_for_st->vm_instruction;
-									is_for_in&=(byte_code_is_load_type(ins->byte_code) || (ins->byte_code == BYTE_CODE_FIND_VARIABLE));
+									is_for_in&=(byte_code_is_load_var_type(ins->byte_code) || (ins->byte_code == BYTE_CODE_FIND_VARIABLE));
 									ptr_ei_init_vars_for_st++;
 								}
 
 								if(is_for_in){
 									Instruction *last_load_instruction=&((EvalInstruction *)ei_init_vars_for_st[i].items[end-1])->vm_instruction;
-									if(byte_code_is_load_type(last_load_instruction->byte_code)){
-										last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
+									if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
+										last_load_instruction->byte_code=byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
 									}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
 										last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 									}
@@ -518,7 +518,7 @@ namespace zetscript{
 
 								// load object end symbol
 								eval_data->current_function->eval_instructions.push_back((zs_int)(
-									ei_aux=new EvalInstruction(BYTE_CODE_LOAD_ELEMENT_OBJECT)
+									ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
 								));
 								ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "end");
 
@@ -549,7 +549,7 @@ namespace zetscript{
 
 								// v._get
 								eval_data->current_function->eval_instructions.push_back((zs_int)(
-									ei_aux=new EvalInstruction(BYTE_CODE_LOAD_ELEMENT_OBJECT)
+									ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
 								));
 
 								ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "get");
@@ -581,7 +581,7 @@ namespace zetscript{
 
 								// load object end symbol
 								ei_post_operations.push_back((zs_int)(
-									ei_aux=new EvalInstruction(BYTE_CODE_LOAD_ELEMENT_OBJECT)
+									ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
 								));
 
 								ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_post_inc");

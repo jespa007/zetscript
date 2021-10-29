@@ -259,8 +259,8 @@ namespace zetscript{
 			ByteCode  byte_code=eval_instruction->vm_instruction.byte_code;
 			if(byte_code==BYTE_CODE_FIND_VARIABLE){
 				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
-			}else if(byte_code_is_load_type(byte_code)){
-				eval_instruction->vm_instruction.byte_code=byte_code_load_to_push_stk(byte_code);
+			}else if(byte_code_is_load_var_type(byte_code)){
+				eval_instruction->vm_instruction.byte_code=byte_code_load_var_type_to_push_stk(byte_code);
 			}
 
 			eval_data->current_function->eval_instructions.push_back((zs_int)(new EvalInstruction(BYTE_CODE_DELETE)));

@@ -8,12 +8,12 @@
 
 #define GET_ILOAD_ACCESS_TYPE_STR(properties) \
  ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? "Local"\
-:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? "This"\
+:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? "This"\
 :"Global"\
 
 #define GET_ILOAD_R_STR(properties,value) \
 	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->local_variables->items[value])->name.c_str()\
-	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? ((Symbol *)sc->class_scope->symbol_variables->items[value])->name.c_str()\
+	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->class_scope->symbol_variables->items[value])->name.c_str()\
 	:((Symbol *)MAIN_FUNCTION(sfo)->local_variables->items[value])->name.c_str()\
 
 namespace zetscript{
@@ -118,10 +118,10 @@ namespace zetscript{
 				 n_ops++;
 			 }
 
-			 if((	   instruction->byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_VARIABLE
-					|| instruction->byte_code==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS
-					|| instruction->byte_code==ByteCode::BYTE_CODE_LOAD_MEMBER_FUNCTION
-					|| instruction->byte_code==ByteCode::BYTE_CODE_PUSH_STK_ELEMENT_THIS
+			 if((
+					   instruction->byte_code==ByteCode::BYTE_CODE_LOAD_THIS_VARIABLE
+					|| instruction->byte_code==ByteCode::BYTE_CODE_LOAD_THIS_FUNCTION
+					|| instruction->byte_code==ByteCode::BYTE_CODE_PUSH_STK_THIS_VARIABLE
 			)){
 
 				// ... we create new instruction
@@ -168,26 +168,26 @@ namespace zetscript{
 			switch(instruction->byte_code){
 
 			case  BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,(char)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_BOOL\t%s\n",idx_instruction,instruction->value_op2==0?"false":"true");
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_BOOL\t\t%s\n",idx_instruction,instruction->value_op2==0?"false":"true");
 				break;
 			case BYTE_CODE_LOAD_ZS_FLOAT:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_FLT\t%f\n",idx_instruction,*((zs_float *)&instruction->value_op2));
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_FLT\t\t%f\n",idx_instruction,*((zs_float *)&instruction->value_op2));
 				break;
 			case BYTE_CODE_LOAD_ZS_INT:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_INT\t%i\n",idx_instruction,(int)(instruction->value_op2));
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_INT\t\t%i\n",idx_instruction,(int)(instruction->value_op2));
 				break;
 			case BYTE_CODE_LOAD_STRING:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
 				break;
 			case BYTE_CODE_NEW_STRING:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tNEW_STRING\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tNEW_STRING\t\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
 				break;
 
 			case BYTE_CODE_PUSH_STK_GLOBAL:
@@ -195,6 +195,7 @@ namespace zetscript{
 			//case BYTE_CODE_PUSH_STK_REF:
 			case BYTE_CODE_PUSH_STK_THIS:
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR:
+			case BYTE_CODE_LOAD_THIS_FUNCTION:
 			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
 			case BYTE_CODE_LOAD_FUNCTION:
 			case BYTE_CODE_FIND_VARIABLE:
@@ -202,36 +203,35 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL:
 			case BYTE_CODE_LOAD_THIS:
 			case BYTE_CODE_LOAD_GLOBAL:
-			case BYTE_CODE_LOAD_MEMBER_VARIABLE:
-			case BYTE_CODE_LOAD_MEMBER_FUNCTION:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
 				);
 				break;
 
-			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
+			case BYTE_CODE_LOAD_VECTOR_ITEM:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s {vector}\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
 				);
 				break;
-			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
-			case BYTE_CODE_LOAD_ELEMENT_THIS:
-			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:
-			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
+			case BYTE_CODE_LOAD_OBJECT_ITEM:
+			case BYTE_CODE_LOAD_THIS_VARIABLE:
+			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
+			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
 				//instruction_aux=instruction;
 
-				while((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){
+				while((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM){
 					instruction++;
 					symbol_value+=zs_string(".")+SFI_GET_SYMBOL_NAME(sfo,instruction);
 				}
 
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
+					,instruction->byte_code==BYTE_CODE_LOAD_THIS_VARIABLE?"\t\t":"\t"
 					,symbol_value.c_str()
 				);
 				break;
@@ -269,9 +269,8 @@ namespace zetscript{
 					,instruction->value_op1
 				);
 				break;
-			case BYTE_CODE_FIND_IMMEDIATE_CALL:
 			case BYTE_CODE_IMMEDIATE_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\targ:%i ret:%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\targ:%i ret:%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
@@ -280,7 +279,7 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\targ:%i ret:%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\targ:%i ret:%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,instruction->value_op1
@@ -293,7 +292,7 @@ namespace zetscript{
 			default:
 
 				if(iload_info != ""){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 						idx_instruction
 						,byte_code_to_str(instruction->byte_code)
 						,iload_info.c_str()

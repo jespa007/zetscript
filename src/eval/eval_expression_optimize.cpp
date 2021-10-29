@@ -404,13 +404,13 @@ namespace zetscript{
 						,((load_value_op2_2 & 0xff) << 16) // pack value + properties
 						  | (
 								load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_2 == BYTE_CODE_LOAD_MEMBER_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+								:load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 							)
 						,INSTRUCTION_PROPERTY_ILOAD_RR
 						| (
 								load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_1 == BYTE_CODE_LOAD_MEMBER_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+								:load_byte_code_1 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 						)
 				);
@@ -427,7 +427,7 @@ namespace zetscript{
 						,INSTRUCTION_PROPERTY_ILOAD_RK
 						| (
 								load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_1 == BYTE_CODE_LOAD_MEMBER_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+								:load_byte_code_1 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 						)
 						| k_properties
@@ -444,7 +444,7 @@ namespace zetscript{
 						,INSTRUCTION_PROPERTY_ILOAD_KR
 						| (
 								load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_2 == BYTE_CODE_LOAD_MEMBER_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+								:load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 						)
 						| k_properties
@@ -472,7 +472,7 @@ namespace zetscript{
 							,ZS_IDX_UNDEFINED
 							,INSTRUCTION_PROPERTY_ILOAD_R | (
 									load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-									:load_byte_code_2 == BYTE_CODE_LOAD_MEMBER_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER
+									:load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 									:0
 							)
 					);

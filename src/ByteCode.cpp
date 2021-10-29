@@ -44,23 +44,22 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_LOCAL:						return "PUSH_STK_LOCAL"; // push stk global
 			//case BYTE_CODE_PUSH_STK_REF:						return "PUSH_STK_REF"; // push stk global
 			case BYTE_CODE_PUSH_STK_THIS:						return "PUSH_STK_THIS"; // push stk global
-			case BYTE_CODE_PUSH_STK_MEMBER_VAR:					return "PUSH_STK_MEMBER_VAR"; // push stk global
-			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:				return "PUSH_STK_E@VECTOR"; // load element vector
-			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:				return "PUSH_STK_E@THIS"; // load element object
-			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:				return "PUSH_STK_E@OBJ"; // load element object
+//			case BYTE_CODE_PUSH_STK_MEMBER_VAR:					return "PUSH_STK_MEMBER_VAR"; // push stk global
+			case BYTE_CODE_PUSH_STK_VECTOR_ITEM:				return "PUSH_STK_VEC@ITEM"; // load element vector
+			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:				return "PUSH_STK_OBJ@ITEM"; // load element object
+			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:				return "PUSH_STK_THIS@VAR"; // load element object
 
 			case BYTE_CODE_LOAD_GLOBAL:							return "LOAD_GLOBAL"; // load type var
 			case BYTE_CODE_LOAD_LOCAL:							return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_REF:							return "LOAD_REF"; // load type var
 			case BYTE_CODE_LOAD_THIS:							return "LOAD_THIS"; // load type var
 			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:	return "LOAD_CTOR"; // load type var
-			case BYTE_CODE_LOAD_MEMBER_VARIABLE:				return "LOAD_MEMBER_VARIABLE"; // load type var
-			case BYTE_CODE_LOAD_MEMBER_FUNCTION:				return "LOAD_MEMBER_FUNCTION"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      					return "LOAD_???"; // load to find global
 			case BYTE_CODE_FIND_IMMEDIATE_CALL:					return "ICALL???"; // load to find local/global function
-			case BYTE_CODE_LOAD_ELEMENT_THIS:					return "LOAD_E@THIS"; // load element object
-			case BYTE_CODE_LOAD_ELEMENT_VECTOR:					return "LOAD_E@VEC"; // load element vector
-			case BYTE_CODE_LOAD_ELEMENT_OBJECT:					return "LOAD_E@OBJ"; // load element object
+			case BYTE_CODE_LOAD_THIS_VARIABLE:					return "LOAD_THIS@VAR"; // load element object
+			case BYTE_CODE_LOAD_THIS_FUNCTION:					return "LOAD_THIS@FUN"; // load element object
+			case BYTE_CODE_LOAD_VECTOR_ITEM:					return "LOAD_VEC@ITEM"; // load element vector
+			case BYTE_CODE_LOAD_OBJECT_ITEM:					return "LOAD_OBJ@ITEM"; // load element object
 			case BYTE_CODE_LOAD_FUNCTION:						return "LOAD_FUNCT"; // load function
 			case BYTE_CODE_LOAD_NULL:							return "LOAD_NULL"; // load undfined
 			case BYTE_CODE_LOAD_STACK_ELEMENT:					return "LOAD_STK"; // load stack element
@@ -78,7 +77,7 @@ namespace zetscript{
 			case BYTE_CODE_IMMEDIATE_CALL:						return "ICALL"; // immediate call
 			case BYTE_CODE_CALL_CONSTRUCTOR: 					return "CALL_CTOR"; // calling function after all of arguments are processed...
 			case BYTE_CODE_NEW_VECTOR: 							return "NEW_VEC"; // Vector object (CREATE)
-			case BYTE_CODE_PUSH_VECTOR_ELEMENT: 				return "VPUSH"; // Value push for stdvector
+			case BYTE_CODE_PUSH_VECTOR_ITEM: 					return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 								return "RET"; // Value pop for stdvector
 			case BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:			return "NEW_CLASS"; // New object (CREATE)
 			case BYTE_CODE_NEW_OBJECT_BY_VALUE:					return "NEW_CLASS_FROM_VALUE"; // New object (CREATE)
@@ -86,7 +85,7 @@ namespace zetscript{
 			case BYTE_CODE_POP_SCOPE: 							return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_POP_SCOPE_CHK_NO_SHARES:				return "POP_SCOPE_CHK_NO_SHARES"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 							return "PUSH_SCOPE"; // New object (CREATE)
-			case BYTE_CODE_PUSH_OBJECT_ELEMENT:					return "PUSH_ATTR"; // New object (CREATE)
+			case BYTE_CODE_PUSH_OBJECT_ITEM:					return "PUSH_ATTR"; // New object (CREATE)
 			case BYTE_CODE_NEW_OBJECT:							return "NEW_OBJ"; // New object (CREATE)
 			case BYTE_CODE_NEW_STRING:							return "NEW_STR";
 			case BYTE_CODE_NEW_SOFM: 							return "NEW_FMO";
@@ -146,11 +145,9 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_GLOBAL:				return "LOAD_GLOBAL"; // load type var
 			case BYTE_CODE_LOAD_LOCAL:				return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_THIS:				return "LOAD_THIS"; // load type var
-			case BYTE_CODE_LOAD_MEMBER_VARIABLE:	return "LOAD_MEMBER_VAR"; // load type var
-			case BYTE_CODE_LOAD_MEMBER_FUNCTION:	return "LOAD_MEMBER_FUN"; // load type var
 			case BYTE_CODE_FIND_VARIABLE:      		return "LOAD_???"; // load to find global
-			case BYTE_CODE_LOAD_ELEMENT_VECTOR:		return "LOAD_EVEC"; // load element vector
-			case BYTE_CODE_LOAD_ELEMENT_OBJECT:		return "LOAD_EOBJ"; // load element object
+			case BYTE_CODE_LOAD_VECTOR_ITEM:		return "LOAD_EVEC"; // load element vector
+			case BYTE_CODE_LOAD_OBJECT_ITEM:		return "LOAD_EOBJ"; // load element object
 			case BYTE_CODE_LOAD_FUNCTION:			return "LOAD_FUNCT"; // load function
 			case BYTE_CODE_LOAD_NULL:				return "LOAD_NULL"; // load undfined
 			case BYTE_CODE_LOAD_STACK_ELEMENT:		return "LOAD_STK"; // load stack element
@@ -165,14 +162,14 @@ namespace zetscript{
 			case BYTE_CODE_JE_CASE:					return "JE"; // goto if equal ... goes end to conditional.
 			case BYTE_CODE_CALL: 					return "CALL"; // calling function after all of arguments are processed...
 			case BYTE_CODE_NEW_VECTOR: 				return "NEW_VEC"; // Vector object (CREATE)
-			case BYTE_CODE_PUSH_VECTOR_ELEMENT: 	return "VPUSH"; // Value push for stdvector
+			case BYTE_CODE_PUSH_VECTOR_ITEM: 	return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 					return "RET"; // Value pop for stdvector
 			case BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:return "NEW_CLASS"; // New object (CREATE)
 			case BYTE_CODE_DELETE:					return "DELETE";
 			case BYTE_CODE_POP_SCOPE: 				return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_POP_SCOPE_CHK_NO_SHARES:	return "POP_SCOPE_CHK_NO_SHARES"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 				return "PUSH_SCOPE"; // New object (CREATE)
-			case BYTE_CODE_PUSH_OBJECT_ELEMENT:		return "PUSH_ATTR"; // New object (CREATE)
+			case BYTE_CODE_PUSH_OBJECT_ITEM:		return "PUSH_ATTR"; // New object (CREATE)
 			case BYTE_CODE_NEW_OBJECT:				return "NEW_OBJ"; // New object (CREATE)
 			case BYTE_CODE_IT_INIT: 				return "IT_INIT"; // BYTE_CODE_IT_CHK_END
 			case BYTE_CODE_STORE_CONST:				return "STORE_CONST"; // BYTE_CODE_STORE_CONST
@@ -311,7 +308,7 @@ namespace zetscript{
 	}*/
 
 
-	ByteCode			 byte_code_load_to_push_stk(ByteCode byte_code){
+	ByteCode			 byte_code_load_var_type_to_push_stk(ByteCode byte_code){
 	// load ptr var
 		switch(byte_code){
 			// load var content
@@ -319,10 +316,9 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL:return BYTE_CODE_PUSH_STK_LOCAL;
 			case BYTE_CODE_LOAD_REF:return BYTE_CODE_LOAD_REF; // PUSH STK NOT EXIST, IS A REF ITSELF
 			case BYTE_CODE_LOAD_THIS:return BYTE_CODE_PUSH_STK_THIS;
-			case BYTE_CODE_LOAD_MEMBER_VARIABLE:return BYTE_CODE_PUSH_STK_MEMBER_VAR;
-			case BYTE_CODE_LOAD_ELEMENT_VECTOR:return BYTE_CODE_PUSH_STK_ELEMENT_VECTOR;
-			case BYTE_CODE_LOAD_ELEMENT_THIS:return BYTE_CODE_PUSH_STK_ELEMENT_THIS;
-			case BYTE_CODE_LOAD_ELEMENT_OBJECT:return BYTE_CODE_PUSH_STK_ELEMENT_OBJECT;
+			case BYTE_CODE_LOAD_VECTOR_ITEM:return BYTE_CODE_PUSH_STK_VECTOR_ITEM;
+			case BYTE_CODE_LOAD_THIS_VARIABLE:return BYTE_CODE_PUSH_STK_THIS_VARIABLE;
+			case BYTE_CODE_LOAD_OBJECT_ITEM:return BYTE_CODE_PUSH_STK_OBJECT_ITEM;
 			default:
 				THROW_RUNTIME_ERROR("internal: op code not type load");
 				break;
@@ -332,14 +328,13 @@ namespace zetscript{
 
 	}
 
-	bool		 byte_code_is_load_type(ByteCode byte_code){
+	bool		 byte_code_is_load_var_type(ByteCode byte_code){
 		return byte_code==BYTE_CODE_LOAD_GLOBAL
 				|| byte_code==BYTE_CODE_LOAD_LOCAL
 				|| byte_code==BYTE_CODE_LOAD_REF
 				|| byte_code==BYTE_CODE_LOAD_THIS
-				|| byte_code==BYTE_CODE_LOAD_MEMBER_VARIABLE
-				|| byte_code==BYTE_CODE_LOAD_ELEMENT_VECTOR
-				|| byte_code==BYTE_CODE_LOAD_ELEMENT_THIS
-				|| byte_code==BYTE_CODE_LOAD_ELEMENT_OBJECT;
+				|| byte_code==BYTE_CODE_LOAD_VECTOR_ITEM
+				|| byte_code==BYTE_CODE_LOAD_THIS_VARIABLE
+				|| byte_code==BYTE_CODE_LOAD_OBJECT_ITEM;
 	}
 }

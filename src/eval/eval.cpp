@@ -237,12 +237,8 @@ namespace zetscript{
 				if(symbol_found !=NULL){
 
 					if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
-						if(unresolved_instruction->instruction->byte_code==BYTE_CODE_FIND_VARIABLE){
-							unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
-						}else{
-							unresolved_instruction->instruction->byte_code=BYTE_CODE_IMMEDIATE_CALL;
-						}
-						unresolved_instruction->instruction->value_op2=(zs_int)(ScriptFunction *)symbol_found->ref_ptr; // store script function
+						unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+						unresolved_instruction->instruction->value_op2=(zs_int)symbol_found; // store script function
 					}
 					else{ // global variable
 
@@ -641,20 +637,18 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_GLOBAL:
 			case BYTE_CODE_LOAD_REF:
 			case BYTE_CODE_LOAD_THIS:
-			case BYTE_CODE_LOAD_MEMBER_VARIABLE:
-			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
-			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
+			case BYTE_CODE_LOAD_VECTOR_ITEM:
+			case BYTE_CODE_LOAD_OBJECT_ITEM:
 			// PUSH_STK
 			case BYTE_CODE_PUSH_STK_GLOBAL:
 			case BYTE_CODE_PUSH_STK_LOCAL:
 			case BYTE_CODE_PUSH_STK_THIS:
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR:
-			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:
-			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:
-			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
+			case BYTE_CODE_PUSH_STK_VECTOR_ITEM:
+			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
+			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
 				// CONSTRUCTOR
 			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
-
 				// load constants
 			case BYTE_CODE_LOAD_FUNCTION:
 			case BYTE_CODE_LOAD_NULL:
@@ -665,10 +659,6 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_STACK_ELEMENT:
 				sum_stk_load_stk++;
 				break;
-			case BYTE_CODE_LOAD_MEMBER_FUNCTION:
-				sum_stk_load_stk++; // obj
-				sum_stk_load_stk++; // function
-				break;
 			case BYTE_CODE_RESET_STACK: // <-- reset stack
 			case BYTE_CODE_CALL: // <-- reset stack
 				if(sf->min_stack_needed<sum_stk_load_stk){
@@ -676,15 +666,15 @@ namespace zetscript{
 				}
 				sum_stk_load_stk=0; // and reset stack
 				break;
-			case BYTE_CODE_LOAD_ELEMENT_THIS:
-				sum_stk_load_stk++;
+			case BYTE_CODE_LOAD_THIS_FUNCTION:
+
+				sum_stk_load_stk++; // obj this
+				sum_stk_load_stk++; // function
 				// try to solve symbol...
 				if(*ptr_str_symbol_to_find == SYMBOL_VALUE_SUPER){
 					// get current function name and find first ancestor in heritance
 					Symbol *symbol_sf_foundf=NULL;
 					zs_string target_name;
-
-					//bool is_constructor = sf->symbol.name == sc_sf->class_name;
 
 					for(int i = sf->idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
 						Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[i];
@@ -730,31 +720,15 @@ namespace zetscript{
 							);
 						}
 					}
-					eval_instruction->vm_instruction.byte_code=BYTE_CODE_LOAD_MEMBER_FUNCTION;
-					eval_instruction->vm_instruction.value_op2=symbol_sf_foundf->idx_position;
+					eval_instruction->vm_instruction.value_op2=(zs_int)symbol_sf_foundf;//->idx_position;
 					eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_class->class_name)+"::"+symbol_sf_foundf->name);
-
-				}else{ // is "this" symbol, check whether symbol is member
-					// TODO: review load function member !!
-					if(eval_instruction->vm_instruction.value_op2 == ZS_IDX_UNDEFINED){
-						// is automatically created on vm...
-						Symbol *symbol_function=sc_sf->getSymbol(*ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY);
-						if(symbol_function!=NULL){
-							// functions always loads dynamically because we can have an override function
-							// so we don't load as member in a fix position else is a member variable ...
-							if((symbol_function->properties & SYMBOL_PROPERTY_FUNCTION) == 0){ // if not function set as load immediate
-								eval_instruction->vm_instruction.value_op2=symbol_function->idx_position;
-								eval_instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_VARIABLE; // immediate load
-							}else{
-								eval_instruction->vm_instruction.byte_code=ByteCode::BYTE_CODE_LOAD_MEMBER_FUNCTION; // immediate load
-							}
-						}
-					}
-					// TODO: review load function member !!
 				}
 				break;
-			case BYTE_CODE_FIND_VARIABLE:
+			case BYTE_CODE_LOAD_THIS_VARIABLE: // is "this" symbol, check whether symbol is member
+				sum_stk_load_stk++;
+				break;
 			case BYTE_CODE_FIND_IMMEDIATE_CALL:
+			case BYTE_CODE_FIND_VARIABLE:
 				// add instruction reference to solve later
 				eval_data->unresolved_symbols.push_back((zs_int)(
 						new UnresolvedInstructionInfo(&sf->instructions[i],sf)

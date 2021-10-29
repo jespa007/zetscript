@@ -218,7 +218,7 @@ eval_error_sub_expression:
 		// is load or find variable
 		for(unsigned i=0;i < eval_instructions->count; i++){
 			Instruction *ei=&((EvalInstruction *)eval_instructions->items[i])->vm_instruction;
-			if(((byte_code_is_load_type(ei->byte_code) || ei->byte_code == BYTE_CODE_FIND_VARIABLE))==false){
+			if(((byte_code_is_load_var_type(ei->byte_code) || ei->byte_code == BYTE_CODE_FIND_VARIABLE))==false){
 				return false;
 			}
 		}
@@ -338,8 +338,8 @@ eval_error_sub_expression:
 				zs_vector *ei_left_sub_expressions=(zs_vector *)zs_ei_left_sub_expressions.items[l];
 				Instruction *last_load_instruction=&((EvalInstruction *)ei_left_sub_expressions->items[ei_left_sub_expressions->count-1])->vm_instruction;
 
-				if(byte_code_is_load_type(last_load_instruction->byte_code)){
-					last_load_instruction->byte_code=byte_code_load_to_push_stk(last_load_instruction->byte_code);
+				if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
+					last_load_instruction->byte_code=byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
 				}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
 					last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 				}

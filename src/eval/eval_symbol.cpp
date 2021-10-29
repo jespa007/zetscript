@@ -126,12 +126,12 @@ namespace zetscript{
 								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"\"super\" only allowed as function");
 							}
 
-							byte_code=BYTE_CODE_LOAD_ELEMENT_THIS;
+							byte_code=BYTE_CODE_LOAD_THIS_FUNCTION;
 						}else{
 							byte_code= ByteCode::BYTE_CODE_LOAD_THIS;// INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 						}
 					}else{
-						Symbol *vis=NULL;
+						Symbol *local_symbol=NULL;
 
 						// should be an identifier and should be find after eval function or at runtime...
 						if(check_identifier_name_expression_ok(
@@ -144,17 +144,17 @@ namespace zetscript{
 
 						ScriptClass *sc=eval_data->script_class_factory->getScriptClass(default_str_value);
 
-						if((vis=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy
+						if((local_symbol=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy
 
-							if(vis->properties & SYMBOL_PROPERTY_FUNCTION){
+							if(local_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 								byte_code= ByteCode::BYTE_CODE_LOAD_FUNCTION;
-								value=vis->ref_ptr;
+								value=(zs_int)local_symbol;
 
 							}else{
 								byte_code= ByteCode::BYTE_CODE_LOAD_LOCAL;
-								value=vis->idx_position;
+								value=local_symbol->idx_position;
 
-								if((vis->properties & SYMBOL_PROPERTY_ARG_BY_REF) == SYMBOL_PROPERTY_ARG_BY_REF){
+								if((local_symbol->properties & SYMBOL_PROPERTY_ARG_BY_REF) == SYMBOL_PROPERTY_ARG_BY_REF){
 									byte_code= ByteCode::BYTE_CODE_LOAD_REF;
 								}
 

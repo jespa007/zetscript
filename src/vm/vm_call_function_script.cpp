@@ -280,7 +280,7 @@
 
 #define LOAD_FROM_STACK(offset,properties) \
 	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? _stk_local_var+offset \
-	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_MEMBER) ? vm_load_this_element(vm,this_object,calling_function,instruction,offset) \
+	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? vm_load_this_element(vm,this_object,calling_function,instruction,offset) \
 	:data->vm_stack + offset\
 
 #define POP_TWO \
@@ -393,6 +393,7 @@ namespace zetscript{
 		bool 			 sf_call_is_member_function=false;
 		StackElement 	*sf_call_stk_return=NULL;
 		int 			sf_call_n_returned_arguments_from_function=0;
+		bool			sf_call_is_immediate=false;
 		// SFCALL
 		//------------------------------------------------
 		//int idx_stk_element;
@@ -462,8 +463,8 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR: // direct load
 				PUSH_STK_PTR(this_object->getBuiltinElementAt(instruction->value_op2));
 				continue;
-			case BYTE_CODE_PUSH_STK_ELEMENT_VECTOR:
-			case BYTE_CODE_LOAD_ELEMENT_VECTOR:
+			case BYTE_CODE_PUSH_STK_VECTOR_ITEM:
+			case BYTE_CODE_LOAD_VECTOR_ITEM:
 				POP_TWO;
 				so_aux=NULL;
 				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
@@ -499,7 +500,7 @@ namespace zetscript{
 							}
 							stk_var = so_object->getProperty(stk_to_str(data->zs, stk_result_op2));
 							if(stk_var == NULL){
-								if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_VECTOR){
+								if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
 									if((stk_var =so_object->addProperty(stk_to_str(data->zs, stk_result_op2), data->vm_error_str))==NULL){
 										VM_STOP_EXECUTE(data->vm_error_str.c_str());
 									}
@@ -507,14 +508,12 @@ namespace zetscript{
 							}
 
 						}
-						if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
+						if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 							*data->stk_vm_current++=*stk_var;
 						}else{
 							PUSH_STK_PTR(stk_var);
 						}
-
 						continue;
-
 					}else if(obj->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_STRING){
 						ScriptObjectString *so_string=(ScriptObjectString *)stk_result_op1->value;
 
@@ -524,7 +523,7 @@ namespace zetscript{
 
 
 						zs_char *ptr_char=(zs_char *)&((zs_string *)so_string->value)->c_str()[STK_VALUE_TO_ZS_INT(stk_result_op2)];
-						if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_VECTOR){
+						if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 							data->stk_vm_current->value=((zs_int)(*ptr_char));
 							data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;
 						}else{ // push stk
@@ -540,7 +539,6 @@ namespace zetscript{
 					VM_STOP_EXECUTE("Expected object for access \"[]\" opertaion"); \
 
 				}
-
 				continue;
 			// load
 			case BYTE_CODE_LOAD_GLOBAL: // load variable ...
@@ -555,16 +553,13 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_THIS: // load variable ...
 				*data->stk_vm_current++=*this_object->getThisProperty();
 				continue;
-			case BYTE_CODE_LOAD_MEMBER_FUNCTION:// direct load
+			case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
 				data->stk_vm_current->value=(zs_int)this_object;
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				data->stk_vm_current++;
-				data->stk_vm_current->value=(zs_int)((Symbol *)this_object->getScriptClass()->class_scope->symbol_functions->items[instruction->value_op2]);
+				data->stk_vm_current->value=instruction->value_op2;
 				data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 				data->stk_vm_current++;
-				continue;
-			case BYTE_CODE_LOAD_MEMBER_VARIABLE: // direct load
-				*data->stk_vm_current++=*vm_load_this_element(vm,this_object,calling_function,instruction,instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
@@ -576,19 +571,15 @@ namespace zetscript{
 					data->stk_vm_current++;
 				}
 				continue;
-
-			case BYTE_CODE_PUSH_STK_ELEMENT_OBJECT:
-			case BYTE_CODE_PUSH_STK_ELEMENT_THIS:
-			case BYTE_CODE_LOAD_ELEMENT_OBJECT:
-			case BYTE_CODE_LOAD_ELEMENT_THIS:
-				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				// TODO: Review jespada load function member
-
+			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
+			case BYTE_CODE_LOAD_OBJECT_ITEM:
+			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
+			case BYTE_CODE_LOAD_THIS_VARIABLE:
 load_element_object:
 
 				stk_var=NULL;
 				so_aux=this_object; // take this as default
-				if(instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT || instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT){
+				if(instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM){
 
 					Instruction *previous_ins= (instruction-1);
 
@@ -621,23 +612,37 @@ load_element_object:
 
 
 				}else{ // if LOAD THIS OR PUSH_STK THIS ...
-					if(instruction->value_op2>=0){ // on dynamic members fix idx when we find a C function
-						stk_var=this_object->getBuiltinElementAt(instruction->value_op2);
-					}
+					stk_var=vm_load_this_element(vm,this_object,calling_function,instruction,instruction->value_op2);
 				}
 
 				if(stk_var==NULL){ // load element from object or dynamic member element from this
 					str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
-					if((stk_var=so_aux->getProperty(str_symbol)) == NULL){
+					//
+					ScriptClass *sc=so_aux->getScriptClass();
+					Symbol *sf_member=sc->getSymbolMemberFunction(str_symbol);
+					if(sf_member !=NULL){
+						if(instruction->byte_code==BYTE_CODE_LOAD_THIS_VARIABLE){
+							data->stk_vm_current->value=(zs_int)this_object;
+							data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+							data->stk_vm_current++;
+						}
+
+						data->stk_vm_current->value=(zs_int)sf_member;
+						data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
+						data->stk_vm_current++;
+						continue;
+
+					}else if((stk_var=so_aux->getProperty(str_symbol)) == NULL){ // --> find property
+						// just in case not found-->push null
 						// something went wrong
 						if(data->vm_error == true){
 							goto lbl_exit_function;
 						}
 						//------------------------------------------------------------------
 						// pack member info for store information...
-						if(   instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT
-						  ||  instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_THIS){
+						if(   instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM
+						  ||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
 							// save
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
 								VM_STOP_EXECUTE(data->vm_error_str.c_str());
@@ -652,7 +657,7 @@ load_element_object:
 						continue;
 					}else if(
 						   ((stk_var->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)!=0)
-						&& (instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT  ||  instruction->byte_code == BYTE_CODE_LOAD_ELEMENT_THIS)
+						&& (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM  ||  instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
 						&& (instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0){ // call getter if exist
 							StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->value;
 							if(stk_ma->member_attribute->getter != NULL){
@@ -671,20 +676,17 @@ load_element_object:
 				}
 
 				// copy the content of this value
-				if(instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_OBJECT || instruction->byte_code == BYTE_CODE_PUSH_STK_ELEMENT_THIS){ // push ref because is gonna to be assigned
+				if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){ // push ref because is gonna to be assigned
 					PUSH_STK_PTR(stk_var);
 				}else{ // load its value for read
 					*data->stk_vm_current++=*stk_var;
 				}
 
-				if((instruction+1)->byte_code == BYTE_CODE_LOAD_ELEMENT_OBJECT){ // fast load access without pass through switch instruction
+				if((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM){ // fast load access without pass through switch instruction
 					instruction++; // we have to inc current instruction...
 					instruction_it++; //... and instruction iterator
 					goto load_element_object;
 				}
-				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				// TODO: Review jespada load function
-
 				continue;
 			case BYTE_CODE_LOAD_NULL:
 				PUSH_STK_NULL;
@@ -715,8 +717,8 @@ load_element_object:
 				PUSH_STK_TYPE(instruction->value_op2);
 				continue;
 			case BYTE_CODE_STORE:
-			case BYTE_CODE_PUSH_VECTOR_ELEMENT:
-			case BYTE_CODE_PUSH_OBJECT_ELEMENT:
+			case BYTE_CODE_PUSH_VECTOR_ITEM:
+			case BYTE_CODE_PUSH_OBJECT_ITEM:
 			case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE_ADD:
 			case BYTE_CODE_STORE_SUB:
@@ -736,7 +738,7 @@ load_element_object:
 					char n_dst_vars=0;
 					StackElement *stk_multi_var_src=NULL;
 
-					if(instruction->byte_code==BYTE_CODE_PUSH_VECTOR_ELEMENT){
+					if(instruction->byte_code==BYTE_CODE_PUSH_VECTOR_ITEM){
 
 						// you are doing that,
 						//
@@ -765,7 +767,7 @@ load_element_object:
 						if(vec_obj==NULL){
 							VM_STOP_EXECUTE("Expected vector object");
 						}
-					}else if(instruction->byte_code==BYTE_CODE_PUSH_OBJECT_ELEMENT){
+					}else if(instruction->byte_code==BYTE_CODE_PUSH_OBJECT_ITEM){
 
 						// you are doing that,
 						//
@@ -1254,8 +1256,8 @@ load_element_object:
 						stk_result_op1=++stk_multi_var_src; // result on the right
 						goto vm_store_next;
 					}
-					else if(   instruction->byte_code!=BYTE_CODE_PUSH_VECTOR_ELEMENT
-							&& instruction->byte_code!=BYTE_CODE_PUSH_OBJECT_ELEMENT
+					else if(   instruction->byte_code!=BYTE_CODE_PUSH_VECTOR_ITEM
+							&& instruction->byte_code!=BYTE_CODE_PUSH_OBJECT_ITEM
 					){
 						*data->stk_vm_current++=*stk_dst;
 					}
@@ -1451,8 +1453,8 @@ load_element_object:
 				}
 				continue;
 			 case  BYTE_CODE_IMMEDIATE_CALL: // calling function after all of args are processed...
-
 				 sf_call_calling_object = NULL;
+				 sf_call_is_immediate=true;
 				 sf_call_script_function=(ScriptFunction *)instruction->value_op2;
 				 sf_call_n_args=instruction->value_op1; // number arguments will pass to this function
 				 sf_call_stk_start_arg_call=(data->stk_vm_current-sf_call_n_args);
@@ -1460,6 +1462,7 @@ load_element_object:
 			 case  BYTE_CODE_CALL_CONSTRUCTOR:
 			 case  BYTE_CODE_CALL: // calling function after all of args are processed...
 				 {
+					sf_call_is_immediate=false;
 					sf_call_script_function=NULL;
 					StackElement *stk_function_ref=NULL;
 					zs_int idx_function=ZS_IDX_UNDEFINED;
@@ -1476,6 +1479,10 @@ load_element_object:
 					if(stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
 					  Symbol *symbol=(Symbol *)stk_function_ref->value;
 					  sf_call_calling_object=(ScriptObject *)((sf_call_stk_start_arg_call-2))->value; // its supposed to have the object
+					  if((zs_int)sf_call_calling_object == 0x19){
+						  int y=0;
+						  y++;
+					  }
 					  sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
 					}else if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_function_ref)){
 					  ScriptObjectMemberFunction *sofm=(  ScriptObjectMemberFunction *)stk_function_ref->value;
@@ -1491,8 +1498,8 @@ load_element_object:
 							}
 							VM_STOP_EXECUTE("'%s' is not function or not exist",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 						}
-
-						sf_call_script_function=(ScriptFunction *)stk_function_ref->value;
+						Symbol *symbol=(Symbol *)stk_function_ref->value;
+						sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
 					}
 
 					sf_call_is_member_function=stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION;
@@ -1731,7 +1738,7 @@ execute_function:
 				CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function,false)
 
 				// reset vm current before function pointer is
-				data->stk_vm_current=sf_call_stk_start_arg_call-(instruction->byte_code==BYTE_CODE_IMMEDIATE_CALL?0:1);
+				data->stk_vm_current=sf_call_stk_start_arg_call-(sf_call_is_immediate?0:1);
 
 				if(instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK) {
 					StackElement tmp;
@@ -1744,7 +1751,7 @@ execute_function:
 					}
 
 					// copy to vm stack
-					data->stk_vm_current=sf_call_stk_start_arg_call-(instruction->byte_code==BYTE_CODE_IMMEDIATE_CALL?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
+					data->stk_vm_current=sf_call_stk_start_arg_call-(sf_call_is_immediate?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
 					for(int i=0;i<sf_call_n_returned_arguments_from_function;i++){
 						*data->stk_vm_current++= *sf_call_stk_return++; // only return first argument
@@ -2022,9 +2029,13 @@ execute_function:
 			,short	idx
 			){
 		VirtualMachineData *data = (VirtualMachineData*)vm->data;
-		StackElement *stk_var=this_object->getBuiltinElementAt(idx);
+		StackElement *stk_var=NULL;
 
-		if(stk_var->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
+		if(idx != ZS_IDX_UNDEFINED){
+			stk_var = this_object->getBuiltinElementAt(idx);
+		}
+
+		if(stk_var != NULL && (stk_var->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)){
 			StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->value;
 			if(stk_ma->member_attribute->getter != NULL){
 

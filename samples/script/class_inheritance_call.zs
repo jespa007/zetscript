@@ -11,12 +11,13 @@ class Test{
 		this.c=c;  // init built-in
 		this.d=-100; // a user property
 		this["e"]=-200; // another user property usign []
-		Console::outln("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.d:{4} MAX_NUM:{5}"
+		Console::outln("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.e:{4} this.f:{5} MAX_NUM:{6}"
 				,this.a
 				,this.b
 				,this.c
 				,this.d
 				,this.e
+				,this.f
 				,Test::MAX_NUM);
 		
 	}
@@ -44,8 +45,8 @@ class TestExtended extends Test{
 	TestExtended(a){
 		Console::outln("TestExtended::constructor this.a:{0}",this.a);
 		super(a); // it calls base constructor (by default it doesn't call)
-		this.function3=function(a){ // creates anonymous function and take account this context
-			this.a+=a;
+		this.function3=function(a){ // creates anonymous function
+			this.a+=a; // anonyous functions can access its own 'this' member
 			Console::outln("TextExtended::Anonymous function, this.a:{0}",this.a);
 			this.function2(a);
 		};
