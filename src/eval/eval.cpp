@@ -237,8 +237,12 @@ namespace zetscript{
 				if(symbol_found !=NULL){
 
 					if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
-						unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
-						unresolved_instruction->instruction->value_op2=(zs_int)symbol_found; // store script function
+						if(unresolved_instruction->instruction->byte_code==BYTE_CODE_FIND_VARIABLE){
+							unresolved_instruction->instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+						}else{
+							unresolved_instruction->instruction->byte_code=BYTE_CODE_IMMEDIATE_CALL;
+						}
+						unresolved_instruction->instruction->value_op2=(zs_int)(ScriptFunction *)symbol_found->ref_ptr; // store script function
 					}
 					else{ // global variable
 

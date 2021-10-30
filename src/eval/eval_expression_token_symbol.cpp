@@ -385,14 +385,14 @@ namespace zetscript{
 					}
 
 					byte_code=ByteCode::BYTE_CODE_CALL;
-					/*if(	it_accessor_token==0
+					if(	it_accessor_token==0
 							&&
 					(ei_first_token_node->vm_instruction.byte_code==BYTE_CODE_LOAD_FUNCTION
 								||
 					ei_first_token_node->vm_instruction.byte_code==BYTE_CODE_FIND_VARIABLE)
 					){
 						byte_code=ByteCode::BYTE_CODE_IMMEDIATE_CALL;
-					}*/
+					}
 
 					aux_p++;
 					break;
@@ -483,7 +483,7 @@ namespace zetscript{
 				//EvalInstruction *ei_first_instruction_token=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
 
 				switch(byte_code){
-				/*case BYTE_CODE_IMMEDIATE_CALL:
+				case BYTE_CODE_IMMEDIATE_CALL:
 					instruction_token->vm_instruction.value_op1=n_params;
 					instruction_token->symbol=ei_first_token_node->symbol;
 					if(instruction_token->vm_instruction.value_op2 == ZS_IDX_UNDEFINED){
@@ -492,7 +492,7 @@ namespace zetscript{
 					instruction_token->instruction_source_info= ei_first_token_node->instruction_source_info;
 					delete ei_first_token_node;
 					token_node_symbol->eval_instructions.erase(0);
-					break;*/
+					break;
 				case BYTE_CODE_CALL:
 					instruction_token->vm_instruction.value_op1=n_params;
 
