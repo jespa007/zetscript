@@ -38,8 +38,7 @@ namespace zetscript{
 			int idx_clear_checkpoint;
 			int idx_clear_global_checkpoint_global_symbol_registered_variables;
 			int idx_clear_global_checkpoint_global_symbol_registered_functions;
-			int idx_clear_global_checkpoint_global_symbol_registered_classes;
-			int idx_clear_global_checkpoint_global_scopes;
+			int idx_clear_global_checkpoint_global_symbol_registered_types;
 
 			void clearGlobalSymbols(int _idx_start=ZS_IDX_UNDEFINED);
 

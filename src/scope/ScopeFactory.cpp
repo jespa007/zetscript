@@ -15,8 +15,7 @@ namespace zetscript{
 		idx_clear_checkpoint=1;  // start from MAIN scope
 		idx_clear_global_checkpoint_global_symbol_registered_variables=0;
 		idx_clear_global_checkpoint_global_symbol_registered_functions=0;
-		idx_clear_global_checkpoint_global_symbol_registered_classes=0;
-		idx_clear_global_checkpoint_global_scopes=0;
+		idx_clear_global_checkpoint_global_symbol_registered_types=0;
 	}
 
 	Scope *	 ScopeFactory::newScope(int idx_sf,Scope * scope_parent,uint16_t _properties){
@@ -35,25 +34,24 @@ namespace zetscript{
 			Scope *scope=(Scope *)scopes->items[v];
 
 
-			if(scope!=NULL  // scope can be NULL due it was erased before by the removing parent (I don't know whether this is a correct way)
+			if(scope!=NULL  // scope can be NULL due it was erased before by the removing parent
 					&&
 			(scope->properties & SCOPE_PROPERTY_UNUSUED)){
 				// search parent element
-				if(scope != NULL){
-					if(scope->scope_parent != NULL){
-						// remove child from parent to
-						zs_vector *childs=scope->scope_parent->scopes;
-						for(int i=0; i < childs->count; i++){
-							Scope *child=(Scope *)childs->items[i];
-							if(child==scope){
-								childs->erase(i);
-								break;
-							}
+				if(scope->scope_parent != NULL){
+					// remove child from parent to
+					zs_vector *childs=scope->scope_parent->scopes;
+					for(int i=0; i < childs->count; i++){
+						Scope *child=(Scope *)childs->items[i];
+						if(child==scope){
+							childs->erase(i);
+							break;
 						}
 					}
-
-					delete scope;
 				}
+
+				delete scope;
+
 				scopes->erase(v);
 			}else{
 				--v;
@@ -64,9 +62,6 @@ namespace zetscript{
 	void ScopeFactory::clear(){
 		int idx_start = idx_clear_checkpoint;
 
-		int idx_start_global_scopes=idx_clear_global_checkpoint_global_scopes;
-
-
 		zs_string global_symbol="";
 
 		for(
@@ -74,20 +69,12 @@ namespace zetscript{
 			v > idx_start; // avoid main scope
 			v--
 		){
-			Scope * info_scope = (Scope *)scopes->pop_back();//(Scope *)scopes->get(v);
-			delete info_scope;
-		}
-
-		// erase all local scopes in the main scope
-		for (
-				int v = main_scope->scopes->count-1;
-				v > idx_start_global_scopes ;
-				v--) {
-			// Only pop-back, don't delete because they were deleted on previous loop
-			main_scope->scopes->pop_back();
+			Scope * info_scope = (Scope *)scopes->items[v];//(Scope *)scopes->get(v);
+			info_scope->properties |= SCOPE_PROPERTY_UNUSUED;
 
 		}
-		//clearGlobalSymbols();
+
+		clearUnusuedScopes();
 	}
 
 	void ScopeFactory::saveState(){
@@ -97,51 +84,11 @@ namespace zetscript{
 
 		idx_clear_global_checkpoint_global_symbol_registered_variables=main_scope->symbol_variables->count-1;
 		idx_clear_global_checkpoint_global_symbol_registered_functions=main_scope->symbol_functions->count-1;
-
-		idx_clear_global_checkpoint_global_scopes=main_scope->scopes->count-1;
-
-	}
-/*
-	void ScopeFactory::clearGlobalSymbols(int _idx_start){
-		int idx_start_global_registered_symbols=_idx_start==ZS_IDX_UNDEFINED?idx_clear_global_checkpoint_global_registered_symbols:_idx_start;
-		Scope *main_scope= (Scope *)this->scopes->items[IDX_SCRIPT_SCOPE_MAIN];
-		VirtualMachine *vm=this->zs->getVirtualMachine();
-		StackElement *vm_stk_element=&vm_get_stack_elements(vm)[main_scope->registered_symbols->count-1];
-
-		// remove all symbols/scopes registered main scope till idx_start
-		for (
-				int v = main_scope->registered_symbols->count-1;
-				v > idx_start_global_registered_symbols;
-				v--) {
-			//delete (Symbol *)main_scope->registered_symbols->items[v];
-			//main_scope->registered_symbols->pop_back();
-			Symbol *symbol=(Symbol *)main_scope->registered_symbols->items[v];
-			//global_symbol=symbol->name;
-			ScriptObjectObject *var = NULL;
-
-
-			if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				var =((ScriptObjectObject *)(vm_stk_element->value));
-				if(var){
-					if(var->shared_pointer != NULL){
-						if(!vm_unref_shared_script_object(vm,var,IDX_CALL_STACK_MAIN)){
-							THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(vm));
-						}
-					}
-				}
-			}
-			delete symbol;
-			main_scope->registered_symbols->pop_back();
-			*vm_stk_element--=k_stk_null;
-		}
-
+		idx_clear_global_checkpoint_global_symbol_registered_types=main_scope->symbol_types->count-1;
 
 	}
-*/
 
 	ScopeFactory::~ScopeFactory(){
-
-		//clearGlobalSymbols(0);
 
 		// destroy all nodes ...
 		for(unsigned i = 0; i < scopes->count; i++){

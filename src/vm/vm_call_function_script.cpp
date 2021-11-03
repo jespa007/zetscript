@@ -384,6 +384,7 @@ namespace zetscript{
 		Symbol * symbol_aux=NULL;
 		//------------------------------------------------
 		// SFCALL
+		StackElement	*sf_call_stk_function_ref=NULL;
 		ScriptFunction 	*sf_call_script_function = NULL;
 		unsigned char 	 sf_call_n_args=0; // number arguments will pass to this function
 		StackElement 	*sf_call_stk_start_arg_call=NULL;
@@ -554,12 +555,17 @@ namespace zetscript{
 				*data->stk_vm_current++=*this_object->getThisProperty();
 				continue;
 			case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
-				data->stk_vm_current->value=(zs_int)this_object;
-				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
-				data->stk_vm_current++;
-				data->stk_vm_current->value=instruction->value_op2;
-				data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
-				data->stk_vm_current++;
+				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs);
+
+				((ScriptObjectMemberFunction *)so_aux)->so_object=this_object;
+				((ScriptObjectMemberFunction *)so_aux)->so_function=(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr;
+
+				 if(!vm_create_shared_pointer(vm,so_aux)){
+						goto lbl_exit_function;
+				 }
+				 data->stk_vm_current->value=(zs_int)so_aux;
+				 data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+				 data->stk_vm_current++;
 				continue;
 			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
@@ -622,15 +628,25 @@ load_element_object:
 					ScriptClass *sc=so_aux->getScriptClass();
 					Symbol *sf_member=sc->getSymbolMemberFunction(str_symbol);
 					if(sf_member !=NULL){
-						if(instruction->byte_code==BYTE_CODE_LOAD_THIS_VARIABLE){
-							data->stk_vm_current->value=(zs_int)this_object;
-							data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
-							data->stk_vm_current++;
-						}
+						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs);
 
-						data->stk_vm_current->value=(zs_int)sf_member;
-						data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
+						somf->so_object=so_aux;
+						somf->so_function=(ScriptFunction *)sf_member->ref_ptr;
+
+						// because of this member function to ensure to call without destroy the object before ...
+						 if(!vm_share_pointer(vm,so_aux)){
+								goto lbl_exit_function;
+						 }
+
+						 if(!vm_create_shared_pointer(vm,somf)){
+								goto lbl_exit_function;
+						 }
+
+
+						data->stk_vm_current->value=(zs_int)somf;
+						data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 						data->stk_vm_current++;
+
 						continue;
 
 					}else if((stk_var=so_aux->getProperty(str_symbol)) == NULL){ // --> find property
@@ -1452,60 +1468,80 @@ load_element_object:
 					instruction_it=instruction+instruction->value_op2;
 				}
 				continue;
-			 case  BYTE_CODE_IMMEDIATE_CALL: // calling function after all of args are processed...
+			//----- direct call
+			 case  BYTE_CODE_CALL: // immediate call this
 				 sf_call_calling_object = NULL;
 				 sf_call_is_immediate=true;
+				 sf_call_is_member_function=false;
 				 sf_call_script_function=(ScriptFunction *)instruction->value_op2;
-				 sf_call_n_args=instruction->value_op1; // number arguments will pass to this function
-				 sf_call_stk_start_arg_call=(data->stk_vm_current-sf_call_n_args);
 				 goto execute_function;
-			 case  BYTE_CODE_CALL_CONSTRUCTOR:
-			 case  BYTE_CODE_CALL: // calling function after all of args are processed...
-				 {
-					sf_call_is_immediate=false;
-					sf_call_script_function=NULL;
-					StackElement *stk_function_ref=NULL;
-					zs_int idx_function=ZS_IDX_UNDEFINED;
-					sf_call_calling_object = NULL;
-					sf_call_n_args=instruction->value_op1; // number arguments will pass to this function
-					sf_call_stk_start_arg_call=(data->stk_vm_current-sf_call_n_args);
-					stk_function_ref = ((sf_call_stk_start_arg_call-1));
+			case  BYTE_CODE_THIS_CALL: // immediate call this
+				 sf_call_calling_object = this_object;
+				 sf_call_is_immediate=true;
+				 sf_call_is_member_function=true;
+				 sf_call_script_function=(ScriptFunction *)instruction->value_op2;
+				 goto execute_function;
+			//----- load function
+			case  BYTE_CODE_THIS_MEMBER_CALL: // find symbol and load
+				 sf_call_calling_object = this_object;
+				 sf_call_is_immediate=true;
+				 if(instruction->value_op2 != ZS_IDX_UNDEFINED){ // stored in a member field
+					 sf_call_stk_function_ref= this_object->getBuiltinElementAt(instruction->value_op2);
+				 }else{
+					 str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
+				 	 sf_call_stk_function_ref=this_object->getProperty(str_symbol);
+					 if(sf_call_stk_function_ref == NULL){
+						 VM_STOP_EXECUTE("Cannot call 'this.%s' because not exist",str_symbol);
+					 }
 
-
-					if(stk_function_ref->properties & STK_PROPERTY_PTR_STK){
-						stk_function_ref=(StackElement *)stk_function_ref->value;
-					}
-
-					if(stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
-					  Symbol *symbol=(Symbol *)stk_function_ref->value;
-					  sf_call_calling_object=(ScriptObject *)((sf_call_stk_start_arg_call-2))->value; // its supposed to have the object
-					  if((zs_int)sf_call_calling_object == 0x19){
-						  int y=0;
-						  y++;
-					  }
-					  sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
-					}else if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_function_ref)){
-					  ScriptObjectMemberFunction *sofm=(  ScriptObjectMemberFunction *)stk_function_ref->value;
-					  sf_call_calling_object=sofm->so_object;
-					  sf_call_script_function=sofm->so_function;
-					}else{
-
-						if((stk_function_ref->properties & (STK_PROPERTY_FUNCTION))==0){
-							if(instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR){ // constructor was not found so we do nothing
-								// reset stack (ignore all pushed data in the stack)
-								data->stk_vm_current=sf_call_stk_start_arg_call-1;
-								continue;
-							}
-							VM_STOP_EXECUTE("'%s' is not function or not exist",SFI_GET_SYMBOL_NAME(calling_function,instruction));
-						}
-						Symbol *symbol=(Symbol *)stk_function_ref->value;
-						sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
-					}
-
-					sf_call_is_member_function=stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION;
 				 }
-execute_function:
+				goto load_function;
+			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
+				 sf_call_calling_object = NULL;
+				 sf_call_is_member_function=false;
+				 sf_call_stk_function_ref=_stk_local_var+instruction->value_op2;
+				goto load_function;
+			case  BYTE_CODE_INDIRECT_GLOBAL_CALL: // call from idx var
+				 sf_call_calling_object = NULL;
+				 sf_call_is_member_function=false;
+				 sf_call_stk_function_ref=data->vm_stack+instruction->value_op2;
+				 goto load_function;
+			 case  BYTE_CODE_CALL_CONSTRUCTOR:
+			 case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
 
+				sf_call_is_immediate=false;
+				sf_call_is_member_function=true;
+				sf_call_script_function=NULL;
+				sf_call_stk_function_ref = (data->stk_vm_current-instruction->value_op1-1);
+				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
+
+load_function:
+				if(sf_call_stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
+				  Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;
+				  sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
+				  sf_call_is_member_function=true;
+				}else if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(sf_call_stk_function_ref)){
+				  ScriptObjectMemberFunction *sofm=(  ScriptObjectMemberFunction *)sf_call_stk_function_ref->value;
+				  sf_call_calling_object=sofm->so_object;
+				  sf_call_script_function=sofm->so_function;
+				  sf_call_is_member_function=true;
+				}else{
+					sf_call_is_member_function=false;
+					if((sf_call_stk_function_ref->properties & (STK_PROPERTY_FUNCTION))==0){
+						if(instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR){ // constructor was not found so we do nothing
+							// reset stack (ignore all pushed data in the stack)
+							data->stk_vm_current=sf_call_stk_start_arg_call-1;
+							continue;
+						}
+						VM_STOP_EXECUTE("'%s' is not function or not exist",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+					}
+					Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;
+					sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
+				}
+
+execute_function:
+				sf_call_n_args=instruction->value_op1; // number arguments will pass to this function
+				sf_call_stk_start_arg_call=(data->stk_vm_current-sf_call_n_args);
 				sf_call_n_local_symbols=0;
 
 				// if a c function that it has more than 1 symbol with same number of parameters, so we have to solve and get the right one...
@@ -1810,17 +1846,6 @@ execute_function:
 					}
 				}
 				goto lbl_exit_function;
-			 case  BYTE_CODE_NEW_SOFM:
-
-				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs);
-
-				 if(!vm_create_shared_pointer(vm,so_aux)){
-				 		goto lbl_exit_function;
-				 }
-				 data->stk_vm_current->value=(zs_int)so_aux;
-				 data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
-				 data->stk_vm_current++;
-				 continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:
 
 				 	 so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,instruction->value_op1);
@@ -1962,11 +1987,6 @@ execute_function:
 					vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 				}
 				continue;
-			 case BYTE_CODE_POP_SCOPE_CHK_NO_SHARES:
-				if((data->zero_shares+data->vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove
-					vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
-				}
-				continue;
 			 case BYTE_CODE_RESET_STACK:
 				 data->stk_vm_current=stk_start;
 				 continue;
@@ -1999,7 +2019,39 @@ execute_function:
 					goto lbl_exit_function;
 				 }
 				 continue;
+			case BYTE_CODE_UNRESOLVED_CALL:
+				{
+					const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(calling_function,instruction);
+					char *str_end_class=NULL;
+
+					if((str_end_class=strstr(ptr_str_symbol_to_find,"::"))!=NULL){ // static access
+						char class_name[512]={0};
+
+						strncpy(class_name,ptr_str_symbol_to_find,str_end_class-ptr_str_symbol_to_find);
+
+
+						if(data->zs->getScriptClassFactory()->getScriptClass(class_name) == NULL){
+							VM_STOP_EXECUTE(
+									"class '%s' not exist"
+									,class_name
+							);
+						}
+
+						VM_STOP_EXECUTE(
+								"static symbol '%s' not exist in '%s'"
+								,str_end_class+2
+								,class_name
+						);
+					}else{
+						VM_STOP_EXECUTE(
+								"Symbol '%s' not defined"
+								,ptr_str_symbol_to_find
+						);
+					}
+				}
+				goto lbl_exit_function;
 			}
+
 		 }
 
 	lbl_exit_function:
@@ -2027,7 +2079,7 @@ execute_function:
 			,ScriptFunction 		* calling_function
 			,Instruction			*instruction
 			,short	idx
-			){
+	){
 		VirtualMachineData *data = (VirtualMachineData*)vm->data;
 		StackElement *stk_var=NULL;
 

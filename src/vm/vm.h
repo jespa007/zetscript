@@ -7,6 +7,8 @@
 #define VM_STACK_LOCAL_VAR_MAX				256
 #define MAX_FUNCTION_CALL 					128
 #define MAX_SHARES_VARIABLE 				256
+#define IDX_MAIN_CALL						1
+
 
 
 #define SET_INTEGER_RETURN(i)	CURRENT_VM->setIntegerReturnValue(i)

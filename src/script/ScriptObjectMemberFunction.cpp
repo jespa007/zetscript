@@ -15,9 +15,18 @@ namespace zetscript{
 	}
 
 	ScriptObjectMemberFunction::ScriptObjectMemberFunction(){
+		setup();
+	}
+
+	void ScriptObjectMemberFunction::setup(){
+		idx_script_class=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
 		this->so_function=NULL;
 		this->so_object=NULL;
+	}
 
+
+	ScriptObjectMemberFunction::~ScriptObjectMemberFunction(){
+		vm_unref_shared_script_object(zs->getVirtualMachine(),this->so_object,IDX_MAIN_CALL);
 	}
 
 }

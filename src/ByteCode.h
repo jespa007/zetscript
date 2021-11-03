@@ -60,7 +60,15 @@ namespace zetscript{
 		// ARITMETHIC OPERATORS.
 		BYTE_CODE_END_FUNCTION = 0,
 		BYTE_CODE_FIND_VARIABLE,
-		BYTE_CODE_FIND_IMMEDIATE_CALL,
+		BYTE_CODE_CALL,		// direct
+		BYTE_CODE_INDIRECT_GLOBAL_CALL,	// through symbol
+		BYTE_CODE_INDIRECT_LOCAL_CALL,	// through symbol
+		BYTE_CODE_THIS_CALL,	// this direct
+		BYTE_CODE_THIS_MEMBER_CALL,
+		BYTE_CODE_MEMBER_CALL, // through function and member loaded
+
+		BYTE_CODE_UNRESOLVED_CALL,
+		BYTE_CODE_UNRESOLVED_THIS_CALL,
 
 		// load ptr var
 		BYTE_CODE_PUSH_STK_GLOBAL,
@@ -144,8 +152,7 @@ namespace zetscript{
 		BYTE_CODE_JNT, // goto if not true ... goes end to conditional.
 		BYTE_CODE_JE_CASE, //
 		BYTE_CODE_JT, // goto if true ... goes end to conditional.
-		BYTE_CODE_CALL, // call function...
-		BYTE_CODE_IMMEDIATE_CALL, // call function...
+		//BYTE_CODE_CALL, // call function...
 		BYTE_CODE_CALL_CONSTRUCTOR, // call function...
 		BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE, // new operator...
 		BYTE_CODE_NEW_OBJECT_BY_VALUE, // new operator...
@@ -156,7 +163,6 @@ namespace zetscript{
 		BYTE_CODE_RET, // ret instruction ..
 		BYTE_CODE_PUSH_SCOPE,
 		BYTE_CODE_POP_SCOPE,
-		BYTE_CODE_POP_SCOPE_CHK_NO_SHARES,
 		BYTE_CODE_IT_INIT,
 		BYTE_CODE_PRE_INC,
 		BYTE_CODE_PRE_DEC,
@@ -167,7 +173,6 @@ namespace zetscript{
 		BYTE_CODE_RESET_STACK, // just in case there's no assignment on left or after last assignment
 		BYTE_CODE_TYPEOF,
 		BYTE_CODE_IN,
-		BYTE_CODE_NEW_SOFM,
 		//---------------------------
 		BYTE_CODE_INVALID=255,
 

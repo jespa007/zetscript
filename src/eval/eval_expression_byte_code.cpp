@@ -192,7 +192,7 @@ namespace zetscript{
 			// add instructions related about its accessors...
 			for(unsigned j=0;j<token_node_symbol->eval_instructions.count;j++){
 				EvalInstruction *ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
-				if(ei_load_assign_instruction->vm_instruction.byte_code ==  BYTE_CODE_CALL){
+				if(INSTRUCTION_IS_BYTE_CODE_CALL(&ei_load_assign_instruction->vm_instruction)){
 					EVAL_ERROR_FILE_LINE_AND_GOTO(
 							eval_error_byte_code
 							,eval_data->current_parsing_file

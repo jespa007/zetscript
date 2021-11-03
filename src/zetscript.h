@@ -189,6 +189,8 @@ namespace zetscript{
 		StackElement * registerStkStringObject(const zs_string & key_name,const zs_string & const_name);
 		StackElement * getStkStringObject(const zs_string & const_name);
 
+
+
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
 		bool isFilenameAlreadyParsed(const zs_string & filename);
@@ -505,6 +507,8 @@ namespace zetscript{
 		void clear();
 		void saveState();
 
+		void addUnresolvedSymbol(ScriptFunction *sf, zs_int idx_instruction);
+		void link();
 
 		 ~ZetScript();
 
@@ -520,6 +524,7 @@ namespace zetscript{
 		// VARS
 		zs_map 	 								*stk_constants;
 		zs_vector 			 					parsed_files;
+		zs_vector								functions_with_unresolved_symbols;
 
 		//ScriptEval * eval_obj;
 		VirtualMachine * virtual_machine;
@@ -548,6 +553,7 @@ namespace zetscript{
 		//void setClearGlobalVariablesCheckpoint();
 		void resetParsedFiles();
 		void clearGlobalVariables(int _idx_start_variable=ZS_IDX_UNDEFINED, int _idx_start_function=ZS_IDX_UNDEFINED);
+		bool getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf);
 
 
 	};

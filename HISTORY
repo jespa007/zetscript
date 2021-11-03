@@ -239,8 +239,8 @@ Solved issues
 #295 Allow switch to have expressions/variables in the case 
 #296 Create inc/dec metamethods and include in attribute metamethods 
 #297 Vector/Object & class by default it gives all public members in json format by default when prints or do toString()
-> #298 Do not store function members in ScriptObject 
-> #299 Do not allocate for attribute member in script object 
+#298 Do not store function members in ScriptObject 
+#299 Do not allocate for attribute member in script object 
 #300 Use linear array instead of zs_vector in vm runtime 
 > #301 Solve inherited class call overrided function
 > #303 Implement BYTE_CODE_IMMEDIATE_CALL BYTE_CODE_THIS_CALL
@@ -251,6 +251,9 @@ Solved issues
 #308 Save memory: get rid of std::string and std::map 
 #309 Create new from type info stk variable 
 > #310 Optimize code for instanceof and typeof
+> #311 On return function do not reset stack there's no any variable store
+> #312 Direct call if metamethod is action or function without any params optimitzation 
+> #313 Change names Property -> Field / Attribute -> Property 
  
 
 //----------------------------------------------------------

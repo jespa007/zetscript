@@ -2,8 +2,8 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#define IGNORE_BLANKS(aux_p,eval_data,s,line) 			if((aux_p=zetscript::eval_ignore_blanks(eval_data,(s),line))==NULL) return 0
-#define IGNORE_BLANKS_AND_GOTO(my_goto,aux_p,eval_data,s,line) 	if((aux_p=zetscript::eval_ignore_blanks(eval_data,(s),line))==NULL) goto my_goto
+#define IGNORE_BLANKS(aux_p,eval_data,s,line) 								if((aux_p=zetscript::eval_ignore_blanks(eval_data,(s),line))==NULL) return 0
+#define IGNORE_BLANKS_AND_GOTO_ON_ERROR(my_goto,aux_p,eval_data,s,line) 	if((aux_p=zetscript::eval_ignore_blanks(eval_data,(s),line))==NULL) goto my_goto
 
 #define RESULT_LITERAL_VALUE 					(number_part[0]+number_part[1]+number_part[2]).c_str()
 #define EVAL_ERROR_FILE_LINE(file,line,s,...)	eval_data->error=true;\
@@ -97,9 +97,9 @@ namespace zetscript{
 		TOKEN_TYPE_LITERAL, // true, false, 0.1, -12e-12
 		TOKEN_TYPE_OPERATOR, // +,-,%, ...
 		TOKEN_TYPE_SUBEXPRESSION,
-		TOKEN_TYPE_VECTOR,
-		TOKEN_TYPE_OBJECT,
-		TOKEN_TYPE_FUNCTION_OBJECT,
+		TOKEN_TYPE_OBJECT_VECTOR,
+		TOKEN_TYPE_OBJECT_OBJECT,
+		TOKEN_TYPE_OBJECT_FUNCTION,
 		TOKEN_TYPE_NEW_OBJECT, // =new ob(); | op (new obj()) op
 		TOKEN_TYPE_MAX
 	}TokenType;
@@ -235,18 +235,6 @@ namespace zetscript{
 		int								idx_instruction_start_loop;
 	}LoopBreakContinueInfo;
 
-
-	struct UnresolvedInstructionInfo{
-		Instruction *instruction;
-		ScriptFunction *calling_function;
-
-		UnresolvedInstructionInfo(Instruction *_instruction, ScriptFunction *_calling_function){
-			instruction = _instruction;
-			calling_function = _calling_function;
-		}
-
-	};
-
 	struct EvalData{
 		ZetScript 						* 		zs;
 		ScopeFactory 					* 		scope_factory;
@@ -254,7 +242,7 @@ namespace zetscript{
 		ScriptClassFactory 				* 		script_class_factory;
 		EvalFunction					* 		current_function;
 		zs_vector				 	  			eval_functions;
-		zs_vector								unresolved_symbols; // UnresolvedInstructionInfo
+
 		zs_vector				 				global_ref_instructions; // Eval Instruction
 		int										parsing_loop;
 

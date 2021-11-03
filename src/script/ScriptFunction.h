@@ -123,6 +123,9 @@ namespace zetscript{
 				, unsigned short properties=0
 		);
 
+		bool linkUnresolvedSymbols();
+		void addUnresolvedSymbol(zs_int instruction);
+
 		~ScriptFunction();
 
 	protected:
@@ -137,7 +140,8 @@ namespace zetscript{
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptClassFactory 		*script_class_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
-		static zs_string formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
+		zs_vector				unresolved_symbols; // UnresolvedInstructionInfo
+		static zs_string 		formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
 		InstructionSourceInfo * getInstructionInfo(Instruction *instruction);
 		void clearParams();
 

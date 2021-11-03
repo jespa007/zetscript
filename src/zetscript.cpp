@@ -27,6 +27,7 @@ namespace zetscript{
 	const char * k_str_bool_type=typeid(bool).name();
 	const char * k_str_stack_element_type=typeid(StackElement).name();
 
+
 	ZetScript::ZetScript(){
 		eval_int=0;
 		eval_float=0;
@@ -353,6 +354,7 @@ namespace zetscript{
 		StackElement stk_ret=k_stk_null;
 
 		eval_parse_and_compile(this,code,filename);
+		link();
 
 		if(options & EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE){
 			printGeneratedCode(options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_BYTE_CODE);
@@ -459,17 +461,18 @@ namespace zetscript{
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
 		zs_string global_symbol;
 		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
-		//int idx_start_function = _idx_start_function == ZS_IDX_UNDEFINED ?  idx_current_global_function_checkpoint:_idx_start_function;
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
-		zs_vector *local_variables=main_function_object->local_variables+idx_start_variable;
-		zs_vector *global_symbol_variables= main_scope->symbol_variables+idx_start_variable;
-
-		if(local_variables->count != global_symbol_variables->count){
-			THROW_RUNTIME_ERROR("error clearing global variables: global symbols doesn't match global stackelements (%i!=%i)",local_variables->count,global_symbol_variables->count);
-		}
-
+		zs_vector *local_variables=main_function_object->local_variables;
+		zs_vector *global_symbol_variables= main_scope->symbol_variables;
+		int n_global_symbol_found=0;
 		int v=local_variables->count-1;
+
+		// Because all symbols are ordered by scope, have G as global symbols and L local symbols the disposition is the following,
+		//
+		// [G][G][G][G]..[G][L][L][L][L][L]..[L]
+		//
+		// So we only have to delete symbols
 
 		// remove all shared 0 pointers
 		if(local_variables->count > 0){
@@ -481,27 +484,28 @@ namespace zetscript{
 
 				Symbol *symbol=(Symbol *)local_variables->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
 
+
 				ScriptObjectObject *var = NULL;
 
-				if(symbol->scope != main_scope){ // if variable in global scope
-					THROW_RUNTIME_ERROR("error clearing global variable: '%s'is not global",symbol->name.c_str());
-				}
+				if(symbol != NULL && symbol->scope == main_scope){ // if variable in global scope
 
-				if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					var =((ScriptObjectObject *)(vm_stk_element->value));
-					if(var){
-						if(var->shared_pointer != NULL){
-							if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
-								THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
+					if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
+						var =((ScriptObjectObject *)(vm_stk_element->value));
+						if(var){
+							if(var->shared_pointer != NULL){
+								if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
+									THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
+								}
 							}
 						}
 					}
+					n_global_symbol_found++;
+
+					// erase unused global symbol
+					delete symbol;
 				}
 
 				*vm_stk_element=k_stk_null;
-
-				// erase unused global symbol
-				delete symbol;
 
 				--v;
 			}
@@ -513,7 +517,7 @@ namespace zetscript{
 			// erase global elements that they weren't saved...
 			int resize=local_variables->count-(local_variables->count-idx_start_variable);
 			local_variables->resize(resize);
-			global_symbol_variables->resize(resize);
+			global_symbol_variables->resize(global_symbol_variables->count-n_global_symbol_found);
 
 		}
 
@@ -543,10 +547,40 @@ namespace zetscript{
 	void ZetScript::saveState(){
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
 		idx_current_global_variable_checkpoint=main_function_object->local_variables->count-1;
-		//idx_current_global_function_checkpoint=main_function_object->symbol_functions->count-1;
+
 		scope_factory->saveState();
 		script_function_factory->saveState();
 		script_class_factory->saveState();
+	}
+
+	bool ZetScript::getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf){
+		for(unsigned i=0;i < functions_with_unresolved_symbols.count; i++){
+			if(functions_with_unresolved_symbols.items[i]==(zs_int)_sf){
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+	void ZetScript::addUnresolvedSymbol(ScriptFunction *_sf, zs_int idx_instruction){
+		if(getFunctionWithUnresolvedSymbolExists(_sf) ==false){
+			functions_with_unresolved_symbols.push_back((zs_int)_sf);
+		}
+		_sf->addUnresolvedSymbol(idx_instruction);
+	}
+
+	void ZetScript::link(){
+		unsigned i=0;
+		while(i<functions_with_unresolved_symbols.count){
+			ScriptFunction *_sf=(ScriptFunction *)functions_with_unresolved_symbols.items[i];
+			if(_sf->linkUnresolvedSymbols()){ // if link all symbols, erase
+				functions_with_unresolved_symbols.erase(i);
+			}else{ // next function
+				i++;
+			}
+		}
 	}
 
 	ZetScript::~ZetScript(){
@@ -578,5 +612,7 @@ namespace zetscript{
 		eval_deinit();
 
 		resetParsedFiles();
+
+		functions_with_unresolved_symbols.clear();
 	}
 }

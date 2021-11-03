@@ -475,10 +475,10 @@ error_eval_keyword_var:
 			if(named_function){ // is named function..
 
 				// function cannot be declared within main scope
-				if(scope_info != MAIN_SCOPE(eval_data) && sc == NULL){ // function within a function (not function member)
+				/*if(scope_info != MAIN_SCOPE(eval_data) && sc == NULL){ // function within a function (not function member)
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"named functions are only allowed in main scope. You can only use anonymous functions");
 				}
-
+*/
 				if(sc==NULL){ // check if function member declaration
 				   end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
 						eval_data

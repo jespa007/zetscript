@@ -390,7 +390,7 @@ eval_error_sub_expression:
 			}
 		}
 
-
+		// is the main block
 		if(	((properties & (EVAL_EXPRESSION_ON_MAIN_BLOCK))!=0)
 						&&
 			// special case for catching vars for-in...

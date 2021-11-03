@@ -22,6 +22,10 @@ namespace zetscript{
 		// Members
 		//
 		ScriptObjectMemberFunction();
+		~ScriptObjectMemberFunction();
+	private:
+
+		void setup();
 
 	};
 }

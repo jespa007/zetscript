@@ -30,7 +30,7 @@ namespace zetscript{
 
 			if(static_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 				instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
-				instruction->value_op2=(zs_int)static_symbol; // it's pointer (script function) or stack element id (const)
+				instruction->value_op2=(zs_int)static_symbol->ref_ptr; // it's pointer (script function) or stack element id (const)
 			}else if(static_symbol->properties & SYMBOL_PROPERTY_CONST){
 				instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
 				instruction->value_op2=static_symbol->ref_ptr; // it's pointer (script function) or stack element id (const)
@@ -67,6 +67,7 @@ namespace zetscript{
 		int last_accessor_line=line;
 		int last_line_ok=line;
 		zs_string static_error;
+		ScriptClass *token_node_symbol_class=NULL;
 
 		// check pre operator (-,+,!,-- or ++)
 		switch(pre_operation=is_pre_operation(aux_p)){
@@ -80,7 +81,8 @@ namespace zetscript{
 				break;
 		}
 
-		IGNORE_BLANKS_AND_GOTO(error_expression_token_symbol,aux_p,eval_data,aux_p,line);
+
+		IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,aux_p,eval_data,aux_p,line);
 
 		// parenthesis (evals another expression)
 		if(*aux_p=='('){ // inner expression (priority)
@@ -133,7 +135,7 @@ namespace zetscript{
 				))==NULL){
 					goto error_expression_token_symbol;
 				}
-				token_node_symbol->token_type = TokenType::TOKEN_TYPE_VECTOR;
+				token_node_symbol->token_type = TokenType::TOKEN_TYPE_OBJECT_VECTOR;
 			}else if(*aux_p=='{'){ // object ...
 
 				if((aux_p=eval_object(
@@ -146,7 +148,7 @@ namespace zetscript{
 					goto error_expression_token_symbol;
 				}
 
-				token_node_symbol->token_type = TokenType::TOKEN_TYPE_OBJECT;
+				token_node_symbol->token_type = TokenType::TOKEN_TYPE_OBJECT_OBJECT;
 
 			}else if(keyword_type == Keyword::KEYWORD_NEW){
 
@@ -174,7 +176,7 @@ namespace zetscript{
 					goto error_expression_token_symbol;
 				}
 
-				token_node_symbol->token_type = TokenType::TOKEN_TYPE_FUNCTION_OBJECT;
+				token_node_symbol->token_type = TokenType::TOKEN_TYPE_OBJECT_FUNCTION;
 			}else{ // symbol
 				token_node_symbol->pre_operation=pre_operation;
 
@@ -222,7 +224,7 @@ namespace zetscript{
 						ScriptClass *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol->value);
 
 						//do{
-						IGNORE_BLANKS_AND_GOTO(error_expression_token_symbol,aux_p,eval_data,aux_p+2,line);
+						IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,aux_p,eval_data,aux_p+2,line);
 
 						last_accessor_line=line;
 						if(get_accessor_name(eval_data, &aux_p, line,class_element) == false){
@@ -258,11 +260,11 @@ namespace zetscript{
 
 					}else{ // check if only gets the type
 
-						ScriptClass *sc=eval_data->script_class_factory->getScriptClass(token_node_symbol->value);
+						token_node_symbol_class=eval_data->script_class_factory->getScriptClass(token_node_symbol->value);
 						Instruction *instruction=&((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction;
-						if(sc != NULL){ // byte code it will be a type
+						if(token_node_symbol_class != NULL){ // byte code it will be a type
 							instruction->byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
-							instruction->value_op2=sc->idx_class;
+							instruction->value_op2=token_node_symbol_class->idx_class;
 						}else{ // sc is null
 							if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
 								EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line,"expected a type after 'instanceof'");
@@ -285,10 +287,28 @@ namespace zetscript{
 			}
 		}
 
-		IGNORE_BLANKS_AND_GOTO(error_expression_token_symbol,test_aux_p,eval_data,aux_p,test_line);
+		test_line=line;
+		IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,test_aux_p,eval_data,aux_p,test_line);
 
 		// eval accessor element (supose that was a preinsert a load instruction for identifier )...
-		if(is_access_punctuator(test_aux_p) && token_node_symbol->token_type==TokenType::TOKEN_TYPE_IDENTIFIER){
+		if(is_access_punctuator(test_aux_p) && (
+				token_node_symbol->token_type==TokenType::TOKEN_TYPE_IDENTIFIER
+				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_FUNCTION
+				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_OBJECT
+				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_VECTOR
+		)){
+
+			if(token_node_symbol_class!=NULL){
+
+					EVAL_ERROR_FILE_LINE_AND_GOTO(
+							error_expression_token_symbol
+							,eval_data->current_parsing_file
+							,line
+							,"Unexpected  '%c' after type '%s'"
+							,*aux_p
+							,token_node_symbol->value.c_str()
+					);
+			}
 
 			// set test
 			aux_p=test_aux_p;
@@ -323,7 +343,7 @@ namespace zetscript{
 
 					n_params=0;
 					last_line_ok=line;
-					IGNORE_BLANKS_AND_GOTO(error_expression_token_symbol,aux_p,eval_data,aux_p+1,line);
+					IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,aux_p,eval_data,aux_p+1,line);
 
 					// eval all calling arguments
 					while(*aux_p != ')'){
@@ -336,7 +356,7 @@ namespace zetscript{
 								EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,last_line_ok ,"Expected ',' or ')'");
 							}
 
-							IGNORE_BLANKS_AND_GOTO(error_expression_token_symbol,aux_p,eval_data,aux_p+1,line);
+							IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,aux_p,eval_data,aux_p+1,line);
 
 							if(*aux_p == ')'){ // unexpected ) but is ok anyway
 								break;
@@ -385,13 +405,18 @@ namespace zetscript{
 					}
 
 					byte_code=ByteCode::BYTE_CODE_CALL;
-					if(	it_accessor_token==0
-							&&
-					(ei_first_token_node->vm_instruction.byte_code==BYTE_CODE_LOAD_FUNCTION
-								||
-					ei_first_token_node->vm_instruction.byte_code==BYTE_CODE_FIND_VARIABLE)
-					){
-						byte_code=ByteCode::BYTE_CODE_IMMEDIATE_CALL;
+					if(	it_accessor_token==0 ){ // direct or indirect call
+						if(ei_first_token_node->vm_instruction.byte_code==BYTE_CODE_LOAD_THIS_FUNCTION){
+							byte_code=ByteCode::BYTE_CODE_THIS_CALL;
+						}else if(ei_first_token_node->vm_instruction.byte_code==ByteCode::BYTE_CODE_LOAD_LOCAL){
+							byte_code= ByteCode::BYTE_CODE_INDIRECT_LOCAL_CALL;
+						}
+					}else{ // access token
+						if(last_instruction_token->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE){
+							byte_code=ByteCode::BYTE_CODE_THIS_CALL;
+						}else{
+							byte_code=ByteCode::BYTE_CODE_MEMBER_CALL;
+						}
 					}
 
 					aux_p++;
@@ -419,7 +444,7 @@ namespace zetscript{
 					break;
 				case '.': // member/static access
 
-					IGNORE_BLANKS_AND_GOTO(error_expression_token_symbol,aux_p,eval_data,aux_p+1,line);
+					IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,aux_p,eval_data,aux_p+1,line);
 
 					last_accessor_line=line;
 					if(get_accessor_name(eval_data, &aux_p, line,accessor_name) == false){
@@ -450,7 +475,7 @@ namespace zetscript{
 						byte_code=ByteCode::BYTE_CODE_LOAD_THIS_VARIABLE;
 
 						// search whether symbol is already in the object and set-it
-						Symbol *symbol_member=sf_class->getSymbol(accessor_name);
+						/*Symbol *symbol_member=sf_class->getSymbol(accessor_name);
 
 						if(symbol_member != NULL){ // is member
 							// functions always loads dynamically because we can have an override function
@@ -462,13 +487,13 @@ namespace zetscript{
 								byte_code=ByteCode::BYTE_CODE_LOAD_THIS_FUNCTION;
 								instruction_value2=(zs_int)symbol_member;
 							}
-						}
+						}*/
 
 					}
 					break;
 				}
 
-				// if byte_code is type BYTE_CODE_LOAD_THIS_XXX it means that is Instrucction with BYTE_CODE_LOAD_THIS was muted into BYTE_CODE_LOAD_THIS_XXX. So
+				// if byte_code is type BYTE_CODE_LOAD_THIS_XXX it means that is Instruction BYTE_CODE_LOAD_THIS was muted into BYTE_CODE_LOAD_THIS_XXX. So
 				// we only create new instructions from bytes code != BYTE_CODE_LOAD_THIS_XXX
 				if((
 						   byte_code==ByteCode::BYTE_CODE_LOAD_THIS_VARIABLE
@@ -483,17 +508,18 @@ namespace zetscript{
 				//EvalInstruction *ei_first_instruction_token=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
 
 				switch(byte_code){
-				case BYTE_CODE_IMMEDIATE_CALL:
+				case BYTE_CODE_THIS_CALL:
+				case BYTE_CODE_CALL:
+				case BYTE_CODE_INDIRECT_LOCAL_CALL:
+					instruction_token->vm_instruction=ei_first_token_node->vm_instruction;
 					instruction_token->vm_instruction.value_op1=n_params;
+					instruction_token->vm_instruction.byte_code=byte_code;
 					instruction_token->symbol=ei_first_token_node->symbol;
-					if(instruction_token->vm_instruction.value_op2 == ZS_IDX_UNDEFINED){
-						instruction_token->vm_instruction.byte_code = BYTE_CODE_FIND_IMMEDIATE_CALL;
-					}
 					instruction_token->instruction_source_info= ei_first_token_node->instruction_source_info;
 					delete ei_first_token_node;
 					token_node_symbol->eval_instructions.erase(0);
 					break;
-				case BYTE_CODE_CALL:
+				/*case BYTE_CODE_CALL:
 					instruction_token->vm_instruction.value_op1=n_params;
 
 					// also insert source file/line/symbol info to get info of this call...
@@ -502,7 +528,7 @@ namespace zetscript{
 						,last_accessor_line
 						,get_mapped_name(eval_data,last_accessor_value) // only can get from last_accessor_value because accessor_name is empty on each iteration
 					);
-					break;
+					break;*/
 				default:
 					instruction_token->vm_instruction.byte_code=byte_code;
 					instruction_token->vm_instruction.value_op2=instruction_value2;
@@ -522,7 +548,7 @@ namespace zetscript{
 
 				it_accessor_token++;
 
-				IGNORE_BLANKS_AND_GOTO(error_expression_token_symbol,test_aux_p,eval_data,aux_p,test_line);
+				IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,test_aux_p,eval_data,aux_p,test_line);
 
 			}while(is_access_punctuator(aux_p));
 

@@ -121,12 +121,19 @@ namespace zetscript{
 			 if((
 					   instruction->byte_code==ByteCode::BYTE_CODE_LOAD_THIS_VARIABLE
 					|| instruction->byte_code==ByteCode::BYTE_CODE_LOAD_THIS_FUNCTION
+					|| instruction->byte_code==ByteCode::BYTE_CODE_UNRESOLVED_THIS_CALL
+					|| instruction->byte_code==ByteCode::BYTE_CODE_THIS_MEMBER_CALL
+					|| instruction->byte_code==ByteCode::BYTE_CODE_THIS_CALL
 					|| instruction->byte_code==ByteCode::BYTE_CODE_PUSH_STK_THIS_VARIABLE
 			)){
 
 				// ... we create new instruction
 				 symbol_value="this."+symbol_value;
-			}
+			 }else if(   instruction->byte_code==ByteCode:: BYTE_CODE_INDIRECT_GLOBAL_CALL
+					 || instruction->byte_code== BYTE_CODE_INDIRECT_LOCAL_CALL
+			 ){
+				 symbol_value="@"+symbol_value;
+			 }
 
 			switch(instruction->properties & INSTRUCTION_PROPERTY_ILOAD){
 			default:
@@ -263,27 +270,33 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_CALL_CONSTRUCTOR:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\targ:%i\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\targ:%i ret:0\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,instruction->value_op1
 				);
 				break;
-			case BYTE_CODE_IMMEDIATE_CALL:
+			case BYTE_CODE_CALL:
+			case BYTE_CODE_INDIRECT_GLOBAL_CALL:
+			case BYTE_CODE_INDIRECT_LOCAL_CALL:
+			case BYTE_CODE_THIS_CALL:
+			case BYTE_CODE_THIS_MEMBER_CALL:
+			case BYTE_CODE_UNRESOLVED_CALL:
+			case BYTE_CODE_UNRESOLVED_THIS_CALL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\targ:%i ret:%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
 					,instruction->value_op1
-					,instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK?"all":"1"
+					,instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK?"all":instruction->properties&INSTRUCTION_PROPERTY_RESET_STACK?"0":"1"
 				);
 				break;
-			case BYTE_CODE_CALL:
+			case BYTE_CODE_MEMBER_CALL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\targ:%i ret:%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,instruction->value_op1
-					,instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK?"all":"1"
+					,instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK?"all":instruction->properties&INSTRUCTION_PROPERTY_RESET_STACK?"0":"1"
 				);
 				break;
 			case BYTE_CODE_LOAD_TYPE:
@@ -523,6 +536,7 @@ namespace zetscript{
 	}
 
 	void ScriptFunction::clear(){
+		unresolved_symbols.clear();
 		// delete symbols refs from scope...
 		//symbol_registered_functions->clear();
 		local_variables->clear();
@@ -536,6 +550,110 @@ namespace zetscript{
 		}
 
 		instructions=NULL;
+	}
+
+	bool ScriptFunction::linkUnresolvedSymbols(){
+		ScriptClass *sc_found=NULL;
+		if(unresolved_symbols.count > 0){
+
+			const char *str_aux=NULL;
+			unsigned i=0;
+			while(i < unresolved_symbols.count){
+				Instruction *unresolved_instruction=&instructions[unresolved_symbols.items[i]];
+				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(this,unresolved_instruction);
+				const char *instruction_file=SFI_GET_FILE(this,unresolved_instruction);
+				int instruction_line=SFI_GET_LINE(this,unresolved_instruction);
+				Symbol *symbol_found=NULL;
+				short idx_sc_found=ZS_IDX_UNDEFINED;
+
+
+				if(ptr_str_symbol_to_find==NULL){
+					THROW_SCRIPT_ERROR_FILE_LINE(
+						instruction_file
+						,instruction_line
+						,"Cannot find symbol name at instruction %i"
+						,unresolved_symbols.items[i]
+					);
+				}
+
+
+				if((idx_sc_found= script_class_factory->getBuiltinTypeOrClass(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if class
+					unresolved_instruction->byte_code=BYTE_CODE_LOAD_TYPE;
+					unresolved_instruction->value_op2=idx_sc_found;
+				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
+					 zs_string static_error;
+					char copy_aux[512]={0};
+
+					// get class
+					strncpy(copy_aux,ptr_str_symbol_to_find,str_aux-ptr_str_symbol_to_find);
+
+					sc_found=zs->getScriptClassFactory()->getScriptClass(copy_aux);
+
+					if(sc_found!=NULL){
+						// advance ::
+						str_aux+=2;
+
+						//get member
+						strcpy(copy_aux,str_aux);
+
+						symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
+					}
+				}else if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // try get global symbol
+					ScriptClass *this_class=zs->getScriptClassFactory()->getScriptClass(this->idx_class);
+					symbol_found=this_class->getSymbolMemberFunction(ptr_str_symbol_to_find);
+				}else{
+					symbol_found = MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
+				}
+
+
+				if(symbol_found !=NULL){ // symbol found
+
+					if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
+
+						if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){
+							unresolved_instruction->byte_code=BYTE_CODE_THIS_CALL;
+						}else{
+							unresolved_instruction->byte_code=BYTE_CODE_CALL;
+						}
+						unresolved_instruction->value_op2=(zs_int)(ScriptFunction *)symbol_found->ref_ptr; // store script function
+					}else{ // global variable
+						if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // an indirect
+							unresolved_instruction->byte_code=BYTE_CODE_THIS_MEMBER_CALL;
+							unresolved_instruction->value_op2=symbol_found->idx_position;
+						}else if(unresolved_instruction->byte_code == BYTE_CODE_UNRESOLVED_CALL){
+							unresolved_instruction->byte_code=BYTE_CODE_INDIRECT_GLOBAL_CALL;
+						}else{
+
+							if(unresolved_instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
+								unresolved_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+							}else{
+								unresolved_instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
+							}
+						}
+
+						unresolved_instruction->value_op2=symbol_found->idx_position;
+					}
+
+					// unstack unresolved symbol
+					unresolved_symbols.erase(i);
+
+				}
+				else{ // next
+					if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // it has to solve the symbol
+							unresolved_instruction->byte_code=BYTE_CODE_THIS_MEMBER_CALL;
+					}
+					i++;
+				}
+
+				// deallocate item
+			}
+		}
+
+		return unresolved_symbols.count==0;
+	}
+
+	void ScriptFunction::addUnresolvedSymbol(zs_int instruction){
+		unresolved_symbols.push_back(instruction);
 	}
 
 	ScriptFunction::~ScriptFunction(){

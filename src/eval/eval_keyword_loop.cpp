@@ -524,7 +524,7 @@ namespace zetscript{
 
 								// call
 								eval_data->current_function->eval_instructions.push_back((zs_int)(
-									new EvalInstruction(BYTE_CODE_CALL,0)
+									new EvalInstruction(BYTE_CODE_MEMBER_CALL,0)
 								));
 
 								eval_data->current_function->eval_instructions.push_back((zs_int)(
@@ -556,7 +556,7 @@ namespace zetscript{
 
 								// call, return all
 								eval_data->current_function->eval_instructions.push_back((zs_int)(
-									new EvalInstruction(BYTE_CODE_CALL,0,0,INSTRUCTION_PROPERTY_RETURN_ALL_STACK)
+									new EvalInstruction(BYTE_CODE_MEMBER_CALL,0,0,INSTRUCTION_PROPERTY_RETURN_ALL_STACK)
 								));
 
 
@@ -588,7 +588,7 @@ namespace zetscript{
 
 								// call
 								ei_post_operations.push_back((zs_int)(
-									new EvalInstruction(BYTE_CODE_CALL,0)
+									new EvalInstruction(BYTE_CODE_MEMBER_CALL,0)
 								));
 
 
