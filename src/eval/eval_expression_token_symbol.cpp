@@ -30,7 +30,7 @@ namespace zetscript{
 
 			if(static_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 				instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
-				instruction->value_op2=(zs_int)static_symbol->ref_ptr; // it's pointer (script function) or stack element id (const)
+				instruction->value_op2=(zs_int)static_symbol; // it's pointer (script function) or stack element id (const)
 			}else if(static_symbol->properties & SYMBOL_PROPERTY_CONST){
 				instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
 				instruction->value_op2=static_symbol->ref_ptr; // it's pointer (script function) or stack element id (const)
@@ -511,6 +511,9 @@ namespace zetscript{
 				case BYTE_CODE_THIS_CALL:
 				case BYTE_CODE_CALL:
 				case BYTE_CODE_INDIRECT_LOCAL_CALL:
+				case BYTE_CODE_INDIRECT_GLOBAL_CALL:
+				case BYTE_CODE_UNRESOLVED_CALL:
+				case BYTE_CODE_UNRESOLVED_THIS_CALL:
 					instruction_token->vm_instruction=ei_first_token_node->vm_instruction;
 					instruction_token->vm_instruction.value_op1=n_params;
 					instruction_token->vm_instruction.byte_code=byte_code;
@@ -519,7 +522,9 @@ namespace zetscript{
 					delete ei_first_token_node;
 					token_node_symbol->eval_instructions.erase(0);
 					break;
-				/*case BYTE_CODE_CALL:
+				case BYTE_CODE_THIS_MEMBER_CALL:
+				case BYTE_CODE_MEMBER_CALL:
+				case BYTE_CODE_CALL_CONSTRUCTOR:
 					instruction_token->vm_instruction.value_op1=n_params;
 
 					// also insert source file/line/symbol info to get info of this call...
@@ -528,7 +533,7 @@ namespace zetscript{
 						,last_accessor_line
 						,get_mapped_name(eval_data,last_accessor_value) // only can get from last_accessor_value because accessor_name is empty on each iteration
 					);
-					break;*/
+					break;
 				default:
 					instruction_token->vm_instruction.byte_code=byte_code;
 					instruction_token->vm_instruction.value_op2=instruction_value2;

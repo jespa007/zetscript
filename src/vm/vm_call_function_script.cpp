@@ -555,10 +555,10 @@ namespace zetscript{
 				*data->stk_vm_current++=*this_object->getThisProperty();
 				continue;
 			case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
-				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs);
+				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,this_object,(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr);
 
-				((ScriptObjectMemberFunction *)so_aux)->so_object=this_object;
-				((ScriptObjectMemberFunction *)so_aux)->so_function=(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr;
+				//((ScriptObjectMemberFunction *)so_aux)->so_object=this_object;
+				//((ScriptObjectMemberFunction *)so_aux)->so_function=(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr;
 
 				 if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
@@ -628,15 +628,15 @@ load_element_object:
 					ScriptClass *sc=so_aux->getScriptClass();
 					Symbol *sf_member=sc->getSymbolMemberFunction(str_symbol);
 					if(sf_member !=NULL){
-						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs);
+						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
 
-						somf->so_object=so_aux;
+						/*somf->so_object=so_aux;
 						somf->so_function=(ScriptFunction *)sf_member->ref_ptr;
 
 						// because of this member function to ensure to call without destroy the object before ...
 						 if(!vm_share_pointer(vm,so_aux)){
 								goto lbl_exit_function;
-						 }
+						 }*/
 
 						 if(!vm_create_shared_pointer(vm,somf)){
 								goto lbl_exit_function;
@@ -1473,13 +1473,13 @@ load_element_object:
 				 sf_call_calling_object = NULL;
 				 sf_call_is_immediate=true;
 				 sf_call_is_member_function=false;
-				 sf_call_script_function=(ScriptFunction *)instruction->value_op2;
+				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
 			case  BYTE_CODE_THIS_CALL: // immediate call this
 				 sf_call_calling_object = this_object;
 				 sf_call_is_immediate=true;
 				 sf_call_is_member_function=true;
-				 sf_call_script_function=(ScriptFunction *)instruction->value_op2;
+				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
 			//----- load function
 			case  BYTE_CODE_THIS_MEMBER_CALL: // find symbol and load

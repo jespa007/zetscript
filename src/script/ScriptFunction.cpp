@@ -615,7 +615,7 @@ namespace zetscript{
 						}else{
 							unresolved_instruction->byte_code=BYTE_CODE_CALL;
 						}
-						unresolved_instruction->value_op2=(zs_int)(ScriptFunction *)symbol_found->ref_ptr; // store script function
+						unresolved_instruction->value_op2=(zs_int)symbol_found; // store script function
 					}else{ // global variable
 						if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // an indirect
 							unresolved_instruction->byte_code=BYTE_CODE_THIS_MEMBER_CALL;

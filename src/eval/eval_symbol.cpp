@@ -148,7 +148,7 @@ namespace zetscript{
 
 							if(local_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 								byte_code= ByteCode::BYTE_CODE_LOAD_FUNCTION;
-								value=(zs_int)local_symbol->ref_ptr;
+								value=(zs_int)local_symbol;
 
 							}else{
 								byte_code= ByteCode::BYTE_CODE_LOAD_LOCAL;

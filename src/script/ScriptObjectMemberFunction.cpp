@@ -6,9 +6,17 @@
 
 namespace zetscript{
 
-	ScriptObjectMemberFunction * ScriptObjectMemberFunction::newScriptObjectMemberFunction(ZetScript *zs){
+	ScriptObjectMemberFunction * ScriptObjectMemberFunction::newScriptObjectMemberFunction(ZetScript *zs, ScriptObject *_so_object, ScriptFunction *_so_function){
 		ScriptObjectMemberFunction *sofm=new ScriptObjectMemberFunction();
 		sofm->init(zs);
+
+		sofm->so_object=_so_object;
+		sofm->so_function=_so_function;
+
+
+		 if(!vm_share_pointer(zs->getVirtualMachine(),_so_object)){
+				return NULL;
+		 }
 
 		return sofm;
 
