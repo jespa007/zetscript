@@ -203,16 +203,18 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_THIS:
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR:
 			case BYTE_CODE_LOAD_THIS_FUNCTION:
-			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
+			case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
 			case BYTE_CODE_LOAD_FUNCTION:
 			case BYTE_CODE_FIND_VARIABLE:
 			case BYTE_CODE_LOAD_REF:
 			case BYTE_CODE_LOAD_LOCAL:
 			case BYTE_CODE_LOAD_THIS:
 			case BYTE_CODE_LOAD_GLOBAL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
+					, instruction->byte_code == BYTE_CODE_PUSH_STK_MEMBER_VAR
+					? "\t" : "\t\t"
 					,symbol_value.c_str()
 				);
 				break;
@@ -238,7 +240,9 @@ namespace zetscript{
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
-					,instruction->byte_code==BYTE_CODE_LOAD_THIS_VARIABLE?"\t\t":"\t"
+					,instruction->byte_code==BYTE_CODE_LOAD_THIS_VARIABLE
+					|| instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM
+					?"\t\t":"\t"
 					,symbol_value.c_str()
 				);
 				break;
@@ -269,7 +273,7 @@ namespace zetscript{
 					,byte_code_to_str(instruction->byte_code)
 				);
 				break;
-			case BYTE_CODE_CALL_CONSTRUCTOR:
+			case BYTE_CODE_CONSTRUCTOR_CALL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\targ:%i ret:0\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)

@@ -524,7 +524,7 @@ namespace zetscript{
 					break;
 				case BYTE_CODE_THIS_MEMBER_CALL:
 				case BYTE_CODE_MEMBER_CALL:
-				case BYTE_CODE_CALL_CONSTRUCTOR:
+				case BYTE_CODE_CONSTRUCTOR_CALL:
 					instruction_token->vm_instruction.value_op1=n_params;
 
 					// also insert source file/line/symbol info to get info of this call...

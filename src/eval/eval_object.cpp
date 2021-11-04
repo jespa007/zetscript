@@ -371,7 +371,7 @@ namespace zetscript{
 				 if(eval_instruction_new_object_by_value==NULL){
 					 eval_instructions->push_back((zs_int)(
 						ei_load_function_constructor=new EvalInstruction(
-							 ByteCode::BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR
+							 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT
 						)
 					 ));
 
@@ -417,7 +417,7 @@ namespace zetscript{
 				 // if constructor function found insert call function...
 				 eval_instructions->push_back((zs_int)(
 							 eval_instruction=new EvalInstruction(
-							  BYTE_CODE_CALL_CONSTRUCTOR
+							  BYTE_CODE_CONSTRUCTOR_CALL
 							 ,n_args
 						 )
 				 	 )

@@ -567,7 +567,7 @@ namespace zetscript{
 				 data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				 data->stk_vm_current++;
 				continue;
-			case BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR:
+			case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
 				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
 					PUSH_STK_NULL;
@@ -1471,12 +1471,16 @@ load_element_object:
 			//----- direct call
 			 case  BYTE_CODE_CALL: // immediate call this
 				 sf_call_calling_object = NULL;
+				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
+				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 sf_call_is_immediate=true;
 				 sf_call_is_member_function=false;
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
 			case  BYTE_CODE_THIS_CALL: // immediate call this
 				 sf_call_calling_object = this_object;
+				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
+				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 sf_call_is_immediate=true;
 				 sf_call_is_member_function=true;
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
@@ -1506,7 +1510,7 @@ load_element_object:
 				 sf_call_is_member_function=false;
 				 sf_call_stk_function_ref=data->vm_stack+instruction->value_op2;
 				 goto load_function;
-			 case  BYTE_CODE_CALL_CONSTRUCTOR:
+			 case  BYTE_CODE_CONSTRUCTOR_CALL:
 			 case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
 
 				sf_call_is_immediate=false;
@@ -1516,6 +1520,10 @@ load_element_object:
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
 
 load_function:
+
+				sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
+				sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
+
 				if(sf_call_stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
 				  Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;
 				  sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
@@ -1528,7 +1536,7 @@ load_function:
 				}else{
 					sf_call_is_member_function=false;
 					if((sf_call_stk_function_ref->properties & (STK_PROPERTY_FUNCTION))==0){
-						if(instruction->byte_code==BYTE_CODE_CALL_CONSTRUCTOR){ // constructor was not found so we do nothing
+						if(instruction->byte_code== BYTE_CODE_CONSTRUCTOR_CALL){ // constructor was not found so we do nothing
 							// reset stack (ignore all pushed data in the stack)
 							data->stk_vm_current=sf_call_stk_start_arg_call-1;
 							continue;
@@ -1540,8 +1548,7 @@ load_function:
 				}
 
 execute_function:
-				sf_call_n_args=instruction->value_op1; // number arguments will pass to this function
-				sf_call_stk_start_arg_call=(data->stk_vm_current-sf_call_n_args);
+
 				sf_call_n_local_symbols=0;
 
 				// if a c function that it has more than 1 symbol with same number of parameters, so we have to solve and get the right one...
@@ -1793,7 +1800,7 @@ execute_function:
 						*data->stk_vm_current++= *sf_call_stk_return++; // only return first argument
 					}
 
-				}else if(instruction->byte_code!=BYTE_CODE_CALL_CONSTRUCTOR){ // return only first element
+				}else if(instruction->byte_code!= BYTE_CODE_CONSTRUCTOR_CALL){ // return only first element
 					if(sf_call_n_returned_arguments_from_function > 0){
 						*data->stk_vm_current++= sf_call_stk_return[0]; // only return first argument
 					}
@@ -2022,7 +2029,7 @@ execute_function:
 			case BYTE_CODE_UNRESOLVED_CALL:
 				{
 					const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(calling_function,instruction);
-					char *str_end_class=NULL;
+					const char *str_end_class=NULL;
 
 					if((str_end_class=strstr(ptr_str_symbol_to_find,"::"))!=NULL){ // static access
 						char class_name[512]={0};

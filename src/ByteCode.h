@@ -66,6 +66,7 @@ namespace zetscript{
 		BYTE_CODE_THIS_CALL,	// this direct
 		BYTE_CODE_THIS_MEMBER_CALL,
 		BYTE_CODE_MEMBER_CALL, // through function and member loaded
+		BYTE_CODE_CONSTRUCTOR_CALL, // constructor...
 
 		BYTE_CODE_UNRESOLVED_CALL,
 		BYTE_CODE_UNRESOLVED_THIS_CALL,
@@ -94,7 +95,7 @@ namespace zetscript{
 		BYTE_CODE_LOAD_OBJECT_ITEM,
 
 		// special load
-		BYTE_CODE_LOAD_SCRIPT_FUNCTION_CONSTRUCTOR,
+		BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT,
 
 		// load constants
 		BYTE_CODE_LOAD_FUNCTION,
@@ -152,8 +153,6 @@ namespace zetscript{
 		BYTE_CODE_JNT, // goto if not true ... goes end to conditional.
 		BYTE_CODE_JE_CASE, //
 		BYTE_CODE_JT, // goto if true ... goes end to conditional.
-		//BYTE_CODE_CALL, // call function...
-		BYTE_CODE_CALL_CONSTRUCTOR, // call function...
 		BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE, // new operator...
 		BYTE_CODE_NEW_OBJECT_BY_VALUE, // new operator...
 		BYTE_CODE_DELETE,
