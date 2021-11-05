@@ -90,7 +90,7 @@ namespace zetscript{
 		Symbol * getSymbolRecursiveUpScope(const zs_string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
 
 		int numInnerScopesRecursive(Scope *sc, int n);
-		int countVariablesRecursive(Scope *sc);
+		int countVariablesRecursive(Scope *sc, int idx_script_function_reference);
 
 
 	};

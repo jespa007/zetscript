@@ -2,30 +2,30 @@ var test=0
 
 class A{
 	var b=10
-	/*A(){
+	A(){
 		
 		test=this.member_function(test)
-		System::assert(test==5,"test!=5")		
+		System::assert(test==7,"test!=7")		
 		
 		this.anonymous_function=function(test){
 			return test+1;
 		}
 		
 		test=this.anonymous_function(test)
-		System::assert(test==6,"test!=6")
+		System::assert(test==8,"test!=8")
 		
 		var member_function=this.member_function
 		test=member_function(test)
-		System::assert(test==7,"test!=7")
+		System::assert(test==9,"test!=9")
 		
-	}*/
+	}
 	
 	member_function(test){
 		return test+1
 	}
 }
 
-/*
+
 
 function global_function(test){
 	return test+1
@@ -49,37 +49,30 @@ test=function(test){
 	return test+1
 }(test)
 System::assert(test==4,"test!=4")
-*/
-//---> crash
-/*{
-	function local_function(){
-		//Console::outln("local function:ok")
+
+{
+	function local_function(test){
+		return test+1
 	}
+	System::assert(test==5,"test!=5")
 	
-	local_function()
+	test=ocal_function(test)
 	
 	var var_local_function=local_function
 		
-	var_local_function()
-}*/
-//---> crash
+	test=var_local_function(test)
+	System::assert(test==5,"test!=6")
+}
 
 
 var a=new A()
-//test=a.member_function(test)
-//System::assert(test==8,"test!=8")
+test=a.member_function(test)
+System::assert(test==10,"test!=10")
 
-var var_member_function=a.member_function //--> somehow increment n shared pointers due, 
+var var_member_function=a.member_function  
 test=var_member_function(test);
-//Console::outln(test)
-//delete test
+System::assert(test==11,"test!=11")
 
-//System::assert(test==9,"test!=9")
-
-//delete a //--> after delete object var_function_member should be still alive
-
-//test=var_function_member(test);
-//System::assert(test==10,"test!=10")
 
 
 

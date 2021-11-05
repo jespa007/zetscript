@@ -68,17 +68,21 @@ namespace zetscript{
 
 	int Scope::countVariables(bool _recursive){
 		if(_recursive){
-			return Scope::countVariablesRecursive(this);
+			return Scope::countVariablesRecursive(this,this->idx_script_function);
 		}
 
 		return this->symbol_variables->count;
 
 	}
 
-	int Scope::countVariablesRecursive(Scope *_sc){
-		int n_total=_sc->symbol_variables->count;
-		for(int i=0; i < _sc->scopes->count; i++){
-			n_total+=Scope::countVariablesRecursive((Scope *)_sc->scopes->items[i]);
+	int Scope::countVariablesRecursive(Scope *_sc, int idx_script_function_reference){
+		int n_total=0;
+		if(_sc->idx_script_function==idx_script_function_reference){ // only count variables in the scope of the function
+			n_total=_sc->symbol_variables->count;
+
+			for(int i=0; i < _sc->scopes->count; i++){
+				n_total+=Scope::countVariablesRecursive((Scope *)_sc->scopes->items[i],idx_script_function_reference);
+			}
 		}
 
 		return n_total;

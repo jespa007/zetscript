@@ -394,7 +394,7 @@ namespace zetscript{
 		bool 			 sf_call_is_member_function=false;
 		StackElement 	*sf_call_stk_return=NULL;
 		int 			sf_call_n_returned_arguments_from_function=0;
-		bool			sf_call_is_immediate=false;
+		int				sf_call_is_immediate=0;
 		// SFCALL
 		//------------------------------------------------
 		//int idx_stk_element;
@@ -629,6 +629,7 @@ load_element_object:
 					Symbol *sf_member=sc->getSymbolMemberFunction(str_symbol);
 					if(sf_member !=NULL){
 						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
+
 
 						 if(!vm_create_shared_pointer(vm,somf)){
 								goto lbl_exit_function;
@@ -1459,10 +1460,10 @@ load_element_object:
 					instruction_it=instruction+instruction->value_op2;
 				}
 				continue;
-			//----- direct call
+			//----- immediate call
 			 case  BYTE_CODE_CALL: // immediate call this
 				 sf_call_calling_object = NULL;
-				 sf_call_is_immediate=true;
+				 sf_call_is_immediate=0;
 				 sf_call_is_member_function=false;
 				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
@@ -1470,7 +1471,7 @@ load_element_object:
 				 goto execute_function;
 			case  BYTE_CODE_THIS_CALL: // immediate call this
 				 sf_call_calling_object = this_object;
-				 sf_call_is_immediate=true;
+				 sf_call_is_immediate=0;
 				 sf_call_is_member_function=true;
 				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
@@ -1479,6 +1480,7 @@ load_element_object:
 			//----- load function
 			case  BYTE_CODE_THIS_MEMBER_CALL: // find symbol and load
 				 sf_call_calling_object = this_object;
+				 sf_call_is_immediate=0;
 				 if(instruction->value_op2 != ZS_IDX_UNDEFINED){ // stored in a member field
 					 sf_call_stk_function_ref= this_object->getBuiltinElementAt(instruction->value_op2);
 				 }else{
@@ -1492,10 +1494,12 @@ load_element_object:
 				goto load_function;
 			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
 				 sf_call_calling_object = NULL;
+				 sf_call_is_immediate=0;
 				 sf_call_stk_function_ref=_stk_local_var+instruction->value_op2;
 				goto load_function;
 			case  BYTE_CODE_INDIRECT_GLOBAL_CALL: // call from idx var
 				 sf_call_calling_object = NULL;
+				 sf_call_is_immediate=true;
 				 sf_call_stk_function_ref=data->vm_stack+instruction->value_op2;
 				 goto load_function;
 			 case  BYTE_CODE_CONSTRUCTOR_CALL:
@@ -1504,9 +1508,10 @@ load_element_object:
 				sf_call_script_function=NULL;
 				sf_call_stk_function_ref = (data->stk_vm_current-instruction->value_op1-1);
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
+				sf_call_is_immediate=2; // object + function
 
 load_function:
-				sf_call_is_immediate=false;
+
 				sf_call_is_member_function=false;
 
 				sf_call_n_args = instruction->value_op1; // number arguments will pass to this function

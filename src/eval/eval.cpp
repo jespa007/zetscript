@@ -434,6 +434,7 @@ namespace zetscript{
 		int n_var_scope=sf->function_scope->countVariables(true);
 
 		if(n_var_fun != n_var_scope){
+
 			EVAL_ERROR(
 				 "internal: n_var_fun != n_var_scope (%i!=%i)"
 				,n_var_fun
