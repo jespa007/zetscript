@@ -1774,7 +1774,7 @@ execute_function:
 				CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function,false)
 
 				// reset vm current before function pointer is
-				data->stk_vm_current=sf_call_stk_start_arg_call-(sf_call_is_immediate?0:1);
+				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_is_immediate;//?0:1);
 
 				if(instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK) {
 					StackElement tmp;
@@ -1787,7 +1787,7 @@ execute_function:
 					}
 
 					// copy to vm stack
-					data->stk_vm_current=sf_call_stk_start_arg_call-(sf_call_is_immediate?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
+					data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_is_immediate;//(sf_call_is_immediate?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
 					for(int i=0;i<sf_call_n_returned_arguments_from_function;i++){
 						*data->stk_vm_current++= *sf_call_stk_return++; // only return first argument
