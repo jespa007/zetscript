@@ -630,18 +630,9 @@ load_element_object:
 					if(sf_member !=NULL){
 						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
 
-						/*somf->so_object=so_aux;
-						somf->so_function=(ScriptFunction *)sf_member->ref_ptr;
-
-						// because of this member function to ensure to call without destroy the object before ...
-						 if(!vm_share_pointer(vm,so_aux)){
-								goto lbl_exit_function;
-						 }*/
-
 						 if(!vm_create_shared_pointer(vm,somf)){
 								goto lbl_exit_function;
 						 }
-
 
 						data->stk_vm_current->value=(zs_int)somf;
 						data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -1471,24 +1462,23 @@ load_element_object:
 			//----- direct call
 			 case  BYTE_CODE_CALL: // immediate call this
 				 sf_call_calling_object = NULL;
-				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
-				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 sf_call_is_immediate=true;
 				 sf_call_is_member_function=false;
+				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
+				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
 			case  BYTE_CODE_THIS_CALL: // immediate call this
 				 sf_call_calling_object = this_object;
-				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
-				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 sf_call_is_immediate=true;
 				 sf_call_is_member_function=true;
+				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
+				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
 			//----- load function
 			case  BYTE_CODE_THIS_MEMBER_CALL: // find symbol and load
 				 sf_call_calling_object = this_object;
-				 sf_call_is_immediate=true;
 				 if(instruction->value_op2 != ZS_IDX_UNDEFINED){ // stored in a member field
 					 sf_call_stk_function_ref= this_object->getBuiltinElementAt(instruction->value_op2);
 				 }else{
@@ -1502,24 +1492,22 @@ load_element_object:
 				goto load_function;
 			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
 				 sf_call_calling_object = NULL;
-				 sf_call_is_member_function=false;
 				 sf_call_stk_function_ref=_stk_local_var+instruction->value_op2;
 				goto load_function;
 			case  BYTE_CODE_INDIRECT_GLOBAL_CALL: // call from idx var
 				 sf_call_calling_object = NULL;
-				 sf_call_is_member_function=false;
 				 sf_call_stk_function_ref=data->vm_stack+instruction->value_op2;
 				 goto load_function;
 			 case  BYTE_CODE_CONSTRUCTOR_CALL:
 			 case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
 
-				sf_call_is_immediate=false;
-				sf_call_is_member_function=true;
 				sf_call_script_function=NULL;
 				sf_call_stk_function_ref = (data->stk_vm_current-instruction->value_op1-1);
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
 
 load_function:
+				sf_call_is_immediate=false;
+				sf_call_is_member_function=false;
 
 				sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
 				sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);

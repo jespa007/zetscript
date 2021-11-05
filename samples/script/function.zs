@@ -66,17 +66,20 @@ System::assert(test==4,"test!=4")
 
 
 var a=new A()
-/*test=a.member_function(test)
-System::assert(test==8,"test!=8")
-*/
-var var_function_member=a.function_member //--> somehow increment n shared pointers due, 
-test=var_function_member(test);
-/*System::assert(test==9,"test!=9")
+//test=a.member_function(test)
+//System::assert(test==8,"test!=8")
 
-delete a //--> after delete object var_function_member should be still alive
+var var_member_function=a.member_function //--> somehow increment n shared pointers due, 
+test=var_member_function(test);
+//Console::outln(test)
+//delete test
 
-test=var_function_member(test);
-System::assert(test==10,"test!=10")*/
+//System::assert(test==9,"test!=9")
+
+//delete a //--> after delete object var_function_member should be still alive
+
+//test=var_function_member(test);
+//System::assert(test==10,"test!=10")
 
 
 
