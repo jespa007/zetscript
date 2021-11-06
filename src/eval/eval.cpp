@@ -476,12 +476,12 @@ namespace zetscript{
 		int ok=FALSE;
 		const char *str_aux=NULL;
 		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data);
-		zs_int *ei_it=eval_data->current_function->eval_instructions.items;
+
 
 		for(unsigned i=0; i < count; i++){
 
 			Symbol *vis=NULL;
-			EvalInstruction *eval_instruction = (EvalInstruction *)(*ei_it++);
+			EvalInstruction *eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[i];
 			zs_string *ptr_str_symbol_to_find=NULL;
 			ScriptClass *sc_aux=NULL;
 			ptr_str_symbol_to_find=&eval_instruction->symbol.name;
@@ -651,19 +651,17 @@ namespace zetscript{
 						){
 							eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
 
-						}else{ // is RR
-							if ((properties_1 & (INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL))
-												==
-								(INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)
-							){
+						}else if(properties_1 & (INSTRUCTION_PROPERTY_ILOAD_RR)){ // is RR local access
+							if ((properties_1 & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) && (properties_2 & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)){
 								eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
-							}
-
-							if ((properties_2 & (INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL))
-												==
-								(INSTRUCTION_PROPERTY_ILOAD_RR | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL)
-							){
 								eval_instruction->vm_instruction.value_op2=(lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op2>>16]<<16) | properties_2;
+							}else{
+								EVAL_ERROR_FILE_LINE_AND_GOTO(
+										lbl_exit_pop_function
+										,eval_data->current_parsing_file
+										,eval_instruction->instruction_source_info.line
+										,"internal: expected both local load RR"
+									);
 							}
 						}
 					}

@@ -54,9 +54,9 @@ System::assert(test==4,"test!=4")
 	function local_function(test){
 		return test+1
 	}
+		
+	test=local_function(test)
 	System::assert(test==5,"test!=5")
-	
-	test=ocal_function(test)
 	
 	var var_local_function=local_function
 		
