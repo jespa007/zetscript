@@ -95,8 +95,8 @@ namespace zetscript{
 
 		bool move_to_shared_list=*n_shares==0;
 
-		if(*n_shares >= MAX_SHARES_VARIABLE){
-			VM_SET_USER_ERROR(vm,"MAX SHARED VARIABLES (Max. %i)",MAX_SHARES_VARIABLE);
+		if(*n_shares >= VM_VARIABLE_SHARES_MAX){
+			VM_SET_USER_ERROR(vm,"MAX SHARED VARIABLES (Max. %i)",VM_VARIABLE_SHARES_MAX);
 			return false;
 		}
 
@@ -206,7 +206,7 @@ namespace zetscript{
 
 	void vm_push_stack_element(VirtualMachine *vm, StackElement stk){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(((data->stk_vm_current-data->vm_stack)+1)>=VM_STACK_LOCAL_VAR_MAX){
+		if(((data->stk_vm_current-data->vm_stack)+1)>=VM_STACK_MAX){
 
 			vm_set_error(vm,"Error MAXIMUM stack size reached");
 			return;
@@ -216,7 +216,7 @@ namespace zetscript{
 
 	bool vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(idx >= VM_STACK_LOCAL_VAR_MAX){
+		if(idx >= VM_STACK_MAX){
 			VM_SET_USER_ERROR(vm,"setStackElement: out of bounds");
 			return false;
 		}
@@ -266,7 +266,7 @@ namespace zetscript{
 
 		if(
 			calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN
-			&& ((properties & VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE) == 0)
+			&& ((properties & VM_PROPERTY_CALL_FROM_NATIVE) == 0)
 		){ // set stack and Init vars for first call...
 
 
@@ -292,7 +292,7 @@ namespace zetscript{
 			stk_start=data->stk_vm_current;
 			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->count];
 
-			if (properties & VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE){
+			if (properties & VM_PROPERTY_CALL_FROM_NATIVE){
 				data->vm_idx_call = 1;
 				stk_start=min_stk;
 			}
@@ -358,7 +358,7 @@ namespace zetscript{
 		// Important restore stk!
 		data->stk_vm_current=stk_start;
 
-		if((properties & VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE)){ // restore idx_call
+		if((properties & VM_PROPERTY_CALL_FROM_NATIVE)){ // restore idx_call
 			data->vm_idx_call=0;
 		}
 

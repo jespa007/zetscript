@@ -35,6 +35,7 @@ namespace zetscript{
 			, const char *expected_ending_char
 			, uint16_t properties
 			, int n_recursive_level
+			, int n_return_values
 		){
 		// PRE: s is current zs_string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.
@@ -80,7 +81,8 @@ namespace zetscript{
 						,&token_nodes
 						,last_operator_token_node
 						,properties
-						,n_recursive_level))==NULL){
+						,n_recursive_level
+						,n_return_values))==NULL){
 					goto eval_error_sub_expression;
 				}
 
@@ -186,6 +188,7 @@ namespace zetscript{
 				//,only_call_instructions
 				,properties
 				,n_recursive_level
+				,n_return_values
 			))==NULL){
 				goto eval_error_sub_expression;
 			}
@@ -240,6 +243,7 @@ eval_error_sub_expression:
 		zs_vector 	zs_ei_left_sub_expressions; // we will write all instructions here as aux, and later will assign to dst_instructions
 		zs_vector 	zs_ei_right_sub_expressions; // right/left assigment
 
+		EvalInstruction *ei_last=NULL;
 		bool not_assignment=false;
 		zs_vector *ei_first_sub_expression=new zs_vector;
 
@@ -292,6 +296,7 @@ eval_error_sub_expression:
 					, expression // it's saving to instructions...
 					,NULL
 					,properties | (idx==0?EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR|additional_properties_first_recursive:0)
+					,idx==1?zs_ei_left_sub_expressions.count:0 // max assignments left
 				))==NULL){
 					goto eval_error_expression_delete_left_right_sub_expressions;
 				}
@@ -304,6 +309,15 @@ eval_error_sub_expression:
 				only_load_left_expression&=eval_check_all_instruction_only_load_op((zs_vector *)zs_ei_left_sub_expressions.items[0]);
 
 				if(aux_p != NULL && *aux_p != 0 && *aux_p=='=' && (only_load_left_expression==true)){ // assignment op, start left assigments
+					if(zs_ei_left_sub_expressions.count >= FUNCTION_RETURN_COUNT_MAX){
+						EVAL_ERROR_FILE_LINE_AND_GOTO(
+								eval_error_expression_delete_left_right_sub_expressions
+								,eval_data->current_parsing_file
+								,line
+							,"Reached max assigment count (max: %i)"
+							,FUNCTION_RETURN_COUNT_MAX
+						);
+					}
 					idx++; //--> start next
 				}
 
@@ -365,7 +379,7 @@ eval_error_sub_expression:
 				if(IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
 					const char *str_symbol=instruction->instruction_source_info.ptr_str_symbol_name==NULL?"unknow":instruction->instruction_source_info.ptr_str_symbol_name->c_str();
 					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_expression_delete_left_right_sub_expressions,eval_data->current_parsing_file,instruction->instruction_source_info.line
-						,"\"%s\" is not allowed on left assignment multiple because '%s' is not literal. Left assignments has to be literals  (i.e a,b.c,b[0]. etc)"
+						,"'%s' is not allowed on left assignment multiple because '%s' is not literal. Left assignments has to be literals  (i.e a,b.c,b[0]. etc)"
 						,str_symbol
 						,str_symbol
 					);
@@ -379,37 +393,33 @@ eval_error_sub_expression:
 					(zs_vector *)zs_ei_left_sub_expressions.items[it]
 				);
 
-				// special case for catching vars for-in...
+				/*// special case for catching vars for-in...
 				if(properties & EVAL_EXPRESSION_FOR_IN_VARIABLES){
 					dst_instructions->push_back((zs_int)(
 						new EvalInstruction(
 								BYTE_CODE_RESET_STACK
 						)
 					));
-				}
+				}*/
 			}
 		}
 
-		// is the main block
-		if(	((properties & (EVAL_EXPRESSION_ON_MAIN_BLOCK))!=0)
-						&&
-			// special case for catching vars for-in...
-			((properties & (EVAL_EXPRESSION_FOR_IN_VARIABLES))==0)
-		){ //
-			EvalInstruction *ei_last=(EvalInstruction *)dst_instructions->items[dst_instructions->count-1];
-			if(IS_BYTE_CODE_CALL(ei_last->vm_instruction.byte_code)
-					||
-			   IS_BYTE_CODE_STORE(ei_last->vm_instruction.byte_code)
-			){
-				ei_last->vm_instruction.properties|=INSTRUCTION_PROPERTY_RESET_STACK;
-			}else{
-				dst_instructions->push_back((zs_int)(
-					new EvalInstruction(
-							BYTE_CODE_RESET_STACK
-					)
-				));
-			}
+		// special case for catching vars for-in...
+		//if	((properties & (EVAL_EXPRESSION_FOR_IN_VARIABLES))==0){
+		ei_last=(EvalInstruction *)dst_instructions->items[dst_instructions->count-1];
+		if(IS_BYTE_CODE_CALL(ei_last->vm_instruction.byte_code)
+				||
+		   IS_BYTE_CODE_STORE(ei_last->vm_instruction.byte_code)
+		){
+			ei_last->vm_instruction.properties|=INSTRUCTION_PROPERTY_RESET_STACK;
+		}else{
+			dst_instructions->push_back((zs_int)(
+				new EvalInstruction(
+						BYTE_CODE_RESET_STACK
+				)
+			));
 		}
+		//}
 
 
 //error_expression_delete_only_vectors:

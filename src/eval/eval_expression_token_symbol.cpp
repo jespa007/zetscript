@@ -55,6 +55,7 @@ namespace zetscript{
 			,TokenNode *last_operator_token_node
 			, uint16_t properties
 			, int n_recursive_level
+			, int n_return_values
 		){
 		char *aux_p = s,*test_aux_p;//, *test_s=NULL;
 		int first_line=line,test_line=line;
@@ -100,6 +101,7 @@ namespace zetscript{
 					, NULL
 					, properties
 					, n_recursive_level+1
+					,n_return_values
 				)
 			)== NULL){
 				goto error_expression_token_symbol;
@@ -377,6 +379,7 @@ namespace zetscript{
 								,NULL
 								,properties // avoid load ref, to avoid pass 2 reference
 								,n_recursive_level+1
+								,n_return_values
 						))==NULL){
 							error_arg =true;
 						}
@@ -431,6 +434,7 @@ namespace zetscript{
 							,NULL
 							,properties
 							,n_recursive_level+1
+							,n_return_values
 					))==NULL){
 						goto error_expression_token_symbol;
 					}

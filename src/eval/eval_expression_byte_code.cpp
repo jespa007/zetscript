@@ -21,6 +21,7 @@ namespace zetscript{
 			, const char *expected_ending_char=NULL
 			, uint16_t properties=0 // uint16_t properties
 			, int n_recursive_level=0
+			, int n_return_values=0
 	);
 
 
@@ -142,6 +143,7 @@ namespace zetscript{
 			, zs_vector * token_nodes
 			, uint16_t properties
 			, int n_recursion_level
+			, uint8_t n_return_values
 		){
 
 		char *aux_p=(char *)s;
@@ -275,13 +277,14 @@ namespace zetscript{
 				, NULL
 				, properties
 				, n_recursion_level+1
+				, n_return_values
 			))==NULL){
 				goto eval_error_byte_code;
 			}
 
 			last_instruction=&(((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction);
-			if((n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
-				last_instruction->properties|=INSTRUCTION_PROPERTY_RETURN_ALL_STACK;
+			if(INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction)){//(n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+				INSTRUCTION_SET_RETURN_COUNT(last_instruction,n_return_values);
 			}
 
 			// TODO: JEB Check whether expression is constant true/false
@@ -306,6 +309,7 @@ namespace zetscript{
 				, NULL
 				, properties
 				, n_recursion_level+1
+				,n_return_values
 			))==NULL){
 				goto eval_error_byte_code;
 			}
@@ -313,8 +317,8 @@ namespace zetscript{
 			body_size_else=dst_instructions->count-jmp_instructions_start;
 
 			last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction;
-			if((n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
-				last_instruction->properties|=INSTRUCTION_PROPERTY_RETURN_ALL_STACK;
+			if(INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction)){//(n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+				INSTRUCTION_SET_RETURN_COUNT(last_instruction,n_return_values);
 			}
 
 
@@ -323,8 +327,8 @@ namespace zetscript{
 
 		}else{
 			Instruction *last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction;
-			if((n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
-				last_instruction->properties|=INSTRUCTION_PROPERTY_RETURN_ALL_STACK;
+			if(INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction)){//(n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+				INSTRUCTION_SET_RETURN_COUNT(last_instruction,n_return_values);
 			}
 		}
 		//--------------------------------------------------------------

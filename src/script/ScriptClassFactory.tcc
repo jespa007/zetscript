@@ -251,15 +251,15 @@ namespace zetscript{
 
 			if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 
-				MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
-				MemberAttribute *ma_dst=NULL;
+				MemberProperty *ma_src=(MemberProperty *)symbol_src->ref_ptr;
+				MemberProperty *ma_dst=NULL;
 
 				zs_vector *sf_setters=&ma_src->setters;
 				Symbol *symbol_attribute=NULL;
 				Symbol *symbol_function=NULL;
 
-				symbol_attribute=this_class->registerMemberAttribute(symbol_src->name,symbol_src->file,symbol_src->line);
-				ma_dst=(MemberAttribute *)symbol_attribute->ref_ptr;
+				symbol_attribute=this_class->registerMemberProperty(symbol_src->name,symbol_src->file,symbol_src->line);
+				ma_dst=(MemberProperty *)symbol_attribute->ref_ptr;
 
 
 				struct _AttribMethodIt{
@@ -398,7 +398,7 @@ namespace zetscript{
 	 * register attribute setter
 	 */
 	template <typename C,typename F>
-	void ScriptClassFactory::registerNativeMemberAttributeSetter(
+	void ScriptClassFactory::registerNativeMemberPropertySetter(
 		const zs_string & attr_name
 		,F ptr_function_setter
 		,const char *registered_file
@@ -412,7 +412,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberAttributeSetter<F>(
+		c_class->registerNativeMemberPropertySetter<F>(
 			 attr_name
 			,ptr_function_setter
 			,registered_file
@@ -424,7 +424,7 @@ namespace zetscript{
 	 * register attribute getter
 	 */
 	template <typename C,typename F>
-	void ScriptClassFactory::registerNativeMemberAttributeGetter(
+	void ScriptClassFactory::registerNativeMemberPropertyGetter(
 		const zs_string & attr_name
 		,F ptr_function_getter
 		,const char *registered_file
@@ -438,7 +438,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberAttributeGetter<F>(
+		c_class->registerNativeMemberPropertyGetter<F>(
 			 attr_name
 			,ptr_function_getter
 			,registered_file
@@ -450,7 +450,7 @@ namespace zetscript{
 	 * register attribute post_increment
 	 */
 	template <typename C,typename F>
-	void ScriptClassFactory::registerNativeMemberAttributePostIncrement(
+	void ScriptClassFactory::registerNativeMemberPropertyPostIncrement(
 		const zs_string & attr_name
 		,F ptr_function_post_increment
 		,const char *registered_file
@@ -464,7 +464,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberAttributePostIncrement<F>(
+		c_class->registerNativeMemberPropertyPostIncrement<F>(
 			 attr_name
 			,ptr_function_post_increment
 			,registered_file
@@ -476,7 +476,7 @@ namespace zetscript{
 	 * register attribute post_decrement
 	 */
 	template <typename C,typename F>
-	void ScriptClassFactory::registerNativeMemberAttributePostDecrement(
+	void ScriptClassFactory::registerNativeMemberPropertyPostDecrement(
 			const zs_string & attr_name
 			,F ptr_function_post_decrement
 			,const char *registered_file
@@ -490,7 +490,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberAttributePostDecrement<F>(
+		c_class->registerNativeMemberPropertyPostDecrement<F>(
 			 attr_name
 			,ptr_function_post_decrement
 			,registered_file
@@ -502,7 +502,7 @@ namespace zetscript{
 	 * register attribute pre_increment
 	 */
 	template <typename C,typename F>
-	void ScriptClassFactory::registerNativeMemberAttributePreIncrement(
+	void ScriptClassFactory::registerNativeMemberPropertyPreIncrement(
 			const zs_string & attr_name
 			,F ptr_function_pre_increment
 			,const char *registered_file
@@ -516,7 +516,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberAttributePreIncrement<F>(
+		c_class->registerNativeMemberPropertyPreIncrement<F>(
 			 attr_name
 			,ptr_function_pre_increment
 			,registered_file
@@ -528,7 +528,7 @@ namespace zetscript{
 	 * register attribute pre_decrement
 	 */
 	template <typename C,typename F>
-	void ScriptClassFactory::registerNativeMemberAttributePreDecrement(
+	void ScriptClassFactory::registerNativeMemberPropertyPreDecrement(
 			const zs_string & attr_name
 			,F ptr_function_pre_decrement
 			,const char *registered_file
@@ -542,7 +542,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberAttributePreDecrement<F>(
+		c_class->registerNativeMemberPropertyPreDecrement<F>(
 			 attr_name
 			,ptr_function_pre_decrement
 			,registered_file

@@ -174,7 +174,7 @@ namespace zetscript{
 		// POINTER MANAGER ...
 		//
 
-		InfoSharedList zero_shares[MAX_FUNCTION_CALL]; // each function contains the number of local scriptvars vars that should or not removed.
+		InfoSharedList zero_shares[VM_FUNCTION_CALL_MAX]; // each function contains the number of local scriptvars vars that should or not removed.
 		InfoSharedList shared_vars; // global vector
 
 		//===================================================================================================
@@ -183,9 +183,9 @@ namespace zetscript{
 		 zs_string 		vm_error_str;
 		 zs_string 		vm_error_callstack_str;
 		 VM_ScopeFunction	*vm_current_scope_function;
-		 VM_ScopeFunction	vm_scope_function[MAX_FUNCTION_CALL];
+		 VM_ScopeFunction	vm_scope_function[VM_FUNCTION_CALL_MAX];
 
-		 StackElement     					vm_stack[VM_STACK_LOCAL_VAR_MAX];
+		 StackElement     					vm_stack[VM_STACK_MAX];
 		 zs_vector							lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
@@ -772,7 +772,7 @@ namespace zetscript{
 		zs_string error_found="";
 		ScriptObject *script_object=NULL;
 		zs_string class_name_object_found="";
-		StackMemberAttribute *stk_ma=NULL;
+		StackMemberProperty *stk_ma=NULL;
 		int n_stk_args=byte_code_metamethod_get_num_arguments(byte_code_metamethod);
 		StackElement *stk_return=NULL;
 		int n_returned_arguments_from_function=0;
@@ -805,7 +805,7 @@ namespace zetscript{
 			ScriptObject * script_object_found=(ScriptObject *)stk_result_op1->value;
 			class_name_object_found=script_object_found->getClassName();
 		}else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){ // in principle attribute member metamethod only contemplates pre/post inc/dec operators
-			stk_ma= (StackMemberAttribute *)stk_result_op1->value;
+			stk_ma= (StackMemberProperty *)stk_result_op1->value;
 			script_object = stk_ma->so_object;
 
 

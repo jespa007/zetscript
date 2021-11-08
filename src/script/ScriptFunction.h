@@ -18,6 +18,9 @@ typedef enum{
 #define SFI_GET_LINE(__FUNC__,__INS__)			((zetscript::ScriptFunction *)__FUNC__)->getInstructionLine(__INS__)
 #define SFI_GET_SYMBOL_NAME(__FUNC__,__INS__)	((zetscript::ScriptFunction *)__FUNC__)->getInstructionSymbolName(__INS__)
 
+#define FUNCTION_PARAMETER_COUNT_MAX			16
+#define FUNCTION_RETURN_COUNT_MAX				16
+
 namespace zetscript{
 
 	class ScriptFunctionFactory;

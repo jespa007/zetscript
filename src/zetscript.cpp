@@ -102,17 +102,17 @@ namespace zetscript{
 		// metamethods...
 		registerMemberFunction<zs_datetime>("_toString",DateTimeModule_toString);
 
-		registerMemberAttributeGetter<zs_datetime>("week_day",DateTimeModule_get_week_day);
-		registerMemberAttributeGetter<zs_datetime>("month_day",DateTimeModule_get_month_day);
-		registerMemberAttributeGetter<zs_datetime>("year_day",DateTimeModule_get_year_day);
+		registerMemberPropertyGetter<zs_datetime>("week_day",DateTimeModule_get_week_day);
+		registerMemberPropertyGetter<zs_datetime>("month_day",DateTimeModule_get_month_day);
+		registerMemberPropertyGetter<zs_datetime>("year_day",DateTimeModule_get_year_day);
 
-		registerMemberAttributeGetter<zs_datetime>("second",DateTimeModule_get_second);
-		registerMemberAttributeGetter<zs_datetime>("minute",DateTimeModule_get_minute);
-		registerMemberAttributeGetter<zs_datetime>("hour",DateTimeModule_get_hour);
+		registerMemberPropertyGetter<zs_datetime>("second",DateTimeModule_get_second);
+		registerMemberPropertyGetter<zs_datetime>("minute",DateTimeModule_get_minute);
+		registerMemberPropertyGetter<zs_datetime>("hour",DateTimeModule_get_hour);
 
-		registerMemberAttributeGetter<zs_datetime>("day",DateTimeModule_get_day);
-		registerMemberAttributeGetter<zs_datetime>("month",DateTimeModule_get_month);
-		registerMemberAttributeGetter<zs_datetime>("year",DateTimeModule_get_year);
+		registerMemberPropertyGetter<zs_datetime>("day",DateTimeModule_get_day);
+		registerMemberPropertyGetter<zs_datetime>("month",DateTimeModule_get_month);
+		registerMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 		// Custom user function or classes
 		eval(
@@ -512,7 +512,7 @@ namespace zetscript{
 
 			// clear all garbage
 			StackElement *vm_stack=vm_get_stack_elements(virtual_machine);
-			memset(vm_stack+idx_start_variable,0,sizeof(StackElement)*(VM_STACK_LOCAL_VAR_MAX-idx_start_variable));
+			memset(vm_stack+idx_start_variable,0,sizeof(StackElement)*(VM_STACK_MAX-idx_start_variable));
 
 			// erase global elements that they weren't saved...
 			int resize=local_variables->count-(local_variables->count-idx_start_variable);

@@ -363,7 +363,7 @@ namespace zetscript{
 		Instruction * instruction = NULL;//calling_instruction;
 
 
-		if(data->vm_idx_call >= MAX_FUNCTION_CALL){
+		if(data->vm_idx_call >= VM_FUNCTION_CALL_MAX){
 			VM_ERROR_AND_RET("Reached max stack");
 		}
 
@@ -394,6 +394,9 @@ namespace zetscript{
 		StackElement 	*sf_call_stk_return=NULL;
 		int 			sf_call_n_returned_arguments_from_function=0;
 		int				sf_call_stk_start_function_object=0;
+		int 			sf_call_expected_return=0;
+		int 			sf_call_n_null_values=0;
+
 		// SFCALL
 		//------------------------------------------------
 		//int idx_stk_element;
@@ -419,7 +422,7 @@ namespace zetscript{
 			return;
 		}
 
-		if(((data->stk_vm_current-data->vm_stack)+calling_function->min_stack_needed)>=VM_STACK_LOCAL_VAR_MAX){
+		if(((data->stk_vm_current-data->vm_stack)+calling_function->min_stack_needed)>=VM_STACK_MAX){
 			VM_STOP_EXECUTE("Error MAXIMUM stack size reached");
 		}
 
@@ -666,7 +669,7 @@ load_element_object:
 						   ((stk_var->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)!=0)
 						&& (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM  ||  instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
 						&& (instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0){ // call getter if exist
-							StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->value;
+							StackMemberProperty *stk_ma=(StackMemberProperty *)stk_var->value;
 							if(stk_ma->member_attribute->getter != NULL){
 
 								VM_INNER_CALL_ONLY_RETURN(
@@ -904,7 +907,7 @@ load_element_object:
 								}
 
 								 if((stk_result_op1->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)){
-									StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_result_op1->value;
+									StackMemberProperty *stk_ma=(StackMemberProperty *)stk_result_op1->value;
 									if(stk_ma->member_attribute->getter != NULL){
 
 										VM_INNER_CALL_ONLY_RETURN(
@@ -920,7 +923,7 @@ load_element_object:
 								 }
 
 								 if((stk_result_op2->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)){
-									StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_result_op2->value;
+									StackMemberProperty *stk_ma=(StackMemberProperty *)stk_result_op2->value;
 									if(stk_ma->member_attribute->getter != NULL){
 
 										VM_INNER_CALL_ONLY_RETURN(
@@ -1016,7 +1019,7 @@ load_element_object:
 									VM_STOP_EXECUTE("\"this\" is not assignable");
 								}*/
 							}else if((stk_dst->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)!=0){
-								StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_dst->value;
+								StackMemberProperty *stk_ma=(StackMemberProperty *)stk_dst->value;
 								if(stk_ma->member_attribute->setters.count > 0){
 									lst_functions=&stk_ma->member_attribute->setters;
 									obj_setter=stk_ma->so_object;
@@ -1056,8 +1059,8 @@ load_element_object:
 											,((ScriptObject *)stk_dst->value)->getScriptClass()->class_name.c_str()
 								);
 								}else{
-									StackMemberAttribute * stk_ma=((StackMemberAttribute *)stk_dst->value);
-									VM_STOP_EXECUTE("Attribute '%s::%s' does not implement setter function"
+									StackMemberProperty * stk_ma=((StackMemberProperty *)stk_dst->value);
+									VM_STOP_EXECUTE("Property '%s::%s' does not implement setter function"
 											,stk_ma->so_object->getScriptClass()->class_name.c_str()
 											,stk_ma->member_attribute->attribute_name.c_str());
 								}
@@ -1262,6 +1265,9 @@ load_element_object:
 						stk_result_op2=--data->stk_vm_current;//stk_multi_var_dest++; // left assigment
 						stk_result_op1=++stk_multi_var_src; // result on the right
 						goto vm_store_next;
+					}
+					else if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
+						data->stk_vm_current=stk_start;
 					}
 					else if(   instruction->byte_code!=BYTE_CODE_PUSH_VECTOR_ITEM
 							&& instruction->byte_code!=BYTE_CODE_PUSH_OBJECT_ITEM
@@ -1775,31 +1781,46 @@ execute_function:
 				// reset vm current before function pointer is
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//?0:1);
 
-				if(instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK) {
-					StackElement tmp;
-					// return all elements in reverse order in order to get right assignment ...
-					// reverse returned items
-					for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
-						tmp=sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1];
-						sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
-						sf_call_stk_return[i]=tmp;
-					}
 
-					// copy to vm stack
-					data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
+				StackElement tmp;
+				sf_call_expected_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
+				sf_call_n_null_values=sf_call_expected_return-sf_call_n_returned_arguments_from_function;
 
-					for(int i=0;i<sf_call_n_returned_arguments_from_function;i++){
-						*data->stk_vm_current++= *sf_call_stk_return++; // only return first argument
-					}
+				// return all elements in reverse order in order to get right assignment ...
+				// reverse returned items
+				for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
+					tmp=sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1];
+					sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
+					sf_call_stk_return[i]=tmp;
+				}
 
-				}else if(instruction->byte_code!= BYTE_CODE_CONSTRUCTOR_CALL){ // return only first element
+				// copy to vm stack
+				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
+
+				memcpy(data->stk_vm_current,sf_call_stk_return,sf_call_n_returned_arguments_from_function*sizeof(StackElement));
+				/*for(int i=0;i<sf_call_n_returned_arguments_from_function;i++){
+					*data->stk_vm_current++= *sf_call_stk_return++; // only return first argument
+				}*/
+				data->stk_vm_current+=sf_call_n_returned_arguments_from_function;
+				memset(data->stk_vm_current,0,sf_call_n_null_values*sizeof(StackElement));
+				data->stk_vm_current+=sf_call_n_null_values;
+
+				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
+					data->stk_vm_current=stk_start;
+				}
+
+				/*for(int i=sf_call_n_returned_arguments_from_function; i < expected_return; i++){
+					PUSH_STK_NULL; // no return push null
+				}*/
+
+				/*}else if(instruction->byte_code!= BYTE_CODE_CONSTRUCTOR_CALL){ // return only first element
 					if(sf_call_n_returned_arguments_from_function > 0){
 						*data->stk_vm_current++= sf_call_stk_return[0]; // only return first argument
 					}
 					else{
 						PUSH_STK_NULL; // no return push null
 					}
-				}
+				}*/
 
 				continue;
 			 case  BYTE_CODE_RET:
@@ -2089,7 +2110,7 @@ execute_function:
 		}
 
 		if(stk_var != NULL && (stk_var->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)){
-			StackMemberAttribute *stk_ma=(StackMemberAttribute *)stk_var->value;
+			StackMemberProperty *stk_ma=(StackMemberProperty *)stk_var->value;
 			if(stk_ma->member_attribute->getter != NULL){
 
 				VM_INNER_CALL_ONLY_RETURN(

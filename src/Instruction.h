@@ -29,7 +29,6 @@ typedef enum:unsigned short {
 	INSTRUCTION_PROPERTY_ZS_FLOAT					=0x0200,
 	INSTRUCTION_PROPERTY_BOOL						=0x0400,
 	INSTRUCTION_PROPERTY_STRING						=0x0800,
-	INSTRUCTION_PROPERTY_RETURN_ALL_STACK			=0x1000,
 	INSTRUCTION_PROPERTY_RESET_STACK				=0x2000
 
 }InstructionProperty;
@@ -55,6 +54,24 @@ typedef enum:unsigned short {
 	:(properties) & INSTRUCTION_PROPERTY_ZS_FLOAT ? STK_PROPERTY_ZS_FLOAT \
 	:(properties) & INSTRUCTION_PROPERTY_STRING ? STK_PROPERTY_PTR_STK \
 	:0
+
+#define INSTRUCTION_GET_PARAMETER_COUNT(instruction) 	((instruction)->value_op1 & 0x0f)
+#define INSTRUCTION_GET_RETURN_COUNT(instruction) 		(((instruction)->value_op1 & 0xf0)>>4)
+
+#define INSTRUCTION_SET_VALUE_OP1_RETURN_COUNT(return_count) \
+		(((return_count)&0xf)<<4)
+
+#define INSTRUCTION_SET_VALUE_OP1_PARAMETER_COUNT(parameter_count) \
+		((parameter_count)&0xf)
+
+
+#define INSTRUCTION_SET_RETURN_COUNT(instruction, return_count) \
+		(instruction)->value_op1&=(0x0f); \
+		(instruction)->value_op1|=INSTRUCTION_SET_VALUE_OP1_RETURN_COUNT(return_count);
+
+#define INSTRUCTION_SET_PARAMETER_COUNT(instruction, parameter_count) \
+		(instruction)->value_op1&=(0xf0); \
+		(instruction)->value_op1|=INSTRUCTION_SET_VALUE_OP1_PARAMETER_COUNT(parameter_count);
 
 
 namespace zetscript{

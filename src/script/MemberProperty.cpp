@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	MemberAttribute::MemberAttribute(ScriptClass *_script_class,const zs_string & _attribute_name){
+	MemberProperty::MemberProperty(ScriptClass *_script_class,const zs_string & _attribute_name){
 		getter= NULL;
 		post_inc=NULL;
 		post_dec=NULL;
@@ -16,7 +16,7 @@ namespace zetscript{
 		script_class=_script_class;
 	}
 
-	void MemberAttribute::addSetter(ScriptFunction *f){
+	void MemberProperty::addSetter(ScriptFunction *f){
 
 		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
 		stk->value=(zs_int)f;
@@ -24,7 +24,7 @@ namespace zetscript{
 		setters.push_back((zs_int)stk);
 	}
 
-	MemberAttribute::~MemberAttribute(){
+	MemberProperty::~MemberProperty(){
 
 		for(int i=0;i < setters.count; i++){
 			StackElement *stk_el=(StackElement *)setters.items[i];

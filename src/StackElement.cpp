@@ -37,7 +37,7 @@ namespace zetscript{
 		else if(STK_VALUE_IS_TYPE(stk)) // is a class
 			result=zs_string("type@")+_zs->getScriptClassFactory()->getScriptClassName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_ATTRIBUTE(stk)){
-			MemberAttribute *ma=(MemberAttribute *)stk->value;
+			MemberProperty *ma=(MemberProperty *)stk->value;
 			result="attr@"+ma->script_class->class_name+"::"+ma->attribute_name;
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);

@@ -4,25 +4,27 @@
  */
 #pragma once
 
-#define VM_STACK_LOCAL_VAR_MAX				256
-#define MAX_FUNCTION_CALL 					128
-#define MAX_SHARES_VARIABLE 				256
+#define VM_STACK_MAX					10
+#define VM_FUNCTION_CALL_MAX 			10
+#define VM_VARIABLE_SHARES_MAX 			10
 
-#define SET_INTEGER_RETURN(i)	CURRENT_VM->setIntegerReturnValue(i)
-#define SET_BOOLEAN_RETURN(b) 	CURRENT_VM->setBooleanReturnValue(b)
-#define SET_FLOAT_RETURN(f)   	CURRENT_VM->setFloatReturnValue(f)
+#define VM_PROPERTY_CALL_FROM_NATIVE	0x1
+
+#define SET_INTEGER_RETURN(i)			CURRENT_VM->setIntegerReturnValue(i)
+#define SET_BOOLEAN_RETURN(b) 			CURRENT_VM->setBooleanReturnValue(b)
+#define SET_FLOAT_RETURN(f)   			CURRENT_VM->setFloatReturnValue(f)
 
 #define NO_PARAMS zs_vector<StackElement>{}
 #define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectObject * (const zs_vector<ScriptObjectObject *> & param)>
 
-#define VM_EXECUTE(vm,o,f,stk,n)	vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
-#define VM_ERROR(s,...)				data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
-#define VM_ERROR_AND_RET(s,...)		data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return;
-#define VM_STOP_EXECUTE(s,...)		data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
-#define VM_SET_USER_ERROR(vm,s,...)	vm_set_error_file_line(vm,__FILE__,__LINE__, s, ##__VA_ARGS__)
+#define VM_EXECUTE(vm,o,f,stk,n)		vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
+#define VM_ERROR(s,...)					data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
+#define VM_ERROR_AND_RET(s,...)			data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return;
+#define VM_STOP_EXECUTE(s,...)			data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
+#define VM_SET_USER_ERROR(vm,s,...)		vm_set_error_file_line(vm,__FILE__,__LINE__, s, ##__VA_ARGS__)
 
 
-#define VM_EXECUTE_PROPERTY_CALL_FROM_NATIVE	0x1
+
 
 
 namespace zetscript{

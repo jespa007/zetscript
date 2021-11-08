@@ -92,12 +92,12 @@
 #define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)							(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)				(zs)->registerMemberFunctionStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberAttributeSetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberAttributeGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_INCREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributePostIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_DECREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberAttributePostDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberAttributePreIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberAttributePreDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberPropertySetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberPropertyGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_INCREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberPropertyPostIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_DECREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberPropertyPostDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberPropertyPreIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberPropertyPreDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
 
 
 #define CLASS_INHERITS_FROM(C,B)														ZS_CLASS_INHERITS_FROM(zs,C,B)
@@ -294,63 +294,63 @@ namespace zetscript{
 
 
 		template <typename C,typename F>
-		void	registerMemberAttributeSetter(
+		void	registerMemberPropertySetter(
 				const zs_string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberAttributeSetter<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertySetter<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberAttributeGetter(
+		void	registerMemberPropertyGetter(
 				const zs_string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberAttributeGetter<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertyGetter<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberAttributePostIncrement(
+		void	registerMemberPropertyPostIncrement(
 				const zs_string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberAttributePostIncrement<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertyPostIncrement<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberAttributePostDecrement(
+		void	registerMemberPropertyPostDecrement(
 				const zs_string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberAttributePostDecrement<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertyPostDecrement<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberAttributePreIncrement(
+		void	registerMemberPropertyPreIncrement(
 				const zs_string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberAttributePreIncrement<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertyPreIncrement<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberAttributePreDecrement(
+		void	registerMemberPropertyPreDecrement(
 				const zs_string & attr_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberAttributePreDecrement<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertyPreDecrement<C>(attr_name,ptr_function, registered_file,registered_line );
 		}
 
 		/**

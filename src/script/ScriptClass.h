@@ -30,7 +30,7 @@ namespace zetscript{
 		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
 		zs_vector 		*allocated_member_attributes;
 		ScriptFunction	*sf_field_initializer;
-		MemberAttribute			*setter_getter;
+		MemberProperty			*setter_getter;
 		int						idx_starting_this_member_functions;
 		int						idx_starting_this_member_variables;
 
@@ -89,7 +89,7 @@ namespace zetscript{
 		//
 		// ATTRIBUTES
 		//
-		Symbol 				*	registerMemberAttribute(
+		Symbol 				*	registerMemberProperty(
 				const zs_string & _attrib_name
 				,const char * _file=""
 				,short _line=-1
@@ -98,7 +98,7 @@ namespace zetscript{
 		
 		//---------------
 		// SETTER
-		Symbol				* 	registerNativeMemberAttributeSetter(
+		Symbol				* 	registerNativeMemberPropertySetter(
 			const zs_string & _attribute_name
 			,ScriptFunctionParam **_params
 			,size_t _params_len
@@ -113,7 +113,7 @@ namespace zetscript{
 		 * register C setter
 		 */
 		template <typename F>
-		void registerNativeMemberAttributeSetter(
+		void registerNativeMemberPropertySetter(
 				const zs_string & _attrib_name
 				,F _ptr_function
 				, const char *_registered_file=""
@@ -122,7 +122,7 @@ namespace zetscript{
 
 		//---------------
 		// GETTER
-		Symbol				* 	registerNativeMemberAttributeGetter(
+		Symbol				* 	registerNativeMemberPropertyGetter(
 			const zs_string & _attribute_name
 			,ScriptFunctionParam **_params
 			,size_t _params_len
@@ -134,7 +134,7 @@ namespace zetscript{
 		);
 
 
-		Symbol				* 	registerNativeMemberAttributePostIncrement(
+		Symbol				* 	registerNativeMemberPropertyPostIncrement(
 			const zs_string & _attribute_name
 			,ScriptFunctionParam **_params
 			,size_t _params_len
@@ -145,7 +145,7 @@ namespace zetscript{
 			,short _line=-1
 		);
 
-		Symbol				* 	registerNativeMemberAttributePostDecrement(
+		Symbol				* 	registerNativeMemberPropertyPostDecrement(
 			const zs_string & _attribute_name
 			,ScriptFunctionParam **_params
 			,size_t _params_len
@@ -156,7 +156,7 @@ namespace zetscript{
 			,short _line=-1
 		);
 
-		Symbol				* 	registerNativeMemberAttributePreIncrement(
+		Symbol				* 	registerNativeMemberPropertyPreIncrement(
 			const zs_string & _attribute_name
 			,ScriptFunctionParam **_params
 			,size_t _params_len
@@ -167,7 +167,7 @@ namespace zetscript{
 			,short _line=-1
 		);
 
-		Symbol				* 	registerNativeMemberAttributePreDecrement(
+		Symbol				* 	registerNativeMemberPropertyPreDecrement(
 			const zs_string & _attribute_name
 			,ScriptFunctionParam **_params
 			,size_t _params_len
@@ -182,7 +182,7 @@ namespace zetscript{
 		 * register C getter
 		 */
 		template <typename F>
-		void registerNativeMemberAttributeGetter(
+		void registerNativeMemberPropertyGetter(
 				const zs_string & _attrib_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -190,7 +190,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerNativeMemberAttributePostIncrement(
+		void registerNativeMemberPropertyPostIncrement(
 				const zs_string & _attrib_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -198,7 +198,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerNativeMemberAttributePostDecrement(
+		void registerNativeMemberPropertyPostDecrement(
 				const zs_string & _attrib_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -206,7 +206,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerNativeMemberAttributePreIncrement(
+		void registerNativeMemberPropertyPreIncrement(
 				const zs_string & _attrib_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -214,7 +214,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerNativeMemberAttributePreDecrement(
+		void registerNativeMemberPropertyPreDecrement(
 				const zs_string & _attrib_name
 			,F _ptr_function
 			, const char *registered_file

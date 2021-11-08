@@ -357,7 +357,7 @@ namespace zetscript{
 								,new_scope
 								,&ei_init_vars_for //eval_data->current_function->instructions
 								,NULL
-								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK | EVAL_EXPRESSION_FOR_IN_VARIABLES
+								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_FOR_IN_VARIABLES
 						))==NULL){
 							return NULL;
 						}
@@ -556,7 +556,8 @@ namespace zetscript{
 
 								// call, return all
 								eval_data->current_function->eval_instructions.push_back((zs_int)(
-									new EvalInstruction(BYTE_CODE_MEMBER_CALL,0,0,INSTRUCTION_PROPERTY_RETURN_ALL_STACK)
+									// insert byte code call and set return count as 2, due in in this case we have prepared 2 vars on the left (k,v)
+									new EvalInstruction(BYTE_CODE_MEMBER_CALL,INSTRUCTION_SET_VALUE_OP1_RETURN_COUNT(2))
 								));
 
 
@@ -601,7 +602,7 @@ namespace zetscript{
 										,new_scope
 										,&eval_data->current_function->eval_instructions
 										,{}
-										,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK
+										,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION
 								))==NULL){
 									return NULL;
 								}
@@ -665,7 +666,7 @@ namespace zetscript{
 							,new_scope
 							,&ei_post_operations
 							,{}
-							,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_ON_MAIN_BLOCK // it allows expression sequence and it does a reset stack in the end
+							,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION // it allows expression sequence and it does a reset stack in the end
 						))==NULL){
 							return NULL;
 						}

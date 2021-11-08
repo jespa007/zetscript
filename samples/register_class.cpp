@@ -25,14 +25,14 @@ int main(){
 		zs->registerClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
 
 		// register data1 named data1 in script side as variable member and read/write.
-		zs->registerMemberAttributeSetter<MyClass>("data1",&MyClassWrap_set_data1);
-		zs->registerMemberAttributeGetter<MyClass>("data1",&MyClassWrap_get_data1);
+		zs->registerMemberPropertySetter<MyClass>("data1",&MyClassWrap_set_data1);
+		zs->registerMemberPropertyGetter<MyClass>("data1",&MyClassWrap_get_data1);
 
 		// register data2 named data1 in script side as variable member (only read).
-		zs->registerMemberAttributeGetter<MyClass>("data2",&MyClassWrap_get_data2);
+		zs->registerMemberPropertyGetter<MyClass>("data2",&MyClassWrap_get_data2);
 
 		// register data1 named data1 in script side as variable member (only write).
-		zs->registerMemberAttributeSetter<MyClass>("data3",&MyClassWrap_set_data3);
+		zs->registerMemberPropertySetter<MyClass>("data3",&MyClassWrap_set_data3);
 
 		// register function0 named function1 in script side as function member.
 		zs->registerMemberFunction<MyClass>("function0",&MyClassWrap_function0);
@@ -42,8 +42,8 @@ int main(){
 
 
 		// register data2 named data1 in script side as variable member.
-		zs->registerMemberAttributeSetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
-		zs->registerMemberAttributeGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
+		zs->registerMemberPropertySetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
+		zs->registerMemberPropertyGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
 
 		// register function2 named function2 in script side as function member.
 		zs->registerMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);

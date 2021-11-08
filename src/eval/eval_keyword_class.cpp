@@ -309,13 +309,13 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			Symbol *symbol=NULL;
 			Symbol *symbol_attrib=NULL;
-			MemberAttribute *ma=NULL;
+			MemberProperty *ma=NULL;
 			char *end_var;
 			zs_string function_name;
 			zs_string error;
 
 			try{
-				symbol_attrib=sc->registerMemberAttribute(
+				symbol_attrib=sc->registerMemberProperty(
 						 attrib_name
 						,eval_data->current_parsing_file
 						,attrib_start_line
@@ -331,7 +331,7 @@ namespace zetscript{
 
 			}
 
-			ma=(MemberAttribute *)symbol_attrib->ref_ptr;
+			ma=(MemberProperty *)symbol_attrib->ref_ptr;
 			//Scope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
 
 			// here we only expect to have _set and _get functions
@@ -378,7 +378,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Attribute \"%s\" has already a setter"
+								,"Property \"%s\" has already a setter"
 								,attrib_name.c_str()
 							);
 						}
@@ -389,7 +389,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Attribute \"%s\" has already a getter"
+								,"Property \"%s\" has already a getter"
 								,attrib_name.c_str()
 							);
 						}
@@ -400,7 +400,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Attribute \"%s\" has already a post increment (aka i++) metamethod"
+								,"Property \"%s\" has already a post increment (aka i++) metamethod"
 								,attrib_name.c_str()
 							);
 						}
@@ -411,7 +411,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Attribute \"%s\" has already a post decrement (aka i--) metamethod"
+								,"Property \"%s\" has already a post decrement (aka i--) metamethod"
 								,attrib_name.c_str()
 							);
 						}
@@ -422,7 +422,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Attribute \"%s\" has already  a pre increment (aka ++i) metamethod"
+								,"Property \"%s\" has already  a pre increment (aka ++i) metamethod"
 								,attrib_name.c_str()
 							);
 						}
@@ -433,7 +433,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Attribute \"%s\" has already a pre decrement (aka --i) metamethod"
+								,"Property \"%s\" has already a pre decrement (aka --i) metamethod"
 								,attrib_name.c_str()
 							);
 						}

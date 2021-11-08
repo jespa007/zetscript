@@ -311,7 +311,7 @@ SET(
 	
 	
 	# script
-	script/MemberAttribute.h
+	script/MemberProperty.h
 	script/ScriptClass.h
 	script/ScriptClass.tcc
 	script/ScriptClassFactory.h

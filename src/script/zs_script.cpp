@@ -27,5 +27,5 @@
 //#include		"ScriptContext.cpp"
 #include		"ScriptFunctionParam.cpp"
 #include		"ScriptFunction.cpp"
-#include 		"MemberAttribute.cpp"
+#include 		"MemberProperty.cpp"
 #include		"ScriptClass.cpp"

@@ -67,7 +67,7 @@ namespace zetscript{
 			for ( unsigned i = 0; i < symbol_vars->count; i++){
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
-					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberAttribute(this,(MemberAttribute *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_ATTRIBUTE});
+					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_ATTRIBUTE});
 				}
 			}
 		}
@@ -126,7 +126,7 @@ namespace zetscript{
 
 	ScriptFunction *ScriptObject::getGetter(){
 		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
-		MemberAttribute *member_attribute=script_class->setter_getter;
+		MemberProperty *member_attribute=script_class->setter_getter;
 
 		if(member_attribute !=NULL){
 			return member_attribute->getter;
@@ -137,7 +137,7 @@ namespace zetscript{
 
 	zs_vector *ScriptObject::getSetterList(){
 		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
-		MemberAttribute *member_attribute=script_class->setter_getter;
+		MemberProperty *member_attribute=script_class->setter_getter;
 
 		if(member_attribute !=NULL){
 			return &member_attribute->setters;
@@ -211,7 +211,7 @@ namespace zetscript{
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 
 			if(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
-				delete (StackMemberAttribute *)stk->value;
+				delete (StackMemberProperty *)stk->value;
 			}else if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced
 				if((stk->value != (zs_int)this) // ensure that property don't holds its same var.
 					&& (stk->value != 0)

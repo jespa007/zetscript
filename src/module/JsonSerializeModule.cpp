@@ -66,7 +66,7 @@ namespace zetscript{
 						// if attribute we have to call script or native...
 						if(stk_se->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
 
-							StackMemberAttribute *sma=(StackMemberAttribute *)stk_se->value;
+							StackMemberProperty *sma=(StackMemberProperty *)stk_se->value;
 							ScriptFunction *ptr_function=sma->member_attribute->getter;
 							if(ptr_function!=NULL && obj->idx_script_class>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
 

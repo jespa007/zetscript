@@ -48,9 +48,9 @@ namespace zetscript{
 		EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION		=0x1<<1, // it tells is a regular expression in eval or in post operation for
 		EVAL_EXPRESSION_ALLOW_SEQUENCE_ASSIGNMENT		=0x1<<2, // do not allow a,b,c=0,0,0
 		EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR	=0x1<<3, // break when any assign operator (i.e, =, +=, -=, ...) is found
-		EVAL_EXPRESSION_ON_MAIN_BLOCK					=0x1<<4,
-		EVAL_EXPRESSION_FOR_IN_VARIABLES				=0x1<<5,
-		EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL				=0x1<<6
+		//EVAL_EXPRESSION_ON_MAIN_BLOCK					=0x1<<4,
+		EVAL_EXPRESSION_FOR_IN_VARIABLES				=0x1<<4,
+		EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL				=0x1<<5
 	}EvalExpressionProperty;
 
 	typedef enum

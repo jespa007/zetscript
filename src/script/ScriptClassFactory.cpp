@@ -453,10 +453,10 @@ namespace zetscript{
 					symbol_dst->properties=symbol_src->properties;
 
 
-					// attribs has to be copy MemberAttribute...
+					// attribs has to be copy MemberProperty...
 					if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
-						MemberAttribute *ma_src=(MemberAttribute *)symbol_src->ref_ptr;
-						MemberAttribute *ma_dst=new MemberAttribute(sc,ma_src->attribute_name);
+						MemberProperty *ma_src=(MemberProperty *)symbol_src->ref_ptr;
+						MemberProperty *ma_dst=new MemberProperty(sc,ma_src->attribute_name);
 						ma_dst->getter=ma_src->getter;
 						ma_dst->post_inc=ma_src->post_inc;
 						ma_dst->post_dec=ma_src->post_dec;

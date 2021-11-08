@@ -29,15 +29,15 @@ namespace zetscript{
 	}InfoSharedList;
 
 
-	struct MemberAttribute;
-	struct StackMemberAttribute{
+	struct MemberProperty;
+	struct StackMemberProperty{
 	public:
-		MemberAttribute 	*member_attribute; // make function pointer first to make compatible with stk
+		MemberProperty 	*member_attribute; // make function pointer first to make compatible with stk
 		ScriptObject		*so_object;
 
-		StackMemberAttribute(
+		StackMemberProperty(
 				ScriptObject		*_so_object
-				,MemberAttribute 	*_member_attribute){
+				,MemberProperty 	*_member_attribute){
 			so_object = _so_object;
 			member_attribute= _member_attribute;
 		}

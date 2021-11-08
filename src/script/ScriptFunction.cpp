@@ -272,10 +272,11 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_CONSTRUCTOR_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\targ:%i ret:0\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\targ:%i ret:%i\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
-					,instruction->value_op1
+					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
+					,INSTRUCTION_GET_RETURN_COUNT(instruction)
 				);
 				break;
 			case BYTE_CODE_CALL:
@@ -285,20 +286,20 @@ namespace zetscript{
 			case BYTE_CODE_THIS_MEMBER_CALL:
 			case BYTE_CODE_UNRESOLVED_CALL:
 			case BYTE_CODE_UNRESOLVED_THIS_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\targ:%i ret:%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\targ:%i ret:%i\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
-					,instruction->value_op1
-					,instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK?"all":instruction->properties&INSTRUCTION_PROPERTY_RESET_STACK?"0":"1"
+					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
+					,INSTRUCTION_GET_RETURN_COUNT(instruction)
 				);
 				break;
 			case BYTE_CODE_MEMBER_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\targ:%i ret:%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\targ:%i ret:%i\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
-					,instruction->value_op1
-					,instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK?"all":instruction->properties&INSTRUCTION_PROPERTY_RESET_STACK?"0":"1"
+					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
+					,INSTRUCTION_GET_RETURN_COUNT(instruction)
 				);
 				break;
 			case BYTE_CODE_LOAD_TYPE:
@@ -464,7 +465,7 @@ namespace zetscript{
 			) // repeat symbol are not both c or script funtions
 			{
 				// if exist override, but should be in the same scope
-				THROW_RUNTIME_ERROR("Symbol \"%s\" defined at %s is already defined at %s"
+				THROW_RUNTIME_ERROR("Symbol '%s' defined at %s is already defined at %s"
 					,function_name.c_str()
 					,current_file_line.c_str()
 					,_line
@@ -528,6 +529,14 @@ namespace zetscript{
 		if(_params == NULL){
 			return;
 		}
+
+		if(_params_len>=FUNCTION_PARAMETER_COUNT_MAX){
+			THROW_EXCEPTION(zs_strutils::format("Reached max parameter count (count:%i max:%i)"
+				,_params_len
+				,FUNCTION_PARAMETER_COUNT_MAX
+			));
+		}
+
 		// delete existing args...
 		clearParams();
 		params=*_params;
