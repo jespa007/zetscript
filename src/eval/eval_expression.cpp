@@ -311,7 +311,7 @@ eval_error_sub_expression:
 
 		}
 
-		if(zs_ei_right_sub_expressions.count > 0){ // multi-assignment
+		if(zs_ei_right_sub_expressions.count > 0){ // assignment on the left
 			int right_size=(int)zs_ei_right_sub_expressions.count;
 			int left_size=(int)zs_ei_left_sub_expressions.count;
 			int max_size=right_size>left_size?right_size:left_size;
@@ -372,7 +372,7 @@ eval_error_sub_expression:
 				}
 			}
 
-		}else{ // make a reset stack in the end and write all instructions
+		}else{ // there's no assignment on the left --> make a reset stack in the end and write all instructions
 			for(unsigned it=0;it<zs_ei_left_sub_expressions.count;it++){
 				// write all instructions to instructions pointer
 				dst_instructions->concat(
@@ -396,11 +396,19 @@ eval_error_sub_expression:
 			// special case for catching vars for-in...
 			((properties & (EVAL_EXPRESSION_FOR_IN_VARIABLES))==0)
 		){ //
-			dst_instructions->push_back((zs_int)(
-				new EvalInstruction(
-						BYTE_CODE_RESET_STACK
-				)
-			));
+			EvalInstruction *ei_last=(EvalInstruction *)dst_instructions->items[dst_instructions->count-1];
+			if(IS_BYTE_CODE_CALL(ei_last->vm_instruction.byte_code)
+					||
+			   IS_BYTE_CODE_STORE(ei_last->vm_instruction.byte_code)
+			){
+				ei_last->vm_instruction.properties|=INSTRUCTION_PROPERTY_RESET_STACK;
+			}else{
+				dst_instructions->push_back((zs_int)(
+					new EvalInstruction(
+							BYTE_CODE_RESET_STACK
+					)
+				));
+			}
 		}
 
 

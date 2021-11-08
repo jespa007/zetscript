@@ -133,15 +133,12 @@ namespace zetscript{
 				if((symbol_found->properties & (SYMBOL_PROPERTY_ARG_BY_REF)) == SYMBOL_PROPERTY_ARG_BY_REF){
 					load_byte_code=BYTE_CODE_LOAD_REF;
 				}
-			}else if ((symbol_found = eval_find_global_symbol(eval_data,i1->symbol.name)) != NULL){
-				load_byte_code=BYTE_CODE_LOAD_GLOBAL;
-				load_value_op2=symbol_found->idx_position;
-			}else{
+			}else { // if global or not found cannot be optimized
 				return false;
 			}
 		}
 
-		if(load_value_op2 >= MAX_REGISTER_LENGTH){
+		if(load_value_op2 >= MAX_REGISTER_LENGTH){ // if number of vars is > MAX_REGISTER_LENGTH cannot be registered either
 			return false;
 		}
 
@@ -403,14 +400,12 @@ namespace zetscript{
 						,load_value_op2_1
 						,((load_value_op2_2 & 0xff) << 16) // pack value + properties
 						  | (
-								load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
+								load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 							)
 						,INSTRUCTION_PROPERTY_ILOAD_RR
 						| (
-								load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_1 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
+								load_byte_code_1 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 						)
 				);
@@ -426,8 +421,8 @@ namespace zetscript{
 						,load_value_op2_2
 						,INSTRUCTION_PROPERTY_ILOAD_RK
 						| (
-								load_byte_code_1 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_1 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
+
+								load_byte_code_1 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 						)
 						| k_properties
@@ -443,8 +438,7 @@ namespace zetscript{
 						,load_value_op2_1
 						,INSTRUCTION_PROPERTY_ILOAD_KR
 						| (
-								load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-								:load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
+								load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 								:0
 						)
 						| k_properties
@@ -471,8 +465,7 @@ namespace zetscript{
 							,load_value_op2_2
 							,ZS_IDX_UNDEFINED
 							,INSTRUCTION_PROPERTY_ILOAD_R | (
-									load_byte_code_2 == BYTE_CODE_LOAD_LOCAL ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL
-									:load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
+									load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 									:0
 							)
 					);

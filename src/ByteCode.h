@@ -5,17 +5,6 @@
 
 #pragma once
 
-#define IS_BYTE_CODE_LOAD_VARIABLE_TYPE(byte_code) \
-(\
-  ((byte_code)==ByteCode::BYTE_CODE_FIND_VARIABLE)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_GLOBAL)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_LOCAL)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_THIS)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_MEMBER_VAR)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_VECTOR_ITEM)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_ELEMENT_THIS)\
-||((byte_code)==ByteCode::BYTE_CODE_LOAD_OBJECT_ITEM)\
-)
 
 #define IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(byte_code) \
 (\
@@ -41,7 +30,6 @@
 (\
    ((byte_code)== BYTE_CODE_LOAD_LOCAL) \
 || ((byte_code)== BYTE_CODE_FIND_VARIABLE) \
-|| ((byte_code)== BYTE_CODE_LOAD_GLOBAL)\
 || ((byte_code)== BYTE_CODE_LOAD_THIS_VARIABLE)\
 )
 
@@ -50,6 +38,19 @@
 #define IS_BYTE_CODE_STORE_WITH_OPERATION(b) 	(ByteCode::BYTE_CODE_STORE_ADD<=(b) && (b) <=ByteCode::BYTE_CODE_STORE_SHR)
 //#define IS_BYTE_CODE_STORE(b) 					(IS_BYTE_CODE_STORE_WITH_OPERATION(b) || ((b)==ByteCode::BYTE_CODE_STORE))
 
+#define IS_BYTE_CODE_CALL(byte_code) \
+(\
+	  (BYTE_CODE_BEGIN_CALL <= (byte_code)) \
+	  	  	  	  && \
+	 ((byte_code)<=BYTE_CODE_END_CALL) \
+)
+
+#define IS_BYTE_CODE_STORE(byte_code) \
+(\
+	  (BYTE_CODE_BEGIN_STORE <= (byte_code)) \
+	  	  	  	  && \
+	 ((byte_code)<=BYTE_CODE_END_STORE) \
+)
 
 #define IS_BYTE_CODE_OPERATOR_METAMETHOD_WITH_TWO_ARGS()
 
@@ -59,14 +60,19 @@ namespace zetscript{
 
 		// ARITMETHIC OPERATORS.
 		BYTE_CODE_END_FUNCTION = 0,
+
 		BYTE_CODE_FIND_VARIABLE,
-		BYTE_CODE_CALL,		// direct
+		//----- BEGIN CALL
+		BYTE_CODE_BEGIN_CALL,
+		BYTE_CODE_CALL=BYTE_CODE_BEGIN_CALL,		// direct
 		BYTE_CODE_INDIRECT_GLOBAL_CALL,	// through symbol
 		BYTE_CODE_INDIRECT_LOCAL_CALL,	// through symbol
 		BYTE_CODE_THIS_CALL,	// this direct
 		BYTE_CODE_THIS_MEMBER_CALL,
 		BYTE_CODE_MEMBER_CALL, // through function and member loaded
 		BYTE_CODE_CONSTRUCTOR_CALL, // constructor...
+		BYTE_CODE_END_CALL=BYTE_CODE_CONSTRUCTOR_CALL,
+		//----- END CALL
 
 		BYTE_CODE_UNRESOLVED_CALL,
 		BYTE_CODE_UNRESOLVED_THIS_CALL,
@@ -107,8 +113,9 @@ namespace zetscript{
 
 		BYTE_CODE_LOAD_STACK_ELEMENT,
 
-
-		BYTE_CODE_STORE_CONST, // it stores and set stack only-read
+		//----- BEGIN STORE
+		BYTE_CODE_BEGIN_STORE,
+		BYTE_CODE_STORE_CONST=BYTE_CODE_BEGIN_STORE, // it stores and set stack only-read
 		BYTE_CODE_STORE, 	 // mov expression to var ( > 1 multiple)
 		BYTE_CODE_STORE_ADD, //
 		BYTE_CODE_STORE_SUB, //
@@ -120,6 +127,9 @@ namespace zetscript{
 		BYTE_CODE_STORE_BITWISE_XOR, //
 		BYTE_CODE_STORE_SHL, //
 		BYTE_CODE_STORE_SHR, //
+		BYTE_CODE_END_STORE=BYTE_CODE_STORE_SHR,
+		//----- END STORE
+
 		BYTE_CODE_PUSH_VECTOR_ITEM, // Value push for vector
 		BYTE_CODE_PUSH_OBJECT_ITEM,
 		//-------------------------------

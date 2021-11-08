@@ -7,14 +7,12 @@
 #define FORMAT_PRINT_INSTRUCTION "%04i"
 
 #define GET_ILOAD_ACCESS_TYPE_STR(properties) \
- ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? "Local"\
-:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? "This"\
-:"Global"\
+((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? "This"\
+:"Local"\
 
 #define GET_ILOAD_R_STR(properties,value) \
-	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? ((Symbol *)sfo->local_variables->items[value])->name.c_str()\
-	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->class_scope->symbol_variables->items[value])->name.c_str()\
-	:((Symbol *)MAIN_FUNCTION(sfo)->local_variables->items[value])->name.c_str()\
+	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->class_scope->symbol_variables->items[value])->name.c_str()\
+	:((Symbol *)sfo->local_variables->items[value])->name.c_str()\
 
 namespace zetscript{
 

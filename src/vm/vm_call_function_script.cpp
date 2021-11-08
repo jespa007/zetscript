@@ -279,9 +279,8 @@
 	 *data->vm_current_scope_function->scope_current++=(Scope *)_scope;
 
 #define LOAD_FROM_STACK(offset,properties) \
-	 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL) ? _stk_local_var+offset \
-	:((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? vm_load_this_element(vm,this_object,calling_function,instruction,offset) \
-	:data->vm_stack + offset\
+	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? vm_load_this_element(vm,this_object,calling_function,instruction,offset) \
+    : _stk_local_var+offset \
 
 #define POP_TWO \
     switch(instruction->properties & INSTRUCTION_PROPERTY_ILOAD){\
@@ -394,7 +393,7 @@ namespace zetscript{
 		bool 			 sf_call_is_member_function=false;
 		StackElement 	*sf_call_stk_return=NULL;
 		int 			sf_call_n_returned_arguments_from_function=0;
-		int				sf_call_is_immediate=0;
+		int				sf_call_stk_start_function_object=0;
 		// SFCALL
 		//------------------------------------------------
 		//int idx_stk_element;
@@ -1463,7 +1462,7 @@ load_element_object:
 			//----- immediate call
 			 case  BYTE_CODE_CALL: // immediate call this
 				 sf_call_calling_object = NULL;
-				 sf_call_is_immediate=0;
+				 sf_call_stk_start_function_object=0;
 				 sf_call_is_member_function=false;
 				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
@@ -1471,7 +1470,7 @@ load_element_object:
 				 goto execute_function;
 			case  BYTE_CODE_THIS_CALL: // immediate call this
 				 sf_call_calling_object = this_object;
-				 sf_call_is_immediate=0;
+				 sf_call_stk_start_function_object=0;
 				 sf_call_is_member_function=true;
 				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
@@ -1480,7 +1479,7 @@ load_element_object:
 			//----- load function
 			case  BYTE_CODE_THIS_MEMBER_CALL: // find symbol and load
 				 sf_call_calling_object = this_object;
-				 sf_call_is_immediate=0;
+				 sf_call_stk_start_function_object=0;
 				 if(instruction->value_op2 != ZS_IDX_UNDEFINED){ // stored in a member field
 					 sf_call_stk_function_ref= this_object->getBuiltinElementAt(instruction->value_op2);
 				 }else{
@@ -1494,12 +1493,12 @@ load_element_object:
 				goto load_function;
 			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
 				 sf_call_calling_object = NULL;
-				 sf_call_is_immediate=0;
+				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=_stk_local_var+instruction->value_op2;
 				goto load_function;
 			case  BYTE_CODE_INDIRECT_GLOBAL_CALL: // call from idx var
 				 sf_call_calling_object = NULL;
-				 sf_call_is_immediate=true;
+				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=data->vm_stack+instruction->value_op2;
 				 goto load_function;
 			 case  BYTE_CODE_CONSTRUCTOR_CALL:
@@ -1508,7 +1507,7 @@ load_element_object:
 				sf_call_script_function=NULL;
 				sf_call_stk_function_ref = (data->stk_vm_current-instruction->value_op1-1);
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
-				sf_call_is_immediate=2; // object + function
+				sf_call_stk_start_function_object=2; // object + function
 
 load_function:
 
@@ -1774,7 +1773,7 @@ execute_function:
 				CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function,false)
 
 				// reset vm current before function pointer is
-				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_is_immediate;//?0:1);
+				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//?0:1);
 
 				if(instruction->properties&INSTRUCTION_PROPERTY_RETURN_ALL_STACK) {
 					StackElement tmp;
@@ -1787,7 +1786,7 @@ execute_function:
 					}
 
 					// copy to vm stack
-					data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_is_immediate;//(sf_call_is_immediate?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
+					data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
 					for(int i=0;i<sf_call_n_returned_arguments_from_function;i++){
 						*data->stk_vm_current++= *sf_call_stk_return++; // only return first argument
@@ -2019,6 +2018,8 @@ execute_function:
 					goto lbl_exit_function;
 				 }
 				 continue;
+
+			case BYTE_CODE_FIND_VARIABLE:
 			case BYTE_CODE_UNRESOLVED_CALL:
 				{
 					const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(calling_function,instruction);

@@ -50,7 +50,7 @@ test=function(test){
 }(test)
 System::assert(test==4,"test!=4")
 
-{
+/*{
 	function local_function(test){
 		return test+1
 	}
@@ -61,8 +61,10 @@ System::assert(test==4,"test!=4")
 	var var_local_function=local_function
 		
 	test=var_local_function(test)
-	System::assert(test==5,"test!=6")
-}
+	System::assert(test==6,"test!=6")
+}*/
+
+test=6
 
 
 var a=new A()
