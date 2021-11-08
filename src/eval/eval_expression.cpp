@@ -296,6 +296,7 @@ eval_error_sub_expression:
 					, expression // it's saving to instructions...
 					,NULL
 					,properties | (idx==0?EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR|additional_properties_first_recursive:0)
+					,0
 					,idx==1?zs_ei_left_sub_expressions.count:0 // max assignments left
 				))==NULL){
 					goto eval_error_expression_delete_left_right_sub_expressions;

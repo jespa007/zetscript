@@ -21,7 +21,7 @@ namespace zetscript{
 			, const char *expected_ending_char=NULL
 			, uint16_t properties=0 // uint16_t properties
 			, int n_recursive_level=0
-			, int n_return_values=0
+			, int n_return_values=1
 	);
 
 

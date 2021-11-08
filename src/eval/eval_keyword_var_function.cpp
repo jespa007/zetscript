@@ -343,11 +343,11 @@ namespace zetscript{
 						}
 
 						// finally we insert reset stack
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
+						/*eval_data->current_function->eval_instructions.push_back((zs_int)(
 								new EvalInstruction(
 										BYTE_CODE_RESET_STACK
 								)
-						));
+						));*/
 					}
 
 					line = aux_line;
