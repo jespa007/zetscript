@@ -253,7 +253,7 @@ Solved issues
 > #310 Optimize code for instanceof and typeof
 > #311 Instruction: Add property reset stack if last instruction of expression is CALL or STORE
 > #312 Direct call if metamethod is action or function without any params optimitzation 
-> #313 Change names Property -> Field / Attribute -> Property 
+#313 Change names Property -> Field / Attribute -> Property 
 > #314 Save n paramater/return count for each call in instruction->value_op1
 > #315 Test stack element limits
  
