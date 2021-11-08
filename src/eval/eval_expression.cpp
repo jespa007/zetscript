@@ -408,10 +408,10 @@ eval_error_sub_expression:
 		// special case for catching vars for-in...
 		//if	((properties & (EVAL_EXPRESSION_FOR_IN_VARIABLES))==0){
 		ei_last=(EvalInstruction *)dst_instructions->items[dst_instructions->count-1];
-		if(IS_BYTE_CODE_CALL(ei_last->vm_instruction.byte_code)
-				||
-		   IS_BYTE_CODE_STORE(ei_last->vm_instruction.byte_code)
-		){
+		if(IS_BYTE_CODE_CALL(ei_last->vm_instruction.byte_code)){
+			ei_last->vm_instruction.properties|=INSTRUCTION_PROPERTY_RESET_STACK;
+			ei_last->vm_instruction.value_op1&=0xf; // if last op, no return parameters needed
+		}else if(IS_BYTE_CODE_STORE(ei_last->vm_instruction.byte_code)){
 			ei_last->vm_instruction.properties|=INSTRUCTION_PROPERTY_RESET_STACK;
 		}else{
 			dst_instructions->push_back((zs_int)(
