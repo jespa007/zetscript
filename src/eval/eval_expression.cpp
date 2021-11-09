@@ -35,7 +35,7 @@ namespace zetscript{
 			, const char *expected_ending_char
 			, uint16_t properties
 			, int n_recursive_level
-			, int n_return_values
+			, zs_vector *unique_call_instruction
 		){
 		// PRE: s is current zs_string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.
@@ -82,7 +82,7 @@ namespace zetscript{
 						,last_operator_token_node
 						,properties
 						,n_recursive_level
-						,n_return_values))==NULL){
+						))==NULL){
 					goto eval_error_sub_expression;
 				}
 
@@ -188,7 +188,7 @@ namespace zetscript{
 				//,only_call_instructions
 				,properties
 				,n_recursive_level
-				,n_return_values
+				,unique_call_instruction
 			))==NULL){
 				goto eval_error_sub_expression;
 			}
@@ -273,17 +273,30 @@ eval_error_sub_expression:
 
 			int idx=0;
 			bool only_load_left_expression=eval_check_all_instruction_only_load_op((zs_vector *)zs_ei_left_sub_expressions.items[0]);
+			zs_vector unique_call_instruction;
 
 			do{
+				uint16_t properties_multi_expression=properties;
+				zs_vector *ptr_unique_call_instruction=NULL;
 
 				if(idx==0) { // left expressions
 					zs_ei_left_sub_expressions.push_back((zs_int)(
 							expression=new zs_vector()
 					));
+					properties_multi_expression|=additional_properties_first_recursive;
+
+					if(only_load_left_expression == true){
+						properties_multi_expression|=EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR;
+					}
+
 				}else{ // right expressions
 					zs_ei_right_sub_expressions.push_back((zs_int)(
 							expression=new zs_vector()
 					));
+
+					if(zs_ei_right_sub_expressions.count==1 && only_load_left_expression==true){ // valid multiassingment
+						ptr_unique_call_instruction=&unique_call_instruction;
+					}
 				}
 
 
@@ -295,9 +308,9 @@ eval_error_sub_expression:
 					, scope_info
 					, expression // it's saving to instructions...
 					,NULL
-					,properties | (idx==0?EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR|additional_properties_first_recursive:0)
+					,properties_multi_expression
 					,0
-					,idx==1?zs_ei_left_sub_expressions.count:0 // max assignments left
+					,ptr_unique_call_instruction // max assignments left
 				))==NULL){
 					goto eval_error_expression_delete_left_right_sub_expressions;
 				}
@@ -323,6 +336,13 @@ eval_error_sub_expression:
 				}
 
 			}while(aux_p != NULL && *aux_p != 0 && (*aux_p==',' || *aux_p=='=') );
+
+			if(zs_ei_right_sub_expressions.count==1 && unique_call_instruction.count > 0){ // assign maximum return for this calls
+				for(unsigned i=0; i < unique_call_instruction.count; i++){
+					EvalInstruction *ei_call=(EvalInstruction *)unique_call_instruction.items[i];
+					INSTRUCTION_SET_RETURN_COUNT(&ei_call->vm_instruction,zs_ei_left_sub_expressions.count);
+				}
+			}
 
 		}
 

@@ -320,7 +320,7 @@ namespace zetscript{
 							,byte_code_to_str(instruction->byte_code)
 						);
 					}else if(n_ops==1){
-						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%i\n"
+						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%i\n"
 							,idx_instruction
 							,byte_code_to_str(instruction->byte_code)
 							,instruction->value_op1
