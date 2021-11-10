@@ -804,30 +804,30 @@ namespace zetscript{
 		}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject * script_object_found=(ScriptObject *)stk_result_op1->value;
 			class_name_object_found=script_object_found->getClassName();
-		}else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){ // in principle attribute member metamethod only contemplates pre/post inc/dec operators
+		}else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){ // in principle attribute member metamethod only contemplates pre/post inc/dec operators
 			stk_ma= (StackMemberProperty *)stk_result_op1->value;
 			script_object = stk_ma->so_object;
 
 
 			switch(byte_code_metamethod){
 			case BYTE_CODE_METAMETHOD_POST_INC: // i++
-				ptr_function_found=stk_ma->member_attribute->post_inc;
-				error_found=zs_strutils::format("Member attribute '%s' has not implemented metamethod _post_inc (aka '%s++') ",stk_ma->member_attribute->attribute_name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
+				ptr_function_found=stk_ma->member_property->post_inc;
+				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _post_inc (aka '%s++') ",stk_ma->member_property->attribute_name.c_str(),stk_ma->member_property->attribute_name.c_str());
 				break;
 			case BYTE_CODE_METAMETHOD_POST_DEC: // i--
-				ptr_function_found=stk_ma->member_attribute->post_dec;
-				error_found=zs_strutils::format("Member attribute '%s' has not implemented metamethod _post_dec (aka '%s--') ",stk_ma->member_attribute->attribute_name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
+				ptr_function_found=stk_ma->member_property->post_dec;
+				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _post_dec (aka '%s--') ",stk_ma->member_property->attribute_name.c_str(),stk_ma->member_property->attribute_name.c_str());
 				break;
 			case BYTE_CODE_METAMETHOD_PRE_INC: // ++i
-				ptr_function_found=stk_ma->member_attribute->pre_inc;
-				error_found=zs_strutils::format("Member attribute '%s' has not implemented metamethod _pre_inc (aka '++%s')",stk_ma->member_attribute->attribute_name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
+				ptr_function_found=stk_ma->member_property->pre_inc;
+				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _pre_inc (aka '++%s')",stk_ma->member_property->attribute_name.c_str(),stk_ma->member_property->attribute_name.c_str());
 				break;
 			case BYTE_CODE_METAMETHOD_PRE_DEC: // --i
-				ptr_function_found=stk_ma->member_attribute->pre_dec;
-				error_found=zs_strutils::format("Member attribute '%s' has not implemented metamethod _pre_dec (aka '--%s')",stk_ma->member_attribute->attribute_name.c_str(),stk_ma->member_attribute->attribute_name.c_str());
+				ptr_function_found=stk_ma->member_property->pre_dec;
+				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _pre_dec (aka '--%s')",stk_ma->member_property->attribute_name.c_str(),stk_ma->member_property->attribute_name.c_str());
 				break;
 			default:
-				error_found=zs_strutils::format("Internal error: unexpected metamethod for attribute '%s'",stk_ma->member_attribute->attribute_name.c_str());
+				error_found=zs_strutils::format("Internal error: unexpected metamethod for attribute '%s'",stk_ma->member_property->attribute_name.c_str());
 				goto apply_metamethod_error;
 			}
 

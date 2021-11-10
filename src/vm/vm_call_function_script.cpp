@@ -559,9 +559,6 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
 				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,this_object,(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr);
 
-				//((ScriptObjectMemberFunction *)so_aux)->so_object=this_object;
-				//((ScriptObjectMemberFunction *)so_aux)->so_function=(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr;
-
 				 if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
 				 }
@@ -579,49 +576,43 @@ namespace zetscript{
 					data->stk_vm_current++;
 				}
 				continue;
-			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
-			case BYTE_CODE_LOAD_OBJECT_ITEM:
 			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
 			case BYTE_CODE_LOAD_THIS_VARIABLE:
+				stk_var=vm_load_this_element(vm,this_object,calling_function,instruction,instruction->value_op2);
+				goto load_element_stk;
+			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
+			case BYTE_CODE_LOAD_OBJECT_ITEM:
 load_element_object:
-
-				stk_var=NULL;
-				so_aux=this_object; // take this as default
-				if(instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM){
-
-					Instruction *previous_ins= (instruction-1);
-
-					if(previous_ins->byte_code == BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE){
-						stk_result_op1=(data->stk_vm_current-1);
-					}
-					else{
-						POP_ONE; // get var op1 and symbol op2
-					}
-
-					if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)!= STK_PROPERTY_SCRIPT_OBJECT)
-					{
-						VM_STOP_EXECUTE(
-							"Cannot perform access operation [ ... %s.%s ]. Expected '%s' as object but is type '%s' %s"
-							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-							,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
-							,zs_strutils::starts_with(stk_to_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
-						);
-					}
-
-					so_aux=((ScriptObject *)stk_result_op1->value);
-
-
-					if(so_aux == NULL)
-					{
-						VM_STOP_EXECUTE("var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(so_aux,previous_ins));
-					}
-
-
-				}else{ // if LOAD THIS OR PUSH_STK THIS ...
-					stk_var=vm_load_this_element(vm,this_object,calling_function,instruction,instruction->value_op2);
+				// check previous instruction
+				if((instruction-1)->byte_code == BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE){
+					stk_result_op1=(data->stk_vm_current-1);
 				}
+				else{
+					POP_ONE; // get var op1 and symbol op2
+				}
+
+				if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)!= STK_PROPERTY_SCRIPT_OBJECT)
+				{
+					VM_STOP_EXECUTE(
+						"Cannot perform access operation [ ... %s.%s ]. Expected '%s' as object but is type '%s' %s"
+						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+						,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+						,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+						,zs_strutils::starts_with(stk_to_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+					);
+				}
+
+				so_aux=((ScriptObject *)stk_result_op1->value);
+
+
+				if(so_aux == NULL)
+				{
+					VM_STOP_EXECUTE("var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(so_aux,(instruction-1)));
+				}
+
+
+load_element_stk:
 
 				if(stk_var==NULL){ // load element from object or dynamic member element from this
 					str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
@@ -666,16 +657,16 @@ load_element_object:
 						}
 						continue;
 					}else if(
-						   ((stk_var->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)!=0)
+						   ((stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0)
 						&& (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM  ||  instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
 						&& (instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0){ // call getter if exist
 							StackMemberProperty *stk_ma=(StackMemberProperty *)stk_var->value;
-							if(stk_ma->member_attribute->getter != NULL){
+							if(stk_ma->member_property->getter != NULL){
 
 								VM_INNER_CALL_ONLY_RETURN(
 										stk_ma->so_object
-										,stk_ma->member_attribute->getter
-										,stk_ma->member_attribute->getter->function_name.c_str()
+										,stk_ma->member_property->getter
+										,stk_ma->member_property->getter->function_name.c_str()
 										,true
 								);
 
@@ -750,7 +741,7 @@ load_element_object:
 
 					if(instruction->byte_code==BYTE_CODE_PUSH_VECTOR_ITEM){
 
-						// you are doing that,
+						// vm is doing that,
 						//
 						// var vec=[
 						//   1
@@ -779,7 +770,7 @@ load_element_object:
 						}
 					}else if(instruction->byte_code==BYTE_CODE_PUSH_OBJECT_ITEM){
 
-						// you are doing that,
+						// vm is doing that,
 						//
 						// var obj={
 						//   a:0
@@ -818,45 +809,10 @@ load_element_object:
 
 						n_elements_left=(char)instruction->value_op1;
 
-						//-------------------------------------------------
-						// GETTER NOT IMPLEMENTED DUE CONFLICTS !!!!
-						// Example: If you return an object from function and this object has the getter implemented it will return the value of this
-						// getter instead of the object... some times the programmer wants this behavior but it will struggle more develop.
-						/*n_dst_vars=n_elements_left;
-						if(n_dst_vars==ZS_IDX_UNDEFINED){
-							n_dst_vars=1;
-						}
-
-						// TODO: check whether src variable it has a _getter
-						if((data->stk_vm_current-n_dst_vars-1)->properties & STK_PROPERTY_SCRIPT_OBJECT){
-							// 0. check whether object it has getter
-							ScriptObject *so_read=(ScriptObject *)((data->stk_vm_current-n_dst_vars-1)->value);
-							ScriptFunction *sf_getter=so_read->getGetter();
-							if(sf_getter != NULL){
-								// 1. alloc tmp stk array with size many dst stk elements it has (n_dst_vars)
-								StackElement *stk_tmp=(StackElement *)malloc(sizeof(StackElement)*n_dst_vars);
-								// 2. copy n elements left to its reserved array
-								memcpy(stk_tmp,(data->stk_vm_current-n_dst_vars),sizeof(StackElement)*n_dst_vars);
-								// 4. invoke inline script function only return
-								// set vm_current to start of getter variable object
-								data->stk_vm_current=data->stk_vm_current-n_dst_vars-1;
-								// call getter and NOT reset stack after call (false)
-								VM_INNER_CALL_ONLY_RETURN(so_read,sf_getter,"_get",false);
-
-								// 5. push elements from tmp stk (starts -1 because after return it points to the last element +1, we want to point at the element)
-								memcpy(data->stk_vm_current-=1,stk_tmp,sizeof(StackElement)*n_dst_vars);
-								data->stk_vm_current+=n_dst_vars;
-								// 6. free allocated tmp stk
-								free(stk_tmp);
-							}
-						}*/
-
 						// check if multiassigment...
 						if(instruction->byte_code==BYTE_CODE_STORE && n_elements_left > 0){
 
 							StackElement *stk_aux=data->stk_vm_current;
-
-							//stk_vm_current--; // set to 0
 
 							// check assigname stk and dec stk_aux
 							for(int i=0; i < n_elements_left; i++){
@@ -873,9 +829,7 @@ load_element_object:
 							stk_result_op2=--data->stk_vm_current;
 							stk_result_op1=++stk_multi_var_src;
 
-
 						}else{
-
 
 							if(IS_BYTE_CODE_STORE_WITH_OPERATION(instruction->byte_code)){ // arithmetic
 								StackElement stk_op1,stk_op2;
@@ -906,14 +860,14 @@ load_element_object:
 									stk_result_op2=(StackElement *)(STK_GET_STK_VAR_REF(stk_result_op2)->value);
 								}
 
-								 if((stk_result_op1->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)){
+								 if((stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY)){
 									StackMemberProperty *stk_ma=(StackMemberProperty *)stk_result_op1->value;
-									if(stk_ma->member_attribute->getter != NULL){
+									if(stk_ma->member_property->getter != NULL){
 
 										VM_INNER_CALL_ONLY_RETURN(
 												stk_ma->so_object
-												,stk_ma->member_attribute->getter
-												,stk_ma->member_attribute->getter->function_name.c_str()
+												,stk_ma->member_property->getter
+												,stk_ma->member_property->getter->function_name.c_str()
 												,true
 										);
 
@@ -922,14 +876,14 @@ load_element_object:
 									}
 								 }
 
-								 if((stk_result_op2->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)){
+								 if((stk_result_op2->properties & STK_PROPERTY_MEMBER_PROPERTY)){
 									StackMemberProperty *stk_ma=(StackMemberProperty *)stk_result_op2->value;
-									if(stk_ma->member_attribute->getter != NULL){
+									if(stk_ma->member_property->getter != NULL){
 
 										VM_INNER_CALL_ONLY_RETURN(
 												stk_ma->so_object
-												,stk_ma->member_attribute->getter
-												,stk_ma->member_attribute->getter->function_name.c_str()
+												,stk_ma->member_property->getter
+												,stk_ma->member_property->getter->function_name.c_str()
 												,true
 										);
 
@@ -970,13 +924,11 @@ load_element_object:
 								case BYTE_CODE_STORE_SHR:
 									PROCESS_BINARY_OPERATION(>>,BYTE_CODE_METAMETHOD_SHR);
 									break;
-
 								}
 
 								// push var again
 								*data->stk_vm_current++=stk_aux;
 							}
-
 							READ_TWO_POP_TWO
 						}
 
@@ -1014,14 +966,10 @@ load_element_object:
 								if((lst_functions=script_object_class->getSetterList())!=NULL){
 									obj_setter=script_object_class;
 								}
-
-								/*if(IS_STK_THIS(stk_dst)){
-									VM_STOP_EXECUTE("\"this\" is not assignable");
-								}*/
-							}else if((stk_dst->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)!=0){
+							}else if((stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0){
 								StackMemberProperty *stk_ma=(StackMemberProperty *)stk_dst->value;
-								if(stk_ma->member_attribute->setters.count > 0){
-									lst_functions=&stk_ma->member_attribute->setters;
+								if(stk_ma->member_property->setters.count > 0){
+									lst_functions=&stk_ma->member_property->setters;
 									obj_setter=stk_ma->so_object;
 								}else{
 									VM_STOP_EXECUTE("Symbol X has not setter metamethod implemented");
@@ -1049,8 +997,6 @@ load_element_object:
 									,calling_function
 									,instruction
 									,false
-									//,lst_functions
-									//,lst_functions->count
 									,STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)?"_set":"_set@" // symbol to find
 									,stk_arg
 									,1))==NULL){
@@ -1062,7 +1008,7 @@ load_element_object:
 									StackMemberProperty * stk_ma=((StackMemberProperty *)stk_dst->value);
 									VM_STOP_EXECUTE("Property '%s::%s' does not implement setter function"
 											,stk_ma->so_object->getScriptClass()->class_name.c_str()
-											,stk_ma->member_attribute->attribute_name.c_str());
+											,stk_ma->member_property->attribute_name.c_str());
 								}
 							}
 						}else if(lst_functions->count>1){ // it has all member list
@@ -1108,7 +1054,6 @@ load_element_object:
 					// STORE THROUGH SCRIPT
 					//
 					}else{
-
 
 						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
 							stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value));
@@ -1233,7 +1178,6 @@ load_element_object:
 									||  (IS_STK_THIS(&old_stk_dst)) // ... or this
 									   // ... do share/unshare
 									){
-
 										// unref pointer because new pointer has been attached...
 										StackElement *chk_ref=(StackElement *)stk_result_op2->value;
 										ScriptObjectObject  *old_so=(ScriptObjectObject  *)old_stk_dst.value;
@@ -1782,45 +1726,29 @@ execute_function:
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//?0:1);
 
 
-				StackElement tmp;
 				sf_call_expected_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
 				sf_call_n_null_values=sf_call_expected_return-sf_call_n_returned_arguments_from_function;
 
 				// return all elements in reverse order in order to get right assignment ...
 				// reverse returned items
 				for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
-					tmp=sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1];
+					StackElement tmp=sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1];
 					sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
 					sf_call_stk_return[i]=tmp;
 				}
 
-				// copy to vm stack
-				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
-
-				memcpy(data->stk_vm_current,sf_call_stk_return,sf_call_n_returned_arguments_from_function*sizeof(StackElement));
-				/*for(int i=0;i<sf_call_n_returned_arguments_from_function;i++){
-					*data->stk_vm_current++= *sf_call_stk_return++; // only return first argument
-				}*/
-				data->stk_vm_current+=sf_call_n_returned_arguments_from_function;
-				memset(data->stk_vm_current,0,sf_call_n_null_values*sizeof(StackElement));
-				data->stk_vm_current+=sf_call_n_null_values;
+				if(sf_call_n_returned_arguments_from_function>0){
+					memcpy(data->stk_vm_current,sf_call_stk_return,sf_call_n_returned_arguments_from_function*sizeof(StackElement));
+					data->stk_vm_current+=sf_call_n_returned_arguments_from_function;
+				}
+				if(sf_call_n_null_values >0){
+					memset(data->stk_vm_current,0,sf_call_n_null_values*sizeof(StackElement));
+					data->stk_vm_current+=sf_call_n_null_values;
+				}
 
 				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
 					data->stk_vm_current=stk_start;
 				}
-
-				/*for(int i=sf_call_n_returned_arguments_from_function; i < expected_return; i++){
-					PUSH_STK_NULL; // no return push null
-				}*/
-
-				/*}else if(instruction->byte_code!= BYTE_CODE_CONSTRUCTOR_CALL){ // return only first element
-					if(sf_call_n_returned_arguments_from_function > 0){
-						*data->stk_vm_current++= sf_call_stk_return[0]; // only return first argument
-					}
-					else{
-						PUSH_STK_NULL; // no return push null
-					}
-				}*/
 
 				continue;
 			 case  BYTE_CODE_RET:
@@ -1914,22 +1842,6 @@ execute_function:
 								 data->stk_vm_current->value=(zs_int)constructor_function;
 								 data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 								 data->stk_vm_current++;
-								 // set idx function found
-								 /*if((constructor_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){  // is a script constructor so only set idx
-									 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
-								 }else{// is a native constructor, find a constructor if it passes one or more args
-									 if(n_args > 0){ // we have to find our custom function to call after object is created
-										 constructor_function=sc->getSymbol(symbol_name,n_args+1); //GET FUNCTION_MEMBER_CONSTRUCTOR_NAME. +1 Is because we include _this paramaters always in the call (is memeber function)!
-										 if(constructor_function == NULL){
-											 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Cannot find any constructor function '%s' with '%i' parameters",symbol_name.c_str(),n_args);
-										 }
-										 // override idx
-										 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;
-										 constructor_function->properties|=SYMBOL_PROPERTY_DEDUCE_AT_RUNTIME; //eval_instruction->vm_instruction.properties|=;
-										 ei_load_function_constructor->vm_instruction.value_op1=n_args+1;
-									 }
-								 }*/
-
 							 }
 						}
 
@@ -2109,14 +2021,14 @@ execute_function:
 			stk_var = this_object->getBuiltinElementAt(idx);
 		}
 
-		if(stk_var != NULL && (stk_var->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)){
+		if(stk_var != NULL && (stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)){
 			StackMemberProperty *stk_ma=(StackMemberProperty *)stk_var->value;
-			if(stk_ma->member_attribute->getter != NULL){
+			if(stk_ma->member_property->getter != NULL){
 
 				VM_INNER_CALL_ONLY_RETURN(
 						stk_ma->so_object
-						,stk_ma->member_attribute->getter
-						,stk_ma->member_attribute->getter->function_name.c_str()
+						,stk_ma->member_property->getter
+						,stk_ma->member_property->getter->function_name.c_str()
 						,true
 				);
 

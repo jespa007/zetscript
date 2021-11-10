@@ -64,10 +64,10 @@ namespace zetscript{
 						str_result.append("\"" + zs_string(mi->key)+ "\":");
 
 						// if attribute we have to call script or native...
-						if(stk_se->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
+						if(stk_se->properties & STK_PROPERTY_MEMBER_PROPERTY){
 
 							StackMemberProperty *sma=(StackMemberProperty *)stk_se->value;
-							ScriptFunction *ptr_function=sma->member_attribute->getter;
+							ScriptFunction *ptr_function=sma->member_property->getter;
 							if(ptr_function!=NULL && obj->idx_script_class>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
 
 								getter_found=true;

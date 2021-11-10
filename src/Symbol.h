@@ -14,7 +14,7 @@ typedef enum:unsigned short  {
 	SYMBOL_PROPERTY_TYPE						= 0x0004,// symbol is type
 	SYMBOL_PROPERTY_FUNCTION					= 0x0008,// ref_ptr holds script function ptr
 	SYMBOL_PROPERTY_CONST 						= 0x0010,// This symbol is not assignable
-	SYMBOL_PROPERTY_MEMBER_ATTRIBUTE			= 0x0020,// Member attrib
+	SYMBOL_PROPERTY_MEMBER_PROPERTY			= 0x0020,// Member attrib
 	SYMBOL_PROPERTY_ARG_BY_REF					= 0x0040,// Is a reference
 }SymbolProperty;
 

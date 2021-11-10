@@ -212,12 +212,12 @@ namespace zetscript{
 
 			Symbol *symbol_src = (Symbol *)base_functions->items[i];
 
-			bool is_metamethod_function = 	zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_SETTER)
-										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_GETTER)
-										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_POST_INC)
-										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_POST_DEC)
-										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_PRE_INC)
-										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_PRE_DEC)
+			bool is_metamethod_function = 	zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_SETTER)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_GETTER)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_POST_INC)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_POST_DEC)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_PRE_INC)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_PRE_DEC)
 										;
 
 			// we have to know whether function member is or not getter/setter because we create them in the attribute member case. If not, we could have
@@ -249,7 +249,7 @@ namespace zetscript{
 		for(unsigned i = 0; i < base_vars->count; i++){
 			Symbol *symbol_src = (Symbol *)base_vars->items[i];
 
-			if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+			if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 
 				MemberProperty *ma_src=(MemberProperty *)symbol_src->ref_ptr;
 				MemberProperty *ma_dst=NULL;

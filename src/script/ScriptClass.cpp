@@ -147,7 +147,7 @@ namespace zetscript{
 		if((symbol_attrib=getSymbol(attrib_name)) != NULL){ // give an error  ...
 
 			const char *what="is already defined";
-			if((symbol_attrib->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE)==0){
+			if((symbol_attrib->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY)==0){
 
 				if(symbol_attrib->properties & SYMBOL_PROPERTY_FUNCTION){
 					what="it conflicts with member function";
@@ -165,7 +165,7 @@ namespace zetscript{
 
 		symbol_attrib = class_scope->registerSymbolVariable(file,line,attrib_name);
 		symbol_attrib->ref_ptr=(zs_int)(new MemberProperty(this,attrib_name));
-		symbol_attrib->properties=SYMBOL_PROPERTY_MEMBER_ATTRIBUTE;
+		symbol_attrib->properties=SYMBOL_PROPERTY_MEMBER_PROPERTY;
 		allocated_member_attributes->push_back(symbol_attrib->ref_ptr);
 
 		return symbol_attrib;
@@ -194,7 +194,7 @@ namespace zetscript{
 
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_SETTER+_attribute_name,
+				ZS_MEMBER_PROPERTY_SYMBOL_NAME_SETTER+_attribute_name,
 				_params,
 				_params_len,
 				IDX_TYPE_VOID_C,
@@ -238,7 +238,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_GETTER+_attribute_name,
+				ZS_MEMBER_PROPERTY_SYMBOL_NAME_GETTER+_attribute_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -283,7 +283,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_POST_INC+_attribute_name,
+				ZS_MEMBER_PROPERTY_SYMBOL_NAME_POST_INC+_attribute_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -328,7 +328,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_POST_DEC+_attribute_name,
+				ZS_MEMBER_PROPERTY_SYMBOL_NAME_POST_DEC+_attribute_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -373,7 +373,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_PRE_INC+_attribute_name,
+				ZS_MEMBER_PROPERTY_SYMBOL_NAME_PRE_INC+_attribute_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -418,7 +418,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_ATTRIBUTE_SYMBOL_NAME_PRE_DEC+_attribute_name,
+				ZS_MEMBER_PROPERTY_SYMBOL_NAME_PRE_DEC+_attribute_name,
 				_params,
 				_params_len,
 				_idx_return_type,

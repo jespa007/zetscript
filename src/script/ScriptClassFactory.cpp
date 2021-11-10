@@ -454,7 +454,7 @@ namespace zetscript{
 
 
 					// attribs has to be copy MemberProperty...
-					if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+					if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 						MemberProperty *ma_src=(MemberProperty *)symbol_src->ref_ptr;
 						MemberProperty *ma_dst=new MemberProperty(sc,ma_src->attribute_name);
 						ma_dst->getter=ma_src->getter;

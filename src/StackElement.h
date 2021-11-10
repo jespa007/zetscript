@@ -16,7 +16,7 @@ typedef enum:unsigned short {
 	//---------- END PRIMITIVE TYPES HERE--------------------
 	STK_PROPERTY_FUNCTION			=0x0020,
 	STK_PROPERTY_MEMBER_FUNCTION	=0x0040,
-	STK_PROPERTY_MEMBER_ATTRIBUTE	=0x0080,
+	STK_PROPERTY_MEMBER_PROPERTY	=0x0080,
 	STK_PROPERTY_SCRIPT_OBJECT		=0x0100,
 	STK_PROPERTY_MAX				=0x0200,
 	//-- VM RUNTIME
@@ -70,7 +70,7 @@ typedef enum:unsigned short {
 #define STK_VALUE_IS_NULL(stk) 							(stk->properties == 0)
 #define STK_VALUE_IS_FUNCTION(stk) 						(stk->properties & STK_PROPERTY_FUNCTION)
 #define STK_VALUE_IS_TYPE(stk) 							(stk->properties & STK_PROPERTY_TYPE)
-#define STK_VALUE_IS_MEMBER_ATTRIBUTE(stk) 				(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)
+#define STK_VALUE_IS_MEMBER_PROPERTY(stk) 				(stk->properties & STK_PROPERTY_MEMBER_PROPERTY)
 #define STK_VALUE_IS_MEMBER_FUNCTION(stk) 				(stk->properties & STK_PROPERTY_MEMBER_FUNCTION)
 #define STK_VALUE_IS_SCRIPT_OBJECT(stk) 				(stk->properties & STK_PROPERTY_SCRIPT_OBJECT)
 

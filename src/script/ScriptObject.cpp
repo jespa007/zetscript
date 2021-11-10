@@ -66,8 +66,8 @@ namespace zetscript{
 			// pre-register built-in members...
 			for ( unsigned i = 0; i < symbol_vars->count; i++){
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
-				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
-					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_ATTRIBUTE});
+				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
+					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_PROPERTY});
 				}
 			}
 		}
@@ -126,10 +126,10 @@ namespace zetscript{
 
 	ScriptFunction *ScriptObject::getGetter(){
 		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
-		MemberProperty *member_attribute=script_class->setter_getter;
+		MemberProperty *member_property=script_class->setter_getter;
 
-		if(member_attribute !=NULL){
-			return member_attribute->getter;
+		if(member_property !=NULL){
+			return member_property->getter;
 		}
 
 		return NULL;
@@ -137,10 +137,10 @@ namespace zetscript{
 
 	zs_vector *ScriptObject::getSetterList(){
 		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
-		MemberProperty *member_attribute=script_class->setter_getter;
+		MemberProperty *member_property=script_class->setter_getter;
 
-		if(member_attribute !=NULL){
-			return &member_attribute->setters;
+		if(member_property !=NULL){
+			return &member_property->setters;
 		}
 
 		return NULL;
@@ -210,7 +210,7 @@ namespace zetscript{
 		for(unsigned i=0; i< stk_builtin_elements.count; i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 
-			if(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
+			if(stk->properties & STK_PROPERTY_MEMBER_PROPERTY){
 				delete (StackMemberProperty *)stk->value;
 			}else if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced
 				if((stk->value != (zs_int)this) // ensure that property don't holds its same var.
