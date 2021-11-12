@@ -945,11 +945,8 @@ load_element_object:
 					zs_vector *lst_setter_functions=NULL;
 					ScriptObject *obj_setter=NULL;
 
-					char n_elements_left=0;
-					char n_dst_vars=0;
+					char n_elements_left=(char)instruction->value_op1;
 					StackElement *stk_multi_var_src=NULL;
-
-					n_elements_left=(char)instruction->value_op1;
 
 					// check if multiassigment...
 					StackElement *stk_aux=data->stk_vm_current;
@@ -980,7 +977,7 @@ load_element_object:
 							stk_dst=(StackElement *)(STK_GET_STK_VAR_REF(stk_dst)->value);
 						}
 
-						//---- get stk var
+						//- check if ptr stk
 						if((stk_dst->properties & STK_PROPERTY_PTR_STK)!=0) {
 							stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
 						}else {
@@ -1004,9 +1001,6 @@ load_element_object:
 									obj_setter=script_object_class;
 								}
 
-								/*if(IS_STK_THIS(stk_dst)){
-									VM_STOP_EXECUTE("\"this\" is not assignable");
-								}*/
 							}else if((stk_dst->properties & STK_PROPERTY_MEMBER_ATTRIBUTE)!=0){
 								StackMemberProperty *stk_ma=(StackMemberProperty *)stk_dst->value;
 								if(stk_ma->member_attribute->setters.count > 0){
@@ -1019,11 +1013,7 @@ load_element_object:
 						}
 					}
 
-					//--------------------------------------------------------------------------------------
-					//
-					// STORE THROUGH SET METAMETHOD
-					//
-					if(lst_setter_functions!=NULL){ // setter list not null
+					if(lst_setter_functions!=NULL){ // store through metamethod
 						// find appropiate function
 						ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)lst_setter_functions->items[0])->value;//(ScriptFunction *)stk_setter->value;
 						StackElement *stk_vm_start=data->stk_vm_current;
@@ -1090,122 +1080,108 @@ load_element_object:
 						// restore
 						data->stk_vm_current=stk_vm_start;
 
-					//--------------------------------------------------------------------------------------
-					//
-					// STORE THROUGH SCRIPT
-					//
-					}else{
-
+					}else{ // store through script assignment
 
 						if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
 							stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value));
 						}
 
 						StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
-						{
 
-							void *copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
-							zs_int *stk_src_ref=&stk_src->value;
-							zs_int *stk_dst_ref=&stk_dst->value;
-							if(stk_src->properties & STK_PROPERTY_IS_VAR_C){ // src is C pointer
-								stk_src_ref=(zs_int *)((stk_src)->value);
-							}
-							if(stk_dst->properties & STK_PROPERTY_IS_VAR_C){ // dst is a C pointer
-
-								// particular case
-								if(
-									    stk_dst->properties != stk_src->properties
-									&& (((stk_dst->properties & STK_PROPERTY_ZS_CHAR) && (stk_src->properties & STK_PROPERTY_ZS_INT))==0)){
-
-									 if(stk_dst->properties != stk_src->properties){
-										if(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties) != GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src->properties)
-										){
-											// check particular case
-											VM_STOP_EXECUTE("different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
-										}else{ // is object
-											VM_STOP_EXECUTE("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator (aka set metamethod) in order to perform assign operation");
-										}
-									}
-								}
-								stk_dst_ref=(zs_int *)((stk_dst)->value);
-								copy_aux=&((stk_dst)->value);
-							}
-							unsigned short type_var=stk_src->properties;
-
-							// init stk_dst
-							STK_SET_NULL(stk_dst);
-
-							if(type_var == STK_PROPERTY_NULL){
-								stk_dst->properties=STK_PROPERTY_NULL;
-							}else if(type_var & STK_PROPERTY_ZS_INT){
-								stk_dst->properties=STK_PROPERTY_ZS_INT;
-								old_stk_dst.properties &  STK_PROPERTY_ZS_CHAR?
-								*((zs_char *)stk_dst_ref)=*((zs_int *)stk_src_ref) & 0xff
-								:*((zs_int *)stk_dst_ref)=*((zs_int *)stk_src_ref);
-								if(copy_aux!=NULL)(*(zs_int *)copy_aux)=*((zs_int *)stk_src_ref);
-							}else if(type_var & STK_PROPERTY_ZS_FLOAT){
-								stk_dst->properties=STK_PROPERTY_ZS_FLOAT;
-								*((zs_float *)stk_dst_ref)=*((zs_float *)stk_src_ref);
-								if(copy_aux!=NULL)(*(zs_float *)copy_aux)=*((zs_float *)stk_src_ref);
-							}else if(type_var & STK_PROPERTY_BOOL){
-								stk_dst->properties=STK_PROPERTY_BOOL;
-								*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);
-								if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)stk_src_ref);
-							}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
-								*stk_dst=*stk_src;
-							}else if(type_var & STK_PROPERTY_SCRIPT_OBJECT){
-
-								if(STK_IS_SCRIPT_OBJECT_STRING(stk_src)){
-									ScriptObjectString *str_object=NULL;
-
-									if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
-										str_object=(ScriptObjectString *)stk_dst->value;
-									}else{ // Generates a zs_string var
-										stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));
-										stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
-
-										// create shared ptr
-										if(!vm_create_shared_pointer(vm,str_object)){
-											goto lbl_exit_function;
-										}
-
-										// share ptr
-										if(!vm_share_pointer(vm,str_object)){
-											goto lbl_exit_function;
-										}
-										//-------------------------------------
-									}
-
-									str_object->set(stk_to_str(data->zs, stk_src));
-
-								}else{ // object we pass its reference
-
-									so_aux=(ScriptObject *)stk_src->value;
-
-									stk_dst->value=(intptr_t)so_aux;
-									stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
-
-									if(!IS_STK_THIS(stk_src)){ // do not share this!
-										if(!vm_share_pointer(vm,so_aux)){
-											goto lbl_exit_function;
-										}
-									}
-								}
-							}else{
-								VM_STOP_EXECUTE("(internal) cannot determine var type %s"
-									,stk_to_typeof_str(data->zs,stk_src).c_str()
-								);
-							}
-							if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
+						void *copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
+						zs_int *stk_src_ref=&stk_src->value;
+						zs_int *stk_dst_ref=&stk_dst->value;
+						if(stk_src->properties & STK_PROPERTY_IS_VAR_C){ // src is C pointer
+							stk_src_ref=(zs_int *)((stk_src)->value);
 						}
+						if(stk_dst->properties & STK_PROPERTY_IS_VAR_C){ // dst is a C pointer
+							// particular case
+							if(
+									stk_dst->properties != stk_src->properties
+								&& (((stk_dst->properties & STK_PROPERTY_ZS_CHAR) && (stk_src->properties & STK_PROPERTY_ZS_INT))==0)){
+
+								 if(stk_dst->properties != stk_src->properties){
+									if(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties) != GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src->properties)
+									){
+										// check particular case
+										VM_STOP_EXECUTE("different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+									}else{ // is object
+										VM_STOP_EXECUTE("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator (aka set metamethod) in order to perform assign operation");
+									}
+								}
+							}
+							stk_dst_ref=(zs_int *)((stk_dst)->value);
+							copy_aux=&((stk_dst)->value);
+						}
+						unsigned short type_var=stk_src->properties;
+
+						// init stk_dst
+						STK_SET_NULL(stk_dst);
+
+						if(type_var == STK_PROPERTY_NULL){
+							stk_dst->properties=STK_PROPERTY_NULL;
+						}else if(type_var & STK_PROPERTY_ZS_INT){
+							stk_dst->properties=STK_PROPERTY_ZS_INT;
+							old_stk_dst.properties &  STK_PROPERTY_ZS_CHAR?
+							*((zs_char *)stk_dst_ref)=*((zs_int *)stk_src_ref) & 0xff
+							:*((zs_int *)stk_dst_ref)=*((zs_int *)stk_src_ref);
+							if(copy_aux!=NULL)(*(zs_int *)copy_aux)=*((zs_int *)stk_src_ref);
+						}else if(type_var & STK_PROPERTY_ZS_FLOAT){
+							stk_dst->properties=STK_PROPERTY_ZS_FLOAT;
+							*((zs_float *)stk_dst_ref)=*((zs_float *)stk_src_ref);
+							if(copy_aux!=NULL)(*(zs_float *)copy_aux)=*((zs_float *)stk_src_ref);
+						}else if(type_var & STK_PROPERTY_BOOL){
+							stk_dst->properties=STK_PROPERTY_BOOL;
+							*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);
+							if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)stk_src_ref);
+						}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
+							*stk_dst=*stk_src;
+						}else if(type_var & STK_PROPERTY_SCRIPT_OBJECT){
+
+							if(STK_IS_SCRIPT_OBJECT_STRING(stk_src)){
+								ScriptObjectString *str_object=NULL;
+
+								if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
+									str_object=(ScriptObjectString *)stk_dst->value;
+								}else{ // Generates a zs_string var
+									stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));
+									stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+									// create shared ptr
+									if(!vm_create_shared_pointer(vm,str_object)){
+										goto lbl_exit_function;
+									}
+									// share ptr
+									if(!vm_share_pointer(vm,str_object)){
+										goto lbl_exit_function;
+									}
+									//-------------------------------------
+								}
+								str_object->set(stk_to_str(data->zs, stk_src));
+
+							}else{ // object we pass its reference
+
+								so_aux=(ScriptObject *)stk_src->value;
+
+								stk_dst->value=(intptr_t)so_aux;
+								stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+
+								if(!IS_STK_THIS(stk_src)){ // do not share this!
+									if(!vm_share_pointer(vm,so_aux)){
+										goto lbl_exit_function;
+									}
+								}
+							}
+						}else{
+							VM_STOP_EXECUTE("(internal) cannot determine var type %s"
+								,stk_to_typeof_str(data->zs,stk_src).c_str()
+							);
+						}
+						if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
+
 
 						// check old dst value to unref if it was an object ...
 						switch(GET_STK_PROPERTY_TYPES(old_stk_dst.properties)){
-						case STK_PROPERTY_NULL:
-						case STK_PROPERTY_ZS_INT:
-						case STK_PROPERTY_ZS_FLOAT:
-						case STK_PROPERTY_BOOL:
-						case STK_PROPERTY_FUNCTION: // we aren't take care about nothing! :)
+						default:
 							break;
 						case STK_PROPERTY_SCRIPT_OBJECT: // we are getting script vars ...
 
@@ -1254,7 +1230,6 @@ load_element_object:
 					}
 
 					*data->stk_vm_current++=*stk_dst;
-
 				}
 				continue;
 			 case BYTE_CODE_IT_INIT:
