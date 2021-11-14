@@ -4,43 +4,6 @@
  */
 #define IDX_CALL_STACK_MAIN 1
 
-#define PUSH_STK_NULL \
-STK_SET_NULL(data->stk_vm_current++); \
-
-#define PUSH_STK_BOOLEAN(init_value) \
-data->stk_vm_current->value=init_value; \
-data->stk_vm_current->properties=STK_PROPERTY_BOOL; \
-data->stk_vm_current++;
-
-
-#define PUSH_STK_ZS_INT(init_value) \
-data->stk_vm_current->value=init_value; \
-data->stk_vm_current->properties=STK_PROPERTY_ZS_INT; \
-data->stk_vm_current++;
-
-#define PUSH_STK_SCRIPT_OBJECT(obj_value) \
-data->stk_vm_current->value=(zs_int)obj_value; \
-data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT; \
-data->stk_vm_current++;
-
-
-#define PUSH_STK_ZS_FLOAT(init_value) \
-{\
-	zs_float aux=(zs_float)(init_value); \
-	ZS_FLOAT_COPY(&data->stk_vm_current->value,&aux); \
-	data->stk_vm_current->properties=STK_PROPERTY_ZS_FLOAT; \
-	data->stk_vm_current++; \
-}
-
-#define PUSH_STK_SCRIPT_FUNCTION(ref) \
-data->stk_vm_current->value=ref; \
-data->stk_vm_current->properties=STK_PROPERTY_FUNCTION; \
-data->stk_vm_current++;
-
-#define PUSH_STK_TYPE(ref) \
-data->stk_vm_current->value=ref; \
-data->stk_vm_current->properties=STK_PROPERTY_TYPE; \
-data->stk_vm_current++;
 
 // explains whether stk is this or not. Warning should be given as value and not as ptr
 #define IS_STK_THIS(stk) (this_object != NULL && (stk)->value == (zs_int)(this_object))
@@ -63,28 +26,7 @@ VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the 
 	return NULL;
 
 
-// defer all local vars
-#define POP_VM_SCOPE()\
-{\
-	Scope *scope=*(data->vm_current_scope_function->scope_current-1);\
-	StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
-	zs_vector *scope_symbols=scope->symbol_variables;\
-	StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\
-	int count=scope_symbols->count;\
-	while(count--){\
-		if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
-			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
-			if(so != NULL && so->shared_pointer!=NULL){\
-				if(vm_unref_shared_script_object(vm,so,data->vm_idx_call)==false){\
-					return;\
-				}\
-			}\
-		}\
-		STK_SET_NULL(stk_local_var);\
-		stk_local_var++;\
-	}\
-	--data->vm_current_scope_function->scope_current;\
-}
+
 
 #define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return, n_return,with_share)\
 	for(int i=0; i < n_return; i++){\
@@ -804,7 +746,7 @@ namespace zetscript{
 		}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject * script_object_found=(ScriptObject *)stk_result_op1->value;
 			class_name_object_found=script_object_found->getClassName();
-		}else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){ // in principle attribute member metamethod only contemplates pre/post inc/dec operators
+		}else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){ // in principle attribute member metamethod only contemplates pre/post inc/dec operators
 			stk_ma= (StackMemberProperty *)stk_result_op1->value;
 			script_object = stk_ma->so_object;
 

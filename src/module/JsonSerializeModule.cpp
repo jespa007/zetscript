@@ -64,7 +64,7 @@ namespace zetscript{
 						str_result.append("\"" + zs_string(mi->key)+ "\":");
 
 						// if attribute we have to call script or native...
-						if(stk_se->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
+						if(stk_se->properties & STK_PROPERTY_MEMBER_PROPERTY){
 
 							StackMemberProperty *sma=(StackMemberProperty *)stk_se->value;
 							ScriptFunction *ptr_function=sma->member_attribute->getter;

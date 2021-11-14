@@ -67,7 +67,7 @@ namespace zetscript{
 			for ( unsigned i = 0; i < symbol_vars->count; i++){
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
-					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_ATTRIBUTE});
+					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_PROPERTY});
 				}
 			}
 		}
@@ -210,7 +210,7 @@ namespace zetscript{
 		for(unsigned i=0; i< stk_builtin_elements.count; i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 
-			if(stk->properties & STK_PROPERTY_MEMBER_ATTRIBUTE){
+			if(stk->properties & STK_PROPERTY_MEMBER_PROPERTY){
 				delete (StackMemberProperty *)stk->value;
 			}else if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){ // is script object to be deferrenced
 				if((stk->value != (zs_int)this) // ensure that property don't holds its same var.

@@ -79,7 +79,7 @@ namespace zetscript{
 				se->properties=STK_PROPERTY_PTR_STK;
 			}else if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 				se->value=(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr));
-				se->properties=STK_PROPERTY_MEMBER_ATTRIBUTE;
+				se->properties=STK_PROPERTY_MEMBER_PROPERTY;
 			}
 
 		}
