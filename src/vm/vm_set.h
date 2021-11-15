@@ -3,7 +3,7 @@
  *  See LICENSE file for details.
  */
 
-#define ASSIGN_CONTAINER_ELEMENT \
+#define PERFORM_SET_CONTAINER_ELEMENT \
 if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){ \
 	stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value)); \
 } \
@@ -59,11 +59,12 @@ if(type_var == STK_PROPERTY_NULL){\
 if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 
 
-#define ASSIGN_SETTER(stk_dst,stk_mp,so_aux, store_lst_setter_functions,__STR_SETTER_METAMETHOD__) \
+#define PERFORM_SET_METAMETHOD(stk_dst,stk_src,stk_mp, so_aux, store_lst_setter_functions,__SETTER_METAMETHOD__) \
 	ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)store_lst_setter_functions->items[0])->value;\
 	StackElement *stk_vm_start=data->stk_vm_current;\
-	const char *
 	StackElement *stk_arg=stk_vm_start+1;\
+	const char *__STR_SETTER_METAMETHOD__=byte_code_metamethod_to_symbol_str(__SETTER_METAMETHOD__);\
+	const char *__STR_AKA_SETTER_METAMETHOD__=byte_code_metamethod_to_operator_str(__SETTER_METAMETHOD__);\
 	*stk_arg=*stk_src;\
 	if(so_aux->isNativeObject()){ /* because object is native, we can have more than one _setter */ \
 		if((ptr_function_found=vm_find_function( \
@@ -75,27 +76,30 @@ if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 				,STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)?__STR_SETTER_METAMETHOD__:__STR_SETTER_METAMETHOD__"@" /* symbol to find */\
 				,stk_arg \
 				,1))==NULL){ \
-			if(stk_mp){ \
-				VM_STOP_EXECUTE("Property '%s::%s' does not implement '%s' function"\
-						,stk_mp->so_object->getScriptClass()->class_name.c_str()\
-						,stk_mp->member_attribute->attribute_name.c_str()\
+			if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
+				VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
+						,so_aux->getScriptClass()->class_name.c_str()\
+						,stk_mp->member_attribute->property_name.c_str()\
 						,__STR_SETTER_METAMETHOD__\
 						);\
 			); \
 			}else{\
-				VM_STOP_EXECUTE("Class '%s' does not implement '%s' function" \
-						,((ScriptObject *)stk_dst->value)->getScriptClass()->class_name.c_str() \
+				VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
+						,so_aux->getScriptClass()->class_name.c_str() \
 						,__STR_SETTER_METAMETHOD__\
 				);\
 			}\
 		}\
 	}else if(store_lst_setter_functions->count>1){ /* it has all member list */\
-		Symbol * symbol_setter = obj_aux->getScriptClass()->getSymbol("_set"); \
+		Symbol * symbol_setter = obj_aux->getScriptClass()->getSymbol(__STR_SETTER_METAMETHOD__); \
 		if(symbol_setter == NULL){\
-			VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented");\
+			VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\
+					,__STR_SETTER_METAMETHOD__\
+					,__STR_AKA_SETTER_METAMETHOD__\
+			);\
 		}\
 		if((symbol_setter->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)==0){\
-			VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not function");\
+			VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not function",__STR_SETTER_METAMETHOD__,__STR_AKA_SETTER_METAMETHOD__);\
 		}\
 		ptr_function_found=(ScriptFunction *)symbol_setter->ref_ptr;\
 	}\
@@ -118,7 +122,7 @@ if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 			,1\
 		);\
 	}\
-	if((stk_mp!=NULL) && (mp->member_attribute->getter != NULL)){ \
+	if((stk_mp!=NULL) && (mp->member_attribute->getter != NULL)){/* if property call getter */ \
 		VM_INNER_CALL_ONLY_RETURN( \
 			stk_ma->so_object \
 			,stk_ma->member_attribute->getter \

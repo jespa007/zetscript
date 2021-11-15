@@ -618,7 +618,7 @@ namespace zetscript{
 		return ptr_function_found;
 	}
 
-	inline bool vm_apply_metamethod_primitive(
+	/*inline bool vm_apply_metamethod_primitive(
 			VirtualMachine *vm
 			,ByteCodeMetamethod byte_code_metamethod
 			,StackElement *stk_result_op1
@@ -691,7 +691,7 @@ namespace zetscript{
 		}
 
 		return false;
-	}
+	}*/
 
 	inline bool vm_apply_metamethod(
 		VirtualMachine *vm
@@ -746,7 +746,7 @@ namespace zetscript{
 		}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject * script_object_found=(ScriptObject *)stk_result_op1->value;
 			class_name_object_found=script_object_found->getClassName();
-		}else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){ // in principle attribute member metamethod only contemplates pre/post inc/dec operators
+		}/*else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){ // in principle attribute member metamethod only contemplates pre/post inc/dec operators
 			stk_ma= (StackMemberProperty *)stk_result_op1->value;
 			script_object = stk_ma->so_object;
 
@@ -754,31 +754,31 @@ namespace zetscript{
 			switch(byte_code_metamethod){
 			case BYTE_CODE_METAMETHOD_POST_INC: // i++
 				ptr_function_found=stk_ma->member_property->post_inc;
-				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _post_inc (aka '%s++') ",stk_ma->member_property->attribute_name.c_str(),stk_ma->member_property->attribute_name.c_str());
+				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _post_inc (aka '%s++') ",stk_ma->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());
 				break;
 			case BYTE_CODE_METAMETHOD_POST_DEC: // i--
 				ptr_function_found=stk_ma->member_property->post_dec;
-				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _post_dec (aka '%s--') ",stk_ma->member_property->attribute_name.c_str(),stk_ma->member_property->attribute_name.c_str());
+				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _post_dec (aka '%s--') ",stk_ma->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());
 				break;
 			case BYTE_CODE_METAMETHOD_PRE_INC: // ++i
 				ptr_function_found=stk_ma->member_property->pre_inc;
-				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _pre_inc (aka '++%s')",stk_ma->member_property->attribute_name.c_str(),stk_ma->member_property->attribute_name.c_str());
+				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _pre_inc (aka '++%s')",stk_ma->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());
 				break;
 			case BYTE_CODE_METAMETHOD_PRE_DEC: // --i
 				ptr_function_found=stk_ma->member_property->pre_dec;
-				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _pre_dec (aka '--%s')",stk_ma->member_property->attribute_name.c_str(),stk_ma->member_property->attribute_name.c_str());
+				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _pre_dec (aka '--%s')",stk_ma->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());
 				break;
 			default:
-				error_found=zs_strutils::format("Internal error: unexpected metamethod for attribute '%s'",stk_ma->member_property->attribute_name.c_str());
+				error_found=zs_strutils::format("Internal error: unexpected metamethod for attribute '%s'",stk_ma->member_property->property_name.c_str());
 				goto apply_metamethod_error;
 			}
 
 			if(ptr_function_found == NULL){
 				goto apply_metamethod_error;
-			}
+			}*
 
 
-		}
+		}*/
 
 
 		// only C refs can check 2nd param
@@ -802,7 +802,7 @@ namespace zetscript{
 			}
 		}
 
-		if(stk_result_op1 != NULL && stk_result_op2 != NULL && stk_ma==NULL){
+		/*if(stk_result_op1 != NULL && stk_result_op2 != NULL && stk_ma==NULL){
 			if(vm_apply_metamethod_primitive(
 				vm
 				,byte_code_metamethod
@@ -811,7 +811,7 @@ namespace zetscript{
 			)){
 				return true;
 			}
-		}
+		}*/
 
 
 		if(script_object == NULL){ // cannot perform operation
@@ -916,7 +916,7 @@ namespace zetscript{
 
 
 
-		if(n_returned_arguments_from_function == 0){ // return itself
+		/*if(n_returned_arguments_from_function == 0){ // return itself
 			switch(byte_code_metamethod){
 			case BYTE_CODE_METAMETHOD_POST_INC:
 			case BYTE_CODE_METAMETHOD_POST_DEC:
@@ -931,7 +931,7 @@ namespace zetscript{
 			}
 
 
-		}else{
+		}else{*/
 
 			// setup all returned variables from function
 			for(int i=0; i < n_returned_arguments_from_function; i++){
@@ -955,7 +955,7 @@ namespace zetscript{
 			}
 
 			ret_obj=stk_return[0];
-		}
+		//}
 		//}
 
 		// reset stack...

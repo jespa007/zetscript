@@ -10,6 +10,10 @@ namespace zetscript{
 		switch(_byte_code){
 			case BYTE_CODE_EQU:        							return "EQU";  // ==
 			case BYTE_CODE_INSTANCEOF:  						return "INSTANCEOF";  // ==
+			case BYTE_CODE_INSTANCEOF_INT:						return "INSTANCEOF";  // ==
+			case BYTE_CODE_INSTANCEOF_FLOAT:  					return "INSTANCEOF";  // ==
+			case BYTE_CODE_INSTANCEOF_BOOL:  					return "INSTANCEOF";  // ==
+			case BYTE_CODE_INSTANCEOF_FUNCTION:					return "INSTANCEOF";  // ==
 			case BYTE_CODE_NOT_EQU:     						return "NOT_EQU" ;  // !=
 			case BYTE_CODE_LT:          						return "LT";  // <
 			case BYTE_CODE_LTE:         						return "LTE";  // <=

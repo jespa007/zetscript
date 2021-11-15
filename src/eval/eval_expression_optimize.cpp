@@ -377,6 +377,7 @@ namespace zetscript{
 					,ZS_IDX_UNDEFINED
 					,i2->vm_instruction.value_op2
 			);
+			if(i2->vm_instruction.value_op2 ==
 			i1=i2; // swap instruction to erase...
 			n_eval_ops=1;
 		}else if(is_i1_K && is_i2_K){

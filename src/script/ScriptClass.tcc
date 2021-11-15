@@ -70,7 +70,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberPropertyGetter(
-			const zs_string & _attrib_name
+			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
 			,short _registered_line
@@ -83,14 +83,14 @@ namespace zetscript{
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
 				this->script_class_factory
-				,_attrib_name
+				,_property_name
 				,_ptr_function
 				,&params
 				,&params_len
 				);
 
 		registerNativeMemberPropertyGetter(
-				 _attrib_name
+				 _property_name
 				 ,&params
 				 ,params_len
 				,idx_return_type
@@ -106,7 +106,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberPropertyPostIncrement(
-			const zs_string & _attrib_name
+			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
 			,short _registered_line
@@ -118,14 +118,14 @@ namespace zetscript{
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				_attrib_name
+				_property_name
 				,_ptr_function
 				,&params
 				,&params_len
 		);
 
 		Symbol *symbol_result = registerNativeMemberPropertyPostIncrement(
-				 _attrib_name
+				 _property_name
 				 ,&params
 				 ,params_len
 				,idx_return_type
@@ -141,7 +141,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberPropertyPostDecrement(
-			const zs_string & _attrib_name
+			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
 			,short _registered_line
@@ -153,14 +153,14 @@ namespace zetscript{
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				_attrib_name
+				_property_name
 				,_ptr_function
 				,&params
 				,&params_len
 		);
 
 		Symbol *symbol_result = registerNativeMemberPropertyPostDecrement(
-				 _attrib_name
+				 _property_name
 				 ,&params
 				 ,params_len
 				,idx_return_type
@@ -176,7 +176,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberPropertyPreIncrement(
-			const zs_string & _attrib_name
+			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
 			,short _registered_line
@@ -188,14 +188,14 @@ namespace zetscript{
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				_attrib_name
+				_property_name
 				,_ptr_function
 				,&params
 				,&params_len
 		);
 
 		Symbol *symbol_result = registerNativeMemberPropertyPreIncrement(
-				 _attrib_name
+				 _property_name
 				 ,&params
 				 ,params_len
 				,idx_return_type
@@ -211,7 +211,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptClass::registerNativeMemberPropertyPreDecrement(
-			const zs_string & _attrib_name
+			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
 			,short _registered_line
@@ -223,14 +223,14 @@ namespace zetscript{
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				_attrib_name
+				_property_name
 				,_ptr_function
 				,&params
 				,&params_len
 		);
 
 		Symbol *symbol_result = registerNativeMemberPropertyPreDecrement(
-				 _attrib_name
+				 _property_name
 				 ,&params
 				 ,params_len
 				,idx_return_type

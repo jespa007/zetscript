@@ -52,4 +52,8 @@ namespace zetscript{
 		return ZS_NEW_OBJECT_ITERATOR_OBJECT(oo);
 	}
 
+	void						 	ScriptObjectObjectWrap_append(ScriptObjectObject *o1,ScriptObjectObject *o2){
+		ScriptObjectObject::append(o1,o2);
+	}
+
 }

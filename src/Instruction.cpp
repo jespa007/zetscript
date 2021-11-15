@@ -28,7 +28,10 @@ namespace zetscript{
 			ScriptObject *obj=NULL;
 			StackElement *stk=NULL;
 
-			if((this->byte_code == BYTE_CODE_LOAD_STRING) || (this->properties & INSTRUCTION_PROPERTY_STRING) || (byte_code == BYTE_CODE_INSTANCEOF)){
+			if((this->byte_code == BYTE_CODE_LOAD_STRING)
+					|| (this->properties & INSTRUCTION_PROPERTY_STRING)
+					|| (byte_code == BYTE_CODE_INSTANCEOF)
+			){
 
 				stk=(StackElement *)this->value_op2;
 				obj = (ScriptObject *)stk->value;

@@ -283,7 +283,7 @@ namespace zetscript{
 		char *end_var = NULL;
 		zs_string attrib_name="";
 		int attrib_start_line;
-		zs_string class_attribute_name=sc->class_name;
+		zs_string class_property_name=sc->class_name;
 		Scope *scope_info=sc->class_scope;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -444,7 +444,7 @@ namespace zetscript{
 							,line
 							,"unexpected metamethod \"%s\" in attribute \"%s::%s\""
 							,function_name.c_str()
-							,class_attribute_name.c_str()
+							,class_property_name.c_str()
 							,attrib_name.c_str()
 						);
 					}
@@ -456,7 +456,7 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE(
 					eval_data->current_parsing_file,attrib_start_line
 					,"expected '}' to end in attribute \"%s::%s\""
-					,class_attribute_name.c_str()
+					,class_property_name.c_str()
 					,attrib_name.c_str()
 				);
 			}

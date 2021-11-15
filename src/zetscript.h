@@ -295,62 +295,62 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void	registerMemberPropertySetter(
-				const zs_string & attr_name
+				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertySetter<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertySetter<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
 		void	registerMemberPropertyGetter(
-				const zs_string & attr_name
+				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertyGetter<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertyGetter<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
 		void	registerMemberPropertyPostIncrement(
-				const zs_string & attr_name
+				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertyPostIncrement<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertyPostIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
 		void	registerMemberPropertyPostDecrement(
-				const zs_string & attr_name
+				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertyPostDecrement<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertyPostDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
 		void	registerMemberPropertyPreIncrement(
-				const zs_string & attr_name
+				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertyPreIncrement<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertyPreIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
 		void	registerMemberPropertyPreDecrement(
-				const zs_string & attr_name
+				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertyPreDecrement<C>(attr_name,ptr_function, registered_file,registered_line );
+			script_class_factory->registerNativeMemberPropertyPreDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		/**

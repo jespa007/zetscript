@@ -399,7 +399,7 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertySetter(
-		const zs_string & attr_name
+		const zs_string & _property_name
 		,F ptr_function_setter
 		,const char *registered_file
 		,short registered_line
@@ -413,7 +413,7 @@ namespace zetscript{
 		}
 
 		c_class->registerNativeMemberPropertySetter<F>(
-			 attr_name
+			 _property_name
 			,ptr_function_setter
 			,registered_file
 			,registered_line
@@ -425,7 +425,7 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyGetter(
-		const zs_string & attr_name
+		const zs_string & _property_name
 		,F ptr_function_getter
 		,const char *registered_file
 		,short registered_line
@@ -439,7 +439,7 @@ namespace zetscript{
 		}
 
 		c_class->registerNativeMemberPropertyGetter<F>(
-			 attr_name
+			 _property_name
 			,ptr_function_getter
 			,registered_file
 			,registered_line
@@ -451,7 +451,7 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPostIncrement(
-		const zs_string & attr_name
+		const zs_string & _property_name
 		,F ptr_function_post_increment
 		,const char *registered_file
 		,short registered_line
@@ -465,7 +465,7 @@ namespace zetscript{
 		}
 
 		c_class->registerNativeMemberPropertyPostIncrement<F>(
-			 attr_name
+			 _property_name
 			,ptr_function_post_increment
 			,registered_file
 			,registered_line
@@ -477,7 +477,7 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPostDecrement(
-			const zs_string & attr_name
+			const zs_string & _property_name
 			,F ptr_function_post_decrement
 			,const char *registered_file
 			,short registered_line
@@ -491,7 +491,7 @@ namespace zetscript{
 		}
 
 		c_class->registerNativeMemberPropertyPostDecrement<F>(
-			 attr_name
+			 _property_name
 			,ptr_function_post_decrement
 			,registered_file
 			,registered_line
@@ -503,7 +503,7 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPreIncrement(
-			const zs_string & attr_name
+			const zs_string & _property_name
 			,F ptr_function_pre_increment
 			,const char *registered_file
 			,short registered_line
@@ -517,7 +517,7 @@ namespace zetscript{
 		}
 
 		c_class->registerNativeMemberPropertyPreIncrement<F>(
-			 attr_name
+			 _property_name
 			,ptr_function_pre_increment
 			,registered_file
 			,registered_line
@@ -529,7 +529,7 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPreDecrement(
-			const zs_string & attr_name
+			const zs_string & _property_name
 			,F ptr_function_pre_decrement
 			,const char *registered_file
 			,short registered_line
@@ -543,12 +543,134 @@ namespace zetscript{
 		}
 
 		c_class->registerNativeMemberPropertyPreDecrement<F>(
-			 attr_name
+			 _property_name
 			,ptr_function_pre_decrement
 			,registered_file
 			,registered_line
 		);
 	}
+
+	// register add set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertyAddSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	// register sub set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertySubSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	// register mul set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertyMulSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	// register div set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertyDivSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	// register mod set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertyModSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	// register mod set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertyModSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	// register and set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertyAndSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	// register or set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertyOrSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	// register xor set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertyXorSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	// register shl set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertyShlSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
+	// register shr set operation
+	template <typename C,typename F>
+	void ScriptClassFactory::registerNativeMemberPropertyShrSet(
+			const zs_string & _property_name
+			,F _ptr_function
+			, const char *registered_file
+			,short registered_line
+	){
+
+	}
+
 
 	/**
 	 * Register C Member function Class

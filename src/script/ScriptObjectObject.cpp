@@ -32,6 +32,15 @@ namespace zetscript{
 		return obj;
 	}
 
+	void  ScriptObjectObject::append(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
+		zs_string error="";
+
+		for(auto it=o2->begin(); !it.end();it.next()){
+			o1->addUserProperty(it.key,error,(StackElement *)it.value);
+		}
+		return obj;
+	}
+
 	//
 	// Helpers
 	//

@@ -386,7 +386,7 @@ find_element_object:
 				if(vec_obj==NULL){
 					VM_STOP_EXECUTE("Expected vector object");
 				}
-				ASSIGN_CONTAINER_ELEMENT;
+				PERFORM_SET_CONTAINER_ELEMENT;
 				continue;
 			case BYTE_CODE_PUSH_OBJECT_ITEM:
 				POP_STK_TWO; // first must be a string that describes variable name and the other the variable itself ...
@@ -412,38 +412,46 @@ find_element_object:
 				}
 
 				stk_dst=se;
-				ASSIGN_CONTAINER_ELEMENT;
+				PERFORM_SET_CONTAINER_ELEMENT;
 				continue;
 			case BYTE_CODE_STORE_ADD:
-				LOAD_STORE_OPERATION;
-				PROCESS_ARITHMETIC_STORE_OPERATION(+=,BYTE_CODE_METAMETHOD_STORE_ADD);
+				LOAD_SET_OPERATION;
+				PERFORM_ARITHMETIC_SET_OPERATION(+=,BYTE_CODE_METAMETHOD_SET_ADD);
 				continue;
 			case BYTE_CODE_STORE_SUB:
-				PROCESS_ARITHMETIC_STORE_OPERATION(-=,BYTE_CODE_METAMETHOD_STORE_SUB);
+				LOAD_SET_OPERATION;
+				PERFORM_ARITHMETIC_SET_OPERATION(-=,BYTE_CODE_METAMETHOD_SET_SUB);
 				continue;
 			case BYTE_CODE_STORE_MUL:
-				PROCESS_ARITHMETIC_STORE_OPERATION(*=,BYTE_CODE_METAMETHOD_STORE_MUL);
+				LOAD_SET_OPERATION;
+				PERFORM_ARITHMETIC_SET_OPERATION(*=,BYTE_CODE_METAMETHOD_SET_MUL);
 				continue;
 			case BYTE_CODE_STORE_DIV:
-				PROCESS_ARITHMETIC_STORE_DIV_OPERATION;
+				LOAD_SET_OPERATION;
+				PERFORM_ARITHMETIC_STORE_DIV_OPERATION;
 				continue;
 			case BYTE_CODE_STORE_MOD:
-				PROCESS_MOD_STORE_OPERATION;
+				LOAD_SET_OPERATION;
+				PERFORM_MOD_STORE_OPERATION;
 				continue;
 			case BYTE_CODE_STORE_STORE_BITWISE_AND:
-				PROCESS_BINARY_OPERATION(&=,BYTE_CODE_METAMETHOD_STORE_ADD);
+				PERFORM_BINARY_OPERATION(&=,BYTE_CODE_METAMETHOD_SET_ADD);
 				continue;
 			case BYTE_CODE_STORE_BITWISE_OR:
-				PROCESS_BINARY_STORE_OPERATION(|=,BYTE_CODE_METAMETHOD_STORE_OR);
+				LOAD_SET_OPERATION;
+				PERFORM_BINARY_STORE_OPERATION(|=,BYTE_CODE_METAMETHOD_SET_OR);
 				continue;
 			case BYTE_CODE_STORE_BITWISE_STORE_XOR:
-				PROCESS_BINARY_STORE_OPERATION(^=,BYTE_CODE_METAMETHOD_STORE_XOR);
+				LOAD_SET_OPERATION;
+				PERFORM_BINARY_STORE_OPERATION(^=,BYTE_CODE_METAMETHOD_STORE_XOR);
 				continue;
 			case BYTE_CODE_STORE_SHL:
-				PROCESS_BINARY_STORE_OPERATION(<<=,BYTE_CODE_METAMETHOD_SHL);
+				LOAD_SET_OPERATION;
+				PERFORM_BINARY_STORE_OPERATION(<<=,BYTE_CODE_METAMETHOD_SHL);
 				continue;
 			case BYTE_CODE_STORE_SHR:
-				PROCESS_BINARY_STORE_OPERATION(>>=,BYTE_CODE_METAMETHOD_SHR);
+				LOAD_SET_OPERATION;
+				PERFORM_BINARY_STORE_OPERATION(>>=,BYTE_CODE_METAMETHOD_SHR);
 				continue;
 			case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE:
@@ -496,11 +504,11 @@ find_element_object:
 					VM_STOP_EXECUTE("Assignment to constant variable");
 				}
 
-				// ok load object pointer ...
+				// store through metamethod
 				if((STK_IS_SCRIPT_OBJECT_CLASS(stk_dst) && ((store_lst_setter_functions=((ScriptObjectClass *)stk_dst->value)->getSetterList())!=NULL))
 						||
 					(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY)){
-
+					stk_mp_aux=NULL;
 					so_aux=(ScriptObjectClass *)stk_dst->value;
 
 					if(store_lst_setter_functions == NULL){ // get setters
@@ -513,7 +521,7 @@ find_element_object:
 						}
 					}
 
-					ASSIGN_SETTER(so_aux, store_lst_setter_functions);
+					PERFORM_SET_METAMETHOD(stk_dst,stk_src,stk_mp_aux, so_aux, store_lst_setter_functions,BYTE_CODE_METAMETHOD_SET);
 				}else{ // store through script assignment
 					if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
 						stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value));
@@ -613,15 +621,17 @@ find_element_object:
 
 
 					// check old dst value to unref if it was an object ...
-					if(old_stk_dst.properties & STK_PROPERTY_SCRIPT_OBJECT){
-
-						if((old_stk_dst.properties & (STK_PROPERTY_IS_VAR_C))==(STK_PROPERTY_IS_VAR_C)==0){ // is not C class
-							if(old_stk_dst.value!=0){ // it had a pointer (no constant)...
-								if(! // if not...
+					if((old_stk_dst.properties & STK_PROPERTY_SCRIPT_OBJECT)
+									&&
+						((old_stk_dst.properties & (STK_PROPERTY_IS_VAR_C))==(STK_PROPERTY_IS_VAR_C)==0) // is not C class
+									&&
+							(old_stk_dst.value!=0) // it had a pointer (no constant)...
+									&&
+								(! // if not...
 									(old_stk_dst.value == stk_dst->value)  // ... same ref ...
 								||  (IS_STK_THIS(&old_stk_dst)) // ... or this
 								   // ... do share/unshare
-								){
+								)){
 
 									// unref pointer because new pointer has been attached...
 									StackElement *chk_ref=(StackElement *)stk_result_op2->value;
@@ -639,9 +649,9 @@ find_element_object:
 										goto lbl_exit_function;
 									}
 								}
-							}
-						}
-					}
+
+
+
 				}
 
 
@@ -674,35 +684,35 @@ find_element_object:
 				continue;
 			case BYTE_CODE_EQU:  // ==
 				POP_STK_TWO;
-				PROCESS_COMPARE_OPERATION(==, BYTE_CODE_METAMETHOD_EQU);
+				PERFORM_COMPARE_OPERATION(==, BYTE_CODE_METAMETHOD_EQU);
 				continue;
 			case BYTE_CODE_NOT_EQU:  // !=
 				POP_STK_TWO;
-				PROCESS_COMPARE_OPERATION(!=, BYTE_CODE_METAMETHOD_NOT_EQU);
+				PERFORM_COMPARE_OPERATION(!=, BYTE_CODE_METAMETHOD_NOT_EQU);
 				continue;
 			case BYTE_CODE_LT:  // <
 				POP_STK_TWO;
-				PROCESS_COMPARE_OPERATION(<, BYTE_CODE_METAMETHOD_LT);
+				PERFORM_COMPARE_OPERATION(<, BYTE_CODE_METAMETHOD_LT);
 				continue;
 			case BYTE_CODE_LTE:  // <=
 				POP_STK_TWO;
-				PROCESS_COMPARE_OPERATION(<=, BYTE_CODE_METAMETHOD_LTE);
+				PERFORM_COMPARE_OPERATION(<=, BYTE_CODE_METAMETHOD_LTE);
 				continue;
 			case BYTE_CODE_GT:  // >
 				POP_STK_TWO;
-				PROCESS_COMPARE_OPERATION(>,BYTE_CODE_METAMETHOD_GT);
+				PERFORM_COMPARE_OPERATION(>,BYTE_CODE_METAMETHOD_GT);
 				continue;
 			case BYTE_CODE_GTE:  // >=
 				POP_STK_TWO;
-				PROCESS_COMPARE_OPERATION(>=,BYTE_CODE_METAMETHOD_GTE);
+				PERFORM_COMPARE_OPERATION(>=,BYTE_CODE_METAMETHOD_GTE);
 				continue;
 			case BYTE_CODE_LOGIC_AND:  // &&
 				POP_STK_TWO;
-				PROCESS_LOGIC_OPERATION(&&);
+				PERFORM_LOGIC_OPERATION(&&);
 				continue;
 			case BYTE_CODE_LOGIC_OR:  // ||
 				POP_STK_TWO;
-				PROCESS_LOGIC_OPERATION(||);
+				PERFORM_LOGIC_OPERATION(||);
 				continue;
 			case BYTE_CODE_NOT: // !
 				POP_STK_ONE;
@@ -751,70 +761,74 @@ find_element_object:
 				continue;
 			case BYTE_CODE_ADD: // +
 				POP_STK_TWO;
-				PROCESS_ARITHMETIC_OPERATION(+,BYTE_CODE_METAMETHOD_ADD);
+				PERFORM_ADD_OPERATION;
 				continue;
 			case BYTE_CODE_SUB: // -
 				POP_STK_TWO;
-				PROCESS_ARITHMETIC_OPERATION(-,BYTE_CODE_METAMETHOD_SUB);
+				PERFORM_ARITHMETIC_OPERATION(-,BYTE_CODE_METAMETHOD_SUB);
 				continue;
 			case BYTE_CODE_MUL: // *
 				POP_STK_TWO;
-				PROCESS_ARITHMETIC_OPERATION(*,BYTE_CODE_METAMETHOD_MUL);
+				PERFORM_ARITHMETIC_OPERATION(*,BYTE_CODE_METAMETHOD_MUL);
 				continue;
 			case BYTE_CODE_DIV: // /
 				POP_STK_TWO;
-				PROCESS_ARITHMETIC_DIV_OPERATION;
+				PERFORM_ARITHMETIC_DIV_OPERATION;
 				continue;
 			 case BYTE_CODE_MOD: // /
 				POP_STK_TWO;
-				PROCESS_MOD_OPERATION;
+				PERFORM_MOD_OPERATION;
 				continue;
 			 case BYTE_CODE_BITWISE_AND: // &
 				POP_STK_TWO;
-				PROCESS_BINARY_OPERATION(&, BYTE_CODE_METAMETHOD_AND);
+				PERFORM_BINARY_OPERATION(&, BYTE_CODE_METAMETHOD_AND);
 				continue;
 			 case BYTE_CODE_BITWISE_OR: // *
 				POP_STK_TWO;
-				PROCESS_BINARY_OPERATION(|, BYTE_CODE_METAMETHOD_OR);
+				PERFORM_BINARY_OPERATION(|, BYTE_CODE_METAMETHOD_OR);
 				continue;
 			 case BYTE_CODE_BITWISE_XOR: // ^
 				POP_STK_TWO;
-				PROCESS_BINARY_OPERATION(^, BYTE_CODE_METAMETHOD_XOR);
+				PERFORM_BINARY_OPERATION(^, BYTE_CODE_METAMETHOD_XOR);
 				continue;
 			 case BYTE_CODE_SHR: // >>
 				POP_STK_TWO;
-				PROCESS_BINARY_OPERATION(>>,BYTE_CODE_METAMETHOD_SHR);
+				PERFORM_BINARY_OPERATION(>>,BYTE_CODE_METAMETHOD_SHR);
 				continue;
 			 case BYTE_CODE_SHL: // <<
 				POP_STK_TWO;
-				PROCESS_BINARY_OPERATION(<<, BYTE_CODE_METAMETHOD_SHL);
+				PERFORM_BINARY_OPERATION(<<, BYTE_CODE_METAMETHOD_SHL);
 				continue;
-			 case BYTE_CODE_INSTANCEOF_INT:
-				 POP_STK_ONE;
-				 PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
-				 continue;
-			 case BYTE_CODE_INSTANCEOF_FLOAT:
-				 POP_STK_ONE;
-				 PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT)!=0);
-				 continue;
-			 case BYTE_CODE_INSTANCEOF_BOOL:
-				 POP_STK_ONE;
-				 PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_BOOL)!=0);
-				 continue;
-			case BYTE_CODE_INSTANCEOF_FUNCTION:
-				 POP_STK_ONE;
-				 PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_FUNCTION)!=0);
-				 continue;
-			 case BYTE_CODE_INSTANCEOF:
-				 POP_STK_ONE;
-				if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					bool b = data->script_class_factory->isClassInheritsFrom(			//
-							((ScriptObjectObject *)(stk_result_op1->value))->idx_script_class // A
-							, instruction->value_op2		// B
-					);
-					PUSH_STK_BOOLEAN(b);
-				}else{
-					PUSH_STK_BOOLEAN(false);
+			 case BYTE_CODE_INSTANCEOF: // check instance of ...
+				 POP_ONE;
+
+				switch(instruction->value_op2){
+				case ZS_IDX_UNDEFINED:
+					VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+					break;
+				case IDX_TYPE_ZS_INT_C:
+					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
+					break;
+				case IDX_TYPE_ZS_FLOAT_C:
+					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT)!=0);
+					break;
+				case IDX_TYPE_BOOL_C:
+					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_BOOL)!=0);
+					break;
+				case IDX_TYPE_FUNCTION:
+					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_FUNCTION)!=0);
+					break;
+				default:
+					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+						bool b = data->script_class_factory->isClassInheritsFrom(			//
+								((ScriptObjectObject *)(stk_result_op1->value))->idx_script_class // A
+								, instruction->value_op2		// B
+						);
+						PUSH_STK_BOOLEAN(b);
+					}else{
+						PUSH_STK_BOOLEAN(false);
+					}
+					break;
 				}
 				continue;
 			 case BYTE_CODE_JMP:
@@ -840,7 +854,7 @@ find_element_object:
 				continue;
 			case BYTE_CODE_JE_CASE:  // especial j for switch
 				READ_TWO_POP_ONE; // reads switch value and case value
-				PROCESS_COMPARE_OPERATION(==, BYTE_CODE_METAMETHOD_EQU);
+				PERFORM_COMPARE_OPERATION(==, BYTE_CODE_METAMETHOD_EQU);
 				POP_STK_ONE; // retrieve result...
 				if(stk_result_op1->value != 0){ // if true goto
 					instruction_it=instruction+instruction->value_op2;

@@ -6,13 +6,13 @@
 
 namespace zetscript{
 
-	MemberProperty::MemberProperty(ScriptClass *_script_class,const zs_string & _attribute_name){
+	MemberProperty::MemberProperty(ScriptClass *_script_class,const zs_string & _property_name){
 		getter= NULL;
 		post_inc=NULL;
 		post_dec=NULL;
 		pre_inc=NULL;
 		pre_dec=NULL;
-		attribute_name=_attribute_name;
+		property_name=_property_name;
 		script_class=_script_class;
 	}
 

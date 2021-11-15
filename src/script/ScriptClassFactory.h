@@ -150,8 +150,8 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void registerNativeMemberPropertySetter(
-				const zs_string & attr_name
-				,F ptr_function_setter
+				const zs_string & _property_name
+				,F _ptr_function
 				, const char *registered_file=""
 				,short registered_line=-1
 		);
@@ -161,8 +161,8 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberPropertyGetter(
-				const zs_string & attr_name
-				,F ptr_function_getter
+				const zs_string & _property_name
+				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
 		);
@@ -172,8 +172,8 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberPropertyPostIncrement(
-				const zs_string & attr_name
-				,F ptr_function_getter
+				const zs_string & _property_name
+				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
 		);
@@ -183,8 +183,8 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberPropertyPostDecrement(
-				const zs_string & attr_name
-				,F ptr_function_getter
+				const zs_string & _property_name
+				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
 		);
@@ -194,8 +194,8 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberPropertyPreIncrement(
-				const zs_string & attr_name
-				,F ptr_function_getter
+				const zs_string & _property_name
+				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
 		);
@@ -205,21 +205,124 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberPropertyPreDecrement(
-				const zs_string & attr_name
-				,F ptr_function_getter
+				const zs_string & _property_name
+				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
 		);
+
+		// register add set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertyAddSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		// register sub set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertySubSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		// register mul set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertyMulSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		// register div set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertyDivSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		// register mod set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertyModSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		// register mod set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertyModSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		// register and set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertyAndSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		// register or set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertyOrSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		// register xor set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertyXorSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		// register shl set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertyShlSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		// register shr set operation
+		template <typename C,typename F>
+		void registerNativeMemberPropertyShrSet(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+
 
 		/**
 		 * Register C Member function static Class
 		 */
 		template <typename C, typename F>
 		void registerNativeMemberFunctionStatic(
-				const zs_string & function_name
-				,F ptr_function
-				, const char *registered_file=""
-				,short registered_line=-1);
+				const zs_string & _function_name
+				,F _ptr_function
+				, const char *_registered_file=""
+				,short _registered_line=-1);
+
+
 
 		/**
 		 * Register C function as function member

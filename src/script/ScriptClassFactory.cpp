@@ -250,6 +250,7 @@ namespace zetscript{
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("clear",&ScriptObjectObjectWrap_clear);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("erase",&ScriptObjectObjectWrap_erase);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("contains",&ScriptObjectObjectWrap_contains);
+		registerNativeMemberFunctionStatic<ScriptObjectObject>("append",&ScriptObjectObjectWrap_append);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("concat",ScriptObjectObject::concat);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("keys",ScriptObjectObjectWrap_keys);
 		registerNativeMemberFunctionStatic<ScriptObjectObject>("iter",ScriptObjectObjectWrap_iter);
@@ -456,7 +457,7 @@ namespace zetscript{
 					// attribs has to be copy MemberProperty...
 					if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 						MemberProperty *ma_src=(MemberProperty *)symbol_src->ref_ptr;
-						MemberProperty *ma_dst=new MemberProperty(sc,ma_src->attribute_name);
+						MemberProperty *ma_dst=new MemberProperty(sc,ma_src->property_name);
 						ma_dst->getter=ma_src->getter;
 						ma_dst->post_inc=ma_src->post_inc;
 						ma_dst->post_dec=ma_src->post_dec;

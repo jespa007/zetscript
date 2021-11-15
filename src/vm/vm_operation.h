@@ -4,7 +4,7 @@
  */
 
 
-#define PROCESS_ARITHMETIC_DIV_OPERATION \
+#define PERFORM_ARITHMETIC_DIV_OPERATION \
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
@@ -50,7 +50,55 @@
 		}\
 	}\
 
-#define PROCESS_ARITHMETIC_OPERATION(__C_OP__, __METAMETHOD__)\
+#define PERFORM_ADD_OPERATION \
+	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	switch(msk_properties){\
+	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
+		PUSH_STK_ZS_INT(stk_result_op1->value + stk_result_op2->value);\
+		break;\
+	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
+		PUSH_STK_ZS_FLOAT(stk_result_op1->value + *((zs_float *)&stk_result_op2->value));\
+		break;\
+	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
+		PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) + stk_result_op2->value);\
+		break;\
+	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
+		PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) + *((zs_float *)&stk_result_op2->value));\
+		break;\
+	default:\
+		if(		STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)\
+					||\
+				STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)\
+			){\
+				ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(data->zs,stk_result_op1,stk_result_op2);\
+				vm_create_shared_pointer(vm,so_string);\
+				PUSH_STK_SCRIPT_OBJECT(so_string);\
+		}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+					&&\
+				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+		){\
+				ScriptObjectVector *so_vector=ScriptObjectVector::newScriptObjectVectorAdd(\
+						data->zs\
+						,(ScriptObjectVector *)stk_result_op1->value\
+						,(ScriptObjectVector *)stk_result_op2->value\
+				);\
+				vm_create_shared_pointer(vm,so_vector);\
+				PUSH_STK_SCRIPT_OBJECT(so_vector);\
+		}else{\
+			if(vm_apply_metamethod(\
+					vm\
+					,calling_function\
+					,instruction\
+					,BYTE_CODE_METAMETHOD_ADD\
+					,stk_result_op1\
+					,stk_result_op2\
+			)==false){\
+				goto lbl_exit_function;\
+			}\
+		}\
+	}\
+
+#define PERFORM_ARITHMETIC_OPERATION(__C_OP__, __METAMETHOD__)\
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
@@ -78,7 +126,7 @@
 		}\
 	}\
 
-#define PROCESS_COMPARE_OPERATION(__C_OP__, __METAMETHOD__)\
+#define PERFORM_COMPARE_OPERATION(__C_OP__, __METAMETHOD__)\
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
@@ -133,7 +181,7 @@
 		}\
 	}\
 
-#define PROCESS_MOD_OPERATION \
+#define PERFORM_MOD_OPERATION \
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
@@ -174,7 +222,7 @@
 		}\
 	}\
 
-#define PROCESS_LOGIC_OPERATION(__C_OP__)\
+#define PERFORM_LOGIC_OPERATION(__C_OP__)\
 	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_BOOL){\
 		PUSH_STK_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}else{\
@@ -183,7 +231,7 @@
 	}\
 
 
-#define PROCESS_BINARY_OPERATION(__C_OP__, __METAMETHOD__)\
+#define PERFORM_BINARY_OPERATION(__C_OP__, __METAMETHOD__)\
 	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_ZS_INT){\
 		PUSH_STK_ZS_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
 	}else{\
@@ -250,7 +298,7 @@
 				*data->stk_vm_current++ = ret_obj;\
 			}\
 		}else{\
-			zs_strutils::format("Member attribute '%s' has not implemented metamethod _post_inc (aka '%s++') ",stk_ma->member_attribute->attribute_name.c_str(),stk_ma->member_attribute->attribute_name.c_str());\
+			zs_strutils::format("Member attribute '%s' has not implemented metamethod _post_inc (aka '%s++') ",stk_ma->member_attribute->property_name.c_str(),stk_ma->member_attribute->property_name.c_str());\
 		}
 
 /*
