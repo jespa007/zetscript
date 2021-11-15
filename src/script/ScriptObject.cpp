@@ -66,7 +66,7 @@ namespace zetscript{
 			// pre-register built-in members...
 			for ( unsigned i = 0; i < symbol_vars->count; i++){
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
-				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
+				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
 					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_PROPERTY});
 				}
 			}
@@ -126,10 +126,10 @@ namespace zetscript{
 
 	ScriptFunction *ScriptObject::getGetter(){
 		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
-		MemberProperty *member_property=script_class->setter_getter;
+		MemberProperty *member_attribute=script_class->setter_getter;
 
-		if(member_property !=NULL){
-			return member_property->getter;
+		if(member_attribute !=NULL){
+			return member_attribute->getter;
 		}
 
 		return NULL;
@@ -137,10 +137,10 @@ namespace zetscript{
 
 	zs_vector *ScriptObject::getSetterList(){
 		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
-		MemberProperty *member_property=script_class->setter_getter;
+		MemberProperty *member_attribute=script_class->setter_getter;
 
-		if(member_property !=NULL){
-			return &member_property->setters;
+		if(member_attribute !=NULL){
+			return &member_attribute->setters;
 		}
 
 		return NULL;

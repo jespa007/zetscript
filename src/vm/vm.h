@@ -23,10 +23,6 @@
 #define VM_STOP_EXECUTE(s,...)			data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
 #define VM_SET_USER_ERROR(vm,s,...)		vm_set_error_file_line(vm,__FILE__,__LINE__, s, ##__VA_ARGS__)
 
-
-
-
-
 namespace zetscript{
 
 	struct  VirtualMachine{
@@ -75,4 +71,9 @@ namespace zetscript{
 
 
 #include "vm.tcc"
+#include "vm_operation.h"
+#include "vm_operation.h"
+#include "vm_pop_stk.h"
+#include "vm_push_stk.h"
+#include "vm_scope.h"
 

@@ -214,6 +214,15 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHL:		return  "<<"; 		// binary shift left
 			case	BYTE_CODE_METAMETHOD_SHR:		return  ">>"; 		// binary shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "=";		// _set
+			case	BYTE_CODE_METAMETHOD_SET_ADD:	return  "+=";		// _set_add
+			case	BYTE_CODE_METAMETHOD_SET_SUB:	return  "-=";		// _set_sub
+			case	BYTE_CODE_METAMETHOD_SET_DIV:	return  "/=";		// _set_div
+			case	BYTE_CODE_METAMETHOD_SET_MOD:	return  "%=";		// _set_mod
+			case	BYTE_CODE_METAMETHOD_SET_AND:	return  "&=";		// _set_and
+			case	BYTE_CODE_METAMETHOD_SET_OR:	return  "|=";		// _set_or
+			case	BYTE_CODE_METAMETHOD_SET_XOR:	return  "^=";		// _set_xor
+			case	BYTE_CODE_METAMETHOD_SET_SHL:	return  "<<=";		// _set_shl
+			case	BYTE_CODE_METAMETHOD_SET_SHR:	return  ">>=";		// _set_shr
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get";		// _get
 			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "_toString";// _toString
 			case 	BYTE_CODE_METAMETHOD_POST_INC: 	return  "++";		// i++
@@ -248,6 +257,16 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; 	// binary shift left
 			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; 	// binary shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; 	// _set
+			case	BYTE_CODE_METAMETHOD_SET_ADD:	return  "_set_add";	// _set_add
+			case	BYTE_CODE_METAMETHOD_SET_SUB:	return  "_set_sub";	// _set_sub
+			case	BYTE_CODE_METAMETHOD_SET_DIV:	return  "_set_div";	// _set_div
+			case	BYTE_CODE_METAMETHOD_SET_MOD:	return  "_set_mod";	// _set_mod
+			case	BYTE_CODE_METAMETHOD_SET_AND:	return  "_set_and";	// _set_and
+			case	BYTE_CODE_METAMETHOD_SET_OR:	return  "_set_or"; 	// _set_or
+			case	BYTE_CODE_METAMETHOD_SET_XOR:	return  "_set_xor";	// _set_xor
+			case	BYTE_CODE_METAMETHOD_SET_SHL:	return  "_set_shl";	// _set_shl
+			case	BYTE_CODE_METAMETHOD_SET_SHR:	return  "_set_shr";	// _set_shr
+
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get"; 	// _get
 			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_toString";// _toString
 			case 	BYTE_CODE_METAMETHOD_POST_INC: 	return  "_post_inc";// i++
