@@ -62,6 +62,7 @@ if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 #define ASSIGN_SETTER(stk_dst,stk_mp,so_aux, store_lst_setter_functions,__STR_SETTER_METAMETHOD__) \
 	ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)store_lst_setter_functions->items[0])->value;\
 	StackElement *stk_vm_start=data->stk_vm_current;\
+	const char *
 	StackElement *stk_arg=stk_vm_start+1;\
 	*stk_arg=*stk_src;\
 	if(so_aux->isNativeObject()){ /* because object is native, we can have more than one _setter */ \
@@ -78,21 +79,23 @@ if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 				VM_STOP_EXECUTE("Property '%s::%s' does not implement '%s' function"\
 						,stk_mp->so_object->getScriptClass()->class_name.c_str()\
 						,stk_mp->member_attribute->attribute_name.c_str()\
-						,__STR_SETTER_METAMETHOD__
+						,__STR_SETTER_METAMETHOD__\
 						);\
 			); \
 			}else{\
 				VM_STOP_EXECUTE("Class '%s' does not implement '%s' function" \
 						,((ScriptObject *)stk_dst->value)->getScriptClass()->class_name.c_str() \
+						,__STR_SETTER_METAMETHOD__\
+				);\
 			}\
 		}\
 	}else if(store_lst_setter_functions->count>1){ /* it has all member list */\
 		Symbol * symbol_setter = obj_aux->getScriptClass()->getSymbol("_set"); \
 		if(symbol_setter == NULL){\
-			VM_STOP_EXECUTE("Operator metamethod '%s' (aka =) is not implemented");\
+			VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented");\
 		}\
 		if((symbol_setter->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)==0){\
-			VM_STOP_EXECUTE("Operator metamethod '%s' (aka =) is not function");\
+			VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not function");\
 		}\
 		ptr_function_found=(ScriptFunction *)symbol_setter->ref_ptr;\
 	}\

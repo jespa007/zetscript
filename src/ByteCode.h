@@ -215,7 +215,7 @@ namespace zetscript{
 		BYTE_CODE_METAMETHOD_SET_DIV, // set '/='
 		BYTE_CODE_METAMETHOD_SET_MOD, // set '%='
 		BYTE_CODE_METAMETHOD_SET_AND, // set '&='
-		BYTE_CODE_METAMETHOD_SET_OR, // set '|='
+		BYTE_CODE_METAMETHOD_SET_OR,  // set '|='
 		BYTE_CODE_METAMETHOD_SET_XOR, // set '^='
 		BYTE_CODE_METAMETHOD_SET_SHL, // set '<<'
 		BYTE_CODE_METAMETHOD_SET_SHR, // set '>>'
