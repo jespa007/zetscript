@@ -92,12 +92,12 @@
 #define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)							(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)				(zs)->registerMemberFunctionStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
 #define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberPropertySetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberPropertyGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_INCREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberPropertyPostIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_POST_DECREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberPropertyPostDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberPropertyPreIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberPropertyPreDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_PROPERTY_SETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberPropertySetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_PROPERTY_GETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberPropertyGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_PROPERTY_POST_INCREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberPropertyPostIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_PROPERTY_POST_DECREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberPropertyPostDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_PROPERTY_PRE_INCREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberPropertyPreIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
+#define ZS_REGISTER_MEMBER_PROPERTY_PRE_DECREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberPropertyPreDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
 
 
 #define CLASS_INHERITS_FROM(C,B)														ZS_CLASS_INHERITS_FROM(zs,C,B)
@@ -107,12 +107,12 @@
 #define REGISTER_SINGLETON_CLASS(class_type,s)											ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)
 #define REGISTER_MEMBER_FUNCTION_STATIC(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)
 #define REGISTER_MEMBER_FUNCTION(class_type,s,ptr_fun)									ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_ATTRIBUTE_SETTER(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_ATTRIBUTE_SETTER(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_ATTRIBUTE_GETTER(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_ATTRIBUTE_GETTER(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_ATTRIBUTE_POST_INCREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_ATTRIBUTE_POST_INCREMENT(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_ATTRIBUTE_POST_DECREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_ATTRIBUTE_POST_DECREMENT(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_INCREMENT(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_ATTRIBUTE_PRE_DECREMENT(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_PROPERTY_SETTER(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_PROPERTY_SETTER(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_PROPERTY_GETTER(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_PROPERTY_GETTER(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_PROPERTY_POST_INCREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_PROPERTY_POST_INCREMENT(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_PROPERTY_POST_DECREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_PROPERTY_POST_DECREMENT(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_PROPERTY_PRE_INCREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_PROPERTY_PRE_INCREMENT(zs,class_type,s,ptr_fun)
+#define REGISTER_MEMBER_PROPERTY_PRE_DECREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_PROPERTY_PRE_DECREMENT(zs,class_type,s,ptr_fun)
 
 
 #define ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(class_type) \

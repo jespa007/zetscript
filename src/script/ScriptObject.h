@@ -32,14 +32,14 @@ namespace zetscript{
 	struct MemberProperty;
 	struct StackMemberProperty{
 	public:
-		MemberProperty 	*member_attribute; // make function pointer first to make compatible with stk
+		MemberProperty 	*member_property; // make function pointer first to make compatible with stk
 		ScriptObject		*so_object;
 
 		StackMemberProperty(
 				ScriptObject		*_so_object
 				,MemberProperty 	*_member_attribute){
 			so_object = _so_object;
-			member_attribute= _member_attribute;
+			member_property= _member_attribute;
 		}
 	};
 
