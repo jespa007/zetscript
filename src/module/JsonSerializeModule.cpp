@@ -42,7 +42,7 @@ namespace zetscript{
 				for(;!mi->end();mi->next()){
 
 					StackElement *stk_se=(StackElement *)mi->value;
-					// only check if is not function. If is an attribute an implements get, call
+					// only check if is not function. If is an property an implements get, call
 					if((stk_se->properties & STK_PROPERTY_FUNCTION) == 0){
 						bool created_object=false;
 						bool getter_found=false;
@@ -63,7 +63,7 @@ namespace zetscript{
 
 						str_result.append("\"" + zs_string(mi->key)+ "\":");
 
-						// if attribute we have to call script or native...
+						// if property we have to call script or native...
 						if(stk_se->properties & STK_PROPERTY_MEMBER_PROPERTY){
 
 							StackMemberProperty *sma=(StackMemberProperty *)stk_se->value;

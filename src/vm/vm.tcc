@@ -637,7 +637,7 @@ namespace zetscript{
 			){
 				ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(data->zs,stk_result_op1,stk_result_op2);
 				vm_create_shared_pointer(vm,so_string);
-				PUSH_STK_SCRIPT_OBJECT(so_string);
+				VM_PUSH_STK_SCRIPT_OBJECT(so_string);
 				return true;
 			}
 			else if(
@@ -651,7 +651,7 @@ namespace zetscript{
 						,(ScriptObjectVector *)stk_result_op2->value
 				);
 				vm_create_shared_pointer(vm,so_vector);
-				PUSH_STK_SCRIPT_OBJECT(so_vector);
+				VM_PUSH_STK_SCRIPT_OBJECT(so_vector);
 
 				return true;
 			}
@@ -674,7 +674,7 @@ namespace zetscript{
 								,(ScriptObjectObject *)obj2
 						);
 						vm_create_shared_pointer(vm,so_object);
-						PUSH_STK_SCRIPT_OBJECT(so_object);
+						VM_PUSH_STK_SCRIPT_OBJECT(so_object);
 						return true;
 					}
 				}
@@ -740,7 +740,7 @@ namespace zetscript{
 		}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject * script_object_found=(ScriptObject *)stk_result_op1->value;
 			class_name_object_found=script_object_found->getClassName();
-		}/*else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){ // in principle attribute member metamethod only contemplates pre/post inc/dec operators
+		}/*else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){ // in principle property member metamethod only contemplates pre/post inc/dec operators
 			stk_ma= (StackMemberProperty *)stk_result_op1->value;
 			script_object = stk_ma->so_object;
 
@@ -763,7 +763,7 @@ namespace zetscript{
 				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _pre_dec (aka '--%s')",stk_ma->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());
 				break;
 			default:
-				error_found=zs_strutils::format("Internal error: unexpected metamethod for attribute '%s'",stk_ma->member_property->property_name.c_str());
+				error_found=zs_strutils::format("Internal error: unexpected metamethod for property '%s'",stk_ma->member_property->property_name.c_str());
 				goto apply_metamethod_error;
 			}
 
@@ -1107,7 +1107,7 @@ lbl_exit_function:
 			switch(so_aux->idx_script_class){
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
-				PUSH_STK_BOOLEAN(
+				VM_PUSH_STK_BOOLEAN(
 					ScriptObjectStringWrap_contains(
 						((ScriptObjectString *)so_aux)
 						,(zs_int)stk_result_op1->value
@@ -1115,7 +1115,7 @@ lbl_exit_function:
 				);
 			}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
 				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
-				PUSH_STK_BOOLEAN(
+				VM_PUSH_STK_BOOLEAN(
 					ScriptObjectStringWrap_contains(
 						(ScriptObjectString *)so_aux
 						,&str_op1)
@@ -1126,7 +1126,7 @@ lbl_exit_function:
 			break;
 			case IDX_TYPE_SCRIPT_OBJECT_VECTOR: // check whether value exists...
 			//PUSH_STK_BOOLEAN(((ScriptObjectVector *)so_aux)->exists(stk_result_op1));
-			PUSH_STK_BOOLEAN(
+				VM_PUSH_STK_BOOLEAN(
 				ScriptObjectVectorWrap_contains(
 					(ScriptObjectVector *)so_aux,stk_result_op1
 				)
@@ -1135,7 +1135,7 @@ lbl_exit_function:
 			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
-				PUSH_STK_BOOLEAN(
+				VM_PUSH_STK_BOOLEAN(
 					ScriptObjectObjectWrap_contains(
 						(ScriptObjectObject *)so_aux,&str_op1
 					)
@@ -1156,7 +1156,6 @@ lbl_exit_function:
 				)==false){
 					return false;
 				}
-				//PUSH_STK_BOOLEAN(false);
 			break;
 			}
 		}else{

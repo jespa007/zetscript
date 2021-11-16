@@ -66,7 +66,7 @@ namespace zetscript{
 			// pre-register built-in members...
 			for ( unsigned i = 0; i < symbol_vars->count; i++){
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
-				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_ATTRIBUTE){
+				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_PROPERTY});
 				}
 			}

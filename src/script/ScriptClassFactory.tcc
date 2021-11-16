@@ -212,15 +212,26 @@ namespace zetscript{
 
 			Symbol *symbol_src = (Symbol *)base_functions->items[i];
 
-			bool is_metamethod_function = 	zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_SETTER)
-										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_GETTER)
-										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_POST_INC)
-										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_POST_DEC)
-										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_PRE_INC)
-										||  zs_strutils::starts_with(symbol_src->name,ZS_MEMBER_PROPERTY_SYMBOL_NAME_PRE_DEC)
+			bool is_metamethod_function =
+										    zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_INC)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_DEC)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_INC)
+										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_DEC)
 										;
 
-			// we have to know whether function member is or not getter/setter because we create them in the attribute member case. If not, we could have
+			if(is_metamethod_function==false){ // try find setter
+				ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_list;
+				zs_string symbol_name_methametod;
+				while(*it!=0 && is_metamethod_function==false){
+					symbol_name_methametod=byte_code_metamethod_to_symbol_str(*it);
+					symbol_name_methametod.append('@');
+					is_metamethod_function=zs_strutils::starts_with(symbol_src->name,symbol_name_methametod);
+					it++;
+				}
+			}
+
+			// we have to know whether function member is or not getter/setter because we create them in the property member case. If not, we could have
 			// duplicated symbols.
 			if(is_metamethod_function == false){
 
@@ -254,11 +265,11 @@ namespace zetscript{
 				MemberProperty *ma_src=(MemberProperty *)symbol_src->ref_ptr;
 				MemberProperty *ma_dst=NULL;
 
-				Symbol *symbol_attribute=NULL;
+				Symbol *symbol_member_property=NULL;
 				Symbol *symbol_function=NULL;
 
-				symbol_attribute=this_class->registerMemberProperty(symbol_src->name,symbol_src->file,symbol_src->line);
-				ma_dst=(MemberProperty *)symbol_attribute->ref_ptr;
+				symbol_member_property=this_class->registerMemberProperty(symbol_src->name,symbol_src->file,symbol_src->line);
+				ma_dst=(MemberProperty *)symbol_member_property->ref_ptr;
 
 
 				struct _PropertyMethodIt{
@@ -401,7 +412,7 @@ namespace zetscript{
 	}
 
 	/*
-	 * register attribute setter
+	 * register property member setter
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertySetter(
@@ -427,7 +438,7 @@ namespace zetscript{
 	}
 
 	/*
-	 * register attribute getter
+	 * register property getter
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyGetter(
@@ -453,7 +464,7 @@ namespace zetscript{
 	}
 
 	/*
-	 * register attribute post_increment
+	 * register member property  post_increment
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPostIncrement(
@@ -479,7 +490,7 @@ namespace zetscript{
 	}
 
 	/*
-	 * register attribute post_decrement
+	 * register member property  post_decrement
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPostDecrement(
@@ -505,7 +516,7 @@ namespace zetscript{
 	}
 
 	/*
-	 * register attribute pre_increment
+	 * register member property  pre_increment
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPreIncrement(
@@ -531,7 +542,7 @@ namespace zetscript{
 	}
 
 	/*
-	 * register attribute pre_decrement
+	 * register member property  pre_decrement
 	 */
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPreDecrement(
@@ -556,7 +567,7 @@ namespace zetscript{
 		);
 	}
 
-	// register add set operation
+	// register member property add set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyAddSet(
 			const zs_string & _property_name
@@ -567,7 +578,7 @@ namespace zetscript{
 
 	}
 
-	// register sub set operation
+	// register member property  sub set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertySubSet(
 			const zs_string & _property_name
@@ -578,7 +589,7 @@ namespace zetscript{
 
 	}
 
-	// register mul set operation
+	// register member property mul set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyMulSet(
 			const zs_string & _property_name
@@ -589,7 +600,7 @@ namespace zetscript{
 
 	}
 
-	// register div set operation
+	// register member property div set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyDivSet(
 			const zs_string & _property_name
@@ -600,7 +611,7 @@ namespace zetscript{
 
 	}
 
-	// register mod set operation
+	// register member property mod set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyModSet(
 			const zs_string & _property_name
@@ -611,7 +622,7 @@ namespace zetscript{
 
 	}
 
-	// register and set operation
+	// register member property and set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyAndSet(
 			const zs_string & _property_name
@@ -622,7 +633,7 @@ namespace zetscript{
 
 	}
 
-	// register or set operation
+	// register member property or set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyOrSet(
 			const zs_string & _property_name
@@ -633,7 +644,7 @@ namespace zetscript{
 
 	}
 
-	// register xor set operation
+	// register member property xor set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyXorSet(
 			const zs_string & _property_name
@@ -644,7 +655,7 @@ namespace zetscript{
 
 	}
 
-	// register shl set operation
+	// register member property shl set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyShlSet(
 			const zs_string & _property_name
@@ -655,7 +666,7 @@ namespace zetscript{
 
 	}
 
-	// register shr set operation
+	// register member property shr set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyShrSet(
 			const zs_string & _property_name

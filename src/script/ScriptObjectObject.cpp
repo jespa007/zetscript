@@ -38,7 +38,7 @@ namespace zetscript{
 		for(auto it=o2->begin(); !it.end();it.next()){
 			o1->addUserProperty(it.key,error,(StackElement *)it.value);
 		}
-		return obj;
+
 	}
 
 	//

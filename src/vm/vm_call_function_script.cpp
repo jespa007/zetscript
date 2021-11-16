@@ -67,6 +67,10 @@ namespace zetscript{
 		uint32_t msk_properties=0;
 		StackElement *stk_dst=NULL;
 		StackElement *stk_src=NULL;
+		zs_int *stk_src_ref_value=NULL;
+		zs_int *stk_dst_ref_value=NULL;
+		unsigned short stk_src_properties=0;
+		void *stk_src_ref_value_copy_aux=NULL;
 		Instruction *instructions=calling_function->instructions; // starting instruction
 		Instruction *instruction_it=instructions;
 		zs_vector *local_variables=calling_function->local_variables;
@@ -95,7 +99,7 @@ namespace zetscript{
 		data->vm_current_scope_function->stk_local_vars=_stk_local_var;
 
 		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (symbols_count > 0)){
-			PUSH_VM_SCOPE(calling_function->function_scope);
+			VM_PUSH_SCOPE(calling_function->function_scope);
 		}
 		//-----------------------------------------------------------------------------------------------------------------------
 		//
@@ -111,20 +115,20 @@ namespace zetscript{
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
 			case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
-				PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
+				VM_PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
 				continue;
 			case BYTE_CODE_PUSH_STK_LOCAL: // load variable ...
-				PUSH_STK_PTR(_stk_local_var+instruction->value_op2);
+				VM_PUSH_STK_PTR(_stk_local_var+instruction->value_op2);
 				continue;
 			case BYTE_CODE_PUSH_STK_THIS: // load variable ...
-				PUSH_STK_PTR(this_object->getThisProperty());
+				VM_PUSH_STK_PTR(this_object->getThisProperty());
 				continue;
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR: // direct load
-				PUSH_STK_PTR(this_object->getBuiltinElementAt(instruction->value_op2));
+				VM_PUSH_STK_PTR(this_object->getBuiltinElementAt(instruction->value_op2));
 				continue;
 			case BYTE_CODE_PUSH_STK_VECTOR_ITEM:
 			case BYTE_CODE_LOAD_VECTOR_ITEM:
-				POP_STK_TWO;
+				VM_POP_STK_TWO;
 				so_aux=NULL;
 				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
 					stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->value)->getStackElementPtr();
@@ -145,7 +149,7 @@ namespace zetscript{
 								VM_STOP_EXECUTE("Expected integer index for Vector access");
 							}
 
-							if((stk_var =so_vector->getUserElementAt(STK_VALUE_TO_ZS_INT(stk_result_op2)))==NULL){
+							if((stk_var =so_vector->getUserElementAt(stk_result_op2->value))==NULL){
 								goto lbl_exit_function;
 							} \
 						}
@@ -166,7 +170,7 @@ namespace zetscript{
 						if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 							*data->stk_vm_current++=*stk_var;
 						}else{
-							PUSH_STK_PTR(stk_var);
+							VM_PUSH_STK_PTR(stk_var);
 						}
 						continue;
 					}else if(obj->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_STRING){
@@ -177,7 +181,7 @@ namespace zetscript{
 						}
 
 
-						zs_char *ptr_char=(zs_char *)&((zs_string *)so_string->value)->c_str()[STK_VALUE_TO_ZS_INT(stk_result_op2)];
+						zs_char *ptr_char=(zs_char *)&((zs_string *)so_string->value)->c_str()[stk_result_op2->value];
 						if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 							data->stk_vm_current->value=((zs_int)(*ptr_char));
 							data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;
@@ -220,7 +224,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
 				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
-					PUSH_STK_NULL;
+					VM_PUSH_STK_NULL;
 				}else{
 					data->stk_vm_current->value= so_aux->getScriptClass()->class_scope->symbol_functions->items[instruction->value_op2];
 					data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
@@ -241,7 +245,7 @@ load_next_element_object:
 					stk_result_op1=(data->stk_vm_current-1);
 				}
 				else{
-					POP_STK_ONE; // get var op1 and symbol op2
+					VM_POP_STK_ONE; // get var op1 and symbol op2
 				}
 
 				if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)!= STK_PROPERTY_SCRIPT_OBJECT)
@@ -298,7 +302,7 @@ find_element_object:
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
 								VM_STOP_EXECUTE(data->vm_error_str.c_str());
 							}
-							PUSH_STK_PTR(stk_var);
+							VM_PUSH_STK_PTR(stk_var);
 						}
 						else{
 							data->stk_vm_current->value=0;
@@ -328,7 +332,7 @@ find_element_object:
 
 				// copy the content of this value
 				if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){ // push ref because is gonna to be assigned
-					PUSH_STK_PTR(stk_var);
+					VM_PUSH_STK_PTR(stk_var);
 				}else{ // load its value for read
 					*data->stk_vm_current++=*stk_var;
 				}
@@ -340,10 +344,10 @@ find_element_object:
 				}
 				continue;
 			case BYTE_CODE_LOAD_NULL:
-				PUSH_STK_NULL;
+				VM_PUSH_STK_NULL;
 				continue;
 			case BYTE_CODE_LOAD_FUNCTION: // expect constant and function has the same behaviour...
-				PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
+				VM_PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_ZS_INT:
 				data->stk_vm_current->value=instruction->value_op2;
@@ -365,38 +369,38 @@ find_element_object:
 				*data->stk_vm_current++=*((StackElement *)instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_TYPE:
-				PUSH_STK_TYPE(instruction->value_op2);
+				VM_PUSH_STK_TYPE(instruction->value_op2);
 				continue;
 			case BYTE_CODE_PUSH_VECTOR_ITEM:
-				POP_STK_ONE; // only pops the value, the last is the vector variable itself
-				ScriptObjectObject *vec_obj = NULL;
+				VM_POP_STK_ONE; // only pops the value, the last is the vector variable itself
+
 				if((data->stk_vm_current-1)->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					vec_obj = (ScriptObjectObject *)(data->stk_vm_current-1)->value;
-					if(vec_obj->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
+					so_aux = (ScriptObject *)(data->stk_vm_current-1)->value;
+					if(so_aux->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
 						// op1 is now the src value ...
 						stk_src=stk_result_op1;
 						if(stk_src->properties & STK_PROPERTY_PTR_STK){
 							stk_src=(StackElement *)stk_result_op1->value;
 						}
 
-						stk_dst=((ScriptObjectVector *)vec_obj)->pushNewUserSlot();
+						stk_dst=((ScriptObjectVector *)so_aux)->pushNewUserSlot();
 					}
 				}
 
-				if(vec_obj==NULL){
+				if(so_aux==NULL){
 					VM_STOP_EXECUTE("Expected vector object");
 				}
-				PERFORM_SET_CONTAINER_ELEMENT;
+				VM_SET_CONTAINER_ELEMENT;
 				continue;
 			case BYTE_CODE_PUSH_OBJECT_ITEM:
-				POP_STK_TWO; // first must be a string that describes variable name and the other the variable itself ...
-				ScriptObjectObject *obj = NULL;
-				StackElement *stk_object=(data->stk_vm_current-1);
-				if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_object) == 0){
-					VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_to_typeof_str(data->zs,stk_object).c_str());
+				VM_POP_STK_TWO; // first must be a string that describes variable name and the other the variable itself ...
+
+				stk_var=(data->stk_vm_current-1);
+				if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_var) == 0){
+					VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_to_typeof_str(data->zs,stk_var).c_str());
 				}
 
-				obj = (ScriptObjectObject *)stk_object->value;
+				so_aux = (ScriptObject *)stk_var->value;
 
 				if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
 					VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\""
@@ -404,54 +408,54 @@ find_element_object:
 					);
 				}
 						// op1 is now the src value ...
-				StackElement *se=NULL;
+
 				//const char *str = (const char *)stk_result_op1->value;
 				stk_src=stk_result_op2;
-				if((se =obj->addProperty(stk_to_str(data->zs, stk_result_op1),data->vm_error_str))==NULL){
+				if((stk_var =so_aux->addProperty(stk_to_str(data->zs, stk_result_op1),data->vm_error_str))==NULL){
 					VM_STOP_EXECUTE(data->vm_error_str.c_str());
 				}
 
-				stk_dst=se;
-				PERFORM_SET_CONTAINER_ELEMENT;
+				stk_dst=stk_var;
+				VM_SET_CONTAINER_ELEMENT;
 				continue;
-			case BYTE_CODE_STORE_ADD:
-				LOAD_SET_OPERATION;
-				PERFORM_ARITHMETIC_SET_OPERATION(+=,BYTE_CODE_METAMETHOD_ADD_SET);
+			case BYTE_CODE_ADD_STORE:
+				LOAD_OPS_SET_OPERATION;
+				VM_OPERATION_ADD_SET;
 				continue;
-			case BYTE_CODE_STORE_SUB:
-				LOAD_SET_OPERATION;
-				PERFORM_ARITHMETIC_SET_OPERATION(-=,BYTE_CODE_METAMETHOD_SUB_SET);
+			case BYTE_CODE_SUB_STORE:
+				LOAD_OPS_SET_OPERATION;
+				VM_OPERATION_ARITHMETIC_SET(-=,BYTE_CODE_METAMETHOD_SUB_SET);
 				continue;
-			case BYTE_CODE_STORE_MUL:
-				LOAD_SET_OPERATION;
-				PERFORM_ARITHMETIC_SET_OPERATION(*=,BYTE_CODE_METAMETHOD_MUL_SET);
+			case BYTE_CODE_MUL_STORE:
+				LOAD_OPS_SET_OPERATION;
+				VM_OPERATION_ARITHMETIC_SET(*=,BYTE_CODE_METAMETHOD_MUL_SET);
 				continue;
-			case BYTE_CODE_STORE_DIV:
-				LOAD_SET_OPERATION;
-				PERFORM_ARITHMETIC_STORE_DIV_OPERATION;
+			case BYTE_CODE_DIV_STORE:
+				LOAD_OPS_SET_OPERATION;
+				VM_OPERATION_DIV_SET;
 				continue;
-			case BYTE_CODE_STORE_MOD:
-				LOAD_SET_OPERATION;
-				PERFORM_MOD_STORE_OPERATION;
+			case BYTE_CODE_MOD_STORE:
+				LOAD_OPS_SET_OPERATION;
+				VM_OPERATION_MOD_SET;
 				continue;
-			case BYTE_CODE_STORE_STORE_BITWISE_AND:
-				PERFORM_BINARY_OPERATION(&=,BYTE_CODE_METAMETHOD_ADD_SET);
+			case BYTE_CODE_BITWISE_AND_STORE:
+				VM_OPERATION_BINARY_SET(&=,BYTE_CODE_METAMETHOD_ADD_SET);
 				continue;
-			case BYTE_CODE_STORE_BITWISE_OR:
-				LOAD_SET_OPERATION;
-				PERFORM_BINARY_STORE_OPERATION(|=,BYTE_CODE_METAMETHOD_OR_SET);
+			case BYTE_CODE_BITWISE_OR_STORE:
+				LOAD_OPS_SET_OPERATION;
+				VM_OPERATION_BINARY_SET(|=,BYTE_CODE_METAMETHOD_OR_SET);
 				continue;
-			case BYTE_CODE_STORE_BITWISE_STORE_XOR:
-				LOAD_SET_OPERATION;
-				PERFORM_BINARY_STORE_OPERATION(^=,BYTE_CODE_METAMETHOD_STORE_XOR);
+			case BYTE_CODE_BITWISE_XOR_STORE:
+				LOAD_OPS_SET_OPERATION;
+				VM_OPERATION_BINARY_SET(^=,BYTE_CODE_METAMETHOD_XOR_SET);
 				continue;
-			case BYTE_CODE_STORE_SHL:
-				LOAD_SET_OPERATION;
-				PERFORM_BINARY_STORE_OPERATION(<<=,BYTE_CODE_METAMETHOD_SHL);
+			case BYTE_CODE_SHL_STORE:
+				LOAD_OPS_SET_OPERATION;
+				VM_OPERATION_BINARY_SET(<<=,BYTE_CODE_METAMETHOD_SHL_SET);
 				continue;
-			case BYTE_CODE_STORE_SHR:
-				LOAD_SET_OPERATION;
-				PERFORM_BINARY_STORE_OPERATION(>>=,BYTE_CODE_METAMETHOD_SHR);
+			case BYTE_CODE_SHR_STORE:
+				LOAD_OPS_SET_OPERATION;
+				VM_OPERATION_BINARY_SET(>>=,BYTE_CODE_METAMETHOD_SHR_SET);
 				continue;
 			case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE:
@@ -521,7 +525,7 @@ find_element_object:
 						}
 					}
 
-					PERFORM_SET_METAMETHOD(stk_dst,stk_src,stk_mp_aux, so_aux, store_lst_setter_functions,BYTE_CODE_METAMETHOD_SET);
+					VM_SET_METAMETHOD(stk_dst,stk_src,stk_mp_aux, so_aux, store_lst_setter_functions,BYTE_CODE_METAMETHOD_SET);
 				}else{ // store through script assignment
 					if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
 						stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value));
@@ -529,11 +533,11 @@ find_element_object:
 
 					StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 
-					void *copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
-					zs_int *stk_src_ref=&stk_src->value;
-					zs_int *stk_dst_ref=&stk_dst->value;
+					void *stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
+					stk_src_ref_value=&stk_src->value;
+					stk_dst_ref_value=&stk_dst->value;
 					if(stk_src->properties & STK_PROPERTY_IS_VAR_C){ // src is C pointer
-						stk_src_ref=(zs_int *)((stk_src)->value);
+						stk_src_ref_value=(zs_int *)((stk_src)->value);
 					}
 					if(stk_dst->properties & STK_PROPERTY_IS_VAR_C){ // dst is a C pointer
 						// particular case
@@ -551,33 +555,33 @@ find_element_object:
 								}
 							}
 						}
-						stk_dst_ref=(zs_int *)((stk_dst)->value);
-						copy_aux=&((stk_dst)->value);
+						stk_dst_ref_value=(zs_int *)((stk_dst)->value);
+						stk_src_ref_value_copy_aux=&((stk_dst)->value);
 					}
-					unsigned short type_var=stk_src->properties;
+					stk_src_properties=stk_src->properties;
 
 					// init stk_dst
 					STK_SET_NULL(stk_dst);
 
-					if(type_var == STK_PROPERTY_NULL){
+					if(stk_src_properties == STK_PROPERTY_NULL){
 						stk_dst->properties=STK_PROPERTY_NULL;
-					}else if(type_var & STK_PROPERTY_ZS_INT){
+					}else if(stk_src_properties & STK_PROPERTY_ZS_INT){
 						stk_dst->properties=STK_PROPERTY_ZS_INT;
 						old_stk_dst.properties &  STK_PROPERTY_ZS_CHAR?
-						*((zs_char *)stk_dst_ref)=*((zs_int *)stk_src_ref) & 0xff
-						:*((zs_int *)stk_dst_ref)=*((zs_int *)stk_src_ref);
-						if(copy_aux!=NULL)(*(zs_int *)copy_aux)=*((zs_int *)stk_src_ref);
-					}else if(type_var & STK_PROPERTY_ZS_FLOAT){
+						*((zs_char *)stk_dst_ref_value)=*((zs_int *)stk_src_ref_value) & 0xff
+						:*((zs_int *)stk_dst_ref_value)=*((zs_int *)stk_src_ref_value);
+						if(stk_src_ref_value_copy_aux!=NULL)(*(zs_int *)stk_src_ref_value_copy_aux)=*((zs_int *)stk_src_ref_value);
+					}else if(stk_src_properties & STK_PROPERTY_ZS_FLOAT){
 						stk_dst->properties=STK_PROPERTY_ZS_FLOAT;
-						*((zs_float *)stk_dst_ref)=*((zs_float *)stk_src_ref);
-						if(copy_aux!=NULL)(*(zs_float *)copy_aux)=*((zs_float *)stk_src_ref);
-					}else if(type_var & STK_PROPERTY_BOOL){
+						*((zs_float *)stk_dst_ref_value)=*((zs_float *)stk_src_ref_value);
+						if(stk_src_ref_value_copy_aux!=NULL)(*(zs_float *)stk_src_ref_value_copy_aux)=*((zs_float *)stk_src_ref_value);
+					}else if(stk_src_properties & STK_PROPERTY_BOOL){
 						stk_dst->properties=STK_PROPERTY_BOOL;
-						*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);
-						if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)stk_src_ref);
-					}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
+						*((bool *)stk_dst_ref_value)=*((bool *)stk_src_ref_value);
+						if(stk_src_ref_value_copy_aux!=NULL)(*(bool *)stk_src_ref_value_copy_aux)=*((bool *)stk_src_ref_value);
+					}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
 						*stk_dst=*stk_src;
-					}else if(type_var & STK_PROPERTY_SCRIPT_OBJECT){
+					}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){
 
 						if(STK_IS_SCRIPT_OBJECT_STRING(stk_src)){
 							ScriptObjectString *str_object=NULL;
@@ -617,7 +621,7 @@ find_element_object:
 							,stk_to_typeof_str(data->zs,stk_src).c_str()
 						);
 					}
-					if(copy_aux!=NULL)	stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
+					if(stk_src_ref_value_copy_aux!=NULL)	stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 
 
 					// check old dst value to unref if it was an object ...
@@ -672,7 +676,7 @@ find_element_object:
 				*data->stk_vm_current++=*stk_dst;
 				continue;
 			 case BYTE_CODE_IT_INIT:
-				POP_STK_TWO;
+				VM_POP_STK_TWO;
 				vm_iterator_init(vm
 						,calling_function
 						,instruction
@@ -683,45 +687,45 @@ find_element_object:
 				}
 				continue;
 			case BYTE_CODE_EQU:  // ==
-				POP_STK_TWO;
-				PERFORM_COMPARE_OPERATION(==, BYTE_CODE_METAMETHOD_EQU);
+				VM_POP_STK_TWO;
+				VM_OPERATION_COMPARE(==, BYTE_CODE_METAMETHOD_EQU);
 				continue;
 			case BYTE_CODE_NOT_EQU:  // !=
-				POP_STK_TWO;
-				PERFORM_COMPARE_OPERATION(!=, BYTE_CODE_METAMETHOD_NOT_EQU);
+				VM_POP_STK_TWO;
+				VM_OPERATION_COMPARE(!=, BYTE_CODE_METAMETHOD_NOT_EQU);
 				continue;
 			case BYTE_CODE_LT:  // <
-				POP_STK_TWO;
-				PERFORM_COMPARE_OPERATION(<, BYTE_CODE_METAMETHOD_LT);
+				VM_POP_STK_TWO;
+				VM_OPERATION_COMPARE(<, BYTE_CODE_METAMETHOD_LT);
 				continue;
 			case BYTE_CODE_LTE:  // <=
-				POP_STK_TWO;
-				PERFORM_COMPARE_OPERATION(<=, BYTE_CODE_METAMETHOD_LTE);
+				VM_POP_STK_TWO;
+				VM_OPERATION_COMPARE(<=, BYTE_CODE_METAMETHOD_LTE);
 				continue;
 			case BYTE_CODE_GT:  // >
-				POP_STK_TWO;
-				PERFORM_COMPARE_OPERATION(>,BYTE_CODE_METAMETHOD_GT);
+				VM_POP_STK_TWO;
+				VM_OPERATION_COMPARE(>,BYTE_CODE_METAMETHOD_GT);
 				continue;
 			case BYTE_CODE_GTE:  // >=
-				POP_STK_TWO;
-				PERFORM_COMPARE_OPERATION(>=,BYTE_CODE_METAMETHOD_GTE);
+				VM_POP_STK_TWO;
+				VM_OPERATION_COMPARE(>=,BYTE_CODE_METAMETHOD_GTE);
 				continue;
 			case BYTE_CODE_LOGIC_AND:  // &&
-				POP_STK_TWO;
-				PERFORM_LOGIC_OPERATION(&&);
+				VM_POP_STK_TWO;
+				VM_OPERATION_LOGIC(&&);
 				continue;
 			case BYTE_CODE_LOGIC_OR:  // ||
-				POP_STK_TWO;
-				PERFORM_LOGIC_OPERATION(||);
+				VM_POP_STK_TWO;
+				VM_OPERATION_LOGIC(||);
 				continue;
 			case BYTE_CODE_NOT: // !
-				POP_STK_ONE;
+				VM_POP_STK_ONE;
 				if(stk_result_op1->properties & STK_PROPERTY_BOOL){ // operation will result as integer.
-					PUSH_STK_BOOLEAN((!((bool)(stk_result_op1->value))));
+					VM_PUSH_STK_BOOLEAN((!((bool)(stk_result_op1->value))));
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
-					PUSH_STK_BOOLEAN((!((zs_int)(stk_result_op1->value))));
+					VM_PUSH_STK_BOOLEAN((!((zs_int)(stk_result_op1->value))));
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
-					PUSH_STK_BOOLEAN((!(*((zs_float *)(&stk_result_op1->value)))==0));
+					VM_PUSH_STK_BOOLEAN((!(*((zs_float *)(&stk_result_op1->value)))==0));
 				}else{
 					if(vm_apply_metamethod(
 						vm
@@ -736,12 +740,11 @@ find_element_object:
 				}
 				continue;
 			case BYTE_CODE_NEG: // -
-				POP_STK_ONE;
+				VM_POP_STK_ONE;
 				if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){ // operation will result as integer.
-					PUSH_STK_ZS_INT((-((zs_int)(stk_result_op1->value))));
+					VM_PUSH_STK_ZS_INT((-((zs_int)(stk_result_op1->value))));
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
-					ZS_FLOAT_COPY(&f_aux_value1,&stk_result_op1->value);
-					PUSH_STK_ZS_FLOAT(-f_aux_value1);
+					VM_PUSH_STK_ZS_FLOAT(-*((zs_float *)&stk_result_op1->value));
 				}else{ // try metamethod ...
 					if(!vm_apply_metamethod(
 							vm
@@ -756,67 +759,67 @@ find_element_object:
 				}
 				continue;
 			case BYTE_CODE_TYPEOF:
-				POP_STK_ONE;
+				VM_POP_STK_ONE;
 				*data->stk_vm_current++=stk_result_op1->typeOf();
 				continue;
 			case BYTE_CODE_ADD: // +
-				POP_STK_TWO;
-				PERFORM_ADD_OPERATION;
+				VM_POP_STK_TWO;
+				VM_OPERATION_ADD;
 				continue;
 			case BYTE_CODE_SUB: // -
-				POP_STK_TWO;
-				PERFORM_ARITHMETIC_OPERATION(-,BYTE_CODE_METAMETHOD_SUB);
+				VM_POP_STK_TWO;
+				VM_OPERATION_ARITHMETIC(-,BYTE_CODE_METAMETHOD_SUB);
 				continue;
 			case BYTE_CODE_MUL: // *
-				POP_STK_TWO;
-				PERFORM_ARITHMETIC_OPERATION(*,BYTE_CODE_METAMETHOD_MUL);
+				VM_POP_STK_TWO;
+				VM_OPERATION_ARITHMETIC(*,BYTE_CODE_METAMETHOD_MUL);
 				continue;
 			case BYTE_CODE_DIV: // /
-				POP_STK_TWO;
-				PERFORM_ARITHMETIC_DIV_OPERATION;
+				VM_POP_STK_TWO;
+				VM_OPERATION_DIV;
 				continue;
 			 case BYTE_CODE_MOD: // /
-				POP_STK_TWO;
-				PERFORM_MOD_OPERATION;
+				VM_POP_STK_TWO;
+				VM_OPERATION_MOD;
 				continue;
 			 case BYTE_CODE_BITWISE_AND: // &
-				POP_STK_TWO;
-				PERFORM_BINARY_OPERATION(&, BYTE_CODE_METAMETHOD_AND);
+				VM_POP_STK_TWO;
+				VM_OPERATION_BINARY(&, BYTE_CODE_METAMETHOD_AND);
 				continue;
 			 case BYTE_CODE_BITWISE_OR: // *
-				POP_STK_TWO;
-				PERFORM_BINARY_OPERATION(|, BYTE_CODE_METAMETHOD_OR);
+				VM_POP_STK_TWO;
+				VM_OPERATION_BINARY(|, BYTE_CODE_METAMETHOD_OR);
 				continue;
 			 case BYTE_CODE_BITWISE_XOR: // ^
-				POP_STK_TWO;
-				PERFORM_BINARY_OPERATION(^, BYTE_CODE_METAMETHOD_XOR);
+				VM_POP_STK_TWO;
+				VM_OPERATION_BINARY(^, BYTE_CODE_METAMETHOD_XOR);
 				continue;
 			 case BYTE_CODE_SHR: // >>
-				POP_STK_TWO;
-				PERFORM_BINARY_OPERATION(>>,BYTE_CODE_METAMETHOD_SHR);
+				VM_POP_STK_TWO;
+				VM_OPERATION_BINARY(>>,BYTE_CODE_METAMETHOD_SHR);
 				continue;
 			 case BYTE_CODE_SHL: // <<
-				POP_STK_TWO;
-				PERFORM_BINARY_OPERATION(<<, BYTE_CODE_METAMETHOD_SHL);
+				VM_POP_STK_TWO;
+				VM_OPERATION_BINARY(<<, BYTE_CODE_METAMETHOD_SHL);
 				continue;
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
-				 POP_ONE;
+				 VM_POP_STK_ONE;
 
 				switch(instruction->value_op2){
 				case ZS_IDX_UNDEFINED:
 					VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 					break;
 				case IDX_TYPE_ZS_INT_C:
-					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
+					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
 					break;
 				case IDX_TYPE_ZS_FLOAT_C:
-					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT)!=0);
+					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT)!=0);
 					break;
 				case IDX_TYPE_BOOL_C:
-					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_BOOL)!=0);
+					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_BOOL)!=0);
 					break;
 				case IDX_TYPE_FUNCTION:
-					PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_FUNCTION)!=0);
+					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_FUNCTION)!=0);
 					break;
 				default:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -824,9 +827,9 @@ find_element_object:
 								((ScriptObjectObject *)(stk_result_op1->value))->idx_script_class // A
 								, instruction->value_op2		// B
 						);
-						PUSH_STK_BOOLEAN(b);
+						VM_PUSH_STK_BOOLEAN(b);
 					}else{
-						PUSH_STK_BOOLEAN(false);
+						VM_PUSH_STK_BOOLEAN(false);
 					}
 					break;
 				}
@@ -835,7 +838,7 @@ find_element_object:
 				instruction_it=instruction+instruction->value_op2;
 				continue;
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
-				POP_STK_ONE;
+				VM_POP_STK_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
 					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_typeof_str(data->zs,stk_result_op1).c_str());
 				}
@@ -844,7 +847,7 @@ find_element_object:
 				}
 				continue;
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
-				POP_STK_ONE;
+				VM_POP_STK_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
 					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_typeof_str(data->zs,stk_result_op1).c_str());
 				}
@@ -853,9 +856,9 @@ find_element_object:
 				}
 				continue;
 			case BYTE_CODE_JE_CASE:  // especial j for switch
-				READ_TWO_POP_ONE; // reads switch value and case value
-				PERFORM_COMPARE_OPERATION(==, BYTE_CODE_METAMETHOD_EQU);
-				POP_STK_ONE; // retrieve result...
+				VM_POP_STK_ONE_LOAD2; // reads switch value and case value
+				VM_OPERATION_COMPARE(==, BYTE_CODE_METAMETHOD_EQU);
+				VM_POP_STK_ONE; // retrieve result...
 				if(stk_result_op1->value != 0){ // if true goto
 					instruction_it=instruction+instruction->value_op2;
 				}
@@ -971,7 +974,7 @@ execute_function:
 								if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false) { // create new
 
 									if((stk_arg->properties & STK_PROPERTY_PTR_STK) != STK_PROPERTY_PTR_STK){
-										VM_STOP_EXECUTE("Calling function \"%s\", parameter \"%i\": Passing argument by reference has to be variable (not attribute or property))"
+										VM_STOP_EXECUTE("Calling function '%s', parameter '%i': Argument by reference has to be variable"
 												,sf_call_script_function->function_name.c_str(),i+1);
 									}
 
@@ -1253,7 +1256,7 @@ execute_function:
 					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_VALUE:
-				 	 POP_STK_ONE;
+				 	 VM_POP_STK_ONE;
 				 	 if(STK_VALUE_IS_TYPE(stk_result_op1)){
 				 		ScriptClass *sc=data->script_class_factory->getScriptClass(stk_result_op1->value);
 						if(!data->script_class_factory->isClassInstanceable(stk_result_op1->value)){
@@ -1289,7 +1292,7 @@ execute_function:
 						}
 
 						if(constructor_function == NULL){
-							PUSH_STK_NULL;
+							VM_PUSH_STK_NULL;
 						}
 
 				 	 }else{
@@ -1322,7 +1325,7 @@ execute_function:
 					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_DELETE:
-					POP_STK_ONE;
+					VM_POP_STK_ONE;
 					//script_var
 					if(stk_result_op1->properties & STK_PROPERTY_PTR_STK){
 						stk_result_op1=(StackElement *)stk_result_op1->value;
@@ -1350,11 +1353,11 @@ execute_function:
 					}
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:
-				PUSH_VM_SCOPE(instruction->value_op2);
+				VM_PUSH_SCOPE(instruction->value_op2);
 				continue;
 
 			 case BYTE_CODE_POP_SCOPE:
-				 POP_VM_SCOPE()
+				 VM_POP_SCOPE()
 
 				if((data->zero_shares+data->vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove
 					vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
@@ -1364,25 +1367,25 @@ execute_function:
 				 data->stk_vm_current=stk_start;
 				 continue;
 			 case BYTE_CODE_POST_INC:
-				 PERFORM_POST_INC_OPERATION;
-				 continue;
-			 case BYTE_CODE_POST_DEC:
-				 PERFORM_POST_OPERATOR(+,--,BYTE_CODE_METAMETHOD_POST_DEC);
-				 continue;
-			 case BYTE_CODE_PRE_INC:
-				 PERFORM_PRE_OPERATOR(++,BYTE_CODE_METAMETHOD_PRE_INC);
-				 continue;
-			 case BYTE_CODE_PRE_DEC:
-				 PERFORM_PRE_OPERATOR(--,BYTE_CODE_METAMETHOD_PRE_DEC);
+				 VM_OPERATION_POST_INC;
 				 continue;
 			 case BYTE_CODE_NEG_POST_INC:
-				 PERFORM_POST_OPERATOR(-,++,BYTE_CODE_METAMETHOD_POST_INC);
+				 VM_OPERATION_NEG_POST_INC;
+				 continue;
+			 case BYTE_CODE_POST_DEC:
+				 VM_OPERATION_POST_DEC;
+				 continue;
+			 case BYTE_CODE_PRE_INC:
+				 VM_OPERATION_PRE_INC;
+				 continue;
+			 case BYTE_CODE_PRE_DEC:
+				 VM_OPERATION_PRE_DEC;
 				 continue;
 			 case BYTE_CODE_NEG_POST_DEC:
-				 PERFORM_POST_OPERATOR(-,--,BYTE_CODE_METAMETHOD_POST_DEC);
+				 VM_OPERATION_NEG_POST_DEC;
 				 continue;
 			 case BYTE_CODE_IN:
-				 POP_STK_TWO;
+				 VM_POP_STK_TWO;
 				 if(vm_perform_in_operator(
 						 vm
 						 ,calling_function
@@ -1434,7 +1437,7 @@ execute_function:
 		//=========================
 		// POP STACK
 		while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
-			POP_VM_SCOPE(); // do not check removeEmptySharedPointers to have better performance
+			VM_POP_SCOPE(); // do not check removeEmptySharedPointers to have better performance
 		}
 
 		if((data->zero_shares+data->vm_idx_call)->first!=NULL){

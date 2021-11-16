@@ -2,11 +2,11 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#define PUSH_VM_SCOPE(_scope)\
+#define VM_PUSH_SCOPE(_scope)\
 	 *data->vm_current_scope_function->scope_current++=(Scope *)_scope;
 
 // defer all local vars
-#define POP_VM_SCOPE()\
+#define VM_POP_SCOPE()\
 {\
 	Scope *scope=*(data->vm_current_scope_function->scope_current-1);\
 	StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\

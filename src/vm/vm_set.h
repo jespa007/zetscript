@@ -3,33 +3,33 @@
  *  See LICENSE file for details.
  */
 
-#define PERFORM_SET_CONTAINER_ELEMENT \
+#define VM_SET_CONTAINER_ELEMENT \
 if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){ \
 	stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value)); \
 } \
-void *copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */ \
-zs_int *stk_src_ref=&stk_src->value; \
+stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */ \
+stk_src_ref_value=&stk_src->value; \
 if(stk_src->properties & STK_PROPERTY_IS_VAR_C){ /* src is C pointer */ \
-	stk_src_ref=(zs_int *)((stk_src)->value); \
+	stk_src_ref_value=(zs_int *)((stk_src)->value); \
 }\
-unsigned short type_var=stk_src->properties;\
-if(type_var == STK_PROPERTY_NULL){\
+stk_src_properties=stk_src->properties;\
+if(stk_src_properties == STK_PROPERTY_NULL){\
 	stk_dst->properties=STK_PROPERTY_NULL;\
-}else if(type_var & STK_PROPERTY_ZS_INT){\
+}else if(stk_src_properties & STK_PROPERTY_ZS_INT){\
 	stk_dst->properties=STK_PROPERTY_ZS_INT;\
-	*((zs_int *)stk_dst_ref)=*((zs_int *)stk_src_ref);\
-	if(copy_aux!=NULL)(*(zs_int *)copy_aux)=*((zs_int *)stk_src_ref);\
-}else if(type_var & STK_PROPERTY_ZS_FLOAT){\
+	*((zs_int *)stk_dst_ref_value)=*((zs_int *)stk_src_ref_value);\
+	if(stk_src_ref_value_copy_aux!=NULL)(*(zs_int *)stk_src_ref_value_copy_aux)=*((zs_int *)stk_src_ref_value);\
+}else if(stk_src_properties & STK_PROPERTY_ZS_FLOAT){\
 	stk_dst->properties=STK_PROPERTY_ZS_FLOAT;\
-	*((zs_float *)stk_dst_ref)=*((zs_float *)stk_src_ref);\
-	if(copy_aux!=NULL)(*(zs_float *)copy_aux)=*((zs_float *)stk_src_ref);\
-}else if(type_var & STK_PROPERTY_BOOL){\
+	*((zs_float *)stk_dst_ref_value)=*((zs_float *)stk_src_ref_value);\
+	if(stk_src_ref_value_copy_aux!=NULL)(*(zs_float *)stk_src_ref_value_copy_aux)=*((zs_float *)stk_src_ref_value);\
+}else if(stk_src_properties & STK_PROPERTY_BOOL){\
 	stk_dst->properties=STK_PROPERTY_BOOL;\
-	*((bool *)stk_dst_ref)=*((bool *)stk_src_ref);\
-	if(copy_aux!=NULL)(*(bool *)copy_aux)=*((bool *)stk_src_ref);\
-}else if(type_var  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){\
+	*((bool *)stk_dst_ref_value)=*((bool *)stk_src_ref_value);\
+	if(stk_src_ref_value_copy_aux!=NULL)(*(bool *)stk_src_ref_value_copy_aux)=*((bool *)stk_src_ref_value);\
+}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){\
 	*stk_dst=*stk_src;\
-}else if(type_var & STK_PROPERTY_SCRIPT_OBJECT){\
+}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){\
 	if(STK_IS_SCRIPT_OBJECT_STRING(stk_src)){\
 		ScriptObjectString *str_object=NULL;\
 		stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));\
@@ -56,10 +56,10 @@ if(type_var == STK_PROPERTY_NULL){\
 		,stk_to_typeof_str(data->zs,stk_src).c_str()\
 	);\
 }\
-if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
+if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 
 
-#define PERFORM_SET_METAMETHOD(stk_dst,stk_src,stk_mp, so_aux, store_lst_setter_functions,__SETTER_METAMETHOD__) \
+#define VM_SET_METAMETHOD(stk_dst,stk_src,stk_mp, so_aux, store_lst_setter_functions,__SETTER_METAMETHOD__) \
 	ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)store_lst_setter_functions->items[0])->value;\
 	StackElement *stk_vm_start=data->stk_vm_current;\
 	StackElement *stk_arg=stk_vm_start+1;\
@@ -73,7 +73,7 @@ if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 				,calling_function\
 				,instruction\
 				,false\
-				,STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)?__STR_SETTER_METAMETHOD__:__STR_SETTER_METAMETHOD__"@" /* symbol to find */\
+				,STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)?"_set":"_set@" /* symbol to find */\
 				,stk_arg \
 				,1))==NULL){ \
 			if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
@@ -81,8 +81,7 @@ if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 						,so_aux->getScriptClass()->class_name.c_str()\
 						,stk_mp->member_property->property_name.c_str()\
 						,__STR_SETTER_METAMETHOD__\
-						);\
-			); \
+				);\
 			}else{\
 				VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
 						,so_aux->getScriptClass()->class_name.c_str() \
@@ -91,7 +90,7 @@ if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 			}\
 		}\
 	}else if(store_lst_setter_functions->count>1){ /* it has all member list */\
-		Symbol * symbol_setter = obj_aux->getScriptClass()->getSymbol(__STR_SETTER_METAMETHOD__); \
+		Symbol * symbol_setter = so_aux->getScriptClass()->getSymbol(__STR_SETTER_METAMETHOD__); \
 		if(symbol_setter == NULL){\
 			VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\
 					,__STR_SETTER_METAMETHOD__\
@@ -122,14 +121,14 @@ if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 			,1\
 		);\
 	}\
-	if((stk_mp!=NULL) && (mp->member_property->getter != NULL)){/* if property call getter */ \
+	if((stk_mp!=NULL) && (stk_mp->member_property->getter != NULL)){ /* if property call getter */ \
 		VM_INNER_CALL_ONLY_RETURN( \
-			stk_ma->so_object \
-			,stk_ma->member_property->getter \
-			,stk_ma->member_property->getter->function_name.c_str() \
+				stk_mp->so_object \
+			,stk_mp->member_property->getter \
+			,stk_mp->member_property->getter->function_name.c_str() \
 			,true \
 		);\
-		dst_stk=data->stk_vm_current;\
+		stk_dst=data->stk_vm_current;\
 	}else{\
-		*dst_stk=k_stk_null;\
-	}\
+		*stk_dst=k_stk_null;\
+	}

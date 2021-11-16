@@ -4,13 +4,13 @@
  */
 #pragma once
 
-//#define ZS_MEMBER_PROPERTY_SYMBOL_NAME_SETTER		"_set@"
-#define ZS_MEMBER_PROPERTY_SYMBOL_NAME_SETTER(_byte_code_metamethod,_property_name) byte_code_metamethod_to_symbol_str(_byte_code_metamethod)+"@"+_property_name
-#define ZS_MEMBER_PROPERTY_SYMBOL_NAME_GETTER		"_get@"
-#define ZS_MEMBER_PROPERTY_SYMBOL_NAME_POST_INC	"_post_inc@"
-#define ZS_MEMBER_PROPERTY_SYMBOL_NAME_POST_DEC	"_post_dec@"
-#define ZS_MEMBER_PROPERTY_SYMBOL_NAME_PRE_INC		"_pre_inc@"
-#define ZS_MEMBER_PROPERTY_SYMBOL_NAME_PRE_DEC		"_pre_dec@"
+//#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER		"_set@"
+//#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code_metamethod,_property_name) byte_code_metamethod_to_symbol_str(_byte_code_metamethod)+"@"+_property_name
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER		"_get@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_INC		"_post_inc@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_DEC		"_post_dec@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_INC		"_pre_inc@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_DEC		"_pre_dec@"
 
 
 
@@ -43,7 +43,7 @@ namespace zetscript{
 
 		 MemberProperty(ScriptClass *_script_class, const zs_string & _property_name);
 		 MemberPropertyInfo getInfo(ByteCodeMetamethod _symbol_name);
-		 MemberPropertyInfo getInfo(const char _symbol_name);
+		 MemberPropertyInfo getInfo(const char *_symbol_name);
 		 void addSetter(ByteCodeMetamethod _byte_code_metamethod,ScriptFunction *f);
 		 zs_vector * getVectorSetter(const char *_symbol_name);
 

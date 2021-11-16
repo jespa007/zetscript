@@ -34,16 +34,16 @@ namespace zetscript{
 			case BYTE_CODE_SHL:         						return "SHL"; // shift left
 			case BYTE_CODE_SHR:         						return "SHR"; // shift right
 			case BYTE_CODE_STORE:       						return "STORE"; // =
-			case BYTE_CODE_STORE_ADD:       					return "STORE_ADD"; // +=
-			case BYTE_CODE_STORE_SUB:       					return "STORE_SUB"; // -=
-			case BYTE_CODE_STORE_MUL:       					return "STORE_MUL"; // *=
-			case BYTE_CODE_STORE_DIV:       					return "STORE_DIV"; // /=
-			case BYTE_CODE_STORE_MOD:       					return "STORE_MOD"; // %=
-			case BYTE_CODE_STORE_BITWISE_AND:      				return "STORE_AND"; // &=
-			case BYTE_CODE_STORE_BITWISE_OR: 	   				return "STORE_OR"; // |=
-			case BYTE_CODE_STORE_BITWISE_XOR: 	   				return "STORE_XOR"; // ^=
-			case BYTE_CODE_STORE_SHL: 	      					return "STORE_SHL"; // <<=
-			case BYTE_CODE_STORE_SHR: 	      					return "STORE_SHR"; // >>=
+			case BYTE_CODE_ADD_STORE:       					return "STORE_ADD"; // +=
+			case BYTE_CODE_SUB_STORE:       					return "STORE_SUB"; // -=
+			case BYTE_CODE_MUL_STORE:       					return "STORE_MUL"; // *=
+			case BYTE_CODE_DIV_STORE:       					return "STORE_DIV"; // /=
+			case BYTE_CODE_MOD_STORE:       					return "STORE_MOD"; // %=
+			case BYTE_CODE_BITWISE_AND_STORE:      				return "STORE_AND"; // &=
+			case BYTE_CODE_BITWISE_OR_STORE: 	   				return "STORE_OR"; // |=
+			case BYTE_CODE_BITWISE_XOR_STORE: 	   				return "STORE_XOR"; // ^=
+			case BYTE_CODE_SHL_STORE: 	      					return "STORE_SHL"; // <<=
+			case BYTE_CODE_SHR_STORE: 	      					return "STORE_SHR"; // >>=
 			case BYTE_CODE_PUSH_STK_GLOBAL:						return "PUSH_STK_GLOBAL"; // push stk global
 			case BYTE_CODE_PUSH_STK_LOCAL:						return "PUSH_STK_LOCAL"; // push stk global
 			//case BYTE_CODE_PUSH_STK_REF:						return "PUSH_STK_REF"; // push stk global
@@ -142,16 +142,16 @@ namespace zetscript{
 			case BYTE_CODE_SHL:         			return ">>"; // shift left
 			case BYTE_CODE_SHR:         			return "<<"; // shift right
 			case BYTE_CODE_STORE:       			return "="; // =
-			case BYTE_CODE_STORE_ADD:       		return "+="; // +=
-			case BYTE_CODE_STORE_SUB:       		return "-="; // -=
-			case BYTE_CODE_STORE_MUL:       		return "*="; // *=
-			case BYTE_CODE_STORE_DIV:       		return "/="; // /=
-			case BYTE_CODE_STORE_MOD:       		return "%="; // %=
-			case BYTE_CODE_STORE_BITWISE_AND:   	return "&="; // &=
-			case BYTE_CODE_STORE_BITWISE_OR: 		return "|="; // |=
-			case BYTE_CODE_STORE_BITWISE_XOR: 		return "^="; // ^=
-			case BYTE_CODE_STORE_SHL: 	      		return ">>="; // <<=
-			case BYTE_CODE_STORE_SHR: 	      		return "<<="; // >>=
+			case BYTE_CODE_ADD_STORE:       		return "+="; // +=
+			case BYTE_CODE_SUB_STORE:       		return "-="; // -=
+			case BYTE_CODE_MUL_STORE:       		return "*="; // *=
+			case BYTE_CODE_DIV_STORE:       		return "/="; // /=
+			case BYTE_CODE_MOD_STORE:       		return "%="; // %=
+			case BYTE_CODE_BITWISE_AND_STORE:   	return "&="; // &=
+			case BYTE_CODE_BITWISE_OR_STORE: 		return "|="; // |=
+			case BYTE_CODE_BITWISE_XOR_STORE: 		return "^="; // ^=
+			case BYTE_CODE_SHL_STORE: 	      		return ">>="; // <<=
+			case BYTE_CODE_SHR_STORE: 	      		return "<<="; // >>=
 			case BYTE_CODE_LOAD_GLOBAL:				return "LOAD_GLOBAL"; // load type var
 			case BYTE_CODE_LOAD_LOCAL:				return "LOAD_LOCAL"; // load type var
 			case BYTE_CODE_LOAD_THIS:				return "LOAD_THIS"; // load type var

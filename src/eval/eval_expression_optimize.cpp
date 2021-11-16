@@ -5,7 +5,7 @@
 #define MAX_REGISTER_LENGTH	128
 
 
-#define PERFORM_ARITHMETIC_OPERATION(ARITHMETIC_OP) \
+#define EVAL_OPERATION_ARITHMETIC(ARITHMETIC_OP) \
 	if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
 		result_op_zs_int=(i1->value_op2) ARITHMETIC_OP (i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_ZS_INT;\
@@ -31,7 +31,7 @@
 	}
 
 
-#define PERFORM_COMPARE_OPERATION(__COMPARE_OP__) \
+#define EVAL_OPERATION_COMPARE(__COMPARE_OP__) \
 	if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
 		result_op_bool=(i1->value_op2)__COMPARE_OP__(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
@@ -59,7 +59,7 @@
 			,i2->getConstantValueOp2ToString().c_str()));\
 	}
 
-#define PERFORM_BINARY_OPERATION(BINARY_OP) \
+#define EVAL_OPERATION_BINARY(BINARY_OP) \
 	if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
 		result_op_zs_int=(i1->value_op2)BINARY_OP(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_ZS_INT;\
@@ -72,7 +72,7 @@
 				,i2->getConstantValueOp2ToString().c_str()));\
 	}
 
-#define PERFORM_LOGIC_OPERATION(LOGIC_OP) \
+#define EVAL_OPERATION_LOGIC(LOGIC_OP) \
 	if(i1->byte_code == BYTE_CODE_LOAD_BOOL && i2->byte_code == BYTE_CODE_LOAD_BOOL){\
 		result_op_bool=(i1->value_op2)LOGIC_OP(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
@@ -185,15 +185,15 @@ namespace zetscript{
 						,i2->getConstantString().c_str());
 				result_bc=BYTE_CODE_LOAD_STRING;
 			}else{
-				PERFORM_ARITHMETIC_OPERATION(+);
+				EVAL_OPERATION_ARITHMETIC(+);
 			}
 
 			break;
 		case BYTE_CODE_SUB:
-			PERFORM_ARITHMETIC_OPERATION(-);
+			EVAL_OPERATION_ARITHMETIC(-);
 			break;
 		case BYTE_CODE_MUL:
-			PERFORM_ARITHMETIC_OPERATION(*);
+			EVAL_OPERATION_ARITHMETIC(*);
 			break;
 		case BYTE_CODE_DIV:
 			if(i2->value_op2==0){
@@ -202,7 +202,7 @@ namespace zetscript{
 						,token_operator->line
 				));
 			}
-			PERFORM_ARITHMETIC_OPERATION(/);
+			EVAL_OPERATION_ARITHMETIC(/);
 			break;
 		case BYTE_CODE_MOD:
 			if(i2->value_op2==0){
@@ -236,46 +236,46 @@ namespace zetscript{
 			break;
 		// binary ops
 		case BYTE_CODE_BITWISE_AND:
-			PERFORM_BINARY_OPERATION(&);
+			EVAL_OPERATION_BINARY(&);
 			break;
 		case BYTE_CODE_BITWISE_OR:
-			PERFORM_BINARY_OPERATION(|);
+			EVAL_OPERATION_BINARY(|);
 			break;
 		case BYTE_CODE_BITWISE_XOR:
-			PERFORM_BINARY_OPERATION(^);
+			EVAL_OPERATION_BINARY(^);
 			break;
 		case BYTE_CODE_SHL:
-			PERFORM_BINARY_OPERATION(<<);
+			EVAL_OPERATION_BINARY(<<);
 			break;
 		case BYTE_CODE_SHR:
-			PERFORM_BINARY_OPERATION(>>);
+			EVAL_OPERATION_BINARY(>>);
 			break;
 
 		// logic ops
 		case BYTE_CODE_LOGIC_AND:
-			PERFORM_LOGIC_OPERATION(&&);
+			EVAL_OPERATION_LOGIC(&&);
 			break;
 		case BYTE_CODE_LOGIC_OR:
-			PERFORM_LOGIC_OPERATION(||);
+			EVAL_OPERATION_LOGIC(||);
 			break;
 		// compare op
 		case BYTE_CODE_LT:
-			PERFORM_COMPARE_OPERATION(<);
+			EVAL_OPERATION_COMPARE(<);
 			break;
 		case BYTE_CODE_GT:
-			PERFORM_COMPARE_OPERATION(>);
+			EVAL_OPERATION_COMPARE(>);
 			break;
 		case BYTE_CODE_GTE:
-			PERFORM_COMPARE_OPERATION(>=);
+			EVAL_OPERATION_COMPARE(>=);
 			break;
 		case BYTE_CODE_LTE:
-			PERFORM_COMPARE_OPERATION(<=);
+			EVAL_OPERATION_COMPARE(<=);
 			break;
 		case BYTE_CODE_EQU:
-			PERFORM_COMPARE_OPERATION(==);
+			EVAL_OPERATION_COMPARE(==);
 			break;
 		case BYTE_CODE_NOT_EQU:
-			PERFORM_COMPARE_OPERATION(!=);
+			EVAL_OPERATION_COMPARE(!=);
 			break;
 		case BYTE_CODE_IN:
 			if(INSTRUCTION_IS_ZS_INT(i1) && INSTRUCTION_IS_STRING(i2)){
@@ -377,7 +377,6 @@ namespace zetscript{
 					,ZS_IDX_UNDEFINED
 					,i2->vm_instruction.value_op2
 			);
-			if(i2->vm_instruction.value_op2 ==
 			i1=i2; // swap instruction to erase...
 			n_eval_ops=1;
 		}else if(is_i1_K && is_i2_K){

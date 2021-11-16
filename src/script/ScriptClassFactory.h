@@ -157,7 +157,7 @@ namespace zetscript{
 		);
 
 		/*
-		 * register attribute getter
+		 * register property getter
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberPropertyGetter(
@@ -168,7 +168,7 @@ namespace zetscript{
 		);
 
 		/*
-		 * register attribute post_inc
+		 * register member property post_inc
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberPropertyPostIncrement(
@@ -179,7 +179,7 @@ namespace zetscript{
 		);
 
 		/*
-		 * register attribute post_dec
+		 * register member property post_dec
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberPropertyPostDecrement(
@@ -190,7 +190,7 @@ namespace zetscript{
 		);
 
 		/*
-		 * register attribute pre_inc
+		 * register member property pre_inc
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberPropertyPreIncrement(
@@ -201,7 +201,7 @@ namespace zetscript{
 		);
 
 		/*
-		 * register attribute pre_dec
+		 * register member property pre_dec
 		 */
 		template <typename C,typename F>
 		void registerNativeMemberPropertyPreDecrement(
@@ -211,7 +211,7 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
-		// register add set operation
+		// register member property add set operation
 		template <typename C,typename F>
 		void registerNativeMemberPropertyAddSet(
 				const zs_string & _property_name
@@ -220,7 +220,7 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
-		// register sub set operation
+		// register member property sub set operation
 		template <typename C,typename F>
 		void registerNativeMemberPropertySubSet(
 				const zs_string & _property_name

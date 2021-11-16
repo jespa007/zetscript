@@ -475,7 +475,7 @@ namespace zetscript{
 							it_setters++;
 						}
 
-						sc->allocated_member_attributes->push_back((zs_int)ma_dst);
+						sc->allocated_member_properties->push_back((zs_int)ma_dst);
 						symbol_dst->ref_ptr=(zs_int)ma_dst;
 					}
 				}

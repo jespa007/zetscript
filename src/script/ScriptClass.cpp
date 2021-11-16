@@ -36,7 +36,7 @@ namespace zetscript{
 		class_name=_class_name;
 		class_scope=_class_scope;
 		str_class_ptr_type=_str_class_ptr_type;
-		allocated_member_attributes=new zs_vector();
+		allocated_member_properties=new zs_vector();
 
 		idx_base_classes=new zs_vector;
 
@@ -166,7 +166,7 @@ namespace zetscript{
 		symbol_attrib = class_scope->registerSymbolVariable(file,line,attrib_name);
 		symbol_attrib->ref_ptr=(zs_int)(new MemberProperty(this,attrib_name));
 		symbol_attrib->properties=SYMBOL_PROPERTY_MEMBER_PROPERTY;
-		allocated_member_attributes->push_back(symbol_attrib->ref_ptr);
+		allocated_member_properties->push_back(symbol_attrib->ref_ptr);
 
 		return symbol_attrib;
 	}
@@ -197,7 +197,7 @@ namespace zetscript{
 
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_PROPERTY_SYMBOL_NAME_SETTER(_byte_code_metamethod_setter,_property_name),
+				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code_metamethod_setter,_property_name),
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -242,7 +242,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_PROPERTY_SYMBOL_NAME_GETTER+_property_name,
+				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER+_property_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -287,7 +287,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_PROPERTY_SYMBOL_NAME_POST_INC+_property_name,
+				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_INC+_property_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -332,7 +332,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_PROPERTY_SYMBOL_NAME_POST_DEC+_property_name,
+				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_DEC+_property_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -377,7 +377,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_PROPERTY_SYMBOL_NAME_PRE_INC+_property_name,
+				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_INC+_property_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -422,7 +422,7 @@ namespace zetscript{
 		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_PROPERTY_SYMBOL_NAME_PRE_DEC+_property_name,
+				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_DEC+_property_name,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -957,12 +957,12 @@ namespace zetscript{
 
 	ScriptClass::~ScriptClass(){
 
-		for(unsigned i=0; i < allocated_member_attributes->count; i++){
-			MemberProperty *ma=(MemberProperty *)allocated_member_attributes->items[i];
+		for(unsigned i=0; i < allocated_member_properties->count; i++){
+			MemberProperty *ma=(MemberProperty *)allocated_member_properties->items[i];
 			delete ma;
 		}
 
-		delete allocated_member_attributes;
+		delete allocated_member_properties;
 		delete idx_base_classes;
 
 		if(member_properties != NULL){

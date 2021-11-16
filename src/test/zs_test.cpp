@@ -591,7 +591,7 @@ int main(int argc, char * argv[]) {
 	const char *test_files[]={
 		//"samples/assert_error.zs"
 		"samples/assign.zs"
-		,"samples/class_attribute.zs"
+		,"samples/class_property.zs"
 		,"samples/class_inheritance_call.zs"
 		,"samples/class_metamethod.zs"
 		,"samples/const.zs"

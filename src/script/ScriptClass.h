@@ -26,10 +26,10 @@ namespace zetscript{
 		const char 		*str_class_ptr_type; // type_id().name();
 		uint16_t		properties;
 
-		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be attribute members or script member vars
+		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be property members or script member vars
 		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
-		zs_vector 		*allocated_member_attributes;
-		ScriptFunction	*sf_field_initializer;
+		zs_vector 				*allocated_member_properties;
+		ScriptFunction			*sf_field_initializer;
 		MemberProperty			*member_properties;
 		int						idx_starting_this_member_functions;
 		int						idx_starting_this_member_variables;

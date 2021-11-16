@@ -37,9 +37,9 @@ namespace zetscript{
 
 		StackMemberProperty(
 				ScriptObject		*_so_object
-				,MemberProperty 	*_member_attribute){
+				,MemberProperty 	*_member_property){
 			so_object = _so_object;
-			member_property= _member_attribute;
+			member_property= _member_property;
 		}
 	};
 
