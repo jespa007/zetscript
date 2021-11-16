@@ -4,6 +4,12 @@
  */
 #pragma once
 
+#include "vm_operation.h"
+#include "vm_operation.h"
+#include "vm_pop_stk.h"
+#include "vm_push_stk.h"
+#include "vm_scope.h"
+
 #define VM_STACK_MAX					10
 #define VM_FUNCTION_CALL_MAX 			10
 #define VM_VARIABLE_SHARES_MAX 			10
@@ -71,9 +77,5 @@ namespace zetscript{
 
 
 #include "vm.tcc"
-#include "vm_operation.h"
-#include "vm_operation.h"
-#include "vm_pop_stk.h"
-#include "vm_push_stk.h"
-#include "vm_scope.h"
+
 

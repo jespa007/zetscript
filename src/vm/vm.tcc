@@ -103,12 +103,6 @@ namespace zetscript{
 	}InfoLifetimeObject;
 
 
-	struct VM_ScopeFunction{
-		Scope				*scope[MAX_INNER_SCOPES_FUNCTION];
-		Scope				**scope_current;
-		StackElement 		*stk_local_vars;
-	};
-
 
 	struct VirtualMachineData{
 		//===================================================================================================

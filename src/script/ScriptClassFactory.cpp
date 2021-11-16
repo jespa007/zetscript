@@ -464,9 +464,15 @@ namespace zetscript{
 						ma_dst->pre_inc=ma_src->pre_inc;
 						ma_dst->pre_dec=ma_src->pre_dec;
 
-						for(unsigned i=0; i < ma_src->setters.count;i++){
-							ma_dst->addSetter((ScriptFunction *)(((StackElement *)ma_src->setters.items[i])->value));
+						ByteCodeMetamethod *it_setters=MemberProperty::byte_code_metamethod_list;
 
+						while(*it_setters!=0){
+							MemberPropertyInfo mp_info=ma_src->getInfo(*it_setters);
+							for(unsigned i=0; i < mp_info.setters->count;i++){
+								ma_dst->addSetter(*it_setters,(ScriptFunction *)(((StackElement *)mp_info.setters->items[i])->value));
+
+							}
+							it_setters++;
 						}
 
 						sc->allocated_member_attributes->push_back((zs_int)ma_dst);

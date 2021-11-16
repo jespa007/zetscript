@@ -311,12 +311,12 @@ find_element_object:
 						&& (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM  ||  instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
 						&& (instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0){ // call getter if exist
 							StackMemberProperty *stk_ma=(StackMemberProperty *)stk_var->value;
-							if(stk_ma->member_attribute->getter != NULL){
+							if(stk_ma->member_property->getter != NULL){
 
 								VM_INNER_CALL_ONLY_RETURN(
 										stk_ma->so_object
-										,stk_ma->member_attribute->getter
-										,stk_ma->member_attribute->getter->function_name.c_str()
+										,stk_ma->member_property->getter
+										,stk_ma->member_property->getter->function_name.c_str()
 										,true
 								);
 
@@ -416,15 +416,15 @@ find_element_object:
 				continue;
 			case BYTE_CODE_STORE_ADD:
 				LOAD_SET_OPERATION;
-				PERFORM_ARITHMETIC_SET_OPERATION(+=,BYTE_CODE_METAMETHOD_SET_ADD);
+				PERFORM_ARITHMETIC_SET_OPERATION(+=,BYTE_CODE_METAMETHOD_ADD_SET);
 				continue;
 			case BYTE_CODE_STORE_SUB:
 				LOAD_SET_OPERATION;
-				PERFORM_ARITHMETIC_SET_OPERATION(-=,BYTE_CODE_METAMETHOD_SET_SUB);
+				PERFORM_ARITHMETIC_SET_OPERATION(-=,BYTE_CODE_METAMETHOD_SUB_SET);
 				continue;
 			case BYTE_CODE_STORE_MUL:
 				LOAD_SET_OPERATION;
-				PERFORM_ARITHMETIC_SET_OPERATION(*=,BYTE_CODE_METAMETHOD_SET_MUL);
+				PERFORM_ARITHMETIC_SET_OPERATION(*=,BYTE_CODE_METAMETHOD_MUL_SET);
 				continue;
 			case BYTE_CODE_STORE_DIV:
 				LOAD_SET_OPERATION;
@@ -435,11 +435,11 @@ find_element_object:
 				PERFORM_MOD_STORE_OPERATION;
 				continue;
 			case BYTE_CODE_STORE_STORE_BITWISE_AND:
-				PERFORM_BINARY_OPERATION(&=,BYTE_CODE_METAMETHOD_SET_ADD);
+				PERFORM_BINARY_OPERATION(&=,BYTE_CODE_METAMETHOD_ADD_SET);
 				continue;
 			case BYTE_CODE_STORE_BITWISE_OR:
 				LOAD_SET_OPERATION;
-				PERFORM_BINARY_STORE_OPERATION(|=,BYTE_CODE_METAMETHOD_SET_OR);
+				PERFORM_BINARY_STORE_OPERATION(|=,BYTE_CODE_METAMETHOD_OR_SET);
 				continue;
 			case BYTE_CODE_STORE_BITWISE_STORE_XOR:
 				LOAD_SET_OPERATION;
@@ -505,16 +505,16 @@ find_element_object:
 				}
 
 				// store through metamethod
-				if((STK_IS_SCRIPT_OBJECT_CLASS(stk_dst) && ((store_lst_setter_functions=((ScriptObjectClass *)stk_dst->value)->getSetterList())!=NULL))
+				if((STK_IS_SCRIPT_OBJECT_CLASS(stk_dst) && ((store_lst_setter_functions=((ScriptObjectClass *)stk_dst->value)->getSetterList(BYTE_CODE_METAMETHOD_SET))!=NULL))
 						||
 					(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY)){
 					stk_mp_aux=NULL;
 					so_aux=(ScriptObjectClass *)stk_dst->value;
 
-					if(store_lst_setter_functions == NULL){ // get setters
+					if(store_lst_setter_functions == NULL){ // try member property...
 						stk_mp_aux=(StackMemberProperty *)stk_dst->value;
-						if(stk_mp_aux->member_attribute->setters.count > 0){
-							store_lst_setter_functions=&stk_mp_aux->member_attribute->setters;
+						if(stk_mp_aux->member_property->setters.count > 0){
+							store_lst_setter_functions=&stk_mp_aux->member_property->setters;
 							so_aux=stk_mp_aux->so_object;
 						}else{
 							VM_STOP_EXECUTE("Symbol X has not setter metamethod implemented");
@@ -1463,12 +1463,12 @@ execute_function:
 
 		if(stk_var != NULL && (stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)){
 			StackMemberProperty *stk_ma=(StackMemberProperty *)stk_var->value;
-			if(stk_ma->member_attribute->getter != NULL){
+			if(stk_ma->member_property->getter != NULL){
 
 				VM_INNER_CALL_ONLY_RETURN(
 						stk_ma->so_object
-						,stk_ma->member_attribute->getter
-						,stk_ma->member_attribute->getter->function_name.c_str()
+						,stk_ma->member_property->getter
+						,stk_ma->member_property->getter->function_name.c_str()
 						,true
 				);
 

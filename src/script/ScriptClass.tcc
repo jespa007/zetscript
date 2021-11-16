@@ -30,11 +30,12 @@ namespace zetscript{
 	 * register C setter
 	 */
 	template <typename F>
-	void ScriptClass::registerNativeMemberPropertySetter(
-			const zs_string & attrib_name
-			,F ptr_function
-			, const char *registered_file
-			,short registered_line
+	void ScriptClass::registerNativeMemberPropertyMetamethod(
+			const zs_string & _property_name
+			,ByteCodeMetamethod _byte_code_metamethod
+			,F _ptr_function
+			, const char *_registered_file
+			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		size_t params_len=0;
@@ -44,31 +45,29 @@ namespace zetscript{
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
 				this->script_class_factory
-				,attrib_name
-				,ptr_function
+				,_property_name
+				,_ptr_function
 				,&params
 				,&params_len
 		);
 
-		if(idx_return_type != IDX_TYPE_VOID_C){
-			THROW_RUNTIME_ERROR("Error register setter attrib '%s': should return void ",attrib_name);
-		}
-
-		registerNativeMemberPropertySetter(
-				attrib_name
+		registerNativeMemberPropertyMetamethod(
+				_property_name
+				,_byte_code_metamethod
 				,&params
 				,params_len
-				,(zs_int)ptr_function
+				,idx_return_type
+				,(zs_int)_ptr_function
 				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
-				,registered_file
-				,registered_line
+				,_registered_file
+				,_registered_line
 		);
 	}
 
 	/*
 	 * register C getter
 	 */
-	template <typename F>
+	/*template <typename F>
 	void ScriptClass::registerNativeMemberPropertyGetter(
 			const zs_string & _property_name
 			,F _ptr_function
@@ -99,12 +98,12 @@ namespace zetscript{
 				,_registered_file
 				,_registered_line
 		);
-	}
+	}*/
 
 	/*
 	 * register C post increment
 	 */
-	template <typename F>
+	/*template <typename F>
 	void ScriptClass::registerNativeMemberPropertyPostIncrement(
 			const zs_string & _property_name
 			,F _ptr_function
@@ -134,12 +133,12 @@ namespace zetscript{
 				,_registered_file
 				,_registered_line
 		);
-	}
+	}*/
 
 	/*
 	 * register C post decrement
 	 */
-	template <typename F>
+	/*template <typename F>
 	void ScriptClass::registerNativeMemberPropertyPostDecrement(
 			const zs_string & _property_name
 			,F _ptr_function
@@ -169,12 +168,12 @@ namespace zetscript{
 				,_registered_file
 				,_registered_line
 		);
-	}
+	}*/
 
 	/*
 	 * register C pre increment
 	 */
-	template <typename F>
+	/*template <typename F>
 	void ScriptClass::registerNativeMemberPropertyPreIncrement(
 			const zs_string & _property_name
 			,F _ptr_function
@@ -205,11 +204,11 @@ namespace zetscript{
 				,_registered_line
 		);
 	}
-
+*/
 	/*
 	 * register C pre decrement
 	 */
-	template <typename F>
+	/*template <typename F>
 	void ScriptClass::registerNativeMemberPropertyPreDecrement(
 			const zs_string & _property_name
 			,F _ptr_function
@@ -239,7 +238,7 @@ namespace zetscript{
 				,_registered_file
 				,_registered_line
 		);
-	}
+	}*/
 
 	/**
 	 * Register C Member function Class

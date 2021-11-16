@@ -256,15 +256,6 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
-		// register mod set operation
-		template <typename C,typename F>
-		void registerNativeMemberPropertyModSet(
-				const zs_string & _property_name
-				,F _ptr_function
-				, const char *registered_file=NULL
-				,short registered_line=-1
-		);
-
 		// register and set operation
 		template <typename C,typename F>
 		void registerNativeMemberPropertyAndSet(
@@ -309,8 +300,6 @@ namespace zetscript{
 				, const char *registered_file=NULL
 				,short registered_line=-1
 		);
-
-
 
 		/**
 		 * Register C Member function static Class

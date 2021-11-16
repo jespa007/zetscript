@@ -218,15 +218,15 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHL:		return  "<<"; 		// binary shift left
 			case	BYTE_CODE_METAMETHOD_SHR:		return  ">>"; 		// binary shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "=";		// _set
-			case	BYTE_CODE_METAMETHOD_SET_ADD:	return  "+=";		// _set_add
-			case	BYTE_CODE_METAMETHOD_SET_SUB:	return  "-=";		// _set_sub
-			case	BYTE_CODE_METAMETHOD_SET_DIV:	return  "/=";		// _set_div
-			case	BYTE_CODE_METAMETHOD_SET_MOD:	return  "%=";		// _set_mod
-			case	BYTE_CODE_METAMETHOD_SET_AND:	return  "&=";		// _set_and
-			case	BYTE_CODE_METAMETHOD_SET_OR:	return  "|=";		// _set_or
-			case	BYTE_CODE_METAMETHOD_SET_XOR:	return  "^=";		// _set_xor
-			case	BYTE_CODE_METAMETHOD_SET_SHL:	return  "<<=";		// _set_shl
-			case	BYTE_CODE_METAMETHOD_SET_SHR:	return  ">>=";		// _set_shr
+			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "+=";		// _set_add
+			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "-=";		// _set_sub
+			case	BYTE_CODE_METAMETHOD_DIV_SET:	return  "/=";		// _set_div
+			case	BYTE_CODE_METAMETHOD_MOD_SET:	return  "%=";		// _set_mod
+			case	BYTE_CODE_METAMETHOD_AND_SET:	return  "&=";		// _set_and
+			case	BYTE_CODE_METAMETHOD_OR_SET:	return  "|=";		// _set_or
+			case	BYTE_CODE_METAMETHOD_XOR_SET:	return  "^=";		// _set_xor
+			case	BYTE_CODE_METAMETHOD_SHL_SET:	return  "<<=";		// _set_shl
+			case	BYTE_CODE_METAMETHOD_SHR_SET:	return  ">>=";		// _set_shr
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get";		// _get
 			case	BYTE_CODE_METAMETHOD_TO_STRING: return  "_toString";// _toString
 			case 	BYTE_CODE_METAMETHOD_POST_INC: 	return  "++";		// i++
@@ -261,15 +261,15 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; 	// binary shift left
 			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; 	// binary shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; 	// _set
-			case	BYTE_CODE_METAMETHOD_SET_ADD:	return  "_set_add";	// _set_add
-			case	BYTE_CODE_METAMETHOD_SET_SUB:	return  "_set_sub";	// _set_sub
-			case	BYTE_CODE_METAMETHOD_SET_DIV:	return  "_set_div";	// _set_div
-			case	BYTE_CODE_METAMETHOD_SET_MOD:	return  "_set_mod";	// _set_mod
-			case	BYTE_CODE_METAMETHOD_SET_AND:	return  "_set_and";	// _set_and
-			case	BYTE_CODE_METAMETHOD_SET_OR:	return  "_set_or"; 	// _set_or
-			case	BYTE_CODE_METAMETHOD_SET_XOR:	return  "_set_xor";	// _set_xor
-			case	BYTE_CODE_METAMETHOD_SET_SHL:	return  "_set_shl";	// _set_shl
-			case	BYTE_CODE_METAMETHOD_SET_SHR:	return  "_set_shr";	// _set_shr
+			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "_set_add";	// _set_add
+			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "_set_sub";	// _set_sub
+			case	BYTE_CODE_METAMETHOD_DIV_SET:	return  "_set_div";	// _set_div
+			case	BYTE_CODE_METAMETHOD_MOD_SET:	return  "_set_mod";	// _set_mod
+			case	BYTE_CODE_METAMETHOD_AND_SET:	return  "_set_and";	// _set_and
+			case	BYTE_CODE_METAMETHOD_OR_SET:	return  "_set_or"; 	// _set_or
+			case	BYTE_CODE_METAMETHOD_XOR_SET:	return  "_set_xor";	// _set_xor
+			case	BYTE_CODE_METAMETHOD_SHL_SET:	return  "_set_shl";	// _set_shl
+			case	BYTE_CODE_METAMETHOD_SHR_SET:	return  "_set_shr";	// _set_shr
 
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get"; 	// _get
 			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_toString";// _toString
@@ -363,5 +363,34 @@ namespace zetscript{
 				|| byte_code==BYTE_CODE_LOAD_VECTOR_ITEM
 				|| byte_code==BYTE_CODE_LOAD_THIS_VARIABLE
 				|| byte_code==BYTE_CODE_LOAD_OBJECT_ITEM;
+	}
+
+	ByteCodeMetamethod byte_code_symbol_to_setter_metamethod(const char *_symbol_name)
+	{
+		ByteCodeMetamethod *ptr_setter_metamethods={
+				BYTE_CODE_METAMETHOD_SET,
+				BYTE_CODE_METAMETHOD_ADD_SET,
+				BYTE_CODE_METAMETHOD_SUB_SET,
+				BYTE_CODE_METAMETHOD_MUL_SET,
+				BYTE_CODE_METAMETHOD_DIV_SET,
+				BYTE_CODE_METAMETHOD_MOD_SET,
+				BYTE_CODE_METAMETHOD_AND_SET,
+				BYTE_CODE_METAMETHOD_OR_SET,
+				BYTE_CODE_METAMETHOD_XOR_SET,
+				BYTE_CODE_METAMETHOD_SHL_SET,
+				BYTE_CODE_METAMETHOD_SHR_SET,
+				0
+			};
+
+			ByteCodeMetamethod *it=ptr_setter_metamethods;
+			bool found=false;
+			while(*it++!=0){
+				const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
+				if(_symbol_name == _mt_name){
+					return *it;
+				}
+			}
+
+			return BYTE_CODE_METAMETHOD_INVALID;
 	}
 }

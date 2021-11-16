@@ -254,7 +254,6 @@ namespace zetscript{
 				MemberProperty *ma_src=(MemberProperty *)symbol_src->ref_ptr;
 				MemberProperty *ma_dst=NULL;
 
-				zs_vector *sf_setters=&ma_src->setters;
 				Symbol *symbol_attribute=NULL;
 				Symbol *symbol_function=NULL;
 
@@ -262,10 +261,10 @@ namespace zetscript{
 				ma_dst=(MemberProperty *)symbol_attribute->ref_ptr;
 
 
-				struct _AttribMethodIt{
+				struct _PropertyMethodIt{
 					ScriptFunction **dst_function;
 					ScriptFunction *src_function;
-				}attrib_methods[]={
+				}property_methods[]={
 					{&ma_dst->getter,ma_src->getter}
 					,{&ma_dst->post_inc,ma_src->post_inc}
 					,{&ma_dst->post_dec,ma_src->post_dec}
@@ -274,7 +273,7 @@ namespace zetscript{
 					,{0,0}
 				};
 
-				_AttribMethodIt *it=attrib_methods;
+				_PropertyMethodIt *it=property_methods;
 
 				// register getter and setter
 				while(it->dst_function!=0){
@@ -302,27 +301,34 @@ namespace zetscript{
 					it++;
 				}
 
-				for(unsigned i=0; i < sf_setters->count; i++){
+				ByteCodeMetamethod *it_setter=MemberProperty::byte_code_metamethod_list;
+				while(*it_setter!= 0){
+					MemberPropertyInfo mp_info=ma_src->getInfo(*it_setter);
+					if(mp_info.setters!=NULL){
+						for(unsigned i=0; i < mp_info.setters->count; i++){
 
+							StackElement *stk_setter=(StackElement *)mp_info.setters->items[i];
+							ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
 
-					StackElement *stk_setter=(StackElement *)sf_setters->items[i];
-					ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
+							ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
+							size_t params_len=it->src_function->params_len;
 
-					ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
-					size_t params_len=it->src_function->params_len;
+							symbol_function=this_class->registerNativeMemberFunction(
+									sf_setter->function_name,
+									&params,
+									params_len,
+									sf_setter->idx_return_type,
+									sf_setter->ref_native_function_ptr,
+									sf_setter->properties
+									//sf_setter->symbol->file,
+									//sf_setter->symbol->line
+							);
 
-					symbol_function=this_class->registerNativeMemberFunction(
-							sf_setter->function_name,
-							&params,
-							params_len,
-							sf_setter->idx_return_type,
-							sf_setter->ref_native_function_ptr,
-							sf_setter->properties
-							//sf_setter->symbol->file,
-							//sf_setter->symbol->line
-					);
+							ma_dst->addSetter(*it_setter,(ScriptFunction *)symbol_function->ref_ptr);
+						}
+					}
 
-					ma_dst->addSetter((ScriptFunction *)symbol_function->ref_ptr);
+					it_setter++;
 				}
 			}
 		}
@@ -586,17 +592,6 @@ namespace zetscript{
 	// register div set operation
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyDivSet(
-			const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-	){
-
-	}
-
-	// register mod set operation
-	template <typename C,typename F>
-	void ScriptClassFactory::registerNativeMemberPropertyModSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file

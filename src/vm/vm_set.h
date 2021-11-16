@@ -79,7 +79,7 @@ if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 			if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
 				VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
 						,so_aux->getScriptClass()->class_name.c_str()\
-						,stk_mp->member_attribute->property_name.c_str()\
+						,stk_mp->member_property->property_name.c_str()\
 						,__STR_SETTER_METAMETHOD__\
 						);\
 			); \
@@ -122,11 +122,11 @@ if(copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 			,1\
 		);\
 	}\
-	if((stk_mp!=NULL) && (mp->member_attribute->getter != NULL)){/* if property call getter */ \
+	if((stk_mp!=NULL) && (mp->member_property->getter != NULL)){/* if property call getter */ \
 		VM_INNER_CALL_ONLY_RETURN( \
 			stk_ma->so_object \
-			,stk_ma->member_attribute->getter \
-			,stk_ma->member_attribute->getter->function_name.c_str() \
+			,stk_ma->member_property->getter \
+			,stk_ma->member_property->getter->function_name.c_str() \
 			,true \
 		);\
 		dst_stk=data->stk_vm_current;\

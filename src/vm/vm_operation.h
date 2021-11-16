@@ -267,7 +267,7 @@
 		if(stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY){\
 			StackMemberProperty *stk_ma= (StackMemberProperty *)stk_result_op1->value;\
 			script_object = stk_ma->so_object;\
-			ptr_function_found=stk_ma->member_attribute->post_inc;\
+			ptr_function_found=stk_ma->member_property->post_inc;\
 			if(ptr_function_found!=NULL){\
 				if((ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){\
 					if(vm_share_pointer(vm,(ScriptObject *)stk_var->value)==false){ /*we have to share any object to avoid be removed on function exit*/ \
@@ -294,11 +294,11 @@
 				\
 				data->stk_vm_current=stk_vm_current_backup;\
 				ret_obj.value=(uintptr_t)script_object;\
-				ret_obj.properties=STK_PROPERTY_SCRIPT_OBJECT;
+				ret_obj.properties=STK_PROPERTY_SCRIPT_OBJECT;\
 				*data->stk_vm_current++ = ret_obj;\
 			}\
 		}else{\
-			zs_strutils::format("Member attribute '%s' has not implemented metamethod _post_inc (aka '%s++') ",stk_ma->member_attribute->property_name.c_str(),stk_ma->member_attribute->property_name.c_str());\
+			zs_strutils::format("Member attribute '%s' has not implemented metamethod _post_inc (aka '%s++') ",stk_ma->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());\
 		}
 
 /*

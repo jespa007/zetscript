@@ -187,8 +187,9 @@ namespace zetscript{
 
 	}ByteCode;
 
-	typedef enum:unsigned char {
+	typedef enum: char {
 		// static
+		BYTE_CODE_METAMETHOD_INVALID=-1,  // ==
 		BYTE_CODE_METAMETHOD_EQU=0,  // ==
 		BYTE_CODE_METAMETHOD_NOT_EQU,  // !=
 		BYTE_CODE_METAMETHOD_LT,  // <
@@ -205,20 +206,21 @@ namespace zetscript{
 		BYTE_CODE_METAMETHOD_XOR, // ^ logic xor
 		BYTE_CODE_METAMETHOD_SHL, // << shift left
 		BYTE_CODE_METAMETHOD_SHR, // >> shift right
+		BYTE_CODE_METAMETHOD_ADD_SET, // set '+='
+		BYTE_CODE_METAMETHOD_SUB_SET, // set '-='
+		BYTE_CODE_METAMETHOD_MUL_SET, // set '*='
+		BYTE_CODE_METAMETHOD_DIV_SET, // set '/='
+		BYTE_CODE_METAMETHOD_MOD_SET, // set '%='
+		BYTE_CODE_METAMETHOD_AND_SET, // set '&='
+		BYTE_CODE_METAMETHOD_OR_SET,  // set '|='
+		BYTE_CODE_METAMETHOD_XOR_SET, // set '^='
+		BYTE_CODE_METAMETHOD_SHL_SET, // set '<<'
+		BYTE_CODE_METAMETHOD_SHR_SET, // set '>>'
+
 		//BYTE_CODE_METAMETHOD_GET, // get '='
 		BYTE_CODE_METAMETHOD_NOT, // !
 		BYTE_CODE_METAMETHOD_NEG, // -a
 		BYTE_CODE_METAMETHOD_SET, // set '='
-		BYTE_CODE_METAMETHOD_SET_ADD, // set '+='
-		BYTE_CODE_METAMETHOD_SET_SUB, // set '-='
-		BYTE_CODE_METAMETHOD_SET_MUL, // set '*='
-		BYTE_CODE_METAMETHOD_SET_DIV, // set '/='
-		BYTE_CODE_METAMETHOD_SET_MOD, // set '%='
-		BYTE_CODE_METAMETHOD_SET_AND, // set '&='
-		BYTE_CODE_METAMETHOD_SET_OR,  // set '|='
-		BYTE_CODE_METAMETHOD_SET_XOR, // set '^='
-		BYTE_CODE_METAMETHOD_SET_SHL, // set '<<'
-		BYTE_CODE_METAMETHOD_SET_SHR, // set '>>'
 		BYTE_CODE_METAMETHOD_TO_STRING, // toString
 		BYTE_CODE_METAMETHOD_POST_INC, // i++
 		BYTE_CODE_METAMETHOD_POST_DEC, // i--
@@ -239,6 +241,7 @@ namespace zetscript{
 	//int			 get_num_arguments_non_metamethod(ByteCodeMetamethod op);
 	ByteCode	 byte_code_load_var_type_to_push_stk(ByteCode op);
 	bool		 byte_code_is_load_var_type(ByteCode op);
+	ByteCodeMetamethod byte_code_symbol_to_setter_metamethod(const char *_symbol_name);
 
 
 

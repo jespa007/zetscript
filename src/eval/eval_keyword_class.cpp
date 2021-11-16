@@ -281,7 +281,7 @@ namespace zetscript{
 
 		char *aux_p = (char *)s;
 		char *end_var = NULL;
-		zs_string attrib_name="";
+		zs_string property_name="";
 		int attrib_start_line;
 		zs_string class_property_name=sc->class_name;
 		Scope *scope_info=sc->class_scope;
@@ -294,7 +294,7 @@ namespace zetscript{
 				eval_data
 				,aux_p
 				,line
-				,attrib_name
+				,property_name
 		);
 
 
@@ -304,7 +304,7 @@ namespace zetscript{
 
 		IGNORE_BLANKS(aux_p,eval_data,end_var,line);
 
-		if(*aux_p=='{'){ // is a class attribute
+		if(*aux_p=='{'){ // is a class property
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			Symbol *symbol=NULL;
@@ -316,7 +316,7 @@ namespace zetscript{
 
 			try{
 				symbol_attrib=sc->registerMemberProperty(
-						 attrib_name
+						 property_name
 						,eval_data->current_parsing_file
 						,attrib_start_line
 
@@ -366,23 +366,12 @@ namespace zetscript{
 						,scope_info // pass class scope
 						, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_ATTRIB | EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
 						,&symbol
-						,function_name+"@"+attrib_name
+						,function_name+"@"+property_name
 					))==NULL){
 						return NULL;
 					}
 
-					if(function_name == "_set"){
-						if(ma->setters.count == 0){
-							ma->addSetter((ScriptFunction *)symbol->ref_ptr);
-						}else{
-							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file
-								,line
-								,"Property \"%s\" has already a setter"
-								,attrib_name.c_str()
-							);
-						}
-					}else if(function_name == "_get"){
+					if(function_name == "_get"){
 						if(ma->getter==NULL){
 							ma->getter=(ScriptFunction *)symbol->ref_ptr;
 						}else{
@@ -390,7 +379,7 @@ namespace zetscript{
 								eval_data->current_parsing_file
 								,line
 								,"Property \"%s\" has already a getter"
-								,attrib_name.c_str()
+								,property_name.c_str()
 							);
 						}
 					}else if(function_name == "_post_inc"){
@@ -401,7 +390,7 @@ namespace zetscript{
 								eval_data->current_parsing_file
 								,line
 								,"Property \"%s\" has already a post increment (aka i++) metamethod"
-								,attrib_name.c_str()
+								,property_name.c_str()
 							);
 						}
 					}else if(function_name == "_post_dec"){
@@ -412,7 +401,7 @@ namespace zetscript{
 								eval_data->current_parsing_file
 								,line
 								,"Property \"%s\" has already a post decrement (aka i--) metamethod"
-								,attrib_name.c_str()
+								,property_name.c_str()
 							);
 						}
 					}else if(function_name == "_pre_inc"){
@@ -423,7 +412,7 @@ namespace zetscript{
 								eval_data->current_parsing_file
 								,line
 								,"Property \"%s\" has already  a pre increment (aka ++i) metamethod"
-								,attrib_name.c_str()
+								,property_name.c_str()
 							);
 						}
 					}else if(function_name == "_pre_dec"){
@@ -434,19 +423,37 @@ namespace zetscript{
 								eval_data->current_parsing_file
 								,line
 								,"Property \"%s\" has already a pre decrement (aka --i) metamethod"
-								,attrib_name.c_str()
+								,property_name.c_str()
 							);
 						}
-					}else{
+					}else{ // find setter
 
-						EVAL_ERROR_FILE_LINE(
-							eval_data->current_parsing_file
-							,line
-							,"unexpected metamethod \"%s\" in attribute \"%s::%s\""
-							,function_name.c_str()
-							,class_property_name.c_str()
-							,attrib_name.c_str()
-						);
+
+						MemberPropertyInfo _mp_info=ma->getInfo(function_name);
+
+						if(_mp_info.byte_code_metamethod!=BYTE_CODE_METAMETHOD_INVALID){
+							if(_mp_info.setters->count == 0){
+								ma->addSetter(_mp_info.byte_code_metamethod,(ScriptFunction *)symbol->ref_ptr);
+							}else{
+								EVAL_ERROR_FILE_LINE(
+									eval_data->current_parsing_file
+									,line
+									,"Property '%s' has already a setter '%s'"
+									,property_name.c_str()
+									,_mp_info.str_byte_code_metamethod
+								);
+							}
+						} else{
+
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"unexpected metamethod \"%s\" in property \"%s::%s\""
+								,function_name.c_str()
+								,class_property_name.c_str()
+								,property_name.c_str()
+							);
+						}
 					}
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -455,9 +462,9 @@ namespace zetscript{
 			if(*aux_p != '}'){
 				EVAL_ERROR_FILE_LINE(
 					eval_data->current_parsing_file,attrib_start_line
-					,"expected '}' to end in attribute \"%s::%s\""
+					,"expected '}' to end in property \"%s::%s\""
 					,class_property_name.c_str()
-					,attrib_name.c_str()
+					,property_name.c_str()
 				);
 			}
 

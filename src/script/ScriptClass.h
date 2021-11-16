@@ -30,7 +30,7 @@ namespace zetscript{
 		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
 		zs_vector 		*allocated_member_attributes;
 		ScriptFunction	*sf_field_initializer;
-		MemberProperty			*setter_getter;
+		MemberProperty			*member_properties;
 		int						idx_starting_this_member_functions;
 		int						idx_starting_this_member_variables;
 
@@ -102,26 +102,40 @@ namespace zetscript{
 		 * register C setter
 		 */
 		template <typename F>
-		void registerNativeMemberPropertySetter(
+		void registerNativeMemberPropertyMetamethod(
 				const zs_string & _property_name
+				,ByteCodeMetamethod _byte_code_metamethod
 				,F _ptr_function
 				, const char *_registered_file=""
 				,short _registered_line=-1
 		);
 
-		Symbol				* 	registerNativeMemberPropertySetter(
+		Symbol				* 	registerNativeMemberPropertyMetamethod(
 			const zs_string & _property_name
+			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
 			,size_t _params_len
-			,zs_int ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short symbol_getter_function_properties
-			,const char * file=""
-			,short line=-1
+			,int _idx_return_type
+			,zs_int _ef_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short _symbol_function_metamethod_properties
+			,const char * _file=""
+			,short _line=-1
 
 		);
 
+		/*Symbol				* 	registerNativeMemberPropertyMetamethodGetter(
+			const zs_string & _property_name
+			,ScriptFunctionParam **_params
+			,size_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,unsigned short _symbol_getter_function_properties
+			,const char * _file=""
+			,short _line=-1
+		);
 
-		//---------------
+
+	/*	//---------------
 		// GETTER
 		template <typename F>
 		void registerNativeMemberPropertyGetter(
@@ -142,7 +156,7 @@ namespace zetscript{
 			,short _line=-1
 		);
 
-
+/*
 		//---------------
 		// POST OPERATIONS
 
@@ -451,7 +465,7 @@ namespace zetscript{
 			,short _line=-1
 
 		);
-
+*/
 		//---------------------------------------------------
 		// FUNCTIONS
 		unsigned 	getNumNativeFunctions(const zs_string & function_name);

@@ -46,7 +46,7 @@ namespace zetscript{
 		script_function_factory= zs->getScriptFunctionFactory();
 		script_class_factory=zs->getScriptClassFactory();
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
-		setter_getter=NULL;
+		member_properties=NULL;
 		properties=_properties;
 
 	}
@@ -171,10 +171,12 @@ namespace zetscript{
 		return symbol_attrib;
 	}
 
-	Symbol				* 	ScriptClass::registerNativeMemberPropertySetter(
+	Symbol				* 	ScriptClass::registerNativeMemberPropertyMetamethod(
 			const zs_string & _property_name
+			,ByteCodeMetamethod _byte_code_metamethod_setter
 			,ScriptFunctionParam **_params
 			,size_t _params_len
+			,int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short _symbol_getter_function_properties
 			,const char * _file
@@ -191,25 +193,27 @@ namespace zetscript{
 		}
 
 		ma=(MemberProperty *)symbol_attrib->ref_ptr;
+		//zs_string member_property_metamethod_name=byte_code_metamethod_to_symbol_str(_metamethod)+"@"+_property_name;
 
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_MEMBER_PROPERTY_SYMBOL_NAME_SETTER+_property_name,
+				ZS_MEMBER_PROPERTY_SYMBOL_NAME_SETTER(_byte_code_metamethod_setter,_property_name),
 				_params,
 				_params_len,
-				IDX_TYPE_VOID_C,
+				_idx_return_type,
 				_ref_ptr,
 				_symbol_getter_function_properties,
 				_file,
 				_line
 		);
 
-		ma->addSetter((ScriptFunction *)symbol_function->ref_ptr);
+		ma->addSettter(_byte_code_metamethod_setter,(ScriptFunction *)symbol_function->ref_ptr);
+
 		return symbol_attrib;
 	}
 
 
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyGetter(
+	Symbol				* 	ScriptClass::registerNativeMemberPropertyMetamethodGetter(
 			 const zs_string & _property_name
 			 , ScriptFunctionParam **_params
 			 ,size_t _params_len
@@ -253,7 +257,7 @@ namespace zetscript{
 		return symbol_attrib;
 	}
 
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyPostIncrement(
+	/*Symbol				* 	ScriptClass::registerNativeMemberPropertyPostIncrement(
 			 const zs_string & _property_name
 			 , ScriptFunctionParam **_params
 			 ,size_t _params_len
@@ -690,7 +694,7 @@ namespace zetscript{
 	){
 		return NULL;
 	}
-
+*/
 	//---------------------------------------------------
 	// FUNCTIONS
 
@@ -858,18 +862,21 @@ namespace zetscript{
 
 					// everything ok
 					if(/*op==BYTE_CODE_METAMETHOD_GET || */op==BYTE_CODE_METAMETHOD_SET){
-						if(setter_getter == NULL){
-							setter_getter = new MemberProperty(this,class_name);
+						if(member_properties == NULL){
+							member_properties = new MemberProperty(this,class_name);
 						}
 
-							if(setter_getter->setters.count>0){
+						MemberPropertyInfo info_mp=member_properties->getInfo(op);
+
+						if(info_mp->setters!=NULL && info_mp->setters->count>0){
 							// error already set (script functions only can be set once)
-							THROW_RUNTIME_ERROR("Setter '%s::_set' already set"
+							THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
 									,class_name.c_str()
-							);
+									,info_mp.str_byte_code_metamethod);
+
 							return NULL;
 						}
-						setter_getter->addSetter((ScriptFunction *)function_symbol->ref_ptr);
+						member_properties->addSetter(op,(ScriptFunction *)function_symbol->ref_ptr);
 					}
 
 					break;
@@ -958,8 +965,8 @@ namespace zetscript{
 		delete allocated_member_attributes;
 		delete idx_base_classes;
 
-		if(setter_getter != NULL){
-			delete setter_getter;
+		if(member_properties != NULL){
+			delete member_properties;
 		}
 	}
 }
