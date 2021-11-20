@@ -240,7 +240,7 @@
 		}\
 	}\
 
-#define VM_OPERATION_POST_INC \
+#define VM_OPERATION_POST(__INLINE_OPERATION__,__BYTE_CODE_POST_OPERATION__,__BYTE_CODE_PRE_OPERATION__) \
 	stk_var=--data->stk_vm_current;\
 	stk_var=(StackElement *)((stk_var)->value);/* always expects ptr stk due it modifies the var */\
 	void **ref=(void **)(&((stk_var)->value));\
@@ -249,12 +249,73 @@
 	}\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_var)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
-			VM_PUSH_STK_ZS_INT((*((zs_int *)(ref))));\
-			(*((zs_int *)(ref)))++;\
+			VM_PUSH_STK_ZS_INT(__BYTE_CODE_PRE_OPERATION__(*((zs_int *)(ref))));\
+			(*((zs_int *)(ref)))__INLINE_OPERATION__;\
 			break;\
 	case STK_PROPERTY_ZS_FLOAT:\
-			VM_PUSH_STK_ZS_FLOAT((*((zs_float *)(ref))));\
-			(*((zs_float *)(ref)))++;\
+			VM_PUSH_STK_ZS_FLOAT(__BYTE_CODE_PRE_OPERATION__(*((zs_float *)(ref))));\
+			(*((zs_float *)(ref)))__INLINE_OPERATION__;\
+			break;\
+	default:/*metamethod*/\
+		/*      \
+		 *  if (neg)     \
+		 *    if(member_property) call member neg from stackmemerpropert  \
+		 *    else call member net from the object itself \
+		 * */   \
+		if(stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY){\
+			StackMemberProperty *stk_ma= (StackMemberProperty *)stk_result_op1->value;\
+			so_aux = stk_ma->so_object;\
+			ptr_function_found=stk_ma->member_property->post_inc;\
+			if(ptr_function_found!=NULL){\
+				if((ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){\
+					if(vm_share_pointer(vm,(ScriptObject *)stk_var->value)==false){ /*we have to share any object to avoid be removed on function exit*/ \
+						goto apply_metamethod_error;\
+					}\
+					vm_call_function_script(\
+						vm\
+						,so_aux\
+						,ptr_function_found\
+						,stk_args\
+						,n_stk_args\
+					);\
+				}else{ \
+					vm_call_function_native(\
+							vm\
+							,so_aux\
+							,ptr_function_found\
+							,stk_args\
+							,n_stk_args\
+							,calling_function\
+							,instruction\
+					);\
+				}\
+				\
+				data->stk_vm_current=stk_vm_current_backup;\
+				ret_obj.value=(uintptr_t)so_aux;\
+				ret_obj.properties=STK_PROPERTY_SCRIPT_OBJECT;\
+				*data->stk_vm_current++ = ret_obj;\
+			}\
+		}else{\
+			zs_strutils::format("Member property '%s' not implementents metamethod _post_inc (aka '%s++') ",stk_mp->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());\
+		}
+
+
+
+#define VM_OPERATION_PRE(__INLINE_OPERATION__,__BYTE_CODE_PRE_OPERATION__) \
+	stk_var=--data->stk_vm_current;\
+	stk_var=(StackElement *)((stk_var)->value);/* always expects ptr stk due it modifies the var */\
+	void **ref=(void **)(&((stk_var)->value));\
+	if(stk_var->properties & STK_PROPERTY_IS_VAR_C){\
+		ref=(void **)((stk_var)->value);\
+	}\
+	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_var)->properties)){\
+	case STK_PROPERTY_ZS_INT:\
+			(*((zs_int *)(ref)))__INLINE_OPERATION__;\
+			VM_PUSH_STK_ZS_INT(*((zs_int *)(ref)));\
+			break;\
+	case STK_PROPERTY_ZS_FLOAT:\
+			(*((zs_float *)(ref)))__INLINE_OPERATION__;\
+			VM_PUSH_STK_ZS_FLOAT(*((zs_float *)(ref)));\
 			break;\
 	default:/*metamethod*/\
 		if(stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY){\
@@ -294,12 +355,6 @@
 			zs_strutils::format("Member property '%s' not implementents metamethod _post_inc (aka '%s++') ",stk_mp->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());\
 		}
 
-#define VM_OPERATION_NEG_POST_INC
-#define VM_OPERATION_POST_DEC
-#define VM_OPERATION_NEG_POST_DEC
-
-#define VM_OPERATION_PRE_INC
-#define VM_OPERATION_PRE_INC
 
 
 /*

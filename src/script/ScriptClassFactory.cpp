@@ -463,6 +463,7 @@ namespace zetscript{
 						ma_dst->post_dec=ma_src->post_dec;
 						ma_dst->pre_inc=ma_src->pre_inc;
 						ma_dst->pre_dec=ma_src->pre_dec;
+						ma_dst->neg=ma_src->neg;
 
 						ByteCodeMetamethod *it_setters=MemberProperty::byte_code_metamethod_list;
 

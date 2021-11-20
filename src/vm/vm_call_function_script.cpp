@@ -1367,22 +1367,22 @@ execute_function:
 				 data->stk_vm_current=stk_start;
 				 continue;
 			 case BYTE_CODE_POST_INC:
-				 VM_OPERATION_POST_INC;
+				 VM_OPERATION_POST(++,BYTE_CODE_POST_INC,0);
 				 continue;
 			 case BYTE_CODE_NEG_POST_INC:
-				 VM_OPERATION_NEG_POST_INC;
+				 VM_OPERATION_POST(++,BYTE_CODE_POST_INC,BYTE_CODE_NEG);
 				 continue;
 			 case BYTE_CODE_POST_DEC:
-				 VM_OPERATION_POST_DEC;
-				 continue;
-			 case BYTE_CODE_PRE_INC:
-				 VM_OPERATION_PRE_INC;
-				 continue;
-			 case BYTE_CODE_PRE_DEC:
-				 VM_OPERATION_PRE_DEC;
+				 VM_OPERATION_POST(--,BYTE_CODE_POST_DEC,0);
 				 continue;
 			 case BYTE_CODE_NEG_POST_DEC:
-				 VM_OPERATION_NEG_POST_DEC;
+				 VM_OPERATION_POST(--,BYTE_CODE_POST_DEC,BYTE_CODE_NEG);
+				 continue;
+			 case BYTE_CODE_PRE_INC:
+				 VM_OPERATION_PRE(++,BYTE_CODE_POST_INC,0);
+				 continue;
+			 case BYTE_CODE_PRE_DEC:
+				 VM_OPERATION_PRE(--,BYTE_CODE_POST_DEC,0);
 				 continue;
 			 case BYTE_CODE_IN:
 				 VM_POP_STK_TWO;

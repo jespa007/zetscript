@@ -416,8 +416,19 @@ namespace zetscript{
 							);
 						}
 					}else if(function_name == "_pre_dec"){
-						if(ma->getter==NULL){
+						if(ma->pre_dec==NULL){
 							ma->pre_dec=(ScriptFunction *)symbol->ref_ptr;
+						}else{
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Property \"%s\" has already a pre decrement (aka --i) metamethod"
+								,property_name.c_str()
+							);
+						}
+					}else if(function_name == "_neg"){
+						if(ma->neg==NULL){
+							ma->neg=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
