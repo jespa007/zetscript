@@ -121,7 +121,7 @@ namespace zetscript{
 
 	){
 		if(getSymbol(symbol_name)!=NULL){
-			THROW_RUNTIME_ERROR("Variable \"%s\" already registered",symbol_name.c_str());
+			THROW_RUNTIME_ERROR("Variable '%s' already registered",symbol_name.c_str());
 			return NULL;
 		}
 
@@ -155,7 +155,7 @@ namespace zetscript{
 					what="it conflicts with member variable";
 				}
 			}
-			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Property \"%s\" %s at [%s:%i]"
+			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Property '%s' %s at [%s:%i]"
 				,attrib_name.c_str()
 				,what
 				,zs_path::get_filename(symbol_attrib->file).c_str()
@@ -236,7 +236,7 @@ namespace zetscript{
 
 		if(ma->getter != NULL){
 
-			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property \"%s\" has already a getter"
+			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a getter"
 				,_property_name.c_str()
 			);
 		}
@@ -762,7 +762,7 @@ namespace zetscript{
 			if(getSymbol(_function_name,(char)_params_len,false) != NULL){ // we only search repeat symbols on this class ...
 				Symbol *existing_symbol;
 				if((existing_symbol=getSymbol(_function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
-					THROW_RUNTIME_ERROR("Function member \"%s\" is already defined at [%s:%i]"
+					THROW_RUNTIME_ERROR("Function member '%s' is already defined at [%s:%i]"
 						,_function_name.c_str()
 						,zs_path::get_filename(_file).c_str()
 						,_line

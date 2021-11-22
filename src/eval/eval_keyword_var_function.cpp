@@ -195,7 +195,7 @@ namespace zetscript{
 
 			if(is_constant){ // scope_var will be global scope...
 				if(!(sc!=NULL || scope_var == MAIN_SCOPE(eval_data))){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"\"const\" is allowed only in class or global");
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'const' is allowed only in class or global");
 				}
 
 				// always static or constant are global symbols...
@@ -248,7 +248,7 @@ namespace zetscript{
 					}
 				}
 
-				ZS_LOG_DEBUG("registered symbol \"%s\" line %i ",variable_name.c_str(), line);
+				ZS_LOG_DEBUG("registered symbol '%s' line %i ",variable_name.c_str(), line);
 
 				Keyword keyw = eval_is_keyword(variable_name.c_str());
 
@@ -567,7 +567,7 @@ error_eval_keyword_var:
 						param_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF;
 						break;
 					default:
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: unexpected keyword \"%s\"",eval_data_keywords[kw_arg].str);
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: unexpected keyword '%s'",eval_data_keywords[kw_arg].str);
 						break;
 					}
 				}

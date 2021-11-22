@@ -71,7 +71,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 					};
 
 				}else{
-					THROW_RUNTIME_ERROR("Native symbol \"%s\" has type \"%s\" that is not registered",symbol->name.c_str(),symbol->str_native_type.c_str());
+					THROW_RUNTIME_ERROR("Native symbol '%s' has type '%s' that is not registered",symbol->name.c_str(),symbol->str_native_type.c_str());
 				}
 			}
 		}else{

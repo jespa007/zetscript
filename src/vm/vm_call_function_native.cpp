@@ -48,11 +48,10 @@ namespace zetscript{
 			VirtualMachine *vm,
 			ScriptObject  * this_object,
 			const ScriptFunction *c_function,
-			StackElement *stk_arg_c_function,
-			unsigned char n_args,
 			const ScriptFunction *calling_function,
-			Instruction *instruction
-
+			Instruction *instruction,
+			StackElement *stk_arg_c_function,
+			unsigned char n_args
 	){
 
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
@@ -83,7 +82,7 @@ namespace zetscript{
 				n_args++;
 				converted_param[0]=(zs_int)this_object->getNativeObject();
 			}else if(this_object->idx_script_class != IDX_SCRIPT_CLASS_MAIN){
-				VM_ERROR_AND_RET("Function \"%s\" is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e \"%s::%s\")\""
+				VM_ERROR_AND_RET("Function '%s' is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e '%s::%s')"
 						,c_function->function_name.c_str()
 						,this_object->getScriptClass()->class_name.c_str()
 						,c_function->function_name.c_str()
@@ -105,7 +104,7 @@ namespace zetscript{
 		}
 
 		if((char)c_function->params_len != (n_args-this_param)){
-			VM_ERROR_AND_RET("Native function \"%s\" expects %i arguments but it passed %i arguments"
+			VM_ERROR_AND_RET("Native function '%s' expects %i arguments but it passed %i arguments"
 					,c_function->function_name.c_str()
 					,c_function->params_len
 					,n_args-this_param);
@@ -116,21 +115,23 @@ namespace zetscript{
 		}
 
 		// convert parameters script to c...
-		for(unsigned char  i = idx_arg_start; i < n_args;i++){
+		if(stk_arg_c_function!=NULL){
+			for(unsigned char  i = idx_arg_start; i < n_args;i++){
 
-			stk_arg_current=&stk_arg_c_function[i-idx_arg_start];
+				stk_arg_current=&stk_arg_c_function[i-idx_arg_start];
 
-			if(!data->zs->convertStackElementToVar(
-					stk_arg_current
-					,c_function->params[i].idx_type
-					,(zs_int *)&converted_param[i]
-					,data->vm_error_str
-			)){
-				VM_ERROR_AND_RET("Function \"%s\", param %i: %s",
-					c_function->function_name.c_str(),
-					i,
-					data->vm_error_str.c_str()
-				);
+				if(!data->zs->convertStackElementToVar(
+						stk_arg_current
+						,c_function->params[i].idx_type
+						,(zs_int *)&converted_param[i]
+						,data->vm_error_str
+				)){
+					VM_ERROR_AND_RET("Function '%s', param %i: %s",
+						c_function->function_name.c_str(),
+						i,
+						data->vm_error_str.c_str()
+					);
+				}
 			}
 		}
 

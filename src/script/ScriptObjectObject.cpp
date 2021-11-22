@@ -60,7 +60,7 @@ namespace zetscript{
 		bool error_symbol=false;
 
 		if(map_user_property_keys->exist(symbol_value.c_str())){
-			error=zs_strutils::format("\"%s\" symbol already exists",symbol_value.c_str());
+			error=zs_strutils::format("'%s' symbol already exists",symbol_value.c_str());
 			return NULL;
 		}
 

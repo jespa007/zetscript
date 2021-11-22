@@ -39,11 +39,11 @@ namespace zetscript{
 					return buffer;
 				}
 				else  {
-					THROW_RUNTIME_ERROR("I can't read file \"%s\"",filename.c_str());
+					THROW_RUNTIME_ERROR("I can't read file '%s'",filename.c_str());
 				}
 			}
 			else  {
-				THROW_RUNTIME_ERROR("I can't open file \"%s\"",filename.c_str());
+				THROW_RUNTIME_ERROR("I can't open file '%s'",filename.c_str());
 			}
 
 			return NULL;

@@ -177,7 +177,7 @@ namespace zetscript{
 			lineSymbol = line;
 
 			if((keyw=eval_is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: \"%s\" keyword is not allowed as property name",eval_data_keywords[keyw].str);
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: '%s' keyword is not allowed as property name",eval_data_keywords[keyw].str);
 			}
 
 			// get identifier with quotes...

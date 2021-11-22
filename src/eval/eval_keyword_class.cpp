@@ -80,7 +80,7 @@ namespace zetscript{
 				return NULL;
 			}
 
-			ZS_LOG_DEBUG("registered class \"%s\" line %i ",class_name.c_str(), class_line);
+			ZS_LOG_DEBUG("registered class '%s' line %i ",class_name.c_str(), class_line);
 
 			if(*aux_p == '{' ){
 
@@ -146,7 +146,7 @@ namespace zetscript{
 
 								break;
 						default:
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword \"%s\" in class declaration \"%s\"",eval_data_keywords[key_w].str,class_name.c_str());
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",eval_data_keywords[key_w].str,class_name.c_str());
 						}
 
 						if(aux_p == NULL){
@@ -159,13 +159,13 @@ namespace zetscript{
 				}
 
 				if(*aux_p != '}'){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration \"%s\"",class_name.c_str());
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",class_name.c_str());
 				}
 
 				return aux_p+1;
 
 			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration\"%s\"",class_name.c_str());
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",class_name.c_str());
 			}
 		}
 		return NULL;
@@ -378,7 +378,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Property \"%s\" has already a getter"
+								,"Property '%s' has already a getter"
 								,property_name.c_str()
 							);
 						}
@@ -389,7 +389,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Property \"%s\" has already a post increment (aka i++) metamethod"
+								,"Property '%s' has already a post increment (aka i++) metamethod"
 								,property_name.c_str()
 							);
 						}
@@ -400,7 +400,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Property \"%s\" has already a post decrement (aka i--) metamethod"
+								,"Property '%s' has already a post decrement (aka i--) metamethod"
 								,property_name.c_str()
 							);
 						}
@@ -411,7 +411,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Property \"%s\" has already  a pre increment (aka ++i) metamethod"
+								,"Property '%s' has already  a pre increment (aka ++i) metamethod"
 								,property_name.c_str()
 							);
 						}
@@ -422,7 +422,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"Property \"%s\" has already a pre decrement (aka --i) metamethod"
+								,"Property '%s' has already a pre decrement (aka --i) metamethod"
 								,property_name.c_str()
 							);
 						}
@@ -446,7 +446,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"unexpected metamethod \"%s\" in property \"%s::%s\""
+								,"unexpected metamethod '%s' in property '%s::%s'"
 								,function_name.c_str()
 								,class_property_name.c_str()
 								,property_name.c_str()
@@ -460,7 +460,7 @@ namespace zetscript{
 			if(*aux_p != '}'){
 				EVAL_ERROR_FILE_LINE(
 					eval_data->current_parsing_file,attrib_start_line
-					,"expected '}' to end in property \"%s::%s\""
+					,"expected '}' to end in property '%s::%s'"
 					,class_property_name.c_str()
 					,property_name.c_str()
 				);

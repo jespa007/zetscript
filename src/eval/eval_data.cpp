@@ -687,7 +687,7 @@ namespace zetscript{
 					}
 				}else{ // error
 					number_part[current_part]+=*aux_p; // save conflicting character
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format '%s'",RESULT_LITERAL_VALUE);
 				}
 			}
 
@@ -704,14 +704,14 @@ namespace zetscript{
 					is_float=true;
 				}else{ // error
 					number_part[current_part]+=*aux_p; // save conflicting character
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format '%s'",RESULT_LITERAL_VALUE);
 				}
 			}
 
 			else if(*aux_p == 'b'){ // is end binary format?
 				if(!is01s || (current_part != 0)){
 					number_part[current_part]+=*aux_p; // save conflicting character
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format '%s'",RESULT_LITERAL_VALUE);
 				}
 
 				number_part[current_part]+=*aux_p;
@@ -719,7 +719,7 @@ namespace zetscript{
 			}
 			else{
 				number_part[current_part]+=*aux_p; // save conflicting character
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format \"%s\"",RESULT_LITERAL_VALUE);
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Invalid number format '%s'",RESULT_LITERAL_VALUE);
 			}
 			is01s&=(('0'==*aux_p) || ('1'==*aux_p));
 

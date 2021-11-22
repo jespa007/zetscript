@@ -111,7 +111,7 @@ namespace zetscript{
 
 			switch(instruction->byte_code){
 			default:
-				VM_STOP_EXECUTE("byte code \"%s\" not implemented",byte_code_to_str(instruction->byte_code));
+				VM_STOP_EXECUTE("byte code '%s' not implemented",byte_code_to_str(instruction->byte_code));
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
 			case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
@@ -192,10 +192,10 @@ namespace zetscript{
 						data->stk_vm_current++;
 						continue;
 					}else{
-						VM_STOP_EXECUTE("Expected String,Vector or Object for access \"[]\" opertaion"); \
+						VM_STOP_EXECUTE("Expected String,Vector or Object for access '[]' opertaion"); \
 					}
 				}else{
-					VM_STOP_EXECUTE("Expected object for access \"[]\" opertaion"); \
+					VM_STOP_EXECUTE("Expected object for access '[]' opertaion"); \
 
 				}
 				continue;
@@ -265,7 +265,7 @@ load_next_element_object:
 
 				if(so_aux == NULL)
 				{
-					VM_STOP_EXECUTE("var \"%s\" is not scriptvariable",SFI_GET_SYMBOL_NAME(so_aux,(instruction-1)));
+					VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(so_aux,(instruction-1)));
 				}
 
 find_element_object:
@@ -397,13 +397,13 @@ find_element_object:
 
 				stk_var=(data->stk_vm_current-1);
 				if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_var) == 0){
-					VM_STOP_EXECUTE("Expected object but is type \"%s\"",stk_to_typeof_str(data->zs,stk_var).c_str());
+					VM_STOP_EXECUTE("Expected object but is type '%s'",stk_to_typeof_str(data->zs,stk_var).c_str());
 				}
 
 				so_aux = (ScriptObject *)stk_var->value;
 
 				if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
-					VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type \"%s\""
+					VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type '%s'"
 							,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
 					);
 				}
@@ -1069,7 +1069,7 @@ execute_function:
 							data->stk_vm_current++;
 							break;
 						default:
-							VM_STOP_EXECUTE("Internal error: Unexpected default stack element \"%s\""
+							VM_STOP_EXECUTE("Internal error: Unexpected default stack element '%s'"
 									,stk_to_typeof_str(data->zs,&param->default_param_value).c_str());
 							break;
 
@@ -1130,10 +1130,11 @@ execute_function:
 						vm
 						,sf_call_calling_object
 						,sf_call_script_function
-						,sf_call_stk_start_arg_call
-						,sf_call_n_args
 						,calling_function
 						,instruction
+						,sf_call_stk_start_arg_call
+						,sf_call_n_args
+
 					);
 
 					// restore stk_start_arg_call due in C args are not considered as local symbols (only for scripts)

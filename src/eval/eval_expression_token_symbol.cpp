@@ -77,7 +77,7 @@ namespace zetscript{
 				aux_p+=strlen(eval_data_pre_operations[pre_operation].str);
 				break;
 			case PreOperation::PRE_OPERATION_DEC_INC_INVALID:
-				EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"Unknow pre-operation \"%.2s\"",aux_p);
+				EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"Unknow pre-operation '%.2s'",aux_p);
 				break;
 		}
 
@@ -88,7 +88,7 @@ namespace zetscript{
 		if(*aux_p=='('){ // inner expression (priority)
 
 			if(pre_operation == PreOperation::PRE_OPERATION_INC || pre_operation == PreOperation::PRE_OPERATION_DEC){
-				EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"operation \"%s\" is only allowed on identifiers",eval_data_pre_operations[pre_operation].str);
+				EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"operation '%s' is only allowed on identifiers",eval_data_pre_operations[pre_operation].str);
 			}
 
 			if((aux_p=eval_sub_expression(
@@ -336,7 +336,7 @@ namespace zetscript{
 						if(
 								token_node_symbol->value == SYMBOL_VALUE_SUPER
 								&& scope_info->script_class->idx_class == IDX_SCRIPT_CLASS_MAIN){
-							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"\"super\" is not allowed here");
+							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'super' is not allowed here");
 						}
 
 					}
@@ -452,7 +452,7 @@ namespace zetscript{
 					}
 
 					if(accessor_name == SYMBOL_VALUE_THIS){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"\"this\" is not allowed as member name");
+						EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' is not allowed as member name");
 					}
 
 					byte_code=ByteCode::BYTE_CODE_LOAD_OBJECT_ITEM;
@@ -462,11 +462,11 @@ namespace zetscript{
 						ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_class);
 
 						if(eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_STATIC){
-							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"\"this\" cannot be used in static functions");
+							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' cannot be used in static functions");
 						}
 
 						if(scope_info->script_class->idx_class == IDX_SCRIPT_CLASS_MAIN){
-							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"\"this\" is not allowed here");
+							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' is not allowed here");
 						}
 
 						// set symbol name
@@ -564,7 +564,7 @@ namespace zetscript{
 			if(token_node_symbol->value==SYMBOL_VALUE_THIS){ // only takes symbol this
 
 				if(eval_data->current_function->script_function->idx_class == IDX_TYPE_MAIN){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line,"\"this\" only can be used within a class");
+					EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line,"'this' only can be used within a class");
 				}
 
 				ei_first_token_node->instruction_source_info= InstructionSourceInfo(
@@ -590,7 +590,7 @@ namespace zetscript{
 			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]))->vm_instruction;
 
 			if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-				EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"expected identifier after post operation \"%s\"",eval_data_post_operations[ post_operation].str);
+				EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"expected identifier after post operation '%s'",eval_data_post_operations[ post_operation].str);
 			}
 
 			// advance pointer...
@@ -598,7 +598,7 @@ namespace zetscript{
 
 			if(token_node_symbol->pre_operation != PreOperation::PRE_OPERATION_UNKNOWN){
 			   if(token_node_symbol->pre_operation != PreOperation::PRE_OPERATION_NEG){
-				   EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"Cannot combine pre-operation \"%s\" with post-operation \"%s\" on \"%s\""
+				   EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"Cannot combine pre-operation '%s' with post-operation '%s' on '%s'"
 						,eval_data_pre_operations[ pre_operation].str
 						,eval_data_pre_operations[ post_operation].str
 						,token_node_symbol->value.c_str()
@@ -649,7 +649,7 @@ namespace zetscript{
 
 			if(pre_operation != PreOperation::PRE_OPERATION_TYPEOF){
 				if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"expected identifier before pre operation \"%s\"",eval_data_pre_operations[ pre_operation].str);
+					EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"expected identifier before pre operation '%s'",eval_data_pre_operations[ pre_operation].str);
 				}
 			}else{
 				// check is not type

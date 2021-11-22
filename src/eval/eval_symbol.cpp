@@ -60,7 +60,7 @@ namespace zetscript{
 				byte_code = ByteCode::BYTE_CODE_LOAD_ZS_FLOAT;
 			}
 			else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unable to parse literal \"%s\"",default_str_value.c_str());
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unable to parse literal '%s'",default_str_value.c_str());
 			}
 
 		}else{ // if not number,integer, hex, bit then is a literal zs_string, boolean or identifier...
@@ -123,7 +123,7 @@ namespace zetscript{
 							char *test=aux;
 							IGNORE_BLANKS(test,eval_data,aux,line);
 							if(*test != '('){
-								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"\"super\" only allowed as function");
+								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"'super' only allowed as function");
 							}
 
 							byte_code=BYTE_CODE_LOAD_THIS_FUNCTION;

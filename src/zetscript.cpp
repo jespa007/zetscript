@@ -326,24 +326,6 @@ namespace zetscript{
 		return (StackElement *)stk_constants->get(key_name.c_str());
 	}
 
-
-	/*void registerConstantVariable(const zs_string & var_name, zs_int value, const char *registered_file, short registered_line){
-
-	}
-
-	void registerConstantVariable(const zs_string & var_name, zs_float value, const char *registered_file, short registered_line){
-
-	}
-
-	void registerConstantVariable(const zs_string & var_name, bool value, const char *registered_file, short registered_line){
-
-	}
-
-	void registerConstantVariable(const zs_string & var_name, const zs_string v, const char *registered_file, short registered_line){
-
-	}*/
-
-
 	//
 	// STK STRING OBJECT
 	//
@@ -442,10 +424,7 @@ namespace zetscript{
 				}
 			}
 
-		}/*else{
-			// already parsed
-			THROW_RUNTIME_ERROR("Filename \"%s\" already parsed",filename);
-		}*/
+		}
 
 		if(buf_tmp!=NULL){
 			free(buf_tmp);

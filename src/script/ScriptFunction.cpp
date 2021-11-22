@@ -94,7 +94,7 @@ namespace zetscript{
 
 
 		printf("-------------------------------------------------------\n");
-		printf("\nCode for function \"%s%s\" (Required stack: %i)\n\n",class_str.c_str(),symbol_ref.c_str(),sfo->min_stack_needed);
+		printf("\nCode for function '%s%s' (Required stack: %i)\n\n",class_str.c_str(),symbol_ref.c_str(),sfo->min_stack_needed);
 
 
 		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++){
@@ -140,20 +140,20 @@ namespace zetscript{
 				 iload_info=zs_strutils::format("%s", instruction->getConstantValueOp2ToString().c_str());
 				 break;
 			case INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
-				 iload_info=zs_strutils::format("%s[\"%s\"]"
+				 iload_info=zs_strutils::format("%s['%s']"
 					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				 break;
 			case INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
-			 	 iload_info=zs_strutils::format("%s,%s[\"%s\"]"
+			 	 iload_info=zs_strutils::format("%s,%s['%s']"
 					 ,instruction->getConstantValueOp2ToString().c_str()
 					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				break;
 			case INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
-				 iload_info=zs_strutils::format("%s[\"%s\"],%s"
+				 iload_info=zs_strutils::format("%s['%s'],%s"
 					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 					 ,instruction->getConstantValueOp2ToString().c_str()
@@ -161,7 +161,7 @@ namespace zetscript{
 				break;
 		   case INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
 		   	   iload_info=zs_strutils::format(
-		   			 "%s[\"%s\"],%s[\"%s\"]"
+		   			 "%s['%s'],%s['%s']"
 		  			 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
 		  			 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 		  			 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->value_op2)

@@ -22,7 +22,7 @@
 		return;\
 	}\
 	if(idx_class >= IDX_TYPE_MAX){\
-		THROW_RUNTIME_ERROR("The class to register \"%s\" should be a built in class",ZS_STR(type_class));\
+		THROW_RUNTIME_ERROR("The class to register '%s' should be a built in class",ZS_STR(type_class));\
 		return;\
 	}\
 	registerNativeClass<type_class>(name_class,type_class##Wrap_New,type_class##Wrap_Delete);
@@ -405,7 +405,7 @@ namespace zetscript{
 
 				if(sc->idx_base_classes->count > 0){
 					ScriptClass *match_class=getScriptClass(sc->idx_base_classes->items[0]);
-					THROW_RUNTIME_ERROR("Class \"%s\" already is inherited from \"%s\""
+					THROW_RUNTIME_ERROR("Class '%s' already is inherited from '%s'"
 							,class_name.c_str()
 							,match_class->class_name.c_str());
 				}
@@ -415,7 +415,7 @@ namespace zetscript{
 				}
 
 				if(base_class->isNativeSingletonClass()){
-					THROW_RUNTIME_ERROR("Class \"%s\" cannot extend from \"%s\" because is singleton. To allow extension register class \"%\" with registerNativeClass instead of registerNativeSingletonClass",class_name.c_str(),base_class_name.c_str(),base_class_name.c_str());
+					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is singleton. To allow extension register class '%' with registerNativeClass instead of registerNativeSingletonClass",class_name.c_str(),base_class_name.c_str(),base_class_name.c_str());
 				}
 
 
@@ -500,7 +500,7 @@ namespace zetscript{
 
 			return sc;
 		}else{
-			THROW_RUNTIME_ERROR("class \"%s\" already registered",class_name.c_str());
+			THROW_RUNTIME_ERROR("class '%s' already registered",class_name.c_str());
 		}
 		return NULL;
 	}

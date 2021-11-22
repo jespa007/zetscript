@@ -25,7 +25,7 @@ namespace zetscript{
 			else if(key_w == Keyword::KEYWORD_VAR){
 				return eval_keyword_var(eval_data,s,line,scope_info);
 			}else{ // not supported
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"expected \"var\" or \"function\" after \"static\"");
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"expected 'var' or 'function' after 'static'");
 			}
 		}
 

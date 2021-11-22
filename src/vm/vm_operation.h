@@ -257,42 +257,62 @@
 			(*((zs_float *)(ref)))++;\
 			break;\
 	default:/*metamethod*/\
+		sf_call_script_function=NULL;\
 		if(stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY){\
-			StackMemberProperty *stk_ma= (StackMemberProperty *)stk_result_op1->value;\
-			so_aux = stk_ma->so_object;\
-			ptr_function_found=stk_ma->member_property->post_inc;\
-			if(ptr_function_found!=NULL){\
-				if((ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){\
-					if(vm_share_pointer(vm,(ScriptObject *)stk_var->value)==false){ /*we have to share any object to avoid be removed on function exit*/ \
-						goto apply_metamethod_error;\
-					}\
-					vm_call_function_script(\
-						vm\
-						,so_aux\
-						,ptr_function_found\
-						,stk_args\
-						,n_stk_args\
-					);\
-				}else{ \
-					vm_call_function_native(\
-							vm\
-							,so_aux\
-							,ptr_function_found\
-							,stk_args\
-							,n_stk_args\
-							,calling_function\
-							,instruction\
-					);\
-				}\
-				\
-				data->stk_vm_current=stk_vm_current_backup;\
-				ret_obj.value=(uintptr_t)so_aux;\
-				ret_obj.properties=STK_PROPERTY_SCRIPT_OBJECT;\
-				*data->stk_vm_current++ = ret_obj;\
+			StackMemberProperty *stk_mp_aux= (StackMemberProperty *)stk_result_op1->value;\
+			so_aux = stk_mp->so_object;\
+			member_properties=stk_mp->member_property;\
+			sf_call_script_function=stk_mp->member_property->post_inc;\
+			if(sf_call_script_function==NULL){\
+				zs_strutils::format("Member property '%s' not implementents metamethod _post_inc (aka '%s++') "
+					,stk_mp->member_property->property_name.c_str()
+					,stk_mp->member_property->property_name.c_str());\
+					goto lbl_exit_function;\
+			}\
+		}else if(stk_var->properties & STK_PROPERTY_PROPERTY){\
+			so_aux = stk_mp->so_object;\
+			member_properties= so_aux->getScriptClass()->member_properties;\
+			sf_call_script_function=stk_mp->member_property->post_inc;\
+			if(sf_call_script_function==NULL){\
+				zs_strutils::format("Member property '%s' not implementents metamethod _post_inc (aka '%s++') "
+					,stk_mp->member_property->property_name.c_str()
+					,stk_mp->member_property->property_name.c_str());\
+					goto lbl_exit_function;\
 			}\
 		}else{\
-			zs_strutils::format("Member property '%s' not implementents metamethod _post_inc (aka '%s++') ",stk_mp->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());\
+			if(sf_call_script_function==NULL){\
+							zs_strutils::format("Member property '%s' not implementents metamethod _post_inc (aka '%s++') "
+								,stk_mp->member_property->property_name.c_str()
+								,stk_mp->member_property->property_name.c_str());\
+								goto lbl_exit_function;\
+						}\
 		}
+		if(sf_call_script_function!=NULL){\
+			StackElement *stk_vm_current_backup=data->stk_vm_current;
+			if((sf_call_script_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){ /* script */\
+				vm_call_function_script(\
+					vm\
+					,so_aux\
+					,sf_call_script_function\
+					,data->stk_vm_current\
+				);\
+			}else{ /*c function*/ \
+				vm_call_function_native(\
+						vm\
+						,so_aux\
+						,sf_call_script_function\
+						,calling_function\
+						,instruction\
+				);\
+			}\
+			data->stk_vm_current=stk_vm_current_backup;\
+			data->stk_vm_current->value=(uintptr_t)so_aux;\
+			data->properties=STK_PROPERTY_SCRIPT_OBJECT;\
+			data->stk_vm_current++;\
+		}else{\
+
+		}
+
 
 #define VM_OPERATION_NEG_POST_INC
 #define VM_OPERATION_POST_DEC

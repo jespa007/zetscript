@@ -20,7 +20,7 @@ namespace zetscript{
 		//int idxVariable;
 
 		if(var_ptr==NULL){
-			THROW_RUNTIME_ERROR("cannot register var \"%s\" with NULL reference value", var_name.c_str());
+			THROW_RUNTIME_ERROR("cannot register var '%s' with NULL reference value", var_name.c_str());
 		}
 
 		ScriptFunction *main_function=MAIN_FUNCTION(this);
@@ -126,7 +126,7 @@ namespace zetscript{
 		script_classes->push_back((zs_int)sc);
 
 		sc->idx_class=script_classes->count-1;
-		ZS_LOG_DEBUG("* C++ class \"%s\" registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
+		ZS_LOG_DEBUG("* C++ class '%s' registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
 
 		return sc;
 	}
@@ -177,12 +177,12 @@ namespace zetscript{
 		}
 
 		if(isClassInheritsFrom(idx_register_class,idx_base_class)){
-			THROW_RUNTIME_ERROR("C++ class \"%s\" is already registered as base of \"%s\" ",zs_rtti::demangle(class_name), zs_rtti::demangle(base_class_name));
+			THROW_RUNTIME_ERROR("C++ class '%s' is already registered as base of '%s' ",zs_rtti::demangle(class_name), zs_rtti::demangle(base_class_name));
 		}
 
 		// check whether is in fact base of ...
 		if(!std::is_base_of<B,C>::value){
-			THROW_RUNTIME_ERROR("C++ class \"%s\" is not base of \"%s\" ",zs_rtti::demangle(class_name), zs_rtti::demangle(base_class_name));
+			THROW_RUNTIME_ERROR("C++ class '%s' is not base of '%s' ",zs_rtti::demangle(class_name), zs_rtti::demangle(base_class_name));
 		}
 
 		// now only allows one inheritance!
@@ -191,7 +191,7 @@ namespace zetscript{
 		for(unsigned i=0; i < sc->idx_base_classes->count; i++){
 			sc=getScriptClass(sc->idx_base_classes->items[i]); // get base class...
 			if(sc->str_class_ptr_type ==base_class_name_ptr){
-				THROW_RUNTIME_ERROR("C++ class \"%s\" already base of \"%s\" ",zs_rtti::demangle(class_name), zs_rtti::demangle(base_class_name));
+				THROW_RUNTIME_ERROR("C++ class '%s' already base of '%s' ",zs_rtti::demangle(class_name), zs_rtti::demangle(base_class_name));
 			}
 		}
 
@@ -363,7 +363,7 @@ namespace zetscript{
 		zs_string str_class_name_ptr = typeid( C *).name();
 		ScriptClass * c_class=	getScriptClassByNativeClassPtr(str_class_name_ptr);
 		if(c_class == NULL){
-			THROW_RUNTIME_ERROR("class \"%s\" is not registered",str_class_name_ptr.c_str());
+			THROW_RUNTIME_ERROR("class '%s' is not registered",str_class_name_ptr.c_str());
 		}
 		return registerNativeMemberFunction<C>(c_class->class_name,function_type, registered_file,registered_line );
 	}

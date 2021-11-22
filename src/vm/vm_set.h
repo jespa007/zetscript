@@ -107,10 +107,10 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 				vm\
 				,so_aux\
 				,ptr_function_found\
-				,stk_arg\
-				,1\
 				,calling_function\
 				,instruction\
+				,stk_arg\
+				,1\
 		);\
 	}else{\
 		vm_call_function_script(\

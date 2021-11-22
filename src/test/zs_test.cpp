@@ -60,15 +60,15 @@ void test_arithmetic_int_expr(zs_int expr,const char *str_expr)
 		StackElement stk=zs->eval(zs_string("return ")+str_expr);\
 		if(stk.properties & STK_PROPERTY_ZS_INT){\
 			if((zs_int)stk.value != expr){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,(int)expr,int(((zs_int)stk.value))); \
+				fprintf(stderr,"error test '%s' expected %i but it was %i!\n",str_expr,(int)expr,int(((zs_int)stk.value))); \
 				exit(-1); \
 			} \
 		}else{\
-			fprintf(stderr,"error test \"%s\" expected int but it was '%s'!\n",str_expr,stk.typeOf()); \
+			fprintf(stderr,"error test '%s' expected int but it was '%s'!\n",str_expr,stk.typeOf()); \
 			exit(-1); \
 		} \
 	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n",str_expr,ex.what()); \
+		fprintf(stderr,"error test '%s' : %s!\n",str_expr,ex.what()); \
 		exit(-1); \
 	}\
 }
@@ -79,15 +79,15 @@ void test_int_expr(const char *str_expr, zs_int expected_value) {
 		StackElement stk=zs->eval(str_expr);\
 		if(stk.properties & STK_PROPERTY_ZS_INT){\
 			if((zs_int)stk.value  != (expected_value)){ \
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n",str_expr,(int)expected_value,(int)((zs_int)stk.value)); \
+				fprintf(stderr,"error test '%s' expected %i but it was %i!\n",str_expr,(int)expected_value,(int)((zs_int)stk.value)); \
 				exit(-1); \
 			} \
 		}else{\
-			fprintf(stderr,"error test \"%s\" expected int but it was '%s'!\n",str_expr,stk.typeOf()); \
+			fprintf(stderr,"error test '%s' expected int but it was '%s'!\n",str_expr,stk.typeOf()); \
 			exit(-1); \
 		} \
 	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what()); \
+		fprintf(stderr,"error test '%s' : %s!\n", str_expr,ex.what()); \
 		exit(-1); \
 	}\
 }
@@ -148,16 +148,16 @@ void test_arithmetic_integer_op(zs_int val1, zs_int val2, const char *str_format
 			StackElement stk=zs->eval(it_iod->str); \
 			if (stk.properties & STK_PROPERTY_ZS_INT) {
 				if ((zs_int)stk.value != (it_iod->val)) {
-					fprintf(stderr, "error test \"%s\" expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zs_int)stk.value));
+					fprintf(stderr, "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zs_int)stk.value));
 					exit(-1);
 				}
 			}else{
-				fprintf(stderr,"error test \"%s\" expected int but it was '%s'!\n",it_iod->str.c_str(),stk.typeOf()); \
+				fprintf(stderr,"error test '%s' expected int but it was '%s'!\n",it_iod->str.c_str(),stk.typeOf()); \
 				exit(-1); \
 			}
 		}
 		catch (std::exception & ex) {
-			fprintf(stderr, "error test \"%s\" : %s!\n", it_iod->str.c_str(), ex.what());
+			fprintf(stderr, "error test '%s' : %s!\n", it_iod->str.c_str(), ex.what());
 			exit(-1);
 		}
 		it_iod++;
@@ -175,15 +175,15 @@ void test_float_expr(const char  *str_expr, zs_float expected_value) {
 			zs_float result;
 			ZS_FLOAT_COPY(&result,&stk.value);
 			if(result  != (expected_value)){
-				fprintf(stderr,"error test \"%s\" expected %f but it was %f!\n",str_expr,expected_value,result);
+				fprintf(stderr,"error test '%s' expected %f but it was %f!\n",str_expr,expected_value,result);
 				exit(-1);
 			}
 		}else{
-			fprintf(stderr,"error test \"%s\" expected float but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",str_expr,stk.typeOf());
 			exit(-1);
 		}
 	}catch(std::exception & ex){
-		fprintf(stderr,"error test \"%s\" : %s!\n",str_expr,ex.what());
+		fprintf(stderr,"error test '%s' : %s!\n",str_expr,ex.what());
 		exit(-1);
 	}
 }
@@ -199,21 +199,21 @@ void test_float_expression(zs_float expr, const char *str_expr) {
 			if (!float_values_are_almost_the_same(result, expr)) {
 				double error = fabs(fabs(result) - fabs(expr));
 					if (error > 0.001) { /* Only error if the difference is more than expected */
-						fprintf(stderr, "error test \"%s\" expected %f but it was %f!\n", str_expr, expr, result);
+						fprintf(stderr, "error test '%s' expected %f but it was %f!\n", str_expr, expr, result);
 							exit(-1);
 						}
 				else {
-					fprintf(stderr, "warning: test \"%s\" expected %f but it was %f (it has some precision error)!\n", str_expr, expr, result);
+					fprintf(stderr, "warning: test '%s' expected %f but it was %f (it has some precision error)!\n", str_expr, expr, result);
 				
 				}
 			}
 		}else{
-			fprintf(stderr,"error test \"%s\" expected float but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",str_expr,stk.typeOf());
 			exit(-1);
 		}
 	}
 	catch (std::exception & ex) {
-		fprintf(stderr, "error test \"%s\" : %s!\n", str_expr, ex.what());
+		fprintf(stderr, "error test '%s' : %s!\n", str_expr, ex.what());
 		exit(-1);
 	}
 }
@@ -275,16 +275,16 @@ void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_form
 					
 				if (!float_values_are_almost_the_same(result, it_af->val)) {
 
-						fprintf(stderr, "error test \"%s\" expected %f but it was %f!\n", it_af->str.c_str(), it_af->val, result);
+						fprintf(stderr, "error test '%s' expected %f but it was %f!\n", it_af->str.c_str(), it_af->val, result);
 						exit(-1);
 				}
 			}else{
-				fprintf(stderr,"error test \"%s\" expected float but it was '%s'!\n",it_af->str.c_str(),stk.typeOf());
+				fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",it_af->str.c_str(),stk.typeOf());
 				exit(-1);
 			}
 		}
 		catch (std::exception & ex) {
-				fprintf(stderr, "error test \"%s\" : %s!\n", it_af->str.c_str(), ex.what());
+				fprintf(stderr, "error test '%s' : %s!\n", it_af->str.c_str(), ex.what());
 				exit(-1); 
 		}
 		it_af++;
@@ -300,16 +300,16 @@ void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_form
 				zs_float result;
 				ZS_FLOAT_COPY(&result,&stk.value);
 				if (!float_values_are_almost_the_same(result, it_afm->val)) {
-					fprintf(stderr, "error test \"%s\" expected %f but it was %f!\n", it_afm->str.c_str(), it_afm->val, result); \
+					fprintf(stderr, "error test '%s' expected %f but it was %f!\n", it_afm->str.c_str(), it_afm->val, result); \
 					exit(-1);
 				}
 			}else{
-				fprintf(stderr,"error test \"%s\" expected float but it was '%s'!\n",it_afm->str.c_str(),stk.typeOf());
+				fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",it_afm->str.c_str(),stk.typeOf());
 				exit(-1);
 			}
 		}
 		catch (std::exception & ex) {
-			fprintf(stderr, "error test \"%s\" : %s!\n", it_afm->str.c_str(), ex.what());
+			fprintf(stderr, "error test '%s' : %s!\n", it_afm->str.c_str(), ex.what());
 			exit(-1);
 		}
 		it_afm++;
@@ -326,15 +326,15 @@ void test_bool_expr(const char *str_expr, bool expected_value){
 		StackElement stk = zs->eval(str_expr);
 		if(stk.properties & STK_PROPERTY_BOOL){
 			if((bool)stk.value  != (expected_value)){
-				fprintf(stderr,"error test \"%s\" expected %i but it was %i!\n", str_expr,expected_value,(bool)stk.value);
+				fprintf(stderr,"error test '%s' expected %i but it was %i!\n", str_expr,expected_value,(bool)stk.value);
 				exit(-1);
 			}
 		}else{
-			fprintf(stderr,"error test \"%s\" expected bool but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected bool but it was '%s'!\n",str_expr,stk.typeOf());
 			exit(-1);
 		}
 	}catch(std::exception & ex){
-		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what());
+		fprintf(stderr,"error test '%s' : %s!\n", str_expr,ex.what());
 		exit(-1);
 	}
 }
@@ -346,16 +346,16 @@ void test_bool_expression(bool expr, const char *str_expr){
 		StackElement stk = zs->eval(zs_string("return ")+str_expr);
 		if(stk.properties & STK_PROPERTY_BOOL){
 			if((bool)stk.value  != (expr)){
-				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n", str_expr,(expr)?"true":"false",(bool)stk.value?"true":"false");
+				fprintf(stderr,"error test '%s' expected %s but it was %s!\n", str_expr,(expr)?"true":"false",(bool)stk.value?"true":"false");
 				exit(-1);
 			}
 		}else{
-			fprintf(stderr,"error test \"%s\" expected bool but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected bool but it was '%s'!\n",str_expr,stk.typeOf());
 			exit(-1);
 
 		}
 	}catch(std::exception & ex){
-		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what());
+		fprintf(stderr,"error test '%s' : %s!\n", str_expr,ex.what());
 		exit(-1); 
 	}
 }
@@ -410,15 +410,15 @@ void test_string_expr(const char * expected_value, const char *str_expr){
 		if(STK_IS_SCRIPT_OBJECT_STRING(&stk)){
 			ScriptObjectString *so=(ScriptObjectString *)stk.value;
 			if (so->toString() != zs_string(expected_value)) {
-				fprintf(stderr, "error test \"%s\" expected \"%s\" but it was \"%s\"!\n", str_expr, expected_value, so->toString().c_str());
+				fprintf(stderr, "error test '%s' expected '%s' but it was '%s'!\n", str_expr, expected_value, so->toString().c_str());
 				exit(-1);
 			}
 		}else{
-			fprintf(stderr,"error test \"%s\" expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk.typeOf());
 			exit(-1);
 		}
 	}catch(std::exception & ex){
-		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what());
+		fprintf(stderr,"error test '%s' : %s!\n", str_expr,ex.what());
 		exit(-1);
 	}
 }
@@ -432,17 +432,17 @@ void test_arithmetic_string_op(const zs_string & expected_value, const char * st
 		if(STK_IS_SCRIPT_OBJECT_STRING(&stk)){
 			ScriptObjectString *so=(ScriptObjectString *)stk.value;
 			if (so->toString() != zs_string(expected_value)) {
-				fprintf(stderr,"error test \"%s\" expected %s but it was %s!\n",str_expr, expected_value.c_str(), so->toString().c_str()); \
+				fprintf(stderr,"error test '%s' expected %s but it was %s!\n",str_expr, expected_value.c_str(), so->toString().c_str()); \
 				exit(-1); \
 			} \
 			// destroy lifetime object when is not needed
 			zs->unrefLifetimeObject(so);
 		}else{
-			fprintf(stderr,"error test \"%s\" expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk.typeOf());
 			exit(-1);
 		}
 	}catch(std::exception & ex){\
-		fprintf(stderr,"error test \"%s\" : %s!\n", str_expr,ex.what()); \
+		fprintf(stderr,"error test '%s' : %s!\n", str_expr,ex.what()); \
 		exit(-1); \
 	}\
 }
@@ -550,7 +550,7 @@ int main(int argc, char * argv[]) {
 	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}return i;",10);
 	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}return i;",11);
 
-	//zs->eval("var i1=\"s\",i2=\"s\",it1=\"s\",it2=\"s\",n1=\"s\",n2=\"s\",nt1=\"s\",nt2=\"s\"");
+	//zs->eval("var i1='s',i2='s\",it1=\"s\",it2=\"s\",n1=\"s\",n2=\"s\",nt1=\"s\",nt2=\"s\"");
 
 	printf("%i. testing class Integer arithmetic operations...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,4); // op1==op2

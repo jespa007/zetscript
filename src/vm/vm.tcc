@@ -12,7 +12,7 @@
 zs_string var_type1=stk_to_typeof_str(data->zs,stk_result_op1),\
 	   var_type2=stk_to_typeof_str(data->zs,stk_result_op2);\
 \
-	VM_ERROR("cannot perform operator \"%s\" %s \"%s\". Check whether op1 and op2 are same type, or class implements the metamethod",\
+	VM_ERROR("cannot perform operator '%s' %s '%s'. Check whether op1 and op2 are same type, or class implements the metamethod",\
 		var_type1.c_str(),\
 		c,\
 		var_type2.c_str());\
@@ -20,7 +20,7 @@ zs_string var_type1=stk_to_typeof_str(data->zs,stk_result_op1),\
 #define PRINT_ERROR_OP(c)\
 	zs_string var_type1=stk_to_typeof_str(data->zs,stk_result_op1);\
 \
-VM_ERROR("cannot perform preoperator %s\"%s\". Check whether op1 implements the metamethod",\
+VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the metamethod",\
 	c,\
 	var_type1.c_str());\
 	return NULL;
@@ -58,10 +58,10 @@ if(((ScriptFunction *)sf)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
 			vm\
 			,so\
 			,((ScriptFunction *)sf)\
-			,stk_def_afun_start\
-			,n_args\
 			,calling_function\
 			,instruction\
+			,stk_def_afun_start\
+			,n_args\
 	);\
 }else{\
 	vm_call_function_script(\
@@ -116,13 +116,13 @@ namespace zetscript{
 		//===================================================================================================
 
 		 bool				vm_error;
-		 zs_string 		vm_error_str;
-		 zs_string 		vm_error_callstack_str;
+		 zs_string 			vm_error_str;
+		 zs_string 			vm_error_callstack_str;
 		 VM_ScopeFunction	*vm_current_scope_function;
 		 VM_ScopeFunction	vm_scope_function[VM_FUNCTION_CALL_MAX];
 
-		 StackElement     					vm_stack[VM_STACK_MAX];
-		 zs_vector							lifetime_object;
+		 StackElement     	vm_stack[VM_STACK_MAX];
+		 zs_vector			lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		StackElement *stk_vm_current;
@@ -182,10 +182,10 @@ namespace zetscript{
 		VirtualMachine *vm,
 		ScriptObject  * this_object,
 		const ScriptFunction *c_function,
-		StackElement *stk_arg_c_function,
-		unsigned char n_args,
 		const ScriptFunction *calling_function,
-		Instruction *instruction
+		Instruction *instruction,
+		StackElement *stk_arg_c_function=NULL,
+		unsigned char n_args=0
 	);
 
 	inline bool  vm_insert_shared_node(VirtualMachine *vm, InfoSharedList * list, InfoSharedPointerNode *_node){
@@ -589,7 +589,7 @@ namespace zetscript{
 			}
 
 			if(n_candidates == 0){
-				VM_ERROR("Cannot find %s \"%s%s(%s)\".\n\n",
+				VM_ERROR("Cannot find %s '%s%s(%s)'.\n\n",
 						is_constructor ? "constructor":"function",
 								class_obj==NULL?"":class_obj->idx_class!=IDX_TYPE_MAIN?(class_obj->class_name+"::").c_str():"",
 								symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
@@ -599,7 +599,7 @@ namespace zetscript{
 				return NULL;
 			}
 			else{
-				VM_ERROR("Cannot match %s \"%s%s(%s)\" .\n\n%s",
+				VM_ERROR("Cannot match %s '%s%s(%s)' .\n\n%s",
 					is_constructor ? "constructor":"function",
 							class_obj==NULL?"":class_obj->idx_class!=IDX_TYPE_MAIN?(class_obj->class_name+"::").c_str():"",
 									symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
@@ -611,81 +611,6 @@ namespace zetscript{
 
 		return ptr_function_found;
 	}
-
-	/*inline bool vm_apply_metamethod_primitive(
-			VirtualMachine *vm
-			,ByteCodeMetamethod byte_code_metamethod
-			,StackElement *stk_result_op1
-			,StackElement *stk_result_op2
-	){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-
-		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
-			stk_result_op1=((ScriptObjectVarRef *)stk_result_op1->value)->getStackElementPtr();
-		}
-
-		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){
-			stk_result_op2=((ScriptObjectVarRef *)stk_result_op2->value)->getStackElementPtr();
-		}
-		//error=true;
-		switch(byte_code_metamethod){
-		case ByteCodeMetamethod::BYTE_CODE_METAMETHOD_ADD:
-			if(
-				STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)
-					||
-				STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)
-			){
-				ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(data->zs,stk_result_op1,stk_result_op2);
-				vm_create_shared_pointer(vm,so_string);
-				VM_PUSH_STK_SCRIPT_OBJECT(so_string);
-				return true;
-			}
-			else if(
-				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op1)
-					&&
-				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)
-			){
-				ScriptObjectVector *so_vector=ScriptObjectVector::newScriptObjectVectorAdd(
-						data->zs
-						,(ScriptObjectVector *)stk_result_op1->value
-						,(ScriptObjectVector *)stk_result_op2->value
-				);
-				vm_create_shared_pointer(vm,so_vector);
-				VM_PUSH_STK_SCRIPT_OBJECT(so_vector);
-
-				return true;
-			}
-			else{ // try object
-
-				if(
-						(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)
-					&&	(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)
-				){
-					ScriptObject *obj1=(ScriptObject *)stk_result_op1->value;
-					ScriptObject *obj2=(ScriptObject *)stk_result_op2->value;
-
-					if(   obj1->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_OBJECT
-					   && obj2->idx_script_class==IDX_TYPE_SCRIPT_OBJECT_OBJECT
-					){
-
-						ScriptObjectObject *so_object=ScriptObjectObject::concat(
-								data->zs
-								,(ScriptObjectObject *)obj1
-								,(ScriptObjectObject *)obj2
-						);
-						vm_create_shared_pointer(vm,so_object);
-						VM_PUSH_STK_SCRIPT_OBJECT(so_object);
-						return true;
-					}
-				}
-			}
-			break;
-		default:
-			break;
-		}
-
-		return false;
-	}*/
 
 	inline bool vm_apply_metamethod(
 		VirtualMachine *vm
@@ -713,9 +638,7 @@ namespace zetscript{
 		StackElement *stk_return=NULL;
 		int n_returned_arguments_from_function=0;
 
-
 		ret_obj.setUndefined();
-
 
 		// init stk
 		stk_vm_current_backup=data->stk_vm_current;
@@ -740,40 +663,7 @@ namespace zetscript{
 		}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject * script_object_found=(ScriptObject *)stk_result_op1->value;
 			class_name_object_found=script_object_found->getClassName();
-		}/*else if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){ // in principle property member metamethod only contemplates pre/post inc/dec operators
-			stk_ma= (StackMemberProperty *)stk_result_op1->value;
-			script_object = stk_ma->so_object;
-
-
-			switch(byte_code_metamethod){
-			case BYTE_CODE_METAMETHOD_POST_INC: // i++
-				ptr_function_found=stk_ma->member_property->post_inc;
-				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _post_inc (aka '%s++') ",stk_ma->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());
-				break;
-			case BYTE_CODE_METAMETHOD_POST_DEC: // i--
-				ptr_function_found=stk_ma->member_property->post_dec;
-				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _post_dec (aka '%s--') ",stk_ma->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());
-				break;
-			case BYTE_CODE_METAMETHOD_PRE_INC: // ++i
-				ptr_function_found=stk_ma->member_property->pre_inc;
-				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _pre_inc (aka '++%s')",stk_ma->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());
-				break;
-			case BYTE_CODE_METAMETHOD_PRE_DEC: // --i
-				ptr_function_found=stk_ma->member_property->pre_dec;
-				error_found=zs_strutils::format("Member property '%s' has not implemented metamethod _pre_dec (aka '--%s')",stk_ma->member_property->property_name.c_str(),stk_ma->member_property->property_name.c_str());
-				break;
-			default:
-				error_found=zs_strutils::format("Internal error: unexpected metamethod for property '%s'",stk_ma->member_property->property_name.c_str());
-				goto apply_metamethod_error;
-			}
-
-			if(ptr_function_found == NULL){
-				goto apply_metamethod_error;
-			}*
-
-
-		}*/
-
+		}
 
 		// only C refs can check 2nd param
 		if(script_object == NULL && stk_result_op2 != NULL) { // script null
@@ -796,18 +686,6 @@ namespace zetscript{
 			}
 		}
 
-		/*if(stk_result_op1 != NULL && stk_result_op2 != NULL && stk_ma==NULL){
-			if(vm_apply_metamethod_primitive(
-				vm
-				,byte_code_metamethod
-				,stk_result_op1
-				,stk_result_op2
-			)){
-				return true;
-			}
-		}*/
-
-
 		if(script_object == NULL){ // cannot perform operation
 			if(class_name_object_found.empty()){ // not any object found
 				// Because script elements can return "null" due undefined properties, do not show any error to not confuse.
@@ -816,7 +694,7 @@ namespace zetscript{
 				if(instruction->byte_code == BYTE_CODE_JE_CASE){
 					error_found=zs_strutils::format("Unable to perform '==' operator for case conditional");
 				}else{
-					error_found=zs_strutils::format("Type \"%s\" does not implements metamethod '%s'"
+					error_found=zs_strutils::format("Type '%s' does not implements metamethod '%s'"
 						,class_name_object_found.c_str()
 						,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
 					);
@@ -897,60 +775,39 @@ namespace zetscript{
 					vm
 					,ptr_function_found->properties & FUNCTION_PROPERTY_STATIC ? NULL:script_object
 					,ptr_function_found
-					,stk_args
-					,n_stk_args
 					,calling_function
 					,instruction
-
+					,stk_args
+					,n_stk_args
 			);
 		}
 
 		stk_return=(stk_args+ptr_function_found->function_scope->symbol_variables->count );
 		n_returned_arguments_from_function=data->stk_vm_current-stk_return;
 
+		// setup all returned variables from function
+		for(int i=0; i < n_returned_arguments_from_function; i++){
 
+			StackElement *stk_ret = --data->stk_vm_current;
 
-		/*if(n_returned_arguments_from_function == 0){ // return itself
-			switch(byte_code_metamethod){
-			case BYTE_CODE_METAMETHOD_POST_INC:
-			case BYTE_CODE_METAMETHOD_POST_DEC:
-			case BYTE_CODE_METAMETHOD_PRE_INC:
-			case BYTE_CODE_METAMETHOD_PRE_DEC:
+			// if a scriptvar --> init shared
+			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				ScriptObject *sv=(ScriptObject *)stk_ret->value;
 
-				ret_obj.value=(uintptr_t)script_object;
-				ret_obj.properties=STK_PROPERTY_SCRIPT_OBJECT;
-				break;
-			default:
-				break;				
-			}
+				// Auto destroy always C when ref == 0
+				((ScriptObjectClass *)(stk_ret->value))->deleteNativeObjectOnDestroy(true);
 
-
-		}else{*/
-
-			// setup all returned variables from function
-			for(int i=0; i < n_returned_arguments_from_function; i++){
-
-				StackElement *stk_ret = --data->stk_vm_current;
-
-				// if a scriptvar --> init shared
-				if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					ScriptObject *sv=(ScriptObject *)stk_ret->value;
-
-					// Auto destroy always C when ref == 0
-					((ScriptObjectClass *)(stk_ret->value))->deleteNativeObjectOnDestroy(true);
-
-					if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
-						if(!vm_create_shared_pointer(vm,sv)){
-							return false;
-						}
+				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
+					if(!vm_create_shared_pointer(vm,sv)){
+						return false;
 					}
 				}
-				// ... and push result if not function constructor...
 			}
+			// ... and push result if not function constructor...
+		}
 
-			ret_obj=stk_return[0];
-		//}
-		//}
+		ret_obj=stk_return[0];
+
 
 		// reset stack...
 		data->stk_vm_current=stk_vm_current_backup;
@@ -985,10 +842,8 @@ apply_metamethod_error:
 				,error_found.c_str()
 			);
 		}
-
 		return false;
 	}
-
 
 	inline void vm_iterator_init(VirtualMachine *vm
 			 ,ScriptFunction *calling_function
@@ -1077,9 +932,6 @@ apply_metamethod_error:
 
 			// everything allright store and share pointer
 			*stk_result_op2=*data->stk_vm_current;
-			//vm_share_pointer(vm,obj);
-
-
 		}
 		else{
 			VM_ERROR("Object not implements 'iter' ",obj->getClassName().c_str());
