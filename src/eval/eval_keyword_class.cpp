@@ -383,7 +383,7 @@ namespace zetscript{
 							);
 						}
 					}else if(function_name == "_post_inc"){
-						if(ma->getter==NULL){
+						if(ma->post_inc==NULL){
 							ma->post_inc=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
@@ -394,7 +394,7 @@ namespace zetscript{
 							);
 						}
 					}else if(function_name == "_post_dec"){
-						if(ma->getter==NULL){
+						if(ma->post_dec==NULL){
 							ma->post_dec=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
@@ -405,7 +405,7 @@ namespace zetscript{
 							);
 						}
 					}else if(function_name == "_pre_inc"){
-						if(ma->getter==NULL){
+						if(ma->pre_inc==NULL){
 							ma->pre_inc=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
@@ -416,13 +416,24 @@ namespace zetscript{
 							);
 						}
 					}else if(function_name == "_pre_dec"){
-						if(ma->getter==NULL){
+						if(ma->pre_dec==NULL){
 							ma->pre_dec=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
 								,"Property '%s' has already a pre decrement (aka --i) metamethod"
+								,property_name.c_str()
+							);
+						}
+					}else if(function_name == "_neg"){
+						if(ma->neg==NULL){
+							ma->neg=(ScriptFunction *)symbol->ref_ptr;
+						}else{
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Property \"%s\" has already a neg (aka -) metamethod"
 								,property_name.c_str()
 							);
 						}

@@ -36,7 +36,7 @@ namespace zetscript{
 		zs_vector xor_setters; // ^=
 		zs_vector shl_setters; // <<=
 		zs_vector shr_setters; // >>=
-		 ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec; // getter
+		 ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg; // getter
 		 zs_string property_name;
 
 		 const static ByteCodeMetamethod *byte_code_metamethod_list;

@@ -27,6 +27,7 @@ namespace zetscript{
 		post_dec=NULL;
 		pre_inc=NULL;
 		pre_dec=NULL;
+		neg=NULL;
 		property_name=_property_name;
 		script_class=_script_class;
 	}
@@ -163,6 +164,7 @@ namespace zetscript{
 		post_dec = NULL;
 		pre_inc = NULL;
 		pre_dec = NULL;
+		neg = NULL;
 
 
 	}
