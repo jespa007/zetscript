@@ -301,7 +301,7 @@
 
 
 
-#define VM_OPERATION_PRE(__INLINE_OPERATION__,__BYTE_CODE_PRE_OPERATION__) \
+#define VM_OPERATION_PRE(__INLINE_OPERATION__) \
 	stk_var=--data->stk_vm_current;\
 	stk_var=(StackElement *)((stk_var)->value);/* always expects ptr stk due it modifies the var */\
 	void **ref=(void **)(&((stk_var)->value));\
