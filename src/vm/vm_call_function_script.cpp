@@ -38,6 +38,7 @@ namespace zetscript{
 		stk_aux.properties=0;
 		stk_aux.value=0;
 		StackElement *stk_var;
+		StackElement stk_var_copy;
 		const char *str_symbol=NULL;
 		//------------------------------------------------
 		// STORE
