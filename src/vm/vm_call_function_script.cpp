@@ -47,10 +47,12 @@ namespace zetscript{
 		StackElement 	*		store_stk_multi_var_src=NULL;
 		StackElement 	*		store_ptr_stk_aux=NULL;
 		StackMemberProperty *	stk_mp_aux=NULL;
+		MemberProperty *		mp_aux=NULL;
+		void			*		ptr_ptr_void_ref=NULL;
 		//------------------------------------------------
 		// SFCALL
 		StackElement	*sf_call_stk_function_ref=NULL;
-		ScriptFunction 	*sf_call_script_function = NULL;
+		ScriptFunction 	*sf_call_script_function = NULL,*sf_setter_function_found=NULL;
 		unsigned char 	 sf_call_n_args=0; // number arguments will pass to this function
 		StackElement 	*sf_call_stk_start_arg_call=NULL;
 		ScriptObject 	*sf_call_calling_object = NULL;
@@ -421,42 +423,42 @@ find_element_object:
 				continue;
 			case BYTE_CODE_ADD_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_ADD_SET;
+				VM_OPERATION_ADD_SET(BYTE_CODE_METAMETHOD_ADD_SET);
 				continue;
 			case BYTE_CODE_SUB_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_ARITHMETIC_SET(-=,BYTE_CODE_METAMETHOD_SUB_SET);
+				VM_OPERATION_ARITHMETIC_SET(-=,BYTE_CODE_METAMETHOD_SUB_SET,mp_aux->sub_setters);
 				continue;
 			case BYTE_CODE_MUL_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_ARITHMETIC_SET(*=,BYTE_CODE_METAMETHOD_MUL_SET);
+				VM_OPERATION_ARITHMETIC_SET(*=,BYTE_CODE_METAMETHOD_MUL_SET,mp_aux->mul_setters);
 				continue;
 			case BYTE_CODE_DIV_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_DIV_SET;
+				VM_OPERATION_DIV_SET(BYTE_CODE_METAMETHOD_DIV_SET);
 				continue;
 			case BYTE_CODE_MOD_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_MOD_SET;
+				VM_OPERATION_MOD_SET(BYTE_CODE_METAMETHOD_MOD_SET);
 				continue;
 			case BYTE_CODE_BITWISE_AND_STORE:
-				VM_OPERATION_BINARY_SET(&=,BYTE_CODE_METAMETHOD_ADD_SET);
+				VM_OPERATION_BINARY_SET(&=,BYTE_CODE_METAMETHOD_ADD_SET,mp_aux->and_setters);
 				continue;
 			case BYTE_CODE_BITWISE_OR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(|=,BYTE_CODE_METAMETHOD_OR_SET);
+				VM_OPERATION_BINARY_SET(|=,BYTE_CODE_METAMETHOD_OR_SET,mp_aux->or_setters);
 				continue;
 			case BYTE_CODE_BITWISE_XOR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(^=,BYTE_CODE_METAMETHOD_XOR_SET);
+				VM_OPERATION_BINARY_SET(^=,BYTE_CODE_METAMETHOD_XOR_SET,mp_aux->xor_setters);
 				continue;
 			case BYTE_CODE_SHL_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(<<=,BYTE_CODE_METAMETHOD_SHL_SET);
+				VM_OPERATION_BINARY_SET(<<=,BYTE_CODE_METAMETHOD_SHL_SET,mp_aux->shl_setters);
 				continue;
 			case BYTE_CODE_SHR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(>>=,BYTE_CODE_METAMETHOD_SHR_SET);
+				VM_OPERATION_BINARY_SET(>>=,BYTE_CODE_METAMETHOD_SHR_SET,mp_aux->shr_setters);
 				continue;
 			case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE:
@@ -765,7 +767,7 @@ find_element_object:
 				continue;
 			case BYTE_CODE_ADD: // +
 				VM_POP_STK_TWO;
-				VM_OPERATION_ADD;
+				VM_OPERATION_ADD(BYTE_CODE_METAMETHOD_ADD);
 				continue;
 			case BYTE_CODE_SUB: // -
 				VM_POP_STK_TWO;
@@ -777,11 +779,11 @@ find_element_object:
 				continue;
 			case BYTE_CODE_DIV: // /
 				VM_POP_STK_TWO;
-				VM_OPERATION_DIV;
+				VM_OPERATION_DIV(BYTE_CODE_METAMETHOD_DIV);
 				continue;
 			 case BYTE_CODE_MOD: // /
 				VM_POP_STK_TWO;
-				VM_OPERATION_MOD;
+				VM_OPERATION_MOD(BYTE_CODE_METAMETHOD_MOD);
 				continue;
 			 case BYTE_CODE_BITWISE_AND: // &
 				VM_POP_STK_TWO;
@@ -1369,22 +1371,22 @@ execute_function:
 				 data->stk_vm_current=stk_start;
 				 continue;
 			 case BYTE_CODE_POST_INC:
-				 VM_OPERATION_POST(++,BYTE_CODE_POST_INC,0);
+				 VM_OPERATION_POST(++,BYTE_CODE_METAMETHOD_POST_INC,mp_aux->post_inc);
 				 continue;
 			 case BYTE_CODE_NEG_POST_INC:
-				 VM_OPERATION_POST(++,BYTE_CODE_POST_INC,BYTE_CODE_NEG);
+				 VM_OPERATION_NEG_POST(++,BYTE_CODE_METAMETHOD_POST_INC,mp_aux->post_inc);
 				 continue;
 			 case BYTE_CODE_POST_DEC:
-				 VM_OPERATION_POST(--,BYTE_CODE_POST_DEC,0);
+				 VM_OPERATION_POST(--,BYTE_CODE_METAMETHOD_POST_DEC,mp_aux->post_dec);
 				 continue;
 			 case BYTE_CODE_NEG_POST_DEC:
-				 VM_OPERATION_POST(--,BYTE_CODE_POST_DEC,BYTE_CODE_NEG);
+				 VM_OPERATION_POST(--,BYTE_CODE_METAMETHOD_POST_DEC,mp_aux->post_dec);
 				 continue;
 			 case BYTE_CODE_PRE_INC:
-				 VM_OPERATION_PRE(++,BYTE_CODE_POST_INC,0);
+				 VM_OPERATION_PRE(++,BYTE_CODE_METAMETHOD_PRE_INC,mp_aux->pre_inc);
 				 continue;
 			 case BYTE_CODE_PRE_DEC:
-				 VM_OPERATION_PRE(--,BYTE_CODE_POST_DEC,0);
+				 VM_OPERATION_PRE(--,BYTE_CODE_METAMETHOD_PRE_DEC,mp_aux->pre_dec);
 				 continue;
 			 case BYTE_CODE_IN:
 				 VM_POP_STK_TWO;

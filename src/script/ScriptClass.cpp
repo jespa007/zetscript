@@ -868,7 +868,7 @@ namespace zetscript{
 
 						MemberPropertyInfo info_mp=member_properties->getInfo(op);
 
-						if(info_mp->setters!=NULL && info_mp->setters->count>0){
+						if(info_mp.setters!=NULL && info_mp.setters->count>0){
 							// error already set (script functions only can be set once)
 							THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
 									,class_name.c_str()

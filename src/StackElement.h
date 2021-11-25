@@ -70,7 +70,7 @@ typedef enum:unsigned short {
 #define STK_VALUE_IS_NULL(stk) 							(stk->properties == 0)
 #define STK_VALUE_IS_FUNCTION(stk) 						(stk->properties & STK_PROPERTY_FUNCTION)
 #define STK_VALUE_IS_TYPE(stk) 							(stk->properties & STK_PROPERTY_TYPE)
-#define STK_VALUE_IS_MEMBER_ATTRIBUTE(stk) 				(stk->properties & STK_PROPERTY_MEMBER_PROPERTY)
+#define STK_VALUE_IS_MEMBER_PROPERTY(stk) 				(stk->properties & STK_PROPERTY_MEMBER_PROPERTY)
 #define STK_VALUE_IS_MEMBER_FUNCTION(stk) 				(stk->properties & STK_PROPERTY_MEMBER_FUNCTION)
 #define STK_VALUE_IS_SCRIPT_OBJECT(stk) 				(stk->properties & STK_PROPERTY_SCRIPT_OBJECT)
 

@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	const static ByteCodeMetamethod *MemberProperty::byte_code_metamethod_list={
+	const ByteCodeMetamethod MemberProperty::byte_code_metamethod_list[]={
 			BYTE_CODE_METAMETHOD_SET
 			,BYTE_CODE_METAMETHOD_ADD_SET
 			,BYTE_CODE_METAMETHOD_SUB_SET
@@ -18,7 +18,7 @@ namespace zetscript{
 			,BYTE_CODE_METAMETHOD_XOR_SET
 			,BYTE_CODE_METAMETHOD_SHL_SET
 			,BYTE_CODE_METAMETHOD_SHR_SET
-			,0
+			,BYTE_CODE_METAMETHOD_EQU //--> is 0 (end of elements)
 	};
 
 	MemberProperty::MemberProperty(ScriptClass *_script_class,const zs_string & _property_name){
@@ -36,10 +36,10 @@ namespace zetscript{
 		info.str_byte_code_metamethod=byte_code_metamethod_to_symbol_str(_byte_code_metamethod);
 		switch(_byte_code_metamethod){
 			case BYTE_CODE_METAMETHOD_SET:
-				return info.setters=&setters;
+				info.setters=&setters;
 				break;
 			case BYTE_CODE_METAMETHOD_ADD_SET:
-				return info.setters=&add_setters;
+				info.setters=&add_setters;
 				break;
 			case BYTE_CODE_METAMETHOD_SUB_SET:
 				 info.setters=&sub_setters;
@@ -122,8 +122,9 @@ namespace zetscript{
 				shr_setters.push_back((zs_int)stk);
 				break;
 			default:
-				THROW_SCRIPT_ERROR("Unexpected to register '%s' setter"
-					,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
+				THROW_EXCEPTION(zs_strutils::format("Unexpected to register '%s' setter"
+						,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
+					)
 				);
 				break;
 			}
@@ -134,28 +135,28 @@ namespace zetscript{
 
 	MemberProperty::~MemberProperty(){
 
-		zs_vector *ptr_vector={
+		zs_vector *ptr_vector[]={
 				&setters
-				&add_setters
-				&sub_setters
-				&div_setters
-				&mod_setters
-				&and_setters
-				&or_setters
-				&xor_setters
-				&shl_setters
-				&shr_setters
-				,0
+				,&add_setters
+				,&sub_setters
+				,&div_setters
+				,&mod_setters
+				,&and_setters
+				,&or_setters
+				,&xor_setters
+				,&shl_setters
+				,&shr_setters
+				,NULL
 		};
 
-		zs_vector *it=ptr_vector;
+		zs_vector **it=ptr_vector;
 		while(*it++!=NULL){
 
-			for(int i=0;i < it->count; i++){
-				StackElement *stk_el=(StackElement *)it->items[i];
+			for(int i=0;i < (*it)->count; i++){
+				StackElement *stk_el=(StackElement *)(*it)->items[i];
 				free(stk_el);
 			}
-			it->clear();
+			(*it)->clear();
 		}
 
 

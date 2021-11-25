@@ -10,10 +10,6 @@ namespace zetscript{
 		switch(_byte_code){
 			case BYTE_CODE_EQU:        							return "EQU";  // ==
 			case BYTE_CODE_INSTANCEOF:  						return "INSTANCEOF";  // ==
-			case BYTE_CODE_INSTANCEOF_INT:						return "INSTANCEOF";  // ==
-			case BYTE_CODE_INSTANCEOF_FLOAT:  					return "INSTANCEOF";  // ==
-			case BYTE_CODE_INSTANCEOF_BOOL:  					return "INSTANCEOF";  // ==
-			case BYTE_CODE_INSTANCEOF_FUNCTION:					return "INSTANCEOF";  // ==
 			case BYTE_CODE_NOT_EQU:     						return "NOT_EQU" ;  // !=
 			case BYTE_CODE_LT:          						return "LT";  // <
 			case BYTE_CODE_LTE:         						return "LTE";  // <=
@@ -367,7 +363,7 @@ namespace zetscript{
 
 	ByteCodeMetamethod byte_code_symbol_to_setter_metamethod(const char *_symbol_name)
 	{
-		ByteCodeMetamethod *ptr_setter_metamethods={
+		ByteCodeMetamethod ptr_setter_metamethods[]={
 				BYTE_CODE_METAMETHOD_SET,
 				BYTE_CODE_METAMETHOD_ADD_SET,
 				BYTE_CODE_METAMETHOD_SUB_SET,
@@ -379,7 +375,7 @@ namespace zetscript{
 				BYTE_CODE_METAMETHOD_XOR_SET,
 				BYTE_CODE_METAMETHOD_SHL_SET,
 				BYTE_CODE_METAMETHOD_SHR_SET,
-				0
+				BYTE_CODE_METAMETHOD_EQU // 0 --> end iteration
 			};
 
 			ByteCodeMetamethod *it=ptr_setter_metamethods;

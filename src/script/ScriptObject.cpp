@@ -126,7 +126,7 @@ namespace zetscript{
 
 	ScriptFunction *ScriptObject::getGetter(){
 		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
-		MemberProperty *member_property=script_class->setter_getter;
+		MemberProperty *member_property=script_class->member_properties;
 
 		if(member_property !=NULL){
 			return member_property->getter;

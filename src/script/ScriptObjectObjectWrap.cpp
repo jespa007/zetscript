@@ -53,7 +53,7 @@ namespace zetscript{
 	}
 
 	void						 	ScriptObjectObjectWrap_append(ScriptObjectObject *o1,ScriptObjectObject *o2){
-		ScriptObjectObject::append(o1,o2);
+		ScriptObjectObject::append(o1->getZetScript(),o1,o2);
 	}
 
 }

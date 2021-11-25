@@ -39,7 +39,7 @@ namespace zetscript{
 		 ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg; // getter
 		 zs_string property_name;
 
-		 const static ByteCodeMetamethod *byte_code_metamethod_list;
+		 const static ByteCodeMetamethod byte_code_metamethod_list[];
 
 		 MemberProperty(ScriptClass *_script_class, const zs_string & _property_name);
 		 MemberPropertyInfo getInfo(ByteCodeMetamethod _symbol_name);
