@@ -140,7 +140,7 @@ namespace zetscript{
 		MemberProperty *member_properties=script_class->member_properties;
 
 		if(member_properties !=NULL){
-			MemberPropertyInfo info=member_properties->getInfo(_byte_code_metamethod);
+			MemberPropertySetterInfo info=member_properties->getInfoSetter(_byte_code_metamethod);
 			return info.setters;
 		}
 

@@ -6,6 +6,7 @@
 
 namespace zetscript{
 
+
 	const char * byte_code_to_str(ByteCode _byte_code){
 		switch(_byte_code){
 			case BYTE_CODE_EQU:        							return "EQU";  // ==
@@ -363,30 +364,20 @@ namespace zetscript{
 
 	ByteCodeMetamethod byte_code_symbol_to_setter_metamethod(const char *_symbol_name)
 	{
-		ByteCodeMetamethod ptr_setter_metamethods[]={
-				BYTE_CODE_METAMETHOD_SET,
-				BYTE_CODE_METAMETHOD_ADD_SET,
-				BYTE_CODE_METAMETHOD_SUB_SET,
-				BYTE_CODE_METAMETHOD_MUL_SET,
-				BYTE_CODE_METAMETHOD_DIV_SET,
-				BYTE_CODE_METAMETHOD_MOD_SET,
-				BYTE_CODE_METAMETHOD_AND_SET,
-				BYTE_CODE_METAMETHOD_OR_SET,
-				BYTE_CODE_METAMETHOD_XOR_SET,
-				BYTE_CODE_METAMETHOD_SHL_SET,
-				BYTE_CODE_METAMETHOD_SHR_SET,
-				BYTE_CODE_METAMETHOD_EQU // 0 --> end iteration
-			};
 
-			ByteCodeMetamethod *it=ptr_setter_metamethods;
+			const ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_setter_list;
 			bool found=false;
-			while(*it++!=0){
+			while(*it!=0){
 				const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
 				if(_symbol_name == _mt_name){
 					return *it;
 				}
+
+				it++;
 			}
 
 			return BYTE_CODE_METAMETHOD_INVALID;
 	}
+
+
 }

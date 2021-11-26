@@ -221,7 +221,7 @@ namespace zetscript{
 										;
 
 			if(is_metamethod_function==false){ // try find setter
-				ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_list;
+				ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_setter_list;
 				zs_string symbol_name_methametod;
 				while(*it!=0 && is_metamethod_function==false){
 					symbol_name_methametod=byte_code_metamethod_to_symbol_str(*it);
@@ -312,9 +312,9 @@ namespace zetscript{
 					it++;
 				}
 
-				ByteCodeMetamethod *it_setter=MemberProperty::byte_code_metamethod_list;
+				ByteCodeMetamethod *it_setter=MemberProperty::byte_code_metamethod_setter_list;
 				while(*it_setter!= 0){
-					MemberPropertyInfo mp_info=ma_src->getInfo(*it_setter);
+					MemberPropertySetterInfo mp_info=ma_src->getInfoSetter(*it_setter);
 					if(mp_info.setters!=NULL){
 						for(unsigned i=0; i < mp_info.setters->count; i++){
 
@@ -443,23 +443,36 @@ namespace zetscript{
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyGetter(
 		const zs_string & _property_name
-		,F ptr_function_getter
-		,const char *registered_file
-		,short registered_line
+		,F _ptr_function_getter
+		,const char *_registered_file
+		,short _registered_line
 	){
 		zs_string str_class_name_ptr = typeid( C *).name();
-
+		ScriptFunctionParam *params=NULL;
+		size_t *params_len=0;
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
 		if(c_class == NULL){
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberPropertyGetter<F>(
-			 _property_name
-			,ptr_function_getter
-			,registered_file
-			,registered_line
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+				this
+				,_property_name
+				,_ptr_function_getter
+				,&params
+				,&params_len
+				);
+
+		c_class->registerNativeMemberPropertyGetter(
+				 _property_name
+				 ,&params
+				 ,params_len
+				,idx_return_type
+				,(zs_int)_ptr_function_getter
+				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
+				,_registered_file
+				,_registered_line
 		);
 	}
 

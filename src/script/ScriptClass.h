@@ -123,7 +123,7 @@ namespace zetscript{
 
 		);
 
-		/*Symbol				* 	registerNativeMemberPropertyMetamethodGetter(
+		Symbol				* 	registerNativeMemberPropertyMetamethodGetter(
 			const zs_string & _property_name
 			,ScriptFunctionParam **_params
 			,size_t _params_len

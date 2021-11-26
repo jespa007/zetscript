@@ -207,7 +207,7 @@ namespace zetscript{
 				_line
 		);
 
-		ma->addSettter(_byte_code_metamethod_setter,(ScriptFunction *)symbol_function->ref_ptr);
+		ma->addSetter(_byte_code_metamethod_setter,(ScriptFunction *)symbol_function->ref_ptr);
 
 		return symbol_attrib;
 	}
@@ -861,14 +861,16 @@ namespace zetscript{
 
 
 					// everything ok
-					if(/*op==BYTE_CODE_METAMETHOD_GET || */op==BYTE_CODE_METAMETHOD_SET){
+					if(MemberProperty::isSetter(op)){
 						if(member_properties == NULL){
 							member_properties = new MemberProperty(this,class_name);
 						}
 
-						MemberPropertyInfo info_mp=member_properties->getInfo(op);
+						MemberPropertySetterInfo info_mp=member_properties->getInfoSetter(op);
 
-						if(info_mp.setters!=NULL && info_mp.setters->count>0){
+						if(((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) //--> script function has to have one setter function, meanwhile c ref can have more than one (due different signatures)
+								&&
+							(info_mp.setters!=NULL && info_mp.setters->count>0)){
 							// error already set (script functions only can be set once)
 							THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
 									,class_name.c_str()

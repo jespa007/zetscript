@@ -465,10 +465,10 @@ namespace zetscript{
 						ma_dst->pre_dec=ma_src->pre_dec;
 						ma_dst->neg=ma_src->neg;
 
-						const ByteCodeMetamethod *it_setters=MemberProperty::byte_code_metamethod_list;
+						const ByteCodeMetamethod *it_setters=MemberProperty::byte_code_metamethod_setter_list;
 
 						while(*it_setters!=0){
-							MemberPropertyInfo mp_info=ma_src->getInfo(*it_setters);
+							MemberPropertySetterInfo mp_info=ma_src->getInfoSetter(*it_setters);
 							for(unsigned i=0; i < mp_info.setters->count;i++){
 								ma_dst->addSetter(*it_setters,(ScriptFunction *)(((StackElement *)mp_info.setters->items[i])->value));
 

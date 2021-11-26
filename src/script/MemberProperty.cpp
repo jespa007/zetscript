@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	const ByteCodeMetamethod MemberProperty::byte_code_metamethod_list[]={
+	const ByteCodeMetamethod MemberProperty::byte_code_metamethod_setter_list[]={
 			BYTE_CODE_METAMETHOD_SET
 			,BYTE_CODE_METAMETHOD_ADD_SET
 			,BYTE_CODE_METAMETHOD_SUB_SET
@@ -21,6 +21,7 @@ namespace zetscript{
 			,BYTE_CODE_METAMETHOD_EQU //--> is 0 (end of elements)
 	};
 
+
 	MemberProperty::MemberProperty(ScriptClass *_script_class,const zs_string & _property_name){
 		getter= NULL;
 		post_inc=NULL;
@@ -31,8 +32,8 @@ namespace zetscript{
 		property_name=_property_name;
 		script_class=_script_class;
 	}
-	MemberPropertyInfo MemberProperty::getInfo(ByteCodeMetamethod _byte_code_metamethod){
-		MemberPropertyInfo info={_byte_code_metamethod,NULL,NULL};
+	MemberPropertySetterInfo MemberProperty::getInfoSetter(ByteCodeMetamethod _byte_code_metamethod){
+		MemberPropertySetterInfo info={_byte_code_metamethod,NULL,NULL};
 		info.str_byte_code_metamethod=byte_code_metamethod_to_symbol_str(_byte_code_metamethod);
 		switch(_byte_code_metamethod){
 			case BYTE_CODE_METAMETHOD_SET:
@@ -74,12 +75,27 @@ namespace zetscript{
 		return info;
 	}
 
-	MemberPropertyInfo MemberProperty::getInfo(const char *_symbol_name){
-
-		ByteCodeMetamethod _byte_code_metamethod=byte_code_symbol_to_setter_metamethod(_symbol_name);
-		return getInfo(_byte_code_metamethod);
 
 
+	MemberPropertySetterInfo MemberProperty::getInfoSetter(const char *_symbol_name){
+		ByteCodeMetamethod _byte_code_metamethod =byte_code_symbol_to_setter_metamethod(_symbol_name);
+		return getInfoSetter(_byte_code_metamethod);
+
+
+	}
+
+	bool MemberProperty::isSetter(ByteCodeMetamethod _byte_code_metamethod){
+		const ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_setter_list;
+		bool found=false;
+		while(*it!=0){
+			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
+			if(*it == _byte_code_metamethod){
+				return true;
+			}
+			it++;
+		}
+
+		return false;
 	}
 
 	void MemberProperty::addSetter(ByteCodeMetamethod _byte_code_metamethod, ScriptFunction *f){
