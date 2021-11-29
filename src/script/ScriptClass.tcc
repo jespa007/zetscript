@@ -3,7 +3,7 @@
  *  See LICENSE file for details.
  */
 namespace zetscript{
-
+/*
 	template < typename R>
 	void ScriptClass::registerNativeMemberVariableStaticConst(
 			const zs_string & var_name
@@ -25,11 +25,11 @@ namespace zetscript{
 				,registered_line
 		);
 	}
-
+/*
 	/*
 	 * register C setter
 	 */
-	template <typename F>
+/*	template <typename F>
 	void ScriptClass::registerNativeMemberPropertyMetamethod(
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
@@ -50,7 +50,7 @@ namespace zetscript{
 				,&params
 				,&params_len
 		);
-
+*/
 /*
 
 return registerInternalMemberFunction(
@@ -65,7 +65,7 @@ return registerInternalMemberFunction(
 
 		);
  * */
-
+/*
 		symbol_function=registerNativeMemberFunction(
 				symbol_metamethod_function,
 				_params,
@@ -80,7 +80,7 @@ return registerInternalMemberFunction(
 
 
 		return symbol_member_property;
-
+*/
 		/*registerNativeMemberPropertyMetamethod(
 				_property_name
 				,_byte_code_metamethod
@@ -274,7 +274,7 @@ return registerInternalMemberFunction(
 	 * Register C Member function Class
 	 * like register function c but is added to member function list according type C
 	 */
-	template <typename F>
+	/*template <typename F>
 	void ScriptClass::registerNativeMemberFunctionStatic(
 			const zs_string & function_name
 			,F ptr_function
@@ -297,7 +297,7 @@ return registerInternalMemberFunction(
 		);
 
 		// register member function...
-		Symbol * symbol_sf = this->registerNativeMemberFunction(
+		Symbol * symbol_sf = this->registerMemberFunction(
 				 function_name
 				,&params
 				,params_len
@@ -347,12 +347,12 @@ return registerInternalMemberFunction(
 			THROW_RUNTIME_ERROR("error! cannot register metamethod set on static function. Must be member function");
 		}
 	}
-
+*/
 	/*
 	 * register static function registerNativeMemberFunction as function member
 	 * Is automatically added in function member list according first parameter type of function_type
 	 */
-	template <typename F>
+/*	template <typename F>
 	void ScriptClass::registerNativeMemberFunction(
 			const zs_string & _function_name
 			,F _ptr_function
@@ -417,5 +417,5 @@ return registerInternalMemberFunction(
 
 		ZS_LOG_DEBUG("Registered C function '%s' as function member '%s'",function_name, function_class_name.c_str());
 	}
-
+*/
 }
