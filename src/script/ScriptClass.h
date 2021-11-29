@@ -116,7 +116,7 @@ namespace zetscript{
 			,ScriptFunctionParam **_params
 			,size_t _params_len
 			,int _idx_return_type
-			,zs_int _ef_ptr // it's the offset from pointer or a pointer directly
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short _symbol_function_metamethod_properties
 			,const char * _file=""
 			,short _line=-1

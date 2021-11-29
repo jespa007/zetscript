@@ -173,7 +173,7 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberPropertyMetamethod(
 			const zs_string & _property_name
-			,ByteCodeMetamethod _byte_code_metamethod_setter
+			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
 			,size_t _params_len
 			,int _idx_return_type
@@ -187,17 +187,40 @@ namespace zetscript{
 		Symbol *symbol_attrib=NULL;
 		MemberProperty *ma=NULL;
 		Symbol *symbol_function=NULL;
+		zs_string symbol_metamethod_function;
 
 		if((symbol_attrib=getSymbol(_property_name)) == NULL){
 			symbol_attrib=registerMemberProperty(_property_name,_file,_line);
 		}
 
 		ma=(MemberProperty *)symbol_attrib->ref_ptr;
-		//zs_string member_property_metamethod_name=byte_code_metamethod_to_symbol_str(_metamethod)+"@"+_property_name;
 
+		if(_byte_code_metamethod == BYTE_CODE_METAMETHOD_GETTER){
+
+		}else{
+
+			symbol_metamethod_function=byte_code_metamethod_to_symbol_str(_byte_code_metamethod)+"@"+_property_name;
+		}
+		//zs_string member_property_metamethod_name=byte_code_metamethod_to_symbol_str(_metamethod)+"@"+_property_name;
+		switch(_byte_code_metamethod){
+		case BYTE_CODE_METAMETHOD_SET:
+		case BYTE_CODE_METAMETHOD_ADD_SET:
+		case BYTE_CODE_METAMETHOD_SUB_SET:
+		case BYTE_CODE_METAMETHOD_MUL_SET:
+		case BYTE_CODE_METAMETHOD_DIV_SET:
+		case BYTE_CODE_METAMETHOD_MOD_SET:
+		case BYTE_CODE_METAMETHOD_AND_SET:
+		case BYTE_CODE_METAMETHOD_OR_SET:
+		case BYTE_CODE_METAMETHOD_XOR_SET:
+		case BYTE_CODE_METAMETHOD_SHL_SET:
+		case BYTE_CODE_METAMETHOD_SHR_SET:
+			symbol_metamethod_function=ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code_metamethod,_property_name);
+			ma->addSetter(_byte_code_metamethod,(ScriptFunction *)symbol_function->ref_ptr);
+			break;
+		}
 
 		symbol_function=registerNativeMemberFunction(
-				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code_metamethod_setter,_property_name),
+				symbol_metamethod_function,
 				_params,
 				_params_len,
 				_idx_return_type,
@@ -207,7 +230,7 @@ namespace zetscript{
 				_line
 		);
 
-		ma->addSetter(_byte_code_metamethod_setter,(ScriptFunction *)symbol_function->ref_ptr);
+
 
 		return symbol_attrib;
 	}

@@ -7,12 +7,21 @@
 //#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER		"_set@"
 #define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code_metamethod,_property_name) zs_string(byte_code_metamethod_to_symbol_str(_byte_code_metamethod))+"@"+_property_name
 #define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER		"_get@"
-#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_INC		"_post_inc@"
+/*#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_INC		"_post_inc@"
 #define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_DEC		"_post_dec@"
 #define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_INC		"_pre_inc@"
 #define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_DEC		"_pre_dec@"
 
-
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_ADD_SET		"_add_set@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SUB_SET		"_sub_set@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_DIV_SET		"_div_set@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_MOD_SET		"_mod_set@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_AND_SET		"_and_set@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_OR_SET		"_or_set@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_XOR_SET		"_xor_set@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SHL_SET		"_shl_set@"
+#define ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SHR_SET		"_shr_set@"
+*/
 
 namespace zetscript{
 
@@ -48,6 +57,7 @@ namespace zetscript{
 		 MemberPropertySetterInfo getInfoSetter(const char *_symbol_name);
 		 void addSetter(ByteCodeMetamethod _byte_code_metamethod,ScriptFunction *f);
 		 zs_vector * getVectorSetter(const char *_symbol_name);
+		 const zs_string & byteCodeToMemberPropertySymbolName(ByteCodeMetamethod _byte_code);
 
 
 		~MemberProperty();
