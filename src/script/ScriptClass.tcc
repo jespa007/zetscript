@@ -3,7 +3,7 @@
  *  See LICENSE file for details.
  */
 namespace zetscript{
-/*
+
 	template < typename R>
 	void ScriptClass::registerNativeMemberVariableStaticConst(
 			const zs_string & var_name
@@ -25,7 +25,7 @@ namespace zetscript{
 				,registered_line
 		);
 	}
-/*
+
 	/*
 	 * register C setter
 	 */
@@ -130,151 +130,16 @@ return registerInternalMemberFunction(
 		);
 	}*/
 
-	/*
-	 * register C post increment
-	 */
-	/*template <typename F>
-	void ScriptClass::registerNativeMemberPropertyPostIncrement(
-			const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-	){
-		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
-		zs_string function_class_name;
-		zs_string error;
 
-		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				_property_name
-				,_ptr_function
-				,&params
-				,&params_len
-		);
 
-		Symbol *symbol_result = registerNativeMemberPropertyPostIncrement(
-				 _property_name
-				 ,&params
-				 ,params_len
-				,idx_return_type
-				,(zs_int)_ptr_function
-				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
-				,_registered_file
-				,_registered_line
-		);
-	}*/
 
-	/*
-	 * register C post decrement
-	 */
-	/*template <typename F>
-	void ScriptClass::registerNativeMemberPropertyPostDecrement(
-			const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-	){
-		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
-		zs_string function_class_name;
-		zs_string error;
 
-		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				_property_name
-				,_ptr_function
-				,&params
-				,&params_len
-		);
-
-		Symbol *symbol_result = registerNativeMemberPropertyPostDecrement(
-				 _property_name
-				 ,&params
-				 ,params_len
-				,idx_return_type
-				,(zs_int)_ptr_function
-				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
-				,_registered_file
-				,_registered_line
-		);
-	}*/
-
-	/*
-	 * register C pre increment
-	 */
-	/*template <typename F>
-	void ScriptClass::registerNativeMemberPropertyPreIncrement(
-			const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-	){
-		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
-		zs_string function_class_name;
-		zs_string error;
-
-		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				_property_name
-				,_ptr_function
-				,&params
-				,&params_len
-		);
-
-		Symbol *symbol_result = registerNativeMemberPropertyPreIncrement(
-				 _property_name
-				 ,&params
-				 ,params_len
-				,idx_return_type
-				,(zs_int)_ptr_function
-				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
-				,_registered_file
-				,_registered_line
-		);
-	}
-*/
-	/*
-	 * register C pre decrement
-	 */
-	/*template <typename F>
-	void ScriptClass::registerNativeMemberPropertyPreDecrement(
-			const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-	){
-		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
-		zs_string function_class_name;
-		zs_string error;
-
-		// 1. check all parameters ok.
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				_property_name
-				,_ptr_function
-				,&params
-				,&params_len
-		);
-
-		Symbol *symbol_result = registerNativeMemberPropertyPreDecrement(
-				 _property_name
-				 ,&params
-				 ,params_len
-				,idx_return_type
-				,(zs_int)_ptr_function
-				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
-				,_registered_file
-				,_registered_line
-		);
-	}*/
 
 	/**
 	 * Register C Member function Class
 	 * like register function c but is added to member function list according type C
 	 */
-	/*template <typename F>
+	template <typename F>
 	void ScriptClass::registerNativeMemberFunctionStatic(
 			const zs_string & function_name
 			,F ptr_function
@@ -297,13 +162,13 @@ return registerInternalMemberFunction(
 		);
 
 		// register member function...
-		Symbol * symbol_sf = this->registerMemberFunction(
+		this->registerInternalMemberFunction(
 				 function_name
 				,&params
 				,params_len
+				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC
 				, idx_return_type
 				, (zs_int)ptr_function
-				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC
 				,registered_file
 				,registered_line
 
@@ -312,7 +177,7 @@ return registerInternalMemberFunction(
 		ZS_LOG_DEBUG("Registered member function name %s::%s",this->name.c_str(), function_name.c_str());
 
 		// check whether is static metamethod...
-		if(ZS_STRCMP(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET),!=,function_name.c_str())){
+		/*if(ZS_STRCMP(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET),!=,function_name.c_str())){
 
 			for(int i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 				if(ZS_STRCMP(byte_code_metamethod_to_symbol_str((ByteCodeMetamethod)i),==,function_name.c_str())){
@@ -345,14 +210,14 @@ return registerInternalMemberFunction(
 			}
 		}else{
 			THROW_RUNTIME_ERROR("error! cannot register metamethod set on static function. Must be member function");
-		}
+		}*/
 	}
-*/
+
 	/*
 	 * register static function registerNativeMemberFunction as function member
 	 * Is automatically added in function member list according first parameter type of function_type
 	 */
-/*	template <typename F>
+	template <typename F>
 	void ScriptClass::registerNativeMemberFunction(
 			const zs_string & _function_name
 			,F _ptr_function
@@ -417,5 +282,5 @@ return registerInternalMemberFunction(
 
 		ZS_LOG_DEBUG("Registered C function '%s' as function member '%s'",function_name, function_class_name.c_str());
 	}
-*/
+
 }

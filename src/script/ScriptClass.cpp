@@ -46,7 +46,7 @@ namespace zetscript{
 		script_function_factory= zs->getScriptFunctionFactory();
 		script_class_factory=zs->getScriptClassFactory();
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
-		member_properties=NULL;
+		member_properties = new MemberProperty(this,class_name);
 		properties=_properties;
 
 	}
@@ -75,7 +75,9 @@ namespace zetscript{
 	}
 
 	//---------------------------------------------------
-	// VARIABLES
+	//
+	// MEMBER VARIABLES
+	//
 	Symbol				* 	ScriptClass::registerMemberVariable(
 		const zs_string & symbol_name
 		,unsigned short symbol_properties
@@ -137,7 +139,9 @@ namespace zetscript{
 		return symbol;
 	}
 	//---------------------------------------------------
-	// ATTRIBUTES
+	//
+	// MEMBER PROPERTIES
+	//
 	Symbol *ScriptClass::registerMemberProperty(
 			 const zs_string & attrib_name
 			,const char * file
@@ -171,29 +175,31 @@ namespace zetscript{
 		return symbol_member_property;
 	}
 
-	/*Symbol				* 	ScriptClass::registerNativeMemberPropertyMetamethod(
+	Symbol				* 	ScriptClass::registerNativeMemberPropertyMetamethod(
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
 			,size_t _params_len
 			,int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_getter_function_properties
 			,const char * _file
 			,short _line
 
 
 	){
 		Symbol *symbol_member_property=NULL;
-		MemberProperty *ma=NULL;
+		MemberProperty *mp=NULL;
+		MemberPropertySetterInfo mp_setter_info;
 		Symbol *symbol_function=NULL;
 		zs_string symbol_metamethod_function;
+		ScriptFunction **ptr_getter_script_function=NULL;
+		zs_vector *ptr_setter=NULL;
 
 		if((symbol_member_property=getSymbol(_property_name)) == NULL){
 			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
 		}
 
-		ma=(MemberProperty *)symbol_member_property->ref_ptr;
+		mp=(MemberProperty *)symbol_member_property->ref_ptr;
 
 
 		if(MemberProperty::check_valid_metamethod(_byte_code_metamethod)==false){
@@ -217,61 +223,67 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_SHL_SET:
 		case BYTE_CODE_METAMETHOD_SHR_SET:
 			symbol_metamethod_function=ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code_metamethod,_property_name);
-			ma->addSetter(_byte_code_metamethod,(ScriptFunction *)symbol_function->ref_ptr);
+			mp_setter_info=mp->getSetterInfo(_byte_code_metamethod);
 			break;
 		// particular case
 		case BYTE_CODE_METAMETHOD_POST_INC:
-			if(ma->post_inc != NULL){
+			if(mp->post_inc != NULL){
 
 				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '%s++') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
 			}
-			ma->post_inc=(ScriptFunction *)symbol_function->ref_ptr;
+			ptr_getter_script_function=&mp->post_inc;
 			break;
 		case BYTE_CODE_METAMETHOD_POST_DEC:
-			if(ma->post_dec != NULL){
+			if(mp->post_dec != NULL){
 
 				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post decrement (aka '%s--') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
 			}
-			ma->post_dec=(ScriptFunction *)symbol_function->ref_ptr;
+			ptr_getter_script_function=&mp->post_dec;
 			break;
 		case BYTE_CODE_METAMETHOD_PRE_INC:
-			if(ma->pre_inc != NULL){
+			if(mp->pre_inc != NULL){
 
 				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre increment (aka '++%s') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
 			}
-			ma->pre_inc=(ScriptFunction *)symbol_function->ref_ptr;
+			ptr_getter_script_function=&mp->pre_inc;
 			break;
 		case BYTE_CODE_METAMETHOD_PRE_DEC:
-			if(ma->pre_dec != NULL){
+			if(mp->pre_dec != NULL){
 
 				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre decrement (aka '--%s') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
 			}
-			ma->pre_dec=(ScriptFunction *)symbol_function->ref_ptr;
+			ptr_getter_script_function=&mp->pre_dec;
 			break;
 		}
 
-		symbol_function=registerNativeMemberFunction(
+		symbol_function=registerInternalMemberFunction(
 				symbol_metamethod_function,
 				_params,
 				_params_len,
 				_idx_return_type,
 				_ref_ptr,
-				_symbol_getter_function_properties,
+				FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION,
 				_file,
 				_line
 		);
+
+		if(ptr_getter_script_function!=NULL){ // getter
+			*ptr_getter_script_function=(ScriptFunction *)symbol_function->ref_ptr;
+		}else{ // setter
+			mp_setter_info.setters->push_back(symbol_function->ref_ptr);
+		}
 
 
 
@@ -281,8 +293,6 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberPropertyMetamethodGetter(
 			 const zs_string & _property_name
-			 , ScriptFunctionParam **_params
-			 ,size_t _params_len
 			, int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short _symbol_getter_function_properties
@@ -307,13 +317,13 @@ namespace zetscript{
 			);
 		}
 
-		symbol_function=registerNativeMemberFunction(
+		symbol_function=registerInternalMemberFunction(
 				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER+_property_name,
-				_params,
-				_params_len,
+				NULL,
+				0,
 				_idx_return_type,
 				_ref_ptr,
-				_symbol_getter_function_properties,
+				 FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION,
 				_file,
 				_line
 		);
@@ -322,447 +332,12 @@ namespace zetscript{
 
 		return symbol_member_property;
 	}
-*/
-	/*Symbol				* 	ScriptClass::registerNativeMemberPropertyPostIncrement(
-			 const zs_string & _property_name
-			 , ScriptFunctionParam **_params
-			 ,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_post_inc_function_properties
-			,const char *_file
-			,short _line
-	){
 
-		Symbol *symbol_member_property=NULL;
-		Symbol *symbol_function=NULL;
 
-		MemberProperty *ma=NULL;
-		if((symbol_member_property=getSymbol(_property_name)) == NULL){
-			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
-		}
-
-		ma=(MemberProperty *)symbol_member_property->ref_ptr;
-
-		if(ma->post_inc != NULL){
-
-			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '%s++') metamethod"
-				,_property_name.c_str()
-				,_property_name.c_str()
-			);
-		}
-
-		symbol_function=registerNativeMemberFunction(
-				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_INC+_property_name,
-				_params,
-				_params_len,
-				_idx_return_type,
-				_ref_ptr,
-				_symbol_post_inc_function_properties,
-				_file,
-				_line
-		);
-
-		ma->post_inc=(ScriptFunction *)symbol_function->ref_ptr;
-
-		return symbol_member_property;
-	}
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyPostDecrement(
-			 const zs_string & _property_name
-			 , ScriptFunctionParam **_params
-			 ,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_post_dec_function_properties
-			,const char *_file
-			,short _line
-	){
-
-		Symbol *symbol_member_property=NULL;
-		Symbol *symbol_function=NULL;
-
-		MemberProperty *ma=NULL;
-		if((symbol_member_property=getSymbol(_property_name)) == NULL){
-			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
-		}
-
-		ma=(MemberProperty *)symbol_member_property->ref_ptr;
-
-		if(ma->post_dec != NULL){
-
-			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post decrement (aka '%s--') metamethod"
-				,_property_name.c_str()
-				,_property_name.c_str()
-			);
-		}
-
-		symbol_function=registerNativeMemberFunction(
-				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_DEC+_property_name,
-				_params,
-				_params_len,
-				_idx_return_type,
-				_ref_ptr,
-				_symbol_post_dec_function_properties,
-				_file,
-				_line
-		);
-
-		ma->post_dec=(ScriptFunction *)symbol_function->ref_ptr;
-
-		return symbol_member_property;
-	}
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyPreIncrement(
-			 const zs_string & _property_name
-			 , ScriptFunctionParam **_params
-			 ,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_pre_inc_function_properties
-			,const char *_file
-			,short _line
-	){
-
-		Symbol *symbol_member_property=NULL;
-		Symbol *symbol_function=NULL;
-
-		MemberProperty *ma=NULL;
-		if((symbol_member_property=getSymbol(_property_name)) == NULL){
-			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
-		}
-
-		ma=(MemberProperty *)symbol_member_property->ref_ptr;
-
-		if(ma->pre_inc != NULL){
-
-			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '++%s') metamethod"
-				,_property_name.c_str()
-				,_property_name.c_str()
-			);
-		}
-
-		symbol_function=registerNativeMemberFunction(
-				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_INC+_property_name,
-				_params,
-				_params_len,
-				_idx_return_type,
-				_ref_ptr,
-				_symbol_pre_inc_function_properties,
-				_file,
-				_line
-		);
-
-		ma->pre_inc=(ScriptFunction *)symbol_function->ref_ptr;
-
-		return symbol_member_property;
-	}
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyPreDecrement(
-			 const zs_string & _property_name
-			 , ScriptFunctionParam **_params
-			 ,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_pre_dec_function_properties
-			,const char *_file
-			,short _line
-	){
-
-		Symbol *symbol_member_property=NULL;
-		Symbol *symbol_function=NULL;
-
-		MemberProperty *ma=NULL;
-		if((symbol_member_property=getSymbol(_property_name)) == NULL){
-			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
-		}
-
-		ma=(MemberProperty *)symbol_member_property->ref_ptr;
-
-		if(ma->post_dec != NULL){
-
-			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre decrement (aka '--%s') metamethod"
-				,_property_name.c_str()
-				,_property_name.c_str()
-			);
-		}
-
-		symbol_function=registerNativeMemberFunction(
-				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_DEC+_property_name,
-				_params,
-				_params_len,
-				_idx_return_type,
-				_ref_ptr,
-				_symbol_pre_dec_function_properties,
-				_file,
-				_line
-		);
-
-		ma->pre_dec=(ScriptFunction *)symbol_function->ref_ptr;
-
-		return symbol_member_property;
-	}
-
-	template <typename F>
-	void ScriptClass::registerNativeMemberPropertyAddSet(
-			const zs_string & _property_name
-		,F _ptr_function
-		, const char *registered_file
-		,short registered_line
-	){
-
-	}
-
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyAddSet(
-		const zs_string & _property_name
-		,ScriptFunctionParam **_params
-		,size_t _params_len
-		, int _idx_return_type
-		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-		,unsigned short _symbol_add_set_function_properties
-		,const char * _file
-		,short _line
-
-	){
-		return NULL;
-	}
-
-	// SUB SET
-	template <typename F>
-	void ScriptClass::registerNativeMemberPropertySubSet(
-			const zs_string & _property_name
-		,F _ptr_function
-		, const char *registered_file
-		,short registered_line
-	){
-
-	}
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertySubSet(
-		const zs_string & _property_name
-		,ScriptFunctionParam **_params
-		,size_t _params_len
-		, int _idx_return_type
-		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-		,unsigned short _symbol_sub_set_function_properties
-		,const char * _file
-		,short _line
-
-	){
-		return NULL;
-	}
-
-	// MUL SET
-	template <typename F>
-	void ScriptClass::registerNativeMemberPropertyMulSet(
-			const zs_string & _property_name
-		,F _ptr_function
-		, const char *registered_file
-		,short registered_line
-	){
-
-	}
-
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyMulSet(
-		const zs_string & _property_name
-		,ScriptFunctionParam **_params
-		,size_t _params_len
-		, int _idx_return_type
-		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-		,unsigned short _symbol_mul_set_function_properties
-		,const char * _file
-		,short _line
-
-	){
-		return NULL;
-	}
-
-	// DIV SET
-	template <typename F>
-	void ScriptClass::registerNativeMemberPropertyDivSet(
-			const zs_string & _property_name
-		,F _ptr_function
-		, const char *registered_file
-		,short registered_line
-	){
-
-	}
-
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyDivSet(
-		const zs_string & _property_name
-		,ScriptFunctionParam **_params
-		,size_t _params_len
-		, int _idx_return_type
-		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-		,unsigned short _symbol_div_set_function_properties
-		,const char * _file
-		,short _line
-
-	){
-		return NULL;
-	}
-
-	// MOD SET
-	template <typename F>
-	void ScriptClass::registerNativeMemberPropertyModSet(
-			const zs_string & _property_name
-		,F _ptr_function
-		, const char *registered_file
-		,short registered_line
-	){
-
-	}
-
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyModSet(
-		const zs_string & _property_name
-		,ScriptFunctionParam **_params
-		,size_t _params_len
-		, int _idx_return_type
-		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-		,unsigned short _symbol_mod_set_function_properties
-		,const char * _file
-		,short _line
-
-	){
-		return NULL;
-	}
-
-	// AND SET
-	template <typename F>
-	void ScriptClass::registerNativeMemberPropertyAndSet(
-			const zs_string & _property_name
-		,F _ptr_function
-		, const char *registered_file
-		,short registered_line
-	){
-
-	}
-
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyAndSet(
-		const zs_string & _property_name
-		,ScriptFunctionParam **_params
-		,size_t _params_len
-		, int _idx_return_type
-		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-		,unsigned short _symbol_and_set_function_properties
-		,const char * _file
-		,short _line
-
-	){
-		return NULL;
-	}
-
-	// OR SET
-	template <typename F>
-	void ScriptClass::registerNativeMemberPropertyOrSet(
-			const zs_string & _property_name
-		,F _ptr_function
-		, const char *registered_file
-		,short registered_line
-	){
-
-	}
-
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyOrSet(
-		const zs_string & _property_name
-		,ScriptFunctionParam **_params
-		,size_t _params_len
-		, int _idx_return_type
-		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-		,unsigned short _symbol_or_set_function_properties
-		,const char * _file
-		,short _line
-
-	){
-		return NULL;
-	}
-
-	// XOR SET
-	template <typename F>
-	void ScriptClass::registerNativeMemberPropertyXorSet(
-			const zs_string & _property_name
-		,F _ptr_function
-		, const char *registered_file
-		,short registered_line
-	){
-
-	}
-
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyXorSet(
-		const zs_string & _property_name
-		,ScriptFunctionParam **_params
-		,size_t _params_len
-		, int _idx_return_type
-		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-		,unsigned short _symbol_xor_set_function_properties
-		,const char * _file
-		,short _line
-
-	){
-		return NULL;
-	}
-
-	// SHL SET
-	template <typename F>
-	void ScriptClass::registerNativeMemberPropertyShlSet(
-			const zs_string & _property_name
-		,F _ptr_function
-		, const char *registered_file
-		,short registered_line
-	){
-
-	}
-
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyShlSet(
-		const zs_string & _property_name
-		,ScriptFunctionParam **_params
-		,size_t _params_len
-		, int _idx_return_type
-		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-		,unsigned short _symbol_shl_set_function_properties
-		,const char * _file
-		,short _line
-
-	){
-		return NULL;
-	}
-
-	// SHR SET
-	template <typename F>
-	void ScriptClass::registerNativeMemberPropertyShrSet(
-			const zs_string & _property_name
-		,F _ptr_function
-		, const char *registered_file
-		,short registered_line
-	){
-
-	}
-
-
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyShrSet(
-		const zs_string & _property_name
-		,ScriptFunctionParam **_params
-		,size_t _params_len
-		, int _idx_return_type
-		,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-		,unsigned short _symbol_shr_set_function_properties
-		,const char * _file
-		,short _line
-
-	){
-		return NULL;
-	}
-*/
 	//---------------------------------------------------
-	// FUNCTIONS
+	//
+	// MEMBER FUNCTIONS
+	//
 
 /*	Symbol				* 	ScriptClass::registerMemberFunction(
 			 const zs_string & _function_name
@@ -842,7 +417,7 @@ namespace zetscript{
 
 		Symbol *function_symbol =  script_function_factory->newScriptFunction(
 				//---- Register data
-				class_scope
+				_class_scope
 				,_file
 				,_line
 				//---- Function data
@@ -911,6 +486,56 @@ namespace zetscript{
 							return NULL;
 						}
 
+						if(_function_properties & FUNCTION_PROPERTY_STATIC){
+
+							// check if they are gte,gt,equ, not_equ, lt, lte
+							switch(i){
+							case BYTE_CODE_METAMETHOD_EQU: //STRCMP(function_name, == ,"_equ")
+							case BYTE_CODE_METAMETHOD_NOT_EQU: //STRCMP(function_name, ==, "_nequ")
+							case BYTE_CODE_METAMETHOD_LT://STRCMP(function_name, ==, "_lt")
+							case BYTE_CODE_METAMETHOD_LTE://STRCMP(function_name, ==, "_lte")
+							case BYTE_CODE_METAMETHOD_GT://STRCMP(function_name, ==, "_gt")
+							case BYTE_CODE_METAMETHOD_GTE://STRCMP(function_name, ==, "_gte")
+							case BYTE_CODE_METAMETHOD_NOT://STRCMP(function_name, ==, "_gte")
+
+								// return type must be bool...
+								if(_idx_return_type != IDX_TYPE_BOOL_C){
+									THROW_RUNTIME_ERROR("error registering metamethod '%s::%s'. Expected return bool but it was '%s'",
+											this->class_name.c_str(),
+											_function_name.c_str(),
+											zs_rtti::demangle(this->script_class_factory->getScriptClass(return_type)->str_class_ptr_type)
+									);
+									return NULL;
+								}
+								break;
+							case BYTE_CODE_METAMETHOD_ADD: // +
+							case BYTE_CODE_METAMETHOD_SUB: // -
+							case BYTE_CODE_METAMETHOD_DIV: // /
+							case BYTE_CODE_METAMETHOD_MUL: // *
+							case BYTE_CODE_METAMETHOD_MOD:  // %
+							case BYTE_CODE_METAMETHOD_AND: // & bitwise logic and
+							case BYTE_CODE_METAMETHOD_OR: // | bitwise logic or
+							case BYTE_CODE_METAMETHOD_XOR: // ^ logic xor
+							case BYTE_CODE_METAMETHOD_SHL: // << shift left
+							case BYTE_CODE_METAMETHOD_SHR: // >> shift right
+
+								if(ZS_STRCMP(this->script_class_factory->getScriptClass(return_type)->str_class_ptr_type, != ,this->str_class_ptr_type)){
+
+									THROW_RUNTIME_ERROR("error registering metamethod %s::%s. Expected return %s but it was %s",
+											this->class_name.c_str(),
+											_function_name.c_str(),
+											zs_rtti::demangle(this->script_class_factory->getScriptClass(return_type)->str_class_ptr_type));
+									return NULL;
+								}
+								break;
+							default:
+								break;
+							}
+
+
+
+						}
+
 						if(_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION){
 							this_arg=1;
 						}
@@ -927,28 +552,77 @@ namespace zetscript{
 					}
 
 
-					// check whether metamethod has only one getter
-					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)== 0){
-						if(byte_code_metamethod_is_setter(op)){
-							if(member_properties == NULL){
-								member_properties = new MemberProperty(this,class_name);
-							}
+					// in the class only setters are registered in member property variable (getter is ignored)
+					switch(op){
+					case BYTE_CODE_METAMETHOD_SET:
+					case BYTE_CODE_METAMETHOD_ADD_SET:
+					case BYTE_CODE_METAMETHOD_SUB_SET:
+					case BYTE_CODE_METAMETHOD_MUL_SET:
+					case BYTE_CODE_METAMETHOD_DIV_SET:
+					case BYTE_CODE_METAMETHOD_MOD_SET:
+					case BYTE_CODE_METAMETHOD_AND_SET:
+					case BYTE_CODE_METAMETHOD_OR_SET:
+					case BYTE_CODE_METAMETHOD_XOR_SET:
+					case BYTE_CODE_METAMETHOD_SHL_SET:
+					case BYTE_CODE_METAMETHOD_SHR_SET:
 
-							MemberPropertySetterInfo info_mp=member_properties->getInfoSetter(op);
+						MemberPropertySetterInfo info_mp=member_properties->getSetterInfo(op);
 
-							if(((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) //--> script function has to have one setter function, meanwhile c ref can have more than one (due different signatures)
-									&&
-								(info_mp.setters!=NULL && info_mp.setters->count>0)){
-								// error already set (script functions only can be set once)
-								THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
-										,class_name.c_str()
-										,info_mp.str_byte_code_metamethod);
+						if(((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) //--> script function has to have one setter function, meanwhile c ref can have more than one (due different signatures)
+								&&
+							(info_mp.setters!=NULL && info_mp.setters->count>0)){
+							// error already set (script functions only can be set once)
+							THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
+									,class_name.c_str()
+									,info_mp.str_byte_code_metamethod);
 
-								return NULL;
-							}
-							member_properties->addSetter(op,(ScriptFunction *)function_symbol->ref_ptr);
+							return NULL;
 						}
+						member_properties->addSetter(op,(ScriptFunction *)function_symbol->ref_ptr);
+						break;
+					case BYTE_CODE_METAMETHOD_POST_INC:
+						if(member_properties->post_inc != NULL){
+
+							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '%s++') metamethod"
+								,_property_name.c_str()
+								,_property_name.c_str()
+							);
+						}
+						member_properties->post_inc=(ScriptFunction *)symbol_function->ref_ptr;
+						break;
+					case BYTE_CODE_METAMETHOD_POST_DEC:
+						if(member_properties->post_dec != NULL){
+
+							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post decrement (aka '%s--') metamethod"
+								,_property_name.c_str()
+								,_property_name.c_str()
+							);
+						}
+						member_properties->post_dec=(ScriptFunction *)symbol_function->ref_ptr;
+						break;
+					case BYTE_CODE_METAMETHOD_PRE_INC:
+						if(ma->pre_inc != NULL){
+
+							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre increment (aka '++%s') metamethod"
+								,_property_name.c_str()
+								,_property_name.c_str()
+							);
+						}
+						member_properties->pre_inc=(ScriptFunction *)symbol_function->ref_ptr;
+						break;
+					case BYTE_CODE_METAMETHOD_PRE_DEC:
+						if(member_properties->pre_dec != NULL){
+
+							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre decrement (aka '--%s') metamethod"
+								,_property_name.c_str()
+								,_property_name.c_str()
+							);
+						}
+						member_properties->pre_dec=(ScriptFunction *)symbol_function->ref_ptr;
+						break;
+
 					}
+
 
 					// break the loop telling that we found the metamethod
 					break;
@@ -1036,10 +710,7 @@ namespace zetscript{
 
 		delete allocated_member_properties;
 		delete idx_base_classes;
-
-		if(member_properties != NULL){
-			delete member_properties;
-		}
+		delete member_properties;
 	}
 }
 

@@ -314,7 +314,7 @@ namespace zetscript{
 
 				ByteCodeMetamethod *it_setter=MemberProperty::byte_code_metamethod_setter_list;
 				while(*it_setter!= 0){
-					MemberPropertySetterInfo mp_info=ma_src->getInfoSetter(*it_setter);
+					MemberPropertySetterInfo mp_info=ma_src->getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
 						for(unsigned i=0; i < mp_info.setters->count; i++){
 
@@ -438,16 +438,19 @@ namespace zetscript{
 				,&params_len
 				);
 
-		/*c_class->registerNativeMemberFunction(
+		c_class->registerNativeMemberPropertyMetamethod(
 			 _property_name
-			,ptr_function_setter
+			 ,BYTE_CODE_METAMETHOD_SET
+			,_ptr_function
 			 ,&params
 			,params_len
 			,idx_return_type
 			,registered_file
 			,registered_line
-		);*/
+		);
 	}
+
+
 
 	/*
 	 * register property getter
@@ -455,13 +458,13 @@ namespace zetscript{
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyGetter(
 		const zs_string & _property_name
-		,F _ptr_function_getter
+		,F _ptr_function
 		,const char *_registered_file
 		,short _registered_line
 	){
-		zs_string str_class_name_ptr = typeid( C *).name();
 		ScriptFunctionParam *params=NULL;
 		size_t *params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
 		if(c_class == NULL){
@@ -469,20 +472,17 @@ namespace zetscript{
 		}
 
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				this
-				,_property_name
-				,_ptr_function_getter
-				,&params
-				,&params_len
-				);
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
 
 		c_class->registerNativeMemberPropertyGetter(
 				 _property_name
-				 ,&params
-				 ,params_len
 				,idx_return_type
-				,(zs_int)_ptr_function_getter
-				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
+				,(zs_int)_ptr_function
 				,_registered_file
 				,_registered_line
 		);
@@ -494,10 +494,12 @@ namespace zetscript{
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPostIncrement(
 		const zs_string & _property_name
-		,F ptr_function_post_increment
+		,F _ptr_function
 		,const char *registered_file
 		,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
 		zs_string str_class_name_ptr = typeid( C *).name();
 
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
@@ -506,9 +508,21 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberProperty(
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
 			 _property_name
-			,ptr_function_post_increment
+			 ,BYTE_CODE_METAMETHOD_POST_INC
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
 			,registered_file
 			,registered_line
 		);
@@ -520,10 +534,12 @@ namespace zetscript{
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPostDecrement(
 			const zs_string & _property_name
-			,F ptr_function_post_decrement
+			,F _ptr_function
 			,const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
 		zs_string str_class_name_ptr = typeid( C *).name();
 
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
@@ -532,9 +548,21 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberPropertyPostDecrement<F>(
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
 			 _property_name
-			,ptr_function_post_decrement
+			 ,BYTE_CODE_METAMETHOD_POST_DEC
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
 			,registered_file
 			,registered_line
 		);
@@ -546,10 +574,12 @@ namespace zetscript{
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPreIncrement(
 			const zs_string & _property_name
-			,F ptr_function_pre_increment
+			,F _ptr_function
 			,const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
 		zs_string str_class_name_ptr = typeid( C *).name();
 
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
@@ -558,9 +588,21 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberPropertyPreIncrement<F>(
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
 			 _property_name
-			,ptr_function_pre_increment
+			 ,BYTE_CODE_METAMETHOD_PRE_INC
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
 			,registered_file
 			,registered_line
 		);
@@ -572,10 +614,12 @@ namespace zetscript{
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertyPreDecrement(
 			const zs_string & _property_name
-			,F ptr_function_pre_decrement
+			,F _ptr_function
 			,const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
 		zs_string str_class_name_ptr = typeid( C *).name();
 
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
@@ -584,9 +628,21 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberPropertyPreDecrement<F>(
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
 			 _property_name
-			,ptr_function_pre_decrement
+			 ,BYTE_CODE_METAMETHOD_PRE_DEC
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
 			,registered_file
 			,registered_line
 		);
@@ -600,7 +656,34 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+		}
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
+			 _property_name
+			 ,BYTE_CODE_METAMETHOD_ADD_SET
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
+			,registered_file
+			,registered_line
+		);
 	}
 
 	// register member property  sub set operation
@@ -611,7 +694,34 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+		}
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
+			 _property_name
+			 ,BYTE_CODE_METAMETHOD_SUB_SET
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
+			,registered_file
+			,registered_line
+		);
 	}
 
 	// register member property mul set operation
@@ -622,7 +732,34 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+		}
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
+			 _property_name
+			 ,BYTE_CODE_METAMETHOD_MUL_DEC
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
+			,registered_file
+			,registered_line
+		);
 	}
 
 	// register member property div set operation
@@ -633,7 +770,34 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+		}
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
+			 _property_name
+			 ,BYTE_CODE_METAMETHOD_DIV_SET
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
+			,registered_file
+			,registered_line
+		);
 	}
 
 	// register member property mod set operation
@@ -644,7 +808,34 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+		}
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
+			 _property_name
+			 ,BYTE_CODE_METAMETHOD_MOD_SET
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
+			,registered_file
+			,registered_line
+		);
 	}
 
 	// register member property and set operation
@@ -655,7 +846,34 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+		}
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
+			 _property_name
+			 ,BYTE_CODE_METAMETHOD_AND_SET
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
+			,registered_file
+			,registered_line
+		);
 	}
 
 	// register member property or set operation
@@ -666,7 +884,34 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+		}
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
+			 _property_name
+			 ,BYTE_CODE_METAMETHOD_OR_SET
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
+			,registered_file
+			,registered_line
+		);
 	}
 
 	// register member property xor set operation
@@ -677,7 +922,34 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+		}
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
+			 _property_name
+			 ,BYTE_CODE_METAMETHOD_XOR_SET
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
+			,registered_file
+			,registered_line
+		);
 	}
 
 	// register member property shl set operation
@@ -688,7 +960,34 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+		}
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
+			 _property_name
+			 ,BYTE_CODE_METAMETHOD_SHL_SET
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
+			,registered_file
+			,registered_line
+		);
 	}
 
 	// register member property shr set operation
@@ -699,7 +998,34 @@ namespace zetscript{
 			, const char *registered_file
 			,short registered_line
 	){
+		ScriptFunctionParam *params=NULL;
+		size_t params_len=0;
+		zs_string str_class_name_ptr = typeid( C *).name();
 
+		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
+
+		if(c_class == NULL){
+			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
+		}
+
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+			this
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
+
+		c_class->registerNativeMemberPropertyMetamethod(
+			 _property_name
+			 ,BYTE_CODE_METAMETHOD_SHR_SET
+			,_ptr_function
+			,params
+			,params_len
+			,idx_return_type
+			,registered_file
+			,registered_line
+		);
 	}
 
 

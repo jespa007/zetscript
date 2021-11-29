@@ -468,7 +468,7 @@ namespace zetscript{
 						const ByteCodeMetamethod *it_setters=MemberProperty::byte_code_metamethod_setter_list;
 
 						while(*it_setters!=0){
-							MemberPropertySetterInfo mp_info=ma_src->getInfoSetter(*it_setters);
+							MemberPropertySetterInfo mp_info=ma_src->getSetterInfo(*it_setters);
 							for(unsigned i=0; i < mp_info.setters->count;i++){
 								ma_dst->addSetter(*it_setters,(ScriptFunction *)(((StackElement *)mp_info.setters->items[i])->value));
 

@@ -438,7 +438,7 @@ namespace zetscript{
 							);
 						}
 					}else{ // find setter
-						MemberPropertySetterInfo _mp_info=ma->getInfoSetter(function_name.c_str());
+						MemberPropertySetterInfo _mp_info=ma->getSetterInfo(function_name.c_str());
 
 						if(_mp_info.byte_code_metamethod!=BYTE_CODE_METAMETHOD_INVALID){
 							if(_mp_info.setters->count == 0){

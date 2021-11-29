@@ -184,29 +184,31 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Return type '%s' for function '%s' not registered",zs_rtti::demangle(return_type),function_name);
 		}
 
-		*params=new ScriptFunctionParam[args.count];
-		*params_len=args.count;
+		if(params != NULL){
+			*params=new ScriptFunctionParam[args.count];
+			*params_len=args.count;
 
-		for(unsigned int i = 0; i < args.count; i++){
-			const char *param=(const char *)args.items[i];
-			int idx_type = script_class_factory->getIdxClassFromItsNativeType(param);
-			// exception: These variables are registered but not allowed to pass throught parameter
-			if(idx_type==IDX_TYPE_ZS_FLOAT_C || idx_type==IDX_TYPE_BOOL_C || idx_type == IDX_TYPE_STRING_C){
-				THROW_RUNTIME_ERROR("Argument %i type '%s' for function '%s' is not supported as parameter, you should use pointer instead (i.e %s *)"
-						,i+1
-						,zs_rtti::demangle(param)
-						,function_name,zs_rtti::demangle(param)
-				);
+			for(unsigned int i = 0; i < args.count; i++){
+				const char *param=(const char *)args.items[i];
+				int idx_type = script_class_factory->getIdxClassFromItsNativeType(param);
+				// exception: These variables are registered but not allowed to pass throught parameter
+				if(idx_type==IDX_TYPE_ZS_FLOAT_C || idx_type==IDX_TYPE_BOOL_C || idx_type == IDX_TYPE_STRING_C){
+					THROW_RUNTIME_ERROR("Argument %i type '%s' for function '%s' is not supported as parameter, you should use pointer instead (i.e %s *)"
+							,i+1
+							,zs_rtti::demangle(param)
+							,function_name,zs_rtti::demangle(param)
+					);
+				}
+
+				if(idx_type==ZS_IDX_UNDEFINED){
+					THROW_RUNTIME_ERROR("Argument %i type '%s' for function '%s' not registered"
+							,i+1
+							,zs_rtti::demangle(param)
+							,function_name);
+				}
+
+				(*params)[i]=ScriptFunctionParam(idx_type,param);
 			}
-
-			if(idx_type==ZS_IDX_UNDEFINED){
-				THROW_RUNTIME_ERROR("Argument %i type '%s' for function '%s' not registered"
-						,i+1
-						,zs_rtti::demangle(param)
-						,function_name);
-			}
-
-			(*params)[i]=ScriptFunctionParam(idx_type,param);
 		}
 
 		if(str_return_type != NULL){

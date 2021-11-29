@@ -32,7 +32,7 @@ namespace zetscript{
 		property_name=_property_name;
 		script_class=_script_class;
 	}
-	MemberPropertySetterInfo MemberProperty::getInfoSetter(ByteCodeMetamethod _byte_code_metamethod){
+	MemberPropertySetterInfo MemberProperty::getSetterInfo(ByteCodeMetamethod _byte_code_metamethod){
 		MemberPropertySetterInfo info={_byte_code_metamethod,NULL,NULL};
 		info.str_byte_code_metamethod=byte_code_metamethod_to_symbol_str(_byte_code_metamethod);
 		switch(_byte_code_metamethod){
@@ -77,9 +77,9 @@ namespace zetscript{
 
 
 
-	MemberPropertySetterInfo MemberProperty::getInfoSetter(const char *_symbol_name){
+	MemberPropertySetterInfo MemberProperty::getSetterInfo(const char *_symbol_name){
 		ByteCodeMetamethod _byte_code_metamethod =byte_code_symbol_to_setter_metamethod(_symbol_name);
-		return getInfoSetter(_byte_code_metamethod);
+		return getSetterInfo(_byte_code_metamethod);
 
 
 	}

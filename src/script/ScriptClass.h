@@ -43,9 +43,6 @@ namespace zetscript{
 
 		zs_vector						   	*   idx_base_classes; // list of idx of classes base
 
-
-
-
 		 ScriptClass(ZetScript *_zs
 				 ,short _idx_class
 				 , zs_string _name
@@ -57,7 +54,9 @@ namespace zetscript{
 		 bool isDerivedFrom(short idx_class);
 
 		//---------------------------------------------------
-		// SCRIPT VARIABLES
+		//
+		// MEMBER VARIABLES
+		//
 		Symbol				* 	registerMemberVariable(
 			 const zs_string & _symbol_name
 			,unsigned short _symbol_properties
@@ -84,10 +83,9 @@ namespace zetscript{
 			,short _line=-1
 
 		);
-
 		//---------------------------------------------------
 		//
-		// ATTRIBUTES
+		// MEMBER PROPERTIES
 		//
 		Symbol 				*	registerMemberProperty(
 				const zs_string & _property_name
@@ -95,20 +93,7 @@ namespace zetscript{
 				,short _line=-1
 
 		);
-		
-		//---------------
-		// SETTER
-		/*
-		 * register C setter
-		 */
-		/*template <typename F>
-		void registerNativeMemberPropertyMetamethod(
-				const zs_string & _property_name
-				,ByteCodeMetamethod _byte_code_metamethod
-				,F _ptr_function
-				, const char *_registered_file=""
-				,short _registered_line=-1
-		);
+
 
 		Symbol				* 	registerNativeMemberPropertyMetamethod(
 			const zs_string & _property_name
@@ -125,30 +110,6 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberPropertyMetamethodGetter(
 			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_getter_function_properties
-			,const char * _file=""
-			,short _line=-1
-		);*/
-
-
-	/*	//---------------
-		// GETTER
-		template <typename F>
-		void registerNativeMemberPropertyGetter(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-		);
-
-		Symbol				* 	registerNativeMemberPropertyGetter(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
 			, int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short _symbol_getter_function_properties
@@ -156,350 +117,21 @@ namespace zetscript{
 			,short _line=-1
 		);
 
-/*
-		//---------------
-		// POST OPERATIONS
 
-		template <typename F>
-		void registerNativeMemberPropertyPostIncrement(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-		);
-
-		Symbol				* 	registerNativeMemberPropertyPostIncrement(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_post_inc_function_properties
-			,const char * _file=""
-			,short _line=-1
-		);
-
-		//---
-		template <typename F>
-		void registerNativeMemberPropertyPostDecrement(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-		);
-
-		Symbol				* 	registerNativeMemberPropertyPostDecrement(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_post_dec_function_properties
-			,const char * _file=""
-			,short _line=-1
-		);
-
-
-		//---------------
-		// PRE OPERATIONS
-		template <typename F>
-		void registerNativeMemberPropertyPreIncrement(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *_registered_file
-			,short _registered_line
-		);
-
-		Symbol				* 	registerNativeMemberPropertyPreIncrement(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_pre_inc_function_properties
-			,const char * _file=""
-			,short _line=-1
-		);
-
-		//---
-
-		template <typename F>
-		void registerNativeMemberPropertyPreDecrement(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-
-		Symbol				* 	registerNativeMemberPropertyPreDecrement(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_pre_dec_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-
-		//--------------------
-		// OPERATIONS SETS
-
-		// ADD SET
-		template <typename F>
-		void registerNativeMemberPropertyAddSet(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-
-		Symbol				* 	registerNativeMemberPropertyAddSet(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_add_set_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-
-		// SUB SET
-		template <typename F>
-		void registerNativeMemberPropertySubSet(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-		Symbol				* 	registerNativeMemberPropertySubSet(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_sub_set_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-
-		// MUL SET
-		template <typename F>
-		void registerNativeMemberPropertyMulSet(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-
-		Symbol				* 	registerNativeMemberPropertyMulSet(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_mul_set_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-
-		// DIV SET
-		template <typename F>
-		void registerNativeMemberPropertyDivSet(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-
-		Symbol				* 	registerNativeMemberPropertyDivSet(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_div_set_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-
-		// MOD SET
-		template <typename F>
-		void registerNativeMemberPropertyModSet(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-
-		Symbol				* 	registerNativeMemberPropertyModSet(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_mod_set_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-
-		// AND SET
-		template <typename F>
-		void registerNativeMemberPropertyAndSet(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-
-		Symbol				* 	registerNativeMemberPropertyAndSet(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_and_set_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-
-		// OR SET
-		template <typename F>
-		void registerNativeMemberPropertyOrSet(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-
-		Symbol				* 	registerNativeMemberPropertyOrSet(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_or_set_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-
-		// XOR SET
-		template <typename F>
-		void registerNativeMemberPropertyXorSet(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-
-		Symbol				* 	registerNativeMemberPropertyXorSet(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_xor_set_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-
-		// SHL SET
-		template <typename F>
-		void registerNativeMemberPropertyShlSet(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-
-		Symbol				* 	registerNativeMemberPropertyShlSet(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_shl_set_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-
-		// SHR SET
-		template <typename F>
-		void registerNativeMemberPropertyShrSet(
-				const zs_string & _property_name
-			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
-		);
-
-
-		Symbol				* 	registerNativeMemberPropertyShrSet(
-			const zs_string & _property_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, int _idx_return_type
-			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_shr_set_function_properties
-			,const char * _file=""
-			,short _line=-1
-
-		);
-*/
 		//---------------------------------------------------
+		//
 		// FUNCTIONS
+		//
 		unsigned 	getNumNativeFunctions(const zs_string & function_name);
 
-		/*Symbol				* 	registerMemberFunction(
+		Symbol				* 	registerMemberFunction(
 				 const zs_string & _function_name
 				,ScriptFunctionParam **_params=NULL
 				,size_t _params_len=0
 				, unsigned short _properties=0
 				,const char * _file = ""
 				, short _line=-1
-		);*/
-		Symbol				* 	registerMemberFunction(
-			 const zs_string & _function_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, unsigned short _function_properties=0
-			, int _idx_return_type=ZS_IDX_UNDEFINED
-			, zs_int _ref_ptr=0
-			, const char * _file=""
-			, short _line=-1
-
 		);
-
-		/*Symbol				* 	registerNativeMemberFunction(
-				 const zs_string & _function_name
-				,ScriptFunctionParam **_params=NULL
-				,size_t _params_len=0
-				,int _idx_return_type=ZS_IDX_UNDEFINED
-				,zs_int _ref_ptr=0
-				,unsigned short _properties=0
-				,const char * _file=""
-				,short _line=-1
-		);*/
 
 		template <typename F>
 		void registerNativeMemberFunctionStatic(
@@ -509,13 +141,13 @@ namespace zetscript{
 				,short _registered_line=-1
 		);
 
-		/*template <typename F>
+		template <typename F>
 		void registerNativeMemberFunction(
 				const zs_string & _function_name
 				,F _function_type
 				, const char *_registered_file=""
 				,short _registered_line=-1
-		);*/
+		);
 
 		//---------------------------------------------------
 
@@ -546,6 +178,17 @@ namespace zetscript{
 
 		);
 
+		Symbol				* 	registerInternalMemberFunction(
+			 const zs_string & _function_name
+			,ScriptFunctionParam **_params
+			,size_t _params_len
+			, unsigned short _function_properties=0
+			, int _idx_return_type=ZS_IDX_UNDEFINED
+			, zs_int _ref_ptr=0
+			, const char * _file=""
+			, short _line=-1
+
+		);
 
 
 
