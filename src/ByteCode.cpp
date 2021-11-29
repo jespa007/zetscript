@@ -380,4 +380,19 @@ namespace zetscript{
 	}
 
 
+	bool byte_code_metamethod_is_setter(ByteCodeMetamethod _byte_code_metamethod){
+		const ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_setter_list;
+		bool found=false;
+		while(*it!=0){
+			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
+			if(*it == _byte_code_metamethod){
+				return true;
+			}
+			it++;
+		}
+
+		return false;
+	}
+
+
 }

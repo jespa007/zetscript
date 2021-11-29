@@ -426,7 +426,7 @@ error_eval_keyword_var:
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )
-			   || (properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_ATTRIB)
+			   || (properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY)
 			  )
 			   // is function member
 			){ // class members are defined as functions

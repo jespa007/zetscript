@@ -84,20 +84,6 @@ namespace zetscript{
 
 	}
 
-	bool MemberProperty::isSetter(ByteCodeMetamethod _byte_code_metamethod){
-		const ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_setter_list;
-		bool found=false;
-		while(*it!=0){
-			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
-			if(*it == _byte_code_metamethod){
-				return true;
-			}
-			it++;
-		}
-
-		return false;
-	}
-
 	void MemberProperty::addSetter(ByteCodeMetamethod _byte_code_metamethod, ScriptFunction *f){
 
 		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
@@ -146,9 +132,35 @@ namespace zetscript{
 			}
 	}
 
-/*
-	const zs_string & MemberProperty::byteCodeToMemberPropertySymbolName(ByteCodeMetamethod _byte_code){
+
+	const zs_string & MemberProperty::byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name){
 		zs_string symbol;
+		switch(_byte_code){
+			//case BYTE_CODE_METAMETHOD_GETTER: return				"_get@";
+		case BYTE_CODE_METAMETHOD_SET:
+		case BYTE_CODE_METAMETHOD_ADD_SET:
+		case BYTE_CODE_METAMETHOD_SUB_SET:
+		case BYTE_CODE_METAMETHOD_MUL_SET:
+		case BYTE_CODE_METAMETHOD_DIV_SET:
+		case BYTE_CODE_METAMETHOD_MOD_SET:
+		case BYTE_CODE_METAMETHOD_AND_SET:
+		case BYTE_CODE_METAMETHOD_OR_SET:
+		case BYTE_CODE_METAMETHOD_XOR_SET:
+		case BYTE_CODE_METAMETHOD_SHL_SET:
+		case BYTE_CODE_METAMETHOD_SHR_SET:
+		case BYTE_CODE_METAMETHOD_POST_INC:
+		case BYTE_CODE_METAMETHOD_POST_DEC:
+		case BYTE_CODE_METAMETHOD_PRE_INC:
+		case BYTE_CODE_METAMETHOD_PRE_DEC:
+
+				symbol=zs_tring(ByteCode::byte_code_metamethod_to_symbol_str(_byte_code))+"@"+_property_name;//ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code,_property_name);
+				break;
+		}
+
+		return symbol;
+	}
+
+	bool MemberProperty::check_valid_metamethod(ByteCodeMetamethod _byte_code){
 		switch(_byte_code){
 			//case BYTE_CODE_METAMETHOD_GETTER: return				"_get@";
 			case BYTE_CODE_METAMETHOD_SET:
@@ -162,52 +174,25 @@ namespace zetscript{
 			case BYTE_CODE_METAMETHOD_XOR_SET:
 			case BYTE_CODE_METAMETHOD_SHL_SET:
 			case BYTE_CODE_METAMETHOD_SHR_SET:
-				symbol=ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code,_property_name);
-				break;
 			case BYTE_CODE_METAMETHOD_POST_INC:
-				symbol="_post_inc@";
-				break;
 			case BYTE_CODE_METAMETHOD_POST_DEC:
-				symbol="_post_dec@";
-				break;
 			case BYTE_CODE_METAMETHOD_PRE_INC:
-				symbol="_pre_inc@";
-				break;
 			case BYTE_CODE_METAMETHOD_PRE_DEC:
-				symbol="_pre_dec@";
-				break;
 			case BYTE_CODE_METAMETHOD_ADD_SET:
-				symbol="_add_set@";
-				break;
 			case BYTE_CODE_METAMETHOD_SUB_SET:
-				symbol="_sub_set@";
-				break;
 			case BYTE_CODE_METAMETHOD_DIV_SET:
-				symbol="_div_set@";
-				break;
 			case BYTE_CODE_METAMETHOD_MOD_SET:
-				symbol="_mod_set@";
-				break;
 			case BYTE_CODE_METAMETHOD_AND_SET:
-				symbol="_and_set@";
-				break;
 			case BYTE_CODE_METAMETHOD_OR_SET:
-				symbol="_or_set@";
-				break;
 			case BYTE_CODE_METAMETHOD_XOR_SET:
-				symbol="_xor_set@";
-				break;
 			case BYTE_CODE_METAMETHOD_SHL_SET:
-				symbol="_shl_set@";
-				break;
 			case BYTE_CODE_METAMETHOD_SHR_SET:
-				symbol="_shr_set@";
+				return true;
 				break;
 		}
-
-		return symbol;
+		return false;
 	}
-*/
+
 
 
 	MemberProperty::~MemberProperty(){

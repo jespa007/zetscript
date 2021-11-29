@@ -49,6 +49,8 @@ namespace zetscript{
 		 zs_string property_name;
 
 		 const static ByteCodeMetamethod byte_code_metamethod_setter_list[];
+		 const static zs_string & byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name);
+		 bool static check_valid_metamethod(ByteCodeMetamethod _byte_code);
 
 		 static bool isSetter(ByteCodeMetamethod _byte_code_metamethod);
 
@@ -57,7 +59,7 @@ namespace zetscript{
 		 MemberPropertySetterInfo getInfoSetter(const char *_symbol_name);
 		 void addSetter(ByteCodeMetamethod _byte_code_metamethod,ScriptFunction *f);
 		 zs_vector * getVectorSetter(const char *_symbol_name);
-		 const zs_string & byteCodeToMemberPropertySymbolName(ByteCodeMetamethod _byte_code);
+
 
 
 		~MemberProperty();

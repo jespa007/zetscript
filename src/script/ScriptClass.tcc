@@ -51,7 +51,37 @@ namespace zetscript{
 				,&params_len
 		);
 
-		registerNativeMemberPropertyMetamethod(
+/*
+
+return registerInternalMemberFunction(
+				 _function_name
+				,_params
+				,_params_len
+				,_symbol_properties
+				,_idx_return_type
+				,(zs_int)_ref_ptr
+				, _file
+				, _line
+
+		);
+ * */
+
+		symbol_function=registerNativeMemberFunction(
+				symbol_metamethod_function,
+				_params,
+				_params_len,
+				_idx_return_type,
+				_ref_ptr,
+				FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION,
+				_registered_file,
+				_registered_line
+		);
+
+
+
+		return symbol_member_property;
+
+		/*registerNativeMemberPropertyMetamethod(
 				_property_name
 				,_byte_code_metamethod
 				,&params
@@ -61,7 +91,7 @@ namespace zetscript{
 				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				,_registered_file
 				,_registered_line
-		);
+		);*/
 	}
 
 	/*

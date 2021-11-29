@@ -242,6 +242,7 @@ namespace zetscript{
 	ByteCode	 byte_code_load_var_type_to_push_stk(ByteCode op);
 	bool		 byte_code_is_load_var_type(ByteCode op);
 	ByteCodeMetamethod byte_code_symbol_to_setter_metamethod(const char *_symbol_name);
+	bool byte_code_metamethod_is_setter(ByteCodeMetamethod _byte_code_metamethod);
 
 
 

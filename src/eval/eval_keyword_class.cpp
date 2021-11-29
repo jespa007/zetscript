@@ -8,7 +8,7 @@ namespace zetscript{
 
 
 
-	char * eval_keyword_class_attrib(EvalData *eval_data, const char *s, int & line	, ScriptClass *sc	);
+	char * eval_keyword_class_property(EvalData *eval_data, const char *s, int & line	, ScriptClass *sc	);
 
 	//------------------------------------------------------------------------------------------------------------------------------------------
 	//
@@ -92,7 +92,7 @@ namespace zetscript{
 				while(*aux_p != '}' && *aux_p != 0){
 					char *test_attrib=aux_p;
 					int test_line_attrib=line;
-					if((test_attrib=eval_keyword_class_attrib(
+					if((test_attrib=eval_keyword_class_property(
 						eval_data
 						,aux_p
 						,line
@@ -272,7 +272,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	char * eval_keyword_class_attrib(
+	char * eval_keyword_class_property(
 			EvalData *eval_data
 			, const char *s
 			, int & line
@@ -356,7 +356,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					// set getter/setter
+					// metamethod property
 					aux_p=end_var;
 
 					if((aux_p = eval_keyword_function(
@@ -364,7 +364,7 @@ namespace zetscript{
 						,aux_p
 						, line
 						,scope_info // pass class scope
-						, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_ATTRIB | EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
+						, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY | EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
 						,&symbol
 						,function_name+"@"+property_name
 					))==NULL){

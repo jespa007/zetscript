@@ -417,24 +417,36 @@ namespace zetscript{
 	template <typename C,typename F>
 	void ScriptClassFactory::registerNativeMemberPropertySetter(
 		const zs_string & _property_name
-		,F ptr_function_setter
+		,F _ptr_function
 		,const char *registered_file
 		,short registered_line
 	){
 		zs_string str_class_name_ptr = typeid( C *).name();
-
+		ScriptFunctionParam *params=NULL;
+		size_t *params_len=0;
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
 		if(c_class == NULL){
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberPropertySetter<F>(
+		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+				this
+				,_property_name
+				,_ptr_function
+				,&params
+				,&params_len
+				);
+
+		/*c_class->registerNativeMemberFunction(
 			 _property_name
 			,ptr_function_setter
+			 ,&params
+			,params_len
+			,idx_return_type
 			,registered_file
 			,registered_line
-		);
+		);*/
 	}
 
 	/*
@@ -494,7 +506,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",str_class_name_ptr.c_str());
 		}
 
-		c_class->registerNativeMemberPropertyPostIncrement<F>(
+		c_class->registerNativeMemberProperty(
 			 _property_name
 			,ptr_function_post_increment
 			,registered_file

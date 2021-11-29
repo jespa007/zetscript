@@ -101,7 +101,7 @@ namespace zetscript{
 		/*
 		 * register C setter
 		 */
-		template <typename F>
+		/*template <typename F>
 		void registerNativeMemberPropertyMetamethod(
 				const zs_string & _property_name
 				,ByteCodeMetamethod _byte_code_metamethod
@@ -132,7 +132,7 @@ namespace zetscript{
 			,unsigned short _symbol_getter_function_properties
 			,const char * _file=""
 			,short _line=-1
-		);
+		);*/
 
 
 	/*	//---------------
@@ -470,16 +470,27 @@ namespace zetscript{
 		// FUNCTIONS
 		unsigned 	getNumNativeFunctions(const zs_string & function_name);
 
-		Symbol				* 	registerMemberFunction(
+		/*Symbol				* 	registerMemberFunction(
 				 const zs_string & _function_name
 				,ScriptFunctionParam **_params=NULL
 				,size_t _params_len=0
 				, unsigned short _properties=0
 				,const char * _file = ""
 				, short _line=-1
+		);*/
+		Symbol				* 	registerMemberFunction(
+			 const zs_string & _function_name
+			,ScriptFunctionParam **_params
+			,size_t _params_len
+			, unsigned short _function_properties=0
+			, int _idx_return_type=ZS_IDX_UNDEFINED
+			, zs_int _ref_ptr=0
+			, const char * _file=""
+			, short _line=-1
+
 		);
 
-		Symbol				* 	registerNativeMemberFunction(
+		/*Symbol				* 	registerNativeMemberFunction(
 				 const zs_string & _function_name
 				,ScriptFunctionParam **_params=NULL
 				,size_t _params_len=0
@@ -488,7 +499,7 @@ namespace zetscript{
 				,unsigned short _properties=0
 				,const char * _file=""
 				,short _line=-1
-		);
+		);*/
 
 		template <typename F>
 		void registerNativeMemberFunctionStatic(
@@ -498,13 +509,13 @@ namespace zetscript{
 				,short _registered_line=-1
 		);
 
-		template <typename F>
+		/*template <typename F>
 		void registerNativeMemberFunction(
 				const zs_string & _function_name
 				,F _function_type
 				, const char *_registered_file=""
 				,short _registered_line=-1
-		);
+		);*/
 
 		//---------------------------------------------------
 
@@ -535,17 +546,7 @@ namespace zetscript{
 
 		);
 
-		Symbol				* 	registerInternalMemberFunction(
-			 const zs_string & _function_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, unsigned short _function_properties=0
-			, int _idx_return_type=ZS_IDX_UNDEFINED
-			, zs_int _ref_ptr=0
-			, const char * _file=""
-			, short _line=-1
 
-		);
 
 
 		ScriptClass * 					getScriptClass(short idx_class);
