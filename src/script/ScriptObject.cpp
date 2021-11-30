@@ -126,7 +126,7 @@ namespace zetscript{
 
 	ScriptFunction *ScriptObject::getGetter(){
 		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
-		MemberProperty *member_property=script_class->member_properties;
+		MemberProperty *member_property=script_class->member_metamethods;
 
 		if(member_property !=NULL){
 			return member_property->getter;
@@ -137,7 +137,7 @@ namespace zetscript{
 
 	zs_vector *ScriptObject::getSetterList(ByteCodeMetamethod _byte_code_metamethod){
 		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_script_class);
-		MemberProperty *member_properties=script_class->member_properties;
+		MemberProperty *member_properties=script_class->member_metamethods;
 
 		if(member_properties !=NULL){
 			MemberPropertySetterInfo info=member_properties->getSetterInfo(_byte_code_metamethod);

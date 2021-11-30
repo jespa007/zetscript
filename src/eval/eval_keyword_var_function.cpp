@@ -699,6 +699,8 @@ error_eval_keyword_var:
 							,&params
 							,params_len
 							,is_static?FUNCTION_PROPERTY_STATIC:FUNCTION_PROPERTY_MEMBER_FUNCTION
+							,0
+							,0
 							,eval_data->current_parsing_file
 							,line
 					);

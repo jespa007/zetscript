@@ -212,13 +212,13 @@ namespace zetscript{
 
 			Symbol *symbol_src = (Symbol *)base_functions->items[i];
 
-			bool is_metamethod_function =
-										    zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER)
+			bool is_metamethod_function = MemberProperty::symbolNameMatchStartSymbolNameMetamethod(symbol_src->name);
+/*										    zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER)
 										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_INC)
 										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_DEC)
 										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_INC)
 										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_DEC)
-										;
+										;*/
 
 			if(is_metamethod_function==false){ // try find setter
 				ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_setter_list;
@@ -243,13 +243,13 @@ namespace zetscript{
 				size_t params_len=script_function->params_len;
 
 
-				this_class->registerNativeMemberFunction(
+				this_class->registerMemberFunction(
 					script_function->function_name,
 					&params,
 					params_len,
+					script_function->properties, //derivated_symbol_info_properties
 					script_function->idx_return_type,
 					script_function->ref_native_function_ptr, // it contains script function pointer
-					script_function->properties, //derivated_symbol_info_properties
 					symbol_src->file,
 					symbol_src->line
 				);
@@ -324,13 +324,14 @@ namespace zetscript{
 							ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
 							size_t params_len=it->src_function->params_len;
 
-							symbol_function=this_class->registerNativeMemberFunction(
+							symbol_function=this_class->registerMemberFunction(
 									sf_setter->function_name,
 									&params,
 									params_len,
+									sf_setter->properties,
 									sf_setter->idx_return_type,
-									sf_setter->ref_native_function_ptr,
-									sf_setter->properties
+									sf_setter->ref_native_function_ptr
+
 									//sf_setter->symbol->file,
 									//sf_setter->symbol->line
 							);
@@ -463,7 +464,7 @@ namespace zetscript{
 		,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t *params_len=0;
+		size_t params_len=0;
 		zs_string str_class_name_ptr = typeid( C *).name();
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
@@ -479,7 +480,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		c_class->registerNativeMemberPropertyGetter(
+		c_class->registerNativeMemberPropertyMetamethodGetter(
 				 _property_name
 				,idx_return_type
 				,(zs_int)_ptr_function
@@ -752,7 +753,7 @@ namespace zetscript{
 
 		c_class->registerNativeMemberPropertyMetamethod(
 			 _property_name
-			 ,BYTE_CODE_METAMETHOD_MUL_DEC
+			 ,BYTE_CODE_METAMETHOD_MUL_SET
 			,_ptr_function
 			,params
 			,params_len

@@ -53,7 +53,7 @@ namespace zetscript{
 		);
 
 		// register member function...
-		this->registerInternalMemberFunction(
+		this->registerMemberFunction(
 				 function_name
 				,&params
 				,params_len
@@ -121,21 +121,20 @@ namespace zetscript{
 			);
 		}
 
-
 		// register member function...
-		this->registerNativeMemberFunction(
+		this->registerMemberFunction(
 				 _function_name
 				, &params
 				, params_len
+				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				, idx_return_type
 				, (zs_int)_ptr_function
-				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
 				,_registered_file
 				, _registered_line
 		);
 
 
-		ZS_LOG_DEBUG("Registered C function '%s' as function member '%s'",function_name, function_class_name.c_str());
+		ZS_LOG_DEBUG("Registered C function '%s' as function member '%s'",_function_name, function_class_name.c_str());
 	}
 
 }

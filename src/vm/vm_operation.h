@@ -11,7 +11,7 @@
 		so_aux = stk_mp_aux->so_object;\
 	}else if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 		so_aux= (ScriptObject *)stk_result_op1->value;\
-		mp_aux= so_aux->getScriptClass()->member_properties;\
+		mp_aux= so_aux->getScriptClass()->member_metamethods;\
 	}\
 	else{\
 		zs_strutils::format("Symbol '%s' not implements metamethod %s (aka '%s'') "\

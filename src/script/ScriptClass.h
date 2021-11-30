@@ -30,7 +30,7 @@ namespace zetscript{
 		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
 		zs_vector 				*allocated_member_properties;
 		ScriptFunction			*sf_field_initializer;
-		MemberProperty			*member_properties;
+		MemberProperty			*member_metamethods;
 		int						idx_starting_this_member_functions;
 		int						idx_starting_this_member_variables;
 
@@ -94,7 +94,6 @@ namespace zetscript{
 
 		);
 
-
 		Symbol				* 	registerNativeMemberPropertyMetamethod(
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
@@ -102,21 +101,17 @@ namespace zetscript{
 			,size_t _params_len
 			,int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_function_metamethod_properties
 			,const char * _file=""
 			,short _line=-1
-
 		);
 
 		Symbol				* 	registerNativeMemberPropertyMetamethodGetter(
 			const zs_string & _property_name
 			, int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
-			,unsigned short _symbol_getter_function_properties
 			,const char * _file=""
 			,short _line=-1
 		);
-
 
 		//---------------------------------------------------
 		//
@@ -125,12 +120,15 @@ namespace zetscript{
 		unsigned 	getNumNativeFunctions(const zs_string & function_name);
 
 		Symbol				* 	registerMemberFunction(
-				 const zs_string & _function_name
-				,ScriptFunctionParam **_params=NULL
-				,size_t _params_len=0
-				, unsigned short _properties=0
-				,const char * _file = ""
-				, short _line=-1
+			 const zs_string & _function_name
+			,ScriptFunctionParam **_params=NULL
+			,size_t _params_len=0
+			, unsigned short _function_properties=0
+			, int _idx_return_type=ZS_IDX_UNDEFINED
+			, zs_int _ref_ptr=0
+			, const char * _file=""
+			, short _line=-1
+
 		);
 
 		template <typename F>
@@ -178,17 +176,7 @@ namespace zetscript{
 
 		);
 
-		Symbol				* 	registerInternalMemberFunction(
-			 const zs_string & _function_name
-			,ScriptFunctionParam **_params
-			,size_t _params_len
-			, unsigned short _function_properties=0
-			, int _idx_return_type=ZS_IDX_UNDEFINED
-			, zs_int _ref_ptr=0
-			, const char * _file=""
-			, short _line=-1
 
-		);
 
 
 

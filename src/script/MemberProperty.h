@@ -48,17 +48,20 @@ namespace zetscript{
 		 ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg; // getter
 		 zs_string property_name;
 
-		 const static ByteCodeMetamethod byte_code_metamethod_setter_list[];
-		 const static zs_string & byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name);
-		 bool static check_valid_metamethod(ByteCodeMetamethod _byte_code);
+		 const static ByteCodeMetamethod 	byte_code_metamethod_setter_list[];
+		 const static ByteCodeMetamethod 	byte_code_metamethod_list[];
+
+		 //const static zs_string & 			byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name);
+		 bool static 						check_valid_metamethod(ByteCodeMetamethod _byte_code);
+		 static bool 						symbolNameMatchStartSymbolNameMetamethod(const zs_string & _symbol_name);
 
 		 static bool isSetter(ByteCodeMetamethod _byte_code_metamethod);
 
 		 MemberProperty(ScriptClass *_script_class, const zs_string & _property_name);
-		 MemberPropertySetterInfo getSetterInfo(ByteCodeMetamethod _byte_code);
-		 MemberPropertySetterInfo getSetterInfo(const char *_symbol_name);
-		 void addSetter(ByteCodeMetamethod _byte_code_metamethod,ScriptFunction *f);
-		 zs_vector * getVectorSetter(const char *_symbol_name);
+		 MemberPropertySetterInfo 	getSetterInfo(ByteCodeMetamethod _byte_code);
+		 MemberPropertySetterInfo 	getSetterInfo(const char *_symbol_name);
+		 void						addSetter(ByteCodeMetamethod _byte_code_metamethod,ScriptFunction *f);
+		 zs_vector * 				getVectorSetter(const char *_symbol_name);
 
 
 

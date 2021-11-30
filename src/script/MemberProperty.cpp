@@ -21,6 +21,27 @@ namespace zetscript{
 			,BYTE_CODE_METAMETHOD_EQU //--> is 0 (end of elements)
 	};
 
+	const ByteCodeMetamethod MemberProperty::byte_code_metamethod_list[]={
+
+			BYTE_CODE_METAMETHOD_SET
+			,BYTE_CODE_METAMETHOD_ADD_SET
+			,BYTE_CODE_METAMETHOD_SUB_SET
+			,BYTE_CODE_METAMETHOD_MUL_SET
+			,BYTE_CODE_METAMETHOD_DIV_SET
+			,BYTE_CODE_METAMETHOD_MOD_SET
+			,BYTE_CODE_METAMETHOD_AND_SET
+			,BYTE_CODE_METAMETHOD_OR_SET
+			,BYTE_CODE_METAMETHOD_XOR_SET
+			,BYTE_CODE_METAMETHOD_SHL_SET
+			,BYTE_CODE_METAMETHOD_SHR_SET
+			,BYTE_CODE_METAMETHOD_POST_INC
+			,BYTE_CODE_METAMETHOD_POST_DEC
+			,BYTE_CODE_METAMETHOD_PRE_INC
+			,BYTE_CODE_METAMETHOD_PRE_DEC
+			,BYTE_CODE_METAMETHOD_EQU //--> is 0 (end of elements)
+	};
+
+
 
 	MemberProperty::MemberProperty(ScriptClass *_script_class,const zs_string & _property_name){
 		getter= NULL;
@@ -133,67 +154,45 @@ namespace zetscript{
 	}
 
 
-	const zs_string & MemberProperty::byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name){
-		zs_string symbol;
-		switch(_byte_code){
-			//case BYTE_CODE_METAMETHOD_GETTER: return				"_get@";
-		case BYTE_CODE_METAMETHOD_SET:
-		case BYTE_CODE_METAMETHOD_ADD_SET:
-		case BYTE_CODE_METAMETHOD_SUB_SET:
-		case BYTE_CODE_METAMETHOD_MUL_SET:
-		case BYTE_CODE_METAMETHOD_DIV_SET:
-		case BYTE_CODE_METAMETHOD_MOD_SET:
-		case BYTE_CODE_METAMETHOD_AND_SET:
-		case BYTE_CODE_METAMETHOD_OR_SET:
-		case BYTE_CODE_METAMETHOD_XOR_SET:
-		case BYTE_CODE_METAMETHOD_SHL_SET:
-		case BYTE_CODE_METAMETHOD_SHR_SET:
-		case BYTE_CODE_METAMETHOD_POST_INC:
-		case BYTE_CODE_METAMETHOD_POST_DEC:
-		case BYTE_CODE_METAMETHOD_PRE_INC:
-		case BYTE_CODE_METAMETHOD_PRE_DEC:
+	/*const zs_string & MemberProperty::byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name){
+		zs_string symbol="N/A";
+		const ByteCodeMetamethod *it=byte_code_metamethod_list;
 
-				symbol=zs_tring(ByteCode::byte_code_metamethod_to_symbol_str(_byte_code))+"@"+_property_name;//ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code,_property_name);
+		while(*it!=0){
+			if(_byte_code==*it){
+				symbol=zs_string(ByteCode::byte_code_metamethod_to_symbol_str(_byte_code))+"@"+_property_name;//ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code,_property_name);
 				break;
+			}
+			it++;
 		}
-
 		return symbol;
-	}
+	}*/
 
 	bool MemberProperty::check_valid_metamethod(ByteCodeMetamethod _byte_code){
-		switch(_byte_code){
-			//case BYTE_CODE_METAMETHOD_GETTER: return				"_get@";
-			case BYTE_CODE_METAMETHOD_SET:
-			case BYTE_CODE_METAMETHOD_ADD_SET:
-			case BYTE_CODE_METAMETHOD_SUB_SET:
-			case BYTE_CODE_METAMETHOD_MUL_SET:
-			case BYTE_CODE_METAMETHOD_DIV_SET:
-			case BYTE_CODE_METAMETHOD_MOD_SET:
-			case BYTE_CODE_METAMETHOD_AND_SET:
-			case BYTE_CODE_METAMETHOD_OR_SET:
-			case BYTE_CODE_METAMETHOD_XOR_SET:
-			case BYTE_CODE_METAMETHOD_SHL_SET:
-			case BYTE_CODE_METAMETHOD_SHR_SET:
-			case BYTE_CODE_METAMETHOD_POST_INC:
-			case BYTE_CODE_METAMETHOD_POST_DEC:
-			case BYTE_CODE_METAMETHOD_PRE_INC:
-			case BYTE_CODE_METAMETHOD_PRE_DEC:
-			case BYTE_CODE_METAMETHOD_ADD_SET:
-			case BYTE_CODE_METAMETHOD_SUB_SET:
-			case BYTE_CODE_METAMETHOD_DIV_SET:
-			case BYTE_CODE_METAMETHOD_MOD_SET:
-			case BYTE_CODE_METAMETHOD_AND_SET:
-			case BYTE_CODE_METAMETHOD_OR_SET:
-			case BYTE_CODE_METAMETHOD_XOR_SET:
-			case BYTE_CODE_METAMETHOD_SHL_SET:
-			case BYTE_CODE_METAMETHOD_SHR_SET:
+		zs_string symbol="N/A";
+		const ByteCodeMetamethod *it=byte_code_metamethod_list;
+
+		while(*it!=0){
+			if(_byte_code==*it){
 				return true;
-				break;
+			}
+			it++;
 		}
 		return false;
 	}
 
+	bool MemberProperty::symbolNameMatchStartSymbolNameMetamethod(const zs_string & _symbol_name){
+		zs_string symbol="N/A";
+		const ByteCodeMetamethod *it=byte_code_metamethod_list;
 
+		while(*it!=0){
+			if(zs_strutils::starts_with(_symbol_name,byte_code_metamethod_to_symbol_str(*it))){
+				return true;
+			}
+			it++;
+		}
+		return false;
+	}
 
 	MemberProperty::~MemberProperty(){
 
@@ -228,7 +227,7 @@ namespace zetscript{
 		pre_inc = NULL;
 		pre_dec = NULL;
 		neg = NULL;
-
-
 	}
+
+
 };
