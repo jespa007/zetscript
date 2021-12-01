@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	const ByteCodeMetamethod MemberProperty::byte_code_metamethod_member_setter_list[]={
+	const ByteCodeMetamethod MetamethodMembers::byte_code_metamethod_member_setter_list[]={
 			BYTE_CODE_METAMETHOD_SET
 			,BYTE_CODE_METAMETHOD_ADD_SET
 			,BYTE_CODE_METAMETHOD_SUB_SET
@@ -21,7 +21,7 @@ namespace zetscript{
 			,BYTE_CODE_METAMETHOD_EQU //--> is 0 (end of elements)
 	};
 
-	const ByteCodeMetamethod MemberProperty::byte_code_metamethod_member_list[]={
+	const ByteCodeMetamethod MetamethodMembers::byte_code_metamethod_member_list[]={
 
 			BYTE_CODE_METAMETHOD_SET
 			,BYTE_CODE_METAMETHOD_ADD_SET
@@ -43,18 +43,16 @@ namespace zetscript{
 
 
 
-	MemberProperty::MemberProperty(ScriptClass *_script_class,const zs_string & _property_name){
+	MetamethodMembers::MetamethodMembers(){
 		getter= NULL;
 		post_inc=NULL;
 		post_dec=NULL;
 		pre_inc=NULL;
 		pre_dec=NULL;
 		neg=NULL;
-		property_name=_property_name;
-		script_class=_script_class;
 	}
-	MemberPropertySetterInfo MemberProperty::getSetterInfo(ByteCodeMetamethod _byte_code_metamethod){
-		MemberPropertySetterInfo info={_byte_code_metamethod,NULL,NULL};
+	MetamethodMemberSetterInfo MetamethodMembers::getSetterInfo(ByteCodeMetamethod _byte_code_metamethod){
+		MetamethodMemberSetterInfo info={_byte_code_metamethod,NULL,NULL};
 		info.str_byte_code_metamethod=byte_code_metamethod_to_symbol_str(_byte_code_metamethod);
 		switch(_byte_code_metamethod){
 			case BYTE_CODE_METAMETHOD_SET:
@@ -96,16 +94,26 @@ namespace zetscript{
 		return info;
 	}
 
+	MetamethodMemberSetterInfo MetamethodMembers::getSetterInfo(const char *_symbol_name){
 
+		// search setter
+		const ByteCodeMetamethod *it=byte_code_metamethod_member_setter_list;
+		bool found=false;
+		ByteCodeMetamethod _byte_code_metamethod;
+		while(*it!=0){
+			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
+			if(_symbol_name == _mt_name){
+				_byte_code_metamethod=*it;
+				break;
+			}
 
-	MemberPropertySetterInfo MemberProperty::getSetterInfo(const char *_symbol_name){
-		ByteCodeMetamethod _byte_code_metamethod =byte_code_symbol_to_setter_metamethod(_symbol_name);
+			it++;
+		}
+
 		return getSetterInfo(_byte_code_metamethod);
-
-
 	}
 
-	void MemberProperty::addSetter(ByteCodeMetamethod _byte_code_metamethod, ScriptFunction *f){
+	void MetamethodMembers::addSetter(ByteCodeMetamethod _byte_code_metamethod, ScriptFunction *f){
 
 		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
 		stk->value=(zs_int)f;
@@ -154,7 +162,7 @@ namespace zetscript{
 	}
 
 
-	/*const zs_string & MemberProperty::byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name){
+	/*const zs_string & MetamethodMembers::byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name){
 		zs_string symbol="N/A";
 		const ByteCodeMetamethod *it=byte_code_metamethod_member_list;
 
@@ -167,8 +175,39 @@ namespace zetscript{
 		}
 		return symbol;
 	}*/
+	bool MetamethodMembers::isSetter(ByteCodeMetamethod _byte_code_metamethod){
+		const ByteCodeMetamethod *it=byte_code_metamethod_member_setter_list;
+		bool found=false;
+		while(*it!=0){
+			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
+			if(*it == _byte_code_metamethod){
+				return true;
+			}
+			it++;
+		}
 
-	bool MemberProperty::check_valid_metamethod(ByteCodeMetamethod _byte_code){
+		return false;
+	}
+
+	/*ByteCodeMetamethod MetamethodMembers::toByteCodeMetamethod(const char *_symbol_name)
+	{
+
+			const ByteCodeMetamethod *it=byte_code_metamethod_member_setter_list;
+			bool found=false;
+			while(*it!=0){
+				const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
+				if(_symbol_name == _mt_name){
+					return *it;
+				}
+
+				it++;
+			}
+
+			return BYTE_CODE_METAMETHOD_INVALID;
+	}*/
+
+
+	bool MetamethodMembers::isMetamethodMember(ByteCodeMetamethod _byte_code){
 		zs_string symbol="N/A";
 		const ByteCodeMetamethod *it=byte_code_metamethod_member_list;
 
@@ -181,20 +220,9 @@ namespace zetscript{
 		return false;
 	}
 
-	bool MemberProperty::symbolNameMatchStartSymbolNameMetamethod(const zs_string & _symbol_name){
-		zs_string symbol="N/A";
-		const ByteCodeMetamethod *it=byte_code_metamethod_member_list;
 
-		while(*it!=0){
-			if(zs_strutils::starts_with(_symbol_name,byte_code_metamethod_to_symbol_str(*it))){
-				return true;
-			}
-			it++;
-		}
-		return false;
-	}
 
-	MemberProperty::~MemberProperty(){
+	MetamethodMembers::~MetamethodMembers(){
 
 		zs_vector *ptr_vector[]={
 				&setters

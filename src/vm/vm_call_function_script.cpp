@@ -47,7 +47,7 @@ namespace zetscript{
 		StackElement 	*		store_stk_multi_var_src=NULL;
 		StackElement 	*		store_ptr_stk_aux=NULL;
 		StackMemberProperty *	stk_mp_aux=NULL;
-		MemberProperty *		mp_aux=NULL;
+		MetamethodMembers *		ptr_metamethod_members_aux=NULL;
 		void			*		ptr_ptr_void_ref=NULL;
 		//------------------------------------------------
 		// SFCALL
@@ -317,13 +317,13 @@ find_element_object:
 						   ((stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0)
 						&& (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM  ||  instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
 						&& (instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0){ // call getter if exist
-							StackMemberProperty *stk_ma=(StackMemberProperty *)stk_var->value;
-							if(stk_ma->member_property->getter != NULL){
+							StackMemberProperty *stk_mp=(StackMemberProperty *)stk_var->value;
+							if(stk_mp->member_property->metamethod_members.getter != NULL){
 
 								VM_INNER_CALL_ONLY_RETURN(
-										stk_ma->so_object
-										,stk_ma->member_property->getter
-										,stk_ma->member_property->getter->function_name.c_str()
+										stk_mp->so_object
+										,stk_mp->member_property->metamethod_members.getter
+										,stk_mp->member_property->metamethod_members.getter->function_name.c_str()
 										,true
 								);
 
@@ -427,11 +427,11 @@ find_element_object:
 				continue;
 			case BYTE_CODE_SUB_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_ARITHMETIC_SET(-=,BYTE_CODE_METAMETHOD_SUB_SET,mp_aux->sub_setters);
+				VM_OPERATION_ARITHMETIC_SET(-=,BYTE_CODE_METAMETHOD_SUB_SET,ptr_metamethod_members_aux->sub_setters);
 				continue;
 			case BYTE_CODE_MUL_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_ARITHMETIC_SET(*=,BYTE_CODE_METAMETHOD_MUL_SET,mp_aux->mul_setters);
+				VM_OPERATION_ARITHMETIC_SET(*=,BYTE_CODE_METAMETHOD_MUL_SET,ptr_metamethod_members_aux->mul_setters);
 				continue;
 			case BYTE_CODE_DIV_STORE:
 				LOAD_OPS_SET_OPERATION;
@@ -442,23 +442,23 @@ find_element_object:
 				VM_OPERATION_MOD_SET(BYTE_CODE_METAMETHOD_MOD_SET);
 				continue;
 			case BYTE_CODE_BITWISE_AND_STORE:
-				VM_OPERATION_BINARY_SET(&=,BYTE_CODE_METAMETHOD_ADD_SET,mp_aux->and_setters);
+				VM_OPERATION_BINARY_SET(&=,BYTE_CODE_METAMETHOD_ADD_SET,ptr_metamethod_members_aux->and_setters);
 				continue;
 			case BYTE_CODE_BITWISE_OR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(|=,BYTE_CODE_METAMETHOD_OR_SET,mp_aux->or_setters);
+				VM_OPERATION_BINARY_SET(|=,BYTE_CODE_METAMETHOD_OR_SET,ptr_metamethod_members_aux->or_setters);
 				continue;
 			case BYTE_CODE_BITWISE_XOR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(^=,BYTE_CODE_METAMETHOD_XOR_SET,mp_aux->xor_setters);
+				VM_OPERATION_BINARY_SET(^=,BYTE_CODE_METAMETHOD_XOR_SET,ptr_metamethod_members_aux->xor_setters);
 				continue;
 			case BYTE_CODE_SHL_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(<<=,BYTE_CODE_METAMETHOD_SHL_SET,mp_aux->shl_setters);
+				VM_OPERATION_BINARY_SET(<<=,BYTE_CODE_METAMETHOD_SHL_SET,ptr_metamethod_members_aux->shl_setters);
 				continue;
 			case BYTE_CODE_SHR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(>>=,BYTE_CODE_METAMETHOD_SHR_SET,mp_aux->shr_setters);
+				VM_OPERATION_BINARY_SET(>>=,BYTE_CODE_METAMETHOD_SHR_SET,ptr_metamethod_members_aux->shr_setters);
 				continue;
 			case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE:
@@ -520,8 +520,8 @@ find_element_object:
 
 					if(store_lst_setter_functions == NULL){ // try member property...
 						stk_mp_aux=(StackMemberProperty *)stk_dst->value;
-						if(stk_mp_aux->member_property->setters.count > 0){
-							store_lst_setter_functions=&stk_mp_aux->member_property->setters;
+						if(stk_mp_aux->member_property->metamethod_members.setters.count > 0){
+							store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;
 							so_aux=stk_mp_aux->so_object;
 						}else{
 							VM_STOP_EXECUTE("Symbol X has not setter metamethod implemented");
@@ -1371,22 +1371,22 @@ execute_function:
 				 data->stk_vm_current=stk_start;
 				 continue;
 			 case BYTE_CODE_POST_INC:
-				 VM_OPERATION_POST(++,BYTE_CODE_METAMETHOD_POST_INC,mp_aux->post_inc);
+				 VM_OPERATION_POST(++,BYTE_CODE_METAMETHOD_POST_INC,ptr_metamethod_members_aux->post_inc);
 				 continue;
 			 case BYTE_CODE_NEG_POST_INC:
-				 VM_OPERATION_NEG_POST(++,BYTE_CODE_METAMETHOD_POST_INC,mp_aux->post_inc);
+				 VM_OPERATION_NEG_POST(++,BYTE_CODE_METAMETHOD_POST_INC,ptr_metamethod_members_aux->post_inc);
 				 continue;
 			 case BYTE_CODE_POST_DEC:
-				 VM_OPERATION_POST(--,BYTE_CODE_METAMETHOD_POST_DEC,mp_aux->post_dec);
+				 VM_OPERATION_POST(--,BYTE_CODE_METAMETHOD_POST_DEC,ptr_metamethod_members_aux->post_dec);
 				 continue;
 			 case BYTE_CODE_NEG_POST_DEC:
-				 VM_OPERATION_POST(--,BYTE_CODE_METAMETHOD_POST_DEC,mp_aux->post_dec);
+				 VM_OPERATION_POST(--,BYTE_CODE_METAMETHOD_POST_DEC,ptr_metamethod_members_aux->post_dec);
 				 continue;
 			 case BYTE_CODE_PRE_INC:
-				 VM_OPERATION_PRE(++,BYTE_CODE_METAMETHOD_PRE_INC,mp_aux->pre_inc);
+				 VM_OPERATION_PRE(++,BYTE_CODE_METAMETHOD_PRE_INC,ptr_metamethod_members_aux->pre_inc);
 				 continue;
 			 case BYTE_CODE_PRE_DEC:
-				 VM_OPERATION_PRE(--,BYTE_CODE_METAMETHOD_PRE_DEC,mp_aux->pre_dec);
+				 VM_OPERATION_PRE(--,BYTE_CODE_METAMETHOD_PRE_DEC,ptr_metamethod_members_aux->pre_dec);
 				 continue;
 			 case BYTE_CODE_IN:
 				 VM_POP_STK_TWO;
@@ -1469,13 +1469,13 @@ execute_function:
 		}
 
 		if(stk_var != NULL && (stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)){
-			StackMemberProperty *stk_ma=(StackMemberProperty *)stk_var->value;
-			if(stk_ma->member_property->getter != NULL){
+			StackMemberProperty *stk_mp=(StackMemberProperty *)stk_var->value;
+			if(stk_mp->member_property->metamethod_members.getter != NULL){
 
 				VM_INNER_CALL_ONLY_RETURN(
-						stk_ma->so_object
-						,stk_ma->member_property->getter
-						,stk_ma->member_property->getter->function_name.c_str()
+						stk_mp->so_object
+						,stk_mp->member_property->metamethod_members.getter
+						,stk_mp->member_property->metamethod_members.getter->function_name.c_str()
 						,true
 				);
 

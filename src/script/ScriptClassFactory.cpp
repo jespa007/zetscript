@@ -456,28 +456,28 @@ namespace zetscript{
 
 					// attribs has to be copy MemberProperty...
 					if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
-						MemberProperty *ma_src=(MemberProperty *)symbol_src->ref_ptr;
-						MemberProperty *ma_dst=new MemberProperty(sc,ma_src->property_name);
-						ma_dst->getter=ma_src->getter;
-						ma_dst->post_inc=ma_src->post_inc;
-						ma_dst->post_dec=ma_src->post_dec;
-						ma_dst->pre_inc=ma_src->pre_inc;
-						ma_dst->pre_dec=ma_src->pre_dec;
-						ma_dst->neg=ma_src->neg;
+						MemberProperty *mp_src=(MemberProperty *)symbol_src->ref_ptr;
+						MemberProperty *mp_dst=new MemberProperty(sc,mp_src->property_name);
+						mp_dst->metamethod_members.getter=mp_src->metamethod_members.getter;
+						mp_dst->metamethod_members.post_inc=mp_src->metamethod_members.post_inc;
+						mp_dst->metamethod_members.post_dec=mp_src->metamethod_members.post_dec;
+						mp_dst->metamethod_members.pre_inc=mp_src->metamethod_members.pre_inc;
+						mp_dst->metamethod_members.pre_dec=mp_src->metamethod_members.pre_dec;
+						mp_dst->metamethod_members.neg=mp_src->metamethod_members.neg;
 
-						const ByteCodeMetamethod *it_setters=MemberProperty::byte_code_metamethod_member_setter_list;
+						const ByteCodeMetamethod *it_setters=MetamethodMembers::byte_code_metamethod_member_setter_list;
 
 						while(*it_setters!=0){
-							MemberPropertySetterInfo mp_info=ma_src->getSetterInfo(*it_setters);
+							MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setters);
 							for(unsigned i=0; i < mp_info.setters->count;i++){
-								ma_dst->addSetter(*it_setters,(ScriptFunction *)(((StackElement *)mp_info.setters->items[i])->value));
+								mp_dst->metamethod_members.addSetter(*it_setters,(ScriptFunction *)(((StackElement *)mp_info.setters->items[i])->value));
 
 							}
 							it_setters++;
 						}
 
-						sc->allocated_member_properties->push_back((zs_int)ma_dst);
-						symbol_dst->ref_ptr=(zs_int)ma_dst;
+						sc->allocated_member_properties->push_back((zs_int)mp_dst);
+						symbol_dst->ref_ptr=(zs_int)mp_dst;
 					}
 				}
 

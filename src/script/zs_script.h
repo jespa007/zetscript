@@ -21,6 +21,7 @@
 #include "ScriptObjectIteratorVectorWrap.h"
 
 
+#include "MetamethodMembers.h"
 #include "MemberProperty.h"
 #include "ScriptFunctionParam.h"
 #include "ScriptFunction.h"

@@ -121,11 +121,11 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 			,1\
 		);\
 	}\
-	if((stk_mp!=NULL) && (stk_mp->member_property->getter != NULL)){ /* if property call getter */ \
+	if((stk_mp!=NULL) && (stk_mp->member_property->metamethod_members.getter != NULL)){ /* if property call getter */ \
 		VM_INNER_CALL_ONLY_RETURN( \
 				stk_mp->so_object \
-			,stk_mp->member_property->getter \
-			,stk_mp->member_property->getter->function_name.c_str() \
+			,stk_mp->member_property->metamethod_members.getter \
+			,stk_mp->member_property->metamethod_members.getter->function_name.c_str() \
 			,true \
 		);\
 		stk_dst=data->stk_vm_current;\

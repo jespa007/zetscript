@@ -30,7 +30,7 @@ namespace zetscript{
 		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
 		zs_vector 				*allocated_member_properties;
 		ScriptFunction			*sf_field_initializer;
-		MemberProperty			*member_metamethods;
+		MetamethodMembers		metamethod_members;
 		int						idx_starting_this_member_functions;
 		int						idx_starting_this_member_variables;
 

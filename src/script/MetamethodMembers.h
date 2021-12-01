@@ -30,11 +30,10 @@ namespace zetscript{
 		ByteCodeMetamethod byte_code_metamethod;
 		zs_vector *setters;
 		const char *str_byte_code_metamethod;
-	}MemberPropertySetterInfo;
+	}MetamethodMemberSetterInfo;
 
-	class MemberProperty{
+	class MetamethodMembers{
 	public:
-		ScriptClass *script_class;
 		zs_vector setters; // =
 		zs_vector add_setters; // +=
 		zs_vector sub_setters; // -=
@@ -46,27 +45,25 @@ namespace zetscript{
 		zs_vector xor_setters; // ^=
 		zs_vector shl_setters; // <<=
 		zs_vector shr_setters; // >>=
-		 ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg; // getter
-		 zs_string property_name;
+		ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg; // getter
 
-		 const static ByteCodeMetamethod 	byte_code_metamethod_member_setter_list[];
-		 const static ByteCodeMetamethod 	byte_code_metamethod_member_list[];
+		const static ByteCodeMetamethod 	byte_code_metamethod_member_setter_list[];
+		const static ByteCodeMetamethod 	byte_code_metamethod_member_list[];
 
-		 //const static zs_string & 			byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name);
-		 bool static 						check_valid_metamethod(ByteCodeMetamethod _byte_code);
-		 static bool 						symbolNameMatchStartSymbolNameMetamethod(const zs_string & _symbol_name);
+		//const static zs_string & 			byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name);
+		bool static 						isMetamethodMember(ByteCodeMetamethod _byte_code);
+		static 	ByteCodeMetamethod symbolNameToSetterMetamethod(const char *_symbol_name);
+		static bool isSetter(ByteCodeMetamethod _byte_code_metamethod);
 
-		 static bool isSetter(ByteCodeMetamethod _byte_code_metamethod);
-
-		 MemberProperty(ScriptClass *_script_class, const zs_string & _property_name);
-		 MemberPropertySetterInfo 	getSetterInfo(ByteCodeMetamethod _byte_code);
-		 MemberPropertySetterInfo 	getSetterInfo(const char *_symbol_name);
-		 void						addSetter(ByteCodeMetamethod _byte_code_metamethod,ScriptFunction *f);
-		 zs_vector * 				getVectorSetter(const char *_symbol_name);
+		MetamethodMembers();
+		MetamethodMemberSetterInfo 	getSetterInfo(ByteCodeMetamethod _byte_code);
+		MetamethodMemberSetterInfo 	getSetterInfo(const char *_symbol_name);
+		void						addSetter(ByteCodeMetamethod _byte_code_metamethod,ScriptFunction *f);
+		zs_vector * 				getVectorSetter(const char *_symbol_name);
 
 
 
-		~MemberProperty();
+		~MetamethodMembers();
 
 	};
 }

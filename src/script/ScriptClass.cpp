@@ -46,7 +46,6 @@ namespace zetscript{
 		script_function_factory= zs->getScriptFunctionFactory();
 		script_class_factory=zs->getScriptClassFactory();
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
-		member_metamethods = new MemberProperty(this,class_name);
 		properties=_properties;
 
 	}
@@ -187,7 +186,7 @@ namespace zetscript{
 	){
 		Symbol *symbol_member_property=NULL;
 		MemberProperty *mp=NULL;
-		MemberPropertySetterInfo mp_setter_info;
+		MetamethodMemberSetterInfo mp_setter_info;
 		Symbol *symbol_function=NULL;
 		zs_string symbol_metamethod_function;
 		ScriptFunction **ptr_getter_script_function=NULL;
@@ -200,7 +199,7 @@ namespace zetscript{
 		mp=(MemberProperty *)symbol_member_property->ref_ptr;
 
 
-		if(MemberProperty::check_valid_metamethod(_byte_code_metamethod)==false){
+		if(MetamethodMembers::isMetamethodMember(_byte_code_metamethod)==false){
 			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Invalid metamethod '%s' for property '%s'"
 				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
 				,_property_name.c_str()
@@ -221,48 +220,48 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_SHL_SET:
 		case BYTE_CODE_METAMETHOD_SHR_SET:
 			symbol_metamethod_function=ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code_metamethod,_property_name);
-			mp_setter_info=mp->getSetterInfo(_byte_code_metamethod);
+			mp_setter_info=mp->metamethod_members.getSetterInfo(_byte_code_metamethod);
 			break;
 		// particular case
 		case BYTE_CODE_METAMETHOD_POST_INC:
-			if(mp->post_inc != NULL){
+			if(mp->metamethod_members.post_inc != NULL){
 
 				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '%s++') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
 			}
-			ptr_getter_script_function=&mp->post_inc;
+			ptr_getter_script_function=&mp->metamethod_members.post_inc;
 			break;
 		case BYTE_CODE_METAMETHOD_POST_DEC:
-			if(mp->post_dec != NULL){
+			if(mp->metamethod_members.post_dec != NULL){
 
 				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post decrement (aka '%s--') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
 			}
-			ptr_getter_script_function=&mp->post_dec;
+			ptr_getter_script_function=&mp->metamethod_members.post_dec;
 			break;
 		case BYTE_CODE_METAMETHOD_PRE_INC:
-			if(mp->pre_inc != NULL){
+			if(mp->metamethod_members.pre_inc != NULL){
 
 				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre increment (aka '++%s') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
 			}
-			ptr_getter_script_function=&mp->pre_inc;
+			ptr_getter_script_function=&mp->metamethod_members.pre_inc;
 			break;
 		case BYTE_CODE_METAMETHOD_PRE_DEC:
-			if(mp->pre_dec != NULL){
+			if(mp->metamethod_members.pre_dec != NULL){
 
 				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre decrement (aka '--%s') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
 			}
-			ptr_getter_script_function=&mp->pre_dec;
+			ptr_getter_script_function=&mp->metamethod_members.pre_dec;
 			break;
 		}
 
@@ -300,14 +299,14 @@ namespace zetscript{
 		Symbol *symbol_member_property=NULL;
 		Symbol *symbol_function=NULL;
 
-		MemberProperty *ma=NULL;
+		MemberProperty *mp=NULL;
 		if((symbol_member_property=getSymbol(_property_name)) == NULL){
 			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
 		}
 
-		ma=(MemberProperty *)symbol_member_property->ref_ptr;
+		mp=(MemberProperty *)symbol_member_property->ref_ptr;
 
-		if(ma->getter != NULL){
+		if(mp->metamethod_members.getter != NULL){
 
 			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a getter"
 				,_property_name.c_str()
@@ -325,7 +324,7 @@ namespace zetscript{
 				_line
 		);
 
-		ma->getter=(ScriptFunction *)symbol_function->ref_ptr;
+		mp->metamethod_members.getter=(ScriptFunction *)symbol_function->ref_ptr;
 
 		return symbol_member_property;
 	}
@@ -404,7 +403,7 @@ namespace zetscript{
 			for(unsigned i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
 				if(ZS_STRCMP(byte_code_metamethod_to_symbol_str((ByteCodeMetamethod)i),==,_function_name.c_str())){
 					// check whether function meets the conditions of num params, static etc
-					MemberPropertySetterInfo info_mp;
+					MetamethodMemberSetterInfo info_mp;
 					ByteCodeMetamethod op=(ByteCodeMetamethod)i;
 					const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(op);
 					const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(op);
@@ -518,7 +517,7 @@ namespace zetscript{
 					case BYTE_CODE_METAMETHOD_SHL_SET:
 					case BYTE_CODE_METAMETHOD_SHR_SET:
 
-						info_mp=member_metamethods->getSetterInfo(op);
+						info_mp=metamethod_members.getSetterInfo(op);
 
 						if(((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) //--> script function has to have one setter function, meanwhile c ref can have more than one (due different signatures)
 								&&
@@ -530,43 +529,43 @@ namespace zetscript{
 
 							return NULL;
 						}
-						member_metamethods->addSetter(op,(ScriptFunction *)symbol_function->ref_ptr);
+						metamethod_members.addSetter(op,(ScriptFunction *)symbol_function->ref_ptr);
 						break;
 					case BYTE_CODE_METAMETHOD_POST_INC:
-						if(member_metamethods->post_inc != NULL){
+						if(metamethod_members.post_inc != NULL){
 
 							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a post increment (aka '%s++') metamethod"
 								,class_name.c_str()
 							);
 						}
-						member_metamethods->post_inc=(ScriptFunction *)symbol_function->ref_ptr;
+						metamethod_members.post_inc=(ScriptFunction *)symbol_function->ref_ptr;
 						break;
 					case BYTE_CODE_METAMETHOD_POST_DEC:
-						if(member_metamethods->post_dec != NULL){
+						if(metamethod_members.post_dec != NULL){
 
 							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a post decrement (aka '%s--') metamethod"
 								,class_name.c_str()
 							);
 						}
-						member_metamethods->post_dec=(ScriptFunction *)symbol_function->ref_ptr;
+						metamethod_members.post_dec=(ScriptFunction *)symbol_function->ref_ptr;
 						break;
 					case BYTE_CODE_METAMETHOD_PRE_INC:
-						if(member_metamethods->pre_inc != NULL){
+						if(metamethod_members.pre_inc != NULL){
 
 							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a pre increment (aka '++%s') metamethod"
 								,class_name.c_str()
 							);
 						}
-						member_metamethods->pre_inc=(ScriptFunction *)symbol_function->ref_ptr;
+						metamethod_members.pre_inc=(ScriptFunction *)symbol_function->ref_ptr;
 						break;
 					case BYTE_CODE_METAMETHOD_PRE_DEC:
-						if(member_metamethods->pre_dec != NULL){
+						if(metamethod_members.pre_dec != NULL){
 
 							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a pre decrement (aka '--%s') metamethod"
 								,class_name.c_str()
 							);
 						}
-						member_metamethods->pre_dec=(ScriptFunction *)symbol_function->ref_ptr;
+						metamethod_members.pre_dec=(ScriptFunction *)symbol_function->ref_ptr;
 						break;
 
 					}
@@ -652,13 +651,13 @@ namespace zetscript{
 	ScriptClass::~ScriptClass(){
 
 		for(unsigned i=0; i < allocated_member_properties->count; i++){
-			MemberProperty *ma=(MemberProperty *)allocated_member_properties->items[i];
-			delete ma;
+			MemberProperty *mp=(MemberProperty *)allocated_member_properties->items[i];
+			delete mp;
 		}
 
 		delete allocated_member_properties;
 		delete idx_base_classes;
-		delete member_metamethods;
+
 	}
 }
 

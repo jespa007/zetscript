@@ -309,7 +309,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			Symbol *symbol=NULL;
 			Symbol *symbol_attrib=NULL;
-			MemberProperty *ma=NULL;
+			MemberProperty *mp=NULL;
 			char *end_var;
 			zs_string function_name;
 			zs_string error;
@@ -331,7 +331,7 @@ namespace zetscript{
 
 			}
 
-			ma=(MemberProperty *)symbol_attrib->ref_ptr;
+			mp=(MemberProperty *)symbol_attrib->ref_ptr;
 			//Scope *scope_function =eval_new_scope(eval_data,scope_info); // push current scope
 
 			// here we only expect to have _set and _get functions
@@ -372,8 +372,8 @@ namespace zetscript{
 					}
 
 					if(function_name == "_get"){
-						if(ma->getter==NULL){
-							ma->getter=(ScriptFunction *)symbol->ref_ptr;
+						if(mp->metamethod_members.getter==NULL){
+							mp->metamethod_members.getter=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -383,8 +383,8 @@ namespace zetscript{
 							);
 						}
 					}else if(function_name == "_post_inc"){
-						if(ma->post_inc==NULL){
-							ma->post_inc=(ScriptFunction *)symbol->ref_ptr;
+						if(mp->metamethod_members.post_inc==NULL){
+							mp->metamethod_members.post_inc=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -394,8 +394,8 @@ namespace zetscript{
 							);
 						}
 					}else if(function_name == "_post_dec"){
-						if(ma->post_dec==NULL){
-							ma->post_dec=(ScriptFunction *)symbol->ref_ptr;
+						if(mp->metamethod_members.post_dec==NULL){
+							mp->metamethod_members.post_dec=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -405,8 +405,8 @@ namespace zetscript{
 							);
 						}
 					}else if(function_name == "_pre_inc"){
-						if(ma->pre_inc==NULL){
-							ma->pre_inc=(ScriptFunction *)symbol->ref_ptr;
+						if(mp->metamethod_members.pre_inc==NULL){
+							mp->metamethod_members.pre_inc=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -416,8 +416,8 @@ namespace zetscript{
 							);
 						}
 					}else if(function_name == "_pre_dec"){
-						if(ma->pre_dec==NULL){
-							ma->pre_dec=(ScriptFunction *)symbol->ref_ptr;
+						if(mp->metamethod_members.pre_dec==NULL){
+							mp->metamethod_members.pre_dec=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -427,8 +427,8 @@ namespace zetscript{
 							);
 						}
 					}else if(function_name == "_neg"){
-						if(ma->neg==NULL){
-							ma->neg=(ScriptFunction *)symbol->ref_ptr;
+						if(mp->metamethod_members.neg==NULL){
+							mp->metamethod_members.neg=(ScriptFunction *)symbol->ref_ptr;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -438,11 +438,11 @@ namespace zetscript{
 							);
 						}
 					}else{ // find setter
-						MemberPropertySetterInfo _mp_info=ma->getSetterInfo(function_name.c_str());
+						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(function_name.c_str());
 
 						if(_mp_info.byte_code_metamethod!=BYTE_CODE_METAMETHOD_INVALID){
 							if(_mp_info.setters->count == 0){
-								ma->addSetter(_mp_info.byte_code_metamethod,(ScriptFunction *)symbol->ref_ptr);
+								mp->metamethod_members.addSetter(_mp_info.byte_code_metamethod,(ScriptFunction *)symbol->ref_ptr);
 							}else{
 								EVAL_ERROR_FILE_LINE(
 									eval_data->current_parsing_file

@@ -218,7 +218,7 @@ namespace zetscript{
 										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_DEC)
 										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_INC)
 										||  zs_strutils::starts_with(symbol_src->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_DEC)
-										;*/
+										;
 
 			if(is_metamethod_function==false){ // try find setter
 				ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_member_setter_list;
@@ -229,7 +229,7 @@ namespace zetscript{
 					is_metamethod_function=zs_strutils::starts_with(symbol_src->name,symbol_name_methametod);
 					it++;
 				}
-			}
+			}*/
 
 			// we have to know whether function member is or not getter/setter because we create them in the property member case. If not, we could have
 			// duplicated symbols.
@@ -262,25 +262,25 @@ namespace zetscript{
 
 			if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 
-				MemberProperty *ma_src=(MemberProperty *)symbol_src->ref_ptr;
-				MemberProperty *ma_dst=NULL;
+				MemberProperty *mp_src=(MemberProperty *)symbol_src->ref_ptr;
+				MemberProperty *mp_dst=NULL;
 
 				Symbol *symbol_member_property=NULL;
 				Symbol *symbol_function=NULL;
 
 				symbol_member_property=this_class->registerMemberProperty(symbol_src->name,symbol_src->file,symbol_src->line);
-				ma_dst=(MemberProperty *)symbol_member_property->ref_ptr;
+				mp_dst=(MemberProperty *)symbol_member_property->ref_ptr;
 
 
 				struct _PropertyMethodIt{
 					ScriptFunction **dst_function;
 					ScriptFunction *src_function;
 				}property_methods[]={
-					{&ma_dst->getter,ma_src->getter}
-					,{&ma_dst->post_inc,ma_src->post_inc}
-					,{&ma_dst->post_dec,ma_src->post_dec}
-					,{&ma_dst->pre_inc,ma_src->pre_inc}
-					,{&ma_dst->pre_dec,ma_src->pre_dec}
+					{&mp_dst->metamethod_members.getter,mp_src->metamethod_members.getter}
+					,{&mp_dst->metamethod_members.post_inc,mp_src->metamethod_members.post_inc}
+					,{&mp_dst->metamethod_members.post_dec,mp_src->metamethod_members.post_dec}
+					,{&mp_dst->metamethod_members.pre_inc,mp_src->metamethod_members.pre_inc}
+					,{&mp_dst->metamethod_members.pre_dec,mp_src->metamethod_members.pre_dec}
 					,{0,0}
 				};
 
@@ -312,9 +312,9 @@ namespace zetscript{
 					it++;
 				}
 
-				ByteCodeMetamethod *it_setter=MemberProperty::byte_code_metamethod_member_setter_list;
+				ByteCodeMetamethod *it_setter=MetamethodMembers::byte_code_metamethod_member_setter_list;
 				while(*it_setter!= 0){
-					MemberPropertySetterInfo mp_info=ma_src->getSetterInfo(*it_setter);
+					MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
 						for(unsigned i=0; i < mp_info.setters->count; i++){
 
@@ -336,7 +336,7 @@ namespace zetscript{
 									//sf_setter->symbol->line
 							);
 
-							ma_dst->addSetter(*it_setter,(ScriptFunction *)symbol_function->ref_ptr);
+							mp_dst->metamethod_members.addSetter(*it_setter,(ScriptFunction *)symbol_function->ref_ptr);
 						}
 					}
 

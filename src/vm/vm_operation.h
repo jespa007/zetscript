@@ -3,15 +3,15 @@
  *  See LICENSE file for details.
  */
 #define LOAD_PROPERTIES(__METAMETHOD__) \
-	mp_aux=NULL;\
+	ptr_metamethod_members_aux=NULL;\
 	if(stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY){\
 		stk_var_copy=*stk_result_op1;\
 		stk_mp_aux=(StackMemberProperty *)stk_result_op1->value;\
-		mp_aux= stk_mp_aux->member_property;\
+		ptr_metamethod_members_aux= &stk_mp_aux->member_property->metamethod_members;\
 		so_aux = stk_mp_aux->so_object;\
 	}else if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 		so_aux= (ScriptObject *)stk_result_op1->value;\
-		mp_aux= so_aux->getScriptClass()->member_metamethods;\
+		ptr_metamethod_members_aux= &so_aux->getScriptClass()->metamethod_members;\
 	}\
 	else{\
 		zs_strutils::format("Symbol '%s' not implements metamethod %s (aka '%s'') "\
@@ -276,7 +276,7 @@
 		break;\
 	default:/*metamethod*/\
 		LOAD_PROPERTIES(__METAMETHOD__);\
-		if(mp_aux->neg==NULL){\
+		if(ptr_metamethod_members_aux->neg==NULL){\
 			zs_strutils::format("%s '%s' not implements metamethod _neg (aka '-a'') "\
 					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
@@ -286,8 +286,8 @@
 		/* call _neg */\
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
-				,mp_aux->neg\
-				,mp_aux->neg->function_name.c_str()\
+				,ptr_metamethod_members_aux->neg\
+				,ptr_metamethod_members_aux->neg->function_name.c_str()\
 				,true\
 		);\
 		data->stk_vm_current++; /* store negated value to stk to load after */\
@@ -328,12 +328,12 @@
 		break;\
 	default:/*metamethod*/\
 		LOAD_PROPERTIES(__METAMETHOD__);\
-		if(mp_aux->getter!=NULL){\
+		if(ptr_metamethod_members_aux->getter!=NULL){\
 			/* call _neg */\
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
-					,mp_aux->getter\
-					,mp_aux->getter->function_name.c_str()\
+					,ptr_metamethod_members_aux->getter\
+					,ptr_metamethod_members_aux->getter->function_name.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \
@@ -398,12 +398,12 @@
 				,true\
 		);\
 		/*getter after*/\
-		if(mp_aux->getter!=NULL){\
+		if(ptr_metamethod_members_aux->getter!=NULL){\
 			/* call _neg */\
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
-					,mp_aux->getter\
-					,mp_aux->getter->function_name.c_str()\
+					,ptr_metamethod_members_aux->getter\
+					,ptr_metamethod_members_aux->getter->function_name.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \

@@ -50,7 +50,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1);\
 		}else{\
 			LOAD_PROPERTIES(__METAMETHOD__); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
-			if(mp_aux->add_setters.count==0){\
+			if(ptr_metamethod_members_aux->add_setters.count==0){\
 				zs_strutils::format("%s '%s' not implements metamethod add_set (aka '+='') " \
 						,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol" \
 						,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
@@ -68,12 +68,12 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				,true\
 			);\
 			/*getter after*/\
-			if(mp_aux->getter!=NULL){\
+			if(ptr_metamethod_members_aux->getter!=NULL){\
 				/* call _neg */\
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
-						,mp_aux->getter\
-						,mp_aux->getter->function_name.c_str()\
+						,ptr_metamethod_members_aux->getter\
+						,ptr_metamethod_members_aux->getter->function_name.c_str()\
 						,true\
 				);\
 			}else{ /* store object */ \
@@ -134,12 +134,12 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			,true\
 		);\
 		/*getter after*/\
-		if(mp_aux->getter!=NULL){\
+		if(ptr_metamethod_members_aux->getter!=NULL){\
 			/* call _neg */\
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
-					,mp_aux->getter\
-					,mp_aux->getter->function_name.c_str()\
+					,ptr_metamethod_members_aux->getter\
+					,ptr_metamethod_members_aux->getter->function_name.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \
@@ -191,7 +191,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	default:\
 		LOAD_PROPERTIES(__METAMETHOD__); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
-		if(mp_aux->div_setters.count==0){\
+		if(ptr_metamethod_members_aux->div_setters.count==0){\
 			zs_strutils::format("%s '%s' not implements metamethod div_set (aka '/='') "\
 					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
@@ -209,12 +209,12 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			,true\
 		);\
 		/*getter after*/\
-		if(mp_aux->getter!=NULL){\
+		if(ptr_metamethod_members_aux->getter!=NULL){\
 			/* call _neg */\
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
-					,mp_aux->getter\
-					,mp_aux->getter->function_name.c_str()\
+					,ptr_metamethod_members_aux->getter\
+					,ptr_metamethod_members_aux->getter->function_name.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \
@@ -262,7 +262,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	default:\
 		LOAD_PROPERTIES(__METAMETHOD__);/* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */ \
-		if(mp_aux->div_setters.count==0){\
+		if(ptr_metamethod_members_aux->div_setters.count==0){\
 			zs_strutils::format("%s '%s' not implements metamethod div_set (aka '/='') "\
 					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
@@ -280,12 +280,12 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			,true\
 		);\
 		/*getter after*/\
-		if(mp_aux->getter!=NULL){\
+		if(ptr_metamethod_members_aux->getter!=NULL){\
 			/* call _neg */\
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
-					,mp_aux->getter\
-					,mp_aux->getter->function_name.c_str()\
+					,ptr_metamethod_members_aux->getter\
+					,ptr_metamethod_members_aux->getter->function_name.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \
@@ -326,12 +326,12 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			,true\
 		);\
 		/*getter after*/\
-		if(mp_aux->getter!=NULL){\
+		if(ptr_metamethod_members_aux->getter!=NULL){\
 			/* call _neg */\
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
-					,mp_aux->getter\
-					,mp_aux->getter->function_name.c_str()\
+					,ptr_metamethod_members_aux->getter\
+					,ptr_metamethod_members_aux->getter->function_name.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \
