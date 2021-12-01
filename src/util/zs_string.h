@@ -19,9 +19,9 @@ namespace zetscript{
 		zs_string& operator+=(const zs_string& rhs);
 		zs_string& operator+=(char _c);
 
-		zs_string(zs_string && dyingObj);
+		zs_string(zs_string && dying_obj);
 
-		zs_string& operator=(zs_string && dyingObj);
+		zs_string& operator=(zs_string && dying_obj);
 
 
 	    char& operator[] (size_t pos);

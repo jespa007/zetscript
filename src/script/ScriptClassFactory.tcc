@@ -221,7 +221,7 @@ namespace zetscript{
 										;*/
 
 			if(is_metamethod_function==false){ // try find setter
-				ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_setter_list;
+				ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_member_setter_list;
 				zs_string symbol_name_methametod;
 				while(*it!=0 && is_metamethod_function==false){
 					symbol_name_methametod=byte_code_metamethod_to_symbol_str(*it);
@@ -312,7 +312,7 @@ namespace zetscript{
 					it++;
 				}
 
-				ByteCodeMetamethod *it_setter=MemberProperty::byte_code_metamethod_setter_list;
+				ByteCodeMetamethod *it_setter=MemberProperty::byte_code_metamethod_member_setter_list;
 				while(*it_setter!= 0){
 					MemberPropertySetterInfo mp_info=ma_src->getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){

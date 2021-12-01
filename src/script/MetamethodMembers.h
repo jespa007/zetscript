@@ -25,6 +25,7 @@
 
 namespace zetscript{
 
+
 	typedef struct{
 		ByteCodeMetamethod byte_code_metamethod;
 		zs_vector *setters;
@@ -48,8 +49,8 @@ namespace zetscript{
 		 ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg; // getter
 		 zs_string property_name;
 
-		 const static ByteCodeMetamethod 	byte_code_metamethod_setter_list[];
-		 const static ByteCodeMetamethod 	byte_code_metamethod_list[];
+		 const static ByteCodeMetamethod 	byte_code_metamethod_member_setter_list[];
+		 const static ByteCodeMetamethod 	byte_code_metamethod_member_list[];
 
 		 //const static zs_string & 			byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name);
 		 bool static 						check_valid_metamethod(ByteCodeMetamethod _byte_code);

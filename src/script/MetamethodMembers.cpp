@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	const ByteCodeMetamethod MemberProperty::byte_code_metamethod_setter_list[]={
+	const ByteCodeMetamethod MemberProperty::byte_code_metamethod_member_setter_list[]={
 			BYTE_CODE_METAMETHOD_SET
 			,BYTE_CODE_METAMETHOD_ADD_SET
 			,BYTE_CODE_METAMETHOD_SUB_SET
@@ -21,7 +21,7 @@ namespace zetscript{
 			,BYTE_CODE_METAMETHOD_EQU //--> is 0 (end of elements)
 	};
 
-	const ByteCodeMetamethod MemberProperty::byte_code_metamethod_list[]={
+	const ByteCodeMetamethod MemberProperty::byte_code_metamethod_member_list[]={
 
 			BYTE_CODE_METAMETHOD_SET
 			,BYTE_CODE_METAMETHOD_ADD_SET
@@ -156,7 +156,7 @@ namespace zetscript{
 
 	/*const zs_string & MemberProperty::byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name){
 		zs_string symbol="N/A";
-		const ByteCodeMetamethod *it=byte_code_metamethod_list;
+		const ByteCodeMetamethod *it=byte_code_metamethod_member_list;
 
 		while(*it!=0){
 			if(_byte_code==*it){
@@ -170,7 +170,7 @@ namespace zetscript{
 
 	bool MemberProperty::check_valid_metamethod(ByteCodeMetamethod _byte_code){
 		zs_string symbol="N/A";
-		const ByteCodeMetamethod *it=byte_code_metamethod_list;
+		const ByteCodeMetamethod *it=byte_code_metamethod_member_list;
 
 		while(*it!=0){
 			if(_byte_code==*it){
@@ -183,7 +183,7 @@ namespace zetscript{
 
 	bool MemberProperty::symbolNameMatchStartSymbolNameMetamethod(const zs_string & _symbol_name){
 		zs_string symbol="N/A";
-		const ByteCodeMetamethod *it=byte_code_metamethod_list;
+		const ByteCodeMetamethod *it=byte_code_metamethod_member_list;
 
 		while(*it!=0){
 			if(zs_strutils::starts_with(_symbol_name,byte_code_metamethod_to_symbol_str(*it))){
