@@ -239,13 +239,14 @@ namespace zetscript{
 		};
 
 		zs_vector **it=ptr_vector;
-		while(*it++!=NULL){
+		while(*it!=NULL){
 
 			for(int i=0;i < (*it)->count; i++){
 				StackElement *stk_el=(StackElement *)(*it)->items[i];
 				free(stk_el);
 			}
 			(*it)->clear();
+			it++;
 		}
 
 

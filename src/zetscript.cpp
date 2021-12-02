@@ -115,7 +115,7 @@ namespace zetscript{
 		registerMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 		// Custom user function or classes
-		/*eval(
+		eval(
 			zs_strutils::format(
 				//------------------------------------------------
 				// String
@@ -184,7 +184,7 @@ namespace zetscript{
 			,
 			(void *)this
 			)
-		);*/
+		);
 
 		saveState();
 	}
@@ -269,8 +269,18 @@ namespace zetscript{
 			 if(show_class){
 				 symbol_functions=sc->class_scope->symbol_functions;
 				 for(unsigned f = 0; f < symbol_functions->count; f++){
+					 bool show_function=true;
 					 Symbol *symbol=(Symbol *)symbol_functions->items[f];
-					 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,sc);
+					 ScriptFunction *script_function=(ScriptFunction *)symbol->ref_ptr;
+					 /*if(show_system_code == false && (
+							 zs_strutils::starts_with(script_function->function_name,"_@afun_defval")
+					)){
+						 show_function=false;
+					 }*/
+
+					 if(show_function){
+						 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,sc);
+					 }
 
 				 }
 			 }

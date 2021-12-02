@@ -256,6 +256,7 @@ Solved issues
 #313 Change names Property -> Field / Attribute -> Property 
 > #314 Save n paramater/return count for each call in instruction->value_op1
 > #315 Test stack element limits
+> #316 default functions generates extra byte codes 
 
 
 //----------------------------------------------------------
