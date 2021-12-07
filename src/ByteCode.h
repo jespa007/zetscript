@@ -240,6 +240,7 @@ namespace zetscript{
 	//int			 get_num_arguments_non_metamethod(ByteCodeMetamethod op);
 	ByteCode	 byte_code_load_var_type_to_push_stk(ByteCode op);
 	bool		 byte_code_is_load_var_type(ByteCode op);
+	int			 byte_code_num_required_stack(ByteCode op);
 
 
 

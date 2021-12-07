@@ -472,38 +472,10 @@ namespace zetscript{
 			ScriptClass *sc_aux=NULL;
 			ptr_str_symbol_to_find=&eval_instruction->symbol.name;
 
+			sum_stk_load_stk+=byte_code_num_required_stack(eval_instruction->vm_instruction.byte_code);
+
 			switch(eval_instruction->vm_instruction.byte_code){
 
-			// LOAD
-			case BYTE_CODE_LOAD_GLOBAL:
-			case BYTE_CODE_LOAD_REF:
-			case BYTE_CODE_LOAD_THIS:
-			case BYTE_CODE_LOAD_VECTOR_ITEM:
-			case BYTE_CODE_LOAD_OBJECT_ITEM:
-			// PUSH_STK
-			case BYTE_CODE_PUSH_STK_GLOBAL:
-			case BYTE_CODE_PUSH_STK_LOCAL:
-			case BYTE_CODE_PUSH_STK_THIS:
-			case BYTE_CODE_PUSH_STK_MEMBER_VAR:
-			case BYTE_CODE_PUSH_STK_VECTOR_ITEM:
-			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
-			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
-				// CONSTRUCTOR
-			case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
-				// load constants
-			case BYTE_CODE_LOAD_FUNCTION:
-			case BYTE_CODE_LOAD_NULL:
-			case BYTE_CODE_LOAD_STRING:
-			case BYTE_CODE_LOAD_ZS_FLOAT:
-			case BYTE_CODE_LOAD_BOOL:
-			case BYTE_CODE_LOAD_ZS_INT:
-			case BYTE_CODE_LOAD_STACK_ELEMENT:
-				sum_stk_load_stk++;
-				break;
-			case BYTE_CODE_LOAD_THIS_FUNCTION:
-				sum_stk_load_stk++; // obj this
-				sum_stk_load_stk++; // function
-				break;
 			case BYTE_CODE_THIS_CALL:
 
 				// try to solve symbol...
@@ -565,10 +537,6 @@ namespace zetscript{
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
-			case BYTE_CODE_LOAD_THIS_VARIABLE: // is "this" symbol, check whether symbol is member
-				sum_stk_load_stk++;
-				break;
-
 			case BYTE_CODE_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
 					eval_instruction->vm_instruction.byte_code=BYTE_CODE_UNRESOLVED_CALL;
@@ -578,7 +546,6 @@ namespace zetscript{
 			case BYTE_CODE_FIND_VARIABLE:
 				// add instruction reference to solve later
 				eval_data->zs->addUnresolvedSymbol(sf,i);
-				sum_stk_load_stk++;
 				break;
 			}
 

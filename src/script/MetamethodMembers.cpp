@@ -99,7 +99,7 @@ namespace zetscript{
 		// search setter
 		const ByteCodeMetamethod *it=byte_code_metamethod_member_setter_list;
 		bool found=false;
-		ByteCodeMetamethod _byte_code_metamethod;
+		ByteCodeMetamethod _byte_code_metamethod=BYTE_CODE_METAMETHOD_INVALID;
 		while(*it!=0){
 			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
 			if(_symbol_name == _mt_name){

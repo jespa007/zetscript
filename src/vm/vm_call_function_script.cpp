@@ -560,7 +560,7 @@ find_element_object:
 					stk_src_properties=stk_src->properties;
 
 					// init stk_dst
-					STK_SET_NULL(stk_dst);
+					*stk_dst=k_stk_null;
 
 					if(stk_src_properties == STK_PROPERTY_NULL){
 						stk_dst->properties=STK_PROPERTY_NULL;
@@ -1355,7 +1355,7 @@ execute_function:
 								script_object_class->deleteNativeObjectOnDestroy(true);
 							}
 						}
-						STK_SET_NULL(se);
+						*se=k_stk_null;
 					}
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:
