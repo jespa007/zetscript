@@ -37,7 +37,7 @@ namespace zetscript{
 		StackElement stk_aux;
 		stk_aux.properties=0;
 		stk_aux.value=0;
-		StackElement *stk_var;
+		StackElement *stk_var=NULL;
 		StackElement stk_var_copy;
 		const char *str_symbol=NULL;
 		//------------------------------------------------
@@ -82,10 +82,6 @@ namespace zetscript{
 
 		data->stk_vm_current = stk_start;
 		data->vm_idx_call++;
-
-		if(instructions==NULL){
-			return;
-		}
 
 		if(((data->stk_vm_current-data->vm_stack)+calling_function->min_stack_needed)>=VM_STACK_MAX){
 			VM_STOP_EXECUTE("Error MAXIMUM stack size reached");
@@ -1177,33 +1173,37 @@ execute_function:
 
 				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
 					data->stk_vm_current=stk_start;
-				}else{
-
-					// reset vm current before function pointer is
-					data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//?0:1);
-
-
-
-					sf_call_expected_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
-					sf_call_n_null_values=sf_call_expected_return-sf_call_n_returned_arguments_from_function;
-
-					// return all elements in reverse order in order to get right assignment ...
-					// reverse returned items
-					for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
-						StackElement tmp=sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1];
-						sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
-						sf_call_stk_return[i]=tmp;
-					}
-
-					// copy to vm stack
-					data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
-
-					memcpy(data->stk_vm_current,sf_call_stk_return,sf_call_n_returned_arguments_from_function*sizeof(StackElement));
-					data->stk_vm_current+=sf_call_n_returned_arguments_from_function;
-					memset(data->stk_vm_current,0,sf_call_n_null_values*sizeof(StackElement));
-					data->stk_vm_current+=sf_call_n_null_values;
-
+					continue;
 				}
+
+				// reset vm current before function pointer is
+				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//?0:1);
+
+				sf_call_expected_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
+				sf_call_n_null_values=sf_call_expected_return-sf_call_n_returned_arguments_from_function;
+
+				// return all elements in reverse order in order to get right assignment ...
+				// reverse returned items
+				for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
+					StackElement tmp=sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1];
+					sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
+					sf_call_stk_return[i]=tmp;
+				}
+
+				// copy to vm stack
+				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
+
+				//memcpy(data->stk_vm_current,sf_call_stk_return,sf_call_n_returned_arguments_from_function*sizeof(StackElement));
+				while(sf_call_n_returned_arguments_from_function--){
+					*data->stk_vm_current++=*sf_call_stk_return++;
+				}
+
+				//data->stk_vm_current+=sf_call_n_returned_arguments_from_function;
+				//memset(data->stk_vm_current,0,sf_call_n_null_values*sizeof(StackElement));
+				while(sf_call_n_null_values--){
+					*data->stk_vm_current++=k_stk_null;
+				}
+				//data->stk_vm_current+=sf_call_n_null_values;
 				continue;
 			 case  BYTE_CODE_RET:
 				for(StackElement *stk_it=data->stk_vm_current-1;stk_it>=stk_start;stk_it--){ // can return something. value is +1 from stack

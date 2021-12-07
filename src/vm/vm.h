@@ -11,9 +11,9 @@
 #include "vm_set.h"
 #include "vm_scope.h"
 
-#define VM_STACK_MAX					10
-#define VM_FUNCTION_CALL_MAX 			10
-#define VM_VARIABLE_SHARES_MAX 			10
+#define VM_STACK_MAX					100
+#define VM_FUNCTION_CALL_MAX 			100
+#define VM_VARIABLE_SHARES_MAX 			100
 
 #define VM_PROPERTY_CALL_FROM_NATIVE	0x1
 
