@@ -482,6 +482,8 @@ namespace zetscript{
 
 		c_class->registerNativeMemberPropertyMetamethodGetter(
 				 _property_name
+				,&params
+				,params_len
 				,idx_return_type
 				,(zs_int)_ptr_function
 				,_registered_file

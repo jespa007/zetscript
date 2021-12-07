@@ -107,6 +107,8 @@ namespace zetscript{
 
 		Symbol				* 	registerNativeMemberPropertyMetamethodGetter(
 			const zs_string & _property_name
+			 ,ScriptFunctionParam **_params
+			 ,size_t _params_len
 			, int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char * _file=""

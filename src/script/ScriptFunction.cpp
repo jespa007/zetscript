@@ -248,7 +248,7 @@ namespace zetscript{
 			case BYTE_CODE_JT:
 			case BYTE_CODE_JMP:
 			case BYTE_CODE_JE_CASE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%03i (ins%s%i)\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%03i (ins%s%i)\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,(int)((instruction-sfo->instructions)+instruction->value_op2)
@@ -286,12 +286,13 @@ namespace zetscript{
 			case BYTE_CODE_THIS_MEMBER_CALL:
 			case BYTE_CODE_UNRESOLVED_CALL:
 			case BYTE_CODE_UNRESOLVED_THIS_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\targ:%i ret:%i\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\targ:%i ret:%i %s\n"
 					,idx_instruction
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
 					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
 					,INSTRUCTION_GET_RETURN_COUNT(instruction)
+					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 				);
 				break;
 			case BYTE_CODE_MEMBER_CALL:

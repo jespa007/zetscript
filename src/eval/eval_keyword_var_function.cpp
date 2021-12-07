@@ -310,7 +310,8 @@ namespace zetscript{
 						,aux_line
 						,scope_var
 						,is_var_member?&ei_member_var_init:&eval_data->current_function->eval_instructions
-						,{}
+						,NULL
+						,EVAL_EXPRESSION_ALLOW_1BYTE_LOAD_INSTRUCTION
 					))==NULL){
 						goto error_eval_keyword_var;
 					}
@@ -798,8 +799,8 @@ error_eval_keyword_var:
 					, line
 					, scope_info
 					,&eval_data->current_function->eval_instructions
-					,{}
-					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION
+					,NULL
+					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION|EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			))!= NULL){
 
 				eval_data->current_function->eval_instructions.push_back((zs_int)(

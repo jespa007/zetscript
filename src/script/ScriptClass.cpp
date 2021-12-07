@@ -290,6 +290,8 @@ namespace zetscript{
 
 	Symbol				* 	ScriptClass::registerNativeMemberPropertyMetamethodGetter(
 			 const zs_string & _property_name
+			 ,ScriptFunctionParam **_params
+			 ,size_t _params_len
 			, int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char *_file
@@ -315,8 +317,8 @@ namespace zetscript{
 
 		symbol_function=registerMemberFunction(
 				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER+_property_name,
-				NULL,
-				0,
+				_params,
+				_params_len,
 				FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION,
 				_idx_return_type,
 				_ref_ptr,

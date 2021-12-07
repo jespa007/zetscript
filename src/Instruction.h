@@ -58,10 +58,10 @@ typedef enum:unsigned short {
 #define INSTRUCTION_GET_PARAMETER_COUNT(instruction) 	((instruction)->value_op1 & 0x0f)
 #define INSTRUCTION_GET_RETURN_COUNT(instruction) 		(((instruction)->value_op1 & 0xf0)>>4)
 
-#define INSTRUCTION_SET_VALUE_OP1_RETURN_COUNT(return_count) \
+#define INSTRUCTION_VALUE_OP1_RETURN_COUNT(return_count) \
 		(((return_count)&0xf)<<4)
 
-#define INSTRUCTION_SET_VALUE_OP1_PARAMETER_COUNT(parameter_count) \
+#define INSTRUCTION_VALUE_OP1_PARAMETER_COUNT(parameter_count) \
 		((parameter_count)&0xf)
 
 #define INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(return_count,parameter_count) \
@@ -69,11 +69,11 @@ typedef enum:unsigned short {
 
 #define INSTRUCTION_SET_RETURN_COUNT(instruction, return_count) \
 		(instruction)->value_op1&=(0x0f); \
-		(instruction)->value_op1|=INSTRUCTION_SET_VALUE_OP1_RETURN_COUNT(return_count);
+		(instruction)->value_op1|=INSTRUCTION_VALUE_OP1_RETURN_COUNT(return_count);
 
 #define INSTRUCTION_SET_PARAMETER_COUNT(instruction, parameter_count) \
 		(instruction)->value_op1&=(0xf0); \
-		(instruction)->value_op1|=INSTRUCTION_SET_VALUE_OP1_PARAMETER_COUNT(parameter_count);
+		(instruction)->value_op1|=INSTRUCTION_VALUE_OP1_PARAMETER_COUNT(parameter_count);
 
 
 namespace zetscript{

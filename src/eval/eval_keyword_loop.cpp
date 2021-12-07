@@ -557,7 +557,7 @@ namespace zetscript{
 								// call, return all
 								eval_data->current_function->eval_instructions.push_back((zs_int)(
 									// insert byte code call and set return count as 2, due in in this case we have prepared 2 vars on the left (k,v)
-									new EvalInstruction(BYTE_CODE_MEMBER_CALL,INSTRUCTION_SET_VALUE_OP1_RETURN_COUNT(2))
+									new EvalInstruction(BYTE_CODE_MEMBER_CALL,INSTRUCTION_VALUE_OP1_RETURN_COUNT(2))
 								));
 
 

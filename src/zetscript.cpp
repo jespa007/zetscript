@@ -239,8 +239,16 @@ namespace zetscript{
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 
 				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
+				bool show_function=true;
+				 if(show_system_code == false && (
+						 zs_strutils::starts_with(local_sf->function_name,"_@afun_defval")
+				)){
+					 show_function=false;
+				 }
 
-				if(( local_sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF){
+				if((show_function == true)
+				 &&	(( local_sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF)
+				){
 					ScriptFunction::printGeneratedCode(local_sf);
 				}
 			}
@@ -272,11 +280,7 @@ namespace zetscript{
 					 bool show_function=true;
 					 Symbol *symbol=(Symbol *)symbol_functions->items[f];
 					 ScriptFunction *script_function=(ScriptFunction *)symbol->ref_ptr;
-					 /*if(show_system_code == false && (
-							 zs_strutils::starts_with(script_function->function_name,"_@afun_defval")
-					)){
-						 show_function=false;
-					 }*/
+
 
 					 if(show_function){
 						 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,sc);

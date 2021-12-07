@@ -871,7 +871,7 @@ find_element_object:
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_is_member_function=false;
-				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
+				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
@@ -879,7 +879,7 @@ find_element_object:
 				 sf_call_calling_object = this_object;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_is_member_function=true;
-				 sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
+				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
@@ -920,7 +920,7 @@ load_function:
 
 				sf_call_is_member_function=false;
 
-				sf_call_n_args = instruction->value_op1; // number arguments will pass to this function
+				sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 
 				if(sf_call_stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
@@ -1175,32 +1175,34 @@ execute_function:
 				// setup all returned variables from function
 				CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function,false)
 
-				// reset vm current before function pointer is
-				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//?0:1);
-
-
-				StackElement tmp;
-				sf_call_expected_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
-				sf_call_n_null_values=sf_call_expected_return-sf_call_n_returned_arguments_from_function;
-
-				// return all elements in reverse order in order to get right assignment ...
-				// reverse returned items
-				for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
-					tmp=sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1];
-					sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
-					sf_call_stk_return[i]=tmp;
-				}
-
-				// copy to vm stack
-				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
-
-				memcpy(data->stk_vm_current,sf_call_stk_return,sf_call_n_returned_arguments_from_function*sizeof(StackElement));
-				data->stk_vm_current+=sf_call_n_returned_arguments_from_function;
-				memset(data->stk_vm_current,0,sf_call_n_null_values*sizeof(StackElement));
-				data->stk_vm_current+=sf_call_n_null_values;
-
 				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
 					data->stk_vm_current=stk_start;
+				}else{
+
+					// reset vm current before function pointer is
+					data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//?0:1);
+
+
+
+					sf_call_expected_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
+					sf_call_n_null_values=sf_call_expected_return-sf_call_n_returned_arguments_from_function;
+
+					// return all elements in reverse order in order to get right assignment ...
+					// reverse returned items
+					for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
+						StackElement tmp=sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1];
+						sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
+						sf_call_stk_return[i]=tmp;
+					}
+
+					// copy to vm stack
+					data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
+
+					memcpy(data->stk_vm_current,sf_call_stk_return,sf_call_n_returned_arguments_from_function*sizeof(StackElement));
+					data->stk_vm_current+=sf_call_n_returned_arguments_from_function;
+					memset(data->stk_vm_current,0,sf_call_n_null_values*sizeof(StackElement));
+					data->stk_vm_current+=sf_call_n_null_values;
+
 				}
 				continue;
 			 case  BYTE_CODE_RET:

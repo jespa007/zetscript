@@ -50,7 +50,9 @@ namespace zetscript{
 		EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR	=0x1<<3, // break when any assign operator (i.e, =, +=, -=, ...) is found
 		//EVAL_EXPRESSION_ON_MAIN_BLOCK					=0x1<<4,
 		EVAL_EXPRESSION_FOR_IN_VARIABLES				=0x1<<4,
-		EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL				=0x1<<5
+		EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL				=0x1<<5,
+		EVAL_EXPRESSION_ALLOW_1BYTE_LOAD_INSTRUCTION	=0x1<<6, // is used in case of eval expressions after '=' (for instance default args and single var assignment and returns). It can eval one load instruction
+		EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL	=0x1<<7
 	}EvalExpressionProperty;
 
 	typedef enum
