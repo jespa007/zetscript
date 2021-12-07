@@ -77,7 +77,7 @@ namespace zetscript{
 		)));
 
 
-		*start_ptr++=Instruction(BYTE_CODE_STORE);
+		*start_ptr++=Instruction(BYTE_CODE_STORE,1);
 		sf->instruction_source_info.push_back(0);
 
 		*start_ptr++=Instruction(BYTE_CODE_RESET_STACK);
@@ -338,7 +338,7 @@ namespace zetscript{
 
 							eval_data->current_function->eval_instructions.push_back((zs_int)(
 									new EvalInstruction(
-											BYTE_CODE_STORE_CONST
+											BYTE_CODE_STORE_CONST,1
 									)
 							));
 						}

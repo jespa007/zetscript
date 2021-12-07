@@ -191,7 +191,7 @@ namespace zetscript{
 			zs_ei_assign_loader_instructions_post_expression.push_back((zs_int)(ei_assign_loader_instructions_post_expression=new zs_vector()));
 
 
-			// add instructions related about its accessors...
+			// assign operators: add instructions related about its accessors...
 			for(unsigned j=0;j<token_node_symbol->eval_instructions.count;j++){
 				EvalInstruction *ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
 				if(INSTRUCTION_IS_BYTE_CODE_CALL(&ei_load_assign_instruction->vm_instruction)){
@@ -223,9 +223,9 @@ namespace zetscript{
 				last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 			}
 
-			// ... add arithmetic operator byte code
+			// ... add assign operations to the list to add later after eval all instructions
 			ei_assign_store_instruction_post_expression.push_back((zs_int)(eval_instruction=new EvalInstruction(
-					eval_operator_to_byte_code(operator_type)
+					eval_operator_to_byte_code(operator_type),1
 			)));
 
 			eval_instruction->instruction_source_info= InstructionSourceInfo(

@@ -24,8 +24,8 @@ namespace zetscript{
 	    ){
 
 		VirtualMachineData *data = (VirtualMachineData*)vm->data;
-		Instruction * instruction = NULL;//calling_instruction;
-
+		Instruction * instructions = calling_function->instructions;//calling_instruction;
+		Instruction *instruction=instructions; // starting instruction
 
 		if(data->vm_idx_call >= VM_FUNCTION_CALL_MAX){
 			VM_ERROR_AND_RET("Reached max stack");
@@ -74,7 +74,7 @@ namespace zetscript{
 		zs_int *stk_dst_ref_value=NULL;
 		unsigned short stk_src_properties=0;
 		void *stk_src_ref_value_copy_aux=NULL;
-		Instruction *instructions=calling_function->instructions; // starting instruction
+
 		Instruction *instruction_it=instructions;
 		zs_vector *local_variables=calling_function->local_variables;
 		unsigned symbols_count=local_variables->count;

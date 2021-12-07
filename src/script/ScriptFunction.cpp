@@ -306,6 +306,14 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_TYPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_TYPE\t%s\n",idx_instruction,zs->getScriptClassFactory()->getScriptClassName(instruction->value_op2));
 				break;
+			case BYTE_CODE_STORE:
+			case BYTE_CODE_STORE_CONST:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\tn:%i\n"
+					,idx_instruction
+					,byte_code_to_str(instruction->byte_code)
+					,(int)instruction->value_op1
+				);
+				break;
 			default:
 
 				if(iload_info != ""){
