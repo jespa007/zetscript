@@ -135,4 +135,6 @@ namespace zetscript{
 
 	typedef Instruction *PtrInstruction;
 
+	int			 instruction_num_required_stack(Instruction *_instruction);
+
 }

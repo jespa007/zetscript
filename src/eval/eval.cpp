@@ -445,6 +445,7 @@ namespace zetscript{
 		ScriptClass *sc_sf = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
 		ScriptClass *sc_found=NULL;
 		int sum_stk_load_stk=0;
+		int max_acc_stk_load=0;
 
 		if(sf->instructions != NULL){
 			free(sf->instructions);
@@ -472,7 +473,8 @@ namespace zetscript{
 			ScriptClass *sc_aux=NULL;
 			ptr_str_symbol_to_find=&eval_instruction->symbol.name;
 
-			sum_stk_load_stk+=byte_code_num_required_stack(eval_instruction->vm_instruction.byte_code);
+			sum_stk_load_stk+=instruction_num_required_stack(&eval_instruction->vm_instruction);
+			max_acc_stk_load=MAX(max_acc_stk_load,sum_stk_load_stk);
 
 			switch(eval_instruction->vm_instruction.byte_code){
 
@@ -549,11 +551,11 @@ namespace zetscript{
 				break;
 			}
 
-			if(eval_instruction->vm_instruction.byte_code == BYTE_CODE_RESET_STACK || (eval_instruction->vm_instruction.properties & INSTRUCTION_PROPERTY_RESET_STACK)){
+			if(eval_instruction->vm_instruction.byte_code == BYTE_CODE_RESET_STACK
+				|| eval_instruction->vm_instruction.byte_code == BYTE_CODE_RET
+				|| (eval_instruction->vm_instruction.properties & INSTRUCTION_PROPERTY_RESET_STACK)
+			){
 				// <-- reset stack
-				if(sf->min_stack_needed<sum_stk_load_stk){
-					sf->min_stack_needed=sum_stk_load_stk;
-				}
 				sum_stk_load_stk=0; // and reset stack
 			}
 
@@ -586,6 +588,10 @@ namespace zetscript{
 				}
 
 			}
+
+			// set min stk required
+			sf->min_stack_needed=max_acc_stk_load;
+
 			//------------------------ SORT ALL LOCAL VARIABLES
 			// save instruction ...
 			sf->instructions[i]=eval_instruction->vm_instruction;
@@ -599,6 +605,8 @@ namespace zetscript{
 
 			sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(instruction_info)));
 		}
+
+
 
 		if(lookup_sorted_table_local_variables != NULL){
 			// update variables symbol...

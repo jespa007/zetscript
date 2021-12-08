@@ -4,7 +4,7 @@
  */
 #include "zetscript.h"
 
-#define FORMAT_PRINT_INSTRUCTION "%04i"
+#define FORMAT_PRINT_INSTRUCTION "%04i|%2i|%02i"
 
 #define GET_ILOAD_ACCESS_TYPE_STR(properties) \
 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? "This"\
@@ -71,6 +71,10 @@ namespace zetscript{
 		// first print functions  ...
 		zs_vector * m_vf = sfo->local_variables;
 		ZetScript *zs=sfo->zs;
+		int sum_stk_load_stk=0;
+		int max_acc_stk_load=0;
+		int req_stk;
+
 
 		if(sfo->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ // c functions has no script instructions
 			return;
@@ -93,9 +97,10 @@ namespace zetscript{
 		}
 
 
-		printf("-------------------------------------------------------\n");
-		printf("\nCode for function '%s%s' (Required stack: %i)\n\n",class_str.c_str(),symbol_ref.c_str(),sfo->min_stack_needed);
-
+		printf("______________________________________________________________\n\n");
+		printf(" Function: '%s%s' (Required stack: %i)				  \n\n",class_str.c_str(),symbol_ref.c_str(),sfo->min_stack_needed);
+		printf(" NUM |RS|AS|          INSTRUCTION                             \n");
+		printf("-----+--+--+--------------------------------------------------\n");
 
 		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++){
 
@@ -131,6 +136,18 @@ namespace zetscript{
 					 || instruction->byte_code== BYTE_CODE_INDIRECT_LOCAL_CALL
 			 ){
 				 symbol_value="@"+symbol_value;
+			 }
+
+
+			 req_stk=instruction_num_required_stack(instruction);
+			 sum_stk_load_stk+=req_stk;
+			 max_acc_stk_load=MAX(max_acc_stk_load,sum_stk_load_stk);
+			 if(instruction->byte_code == BYTE_CODE_RESET_STACK
+				|| instruction->byte_code == BYTE_CODE_RET
+				|| (instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK)
+			 ){
+				// <-- reset stack
+				sum_stk_load_stk=0; // and reset stack
 			 }
 
 			switch(instruction->properties & INSTRUCTION_PROPERTY_ILOAD){
@@ -175,24 +192,46 @@ namespace zetscript{
 			case  BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					,(char)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_BOOL\t\t%s\n",idx_instruction,instruction->value_op2==0?"false":"true");
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_BOOL\t\t%s\n"
+						,idx_instruction
+						,req_stk
+						,sum_stk_load_stk
+						,instruction->value_op2==0?"false":"true");
 				break;
 			case BYTE_CODE_LOAD_ZS_FLOAT:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_FLT\t\t%f\n",idx_instruction,*((zs_float *)&instruction->value_op2));
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_FLT\t\t%f\n"
+						,idx_instruction
+						,req_stk
+						,sum_stk_load_stk
+						,*((zs_float *)&instruction->value_op2));
 				break;
 			case BYTE_CODE_LOAD_ZS_INT:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_INT\t\t%i\n",idx_instruction,(int)(instruction->value_op2));
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_INT\t\t%i\n"
+						,idx_instruction
+						,req_stk
+						,sum_stk_load_stk
+						,(int)(instruction->value_op2));
 				break;
 			case BYTE_CODE_LOAD_STRING:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t\t%s\n"
+						,idx_instruction
+						,req_stk
+						,sum_stk_load_stk
+						,instruction->getConstantValueOp2ToString().c_str());
 				break;
 			case BYTE_CODE_NEW_STRING:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tNEW_STRING\t\t%s\n",idx_instruction,instruction->getConstantValueOp2ToString().c_str());
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tNEW_STRING\t\t%s\n"
+						,idx_instruction
+						,req_stk
+						,sum_stk_load_stk
+						,instruction->getConstantValueOp2ToString().c_str());
 				break;
 
 			case BYTE_CODE_PUSH_STK_GLOBAL:
@@ -210,6 +249,8 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_GLOBAL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					, instruction->byte_code == BYTE_CODE_PUSH_STK_MEMBER_VAR
 					? "\t" : "\t\t"
@@ -220,6 +261,8 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_VECTOR_ITEM:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s {vector}\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
 				);
@@ -237,6 +280,8 @@ namespace zetscript{
 
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					,instruction->byte_code==BYTE_CODE_LOAD_THIS_VARIABLE
 					|| instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM
@@ -250,6 +295,8 @@ namespace zetscript{
 			case BYTE_CODE_JE_CASE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%03i (ins%s%i)\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					,(int)((instruction-sfo->instructions)+instruction->value_op2)
 					,(int)(instruction->value_op2)>=0?"+":""
@@ -262,18 +309,24 @@ namespace zetscript{
 			case BYTE_CODE_POP_SCOPE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 				);
 				break;
 			case BYTE_CODE_INSTANCEOF:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 				);
 				break;
 			case BYTE_CODE_CONSTRUCTOR_CALL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\targ:%i ret:%i\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
 					,INSTRUCTION_GET_RETURN_COUNT(instruction)
@@ -288,6 +341,8 @@ namespace zetscript{
 			case BYTE_CODE_UNRESOLVED_THIS_CALL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\targ:%i ret:%i %s\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					,symbol_value.c_str()
 					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
@@ -298,18 +353,26 @@ namespace zetscript{
 			case BYTE_CODE_MEMBER_CALL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\targ:%i ret:%i\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
 					,INSTRUCTION_GET_RETURN_COUNT(instruction)
 				);
 				break;
 			case BYTE_CODE_LOAD_TYPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_TYPE\t%s\n",idx_instruction,zs->getScriptClassFactory()->getScriptClassName(instruction->value_op2));
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_TYPE\t%s\n"
+						,idx_instruction
+						,req_stk
+						,sum_stk_load_stk
+						,zs->getScriptClassFactory()->getScriptClassName(instruction->value_op2));
 				break;
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_STORE_CONST:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\tn:%i\n"
 					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					,(int)instruction->value_op1
 				);
@@ -319,6 +382,8 @@ namespace zetscript{
 				if(iload_info != ""){
 					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 						idx_instruction
+						,req_stk
+						,sum_stk_load_stk
 						,byte_code_to_str(instruction->byte_code)
 						,iload_info.c_str()
 					);
@@ -326,17 +391,23 @@ namespace zetscript{
 					if(n_ops==0){
 						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 							idx_instruction
+							,req_stk
+							,sum_stk_load_stk
 							,byte_code_to_str(instruction->byte_code)
 						);
 					}else if(n_ops==1){
 						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%i\n"
 							,idx_instruction
+							,req_stk
+							,sum_stk_load_stk
 							,byte_code_to_str(instruction->byte_code)
 							,instruction->value_op1
 						);
 					}else{ //2 ops
 						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%i,%i\n"
 							,idx_instruction
+							,req_stk
+							,sum_stk_load_stk
 							,byte_code_to_str(instruction->byte_code)
 							,instruction->value_op1
 							,(int)instruction->value_op2
@@ -346,6 +417,9 @@ namespace zetscript{
 				break;
 			}
 		}
+
+		printf("\n");
+
 	 }
 
 	short	 ScriptFunction::getInstructionLine(Instruction * ins){
