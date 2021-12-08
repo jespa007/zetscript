@@ -1190,20 +1190,18 @@ execute_function:
 					sf_call_stk_return[i]=tmp;
 				}
 
-				// copy to vm stack
+
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
-				//memcpy(data->stk_vm_current,sf_call_stk_return,sf_call_n_returned_arguments_from_function*sizeof(StackElement));
+				// copy to vm stack
 				while(sf_call_n_returned_arguments_from_function--){
 					*data->stk_vm_current++=*sf_call_stk_return++;
 				}
 
-				//data->stk_vm_current+=sf_call_n_returned_arguments_from_function;
-				//memset(data->stk_vm_current,0,sf_call_n_null_values*sizeof(StackElement));
+				// assign as many null from multiple assigns
 				while(sf_call_n_null_values--){
 					*data->stk_vm_current++=k_stk_null;
 				}
-				//data->stk_vm_current+=sf_call_n_null_values;
 				continue;
 			 case  BYTE_CODE_RET:
 				for(StackElement *stk_it=data->stk_vm_current-1;stk_it>=stk_start;stk_it--){ // can return something. value is +1 from stack
