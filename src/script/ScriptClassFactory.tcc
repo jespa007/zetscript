@@ -281,6 +281,7 @@ namespace zetscript{
 					,{&mp_dst->metamethod_members.post_dec,mp_src->metamethod_members.post_dec}
 					,{&mp_dst->metamethod_members.pre_inc,mp_src->metamethod_members.pre_inc}
 					,{&mp_dst->metamethod_members.pre_dec,mp_src->metamethod_members.pre_dec}
+					,{&mp_dst->metamethod_members.neg,mp_src->metamethod_members.neg}
 					,{0,0}
 				};
 
@@ -293,16 +294,16 @@ namespace zetscript{
 
 					if(it->src_function!=0){ // we have src method
 
-						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(it->src);
+						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(it->src_function);
 						size_t params_len=it->src_function->params_len;
 
-						symbol_function=this_class->registerNativeMemberFunction(
+						symbol_function=this_class->registerMemberFunction(
 								it->src_function->function_name,
 								&params,
 								params_len,
+								it->src_function->properties,
 								it->src_function->idx_return_type,
-								it->src_function->ref_native_function_ptr,
-								it->src_function->properties
+								it->src_function->ref_native_function_ptr
 								//it->src_function->symbol.file,
 								//it->src_function->symbol.line
 						);
@@ -312,7 +313,7 @@ namespace zetscript{
 					it++;
 				}
 
-				ByteCodeMetamethod *it_setter=MetamethodMembers::byte_code_metamethod_member_setter_list;
+				const ByteCodeMetamethod *it_setter=MetamethodMembers::byte_code_metamethod_member_setter_list;
 				while(*it_setter!= 0){
 					MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
@@ -424,7 +425,7 @@ namespace zetscript{
 	){
 		zs_string str_class_name_ptr = typeid( C *).name();
 		ScriptFunctionParam *params=NULL;
-		size_t *params_len=0;
+		size_t params_len=0;
 		ScriptClass *c_class = getScriptClassByNativeClassPtr(str_class_name_ptr);
 
 		if(c_class == NULL){
@@ -442,10 +443,10 @@ namespace zetscript{
 		c_class->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_SET
-			,_ptr_function
 			 ,&params
 			,params_len
 			,idx_return_type
+			,(zs_int)_ptr_function
 			,registered_file
 			,registered_line
 		);

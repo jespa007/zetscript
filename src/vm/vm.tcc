@@ -633,7 +633,6 @@ namespace zetscript{
 		zs_string error_found="";
 		ScriptObject *script_object=NULL;
 		zs_string class_name_object_found="";
-		StackMemberProperty *stk_ma=NULL;
 		int n_stk_args=byte_code_metamethod_get_num_arguments(byte_code_metamethod);
 		StackElement *stk_return=NULL;
 		int n_returned_arguments_from_function=0;
