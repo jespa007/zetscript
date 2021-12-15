@@ -191,11 +191,11 @@ namespace zetscript{
 		// Let's register functions,...
 		// register c function's
 
-		ZS_REGISTER_FUNCTION(zs,"ptrToZetScriptPtr",ptrToZetScriptPtr);
-		ZS_REGISTER_FUNCTION(zs,"parseFloat",static_cast<zs_float (*)(zs_int)>(parseFloat));
-		ZS_REGISTER_FUNCTION(zs,"parseFloat",static_cast<zs_float (*)(zs_string *)>(parseFloat));
-		ZS_REGISTER_FUNCTION(zs,"parseInteger",static_cast<zs_int (*)(zs_float *)>(parseInteger));
-		ZS_REGISTER_FUNCTION(zs,"parseInteger",static_cast<zs_int (*)(zs_string *)>(parseInteger));
+		zs->registerFunction("ptrToZetScriptPtr",ptrToZetScriptPtr);
+		zs->registerFunction("parseFloat",static_cast<zs_float (*)(zs_int)>(parseFloat));
+		zs->registerFunction("parseFloat",static_cast<zs_float (*)(zs_string *)>(parseFloat));
+		zs->registerFunction("parseInteger",static_cast<zs_int (*)(zs_float *)>(parseInteger));
+		zs->registerFunction("parseInteger",static_cast<zs_int (*)(zs_string *)>(parseInteger));
 
 		//-------------------------
 		// Wrap functions

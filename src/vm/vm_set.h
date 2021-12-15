@@ -9,6 +9,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){ \
 } \
 stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */ \
 stk_src_ref_value=&stk_src->value; \
+stk_dst_ref_value=&stk_dst->value; \
 if(stk_src->properties & STK_PROPERTY_IS_VAR_C){ /* src is C pointer */ \
 	stk_src_ref_value=(zs_int *)((stk_src)->value); \
 }\

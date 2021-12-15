@@ -408,9 +408,6 @@ eval_error_sub_expression:
 
 		}else{ // there's no assignment on the left --> make a reset stack in the end and write all instructions
 
-
-
-
 			for(unsigned it=0;it<zs_ei_left_sub_expressions.count;it++){
 				zs_vector *left_instructions=(zs_vector *)zs_ei_left_sub_expressions.items[it];
 

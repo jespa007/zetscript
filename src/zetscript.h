@@ -84,49 +84,9 @@
 #define ZETSCRIPT_VERSION_MINOR 0
 #define ZETSCRIPT_VERSION_PATCH 0
 
-
-#define ZS_CLASS_INHERITS_FROM(zs,C,B)											(zs)->classInheritsFrom<C,B>()
-#define ZS_REGISTER_FUNCTION(zs,text,s) 										(zs)->registerFunction(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_VARIABLE(zs,text,s) 										(zs)->registerVariable(text,s,__FILE__, __LINE__)
-#define ZS_REGISTER_CLASS(zs,class_type,s,ptr_fun_new, ptr_fun_del)				(zs)->registerClass<class_type>(s,ptr_fun_new,ptr_fun_del,__FILE__, __LINE__)
-#define ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)							(zs)->registerSingletonClass<class_type>(s,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)				(zs)->registerMemberFunctionStatic<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)					(zs)->registerMemberFunction<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_PROPERTY_SETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberPropertySetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_PROPERTY_GETTER(zs,class_type,s,ptr_fun)			(zs)->registerMemberPropertyGetter<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_PROPERTY_POST_INCREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberPropertyPostIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_PROPERTY_POST_DECREMENT(zs,class_type,s,ptr_fun)	(zs)->registerMemberPropertyPostDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_PROPERTY_PRE_INCREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberPropertyPreIncrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-#define ZS_REGISTER_MEMBER_PROPERTY_PRE_DECREMENT(zs,class_type,s,ptr_fun)		(zs)->registerMemberPropertyPreDecrement<class_type>(s,ptr_fun,__FILE__, __LINE__)
-
-
-#define CLASS_INHERITS_FROM(C,B)														ZS_CLASS_INHERITS_FROM(zs,C,B)
-#define REGISTER_FUNCTION(text,s) 														ZS_REGISTER_FUNCTION(zs,text,s)
-#define REGISTER_VARIABLE(text,s) 														ZS_REGISTER_VARIABLE(zs,s)
-#define REGISTER_CLASS(class_type,s)													ZS_REGISTER_CLASS(zs,s,class_type##"Wrap_New", class_type##"Wrap_Delete")
-#define REGISTER_SINGLETON_CLASS(class_type,s)											ZS_REGISTER_SINGLETON_CLASS(zs,class_type,s)
-#define REGISTER_MEMBER_FUNCTION_STATIC(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_FUNCTION_STATIC(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_FUNCTION(class_type,s,ptr_fun)									ZS_REGISTER_MEMBER_FUNCTION(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_PROPERTY_SETTER(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_PROPERTY_SETTER(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_PROPERTY_GETTER(class_type,s,ptr_fun)							ZS_REGISTER_MEMBER_PROPERTY_GETTER(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_PROPERTY_POST_INCREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_PROPERTY_POST_INCREMENT(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_PROPERTY_POST_DECREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_PROPERTY_POST_DECREMENT(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_PROPERTY_PRE_INCREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_PROPERTY_PRE_INCREMENT(zs,class_type,s,ptr_fun)
-#define REGISTER_MEMBER_PROPERTY_PRE_DECREMENT(class_type,s,ptr_fun)					ZS_REGISTER_MEMBER_PROPERTY_PRE_DECREMENT(zs,class_type,s,ptr_fun)
-
-
 #define ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(class_type) \
  class_type * class_type##Wrap_New(){ return new class_type();} \
  void class_type##Wrap_Delete(class_type *ptr){ delete  (class_type *)(ptr);}
-
-
-#define ZS_BIND_SCRIPT_FUNCTION(zs,_T,access_name)						(zs)->bindScriptFunction<_T>(access_name, __FILE__, __LINE__)
-#define	ZS_UNREF_LIFETIME_OBJECT(zs,so)									(zs)->unrefLifetimeObject(so);
-#define ZS_EVAL(zs,s) 													(zs)->eval(s,0,"",__FILE__,__LINE__)
-
-
-#define ZS_REGISTER_CONSTANT_VAR(zs,constant_name,v)					(zs)->registerConstantVariable(constant_name,v,__FILE__,__LINE__)
-
 
 
 namespace zetscript{

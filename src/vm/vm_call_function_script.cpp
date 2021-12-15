@@ -43,12 +43,11 @@ namespace zetscript{
 		//------------------------------------------------
 		// STORE
 		zs_vector 		*		store_lst_setter_functions=NULL;
-		char 					store_n_elements_left=0;
-		StackElement 	*		store_stk_multi_var_src=NULL;
-		StackElement 	*		store_ptr_stk_aux=NULL;
+		char 					n_element_left_to_store=0;
 		StackMemberProperty *	stk_mp_aux=NULL;
 		MetamethodMembers *		ptr_metamethod_members_aux=NULL;
 		void			*		ptr_ptr_void_ref=NULL;
+		StackElement    *		stk_load_multi_var_src=NULL;
 		//------------------------------------------------
 		// SFCALL
 		StackElement	*sf_call_stk_function_ref=NULL;
@@ -62,8 +61,6 @@ namespace zetscript{
 		StackElement 	*sf_call_stk_return=NULL;
 		int 			sf_call_n_returned_arguments_from_function=0;
 		int				sf_call_stk_start_function_object=0;
-		int 			sf_call_expected_return=0;
-		int 			sf_call_n_null_values=0;
 
 		// SFCALL
 		//------------------------------------------------
@@ -459,32 +456,19 @@ find_element_object:
 			case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE:
 
-				store_lst_setter_functions=NULL;
-				store_n_elements_left=(char)instruction->value_op1;
-				store_stk_multi_var_src=NULL;
+				 // n elements left
+				n_element_left_to_store=(char)instruction->value_op1;
 
-				// check if multiassigment...
-				store_ptr_stk_aux=data->stk_vm_current;
-
-				// check assigname stk and dec stk_aux
-				for(int i=0; i < store_n_elements_left; i++){
-
-					store_ptr_stk_aux--;
-
-					if ((store_ptr_stk_aux->properties & STK_PROPERTY_PTR_STK) == 0){
-						VM_STOP_EXECUTE("Expected stk ptr");
-					}
-				}
-
-				store_stk_multi_var_src=store_ptr_stk_aux-store_n_elements_left-1; // now pos - n_elements
-				store_n_elements_left=store_n_elements_left-1;
-				stk_result_op2=--data->stk_vm_current;
-				stk_result_op1=++store_stk_multi_var_src;
+				// vm_current - n_element_left_to_store we have src values
+				// do +1 is because it has to point to first the stack, due vm_stk_current points to new stk slot
+				stk_load_multi_var_src=data->stk_vm_current-(n_element_left_to_store<<1); // it loads n_loads + n_vars to store 2xn_elements to store
+				stk_dst=--data->stk_vm_current; // dst first read
+				n_element_left_to_store--; // first read
 
 	vm_store_next:
 				store_lst_setter_functions=NULL;
-				stk_src=stk_result_op1; // store ptr instruction2 op as src_var_value
-				stk_dst=stk_result_op2;
+				stk_src=stk_load_multi_var_src; // store ptr instruction2 op as src_var_value
+				//stk_dst=stk_result_op2;
 
 				// check if by ref
 				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_dst)){
@@ -526,6 +510,7 @@ find_element_object:
 
 					VM_SET_METAMETHOD(stk_dst,stk_src,stk_mp_aux, so_aux, store_lst_setter_functions,BYTE_CODE_METAMETHOD_SET);
 				}else{ // store through script assignment
+
 					if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
 						stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value));
 					}
@@ -662,10 +647,9 @@ find_element_object:
 					stk_dst->properties |= STK_PROPERTY_READ_ONLY;
 				}
 
-				if(store_n_elements_left > 0){
-					store_n_elements_left--;
-					stk_result_op2=--data->stk_vm_current;//stk_multi_var_dest++; // left assigment
-					stk_result_op1=++store_stk_multi_var_src; // result on the right
+				if(n_element_left_to_store-- > 0){
+					stk_dst=--data->stk_vm_current;//stk_multi_var_dest++; // left assigment
+					stk_src=++stk_load_multi_var_src; // result on the right
 					goto vm_store_next;
 				}
 				else if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
@@ -1179,9 +1163,6 @@ execute_function:
 				// reset vm current before function pointer is
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//?0:1);
 
-				sf_call_expected_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
-				sf_call_n_null_values=sf_call_expected_return-sf_call_n_returned_arguments_from_function;
-
 				// return all elements in reverse order in order to get right assignment ...
 				// reverse returned items
 				for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
@@ -1190,7 +1171,6 @@ execute_function:
 					sf_call_stk_return[i]=tmp;
 				}
 
-
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
 				// copy to vm stack
@@ -1198,10 +1178,6 @@ execute_function:
 					*data->stk_vm_current++=*sf_call_stk_return++;
 				}
 
-				// assign as many null from multiple assigns
-				while(sf_call_n_null_values--){
-					*data->stk_vm_current++=k_stk_null;
-				}
 				continue;
 			 case  BYTE_CODE_RET:
 				for(StackElement *stk_it=data->stk_vm_current-1;stk_it>=stk_start;stk_it--){ // can return something. value is +1 from stack
