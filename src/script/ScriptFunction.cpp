@@ -84,6 +84,10 @@ namespace zetscript{
 			return;
 		}
 
+		if(sfo->instructions->byte_code== BYTE_CODE_END_FUNCTION){
+			return;
+		}
+
 		zs_string symbol_ref="????";
 		zs_string class_str="";
 		zs_string symbol_value="";
@@ -97,8 +101,9 @@ namespace zetscript{
 		}
 
 
+
 		printf("______________________________________________________________\n\n");
-		printf(" Function: '%s%s' (Required stack: %i)				  \n\n",class_str.c_str(),symbol_ref.c_str(),sfo->min_stack_needed);
+		printf(" Function: '%s%s' (Required stack: %i)				  		  \n\n",class_str.c_str(),symbol_ref.c_str(),sfo->min_stack_needed);
 		printf(" NUM |RS|AS|          INSTRUCTION                             \n");
 		printf("-----+--+--+--------------------------------------------------\n");
 

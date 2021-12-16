@@ -414,9 +414,9 @@ eval_error_sub_expression:
 				if(left_instructions->count>0){
 					// read first instruction
 					EvalInstruction *ei=(EvalInstruction *)left_instructions->items[0];
-					bool do_concat = true;
 
-					if(left_instructions->count==1 && ((_properties & EVAL_EXPRESSION_ALLOW_1BYTE_LOAD_INSTRUCTION) != 0)){
+					// if only one instruction and is not allowed one instruction it deallocates and ignore
+					if(left_instructions->count==1 && ((_properties & EVAL_EXPRESSION_ALLOW_ONE_LOAD_INSTRUCTION) == 0)){
 							switch(ei->vm_instruction.byte_code){
 							case BYTE_CODE_PUSH_STK_GLOBAL:
 							case BYTE_CODE_PUSH_STK_LOCAL:
@@ -443,16 +443,16 @@ eval_error_sub_expression:
 							case BYTE_CODE_LOAD_BOOL:
 							case BYTE_CODE_LOAD_ZS_INT:
 							case BYTE_CODE_LOAD_STACK_ELEMENT:
-								do_concat=false;
+								// deallocate
+								delete (EvalInstruction *)left_instructions->items[0];
+								left_instructions->clear();
 								break;
 							}
 					}
 
-					if(do_concat == true){
-						dst_instructions->concat(
-							left_instructions
-						);
-					}
+					dst_instructions->concat(
+						left_instructions
+					);
 
 				}
 

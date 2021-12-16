@@ -313,7 +313,7 @@ namespace zetscript{
 						,scope_var
 						,is_var_member?&ei_member_var_init:&eval_data->current_function->eval_instructions
 						,NULL
-						,EVAL_EXPRESSION_ALLOW_1BYTE_LOAD_INSTRUCTION
+						,EVAL_EXPRESSION_ALLOW_ONE_LOAD_INSTRUCTION
 					))==NULL){
 						goto error_eval_keyword_var;
 					}
@@ -611,6 +611,8 @@ error_eval_keyword_var:
 							,line
 							,MAIN_SCOPE(eval_data)
 							,&ei_instructions_default
+							,NULL
+							,EVAL_EXPRESSION_ALLOW_ONE_LOAD_INSTRUCTION
 					);
 
 					if(aux_p==NULL){
