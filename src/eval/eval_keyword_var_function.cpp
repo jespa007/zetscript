@@ -210,6 +210,7 @@ namespace zetscript{
 
 
 			do{
+				int test_line=0;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				start_var=aux_p;
 				start_line=line;
@@ -296,18 +297,19 @@ namespace zetscript{
 
 				// advance identifier length chars
 				aux_p=end_var;
+				test_line=line;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if(*aux_p == '='){
 
-					int aux_line=line;
+					test_line=line;
 					bool is_var_member_or_const=sc_var_member_extension!=NULL || is_constant == true;
 					bool is_var_member=sf_field_initializer!=NULL && is_constant==false;
 
 					if((aux_p = eval_expression(
 						eval_data
 						,is_var_member_or_const?aux_p+1:start_var
-						,aux_line
+						,test_line
 						,scope_var
 						,is_var_member?&ei_member_var_init:&eval_data->current_function->eval_instructions
 						,NULL
@@ -343,18 +345,12 @@ namespace zetscript{
 							));
 						}
 
-						// finally we insert reset stack
-						/*eval_data->current_function->eval_instructions.push_back((zs_int)(
-								new EvalInstruction(
-										BYTE_CODE_RESET_STACK
-								)
-						));*/
 					}
 
-					line = aux_line;
+					line = test_line;
 				}
 				else if(is_constant){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Uninitialized constant symbol %s%s"
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
 							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->class_name.c_str()).c_str():""
 							,variable_name.c_str());
 				}

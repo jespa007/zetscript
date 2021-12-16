@@ -67,5 +67,7 @@ class TestExtended extends Test{
 	}
 };
 
-var t=new TestExtended(1); 	// instances TestExtended class
-t.function3(20); // it calls anynomus function*/
+var t=new TestExtended(1);
+var a=t.function3(20); 
+System::assert(a==1,"a!=1");
+
