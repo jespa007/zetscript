@@ -415,55 +415,11 @@ eval_error_sub_expression:
 					// read first instruction
 					EvalInstruction *ei=(EvalInstruction *)left_instructions->items[0];
 
-					// if only one instruction and is not allowed one instruction it deallocates and ignore
-					if(left_instructions->count==1 && ((_properties & EVAL_EXPRESSION_ALLOW_ONE_LOAD_INSTRUCTION) == 0)){
-							switch(ei->vm_instruction.byte_code){
-							case BYTE_CODE_PUSH_STK_GLOBAL:
-							case BYTE_CODE_PUSH_STK_LOCAL:
-							case BYTE_CODE_PUSH_STK_THIS:
-							case BYTE_CODE_PUSH_STK_MEMBER_VAR:
-							case BYTE_CODE_PUSH_STK_VECTOR_ITEM:
-							case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
-							case BYTE_CODE_PUSH_STK_THIS_FUNCTION:
-							case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
-							case BYTE_CODE_LOAD_TYPE:
-							case BYTE_CODE_LOAD_GLOBAL:
-							case BYTE_CODE_LOAD_LOCAL:
-							case BYTE_CODE_LOAD_REF:
-							case BYTE_CODE_LOAD_THIS:
-							case BYTE_CODE_LOAD_VECTOR_ITEM:
-							case BYTE_CODE_LOAD_THIS_VARIABLE:
-							case BYTE_CODE_LOAD_THIS_FUNCTION:
-							case BYTE_CODE_LOAD_OBJECT_ITEM:
-							case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
-							case BYTE_CODE_LOAD_FUNCTION:
-							case BYTE_CODE_LOAD_NULL:
-							case BYTE_CODE_LOAD_STRING:
-							case BYTE_CODE_LOAD_ZS_FLOAT:
-							case BYTE_CODE_LOAD_BOOL:
-							case BYTE_CODE_LOAD_ZS_INT:
-							case BYTE_CODE_LOAD_STACK_ELEMENT:
-								// deallocate
-								delete (EvalInstruction *)left_instructions->items[0];
-								left_instructions->clear();
-								break;
-							}
-					}
-
 					dst_instructions->concat(
 						left_instructions
 					);
 
 				}
-
-				/*// special case for catching vars for-in...
-				if(properties & EVAL_EXPRESSION_FOR_IN_VARIABLES){
-					dst_instructions->push_back((zs_int)(
-						new EvalInstruction(
-								BYTE_CODE_RESET_STACK
-						)
-					));
-				}*/
 			}
 		}
 
@@ -480,17 +436,9 @@ eval_error_sub_expression:
 				//ei_last->vm_instruction.value_op1&=0xf; // if last op, no return parameters needed
 			}else if(IS_BYTE_CODE_STORE(ei_last->vm_instruction.byte_code)){
 				ei_last->vm_instruction.properties|=INSTRUCTION_PROPERTY_RESET_STACK;
-			}/*else if(IS_BYTE_CODE_LOAD(ei_last->vm_instruction.byte_code)){
-				dst_instructions->push_back((zs_int)(
-					new EvalInstruction(
-							BYTE_CODE_RESET_STACK
-					)
-				));
-			}*/
+			}
 		}
 
-
-//error_expression_delete_only_vectors:
 		// erase all vectors ...
 		for(unsigned it=0; it<zs_ei_left_sub_expressions.count; it++){
 			delete (zs_vector *)zs_ei_left_sub_expressions.items[it];

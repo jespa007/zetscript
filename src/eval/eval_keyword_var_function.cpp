@@ -312,8 +312,6 @@ namespace zetscript{
 						,test_line
 						,scope_var
 						,is_var_member?&ei_member_var_init:&eval_data->current_function->eval_instructions
-						,NULL
-						,EVAL_EXPRESSION_ALLOW_ONE_LOAD_INSTRUCTION
 					))==NULL){
 						goto error_eval_keyword_var;
 					}
@@ -446,6 +444,9 @@ error_eval_keyword_var:
 
 		if(key_w == Keyword::KEYWORD_FUNCTION || is_static){
 			ScriptFunctionParam param_info;
+			ScriptFunctionParam *params=NULL;
+			size_t params_len=0;
+
 			//bool var_args=false;
 			int n_arg=0;
 			char *end_var = NULL;
@@ -538,13 +539,13 @@ error_eval_keyword_var:
 
 				if(script_function_params.count>0){
 					if(*aux_p != ','){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected function argument separator ','");
+						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Syntax error: expected function argument separator ','");
 					}
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 				}
 
 				if(*aux_p == ')' || *aux_p == ','){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected argument name");
+					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Syntax error: expected argument name");
 				}
 
 				// capture line where argument is...
@@ -564,7 +565,7 @@ error_eval_keyword_var:
 						param_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF;
 						break;
 					default:
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: unexpected keyword '%s'",eval_data_keywords[kw_arg].str);
+						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Syntax error: unexpected keyword '%s'",eval_data_keywords[kw_arg].str);
 						break;
 					}
 				}
@@ -578,7 +579,7 @@ error_eval_keyword_var:
 				);
 
 				if(end_var == NULL){
-					return NULL;
+					goto eval_keyword_function_params;
 				}
 
 				// copy value
@@ -592,12 +593,12 @@ error_eval_keyword_var:
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if((param_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS) && *aux_p!=')'){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected ')' after variable argument declaration");
+					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Expected ')' after variable argument declaration");
 				}
 				else if(*aux_p=='='){ // default argument...
 
 					if(param_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF ){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Arguments by reference cannot set a default argument");
+						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Arguments by reference cannot set a default argument");
 					}
 
 					zs_vector ei_instructions_default;
@@ -611,16 +612,14 @@ error_eval_keyword_var:
 							,line
 							,MAIN_SCOPE(eval_data)
 							,&ei_instructions_default
-							,NULL
-							,EVAL_EXPRESSION_ALLOW_ONE_LOAD_INSTRUCTION
 					);
 
 					if(aux_p==NULL){
-						return NULL;
+						goto eval_keyword_function_params;
 					}
 
 					if(ei_instructions_default.count == 0){ // expected expression
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error:  expected expression after '='");
+						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Syntax error:  expected expression after '='");
 					}
 
 					// copy evaluated instruction
@@ -682,8 +681,8 @@ error_eval_keyword_var:
 				}
 			}
 
-			ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromVector(&script_function_params);
-			size_t params_len=script_function_params.count;
+			params=ScriptFunctionParam::createArrayFromVector(&script_function_params);
+			params_len=script_function_params.count;
 
 			// remove collected script function params
 			for(unsigned i=0; i < script_function_params.count; i++){
@@ -771,9 +770,22 @@ error_eval_keyword_var:
 			eval_pop_and_compile_function(eval_data);
 
 			return aux_p;
+	//---------------------------------------------
+	// CONTROL ERROR
+	eval_keyword_function_params:
+			// unallocate script function params
+			for(unsigned h=0; h < script_function_params.count; h++){
+				delete (ScriptFunctionParam *)script_function_params.items[h];
+			}
+			script_function_params.clear();
+			return NULL;
+	//---------------------------------------------
+
 		}
 
 		return NULL;
+
+
 
 	}
 
@@ -797,8 +809,6 @@ error_eval_keyword_var:
 					, line
 					, scope_info
 					,&eval_data->current_function->eval_instructions
-					,NULL
-					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION|EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			))!= NULL){
 
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
