@@ -237,7 +237,7 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
 			case BYTE_CODE_LOAD_OBJECT_ITEM:
 load_next_element_object:
-				if((instruction-1)->byte_code == BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE){
+				if((instruction-1)->byte_code == BYTE_CODE_NEW_OBJECT_BY_TYPE){
 					stk_result_op1=(data->stk_vm_current-1);
 				}
 				else{
@@ -892,7 +892,7 @@ find_element_object:
 			 case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
 
 				sf_call_script_function=NULL;
-				sf_call_stk_function_ref = (data->stk_vm_current-instruction->value_op1-1);
+				sf_call_stk_function_ref = (data->stk_vm_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
 				sf_call_stk_start_function_object=2; // object + function
 
@@ -1220,7 +1220,7 @@ execute_function:
 					}
 				}
 				goto lbl_exit_function;
-			 case  BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:
+			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 
 				 	 so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,instruction->value_op1);
 

@@ -142,7 +142,8 @@ namespace zetscript{
 		inline ScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
 		inline ScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
 
-		StackElement	eval(const zs_string & expresion,unsigned short options=0, const char * filename="", const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	eval(const zs_string & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	eval(const zs_string & expresion,unsigned short options, const char * filename="", const char *__invoke_file__="", int __invoke_line__=-1);
 		StackElement	evalFile(const zs_string & filename,unsigned short options=0, const char *__invoke_file__="", int __invoke_line__=-1);
 
 		// CONSTANT TOOLS

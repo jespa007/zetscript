@@ -88,13 +88,13 @@ namespace zetscript{
 			case BYTE_CODE_NEW_VECTOR: 							return "NEW_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_PUSH_VECTOR_ITEM: 					return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 								return "RET"; // Value pop for stdvector
-			case BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:			return "NEW_CLASS"; // New object (CREATE)
-			case BYTE_CODE_NEW_OBJECT_BY_VALUE:					return "NEW_CLASS_FROM_VALUE"; // New object (CREATE)
+			case BYTE_CODE_NEW_OBJECT_BY_TYPE:					return "NEW_OBJECT_BY_TYPE"; // New object (CREATE)
+			case BYTE_CODE_NEW_OBJECT_BY_VALUE:					return "NEW_OBJECT_BY_VALUE"; // New object (CREATE)
 			case BYTE_CODE_DELETE:								return "DELETE";
 			case BYTE_CODE_POP_SCOPE: 							return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 							return "PUSH_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_OBJECT_ITEM:					return "PUSH_ATTR"; // New object (CREATE)
-			case BYTE_CODE_NEW_OBJECT:							return "NEW_OBJ"; // New object (CREATE)
+			case BYTE_CODE_NEW_OBJECT:							return "NEW_OBJECT"; // New object (CREATE)
 			case BYTE_CODE_NEW_STRING:							return "NEW_STR";
 			case BYTE_CODE_IT_INIT: 							return "IT_INIT"; // BYTE_CODE_IT_CHK_END
 			case BYTE_CODE_STORE_CONST:							return "STORE_CONST"; // BYTE_CODE_STORE_CONST
@@ -170,7 +170,7 @@ namespace zetscript{
 			case BYTE_CODE_NEW_VECTOR: 				return "NEW_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_PUSH_VECTOR_ITEM: 		return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 					return "RET"; // Value pop for stdvector
-			case BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:return "NEW_CLASS"; // New object (CREATE)
+			case BYTE_CODE_NEW_OBJECT_BY_TYPE:return "NEW_OBJECT_TYPE"; // New object (CREATE)
 			case BYTE_CODE_DELETE:					return "DELETE";
 			case BYTE_CODE_POP_SCOPE: 				return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 				return "PUSH_SCOPE"; // New object (CREATE)

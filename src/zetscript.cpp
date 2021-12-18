@@ -373,9 +373,13 @@ namespace zetscript{
 		return stk_ret;
 	}
 
-	StackElement ZetScript::eval(const zs_string & code, unsigned short options, const char * filename, const char *__invoke_file__, int __invoke_line__)  {
+	StackElement ZetScript::eval(const zs_string & _expresion, unsigned short _options, const char * _filename, const char *__invoke_file__, int __invoke_line__)  {
 
-		return evalInternal(code.c_str(), options, filename,__invoke_file__,__invoke_line__);
+		return evalInternal(_expresion.c_str(), _options, _filename,__invoke_file__,__invoke_line__);
+	}
+
+	StackElement	ZetScript::eval(const zs_string & _expresion, const char *__invoke_file__, int __invoke_line__){
+		return evalInternal(_expresion.c_str(), 0, NULL,__invoke_file__,__invoke_line__);
 	}
 
 	StackElement ZetScript::evalFile(const zs_string &  filename, unsigned short eval_options, const char *__invoke_file__, int __invoke_line__){

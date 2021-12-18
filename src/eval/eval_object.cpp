@@ -362,7 +362,7 @@ namespace zetscript{
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getClassName());
 					}
 
-					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE)));
+					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE)));
 					eval_instruction->vm_instruction.value_op1=sc->idx_class;
 				}
 

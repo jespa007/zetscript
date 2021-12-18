@@ -80,9 +80,6 @@ namespace zetscript{
 		*start_ptr++=Instruction(BYTE_CODE_STORE,1);
 		sf->instruction_source_info.push_back(0);
 
-		*start_ptr++=Instruction(BYTE_CODE_RESET_STACK);
-		sf->instruction_source_info.push_back(0);
-
 		if(sf->instructions != NULL){
 			free(sf->instructions); // deallocate last allocated instructions
 		}
@@ -809,6 +806,8 @@ error_eval_keyword_var:
 					, line
 					, scope_info
 					,&eval_data->current_function->eval_instructions
+					,NULL
+					,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			))!= NULL){
 
 				eval_data->current_function->eval_instructions.push_back((zs_int)(

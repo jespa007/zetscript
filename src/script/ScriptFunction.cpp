@@ -194,8 +194,8 @@ namespace zetscript{
 
 			switch(instruction->byte_code){
 
-			case  BYTE_CODE_NEW_OBJECT_BY_KNOWN_TYPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\n"
+			case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -258,6 +258,7 @@ namespace zetscript{
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
 					, instruction->byte_code == BYTE_CODE_PUSH_STK_MEMBER_VAR
+					|| instruction->byte_code == BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT
 					? "\t" : "\t\t"
 					,symbol_value.c_str()
 				);
@@ -374,11 +375,13 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_STORE_CONST:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\tn:%i\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%sn:%i\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
+					,instruction->byte_code==BYTE_CODE_STORE_CONST
+					?"\t\t":"\t\t\t"
 					,(int)instruction->value_op1
 				);
 				break;

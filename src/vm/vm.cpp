@@ -370,6 +370,7 @@ namespace zetscript{
 		if(data->lifetime_object.count>0){
 			zs_string created_at="";
 			zs_string end="";
+			bool some_registers_without_file_line=false;
 
 			zs_string error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
 			for(unsigned i=0; i < data->lifetime_object.count;i++ ){
@@ -377,14 +378,21 @@ namespace zetscript{
 				created_at="";
 				end="";
 
-				if((info->file == 0 || *info->file==0)){
-					end="Tip: Use ZS_EVAL in order to get file:line where the lifetime object was returned";
-				}else{
+				if(info->file != 0 && *info->file!=0){
 					created_at=zs_strutils::format(" at [%s:%i]",zs_path::get_filename(info->file).c_str(),info->line);
+				}else{
+					created_at=" at [??:??]";
+					some_registers_without_file_line=true;
 				}
 				error+=zs_strutils::format("* Returned lifetime object%s was not unreferenced. %s \n",created_at.c_str(),end.c_str());
 
 			}
+
+			if(some_registers_without_file_line==true){
+				error+="\n\nSome lifetimes objects were returned/created from unknown file/line. Tip: Pass pass the file and line to all 'eval' function that it's calling from c++ in order to give you a clue where the 'lifetime object' was returned/created. For example,\n\n\n"
+						"\tStackElement var_from_script=zs->eval(\"return new Object()\",__FILE__,__LINE__)\n";
+			}
+
 			error+="\n\nLifetime objects returned by virtual machine must be unreferenced by calling 'unrefLifetimeObject' \n\n";
 
 			error+="\n\n";
