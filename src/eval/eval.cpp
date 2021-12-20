@@ -134,7 +134,7 @@ namespace zetscript{
 
 	void eval_check_scope(EvalData *eval_data, Scope *scope){
 		if(scope->symbol_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
-			if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
+			if(scope->tmp_idx_instruction_push_scope!=IDX_ZS_UNDEFINED){
 				eval_data->current_function->eval_instructions.insert(
 						scope->tmp_idx_instruction_push_scope
 						,(zs_int)(
@@ -442,7 +442,7 @@ namespace zetscript{
 
 		zs_string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
-		ScriptClass *sc_sf = GET_SCRIPT_CLASS(eval_data,sf->idx_class);
+		ScriptClass *sc_sf = GET_SCRIPT_CLASS(eval_data,sf->idx_type_class);
 		ScriptClass *sc_found=NULL;
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
@@ -486,14 +486,12 @@ namespace zetscript{
 					Symbol *symbol_sf_foundf=NULL;
 					zs_string target_name;
 
+					// find constructor symbol through other members...
 					for(int i = sf->idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
 						Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[i];
 						ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 						bool match_names=false;
 						if((sf->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
-							/*if(symbol_member->scope == NULL){ // is constant...
-								continue;
-							}*/
 							match_names=( sf_member->properties & FUNCTION_PROPERTY_CONSTRUCTOR) != 0;//symbol_member->scope->script_class->class_name==symbol_member->name;
 						}else{
 							match_names=symbol_member->name==sf->function_name;
@@ -534,13 +532,13 @@ namespace zetscript{
 					eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_class->class_name)+"::"+symbol_sf_foundf->name);
 				}
 
-				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
+				if(eval_instruction->vm_instruction.value_op2==IDX_ZS_UNDEFINED){
 					eval_instruction->vm_instruction.byte_code=BYTE_CODE_UNRESOLVED_THIS_CALL;
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
 			case BYTE_CODE_CALL:
-				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
+				if(eval_instruction->vm_instruction.value_op2==IDX_ZS_UNDEFINED){
 					eval_instruction->vm_instruction.byte_code=BYTE_CODE_UNRESOLVED_CALL;
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}

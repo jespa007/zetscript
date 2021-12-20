@@ -5,11 +5,10 @@
 #pragma once
 
 
-#define IDX_SCRIPT_CLASS_MAIN							0
 #define NEW_OBJECT_VAR_BY_CLASS_IDX(data,idx)			((data->script_class_factory)->instanceScriptObjectByClassIdx(idx))
 #define GET_SCRIPT_CLASS(data,idx_or_name)				((data->script_class_factory)->getScriptClass(idx_or_name))
 #define GET_SCRIPT_CLASS_NAME(data,idx) 				((data->script_class_factory)->getScriptClassName(idx))
-#define SCRIPT_CLASS_MAIN(data)							((data->script_class_factory)->getScriptClass(IDX_TYPE_MAIN))    // 0 is the main class
+#define SCRIPT_CLASS_MAIN(data)							((data->script_class_factory)->getScriptClass(IDX_TYPE_CLASS_MAIN))    // 0 is the main class
 
 #define SCRIPT_OBJECT_STRING(data)						((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_STRING))
 #define SCRIPT_OBJECT_ITERATOR_STRING(data)				((data->script_class_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))
@@ -53,8 +52,8 @@ namespace zetscript{
 		ScriptClass * 					getScriptClassByNativeClassPtr(const zs_string & class_type);
 		const char 	* 					getScriptClassName(short idx);
 		void							classInheritsFrom(const zs_string & the_class,const zs_string & the_base_class);
-		bool							isClassInheritsFrom(short idx_class,short idx_base_class);
-		bool							isClassInstanceable(short idx_class);
+		bool							isClassInheritsFrom(short idx_type_class,short idx_base_class);
+		bool							isClassInstanceable(short idx_type_class);
 		short							getIdxClassFromItsNativeType(const char * s);
 		short		 					getIdxNativeRegisteredClass(const zs_string & str_classPtr);
 		zs_vector	* 					getScriptClasses();
@@ -68,7 +67,7 @@ namespace zetscript{
 		 * Class name given this function creates the object and initializes all variables.
 		 */
 		ScriptObject 			* 			instanceScriptObjectByClassName(const zs_string & class_name);
-		ScriptObject 			* 			instanceScriptObjectByClassIdx(short  idx_class, void * value_object = NULL);
+		ScriptObject 			* 			instanceScriptObjectByClassIdx(short  idx_type_class, void * value_object = NULL);
 
 		void 							registerNativeBaseSymbols(bool _register);
 
@@ -324,7 +323,7 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
-		void 	clear(short _idx_start=ZS_IDX_UNDEFINED);
+		void 	clear(short _idx_start=IDX_ZS_UNDEFINED);
 		void 	saveState();
 
 

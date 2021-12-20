@@ -90,13 +90,13 @@ namespace zetscript{
 		 sf=new	ScriptFunction(
 				zs
 				,NULL
-				,IDX_SCRIPT_CLASS_MAIN
+				,IDX_TYPE_CLASS_MAIN
 				,ZS_IDX_EVAL_FUNCTION
 				,-1
 				,function_name
 				,&function_params
 				,function_params_len
-				,ZS_IDX_UNDEFINED
+				,IDX_ZS_UNDEFINED
 				,0
 				,0
 		);

@@ -23,7 +23,7 @@ namespace zetscript{
 			, const char * _file
 			, short _line
 			//--- Function data
-			, int _idx_class
+			, int _idx_type_class
 			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
 			,size_t _params_len
@@ -42,12 +42,12 @@ namespace zetscript{
 			ScriptFunction *sf_repeaded=NULL;
 			if(p_irv!=NULL && (p_irv->properties & SYMBOL_PROPERTY_FUNCTION)){
 				sf_repeaded=(ScriptFunction *)p_irv->ref_ptr;
-				if((sf_repeaded->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && sf_repeaded->idx_class != _idx_class){
+				if((sf_repeaded->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && sf_repeaded->idx_type_class != _idx_type_class){
 					_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS;
 				}
 			}
 
-			if(_function_name == zs->getScriptClassFactory()->getScriptClassName(_idx_class)){
+			if(_function_name == zs->getScriptClassFactory()->getScriptClassName(_idx_type_class)){
 				_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 			}
 		}
@@ -70,7 +70,7 @@ namespace zetscript{
 				zs
 				,_scope
 				,idx_script_function
-				,_idx_class
+				,_idx_type_class
 				, symbol->idx_position
 				,_function_name
 				,_params
@@ -103,7 +103,7 @@ namespace zetscript{
 
 	void ScriptFunctionFactory::clear(int _idx_start){
 
-		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
+		int idx_start = _idx_start == IDX_ZS_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
 			int v=script_functions->count-1;

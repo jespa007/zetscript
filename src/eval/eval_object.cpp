@@ -32,15 +32,15 @@ namespace zetscript{
 
 		if(scope_info->scope_parent!=NULL){// is within function ?
 
-			if(scope_info->script_class->idx_class != IDX_TYPE_MAIN){ // function object as function member because it will use this inside
+			if(scope_info->script_class->idx_type_class != IDX_TYPE_CLASS_MAIN){ // function object as function member because it will use this inside
 				byte_code=ByteCode::BYTE_CODE_LOAD_THIS_FUNCTION;
 			}
 		}
 
 		eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(
 				byte_code
-				,ZS_IDX_UNDEFINED
-				,ZS_IDX_UNDEFINED
+				,IDX_ZS_UNDEFINED
+				,IDX_ZS_UNDEFINED
 				,instruction_properties
 		)));
 
@@ -196,7 +196,7 @@ namespace zetscript{
 			// add instruction...
 			eval_instructions->push_back((zs_int)(
 					new EvalInstruction(ByteCode::BYTE_CODE_LOAD_STRING
-					,ZS_IDX_UNDEFINED
+					,IDX_ZS_UNDEFINED
 					,(zs_int)stk_key_object
 			)));
 
@@ -330,7 +330,7 @@ namespace zetscript{
 
 					ByteCode byte_code_load=BYTE_CODE_FIND_VARIABLE;
 					Symbol *vis=NULL;
-					uintptr_t value=ZS_IDX_UNDEFINED;
+					uintptr_t value=IDX_ZS_UNDEFINED;
 					// check whether local or global var...
 					if((vis=eval_find_local_symbol(eval_data,scope_info,symbol_name)) != NULL){ // local sy
 						if((vis->properties & BYTE_CODE_LOAD_LOCAL)){
@@ -341,7 +341,7 @@ namespace zetscript{
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not defined",symbol_name.c_str());
 					}
 
-					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(byte_code_load,ZS_IDX_UNDEFINED,value)));
+					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(byte_code_load,IDX_ZS_UNDEFINED,value)));
 					eval_instruction->instruction_source_info=InstructionSourceInfo(
 						 eval_data->current_parsing_file
 						 ,line
@@ -358,12 +358,12 @@ namespace zetscript{
 
 					//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
 				}else{ // known type
-					if(!eval_data->script_class_factory->isClassInstanceable(sc->idx_class)){
+					if(!eval_data->script_class_factory->isClassInstanceable(sc->idx_type_class)){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getClassName());
 					}
 
 					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE)));
-					eval_instruction->vm_instruction.value_op1=sc->idx_class;
+					eval_instruction->vm_instruction.value_op1=sc->idx_type_class;
 				}
 
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -411,7 +411,6 @@ namespace zetscript{
 						  n_args++;
 					  }
 
-
 				 }while(*aux_p != ')');
 
 				 // if constructor function found insert call function...
@@ -426,8 +425,18 @@ namespace zetscript{
 				 if(eval_instruction_new_object_by_value==NULL){
 					 // check constructor symbol
 					 constructor_function=sc->getSymbol(symbol_name);
+					 int start_idx_function=sc->class_scope->symbol_functions->count-1;
+					 if(constructor_function == NULL){ // find first constructor throught its function members
+						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
+							Symbol *symbol_member = (Symbol *)sc->class_scope->symbol_functions->items[i];
+							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
+							if((sf_member->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
+								constructor_function = symbol_member;
+							}
+						}
+					 }
 
-					 if(constructor_function != NULL){
+					 if(constructor_function!=NULL){
 						 // set idx function found
 						 if((constructor_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){  // is a script constructor so only set idx
 							 ei_load_function_constructor->vm_instruction.value_op2=constructor_function->idx_position;

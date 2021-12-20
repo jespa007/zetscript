@@ -219,7 +219,7 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
-				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
+				if(instruction->value_op2 == IDX_ZS_UNDEFINED){
 					VM_PUSH_STK_NULL;
 				}else{
 					data->stk_vm_current->value= so_aux->getScriptClass()->class_scope->symbol_functions->items[instruction->value_op2];
@@ -789,7 +789,7 @@ find_element_object:
 				 VM_POP_STK_ONE;
 
 				switch(instruction->value_op2){
-				case ZS_IDX_UNDEFINED:
+				case IDX_ZS_UNDEFINED:
 					VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 					break;
 				case IDX_TYPE_ZS_INT_C:
@@ -867,7 +867,7 @@ find_element_object:
 			case  BYTE_CODE_THIS_MEMBER_CALL: // find symbol and load
 				 sf_call_calling_object = this_object;
 				 sf_call_stk_start_function_object=0;
-				 if(instruction->value_op2 != ZS_IDX_UNDEFINED){ // stored in a member field
+				 if(instruction->value_op2 != IDX_ZS_UNDEFINED){ // stored in a member field
 					 sf_call_stk_function_ref= this_object->getBuiltinElementAt(instruction->value_op2);
 				 }else{
 					 str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
@@ -1080,10 +1080,10 @@ execute_function:
 						){
 							ignore_call= (sf_call_is_constructor) && sf_call_calling_object->isNativeObject() && sf_call_n_args==0;
 							sc=data->script_class_factory->getScriptClass(sf_call_calling_object->idx_script_class);
-						}else if(sf_call_script_function->idx_class != IDX_SCRIPT_CLASS_MAIN
+						}else if(sf_call_script_function->idx_type_class != IDX_TYPE_CLASS_MAIN
 								&& (sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)
 						){
-							sc=data->script_class_factory->getScriptClass(sf_call_script_function->idx_class);
+							sc=data->script_class_factory->getScriptClass(sf_call_script_function->idx_type_class);
 						}
 
 						if(ignore_call == false)
@@ -1133,7 +1133,7 @@ execute_function:
 								||
 							(sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)!=0
 						){
-							str_class_owner=data->script_class_factory->getScriptClass(sf_call_script_function->idx_class)->class_name.c_str();
+							str_class_owner=data->script_class_factory->getScriptClass(sf_call_script_function->idx_type_class)->class_name.c_str();
 						}
 
 						data->vm_error_callstack_str+=zs_strutils::format(
@@ -1440,7 +1440,7 @@ execute_function:
 		VirtualMachineData *data = (VirtualMachineData*)vm->data;
 		StackElement *stk_var=NULL;
 
-		if(idx != ZS_IDX_UNDEFINED){
+		if(idx != IDX_ZS_UNDEFINED){
 			stk_var = this_object->getBuiltinElementAt(idx);
 		}
 

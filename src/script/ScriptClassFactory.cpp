@@ -8,34 +8,34 @@
 #define 				MAX_REGISTER_CLASSES 				100
 #define 				MAIN_SCRIPT_CLASS_NAME 				"@MainClass"
 
-#define SCF_REGISTER_STRUCT(type_class, idx_class)\
-	if(script_classes->count!=idx_class){\
+#define SCF_REGISTER_STRUCT(type_class, idx_type_class)\
+	if(script_classes->count!=idx_type_class){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	registerNativeClass<type_class>(ZS_STR(type_class),NULL,NULL);
 
 
-#define SCF_REGISTER_CLASS(name_class, type_class, idx_class)\
-	if(script_classes->count!=idx_class){\
+#define SCF_REGISTER_CLASS(name_class, type_class, idx_type_class)\
+	if(script_classes->count!=idx_type_class){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	if(idx_class >= IDX_TYPE_MAX){\
+	if(idx_type_class >= IDX_TYPE_MAX){\
 		THROW_RUNTIME_ERROR("The class to register '%s' should be a built in class",ZS_STR(type_class));\
 		return;\
 	}\
 	registerNativeClass<type_class>(name_class,type_class##Wrap_New,type_class##Wrap_Delete);
 
-#define SCF_REGISTER_SINGLETON_CLASS(type_class, idx_class)\
-	if(script_classes->count!=idx_class){\
+#define SCF_REGISTER_SINGLETON_CLASS(type_class, idx_type_class)\
+	if(script_classes->count!=idx_type_class){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	registerNativeSingletonClass<type_class>(ZS_STR(type_class));
 
-#define SCF_REGISTER_NATIVE_TYPE(type, idx_class)\
-	if(script_classes->count!=idx_class){\
+#define SCF_REGISTER_NATIVE_TYPE(type, idx_type_class)\
+	if(script_classes->count!=idx_type_class){\
 		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",ZS_STR(type_class));\
 		return;\
 	}else{\
@@ -45,8 +45,8 @@
 		sc->str_class_ptr_type=(typeid(type).name());\
 	}
 
-#define SCF_REGISTER_TYPE(str_type, idx_class)\
-	if(script_classes->count!=idx_class){\
+#define SCF_REGISTER_TYPE(str_type, idx_type_class)\
+	if(script_classes->count!=idx_type_class){\
 		THROW_RUNTIME_ERROR("Error initializing built in type: %s",str_type);\
 		return;\
 	}else{\
@@ -330,7 +330,7 @@ namespace zetscript{
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 
 	void ScriptClassFactory::clear(short _idx_start){
-		short idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
+		short idx_start = _idx_start == IDX_ZS_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
 			int v=script_classes->count-1;
@@ -376,7 +376,7 @@ namespace zetscript{
 
 		checkClassName(class_name);
 
-		if((index = getIdxScriptClassInternal(class_name))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
+		if((index = getIdxScriptClassInternal(class_name))==IDX_ZS_UNDEFINED){ // check whether is local var registered scope ...
 			uint16_t properties_register_scope=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
 			index=script_classes->count;
 
@@ -385,7 +385,7 @@ namespace zetscript{
 				properties_register_scope|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 			}
 			// BYTE_CODE_NEW SCOPE C and register ...
-			Scope * scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
+			Scope * scope = NEW_SCOPE(this,IDX_ZS_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
 
 			// register symbol on main scope...
 
@@ -485,10 +485,10 @@ namespace zetscript{
 				sc->idx_starting_this_member_variables=sc->class_scope->symbol_variables->count;
 
 				// 2. set idx base class...
-				sc->idx_base_classes->push_back(base_class->idx_class);
+				sc->idx_base_classes->push_back(base_class->idx_type_class);
 			}
 
-			if(sc->idx_class != IDX_SCRIPT_CLASS_MAIN){ // main class has no field initializers and reserve first function as main function
+			if(sc->idx_type_class != IDX_TYPE_CLASS_MAIN){ // main class has no field initializers and reserve first function as main function
 				zs_string error="";
 				Symbol *symbol_field_initializer=NULL;
 
@@ -522,14 +522,14 @@ namespace zetscript{
 		}else if(name == ZS_TYPE_NAME_BOOL){
 			return IDX_TYPE_BOOL_C;
 		}else if((sc=getScriptClass(name))!=NULL){
-			return sc->idx_class;
+			return sc->idx_type_class;
 		}
 
-		return ZS_IDX_UNDEFINED;
+		return IDX_ZS_UNDEFINED;
 	}
 
 	ScriptClass 	* ScriptClassFactory::getScriptClass(short idx){
-		if(idx == ZS_IDX_UNDEFINED){
+		if(idx == IDX_ZS_UNDEFINED){
 			THROW_RUNTIME_ERROR("ScriptClass node out of bound");
 			return NULL;
 		}
@@ -538,7 +538,7 @@ namespace zetscript{
 
 	ScriptClass 	* ScriptClassFactory::getScriptClass(const zs_string & class_name){
 		int idx;
-		if((idx = getIdxScriptClassInternal(class_name))!=ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
+		if((idx = getIdxScriptClassInternal(class_name))!=IDX_ZS_UNDEFINED){ // check whether is local var registered scope ...
 			return (ScriptClass *)script_classes->get(idx);
 		}
 		return NULL;
@@ -563,11 +563,11 @@ namespace zetscript{
 				return i;
 			}
 		}
-		return ZS_IDX_UNDEFINED;
+		return IDX_ZS_UNDEFINED;
 	}
 
 	bool ScriptClassFactory::isClassRegistered(const zs_string & v){
-		return getIdxScriptClassInternal(v) != ZS_IDX_UNDEFINED;
+		return getIdxScriptClassInternal(v) != IDX_ZS_UNDEFINED;
 	}
 
 	ScriptObject *		ScriptClassFactory::instanceScriptObjectByClassName(const zs_string & class_name){
@@ -575,21 +575,21 @@ namespace zetscript{
 		 ScriptClass * rc = getScriptClass(class_name);
 
 		 if(rc != NULL){
-			 return instanceScriptObjectByClassIdx(rc->idx_class);
+			 return instanceScriptObjectByClassIdx(rc->idx_type_class);
 		 }
 		 return NULL;
 	 }
 
-	 ScriptObject 		 * ScriptClassFactory::instanceScriptObjectByClassIdx(short idx_class, void * value_object){
+	 ScriptObject 		 * ScriptClassFactory::instanceScriptObjectByClassIdx(short idx_type_class, void * value_object){
 
 		 ScriptObject *so=NULL;
 
 		 // 0. Search class info ...
-		 ScriptClass *rc = getScriptClass(idx_class);
+		 ScriptClass *rc = getScriptClass(idx_type_class);
 
 		 if(rc != NULL){
 			 // Is a primitive ?
-			switch(rc->idx_class){
+			switch(rc->idx_type_class){
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // "String"
 				so=ScriptObjectString::newScriptObjectString(zs);
 				break;
@@ -603,11 +603,11 @@ namespace zetscript{
 
 			default:
 
-				if(rc->idx_class > IDX_TYPE_SCRIPT_OBJECT_CLASS){
+				if(rc->idx_type_class > IDX_TYPE_SCRIPT_OBJECT_CLASS){
 					 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
-					 so = ScriptObjectClass::newScriptObjectClass(zs,rc->idx_class, value_object);
+					 so = ScriptObjectClass::newScriptObjectClass(zs,rc->idx_type_class, value_object);
 				}else{
-					 THROW_RUNTIME_ERROR("Internal error: An idx class was expected but it was %i",rc->idx_class);
+					 THROW_RUNTIME_ERROR("Internal error: An idx class was expected but it was %i",rc->idx_type_class);
 					 return NULL;
 				 }
 				break;
@@ -624,11 +624,11 @@ namespace zetscript{
 				return i;
 			}
 		}
-		return ZS_IDX_UNDEFINED;
+		return IDX_ZS_UNDEFINED;
 	}
 
 	const char * ScriptClassFactory::getScriptClassName(short idx){
-		if(idx != ZS_IDX_UNDEFINED){
+		if(idx != IDX_ZS_UNDEFINED){
 			ScriptClass *sc=(ScriptClass *)script_classes->get(idx);
 			return sc->class_name.c_str();
 		}
@@ -647,20 +647,20 @@ namespace zetscript{
 			 }
 		 }
 
-		 return ZS_IDX_UNDEFINED;
+		 return IDX_ZS_UNDEFINED;
 	 }
 
 	short 			ScriptClassFactory::getIdxClassFromItsNativeType(const char * str_native_type){
 		return getIdxScriptInternalFrom_C_Type(str_native_type);
 	}
 
-	bool 	ScriptClassFactory::isClassInheritsFrom(short idx_class,short idx_base_class){
+	bool 	ScriptClassFactory::isClassInheritsFrom(short idx_type_class,short idx_base_class){
 
-		if(idx_class == idx_base_class){
+		if(idx_type_class == idx_base_class){
 			return true;
 		}
 
-		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_class);
+		ScriptClass *sc=(ScriptClass *)script_classes->get(idx_type_class);
 
 		for(unsigned i=0; i < sc->idx_base_classes->count; i++){
 			if(isClassInheritsFrom(sc->idx_base_classes->items[i],idx_base_class)){
@@ -671,16 +671,16 @@ namespace zetscript{
 		return false;
 	}
 
-	bool							ScriptClassFactory::isClassInstanceable(short idx_class){
+	bool							ScriptClassFactory::isClassInstanceable(short idx_type_class){
 
 
 
 
 		if(
-				idx_class==IDX_TYPE_SCRIPT_OBJECT_STRING
-				|| idx_class==IDX_TYPE_SCRIPT_OBJECT_VECTOR
-				|| idx_class==IDX_TYPE_SCRIPT_OBJECT_OBJECT
-				|| idx_class>=IDX_TYPE_MAX
+				idx_type_class==IDX_TYPE_SCRIPT_OBJECT_STRING
+				|| idx_type_class==IDX_TYPE_SCRIPT_OBJECT_VECTOR
+				|| idx_type_class==IDX_TYPE_SCRIPT_OBJECT_OBJECT
+				|| idx_type_class>=IDX_TYPE_MAX
 		){
 			return true;
 		}

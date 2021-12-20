@@ -264,7 +264,7 @@ namespace zetscript{
 						Instruction *instruction=&((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction;
 						if(token_node_symbol_class != NULL){ // byte code it will be a type
 							instruction->byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
-							instruction->value_op2=token_node_symbol_class->idx_class;
+							instruction->value_op2=token_node_symbol_class->idx_type_class;
 						}else{ // sc is null
 							if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
 								EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line,"expected a type after 'instanceof'");
@@ -323,7 +323,7 @@ namespace zetscript{
 			do{
 				ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 				accessor_name="";
-				zs_int instruction_value2=ZS_IDX_UNDEFINED;
+				zs_int instruction_value2=IDX_ZS_UNDEFINED;
 				EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
 
 				aux_p=test_aux_p;
@@ -335,7 +335,7 @@ namespace zetscript{
 					if(	it_accessor_token==0){
 						if(
 								token_node_symbol->value == SYMBOL_VALUE_SUPER
-								&& scope_info->script_class->idx_class == IDX_SCRIPT_CLASS_MAIN){
+								&& scope_info->script_class->idx_type_class == IDX_TYPE_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'super' is not allowed here");
 						}
 
@@ -459,13 +459,13 @@ namespace zetscript{
 					instruction_token=ei_first_token_node;
 
 					if(it_accessor_token==0 && token_node_symbol->value == SYMBOL_VALUE_THIS){ // check first symbol at first...
-						ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_class);
+						ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_type_class);
 
 						if(eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_STATIC){
 							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' cannot be used in static functions");
 						}
 
-						if(scope_info->script_class->idx_class == IDX_SCRIPT_CLASS_MAIN){
+						if(scope_info->script_class->idx_type_class == IDX_TYPE_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' is not allowed here");
 						}
 
@@ -563,7 +563,7 @@ namespace zetscript{
 
 			if(token_node_symbol->value==SYMBOL_VALUE_THIS){ // only takes symbol this
 
-				if(eval_data->current_function->script_function->idx_class == IDX_TYPE_MAIN){
+				if(eval_data->current_function->script_function->idx_type_class == IDX_TYPE_CLASS_MAIN){
 					EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line,"'this' only can be used within a class");
 				}
 

@@ -88,7 +88,7 @@ namespace zetscript{
 		// LINK C OBJECT
 
 		//this->script_class = irv;
-		//idx_class = irv->idx_class;
+		//idx_type_class = irv->idx_type_class;
 		c_object = _c_object;
 		script_class_native=NULL;
 
@@ -123,7 +123,7 @@ namespace zetscript{
 	ScriptFunction *ScriptObjectClass::getConstructorFunction(){
 
 		ScriptClass *script_class=getScriptClass();
-		if(script_class->idx_function_member_constructor != ZS_IDX_UNDEFINED){
+		if(script_class->idx_function_member_constructor != IDX_ZS_UNDEFINED){
 			return (ScriptFunction *)script_class->class_scope->symbol_functions->items[script_class->idx_function_member_constructor];
 		}
 

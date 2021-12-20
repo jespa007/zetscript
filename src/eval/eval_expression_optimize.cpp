@@ -315,14 +315,14 @@ namespace zetscript{
 		case BYTE_CODE_LOAD_ZS_INT:
 			result_instruction=new EvalInstruction(
 					result_bc
-					,ZS_IDX_UNDEFINED
+					,IDX_ZS_UNDEFINED
 					,result_op_zs_int
 			);
 			break;
 		case BYTE_CODE_LOAD_ZS_FLOAT:
 			result_instruction=new EvalInstruction(
 					result_bc
-					,ZS_IDX_UNDEFINED
+					,IDX_ZS_UNDEFINED
 					,result_op_zs_int
 			);
 			break;
@@ -330,14 +330,14 @@ namespace zetscript{
 			str_constant_key=zs_string("\"")+result_op_str+"\"";
 			result_instruction=new EvalInstruction(
 					result_bc
-					,ZS_IDX_UNDEFINED
+					,IDX_ZS_UNDEFINED
 					,(zs_int)eval_data->zs->registerStkStringObject(str_constant_key,result_op_str)
 			);
 			break;
 		case BYTE_CODE_LOAD_BOOL:
 			result_instruction=new EvalInstruction(
 					result_bc
-					,ZS_IDX_UNDEFINED
+					,IDX_ZS_UNDEFINED
 					,result_op_bool
 			);
 			break;
@@ -374,7 +374,7 @@ namespace zetscript{
 		if(token_operation->operator_type == OPERATOR_INSTANCEOF){
 			instruction=new EvalInstruction(
 					BYTE_CODE_INSTANCEOF
-					,ZS_IDX_UNDEFINED
+					,IDX_ZS_UNDEFINED
 					,i2->vm_instruction.value_op2
 			);
 			i1=i2; // swap instruction to erase...
@@ -453,7 +453,7 @@ namespace zetscript{
 
 					instruction=new EvalInstruction(
 							byte_code
-							, ZS_IDX_UNDEFINED
+							, IDX_ZS_UNDEFINED
 							, load_value_op2_2
 							, INSTRUCTION_PROPERTY_ILOAD_K |k_properties
 					);
@@ -463,7 +463,7 @@ namespace zetscript{
 					instruction=new EvalInstruction(
 							byte_code
 							,load_value_op2_2
-							,ZS_IDX_UNDEFINED
+							,IDX_ZS_UNDEFINED
 							,INSTRUCTION_PROPERTY_ILOAD_R | (
 									load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 									:0

@@ -63,7 +63,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 				ScriptClass *info_registered_class = zs->getScriptClassFactory()->getScriptClassByNativeClassPtr(symbol->str_native_type);//  ScriptClass::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 				if(info_registered_class){
-					ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs,info_registered_class->idx_class,ptr_variable);
+					ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs,info_registered_class->idx_type_class,ptr_variable);
 
 					return{
 							(zs_int)var,

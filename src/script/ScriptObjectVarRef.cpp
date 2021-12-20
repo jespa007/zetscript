@@ -18,7 +18,7 @@ namespace zetscript{
 	ScriptObjectVarRef::ScriptObjectVarRef(){
 		idx_script_class=IDX_TYPE_SCRIPT_OBJECT_VAR_REF;
 		stk_var_ref.setUndefined();
-		idx_call=ZS_IDX_UNDEFINED;
+		idx_call=IDX_ZS_UNDEFINED;
 
 	}
 

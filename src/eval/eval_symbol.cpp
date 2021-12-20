@@ -20,7 +20,7 @@ namespace zetscript{
 		// PRE:
 		bool is_constant_number=false, is_constant_boolean=false;
 		EvalInstruction *instruction=NULL;
-		zs_int value = ZS_IDX_UNDEFINED;
+		zs_int value = IDX_ZS_UNDEFINED;
 		ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 		token_node_symbol->token_type = TokenType::TOKEN_TYPE_LITERAL;
 		token_node_symbol->line=line;
@@ -169,7 +169,7 @@ namespace zetscript{
 		token_node_symbol->eval_instructions.push_back((zs_int)(
 			new EvalInstruction(
 				byte_code
-				,ZS_IDX_UNDEFINED
+				,IDX_ZS_UNDEFINED
 				,value
 			)
 		));

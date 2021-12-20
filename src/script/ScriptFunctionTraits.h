@@ -200,7 +200,7 @@ namespace zetscript{
 					);
 				}
 
-				if(idx_type==ZS_IDX_UNDEFINED){
+				if(idx_type==IDX_ZS_UNDEFINED){
 					THROW_RUNTIME_ERROR("Argument %i type '%s' for function '%s' not registered"
 							,i+1
 							,zs_rtti::demangle(param)

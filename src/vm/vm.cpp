@@ -179,13 +179,13 @@ namespace zetscript{
 			}
 		}
 
-		return ZS_IDX_UNDEFINED;
+		return IDX_ZS_UNDEFINED;
 	}
 
 	void vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		int idx = ZS_IDX_UNDEFINED;
-		if((idx=vm_find_lifetime_object(vm,script_object))==ZS_IDX_UNDEFINED){
+		int idx = IDX_ZS_UNDEFINED;
+		if((idx=vm_find_lifetime_object(vm,script_object))==IDX_ZS_UNDEFINED){
 			THROW_RUNTIME_ERROR("Cannot find stack element lifetime");
 		}
 		InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[idx];

@@ -91,8 +91,8 @@ namespace zetscript{
 		Instruction();
 
 		Instruction(ByteCode _byte_code
-		 ,uint8_t _value_op1=ZS_IDX_UNDEFINED
-		 ,zs_int _value_op2=ZS_IDX_UNDEFINED
+		 ,uint8_t _value_op1=IDX_ZS_UNDEFINED
+		 ,zs_int _value_op2=IDX_ZS_UNDEFINED
 		 ,uint16_t _properties=0
 		 );
 

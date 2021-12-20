@@ -69,7 +69,7 @@ namespace zetscript{
 
 		// 4. add load/store/reset stack
 		idx_position=start_ptr-new_instructions;
-		*start_ptr++=Instruction(BYTE_CODE_PUSH_STK_MEMBER_VAR,ZS_IDX_UNDEFINED,symbol_member_var->idx_position);
+		*start_ptr++=Instruction(BYTE_CODE_PUSH_STK_MEMBER_VAR,IDX_ZS_UNDEFINED,symbol_member_var->idx_position);
 		sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(
 			eval_data->current_parsing_file
 			,symbol_member_var->line
@@ -137,8 +137,8 @@ namespace zetscript{
 
 		// add return in the end...
 		start_ptr->byte_code=BYTE_CODE_RET;
-		start_ptr->value_op1=ZS_IDX_UNDEFINED;
-		start_ptr->value_op2=ZS_IDX_UNDEFINED;
+		start_ptr->value_op1=IDX_ZS_UNDEFINED;
+		start_ptr->value_op2=IDX_ZS_UNDEFINED;
 		sf->instruction_source_info.push_back(0);
 
 		eval_instructions->clear();
@@ -182,7 +182,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check class scope...
-			if(scope_var->script_class->idx_class != IDX_TYPE_MAIN
+			if(scope_var->script_class->idx_type_class != IDX_TYPE_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // class members are defined as functions
@@ -414,7 +414,7 @@ error_eval_keyword_var:
 		//Keyword key_w;
 		//
 		// check for keyword ...
-		if(scope_info->script_class->idx_class != IDX_TYPE_MAIN
+		if(scope_info->script_class->idx_type_class != IDX_TYPE_CLASS_MAIN
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )

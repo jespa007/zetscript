@@ -50,7 +50,7 @@ namespace zetscript{
 		int last_line_ok;
 		const char *start_expression_str=NULL;
 		int start_expression_line=-1;
-		int instruction_identifier=ZS_IDX_UNDEFINED;
+		int instruction_identifier=IDX_ZS_UNDEFINED;
 		char *aux_p=NULL;//,*test_s=NULL;
 		bool new_line_break=false;
 		char *test_ignore_blanks=NULL,*test_char_carry_return=NULL;

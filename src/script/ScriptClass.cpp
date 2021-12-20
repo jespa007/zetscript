@@ -19,7 +19,7 @@ namespace zetscript{
 	//------------------------------------------------------------
 
 	ScriptClass::ScriptClass(ZetScript *_zs
-			,short _idx_class
+			,short _idx_type_class
 			, zs_string _class_name
 			, Scope *_class_scope
 			,const char *_str_class_ptr_type
@@ -29,8 +29,8 @@ namespace zetscript{
 		str_class_ptr_type="";
 		c_destructor = NULL;
 		c_constructor=NULL;
-		idx_function_member_constructor =ZS_IDX_UNDEFINED;
-		idx_class=_idx_class;
+		idx_function_member_constructor =IDX_ZS_UNDEFINED;
+		idx_type_class=_idx_type_class;
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
 		class_name=_class_name;
@@ -50,9 +50,9 @@ namespace zetscript{
 
 	}
 
-	bool ScriptClass::isDerivedFrom(short idx_class){
+	bool ScriptClass::isDerivedFrom(short idx_type_class){
 		for(unsigned i=0; i < this->idx_base_classes->count; i++){
-			if(this->idx_base_classes->items[i]==idx_class){
+			if(this->idx_base_classes->items[i]==idx_type_class){
 				return true;
 			}
 		}
@@ -373,7 +373,7 @@ namespace zetscript{
 				,_file
 				,_line
 				//---- Function data
-				,idx_class 				// idx class which belongs to...
+				,idx_type_class 				// idx class which belongs to...
 				,_function_name
 				,_params
 				,_params_len
@@ -639,9 +639,9 @@ namespace zetscript{
 	}
 
 	const char *ScriptClass::getClassName(){
-		if(idx_class==IDX_TYPE_ZS_INT_C){
+		if(idx_type_class==IDX_TYPE_ZS_INT_C){
 			return "int";
-		}else if(idx_class==IDX_TYPE_ZS_FLOAT_C){
+		}else if(idx_type_class==IDX_TYPE_ZS_FLOAT_C){
 			return "float";
 		}
 

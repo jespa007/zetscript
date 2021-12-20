@@ -29,7 +29,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("main function is not created");
 		}
 
-		if(getIdxClassFromItsNativeType(var_type) == ZS_IDX_UNDEFINED){
+		if(getIdxClassFromItsNativeType(var_type) == IDX_ZS_UNDEFINED){
 			THROW_RUNTIME_ERROR("%s has not valid type (%s)",var_name.c_str(),var_type);
 		}
 
@@ -101,31 +101,31 @@ namespace zetscript{
 		ScriptClass *sc=NULL;
 		const char * str_class_name_ptr = typeid( T *).name();
 		//int size=script_classes->count;
-		int idx_class=ZS_IDX_UNDEFINED;
+		int idx_type_class=IDX_ZS_UNDEFINED;
 		Scope * scope = NULL;
 
 
 		checkClassName(class_name);
 
-		if(getIdxNativeRegisteredClass(str_class_name_ptr)!=ZS_IDX_UNDEFINED){
+		if(getIdxNativeRegisteredClass(str_class_name_ptr)!=IDX_ZS_UNDEFINED){
 			THROW_RUNTIME_ERROR("Native class '%s' is already registered",zs_rtti::demangle(typeid( T).name()));
 		}
 
-		idx_class=script_classes->count;
-		scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
+		idx_type_class=script_classes->count;
+		scope = NEW_SCOPE(this,IDX_ZS_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,class_name);
 
-		sc = new ScriptClass(zs,idx_class,class_name,scope,str_class_name_ptr,SCRIPT_CLASS_PROPERTY_C_OBJECT_REF);
+		sc = new ScriptClass(zs,idx_type_class,class_name,scope,str_class_name_ptr,SCRIPT_CLASS_PROPERTY_C_OBJECT_REF);
 		scope->setScriptClass(sc);
 
 		// in C there's no script constructor ...
-		sc->idx_function_member_constructor=ZS_IDX_UNDEFINED;
+		sc->idx_function_member_constructor=IDX_ZS_UNDEFINED;
 		// allow dynamic constructor in function its parameters ...
 		sc->c_constructor = NULL;
 		sc->c_destructor = NULL;
 		script_classes->push_back((zs_int)sc);
 
-		sc->idx_class=script_classes->count-1;
+		sc->idx_type_class=script_classes->count-1;
 		ZS_LOG_DEBUG("* C++ class '%s' registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
 
 		return sc;
@@ -172,7 +172,7 @@ namespace zetscript{
 
 
 		int idx_register_class = getIdxClassFromItsNativeType(class_name_ptr);
-		if(idx_register_class == ZS_IDX_UNDEFINED) {
+		if(idx_register_class == IDX_ZS_UNDEFINED) {
 			THROW_RUNTIME_ERROR("class %s not registered",class_name_ptr);
 		}
 
@@ -395,7 +395,7 @@ namespace zetscript{
 
 		// 1. check all parameters ok.
 		// check valid parameters ...
-		if(getIdxClassFromItsNativeType(var_type) == ZS_IDX_UNDEFINED){
+		if(getIdxClassFromItsNativeType(var_type) == IDX_ZS_UNDEFINED){
 			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
 					,c_class->class_name.c_str()
 					,var_name

@@ -9,12 +9,12 @@
 //#define __ZETSCRIPT_VERBOSE_MESSAGE__
 #endif
 
-#define ZS_IDX_UNDEFINED 						-1
+#define IDX_ZS_UNDEFINED 						-1
 #define ZS_IDX_EVAL_FUNCTION					-10
 #define MAX_NATIVE_FUNCTION_ARGS				6
 
 #define GET_METAMETHOD(m)														((this->zs))->getMetamethod(m)
-#define IS_IDX_TYPE_INSTANCEOF(zs,idx_class,idx_class_instance)	((this->script_class_factory))->isClassInheritsFrom(idx_class,idx_class_instance)
+#define IS_IDX_TYPE_INSTANCEOF(zs,idx_type_class,idx_type_class_instance)	((this->script_class_factory))->isClassInheritsFrom(idx_type_class,idx_type_class_instance)
 
 #ifndef TRUE
 #define TRUE 1

@@ -457,7 +457,7 @@ namespace zetscript{
 
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
 		zs_string global_symbol;
-		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
+		int idx_start_variable = _idx_start_variable == IDX_ZS_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
 		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
 		zs_vector *local_variables=main_function_object->local_variables;

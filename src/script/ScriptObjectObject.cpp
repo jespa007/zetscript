@@ -19,8 +19,6 @@ namespace zetscript{
 	ScriptObjectObject * ScriptObjectObject::concat(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
 		zs_string error="";
 		ScriptObjectObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
-		//zs_map_iterator it_1=o1->map_user_property_keys->begin();
-		//zs_map_iterator it_2=o2->map_user_property_keys->begin();
 
 		for(auto it=o1->begin(); !it.end();it.next()){
 			obj->addUserProperty(it.key,error,(StackElement *)it.value);
@@ -38,9 +36,7 @@ namespace zetscript{
 		for(auto it=o2->begin(); !it.end();it.next()){
 			o1->addUserProperty(it.key,error,(StackElement *)it.value);
 		}
-
 	}
-
 	//
 	// Helpers
 	//
@@ -66,25 +62,18 @@ namespace zetscript{
 
 		if(sv != NULL){
 			si = *sv;
-
 			// update n_refs +1
 			if(sv->properties&STK_PROPERTY_SCRIPT_OBJECT){
 				if(vm_share_pointer(vm,(ScriptObjectObject *)(sv->value)) == false){
 					return NULL;
 				}
 			}
-
 		}else{
 
 			si=k_stk_null;
 		}
 
-		/*if(idx_stk_element != NULL){
-			*idx_stk_element=stk_user_elements.count;
-		}*/
-
 		zs_string key_value = symbol_value;
-		//StackElement *new_stk=pushNewUserSlot();
 		StackElement *new_stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
 		map_user_property_keys->set(key_value.c_str(),(zs_int)new_stk);
 
@@ -97,16 +86,10 @@ namespace zetscript{
 		bool exists;
 		StackElement *stk_element=(StackElement *)this->map_user_property_keys->get(property_name.c_str(),&exists);
 		if(exists){
-			/*if(idx!=NULL){
-				*idx=idx_stk_element;
-			}
-
-			return (StackElement *)stk_user_elements.items[idx_stk_element];*/
 			return stk_element;
 		}
 		return NULL;
 	}
-
 
 	StackElement * ScriptObjectObject::addProperty(
 			const zs_string & symbol_value
@@ -121,9 +104,7 @@ namespace zetscript{
 		if(stk==NULL){
 			stk=getUserProperty(property_name/*,idx*/);
 		}
-
 		return stk;
-
 	}
 
 	bool ScriptObjectObject::existUserProperty(const zs_string & property_name){
@@ -142,7 +123,6 @@ namespace zetscript{
 		return this->map_builtin_property_keys->count;
 	}
 
-
 	bool ScriptObjectObject::eraseUserProperty(const zs_string & property_name/*, const ScriptFunction *info_function*/){
 		bool exists=false;
 		StackElement *stk_user_element = (StackElement *)map_user_property_keys->get(property_name.c_str(),&exists);
@@ -151,13 +131,8 @@ namespace zetscript{
 			return false;
 		}
 
-		/*if(!eraseUserElementAt(stk_user_element)){
-			return false;
-		}*/
 		free(stk_user_element);
-
 		map_user_property_keys->erase(property_name.c_str()); // erase also property key
-
 		return true;
 	}
 
@@ -167,7 +142,6 @@ namespace zetscript{
 			ScriptObject::unrefAndFreeStackElementContainer(si);
 		}
 		map_user_property_keys->clear();
-
 	}
 
 	zs_string ScriptObjectObject::toString(){
@@ -178,6 +152,5 @@ namespace zetscript{
 	ScriptObjectObject::~ScriptObjectObject(){
 		eraseAllUserProperties();
 		delete map_user_property_keys;
-
 	}
 }

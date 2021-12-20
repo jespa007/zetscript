@@ -559,7 +559,7 @@ namespace zetscript{
 					str_candidates.append("\t\t-");
 
 					// class if not mail
-					if(class_obj!=NULL && class_obj->idx_class!=IDX_TYPE_MAIN){
+					if(class_obj!=NULL && class_obj->idx_type_class!=IDX_TYPE_CLASS_MAIN){
 						str_candidates.append(class_obj->class_name.c_str());
 						str_candidates.append("::");
 					}
@@ -591,7 +591,7 @@ namespace zetscript{
 			if(n_candidates == 0){
 				VM_ERROR("Cannot find %s '%s%s(%s)'.\n\n",
 						is_constructor ? "constructor":"function",
-								class_obj==NULL?"":class_obj->idx_class!=IDX_TYPE_MAIN?(class_obj->class_name+"::").c_str():"",
+								class_obj==NULL?"":class_obj->idx_type_class!=IDX_TYPE_CLASS_MAIN?(class_obj->class_name+"::").c_str():"",
 								symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 						args_str.c_str()
 				);
@@ -601,7 +601,7 @@ namespace zetscript{
 			else{
 				VM_ERROR("Cannot match %s '%s%s(%s)' .\n\n%s",
 					is_constructor ? "constructor":"function",
-							class_obj==NULL?"":class_obj->idx_class!=IDX_TYPE_MAIN?(class_obj->class_name+"::").c_str():"",
+							class_obj==NULL?"":class_obj->idx_type_class!=IDX_TYPE_CLASS_MAIN?(class_obj->class_name+"::").c_str():"",
 									symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 					args_str.c_str(),
 					str_candidates.c_str());

@@ -20,7 +20,7 @@ namespace zetscript{
 			ZetScript * _zs
 			,Scope *_scope_function
 			,int _idx_script_function
-			,int _idx_class
+			,int _idx_type_class
 			,int _idx_position
 			,const zs_string & _function_name
 			, ScriptFunctionParam **_params
@@ -30,7 +30,7 @@ namespace zetscript{
 			,uint16_t _properties
 		) {
 		// function data...
-		idx_class=_idx_class;
+		idx_type_class=_idx_type_class;
 		function_name=_function_name;
 		idx_script_function=_idx_script_function;
 		idx_position = _idx_position;
@@ -118,11 +118,11 @@ namespace zetscript{
 			iload_info="";
 			unsigned idx_instruction=instruction-sfo->instructions;
 
-			if((char)value_op1 != ZS_IDX_UNDEFINED){
+			if((char)value_op1 != IDX_ZS_UNDEFINED){
 				n_ops++;
 			}
 
-			 if(value_op2 != ZS_IDX_UNDEFINED){
+			 if(value_op2 != IDX_ZS_UNDEFINED){
 				 n_ops++;
 			 }
 
@@ -200,7 +200,7 @@ namespace zetscript{
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
-					,(char)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
+					,(char)instruction->value_op1!=IDX_ZS_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:
@@ -585,7 +585,7 @@ namespace zetscript{
 				,_file
 				,_line
 				//---- Function data
-				,idx_class 				// idx class is the same which this function belongs to...
+				,idx_type_class 				// idx class is the same which this function belongs to...
 				,_function_name
 				,_params
 				,_params_len
@@ -666,7 +666,7 @@ namespace zetscript{
 				const char *instruction_file=SFI_GET_FILE(this,unresolved_instruction);
 				int instruction_line=SFI_GET_LINE(this,unresolved_instruction);
 				Symbol *symbol_found=NULL;
-				short idx_sc_found=ZS_IDX_UNDEFINED;
+				short idx_sc_found=IDX_ZS_UNDEFINED;
 
 
 				if(ptr_str_symbol_to_find==NULL){
@@ -679,7 +679,7 @@ namespace zetscript{
 				}
 
 
-				if((idx_sc_found= script_class_factory->getBuiltinTypeOrClass(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if class
+				if((idx_sc_found= script_class_factory->getBuiltinTypeOrClass(ptr_str_symbol_to_find))!= IDX_ZS_UNDEFINED){ // check if class
 					unresolved_instruction->byte_code=BYTE_CODE_LOAD_TYPE;
 					unresolved_instruction->value_op2=idx_sc_found;
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
@@ -701,7 +701,7 @@ namespace zetscript{
 						symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 					}
 				}else if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // try get global symbol
-					ScriptClass *this_class=zs->getScriptClassFactory()->getScriptClass(this->idx_class);
+					ScriptClass *this_class=zs->getScriptClassFactory()->getScriptClass(this->idx_type_class);
 					symbol_found=this_class->getSymbolMemberFunction(ptr_str_symbol_to_find);
 				}else{
 					symbol_found = MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
