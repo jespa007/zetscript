@@ -173,9 +173,9 @@ namespace zetscript{
 							return false;
 						}
 
-						if(idx_builtin_type!=script_object->idx_script_class){
+						if(idx_builtin_type!=script_object->idx_type){
 
-							if(script_object->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
+							if(script_object->idx_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
 								if(stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
 									error= "internal error var_ref is NULL";
 									return false;
@@ -193,7 +193,7 @@ namespace zetscript{
 									error.append("'");
 									return false;
 								}
-							}else if(script_object->idx_script_class>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
+							}else if(script_object->idx_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
 								ScriptObjectClass *script_object_class = (ScriptObjectClass *)script_object;
 								c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
 
@@ -201,7 +201,7 @@ namespace zetscript{
 									if((val_ret=c_class->isDerivedFrom(
 											idx_builtin_type
 										))==0
-									){//c_class->idx_type_class==idx_builtin_type){
+									){//c_class->idx_type==idx_builtin_type){
 										error = "cannot convert '";
 										error.append(zs_rtti::demangle(script_object_class->getNativePointerClassName()));
 										error.append("' to '");

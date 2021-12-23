@@ -52,8 +52,8 @@ namespace zetscript{
 		ScriptClass * 					getScriptClassByNativeClassPtr(const zs_string & class_type);
 		const char 	* 					getScriptClassName(short idx);
 		void							classInheritsFrom(const zs_string & the_class,const zs_string & the_base_class);
-		bool							isClassInheritsFrom(short idx_type_class,short idx_base_class);
-		bool							isClassInstanceable(short idx_type_class);
+		bool							isClassInheritsFrom(short idx_type,short idx_base_class);
+		bool							isClassInstanceable(short idx_type);
 		short							getIdxClassFromItsNativeType(const char * s);
 		short		 					getIdxNativeRegisteredClass(const zs_string & str_classPtr);
 		zs_vector	* 					getScriptClasses();
@@ -67,7 +67,7 @@ namespace zetscript{
 		 * Class name given this function creates the object and initializes all variables.
 		 */
 		ScriptObject 			* 			instanceScriptObjectByClassName(const zs_string & class_name);
-		ScriptObject 			* 			instanceScriptObjectByClassIdx(short  idx_type_class, void * value_object = NULL);
+		ScriptObject 			* 			instanceScriptObjectByClassIdx(short  idx_type, void * value_object = NULL);
 
 		void 							registerNativeBaseSymbols(bool _register);
 

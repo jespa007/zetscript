@@ -23,7 +23,7 @@ namespace zetscript{
 	}
 
 	void ScriptObjectMemberFunction::setup(){
-		idx_script_class=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
+		idx_type=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
 		this->so_function=NULL;
 		this->so_object=NULL;
 	}

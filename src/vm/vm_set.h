@@ -70,7 +70,7 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 	if(so_aux->isNativeObject()){ /* because object is native, we can have more than one _setter */ \
 		if((ptr_function_found=vm_find_function( \
 				vm \
-				,data->script_class_factory->getScriptClass(so_aux->idx_script_class)\
+				,data->script_class_factory->getScriptClass(so_aux->idx_type)\
 				,calling_function\
 				,instruction\
 				,false\

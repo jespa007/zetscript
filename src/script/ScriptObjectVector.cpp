@@ -41,7 +41,7 @@ namespace zetscript{
 
 
 	ScriptObjectVector::ScriptObjectVector(){
-		this->idx_script_class=IDX_TYPE_SCRIPT_OBJECT_VECTOR;
+		this->idx_type=IDX_TYPE_SCRIPT_OBJECT_VECTOR;
 	}
 
 	zs_vector * ScriptObjectVector::getStkUserListElements(){ // return list of stack elements

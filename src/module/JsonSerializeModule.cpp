@@ -68,7 +68,7 @@ namespace zetscript{
 
 							StackMemberProperty *smp=(StackMemberProperty *)stk_se->value;
 							ScriptFunction *ptr_function=smp->member_property->metamethod_members.getter;
-							if(ptr_function!=NULL && obj->idx_script_class>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
+							if(ptr_function!=NULL && obj->idx_type>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
 
 								getter_found=true;
 
@@ -147,7 +147,7 @@ namespace zetscript{
 			case STK_PROPERTY_SCRIPT_OBJECT: // vector or object
 
 				obj=((ScriptObject *)stk->value);
-				switch(obj->idx_script_class){
+				switch(obj->idx_type){
 				case IDX_TYPE_SCRIPT_OBJECT_STRING:
 					str_result.append(zs_string("\"") + ((ScriptObjectString *)obj)->toString() + "\"");
 					break;
@@ -156,7 +156,7 @@ namespace zetscript{
 					break;
 				default:
 					if(
-						obj->idx_script_class>=IDX_TYPE_SCRIPT_OBJECT_OBJECT
+						obj->idx_type>=IDX_TYPE_SCRIPT_OBJECT_OBJECT
 					){
 						if(this_object != obj){ // avoid recursivity
 							serialize_object(zs,this_object,str_result,(ScriptObjectObject *)obj,ident,is_formatted);
@@ -176,7 +176,7 @@ namespace zetscript{
 
 			if(
 					(stk->properties & STK_PROPERTY_SCRIPT_OBJECT)
-				&& (((ScriptObject *)(stk->value))->idx_script_class>=IDX_TYPE_SCRIPT_OBJECT_OBJECT)
+				&& (((ScriptObject *)(stk->value))->idx_type>=IDX_TYPE_SCRIPT_OBJECT_OBJECT)
 			){
 				serialize_object(zs,(ScriptObject *)stk->value,serialized_stk,(ScriptObjectObject *)(stk->value),0,is_formatted);
 			}else{

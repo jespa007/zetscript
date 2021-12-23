@@ -23,7 +23,7 @@ namespace zetscript{
 			, const char * _file
 			, short _line
 			//--- Function data
-			, int _idx_type_class
+			, int _idx_type
 			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
 			,size_t _params_len
@@ -42,12 +42,12 @@ namespace zetscript{
 			ScriptFunction *sf_repeaded=NULL;
 			if(p_irv!=NULL && (p_irv->properties & SYMBOL_PROPERTY_FUNCTION)){
 				sf_repeaded=(ScriptFunction *)p_irv->ref_ptr;
-				if((sf_repeaded->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && sf_repeaded->idx_type_class != _idx_type_class){
+				if((sf_repeaded->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) && sf_repeaded->idx_type != _idx_type){
 					_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS;
 				}
 			}
 
-			if(_function_name == zs->getScriptClassFactory()->getScriptClassName(_idx_type_class)){
+			if(_function_name == zs->getScriptClassFactory()->getScriptClassName(_idx_type)){
 				_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 			}
 		}
@@ -70,7 +70,7 @@ namespace zetscript{
 				zs
 				,_scope
 				,idx_script_function
-				,_idx_type_class
+				,_idx_type
 				, symbol->idx_position
 				,_function_name
 				,_params

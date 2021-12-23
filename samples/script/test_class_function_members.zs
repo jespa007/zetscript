@@ -1,25 +1,10 @@
 // A class example
 class Test{
-	const MAX_NUM=9
 	
-	// built-in member vars with optional initialization
-	var a,b=-1,c=-2
-
-	Test(a,b=-1,c=Test::MAX_NUM){
+	var a
+	Test(a){
 		this.a=a; // init built-in
-		this.b=b; // init built-in
-		this.c=c;  // init built-in
-		this.d=-100; // a user property
-		this["e"]=-200; // another user property usign []
-		Console::outln("Test::constructor this.a:{0} this.b:{1} this.c:{2} this.d:{3} this.e:{4} this.f:{5} MAX_NUM:{6}"
-				,this.a
-				,this.b
-				,this.c
-				,this.d
-				,this.e
-				,this.f
-				,Test::MAX_NUM);
-		
+		Console::outln("Test::Test this.a:{0}",this.a);
 	}
 	function1(a){
 		this.a+=10+a;
@@ -28,22 +13,18 @@ class Test{
 	}
 };
 
-// post-include function member
+// declaration function member out of its class
 function Test::function2(a){
 	this.function1(a+5); // it calls Test::function1(a+5)
 	this.a+=a;
 	Console::outln("Test::function2, this.a:{0}",this.a);
 }
 
-// late bind var and const member
-var Test::f=-1,Test::e
-const Test::MAX_NUM_EXT=10
-
 // A inheritance class example. TestExtended inherites function1 and function2. 
 class TestExtended extends Test{
 	
 	TestExtended(a){
-		Console::outln("TestExtended::constructor this.a:{0}",this.a);
+		Console::outln("TestExtended::TestExtended this.a:{0}",this.a);
 		super(a); // it calls base constructor (by default it doesn't call)
 		this.function3=function(a){ // creates anonymous function
 			this.a+=a; // anonyous functions can access its own 'this' member
@@ -63,11 +44,12 @@ class TestExtended extends Test{
 		super(a+10); // it calls Test::function2(2)
 		this.a+=5; 	
 		Console::outln("TestExtended::function2, this.a:{0}",this.a);
-
 	}
 };
 
 var t=new TestExtended(1);
-var a=t.function3(20); 
-System::assert(a==1,"a!=1");
+System::assert(t.a==1,"t.a!=1");
+var a=t.function3(20);
+Console::outln("a:"+t.a);
+
 

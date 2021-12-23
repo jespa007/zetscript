@@ -260,7 +260,7 @@ namespace zetscript{
 				}
 
 				// recheck empty shared pointers
-				if(current->data.ptr_script_object_shared->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
+				if(current->data.ptr_script_object_shared->idx_type == IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
 					check_empty_shared_pointers=true;
 				}
 
@@ -559,7 +559,7 @@ namespace zetscript{
 					str_candidates.append("\t\t-");
 
 					// class if not mail
-					if(class_obj!=NULL && class_obj->idx_type_class!=IDX_TYPE_CLASS_MAIN){
+					if(class_obj!=NULL && class_obj->idx_type!=IDX_TYPE_CLASS_MAIN){
 						str_candidates.append(class_obj->class_name.c_str());
 						str_candidates.append("::");
 					}
@@ -591,7 +591,7 @@ namespace zetscript{
 			if(n_candidates == 0){
 				VM_ERROR("Cannot find %s '%s%s(%s)'.\n\n",
 						is_constructor ? "constructor":"function",
-								class_obj==NULL?"":class_obj->idx_type_class!=IDX_TYPE_CLASS_MAIN?(class_obj->class_name+"::").c_str():"",
+								class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->class_name+"::").c_str():"",
 								symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 						args_str.c_str()
 				);
@@ -601,7 +601,7 @@ namespace zetscript{
 			else{
 				VM_ERROR("Cannot match %s '%s%s(%s)' .\n\n%s",
 					is_constructor ? "constructor":"function",
-							class_obj==NULL?"":class_obj->idx_type_class!=IDX_TYPE_CLASS_MAIN?(class_obj->class_name+"::").c_str():"",
+							class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->class_name+"::").c_str():"",
 									symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 					args_str.c_str(),
 					str_candidates.c_str());
@@ -715,7 +715,7 @@ namespace zetscript{
 			if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
 				if((ptr_function_found = vm_find_function(
 					vm
-					,data->script_class_factory->getScriptClass(script_object->idx_script_class)
+					,data->script_class_factory->getScriptClass(script_object->idx_type)
 					,calling_function
 					,instruction
 					,false
@@ -955,7 +955,7 @@ lbl_exit_function:
 		if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so_aux=(ScriptObject *)stk_result_op2->value;
 
-			switch(so_aux->idx_script_class){
+			switch(so_aux->idx_type){
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
 				VM_PUSH_STK_BOOLEAN(

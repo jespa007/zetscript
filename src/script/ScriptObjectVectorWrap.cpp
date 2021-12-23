@@ -29,7 +29,7 @@ namespace zetscript{
 		// update n_refs +1
 		if(_stk->properties&STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so_param=(ScriptObject *)_stk->value;
-			if(so_param->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
+			if(so_param->idx_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
 				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(zs);
 				if(!vm_create_shared_pointer(vm,sc)){
@@ -94,11 +94,11 @@ namespace zetscript{
 			case STK_PROPERTY_SCRIPT_OBJECT: // compare objects?
 
 				if(
-					   ((ScriptObject *)stk_to_compare->value)->idx_script_class ==
-					   ((ScriptObject *)stk_element->value)->idx_script_class
+					   ((ScriptObject *)stk_to_compare->value)->idx_type ==
+					   ((ScriptObject *)stk_element->value)->idx_type
 					   ){
 					// particular case string
-					if(((ScriptObject *)stk_to_compare->value)->idx_script_class == IDX_TYPE_SCRIPT_OBJECT_STRING){
+					if(((ScriptObject *)stk_to_compare->value)->idx_type == IDX_TYPE_SCRIPT_OBJECT_STRING){
 						found=stk_to_str(zs,stk_to_compare)==stk_to_str(zs,stk_element);
 					}
 				}

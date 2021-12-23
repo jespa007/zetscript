@@ -141,7 +141,7 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_BOOLEAN(stk)){
 			result.value=IDX_TYPE_BOOL_C;
 		}else if(STK_VALUE_IS_SCRIPT_OBJECT(stk)){
-			result.value=((ScriptObjectObject *)stk->value)->getScriptClass()->idx_type_class;
+			result.value=((ScriptObjectObject *)stk->value)->getScriptClass()->idx_type;
 		}
 
 		return result;

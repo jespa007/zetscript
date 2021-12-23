@@ -29,7 +29,7 @@ namespace zetscript{
 				, const char * file
 				, short line
 				//--- Function data
-			    , int idx_type_class
+			    , int idx_type
 				, const zs_string & function_name
 				, ScriptFunctionParam **_params
 				,size_t _params_len

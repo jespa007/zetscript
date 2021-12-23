@@ -40,7 +40,7 @@ namespace zetscript{
 
 		//Symbol 	  			symbol;	 			// function registered by scope
 		short 				idx_script_function;	// idx_script_function from factory
-		int					idx_type_class; 				// which class belongs to...
+		int					idx_type; 				// which class belongs to...
 		int					idx_position;			// idx position in array
 		int 				idx_return_type; 		// idx return type
 		zs_int 				ref_native_function_ptr;
@@ -60,7 +60,7 @@ namespace zetscript{
 				ZetScript *_zs
 				, Scope *_scope_function
 				,int _idx_script_function
-				,int _idx_type_class
+				,int _idx_type
 				,int _idx_position
 				,const zs_string & function_name
 				, ScriptFunctionParam **_params

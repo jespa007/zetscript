@@ -9,9 +9,9 @@
 
 namespace zetscript{
 
-	ScriptObjectClass * ScriptObjectClass::newScriptObjectClass(ZetScript *_zs, short _idx_script_class,void *_c_object){
+	ScriptObjectClass * ScriptObjectClass::newScriptObjectClass(ZetScript *_zs, short _idx_type,void *_c_object){
 		ScriptObjectClass *sc=new ScriptObjectClass();
-		sc->init(_zs,_idx_script_class,_c_object);
+		sc->init(_zs,_idx_type,_c_object);
 		return sc;
 	}
 
@@ -23,7 +23,7 @@ namespace zetscript{
 	//	script_class = NULL;
 		c_object = NULL;
 		created_object = NULL;
-		idx_script_class = IDX_TYPE_SCRIPT_OBJECT_CLASS;
+		idx_type = IDX_TYPE_SCRIPT_OBJECT_CLASS;
 		delete_c_object_on_destroy = false; // --> user is responsible to delete C objects!
 		script_class_native=NULL;
 	}
@@ -43,14 +43,14 @@ namespace zetscript{
 	}
 
 
-	void ScriptObjectClass::init(ZetScript *_zs, short _idx_script_class,void *_c_object){
+	void ScriptObjectClass::init(ZetScript *_zs, short _idx_type,void *_c_object){
 		zs = _zs;
 		StackElement *se;
 		zs_string error;
 
 		vm=zs->getVirtualMachine();
 
-		idx_script_class=_idx_script_class;
+		idx_type=_idx_type;
 		ScriptClass *script_class=getScriptClass();
 		zs_vector *member_vars=script_class->class_scope->symbol_variables;
 		//------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ namespace zetscript{
 		// LINK C OBJECT
 
 		//this->script_class = irv;
-		//idx_type_class = irv->idx_type_class;
+		//idx_type = irv->idx_type;
 		c_object = _c_object;
 		script_class_native=NULL;
 

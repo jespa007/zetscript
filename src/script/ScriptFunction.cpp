@@ -20,7 +20,7 @@ namespace zetscript{
 			ZetScript * _zs
 			,Scope *_scope_function
 			,int _idx_script_function
-			,int _idx_type_class
+			,int _idx_type
 			,int _idx_position
 			,const zs_string & _function_name
 			, ScriptFunctionParam **_params
@@ -30,7 +30,7 @@ namespace zetscript{
 			,uint16_t _properties
 		) {
 		// function data...
-		idx_type_class=_idx_type_class;
+		idx_type=_idx_type;
 		function_name=_function_name;
 		idx_script_function=_idx_script_function;
 		idx_position = _idx_position;
@@ -585,7 +585,7 @@ namespace zetscript{
 				,_file
 				,_line
 				//---- Function data
-				,idx_type_class 				// idx class is the same which this function belongs to...
+				,idx_type 				// idx class is the same which this function belongs to...
 				,_function_name
 				,_params
 				,_params_len
@@ -701,7 +701,7 @@ namespace zetscript{
 						symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 					}
 				}else if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // try get global symbol
-					ScriptClass *this_class=zs->getScriptClassFactory()->getScriptClass(this->idx_type_class);
+					ScriptClass *this_class=zs->getScriptClassFactory()->getScriptClass(this->idx_type);
 					symbol_found=this_class->getSymbolMemberFunction(ptr_str_symbol_to_find);
 				}else{
 					symbol_found = MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);

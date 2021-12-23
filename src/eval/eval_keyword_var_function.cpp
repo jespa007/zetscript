@@ -182,7 +182,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check class scope...
-			if(scope_var->script_class->idx_type_class != IDX_TYPE_CLASS_MAIN
+			if(scope_var->script_class->idx_type != IDX_TYPE_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // class members are defined as functions
@@ -414,7 +414,7 @@ error_eval_keyword_var:
 		//Keyword key_w;
 		//
 		// check for keyword ...
-		if(scope_info->script_class->idx_type_class != IDX_TYPE_CLASS_MAIN
+		if(scope_info->script_class->idx_type != IDX_TYPE_CLASS_MAIN
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )

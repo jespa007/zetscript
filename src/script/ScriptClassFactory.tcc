@@ -101,7 +101,7 @@ namespace zetscript{
 		ScriptClass *sc=NULL;
 		const char * str_class_name_ptr = typeid( T *).name();
 		//int size=script_classes->count;
-		int idx_type_class=IDX_ZS_UNDEFINED;
+		int idx_type=IDX_ZS_UNDEFINED;
 		Scope * scope = NULL;
 
 
@@ -111,11 +111,11 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Native class '%s' is already registered",zs_rtti::demangle(typeid( T).name()));
 		}
 
-		idx_type_class=script_classes->count;
+		idx_type=script_classes->count;
 		scope = NEW_SCOPE(this,IDX_ZS_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,class_name);
 
-		sc = new ScriptClass(zs,idx_type_class,class_name,scope,str_class_name_ptr,SCRIPT_CLASS_PROPERTY_C_OBJECT_REF);
+		sc = new ScriptClass(zs,idx_type,class_name,scope,str_class_name_ptr,SCRIPT_CLASS_PROPERTY_C_OBJECT_REF);
 		scope->setScriptClass(sc);
 
 		// in C there's no script constructor ...
@@ -125,7 +125,7 @@ namespace zetscript{
 		sc->c_destructor = NULL;
 		script_classes->push_back((zs_int)sc);
 
-		sc->idx_type_class=script_classes->count-1;
+		sc->idx_type=script_classes->count-1;
 		ZS_LOG_DEBUG("* C++ class '%s' registered as (%s).",class_name.c_str(),zs_rtti::demangle(str_class_name_ptr).c_str());
 
 		return sc;

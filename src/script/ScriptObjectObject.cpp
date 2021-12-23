@@ -43,7 +43,7 @@ namespace zetscript{
 	//----------------------------------------------
 
 	ScriptObjectObject::ScriptObjectObject(){
-		idx_script_class=IDX_TYPE_SCRIPT_OBJECT_OBJECT;
+		idx_type=IDX_TYPE_SCRIPT_OBJECT_OBJECT;
 		map_user_property_keys=new zs_map();
 	}
 

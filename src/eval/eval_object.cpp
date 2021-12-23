@@ -32,7 +32,7 @@ namespace zetscript{
 
 		if(scope_info->scope_parent!=NULL){// is within function ?
 
-			if(scope_info->script_class->idx_type_class != IDX_TYPE_CLASS_MAIN){ // function object as function member because it will use this inside
+			if(scope_info->script_class->idx_type != IDX_TYPE_CLASS_MAIN){ // function object as function member because it will use this inside
 				byte_code=ByteCode::BYTE_CODE_LOAD_THIS_FUNCTION;
 			}
 		}
@@ -358,12 +358,12 @@ namespace zetscript{
 
 					//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
 				}else{ // known type
-					if(!eval_data->script_class_factory->isClassInstanceable(sc->idx_type_class)){
+					if(!eval_data->script_class_factory->isClassInstanceable(sc->idx_type)){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getClassName());
 					}
 
 					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE)));
-					eval_instruction->vm_instruction.value_op1=sc->idx_type_class;
+					eval_instruction->vm_instruction.value_op1=sc->idx_type;
 				}
 
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
