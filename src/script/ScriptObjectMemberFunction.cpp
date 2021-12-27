@@ -11,10 +11,6 @@ namespace zetscript{
 		sofm->init(zs);
 		sofm->so_object=_so_object;
 		sofm->so_function=_so_function;
-		// shares current object because script function member needs to have the object alive...
-		if(!vm_share_pointer(zs->getVirtualMachine(),_so_object)){
-			return NULL;
-		}
 		return sofm;
 	}
 
@@ -29,7 +25,7 @@ namespace zetscript{
 	}
 
 	ScriptObjectMemberFunction::~ScriptObjectMemberFunction(){
-		vm_unref_shared_script_object(zs->getVirtualMachine(),this->so_object,IDX_CALL_STACK_MAIN);
+
 	}
 
 }

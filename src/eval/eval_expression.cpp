@@ -424,7 +424,6 @@ eval_error_sub_expression:
 		}
 
 		// special case for catching vars for-in...
-		//if	((properties & (EVAL_EXPRESSION_FOR_IN_VARIABLES))==0){
 		if(dst_instructions->count>0){
 			ei_last=(EvalInstruction *)dst_instructions->items[dst_instructions->count-1];
 			if(

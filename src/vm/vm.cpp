@@ -225,6 +225,11 @@ namespace zetscript{
 		return true;
 	}
 
+	int	vm_get_idx_call(VirtualMachine *vm){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		return data->vm_idx_call;
+	}
+
 	StackElement *vm_get_current_stack_element(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		return data->stk_vm_current;

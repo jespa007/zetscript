@@ -50,13 +50,14 @@ namespace zetscript{
 	inline bool 	vm_unref_shared_script_object_and_remove_if_zero(VirtualMachine *vm,ScriptObject **so);
 	void 			vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object);
 	bool 			vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk);
-
+	int				vm_get_idx_call(VirtualMachine *vm);
 
 	void 			vm_set_error(VirtualMachine *vm,const zs_string & str);
 	void 			vm_set_error_file_line(VirtualMachine *vm, const char *file, int line, const char *in_txt,...);
-	zs_string 	vm_get_error(VirtualMachine *vm);
+	zs_string 		vm_get_error(VirtualMachine *vm);
 	
 	bool 			vm_it_has_error(VirtualMachine *vm);
+
 
 	//StackElement * 	vm_get_top_stack_element_from_stack(VirtualMachine *vm);
 	StackElement *	vm_get_stack_elements(VirtualMachine *vm);

@@ -605,42 +605,43 @@ find_element_object:
 							,stk_to_typeof_str(data->zs,stk_src).c_str()
 						);
 					}
-					if(stk_src_ref_value_copy_aux!=NULL)	stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 
+					if(stk_src_ref_value_copy_aux!=NULL){
+						stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
+					}
 
 					// check old dst value to unref if it was an object ...
-					if((old_stk_dst.properties & STK_PROPERTY_SCRIPT_OBJECT)
+					if(
+						(old_stk_dst.properties & STK_PROPERTY_SCRIPT_OBJECT)
 									&&
 						((old_stk_dst.properties & (STK_PROPERTY_IS_VAR_C))==(STK_PROPERTY_IS_VAR_C)==0) // is not C class
 									&&
-							(old_stk_dst.value!=0) // it had a pointer (no constant)...
+						(old_stk_dst.value!=0) // it had a pointer (no constant)...
 									&&
-								(! // if not...
-									(old_stk_dst.value == stk_dst->value)  // ... same ref ...
-								||  (IS_STK_THIS(&old_stk_dst)) // ... or this
-								   // ... do share/unshare
-								)){
+						(! // if not...
+								(old_stk_dst.value == stk_dst->value)  // ... same ref ...
+									||
+								(IS_STK_THIS(&old_stk_dst)) // ... or this
+								// ... do share/unshare
+						)){
 
-									// unref pointer because new pointer has been attached...
-									StackElement *chk_ref=(StackElement *)stk_result_op2->value;
-									ScriptObjectObject  *old_so=(ScriptObjectObject  *)old_stk_dst.value;
-									int idx_call=data->vm_idx_call;
-									if(chk_ref->properties & STK_PROPERTY_PTR_STK){
-										chk_ref=(StackElement *)chk_ref->value;
-									}
-									if(STK_IS_SCRIPT_OBJECT_VAR_REF(chk_ref)){
-										ScriptObjectVarRef *so_var_ref=(ScriptObjectVarRef *)chk_ref->value;
-										data->vm_idx_call=so_var_ref->getIdxCall(); // put the vm_idx_call where it was created
-									}
+							// unref pointer because new pointer has been attached...
+							StackElement *chk_ref=(StackElement *)stk_result_op2->value;
+							ScriptObjectObject  *old_so=(ScriptObjectObject  *)old_stk_dst.value;
+							int idx_call=data->vm_idx_call;
+							if(chk_ref->properties & STK_PROPERTY_PTR_STK){
+								chk_ref=(StackElement *)chk_ref->value;
+							}
+							if(STK_IS_SCRIPT_OBJECT_VAR_REF(chk_ref)){
+								ScriptObjectVarRef *so_var_ref=(ScriptObjectVarRef *)chk_ref->value;
+								data->vm_idx_call=so_var_ref->getIdxCall(); // put the vm_idx_call where it was created
+							}
 
-									if(!vm_unref_shared_script_object(vm,old_so,data->vm_idx_call)){
-										goto lbl_exit_function;
-									}
-								}
-
-
-
-				}
+							if(!vm_unref_shared_script_object(vm,old_so,data->vm_idx_call)){
+								goto lbl_exit_function;
+							}
+						}
+					}
 
 
 				if(instruction->byte_code ==BYTE_CODE_STORE_CONST){
@@ -654,9 +655,9 @@ find_element_object:
 				}
 				else if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
 					data->stk_vm_current=stk_start;
+				}else{
+					*data->stk_vm_current++=*stk_dst;
 				}
-
-				*data->stk_vm_current++=*stk_dst;
 				continue;
 			 case BYTE_CODE_IT_INIT:
 				VM_POP_STK_TWO;
@@ -894,11 +895,14 @@ find_element_object:
 				sf_call_script_function=NULL;
 				sf_call_stk_function_ref = (data->stk_vm_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
-				sf_call_stk_start_function_object=2; // object + function
+
+				// if we invoke constructor we need to keep object to pass after, else remove object+function
+				sf_call_stk_start_function_object=instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL?1:2; // object + function
 
 load_function:
 
 				sf_call_is_member_function=false;
+				sf_call_is_constructor=instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL;
 
 				sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
@@ -1160,9 +1164,6 @@ execute_function:
 					continue;
 				}
 
-				// reset vm current before function pointer is
-				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//?0:1);
-
 				// return all elements in reverse order in order to get right assignment ...
 				// reverse returned items
 				for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
@@ -1423,6 +1424,10 @@ execute_function:
 		if((data->zero_shares+data->vm_idx_call)->first!=NULL){
 			vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 		}
+
+		// reset stack and set last stk return null;
+		*data->stk_vm_current=k_stk_null;
+		data->stk_vm_current=_stk_local_var;
 
 		data->vm_idx_call--;
 		data->vm_current_scope_function--;
