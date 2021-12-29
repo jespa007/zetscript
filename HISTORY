@@ -3,8 +3,8 @@
 //----------------------------------------------------------
 TODOS
 
-#79 Implement coroutines 
-#165 try eval expressions as constant 
+> #79 Implement coroutines 
+> #165 try eval expressions as constant 
 > #176 Add shared version
 > #221 Implement backup/restore state
 > #225 implement File class
@@ -16,7 +16,7 @@ TODOS
 
 //----------------------------------------------------------
 Version: 2.0.0
-Date: XX-08-2021 (Expected to finish on end of november)
+Date: XX-01-2022 (Expected to finish on end of january)
 
 Main improvements: 
 
@@ -247,16 +247,16 @@ Solved issues
 #304 Cache scope data
 #305 Simplify VMScope info optimitzation
 #306 Get rid PUSH/POP begining function optimitzation
-> #307 Solve all symbols after each eval
+#307 Solve all symbols after each eval
 #308 Save memory: get rid of std::string and std::map 
 #309 Create new from type info stk variable 
 > #310 Optimize code for instanceof and typeof
-> #311 Instruction: Add property reset stack if last instruction of expression is CALL or STORE
-> #312 Direct call if metamethod is action or function without any params optimitzation 
+#311 Instruction: Add property reset stack if last instruction of expression is CALL or STORE
+#312 Direct call if metamethod is action or function without any params optimitzation 
 #313 Change names Property -> Field / Attribute -> Property 
-> #314 Save n paramater/return count for each call in instruction->value_op1
-> #315 Test stack element limits
-> #316 default functions generates extra byte codes 
+#314 Save n paramater/return count for each call in instruction->value_op1
+#315 Test stack element limits
+#316 default functions generates extra byte codes 
 > #317 Change concept of class by type 
 > #302 Improve zs_map
 

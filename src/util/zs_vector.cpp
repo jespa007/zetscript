@@ -4,8 +4,8 @@
  */
 #include "../zetscript.h"
 
-#define ZS_MAX_ELEMENTS_VECTOR	16000
-
+#define ZS_VECTOR_MAX_ELEMENTS	16000
+#define ZS_VECTOR_N_SLOT_ELEMENTS 10
 namespace zetscript{
 
 	size_t zs_vector::npos=-1;
@@ -18,7 +18,7 @@ namespace zetscript{
 		// condition to increase this->items:
 		// last slot exhausted
 		if (this->_size ==this->count) {
-			if((this->_size+ZS_VECTOR_N_SLOT_ELEMENTS) >= ZS_MAX_ELEMENTS_VECTOR){
+			if((this->_size+ZS_VECTOR_N_SLOT_ELEMENTS) >= ZS_VECTOR_MAX_ELEMENTS){
 				THROW_RUNTIME_ERROR("Max elements vector");
 				return false;
 			}
@@ -186,28 +186,11 @@ namespace zetscript{
 		this->_size=0;
 	}
 
-	/*void 		zs_vector::free_all_items_and_clear(){
-		if(this->items!=NULL){
-			for(unsigned i=0; i < this->count; i++){
-				free((void *)this->items[i]);
-			}
-			this->clear();
-		}
-	}*/
-
 	zs_vector::~zs_vector(){
 		if(this->items!=NULL){
 			free(this->items);
 		}
 	}
-
-	/*void deleteAndFreeAllItems(zs_vector *v){
-		for(unsigned i=0; i < this->count; i++){
-			free(this->items[i]);
-		}
-		deleteList(v);
-	}
-*/
 
 }
 

@@ -2,142 +2,177 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include "zetscript.h"
+#include "../zetscript.h"
+
+#define ZS_MAP_KEY_NOT_FOUND 	-1
+#define ZS_MAP_MAX_ELEMENTS  	16000
+#define ZS_MAP_N_SLOT_ELEMENTS 	10
 
 namespace zetscript{
 
-	uint8_t zs_map::hash_code(const char * key){
-		size_t key_len=strlen(key);
-		uint8_t p=0;
+	int			zs_map::search(const char * _key){
 
-		for(unsigned i=0; i < key_len; i++){
-			p+=key[i];
+		int idx_min=0;
+		int idx_max=(int)count-1;
+
+		if(idx_max<=0){
+			return ZS_MAP_KEY_NOT_FOUND;
 		}
-		return p;
+
+		// continue searching while [imin,imax] is not empty
+		while (idx_max >= idx_min)
+		{
+			// calculate the midpoint for roughly equal partition
+			int idx_mid = (idx_min + idx_max ) >> 1;
+			if(strcmp(items[idx_mid].key,_key)==0){
+				// key found at index idx_mid
+				return idx_mid;
+			// determine which subarray to search
+			}else if (strcmp(items[idx_mid].key,_key)<0){ // item.key < key
+				// change min index to search upper subarray
+				idx_min = idx_mid + 1;
+			}else{ // item.key > key
+				// change max index to search lower subarray
+				idx_max = idx_mid - 1;
+			}
+		}
+		// key was not found
+		return ZS_MAP_KEY_NOT_FOUND;
+	}
+
+	void	zs_map::push_back_slot(){
+		if (this->_size == 0) {
+			this->_size = ZS_MAP_N_SLOT_ELEMENTS;
+			this->items = (zs_map_item *)ZS_MALLOC(sizeof(zs_map_item) * this->_size);
+		}
+		// condition to increase this->items:
+		// last slot exhausted
+		if (this->_size ==this->count) {
+			if((this->_size+ZS_MAP_N_SLOT_ELEMENTS) >= ZS_MAP_MAX_ELEMENTS){
+				THROW_RUNTIME_ERROR("Max elements vector");
+				return;
+			}
+			this->_size += ZS_MAP_N_SLOT_ELEMENTS;
+			this->items =(zs_map_item *) realloc(this->items, sizeof(zs_map_item) * this->_size);
+		}
+
+		this->count++;
+
 	}
 
 	zs_map::zs_map(){
-		this->count=HASH_MAP_SIZE;
-		this->list = (zs_map_node **)ZS_MALLOC(sizeof(zs_map_node*)*this->count);
-
+		items=NULL;
+		count=0; //number of items
+		_size=0;
 	}
 
-	zs_map_iterator zs_map::begin(){
-		return zs_map_iterator(this);
+	bool	zs_map::exist(const char * _key){
+		return search(_key)!=ZS_MAP_KEY_NOT_FOUND;
 	}
+	void	zs_map::set(const char * _key,zs_int _value){
 
-	zs_map_node * zs_map::lookup_node(const char * key){
-		uint8_t pos = hash_code(key);
-		zs_map_node *list = this->list[pos];
-		zs_map_node *temp = list;
+		int idx=search(_key);
+		zs_map_item *item=NULL;
 
-		while(temp){
-			if(strcmp(temp->key,key)==0){
-				return temp;
-			}
-			temp = temp->next;
-		}
-		return NULL;
-	}
+		if(idx != ZS_MAP_KEY_NOT_FOUND){
+			item=items+idx;
+		}else{
 
-	void zs_map::set(const char * key,zs_int val){
+			push_back_slot();
 
-		zs_map_node *node = NULL;
+			int size=count;
+			int idx_min = 0, idx_max = count - 1;
 
-		if((node=lookup_node(key))==NULL){
-			uint8_t pos = hash_code(key);
-			zs_map_node *first_node = this->list[pos];
-			node = (zs_map_node *)ZS_MALLOC(sizeof(zs_map_node));
+			if(size > 0){
 
-			// insert node at the end (not ordered)
-			size_t key_len=strlen(key)+1;
-			node->key = (char *)ZS_MALLOC(key_len);
-
-			strcpy(node->key,key);
-			node->val = val;
-			node->next = first_node;
-			node->previous=NULL;
-
-			if(first_node != NULL){
-				first_node->previous=node;
+				if (strcmp(items[idx_max].key,_key) < 0){
+				  idx_min=size;
+				}
+				else{
+				  while (idx_max > idx_min) {
+					int idx_mid = (idx_min + idx_max) >> 1;
+					if (strcmp(items[idx_mid].key,_key) > 0) {
+						idx_max = idx_mid;
+					}
+					else{
+						idx_min = idx_mid + 1;
+					}
+				  }
+				}
 			}
 
-			this->list[pos] = node; //Replace first node by _this one...
-		}
-		node->val = val;
-	}
+			// move all data..
+			if(idx_min >= 0){
 
-	zs_int 	zs_map::get(const char * key, bool * exists){
-		zs_map_node * node=lookup_node(key);
-
-		if(exists!=NULL){
-			*exists=false;
-		}
-
-		if(node != NULL){
-			if(exists){
-				*exists=true;
+				if(idx_min < size){
+					// 1. move all elements...
+					for(int i=this->count-1;i>idx_min;i--){
+						this->items[i]=this->items[i-1];
+					}
+				}
 			}
-			return node->val;
+
+			item=items+idx_min;
 		}
 
-		return 0;
+		char *key=(char *)ZS_MALLOC(strlen(_key)+1);
+		strcpy(key,_key);
+
+		item->key = key;
+		item->value = _value;
 	}
 
-	void 		zs_map::erase(const char * key){
-		uint8_t pos = hash_code(key);
-		zs_map_node * node=lookup_node(key);
+	zs_int	zs_map::get(const char * _key, bool * _exist){
+		int idx=search(_key);
+		zs_int value=0;
 
-		if(node == NULL){
-			THROW_RUNTIME_ERROR("Element %s not exist",key);
-			return;
+		if(idx!=ZS_MAP_KEY_NOT_FOUND){
+			value=items[idx].value;
 		}
 
-		// not first...
-		if(node->previous != NULL){
-			node->previous->next=node->next; // link previous
-		}else{ // first, set first element as next
-			this->list[pos]=node->next;
+		if(_exist!=NULL){
+			*_exist=idx!=ZS_MAP_KEY_NOT_FOUND;
 		}
 
-		// not last
-		if(node->next!=NULL){
-			node->next->previous=node->previous; // link previous-next
-		}
+		return value;
 
-		free(node->key);
-		free(node);
 
 	}
 
-	bool		zs_map::exist(const char * key){
-		return lookup_node(key) != NULL;
+	void	zs_map::erase(const char * _key){
+
+		int idx=search(_key);
+
+		if(idx==ZS_MAP_KEY_NOT_FOUND){
+			THROW_RUNTIME_ERROR("key '%s' not found");
+		}
+
+		// free allocated mem
+		free(this->items[idx].key);
+
+		// reset values to 0
+		this->items[idx].key=NULL;
+		this->items[idx].value=0;
+
+		for (int i = idx; i < (int)((this->count-1)); i++) {
+			this->items[i] = this->items[i+1];
+		}
+
+		this->count--;
 	}
 
-	void zs_map::clear(){
-		for(unsigned i=0;i<this->count;i++){
-			zs_map_node * temp=this->list[i];
-
-			while(temp){
-				zs_map_node * to_deallocate = temp;
-				temp=temp->next;
-
-				/*if(t->on_delete != NULL){
-					t->on_delete(to_deallocate);
-				}*/
-
-				free(to_deallocate->key);
-				free(to_deallocate);
-
-			}
+	void	zs_map::clear(){
+		for(int i=0; i < count; i++){
+			free((items+i)->key);
 		}
-		memset(this->list,0,sizeof(zs_map_node*)*this->count);
+		free(items);
+		items=NULL;
+		count=0;
+		_size=0;
 	}
 
 	zs_map::~zs_map(){
-
 		clear();
-
-		free(this->list);
 	}
+
 }

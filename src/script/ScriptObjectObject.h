@@ -45,21 +45,20 @@ namespace zetscript{
 
 		bool existUserProperty(const zs_string & property_name);
 
-		zs_map_iterator begin();
-		zs_map_iterator begin_builtin();
-
 		virtual size_t	length();
 
 
 		bool eraseUserProperty(const zs_string & symbol_value);
 		void eraseAllUserProperties(/*const ScriptFunction *info_function=NULL*/);
+		zs_map *getMapUserProperties();
+		zs_map *getMapBuiltinProperties();
 
 		virtual zs_string toString();
 		virtual ~ScriptObjectObject();
 
 	protected:
 
-		zs_map				*	map_user_property_keys; // to search faster each property by its name
+		zs_map				*	map_user_properties; // to search faster each property by its name
 
 		StackElement * 			getUserProperty(const zs_string & property_name);
 	};

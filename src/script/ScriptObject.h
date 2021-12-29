@@ -84,7 +84,7 @@ namespace zetscript{
 		ZetScript 				*	zs; // 8
 		VirtualMachine 			*	vm; // 8
 		zs_vector				stk_builtin_elements;
-		zs_map					*map_builtin_property_keys; // to search faster each property by its name
+		zs_map					*map_builtin_properties; // to search faster each property by its name
 
 
 		void init(ZetScript *zs);

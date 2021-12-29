@@ -31,17 +31,17 @@ namespace zetscript{
 
 			str_result.append('{');
 
-			zs_map_iterator map_iterators[2]={
-					obj->begin_builtin()
-					,obj->begin()
+			zs_map *maps[2]={
+					obj->getMapUserProperties()
+					,obj->getMapBuiltinProperties()
 			};
 
 			for(int i=0; i < 2; i++){//zs_map_iterator *it=map_iterators;mi!=map_iterators.end();mi++){
 				int k=0;
-				zs_map_iterator *mi=&map_iterators[i];
-				for(;!mi->end();mi->next()){
+				zs_map *map=maps[i];
+				for(int j=0;j < map->count;j++){
 
-					StackElement *stk_se=(StackElement *)mi->value;
+					StackElement *stk_se=(StackElement *)(map->items+j)->value;
 					// only check if is not function. If is an property an implements get, call
 					if((stk_se->properties & STK_PROPERTY_FUNCTION) == 0){
 						bool created_object=false;
@@ -61,7 +61,7 @@ namespace zetscript{
 							str_result.append(',');
 						}
 
-						str_result.append("\"" + zs_string(mi->key)+ "\":");
+						str_result.append("\"" + zs_string((map->items+j)->key)+ "\":");
 
 						// if property we have to call script or native...
 						if(stk_se->properties & STK_PROPERTY_MEMBER_PROPERTY){
@@ -95,7 +95,7 @@ namespace zetscript{
 						}
 
 						if(getter_found == false){
-							ptr_stk_param=(StackElement *)mi->value;
+							ptr_stk_param=(StackElement *)(map->items+j)->value;
 						}
 
 						serialize_stk(zs,this_object, str_result, ptr_stk_param, ident+1,is_formatted);

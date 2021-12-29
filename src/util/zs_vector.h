@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define ZS_VECTOR_N_SLOT_ELEMENTS 10
+
 
 namespace zetscript{
 

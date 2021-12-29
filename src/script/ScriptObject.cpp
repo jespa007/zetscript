@@ -41,7 +41,7 @@ namespace zetscript{
 		idx_type=IDX_ZS_UNDEFINED;
 		shared_pointer=NULL;
 		zs=NULL;
-		map_builtin_property_keys=new zs_map();
+		map_builtin_properties=new zs_map();
 		memset(&stk_this,0,sizeof(stk_this));
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -81,7 +81,7 @@ namespace zetscript{
 		StackElement *new_stk=newBuiltinSlot();
 		*new_stk=stk;
 
-		map_builtin_property_keys->set(key_value.c_str(),(zs_int)new_stk);
+		map_builtin_properties->set(key_value.c_str(),(zs_int)new_stk);
 
   	    return new_stk;
 	}
@@ -133,7 +133,7 @@ namespace zetscript{
 
 	StackElement * 			ScriptObject::getBuiltinProperty(const zs_string & property_name){
 		bool exists=false;
-		StackElement  *stk_item=(StackElement  *)this->map_builtin_property_keys->get(property_name.c_str(),&exists);
+		StackElement  *stk_item=(StackElement  *)this->map_builtin_properties->get(property_name.c_str(),&exists);
 
 		if(exists){
 			return stk_item;
@@ -197,6 +197,6 @@ namespace zetscript{
 			free(stk);
 		}
 		stk_builtin_elements.clear();
-		delete map_builtin_property_keys;
+		delete map_builtin_properties;
 	}
 }

@@ -15,4 +15,14 @@ namespace zetscript{
 		memset(p,0,_size);
 		return p;
 	}
+
+	void zs_free(void *_ptr,const char *_file, int _line){
+
+#ifdef __MEMMANAGER__
+		MEMMGR_free(_ptr,_file,_line);
+#else
+		free(_ptr);
+#endif
+
+	}
 }
