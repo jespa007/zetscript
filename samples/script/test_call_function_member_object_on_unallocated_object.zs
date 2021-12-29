@@ -1,4 +1,4 @@
-var a
+var a=null
 
 class A{
 	A{
@@ -6,8 +6,6 @@ class A{
 	}
 	
 }
-
-
 
 function createA(){
 	new A()
