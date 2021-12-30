@@ -64,6 +64,7 @@ namespace zetscript{
 		items=NULL;
 		count=0; //number of items
 		_size=0;
+		list=NULL;
 	}
 
 	bool	zs_map::exist(const char * _key){
@@ -77,6 +78,31 @@ namespace zetscript{
 		if(idx != ZS_MAP_KEY_NOT_FOUND){
 			item=items+idx;
 		}else{
+
+			// 1st CREATE NODE AND ADD AT THE END OF LIST
+			zs_map_node *node = NULL;
+
+			uint8_t pos = hash_code(key);
+			zs_map_node *first_node = this->list[pos];
+			node = (zs_map_node *)ZS_MALLOC(sizeof(zs_map_node));
+
+			// insert node at the end (not ordered)
+			size_t key_len=strlen(key)+1;
+			node->key = (char *)ZS_MALLOC(key_len);
+
+			strcpy(node->key,key);
+			node->val = val;
+			node->next = first_node;
+			node->previous=NULL;
+
+			if(first_node != NULL){
+				first_node->previous=node;
+			}
+
+			this->list[pos] = node; //Replace first node by _this one...
+
+			// 2nd CREATE IDX AND ADD TO LOOKUP TABLE
+			node->val = val;
 
 			push_back_slot();
 
@@ -122,6 +148,10 @@ namespace zetscript{
 		item->value = _value;
 	}
 
+	zs_map_iterator zs_map::begin(){
+		return zs_map_iterator(this);
+	}
+
 	zs_int	zs_map::get(const char * _key, bool * _exist){
 		int idx=search(_key);
 		zs_int value=0;
@@ -147,6 +177,24 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("key '%s' not found");
 		}
 
+		// erase node
+
+		// not first...
+		if(node->previous != NULL){
+			node->previous->next=node->next; // link previous
+		}else{ // first, set first element as next
+			this->list[pos]=node->next;
+		}
+
+		// not last
+		if(node->next!=NULL){
+			node->next->previous=node->previous; // link previous-next
+		}
+
+		free(node->key);
+		free(node);
+
+		// erase item from lookup list
 		// free allocated mem
 		free(this->items[idx].key);
 
@@ -158,10 +206,32 @@ namespace zetscript{
 			this->items[i] = this->items[i+1];
 		}
 
+
 		this->count--;
 	}
 
 	void	zs_map::clear(){
+
+		// clear nodes
+		for(unsigned i=0;i<this->count;i++){
+					zs_map_node * temp=this->list[i];
+
+					while(temp){
+						zs_map_node * to_deallocate = temp;
+						temp=temp->next;
+
+						/*if(t->on_delete != NULL){
+							t->on_delete(to_deallocate);
+						}*/
+
+						free(to_deallocate->key);
+						free(to_deallocate);
+
+					}
+				}
+				memset(this->list,0,sizeof(zs_map_node*)*this->count);
+
+		// clear ordered lookup list
 		for(int i=0; i < count; i++){
 			free((items+i)->key);
 		}

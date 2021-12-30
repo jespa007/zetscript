@@ -67,11 +67,11 @@ namespace zetscript{
 			function_params_len=oo_param->length();
 			function_params=(ScriptFunctionParam *)ZS_MALLOC(sizeof(ScriptFunctionParam)*function_params_len);
 			int i=0;
-			zs_map *map=oo_param->getMapUserProperties();
 
-			for(int i=0; i < map->count; i++){
-				StackElement *stk=((StackElement *)(map->items+i)->value);
-				function_params[i]=ScriptFunctionParam((map->items+i)->key);
+
+			for(auto it=oo_param->begin(); !it.end(); it.next()){
+				StackElement *stk=((StackElement *)it.value);
+				function_params[i]=ScriptFunctionParam(it.key);
 				stk_params.push_back((zs_int)stk);
 
 				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){

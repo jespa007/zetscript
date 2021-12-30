@@ -29,28 +29,26 @@ namespace zetscript{
 		// setup object
 		this->init(_oo->getZetScript());
 		oo=_oo;
-		map=_oo->getMapUserProperties();
-		idx=0;
-
+		it=oo->begin();
 	}
 
 
 	bool	 ScriptObjectIteratorObject::end(){
-		return idx>=map->count;
+		return it.end();
 	}
 
 	void	 ScriptObjectIteratorObject::get(){
 		if(oo==NULL) return;
-		if(end()) return;
+		if(it.end()) return;
 
 		// pass value through the stack
 
-		vm_push_stack_element(vm,*((StackElement *)(map->items+idx)->value)); // last value/first value to get
+		vm_push_stack_element(vm,*((StackElement *)it.value));  // last value/first value to get
 		vm_push_stack_element(vm,stk_key);
 	}
 
 
 	void	 ScriptObjectIteratorObject::next(){
-		idx++;
+		it.next();
 	}
 }

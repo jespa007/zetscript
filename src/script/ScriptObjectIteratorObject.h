@@ -33,8 +33,7 @@ namespace zetscript{
 
 		ScriptObjectObject *oo;
 		StackElement stk_key;
-		zs_map *map;
-		int idx;
+		zs_map_iterator it;
 		void setup();
 
 	};

@@ -20,12 +20,12 @@ namespace zetscript{
 		zs_string error="";
 		ScriptObjectObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
 
-		for(int i=0; i < o1->map_user_properties->count; i++){
-			obj->addUserProperty((o1->map_user_properties->items+i)->key,error,(StackElement *)(o1->map_user_properties->items+i)->value);
+		for(auto it=o1->begin(); !it.end();it.next()){
+			obj->addUserProperty(it.key,error,(StackElement *)it.value);
 		}
 
-		for(int i=0; i < o2->map_user_properties->count; i++){
-			obj->addUserProperty((o2->map_user_properties->items+i)->key,error,(StackElement *)(o2->map_user_properties->items+i)->value);
+		for(auto it=o2->begin(); !it.end();it.next()){
+			obj->addUserProperty(it.key,error,(StackElement *)it.value);
 		}
 		return obj;
 	}
@@ -33,9 +33,8 @@ namespace zetscript{
 	void  ScriptObjectObject::append(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
 		zs_string error="";
 
-		for(int i=0;i< o2->map_user_properties->count; i++){
-
-			o1->addUserProperty((o2->map_user_properties->items+i)->key,error,(StackElement *)(o2->map_user_properties->items+i)->value);
+		for(auto it=o2->begin(); !it.end();it.next()){
+			o1->addUserProperty(it.key,error,(StackElement *)it.value);
 		}
 	}
 	//

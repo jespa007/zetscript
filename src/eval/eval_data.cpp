@@ -883,8 +883,8 @@ namespace zetscript{
 	void eval_deinit(){
 		if(g_init_eval){
 
-			for(int i=0; i < compiled_symbol_name->count;i++){
-				delete (zs_string *)(compiled_symbol_name->items+i)->value;
+			for(auto it=compiled_symbol_name->begin();!it.end(); it.next()){
+					delete (zs_string *)it.value;
 			}
 
 			delete compiled_symbol_name;
