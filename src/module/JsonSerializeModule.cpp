@@ -40,7 +40,7 @@ namespace zetscript{
 				int k=0;
 				zs_map_iterator *mi=&map_iterators[i];
 				for(;!mi->end();mi->next()){
-					zs_map *map=maps[i];
+					zs_map_iterator *map=&map_iterators[i];
 
 					StackElement *stk_se=(StackElement *)mi->value;
 					// only check if is not function. If is an property an implements get, call
@@ -96,7 +96,7 @@ namespace zetscript{
 						}
 
 						if(getter_found == false){
-							ptr_stk_param=(StackElement *)(map->items+j)->value;
+							ptr_stk_param=(StackElement *)(mi->value);
 						}
 
 						serialize_stk(zs,this_object, str_result, ptr_stk_param, ident+1,is_formatted);

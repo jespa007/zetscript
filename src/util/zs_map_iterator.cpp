@@ -18,7 +18,7 @@ namespace zetscript{
 	zs_map_iterator::zs_map_iterator(zs_map *_map){
 		setup();
 		map=_map;
-		current_node=map->nodes;;
+		current_node=map->data();
 	}
 
 	void zs_map_iterator::setCurrentPair(){

@@ -5,15 +5,15 @@
 #include "../zetscript.h"
 
 #define ZS_MAP_KEY_NOT_FOUND 	-1
-#define ZS_MAP_MAX_ELEMENTS  	16000
-#define ZS_MAP_N_SLOT_ELEMENTS 	10
+#define ZS_MAP_MAX_ITEMS  	16000
+#define ZS_MAP_N_SLOT_ITEMS 	10
 
 namespace zetscript{
 
 	int			zs_map::search(const char * _key){
 
 		int idx_min=0;
-		int idx_max=(int)count-1;
+		int idx_max=(int)_count-1;
 
 		if(idx_max<=0){
 			return ZS_MAP_KEY_NOT_FOUND;
@@ -42,77 +42,82 @@ namespace zetscript{
 
 	void	zs_map::push_back_slot(){
 		if (this->_size == 0) {
-			this->_size = ZS_MAP_N_SLOT_ELEMENTS;
+			this->_size = ZS_MAP_N_SLOT_ITEMS;
 			this->items = (zs_map_item *)ZS_MALLOC(sizeof(zs_map_item) * this->_size);
 		}
 		// condition to increase this->items:
 		// last slot exhausted
-		if (this->_size ==this->count) {
-			if((this->_size+ZS_MAP_N_SLOT_ELEMENTS) >= ZS_MAP_MAX_ELEMENTS){
+		if (this->_size ==this->_count) {
+			if((this->_size+ZS_MAP_N_SLOT_ITEMS) >= ZS_MAP_MAX_ITEMS){
 				THROW_RUNTIME_ERROR("Max elements vector");
 				return;
 			}
-			this->_size += ZS_MAP_N_SLOT_ELEMENTS;
+			this->_size += ZS_MAP_N_SLOT_ITEMS;
 			this->items =(zs_map_item *) realloc(this->items, sizeof(zs_map_item) * this->_size);
 		}
 
-		this->count++;
+		this->_count++;
 
 	}
 
 	zs_map::zs_map(){
 		items=NULL;
-		count=0; //number of items
+		_count=0; //number of items
 		_size=0;
-		list=NULL;
+		first=NULL;
+		last=NULL;
 	}
 
 	bool	zs_map::exist(const char * _key){
 		return search(_key)!=ZS_MAP_KEY_NOT_FOUND;
 	}
+
+	size_t 		zs_map::count()
+	{
+		return _count;
+	}
+
 	void	zs_map::set(const char * _key,zs_int _value){
 
 		int idx=search(_key);
 		zs_map_item *item=NULL;
+		char *key=NULL;
+		zs_map_node *node = NULL;
 
 		if(idx != ZS_MAP_KEY_NOT_FOUND){
 			item=items+idx;
 		}else{
 
+			//------------------------------------------
 			// 1st CREATE NODE AND ADD AT THE END OF LIST
-			zs_map_node *node = NULL;
-
-			uint8_t pos = hash_code(key);
-			zs_map_node *first_node = this->list[pos];
+			zs_map_node *first_node = this->first;
 			node = (zs_map_node *)ZS_MALLOC(sizeof(zs_map_node));
 
-			// insert node at the end (not ordered)
-			size_t key_len=strlen(key)+1;
-			node->key = (char *)ZS_MALLOC(key_len);
+			if(first == NULL){ /*one  node: trivial ?*/
+				node->previous=node->next= last = first =node;
+			}
+			else{ /* >1 node add to the end */
+				// attach last-previous
+				node->previous=last;
+				last->next=node;
+				last=node;
 
-			strcpy(node->key,key);
-			node->val = val;
-			node->next = first_node;
-			node->previous=NULL;
-
-			if(first_node != NULL){
-				first_node->previous=node;
+				// attach next
+				node->next=first;
+				first->previous=node;
 			}
 
-			this->list[pos] = node; //Replace first node by _this one...
-
+			//------------------------------------------
 			// 2nd CREATE IDX AND ADD TO LOOKUP TABLE
-			node->val = val;
-
 			push_back_slot();
 
-			int size=count;
-			int idx_min = 0, idx_max = count - 1;
+			int max_size=_count;
+			int idx_min = 0, idx_max = _count - 1;
 
-			if(size > 0){
+			if(max_size > 0){
 
 				if (strcmp(items[idx_max].key,_key) < 0){
-				  idx_min=size;
+				  idx_min=max_size;
 				}
 				else{
 				  while (idx_max > idx_min) {
@@ -129,23 +134,26 @@ namespace zetscript{
 
 			// move all data..
 			if(idx_min >= 0){
-
-				if(idx_min < size){
+				if(idx_min < max_size){
 					// 1. move all elements...
-					for(int i=this->count-1;i>idx_min;i--){
+					for(int i=this->_count-1;i>idx_min;i--){
 						this->items[i]=this->items[i-1];
 					}
 				}
 			}
 
 			item=items+idx_min;
+
+			key=(char *)ZS_MALLOC(strlen(_key)+1);
+			strcpy(key,_key);
+
+			item->key = key;
+			item->node=node;
+			node->key=key;
 		}
 
-		char *key=(char *)ZS_MALLOC(strlen(_key)+1);
-		strcpy(key,_key);
 
-		item->key = key;
-		item->value = _value;
+		item->node->value=_value;
 	}
 
 	zs_map_iterator zs_map::begin(){
@@ -157,7 +165,7 @@ namespace zetscript{
 		zs_int value=0;
 
 		if(idx!=ZS_MAP_KEY_NOT_FOUND){
-			value=items[idx].value;
+			value=items[idx].node->value;
 		}
 
 		if(_exist!=NULL){
@@ -165,8 +173,6 @@ namespace zetscript{
 		}
 
 		return value;
-
-
 	}
 
 	void	zs_map::erase(const char * _key){
@@ -177,20 +183,24 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("key '%s' not found");
 		}
 
-		// erase node
+		zs_map_node *node = items[idx].node;
 
-		// not first...
-		if(node->previous != NULL){
-			node->previous->next=node->next; // link previous
-		}else{ // first, set first element as next
-			this->list[pos]=node->next;
+		if((node->previous == node) && (node->next == node)){ // 1 single node...
+			last=first=NULL;
+		}
+		else{ // dettach and attach next...
+			// [1]<->[2]<-> ...[P]<->[C]<->[N]...[M-1]<->[M]
+			if(node == first){
+				first=node->next;
+			}
+			else if(node == last){
+				last=node->previous;
+			}
+			node->previous->next=node->next;
+			node->next->previous=node->previous;
 		}
 
-		// not last
-		if(node->next!=NULL){
-			node->next->previous=node->previous; // link previous-next
-		}
-
+		node->previous = node->next = NULL;
 		free(node->key);
 		free(node);
 
@@ -198,46 +208,42 @@ namespace zetscript{
 		// free allocated mem
 		free(this->items[idx].key);
 
-		// reset values to 0
-		this->items[idx].key=NULL;
-		this->items[idx].value=0;
-
-		for (int i = idx; i < (int)((this->count-1)); i++) {
+		for (int i = idx; i < (int)((this->_count-1)); i++) {
 			this->items[i] = this->items[i+1];
 		}
 
+		// reset last value
+		this->items[this->_count-1].key=NULL;
+		this->items[this->_count-1].node=NULL;
 
-		this->count--;
+		this->_count--;
+	}
+
+	zs_map_node *zs_map::data(){
+		return first;
 	}
 
 	void	zs_map::clear(){
+		// clear first
+		zs_map_node * node=this->first;
 
-		// clear nodes
-		for(unsigned i=0;i<this->count;i++){
-					zs_map_node * temp=this->list[i];
+		while(node!=NULL){
+			zs_map_node * to_deallocate = node;
+			node=node->next;
+			free(to_deallocate);
+		}
 
-					while(temp){
-						zs_map_node * to_deallocate = temp;
-						temp=temp->next;
-
-						/*if(t->on_delete != NULL){
-							t->on_delete(to_deallocate);
-						}*/
-
-						free(to_deallocate->key);
-						free(to_deallocate);
-
-					}
-				}
-				memset(this->list,0,sizeof(zs_map_node*)*this->count);
+		first=NULL;
+		last=NULL;
 
 		// clear ordered lookup list
-		for(int i=0; i < count; i++){
+		for(int i=0; i < _count; i++){
 			free((items+i)->key);
 		}
 		free(items);
 		items=NULL;
-		count=0;
+
+		_count=0;
 		_size=0;
 	}
 

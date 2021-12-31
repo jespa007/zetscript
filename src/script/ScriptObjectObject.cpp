@@ -20,11 +20,15 @@ namespace zetscript{
 		zs_string error="";
 		ScriptObjectObject *obj = ZS_NEW_OBJECT_OBJECT(zs);
 
-		for(auto it=o1->begin(); !it.end();it.next()){
+		// get properties from object o1
+		zs_map *map=o1->getMapUserProperties();
+		for(auto it=map->begin(); !it.end();it.next()){
 			obj->addUserProperty(it.key,error,(StackElement *)it.value);
 		}
 
-		for(auto it=o2->begin(); !it.end();it.next()){
+		// get properties from object o2
+		map=o2->getMapUserProperties();
+		for(auto it=map->begin(); !it.end();it.next()){
 			obj->addUserProperty(it.key,error,(StackElement *)it.value);
 		}
 		return obj;
@@ -33,7 +37,9 @@ namespace zetscript{
 	void  ScriptObjectObject::append(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
 		zs_string error="";
 
-		for(auto it=o2->begin(); !it.end();it.next()){
+		// get properties from object o2
+		zs_map *map=o2->getMapUserProperties();
+		for(auto it=map->begin(); !it.end();it.next()){
 			o1->addUserProperty(it.key,error,(StackElement *)it.value);
 		}
 	}
@@ -120,7 +126,7 @@ namespace zetscript{
 	}
 
 	size_t	ScriptObjectObject::length(){
-		return this->map_builtin_properties->count;
+		return this->map_builtin_properties->count();
 	}
 
 	bool ScriptObjectObject::eraseUserProperty(const zs_string & property_name/*, const ScriptFunction *info_function*/){
@@ -138,8 +144,9 @@ namespace zetscript{
 
 	void ScriptObjectObject::eraseAllUserProperties(){
 
-		for(int i=0; i < map_user_properties->count; i++){
-			StackElement *si=(StackElement *)(map_user_properties->items+i)->value;
+
+		for(auto it=map_user_properties->begin();!it.end();it.next()){
+			StackElement *si=(StackElement *)(it.value);
 			ScriptObject::unrefAndFreeStackElementContainer(si);
 		}
 		map_user_properties->clear();

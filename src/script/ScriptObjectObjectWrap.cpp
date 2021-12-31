@@ -10,7 +10,8 @@ namespace zetscript{
 		VirtualMachine *vm=o1->getZetScript()->getVirtualMachine();
 		ScriptObjectVector *sv= ZS_NEW_OBJECT_VECTOR(o1->getZetScript());
 
-		for(auto it=o1->begin(); !it.end(); it.next()){
+		zs_map *map=o1->getMapUserProperties();
+		for(auto it=map->begin(); !it.end(); it.next()){
 			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so=ZS_NEW_OBJECT_STRING(o1->getZetScript());
 			so->set(it.key);

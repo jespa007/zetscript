@@ -258,7 +258,7 @@ Solved issues
 #315 Test stack element limits
 #316 default functions generates extra byte codes 
 > #317 Change concept of class by type 
-> #302 Improve zs_map
+#302 Improve zs_map
 
 //----------------------------------------------------------
 Version: 1.3.0

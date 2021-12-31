@@ -29,7 +29,7 @@ namespace zetscript{
 		// setup object
 		this->init(_oo->getZetScript());
 		oo=_oo;
-		it=oo->begin();
+		it=oo->getMapUserProperties()->begin();
 	}
 
 
