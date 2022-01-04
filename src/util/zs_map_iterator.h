@@ -23,6 +23,7 @@ namespace zetscript{
 	private:
 		zs_map_node *current_node;
 		zs_map *map;
+		bool _end;
 
 
 		void setup();

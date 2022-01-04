@@ -5,7 +5,7 @@
 #include "../zetscript.h"
 
 #define ZS_MAP_KEY_NOT_FOUND 	-1
-#define ZS_MAP_MAX_ITEMS  	16000
+#define ZS_MAP_MAX_ITEMS  		16000
 #define ZS_MAP_N_SLOT_ITEMS 	10
 
 namespace zetscript{
@@ -49,7 +49,7 @@ namespace zetscript{
 		// last slot exhausted
 		if (this->_size ==this->_count) {
 			if((this->_size+ZS_MAP_N_SLOT_ITEMS) >= ZS_MAP_MAX_ITEMS){
-				THROW_RUNTIME_ERROR("Max elements vector");
+				THROW_RUNTIME_ERROR("Reached Max elements");
 				return;
 			}
 			this->_size += ZS_MAP_N_SLOT_ITEMS;
@@ -75,6 +75,41 @@ namespace zetscript{
 	size_t 		zs_map::count()
 	{
 		return _count;
+	}
+
+	int zs_map::new_slot(const char *_key){
+
+		int max_size=_count;
+		int idx_min = 0, idx_max = _count - 1;
+
+		if(max_size > 0){
+
+			if (strcmp(items[idx_max].key,_key) < 0){
+			  idx_min=max_size;
+			}
+			else{
+			  while (idx_max > idx_min) {
+				int idx_mid = (idx_min + idx_max) >> 1;
+				if (strcmp(items[idx_mid].key,_key) > 0) {
+					idx_max = idx_mid;
+				}
+				else{
+					idx_min = idx_mid + 1;
+				}
+			  }
+			}
+		}
+
+		// increment new slot
+		push_back_slot();
+
+		for(int i=this->_count-1;i>idx_min;i--){
+			this->items[i]=this->items[i-1];
+		}
+
+
+
+		return idx_min;
 	}
 
 	void	zs_map::set(const char * _key,zs_int _value){
@@ -109,40 +144,10 @@ namespace zetscript{
 
 			//------------------------------------------
 			// 2nd CREATE IDX AND ADD TO LOOKUP TABLE
-			push_back_slot();
+			int idx_position=new_slot(_key);
 
-			int max_size=_count;
-			int idx_min = 0, idx_max = _count - 1;
 
-			if(max_size > 0){
-
-				if (strcmp(items[idx_max].key,_key) < 0){
-				  idx_min=max_size;
-				}
-				else{
-				  while (idx_max > idx_min) {
-					int idx_mid = (idx_min + idx_max) >> 1;
-					if (strcmp(items[idx_mid].key,_key) > 0) {
-						idx_max = idx_mid;
-					}
-					else{
-						idx_min = idx_mid + 1;
-					}
-				  }
-				}
-			}
-
-			// move all data..
-			if(idx_min >= 0){
-				if(idx_min < max_size){
-					// 1. move all elements...
-					for(int i=this->_count-1;i>idx_min;i--){
-						this->items[i]=this->items[i-1];
-					}
-				}
-			}
-
-			item=items+idx_min;
+			item=items+idx_position;
 
 			key=(char *)ZS_MALLOC(strlen(_key)+1);
 			strcpy(key,_key);
@@ -227,11 +232,19 @@ namespace zetscript{
 		// clear first
 		zs_map_node * node=this->first;
 
-		while(node!=NULL){
-			zs_map_node * to_deallocate = node;
+		if(node != NULL){
+
 			node=node->next;
-			free(to_deallocate);
+			while(node!=first){
+				zs_map_node * to_deallocate = node;
+				node=node->next;
+				free(to_deallocate);
+			}
+
+			// deallocate first one
+			free(first);
 		}
+
 
 		first=NULL;
 		last=NULL;
@@ -240,8 +253,11 @@ namespace zetscript{
 		for(int i=0; i < _count; i++){
 			free((items+i)->key);
 		}
-		free(items);
-		items=NULL;
+
+		if(items != NULL){
+			free(items);
+			items=NULL;
+		}
 
 		_count=0;
 		_size=0;

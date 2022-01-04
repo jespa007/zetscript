@@ -595,7 +595,6 @@ namespace zetscript{
 
 		if(stk_constants != NULL){
 
-
 			for(auto it=stk_constants->begin(); !it.end();it.next()){//std::map<zs_string,StackElement *>::iterator it=stk_constants->begin();it!=stk_constants->end();it++){
 				StackElement *stk=(StackElement *)(it.value);
 				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){

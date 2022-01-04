@@ -42,7 +42,7 @@ namespace zetscript{
 
 		void		push_back_slot();
 		int			search(const char * key);
-
+		int			new_slot(const char *_key);
 		unsigned int _size; // size vector (user count for iterate through items)
 		uint16_t _count;
 
