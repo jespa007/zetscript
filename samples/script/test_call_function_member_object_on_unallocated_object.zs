@@ -1,8 +1,8 @@
 var a=null
 
 class A{
-	A{
-		a=function(){} // creates a member function object and assigns to global var
+	A(){
+		a=function(){ Console::outln("caca")} // creates a member function object and assigns to global var
 	}
 	
 }
