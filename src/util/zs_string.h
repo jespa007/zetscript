@@ -12,7 +12,7 @@ namespace zetscript{
 		static size_t npos;
 
 		zs_string();
-		zs_string(const char * const buffer);
+		zs_string(const char * buffer);
 		zs_string(const zs_string & obj);
 
 		zs_string& operator=(const zs_string & obj);

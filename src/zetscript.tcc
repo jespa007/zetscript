@@ -227,7 +227,7 @@ namespace zetscript{
 							val_ret=(zs_int)script_object->getNativeObject();
 						}
 					}else{
-						error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+						error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type).c_str()));
 						return false;
 					}
 					break;

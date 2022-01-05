@@ -13,7 +13,7 @@ namespace zetscript{
 	{
 	}
 
-	zs_string::zs_string(const char * const buffer) // constructor
+	zs_string::zs_string(const char * buffer) // constructor
 	{
 		if(buffer==NULL){return;} // do not create string from NULL pointers
 		size = strlen(buffer);
