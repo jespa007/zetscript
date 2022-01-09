@@ -240,7 +240,7 @@ namespace zetscript{
 		ZetScript 						* 		zs;
 		ScopeFactory 					* 		scope_factory;
 		ScriptFunctionFactory 			* 		script_function_factory;
-		ScriptClassFactory 				* 		script_class_factory;
+		ScriptTypeFactory 				* 		script_type_factory;
 		EvalFunction					* 		current_function;
 		zs_vector				 	  			eval_functions;
 
@@ -259,7 +259,7 @@ namespace zetscript{
 			this->zs=_zs;
 			this->script_function_factory=zs->getScriptFunctionFactory();
 			this->scope_factory=zs->getScopeFactory();
-			this->script_class_factory=zs->getScriptClassFactory();
+			this->script_type_factory=zs->getScriptClassFactory();
 			error=false;
 			error_str="";
 			parsing_loop=0;

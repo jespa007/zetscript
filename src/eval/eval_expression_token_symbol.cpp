@@ -67,7 +67,7 @@ namespace zetscript{
 		int last_accessor_line=line;
 		int last_line_ok=line;
 		zs_string static_error;
-		ScriptClass *token_node_symbol_class=NULL;
+		ScriptType *token_node_symbol_class=NULL;
 
 		// check pre operator (-,+,!,-- or ++)
 		switch(pre_operation=is_pre_operation(aux_p)){
@@ -221,7 +221,7 @@ namespace zetscript{
 						zs_string static_access_value=token_node_symbol->value,class_element;
 						Symbol *member_symbol=NULL;
 
-						ScriptClass *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol->value);
+						ScriptType *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol->value);
 
 						//do{
 						IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,aux_p,eval_data,aux_p+2,line);
@@ -260,7 +260,7 @@ namespace zetscript{
 
 					}else{ // check if only gets the type
 
-						token_node_symbol_class=eval_data->script_class_factory->getScriptClass(token_node_symbol->value);
+						token_node_symbol_class=eval_data->script_type_factory->getScriptClass(token_node_symbol->value);
 						Instruction *instruction=&((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction;
 						if(token_node_symbol_class != NULL){ // byte code it will be a type
 							instruction->byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
@@ -459,7 +459,7 @@ namespace zetscript{
 					instruction_token=ei_first_token_node;
 
 					if(it_accessor_token==0 && token_node_symbol->value == SYMBOL_VALUE_THIS){ // check first symbol at first...
-						ScriptClass *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_type);
+						ScriptType *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_type);
 
 						if(eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_STATIC){
 							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' cannot be used in static functions");
@@ -653,7 +653,7 @@ namespace zetscript{
 				}
 			}else{
 				// check is not type
-				if(eval_data->script_class_factory->getScriptClass(token_node_symbol->value)!=NULL){
+				if(eval_data->script_type_factory->getScriptClass(token_node_symbol->value)!=NULL){
 					EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"expected variable after 'typeof' but it was a type");
 				}
 			}

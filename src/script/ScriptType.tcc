@@ -5,7 +5,7 @@
 namespace zetscript{
 
 	template < typename R>
-	void ScriptClass::registerNativeMemberVariableStaticConst(
+	void ScriptType::registerNativeMemberVariableStaticConst(
 			const zs_string & var_name
 			, const R var_pointer
 			, const char *registered_file
@@ -31,7 +31,7 @@ namespace zetscript{
 	 * like register function c but is added to member function list according type C
 	 */
 	template <typename F>
-	void ScriptClass::registerNativeMemberFunctionStatic(
+	void ScriptType::registerNativeMemberFunctionStatic(
 			const zs_string & function_name
 			,F ptr_function
 			, const char *registered_file
@@ -44,7 +44,7 @@ namespace zetscript{
 		const char *return_type;
 
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				this->script_class_factory
+				this->script_type_factory
 				,function_name
 				,ptr_function
 				,&params
@@ -73,7 +73,7 @@ namespace zetscript{
 	 * Is automatically added in function member list according first parameter type of function_type
 	 */
 	template <typename F>
-	void ScriptClass::registerNativeMemberFunction(
+	void ScriptType::registerNativeMemberFunction(
 			const zs_string & _function_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -84,11 +84,11 @@ namespace zetscript{
 
 		zs_string error;
 		
-		zs_string function_class_name = this->class_name+"::"+_function_name;
+		zs_string function_class_name = this->type_name+"::"+_function_name;
 
 		// 1. check all parameters ok.
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
-				this->script_class_factory
+				this->script_type_factory
 				,_function_name
 				,_ptr_function
 				,&params
@@ -98,25 +98,25 @@ namespace zetscript{
 		if(params_len==0){
 			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s'"
 				,function_class_name.c_str()
-				,this->str_class_ptr_type
-				,this->str_class_ptr_type
+				,this->str_ptr_type
+				,this->str_ptr_type
 			);
 		}
 
-		ScriptClass * c_class_first_arg=	getScriptClass(params[0].idx_type);
+		ScriptType * c_class_first_arg=	getScriptClass(params[0].idx_type);
 		if(c_class_first_arg == NULL){
 			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s')"
 				,function_class_name.c_str()
-				,this->str_class_ptr_type
-				,this->str_class_ptr_type
+				,this->str_ptr_type
+				,this->str_ptr_type
 			);
 		}
 
-		if(c_class_first_arg->str_class_ptr_type !=  this->str_class_ptr_type){
+		if(c_class_first_arg->str_ptr_type !=  this->str_ptr_type){
 			THROW_RUNTIME_ERROR("register native member function '%s::%s': expected to have FIRST parameter as pointer type '%s' but it was '%s')"
 				,function_class_name.c_str()
-				,this->str_class_ptr_type
-				,this->str_class_ptr_type
+				,this->str_ptr_type
+				,this->str_ptr_type
 				,params[0].name
 			);
 		}

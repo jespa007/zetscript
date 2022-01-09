@@ -70,7 +70,7 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 	if(so_aux->isNativeObject()){ /* because object is native, we can have more than one _setter */ \
 		if((ptr_function_found=vm_find_function( \
 				vm \
-				,data->script_class_factory->getScriptClass(so_aux->idx_type)\
+				,data->script_type_factory->getScriptClass(so_aux->idx_type)\
 				,calling_function\
 				,instruction\
 				,false\
@@ -79,13 +79,13 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 				,1))==NULL){ \
 			if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
 				VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-						,so_aux->getScriptClass()->class_name.c_str()\
+						,so_aux->getScriptClass()->type_name.c_str()\
 						,stk_mp->member_property->property_name.c_str()\
 						,__STR_SETTER_METAMETHOD__\
 				);\
 			}else{\
 				VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
-						,so_aux->getScriptClass()->class_name.c_str() \
+						,so_aux->getScriptClass()->type_name.c_str() \
 						,__STR_SETTER_METAMETHOD__\
 				);\
 			}\

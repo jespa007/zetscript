@@ -6,11 +6,11 @@
 
 namespace zetscript{
 
-		class ScriptClass;
-		class ScriptClass;
+		class ScriptType;
+		class ScriptType;
 		class ZetScript;
 		struct VirtualMachine;
-		class ScriptClassFactory;
+		class ScriptTypeFactory;
 		class  ScriptObjectClass: public ScriptObjectObject{
 		public:
 
@@ -37,7 +37,7 @@ namespace zetscript{
 
 
 			virtual void * getNativeObject();
-			ScriptClass * getNativeScriptClass();
+			ScriptType * getNativeScriptClass();
 
 			const char *getNativePointerClassName();
 
@@ -48,7 +48,7 @@ namespace zetscript{
 			virtual ~ScriptObjectClass();
 
 		protected:
-			void callConstructorMemberVariables(ScriptClass *sc);
+			void callConstructorMemberVariables(ScriptType *sc);
 			//virtual StackElement * newSlotBuiltin();
 			//virtual StackElement * addPropertyBuiltin(const zs_string & symbol_value, StackElement stk=k_stk_null);
 
@@ -57,7 +57,7 @@ namespace zetscript{
 			/**
 			 * This variable tells whether is pointer function or not.
 			 */
-			ScriptClass * script_class_native;
+			ScriptType * script_class_native;
 			bool delete_c_object_on_destroy;
 
 			void * created_object;

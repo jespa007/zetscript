@@ -6,19 +6,19 @@
 
 namespace zetscript{
 
-	bool ScriptClass::isNativeClass(){
+	bool ScriptType::isNativeClass(){
 
 		 return ((properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0);
 	}
 
-	bool ScriptClass::isNativeSingletonClass(){
+	bool ScriptType::isNativeSingletonClass(){
 		 return ((properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0)
 				 	 &&
 				this->c_constructor == NULL;
 	}
 	//------------------------------------------------------------
 
-	ScriptClass::ScriptClass(ZetScript *_zs
+	ScriptType::ScriptType(ZetScript *_zs
 			,short _idx_type
 			, zs_string _class_name
 			, Scope *_class_scope
@@ -26,16 +26,16 @@ namespace zetscript{
 			,uint16_t _properties){
 		sf_field_initializer=NULL;
 
-		str_class_ptr_type="";
+		str_ptr_type="";
 		c_destructor = NULL;
 		c_constructor=NULL;
 		idx_function_member_constructor =IDX_ZS_UNDEFINED;
 		idx_type=_idx_type;
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
-		class_name=_class_name;
+		type_name=_class_name;
 		class_scope=_class_scope;
-		str_class_ptr_type=_str_class_ptr_type;
+		str_ptr_type=_str_class_ptr_type;
 		allocated_member_properties=new zs_vector();
 
 		idx_base_classes=new zs_vector;
@@ -44,13 +44,13 @@ namespace zetscript{
 		zs = _zs;
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
-		script_class_factory=zs->getScriptClassFactory();
+		script_type_factory=zs->getScriptClassFactory();
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
 		properties=_properties;
 
 	}
 
-	bool ScriptClass::isDerivedFrom(short idx_type){
+	bool ScriptType::isDerivedFrom(short idx_type){
 		for(unsigned i=0; i < this->idx_base_classes->count; i++){
 			if(this->idx_base_classes->items[i]==idx_type){
 				return true;
@@ -60,24 +60,24 @@ namespace zetscript{
 		return false;
 	}
 
-	ScriptClass * 				ScriptClass::getScriptClass(short idx){
-		return script_class_factory->getScriptClass(idx);
+	ScriptType * 				ScriptType::getScriptClass(short idx){
+		return script_type_factory->getScriptClass(idx);
 	}
 
 
-	short					ScriptClass::getIdxClassFromItsNativeType(const char * s){
-		return script_class_factory->getIdxClassFromItsNativeType(s);
+	short					ScriptType::getIdxClassFromItsNativeType(const char * s){
+		return script_type_factory->getIdxClassFromItsNativeType(s);
 	}
 
-	ScriptClass * 			ScriptClass::getScriptClassByNativeClassPtr(const zs_string & class_type){
-		return script_class_factory->getScriptClassByNativeClassPtr(class_type);
+	ScriptType * 			ScriptType::getScriptClassByNativeClassPtr(const zs_string & class_type){
+		return script_type_factory->getScriptClassByNativeClassPtr(class_type);
 	}
 
 	//---------------------------------------------------
 	//
 	// MEMBER VARIABLES
 	//
-	Symbol				* 	ScriptClass::registerMemberVariable(
+	Symbol				* 	ScriptType::registerMemberVariable(
 		const zs_string & symbol_name
 		,unsigned short symbol_properties
 		,const char * file
@@ -94,7 +94,7 @@ namespace zetscript{
 		);
 	}
 
-	Symbol				* 	ScriptClass::registerNativeMemberVariable(
+	Symbol				* 	ScriptType::registerNativeMemberVariable(
 		 const zs_string & symbol_name
 		,const zs_string & str_native_type
 		,zs_int ref_ptr
@@ -112,7 +112,7 @@ namespace zetscript{
 		);
 	}
 
-	Symbol				* 	ScriptClass::registerInternalMemberVariable(
+	Symbol				* 	ScriptType::registerInternalMemberVariable(
 		const zs_string & symbol_name
 		,unsigned short symbol_properties
 		,const zs_string & str_native_type
@@ -141,7 +141,7 @@ namespace zetscript{
 	//
 	// MEMBER PROPERTIES
 	//
-	Symbol *ScriptClass::registerMemberProperty(
+	Symbol *ScriptType::registerMemberProperty(
 			 const zs_string & attrib_name
 			,const char * file
 			,short line
@@ -174,7 +174,7 @@ namespace zetscript{
 		return symbol_member_property;
 	}
 
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyMetamethod(
+	Symbol				* 	ScriptType::registerNativeMemberPropertyMetamethod(
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
@@ -288,7 +288,7 @@ namespace zetscript{
 	}
 
 
-	Symbol				* 	ScriptClass::registerNativeMemberPropertyMetamethodGetter(
+	Symbol				* 	ScriptType::registerNativeMemberPropertyMetamethodGetter(
 			 const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
 			 ,size_t _params_len
@@ -337,7 +337,7 @@ namespace zetscript{
 	// MEMBER FUNCTIONS
 	//
 
-	Symbol * ScriptClass::registerMemberFunction(
+	Symbol * ScriptType::registerMemberFunction(
 		 const zs_string & _function_name
 		 , ScriptFunctionParam **_params
 		 ,size_t _params_len
@@ -396,7 +396,7 @@ namespace zetscript{
 		}
 
 		// constructor...
-		if(_function_name == this->class_name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
+		if(_function_name == this->type_name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
 			idx_function_member_constructor = symbol_function->idx_position;
 			sf_current->properties|=FUNCTION_PROPERTY_CONSTRUCTOR;
 		}
@@ -417,13 +417,13 @@ namespace zetscript{
 					// can be one parameter or 0 params...
 					if(byte_code_metamethod_should_be_static(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){
 						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as static instead of member"
-							,class_name.c_str()
+							,type_name.c_str()
 							,_function_name.c_str()
 						);
 						return NULL;
 					}else if((byte_code_metamethod_should_be_static(op)==false) && ((_function_properties & FUNCTION_PROPERTY_STATIC))){
 						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as member instead of static"
-							,class_name.c_str()
+							,type_name.c_str()
 							,_function_name.c_str()
 						);
 						return NULL;
@@ -433,7 +433,7 @@ namespace zetscript{
 					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
 						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(_idx_return_type == IDX_TYPE_STRING_PTR_C || _idx_return_type == IDX_TYPE_STRING_C) ){
 							THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
-								,class_name.c_str()
+								,type_name.c_str()
 								,_function_name.c_str()
 							);
 							return NULL;
@@ -454,9 +454,9 @@ namespace zetscript{
 								// return type must be bool...
 								if(_idx_return_type != IDX_TYPE_BOOL_C){
 									THROW_RUNTIME_ERROR("error registering metamethod '%s::%s'. Expected return bool but it was '%s'",
-											this->class_name.c_str(),
+											this->type_name.c_str(),
 											_function_name.c_str(),
-											zs_rtti::demangle(this->script_class_factory->getScriptClass(_idx_return_type)->str_class_ptr_type)
+											zs_rtti::demangle(this->script_type_factory->getScriptClass(_idx_return_type)->str_ptr_type)
 									);
 									return NULL;
 								}
@@ -472,12 +472,12 @@ namespace zetscript{
 							case BYTE_CODE_METAMETHOD_SHL: // << shift left
 							case BYTE_CODE_METAMETHOD_SHR: // >> shift right
 
-								if(ZS_STRCMP(this->script_class_factory->getScriptClass(_idx_return_type)->str_class_ptr_type, != ,this->str_class_ptr_type)){
+								if(ZS_STRCMP(this->script_type_factory->getScriptClass(_idx_return_type)->str_ptr_type, != ,this->str_ptr_type)){
 
 									THROW_RUNTIME_ERROR("error registering metamethod %s::%s. Expected return %s but it was %s",
-											this->class_name.c_str(),
+											this->type_name.c_str(),
 											_function_name.c_str(),
-											zs_rtti::demangle(this->script_class_factory->getScriptClass(_idx_return_type)->str_class_ptr_type));
+											zs_rtti::demangle(this->script_type_factory->getScriptClass(_idx_return_type)->str_ptr_type));
 									return NULL;
 								}
 								break;
@@ -526,7 +526,7 @@ namespace zetscript{
 							(info_mp.setters!=NULL && info_mp.setters->count>0)){
 							// error already set (script functions only can be set once)
 							THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
-									,class_name.c_str()
+									,type_name.c_str()
 									,info_mp.str_byte_code_metamethod);
 
 							return NULL;
@@ -537,7 +537,7 @@ namespace zetscript{
 						if(metamethod_members.post_inc != NULL){
 
 							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a post increment (aka '%s++') metamethod"
-								,class_name.c_str()
+								,type_name.c_str()
 							);
 						}
 						metamethod_members.post_inc=(ScriptFunction *)symbol_function->ref_ptr;
@@ -546,7 +546,7 @@ namespace zetscript{
 						if(metamethod_members.post_dec != NULL){
 
 							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a post decrement (aka '%s--') metamethod"
-								,class_name.c_str()
+								,type_name.c_str()
 							);
 						}
 						metamethod_members.post_dec=(ScriptFunction *)symbol_function->ref_ptr;
@@ -555,7 +555,7 @@ namespace zetscript{
 						if(metamethod_members.pre_inc != NULL){
 
 							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a pre increment (aka '++%s') metamethod"
-								,class_name.c_str()
+								,type_name.c_str()
 							);
 						}
 						metamethod_members.pre_inc=(ScriptFunction *)symbol_function->ref_ptr;
@@ -564,7 +564,7 @@ namespace zetscript{
 						if(metamethod_members.pre_dec != NULL){
 
 							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a pre decrement (aka '--%s') metamethod"
-								,class_name.c_str()
+								,type_name.c_str()
 							);
 						}
 						metamethod_members.pre_dec=(ScriptFunction *)symbol_function->ref_ptr;
@@ -582,7 +582,7 @@ namespace zetscript{
 		return symbol_function;
 	}
 	//---------------------------------------------------------
-	Symbol *    ScriptClass::getSymbolVariableMember(const zs_string & symbol_name, bool include_inherited_symbols){
+	Symbol *    ScriptType::getSymbolVariableMember(const zs_string & symbol_name, bool include_inherited_symbols){
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_variables;
 		zs_vector *list=this->class_scope->symbol_variables;
 
@@ -600,7 +600,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol *    ScriptClass::getSymbolMemberFunction(const zs_string & symbol_name, char n_params, bool include_inherited_symbols){
+	Symbol *    ScriptType::getSymbolMemberFunction(const zs_string & symbol_name, char n_params, bool include_inherited_symbols){
 		bool only_symbol=n_params<0;
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_functions;
 		zs_vector *symbol_functions=this->class_scope->symbol_functions;
@@ -627,7 +627,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol				* 	ScriptClass::getSymbol(const zs_string & symbol_name, char n_params,bool include_inherited_symbols){
+	Symbol				* 	ScriptType::getSymbol(const zs_string & symbol_name, char n_params,bool include_inherited_symbols){
 
 		Symbol *symbol=NULL;
 
@@ -638,19 +638,19 @@ namespace zetscript{
 		return symbol;
 	}
 
-	const char *ScriptClass::getClassName(){
+	const char *ScriptType::getTypeName(){
 		if(idx_type==IDX_TYPE_ZS_INT_C){
 			return "int";
 		}else if(idx_type==IDX_TYPE_ZS_FLOAT_C){
 			return "float";
 		}
 
-		return class_name.c_str();
+		return type_name.c_str();
 	}
 
 
 
-	ScriptClass::~ScriptClass(){
+	ScriptType::~ScriptType(){
 
 		for(unsigned i=0; i < allocated_member_properties->count; i++){
 			MemberProperty *mp=(MemberProperty *)allocated_member_properties->items[i];

@@ -68,10 +68,10 @@ namespace zetscript{
 
 
 		zs_vector * getStkBuiltinListElements();
-		ScriptClass * 	    getNativeScriptClass();
+		ScriptType * 	    getNativeScriptClass();
 		bool 				isNativeObject();
-		const zs_string & getClassName();
-		ScriptClass * 	    getScriptClass();
+		const zs_string & getTypeName();
+		ScriptType * 	    getScriptClass();
 		StackElement 	*getThisProperty();
 		virtual void	*getNativeObject();
 		virtual zs_string toString();

@@ -12,13 +12,13 @@
 namespace zetscript{
 	class MemberProperty{
 	public:
-		ScriptClass *script_class;
+		ScriptType *script_class;
 		 zs_string property_name;
 		 MetamethodMembers metamethod_members;
 
 		 static bool 						symbolNameMatchStartSymbolNameMetamethod(const zs_string & _symbol_name);
 
-		 MemberProperty(ScriptClass *_script_class, const zs_string & _property_name);
+		 MemberProperty(ScriptType *_script_class, const zs_string & _property_name);
 
 		~MemberProperty();
 

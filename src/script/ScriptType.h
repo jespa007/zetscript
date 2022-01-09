@@ -15,15 +15,15 @@ namespace zetscript{
  */
 
 	class ScriptFunctionFactory;
-	class  ScriptClass{
+	class  ScriptType{
 
 	public:
 
 		int 			idx_type; 	// registered class idx
 
-		zs_string 		class_name;		// info symbol class
+		zs_string 		type_name;		// info symbol class
 		Scope			*class_scope;
-		const char 		*str_class_ptr_type; // type_id().name();
+		const char 		*str_ptr_type; // type_id().name();
 		uint16_t		properties;
 
 		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be property members or script member vars
@@ -43,11 +43,11 @@ namespace zetscript{
 
 		zs_vector						   	*   idx_base_classes; // list of idx of classes base
 
-		 ScriptClass(ZetScript *_zs
+		 ScriptType(ZetScript *_zs
 				 ,short _idx_type
 				 , zs_string _name
 				 , Scope *_scope
-				 ,const char *  str_class_ptr_type=TYPE_SCRIPT_VARIABLE
+				 ,const char *  str_ptr_type=TYPE_SCRIPT_VARIABLE
 				 ,uint16_t _properties=0
 		);
 
@@ -155,17 +155,17 @@ namespace zetscript{
 		Symbol *    getSymbolVariableMember(const zs_string & symbol_name, bool include_inherited_symbols=true);
 		Symbol *    getSymbolMemberFunction(const zs_string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 
-		const char *getClassName();
+		const char *getTypeName();
 
 		bool isNativeClass();
 		bool isNativeSingletonClass();
 
-		virtual ~ScriptClass();
+		virtual ~ScriptType();
 
 	private:
 		ZetScript 				*zs;
 		ScriptFunctionFactory 	*script_function_factory;
-		ScriptClassFactory 		*script_class_factory;
+		ScriptTypeFactory 		*script_type_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
 		Symbol				* 	registerInternalMemberVariable(
@@ -182,11 +182,11 @@ namespace zetscript{
 
 
 
-		ScriptClass * 					getScriptClass(short idx_type);
+		ScriptType * 					getScriptClass(short idx_type);
 		short							getIdxClassFromItsNativeType(const char  * s);
-		ScriptClass * 					getScriptClassByNativeClassPtr(const zs_string & class_type);
+		ScriptType * 					getScriptClassByNativeClassPtr(const zs_string & class_type);
 	};
 }
 
-#include "ScriptClass.tcc"
+#include "ScriptType.tcc"
 

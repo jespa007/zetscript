@@ -10,13 +10,13 @@ namespace zetscript{
 	class ScriptObjectMemberFunction:public ScriptObject{
 	public:
 		ScriptFunction *so_function;
-		ScriptObject *so_object;
+		ScriptObjectObject *so_object;
 
 		//----------------------------------------------
 		//
 		// Helpers
 		//
-		static ScriptObjectMemberFunction * newScriptObjectMemberFunction(ZetScript *zs, ScriptObject *_so_object, ScriptFunction *_so_function);
+		static ScriptObjectMemberFunction * newScriptObjectMemberFunction(ZetScript *zs, ScriptObjectObject *_so_object, ScriptFunction *_so_function);
 		//----------------------------------------------
 		//
 		// Members

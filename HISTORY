@@ -259,6 +259,7 @@ Solved issues
 #316 default functions generates extra byte codes 
 > #317 Change concept of class by type 
 #302 Improve zs_map
+> #319 Detect when function member object is called and its own object is destroyed 
 
 //----------------------------------------------------------
 Version: 1.3.0

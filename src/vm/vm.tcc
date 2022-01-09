@@ -127,14 +127,14 @@ namespace zetscript{
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		StackElement *stk_vm_current;
 		ScriptFunction  *main_function_object;
-		ScriptClass *main_class_object;
+		ScriptType *main_class_object;
 
 		int vm_idx_call;
 		int idx_last_statment;
 		const ScriptFunction *current_call_c_function;
 		ZetScript *zs;
 		ScriptFunctionFactory 	*script_function_factory;
-		ScriptClassFactory 		*script_class_factory;
+		ScriptTypeFactory 		*script_type_factory;
 		ScopeFactory 			*scope_factory;
 
 		StackElement stk_aux;
@@ -157,7 +157,7 @@ namespace zetscript{
 			zs=_zs;
 
 			script_function_factory=NULL;
-			script_class_factory=NULL;
+			script_type_factory=NULL;
 			scope_factory=NULL;
 			vm_error=false;
 			vm_error_str="";
@@ -359,7 +359,7 @@ namespace zetscript{
 
 	inline ScriptFunction * vm_find_function(
 			VirtualMachine *vm
-			,ScriptClass *class_obj // if NULL is MainClass
+			,ScriptType *class_obj // if NULL is MainClass
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
 			,bool is_constructor
@@ -458,14 +458,14 @@ namespace zetscript{
 										  ||	arg_idx_type==IDX_TYPE_CONST_CHAR_PTR_C;
 									}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
 										ScriptObjectClass *var_object_class=((ScriptObjectClass *)current_arg->value);
-										aux_string=var_object_class->getClassName();
+										aux_string=var_object_class->getTypeName();
 										if(arg_idx_type==idx_type){
 											all_check=true;
 										}
 									}else{
 										ScriptObject *var_object = NULL;
 										var_object=((ScriptObject *)current_arg->value);
-										aux_string=var_object->getClassName();
+										aux_string=var_object->getTypeName();
 										if(arg_idx_type==idx_type){
 											all_check=true;
 										}
@@ -528,7 +528,7 @@ namespace zetscript{
 						}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
 							aux_string = ((ScriptObjectClass *)current_arg->value)->getNativePointerClassName();
 						}else{ // object
-							aux_string = ((ScriptObject *)current_arg->value)->getClassName();
+							aux_string = ((ScriptObject *)current_arg->value)->getTypeName();
 						}
 						break;
 					}
@@ -560,7 +560,7 @@ namespace zetscript{
 
 					// class if not mail
 					if(class_obj!=NULL && class_obj->idx_type!=IDX_TYPE_CLASS_MAIN){
-						str_candidates.append(class_obj->class_name.c_str());
+						str_candidates.append(class_obj->type_name.c_str());
 						str_candidates.append("::");
 					}
 
@@ -591,7 +591,7 @@ namespace zetscript{
 			if(n_candidates == 0){
 				VM_ERROR("Cannot find %s '%s%s(%s)'.\n\n",
 						is_constructor ? "constructor":"function",
-								class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->class_name+"::").c_str():"",
+								class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->type_name+"::").c_str():"",
 								symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 						args_str.c_str()
 				);
@@ -601,7 +601,7 @@ namespace zetscript{
 			else{
 				VM_ERROR("Cannot match %s '%s%s(%s)' .\n\n%s",
 					is_constructor ? "constructor":"function",
-							class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->class_name+"::").c_str():"",
+							class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->type_name+"::").c_str():"",
 									symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 					args_str.c_str(),
 					str_candidates.c_str());
@@ -661,7 +661,7 @@ namespace zetscript{
 			script_object = (ScriptObjectClass *)(stk_result_op1->value);
 		}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject * script_object_found=(ScriptObject *)stk_result_op1->value;
-			class_name_object_found=script_object_found->getClassName();
+			class_name_object_found=script_object_found->getTypeName();
 		}
 
 		// only C refs can check 2nd param
@@ -681,7 +681,7 @@ namespace zetscript{
 				script_object = (ScriptObject *)(stk_result_op2->value);
 			}else if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					ScriptObject *script_object_found=(ScriptObject *)stk_result_op2->value;
-					class_name_object_found=script_object_found->getClassName();
+					class_name_object_found=script_object_found->getTypeName();
 			}
 		}
 
@@ -715,7 +715,7 @@ namespace zetscript{
 			if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
 				if((ptr_function_found = vm_find_function(
 					vm
-					,data->script_class_factory->getScriptClass(script_object->idx_type)
+					,data->script_type_factory->getScriptClass(script_object->idx_type)
 					,calling_function
 					,instruction
 					,false
@@ -729,7 +729,7 @@ namespace zetscript{
 
 
 			}else{ // get first item...
-				ScriptClass *sc=script_object->getScriptClass();
+				ScriptType *sc=script_object->getScriptClass();
 				Symbol * symbol = sc->getSymbolMemberFunction(str_symbol_metamethod);
 
 				if(symbol == NULL){
@@ -872,7 +872,7 @@ apply_metamethod_error:
 
 		stk_result_op2 = (StackElement *)(stk_result_op2->value);
 		ScriptObject *obj=(ScriptObject *)stk_result_op1->value;
-		ScriptClass *sc=obj->getScriptClass();
+		ScriptType *sc=obj->getScriptClass();
 
 		symbol_iter=sc->getSymbolMemberFunction("iter");
 
@@ -915,17 +915,17 @@ apply_metamethod_error:
 
 			// check all functions...
 			if((obj->getProperty("get"))==NULL){
-				VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getClassName().c_str());
+				VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getTypeName().c_str());
 				return;
 			}
 
 			if((obj->getProperty("_post_inc"))==NULL){
-				VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getClassName().c_str());
+				VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getTypeName().c_str());
 				return;
 			}
 
 			if((obj->getProperty("end"))==NULL){
-				VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getClassName().c_str());
+				VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getTypeName().c_str());
 				return;
 			}
 
@@ -933,7 +933,7 @@ apply_metamethod_error:
 			*stk_result_op2=*data->stk_vm_current;
 		}
 		else{
-			VM_ERROR("Object not implements 'iter' ",obj->getClassName().c_str());
+			VM_ERROR("Object not implements 'iter' ",obj->getTypeName().c_str());
 		}
 
 		// get iterator...

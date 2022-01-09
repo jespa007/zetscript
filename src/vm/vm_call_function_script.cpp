@@ -209,7 +209,7 @@ namespace zetscript{
 				*data->stk_vm_current++=*this_object->getThisProperty();
 				continue;
 			case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
-				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,this_object,(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr);
+				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,(ScriptObjectObject *)this_object,(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr);
 				 if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
 				 }
@@ -270,10 +270,10 @@ find_element_object:
 					str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
 					//
-					ScriptClass *sc=so_aux->getScriptClass();
+					ScriptType *sc=so_aux->getScriptClass();
 					Symbol *sf_member=sc->getSymbolMemberFunction(str_symbol);
 					if(sf_member !=NULL){
-						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
+						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,(ScriptObjectObject *)so_aux,(ScriptFunction *)sf_member->ref_ptr);
 
 						 if(!vm_create_shared_pointer(vm,somf)){
 								goto lbl_exit_function;
@@ -807,7 +807,7 @@ find_element_object:
 					break;
 				default:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						bool b = data->script_class_factory->isClassInheritsFrom(			//
+						bool b = data->script_type_factory->isClassInheritsFrom(			//
 								((ScriptObjectObject *)(stk_result_op1->value))->idx_type // A
 								, instruction->value_op2		// B
 						);
@@ -913,6 +913,9 @@ load_function:
 				  sf_call_is_member_function=true;
 				}else if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(sf_call_stk_function_ref)){
 				  ScriptObjectMemberFunction *sofm=(  ScriptObjectMemberFunction *)sf_call_stk_function_ref->value;
+				  if(sofm->so_object==NULL){
+					  VM_STOP_EXECUTE("Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced",sofm->so_function->function_name.c_str(), SFI_GET_SYMBOL_NAME(calling_function,instruction));
+				  }
 				  sf_call_calling_object=sofm->so_object;
 				  sf_call_script_function=sofm->so_function;
 				  sf_call_is_member_function=true;
@@ -1076,18 +1079,18 @@ execute_function:
 				else{ // C function
 					if(sf_call_script_function->properties & FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME){
 
-						ScriptClass *sc=NULL;
+						ScriptType *sc=NULL;
 						bool ignore_call=false;
 
 						if(
 							sf_call_is_member_function
 						){
 							ignore_call= (sf_call_is_constructor) && sf_call_calling_object->isNativeObject() && sf_call_n_args==0;
-							sc=data->script_class_factory->getScriptClass(sf_call_calling_object->idx_type);
+							sc=data->script_type_factory->getScriptClass(sf_call_calling_object->idx_type);
 						}else if(sf_call_script_function->idx_type != IDX_TYPE_CLASS_MAIN
 								&& (sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)
 						){
-							sc=data->script_class_factory->getScriptClass(sf_call_script_function->idx_type);
+							sc=data->script_type_factory->getScriptClass(sf_call_script_function->idx_type);
 						}
 
 						if(ignore_call == false)
@@ -1137,7 +1140,7 @@ execute_function:
 								||
 							(sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)!=0
 						){
-							str_class_owner=data->script_class_factory->getScriptClass(sf_call_script_function->idx_type)->class_name.c_str();
+							str_class_owner=data->script_type_factory->getScriptClass(sf_call_script_function->idx_type)->type_name.c_str();
 						}
 
 						data->vm_error_callstack_str+=zs_strutils::format(
@@ -1239,9 +1242,9 @@ execute_function:
 			 case  BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				 	 VM_POP_STK_ONE;
 				 	 if(STK_VALUE_IS_TYPE(stk_result_op1)){
-				 		ScriptClass *sc=data->script_class_factory->getScriptClass(stk_result_op1->value);
-						if(!data->script_class_factory->isClassInstanceable(stk_result_op1->value)){
-							VM_STOP_EXECUTE("'%s' type is not object instanceable",sc->getClassName());
+				 		ScriptType *sc=data->script_type_factory->getScriptClass(stk_result_op1->value);
+						if(!data->script_type_factory->isClassInstanceable(stk_result_op1->value)){
+							VM_STOP_EXECUTE("'%s' type is not object instanceable",sc->getTypeName());
 						}
 
 				 		 Symbol *constructor_function=NULL;
@@ -1263,7 +1266,7 @@ execute_function:
 							so_class_aux->instruction_new=instruction;
 
 							// check for constructor
-							 constructor_function=sc->getSymbolMemberFunction(sc->class_name);
+							 constructor_function=sc->getSymbolMemberFunction(sc->type_name);
 
 							 if(constructor_function != NULL){
 								 data->stk_vm_current->value=(zs_int)constructor_function;
@@ -1384,22 +1387,22 @@ execute_function:
 					const char *str_end_class=NULL;
 
 					if((str_end_class=strstr(ptr_str_symbol_to_find,"::"))!=NULL){ // static access
-						char class_name[512]={0};
+						char type_name[512]={0};
 
-						strncpy(class_name,ptr_str_symbol_to_find,str_end_class-ptr_str_symbol_to_find);
+						strncpy(type_name,ptr_str_symbol_to_find,str_end_class-ptr_str_symbol_to_find);
 
 
-						if(data->zs->getScriptClassFactory()->getScriptClass(class_name) == NULL){
+						if(data->zs->getScriptClassFactory()->getScriptClass(type_name) == NULL){
 							VM_STOP_EXECUTE(
 									"class '%s' not exist"
-									,class_name
+									,type_name
 							);
 						}
 
 						VM_STOP_EXECUTE(
 								"static symbol '%s' not exist in '%s'"
 								,str_end_class+2
-								,class_name
+								,type_name
 						);
 					}else{
 						VM_STOP_EXECUTE(
@@ -1413,6 +1416,11 @@ execute_function:
 
 		 }
 
+		// default return null
+		*data->stk_vm_current=k_stk_null;
+		// reset stack and set last stk return null;
+		data->stk_vm_current=_stk_local_var;
+
 	lbl_exit_function:
 
 		//=========================
@@ -1424,10 +1432,6 @@ execute_function:
 		if((data->zero_shares+data->vm_idx_call)->first!=NULL){
 			vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 		}
-
-		// reset stack and set last stk return null;
-		*data->stk_vm_current=k_stk_null;
-		data->stk_vm_current=_stk_local_var;
 
 		data->vm_idx_call--;
 		data->vm_current_scope_function--;

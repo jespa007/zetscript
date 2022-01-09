@@ -19,7 +19,7 @@ namespace zetscript{
 			ScriptFunctionFactory(ZetScript *_zs);
 
 			/**
-			 * Set/Get ScriptClass Node by its idx, regarding current state.
+			 * Set/Get ScriptType Node by its idx, regarding current state.
 			 */
 			zs_vector 	*	getScriptFunctions();
 

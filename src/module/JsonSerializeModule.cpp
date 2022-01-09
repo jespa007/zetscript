@@ -163,7 +163,7 @@ namespace zetscript{
 							serialize_object(zs,this_object,str_result,(ScriptObjectObject *)obj,ident,is_formatted);
 						}
 						else{
-							str_result.append("\"Object@"+this_object->getClassName()+"\"");
+							str_result.append("\"Object@"+this_object->getTypeName()+"\"");
 						}
 					}
 					break;

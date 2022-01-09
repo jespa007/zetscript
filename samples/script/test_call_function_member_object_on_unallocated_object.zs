@@ -2,7 +2,14 @@ var a=null
 
 class A{
 	A(){
-		a=function(){ Console::outln("caca")} // creates a member function object and assigns to global var
+		this.b=10
+		a=function(){
+			this.b=100	
+			Console::outln("b:{0}",this.b)
+		} // creates a member function object and assigns to global var
+		
+		
+		a();
 	}
 	
 }
@@ -10,6 +17,7 @@ class A{
 function createA(){
 	new A()
 }
+
 
 createA();
 

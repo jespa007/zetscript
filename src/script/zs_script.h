@@ -25,9 +25,9 @@
 #include "MemberProperty.h"
 #include "ScriptFunctionParam.h"
 #include "ScriptFunction.h"
-#include "ScriptClass.h"
+#include "ScriptType.h"
 #include "ScriptFunctionFactory.h"
-#include "ScriptClassFactory.h"
+#include "ScriptTypeFactory.h"
 #include "ScriptFunctionTraits.h"
 
 

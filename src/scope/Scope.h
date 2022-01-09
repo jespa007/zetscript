@@ -24,13 +24,13 @@ namespace zetscript{
 
 	class ScopeFactory;
 	class ZetScript;
-	class ScriptClass;
+	class ScriptType;
 	class  Scope{
 	public:
 		uint16_t properties;
 		//bool is_c_node;
 		//bool is_scope_function; // this will ignore symbols within scopes where functions starts to avoid conflicts with global functions...
-		ScriptClass *script_class;
+		ScriptType *script_class;
 		int tmp_idx_instruction_push_scope;
 
 
@@ -67,8 +67,8 @@ namespace zetscript{
 		void						    markAsUnusued();
 
 
-		void setScriptClass(ScriptClass *sc);
-		ScriptClass * getScriptClass();
+		void setScriptClass(ScriptType *sc);
+		ScriptType * getScriptClass();
 		int getIdxScriptFunction();
 		int numInnerScopes();
 

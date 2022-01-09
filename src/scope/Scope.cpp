@@ -36,7 +36,7 @@ namespace zetscript{
 		}
 	}
 
-	void Scope::setScriptClass(ScriptClass *sc){
+	void Scope::setScriptClass(ScriptType *sc){
 		if(scope_parent != NULL){
 			THROW_RUNTIME_ERROR("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
 			return;
@@ -44,7 +44,7 @@ namespace zetscript{
 		script_class=sc;
 	}
 
-	ScriptClass * Scope::getScriptClass(){
+	ScriptType * Scope::getScriptClass(){
 		return scope_base->script_class;
 	}
 

@@ -48,11 +48,16 @@ typedef enum:unsigned short {
  ||	((instruction)->byte_code == 		BYTE_CODE_UNRESOLVED_THIS_CALL) \
 )
 
+#define INSTRUCTION_CONST_TO_STK_CONST_VALUE(val,properties)\
+	((properties) & (INSTRUCTION_PROPERTY_ZS_INT | INSTRUCTION_PROPERTY_BOOL | INSTRUCTION_PROPERTY_ZS_FLOAT) ) ? val \
+	:((properties) & INSTRUCTION_PROPERTY_STRING) ? (((StackElement *)(val))->value) \
+	:0
+
 #define INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(properties)\
 	 (properties) & INSTRUCTION_PROPERTY_ZS_INT ? STK_PROPERTY_ZS_INT \
 	:(properties) & INSTRUCTION_PROPERTY_BOOL ? STK_PROPERTY_BOOL \
 	:(properties) & INSTRUCTION_PROPERTY_ZS_FLOAT ? STK_PROPERTY_ZS_FLOAT \
-	:(properties) & INSTRUCTION_PROPERTY_STRING ? STK_PROPERTY_PTR_STK \
+	:(properties) & INSTRUCTION_PROPERTY_STRING ? (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY) \
 	:0
 
 #define INSTRUCTION_GET_PARAMETER_COUNT(instruction) 	((instruction)->value_op1 & 0x0f)

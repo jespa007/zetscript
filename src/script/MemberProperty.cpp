@@ -5,7 +5,7 @@
 #include "zetscript.h"
 
 namespace zetscript{
-	MemberProperty::MemberProperty(ScriptClass *_script_class,const zs_string & _property_name){
+	MemberProperty::MemberProperty(ScriptType *_script_class,const zs_string & _property_name){
 		property_name=_property_name;
 		script_class=_script_class;
 	}

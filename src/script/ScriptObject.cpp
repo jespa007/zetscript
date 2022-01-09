@@ -54,7 +54,7 @@ namespace zetscript{
 
 		// init builtin
 		if(idx_type >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_type<IDX_TYPE_SCRIPT_OBJECT_CLASS){
-			ScriptClass *script_class=getScriptClass();
+			ScriptType *script_class=getScriptClass();
 			zs_vector *symbol_vars=script_class->class_scope->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
@@ -90,24 +90,24 @@ namespace zetscript{
 		return 0;
 	}
 
-	const zs_string & ScriptObject::getClassName(){
-		return getScriptClass()->class_name;
+	const zs_string & ScriptObject::getTypeName(){
+		return getScriptClass()->type_name;
 	}
 
 	const char * ScriptObjectClass::getNativePointerClassName(){
-		return getScriptClass()->str_class_ptr_type;
+		return getScriptClass()->str_ptr_type;
 	}
 
 	bool ScriptObject::isNativeObject(){
 		 return (getScriptClass()->properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0;
 	}
 
-	ScriptClass * ScriptObject::getScriptClass(){
+	ScriptType * ScriptObject::getScriptClass(){
 		return this->zs->getScriptClassFactory()->getScriptClass(idx_type);
 	}
 
 	ScriptFunction *ScriptObject::getGetter(){
-		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_type);
+		ScriptType *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_type);
 		MetamethodMembers *metamethod_members=&script_class->metamethod_members;
 
 		if(metamethod_members !=NULL){
@@ -117,7 +117,7 @@ namespace zetscript{
 	}
 
 	zs_vector *ScriptObject::getSetterList(ByteCodeMetamethod _byte_code_metamethod){
-		ScriptClass *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_type);
+		ScriptType *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_type);
 		MetamethodMembers *metamethod_members=&script_class->metamethod_members;
 
 		if(metamethod_members !=NULL){
@@ -176,7 +176,7 @@ namespace zetscript{
 	}
 
 	zs_string ScriptObject::toString(){
-		return "Object@"+getClassName();
+		return "Object@"+getTypeName();
 	}
 
 	ScriptObject::~ScriptObject(){

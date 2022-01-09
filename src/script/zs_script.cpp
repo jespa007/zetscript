@@ -23,10 +23,10 @@
 #include 		"ScriptObjectVarRef.cpp"
 
 #include		"ScriptFunctionFactory.cpp"
-#include		"ScriptClassFactory.cpp"
+#include		"ScriptTypeFactory.cpp"
 //#include		"ScriptContext.cpp"
 #include		"ScriptFunctionParam.cpp"
 #include		"ScriptFunction.cpp"
 #include 		"MetamethodMembers.cpp"
 #include 		"MemberProperty.cpp"
-#include		"ScriptClass.cpp"
+#include		"ScriptType.cpp"

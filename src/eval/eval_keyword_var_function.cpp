@@ -172,7 +172,7 @@ namespace zetscript{
 
 			char *start_var=NULL,*end_var=NULL;
 			int start_line=0;
-			ScriptClass *sc=NULL;
+			ScriptType *sc=NULL;
 			zs_string s_aux,variable_name,pre_variable_name="";
 			zs_string error="";
 			Symbol *symbol_variable=NULL,*symbol_member_variable=NULL;
@@ -199,7 +199,7 @@ namespace zetscript{
 				scope_var = MAIN_SCOPE(eval_data);
 
 				if(sc!=NULL){
-					pre_variable_name=sc->class_name+"::";
+					pre_variable_name=sc->type_name+"::";
 				}
 			}else if(sc != NULL){
 				sf_field_initializer=sc->sf_field_initializer;
@@ -212,7 +212,7 @@ namespace zetscript{
 				start_var=aux_p;
 				start_line=line;
 				end_var=NULL;
-				ScriptClass *sc_var_member_extension=sc;
+				ScriptType *sc_var_member_extension=sc;
 
 				if(sc==NULL){
 					if((end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
@@ -346,7 +346,7 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->class_name.c_str()).c_str():""
+							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->type_name.c_str()).c_str():""
 							,variable_name.c_str());
 				}
 
@@ -397,7 +397,7 @@ error_eval_keyword_var:
 		){
 
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-		ScriptClass *sc=NULL; // if NULL it suposes is the main
+		ScriptType *sc=NULL; // if NULL it suposes is the main
 		char *aux_p = (char *)s;
 		Keyword key_w=eval_is_keyword(aux_p);
 		bool is_static = false;
@@ -674,7 +674,7 @@ error_eval_keyword_var:
 				if(custom_symbol_name != ""){
 					function_name=custom_symbol_name;
 				}else{
-					function_name=eval_anonymous_function_name(sc!=NULL?sc->class_name:"");
+					function_name=eval_anonymous_function_name(sc!=NULL?sc->type_name:"");
 				}
 			}
 
@@ -807,7 +807,7 @@ error_eval_keyword_var:
 					, scope_info
 					,&eval_data->current_function->eval_instructions
 					,NULL
-					,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
+					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION|EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			))!= NULL){
 
 				eval_data->current_function->eval_instructions.push_back((zs_int)(

@@ -54,7 +54,7 @@ namespace zetscript{
 
 		// script class factory should be created and initialized
 		data->script_function_factory=_zs->getScriptFunctionFactory();
-		data->script_class_factory=_zs->getScriptClassFactory();
+		data->script_type_factory=_zs->getScriptClassFactory();
 		data->scope_factory = _zs->getScopeFactory();
 		data->main_function_object = MAIN_FUNCTION(data);
 		data->main_class_object = SCRIPT_CLASS_MAIN(data);

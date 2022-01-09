@@ -442,8 +442,8 @@ namespace zetscript{
 
 		zs_string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
-		ScriptClass *sc_sf = GET_SCRIPT_CLASS(eval_data,sf->idx_type);
-		ScriptClass *sc_found=NULL;
+		ScriptType *sc_sf = GET_SCRIPT_CLASS(eval_data,sf->idx_type);
+		ScriptType *sc_found=NULL;
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 
@@ -470,7 +470,7 @@ namespace zetscript{
 			Symbol *vis=NULL;
 			EvalInstruction *eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[i];
 			zs_string *ptr_str_symbol_to_find=NULL;
-			ScriptClass *sc_aux=NULL;
+			ScriptType *sc_aux=NULL;
 			ptr_str_symbol_to_find=&eval_instruction->symbol.name;
 
 			sum_stk_load_stk+=instruction_num_required_stack(&eval_instruction->vm_instruction);
@@ -492,7 +492,7 @@ namespace zetscript{
 						ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 						bool match_names=false;
 						if((sf->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
-							match_names=( sf_member->properties & FUNCTION_PROPERTY_CONSTRUCTOR) != 0;//symbol_member->scope->script_class->class_name==symbol_member->name;
+							match_names=( sf_member->properties & FUNCTION_PROPERTY_CONSTRUCTOR) != 0;//symbol_member->scope->script_class->type_name==symbol_member->name;
 						}else{
 							match_names=symbol_member->name==sf->function_name;
 						}
@@ -515,7 +515,7 @@ namespace zetscript{
 								,eval_data->current_parsing_file
 								,eval_instruction->instruction_source_info.line
 								,"Cannot find parent constructor of '%s'"
-								,sc_sf->class_name.c_str()
+								,sc_sf->type_name.c_str()
 							);
 						}else{
 							EVAL_ERROR_FILE_LINE_AND_GOTO(
@@ -523,13 +523,13 @@ namespace zetscript{
 								,eval_data->current_parsing_file
 								,eval_instruction->instruction_source_info.line
 								,"Cannot find parent function '%s::%s'"
-								,sc_sf->class_name.c_str()
+								,sc_sf->type_name.c_str()
 								,sf->function_name.c_str()
 							);
 						}
 					}
 					eval_instruction->vm_instruction.value_op2=(zs_int)symbol_sf_foundf;//->idx_position;
-					eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_class->class_name)+"::"+symbol_sf_foundf->name);
+					eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_class->type_name)+"::"+symbol_sf_foundf->name);
 				}
 
 				if(eval_instruction->vm_instruction.value_op2==IDX_ZS_UNDEFINED){

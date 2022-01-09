@@ -28,7 +28,7 @@ namespace zetscript{
 		script_class_native=NULL;
 	}
 
-	void ScriptObjectClass::callConstructorMemberVariables(ScriptClass *sc ){
+	void ScriptObjectClass::callConstructorMemberVariables(ScriptType *sc ){
 		if(sc == NULL){
 			return;
 		}
@@ -51,7 +51,7 @@ namespace zetscript{
 		vm=zs->getVirtualMachine();
 
 		idx_type=_idx_type;
-		ScriptClass *script_class=getScriptClass();
+		ScriptType *script_class=getScriptClass();
 		zs_vector *member_vars=script_class->class_scope->symbol_variables;
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
@@ -96,7 +96,7 @@ namespace zetscript{
 		if(script_class->isNativeClass()){
 			script_class_native=script_class;
 		}else {
-			ScriptClass *sc=script_class;
+			ScriptType *sc=script_class;
 			// get first class with c inheritance...
 			while((sc->idx_base_classes->count>0) && (script_class_native==NULL)){
 				sc=this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]); // get base class (only first in script because has single inheritance)...
@@ -122,7 +122,7 @@ namespace zetscript{
 
 	ScriptFunction *ScriptObjectClass::getConstructorFunction(){
 
-		ScriptClass *script_class=getScriptClass();
+		ScriptType *script_class=getScriptClass();
 		if(script_class->idx_function_member_constructor != IDX_ZS_UNDEFINED){
 			return (ScriptFunction *)script_class->class_scope->symbol_functions->items[script_class->idx_function_member_constructor];
 		}
@@ -149,7 +149,7 @@ namespace zetscript{
 		return was_created_by_constructor;
 	}
 
-	ScriptClass * ScriptObjectClass::getNativeScriptClass(){
+	ScriptType * ScriptObjectClass::getNativeScriptClass(){
 		 return script_class_native;
 	}
 
@@ -209,7 +209,7 @@ namespace zetscript{
 	}
 
 	ScriptObjectClass::~ScriptObjectClass(){
-		ScriptClass *script_class=getScriptClass();
+		ScriptType *script_class=getScriptClass();
 
 		if(created_object != 0 && delete_c_object_on_destroy){
 			 // only erases pointer if basic type or user/auto delete is required ...

@@ -38,18 +38,18 @@ namespace zetscript{
 			result=zs_string("type@")+_zs->getScriptClassFactory()->getScriptClassName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_PROPERTY(stk)){
 			MemberProperty *ma=(MemberProperty *)stk->value;
-			result="attr@"+ma->script_class->class_name+"::"+ma->property_name;
+			result="attr@"+ma->script_class->type_name+"::"+ma->property_name;
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-			result="fun@"+sf->function_scope->script_class->class_name+"::"+sf->function_name;
+			result="fun@"+sf->function_scope->script_class->type_name+"::"+sf->function_name;
 		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
 			}
 
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				result=((ScriptObjectObject *)stk->value)->getClassName().c_str();
+				result=((ScriptObjectObject *)stk->value)->getTypeName().c_str();
 			}
 		}
 
@@ -86,7 +86,7 @@ namespace zetscript{
 		}else{
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk->value;
-				if(so->getClassName() == "DateTime"){
+				if(so->getTypeName() == "DateTime"){
 					result=((zs_datetime *)((ScriptObjectClass *)so)->getNativeObject())->to_string(_format);
 				}else{
 					result=so->toString();

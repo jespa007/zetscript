@@ -42,11 +42,11 @@ namespace zetscript{
 		script_function_factory= new ScriptFunctionFactory(this);
 
 		virtual_machine = vm_new(this);
-		script_class_factory = new ScriptClassFactory(this);
-		script_class_factory->init();
+		script_type_factory = new ScriptTypeFactory(this);
+		script_type_factory->init();
 		vm_init(virtual_machine,this);
 
-		script_class_factory->registerSystem();
+		script_type_factory->registerSystem();
 
 		stk_constants=new zs_map();
 
@@ -54,7 +54,7 @@ namespace zetscript{
 		// Register built in modules
 
 		// Math mod
-		ScriptClass *cl=script_class_factory->registerClass("Math");
+		ScriptType *cl=script_type_factory->registerClass("Math");
 		cl->registerNativeMemberVariableStaticConst("PI",&MathModule_PI);
 		cl->registerNativeMemberFunctionStatic("sin",MathModule_sin);
 		cl->registerNativeMemberFunctionStatic("cos",MathModule_cos);
@@ -64,7 +64,7 @@ namespace zetscript{
 		cl->registerNativeMemberFunctionStatic("random",MathModule_random);
 
 		// Console mod
-		cl=script_class_factory->registerClass("Console");
+		cl=script_type_factory->registerClass("Console");
 		cl->registerNativeMemberFunctionStatic("readChar",ConsoleModule_readChar);
 		cl->registerNativeMemberFunctionStatic("outNative",ConsoleModule_out);
 		cl->registerNativeMemberFunctionStatic("outlnNative",ConsoleModule_outln);
@@ -72,14 +72,14 @@ namespace zetscript{
 		cl->registerNativeMemberFunctionStatic("errorlnNative",ConsoleModule_errorln);
 
 		// System mod
-		cl=script_class_factory->registerClass("System");
+		cl=script_type_factory->registerClass("System");
 		cl->registerNativeMemberFunctionStatic("clock",SystemModule_clock);
 		cl->registerNativeMemberFunctionStatic("evalNative",SystemModule_eval);
 		//cl->registerNativeMemberFunctionStatic("assertNative",SystemModule_assert);
 		cl->registerNativeMemberFunctionStatic("errorNative",SystemModule_error);
 
 		// Json mod
-		cl=script_class_factory->registerClass("Json");
+		cl=script_type_factory->registerClass("Json");
 		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
 		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
 		cl->registerNativeMemberFunctionStatic("deserialize",JsonModule_deserialize);
@@ -194,7 +194,7 @@ namespace zetscript{
 	void ZetScript::printAllStructSizes(){
 		printf("ZetScript:%lu\n"
 				"VirtualMachineData:%lu\n"
-				"ScriptClass:%lu\n"
+				"ScriptType:%lu\n"
 				"ScriptFunction:%lu\n"
 				"StackElement:%lu\n"
 				"Symbol:%lu\n"
@@ -206,7 +206,7 @@ namespace zetscript{
 				"ScriptObjectClass:%lu\n"
 				,sizeof(ZetScript)
 				,sizeof(VirtualMachineData)
-				,sizeof(ScriptClass)
+				,sizeof(ScriptType)
 				,sizeof(ScriptFunction)
 				,sizeof(StackElement)
 				,sizeof(Symbol)
@@ -222,7 +222,7 @@ namespace zetscript{
 
 	 void ZetScript::printGeneratedCode(bool show_system_code){
 
-		 zs_vector *script_classes=script_class_factory->getScriptClasses();
+		 zs_vector *script_classes=script_type_factory->getScriptClasses();
 		 // for all classes print code...
 		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
 
@@ -255,21 +255,21 @@ namespace zetscript{
 		}
 
 		 for(unsigned i = 1; i < script_classes->count; i++){
-			 ScriptClass *sc=(ScriptClass *)script_classes->get(i);
+			 ScriptType *sc=(ScriptType *)script_classes->get(i);
 			 bool show_class=true;
 
 			 // ignore builtin implementations if not chosen ...
 			 if(show_system_code == false && (
-					 	sc->class_name == "System"
-					||	sc->class_name == "String"
-					||	sc->class_name == "IteratorString"
-					||	sc->class_name == "Object"
-					||	sc->class_name == "IteratorObject"
-					||	sc->class_name == "Console"
-					||	sc->class_name == "DateTime"
-					||	sc->class_name == "Vector"
-					||	sc->class_name == "IteratorVector"
-					||	sc->class_name == "Json"
+					 	sc->type_name == "System"
+					||	sc->type_name == "String"
+					||	sc->type_name == "IteratorString"
+					||	sc->type_name == "Object"
+					||	sc->type_name == "IteratorObject"
+					||	sc->type_name == "Console"
+					||	sc->type_name == "DateTime"
+					||	sc->type_name == "Vector"
+					||	sc->type_name == "IteratorVector"
+					||	sc->type_name == "Json"
 				)){
 				 show_class=false;
 			 }
@@ -361,7 +361,7 @@ namespace zetscript{
 			stk_ret=vm_execute(
 					virtual_machine
 					,NULL
-					,script_class_factory->getMainFunction()
+					,script_type_factory->getMainFunction()
 					,NULL
 					,0
 					,0
@@ -458,7 +458,7 @@ namespace zetscript{
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
 		zs_string global_symbol;
 		int idx_start_variable = _idx_start_variable == IDX_ZS_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
-		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
+		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
 		zs_vector *local_variables=main_function_object->local_variables;
 		zs_vector *global_symbol_variables= main_scope->symbol_variables;
@@ -536,18 +536,18 @@ namespace zetscript{
 
 		scope_factory->clear();
 		script_function_factory->clear();
-		script_class_factory->clear();
+		script_type_factory->clear();
 
 		resetParsedFiles();
 	}
 
 	void ZetScript::saveState(){
-		ScriptFunction *main_function_object=script_class_factory->getMainFunction();
+		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
 		idx_current_global_variable_checkpoint=main_function_object->local_variables->count-1;
 
 		scope_factory->saveState();
 		script_function_factory->saveState();
-		script_class_factory->saveState();
+		script_type_factory->saveState();
 	}
 
 	bool ZetScript::getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf){
@@ -588,7 +588,7 @@ namespace zetscript{
 		vm_delete(virtual_machine);
 		
 		delete script_function_factory;
-		delete script_class_factory;
+		delete script_type_factory;
 		delete scope_factory;
 
 		virtual_machine=NULL;

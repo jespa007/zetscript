@@ -24,7 +24,7 @@ typedef enum{
 namespace zetscript{
 
 	class ScriptFunctionFactory;
-	class ScriptClassFactory;
+	class ScriptTypeFactory;
 	class ScopeFactory;
 	class ZetScript;
 
@@ -81,7 +81,7 @@ namespace zetscript{
 		//  DEBUG
 		//-----------
 
-		static void printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc=NULL);
+		static void printGeneratedCode(ScriptFunction *sfo,ScriptType *sc=NULL);
 
 		int existArgumentName(const zs_string & arg_name);
 
@@ -141,7 +141,7 @@ namespace zetscript{
 
 		ZetScript 				*zs;
 		ScriptFunctionFactory 	*script_function_factory;
-		ScriptClassFactory 		*script_class_factory;
+		ScriptTypeFactory 		*script_type_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 		zs_vector				unresolved_symbols; // UnresolvedInstructionInfo
 		static zs_string 		formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);

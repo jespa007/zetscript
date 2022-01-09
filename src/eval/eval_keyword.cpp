@@ -9,7 +9,7 @@ namespace zetscript{
 	char * eval_keyword_static(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 		char *aux_p = (char *)s;
 		Keyword key_w;
-		ScriptClass *sc=NULL;
+		ScriptType *sc=NULL;
 
 		// check class scope...
 		if(eval_is_keyword(aux_p)==Keyword::KEYWORD_STATIC){

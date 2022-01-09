@@ -8,7 +8,7 @@ namespace zetscript{
 
 
 
-	char * eval_keyword_class_property(EvalData *eval_data, const char *s, int & line	, ScriptClass *sc	);
+	char * eval_keyword_class_property(EvalData *eval_data, const char *s, int & line	, ScriptType *sc	);
 
 	//------------------------------------------------------------------------------------------------------------------------------------------
 	//
@@ -19,9 +19,9 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		int class_line;
-		zs_string class_name;
+		zs_string type_name;
 		zs_string base_class_name="";
-		ScriptClass *sc;
+		ScriptType *sc;
 		Keyword key_w;
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -46,7 +46,7 @@ namespace zetscript{
 					eval_data
 					,aux_p
 					,line
-					,class_name
+					,type_name
 			);
 
 			// try to register class...
@@ -68,8 +68,8 @@ namespace zetscript{
 
 			// register class
 			try{
-				sc=eval_data->script_class_factory->registerClass(
-					 class_name
+				sc=eval_data->script_type_factory->registerClass(
+					 type_name
 					,base_class_name
 					,__FILE__
 					, __LINE__
@@ -80,7 +80,7 @@ namespace zetscript{
 				return NULL;
 			}
 
-			ZS_LOG_DEBUG("registered class '%s' line %i ",class_name.c_str(), class_line);
+			ZS_LOG_DEBUG("registered class '%s' line %i ",type_name.c_str(), class_line);
 
 			if(*aux_p == '{' ){
 
@@ -146,7 +146,7 @@ namespace zetscript{
 
 								break;
 						default:
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",eval_data_keywords[key_w].str,class_name.c_str());
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",eval_data_keywords[key_w].str,type_name.c_str());
 						}
 
 						if(aux_p == NULL){
@@ -159,22 +159,22 @@ namespace zetscript{
 				}
 
 				if(*aux_p != '}'){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",class_name.c_str());
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",type_name.c_str());
 				}
 
 				return aux_p+1;
 
 			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",class_name.c_str());
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",type_name.c_str());
 			}
 		}
 		return NULL;
 	}
 
-	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptClass **sc,zs_string & member_symbol){
+	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptType **sc,zs_string & member_symbol){
 
 		char *aux_p = (char *)s;
-		zs_string class_name;
+		zs_string type_name;
 		*sc=NULL;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -184,7 +184,7 @@ namespace zetscript{
 				eval_data
 				,aux_p
 				,line
-				,class_name);
+				,type_name);
 
 		if(aux_p == NULL){
 			return NULL;
@@ -194,7 +194,7 @@ namespace zetscript{
 
 		if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
 
-			if((*sc=GET_SCRIPT_CLASS(eval_data,class_name)) != NULL){
+			if((*sc=GET_SCRIPT_CLASS(eval_data,type_name)) != NULL){
 				aux_p=get_name_identifier_token(
 						eval_data
 						,aux_p+2
@@ -204,7 +204,7 @@ namespace zetscript{
 
 				return aux_p;
 			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class %s not found",class_name.c_str());
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class %s not found",type_name.c_str());
 			}
 		}
 		return NULL;
@@ -276,14 +276,14 @@ namespace zetscript{
 			EvalData *eval_data
 			, const char *s
 			, int & line
-			, ScriptClass *sc
+			, ScriptType *sc
 		){
 
 		char *aux_p = (char *)s;
 		char *end_var = NULL;
 		zs_string property_name="";
 		int attrib_start_line;
-		zs_string class_property_name=sc->class_name;
+		zs_string class_property_name=sc->type_name;
 		Scope *scope_info=sc->class_scope;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);

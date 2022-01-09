@@ -53,7 +53,7 @@ namespace zetscript{
 		zs = _zs;
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
-		script_class_factory=zs->getScriptClassFactory();
+		script_type_factory=zs->getScriptClassFactory();
 
 		min_stack_needed=0;
 
@@ -65,7 +65,7 @@ namespace zetscript{
 		return (InstructionSourceInfo *)instruction_source_info.items[idx];
 	}
 
-	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptClass *sc){
+	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptType *sc){
 
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
@@ -97,7 +97,7 @@ namespace zetscript{
 			symbol_ref=sfo->function_name;
 		}else{ // is a class
 			symbol_ref=sfo->function_name;//+zs_string("::")+zs_string("????");
-			class_str=sc->class_name+"::";
+			class_str=sc->type_name+"::";
 		}
 
 
@@ -648,7 +648,7 @@ namespace zetscript{
 	}
 
 	bool ScriptFunction::linkUnresolvedSymbols(){
-		ScriptClass *sc_found=NULL;
+		ScriptType *sc_found=NULL;
 		if(unresolved_symbols.count > 0){
 
 			const char *str_aux=NULL;
@@ -672,7 +672,7 @@ namespace zetscript{
 				}
 
 
-				if((idx_sc_found= script_class_factory->getBuiltinTypeOrClass(ptr_str_symbol_to_find))!= IDX_ZS_UNDEFINED){ // check if class
+				if((idx_sc_found= script_type_factory->getBuiltinTypeOrClass(ptr_str_symbol_to_find))!= IDX_ZS_UNDEFINED){ // check if class
 					unresolved_instruction->byte_code=BYTE_CODE_LOAD_TYPE;
 					unresolved_instruction->value_op2=idx_sc_found;
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
@@ -694,7 +694,7 @@ namespace zetscript{
 						symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 					}
 				}else if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // try get global symbol
-					ScriptClass *this_class=zs->getScriptClassFactory()->getScriptClass(this->idx_type);
+					ScriptType *this_class=zs->getScriptClassFactory()->getScriptClass(this->idx_type);
 					symbol_found=this_class->getSymbolMemberFunction(ptr_str_symbol_to_find);
 				}else{
 					symbol_found = MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);

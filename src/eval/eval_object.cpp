@@ -296,7 +296,7 @@ namespace zetscript{
 		// Inline new : (new A(4+5)).toString()
 		char *aux_p = (char *)s;
 		zs_string symbol_name;
-		ScriptClass *sc=NULL;
+		ScriptType *sc=NULL;
 		int n_args=0;
 		Symbol *constructor_function=NULL;
 		int start_line=line;
@@ -356,10 +356,10 @@ namespace zetscript{
 							 ,get_mapped_name(eval_data,symbol_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
 						 );
 
-					//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",class_name.c_str());
+					//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",type_name.c_str());
 				}else{ // known type
-					if(!eval_data->script_class_factory->isClassInstanceable(sc->idx_type)){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getClassName());
+					if(!eval_data->script_type_factory->isClassInstanceable(sc->idx_type)){
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getTypeName());
 					}
 
 					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE)));

@@ -140,7 +140,7 @@ namespace zetscript{
 		inline VirtualMachine * getVirtualMachine() { return virtual_machine;}
 		inline ScopeFactory * getScopeFactory() { return scope_factory;}
 		inline ScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
-		inline ScriptClassFactory *getScriptClassFactory() { return script_class_factory;}
+		inline ScriptTypeFactory *getScriptClassFactory() { return script_type_factory;}
 
 		StackElement	eval(const zs_string & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
 		StackElement	eval(const zs_string & expresion,unsigned short options, const char * filename="", const char *__invoke_file__="", int __invoke_line__=-1);
@@ -161,32 +161,32 @@ namespace zetscript{
 		 */
 		template <typename V>
 		 void registerVariable(const zs_string & var_name,V var_ptr, const char *registered_file="",short registered_line=-1){
-			 script_class_factory->registerNativeGlobalVariable(var_name,var_ptr, registered_file, registered_line);
+			 script_type_factory->registerNativeGlobalVariable(var_name,var_ptr, registered_file, registered_line);
 		 }
 
 		void registerConstantVariable(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1){
-			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+			script_type_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
 		void registerConstantVariable(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1){
-			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+			script_type_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
 		void registerConstantVariable(const zs_string & var_name, float value, const char *registered_file="", short registered_line=-1){
-			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+			script_type_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
 		void registerConstantVariable(const zs_string & var_name, double value, const char *registered_file="", short registered_line=-1){
-			script_class_factory->registerConstantVariable(var_name,(float)value, registered_file, registered_line);
+			script_type_factory->registerConstantVariable(var_name,(float)value, registered_file, registered_line);
 		}
 
 
 		void registerConstantVariable(const zs_string & var_name, const zs_string & value, const char *registered_file="", short registered_line=-1){
-			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+			script_type_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
 		void registerConstantVariable(const zs_string & var_name, const char *value, const char *registered_file="", short registered_line=-1){
-			script_class_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+			script_type_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
 		/**
@@ -194,15 +194,15 @@ namespace zetscript{
 		 */
 		template <typename F>
 		void registerFunction( const zs_string & function_name,F ptr_function, const char *registered_file="",short registered_line=-1){
-			script_class_factory->registerNativeGlobalFunction( function_name,ptr_function, registered_file,registered_line);
+			script_type_factory->registerNativeGlobalFunction( function_name,ptr_function, registered_file,registered_line);
 		}
 
 		/**
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		 void registerSingletonClass(const zs_string & class_name, const char *registered_file="",short registered_line=-1){
-			script_class_factory->registerNativeSingletonClass<C>(class_name, registered_file, registered_line);
+		 void registerSingletonClass(const zs_string & type_name, const char *registered_file="",short registered_line=-1){
+			script_type_factory->registerNativeSingletonClass<C>(type_name, registered_file, registered_line);
 		}
 
 		/**
@@ -210,17 +210,22 @@ namespace zetscript{
 		 */
 
 		template<typename C>
-		ScriptClass * registerClass(const zs_string & class_name, C  * (*_constructor)(), void (*_destructor)(C *), const char *registered_file="",short registered_line=-1){
-			return script_class_factory->registerNativeClass<C>(class_name, _constructor, _destructor, registered_file,registered_line);
+		ScriptType * registerClass(const zs_string & type_name, C  * (*_constructor)(), void (*_destructor)(C *), const char *registered_file="",short registered_line=-1){
+			return script_type_factory->registerNativeClass<C>(type_name, _constructor, _destructor, registered_file,registered_line);
+		}
+
+		template<typename C>
+		ScriptType * registerType(const zs_string & _type_name, const char *_registered_file="",short _registered_line=-1){
+			return script_type_factory->registerNativeType<C>(_type_name,_registered_file,_registered_line);
 		}
 
 		template<class C, class B>
 		void classInheritsFrom(){
-			script_class_factory->nativeClassInheritsFrom<C,B>();
+			script_type_factory->nativeClassInheritsFrom<C,B>();
 		}
 
 		void	registerBaseSymbols(bool r){
-			script_class_factory->registerNativeBaseSymbols(r);
+			script_type_factory->registerNativeBaseSymbols(r);
 		}
 
 		template<typename C,typename F>
@@ -229,7 +234,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1){
 
-			script_class_factory->registerNativeConstructor<C>(function_type, registered_file,registered_line );
+			script_type_factory->registerNativeConstructor<C>(function_type, registered_file,registered_line );
 		}
 
 
@@ -240,7 +245,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeStaticConstMember<C>(var_name,var_pointer, registered_file,registered_line );
+			script_type_factory->registerNativeStaticConstMember<C>(var_name,var_pointer, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
@@ -250,7 +255,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberFunction<C>(function_name,function_type, registered_file,registered_line );
+			script_type_factory->registerNativeMemberFunction<C>(function_name,function_type, registered_file,registered_line );
 		}
 
 
@@ -261,7 +266,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertySetter<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->registerNativeMemberPropertySetter<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
@@ -271,7 +276,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertyGetter<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->registerNativeMemberPropertyGetter<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
@@ -281,7 +286,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertyPostIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->registerNativeMemberPropertyPostIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
@@ -291,7 +296,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertyPostDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->registerNativeMemberPropertyPostDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
@@ -301,7 +306,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertyPreIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->registerNativeMemberPropertyPreIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
@@ -311,7 +316,7 @@ namespace zetscript{
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_class_factory->registerNativeMemberPropertyPreDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->registerNativeMemberPropertyPreDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		/**
@@ -319,7 +324,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void registerMemberFunctionStatic(const zs_string & function_name,F fun, const char *registered_file="",short registered_line=-1){
-			script_class_factory->registerNativeMemberFunctionStatic<C>(function_name,fun, registered_file, registered_line);
+			script_type_factory->registerNativeMemberFunctionStatic<C>(function_name,fun, registered_file, registered_line);
 		}
 
 		//cpp binding
@@ -491,7 +496,7 @@ namespace zetscript{
 		VirtualMachine * virtual_machine;
 		ScopeFactory * scope_factory;
 		ScriptFunctionFactory *script_function_factory;
-		ScriptClassFactory *script_class_factory;
+		ScriptTypeFactory *script_type_factory;
 
 		zs_float eval_float;
 		zs_int eval_int;

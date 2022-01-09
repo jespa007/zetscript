@@ -161,7 +161,7 @@ namespace zetscript{
 
 	template <typename F>
 	int getNativeMemberFunctionRetArgsTypes(
-			 ScriptClassFactory *_script_class_factory
+			 ScriptTypeFactory *_script_class_factory
 			,const zs_string & _function_name
 			,F _ptr_function
 			,ScriptFunctionParam **_params
