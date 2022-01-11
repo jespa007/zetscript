@@ -90,14 +90,13 @@ namespace zetscript{
 			}
 			else{
 				switch(_instruction->byte_code){
+				// 2 ops
 				case BYTE_CODE_EQU:
 				case BYTE_CODE_NOT_EQU:
 				case BYTE_CODE_LT:
 				case BYTE_CODE_LTE:
-				case BYTE_CODE_NOT:
 				case BYTE_CODE_GT:
 				case BYTE_CODE_GTE:
-				case BYTE_CODE_NEG:
 				case BYTE_CODE_ADD:
 				case BYTE_CODE_SUB:
 				case BYTE_CODE_LOGIC_AND:
@@ -110,6 +109,9 @@ namespace zetscript{
 				case BYTE_CODE_BITWISE_XOR:
 				case BYTE_CODE_SHL:
 				case BYTE_CODE_SHR:
+					return -2;
+				case BYTE_CODE_NEG:
+				case BYTE_CODE_NOT:
 				case BYTE_CODE_JNT:
 				case BYTE_CODE_JT:
 				case BYTE_CODE_JE_CASE:
@@ -139,6 +141,7 @@ namespace zetscript{
 				case BYTE_CODE_POST_DEC:		// get -1 and stk +1 = 0
 				case BYTE_CODE_NEG_POST_DEC:	// get -1 and stk +1 = 0
 				case BYTE_CODE_RESET_STACK:		// get -1 and stk +1 = 0
+				case BYTE_CODE_LOAD_OBJECT_ITEM:
 					return 0;
 				case BYTE_CODE_FIND_VARIABLE:
 				case BYTE_CODE_INSTANCEOF:
@@ -156,7 +159,6 @@ namespace zetscript{
 				case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
 				case BYTE_CODE_LOAD_THIS_VARIABLE:
 				case BYTE_CODE_LOAD_VECTOR_ITEM:
-				case BYTE_CODE_LOAD_OBJECT_ITEM:
 				case BYTE_CODE_LOAD_FUNCTION:
 				case BYTE_CODE_LOAD_NULL:
 				case BYTE_CODE_LOAD_STACK_ELEMENT:

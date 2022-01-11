@@ -30,7 +30,6 @@ int main(int argc, char * argv[]) {
 
 	if (argc > 1) {
 
-
 		int idx_arg=1;
 		bool exit_loop=false;
 		for(;idx_arg  < argc && exit_loop==false; idx_arg++){

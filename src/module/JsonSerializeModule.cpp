@@ -44,7 +44,10 @@ namespace zetscript{
 
 					StackElement *stk_se=(StackElement *)mi->value;
 					// only check if is not function. If is an property an implements get, call
-					if((stk_se->properties & STK_PROPERTY_FUNCTION) == 0){
+					if(((stk_se->properties & STK_PROPERTY_FUNCTION) == 0)
+							&&
+						STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_se) == false
+							){
 						bool created_object=false;
 						bool getter_found=false;
 						StackElement *ptr_stk_param;

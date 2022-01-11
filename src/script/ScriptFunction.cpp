@@ -348,11 +348,12 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_MEMBER_CALL:
 			case BYTE_CODE_CONSTRUCTOR_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\targ:%i ret:%i %s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%sarg:%i ret:%i %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
+					,instruction->byte_code==BYTE_CODE_MEMBER_CALL?"\t\t":"\t"
 					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
 					,INSTRUCTION_GET_RETURN_COUNT(instruction)
 					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
@@ -375,6 +376,25 @@ namespace zetscript{
 					,instruction->byte_code==BYTE_CODE_STORE_CONST
 					?"\t\t":"\t\t\t"
 					,(int)instruction->value_op1
+					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
+				);
+				break;
+			case BYTE_CODE_ADD_STORE:
+			case BYTE_CODE_SUB_STORE:
+			case BYTE_CODE_MUL_STORE:
+			case BYTE_CODE_DIV_STORE:
+			case BYTE_CODE_MOD_STORE:
+			case BYTE_CODE_BITWISE_AND_STORE:
+			case BYTE_CODE_BITWISE_OR_STORE:
+			case BYTE_CODE_BITWISE_XOR_STORE:
+			case BYTE_CODE_SHL_STORE:
+			case BYTE_CODE_SHR_STORE:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
+					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
+					,byte_code_to_str(instruction->byte_code)
+					,"\t\t"
 					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 				);
 				break;

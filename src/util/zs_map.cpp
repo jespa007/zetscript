@@ -15,7 +15,8 @@ namespace zetscript{
 		int idx_min=0;
 		int idx_max=(int)_count-1;
 
-		if(idx_max<=0){
+		// trivial case (no items)
+		if(idx_max<0){
 			return ZS_MAP_KEY_NOT_FOUND;
 		}
 

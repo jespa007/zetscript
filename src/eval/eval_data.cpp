@@ -763,7 +763,7 @@ namespace zetscript{
 				return aux_p;
 		}else{
 			if(_throw_error){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Invalid or unexpected token");
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected char '%c'",*aux_p);
 			}
 		}
 		return NULL;

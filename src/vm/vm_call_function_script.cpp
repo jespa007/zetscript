@@ -96,6 +96,9 @@ namespace zetscript{
 
 		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (symbols_count > 0)){
 			VM_PUSH_SCOPE(calling_function->function_scope);
+
+			// reset local variables symbols (not arg symbols)
+			memset(_stk_local_var+calling_function->params_len,0,sizeof(StackElement)*symbols_count);
 		}
 		//-----------------------------------------------------------------------------------------------------------------------
 		//
@@ -209,7 +212,7 @@ namespace zetscript{
 				*data->stk_vm_current++=*this_object->getThisProperty();
 				continue;
 			case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
-				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,(ScriptObjectObject *)this_object,(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr);
+				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,this_object,(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr);
 				 if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
 				 }
@@ -266,14 +269,15 @@ load_next_element_object:
 
 find_element_object:
 
-				if(stk_var==NULL){ // load element from object or dynamic member element from this
+				//if(stk_var==NULL)
+				{ // load element from object or dynamic member element from this
 					str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
 					//
 					ScriptType *sc=so_aux->getScriptClass();
 					Symbol *sf_member=sc->getSymbolMemberFunction(str_symbol);
 					if(sf_member !=NULL){
-						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,(ScriptObjectObject *)so_aux,(ScriptFunction *)sf_member->ref_ptr);
+						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
 
 						 if(!vm_create_shared_pointer(vm,somf)){
 								goto lbl_exit_function;
@@ -403,7 +407,6 @@ find_element_object:
 							,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
 					);
 				}
-						// op1 is now the src value ...
 
 				//const char *str = (const char *)stk_result_op1->value;
 				stk_src=stk_result_op2;

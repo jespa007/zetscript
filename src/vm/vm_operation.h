@@ -14,12 +14,12 @@
 		ptr_metamethod_members_aux= &so_aux->getScriptClass()->metamethod_members;\
 	}\
 	else{\
-		zs_strutils::format("Symbol '%s' not implements metamethod %s (aka '%s'') "\
-			,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
-			,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
+		VM_STOP_EXECUTE("Error performing '%s%s': Cannot perform operation with value as '%s'"\
+			,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 			,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
+			,stk_to_str(data->zs,stk_var).c_str()\
+			,stk_to_str(data->zs,stk_var).c_str()\
 		);\
-		goto lbl_exit_function;\
 	}\
 
 #define VM_OPERATION_DIV \

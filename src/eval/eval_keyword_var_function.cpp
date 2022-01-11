@@ -522,8 +522,27 @@ error_eval_keyword_var:
 			}
 
 			// eval function args...
-			if(*aux_p != '('){ // push arguments...
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected function start argument declaration '(' ");
+			if(*aux_p != '('){ // expected (
+				zs_string error;
+				if(is_special_char(aux_p)){
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
+					,scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
+							"declaring function member in class '%s'"
+							,scope_info->script_class->type_name.c_str()
+							).c_str():"declaring function"
+							,*aux_p
+
+					);
+				}else{
+
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
+							,scope_info->script_class != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
+									"declaring function member in class '%s'"
+									,scope_info->script_class->type_name.c_str()
+									).c_str():"declaring function"
+
+					);
+				}
 			}
 
 			// save scope pointer for function args ...

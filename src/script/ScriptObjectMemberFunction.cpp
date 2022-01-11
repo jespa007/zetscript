@@ -6,10 +6,15 @@
 
 namespace zetscript{
 
-	ScriptObjectMemberFunction * ScriptObjectMemberFunction::newScriptObjectMemberFunction(ZetScript *zs, ScriptObjectObject *_so_object, ScriptFunction *_so_function){
+	ScriptObjectMemberFunction * ScriptObjectMemberFunction::newScriptObjectMemberFunction(ZetScript *zs, ScriptObject *_so_object, ScriptFunction *_so_function){
 		ScriptObjectMemberFunction *sofm=new ScriptObjectMemberFunction();
 		sofm->init(zs);
-		sofm->so_object=_so_object;
+
+		if(_so_object->idx_type<IDX_TYPE_SCRIPT_OBJECT_OBJECT){
+			THROW_RUNTIME_ERROR("Internal:Expected object object or class object");
+		}
+
+		sofm->so_object=(ScriptObjectObject *)_so_object;
 		sofm->so_function=_so_function;
 		sofm->so_object->refObjectMemberFunction(sofm);
 		return sofm;
