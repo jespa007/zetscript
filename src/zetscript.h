@@ -220,7 +220,7 @@ namespace zetscript{
 		}
 
 		template<class C, class B>
-		void inheritsFrom(){
+		void scriptClassTypeInheritsFrom(){
 			script_type_factory->nativeClassInheritsFrom<C,B>();
 		}
 

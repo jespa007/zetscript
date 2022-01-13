@@ -810,7 +810,7 @@ find_element_object:
 					break;
 				default:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						bool b = data->script_type_factory->isScriptTypeInheritsFrom(			//
+						bool b = data->script_type_factory->isScriptClassTypeInheritsFrom(			//
 								((ScriptObjectObject *)(stk_result_op1->value))->idx_type // A
 								, instruction->value_op2		// B
 						);

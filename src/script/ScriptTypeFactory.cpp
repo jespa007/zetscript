@@ -635,7 +635,7 @@ namespace zetscript{
 		 return "type_unknow";
 	}
 
-	bool 	ScriptTypeFactory::isScriptTypeInheritsFrom(short _idx_type,short _idx_base_type){
+	bool 	ScriptTypeFactory::isScriptClassTypeInheritsFrom(short _idx_type,short _idx_base_type){
 
 		if(_idx_type == _idx_base_type){
 			return true;
@@ -644,7 +644,7 @@ namespace zetscript{
 		ScriptType *sc=(ScriptType *)script_types->get(_idx_type);
 
 		for(unsigned i=0; i < sc->idx_base_types->count; i++){
-			if(isScriptTypeInheritsFrom(sc->idx_base_types->items[i],_idx_base_type)){
+			if(isScriptClassTypeInheritsFrom(sc->idx_base_types->items[i],_idx_base_type)){
 				return true;
 			}
 		}

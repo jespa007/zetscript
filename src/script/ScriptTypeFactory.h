@@ -54,8 +54,8 @@ namespace zetscript{
 		int								getBuiltinTypeOrClass(const zs_string & name);
 
 		const char 	* 					getScriptTypeName(short _idx_type);
-		void							inheritsFrom(const zs_string & _type_name,const zs_string & _type_name_inherits_from);
-		bool							isScriptTypeInheritsFrom(short _idx_type,short _idx_type_inherits_from);
+		void							scriptClassTypeInheritsFrom(const zs_string & _type_class_name,const zs_string & _type_name_inherits_from);
+		bool							isScriptClassTypeInheritsFrom(short _idx_class_type,short _idx_class_type_inherits_from);
 		bool							isScriptTypeInstanceable(short _idx_type);
 
 		zs_vector	* 					getScriptTypes();

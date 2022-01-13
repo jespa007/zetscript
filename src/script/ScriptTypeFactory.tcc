@@ -189,7 +189,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("class %s not registered",class_name_ptr);
 		}
 
-		if(isScriptTypeInheritsFrom(idx_register_class,idx_base_type)){
+		if(isScriptClassTypeInheritsFrom(idx_register_class,idx_base_type)){
 			THROW_RUNTIME_ERROR("C++ class '%s' is already registered as base of '%s' ",zs_rtti::demangle(type_name), zs_rtti::demangle(base_class_name));
 		}
 
