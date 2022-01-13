@@ -98,7 +98,10 @@ namespace zetscript{
 			VM_PUSH_SCOPE(calling_function->function_scope);
 
 			// reset local variables symbols (not arg symbols)
-			memset(_stk_local_var+calling_function->params_len,0,sizeof(StackElement)*symbols_count);
+			for(unsigned i=calling_function->params_len;i<symbols_count;i++){
+				STK_SET_NULL(_stk_local_var+i);
+			}
+			//memset(_stk_local_var+calling_function->params_len,0,sizeof(StackElement)*symbols_count);
 		}
 		//-----------------------------------------------------------------------------------------------------------------------
 		//
@@ -548,7 +551,7 @@ find_element_object:
 					stk_src_properties=stk_src->properties;
 
 					// init stk_dst
-					*stk_dst=k_stk_null;
+					STK_SET_NULL(stk_dst);
 
 					if(stk_src_properties == STK_PROPERTY_NULL){
 						stk_dst->properties=STK_PROPERTY_NULL;
@@ -1336,7 +1339,7 @@ execute_function:
 								script_object_class->deleteNativeObjectOnDestroy(true);
 							}
 						}
-						*se=k_stk_null;
+						STK_SET_NULL(se);
 					}
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:
@@ -1420,7 +1423,7 @@ execute_function:
 		 }
 
 		// default return null
-		*data->stk_vm_current=k_stk_null;
+		 STK_SET_NULL(data->stk_vm_current);
 		// reset stack and set last stk return null;
 		data->stk_vm_current=_stk_local_var;
 

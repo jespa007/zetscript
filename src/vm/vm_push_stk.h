@@ -4,7 +4,8 @@
  */
 
 #define VM_PUSH_STK_NULL \
-*data->stk_vm_current++=k_stk_null; \
+		STK_SET_NULL(data->stk_vm_current);\
+		data->stk_vm_current++; \
 
 #define VM_PUSH_STK_BOOLEAN(init_value) \
 data->stk_vm_current->value=init_value; \

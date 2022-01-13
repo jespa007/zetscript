@@ -22,7 +22,8 @@
 				}\
 			}\
 		}\
-		*stk_local_var++=k_stk_null;\
+		STK_SET_NULL(stk_local_var);\
+		stk_local_var++;\
 	}\
 	--data->vm_current_scope_function->scope_current;\
 }

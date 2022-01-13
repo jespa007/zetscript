@@ -121,7 +121,7 @@ namespace zetscript{
 	}
 
 	void StackElement::setUndefined(){
-		*this=k_stk_null;
+		STK_SET_NULL(this);;
 	}
 
 	StackElement	StackElement::typeOf(){

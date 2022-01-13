@@ -502,7 +502,7 @@ namespace zetscript{
 					delete symbol;
 				}
 
-				*vm_stk_element=k_stk_null;
+				STK_SET_NULL(vm_stk_element);
 
 				--v;
 			}

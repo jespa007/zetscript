@@ -131,5 +131,5 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
 		);\
 		stk_dst=data->stk_vm_current;\
 	}else{\
-		*stk_dst=k_stk_null;\
+		STK_SET_NULL(stk_dst);\
 	}

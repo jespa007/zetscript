@@ -75,7 +75,9 @@ typedef enum:unsigned short {
 #define STK_VALUE_IS_SCRIPT_OBJECT(stk) 				(stk->properties & STK_PROPERTY_SCRIPT_OBJECT)
 
 #define STK_VALUE_TO_BOOL(ptr_result_instruction) 		(((bool)(ptr_result_instruction->value)))
-#define STK_SET_NULL(stk) 								memset(stk,0,sizeof(StackElement))
+#define STK_SET_NULL(stk)\
+	(stk)->value=0;\
+	(stk)->properties=0;
 
 
 namespace zetscript{
