@@ -71,7 +71,7 @@ namespace zetscript{
 		ScriptType * 	    getNativeScriptClass();
 		bool 				isNativeObject();
 		const zs_string & getTypeName();
-		ScriptType * 	    getScriptClass();
+		ScriptType * 	    getScriptType();
 		StackElement 	*getThisProperty();
 		virtual void	*getNativeObject();
 		virtual zs_string toString();

@@ -35,14 +35,14 @@ namespace zetscript{
 		else if(STK_VALUE_IS_FUNCTION(stk))
 			result=zs_string("fun@")+((ScriptFunction *)stk->value)->function_name;
 		else if(STK_VALUE_IS_TYPE(stk)) // is a class
-			result=zs_string("type@")+_zs->getScriptClassFactory()->getScriptClassName(stk->value);
+			result=zs_string("type@")+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_PROPERTY(stk)){
 			MemberProperty *ma=(MemberProperty *)stk->value;
-			result="attr@"+ma->script_class->type_name+"::"+ma->property_name;
+			result="attr@"+ma->script_type->type_name+"::"+ma->property_name;
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-			result="fun@"+sf->function_scope->script_class->type_name+"::"+sf->function_name;
+			result="fun@"+sf->function_scope->script_type->type_name+"::"+sf->function_name;
 		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
@@ -82,7 +82,7 @@ namespace zetscript{
 				result= zs_string("Function")+"@"+((ScriptFunction *)stk->value)->function_name;
 			}
 		}else if(STK_VALUE_IS_TYPE(stk)){
-			result= zs_string("type")+"@"+_zs->getScriptClassFactory()->getScriptClassName(stk->value);
+			result= zs_string("type")+"@"+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		}else{
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk->value;
@@ -141,7 +141,7 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_BOOLEAN(stk)){
 			result.value=IDX_TYPE_BOOL_C;
 		}else if(STK_VALUE_IS_SCRIPT_OBJECT(stk)){
-			result.value=((ScriptObjectObject *)stk->value)->getScriptClass()->idx_type;
+			result.value=((ScriptObjectObject *)stk->value)->getScriptType()->idx_type;
 		}
 
 		return result;

@@ -54,8 +54,8 @@ namespace zetscript{
 
 		// init builtin
 		if(idx_type >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_type<IDX_TYPE_SCRIPT_OBJECT_CLASS){
-			ScriptType *script_class=getScriptClass();
-			zs_vector *symbol_vars=script_class->class_scope->symbol_variables;
+			ScriptType *script_type=getScriptType();
+			zs_vector *symbol_vars=script_type->class_scope->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
 			for ( unsigned i = 0; i < symbol_vars->count; i++){
@@ -91,24 +91,24 @@ namespace zetscript{
 	}
 
 	const zs_string & ScriptObject::getTypeName(){
-		return getScriptClass()->type_name;
+		return getScriptType()->type_name;
 	}
 
 	const char * ScriptObjectClass::getNativePointerClassName(){
-		return getScriptClass()->str_ptr_type;
+		return getScriptType()->type_name_ptr;
 	}
 
 	bool ScriptObject::isNativeObject(){
-		 return (getScriptClass()->properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0;
+		 return (getScriptType()->properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0;
 	}
 
-	ScriptType * ScriptObject::getScriptClass(){
-		return this->zs->getScriptClassFactory()->getScriptClass(idx_type);
+	ScriptType * ScriptObject::getScriptType(){
+		return this->zs->getScriptTypeFactory()->getScriptType(idx_type);
 	}
 
 	ScriptFunction *ScriptObject::getGetter(){
-		ScriptType *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_type);
-		MetamethodMembers *metamethod_members=&script_class->metamethod_members;
+		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_type);
+		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){
 			return metamethod_members->getter;
@@ -117,8 +117,8 @@ namespace zetscript{
 	}
 
 	zs_vector *ScriptObject::getSetterList(ByteCodeMetamethod _byte_code_metamethod){
-		ScriptType *script_class=this->zs->getScriptClassFactory()->getScriptClass(idx_type);
-		MetamethodMembers *metamethod_members=&script_class->metamethod_members;
+		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_type);
+		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){
 			MetamethodMemberSetterInfo info=metamethod_members->getSetterInfo(_byte_code_metamethod);

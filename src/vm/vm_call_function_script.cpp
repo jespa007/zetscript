@@ -225,7 +225,7 @@ namespace zetscript{
 				if(instruction->value_op2 == IDX_ZS_UNDEFINED){
 					VM_PUSH_STK_NULL;
 				}else{
-					data->stk_vm_current->value= so_aux->getScriptClass()->class_scope->symbol_functions->items[instruction->value_op2];
+					data->stk_vm_current->value= so_aux->getScriptType()->class_scope->symbol_functions->items[instruction->value_op2];
 					data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 					data->stk_vm_current++;
 				}
@@ -274,7 +274,7 @@ find_element_object:
 					str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
 					//
-					ScriptType *sc=so_aux->getScriptClass();
+					ScriptType *sc=so_aux->getScriptType();
 					Symbol *sf_member=sc->getSymbolMemberFunction(str_symbol);
 					if(sf_member !=NULL){
 						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
@@ -810,7 +810,7 @@ find_element_object:
 					break;
 				default:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						bool b = data->script_type_factory->isClassInheritsFrom(			//
+						bool b = data->script_type_factory->isScriptTypeInheritsFrom(			//
 								((ScriptObjectObject *)(stk_result_op1->value))->idx_type // A
 								, instruction->value_op2		// B
 						);
@@ -1089,11 +1089,11 @@ execute_function:
 							sf_call_is_member_function
 						){
 							ignore_call= (sf_call_is_constructor) && sf_call_calling_object->isNativeObject() && sf_call_n_args==0;
-							sc=data->script_type_factory->getScriptClass(sf_call_calling_object->idx_type);
+							sc=data->script_type_factory->getScriptType(sf_call_calling_object->idx_type);
 						}else if(sf_call_script_function->idx_type != IDX_TYPE_CLASS_MAIN
 								&& (sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)
 						){
-							sc=data->script_type_factory->getScriptClass(sf_call_script_function->idx_type);
+							sc=data->script_type_factory->getScriptType(sf_call_script_function->idx_type);
 						}
 
 						if(ignore_call == false)
@@ -1143,7 +1143,7 @@ execute_function:
 								||
 							(sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)!=0
 						){
-							str_class_owner=data->script_type_factory->getScriptClass(sf_call_script_function->idx_type)->type_name.c_str();
+							str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_type)->type_name.c_str();
 						}
 
 						data->vm_error_callstack_str+=zs_strutils::format(
@@ -1245,8 +1245,8 @@ execute_function:
 			 case  BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				 	 VM_POP_STK_ONE;
 				 	 if(STK_VALUE_IS_TYPE(stk_result_op1)){
-				 		ScriptType *sc=data->script_type_factory->getScriptClass(stk_result_op1->value);
-						if(!data->script_type_factory->isClassInstanceable(stk_result_op1->value)){
+				 		ScriptType *sc=data->script_type_factory->getScriptType(stk_result_op1->value);
+						if(!data->script_type_factory->isScriptTypeInstanceable(stk_result_op1->value)){
 							VM_STOP_EXECUTE("'%s' type is not object instanceable",sc->getTypeName());
 						}
 
@@ -1395,7 +1395,7 @@ execute_function:
 						strncpy(type_name,ptr_str_symbol_to_find,str_end_class-ptr_str_symbol_to_find);
 
 
-						if(data->zs->getScriptClassFactory()->getScriptClass(type_name) == NULL){
+						if(data->zs->getScriptTypeFactory()->getScriptType(type_name) == NULL){
 							VM_STOP_EXECUTE(
 									"class '%s' not exist"
 									,type_name

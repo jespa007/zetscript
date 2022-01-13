@@ -5,23 +5,22 @@
 #pragma once
 
 
-#define NEW_OBJECT_VAR_BY_CLASS_IDX(data,idx)			((data->script_type_factory)->instanceScriptObjectByClassIdx(idx))
-#define GET_SCRIPT_CLASS(data,idx_or_name)				((data->script_type_factory)->getScriptClass(idx_or_name))
-#define GET_SCRIPT_CLASS_NAME(data,idx) 				((data->script_type_factory)->getScriptClassName(idx))
-#define SCRIPT_CLASS_MAIN(data)							((data->script_type_factory)->getScriptClass(IDX_TYPE_CLASS_MAIN))    // 0 is the main class
+#define NEW_OBJECT_VAR_BY_CLASS_IDX(data,idx)			((data->script_type_factory)->instanceScriptObjectByTypeIdx(idx))
+#define GET_SCRIPT_CLASS(data,idx_or_name)				((data->script_type_factory)->getScriptType(idx_or_name))
+#define GET_SCRIPT_CLASS_NAME(data,idx) 				((data->script_type_factory)->getScriptTypeName(idx))
+#define SCRIPT_CLASS_MAIN(data)							((data->script_type_factory)->getScriptType(IDX_TYPE_CLASS_MAIN))    // 0 is the main class
 
-#define SCRIPT_OBJECT_STRING(data)						((data->script_type_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_STRING))
-#define SCRIPT_OBJECT_ITERATOR_STRING(data)				((data->script_type_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))
-//#define SCRIPT_CLASS_DICTIONARY(data)					((data->script_type_factory)->getScriptClass(IDX_TYPE_DICTIONARY))
-#define SCRIPT_OBJECT_VECTOR(data)						((data->script_type_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_VECTOR))
-#define SCRIPT_OBJECT_ITERATOR_VECTOR(data)				((data->script_type_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR))
+#define SCRIPT_OBJECT_STRING(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_STRING))
+#define SCRIPT_OBJECT_ITERATOR_STRING(data)				((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))
+//#define SCRIPT_CLASS_DICTIONARY(data)					((data->script_type_factory)->getScriptType(IDX_TYPE_DICTIONARY))
+#define SCRIPT_OBJECT_VECTOR(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_VECTOR))
+#define SCRIPT_OBJECT_ITERATOR_VECTOR(data)				((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR))
 
-#define SCRIPT_OBJECT_OBJECT(data)						((data->script_type_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_OBJECT))
-#define SCRIPT_OBJECT_ITERATOR_OBJECT(data)				((data->script_type_factory)->getScriptClass(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT))
+#define SCRIPT_OBJECT_OBJECT(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_OBJECT))
+#define SCRIPT_OBJECT_ITERATOR_OBJECT(data)				((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT))
 
-//#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_type_factory)->getScriptClass(IDX_TYPE_FUNCTION))
-#define GET_SCRIPT_CLASS_INFO_BY_C_PTR_NAME(data,s)		(data->script_type_factory)->getScriptClassByNativeClassPtr(s))    // 0 is the main class
-#define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_type_factory)->getScriptClass(idx)->str_ptr_type)
+//#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_FUNCTION))
+#define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_type_factory)->getScriptType(idx)->type_name_ptr)
 
 
 namespace zetscript{
@@ -45,20 +44,23 @@ namespace zetscript{
 		  * Class management region
 		  */
 		ScriptType * 					registerClass(const zs_string & type_name, const zs_string & base_class_name="",const char * file="", short line=-1);
-		ScriptType * 					getScriptClass(short idx);
+		ScriptType * 					getScriptType(short _idx_type);
+		ScriptType * 					getScriptType(const zs_string & _type_name);
+		ScriptType * 					getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
 
-		ScriptType * 					getScriptClass(const zs_string & name);
+		short							getIdxScriptType(const zs_string & _type_name);
+		short		 					getIdxScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
+
 		int								getBuiltinTypeOrClass(const zs_string & name);
-		ScriptType * 					getScriptClassByNativeClassPtr(const zs_string & class_type);
-		const char 	* 					getScriptClassName(short idx);
-		void							classInheritsFrom(const zs_string & the_class,const zs_string & the_base_class);
-		bool							isClassInheritsFrom(short idx_type,short idx_base_class);
-		bool							isClassInstanceable(short idx_type);
-		short							getIdxClassFromItsNativeType(const char * s);
-		short		 					getIdxNativeRegisteredClass(const zs_string & str_classPtr);
-		zs_vector	* 					getScriptClasses();
 
-		bool 							isClassRegistered(const zs_string & v);
+		const char 	* 					getScriptTypeName(short _idx_type);
+		void							inheritsFrom(const zs_string & _type_name,const zs_string & _type_name_inherits_from);
+		bool							isScriptTypeInheritsFrom(short _idx_type,short _idx_type_inherits_from);
+		bool							isScriptTypeInstanceable(short _idx_type);
+
+		zs_vector	* 					getScriptTypes();
+
+		bool 							isScriptTypeRegistered(const zs_string & _type_name);
 
 		inline ScriptType * 			getMainObject() { return main_object;}
 		inline ScriptFunction * 		getMainFunction() { return main_function;}
@@ -66,10 +68,8 @@ namespace zetscript{
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
-		ScriptObject 			* 			instanceScriptObjectByClassName(const zs_string & type_name);
-		ScriptObject 			* 			instanceScriptObjectByClassIdx(short  idx_type, void * value_object = NULL);
-
-		void 							registerNativeBaseSymbols(bool _register);
+		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & type_name);
+		ScriptObject 			* 			instanceScriptObjectByTypeIdx(short  idx_type, void * value_object = NULL);
 
 		/**
 		 * Register C variable
@@ -355,14 +355,10 @@ namespace zetscript{
 		ZetScript 						*	zs;
 		ScopeFactory 					*	scope_factory;
 		ScriptFunctionFactory 			*	script_function_factory;
-		ScriptType 					* 	main_object;
+		ScriptType 						* 	main_object;
 		ScriptFunction 					* 	main_function;
 
-		/*
-			 * register_c_base_symbols it tells to register functions/variable member already registered on base classes. Only works if class is not polymorphic (i.e there's no any virtual functions involved)
-			 */
-		bool register_c_base_symbols;
-		int 			idx_clear_checkpoint;
+		int 							idx_clear_checkpoint;
 
 		void							checkClassName(const zs_string & type_name);
 		PrimitiveType *					getPrimitiveTypeFromStr(const zs_string & str);
@@ -370,12 +366,10 @@ namespace zetscript{
 
 		void 							registerPrimitiveTypes();
 
-		int								getIdxScriptClassInternal(const zs_string & type_name);
-		int								getIdxScriptInternalFrom_C_Type(const char * str_native_type);
+		short							getIdxTypeFromTypeNameInternal(const zs_string & _type_name);
 
 		void 							setup();
 		void 							internalPrintError(const char *s);
-
 
 	};
 

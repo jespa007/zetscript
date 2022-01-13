@@ -715,7 +715,7 @@ namespace zetscript{
 			if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
 				if((ptr_function_found = vm_find_function(
 					vm
-					,data->script_type_factory->getScriptClass(script_object->idx_type)
+					,data->script_type_factory->getScriptType(script_object->idx_type)
 					,calling_function
 					,instruction
 					,false
@@ -729,7 +729,7 @@ namespace zetscript{
 
 
 			}else{ // get first item...
-				ScriptType *sc=script_object->getScriptClass();
+				ScriptType *sc=script_object->getScriptType();
 				Symbol * symbol = sc->getSymbolMemberFunction(str_symbol_metamethod);
 
 				if(symbol == NULL){
@@ -872,7 +872,7 @@ apply_metamethod_error:
 
 		stk_result_op2 = (StackElement *)(stk_result_op2->value);
 		ScriptObject *obj=(ScriptObject *)stk_result_op1->value;
-		ScriptType *sc=obj->getScriptClass();
+		ScriptType *sc=obj->getScriptType();
 
 		symbol_iter=sc->getSymbolMemberFunction("iter");
 

@@ -221,7 +221,7 @@ namespace zetscript{
 						zs_string static_access_value=token_node_symbol->value,class_element;
 						Symbol *member_symbol=NULL;
 
-						ScriptType *sc=eval_data->zs->getScriptClassFactory()->getScriptClass(token_node_symbol->value);
+						ScriptType *sc=eval_data->zs->getScriptTypeFactory()->getScriptType(token_node_symbol->value);
 
 						//do{
 						IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,aux_p,eval_data,aux_p+2,line);
@@ -260,7 +260,7 @@ namespace zetscript{
 
 					}else{ // check if only gets the type
 
-						token_node_symbol_class=eval_data->script_type_factory->getScriptClass(token_node_symbol->value);
+						token_node_symbol_class=eval_data->script_type_factory->getScriptType(token_node_symbol->value);
 						Instruction *instruction=&((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction;
 						if(token_node_symbol_class != NULL){ // byte code it will be a type
 							instruction->byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
@@ -335,7 +335,7 @@ namespace zetscript{
 					if(	it_accessor_token==0){
 						if(
 								token_node_symbol->value == SYMBOL_VALUE_SUPER
-								&& scope_info->script_class->idx_type == IDX_TYPE_CLASS_MAIN){
+								&& scope_info->script_type->idx_type == IDX_TYPE_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'super' is not allowed here");
 						}
 
@@ -465,7 +465,7 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' cannot be used in static functions");
 						}
 
-						if(scope_info->script_class->idx_type == IDX_TYPE_CLASS_MAIN){
+						if(scope_info->script_type->idx_type == IDX_TYPE_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' is not allowed here");
 						}
 
@@ -653,7 +653,7 @@ namespace zetscript{
 				}
 			}else{
 				// check is not type
-				if(eval_data->script_type_factory->getScriptClass(token_node_symbol->value)!=NULL){
+				if(eval_data->script_type_factory->getScriptType(token_node_symbol->value)!=NULL){
 					EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"expected variable after 'typeof' but it was a type");
 				}
 			}

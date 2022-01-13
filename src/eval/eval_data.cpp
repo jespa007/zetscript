@@ -259,7 +259,7 @@ namespace zetscript{
 			this->zs=_zs;
 			this->script_function_factory=zs->getScriptFunctionFactory();
 			this->scope_factory=zs->getScopeFactory();
-			this->script_type_factory=zs->getScriptClassFactory();
+			this->script_type_factory=zs->getScriptTypeFactory();
 			error=false;
 			error_str="";
 			parsing_loop=0;

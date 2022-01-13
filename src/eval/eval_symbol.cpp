@@ -142,7 +142,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						ScriptType *sc=eval_data->script_type_factory->getScriptClass(default_str_value);
+						ScriptType *sc=eval_data->script_type_factory->getScriptType(default_str_value);
 
 						if((local_symbol=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy
 

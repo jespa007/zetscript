@@ -20,7 +20,7 @@ namespace zetscript{
 		info_function_new=NULL;
 		instruction_new=NULL;
 
-	//	script_class = NULL;
+	//	script_type = NULL;
 		c_object = NULL;
 		created_object = NULL;
 		idx_type = IDX_TYPE_SCRIPT_OBJECT_CLASS;
@@ -33,8 +33,8 @@ namespace zetscript{
 			return;
 		}
 
-		if(sc->idx_base_classes->count>0){
-			callConstructorMemberVariables(this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]));
+		if(sc->idx_base_types->count>0){
+			callConstructorMemberVariables(this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]));
 		}
 
 		if(sc->sf_field_initializer != NULL){ // execute if only script class
@@ -51,8 +51,8 @@ namespace zetscript{
 		vm=zs->getVirtualMachine();
 
 		idx_type=_idx_type;
-		ScriptType *script_class=getScriptClass();
-		zs_vector *member_vars=script_class->class_scope->symbol_variables;
+		ScriptType *script_type=getScriptType();
+		zs_vector *member_vars=script_type->class_scope->symbol_variables;
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
 		for ( unsigned i = 0; i < member_vars->count; i++){
@@ -87,19 +87,19 @@ namespace zetscript{
 		//-------------------------------------------------------------------------------
 		// LINK C OBJECT
 
-		//this->script_class = irv;
+		//this->script_type = irv;
 		//idx_type = irv->idx_type;
 		c_object = _c_object;
 		script_class_native=NULL;
 
 		// search native class
-		if(script_class->isNativeClass()){
-			script_class_native=script_class;
+		if(script_type->isNativeClass()){
+			script_class_native=script_type;
 		}else {
-			ScriptType *sc=script_class;
+			ScriptType *sc=script_type;
 			// get first class with c inheritance...
-			while((sc->idx_base_classes->count>0) && (script_class_native==NULL)){
-				sc=this->zs->getScriptClassFactory()->getScriptClass(sc->idx_base_classes->items[0]); // get base class (only first in script because has single inheritance)...
+			while((sc->idx_base_types->count>0) && (script_class_native==NULL)){
+				sc=this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]); // get base class (only first in script because has single inheritance)...
 				if(sc->isNativeClass()){ // we found the native script class!
 					script_class_native=sc;
 					break;
@@ -110,21 +110,21 @@ namespace zetscript{
 		// create object if class is native or it derives from a native class
 		if(c_object == NULL && script_class_native != NULL){
 			// if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
-			created_object = CALL_CONSTRUCTOR_CLASS(script_class_native); // (*script_class->c_constructor)();
+			created_object = CALL_CONSTRUCTOR_CLASS(script_class_native); // (*script_type->c_constructor)();
 			was_created_by_constructor=true;
 			c_object = created_object;
 			delete_c_object_on_destroy=true; // destroy object when class is destroyed. It will be safe (in principle)
 		}
 
 		// execute init for variable members (not dynamic)
-		callConstructorMemberVariables(script_class);
+		callConstructorMemberVariables(script_type);
 	}
 
 	ScriptFunction *ScriptObjectClass::getConstructorFunction(){
 
-		ScriptType *script_class=getScriptClass();
-		if(script_class->idx_function_member_constructor != IDX_ZS_UNDEFINED){
-			return (ScriptFunction *)script_class->class_scope->symbol_functions->items[script_class->idx_function_member_constructor];
+		ScriptType *script_type=getScriptType();
+		if(script_type->idx_function_member_constructor != IDX_ZS_UNDEFINED){
+			return (ScriptFunction *)script_type->class_scope->symbol_functions->items[script_type->idx_function_member_constructor];
 		}
 
 		return NULL;
@@ -155,7 +155,7 @@ namespace zetscript{
 
 	zs_string ScriptObjectClass::toString(){
 		// check whether toString is implemented...
-		Symbol *symbol_function=getScriptClass()->getSymbolMemberFunction(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
+		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
 		zs_string aux="";
 		if(symbol_function != NULL){ // get first element
 			//if(symbol_function->properties & (SYMBOL_PROPERTY_MEMBER_FUNCTION | SYMBOL_PROPERTY_FUNCTION))
@@ -209,7 +209,7 @@ namespace zetscript{
 	}
 
 	ScriptObjectClass::~ScriptObjectClass(){
-		ScriptType *script_class=getScriptClass();
+		ScriptType *script_type=getScriptType();
 
 		if(created_object != 0 && delete_c_object_on_destroy){
 			 // only erases pointer if basic type or user/auto delete is required ...

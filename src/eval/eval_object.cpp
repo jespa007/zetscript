@@ -32,7 +32,7 @@ namespace zetscript{
 
 		if(scope_info->scope_parent!=NULL){// is within function ?
 
-			if(scope_info->script_class->idx_type != IDX_TYPE_CLASS_MAIN){ // function object as function member because it will use this inside
+			if(scope_info->script_type->idx_type != IDX_TYPE_CLASS_MAIN){ // function object as function member because it will use this inside
 				byte_code=ByteCode::BYTE_CODE_LOAD_THIS_FUNCTION;
 			}
 		}
@@ -358,7 +358,7 @@ namespace zetscript{
 
 					//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",type_name.c_str());
 				}else{ // known type
-					if(!eval_data->script_type_factory->isClassInstanceable(sc->idx_type)){
+					if(!eval_data->script_type_factory->isScriptTypeInstanceable(sc->idx_type)){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getTypeName());
 					}
 

@@ -222,7 +222,7 @@ namespace zetscript{
 
 	 void ZetScript::printGeneratedCode(bool show_system_code){
 
-		 zs_vector *script_classes=script_type_factory->getScriptClasses();
+		 zs_vector *script_classes=script_type_factory->getScriptTypes();
 		 // for all classes print code...
 		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
 

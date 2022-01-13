@@ -492,7 +492,7 @@ namespace zetscript{
 						ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 						bool match_names=false;
 						if((sf->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
-							match_names=( sf_member->properties & FUNCTION_PROPERTY_CONSTRUCTOR) != 0;//symbol_member->scope->script_class->type_name==symbol_member->name;
+							match_names=( sf_member->properties & FUNCTION_PROPERTY_CONSTRUCTOR) != 0;//symbol_member->scope->script_type->type_name==symbol_member->name;
 						}else{
 							match_names=symbol_member->name==sf->function_name;
 						}
@@ -529,7 +529,7 @@ namespace zetscript{
 						}
 					}
 					eval_instruction->vm_instruction.value_op2=(zs_int)symbol_sf_foundf;//->idx_position;
-					eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_class->type_name)+"::"+symbol_sf_foundf->name);
+					eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_type->type_name)+"::"+symbol_sf_foundf->name);
 				}
 
 				if(eval_instruction->vm_instruction.value_op2==IDX_ZS_UNDEFINED){

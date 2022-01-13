@@ -7,7 +7,7 @@
 namespace zetscript{
 	MemberProperty::MemberProperty(ScriptType *_script_class,const zs_string & _property_name){
 		property_name=_property_name;
-		script_class=_script_class;
+		script_type=_script_class;
 	}
 
 	bool MemberProperty::symbolNameMatchStartSymbolNameMetamethod(const zs_string & _symbol_name){

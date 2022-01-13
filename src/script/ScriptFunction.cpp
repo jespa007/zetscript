@@ -53,7 +53,7 @@ namespace zetscript{
 		zs = _zs;
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
-		script_type_factory=zs->getScriptClassFactory();
+		script_type_factory=zs->getScriptTypeFactory();
 
 		min_stack_needed=0;
 
@@ -364,7 +364,7 @@ namespace zetscript{
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
-						,zs->getScriptClassFactory()->getScriptClassName(instruction->value_op2));
+						,zs->getScriptTypeFactory()->getScriptTypeName(instruction->value_op2));
 				break;
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_STORE_CONST:
@@ -702,7 +702,7 @@ namespace zetscript{
 					// get class
 					strncpy(copy_aux,ptr_str_symbol_to_find,str_aux-ptr_str_symbol_to_find);
 
-					sc_found=zs->getScriptClassFactory()->getScriptClass(copy_aux);
+					sc_found=zs->getScriptTypeFactory()->getScriptType(copy_aux);
 
 					if(sc_found!=NULL){
 						// advance ::
@@ -714,7 +714,7 @@ namespace zetscript{
 						symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 					}
 				}else if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // try get global symbol
-					ScriptType *this_class=zs->getScriptClassFactory()->getScriptClass(this->idx_type);
+					ScriptType *this_class=zs->getScriptTypeFactory()->getScriptType(this->idx_type);
 					symbol_found=this_class->getSymbolMemberFunction(ptr_str_symbol_to_find);
 				}else{
 					symbol_found = MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);

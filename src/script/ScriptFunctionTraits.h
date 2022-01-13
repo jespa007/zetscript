@@ -180,7 +180,7 @@ namespace zetscript{
 		}
 
 		// check valid parameters ...
-		if((idx_return_type=_script_class_factory->getIdxClassFromItsNativeType(return_type)) == -1){
+		if((idx_return_type=_script_class_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
 			THROW_RUNTIME_ERROR("Return type '%s' for function '%s' not registered",zs_rtti::demangle(return_type),_function_name);
 		}
 
@@ -190,7 +190,7 @@ namespace zetscript{
 
 			for(unsigned int i = 0; i < args.count; i++){
 				const char *param=(const char *)args.items[i];
-				int idx_type = _script_class_factory->getIdxClassFromItsNativeType(param);
+				int idx_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
 				// exception: These variables are registered but not allowed to pass throught parameter
 				if(idx_type==IDX_TYPE_ZS_FLOAT_C || idx_type==IDX_TYPE_BOOL_C || idx_type == IDX_TYPE_STRING_C){
 					THROW_RUNTIME_ERROR("Argument %i type '%s' for function '%s' is not supported as parameter, you should use pointer instead (i.e %s *)"

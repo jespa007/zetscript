@@ -26,7 +26,7 @@ namespace zetscript{
 			,uint16_t _properties){
 		sf_field_initializer=NULL;
 
-		str_ptr_type="";
+		type_name_ptr="";
 		c_destructor = NULL;
 		c_constructor=NULL;
 		idx_function_member_constructor =IDX_ZS_UNDEFINED;
@@ -35,24 +35,24 @@ namespace zetscript{
 		idx_starting_this_member_functions=0;
 		type_name=_class_name;
 		class_scope=_class_scope;
-		str_ptr_type=_str_class_ptr_type;
+		type_name_ptr=_str_class_ptr_type;
 		allocated_member_properties=new zs_vector();
 
-		idx_base_classes=new zs_vector;
+		idx_base_types=new zs_vector;
 
 		// factories
 		zs = _zs;
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
-		script_type_factory=zs->getScriptClassFactory();
+		script_type_factory=zs->getScriptTypeFactory();
 		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
 		properties=_properties;
 
 	}
 
 	bool ScriptType::isDerivedFrom(short idx_type){
-		for(unsigned i=0; i < this->idx_base_classes->count; i++){
-			if(this->idx_base_classes->items[i]==idx_type){
+		for(unsigned i=0; i < this->idx_base_types->count; i++){
+			if(this->idx_base_types->items[i]==idx_type){
 				return true;
 			}
 		}
@@ -60,17 +60,13 @@ namespace zetscript{
 		return false;
 	}
 
-	ScriptType * 				ScriptType::getScriptClass(short idx){
-		return script_type_factory->getScriptClass(idx);
+	ScriptType * 				ScriptType::getScriptType(short idx){
+		return script_type_factory->getScriptType(idx);
 	}
 
 
-	short					ScriptType::getIdxClassFromItsNativeType(const char * s){
-		return script_type_factory->getIdxClassFromItsNativeType(s);
-	}
-
-	ScriptType * 			ScriptType::getScriptClassByNativeClassPtr(const zs_string & class_type){
-		return script_type_factory->getScriptClassByNativeClassPtr(class_type);
+	short					ScriptType::getIdxScriptTypeFromTypeNamePtr(const char * s){
+		return script_type_factory->getIdxScriptTypeFromTypeNamePtr(s);
 	}
 
 	//---------------------------------------------------
@@ -456,7 +452,7 @@ namespace zetscript{
 									THROW_RUNTIME_ERROR("error registering metamethod '%s::%s'. Expected return bool but it was '%s'",
 											this->type_name.c_str(),
 											_function_name.c_str(),
-											zs_rtti::demangle(this->script_type_factory->getScriptClass(_idx_return_type)->str_ptr_type)
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->type_name_ptr)
 									);
 									return NULL;
 								}
@@ -472,12 +468,12 @@ namespace zetscript{
 							case BYTE_CODE_METAMETHOD_SHL: // << shift left
 							case BYTE_CODE_METAMETHOD_SHR: // >> shift right
 
-								if(ZS_STRCMP(this->script_type_factory->getScriptClass(_idx_return_type)->str_ptr_type, != ,this->str_ptr_type)){
+								if(ZS_STRCMP(this->script_type_factory->getScriptType(_idx_return_type)->type_name_ptr, != ,this->type_name_ptr)){
 
 									THROW_RUNTIME_ERROR("error registering metamethod %s::%s. Expected return %s but it was %s",
 											this->type_name.c_str(),
 											_function_name.c_str(),
-											zs_rtti::demangle(this->script_type_factory->getScriptClass(_idx_return_type)->str_ptr_type));
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->type_name_ptr));
 									return NULL;
 								}
 								break;
@@ -658,7 +654,7 @@ namespace zetscript{
 		}
 
 		delete allocated_member_properties;
-		delete idx_base_classes;
+		delete idx_base_types;
 
 	}
 }

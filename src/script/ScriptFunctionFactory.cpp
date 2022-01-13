@@ -47,7 +47,7 @@ namespace zetscript{
 				}
 			}
 
-			if(_function_name == zs->getScriptClassFactory()->getScriptClassName(_idx_type)){
+			if(_function_name == zs->getScriptTypeFactory()->getScriptTypeName(_idx_type)){
 				_symbol_check_repeated|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 			}
 		}

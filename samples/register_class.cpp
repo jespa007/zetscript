@@ -49,7 +49,7 @@ int main(){
 		zs->registerMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);
 
 		// once all vars and functions are registered, tell that MyClassExtend is base of MyClass
-		zs->classInheritsFrom<MyClassExtend,MyClass>();
+		zs->inheritsFrom<MyClassExtend,MyClass>();
 
 	}catch(std::exception & ex){
 		fprintf(stderr,"register error: %s\n",ex.what());

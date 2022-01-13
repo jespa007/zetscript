@@ -11,7 +11,7 @@
 		so_aux = stk_mp_aux->so_object;\
 	}else if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 		so_aux= (ScriptObject *)stk_result_op1->value;\
-		ptr_metamethod_members_aux= &so_aux->getScriptClass()->metamethod_members;\
+		ptr_metamethod_members_aux= &so_aux->getScriptType()->metamethod_members;\
 	}\
 	else{\
 		VM_STOP_EXECUTE("Error performing '%s%s': Cannot perform operation with value as '%s'"\

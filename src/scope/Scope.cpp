@@ -14,7 +14,7 @@ namespace zetscript{
 	Scope::Scope(ZetScript * _zs,int idx_sf, Scope * _scope_parent, uint16_t _properties){
 		scope_parent = _scope_parent;
 		properties = _properties;
-		script_class=NULL;
+		script_type=NULL;
 		idx_script_function=idx_sf;
 		zs=_zs;
 		tmp_idx_instruction_push_scope=IDX_ZS_UNDEFINED;
@@ -28,7 +28,7 @@ namespace zetscript{
 			scope_base = this;
 		}else{ // others...
 			scope_base = scope_parent->scope_base;
-			script_class=scope_parent->script_class; // propagate script class
+			script_type=scope_parent->script_type; // propagate script class
 
 			if(idx_script_function==IDX_ZS_UNDEFINED){ // May be is a block containing if-else, for, etc --> propagate current script function
 				idx_script_function=scope_parent->idx_script_function;
@@ -41,11 +41,11 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
 			return;
 		}
-		script_class=sc;
+		script_type=sc;
 	}
 
-	ScriptType * Scope::getScriptClass(){
-		return scope_base->script_class;
+	ScriptType * Scope::getScriptType(){
+		return scope_base->script_type;
 	}
 
 	int Scope::getIdxScriptFunction(){
@@ -112,7 +112,7 @@ namespace zetscript{
 		// check if you register a class...
 		// check if symbol collides also with built in type...
 		if((check_repeated_symbols_direction & REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS)==0){
-			if(zs->getScriptClassFactory()->getBuiltinTypeOrClass(symbol_name) != IDX_ZS_UNDEFINED){
+			if(zs->getScriptTypeFactory()->getBuiltinTypeOrClass(symbol_name) != IDX_ZS_UNDEFINED){
 				THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved builtin-type or defined class",symbol_name.c_str());
 			}
 		}

@@ -140,7 +140,7 @@ namespace zetscript{
 		inline VirtualMachine * getVirtualMachine() { return virtual_machine;}
 		inline ScopeFactory * getScopeFactory() { return scope_factory;}
 		inline ScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
-		inline ScriptTypeFactory *getScriptClassFactory() { return script_type_factory;}
+		inline ScriptTypeFactory *getScriptTypeFactory() { return script_type_factory;}
 
 		StackElement	eval(const zs_string & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
 		StackElement	eval(const zs_string & expresion,unsigned short options, const char * filename="", const char *__invoke_file__="", int __invoke_line__=-1);
@@ -220,12 +220,8 @@ namespace zetscript{
 		}
 
 		template<class C, class B>
-		void classInheritsFrom(){
+		void inheritsFrom(){
 			script_type_factory->nativeClassInheritsFrom<C,B>();
-		}
-
-		void	registerBaseSymbols(bool r){
-			script_type_factory->registerNativeBaseSymbols(r);
 		}
 
 		template<typename C,typename F>
@@ -236,7 +232,6 @@ namespace zetscript{
 
 			script_type_factory->registerNativeConstructor<C>(function_type, registered_file,registered_line );
 		}
-
 
 		template <typename C, typename R>
 		void registerNativeStaticConstMember(

@@ -118,7 +118,7 @@ namespace zetscript{
 		 }
 
 		 // is a type, not register. Note may be we could optimize but generally we are doing ops between registers
-		 if(eval_data->script_type_factory->getScriptClass(i1->symbol.name)!=NULL){
+		 if(eval_data->script_type_factory->getScriptType(i1->symbol.name)!=NULL){
 			return false;
 		}
 

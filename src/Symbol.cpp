@@ -60,7 +60,7 @@ StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol,void *pt
 						STK_PROPERTY_BOOL_PTR|STK_PROPERTY_READ_ONLY
 				};
 			}else{
-				ScriptType *info_registered_class = zs->getScriptClassFactory()->getScriptClassByNativeClassPtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+				ScriptType *info_registered_class = zs->getScriptTypeFactory()->getScriptTypeFromTypeNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 				if(info_registered_class){
 					ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs,info_registered_class->idx_type,ptr_variable);

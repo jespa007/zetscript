@@ -98,25 +98,25 @@ namespace zetscript{
 		if(params_len==0){
 			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s'"
 				,function_class_name.c_str()
-				,this->str_ptr_type
-				,this->str_ptr_type
+				,this->type_name_ptr
+				,this->type_name_ptr
 			);
 		}
 
-		ScriptType * c_class_first_arg=	getScriptClass(params[0].idx_type);
+		ScriptType * c_class_first_arg=	getScriptType(params[0].idx_type);
 		if(c_class_first_arg == NULL){
 			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s')"
 				,function_class_name.c_str()
-				,this->str_ptr_type
-				,this->str_ptr_type
+				,this->type_name_ptr
+				,this->type_name_ptr
 			);
 		}
 
-		if(c_class_first_arg->str_ptr_type !=  this->str_ptr_type){
+		if(c_class_first_arg->type_name_ptr !=  this->type_name_ptr){
 			THROW_RUNTIME_ERROR("register native member function '%s::%s': expected to have FIRST parameter as pointer type '%s' but it was '%s')"
 				,function_class_name.c_str()
-				,this->str_ptr_type
-				,this->str_ptr_type
+				,this->type_name_ptr
+				,this->type_name_ptr
 				,params[0].name
 			);
 		}

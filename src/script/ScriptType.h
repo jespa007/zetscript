@@ -23,7 +23,7 @@ namespace zetscript{
 
 		zs_string 		type_name;		// info symbol class
 		Scope			*class_scope;
-		const char 		*str_ptr_type; // type_id().name();
+		const char 		*type_name_ptr; // type_id().name();
 		uint16_t		properties;
 
 		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be property members or script member vars
@@ -41,13 +41,13 @@ namespace zetscript{
 		void								* 	c_constructor;
 		void 								*	c_destructor;
 
-		zs_vector						   	*   idx_base_classes; // list of idx of classes base
+		zs_vector						   	*   idx_base_types; // list of idx of classes base
 
 		 ScriptType(ZetScript *_zs
 				 ,short _idx_type
 				 , zs_string _name
 				 , Scope *_scope
-				 ,const char *  str_ptr_type=TYPE_SCRIPT_VARIABLE
+				 ,const char *  type_name_ptr=TYPE_SCRIPT_VARIABLE
 				 ,uint16_t _properties=0
 		);
 
@@ -182,9 +182,8 @@ namespace zetscript{
 
 
 
-		ScriptType * 					getScriptClass(short idx_type);
-		short							getIdxClassFromItsNativeType(const char  * s);
-		ScriptType * 					getScriptClassByNativeClassPtr(const zs_string & class_type);
+		ScriptType * 					getScriptType(short idx_type);
+		short							getIdxScriptTypeFromTypeNamePtr(const char  * s);
 	};
 }
 

@@ -12,7 +12,7 @@
 namespace zetscript{
 	class MemberProperty{
 	public:
-		ScriptType *script_class;
+		ScriptType *script_type;
 		 zs_string property_name;
 		 MetamethodMembers metamethod_members;
 
