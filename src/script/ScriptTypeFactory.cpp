@@ -41,7 +41,7 @@
 	}else{\
 		ScriptType *sc=registerClass(ZS_STR(type));\
 		sc->class_scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
-		sc->properties=SCRIPT_CLASS_PROPERTY_C_OBJECT_REF;\
+		sc->properties=SCRIPT_TYPE_PROPERTY_C_OBJECT_REF;\
 		sc->type_name_ptr=(typeid(type).name());\
 	}
 

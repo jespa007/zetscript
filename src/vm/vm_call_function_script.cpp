@@ -878,11 +878,13 @@ find_element_object:
 					 sf_call_stk_function_ref= this_object->getBuiltinElementAt(instruction->value_op2);
 				 }else{
 					 str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
-				 	 sf_call_stk_function_ref=this_object->getProperty(str_symbol);
-					 if(sf_call_stk_function_ref == NULL){
+				 	 stk_aux.value=(zs_int)this_object->getScriptFunctionSymbol(str_symbol);
+					 if(stk_aux.value == 0){
 						 VM_STOP_EXECUTE("Cannot call 'this.%s' because not exist",str_symbol);
 					 }
 
+					 stk_aux.properties=STK_PROPERTY_MEMBER_FUNCTION;
+					 sf_call_stk_function_ref=&stk_aux;
 				 }
 				goto load_function;
 			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var

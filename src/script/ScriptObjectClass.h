@@ -39,7 +39,7 @@ namespace zetscript{
 			virtual void * getNativeObject();
 			ScriptType * getNativeScriptClass();
 
-			const char *getNativePointerClassName();
+			const char *getTypeNamePtr();
 
 			ScriptFunction *getConstructorFunction();
 

@@ -32,7 +32,7 @@ namespace zetscript{
 	struct MemberProperty;
 	struct StackMemberProperty{
 	public:
-		MemberProperty 	*member_property; // make function pointer first to make compatible with stk
+		MemberProperty 		*member_property; // make function pointer first to make compatible with stk
 		ScriptObject		*so_object;
 
 		StackMemberProperty(
@@ -50,48 +50,52 @@ namespace zetscript{
 
 		ScriptObject();
 
-		ScriptFunction *getGetter();
-		zs_vector *getSetterList(ByteCodeMetamethod _byte_code_metamethod);
+		ScriptFunction 			*	getGetter();
+		zs_vector 				*	getSetterList(ByteCodeMetamethod _byte_code_metamethod);
 
-		virtual				size_t length();
+		virtual	size_t 				length();
 
-		ZetScript      * 	getZetScript();
-		StackElement 	* getBuiltinProperty(const zs_string & property_name);
+		ZetScript      			* 	getZetScript();
+		StackElement 			* 	getBuiltinProperty(const zs_string & property_name);
 
-		StackElement * getBuiltinElementAt(short idx);
-		virtual StackElement * addProperty(
+		StackElement 			* 	getBuiltinElementAt(short idx);
+
+		virtual StackElement 	* 	addProperty(
 				const zs_string & symbol_value
 				,zs_string & error
 				,StackElement * stk_element = NULL
 		);
-		virtual StackElement 	* getProperty(const zs_string & property_name);
+
+		virtual StackElement 	* 	getProperty(const zs_string & property_name);
+		virtual Symbol 			*  	getScriptFunctionSymbol(const zs_string & _function_member_name);
 
 
-		zs_vector * getStkBuiltinListElements();
-		ScriptType * 	    getNativeScriptClass();
-		bool 				isNativeObject();
-		const zs_string & getTypeName();
-		ScriptType * 	    getScriptType();
-		StackElement 	*getThisProperty();
-		virtual void	*getNativeObject();
-		virtual zs_string toString();
+		zs_vector 				* 	getStkBuiltinListElements();
+		bool 						isNativeObject();
+		const zs_string 		& 	getTypeName();
+		ScriptType * 	    		getScriptType();
+		StackElement 			*	getThisProperty();
+		virtual void			*	getNativeObject();
+		virtual zs_string 			toString();
 
-		virtual ~ScriptObject();
+		void 						printAllFunctionMembers();
+
+		virtual 					~ScriptObject();
 	protected:
 
-		StackElement stk_this;
+		StackElement 				stk_this;
 
 		ZetScript 				*	zs; // 8
 		VirtualMachine 			*	vm; // 8
-		zs_vector				stk_builtin_elements;
-		zs_map					*map_builtin_properties; // to search faster each property by its name
+		zs_vector					stk_builtin_elements;
+		zs_map					*	map_builtin_properties; // to search faster each property by its name
 
 
-		void init(ZetScript *zs);
+		void 						init(ZetScript *zs);
 
-		virtual StackElement * newBuiltinSlot();
-		virtual StackElement * addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_null);
-		bool unrefAndFreeStackElementContainer(StackElement *si);
+		virtual StackElement 	* 	newBuiltinSlot();
+		virtual StackElement 	* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_null);
+		bool 						unrefAndFreeStackElementContainer(StackElement *si);
 
 	};
 

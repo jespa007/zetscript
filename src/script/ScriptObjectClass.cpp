@@ -58,9 +58,6 @@ namespace zetscript{
 		for ( unsigned i = 0; i < member_vars->count; i++){
 
 			Symbol * symbol = (Symbol *)member_vars->items[i];
-			//bool is_script_function=symbol->properties & SYMBOL_PROPERTY_FUNCTION;
-			//bool ignore_duplicates=is_script_function==false; // we ignore duplicates in case of script function, to allow super operation work.
-
 
 			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
 			if((se=addBuiltinProperty(
@@ -81,26 +78,23 @@ namespace zetscript{
 				se->value=(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr));
 				se->properties=STK_PROPERTY_MEMBER_PROPERTY;
 			}
-
 		}
 
 		//-------------------------------------------------------------------------------
 		// LINK C OBJECT
 
-		//this->script_type = irv;
-		//idx_type = irv->idx_type;
 		c_object = _c_object;
 		script_class_native=NULL;
 
 		// search native class
-		if(script_type->isNativeClass()){
+		if(script_type->isNativeType()){
 			script_class_native=script_type;
 		}else {
 			ScriptType *sc=script_type;
 			// get first class with c inheritance...
 			while((sc->idx_base_types->count>0) && (script_class_native==NULL)){
 				sc=this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]); // get base class (only first in script because has single inheritance)...
-				if(sc->isNativeClass()){ // we found the native script class!
+				if(sc->isNativeType()){ // we found the native script class!
 					script_class_native=sc;
 					break;
 				}
@@ -158,51 +152,48 @@ namespace zetscript{
 		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
 		zs_string aux="";
 		if(symbol_function != NULL){ // get first element
-			//if(symbol_function->properties & (SYMBOL_PROPERTY_MEMBER_FUNCTION | SYMBOL_PROPERTY_FUNCTION))
-			//{
-				ScriptFunction *ptr_function=(ScriptFunction *)symbol_function->ref_ptr;
-				if((ptr_function->properties & FUNCTION_PROPERTY_STATIC) == 0){
+			ScriptFunction *ptr_function=(ScriptFunction *)symbol_function->ref_ptr;
+			if((ptr_function->properties & FUNCTION_PROPERTY_STATIC) == 0){
 
-					if((ptr_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
+				if((ptr_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 
-						StackElement result=VM_EXECUTE(
-								this->vm
-								,this
-								,ptr_function
-								,NULL
-								,0
-						);
+					StackElement result=VM_EXECUTE(
+							this->vm
+							,this
+							,ptr_function
+							,NULL
+							,0
+					);
 
-						if(STK_IS_SCRIPT_OBJECT_STRING(&result)){
-							ScriptObjectString *so=(ScriptObjectString *)result.value;
-							// capture string...
-							aux=so->toString();
-							// ... destroy lifetime object we don't need anymore
-							vm_unref_lifetime_object(this->vm,so);
-							// return
-						}else{
-							aux=stk_to_str(zs,&result);
-						}
-					}else{ // expect return an scriptobjectstring
-						zs_string *str=NULL;
-						switch(ptr_function->idx_return_type){
-						case IDX_TYPE_STRING_C:
-								aux=((zs_string (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
-								break;
-						case IDX_TYPE_STRING_PTR_C:
-								str=((zs_string * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
-								if(str == NULL){
-									THROW_RUNTIME_ERROR("toString: str NULL");
-								}
-								aux=*str;
-								break;
-						default:
-							THROW_RUNTIME_ERROR("toString: expected zs_string or *zs_string");
+					if(STK_IS_SCRIPT_OBJECT_STRING(&result)){
+						ScriptObjectString *so=(ScriptObjectString *)result.value;
+						// capture string...
+						aux=so->toString();
+						// ... destroy lifetime object we don't need anymore
+						vm_unref_lifetime_object(this->vm,so);
+						// return
+					}else{
+						aux=stk_to_str(zs,&result);
+					}
+				}else{ // expect return an scriptobjectstring
+					zs_string *str=NULL;
+					switch(ptr_function->idx_return_type){
+					case IDX_TYPE_STRING_C:
+							aux=((zs_string (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
 							break;
-						}
+					case IDX_TYPE_STRING_PTR_C:
+							str=((zs_string * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
+							if(str == NULL){
+								THROW_RUNTIME_ERROR("toString: str NULL");
+							}
+							aux=*str;
+							break;
+					default:
+						THROW_RUNTIME_ERROR("toString: expected zs_string or *zs_string");
+						break;
 					}
 				}
-			//}
+			}
 			return aux;
 		}
 		return ScriptObjectObject::toString();

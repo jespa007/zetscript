@@ -115,7 +115,7 @@ namespace zetscript{
 		scope = NEW_SCOPE(this,IDX_ZS_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,type_name);
 
-		sc = new ScriptType(zs,idx_type,type_name,scope,type_name_ptr,SCRIPT_CLASS_PROPERTY_C_OBJECT_REF);
+		sc = new ScriptType(zs,idx_type,type_name,scope,type_name_ptr,SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
 		scope->setScriptClass(sc);
 
 		// in C there's no script constructor ...

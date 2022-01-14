@@ -6,13 +6,13 @@
 
 namespace zetscript{
 
-	bool ScriptType::isNativeClass(){
+	bool ScriptType::isNativeType(){
 
-		 return ((properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0);
+		 return ((properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF) != 0);
 	}
 
 	bool ScriptType::isNativeSingletonClass(){
-		 return ((properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0)
+		 return ((properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF) != 0)
 				 	 &&
 				this->c_constructor == NULL;
 	}

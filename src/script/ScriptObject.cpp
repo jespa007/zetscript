@@ -94,12 +94,12 @@ namespace zetscript{
 		return getScriptType()->type_name;
 	}
 
-	const char * ScriptObjectClass::getNativePointerClassName(){
+	const char * ScriptObjectClass::getTypeNamePtr(){
 		return getScriptType()->type_name_ptr;
 	}
 
 	bool ScriptObject::isNativeObject(){
-		 return (getScriptType()->properties & SCRIPT_CLASS_PROPERTY_C_OBJECT_REF) != 0;
+		 return (getScriptType()->properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF) != 0;
 	}
 
 	ScriptType * ScriptObject::getScriptType(){
@@ -143,6 +143,18 @@ namespace zetscript{
 
 	StackElement 	* ScriptObject::getProperty(const zs_string & property_name){
 		return getBuiltinProperty(property_name);
+	}
+
+	Symbol 	* ScriptObject::getScriptFunctionSymbol(const zs_string & _function_member_name){
+		ScriptType *script_type=getScriptType();
+		zs_vector *s=script_type->class_scope->symbol_functions;
+		for(int i=s->count-1;i>=0;i--){
+			Symbol *symbol=(Symbol *)s->items[i];
+			if(symbol->name == _function_member_name){
+				return symbol;
+			}
+		}
+		return NULL;
 	}
 
 	StackElement *ScriptObject::getThisProperty(){

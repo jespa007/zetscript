@@ -526,7 +526,7 @@ namespace zetscript{
 								aux_string=	k_str_const_char_type_ptr;
 							}
 						}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
-							aux_string = ((ScriptObjectClass *)current_arg->value)->getNativePointerClassName();
+							aux_string = ((ScriptObjectClass *)current_arg->value)->getTypeNamePtr();
 						}else{ // object
 							aux_string = ((ScriptObject *)current_arg->value)->getTypeName();
 						}

@@ -5,8 +5,8 @@
 #pragma once
 
 typedef enum{
-	SCRIPT_CLASS_PROPERTY_C_OBJECT_REF=0x1
-}ScriptClassProperty;
+	SCRIPT_TYPE_PROPERTY_C_OBJECT_REF=0x1
+}ScriptTypeProperty;
 
 namespace zetscript{
 
@@ -157,7 +157,7 @@ namespace zetscript{
 
 		const char *getTypeName();
 
-		bool isNativeClass();
+		bool isNativeType();
 		bool isNativeSingletonClass();
 
 		virtual ~ScriptType();
