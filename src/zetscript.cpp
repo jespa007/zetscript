@@ -164,7 +164,7 @@ namespace zetscript{
 				"	return System::evalNative(System::getZetScript(),s,params)"
 				"}"
 				"static System::getZetScript(){"
-				"	return ptrToZetScriptPtr(0x%x);" // ptrToZetScript it gets current this
+				"	return ptrToZetScriptPtr(%lu);" // ptrToZetScript it gets current this
 				"}"
 				//------------------------------------------------
 				// Json
@@ -182,7 +182,7 @@ namespace zetscript{
 				"   return dt; "
 				"}"
 			,
-			(void *)this
+			(intptr_t)this
 			)
 		);
 
