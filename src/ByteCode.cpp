@@ -258,15 +258,15 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; 	// binary shift left
 			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; 	// binary shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; 	// _set
-			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "_set_add";	// _set_add
-			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "_set_sub";	// _set_sub
-			case	BYTE_CODE_METAMETHOD_DIV_SET:	return  "_set_div";	// _set_div
-			case	BYTE_CODE_METAMETHOD_MOD_SET:	return  "_set_mod";	// _set_mod
-			case	BYTE_CODE_METAMETHOD_AND_SET:	return  "_set_and";	// _set_and
-			case	BYTE_CODE_METAMETHOD_OR_SET:	return  "_set_or"; 	// _set_or
-			case	BYTE_CODE_METAMETHOD_XOR_SET:	return  "_set_xor";	// _set_xor
-			case	BYTE_CODE_METAMETHOD_SHL_SET:	return  "_set_shl";	// _set_shl
-			case	BYTE_CODE_METAMETHOD_SHR_SET:	return  "_set_shr";	// _set_shr
+			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "_add_set";	// _set_add
+			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "_sub_set";	// _set_sub
+			case	BYTE_CODE_METAMETHOD_DIV_SET:	return  "_div_set";	// _set_div
+			case	BYTE_CODE_METAMETHOD_MOD_SET:	return  "_mod_set";	// _set_mod
+			case	BYTE_CODE_METAMETHOD_AND_SET:	return  "_and_set";	// _set_and
+			case	BYTE_CODE_METAMETHOD_OR_SET:	return  "_or_set"; 	// _set_or
+			case	BYTE_CODE_METAMETHOD_XOR_SET:	return  "_xor_set";	// _set_xor
+			case	BYTE_CODE_METAMETHOD_SHL_SET:	return  "_shl_set";	// _set_shl
+			case	BYTE_CODE_METAMETHOD_SHR_SET:	return  "_shr_set";	// _set_shr
 
 			//case	BYTE_CODE_METAMETHOD_GET:		return  "_get"; 	// _get
 			case	BYTE_CODE_METAMETHOD_TO_STRING:	return  "_toString";// _toString
