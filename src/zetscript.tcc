@@ -209,7 +209,7 @@ namespace zetscript{
 										error.append("'");
 										return false;
 									}
-								}else{ // ScriptObjectClass ?
+								}else{ // ScriptObject ?
 									error = " Error calling function, no C-object parameter! Unexpected script variable (";
 									error.append(zs_rtti::demangle(script_object->getTypeName().c_str()));
 									error.append(")");
@@ -248,7 +248,7 @@ namespace zetscript{
 		// 0 PARAMS
 		//
 		template <typename R,typename T>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<std::is_same<R,void>::value>::type
 		{
 
@@ -272,7 +272,7 @@ namespace zetscript{
 		}
 
 		template <typename R,typename T>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<!std::is_same<R,void>::value>::type
 		{
 			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
@@ -308,7 +308,7 @@ namespace zetscript{
 		//
 		// template for last parameter argIdx == 1
 		template<typename R,typename T,  typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 		{
 			//return NULL;
@@ -337,7 +337,7 @@ namespace zetscript{
 		}
 
 		template<typename R,typename T,  typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type
 		{
 			using Param1 = typename T::template Argument<0>::type;
@@ -380,7 +380,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 2
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 		{
 
@@ -417,7 +417,7 @@ namespace zetscript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type
 		{
 			using Param1 = typename T::template Argument<0>::type;
@@ -467,7 +467,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 3
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 		{
 
@@ -508,7 +508,7 @@ namespace zetscript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type
 		{
 			using Param1 = typename T::template Argument<0>::type;
@@ -557,7 +557,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 4
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 		{
 
@@ -599,7 +599,7 @@ namespace zetscript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type
 		{
 
@@ -652,7 +652,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 5
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 		{
 
@@ -699,7 +699,7 @@ namespace zetscript{
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type
 		{
 
@@ -756,7 +756,7 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 6
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 6)>::type
 		{
 
@@ -805,7 +805,7 @@ namespace zetscript{
 		}
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type
 		{
 			using Param1 = typename T::template Argument<0>::type;
@@ -863,7 +863,7 @@ namespace zetscript{
 		//--------------------------------------------------------------------------------------------------------------------
 
 		 template <typename F, std::size_t... Is>
-		 auto ZetScript::bindScriptFunctionBuilderBase(const char *file, int line,void **ptr_fun, ScriptObjectClass *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto ZetScript::bindScriptFunctionBuilderBase(const char *file, int line,void **ptr_fun, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity > 0)>::type
 		{
 			 bindScriptFunctionBuilder<typename F::return_type, F,  typename F::template Argument<Is>::type...>(file,line,ptr_fun,calling_obj,fun_obj);
@@ -872,14 +872,14 @@ namespace zetscript{
 
 
 		 template <typename F, std::size_t... Is>
-		 auto ZetScript::bindScriptFunctionBuilderBase(const char *file, int line, void **ptr_fun, ScriptObjectClass *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto ZetScript::bindScriptFunctionBuilderBase(const char *file, int line, void **ptr_fun, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity == 0)>::type
 		{
 			 bindScriptFunctionBuilder<typename F::return_type, F>(file,line,ptr_fun,calling_obj,fun_obj);
 		}
 
 		template <  typename F>
-		std::function<F> * ZetScript::bindScriptFunction(ScriptFunction *fun,ScriptObjectClass *calling_obj, const char *file, int line){
+		std::function<F> * ZetScript::bindScriptFunction(ScriptFunction *fun,ScriptObject *calling_obj, const char *file, int line){
 
 			const char *return_type;
 			zs_vector params;
@@ -923,7 +923,7 @@ namespace zetscript{
 		std::function<F> * ZetScript::bindScriptFunction(const zs_string & function_access, const char *file, int line)
 		{
 			ScriptFunction * fun_obj=NULL;
-			ScriptObjectClass *calling_obj=NULL;
+			ScriptObject *calling_obj=NULL;
 			zs_vector access_var = zs_strutils::split(function_access,'.');
 			ScriptFunction * main_function = script_type_factory->getMainFunction();
 			StackElement *se=NULL;
@@ -943,7 +943,7 @@ namespace zetscript{
 								StackElement *stk = vm_get_stack_element_at(virtual_machine,j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
 									if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
-										calling_obj=(ScriptObjectClass *)stk->value;
+										calling_obj=(ScriptObject *)stk->value;
 									}
 								}
 								else{
@@ -972,7 +972,7 @@ namespace zetscript{
 						se = calling_obj->getProperty(*symbol_to_find);
 						if(se!=NULL){
 							if(se->properties & STK_PROPERTY_SCRIPT_OBJECT){
-								calling_obj=(ScriptObjectClass *)se->value;
+								calling_obj=(ScriptObject *)se->value;
 							}else{
 								THROW_SCRIPT_ERROR_FILE_LINE(
 										file

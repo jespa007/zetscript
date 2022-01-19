@@ -335,12 +335,12 @@ namespace zetscript{
 		// 0 PARAMS
 		//
 		template <typename R,typename T>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<std::is_same<R,void>::value>::type;
 
 
 		template <typename R,typename T>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<!std::is_same<R,void>::value>::type;
 
 
@@ -350,12 +350,12 @@ namespace zetscript{
 		//
 		// template for last parameter argIdx == 1
 		template<typename R,typename T,  typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun ,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun ,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type;
 
 
 		template<typename R,typename T,  typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun ,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun ,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type;
 
 
@@ -365,12 +365,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 2
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type;
 
 
@@ -380,12 +380,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 3
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type;
 
 
@@ -396,12 +396,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 4
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type;
 
 
@@ -411,13 +411,13 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 5
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type;
 
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type;
 
 		//--------------------------------------------------------------------------------------------------------------------
@@ -426,12 +426,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 6
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 6)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObjectClass *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type;
 
 		//
@@ -439,21 +439,21 @@ namespace zetscript{
 		//--------------------------------------------------------------------------------------------------------------------
 
 		 template <typename F, std::size_t... Is>
-		 auto bindScriptFunctionBuilderBase(const char *file,int line,void **ptr_fun, ScriptObjectClass *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto bindScriptFunctionBuilderBase(const char *file,int line,void **ptr_fun, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity > 0)>::type;
 
 
 		 template <typename F, std::size_t... Is>
-		 auto bindScriptFunctionBuilderBase(const char *file,int line,void **ptr_fun, ScriptObjectClass *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto bindScriptFunctionBuilderBase(const char *file,int line,void **ptr_fun, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity == 0)>::type;
 
-		void getScriptObject(const zs_string &function_access,ScriptObjectClass **calling_obj,ScriptFunction **fun_obj );
+		void getScriptObject(const zs_string &function_access,ScriptObject **calling_obj,ScriptFunction **fun_obj );
 
 		template <  typename F>
 		std::function<F> * bindScriptFunction(const zs_string & function_access, const char *file="", int line=-1);
 
 		template <  typename F>
-		std::function<F> * bindScriptFunction(ScriptFunction *sf, ScriptObjectClass *calling_object, const char *file="", int line=-1);
+		std::function<F> * bindScriptFunction(ScriptFunction *sf, ScriptObject *calling_object, const char *file="", int line=-1);
 
 		template <  typename F>
 		std::function<F> * bindScriptFunction(ScriptFunction *sf, const char *file="", int line=-1);

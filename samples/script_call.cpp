@@ -11,7 +11,7 @@ void test_callback(ScriptFunction *script_function){
 	bool param3=true;
 
 	// transform script function to c++ function...
-	auto callback_function = ZS_BIND_SCRIPT_FUNCTION(zs,ScriptObjectString * (zs_float *, zs_int *, bool *),script_function);
+	auto callback_function = zs->bindScriptFunction<ScriptObjectString * (zs_float *, zs_int *, bool *)>(script_function,__FILE__,__LINE__);
 
 	// call the function...
 	auto so=(*callback_function)(&param1,&param2,&param3);
@@ -38,8 +38,11 @@ int main(){
 		zs->eval(
 			"class Test{\n"
 			"	function1(arg){\n"
-			"       var a=10;\n"
-			"		Console::outln(\"calling Test.Function:\"+arg+\" a:\"+a);\n"
+			"       this.d=10;\n"
+			"		Console::outln(\"calling Test.Function:\"+arg+\" a:\"+this.a);\n"
+			"		test_callback(function(a,b,c){\n"
+			"			return \"result a:\"+a+\" b:\"+b+\" c:\"+c+\" this.d:\"+this.d;\n"
+			"		});\n"
 			"	}\n"
 			"};\n"
 			"\n"

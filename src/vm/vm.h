@@ -64,14 +64,14 @@ namespace zetscript{
 	StackElement *	vm_get_current_stack_element(VirtualMachine *vm);
 	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,unsigned int idx_glb_element);
 	StackElement vm_execute(
-		VirtualMachine 	*	vm
-		,ScriptObject 	*	this_object
-		,ScriptFunction *	calling_function
-		,StackElement 	*  	stk_params=NULL
-		,unsigned char		n_stk_params=0
-		,unsigned short 	properties=0
-		,const char 	*	file=""
-		,int 				line=-1
+		VirtualMachine 	*	_vm
+		,ScriptObject 	*	_this_object
+		,ScriptFunction *	_calling_function
+		,StackElement 	*  	_stk_params=NULL
+		,unsigned char		_n_stk_params=0
+		,unsigned short 	_properties=0
+		,const char 	*	_file=""
+		,int 				_line=-1
 	);
 
 	void vm_delete(VirtualMachine *vm);

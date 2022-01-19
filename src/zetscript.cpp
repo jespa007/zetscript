@@ -451,10 +451,6 @@ namespace zetscript{
 		return stk_ret;
 	}
 
-	void ZetScript::getScriptObject(const zs_string &function_access,ScriptObjectClass **calling_obj,ScriptFunction **fun_obj ){
-
-	}
-
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
 		zs_string global_symbol;
 		int idx_start_variable = _idx_start_variable == IDX_ZS_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
