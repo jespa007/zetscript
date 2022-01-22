@@ -155,6 +155,7 @@ namespace zetscript{
 			for(unsigned j=0; j < eic_current->ei_load_symbols.count; j++){
 				delete (EvalInstruction *)(eic_current->ei_load_symbols.items[j]);
 			}
+			delete eic_current;
 		}
 		_eic_cases.clear();
 
@@ -396,6 +397,14 @@ namespace zetscript{
 					if(ins->value_op1==ZS_IDX_INSTRUCTION_JMP_BREAK){
 						ins->value_op1=IDX_ZS_UNDEFINED;
 						ins->value_op2=offset_end_instruction-i;
+					}
+				}
+
+				// deallocate all cases
+				for(unsigned i=0; i < eic_cases.count; i++){
+					EvalInstructionCase * eic_current=((EvalInstructionCase *)eic_cases.items[i]);
+					if(eic_current != NULL){
+						delete eic_current;
 					}
 				}
 

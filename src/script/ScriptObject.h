@@ -12,6 +12,7 @@ namespace zetscript{
 	struct VirtualMachine;
 	class ScriptObject;
 	class ScriptFunction;
+	class ScriptObjectMemberFunction;
 
 	typedef struct _SharedPointerInfo {
 		ScriptObject 			*ptr_script_object_shared;
@@ -78,6 +79,9 @@ namespace zetscript{
 		virtual void			*	getNativeObject();
 		virtual zs_string 			toString();
 
+		void derefObjectMemberFunction(ScriptObjectMemberFunction  *_somf);
+		void 						refObjectMemberFunction(ScriptObjectMemberFunction *_somf);
+
 		void 						printAllFunctionMembers();
 
 		virtual 					~ScriptObject();
@@ -89,14 +93,14 @@ namespace zetscript{
 		VirtualMachine 			*	vm; // 8
 		zs_vector					stk_builtin_elements;
 		zs_map					*	map_builtin_properties; // to search faster each property by its name
-
+		zs_vector				*   ref_script_object_functions;
 
 		void 						init(ZetScript *zs);
 
 		virtual StackElement 	* 	newBuiltinSlot();
 		virtual StackElement 	* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_null);
 		bool 						unrefAndFreeStackElementContainer(StackElement *si);
-
+		int 						idxRefObjectMemberFunction(ScriptObjectMemberFunction  *_somf);
 	};
 
 }

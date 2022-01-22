@@ -51,7 +51,6 @@ namespace zetscript{
 	ScriptObjectObject::ScriptObjectObject(){
 		idx_type=IDX_TYPE_SCRIPT_OBJECT_OBJECT;
 		map_user_properties=new zs_map();
-		ref_script_object_functions=new zs_vector();
 	}
 
 	StackElement * ScriptObjectObject::addUserProperty(
@@ -158,39 +157,9 @@ namespace zetscript{
 		return json::serialize(zs,&stk,true);
 	}
 
-	int ScriptObjectObject::idxRefObjectMemberFunction(ScriptObjectMemberFunction  *_somf){
-		for(unsigned i=0; i < ref_script_object_functions->count;i++){
-			if(*(ref_script_object_functions->items+i)==(zs_int)_somf){
-				return i;
-			}
-		}
 
-		return IDX_ZS_UNDEFINED;
-	}
-
-
-	void ScriptObjectObject::derefObjectMemberFunction(ScriptObjectMemberFunction  *_somf){
-		int idx=idxRefObjectMemberFunction(_somf);
-
-		if(idx==IDX_ZS_UNDEFINED){
-			THROW_RUNTIME_ERROR("internal: member function not exist");
-		}
-
-		ref_script_object_functions->erase(idx);
-	}
-
-	void ScriptObjectObject::refObjectMemberFunction(ScriptObjectMemberFunction *_somf){
-		ref_script_object_functions->push_back((zs_int)_somf);
-	}
 
 	ScriptObjectObject::~ScriptObjectObject(){
-
-		for(unsigned i=0; i < ref_script_object_functions->count; i++){
-			ScriptObjectMemberFunction *_somf=(ScriptObjectMemberFunction *)ref_script_object_functions->items[i];
-			_somf->so_object=NULL;
-		}
-
-		delete ref_script_object_functions;
 
 		eraseAllUserProperties();
 		delete map_user_properties;

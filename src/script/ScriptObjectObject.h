@@ -53,18 +53,17 @@ namespace zetscript{
 		zs_map *getMapUserProperties();
 		zs_map *getMapBuiltinProperties();
 
-		void derefObjectMemberFunction(ScriptObjectMemberFunction  *_somf);
-		void refObjectMemberFunction(ScriptObjectMemberFunction *_somf);
+
+
 
 		virtual zs_string toString();
 		virtual ~ScriptObjectObject();
 
 	protected:
 
-		zs_vector			*   ref_script_object_functions;
 		zs_map				*	map_user_properties; // to search faster each property by its name
 
-		int 					idxRefObjectMemberFunction(ScriptObjectMemberFunction  *_somf);
+
 		StackElement * 			getUserProperty(const zs_string & property_name);
 	};
 

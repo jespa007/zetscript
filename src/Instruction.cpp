@@ -84,7 +84,7 @@ namespace zetscript{
 		}
 
 		int instruction_num_required_stack(Instruction *_instruction){
-
+			return 0;
 			if(_instruction->properties & INSTRUCTION_PROPERTY_ILOAD){
 				return 1;
 			}

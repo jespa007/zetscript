@@ -475,6 +475,7 @@ find_element_object:
 				store_lst_setter_functions=NULL;
 				stk_src=stk_load_multi_var_src; // store ptr instruction2 op as src_var_value
 				//stk_dst=stk_result_op2;
+				stk_result_op2=stk_dst;
 
 				// check if by ref
 				if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_dst)){
@@ -625,12 +626,11 @@ find_element_object:
 						(old_stk_dst.value!=0) // it had a pointer (no constant)...
 									&&
 						(! // if not...
-								(old_stk_dst.value == stk_dst->value)  // ... same ref ...
-									||
-								(IS_STK_THIS(&old_stk_dst)) // ... or this
-								// ... do share/unshare
+							(old_stk_dst.value == stk_dst->value)  // ... same ref ...
+								||
+							(IS_STK_THIS(&old_stk_dst)) // ... or this
+							// ... do share/unshare
 						)){
-
 							// unref pointer because new pointer has been attached...
 							StackElement *chk_ref=(StackElement *)stk_result_op2->value;
 							ScriptObjectObject  *old_so=(ScriptObjectObject  *)old_stk_dst.value;

@@ -464,7 +464,6 @@ namespace zetscript{
 		const char *str_aux=NULL;
 		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data);
 
-
 		for(unsigned i=0; i < count; i++){
 
 			Symbol *vis=NULL;
@@ -603,8 +602,6 @@ namespace zetscript{
 
 			sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(instruction_info)));
 		}
-
-
 
 		if(lookup_sorted_table_local_variables != NULL){
 			// update variables symbol...

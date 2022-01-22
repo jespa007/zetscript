@@ -127,7 +127,6 @@ namespace zetscript{
 		return json::serialize(zs,&stk,true);
 	}
 
-
 	ScriptObjectVector::~ScriptObjectVector(){
 
 		eraseAllUserElements();

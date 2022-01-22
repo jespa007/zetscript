@@ -50,6 +50,7 @@ class TestExtended extends Test{
 var t=new TestExtended(1);
 System::assert(t.a==1,"t.a!=1");
 var a=t.function3(20);
-Console::outln("a:"+t.a);
+System::assert(t.a==111,"t.a!=111");
+
 
 

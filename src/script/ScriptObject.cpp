@@ -46,6 +46,7 @@ namespace zetscript{
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
+		ref_script_object_functions=new zs_vector();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
@@ -191,6 +192,31 @@ namespace zetscript{
 		return "Object@"+getTypeName();
 	}
 
+	int ScriptObject::idxRefObjectMemberFunction(ScriptObjectMemberFunction  *_somf){
+		for(unsigned i=0; i < ref_script_object_functions->count;i++){
+			if(*(ref_script_object_functions->items+i)==(zs_int)_somf){
+				return i;
+			}
+		}
+
+		return IDX_ZS_UNDEFINED;
+	}
+
+	void ScriptObject::derefObjectMemberFunction(ScriptObjectMemberFunction  *_somf){
+		int idx=idxRefObjectMemberFunction(_somf);
+
+		if(idx==IDX_ZS_UNDEFINED){
+			THROW_RUNTIME_ERROR("internal: member function not exist");
+		}
+
+		ref_script_object_functions->erase(idx);
+	}
+
+	void ScriptObject::refObjectMemberFunction(ScriptObjectMemberFunction *_somf){
+		ref_script_object_functions->push_back((zs_int)_somf);
+	}
+
+
 	ScriptObject::~ScriptObject(){
 		// deallocate built-in function member objects
 		for(unsigned i=0; i< stk_builtin_elements.count; i++){
@@ -210,5 +236,12 @@ namespace zetscript{
 		}
 		stk_builtin_elements.clear();
 		delete map_builtin_properties;
+
+		for(unsigned i=0; i < ref_script_object_functions->count; i++){
+			ScriptObjectMemberFunction *_somf=(ScriptObjectMemberFunction *)ref_script_object_functions->items[i];
+			_somf->so_object=NULL;
+		}
+
+		delete ref_script_object_functions;
 	}
 }
