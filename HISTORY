@@ -260,8 +260,7 @@ Solved issues
 #317 Change concept of class by type 
 #302 Improve zs_map
 #319 Detect when function member object is called and its own object is destroyed 
-> #322 Switch case values should have constant values
-> #323 Implement operator "==" for Vector 
+#323 Implement operator "==" for Vector 
 
 
 //----------------------------------------------------------

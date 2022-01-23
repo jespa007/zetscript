@@ -108,4 +108,48 @@ namespace zetscript{
 		}
 		return found;
 	}
+
+	bool 							ScriptObjectVectorWrap_equal(ScriptObjectVector *so1, ScriptObjectVector *so2){
+		bool equal=true;
+		ZetScript *zs=so1->getZetScript();
+		zs_vector *stk_user_list_elements_s1=so1->getStkUserListElements();
+		zs_vector *stk_user_list_elements_s2=so2->getStkUserListElements();
+
+		if(stk_user_list_elements_s1->count != stk_user_list_elements_s2->count){
+			return false;
+		}
+
+		for(unsigned i=0; i < stk_user_list_elements_s1->count && equal == true;i++){
+			StackElement *stk_element_s1=(StackElement *)stk_user_list_elements_s1->items[i];
+			StackElement *stk_element_s2=(StackElement *)stk_user_list_elements_s2->items[i];
+
+			// compare primitives (inclusive strings) other objects as the same pointer
+			switch(stk_element_s1->properties | stk_element_s2->properties){
+				case STK_PROPERTY_ZS_INT:
+				case STK_PROPERTY_ZS_FLOAT:
+				case STK_PROPERTY_BOOL:
+					equal=stk_element_s1->value==stk_element_s2->value;
+					break;
+				case (STK_PROPERTY_ZS_INT|STK_PROPERTY_ZS_FLOAT):
+					if((stk_element_s1->properties & STK_PROPERTY_ZS_INT) && (stk_element_s2->properties & STK_PROPERTY_ZS_FLOAT)){
+						equal=stk_element_s1->value == *((float *)&stk_element_s2->value);
+					}else{
+						equal=*((float *)&stk_element_s1->value)==stk_element_s2->value;
+					}
+					break;
+				case STK_PROPERTY_SCRIPT_OBJECT:
+					if(STK_IS_SCRIPT_OBJECT_STRING(stk_element_s1) && STK_IS_SCRIPT_OBJECT_STRING(stk_element_s2)){
+						equal=stk_to_str(zs,stk_element_s1) == stk_to_str(zs,stk_element_s2);
+					}else{
+						equal=stk_element_s1->value==stk_element_s2->value;
+					}
+					break;
+				default:
+					equal=false;
+					break;
+			}
+
+		}
+		return equal;
+	}
 }

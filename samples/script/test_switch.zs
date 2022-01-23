@@ -43,19 +43,24 @@ function test_switch(a){
 }
 Console::outln("--")
 var v=test_switch(-2)
+System::assert(Vector::equal(v,[-2]),"v!=[-2]")
 Console::outln(v)
 Console::outln("--")
 v=test_switch(-1)
 Console::outln(v)
+System::assert(Vector::equal(v,[-1,0,1,2,-3]),"v!=[-1,0,1,2,-3]")
 Console::outln("--")
 v=test_switch(0)
 Console::outln(v)
+System::assert(Vector::equal(v,[0,1,2,-3]),"v!=[0,1,2,-3]")
 Console::outln("--")
 v=test_switch(3)
 Console::outln(v)
+System::assert(Vector::equal(v,[3]),"v!=[3]")
 Console::outln("--")
 v=test_switch(4)
 Console::outln(v)
+System::assert(Vector::equal(v,[4]),"v!=[4]")
 
 
 var s="hello"
@@ -92,19 +97,24 @@ var h;
 switch(g){
 case 0:
 	Console::outln("0")
+	h=g
 case CASE_3:
     Console::outln("CASE_3")
+    h=g
     break;
 case obj.a : 
     Console::outln("a {0}",g)
+    h=g
     break;
 case obj.b : 
     Console::outln("b")
+    h=g
     break;
 default:
     Console::outln("default: {0}",g)
+    h=g
     break;
 }
 
-
+System::assert(h==-CASE_3,"h!=-CASE_3")
 

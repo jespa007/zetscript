@@ -113,7 +113,8 @@ namespace zetscript{
 
 	#pragma pack(pop)
 
-	struct InstructionSourceInfo {
+	class InstructionSourceInfo {
+	public:
 
 		const char *file;
 		short line;
@@ -131,10 +132,20 @@ namespace zetscript{
 			ptr_str_symbol_name=_ptr_str_symbol_name;
 		}
 
-		InstructionSourceInfo(const InstructionSourceInfo & instruction_source_info){
-			ptr_str_symbol_name=instruction_source_info.ptr_str_symbol_name;
-			file=instruction_source_info.file;
-			line=instruction_source_info.line;
+		InstructionSourceInfo(const InstructionSourceInfo & _instruction_source_info){
+			copy(_instruction_source_info);
+		}
+
+		InstructionSourceInfo & operator=(const InstructionSourceInfo & _instruction_source_info){
+			copy(_instruction_source_info);
+			return *this;
+		}
+
+	private:
+		void copy(const InstructionSourceInfo & _instruction_source_info){
+			ptr_str_symbol_name=_instruction_source_info.ptr_str_symbol_name;
+			file=_instruction_source_info.file;
+			line=_instruction_source_info.line;
 		}
 	};
 

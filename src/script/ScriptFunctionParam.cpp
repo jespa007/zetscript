@@ -31,11 +31,20 @@ namespace zetscript{
 	}
 
 	ScriptFunctionParam::ScriptFunctionParam( const ScriptFunctionParam & _function_param){
+		copy(_function_param);
+	}
+
+	void ScriptFunctionParam::copy( const ScriptFunctionParam & _function_param){
 		idx_type=_function_param.idx_type;
 		name=_function_param.name;
 		line=_function_param.line;
 		properties=_function_param.properties;
 		default_param_value=_function_param.default_param_value;
+	}
+
+	ScriptFunctionParam & ScriptFunctionParam::operator =( const ScriptFunctionParam & _function_param){
+		copy(_function_param);
+		return *this;
 	}
 
 	ScriptFunctionParam *ScriptFunctionParam::createArrayFromVector(const zs_vector * _s){

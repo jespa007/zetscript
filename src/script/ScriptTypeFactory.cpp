@@ -209,6 +209,7 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectVector>("size",&ScriptObjectVectorWrap_size);
 		registerNativeMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
 		registerNativeMemberFunction<ScriptObjectVector>("iter",&ScriptObjectVectorWrap_iter);
+		registerNativeMemberFunctionStatic<ScriptObjectVector>("equal",&ScriptObjectVectorWrap_equal);
 
 		// IteratorVector
 		registerNativeMemberFunction<ScriptObjectIteratorVector>("_post_inc",ScriptObjectIteratorVectorWrap_next);

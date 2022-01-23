@@ -11,7 +11,8 @@ namespace zetscript{
 		,MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS	=0x1<<1
 	} ScriptFunctionArgProperty;
 
-	struct ScriptFunctionParam{
+	class ScriptFunctionParam{
+	public:
 		int idx_type;
 		zs_string name; //arg c++ type or arg name
 		int line;
@@ -21,10 +22,13 @@ namespace zetscript{
 		ScriptFunctionParam();
 		ScriptFunctionParam(const zs_string & _name);
 		ScriptFunctionParam(int _idx_type, const zs_string & _name);
-
 		ScriptFunctionParam( const ScriptFunctionParam & _function_param);
+
+		ScriptFunctionParam & operator=( const ScriptFunctionParam & _function_param);
 
 		static ScriptFunctionParam *createArrayFromVector(const zs_vector  * _s);
 		static ScriptFunctionParam *createArrayFromScriptFunction(const ScriptFunction * sf);
+	private:
+		void copy( const ScriptFunctionParam & _function_param);
 	};
 }

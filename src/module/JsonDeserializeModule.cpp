@@ -142,7 +142,7 @@ namespace zetscript{
 		void json_deserialize_error(JsonDeserializeData *data,const char *str_from,int _line,const char *str,...){
 
 			char  what_msg[ZS_MAX_STR_BUFFER]={0};
-			char  error_description[ZS_MAX_STR_BUFFER] = { 0 };
+			char  error_description[1024] = { 0 };
 			va_list  ap;
 			va_start(ap,  str);
 			vsprintf(error_description,  str,  ap);
@@ -155,7 +155,10 @@ namespace zetscript{
 			}
 
 			if(data->filename != NULL  && *data->filename != 0){
-				sprintf(what_msg,"[file:%s line:%i] %s",data->filename, _line, (char *)error_description);
+				sprintf(what_msg,"[file:%s line:%i] %s"
+						,data->filename
+						, _line
+						, (char *)error_description);
 			}else{
 				sprintf(what_msg,"[line:%i] %s",_line,error_description);
 			}
