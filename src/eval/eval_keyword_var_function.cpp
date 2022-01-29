@@ -361,7 +361,7 @@ namespace zetscript{
 
 			// after variable declaration is expected to have any keyword but is not valid any operator,
 			if((ending_op=is_operator(aux_p))!=Operator::OPERATOR_UNKNOWN){
-				if((properties & EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR) && ending_op != Operator::OPERATOR_IN){
+				if((((properties & EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR)==EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR) && (ending_op == Operator::OPERATOR_IN))==false){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected '%s' within variable initialization",eval_data_operators[ending_op].str)
 				}
 			}

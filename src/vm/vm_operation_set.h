@@ -42,13 +42,13 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	default:\
 		if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
 			((zs_string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(stk_to_str(data->zs,stk_result_op2));\
-			VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1);\
+			VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 		}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
 					&&\
 				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
 		){\
 				ScriptObjectObject::append(data->zs, (ScriptObjectObject *)stk_result_op1->value,(ScriptObjectObject *)stk_result_op1->value);\
-				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1);\
+				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 		}else{\
 			LOAD_PROPERTIES(__METAMETHOD__); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 			if(ptr_metamethod_members_aux->add_setters.count==0){\
@@ -89,6 +89,9 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		}\
 		break;\
 	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
+	}
 
 #define VM_OPERATION_ARITHMETIC_SET(__C_OP__, __METAMETHOD__,__ACCESSOR_METAMETHOD_PROPERTY__)\
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
@@ -153,6 +156,10 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		}\
 		data->stk_vm_current++;\
 	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
+	}
+
 
 
 #define VM_OPERATION_DIV_SET(__METAMETHOD__) \
@@ -229,6 +236,10 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		data->stk_vm_current++;\
 		break;\
 	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
+	}
+
 
 #define VM_OPERATION_MOD_SET(__METAMETHOD__) \
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
@@ -300,6 +311,10 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		data->stk_vm_current++;\
 		break;\
 	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
+	}
+
 
 #define VM_OPERATION_BINARY_SET(__C_OP__, __METAMETHOD__,__ACCESSOR_METAMETHOD_PROPERTY__)\
 	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_ZS_INT){\
@@ -345,4 +360,8 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		}\
 		data->stk_vm_current++;\
 	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
+	}
+
 

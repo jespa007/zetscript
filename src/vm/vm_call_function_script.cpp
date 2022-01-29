@@ -1349,8 +1349,7 @@ execute_function:
 				continue;
 
 			 case BYTE_CODE_POP_SCOPE:
-				 VM_POP_SCOPE()
-
+				VM_POP_SCOPE()
 				if((data->zero_shares+data->vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove
 					vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 				}

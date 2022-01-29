@@ -139,7 +139,11 @@ namespace zetscript{
 							,default_str_value
 							,line
 						)==FALSE){
-							return NULL;
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file,line,
+								eval_data->current_parsing_file,line,
+								"Expected literal or identifier"
+							);
 						}
 
 						ScriptType *sc=eval_data->script_type_factory->getScriptType(default_str_value);
@@ -158,6 +162,10 @@ namespace zetscript{
 									byte_code= ByteCode::BYTE_CODE_LOAD_REF;
 								}
 
+							}
+						}else{
+							if(eval_data->current_function->script_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN){
+								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Symbol '%s' not defined",default_str_value.c_str());
 							}
 						}
 					}

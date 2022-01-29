@@ -4,12 +4,12 @@
  */
 #define LOAD_PROPERTIES(__METAMETHOD__) \
 	ptr_metamethod_members_aux=NULL;\
-	if(stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY){\
+	if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){\
 		stk_var_copy=*stk_result_op1;\
 		stk_mp_aux=(StackMemberProperty *)stk_result_op1->value;\
 		ptr_metamethod_members_aux= &stk_mp_aux->member_property->metamethod_members;\
 		so_aux = stk_mp_aux->so_object;\
-	}else if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){\
+	}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 		so_aux= (ScriptObject *)stk_result_op1->value;\
 		ptr_metamethod_members_aux= &so_aux->getScriptType()->metamethod_members;\
 	}\
@@ -17,8 +17,8 @@
 		VM_STOP_EXECUTE("Error performing '%s%s': Cannot perform operation with value as '%s'"\
 			,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 			,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
-			,stk_to_str(data->zs,stk_var).c_str()\
-			,stk_to_str(data->zs,stk_var).c_str()\
+			,stk_to_str(data->zs,stk_result_op1).c_str()\
+			,stk_to_str(data->zs,stk_result_op1).c_str()\
 		);\
 	}\
 
@@ -259,13 +259,13 @@
 	}\
 
 #define VM_OPERATION_NEG_POST(__C_OP__, __METAMETHOD__,__POST_OPERATION_VARIABLE__) \
-	stk_var=--data->stk_vm_current;\
-	stk_var=(StackElement *)((stk_var)->value);/* always expects ptr stk due it modifies the var */\
-	ptr_ptr_void_ref=(void **)(&((stk_var)->value));\
-	if(stk_var->properties & STK_PROPERTY_IS_VAR_C){\
-		ptr_ptr_void_ref=(void **)((stk_var)->value);\
+	stk_result_op1=--data->stk_vm_current;\
+	stk_result_op1=(StackElement *)((stk_result_op1)->value);/* always expects ptr stk due it modifies the var */\
+	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_VAR_C){\
+		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
 	}\
-	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_var)->properties)){\
+	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
 		VM_PUSH_STK_ZS_INT(-(*((zs_int *)(ptr_ptr_void_ref))));\
 		(*((zs_int *)(ptr_ptr_void_ref)))__C_OP__;\
@@ -278,7 +278,7 @@
 		LOAD_PROPERTIES(__METAMETHOD__);\
 		if(ptr_metamethod_members_aux->neg==NULL){\
 			zs_strutils::format("%s '%s' not implements metamethod _neg (aka '-a'') "\
-					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
+					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
 			);\
 			goto lbl_exit_function;\
@@ -294,7 +294,7 @@
 		/* call inc metamethod */\
 		if(__POST_OPERATION_VARIABLE__==NULL){\
 			zs_strutils::format("%s '%s' not implements metamethod %s (aka '%s') "\
-					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
+					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
@@ -311,13 +311,13 @@
 
 
 #define VM_OPERATION_POST(__C_OP__, __METAMETHOD__,__POST_OPERATION_VARIABLE__) \
-	stk_var=--data->stk_vm_current;\
-	stk_var=(StackElement *)((stk_var)->value);/* always expects ptr stk due it modifies the var */\
-	ptr_ptr_void_ref=(void **)(&((stk_var)->value));\
-	if(stk_var->properties & STK_PROPERTY_IS_VAR_C){\
-		ptr_ptr_void_ref=(void **)((stk_var)->value);\
+	stk_result_op1=--data->stk_vm_current;\
+	stk_result_op1=(StackElement *)((stk_result_op1)->value);/* always expects ptr stk due it modifies the var */\
+	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_VAR_C){\
+		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
 	}\
-	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_var)->properties)){\
+	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
 		VM_PUSH_STK_ZS_INT(-(*((zs_int *)(ptr_ptr_void_ref))));\
 		(*((zs_int *)(ptr_ptr_void_ref)))__C_OP__;\
@@ -337,7 +337,7 @@
 					,true\
 			);\
 		}else{ /* store object */ \
-			if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){\
+			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 				data->stk_vm_current->value=(zs_int)so_aux;\
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
@@ -348,7 +348,7 @@
 		/* call post operation metamethod */\
 		if(__POST_OPERATION_VARIABLE__==NULL){\
 			zs_strutils::format("%s '%s' not implements metamethod %s (aka '%s') "\
-					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
+					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
@@ -364,13 +364,13 @@
 	}
 
 #define VM_OPERATION_PRE(__C_OP__, __METAMETHOD__,__PRE_OPERATION_VARIABLE__) \
-	stk_var=--data->stk_vm_current;\
-	stk_var=(StackElement *)((stk_var)->value);\
-	ptr_ptr_void_ref=(void **)(&((stk_var)->value));\
-	if(stk_var->properties & STK_PROPERTY_IS_VAR_C){\
-		ptr_ptr_void_ref=(void **)((stk_var)->value);\
+	stk_result_op1=--data->stk_vm_current;\
+	stk_result_op1=(StackElement *)((stk_result_op1)->value);\
+	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_VAR_C){\
+		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
 	}\
-	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_var)->properties)){\
+	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
 		(*((zs_int *)(ptr_ptr_void_ref)))__C_OP__;\
 		VM_PUSH_STK_ZS_INT(*((zs_int *)(ptr_ptr_void_ref)));\
@@ -384,7 +384,7 @@
 		/* call pre operation metamethod */\
 		if(__PRE_OPERATION_VARIABLE__==NULL){\
 			zs_strutils::format("%s '%s' not implements metamethod %s (aka '%s') " \
-					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
+					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
@@ -407,7 +407,7 @@
 					,true\
 			);\
 		}else{ /* store object */ \
-			if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){\
+			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 				data->stk_vm_current->value=(zs_int)so_aux;\
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\

@@ -180,7 +180,6 @@ namespace zetscript{
 			}else{ // symbol
 				token_node_symbol->pre_operation=pre_operation;
 
-
 				last_accessor_line=line;
 				if((aux_p = eval_symbol(eval_data
 						,aux_p
@@ -189,21 +188,7 @@ namespace zetscript{
 						,token_node_symbol
 						,pre_operation
 				)) == NULL){
-					if(last_operator_token_node!=NULL && last_operator_token_node->operator_type!=OPERATOR_UNKNOWN){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,
-								eval_data->current_parsing_file
-								,last_operator_token_node->line
-								,"Expected literal or identifier after operator '%s'"
-								,eval_data_operators[last_operator_token_node->operator_type].str
-						);
-					}else{
-						EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,
-								eval_data->current_parsing_file
-								,last_operator_token_node->line
-								,"Expected literal or identifier"
-						);
-					}
-
+					goto error_expression_token_symbol;
 				}
 
 				EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];

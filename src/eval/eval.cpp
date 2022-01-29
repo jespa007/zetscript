@@ -392,21 +392,22 @@ namespace zetscript{
 		return true;
 	}
 
-	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable){
+	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable,zs_vector *order_local_vars){
 		for(int i=0; i < current_scope->symbol_variables->count; i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->items[i];
 			lookup_table[s->idx_position]=n_variable++;
+			order_local_vars->push_back(s->idx_position);
 		}
 
 		for(int i=0; i < current_scope->scopes->count; i++){
 			Scope *scope=(Scope *)current_scope->scopes->items[i];
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
-				eval_fill_lookup_local_variable(scope,lookup_table,n_variable);
+				eval_fill_lookup_local_variable(scope,lookup_table,n_variable,order_local_vars);
 			}
 		}
 	}
 
-	short *eval_create_lookup_sorted_table_local_variables(EvalData *eval_data){
+	short *eval_create_lookup_sorted_table_local_variables(EvalData *eval_data,zs_vector *order_local_vars){
 
 		ScriptFunction *sf = eval_data->current_function->script_function;
 		Scope *sc=sf->function_scope;
@@ -432,7 +433,7 @@ namespace zetscript{
 		Scope *current_scope=sf->function_scope;
 		n_local_variable=0;
 
-		eval_fill_lookup_local_variable(current_scope,lookup_linear_stk,n_local_variable);
+		eval_fill_lookup_local_variable(current_scope,lookup_linear_stk,n_local_variable,order_local_vars);
 
 		return lookup_linear_stk;
 	}
@@ -458,11 +459,12 @@ namespace zetscript{
 		size_t total_size_bytes = (len) * sizeof(Instruction);
 		sf->instructions_len=len;
 		sf->instructions = (PtrInstruction)ZS_MALLOC(total_size_bytes);
+		zs_vector order_local_vars;
 
 
 		int ok=FALSE;
 		const char *str_aux=NULL;
-		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data);
+		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data,&order_local_vars);
 
 		for(unsigned i=0; i < count; i++){
 
@@ -608,7 +610,10 @@ namespace zetscript{
 			zs_vector *local_vars_dst=new zs_vector();
 
 			for(int i=0; i < sf->local_variables->count; i++){
-				local_vars_dst->push_back(sf->local_variables->items[lookup_sorted_table_local_variables[i]]);
+				int idx_var=order_local_vars.items[i];
+				Symbol *s=(Symbol *)sf->local_variables->items[idx_var];
+				s->idx_position=lookup_sorted_table_local_variables[idx_var];
+				local_vars_dst->push_back((zs_int)s);
 			}
 
 			delete sf->local_variables;
