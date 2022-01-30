@@ -94,8 +94,11 @@ namespace zetscript{
 		data->vm_current_scope_function->scope_current=data->vm_current_scope_function->scope;
 		data->vm_current_scope_function->stk_local_vars=_stk_local_var;
 
-		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN) && (symbols_count > 0)){
-			VM_PUSH_SCOPE(calling_function->function_scope);
+		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN)){
+
+			if(calling_function->function_scope->symbol_variables->count>0){
+				VM_PUSH_SCOPE(calling_function->function_scope);
+			}
 
 			// reset local variables symbols (not arg symbols)
 			for(unsigned i=calling_function->params_len;i<symbols_count;i++){
@@ -1347,7 +1350,6 @@ execute_function:
 			 case BYTE_CODE_PUSH_SCOPE:
 				VM_PUSH_SCOPE(instruction->value_op2);
 				continue;
-
 			 case BYTE_CODE_POP_SCOPE:
 				VM_POP_SCOPE()
 				if((data->zero_shares+data->vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove

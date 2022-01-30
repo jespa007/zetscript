@@ -281,6 +281,7 @@ namespace zetscript{
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_FUNCTION
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_OBJECT
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_VECTOR
+				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_LITERAL) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==BYTE_CODE_LOAD_STRING) && *test_aux_p=='.')
 		)){
 
 			if(token_node_symbol_class!=NULL){

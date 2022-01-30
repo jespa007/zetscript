@@ -1,7 +1,6 @@
-var s="abcd"
 var sum_k=0;
 var sum_v=0;
-for(var it=s.iter();!it.end();it++){
+for(var it="abcd".iter();!it.end();it++){
 	var k,v;
 	v,k=it.get();
 	Console::outln("k:{0} v:{1} ",k,v);
