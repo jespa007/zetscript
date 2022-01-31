@@ -3,7 +3,7 @@ class A{
 	// built-in member vars with optional initialization
 	var a,b=-1,c=-2
 
-	Test(a,b=-1,c=Test::MAX_NUM){
+	A(a,b=-1,c=A::MAX_NUM){
 		this.a=a; // this.a member
 		this.b=b; // this.b member
 		this.c=c;  // this.c member

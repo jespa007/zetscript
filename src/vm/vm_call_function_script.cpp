@@ -246,7 +246,9 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
 			case BYTE_CODE_LOAD_OBJECT_ITEM:
 load_next_element_object:
-				if((instruction-1)->byte_code == BYTE_CODE_NEW_OBJECT_BY_TYPE){
+				if(
+						(instruction-1)->byte_code == BYTE_CODE_NEW_OBJECT_BY_TYPE
+				){
 					stk_result_op1=(data->stk_vm_current-1);
 				}
 				else{
@@ -908,7 +910,7 @@ find_element_object:
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
 
 				// if we invoke constructor we need to keep object to pass after, else remove object+function
-				sf_call_stk_start_function_object=instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL?1:2; // object + function
+				sf_call_stk_start_function_object=instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL?1:0; // object + function
 
 load_function:
 
@@ -1189,7 +1191,7 @@ execute_function:
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
 				// copy to vm stack
-				while(sf_call_n_returned_arguments_from_function--){
+				while(sf_call_n_returned_arguments_from_function-->0){
 					*data->stk_vm_current++=*sf_call_stk_return++;
 				}
 
@@ -1234,7 +1236,7 @@ execute_function:
 						}
 					}
 				}
-				goto lbl_exit_function;
+				goto lbl_return_function;
 			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 
 				 	 so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,instruction->value_op1);
@@ -1424,13 +1426,13 @@ execute_function:
 			}
 
 		 }
-
+	lbl_exit_function:
 		// default return null
 		 STK_SET_NULL(data->stk_vm_current);
 		// reset stack and set last stk return null;
 		data->stk_vm_current=_stk_local_var;
 
-	lbl_exit_function:
+	lbl_return_function:
 
 		//=========================
 		// POP STACK
