@@ -910,7 +910,7 @@ find_element_object:
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
 
 				// if we invoke constructor we need to keep object to pass after, else remove object+function
-				sf_call_stk_start_function_object=instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL?1:0; // object + function
+				sf_call_stk_start_function_object=1;//instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL?1:0; // object + function
 
 load_function:
 
@@ -1353,7 +1353,27 @@ execute_function:
 				VM_PUSH_SCOPE(instruction->value_op2);
 				continue;
 			 case BYTE_CODE_POP_SCOPE:
-				VM_POP_SCOPE()
+				//VM_POP_SCOPE()
+				 {\
+					Scope *scope=*(data->vm_current_scope_function->scope_current-1);\
+					StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
+					zs_vector *scope_symbols=scope->symbol_variables;\
+					int count=scope_symbols->count;\
+					StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\
+					while(count--){\
+						if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
+							ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
+							if(so != NULL && so->shared_pointer!=NULL){\
+								if(vm_unref_shared_script_object(vm,so,data->vm_idx_call)==false){\
+									return;\
+								}\
+							}\
+						}\
+						STK_SET_NULL(stk_local_var);\
+						stk_local_var++;\
+					}\
+					--data->vm_current_scope_function->scope_current;\
+				 }
 				if((data->zero_shares+data->vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove
 					vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 				}
