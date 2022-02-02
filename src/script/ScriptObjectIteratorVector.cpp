@@ -36,7 +36,9 @@ namespace zetscript{
 	}
 
 	void ScriptObjectIteratorVector::get(){
-		if(vo==NULL) return;
+		if(vo==NULL){
+			THROW_EXCEPTION("vector object null");
+		}
 		if(idx<(int)vo->length()){
 			// set value
 			stk_value=*((StackElement *)vo->getUserElementAt(idx));
@@ -52,7 +54,7 @@ namespace zetscript{
 
 	void	 ScriptObjectIteratorVector::next(){
 		if(vo==NULL) {
-			return;
+			THROW_EXCEPTION("vector object null");
 		}
 
 		if(idx<(int)vo->length()){
@@ -62,7 +64,7 @@ namespace zetscript{
 
 	bool	 ScriptObjectIteratorVector::end(){
 		if(vo==NULL) {
-			return false;
+			THROW_EXCEPTION("vector object null");
 		}
 		return idx >= (int)vo->length();
 	}

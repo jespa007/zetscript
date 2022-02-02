@@ -35,7 +35,10 @@ namespace zetscript{
 	}
 
 	void ScriptObjectIteratorString::get(){
-		if(so==NULL) return;
+		if(so==NULL) {
+			THROW_EXCEPTION("string object null");
+		}
+
 		zs_string *str_ref=(zs_string *)so->value;
 		if(idx < (int)str_ref->length()){
 			// set value
@@ -52,14 +55,19 @@ namespace zetscript{
 	}
 
 	void	 ScriptObjectIteratorString::next(){
-		if(so==NULL) return;
+		if(so==NULL) {
+			THROW_EXCEPTION("string object null");
+		}
+
 		if(idx<(int)so->length()){
 			idx++;
 		}
 	}
 
 	bool	 ScriptObjectIteratorString::end(){
-		if(so==NULL) false;
+		if(so==NULL) {
+			THROW_EXCEPTION("string object null");
+		}
 		return idx >= (int)so->length();
 	}
 

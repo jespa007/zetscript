@@ -35,11 +35,16 @@ namespace zetscript{
 
 
 	bool	 ScriptObjectIteratorObject::end(){
+		if(oo==NULL) {
+			THROW_EXCEPTION("object null");
+		}
 		return it.end();
 	}
 
 	void	 ScriptObjectIteratorObject::get(){
-		if(oo==NULL) return;
+		if(oo==NULL) {
+			THROW_EXCEPTION("object null");
+		}
 		if(it.end()) return;
 
 		// pass value through the stack
@@ -50,6 +55,9 @@ namespace zetscript{
 
 
 	void	 ScriptObjectIteratorObject::next(){
+		if(oo==NULL) {
+			THROW_EXCEPTION("object null");
+		}
 		it.next();
 	}
 
