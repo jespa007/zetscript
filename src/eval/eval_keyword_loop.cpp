@@ -134,6 +134,7 @@ namespace zetscript{
 					,scope_info
 					,&eval_data->current_function->eval_instructions
 					,")"
+					,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			);
 
 			// insert instruction if evaluated expression
@@ -241,6 +242,7 @@ namespace zetscript{
 
 				idx_do_while_conditional=(int)(eval_data->current_function->eval_instructions.count);
 
+				// eval conditional
 				if((end_expr = eval_expression(
 						eval_data
 						,aux_p+1
@@ -248,6 +250,7 @@ namespace zetscript{
 						,scope_info
 						,&eval_data->current_function->eval_instructions
 						,")"
+						,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 				)) != NULL){
 					zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr);
 				}else{
@@ -631,12 +634,15 @@ namespace zetscript{
 
 						idx_instruction_for_start=(int)(eval_data->current_function->eval_instructions.count);
 
+						// eval conditional
 						if((aux_p = eval_expression(
 								eval_data
 								,(const char *)aux_p
 								,line
 								,new_scope
 								,&eval_data->current_function->eval_instructions
+								,NULL
+								,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 						))==NULL){
 							return NULL;
 						}

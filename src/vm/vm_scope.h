@@ -6,7 +6,7 @@
 	 *data->vm_current_scope_function->scope_current++=(Scope *)_scope;
 
 // defer all local vars
-#define VM_POP_SCOPE()\
+#define VM_POP_SCOPE(destroy_on_zero_ref)\
 {\
 	Scope *scope=*(data->vm_current_scope_function->scope_current-1);\
 	StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
@@ -17,9 +17,10 @@
 		if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
 			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
 			if(so != NULL && so->shared_pointer!=NULL){\
-				if(vm_unref_shared_script_object(vm,so,data->vm_idx_call)==false){\
-					return;\
-				}\
+				destroy_on_zero_ref==true?\
+					vm_unref_shared_script_object_and_remove_if_zero(vm,&so)\
+				:\
+				 	 vm_unref_shared_script_object(vm,so,data->vm_idx_call);\
 			}\
 		}\
 		STK_SET_NULL(stk_local_var);\

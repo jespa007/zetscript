@@ -37,7 +37,7 @@ namespace zetscript{
 
 	void ScriptObjectIteratorVector::get(){
 		if(vo==NULL){
-			THROW_EXCEPTION("vector object null");
+
 		}
 		if(idx<(int)vo->length()){
 			// set value
@@ -54,7 +54,7 @@ namespace zetscript{
 
 	void	 ScriptObjectIteratorVector::next(){
 		if(vo==NULL) {
-			THROW_EXCEPTION("vector object null");
+			THROW_RUNTIME_ERROR("Attached object was unreferenced");
 		}
 
 		if(idx<(int)vo->length()){
@@ -64,7 +64,7 @@ namespace zetscript{
 
 	bool	 ScriptObjectIteratorVector::end(){
 		if(vo==NULL) {
-			THROW_EXCEPTION("vector object null");
+			THROW_RUNTIME_ERROR("Attached object was unreferenced");
 		}
 		return idx >= (int)vo->length();
 	}

@@ -1129,16 +1129,21 @@ execute_function:
 						sf_call_calling_object= (ScriptObjectObject *)(sf_call_stk_start_arg_call-2)->value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
 					}
 
-					vm_call_function_native(
-						vm
-						,sf_call_calling_object
-						,sf_call_script_function
-						,calling_function
-						,instruction
-						,sf_call_stk_start_arg_call
-						,sf_call_n_args
+					try{
+						vm_call_function_native(
+							vm
+							,sf_call_calling_object
+							,sf_call_script_function
+							,calling_function
+							,instruction
+							,sf_call_stk_start_arg_call
+							,sf_call_n_args
 
-					);
+						);
+					}catch(std::exception & ex){
+						data->vm_error = true;
+						data->vm_error_str=ex.what();
+					}
 
 					// restore stk_start_arg_call due in C args are not considered as local symbols (only for scripts)
 					sf_call_n_local_symbols=sf_call_n_args;
@@ -1353,10 +1358,7 @@ execute_function:
 				VM_PUSH_SCOPE(instruction->value_op2);
 				continue;
 			 case BYTE_CODE_POP_SCOPE:
-				VM_POP_SCOPE()
-				if((data->zero_shares+data->vm_idx_call)->first!=NULL){ // there's empty shared pointers to remove
-					vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
-				}
+				VM_POP_SCOPE(true)
 				continue;
 			 case BYTE_CODE_RESET_STACK:
 				 data->stk_vm_current=stk_start;
@@ -1437,7 +1439,7 @@ execute_function:
 		//=========================
 		// POP STACK
 		while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
-			VM_POP_SCOPE(); // do not check removeEmptySharedPointers to have better performance
+			VM_POP_SCOPE(false); // do not check removeEmptySharedPointers to have better performance
 		}
 
 		if((data->zero_shares+data->vm_idx_call)->first!=NULL){

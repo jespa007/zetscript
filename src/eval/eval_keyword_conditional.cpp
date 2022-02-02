@@ -49,6 +49,7 @@ namespace zetscript{
 						,scope_info
 						,&eval_data->current_function->eval_instructions
 						,")"
+						,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 				))==NULL){
 					return 0;
 				}
@@ -194,6 +195,8 @@ namespace zetscript{
 			}
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
+
 			// evaluate switch condition expression ...
 			aux_p = eval_expression(
 				eval_data
@@ -202,6 +205,7 @@ namespace zetscript{
 				,scope_info
 				,&ei_switch_condition
 				,")"
+				,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			);
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);

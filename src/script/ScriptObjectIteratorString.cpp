@@ -36,7 +36,7 @@ namespace zetscript{
 
 	void ScriptObjectIteratorString::get(){
 		if(so==NULL) {
-			THROW_EXCEPTION("string object null");
+			THROW_RUNTIME_ERROR("Attached object was unreferenced");
 		}
 
 		zs_string *str_ref=(zs_string *)so->value;
@@ -49,14 +49,13 @@ namespace zetscript{
 		stk_key.value=idx;
 
 		// pass value through the stack
-
 		vm_push_stack_element(vm,stk_value); // last value/first value to get
 		vm_push_stack_element(vm,stk_key);
 	}
 
 	void	 ScriptObjectIteratorString::next(){
 		if(so==NULL) {
-			THROW_EXCEPTION("string object null");
+			THROW_RUNTIME_ERROR("Attached object was unreferenced");
 		}
 
 		if(idx<(int)so->length()){
@@ -66,7 +65,7 @@ namespace zetscript{
 
 	bool	 ScriptObjectIteratorString::end(){
 		if(so==NULL) {
-			THROW_EXCEPTION("string object null");
+			THROW_RUNTIME_ERROR("Attached object was unreferenced");
 		}
 		return idx >= (int)so->length();
 	}

@@ -4,13 +4,11 @@
  */
 #include "zetscript.h"
 
-#define CALL_GC SHARED_LIST_DESTROY(zero_shares[idx_current_call])
-
 namespace zetscript{
 
 	struct VM_Foreach{
 		StackElement 		   	*key; // iterator element can be zs_string or integer...
-		ScriptObjectObject	*ptr; // can be struct or zs_vector...
+		ScriptObjectObject		*ptr; // can be struct or zs_vector...
 		unsigned int 		   	idx_current;
 
 	};
@@ -22,7 +20,7 @@ namespace zetscript{
 		// TODO: do stack dump from current vm_stk
 		while(data->vm_current_scope_function-- > data->vm_scope_function){
 			while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
-				VM_POP_SCOPE();
+				VM_POP_SCOPE(false);
 			}
 		}
 
