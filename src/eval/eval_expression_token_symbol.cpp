@@ -275,14 +275,19 @@ namespace zetscript{
 		test_line=line;
 		IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,test_aux_p,eval_data,aux_p,test_line);
 
-		// eval accessor element (supose that was a preinsert a load instruction for identifier )...
-		if(is_access_punctuator(test_aux_p) && (
-				token_node_symbol->token_type==TokenType::TOKEN_TYPE_IDENTIFIER
+
+		if(is_access_punctuator(test_aux_p)){
+			if((
+				   token_node_symbol->token_type==TokenType::TOKEN_TYPE_IDENTIFIER
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_FUNCTION
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_OBJECT
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_VECTOR
 				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_LITERAL) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==BYTE_CODE_LOAD_STRING) && *test_aux_p=='.')
-		)){
+				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==BYTE_CODE_NEW_OBJECT_BY_TYPE) && *test_aux_p=='.')
+			)==false){
+				EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line,"Unexpected '%c'",*test_aux_p);
+			}
+		// eval accessor element (supose that was a preinsert a load instruction for identifier )...
 
 			if(token_node_symbol_class!=NULL){
 

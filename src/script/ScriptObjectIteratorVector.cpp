@@ -9,6 +9,7 @@ namespace zetscript{
 
 	ScriptObjectIteratorVector * ScriptObjectIteratorVector::newScriptObjectIteratorVector(ScriptObjectVector *_so){
 		ScriptObjectIteratorVector *si= new ScriptObjectIteratorVector(_so);
+
 		return si;
 	}
 
@@ -31,6 +32,7 @@ namespace zetscript{
 		// setup object
 		this->init(_so->getZetScript());
 		vo=_so;
+		vo->refObject((ScriptObject **)&this->vo);
 	}
 
 	void ScriptObjectIteratorVector::get(){
@@ -49,15 +51,25 @@ namespace zetscript{
 	}
 
 	void	 ScriptObjectIteratorVector::next(){
-		if(vo==NULL) return;
+		if(vo==NULL) {
+			return;
+		}
+
 		if(idx<(int)vo->length()){
 			idx++;
 		}
 	}
 
 	bool	 ScriptObjectIteratorVector::end(){
-		if(vo==NULL) false;
+		if(vo==NULL) {
+			return false;
+		}
 		return idx >= (int)vo->length();
 	}
 
+	ScriptObjectIteratorVector::~ScriptObjectIteratorVector(){
+		if(vo != NULL){
+			vo->derefObject((ScriptObject **)&this->vo);
+		}
+	}
 }

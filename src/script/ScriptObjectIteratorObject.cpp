@@ -30,6 +30,7 @@ namespace zetscript{
 		this->init(_oo->getZetScript());
 		oo=_oo;
 		it=oo->getMapUserProperties()->begin();
+		oo->refObject((ScriptObject **)&this->oo);
 	}
 
 
@@ -50,5 +51,11 @@ namespace zetscript{
 
 	void	 ScriptObjectIteratorObject::next(){
 		it.next();
+	}
+
+	ScriptObjectIteratorObject::~ScriptObjectIteratorObject(){
+		if(oo != NULL){
+			oo->derefObject((ScriptObject **)&this->oo);
+		}
 	}
 }

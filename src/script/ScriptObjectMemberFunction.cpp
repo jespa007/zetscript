@@ -14,9 +14,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("Internal:Expected object object or class object");
 		}
 
-		sofm->so_object=(ScriptObject *)_so_object;
+		sofm->so_object=_so_object;
 		sofm->so_function=_so_function;
-		sofm->so_object->refObjectMemberFunction(sofm);
+		sofm->so_object->refObject(&sofm->so_object);
 		return sofm;
 	}
 
@@ -32,7 +32,7 @@ namespace zetscript{
 
 	ScriptObjectMemberFunction::~ScriptObjectMemberFunction(){
 		if(so_object != NULL){
-			so_object->derefObjectMemberFunction(this);
+			so_object->derefObject(&this->so_object);
 		}
 	}
 
