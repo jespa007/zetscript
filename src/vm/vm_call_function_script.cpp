@@ -903,12 +903,17 @@ find_element_object:
 				 sf_call_stk_function_ref=data->vm_stack+instruction->value_op2;
 				 goto load_function;
 			 case  BYTE_CODE_CONSTRUCTOR_CALL:
+				sf_call_script_function=NULL;
+				sf_call_stk_function_ref = (data->stk_vm_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
+				// get object
+				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
+				// if we invoke constructor we need to keep object to pass after, else remove object+function
+				sf_call_stk_start_function_object=1;
+				goto load_function;
 			 case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
 
 				sf_call_script_function=NULL;
 				sf_call_stk_function_ref = (data->stk_vm_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
-				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
-
 				// if we invoke constructor we need to keep object to pass after, else remove object+function
 				sf_call_stk_start_function_object=1;//instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL?1:0; // object + function
 
@@ -1122,11 +1127,6 @@ execute_function:
 							}
 							sf_call_script_function=sf_aux;
 						}
-					}
-
-
-					if(sf_call_is_constructor) {// && (sf->symbol.properties & SYMBOL_PROPERTY_MEMBER_FUNCTION))
-						sf_call_calling_object= (ScriptObjectObject *)(sf_call_stk_start_arg_call-2)->value; // the object should be before (start_arg -1 (idx_function)  - 2 (idx_object))
 					}
 
 					try{

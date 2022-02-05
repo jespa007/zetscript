@@ -389,6 +389,12 @@ namespace zetscript{
 			case BYTE_CODE_BITWISE_XOR_STORE:
 			case BYTE_CODE_SHL_STORE:
 			case BYTE_CODE_SHR_STORE:
+			case BYTE_CODE_PRE_INC:
+			case BYTE_CODE_PRE_DEC:
+			case BYTE_CODE_POST_INC:
+			case BYTE_CODE_NEG_POST_INC:
+			case BYTE_CODE_POST_DEC:
+			case BYTE_CODE_NEG_POST_DEC:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
 					,req_stk

@@ -52,6 +52,25 @@
 	 ((byte_code)<=BYTE_CODE_END_STORE) \
 )
 
+#define IS_BYTE_CODE_PRE_POST(byte_code) \
+	(byte_code==BYTE_CODE_PRE_INC)\
+	|| (byte_code==	BYTE_CODE_PRE_DEC)\
+	|| (byte_code==BYTE_CODE_POST_INC)\
+	|| (byte_code==BYTE_CODE_NEG_POST_INC)\
+	|| (byte_code==BYTE_CODE_POST_DEC)\
+	|| (byte_code==BYTE_CODE_NEG_POST_DEC)
+
+#define IS_BYTE_CODE_LOAD(byte_code) \
+(\
+	(byte_code==BYTE_CODE_FIND_VARIABLE)\
+		||\
+	(\
+		  (BYTE_CODE_LOAD_INI_LOAD <= (byte_code)) \
+					  && \
+		 ((byte_code)<=BYTE_CODE_LOAD_STACK_ELEMENT) \
+	)\
+)
+
 #define IS_BYTE_CODE_OPERATOR_METAMETHOD_WITH_TWO_ARGS()
 
 namespace zetscript{
@@ -77,8 +96,10 @@ namespace zetscript{
 		BYTE_CODE_UNRESOLVED_CALL,
 		BYTE_CODE_UNRESOLVED_THIS_CALL,
 
+		//------ LOAD INI-----------------------
 		// load ptr var
-		BYTE_CODE_PUSH_STK_GLOBAL,
+		BYTE_CODE_LOAD_INI_LOAD,
+		BYTE_CODE_PUSH_STK_GLOBAL=BYTE_CODE_LOAD_INI_LOAD,
 		BYTE_CODE_PUSH_STK_LOCAL,
 		//BYTE_CODE_PUSH_STK_REF,
 		BYTE_CODE_PUSH_STK_THIS,
@@ -87,7 +108,6 @@ namespace zetscript{
 		BYTE_CODE_PUSH_STK_THIS_VARIABLE,
 		BYTE_CODE_PUSH_STK_THIS_FUNCTION,
 		BYTE_CODE_PUSH_STK_OBJECT_ITEM,
-
 
 		// load var content
 		BYTE_CODE_LOAD_TYPE,
@@ -112,6 +132,8 @@ namespace zetscript{
 		BYTE_CODE_LOAD_ZS_INT,
 
 		BYTE_CODE_LOAD_STACK_ELEMENT,
+		BYTE_CODE_LOAD_END=BYTE_CODE_LOAD_STACK_ELEMENT,
+		//------ LOAD END -----------------------
 
 		//----- BEGIN STORE
 		BYTE_CODE_BEGIN_STORE,

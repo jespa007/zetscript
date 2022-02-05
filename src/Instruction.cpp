@@ -84,6 +84,7 @@ namespace zetscript{
 		}
 
 		int instruction_num_required_stack(Instruction *_instruction){
+			int ret_aux=0;
 			if(_instruction->properties & INSTRUCTION_PROPERTY_ILOAD){
 				return 1;
 			}
@@ -109,8 +110,6 @@ namespace zetscript{
 				case BYTE_CODE_SHL:
 				case BYTE_CODE_SHR:
 					return -2;
-				case BYTE_CODE_NEG:
-				case BYTE_CODE_NOT:
 				case BYTE_CODE_JNT:
 				case BYTE_CODE_JT:
 				case BYTE_CODE_JE_CASE:
@@ -127,6 +126,8 @@ namespace zetscript{
 				case BYTE_CODE_SHL_STORE:
 				case BYTE_CODE_SHR_STORE:
 					return -1;
+				case BYTE_CODE_NEG:			// get -1 and stk +1 = 0
+				case BYTE_CODE_NOT:			// get -1 and stk +1 = 0
 				case BYTE_CODE_RET:
 				case BYTE_CODE_JMP:
 				case BYTE_CODE_DELETE:
@@ -185,9 +186,10 @@ namespace zetscript{
 				case BYTE_CODE_THIS_MEMBER_CALL:
 				case BYTE_CODE_CALL:
 				case BYTE_CODE_UNRESOLVED_CALL:
-				case BYTE_CODE_MEMBER_CALL:
-				case BYTE_CODE_CONSTRUCTOR_CALL:
 					return INSTRUCTION_GET_RETURN_COUNT(_instruction);
+				 case  BYTE_CODE_CONSTRUCTOR_CALL:
+				 case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
+					return INSTRUCTION_GET_RETURN_COUNT(_instruction)-1;
 				default:
 					THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed",_instruction->byte_code);
 					break;

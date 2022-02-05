@@ -23,9 +23,9 @@ namespace zetscript{
 	void link_loop_break_continues(EvalData *eval_data,int idx_start, int idx_post_instruction_for_start=IDX_ZS_UNDEFINED){
 
 		int idx_end_instruction = eval_data->current_function->eval_instructions.count;
-		zs_int *ei_it=&eval_data->current_function->eval_instructions.items[idx_start];
-		for(int i=idx_start; i < idx_end_instruction;i++,ei_it++){
-			Instruction *ins=&((EvalInstruction *)ei_it)->vm_instruction;//&eval_data->current_function->instructions[i]->vm_instruction;
+
+		for(int i=idx_start; i < idx_end_instruction;i++){
+			Instruction *ins=&(((EvalInstruction *)eval_data->current_function->eval_instructions.items[i])->vm_instruction);//&eval_data->current_function->instructions[i]->vm_instruction;
 			if(ins->value_op1 == ZS_IDX_INSTRUCTION_JMP_BREAK){
 				ins->value_op1=IDX_ZS_UNDEFINED;
 				ins->value_op2=idx_end_instruction-i;
@@ -108,7 +108,8 @@ namespace zetscript{
 		char *end_expr;
 		zs_string start_symbol;
 		Keyword key_w;
-		int idx_instruction_conditional_while;
+		int idx_instruction_conditional_while=0;
+		int idx_instruction_jmp_while=0;
 		EvalInstruction *ei_jnt; // conditional to end block
 
 		// check for keyword ...
@@ -125,7 +126,7 @@ namespace zetscript{
 			}
 
 			// save current instruction to use later...
-			idx_instruction_conditional_while=(int)(eval_data->current_function->eval_instructions.count);
+			idx_instruction_jmp_while=(int)(eval_data->current_function->eval_instructions.count);
 
 			end_expr = eval_expression(
 					eval_data
@@ -137,11 +138,12 @@ namespace zetscript{
 					,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			);
 
+			idx_instruction_conditional_while=(int)(eval_data->current_function->eval_instructions.count);
+
 			// insert instruction if evaluated expression
 			eval_data->current_function->eval_instructions.push_back((zs_int)(ei_jnt=new EvalInstruction(BYTE_CODE_JNT)));
 			ei_jnt->instruction_source_info.file=eval_data->current_parsing_file;
 			ei_jnt->instruction_source_info.line=line;
-
 
 
 			zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr);
@@ -169,15 +171,15 @@ namespace zetscript{
 			eval_data->current_function->eval_instructions.push_back((zs_int)(new EvalInstruction(
 					BYTE_CODE_JMP
 					,IDX_ZS_UNDEFINED
-					,-((int)(eval_data->current_function->eval_instructions.count)-idx_instruction_conditional_while)
+					,-((int)(eval_data->current_function->eval_instructions.count)-idx_instruction_jmp_while)
 				)
 			));
 
 			// update jnt instruction to jmp after jmp instruction...
-			ei_jnt->vm_instruction.value_op2=eval_data->current_function->eval_instructions.count-idx_instruction_conditional_while-1; // +1 jmp
+			ei_jnt->vm_instruction.value_op2=eval_data->current_function->eval_instructions.count-idx_instruction_conditional_while;
 
 			// catch all breaks in the while...
-			link_loop_break_continues(eval_data,idx_instruction_conditional_while);
+			link_loop_break_continues(eval_data,idx_instruction_jmp_while);
 
 			return aux_p;
 		}

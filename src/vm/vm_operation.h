@@ -307,6 +307,9 @@
 				,__POST_OPERATION_VARIABLE__->function_name.c_str()\
 				,true\
 		);\
+	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
 	}
 
 
@@ -361,6 +364,9 @@
 				,__POST_OPERATION_VARIABLE__->function_name.c_str()\
 				,true\
 		);\
+	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
 	}
 
 #define VM_OPERATION_PRE(__C_OP__, __METAMETHOD__,__PRE_OPERATION_VARIABLE__) \
@@ -415,4 +421,7 @@
 			}\
 		}\
 		data->stk_vm_current++;\
+	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
 	}

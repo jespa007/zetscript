@@ -447,9 +447,10 @@ namespace zetscript{
 					}
 
 					byte_code=ByteCode::BYTE_CODE_LOAD_OBJECT_ITEM;
-					instruction_token=ei_first_token_node;
 
 					if(it_accessor_token==0 && token_node_symbol->value == SYMBOL_VALUE_THIS){ // check first symbol at first...
+						instruction_token=ei_first_token_node;
+
 						ScriptType *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_type);
 
 						if(eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_STATIC){
@@ -464,21 +465,6 @@ namespace zetscript{
 						ei_first_token_node->symbol.name=accessor_name;
 
 						byte_code=ByteCode::BYTE_CODE_LOAD_THIS_VARIABLE;
-
-						// search whether symbol is already in the object and set-it
-						/*Symbol *symbol_member=sf_class->getSymbol(accessor_name);
-
-						if(symbol_member != NULL){ // is member
-							// functions always loads dynamically because we can have an override function
-							// so we don't load as member in a fix position else is a variable ...
-							if((symbol_member->properties & SYMBOL_PROPERTY_FUNCTION)==0){
-								instruction_value2=symbol_member->idx_position;
-								byte_code=ByteCode::BYTE_CODE_LOAD_THIS_VARIABLE;
-							}else{
-								byte_code=ByteCode::BYTE_CODE_LOAD_THIS_FUNCTION;
-								instruction_value2=(zs_int)symbol_member;
-							}
-						}*/
 
 					}
 					break;
