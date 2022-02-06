@@ -17,7 +17,7 @@ namespace zetscript{
 			oo = NULL;
 			vm=NULL;
 			stk_key.setUndefined();
-			stk_key.properties=STK_PROPERTY_SCRIPT_OBJECT;
+			stk_key.properties=(STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR);
 	}
 
 	ScriptObjectIteratorObject::ScriptObjectIteratorObject(){
@@ -48,6 +48,7 @@ namespace zetscript{
 		if(it.end()) return;
 
 		// pass value through the stack
+		stk_key.value=(zs_int)it.key;
 
 		vm_push_stack_element(vm,*((StackElement *)it.value));  // last value/first value to get
 		vm_push_stack_element(vm,stk_key);

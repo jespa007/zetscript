@@ -192,7 +192,7 @@ namespace zetscript{
 							data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;
 						}else{ // push stk
 							data->stk_vm_current->value=(zs_int)ptr_char;
-							data->stk_vm_current->properties=STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C;
+							data->stk_vm_current->properties=STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR;
 						}
 						data->stk_vm_current++;
 						continue;
@@ -491,7 +491,7 @@ find_element_object:
 				if((stk_dst->properties & STK_PROPERTY_PTR_STK)!=0) {
 					stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
 				}else {
-					if((stk_dst->properties & STK_PROPERTY_IS_VAR_C)==0){
+					if((stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR)==0){
 						VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
 							,stk_to_typeof_str(data->zs,stk_dst).c_str()
 						);
@@ -532,10 +532,10 @@ find_element_object:
 					void *stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
 					stk_src_ref_value=&stk_src->value;
 					stk_dst_ref_value=&stk_dst->value;
-					if(stk_src->properties & STK_PROPERTY_IS_VAR_C){ // src is C pointer
+					if(stk_src->properties & STK_PROPERTY_IS_C_VAR_PTR){ // src is C pointer
 						stk_src_ref_value=(zs_int *)((stk_src)->value);
 					}
-					if(stk_dst->properties & STK_PROPERTY_IS_VAR_C){ // dst is a C pointer
+					if(stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR){ // dst is a C pointer
 						// particular case
 						if(
 								stk_dst->properties != stk_src->properties
@@ -619,14 +619,14 @@ find_element_object:
 					}
 
 					if(stk_src_ref_value_copy_aux!=NULL){
-						stk_dst->properties|=STK_PROPERTY_IS_VAR_C;
+						stk_dst->properties|=STK_PROPERTY_IS_C_VAR_PTR;
 					}
 
 					// check old dst value to unref if it was an object ...
 					if(
 						(old_stk_dst.properties & STK_PROPERTY_SCRIPT_OBJECT)
 									&&
-						((old_stk_dst.properties & (STK_PROPERTY_IS_VAR_C))==(STK_PROPERTY_IS_VAR_C)==0) // is not C class
+						((old_stk_dst.properties & (STK_PROPERTY_IS_C_VAR_PTR))==(STK_PROPERTY_IS_C_VAR_PTR)==0) // is not C class
 									&&
 						(old_stk_dst.value!=0) // it had a pointer (no constant)...
 									&&

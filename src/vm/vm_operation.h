@@ -262,7 +262,7 @@
 	stk_result_op1=--data->stk_vm_current;\
 	stk_result_op1=(StackElement *)((stk_result_op1)->value);/* always expects ptr stk due it modifies the var */\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
-	if(stk_result_op1->properties & STK_PROPERTY_IS_VAR_C){\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
 	}\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
@@ -317,7 +317,7 @@
 	stk_result_op1=--data->stk_vm_current;\
 	stk_result_op1=(StackElement *)((stk_result_op1)->value);/* always expects ptr stk due it modifies the var */\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
-	if(stk_result_op1->properties & STK_PROPERTY_IS_VAR_C){\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
 	}\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
@@ -373,7 +373,7 @@
 	stk_result_op1=--data->stk_vm_current;\
 	stk_result_op1=(StackElement *)((stk_result_op1)->value);\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
-	if(stk_result_op1->properties & STK_PROPERTY_IS_VAR_C){\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
 	}\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\

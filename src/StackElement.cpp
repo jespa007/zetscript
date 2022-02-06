@@ -66,7 +66,7 @@ namespace zetscript{
 
 		if(STK_VALUE_IS_NULL(stk)){
 			result=ZS_TYPE_NAME_NULL;
-		}else if((stk->properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_VAR_C)){
+		}else if((stk->properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)){
 			result= (const char *)stk->value;
 		}else if(STK_VALUE_IS_ZS_INT(stk)){
 			result= zs_strutils::zs_int_to_str((zs_int)stk->value,_format);

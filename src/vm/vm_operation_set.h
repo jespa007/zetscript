@@ -19,7 +19,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	stk_var=stk_result_op1;\
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
-	if(stk_result_op1->properties & STK_PROPERTY_IS_VAR_C){\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
 	}\
 	switch(msk_properties){\
@@ -96,7 +96,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 #define VM_OPERATION_ARITHMETIC_SET(__C_OP__, __METAMETHOD__,__ACCESSOR_METAMETHOD_PROPERTY__)\
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
-	if(stk_result_op1->properties & STK_PROPERTY_IS_VAR_C){\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
 	}\
 	switch(msk_properties){\
@@ -165,7 +165,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 #define VM_OPERATION_DIV_SET(__METAMETHOD__) \
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
-	if(stk_result_op1->properties & STK_PROPERTY_IS_VAR_C){\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
 	}\
 	switch(msk_properties){\
