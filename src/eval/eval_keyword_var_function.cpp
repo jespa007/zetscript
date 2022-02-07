@@ -309,6 +309,8 @@ namespace zetscript{
 						,test_line
 						,scope_var
 						,is_var_member?&ei_member_var_init:&eval_data->current_function->eval_instructions
+						,NULL
+						,properties
 					))==NULL){
 						goto error_eval_keyword_var;
 					}

@@ -103,7 +103,7 @@ namespace zetscript{
 				|| operator_type==Operator::OPERATOR_TERNARY_IF
 				|| operator_type==Operator::OPERATOR_TERNARY_ELSE
 				|| ((operator_type==Operator::OPERATOR_ASSIGN) && (_properties & EVAL_EXPRESSION_BREAK_ON_ASSIGNMENT_OPERATOR))
-				|| ((operator_type==Operator::OPERATOR_IN) && (_properties & EVAL_EXPRESSION_FOR_IN_VARIABLES))
+				|| ((operator_type==Operator::OPERATOR_IN) && ((_properties & EVAL_EXPRESSION_FOR_IN_VARIABLES) || (_properties & EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR)))
 				|| (_properties & EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL)
 				|| ( new_line_break && (operator_type==Operator::OPERATOR_UNKNOWN ))){ // if not operator and carry return found is behaves as end expression
 					break;
