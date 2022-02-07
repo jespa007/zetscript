@@ -90,7 +90,7 @@ if(MSVC)
 	
 else()
 
-	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra")
+	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -Wpedantic ")
    
 	if (MINGW)
 		MESSAGE("-- Plataform: MINGW" )
@@ -118,7 +118,7 @@ else()
 		
 	ELSE()
 		set(TARGET "release")
-		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -march=native -O2 ")
+		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -O2 ")
 		message("-- Memmanager: No")
 	ENDIF()
 	

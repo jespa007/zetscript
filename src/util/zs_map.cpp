@@ -50,7 +50,7 @@ namespace zetscript{
 		// last slot exhausted
 		if (this->_size ==this->_count) {
 			if((this->_size+ZS_MAP_N_SLOT_ITEMS) >= ZS_MAP_MAX_ITEMS){
-				THROW_RUNTIME_ERROR("Reached Max elements");
+				THROW_RUNTIME_ERRORF("Reached Max elements");
 				return;
 			}
 			this->_size += ZS_MAP_N_SLOT_ITEMS;
@@ -186,7 +186,7 @@ namespace zetscript{
 		int idx=search(_key);
 
 		if(idx==ZS_MAP_KEY_NOT_FOUND){
-			THROW_RUNTIME_ERROR("key '%s' not found");
+			THROW_RUNTIME_ERROR("key '%s' not found",_key);
 		}
 
 		zs_map_node *node = items[idx].node;

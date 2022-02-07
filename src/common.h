@@ -45,5 +45,5 @@
 namespace zetscript{
 	typedef intptr_t zs_int;
 	typedef char zs_char;
-};
+}
 

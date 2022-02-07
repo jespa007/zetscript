@@ -373,7 +373,7 @@ namespace zetscript{
 			}
 
 			if(p1 == p2){
-				THROW_RUNTIME_ERROR("Nothing to copy");
+				THROW_RUNTIME_ERRORF("Nothing to copy");
 			}
 
 			strncpy(aux_str_copy,p1,var_length);

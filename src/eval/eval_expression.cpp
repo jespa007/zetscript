@@ -486,6 +486,6 @@ eval_error_expression_delete_left_right_sub_expressions:
 
 		return NULL;
 
-	};
+	}
 }
 

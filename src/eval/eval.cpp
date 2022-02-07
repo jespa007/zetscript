@@ -108,7 +108,7 @@ namespace zetscript{
 		delete eval_data;
 
 		if(error){
-			THROW_SCRIPT_ERROR_FILE_LINE(error_file,error_line,error_str.c_str());
+			THROW_SCRIPT_ERROR_FILE_LINEF(error_file,error_line,error_str.c_str());
 		}
 	}
 
@@ -203,7 +203,7 @@ namespace zetscript{
 			)) != NULL){
 
 				if(*aux_p != '}'){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '}' ");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Expected '}' ");
 				}
 
 				if(is_function == false){
@@ -265,7 +265,7 @@ namespace zetscript{
 						aux += strlen(eval_data_directives[directive].str);
 						IGNORE_BLANKS(aux,eval_data,aux,line);
 						if(*aux != '\"'){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"expected starting \" directive");
+							EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"expected starting \" directive");
 						}
 						aux++;
 						start_var=aux;
@@ -273,7 +273,7 @@ namespace zetscript{
 						while(*aux != '\n' && *aux!=0 && !(*aux=='\"' && *(aux-1)!='\\')) aux++;
 
 						if(*aux != '\"'){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"expected end \" directive");
+							EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"expected end \" directive");
 						}
 
 						end_var=aux;
@@ -292,7 +292,7 @@ namespace zetscript{
 							// compile but not execute, it will execute the last eval
 							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE);
 						}catch(zs_exception & ex){
-							EVAL_ERROR_FILE_LINE(str_symbol,ex.getErrorLine(),ex.getErrorDescription().c_str());
+							EVAL_ERROR_FILE_LINEF(str_symbol,ex.getErrorLine(),ex.getErrorDescription().c_str());
 						}catch(std::exception & ex){
 							EVAL_ERROR("%s : %s",str_symbol.c_str(),ex.what());
 						}

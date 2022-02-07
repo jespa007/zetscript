@@ -263,7 +263,13 @@ namespace zetscript{
 
 				}else if(key_w == KEYWORD_DEFAULT){
 					if(ei_jmp_default!=NULL){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: there's an already 'default' case");
+						EVAL_ERROR_FILE_LINE_AND_GOTO(
+								eval_keyword_switch_error
+								,eval_data->current_parsing_file
+								,line
+								,"Syntax error switch: there's an already 'default' case"
+								, NULL
+						);
 					}
 
 					ei_jmp_default=new EvalInstruction(
@@ -277,11 +283,21 @@ namespace zetscript{
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				}else{
-					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: Expected 'case' or 'default' keyword");
+					EVAL_ERROR_FILE_LINE_AND_GOTO(
+						eval_keyword_switch_error
+						,eval_data->current_parsing_file
+						,line
+						,"Syntax error switch: Expected 'case' or 'default' keyword"
+					);
 				}
 
 				if(*aux_p!=':'){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: Expected ':' ");
+					EVAL_ERROR_FILE_LINE_AND_GOTO(
+						eval_keyword_switch_error
+						,eval_data->current_parsing_file
+						,line
+						,"Syntax error switch: Expected ':' "
+					);
 				}
 
 				// ignore :

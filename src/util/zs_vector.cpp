@@ -19,7 +19,7 @@ namespace zetscript{
 		// last slot exhausted
 		if (this->_size ==this->count) {
 			if((this->_size+ZS_VECTOR_N_SLOT_ELEMENTS) >= ZS_VECTOR_MAX_ELEMENTS){
-				THROW_RUNTIME_ERROR("Max elements vector");
+				THROW_RUNTIME_ERRORF("Max elements vector");
 				return false;
 			}
 			this->_size += ZS_VECTOR_N_SLOT_ELEMENTS;
@@ -38,7 +38,7 @@ namespace zetscript{
 
 	void zs_vector::set(uint16_t idx, zs_int e){
 		if (idx >= this->count) {
-			THROW_RUNTIME_ERROR("vector::set => idx out of bounds 1");
+			THROW_RUNTIME_ERRORF("vector::set => idx out of bounds 1");
 			return;
 		}
 		this->items[idx] = e;
@@ -46,7 +46,7 @@ namespace zetscript{
 
 	zs_int zs_vector::get(uint16_t  idx){
 		if (idx >= this->count) {
-			THROW_RUNTIME_ERROR("vector::get => idx out of bounds");
+			THROW_RUNTIME_ERRORF("vector::get => idx out of bounds");
 			return 0;
 		}
 
@@ -55,7 +55,7 @@ namespace zetscript{
 
 	void zs_vector::erase(uint16_t  idx){
 		if (idx >= this->count) {
-			THROW_RUNTIME_ERROR("vector::erase => idx out of bounds");
+			THROW_RUNTIME_ERRORF("vector::erase => idx out of bounds");
 			return;
 		}
 
@@ -72,7 +72,7 @@ namespace zetscript{
 	zs_int zs_vector::pop_back(){
 		zs_int item=0;
 		if (this->count==0) {
-			THROW_RUNTIME_ERROR("no elements");
+			THROW_RUNTIME_ERRORF("no elements");
 			return 0;
 		}
 

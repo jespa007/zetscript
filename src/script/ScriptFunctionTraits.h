@@ -176,7 +176,7 @@ namespace zetscript{
 		getParamsFunction<Traits3>(&return_type, args, MakeIndexSequence<Traits3::arity>{});
 
 		if(args.count>MAX_NATIVE_FUNCTION_ARGS){
-			THROW_RUNTIME_ERROR("Max arguments reached");
+			THROW_RUNTIME_ERRORF("Max arguments reached");
 		}
 
 		// check valid parameters ...

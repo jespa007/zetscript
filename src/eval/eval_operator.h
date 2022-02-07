@@ -106,4 +106,4 @@ namespace zetscript{
 		OPERATOR_MAX
 	}Operator;
 
-};
+}

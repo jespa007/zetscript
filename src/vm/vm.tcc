@@ -190,7 +190,7 @@ namespace zetscript{
 
 	inline bool  vm_insert_shared_node(VirtualMachine *vm, InfoSharedList * list, InfoSharedPointerNode *_node){
 		if(_node->next != NULL || _node->previous!=NULL) {
-			VM_SET_USER_ERROR(vm," Internal error expected node not in list");
+			VM_SET_USER_ERRORF(vm," Internal error expected node not in list");
 			return false;
 		}
 
@@ -215,7 +215,7 @@ namespace zetscript{
 		if(list == NULL) return true;
 
 		if(_node->next == NULL || _node->previous == NULL){
-			VM_SET_USER_ERROR(vm," Internal error: An already deattached node");
+			VM_SET_USER_ERRORF(vm," Internal error: An already deattached node");
 			return false;
 		}
 
@@ -329,7 +329,7 @@ namespace zetscript{
 				return true;
 			}
 		}else{
-			VM_SET_USER_ERROR(vm,"shared ptr not registered");
+			VM_SET_USER_ERRORF(vm,"shared ptr not registered");
 		}
 
 		return false;
@@ -858,7 +858,7 @@ apply_metamethod_error:
 		// stk_op2 expects to be obj with container
 
 		if((stk_result_op2->properties & STK_PROPERTY_PTR_STK) == false){
-			VM_ERROR("internal: Expected stk");
+			VM_ERROR("internal: Expected stk",0);
 			return;
 		}
 

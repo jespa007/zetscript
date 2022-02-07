@@ -142,4 +142,4 @@ namespace zetscript{
 		delete script_functions;
 		script_functions=NULL;
 	}
-};
+}

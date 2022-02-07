@@ -56,4 +56,4 @@ namespace zetscript{
 			int idx_clear_checkpoint;
 	};
 
-};
+}

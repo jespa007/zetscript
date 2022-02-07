@@ -327,6 +327,7 @@ namespace zetscript{
 					eval_data->current_parsing_file
 					,attrib_start_line
 					,ex.what()
+					, NULL
 				);
 
 			}

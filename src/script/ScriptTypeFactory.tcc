@@ -26,7 +26,7 @@ namespace zetscript{
 		ScriptFunction *main_function=MAIN_FUNCTION(this);
 
 		if(main_function == NULL){
-			THROW_RUNTIME_ERROR("main function is not created");
+			THROW_RUNTIME_ERRORF("main function is not created");
 		}
 
 		if(getIdxScriptTypeFromTypeNamePtr(var_type) == IDX_ZS_UNDEFINED){
@@ -61,7 +61,7 @@ namespace zetscript{
 		size_t params_len=0;
 
 		if(main_function == NULL){
-			THROW_RUNTIME_ERROR("main function is not created");
+			THROW_RUNTIME_ERRORF("main function is not created");
 		}
 
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(

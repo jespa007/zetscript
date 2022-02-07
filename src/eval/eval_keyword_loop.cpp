@@ -81,7 +81,12 @@ namespace zetscript{
 		if(key_w == Keyword::KEYWORD_CONTINUE){
 
 			if(eval_data->current_function->parsing_loop <= 0){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"continue is only available on 'for' or 'while' loops");
+				EVAL_ERROR_FILE_LINE(
+					eval_data->current_parsing_file
+					,line
+					,"continue is only available on 'for' or 'while' loops"
+					, NULL
+				);
 			}
 
 			int last_line_ok = line;
@@ -91,9 +96,9 @@ namespace zetscript{
 
 			eval_data->current_function->eval_instructions.push_back((zs_int)(
 				new EvalInstruction(
-						BYTE_CODE_JMP,
-						ZS_IDX_INSTRUCTION_JMP_CONTINUE,
-						0
+					BYTE_CODE_JMP,
+					ZS_IDX_INSTRUCTION_JMP_CONTINUE,
+					0
 				)
 			));
 
@@ -122,7 +127,12 @@ namespace zetscript{
 
 			// evaluate conditional line ...
 			if(*aux_p != '('){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'while': Expected '(' ");
+				EVAL_ERROR_FILE_LINE(
+					eval_data->current_parsing_file
+					,line
+					,"Syntax error 'while': Expected '(' "
+					, NULL
+				);
 			}
 
 			// save current instruction to use later...
@@ -685,12 +695,12 @@ namespace zetscript{
 
 
 			if(*aux_p != ')'){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for': Expected ')'");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected ')'");
 			}
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			if(*aux_p != '{'){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for': Expected '{' for begin block");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected '{' for begin block");
 			}
 
 

@@ -6,22 +6,27 @@
 #define IGNORE_BLANKS_AND_GOTO_ON_ERROR(my_goto,aux_p,eval_data,s,line) 	if((aux_p=zetscript::eval_ignore_blanks(eval_data,(s),line))==NULL) goto my_goto
 
 #define RESULT_LITERAL_VALUE 					(number_part[0]+number_part[1]+number_part[2]).c_str()
+
 #define EVAL_ERROR_FILE_LINE(file,line,s,...)	eval_data->error=true;\
 												eval_data->error_file=file;\
 												eval_data->error_line=line;\
 												eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 												return 0;
+#define EVAL_ERROR_FILE_LINEF(file,line,s)		EVAL_ERROR_FILE_LINE(file,line,s,NULL)
+
 
 #define EVAL_ERROR_TOKEN_SYMBOL(file,line,s,...)	eval_data->error=true;\
 													eval_data->error_file=file;\
 													eval_data->error_line=line;\
 													eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 													goto lbl_eval_error_token_symbol;
+#define EVAL_ERROR_TOKEN_SYMBOLF(file,line,s)		EVAL_ERROR_TOKEN_SYMBOL(file,line,s,NULL)
 
 
 #define EVAL_ERROR(s,...)						eval_data->error=true;\
 												eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 												return 0;
+#define EVAL_ERRORF(file,line,s)				EVAL_ERROR(s,NULL)
 
 
 
@@ -32,11 +37,13 @@
 																		eval_data->error_line=line;\
 																		eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 																		goto my_goto;
+#define EVAL_ERROR_FILE_LINE_AND_GOTOF(my_goto,file,line,s)				EVAL_ERROR_FILE_LINE_AND_GOTO(my_goto,file,line,s);
 
 #define EVAL_ERROR_BYTE_CODE(s,...)							eval_data->error=true;\
 															aux_p=NULL;\
 															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-															goto eval_error_byte_code;\
+															goto eval_error_byte_code;
+#define EVAL_ERROR_BYTE_CODEF(s)							EVAL_ERROR_BYTE_CODE(s)
 
 
 #define IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) (Operator::OPERATOR_ASSIGN_ADD<=(c) && (c)<=Operator::OPERATOR_ASSIGN_SHIFT_RIGHT)

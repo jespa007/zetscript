@@ -555,13 +555,23 @@ error_eval_keyword_var:
 
 				if(script_function_params.count>0){
 					if(*aux_p != ','){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Syntax error: expected function argument separator ','");
+						EVAL_ERROR_FILE_LINE_AND_GOTOF(
+							eval_keyword_function_params
+							,eval_data->current_parsing_file
+							,line
+							,"Syntax error: expected function argument separator ','"
+						);
 					}
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 				}
 
 				if(*aux_p == ')' || *aux_p == ','){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Syntax error: expected argument name");
+					EVAL_ERROR_FILE_LINE_AND_GOTOF(
+						eval_keyword_function_params
+						,eval_data->current_parsing_file
+						,line
+						,"Syntax error: expected argument name"
+					);
 				}
 
 				// capture line where argument is...
@@ -581,7 +591,13 @@ error_eval_keyword_var:
 						param_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF;
 						break;
 					default:
-						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Syntax error: unexpected keyword '%s'",eval_data_keywords[kw_arg].str);
+						EVAL_ERROR_FILE_LINE_AND_GOTO(
+							eval_keyword_function_params
+							,eval_data->current_parsing_file
+							,line
+							,"Syntax error: unexpected keyword '%s'"
+							,eval_data_keywords[kw_arg].str
+						);
 						break;
 					}
 				}
@@ -609,12 +625,22 @@ error_eval_keyword_var:
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if((param_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS) && *aux_p!=')'){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Expected ')' after variable argument declaration");
+					EVAL_ERROR_FILE_LINE_AND_GOTOF(
+						eval_keyword_function_params
+						,eval_data->current_parsing_file
+						,line
+						,"Expected ')' after variable argument declaration"
+					);
 				}
 				else if(*aux_p=='='){ // default argument...
 
 					if(param_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF ){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Arguments by reference cannot set a default argument");
+						EVAL_ERROR_FILE_LINE_AND_GOTOF(
+							eval_keyword_function_params
+							,eval_data->current_parsing_file
+							,line
+							,"Arguments by reference cannot set a default argument"
+						);
 					}
 
 					zs_vector ei_instructions_default;
@@ -623,11 +649,11 @@ error_eval_keyword_var:
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 					// create inline expression
 					aux_p=eval_expression(
-							eval_data
-							,aux_p
-							,line
-							,MAIN_SCOPE(eval_data)
-							,&ei_instructions_default
+						eval_data
+						,aux_p
+						,line
+						,MAIN_SCOPE(eval_data)
+						,&ei_instructions_default
 					);
 
 					if(aux_p==NULL){
@@ -635,7 +661,12 @@ error_eval_keyword_var:
 					}
 
 					if(ei_instructions_default.count == 0){ // expected expression
-						EVAL_ERROR_FILE_LINE_AND_GOTO(eval_keyword_function_params,eval_data->current_parsing_file,line,"Syntax error:  expected expression after '='");
+						EVAL_ERROR_FILE_LINE_AND_GOTOF(
+							eval_keyword_function_params
+							,eval_data->current_parsing_file
+							,line
+							,"Syntax error:  expected expression after '='"
+						);
 					}
 
 					// copy evaluated instruction
@@ -724,7 +755,7 @@ error_eval_keyword_var:
 					}
 
 
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,ex.what());
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,ex.what());
 				}
 
 
