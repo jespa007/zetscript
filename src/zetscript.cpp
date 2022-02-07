@@ -435,7 +435,7 @@ namespace zetscript{
 
 				if(error){
 					if(error_file.empty()==false){
-						THROW_SCRIPT_ERROR_FILE_LINE(error_file.c_str(),error_line,error_str.c_str());
+						THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,error_str.c_str());
 					}else{
 						THROW_EXCEPTION(error_str.c_str());
 					}

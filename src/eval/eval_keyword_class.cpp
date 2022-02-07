@@ -36,7 +36,7 @@ namespace zetscript{
 
 
 			if(scope_info->scope_parent!=NULL){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class keyword is not allowed");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"class keyword is not allowed");
 			}
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);

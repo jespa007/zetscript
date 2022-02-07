@@ -99,4 +99,4 @@ namespace zetscript{
 		delete scopes;
 
 	}
-};
+}

@@ -56,10 +56,10 @@ namespace zetscript{
 
 			// create and share pointer
 			if(!vm_create_shared_pointer(vm,so_partial)){
-				THROW_RUNTIME_ERROR("cannot creat shared pointer");
+				THROW_RUNTIME_ERRORF("cannot creat shared pointer");
 			}
 			if(!vm_share_pointer(vm,so_partial)){
-				THROW_RUNTIME_ERROR("cannot share pointer");
+				THROW_RUNTIME_ERRORF("cannot share pointer");
 			}
 
 			stk->value=(zs_int)so_partial;
@@ -82,10 +82,10 @@ namespace zetscript{
 
 			// create and share pointer
 			if(!vm_create_shared_pointer(vm,so_partial)){
-				THROW_RUNTIME_ERROR("cannot creat shared pointer");
+				THROW_RUNTIME_ERRORF("cannot creat shared pointer");
 			}
 			if(!vm_share_pointer(vm,so_partial)){
-				THROW_RUNTIME_ERROR("cannot share pointer");
+				THROW_RUNTIME_ERRORF("cannot share pointer");
 			}
 
 			stk->value=(zs_int)so_partial;

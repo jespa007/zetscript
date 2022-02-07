@@ -50,7 +50,7 @@ namespace zetscript{
 		if(key_w == Keyword::KEYWORD_BREAK){
 
 			if(eval_data->current_function->parsing_loop <= 0 && eval_data->current_function->parsing_switch <= 0){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"break is only available on 'for', 'while' loops and switch");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"break is only available on 'for', 'while' loops and switch");
 			}
 
 			int last_line_ok = line;
@@ -161,7 +161,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
 
 			if(*aux_p != '{'){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'while': Expected open block '{' ");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'while': Expected open block '{' ");
 			}
 
 			eval_data->current_function->parsing_loop++;
@@ -222,7 +222,7 @@ namespace zetscript{
 
 
 			if(*aux_p != '{'){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'do-while': Expected open block '{' ");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'do-while': Expected open block '{' ");
 			}
 
 			eval_data->current_function->parsing_loop++;
@@ -243,7 +243,7 @@ namespace zetscript{
 			key_w = eval_is_keyword(aux_p);
 
 			if(key_w!=KEYWORD_WHILE){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'do-while': expected 'while' keyword");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'do-while': expected 'while' keyword");
 			}
 
 			aux_p += strlen(eval_data_keywords[key_w].str);
@@ -266,10 +266,10 @@ namespace zetscript{
 				)) != NULL){
 					zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr);
 				}else{
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'do-while': Expected ')'");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'do-while': Expected ')'");
 				}
 			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'do-while': Expected '('");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'do-while': Expected '('");
 			}
 			// insert jmp instruction to begin condition while...
 			eval_data->current_function->eval_instructions.push_back((zs_int)(ei_aux=new EvalInstruction(BYTE_CODE_JT
@@ -314,7 +314,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if(*aux_p != '('){ // ready ...
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for': Expected '('");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected '('");
 			}
 
 			idx_instruction_for_start=(int)(eval_data->current_function->eval_instructions.count);
@@ -477,7 +477,7 @@ namespace zetscript{
 								if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
 									EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for-in': unexpected operator '%s' after container identifier ",eval_data_operators[tst_op_aux].str);
 								}else{
-									EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for-in': expected ')' after container identifier ");
+									EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for-in': expected ')' after container identifier ");
 								}
 							}
 
@@ -633,7 +633,7 @@ namespace zetscript{
 			if(is_for_in == false){
 			  // expects conditional and post (i.e for(;;) )
 				if(*aux_p != ';'){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for': Expected ';'");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected ';'");
 				}
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -673,7 +673,7 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if(*aux_p != ';'){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for': Expected ';'");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected ';'");
 
 				}
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);

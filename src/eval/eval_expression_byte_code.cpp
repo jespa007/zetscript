@@ -74,7 +74,7 @@ namespace zetscript{
 		}
 
 		if(idx_split == -1){
-			THROW_RUNTIME_ERROR("Cannot fint operator");
+			THROW_RUNTIME_ERRORF("Cannot fint operator");
 		}
 
 		// split left/right by operator precedence...
@@ -195,7 +195,7 @@ namespace zetscript{
 			for(unsigned j=0;j<token_node_symbol->eval_instructions.count;j++){
 				EvalInstruction *ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
 				if(INSTRUCTION_IS_BYTE_CODE_CALL(&ei_load_assign_instruction->vm_instruction)){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(
+					EVAL_ERROR_FILE_LINE_AND_GOTOF(
 							eval_error_byte_code
 							,eval_data->current_parsing_file
 							,ei_load_assign_instruction->instruction_source_info.line
@@ -211,7 +211,7 @@ namespace zetscript{
 			if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
 
 				if(last_load_instruction->byte_code==BYTE_CODE_LOAD_THIS){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(
+					EVAL_ERROR_FILE_LINE_AND_GOTOF(
 						eval_error_byte_code
 						,eval_data->current_parsing_file
 						,ei_last_load_instruction->instruction_source_info.line
@@ -249,7 +249,7 @@ namespace zetscript{
 				, properties
 			);
 		}catch(std::exception & error){
-			EVAL_ERROR_BYTE_CODE(error.what());
+			EVAL_ERROR_BYTE_CODEF(error.what());
 		}
 
 		// if ends with ternary then continues performing expressions
@@ -293,7 +293,7 @@ namespace zetscript{
 
 			// TODO: JEB Check whether expression is constant true/false
 			if(*aux_p != ':'){
-				EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_byte_code,eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
+				EVAL_ERROR_FILE_LINE_AND_GOTOF(eval_error_byte_code,eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
 			}
 
 

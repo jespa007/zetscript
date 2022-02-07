@@ -78,7 +78,7 @@ namespace zetscript{
 			_obj->shared_pointer=_node;
 			return true;
 		}else{
-			VM_SET_USER_ERROR(vm," shared ptr already has a shared pointer data");
+			VM_SET_USER_ERRORF(vm," shared ptr already has a shared pointer data");
 		}
 
 		return false;
@@ -184,7 +184,7 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		int idx = IDX_ZS_UNDEFINED;
 		if((idx=vm_find_lifetime_object(vm,script_object))==IDX_ZS_UNDEFINED){
-			THROW_RUNTIME_ERROR("Cannot find stack element lifetime");
+			THROW_RUNTIME_ERRORF("Cannot find stack element lifetime");
 		}
 		InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[idx];
 		data->lifetime_object.erase(idx);
@@ -215,7 +215,7 @@ namespace zetscript{
 	bool vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		if(idx >= VM_STACK_MAX){
-			VM_SET_USER_ERROR(vm,"setStackElement: out of bounds");
+			VM_SET_USER_ERRORF(vm,"setStackElement: out of bounds");
 			return false;
 		}
 
@@ -238,7 +238,7 @@ namespace zetscript{
 		if(idx_glb_element < data->main_function_object->local_variables->count){
 			return &data->vm_stack[idx_glb_element];
 		}else{
-			VM_SET_USER_ERROR(vm,"getStackElement: out of bounds");
+			VM_SET_USER_ERRORF(vm,"getStackElement: out of bounds");
 		}
 		return NULL;
 	}
@@ -303,7 +303,7 @@ namespace zetscript{
 
 			if(stk_start<min_stk){ // control: not overwrite global symbols
 				// this could happen when you call script function from native c++, so this control is needed
-				THROW_RUNTIME_ERROR("Internal: stk_start < min_stk");
+				THROW_RUNTIME_ERRORF("Internal: stk_start < min_stk");
 			}
 
 			StackElement *stk_aux=stk_start;

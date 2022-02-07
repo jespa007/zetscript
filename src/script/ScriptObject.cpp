@@ -176,7 +176,7 @@ namespace zetscript{
 			,StackElement * stk_element
 
 	){
-		VM_SET_USER_ERROR(vm,"addProperty is not implemented");
+		VM_SET_USER_ERRORF(vm,"addProperty is not implemented");
 		return NULL;
 	}
 
@@ -206,7 +206,7 @@ namespace zetscript{
 		int idx=idxRefObject(_so);
 
 		if(idx==IDX_ZS_UNDEFINED){
-			THROW_RUNTIME_ERROR("internal: member function not exist");
+			THROW_RUNTIME_ERRORF("internal: member function not exist");
 		}
 
 		ref_script_objects->erase(idx);

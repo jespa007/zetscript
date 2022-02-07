@@ -106,7 +106,7 @@ namespace zetscript{
 			}
 
 			if(*aux_p != ')'){
-				EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"Expected ')'");
+				EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line ,"Expected ')'");
 			}
 
 			aux_p=aux_p+1;
@@ -213,7 +213,7 @@ namespace zetscript{
 
 						last_accessor_line=line;
 						if(get_accessor_name(eval_data, &aux_p, line,class_element) == false){
-							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line,"Expected identifier after '::'");
+							EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line,"Expected identifier after '::'");
 						}
 
 						static_access_value+="::"+class_element;
@@ -252,7 +252,7 @@ namespace zetscript{
 							instruction->value_op2=token_node_symbol_class->idx_type;
 						}else{ // sc is null
 							if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
-								EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line,"expected a type after 'instanceof'");
+								EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line,"expected a type after 'instanceof'");
 							}
 
 						}
@@ -327,7 +327,7 @@ namespace zetscript{
 						if(
 								token_node_symbol->value == SYMBOL_VALUE_SUPER
 								&& scope_info->script_type->idx_type == IDX_TYPE_CLASS_MAIN){
-							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'super' is not allowed here");
+							EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'super' is not allowed here");
 						}
 
 					}
@@ -344,7 +344,7 @@ namespace zetscript{
 						// check if ref identifier...
 						if(n_params>0){
 							if(*aux_p != ','){
-								EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,last_line_ok ,"Expected ',' or ')'");
+								EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,last_line_ok ,"Expected ',' or ')'");
 							}
 
 							IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,aux_p,eval_data,aux_p+1,line);
@@ -427,7 +427,7 @@ namespace zetscript{
 					}
 
 					if(*aux_p != ']'){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"Expected ']'");
+						EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line ,"Expected ']'");
 					}
 
 					aux_p++;
@@ -443,7 +443,7 @@ namespace zetscript{
 					}
 
 					if(accessor_name == SYMBOL_VALUE_THIS){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' is not allowed as member name");
+						EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' is not allowed as member name");
 					}
 
 					byte_code=ByteCode::BYTE_CODE_LOAD_OBJECT_ITEM;
@@ -454,11 +454,11 @@ namespace zetscript{
 						ScriptType *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_type);
 
 						if(eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_STATIC){
-							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' cannot be used in static functions");
+							EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' cannot be used in static functions");
 						}
 
 						if(scope_info->script_type->idx_type == IDX_TYPE_CLASS_MAIN){
-							EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' is not allowed here");
+							EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' is not allowed here");
 						}
 
 						// set symbol name
@@ -541,7 +541,7 @@ namespace zetscript{
 			if(token_node_symbol->value==SYMBOL_VALUE_THIS){ // only takes symbol this
 
 				if(eval_data->current_function->script_function->idx_type == IDX_TYPE_CLASS_MAIN){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line,"'this' only can be used within a class");
+					EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line,"'this' only can be used within a class");
 				}
 
 				ei_first_token_node->instruction_source_info= InstructionSourceInfo(
@@ -631,7 +631,7 @@ namespace zetscript{
 			}else{
 				// check is not type
 				if(eval_data->script_type_factory->getScriptType(token_node_symbol->value)!=NULL){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(error_expression_token_symbol,eval_data->current_parsing_file,line ,"expected variable after 'typeof' but it was a type");
+					EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line ,"expected variable after 'typeof' but it was a type");
 				}
 			}
 

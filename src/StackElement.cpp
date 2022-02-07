@@ -103,7 +103,7 @@ namespace zetscript{
 			return (zs_int)this->value;
 		}
 
-		THROW_RUNTIME_ERROR("StackElement not is not int");
+		THROW_RUNTIME_ERRORF("StackElement not is not int");
 
 		return 0;
 	}
@@ -115,7 +115,7 @@ namespace zetscript{
 			return aux;
 		}
 
-		THROW_RUNTIME_ERROR("StackElement not is not float");
+		THROW_RUNTIME_ERRORF("StackElement not is not float");
 
 		return 0;
 	}

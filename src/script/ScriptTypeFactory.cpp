@@ -526,7 +526,7 @@ namespace zetscript{
 
 	ScriptType 	* ScriptTypeFactory::getScriptType(short _idx_type){
 		if(_idx_type == IDX_ZS_UNDEFINED){
-			THROW_RUNTIME_ERROR("ScriptType node out of bound");
+			THROW_RUNTIME_ERRORF("ScriptType node out of bound");
 			return NULL;
 		}
 		return (ScriptType *)script_types->get(_idx_type);

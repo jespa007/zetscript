@@ -257,6 +257,4 @@ namespace zetscript{
 		pre_dec = NULL;
 		neg = NULL;
 	}
-
-
-};
+}

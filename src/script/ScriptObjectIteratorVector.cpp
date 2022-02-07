@@ -54,7 +54,7 @@ namespace zetscript{
 
 	void	 ScriptObjectIteratorVector::next(){
 		if(vo==NULL) {
-			THROW_RUNTIME_ERROR("Attached object was unreferenced");
+			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 
 		if(idx<(int)vo->length()){
@@ -64,7 +64,7 @@ namespace zetscript{
 
 	bool	 ScriptObjectIteratorVector::end(){
 		if(vo==NULL) {
-			THROW_RUNTIME_ERROR("Attached object was unreferenced");
+			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 		return idx >= (int)vo->length();
 	}

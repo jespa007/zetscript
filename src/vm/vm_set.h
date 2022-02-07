@@ -53,7 +53,7 @@ if(stk_src_properties == STK_PROPERTY_NULL){\
 		}\
 	}\
 }else{\
-	VM_STOP_EXECUTE("(internal) cannot determine var type %s"\
+	VM_STOP_EXECUTE("VM_SET_CONTAINER_ELEMENT:(internal) cannot determine var type %s"\
 		,stk_to_typeof_str(data->zs,stk_src).c_str()\
 	);\
 }\

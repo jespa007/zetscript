@@ -37,13 +37,13 @@
 																		eval_data->error_line=line;\
 																		eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 																		goto my_goto;
-#define EVAL_ERROR_FILE_LINE_AND_GOTOF(my_goto,file,line,s)				EVAL_ERROR_FILE_LINE_AND_GOTO(my_goto,file,line,s);
+#define EVAL_ERROR_FILE_LINE_AND_GOTOF(my_goto,file,line,s)				EVAL_ERROR_FILE_LINE_AND_GOTO(my_goto,file,line,s,NULL);
 
 #define EVAL_ERROR_BYTE_CODE(s,...)							eval_data->error=true;\
 															aux_p=NULL;\
 															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 															goto eval_error_byte_code;
-#define EVAL_ERROR_BYTE_CODEF(s)							EVAL_ERROR_BYTE_CODE(s)
+#define EVAL_ERROR_BYTE_CODEF(s)							EVAL_ERROR_BYTE_CODE(s,NULL)
 
 
 #define IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) (Operator::OPERATOR_ASSIGN_ADD<=(c) && (c)<=Operator::OPERATOR_ASSIGN_SHIFT_RIGHT)
@@ -398,7 +398,7 @@ namespace zetscript{
 
 				end=false;
 			}else if( is_comment_block_end(aux_p)){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line," Unexpected end comment block");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line," Unexpected end comment block");
 			}
 			// make compatible windows format...
 			if(*aux_p == '\r'){
@@ -647,12 +647,12 @@ namespace zetscript{
 			}else if(*aux_p != '\''){
 
 				if(*aux_p==0){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unterminated char \'");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"Unterminated char \'");
 				}
 
 				i_char=*aux_p;
 			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"empty character constant");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"empty character constant");
 			}
 
 			aux_p++;
@@ -660,9 +660,9 @@ namespace zetscript{
 				while(*aux_p!=0 && *aux_p!='\n' && *aux_p!='\'' ) aux_p++;
 
 				if(*aux_p == '\''){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"multi-character character constant");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"multi-character character constant");
 				}else{
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unterminated char \'");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"Unterminated char \'");
 				}
 			}
 

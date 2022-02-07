@@ -79,7 +79,7 @@ namespace zetscript{
 				}while(!((*aux=='\"' && *(aux-1)!= '\\')|| *aux==0 || *aux=='\n'));
 
 				if(*aux!='\"'){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Constant string not ends with '\"'");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"Constant string not ends with '\"'");
 				}
 
 				if((start_word+1)<aux){ // copy string without double quotes...
@@ -123,7 +123,7 @@ namespace zetscript{
 							char *test=aux;
 							IGNORE_BLANKS(test,eval_data,aux,line);
 							if(*test != '('){
-								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"'super' only allowed as function");
+								EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"'super' only allowed as function");
 							}
 
 							byte_code=BYTE_CODE_LOAD_THIS_FUNCTION;

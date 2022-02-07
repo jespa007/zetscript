@@ -36,7 +36,7 @@ namespace zetscript{
 
 	void ScriptObjectIteratorString::get(){
 		if(so==NULL) {
-			THROW_RUNTIME_ERROR("Attached object was unreferenced");
+			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 
 		zs_string *str_ref=(zs_string *)so->value;
@@ -55,7 +55,7 @@ namespace zetscript{
 
 	void	 ScriptObjectIteratorString::next(){
 		if(so==NULL) {
-			THROW_RUNTIME_ERROR("Attached object was unreferenced");
+			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 
 		if(idx<(int)so->length()){
@@ -65,7 +65,7 @@ namespace zetscript{
 
 	bool	 ScriptObjectIteratorString::end(){
 		if(so==NULL) {
-			THROW_RUNTIME_ERROR("Attached object was unreferenced");
+			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 		return idx >= (int)so->length();
 	}

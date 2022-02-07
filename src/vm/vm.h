@@ -25,14 +25,15 @@
 #define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectObject * (const zs_vector<ScriptObjectObject *> & param)>
 
 #define VM_EXECUTE(vm,o,f,stk,n)		vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
+
 #define VM_ERROR(s,...)					data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);
-#define VM_ERRORF(s)					VM_ERROR(s)
+#define VM_ERRORF(s)					VM_ERROR(s,NULL)
 
 #define VM_ERROR_AND_RET(s,...)			data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);return;
-#define VM_ERROR_AND_RETF(s)			VM_ERROR_AND_RET(s)
+#define VM_ERROR_AND_RETF(s)			VM_ERROR_AND_RET(s,NULL)
 
 #define VM_STOP_EXECUTE(s,...)			data->vm_error=true;data->vm_error_str=ZS_LOG_FILE_LINE_STR(SFI_GET_FILE(calling_function,instruction),SFI_GET_LINE(calling_function,instruction))+zetscript::zs_strutils::format(s, ##__VA_ARGS__);goto lbl_exit_function;
-#define VM_STOP_EXECUTEF(s,...)			VM_STOP_EXECUTE(s)
+#define VM_STOP_EXECUTEF(s)				VM_STOP_EXECUTE(s,NULL)
 
 #define VM_SET_USER_ERROR(vm,s,...)		vm_set_error_file_line(vm,__FILE__,__LINE__, s, ##__VA_ARGS__)
 #define VM_SET_USER_ERRORF(vm,s)		VM_SET_USER_ERROR(vm,s,NULL)

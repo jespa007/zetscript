@@ -38,7 +38,7 @@ namespace zetscript{
 
 	void Scope::setScriptClass(ScriptType *sc){
 		if(scope_parent != NULL){
-			THROW_RUNTIME_ERROR("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
+			THROW_RUNTIME_ERRORF("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
 			return;
 		}
 		script_type=sc;

@@ -344,7 +344,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_THIS_VARIABLE:return BYTE_CODE_PUSH_STK_THIS_VARIABLE;
 			case BYTE_CODE_LOAD_OBJECT_ITEM:return BYTE_CODE_PUSH_STK_OBJECT_ITEM;
 			default:
-				THROW_RUNTIME_ERROR("internal: op code not type load");
+				THROW_RUNTIME_ERRORF("internal: op code not type load");
 				break;
 		}
 

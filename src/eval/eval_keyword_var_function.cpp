@@ -192,7 +192,7 @@ namespace zetscript{
 
 			if(is_constant){ // scope_var will be global scope...
 				if(!(sc!=NULL || scope_var == MAIN_SCOPE(eval_data))){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'const' is allowed only in class or global");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"'const' is allowed only in class or global");
 				}
 
 				// always static or constant are global symbols...
@@ -223,7 +223,7 @@ namespace zetscript{
 						,variable_name
 				   ))!=NULL){
 						if(is_class_scope==true){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected ::");
+							EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Unexpected ::");
 						}
 						line=start_line;
 						sf_field_initializer=sc_var_member_extension->sf_field_initializer;
@@ -716,7 +716,7 @@ error_eval_keyword_var:
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if(*aux_p != '{'){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error:  expected '{' as function block");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error:  expected '{' as function block");
 			}
 
 			// register function ...
@@ -775,7 +775,7 @@ error_eval_keyword_var:
 						delete [] params;
 					}
 
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,ex.what());
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,ex.what());
 				}
 
 				if(scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...

@@ -11,7 +11,7 @@ namespace zetscript{
 		sofm->init(zs);
 
 		if(_so_object->idx_type<IDX_TYPE_SCRIPT_OBJECT_STRING){
-			THROW_RUNTIME_ERROR("Internal:Expected object object or class object");
+			THROW_RUNTIME_ERRORF("Internal:Expected object object or class object");
 		}
 
 		sofm->so_object=_so_object;

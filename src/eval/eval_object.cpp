@@ -88,7 +88,7 @@ namespace zetscript{
 			}
 
 			if(*aux_p!='\"'){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"string not ends with '\"'");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"string not ends with '\"'");
 			}
 
 			aux_p++;
@@ -151,7 +151,7 @@ namespace zetscript{
 		Keyword keyw;
 
 		if(*aux_p != '{'){ // go for final ...
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: Expected '{'");
+			EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error: Expected '{'");
 		}
 
 		// instance object ...
@@ -168,7 +168,7 @@ namespace zetscript{
 			// expression expected ...
 			if(v_elements > 0){
 				if(*aux_p != ','){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected ',' for object property");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error: expected ',' for object property");
 				}
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -184,7 +184,7 @@ namespace zetscript{
 			aux_p=eval_object_identifier(eval_data,aux_p,line,symbol_value);
 
 			if(symbol_value.empty()){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error Object: expected property name");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error Object: expected property name");
 			}
 
 			 // register constant...
@@ -203,13 +203,13 @@ namespace zetscript{
 			 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			 if(*aux_p != ':'){ // expected : ...
-				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error Object: expected ':' after property name");
+				 EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error Object: expected ':' after property name");
 			 }
 
 			 IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 			 if(*aux_p == '}'){
-				 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error Object: unexpected '}' ");
+				 EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error Object: unexpected '}' ");
 			 }
 
 
@@ -231,7 +231,7 @@ namespace zetscript{
 		}
 
 		if( *aux_p != '}'){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected ending '}'");
+			EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error: expected ending '}'");
 		}
 
 		return aux_p+1;
@@ -243,7 +243,7 @@ namespace zetscript{
 		IGNORE_BLANKS(aux_p,eval_data,s,line);
 
 		if(*aux_p != '['){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected '['");
+			EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error: expected '['");
 		}
 
 		// declare vector ...
@@ -259,12 +259,12 @@ namespace zetscript{
 			// expression expected ...
 			if(v_elements > 0){
 				if(*aux_p != ','){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected ',' before element");
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error: expected ',' before element");
 				}
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			}
 			else if(*aux_p == ','){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: unexpected ','");
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error: unexpected ','");
 			}
 
 			aux_p=eval_expression(
@@ -286,7 +286,7 @@ namespace zetscript{
 		}
 
 		if( *aux_p != ']'){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: expected ending ']'");
+			EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error: expected ending ']'");
 		}
 
 		return aux_p+1;

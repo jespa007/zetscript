@@ -184,12 +184,12 @@ namespace zetscript{
 					case IDX_TYPE_STRING_PTR_C:
 							str=((zs_string * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
 							if(str == NULL){
-								THROW_RUNTIME_ERROR("toString: str NULL");
+								THROW_RUNTIME_ERRORF("toString: str NULL");
 							}
 							aux=*str;
 							break;
 					default:
-						THROW_RUNTIME_ERROR("toString: expected zs_string or *zs_string");
+						THROW_RUNTIME_ERRORF("toString: expected zs_string or *zs_string");
 						break;
 					}
 				}

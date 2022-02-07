@@ -59,7 +59,7 @@ namespace zetscript{
 		zs_string str_aux;
 
 		if((c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){
-			VM_SET_USER_ERROR(vm,"Internal error: Function not native");
+			VM_SET_USER_ERRORF(vm,"Internal error: Function not native");
 			return;
 		}
 
@@ -96,11 +96,11 @@ namespace zetscript{
 		}
 
 		if((c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF) {
-			VM_ERROR_AND_RET("Function is not registered as C");
+			VM_ERROR_AND_RETF("Function is not registered as C");
 		}
 
 		if(fun_ptr==0){
-			VM_ERROR_AND_RET("Null function");
+			VM_ERROR_AND_RETF("Null function");
 		}
 
 		if((char)c_function->params_len != (n_args-this_param)){

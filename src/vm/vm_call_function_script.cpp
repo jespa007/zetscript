@@ -28,7 +28,7 @@ namespace zetscript{
 		Instruction *instruction=instructions; // starting instruction
 
 		if(data->vm_idx_call >= VM_FUNCTION_CALL_MAX){
-			VM_ERROR_AND_RET("Reached max stack");
+			VM_ERROR_AND_RETF("Reached max stack");
 		}
 
 		ScriptObject *so_aux=NULL;
@@ -81,7 +81,7 @@ namespace zetscript{
 		data->vm_idx_call++;
 
 		if(((data->stk_vm_current-data->vm_stack)+calling_function->min_stack_needed)>=VM_STACK_MAX){
-			VM_STOP_EXECUTE("Error MAXIMUM stack size reached");
+			VM_STOP_EXECUTEF("Error MAXIMUM stack size reached");
 		}
 
 #ifdef __DEBUG__
@@ -151,7 +151,7 @@ namespace zetscript{
 							ScriptObjectVector *so_vector=(ScriptObjectVector *)obj;
 
 							if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
-								VM_STOP_EXECUTE("Expected integer index for Vector access");
+								VM_STOP_EXECUTEF("Expected integer index for Vector access");
 							}
 
 							if((stk_var =so_vector->getUserElementAt(stk_result_op2->value))==NULL){
@@ -161,13 +161,13 @@ namespace zetscript{
 						else{
 							ScriptObjectObject *so_object = (ScriptObjectObject *)obj;
 							if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==false){ \
-								VM_STOP_EXECUTE("Expected string for object access");
+								VM_STOP_EXECUTEF("Expected string for object access");
 							}
 							stk_var = so_object->getProperty(stk_to_str(data->zs, stk_result_op2));
 							if(stk_var == NULL){
 								if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
 									if((stk_var =so_object->addProperty(stk_to_str(data->zs, stk_result_op2), data->vm_error_str))==NULL){
-										VM_STOP_EXECUTE(data->vm_error_str.c_str());
+										VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 									}
 								}
 							}
@@ -182,7 +182,7 @@ namespace zetscript{
 						ScriptObjectString *so_string=(ScriptObjectString *)stk_result_op1->value;
 
 						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
-							VM_STOP_EXECUTE("Expected integer index for String access");
+							VM_STOP_EXECUTEF("Expected integer index for String access");
 						}
 
 
@@ -197,10 +197,10 @@ namespace zetscript{
 						data->stk_vm_current++;
 						continue;
 					}else{
-						VM_STOP_EXECUTE("Expected String,Vector or Object for access '[]' opertaion"); \
+						VM_STOP_EXECUTEF("Expected String,Vector or Object for access '[]' opertaion"); \
 					}
 				}else{
-					VM_STOP_EXECUTE("Expected object for access '[]' opertaion"); \
+					VM_STOP_EXECUTEF("Expected object for access '[]' opertaion"); \
 
 				}
 				continue;
@@ -308,7 +308,7 @@ find_element_object:
 						  ||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
 							// save
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
-								VM_STOP_EXECUTE(data->vm_error_str.c_str());
+								VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 							}
 							VM_PUSH_STK_PTR(stk_var);
 						}
@@ -396,7 +396,7 @@ find_element_object:
 				}
 
 				if(so_aux==NULL){
-					VM_STOP_EXECUTE("Expected vector object");
+					VM_STOP_EXECUTEF("Expected vector object");
 				}
 				VM_SET_CONTAINER_ELEMENT;
 				continue;
@@ -419,7 +419,7 @@ find_element_object:
 				//const char *str = (const char *)stk_result_op1->value;
 				stk_src=stk_result_op2;
 				if((stk_var =so_aux->addProperty(stk_to_str(data->zs, stk_result_op1),data->vm_error_str))==NULL){
-					VM_STOP_EXECUTE(data->vm_error_str.c_str());
+					VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 				}
 
 				stk_dst=stk_var;
@@ -500,7 +500,7 @@ find_element_object:
 
 				//-----------------------
 				if(stk_dst->properties & STK_PROPERTY_READ_ONLY){
-					VM_STOP_EXECUTE("Assignment to constant variable");
+					VM_STOP_EXECUTEF("Assignment to constant variable");
 				}
 
 				// store through metamethod
@@ -516,7 +516,7 @@ find_element_object:
 							store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;
 							so_aux=stk_mp_aux->so_object;
 						}else{
-							VM_STOP_EXECUTE("Symbol X has not setter metamethod implemented");
+							VM_STOP_EXECUTEF("Symbol X has not setter metamethod implemented");
 						}
 					}
 
@@ -545,9 +545,9 @@ find_element_object:
 								if(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties) != GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src->properties)
 								){
 									// check particular case
-									VM_STOP_EXECUTE("different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+									VM_STOP_EXECUTE("Symbol '%s': different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 								}else{ // is object
-									VM_STOP_EXECUTE("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator (aka set metamethod) in order to perform assign operation");
+									VM_STOP_EXECUTEF("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator (aka set metamethod) in order to perform assign operation");
 								}
 							}
 						}
@@ -613,7 +613,7 @@ find_element_object:
 							}
 						}
 					}else{
-						VM_STOP_EXECUTE("(internal) cannot determine var type %s"
+						VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
 							,stk_to_typeof_str(data->zs,stk_src).c_str()
 						);
 					}
