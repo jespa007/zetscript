@@ -577,41 +577,51 @@ find_element_object:
 						if(stk_src_ref_value_copy_aux!=NULL)(*(bool *)stk_src_ref_value_copy_aux)=*((bool *)stk_src_ref_value);
 					}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
 						*stk_dst=*stk_src;
-					}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){
+					}else if(
+						STK_IS_SCRIPT_OBJECT_STRING(stk_src)
+									||
+						(stk_src_properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR))
 
-						if(STK_IS_SCRIPT_OBJECT_STRING(stk_src)){
-							ScriptObjectString *str_object=NULL;
+					){
+						const char *_src_ptr=NULL;
+						ScriptObjectString *str_object=NULL;
 
-							if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
-								str_object=(ScriptObjectString *)stk_dst->value;
-							}else{ // Generates a zs_string var
-								stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));
-								stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
-								// create shared ptr
-								if(!vm_create_shared_pointer(vm,str_object)){
-									goto lbl_exit_function;
-								}
-								// share ptr
-								if(!vm_share_pointer(vm,str_object)){
-									goto lbl_exit_function;
-								}
-								//-------------------------------------
-							}
-							str_object->set(stk_to_str(data->zs, stk_src));
-
-						}else{ // object we pass its reference
-
-							so_aux=(ScriptObject *)stk_src->value;
-
-							stk_dst->value=(intptr_t)so_aux;
+						if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
+							str_object=(ScriptObjectString *)stk_dst->value;
+						}else{ // Generates a zs_string var
+							stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));
 							stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+							// create shared ptr
+							if(!vm_create_shared_pointer(vm,str_object)){
+								goto lbl_exit_function;
+							}
+							// share ptr
+							if(!vm_share_pointer(vm,str_object)){
+								goto lbl_exit_function;
+							}
+							//-------------------------------------
+						}
 
-							if(!IS_STK_THIS(stk_src)){ // do not share this!
-								if(!vm_share_pointer(vm,so_aux)){
-									goto lbl_exit_function;
-								}
+						if(stk_src_properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)){
+							str_object->set((const char *)stk_src->value);
+						}else{
+							str_object->set(stk_to_str(data->zs, stk_src));
+						}
+
+
+					}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){// object we pass its reference
+
+						so_aux=(ScriptObject *)stk_src->value;
+
+						stk_dst->value=(intptr_t)so_aux;
+						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+
+						if(!IS_STK_THIS(stk_src)){ // do not share this!
+							if(!vm_share_pointer(vm,so_aux)){
+								goto lbl_exit_function;
 							}
 						}
+
 					}else{
 						VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
 							,stk_to_typeof_str(data->zs,stk_src).c_str()
