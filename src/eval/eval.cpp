@@ -134,7 +134,7 @@ namespace zetscript{
 
 	void eval_check_scope(EvalData *eval_data, Scope *scope){
 		if(scope->symbol_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
-			if(scope->tmp_idx_instruction_push_scope!=IDX_ZS_UNDEFINED){
+			if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 				eval_data->current_function->eval_instructions.insert(
 						scope->tmp_idx_instruction_push_scope
 						,(zs_int)(
@@ -529,13 +529,13 @@ namespace zetscript{
 					eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_type->type_name)+"::"+symbol_sf_foundf->name);
 				}
 
-				if(eval_instruction->vm_instruction.value_op2==IDX_ZS_UNDEFINED){
+				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
 					eval_instruction->vm_instruction.byte_code=BYTE_CODE_UNRESOLVED_THIS_CALL;
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
 			case BYTE_CODE_CALL:
-				if(eval_instruction->vm_instruction.value_op2==IDX_ZS_UNDEFINED){
+				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
 					eval_instruction->vm_instruction.byte_code=BYTE_CODE_UNRESOLVED_CALL;
 					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}

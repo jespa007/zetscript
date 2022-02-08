@@ -29,7 +29,7 @@ namespace zetscript{
 		type_name_ptr="";
 		c_destructor = NULL;
 		c_constructor=NULL;
-		idx_function_member_constructor =IDX_ZS_UNDEFINED;
+		idx_function_member_constructor = ZS_IDX_UNDEFINED;
 		idx_type=_idx_type;
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
@@ -174,7 +174,7 @@ namespace zetscript{
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
-			,size_t _params_len
+			,char _params_len
 			,int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char * _file
@@ -182,11 +182,10 @@ namespace zetscript{
 	){
 		Symbol *symbol_member_property=NULL;
 		MemberProperty *mp=NULL;
-		MetamethodMemberSetterInfo mp_setter_info=NULL;
+		MetamethodMemberSetterInfo mp_setter_info;
 		Symbol *symbol_function=NULL;
 		zs_string symbol_metamethod_function;
 		ScriptFunction **ptr_getter_script_function=NULL;
-		zs_vector *ptr_setter=NULL;
 
 		if((symbol_member_property=getSymbol(_property_name)) == NULL){
 			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
@@ -278,8 +277,6 @@ namespace zetscript{
 			mp_setter_info.setters->push_back(symbol_function->ref_ptr);
 		}
 
-
-
 		return symbol_member_property;
 	}
 
@@ -287,7 +284,7 @@ namespace zetscript{
 	Symbol				* 	ScriptType::registerNativeMemberPropertyMetamethodGetter(
 			 const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
-			 ,size_t _params_len
+			 ,char _params_len
 			, int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char *_file
@@ -336,7 +333,7 @@ namespace zetscript{
 	Symbol * ScriptType::registerMemberFunction(
 		 const zs_string & _function_name
 		 , ScriptFunctionParam **_params
-		 ,size_t _params_len
+		 ,char _params_len
 		, unsigned short _function_properties
 		, int _idx_return_type
 		,zs_int _ref_ptr
@@ -407,8 +404,6 @@ namespace zetscript{
 					const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(op);
 					int n_args_static_metamethod=byte_code_metamethod_get_num_arguments(op); // expected params for static function, n_args -1 else
 					int this_arg=0;
-
-					Symbol *symbol_result=NULL;
 
 					// can be one parameter or 0 params...
 					if(byte_code_metamethod_should_be_static(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){

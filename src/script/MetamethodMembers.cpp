@@ -52,7 +52,8 @@ namespace zetscript{
 		neg=NULL;
 	}
 	MetamethodMemberSetterInfo MetamethodMembers::getSetterInfo(ByteCodeMetamethod _byte_code_metamethod){
-		MetamethodMemberSetterInfo info={_byte_code_metamethod,NULL,NULL};
+		MetamethodMemberSetterInfo info;
+		info.byte_code_metamethod= _byte_code_metamethod;
 		info.str_byte_code_metamethod=byte_code_metamethod_to_symbol_str(_byte_code_metamethod);
 		switch(_byte_code_metamethod){
 			case BYTE_CODE_METAMETHOD_SET:
@@ -98,7 +99,6 @@ namespace zetscript{
 
 		// search setter
 		const ByteCodeMetamethod *it=byte_code_metamethod_member_setter_list;
-		bool found=false;
 		ByteCodeMetamethod _byte_code_metamethod=BYTE_CODE_METAMETHOD_INVALID;
 		while(*it!=0){
 			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
@@ -178,7 +178,6 @@ namespace zetscript{
 	bool MetamethodMembers::isSetter(ByteCodeMetamethod _byte_code_metamethod){
 		const ByteCodeMetamethod *it=byte_code_metamethod_member_setter_list;
 		while(*it!=0){
-			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
 			if(*it == _byte_code_metamethod){
 				return true;
 			}

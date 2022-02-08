@@ -463,7 +463,7 @@ namespace zetscript{
 					instruction=new EvalInstruction(
 							byte_code
 							,load_value_op2_2
-							,IDX_ZS_UNDEFINED
+							,ZS_IDX_UNDEFINED
 							,INSTRUCTION_PROPERTY_ILOAD_R | (
 									load_byte_code_2 == BYTE_CODE_LOAD_THIS_VARIABLE ? INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR
 									:0

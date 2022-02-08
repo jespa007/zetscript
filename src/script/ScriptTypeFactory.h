@@ -333,7 +333,7 @@ namespace zetscript{
 				,short registered_line=-1
 		);
 
-		void 	clear(short _idx_start=IDX_ZS_UNDEFINED);
+		void 	clear(short _idx_start=ZS_IDX_UNDEFINED);
 		void 	saveState();
 
 

@@ -69,7 +69,6 @@ namespace zetscript{
 
 		// PRE: it should printed after compile and updateReferences.
 		// first print functions  ...
-		zs_vector * m_vf = sfo->local_variables;
 		ZetScript *zs=sfo->zs;
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
@@ -118,11 +117,11 @@ namespace zetscript{
 			iload_info="";
 			unsigned idx_instruction=instruction-sfo->instructions;
 
-			if((char)value_op1 != IDX_ZS_UNDEFINED){
+			if((char)value_op1 != ZS_IDX_UNDEFINED){
 				n_ops++;
 			}
 
-			 if(value_op2 != IDX_ZS_UNDEFINED){
+			 if(value_op2 != ZS_IDX_UNDEFINED){
 				 n_ops++;
 			 }
 
@@ -200,7 +199,7 @@ namespace zetscript{
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
-					,(char)instruction->value_op1!=IDX_ZS_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
+					,(char)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:
@@ -484,8 +483,6 @@ namespace zetscript{
 	){
 		Symbol * symbol=NULL;
 		short idx_position_aux=(short)local_variables->count;
-		StackElement *se=NULL;
-
 
 		if((symbol=_scope_block->registerSymbolVariable(
 				_file
@@ -517,7 +514,6 @@ namespace zetscript{
 
 		Symbol * symbol=NULL;
 		short idx_position_aux=(short)local_variables->count;
-		StackElement *se=NULL;
 
 		if((symbol=_scope_block->registerSymbolVariable(_file,_line, _symbol_name ))==NULL){
 				return NULL;
@@ -540,7 +536,7 @@ namespace zetscript{
 			, short _line
 			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
-			,size_t _params_len
+			,char _params_len
 			, int _idx_return_type
 			,zs_int _ref_ptr
 			, unsigned short _function_properties
@@ -614,7 +610,7 @@ namespace zetscript{
 		);
 
 		// register num symbols only for c symbols...
-		if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF != 0) && symbol_repeat!=NULL){
+		if(((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF) != 0) && (symbol_repeat!=NULL)){
 			((ScriptFunction *)symbol->ref_ptr)->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME;
 		}
 
@@ -685,7 +681,7 @@ namespace zetscript{
 				const char *instruction_file=SFI_GET_FILE(this,unresolved_instruction);
 				int instruction_line=SFI_GET_LINE(this,unresolved_instruction);
 				Symbol *symbol_found=NULL;
-				short idx_sc_found=IDX_ZS_UNDEFINED;
+				short idx_sc_found=ZS_IDX_UNDEFINED;
 
 
 				if(ptr_str_symbol_to_find==NULL){
@@ -698,7 +694,7 @@ namespace zetscript{
 				}
 
 
-				if((idx_sc_found= script_type_factory->getBuiltinTypeOrClass(ptr_str_symbol_to_find))!= IDX_ZS_UNDEFINED){ // check if class
+				if((idx_sc_found= script_type_factory->getBuiltinTypeOrClass(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if class
 					unresolved_instruction->byte_code=BYTE_CODE_LOAD_TYPE;
 					unresolved_instruction->value_op2=idx_sc_found;
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static

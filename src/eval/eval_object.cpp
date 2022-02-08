@@ -40,7 +40,7 @@ namespace zetscript{
 		eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(
 				byte_code
 				, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
-				,IDX_ZS_UNDEFINED
+				,ZS_IDX_UNDEFINED
 				,instruction_properties
 		)));
 
@@ -329,7 +329,7 @@ namespace zetscript{
 
 					ByteCode byte_code_load=BYTE_CODE_FIND_VARIABLE;
 					Symbol *vis=NULL;
-					intptr_t value=IDX_ZS_UNDEFINED;
+					intptr_t value=ZS_IDX_UNDEFINED;
 					// check whether local or global var...
 					if((vis=eval_find_local_symbol(eval_data,scope_info,symbol_name)) != NULL){ // local sy
 						if((vis->properties & BYTE_CODE_LOAD_LOCAL)){

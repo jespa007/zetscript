@@ -9,7 +9,7 @@
 #define ZS_IDX_INSTRUCTION_JMP_BREAK						(uint8_t)(-6)
 #define ZS_IDX_INSTRUCTION_JMP_CONTINUE						(uint8_t)(-7)
 
-#define ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED					(uint8_t)(IDX_ZS_UNDEFINED)
+#define ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED					(uint8_t)(ZS_IDX_UNDEFINED)
 
 
 #define INSTRUCTION_IS_STRING(ins)							((ins)->byte_code==BYTE_CODE_LOAD_STRING || ((ins)->properties & INSTRUCTION_PROPERTY_STRING))
@@ -98,8 +98,8 @@ namespace zetscript{
 		Instruction();
 
 		Instruction(ByteCode _byte_code
-		 ,uint8_t _value_op1=IDX_ZS_UNDEFINED
-		 ,zs_int _value_op2=IDX_ZS_UNDEFINED
+		 ,uint8_t _value_op1=ZS_IDX_UNDEFINED
+		 ,zs_int _value_op2=ZS_IDX_UNDEFINED
 		 ,uint16_t _properties=0
 		 );
 

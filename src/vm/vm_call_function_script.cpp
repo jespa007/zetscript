@@ -19,8 +19,7 @@ namespace zetscript{
 			VirtualMachine			* vm,
 			ScriptObject			* this_object,
 			ScriptFunction 			* calling_function,
-			StackElement 		  	* _stk_local_var,
-			unsigned char 			n_args
+			StackElement 		  	* _stk_local_var
 	    ){
 
 		VirtualMachineData *data = (VirtualMachineData*)vm->data;
@@ -228,7 +227,7 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
-				if(instruction->value_op2 == IDX_ZS_UNDEFINED){
+				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
 					VM_PUSH_STK_NULL;
 				}else{
 					data->stk_vm_current->value= so_aux->getScriptType()->class_scope->symbol_functions->items[instruction->value_op2];
@@ -810,7 +809,7 @@ find_element_object:
 				 VM_POP_STK_ONE;
 
 				switch(instruction->value_op2){
-				case IDX_ZS_UNDEFINED:
+				case ZS_IDX_UNDEFINED:
 					VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 					break;
 				case IDX_TYPE_ZS_INT_C:
@@ -888,7 +887,7 @@ find_element_object:
 			case  BYTE_CODE_THIS_MEMBER_CALL: // find symbol and load
 				 sf_call_calling_object = this_object;
 				 sf_call_stk_start_function_object=0;
-				 if(instruction->value_op2 != IDX_ZS_UNDEFINED){ // stored in a member field
+				 if(instruction->value_op2 != ZS_IDX_UNDEFINED){ // stored in a member field
 					 sf_call_stk_function_ref= this_object->getBuiltinElementAt(instruction->value_op2);
 				 }else{
 					 str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
@@ -1098,7 +1097,6 @@ execute_function:
 						,sf_call_calling_object
 						,sf_call_script_function
 						,sf_call_stk_start_arg_call
-						,sf_call_n_args
 					);
 					sf_call_n_local_symbols=sf_call_script_function->local_variables->count;
 				}
@@ -1470,7 +1468,7 @@ execute_function:
 		VirtualMachineData *data = (VirtualMachineData*)vm->data;
 		StackElement *stk_var=NULL;
 
-		if(idx != IDX_ZS_UNDEFINED){
+		if(idx != ZS_IDX_UNDEFINED){
 			stk_var = this_object->getBuiltinElementAt(idx);
 		}
 

@@ -69,7 +69,6 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 			,so\
 			,((ScriptFunction *)sf)\
 			,stk_def_afun_start\
-			,n_args\
 		);\
 	}\
 	if(data->vm_error == true){ \
@@ -174,8 +173,7 @@ namespace zetscript{
 				VirtualMachine			* vm,
 				ScriptObject			* this_object,
 				ScriptFunction 			* calling_function,
-				StackElement 		  	* _stk_local_var,
-				unsigned char 			n_args=0
+				StackElement 		  	* _stk_local_var
 	);
 
 	void  vm_call_function_native(
@@ -767,7 +765,6 @@ namespace zetscript{
 				,script_object
 				,ptr_function_found
 				,stk_args
-				,n_stk_args
 			);
 		}else{ //
 			vm_call_function_native(

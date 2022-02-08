@@ -165,7 +165,7 @@ namespace zetscript{
 			,const zs_string & _function_name
 			,F _ptr_function
 			,ScriptFunctionParam **_params
-			,size_t *_params_len
+			,char *_params_len
 			, const char **_str_return_type=NULL
 	){
 		int idx_return_type=-1;
@@ -189,7 +189,7 @@ namespace zetscript{
 
 		if(_params != NULL){
 			*_params=new ScriptFunctionParam[args.count];
-			*_params_len=args.count;
+			*_params_len=(char)args.count;
 
 			for(unsigned int i = 0; i < args.count; i++){
 				const char *param=(const char *)args.items[i];
@@ -205,7 +205,7 @@ namespace zetscript{
 					);
 				}
 
-				if(idx_type==IDX_ZS_UNDEFINED){
+				if(idx_type==ZS_IDX_UNDEFINED){
 					THROW_RUNTIME_ERROR("Argument %i type '%s' for function '%s' not registered"
 							,i+1
 							,zs_rtti::demangle(param).c_str()

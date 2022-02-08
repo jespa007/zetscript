@@ -144,7 +144,7 @@ namespace zetscript{
 
 		zs_string zs_float_to_str(zs_float _number){
 
-			char float_str[100];
+			char float_str[100000];
 
 			sprintf(float_str,"%f",_number);
 

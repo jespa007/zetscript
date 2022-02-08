@@ -26,11 +26,18 @@
 namespace zetscript{
 
 
-	typedef struct{
+	struct MetamethodMemberSetterInfo {
 		ByteCodeMetamethod byte_code_metamethod;
 		zs_vector *setters;
 		const char *str_byte_code_metamethod;
-	}MetamethodMemberSetterInfo;
+
+		MetamethodMemberSetterInfo() {
+			byte_code_metamethod = ByteCodeMetamethod::BYTE_CODE_METAMETHOD_INVALID;
+			setters = NULL;
+			str_byte_code_metamethod = NULL;
+
+		}
+	};
 
 	class MetamethodMembers{
 	public:

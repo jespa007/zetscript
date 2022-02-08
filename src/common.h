@@ -18,7 +18,7 @@
 //#define __ZETSCRIPT_VERBOSE_MESSAGE__
 #endif
 
-#define IDX_ZS_UNDEFINED 						-1
+#define ZS_IDX_UNDEFINED 						-1
 #define ZS_IDX_EVAL_FUNCTION					-10
 #define MAX_NATIVE_FUNCTION_ARGS				6
 

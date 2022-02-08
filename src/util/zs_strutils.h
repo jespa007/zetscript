@@ -45,7 +45,7 @@ namespace zetscript{
 
 
 		 zs_string zs_int_to_str(zs_int _number, const zs_string & _format = "");
-		 zs_string zs_float_to_str(zs_float _number, const zs_string & _format = "");
+		 zs_string zs_float_to_str(zs_float _number);
 		 zs_string to_lower(const zs_string & str);
 		 zs_string to_upper(const zs_string & str);
 		 zs_string  format(const  char  *string_text, ...);

@@ -20,7 +20,7 @@ namespace zetscript{
 	//
 	// LOOPS
 	//
-	void link_loop_break_continues(EvalData *eval_data,int idx_start, int idx_post_instruction_for_start=IDX_ZS_UNDEFINED){
+	void link_loop_break_continues(EvalData *eval_data,int idx_start, int idx_post_instruction_for_start=ZS_IDX_UNDEFINED){
 
 		int idx_end_instruction = eval_data->current_function->eval_instructions.count;
 
@@ -31,7 +31,7 @@ namespace zetscript{
 				ins->value_op2=idx_end_instruction-i;
 			}else if(ins->value_op1 == ZS_IDX_INSTRUCTION_JMP_CONTINUE){
 				ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
-				if(idx_post_instruction_for_start != IDX_ZS_UNDEFINED){
+				if(idx_post_instruction_for_start != ZS_IDX_UNDEFINED){
 					ins->value_op2=idx_post_instruction_for_start-i;
 				}
 				else{
@@ -296,9 +296,9 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		Keyword key_w;
 		bool is_for_in=false;
-		int	 idx_instruction_for_start=IDX_ZS_UNDEFINED
-			,idx_instruction_for_after_jnz_condition=IDX_ZS_UNDEFINED
-			,idx_post_instruction_for_start=IDX_ZS_UNDEFINED;
+		int	 idx_instruction_for_start=ZS_IDX_UNDEFINED
+			,idx_instruction_for_after_jnz_condition=ZS_IDX_UNDEFINED
+			,idx_post_instruction_for_start=ZS_IDX_UNDEFINED;
 
 		EvalInstruction *ei_jnt=NULL,*ei_jmp=NULL; // conditional to end block
 		zs_vector ei_post_operations;

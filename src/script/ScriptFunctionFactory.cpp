@@ -26,7 +26,7 @@ namespace zetscript{
 			, int _idx_type
 			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
-			,size_t _params_len
+			,char _params_len
 			, int _idx_return_type
 			, zs_int _ref_native_function_ptr
 			, unsigned short _function_properties
@@ -68,7 +68,6 @@ namespace zetscript{
 
 		ScriptFunction *script_function = new ScriptFunction(
 				zs
-				,_scope
 				,idx_script_function
 				,_idx_type
 				, symbol->idx_position
@@ -103,7 +102,7 @@ namespace zetscript{
 
 	void ScriptFunctionFactory::clear(int _idx_start){
 
-		int idx_start = _idx_start == IDX_ZS_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
+		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
 			int v=script_functions->count-1;

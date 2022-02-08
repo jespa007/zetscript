@@ -94,7 +94,7 @@ namespace zetscript{
 				,function_name
 				,&function_params
 				,function_params_len
-				,IDX_ZS_UNDEFINED
+				,ZS_IDX_UNDEFINED
 				,0
 				,0
 		);
@@ -149,8 +149,7 @@ namespace zetscript{
 			zs->getVirtualMachine(),
 			NULL,
 			sf,
-			stk_vm_current,
-			stk_n_params);
+			stk_vm_current);
 
 		// modifug
 		if(vm_it_has_error(zs->getVirtualMachine())){

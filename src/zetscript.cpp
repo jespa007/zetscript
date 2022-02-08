@@ -279,8 +279,6 @@ namespace zetscript{
 				 for(unsigned f = 0; f < symbol_functions->count; f++){
 					 bool show_function=true;
 					 Symbol *symbol=(Symbol *)symbol_functions->items[f];
-					 ScriptFunction *script_function=(ScriptFunction *)symbol->ref_ptr;
-
 
 					 if(show_function){
 						 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,sc);
@@ -346,8 +344,6 @@ namespace zetscript{
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 	StackElement ZetScript::evalInternal(const char * code, unsigned short options, const char * filename, const char *__invoke_file__, int __invoke_line__)  {
-		ScriptFunction *sf_main=MAIN_FUNCTION(this);
-		Scope *sc_main=MAIN_SCOPE(this);
 		StackElement stk_ret=k_stk_null;
 
 		eval_parse_and_compile(this,code,filename);
@@ -456,7 +452,7 @@ namespace zetscript{
 		ZS_UNUSUED_PARAM(_idx_start_function);
 
 		zs_string global_symbol;
-		int idx_start_variable = _idx_start_variable == IDX_ZS_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
+		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
 		zs_vector *local_variables=main_function_object->local_variables;

@@ -4,7 +4,8 @@
  */
 #define LOAD_PROPERTIES(__METAMETHOD__) \
 	ptr_metamethod_members_aux=NULL;\
-	stk_var_copy=NULL;\
+	stk_var_copy.value=0;\
+	stk_var_copy.properties=0;\
 	if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){\
 		stk_var_copy=*stk_result_op1;\
 		stk_mp_aux=(StackMemberProperty *)stk_result_op1->value;\

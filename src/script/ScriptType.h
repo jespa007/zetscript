@@ -98,7 +98,7 @@ namespace zetscript{
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
-			,size_t _params_len
+			,char _params_len
 			,int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char * _file=""
@@ -108,7 +108,7 @@ namespace zetscript{
 		Symbol				* 	registerNativeMemberPropertyMetamethodGetter(
 			const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
-			 ,size_t _params_len
+			 ,char _params_len
 			, int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char * _file=""
@@ -124,9 +124,9 @@ namespace zetscript{
 		Symbol				* 	registerMemberFunction(
 			 const zs_string & _function_name
 			,ScriptFunctionParam **_params=NULL
-			,size_t _params_len=0
+			,char _params_len=0
 			, unsigned short _function_properties=0
-			, int _idx_return_type=IDX_ZS_UNDEFINED
+			, int _idx_return_type=ZS_IDX_UNDEFINED
 			, zs_int _ref_ptr=0
 			, const char * _file=""
 			, short _line=-1

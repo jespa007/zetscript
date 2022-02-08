@@ -29,7 +29,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("main function is not created");
 		}
 
-		if(getIdxScriptTypeFromTypeNamePtr(var_type) == IDX_ZS_UNDEFINED){
+		if(getIdxScriptTypeFromTypeNamePtr(var_type) == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("%s has not valid type (%s)",var_name.c_str(),var_type);
 		}
 
@@ -58,7 +58,7 @@ namespace zetscript{
 	{
 		zs_string error;
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 
 		if(main_function == NULL){
 			THROW_RUNTIME_ERRORF("main function is not created");
@@ -101,13 +101,13 @@ namespace zetscript{
 		ScriptType *sc=NULL;
 		const char * type_name_ptr = typeid( T *).name();
 		//int size=script_types->count;
-		int idx_type=IDX_ZS_UNDEFINED;
+		int idx_type=ZS_IDX_UNDEFINED;
 		Scope * scope = NULL;
 
 
 		checkClassName(type_name);
 
-		if(getIdxScriptTypeFromTypeNamePtr(type_name_ptr)!=IDX_ZS_UNDEFINED){
+		if(getIdxScriptTypeFromTypeNamePtr(type_name_ptr)!=ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR(
 			"Native class '%s' is already registered"
 			,zs_rtti::demangle(typeid( T).name()).c_str()
@@ -115,14 +115,14 @@ namespace zetscript{
 		}
 
 		idx_type=script_types->count;
-		scope = NEW_SCOPE(this,IDX_ZS_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
+		scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,type_name);
 
 		sc = new ScriptType(zs,idx_type,type_name,scope,type_name_ptr,SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
 		scope->setScriptClass(sc);
 
 		// in C there's no script constructor ...
-		sc->idx_function_member_constructor=IDX_ZS_UNDEFINED;
+		sc->idx_function_member_constructor=ZS_IDX_UNDEFINED;
 		// allow dynamic constructor in function its parameters ...
 		sc->c_constructor = NULL;
 		sc->c_destructor = NULL;
@@ -188,7 +188,7 @@ namespace zetscript{
 
 
 		int idx_register_class = getIdxScriptTypeFromTypeNamePtr(class_name_ptr);
-		if(idx_register_class == IDX_ZS_UNDEFINED) {
+		if(idx_register_class == ZS_IDX_UNDEFINED) {
 			THROW_RUNTIME_ERROR("class %s not registered",class_name_ptr);
 		}
 
@@ -256,7 +256,7 @@ namespace zetscript{
 
 
 				ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(script_function);
-				size_t params_len=script_function->params_len;
+				char params_len=script_function->params_len;
 
 
 				this_class->registerMemberFunction(
@@ -311,7 +311,7 @@ namespace zetscript{
 					if(it->src_function!=0){ // we have src method
 
 						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(it->src_function);
-						size_t params_len=it->src_function->params_len;
+						char params_len=it->src_function->params_len;
 
 						symbol_function=this_class->registerMemberFunction(
 								it->src_function->function_name,
@@ -339,7 +339,7 @@ namespace zetscript{
 							ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
 
 							ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
-							size_t params_len=it->src_function->params_len;
+							char params_len=it->src_function->params_len;
 
 							symbol_function=this_class->registerMemberFunction(
 									sf_setter->function_name,
@@ -411,7 +411,7 @@ namespace zetscript{
 
 		// 1. check all parameters ok.
 		// check valid parameters ...
-		if(getIdxScriptTypeFromTypeNamePtr(var_type) == IDX_ZS_UNDEFINED){
+		if(getIdxScriptTypeFromTypeNamePtr(var_type) == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
 					,script_type->type_name.c_str()
 					,var_name
@@ -441,7 +441,7 @@ namespace zetscript{
 	){
 		zs_string type_name_ptr = typeid( C *).name();
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
 
 		if(script_type == NULL){
@@ -481,12 +481,12 @@ namespace zetscript{
 		,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr.c_str());
 		}
 
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
@@ -519,7 +519,7 @@ namespace zetscript{
 		,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -559,7 +559,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -599,7 +599,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -639,7 +639,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -677,7 +677,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -715,7 +715,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -753,7 +753,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -791,7 +791,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -829,7 +829,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -867,7 +867,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -905,7 +905,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -943,7 +943,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -981,7 +981,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -1019,7 +1019,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		size_t params_len=0;
+		char params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -1068,7 +1068,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr.c_str());
 		}
 
 		return script_type->registerNativeMemberFunctionStatic<F>(function_name
@@ -1094,7 +1094,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr.c_str());
 		}
 
 		script_type->registerNativeMemberFunction<F>(

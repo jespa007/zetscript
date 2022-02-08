@@ -514,7 +514,7 @@ namespace zetscript{
 
 		//void setClearGlobalVariablesCheckpoint();
 		void resetParsedFiles();
-		void clearGlobalVariables(int _idx_start_variable=IDX_ZS_UNDEFINED, int _idx_start_function=IDX_ZS_UNDEFINED);
+		void clearGlobalVariables(int _idx_start_variable=ZS_IDX_UNDEFINED, int _idx_start_function=ZS_IDX_UNDEFINED);
 		bool getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf);
 
 

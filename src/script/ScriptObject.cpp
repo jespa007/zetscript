@@ -38,7 +38,7 @@ namespace zetscript{
 	}
 
 	ScriptObject::ScriptObject(){
-		idx_type=IDX_ZS_UNDEFINED;
+		idx_type=ZS_IDX_UNDEFINED;
 		shared_pointer=NULL;
 		zs=NULL;
 		map_builtin_properties=new zs_map();
@@ -200,13 +200,13 @@ namespace zetscript{
 			}
 		}
 
-		return IDX_ZS_UNDEFINED;
+		return ZS_IDX_UNDEFINED;
 	}
 
 	void ScriptObject::derefObject(ScriptObject  **_so){
 		int idx=idxRefObject(_so);
 
-		if(idx==IDX_ZS_UNDEFINED){
+		if(idx==ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERRORF("internal: member function not exist");
 		}
 

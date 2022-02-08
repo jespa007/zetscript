@@ -329,7 +329,7 @@ namespace zetscript{
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 
 	void ScriptTypeFactory::clear(short _idx_start){
-		short idx_start = _idx_start == IDX_ZS_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
+		short idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
 			int v=script_types->count-1;
@@ -375,7 +375,7 @@ namespace zetscript{
 
 		checkClassName(type_name);
 
-		if((index = getIdxScriptType(type_name))==IDX_ZS_UNDEFINED){ // check whether is local var registered scope ...
+		if((index = getIdxScriptType(type_name))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
 			uint16_t properties_register_scope=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
 			index=script_types->count;
 
@@ -384,7 +384,7 @@ namespace zetscript{
 				properties_register_scope|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 			}
 			// BYTE_CODE_NEW SCOPE C and register ...
-			Scope * scope = NEW_SCOPE(this,IDX_ZS_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
+			Scope * scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
 
 			// register symbol on main scope...
 
@@ -524,11 +524,11 @@ namespace zetscript{
 			return sc->idx_type;
 		}
 
-		return IDX_ZS_UNDEFINED;
+		return ZS_IDX_UNDEFINED;
 	}
 
 	ScriptType 	* ScriptTypeFactory::getScriptType(short _idx_type){
-		if(_idx_type == IDX_ZS_UNDEFINED){
+		if(_idx_type == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERRORF("ScriptType node out of bound");
 			return NULL;
 		}
@@ -566,7 +566,7 @@ namespace zetscript{
 				return i;
 			}
 		}
-		return IDX_ZS_UNDEFINED;
+		return ZS_IDX_UNDEFINED;
 	}
 
 	short ScriptTypeFactory::getIdxScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr){
@@ -577,11 +577,11 @@ namespace zetscript{
 				return i;
 			}
 		}
-		return IDX_ZS_UNDEFINED;
+		return ZS_IDX_UNDEFINED;
 	}
 
 	bool ScriptTypeFactory::isScriptTypeRegistered(const zs_string & _type_name){
-		return getIdxScriptType(_type_name) != IDX_ZS_UNDEFINED;
+		return getIdxScriptType(_type_name) != ZS_IDX_UNDEFINED;
 	}
 
 	ScriptObject *		ScriptTypeFactory::instanceScriptObjectByTypeName(const zs_string & _type_name){
@@ -632,7 +632,7 @@ namespace zetscript{
 
 
 	const char * ScriptTypeFactory::getScriptTypeName(short _idx_type){
-		if(_idx_type != IDX_ZS_UNDEFINED){
+		if(_idx_type != ZS_IDX_UNDEFINED){
 			ScriptType *sc=(ScriptType *)script_types->get(_idx_type);
 			return sc->type_name.c_str();
 		}

@@ -41,7 +41,7 @@ namespace zetscript{
 		Symbol(){
 			file="";
 			line=-1;
-			idx_position = IDX_ZS_UNDEFINED; // in principle is not on stack
+			idx_position = ZS_IDX_UNDEFINED; // in principle is not on stack
 
 			scope = NULL;
 			name="";

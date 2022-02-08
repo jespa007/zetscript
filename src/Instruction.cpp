@@ -8,7 +8,7 @@ namespace zetscript{
 		Instruction::Instruction(){
 			byte_code=ByteCode::BYTE_CODE_INVALID;
 			value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
-			value_op2=IDX_ZS_UNDEFINED;
+			value_op2=ZS_IDX_UNDEFINED;
 			properties=0;
 		}
 

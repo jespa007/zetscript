@@ -314,7 +314,7 @@ namespace zetscript{
 			do{
 				ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 				accessor_name="";
-				zs_int instruction_value2=IDX_ZS_UNDEFINED;
+				zs_int instruction_value2=ZS_IDX_UNDEFINED;
 				EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
 
 				aux_p=test_aux_p;

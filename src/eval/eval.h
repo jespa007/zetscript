@@ -19,8 +19,8 @@ namespace zetscript{
 
 		EvalInstruction(
 			ByteCode _byte_code
-			,uint8_t _index_op1=IDX_ZS_UNDEFINED
-			,zs_int _index_op2=IDX_ZS_UNDEFINED
+			,uint8_t _index_op1=ZS_IDX_UNDEFINED
+			,zs_int _index_op2=ZS_IDX_UNDEFINED
 			,unsigned short _properties=0
 		 ){
 			vm_instruction=Instruction(_byte_code,_index_op1,_index_op2,_properties);

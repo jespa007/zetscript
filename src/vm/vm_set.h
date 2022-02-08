@@ -119,7 +119,6 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_C_VAR_P
 			,so_aux\
 			,ptr_function_found\
 			,stk_arg\
-			,1\
 		);\
 	}\
 	if((stk_mp!=NULL) && (stk_mp->member_property->metamethod_members.getter != NULL)){ /* if property call getter */ \

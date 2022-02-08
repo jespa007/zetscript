@@ -142,7 +142,7 @@ namespace zetscript{
 		// add return in the end...
 		start_ptr->byte_code=BYTE_CODE_RET;
 		start_ptr->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
-		start_ptr->value_op2=IDX_ZS_UNDEFINED;
+		start_ptr->value_op2=ZS_IDX_UNDEFINED;
 		sf->instruction_source_info.push_back(0);
 
 		eval_instructions->clear();
@@ -447,7 +447,7 @@ error_eval_keyword_var:
 		if(key_w == Keyword::KEYWORD_FUNCTION || is_static){
 			ScriptFunctionParam param_info;
 			ScriptFunctionParam *params=NULL;
-			size_t params_len=0;
+			char params_len=0;
 
 			//bool var_args=false;
 			char *end_var = NULL;
