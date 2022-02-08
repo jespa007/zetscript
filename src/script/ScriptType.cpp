@@ -50,9 +50,9 @@ namespace zetscript{
 
 	}
 
-	bool ScriptType::isDerivedFrom(short idx_type){
+	bool ScriptType::isDerivedFrom(short _idx_type){
 		for(unsigned i=0; i < this->idx_base_types->count; i++){
-			if(this->idx_base_types->items[i]==idx_type){
+			if(this->idx_base_types->items[i]==_idx_type){
 				return true;
 			}
 		}
@@ -182,7 +182,7 @@ namespace zetscript{
 	){
 		Symbol *symbol_member_property=NULL;
 		MemberProperty *mp=NULL;
-		MetamethodMemberSetterInfo mp_setter_info;
+		MetamethodMemberSetterInfo mp_setter_info=NULL;
 		Symbol *symbol_function=NULL;
 		zs_string symbol_metamethod_function;
 		ScriptFunction **ptr_getter_script_function=NULL;
@@ -452,7 +452,7 @@ namespace zetscript{
 									THROW_RUNTIME_ERROR("error registering metamethod '%s::%s'. Expected return bool but it was '%s'",
 											this->type_name.c_str(),
 											_function_name.c_str(),
-											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->type_name_ptr)
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->type_name_ptr).c_str()
 									);
 									return NULL;
 								}
@@ -473,7 +473,8 @@ namespace zetscript{
 									THROW_RUNTIME_ERROR("error registering metamethod %s::%s. Expected return %s but it was %s",
 											this->type_name.c_str(),
 											_function_name.c_str(),
-											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->type_name_ptr));
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->type_name_ptr).c_str()
+									);
 									return NULL;
 								}
 								break;

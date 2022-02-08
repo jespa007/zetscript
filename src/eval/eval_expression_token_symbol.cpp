@@ -57,7 +57,7 @@ namespace zetscript{
 			, int n_recursive_level
 		){
 		char *aux_p = s,*test_aux_p;//, *test_s=NULL;
-		int first_line=line,test_line=line;
+		int test_line=line;
 		TokenNode *token_node_symbol=new TokenNode();
 		zs_vector ei_arg_instruction;
 		EvalInstruction *instruction_token=NULL;
@@ -376,12 +376,12 @@ namespace zetscript{
 						// only one argument and is variable
 						if(ei_arg_instruction.count==1){
 							EvalInstruction *ei_arg=(EvalInstruction *)ei_arg_instruction.items[0];
-							ByteCode byte_code=ei_arg->vm_instruction.byte_code;
-							if(byte_code==BYTE_CODE_LOAD_REF){
+							ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
+							if(byte_code_aux ==BYTE_CODE_LOAD_REF){
 								ei_arg->vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
 							}
-							else if(byte_code_is_load_var_type(byte_code)){
-								ei_arg->vm_instruction.byte_code=byte_code_load_var_type_to_push_stk(byte_code);
+							else if(byte_code_is_load_var_type(byte_code_aux)){
+								ei_arg->vm_instruction.byte_code=byte_code_load_var_type_to_push_stk(byte_code_aux);
 								ei_arg->vm_instruction.properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
 							}
 						}
@@ -450,8 +450,6 @@ namespace zetscript{
 
 					if(it_accessor_token==0 && token_node_symbol->value == SYMBOL_VALUE_THIS){ // check first symbol at first...
 						instruction_token=ei_first_token_node;
-
-						ScriptType *sf_class = GET_SCRIPT_CLASS(eval_data,eval_data->current_function->script_function->idx_type);
 
 						if(eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_STATIC){
 							EVAL_ERROR_FILE_LINE_AND_GOTOF(error_expression_token_symbol,eval_data->current_parsing_file,line ,"'this' cannot be used in static functions");

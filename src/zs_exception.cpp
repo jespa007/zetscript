@@ -57,6 +57,8 @@ namespace zetscript {
 	}
 
 	void throw_exception(const char *filename, int line, const char *in_txt,...){
+		ZS_UNUSUED_PARAM(filename);
+		ZS_UNUSUED_PARAM(line);
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 

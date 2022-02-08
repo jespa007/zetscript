@@ -181,7 +181,10 @@ namespace zetscript{
 
 		// check valid parameters ...
 		if((idx_return_type=_script_class_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
-			THROW_RUNTIME_ERROR("Return type '%s' for function '%s' not registered",zs_rtti::demangle(return_type),_function_name);
+			THROW_RUNTIME_ERROR(
+				"Return type '%s' for function '%s' not registered"
+				,zs_rtti::demangle(return_type).c_str()
+				,_function_name.c_str());
 		}
 
 		if(_params != NULL){
@@ -193,18 +196,20 @@ namespace zetscript{
 				int idx_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
 				// exception: These variables are registered but not allowed to pass throught parameter
 				if(idx_type==IDX_TYPE_ZS_FLOAT_C || idx_type==IDX_TYPE_BOOL_C || idx_type == IDX_TYPE_STRING_C){
-					THROW_RUNTIME_ERROR("Argument %i type '%s' for function '%s' is not supported as parameter, you should use pointer instead (i.e %s *)"
+					THROW_RUNTIME_ERROR(
+							"Argument %i type '%s' for function '%s' is not supported as parameter, you should use pointer instead (i.e %s *)"
 							,i+1
-							,zs_rtti::demangle(param)
-							,_function_name,zs_rtti::demangle(param)
+							,zs_rtti::demangle(param).c_str()
+							,_function_name.c_str()
+							,zs_rtti::demangle(param).c_str()
 					);
 				}
 
 				if(idx_type==IDX_ZS_UNDEFINED){
 					THROW_RUNTIME_ERROR("Argument %i type '%s' for function '%s' not registered"
 							,i+1
-							,zs_rtti::demangle(param)
-							,_function_name);
+							,zs_rtti::demangle(param).c_str()
+							,_function_name.c_str());
 				}
 
 				(*_params)[i]=ScriptFunctionParam(idx_type,param);

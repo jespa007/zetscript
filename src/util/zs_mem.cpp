@@ -10,6 +10,7 @@ namespace zetscript{
 #ifdef __MEMMANAGER__
 		p=MEMMGR_malloc(_size,_file,_line);
 #else
+		ZS_UNUSUED_2PARAMS(_file, _line);
 		p=malloc(_size);
 #endif
 		memset(p,0,_size);

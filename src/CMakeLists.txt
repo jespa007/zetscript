@@ -75,6 +75,9 @@ if(MSVC)
 	add_definitions(/wd4800)
 	add_definitions(/wd4244)
 	
+	# Warning all
+	add_definitions(/W4)
+	
 	# warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
 	add_definitions(/EHsc)
 	

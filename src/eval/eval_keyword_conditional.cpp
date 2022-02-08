@@ -94,7 +94,7 @@ namespace zetscript{
 					// we should insert jmp to end conditional chain if/else...
 					eval_data->current_function->eval_instructions.push_back((zs_int)(ei_aux=new EvalInstruction(
 							BYTE_CODE_JMP
-							,IDX_ZS_UNDEFINED
+							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 							,eval_data->current_function->eval_instructions.count
 							)));
 					ei_if_jnt->vm_instruction.value_op2+=1; // sum +1 because we inserted a jmp for else
@@ -168,10 +168,7 @@ namespace zetscript{
 
 	char * eval_keyword_switch(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 
-
-
 		char *aux_p = (char *)s;
-		Scope *scope_case=NULL;
 		zs_string val;
 		Keyword key_w;//,key_w2;
 		zs_vector 		ei_switch_condition; // switch condition
@@ -248,7 +245,7 @@ namespace zetscript{
 					// insert a pair of instructions...
 					eval_instruction_case->ei_je_instruction=new EvalInstruction(
 							BYTE_CODE_JE_CASE
-							,IDX_ZS_UNDEFINED
+							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 							,((int)(eval_data->current_function->eval_instructions.count))-idx_start_instruction	 // offset
 					);
 
@@ -274,7 +271,7 @@ namespace zetscript{
 
 					ei_jmp_default=new EvalInstruction(
 							BYTE_CODE_JMP
-							,IDX_ZS_UNDEFINED
+							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 							,((int)(eval_data->current_function->eval_instructions.count))-idx_start_instruction+1	 // offset
 					);
 
@@ -371,7 +368,7 @@ namespace zetscript{
 				if(ei_jmp_default == NULL){ // no default found so, we insert a default jmp to the end
 					ei_jmp_default=new EvalInstruction(
 					BYTE_CODE_JMP
-					,IDX_ZS_UNDEFINED
+					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,total_instructions_switch-size_ei_cases-size_ei_switch_condition
 					);
 				}
@@ -415,7 +412,7 @@ namespace zetscript{
 				for(unsigned i=idx_start_instruction; i < eval_data->current_function->eval_instructions.count;i++){
 					Instruction *ins=&((EvalInstruction *)eval_data->current_function->eval_instructions.items[i])->vm_instruction;
 					if(ins->value_op1==ZS_IDX_INSTRUCTION_JMP_BREAK){
-						ins->value_op1=IDX_ZS_UNDEFINED;
+						ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 						ins->value_op2=offset_end_instruction-i;
 					}
 				}

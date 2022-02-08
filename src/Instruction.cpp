@@ -7,7 +7,7 @@
 namespace zetscript{
 		Instruction::Instruction(){
 			byte_code=ByteCode::BYTE_CODE_INVALID;
-			value_op1=IDX_ZS_UNDEFINED;
+			value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 			value_op2=IDX_ZS_UNDEFINED;
 			properties=0;
 		}
@@ -84,7 +84,7 @@ namespace zetscript{
 		}
 
 		int instruction_num_required_stack(Instruction *_instruction){
-			int ret_aux=0;
+
 			if(_instruction->properties & INSTRUCTION_PROPERTY_ILOAD){
 				return 1;
 			}

@@ -7,7 +7,7 @@ namespace zetscript{
 	int n_anonymouse_function=0;
 
 	//zs_string * 	get_mapped_name(EvalData *eval_data,const zs_string * symbol_name);
-	zs_string * get_mapped_name(EvalData *eval_data,const zs_string & s);
+	zs_string * get_mapped_name(const zs_string & s);
 	char 		*	eval_expression(
 			EvalData *eval_data
 			,const char *s
@@ -39,7 +39,7 @@ namespace zetscript{
 
 		eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(
 				byte_code
-				,IDX_ZS_UNDEFINED
+				, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 				,IDX_ZS_UNDEFINED
 				,instruction_properties
 		)));
@@ -77,7 +77,6 @@ namespace zetscript{
 		// get identifier with quotes...
 		if(*aux_p == '\"'){
 			aux_p++;
-			bool end=false;
 			for(;;){
 				if(((*aux_p=='\"' && *(aux_p-1)!= '\\')|| *aux_p==0 || *aux_p=='\n')){
 					break;
@@ -195,8 +194,9 @@ namespace zetscript{
 
 			// add instruction...
 			eval_instructions->push_back((zs_int)(
-					new EvalInstruction(ByteCode::BYTE_CODE_LOAD_STRING
-					,IDX_ZS_UNDEFINED
+					new EvalInstruction(
+					ByteCode::BYTE_CODE_LOAD_STRING
+					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,(zs_int)stk_key_object
 			)));
 
@@ -314,7 +314,6 @@ namespace zetscript{
 			if(key_w == Keyword::KEYWORD_NEW){
 				EvalInstruction *ei_load_function_constructor = NULL,*eval_instruction=NULL;
 				EvalInstruction *eval_instruction_new_object_by_value=NULL;
-				int start_line_new=line;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 				// try get symbol ...++++
 				aux_p=get_name_identifier_token(
@@ -330,7 +329,7 @@ namespace zetscript{
 
 					ByteCode byte_code_load=BYTE_CODE_FIND_VARIABLE;
 					Symbol *vis=NULL;
-					uintptr_t value=IDX_ZS_UNDEFINED;
+					intptr_t value=IDX_ZS_UNDEFINED;
 					// check whether local or global var...
 					if((vis=eval_find_local_symbol(eval_data,scope_info,symbol_name)) != NULL){ // local sy
 						if((vis->properties & BYTE_CODE_LOAD_LOCAL)){
@@ -341,7 +340,13 @@ namespace zetscript{
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not defined",symbol_name.c_str());
 					}
 
-					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(byte_code_load,IDX_ZS_UNDEFINED,value)));
+					eval_instructions->push_back((zs_int)(
+						eval_instruction=new EvalInstruction(
+							byte_code_load
+							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+							,value)
+						)
+					);
 					eval_instruction->instruction_source_info=InstructionSourceInfo(
 						 eval_data->current_parsing_file
 						 ,line

@@ -8,8 +8,8 @@ namespace zetscript{
 
 	// member functions
 	zs_datetime * 		DateTimeModule_new(void);
-	zs_datetime * 		DateTimeModule_add(zs_datetime *dt1,zs_datetime *dt2);
-	zs_datetime * 		DateTimeModule_sub(zs_datetime *dt1,zs_datetime *dt2);
+	/*zs_datetime * 		DateTimeModule_add(zs_datetime *dt1,zs_datetime *dt2);
+	zs_datetime * 		DateTimeModule_sub(zs_datetime *dt1,zs_datetime *dt2);*/
 
 	void 				DateTimeModule_setUtc(zs_datetime *_this);
 

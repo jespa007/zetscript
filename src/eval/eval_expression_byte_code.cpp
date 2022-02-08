@@ -39,15 +39,7 @@ namespace zetscript{
 		EvalInstruction 	*eval_instruction=NULL;
 		int 				idx_split=-1;
 		TokenNode      		*split_node = NULL;
-		Operator 			op_split=Operator::OPERATOR_MAX;
-		EvalInstruction 	*left_eval_constant=NULL;
-		EvalInstruction 	*right_eval_constant=NULL;
 		unsigned char 		idx_group_split=OPERATOR_GROUP_MAX;
-		bool is_left_branch_end=false, is_right_branch_end=false;
-		bool is_left_token_simplifiable=false,is_right_token_simplifiable=false;
-		//TokenNode		*left_token,*right_token;
-		bool simplified_ok=false;
-		//ByteCode byte_code;
 
 		// trivial case (symbol node)
 		if(idx_start>=idx_end){
@@ -167,12 +159,10 @@ namespace zetscript{
 		// operator assign = found --> assign operators, load identifiers first
 		for(int i=0; i < idx_start; i+=2){ // starting from assign operator if idx_start > 0 += 2 is because there's a symbol followed by its operator
 			EvalInstruction *eval_instruction=NULL;
-			int idx_post_operation = i >> 1;
 			TokenNode * token_node_symbol = (TokenNode *)token_nodes->items[i];
 			TokenNode * token_node_operator = (TokenNode *)token_nodes->items[i+1];
 			Operator operator_type=token_node_operator->operator_type;
 			zs_vector *ei_assign_loader_instructions_post_expression=NULL;
-			int end_idx=(int)(token_nodes->count-1);
 
 			// Check for operators found. Each operator found it has to be (=,+=,-=,... etc)
 			if(!(
@@ -345,8 +335,6 @@ namespace zetscript{
 		// ... finally save store operators
 		for(int i=(int)(zs_ei_assign_loader_instructions_post_expression.count-1); i >=0 ;i--){
 			//loaders
-			zs_vector *ei_assign_loader_instructions_post_expression=(zs_vector *)zs_ei_assign_loader_instructions_post_expression.items[i];
-
 			dst_instructions->concat((zs_vector *)zs_ei_assign_loader_instructions_post_expression.items[i]);
 
 			// push back assign operator

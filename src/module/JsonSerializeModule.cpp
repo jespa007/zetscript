@@ -27,20 +27,25 @@ namespace zetscript{
 			str_result.append(']');
 		}
 
-		void serialize_object(ZetScript *zs,ScriptObject *this_object, zs_string & str_result, ScriptObjectObject *obj, int ident, bool is_formatted){
+		void serialize_object(
+			ZetScript *_zs
+			,ScriptObject *_this_object
+			, zs_string & _str_result
+			, ScriptObjectObject *_obj
+			, int _ident
+			, bool _is_formatted){
 
-			str_result.append('{');
+			_str_result.append('{');
 
 			zs_map_iterator map_iterators[2]={
-					obj->getMapUserProperties()->begin()
-					,obj->getMapBuiltinProperties()->begin()
+					_obj->getMapUserProperties()->begin()
+					,_obj->getMapBuiltinProperties()->begin()
 			};
 
 			for(int i=0; i < 2; i++){//zs_map_iterator *it=map_iterators;mi!=map_iterators.end();mi++){
 				int k=0;
 				zs_map_iterator *mi=&map_iterators[i];
 				for(;!mi->end();mi->next()){
-					zs_map_iterator *map=&map_iterators[i];
 
 					StackElement *stk_se=(StackElement *)mi->value;
 					// only check if is not function. If is an property an implements get, call
@@ -48,39 +53,37 @@ namespace zetscript{
 							&&
 						STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_se) == false
 							){
-						bool created_object=false;
 						bool getter_found=false;
-						StackElement *ptr_stk_param;
+						StackElement *ptr_stk_param=NULL;
 						StackElement stk_getter_result=k_stk_null;
 
-
-						if (is_formatted){
-							str_result.append('\n');
-							for (int i = 0; i <= (ident); i++){
-								str_result.append('\t');
+						if (_is_formatted){
+							_str_result.append('\n');
+							for (int j = 0; j <= (_ident); j++){
+								_str_result.append('\t');
 							}
 						}
 
 						if (k>0){
-							str_result.append(',');
+							_str_result.append(',');
 						}
 
-						str_result.append("\"" + zs_string(mi->key)+ "\":");
+						_str_result.append("\"" + zs_string(mi->key)+ "\":");
 
 						// if property we have to call script or native...
 						if(stk_se->properties & STK_PROPERTY_MEMBER_PROPERTY){
 
 							StackMemberProperty *smp=(StackMemberProperty *)stk_se->value;
 							ScriptFunction *ptr_function=smp->member_property->metamethod_members.getter;
-							if(ptr_function!=NULL && obj->idx_type>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
+							if(ptr_function!=NULL && _obj->idx_type>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
 
 								getter_found=true;
 
 								if((ptr_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 
 									stk_getter_result=VM_EXECUTE(
-										zs->getVirtualMachine()
-										,obj
+										_zs->getVirtualMachine()
+										,_obj
 										,ptr_function
 										,NULL
 										,0
@@ -88,9 +91,12 @@ namespace zetscript{
 
 
 								}else{ // expect return an scriptobjectstring
-									void *c_object = ((ScriptObjectClass *)obj)->getNativeObject();
+									void *c_object = ((ScriptObjectClass *)_obj)->getNativeObject();
 									zs_int result=((zs_int (*)(void *))(ptr_function->ref_native_function_ptr))(c_object);
-									stk_getter_result=zs->convertVarToStackElement(result,ptr_function->idx_return_type);
+									stk_getter_result=_zs->convertVarToStackElement(
+										result
+										,ptr_function->idx_return_type
+									);
 
 								}
 
@@ -102,10 +108,19 @@ namespace zetscript{
 							ptr_stk_param=(StackElement *)(mi->value);
 						}
 
-						serialize_stk(zs,this_object, str_result, ptr_stk_param, ident+1,is_formatted);
+						serialize_stk(
+							_zs
+							,_this_object
+							, _str_result
+							, ptr_stk_param
+							, _ident+1
+							,_is_formatted);
 
 						if(stk_getter_result.properties & STK_PROPERTY_SCRIPT_OBJECT){
-							vm_unref_lifetime_object(zs->getVirtualMachine(),(ScriptObject *)stk_getter_result.value);
+							vm_unref_lifetime_object(
+								_zs->getVirtualMachine()
+								,(ScriptObject *)stk_getter_result.value
+							);
 
 						}
 						k++;
@@ -113,13 +128,13 @@ namespace zetscript{
 				}
 			}
 
-			if(is_formatted){
-				str_result.append('\n');
-				for (int i = 0; i < (ident); i++){
-					str_result.append('\t');
+			if(_is_formatted){
+				_str_result.append('\n');
+				for (int i = 0; i < (_ident); i++){
+					_str_result.append('\t');
 				}
 			}
-			str_result.append('}');
+			_str_result.append('}');
 		}
 
 		void serialize_stk(ZetScript *zs, ScriptObject *this_object,zs_string & str_result, StackElement *stk, int ident,bool is_formatted){

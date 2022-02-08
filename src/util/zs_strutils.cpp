@@ -102,11 +102,11 @@ namespace zetscript{
 			}
 
 			// reverse result
-			size_t len=result.length();
-			for(unsigned i=0; i < (len>>1); i++){
+			size_t reverse_len=result.length();
+			for(unsigned i=0; i < (reverse_len >>1); i++){
 				// do swap
-				char aux1=result[len-i-1];
-				result[len-i-1]=result[i];
+				char aux1=result[reverse_len -i-1];
+				result[reverse_len -i-1]=result[i];
 				result[i]=aux1;
 			}
 
@@ -142,7 +142,7 @@ namespace zetscript{
 
 		}
 
-		zs_string zs_float_to_str(zs_float _number, const zs_string & _format){
+		zs_string zs_float_to_str(zs_float _number){
 
 			char float_str[100];
 

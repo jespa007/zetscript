@@ -54,6 +54,7 @@
 
 #include 		<type_traits>
 
+
 // Prototypes & structs
 #ifdef __MEMMANAGER__
 #include "memmgr.h"

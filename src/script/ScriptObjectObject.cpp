@@ -35,6 +35,7 @@ namespace zetscript{
 	}
 
 	void  ScriptObjectObject::append(ZetScript *zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
+		ZS_UNUSUED_PARAM(zs);
 		zs_string error="";
 
 		// get properties from object o2
@@ -59,7 +60,6 @@ namespace zetscript{
 			,StackElement * sv
 		){
 		StackElement si;
-		bool error_symbol=false;
 
 		if(map_user_properties->exist(symbol_value.c_str())){
 			error=zs_strutils::format("'%s' symbol already exists",symbol_value.c_str());
@@ -102,7 +102,8 @@ namespace zetscript{
 			,zs_string & error
 			,StackElement * stk_element
 	){
-		return addUserProperty(symbol_value,error);
+
+		return addUserProperty(symbol_value,error,stk_element);
 	}
 
 	StackElement 	* ScriptObjectObject::getProperty(const zs_string & property_name){

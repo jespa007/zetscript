@@ -529,7 +529,7 @@ find_element_object:
 
 					StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 
-					void *stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
+					stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
 					stk_src_ref_value=&stk_src->value;
 					stk_dst_ref_value=&stk_dst->value;
 					if(stk_src->properties & STK_PROPERTY_IS_C_VAR_PTR){ // src is C pointer
@@ -583,7 +583,6 @@ find_element_object:
 						(stk_src_properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR))
 
 					){
-						const char *_src_ptr=NULL;
 						ScriptObjectString *str_object=NULL;
 
 						if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
@@ -649,7 +648,7 @@ find_element_object:
 							// unref pointer because new pointer has been attached...
 							StackElement *chk_ref=(StackElement *)stk_result_op2->value;
 							ScriptObjectObject  *old_so=(ScriptObjectObject  *)old_stk_dst.value;
-							int idx_call=data->vm_idx_call;
+
 							if(chk_ref->properties & STK_PROPERTY_PTR_STK){
 								chk_ref=(StackElement *)chk_ref->value;
 							}
@@ -974,10 +973,9 @@ execute_function:
 						StackElement *stk_arg=sf_call_stk_start_arg_call;
 						ScriptObjectVector *var_args=NULL;
 						ScriptObject *so_param=NULL;
-						bool end_args=false;
+
 						int effective_args=sf_call_n_args < sf_call_script_function->params_len ? sf_call_n_args:sf_call_script_function->params_len;
 						ScriptFunctionParam *sf_param=sf_call_script_function->params;
-						int i=0;
 						for(int i=0;i < sf_call_n_args;++i){
 							so_param=NULL; // script object we passing
 							uint16_t sfa_properties=sf_param->properties;// ((ScriptFunctionParam *)(*function_param))->properties;
@@ -1072,8 +1070,8 @@ execute_function:
 					// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 					// will be ignored always.
 
-					for(unsigned i = sf_call_n_args; i < sf_call_script_function->params_len; ++i){
-						ScriptFunctionParam *param=sf_call_script_function->params+i;
+					for(unsigned h = sf_call_n_args; h < sf_call_script_function->params_len; ++h){
+						ScriptFunctionParam *param=sf_call_script_function->params+h;
 
 						switch(param->default_param_value.properties){
 						case STK_PROPERTY_NULL:

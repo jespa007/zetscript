@@ -69,7 +69,11 @@ namespace zetscript{
 
 		// 4. add load/store/reset stack
 		idx_position=start_ptr-new_instructions;
-		*start_ptr++=Instruction(BYTE_CODE_PUSH_STK_MEMBER_VAR,IDX_ZS_UNDEFINED,symbol_member_var->idx_position);
+		*start_ptr++=Instruction(
+			BYTE_CODE_PUSH_STK_MEMBER_VAR
+			, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+			,symbol_member_var->idx_position
+		);
 		sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(
 			eval_data->current_parsing_file
 			,symbol_member_var->line
@@ -93,7 +97,7 @@ namespace zetscript{
 	ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector *eval_instructions){
 
 		zs_string function_name=eval_anonymous_function_name("defval");
-		Instruction *instructions=NULL,*start_ptr=NULL;
+		Instruction *start_ptr=NULL;
 		size_t instructions_len=(eval_instructions->count+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
 
@@ -137,7 +141,7 @@ namespace zetscript{
 
 		// add return in the end...
 		start_ptr->byte_code=BYTE_CODE_RET;
-		start_ptr->value_op1=IDX_ZS_UNDEFINED;
+		start_ptr->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 		start_ptr->value_op2=IDX_ZS_UNDEFINED;
 		sf->instruction_source_info.push_back(0);
 
@@ -161,8 +165,7 @@ namespace zetscript{
 		zs_vector ei_member_var_init;
 
 		if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
-			bool is_static = false,
-				 is_constant = false,
+			bool  is_constant = false,
 				 is_class_scope=false,
 				 end=false;
 
@@ -447,35 +450,21 @@ error_eval_keyword_var:
 			size_t params_len=0;
 
 			//bool var_args=false;
-			int n_arg=0;
 			char *end_var = NULL;
 			zs_string param_value;
-			zs_string error;
-			//size_t advance_chars=0;
-
-
 			zs_vector script_function_params;
 			zs_string conditional_str;
 			Symbol *symbol_sf=NULL;
-
-			Symbol * irv=NULL;
-
-
 			zs_string function_name="";
-			ScriptFunction *sf=NULL;
+			ScriptFunction *sf = NULL;
+
 			// advance keyword...
-			//aux_p += advance_chars;
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			bool named_function = *aux_p!='(';
 
 			if(named_function){ // is named function..
 
-				// function cannot be declared within main scope
-				/*if(scope_info != MAIN_SCOPE(eval_data) && sc == NULL){ // function within a function (not function member)
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"named functions are only allowed in main scope. You can only use anonymous functions");
-				}
-*/
 				if(sc==NULL){ // check if function member declaration
 				   end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
 						eval_data
@@ -698,8 +687,8 @@ error_eval_keyword_var:
 					}
 
 					if(create_anonymous_function_return_expression==true){
-						ScriptFunction *sf=eval_new_inline_anonymous_function(eval_data,&ei_instructions_default);
-						param_info.default_param_value={(zs_int)sf,STK_PROPERTY_FUNCTION};
+						ScriptFunction *sf_aux=eval_new_inline_anonymous_function(eval_data,&ei_instructions_default);
+						param_info.default_param_value={(zs_int)sf_aux,STK_PROPERTY_FUNCTION};
 					}
 
 					// finally delete all evaluated code

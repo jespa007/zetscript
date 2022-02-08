@@ -8,7 +8,7 @@
 #define ZS_VECTOR_N_SLOT_ELEMENTS 10
 namespace zetscript{
 
-	size_t zs_vector::npos=-1;
+	size_t zs_vector::npos=(size_t)(-1);
 
 	bool	zs_vector::push_back_slot(){
 		if (this->_size == 0) {
@@ -82,7 +82,7 @@ namespace zetscript{
 		return item;
 	}
 
-	void zs_vector::resize(size_t _new_size){
+	void zs_vector::resize(uint16_t _new_size){
 		if (_new_size==0) {
 			if(this->items!=NULL){
 				free(this->items);
@@ -117,7 +117,7 @@ namespace zetscript{
 		insert(count,list, list->count);
 	}
 
-	void 		zs_vector::insert(uint16_t  idx,zs_vector  * list, size_t n_list_elements_to_copy){
+	void 		zs_vector::insert(uint16_t  idx,zs_vector  * list, uint16_t n_list_elements_to_copy){
 
 
 		if(list==NULL || list->count==0) { // not insert

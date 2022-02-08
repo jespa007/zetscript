@@ -4,6 +4,7 @@
  */
 #define LOAD_PROPERTIES(__METAMETHOD__) \
 	ptr_metamethod_members_aux=NULL;\
+	stk_var_copy=NULL;\
 	if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){\
 		stk_var_copy=*stk_result_op1;\
 		stk_mp_aux=(StackMemberProperty *)stk_result_op1->value;\
@@ -158,7 +159,10 @@
 		break;\
 	default:\
 		if(STK_VALUE_IS_TYPE(stk_result_op1)){\
+			PRAGMA_PUSH\
+			PRAGMA_DISABLE_WARNING(4127)\
 			if(__METAMETHOD__ ==BYTE_CODE_METAMETHOD_EQU || __METAMETHOD__ ==BYTE_CODE_METAMETHOD_NOT_EQU){\
+				PRAGMA_POP\
 				if((stk_result_op1->value == IDX_TYPE_NULL) && (stk_result_op1->properties == 0) && (__METAMETHOD__ ==BYTE_CODE_METAMETHOD_EQU)){\
 					VM_PUSH_STK_BOOLEAN(true);\
 				}else if((stk_result_op1->value == IDX_TYPE_NULL) && (stk_result_op1->properties != 0) && (__METAMETHOD__ ==BYTE_CODE_METAMETHOD_NOT_EQU)){\

@@ -13,10 +13,11 @@ namespace zetscript{
 		Keyword op=eval_is_keyword(s);
 		return !is_anonymous_function(eval_data,s,line) && (is_end_expression(s) || (op<Keyword::KEYWORDS_WITHIN_EXPRESSIONS && op !=Keyword::KEYWORD_UNKNOWN));
 	}
-
+	/*
 	bool is_end_expression_with_cr(const char * s){
+		ZS_UNUSUED_PARAM(s);
 		return false;
-	}
+	}*/
 
 	void eval_deallocate_tokens(zs_vector 	& token_nodes){
 		for(unsigned i=0; i < token_nodes.count; i++){
@@ -50,7 +51,6 @@ namespace zetscript{
 		int last_line_ok;
 		const char *start_expression_str=NULL;
 		int start_expression_line=-1;
-		int instruction_identifier=IDX_ZS_UNDEFINED;
 		char *aux_p=NULL;//,*test_s=NULL;
 		bool new_line_break=false;
 		char *test_ignore_blanks=NULL,*test_char_carry_return=NULL;
@@ -62,8 +62,6 @@ namespace zetscript{
 
 		start_expression_str=aux_p;
 		start_expression_line=line;
-
-		int idx_instruction_start_expression=(int)eval_instructions->count;
 
 		if(is_end_expression(aux_p) && *aux_p != ';'){
 			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
@@ -244,7 +242,6 @@ eval_error_sub_expression:
 		zs_vector 	zs_ei_right_sub_expressions; // right/left assigment
 
 		EvalInstruction *ei_last=NULL;
-		bool not_assignment=false;
 		zs_vector *ei_first_sub_expression=new zs_vector;
 
 		zs_ei_left_sub_expressions.push_back((zs_int)(
@@ -413,8 +410,6 @@ eval_error_sub_expression:
 
 				if(left_instructions->count>0){
 					// read first instruction
-					EvalInstruction *ei=(EvalInstruction *)left_instructions->items[0];
-
 					dst_instructions->concat(
 						left_instructions
 					);
@@ -473,9 +468,9 @@ eval_error_expression_delete_left_right_sub_expressions:
 			delete ie_left_sub_expression;
 		}
 
-		for(auto re=0; re<zs_ei_right_sub_expressions.count; re++){ // delete right expressions and vectors
+		for(unsigned re=0; re<zs_ei_right_sub_expressions.count; re++){ // delete right expressions and vectors
 			zs_vector *ie_right_sub_expression=(zs_vector *)zs_ei_right_sub_expressions.items[re];
-			for(auto e=0 //delete expressions
+			for(unsigned e=0 //delete expressions
 					; e!=ie_right_sub_expression->count
 					; e++){
 					delete (EvalInstruction *)ie_right_sub_expression->items[e];

@@ -350,6 +350,7 @@ namespace zetscript{
 	}
 
 	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const zs_string & symbol_to_find){
+		ZS_UNUSUED_PARAM(eval_data);
 		return scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 	}
 
@@ -371,14 +372,14 @@ namespace zetscript{
 	}
 
 	bool eval_all_local_variables_in_scopes_already_sorted(Scope  *current_scope,  int & idx_local_variable){
-		for(int i=0; i < current_scope->symbol_variables->count; i++){
+		for(unsigned i=0; i < current_scope->symbol_variables->count; i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->items[i];
 			if(s->idx_position!=idx_local_variable++){
 				return false;
 			}
 		}
 
-		for(int i=0; i < current_scope->scopes->count; i++){
+		for(unsigned i=0; i < current_scope->scopes->count; i++){
 			Scope *scope=(Scope *)current_scope->scopes->items[i];
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				bool ok=eval_all_local_variables_in_scopes_already_sorted(scope,idx_local_variable);
@@ -393,13 +394,13 @@ namespace zetscript{
 	}
 
 	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable,zs_vector *order_local_vars){
-		for(int i=0; i < current_scope->symbol_variables->count; i++){
+		for(unsigned i=0; i < current_scope->symbol_variables->count; i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->items[i];
 			lookup_table[s->idx_position]=n_variable++;
 			order_local_vars->push_back(s->idx_position);
 		}
 
-		for(int i=0; i < current_scope->scopes->count; i++){
+		for(unsigned i=0; i < current_scope->scopes->count; i++){
 			Scope *scope=(Scope *)current_scope->scopes->items[i];
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				eval_fill_lookup_local_variable(scope,lookup_table,n_variable,order_local_vars);
@@ -410,7 +411,6 @@ namespace zetscript{
 	short *eval_create_lookup_sorted_table_local_variables(EvalData *eval_data,zs_vector *order_local_vars){
 
 		ScriptFunction *sf = eval_data->current_function->script_function;
-		Scope *sc=sf->function_scope;
 
 		int n_local_variable=0;
 		if(eval_all_local_variables_in_scopes_already_sorted(sf->function_scope,n_local_variable) == true){
@@ -444,7 +444,6 @@ namespace zetscript{
 		zs_string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
 		ScriptType *sc_sf = GET_SCRIPT_CLASS(eval_data,sf->idx_type);
-		ScriptType *sc_found=NULL;
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 
@@ -463,15 +462,12 @@ namespace zetscript{
 
 
 		int ok=FALSE;
-		const char *str_aux=NULL;
 		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data,&order_local_vars);
 
 		for(unsigned i=0; i < count; i++){
 
-			Symbol *vis=NULL;
 			EvalInstruction *eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[i];
 			zs_string *ptr_str_symbol_to_find=NULL;
-			ScriptType *sc_aux=NULL;
 			ptr_str_symbol_to_find=&eval_instruction->symbol.name;
 
 			sum_stk_load_stk+=instruction_num_required_stack(&eval_instruction->vm_instruction);
@@ -488,8 +484,8 @@ namespace zetscript{
 					zs_string target_name;
 
 					// find constructor symbol through other members...
-					for(int i = sf->idx_position-1; i >=0 && symbol_sf_foundf==NULL; i--){
-						Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[i];
+					for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
+						Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[j];
 						ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 						bool match_names=false;
 						if((sf->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
@@ -609,7 +605,7 @@ namespace zetscript{
 			// update variables symbol...
 			zs_vector *local_vars_dst=new zs_vector();
 
-			for(int i=0; i < sf->local_variables->count; i++){
+			for(unsigned i=0; i < sf->local_variables->count; i++){
 				int idx_var=order_local_vars.items[i];
 				Symbol *s=(Symbol *)sf->local_variables->items[idx_var];
 				s->idx_position=lookup_sorted_table_local_variables[idx_var];

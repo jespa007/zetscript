@@ -15,7 +15,7 @@ namespace zetscript{
 		}JsonDeserializeData;
 
 
-		const char end_char_standard_value[] = {
+		const char json_deserialize_end_char_values[] = {
 				',',
 				'}',
 				' ',
@@ -59,25 +59,29 @@ namespace zetscript{
 				aux_p++;
 			}
 
-			if(*aux_p=='\r')
+			if (*aux_p == '\r') {
 				aux_p++;
+			}
 
 			return aux_p;
 		}
 
-		char *advance_to_end_comment(char *aux_p, int &line){
+		char *advance_to_end_comment(char *_aux_p, int &_line){
 
-			if(is_start_comment(aux_p)){
-				aux_p+=2; //advance first
-				while(!is_end_comment(aux_p) && *aux_p != 0){
-					aux_p = advance_to_char(aux_p,'*');
-					if(*aux_p == '\n') aux_p++; // make compatible windows format...
-					if(*aux_p == '\r') aux_p++;
-					if(*(aux_p+1) != '/') aux_p++; // not end comment ... advance ...
+			if(is_start_comment(_aux_p)){
+				_aux_p+=2; //advance first
+				while(!is_end_comment(_aux_p) && *_aux_p != 0){
+					_aux_p = advance_to_char(_aux_p,'*');
+					if (*_aux_p == '\n') {
+						_aux_p++; // make compatible windows format...
+						_line++; // next line
+					}
+					if(*_aux_p == '\r') _aux_p++;
+					if(*(_aux_p+1) != '/') _aux_p++; // not end comment ... advance ...
 				}
 			}
 
-			return aux_p;
+			return _aux_p;
 		}
 
 		char *eval_ignore_blanks(char *str, int &line) {
@@ -112,15 +116,15 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		char *advance_to_one_of_collection_of_char(char *str,char *end_char_standard_value, int &line) {
-			char *aux_p = str;
+		char *advance_to_one_of_collection_of_char(char *_str,char *_collection_of_chars, int &_line) {
+			char *aux_p = _str;
 			char *chk_char;
 			while(*aux_p!=0){
-				chk_char = end_char_standard_value;
+				chk_char = _collection_of_chars;
 
 				// comment blocks also is returned (these lines must be ignored)
 				if(is_start_comment(aux_p)) {
-					aux_p = advance_to_end_comment(aux_p, line);
+					aux_p = advance_to_end_comment(aux_p, _line);
 					if(is_end_comment(aux_p))
 						aux_p+=2;
 				}
@@ -130,8 +134,9 @@ namespace zetscript{
 				}
 
 				while(*chk_char != 0){
-					if(*chk_char == *aux_p)
+					if (*chk_char == *aux_p) {
 						return aux_p;
+					}
 					chk_char++;
 				}
 				aux_p++;
@@ -140,16 +145,15 @@ namespace zetscript{
 		}
 
 		void json_deserialize_error(JsonDeserializeData *data,const char *str_from,int _line,const char *str,...){
-
+			ZS_UNUSUED_PARAM(str_from);
 			char  what_msg[ZS_MAX_STR_BUFFER]={0};
 			char  error_description[1024] = { 0 };
 			va_list  ap;
 			va_start(ap,  str);
 			vsprintf(error_description,  str,  ap);
 			va_end(ap);
-			char *aux=(char *)str_from-1;
 			zs_string filename="";
-			int n=0;
+
 			if(data->filename!=NULL){
 				filename=zs_path::get_filename(data->filename);
 			}
@@ -209,7 +213,6 @@ namespace zetscript{
 			char *str_current = (char *)str_start;
 			int bytes_readed=0;
 			char *str_end=NULL;
-			bool ok=false;
 
 			if (*str_current == '\"') {// try string ...
 				zs_string str_aux;
@@ -247,7 +250,7 @@ namespace zetscript{
 				// try read until next comma
 				char default_str_value[1024]={0};
 
-				str_end = advance_to_one_of_collection_of_char(str_current, (char *)end_char_standard_value, line);
+				str_end = advance_to_one_of_collection_of_char(str_current, (char *)json_deserialize_end_char_values, line);
 				bytes_readed = str_end - str_current;
 				if (*str_end != 0) {
 					str_end--;
@@ -385,7 +388,6 @@ namespace zetscript{
 
 			if(*str_current != '}'){ // do parsing object values...
 				do{
-					StackElement *stk_json_property=NULL;
 					str_current =read_string_between_quotes(data, str_current, line, &key_id);
 					if (*str_current != ':') {// ok check value
 						json_deserialize_error(data, str_current, line, "Error ':' expected");

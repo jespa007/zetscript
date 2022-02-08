@@ -22,7 +22,6 @@ namespace zetscript{
 	}
 
 	void SystemModule_eval(ZetScript *zs,StackElement *stk_so_str_eval,StackElement *stk_oo_param){
-		ScriptFunction *sf_main=zs->getScriptFunctionFactory()->getScriptFunction(IDX_SCRIPT_FUNCTION_MAIN);
 		ScriptObjectString *so_str_eval=NULL;
 		ScriptObjectObject *oo_param=NULL;
 		ScriptFunctionParam *function_params=NULL;
@@ -32,7 +31,6 @@ namespace zetscript{
 		zs_vector stk_params;
 		StackElement stk_ret=k_stk_null;
 		const char *str_start=NULL;
-		Scope *main_scope=zs->getScopeFactory()->getMainScope();
 		zs_string str_unescaped_source="";
 		VirtualMachine *vm=zs->getVirtualMachine();
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
@@ -90,7 +88,6 @@ namespace zetscript{
 
 		 sf=new	ScriptFunction(
 				zs
-				,NULL
 				,IDX_TYPE_CLASS_MAIN
 				,ZS_IDX_EVAL_FUNCTION
 				,-1

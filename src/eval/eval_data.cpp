@@ -524,7 +524,8 @@ namespace zetscript{
 		return Directive::DIRECTIVE_UNKNOWN;
 	}
 
-	zs_string * get_mapped_name(EvalData *eval_data,const zs_string & _mapped_name){
+	zs_string * get_mapped_name(EvalData *eval_data, const zs_string & _mapped_name){
+		ZS_UNUSUED_PARAM(eval_data);
 		zs_int e=compiled_symbol_name->get(_mapped_name.c_str());
 		if(e==0){
 			zs_string *s=new zs_string (_mapped_name);
@@ -614,7 +615,6 @@ namespace zetscript{
 		bool is_hexa=false;
 		bool is01s=true;
 		//bool isInt=true;
-		bool is_char=false;
 		bool is_float=false;
 
 		IGNORE_BLANKS(aux_p,eval_data,s,line);

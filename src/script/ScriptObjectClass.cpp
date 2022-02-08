@@ -200,7 +200,6 @@ namespace zetscript{
 	}
 
 	ScriptObjectClass::~ScriptObjectClass(){
-		ScriptType *script_type=getScriptType();
 
 		if(created_object != 0 && delete_c_object_on_destroy){
 			 // only erases pointer if basic type or user/auto delete is required ...

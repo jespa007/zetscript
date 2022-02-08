@@ -87,8 +87,8 @@ namespace zetscript{
 		// DateTime
 		cl=registerClass<zs_datetime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
 
-		registerMemberFunctionStatic<zs_datetime>("_add",DateTimeModule_add);
-		registerMemberFunctionStatic<zs_datetime>("_sub",DateTimeModule_sub);
+		/*registerMemberFunctionStatic<zs_datetime>("_add",DateTimeModule_add);
+		registerMemberFunctionStatic<zs_datetime>("_sub",DateTimeModule_sub);*/
 
 		registerMemberFunction<zs_datetime>("setUtc",DateTimeModule_setUtc);
 
@@ -315,9 +315,10 @@ namespace zetscript{
 			else{
 				// throw
 				THROW_RUNTIME_ERROR(
-						"Cannot register constant '%s' as 'ScriptObjectString', because is already registered as '%s'"
-						,key_name.c_str(),stk_to_typeof_str(this,stk)
-						);
+					"Cannot register constant '%s' as 'ScriptObjectString', because is already registered as '%s'"
+					,key_name.c_str()
+					,stk_to_typeof_str(this,stk).c_str()
+				);
 			}
 		}
 
@@ -452,6 +453,8 @@ namespace zetscript{
 	}
 
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
+		ZS_UNUSUED_PARAM(_idx_start_function);
+
 		zs_string global_symbol;
 		int idx_start_variable = _idx_start_variable == IDX_ZS_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();

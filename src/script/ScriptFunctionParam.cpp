@@ -49,7 +49,6 @@ namespace zetscript{
 
 	ScriptFunctionParam *ScriptFunctionParam::createArrayFromVector(const zs_vector * _s){
 		ScriptFunctionParam *params=new ScriptFunctionParam[_s->count];
-		size_t params_len=_s->count;
 
 		for(unsigned i=0; i < _s->count; i++){
 			params[i]=*((ScriptFunctionParam *)_s->items[i]);
@@ -61,7 +60,6 @@ namespace zetscript{
 
 	ScriptFunctionParam *ScriptFunctionParam::createArrayFromScriptFunction(const ScriptFunction * _sf){
 		ScriptFunctionParam *params=new ScriptFunctionParam[_sf->params_len];
-		size_t params_len=_sf->params_len;
 
 		for(unsigned i=0; i < _sf->params_len; i++){
 			params[i]=_sf->params[i];

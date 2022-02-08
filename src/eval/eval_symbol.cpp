@@ -18,17 +18,13 @@ namespace zetscript{
 		//	, PostOperation post_operation
 	){
 		// PRE:
-		bool is_constant_number=false, is_constant_boolean=false;
-		EvalInstruction *instruction=NULL;
 		zs_int value = IDX_ZS_UNDEFINED;
 		ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 		token_node_symbol->token_type = TokenType::TOKEN_TYPE_LITERAL;
 		token_node_symbol->line=line;
-		void *get_obj=NULL,*const_obj=NULL;
+		void *const_obj=NULL;
 		char *aux=(char *)start_word;
 		zs_string default_str_value="";
-		 bool error=false;
-//			 unsigned short instruction_properties=0;
 
 		 if((aux=parse_literal_number(
 				 eval_data
@@ -146,8 +142,6 @@ namespace zetscript{
 							);
 						}
 
-						ScriptType *sc=eval_data->script_type_factory->getScriptType(default_str_value);
-
 						if((local_symbol=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy
 
 							if(local_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
@@ -177,7 +171,7 @@ namespace zetscript{
 		token_node_symbol->eval_instructions.push_back((zs_int)(
 			new EvalInstruction(
 				byte_code
-				,IDX_ZS_UNDEFINED
+				, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 				,value
 			)
 		));

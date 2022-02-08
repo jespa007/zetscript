@@ -176,6 +176,7 @@ namespace zetscript{
 			,StackElement * stk_element
 
 	){
+		ZS_UNUSUED_3PARAMS(symbol_value, error, stk_element);
 		VM_SET_USER_ERRORF(vm,"addProperty is not implemented");
 		return NULL;
 	}

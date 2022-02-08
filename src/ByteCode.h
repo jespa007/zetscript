@@ -6,6 +6,8 @@
 #pragma once
 
 
+
+
 #define IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(byte_code) \
 (\
   ((byte_code)==ByteCode::BYTE_CODE_FIND_VARIABLE)\

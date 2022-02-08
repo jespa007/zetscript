@@ -27,10 +27,10 @@ namespace zetscript{
 		for(int i=idx_start; i < idx_end_instruction;i++){
 			Instruction *ins=&(((EvalInstruction *)eval_data->current_function->eval_instructions.items[i])->vm_instruction);//&eval_data->current_function->instructions[i]->vm_instruction;
 			if(ins->value_op1 == ZS_IDX_INSTRUCTION_JMP_BREAK){
-				ins->value_op1=IDX_ZS_UNDEFINED;
+				ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 				ins->value_op2=idx_end_instruction-i;
 			}else if(ins->value_op1 == ZS_IDX_INSTRUCTION_JMP_CONTINUE){
-				ins->value_op1=IDX_ZS_UNDEFINED;
+				ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 				if(idx_post_instruction_for_start != IDX_ZS_UNDEFINED){
 					ins->value_op2=idx_post_instruction_for_start-i;
 				}
@@ -42,6 +42,9 @@ namespace zetscript{
 	}
 
 	char *eval_keyword_break(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
+		ZS_UNUSUED_PARAM(scope_info);
+
+
 		char *aux_p = (char *)s;
 		Keyword key_w;
 
@@ -53,14 +56,9 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"break is only available on 'for', 'while' loops and switch");
 			}
 
-			int last_line_ok = line;
-
-			//EvalInstruction *jmp_instruction;
-
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// insert jmp instruction
-			//eval_new_loop_jmp_break(eval_data);
 			eval_data->current_function->eval_instructions.push_back((zs_int)(
 					new EvalInstruction(
 						BYTE_CODE_JMP,
@@ -73,6 +71,7 @@ namespace zetscript{
 	}
 
 	char *eval_keyword_continue(EvalData *eval_data,const char *s, int & line, Scope *scope_info){
+		ZS_UNUSUED_PARAM(scope_info);
 		char *aux_p = (char *)s;
 		Keyword key_w;
 
@@ -88,9 +87,6 @@ namespace zetscript{
 					, NULL
 				);
 			}
-
-			int last_line_ok = line;
-			//EvalInstruction *jmp_instruction;
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
@@ -180,7 +176,7 @@ namespace zetscript{
 			// insert jmp instruction to begin condition while...
 			eval_data->current_function->eval_instructions.push_back((zs_int)(new EvalInstruction(
 					BYTE_CODE_JMP
-					,IDX_ZS_UNDEFINED
+					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,-((int)(eval_data->current_function->eval_instructions.count)-idx_instruction_jmp_while)
 				)
 			));
@@ -272,8 +268,10 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'do-while': Expected '('");
 			}
 			// insert jmp instruction to begin condition while...
-			eval_data->current_function->eval_instructions.push_back((zs_int)(ei_aux=new EvalInstruction(BYTE_CODE_JT
-					,IDX_ZS_UNDEFINED
+			eval_data->current_function->eval_instructions.push_back((zs_int)(
+				ei_aux=new EvalInstruction(
+					BYTE_CODE_JT
+					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,-((int)(eval_data->current_function->eval_instructions.count)-idx_do_while_start)
 			)));
 
@@ -329,7 +327,7 @@ namespace zetscript{
 		// 1. var init ...
 		if(*aux_p != ';'){
 			// there's some var Init...
-			Keyword key_w = eval_is_keyword(aux_p);
+			key_w = eval_is_keyword(aux_p);
 			bool check_for_in=true;
 
 			if(key_w == KEYWORD_VAR){
@@ -386,7 +384,7 @@ namespace zetscript{
 				}
 
 				// copy per each variable detected...
-				for(int j=0; j<ei_init_vars_for.count;j++){
+				for(int j=0; j<(int)ei_init_vars_for.count;j++){
 					if(n_for_in_vars<MAX_FOR_IN_VARIABLES){
 						EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for.items[j];
 						if(ins->vm_instruction.byte_code == BYTE_CODE_RESET_STACK){
@@ -500,7 +498,7 @@ namespace zetscript{
 						};
 
 						ei_iterator.vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
-						ei_iterator.vm_instruction.value_op1=IDX_ZS_UNDEFINED;
+						ei_iterator.vm_instruction.value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 						ei_iterator.vm_instruction.value_op2=symbol_iterator->idx_position;
 						ei_iterator.symbol=*symbol_iterator;
 						ei_iterator.instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, symbol_iterator->name);
@@ -741,7 +739,7 @@ namespace zetscript{
 		eval_data->current_function->eval_instructions.push_back((zs_int)(
 				ei_jmp=new EvalInstruction(
 					BYTE_CODE_JMP
-					,IDX_ZS_UNDEFINED
+					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,-((int)(eval_data->current_function->eval_instructions.count)-idx_instruction_for_start)
 				)
 		));

@@ -78,7 +78,6 @@ namespace zetscript{
 	}
 
 	void ScopeFactory::saveState(){
-		Scope *main_scope= (Scope *)this->scopes->items[IDX_SCRIPT_SCOPE_MAIN];
 		idx_clear_checkpoint=scopes->count-1;
 
 

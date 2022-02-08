@@ -21,7 +21,10 @@
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
+	PRAGMA_PUSH\
+	PRAGMA_DISABLE_WARNING(4127)\
 	if(idx_type >= IDX_TYPE_MAX){\
+		PRAGMA_POP\
 		THROW_RUNTIME_ERROR("The class to register '%s' should be a built in class",ZS_STR(type_class));\
 		return;\
 	}\
@@ -465,8 +468,8 @@ namespace zetscript{
 
 						while(*it_setters!=0){
 							MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setters);
-							for(unsigned i=0; i < mp_info.setters->count;i++){
-								mp_dst->metamethod_members.addSetter(*it_setters,(ScriptFunction *)(((StackElement *)mp_info.setters->items[i])->value));
+							for(unsigned j=0; i < mp_info.setters->count;j++){
+								mp_dst->metamethod_members.addSetter(*it_setters,(ScriptFunction *)(((StackElement *)mp_info.setters->items[j])->value));
 
 							}
 							it_setters++;

@@ -25,9 +25,6 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 	var_type1.c_str());\
 	return NULL;
 
-
-
-
 #define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return, n_return,with_share)\
 	for(int i=0; i < n_return; i++){\
 		StackElement *stk_ret = stk_return+i;\
@@ -37,7 +34,10 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 				if(!vm_create_shared_pointer(vm,sv)){\
 					goto lbl_exit_function;\
 				}\
+				PRAGMA_PUSH\
+				PRAGMA_DISABLE_WARNING(4127)\
 				if(with_share==true){\
+					PRAGMA_POP\
 					if(!vm_share_pointer(vm,sv)){\
 						goto lbl_exit_function;\
 					}\
@@ -51,45 +51,45 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 
 #define VM_INNER_CALL(so,sf,name,reset,n_args,goto_on_error)\
 {\
-StackElement *stk_def_afun_start=data->stk_vm_current;\
-int n_returned_args_afun=0;\
-if(((ScriptFunction *)sf)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
-	vm_call_function_native(\
+	StackElement *stk_def_afun_start=data->stk_vm_current;\
+	int n_returned_args_afun=0;\
+	if(((ScriptFunction *)sf)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
+		vm_call_function_native(\
+				vm\
+				,so\
+				,((ScriptFunction *)sf)\
+				,calling_function\
+				,instruction\
+				,stk_def_afun_start\
+				,n_args\
+		);\
+	}else{\
+		vm_call_function_script(\
 			vm\
 			,so\
 			,((ScriptFunction *)sf)\
-			,calling_function\
-			,instruction\
 			,stk_def_afun_start\
 			,n_args\
-	);\
-}else{\
-	vm_call_function_script(\
-		vm\
-		,so\
-		,((ScriptFunction *)sf)\
-		,stk_def_afun_start\
-		,n_args\
-	);\
-}\
-if(data->vm_error == true){ \
-    data->vm_error_callstack_str+=zs_strutils::format(\
-        "\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */ \
-        , name \
-        ,SFI_GET_FILE(calling_function,instruction)\
-        ,SFI_GET_LINE(calling_function,instruction)\
-    );\
-    if(goto_on_error){\
-    	goto lbl_exit_function;\
-    }\
-}\
-n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;\
-/* we share pointer (true second arg) to not remove on pop in calling return */\
-CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) \
-/* reset stack */\
-if(reset){\
-	data->stk_vm_current=stk_def_afun_start; \
-}\
+		);\
+	}\
+	if(data->vm_error == true){ \
+		data->vm_error_callstack_str+=zs_strutils::format(\
+			"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */ \
+			, name \
+			,SFI_GET_FILE(calling_function,instruction)\
+			,SFI_GET_LINE(calling_function,instruction)\
+		);\
+		if(goto_on_error){\
+			goto lbl_exit_function;\
+		}\
+	}\
+	n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;\
+	/* we share pointer (true second arg) to not remove on pop in calling return */\
+	CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) \
+	/* reset stack */\
+	if(reset){\
+		data->stk_vm_current=stk_def_afun_start; \
+	}\
 }
 
 namespace zetscript{

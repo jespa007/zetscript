@@ -9,6 +9,8 @@
 #define ZS_IDX_INSTRUCTION_JMP_BREAK						(uint8_t)(-6)
 #define ZS_IDX_INSTRUCTION_JMP_CONTINUE						(uint8_t)(-7)
 
+#define ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED					(uint8_t)(IDX_ZS_UNDEFINED)
+
 
 #define INSTRUCTION_IS_STRING(ins)							((ins)->byte_code==BYTE_CODE_LOAD_STRING || ((ins)->properties & INSTRUCTION_PROPERTY_STRING))
 #define INSTRUCTION_IS_ZS_INT(ins)							((ins)->byte_code==BYTE_CODE_LOAD_ZS_INT || ((ins)->properties & INSTRUCTION_PROPERTY_ZS_INT))

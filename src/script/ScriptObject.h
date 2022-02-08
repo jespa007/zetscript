@@ -30,7 +30,7 @@ namespace zetscript{
 	}InfoSharedList;
 
 
-	struct MemberProperty;
+	class MemberProperty;
 	struct StackMemberProperty{
 	public:
 		MemberProperty 		*member_property; // make function pointer first to make compatible with stk

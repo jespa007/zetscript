@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	size_t zs_string::npos=-1;
+	size_t zs_string::npos=(size_t)(-1);
 
 
 	zs_string::zs_string() : buf(NULL), size(0) // default constructor
@@ -204,7 +204,8 @@ namespace zetscript{
 
 	}
 
-	zs_string zs_string::replace(size_t _pos, size_t _len, const zs_string & to_replace){
+	zs_string zs_string::replace(size_t _pos, size_t _len, const zs_string & _to_replace){
+		ZS_UNUSUED_3PARAMS(_pos, _len, _to_replace);
 		zs_string str;
 
 		return str;
@@ -232,9 +233,7 @@ namespace zetscript{
 		buf=new_buf;
 		size=new_size;
 
-
 	}
-
 
 	void zs_string::erase(size_t _pos, size_t _len){
 

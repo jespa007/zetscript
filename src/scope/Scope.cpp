@@ -80,7 +80,7 @@ namespace zetscript{
 		if(_sc->idx_script_function==idx_script_function_reference){ // only count variables in the scope of the function
 			n_total=_sc->symbol_variables->count;
 
-			for(int i=0; i < _sc->scopes->count; i++){
+			for(unsigned i=0; i < _sc->scopes->count; i++){
 				n_total+=Scope::countVariablesRecursive((Scope *)_sc->scopes->items[i],idx_script_function_reference);
 			}
 		}
@@ -191,11 +191,9 @@ namespace zetscript{
 
 	Symbol * Scope::getSymbol(const zs_string & str_symbol, char n_params, uint16_t scope_direction){
 
-		Symbol *sv=NULL;
-
 		// for each variable in current scope ...
 		for(unsigned i = 0; i < symbol_types->count; i++){
-			sv=(Symbol *)symbol_types->items[i];
+			Symbol *sv=(Symbol *)symbol_types->items[i];
 			if(
 				   ( sv->name == str_symbol )
 			){
@@ -204,7 +202,7 @@ namespace zetscript{
 		}
 
 		for(unsigned i = 0; i < symbol_variables->count; i++){
-			sv=(Symbol *)symbol_variables->items[i];
+			Symbol *sv=(Symbol *)symbol_variables->items[i];
 			if(
 				   ( sv->name == str_symbol )
 			){
@@ -213,7 +211,7 @@ namespace zetscript{
 		}
 
 		for(unsigned i = 0; i < symbol_functions->count; i++){
-			sv=(Symbol *)symbol_functions->items[i];
+			Symbol *sv=(Symbol *)symbol_functions->items[i];
 			if(
 				   ( sv->name == str_symbol )
 			   &&  ( sv->n_params == n_params || n_params==NO_PARAMS_SYMBOL_ONLY )

@@ -16,7 +16,7 @@ namespace zetscript{
 		zs_string error;
 
 			// register variable...
-		Symbol *symbol=this->registerNativeMemberVariable(
+		this->registerNativeMemberVariable(
 				var_name
 				,var_type
 				,(zs_int)var_pointer
@@ -113,11 +113,12 @@ namespace zetscript{
 		}
 
 		if(c_class_first_arg->type_name_ptr !=  this->type_name_ptr){
-			THROW_RUNTIME_ERROR("register native member function '%s::%s': expected to have FIRST parameter as pointer type '%s' but it was '%s')"
+			THROW_RUNTIME_ERROR(
+				"register native member function '%s::%s': expected to have FIRST parameter as pointer type '%s' but it was '%s')"
 				,function_class_name.c_str()
 				,this->type_name_ptr
 				,this->type_name_ptr
-				,params[0].name
+				,params[0].name.c_str()
 			);
 		}
 

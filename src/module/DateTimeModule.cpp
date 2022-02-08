@@ -11,7 +11,8 @@ namespace zetscript{
 		return new zs_datetime();
 	}
 
-	zs_datetime * 			DateTimeModule_add(zs_datetime *dt1,zs_datetime *dt2){
+	/*zs_datetime * 			DateTimeModule_add(zs_datetime *dt1,zs_datetime *dt2){
+
 		zs_datetime *dt=new zs_datetime;
 		//*dt=*dt1->+*dt2;
 		return dt;
@@ -21,7 +22,7 @@ namespace zetscript{
 		zs_datetime *dt=new zs_datetime;
 		//*dt=*dt1-*dt2;
 		return dt;
-	}
+	}*/
 
 	void 					DateTimeModule_setUtc(zs_datetime *_this){
 		_this->set_utc();

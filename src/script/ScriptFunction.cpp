@@ -18,7 +18,6 @@ namespace zetscript{
 
 	ScriptFunction::ScriptFunction(
 			ZetScript * _zs
-			,Scope *_scope_function
 			,int _idx_script_function
 			,int _idx_type
 			,int _idx_position
@@ -29,6 +28,7 @@ namespace zetscript{
 			, zs_int _ref_native_function_ptr
 			,uint16_t _properties
 		) {
+
 		// function data...
 		idx_type=_idx_type;
 		function_name=_function_name;
@@ -37,7 +37,7 @@ namespace zetscript{
 		idx_return_type = _idx_return_type;
 		ref_native_function_ptr=_ref_native_function_ptr;
 		properties = _properties;
-
+		function_scope = NULL;
 		instructions=NULL;
 		instructions_len = 0;
 
@@ -476,28 +476,28 @@ namespace zetscript{
 	}
 
 	Symbol * ScriptFunction::registerLocalArgument(
-			 Scope * scope_block
-			, const char *file
-			, short line
-			, const zs_string & symbol_name
-			, uint16_t properties
+			 Scope * _scope_block
+			, const char *_file
+			, short _line
+			, const zs_string & _symbol_name
+			, uint16_t _properties
 	){
 		Symbol * symbol=NULL;
-		short idx_position=(short)local_variables->count;
+		short idx_position_aux=(short)local_variables->count;
 		StackElement *se=NULL;
 
 
-		if((symbol=scope_block->registerSymbolVariable(
-				file
-				,line
-				, symbol_name
+		if((symbol=_scope_block->registerSymbolVariable(
+				_file
+				,_line
+				, _symbol_name
 				, REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL
 		))==NULL){
 				return NULL;
 		}
 
-		symbol->properties=properties;
-		symbol->idx_position = idx_position;
+		symbol->properties=_properties;
+		symbol->idx_position = idx_position_aux;
 
 		local_variables->push_back((zs_int)symbol);
 
@@ -505,29 +505,29 @@ namespace zetscript{
 	}
 
 	Symbol * ScriptFunction::registerLocalVariable(
-			 Scope * scope_block
-			, const char * file
-			, short line
-			, const zs_string & symbol_name
-			, const zs_string & str_native_type
-			, zs_int ref_ptr
-			, unsigned short properties
+			 Scope * _scope_block
+			, const char * _file
+			, short _line
+			, const zs_string & _symbol_name
+			, const zs_string & _str_native_type
+			, zs_int _ref_ptr
+			, unsigned short _properties
 	){
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
 
 		Symbol * symbol=NULL;
-		short idx_position=(short)local_variables->count;
+		short idx_position_aux=(short)local_variables->count;
 		StackElement *se=NULL;
 
-		if((symbol=scope_block->registerSymbolVariable(file,line, symbol_name ))==NULL){
+		if((symbol=_scope_block->registerSymbolVariable(_file,_line, _symbol_name ))==NULL){
 				return NULL;
 		}
 
-		symbol->ref_ptr =ref_ptr;
+		symbol->ref_ptr =_ref_ptr;
 		//scope_symbol->symbol=scope_symbol;
-		symbol->str_native_type = str_native_type;
-		symbol->properties = properties;
-		symbol->idx_position = idx_position;
+		symbol->str_native_type = _str_native_type;
+		symbol->properties = _properties;
+		symbol->idx_position = idx_position_aux;
 
 		local_variables->push_back((zs_int)symbol);
 

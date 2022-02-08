@@ -126,7 +126,6 @@ namespace zetscript{
 
 			//------------------------------------------
 			// 1st CREATE NODE AND ADD AT THE END OF LIST
-			zs_map_node *first_node = this->first;
 			node = (zs_map_node *)ZS_MALLOC(sizeof(zs_map_node));
 
 			if(first == NULL){ /*one  node: trivial ?*/

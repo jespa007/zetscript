@@ -4,6 +4,15 @@
  */
 #pragma once
 
+#ifdef _MSC_VER
+	#define PRAGMA_PUSH					__pragma(warning(push))
+	#define PRAGMA_DISABLE_WARNING(W)	__pragma(warning(disable:W))
+	#define PRAGMA_POP  				__pragma(warning(pop))
+#else
+	#define PRAGMA_PUSH
+	#define PRAGMA_DISABLE_WARNING(w)
+	#define PRAGMA_POP
+#endif
 
 #ifdef __DEBUG__ // incoment __ZETSCRIPT_VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
 //#define __ZETSCRIPT_VERBOSE_MESSAGE__

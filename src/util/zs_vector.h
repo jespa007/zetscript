@@ -27,7 +27,7 @@ namespace zetscript{
 		 */
 		bool 		push_back( zs_int e);
 		void 		concat(zs_vector  * list);
-		void 		insert(uint16_t  idx,zs_vector  * list, size_t n_list_elements_to_copy=npos);
+		void 		insert(uint16_t  idx,zs_vector  * list, uint16_t n_list_elements_to_copy=npos);
 		/**
 		 * Insert item at position idx.
 		 */
@@ -35,7 +35,7 @@ namespace zetscript{
 
 		void 		clear();
 		zs_int    	pop_back();
-		void    	resize(size_t n);
+		void    	resize(uint16_t n);
 
 		//void		free_all_items_and_clear();
 		/**
@@ -44,8 +44,8 @@ namespace zetscript{
 		~zs_vector();
 	private:
 		//private
-		unsigned int _size; // size vector (user count for iterate through items)
-		bool	push_back_slot();
+		uint16_t	_size; // size vector (user count for iterate through items)
+		bool		push_back_slot();
 
 	};
 

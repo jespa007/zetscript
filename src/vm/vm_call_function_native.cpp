@@ -69,7 +69,6 @@ namespace zetscript{
 		StackElement *stk_arg_current;
 		data->current_call_c_function = c_function;
 		int this_param=0;
-		zs_int param_this_object=0;
 		int idx_arg_start=0;
 
 
@@ -240,7 +239,7 @@ namespace zetscript{
 				break;
 			}
 		}else if(c_function->idx_return_type==IDX_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
-			zs_float float_aux;
+			zs_float float_aux=0;
 			switch(n_args){
 			case 0:
 				float_aux=PTR_FUNCTION_RET_FLOAT_PARAM0(fun_ptr)();

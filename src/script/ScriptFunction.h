@@ -58,7 +58,6 @@ namespace zetscript{
 
 		ScriptFunction(
 				ZetScript *_zs
-				, Scope *_scope_function
 				,int _idx_script_function
 				,int _idx_type
 				,int _idx_position

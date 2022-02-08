@@ -31,10 +31,6 @@ namespace zetscript{
 
 		if(key_w == Keyword::KEYWORD_CLASS){
 
-			char *test_attrib_s=NULL;
-			int  test_attrib_line=-1;
-
-
 			if(scope_info->scope_parent!=NULL){
 				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"class keyword is not allowed");
 			}
@@ -215,7 +211,6 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		zs_string symbol_value;
 		Keyword key_w;
-		Symbol *symbol_found=NULL;
 		EvalInstruction *eval_instruction;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -280,9 +275,9 @@ namespace zetscript{
 		){
 
 		char *aux_p = (char *)s;
-		char *end_var = NULL;
 		zs_string property_name="";
 		int attrib_start_line;
+		char *end_var = NULL;
 		zs_string class_property_name=sc->type_name;
 		Scope *scope_info=sc->class_scope;
 
@@ -310,7 +305,7 @@ namespace zetscript{
 			Symbol *symbol=NULL;
 			Symbol *symbol_attrib=NULL;
 			MemberProperty *mp=NULL;
-			char *end_var;
+			
 			zs_string function_name;
 			zs_string error;
 
