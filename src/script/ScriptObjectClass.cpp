@@ -55,7 +55,7 @@ namespace zetscript{
 		zs_vector *member_vars=script_type->class_scope->symbol_variables;
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
-		for ( unsigned i = 0; i < member_vars->count; i++){
+		for ( int i = 0; i < member_vars->count; i++){
 
 			Symbol * symbol = (Symbol *)member_vars->items[i];
 

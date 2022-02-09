@@ -165,7 +165,7 @@ namespace zetscript{
 			,const zs_string & _function_name
 			,F _ptr_function
 			,ScriptFunctionParam **_params
-			,char *_params_len
+			,int *_params_len
 			, const char **_str_return_type=NULL
 	){
 		int idx_return_type=-1;
@@ -189,9 +189,9 @@ namespace zetscript{
 
 		if(_params != NULL){
 			*_params=new ScriptFunctionParam[args.count];
-			*_params_len=(char)args.count;
+			*_params_len=args.count;
 
-			for(unsigned int i = 0; i < args.count; i++){
+			for(int i = 0; i < args.count; i++){
 				const char *param=(const char *)args.items[i];
 				int idx_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
 				// exception: These variables are registered but not allowed to pass throught parameter

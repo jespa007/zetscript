@@ -372,14 +372,14 @@ namespace zetscript{
 	}
 
 	bool eval_all_local_variables_in_scopes_already_sorted(Scope  *current_scope,  int & idx_local_variable){
-		for(unsigned i=0; i < current_scope->symbol_variables->count; i++){
+		for(int i=0; i < current_scope->symbol_variables->count; i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->items[i];
 			if(s->idx_position!=idx_local_variable++){
 				return false;
 			}
 		}
 
-		for(unsigned i=0; i < current_scope->scopes->count; i++){
+		for(int i=0; i < current_scope->scopes->count; i++){
 			Scope *scope=(Scope *)current_scope->scopes->items[i];
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				bool ok=eval_all_local_variables_in_scopes_already_sorted(scope,idx_local_variable);
@@ -394,13 +394,13 @@ namespace zetscript{
 	}
 
 	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable,zs_vector *order_local_vars){
-		for(unsigned i=0; i < current_scope->symbol_variables->count; i++){
+		for(int i=0; i < current_scope->symbol_variables->count; i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->items[i];
 			lookup_table[s->idx_position]=n_variable++;
 			order_local_vars->push_back(s->idx_position);
 		}
 
-		for(unsigned i=0; i < current_scope->scopes->count; i++){
+		for(int i=0; i < current_scope->scopes->count; i++){
 			Scope *scope=(Scope *)current_scope->scopes->items[i];
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				eval_fill_lookup_local_variable(scope,lookup_table,n_variable,order_local_vars);
@@ -605,7 +605,7 @@ namespace zetscript{
 			// update variables symbol...
 			zs_vector *local_vars_dst=new zs_vector();
 
-			for(unsigned i=0; i < sf->local_variables->count; i++){
+			for(int i=0; i < sf->local_variables->count; i++){
 				int idx_var=order_local_vars.items[i];
 				Symbol *s=(Symbol *)sf->local_variables->items[idx_var];
 				s->idx_position=lookup_sorted_table_local_variables[idx_var];

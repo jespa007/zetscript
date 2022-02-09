@@ -77,7 +77,7 @@
 
 namespace zetscript{
 
-	typedef enum:unsigned char{
+	typedef enum:uint8_t{
 
 		// ARITMETHIC OPERATORS.
 		BYTE_CODE_END_FUNCTION = 0,

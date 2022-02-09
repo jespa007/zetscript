@@ -61,7 +61,7 @@ namespace zetscript{
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
 		ZetScript *zs=sv->getZetScript();
 
-		for(unsigned i=0; i < stk_user_list_elements->count;i++){
+		for(int i=0; i < stk_user_list_elements->count;i++){
 			StackElement *stk=(StackElement *)stk_user_list_elements->items[i];
 			if(i>0){
 				ptr_str->append((char)idx);
@@ -81,7 +81,7 @@ namespace zetscript{
 		ZetScript *zs=sv->getZetScript();
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
 
-		for(unsigned i=0; i < stk_user_list_elements->count && found == false;i++){
+		for(int i=0; i < stk_user_list_elements->count && found == false;i++){
 			StackElement *stk_element=(StackElement *)stk_user_list_elements->items[i];
 			switch(stk_to_compare->properties & stk_element->properties){ // match element
 			case STK_PROPERTY_BOOL:
@@ -117,7 +117,7 @@ namespace zetscript{
 			return false;
 		}
 
-		for(unsigned i=0; i < stk_user_list_elements_s1->count && equal == true;i++){
+		for(int i=0; i < stk_user_list_elements_s1->count && equal == true;i++){
 			StackElement *stk_element_s1=(StackElement *)stk_user_list_elements_s1->items[i];
 			StackElement *stk_element_s2=(StackElement *)stk_user_list_elements_s2->items[i];
 

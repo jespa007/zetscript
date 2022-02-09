@@ -567,7 +567,7 @@ namespace zetscript{
 					str_candidates.append("(");
 
 
-					for(unsigned a = 0; a < irfs->params_len; a++){
+					for(int a = 0; a < irfs->params_len; a++){
 						if(a>0){
 							str_candidates.append(",");
 						}

@@ -39,13 +39,13 @@ namespace zetscript{
 		uint16_t			properties;
 
 		//Symbol 	  			symbol;	 			// function registered by scope
-		short 				idx_script_function;	// idx_script_function from factory
+		int 				idx_script_function;	// idx_script_function from factory
 		int					idx_type; 				// which class belongs to...
-		int					idx_position;			// idx position in array
+		size_t				idx_position;			// idx position in array
 		int 				idx_return_type; 		// idx return type
 		zs_int 				ref_native_function_ptr;
 		ScriptFunctionParam	*params;
-		size_t 				params_len;
+		int 				params_len;
 		int					min_stack_needed;
 
 		PtrInstruction  instructions; // The set of byte code instructions that executes the function
@@ -63,7 +63,7 @@ namespace zetscript{
 				,int _idx_position
 				,const zs_string & function_name
 				, ScriptFunctionParam **_params
-				,size_t _params_len
+				,int _params_len
 				,int  idx_return_type
 				, zs_int _ref_native_function_ptr
 				, uint16_t _properties

@@ -20,7 +20,7 @@ namespace zetscript{
 	}*/
 
 	void eval_deallocate_tokens(zs_vector 	& token_nodes){
-		for(unsigned i=0; i < token_nodes.count; i++){
+		for(int i=0; i < token_nodes.count; i++){
 			delete (TokenNode *)token_nodes.items[i];
 		}
 
@@ -199,11 +199,11 @@ namespace zetscript{
 
 eval_error_sub_expression:
 
-		for(unsigned kk=0;kk<token_nodes.count;kk++){
+		for(int kk=0;kk<token_nodes.count;kk++){
 			TokenNode *node=(TokenNode *)token_nodes.items[kk];
 			if(node->are_instructions_moved == false){ // it means that instructions was not saved in instructions vector yet
 
-				for(unsigned jj=0;jj<node->eval_instructions.count;jj++){
+				for(int jj=0;jj<node->eval_instructions.count;jj++){
 					delete (EvalInstruction *)node->eval_instructions.items[jj];
 				}
 			}
@@ -217,7 +217,7 @@ eval_error_sub_expression:
 
 	bool eval_check_all_instruction_only_load_op(zs_vector * eval_instructions){
 		// is load or find variable
-		for(unsigned i=0;i < eval_instructions->count; i++){
+		for(int i=0;i < eval_instructions->count; i++){
 			Instruction *ei=&((EvalInstruction *)eval_instructions->items[i])->vm_instruction;
 			if(((byte_code_is_load_var_type(ei->byte_code) || ei->byte_code == BYTE_CODE_FIND_VARIABLE))==false){
 				return false;
@@ -334,7 +334,7 @@ eval_error_sub_expression:
 			}while(aux_p != NULL && *aux_p != 0 && (*aux_p==',' || *aux_p=='=') );
 
 			if(zs_ei_right_sub_expressions.count==1 && unique_call_instruction.count > 0){ // assign maximum return for this calls
-				for(unsigned i=0; i < unique_call_instruction.count; i++){
+				for(int i=0; i < unique_call_instruction.count; i++){
 					EvalInstruction *ei_call=(EvalInstruction *)unique_call_instruction.items[i];
 					INSTRUCTION_SET_RETURN_COUNT(&ei_call->vm_instruction,zs_ei_left_sub_expressions.count);
 				}
@@ -405,7 +405,7 @@ eval_error_sub_expression:
 
 		}else{ // there's no assignment on the left --> make a reset stack in the end and write all instructions
 
-			for(unsigned it=0;it<zs_ei_left_sub_expressions.count;it++){
+			for(int it=0;it<zs_ei_left_sub_expressions.count;it++){
 				zs_vector *left_instructions=(zs_vector *)zs_ei_left_sub_expressions.items[it];
 
 				if(left_instructions->count>0){
@@ -442,11 +442,11 @@ eval_error_sub_expression:
 		}
 
 		// erase all vectors ...
-		for(unsigned it=0; it<zs_ei_left_sub_expressions.count; it++){
+		for(int it=0; it<zs_ei_left_sub_expressions.count; it++){
 			delete (zs_vector *)zs_ei_left_sub_expressions.items[it];
 		}
 
-		for(unsigned it=0; it<zs_ei_right_sub_expressions.count; it++){
+		for(int it=0; it<zs_ei_right_sub_expressions.count; it++){
 			delete (zs_vector *)zs_ei_right_sub_expressions.items[it];
 		}
 
@@ -456,9 +456,9 @@ eval_error_sub_expression:
 eval_error_expression_delete_left_right_sub_expressions:
 
 		// we delete all instructions for left
-		for(unsigned le=0; le<zs_ei_left_sub_expressions.count; le++){ // delete left expressions and vectors
+		for(int le=0; le<zs_ei_left_sub_expressions.count; le++){ // delete left expressions and vectors
 			zs_vector *ie_left_sub_expression=(zs_vector *)zs_ei_left_sub_expressions.items[le];
-			for(unsigned e=0 //delete expressions
+			for(int e=0 //delete expressions
 					; e<ie_left_sub_expression->count
 					; e++){
 				EvalInstruction *ei=(EvalInstruction *)ie_left_sub_expression->items[e];
@@ -468,9 +468,9 @@ eval_error_expression_delete_left_right_sub_expressions:
 			delete ie_left_sub_expression;
 		}
 
-		for(unsigned re=0; re<zs_ei_right_sub_expressions.count; re++){ // delete right expressions and vectors
+		for(int re=0; re<zs_ei_right_sub_expressions.count; re++){ // delete right expressions and vectors
 			zs_vector *ie_right_sub_expression=(zs_vector *)zs_ei_right_sub_expressions.items[re];
-			for(unsigned e=0 //delete expressions
+			for(int e=0 //delete expressions
 					; e!=ie_right_sub_expression->count
 					; e++){
 					delete (EvalInstruction *)ie_right_sub_expression->items[e];

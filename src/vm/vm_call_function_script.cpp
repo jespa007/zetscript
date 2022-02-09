@@ -34,15 +34,13 @@ namespace zetscript{
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
 		StackElement stk_aux;
-		stk_aux.properties=0;
-		stk_aux.value=0;
 		StackElement *stk_var=NULL;
 		StackElement stk_var_copy;
 		const char *str_symbol=NULL;
 		//------------------------------------------------
 		// STORE
 		zs_vector 		*		store_lst_setter_functions=NULL;
-		char 					n_element_left_to_store=0;
+		int 					n_element_left_to_store=0;
 		StackMemberProperty *	stk_mp_aux=NULL;
 		MetamethodMembers *		ptr_metamethod_members_aux=NULL;
 		void			*		ptr_ptr_void_ref=NULL;
@@ -51,11 +49,11 @@ namespace zetscript{
 		// SFCALL
 		StackElement	*sf_call_stk_function_ref=NULL;
 		ScriptFunction 	*sf_call_script_function = NULL,*sf_setter_function_found=NULL;
-		unsigned char 	 sf_call_n_args=0; // number arguments will pass to this function
+		int			 	 sf_call_n_args=0; // number arguments will pass to this function
 		StackElement 	*sf_call_stk_start_arg_call=NULL;
 		ScriptObject 	*sf_call_calling_object = NULL;
 		bool			 sf_call_is_constructor=false;
-		uint16_t 		 sf_call_n_local_symbols=0;
+		int 		 	sf_call_n_local_symbols=0;
 		bool 			 sf_call_is_member_function=false;
 		StackElement 	*sf_call_stk_return=NULL;
 		int 			sf_call_n_returned_arguments_from_function=0;
@@ -1069,7 +1067,7 @@ execute_function:
 					// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 					// will be ignored always.
 
-					for(unsigned h = sf_call_n_args; h < sf_call_script_function->params_len; ++h){
+					for(int h = sf_call_n_args; h < sf_call_script_function->params_len; ++h){
 						ScriptFunctionParam *param=sf_call_script_function->params+h;
 
 						switch(param->default_param_value.properties){

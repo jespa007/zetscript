@@ -233,7 +233,7 @@ namespace zetscript{
 		 ScriptFunction::printGeneratedCode(sf_main);
 
 		 // print defined functions in main function
-		 for(unsigned j =0; j < symbol_functions->count; j++){
+		 for(int j =0; j < symbol_functions->count; j++){
 			Symbol *symbol=(Symbol *)symbol_functions->items[j];
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
@@ -254,7 +254,7 @@ namespace zetscript{
 			}
 		}
 
-		 for(unsigned i = 1; i < script_classes->count; i++){
+		 for(int i = 1; i < script_classes->count; i++){
 			 ScriptType *sc=(ScriptType *)script_classes->get(i);
 			 bool show_class=true;
 
@@ -276,7 +276,7 @@ namespace zetscript{
 
 			 if(show_class){
 				 symbol_functions=sc->class_scope->symbol_functions;
-				 for(unsigned f = 0; f < symbol_functions->count; f++){
+				 for(int f = 0; f < symbol_functions->count; f++){
 					 bool show_function=true;
 					 Symbol *symbol=(Symbol *)symbol_functions->items[f];
 
@@ -292,7 +292,7 @@ namespace zetscript{
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // FILE MANAGEMENT
 	bool ZetScript::isFilenameAlreadyParsed(const zs_string & filename){
-		for(unsigned i = 0; i < parsed_files.count; i++){
+		for(int i = 0; i < parsed_files.count; i++){
 			if(((ParsedFile *)parsed_files.items[i])->filename==filename){
 				return true;
 			}
@@ -519,7 +519,7 @@ namespace zetscript{
 
 
 	void ZetScript::resetParsedFiles(){
-		for(unsigned i=0;i<parsed_files.count;i++){
+		for(int i=0;i<parsed_files.count;i++){
 			delete ((ParsedFile *)parsed_files.items[i]);
 		}
 		parsed_files.clear();
@@ -546,7 +546,7 @@ namespace zetscript{
 	}
 
 	bool ZetScript::getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf){
-		for(unsigned i=0;i < functions_with_unresolved_symbols.count; i++){
+		for(int i=0;i < functions_with_unresolved_symbols.count; i++){
 			if(functions_with_unresolved_symbols.items[i]==(zs_int)_sf){
 				return true;
 			}
@@ -564,7 +564,7 @@ namespace zetscript{
 	}
 
 	void ZetScript::link(){
-		unsigned i=0;
+		int i=0;
 		while(i<functions_with_unresolved_symbols.count){
 			ScriptFunction *_sf=(ScriptFunction *)functions_with_unresolved_symbols.items[i];
 			if(_sf->linkUnresolvedSymbols()){ // if link all symbols, erase

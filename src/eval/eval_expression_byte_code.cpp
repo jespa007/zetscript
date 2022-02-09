@@ -120,7 +120,7 @@ namespace zetscript{
 	}
 
 	void eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_vector & zs_ei_assign_loader_instructions_post_expression){
-		for(unsigned i=0; i<zs_ei_assign_loader_instructions_post_expression.count; i++ ){
+		for(int i=0; i<zs_ei_assign_loader_instructions_post_expression.count; i++ ){
 			delete (zs_vector *)zs_ei_assign_loader_instructions_post_expression.items[i];
 		}
 		zs_ei_assign_loader_instructions_post_expression.clear();
@@ -182,7 +182,7 @@ namespace zetscript{
 
 
 			// assign operators: add instructions related about its accessors...
-			for(unsigned j=0;j<token_node_symbol->eval_instructions.count;j++){
+			for(int j=0;j<token_node_symbol->eval_instructions.count;j++){
 				EvalInstruction *ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
 				if(INSTRUCTION_IS_BYTE_CODE_CALL(&ei_load_assign_instruction->vm_instruction)){
 					EVAL_ERROR_FILE_LINE_AND_GOTOF(
@@ -350,7 +350,7 @@ namespace zetscript{
 eval_error_byte_code:
 
 		// only delete the new ones
-		for(unsigned i=0; i < ei_assign_store_instruction_post_expression.count; i++){
+		for(int i=0; i < ei_assign_store_instruction_post_expression.count; i++){
 			delete (EvalInstruction *)ei_assign_store_instruction_post_expression.items[i];
 		}
 

@@ -28,8 +28,8 @@ namespace zetscript{
 
 		ScriptObjectVector();
 
-		virtual StackElement * 	getUserElementAt(short idx);
-		bool 				eraseUserElementAt(short idx);
+		virtual StackElement * 	getUserElementAt(int idx);
+		bool 				eraseUserElementAt(int idx);
 		void				eraseAllUserElements();
 
 		virtual size_t length();

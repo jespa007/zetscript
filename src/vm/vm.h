@@ -72,7 +72,7 @@ namespace zetscript{
 	//StackElement * 	vm_get_top_stack_element_from_stack(VirtualMachine *vm);
 	StackElement *	vm_get_stack_elements(VirtualMachine *vm);
 	StackElement *	vm_get_current_stack_element(VirtualMachine *vm);
-	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,unsigned int idx_glb_element);
+	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
 	StackElement vm_execute(
 		VirtualMachine 	*	_vm
 		,ScriptObject 	*	_this_object

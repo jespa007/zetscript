@@ -11,31 +11,31 @@ namespace zetscript{
 	class zs_vector{
 	public:
 
-		static size_t npos;
+		static int npos;
 		//public
 		zs_int* items;
-		uint16_t count; //number of items
+		int count; //number of items
 
 		//ZPList  	*	ZPList_New(void);
 		zs_vector();
 
-		void 		set( uint16_t  idx, zs_int e);
-		zs_int		get( uint16_t  idx);
-		void 		erase( uint16_t  idx);
+		void 		set( int  idx, zs_int e);
+		zs_int		get( int  idx);
+		void 		erase( int  idx);
 		/**
 		 * Insert item at the end
 		 */
 		bool 		push_back( zs_int e);
 		void 		concat(zs_vector  * list);
-		void 		insert(uint16_t  idx,zs_vector  * list, uint16_t n_list_elements_to_copy=npos);
+		void 		insert(int  idx,zs_vector  * list, int n_list_elements_to_copy=npos);
 		/**
 		 * Insert item at position idx.
 		 */
-		void 		insert(uint16_t  idx, zs_int e);
+		void 		insert(int  idx, zs_int e);
 
 		void 		clear();
 		zs_int    	pop_back();
-		void    	resize(uint16_t n);
+		void    	resize(int n);
 
 		//void		free_all_items_and_clear();
 		/**
@@ -44,7 +44,7 @@ namespace zetscript{
 		~zs_vector();
 	private:
 		//private
-		uint16_t	_size; // size vector (user count for iterate through items)
+		int			_size; // size vector (user count for iterate through items)
 		bool		push_back_slot();
 
 	};

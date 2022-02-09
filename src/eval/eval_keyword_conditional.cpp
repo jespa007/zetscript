@@ -131,7 +131,7 @@ namespace zetscript{
 				}
 			}while(!end); // loop
 
-			for(unsigned i=0; i < ei_else_end_jmp.count; i++){
+			for(int i=0; i < ei_else_end_jmp.count; i++){
 				Instruction *ins=&((EvalInstruction *)ei_else_end_jmp.items[i])->vm_instruction;
 				ins->value_op2=eval_data->current_function->eval_instructions.count-ins->value_op2;
 			}
@@ -144,16 +144,16 @@ namespace zetscript{
 	void eval_switch_deallocate(zs_vector & ei_switch_condition,zs_vector & _eic_cases,EvalInstruction **_ei_jmp_default){
 
 		// deallocate condition
-		for(unsigned i=0; i < ei_switch_condition.count; i++){
+		for(int i=0; i < ei_switch_condition.count; i++){
 			delete (EvalInstruction *)ei_switch_condition.items[i];
 		}
 		ei_switch_condition.clear();
 
 		// deallocate all cases
-		for(unsigned i=0; i < _eic_cases.count; i++){
+		for(int i=0; i < _eic_cases.count; i++){
 			delete ((EvalInstructionCase *)_eic_cases.items[i])->ei_je_instruction;
 			EvalInstructionCase * eic_current=((EvalInstructionCase *)_eic_cases.items[i]);
-			for(unsigned j=0; j < eic_current->ei_load_symbols.count; j++){
+			for(int j=0; j < eic_current->ei_load_symbols.count; j++){
 				delete (EvalInstruction *)(eic_current->ei_load_symbols.items[j]);
 			}
 			delete eic_current;
@@ -380,7 +380,7 @@ namespace zetscript{
 				);
 
 				// 2. insert all cases found first from start + offset size instruction cases found
-				for(unsigned i=0; i < eic_cases.count; i++){
+				for(int i=0; i < eic_cases.count; i++){
 					EvalInstructionCase *eic_case=(EvalInstructionCase *) eic_cases.items[i];
 					Instruction *ins=&eic_case->ei_je_instruction->vm_instruction; // load je
 
@@ -409,7 +409,7 @@ namespace zetscript{
 				);
 
 				offset_end_instruction=eval_data->current_function->eval_instructions.count;
-				for(unsigned i=idx_start_instruction; i < eval_data->current_function->eval_instructions.count;i++){
+				for(int i=idx_start_instruction; i < eval_data->current_function->eval_instructions.count;i++){
 					Instruction *ins=&((EvalInstruction *)eval_data->current_function->eval_instructions.items[i])->vm_instruction;
 					if(ins->value_op1==ZS_IDX_INSTRUCTION_JMP_BREAK){
 						ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
@@ -418,7 +418,7 @@ namespace zetscript{
 				}
 
 				// deallocate all cases
-				for(unsigned i=0; i < eic_cases.count; i++){
+				for(int i=0; i < eic_cases.count; i++){
 					EvalInstructionCase * eic_current=((EvalInstructionCase *)eic_cases.items[i]);
 					if(eic_current != NULL){
 						delete eic_current;

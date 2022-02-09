@@ -388,7 +388,7 @@ namespace zetscript{
 					if(n_for_in_vars<MAX_FOR_IN_VARIABLES){
 						EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for.items[j];
 						if(ins->vm_instruction.byte_code == BYTE_CODE_RESET_STACK){
-							if(j < (ei_init_vars_for.count-1)){ // is not last variable
+							if(j < ((int)ei_init_vars_for.count-1)){ // is not last variable
 								n_for_in_vars++;
 							}
 						}else{
@@ -470,7 +470,7 @@ namespace zetscript{
 							return NULL;
 						}
 
-						for(unsigned j=0; j<ei_load_container_identifier.count;j++){
+						for(int j=0; j<ei_load_container_identifier.count;j++){
 							ei_load_container_identifier_st.push_back((zs_int)(
 									ei_load_container_identifier.items[j]
 							));
@@ -505,7 +505,7 @@ namespace zetscript{
 
 
 						// 2. emit iterator init
-						for(unsigned i=0; i < ei_load_container_identifier_st.count; i++){
+						for(int i=0; i < ei_load_container_identifier_st.count; i++){
 							eval_data->current_function->eval_instructions.push_back((zs_int)(
 								new EvalInstruction(*((EvalInstruction *)ei_load_container_identifier_st.items[i]))
 							));
@@ -584,7 +584,7 @@ namespace zetscript{
 
 						// load k,v
 						for(int i=n_for_in_vars-1; i >=0 ;i--){
-							for(unsigned j=0; j<ei_init_vars_for_st[i].count;j++){
+							for(int j=0; j<ei_init_vars_for_st[i].count;j++){
 								eval_data->current_function->eval_instructions.push_back((zs_int)(
 										new EvalInstruction(*(EvalInstruction *)ei_init_vars_for_st[i].items[j])
 								));
@@ -719,7 +719,7 @@ namespace zetscript{
 				,new_scope
 		))==NULL){
 			// deallocate post operations
-			for(unsigned i=0; i<ei_post_operations.count;i++){
+			for(int i=0; i<ei_post_operations.count;i++){
 				EvalInstruction *ei=(EvalInstruction *)ei_post_operations.items[i];
 				delete ei;
 			}

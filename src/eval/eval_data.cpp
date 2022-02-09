@@ -197,7 +197,7 @@ namespace zetscript{
 		}
 
 		~EvalFunction(){
-			for(unsigned i=0; i< eval_instructions.count; i++){
+			for(int i=0; i< eval_instructions.count; i++){
 				delete (EvalInstruction *)eval_instructions.items[i];
 			}
 		}

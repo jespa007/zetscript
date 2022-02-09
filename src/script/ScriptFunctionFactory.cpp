@@ -26,7 +26,7 @@ namespace zetscript{
 			, int _idx_type
 			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
-			,char _params_len
+			,int _params_len
 			, int _idx_return_type
 			, zs_int _ref_native_function_ptr
 			, unsigned short _function_properties
@@ -64,7 +64,7 @@ namespace zetscript{
 			symbol->properties|=SYMBOL_PROPERTY_STATIC;
 		}
 
-		short idx_script_function = script_functions->count;
+		size_t idx_script_function = script_functions->count;
 
 		ScriptFunction *script_function = new ScriptFunction(
 				zs
@@ -84,8 +84,8 @@ namespace zetscript{
 		return symbol;
 	}
 
-	void	ScriptFunctionFactory::setScriptFunction(short idx, ScriptFunction *sf){
-		if(idx < 0 || (unsigned)idx >= script_functions->count){
+	void	ScriptFunctionFactory::setScriptFunction(int idx, ScriptFunction *sf){
+		if(idx < 0 || idx >= script_functions->count){
 			THROW_RUNTIME_ERRORF("script function idx node out of bound");
 		}
 
@@ -93,7 +93,7 @@ namespace zetscript{
 	}
 
 	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){
-		if(idx < 0 || (unsigned)idx >= script_functions->count){
+		if(idx < 0 || idx >= script_functions->count){
 			THROW_RUNTIME_ERRORF("script function idx node out of bound");
 			return NULL;
 		}
@@ -123,7 +123,7 @@ namespace zetscript{
 
 	ScriptFunctionFactory::~ScriptFunctionFactory(){
 		// erases all functions...
-		for(unsigned i = 0;i < script_functions->count;i++){
+		for(int i = 0;i < script_functions->count;i++){
 			ScriptFunction * info_function = (ScriptFunction *)script_functions->items[i];
 
 			if (info_function->instructions != NULL) {

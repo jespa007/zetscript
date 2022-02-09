@@ -8,7 +8,7 @@
 #define ZS_VECTOR_N_SLOT_ELEMENTS 10
 namespace zetscript{
 
-	size_t zs_vector::npos=(size_t)(-1);
+	int zs_vector::npos=-1;
 
 	bool	zs_vector::push_back_slot(){
 		if (this->_size == 0) {
@@ -36,7 +36,7 @@ namespace zetscript{
 		_size=0;
 	}
 
-	void zs_vector::set(uint16_t idx, zs_int e){
+	void zs_vector::set(int idx, zs_int e){
 		if (idx >= this->count) {
 			THROW_RUNTIME_ERRORF("vector::set => idx out of bounds 1");
 			return;
@@ -44,7 +44,7 @@ namespace zetscript{
 		this->items[idx] = e;
 	}
 
-	zs_int zs_vector::get(uint16_t  idx){
+	zs_int zs_vector::get(int  idx){
 		if (idx >= this->count) {
 			THROW_RUNTIME_ERRORF("vector::get => idx out of bounds");
 			return 0;
@@ -53,7 +53,7 @@ namespace zetscript{
 		return this->items[idx];
 	}
 
-	void zs_vector::erase(uint16_t  idx){
+	void zs_vector::erase(int  idx){
 		if (idx >= this->count) {
 			THROW_RUNTIME_ERRORF("vector::erase => idx out of bounds");
 			return;
@@ -82,7 +82,7 @@ namespace zetscript{
 		return item;
 	}
 
-	void zs_vector::resize(uint16_t _new_size){
+	void zs_vector::resize(int _new_size){
 		if (_new_size==0) {
 			if(this->items!=NULL){
 				free(this->items);
@@ -117,7 +117,7 @@ namespace zetscript{
 		insert(count,list, list->count);
 	}
 
-	void 		zs_vector::insert(uint16_t  idx,zs_vector  * list, uint16_t n_list_elements_to_copy){
+	void 		zs_vector::insert(int  idx,zs_vector  * list, int n_list_elements_to_copy){
 
 
 		if(list==NULL || list->count==0) { // not insert
@@ -160,7 +160,7 @@ namespace zetscript{
 		count+=list->count;
 	}
 
-	void 		zs_vector::insert(uint16_t  idx, zs_int e){
+	void 		zs_vector::insert(int  idx, zs_int e){
 		if(idx > (this->count+1)){
 			THROW_RUNTIME_ERROR("idx should be 0 to %i",this->count+1);
 			return;
@@ -168,7 +168,7 @@ namespace zetscript{
 
 		if(push_back_slot()){
 			// 1. move all elements...
-			for(int i=this->count-1;i>idx;i--){
+			for(int i=(int)this->count-1;i>(int)idx;i--){
 				this->items[i]=this->items[i-1];
 			}
 			// 2. Assign element

@@ -46,7 +46,7 @@ namespace zetscript{
 
 
 		// 3. copy eval instructions
-		for(unsigned i=0; i < eval_instructions->count; i++){
+		for(int i=0; i < eval_instructions->count; i++){
 			EvalInstruction *eval_instruction = (EvalInstruction *)eval_instructions->items[i];
 			// save instruction ...
 			*start_ptr=eval_instruction->vm_instruction;
@@ -115,7 +115,7 @@ namespace zetscript{
 
 		sf->instructions_len=instructions_len;
 
-		for(unsigned i=0; i < eval_instructions->count; i++){
+		for(int i=0; i < eval_instructions->count; i++){
 			EvalInstruction *instruction = (EvalInstruction *)eval_instructions->items[i];
 			InstructionSourceInfo instruction_info=instruction->instruction_source_info;
 
@@ -375,7 +375,7 @@ namespace zetscript{
 		}
 
 error_eval_keyword_var:
-		for(size_t i=0; i < ei_member_var_init.count; i++){
+		for(int i=0; i < ei_member_var_init.count; i++){
 			delete (EvalInstruction *)ei_member_var_init.items[i];
 		}
 
@@ -447,7 +447,7 @@ error_eval_keyword_var:
 		if(key_w == Keyword::KEYWORD_FUNCTION || is_static){
 			ScriptFunctionParam param_info;
 			ScriptFunctionParam *params=NULL;
-			char params_len=0;
+			int params_len=0;
 
 			//bool var_args=false;
 			char *end_var = NULL;
@@ -692,7 +692,7 @@ error_eval_keyword_var:
 					}
 
 					// finally delete all evaluated code
-					for(unsigned i=0; i < ei_instructions_default.count; i++){
+					for(int i=0; i < ei_instructions_default.count; i++){
 						delete (EvalInstruction *)ei_instructions_default.items[i];
 					}
 
@@ -723,7 +723,7 @@ error_eval_keyword_var:
 			params_len=script_function_params.count;
 
 			// remove collected script function params
-			for(unsigned i=0; i < script_function_params.count; i++){
+			for(int i=0; i < script_function_params.count; i++){
 				delete (ScriptFunctionParam *)script_function_params.items[i];
 			}
 
@@ -812,7 +812,7 @@ error_eval_keyword_var:
 	// CONTROL ERROR
 	eval_keyword_function_params:
 			// unallocate script function params
-			for(unsigned h=0; h < script_function_params.count; h++){
+			for(int h=0; h < script_function_params.count; h++){
 				delete (ScriptFunctionParam *)script_function_params.items[h];
 			}
 			script_function_params.clear();

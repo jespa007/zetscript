@@ -23,7 +23,7 @@ namespace zetscript{
 			,int _idx_position
 			,const zs_string & _function_name
 			, ScriptFunctionParam **_params
-			, size_t _params_len
+			, int _params_len
 			,int _idx_return_type
 			, zs_int _ref_native_function_ptr
 			,uint16_t _properties
@@ -674,7 +674,7 @@ namespace zetscript{
 		if(unresolved_symbols.count > 0){
 
 			const char *str_aux=NULL;
-			unsigned i=0;
+			int i=0;
 			while(i < unresolved_symbols.count){
 				Instruction *unresolved_instruction=&instructions[unresolved_symbols.items[i]];
 				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(this,unresolved_instruction);
@@ -776,7 +776,7 @@ namespace zetscript{
 	ScriptFunction::~ScriptFunction(){
 		clear();
 
-		for(unsigned i=0; i < instruction_source_info.count; i++){
+		for(int i=0; i < instruction_source_info.count; i++){
 			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_info.items[i];
 			if(isi != NULL){
 				delete isi;

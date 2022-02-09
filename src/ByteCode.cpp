@@ -275,8 +275,6 @@ namespace zetscript{
 			case 	BYTE_CODE_METAMETHOD_PRE_INC: 	return  "_pre_inc";	// ++i
 			case 	BYTE_CODE_METAMETHOD_PRE_DEC:	return  "_pre_dec";	// --i
 			case 	BYTE_CODE_METAMETHOD_IN: 		return  "_in";		// 	_in
-			default:
-				return "none";
 		}
 
 		return "none";
@@ -343,12 +341,9 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_VECTOR_ITEM:return BYTE_CODE_PUSH_STK_VECTOR_ITEM;
 			case BYTE_CODE_LOAD_THIS_VARIABLE:return BYTE_CODE_PUSH_STK_THIS_VARIABLE;
 			case BYTE_CODE_LOAD_OBJECT_ITEM:return BYTE_CODE_PUSH_STK_OBJECT_ITEM;
-			default:
-				THROW_RUNTIME_ERRORF("internal: op code not type load");
-				break;
 		}
 
-		return byte_code;
+		THROW_RUNTIME_ERRORF("internal: op code not type load");
 
 	}
 

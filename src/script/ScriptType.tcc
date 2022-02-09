@@ -40,7 +40,7 @@ namespace zetscript{
 	{
 		zs_string error;
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		const char *return_type;
 
 		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
@@ -80,7 +80,7 @@ namespace zetscript{
 			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 
 		zs_string error;
 		

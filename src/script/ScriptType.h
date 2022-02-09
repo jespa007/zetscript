@@ -124,7 +124,7 @@ namespace zetscript{
 		Symbol				* 	registerMemberFunction(
 			 const zs_string & _function_name
 			,ScriptFunctionParam **_params=NULL
-			,char _params_len=0
+			,int _params_len=0
 			, unsigned short _function_properties=0
 			, int _idx_return_type=ZS_IDX_UNDEFINED
 			, zs_int _ref_ptr=0

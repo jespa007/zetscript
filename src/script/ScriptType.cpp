@@ -51,7 +51,7 @@ namespace zetscript{
 	}
 
 	bool ScriptType::isDerivedFrom(short _idx_type){
-		for(unsigned i=0; i < this->idx_base_types->count; i++){
+		for(int i=0; i < this->idx_base_types->count; i++){
 			if(this->idx_base_types->items[i]==_idx_type){
 				return true;
 			}
@@ -333,14 +333,12 @@ namespace zetscript{
 	Symbol * ScriptType::registerMemberFunction(
 		 const zs_string & _function_name
 		 , ScriptFunctionParam **_params
-		 ,char _params_len
+		 ,int _params_len
 		, unsigned short _function_properties
 		, int _idx_return_type
 		,zs_int _ref_ptr
 		, const char * _file
 		, short _line
-
-
 	){
 
 		if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
@@ -644,7 +642,7 @@ namespace zetscript{
 
 	ScriptType::~ScriptType(){
 
-		for(unsigned i=0; i < allocated_member_properties->count; i++){
+		for(int i=0; i < allocated_member_properties->count; i++){
 			MemberProperty *mp=(MemberProperty *)allocated_member_properties->items[i];
 			delete mp;
 		}

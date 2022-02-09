@@ -104,8 +104,6 @@ namespace zetscript{
 		}
 
 		THROW_RUNTIME_ERRORF("StackElement not is not int");
-
-		return 0;
 	}
 
 	zs_float	StackElement::toFloat(){
@@ -116,8 +114,6 @@ namespace zetscript{
 		}
 
 		THROW_RUNTIME_ERRORF("StackElement not is not float");
-
-		return 0;
 	}
 
 	void StackElement::setUndefined(){

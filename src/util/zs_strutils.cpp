@@ -400,7 +400,7 @@ namespace zetscript{
 
 		bool contains(const zs_vector & input, const zs_string & str_containts,StringComparer sc){
 
-			for(unsigned i = 0; i < input.count; i++){
+			for(int i = 0; i < input.count; i++){
 				if(contains(*(zs_string *)input.items[i],str_containts,sc)){
 					return true;
 				}

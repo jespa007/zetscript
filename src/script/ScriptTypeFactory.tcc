@@ -58,7 +58,7 @@ namespace zetscript{
 	{
 		zs_string error;
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 
 		if(main_function == NULL){
 			THROW_RUNTIME_ERRORF("main function is not created");
@@ -441,7 +441,7 @@ namespace zetscript{
 	){
 		zs_string type_name_ptr = typeid( C *).name();
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
 
 		if(script_type == NULL){
@@ -481,7 +481,7 @@ namespace zetscript{
 		,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
 
@@ -519,7 +519,7 @@ namespace zetscript{
 		,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -559,7 +559,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -599,7 +599,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -639,7 +639,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -677,7 +677,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -715,7 +715,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -753,7 +753,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -791,7 +791,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -829,7 +829,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -867,7 +867,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -905,7 +905,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -943,7 +943,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -981,7 +981,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
@@ -1019,7 +1019,7 @@ namespace zetscript{
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
-		char params_len=0;
+		int params_len=0;
 		zs_string type_name_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);

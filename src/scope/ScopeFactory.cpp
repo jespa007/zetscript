@@ -90,7 +90,7 @@ namespace zetscript{
 	ScopeFactory::~ScopeFactory(){
 
 		// destroy all nodes ...
-		for(unsigned i = 0; i < scopes->count; i++){
+		for(int i = 0; i < scopes->count; i++){
 			delete (Scope *)scopes->get(i);
 		}
 		scopes->clear();
