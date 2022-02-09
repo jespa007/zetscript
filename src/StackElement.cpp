@@ -99,21 +99,23 @@ namespace zetscript{
 	}
 
 	zs_int	StackElement::toInt(){
-		if(this->properties & STK_PROPERTY_ZS_INT){
-			return (zs_int)this->value;
+		if((this->properties & STK_PROPERTY_ZS_INT)==0){
+			THROW_RUNTIME_ERRORF("StackElement not is not int");
 		}
 
-		THROW_RUNTIME_ERRORF("StackElement not is not int");
+		return (zs_int)this->value;
 	}
 
 	zs_float	StackElement::toFloat(){
-		zs_float aux;
-		if(this->properties & STK_PROPERTY_ZS_FLOAT){
-			ZS_FLOAT_COPY(&aux,&this->value);
-			return aux;
+
+		if((this->properties & STK_PROPERTY_ZS_FLOAT)==0){
+			THROW_RUNTIME_ERRORF("StackElement not is not float");
 		}
 
-		THROW_RUNTIME_ERRORF("StackElement not is not float");
+		return *((zs_float *)&this->value);
+
+
+
 	}
 
 	void StackElement::setUndefined(){

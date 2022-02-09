@@ -343,7 +343,8 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_OBJECT_ITEM:return BYTE_CODE_PUSH_STK_OBJECT_ITEM;
 		}
 
-		THROW_RUNTIME_ERRORF("internal: op code not type load");
+		//THROW_RUNTIME_ERRORF("internal: op code not type load");
+		return BYTE_CODE_INVALID;
 
 	}
 

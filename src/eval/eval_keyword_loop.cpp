@@ -344,24 +344,22 @@ namespace zetscript{
 					return NULL;
 				}
 
-				// check if no instructions and aux_test is operator in...
-				check_for_in=
+				// check if no instructions (i.e v,k=1+2) and aux_test is operator in...
+				if(
 						(idx_instruction_for_start==((int)eval_data->current_function->eval_instructions.count)
 								&&
-						(is_operator(aux_test))==Operator::OPERATOR_IN);
-
-				if(check_for_in  == true){ // restore
+						(is_operator(aux_test))==Operator::OPERATOR_IN)
+				){
 					aux_p+=strlen(eval_data_keywords[KEYWORD_VAR].str);
+					check_for_in=true;
 				}else{
-					if(is_operator(aux_test)==Operator::OPERATOR_IN){
-						EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Inexpected 'in'");
-					}
-					// restore instructions
+				// restore instructions
 					aux_p=aux_test;
 					line=line_test;
 				}
 			}
 
+			// no keyword or the previus parsing was successful
 			if(check_for_in){
 				// we do another eval to capture load byte code instructions from variables variables
 				zs_vector ei_init_vars_for;
@@ -383,7 +381,7 @@ namespace zetscript{
 					return NULL;
 				}
 
-				// copy per each variable detected...
+				// check each byte code is load...
 				for(int j=0; j<(int)ei_init_vars_for.count;j++){
 					if(n_for_in_vars<MAX_FOR_IN_VARIABLES){
 						EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for.items[j];
