@@ -5,7 +5,6 @@
 #include "eval.h"
 
 
-#define MAX_FOR_IN_VARIABLES	10
 
 namespace zetscript{
 
@@ -301,7 +300,7 @@ namespace zetscript{
 			,idx_post_instruction_for_start=ZS_IDX_UNDEFINED;
 
 		EvalInstruction *ei_jnt=NULL,*ei_jmp=NULL; // conditional to end block
-		zs_vector ei_post_operations;
+		zs_vector ei_post_operations,ei_init_vars_for,ei_load_container_identifier;
 
 		// check for keyword ...
 		key_w = eval_is_keyword(aux_p);
@@ -331,10 +330,9 @@ namespace zetscript{
 			bool check_for_in=true;
 
 			if(key_w == KEYWORD_VAR){
-				check_for_in=false;
-				char *aux_test=NULL;
+				char *aux_test=aux_p;
 				int line_test=line;
-				if((aux_test = eval_keyword_var(
+				if((aux_p = eval_keyword_var(
 						eval_data
 						,aux_p
 						,line_test
@@ -344,18 +342,19 @@ namespace zetscript{
 					return NULL;
 				}
 
-				// check if no instructions (i.e v,k=1+2) and aux_test is operator in...
-				if(
-						(idx_instruction_for_start==((int)eval_data->current_function->eval_instructions.count)
-								&&
-						(is_operator(aux_test))==Operator::OPERATOR_IN)
-				){
-					aux_p+=strlen(eval_data_keywords[KEYWORD_VAR].str);
-					check_for_in=true;
-				}else{
-				// restore instructions
-					aux_p=aux_test;
+				if(is_operator(aux_test)!=Operator::OPERATOR_IN){
+					check_for_in=false;
+				}
+				else{ // in
+
+					// check if no instructions (i.e v,k=1+2) and aux_test is operator in...
+					if(idx_instruction_for_start!=eval_data->current_function->eval_instructions.count){
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"malformed for-in loop");
+					}
+
+					// restore current ptr + line
 					line=line_test;
+					aux_p=aux_test+strlen(eval_data_keywords[KEYWORD_VAR].str);
 				}
 			}
 
@@ -363,10 +362,11 @@ namespace zetscript{
 			if(check_for_in){
 				// we do another eval to capture load byte code instructions from variables variables
 				zs_vector ei_init_vars_for;
-				zs_vector ei_init_vars_for_st[MAX_FOR_IN_VARIABLES];
+				//EvalInstruction ei_init_vars_for_st[MAX_FOR_IN_VARIABLES];
 				is_for_in=false;
-				int n_for_in_vars=1;
+				//int n_for_in_vars=1;
 				char *test_aux;
+				bool error_some_instruction_not_load_local=false;
 				int test_line=line;
 				// eval expression and not optimize to convert load in op to load from iterator
 				if((test_aux = eval_expression(
@@ -378,37 +378,49 @@ namespace zetscript{
 						,NULL
 						,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_FOR_IN_VARIABLES
 				))==NULL){
-					return NULL;
+					return exit_for;
 				}
-
-				// check each byte code is load...
-				for(int j=0; j<(int)ei_init_vars_for.count;j++){
-					if(n_for_in_vars<MAX_FOR_IN_VARIABLES){
-						EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for.items[j];
-						if(ins->vm_instruction.byte_code == BYTE_CODE_RESET_STACK){
-							if(j < ((int)ei_init_vars_for.count-1)){ // is not last variable
-								n_for_in_vars++;
-							}
-						}else{
-							ei_init_vars_for_st[n_for_in_vars-1].push_back((zs_int)(
-									ins
-							));
-						}
-					}
-					delete (EvalInstruction *)ei_init_vars_for.items[j];
-				}
-
-				if(n_for_in_vars>=MAX_FOR_IN_VARIABLES){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error max for-in variables reached (Max: %i)",MAX_FOR_IN_VARIABLES);
-				}
-
-				ei_init_vars_for.clear();
 
 				if(is_operator(test_aux)==Operator::OPERATOR_IN){
+
+					aux_p=test_aux;
+					line=test_line;
+
+					// check each byte code is load...
+					for(int j=0; j<ei_init_vars_for.count;j++){
+						EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for.items[j];
+						if(ins->vm_instruction.byte_code!=BYTE_CODE_LOAD_LOCAL){
+							error_some_instruction_not_load_local=true;
+							break;
+						}
+
+						// switch to push
+						ins->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_LOCAL;
+
+					}
+
+					// Some symbol is not local
+					if(error_some_instruction_not_load_local == true){
+						EVAL_ERROR_FILE_LINE_GOTO(
+								eval_data->current_parsing_file
+								,line
+								,exit_for
+								,"malformed for-in loop"
+						);
+					}
+
+
 					EvalInstruction *ei_aux=NULL;
-					is_for_in=true;
+					//is_for_in=true;
+					Symbol *symbol_iterator=NULL;
+					Operator tst_op_aux;
+					zs_vector 	ei_load_container_identifier;
+					//zs_vector	ei_load_container_identifier_st;
+					EvalInstruction ei_iterator;
+					// set aux_p as test_aux
+					line=test_line;
 					// all check instructions
-					for(int i=0; i < n_for_in_vars && is_for_in == true;i++){
+					/*for(int i=0; i < n_for_in_vars && is_for_in == true;i++){
 						size_t end=ei_init_vars_for_st[i].count;// +2: expects operator in & reset stack at the end
 						if(end == 0){
 							is_for_in=false;
@@ -431,26 +443,32 @@ namespace zetscript{
 								last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 							}
 						}
-					}
+					}*/
 
-					if(is_for_in){
-						Symbol *symbol_iterator;
-						Operator tst_op_aux;
-						zs_vector 	ei_load_container_identifier;
-						zs_vector	ei_load_container_identifier_st;
-						EvalInstruction ei_iterator;
-						// set aux_p as test_aux
-						line=test_line;
+					//if(is_for_in){
+
 						IGNORE_BLANKS(aux_p,eval_data,test_aux+strlen(eval_data_operators[OPERATOR_IN].str),line);
 
 
 
 						if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for-in': unexpected operator '%s' after 'in' ",eval_data_operators[tst_op_aux].str);
+							EVAL_ERROR_FILE_LINE_GOTO(
+									eval_data->current_parsing_file
+									,test_line
+									,exit_for
+									,"Syntax error 'for-in': unexpected operator '%s' after 'in' "
+									,eval_data_operators[tst_op_aux].str
+							);
 						}
 
 						if((key_w=eval_is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for-in': unexpected '%s' after 'in' ",eval_data_keywords[key_w].str);
+							EVAL_ERROR_FILE_LINE_GOTO(
+									eval_data->current_parsing_file
+									,test_line
+									,exit_for
+									,"Syntax error 'for-in': unexpected '%s' after 'in' "
+									,eval_data_keywords[key_w].str
+							);
 						}
 
 
@@ -465,21 +483,32 @@ namespace zetscript{
 								,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
 						))==NULL){
 							// delete unusued vars_for
-							return NULL;
+							goto exit_for;
 						}
 
-						for(int j=0; j<ei_load_container_identifier.count;j++){
+						/*for(int j=0; j<ei_load_container_identifier.count;j++){
 							ei_load_container_identifier_st.push_back((zs_int)(
 									ei_load_container_identifier.items[j]
 							));
 							delete (EvalInstruction *)ei_load_container_identifier.items[j];
-						}
+						}*/
 
 						if(*aux_p!=')'){
 							if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
-								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error 'for-in': unexpected operator '%s' after container identifier ",eval_data_operators[tst_op_aux].str);
+								EVAL_ERROR_FILE_LINE_GOTO(
+									eval_data->current_parsing_file
+									,line
+									,exit_for
+									,"Syntax error 'for-in': unexpected operator '%s' after container identifier "
+									,eval_data_operators[tst_op_aux].str
+								);
 							}else{
-								EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for-in': expected ')' after container identifier ");
+								EVAL_ERROR_FILE_LINE_GOTOF(
+									eval_data->current_parsing_file
+									,line
+									,exit_for
+									,"Syntax error 'for-in': expected ')' after container identifier "
+								);
 							}
 						}
 
@@ -492,7 +521,7 @@ namespace zetscript{
 								, line
 								, eval_anonymous_iterator_name()
 							))==NULL){
-							return NULL;
+							goto exit_for;
 						};
 
 						ei_iterator.vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
@@ -503,9 +532,9 @@ namespace zetscript{
 
 
 						// 2. emit iterator init
-						for(int i=0; i < ei_load_container_identifier_st.count; i++){
+						for(int i=0; i < ei_load_container_identifier.count; i++){
 							eval_data->current_function->eval_instructions.push_back((zs_int)(
-								new EvalInstruction(*((EvalInstruction *)ei_load_container_identifier_st.items[i]))
+								new EvalInstruction(*((EvalInstruction *)ei_load_container_identifier.items[i]))
 							));
 						}
 
@@ -522,10 +551,7 @@ namespace zetscript{
 							)
 						));
 
-
-
-						ei_aux->instruction_source_info=((EvalInstruction *)ei_load_container_identifier_st.items[ei_load_container_identifier_st.count-1])->instruction_source_info;
-
+						ei_aux->instruction_source_info=((EvalInstruction *)ei_load_container_identifier.items[ei_load_container_identifier.count-1])->instruction_source_info;
 
 						idx_instruction_for_start=(int)(eval_data->current_function->eval_instructions.count);
 
@@ -555,7 +581,7 @@ namespace zetscript{
 						idx_instruction_for_after_jnz_condition=(int)(eval_data->current_function->eval_instructions.count);
 
 						// push as many null as n left vars -1
-						for(int i=0; i < n_for_in_vars-1;i++){
+						for(int i=0; i < ei_init_vars_for.count;i++){
 							eval_data->current_function->eval_instructions.push_back((zs_int)(
 								ei_aux=new EvalInstruction(BYTE_CODE_LOAD_NULL)
 							));
@@ -581,17 +607,15 @@ namespace zetscript{
 
 
 						// load k,v
-						for(int i=n_for_in_vars-1; i >=0 ;i--){
-							for(int j=0; j<ei_init_vars_for_st[i].count;j++){
-								eval_data->current_function->eval_instructions.push_back((zs_int)(
-										new EvalInstruction(*(EvalInstruction *)ei_init_vars_for_st[i].items[j])
-								));
-							}
+						for(int i=ei_init_vars_for.count-1; i >=0 ;i--){
+							eval_data->current_function->eval_instructions.push_back((zs_int)(
+									new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.items[i])
+							));
 						}
 
 						// store...
 						eval_data->current_function->eval_instructions.push_back((zs_int)(
-							new EvalInstruction(BYTE_CODE_STORE,n_for_in_vars)
+							new EvalInstruction(BYTE_CODE_STORE,ei_init_vars_for.count)
 						));
 
 						// 4. emit post operation
@@ -614,7 +638,10 @@ namespace zetscript{
 
 					}else{ // is not for-in re eval for in with no in-break
 						// delete
-						if((aux_p = eval_expression(
+
+						// TODO COPY ALL EVALUATED
+
+						/*if((aux_p = eval_expression(
 								eval_data
 								,aux_p
 								,line
@@ -625,8 +652,9 @@ namespace zetscript{
 						))==NULL){
 							return NULL;
 						}
+					}*/
 					}
-				}
+				//}
 			}
 		}
 
@@ -635,7 +663,12 @@ namespace zetscript{
 		if(is_for_in == false){
 		  // expects conditional and post (i.e for(;;) )
 			if(*aux_p != ';'){
-				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected ';'");
+				EVAL_ERROR_FILE_LINE_GOTOF(
+					eval_data->current_parsing_file
+					,line
+					,exit_for
+					,"Syntax error 'for': Expected ';'"
+				);
 			}
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -675,7 +708,12 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if(*aux_p != ';'){
-				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected ';'");
+				EVAL_ERROR_FILE_LINE_GOTOF(
+					eval_data->current_parsing_file
+					,line
+					,exit_for
+					,"Syntax error 'for': Expected ';'"
+				);
 
 			}
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -697,12 +735,22 @@ namespace zetscript{
 
 
 		if(*aux_p != ')'){
-			EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected ')'");
+			EVAL_ERROR_FILE_LINE_GOTOF(
+				eval_data->current_parsing_file
+				,line
+				,exit_for
+				,"Syntax error 'for': Expected ')'"
+			);
 		}
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 		if(*aux_p != '{'){
-			EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected '{' for begin block");
+			EVAL_ERROR_FILE_LINEF(
+				eval_data->current_parsing_file
+				,line
+				,exit_for
+				,"Syntax error 'for': Expected '{' for begin block"
+			);
 		}
 
 
@@ -717,12 +765,7 @@ namespace zetscript{
 				,new_scope
 		))==NULL){
 			// deallocate post operations
-			for(int i=0; i<ei_post_operations.count;i++){
-				EvalInstruction *ei=(EvalInstruction *)ei_post_operations.items[i];
-				delete ei;
-			}
-
-			return NULL;
+			goto exit_for;
 		}
 
 		// parsing_loop--
@@ -752,6 +795,21 @@ namespace zetscript{
 
 		// true: We treat declared variables into for as another scope.
 		eval_check_scope(eval_data,new_scope);
+
+exit_for:
+
+		for(int i=0; i<ei_post_operations.count;i++){
+			EvalInstruction *ei=(EvalInstruction *)ei_post_operations.items[i];
+			delete ei;
+		}
+
+
+		for(int j=0; j<ei_init_vars_for.count;j++){
+			delete (EvalInstruction *)ei_init_vars_for.items[j];
+		}
+		ei_init_vars_for.clear();
+
+
 		return aux_p;
 	}
 }

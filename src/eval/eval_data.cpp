@@ -32,12 +32,12 @@
 
 
 
-#define EVAL_ERROR_FILE_LINE_AND_GOTO(my_goto,file,line,s,...)			eval_data->error=true;\
+#define EVAL_ERROR_FILE_LINE_GOTO(file,line,my_goto,s,...)			eval_data->error=true;\
 																		eval_data->error_file=file;\
 																		eval_data->error_line=line;\
 																		eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
 																		goto my_goto;
-#define EVAL_ERROR_FILE_LINE_AND_GOTOF(my_goto,file,line,s)				EVAL_ERROR_FILE_LINE_AND_GOTO(my_goto,file,line,s,NULL);
+#define EVAL_ERROR_FILE_LINE_GOTOF(file,line,my_goto,s)				EVAL_ERROR_FILE_LINE_GOTO(file,line,my_goto,s,NULL);
 
 #define EVAL_ERROR_BYTE_CODE(s,...)							eval_data->error=true;\
 															aux_p=NULL;\

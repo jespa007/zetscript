@@ -170,12 +170,12 @@ namespace zetscript{
 				&&	(IS_OPERATOR_TYPE_ASSIGN(operator_type))
 
 				)){ // ... save all assignables from operator split
-				EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_byte_code,eval_data->current_parsing_file,token_node_operator->line,"Operation '%s' in assignment is not allowed",eval_data_operators[operator_type].str);
+				EVAL_ERROR_FILE_LINE_GOTO(eval_data->current_parsing_file,token_node_operator->line,eval_error_byte_code,"Operation '%s' in assignment is not allowed",eval_data_operators[operator_type].str);
 			}
 
 			// should be identifier...
 			if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-				EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_byte_code,eval_data->current_parsing_file,token_node_symbol->line,"Assign a literal '%s' is not allowed",token_node_symbol->value.c_str());
+				EVAL_ERROR_FILE_LINE_GOTO(eval_data->current_parsing_file,token_node_symbol->line,eval_error_byte_code,"Assign a literal '%s' is not allowed",token_node_symbol->value.c_str());
 			}
 
 			zs_ei_assign_loader_instructions_post_expression.push_back((zs_int)(ei_assign_loader_instructions_post_expression=new zs_vector()));
@@ -185,10 +185,10 @@ namespace zetscript{
 			for(int j=0;j<token_node_symbol->eval_instructions.count;j++){
 				EvalInstruction *ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
 				if(INSTRUCTION_IS_BYTE_CODE_CALL(&ei_load_assign_instruction->vm_instruction)){
-					EVAL_ERROR_FILE_LINE_AND_GOTOF(
-							eval_error_byte_code
-							,eval_data->current_parsing_file
+					EVAL_ERROR_FILE_LINE_GOTOF(
+							eval_data->current_parsing_file
 							,ei_load_assign_instruction->instruction_source_info.line
+							,eval_error_byte_code
 							,"Calling a function in left assignment is not allowed");
 				}
 				ei_assign_loader_instructions_post_expression->push_back((zs_int)(token_node_symbol->eval_instructions.items[j]));
@@ -201,10 +201,10 @@ namespace zetscript{
 			if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
 
 				if(last_load_instruction->byte_code==BYTE_CODE_LOAD_THIS){
-					EVAL_ERROR_FILE_LINE_AND_GOTOF(
-						eval_error_byte_code
-						,eval_data->current_parsing_file
+					EVAL_ERROR_FILE_LINE_GOTOF(
+						eval_data->current_parsing_file
 						,ei_last_load_instruction->instruction_source_info.line
+						,eval_error_byte_code
 						,"'this' is not assignable");
 				}
 
@@ -283,7 +283,7 @@ namespace zetscript{
 
 			// TODO: JEB Check whether expression is constant true/false
 			if(*aux_p != ':'){
-				EVAL_ERROR_FILE_LINE_AND_GOTOF(eval_error_byte_code,eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
+				EVAL_ERROR_FILE_LINE_GOTOF(eval_error_byte_code,eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
 			}
 
 

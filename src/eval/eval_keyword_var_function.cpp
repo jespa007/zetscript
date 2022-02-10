@@ -546,10 +546,10 @@ error_eval_keyword_var:
 
 				if(script_function_params.count>0){
 					if(*aux_p != ','){
-						EVAL_ERROR_FILE_LINE_AND_GOTOF(
-							eval_keyword_function_params
-							,eval_data->current_parsing_file
+						EVAL_ERROR_FILE_LINE_GOTOF(
+							eval_data->current_parsing_file
 							,line
+							,eval_keyword_function_params
 							,"Syntax error: expected function argument separator ','"
 						);
 					}
@@ -557,10 +557,10 @@ error_eval_keyword_var:
 				}
 
 				if(*aux_p == ')' || *aux_p == ','){
-					EVAL_ERROR_FILE_LINE_AND_GOTOF(
-						eval_keyword_function_params
-						,eval_data->current_parsing_file
+					EVAL_ERROR_FILE_LINE_GOTOF(
+						eval_data->current_parsing_file
 						,line
+						,eval_keyword_function_params
 						,"Syntax error: expected argument name"
 					);
 				}
@@ -582,10 +582,10 @@ error_eval_keyword_var:
 						param_info.properties|=MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF;
 						break;
 					default:
-						EVAL_ERROR_FILE_LINE_AND_GOTO(
-							eval_keyword_function_params
-							,eval_data->current_parsing_file
+						EVAL_ERROR_FILE_LINE_GOTO(
+							eval_data->current_parsing_file
 							,line
+							,eval_keyword_function_params
 							,"Syntax error: unexpected keyword '%s'"
 							,eval_data_keywords[kw_arg].str
 						);
@@ -616,20 +616,20 @@ error_eval_keyword_var:
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 				if((param_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS) && *aux_p!=')'){
-					EVAL_ERROR_FILE_LINE_AND_GOTOF(
-						eval_keyword_function_params
-						,eval_data->current_parsing_file
+					EVAL_ERROR_FILE_LINE_GOTOF(
+						eval_data->current_parsing_file
 						,line
+						,eval_keyword_function_params
 						,"Expected ')' after variable argument declaration"
 					);
 				}
 				else if(*aux_p=='='){ // default argument...
 
 					if(param_info.properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF ){
-						EVAL_ERROR_FILE_LINE_AND_GOTOF(
-							eval_keyword_function_params
-							,eval_data->current_parsing_file
+						EVAL_ERROR_FILE_LINE_GOTOF(
+							eval_data->current_parsing_file
 							,line
+							,eval_keyword_function_params
 							,"Arguments by reference cannot set a default argument"
 						);
 					}
@@ -652,10 +652,10 @@ error_eval_keyword_var:
 					}
 
 					if(ei_instructions_default.count == 0){ // expected expression
-						EVAL_ERROR_FILE_LINE_AND_GOTOF(
-							eval_keyword_function_params
-							,eval_data->current_parsing_file
+						EVAL_ERROR_FILE_LINE_GOTOF(
+							eval_data->current_parsing_file
 							,line
+							,eval_keyword_function_params
 							,"Syntax error:  expected expression after '='"
 						);
 					}

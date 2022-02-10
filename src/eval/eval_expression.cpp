@@ -108,7 +108,11 @@ namespace zetscript{
 				}
 
 				if(operator_type==Operator::OPERATOR_UNKNOWN){
-					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_sub_expression,eval_data->current_parsing_file,line ,"Expected operator after '%s'"
+					EVAL_ERROR_FILE_LINE_GOTO(
+							eval_data->current_parsing_file
+							,line
+							,eval_error_sub_expression
+							,"Expected operator after '%s'"
 							,((TokenNode *)token_nodes.items[token_nodes.count-1])->value.c_str());
 				}
 
@@ -159,10 +163,10 @@ namespace zetscript{
 
 			if(found == false){
 				size_t len=aux_p-start_expression_str;
-				EVAL_ERROR_FILE_LINE_AND_GOTO(
-						eval_error_sub_expression
-						,eval_data->current_parsing_file
+				EVAL_ERROR_FILE_LINE_GOTO(
+						eval_data->current_parsing_file
 						,start_expression_line
+						,eval_error_sub_expression
 						,"%s at the end of expression %10s..."
 						,expected_ending_str.c_str(),zs_string(start_expression_str).substr(0,len).c_str()
 				);
@@ -170,7 +174,7 @@ namespace zetscript{
 		}
 
 		if(aux_p==0){
-			EVAL_ERROR_FILE_LINE_AND_GOTOF(eval_error_sub_expression,eval_data->current_parsing_file,line ,"Unexpected end of file");
+			EVAL_ERROR_FILE_LINE_GOTOF(eval_error_sub_expression,eval_data->current_parsing_file,line ,"Unexpected end of file");
 		}
 
 		// here convert each expression token to byte code
@@ -320,10 +324,10 @@ eval_error_sub_expression:
 
 				if(aux_p != NULL && *aux_p != 0 && *aux_p=='=' && (only_load_left_expression==true)){ // assignment op, start left assigments
 					if(zs_ei_left_sub_expressions.count >= FUNCTION_RETURN_COUNT_MAX){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(
-								eval_error_expression_delete_left_right_sub_expressions
-								,eval_data->current_parsing_file
-								,line
+						EVAL_ERROR_FILE_LINE_GOTO(
+							eval_data->current_parsing_file
+							,line
+							,eval_error_expression_delete_left_right_sub_expressions
 							,"Reached max assigment count (max: %i)"
 							,FUNCTION_RETURN_COUNT_MAX
 						);
@@ -395,7 +399,10 @@ eval_error_sub_expression:
 
 				if(IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
 					const char *str_symbol=instruction->instruction_source_info.ptr_str_symbol_name==NULL?"unknow":instruction->instruction_source_info.ptr_str_symbol_name->c_str();
-					EVAL_ERROR_FILE_LINE_AND_GOTO(eval_error_expression_delete_left_right_sub_expressions,eval_data->current_parsing_file,instruction->instruction_source_info.line
+					EVAL_ERROR_FILE_LINE_GOTO(
+						eval_data->current_parsing_file
+						,instruction->instruction_source_info.line
+						,eval_error_expression_delete_left_right_sub_expressions
 						,"'%s' is not allowed on left assignment multiple because '%s' is not literal. Left assignments has to be literals  (i.e a,b.c,b[0]. etc)"
 						,str_symbol
 						,str_symbol

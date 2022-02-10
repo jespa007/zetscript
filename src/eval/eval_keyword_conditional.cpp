@@ -188,7 +188,12 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if(*aux_p != '('){
-				EVAL_ERROR_FILE_LINE_AND_GOTOF(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: Expected '(' conditional switch ");
+				EVAL_ERROR_FILE_LINE_GOTOF(
+					eval_data->current_parsing_file
+					,line
+					,eval_keyword_switch_error
+					,"Syntax error switch: Expected '(' conditional switch "
+				);
 			}
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -208,7 +213,12 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 			if(*aux_p != '{'){
-				EVAL_ERROR_FILE_LINE_AND_GOTOF(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: Expected '{' begin switch block");
+				EVAL_ERROR_FILE_LINE_GOTOF(
+					eval_data->current_parsing_file
+					,line
+					,eval_keyword_switch_error
+					,"Syntax error switch: Expected '{' begin switch block"
+				);
 			}
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -260,10 +270,10 @@ namespace zetscript{
 
 				}else if(key_w == KEYWORD_DEFAULT){
 					if(ei_jmp_default!=NULL){
-						EVAL_ERROR_FILE_LINE_AND_GOTO(
-								eval_keyword_switch_error
-								,eval_data->current_parsing_file
+						EVAL_ERROR_FILE_LINE_GOTO(
+								eval_data->current_parsing_file
 								,line
+								,eval_keyword_switch_error
 								,"Syntax error switch: there's an already 'default' case"
 								, NULL
 						);
@@ -280,19 +290,19 @@ namespace zetscript{
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 				}else{
-					EVAL_ERROR_FILE_LINE_AND_GOTOF(
-						eval_keyword_switch_error
-						,eval_data->current_parsing_file
+					EVAL_ERROR_FILE_LINE_GOTOF(
+						eval_data->current_parsing_file
 						,line
+						,eval_keyword_switch_error
 						,"Syntax error switch: Expected 'case' or 'default' keyword"
 					);
 				}
 
 				if(*aux_p!=':'){
-					EVAL_ERROR_FILE_LINE_AND_GOTOF(
-						eval_keyword_switch_error
-						,eval_data->current_parsing_file
+					EVAL_ERROR_FILE_LINE_GOTOF(
+						eval_data->current_parsing_file
 						,line
+						,eval_keyword_switch_error
 						,"Syntax error switch: Expected ':' "
 					);
 				}
@@ -341,7 +351,12 @@ namespace zetscript{
 
 
 				}else if(is_default){
-					EVAL_ERROR_FILE_LINE_AND_GOTOF(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch:'default' needs a 'break' at the end");
+					EVAL_ERROR_FILE_LINE_GOTOF(
+						eval_data->current_parsing_file
+						,line
+						,eval_keyword_switch_error
+						,"Syntax error switch:'default' needs a 'break' at the end"
+					);
 				}
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -349,7 +364,12 @@ namespace zetscript{
 			}
 
 			if(*aux_p != '}'){
-				EVAL_ERROR_FILE_LINE_AND_GOTOF(eval_keyword_switch_error,eval_data->current_parsing_file,line,"Syntax error switch: Expected '}' end switch");
+				EVAL_ERROR_FILE_LINE_GOTOF(
+					eval_data->current_parsing_file
+					,line
+					,eval_keyword_switch_error
+					,"Syntax error switch: Expected '}' end switch"
+				);
 			}
 
 			// end instruction
