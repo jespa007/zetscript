@@ -637,7 +637,7 @@ namespace zetscript{
 				   EVAL_ERROR_FILE_LINE_GOTO(
 					   eval_data->current_parsing_file
 					   ,line
-					   ,error_expression_token_symbo
+					   ,error_expression_token_symbol
 					   ,"Cannot combine pre-operation '%s' with post-operation '%s' on '%s'"
 						,eval_data_pre_operations[ pre_operation].str
 						,eval_data_pre_operations[ post_operation].str

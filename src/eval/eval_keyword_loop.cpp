@@ -300,7 +300,10 @@ namespace zetscript{
 			,idx_post_instruction_for_start=ZS_IDX_UNDEFINED;
 
 		EvalInstruction *ei_jnt=NULL,*ei_jmp=NULL; // conditional to end block
-		zs_vector ei_post_operations,ei_init_vars_for,ei_load_container_identifier;
+		zs_vector ei_post_operations
+				,ei_load_container_identifier
+				,ei_init_vars_for;
+
 
 		// check for keyword ...
 		key_w = eval_is_keyword(aux_p);
@@ -323,340 +326,292 @@ namespace zetscript{
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
+
+		//------------------------------------------------------------------------------------------
+		// BEGIN FOR-VAR IN PROCESS
 		// 1. var init ...
-		if(*aux_p != ';'){
-			// there's some var Init...
-			key_w = eval_is_keyword(aux_p);
-			bool check_for_in=true;
+		// there's some var Init...
+		bool check_for_in=true;
 
-			if(key_w == KEYWORD_VAR){
-				char *aux_test=aux_p;
-				int line_test=line;
-				if((aux_p = eval_keyword_var(
-						eval_data
-						,aux_p
-						,line_test
-						,new_scope
-						, EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR
-				))==NULL){
-					return NULL;
-				}
-
-				if(is_operator(aux_test)!=Operator::OPERATOR_IN){
-					check_for_in=false;
-				}
-				else{ // in
-
-					// check if no instructions (i.e v,k=1+2) and aux_test is operator in...
-					if(idx_instruction_for_start!=eval_data->current_function->eval_instructions.count){
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"malformed for-in loop");
-					}
-
-					// restore current ptr + line
-					line=line_test;
-					aux_p=aux_test+strlen(eval_data_keywords[KEYWORD_VAR].str);
-				}
+		if(eval_is_keyword(aux_p) == KEYWORD_VAR){
+			char *aux_test=aux_p;
+			int line_test=line;
+			if((aux_p = eval_keyword_var(
+					eval_data
+					,aux_p
+					,line
+					,new_scope
+					, EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR
+			))==NULL){
+				return NULL;
 			}
 
-			// no keyword or the previus parsing was successful
-			if(check_for_in){
-				// we do another eval to capture load byte code instructions from variables variables
-				zs_vector ei_init_vars_for;
-				//EvalInstruction ei_init_vars_for_st[MAX_FOR_IN_VARIABLES];
-				is_for_in=false;
-				//int n_for_in_vars=1;
-				char *test_aux;
-				bool error_some_instruction_not_load_local=false;
-				int test_line=line;
-				// eval expression and not optimize to convert load in op to load from iterator
-				if((test_aux = eval_expression(
-						eval_data
-						,aux_p
-						,test_line
-						,new_scope
-						,&ei_init_vars_for //eval_data->current_function->instructions
-						,NULL
-						,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_FOR_IN_VARIABLES
-				))==NULL){
-					return exit_for;
+			if(is_operator(aux_p)!=Operator::OPERATOR_IN){
+				check_for_in=false;
+			}
+			else{ // in
+
+				// check if no instructions (i.e v,k=1+2) and aux_test is operator in...
+				if(idx_instruction_for_start!=eval_data->current_function->eval_instructions.count){
+					EVAL_ERROR_FILE_LINEF(
+							eval_data->current_parsing_file
+							,line
+							,"malformed for-in loop"
+					);
 				}
 
-				if(is_operator(test_aux)==Operator::OPERATOR_IN){
-
-					aux_p=test_aux;
-					line=test_line;
-
-					// check each byte code is load...
-					for(int j=0; j<ei_init_vars_for.count;j++){
-						EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for.items[j];
-						if(ins->vm_instruction.byte_code!=BYTE_CODE_LOAD_LOCAL){
-							error_some_instruction_not_load_local=true;
-							break;
-						}
-
-						// switch to push
-						ins->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_LOCAL;
-
-					}
-
-					// Some symbol is not local
-					if(error_some_instruction_not_load_local == true){
-						EVAL_ERROR_FILE_LINE_GOTO(
-								eval_data->current_parsing_file
-								,line
-								,exit_for
-								,"malformed for-in loop"
-						);
-					}
-
-
-					EvalInstruction *ei_aux=NULL;
-					//is_for_in=true;
-					Symbol *symbol_iterator=NULL;
-					Operator tst_op_aux;
-					zs_vector 	ei_load_container_identifier;
-					//zs_vector	ei_load_container_identifier_st;
-					EvalInstruction ei_iterator;
-					// set aux_p as test_aux
-					line=test_line;
-					// all check instructions
-					/*for(int i=0; i < n_for_in_vars && is_for_in == true;i++){
-						size_t end=ei_init_vars_for_st[i].count;// +2: expects operator in & reset stack at the end
-						if(end == 0){
-							is_for_in=false;
-							break;
-						}
-
-						EvalInstruction *ptr_ei_init_vars_for_st=(EvalInstruction *)ei_init_vars_for_st[i].items[0];
-
-						for(unsigned j=0; j<end && is_for_in == true;j++){
-							Instruction *ins=&ptr_ei_init_vars_for_st->vm_instruction;
-							is_for_in&=(byte_code_is_load_var_type(ins->byte_code) || (ins->byte_code == BYTE_CODE_FIND_VARIABLE));
-							ptr_ei_init_vars_for_st++;
-						}
-
-						if(is_for_in){
-							Instruction *last_load_instruction=&((EvalInstruction *)ei_init_vars_for_st[i].items[end-1])->vm_instruction;
-							if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
-								last_load_instruction->byte_code=byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
-							}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
-								last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
-							}
-						}
-					}*/
-
-					//if(is_for_in){
-
-						IGNORE_BLANKS(aux_p,eval_data,test_aux+strlen(eval_data_operators[OPERATOR_IN].str),line);
-
-
-
-						if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
-							EVAL_ERROR_FILE_LINE_GOTO(
-									eval_data->current_parsing_file
-									,test_line
-									,exit_for
-									,"Syntax error 'for-in': unexpected operator '%s' after 'in' "
-									,eval_data_operators[tst_op_aux].str
-							);
-						}
-
-						if((key_w=eval_is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
-							EVAL_ERROR_FILE_LINE_GOTO(
-									eval_data->current_parsing_file
-									,test_line
-									,exit_for
-									,"Syntax error 'for-in': unexpected '%s' after 'in' "
-									,eval_data_keywords[key_w].str
-							);
-						}
-
-
-						// eval iterator variable
-						if((aux_p = eval_expression(
-								eval_data
-								,aux_p
-								,line
-								,new_scope
-								,&ei_load_container_identifier //eval_data->current_function->instructions
-								,NULL
-								,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
-						))==NULL){
-							// delete unusued vars_for
-							goto exit_for;
-						}
-
-						/*for(int j=0; j<ei_load_container_identifier.count;j++){
-							ei_load_container_identifier_st.push_back((zs_int)(
-									ei_load_container_identifier.items[j]
-							));
-							delete (EvalInstruction *)ei_load_container_identifier.items[j];
-						}*/
-
-						if(*aux_p!=')'){
-							if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
-								EVAL_ERROR_FILE_LINE_GOTO(
-									eval_data->current_parsing_file
-									,line
-									,exit_for
-									,"Syntax error 'for-in': unexpected operator '%s' after container identifier "
-									,eval_data_operators[tst_op_aux].str
-								);
-							}else{
-								EVAL_ERROR_FILE_LINE_GOTOF(
-									eval_data->current_parsing_file
-									,line
-									,exit_for
-									,"Syntax error 'for-in': expected ')' after container identifier "
-								);
-							}
-						}
-
-						ei_init_vars_for.clear();
-
-						// 1. create iterator symbol
-						if((symbol_iterator=eval_data->current_function->script_function->registerLocalVariable(
-								new_scope
-								, eval_data->current_parsing_file
-								, line
-								, eval_anonymous_iterator_name()
-							))==NULL){
-							goto exit_for;
-						};
-
-						ei_iterator.vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
-						ei_iterator.vm_instruction.value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
-						ei_iterator.vm_instruction.value_op2=symbol_iterator->idx_position;
-						ei_iterator.symbol=*symbol_iterator;
-						ei_iterator.instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, symbol_iterator->name);
-
-
-						// 2. emit iterator init
-						for(int i=0; i < ei_load_container_identifier.count; i++){
-							eval_data->current_function->eval_instructions.push_back((zs_int)(
-								new EvalInstruction(*((EvalInstruction *)ei_load_container_identifier.items[i]))
-							));
-						}
-
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
-								ei_aux=new EvalInstruction(ei_iterator)
-						));
-
-						// change load by push stk because we have to store iterator variable returned by iter()
-						ei_aux->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_LOCAL;
-
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
-								ei_aux=new EvalInstruction(
-									BYTE_CODE_IT_INIT
-							)
-						));
-
-						ei_aux->instruction_source_info=((EvalInstruction *)ei_load_container_identifier.items[ei_load_container_identifier.count-1])->instruction_source_info;
-
-						idx_instruction_for_start=(int)(eval_data->current_function->eval_instructions.count);
-
-						// 3. emit iterator condition end
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
-								ei_aux=new EvalInstruction(ei_iterator)
-						));
-
-
-						// load object end symbol
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
-							ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
-						));
-						ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "end");
-
-						// call
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
-							new EvalInstruction(BYTE_CODE_MEMBER_CALL,0)
-						));
-
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
-								ei_jnt=new EvalInstruction(BYTE_CODE_JT)
-						));
-						ei_jnt->instruction_source_info.file=eval_data->current_parsing_file;
-						ei_jnt->instruction_source_info.line=line;
-
-						idx_instruction_for_after_jnz_condition=(int)(eval_data->current_function->eval_instructions.count);
-
-						// push as many null as n left vars -1
-						for(int i=0; i < ei_init_vars_for.count;i++){
-							eval_data->current_function->eval_instructions.push_back((zs_int)(
-								ei_aux=new EvalInstruction(BYTE_CODE_LOAD_NULL)
-							));
-						}
-
-						// load v
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
-								ei_aux=new EvalInstruction(ei_iterator)
-						));
-
-						// v._get
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
-							ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
-						));
-
-						ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "get");
-
-						// call, return all
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
-							// insert byte code call and set return count as 2, due in in this case we have prepared 2 vars on the left (k,v)
-							new EvalInstruction(BYTE_CODE_MEMBER_CALL,INSTRUCTION_VALUE_OP1_RETURN_COUNT(2))
-						));
-
-
-						// load k,v
-						for(int i=ei_init_vars_for.count-1; i >=0 ;i--){
-							eval_data->current_function->eval_instructions.push_back((zs_int)(
-									new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.items[i])
-							));
-						}
-
-						// store...
-						eval_data->current_function->eval_instructions.push_back((zs_int)(
-							new EvalInstruction(BYTE_CODE_STORE,ei_init_vars_for.count)
-						));
-
-						// 4. emit post operation
-						ei_post_operations.push_back((zs_int)(
-								ei_aux=new EvalInstruction(ei_iterator)
-						));
-
-						// load object end symbol
-						ei_post_operations.push_back((zs_int)(
-							ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
-						));
-
-						ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_post_inc");
-
-						// call
-						ei_post_operations.push_back((zs_int)(
-							new EvalInstruction(BYTE_CODE_MEMBER_CALL,0)
-						));
-
-
-					}else{ // is not for-in re eval for in with no in-break
-						// delete
-
-						// TODO COPY ALL EVALUATED
-
-						/*if((aux_p = eval_expression(
-								eval_data
-								,aux_p
-								,line
-								,new_scope
-								,&eval_data->current_function->eval_instructions
-								,{}
-								,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION
-						))==NULL){
-							return NULL;
-						}
-					}*/
-					}
-				//}
+				// restore current ptr + line in order to reevaluate load vars
+				line=line_test;
+				aux_p=aux_test+strlen(eval_data_keywords[KEYWORD_VAR].str);
 			}
 		}
+
+		// no keyword or the previus parsing was successful
+		if(check_for_in){
+			// we do another eval to capture load byte code instructions from variables variables
+			is_for_in=false;
+			char *test_aux;
+			bool error_some_instruction_not_load_local=false;
+			int test_line=line;
+
+			// eval expression and not optimize to convert load in op to load from iterator
+			if((test_aux = eval_expression(
+					eval_data
+					,aux_p
+					,test_line
+					,new_scope
+					,&ei_init_vars_for //eval_data->current_function->instructions
+					,NULL
+					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_FOR_IN_VARIABLES
+			))==NULL){
+				goto label_exit_for;
+			}
+
+			if(is_operator(test_aux)==Operator::OPERATOR_IN){
+
+				aux_p=test_aux;
+				line=test_line;
+
+				// check each byte code is load...
+				for(int j=0; j<ei_init_vars_for.count;j++){
+					EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for.items[j];
+					if(ins->vm_instruction.byte_code!=BYTE_CODE_LOAD_LOCAL){
+						error_some_instruction_not_load_local=true;
+						break;
+					}
+
+					// switch to push
+					ins->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_LOCAL;
+
+				}
+
+				// Some symbol is not local
+				if(error_some_instruction_not_load_local == true){
+					EVAL_ERROR_FILE_LINE_GOTOF(
+							eval_data->current_parsing_file
+							,line
+							,label_exit_for
+							,"malformed for-in loop"
+					);
+				}
+
+				EvalInstruction *ei_aux=NULL;
+				Symbol *symbol_iterator=NULL;
+				Operator tst_op_aux;
+				EvalInstruction ei_iterator;
+				// set aux_p as test_aux
+				line=test_line;
+
+				// all check instructions
+				IGNORE_BLANKS(aux_p,eval_data,test_aux+strlen(eval_data_operators[OPERATOR_IN].str),line);
+
+				if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
+					EVAL_ERROR_FILE_LINE_GOTO(
+							eval_data->current_parsing_file
+							,test_line
+							,label_exit_for
+							,"Syntax error 'for-in': unexpected operator '%s' after 'in' "
+							,eval_data_operators[tst_op_aux].str
+					);
+				}
+
+				if((key_w=eval_is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
+					EVAL_ERROR_FILE_LINE_GOTO(
+							eval_data->current_parsing_file
+							,test_line
+							,label_exit_for
+							,"Syntax error 'for-in': unexpected '%s' after 'in' "
+							,eval_data_keywords[key_w].str
+					);
+				}
+
+				// eval iterator variable
+				if((aux_p = eval_expression(
+						eval_data
+						,aux_p
+						,line
+						,new_scope
+						,&ei_load_container_identifier //eval_data->current_function->instructions
+						,NULL
+						,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
+				))==NULL){
+					goto label_exit_for;
+				}
+
+				if(*aux_p!=')'){
+					if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
+						EVAL_ERROR_FILE_LINE_GOTO(
+							eval_data->current_parsing_file
+							,line
+							,label_exit_for
+							,"Syntax error 'for-in': unexpected operator '%s' after container identifier "
+							,eval_data_operators[tst_op_aux].str
+						);
+					}else{
+						EVAL_ERROR_FILE_LINE_GOTOF(
+							eval_data->current_parsing_file
+							,line
+							,label_exit_for
+							,"Syntax error 'for-in': expected ')' after container identifier "
+						);
+					}
+				}
+
+				// 1. create iterator symbol
+				if((symbol_iterator=eval_data->current_function->script_function->registerLocalVariable(
+						new_scope
+						, eval_data->current_parsing_file
+						, line
+						, eval_anonymous_iterator_name()
+					))==NULL){
+					goto label_exit_for;
+				};
+
+				ei_iterator.vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
+				ei_iterator.vm_instruction.value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
+				ei_iterator.vm_instruction.value_op2=symbol_iterator->idx_position;
+				ei_iterator.symbol=*symbol_iterator;
+				ei_iterator.instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, symbol_iterator->name);
+
+
+				// 2. emit iterator init
+				for(int i=0; i < ei_load_container_identifier.count; i++){
+					eval_data->current_function->eval_instructions.push_back((zs_int)(
+						new EvalInstruction(*((EvalInstruction *)ei_load_container_identifier.items[i]))
+					));
+				}
+
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+						ei_aux=new EvalInstruction(ei_iterator)
+				));
+
+				// change load by push stk because we have to store iterator variable returned by iter()
+				ei_aux->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_LOCAL;
+
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+						ei_aux=new EvalInstruction(
+							BYTE_CODE_IT_INIT
+					)
+				));
+
+				ei_aux->instruction_source_info=((EvalInstruction *)ei_load_container_identifier.items[ei_load_container_identifier.count-1])->instruction_source_info;
+
+				idx_instruction_for_start=(int)(eval_data->current_function->eval_instructions.count);
+
+				// 3. emit iterator condition end
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+						ei_aux=new EvalInstruction(ei_iterator)
+				));
+
+
+				// load object end symbol
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
+				));
+				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "end");
+
+				// call
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+					new EvalInstruction(BYTE_CODE_MEMBER_CALL,0)
+				));
+
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+						ei_jnt=new EvalInstruction(BYTE_CODE_JT)
+				));
+				ei_jnt->instruction_source_info.file=eval_data->current_parsing_file;
+				ei_jnt->instruction_source_info.line=line;
+
+				idx_instruction_for_after_jnz_condition=(int)(eval_data->current_function->eval_instructions.count);
+
+				// push as many null as n left vars -1
+				for(int i=0; i < ei_init_vars_for.count;i++){
+					eval_data->current_function->eval_instructions.push_back((zs_int)(
+						ei_aux=new EvalInstruction(BYTE_CODE_LOAD_NULL)
+					));
+				}
+
+				// load v
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+						ei_aux=new EvalInstruction(ei_iterator)
+				));
+
+				// v._get
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
+				));
+
+				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "get");
+
+				// call, return all
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+					// insert byte code call and set return count as 2, due in in this case we have prepared 2 vars on the left (k,v)
+					new EvalInstruction(BYTE_CODE_MEMBER_CALL,INSTRUCTION_VALUE_OP1_RETURN_COUNT(2))
+				));
+
+				// load k,v
+				for(int i=ei_init_vars_for.count-1; i >=0 ;i--){
+					eval_data->current_function->eval_instructions.push_back((zs_int)(
+							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.items[i])
+					));
+				}
+
+				// store...
+				eval_data->current_function->eval_instructions.push_back((zs_int)(
+					new EvalInstruction(BYTE_CODE_STORE,ei_init_vars_for.count)
+				));
+
+				// 4. emit post operation
+				ei_post_operations.push_back((zs_int)(
+						ei_aux=new EvalInstruction(ei_iterator)
+				));
+
+				// load object end symbol
+				ei_post_operations.push_back((zs_int)(
+					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
+				));
+
+				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_post_inc");
+
+				// call
+				ei_post_operations.push_back((zs_int)(
+					new EvalInstruction(BYTE_CODE_MEMBER_CALL,0)
+				));
+
+
+			}else{ // is not for-in re eval for in with no in-break
+
+				// copy var initialization
+				for(int i=0; i <ei_init_vars_for.count ;i++){
+					eval_data->current_function->eval_instructions.push_back((zs_int)(
+							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.items[i])
+					));
+				}
+
+			}
+		}
+		// END FOR-VAR IN PROCESS
+		//------------------------------------------------------------------------------------------
+
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -666,7 +621,7 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE_GOTOF(
 					eval_data->current_parsing_file
 					,line
-					,exit_for
+					,label_exit_for
 					,"Syntax error 'for': Expected ';'"
 				);
 			}
@@ -711,7 +666,7 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE_GOTOF(
 					eval_data->current_parsing_file
 					,line
-					,exit_for
+					,label_exit_for
 					,"Syntax error 'for': Expected ';'"
 				);
 
@@ -733,26 +688,24 @@ namespace zetscript{
 			}
 		}
 
-
 		if(*aux_p != ')'){
 			EVAL_ERROR_FILE_LINE_GOTOF(
 				eval_data->current_parsing_file
 				,line
-				,exit_for
+				,label_exit_for
 				,"Syntax error 'for': Expected ')'"
 			);
 		}
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 		if(*aux_p != '{'){
-			EVAL_ERROR_FILE_LINEF(
+			EVAL_ERROR_FILE_LINE_GOTOF(
 				eval_data->current_parsing_file
 				,line
-				,exit_for
+				,label_exit_for
 				,"Syntax error 'for': Expected '{' for begin block"
 			);
 		}
-
 
 		// increase the parsing_loop in order to take account for continues and breaks
 		eval_data->current_function->parsing_loop++;
@@ -765,7 +718,7 @@ namespace zetscript{
 				,new_scope
 		))==NULL){
 			// deallocate post operations
-			goto exit_for;
+			goto label_exit_for;
 		}
 
 		// parsing_loop--
@@ -785,6 +738,9 @@ namespace zetscript{
 				)
 		));
 
+		// all opeartions done so clean ei_post_operations vector in order to not deallocate already evaluated instructions
+		ei_post_operations.clear();
+
 		// update jnt instruction to jmp after jmp instruction...
 		if(ei_jnt != NULL){ // infinite loop
 			ei_jnt->vm_instruction.value_op2=(eval_data->current_function->eval_instructions.count-idx_instruction_for_after_jnz_condition)+1;
@@ -796,19 +752,26 @@ namespace zetscript{
 		// true: We treat declared variables into for as another scope.
 		eval_check_scope(eval_data,new_scope);
 
-exit_for:
+label_exit_for:
 
 		for(int i=0; i<ei_post_operations.count;i++){
 			EvalInstruction *ei=(EvalInstruction *)ei_post_operations.items[i];
 			delete ei;
 		}
+		ei_post_operations.clear();
 
 
 		for(int j=0; j<ei_init_vars_for.count;j++){
-			delete (EvalInstruction *)ei_init_vars_for.items[j];
+			EvalInstruction *ei= (EvalInstruction *)ei_init_vars_for.items[j];
+			delete ei;
 		}
 		ei_init_vars_for.clear();
 
+		for(int j=0; j<ei_load_container_identifier.count;j++){
+			EvalInstruction *ei= (EvalInstruction *)ei_load_container_identifier.items[j];
+			delete ei;
+		}
+		ei_load_container_identifier.clear();
 
 		return aux_p;
 	}

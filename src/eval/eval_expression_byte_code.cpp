@@ -283,7 +283,12 @@ namespace zetscript{
 
 			// TODO: JEB Check whether expression is constant true/false
 			if(*aux_p != ':'){
-				EVAL_ERROR_FILE_LINE_GOTOF(eval_error_byte_code,eval_data->current_parsing_file,line ,"Expected ':' on ternary expression");
+				EVAL_ERROR_FILE_LINE_GOTOF(
+					eval_data->current_parsing_file
+					,line
+					,eval_error_byte_code
+					,"Expected ':' on ternary expression"
+				);
 			}
 
 

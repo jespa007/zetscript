@@ -174,7 +174,12 @@ namespace zetscript{
 		}
 
 		if(aux_p==0){
-			EVAL_ERROR_FILE_LINE_GOTOF(eval_error_sub_expression,eval_data->current_parsing_file,line ,"Unexpected end of file");
+			EVAL_ERROR_FILE_LINE_GOTOF(
+				eval_data->current_parsing_file
+				,line
+				,eval_error_sub_expression
+				,"Unexpected end of file"
+			);
 		}
 
 		// here convert each expression token to byte code

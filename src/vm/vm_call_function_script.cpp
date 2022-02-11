@@ -66,13 +66,11 @@ namespace zetscript{
 		StackElement *stk_src=NULL;
 		zs_int *stk_src_ref_value=NULL;
 		zs_int *stk_dst_ref_value=NULL;
-		unsigned short stk_src_properties=0;
+		uint16_t stk_src_properties=0;
 		void *stk_src_ref_value_copy_aux=NULL;
 
 		Instruction *instruction_it=instructions;
-		zs_vector *local_variables=calling_function->local_variables;
-		unsigned symbols_count=local_variables->count;
-		StackElement *stk_start=&_stk_local_var[symbols_count];   // <-- here starts stk for aux vars for operations ..
+		StackElement *stk_start=&_stk_local_var[calling_function->local_variables->count];   // <-- here starts stk for aux vars for operations ..
 
 		data->stk_vm_current = stk_start;
 		data->vm_idx_call++;
@@ -98,10 +96,9 @@ namespace zetscript{
 			}
 
 			// reset local variables symbols (not arg symbols)
-			for(unsigned i=calling_function->params_len;i<symbols_count;i++){
+			for(int i=calling_function->params_len;i<calling_function->local_variables->count;i++){
 				STK_SET_NULL(_stk_local_var+i);
 			}
-			//memset(_stk_local_var+calling_function->params_len,0,sizeof(StackElement)*symbols_count);
 		}
 		//-----------------------------------------------------------------------------------------------------------------------
 		//

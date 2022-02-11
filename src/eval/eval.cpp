@@ -508,17 +508,17 @@ namespace zetscript{
 					if(symbol_sf_foundf == NULL){
 						if((sf->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
 							EVAL_ERROR_FILE_LINE_GOTO(
-								lbl_exit_pop_function
-								,eval_data->current_parsing_file
+								eval_data->current_parsing_file
 								,eval_instruction->instruction_source_info.line
+								,lbl_exit_pop_function
 								,"Cannot find parent constructor of '%s'"
 								,sc_sf->type_name.c_str()
 							);
 						}else{
 							EVAL_ERROR_FILE_LINE_GOTO(
-								lbl_exit_pop_function
-								,eval_data->current_parsing_file
+								eval_data->current_parsing_file
 								,eval_instruction->instruction_source_info.line
+								,lbl_exit_pop_function
 								,"Cannot find parent function '%s::%s'"
 								,sc_sf->type_name.c_str()
 								,sf->function_name.c_str()
