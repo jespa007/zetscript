@@ -854,14 +854,14 @@ apply_metamethod_error:
 
 		// stk_op2 expects to be obj with container
 
-		if((stk_result_op2->properties & STK_PROPERTY_PTR_STK) == false){
+		if((stk_result_op2->properties & STK_PROPERTY_PTR_STK) == 0){
 			VM_ERROR("internal: Expected stk",0);
 			return;
 		}
 
-		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
+		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
 			//VM_ERROR("internal: Expected object");
-			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
+			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
 				VM_ERROR("Variable '%s' it doesn't implements iterator",SFI_GET_SYMBOL_NAME(calling_function,instruction));
 				return;
 			}
@@ -877,10 +877,12 @@ apply_metamethod_error:
 
 			ScriptFunction *so_function=(ScriptFunction *)symbol_iter->ref_ptr;
 			ScriptObject *so_object=obj;
+			ScriptType *sc=NULL;//obj->getScriptType();
 
 			int n_args=0;
 
-			if(symbol_iter->properties & SYMBOL_PROPERTY_STATIC){
+			// ScriptObjectObject uses static method in order to call iter (i.e Object::iter(o)
+			if((symbol_iter->properties & SYMBOL_PROPERTY_STATIC)!= 0){ //is static
 				n_args=1;
 
 				// only stores and not increment (++ ) in order to start the stk arg
@@ -909,19 +911,20 @@ apply_metamethod_error:
 			}
 
 			obj=(ScriptObject *)data->stk_vm_current->value;
+			sc=obj->getScriptType();
 
 			// check all functions...
-			if((obj->getProperty("get"))==NULL){
+			if(sc->getSymbolMemberFunction("get")==NULL){
 				VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getTypeName().c_str());
 				return;
 			}
 
-			if((obj->getProperty("_post_inc"))==NULL){
+			if(sc->getSymbolMemberFunction("_post_inc")==NULL){
 				VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getTypeName().c_str());
 				return;
 			}
 
-			if((obj->getProperty("end"))==NULL){
+			if(sc->getSymbolMemberFunction("end")==NULL){
 				VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getTypeName().c_str());
 				return;
 			}

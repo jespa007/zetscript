@@ -388,6 +388,7 @@ namespace zetscript{
 			}
 
 			if(is_operator(test_aux)==Operator::OPERATOR_IN){
+				is_for_in=true;
 
 				aux_p=test_aux;
 				line=test_line;
@@ -511,6 +512,9 @@ namespace zetscript{
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
 						ei_aux=new EvalInstruction(
 							BYTE_CODE_IT_INIT
+							,ZS_IDX_UNDEFINED
+							,ZS_IDX_UNDEFINED
+							,INSTRUCTION_PROPERTY_RESET_STACK
 					)
 				));
 
@@ -532,7 +536,7 @@ namespace zetscript{
 
 				// call
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
-					new EvalInstruction(BYTE_CODE_MEMBER_CALL,0)
+					new EvalInstruction(BYTE_CODE_MEMBER_CALL,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,0))
 				));
 
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
@@ -544,11 +548,11 @@ namespace zetscript{
 				idx_instruction_for_after_jnz_condition=(int)(eval_data->current_function->eval_instructions.count);
 
 				// push as many null as n left vars -1
-				for(int i=0; i < ei_init_vars_for.count;i++){
+				/*for(int i=0; i < ei_init_vars_for.count;i++){
 					eval_data->current_function->eval_instructions.push_back((zs_int)(
 						ei_aux=new EvalInstruction(BYTE_CODE_LOAD_NULL)
 					));
-				}
+				}*/
 
 				// load v
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
@@ -565,7 +569,7 @@ namespace zetscript{
 				// call, return all
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
 					// insert byte code call and set return count as 2, due in in this case we have prepared 2 vars on the left (k,v)
-					new EvalInstruction(BYTE_CODE_MEMBER_CALL,INSTRUCTION_VALUE_OP1_RETURN_COUNT(2))
+					new EvalInstruction(BYTE_CODE_MEMBER_CALL,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,0))
 				));
 
 				// load k,v
@@ -594,7 +598,7 @@ namespace zetscript{
 
 				// call
 				ei_post_operations.push_back((zs_int)(
-					new EvalInstruction(BYTE_CODE_MEMBER_CALL,0)
+					new EvalInstruction(BYTE_CODE_MEMBER_CALL,0,0,INSTRUCTION_PROPERTY_RESET_STACK)
 				));
 
 
@@ -646,7 +650,7 @@ namespace zetscript{
 							,NULL
 							,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 					))==NULL){
-						return NULL;
+						goto label_exit_for;
 					}
 
 					eval_data->current_function->eval_instructions.push_back((zs_int)(
@@ -683,7 +687,7 @@ namespace zetscript{
 					,{}
 					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION // it allows expression sequence and it does a reset stack in the end
 				))==NULL){
-					return NULL;
+					goto label_exit_for;
 				}
 			}
 		}

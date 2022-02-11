@@ -683,6 +683,8 @@ find_element_object:
 				if(data->vm_error) {
 					goto lbl_exit_function;
 				}
+				// always it does a reset
+				data->stk_vm_current=stk_start;
 				continue;
 			case BYTE_CODE_EQU:  // ==
 				VM_POP_STK_TWO;

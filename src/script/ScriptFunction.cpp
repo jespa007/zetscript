@@ -403,6 +403,14 @@ namespace zetscript{
 					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 				);
 				break;
+			case BYTE_CODE_IT_INIT:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t[RST]\n"
+					,idx_instruction
+					,req_stk
+					,sum_stk_load_stk
+					,byte_code_to_str(instruction->byte_code)
+				);
+				break;
 			default:
 
 				if(iload_info != ""){

@@ -540,8 +540,9 @@ namespace zetscript{
 				case BYTE_CODE_UNRESOLVED_CALL:
 				case BYTE_CODE_UNRESOLVED_THIS_CALL:
 					instruction_token->vm_instruction=ei_first_token_node->vm_instruction;
-					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_params); // by default always returns 1 value
 					instruction_token->vm_instruction.byte_code=byte_code;
+					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_params); // by default always returns 1 value
+
 					instruction_token->symbol=ei_first_token_node->symbol;
 					instruction_token->instruction_source_info= ei_first_token_node->instruction_source_info;
 					delete ei_first_token_node;

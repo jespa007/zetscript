@@ -15,12 +15,13 @@
 #define EVAL_ERROR_FILE_LINEF(file,line,s)		EVAL_ERROR_FILE_LINE(file,line,s,NULL)
 
 
-#define EVAL_ERROR_TOKEN_SYMBOL(file,line,s,...)	eval_data->error=true;\
+#define EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(file,line,my_goto,s,...)	eval_data->error=true;\
 													eval_data->error_file=file;\
 													eval_data->error_line=line;\
 													eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
-													goto lbl_eval_error_token_symbol;
-#define EVAL_ERROR_TOKEN_SYMBOLF(file,line,s)		EVAL_ERROR_TOKEN_SYMBOL(file,line,s,NULL)
+													goto my_goto;
+
+#define EVAL_ERROR_FILE_LINE_GOTO_NO_AUXF(file,line,my_goto,s)		EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(file,line,my_goto,s,NULL)
 
 
 #define EVAL_ERROR(s,...)						eval_data->error=true;\
@@ -33,6 +34,7 @@
 
 
 #define EVAL_ERROR_FILE_LINE_GOTO(file,line,my_goto,s,...)			eval_data->error=true;\
+																	aux_p=NULL;\
 																		eval_data->error_file=file;\
 																		eval_data->error_line=line;\
 																		eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\

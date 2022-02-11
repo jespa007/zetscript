@@ -1,14 +1,16 @@
 var str="abcd"
 var sum_k=0
-var sum_v=""
+var sum_v=0
 
 for(var v in str){
 	sum_v+=v
 	Console::outln("v:{0}",v);
 }
 
-System::assert(sum_v==str,"1. sum_v!="+str)
+System::assert(sum_v=='a'+'b'+'c'+'d',"sum_v!="+str)
 
+sum_k=0
+sum_v=0
 
 for(var k,v in str){
 	sum_k+=k
@@ -16,6 +18,6 @@ for(var k,v in str){
 	Console::outln("str[{0}]:{1}",k,v);
 }
 
-System::assert(sum_k==6,"2.1 sum_k!=6")
-System::assert(sum_v==str,"2.2 sum_v!="+str)
+System::assert(sum_k==6,"sum_k!=6")
+System::assert(sum_v=='a'+'b'+'c'+'d',"sum_v!="+str)
 
