@@ -193,29 +193,29 @@ namespace zetscript{
 
 	void ZetScript::printAllStructSizes(){
 		printf("ZetScript:%lu\n"
-				"VirtualMachineData:%lu\n"
-				"ScriptType:%lu\n"
-				"ScriptFunction:%lu\n"
-				"StackElement:%lu\n"
-				"Symbol:%lu\n"
-				"Scope:%lu\n"
-				"ScriptObject:%lu\n"
-				"ScriptObjectString:%lu\n"
-				"ScriptObjectVector:%lu\n"
-				"ScriptObjectObject:%lu\n"
-				"ScriptObjectClass:%lu\n"
-				,sizeof(ZetScript)
-				,sizeof(VirtualMachineData)
-				,sizeof(ScriptType)
-				,sizeof(ScriptFunction)
-				,sizeof(StackElement)
-				,sizeof(Symbol)
-				,sizeof(Scope)
-				,sizeof(ScriptObject)
-				,sizeof(ScriptObjectString)
-				,sizeof(ScriptObjectVector)
-				,sizeof(ScriptObjectObject)
-				,sizeof(ScriptObjectClass)
+				"VirtualMachineData:%i\n"
+				"ScriptType:%i\n"
+				"ScriptFunction:%i\n"
+				"StackElement:%i\n"
+				"Symbol:%i\n"
+				"Scope:%i\n"
+				"ScriptObject:%i\n"
+				"ScriptObjectString:%i\n"
+				"ScriptObjectVector:%i\n"
+				"ScriptObjectObject:%i\n"
+				"ScriptObjectClass:%i\n"
+				,(int)sizeof(ZetScript)
+				, (int)sizeof(VirtualMachineData)
+				, (int)sizeof(ScriptType)
+				, (int)sizeof(ScriptFunction)
+				, (int)sizeof(StackElement)
+				, (int)sizeof(Symbol)
+				, (int)sizeof(Scope)
+				, (int)sizeof(ScriptObject)
+				, (int)sizeof(ScriptObjectString)
+				, (int)sizeof(ScriptObjectVector)
+				, (int)sizeof(ScriptObjectObject)
+				, (int)sizeof(ScriptObjectClass)
 			);
 	}
 

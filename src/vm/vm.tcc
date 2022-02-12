@@ -877,7 +877,6 @@ apply_metamethod_error:
 
 			ScriptFunction *so_function=(ScriptFunction *)symbol_iter->ref_ptr;
 			ScriptObject *so_object=obj;
-			ScriptType *sc=NULL;//obj->getScriptType();
 
 			int n_args=0;
 

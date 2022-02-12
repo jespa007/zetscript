@@ -500,7 +500,7 @@ namespace zetscript{
 	}
 
 	// Operators
-	std::ostream& operator<<(std::ostream &os, const zs_datetime &dt)
+	/*std::ostream& operator<<(std::ostream& os, const zs_datetime& dt)
 	{
 		char retVal[128] = "";
 		sprintf(static_cast<char *>(retVal), "%d-%02d-%02d %02d:%02d:%02d",
@@ -510,10 +510,10 @@ namespace zetscript{
 			dt.timeInfo->tm_hour,
 			dt.timeInfo->tm_min,
 			dt.timeInfo->tm_sec);
-		os << static_cast<char *>(retVal);
+		std::os << static_cast<char *>(retVal);
 
 		return os;
-	}
+	}*/
 
 	bool operator<(const zs_datetime &mdt, const zs_datetime &odt)
 	{

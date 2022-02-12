@@ -10,7 +10,7 @@ namespace zetscript{
 		{
 		static char line[256];
 		char *ptr;
-		unsigned int len;
+		size_t len;
 		char *c;
 
 		   if (lineptr == NULL || n == NULL)
