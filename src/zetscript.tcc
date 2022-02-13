@@ -889,7 +889,7 @@ namespace zetscript{
 
 			// 1. check all parameters ok.
 			using Traits3 = FunctionTraits<F>;
-			getParamsFunction<Traits3>(0,&return_type, params, MakeIndexSequence<Traits3::arity>{});
+			getParamsFunction<Traits3>(&return_type, params, MakeIndexSequence<Traits3::arity>{});
 
 			// 2. check valid parameters ...
 			if((idx_return_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
@@ -897,7 +897,7 @@ namespace zetscript{
 				return NULL;
 			}
 
-			for(unsigned int i = 0; i < params.count; i++){
+			for(int i = 0; i < params.count; i++){
 				const char *param=params.items[i];
 				if(script_type_factory->getIdxScriptTypeFromTypeNamePtr(param)==-1){
 					THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"

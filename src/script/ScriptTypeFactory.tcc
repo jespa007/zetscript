@@ -204,7 +204,7 @@ namespace zetscript{
 		// now only allows one inheritance!
 		ScriptType *sc=(ScriptType *)script_types->get(idx_register_class);
 
-		for(unsigned i=0; i < sc->idx_base_types->count; i++){
+		for(int i=0; i < sc->idx_base_types->count; i++){
 			sc=getScriptType(sc->idx_base_types->items[i]); // get base class...
 			if(sc->type_name_ptr ==base_class_name_ptr){
 				THROW_RUNTIME_ERROR("C++ class '%s' already base of '%s' ",zs_rtti::demangle(type_name), zs_rtti::demangle(base_class_name));
@@ -224,7 +224,7 @@ namespace zetscript{
 		zs_vector *base_functions=base_class->class_scope->symbol_variables;
 
 		// register all c vars symbols ...
-		for(unsigned i = 0; i < base_functions->count; i++){
+		for(int i = 0; i < base_functions->count; i++){
 
 			Symbol *symbol_src = (Symbol *)base_functions->items[i];
 
@@ -273,7 +273,7 @@ namespace zetscript{
 		}
 
 
-		for(unsigned i = 0; i < base_vars->count; i++){
+		for(int i = 0; i < base_vars->count; i++){
 			Symbol *symbol_src = (Symbol *)base_vars->items[i];
 
 			if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
@@ -333,7 +333,7 @@ namespace zetscript{
 				while(*it_setter!= 0){
 					MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
-						for(unsigned i=0; i < mp_info.setters->count; i++){
+						for(int i=0; i < mp_info.setters->count; i++){
 
 							StackElement *stk_setter=(StackElement *)mp_info.setters->items[i];
 							ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
