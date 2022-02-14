@@ -349,7 +349,7 @@ find_element_object:
 				VM_PUSH_STK_NULL;
 				continue;
 			case BYTE_CODE_LOAD_FUNCTION: // expect constant and function has the same behaviour...
-				VM_PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
+				VM_PUSH_STK_SCRIPT_FUNCTION(((Symbol *)instruction->value_op2)->ref_ptr);
 				continue;
 			case BYTE_CODE_LOAD_ZS_INT:
 				data->stk_vm_current->value=instruction->value_op2;

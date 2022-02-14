@@ -20,7 +20,7 @@ void test_callback(ScriptFunction *script_function){
 	printf("calling function result: %s\n",so->toString().c_str());
 
 	// unref string object lifetime when is not used anymore
-	ZS_UNREF_LIFETIME_OBJECT(zs,so);
+	zs->unrefLifetimeObject(so);
 
 	// delete function...
 	delete callback_function;
@@ -33,16 +33,18 @@ int main(){
 
 	try{
 
+		// bind global function
 		zs->registerFunction("test_callback",test_callback);
 
 		zs->eval(
 			"class Test{\n"
+				"var a\n"
 			"	function1(arg){\n"
 			"       this.d=10;\n"
 			"		Console::outln(\"calling Test.Function:\"+arg+\" a:\"+this.a);\n"
-			"		test_callback(function(a,b,c){\n"
+			/*"		test_callback(function(a,b,c){\n"
 			"			return \"result a:\"+a+\" b:\"+b+\" c:\"+c+\" this.d:\"+this.d;\n"
-			"		});\n"
+			"		});\n"*/
 			"	}\n"
 			"};\n"
 			"\n"
@@ -55,7 +57,7 @@ int main(){
 			"		return \"result a:\"+a+\" b:\"+b+\" c:\"+c;\n"
 			"});\n"
 			""
-		);
+		,EVAL_OPTION_SHOW_USER_BYTE_CODE);
 
 		std::function<void()>  * delete_test=zs->bindScriptFunction<void ()>("delete_test"); // instance function delete_test function.
 		std::function<void(zs_int)> * test_function1=zs->bindScriptFunction<void (zs_int)>("test.function1"); // instance member function test.function1.

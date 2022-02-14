@@ -726,7 +726,7 @@ namespace zetscript{
 				}else if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // try get global symbol
 					ScriptType *this_class=zs->getScriptTypeFactory()->getScriptType(this->idx_type);
 					symbol_found=this_class->getSymbolMemberFunction(ptr_str_symbol_to_find);
-				}else{
+				}else{ // global scope
 					symbol_found = MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 				}
 

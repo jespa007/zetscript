@@ -136,6 +136,29 @@ namespace zetscript{
 			}else { // if global or not found cannot be optimized
 				return false;
 			}
+		}else if(i1->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE){
+			if(load_value_op2 == ZS_IDX_UNDEFINED){
+				ScriptType *sc=NULL;
+				if(
+					   ( eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!= 0
+					&& (	scope->script_type->idx_type != IDX_TYPE_CLASS_MAIN)
+					   // is function member
+					){ // class members are defined as functions
+					sc=scope->script_type;
+				}
+
+				if(sc != NULL){
+					symbol_found = sc->getSymbolVariableMember(i1->symbol.name);
+				}
+
+				if(symbol_found == NULL){
+					return false;
+				}
+
+				load_value_op2=symbol_found->idx_position;
+			}
+
+			// should assign the idx
 		}
 
 		if(load_value_op2 >= MAX_REGISTER_LENGTH){ // if number of vars is > MAX_REGISTER_LENGTH cannot be registered either
@@ -391,9 +414,9 @@ namespace zetscript{
 			unsigned short k_properties=0;
 			n_eval_ops=2;
 
-
 			is_i1_R=eval_expression_get_register(eval_data, scope_info, i1, load_byte_code_1,load_value_op2_1);
 			is_i2_R=eval_expression_get_register(eval_data, scope_info, i2, load_byte_code_2,load_value_op2_2);
+
 			if(is_i1_R && is_i2_R){ // RR
 				instruction=new EvalInstruction(
 						byte_code

@@ -222,6 +222,16 @@ add_executable(zs${POST_NAME}
 )
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 
+#---------------
+# TODO REMOVE!!!
+# function_script_call
+add_executable(script_call${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../samples/script_call.cpp
+)
+# TODO REMOVE!!!
+#---------------
+
+target_link_libraries(script_call${POST_NAME} zetscript${POST_NAME})
 
 if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 	MESSAGE ("-- Suittest: Yes")

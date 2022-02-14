@@ -898,7 +898,7 @@ namespace zetscript{
 			}
 
 			for(int i = 0; i < params.count; i++){
-				const char *param=params.items[i];
+				char *param=(char *)params.items[i];
 				if(script_type_factory->getIdxScriptTypeFromTypeNamePtr(param)==-1){
 					THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"
 							,i+1
@@ -922,6 +922,7 @@ namespace zetscript{
 		template <  typename F>
 		std::function<F> * ZetScript::bindScriptFunction(const zs_string & function_access, const char *file, int line)
 		{
+			std::function<F> * return_function=NULL;
 			ScriptFunction * fun_obj=NULL;
 			ScriptObject *calling_obj=NULL;
 			zs_vector access_var = zs_strutils::split(function_access,'.');
@@ -932,12 +933,12 @@ namespace zetscript{
 
 			// 1. some variable in main function ...
 			if(access_var.count>1){
-				for(unsigned i=0; i < access_var.count-1; i++){
+				for(int i=0; i < access_var.count-1; i++){
 					zs_string *symbol_to_find=(zs_string *)access_var.items[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
-						zs_vector *list_functions=main_function->function_scope->symbol_functions;
-						for(unsigned j = 0; j < list_functions->count && calling_obj==NULL; j++){
-							Symbol * registered_symbol=(Symbol *)list_functions->items[j];
+						zs_vector *list_variables=main_function->function_scope->symbol_variables;
+						for(int j = 0; j < list_variables->count && calling_obj==NULL; j++){
+							Symbol * registered_symbol=(Symbol *)list_variables->items[j];
 							if(registered_symbol->name==*symbol_to_find
 							&& registered_symbol->scope == MAIN_SCOPE(this)){
 								StackElement *stk = vm_get_stack_element_at(virtual_machine,j); // main_function->object_info.local_symbols.variable[j].
@@ -1018,11 +1019,11 @@ namespace zetscript{
 			}else{ // some function in main function
 				zs_string *symbol_to_find=(zs_string *)access_var.items[0];
 				zs_vector *list_functions=main_function->function_scope->symbol_functions;
-				for(unsigned i = 0; i < list_functions->count && fun_obj==NULL; i++){
+
+				for(int i = 0; i < list_functions->count && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->items[i];
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
-					if(		aux_fun_obj->function_name  == *symbol_to_find
-					  && aux_fun_obj->function_scope == MAIN_SCOPE(this)){
+					if(	aux_fun_obj->function_name  == *symbol_to_find){
 						fun_obj=aux_fun_obj;
 					}
 
@@ -1033,18 +1034,22 @@ namespace zetscript{
 				THROW_SCRIPT_ERROR_FILE_LINE(
 						file
 						,line
-						,"Cannot bind script function '%s': Variable name '%s' is not function type"
+						,"Cannot bind script function '%s': Variable name '%s' is not found or not function type"
 						,function_access.c_str()
 						,((zs_string *)access_var.items[access_var.count-1])->c_str()
 				);
 			}
 			try{
-				return bindScriptFunction<F>(fun_obj,calling_obj,file,line);
+				return_function=bindScriptFunction<F>(fun_obj,calling_obj,file,line);
 			}catch(std::exception & ex){
 				THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': %s",function_access.c_str(),ex.what());
 			}
 
-			return NULL;
+			for(int i=0; i < access_var.count;i++){
+				delete (zs_string *)access_var.items[i];
+			}
+
+			return return_function;
 
 		}
 }

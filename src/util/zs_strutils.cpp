@@ -172,17 +172,20 @@ namespace zetscript{
 		zs_vector split(const zs_string &s_in, char delim) {
 		    zs_vector elems;
 		    //zs_string s = s_in;
+		    char *last_pos=(char *)s_in.c_str();
 		    char *pos=(char *)s_in.c_str();
 		    zs_string token;
 		    while((pos=strchr(pos,delim))!=NULL) {
-		        token = s_in.substr(0, pos-s_in.c_str());
+		        token = s_in.substr(last_pos-s_in.c_str(), pos-last_pos);
 		        elems.push_back((zs_int)(new zs_string(token)));
 		        pos++;
-		//        std::cout << token << std::endl;
-		        //s.erase(0, pos + delim.length());
+		        last_pos=pos;
 		    }
 
-		    //std::cout << s << std::endl;
+		    // push last token
+		    token = s_in.substr((last_pos-s_in.c_str()), s_in.length()-(last_pos-s_in.c_str()));
+	    	elems.push_back((zs_int)(new zs_string(token)));
+
 		    return elems;
 		}
 
