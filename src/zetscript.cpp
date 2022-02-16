@@ -192,7 +192,7 @@ namespace zetscript{
 	 // PRINT INFO
 
 	void ZetScript::printAllStructSizes(){
-		printf("ZetScript:%lu\n"
+		printf("ZetScript:%i\n"
 				"VirtualMachineData:%i\n"
 				"ScriptType:%i\n"
 				"ScriptFunction:%i\n"

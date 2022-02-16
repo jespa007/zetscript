@@ -336,7 +336,7 @@ namespace zetscript{
 
 #define EXTRACT_FUNCTION_INFO\
 	{ /* get elements from class */ \
-		Symbol *symbol = (Symbol *)(((zs_int *)stk_elements_builtin_ptr)[i]);\
+		Symbol *symbol = (Symbol *)(*(stk_elements_builtin_ptr+i));\
 		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
 			irfs = (ScriptFunction *)symbol->ref_ptr;\
 			if(irfs->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION ){\
@@ -367,7 +367,7 @@ namespace zetscript{
 
 		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
 
-		void *stk_elements_builtin_ptr= data->main_function_object->function_scope->symbol_functions->items;// vector of symbols
+		zs_int *stk_elements_builtin_ptr= data->main_function_object->function_scope->symbol_functions->items;// vector of symbols
 		int stk_elements_builtin_len=  data->main_function_object->function_scope->symbol_functions->count;// vector of symbols
 
 		if(class_obj != NULL){

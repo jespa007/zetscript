@@ -557,6 +557,7 @@ namespace zetscript{
 
 
 		if(symbol_repeat != NULL){ // symbol found
+
 			ScriptFunction *sf_repeat=NULL;
 
 			zs_string symbol_file_line=ZS_CONST_STR_IS_EMPTY(symbol_repeat->file)?

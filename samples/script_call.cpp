@@ -17,7 +17,7 @@ void test_callback(ScriptFunction *_script_function){
 	auto so=script_function(&param1,&param2,&param3);
 
 	// print the results...
-	printf("calling function result: %s\n",so->toString().c_str());
+	printf("FROM CALLBACK 1: calling function result: %s\n",so->toString().c_str());
 
 	// unref string object lifetime when is not used anymore
 	zs->unrefLifetimeObject(so);
@@ -36,7 +36,7 @@ void test_callback(ScriptObjectMemberFunction *_script_function){
 	auto so=script_function(&param1,&param2,&param3);
 
 	// print the results...
-	printf("calling function result: %s\n",so->toString().c_str());
+	printf("FROM CALLBACK 2: %s\n",so->toString().c_str());
 
 	// unref string object lifetime when is not used anymore
 	zs->unrefLifetimeObject(so);
@@ -62,7 +62,6 @@ int main(){
 				"var a\n"
 			"	function1(arg){\n"
 			"       this.d=10;\n"
-			"		Console::outln(\"calling Test.Function:\"+arg+\" a:\"+this.a);\n"
 			"		test_callback(function(a,b,c){\n"
 			"			return \"result from object Test: a:\"+a+\" b:\"+b+\" c:\"+c+\" this.d:\"+this.d;\n"
 			"		});\n"
@@ -78,10 +77,10 @@ int main(){
 			"		return \"result a:\"+a+\" b:\"+b+\" c:\"+c;\n"
 			"});\n"
 			""
-		,EVAL_OPTION_SHOW_USER_BYTE_CODE);
+		);
 
-		std::function<void()>  delete_test=zs->bindScriptFunction<void ()>("delete_test"); // instance function delete_test function.
-		std::function<void(zs_int)> test_function1=zs->bindScriptFunction<void (zs_int)>("test.function1"); // instance member function test.function1.
+		auto  delete_test=zs->bindScriptFunction<void ()>("delete_test"); // instance function delete_test function.
+		auto  test_function1=zs->bindScriptFunction<void (zs_int)>("test.function1"); // instance member function test.function1.
 
 		test_function1(10); // it calls "test.function" member function with 10 as parameter.
 		delete_test(); // it calls "delete_test" function with no parameters
