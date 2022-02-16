@@ -50,6 +50,7 @@ namespace zetscript{
 		 zs_string to_upper(const zs_string & str);
 		 zs_string  format(const  char  *string_text, ...);
 
+		 bool is_empty(const zs_string & str);
 		 bool ends_with(const zs_string & str, const zs_string & ending);
 		 bool starts_with(const zs_string & str, const zs_string & starting);
 		 zs_string replace(const zs_string & str_input, const zs_string & old_word, const zs_string & new_word);

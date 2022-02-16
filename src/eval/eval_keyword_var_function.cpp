@@ -10,8 +10,8 @@ namespace zetscript{
 
 	static int n_anonymous_function=0;
 
-	zs_string eval_anonymous_function_name(const zs_string &pre_name=""){
-		return "_@afun_"+(pre_name==""?"":pre_name+"_")+zs_strutils::zs_int_to_str(n_anonymous_function++);
+	zs_string eval_anonymous_function_name(const zs_string &pre_name="",const zs_string &post_name=""){
+		return "_"+(pre_name==""?"":pre_name)+"@afun_"+(post_name==""?"":post_name+"_")+zs_strutils::zs_int_to_str(n_anonymous_function++);
 	}
 
 
@@ -96,7 +96,7 @@ namespace zetscript{
 
 	ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector *eval_instructions){
 
-		zs_string function_name=eval_anonymous_function_name("defval");
+		zs_string function_name=eval_anonymous_function_name("","defval");
 		Instruction *start_ptr=NULL;
 		size_t instructions_len=(eval_instructions->count+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);

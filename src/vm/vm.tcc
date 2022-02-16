@@ -335,22 +335,13 @@ namespace zetscript{
 
 
 #define EXTRACT_FUNCTION_INFO\
-	if(class_obj!=NULL){ /* get elements from class */ \
+	{ /* get elements from class */ \
 		Symbol *symbol = (Symbol *)(((zs_int *)stk_elements_builtin_ptr)[i]);\
 		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
 			irfs = (ScriptFunction *)symbol->ref_ptr;\
 			if(irfs->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION ){\
 				this_as_first_parameter=1;\
 			}\
-		}\
-	}else{ \
-		StackElement *stk_element=&((StackElement *)stk_elements_builtin_ptr)[i]; \
-		if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_element)){\
-			ScriptObjectMemberFunction *fm=(ScriptObjectMemberFunction  *)stk_element->value;\
-			irfs=fm->so_function;\
-			this_as_first_parameter=1;\
-		}else if(stk_element->properties & STK_PROPERTY_FUNCTION){\
-				irfs = (ScriptFunction *)stk_element->value;\
 		}\
 	}\
 	if(irfs==NULL) continue;
@@ -438,10 +429,16 @@ namespace zetscript{
 									break;
 								case STK_PROPERTY_BOOL:
 									idx_type=IDX_TYPE_BOOL_PTR_C;
+									break;
+								case STK_PROPERTY_FUNCTION|STK_PROPERTY_MEMBER_FUNCTION:
 									all_check=
-											arg_idx_type==IDX_TYPE_BOOL_PTR_C
-										  ||arg_idx_type==IDX_TYPE_BOOL_C;
-
+												arg_idx_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
+									idx_type=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
+									break;
+								case STK_PROPERTY_FUNCTION:
+									idx_type=IDX_TYPE_FUNCTION;
+									all_check=
+												arg_idx_type==IDX_TYPE_FUNCTION;
 									break;
 								/*case STK_PROPERTY_NULL:
 									all_check=false;

@@ -159,7 +159,7 @@ namespace zetscript{
 					}
 					break;
 				case STK_PROPERTY_FUNCTION:
-					val_ret=(zs_int)stack_element->value;
+					val_ret=(zs_int)((Symbol *)(stack_element)->value)->ref_ptr;
 					break;
 				default: // script variable by default ...
 
@@ -879,7 +879,7 @@ namespace zetscript{
 		}
 
 		template <  typename F>
-		std::function<F> * ZetScript::bindScriptFunction(ScriptFunction *fun,ScriptObject *calling_obj, const char *file, int line){
+		std::function<F> ZetScript::bindScriptFunction(ScriptFunction *fun,ScriptObject *calling_obj, const char *file, int line){
 
 			const char *return_type;
 			zs_vector params;
@@ -909,20 +909,30 @@ namespace zetscript{
 
 			// 3. build custom function in function of parameter number ...
 			bindScriptFunctionBuilderBase<Traits3>(file,line,&ptr,calling_obj,fun,MakeIndexSequence<Traits3::arity>{});
-			return (std::function<F> *)ptr;
+
+			// copy f and deallocate
+			auto f=*((std::function<F> *)ptr);
+			delete (std::function<F> *)ptr;
+
+			return f;
 
 		}
 
 		template <  typename F>
-		std::function<F> * ZetScript::bindScriptFunction(ScriptFunction *fun, const char *file, int line){
+		std::function<F> ZetScript::bindScriptFunction(ScriptObjectMemberFunction *fun, const char *file, int line){
+			return bindScriptFunction<F>(fun->so_function,fun->so_object, file, line);
+		}
+
+		template <  typename F>
+		std::function<F> ZetScript::bindScriptFunction(ScriptFunction *fun, const char *file, int line){
 			return bindScriptFunction<F>(fun,NULL, file, line);
 		}
 
 
 		template <  typename F>
-		std::function<F> * ZetScript::bindScriptFunction(const zs_string & function_access, const char *file, int line)
+		std::function<F> ZetScript::bindScriptFunction(const zs_string & function_access, const char *file, int line)
 		{
-			std::function<F> * return_function=NULL;
+			std::function<F> return_function=NULL;
 			ScriptFunction * fun_obj=NULL;
 			ScriptObject *calling_obj=NULL;
 			zs_vector access_var = zs_strutils::split(function_access,'.');

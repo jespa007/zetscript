@@ -12,15 +12,15 @@ namespace zetscript{
 			return name;
 		#else
 			if(name == zs_string(typeid(zs_string *).name())){
-				return "zs_string*";
+				return "zetscript::zs_string*";
 			}
 
 			if(name == zs_string(typeid(zs_int *).name())){
-					return "zs_int*";
+					return "zetscript::zs_int*";
 				}
 
 			if(name == zs_string(typeid(bool *).name())){
-					return "bool*";
+					return "zetscript::bool*";
 				}
 
 			if(name == zs_string(typeid(zs_float *).name())){
@@ -29,7 +29,11 @@ namespace zetscript{
 
 
 			if(name == zs_string(typeid(zs_string).name())){
-				return "zs_string";
+				return "zetscript::zs_string";
+			}
+
+			if(name == zs_string("FunctionMember")){
+				return "zetscript::ScriptObjectMemberFunction *";
 			}
 
 			int status = -4; // some arbitrary value to eliminate the compiler warning

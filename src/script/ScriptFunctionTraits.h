@@ -171,6 +171,7 @@ namespace zetscript{
 		int idx_return_type=-1;
 		const char * return_type;
 		zs_vector args;
+		zs_string error="";
 		// 1. check all parameters ok.
 		using Traits3 = FunctionTraits<decltype(_ptr_function)>;
 		getParamsFunction<Traits3>(&return_type, args, MakeIndexSequence<Traits3::arity>{});
@@ -196,24 +197,40 @@ namespace zetscript{
 				int idx_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
 				// exception: These variables are registered but not allowed to pass throught parameter
 				if(idx_type==IDX_TYPE_ZS_FLOAT_C || idx_type==IDX_TYPE_BOOL_C || idx_type == IDX_TYPE_STRING_C){
-					THROW_RUNTIME_ERROR(
-							"Argument %i type '%s' for function '%s' is not supported as parameter, you should use pointer instead (i.e %s *)"
+					error=zs_strutils::format("Argument %i type '%s' for function '%s' is not supported as parameter, you should use pointer instead (i.e %s *)"
 							,i+1
 							,zs_rtti::demangle(param).c_str()
 							,_function_name.c_str()
-							,zs_rtti::demangle(param).c_str()
-					);
+							,zs_rtti::demangle(param).c_str());
+					goto exit_function_traits;
 				}
 
 				if(idx_type==ZS_IDX_UNDEFINED){
-					THROW_RUNTIME_ERROR("Argument %i type '%s' for function '%s' not registered"
+
+					error=zs_strutils::format("Argument %i type '%s' for function '%s' not registered"
 							,i+1
 							,zs_rtti::demangle(param).c_str()
 							,_function_name.c_str());
+					goto exit_function_traits;
 				}
 
 				(*_params)[i]=ScriptFunctionParam(idx_type,param);
 			}
+		}
+
+exit_function_traits:
+
+		if(zs_strutils::is_empty(error)==false){
+
+			if(*_params !=NULL){
+				delete [] *_params;
+			}
+
+			 *_params=NULL;
+
+			THROW_RUNTIME_ERRORF(
+					error.c_str()
+			);
 		}
 
 		if(_str_return_type != NULL){
@@ -221,6 +238,7 @@ namespace zetscript{
 		}
 
 		return idx_return_type;
+
 	}
 
 

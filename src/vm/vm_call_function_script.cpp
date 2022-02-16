@@ -1198,9 +1198,17 @@ execute_function:
 
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
-				// copy to vm stack
-				while(sf_call_n_returned_arguments_from_function-->0){
-					*data->stk_vm_current++=*sf_call_stk_return++;
+
+				// no return parameters but the caller expects n_parameters, so
+				if(sf_call_n_returned_arguments_from_function==0){
+					int ret=INSTRUCTION_GET_RETURN_COUNT(instruction);
+					for(int i=0;  i < ret; i++){
+						VM_PUSH_STK_NULL;
+					}
+				}else{ // copy to vm stack
+					while(sf_call_n_returned_arguments_from_function-->0){
+						*data->stk_vm_current++=*sf_call_stk_return++;
+					}
 				}
 
 				continue;

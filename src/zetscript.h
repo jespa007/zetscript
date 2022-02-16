@@ -451,13 +451,17 @@ namespace zetscript{
 		void getScriptObject(const zs_string &function_access,ScriptObject **calling_obj,ScriptFunction **fun_obj );
 
 		template <  typename F>
-		std::function<F> * bindScriptFunction(const zs_string & function_access, const char *file="", int line=-1);
+		std::function<F> bindScriptFunction(const zs_string & function_access, const char *file="", int line=-1);
 
 		template <  typename F>
-		std::function<F> * bindScriptFunction(ScriptFunction *sf, ScriptObject *calling_object, const char *file="", int line=-1);
+		std::function<F> bindScriptFunction(ScriptObjectMemberFunction *sf, const char *file="", int line=-1);
+
 
 		template <  typename F>
-		std::function<F> * bindScriptFunction(ScriptFunction *sf, const char *file="", int line=-1);
+		std::function<F> bindScriptFunction(ScriptFunction *sf, ScriptObject *calling_object, const char *file="", int line=-1);
+
+		template <  typename F>
+		std::function<F> bindScriptFunction(ScriptFunction *sf, const char *file="", int line=-1);
 
 
 
