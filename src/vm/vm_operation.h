@@ -98,6 +98,17 @@
 				);\
 				vm_create_shared_pointer(vm,so_vector);\
 				VM_PUSH_STK_SCRIPT_OBJECT(so_vector);\
+		}else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
+					&&\
+				STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
+		){\
+				ScriptObjectObject *so_object=ScriptObjectObject::concat(\
+						data->zs\
+						,(ScriptObjectObject *)stk_result_op1->value\
+						,(ScriptObjectObject *)stk_result_op2->value\
+				);\
+				vm_create_shared_pointer(vm,so_object);\
+				VM_PUSH_STK_SCRIPT_OBJECT(so_object);\
 		}else{\
 			if(vm_apply_metamethod(\
 					vm\

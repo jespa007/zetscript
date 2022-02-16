@@ -90,6 +90,10 @@ namespace zetscript{
 
 			stk->value=(zs_int)so_partial;
 			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
+
+			// deallocate allocated string
+			delete (zs_string *)v.items[i];
+
 		}
 
 		return sv;
