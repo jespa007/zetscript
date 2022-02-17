@@ -4,21 +4,23 @@
  */
 #include "zetscript.h"
 
-using namespace zetscript;
-
 void say_helloworld(){
-	printf("Hello World!\n");
+	printf("Hello World from C!\n");
 }
 
 int main(){
 
-	ZetScript *zs = new ZetScript(); // create zetscript instance
+	// Zetscript instance
+	zetscript::ZetScript zs;
 
-	zs->registerFunction("say_helloworld",say_helloworld);
+	// Binds 'say_helloworld' function to be accessible from script
+	zs.registerFunction("say_helloworld",say_helloworld);
 
-	zs->eval("say_helloworld();"); // Call c function and prints hello world!
+	 // Prints 'Hello World from script!'
+	zs.eval("Console::outln(\"Hello World from script!\")");
 
-	delete zs; // destroy zetscript instance when not used anymore
+	// Call C function and prints 'Hello World from C!'
+	zs.eval("say_helloworld();");
 
 	return 0;
 }

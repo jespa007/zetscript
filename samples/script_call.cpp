@@ -1,44 +1,42 @@
 
 #include "zetscript.h"
 
-using namespace zetscript;
+zetscript::ZetScript *zs=NULL;
 
-ZetScript *zs=NULL;
-
-void test_callback(ScriptFunction *_script_function){
-	zs_float param1=1.0;
-	zs_int param2=2.0;
+void test_callback(zetscript::ScriptFunction *_script_function){
+	zetscript::zs_float param1=1.0;
+	zetscript::zs_int param2=2.0;
 	bool param3=true;
 
 	// transform script function to c++ function...
-	auto script_function = zs->bindScriptFunction<ScriptObjectString * (zs_float *, zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
+	auto script_function = zs->bindScriptFunction<zetscript::ScriptObjectString * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
 
-	// call the function...
+	// call the function. The function return a 'ScriptObjectString' ...
 	auto so=script_function(&param1,&param2,&param3);
 
 	// print the results...
 	printf("FROM CALLBACK 1: calling function result: %s\n",so->toString().c_str());
 
-	// unref string object lifetime when is not used anymore
+	// unref 'ScriptObjectString' lifetime
 	zs->unrefLifetimeObject(so);
 
 }
 
-void test_callback(ScriptObjectMemberFunction *_script_function){
-	zs_float param1=1.0;
-	zs_int param2=2.0;
+void test_callback(zetscript::ScriptObjectMemberFunction *_script_function){
+	zetscript::zs_float param1=1.0;
+	zetscript::zs_int param2=2.0;
 	bool param3=true;
 
 	// transform script function to c++ function...
-	auto script_function = zs->bindScriptFunction<ScriptObjectString * (zs_float *, zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
+	auto script_function = zs->bindScriptFunction<zetscript::ScriptObjectString * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
 
-	// call the function...
+	// call the function. The function return a 'ScriptObjectString' ...
 	auto so=script_function(&param1,&param2,&param3);
 
 	// print the results...
 	printf("FROM CALLBACK 2: %s\n",so->toString().c_str());
 
-	// unref string object lifetime when is not used anymore
+	// unref 'ScriptObjectString' lifetime
 	zs->unrefLifetimeObject(so);
 
 }
@@ -46,52 +44,69 @@ void test_callback(ScriptObjectMemberFunction *_script_function){
 
 int main(){
 
-	zs = new ZetScript(); // instance ZetScript
+	// instances ZetScript
+	zetscript::ZetScript *zs = new zetscript::ZetScript();
 
 	try{
 
-		// bind test_callback receives a script_function
-		zs->registerFunction("test_callback",static_cast<void (*)(ScriptFunction *script_function)>(test_callback));
+		// bind 'test_callback' receives a 'ScriptFunction' pointer type
+		zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptFunction *script_function)>(test_callback));
 
-		// bind test_callback receives a ScriptObjectMemberfunction
-		zs->registerFunction("test_callback",static_cast<void (*)(ScriptObjectMemberFunction *script_function)>(test_callback));
+		// bind 'test_callback' receives a 'ScriptObjectMemberFunction' pointer type
+		zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptObjectMemberFunction *script_function)>(test_callback));
 
 
 		zs->eval(
+			// Function say hello
+			"function say_hello(){\n"
+			"	Console::outln(\"hello!\")\n"
+			"}\n"
+			"\n"
+			// Type 'Test' declaration
 			"class Test{\n"
-				"var a\n"
 			"	function1(arg){\n"
+			//      assign 'this.d=10'
 			"       this.d=10;\n"
-			"		test_callback(function(a,b,c){\n"
-			"			return \"result from object Test: a:\"+a+\" b:\"+b+\" c:\"+c+\" this.d:\"+this.d;\n"
-			"		});\n"
+			// 		calls C function 'test_callback'.
+			"		test_callback("
+			//      Anonymous function as parameter: The test_callback function expects 'ScriptObjectMemberFunction' in C++ due is created in a class scope
+			//		Note: The anonymous function content is reading the 'this.d', so it has access to object 'Test' type scope
+			"			function(a,b,c){\n"
+			"				return \"result from object Test: a:\"+a+\" b:\"+b+\" c:\"+c+\" this.d:\"+this.d;\n"
+			"			}\n"
+			"		);\n"
 			"	}\n"
 			"};\n"
 			"\n"
-			"function delete_test(){\n"
-			"	delete test;\n"
-			"	Console::outln(\"test variable was deleted\");\n"
-			"}\n"
+
+			// test variable declaration and instances 'Text' type
 			"var test=new Test();\n"
-			"test_callback(function(a,b,c){\n"
+
+			// calls C function 'test_callback'.
+			"test_callback(\n"
+			//  Anonymous function as parameter: The test_callback function expects 'ScriptFunction' in C++ due is created in a main scope
+			"	function(a,b,c){\n"
 			"		return \"result a:\"+a+\" b:\"+b+\" c:\"+c;\n"
 			"});\n"
 			""
 		);
 
-		auto  delete_test=zs->bindScriptFunction<void ()>("delete_test"); // instance function delete_test function.
-		auto  test_function1=zs->bindScriptFunction<void (zs_int)>("test.function1"); // instance member function test.function1.
+		// instance function delete_test function.
+		auto  say_hello=zs->bindScriptFunction<void ()>("say_hello");
 
-		test_function1(10); // it calls "test.function" member function with 10 as parameter.
-		delete_test(); // it calls "delete_test" function with no parameters
+		// it calls "say_hello" function with no parameters
+		say_hello();
+
+		// instance member function test.function1.
+		auto  test_function1=zs->bindScriptFunction<void (zetscript::zs_int)>("test.function1");
+
+		// it calls "test.function1" member function with 10 as parameter.
+		test_function1(10);
+
 
 	}catch(std::exception & ex){
 		fprintf(stderr,"%s\n",ex.what());
 	}
 
 	delete zs;
-
-#ifdef __MEMMANAGER__
-	MEMMGR_print_status();
-#endif
 }

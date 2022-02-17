@@ -4,11 +4,7 @@
  */
 #include 		"zetscript.h"
 //#include        <iostream> //--> loads 244KB
-
 #define ZETSCRIP_COPYRIGHT "ZetScript %i.%i.%i Copyright (C) 2016-2022 Jordi Espada\n",ZETSCRIPT_VERSION_MAJOR,ZETSCRIPT_VERSION_MINOR,ZETSCRIPT_VERSION_PATCH
-
-
-using namespace zetscript;
 
 void show_usage(){
 
@@ -24,7 +20,7 @@ void show_usage(){
 
 int main(int argc, char * argv[]) {
 
-	ZetScript *zs = new ZetScript();
+	zetscript::ZetScript zs;
 	const char *file="";
 	unsigned short eval_options=0;
 
@@ -34,7 +30,7 @@ int main(int argc, char * argv[]) {
 		bool exit_loop=false;
 		for(;idx_arg  < argc && exit_loop==false; idx_arg++){
 
-			bool is_option=zs_strutils::starts_with(argv[idx_arg],"--"); // is option
+			bool is_option=zetscript::zs_strutils::starts_with(argv[idx_arg],"--"); // is option
 
 			if(is_option){
 
@@ -75,7 +71,7 @@ int main(int argc, char * argv[]) {
 
 		do{
 			printf("zs>");
-			readed_bytes=zs_io::getline(&expression,&expression_len,stdin);
+			readed_bytes=zetscript::zs_io::getline(&expression,&expression_len,stdin);
 
 			if(readed_bytes==-1){
 				continue;
@@ -83,13 +79,13 @@ int main(int argc, char * argv[]) {
 
 			if(ZS_STRCMP(expression,==,"clear")){
 				printf("Clearing symbols...\n");
-				zs->clear();
+				zs.clear();
 				continue;
 			}
 
 			if(ZS_STRCMP(expression,==,"save")){
 				printf("Saving state...\n");
-				zs->saveState();
+				zs.saveState();
 				continue;
 			}
 
@@ -98,7 +94,7 @@ int main(int argc, char * argv[]) {
 			if(!exit){ // evaluate expression
 
 				try{
-					zs->eval(expression);
+					zs.eval(expression);
 				}catch(std::exception & ex){
 					fprintf(stderr,"%s\n",ex.what());
 				}
@@ -114,18 +110,18 @@ int main(int argc, char * argv[]) {
 
 	}else{ // eval script file
 
-		if(zs_file::exists(file)){
+		if(zetscript::zs_file::exists(file)){
 
 			try{
 				std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 				try{
-					zs->evalFile(file,eval_options,__FILE__,__LINE__);
+					zs.evalFile(file,eval_options,__FILE__,__LINE__);
 				}catch(std::exception & ex){
 					fprintf(stderr,"%s\n",ex.what());
 				}
 				std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 				std::chrono::duration<double, std::milli> time_span=t2-t1;
-				printf("executed %s %.0fms\n", zs_path::get_filename(file).c_str(),time_span.count());
+				printf("executed %s %.0fms\n", zetscript::zs_path::get_filename(file).c_str(),time_span.count());
 			}catch(std::exception & ex){
 				fprintf(stderr,"%s\n",ex.what());
 			}
@@ -133,12 +129,6 @@ int main(int argc, char * argv[]) {
 			fprintf(stderr,"file '%s' not exits\n",file);
 		}
 	}
-
-	delete zs;
-
-#ifdef __MEMMANAGER__
-	MEMMGR_print_status();
-#endif
 
 	return 0;
 }
