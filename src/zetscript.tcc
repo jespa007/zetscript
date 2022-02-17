@@ -256,7 +256,6 @@ namespace zetscript{
 
 			*ptr_fun=((void *)(new std::function<void ()>(
 				[&,file,line,calling_obj,fun_obj](){
-					bool error=false;
 					vm_execute(
 						virtual_machine
 						,calling_obj
