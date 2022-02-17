@@ -233,8 +233,8 @@ add_executable(script_call${POST_NAME}
 
 target_link_libraries(script_call${POST_NAME} zetscript${POST_NAME})
 
-if ((SUITTEST) OR (NOT DEFINED SUITTEST))
-	MESSAGE ("-- Suittest: Yes")
+if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
+	MESSAGE ("-- Suit test: Yes")
 
 	# zs_test
 	add_executable(zs_test${POST_NAME}
@@ -286,7 +286,7 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 	
 	target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
 else()
-	MESSAGE ("-- Suittest: No")
+	MESSAGE ("-- Suit test: No")
 endif()
 
 
