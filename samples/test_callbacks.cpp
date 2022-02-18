@@ -1,17 +1,21 @@
 
 #include "zetscript.h"
 
-zetscript::ZetScript *zs=NULL;
 
-void test_callback(zetscript::ScriptFunction *_script_function){
+void test_callback(
+	zetscript::ScriptFunction *_script_function
+){
 	zetscript::zs_float param1=1.0;
 	zetscript::zs_int param2=2.0;
 	bool param3=true;
+	// get zetscript instance
+
+	zetscript::ZetScript *zs=_script_function->getZetScript();
 
 	// transform script function to c++ function...
 	auto script_function = zs->bindScriptFunction<zetscript::ScriptObjectString * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
 
-	// call the function. The function return a 'ScriptObjectString' ...
+	// call the function with params 1,2,3. The function returns a 'ScriptObjectString' ...
 	auto so=script_function(&param1,&param2,&param3);
 
 	// print the results...
@@ -22,15 +26,20 @@ void test_callback(zetscript::ScriptFunction *_script_function){
 
 }
 
-void test_callback(zetscript::ScriptObjectMemberFunction *_script_function){
+void test_callback(
+		zetscript::ScriptObjectMemberFunction *_script_function
+){
 	zetscript::zs_float param1=1.0;
 	zetscript::zs_int param2=2.0;
 	bool param3=true;
 
+	// get zetscript instance
+	zetscript::ZetScript *zs=_script_function->getZetScript();
+
 	// transform script function to c++ function...
 	auto script_function = zs->bindScriptFunction<zetscript::ScriptObjectString * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
 
-	// call the function. The function return a 'ScriptObjectString' ...
+	// call the function with params 1,2,3. The function returns a 'ScriptObjectString' ...
 	auto so=script_function(&param1,&param2,&param3);
 
 	// print the results...
@@ -45,30 +54,26 @@ void test_callback(zetscript::ScriptObjectMemberFunction *_script_function){
 int main(){
 
 	// instances ZetScript
-	zetscript::ZetScript *zs = new zetscript::ZetScript();
+	 zetscript::ZetScript zs;
 
 	try{
 
 		// bind 'test_callback' receives a 'ScriptFunction' pointer type
-		zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptFunction *script_function)>(test_callback));
+		zs.registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptFunction *script_function)>(test_callback));
 
 		// bind 'test_callback' receives a 'ScriptObjectMemberFunction' pointer type
-		zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptObjectMemberFunction *script_function)>(test_callback));
+		zs.registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptObjectMemberFunction *script_function)>(test_callback));
 
 
-		zs->eval(
-			// Function say hello
-			"function say_hello(){\n"
-			"	Console::outln(\"hello!\")\n"
-			"}\n"
-			"\n"
+		zs.eval(
 			// Type 'Test' declaration
 			"class Test{\n"
-			"	function1(arg){\n"
+			"	test_callback(){\n"
 			//      assign 'this.d=10'
 			"       this.d=10;\n"
 			// 		calls C function 'test_callback'.
 			"		test_callback("
+			// 		passes current zetscript instance as 1st parameters
 			//      Anonymous function as parameter: The test_callback function expects 'ScriptObjectMemberFunction' in C++ due is created in a class scope
 			//		Note: The anonymous function content is reading the 'this.d', so it has access to object 'Test' type scope
 			"			function(a,b,c){\n"
@@ -88,25 +93,13 @@ int main(){
 			"	function(a,b,c){\n"
 			"		return \"result a:\"+a+\" b:\"+b+\" c:\"+c;\n"
 			"});\n"
+			"\n"
+			"test.test_callback()"
 			""
 		);
-
-		// instance function delete_test function.
-		auto  say_hello=zs->bindScriptFunction<void ()>("say_hello");
-
-		// it calls "say_hello" function with no parameters
-		say_hello();
-
-		// instance member function test.function1.
-		auto  test_function1=zs->bindScriptFunction<void (zetscript::zs_int)>("test.function1");
-
-		// it calls "test.function1" member function with 10 as parameter.
-		test_function1(10);
-
 
 	}catch(std::exception & ex){
 		fprintf(stderr,"%s\n",ex.what());
 	}
 
-	delete zs;
 }

@@ -1154,7 +1154,7 @@ execute_function:
 
 				if(data->vm_error == true){
 					// if System::assert -> not add in callstack trace
-					if(((calling_function->function_name=="assert") && (sf_call_script_function->function_name=="errorNative")
+					if(((calling_function->function_name=="assert" || calling_function->function_name=="error") && (sf_call_script_function->function_name=="errorNative")
 					)==false){
 						const char *str_class_owner=NULL;
 						if(	(sf_call_script_function->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!=0

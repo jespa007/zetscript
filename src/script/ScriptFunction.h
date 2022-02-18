@@ -127,6 +127,7 @@ namespace zetscript{
 
 		bool linkUnresolvedSymbols();
 		void addUnresolvedSymbol(zs_int instruction);
+		ZetScript *getZetScript();
 
 		~ScriptFunction();
 

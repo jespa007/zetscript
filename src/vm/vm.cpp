@@ -285,19 +285,13 @@ namespace zetscript{
 			stk_start=data->vm_stack;
 			n_stk_params=(char)data->main_function_object->local_variables->count;
 
-			// calls script function from C : preserve stack space for global vars to avoid
-			//stk_start=&data->vm_stack[data->main_function_object->registered_symbols->count];
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
-            /*if(data->vm_idx_call == 0){
-				data->vm_idx_call=1; // is calling from application set as 1 to make sure it not become conflict with global vars
-			}*/
 			stk_start=data->stk_vm_current;
 			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->count];
 
-			if (properties & VM_PROPERTY_CALL_FROM_NATIVE){
-				data->vm_idx_call = 1;
-				stk_start=min_stk;
+			if(data->vm_idx_call == 0){
+				THROW_RUNTIME_ERROR("Internal: native vm_idx_call should be > 0 (%i)",data->vm_idx_call);
 			}
 
 
@@ -360,10 +354,6 @@ namespace zetscript{
 
 		// Important restore stk!
 		data->stk_vm_current=stk_start;
-
-		if((properties & VM_PROPERTY_CALL_FROM_NATIVE)){ // restore idx_call
-			data->vm_idx_call=0;
-		}
 
 		return stk_return;
 	}

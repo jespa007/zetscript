@@ -224,14 +224,22 @@ target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 
 #---------------
 # TODO REMOVE!!!
-# function_script_call
-add_executable(script_call${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../samples/script_call.cpp
+# test_call_script_function
+add_executable(test_call_script_function${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../samples/test_call_script_function.cpp
 )
+
+target_link_libraries(test_call_script_function${POST_NAME} zetscript${POST_NAME})
+
+add_executable(test_callbacks${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../samples/test_callbacks.cpp
+)
+
+target_link_libraries(test_callbacks${POST_NAME} zetscript${POST_NAME})
 # TODO REMOVE!!!
 #---------------
 
-target_link_libraries(script_call${POST_NAME} zetscript${POST_NAME})
+
 
 if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
 	MESSAGE ("-- Suit test: Yes")
@@ -271,12 +279,12 @@ if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
 	
 	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
 	
-	# function_script_call
-	add_executable(script_call${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../samples/script_call.cpp
-	)
+	# test_call_script_function
+	#add_executable(test_call_script_function${POST_NAME}
+	#	${PROJECT_SOURCE_DIR}/../samples/test_call_script_function.cpp
+	#)
 	
-	target_link_libraries(script_call${POST_NAME} zetscript${POST_NAME})
+	#target_link_libraries(test_call_script_function${POST_NAME} zetscript${POST_NAME})
 	
 	
 	# register_constants

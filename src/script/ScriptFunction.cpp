@@ -782,6 +782,10 @@ namespace zetscript{
 		unresolved_symbols.push_back(instruction);
 	}
 
+	ZetScript *ScriptFunction::getZetScript(){
+		return zs;
+	}
+
 	ScriptFunction::~ScriptFunction(){
 		clear();
 

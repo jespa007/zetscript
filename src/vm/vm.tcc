@@ -257,11 +257,6 @@ namespace zetscript{
 					return;
 				}
 
-				// recheck empty shared pointers
-				if(current->data.ptr_script_object_shared->idx_type == IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
-					check_empty_shared_pointers=true;
-				}
-
 				delete current->data.ptr_script_object_shared;
 				current->data.ptr_script_object_shared=NULL;
 				free(current);
@@ -269,10 +264,6 @@ namespace zetscript{
 				current=next_node;
 
 			}while(!finish);
-		}
-
-		if(check_empty_shared_pointers==true){
-			vm_remove_empty_shared_pointers(vm,idx_call_stack);
 		}
 	}
 
