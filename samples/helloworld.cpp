@@ -4,7 +4,7 @@
  */
 #include "zetscript.h"
 
-void say_helloworld(){
+void say_helloworld(zetscript::ZetScript *_zs){
 	printf("Hello World from C!\n");
 }
 

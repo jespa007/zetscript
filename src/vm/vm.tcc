@@ -331,7 +331,7 @@ namespace zetscript{
 		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
 			irfs = (ScriptFunction *)symbol->ref_ptr;\
 			if(irfs->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION ){\
-				this_as_first_parameter=1;\
+				start_param=2;\
 			}\
 		}\
 	}\
@@ -354,7 +354,7 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		ScriptFunction * ptr_function_found=NULL;
 		zs_string aux_string;
-		int this_as_first_parameter=0;
+		int start_param=0;
 
 		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
 
@@ -369,7 +369,7 @@ namespace zetscript{
 
 		for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 			ScriptFunction *irfs = NULL;
-			this_as_first_parameter=0;
+			start_param=1;
 
 			EXTRACT_FUNCTION_INFO
 
@@ -379,14 +379,15 @@ namespace zetscript{
 								aux_string == symbol_to_find
 								|| (is_set_attrib_metamethod && zs_strutils::starts_with(aux_string,"_set@"));
 
-			if((symbol_equals && ((int)irfs->params_len == (n_args+this_as_first_parameter)))){
+			if((symbol_equals && ((int)irfs->params_len == (n_args+start_param)))){
 				if((irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int idx_type=-1;
 					int arg_idx_type=-1;
-					for( unsigned k = 0; k < n_args && all_check;k++){
+
+					for( unsigned k = 0; k < n_args && all_check;k++){ // ignore first parameter due expects zetscript
 						StackElement *current_arg=&stk_arg[k];
-						arg_idx_type=irfs->params[k+this_as_first_parameter].idx_type;
+						arg_idx_type=irfs->params[k+start_param].idx_type;
 
 						if(arg_idx_type!=IDX_TYPE_STACK_ELEMENT
 								 /*&&
@@ -497,7 +498,7 @@ namespace zetscript{
 						aux_string=k_str_zs_int_type;
 						break;
 					case STK_PROPERTY_ZS_FLOAT:
-						aux_string=k_str_float_type;
+						aux_string=k_str_zs_float_type;
 						break;
 					case STK_PROPERTY_BOOL:
 						aux_string=k_str_bool_type;
@@ -507,7 +508,7 @@ namespace zetscript{
 						break;
 					case STK_PROPERTY_SCRIPT_OBJECT:
 						if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
-							aux_string=k_str_string_type_ptr;
+							aux_string=k_str_zs_string_type_ptr;
 							if(current_arg->value==0){ /* is constant char */
 								aux_string=	k_str_const_char_type_ptr;
 							}
@@ -531,7 +532,7 @@ namespace zetscript{
 			}
 
 			for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
-				this_as_first_parameter=0;
+				start_param=1;
 				ScriptFunction *irfs=NULL;
 
 				EXTRACT_FUNCTION_INFO
@@ -947,7 +948,8 @@ lbl_exit_function:
 			if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
 				VM_PUSH_STK_BOOLEAN(
 					ScriptObjectStringWrap_contains(
-						((ScriptObjectString *)so_aux)
+						data->zs
+						,((ScriptObjectString *)so_aux)
 						,(zs_int)stk_result_op1->value
 					)
 				);
@@ -955,7 +957,8 @@ lbl_exit_function:
 				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
 				VM_PUSH_STK_BOOLEAN(
 					ScriptObjectStringWrap_contains(
-						(ScriptObjectString *)so_aux
+						data->zs
+						,(ScriptObjectString *)so_aux
 						,&str_op1)
 				);
 			}else{
@@ -966,7 +969,7 @@ lbl_exit_function:
 			//PUSH_STK_BOOLEAN(((ScriptObjectVector *)so_aux)->exists(stk_result_op1));
 				VM_PUSH_STK_BOOLEAN(
 				ScriptObjectVectorWrap_contains(
-					(ScriptObjectVector *)so_aux,stk_result_op1
+					data->zs,(ScriptObjectVector *)so_aux,stk_result_op1
 				)
 			);
 			break;
@@ -975,7 +978,7 @@ lbl_exit_function:
 				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
 				VM_PUSH_STK_BOOLEAN(
 					ScriptObjectObjectWrap_contains(
-						(ScriptObjectObject *)so_aux,&str_op1
+						data->zs,(ScriptObjectObject *)so_aux,&str_op1
 					)
 				);
 

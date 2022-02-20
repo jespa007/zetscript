@@ -11,7 +11,7 @@
 
 namespace zetscript{
 
-	zs_int ConsoleModule_readChar(){
+	zs_int ConsoleModule_readChar(ZetScript *_zs){
 			char buf=0;
 		#ifdef _WIN32
 			buf=getch();

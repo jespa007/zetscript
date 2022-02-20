@@ -4,8 +4,6 @@
  */
 #include "zetscript.h"
 
-using namespace zetscript;
-
 #include "MyClass.h"
 #include "MyClassWrap.h"
 #include "MyClassExtend.h"
@@ -14,42 +12,42 @@ using namespace zetscript;
 
 int main(){
 
-	ZetScript *zs=new ZetScript();
+	zetscript::ZetScript zs;
 
 	try{
 
 		// register MyClass with name MyClass in script side.
-		zs->registerClass<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
+		zs.registerClass<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
 
 		 // register MyClassExtend with name MyClassExtend in script side.
-		zs->registerClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
+		zs.registerClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
 
 		// register data1 named data1 in script side as variable member and read/write.
-		zs->registerMemberPropertySetter<MyClass>("data1",&MyClassWrap_set_data1);
-		zs->registerMemberPropertyGetter<MyClass>("data1",&MyClassWrap_get_data1);
+		zs.registerMemberPropertySetter<MyClass>("data1",&MyClassWrap_set_data1);
+		zs.registerMemberPropertyGetter<MyClass>("data1",&MyClassWrap_get_data1);
 
 		// register data2 named data1 in script side as variable member (only read).
-		zs->registerMemberPropertyGetter<MyClass>("data2",&MyClassWrap_get_data2);
+		zs.registerMemberPropertyGetter<MyClass>("data2",&MyClassWrap_get_data2);
 
 		// register data1 named data1 in script side as variable member (only write).
-		zs->registerMemberPropertySetter<MyClass>("data3",&MyClassWrap_set_data3);
+		zs.registerMemberPropertySetter<MyClass>("data3",&MyClassWrap_set_data3);
 
 		// register function0 named function1 in script side as function member.
-		zs->registerMemberFunction<MyClass>("function0",&MyClassWrap_function0);
+		zs.registerMemberFunction<MyClass>("function0",&MyClassWrap_function0);
 
 		// register function1 named function1 in script side as function member.
-		zs->registerMemberFunction<MyClass>("function1",&MyClassWrap_function1);
+		zs.registerMemberFunction<MyClass>("function1",&MyClassWrap_function1);
 
 
 		// register data2 named data1 in script side as variable member.
-		zs->registerMemberPropertySetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
-		zs->registerMemberPropertyGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
+		zs.registerMemberPropertySetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
+		zs.registerMemberPropertyGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
 
 		// register function2 named function2 in script side as function member.
-		zs->registerMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);
+		zs.registerMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);
 
 		// once all vars and functions are registered, tell that MyClassExtend is base of MyClass
-		zs->scriptClassTypeInheritsFrom<MyClassExtend,MyClass>();
+		zs.classInheritsFrom<MyClassExtend,MyClass>();
 
 	}catch(std::exception & ex){
 		fprintf(stderr,"register error: %s\n",ex.what());
@@ -58,7 +56,7 @@ int main(){
 
 	try{
 
-		zs->eval(
+		zs.eval(
 			"class ScriptMyClassExtend extends MyClassExtend{\n"
 			"	var data5;\n"
 			"	function function0(){\n"
@@ -91,11 +89,6 @@ int main(){
 
 	}
 
-	delete zs;
-
-#ifdef __MEMMANAGER__
-	MEMMGR_print_status();
-#endif
 
 	return 0;
 }

@@ -11,7 +11,7 @@ using namespace zetscript;
 
 
 std::function<void ()> * test_2nd_script_call = NULL;
-ZetScript *zs = NULL;
+
 
 zs_string to_string(bool _b){
 	return _b?"true":"false";
@@ -32,7 +32,7 @@ zs_string to_string(const zs_string & _s){
 
 
 
-void test_function_1st_c_call(){
+void test_function_1st_c_call(ZetScript *_zs){
 	 printf("C Function 1st call from script\n");
 
 	 if(test_2nd_script_call != NULL){
@@ -53,18 +53,18 @@ bool float_values_are_almost_the_same(zs_float A, zs_float B, int maxUlps=8)
 //
 // INTEGER OPERATIONS
 //
-#define TEST_ARITHMETIC_INT_EXPR(expr) test_arithmetic_int_expr(expr,ZS_STR(expr))
-void test_arithmetic_int_expr(zs_int expr,const char *str_expr)
+#define TEST_ARITHMETIC_INT_EXPR(_zs,expr) test_arithmetic_int_expr(_zs,expr,ZS_STR(expr))
+void test_arithmetic_int_expr(ZetScript *_zs, zs_int expr,const char *str_expr)
 { \
 	try{\
-		StackElement stk=zs->eval(zs_string("return ")+str_expr);\
+		StackElement stk=_zs->eval(zs_string("return ")+str_expr);\
 		if(stk.properties & STK_PROPERTY_ZS_INT){\
 			if((zs_int)stk.value != expr){ \
 				fprintf(stderr,"error test '%s' expected %i but it was %i!\n",str_expr,(int)expr,int(((zs_int)stk.value))); \
 				exit(-1); \
 			} \
 		}else{\
-			fprintf(stderr,"error test '%s' expected int but it was '%s'!\n",str_expr,stk.typeOf()); \
+			fprintf(stderr,"error test '%s' expected int but it was '%s'!\n",str_expr,stk_to_str(_zs,&stk).c_str()); \
 			exit(-1); \
 		} \
 	}catch(std::exception & ex){\
@@ -73,17 +73,17 @@ void test_arithmetic_int_expr(zs_int expr,const char *str_expr)
 	}\
 }
 
-#define TEST_INT_EXPR(str_expr, expected_value) test_int_expr(str_expr, expected_value)
-void test_int_expr(const char *str_expr, zs_int expected_value) {
+#define TEST_INT_EXPR(_zs,str_expr, expected_value) test_int_expr(_zs,str_expr, expected_value)
+void test_int_expr(ZetScript *_zs, const char *str_expr, zs_int expected_value) {
 	try{\
-		StackElement stk=zs->eval(str_expr);\
+		StackElement stk=_zs->eval(str_expr);\
 		if(stk.properties & STK_PROPERTY_ZS_INT){\
 			if((zs_int)stk.value  != (expected_value)){ \
 				fprintf(stderr,"error test '%s' expected %i but it was %i!\n",str_expr,(int)expected_value,(int)((zs_int)stk.value)); \
 				exit(-1); \
 			} \
 		}else{\
-			fprintf(stderr,"error test '%s' expected int but it was '%s'!\n",str_expr,stk.typeOf()); \
+			fprintf(stderr,"error test '%s' expected int but it was '%s'!\n",str_expr,stk_to_str(_zs,&stk).c_str()); \
 			exit(-1); \
 		} \
 	}catch(std::exception & ex){\
@@ -92,8 +92,8 @@ void test_int_expr(const char *str_expr, zs_int expected_value) {
 	}\
 }
 
-#define COMPLETE_TEST_ARITHMETIC_INTEGER_OP(val1,val2) test_arithmetic_integer_op(val1, val2, "return %s%s%s")
-#define COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(val1,val2)  test_arithmetic_integer_op(val1,val2,"it1=("\
+#define COMPLETE_TEST_ARITHMETIC_INTEGER_OP(_zs,val1,val2) test_arithmetic_integer_op(_zs,val1, val2, "return %s%s%s")
+#define COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(_zs,val1,val2)  test_arithmetic_integer_op(_zs,val1,val2,"it1=("\
 				"(i1=new Integer("\
 				"%s" \
 				"))"\
@@ -108,7 +108,7 @@ void test_int_expr(const char *str_expr, zs_int expected_value) {
 				"delete i2;\n" \
 				"return it2;\n" \
 	)
-void test_arithmetic_integer_op(zs_int val1, zs_int val2, const char *str_format){
+void test_arithmetic_integer_op(ZetScript *_zs,zs_int val1, zs_int val2, const char *str_format){
 	struct _test_arithmetic_integer_op_data {
 		zs_string str; zs_int val;\
 	}test_arithmetic_integer_op_data[] = {
@@ -145,14 +145,14 @@ void test_arithmetic_integer_op(zs_int val1, zs_int val2, const char *str_format
 	_test_arithmetic_integer_op_data *it_iod = test_arithmetic_integer_op_data;
 	while (!it_iod->str.empty()) {
 		try {
-			StackElement stk=zs->eval(it_iod->str); \
+			StackElement stk=_zs->eval(it_iod->str); \
 			if (stk.properties & STK_PROPERTY_ZS_INT) {
 				if ((zs_int)stk.value != (it_iod->val)) {
 					fprintf(stderr, "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zs_int)stk.value));
 					exit(-1);
 				}
 			}else{
-				fprintf(stderr,"error test '%s' expected int but it was '%s'!\n",it_iod->str.c_str(),stk.typeOf()); \
+				fprintf(stderr,"error test '%s' expected int but it was '%s'!\n",it_iod->str.c_str(),stk_to_str(_zs,&stk).c_str()); \
 				exit(-1); \
 			}
 		}
@@ -167,10 +167,10 @@ void test_arithmetic_integer_op(zs_int val1, zs_int val2, const char *str_format
 //
 // FLOAT OPERATIONS
 //
-#define TEST_FLOAT_EXPR(str_expr, expected_value) test_float_expr(str_expr, expected_value)
-void test_float_expr(const char  *str_expr, zs_float expected_value) {
+#define TEST_FLOAT_EXPR(_zs,str_expr, expected_value) test_float_expr(_zs,str_expr, expected_value)
+void test_float_expr(ZetScript *_zs,const char  *str_expr, zs_float expected_value) {
 	try{
-		StackElement stk=zs->eval(str_expr);
+		StackElement stk=_zs->eval(str_expr);
 		if(stk.properties & STK_PROPERTY_ZS_FLOAT){
 			zs_float result;
 			ZS_FLOAT_COPY(&result,&stk.value);
@@ -179,7 +179,7 @@ void test_float_expr(const char  *str_expr, zs_float expected_value) {
 				exit(-1);
 			}
 		}else{
-			fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",str_expr,stk_to_str(_zs,&stk).c_str());
 			exit(-1);
 		}
 	}catch(std::exception & ex){
@@ -188,11 +188,11 @@ void test_float_expr(const char  *str_expr, zs_float expected_value) {
 	}
 }
 
-#define TEST_ARITHMETIC_FLOAT_EXPR(val1) test_float_expression((zs_float)(val1),ZS_STR(val1)";")
-void test_float_expression(zs_float expr, const char *str_expr) {
+#define TEST_ARITHMETIC_FLOAT_EXPR(_zs,val1) test_float_expression(_zs,(zs_float)(val1),ZS_STR(val1)";")
+void test_float_expression(ZetScript *_zs,zs_float expr, const char *str_expr) {
 
 	try {
-		StackElement stk=zs->eval(zs_string("return ")+str_expr);
+		StackElement stk=_zs->eval(zs_string("return ")+str_expr);
 		if(stk.properties & STK_PROPERTY_ZS_FLOAT){
 			zs_float result;
 			ZS_FLOAT_COPY(&result,&stk.value);
@@ -208,7 +208,7 @@ void test_float_expression(zs_float expr, const char *str_expr) {
 				}
 			}
 		}else{
-			fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",str_expr,stk_to_str(_zs,&stk).c_str());
 			exit(-1);
 		}
 	}
@@ -219,8 +219,8 @@ void test_float_expression(zs_float expr, const char *str_expr) {
 }
 
 #define INLINE_FLOAT_MOD_OPERATION(val1,val2) {zs_strutils::format(str_format,to_string(val1).c_str(),"%",to_string(val2).c_str()), (zs_float)fmod(val1,val2)}
-#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP(val1,val2) test_arithmetic_float_op(val1, val2,"return %s%s%s")
-#define COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(val1,val2) test_arithmetic_float_op(val1, val2,"nt1=("\
+#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP(_zs,val1,val2) test_arithmetic_float_op(_zs,val1, val2,"return %s%s%s")
+#define COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(_zs,val1,val2) test_arithmetic_float_op(_zs,val1, val2,"nt1=("\
 				"(n1=new Float("\
 				"%s" \
 				"))"\
@@ -229,7 +229,7 @@ void test_float_expression(zs_float expr, const char *str_expr) {
 				"%s" \
 				"))"\
 				");nt2=nt1.toFloat();delete n1;delete n2;delete nt1;return nt2;")
-void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_format) {
+void test_arithmetic_float_op(ZetScript *_zs,zs_float val1, zs_float val2, const char *str_format) {
 	struct _test_arithmetic_float_op_data {
 		zs_string str; zs_float val;
 	}test_arithmetic_float_op_data[] = {
@@ -268,7 +268,7 @@ void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_form
 	_test_arithmetic_float_op_data *it_af = test_arithmetic_float_op_data;
 	while (!it_af->str.empty()) {
 		try {
-			StackElement stk = zs->eval(it_af->str);
+			StackElement stk = _zs->eval(it_af->str);
 			if(stk.properties & STK_PROPERTY_ZS_FLOAT){
 				zs_float result;
 				ZS_FLOAT_COPY(&result,&stk.value);
@@ -279,7 +279,7 @@ void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_form
 						exit(-1);
 				}
 			}else{
-				fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",it_af->str.c_str(),stk.typeOf());
+				fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",it_af->str.c_str(),stk_to_str(_zs,&stk).c_str());
 				exit(-1);
 			}
 		}
@@ -295,7 +295,7 @@ void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_form
 	// process second part
 	while (!it_afm->str.empty()) {
 		try {
-			StackElement stk = zs->eval(it_afm->str);
+			StackElement stk = _zs->eval(it_afm->str);
 			if(stk.properties & STK_PROPERTY_ZS_FLOAT){
 				zs_float result;
 				ZS_FLOAT_COPY(&result,&stk.value);
@@ -304,7 +304,7 @@ void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_form
 					exit(-1);
 				}
 			}else{
-				fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",it_afm->str.c_str(),stk.typeOf());
+				fprintf(stderr,"error test '%s' expected float but it was '%s'!\n",it_afm->str.c_str(),stk_to_str(_zs,&stk).c_str());
 				exit(-1);
 			}
 		}
@@ -320,17 +320,17 @@ void test_arithmetic_float_op(zs_float val1, zs_float val2, const char *str_form
 //
 // BOOL OPERATIONS
 //
-#define TEST_BOOL_EXPR(str_expr, expected_value) test_bool_expr(str_expr, expected_value)
-void test_bool_expr(const char *str_expr, bool expected_value){ 
+#define TEST_BOOL_EXPR(_zs,str_expr, expected_value) test_bool_expr(_zs,str_expr, expected_value)
+void test_bool_expr(ZetScript *_zs,const char *str_expr, bool expected_value){
 	try{
-		StackElement stk = zs->eval(str_expr);
+		StackElement stk = _zs->eval(str_expr);
 		if(stk.properties & STK_PROPERTY_BOOL){
 			if((bool)stk.value  != (expected_value)){
 				fprintf(stderr,"error test '%s' expected %i but it was %i!\n", str_expr,expected_value,(bool)stk.value);
 				exit(-1);
 			}
 		}else{
-			fprintf(stderr,"error test '%s' expected bool but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected bool but it was '%s'!\n",str_expr,stk_to_str(_zs,&stk).c_str());
 			exit(-1);
 		}
 	}catch(std::exception & ex){
@@ -339,18 +339,18 @@ void test_bool_expr(const char *str_expr, bool expected_value){
 	}
 }
 
-#define TEST_ARITHMETIC_BOOL_EXPR(val1) test_bool_expression(val1,ZS_STR(val1))
-void test_bool_expression(bool expr, const char *str_expr){
+#define TEST_ARITHMETIC_BOOL_EXPR(_zs,val1) test_bool_expression(_zs,val1,ZS_STR(val1))
+void test_bool_expression(ZetScript *_zs,bool expr, const char *str_expr){
 
 	try{
-		StackElement stk = zs->eval(zs_string("return ")+str_expr);
+		StackElement stk = _zs->eval(zs_string("return ")+str_expr);
 		if(stk.properties & STK_PROPERTY_BOOL){
 			if((bool)stk.value  != (expr)){
 				fprintf(stderr,"error test '%s' expected %s but it was %s!\n", str_expr,(expr)?"true":"false",(bool)stk.value?"true":"false");
 				exit(-1);
 			}
 		}else{
-			fprintf(stderr,"error test '%s' expected bool but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected bool but it was '%s'!\n",str_expr,stk_to_str(_zs,&stk).c_str());
 			exit(-1);
 
 		}
@@ -361,40 +361,40 @@ void test_bool_expression(bool expr, const char *str_expr){
 }
 
 
-#define COMPLETE_TEST_COMPARE_OP(val1,val2) \
-		TEST_ARITHMETIC_BOOL_EXPR(val1<val2); \
-		TEST_ARITHMETIC_BOOL_EXPR(val1*10<-val2/10); \
-		TEST_ARITHMETIC_BOOL_EXPR(-(val1+10)<(val2-8)); \
-		TEST_ARITHMETIC_BOOL_EXPR((-val1-100)<(-val2+100)); \
+#define COMPLETE_TEST_COMPARE_OP(zs,val1,val2) \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,val1<val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,val1*10<-val2/10); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,-(val1+10)<(val2-8)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(-val1-100)<(-val2+100)); \
 		\
-		TEST_ARITHMETIC_BOOL_EXPR((val1+10)>(val2-80)); \
-		TEST_ARITHMETIC_BOOL_EXPR(val1*70>(-val2+300)); \
-		TEST_ARITHMETIC_BOOL_EXPR(-val1*60>val2*90); \
-		TEST_ARITHMETIC_BOOL_EXPR(-val1*90>-val2*60); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1+10)>(val2-80)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,val1*70>(-val2+300)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,-val1*60>val2*90); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,-val1*90>-val2*60); \
 		\
-		TEST_ARITHMETIC_BOOL_EXPR((val1+10)<=10*val2); \
-		TEST_ARITHMETIC_BOOL_EXPR(val1*10<=-80/val2); \
-		TEST_ARITHMETIC_BOOL_EXPR(-val1/10<=val2*70); \
-		TEST_ARITHMETIC_BOOL_EXPR((-val1-10)<=-val2*10); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1+10)<=10*val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,val1*10<=-80/val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,-val1/10<=val2*70); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(-val1-10)<=-val2*10); \
 		\
-		TEST_ARITHMETIC_BOOL_EXPR(val1*70>=val2); \
-		TEST_ARITHMETIC_BOOL_EXPR(-val1/10>=-(val2+90)); \
-		TEST_ARITHMETIC_BOOL_EXPR((-val1+10)>=val2*10/10); \
-		TEST_ARITHMETIC_BOOL_EXPR((-val1-val1)>=-(val2-val2-10)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,val1*70>=val2); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,-val1/10>=-(val2+90)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(-val1+10)>=val2*10/10); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(-val1-val1)>=-(val2-val2-10)); \
 
-#define COMPLETE_TEST_LOGIC_OP(val1,val2) \
-		TEST_ARITHMETIC_BOOL_EXPR(!(val1>0)&&(val2>0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<0)&&(val2<0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1>=0)&&!(val2>=0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)&&(val2<=0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)&&!(false)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)&&(true)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1>0)||!(val2>0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<0)||(val2<0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1>=0)||(val2>=0)); \
-		TEST_ARITHMETIC_BOOL_EXPR(!(val1<=0)||(val2<=0)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(false)); \
-		TEST_ARITHMETIC_BOOL_EXPR((val1<=0)||(true));
+#define COMPLETE_TEST_LOGIC_OP(zs,val1,val2) \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,!(val1>0)&&(val2>0)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1<0)&&(val2<0)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1>=0)&&!(val2>=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1<=0)&&(val2<=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1<=0)&&!(false)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1<=0)&&(true)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1>0)||!(val2>0)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1<0)||(val2<0)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1>=0)||(val2>=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,!(val1<=0)||(val2<=0)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1<=0)||(false)); \
+		TEST_ARITHMETIC_BOOL_EXPR(zs,(val1<=0)||(true));
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
@@ -402,11 +402,11 @@ void test_bool_expression(bool expr, const char *str_expr){
 //
 
 #define TEST_STRING_EXPR(str_expr, expected_value) test_string_expr(expected_value,str_expr)
-void test_string_expr(const char * expected_value, const char *str_expr){
+void test_string_expr(ZetScript *_zs,const char * expected_value, const char *str_expr){
 	
 	
 	try{
-		StackElement stk = zs->eval(zs_string("return ")+str_expr);
+		StackElement stk = _zs->eval(zs_string("return ")+str_expr);
 		if(STK_IS_SCRIPT_OBJECT_STRING(&stk)){
 			ScriptObjectString *so=(ScriptObjectString *)stk.value;
 			if (so->toString() != zs_string(expected_value)) {
@@ -414,7 +414,7 @@ void test_string_expr(const char * expected_value, const char *str_expr){
 				exit(-1);
 			}
 		}else{
-			fprintf(stderr,"error test '%s' expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk_to_str(_zs,&stk).c_str());
 			exit(-1);
 		}
 	}catch(std::exception & ex){
@@ -423,12 +423,12 @@ void test_string_expr(const char * expected_value, const char *str_expr){
 	}
 }
 
-#define TEST_ARITHMETIC_STRING_OP(val1,op, val2) test_arithmetic_string_op(zs_string(val1) op val2,ZS_STR(val1)ZS_STR(op)val2)
-void test_arithmetic_string_op(const zs_string & expected_value, const char * str_expr){
+#define TEST_ARITHMETIC_STRING_OP(_zs,val1,op, val2) test_arithmetic_string_op(_zs,zs_string(val1) op val2,ZS_STR(val1)ZS_STR(op)val2)
+void test_arithmetic_string_op(ZetScript *_zs,const zs_string & expected_value, const char * str_expr){
 
 
 	try{\
-		StackElement stk = ZS_EVAL(zs,zs_string("return ")+str_expr);
+		StackElement stk = _zs->eval(zs_string("return ")+str_expr,__FILE__,__LINE__);
 		if(STK_IS_SCRIPT_OBJECT_STRING(&stk)){
 			ScriptObjectString *so=(ScriptObjectString *)stk.value;
 			if (so->toString() != zs_string(expected_value)) {
@@ -436,9 +436,9 @@ void test_arithmetic_string_op(const zs_string & expected_value, const char * st
 				exit(-1); \
 			} \
 			// destroy lifetime object when is not needed
-			zs->unrefLifetimeObject(so);
+			_zs->unrefLifetimeObject(so);
 		}else{
-			fprintf(stderr,"error test '%s' expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk.typeOf());
+			fprintf(stderr,"error test '%s' expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk_to_str(_zs,&stk).c_str());
 			exit(-1);
 		}
 	}catch(std::exception & ex){\
@@ -451,124 +451,124 @@ int main(int argc, char * argv[]) {
 
 	int n_test=0;
 
-	zs=new ZetScript();
+	ZetScript zs;
 
 	// register wraps
-	FloatWrap_register(zs);
-	IntegerWrap_register(zs);
+	FloatWrap_register(&zs);
+	IntegerWrap_register(&zs);
 
 	// unsinged
 	printf("%i. testing arithmetic operations integer...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(4,4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(4,5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(5,4); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(&zs,4,4); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(&zs,4,5); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(&zs,5,4); // op1 > op2
 
 
 	printf("%i. testing arithmetic operations hexa (int)...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(0x4,0x4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(0x4,0x5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(0x5,0x4); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(&zs,0x4,0x4); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(&zs,0x4,0x5); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_INTEGER_OP(&zs,0x5,0x4); // op1 > op2
 
 	printf("%i. testing arithmetic operations float ...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,4.0); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,5.0); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,4.0); // op1 > op2
-	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,2.0e2); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(&zs,4.0,4.0); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(&zs,4.0,5.0); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(&zs,5.0,4.0); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(&zs,5.0,2.0e2); // op1 > op2
 
 	printf("%i. testing arithmetic operations float vs int ...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4.0,5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5.0,4); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(&zs,4.0,4); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(&zs,4.0,5); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(&zs,5.0,4); // op1 > op2
 
 	printf("%i. testing arithmetic operations int vs float ...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,4.0); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(4,5.0); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(5,4.0); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(&zs,4,4.0); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(&zs,4,5.0); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_FLOAT_OP(&zs,5,4.0); // op1 > op2
 
 	printf("%i. testing zs_string...\n",++n_test);
-	TEST_ARITHMETIC_STRING_OP("test_",+,"100"); // concatenate int
-	TEST_ARITHMETIC_STRING_OP("test_",+,"-100"); // concatenate -int
-	TEST_ARITHMETIC_STRING_OP("test_",+,"100.000000"); // concatenate float
-	TEST_ARITHMETIC_STRING_OP("test_",+,"-100.000000"); // concatenate float
-	TEST_ARITHMETIC_STRING_OP("test_",+,"true"); // concatenate bool
-	TEST_ARITHMETIC_STRING_OP("test_",+,"false"); // concatenate bool
+	TEST_ARITHMETIC_STRING_OP(&zs,"test_",+,"100"); // concatenate int
+	TEST_ARITHMETIC_STRING_OP(&zs,"test_",+,"-100"); // concatenate -int
+	TEST_ARITHMETIC_STRING_OP(&zs,"test_",+,"100.000000"); // concatenate float
+	TEST_ARITHMETIC_STRING_OP(&zs,"test_",+,"-100.000000"); // concatenate float
+	TEST_ARITHMETIC_STRING_OP(&zs,"test_",+,"true"); // concatenate bool
+	TEST_ARITHMETIC_STRING_OP(&zs,"test_",+,"false"); // concatenate bool
 
 	printf("%i. testing parenthesis operations ...\n",++n_test);
 
-	TEST_ARITHMETIC_INT_EXPR((((2+2*(5-9))*1000))/100);
-	TEST_ARITHMETIC_FLOAT_EXPR((((2.0+2.0*(5.0-6.1))*1000.0))/100.0);
+	TEST_ARITHMETIC_INT_EXPR(&zs,(((2+2*(5-9))*1000))/100);
+	TEST_ARITHMETIC_FLOAT_EXPR(&zs,(((2.0+2.0*(5.0-6.1))*1000.0))/100.0);
 
 	// test bool compare ...
 	printf("%i. testing compare operations ...\n",++n_test);
-	COMPLETE_TEST_COMPARE_OP(10,10);
-	COMPLETE_TEST_COMPARE_OP(15,10);
-	COMPLETE_TEST_COMPARE_OP(10,15);
+	COMPLETE_TEST_COMPARE_OP(&zs,10,10);
+	COMPLETE_TEST_COMPARE_OP(&zs,15,10);
+	COMPLETE_TEST_COMPARE_OP(&zs,10,15);
 
 	// test logic and/or ...
 	printf("%i. testing logic operations ...\n",++n_test);
-	COMPLETE_TEST_LOGIC_OP(10,10);
-	COMPLETE_TEST_LOGIC_OP(15,10);
-	COMPLETE_TEST_LOGIC_OP(10,15);
+	COMPLETE_TEST_LOGIC_OP(&zs,10,10);
+	COMPLETE_TEST_LOGIC_OP(&zs,15,10);
+	COMPLETE_TEST_LOGIC_OP(&zs,10,15);
 
 	// some basics tests
-	TEST_ARITHMETIC_BOOL_EXPR(!false && !(false || false));
-	TEST_ARITHMETIC_BOOL_EXPR(!(true && !false) || false);
-	TEST_ARITHMETIC_BOOL_EXPR((true && !false) || !false);
+	TEST_ARITHMETIC_BOOL_EXPR(&zs,!false && !(false || false));
+	TEST_ARITHMETIC_BOOL_EXPR(&zs,!(true && !false) || false);
+	TEST_ARITHMETIC_BOOL_EXPR(&zs,(true && !false) || !false);
 
 	// test declare var int/bool/zs_string/number
 	printf("%i. testing primitive var\n",++n_test);
 
 	// decalre vars
-	zs->eval("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
+	zs.eval("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
 
-	TEST_INT_EXPR("i=1;return i;",1);
-	TEST_INT_EXPR("i++;return i;",2);
-	TEST_INT_EXPR("++i;return i;",3);
-	TEST_INT_EXPR("i--;return i;",2);
-	TEST_INT_EXPR("--i;return i;",1);
+	TEST_INT_EXPR(&zs,"i=1;return i;",1);
+	TEST_INT_EXPR(&zs,"i++;return i;",2);
+	TEST_INT_EXPR(&zs,"++i;return i;",3);
+	TEST_INT_EXPR(&zs,"i--;return i;",2);
+	TEST_INT_EXPR(&zs,"--i;return i;",1);
 
 
-	TEST_INT_EXPR("i=10;i*=10;return i;",100);
-	TEST_INT_EXPR("i/=10;return i;",10);
-	TEST_INT_EXPR("i+=10;return i;",20);
-	TEST_INT_EXPR("i-=5;return i;",15);
-	TEST_INT_EXPR("i%=10;return i;",5);
+	TEST_INT_EXPR(&zs,"i=10;i*=10;return i;",100);
+	TEST_INT_EXPR(&zs,"i/=10;return i;",10);
+	TEST_INT_EXPR(&zs,"i+=10;return i;",20);
+	TEST_INT_EXPR(&zs,"i-=5;return i;",15);
+	TEST_INT_EXPR(&zs,"i%=10;return i;",5);
 
 	// test reassign and float
-	TEST_FLOAT_EXPR("i=2.0;return i;",2.0f);
-	TEST_FLOAT_EXPR("i++;return i;",3.0f);
-	TEST_FLOAT_EXPR("--i;return i;",2.0f);
+	TEST_FLOAT_EXPR(&zs,"i=2.0;return i;",2.0f);
+	TEST_FLOAT_EXPR(&zs,"i++;return i;",3.0f);
+	TEST_FLOAT_EXPR(&zs,"--i;return i;",2.0f);
 
-	TEST_BOOL_EXPR("i=true;return i;",true);
-	TEST_BOOL_EXPR("i=!i;return i;",false);
-	TEST_BOOL_EXPR("return i==i;",true);
-	TEST_BOOL_EXPR("return i!=i;",false);
-	TEST_BOOL_EXPR("i=!i;return i;",true);
+	TEST_BOOL_EXPR(&zs,"i=true;return i;",true);
+	TEST_BOOL_EXPR(&zs,"i=!i;return i;",false);
+	TEST_BOOL_EXPR(&zs,"return i==i;",true);
+	TEST_BOOL_EXPR(&zs,"return i!=i;",false);
+	TEST_BOOL_EXPR(&zs,"i=!i;return i;",true);
 
 
 	printf("%i. test if-else ...\n",++n_test);
-	TEST_INT_EXPR("i=0;if(i==0){i=10;}else{i=11;}return i;",10);
-	TEST_INT_EXPR("if(i==0){i=10;}else{i=11;}return i;",11);
+	TEST_INT_EXPR(&zs,"i=0;if(i==0){i=10;}else{i=11;}return i;",10);
+	TEST_INT_EXPR(&zs,"if(i==0){i=10;}else{i=11;}return i;",11);
 
-	//zs->eval("var i1='s',i2='s\",it1=\"s\",it2=\"s\",n1=\"s\",n2=\"s\",nt1=\"s\",nt2=\"s\"");
+	//zs.eval("var i1='s',i2='s\",it1=\"s\",it2=\"s\",n1=\"s\",n2=\"s\",nt1=\"s\",nt2=\"s\"");
 
 	printf("%i. testing class Integer arithmetic operations...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,4); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(4,5); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(5,4); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,4,4); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,4,5); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,5,4); // op1 > op2
 
 	printf("%i. testing class Float arithmetic operations ...\n",++n_test);
-	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(4.0,4.0); // op1==op2
-	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(4.0,5.0); // op1 < op2
-	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(5.0,4.0); // op1 > op2
-	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(5.0,2.0e2); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(&zs,4.0,4.0); // op1==op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(&zs,4.0,5.0); // op1 < op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(&zs,5.0,4.0); // op1 > op2
+	COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(&zs,5.0,2.0e2); // op1 > op2
 
 
 	printf("%i. test consisten script-c-script calls ...\n",++n_test);
-	zs->registerFunction("test_function_1st_c_call",test_function_1st_c_call);
+	zs.registerFunction("test_function_1st_c_call",test_function_1st_c_call);
 	// test calling script-c-script-c
 
-	zs->eval("function test_1st_script_call(){\n"
+	zs.eval("function test_1st_script_call(){\n"
 				"Console::outln (\"Hello from script\");\n"
 				"test_function_1st_c_call();\n"
 			"}\n"
@@ -576,15 +576,16 @@ int main(int argc, char * argv[]) {
 				"Console::outln(\"2nd call script\");\n"
 			"}");
 
-	std::function<void ()> * test_1st_script_call=zs->bindScriptFunction<void ()>("test_1st_script_call");
-	test_2nd_script_call=zs->bindScriptFunction<void ()>("test_2nd_script_call");
+	auto  test_1st_script_call=zs.bindScriptFunction<void ()>("test_1st_script_call");
+	test_2nd_script_call=new std::function<void()>(zs.bindScriptFunction<void ()>("test_2nd_script_call"));
 
 	if(test_1st_script_call){
-		(*test_1st_script_call)();
+		test_1st_script_call();
 	}
 
-	delete test_1st_script_call;
 	delete test_2nd_script_call;
+
+	// test files
 
 
 	// test all external tests...
@@ -633,19 +634,15 @@ int main(int argc, char * argv[]) {
 
 	while(*it!=0){
 		// clear all vars in order to no have conflict with previous evaluations
-		zs->clear();
+		zs.clear();
 		printf("Evaluating %i/%i:'%s'\n",n++,total,*it);
-		zs->evalFile(*it);
+		zs.evalFile(*it);
 		it++;
 	}
 
 	printf("All tests passed OK!\n");
 
-	delete zs;
 
-#ifdef __MEMMANAGER__
-	MEMMGR_print_status();
-#endif
 
 	return 0;
 }

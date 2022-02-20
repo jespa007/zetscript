@@ -3,17 +3,15 @@
 
 
 void test_callback(
-	zetscript::ScriptFunction *_script_function
+	zetscript::ZetScript *_zs
+	,zetscript::ScriptFunction *_script_function
 ){
 	zetscript::zs_float param1=1.0;
 	zetscript::zs_int param2=2.0;
 	bool param3=true;
 	// get zetscript instance
-
-	zetscript::ZetScript *zs=_script_function->getZetScript();
-
 	// transform script function to c++ function...
-	auto script_function = zs->bindScriptFunction<zetscript::ScriptObjectString * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
+	auto script_function = _zs->bindScriptFunction<zetscript::ScriptObjectString * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
 
 	// call the function with params 1,2,3. The function returns a 'ScriptObjectString' ...
 	auto so=script_function(&param1,&param2,&param3);
@@ -22,22 +20,20 @@ void test_callback(
 	printf("FROM CALLBACK 1: calling function result: %s\n",so->toString().c_str());
 
 	// unref 'ScriptObjectString' lifetime
-	zs->unrefLifetimeObject(so);
+	_zs->unrefLifetimeObject(so);
 
 }
 
 void test_callback(
-		zetscript::ScriptObjectMemberFunction *_script_function
+	zetscript::ZetScript *_zs
+	,zetscript::ScriptObjectMemberFunction *_script_function
 ){
 	zetscript::zs_float param1=1.0;
 	zetscript::zs_int param2=2.0;
 	bool param3=true;
 
-	// get zetscript instance
-	zetscript::ZetScript *zs=_script_function->getZetScript();
-
 	// transform script function to c++ function...
-	auto script_function = zs->bindScriptFunction<zetscript::ScriptObjectString * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
+	auto script_function = _zs->bindScriptFunction<zetscript::ScriptObjectString * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
 
 	// call the function with params 1,2,3. The function returns a 'ScriptObjectString' ...
 	auto so=script_function(&param1,&param2,&param3);
@@ -46,7 +42,7 @@ void test_callback(
 	printf("FROM CALLBACK 2: %s\n",so->toString().c_str());
 
 	// unref 'ScriptObjectString' lifetime
-	zs->unrefLifetimeObject(so);
+	_zs->unrefLifetimeObject(so);
 
 }
 
@@ -54,15 +50,15 @@ void test_callback(
 int main(){
 
 	// instances ZetScript
-	 zetscript::ZetScript zs;
+	zetscript::ZetScript zs;
 
 	try{
 
 		// bind 'test_callback' receives a 'ScriptFunction' pointer type
-		zs.registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptFunction *script_function)>(test_callback));
+		zs.registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *script_function)>(test_callback));
 
 		// bind 'test_callback' receives a 'ScriptObjectMemberFunction' pointer type
-		zs.registerFunction("test_callback",static_cast<void (*)(zetscript::ScriptObjectMemberFunction *script_function)>(test_callback));
+		zs.registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptObjectMemberFunction *script_function)>(test_callback));
 
 
 		zs.eval(

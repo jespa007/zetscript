@@ -51,10 +51,10 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptTypeFactory::registerNativeGlobalFunction(
-		const zs_string &  function_name
-		,F ptr_function
-		,const char *registered_file
-		,short registered_line)
+		const zs_string &  _function_name
+		,F _ptr_function
+		,const char *_registered_file
+		,short _registered_line)
 	{
 		zs_string error;
 		ScriptFunctionParam *params=NULL;
@@ -64,10 +64,11 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("main function is not created");
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 				this
-				,function_name
-				,ptr_function
+				,NULL
+				,_function_name
+				,_ptr_function
 				,&params
 				,&params_len
 		);
@@ -75,13 +76,13 @@ namespace zetscript{
 		// Init struct...
 		main_function->registerLocalFunction(
 				 MAIN_SCOPE(this)
-				,registered_file
-				,registered_line
-				,function_name
+				,_registered_file
+				,_registered_line
+				,_function_name
 				,&params
 				,params_len
 				,idx_return_type
-				,(zs_int)ptr_function
+				,(zs_int)_ptr_function
 				,FUNCTION_PROPERTY_C_OBJECT_REF
 			);
 
@@ -140,8 +141,8 @@ namespace zetscript{
 	template<typename C>
 	ScriptType * ScriptTypeFactory::registerNativeClass(
 		const zs_string & type_name
-		,C * (*_constructor)()
-		,void (*_destructor)(C *)
+		,C * (*_constructor)(ZetScript *_zs)
+		,void (*_destructor)(ZetScript *_zs,C *)
 		,const char *registered_file
 		,short registered_line
 	){
@@ -436,8 +437,8 @@ namespace zetscript{
 	void ScriptTypeFactory::registerNativeMemberPropertySetter(
 		const zs_string & _property_name
 		,F _ptr_function
-		,const char *registered_file
-		,short registered_line
+		,const char *_registered_file
+		,short _registered_line
 	){
 		zs_string type_name_ptr = typeid( C *).name();
 		ScriptFunctionParam *params=NULL;
@@ -448,8 +449,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 				this
+				,script_type
 				,_property_name
 				,_ptr_function
 				,&params
@@ -463,8 +465,8 @@ namespace zetscript{
 			,params_len
 			,idx_return_type
 			,(zs_int)_ptr_function
-			,registered_file
-			,registered_line
+			,_registered_file
+			,_registered_line
 		);
 	}
 
@@ -489,8 +491,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr.c_str());
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -515,8 +518,8 @@ namespace zetscript{
 	void ScriptTypeFactory::registerNativeMemberPropertyPostIncrement(
 		const zs_string & _property_name
 		,F _ptr_function
-		,const char *registered_file
-		,short registered_line
+		,const char *_registered_file
+		,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
@@ -528,8 +531,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -543,8 +547,8 @@ namespace zetscript{
 			,params
 			,params_len
 			,idx_return_type
-			,registered_file
-			,registered_line
+			,_registered_file
+			,_registered_line
 		);
 	}
 
@@ -555,8 +559,8 @@ namespace zetscript{
 	void ScriptTypeFactory::registerNativeMemberPropertyPostDecrement(
 			const zs_string & _property_name
 			,F _ptr_function
-			,const char *registered_file
-			,short registered_line
+			,const char *_registered_file
+			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
@@ -568,8 +572,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -583,8 +588,8 @@ namespace zetscript{
 			,params
 			,params_len
 			,idx_return_type
-			,registered_file
-			,registered_line
+			,_registered_file
+			,_registered_line
 		);
 	}
 
@@ -595,8 +600,8 @@ namespace zetscript{
 	void ScriptTypeFactory::registerNativeMemberPropertyPreIncrement(
 			const zs_string & _property_name
 			,F _ptr_function
-			,const char *registered_file
-			,short registered_line
+			,const char *_registered_file
+			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
@@ -608,8 +613,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -623,8 +629,8 @@ namespace zetscript{
 			,params
 			,params_len
 			,idx_return_type
-			,registered_file
-			,registered_line
+			,_registered_file
+			,_registered_line
 		);
 	}
 
@@ -635,8 +641,8 @@ namespace zetscript{
 	void ScriptTypeFactory::registerNativeMemberPropertyPreDecrement(
 			const zs_string & _property_name
 			,F _ptr_function
-			,const char *registered_file
-			,short registered_line
+			,const char *_registered_file
+			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
@@ -648,8 +654,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -663,8 +670,8 @@ namespace zetscript{
 			,params
 			,params_len
 			,idx_return_type
-			,registered_file
-			,registered_line
+			,_registered_file
+			,_registered_line
 		);
 	}
 
@@ -673,8 +680,8 @@ namespace zetscript{
 	void ScriptTypeFactory::registerNativeMemberPropertyAddSet(
 			const zs_string & _property_name
 			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
+			, const char *_registered_file
+			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
@@ -686,8 +693,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -701,8 +709,8 @@ namespace zetscript{
 			,params
 			,params_len
 			,idx_return_type
-			,registered_file
-			,registered_line
+			,_registered_file
+			,_registered_line
 		);
 	}
 
@@ -711,8 +719,8 @@ namespace zetscript{
 	void ScriptTypeFactory::registerNativeMemberPropertySubSet(
 			const zs_string & _property_name
 			,F _ptr_function
-			, const char *registered_file
-			,short registered_line
+			, const char *_registered_file
+			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
@@ -724,8 +732,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			, script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -739,8 +748,8 @@ namespace zetscript{
 			,params
 			,params_len
 			,idx_return_type
-			,registered_file
-			,registered_line
+			,_registered_file
+			,_registered_line
 		);
 	}
 
@@ -762,8 +771,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -800,8 +810,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -838,8 +849,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -876,8 +888,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -914,8 +927,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -952,8 +966,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -990,8 +1005,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params
@@ -1028,8 +1044,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
 		}
 
-		int idx_return_type=getNativeMemberFunctionRetArgsTypes(
+		int idx_return_type=getNativeFunctionRetArgsTypes(
 			this
+			,script_type
 			,_property_name
 			,_ptr_function
 			,&params

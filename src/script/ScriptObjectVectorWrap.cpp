@@ -6,23 +6,22 @@
 
 namespace zetscript{
 
-	void    			ScriptObjectVectorWrap_push(ScriptObjectVector *sv,StackElement  * stk){
+	void    			ScriptObjectVectorWrap_push(ZetScript *_zs,ScriptObjectVector *sv,StackElement  * stk){
 		return sv->push(stk);
 	}
 
-	void   	ScriptObjectVectorWrap_pop(ScriptObjectVector *sv){
+	void   	ScriptObjectVectorWrap_pop(ZetScript *_zs,ScriptObjectVector *sv){
 		sv->pop();
 	}
 
-	zs_int 			ScriptObjectVectorWrap_size(ScriptObjectVector *sv){
+	zs_int 			ScriptObjectVectorWrap_size(ZetScript *_zs,ScriptObjectVector *sv){
 		return sv->length();
 	}
 
-	void 			ScriptObjectVectorWrap_insertAt(ScriptObjectVector *sv, zs_int idx,StackElement  * _stk){
+	void 			ScriptObjectVectorWrap_insertAt(ZetScript *_zs,ScriptObjectVector *sv, zs_int idx,StackElement  * _stk){
 
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
 		*new_stk=*_stk;
-		ZetScript *zs=sv->getZetScript();
 		VirtualMachine *vm=sv->getZetScript()->getVirtualMachine();
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
 
@@ -31,7 +30,7 @@ namespace zetscript{
 			ScriptObject *so_param=(ScriptObject *)_stk->value;
 			if(so_param->idx_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
-				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(zs);
+				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(_zs);
 				if(!vm_create_shared_pointer(vm,sc)){
 					return;
 				}
@@ -47,38 +46,36 @@ namespace zetscript{
 		stk_user_list_elements->insert(idx,(zs_int)new_stk);
 	}
 
-	void 			ScriptObjectVectorWrap_eraseAt(ScriptObjectVector *sv, zs_int idx){
+	void 			ScriptObjectVectorWrap_eraseAt(ZetScript *_zs,ScriptObjectVector *sv, zs_int idx){
 		sv->eraseUserElementAt(idx);
 	}
 
-	void 			ScriptObjectVectorWrap_clear(ScriptObjectVector *sv){
+	void 			ScriptObjectVectorWrap_clear(ZetScript *_zs,ScriptObjectVector *sv){
 		sv->eraseAllUserElements();
 	}
 
-	ScriptObjectString *		ScriptObjectVectorWrap_join(ScriptObjectVector *sv, zs_int idx){
+	ScriptObjectString *		ScriptObjectVectorWrap_join(ZetScript *_zs,ScriptObjectVector *sv, zs_int idx){
 		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(sv->getZetScript());
 		zs_string *ptr_str=(zs_string *)so_string->value;
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
-		ZetScript *zs=sv->getZetScript();
 
 		for(int i=0; i < stk_user_list_elements->count;i++){
 			StackElement *stk=(StackElement *)stk_user_list_elements->items[i];
 			if(i>0){
 				ptr_str->append((char)idx);
 			}
-			ptr_str->append(stk_to_str(zs,stk));
+			ptr_str->append(stk_to_str(_zs,stk));
 		}
 
 		return so_string;
 	}
 
-	ScriptObjectIteratorVector * ScriptObjectVectorWrap_iter(ScriptObjectVector *so){
+	ScriptObjectIteratorVector * ScriptObjectVectorWrap_iter(ZetScript *_zs,ScriptObjectVector *so){
 		return ZS_NEW_OBJECT_ITERATOR_VECTOR(so);
 	}
 
-	bool 							ScriptObjectVectorWrap_contains(ScriptObjectVector *sv, StackElement *stk_to_compare){
+	bool 							ScriptObjectVectorWrap_contains(ZetScript *_zs,ScriptObjectVector *sv, StackElement *stk_to_compare){
 		bool found=false;
-		ZetScript *zs=sv->getZetScript();
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
 
 		for(int i=0; i < stk_user_list_elements->count && found == false;i++){
@@ -97,7 +94,7 @@ namespace zetscript{
 					   ){
 					// particular case string
 					if(((ScriptObject *)stk_to_compare->value)->idx_type == IDX_TYPE_SCRIPT_OBJECT_STRING){
-						found=stk_to_str(zs,stk_to_compare)==stk_to_str(zs,stk_element);
+						found=stk_to_str(_zs,stk_to_compare)==stk_to_str(_zs,stk_element);
 					}
 				}
 				break;
@@ -107,9 +104,8 @@ namespace zetscript{
 		return found;
 	}
 
-	bool 							ScriptObjectVectorWrap_equal(ScriptObjectVector *so1, ScriptObjectVector *so2){
+	bool 							ScriptObjectVectorWrap_equal(ZetScript *_zs,ScriptObjectVector *so1, ScriptObjectVector *so2){
 		bool equal=true;
-		ZetScript *zs=so1->getZetScript();
 		zs_vector *stk_user_list_elements_s1=so1->getStkUserListElements();
 		zs_vector *stk_user_list_elements_s2=so2->getStkUserListElements();
 
@@ -137,7 +133,7 @@ namespace zetscript{
 					break;
 				case STK_PROPERTY_SCRIPT_OBJECT:
 					if(STK_IS_SCRIPT_OBJECT_STRING(stk_element_s1) && STK_IS_SCRIPT_OBJECT_STRING(stk_element_s2)){
-						equal=stk_to_str(zs,stk_element_s1) == stk_to_str(zs,stk_element_s2);
+						equal=stk_to_str(_zs,stk_element_s1) == stk_to_str(_zs,stk_element_s2);
 					}else{
 						equal=stk_element_s1->value==stk_element_s2->value;
 					}

@@ -262,7 +262,7 @@ Solved issues
 #319 Detect when function member object is called and its own object is destroyed 
 #323 Implement operator "==" for Vector 
 #323 Implement operator "==" for Vector
-> #324 Mandatory Zetscript *_zs first param for to all binding functions 
+#324 Mandatory Zetscript *_zs first param for to all binding functions 
 
 //----------------------------------------------------------
 Version: 1.3.0

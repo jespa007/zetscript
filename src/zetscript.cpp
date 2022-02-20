@@ -12,22 +12,6 @@
 
 namespace zetscript{
 
-	const char * k_str_void_type =typeid(void).name();
-	const char * k_str_zs_int_type_ptr=typeid(zs_int *).name();
-	const char * k_str_const_zs_int_type_ptr=typeid(const zs_int *).name();
-	const char * k_str_float_type_ptr=typeid(zs_float *).name();
-	const char * k_str_const_float_type_ptr=typeid(const zs_float *).name();
-	const char * k_str_string_type_ptr=typeid(zs_string *).name();
-	const char * k_str_char_type_ptr=typeid(char *).name();
-	const char * k_str_const_char_type_ptr=typeid(const char *).name();
-	const char * k_str_bool_type_ptr=typeid(bool *).name();
-	const char * k_str_const_bool_type_ptr=typeid(const bool *).name();
-	const char * k_str_zs_int_type=typeid(zs_int).name();
-	const char * k_str_float_type=typeid(zs_float).name();
-	const char * k_str_bool_type=typeid(bool).name();
-	const char * k_str_stack_element_type=typeid(StackElement).name();
-
-
 	ZetScript::ZetScript(){
 		eval_int=0;
 		eval_float=0;
@@ -55,6 +39,7 @@ namespace zetscript{
 
 		// Math mod
 		ScriptType *cl=script_type_factory->registerClass("Math");
+
 		cl->registerNativeMemberVariableStaticConst("PI",&MathModule_PI);
 		cl->registerNativeMemberFunctionStatic("sin",MathModule_sin);
 		cl->registerNativeMemberFunctionStatic("cos",MathModule_cos);
@@ -120,7 +105,7 @@ namespace zetscript{
 				//------------------------------------------------
 				// String
 				"static String::format(s,...args){" // add static function format to String module
-				"	String::formatNative(System::getZetScript(),s,args)"
+				"	String::formatNative(s,args)"
 				"}"
 				//------------------------------------------------
 				// DateTime
@@ -136,32 +121,32 @@ namespace zetscript{
 				//------------------------------------------------
 				// Console
 				"static Console::out(s,...args){"
-				"	Console::outNative(System::getZetScript(),s,args)"
+				"	Console::outNative(s,args)"
 				"}"
 				"static Console::outln(s,...args){"
-				"	Console::outlnNative(System::getZetScript(),s,args)"
+				"	Console::outlnNative(s,args)"
 				"}"
 				"static Console::error(s,...args){"
-				"	Console::errorNative(System::getZetScript(),s,args)"
+				"	Console::errorNative(s,args)"
 				"}"
 				"static Console::errorln(s,...args){"
-				"	Console::errorlnNative(System::getZetScript(),s,args)"
+				"	Console::errorlnNative(s,args)"
 				"}"
 				//------------------------------------------------
 				// System
 				"static System::assert(check,s,...args){"
 				"	if((typeof check)!=bool){"
-				"		System::errorNative(System::getZetScript(),\"Error, executing  'System::assert' first parameter must be boolean but it was {0}\",[typeof check])"
+				"		System::errorNative(\"Error, executing  'System::assert' first parameter must be boolean but it was {0}\",[typeof check])"
 				"	}"
 				"	if(check==false){"
-				"		System::errorNative(System::getZetScript(),\"Assert error: \"+s,args)"
+				"		System::errorNative(\"Assert error: \"+s,args)"
 				"	}"
 				"}"
 				"static System::error(s,...args){"
-				"	System::errorNative(System::getZetScript(),s,args)"
+				"	System::errorNative(s,args)"
 				"}"
 				"static System::eval(s,params){"
-				"	return System::evalNative(System::getZetScript(),s,params)"
+				"	return System::evalNative(s,params)"
 				"}"
 				"static System::getZetScript(){"
 				"	return ptrToZetScriptPtr(%lu);" // ptrToZetScript it gets current this
@@ -169,7 +154,7 @@ namespace zetscript{
 				//------------------------------------------------
 				// Json
 				"static Json::serialize(stk,formatted=false){"
-				"	return Json::serializeNative(System::getZetScript(),stk,formatted)"
+				"	return Json::serializeNative(stk,formatted)"
 				"}"
 				//------------------------------------------------
 				// DateTime

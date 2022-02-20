@@ -86,27 +86,11 @@
 #define ZETSCRIPT_VERSION_PATCH 0
 
 #define ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(class_type) \
- class_type * class_type##Wrap_New(){ return new class_type();} \
- void class_type##Wrap_Delete(class_type *ptr){ delete  (class_type *)(ptr);}
+ class_type * class_type##Wrap_New(ZetScript *_zs){ return new class_type();} \
+ void class_type##Wrap_Delete(ZetScript *_zs,class_type *ptr){ delete  (class_type *)(ptr);}
 
 
 namespace zetscript{
-
-	extern const char *	k_str_void_type;				// 	typeid(void).name()
-	extern const char * k_str_zs_int_type_ptr;			//	typeid(zs_int *).name()
-	extern const char * k_str_const_zs_int_type_ptr;	//	typeid(zs_int *).name()
-	extern const char * k_str_float_type_ptr;			//	typeid(zs_float *).name()
-	extern const char * k_str_const_float_type_ptr;		//	typeid(zs_float *).name()
-	extern const char * k_str_string_type_ptr;			//	typeid(zs_string *).name()
-	extern const char * k_str_char_type_ptr;			//	typeid(zs_string *).name()
-	extern const char * k_str_const_char_type_ptr;		//	typeid(zs_string *).name()
-	extern const char * k_str_bool_type_ptr;			//	typeid(bool *).name()
-	extern const char * k_str_const_bool_type_ptr;		//	typeid(bool *).name()
-	extern const char *	k_str_zs_int_type;				//	typeid(zs_int).name()
-
-	extern const char * k_str_float_type;				//	typeid(int).name()
-	extern const char * k_str_bool_type;				//	typeid(bool).name()
-	extern const char * k_str_stack_element_type;		//	typeid(bool).name()
 
 	typedef enum{
 
@@ -211,7 +195,7 @@ namespace zetscript{
 		 */
 
 		template<typename C>
-		ScriptType * registerClass(const zs_string & type_name, C  * (*_constructor)(), void (*_destructor)(C *), const char *registered_file="",short registered_line=-1){
+		ScriptType * registerClass(const zs_string & type_name, C  * (*_constructor)(ZetScript *_zs), void (*_destructor)(ZetScript *_zs,C *), const char *registered_file="",short registered_line=-1){
 			return script_type_factory->registerNativeClass<C>(type_name, _constructor, _destructor, registered_file,registered_line);
 		}
 
@@ -434,6 +418,20 @@ namespace zetscript{
 		template <typename R,typename T, typename... ArgTypes>
 		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type;
+
+		//--------------------------------------------------------------------------------------------------------------------
+		//
+		// 7 PARAMS
+		//
+		// template when parameters argIdx == 7
+		template <typename R,typename T, typename... ArgTypes>
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 7)>::type;
+
+
+		template <typename R,typename T, typename... ArgTypes>
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 7)>::type;
 
 		//
 		//

@@ -13,11 +13,11 @@ namespace zetscript{
 
 	static int n_eval_function=0;
 
-	zs_int SystemModule_clock(){
+	zs_int SystemModule_clock(ZetScript *_zs){
 		return std::clock()*(1000.0f/CLOCKS_PER_SEC);
 	}
 
-	void SystemModule_makeReadOnly(StackElement *stk){
+	void SystemModule_makeReadOnly(ZetScript *_zs,StackElement *stk){
 		stk->properties|=STK_PROPERTY_READ_ONLY;
 	}
 

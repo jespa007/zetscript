@@ -6,15 +6,15 @@
 
 namespace zetscript{
 
-	void	 ScriptObjectIteratorStringWrap_get(ScriptObjectIteratorString *si){
+	void	 ScriptObjectIteratorStringWrap_get(ZetScript *_zs,ScriptObjectIteratorString *si){
 		si->get();
 	}
 
-	void	 ScriptObjectIteratorStringWrap_next(ScriptObjectIteratorString *si){
+	void	 ScriptObjectIteratorStringWrap_next(ZetScript *_zs,ScriptObjectIteratorString *si){
 		si->next();
 	}
 
-	bool	 ScriptObjectIteratorStringWrap_end(ScriptObjectIteratorString *si){
+	bool	 ScriptObjectIteratorStringWrap_end(ZetScript *_zs,ScriptObjectIteratorString *si){
 		return si->end();
 	}
 

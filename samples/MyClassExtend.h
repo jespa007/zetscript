@@ -2,7 +2,7 @@
 
 class MyClassExtend:public MyClass{
 public:
-	zs_float data4;
+	zetscript::zs_float data4;
 
 	void function2(float arg){
 		this->data4 = arg;

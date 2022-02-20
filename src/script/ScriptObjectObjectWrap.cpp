@@ -6,14 +6,14 @@
 
 namespace zetscript{
 
-	ScriptObjectVector *ScriptObjectObjectWrap_keys(ScriptObjectObject *o1){
-		VirtualMachine *vm=o1->getZetScript()->getVirtualMachine();
-		ScriptObjectVector *sv= ZS_NEW_OBJECT_VECTOR(o1->getZetScript());
+	ScriptObjectVector *ScriptObjectObjectWrap_keys(ZetScript *_zs,ScriptObjectObject *o1){
+		VirtualMachine *vm=_zs->getVirtualMachine();
+		ScriptObjectVector *sv= ZS_NEW_OBJECT_VECTOR(_zs);
 
 		zs_map *map=o1->getMapUserProperties();
 		for(auto it=map->begin(); !it.end(); it.next()){
 			StackElement *stk=sv->pushNewUserSlot();
-			ScriptObjectString *so=ZS_NEW_OBJECT_STRING(o1->getZetScript());
+			ScriptObjectString *so=ZS_NEW_OBJECT_STRING(_zs);
 			so->set(it.key);
 
 			// create and share pointer
@@ -37,24 +37,24 @@ namespace zetscript{
 	}*/
 
 
-	bool ScriptObjectObjectWrap_contains(ScriptObjectObject *o1, zs_string * key){
+	bool ScriptObjectObjectWrap_contains(ZetScript *_zs,ScriptObjectObject *o1, zs_string * key){
 		return o1->existUserProperty(key->c_str());
 	}
 
-	void ScriptObjectObjectWrap_clear(ScriptObjectObject *o1){
+	void ScriptObjectObjectWrap_clear(ZetScript *_zs,ScriptObjectObject *o1){
 		o1->eraseAllUserProperties();
 	}
 
-	void ScriptObjectObjectWrap_erase(ScriptObjectObject *o1, zs_string * key){
+	void ScriptObjectObjectWrap_erase(ZetScript *_zs,ScriptObjectObject *o1, zs_string * key){
 		o1->eraseUserProperty(*key);
 	}
 
-	ScriptObjectIteratorObject * ScriptObjectObjectWrap_iter(ScriptObjectObject *oo){
+	ScriptObjectIteratorObject * ScriptObjectObjectWrap_iter(ZetScript *_zs,ScriptObjectObject *oo){
 		return ZS_NEW_OBJECT_ITERATOR_OBJECT(oo);
 	}
 
-	void						 	ScriptObjectObjectWrap_append(ScriptObjectObject *o1,ScriptObjectObject *o2){
-		ScriptObjectObject::append(o1->getZetScript(),o1,o2);
+	void						 	ScriptObjectObjectWrap_append(ZetScript *_zs,ScriptObjectObject *o1,ScriptObjectObject *o2){
+		ScriptObjectObject::append(_zs,o1,o2);
 	}
 
 }

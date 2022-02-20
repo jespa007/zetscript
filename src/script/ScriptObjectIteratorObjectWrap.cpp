@@ -5,16 +5,16 @@
 #include "zetscript.h"
 
 namespace zetscript{
-	void	 ScriptObjectIteratorObjectWrap_next(ScriptObjectIteratorObject *oi){
+	void	 ScriptObjectIteratorObjectWrap_next(ZetScript *_zs,ScriptObjectIteratorObject *oi){
 		oi->next();
 	}
 
-	void	ScriptObjectIteratorObjectWrap_get(ScriptObjectIteratorObject *oi){
+	void	ScriptObjectIteratorObjectWrap_get(ZetScript *_zs,ScriptObjectIteratorObject *oi){
 		oi->get();
 	}
 
 
-	bool	 ScriptObjectIteratorObjectWrap_end(ScriptObjectIteratorObject *oi){
+	bool	 ScriptObjectIteratorObjectWrap_end(ZetScript *_zs,ScriptObjectIteratorObject *oi){
 		return oi->end();
 	}
 }

@@ -58,6 +58,23 @@
 
 namespace zetscript{
 
+
+	const char * k_str_void_type =typeid(void).name();
+	const char * k_str_zs_int_type_ptr=typeid(zs_int *).name();
+	const char * k_str_const_zs_int_type_ptr=typeid(const zs_int *).name();
+	const char * k_str_zs_float_type_ptr=typeid(zs_float *).name();
+	const char * k_str_const_zs_float_type_ptr=typeid(const zs_float *).name();
+	const char * k_str_zs_string_type_ptr=typeid(zs_string *).name();
+	const char * k_str_char_type_ptr=typeid(char *).name();
+	const char * k_str_const_char_type_ptr=typeid(const char *).name();
+	const char * k_str_bool_type_ptr=typeid(bool *).name();
+	const char * k_str_const_bool_type_ptr=typeid(const bool *).name();
+	const char * k_str_zs_int_type=typeid(zs_int).name();
+	const char * k_str_zs_float_type=typeid(zs_float).name();
+	const char * k_str_bool_type=typeid(bool).name();
+	const char * k_str_stack_element_type=typeid(StackElement).name();
+	const char * k_str_zetscript_type_ptr=typeid(ZetScript *).name();
+
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectIteratorObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectString)
@@ -95,16 +112,16 @@ namespace zetscript{
 		idx_clear_checkpoint=1; // by default restore till main class.
 	}
 
-	ZetScript *ptrToZetScriptPtr(zs_int ptr){
+	ZetScript *ptrToZetScriptPtr(ZetScript *_zs, zs_int ptr){
 		return (ZetScript *)ptr;
 	}
 
-	zs_float parseFloat(zs_int number){
+	zs_float parseFloat(ZetScript *_zs,zs_int number){
 
 		return (zs_float)(number);
 	}
 
-	zs_float parseFloat(zs_string  *number_str){
+	zs_float parseFloat(ZetScript *_zs,zs_string  *number_str){
 		zs_float result=0;
 		zs_float *result_ptr=zs_strutils::parse_zs_float(*number_str);
 
@@ -116,12 +133,12 @@ namespace zetscript{
 		return result;
 	}
 
-	zs_int parseInteger(zs_float *number){
+	zs_int parseInteger(ZetScript *_zs,zs_float *number){
 
 		return (zs_int)(*number);
 	}
 
-	zs_int parseInteger(zs_string  *number_str){
+	zs_int parseInteger(ZetScript *_zs,zs_string  *number_str){
 		zs_int result=0;
 		zs_int *result_ptr=zs_strutils::parse_zs_int(*number_str);
 		if(result_ptr!=NULL){
@@ -194,10 +211,10 @@ namespace zetscript{
 		// register c function's
 
 		zs->registerFunction("ptrToZetScriptPtr",ptrToZetScriptPtr);
-		zs->registerFunction("parseFloat",static_cast<zs_float (*)(zs_int)>(parseFloat));
-		zs->registerFunction("parseFloat",static_cast<zs_float (*)(zs_string *)>(parseFloat));
-		zs->registerFunction("parseInteger",static_cast<zs_int (*)(zs_float *)>(parseInteger));
-		zs->registerFunction("parseInteger",static_cast<zs_int (*)(zs_string *)>(parseInteger));
+		zs->registerFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_int)>(parseFloat));
+		zs->registerFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));
+		zs->registerFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInteger));
+		zs->registerFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInteger));
 
 		//-------------------------
 		// Wrap functions
@@ -227,14 +244,14 @@ namespace zetscript{
 		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
 		registerNativeMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);
 		registerNativeMemberFunction<ScriptObjectString>("replace",ScriptObjectStringWrap_replace);
-		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, zs_string *)>(ScriptObjectStringWrap_split));
-		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ScriptObjectString *so, zs_int )>(ScriptObjectStringWrap_split));
+		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(ScriptObjectStringWrap_split));
+		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(ScriptObjectStringWrap_split));
 		registerNativeMemberFunction<ScriptObjectString>("size",ScriptObjectStringWrap_size);
-		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_contains));
-		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_contains));
+		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_contains));
+		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_contains));
 
-		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_indexOf));
-		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_indexOf));
+		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_indexOf));
+		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_indexOf));
 
 		registerNativeMemberFunction<ScriptObjectString>("startsWith",ScriptObjectStringWrap_startsWith);
 		registerNativeMemberFunction<ScriptObjectString>("endsWith",ScriptObjectStringWrap_endsWith);

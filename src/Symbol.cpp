@@ -26,13 +26,13 @@ namespace zetscript{
 			};
 
 		}
-		else if (k_str_float_type_ptr == symbol->str_native_type) {
+		else if (k_str_zs_float_type_ptr == symbol->str_native_type) {
 			return {
 					(zs_int)ptr_variable,
 					STK_PROPERTY_ZS_FLOAT_PTR
 			};
 		}
-		else if (k_str_const_float_type_ptr == symbol->str_native_type) {
+		else if (k_str_const_zs_float_type_ptr == symbol->str_native_type) {
 			return {
 					(zs_int)ptr_variable,
 					STK_PROPERTY_ZS_FLOAT_PTR | STK_PROPERTY_READ_ONLY
@@ -40,12 +40,12 @@ namespace zetscript{
 		}
 		else if (k_str_char_type_ptr == symbol->str_native_type
 			|| k_str_const_char_type_ptr == symbol->str_native_type
-			|| k_str_string_type_ptr == symbol->str_native_type
+			|| k_str_zs_string_type_ptr == symbol->str_native_type
 			) {
 			char *input_s = (char *)ptr_variable;
 			ScriptObjectString *s = ZS_NEW_OBJECT_STRING(zs);
 
-			if (k_str_string_type_ptr == symbol->str_native_type) {
+			if (k_str_zs_string_type_ptr == symbol->str_native_type) {
 				s->value = (void *)ptr_variable;
 				input_s = (char *)(((zs_string *)ptr_variable)->c_str());
 			}
