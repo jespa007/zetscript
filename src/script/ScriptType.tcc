@@ -2,6 +2,33 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
+
+#define ZS_CHECK_TEST_PARAMETER(STR_TYPE_NAME,PLACE_PARAM,STR_PLACE_PARAM)\
+		if(params_len>=PLACE_PARAM){\
+			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have "STR_PLACE_PARAM" parameter as pointer type '%s'"\
+				,function_class_name.c_str()\
+				,this->type_name_ptr\
+				,this->type_name_ptr\
+			);\
+		}\
+		ScriptType * c_class_first_arg=	getScriptType(params[PLACE_PARAM].idx_type);\
+		if(c_class_first_arg == NULL){\
+			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have "STR_PLACE_PARAM" parameter as pointer type '%s')"\
+				,function_class_name.c_str()\
+				,this->type_name_ptr\
+				,this->type_name_ptr\
+			);\
+		}\
+		if(c_class_first_arg->type_name_ptr !=  this->type_name_ptr){\
+			THROW_RUNTIME_ERROR(\
+				"register native member function '%s::%s': expected to have "STR_PLACE_PARAM" parameter as pointer type '%s' but it was '%s')"\
+				,function_class_name.c_str()\
+				,this->type_name_ptr\
+				,this->type_name_ptr\
+				,params[PLACE_PARAM].name.c_str()\
+			);\
+		}\
+
 namespace zetscript{
 
 	template < typename R>
@@ -95,32 +122,9 @@ namespace zetscript{
 				,&params_len
 		);
 
-		if(params_len==0){
-			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s'"
-				,function_class_name.c_str()
-				,this->type_name_ptr
-				,this->type_name_ptr
-			);
-		}
+		ZS_CHECK_TEST_PARAMETER(this->type_name_ptr,0,"FIRST")
 
-		ScriptType * c_class_first_arg=	getScriptType(params[0].idx_type);
-		if(c_class_first_arg == NULL){
-			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have FIRST parameter as pointer type '%s')"
-				,function_class_name.c_str()
-				,this->type_name_ptr
-				,this->type_name_ptr
-			);
-		}
-
-		if(c_class_first_arg->type_name_ptr !=  this->type_name_ptr){
-			THROW_RUNTIME_ERROR(
-				"register native member function '%s::%s': expected to have FIRST parameter as pointer type '%s' but it was '%s')"
-				,function_class_name.c_str()
-				,this->type_name_ptr
-				,this->type_name_ptr
-				,params[0].name.c_str()
-			);
-		}
+		ZS_CHECK_TEST_PARAMETER(this->type_name_ptr,1,"SECOND")
 
 		// register member function...
 		this->registerMemberFunction(
