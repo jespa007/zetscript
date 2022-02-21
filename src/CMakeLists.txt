@@ -236,6 +236,13 @@ add_executable(test_callbacks${POST_NAME}
 )
 
 target_link_libraries(test_callbacks${POST_NAME} zetscript${POST_NAME})
+
+add_executable(zs_test${POST_NAME}
+	${PROJECT_SOURCE_DIR}/test/zs_test.cpp
+)
+
+target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+
 # TODO REMOVE!!!
 #---------------
 

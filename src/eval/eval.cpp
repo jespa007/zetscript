@@ -602,6 +602,7 @@ namespace zetscript{
 		}
 
 		if(lookup_sorted_table_local_variables != NULL){
+
 			// update variables symbol...
 			zs_vector *local_vars_dst=new zs_vector();
 

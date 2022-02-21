@@ -545,11 +545,21 @@ namespace zetscript{
 					instruction_token->vm_instruction=ei_first_token_node->vm_instruction;
 					instruction_token->vm_instruction.byte_code=byte_code;
 					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_params); // by default always returns 1 value
-
 					instruction_token->symbol=ei_first_token_node->symbol;
 					instruction_token->instruction_source_info= ei_first_token_node->instruction_source_info;
+
+					// The last instruction was BYTE_CODE_LOAD_THIS_VARIABLE and the evaluation found its idx_position
+					// Because the instruction to be replaced is a call_this and it could have inheritance, leave as undefined
+					// to allow locate functions in the top most inherited class
+					if(byte_code==BYTE_CODE_THIS_CALL){
+						instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
+					}
+
+					// erase first token node because last this.xxx is gona to be replaced to a single instruction
+					// last_instruction_token will be erased!!!
 					delete ei_first_token_node;
 					token_node_symbol->eval_instructions.erase(0);
+					last_instruction_token=NULL;
 					break;
 				case BYTE_CODE_THIS_MEMBER_CALL:
 				case BYTE_CODE_MEMBER_CALL:

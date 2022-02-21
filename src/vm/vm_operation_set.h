@@ -243,6 +243,10 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 
 #define VM_OPERATION_MOD_SET(__METAMETHOD__) \
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
+		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
+	}\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
 		if(stk_result_op2->value == 0){\
@@ -317,6 +321,10 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 
 
 #define VM_OPERATION_BINARY_SET(__C_OP__, __METAMETHOD__,__ACCESSOR_METAMETHOD_PROPERTY__)\
+	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
+	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
+		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
+	}\
 	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_ZS_INT){\
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
 		(*((zs_int *)(ptr_ptr_void_ref)))=stk_result_op1->value;\

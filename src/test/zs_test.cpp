@@ -551,7 +551,7 @@ int main(int argc, char * argv[]) {
 	TEST_INT_EXPR(&zs,"if(i==0){i=10;}else{i=11;}return i;",11);
 
 	//zs.eval("var i1='s',i2='s\",it1=\"s\",it2=\"s\",n1=\"s\",n2=\"s\",nt1=\"s\",nt2=\"s\"");
-
+	// testing metamethods...
 	printf("%i. testing class Integer arithmetic operations...\n",++n_test);
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,4,4); // op1==op2
 	COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,4,5); // op1 < op2
@@ -587,7 +587,7 @@ int main(int argc, char * argv[]) {
 
 	// test files
 
-
+/*
 	// test all external tests...
 	const char *test_files[]={
 		//"samples/assert_error.zs"
@@ -638,7 +638,7 @@ int main(int argc, char * argv[]) {
 		printf("Evaluating %i/%i:'%s'\n",n++,total,*it);
 		zs.evalFile(*it);
 		it++;
-	}
+	}*/
 
 	printf("All tests passed OK!\n");
 
