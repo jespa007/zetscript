@@ -114,7 +114,7 @@ namespace zetscript{
 
 		//===================================================================================================
 
-		 bool				vm_error;
+		 bool				vm_error,vm_error_max_stack_reached;
 		 zs_string 			vm_error_str;
 		 zs_string 			vm_error_callstack_str;
 		 VM_ScopeFunction	*vm_current_scope_function;

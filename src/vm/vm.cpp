@@ -277,7 +277,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",data->vm_idx_call);
 			}
 
-
+			data->vm_error_max_stack_reached=false;
 			data->vm_error=false;
 			data->vm_error_str="";
 			data->vm_error_callstack_str="";

@@ -77,6 +77,7 @@ namespace zetscript{
 		data->vm_idx_call++;
 
 		if(((data->stk_vm_current-data->vm_stack)+calling_function->min_stack_needed)>=VM_STACK_MAX){
+			data->vm_error_max_stack_reached=true;
 			VM_STOP_EXECUTEF("Error MAXIMUM stack size reached");
 		}
 
@@ -1153,8 +1154,11 @@ execute_function:
 
 				if(data->vm_error == true){
 					// if System::assert -> not add in callstack trace
-					if(((calling_function->function_name=="assert" || calling_function->function_name=="error") && (sf_call_script_function->function_name=="errorNative")
-					)==false){
+
+					if((((calling_function->function_name=="assert" || calling_function->function_name=="error") && (sf_call_script_function->function_name=="errorNative")))==false
+												&&
+											data->vm_error_max_stack_reached==false
+					){
 						const char *str_class_owner=NULL;
 						if(	(sf_call_script_function->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!=0
 								||
@@ -1171,6 +1175,7 @@ execute_function:
 							,SFI_GET_FILE(calling_function,instruction)
 							,SFI_GET_LINE(calling_function,instruction)
 						);
+
 					}
 					goto lbl_exit_function;
 				}
