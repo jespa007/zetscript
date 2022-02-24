@@ -245,7 +245,7 @@ namespace zetscript{
 
 		InfoSharedList *list=&data->zero_shares[idx_call_stack];
 		InfoSharedPointerNode *next_node=NULL,*current=list->first;
-		bool check_empty_shared_pointers=false;
+		//bool check_empty_shared_pointers=false;
 
 		if(current != NULL){
 			bool finish=false;
