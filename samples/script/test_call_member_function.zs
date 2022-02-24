@@ -2,7 +2,7 @@
 class Test{
 	
 	var a
-	Test(a){
+	constructor(a){
 		this.a=a; // init built-in
 		Console::outln("Test::Test this.a:{0}",this.a);
 	}
@@ -10,6 +10,9 @@ class Test{
 		this.a+=10+a;
 		Console::outln("Test::function1, this.a:{0}",this.a);
 		this.function0();
+	}
+	
+	function0(){
 	}
 };
 
@@ -23,7 +26,7 @@ function Test::function2(a){
 // A inheritance class example. TestExtended inherites function1 and function2. 
 class TestExtended extends Test{
 	
-	TestExtended(a){
+	constructor(a){
 		Console::outln("TestExtended::TestExtended this.a:{0}",this.a);
 		super(a); // it calls base constructor (by default it doesn't call)
 		this.function3=function(a){ // creates anonymous function

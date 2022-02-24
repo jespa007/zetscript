@@ -35,6 +35,7 @@ namespace zetscript{
 		StackElement *stk_result_op2=NULL;
 		StackElement stk_aux;
 		StackElement *stk_var=NULL;
+		Symbol 		 *symbol_aux;
 		StackElement stk_var_copy;
 		const char *str_symbol=NULL;
 		//------------------------------------------------
@@ -873,13 +874,27 @@ find_element_object:
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
 			case BYTE_CODE_SUPER_CALL:
+				 sf_call_calling_object = this_object;
+				 sf_call_stk_start_function_object=0;
+				 sf_call_is_member_function=true;
+				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
+				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
+				 sf_call_script_function=(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr;
+				 goto execute_function;
 			case  BYTE_CODE_THIS_CALL: // immediate call this
 				 sf_call_calling_object = this_object;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_is_member_function=true;
 				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
-				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
+				 // Since symbol is created on its owner, we have to get symbol from this object. This technique expects
+				 // that symbols are ordered
+				 symbol_aux=(Symbol *)this_object->getScriptType()->class_scope->symbol_functions->items[((Symbol *)instruction->value_op2)->idx_position];
+				 if(symbol_aux->overrided_symbol!=NULL){ // it calls overrided function (top-most)
+					 sf_call_script_function=(ScriptFunction *)(symbol_aux->overrided_symbol->ref_ptr);
+				 }else{
+					 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
+				 }
 				 goto execute_function;
 			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
 				 sf_call_calling_object = NULL;

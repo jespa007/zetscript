@@ -38,6 +38,8 @@ namespace zetscript{
 
 		char n_params; // max params in case of function
 
+		Symbol *overrided_symbol; // for virtual functions
+
 		Symbol(){
 			file="";
 			line=-1;
@@ -49,6 +51,7 @@ namespace zetscript{
 			properties = 0;
 			str_native_type = "";
 			ref_ptr = 0;
+			overrided_symbol=NULL;
 		}
 
 	};

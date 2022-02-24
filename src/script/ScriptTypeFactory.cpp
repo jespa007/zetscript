@@ -448,9 +448,8 @@ namespace zetscript{
 					);
 
 					symbol_dst->ref_ptr=symbol_src->ref_ptr;
+					symbol_dst->overrided_symbol=symbol_src->overrided_symbol;
 					symbol_dst->properties=symbol_src->properties;
-
-//					sci->symbol_member_functions->push_back((zs_int)symbol_src);
 				}
 
 				// set idx starting member
