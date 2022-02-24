@@ -128,8 +128,6 @@ namespace zetscript{
 			 if((
 					   instruction->byte_code==ByteCode::BYTE_CODE_LOAD_THIS_VARIABLE
 					|| instruction->byte_code==ByteCode::BYTE_CODE_LOAD_THIS_FUNCTION
-					|| instruction->byte_code==ByteCode::BYTE_CODE_UNRESOLVED_THIS_CALL
-					|| instruction->byte_code==ByteCode::BYTE_CODE_THIS_MEMBER_CALL
 					|| instruction->byte_code==ByteCode::BYTE_CODE_THIS_CALL
 					|| instruction->byte_code==ByteCode::BYTE_CODE_PUSH_STK_THIS_VARIABLE
 			)){
@@ -331,9 +329,8 @@ namespace zetscript{
 			case BYTE_CODE_INDIRECT_GLOBAL_CALL:
 			case BYTE_CODE_INDIRECT_LOCAL_CALL:
 			case BYTE_CODE_THIS_CALL:
-			case BYTE_CODE_THIS_MEMBER_CALL:
+			case BYTE_CODE_SUPER_CALL:
 			case BYTE_CODE_UNRESOLVED_CALL:
-			case BYTE_CODE_UNRESOLVED_THIS_CALL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\targ:%i ret:%i %s\n"
 					,idx_instruction
 					,req_stk
@@ -724,9 +721,6 @@ namespace zetscript{
 
 						symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 					}
-				}else if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // try get global symbol
-					ScriptType *this_class=zs->getScriptTypeFactory()->getScriptType(this->idx_type);
-					symbol_found=this_class->getSymbolMemberFunction(ptr_str_symbol_to_find);
 				}else{ // global scope
 					symbol_found = MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 				}
@@ -735,18 +729,10 @@ namespace zetscript{
 				if(symbol_found !=NULL){ // symbol found
 
 					if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
-
-						if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){
-							unresolved_instruction->byte_code=BYTE_CODE_THIS_CALL;
-						}else{
-							unresolved_instruction->byte_code=BYTE_CODE_CALL;
-						}
+						unresolved_instruction->byte_code=BYTE_CODE_CALL;
 						unresolved_instruction->value_op2=(zs_int)symbol_found; // store script function
 					}else{ // global variable
-						if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // an indirect
-							unresolved_instruction->byte_code=BYTE_CODE_THIS_MEMBER_CALL;
-							unresolved_instruction->value_op2=symbol_found->idx_position;
-						}else if(unresolved_instruction->byte_code == BYTE_CODE_UNRESOLVED_CALL){
+						if(unresolved_instruction->byte_code == BYTE_CODE_UNRESOLVED_CALL){
 							unresolved_instruction->byte_code=BYTE_CODE_INDIRECT_GLOBAL_CALL;
 						}else{
 
@@ -765,9 +751,6 @@ namespace zetscript{
 
 				}
 				else{ // next
-					if(unresolved_instruction->byte_code==BYTE_CODE_UNRESOLVED_THIS_CALL){ // it has to solve the symbol
-							unresolved_instruction->byte_code=BYTE_CODE_THIS_MEMBER_CALL;
-					}
 					i++;
 				}
 

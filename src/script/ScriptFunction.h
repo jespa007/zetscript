@@ -9,7 +9,6 @@ typedef enum{
 	FUNCTION_PROPERTY_STATIC				= 0x0002,
 	FUNCTION_PROPERTY_MEMBER_FUNCTION		= 0x0004,// Member function
 	FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME		= 0x0008,// Deduce runtime functions becuse is C and it has functions with same name but different signature
-	FUNCTION_PROPERTY_CONSTRUCTOR			= 0x0010 // Is a reference
 }FunctionProperty;
 
 

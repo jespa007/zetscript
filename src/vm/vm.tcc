@@ -599,7 +599,7 @@ namespace zetscript{
 		return ptr_function_found;
 	}
 
-	inline bool vm_apply_metamethod(
+	inline bool vm_apply_static_metamethod(
 		VirtualMachine *vm
 		,ScriptFunction *calling_function
 		,Instruction *instruction
@@ -726,7 +726,7 @@ namespace zetscript{
 
 				ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 
-				if((sf->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION) == 0){
+				if((sf->properties & FUNCTION_PROPERTY_STATIC) == 0){
 					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
 					goto apply_metamethod_error;
 				}
@@ -987,7 +987,7 @@ lbl_exit_function:
 			break;
 			default:
 				// TODO:
-				if(vm_apply_metamethod(
+				if(vm_apply_static_metamethod(
 						vm,
 						calling_function,
 						instruction,

@@ -727,7 +727,7 @@ find_element_object:
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
 					VM_PUSH_STK_BOOLEAN((!(*((zs_float *)(&stk_result_op1->value)))==0));
 				}else{
-					if(vm_apply_metamethod(
+					if(vm_apply_static_metamethod(
 						vm
 						,calling_function
 						,instruction
@@ -746,7 +746,7 @@ find_element_object:
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
 					VM_PUSH_STK_ZS_FLOAT(-*((zs_float *)&stk_result_op1->value));
 				}else{ // try metamethod ...
-					if(!vm_apply_metamethod(
+					if(!vm_apply_static_metamethod(
 							vm
 							,calling_function
 							,instruction
@@ -872,6 +872,7 @@ find_element_object:
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
+			case BYTE_CODE_SUPER_CALL:
 			case  BYTE_CODE_THIS_CALL: // immediate call this
 				 sf_call_calling_object = this_object;
 				 sf_call_stk_start_function_object=0;
@@ -880,23 +881,6 @@ find_element_object:
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
-			//----- load function
-			case  BYTE_CODE_THIS_MEMBER_CALL: // find symbol and load
-				 sf_call_calling_object = this_object;
-				 sf_call_stk_start_function_object=0;
-				 if(instruction->value_op2 != ZS_IDX_UNDEFINED){ // stored in a member field
-					 sf_call_stk_function_ref= this_object->getBuiltinElementAt(instruction->value_op2);
-				 }else{
-					 str_symbol=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
-				 	 stk_aux.value=(zs_int)this_object->getScriptFunctionSymbol(str_symbol);
-					 if(stk_aux.value == 0){
-						 VM_STOP_EXECUTE("Cannot call 'this.%s' because not exist",str_symbol);
-					 }
-
-					 stk_aux.properties=STK_PROPERTY_MEMBER_FUNCTION;
-					 sf_call_stk_function_ref=&stk_aux;
-				 }
-				goto load_function;
 			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;

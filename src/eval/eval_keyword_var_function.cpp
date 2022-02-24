@@ -389,6 +389,38 @@ error_eval_keyword_var:
 	//
 	// FUNCTION
 	//
+	void eval_function_update_member_function_references(EvalData *eval_data,ScriptType *_script_type, Symbol *_function_reference){
+
+		// foreach type that inherits _sc class...
+
+
+			//ScriptType *_sc_inherited_class=eval_data->zs->getScriptTypeFactory()->getScriptType(_script_type->idx_base_types->items[c]);
+
+			// foreach function in this type...
+			// link unreferenced forward declared functions
+		for(int i=0; i < _script_type->class_scope->symbol_functions->count; i++){
+			Symbol  *symbol_sf=(Symbol *)(_script_type->class_scope->symbol_functions->items[i]);
+
+			if(symbol_sf !=  _function_reference){
+
+				ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
+				Instruction *it=sf->instructions;
+				if(it != NULL){
+					while(it->byte_code!=BYTE_CODE_END_FUNCTION){
+						const char *str_symbol_this_call=SFI_GET_SYMBOL_NAME(sf,it);
+						// update reference
+						if((it->byte_code==BYTE_CODE_THIS_CALL) && (_function_reference->name==str_symbol_this_call)){
+							// search function and link its idx_position
+							it->value_op2=(zs_int)_function_reference;
+						}
+
+						it++;
+					}
+				}
+			}
+			//}
+		}
+	}
 
 	char * eval_keyword_function(
 			EvalData *eval_data
@@ -740,6 +772,11 @@ error_eval_keyword_var:
 							,eval_data->current_parsing_file
 							,line
 					);
+
+					// ok update references if classes that inherits this class
+					eval_function_update_member_function_references(eval_data, sc, symbol_sf);
+
+
 				}catch(std::exception & ex){
 					if(params != NULL){
 						delete [] params;

@@ -459,6 +459,8 @@ namespace zetscript{
 		sf->instructions_len=len;
 		sf->instructions = (PtrInstruction)ZS_MALLOC(total_size_bytes);
 		zs_vector order_local_vars;
+		Symbol *symbol_sf_foundf=NULL;
+		zs_string target_name="";
 
 
 		int ok=FALSE;
@@ -473,66 +475,52 @@ namespace zetscript{
 			sum_stk_load_stk+=instruction_num_required_stack(&eval_instruction->vm_instruction);
 			max_acc_stk_load=MAX(max_acc_stk_load,sum_stk_load_stk);
 
+
 			switch(eval_instruction->vm_instruction.byte_code){
-
-			case BYTE_CODE_THIS_CALL:
-
-				// try to solve symbol...
-				if(*ptr_str_symbol_to_find == SYMBOL_VALUE_SUPER){
-					// get current function name and find first ancestor in heritance
-					Symbol *symbol_sf_foundf=NULL;
-					zs_string target_name;
-
-					// find constructor symbol through other members...
-					for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
-						Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[j];
-						ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
-						bool match_names=false;
-						if((sf->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
-							match_names=( sf_member->properties & FUNCTION_PROPERTY_CONSTRUCTOR) != 0;//symbol_member->scope->script_type->type_name==symbol_member->name;
-						}else{
-							match_names=symbol_member->name==sf->function_name;
-						}
-
-						bool match_params=(sf_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
-						if(
-								(match_names)
-							&& (match_params)
-							){
-							symbol_sf_foundf = symbol_member;
-						}
-
+			case BYTE_CODE_SUPER_CALL:
+				// get current function name and find first ancestor in heritance
+				// find constructor symbol through other members...
+				for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
+					Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[j];
+					ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
+					bool match_names=sf_member->function_name == sf->function_name;
+					bool match_params=(sf_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
+					if(
+							(match_names)
+						&& (match_params)
+						){
+						symbol_sf_foundf = symbol_member;
 					}
 
-					// ok get the super function...
-					if(symbol_sf_foundf == NULL){
-						if((sf->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
-							EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
-								eval_data->current_parsing_file
-								,eval_instruction->instruction_source_info.line
-								,lbl_exit_pop_function
-								,"Cannot find parent constructor of '%s'"
-								,sc_sf->type_name.c_str()
-							);
-						}else{
-							EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
-								eval_data->current_parsing_file
-								,eval_instruction->instruction_source_info.line
-								,lbl_exit_pop_function
-								,"Cannot find parent function '%s::%s'"
-								,sc_sf->type_name.c_str()
-								,sf->function_name.c_str()
-							);
-						}
-					}
-					eval_instruction->vm_instruction.value_op2=(zs_int)symbol_sf_foundf;//->idx_position;
-					eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(eval_data,zs_string(symbol_sf_foundf->scope->script_type->type_name)+"::"+symbol_sf_foundf->name);
 				}
 
-				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
-					eval_instruction->vm_instruction.byte_code=BYTE_CODE_UNRESOLVED_THIS_CALL;
-					eval_data->zs->addUnresolvedSymbol(sf,i);
+				// ok get the super function...
+				if(symbol_sf_foundf == NULL){
+					if(sf->function_name != sf->function_name){
+						EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
+							eval_data->current_parsing_file
+							,eval_instruction->instruction_source_info.line
+							,lbl_exit_pop_function
+							,"Cannot find parent constructor of '%s'"
+							,sc_sf->type_name.c_str()
+						);
+					}else{
+						EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
+							eval_data->current_parsing_file
+							,eval_instruction->instruction_source_info.line
+							,lbl_exit_pop_function
+							,"Cannot find parent function '%s::%s'"
+							,sc_sf->type_name.c_str()
+							,sf->function_name.c_str()
+						);
+					}
 				}
+				eval_instruction->vm_instruction.value_op2=(zs_int)symbol_sf_foundf;//->idx_position;
+				eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(
+						eval_data
+						,zs_string(
+								((ScriptFunction *)symbol_sf_foundf->ref_ptr)->function_scope->script_type->type_name)+"::"+symbol_sf_foundf->name);
+
 				break;
 			case BYTE_CODE_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){

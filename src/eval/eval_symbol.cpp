@@ -122,7 +122,7 @@ namespace zetscript{
 								EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line ,"'super' only allowed as function");
 							}
 
-							byte_code=BYTE_CODE_LOAD_THIS_FUNCTION;
+							byte_code=ByteCode::BYTE_CODE_SUPER_CALL;
 						}else{
 							byte_code= ByteCode::BYTE_CODE_LOAD_THIS;// INSTRUCTION_PROPERTY_ACCESS_TYPE_THIS;
 						}

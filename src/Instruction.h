@@ -44,10 +44,8 @@ typedef enum:unsigned short {
  || ((instruction)->byte_code == 		BYTE_CODE_INDIRECT_GLOBAL_CALL) \
  || ((instruction)->byte_code == 		BYTE_CODE_INDIRECT_LOCAL_CALL) \
  || ((instruction)->byte_code == 		BYTE_CODE_THIS_CALL) \
- || ((instruction)->byte_code == 		BYTE_CODE_THIS_MEMBER_CALL) \
  || ((instruction)->byte_code == 		BYTE_CODE_MEMBER_CALL) \
  || ((instruction)->byte_code == 		BYTE_CODE_UNRESOLVED_CALL) \
- ||	((instruction)->byte_code == 		BYTE_CODE_UNRESOLVED_THIS_CALL) \
 )
 
 #define INSTRUCTION_CONST_TO_STK_CONST_VALUE(val,properties)\

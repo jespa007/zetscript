@@ -52,7 +52,7 @@
 		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) / *((zs_float *)&stk_result_op2->value));\
 		break;\
 	default:\
-		if(vm_apply_metamethod(\
+		if(vm_apply_static_metamethod(\
 				vm\
 				,calling_function\
 				,instruction\
@@ -110,7 +110,7 @@
 				vm_create_shared_pointer(vm,so_object);\
 				VM_PUSH_STK_SCRIPT_OBJECT(so_object);\
 		}else{\
-			if(vm_apply_metamethod(\
+			if(vm_apply_static_metamethod(\
 					vm\
 					,calling_function\
 					,instruction\
@@ -139,7 +139,7 @@
 		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) __C_OP__ *((zs_float *)&stk_result_op2->value));\
 		break;\
 	default:\
-		if(vm_apply_metamethod(\
+		if(vm_apply_static_metamethod(\
 				vm\
 				,calling_function\
 				,instruction\
@@ -196,7 +196,7 @@
 				VM_PUSH_STK_BOOLEAN(__METAMETHOD__ != BYTE_CODE_METAMETHOD_EQU);\
 			}\
 		}else{\
-			if(vm_apply_metamethod(\
+			if(vm_apply_static_metamethod(\
 				vm\
 				,calling_function\
 				,instruction\
@@ -237,7 +237,7 @@
 		VM_PUSH_STK_ZS_FLOAT(fmod(*((zs_float *)&stk_result_op1->value) , *((zs_float *)&stk_result_op2->value)));\
 		break;\
 	default:\
-		if(vm_apply_metamethod(\
+		if(vm_apply_static_metamethod(\
 			vm\
 			,calling_function\
 			,instruction\
@@ -262,7 +262,7 @@
 	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_ZS_INT){\
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
 	}else{\
-		if(vm_apply_metamethod(\
+		if(vm_apply_static_metamethod(\
 			vm\
 			,calling_function\
 			,instruction\

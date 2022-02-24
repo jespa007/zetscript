@@ -59,12 +59,11 @@ namespace zetscript{
 			// CALL
 			case BYTE_CODE_INDIRECT_LOCAL_CALL:
 			case BYTE_CODE_INDIRECT_GLOBAL_CALL:
+			case BYTE_CODE_SUPER_CALL:
 			case BYTE_CODE_THIS_CALL:
-			case BYTE_CODE_THIS_MEMBER_CALL:
 			case BYTE_CODE_CALL:								return "CALL"; // direct call
-
-			case BYTE_CODE_UNRESOLVED_THIS_CALL:
 			case BYTE_CODE_UNRESOLVED_CALL:						return "CALL???"; // direct call
+
 
 			case BYTE_CODE_MEMBER_CALL:							return "MEMBER_CALL"; // this indirect call through dynamic symbol
 			case BYTE_CODE_LOAD_THIS_VARIABLE:					return "LOAD_THIS@VAR"; // load element object

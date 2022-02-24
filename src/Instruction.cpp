@@ -177,19 +177,19 @@ namespace zetscript{
 				case BYTE_CODE_TYPEOF:
 				case BYTE_CODE_IN:
 					return 1;
-				case BYTE_CODE_UNRESOLVED_THIS_CALL:
 				case BYTE_CODE_LOAD_THIS_FUNCTION:
 					return 2;
 				case BYTE_CODE_INDIRECT_LOCAL_CALL:
 				case BYTE_CODE_INDIRECT_GLOBAL_CALL:
 				case BYTE_CODE_THIS_CALL:
-				case BYTE_CODE_THIS_MEMBER_CALL:
+				case BYTE_CODE_SUPER_CALL:
 				case BYTE_CODE_CALL:
 				case BYTE_CODE_UNRESOLVED_CALL:
-					return INSTRUCTION_GET_RETURN_COUNT(_instruction);
+					return INSTRUCTION_GET_RETURN_COUNT(_instruction)-(INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+0);
 				 case  BYTE_CODE_CONSTRUCTOR_CALL:
 				 case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
-					return INSTRUCTION_GET_RETURN_COUNT(_instruction)-1;
+					 // +1 to pop ScriptObjectMemberFunction or FunctionMemberFunction for CONSTRUCTOR
+					return INSTRUCTION_GET_RETURN_COUNT(_instruction)-(INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+1);
 				default:
 					THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed",_instruction->byte_code);
 					break;

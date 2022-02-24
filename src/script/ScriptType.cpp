@@ -387,9 +387,8 @@ namespace zetscript{
 		}
 
 		// constructor...
-		if(_function_name == this->type_name){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
+		if(_function_name == CONSTRUCTOR_FUNCTION_NAME){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
 			idx_function_member_constructor = symbol_function->idx_position;
-			sf_current->properties|=FUNCTION_PROPERTY_CONSTRUCTOR;
 		}
 		else{
 			// check metamethod function...

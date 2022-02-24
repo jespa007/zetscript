@@ -350,7 +350,7 @@ namespace zetscript{
 					eval_instruction->instruction_source_info=InstructionSourceInfo(
 						 eval_data->current_parsing_file
 						 ,line
-						 ,get_mapped_name(eval_data,symbol_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+						 ,get_mapped_name(eval_data,symbol_name)
 					 );
 
 
@@ -358,10 +358,8 @@ namespace zetscript{
 					eval_instruction_new_object_by_value->instruction_source_info=InstructionSourceInfo(
 							 eval_data->current_parsing_file
 							 ,line
-							 ,get_mapped_name(eval_data,symbol_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+							 ,get_mapped_name(eval_data,symbol_name)
 						 );
-
-					//EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class '%s' not defined",type_name.c_str());
 				}else{ // known type
 					if(!eval_data->script_type_factory->isScriptTypeInstanceable(sc->idx_type)){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getTypeName());
@@ -383,7 +381,7 @@ namespace zetscript{
 					 ei_load_function_constructor->instruction_source_info=InstructionSourceInfo(
 						 eval_data->current_parsing_file
 						 ,line
-						 ,get_mapped_name(eval_data,symbol_name)//FUNCTION_MEMBER_CONSTRUCTOR_NAME)
+						 ,get_mapped_name(eval_data,CONSTRUCTOR_FUNCTION_NAME)
 					 );
 				 }
 
@@ -422,20 +420,24 @@ namespace zetscript{
 				 eval_instructions->push_back((zs_int)(
 							 eval_instruction=new EvalInstruction(
 							  BYTE_CODE_CONSTRUCTOR_CALL
-							 ,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_args)
+
+							 ,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(
+									 0   // <-- CONSTRUCTOR ALWAYS RETURNS 0! the object is created at begin of expression byte code
+									 ,n_args
+							)
 						 )
 				 	 )
 				 );
 
 				 if(eval_instruction_new_object_by_value==NULL){
 					 // check constructor symbol
-					 constructor_function=sc->getSymbol(symbol_name);
+					 constructor_function=sc->getSymbol(CONSTRUCTOR_FUNCTION_NAME);
 					 int start_idx_function=sc->class_scope->symbol_functions->count-1;
 					 if(constructor_function == NULL){ // find first constructor throught its function members
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
 							Symbol *symbol_member = (Symbol *)sc->class_scope->symbol_functions->items[i];
 							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
-							if((sf_member->properties &  FUNCTION_PROPERTY_CONSTRUCTOR) != 0){
+							if(sf_member->function_name == CONSTRUCTOR_FUNCTION_NAME){
 								constructor_function = symbol_member;
 							}
 						}

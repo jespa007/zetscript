@@ -29,142 +29,170 @@ namespace zetscript{
 		key_w = eval_is_keyword(aux_p);
 
 
-		if(key_w == Keyword::KEYWORD_CLASS){
+		if(key_w != Keyword::KEYWORD_CLASS){
+			return NULL;
+		}
 
-			if(scope_info->scope_parent!=NULL){
-				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"class keyword is not allowed");
-			}
+		if(scope_info->scope_parent!=NULL){
+			EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"class keyword is not allowed");
+		}
 
-			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
+		IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
-			// check for symbol's name
+		// check for symbol's name
+		aux_p=get_name_identifier_token(
+				eval_data
+				,aux_p
+				,line
+				,type_name
+		);
+
+		// try to register class...
+		class_line = line;
+
+		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+		if(strncmp(aux_p, "extends",7)==0 ){ // extension class detected
+			IGNORE_BLANKS(aux_p,eval_data,aux_p+7,line);
 			aux_p=get_name_identifier_token(
 					eval_data
 					,aux_p
 					,line
-					,type_name
+					,base_class_name
 			);
 
-			// try to register class...
-			class_line = line;
+			IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
+		}
 
+		// register class
+		try{
+			sc=eval_data->script_type_factory->registerClass(
+				 type_name
+				,base_class_name
+				,__FILE__
+				, __LINE__
+			);
+		}catch(std::exception &ex){
+			eval_data->error=true;
+			eval_data->error_str=ex.what();
+			return NULL;
+		}
+
+		ZS_LOG_DEBUG("registered class '%s' line %i ",type_name.c_str(), class_line);
+
+		if(*aux_p != '{' ){
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",type_name.c_str());
+		}
+
+		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
+		// TODO: Register class and baseof
+		// register info class ...
+		// check for named functions or vars...
+		while(*aux_p != '}' && *aux_p != 0){
+			char *test_attrib=aux_p;
+			int test_line_attrib=line;
+			if((test_attrib=eval_keyword_class_property(
+				eval_data
+				,aux_p
+				,line
+				,sc // pass class
+			))==NULL){
+
+				line=test_line_attrib; // restore line
+
+				if(eval_data->error){
+					return NULL;
+				}
+
+				// 1st. check whether eval a keyword...
+				key_w = eval_is_keyword(aux_p);
+
+				switch(key_w){
+				// functions
+				case Keyword::KEYWORD_STATIC:
+				case Keyword::KEYWORD_FUNCTION:
+
+						aux_p = eval_keyword_function(
+							eval_data
+							,aux_p
+							, line
+							,sc->class_scope // pass class scope
+						);
+						break;
+				case Keyword::KEYWORD_UNKNOWN: // supposes a member function
+					// function member without function keyword
+					aux_p=eval_keyword_function(eval_data
+							,aux_p
+							, line
+							,sc->class_scope
+					);
+
+					break;
+				case Keyword::KEYWORD_VAR:
+				case Keyword::KEYWORD_CONST: // const symbol
+						aux_p = eval_keyword_var(
+							eval_data
+							,aux_p
+							, line
+							,sc->class_scope // pass class scope
+						);
+
+						if(aux_p != NULL){ // particular case where var declaration ends with ';'
+							if(*aux_p == ';'){
+								aux_p++;
+							}
+						}
+
+						break;
+				default:
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",eval_data_keywords[key_w].str,type_name.c_str());
+				}
+
+				if(aux_p == NULL){
+					return NULL;
+				}
+			}else{ // parsed detected an attrib
+				aux_p = test_attrib;
+			}
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+		}
 
-			if(strncmp(aux_p, "extends",7)==0 ){ // extension class detected
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+7,line);
-				aux_p=get_name_identifier_token(
-						eval_data
-						,aux_p
-						,line
-						,base_class_name
-				);
+		if(*aux_p != '}'){
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",type_name.c_str());
+		}
 
-				IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
-			}
+		// link unreferenced forward declared functions
+		for(int i=0; i < sc->class_scope->symbol_functions->count; i++){
+			Symbol  *symbol_sf=(Symbol *)(sc->class_scope->symbol_functions->items[i]);
+			ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
+			Instruction *it=sf->instructions;
+			if(it != NULL){
+				while(it->byte_code!=BYTE_CODE_END_FUNCTION){
+					if((it->byte_code==BYTE_CODE_THIS_CALL) && (it->value_op2==ZS_IDX_UNDEFINED)){
+						// search function and link its idx_position
+						const char *str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
+						int line_unreferenced_this_call=SFI_GET_LINE(sf,it);
+						Symbol *symbol_unref_this_call=sc->class_scope->getSymbol(str_name_unreferenced_this_call);
 
-			// register class
-			try{
-				sc=eval_data->script_type_factory->registerClass(
-					 type_name
-					,base_class_name
-					,__FILE__
-					, __LINE__
-				);
-			}catch(std::exception &ex){
-				eval_data->error=true;
-				eval_data->error_str=ex.what();
-				return NULL;
-			}
+						if(symbol_unref_this_call == NULL){
+							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line_unreferenced_this_call ,"cannot call 'this.%s' because member function '%s::%s' is not declared"
+									,str_name_unreferenced_this_call
+									,sc->type_name.c_str()
+									,str_name_unreferenced_this_call
 
-			ZS_LOG_DEBUG("registered class '%s' line %i ",type_name.c_str(), class_line);
-
-			if(*aux_p == '{' ){
-
-				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
-
-				// TODO: Register class and baseof
-				// register info class ...
-				// check for named functions or vars...
-				while(*aux_p != '}' && *aux_p != 0){
-					char *test_attrib=aux_p;
-					int test_line_attrib=line;
-					if((test_attrib=eval_keyword_class_property(
-						eval_data
-						,aux_p
-						,line
-						,sc // pass class
-					))==NULL){
-
-						line=test_line_attrib; // restore line
-
-						if(eval_data->error){
-							return NULL;
-						}
-
-						// 1st. check whether eval a keyword...
-						key_w = eval_is_keyword(aux_p);
-
-						switch(key_w){
-						// functions
-						case Keyword::KEYWORD_STATIC:
-						case Keyword::KEYWORD_FUNCTION:
-
-								aux_p = eval_keyword_function(
-									eval_data
-									,aux_p
-									, line
-									,sc->class_scope // pass class scope
 								);
-								break;
-						case Keyword::KEYWORD_UNKNOWN: // supposes a member function
-							// function member without function keyword
-							aux_p=eval_keyword_function(eval_data
-									,aux_p
-									, line
-									,sc->class_scope
-							);
-
-							break;
-						case Keyword::KEYWORD_VAR:
-						case Keyword::KEYWORD_CONST: // const symbol
-								aux_p = eval_keyword_var(
-									eval_data
-									,aux_p
-									, line
-									,sc->class_scope // pass class scope
-								);
-
-								if(aux_p != NULL){ // particular case where var declaration ends with ';'
-									if(*aux_p == ';'){
-										aux_p++;
-									}
-								}
-
-								break;
-						default:
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",eval_data_keywords[key_w].str,type_name.c_str());
 						}
+						it->value_op2=(zs_int)symbol_unref_this_call;
 
-						if(aux_p == NULL){
-							return NULL;
-						}
-					}else{ // parsed detected an attrib
-						aux_p = test_attrib;
 					}
-					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					it++;
 				}
-
-				if(*aux_p != '}'){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",type_name.c_str());
-				}
-
-				return aux_p+1;
-
-			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",type_name.c_str());
 			}
 		}
-		return NULL;
+
+		return aux_p+1;
 	}
 
 	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptType **sc,zs_string & member_symbol){

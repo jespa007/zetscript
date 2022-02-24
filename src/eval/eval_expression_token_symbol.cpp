@@ -310,8 +310,8 @@ namespace zetscript{
 							eval_data->current_parsing_file
 							,line
 							,error_expression_token_symbol
-							,"Unexpected  '%c' after type '%s'"
-							,*aux_p
+							,"Unexpected '%c' after type '%s'"
+							,*test_aux_p
 							,token_node_symbol->value.c_str()
 					);
 			}
@@ -346,7 +346,7 @@ namespace zetscript{
 									eval_data->current_parsing_file
 									,line
 									,error_expression_token_symbol
-									,"'super' is not allowed here"
+									,"'super' keyword only can be used within member function"
 							);
 						}
 
@@ -419,18 +419,23 @@ namespace zetscript{
 						n_params++;
 					}
 
-					byte_code=ByteCode::BYTE_CODE_CALL;
-					if(	it_accessor_token==0 ){ // direct or indirect call
-						if(ei_first_token_node->vm_instruction.byte_code==BYTE_CODE_LOAD_THIS_FUNCTION){
-							byte_code=ByteCode::BYTE_CODE_THIS_CALL;
-						}else if(ei_first_token_node->vm_instruction.byte_code==ByteCode::BYTE_CODE_LOAD_LOCAL){
-							byte_code= ByteCode::BYTE_CODE_INDIRECT_LOCAL_CALL;
-						}
-					}else{ // access token
-						if(last_instruction_token->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE){
-							byte_code=ByteCode::BYTE_CODE_THIS_CALL;
-						}else{
-							byte_code=ByteCode::BYTE_CODE_MEMBER_CALL;
+					if(token_node_symbol->value == SYMBOL_VALUE_SUPER){
+						byte_code=ByteCode::BYTE_CODE_SUPER_CALL;
+					}
+					else{
+						byte_code=ByteCode::BYTE_CODE_CALL;
+						if(	it_accessor_token==0 ){ // direct or indirect call
+							if(ei_first_token_node->vm_instruction.byte_code==BYTE_CODE_LOAD_THIS_FUNCTION){
+								byte_code=ByteCode::BYTE_CODE_THIS_CALL;
+							}else if(ei_first_token_node->vm_instruction.byte_code==ByteCode::BYTE_CODE_LOAD_LOCAL){
+								byte_code= ByteCode::BYTE_CODE_INDIRECT_LOCAL_CALL;
+							}
+						}else{ // access token
+							if(last_instruction_token->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE){
+								byte_code=ByteCode::BYTE_CODE_THIS_CALL;
+							}else{
+								byte_code=ByteCode::BYTE_CODE_MEMBER_CALL;
+							}
 						}
 					}
 
@@ -537,11 +542,11 @@ namespace zetscript{
 
 				switch(byte_code){
 				case BYTE_CODE_THIS_CALL:
+				case BYTE_CODE_SUPER_CALL:
 				case BYTE_CODE_CALL:
 				case BYTE_CODE_INDIRECT_LOCAL_CALL:
 				case BYTE_CODE_INDIRECT_GLOBAL_CALL:
 				case BYTE_CODE_UNRESOLVED_CALL:
-				case BYTE_CODE_UNRESOLVED_THIS_CALL:
 					instruction_token->vm_instruction=ei_first_token_node->vm_instruction;
 					instruction_token->vm_instruction.byte_code=byte_code;
 					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_params); // by default always returns 1 value
@@ -551,17 +556,18 @@ namespace zetscript{
 					// The last instruction was BYTE_CODE_LOAD_THIS_VARIABLE and the evaluation found its idx_position
 					// Because the instruction to be replaced is a call_this and it could have inheritance, leave as undefined
 					// to allow locate functions in the top most inherited class
-					if(byte_code==BYTE_CODE_THIS_CALL){
+					if(byte_code==BYTE_CODE_THIS_CALL || BYTE_CODE_SUPER_CALL){
 						instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
 					}
+
 
 					// erase first token node because last this.xxx is gona to be replaced to a single instruction
 					// last_instruction_token will be erased!!!
 					delete ei_first_token_node;
 					token_node_symbol->eval_instructions.erase(0);
 					last_instruction_token=NULL;
+
 					break;
-				case BYTE_CODE_THIS_MEMBER_CALL:
 				case BYTE_CODE_MEMBER_CALL:
 				case BYTE_CODE_CONSTRUCTOR_CALL:
 					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_params);

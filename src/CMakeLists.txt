@@ -93,7 +93,7 @@ if(MSVC)
 	
 else()
 
-	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -Wpedantic ")
+	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -pedantic ")
    
 	if (MINGW)
 		MESSAGE("-- Plataform: MINGW" )
@@ -237,6 +237,12 @@ add_executable(test_callbacks${POST_NAME}
 
 target_link_libraries(test_callbacks${POST_NAME} zetscript${POST_NAME})
 
+add_executable(test_consecutive_evals${POST_NAME}
+	${PROJECT_SOURCE_DIR}/../samples/test_consecutive_evals.cpp
+)
+
+target_link_libraries(test_consecutive_evals${POST_NAME} zetscript${POST_NAME})
+
 add_executable(zs_test${POST_NAME}
 	${PROJECT_SOURCE_DIR}/test/zs_test.cpp
 )
@@ -300,6 +306,13 @@ if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
 	)
 	
 	target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
+	
+	# test_consecutive_evals
+	add_executable(test_consecutive_evals${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/test_consecutive_evals.cpp
+	)
+
+	target_link_libraries(test_consecutive_evals${POST_NAME} zetscript${POST_NAME})
 else()
 	MESSAGE ("-- Suit test: No")
 endif()

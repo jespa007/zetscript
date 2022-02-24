@@ -89,14 +89,13 @@ namespace zetscript{
 		BYTE_CODE_INDIRECT_GLOBAL_CALL,	// through symbol
 		BYTE_CODE_INDIRECT_LOCAL_CALL,	// through symbol
 		BYTE_CODE_THIS_CALL,	// this direct
-		BYTE_CODE_THIS_MEMBER_CALL,
+		BYTE_CODE_SUPER_CALL,	// super direct
 		BYTE_CODE_MEMBER_CALL, // through function and member loaded
 		BYTE_CODE_CONSTRUCTOR_CALL, // constructor...
 		BYTE_CODE_END_CALL=BYTE_CODE_CONSTRUCTOR_CALL,
 		//----- END CALL
 
 		BYTE_CODE_UNRESOLVED_CALL,
-		BYTE_CODE_UNRESOLVED_THIS_CALL,
 
 		//------ LOAD INI-----------------------
 		// load ptr var
