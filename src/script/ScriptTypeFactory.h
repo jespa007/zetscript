@@ -20,7 +20,7 @@
 #define SCRIPT_OBJECT_ITERATOR_OBJECT(data)				((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT))
 
 //#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_FUNCTION))
-#define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_type_factory)->getScriptType(idx)->type_name_ptr)
+#define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_type_factory)->getScriptType(idx)->script_type_name_ptr)
 
 
 namespace zetscript{
@@ -59,7 +59,7 @@ namespace zetscript{
 		 /**
 		  * Class management region
 		  */
-		ScriptType * 					registerClass(const zs_string & type_name, const zs_string & base_class_name="",const char * file="", short line=-1);
+		ScriptType * 					registerClass(const zs_string & script_type_name, const zs_string & base_class_name="",const char * file="", short line=-1);
 		ScriptType * 					getScriptType(short _idx_type);
 		ScriptType * 					getScriptType(const zs_string & _type_name);
 		ScriptType * 					getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
@@ -84,7 +84,7 @@ namespace zetscript{
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
-		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & type_name);
+		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & script_type_name);
 		ScriptObject 			* 			instanceScriptObjectByTypeIdx(short  idx_type, void * value_object = NULL);
 
 		/**
@@ -120,7 +120,7 @@ namespace zetscript{
 		 */
 		 template<typename T>
 		 ScriptType *  registerNativeSingletonClass(
-				 const zs_string & type_name
+				 const zs_string & script_type_name
 				 , const char *registered_file=""
 				,short registered_line=-1
 		);
@@ -130,7 +130,7 @@ namespace zetscript{
 		 */
 		template<typename C>
 		ScriptType * registerNativeClass(
-			const zs_string & type_name
+			const zs_string & script_type_name
 			, C * (*_constructor)(ZetScript *_zs)
 			, void (*_destructor)(ZetScript *_zs,C *)
 			, const char *registered_file=""
@@ -142,7 +142,7 @@ namespace zetscript{
 		 */
 		template<typename C>
 		ScriptType * registerNativeType(
-			const zs_string & type_name
+			const zs_string & script_type_name
 			, const char *registered_file=""
 			,short registered_line=-1
 		);
@@ -376,7 +376,7 @@ namespace zetscript{
 
 		int 							idx_clear_checkpoint;
 
-		void							checkClassName(const zs_string & type_name);
+		void							checkClassName(const zs_string & script_type_name);
 		PrimitiveType *					getPrimitiveTypeFromStr(const zs_string & str);
 
 

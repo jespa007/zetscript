@@ -12,7 +12,7 @@
 				,STR_EXPECTED_TYPE_NAME\
 			);\
 		}\
-		if(strcmp(c_class_arg->type_name_ptr,STR_EXPECTED_TYPE_NAME)!=0){\
+		if(strcmp(c_class_arg->script_type_name_ptr,STR_EXPECTED_TYPE_NAME)!=0){\
 			THROW_RUNTIME_ERROR(\
 				"register native member function '%s::%s': expected to have "STR_PLACE_PARAM" parameter as pointer type '%s' but it was '%s')"\
 				,STR_CLASS_NAME\
@@ -30,7 +30,7 @@
 				,STR_EXPECTED_TYPE_NAME\
 			);\
 		}\
-		if(strcmp(c_class_first_arg->type_name_ptr,STR_EXPECTED_TYPE_NAME)!=0){\
+		if(strcmp(c_class_first_arg->script_type_name_ptr,STR_EXPECTED_TYPE_NAME)!=0){\
 			THROW_RUNTIME_ERROR(\
 				"register native function '%s': expected to have "STR_PLACE_PARAM" parameter as pointer type '%s' but it was '%s')"\
 				,STR_FUNCTION_NAME\
@@ -135,23 +135,23 @@ namespace zetscript{
 		ScriptType * c_class_first_arg=	params_len>1?getScriptType(params[1].idx_type):NULL;
 		if(c_class_first_arg == NULL){
 			THROW_RUNTIME_ERROR("register native function '%s::%s': needs to have SECOND parameter as pointer type '%s')"
-				,type_name.c_str()
+				,script_type_name.c_str()
 				,_function_name.c_str()
-				,this->type_name.c_str()
+				,this->script_type_name.c_str()
 			);
 		}
 
-		if(strcmp(c_class_first_arg->type_name_ptr,this->type_name_ptr)!=0){
+		if(strcmp(c_class_first_arg->script_type_name_ptr,this->script_type_name_ptr)!=0){
 			THROW_RUNTIME_ERROR(
 				"register native function '%s::%s': expected to have SECOND parameter as pointer type '%s' but it was '%s')"
-				,type_name.c_str()
+				,script_type_name.c_str()
 				,_function_name.c_str()
-				,this->type_name.c_str()
+				,this->script_type_name.c_str()
 				,params[1].name.c_str()
 			);
 		}
 
-		//ZS_CHECK_TEST_MEMBER_FUNCTION_PARAMETER(this->type_name,_function_name,this->type_name_ptr,1,"SECOND")
+		//ZS_CHECK_TEST_MEMBER_FUNCTION_PARAMETER(this->script_type_name,_function_name,this->script_type_name_ptr,1,"SECOND")
 
 		// register member function...
 		this->registerMemberFunction(

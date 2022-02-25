@@ -481,7 +481,7 @@ namespace zetscript{
 				// get current function name and find first ancestor in heritance
 				// find constructor symbol through other members...
 				for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
-					Symbol *symbol_member = (Symbol *)sc_sf->class_scope->symbol_functions->items[j];
+					Symbol *symbol_member = (Symbol *)sc_sf->script_type_scope->symbol_functions->items[j];
 					ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 					bool match_names=sf_member->function_name == sf->function_name;
 					bool match_params=(sf_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
@@ -502,7 +502,7 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent constructor of '%s'"
-							,sc_sf->type_name.c_str()
+							,sc_sf->script_type_name.c_str()
 						);
 					}else{
 						EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
@@ -510,7 +510,7 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent function '%s::%s'"
-							,sc_sf->type_name.c_str()
+							,sc_sf->script_type_name.c_str()
 							,sf->function_name.c_str()
 						);
 					}
@@ -519,7 +519,7 @@ namespace zetscript{
 				eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(
 						eval_data
 						,zs_string(
-								((ScriptFunction *)symbol_sf_foundf->ref_ptr)->function_scope->script_type->type_name)+"::"+symbol_sf_foundf->name);
+								((ScriptFunction *)symbol_sf_foundf->ref_ptr)->function_scope->script_type->script_type_name)+"::"+symbol_sf_foundf->name);
 
 				break;
 			case BYTE_CODE_CALL:

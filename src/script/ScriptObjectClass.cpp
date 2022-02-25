@@ -52,7 +52,7 @@ namespace zetscript{
 
 		idx_type=_idx_type;
 		ScriptType *script_type=getScriptType();
-		zs_vector *member_vars=script_type->class_scope->symbol_variables;
+		zs_vector *member_vars=script_type->script_type_scope->symbol_variables;
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
 		for ( int i = 0; i < member_vars->count; i++){
@@ -118,7 +118,7 @@ namespace zetscript{
 
 		ScriptType *script_type=getScriptType();
 		if(script_type->idx_function_member_constructor != ZS_IDX_UNDEFINED){
-			return (ScriptFunction *)script_type->class_scope->symbol_functions->items[script_type->idx_function_member_constructor];
+			return (ScriptFunction *)script_type->script_type_scope->symbol_functions->items[script_type->idx_function_member_constructor];
 		}
 
 		return NULL;

@@ -245,22 +245,22 @@ namespace zetscript{
 
 			 // ignore builtin implementations if not chosen ...
 			 if(show_system_code == false && (
-					 	sc->type_name == "System"
-					||	sc->type_name == "String"
-					||	sc->type_name == "IteratorString"
-					||	sc->type_name == "Object"
-					||	sc->type_name == "IteratorObject"
-					||	sc->type_name == "Console"
-					||	sc->type_name == "DateTime"
-					||	sc->type_name == "Vector"
-					||	sc->type_name == "IteratorVector"
-					||	sc->type_name == "Json"
+					 	sc->script_type_name == "System"
+					||	sc->script_type_name == "String"
+					||	sc->script_type_name == "IteratorString"
+					||	sc->script_type_name == "Object"
+					||	sc->script_type_name == "IteratorObject"
+					||	sc->script_type_name == "Console"
+					||	sc->script_type_name == "DateTime"
+					||	sc->script_type_name == "Vector"
+					||	sc->script_type_name == "IteratorVector"
+					||	sc->script_type_name == "Json"
 				)){
 				 show_class=false;
 			 }
 
 			 if(show_class){
-				 symbol_functions=sc->class_scope->symbol_functions;
+				 symbol_functions=sc->script_type_scope->symbol_functions;
 				 for(int f = 0; f < symbol_functions->count; f++){
 					 bool show_function=true;
 					 Symbol *symbol=(Symbol *)symbol_functions->items[f];

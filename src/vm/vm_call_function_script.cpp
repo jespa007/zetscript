@@ -214,7 +214,17 @@ namespace zetscript{
 				*data->stk_vm_current++=*this_object->getThisProperty();
 				continue;
 			case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
-				 so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,this_object,(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr);
+				symbol_aux=(Symbol *)this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
+				if(symbol_aux==NULL){ // it calls overrided function (top-most)
+					 VM_STOP_EXECUTE("Error load 'this.%s': Cannot find '%s::%s' member function"
+							,((Symbol *)instruction->value_op2)->name.c_str()
+							,this_object->getScriptType()->script_type_name.c_str()
+							,((Symbol *)instruction->value_op2)->name.c_str()
+					);
+				 }
+
+				so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,this_object,(ScriptFunction *)(symbol_aux->ref_ptr));
+
 				 if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
 				 }
@@ -227,7 +237,7 @@ namespace zetscript{
 				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
 					VM_PUSH_STK_NULL;
 				}else{
-					data->stk_vm_current->value= so_aux->getScriptType()->class_scope->symbol_functions->items[instruction->value_op2];
+					data->stk_vm_current->value= so_aux->getScriptType()->script_type_scope->symbol_functions->items[instruction->value_op2];
 					data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 					data->stk_vm_current++;
 				}
@@ -729,7 +739,7 @@ find_element_object:
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
 					VM_PUSH_STK_BOOLEAN((!(*((zs_float *)(&stk_result_op1->value)))==0));
 				}else{
-					if(vm_apply_static_metamethod(
+					if(vm_call_static_metamethod_2ops(
 						vm
 						,calling_function
 						,instruction
@@ -748,7 +758,7 @@ find_element_object:
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
 					VM_PUSH_STK_ZS_FLOAT(-*((zs_float *)&stk_result_op1->value));
 				}else{ // try metamethod ...
-					if(!vm_apply_static_metamethod(
+					if(!vm_call_static_metamethod_2ops(
 							vm
 							,calling_function
 							,instruction
@@ -890,12 +900,15 @@ find_element_object:
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
 				 // Since symbol is created on its owner, we have to get symbol from this object. This technique expects
 				 // that symbols are ordered
-				 symbol_aux=(Symbol *)this_object->getScriptType()->class_scope->symbol_functions->items[((Symbol *)instruction->value_op2)->idx_position];
-				 if(symbol_aux->overrided_symbol!=NULL){ // it calls overrided function (top-most)
-					 sf_call_script_function=(ScriptFunction *)(symbol_aux->overrided_symbol->ref_ptr);
-				 }else{
-					 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
+				 symbol_aux=(Symbol *)this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
+				 if(symbol_aux==NULL){ // it calls overrided function (top-most)
+					 VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
+							,((Symbol *)instruction->value_op2)->name.c_str()
+							,this_object->getScriptType()->script_type_name.c_str()
+							,((Symbol *)instruction->value_op2)->name.c_str()
+					);
 				 }
+				 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
 				 goto execute_function;
 			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
 				 sf_call_calling_object = NULL;
@@ -937,7 +950,10 @@ load_function:
 				}else if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(sf_call_stk_function_ref)){
 				  ScriptObjectMemberFunction *sofm=(  ScriptObjectMemberFunction *)sf_call_stk_function_ref->value;
 				  if(sofm->so_object==NULL){
-					  VM_STOP_EXECUTE("Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced",sofm->so_function->function_name.c_str(), SFI_GET_SYMBOL_NAME(calling_function,instruction));
+					  VM_STOP_EXECUTE(
+							  "Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced"
+							  ,sofm->so_function->function_name.c_str()
+							  , SFI_GET_SYMBOL_NAME(calling_function,instruction));
 				  }
 				  sf_call_calling_object=sofm->so_object;
 				  sf_call_script_function=sofm->so_function;
@@ -1164,7 +1180,7 @@ execute_function:
 								||
 							(sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)!=0
 						){
-							str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_type)->type_name.c_str();
+							str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_type)->script_type_name.c_str();
 						}
 
 						data->vm_error_callstack_str+=zs_strutils::format(
@@ -1299,7 +1315,7 @@ execute_function:
 							so_class_aux->instruction_new=instruction;
 
 							// check for constructor
-							 constructor_function=sc->getSymbolMemberFunction(sc->type_name);
+							 constructor_function=sc->getSymbolMemberFunction(sc->script_type_name);
 
 							 if(constructor_function != NULL){
 								 data->stk_vm_current->value=(zs_int)constructor_function;
@@ -1415,22 +1431,22 @@ execute_function:
 					const char *str_end_class=NULL;
 
 					if((str_end_class=strstr(ptr_str_symbol_to_find,"::"))!=NULL){ // static access
-						char type_name[512]={0};
+						char script_type_name[512]={0};
 
-						strncpy(type_name,ptr_str_symbol_to_find,str_end_class-ptr_str_symbol_to_find);
+						strncpy(script_type_name,ptr_str_symbol_to_find,str_end_class-ptr_str_symbol_to_find);
 
 
-						if(data->zs->getScriptTypeFactory()->getScriptType(type_name) == NULL){
+						if(data->zs->getScriptTypeFactory()->getScriptType(script_type_name) == NULL){
 							VM_STOP_EXECUTE(
 									"class '%s' not exist"
-									,type_name
+									,script_type_name
 							);
 						}
 
 						VM_STOP_EXECUTE(
 								"static symbol '%s' not exist in '%s'"
 								,str_end_class+2
-								,type_name
+								,script_type_name
 						);
 					}else{
 						VM_STOP_EXECUTE(

@@ -19,7 +19,7 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		int class_line;
-		zs_string type_name;
+		zs_string script_type_name;
 		zs_string base_class_name="";
 		ScriptType *sc;
 		Keyword key_w;
@@ -44,7 +44,7 @@ namespace zetscript{
 				eval_data
 				,aux_p
 				,line
-				,type_name
+				,script_type_name
 		);
 
 		// try to register class...
@@ -67,7 +67,7 @@ namespace zetscript{
 		// register class
 		try{
 			sc=eval_data->script_type_factory->registerClass(
-				 type_name
+				 script_type_name
 				,base_class_name
 				,__FILE__
 				, __LINE__
@@ -78,10 +78,10 @@ namespace zetscript{
 			return NULL;
 		}
 
-		ZS_LOG_DEBUG("registered class '%s' line %i ",type_name.c_str(), class_line);
+		ZS_LOG_DEBUG("registered class '%s' line %i ",script_type_name.c_str(), class_line);
 
 		if(*aux_p != '{' ){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",type_name.c_str());
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",script_type_name.c_str());
 		}
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -117,7 +117,7 @@ namespace zetscript{
 							eval_data
 							,aux_p
 							, line
-							,sc->class_scope // pass class scope
+							,sc->script_type_scope // pass class scope
 						);
 						break;
 				case Keyword::KEYWORD_UNKNOWN: // supposes a member function
@@ -125,7 +125,7 @@ namespace zetscript{
 					aux_p=eval_keyword_function(eval_data
 							,aux_p
 							, line
-							,sc->class_scope
+							,sc->script_type_scope
 					);
 
 					break;
@@ -135,7 +135,7 @@ namespace zetscript{
 							eval_data
 							,aux_p
 							, line
-							,sc->class_scope // pass class scope
+							,sc->script_type_scope // pass class scope
 						);
 
 						if(aux_p != NULL){ // particular case where var declaration ends with ';'
@@ -146,7 +146,7 @@ namespace zetscript{
 
 						break;
 				default:
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",eval_data_keywords[key_w].str,type_name.c_str());
+					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"unexpected keyword '%s' in class declaration '%s'",eval_data_keywords[key_w].str,script_type_name.c_str());
 				}
 
 				if(aux_p == NULL){
@@ -159,12 +159,12 @@ namespace zetscript{
 		}
 
 		if(*aux_p != '}'){
-			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",type_name.c_str());
+			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,class_line ,"expected '}' to end class declaration '%s'",script_type_name.c_str());
 		}
 
 		// link unreferenced forward declared functions
-		for(int i=0; i < sc->class_scope->symbol_functions->count; i++){
-			Symbol  *symbol_sf=(Symbol *)(sc->class_scope->symbol_functions->items[i]);
+		for(int i=0; i < sc->script_type_scope->symbol_functions->count; i++){
+			Symbol  *symbol_sf=(Symbol *)(sc->script_type_scope->symbol_functions->items[i]);
 			ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
 			Instruction *it=sf->instructions;
 			if(it != NULL){
@@ -173,12 +173,12 @@ namespace zetscript{
 						// search function and link its idx_position
 						const char *str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
 						int line_unreferenced_this_call=SFI_GET_LINE(sf,it);
-						Symbol *symbol_unref_this_call=sc->class_scope->getSymbol(str_name_unreferenced_this_call);
+						Symbol *symbol_unref_this_call=sc->script_type_scope->getSymbol(str_name_unreferenced_this_call);
 
 						if(symbol_unref_this_call == NULL){
 							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line_unreferenced_this_call ,"cannot call 'this.%s' because member function '%s::%s' is not declared"
 									,str_name_unreferenced_this_call
-									,sc->type_name.c_str()
+									,sc->script_type_name.c_str()
 									,str_name_unreferenced_this_call
 
 								);
@@ -192,13 +192,16 @@ namespace zetscript{
 			}
 		}
 
+
 		return aux_p+1;
+
+
 	}
 
 	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptType **sc,zs_string & member_symbol){
 
 		char *aux_p = (char *)s;
-		zs_string type_name;
+		zs_string script_type_name;
 		*sc=NULL;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -208,7 +211,7 @@ namespace zetscript{
 				eval_data
 				,aux_p
 				,line
-				,type_name);
+				,script_type_name);
 
 		if(aux_p == NULL){
 			return NULL;
@@ -218,7 +221,7 @@ namespace zetscript{
 
 		if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
 
-			if((*sc=GET_SCRIPT_CLASS(eval_data,type_name)) != NULL){
+			if((*sc=GET_SCRIPT_CLASS(eval_data,script_type_name)) != NULL){
 				aux_p=get_name_identifier_token(
 						eval_data
 						,aux_p+2
@@ -228,7 +231,7 @@ namespace zetscript{
 
 				return aux_p;
 			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class %s not found",type_name.c_str());
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class %s not found",script_type_name.c_str());
 			}
 		}
 		return NULL;
@@ -306,8 +309,8 @@ namespace zetscript{
 		zs_string property_name="";
 		int attrib_start_line;
 		char *end_var = NULL;
-		zs_string class_property_name=sc->type_name;
-		Scope *scope_info=sc->class_scope;
+		zs_string class_property_name=sc->script_type_name;
+		Scope *scope_info=sc->script_type_scope;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 

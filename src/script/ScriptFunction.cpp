@@ -11,7 +11,7 @@
 :"Local"\
 
 #define GET_ILOAD_R_STR(properties,value) \
-	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->class_scope->symbol_variables->items[value])->name.c_str()\
+	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->script_type_scope->symbol_variables->items[value])->name.c_str()\
 	:((Symbol *)sfo->local_variables->items[value])->name.c_str()\
 
 namespace zetscript{
@@ -96,7 +96,7 @@ namespace zetscript{
 			symbol_ref=sfo->function_name;
 		}else{ // is a class
 			symbol_ref=sfo->function_name;//+zs_string("::")+zs_string("????");
-			class_str=sc->type_name+"::";
+			class_str=sc->script_type_name+"::";
 		}
 
 

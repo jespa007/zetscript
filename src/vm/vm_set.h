@@ -79,13 +79,13 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_C_VAR_P
 				,1))==NULL){ \
 			if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
 				VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-						,so_aux->getScriptType()->type_name.c_str()\
+						,so_aux->getScriptType()->script_type_name.c_str()\
 						,stk_mp->member_property->property_name.c_str()\
 						,__STR_SETTER_METAMETHOD__\
 				);\
 			}else{\
 				VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
-						,so_aux->getScriptType()->type_name.c_str() \
+						,so_aux->getScriptType()->script_type_name.c_str() \
 						,__STR_SETTER_METAMETHOD__\
 				);\
 			}\

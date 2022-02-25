@@ -202,7 +202,7 @@ namespace zetscript{
 				scope_var = MAIN_SCOPE(eval_data);
 
 				if(sc!=NULL){
-					pre_variable_name=sc->type_name+"::";
+					pre_variable_name=sc->script_type_name+"::";
 				}
 			}else if(sc != NULL){
 				sf_field_initializer=sc->sf_field_initializer;
@@ -351,7 +351,7 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->type_name.c_str()).c_str():""
+							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->script_type_name.c_str()).c_str():""
 							,variable_name.c_str());
 				}
 
@@ -389,17 +389,6 @@ error_eval_keyword_var:
 	//
 	// FUNCTION
 	//
-	void eval_function_update_member_function_references(EvalData *eval_data,ScriptType *_script_type, Symbol *_function_reference){
-
-		// set overrided symbol
-		for(int i=0; i < _script_type->class_scope->symbol_functions->count; i++){
-			Symbol  *symbol_sf=(Symbol *)(_script_type->class_scope->symbol_functions->items[i]);
-			if(symbol_sf !=  _function_reference){
-				symbol_sf->overrided_symbol=_function_reference;
-			}
-		}
-	}
-
 	char * eval_keyword_function(
 			EvalData *eval_data
 			, const char *s
@@ -485,7 +474,7 @@ error_eval_keyword_var:
 				   );
 
 				   if(sc!=NULL){ // scope is the class
-					   scope_info=sc->class_scope;
+					   scope_info=sc->script_type_scope;
 				   }
 				}
 
@@ -529,7 +518,7 @@ error_eval_keyword_var:
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
 					,scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
 							"declaring function member in class '%s'"
-							,scope_info->script_type->type_name.c_str()
+							,scope_info->script_type->script_type_name.c_str()
 							).c_str():"declaring function"
 							,*aux_p
 
@@ -539,7 +528,7 @@ error_eval_keyword_var:
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
 							,scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
 									"declaring function member in class '%s'"
-									,scope_info->script_type->type_name.c_str()
+									,scope_info->script_type->script_type_name.c_str()
 									).c_str():"declaring function"
 
 					);
@@ -725,7 +714,7 @@ error_eval_keyword_var:
 				if(custom_symbol_name != ""){
 					function_name=custom_symbol_name;
 				}else{
-					function_name=eval_anonymous_function_name(sc!=NULL?sc->type_name:"");
+					function_name=eval_anonymous_function_name(sc!=NULL?sc->script_type_name:"");
 				}
 			}
 
@@ -751,15 +740,10 @@ error_eval_keyword_var:
 							,line
 					);
 
-					// ok update references if classes that inherits this class
-					eval_function_update_member_function_references(eval_data, sc, symbol_sf);
-
-
 				}catch(std::exception & ex){
 					if(params != NULL){
 						delete [] params;
 					}
-
 
 					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,ex.what());
 				}

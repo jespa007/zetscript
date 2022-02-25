@@ -94,21 +94,21 @@ namespace zetscript{
 	 */
 	template<class T>
 	ScriptType * ScriptTypeFactory::registerNativeSingletonClass(
-		const zs_string & type_name
+		const zs_string & script_type_name
 		,const char *registered_file
 		,short registered_line
 	){//, const zs_string & base_class_name=""){
 
 		ScriptType *sc=NULL;
-		const char * type_name_ptr = typeid( T *).name();
+		const char * script_type_name_ptr = typeid( T *).name();
 		//int size=script_types->count;
 		int idx_type=ZS_IDX_UNDEFINED;
 		Scope * scope = NULL;
 
 
-		checkClassName(type_name);
+		checkClassName(script_type_name);
 
-		if(getIdxScriptTypeFromTypeNamePtr(type_name_ptr)!=ZS_IDX_UNDEFINED){
+		if(getIdxScriptTypeFromTypeNamePtr(script_type_name_ptr)!=ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR(
 			"Native class '%s' is already registered"
 			,zs_rtti::demangle(typeid( T).name()).c_str()
@@ -117,9 +117,9 @@ namespace zetscript{
 
 		idx_type=script_types->count;
 		scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
-		MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,type_name);
+		MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,script_type_name);
 
-		sc = new ScriptType(zs,idx_type,type_name,scope,type_name_ptr,SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
+		sc = new ScriptType(zs,idx_type,script_type_name,scope,script_type_name_ptr,SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
 		scope->setScriptClass(sc);
 
 		// in C there's no script constructor ...
@@ -130,7 +130,7 @@ namespace zetscript{
 		script_types->push_back((zs_int)sc);
 
 		sc->idx_type=script_types->count-1;
-		ZS_LOG_DEBUG("* C++ class '%s' registered as (%s).",type_name.c_str(),zs_rtti::demangle(type_name_ptr).c_str());
+		ZS_LOG_DEBUG("* C++ class '%s' registered as (%s).",script_type_name.c_str(),zs_rtti::demangle(script_type_name_ptr).c_str());
 
 		return sc;
 	}
@@ -140,7 +140,7 @@ namespace zetscript{
 	 */
 	template<typename C>
 	ScriptType * ScriptTypeFactory::registerNativeClass(
-		const zs_string & type_name
+		const zs_string & script_type_name
 		,C * (*_constructor)(ZetScript *_zs)
 		,void (*_destructor)(ZetScript *_zs,C *)
 		,const char *registered_file
@@ -148,7 +148,7 @@ namespace zetscript{
 	){
 
 		ScriptType *sc =registerNativeSingletonClass<C>(
-				type_name
+				script_type_name
 				,registered_file
 				,registered_line
 		);
@@ -178,7 +178,7 @@ namespace zetscript{
 
 		const char *base_class_name=typeid(B).name();
 		const char * base_class_name_ptr=typeid(B *).name();
-		const char * type_name=typeid(C).name();
+		const char * script_type_name=typeid(C).name();
 		const char * class_name_ptr=typeid(C *).name();
 		zs_string error;
 
@@ -194,12 +194,12 @@ namespace zetscript{
 		}
 
 		if(isScriptClassTypeInheritsFrom(idx_register_class,idx_base_type)){
-			THROW_RUNTIME_ERROR("C++ class '%s' is already registered as base of '%s' ",zs_rtti::demangle(type_name), zs_rtti::demangle(base_class_name));
+			THROW_RUNTIME_ERROR("C++ class '%s' is already registered as base of '%s' ",zs_rtti::demangle(script_type_name), zs_rtti::demangle(base_class_name));
 		}
 
 		// check whether is in fact base of ...
 		if(!std::is_base_of<B,C>::value){
-			THROW_RUNTIME_ERROR("C++ class '%s' is not base of '%s' ",zs_rtti::demangle(type_name), zs_rtti::demangle(base_class_name));
+			THROW_RUNTIME_ERROR("C++ class '%s' is not base of '%s' ",zs_rtti::demangle(script_type_name), zs_rtti::demangle(base_class_name));
 		}
 
 		// now only allows one inheritance!
@@ -207,8 +207,8 @@ namespace zetscript{
 
 		for(int i=0; i < sc->idx_base_types->count; i++){
 			sc=getScriptType(sc->idx_base_types->items[i]); // get base class...
-			if(sc->type_name_ptr ==base_class_name_ptr){
-				THROW_RUNTIME_ERROR("C++ class '%s' already base of '%s' ",zs_rtti::demangle(type_name), zs_rtti::demangle(base_class_name));
+			if(sc->script_type_name_ptr ==base_class_name_ptr){
+				THROW_RUNTIME_ERROR("C++ class '%s' already base of '%s' ",zs_rtti::demangle(script_type_name), zs_rtti::demangle(base_class_name));
 			}
 		}
 
@@ -221,8 +221,8 @@ namespace zetscript{
 		//
 
 		ScriptType *base_class = (ScriptType *)script_types->get(idx_base_type);
-		zs_vector *base_vars=base_class->class_scope->symbol_variables;
-		zs_vector *base_functions=base_class->class_scope->symbol_variables;
+		zs_vector *base_vars=base_class->script_type_scope->symbol_variables;
+		zs_vector *base_functions=base_class->script_type_scope->symbol_variables;
 
 		// register all c vars symbols ...
 		for(int i = 0; i < base_functions->count; i++){
@@ -379,12 +379,12 @@ namespace zetscript{
 		,short registered_line
 	){
 
-		zs_string type_name_ptr = typeid( C *).name();
-		ScriptType * script_type=	getScriptTypeFromTypeNamePtr(type_name_ptr);
+		zs_string script_type_name_ptr = typeid( C *).name();
+		ScriptType * script_type=	getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("class '%s' is not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("class '%s' is not registered",script_type_name_ptr);
 		}
-		return registerNativeMemberFunction<C>(script_type->type_name,function_type, registered_file,registered_line );
+		return registerNativeMemberFunction<C>(CONSTRUCTOR_FUNCTION_NAME,function_type, registered_file,registered_line );
 	}
 
 	/**
@@ -401,20 +401,20 @@ namespace zetscript{
 		const char *var_type = typeid(R).name(); // we need the pointer type ...
 		const char *return_type;
 		zs_string error;
-		const char *type_name_ptr = typeid( C *).name();
+		const char *script_type_name_ptr = typeid( C *).name();
 		Symbol *symbol;
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		// 1. check all parameters ok.
 		// check valid parameters ...
 		if(getIdxScriptTypeFromTypeNamePtr(var_type) == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-					,script_type->type_name.c_str()
+					,script_type->script_type_name.c_str()
 					,var_name
 					,zs_rtti::demangle(typeid(R).name()));
 		}
@@ -440,13 +440,13 @@ namespace zetscript{
 		,const char *_registered_file
 		,short _registered_line
 	){
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -484,11 +484,11 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		zs_string script_type_name_ptr = typeid( C *).name();
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr.c_str());
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr.c_str());
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -523,12 +523,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -564,12 +564,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -605,12 +605,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -646,12 +646,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -685,12 +685,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -724,12 +724,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -763,12 +763,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -802,12 +802,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -841,12 +841,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -880,12 +880,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -919,12 +919,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -958,12 +958,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -997,12 +997,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -1036,12 +1036,12 @@ namespace zetscript{
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr);
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr);
 		}
 
 		int idx_return_type=getNativeFunctionRetArgsTypes(
@@ -1079,13 +1079,13 @@ namespace zetscript{
 	)
 	{
 		// to make compatible MSVC shared library
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr.c_str());
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr.c_str());
 		}
 
 		return script_type->registerNativeMemberFunctionStatic<F>(function_name
@@ -1106,12 +1106,12 @@ namespace zetscript{
 		,const char *registered_file
 		,short registered_line
 	){
-		zs_string type_name_ptr = typeid( C *).name();
+		zs_string script_type_name_ptr = typeid( C *).name();
 
-		ScriptType *script_type = getScriptTypeFromTypeNamePtr(type_name_ptr);
+		ScriptType *script_type = getScriptTypeFromTypeNamePtr(script_type_name_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native class %s not registered",type_name_ptr.c_str());
+			THROW_RUNTIME_ERROR("native class %s not registered",script_type_name_ptr.c_str());
 		}
 
 		script_type->registerNativeMemberFunction<F>(

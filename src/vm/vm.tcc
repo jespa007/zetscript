@@ -362,8 +362,8 @@ namespace zetscript{
 		int stk_elements_builtin_len=  data->main_function_object->function_scope->symbol_functions->count;// vector of symbols
 
 		if(class_obj != NULL){
-			stk_elements_builtin_ptr=class_obj->class_scope->symbol_functions->items;
-			stk_elements_builtin_len=class_obj->class_scope->symbol_functions->count;
+			stk_elements_builtin_ptr=class_obj->script_type_scope->symbol_functions->items;
+			stk_elements_builtin_len=class_obj->script_type_scope->symbol_functions->count;
 
 		}
 
@@ -547,7 +547,7 @@ namespace zetscript{
 
 					// class if not mail
 					if(class_obj!=NULL && class_obj->idx_type!=IDX_TYPE_CLASS_MAIN){
-						str_candidates.append(class_obj->type_name.c_str());
+						str_candidates.append(class_obj->script_type_name.c_str());
 						str_candidates.append("::");
 					}
 
@@ -578,7 +578,7 @@ namespace zetscript{
 			if(n_candidates == 0){
 				VM_ERROR("Cannot find %s '%s%s(%s)'.\n\n",
 						is_constructor ? "constructor":"function",
-								class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->type_name+"::").c_str():"",
+								class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->script_type_name+"::").c_str():"",
 								symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 						args_str.c_str()
 				);
@@ -588,7 +588,7 @@ namespace zetscript{
 			else{
 				VM_ERROR("Cannot match %s '%s%s(%s)' .\n\n%s",
 					is_constructor ? "constructor":"function",
-							class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->type_name+"::").c_str():"",
+							class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->script_type_name+"::").c_str():"",
 									symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 					args_str.c_str(),
 					str_candidates.c_str());
@@ -599,7 +599,7 @@ namespace zetscript{
 		return ptr_function_found;
 	}
 
-	inline bool vm_apply_static_metamethod(
+	inline bool vm_call_static_metamethod_2ops(
 		VirtualMachine *vm
 		,ScriptFunction *calling_function
 		,Instruction *instruction
@@ -612,15 +612,15 @@ namespace zetscript{
 		zs_string str_stk_result_op1_full_definition="";
 		zs_string str_stk_result_op2_full_definition="";
 		StackElement *stk_vm_current_backup,*stk_args;
-		//int stk_element_len=0;
 		ScriptFunction *ptr_function_found=NULL;
 		StackElement ret_obj;
 		const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(byte_code_metamethod);
 		const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
 		zs_string error_found="";
 		ScriptObject *script_object=NULL;
-		zs_string class_name_object_found="";
-		int n_stk_args=byte_code_metamethod_get_num_arguments(byte_code_metamethod);
+		zs_string script_type_name_object_found="";
+		int n_stk_args=2;
+		int n_stk_local_symbols=0;
 		StackElement *stk_return=NULL;
 		int n_returned_arguments_from_function=0;
 
@@ -630,50 +630,14 @@ namespace zetscript{
 		stk_vm_current_backup=data->stk_vm_current;
 		stk_args=data->stk_vm_current;
 
-		if(stk_result_op1->properties & STK_PROPERTY_PTR_STK){
-			stk_result_op1 = (StackElement *)(stk_result_op1->value);
+		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) && (stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)){
+			script_object=(ScriptObject *)stk_result_op1->value;
+			script_type_name_object_found=script_object->getTypeName();
 		}
 
-		if(stk_result_op2->properties & STK_PROPERTY_PTR_STK){
-			stk_result_op2 = (StackElement *)(stk_result_op2->value);
-		}
-
-		if(
-			// allowed classes that accepts metamethods
-			STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op1)
-			|| STK_IS_SCRIPT_OBJECT_ITERATOR_STRING(stk_result_op1)
-			|| STK_IS_SCRIPT_OBJECT_ITERATOR_VECTOR(stk_result_op1)
-			|| STK_IS_SCRIPT_OBJECT_ITERATOR_OBJECT(stk_result_op1)
-		){
-			script_object = (ScriptObjectClass *)(stk_result_op1->value);
-		}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-			ScriptObject * script_object_found=(ScriptObject *)stk_result_op1->value;
-			class_name_object_found=script_object_found->getTypeName();
-		}
-
-		// only C refs can check 2nd param
-		if(script_object == NULL && stk_result_op2 != NULL) { // script null
-
-			if(((stk_result_op2->properties & STK_PROPERTY_PTR_STK))){
-				stk_result_op2 = (StackElement *)(stk_result_op2->value);
-			}
-
-			// allowed classes that accepts metamethods
-			if(			STK_IS_SCRIPT_OBJECT_CLASS(stk_result_op2)
-					|| STK_IS_SCRIPT_OBJECT_ITERATOR_STRING(stk_result_op2)
-					|| STK_IS_SCRIPT_OBJECT_ITERATOR_VECTOR(stk_result_op2)
-					|| STK_IS_SCRIPT_OBJECT_ITERATOR_OBJECT(stk_result_op2)
-
-					){
-				script_object = (ScriptObject *)(stk_result_op2->value);
-			}else if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					ScriptObject *script_object_found=(ScriptObject *)stk_result_op2->value;
-					class_name_object_found=script_object_found->getTypeName();
-			}
-		}
 
 		if(script_object == NULL){ // cannot perform operation
-			if(class_name_object_found.empty()){ // not any object found
+			if(script_type_name_object_found.empty()){ // not any object found
 				// Because script elements can return "null" due undefined properties, do not show any error to not confuse.
 				// If is an internal error, fix!
 			}else{
@@ -681,7 +645,7 @@ namespace zetscript{
 					error_found=zs_strutils::format("Unable to perform '==' operator for case conditional");
 				}else{
 					error_found=zs_strutils::format("Type '%s' does not implements metamethod '%s'"
-						,class_name_object_found.c_str()
+						,script_type_name_object_found.c_str()
 						,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
 					);
 				}
@@ -692,9 +656,7 @@ namespace zetscript{
 		//------------------------------------
 		// push stk results...
 		*data->stk_vm_current++=*stk_result_op1;
-		if(n_stk_args==2){
-			*data->stk_vm_current++=*stk_result_op2;
-		}
+		*data->stk_vm_current++=*stk_result_op2;
 		//------------------------------------
 
 		if(ptr_function_found == NULL){
@@ -713,6 +675,8 @@ namespace zetscript{
 					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
 					goto apply_metamethod_error;
 				}
+
+
 
 
 			}else{ // get first item...
@@ -755,6 +719,8 @@ namespace zetscript{
 				,ptr_function_found
 				,stk_args
 			);
+
+			n_stk_local_symbols=ptr_function_found->local_variables->count;
 		}else{ //
 			vm_call_function_native(
 					vm
@@ -765,10 +731,17 @@ namespace zetscript{
 					,stk_args
 					,n_stk_args
 			);
+
+			n_stk_local_symbols=n_stk_args;
 		}
 
-		stk_return=(stk_args+ptr_function_found->function_scope->symbol_variables->count );
+		stk_return=(stk_args+n_stk_local_symbols );
 		n_returned_arguments_from_function=data->stk_vm_current-stk_return;
+
+		if(n_returned_arguments_from_function==0){
+			error_found="Metamethod function should return a value";
+			goto apply_metamethod_error;
+		}
 
 		// setup all returned variables from function
 		for(int i=0; i < n_returned_arguments_from_function; i++){
@@ -803,30 +776,15 @@ namespace zetscript{
 
 apply_metamethod_error:
 
+		VM_ERROR("Metamethod operation '%s' (aka %s) failed performing operation by types '%s' %s '%s': %s"
+			,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+			,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
+			,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+			,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+			,stk_to_typeof_str(data->zs,stk_result_op2).c_str()
+			,error_found.c_str()
+		);
 
-		if(stk_result_op1!=NULL && stk_result_op2!=NULL){
-			VM_ERROR("Metamethod operation '%s' (aka %s) failed performing operation by types '%s' %s '%s': %s"
-				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
-				,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
-				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_to_typeof_str(data->zs,stk_result_op2).c_str()
-				,error_found.c_str()
-			);
-
-		}else if(stk_result_op1!=NULL){
-			VM_ERROR("cannot perform operation '%s %s'. %s"
-				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
-				,error_found.c_str()
-			);
-
-		}else{
-			VM_ERROR("cannot perform operation '%s'. %s"
-				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,error_found.c_str()
-			);
-		}
 		return false;
 	}
 
@@ -987,7 +945,7 @@ lbl_exit_function:
 			break;
 			default:
 				// TODO:
-				if(vm_apply_static_metamethod(
+				if(vm_call_static_metamethod_2ops(
 						vm,
 						calling_function,
 						instruction,

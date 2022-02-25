@@ -30,8 +30,6 @@ zs_string to_string(const zs_string & _s){
 }
 
 
-
-
 void test_function_1st_c_call(ZetScript *_zs){
 	 printf("C Function 1st call from script\n");
 
@@ -145,7 +143,7 @@ void test_arithmetic_integer_op(ZetScript *_zs,zs_int val1, zs_int val2, const c
 	_test_arithmetic_integer_op_data *it_iod = test_arithmetic_integer_op_data;
 	while (!it_iod->str.empty()) {
 		try {
-			StackElement stk=_zs->eval(it_iod->str); \
+			StackElement stk=_zs->eval(it_iod->str,EVAL_OPTION_SHOW_USER_BYTE_CODE); \
 			if (stk.properties & STK_PROPERTY_ZS_INT) {
 				if ((zs_int)stk.value != (it_iod->val)) {
 					fprintf(stderr, "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zs_int)stk.value));
