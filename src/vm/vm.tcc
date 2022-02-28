@@ -630,9 +630,14 @@ namespace zetscript{
 		stk_vm_current_backup=data->stk_vm_current;
 		stk_args=data->stk_vm_current;
 
-		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) && (stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)){
+		// op1/op2 should be the object that have the metamethod
+		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)){
 			script_object=(ScriptObject *)stk_result_op1->value;
 			script_type_name_object_found=script_object->getTypeName();
+		}else if (stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			script_object=(ScriptObject *)stk_result_op2->value;
+			script_type_name_object_found=script_object->getTypeName();
+
 		}
 
 

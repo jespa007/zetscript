@@ -9,7 +9,7 @@ namespace zetscript{
 	typedef ${ZS_FLOAT_TYPE} 	zs_float;
 }
 
-#define ZS_FLOAT_COPY(dst_ptr, src_ptr) memcpy((void *)(dst_ptr),(void *)(src_ptr),sizeof(zs_float))
+#define ZS_FLOAT_COPY(dst_ptr, src_ptr) memcpy((void *)(dst_ptr),(void *)(src_ptr),sizeof(zetscript::zs_float))
 
 #endif /* ZS_CONFIG_H */
 

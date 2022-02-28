@@ -59,6 +59,7 @@ namespace zetscript{
 		StackElement 	*sf_call_stk_return=NULL;
 		int 			sf_call_n_returned_arguments_from_function=0;
 		int				sf_call_stk_start_function_object=0;
+		int				sf_call_return=0;
 
 		// SFCALL
 		//------------------------------------------------
@@ -681,9 +682,9 @@ find_element_object:
 				}
 				else if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
 					data->stk_vm_current=stk_start;
-				}else{
+				}/*else{
 					*data->stk_vm_current++=*stk_dst;
-				}
+				}*/
 				continue;
 			 case BYTE_CODE_IT_INIT:
 				VM_POP_STK_TWO;
@@ -1199,6 +1200,7 @@ execute_function:
 				// calcule returned stack elements
 				sf_call_stk_return=(sf_call_stk_start_arg_call+sf_call_n_local_symbols); // +1 points to starting return...
 				sf_call_n_returned_arguments_from_function=data->stk_vm_current-sf_call_stk_return;
+				sf_call_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
 
 				// setup all returned variables from function
 				CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function,false)
@@ -1221,12 +1223,12 @@ execute_function:
 
 				// no return parameters but the caller expects n_parameters, so
 				if(sf_call_n_returned_arguments_from_function==0){
-					int ret=INSTRUCTION_GET_RETURN_COUNT(instruction);
-					for(int i=0;  i < ret; i++){
+
+					for(int i=0;  i < sf_call_return; i++){
 						VM_PUSH_STK_NULL;
 					}
-				}else{ // copy to vm stack
-					while(sf_call_n_returned_arguments_from_function-->0){
+				}else{ // copy to vm stack as many values expected
+					while(sf_call_return-->0){
 						*data->stk_vm_current++=*sf_call_stk_return++;
 					}
 				}
