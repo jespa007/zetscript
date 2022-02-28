@@ -11,11 +11,15 @@ namespace zetscript{
 	ScopeFactory::ScopeFactory(ZetScript *zs){
 		this->zs=zs;
 		this->scopes = new zs_vector;
-		main_scope=newScope(IDX_SCRIPT_FUNCTION_MAIN,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
+		main_scope=NULL;
 		idx_clear_checkpoint=1;  // start from MAIN scope
 		idx_clear_global_checkpoint_global_symbol_registered_variables=0;
 		idx_clear_global_checkpoint_global_symbol_registered_functions=0;
 		idx_clear_global_checkpoint_global_symbol_registered_types=0;
+	}
+
+	void ScopeFactory::init(){
+		main_scope=newScope(IDX_SCRIPT_FUNCTION_MAIN,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
 	}
 
 	Scope *	 ScopeFactory::newScope(int idx_sf,Scope * scope_parent,uint16_t _properties){

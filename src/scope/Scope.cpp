@@ -61,6 +61,26 @@ namespace zetscript{
 		return n;
 	}
 
+	void Scope::removeChildren(){
+		for(int i=0; i < this->scopes->count; i++){
+			markUnusuedScopeRecursive((Scope *)this->scopes->items[i]);
+		}
+
+		this->scope_factory->clearUnusuedScopes();
+	}
+
+	void Scope::markUnusuedScopeRecursive(Scope *_sc){
+
+		if(_sc==NULL){
+			return;
+		}
+
+		for(int i=0; i < _sc->scopes->count; i++){
+			Scope *_child=(Scope *)_sc->scopes->items[i];
+			_child->properties|=SCOPE_PROPERTY_UNUSUED;
+		}
+	}
+
 
 	int Scope::numInnerScopes(){
 		return numInnerScopesRecursive(this,1);

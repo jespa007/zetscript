@@ -9,7 +9,7 @@ Integer *IntegerWrap_new(zetscript::ZetScript *_zs){
 
 }
 
-void IntegerWrap_set(zetscript::ZetScript *_zs,Integer *_this, zs_int _n){
+void IntegerWrap_set(zetscript::ZetScript *_zs,Integer *_this, zetscript::zs_int _n){
 	_this->n=_n;
 }
 
@@ -21,15 +21,15 @@ Integer * IntegerWrap_add(zetscript::ZetScript *_zs,Integer *n1, Integer *n2){
 	return new Integer(n1->n + n2->n);
 }
 
-Integer * IntegerWrap_add(zetscript::ZetScript *_zs,Integer *n1, zs_float n2){
+Integer * IntegerWrap_add(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_float n2){
 	return new Integer((int)(n1->n + n2));
 }
 
-Integer * IntegerWrap_add(zetscript::ZetScript *_zs,Integer *n1, zs_int n2){
+Integer * IntegerWrap_add(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_int n2){
 	return new Integer(n1->n + n2);
 }
 
-Integer * IntegerWrap_add(zetscript::ZetScript *_zs,zs_int n1, Integer * n2){
+Integer * IntegerWrap_add(zetscript::ZetScript *_zs,zetscript::zs_int n1, Integer * n2){
 	return new Integer(n1 + n2->n);
 }
 
@@ -37,15 +37,15 @@ Integer * IntegerWrap_sub(zetscript::ZetScript *_zs,Integer *n1, Integer *n2){
 	return new Integer(n1->n - n2->n);
 }
 
-Integer * IntegerWrap_sub(zetscript::ZetScript *_zs,Integer *n1, zs_float n2){
+Integer * IntegerWrap_sub(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_float n2){
 	return new Integer((int)(n1->n - n2));
 }
 
-Integer * IntegerWrap_sub(zetscript::ZetScript *_zs,Integer *n1, zs_int n2){
+Integer * IntegerWrap_sub(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_int n2){
 	return new Integer(n1->n - n2);
 }
 
-Integer * IntegerWrap_sub(zetscript::ZetScript *_zs,zs_int n1, Integer * n2){
+Integer * IntegerWrap_sub(zetscript::ZetScript *_zs,zetscript::zs_int n1, Integer * n2){
 	return new Integer(n1 - n2->n);
 }
 
@@ -53,11 +53,11 @@ Integer * IntegerWrap_div(zetscript::ZetScript *_zs,Integer *n1, Integer *n2){
 	return new Integer(n1->n / n2->n);
 }
 
-Integer * IntegerWrap_div(zetscript::ZetScript *_zs,Integer *n1, zs_int n2){
+Integer * IntegerWrap_div(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_int n2){
 	return new Integer(n1->n / n2);
 }
 
-Integer * IntegerWrap_div(zetscript::ZetScript *_zs,zs_int n1, Integer *n2){
+Integer * IntegerWrap_div(zetscript::ZetScript *_zs,zetscript::zs_int n1, Integer *n2){
 	return new Integer(n1 / n2->n);
 }
 
@@ -69,11 +69,11 @@ Integer * IntegerWrap_mod(zetscript::ZetScript *_zs,Integer *n1, Integer *n2){
 	return new Integer(n1->n % n2->n);
 }
 
-Integer * IntegerWrap_mod(zetscript::ZetScript *_zs,Integer *n1, zs_int n2){
+Integer * IntegerWrap_mod(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_int n2){
 	return new Integer(fmod(n1->n, n2));
 }
 
-Integer * IntegerWrap_mod(zetscript::ZetScript *_zs,zs_int n1, Integer *n2){
+Integer * IntegerWrap_mod(zetscript::ZetScript *_zs,zetscript::zs_int n1, Integer *n2){
 	return new Integer(n1 % n2->n);
 }
 
@@ -81,11 +81,11 @@ Integer * IntegerWrap_mul(zetscript::ZetScript *_zs,Integer *n1, Integer *n2){
 	return new Integer(n1->n * n2->n);
 }
 
-Integer * IntegerWrap_mul(zetscript::ZetScript *_zs,Integer *n1, zs_int n2){
+Integer * IntegerWrap_mul(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_int n2){
 	return new Integer(n1->n * n2);
 }
 
-Integer * IntegerWrap_mul(zetscript::ZetScript *_zs,zs_int n1, Integer * n2){
+Integer * IntegerWrap_mul(zetscript::ZetScript *_zs,zetscript::zs_int n1, Integer * n2){
 	return new Integer(n1 * n2->n);
 }
 
@@ -93,11 +93,11 @@ Integer * IntegerWrap_shl(zetscript::ZetScript *_zs,Integer *n1, Integer *n2){
 	return new Integer(n1->n << n2->n);
 }
 
-Integer * IntegerWrap_shl(zetscript::ZetScript *_zs,Integer *n1, zs_int n2){
+Integer * IntegerWrap_shl(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_int n2){
 	return new Integer(n1->n << n2);
 }
 
-Integer * IntegerWrap_shl(zetscript::ZetScript *_zs,zs_int n1, Integer *n2){
+Integer * IntegerWrap_shl(zetscript::ZetScript *_zs,zetscript::zs_int n1, Integer *n2){
 	return new Integer(n1 << n2->n);
 }
 
@@ -105,11 +105,11 @@ Integer * IntegerWrap_and(zetscript::ZetScript *_zs,Integer *n1, Integer *n2){
 	return new Integer(n1->n & n2->n);
 }
 
-Integer * IntegerWrap_and(zetscript::ZetScript *_zs,Integer *n1, zs_int n2){
+Integer * IntegerWrap_and(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_int n2){
 	return new Integer(n1->n & n2);
 }
 
-Integer * IntegerWrap_and(zetscript::ZetScript *_zs,zs_int n1, Integer * n2){
+Integer * IntegerWrap_and(zetscript::ZetScript *_zs,zetscript::zs_int n1, Integer * n2){
 	return new Integer(n1 & n2->n);
 }
 
@@ -117,11 +117,11 @@ Integer * IntegerWrap_or(zetscript::ZetScript *_zs,Integer *n1, Integer *n2){
 	return new Integer(n1->n | n2->n);
 }
 
-Integer * IntegerWrap_or(zetscript::ZetScript *_zs,Integer *n1, zs_int n2){
+Integer * IntegerWrap_or(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_int n2){
 	return new Integer(n1->n | n2);
 }
 
-Integer * IntegerWrap_or(zetscript::ZetScript *_zs,zs_int n1, Integer * n2){
+Integer * IntegerWrap_or(zetscript::ZetScript *_zs,zetscript::zs_int n1, Integer * n2){
 	return new Integer(n1 | n2->n);
 }
 
@@ -129,11 +129,11 @@ Integer * IntegerWrap_xor(zetscript::ZetScript *_zs,Integer *n1, Integer *n2){
 	return new Integer(n1->n ^ n2->n);
 }
 
-Integer * IntegerWrap_xor(zetscript::ZetScript *_zs,Integer *n1, zs_int n2){
+Integer * IntegerWrap_xor(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_int n2){
 	return new Integer(n1->n ^ n2);
 }
 
-Integer * IntegerWrap_xor(zetscript::ZetScript *_zs,zs_int n1, Integer * n2){
+Integer * IntegerWrap_xor(zetscript::ZetScript *_zs,zetscript::zs_int n1, Integer * n2){
 	return new Integer(n1 ^ n2->n);
 }
 
@@ -141,15 +141,15 @@ Integer * IntegerWrap_shr(zetscript::ZetScript *_zs,Integer *n1, Integer *n2){
 	return new Integer(n1->n >> n2->n);
 }
 
-Integer * IntegerWrap_shr(zetscript::ZetScript *_zs,Integer *n1, zs_int n2){
+Integer * IntegerWrap_shr(zetscript::ZetScript *_zs,Integer *n1, zetscript::zs_int n2){
 	return new Integer(n1->n >> n2);
 }
 
-Integer * IntegerWrap_shr(zetscript::ZetScript *_zs,zs_int n1, Integer *n2){
+Integer * IntegerWrap_shr(zetscript::ZetScript *_zs,zetscript::zs_int n1, Integer *n2){
 	return new Integer(n1 >> n2->n);
 }
 
-zs_int IntegerWrap_toInt(zetscript::ZetScript *_zs,Integer *_this){
+zetscript::zs_int IntegerWrap_toInt(zetscript::ZetScript *_zs,Integer *_this){
 	return _this->n;
 }
 
@@ -161,56 +161,56 @@ void IntegerWrap_delete(zetscript::ZetScript *_zs,Integer *_this){
 void IntegerWrap_register(zetscript::ZetScript *_zs){
 
 	_zs->registerClass<Integer>("Integer",IntegerWrap_new,IntegerWrap_delete);
-	_zs->registerConstructor<Integer>(static_cast<void (*)(zetscript::ZetScript *_zs,Integer *,zs_int )>(&IntegerWrap_set));
+	_zs->registerConstructor<Integer>(static_cast<void (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int )>(&IntegerWrap_set));
 	_zs->registerConstructor<Integer>(static_cast<void (*)(zetscript::ZetScript *_zs,Integer *,Integer *)>(&IntegerWrap_set));
 	_zs->registerMemberFunction<Integer>("toInt",&IntegerWrap_toInt);
 
-	_zs->registerMemberFunction<Integer>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Integer *, zs_int)>(&IntegerWrap_set));
+	_zs->registerMemberFunction<Integer>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Integer *, zetscript::zs_int)>(&IntegerWrap_set));
 	_zs->registerMemberFunction<Integer>("_set",static_cast<void (*)(zetscript::ZetScript *_zs,Integer *,Integer *)>(&IntegerWrap_set));
 
 
-	_zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zs_int,Integer * )>(&IntegerWrap_add));
-	_zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zs_int)>(&IntegerWrap_add));
+	_zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zetscript::zs_int,Integer * )>(&IntegerWrap_add));
+	_zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int)>(&IntegerWrap_add));
 	_zs->registerMemberFunctionStatic<Integer>("_add",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,Integer * )>(&IntegerWrap_add));
 
-	_zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zs_int,Integer * )>(&IntegerWrap_sub));
-	_zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zs_int)>(&IntegerWrap_sub));
+	_zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zetscript::zs_int,Integer * )>(&IntegerWrap_sub));
+	_zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int)>(&IntegerWrap_sub));
 	_zs->registerMemberFunctionStatic<Integer>("_sub",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,Integer * )>(&IntegerWrap_sub));
 
 
-	_zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zs_int,Integer * )>(&IntegerWrap_mul));
-	_zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zs_int)>(&IntegerWrap_mul));
+	_zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zetscript::zs_int,Integer * )>(&IntegerWrap_mul));
+	_zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int)>(&IntegerWrap_mul));
 	_zs->registerMemberFunctionStatic<Integer>("_mul",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,Integer * )>(&IntegerWrap_mul));
 
-	_zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zs_int,Integer * )>(&IntegerWrap_div));
-	_zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zs_int)>(&IntegerWrap_div));
+	_zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zetscript::zs_int,Integer * )>(&IntegerWrap_div));
+	_zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int)>(&IntegerWrap_div));
 	_zs->registerMemberFunctionStatic<Integer>("_div",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,Integer * )>(&IntegerWrap_div));
 
-	_zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zs_int,Integer * )>(&IntegerWrap_mod));
-	_zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zs_int)>(&IntegerWrap_mod));
+	_zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zetscript::zs_int,Integer * )>(&IntegerWrap_mod));
+	_zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int)>(&IntegerWrap_mod));
 	_zs->registerMemberFunctionStatic<Integer>("_mod",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,Integer * )>(&IntegerWrap_mod));
 
 
-	_zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zs_int,Integer * )>(&IntegerWrap_shr));
-	_zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zs_int)>(&IntegerWrap_shr));
+	_zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zetscript::zs_int,Integer * )>(&IntegerWrap_shr));
+	_zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int)>(&IntegerWrap_shr));
 	_zs->registerMemberFunctionStatic<Integer>("_shr",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,Integer * )>(&IntegerWrap_shr));
 
 
-	_zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zs_int,Integer * )>(&IntegerWrap_shl));
-	_zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zs_int)>(&IntegerWrap_shl));
+	_zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zetscript::zs_int,Integer * )>(&IntegerWrap_shl));
+	_zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int)>(&IntegerWrap_shl));
 	_zs->registerMemberFunctionStatic<Integer>("_shl",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,Integer * )>(&IntegerWrap_shl));
 
 
-	_zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zs_int,Integer * )>(&IntegerWrap_and));
-	_zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zs_int)>(&IntegerWrap_and));
+	_zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zetscript::zs_int,Integer * )>(&IntegerWrap_and));
+	_zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int)>(&IntegerWrap_and));
 	_zs->registerMemberFunctionStatic<Integer>("_and",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,Integer * )>(&IntegerWrap_and));
 
-	_zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zs_int,Integer * )>(&IntegerWrap_or));
-	_zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zs_int)>(&IntegerWrap_or));
+	_zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zetscript::zs_int,Integer * )>(&IntegerWrap_or));
+	_zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int)>(&IntegerWrap_or));
 	_zs->registerMemberFunctionStatic<Integer>("_or",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,Integer * )>(&IntegerWrap_or));
 
-	_zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zs_int,Integer * )>(&IntegerWrap_xor));
-	_zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zs_int)>(&IntegerWrap_xor));
+	_zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(zetscript::ZetScript *_zs,zetscript::zs_int,Integer * )>(&IntegerWrap_xor));
+	_zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,zetscript::zs_int)>(&IntegerWrap_xor));
 	_zs->registerMemberFunctionStatic<Integer>("_xor",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *,Integer * )>(&IntegerWrap_xor));
 
 	_zs->registerMemberFunction<Integer>("_neg",static_cast<Integer * (*)(zetscript::ZetScript *_zs,Integer *)>(&IntegerWrap_neg));

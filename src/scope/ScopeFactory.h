@@ -16,7 +16,7 @@ namespace zetscript{
 	class ScopeFactory{
 		public:
 			ScopeFactory(ZetScript 		*zs);
-
+			void init();
 			Scope	    				*	newScope(int idx_sf,Scope * scope_parent=NULL,uint16_t _properties=0);
 			Scope 						* 	getMainScope(){return main_scope;}
 			zs_vector 					* 	getScopes();

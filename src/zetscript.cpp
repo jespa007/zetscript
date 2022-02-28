@@ -23,6 +23,7 @@ namespace zetscript{
 
 		eval_init();
 		scope_factory = new ScopeFactory(this);
+		scope_factory->init();
 		script_function_factory= new ScriptFunctionFactory(this);
 
 		virtual_machine = vm_new(this);
@@ -347,7 +348,7 @@ namespace zetscript{
 					,NULL
 					,0
 					,0
-					, __invoke_file__
+					,__invoke_file__
 					,__invoke_line__
 			);
 		}

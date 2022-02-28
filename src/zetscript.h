@@ -507,6 +507,7 @@ namespace zetscript{
 		//
 		// PRINT ASM INFO
 		//----
+		void clearMainFunction();
 		StackElement evalInternal(const char * code, unsigned short options=0, const char  *filename="", const char *__invoke_file__="", int __invoke_line__=-1);
 
 		// FUNCTIONS

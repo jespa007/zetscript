@@ -6,5 +6,5 @@
 
 #include "Float.h"
 
-void FloatWrap_register(ZetScript *_zs);
+void FloatWrap_register(zetscript::ZetScript *_zs);
 

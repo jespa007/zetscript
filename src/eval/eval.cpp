@@ -47,7 +47,7 @@ namespace zetscript{
 		ScriptFunction *sf = _sf == NULL?MAIN_FUNCTION(eval_data):_sf;
 
 
-		if(sf != MAIN_FUNCTION(eval_data)){
+		if(sf != MAIN_FUNCTION(eval_data)){ // remove/reset old code
 			scope_info = NEW_SCOPE(eval_data,sf->idx_script_function,MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 			MAIN_SCOPE(eval_data)->scopes->push_back((zs_int)scope_info);
 
@@ -447,10 +447,19 @@ namespace zetscript{
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 
+		// remove old instructions
 		if(sf->instructions != NULL){
 			free(sf->instructions);
 			sf->instructions=NULL;
 		}
+
+		// remove old ref symbols
+		for(int i=0; i < sf->instruction_source_info.count; i++){
+			InstructionSourceInfo *isi=(InstructionSourceInfo *)sf->instruction_source_info.items[i];
+			delete isi;
+		}
+
+		sf->instruction_source_info.clear();
 
 		// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
 		size_t count =eval_data->current_function->eval_instructions.count;

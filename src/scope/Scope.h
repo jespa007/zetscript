@@ -66,7 +66,7 @@ namespace zetscript{
 
 		void						    markAsUnusued();
 
-
+		void removeChildren();
 		void setScriptClass(ScriptType *sc);
 		ScriptType * getScriptType();
 		int getIdxScriptFunction();
@@ -88,6 +88,8 @@ namespace zetscript{
 		Symbol * getSymbolRecursive(const zs_string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		Symbol * getSymbolRecursiveDownScope(const zs_string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		Symbol * getSymbolRecursiveUpScope(const zs_string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
+
+		void markUnusuedScopeRecursive(Scope *_sc);
 
 		int numInnerScopesRecursive(Scope *sc, int n);
 		int countVariablesRecursive(Scope *sc, int idx_script_function_reference);

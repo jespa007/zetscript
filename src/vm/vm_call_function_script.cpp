@@ -71,12 +71,12 @@ namespace zetscript{
 		void *stk_src_ref_value_copy_aux=NULL;
 
 		Instruction *instruction_it=instructions;
-		StackElement *stk_start=&_stk_local_var[calling_function->local_variables->count];   // <-- here starts stk for aux vars for operations ..
+		StackElement *stk_start=_stk_local_var+calling_function->local_variables->count;   // <-- here starts stk for aux vars for operations ..
 
 		data->stk_vm_current = stk_start;
 		data->vm_idx_call++;
 
-		if(((data->stk_vm_current-data->vm_stack)+calling_function->min_stack_needed)>=VM_STACK_MAX){
+		if(((stk_start-data->vm_stack)+calling_function->min_stack_needed)>=VM_STACK_MAX){
 			data->vm_error_max_stack_reached=true;
 			VM_STOP_EXECUTEF("Error MAXIMUM stack size reached");
 		}
