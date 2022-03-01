@@ -149,7 +149,12 @@ namespace zetscript{
 						val_ret=(zs_int)(&stack_element->value);
 						break;
 					case IDX_TYPE_ZS_FLOAT_PTR_C:
-						ZS_FLOAT_COPY(&val_ret,stack_element->value);
+						// first assign value
+						*((zs_float *)&stack_element->value)=stack_element->value;
+						// second assign pointer
+						val_ret=(zs_int)&stack_element->value;
+						// third stackelement is mutuated as ptr zs_float (to consensuate)
+						stack_element->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_IS_C_VAR_PTR;
 						break;
 					default:
 						error= "cannot convert 'int' to '";

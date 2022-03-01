@@ -222,47 +222,10 @@ add_executable(zs${POST_NAME}
 )
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 
-#---------------
-# TODO REMOVE!!!
-# test_call_script_function
-add_executable(test_call_script_function${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../samples/test_call_script_function.cpp
-)
-
-target_link_libraries(test_call_script_function${POST_NAME} zetscript${POST_NAME})
-
-add_executable(test_callbacks${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../samples/test_callbacks.cpp
-)
-
-target_link_libraries(test_callbacks${POST_NAME} zetscript${POST_NAME})
-
-add_executable(test_consecutive_evals${POST_NAME}
-	${PROJECT_SOURCE_DIR}/../samples/test_consecutive_evals.cpp
-)
-
-target_link_libraries(test_consecutive_evals${POST_NAME} zetscript${POST_NAME})
-
-add_executable(zs_test${POST_NAME}
-	${PROJECT_SOURCE_DIR}/test/zs_test.cpp
-)
-
-target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
-
-# TODO REMOVE!!!
-#---------------
-
-
-
 if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
 	MESSAGE ("-- Suit test: Yes")
 
-	# zs_test
-	add_executable(zs_test${POST_NAME}
-		test/zs_test.cpp
-	)
-	
-	target_link_libraries(zs_test${POST_NAME} zetscript${POST_NAME})
+	if(false)
 	
 	# helloworld
 	add_executable(helloworld${POST_NAME}
@@ -293,11 +256,11 @@ if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
 	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
 	
 	# test_call_script_function
-	#add_executable(test_call_script_function${POST_NAME}
-	#	${PROJECT_SOURCE_DIR}/../samples/test_call_script_function.cpp
-	#)
+	add_executable(test_call_script_function${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/test_call_script_function.cpp
+	)
 	
-	#target_link_libraries(test_call_script_function${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_call_script_function${POST_NAME} zetscript${POST_NAME})
 	
 	
 	# register_constants
@@ -313,6 +276,36 @@ if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
 	)
 
 	target_link_libraries(test_consecutive_evals${POST_NAME} zetscript${POST_NAME})
+	
+	# test arithmetic constants
+	add_executable(test_arithmetic_constants${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/test_arithmetic_constants.cpp
+	)
+
+	target_link_libraries(test_arithmetic_constants${POST_NAME} zetscript${POST_NAME})
+	
+	# test arithmetic vars
+	add_executable(test_arithmetic_vars${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/test_arithmetic_vars.cpp
+	)
+
+	target_link_libraries(test_arithmetic_vars${POST_NAME} zetscript${POST_NAME})
+	
+	endif()
+	
+	# test arithmetic metamethods
+	add_executable(test_arithmetic_metamethods${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/test_arithmetic_metamethods.cpp
+	)
+
+	target_link_libraries(test_arithmetic_metamethods${POST_NAME} zetscript${POST_NAME})
+	
+	# test_all
+	add_executable(test_all${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/test_all.cpp
+	)
+
+	target_link_libraries(test_all${POST_NAME} zetscript${POST_NAME})
 else()
 	MESSAGE ("-- Suit test: No")
 endif()

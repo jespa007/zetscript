@@ -1,5 +1,19 @@
-
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 #include "zetscript.h"
+
+std::function<void ()> * test_2nd_script_call = NULL;
+
+void test_function_1st_c_call(zetscript::ZetScript *_zs){
+	 printf("C Function 1st call from script\n");
+
+	 if(test_2nd_script_call != NULL){
+		 (*test_2nd_script_call)();
+	 }
+}
+
 
 
 void test_callback(
@@ -93,6 +107,27 @@ int main(){
 			"test.test_callback()"
 			""
 		);
+
+		// 2nd test calling from script->C->script
+		zs.registerFunction("test_function_1st_c_call",test_function_1st_c_call);
+		// test calling script-c-script-c
+
+		zs.eval("function test_1st_script_call(){\n"
+					"Console::outln (\"Hello from script\");\n"
+					"test_function_1st_c_call();\n"
+				"}\n"
+				"function test_2nd_script_call(){\n"
+					"Console::outln(\"2nd call script\");\n"
+				"}");
+
+		auto  test_1st_script_call=zs.bindScriptFunction<void ()>("test_1st_script_call");
+		test_2nd_script_call=new std::function<void()>(zs.bindScriptFunction<void ()>("test_2nd_script_call"));
+
+		if(test_1st_script_call){
+			test_1st_script_call();
+		}
+
+		delete test_2nd_script_call;
 
 	}catch(std::exception & ex){
 		fprintf(stderr,"%s\n",ex.what());
