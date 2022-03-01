@@ -4,6 +4,18 @@
  */
 #pragma once
 
-#include "Integer.h"
 
-void IntegerWrap_register(zetscript::ZetScript *_zs);
+class Number{
+public:
+
+	float n;
+
+	Number(){
+		n=0;
+	}
+
+	Number(float _n){
+		n=_n;
+	}
+
+};

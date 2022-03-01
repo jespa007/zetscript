@@ -46,8 +46,10 @@ namespace zetscript{
 		eval_data->current_parsing_file=_filename;
 		ScriptFunction *sf = _sf == NULL?MAIN_FUNCTION(eval_data):_sf;
 
+		sf->removeUnusuedScopes();
 
 		if(sf != MAIN_FUNCTION(eval_data)){ // remove/reset old code
+
 			scope_info = NEW_SCOPE(eval_data,sf->idx_script_function,MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 			MAIN_SCOPE(eval_data)->scopes->push_back((zs_int)scope_info);
 
@@ -118,7 +120,7 @@ namespace zetscript{
 				eval_data
 				,eval_data->current_function->script_function->idx_script_function
 				,scope_parent
-				,is_scope_function?SCOPE_PROPERTY_IS_SCOPE_FUNCTION:0
+				,is_scope_function?SCOPE_PROPERTY_IS_SCOPE_FUNCTION:SCOPE_PROPERTY_IS_SCOPE_BLOCK
 		);
 
 		scope_parent->scopes->push_back((zs_int)new_scope);

@@ -3,9 +3,7 @@
  *  See LICENSE file for details.
  */
 #include "zetscript.h"
-
-#include "FloatWrap.cpp"
-#include "IntegerWrap.cpp"
+#include "NumberWrap.cpp"
 
 
 std::function<void ()> * test_2nd_script_call = NULL;
@@ -83,12 +81,12 @@ void test_int_expr(zetscript::ZetScript *_zs, const char *str_expr, zetscript::z
 }
 
 #define COMPLETE_TEST_ARITHMETIC_INTEGER_OP(_zs,val1,val2) test_arithmetic_integer_op(_zs,val1, val2, "return %s%s%s")
-#define COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(_zs,val1,val2)  test_arithmetic_integer_op(_zs,val1,val2,"it1=("\
-				"(i1=new Integer("\
+#define COMPLETE_TEST_ARITHMETIC_CLASS_NUMBER_OP(_zs,val1,val2)  test_arithmetic_integer_op(_zs,val1,val2,"it1=("\
+				"(i1=new Number("\
 				"%s" \
 				"))"\
 				"%s" \
-				"(i2=new Integer("\
+				"(i2=new Number("\
 				"%s" \
 				"))"\
 				");\n" \
@@ -418,106 +416,24 @@ int main(int argc, char * argv[]) {
 	try{
 
 		// register wraps
-		FloatWrap_register(&zs);
-		IntegerWrap_register(&zs);
 
+		NumberWrap_register(&zs);
 
-		//----------------------------
-		// TODO REMOVE
-
-		// decalre vars
+		/*//---------- TODO REMOVE
 		zs.eval("var i,i1,i2,it1,it2,n1,n2,nt1,nt2;");
-		TEST_INT_EXPR(&zs,"i=1;return i;",1);
-		TEST_INT_EXPR(&zs,"i++;return i;",2);
-		TEST_INT_EXPR(&zs,"++i;return i;",3);
-		TEST_INT_EXPR(&zs,"i--;return i;",2);
-		TEST_INT_EXPR(&zs,"--i;return i;",1);
+		zs.eval("it1=((i1=new Number(4))+(i2=new Number(4)));"
+				"delete it1"
+				""
+				"",zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE);
 
-		zs.eval("var i5,i6");
+		zs.eval("it1=((i1=new Number(4))+(i2=new Number(-4)));"
+		"delete it1"
+		""
+		"",zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE);
+		return 0;
 
-
-		TEST_INT_EXPR(&zs,"i=10;i*=10;return i;",100);
-
-		zs.eval("var i7,i8");
-
-		TEST_INT_EXPR(&zs,"i/=10;return i;",10);
-		TEST_INT_EXPR(&zs,"i+=10;return i;",20);
-		TEST_INT_EXPR(&zs,"i-=5;return i;",15);
-		TEST_INT_EXPR(&zs,"i%=10;return i;",5);
-
-		// test reassign and float
-		TEST_FLOAT_EXPR(&zs,"i=2.0;return i;",2.0f);
-		TEST_FLOAT_EXPR(&zs,"i++;return i;",3.0f);
-		TEST_FLOAT_EXPR(&zs,"--i;return i;",2.0f);
-
-		TEST_BOOL_EXPR(&zs,"i=true;return i;",true);
-		TEST_BOOL_EXPR(&zs,"i=!i;return i;",false);
-		TEST_BOOL_EXPR(&zs,"return i==i;",true);
-		TEST_BOOL_EXPR(&zs,"return i!=i;",false);
-		TEST_BOOL_EXPR(&zs,"i=!i;return i;",true);
-
-
-				printf("%i. test if-else ...\n",++n_test);
-				TEST_INT_EXPR(&zs,"i=0;if(i==0){i=10;}else{i=11;}return i;",10);
-				TEST_INT_EXPR(&zs,"if(i==0){i=10;}else{i=11;}return i;",11);
-
-		zs.eval("it1=("\
-						"(i1=new Integer("\
-						"4" \
-						"))"\
-						"+" \
-						"(i2=new Integer("\
-						"4" \
-						"))"\
-						");\n" \
-						"//it2=it1.toInt();\n" \
-						/*"delete it1;\n" \
-						 "delete i1;\n"*/ \
-						"//delete i2;\n" \
-						"//return it2;\n"
-		,zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE);
-
-		//TEST_INT_EXPR(&zs,"i=1;return i;",1);
-		/*TEST_INT_EXPR(&zs,"i++;return i;",2);
-		TEST_INT_EXPR(&zs,"++i;return i;",3);
-		TEST_INT_EXPR(&zs,"i--;return i;",2);
-		TEST_INT_EXPR(&zs,"--i;return i;",1);
-
-
-		TEST_INT_EXPR(&zs,"i=10;i*=10;return i;",100);
-		TEST_INT_EXPR(&zs,"i/=10;return i;",10);
-		TEST_INT_EXPR(&zs,"i+=10;return i;",20);
-		TEST_INT_EXPR(&zs,"i-=5;return i;",15);
-		TEST_INT_EXPR(&zs,"i%=10;return i;",5);
-
-		// test reassign and float
-		TEST_FLOAT_EXPR(&zs,"i=2.0;return i;",2.0f);
-		TEST_FLOAT_EXPR(&zs,"i++;return i;",3.0f);
-		TEST_FLOAT_EXPR(&zs,"--i;return i;",2.0f);
-
-		TEST_BOOL_EXPR(&zs,"i=true;return i;",true);
-		TEST_BOOL_EXPR(&zs,"i=!i;return i;",false);
-		TEST_BOOL_EXPR(&zs,"return i==i;",true);
-		TEST_BOOL_EXPR(&zs,"return i!=i;",false);
-		TEST_BOOL_EXPR(&zs,"i=!i;return i;",true);
-
-
-		printf("%i. test if-else ...\n",++n_test);
-		TEST_INT_EXPR(&zs,"i=0;if(i==0){i=10;}else{i=11;}return i;",10);
-		TEST_INT_EXPR(&zs,"if(i==0){i=10;}else{i=11;}return i;",11);
+		//---------- TODO REMOVE
 */
-
-		//zs.eval("var i1='s',i2='s\",it1=\"s\",it2=\"s\",n1=\"s\",n2=\"s\",nt1=\"s\",nt2=\"s\"");
-		// testing metamethods...
-		//printf("%i. testing class Integer arithmetic operations...\n",++n_test);
-		//COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,4,4); // op1==op2
-		//COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,4,5); // op1 < op2
-		//COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,5,4); // op1 > op2
-
-		// TODO REMOVE
-		//--------------------------
-
-		/*
 		// unsinged
 		printf("%i. testing arithmetic operations integer...\n",++n_test);
 		COMPLETE_TEST_ARITHMETIC_INTEGER_OP(&zs,4,4); // op1==op2
@@ -614,16 +530,11 @@ int main(int argc, char * argv[]) {
 
 		//zs.eval("var i1='s',i2='s\",it1=\"s\",it2=\"s\",n1=\"s\",n2=\"s\",nt1=\"s\",nt2=\"s\"");
 		// testing metamethods...
-		printf("%i. testing class Integer arithmetic operations...\n",++n_test);
-		COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,4,4); // op1==op2
-		COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,4,5); // op1 < op2
-		COMPLETE_TEST_ARITHMETIC_CLASS_INTEGER_OP(&zs,5,4); // op1 > op2
+		printf("%i. testing class Number arithmetic operations...\n",++n_test);
+		COMPLETE_TEST_ARITHMETIC_CLASS_NUMBER_OP(&zs,4,4); // op1==op2
+		COMPLETE_TEST_ARITHMETIC_CLASS_NUMBER_OP(&zs,4,5); // op1 < op2
+		COMPLETE_TEST_ARITHMETIC_CLASS_NUMBER_OP(&zs,5,4); // op1 > op2
 
-		printf("%i. testing class Float arithmetic operations ...\n",++n_test);
-		COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(&zs,4.0,4.0); // op1==op2
-		COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(&zs,4.0,5.0); // op1 < op2
-		COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(&zs,5.0,4.0); // op1 > op2
-		COMPLETE_TEST_ARITHMETIC_CLASS_FLOAT_OP(&zs,5.0,2.0e2); // op1 > op2
 
 
 		printf("%i. test consisten script-c-script calls ...\n",++n_test);
@@ -645,7 +556,7 @@ int main(int argc, char * argv[]) {
 			test_1st_script_call();
 		}
 
-		delete test_2nd_script_call;*/
+		delete test_2nd_script_call;
 
 	}catch(std::exception & ex){
 		fprintf(stderr,"%s\n",ex.what());

@@ -14,10 +14,11 @@
 #define MAX_INNER_SCOPES_FUNCTION								10
 
 
-#define SCOPE_PROPERTY_IS_C_OBJECT_REF							0x1
-#define SCOPE_PROPERTY_IS_SCOPE_FUNCTION						0x2
-#define SCOPE_PROPERTY_IS_SCOPE_CLASS							0x4
-#define SCOPE_PROPERTY_UNUSUED									0x8
+#define SCOPE_PROPERTY_IS_C_OBJECT_REF							0x01
+#define SCOPE_PROPERTY_IS_SCOPE_FUNCTION						0x02
+#define SCOPE_PROPERTY_IS_SCOPE_CLASS							0x04
+#define SCOPE_PROPERTY_IS_SCOPE_BLOCK							0x08
+#define SCOPE_PROPERTY_UNUSUED									0x10
 
 
 namespace zetscript{
@@ -66,7 +67,7 @@ namespace zetscript{
 
 		void						    markAsUnusued();
 
-		void removeChildren();
+		void removeChildrenBlockTypes();
 		void setScriptClass(ScriptType *sc);
 		ScriptType * getScriptType();
 		int getIdxScriptFunction();
@@ -89,7 +90,7 @@ namespace zetscript{
 		Symbol * getSymbolRecursiveDownScope(const zs_string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
 		Symbol * getSymbolRecursiveUpScope(const zs_string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
 
-		void markUnusuedScopeRecursive(Scope *_sc);
+		void markBlockScopeAsUnusuedScopesRecursive(Scope *_sc);
 
 		int numInnerScopesRecursive(Scope *sc, int n);
 		int countVariablesRecursive(Scope *sc, int idx_script_function_reference);

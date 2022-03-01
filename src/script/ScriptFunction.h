@@ -124,6 +124,8 @@ namespace zetscript{
 				, unsigned short properties=0
 		);
 
+		void removeUnusuedScopes();
+
 		bool linkUnresolvedSymbols();
 		void addUnresolvedSymbol(zs_int instruction);
 		ZetScript *getZetScript();

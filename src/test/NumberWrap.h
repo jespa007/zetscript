@@ -4,7 +4,6 @@
  */
 #pragma once
 
-#include "Float.h"
+#include "Number.h"
 
-void FloatWrap_register(zetscript::ZetScript *_zs);
-
+void NumberWrap_register(zetscript::ZetScript *_zs);

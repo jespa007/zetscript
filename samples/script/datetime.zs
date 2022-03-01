@@ -1,5 +1,5 @@
 var now=DateTime::now(); // now
-var utc=DateTime::utc(); // utc
+var utc=DateTime::nowUtc(); // utc
 
 Console::outln("utc:{0}",utc)
 Console::outln("now:{0}",now)

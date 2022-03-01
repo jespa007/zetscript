@@ -265,6 +265,7 @@ Solved issues
 #324 Mandatory Zetscript *_zs first param for to all binding functions 
 #325 evaluation inherited class doesn't update references from its parent 
 #326 Constructor member as named "constructor" 
+> #328 Improve one to multi-assigment 
 
 //----------------------------------------------------------
 Version: 1.3.0

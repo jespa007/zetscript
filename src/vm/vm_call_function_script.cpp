@@ -1210,6 +1210,14 @@ execute_function:
 					continue;
 				}
 
+				// add as many values expects to the left
+				for(int i=sf_call_n_returned_arguments_from_function; i < sf_call_return;i++){
+					VM_PUSH_STK_NULL;
+					sf_call_n_returned_arguments_from_function++;
+				}
+
+				sf_call_n_returned_arguments_from_function=sf_call_return;
+
 				// return all elements in reverse order in order to get right assignment ...
 				// reverse returned items
 				for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
@@ -1220,19 +1228,10 @@ execute_function:
 
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
-
 				// no return parameters but the caller expects n_parameters, so
-				if(sf_call_n_returned_arguments_from_function==0){
-
-					for(int i=0;  i < sf_call_return; i++){
-						VM_PUSH_STK_NULL;
-					}
-				}else{ // copy to vm stack as many values expected
-					while(sf_call_return-->0){
-						*data->stk_vm_current++=*sf_call_stk_return++;
-					}
+				for(int i=0; i < sf_call_n_returned_arguments_from_function;i++){
+					*data->stk_vm_current++=*sf_call_stk_return++;
 				}
-
 				continue;
 			 case  BYTE_CODE_RET:
 				for(StackElement *stk_it=data->stk_vm_current-1;stk_it>=stk_start;stk_it--){ // can return something. value is +1 from stack

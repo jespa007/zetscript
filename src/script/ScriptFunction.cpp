@@ -102,7 +102,9 @@ namespace zetscript{
 
 
 		printf("______________________________________________________________\n\n");
-		printf(" Function: '%s%s' (Required stack: %i)				  		  \n\n",class_str.c_str(),symbol_ref.c_str(),sfo->min_stack_needed);
+		printf(" Function: '%s%s' 									  		  \n",class_str.c_str(),symbol_ref.c_str());
+		printf(" Required stack: %i				  			  				  \n",sfo->min_stack_needed);
+		printf(" Scopes: %i				  			  				   		  \n\n",sfo->function_scope->scopes->count);
 		printf(" NUM |RS|AS|          INSTRUCTION                             \n");
 		printf("-----+--+--+--------------------------------------------------\n");
 
@@ -673,6 +675,20 @@ namespace zetscript{
 		}
 
 		instructions=NULL;
+	}
+
+	void ScriptFunction::removeUnusuedScopes(){
+
+		// remove children scopes type block
+		function_scope->removeChildrenBlockTypes();
+
+		// count number vars at the top most
+		int n_var_scope=function_scope->countVariables(true);
+
+		// remove last symbols
+		local_variables->resize(n_var_scope);
+
+
 	}
 
 	bool ScriptFunction::linkUnresolvedSymbols(){

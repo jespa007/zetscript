@@ -121,14 +121,4 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_C_VAR_P
 			,stk_arg\
 		);\
 	}\
-	if((stk_mp!=NULL) && (stk_mp->member_property->metamethod_members.getter != NULL)){ /* if property call getter */ \
-		VM_INNER_CALL_ONLY_RETURN( \
-				stk_mp->so_object \
-			,stk_mp->member_property->metamethod_members.getter \
-			,stk_mp->member_property->metamethod_members.getter->function_name.c_str() \
-			,true \
-		);\
-		stk_dst=data->stk_vm_current;\
-	}else{\
-		STK_SET_NULL(stk_dst);\
-	}
+	data->stk_vm_current=stk_vm_start;

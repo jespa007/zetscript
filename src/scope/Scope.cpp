@@ -61,23 +61,32 @@ namespace zetscript{
 		return n;
 	}
 
-	void Scope::removeChildren(){
+	void Scope::removeChildrenBlockTypes(){
 		for(int i=0; i < this->scopes->count; i++){
-			markUnusuedScopeRecursive((Scope *)this->scopes->items[i]);
+			markBlockScopeAsUnusuedScopesRecursive((Scope *)this->scopes->items[i]);
 		}
 
 		this->scope_factory->clearUnusuedScopes();
 	}
 
-	void Scope::markUnusuedScopeRecursive(Scope *_sc){
+	void Scope::markBlockScopeAsUnusuedScopesRecursive(Scope *_sc){
 
 		if(_sc==NULL){
 			return;
 		}
 
-		for(int i=0; i < _sc->scopes->count; i++){
-			Scope *_child=(Scope *)_sc->scopes->items[i];
-			_child->properties|=SCOPE_PROPERTY_UNUSUED;
+		// if scope is block the consecutive are blocks check node
+		if(_sc->properties & SCOPE_PROPERTY_IS_SCOPE_BLOCK){
+			_sc->properties|=SCOPE_PROPERTY_UNUSUED;
+
+			// check its
+			for(int i=0; i < _sc->scopes->count;i++){
+				Scope *_child=(Scope *)_sc->scopes->items[i];
+				if((_sc->properties & SCOPE_PROPERTY_IS_SCOPE_BLOCK)==0){
+					throw std::runtime_error("expected scope as block type");
+				}
+				markBlockScopeAsUnusuedScopesRecursive(_child);
+			}
 		}
 	}
 
