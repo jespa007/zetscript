@@ -300,6 +300,13 @@ if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
 
 	target_link_libraries(test_arithmetic_metamethods${POST_NAME} zetscript${POST_NAME})
 	
+	# test_callbacks
+	add_executable(test_callbacks${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/test_callbacks.cpp
+	)
+
+	target_link_libraries(test_callbacks${POST_NAME} zetscript${POST_NAME})
+	
 	# test_all
 	add_executable(test_all${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../samples/test_all.cpp

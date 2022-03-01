@@ -60,6 +60,74 @@ void test_callback(
 
 }
 
+void test_script_c_script(zetscript::ZetScript *_zs){
+	// 1s combination: Script -> C -> Script
+	// bind 'test_callback' receives a 'ScriptFunction' pointer type
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *script_function)>(test_callback));
+
+	// bind 'test_callback' receives a 'ScriptObjectMemberFunction' pointer type
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptObjectMemberFunction *script_function)>(test_callback));
+
+
+	_zs->eval(
+		// Type 'Test' declaration
+		"class Test{\n"
+		"	test_callback(){\n"
+		//      assign 'this.d=10'
+		"       this.d=10;\n"
+		// 		calls C function 'test_callback'.
+		"		test_callback("
+		// 		passes current zetscript instance as 1st parameters
+		//      Anonymous function as parameter: The test_callback function expects 'ScriptObjectMemberFunction' in C++ due is created in a class scope
+		//		Note: The anonymous function content is reading the 'this.d', so it has access to object 'Test' type scope
+		"			function(a,b,c){\n"
+		"				return \"result from object Test: a:\"+a+\" b:\"+b+\" c:\"+c+\" this.d:\"+this.d;\n"
+		"			}\n"
+		"		);\n"
+		"	}\n"
+		"};\n"
+		"\n"
+
+		// test variable declaration and instances 'Text' type
+		"var test=new Test();\n"
+
+		// calls C function 'test_callback'.
+		"test_callback(\n"
+		//  Anonymous function as parameter: The test_callback function expects 'ScriptFunction' in C++ due is created in a main scope
+		"	function(a,b,c){\n"
+		"		return \"result a:\"+a+\" b:\"+b+\" c:\"+c;\n"
+		"});\n"
+		"\n"
+		"test.test_callback()"
+		""
+	);
+}
+
+void test_c_script_c(zetscript::ZetScript *_zs){
+
+	// 2nd test calling from C->Script->C
+	_zs->registerFunction("test_function_1st_c_call",test_function_1st_c_call);
+	// test calling script-c-script-c
+
+	_zs->eval("function test_1st_script_call(){\n"
+				"Console::outln (\"Hello from script\");\n"
+				"test_function_1st_c_call();\n"
+			"}\n"
+			"function test_2nd_script_call(){\n"
+				"Console::outln(\"2nd call script\");\n"
+			"}");
+
+	auto  test_1st_script_call=_zs->bindScriptFunction<void ()>("test_1st_script_call");
+	test_2nd_script_call=new std::function<void()>(_zs->bindScriptFunction<void ()>("test_2nd_script_call"));
+
+	if(test_1st_script_call){
+		test_1st_script_call();
+	}
+
+	delete test_2nd_script_call;
+}
+
+
 
 int main(){
 
@@ -68,66 +136,8 @@ int main(){
 
 	try{
 
-		// bind 'test_callback' receives a 'ScriptFunction' pointer type
-		zs.registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *script_function)>(test_callback));
-
-		// bind 'test_callback' receives a 'ScriptObjectMemberFunction' pointer type
-		zs.registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptObjectMemberFunction *script_function)>(test_callback));
-
-
-		zs.eval(
-			// Type 'Test' declaration
-			"class Test{\n"
-			"	test_callback(){\n"
-			//      assign 'this.d=10'
-			"       this.d=10;\n"
-			// 		calls C function 'test_callback'.
-			"		test_callback("
-			// 		passes current zetscript instance as 1st parameters
-			//      Anonymous function as parameter: The test_callback function expects 'ScriptObjectMemberFunction' in C++ due is created in a class scope
-			//		Note: The anonymous function content is reading the 'this.d', so it has access to object 'Test' type scope
-			"			function(a,b,c){\n"
-			"				return \"result from object Test: a:\"+a+\" b:\"+b+\" c:\"+c+\" this.d:\"+this.d;\n"
-			"			}\n"
-			"		);\n"
-			"	}\n"
-			"};\n"
-			"\n"
-
-			// test variable declaration and instances 'Text' type
-			"var test=new Test();\n"
-
-			// calls C function 'test_callback'.
-			"test_callback(\n"
-			//  Anonymous function as parameter: The test_callback function expects 'ScriptFunction' in C++ due is created in a main scope
-			"	function(a,b,c){\n"
-			"		return \"result a:\"+a+\" b:\"+b+\" c:\"+c;\n"
-			"});\n"
-			"\n"
-			"test.test_callback()"
-			""
-		);
-
-		// 2nd test calling from script->C->script
-		zs.registerFunction("test_function_1st_c_call",test_function_1st_c_call);
-		// test calling script-c-script-c
-
-		zs.eval("function test_1st_script_call(){\n"
-					"Console::outln (\"Hello from script\");\n"
-					"test_function_1st_c_call();\n"
-				"}\n"
-				"function test_2nd_script_call(){\n"
-					"Console::outln(\"2nd call script\");\n"
-				"}");
-
-		auto  test_1st_script_call=zs.bindScriptFunction<void ()>("test_1st_script_call");
-		test_2nd_script_call=new std::function<void()>(zs.bindScriptFunction<void ()>("test_2nd_script_call"));
-
-		if(test_1st_script_call){
-			test_1st_script_call();
-		}
-
-		delete test_2nd_script_call;
+		test_script_c_script(&zs);
+		test_c_script_c(&zs);
 
 	}catch(std::exception & ex){
 		fprintf(stderr,"%s\n",ex.what());

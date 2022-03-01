@@ -263,6 +263,9 @@ namespace zetscript{
 			return k_stk_null;
 		}
 
+		// in case user binds script function and calls directy from C code, idx_call will 0 so we have
+		// to prevent conflict with first call that is reserved by main_function
+		bool first_script_call_from_c=false;
 		StackElement stk_return=k_stk_null;
 		StackElement *stk_start=NULL;
 
@@ -289,9 +292,17 @@ namespace zetscript{
 			// push param stack elements...
 			stk_start=data->stk_vm_current;
 			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->count];
+			first_script_call_from_c=false;
 
 			if(data->vm_idx_call == 0){
-				THROW_RUNTIME_ERROR("Internal: native vm_idx_call should be > 0 (%i)",data->vm_idx_call);
+
+				if((properties & VM_PROPERTY_CALL_FROM_NATIVE)==0){
+					THROW_RUNTIME_ERRORF("Internal: expected first call function from C");
+				}
+				first_script_call_from_c=true;
+				data->vm_idx_call=1; // assign first idx call as 1
+				stk_start=min_stk;
+
 			}
 
 
@@ -354,6 +365,11 @@ namespace zetscript{
 
 		// Important restore stk!
 		data->stk_vm_current=stk_start;
+
+		// restore idx_call as 0 if first call was a script function called from C
+		if(first_script_call_from_c==true){
+			data->vm_idx_call=0;
+		}
 
 		return stk_return;
 	}
