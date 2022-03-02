@@ -66,7 +66,7 @@ namespace zetscript{
 		MetamethodMemberSetterInfo 	getSetterInfo(ByteCodeMetamethod _byte_code);
 		MetamethodMemberSetterInfo 	getSetterInfo(const char *_symbol_name);
 		void						addSetter(ByteCodeMetamethod _byte_code_metamethod,ScriptFunction *f);
-		zs_vector * 				getVectorSetter(const char *_symbol_name);
+		zs_vector * 				getVectorSetter(ByteCodeMetamethod _byte_code_metamethod);
 
 
 

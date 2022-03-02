@@ -42,14 +42,15 @@ namespace zetscript{
 		// STORE
 		zs_vector 		*		store_lst_setter_functions=NULL;
 		int 					n_element_left_to_store=0;
-		StackMemberProperty *	stk_mp_aux=NULL;
 		MetamethodMembers *		ptr_metamethod_members_aux=NULL;
 		void			*		ptr_ptr_void_ref=NULL;
 		StackElement    *		stk_load_multi_var_src=NULL;
+		MemberProperty	* 		member_property=NULL;
 		//------------------------------------------------
 		// SFCALL
 		StackElement	*sf_call_stk_function_ref=NULL;
-		ScriptFunction 	*sf_call_script_function = NULL,*sf_setter_function_found=NULL;
+		ScriptFunction 	*sf_call_script_function = NULL;
+
 		int			 	 sf_call_n_args=0; // number arguments will pass to this function
 		StackElement 	*sf_call_stk_start_arg_call=NULL;
 		ScriptObject 	*sf_call_calling_object = NULL;
@@ -435,117 +436,42 @@ find_element_object:
 				continue;
 			case BYTE_CODE_ADD_STORE:
 				LOAD_OPS_SET_OPERATION;
-				//VM_OPERATION_ADD_SET(BYTE_CODE_METAMETHOD_ADD_SET);
-				stk_var=stk_result_op1;\
-				msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
-				ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
-				if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
-					ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
-				}\
-				switch(msk_properties){\
-				case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
-					VM_PUSH_STK_ZS_INT(stk_result_op1->value += stk_result_op2->value);\
-					(*((zs_int *)(ptr_ptr_void_ref)))=stk_result_op1->value;\
-					break;\
-				case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
-					VM_PUSH_STK_ZS_FLOAT(stk_result_op1->value += *((zs_float *)&stk_result_op2->value));\
-					(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
-					break;\
-				case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
-					VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) += stk_result_op2->value);\
-					(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
-					break;\
-				case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
-					VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) += *((zs_float *)&stk_result_op2->value));\
-					(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
-					break;\
-				default:\
-					if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
-						((zs_string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(stk_to_str(data->zs,stk_result_op2));\
-						VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
-					}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
-								&&\
-							STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
-					){\
-							ScriptObjectObject::append(data->zs, (ScriptObjectObject *)stk_result_op1->value,(ScriptObjectObject *)stk_result_op1->value);\
-							VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
-					}else{\
-						LOAD_PROPERTIES(BYTE_CODE_METAMETHOD_ADD_SET); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
-						if(ptr_metamethod_members_aux->add_setters.count==0){\
-							VM_STOP_EXECUTE("%s '%s' not implements metamethod add_set (aka '+='') " \
-									,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol" \
-									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-							);\
-						}\
-						/* find function if c */ \
-						/* call metamethod  */ \
-						VM_INNER_CALL(\
-							so_aux\
-							,sf_setter_function_found\
-							,sf_setter_function_found->function_name.c_str()\
-							,true\
-							,1 \
-							,true\
-						);\
-						/*getter after*/\
-						if(ptr_metamethod_members_aux->getter!=NULL){\
-							/* call _neg */\
-							VM_INNER_CALL_ONLY_RETURN(\
-									so_aux\
-									,ptr_metamethod_members_aux->getter\
-									,ptr_metamethod_members_aux->getter->function_name.c_str()\
-									,true\
-							);\
-						}else{ /* store object */ \
-							if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){\
-								data->stk_vm_current->value=(zs_int)so_aux;\
-								data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
-							}else{\
-								*data->stk_vm_current=stk_var_copy;\
-							}\
-						}\
-						data->stk_vm_current++;\
-					}\
-					break;\
-				}\
-				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
-					data->stk_vm_current=stk_start;\
-				}
+				VM_OPERATION_ADD_SET();
 				continue;
 			case BYTE_CODE_SUB_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_ARITHMETIC_SET(-=,BYTE_CODE_METAMETHOD_SUB_SET,ptr_metamethod_members_aux->sub_setters);
+				VM_OPERATION_ARITHMETIC_SET(-=,BYTE_CODE_METAMETHOD_SUB_SET);
 				continue;
 			case BYTE_CODE_MUL_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_ARITHMETIC_SET(*=,BYTE_CODE_METAMETHOD_MUL_SET,ptr_metamethod_members_aux->mul_setters);
+				VM_OPERATION_ARITHMETIC_SET(*=,BYTE_CODE_METAMETHOD_MUL_SET);
 				continue;
 			case BYTE_CODE_DIV_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_DIV_SET(BYTE_CODE_METAMETHOD_DIV_SET);
+				VM_OPERATION_DIV_SET();
 				continue;
 			case BYTE_CODE_MOD_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_MOD_SET(BYTE_CODE_METAMETHOD_MOD_SET);
+				VM_OPERATION_MOD_SET();
 				continue;
 			case BYTE_CODE_BITWISE_AND_STORE:
-				VM_OPERATION_BINARY_SET(&=,BYTE_CODE_METAMETHOD_ADD_SET,ptr_metamethod_members_aux->and_setters);
+				VM_OPERATION_BINARY_SET(&=,BYTE_CODE_METAMETHOD_ADD_SET);
 				continue;
 			case BYTE_CODE_BITWISE_OR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(|=,BYTE_CODE_METAMETHOD_OR_SET,ptr_metamethod_members_aux->or_setters);
+				VM_OPERATION_BINARY_SET(|=,BYTE_CODE_METAMETHOD_OR_SET);
 				continue;
 			case BYTE_CODE_BITWISE_XOR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(^=,BYTE_CODE_METAMETHOD_XOR_SET,ptr_metamethod_members_aux->xor_setters);
+				VM_OPERATION_BINARY_SET(^=,BYTE_CODE_METAMETHOD_XOR_SET);
 				continue;
 			case BYTE_CODE_SHL_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(<<=,BYTE_CODE_METAMETHOD_SHL_SET,ptr_metamethod_members_aux->shl_setters);
+				VM_OPERATION_BINARY_SET(<<=,BYTE_CODE_METAMETHOD_SHL_SET);
 				continue;
 			case BYTE_CODE_SHR_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_BINARY_SET(>>=,BYTE_CODE_METAMETHOD_SHR_SET,ptr_metamethod_members_aux->shr_setters);
+				VM_OPERATION_BINARY_SET(>>=,BYTE_CODE_METAMETHOD_SHR_SET);
 				continue;
 			case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE:
@@ -590,20 +516,8 @@ find_element_object:
 				if((STK_IS_SCRIPT_OBJECT_CLASS(stk_dst) && ((store_lst_setter_functions=((ScriptObjectClass *)stk_dst->value)->getSetterList(BYTE_CODE_METAMETHOD_SET))!=NULL))
 						||
 					(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY)){
-					stk_mp_aux=NULL;
 					so_aux=(ScriptObjectClass *)stk_dst->value;
-
-					if(store_lst_setter_functions == NULL){ // try member property...
-						stk_mp_aux=(StackMemberProperty *)stk_dst->value;
-						if(stk_mp_aux->member_property->metamethod_members.setters.count > 0){
-							store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;
-							so_aux=stk_mp_aux->so_object;
-						}else{
-							VM_STOP_EXECUTEF("Symbol X has not setter metamethod implemented");
-						}
-					}
-
-					VM_SET_METAMETHOD(stk_dst,stk_src,stk_mp_aux, so_aux, store_lst_setter_functions,BYTE_CODE_METAMETHOD_SET);
+					VM_SET_METAMETHOD(stk_dst,stk_src, so_aux, store_lst_setter_functions);
 				}else{ // store through script assignment
 
 					if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){

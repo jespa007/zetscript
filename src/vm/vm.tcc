@@ -356,8 +356,6 @@ namespace zetscript{
 		zs_string aux_string;
 		int start_param=0;
 
-		bool is_set_attrib_metamethod=zs_strutils::starts_with(symbol_to_find,"_set@");
-
 		zs_int *stk_elements_builtin_ptr= data->main_function_object->function_scope->symbol_functions->items;// vector of symbols
 		int stk_elements_builtin_len=  data->main_function_object->function_scope->symbol_functions->count;// vector of symbols
 
@@ -375,9 +373,7 @@ namespace zetscript{
 
 			aux_string=irfs->function_name;
 
-			bool symbol_equals=
-								aux_string == symbol_to_find
-								|| (is_set_attrib_metamethod && zs_strutils::starts_with(aux_string,"_set@"));
+			bool symbol_equals=aux_string == symbol_to_find;
 
 			if((symbol_equals && ((int)irfs->params_len == (n_args+start_param)))){
 				if((irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/

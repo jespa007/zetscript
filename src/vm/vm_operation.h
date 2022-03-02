@@ -6,11 +6,14 @@
 	ptr_metamethod_members_aux=NULL;\
 	stk_var_copy.value=0;\
 	stk_var_copy.properties=0;\
+	so_aux=NULL;\
+	member_property=NULL;\
 	if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){\
 		stk_var_copy=*stk_result_op1;\
-		stk_mp_aux=(StackMemberProperty *)stk_result_op1->value;\
-		ptr_metamethod_members_aux= &stk_mp_aux->member_property->metamethod_members;\
-		so_aux = stk_mp_aux->so_object;\
+		StackMemberProperty *stk_mp=(StackMemberProperty *)stk_result_op1->value;\
+		member_property=stk_mp->member_property;\
+		ptr_metamethod_members_aux= &member_property->metamethod_members;\
+		so_aux = stk_mp->so_object;\
 	}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 		so_aux= (ScriptObject *)stk_result_op1->value;\
 		ptr_metamethod_members_aux= &so_aux->getScriptType()->metamethod_members;\

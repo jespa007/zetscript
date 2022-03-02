@@ -60,13 +60,27 @@ if(stk_src_properties == STK_PROPERTY_NULL){\
 if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_C_VAR_PTR;
 
 
-#define VM_SET_METAMETHOD(stk_dst,stk_src,stk_mp, so_aux, store_lst_setter_functions,__SETTER_METAMETHOD__) \
-	ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)store_lst_setter_functions->items[0])->value;\
+#define VM_SET_METAMETHOD(stk_dst,stk_src,so_aux, store_lst_setter_functions) \
 	StackElement *stk_vm_start=data->stk_vm_current;\
-	StackElement *stk_arg=stk_vm_start+1;\
-	const char *__STR_SETTER_METAMETHOD__=byte_code_metamethod_to_symbol_str(__SETTER_METAMETHOD__);\
-	const char *__STR_AKA_SETTER_METAMETHOD__=byte_code_metamethod_to_operator_str(__SETTER_METAMETHOD__);\
+	StackElement *stk_arg=stk_vm_start+1; /*start from stk_src */\
+	const char *__STR_SETTER_METAMETHOD__=byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET);\
+	const char *__STR_AKA_SETTER_METAMETHOD__=byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_SET);\
 	*stk_arg=*stk_src;\
+	StackMemberProperty *	stk_mp=NULL;\
+	if((store_lst_setter_functions == NULL) && (stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY)){ /* try member property...*/\
+		stk_mp=(StackMemberProperty *)stk_dst->value;\
+		if(stk_mp->member_property->metamethod_members.setters.count > 0){\
+			store_lst_setter_functions=&stk_mp->member_property->metamethod_members.setters;\
+			so_aux=stk_mp->so_object;\
+		}\
+	}\
+	if(store_lst_setter_functions == NULL){\
+		VM_STOP_EXECUTE("%s '%s' not implements metamethod add_set (aka '+='') " \
+				,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol" \
+				,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
+		);\
+	}\
+	ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)store_lst_setter_functions->items[0])->value;\
 	if(so_aux->isNativeObject()){ /* because object is native, we can have more than one _setter */ \
 		if((ptr_function_found=vm_find_function( \
 				vm \
@@ -74,7 +88,7 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_C_VAR_P
 				,calling_function\
 				,instruction\
 				,false\
-				,STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)?"_set":"_set@" /* symbol to find */\
+				,stk_mp==NULL?"_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(BYTE_CODE_METAMETHOD_ADD_SET,stk_mp->member_property->property_name)).c_str() /* symbol to find */\
 				,stk_arg \
 				,1))==NULL){ \
 			if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
@@ -90,7 +104,7 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_C_VAR_P
 				);\
 			}\
 		}\
-	}else if(store_lst_setter_functions->count>1){ /* it has all member list */\
+	}else if(store_lst_setter_functions->count>1){ /* it has overrided metamethods */\
 		Symbol * symbol_setter = so_aux->getScriptType()->getSymbol(__STR_SETTER_METAMETHOD__); \
 		if(symbol_setter == NULL){\
 			VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\
