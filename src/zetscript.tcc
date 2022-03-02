@@ -1030,6 +1030,187 @@ namespace zetscript{
 				}
 			)));
 		}
+		//--------------------------------------------------------------------------------------------------------------------
+		//
+		// 7 PARAMS
+		//
+		// template when parameters argIdx == 8
+		template <typename R,typename T, typename... ArgTypes>
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 8)>::type
+		{
+
+			using Param1 = typename T::template Argument<0>::type;
+			using Param2 = typename T::template Argument<1>::type;
+			using Param3 = typename T::template Argument<2>::type;
+			using Param4 = typename T::template Argument<3>::type;
+			using Param5 = typename T::template Argument<4>::type;
+			using Param6 = typename T::template Argument<5>::type;
+			using Param7 = typename T::template Argument<6>::type;
+			using Param8 = typename T::template Argument<7>::type;
+
+
+			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
+			int idx_param7 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param7).name());
+			int idx_param8 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param8).name());
+
+			*ptr_fun=((void *)(new std::function<void (
+					Param1
+					,Param2
+					,Param3
+					,Param4
+					,Param5
+					,Param6
+					,Param7
+					,Param8
+			)>(
+			[
+			 	 &
+				 ,file
+				 ,line
+				 ,calling_obj
+				 ,fun_obj
+				 , idx_param1
+				 , idx_param2
+				 , idx_param3
+				 , idx_param4
+				 , idx_param5
+				 , idx_param6
+				 , idx_param7
+				 , idx_param8
+			](
+				  Param1 p1
+				 ,Param2 p2
+				 ,Param3 p3
+				 ,Param4 p4
+				 ,Param5 p5
+				 ,Param6 p6
+				 ,Param7 p7
+				 ,Param8 p8
+				){
+
+					StackElement args[8]={
+						 convertVarToStackElement((zs_int)p1,idx_param1)
+						,convertVarToStackElement((zs_int)p2,idx_param2)
+						,convertVarToStackElement((zs_int)p3,idx_param3)
+						,convertVarToStackElement((zs_int)p4,idx_param4)
+						,convertVarToStackElement((zs_int)p5,idx_param5)
+						,convertVarToStackElement((zs_int)p6,idx_param6)
+						,convertVarToStackElement((zs_int)p7,idx_param7)
+						,convertVarToStackElement((zs_int)p8,idx_param8)
+					};
+
+					vm_execute(
+							 virtual_machine
+							,calling_obj
+							,fun_obj
+							,args
+							,8
+							,VM_PROPERTY_CALL_FROM_NATIVE
+							,file
+							,line);
+				}
+
+			)));
+		}
+
+		template <typename R,typename T, typename... ArgTypes>
+		auto ZetScript::bindScriptFunctionBuilder(const char *file, int line,void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 8)>::type
+		{
+			using Param1 = typename T::template Argument<0>::type;
+			using Param2 = typename T::template Argument<1>::type;
+			using Param3 = typename T::template Argument<2>::type;
+			using Param4 = typename T::template Argument<3>::type;
+			using Param5 = typename T::template Argument<4>::type;
+			using Param6 = typename T::template Argument<5>::type;
+			using Param7 = typename T::template Argument<6>::type;
+			using Param8 = typename T::template Argument<7>::type;
+
+			int idx_return = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(R).name());
+			int idx_param1 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param1).name());
+			int idx_param2 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param2).name());
+			int idx_param3 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param3).name());
+			int idx_param4 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param4).name());
+			int idx_param5 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param5).name());
+			int idx_param6 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param6).name());
+			int idx_param7 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param7).name());
+			int idx_param8 = script_type_factory->getIdxScriptTypeFromTypeNamePtr(typeid(Param8).name());
+
+			*ptr_fun=((void *)(new std::function<R (
+					Param1
+					,Param2
+					,Param3
+					,Param4
+					,Param5
+					,Param6
+					,Param7
+					,Param8
+			)>(
+				[
+					 &
+					 ,file
+					 ,line
+					 ,calling_obj
+					 ,fun_obj
+					 ,idx_return
+					 , idx_param1
+					 , idx_param2
+					 , idx_param3
+					 , idx_param4
+					 , idx_param5
+					 , idx_param6
+					 , idx_param7
+					 , idx_param8
+				 ](
+					 Param1 p1
+					 ,Param2 p2
+					 ,Param3 p3
+					 ,Param4 p4
+					 ,Param5 p5
+					 ,Param6 p6
+					 ,Param7 p7
+					 ,Param7 p8
+				){
+
+						R ret_value;
+						zs_string error_str;
+
+						StackElement args[7]={
+								 convertVarToStackElement((zs_int)p1,idx_param1)
+								,convertVarToStackElement((zs_int)p2,idx_param2)
+								,convertVarToStackElement((zs_int)p3,idx_param3)
+								,convertVarToStackElement((zs_int)p4,idx_param4)
+								,convertVarToStackElement((zs_int)p5,idx_param5)
+								,convertVarToStackElement((zs_int)p6,idx_param6)
+								,convertVarToStackElement((zs_int)p7,idx_param7)
+								,convertVarToStackElement((zs_int)p8,idx_param8)
+						};
+
+						StackElement stk = vm_execute(
+								virtual_machine,
+								calling_obj,
+								fun_obj,
+								args,
+								8
+								,VM_PROPERTY_CALL_FROM_NATIVE
+								,file
+								,line);
+
+						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						}
+						return ret_value;
+
+				}
+			)));
+		}
+
 
 		//
 		//

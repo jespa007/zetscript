@@ -199,6 +199,13 @@ namespace zetscript{
 			*_params=new ScriptFunctionParam[args.count];
 			*_params_len=args.count;
 
+			if(args.count==0){
+				THROW_RUNTIME_ERROR(
+					"Error register function '%s': It expectes at FIRST parameter as 'ZetScript *'"
+					,function_name.c_str()
+				);
+			}
+
 			for(int i = 0; i < args.count; i++){
 				const char *param=(const char *)args.items[i];
 				int idx_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);

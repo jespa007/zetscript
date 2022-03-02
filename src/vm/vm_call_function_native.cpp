@@ -9,6 +9,7 @@
 #define PTR_FUNCTION_VOID_PARAM5(f) ((void (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_VOID_PARAM6(f) ((void (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_VOID_PARAM7(f) ((void (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_VOID_PARAM8(f) ((void (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 #define PTR_FUNCTION_RET_PARAM1(f) ((zs_int (*)(zs_int))(f))
 #define PTR_FUNCTION_RET_PARAM2(f) ((zs_int (*)(zs_int,zs_int))(f))
@@ -17,6 +18,7 @@
 #define PTR_FUNCTION_RET_PARAM5(f) ((zs_int (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_PARAM6(f) ((zs_int (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_PARAM7(f) ((zs_int (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_PARAM8(f) ((zs_int (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 #define PTR_FUNCTION_RET_FLOAT_PARAM1(f) ((zs_float (*)(zs_int))(f))
 #define PTR_FUNCTION_RET_FLOAT_PARAM2(f) ((zs_float (*)(zs_int,zs_int))(f))
@@ -25,6 +27,7 @@
 #define PTR_FUNCTION_RET_FLOAT_PARAM5(f) ((zs_float (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_FLOAT_PARAM6(f) ((zs_float (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_FLOAT_PARAM7(f) ((zs_float (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_FLOAT_PARAM8(f) ((zs_float (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 #define PTR_FUNCTION_RET_BOOL_PARAM1(f) ((bool (*)(zs_int))(f))
 #define PTR_FUNCTION_RET_BOOL_PARAM2(f) ((bool (*)(zs_int,zs_int))(f))
@@ -33,6 +36,7 @@
 #define PTR_FUNCTION_RET_BOOL_PARAM5(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_BOOL_PARAM6(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_BOOL_PARAM7(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_BOOL_PARAM8(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 #define PTR_FUNCTION_RET_STRING_PARAM1(f) ((zs_string (*)(zs_int))(f))
 #define PTR_FUNCTION_RET_STRING_PARAM2(f) ((zs_string (*)(zs_int,zs_int))(f))
@@ -41,6 +45,7 @@
 #define PTR_FUNCTION_RET_STRING_PARAM5(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_STRING_PARAM6(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_STRING_PARAM7(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM8(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 namespace zetscript{
 
@@ -198,6 +203,18 @@ namespace zetscript{
 					,converted_param[6]
 				);
 				break;
+			case 8:
+				PTR_FUNCTION_VOID_PARAM8(fun_ptr)(
+					converted_param[0]
+					 ,converted_param[1]
+					 ,converted_param[2]
+					 ,converted_param[3]
+					 ,converted_param[4]
+					 ,converted_param[5]
+					,converted_param[6]
+					,converted_param[7]
+				);
+				break;
 			}
 
 		}else if(c_function->idx_return_type==IDX_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
@@ -258,7 +275,18 @@ namespace zetscript{
 					,converted_param[6]
 				);
 				break;
-
+			case 8:
+				result=PTR_FUNCTION_RET_BOOL_PARAM8(fun_ptr)(
+					converted_param[0]
+					 ,converted_param[1]
+					 ,converted_param[2]
+					 ,converted_param[3]
+					 ,converted_param[4]
+					 ,converted_param[5]
+					,converted_param[6]
+					,converted_param[7]
+				);
+				break;
 			}
 		}else if(c_function->idx_return_type==IDX_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
 			zs_float float_aux=0;
@@ -317,6 +345,18 @@ namespace zetscript{
 					 ,converted_param[4]
 					,converted_param[5]
 					,converted_param[6]
+				);
+				break;
+			case 8:
+				float_aux=PTR_FUNCTION_RET_FLOAT_PARAM8(fun_ptr)(
+					converted_param[0]
+					 ,converted_param[1]
+					 ,converted_param[2]
+					 ,converted_param[3]
+					 ,converted_param[4]
+					,converted_param[5]
+					,converted_param[6]
+					,converted_param[7]
 				);
 				break;
 			}
@@ -383,6 +423,18 @@ namespace zetscript{
 					,converted_param[6]
 				);
 				break;
+			case 8:
+				str_aux=PTR_FUNCTION_RET_STRING_PARAM8(fun_ptr)(
+					converted_param[0]
+					 ,converted_param[1]
+					 ,converted_param[2]
+					 ,converted_param[3]
+					 ,converted_param[4]
+					,converted_param[5]
+					,converted_param[6]
+					,converted_param[7]
+				);
+				break;
 			}
 
 			result=(zs_int)&str_aux;
@@ -445,6 +497,18 @@ namespace zetscript{
 					 ,converted_param[4]
 					 ,converted_param[5]
 					,converted_param[6]
+				);
+				break;
+			case 8:
+				result=PTR_FUNCTION_RET_PARAM8(fun_ptr)(
+					converted_param[0]
+					 ,converted_param[1]
+					 ,converted_param[2]
+					 ,converted_param[3]
+					 ,converted_param[4]
+					 ,converted_param[5]
+					,converted_param[6]
+					,converted_param[7]
 				);
 				break;
 			}
