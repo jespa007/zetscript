@@ -5,6 +5,7 @@
 
 #include "test_arithmetic_common.h"
 
+#define COMPLETE_TEST_ARITHMETIC_INTEGER_OP(_zs,val1,val2) _complete_test_arithmetic_integer_op(_zs,val1, val2, "return %s%s%s")
 
 #define COMPLETE_TEST_COMPARE_OP(zs,val1,val2) \
 		TEST_ARITHMETIC_BOOL_EXPR(zs,val1<val2); \

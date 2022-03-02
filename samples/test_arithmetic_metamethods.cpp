@@ -6,6 +6,7 @@
 #include "test_arithmetic_common.h"
 #include "NumberWrap.cpp"
 
+
 #define COMPLETE_TEST_ARITHMETIC_INTEGER_OP_WITH_CLASS_NUMBER_CC(_zs,val1,val2)  _complete_test_arithmetic_integer_op(_zs,val1,val2,"it1=("\
 				"(new Number("\
 				"%s" \
@@ -89,6 +90,7 @@ int main(int argc, char * argv[]) {
 
 
 	int n_test=0;
+	zetscript::zs_int result_assign=10;
 
 	zetscript::ZetScript zs;
 
@@ -134,6 +136,10 @@ int main(int argc, char * argv[]) {
 		COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_FC(&zs,4.2,5.2); // op1 < op2
 		COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_FC(&zs,5.2,4.2); // op1 > op2
 		COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_FC(&zs,5.2,2.0e2); // op1 > op2
+
+		printf("%i. testing arithmetic operations assign ...\n",++n_test);
+		zs.eval("var result_assign=new Number();");
+		_complete_test_arithmetic_integer_op_assign(&zs,&result_assign,10,"result_assign%s%s;return result_assign.toInt()");
 
 
 	}catch(std::exception & ex){
