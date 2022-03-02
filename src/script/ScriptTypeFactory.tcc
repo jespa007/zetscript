@@ -194,12 +194,12 @@ namespace zetscript{
 		}
 
 		if(isScriptClassTypeInheritsFrom(idx_register_class,idx_base_type)){
-			THROW_RUNTIME_ERROR("C++ class '%s' is already registered as base of '%s' ",zs_rtti::demangle(script_type_name), zs_rtti::demangle(base_class_name));
+			THROW_RUNTIME_ERROR("C++ class '%s' is already registered as base of '%s' ",zs_rtti::demangle(script_type_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
 		}
 
 		// check whether is in fact base of ...
 		if(!std::is_base_of<B,C>::value){
-			THROW_RUNTIME_ERROR("C++ class '%s' is not base of '%s' ",zs_rtti::demangle(script_type_name), zs_rtti::demangle(base_class_name));
+			THROW_RUNTIME_ERROR("C++ class '%s' is not base of '%s' ",zs_rtti::demangle(script_type_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
 		}
 
 		// now only allows one inheritance!
@@ -208,7 +208,7 @@ namespace zetscript{
 		for(int i=0; i < sc->idx_base_types->count; i++){
 			sc=getScriptType(sc->idx_base_types->items[i]); // get base class...
 			if(sc->script_type_name_ptr ==base_class_name_ptr){
-				THROW_RUNTIME_ERROR("C++ class '%s' already base of '%s' ",zs_rtti::demangle(script_type_name), zs_rtti::demangle(base_class_name));
+				THROW_RUNTIME_ERROR("C++ class '%s' already base of '%s' ",zs_rtti::demangle(script_type_name).c_str(), zs_rtti::demangle(base_class_name).c_str());
 			}
 		}
 
@@ -416,7 +416,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
 					,script_type->script_type_name.c_str()
 					,var_name
-					,zs_rtti::demangle(typeid(R).name()));
+					,zs_rtti::demangle(typeid(R).name()).c_str());
 		}
 
 		// register variable...

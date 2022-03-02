@@ -1066,7 +1066,7 @@ namespace zetscript{
 
 			// 2. check valid parameters ...
 			if((idx_return_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
-				THROW_RUNTIME_ERROR("Return type '%s' for bind function not registered",zs_rtti::demangle(return_type));
+				THROW_RUNTIME_ERROR("Return type '%s' for bind function not registered",zs_rtti::demangle(return_type).c_str());
 				return NULL;
 			}
 
@@ -1075,7 +1075,7 @@ namespace zetscript{
 				if(script_type_factory->getIdxScriptTypeFromTypeNamePtr(param)==-1){
 					THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"
 							,i+1
-							,zs_rtti::demangle(param));
+							,zs_rtti::demangle(param).c_str());
 					return NULL;
 				}
 			}
