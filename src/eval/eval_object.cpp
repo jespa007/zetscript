@@ -371,6 +371,17 @@ namespace zetscript{
 
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
+				 if(*aux_p != '('){
+					 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_data_keywords[key_w].str);
+				 }
+
+				 IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
+				 if(((*aux_p==')') && sc->isNativeType() && (sc->getSymbolMemberFunction(CONSTRUCTOR_FUNCTION_NAME,0)==NULL))){
+					 // no args set and is native type and there's no constructor with parameters --> set default contructor ==0
+					return aux_p+1;
+				 }
+
 				 if(eval_instruction_new_object_by_value==NULL){
 					 eval_instructions->push_back((zs_int)(
 						ei_load_function_constructor=new EvalInstruction(
@@ -386,16 +397,14 @@ namespace zetscript{
 				 }
 
 
-				 if(*aux_p != '('){
-					 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_data_keywords[key_w].str);
-				 }
+
 
 				 n_args=0;
 
 				 // foreach constructor argument
 				  do{
 
-					  IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+
 					  if(*aux_p!=')'){ // be sure that counts as argument for empty args
 						  // eval expression
 						  aux_p = eval_expression(

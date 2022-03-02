@@ -54,6 +54,7 @@ namespace zetscript{
 		StackElement 	*sf_call_stk_start_arg_call=NULL;
 		ScriptObject 	*sf_call_calling_object = NULL;
 		bool			 sf_call_is_constructor=false;
+		bool			sf_call_ignore_call=false;
 		int 		 	sf_call_n_local_symbols=0;
 		bool 			 sf_call_is_member_function=false;
 		StackElement 	*sf_call_stk_return=NULL;
@@ -434,7 +435,82 @@ find_element_object:
 				continue;
 			case BYTE_CODE_ADD_STORE:
 				LOAD_OPS_SET_OPERATION;
-				VM_OPERATION_ADD_SET(BYTE_CODE_METAMETHOD_ADD_SET);
+				//VM_OPERATION_ADD_SET(BYTE_CODE_METAMETHOD_ADD_SET);
+				stk_var=stk_result_op1;\
+				msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
+				ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
+				if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
+					ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
+				}\
+				switch(msk_properties){\
+				case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
+					VM_PUSH_STK_ZS_INT(stk_result_op1->value += stk_result_op2->value);\
+					(*((zs_int *)(ptr_ptr_void_ref)))=stk_result_op1->value;\
+					break;\
+				case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
+					VM_PUSH_STK_ZS_FLOAT(stk_result_op1->value += *((zs_float *)&stk_result_op2->value));\
+					(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
+					break;\
+				case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
+					VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) += stk_result_op2->value);\
+					(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
+					break;\
+				case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
+					VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) += *((zs_float *)&stk_result_op2->value));\
+					(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
+					break;\
+				default:\
+					if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
+						((zs_string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(stk_to_str(data->zs,stk_result_op2));\
+						VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
+					}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+								&&\
+							STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+					){\
+							ScriptObjectObject::append(data->zs, (ScriptObjectObject *)stk_result_op1->value,(ScriptObjectObject *)stk_result_op1->value);\
+							VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
+					}else{\
+						LOAD_PROPERTIES(BYTE_CODE_METAMETHOD_ADD_SET); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
+						if(ptr_metamethod_members_aux->add_setters.count==0){\
+							VM_STOP_EXECUTE("%s '%s' not implements metamethod add_set (aka '+='') " \
+									,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol" \
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
+							);\
+						}\
+						/* find function if c */ \
+						/* call metamethod  */ \
+						VM_INNER_CALL(\
+							so_aux\
+							,sf_setter_function_found\
+							,sf_setter_function_found->function_name.c_str()\
+							,true\
+							,1 \
+							,true\
+						);\
+						/*getter after*/\
+						if(ptr_metamethod_members_aux->getter!=NULL){\
+							/* call _neg */\
+							VM_INNER_CALL_ONLY_RETURN(\
+									so_aux\
+									,ptr_metamethod_members_aux->getter\
+									,ptr_metamethod_members_aux->getter->function_name.c_str()\
+									,true\
+							);\
+						}else{ /* store object */ \
+							if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){\
+								data->stk_vm_current->value=(zs_int)so_aux;\
+								data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
+							}else{\
+								*data->stk_vm_current=stk_var_copy;\
+							}\
+						}\
+						data->stk_vm_current++;\
+					}\
+					break;\
+				}\
+				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+					data->stk_vm_current=stk_start;\
+				}
 				continue;
 			case BYTE_CODE_SUB_STORE:
 				LOAD_OPS_SET_OPERATION;
@@ -940,6 +1016,7 @@ load_function:
 
 				sf_call_is_member_function=false;
 				sf_call_is_constructor=instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL;
+				sf_call_ignore_call=false;
 
 				sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
@@ -962,12 +1039,14 @@ load_function:
 				}else{
 					sf_call_is_member_function=false;
 					if((sf_call_stk_function_ref->properties & (STK_PROPERTY_FUNCTION))==0){
+						// error or continue
 						if(instruction->byte_code== BYTE_CODE_CONSTRUCTOR_CALL){ // constructor was not found so we do nothing
 							// reset stack (ignore all pushed data in the stack)
-							data->stk_vm_current=sf_call_stk_start_arg_call-1;
+							data->stk_vm_current=data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;
 							continue;
 						}
 						VM_STOP_EXECUTE("'%s' is not function or not exist",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+
 					}
 					Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;
 					sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;

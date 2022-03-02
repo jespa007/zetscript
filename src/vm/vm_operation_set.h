@@ -52,11 +52,10 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		}else{\
 			LOAD_PROPERTIES(__METAMETHOD__); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 			if(ptr_metamethod_members_aux->add_setters.count==0){\
-				zs_strutils::format("%s '%s' not implements metamethod add_set (aka '+='') " \
+				VM_STOP_EXECUTE("%s '%s' not implements metamethod add_set (aka '+='') " \
 						,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol" \
-						,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
+						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 				);\
-				goto lbl_exit_function;\
 			}\
 			/* find function if c */ \
 			/* call metamethod  */ \
@@ -119,13 +118,12 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	default:\
 		LOAD_PROPERTIES(__METAMETHOD__); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 		if(__ACCESSOR_METAMETHOD_PROPERTY__.count==0){\
-			zs_strutils::format("%s '%s' not implements metamethod %s (aka '%s'') "\
+			VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s'') "\
 					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
+					,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 			);\
-			goto lbl_exit_function;\
 		}\
 		/* find function if c */ \
 		/* call metamethod  */ \
@@ -200,9 +198,9 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	default:\
 		LOAD_PROPERTIES(__METAMETHOD__); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 		if(ptr_metamethod_members_aux->div_setters.count==0){\
-			zs_strutils::format("%s '%s' not implements metamethod div_set (aka '/='') "\
+			VM_STOP_EXECUTE("%s '%s' not implements metamethod div_set (aka '/='') "\
 					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
+					,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 			);\
 			goto lbl_exit_function;\
 		}\
@@ -279,11 +277,10 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	default:\
 		LOAD_PROPERTIES(__METAMETHOD__);/* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */ \
 		if(ptr_metamethod_members_aux->div_setters.count==0){\
-			zs_strutils::format("%s '%s' not implements metamethod div_set (aka '/='') "\
+			VM_STOP_EXECUTE("%s '%s' not implements metamethod div_set (aka '/='') "\
 					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
+					,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 			);\
-			goto lbl_exit_function;\
 		}\
 		/* find function if c */ \
 		/* call metamethod  */ \
@@ -331,13 +328,12 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	}else{\
 		LOAD_PROPERTIES(__METAMETHOD__); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 		if(__ACCESSOR_METAMETHOD_PROPERTY__.count==0){\
-			zs_strutils::format("%s '%s' not implements metamethod %s (aka '%s'') "\
+			VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s'') "\
 					,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
+					,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 			);\
-			goto lbl_exit_function;\
 		}\
 		/* find function if c */ \
 		/* call metamethod  */ \

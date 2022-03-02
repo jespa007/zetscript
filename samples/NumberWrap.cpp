@@ -29,6 +29,14 @@ Number * NumberWrap_add(zetscript::ZetScript *_zs,zetscript::zs_float *_n1, Numb
 	return new Number(*_n1 + _n2->n);
 }
 
+void NumberWrap_add_set(zetscript::ZetScript *_zs, Number *_this,zetscript::zs_float *_n){
+	_this->n+=*_n;
+}
+
+void NumberWrap_add_set(zetscript::ZetScript *_zs, Number *_this,Number *_n){
+	_this->n+=_n->n;
+}
+
 Number * NumberWrap_sub(zetscript::ZetScript *_zs,Number *_n1, Number *_n2){
 	return new Number(_n1->n - _n2->n);
 }
@@ -169,6 +177,11 @@ void NumberWrap_register(zetscript::ZetScript *_zs){
 	_zs->registerMemberFunctionStatic<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_add));
 	_zs->registerMemberFunctionStatic<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_add));
 	_zs->registerMemberFunctionStatic<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_add));
+
+	// add set
+	_zs->registerMemberFunction<Number>("_add_set",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_add_set));
+	_zs->registerMemberFunction<Number>("_add_set",static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number * )>(&NumberWrap_add_set));
+
 
 	_zs->registerMemberFunctionStatic<Number>("_sub",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_sub));
 	_zs->registerMemberFunctionStatic<Number>("_sub",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_sub));
