@@ -24,7 +24,7 @@ var test_ret=[
 	,function(){var b={a:10,b:"10"}; return b;}
 	,function(){return new A(10);}
 	,function(){var b=new A(10);return b;}
-	,function(){return new A(10).return_this();}
+	,function(){return (new A(10)).return_this();}
 	,function(){var b=new A(10);return b.return_this();}
 ];
 

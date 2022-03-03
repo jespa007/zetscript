@@ -215,11 +215,12 @@ namespace zetscript{
 										error.append("'");
 										return false;
 									}
-								}else{ // ScriptObject ?
-									error = " Error calling function, no C-object parameter! Unexpected script variable (";
+								}else{ // Is script class, set directly
+									val_ret=stack_element->value;
+									/*error = " Error calling function, no C-object parameter! Unexpected script variable (";
 									error.append(zs_rtti::demangle(script_object->getTypeName().c_str()));
 									error.append(")");
-									return false;
+									return false;*/
 								}
 							}else{ // cannot convert...
 								error = "cannot convert '";

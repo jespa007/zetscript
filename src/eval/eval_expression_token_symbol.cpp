@@ -556,7 +556,7 @@ namespace zetscript{
 					// The last instruction was BYTE_CODE_LOAD_THIS_VARIABLE and the evaluation found its idx_position
 					// Because the instruction to be replaced is a call_this and it could have inheritance, leave as undefined
 					// to allow locate functions in the top most inherited class
-					if(byte_code==BYTE_CODE_THIS_CALL || BYTE_CODE_SUPER_CALL){
+					if(byte_code==BYTE_CODE_THIS_CALL || byte_code==BYTE_CODE_SUPER_CALL){
 						instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
 					}
 

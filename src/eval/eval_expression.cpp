@@ -6,7 +6,7 @@ namespace zetscript{
 
 
 	bool is_end_expression(const char *s){
-		 return *s==')' || *s==','||  *s==']' || *s==';' || *s == 0 || *s=='}' || *s=='{';
+		 return *s==')' || *s==','||  *s==']' || *s==';' || *s == 0 || *s=='}';
 	}
 
 	int    is_end_expression_or_keyword(EvalData *eval_data,const char * s,int line){
@@ -63,9 +63,13 @@ namespace zetscript{
 		start_expression_str=aux_p;
 		start_expression_line=line;
 
-		if(is_end_expression(aux_p)
-				&& *aux_p != ';' // ignore ';'
-						){
+		if(
+			   *s==')'
+			|| *s==','
+			|| *s==']'
+			|| *s== 0
+			|| *s=='}'
+		){
 			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
 		}
 

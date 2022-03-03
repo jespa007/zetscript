@@ -503,12 +503,13 @@ error_eval_keyword_var:
 					return NULL;
 				}
 
-				if(
+				// anonymous functions are always in main scope
+				/*if(
 						scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)
 					 && scope_info->scope_parent != NULL
 				){
 					sc=scope_info->script_type;
-				}
+				}*/
 			}
 
 			// eval function args...
@@ -714,7 +715,7 @@ error_eval_keyword_var:
 				if(custom_symbol_name != ""){
 					function_name=custom_symbol_name;
 				}else{
-					function_name=eval_anonymous_function_name(sc!=NULL?sc->script_type_name:"");
+					function_name=eval_anonymous_function_name();//sc!=NULL?sc->script_type_name:"");
 				}
 			}
 
@@ -744,11 +745,8 @@ error_eval_keyword_var:
 					if(params != NULL){
 						delete [] params;
 					}
-
 					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,ex.what());
 				}
-
-
 			}
 			else{ // register as local variable in the function...
 				try{
@@ -768,8 +766,10 @@ error_eval_keyword_var:
 					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,ex.what());
 				}
 
-				if(scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
-					((ScriptFunction *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
+				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
+					if(scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
+						((ScriptFunction *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
+					}
 				}
 			}
 

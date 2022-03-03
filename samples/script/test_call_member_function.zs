@@ -29,11 +29,6 @@ class TestExtended extends Test{
 	constructor(a){
 		Console::outln("TestExtended::TestExtended this.a:{0}",this.a);
 		super(a); // it calls base constructor (by default it doesn't call)
-		this.function3=function(a){ // creates anonymous function
-			this.a+=a; // anonyous functions can access its own 'this' member
-			Console::outln("TextExtended::Anonymous function, this.a:{0}",this.a);
-			this.function2(a);
-		};
 	}
 	
 	function // function keyword is optional in member functions
@@ -52,8 +47,8 @@ class TestExtended extends Test{
 
 var t=new TestExtended(1);
 System::assert(t.a==1,"t.a!=1");
-var a=t.function3(20);
-System::assert(t.a==111,"t.a!=111");
+var a=t.function2(20);
+System::assert(t.a==91,"t.a!=91");
 
 
 

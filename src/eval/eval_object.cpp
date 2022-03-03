@@ -30,12 +30,12 @@ namespace zetscript{
 		Symbol *symbol_object=NULL;
 		ByteCode byte_code = ByteCode::BYTE_CODE_LOAD_FUNCTION;
 
-		if(scope_info->scope_parent!=NULL){// is within function ?
+		/*if(scope_info->scope_parent!=NULL){// is within function ?
 
 			if(scope_info->script_type->idx_type != IDX_TYPE_CLASS_MAIN){ // function object as function member because it will use this inside
 				byte_code=ByteCode::BYTE_CODE_LOAD_THIS_FUNCTION;
 			}
-		}
+		}*/
 
 		eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(
 				byte_code

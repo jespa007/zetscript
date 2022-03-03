@@ -15,13 +15,12 @@ void test_function_1st_c_call(zetscript::ZetScript *_zs){
 }
 
 
-
 void test_callback(
 	zetscript::ZetScript *_zs
 	,zetscript::ScriptFunction *_script_function
 ){
-	zetscript::zs_float param1=1.0;
-	zetscript::zs_int param2=2.0;
+	zetscript::zs_float param1=1.5;
+	zetscript::zs_int param2=2;
 	bool param3=true;
 	// get zetscript instance
 	// transform script function to c++ function...
@@ -40,17 +39,18 @@ void test_callback(
 
 void test_callback(
 	zetscript::ZetScript *_zs
-	,zetscript::ScriptObjectMemberFunction *_script_function
+	,zetscript::ScriptFunction *_script_function
+	,zetscript::ScriptObjectObject *_user_params
 ){
 	zetscript::zs_float param1=1.0;
 	zetscript::zs_int param2=2.0;
 	bool param3=true;
 
 	// transform script function to c++ function...
-	auto script_function = _zs->bindScriptFunction<zetscript::ScriptObjectString * (zetscript::zs_float *, zetscript::zs_int *, bool *)>(_script_function,__FILE__,__LINE__);
+	auto script_function = _zs->bindScriptFunction<zetscript::ScriptObjectString * (zetscript::zs_float *, zetscript::zs_int *, bool *,zetscript::ScriptObjectObject *)>(_script_function,__FILE__,__LINE__);
 
 	// call the function with params 1,2,3. The function returns a 'ScriptObjectString' ...
-	auto so=script_function(&param1,&param2,&param3);
+	auto so=script_function(&param1,&param2,&param3,_user_params);
 
 	// print the results...
 	printf("FROM CALLBACK 2: %s\n",so->toString().c_str());
@@ -60,29 +60,36 @@ void test_callback(
 
 }
 
-void test_script_c_script(zetscript::ZetScript *_zs){
+void test_call_script_c_script(zetscript::ZetScript *_zs){
 	// 1s combination: Script -> C -> Script
 	// bind 'test_callback' receives a 'ScriptFunction' pointer type
-	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *script_function)>(test_callback));
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function)>(test_callback));
 
-	// bind 'test_callback' receives a 'ScriptObjectMemberFunction' pointer type
-	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptObjectMemberFunction *script_function)>(test_callback));
+	// bind 'test_callback' receives a 'ScriptFunction' and 'ScriptObjectObject' pointer type
+	_zs->registerFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function,zetscript::ScriptObjectObject *_params)>(test_callback));
 
 
 	_zs->eval(
 		// Type 'Test' declaration
 		"class Test{\n"
-		"	test_callback(){\n"
+		"	constructor(){\n"
 		//      assign 'this.d=10'
 		"       this.d=10;\n"
 		// 		calls C function 'test_callback'.
 		"		test_callback("
-		// 		passes current zetscript instance as 1st parameters
-		//      Anonymous function as parameter: The test_callback function expects 'ScriptObjectMemberFunction' in C++ due is created in a class scope
-		//		Note: The anonymous function content is reading the 'this.d', so it has access to object 'Test' type scope
-		"			function(a,b,c){\n"
-		"				return \"result from object Test: a:\"+a+\" b:\"+b+\" c:\"+c+\" this.d:\"+this.d;\n"
-		"			}\n"
+		//      1st parameter: Anonymous function ('ScriptFunction *' in C aka 'function(){}')
+		"			function("
+		"				 _a\n"
+		"				,_b\n"
+		"				,_c\n"
+		"				,_user_params" //--> params: Include aditional parameters to
+		"			){\n"
+		"				return \"result from object Test: a:\"+_a+\" b:\"+_b+\" c:\"+_c+\" d:\"+ _user_params.that.d;\n"
+		"			}"
+		//		2nd parameter: Object with user params ('ScriptObjectObject *' in C aka 'ScriptObjectObject')
+		"			,{"
+		"				that:this"
+		"			}"
 		"		);\n"
 		"	}\n"
 		"};\n"
@@ -98,12 +105,11 @@ void test_script_c_script(zetscript::ZetScript *_zs){
 		"		return \"result a:\"+a+\" b:\"+b+\" c:\"+c;\n"
 		"});\n"
 		"\n"
-		"test.test_callback()"
 		""
 	);
 }
 
-void test_c_script_c(zetscript::ZetScript *_zs){
+void test_call_c_script_c(zetscript::ZetScript *_zs){
 
 	// 2nd test calling from C->Script->C
 	_zs->registerFunction("test_function_1st_c_call",test_function_1st_c_call);
@@ -136,8 +142,8 @@ int main(){
 
 	try{
 
-		test_script_c_script(&zs);
-		test_c_script_c(&zs);
+		test_call_script_c_script(&zs);
+		test_call_c_script_c(&zs);
 
 	}catch(std::exception & ex){
 		fprintf(stderr,"%s\n",ex.what());
