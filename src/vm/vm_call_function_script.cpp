@@ -364,7 +364,7 @@ find_element_object:
 				VM_PUSH_STK_NULL;
 				continue;
 			case BYTE_CODE_LOAD_FUNCTION: // expect constant and function has the same behaviour...
-				VM_PUSH_STK_SCRIPT_FUNCTION(((Symbol *)instruction->value_op2)->ref_ptr);
+				VM_PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_ZS_INT:
 				data->stk_vm_current->value=instruction->value_op2;
@@ -901,6 +901,15 @@ find_element_object:
 				 }
 				 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
 				 goto execute_function;
+			case BYTE_CODE_INDIRECT_THIS_CALL:
+				 sf_call_calling_object = this_object;
+				 sf_call_stk_start_function_object=0;
+				 sf_call_stk_function_ref=this_object->getProperty(SFI_GET_SYMBOL_NAME(calling_function,instruction));
+				 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
+					 VM_STOP_EXECUTE("'this.%s' not exist", SFI_GET_SYMBOL_NAME(calling_function,instruction)
+					);
+				 }
+				 goto load_function;
 			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
@@ -959,7 +968,13 @@ load_function:
 							data->stk_vm_current=data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;
 							continue;
 						}
-						VM_STOP_EXECUTE("'%s' is not function or not exist",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+						VM_STOP_EXECUTE("Cannot call '%s%s' as type '%s'. '%s%s' is not function"
+								,instruction->byte_code==BYTE_CODE_INDIRECT_THIS_CALL?"this.":""
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
+								,instruction->byte_code==BYTE_CODE_INDIRECT_THIS_CALL?"this.":""
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+						);
 
 					}
 					Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;

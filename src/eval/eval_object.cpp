@@ -21,7 +21,7 @@ namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------------------------------------
 
-	char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, TokenNode *token_node){
+	char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *_scope_info, TokenNode *token_node){
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 		EvalInstruction *eval_instruction;
 		zs_vector 	* eval_instructions=&token_node->eval_instructions;
@@ -29,6 +29,7 @@ namespace zetscript{
 		unsigned short instruction_properties=0; // global by default ...
 		Symbol *symbol_object=NULL;
 		ByteCode byte_code = ByteCode::BYTE_CODE_LOAD_FUNCTION;
+		Scope *scope_info=MAIN_SCOPE(eval_data);
 
 		/*if(scope_info->scope_parent!=NULL){// is within function ?
 

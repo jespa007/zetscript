@@ -91,6 +91,7 @@ namespace zetscript{
 		BYTE_CODE_THIS_CALL,	// this direct
 		BYTE_CODE_SUPER_CALL,	// super direct
 		BYTE_CODE_MEMBER_CALL, // through function and member loaded
+		BYTE_CODE_INDIRECT_THIS_CALL, // call throught function
 		BYTE_CODE_CONSTRUCTOR_CALL, // constructor...
 		BYTE_CODE_END_CALL=BYTE_CODE_CONSTRUCTOR_CALL,
 		//----- END CALL

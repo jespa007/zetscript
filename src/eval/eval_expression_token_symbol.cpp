@@ -510,7 +510,7 @@ namespace zetscript{
 								eval_data->current_parsing_file
 								,line
 								,error_expression_token_symbol
-								,"'this' is not allowed here"
+								,"'this' is only allowed within member functions"
 							);
 						}
 

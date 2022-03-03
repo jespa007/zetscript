@@ -138,6 +138,7 @@ namespace zetscript{
 				 symbol_value="this."+symbol_value;
 			 }else if(   instruction->byte_code==ByteCode:: BYTE_CODE_INDIRECT_GLOBAL_CALL
 					 || instruction->byte_code== BYTE_CODE_INDIRECT_LOCAL_CALL
+					 || instruction->byte_code== BYTE_CODE_INDIRECT_THIS_CALL
 			 ){
 				 symbol_value="@"+symbol_value;
 			 }
@@ -331,6 +332,7 @@ namespace zetscript{
 			case BYTE_CODE_INDIRECT_GLOBAL_CALL:
 			case BYTE_CODE_INDIRECT_LOCAL_CALL:
 			case BYTE_CODE_THIS_CALL:
+			case BYTE_CODE_INDIRECT_THIS_CALL:
 			case BYTE_CODE_SUPER_CALL:
 			case BYTE_CODE_UNRESOLVED_CALL:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\targ:%i ret:%i %s\n"

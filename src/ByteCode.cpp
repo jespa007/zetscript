@@ -61,6 +61,7 @@ namespace zetscript{
 			case BYTE_CODE_INDIRECT_GLOBAL_CALL:
 			case BYTE_CODE_SUPER_CALL:
 			case BYTE_CODE_THIS_CALL:
+			case BYTE_CODE_INDIRECT_THIS_CALL:
 			case BYTE_CODE_CALL:								return "CALL"; // direct call
 			case BYTE_CODE_UNRESOLVED_CALL:						return "CALL???"; // direct call
 

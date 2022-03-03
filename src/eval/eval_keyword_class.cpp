@@ -175,15 +175,17 @@ namespace zetscript{
 						int line_unreferenced_this_call=SFI_GET_LINE(sf,it);
 						Symbol *symbol_unref_this_call=sc->script_type_scope->getSymbol(str_name_unreferenced_this_call);
 
-						if(symbol_unref_this_call == NULL){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line_unreferenced_this_call ,"cannot call 'this.%s' because member function '%s::%s' is not declared"
+						if(symbol_unref_this_call == NULL){ // try to call by the name of symbol later
+							it->byte_code=BYTE_CODE_INDIRECT_THIS_CALL;
+							/*EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line_unreferenced_this_call ,"cannot call 'this.%s' because member function '%s::%s' is not declared"
 									,str_name_unreferenced_this_call
 									,sc->script_type_name.c_str()
 									,str_name_unreferenced_this_call
 
-								);
+								);*/
+						}else{
+							it->value_op2=(zs_int)symbol_unref_this_call;
 						}
-						it->value_op2=(zs_int)symbol_unref_this_call;
 
 					}
 
