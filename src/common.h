@@ -19,11 +19,11 @@
 #endif
 
 #define ZS_IDX_UNDEFINED 						-1
-#define ZS_IDX_EVAL_FUNCTION					-10
+#define IDX_ZS_SCRIPT_FUNCTION_EVAL					-10
 #define MAX_NATIVE_FUNCTION_ARGS				8
 
 #define GET_METAMETHOD(m)														((this->zs))->getMetamethod(m)
-#define IS_IDX_TYPE_INSTANCEOF(zs,idx_type,idx_type_instance)	((this->script_type_factory))->isScriptClassTypeInheritsFrom(idx_type,idx_type_instance)
+#define IS_IDX_TYPE_INSTANCEOF(zs,idx_script_type,idx_type_instance)	((this->script_type_factory))->isScriptClassTypeInheritsFrom(idx_script_type,idx_type_instance)
 
 #ifndef TRUE
 #define TRUE 1

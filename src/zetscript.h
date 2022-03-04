@@ -178,8 +178,8 @@ namespace zetscript{
 		 * Register C function
 		 */
 		template <typename F>
-		void registerFunction( const zs_string & function_name,F ptr_function, const char *registered_file="",short registered_line=-1){
-			script_type_factory->registerNativeGlobalFunction( function_name,ptr_function, registered_file,registered_line);
+		void registerFunction( const zs_string & name_script_function,F ptr_function, const char *registered_file="",short registered_line=-1){
+			script_type_factory->registerNativeGlobalFunction( name_script_function,ptr_function, registered_file,registered_line);
 		}
 
 		/**
@@ -230,12 +230,12 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void	registerMemberFunction(
-				const zs_string & function_name
+				const zs_string & name_script_function
 				,F function_type
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->registerNativeMemberFunction<C>(function_name,function_type, registered_file,registered_line );
+			script_type_factory->registerNativeMemberFunction<C>(name_script_function,function_type, registered_file,registered_line );
 		}
 
 
@@ -303,8 +303,8 @@ namespace zetscript{
 		 * Register Static Function Member Class
 		 */
 		template <typename C,typename F>
-		void registerMemberFunctionStatic(const zs_string & function_name,F fun, const char *registered_file="",short registered_line=-1){
-			script_type_factory->registerNativeMemberFunctionStatic<C>(function_name,fun, registered_file, registered_line);
+		void registerMemberFunctionStatic(const zs_string & name_script_function,F fun, const char *registered_file="",short registered_line=-1){
+			script_type_factory->registerNativeMemberFunctionStatic<C>(name_script_function,fun, registered_file, registered_line);
 		}
 
 		//cpp binding

@@ -60,7 +60,7 @@ namespace zetscript{
 		  * Class management region
 		  */
 		ScriptType * 					registerClass(const zs_string & script_type_name, const zs_string & base_class_name="",const char * file="", short line=-1);
-		ScriptType * 					getScriptType(short _idx_type);
+		ScriptType * 					getScriptType(short _idx_script_type);
 		ScriptType * 					getScriptType(const zs_string & _type_name);
 		ScriptType * 					getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
 
@@ -69,10 +69,10 @@ namespace zetscript{
 
 		int								getBuiltinTypeOrClass(const zs_string & name);
 
-		const char 	* 					getScriptTypeName(short _idx_type);
+		const char 	* 					getScriptTypeName(short _idx_script_type);
 		void							scriptClassTypeInheritsFrom(const zs_string & _type_class_name,const zs_string & _type_name_inherits_from);
 		bool							isScriptClassTypeInheritsFrom(short _idx_class_type,short _idx_class_type_inherits_from);
-		bool							isScriptTypeInstanceable(short _idx_type);
+		bool							isScriptTypeInstanceable(short _idx_script_type);
 
 		zs_vector	* 					getScriptTypes();
 
@@ -85,7 +85,7 @@ namespace zetscript{
 		 * Class name given this function creates the object and initializes all variables.
 		 */
 		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & script_type_name);
-		ScriptObject 			* 			instanceScriptObjectByTypeIdx(short  idx_type, void * value_object = NULL);
+		ScriptObject 			* 			instanceScriptObjectByTypeIdx(short  idx_script_type, void * value_object = NULL);
 
 		/**
 		 * Register C variable
@@ -109,7 +109,7 @@ namespace zetscript{
 		 */
 		 template <typename F>
 		 void registerNativeGlobalFunction(
-			const zs_string &  function_name
+			const zs_string &  name_script_function
 			 ,F function_ptr
 			 , const char *registered_file=""
 			,short registered_line=-1
@@ -343,7 +343,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void	registerNativeMemberFunction(
-				const zs_string & function_name
+				const zs_string & name_script_function
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1

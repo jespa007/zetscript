@@ -96,7 +96,7 @@ namespace zetscript{
 
 	ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector *eval_instructions){
 
-		zs_string function_name=eval_anonymous_function_name("","defval");
+		zs_string name_script_function=eval_anonymous_function_name("","defval");
 		Instruction *start_ptr=NULL;
 		size_t instructions_len=(eval_instructions->count+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
@@ -105,7 +105,7 @@ namespace zetscript{
 			 MAIN_SCOPE(eval_data)
 			, eval_data->current_parsing_file
 			, -1
-			, function_name
+			, name_script_function
 		);
 
 		ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
@@ -185,7 +185,7 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check class scope...
-			if(scope_var->script_type->idx_type != IDX_TYPE_CLASS_MAIN
+			if(scope_var->script_type->idx_script_type != IDX_TYPE_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // class members are defined as functions
@@ -418,7 +418,7 @@ error_eval_keyword_var:
 		//Keyword key_w;
 		//
 		// check for keyword ...
-		if(scope_info->script_type->idx_type != IDX_TYPE_CLASS_MAIN
+		if(scope_info->script_type->idx_script_type != IDX_TYPE_CLASS_MAIN
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )
@@ -454,7 +454,7 @@ error_eval_keyword_var:
 			zs_vector script_function_params;
 			zs_string conditional_str;
 			Symbol *symbol_sf=NULL;
-			zs_string function_name="";
+			zs_string name_script_function="";
 			ScriptFunction *sf = NULL;
 
 			// advance keyword...
@@ -470,7 +470,7 @@ error_eval_keyword_var:
 						,aux_p
 						,line
 						,&sc
-						,function_name
+						,name_script_function
 				   );
 
 				   if(sc!=NULL){ // scope is the class
@@ -485,7 +485,7 @@ error_eval_keyword_var:
 							eval_data
 							,aux_p
 							,line
-							,function_name
+							,name_script_function
 					);
 
 					if(end_var == NULL){
@@ -713,9 +713,9 @@ error_eval_keyword_var:
 			// register function ...
 			if(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS){ // register named function...
 				if(custom_symbol_name != ""){
-					function_name=custom_symbol_name;
+					name_script_function=custom_symbol_name;
 				}else{
-					function_name=eval_anonymous_function_name();//sc!=NULL?sc->script_type_name:"");
+					name_script_function=eval_anonymous_function_name();//sc!=NULL?sc->script_type_name:"");
 				}
 			}
 
@@ -731,7 +731,7 @@ error_eval_keyword_var:
 			if(sc!=NULL){ // register as variable member...
 				try{
 					symbol_sf=sc->registerMemberFunction(
-							function_name
+							name_script_function
 							,&params
 							,params_len
 							,is_static?FUNCTION_PROPERTY_STATIC:FUNCTION_PROPERTY_MEMBER_FUNCTION
@@ -754,7 +754,7 @@ error_eval_keyword_var:
 						 scope_info
 						, eval_data->current_parsing_file
 						, line
-						, function_name
+						, name_script_function
 						, &params
 						, params_len
 					);

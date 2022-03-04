@@ -19,7 +19,7 @@ namespace zetscript{
 	//------------------------------------------------------------
 
 	ScriptType::ScriptType(ZetScript *_zs
-			,short _idx_type
+			,short _idx_script_type
 			, zs_string _class_name
 			, Scope *_class_scope
 			,const char *_str_class_ptr_type
@@ -30,7 +30,7 @@ namespace zetscript{
 		c_destructor = NULL;
 		c_constructor=NULL;
 		idx_function_member_constructor = ZS_IDX_UNDEFINED;
-		idx_type=_idx_type;
+		idx_script_type=_idx_script_type;
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
 		script_type_name=_class_name;
@@ -50,9 +50,9 @@ namespace zetscript{
 
 	}
 
-	bool ScriptType::isDerivedFrom(short _idx_type){
+	bool ScriptType::isDerivedFrom(short _idx_script_type){
 		for(int i=0; i < this->idx_base_types->count; i++){
-			if(this->idx_base_types->items[i]==_idx_type){
+			if(this->idx_base_types->items[i]==_idx_script_type){
 				return true;
 			}
 		}
@@ -364,7 +364,7 @@ namespace zetscript{
 				,_file
 				,_line
 				//---- Function data
-				,idx_type 				// idx class which belongs to...
+				,idx_script_type 				// idx class which belongs to...
 				,_function_name
 				,_params
 				,_params_len
@@ -431,13 +431,13 @@ namespace zetscript{
 
 							// check if they are gte,gt,equ, not_equ, lt, lte
 							switch(i){
-							case BYTE_CODE_METAMETHOD_EQU: //STRCMP(function_name, == ,"_equ")
-							case BYTE_CODE_METAMETHOD_NOT_EQU: //STRCMP(function_name, ==, "_nequ")
-							case BYTE_CODE_METAMETHOD_LT://STRCMP(function_name, ==, "_lt")
-							case BYTE_CODE_METAMETHOD_LTE://STRCMP(function_name, ==, "_lte")
-							case BYTE_CODE_METAMETHOD_GT://STRCMP(function_name, ==, "_gt")
-							case BYTE_CODE_METAMETHOD_GTE://STRCMP(function_name, ==, "_gte")
-							case BYTE_CODE_METAMETHOD_NOT://STRCMP(function_name, ==, "_gte")
+							case BYTE_CODE_METAMETHOD_EQU: //STRCMP(name_script_function, == ,"_equ")
+							case BYTE_CODE_METAMETHOD_NOT_EQU: //STRCMP(name_script_function, ==, "_nequ")
+							case BYTE_CODE_METAMETHOD_LT://STRCMP(name_script_function, ==, "_lt")
+							case BYTE_CODE_METAMETHOD_LTE://STRCMP(name_script_function, ==, "_lte")
+							case BYTE_CODE_METAMETHOD_GT://STRCMP(name_script_function, ==, "_gt")
+							case BYTE_CODE_METAMETHOD_GTE://STRCMP(name_script_function, ==, "_gte")
+							case BYTE_CODE_METAMETHOD_NOT://STRCMP(name_script_function, ==, "_gte")
 
 								// return type must be bool...
 								if(_idx_return_type != IDX_TYPE_BOOL_C){
@@ -628,11 +628,11 @@ namespace zetscript{
 	}
 
 	const char *ScriptType::getTypeName(){
-		if(idx_type==IDX_TYPE_ZS_INT_C){
+		/*if(idx_script_type==IDX_TYPE_ZS_INT_C){
 			return "int";
-		}else if(idx_type==IDX_TYPE_ZS_FLOAT_C){
+		}else if(idx_script_type==IDX_TYPE_ZS_FLOAT_C){
 			return "float";
-		}
+		}*/
 
 		return script_type_name.c_str();
 	}

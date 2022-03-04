@@ -13,7 +13,7 @@ namespace zetscript{
 
 	class ScriptFunctionParam{
 	public:
-		int idx_type;
+		int idx_script_type;
 		zs_string name; //arg c++ type or arg name
 		int line;
 		uint16_t properties;
@@ -21,13 +21,15 @@ namespace zetscript{
 
 		ScriptFunctionParam();
 		ScriptFunctionParam(const zs_string & _name);
-		ScriptFunctionParam(int _idx_type, const zs_string & _name);
+		ScriptFunctionParam(int _idx_script_type, const zs_string & _name);
 		ScriptFunctionParam( const ScriptFunctionParam & _function_param);
 
 		ScriptFunctionParam & operator=( const ScriptFunctionParam & _function_param);
 
 		static ScriptFunctionParam *createArrayFromVector(const zs_vector  * _s);
 		static ScriptFunctionParam *createArrayFromScriptFunction(const ScriptFunction * sf);
+
+		~ScriptFunctionParam();
 	private:
 		void copy( const ScriptFunctionParam & _function_param);
 	};

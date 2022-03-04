@@ -64,7 +64,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 				if((ptr_function_found=vm_find_function( \
 					vm \
-					,data->script_type_factory->getScriptType(so_aux->idx_type)\
+					,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 					,calling_function\
 					,instruction\
 					,false\
@@ -102,7 +102,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			VM_INNER_CALL(\
 				so_aux\
 				,ptr_function_found\
-				,ptr_function_found->function_name.c_str()\
+				,ptr_function_found->name_script_function.c_str()\
 				,true\
 				,1 \
 				,true\
@@ -113,7 +113,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
 						,ptr_metamethod_members_aux->getter\
-						,ptr_metamethod_members_aux->getter->function_name.c_str()\
+						,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
 						,true\
 				);\
 			}else{ /* store object */ \
@@ -171,7 +171,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 				if((ptr_function_found=vm_find_function( \
 					vm \
-					,data->script_type_factory->getScriptType(so_aux->idx_type)\
+					,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 					,calling_function\
 					,instruction\
 					,false\
@@ -209,7 +209,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			VM_INNER_CALL(\
 				so_aux\
 				,ptr_function_found\
-				,ptr_function_found->function_name.c_str()\
+				,ptr_function_found->name_script_function.c_str()\
 				,true\
 				,1 \
 				,true\
@@ -220,7 +220,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
 						,ptr_metamethod_members_aux->getter\
-						,ptr_metamethod_members_aux->getter->function_name.c_str()\
+						,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
 						,true\
 				);\
 			}else{ /* store object */ \
@@ -288,7 +288,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 				if((ptr_function_found=vm_find_function( \
 					vm \
-					,data->script_type_factory->getScriptType(so_aux->idx_type)\
+					,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 					,calling_function\
 					,instruction\
 					,false\
@@ -326,7 +326,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			VM_INNER_CALL(\
 				so_aux\
 				,ptr_function_found\
-				,ptr_function_found->function_name.c_str()\
+				,ptr_function_found->name_script_function.c_str()\
 				,true\
 				,1 \
 				,true\
@@ -337,7 +337,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
 						,ptr_metamethod_members_aux->getter\
-						,ptr_metamethod_members_aux->getter->function_name.c_str()\
+						,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
 						,true\
 				);\
 			}else{ /* store object */ \
@@ -406,7 +406,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 				if((ptr_function_found=vm_find_function( \
 					vm \
-					,data->script_type_factory->getScriptType(so_aux->idx_type)\
+					,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 					,calling_function\
 					,instruction\
 					,false\
@@ -444,7 +444,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			VM_INNER_CALL(\
 				so_aux\
 				,ptr_function_found\
-				,ptr_function_found->function_name.c_str()\
+				,ptr_function_found->name_script_function.c_str()\
 				,true\
 				,1 \
 				,true\
@@ -455,7 +455,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
 						,ptr_metamethod_members_aux->getter\
-						,ptr_metamethod_members_aux->getter->function_name.c_str()\
+						,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
 						,true\
 				);\
 			}else{ /* store object */ \
@@ -497,7 +497,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 			if((ptr_function_found=vm_find_function( \
 				vm \
-				,data->script_type_factory->getScriptType(so_aux->idx_type)\
+				,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 				,calling_function\
 				,instruction\
 				,false\
@@ -535,7 +535,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		VM_INNER_CALL(\
 			so_aux\
 			,ptr_function_found\
-			,ptr_function_found->function_name.c_str()\
+			,ptr_function_found->name_script_function.c_str()\
 			,true\
 			,1 \
 			,true\
@@ -546,7 +546,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
 					,ptr_metamethod_members_aux->getter\
-					,ptr_metamethod_members_aux->getter->function_name.c_str()\
+					,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \

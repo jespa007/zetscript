@@ -19,10 +19,10 @@ namespace zetscript{
 			Instruction 		*	instruction_new;
 			bool 					was_created_by_constructor;
 
-			static ScriptObjectClass * newScriptObjectClass(ZetScript *_zs,short _idx_type,void *  _c_object=NULL);
+			static ScriptObjectClass * newScriptObjectClass(ZetScript *_zs,short _idx_script_type,void *  _c_object=NULL);
 
 			ScriptObjectClass();
-			void init(ZetScript *_zs, short _idx_type,void *_c_object);
+			void init(ZetScript *_zs, short _idx_script_type,void *_c_object);
 
 			/**
 			 * info_registered_class: scriptclass info

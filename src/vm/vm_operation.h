@@ -55,7 +55,7 @@
 		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) / *((zs_float *)&stk_result_op2->value));\
 		break;\
 	default:\
-		if(vm_call_static_metamethod_2ops(\
+		if(vm_call_metamethod(\
 				vm\
 				,calling_function\
 				,instruction\
@@ -113,7 +113,7 @@
 				vm_create_shared_pointer(vm,so_object);\
 				VM_PUSH_STK_SCRIPT_OBJECT(so_object);\
 		}else{\
-			if(vm_call_static_metamethod_2ops(\
+			if(vm_call_metamethod(\
 					vm\
 					,calling_function\
 					,instruction\
@@ -142,7 +142,7 @@
 		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) __C_OP__ *((zs_float *)&stk_result_op2->value));\
 		break;\
 	default:\
-		if(vm_call_static_metamethod_2ops(\
+		if(vm_call_metamethod(\
 				vm\
 				,calling_function\
 				,instruction\
@@ -199,7 +199,7 @@
 				VM_PUSH_STK_BOOLEAN(__METAMETHOD__ != BYTE_CODE_METAMETHOD_EQU);\
 			}\
 		}else{\
-			if(vm_call_static_metamethod_2ops(\
+			if(vm_call_metamethod(\
 				vm\
 				,calling_function\
 				,instruction\
@@ -240,7 +240,7 @@
 		VM_PUSH_STK_ZS_FLOAT(fmod(*((zs_float *)&stk_result_op1->value) , *((zs_float *)&stk_result_op2->value)));\
 		break;\
 	default:\
-		if(vm_call_static_metamethod_2ops(\
+		if(vm_call_metamethod(\
 			vm\
 			,calling_function\
 			,instruction\
@@ -265,7 +265,7 @@
 	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_ZS_INT){\
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
 	}else{\
-		if(vm_call_static_metamethod_2ops(\
+		if(vm_call_metamethod(\
 			vm\
 			,calling_function\
 			,instruction\
@@ -306,7 +306,7 @@
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
 				,ptr_metamethod_members_aux->neg\
-				,ptr_metamethod_members_aux->neg->function_name.c_str()\
+				,ptr_metamethod_members_aux->neg->name_script_function.c_str()\
 				,true\
 		);\
 		data->stk_vm_current++; /* store negated value to stk to load after */\
@@ -323,7 +323,7 @@
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
 				,__POST_OPERATION_VARIABLE__\
-				,__POST_OPERATION_VARIABLE__->function_name.c_str()\
+				,__POST_OPERATION_VARIABLE__->name_script_function.c_str()\
 				,true\
 		);\
 	}\
@@ -355,7 +355,7 @@
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
 					,ptr_metamethod_members_aux->getter\
-					,ptr_metamethod_members_aux->getter->function_name.c_str()\
+					,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \
@@ -380,7 +380,7 @@
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
 				,__POST_OPERATION_VARIABLE__\
-				,__POST_OPERATION_VARIABLE__->function_name.c_str()\
+				,__POST_OPERATION_VARIABLE__->name_script_function.c_str()\
 				,true\
 		);\
 	}\
@@ -419,7 +419,7 @@
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
 				,__PRE_OPERATION_VARIABLE__\
-				,__PRE_OPERATION_VARIABLE__->function_name.c_str()\
+				,__PRE_OPERATION_VARIABLE__->name_script_function.c_str()\
 				,true\
 		);\
 		/*getter after*/\
@@ -428,7 +428,7 @@
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
 					,ptr_metamethod_members_aux->getter\
-					,ptr_metamethod_members_aux->getter->function_name.c_str()\
+					,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \

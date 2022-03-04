@@ -9,9 +9,9 @@
 
 namespace zetscript{
 
-	ScriptObjectClass * ScriptObjectClass::newScriptObjectClass(ZetScript *_zs, short _idx_type,void *_c_object){
+	ScriptObjectClass * ScriptObjectClass::newScriptObjectClass(ZetScript *_zs, short _idx_script_type,void *_c_object){
 		ScriptObjectClass *sc=new ScriptObjectClass();
-		sc->init(_zs,_idx_type,_c_object);
+		sc->init(_zs,_idx_script_type,_c_object);
 		return sc;
 	}
 
@@ -23,7 +23,7 @@ namespace zetscript{
 	//	script_type = NULL;
 		c_object = NULL;
 		created_object = NULL;
-		idx_type = IDX_TYPE_SCRIPT_OBJECT_CLASS;
+		idx_script_type = IDX_TYPE_SCRIPT_OBJECT_CLASS;
 		delete_c_object_on_destroy = false; // --> user is responsible to delete C objects!
 		script_class_native=NULL;
 	}
@@ -43,14 +43,14 @@ namespace zetscript{
 	}
 
 
-	void ScriptObjectClass::init(ZetScript *_zs, short _idx_type,void *_c_object){
+	void ScriptObjectClass::init(ZetScript *_zs, short _idx_script_type,void *_c_object){
 		zs = _zs;
 		StackElement *se;
 		zs_string error;
 
 		vm=zs->getVirtualMachine();
 
-		idx_type=_idx_type;
+		idx_script_type=_idx_script_type;
 		ScriptType *script_type=getScriptType();
 		zs_vector *member_vars=script_type->script_type_scope->symbol_variables;
 		//------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ namespace zetscript{
 					}
 				}else{ // expect return an scriptobjectstring
 					zs_string *str=NULL;
-					switch(ptr_function->idx_return_type){
+					switch(ptr_function->idx_script_type_return){
 					case IDX_TYPE_STRING_C:
 							aux=((zs_string (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
 							break;

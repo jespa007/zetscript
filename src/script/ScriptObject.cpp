@@ -38,7 +38,7 @@ namespace zetscript{
 	}
 
 	ScriptObject::ScriptObject(){
-		idx_type=ZS_IDX_UNDEFINED;
+		idx_script_type=ZS_IDX_UNDEFINED;
 		shared_pointer=NULL;
 		zs=NULL;
 		map_builtin_properties=new zs_map();
@@ -54,7 +54,7 @@ namespace zetscript{
 		vm=_zs->getVirtualMachine();
 
 		// init builtin
-		if(idx_type >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_type<IDX_TYPE_SCRIPT_OBJECT_CLASS){
+		if(idx_script_type >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_script_type<IDX_TYPE_SCRIPT_OBJECT_CLASS){
 			ScriptType *script_type=getScriptType();
 			zs_vector *symbol_vars=script_type->script_type_scope->symbol_variables;
 			//------------------------------------------------------------------------------
@@ -104,11 +104,11 @@ namespace zetscript{
 	}
 
 	ScriptType * ScriptObject::getScriptType(){
-		return this->zs->getScriptTypeFactory()->getScriptType(idx_type);
+		return this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
 	}
 
 	ScriptFunction *ScriptObject::getGetter(){
-		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_type);
+		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
 		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){
@@ -118,7 +118,7 @@ namespace zetscript{
 	}
 
 	zs_vector *ScriptObject::getSetterList(ByteCodeMetamethod _byte_code_metamethod){
-		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_type);
+		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
 		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
 		if(metamethod_members !=NULL){

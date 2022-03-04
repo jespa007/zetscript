@@ -25,6 +25,7 @@ namespace zetscript{
 		ScriptObjectString *so_str_eval=NULL;
 		ScriptObjectObject *oo_param=NULL;
 		ScriptFunctionParam *function_params=NULL;
+		ScriptFunctionParam **function_params_ptr=NULL;
 		size_t 				 function_params_len=0;
 		zs_string str_param_name;
 		ScriptFunction *sf;
@@ -35,6 +36,11 @@ namespace zetscript{
 		VirtualMachine *vm=zs->getVirtualMachine();
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		Symbol *symbol_sf=NULL;
+		Scope *scope=NULL;
+		int n_ret_args=0;
+		uint8_t stk_n_params=0;
+		StackElement *stk_vm_current=NULL;
+		StackElement *stk_start=NULL;
 
 		// Example of use,
 		// System::eval("a+b",{a:1,b:2})
@@ -49,7 +55,10 @@ namespace zetscript{
 
 		so_str_eval=(ScriptObjectString *)stk_so_str_eval->value;
 
-		if(stk_oo_param->properties != 0){ // parameters were passed
+		//--------------------------------------
+		// 0. setup scope and parameters
+		if(stk_oo_param->properties != 0){
+
 			if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_oo_param) == false){
 				vm_set_error(
 						zs->getVirtualMachine()
@@ -60,58 +69,87 @@ namespace zetscript{
 			}
 
 			oo_param=(ScriptObjectObject *)stk_oo_param->value;
-
-			// catch parameters...
 			function_params_len=oo_param->length();
-			function_params=(ScriptFunctionParam *)ZS_MALLOC(sizeof(ScriptFunctionParam)*function_params_len);
-			int i=0;
-			zs_map *map=oo_param->getMapUserProperties();
+			if(function_params_len>0){
 
-			for(auto it=map->begin(); !it.end(); it.next()){
-				StackElement *stk=((StackElement *)it.value);
-				function_params[i]=ScriptFunctionParam(it.key);
-				stk_params.push_back((zs_int)stk);
+				function_params=new ScriptFunctionParam[function_params_len];//(ScriptFunctionParam *)ZS_MALLOC(sizeof(ScriptFunctionParam)*function_params_len);
+				function_params_ptr=&function_params;
 
-				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					// inc number of ref as standard in pass object args
-					((ScriptObject *)stk->value)->shared_pointer->data.n_shares++;
+				if(function_params!=NULL){
+					int i=0;
+					zs_map *map=oo_param->getMapUserProperties();
+
+					for(auto it=map->begin(); !it.end(); it.next()){
+						StackElement *stk=((StackElement *)it.value);
+						function_params[i]=ScriptFunctionParam(it.key);
+						stk_params.push_back((zs_int)stk);
+
+						if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+							// inc number of ref as standard in pass object args
+							((ScriptObject *)stk->value)->shared_pointer->data.n_shares++;
+						}
+
+						i++;
+					}
 				}
 			}
 		}
 
+		//--------------------------------------
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
-		/*symbol_sf=new Symbol(
-				);*/
-
-		zs_string  function_name=zs_strutils::format("eval@",n_eval_function++);
-
-		 sf=new	ScriptFunction(
+		zs_string  name_script_function=zs_strutils::format("eval@",n_eval_function++);
+		sf=new	ScriptFunction(
 				zs
+				,IDX_ZS_SCRIPT_FUNCTION_EVAL
 				,IDX_TYPE_CLASS_MAIN
-				,ZS_IDX_EVAL_FUNCTION
 				,-1
-				,function_name
-				,&function_params
+				,name_script_function
+				,function_params_ptr
 				,function_params_len
 				,ZS_IDX_UNDEFINED
 				,0
 				,0
 		);
 
+		Scope *main_scope=((((zs)->getScopeFactory())))->getMainScope();
+		sf->scope_script_function=(((zs)->getScopeFactory()))->newScope(sf->idx_script_function,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
+		main_scope->scopes->push_back((zs_int)sf->scope_script_function);
+
+		//--------------------------------------
+		// 2. register arg symbols
+		// catch parameters...
+		if(function_params_len > 0){
+			int i=0;
+			zs_map *map=oo_param->getMapUserProperties();
+
+			for(auto it=map->begin(); !it.end(); it.next()){
+
+				if(sf->registerLocalArgument(
+						sf->scope_script_function
+						,__FILE__
+						,__LINE__
+						,it.key
+				,0)==NULL){
+					goto goto_eval_exit;
+				}
+
+			}
+		}
 
 		str_unescaped_source=zs_strutils::unescape(so_str_eval->toString());
 		str_start=str_unescaped_source.c_str();
-		// 2. Call zetscript->eval this function
 
+		// 3. Call zetscript->eval this function
 		try{
-			eval_parse_and_compile(zs,str_start,NULL,1,sf,function_params,function_params_len);
+			eval_parse_and_compile(zs,str_start,NULL,1,sf/*,function_params,function_params_len*/);
 		}catch(std::exception & ex){
-			delete sf;
-			delete symbol_sf;
 			vm_set_error(zs->getVirtualMachine(),zs_string("eval error:")+ex.what());
-			return;
+			goto goto_eval_exit;
 		}
+
+		// link unresoved symbols
+		zs->link();
 
 		// check if there's a reset stack at the end and set as end function in order to get last value stk ...
 		if(sf->instructions_len>2){
@@ -129,18 +167,14 @@ namespace zetscript{
 
 				sf->instructions=new_buf;
 				sf->instructions_len=new_buf_len;
-
-
-
 			}
 		}
 
-		// 3. Call function passing all arg parameter
-
+		// 4. Call function passing all arg parameter
 		// pass data to stk_vm_current
-		uint8_t stk_n_params=(uint8_t)stk_params.count;
-		StackElement *stk_vm_current=vm_get_current_stack_element(vm);
-		StackElement *stk_start=stk_vm_current;//vm data->stk_vm_current;
+		stk_n_params=(uint8_t)stk_params.count;
+		stk_vm_current=vm_get_current_stack_element(vm);
+		stk_start=stk_vm_current;//vm data->stk_vm_current;
 		for(unsigned i = 0; i < stk_n_params; i++){
 			*stk_start++=*((StackElement *)stk_params.items[i]);
 		}
@@ -157,13 +191,7 @@ namespace zetscript{
 			vm_set_error(zs->getVirtualMachine(),zs_strutils::format("eval error %s",error.c_str()));
 		}
 
-		//vm_push_stack_element(zs->getVirtualMachine(),stk_ret);
-
-		 delete sf;
-		 delete symbol_sf;
-
-
-		int n_ret_args=vm_get_current_stack_element(vm)-stk_vm_current;
+		n_ret_args=vm_get_current_stack_element(vm)-stk_vm_current;
 		stk_start=stk_vm_current;
 
 		// overwrite first entered params due are the objects passed before and now are undefined
@@ -173,7 +201,14 @@ namespace zetscript{
 
 		// avoid pass params
 		data->stk_vm_current-=stk_n_params;
+goto_eval_exit:
 
+		 delete sf;
+		 delete symbol_sf;
+
+		 sf->scope_script_function->removeChildrenBlockTypes();
+		 sf->scope_script_function->markAsUnusued();
+		 zs->getScopeFactory()->clearUnusuedScopes();
 	}
 
 	/*void SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){

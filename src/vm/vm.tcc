@@ -356,8 +356,8 @@ namespace zetscript{
 		zs_string aux_string;
 		int start_param=0;
 
-		zs_int *stk_elements_builtin_ptr= data->main_function_object->function_scope->symbol_functions->items;// vector of symbols
-		int stk_elements_builtin_len=  data->main_function_object->function_scope->symbol_functions->count;// vector of symbols
+		zs_int *stk_elements_builtin_ptr= data->main_function_object->scope_script_function->symbol_functions->items;// vector of symbols
+		int stk_elements_builtin_len=  data->main_function_object->scope_script_function->symbol_functions->count;// vector of symbols
 
 		if(class_obj != NULL){
 			stk_elements_builtin_ptr=class_obj->script_type_scope->symbol_functions->items;
@@ -371,21 +371,21 @@ namespace zetscript{
 
 			EXTRACT_FUNCTION_INFO
 
-			aux_string=irfs->function_name;
+			aux_string=irfs->name_script_function;
 
 			bool symbol_equals=aux_string == symbol_to_find;
 
 			if((symbol_equals && ((int)irfs->params_len == (n_args+start_param)))){
 				if((irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
-					int idx_type=-1;
-					int arg_idx_type=-1;
+					int idx_script_type=-1;
+					int arg_idx_script_type=-1;
 
 					for( unsigned k = 0; k < n_args && all_check;k++){ // ignore first parameter due expects zetscript
 						StackElement *current_arg=&stk_arg[k];
-						arg_idx_type=irfs->params[k+start_param].idx_type;
+						arg_idx_script_type=irfs->params[k+start_param].idx_script_type;
 
-						if(arg_idx_type!=IDX_TYPE_STACK_ELEMENT
+						if(arg_idx_script_type!=IDX_TYPE_STACK_ELEMENT
 								 /*&&
 						((current_arg->properties & STK_PROPERTY_PTR_STK) == 0)*/
 								){
@@ -402,31 +402,31 @@ namespace zetscript{
 									all_check=false;
 									break;
 								case STK_PROPERTY_ZS_INT:
-									idx_type=IDX_TYPE_ZS_INT_PTR_C;
+									idx_script_type=IDX_TYPE_ZS_INT_PTR_C;
 									all_check=
-											arg_idx_type==IDX_TYPE_ZS_INT_PTR_C
-										  ||arg_idx_type==IDX_TYPE_ZS_INT_C
-										  ||arg_idx_type==IDX_TYPE_ZS_FLOAT_PTR_C;
+											arg_idx_script_type==IDX_TYPE_ZS_INT_PTR_C
+										  ||arg_idx_script_type==IDX_TYPE_ZS_INT_C
+										  ||arg_idx_script_type==IDX_TYPE_ZS_FLOAT_PTR_C;
 									break;
 								case STK_PROPERTY_ZS_FLOAT:
-									idx_type=IDX_TYPE_ZS_FLOAT_PTR_C;
-									all_check=arg_idx_type==IDX_TYPE_ZS_FLOAT_PTR_C
-											||arg_idx_type==IDX_TYPE_ZS_FLOAT_C
-											||arg_idx_type==IDX_TYPE_ZS_INT_PTR_C
-										    ||arg_idx_type==IDX_TYPE_ZS_INT_C;
+									idx_script_type=IDX_TYPE_ZS_FLOAT_PTR_C;
+									all_check=arg_idx_script_type==IDX_TYPE_ZS_FLOAT_PTR_C
+											||arg_idx_script_type==IDX_TYPE_ZS_FLOAT_C
+											||arg_idx_script_type==IDX_TYPE_ZS_INT_PTR_C
+										    ||arg_idx_script_type==IDX_TYPE_ZS_INT_C;
 									break;
 								case STK_PROPERTY_BOOL:
-									idx_type=IDX_TYPE_BOOL_PTR_C;
+									idx_script_type=IDX_TYPE_BOOL_PTR_C;
 									break;
 								case STK_PROPERTY_FUNCTION|STK_PROPERTY_MEMBER_FUNCTION:
 									all_check=
-												arg_idx_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
-									idx_type=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
+												arg_idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
+									idx_script_type=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
 									break;
 								case STK_PROPERTY_FUNCTION:
-									idx_type=IDX_TYPE_FUNCTION;
+									idx_script_type=IDX_TYPE_FUNCTION;
 									all_check=
-												arg_idx_type==IDX_TYPE_FUNCTION;
+												arg_idx_script_type==IDX_TYPE_FUNCTION;
 									break;
 								/*case STK_PROPERTY_NULL:
 									all_check=false;
@@ -434,22 +434,22 @@ namespace zetscript{
 								case STK_PROPERTY_SCRIPT_OBJECT:
 
 									if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
-										idx_type=IDX_TYPE_STRING_PTR_C;
+										idx_script_type=IDX_TYPE_STRING_PTR_C;
 
 										all_check =
-											(	arg_idx_type==IDX_TYPE_STRING_PTR_C && current_arg->value!=0)
-										  ||	arg_idx_type==IDX_TYPE_CONST_CHAR_PTR_C;
+											(	arg_idx_script_type==IDX_TYPE_STRING_PTR_C && current_arg->value!=0)
+										  ||	arg_idx_script_type==IDX_TYPE_CONST_CHAR_PTR_C;
 									}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
 										ScriptObjectClass *var_object_class=((ScriptObjectClass *)current_arg->value);
 										aux_string=var_object_class->getTypeName();
-										if(arg_idx_type==idx_type){
+										if(arg_idx_script_type==idx_script_type){
 											all_check=true;
 										}
 									}else{
 										ScriptObject *var_object = NULL;
 										var_object=((ScriptObject *)current_arg->value);
 										aux_string=var_object->getTypeName();
-										if(arg_idx_type==idx_type){
+										if(arg_idx_script_type==idx_script_type){
 											all_check=true;
 										}
 									}
@@ -471,7 +471,7 @@ namespace zetscript{
 			int n_candidates=0;
 			zs_string str_candidates="";
 			zs_string args_str = "";
-			//int arg_idx_type=-1;
+			//int arg_idx_script_type=-1;
 			/* get arguments... */
 			for( unsigned k = 0; k < n_args;k++){
 				StackElement *current_arg=&stk_arg[k];
@@ -534,7 +534,7 @@ namespace zetscript{
 				EXTRACT_FUNCTION_INFO
 
 
-				if(irfs->function_name == symbol_to_find){
+				if(irfs->name_script_function == symbol_to_find){
 
 					if(n_candidates == 0){
 						str_candidates.append("\tPossible candidates are:\n\n");
@@ -542,13 +542,13 @@ namespace zetscript{
 					str_candidates.append("\t\t-");
 
 					// class if not mail
-					if(class_obj!=NULL && class_obj->idx_type!=IDX_TYPE_CLASS_MAIN){
+					if(class_obj!=NULL && class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN){
 						str_candidates.append(class_obj->script_type_name.c_str());
 						str_candidates.append("::");
 					}
 
 					// function name
-					str_candidates.append(irfs->function_name.c_str());
+					str_candidates.append(irfs->name_script_function.c_str());
 					str_candidates.append("(");
 
 
@@ -559,7 +559,7 @@ namespace zetscript{
 
 						if(irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 							str_candidates+=zs_rtti::demangle(
-								GET_IDX_2_CLASS_C_STR(data,irfs->params[a].idx_type)
+								GET_IDX_2_CLASS_C_STR(data,irfs->params[a].idx_script_type)
 							);
 						}else{ /* typic var ... */
 							str_candidates.append("arg");
@@ -574,7 +574,7 @@ namespace zetscript{
 			if(n_candidates == 0){
 				VM_ERROR("Cannot find %s '%s%s(%s)'.\n\n",
 						is_constructor ? "constructor":"function",
-								class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->script_type_name+"::").c_str():"",
+								class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?(class_obj->script_type_name+"::").c_str():"",
 								symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 						args_str.c_str()
 				);
@@ -584,7 +584,7 @@ namespace zetscript{
 			else{
 				VM_ERROR("Cannot match %s '%s%s(%s)' .\n\n%s",
 					is_constructor ? "constructor":"function",
-							class_obj==NULL?"":class_obj->idx_type!=IDX_TYPE_CLASS_MAIN?(class_obj->script_type_name+"::").c_str():"",
+							class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?(class_obj->script_type_name+"::").c_str():"",
 									symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
 					args_str.c_str(),
 					str_candidates.c_str());
@@ -595,13 +595,14 @@ namespace zetscript{
 		return ptr_function_found;
 	}
 
-	inline bool vm_call_static_metamethod_2ops(
+	inline bool vm_call_metamethod(
 		VirtualMachine *vm
 		,ScriptFunction *calling_function
 		,Instruction *instruction
 		,ByteCodeMetamethod byte_code_metamethod
 		,StackElement *stk_result_op1
 		,StackElement *stk_result_op2
+		, bool is_static=true
 	
 	) {
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
@@ -615,7 +616,7 @@ namespace zetscript{
 		zs_string error_found="";
 		ScriptObject *script_object=NULL;
 		zs_string script_type_name_object_found="";
-		int n_stk_args=2;
+		int n_stk_args=is_static?2:1;
 		int n_stk_local_symbols=0;
 		StackElement *stk_return=NULL;
 		int n_returned_arguments_from_function=0;
@@ -630,7 +631,7 @@ namespace zetscript{
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)){
 			script_object=(ScriptObject *)stk_result_op1->value;
 			script_type_name_object_found=script_object->getTypeName();
-		}else if (stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
+		}else if ((is_static==true) && (stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)){
 			script_object=(ScriptObject *)stk_result_op2->value;
 			script_type_name_object_found=script_object->getTypeName();
 
@@ -656,58 +657,68 @@ namespace zetscript{
 
 		//------------------------------------
 		// push stk results...
-		*data->stk_vm_current++=*stk_result_op1;
-		*data->stk_vm_current++=*stk_result_op2;
+		if(is_static == true){
+			*data->stk_vm_current++=*stk_result_op1;
+			*data->stk_vm_current++=*stk_result_op2;
+		}else{
+			*data->stk_vm_current++=*stk_result_op2;
+		}
 		//------------------------------------
 
-		if(ptr_function_found == NULL){
 
-			if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
-				if((ptr_function_found = vm_find_function(
-					vm
-					,data->script_type_factory->getScriptType(script_object->idx_type)
-					,calling_function
-					,instruction
-					,false
-					,str_symbol_metamethod
-					,stk_args
-					,n_stk_args
-				)) == NULL){
-					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
-					goto apply_metamethod_error;
-				}
-
-
-
-
-			}else{ // get first item...
-				ScriptType *sc=script_object->getScriptType();
-				Symbol * symbol = sc->getSymbolMemberFunction(str_symbol_metamethod);
-
-				if(symbol == NULL){
-					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
-					goto apply_metamethod_error;
-				}
-
-				ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-
-				if((sf->properties & FUNCTION_PROPERTY_STATIC) == 0){
-					error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not a function",str_symbol_metamethod,byte_code_metamethod_operator_str);
-					goto apply_metamethod_error;
-				}
-
-				ptr_function_found=(ScriptFunction *)symbol->ref_ptr;
-
+		if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
+			if((ptr_function_found = vm_find_function(
+				vm
+				,data->script_type_factory->getScriptType(script_object->idx_script_type)
+				,calling_function
+				,instruction
+				,false
+				,str_symbol_metamethod
+				,stk_args
+				,n_stk_args
+			)) == NULL){
+				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' it's not implemented or it cannot find appropriate arguments for calling function",str_symbol_metamethod,byte_code_metamethod_operator_str);
+				goto apply_metamethod_error;
 			}
+
+		}else{ // get first item...
+			ScriptType *sc=script_object->getScriptType();
+			Symbol * symbol = sc->getSymbolMemberFunction(str_symbol_metamethod);
+
+			if(symbol == NULL){
+				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not implemented",str_symbol_metamethod,byte_code_metamethod_operator_str);
+				goto apply_metamethod_error;
+			}
+
+			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
+
+			if(is_static && ((sf->properties & FUNCTION_PROPERTY_STATIC) == 0)){
+				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is not a static function (i.e add 'static' keyword )",str_symbol_metamethod,byte_code_metamethod_operator_str);
+				goto apply_metamethod_error;
+			}
+
+			if((is_static==false) && ((sf->properties & FUNCTION_PROPERTY_STATIC) != 0)){
+				error_found=zs_strutils::format("Operator metamethod '%s (aka %s)' is static function and should be a member function (i.e remove 'static' keyword)",str_symbol_metamethod,byte_code_metamethod_operator_str);
+				goto apply_metamethod_error;
+			}
+
+
+			ptr_function_found=(ScriptFunction *)symbol->ref_ptr;
+
 		}
+
 
 		if((ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 			// we have to share any object to avoid be removed on function exit
-			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				if(vm_share_pointer(vm,(ScriptObject *)stk_result_op1->value)==false){
-					goto apply_metamethod_error;
+
+			if(is_static == true){ // the share of the 1st object if static and object
+				if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					if(vm_share_pointer(vm,(ScriptObject *)stk_result_op1->value)==false){
+						goto apply_metamethod_error;
+					}
 				}
 			}
+
 			if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				if(vm_share_pointer(vm,(ScriptObject *)stk_result_op2->value)==false){
 					goto apply_metamethod_error;
@@ -725,7 +736,7 @@ namespace zetscript{
 		}else{ //
 			vm_call_function_native(
 					vm
-					,ptr_function_found->properties & FUNCTION_PROPERTY_STATIC ? NULL:script_object
+					,is_static ? NULL:script_object
 					,ptr_function_found
 					,calling_function
 					,instruction
@@ -758,7 +769,7 @@ namespace zetscript{
 
 				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
 					if(!vm_create_shared_pointer(vm,sv)){
-						return false;
+						goto apply_metamethod_error;
 					}
 				}
 			}
@@ -902,7 +913,7 @@ lbl_exit_function:
 		if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so_aux=(ScriptObject *)stk_result_op2->value;
 
-			switch(so_aux->idx_type){
+			switch(so_aux->idx_script_type){
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
 				VM_PUSH_STK_BOOLEAN(
@@ -946,13 +957,14 @@ lbl_exit_function:
 			break;
 			default:
 				// TODO:
-				if(vm_call_static_metamethod_2ops(
+				if(vm_call_metamethod(
 						vm,
 						calling_function,
 						instruction,
 						BYTE_CODE_METAMETHOD_IN,
 						stk_result_op2,
-						stk_result_op1
+						stk_result_op1,
+						false
 				)==false){
 					return false;
 				}

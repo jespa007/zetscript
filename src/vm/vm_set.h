@@ -84,7 +84,7 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_C_VAR_P
 	if(so_aux->isNativeObject()){ /* because object is native, we can have more than one _setter */ \
 		if((ptr_function_found=vm_find_function( \
 				vm \
-				,data->script_type_factory->getScriptType(so_aux->idx_type)\
+				,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 				,calling_function\
 				,instruction\
 				,false\

@@ -68,7 +68,7 @@ namespace zetscript{
 			return;
 		}
 
-		int idx_return_type=c_function->idx_return_type;
+		int idx_script_type_return=c_function->idx_script_type_return;
 		zs_int converted_param[MAX_NATIVE_FUNCTION_ARGS];
 		zs_int result=0;
 		StackElement *stk_arg_current;
@@ -90,12 +90,12 @@ namespace zetscript{
 				idx_arg_start++;
 				n_args++;
 				converted_param[1]=(zs_int)this_object->getNativeObject();
-			}else if(this_object->idx_type != IDX_TYPE_CLASS_MAIN){
+			}else if(this_object->idx_script_type != IDX_TYPE_CLASS_MAIN){
 				VM_ERROR_AND_RET("Function '%s' is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e '%s::%s')"
-						,c_function->function_name.c_str()
+						,c_function->name_script_function.c_str()
 						,this_object->getScriptType()->script_type_name.c_str()
-						,c_function->function_name.c_str()
-						,c_function->function_name.c_str()
+						,c_function->name_script_function.c_str()
+						,c_function->name_script_function.c_str()
 						);
 			}
 		}
@@ -114,7 +114,7 @@ namespace zetscript{
 
 		if((char)c_function->params_len != (n_args)){
 			VM_ERROR_AND_RET("Native function '%s' expects %i arguments but it passed %i arguments"
-					,c_function->function_name.c_str()
+					,c_function->name_script_function.c_str()
 					,c_function->params_len
 					,n_args);
 		}
@@ -131,12 +131,12 @@ namespace zetscript{
 
 				if(!data->zs->convertStackElementToVar(
 						stk_arg_current
-						,c_function->params[i].idx_type
+						,c_function->params[i].idx_script_type
 						,(zs_int *)&converted_param[i]
 						,data->vm_error_str
 				)){
 					VM_ERROR_AND_RET("Function '%s', param %i: %s",
-						c_function->function_name.c_str(),
+						c_function->name_script_function.c_str(),
 						i,
 						data->vm_error_str.c_str()
 					);
@@ -144,7 +144,7 @@ namespace zetscript{
 			}
 		}
 
-		if(c_function->idx_return_type == IDX_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
+		if(c_function->idx_script_type_return == IDX_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
 
 			switch(n_args){
 			case 1:
@@ -217,7 +217,7 @@ namespace zetscript{
 				break;
 			}
 
-		}else if(c_function->idx_return_type==IDX_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
+		}else if(c_function->idx_script_type_return==IDX_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
 			switch(n_args){
 			case 1:
 				result=PTR_FUNCTION_RET_BOOL_PARAM1(fun_ptr)(
@@ -288,7 +288,7 @@ namespace zetscript{
 				);
 				break;
 			}
-		}else if(c_function->idx_return_type==IDX_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
+		}else if(c_function->idx_script_type_return==IDX_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
 			zs_float float_aux=0;
 			switch(n_args){
 			case 1:
@@ -363,7 +363,7 @@ namespace zetscript{
 
 			ZS_FLOAT_COPY(&result,&float_aux);
 
-		}else if(c_function->idx_return_type==IDX_TYPE_STRING_C){ // we must do a float cast in order to get float return.
+		}else if(c_function->idx_script_type_return==IDX_TYPE_STRING_C){ // we must do a float cast in order to get float return.
 
 			switch(n_args){
 			case 1:
@@ -438,7 +438,7 @@ namespace zetscript{
 			}
 
 			result=(zs_int)&str_aux;
-			idx_return_type=IDX_TYPE_STRING_PTR_C;
+			idx_script_type_return=IDX_TYPE_STRING_PTR_C;
 
 		}else{ // generic pointer or int
 
@@ -514,6 +514,6 @@ namespace zetscript{
 			}
 		}
 
-		*data->stk_vm_current++=data->zs->convertVarToStackElement(result,idx_return_type);
+		*data->stk_vm_current++=data->zs->convertVarToStackElement(result,idx_script_type_return);
 	}
 }

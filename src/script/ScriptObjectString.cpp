@@ -101,7 +101,7 @@ namespace zetscript{
 
 		if(args->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)args->value;
-			if(so->idx_type == IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 				sov=(ScriptObjectVector *)so;
 			}
 		}
@@ -250,7 +250,7 @@ namespace zetscript{
 	//----------------------------------------------
 
 	ScriptObjectString::ScriptObjectString(){
-		idx_type=IDX_TYPE_SCRIPT_OBJECT_STRING;
+		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_STRING;
 		default_str_value = "";
 		value = &default_str_value;
 	}

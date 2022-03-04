@@ -19,7 +19,7 @@ namespace zetscript{
 	ScriptFunction::ScriptFunction(
 			ZetScript * _zs
 			,int _idx_script_function
-			,int _idx_type
+			,int _idx_script_type_owner
 			,int _idx_position
 			,const zs_string & _function_name
 			, ScriptFunctionParam **_params
@@ -30,14 +30,14 @@ namespace zetscript{
 		) {
 
 		// function data...
-		idx_type=_idx_type;
-		function_name=_function_name;
+		idx_script_type_owner=_idx_script_type_owner;
+		name_script_function=_function_name;
 		idx_script_function=_idx_script_function;
 		idx_position = _idx_position;
-		idx_return_type = _idx_return_type;
+		idx_script_type_return = _idx_return_type;
 		ref_native_function_ptr=_ref_native_function_ptr;
 		properties = _properties;
-		function_scope = NULL;
+		scope_script_function = NULL;
 		instructions=NULL;
 		instructions_len = 0;
 
@@ -93,9 +93,9 @@ namespace zetscript{
 		zs_string iload_info="";
 
 		if(sc==NULL){ // no class is a function on a global scope
-			symbol_ref=sfo->function_name;
+			symbol_ref=sfo->name_script_function;
 		}else{ // is a class
-			symbol_ref=sfo->function_name;//+zs_string("::")+zs_string("????");
+			symbol_ref=sfo->name_script_function;//+zs_string("::")+zs_string("????");
 			class_str=sc->script_type_name+"::";
 		}
 
@@ -104,7 +104,7 @@ namespace zetscript{
 		printf("______________________________________________________________\n\n");
 		printf(" Function: '%s%s' 									  		  \n",class_str.c_str(),symbol_ref.c_str());
 		printf(" Required stack: %i				  			  				  \n",sfo->min_stack_needed);
-		printf(" Scopes: %i				  			  				   		  \n\n",sfo->function_scope->scopes->count);
+		printf(" Scopes: %i				  			  				   		  \n\n",sfo->scope_script_function->scopes->count);
 		printf(" NUM |RS|AS|          INSTRUCTION                             \n");
 		printf("-----+--+--+--------------------------------------------------\n");
 
@@ -582,7 +582,7 @@ namespace zetscript{
 			{
 				// if exist override, but should be in the same scope
 				THROW_RUNTIME_ERROR("Symbol '%s' defined at %s is already defined at %s"
-					,function_name.c_str()
+					,name_script_function.c_str()
 					,current_file_line.c_str()
 					,_line
 					,symbol_file_line.c_str()
@@ -610,7 +610,7 @@ namespace zetscript{
 				,_file
 				,_line
 				//---- Function data
-				,idx_type 				// idx class is the same which this function belongs to...
+				,idx_script_type_owner 				// idx class is the same which this function belongs to...
 				,_function_name
 				,_params
 				,_params_len
@@ -682,10 +682,10 @@ namespace zetscript{
 	void ScriptFunction::removeUnusuedScopes(){
 
 		// remove children scopes type block
-		function_scope->removeChildrenBlockTypes();
+		scope_script_function->removeChildrenBlockTypes();
 
 		// count number vars at the top most
-		int n_var_scope=function_scope->countVariables(true);
+		int n_var_scope=scope_script_function->countVariables(true);
 
 		// remove last symbols
 		local_variables->resize(n_var_scope);

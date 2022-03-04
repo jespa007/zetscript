@@ -254,7 +254,7 @@ namespace zetscript{
 						Instruction *instruction=&((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction;
 						if(token_node_symbol_class != NULL){ // byte code it will be a type
 							instruction->byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
-							instruction->value_op2=token_node_symbol_class->idx_type;
+							instruction->value_op2=token_node_symbol_class->idx_script_type;
 						}else{ // sc is null
 							if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
 								EVAL_ERROR_FILE_LINE_GOTOF(
@@ -341,7 +341,7 @@ namespace zetscript{
 					if(	it_accessor_token==0){
 						if(
 								token_node_symbol->value == SYMBOL_VALUE_SUPER
-								&& scope_info->script_type->idx_type == IDX_TYPE_CLASS_MAIN){
+								&& scope_info->script_type->idx_script_type == IDX_TYPE_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 									eval_data->current_parsing_file
 									,line
@@ -505,7 +505,7 @@ namespace zetscript{
 							);
 						}
 
-						if(scope_info->script_type->idx_type == IDX_TYPE_CLASS_MAIN){
+						if(scope_info->script_type->idx_script_type == IDX_TYPE_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 								eval_data->current_parsing_file
 								,line
@@ -608,7 +608,7 @@ namespace zetscript{
 
 			if(token_node_symbol->value==SYMBOL_VALUE_THIS){ // only takes symbol this
 
-				if(eval_data->current_function->script_function->idx_type == IDX_TYPE_CLASS_MAIN){
+				if(eval_data->current_function->script_function->idx_script_type_owner == IDX_TYPE_CLASS_MAIN){
 					EVAL_ERROR_FILE_LINE_GOTOF(
 						eval_data->current_parsing_file
 						,line

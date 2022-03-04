@@ -96,8 +96,8 @@ namespace zetscript{
 
 		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN)){
 
-			if(calling_function->function_scope->symbol_variables->count>0){
-				VM_PUSH_SCOPE(calling_function->function_scope);
+			if(calling_function->scope_script_function->symbol_variables->count>0){
+				VM_PUSH_SCOPE(calling_function->scope_script_function);
 			}
 
 			// reset local variables symbols (not arg symbols)
@@ -141,12 +141,12 @@ namespace zetscript{
 				// determine object ...
 				if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					ScriptObject *obj=(ScriptObject *)stk_result_op1->value;
-					if(		   obj->idx_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR
-							|| obj->idx_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT
-							|| obj->idx_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS
+					if(		   obj->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR
+							|| obj->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT
+							|| obj->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS
 					){
 
-						if(obj->idx_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+						if(obj->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 							ScriptObjectVector *so_vector=(ScriptObjectVector *)obj;
 
 							if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
@@ -177,7 +177,7 @@ namespace zetscript{
 							VM_PUSH_STK_PTR(stk_var);
 						}
 						continue;
-					}else if(obj->idx_type==IDX_TYPE_SCRIPT_OBJECT_STRING){
+					}else if(obj->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_STRING){
 						ScriptObjectString *so_string=(ScriptObjectString *)stk_result_op1->value;
 
 						if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
@@ -337,7 +337,7 @@ find_element_object:
 								VM_INNER_CALL_ONLY_RETURN(
 										stk_mp->so_object
 										,stk_mp->member_property->metamethod_members.getter
-										,stk_mp->member_property->metamethod_members.getter->function_name.c_str()
+										,stk_mp->member_property->metamethod_members.getter->name_script_function.c_str()
 										,true
 								);
 
@@ -393,7 +393,7 @@ find_element_object:
 
 				if((data->stk_vm_current-1)->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					so_aux = (ScriptObject *)(data->stk_vm_current-1)->value;
-					if(so_aux->idx_type == IDX_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
+					if(so_aux->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
 						// op1 is now the src value ...
 						stk_src=stk_result_op1;
 						if(stk_src->properties & STK_PROPERTY_PTR_STK){
@@ -730,7 +730,7 @@ find_element_object:
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
 					VM_PUSH_STK_BOOLEAN((!(*((zs_float *)(&stk_result_op1->value)))==0));
 				}else{
-					if(vm_call_static_metamethod_2ops(
+					if(vm_call_metamethod(
 						vm
 						,calling_function
 						,instruction
@@ -749,7 +749,7 @@ find_element_object:
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
 					VM_PUSH_STK_ZS_FLOAT(-*((zs_float *)&stk_result_op1->value));
 				}else{ // try metamethod ...
-					if(!vm_call_static_metamethod_2ops(
+					if(!vm_call_metamethod(
 							vm
 							,calling_function
 							,instruction
@@ -827,7 +827,7 @@ find_element_object:
 				default:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						bool b = data->script_type_factory->isScriptClassTypeInheritsFrom(			//
-								((ScriptObjectObject *)(stk_result_op1->value))->idx_type // A
+								((ScriptObjectObject *)(stk_result_op1->value))->idx_script_type // A
 								, instruction->value_op2		// B
 						);
 						VM_PUSH_STK_BOOLEAN(b);
@@ -953,7 +953,7 @@ load_function:
 				  if(sofm->so_object==NULL){
 					  VM_STOP_EXECUTE(
 							  "Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced"
-							  ,sofm->so_function->function_name.c_str()
+							  ,sofm->so_function->name_script_function.c_str()
 							  , SFI_GET_SYMBOL_NAME(calling_function,instruction));
 				  }
 				  sf_call_calling_object=sofm->so_object;
@@ -1012,7 +1012,7 @@ execute_function:
 
 									if((stk_arg->properties & STK_PROPERTY_PTR_STK) != STK_PROPERTY_PTR_STK){
 										VM_STOP_EXECUTE("Calling function '%s', parameter '%i': Argument by reference has to be variable"
-												,sf_call_script_function->function_name.c_str(),i+1);
+												,sf_call_script_function->name_script_function.c_str(),i+1);
 									}
 
 									ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg,data->vm_idx_call);
@@ -1039,7 +1039,7 @@ execute_function:
 
 								if((stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT)  && (is_stk_this==false)){
 									so_param=(ScriptObject *)stk_arg->value;
-									if(so_param->idx_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
+									if(so_param->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 										ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
 										if(!vm_create_shared_pointer(vm,sc)){
 											goto lbl_exit_function;
@@ -1132,11 +1132,11 @@ execute_function:
 							sf_call_is_member_function
 						){
 							ignore_call= (sf_call_is_constructor) && sf_call_calling_object->isNativeObject() && sf_call_n_args==0;
-							sc=data->script_type_factory->getScriptType(sf_call_calling_object->idx_type);
-						}else if(sf_call_script_function->idx_type != IDX_TYPE_CLASS_MAIN
+							sc=data->script_type_factory->getScriptType(sf_call_calling_object->idx_script_type);
+						}else if(sf_call_script_function->idx_script_type_owner != IDX_TYPE_CLASS_MAIN
 								&& (sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)
 						){
-							sc=data->script_type_factory->getScriptType(sf_call_script_function->idx_type);
+							sc=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner);
 						}
 
 						if(ignore_call == false)
@@ -1148,7 +1148,7 @@ execute_function:
 									,calling_function
 									,instruction
 									,sf_call_is_constructor
-									,sf_call_script_function->function_name // symbol to find
+									,sf_call_script_function->name_script_function // symbol to find
 									,sf_call_stk_start_arg_call
 									,sf_call_n_args))==NULL){
 								goto lbl_exit_function;
@@ -1180,23 +1180,25 @@ execute_function:
 				if(data->vm_error == true){
 					// if System::assert -> not add in callstack trace
 
-					if((((calling_function->function_name=="assert" || calling_function->function_name=="error") && (sf_call_script_function->function_name=="errorNative")))==false
-												&&
-											data->vm_error_max_stack_reached==false
+					if((((calling_function->name_script_function=="assert" || calling_function->name_script_function=="error") && (sf_call_script_function->name_script_function=="errorNative"))
+							|| ((calling_function->name_script_function=="eval") && (sf_call_script_function->name_script_function=="evalNative"))
+					)==false
+							&&
+					data->vm_error_max_stack_reached==false
 					){
 						const char *str_class_owner=NULL;
 						if(	(sf_call_script_function->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!=0
 								||
 							(sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)!=0
 						){
-							str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_type)->script_type_name.c_str();
+							str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->script_type_name.c_str();
 						}
 
 						data->vm_error_callstack_str+=zs_strutils::format(
 							"\nat calling function %s%s%s (file:%s line:%i)" // TODO: get full symbol ?
 							,str_class_owner==NULL?"":str_class_owner
 							,str_class_owner==NULL?"":"::"
-							,sf_call_script_function->function_name.c_str()
+							,sf_call_script_function->name_script_function.c_str()
 							,SFI_GET_FILE(calling_function,instruction)
 							,SFI_GET_LINE(calling_function,instruction)
 						);
@@ -1250,7 +1252,7 @@ execute_function:
 							ScriptObject *script_var=(ScriptObject *)stk_it->value;
 
 							//special case for constant string object (they don't are shared elements)
-							if(script_var->idx_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (script_var->shared_pointer==NULL)){
+							if(script_var->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (script_var->shared_pointer==NULL)){
 								// if is not shared is constant...
 								ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
 								sc->set(script_var->toString());
@@ -1290,7 +1292,7 @@ execute_function:
 						goto lbl_exit_function;
 					}
 
-					if(so_aux->idx_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
+					if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
 						ScriptObjectClass *so_class_aux=(ScriptObjectClass *)so_aux;
 						so_class_aux->info_function_new=calling_function;
 						so_class_aux->instruction_new=instruction;
@@ -1317,7 +1319,7 @@ execute_function:
 						data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
 						data->stk_vm_current++;
 
-						if(so_aux->idx_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
+						if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
 
 							ScriptObjectClass *so_class_aux=(ScriptObjectClass *)so_aux;
 							so_class_aux->info_function_new=calling_function;
@@ -1383,7 +1385,7 @@ execute_function:
 							goto lbl_exit_function;
 						}
 
-						if(so_aux->idx_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS)
+						if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS)
 						{ // max ...
 							script_object_class=(ScriptObjectClass *)so_aux;
 
@@ -1513,7 +1515,7 @@ execute_function:
 				VM_INNER_CALL_ONLY_RETURN(
 						stk_mp->so_object
 						,stk_mp->member_property->metamethod_members.getter
-						,stk_mp->member_property->metamethod_members.getter->function_name.c_str()
+						,stk_mp->member_property->metamethod_members.getter->name_script_function.c_str()
 						,true
 				);
 

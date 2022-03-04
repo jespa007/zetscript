@@ -13,7 +13,7 @@ namespace zetscript{
 	}
 
 	void ScriptObjectIteratorObject::setup(){
-			idx_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT;
+			idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT;
 			oo = NULL;
 			vm=NULL;
 			stk_key.setUndefined();

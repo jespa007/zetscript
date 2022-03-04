@@ -10,7 +10,7 @@ namespace zetscript{
 		ScriptObjectMemberFunction *sofm=new ScriptObjectMemberFunction();
 		sofm->init(zs);
 
-		if(_so_object->idx_type<IDX_TYPE_SCRIPT_OBJECT_STRING){
+		if(_so_object->idx_script_type<IDX_TYPE_SCRIPT_OBJECT_STRING){
 			THROW_RUNTIME_ERRORF("Internal:Expected object object or class object");
 		}
 
@@ -25,7 +25,7 @@ namespace zetscript{
 	}
 
 	void ScriptObjectMemberFunction::setup(){
-		idx_type=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
+		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
 		this->so_function=NULL;
 		this->so_object=NULL;
 	}

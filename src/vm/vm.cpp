@@ -112,7 +112,7 @@ namespace zetscript{
 				return false;
 			}
 
-			ZS_LOG_DEBUG("Share pointer %i:%p",_node->data.ptr_script_object_shared->idx_type,_node->data.ptr_script_object_shared);
+			ZS_LOG_DEBUG("Share pointer %i:%p",_node->data.ptr_script_object_shared->idx_script_type,_node->data.ptr_script_object_shared);
 
 		}
 		return true;

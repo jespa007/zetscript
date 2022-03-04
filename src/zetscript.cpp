@@ -110,11 +110,11 @@ namespace zetscript{
 				"}"
 				//------------------------------------------------
 				// DateTime
-				"static DateTime::now(zs){" // add static function now
+				"static DateTime::now(){" // add static function now
 				"	return new DateTime()"
 				"}"
 
-				"static DateTime::nowUtc(zs){" // add static function nowUtc
+				"static DateTime::nowUtc(){" // add static function nowUtc
 				"   var t=new DateTime();"
 				"   t.setUtc()"
 				"   return t;"
@@ -156,16 +156,6 @@ namespace zetscript{
 				// Json
 				"static Json::serialize(stk,formatted=false){"
 				"	return Json::serializeNative(stk,formatted)"
-				"}"
-				//------------------------------------------------
-				// DateTime
-				"static DateTime::now(){"
-				"	return new DateTime();"
-				"}"
-				"static DateTime::nowUtc(){"
-				"	var dt=new DateTime();"
-				"   dt.setUtc();"
-				"   return dt; "
 				"}"
 			,
 			(intptr_t)this
@@ -213,7 +203,7 @@ namespace zetscript{
 		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
 
 		 // list functions
-		 zs_vector *symbol_functions=sf_main->function_scope->symbol_functions;
+		 zs_vector *symbol_functions=sf_main->scope_script_function->symbol_functions;
 
 		 // print main function
 		 ScriptFunction::printGeneratedCode(sf_main);
@@ -227,7 +217,7 @@ namespace zetscript{
 				ScriptFunction *local_sf = (ScriptFunction *)symbol->ref_ptr;
 				bool show_function=true;
 				 if(show_system_code == false && (
-						 zs_strutils::starts_with(local_sf->function_name,"_@afun_defval")
+						 zs_strutils::starts_with(local_sf->name_script_function,"_@afun_defval")
 				)){
 					 show_function=false;
 				 }

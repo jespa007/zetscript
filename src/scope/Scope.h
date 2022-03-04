@@ -45,7 +45,7 @@ namespace zetscript{
 		//--------------------------------------------------------------------
 		// Functions
 
-		Scope(ZetScript * _zs, int idx_sf, Scope * _scope_parent=NULL,uint16_t _properties=0);
+		Scope(ZetScript * _zs, int _idx_script_function, Scope * _scope_parent=NULL,uint16_t _properties=0);
 
 		//--------------------------------------------------------------------
 		// Register functions

@@ -179,9 +179,9 @@ namespace zetscript{
 							return false;
 						}
 
-						if(idx_builtin_type!=script_object->idx_type){
+						if(idx_builtin_type!=script_object->idx_script_type){
 
-							if(script_object->idx_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
+							if(script_object->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
 								if(stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
 									error= "internal error var_ref is NULL";
 									return false;
@@ -199,7 +199,7 @@ namespace zetscript{
 									error.append("'");
 									return false;
 								}
-							}else if(script_object->idx_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
+							}else if(script_object->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
 								ScriptObjectClass *script_object_class = (ScriptObjectClass *)script_object;
 								c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
 
@@ -207,7 +207,7 @@ namespace zetscript{
 									if((val_ret=c_class->isDerivedFrom(
 											idx_builtin_type
 										))==0
-									){//c_class->idx_type==idx_builtin_type){
+									){//c_class->idx_script_type==idx_builtin_type){
 										error = "cannot convert '";
 										error.append(zs_rtti::demangle(script_object_class->getTypeNamePtr()));
 										error.append("' to '");
@@ -1238,7 +1238,7 @@ namespace zetscript{
 
 			const char *return_type;
 			zs_vector params;
-			int idx_return_type=-1;
+			int idx_script_type_return=-1;
 			void *ptr=NULL;
 
 
@@ -1247,7 +1247,7 @@ namespace zetscript{
 			getParamsFunction<Traits3>(&return_type, params, MakeIndexSequence<Traits3::arity>{});
 
 			// 2. check valid parameters ...
-			if((idx_return_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
+			if((idx_script_type_return=script_type_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
 				THROW_RUNTIME_ERROR("Return type '%s' for bind function not registered",zs_rtti::demangle(return_type).c_str());
 				return NULL;
 			}
@@ -1301,7 +1301,7 @@ namespace zetscript{
 				for(int i=0; i < access_var.count-1; i++){
 					zs_string *symbol_to_find=(zs_string *)access_var.items[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
-						zs_vector *list_variables=main_function->function_scope->symbol_variables;
+						zs_vector *list_variables=main_function->scope_script_function->symbol_variables;
 						for(int j = 0; j < list_variables->count && calling_obj==NULL; j++){
 							Symbol * registered_symbol=(Symbol *)list_variables->items[j];
 							if(registered_symbol->name==*symbol_to_find
@@ -1383,12 +1383,12 @@ namespace zetscript{
 
 			}else{ // some function in main function
 				zs_string *symbol_to_find=(zs_string *)access_var.items[0];
-				zs_vector *list_functions=main_function->function_scope->symbol_functions;
+				zs_vector *list_functions=main_function->scope_script_function->symbol_functions;
 
 				for(int i = 0; i < list_functions->count && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->items[i];
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
-					if(	aux_fun_obj->function_name  == *symbol_to_find){
+					if(	aux_fun_obj->name_script_function  == *symbol_to_find){
 						fun_obj=aux_fun_obj;
 					}
 

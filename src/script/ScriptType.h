@@ -19,8 +19,7 @@ namespace zetscript{
 
 	public:
 
-		int 			idx_type; 	// registered class idx
-
+		int 			idx_script_type; 	// registered class idx
 		zs_string 		script_type_name;		// info symbol class
 		Scope			*script_type_scope;
 		const char 		*script_type_name_ptr; // type_id().name();
@@ -44,14 +43,14 @@ namespace zetscript{
 		zs_vector						   	*   idx_base_types; // list of idx of classes base
 
 		 ScriptType(ZetScript *_zs
-				 ,short _idx_type
+				 ,short _idx_script_type
 				 , zs_string _name
 				 , Scope *_scope
 				 ,const char *  script_type_name_ptr=TYPE_SCRIPT_VARIABLE
 				 ,uint16_t _properties=0
 		);
 
-		 bool isDerivedFrom(short idx_type);
+		 bool isDerivedFrom(short idx_script_type);
 
 		//---------------------------------------------------
 		//
@@ -119,7 +118,7 @@ namespace zetscript{
 		//
 		// FUNCTIONS
 		//
-		unsigned 	getNumNativeFunctions(const zs_string & function_name);
+		unsigned 	getNumNativeFunctions(const zs_string & name_script_function);
 
 		Symbol				* 	registerMemberFunction(
 			 const zs_string & _function_name
@@ -182,7 +181,7 @@ namespace zetscript{
 
 
 
-		ScriptType * 					getScriptType(short idx_type);
+		ScriptType * 					getScriptType(short idx_script_type);
 		short							getIdxScriptTypeFromTypeNamePtr(const char  * s);
 	};
 }

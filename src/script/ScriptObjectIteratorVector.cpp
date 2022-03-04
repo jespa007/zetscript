@@ -15,7 +15,7 @@ namespace zetscript{
 
 
 	void ScriptObjectIteratorVector::setup(){
-		idx_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR;
+		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR;
 		vo = NULL;
 		vm=NULL;
 		idx=0;

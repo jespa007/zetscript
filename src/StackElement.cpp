@@ -33,7 +33,7 @@ namespace zetscript{
 		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT;
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result=zs_string("fun@")+((ScriptFunction *)stk->value)->function_name;
+			result=zs_string("fun@")+((ScriptFunction *)stk->value)->name_script_function;
 		else if(STK_VALUE_IS_TYPE(stk)) // is a class
 			result=zs_string("type@")+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_PROPERTY(stk)){
@@ -42,7 +42,7 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-			result="fun@"+sf->function_scope->script_type->script_type_name+"::"+sf->function_name;
+			result="fun@"+sf->scope_script_function->script_type->script_type_name+"::"+sf->name_script_function;
 		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
@@ -77,9 +77,9 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_FUNCTION(stk)){
 			if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 				ScriptFunction *sf=(ScriptFunction *)stk->value;
-				result= zs_string("FunctionMember")+"@"+"UnknowClass(TODO)"+"::"+sf->function_name;
+				result= zs_string("FunctionMember")+"@"+"UnknowClass(TODO)"+"::"+sf->name_script_function;
 			}else{ // normal function
-				result= zs_string("Function")+"@"+((ScriptFunction *)stk->value)->function_name;
+				result= zs_string("Function")+"@"+((ScriptFunction *)stk->value)->name_script_function;
 			}
 		}else if(STK_VALUE_IS_TYPE(stk)){
 			result= zs_string("type")+"@"+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
@@ -139,7 +139,7 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_BOOLEAN(stk)){
 			result.value=IDX_TYPE_BOOL_C;
 		}else if(STK_VALUE_IS_SCRIPT_OBJECT(stk)){
-			result.value=((ScriptObjectObject *)stk->value)->getScriptType()->idx_type;
+			result.value=((ScriptObjectObject *)stk->value)->getScriptType()->idx_script_type;
 		}
 
 		return result;

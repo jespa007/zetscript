@@ -11,11 +11,11 @@
 namespace zetscript{
 
 	//------------------------------------------------------------------------------------------------
-	Scope::Scope(ZetScript * _zs,int idx_sf, Scope * _scope_parent, uint16_t _properties){
+	Scope::Scope(ZetScript * _zs,int _idx_script_function, Scope * _scope_parent, uint16_t _properties){
 		scope_parent = _scope_parent;
 		properties = _properties;
 		script_type=NULL;
-		idx_script_function=idx_sf;
+		idx_script_function=_idx_script_function;
 		zs=_zs;
 		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
 		scope_factory=_zs->getScopeFactory();

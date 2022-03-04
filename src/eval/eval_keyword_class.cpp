@@ -339,7 +339,7 @@ namespace zetscript{
 			Symbol *symbol_attrib=NULL;
 			MemberProperty *mp=NULL;
 			
-			zs_string function_name;
+			zs_string name_script_function;
 			zs_string error;
 
 			try{
@@ -378,7 +378,7 @@ namespace zetscript{
 							eval_data
 							,aux_p
 							,line
-							,function_name
+							,name_script_function
 					);
 
 					if(end_var == NULL){
@@ -395,12 +395,12 @@ namespace zetscript{
 						,scope_info // pass class scope
 						, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY | EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
 						,&symbol
-						,function_name+"@"+property_name
+						,name_script_function+"@"+property_name
 					))==NULL){
 						return NULL;
 					}
 
-					if(function_name == "_get"){
+					if(name_script_function == "_get"){
 						if(mp->metamethod_members.getter==NULL){
 							mp->metamethod_members.getter=(ScriptFunction *)symbol->ref_ptr;
 						}else{
@@ -411,7 +411,7 @@ namespace zetscript{
 								,property_name.c_str()
 							);
 						}
-					}else if(function_name == "_post_inc"){
+					}else if(name_script_function == "_post_inc"){
 						if(mp->metamethod_members.post_inc==NULL){
 							mp->metamethod_members.post_inc=(ScriptFunction *)symbol->ref_ptr;
 						}else{
@@ -422,7 +422,7 @@ namespace zetscript{
 								,property_name.c_str()
 							);
 						}
-					}else if(function_name == "_post_dec"){
+					}else if(name_script_function == "_post_dec"){
 						if(mp->metamethod_members.post_dec==NULL){
 							mp->metamethod_members.post_dec=(ScriptFunction *)symbol->ref_ptr;
 						}else{
@@ -433,7 +433,7 @@ namespace zetscript{
 								,property_name.c_str()
 							);
 						}
-					}else if(function_name == "_pre_inc"){
+					}else if(name_script_function == "_pre_inc"){
 						if(mp->metamethod_members.pre_inc==NULL){
 							mp->metamethod_members.pre_inc=(ScriptFunction *)symbol->ref_ptr;
 						}else{
@@ -444,7 +444,7 @@ namespace zetscript{
 								,property_name.c_str()
 							);
 						}
-					}else if(function_name == "_pre_dec"){
+					}else if(name_script_function == "_pre_dec"){
 						if(mp->metamethod_members.pre_dec==NULL){
 							mp->metamethod_members.pre_dec=(ScriptFunction *)symbol->ref_ptr;
 						}else{
@@ -455,7 +455,7 @@ namespace zetscript{
 								,property_name.c_str()
 							);
 						}
-					}else if(function_name == "_neg"){
+					}else if(name_script_function == "_neg"){
 						if(mp->metamethod_members.neg==NULL){
 							mp->metamethod_members.neg=(ScriptFunction *)symbol->ref_ptr;
 						}else{
@@ -467,7 +467,7 @@ namespace zetscript{
 							);
 						}
 					}else{ // find setter
-						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(function_name.c_str());
+						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name_script_function.c_str());
 
 						if(_mp_info.byte_code_metamethod!=BYTE_CODE_METAMETHOD_INVALID){
 							if(_mp_info.setters->count == 0){
@@ -487,7 +487,7 @@ namespace zetscript{
 								eval_data->current_parsing_file
 								,line
 								,"unexpected metamethod '%s' in property '%s::%s'"
-								,function_name.c_str()
+								,name_script_function.c_str()
 								,class_property_name.c_str()
 								,property_name.c_str()
 							);

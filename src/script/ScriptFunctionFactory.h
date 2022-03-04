@@ -30,17 +30,17 @@ namespace zetscript{
 				, const char * file
 				, short line
 				//--- Function data
-			    , int idx_type
-				, const zs_string & function_name
+			    , int idx_script_type
+				, const zs_string & name_script_function
 				, ScriptFunctionParam **_params
 				,int _params_len
 
-				, int idx_return_type=ZS_IDX_UNDEFINED
+				, int idx_script_type_return=ZS_IDX_UNDEFINED
 				, zs_int ref_native_function_ptr=0
 				, unsigned short properties=0
 			);
 
-			 bool							checkCanregisterNativeFunction(const zs_string & function_name);
+			 bool							checkCanregisterNativeFunction(const zs_string & name_script_function);
 
 			 ScriptFunction 			* 	getScriptFunction(int idx);
 			 void							setScriptFunction(int idx, ScriptFunction *sf);

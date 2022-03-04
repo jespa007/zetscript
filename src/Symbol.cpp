@@ -75,7 +75,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("Native symbol '%s' has type '%s' that is not registered", symbol->name.c_str(), symbol->str_native_type.c_str());
 			}
 
-			ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs, info_registered_class->idx_type, ptr_variable);
+			ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs, info_registered_class->idx_script_type, ptr_variable);
 
 			return{
 					(zs_int)var,

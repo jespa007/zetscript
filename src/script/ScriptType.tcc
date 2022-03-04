@@ -4,7 +4,7 @@
  */
 /*
 #define ZS_CHECK_TEST_MEMBER_FUNCTION_PARAMETER(STR_CLASS_NAME,STR_FUNCTION_NAME,STR_EXPECTED_TYPE_NAME,PLACE_PARAM,STR_PLACE_PARAM)\
-		ScriptType * c_class_arg=	params_len<PLACE_PARAM?getScriptType(params[PLACE_PARAM].idx_type):NULL;\
+		ScriptType * c_class_arg=	params_len<PLACE_PARAM?getScriptType(params[PLACE_PARAM].idx_script_type):NULL;\
 		if(c_class_arg == NULL){\
 			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have "STR_PLACE_PARAM" parameter as pointer type '%s')"\
 				,STR_CLASS_NAME\
@@ -23,7 +23,7 @@
 		}\
 
 #define ZS_CHECK_TEST_FUNCTION_PARAMETER(STR_FUNCTION_NAME,STR_EXPECTED_TYPE_NAME,PLACE_PARAM,STR_PLACE_PARAM)\
-		ScriptType * c_class_first_arg=	params_len<PLACE_PARAM?getScriptType(params[PLACE_PARAM].idx_type):NULL;\
+		ScriptType * c_class_first_arg=	params_len<PLACE_PARAM?getScriptType(params[PLACE_PARAM].idx_script_type):NULL;\
 		if(c_class_first_arg == NULL){\
 			THROW_RUNTIME_ERROR("register native function '%s': needs to have "STR_PLACE_PARAM" parameter as pointer type '%s')"\
 				,STR_FUNCTION_NAME\
@@ -80,7 +80,7 @@ namespace zetscript{
 		int params_len=0;
 		const char *return_type;
 
-		int idx_return_type=getNativeFunctionRetArgsTypes(
+		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 				this->script_type_factory
 				,this
 				,_function_name
@@ -96,14 +96,14 @@ namespace zetscript{
 				,&params
 				,params_len
 				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_STATIC
-				, idx_return_type
+				, idx_script_type_return
 				, (zs_int)_ptr_function
 				,_registered_file
 				,_registered_line
 
 		);
 
-		ZS_LOG_DEBUG("Registered member function name %s::%s",this->name.c_str(), function_name.c_str());
+		ZS_LOG_DEBUG("Registered member function name %s::%s",this->name.c_str(), name_script_function.c_str());
 	}
 
 	/*
@@ -123,7 +123,7 @@ namespace zetscript{
 		zs_string error;
 
 		// 1. check all parameters ok.
-		int idx_return_type=getNativeFunctionRetArgsTypes(
+		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 				this->script_type_factory
 				,this
 				,_function_name
@@ -132,7 +132,7 @@ namespace zetscript{
 				,&params_len
 		);
 
-		ScriptType * c_class_first_arg=	params_len>1?getScriptType(params[1].idx_type):NULL;
+		ScriptType * c_class_first_arg=	params_len>1?getScriptType(params[1].idx_script_type):NULL;
 		if(c_class_first_arg == NULL){
 			THROW_RUNTIME_ERROR("register native function '%s::%s': needs to have SECOND parameter as pointer type '%s')"
 				,script_type_name.c_str()
@@ -159,7 +159,7 @@ namespace zetscript{
 				, &params
 				, params_len
 				, FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION
-				, idx_return_type
+				, idx_script_type_return
 				, (zs_int)_ptr_function
 				,_registered_file
 				, _registered_line

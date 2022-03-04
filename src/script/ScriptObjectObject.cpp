@@ -50,7 +50,7 @@ namespace zetscript{
 	//----------------------------------------------
 
 	ScriptObjectObject::ScriptObjectObject(){
-		idx_type=IDX_TYPE_SCRIPT_OBJECT_OBJECT;
+		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_OBJECT;
 		map_user_properties=new zs_map();
 	}
 
@@ -127,7 +127,7 @@ namespace zetscript{
 	}
 
 	size_t	ScriptObjectObject::length(){
-		return this->map_builtin_properties->count();
+		return this->map_user_properties->count();
 	}
 
 	bool ScriptObjectObject::eraseUserProperty(const zs_string & property_name/*, const ScriptFunction *info_function*/){

@@ -169,11 +169,11 @@ namespace zetscript{
 			,int *_params_len
 			, const char **_str_return_type=NULL
 	){
-		int idx_return_type=-1;
+		int idx_script_type_return=-1;
 		const char * return_type;
 		zs_vector args;
 		zs_string error="";
-		zs_string function_name=_script_type==NULL?_function_name:_script_type->script_type_name+"::"+_function_name;
+		zs_string name_script_function=_script_type==NULL?_function_name:_script_type->script_type_name+"::"+_function_name;
 		// 1. check all parameters ok.
 		using Traits3 = FunctionTraits<decltype(_ptr_function)>;
 		getParamsFunction<Traits3>(&return_type, args, MakeIndexSequence<Traits3::arity>{});
@@ -181,16 +181,16 @@ namespace zetscript{
 		if(args.count>MAX_NATIVE_FUNCTION_ARGS){
 			THROW_RUNTIME_ERROR(
 				"Error register function '%s': max arguments reached (max:'%i')"
-				,function_name.c_str()
+				,name_script_function.c_str()
 				,MAX_NATIVE_FUNCTION_ARGS
 			);
 		}
 
 		// check valid parameters ...
-		if((idx_return_type=_script_class_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
+		if((idx_script_type_return=_script_class_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
 			THROW_RUNTIME_ERROR(
 				"Error register function '%s': return type '%s' not registered"
-				,function_name.c_str()
+				,name_script_function.c_str()
 				,zs_rtti::demangle(return_type).c_str()
 			);
 		}
@@ -202,45 +202,45 @@ namespace zetscript{
 			if(args.count==0){
 				THROW_RUNTIME_ERROR(
 					"Error register function '%s': It expectes at FIRST parameter as 'ZetScript *'"
-					,function_name.c_str()
+					,name_script_function.c_str()
 				);
 			}
 
 			for(int i = 0; i < args.count; i++){
 				const char *param=(const char *)args.items[i];
-				int idx_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
+				int idx_script_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
 
 				if(i==0){
-					if(idx_type!=IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT){
+					if(idx_script_type!=IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT){
 						THROW_RUNTIME_ERROR(\
 							"Error register function '%s': expected 'ZetScript *' as FIRST parameter but it was '%s'"
-							,function_name.c_str()
+							,name_script_function.c_str()
 							,param
 						);
 					}
 				}
 
 				// exception: These variables are registered but not allowed to pass throught parameter
-				if(idx_type==IDX_TYPE_ZS_FLOAT_C || idx_type==IDX_TYPE_BOOL_C || idx_type == IDX_TYPE_STRING_C){
+				if(idx_script_type==IDX_TYPE_ZS_FLOAT_C || idx_script_type==IDX_TYPE_BOOL_C || idx_script_type == IDX_TYPE_STRING_C){
 					error=zs_strutils::format("Error register function '%s': argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
-							,function_name.c_str()
+							,name_script_function.c_str()
 							,i+1
 							,zs_rtti::demangle(param).c_str()
 							,zs_rtti::demangle(param).c_str());
 					goto exit_function_traits;
 				}
 
-				if(idx_type==ZS_IDX_UNDEFINED){
+				if(idx_script_type==ZS_IDX_UNDEFINED){
 
 					error=zs_strutils::format("Error register function '%s': argument %i type '%s' not registered"
-						,function_name.c_str()
+						,name_script_function.c_str()
 						,i+1
 						,zs_rtti::demangle(param).c_str()
 					);
 					goto exit_function_traits;
 				}
 
-				(*_params)[i]=ScriptFunctionParam(idx_type,param);
+				(*_params)[i]=ScriptFunctionParam(idx_script_type,param);
 			}
 		}
 
@@ -263,7 +263,7 @@ exit_function_traits:
 			*_str_return_type=return_type;
 		}
 
-		return idx_return_type;
+		return idx_script_type_return;
 
 	}
 
