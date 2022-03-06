@@ -51,8 +51,6 @@ namespace zetscript{
 			, const char *  _filename=""
 			, int _line=1
 			,ScriptFunction *sf=NULL
-			/*,ScriptFunctionParam *function_params=NULL
-			,size_t function_params_len=0*/
 			);
 
 	void	eval_deinit();

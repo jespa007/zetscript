@@ -32,8 +32,6 @@ namespace zetscript{
 			, const char *  _filename
 			, int _line
 			, ScriptFunction *_sf
-			/*, ScriptFunctionParam * function_params
-			, size_t function_params_len*/
 	){
 		EvalData *eval_data=new EvalData(zs);
 		char *aux_p=NULL;
@@ -45,31 +43,10 @@ namespace zetscript{
 		Scope *scope_info=MAIN_SCOPE(eval_data);
 		eval_data->current_parsing_file=_filename;
 		ScriptFunction *sf = _sf == NULL?MAIN_FUNCTION(eval_data):_sf;
-
-		//if(sf->idx_script_function!=IDX_ZS_SCRIPT_FUNCTION_EVAL){
 		sf->removeUnusuedScopes();
-		//}
 
 		if(sf != MAIN_FUNCTION(eval_data)){ // remove/reset old code
-
 			scope_info =sf->scope_script_function;// NEW_SCOPE(eval_data,sf->idx_script_function,MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
-			/*MAIN_SCOPE(eval_data)->scopes->push_back((zs_int)scope_info);
-
-			if(function_params != NULL){
-
-				// register args as part of stack...
-				for(unsigned i=0; i < function_params_len; i++){
-
-					sf->registerLocalArgument(
-						scope_info
-						,""
-						,-1
-						,function_params[i].name
-						,0
-					);
-
-				}
-			}*/
 		}
 
 		eval_push_function(eval_data,sf);
@@ -83,18 +60,7 @@ namespace zetscript{
 		}
 
 		if(sf != MAIN_FUNCTION(eval_data) && sf->idx_script_function != IDX_ZS_SCRIPT_FUNCTION_EVAL){ // is anonyomuse function
-			if(scope_info->symbol_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
-
-					/*eval_data->current_function->instructions.insert(
-							eval_data->current_function->instructions.begin()
-							,new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope_info)
-					);*/
-
-					// and finally insert pop scope
-					//eval_data->current_function->instructions.push_back(new EvalInstruction(BYTE_CODE_POP_SCOPE,0));
-
-			}
-			else{ // remove scope
+			if(scope_info->symbol_variables->count == 0){ // remove scope
 				scope_info->markAsUnusued();
 			}
 		}
@@ -296,9 +262,10 @@ namespace zetscript{
 							// compile but not execute, it will execute the last eval
 							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE);
 						}catch(zs_exception & ex){
-							EVAL_ERROR_FILE_LINEF(str_symbol,ex.getErrorLine(),ex.getErrorDescription().c_str());
-						}catch(std::exception & ex){
-							EVAL_ERROR("%s : %s",str_symbol.c_str(),ex.what());
+							eval_data->error=true;\
+							eval_data->error_str=zetscript::zs_strutils::format("%s\n",ex.what());
+							eval_data->error_str+=zetscript::zs_strutils::format("[%s:%i] from import '%s'",zs_path::get_filename(eval_data->current_parsing_file).c_str(),line,str_symbol.c_str());
+							return 0;
 						}
 
 						aux++;// advance ..
@@ -504,7 +471,6 @@ namespace zetscript{
 						){
 						symbol_sf_foundf = symbol_member;
 					}
-
 				}
 
 				// ok get the super function...
@@ -532,7 +498,7 @@ namespace zetscript{
 				eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(
 						eval_data
 						,zs_string(
-								((ScriptFunction *)symbol_sf_foundf->ref_ptr)->scope_script_function->script_type->script_type_name)+"::"+symbol_sf_foundf->name);
+								((ScriptFunction *)symbol_sf_foundf->ref_ptr)->scope_script_function->script_type_owner->script_type_name)+"::"+symbol_sf_foundf->name);
 
 				break;
 			case BYTE_CODE_CALL:

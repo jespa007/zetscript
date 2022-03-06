@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	size_t zs_string::npos=(size_t)(-1);
+	int zs_string::npos=-1;
 
 
 	zs_string::zs_string() : buf(NULL), size(0) // default constructor
@@ -81,26 +81,26 @@ namespace zetscript{
 		return *this;
 	}
 
-    char& zs_string::operator[] (size_t pos){
+    char& zs_string::operator[] (int pos){
 
     	if(pos>=size) THROW_EXCEPTION("zs_string::access out of bounds");
 
     	return buf[pos];
     }
 
-    const char& zs_string::operator[] (size_t pos) const{
+    const char& zs_string::operator[] (int pos) const{
     	if(pos>=size) THROW_EXCEPTION("zs_string::access out of bounds");
 
     	return buf[pos];
     }
 
-    char& zs_string::at (size_t pos){
+    char& zs_string::at (int pos){
     	if(pos>=size) THROW_EXCEPTION("zs_string::at out of bounds");
 
     	return buf[pos];
     }
 
-    const char& zs_string::at (size_t pos) const{
+    const char& zs_string::at (int pos) const{
     	if(pos>=size) THROW_EXCEPTION("zs_string::at out of bounds");
 
     	return buf[pos];
@@ -112,8 +112,8 @@ namespace zetscript{
 
     zs_string zs_string::newFromTwo(const char *_s1, const char *_s2) {
 		zs_string s; // create a new string named 's'
-		size_t len1=0;
-		size_t len2=0;
+		int len1=0;
+		int len2=0;
 
 		if(_s1!=NULL){
 			len1=strlen(_s1);
@@ -184,7 +184,7 @@ namespace zetscript{
 		return strcmp(_s1,_s2.c_str())!=0;
 	}
 
-	zs_string zs_string::substr (size_t pos, size_t len) const{
+	zs_string zs_string::substr (int pos, int len) const{
 
 		if(len == npos){
 			len=size-pos;
@@ -204,21 +204,21 @@ namespace zetscript{
 
 	}
 
-	zs_string zs_string::replace(size_t _pos, size_t _len, const zs_string & _to_replace){
+	zs_string zs_string::replace(int _pos, int _len, const zs_string & _to_replace){
 		ZS_UNUSUED_3PARAMS(_pos, _len, _to_replace);
 		zs_string str;
 
 		return str;
 	}
 
-	void zs_string::erase(size_t _pos){
+	void zs_string::erase(int _pos){
 		erase(_pos,1);
 	}
 
-	void zs_string::insert(size_t _pos, char _c){
+	void zs_string::insert(int _pos, char _c){
 		if(_pos>=this->size) THROW_RUNTIME_ERROR("erase: _pos(%i) >= size(%i)",_pos,size);
 
-		size_t new_size = size + 1;
+		int new_size = size + 1;
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
 
 		if(_pos > 0){
@@ -235,12 +235,12 @@ namespace zetscript{
 
 	}
 
-	void zs_string::erase(size_t _pos, size_t _len){
+	void zs_string::erase(int _pos, int _len){
 
 		if(_pos>=this->size) THROW_RUNTIME_ERROR("erase: _pos(%i) >= size(%i)",_pos,size);
 		if((_pos+_len)>this->size) THROW_RUNTIME_ERROR("erase: _pos(%i)+_len(%i) >= size(%i)",_pos,_len,size);
 
-		size_t new_size=size-_len;
+		int new_size=size-_len;
 		char *new_buf=(char *)ZS_MALLOC(new_size*sizeof(char)+1);
 
 		// 1st copy
@@ -259,7 +259,7 @@ namespace zetscript{
 
 	}
 
-	size_t zs_string::find(const char *_s, size_t pos) const{
+	int zs_string::find(const char *_s, int pos) const{
 
 		if(pos<size){
 			const char *f=strstr(buf+pos,_s);
@@ -270,11 +270,11 @@ namespace zetscript{
 
 		return npos;
 	}
-	size_t zs_string::find(const zs_string &_s, size_t pos) const{
+	int zs_string::find(const zs_string &_s, int pos) const{
 		return find(_s.c_str(),pos);
 	}
 
-	size_t zs_string::find_last_of(const char *_s, size_t pos) const{
+	int zs_string::find_last_of(const char *_s, int pos) const{
 
 		if(pos == npos){
 			pos=size-1;
@@ -284,9 +284,9 @@ namespace zetscript{
 			int idx=MIN(pos,size-1);
 
 			do{
-				size_t len=strlen(_s);
+				int len=strlen(_s);
 				char c=buf[idx];
-				for(unsigned i=0; i < len; i++){ // search for all chars
+				for(int i=0; i < len; i++){ // search for all chars
 					if(_s[i]==c){
 						return idx;
 					}
@@ -297,9 +297,9 @@ namespace zetscript{
 		return npos;
 	}
 
-	void zs_string::append(const char *_buf, size_t _len){
+	void zs_string::append(const char *_buf, int _len){
 
-		size_t len=_len;
+		int len=_len;
 		if(len == npos){
 			len=strlen(_buf);
 		}
@@ -327,7 +327,7 @@ namespace zetscript{
 		buf[size-1]=_c;
 	}
 
-	size_t zs_string::length() const
+	int zs_string::length() const
 	{
 		return size;
 	}

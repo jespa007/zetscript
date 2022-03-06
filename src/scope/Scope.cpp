@@ -14,7 +14,7 @@ namespace zetscript{
 	Scope::Scope(ZetScript * _zs,int _idx_script_function, Scope * _scope_parent, uint16_t _properties){
 		scope_parent = _scope_parent;
 		properties = _properties;
-		script_type=NULL;
+		script_type_owner=NULL;
 		idx_script_function=_idx_script_function;
 		zs=_zs;
 		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
@@ -28,7 +28,7 @@ namespace zetscript{
 			scope_base = this;
 		}else{ // others...
 			scope_base = scope_parent->scope_base;
-			script_type=scope_parent->script_type; // propagate script class
+			script_type_owner=scope_parent->script_type_owner; // propagate script class
 
 			if(idx_script_function==ZS_IDX_UNDEFINED){ // May be is a block containing if-else, for, etc --> propagate current script function
 				idx_script_function=scope_parent->idx_script_function;
@@ -36,16 +36,16 @@ namespace zetscript{
 		}
 	}
 
-	void Scope::setScriptClass(ScriptType *sc){
+	void Scope::setScriptTypeOwner(ScriptType *_script_type_owner){
 		if(scope_parent != NULL){
 			THROW_RUNTIME_ERRORF("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
 			return;
 		}
-		script_type=sc;
+		script_type_owner=_script_type_owner;
 	}
 
-	ScriptType * Scope::getScriptType(){
-		return scope_base->script_type;
+	ScriptType * Scope::getScriptTypeOwner(){
+		return scope_base->script_type_owner;
 	}
 
 	int Scope::getIdxScriptFunction(){
@@ -151,7 +151,7 @@ namespace zetscript{
 				if(p_irv->file == NULL || *p_irv->file==0){
 					THROW_SCRIPT_ERROR_FILE_LINE(file,line," error symbol '%s' already registered", symbol_name.c_str());
 				}else{
-					THROW_SCRIPT_ERROR_FILE_LINE(file,line," error symbol '%s' already registered at %s:%i", symbol_name.c_str(),p_irv->file,p_irv->line);
+					THROW_SCRIPT_ERROR_FILE_LINE(file,line," error symbol '%s' already registered at '%s:%i'", symbol_name.c_str(),p_irv->file,p_irv->line);
 				}
 			}else{
 				THROW_RUNTIME_ERROR(" error symbol '%s' already registered as C++", symbol_name.c_str());

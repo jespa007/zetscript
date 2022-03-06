@@ -39,7 +39,7 @@ namespace zetscript{
 		// Register built in modules
 
 		// Math mod
-		ScriptType *cl=script_type_factory->registerClass("Math");
+		ScriptType *cl=script_type_factory->registerStaticClass("Math");
 
 		cl->registerNativeMemberVariableStaticConst("PI",&MathModule_PI);
 		cl->registerNativeMemberFunctionStatic("sin",MathModule_sin);
@@ -50,7 +50,7 @@ namespace zetscript{
 		cl->registerNativeMemberFunctionStatic("random",MathModule_random);
 
 		// Console mod
-		cl=script_type_factory->registerClass("Console");
+		cl=script_type_factory->registerStaticClass("Console");
 		cl->registerNativeMemberFunctionStatic("readChar",ConsoleModule_readChar);
 		cl->registerNativeMemberFunctionStatic("outNative",ConsoleModule_out);
 		cl->registerNativeMemberFunctionStatic("outlnNative",ConsoleModule_outln);
@@ -58,14 +58,14 @@ namespace zetscript{
 		cl->registerNativeMemberFunctionStatic("errorlnNative",ConsoleModule_errorln);
 
 		// System mod
-		cl=script_type_factory->registerClass("System");
+		cl=script_type_factory->registerStaticClass("System");
 		cl->registerNativeMemberFunctionStatic("clock",SystemModule_clock);
 		cl->registerNativeMemberFunctionStatic("evalNative",SystemModule_eval);
 		//cl->registerNativeMemberFunctionStatic("assertNative",SystemModule_assert);
 		cl->registerNativeMemberFunctionStatic("errorNative",SystemModule_error);
 
 		// Json mod
-		cl=script_type_factory->registerClass("Json");
+		cl=script_type_factory->registerStaticClass("Json");
 		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
 		cl->registerNativeMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
 		cl->registerNativeMemberFunctionStatic("deserialize",JsonModule_deserialize);

@@ -11,10 +11,8 @@ namespace zetscript{
 		 return ((properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF) != 0);
 	}
 
-	bool ScriptType::isNativeSingletonClass(){
-		 return ((properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF) != 0)
-				 	 &&
-				this->c_constructor == NULL;
+	bool ScriptType::isNativeStaticClass(){
+		 return ((properties & SCRIPT_TYPE_PROPERTY_STATIC) != 0);
 	}
 	//------------------------------------------------------------
 

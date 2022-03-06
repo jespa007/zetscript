@@ -186,7 +186,7 @@ namespace zetscript{
 				}
 
 				if(str_out != NULL){
-					str_out->append(start,start-str_current);
+					str_out->append(start,str_current-start);
 				}
 			}else{
 				json_deserialize_error(data,str_start,line,"expected string value");

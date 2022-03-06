@@ -185,11 +185,11 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
 			// check class scope...
-			if(scope_var->script_type->idx_script_type != IDX_TYPE_CLASS_MAIN
+			if(scope_var->script_type_owner->idx_script_type != IDX_TYPE_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
 			){ // class members are defined as functions
-				sc=scope_var->script_type;
+				sc=scope_var->script_type_owner;
 				is_class_scope=true;
 			}
 
@@ -418,7 +418,7 @@ error_eval_keyword_var:
 		//Keyword key_w;
 		//
 		// check for keyword ...
-		if(scope_info->script_type->idx_script_type != IDX_TYPE_CLASS_MAIN
+		if(scope_info->script_type_owner->idx_script_type != IDX_TYPE_CLASS_MAIN
 			&& ((  scope_info->scope_base == scope_info
 			      && scope_info->scope_parent == NULL
 			    )
@@ -433,7 +433,7 @@ error_eval_keyword_var:
 			else{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 			}
-			sc=scope_info->script_type;
+			sc=scope_info->script_type_owner;
 		}
 		else{
 			key_w = eval_is_keyword(aux_p);
@@ -517,9 +517,9 @@ error_eval_keyword_var:
 				zs_string error;
 				if(is_special_char(aux_p)){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
-					,scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
+					,scope_info->script_type_owner != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
 							"declaring function member in class '%s'"
-							,scope_info->script_type->script_type_name.c_str()
+							,scope_info->script_type_owner->script_type_name.c_str()
 							).c_str():"declaring function"
 							,*aux_p
 
@@ -527,9 +527,9 @@ error_eval_keyword_var:
 				}else{
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
-							,scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
+							,scope_info->script_type_owner != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
 									"declaring function member in class '%s'"
-									,scope_info->script_type->script_type_name.c_str()
+									,scope_info->script_type_owner->script_type_name.c_str()
 									).c_str():"declaring function"
 
 					);
@@ -767,7 +767,7 @@ error_eval_keyword_var:
 				}
 
 				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
-					if(scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
+					if(scope_info->script_type_owner != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
 						((ScriptFunction *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
 					}
 				}

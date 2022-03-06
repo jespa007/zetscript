@@ -4,9 +4,10 @@
  */
 #pragma once
 
-typedef enum{
-	SCRIPT_TYPE_PROPERTY_C_OBJECT_REF=0x1
-}ScriptTypeProperty;
+
+#define	SCRIPT_TYPE_PROPERTY_C_OBJECT_REF	0x1
+#define SCRIPT_TYPE_PROPERTY_STATIC			0x2	// cannot be instanced
+
 
 namespace zetscript{
 
@@ -157,7 +158,7 @@ namespace zetscript{
 		const char *getTypeName();
 
 		bool isNativeType();
-		bool isNativeSingletonClass();
+		bool isNativeStaticClass();
 
 		virtual ~ScriptType();
 

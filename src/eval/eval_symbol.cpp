@@ -136,9 +136,10 @@ namespace zetscript{
 							,line
 						)==FALSE){
 							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file,line,
-								eval_data->current_parsing_file,line,
-								"Expected literal or identifier"
+								eval_data->current_parsing_file
+								,line
+								,"'%s' is not a valid identifier"
+								,default_str_value.c_str()
 							);
 						}
 

@@ -192,7 +192,7 @@ namespace zetscript{
 		zs_vector split(const zs_string &s_in, const zs_string & delim) {
 		    zs_vector elems;
 		    zs_string s = s_in;
-		    size_t pos = 0;
+		    int pos = 0;
 		    zs_string token;
 		    while ((pos = s.find(delim)) != zs_string::npos) {
 		        token = s.substr(0, pos);
@@ -344,7 +344,7 @@ namespace zetscript{
 			zs_string str = str_old;
 			zs_string str_new="";
 
-			for (unsigned i = 0; i < str_old.length(); ++i) {
+			for (int  i = 0; i < str_old.length(); ++i) {
 				if (str_old[i] != ch_to_remove)
 						str_new+=str_old[i];
 			}
@@ -354,7 +354,7 @@ namespace zetscript{
 		int count(const zs_string & s,char c){
 			int n_items=0;
 
-			for(unsigned i=0; i < s.length(); i++)
+			for(int i=0; i < s.length(); i++)
 				if(s[i] == c)
 					n_items++;
 
@@ -414,7 +414,7 @@ namespace zetscript{
 		int index_of(zs_string& text, zs_string& pattern)
 		{
 			// where appears the pattern in the text?
-			size_t loc = text.find(pattern, 0);
+			int loc = text.find(pattern, 0);
 			if (loc != zs_string::npos)
 			{
 				return loc;

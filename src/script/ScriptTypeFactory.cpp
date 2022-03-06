@@ -35,7 +35,7 @@
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeSingletonClass<type_class>(ZS_STR(type_class));
+	registerNativeStaticClass<type_class>(ZS_STR(type_class));
 
 #define SCF_REGISTER_NATIVE_TYPE(type, idx_script_type)\
 	if(script_types->count!=idx_script_type){\
@@ -112,7 +112,7 @@ namespace zetscript{
 		zs_string error;
 		// ScriptFunctionFactory has to be created
 		main_object=registerClass(MAIN_SCRIPT_CLASS_NAME); // 0
-		MAIN_SCOPE(this)->script_type=main_object;
+		MAIN_SCOPE(this)->script_type_owner=main_object;
 
 		Symbol *symbol_main_function=main_object->registerMemberFunction(
 				MAIN_SCRIPT_FUNCTION_NAME
@@ -147,6 +147,11 @@ namespace zetscript{
 	zs_int parseInteger(ZetScript *_zs,zs_float *number){
 
 		return (zs_int)(*number);
+	}
+
+	bool isNumber(ZetScript *_zs,StackElement *_stk){
+
+		return (_stk->properties & (STK_PROPERTY_ZS_INT | STK_PROPERTY_ZS_FLOAT)) != 0;
 	}
 
 	zs_int parseInteger(ZetScript *_zs,zs_string  *number_str){
@@ -226,6 +231,7 @@ namespace zetscript{
 		zs->registerFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));
 		zs->registerFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInteger));
 		zs->registerFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInteger));
+		zs->registerFunction("isNumber",isNumber);
 
 		//-------------------------
 		// Wrap functions
@@ -424,7 +430,7 @@ namespace zetscript{
 			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolType(file,line,script_type_name,properties_register_scope);
 
 			sc = new ScriptType(this->zs,index, script_type_name, scope);
-			scope->setScriptClass(sc);
+			scope->setScriptTypeOwner(sc);
 			symbol->ref_ptr=(zs_int)sc;
 
 			//sc->script_type_name_ptr = TYPE_SCRIPT_VARIABLE;
@@ -446,8 +452,8 @@ namespace zetscript{
 					THROW_RUNTIME_ERROR("Class %s not registered",base_class_name.c_str());
 				}
 
-				if(base_class->isNativeSingletonClass()){
-					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is singleton. To allow extension register class '%' with registerNativeClass instead of registerNativeSingletonClass",script_type_name.c_str(),base_class_name.c_str(),base_class_name.c_str());
+				if(base_class->isNativeStaticClass()){
+					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is static. To allow extension register class '%' with 'registerClass' instead of 'registerStaticClass'",script_type_name.c_str(),base_class_name.c_str(),base_class_name.c_str());
 				}
 
 
@@ -460,7 +466,7 @@ namespace zetscript{
 							,symbol_src->line
 							,symbol_src->name
 							,symbol_src->n_params
-							,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN|REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS
+							,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN|REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS
 					);
 
 					symbol_dst->ref_ptr=symbol_src->ref_ptr;
@@ -535,6 +541,20 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("class '%s' already registered",script_type_name.c_str());
 		}
 		return NULL;
+	}
+	ScriptType * ScriptTypeFactory::registerStaticClass(
+			const zs_string & _script_type_name
+			 ,const char *_file
+			 , short _line
+	){
+		ScriptType *st=	NULL;
+		if((st=registerClass(_script_type_name
+				 ,""
+				 ,_file
+				 ,_line))!=NULL){
+			st->properties|=SCRIPT_TYPE_PROPERTY_STATIC;
+		}
+		return st;
 	}
 
 	zs_vector * ScriptTypeFactory::getScriptTypes(){

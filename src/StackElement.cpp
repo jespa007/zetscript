@@ -42,7 +42,7 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-			result="fun@"+sf->scope_script_function->script_type->script_type_name+"::"+sf->name_script_function;
+			result="fun@"+sf->scope_script_function->script_type_owner->script_type_name+"::"+sf->name_script_function;
 		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
@@ -75,12 +75,27 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_BOOLEAN(stk)){
 			result= stk->value?"true":"false";
 		}else if(STK_VALUE_IS_FUNCTION(stk)){
-			if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
-				ScriptFunction *sf=(ScriptFunction *)stk->value;
-				result= zs_string("FunctionMember")+"@"+"UnknowClass(TODO)"+"::"+sf->name_script_function;
-			}else{ // normal function
-				result= zs_string("Function")+"@"+((ScriptFunction *)stk->value)->name_script_function;
+			Symbol *symbol=((Symbol *)stk->value);
+			ScriptType *st=symbol->scope->getScriptTypeOwner();
+			if(st==((_zs->getScriptTypeFactory())->getScriptType(IDX_TYPE_CLASS_MAIN))){
+				result= zs_string("function<")+symbol->name+">";
+			}else{
+				zs_string s="";
+
+				if(symbol->properties & SYMBOL_PROPERTY_STATIC){
+					s=zs_string("static_function<");
+				}else{
+					s=zs_string("member_function<");
+				}
+				result=s+st->script_type_name+"::"+symbol->name+">";
 			}
+
+			/*if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
+				ScriptFunction *sf=(ScriptFunction *)stk->value;
+				result= zs_string("function@")+"UnknowClass(TODO)"+"::"+sf->name_script_function;
+			}else{ // normal function
+				result= zs_string("function@")+((Symbol *)stk->value)->name;
+			}*/
 		}else if(STK_VALUE_IS_TYPE(stk)){
 			result= zs_string("type")+"@"+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		}else{
@@ -88,6 +103,10 @@ namespace zetscript{
 				ScriptObject *so=(ScriptObject *)stk->value;
 				if(so->getTypeName() == "DateTime"){
 					result=((zs_datetime *)((ScriptObjectClass *)so)->getNativeObject())->to_string(_format);
+				}else if(so->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
+					ScriptObjectMemberFunction *somf=(ScriptObjectMemberFunction *)so;
+					ScriptType *st=somf->so_object->getScriptType();
+					result= zs_string("member_function<")+st->script_type_name+"::"+somf->so_function->name_script_function+">";
 				}else{
 					result=so->toString();
 				}

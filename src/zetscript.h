@@ -186,8 +186,8 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		 void registerSingletonClass(const zs_string & script_type_name, const char *registered_file="",short registered_line=-1){
-			script_type_factory->registerNativeSingletonClass<C>(script_type_name, registered_file, registered_line);
+		 void registerStaticClass(const zs_string & script_type_name, const char *registered_file="",short registered_line=-1){
+			script_type_factory->registerNativeStaticClass<C>(script_type_name, registered_file, registered_line);
 		}
 
 		/**

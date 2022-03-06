@@ -93,7 +93,7 @@ namespace zetscript{
 	 * Register C Class. Return index registered class
 	 */
 	template<class T>
-	ScriptType * ScriptTypeFactory::registerNativeSingletonClass(
+	ScriptType * ScriptTypeFactory::registerNativeStaticClass(
 		const zs_string & script_type_name
 		,const char *registered_file
 		,short registered_line
@@ -119,8 +119,8 @@ namespace zetscript{
 		scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,script_type_name);
 
-		sc = new ScriptType(zs,idx_script_type,script_type_name,scope,script_type_name_ptr,SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
-		scope->setScriptClass(sc);
+		sc = new ScriptType(zs,idx_script_type,script_type_name,scope,script_type_name_ptr,SCRIPT_TYPE_PROPERTY_C_OBJECT_REF|SCRIPT_TYPE_PROPERTY_STATIC);
+		scope->setScriptTypeOwner(sc);
 
 		// in C there's no script constructor ...
 		sc->idx_function_member_constructor=ZS_IDX_UNDEFINED;
@@ -147,7 +147,7 @@ namespace zetscript{
 		,short registered_line
 	){
 
-		ScriptType *sc =registerNativeSingletonClass<C>(
+		ScriptType *sc =registerNativeStaticClass<C>(
 				script_type_name
 				,registered_file
 				,registered_line

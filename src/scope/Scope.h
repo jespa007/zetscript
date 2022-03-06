@@ -31,7 +31,7 @@ namespace zetscript{
 		uint16_t properties;
 		//bool is_c_node;
 		//bool is_scope_function; // this will ignore symbols within scopes where functions starts to avoid conflicts with global functions...
-		ScriptType *script_type;
+		ScriptType *script_type_owner;
 		int tmp_idx_instruction_push_scope;
 
 
@@ -68,8 +68,8 @@ namespace zetscript{
 		void						    markAsUnusued();
 
 		void removeChildrenBlockTypes();
-		void setScriptClass(ScriptType *sc);
-		ScriptType * getScriptType();
+		void setScriptTypeOwner(ScriptType *_script_type_owner);
+		ScriptType * getScriptTypeOwner();
 		int getIdxScriptFunction();
 		int numInnerScopes();
 

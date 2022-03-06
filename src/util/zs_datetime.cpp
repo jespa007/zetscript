@@ -155,7 +155,7 @@ namespace zetscript{
 			return to_string();
 		}
 		zs_string pattern_temp;
-		for (unsigned int index_char = 0; index_char < format.length(); index_char++) {
+		for (int index_char = 0; index_char < format.length(); index_char++) {
 			bool is_letter = false;
 			//Check if the character is a valid pattern char
 			if ((format[index_char] >= 'a' && format[index_char] <= 'z') ||
@@ -414,7 +414,7 @@ namespace zetscript{
 		int pattern_firstindex = 0;
 		bool is_letter = false;
 		period day_period = period::undefined;
-		for (unsigned int index_char = 0; index_char < format.length(); index_char++) {
+		for (int index_char = 0; index_char < format.length(); index_char++) {
 			//Check if the character is a valid pattern char
 			if ((format[index_char] >= 'a' && format[index_char] <= 'z') ||
 				(format[index_char] >= 'A' && format[index_char] <= 'Z')) {

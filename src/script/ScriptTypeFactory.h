@@ -60,6 +60,7 @@ namespace zetscript{
 		  * Class management region
 		  */
 		ScriptType * 					registerClass(const zs_string & script_type_name, const zs_string & base_class_name="",const char * file="", short line=-1);
+		ScriptType * 					registerStaticClass(const zs_string & _script_type_name,const char * file="", short line=-1);
 		ScriptType * 					getScriptType(short _idx_script_type);
 		ScriptType * 					getScriptType(const zs_string & _type_name);
 		ScriptType * 					getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
@@ -119,7 +120,7 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		 template<typename T>
-		 ScriptType *  registerNativeSingletonClass(
+		 ScriptType *  registerNativeStaticClass(
 				 const zs_string & script_type_name
 				 , const char *registered_file=""
 				,short registered_line=-1

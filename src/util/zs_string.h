@@ -9,7 +9,7 @@ namespace zetscript{
 	class zs_string
 	{
 	public:
-		static size_t npos;
+		static int npos;
 
 		zs_string();
 		zs_string(const char * buffer);
@@ -24,16 +24,16 @@ namespace zetscript{
 		zs_string& operator=(zs_string && dying_obj);
 
 
-	    char& operator[] (size_t pos);
-	    const char& operator[] (size_t pos) const;
+	    char& operator[] (int pos);
+	    const char& operator[] (int pos) const;
 
-	    char& at (size_t pos);
-	    const char& at (size_t pos) const;
+	    char& at (int pos);
+	    const char& at (int pos) const;
 
 	    void clear();
 
 
-	    zs_string  substr (size_t pos = 0, size_t len = npos) const;
+	    zs_string  substr (int pos = 0, int len = npos) const;
 
 	    // +
 		friend zs_string operator+(const zs_string & _s1, const zs_string &_s2);
@@ -53,22 +53,22 @@ namespace zetscript{
 		friend bool operator!=(const zs_string & _s1, const char *_s2);
 		friend bool operator!=(const char * _s1, const zs_string & _s2);
 
-		size_t find(const zs_string &_s, size_t pos = 0) const;
-		size_t find(const char *_s, size_t pos = 0) const;
-		size_t find_last_of(const char *_s, size_t pos = npos) const;
+		int find(const zs_string &_s, int pos = 0) const;
+		int find(const char *_s, int pos = 0) const;
+		int find_last_of(const char *_s, int pos = npos) const;
 
-		zs_string replace(size_t _pos, size_t _len, const zs_string & to_replace);
-		void append(const char *buf, size_t _len=npos);
+		zs_string replace(int _pos, int _len, const zs_string & to_replace);
+		void append(const char *buf, int _len=npos);
 		void append(char _c);
 		void append(const zs_string & _s);
 
-		void erase(size_t _pos, size_t _len);
-		void erase(size_t _pos);
-		void insert(size_t _pos, char _c);
+		void erase(int _pos, int _len);
+		void erase(int _pos);
+		void insert(int _pos, char _c);
 
 		bool empty() const;
 
-		size_t length() const;
+		int length() const;
 
 		const char * c_str() const;
 
@@ -76,7 +76,7 @@ namespace zetscript{
 
 	private:
 		char * buf = NULL;
-		size_t size = 0;
+		int size = 0;
 		static zs_string newFromTwo(const char *_s1,const char *_s2);
 
 		void __cleanup__();

@@ -341,7 +341,7 @@ namespace zetscript{
 					if(	it_accessor_token==0){
 						if(
 								token_node_symbol->value == SYMBOL_VALUE_SUPER
-								&& scope_info->script_type->idx_script_type == IDX_TYPE_CLASS_MAIN){
+								&& scope_info->script_type_owner->idx_script_type == IDX_TYPE_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 									eval_data->current_parsing_file
 									,line
@@ -505,7 +505,7 @@ namespace zetscript{
 							);
 						}
 
-						if(scope_info->script_type->idx_script_type == IDX_TYPE_CLASS_MAIN){
+						if(scope_info->script_type_owner->idx_script_type == IDX_TYPE_CLASS_MAIN){
 							EVAL_ERROR_FILE_LINE_GOTOF(
 								eval_data->current_parsing_file
 								,line
@@ -516,7 +516,7 @@ namespace zetscript{
 
 						// set symbol name
 						ei_first_token_node->symbol.name=accessor_name;
-						Symbol *symbol_access_this=scope_info->script_type->getSymbol(accessor_name);
+						Symbol *symbol_access_this=scope_info->script_type_owner->getSymbol(accessor_name);
 						if(symbol_access_this!=NULL){
 							instruction_value2=symbol_access_this->idx_position;
 						}

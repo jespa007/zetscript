@@ -434,11 +434,16 @@ namespace zetscript{
 								case STK_PROPERTY_SCRIPT_OBJECT:
 
 									if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
-										idx_script_type=IDX_TYPE_STRING_PTR_C;
+										idx_script_type=IDX_TYPE_SCRIPT_OBJECT_STRING;
+										all_check=arg_idx_script_type==idx_script_type; // if string object --> direct
 
-										all_check =
-											(	arg_idx_script_type==IDX_TYPE_STRING_PTR_C && current_arg->value!=0)
-										  ||	arg_idx_script_type==IDX_TYPE_CONST_CHAR_PTR_C;
+										if(all_check==false){ // try native conversions
+											idx_script_type=IDX_TYPE_STRING_PTR_C;
+
+											all_check =
+												(	arg_idx_script_type==IDX_TYPE_STRING_PTR_C && current_arg->value!=0)
+											  ||	arg_idx_script_type==IDX_TYPE_CONST_CHAR_PTR_C;
+										}
 									}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
 										ScriptObjectClass *var_object_class=((ScriptObjectClass *)current_arg->value);
 										aux_string=var_object_class->getTypeName();
@@ -470,15 +475,15 @@ namespace zetscript{
 		if(ptr_function_found == NULL){
 			int n_candidates=0;
 			zs_string str_candidates="";
-			zs_string args_str = "";
+			zs_string args_str = "ZetScript *";
 			//int arg_idx_script_type=-1;
 			/* get arguments... */
 			for( unsigned k = 0; k < n_args;k++){
 				StackElement *current_arg=&stk_arg[k];
 
-				if(k>0){
-					args_str.append(",");
-				}
+
+				args_str.append(",");
+
 				//unsigned short var_type = GET_STK_PROPERTY_TYPES(current_arg->properties);
 				if(current_arg->properties & STK_PROPERTY_PTR_STK){
 					aux_string="StackElement";
@@ -503,16 +508,17 @@ namespace zetscript{
 						aux_string="null";
 						break;
 					case STK_PROPERTY_SCRIPT_OBJECT:
-						if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
+						/*if(STK_IS_SCRIPT_OBJECT_STRING(current_arg)){
+							aux_string = ((ScriptObjectString *)current_arg->value)->getTypegetTypeNamePtr();
 							aux_string=k_str_zs_string_type_ptr;
-							if(current_arg->value==0){ /* is constant char */
+							if(current_arg->value==0){ // is constant char
 								aux_string=	k_str_const_char_type_ptr;
 							}
 						}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
 							aux_string = ((ScriptObjectClass *)current_arg->value)->getTypeNamePtr();
-						}else{ // object
-							aux_string = ((ScriptObject *)current_arg->value)->getTypeName();
-						}
+						}else{*/ // object
+							aux_string = ((ScriptObject *)current_arg->value)->getScriptType()->script_type_name_ptr;
+						//}
 						break;
 					}
 				}
