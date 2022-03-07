@@ -336,8 +336,8 @@ find_element_object:
 
 								VM_INNER_CALL_ONLY_RETURN(
 										stk_mp->so_object
-										,stk_mp->member_property->metamethod_members.getter
-										,stk_mp->member_property->metamethod_members.getter->name_script_function.c_str()
+										,stk_mp->member_property->metamethod_members.getter->ref_ptr
+										,stk_mp->member_property->metamethod_members.getter->name.c_str()
 										,true
 								);
 
@@ -1514,8 +1514,8 @@ execute_function:
 
 				VM_INNER_CALL_ONLY_RETURN(
 						stk_mp->so_object
-						,stk_mp->member_property->metamethod_members.getter
-						,stk_mp->member_property->metamethod_members.getter->name_script_function.c_str()
+						,stk_mp->member_property->metamethod_members.getter->ref_ptr
+						,stk_mp->member_property->metamethod_members.getter->name.c_str()
 						,true
 				);
 

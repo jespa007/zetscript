@@ -93,8 +93,10 @@ namespace zetscript{
 	 * Register C Class. Return index registered class
 	 */
 	template<class T>
-	ScriptType * ScriptTypeFactory::registerNativeStaticClass(
+	ScriptType * ScriptTypeFactory::registerNativeType(
 		const zs_string & script_type_name
+		,T * (*_constructor)(ZetScript *_zs)
+		,void (*_destructor)(ZetScript *_zs,T *)
 		,const char *registered_file
 		,short registered_line
 	){//, const zs_string & base_class_name=""){
@@ -117,9 +119,9 @@ namespace zetscript{
 
 		idx_script_type=script_types->count;
 		scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
-		MAIN_SCOPE(this)->registerSymbolType(registered_file,registered_line,script_type_name);
+		MAIN_SCOPE(this)->registerSymbolScriptType(registered_file,registered_line,script_type_name);
 
-		sc = new ScriptType(zs,idx_script_type,script_type_name,scope,script_type_name_ptr,SCRIPT_TYPE_PROPERTY_C_OBJECT_REF|SCRIPT_TYPE_PROPERTY_STATIC);
+		sc = new ScriptType(zs,idx_script_type,script_type_name,scope,script_type_name_ptr,SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
 		scope->setScriptTypeOwner(sc);
 
 		// in C there's no script constructor ...
@@ -129,10 +131,55 @@ namespace zetscript{
 		sc->c_destructor = NULL;
 		script_types->push_back((zs_int)sc);
 
+
+		if((_constructor != NULL) && (_destructor != NULL)){ // it can instanced, not static
+			sc->c_constructor = (void *)_constructor;
+			sc->c_destructor = (void *)_destructor;
+
+		}else{ // Cannot be instanced so is static
+			sc->properties|=SCRIPT_TYPE_PROPERTY_STATIC;
+		}
+
 		sc->idx_script_type=script_types->count-1;
 		ZS_LOG_DEBUG("* C++ class '%s' registered as (%s).",script_type_name.c_str(),zs_rtti::demangle(script_type_name_ptr).c_str());
 
 		return sc;
+	}
+
+	/**
+	 * Register C Class. Return index registered class
+	 */
+	template<class T>
+	ScriptType * ScriptTypeFactory::registerNativeTypeStatic(
+		const zs_string & script_type_name
+		,const char *registered_file
+		,short registered_line
+	){
+		return registerNativeType<T>(
+				script_type_name
+				,NULL
+				,NULL
+				,registered_file
+				,registered_line
+		);
+	}
+
+	/**
+	 * Register C Class. Return index registered class
+	 */
+	template<class T>
+	ScriptType * ScriptTypeFactory::registerNativeStaticClass(
+		const zs_string & script_type_name
+		,const char *registered_file
+		,short registered_line
+	){
+		return registerNativeType<T>(
+				script_type_name
+				,NULL
+				,NULL
+				,registered_file
+				,registered_line
+		);
 	}
 
 	/**
@@ -147,23 +194,19 @@ namespace zetscript{
 		,short registered_line
 	){
 
-		ScriptType *sc =registerNativeStaticClass<C>(
+		return registerNativeType<C>(
 				script_type_name
+				,_constructor
+				,_destructor
 				,registered_file
 				,registered_line
 		);
-
-		// get class...
-		sc->c_constructor = (void *)_constructor;
-		sc->c_destructor = (void *)_destructor;
-
-		return sc;
 	}
 
 	/**
 	 * Register C Class. Return index registered class
 	 */
-	template<typename C>
+	/*template<typename C>
 	ScriptType * ScriptTypeFactory::registerNativeType(
 		const zs_string & _type_name
 		,const char *_registered_file
@@ -171,7 +214,7 @@ namespace zetscript{
 	){
 
 		return ScriptTypeFactory::registerNativeClass<C>(_type_name,NULL,NULL,_registered_file,_registered_line);
-	}
+	}*/
 
 	template<class C,class B>
 	void ScriptTypeFactory::nativeClassInheritsFrom(){
@@ -222,7 +265,7 @@ namespace zetscript{
 
 		ScriptType *base_class = (ScriptType *)script_types->get(idx_base_type);
 		zs_vector *base_vars=base_class->script_type_scope->symbol_variables;
-		zs_vector *base_functions=base_class->script_type_scope->symbol_variables;
+		zs_vector *base_functions=base_class->script_type_scope->symbol_functions;
 
 		// register all c vars symbols ...
 		for(int i = 0; i < base_functions->count; i++){
@@ -251,25 +294,51 @@ namespace zetscript{
 			// we have to know whether function member is or not getter/setter because we create them in the property member case. If not, we could have
 			// duplicated symbols.
 			if(is_metamethod_function == false){
+				ScriptFunction *script_function =NULL;
+				/*if(symbol_src->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){ // property
+					MemberProperty *mp=(MemberProperty *)symbol_src->ref_ptr;
 
-				ScriptFunction *script_function = (ScriptFunction *)symbol_src->ref_ptr;
+					this_class->registerMemberFunction(
+						script_function->name_script_function,
+						&params,
+						params_len,
+						script_function->properties, //derivated_symbol_info_properties
+						script_function->idx_script_type_return,
+						script_function->ref_native_function_ptr, // it contains script function pointer
+						symbol_src->file,
+						symbol_src->line
+					);
+
+				}else */
+				if(symbol_src->properties & SYMBOL_PROPERTY_FUNCTION){ // function
+					script_function=(ScriptFunction *)symbol_src->ref_ptr;
+
+					ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(script_function);
+					char params_len=script_function->params_len;
+
+
+					this_class->registerMemberFunction(
+						script_function->name_script_function,
+						&params,
+						params_len,
+						script_function->properties, //derivated_symbol_info_properties
+						script_function->idx_script_type_return,
+						script_function->ref_native_function_ptr, // it contains script function pointer
+						symbol_src->file,
+						symbol_src->line
+					);
+				}else{
+					THROW_RUNTIME_ERROR("Error adding functions from base elements '%s': '%s::%s' is not a function"
+							,zs_rtti::demangle(base_class_name).c_str()
+							,zs_rtti::demangle(base_class_name).c_str()
+							, symbol_src->name.c_str());
+				}
+
+
 				// build params...
 
 
-				ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(script_function);
-				char params_len=script_function->params_len;
 
-
-				this_class->registerMemberFunction(
-					script_function->name_script_function,
-					&params,
-					params_len,
-					script_function->properties, //derivated_symbol_info_properties
-					script_function->idx_script_type_return,
-					script_function->ref_native_function_ptr, // it contains script function pointer
-					symbol_src->file,
-					symbol_src->line
-				);
 			}
 		}
 
@@ -290,8 +359,8 @@ namespace zetscript{
 
 
 				struct _PropertyMethodIt{
-					ScriptFunction **dst_function;
-					ScriptFunction *src_function;
+					Symbol **dst_symbol_function;
+					Symbol *src_symbol_function;
 				}property_methods[]={
 					{&mp_dst->metamethod_members.getter,mp_src->metamethod_members.getter}
 					,{&mp_dst->metamethod_members.post_inc,mp_src->metamethod_members.post_inc}
@@ -305,27 +374,27 @@ namespace zetscript{
 				_PropertyMethodIt *it=property_methods;
 
 				// register getter and setter
-				while(it->dst_function!=0){
+				while(it->dst_symbol_function!=0){
 
-					*it->dst_function= NULL; // init to null
+					*it->dst_symbol_function= NULL; // init to null
 
-					if(it->src_function!=0){ // we have src method
-
-						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(it->src_function);
-						char params_len=it->src_function->params_len;
+					if(it->src_symbol_function!=0){ // we have src method
+						ScriptFunction *src_function=(ScriptFunction *)it->src_symbol_function->ref_ptr;
+						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(src_function);
+						char params_len=src_function->params_len;
 
 						symbol_function=this_class->registerMemberFunction(
-								it->src_function->name_script_function,
+								src_function->name_script_function,
 								&params,
 								params_len,
-								it->src_function->properties,
-								it->src_function->idx_script_type_return,
-								it->src_function->ref_native_function_ptr
+								src_function->properties,
+								src_function->idx_script_type_return,
+								src_function->ref_native_function_ptr
 								//it->src_function->symbol.file,
 								//it->src_function->symbol.line
 						);
 
-						*it->dst_function=(ScriptFunction *)symbol_function->ref_ptr;
+						*it->dst_symbol_function=symbol_function;
 					}
 					it++;
 				}
@@ -337,10 +406,11 @@ namespace zetscript{
 						for(int i=0; i < mp_info.setters->count; i++){
 
 							StackElement *stk_setter=(StackElement *)mp_info.setters->items[i];
-							ScriptFunction *sf_setter=(ScriptFunction *)stk_setter->value;
+							Symbol *symbol_setter=(Symbol *)stk_setter->value;
+							ScriptFunction *sf_setter=(ScriptFunction *)symbol_setter->ref_ptr;
 
 							ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
-							char params_len=it->src_function->params_len;
+							char params_len=sf_setter->params_len;
 
 							symbol_function=this_class->registerMemberFunction(
 									sf_setter->name_script_function,
@@ -354,7 +424,7 @@ namespace zetscript{
 									//sf_setter->symbol->line
 							);
 
-							mp_dst->metamethod_members.addSetter(*it_setter,(ScriptFunction *)symbol_function->ref_ptr);
+							mp_dst->metamethod_members.addSetter(*it_setter,symbol_function);
 						}
 					}
 

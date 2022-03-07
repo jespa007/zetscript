@@ -13,7 +13,7 @@
 		THROW_RUNTIME_ERROR("Error: type built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeType<type_class>(ZS_STR(type_class));
+	registerNativeTypeStatic<type_class>(ZS_STR(type_class));
 
 
 #define SCF_REGISTER_CLASS(name_class, type_class, idx_script_type)\
@@ -427,7 +427,7 @@ namespace zetscript{
 
 			// register symbol on main scope...
 
-			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolType(file,line,script_type_name,properties_register_scope);
+			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolScriptType(file,line,script_type_name,properties_register_scope);
 
 			sc = new ScriptType(this->zs,index, script_type_name, scope);
 			scope->setScriptTypeOwner(sc);
@@ -452,8 +452,11 @@ namespace zetscript{
 					THROW_RUNTIME_ERROR("Class %s not registered",base_class_name.c_str());
 				}
 
-				if(base_class->isNativeStaticClass()){
-					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is static. To allow extension register class '%' with 'registerClass' instead of 'registerStaticClass'",script_type_name.c_str(),base_class_name.c_str(),base_class_name.c_str());
+				if(base_class->isStatic()){
+					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is static. To allow extension register with 'registerClass' instead of 'registerStaticClass'"
+						,script_type_name.c_str()
+						,base_class_name.c_str()
+					);
 				}
 
 
@@ -506,8 +509,8 @@ namespace zetscript{
 
 						while(*it_setters!=0){
 							MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setters);
-							for(int j=0; i < mp_info.setters->count;j++){
-								mp_dst->metamethod_members.addSetter(*it_setters,(ScriptFunction *)(((StackElement *)mp_info.setters->items[j])->value));
+							for(int j=0; j < mp_info.setters->count;j++){
+								mp_dst->metamethod_members.addSetter(*it_setters,(Symbol *)(((StackElement *)mp_info.setters->items[j])->value));
 
 							}
 							it_setters++;

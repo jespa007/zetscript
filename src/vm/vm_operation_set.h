@@ -59,7 +59,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 						,byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_ADD_SET)\
 				);\
 			}\
-			ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)(ptr_metamethod_members_aux->add_setters.items[0]))->value;\
+			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)((StackElement *)(ptr_metamethod_members_aux->add_setters.items[0]))->value)->ref_ptr;\
 			/* find function if c */ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 				if((ptr_function_found=vm_find_function( \
@@ -113,7 +113,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
 						,ptr_metamethod_members_aux->getter\
-						,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
+						,ptr_metamethod_members_aux->getter->name.c_str()\
 						,true\
 				);\
 			}else{ /* store object */ \
@@ -166,7 +166,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 						,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 				);\
 			}\
-			ScriptFunction *ptr_function_found=(ScriptFunction *)(((StackElement *)setter_info.setters->items[0])->value);\
+			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->items[0])->value))->ref_ptr;\
 			/* find function if c */ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 				if((ptr_function_found=vm_find_function( \
@@ -220,7 +220,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
 						,ptr_metamethod_members_aux->getter\
-						,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
+						,ptr_metamethod_members_aux->getter->name.c_str()\
 						,true\
 				);\
 			}else{ /* store object */ \
@@ -283,7 +283,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 						,byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_DIV_SET)\
 				);\
 			}\
-			ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)(ptr_metamethod_members_aux->div_setters.items[0]))->value;\
+			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)((StackElement *)(ptr_metamethod_members_aux->div_setters.items[0]))->value)->ref_ptr;\
 			/* find function if c */ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 				if((ptr_function_found=vm_find_function( \
@@ -337,7 +337,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
 						,ptr_metamethod_members_aux->getter\
-						,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
+						,ptr_metamethod_members_aux->getter->name.c_str()\
 						,true\
 				);\
 			}else{ /* store object */ \
@@ -401,7 +401,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 						,byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_MOD_SET)\
 				);\
 			}\
-			ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)(ptr_metamethod_members_aux->mod_setters.items[0]))->value;\
+			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)((StackElement *)(ptr_metamethod_members_aux->mod_setters.items[0]))->value)->ref_ptr;\
 			/* find function if c */ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 				if((ptr_function_found=vm_find_function( \
@@ -455,7 +455,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
 						,ptr_metamethod_members_aux->getter\
-						,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
+						,ptr_metamethod_members_aux->getter->name.c_str()\
 						,true\
 				);\
 			}else{ /* store object */ \
@@ -492,7 +492,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 			);\
 		}\
-		ScriptFunction *ptr_function_found=(ScriptFunction *)(((StackElement *)setter_info.setters->items[0])->value);\
+		ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->items[0])->value))->ref_ptr;\
 		/* find function if c */ \
 		if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 			if((ptr_function_found=vm_find_function( \
@@ -546,7 +546,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
 					,ptr_metamethod_members_aux->getter\
-					,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
+					,ptr_metamethod_members_aux->getter->name.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \

@@ -498,7 +498,7 @@ namespace zetscript{
 				eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(
 						eval_data
 						,zs_string(
-								((ScriptFunction *)symbol_sf_foundf->ref_ptr)->scope_script_function->script_type_owner->script_type_name)+"::"+symbol_sf_foundf->name);
+								symbol_sf_foundf->scope->script_type_owner->script_type_name)+"::"+symbol_sf_foundf->name);
 
 				break;
 			case BYTE_CODE_CALL:

@@ -52,7 +52,7 @@ namespace zetscript{
 		zs_vector xor_setters; // ^=
 		zs_vector shl_setters; // <<=
 		zs_vector shr_setters; // >>=
-		ScriptFunction *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg; // getter
+		Symbol *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg; // getter
 
 		const static ByteCodeMetamethod 	byte_code_metamethod_member_setter_list[];
 		const static ByteCodeMetamethod 	byte_code_metamethod_member_list[];
@@ -65,7 +65,7 @@ namespace zetscript{
 		MetamethodMembers();
 		MetamethodMemberSetterInfo 	getSetterInfo(ByteCodeMetamethod _byte_code);
 		MetamethodMemberSetterInfo 	getSetterInfo(const char *_symbol_name);
-		void						addSetter(ByteCodeMetamethod _byte_code_metamethod,ScriptFunction *f);
+		void						addSetter(ByteCodeMetamethod _byte_code_metamethod,Symbol *f);
 		zs_vector * 				getVectorSetter(ByteCodeMetamethod _byte_code_metamethod);
 
 

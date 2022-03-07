@@ -51,7 +51,7 @@ namespace zetscript{
 
 		ScriptObject();
 
-		ScriptFunction 			*	getGetter();
+		Symbol 					*	getGetter();
 		zs_vector 				*	getSetterList(ByteCodeMetamethod _byte_code_metamethod);
 
 		virtual	size_t 				length();

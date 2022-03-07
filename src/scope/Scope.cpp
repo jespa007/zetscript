@@ -159,7 +159,7 @@ namespace zetscript{
 		}
 	}
 
-	Symbol * Scope::registerSymbolType(const char * _file,short _line, const zs_string & _symbol_name, uint16_t _check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbolScriptType(const char * _file,short _line, const zs_string & _symbol_name, uint16_t _check_repeated_symbols_direction){
 
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 

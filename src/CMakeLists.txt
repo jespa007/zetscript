@@ -248,13 +248,6 @@ if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
 	
 	target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})
 	
-	# test_register_class
-	add_executable(register_class${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../samples/register_class.cpp
-	)	
-	
-	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})
-	
 	# test_call_script_function
 	add_executable(test_call_script_function${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../samples/test_call_script_function.cpp
@@ -313,6 +306,13 @@ if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
 	)
 
 	target_link_libraries(test_all${POST_NAME} zetscript${POST_NAME})
+	
+	# test_register_class
+	add_executable(register_class${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../samples/register_class.cpp
+	)	
+	
+	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})	
 else()
 	MESSAGE ("-- Suit test: No")
 endif()

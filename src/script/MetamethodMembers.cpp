@@ -113,10 +113,10 @@ namespace zetscript{
 		return getSetterInfo(_byte_code_metamethod);
 	}
 
-	void MetamethodMembers::addSetter(ByteCodeMetamethod _byte_code_metamethod, ScriptFunction *f){
+	void MetamethodMembers::addSetter(ByteCodeMetamethod _byte_code_metamethod, Symbol *symbol_function){
 
 		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
-		stk->value=(zs_int)f;
+		stk->value=(zs_int)symbol_function;
 		stk->properties=STK_PROPERTY_FUNCTION;
 		switch(_byte_code_metamethod){
 			case BYTE_CODE_METAMETHOD_SET:

@@ -139,14 +139,27 @@ namespace zetscript{
 		);
 
 		/**
-		 * User Register C type
+		 * Instenceable Register C type
 		 */
 		template<typename C>
 		ScriptType * registerNativeType(
 			const zs_string & script_type_name
+			, C * (*_constructor)(ZetScript *_zs)
+			, void (*_destructor)(ZetScript *_zs,C *)
 			, const char *registered_file=""
 			,short registered_line=-1
 		);
+
+		/**
+		 * Static C type
+		 */
+		 template<typename T>
+		 ScriptType *  registerNativeTypeStatic(
+				 const zs_string & script_type_name
+				 , const char *registered_file=""
+				,short registered_line=-1
+		);
+
 
 		/**
 		 * Built in register C Class, like ScriptObject,ScriptObjectString...
@@ -387,6 +400,7 @@ namespace zetscript{
 
 		void 							setup();
 		void 							internalPrintError(const char *s);
+
 
 	};
 

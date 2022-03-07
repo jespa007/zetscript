@@ -408,7 +408,7 @@ namespace zetscript{
 
 					if(name_script_function == "_get"){
 						if(mp->metamethod_members.getter==NULL){
-							mp->metamethod_members.getter=(ScriptFunction *)symbol->ref_ptr;
+							mp->metamethod_members.getter=symbol;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -419,7 +419,7 @@ namespace zetscript{
 						}
 					}else if(name_script_function == "_post_inc"){
 						if(mp->metamethod_members.post_inc==NULL){
-							mp->metamethod_members.post_inc=(ScriptFunction *)symbol->ref_ptr;
+							mp->metamethod_members.post_inc=symbol;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -430,7 +430,7 @@ namespace zetscript{
 						}
 					}else if(name_script_function == "_post_dec"){
 						if(mp->metamethod_members.post_dec==NULL){
-							mp->metamethod_members.post_dec=(ScriptFunction *)symbol->ref_ptr;
+							mp->metamethod_members.post_dec=symbol;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -441,7 +441,7 @@ namespace zetscript{
 						}
 					}else if(name_script_function == "_pre_inc"){
 						if(mp->metamethod_members.pre_inc==NULL){
-							mp->metamethod_members.pre_inc=(ScriptFunction *)symbol->ref_ptr;
+							mp->metamethod_members.pre_inc=symbol;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -452,7 +452,7 @@ namespace zetscript{
 						}
 					}else if(name_script_function == "_pre_dec"){
 						if(mp->metamethod_members.pre_dec==NULL){
-							mp->metamethod_members.pre_dec=(ScriptFunction *)symbol->ref_ptr;
+							mp->metamethod_members.pre_dec=symbol;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -463,7 +463,7 @@ namespace zetscript{
 						}
 					}else if(name_script_function == "_neg"){
 						if(mp->metamethod_members.neg==NULL){
-							mp->metamethod_members.neg=(ScriptFunction *)symbol->ref_ptr;
+							mp->metamethod_members.neg=symbol;
 						}else{
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
@@ -477,7 +477,7 @@ namespace zetscript{
 
 						if(_mp_info.byte_code_metamethod!=BYTE_CODE_METAMETHOD_INVALID){
 							if(_mp_info.setters->count == 0){
-								mp->metamethod_members.addSetter(_mp_info.byte_code_metamethod,(ScriptFunction *)symbol->ref_ptr);
+								mp->metamethod_members.addSetter(_mp_info.byte_code_metamethod,symbol);
 							}else{
 								EVAL_ERROR_FILE_LINE(
 									eval_data->current_parsing_file

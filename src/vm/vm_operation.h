@@ -306,7 +306,7 @@
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
 				,ptr_metamethod_members_aux->neg\
-				,ptr_metamethod_members_aux->neg->name_script_function.c_str()\
+				,ptr_metamethod_members_aux->neg->name.c_str()\
 				,true\
 		);\
 		data->stk_vm_current++; /* store negated value to stk to load after */\
@@ -323,7 +323,7 @@
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
 				,__POST_OPERATION_VARIABLE__\
-				,__POST_OPERATION_VARIABLE__->name_script_function.c_str()\
+				,__POST_OPERATION_VARIABLE__->name.c_str()\
 				,true\
 		);\
 	}\
@@ -355,7 +355,7 @@
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
 					,ptr_metamethod_members_aux->getter\
-					,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
+					,ptr_metamethod_members_aux->getter->name.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \
@@ -380,7 +380,7 @@
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
 				,__POST_OPERATION_VARIABLE__\
-				,__POST_OPERATION_VARIABLE__->name_script_function.c_str()\
+				,__POST_OPERATION_VARIABLE__->name.c_str()\
 				,true\
 		);\
 	}\
@@ -419,7 +419,7 @@
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
 				,__PRE_OPERATION_VARIABLE__\
-				,__PRE_OPERATION_VARIABLE__->name_script_function.c_str()\
+				,__PRE_OPERATION_VARIABLE__->name.c_str()\
 				,true\
 		);\
 		/*getter after*/\
@@ -428,7 +428,7 @@
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
 					,ptr_metamethod_members_aux->getter\
-					,ptr_metamethod_members_aux->getter->name_script_function.c_str()\
+					,ptr_metamethod_members_aux->getter->name.c_str()\
 					,true\
 			);\
 		}else{ /* store object */ \

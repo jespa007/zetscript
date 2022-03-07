@@ -80,7 +80,7 @@ if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_C_VAR_P
 				,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 		);\
 	}\
-	ScriptFunction *ptr_function_found=(ScriptFunction *)((StackElement *)store_lst_setter_functions->items[0])->value;\
+	ScriptFunction *ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->items[0]))->value))->ref_ptr);\
 	if(so_aux->isNativeObject()){ /* because object is native, we can have more than one _setter */ \
 		if((ptr_function_found=vm_find_function( \
 				vm \

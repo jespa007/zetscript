@@ -107,7 +107,7 @@ namespace zetscript{
 		return this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
 	}
 
-	ScriptFunction *ScriptObject::getGetter(){
+	Symbol *ScriptObject::getGetter(){
 		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
 		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 

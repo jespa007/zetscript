@@ -11,7 +11,7 @@ namespace zetscript{
 		 return ((properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF) != 0);
 	}
 
-	bool ScriptType::isNativeStaticClass(){
+	bool ScriptType::isStatic(){
 		 return ((properties & SCRIPT_TYPE_PROPERTY_STATIC) != 0);
 	}
 	//------------------------------------------------------------
@@ -183,7 +183,7 @@ namespace zetscript{
 		MetamethodMemberSetterInfo mp_setter_info;
 		Symbol *symbol_function=NULL;
 		zs_string symbol_metamethod_function;
-		ScriptFunction **ptr_getter_script_function=NULL;
+		Symbol **ptr_getter_script_function=NULL;
 
 		if((symbol_member_property=getSymbol(_property_name)) == NULL){
 			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
@@ -270,9 +270,10 @@ namespace zetscript{
 		);
 
 		if(ptr_getter_script_function!=NULL){ // getter
-			*ptr_getter_script_function=(ScriptFunction *)symbol_function->ref_ptr;
+			*ptr_getter_script_function=symbol_function;
 		}else{ // setter
-			mp_setter_info.setters->push_back(symbol_function->ref_ptr);
+			mp->metamethod_members.addSetter(_byte_code_metamethod,symbol_function);
+			//mp_setter_info.setters->push_back(symbol_function->ref_ptr);
 		}
 
 		return symbol_member_property;
@@ -317,7 +318,7 @@ namespace zetscript{
 				_line
 		);
 
-		mp->metamethod_members.getter=(ScriptFunction *)symbol_function->ref_ptr;
+		mp->metamethod_members.getter=symbol_function;
 
 		return symbol_member_property;
 	}
@@ -346,8 +347,8 @@ namespace zetscript{
 				if((existing_symbol=getSymbol(_function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
 					THROW_RUNTIME_ERROR("Function member '%s' is already defined at [%s:%i]"
 						,_function_name.c_str()
-						,zs_path::get_filename(_file).c_str()
-						,_line
+						//,zs_path::get_filename(_file).c_str()
+						//,_line
 						,zs_path::get_filename(existing_symbol->file).c_str()
 						,existing_symbol->line
 					);
@@ -518,7 +519,7 @@ namespace zetscript{
 
 							return NULL;
 						}
-						metamethod_members.addSetter(op,(ScriptFunction *)symbol_function->ref_ptr);
+						metamethod_members.addSetter(op,symbol_function);
 						break;
 					case BYTE_CODE_METAMETHOD_POST_INC:
 						if(metamethod_members.post_inc != NULL){
@@ -527,7 +528,7 @@ namespace zetscript{
 								,script_type_name.c_str()
 							);
 						}
-						metamethod_members.post_inc=(ScriptFunction *)symbol_function->ref_ptr;
+						metamethod_members.post_inc=symbol_function;
 						break;
 					case BYTE_CODE_METAMETHOD_POST_DEC:
 						if(metamethod_members.post_dec != NULL){
@@ -536,7 +537,7 @@ namespace zetscript{
 								,script_type_name.c_str()
 							);
 						}
-						metamethod_members.post_dec=(ScriptFunction *)symbol_function->ref_ptr;
+						metamethod_members.post_dec=symbol_function;
 						break;
 					case BYTE_CODE_METAMETHOD_PRE_INC:
 						if(metamethod_members.pre_inc != NULL){
@@ -545,7 +546,7 @@ namespace zetscript{
 								,script_type_name.c_str()
 							);
 						}
-						metamethod_members.pre_inc=(ScriptFunction *)symbol_function->ref_ptr;
+						metamethod_members.pre_inc=symbol_function;
 						break;
 					case BYTE_CODE_METAMETHOD_PRE_DEC:
 						if(metamethod_members.pre_dec != NULL){
@@ -554,7 +555,7 @@ namespace zetscript{
 								,script_type_name.c_str()
 							);
 						}
-						metamethod_members.pre_dec=(ScriptFunction *)symbol_function->ref_ptr;
+						metamethod_members.pre_dec=symbol_function;
 						break;
 
 					}

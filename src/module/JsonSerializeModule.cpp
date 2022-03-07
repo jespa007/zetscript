@@ -74,7 +74,7 @@ namespace zetscript{
 						if(stk_se->properties & STK_PROPERTY_MEMBER_PROPERTY){
 
 							StackMemberProperty *smp=(StackMemberProperty *)stk_se->value;
-							ScriptFunction *ptr_function=smp->member_property->metamethod_members.getter;
+							ScriptFunction *ptr_function=(ScriptFunction *)(smp->member_property->metamethod_members.getter->ref_ptr);
 							if(ptr_function!=NULL && _obj->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
 
 								getter_found=true;

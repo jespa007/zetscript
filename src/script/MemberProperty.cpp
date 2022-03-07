@@ -15,6 +15,11 @@ namespace zetscript{
 		zs_string symbol_name_methametod;
 		const ByteCodeMetamethod *it=MetamethodMembers::byte_code_metamethod_member_list;
 
+		// custom case get...
+		if(zs_strutils::starts_with(_symbol_name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER)){
+			return true;
+		}
+
 		//
 		while(*it!=0){
 			symbol_name_methametod=byte_code_metamethod_to_symbol_str(*it);

@@ -158,7 +158,7 @@ namespace zetscript{
 		const char *getTypeName();
 
 		bool isNativeType();
-		bool isNativeStaticClass();
+		bool isStatic();
 
 		virtual ~ScriptType();
 
