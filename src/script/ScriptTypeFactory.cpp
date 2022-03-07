@@ -545,6 +545,7 @@ namespace zetscript{
 		}
 		return NULL;
 	}
+
 	ScriptType * ScriptTypeFactory::registerStaticClass(
 			const zs_string & _script_type_name
 			 ,const char *_file
@@ -719,7 +720,7 @@ namespace zetscript{
 				|| idx_script_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT
 				|| idx_script_type>=IDX_TYPE_MAX
 		){
-			return true;
+			return ((ScriptType *)script_types->get(idx_script_type))->isStatic()==false;
 		}
 
 		return false;

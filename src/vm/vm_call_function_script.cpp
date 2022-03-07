@@ -1322,6 +1322,7 @@ execute_function:
 						if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
 
 							ScriptObjectClass *so_class_aux=(ScriptObjectClass *)so_aux;
+
 							so_class_aux->info_function_new=calling_function;
 							so_class_aux->instruction_new=instruction;
 
