@@ -733,7 +733,7 @@ namespace zetscript{
 
 			vm_call_function_script(
 				vm
-				,script_object
+				,is_static?NULL:script_object // do not pass script_object as this on static function, it will be destroyed on pop function
 				,ptr_function_found
 				,stk_args
 			);

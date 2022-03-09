@@ -1,6 +1,6 @@
 class A{
 	var i;
-	function A(_i){
+	constructor(_i){
 		this.i=_i;		
 	}
 	function return_this(){

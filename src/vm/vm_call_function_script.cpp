@@ -1290,7 +1290,7 @@ execute_function:
 				goto lbl_return_function;
 			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 
-				 	 so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,instruction->value_op1);
+				 	so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,instruction->value_op1);
 
 					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
