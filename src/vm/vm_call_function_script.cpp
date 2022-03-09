@@ -531,7 +531,6 @@ find_element_object:
 
 				if(store_lst_setter_functions!=NULL){
 
-					//VM_SET_METAMETHOD(stk_dst,stk_src, so_aux, store_lst_setter_functions);
 					StackElement *stk_vm_start=data->stk_vm_current;\
 					StackElement *stk_arg=stk_vm_start+1; /*start from stk_src */\
 					const char *__STR_SETTER_METAMETHOD__=byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET);\
@@ -543,20 +542,6 @@ find_element_object:
 					}else{
 						so_aux=(ScriptObjectClass *)stk_dst->value;
 					}
-					//StackMemberProperty *	stk_mp=NULL;\
-					//if((store_lst_setter_functions == NULL) && (stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY)){ /* try member property...*/\
-					//	stk_mp=(StackMemberProperty *)stk_dst->value;\
-						/*if(stk_mp->member_property->metamethod_members.setters.count > 0){\
-							store_lst_setter_functions=&stk_mp->member_property->metamethod_members.setters;\
-							so_aux=stk_mp->so_object;\
-						}\*/
-					//}\
-					/*if(store_lst_setter_functions == NULL){\
-						VM_STOP_EXECUTE("%s '%s' not implements metamethod add_set (aka '+='') " \
-								,stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol" \
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-						);\
-					}\*/
 					ScriptFunction *ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->items[0]))->value))->ref_ptr);\
 					if(so_aux->isNativeObject()){ /* because object is native, we can have more than one _setter */ \
 						if((ptr_function_found=vm_find_function( \
