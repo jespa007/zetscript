@@ -768,10 +768,10 @@ namespace zetscript{
 
 			// if a scriptvar --> init shared
 			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				ScriptObject *sv=(ScriptObject *)stk_ret->value;
+				ScriptObjectClass *sv=(ScriptObjectClass *)stk_ret->value;
 
 				// Auto destroy always C when ref == 0
-				((ScriptObjectClass *)(stk_ret->value))->deleteNativeObjectOnDestroy(true);
+				sv->deleteNativeObjectOnDestroy(true);
 
 				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
 					if(!vm_create_shared_pointer(vm,sv)){

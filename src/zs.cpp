@@ -44,11 +44,11 @@ int main(int argc, char * argv[]) {
 					eval_options|=zetscript::EvalOption::EVAL_OPTION_SHOW_SYSTEM_BYTE_CODE;
 				}else if(strcmp(argv[idx_arg],"--version")==0){
 					printf(ZETSCRIP_COPYRIGHT);
-					exit(0);
+					goto zs_exit;
 				}else{ // unknow option
 					fprintf(stderr,"Unrecognized option '%s'\n",argv[idx_arg]);
 					show_usage();
-					exit(EXIT_FAILURE);
+					goto zs_exit;
 				}
 			}else{
 				file=argv[idx_arg];
@@ -129,6 +129,8 @@ int main(int argc, char * argv[]) {
 			fprintf(stderr,"file '%s' not exits\n",file);
 		}
 	}
+
+zs_exit:
 
 	return 0;
 }

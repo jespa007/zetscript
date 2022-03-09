@@ -450,7 +450,7 @@ eval_error_sub_expression:
 					|| IS_BYTE_CODE_PRE_POST(ei_last->vm_instruction.byte_code)
 			){
 				ei_last->vm_instruction.properties|=INSTRUCTION_PROPERTY_RESET_STACK;
-			}else if(IS_BYTE_CODE_LOAD(ei_last->vm_instruction.byte_code) && (_properties &EVAL_EXPRESSION_RESET_STACK_LAST_LOAD)){
+			}else if(/*IS_BYTE_CODE_LOAD(ei_last->vm_instruction.byte_code) &&*/ (_properties &EVAL_EXPRESSION_RESET_STACK_LAST_LOAD)){
 				dst_instructions->push_back((zs_int)(
 					new EvalInstruction(
 						BYTE_CODE_RESET_STACK

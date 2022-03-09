@@ -3,7 +3,7 @@ class Number{
 		this.n=0;
 	}
 	
-	static getNumbers(_n1,_n2){
+	static parseFloat(_n1,_n2){
 		var n1,n2
 		if(isNumber(_n1)){
 			n1=parseFloat(_n1)
@@ -20,7 +20,7 @@ class Number{
 	
 	static _add(_n1, _n2){
 		var n1,n2
-		n1,n2=Number::getNumbers(_n1,_n2);		
+		n1,n2=Number::parseFloat(_n1,_n2);		
 		return new Number(n1+n2)
 	}
 

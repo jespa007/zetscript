@@ -964,8 +964,12 @@ load_function:
 					if((sf_call_stk_function_ref->properties & (STK_PROPERTY_FUNCTION))==0){
 						// error or continue
 						if(instruction->byte_code== BYTE_CODE_CONSTRUCTOR_CALL){ // constructor was not found so we do nothing
-							// reset stack (ignore all pushed data in the stack)
-							data->stk_vm_current=data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;
+							// reset stack to last
+							if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
+								data->stk_vm_current=stk_start;
+							}else{
+								data->stk_vm_current=sf_call_stk_function_ref;//sf_call_stk_start_arg_call-sf_call_stk_start_function_object;
+							}
 							continue;
 						}
 						VM_STOP_EXECUTE("Cannot call '%s%s' as type '%s'. '%s%s' is not function"
@@ -1073,7 +1077,7 @@ execute_function:
 								}else{ // not push in var arg
 
 									if(so_param != NULL && (so_param!=this_object)){ // share n+1 to function if not this
-										if(!vm_share_pointer(vm,so_param)){ // we share pointer +1 to not remove on pop in calling return
+										if(!vm_share_pointer(vm,so_param)){ // By pass object in the arg, it shares pointer +1 to not remove on pop in calling return
 											goto lbl_exit_function;
 										}
 									}

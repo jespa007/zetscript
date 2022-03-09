@@ -91,6 +91,7 @@ namespace zetscript{
 			else{
 				switch(_instruction->byte_code){
 				// 2 ops
+				// pop -2 and push stk +1 = 0
 				case BYTE_CODE_EQU:
 				case BYTE_CODE_NOT_EQU:
 				case BYTE_CODE_LT:
@@ -109,7 +110,8 @@ namespace zetscript{
 				case BYTE_CODE_BITWISE_XOR:
 				case BYTE_CODE_SHL:
 				case BYTE_CODE_SHR:
-					return -2;
+					return -1;
+				// pop -2 and push stk +0 = 0
 				case BYTE_CODE_JNT:
 				case BYTE_CODE_JT:
 				case BYTE_CODE_JE_CASE:
@@ -125,22 +127,23 @@ namespace zetscript{
 				case BYTE_CODE_BITWISE_XOR_STORE:
 				case BYTE_CODE_SHL_STORE:
 				case BYTE_CODE_SHR_STORE:
-					return -1;
-				case BYTE_CODE_NEG:			// get -1 and stk +1 = 0
-				case BYTE_CODE_NOT:			// get -1 and stk +1 = 0
+					return 0;
+				// pop -1 and push stk +1 = 0
+				case BYTE_CODE_NEG:
+				case BYTE_CODE_NOT:			// pop -1 and push stk +1 = 0
 				case BYTE_CODE_RET:
 				case BYTE_CODE_JMP:
 				case BYTE_CODE_DELETE:
 				case BYTE_CODE_POP_SCOPE:
 				case BYTE_CODE_PUSH_SCOPE:
 				case BYTE_CODE_IT_INIT:
-				case BYTE_CODE_PRE_INC:			// get -1 and stk +1 = 0
-				case BYTE_CODE_PRE_DEC:			// get -1 and stk +1 = 0
-				case BYTE_CODE_POST_INC:		// get -1 and stk +1 = 0
-				case BYTE_CODE_NEG_POST_INC: 	// get -1 and stk +1 = 0
-				case BYTE_CODE_POST_DEC:		// get -1 and stk +1 = 0
-				case BYTE_CODE_NEG_POST_DEC:	// get -1 and stk +1 = 0
-				case BYTE_CODE_RESET_STACK:		// get -1 and stk +1 = 0
+				case BYTE_CODE_PRE_INC:			// pop -1 and stk +1 = 0
+				case BYTE_CODE_PRE_DEC:			// pop -1 and stk +1 = 0
+				case BYTE_CODE_POST_INC:		// pop -1 and stk +1 = 0
+				case BYTE_CODE_NEG_POST_INC: 	// pop -1 and stk +1 = 0
+				case BYTE_CODE_POST_DEC:		// pop -1 and stk +1 = 0
+				case BYTE_CODE_NEG_POST_DEC:	// pop -1 and stk +1 = 0
+				case BYTE_CODE_RESET_STACK:		// pop -1 and stk +1 = 0
 				case BYTE_CODE_LOAD_OBJECT_ITEM:
 					return 0;
 				case BYTE_CODE_FIND_VARIABLE:

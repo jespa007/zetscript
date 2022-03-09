@@ -703,13 +703,6 @@ error_eval_keyword_var:
 				));
 			}
 
-			aux_p++;
-			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-			if(*aux_p != '{'){
-				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error:  expected '{' as function block");
-			}
-
 			// register function ...
 			if(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS){ // register named function...
 				if(custom_symbol_name != ""){
@@ -725,6 +718,16 @@ error_eval_keyword_var:
 			// remove collected script function params
 			for(int i=0; i < script_function_params.count; i++){
 				delete (ScriptFunctionParam *)script_function_params.items[i];
+			}
+
+			aux_p++;
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+			if(*aux_p != '{'){
+				if(params != NULL){
+					delete [] params;
+				}
+				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error:  expected '{' as function block");
 			}
 
 			//--- OP
