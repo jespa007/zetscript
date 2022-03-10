@@ -79,6 +79,8 @@ namespace zetscript{
 		int size = 0;
 		static zs_string newFromTwo(const char *_s1,const char *_s2);
 
+		void set(const zs_string & _s);
+		void set(const char * _s);
 		void __cleanup__();
 	};
 

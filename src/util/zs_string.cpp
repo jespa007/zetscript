@@ -8,36 +8,47 @@ namespace zetscript{
 
 	int zs_string::npos=-1;
 
+	void zs_string::set(const char * _buffer){
 
-	zs_string::zs_string() : buf(NULL), size(0) // default constructor
+		if(_buffer==NULL){return;} // do not create string from NULL pointers
+
+		__cleanup__(); // cleanup any existing data
+		size = strlen(_buffer);
+		buf = (char *)ZS_MALLOC(size + 1); // + 1 for the keeping the null character
+		strncpy(buf, _buffer, size); // copy from the incoming buffer to character buffer of the new object
+	}
+
+
+	void zs_string::set(const zs_string & _s){
+		set(_s.c_str());
+	}
+
+	zs_string::zs_string() // default constructor -> empty
 	{
+		buf=NULL;
+		size=0;
+		set("");
 	}
 
 	zs_string::zs_string(const char * buffer) // constructor
 	{
-		if(buffer==NULL){return;} // do not create string from NULL pointers
-		size = strlen(buffer);
-		buf = (char *)ZS_MALLOC(size + 1); // + 1 for the keeping the null character
-		strncpy(buf, buffer, size); // copy from the incoming buffer to character buffer of the new object
+		buf=NULL;
+		size=0;
+		set(buffer);
 	}
 
 	zs_string::zs_string(const zs_string & obj) // copy constructor
 	{
-		size = obj.size;
-		buf = (char *)ZS_MALLOC(size + 1); // + 1 for the keeping the null character
-
-		strncpy(buf,obj.buf, size); // copy from the incoming buffer to character buffer of the new object
+		buf=NULL;
+		size=0;
+		set(obj);
 	}
 
 	zs_string& zs_string::operator=(const zs_string & obj) // copy assignment
 	{
-		__cleanup__(); // cleanup any existing data
-
-		// Copy data from the newly assigned zs_string object
-		size = obj.size;
-		buf = (char *)ZS_MALLOC(size + 1); // + 1 for the keeping the null character
-
-		strncpy(buf, obj.buf, size); // copy from the incoming buffer to character buffer of the new object
+		buf=NULL;
+		size=0;
+		set(obj);
 		return *this;
 	}
 
@@ -57,8 +68,6 @@ namespace zetscript{
 	// Compiler calls this constructor when the object passed in the argument
 	// is about to die due to scope end or such
 	{
-
-
 		// Copy data from the incoming object
 		size = dyingObj.size;
 
@@ -354,6 +363,7 @@ namespace zetscript{
 			free(buf);
 		}
 		size = 0;
+		buf=NULL;
 	}
 
 }
