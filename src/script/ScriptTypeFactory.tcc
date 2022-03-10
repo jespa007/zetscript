@@ -613,10 +613,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_POST_INC
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,_registered_file
 			,_registered_line
 		);
@@ -654,10 +654,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_POST_DEC
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,_registered_file
 			,_registered_line
 		);
@@ -695,10 +695,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_PRE_INC
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,_registered_file
 			,_registered_line
 		);
@@ -736,10 +736,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_PRE_DEC
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,_registered_file
 			,_registered_line
 		);
@@ -775,10 +775,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_ADD_SET
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,_registered_file
 			,_registered_line
 		);
@@ -814,10 +814,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_SUB_SET
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,_registered_file
 			,_registered_line
 		);
@@ -853,10 +853,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_MUL_SET
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,registered_file
 			,registered_line
 		);
@@ -892,10 +892,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_DIV_SET
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,registered_file
 			,registered_line
 		);
@@ -931,10 +931,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_MOD_SET
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,registered_file
 			,registered_line
 		);
@@ -970,10 +970,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_AND_SET
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,registered_file
 			,registered_line
 		);
@@ -1009,10 +1009,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_OR_SET
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,registered_file
 			,registered_line
 		);
@@ -1048,10 +1048,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_XOR_SET
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,registered_file
 			,registered_line
 		);
@@ -1087,10 +1087,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_SHL_SET
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,registered_file
 			,registered_line
 		);
@@ -1126,10 +1126,10 @@ namespace zetscript{
 		script_type->registerNativeMemberPropertyMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_SHR_SET
-			,_ptr_function
-			,params
+			,&params
 			,params_len
 			,idx_script_type_return
+			,(zs_int)_ptr_function
 			,registered_file
 			,registered_line
 		);

@@ -37,14 +37,9 @@
 #define MAX_PATH 4096
 #endif
 
-#ifndef MAX
-#define MAX(a,b) (a)>(b)?(a):(b)
-#endif
+#define ZS_MAX(a,b) (a)>(b)?(a):(b)
+#define ZS_MIN(a,b) (a)<(b)?(a):(b)
 
-
-#ifndef MIN
-#define MIN(a,b) (a)<(b)?(a):(b)
-#endif
 
 #define 	ZS_UNUSUED_PARAM(x) 				((void)(x))
 #define 	ZS_UNUSUED_2PARAMS(x1,x2) 			((void)(x1),(void)(x2))

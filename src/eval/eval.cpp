@@ -453,7 +453,7 @@ namespace zetscript{
 			ptr_str_symbol_to_find=&eval_instruction->symbol.name;
 
 			sum_stk_load_stk+=instruction_num_required_stack(&eval_instruction->vm_instruction);
-			max_acc_stk_load=MAX(max_acc_stk_load,sum_stk_load_stk);
+			max_acc_stk_load=ZS_MAX(max_acc_stk_load,sum_stk_load_stk);
 
 
 			switch(eval_instruction->vm_instruction.byte_code){

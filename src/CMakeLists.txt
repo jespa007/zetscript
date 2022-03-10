@@ -322,19 +322,21 @@ endif()
 SET(
 	HS
 	# Utils
-	util/zs_file.h
+	util/zs_datetime.h
 	util/zs_dir.h
+	util/zs_file.h
+	util/zs_io.h
 	util/zs_log.h
+	util/zs_map_iterator.h
+	util/zs_map.h
+	util/zs_mem.h
 	util/zs_path.h
 	util/zs_rtti.h
+	util/zs_string.h
 	util/zs_strutils.h
-	util/zs_vector.h
-	util/zs_map.h
-	util/zs_map_iterator.h
 	util/zs_timespan.h
-	util/zs_datetime.h
 	util/zs_util.h
-	util/zs_mem.h
+	util/zs_vector.h
 	
 	#eval
 	eval/eval_keyword.h
@@ -342,41 +344,42 @@ SET(
 	eval/eval.h
 	
 	
-	# extra
+	# module
+	module/ConsoleModule.h
+	module/DateTimeModule.h
+	module/JsonModule.h
 	module/MathModule.h
 	module/SystemModule.h
-	module/ConsoleModule.h
-	module/JsonModule.h
-	module/DateTimeModule.h
 	module/zs_module.h
 	
 	
 	# script
 	script/MemberProperty.h
-	script/ScriptClass.h
-	script/ScriptClass.tcc
-	script/ScriptClassFactory.h
-	script/ScriptClassFactory.tcc
+	script/MetamethodMembers.h
 	script/ScriptFunction.h
-	script/ScriptFunctionParam.h
 	script/ScriptFunctionFactory.h
+	script/ScriptFunctionParam.h
 	script/ScriptFunctionTraits.h
 	script/ScriptObject.h
 	script/ScriptObjectClass.h
-	script/ScriptObjectObject.h
 	script/ScriptObjectIteratorObject.h
 	script/ScriptObjectIteratorObjectWrap.h
-	script/ScriptObjectObjectWrap.h
-	script/ScriptObjectString.h
 	script/ScriptObjectIteratorString.h
 	script/ScriptObjectIteratorStringWrap.h
+	script/ScriptObjectIteratorVector.h
+	script/ScriptObjectIteratorVectorWrap.h
+	script/ScriptObjectMemberFunction.h
+	script/ScriptObjectObject.h
+	script/ScriptObjectObjectWrap.h
+	script/ScriptObjectString.h
 	script/ScriptObjectStringWrap.h
 	script/ScriptObjectVarRef.h
 	script/ScriptObjectVector.h
-	script/ScriptObjectVector.tcc
-	script/ScriptObjectIteratorVector.h
-	script/ScriptObjectIteratorVectorWrap.h
 	script/ScriptObjectVectorWrap.h
+	script/ScriptType.h
+	script/ScriptType.tcc
+	script/ScriptTypeFactory.h
+	script/ScriptTypeFactory.tcc
 	script/zs_script.h
 			
 	# scope
@@ -385,21 +388,28 @@ SET(
 	scope/zs_scope.h
 	
 	# vm
+	vm/vm_operation_set.h
+	vm/vm_operation.h
+	vm/vm_pop_stk.h
+	vm/vm_push_stk.h
+	vm/vm_scope.h
+	vm/vm_set.h
+	vm/vm.cpp
 	vm/vm.h
 	vm/vm.tcc
 	
 	
 	# main
-	Type.h
 	ByteCode.h
 	common.h
 	config.h
-	zs_exception.h
 	Instruction.h
 	StackElement.h
 	Symbol.h
+	Type.h
 	zetscript.h
 	zetscript.tcc
+	zs_exception.h
 )
 	
 

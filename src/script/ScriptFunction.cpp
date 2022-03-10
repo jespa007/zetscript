@@ -146,7 +146,7 @@ namespace zetscript{
 
 			 req_stk=instruction_num_required_stack(instruction);
 			 sum_stk_load_stk+=req_stk;
-			 max_acc_stk_load=MAX(max_acc_stk_load,sum_stk_load_stk);
+			 max_acc_stk_load=ZS_MAX(max_acc_stk_load,sum_stk_load_stk);
 			 if(instruction->byte_code == BYTE_CODE_RESET_STACK
 				|| instruction->byte_code == BYTE_CODE_RET
 				|| (instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK)

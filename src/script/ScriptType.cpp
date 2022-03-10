@@ -172,7 +172,7 @@ namespace zetscript{
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
-			,char _params_len
+			,int _params_len
 			,int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char * _file

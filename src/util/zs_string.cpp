@@ -281,7 +281,7 @@ namespace zetscript{
 		}
 
 		if(pos < size){
-			int idx=MIN(pos,size-1);
+			int idx=ZS_MIN(pos,size-1);
 
 			do{
 				int len=strlen(_s);
