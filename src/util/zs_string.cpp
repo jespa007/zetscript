@@ -46,8 +46,6 @@ namespace zetscript{
 
 	zs_string& zs_string::operator=(const zs_string & obj) // copy assignment
 	{
-		buf=NULL;
-		size=0;
 		set(obj);
 		return *this;
 	}
@@ -132,13 +130,19 @@ namespace zetscript{
 			len2=strlen(_s2);
 		}
 
-		s.size = len1 + len2;
-		s.buf = (char *)ZS_MALLOC(s.size + 1); // allocate memory to keep the concatenated string
+		int buf_new_from_two_size = len1 + len2;
+		char *buf_new_from_two = (char *)ZS_MALLOC(buf_new_from_two_size + 1); // allocate memory to keep the concatenated string
 
-		if(_s1!=NULL) strncpy(s.buf, _s1, len1); // copy the 1st string
-		if(_s2!=NULL) strncpy(s.buf + len1, _s2, len2);
+		if(_s1!=NULL) strncpy(buf_new_from_two, _s1, len1); // copy the 1st string
+		if(_s2!=NULL) strncpy(buf_new_from_two + len1, _s2, len2);
+
+		s=buf_new_from_two;
+
+		free(buf_new_from_two);
 
 		return s;
+
+
     }
 
     // +
@@ -194,7 +198,7 @@ namespace zetscript{
 	}
 
 	zs_string zs_string::substr (int pos, int len) const{
-
+		zs_string s;
 		if(len == npos){
 			len=size-pos;
 		}
@@ -203,12 +207,14 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("substring: pos+len >= size (%i+%i>=%i)",pos,len,size);
 		}
 
-		zs_string str;
-		str.buf=(char *)ZS_MALLOC(len+1);
+		char *str_cut=(char *)ZS_MALLOC(len+1);
+		strncpy(str_cut,this->buf+pos,len);
 
-		str.size=len;
-		strncpy(str.buf,this->buf+pos,len);
-		return str;
+		s=str_cut;
+
+		free(str_cut);
+
+		return s;
 
 
 	}
