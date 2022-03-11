@@ -265,7 +265,7 @@ namespace zetscript{
 				break;
 
 			case BYTE_CODE_LOAD_VECTOR_ITEM:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s {vector}\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s {vector}\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk

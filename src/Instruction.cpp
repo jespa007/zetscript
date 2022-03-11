@@ -110,6 +110,7 @@ namespace zetscript{
 				case BYTE_CODE_BITWISE_XOR:
 				case BYTE_CODE_SHL:
 				case BYTE_CODE_SHR:
+				case BYTE_CODE_PUSH_VECTOR_ITEM:
 					return -1;
 				// pop -2 and push stk +0 = 0
 				case BYTE_CODE_JNT:
@@ -170,7 +171,6 @@ namespace zetscript{
 				case BYTE_CODE_LOAD_BOOL:
 				case BYTE_CODE_LOAD_ZS_INT:
 				case BYTE_CODE_LOAD_TYPE:
-				case BYTE_CODE_PUSH_VECTOR_ITEM:
 				case BYTE_CODE_NEW_VECTOR:
 				case BYTE_CODE_NEW_OBJECT_BY_TYPE:
 				case BYTE_CODE_NEW_OBJECT_BY_VALUE:

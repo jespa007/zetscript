@@ -140,7 +140,7 @@ namespace zetscript{
 		return false;
 	}
 
-	char * eval_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector	*	eval_instructions){
+	char * eval_object_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector	*	eval_instructions){
 		// Inline object: two possibles uses {a:1,b:2}["a"] or {a:1, b:2}.a
 		char *aux_p = (char *)s;
 		zs_string symbol_value;
@@ -221,6 +221,8 @@ namespace zetscript{
 					 ,line
 					 ,scope_info
 					 ,eval_instructions
+					 ,""
+					,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL // do not reset due it has to get result from function
 			))==NULL){
 				 return NULL;
 			 }
@@ -274,6 +276,8 @@ namespace zetscript{
 					,line
 					,scope_info
 					,eval_instructions
+					,""
+					,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			);
 
 			if(aux_p==NULL){
@@ -419,6 +423,10 @@ namespace zetscript{
 
 						  if(aux_p == NULL){
 							  return NULL;
+						  }
+
+						  if(*aux_p == ','){
+							  IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 						  }
 
 						  n_args++;

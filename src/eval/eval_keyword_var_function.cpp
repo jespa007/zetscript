@@ -340,7 +340,10 @@ namespace zetscript{
 
 							eval_data->current_function->eval_instructions.push_back((zs_int)(
 									new EvalInstruction(
-											BYTE_CODE_STORE_CONST,1
+											BYTE_CODE_STORE_CONST
+											,1
+											,ZS_IDX_UNDEFINED
+											,INSTRUCTION_PROPERTY_RESET_STACK
 									)
 							));
 						}

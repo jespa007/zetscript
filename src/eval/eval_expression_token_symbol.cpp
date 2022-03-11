@@ -138,7 +138,7 @@ namespace zetscript{
 				token_node_symbol->token_type = TokenType::TOKEN_TYPE_OBJECT_VECTOR;
 			}else if(*aux_p=='{'){ // object ...
 
-				if((aux_p=eval_object(
+				if((aux_p=eval_object_object(
 					eval_data
 					,aux_p
 					,line
