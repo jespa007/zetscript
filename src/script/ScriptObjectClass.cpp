@@ -179,10 +179,10 @@ namespace zetscript{
 					zs_string *str=NULL;
 					switch(ptr_function->idx_script_type_return){
 					case IDX_TYPE_STRING_C:
-							aux=((zs_string (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
+							aux=((zs_string (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							break;
 					case IDX_TYPE_STRING_PTR_C:
-							str=((zs_string * (*)(void *))(ptr_function->ref_native_function_ptr))(this->c_object);
+							str=((zs_string * (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							if(str == NULL){
 								THROW_RUNTIME_ERRORF("toString: str NULL");
 							}

@@ -514,7 +514,7 @@ namespace zetscript{
 
 	void ZetScript::saveState(){
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
-		idx_current_global_variable_checkpoint=main_function_object->local_variables->count-1;
+		idx_current_global_variable_checkpoint=main_function_object->local_variables->count;
 
 		scope_factory->saveState();
 		script_function_factory->saveState();

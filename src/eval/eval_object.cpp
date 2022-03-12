@@ -221,7 +221,7 @@ namespace zetscript{
 					 ,line
 					 ,scope_info
 					 ,eval_instructions
-					 ,""
+					 ,NULL
 					,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL // do not reset due it has to get result from function
 			))==NULL){
 				 return NULL;
@@ -276,7 +276,7 @@ namespace zetscript{
 					,line
 					,scope_info
 					,eval_instructions
-					,""
+					,NULL
 					,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			);
 
