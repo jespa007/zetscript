@@ -49,6 +49,10 @@ namespace zetscript{
 	}
 
 	bool ScriptType::isDerivedFrom(short _idx_script_type){
+		if(_idx_script_type==this->idx_script_type){
+			return true;
+		}
+
 		for(int i=0; i < this->idx_base_types->count; i++){
 			if(this->idx_base_types->items[i]==_idx_script_type){
 				return true;

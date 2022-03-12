@@ -43,15 +43,15 @@
 
 
 // Check types
-#define STK_VALUE_IS_ZS_FLOAT(stk) 						(stk->properties & STK_PROPERTY_ZS_FLOAT)
-#define STK_VALUE_IS_ZS_INT(stk) 						(stk->properties & STK_PROPERTY_ZS_INT)
-#define STK_VALUE_IS_BOOLEAN(stk) 						(stk->properties & STK_PROPERTY_BOOL)
-#define STK_VALUE_IS_NULL(stk) 							(stk->properties == 0)
-#define STK_VALUE_IS_FUNCTION(stk) 						(stk->properties & STK_PROPERTY_FUNCTION)
-#define STK_VALUE_IS_TYPE(stk) 							(stk->properties & STK_PROPERTY_TYPE)
-#define STK_VALUE_IS_MEMBER_PROPERTY(stk) 				(stk->properties & STK_PROPERTY_MEMBER_PROPERTY)
-#define STK_VALUE_IS_MEMBER_FUNCTION(stk) 				(stk->properties & STK_PROPERTY_MEMBER_FUNCTION)
-#define STK_VALUE_IS_SCRIPT_OBJECT(stk) 				(stk->properties & STK_PROPERTY_SCRIPT_OBJECT)
+#define STK_VALUE_IS_ZS_FLOAT(stk) 						((stk)->properties & STK_PROPERTY_ZS_FLOAT)
+#define STK_VALUE_IS_ZS_INT(stk) 						((stk)->properties & STK_PROPERTY_ZS_INT)
+#define STK_VALUE_IS_BOOLEAN(stk) 						((stk)->properties & STK_PROPERTY_BOOL)
+#define STK_VALUE_IS_NULL(stk) 							((stk)->properties == 0)
+#define STK_VALUE_IS_FUNCTION(stk) 						((stk)->properties & STK_PROPERTY_FUNCTION)
+#define STK_VALUE_IS_TYPE(stk) 							((stk)->properties & STK_PROPERTY_TYPE)
+#define STK_VALUE_IS_MEMBER_PROPERTY(stk) 				((stk)->properties & STK_PROPERTY_MEMBER_PROPERTY)
+#define STK_VALUE_IS_MEMBER_FUNCTION(stk) 				((stk)->properties & STK_PROPERTY_MEMBER_FUNCTION)
+#define STK_VALUE_IS_SCRIPT_OBJECT(stk) 				((stk)->properties & STK_PROPERTY_SCRIPT_OBJECT)
 
 #define STK_VALUE_TO_BOOL(ptr_result_instruction) 		(((bool)(ptr_result_instruction->value)))
 #define STK_SET_NULL(stk)\

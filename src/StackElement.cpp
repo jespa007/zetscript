@@ -58,24 +58,30 @@ namespace zetscript{
 
 	zs_string stk_to_str(ZetScript *_zs, StackElement *_stk, const zs_string & _format ){
 		zs_string result="unknown";
-		StackElement *stk=_stk;
+		bool is_constant=false;
+		StackElement stk=*_stk;
 
-		if(stk->properties & STK_PROPERTY_PTR_STK){
-			stk=(StackElement *)stk->value;
+		if(stk.properties & STK_PROPERTY_PTR_STK){
+			stk=*((StackElement *)stk.value);
 		}
 
-		if(STK_VALUE_IS_NULL(stk)){
+		if(stk.properties & STK_PROPERTY_READ_ONLY){
+			is_constant=true;
+			stk.properties&=~STK_PROPERTY_READ_ONLY;
+		}
+
+		if(STK_VALUE_IS_NULL(&stk)){
 			result=ZS_TYPE_NAME_NULL;
-		}else if((stk->properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)){
-			result= (const char *)stk->value;
-		}else if(STK_VALUE_IS_ZS_INT(stk)){
-			result= zs_strutils::zs_int_to_str((zs_int)stk->value,_format);
-		}else if(STK_VALUE_IS_ZS_FLOAT(stk)){
-			result= zs_strutils::zs_float_to_str(*((zs_float *)&stk->value));
-		}else if(STK_VALUE_IS_BOOLEAN(stk)){
-			result= stk->value?"true":"false";
-		}else if(STK_VALUE_IS_FUNCTION(stk)){
-			Symbol *symbol=((Symbol *)stk->value);
+		}else if((stk.properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)){
+			result= (const char *)stk.value;
+		}else if(STK_VALUE_IS_ZS_INT(&stk)){
+			result= zs_strutils::zs_int_to_str((zs_int)stk.value,_format);
+		}else if(STK_VALUE_IS_ZS_FLOAT(&stk)){
+			result= zs_strutils::zs_float_to_str(*((zs_float *)&stk.value));
+		}else if(STK_VALUE_IS_BOOLEAN(&stk)){
+			result= stk.value?"true":"false";
+		}else if(STK_VALUE_IS_FUNCTION(&stk)){
+			Symbol *symbol=((Symbol *)stk.value);
 			ScriptType *st=symbol->scope->getScriptTypeOwner();
 			if(st==((_zs->getScriptTypeFactory())->getScriptType(IDX_TYPE_CLASS_MAIN))){
 				result= zs_string("function<")+symbol->name+">";
@@ -96,11 +102,11 @@ namespace zetscript{
 			}else{ // normal function
 				result= zs_string("function@")+((Symbol *)stk->value)->name;
 			}*/
-		}else if(STK_VALUE_IS_TYPE(stk)){
-			result= zs_string("type")+"@"+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
+		}else if(STK_VALUE_IS_TYPE(&stk)){
+			result= zs_string("type")+"@"+_zs->getScriptTypeFactory()->getScriptTypeName(stk.value);
 		}else{
-			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				ScriptObject *so=(ScriptObject *)stk->value;
+			if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){
+				ScriptObject *so=(ScriptObject *)stk.value;
 				if(so->getTypeName() == "DateTime"){
 					result=((zs_datetime *)((ScriptObjectClass *)so)->getNativeObject())->to_string(_format);
 				}else if(so->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){

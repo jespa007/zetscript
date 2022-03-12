@@ -305,7 +305,7 @@
 		/* call _neg */\
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
-				,ptr_metamethod_members_aux->neg\
+				,(ScriptFunction *)ptr_metamethod_members_aux->neg->ref_ptr\
 				,ptr_metamethod_members_aux->neg->name.c_str()\
 				,true\
 		);\
@@ -322,7 +322,7 @@
 		}\
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
-				,__POST_OPERATION_VARIABLE__\
+				,(ScriptFunction *)__POST_OPERATION_VARIABLE__->ref_ptr\
 				,__POST_OPERATION_VARIABLE__->name.c_str()\
 				,true\
 		);\
@@ -354,7 +354,7 @@
 			/* call _neg */\
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
-					,ptr_metamethod_members_aux->getter\
+					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,ptr_metamethod_members_aux->getter->name.c_str()\
 					,true\
 			);\
@@ -379,7 +379,7 @@
 		}\
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
-				,__POST_OPERATION_VARIABLE__\
+				,(ScriptFunction *)__POST_OPERATION_VARIABLE__->ref_ptr\
 				,__POST_OPERATION_VARIABLE__->name.c_str()\
 				,true\
 		);\
@@ -418,7 +418,7 @@
 		}\
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
-				,__PRE_OPERATION_VARIABLE__\
+				,(ScriptFunction *)__PRE_OPERATION_VARIABLE__->ref_ptr\
 				,__PRE_OPERATION_VARIABLE__->name.c_str()\
 				,true\
 		);\
@@ -427,7 +427,7 @@
 			/* call _neg */\
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
-					,ptr_metamethod_members_aux->getter\
+					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,ptr_metamethod_members_aux->getter->name.c_str()\
 					,true\
 			);\

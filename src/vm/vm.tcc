@@ -53,11 +53,11 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 {\
 	StackElement *stk_def_afun_start=data->stk_vm_current;\
 	int n_returned_args_afun=0;\
-	if(((ScriptFunction *)sf)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
+	if((sf)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
 		vm_call_function_native(\
 				vm\
 				,so\
-				,((ScriptFunction *)sf)\
+				,sf\
 				,calling_function\
 				,instruction\
 				,stk_def_afun_start\

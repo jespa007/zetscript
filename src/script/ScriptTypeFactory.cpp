@@ -399,17 +399,17 @@ namespace zetscript{
 	}
 
 	ScriptType * ScriptTypeFactory::registerClass(
-			const zs_string & script_type_name
-			 ,const zs_string & base_class_name
-			 ,const char * file
-			 , short line
+			const zs_string & _script_type_name
+			 ,const zs_string & _base_class_name
+			 ,const char * _file
+			 , short _line
 	){
 		int  index;
 		ScriptType *sc=NULL;
 
-		checkClassName(script_type_name);
+		checkClassName(_script_type_name);
 
-		if((index = getIdxScriptType(script_type_name))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
+		if((index = getIdxScriptType(_script_type_name))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
 			uint16_t properties_register_scope=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
 			index=script_types->count;
 
@@ -427,9 +427,9 @@ namespace zetscript{
 
 			// register symbol on main scope...
 
-			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolScriptType(file,line,script_type_name,properties_register_scope);
+			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolScriptType(_file,_line,_script_type_name,properties_register_scope);
 
-			sc = new ScriptType(this->zs,index, script_type_name, scope);
+			sc = new ScriptType(this->zs,index, _script_type_name, scope);
 			scope->setScriptTypeOwner(sc);
 			symbol->ref_ptr=(zs_int)sc;
 
@@ -437,25 +437,25 @@ namespace zetscript{
 
 			script_types->push_back((zs_int)sc);
 
-			if(base_class_name != ""){
+			if(_base_class_name != ""){
 
 				ScriptType *base_class=NULL;
 
 				if(sc->idx_base_types->count > 0){
 					ScriptType *match_class=getScriptType(sc->idx_base_types->items[0]);
 					THROW_RUNTIME_ERROR("Class '%s' already is inherited from '%s'"
-							,script_type_name.c_str()
+							,_script_type_name.c_str()
 							,match_class->script_type_name.c_str());
 				}
 
-				if((base_class = getScriptType(base_class_name)) == NULL){
-					THROW_RUNTIME_ERROR("Class %s not registered",base_class_name.c_str());
+				if((base_class = getScriptType(_base_class_name)) == NULL){
+					THROW_RUNTIME_ERROR("Class '%s' not registered",_base_class_name.c_str());
 				}
 
 				if(base_class->isStatic()){
 					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is static. To allow extension register with 'registerClass' instead of 'registerStaticClass'"
-						,script_type_name.c_str()
-						,base_class_name.c_str()
+						,_script_type_name.c_str()
+						,_base_class_name.c_str()
 					);
 				}
 
@@ -541,7 +541,7 @@ namespace zetscript{
 
 			return sc;
 		}else{
-			THROW_RUNTIME_ERROR("class '%s' already registered",script_type_name.c_str());
+			THROW_RUNTIME_ERROR("class '%s' already registered",_script_type_name.c_str());
 		}
 		return NULL;
 	}

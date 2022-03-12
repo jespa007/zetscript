@@ -94,7 +94,7 @@ namespace zetscript{
 		eval_instructions->clear();
 	}
 
-	ScriptFunction *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector *eval_instructions){
+	Symbol *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector *eval_instructions){
 
 		zs_string name_script_function=eval_anonymous_function_name("","defval");
 		Instruction *start_ptr=NULL;
@@ -148,7 +148,7 @@ namespace zetscript{
 		eval_instructions->clear();
 
 
-		return sf;
+		return symbol_sf;
 	}
 
 	//
@@ -326,7 +326,12 @@ namespace zetscript{
 					}
 					else{
 						if(is_constant){ // make ptr as constant after variable is saved
-							EvalInstruction *eval_instruction;
+
+							// unset last reset stack
+							EvalInstruction *eval_instruction=(EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.count-1];
+							eval_instruction->vm_instruction.properties&=~INSTRUCTION_PROPERTY_RESET_STACK;
+
+							// add instruction push
 							eval_data->current_function->eval_instructions.push_back((zs_int)(
 									eval_instruction=new EvalInstruction(
 											BYTE_CODE_PUSH_STK_GLOBAL
@@ -340,10 +345,10 @@ namespace zetscript{
 
 							eval_data->current_function->eval_instructions.push_back((zs_int)(
 									new EvalInstruction(
-											BYTE_CODE_STORE_CONST
-											,1
-											,ZS_IDX_UNDEFINED
-											,INSTRUCTION_PROPERTY_RESET_STACK
+										BYTE_CODE_STORE_CONST
+										,1
+										,ZS_IDX_UNDEFINED
+										,INSTRUCTION_PROPERTY_RESET_STACK
 									)
 							));
 						}
@@ -690,7 +695,7 @@ error_eval_keyword_var:
 					}
 
 					if(create_anonymous_function_return_expression==true){
-						ScriptFunction *sf_aux=eval_new_inline_anonymous_function(eval_data,&ei_instructions_default);
+						Symbol *sf_aux=eval_new_inline_anonymous_function(eval_data,&ei_instructions_default);
 						param_info.default_param_value={(zs_int)sf_aux,STK_PROPERTY_FUNCTION};
 					}
 

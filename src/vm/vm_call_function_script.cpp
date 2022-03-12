@@ -336,7 +336,7 @@ find_element_object:
 
 								VM_INNER_CALL_ONLY_RETURN(
 										stk_mp->so_object
-										,stk_mp->member_property->metamethod_members.getter->ref_ptr
+										,((ScriptFunction *)stk_mp->member_property->metamethod_members.getter->ref_ptr)
 										,stk_mp->member_property->metamethod_members.getter->name.c_str()
 										,true
 								);
@@ -1054,13 +1054,20 @@ load_function:
 							}
 							continue;
 						}
-						VM_STOP_EXECUTE("Cannot call '%s%s' as type '%s'. '%s%s' is not function"
-								,instruction->byte_code==BYTE_CODE_INDIRECT_THIS_CALL?"this.":""
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
-								,instruction->byte_code==BYTE_CODE_INDIRECT_THIS_CALL?"this.":""
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-						);
+						if(instruction->byte_code==BYTE_CODE_INDIRECT_THIS_CALL){
+
+							VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+									,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+							);
+
+						}else{
+							VM_STOP_EXECUTE("Cannot call '%s'. '%s' is not function or not exist"
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+							);
+						}
 
 					}
 					Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;
@@ -1187,8 +1194,13 @@ execute_function:
 						case STK_PROPERTY_ZS_FLOAT:
 							*data->stk_vm_current++=param->default_param_value;
 							break;
-						case STK_PROPERTY_FUNCTION: // we call function in the middle of the function
-							VM_INNER_CALL_ONLY_RETURN(NULL,param->default_param_value.value,"default",true)
+						case STK_PROPERTY_FUNCTION: // we call function that return default value
+							VM_INNER_CALL_ONLY_RETURN(
+								NULL
+								,(ScriptFunction *)(((Symbol *)param->default_param_value.value)->ref_ptr)
+								,((Symbol *)param->default_param_value.value)->name.c_str()
+								,true
+							)
 							data->stk_vm_current++;
 							break;
 						default:
@@ -1601,7 +1613,7 @@ execute_function:
 
 				VM_INNER_CALL_ONLY_RETURN(
 						stk_mp->so_object
-						,stk_mp->member_property->metamethod_members.getter->ref_ptr
+						,(ScriptFunction *)stk_mp->member_property->metamethod_members.getter->ref_ptr
 						,stk_mp->member_property->metamethod_members.getter->name.c_str()
 						,true
 				);

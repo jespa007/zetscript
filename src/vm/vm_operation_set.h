@@ -112,7 +112,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				/* call _neg */\
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
-						,ptr_metamethod_members_aux->getter\
+						,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 						,ptr_metamethod_members_aux->getter->name.c_str()\
 						,true\
 				);\
@@ -124,8 +124,12 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 					*data->stk_vm_current=stk_var_copy;\
 				}\
 			}\
+			data->stk_vm_current++;\
 		}\
 		break;\
+	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
 	}\
 
 
@@ -219,7 +223,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				/* call _neg */\
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
-						,ptr_metamethod_members_aux->getter\
+						,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 						,ptr_metamethod_members_aux->getter->name.c_str()\
 						,true\
 				);\
@@ -231,10 +235,13 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 					*data->stk_vm_current=stk_var_copy;\
 				}\
 			}\
+			data->stk_vm_current++;\
 		}\
 		break;\
-	}
-
+	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
+	}\
 
 #define VM_OPERATION_DIV_SET() \
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
@@ -336,7 +343,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				/* call _neg */\
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
-						,ptr_metamethod_members_aux->getter\
+						,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 						,ptr_metamethod_members_aux->getter->name.c_str()\
 						,true\
 				);\
@@ -348,10 +355,13 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 					*data->stk_vm_current=stk_var_copy;\
 				}\
 			}\
+			data->stk_vm_current++;\
 		}\
 		break;\
 	}\
-
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
+	}\
 
 
 #define VM_OPERATION_MOD_SET() \
@@ -454,7 +464,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				/* call _neg */\
 				VM_INNER_CALL_ONLY_RETURN(\
 						so_aux\
-						,ptr_metamethod_members_aux->getter\
+						,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 						,ptr_metamethod_members_aux->getter->name.c_str()\
 						,true\
 				);\
@@ -466,10 +476,13 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 					*data->stk_vm_current=stk_var_copy;\
 				}\
 			}\
+			data->stk_vm_current++;\
 		}\
 		break;\
-	}
-
+	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
+	}\
 
 #define VM_OPERATION_BINARY_SET(__C_OP__, __METAMETHOD__)\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
@@ -545,7 +558,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			/* call _neg */\
 			VM_INNER_CALL_ONLY_RETURN(\
 					so_aux\
-					,ptr_metamethod_members_aux->getter\
+					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,ptr_metamethod_members_aux->getter->name.c_str()\
 					,true\
 			);\
@@ -557,6 +570,9 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				*data->stk_vm_current=stk_var_copy;\
 			}\
 		}\
+		data->stk_vm_current++;\
 	}\
-
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->stk_vm_current=stk_start;\
+	}\
 
