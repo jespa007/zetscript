@@ -19,6 +19,7 @@ namespace zetscript{
 		eval_bool = false;
 		idx_current_global_variable_checkpoint=0;
 		idx_current_global_function_checkpoint=0;
+		idx_current_script_types_checkpoint=0;
 		stk_constants=NULL;
 
 		eval_init();
@@ -503,18 +504,65 @@ namespace zetscript{
 
 	void ZetScript::clear(){
 
+		// clearGlobalVariables
 		clearGlobalVariables();
+
+		// clearGlobalFunctions
+		Scope *main_scope=MAIN_SCOPE(this);
+		zs_vector *global_symbol_functions= main_scope->symbol_functions;
+		int v=global_symbol_functions->count-1;
+		// remove all shared 0 pointers
+		if(v >= idx_current_global_function_checkpoint){
+			for (
+				;v>=idx_current_global_function_checkpoint;
+			) {
+
+
+				Symbol *symbol=(Symbol *)global_symbol_functions->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
+				delete symbol;
+				--v;
+			}
+
+			int resize=global_symbol_functions->count-(global_symbol_functions->count-idx_current_global_function_checkpoint);
+			global_symbol_functions->resize(resize);
+		}
+
+
+		// clearScriptTypes
+		zs_vector *script_types= main_scope->symbol_types;
+		v=script_types->count-1;
+		// remove all shared 0 pointers
+		if(v >=idx_current_script_types_checkpoint){
+			for (
+				;v>=idx_current_script_types_checkpoint;
+			) {
+
+
+				Symbol *symbol=(Symbol *)script_types->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
+				delete symbol;
+				--v;
+			}
+
+			int resize=script_types->count-(script_types->count-idx_current_script_types_checkpoint);
+			script_types->resize(resize);
+		}
+
 
 		scope_factory->clear();
 		script_function_factory->clear();
 		script_type_factory->clear();
 
 		resetParsedFiles();
+
+
 	}
 
 	void ZetScript::saveState(){
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
+		Scope *main_scope=MAIN_SCOPE(this);
 		idx_current_global_variable_checkpoint=main_function_object->local_variables->count;
+		idx_current_global_function_checkpoint=main_scope->symbol_functions->count;
+		idx_current_script_types_checkpoint=main_scope->symbol_types->count;
 
 		scope_factory->saveState();
 		script_function_factory->saveState();

@@ -516,6 +516,7 @@ namespace zetscript{
 		zs_string eval_string;
 		int idx_current_global_variable_checkpoint;
 		int idx_current_global_function_checkpoint;
+		int idx_current_script_types_checkpoint;
 
 		//===================================================================================================
 		//
