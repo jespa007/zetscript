@@ -165,7 +165,7 @@ namespace zetscript{
 					break;
 				// it expects the ScriptFunction directly
 				case STK_PROPERTY_FUNCTION:
-					val_ret=stack_element->value;
+					val_ret=((Symbol *)stack_element->value)->ref_ptr;
 					break;
 				default: // script variable by default ...
 

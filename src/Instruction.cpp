@@ -92,6 +92,7 @@ namespace zetscript{
 				switch(_instruction->byte_code){
 				// 2 ops
 				case BYTE_CODE_STORE_CONST:
+				case BYTE_CODE_PUSH_OBJECT_ITEM:
 					return -2;
 				// pop -2 and push stk +1 = 0
 				case BYTE_CODE_EQU:
@@ -125,11 +126,11 @@ namespace zetscript{
 				case BYTE_CODE_SHL_STORE:
 				case BYTE_CODE_SHR_STORE:
 					return -1;
-				// pop -2 and push stk +0 = 0
+				// pop -1 and push stk +0 = -1
 				case BYTE_CODE_JNT:
 				case BYTE_CODE_JT:
 				case BYTE_CODE_JE_CASE:
-					return 0;
+					return -1;
 				// pop -1 and push stk +1 = 0
 				case BYTE_CODE_NEG:
 				case BYTE_CODE_NOT:			// pop -1 and push stk +1 = 0
@@ -179,7 +180,6 @@ namespace zetscript{
 				case BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				case BYTE_CODE_NEW_OBJECT:
 				case BYTE_CODE_NEW_STRING:
-				case BYTE_CODE_PUSH_OBJECT_ITEM:
 				case BYTE_CODE_TYPEOF:
 				case BYTE_CODE_IN:
 					return 1;

@@ -536,7 +536,10 @@ namespace zetscript{
 
 				// call
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
-					new EvalInstruction(BYTE_CODE_MEMBER_CALL,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,0))
+					new EvalInstruction(
+							BYTE_CODE_MEMBER_CALL
+							,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,0)
+					)
 				));
 
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
@@ -569,7 +572,10 @@ namespace zetscript{
 				// call, return all
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
 					// insert byte code call and set return count as 2, due in in this case we have prepared 2 vars on the left (k,v)
-					new EvalInstruction(BYTE_CODE_MEMBER_CALL,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,0))
+					new EvalInstruction(
+							BYTE_CODE_MEMBER_CALL
+							,INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(ei_init_vars_for.count,0)
+					)
 				));
 
 				// load k,v
@@ -581,7 +587,12 @@ namespace zetscript{
 
 				// store...
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
-					new EvalInstruction(BYTE_CODE_STORE,ei_init_vars_for.count)
+					new EvalInstruction(
+							BYTE_CODE_STORE
+							,ei_init_vars_for.count
+							,ZS_IDX_UNDEFINED
+							,INSTRUCTION_PROPERTY_RESET_STACK
+					)
 				));
 
 				// 4. emit post operation
