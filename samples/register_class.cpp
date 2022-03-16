@@ -17,10 +17,10 @@ int main(){
 	try{
 
 		// register MyClass with name MyClass in script side.
-		zs.registerClass<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
+		zs.registerInstantiableClass<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
 
 		 // register MyClassExtend with name MyClassExtend in script side.
-		zs.registerClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
+		zs.registerInstantiableClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
 
 		// register data1 named data1 in script side as variable member and read/write.
 		zs.registerMemberPropertySetter<MyClass>("data1",&MyClassWrap_set_data1);

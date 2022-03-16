@@ -42,7 +42,7 @@
 		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",ZS_STR(type_class));\
 		return;\
 	}else{\
-		ScriptType *sc=registerClass(ZS_STR(type));\
+		ScriptType *sc=registerInstantiableClass(ZS_STR(type));\
 		sc->script_type_scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		sc->properties=SCRIPT_TYPE_PROPERTY_C_OBJECT_REF;\
 		sc->script_type_name_ptr=(typeid(type).name());\
@@ -53,7 +53,7 @@
 		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",ZS_STR(type_class));\
 		return;\
 	}else{\
-		ScriptType *sc=registerClass(__name__);\
+		ScriptType *sc=registerInstantiableClass(__name__);\
 		sc->script_type_scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		sc->properties=SCRIPT_TYPE_PROPERTY_C_OBJECT_REF;\
 		sc->script_type_name_ptr=(typeid(type).name());\
@@ -64,7 +64,7 @@
 		THROW_RUNTIME_ERROR("Error initializing built in type: %s",str_type);\
 		return;\
 	}else{\
-		registerClass(str_type);\
+		registerInstantiableClass(str_type);\
 	}
 
 namespace zetscript{
@@ -111,7 +111,7 @@ namespace zetscript{
 	void ScriptTypeFactory::init(){
 		zs_string error;
 		// ScriptFunctionFactory has to be created
-		main_object=registerClass(MAIN_SCRIPT_CLASS_NAME); // 0
+		main_object=registerInstantiableClass(MAIN_SCRIPT_CLASS_NAME); // 0
 		MAIN_SCOPE(this)->script_type_owner=main_object;
 
 		Symbol *symbol_main_function=main_object->registerMemberFunction(
@@ -398,7 +398,7 @@ namespace zetscript{
 		}
 	}
 
-	ScriptType * ScriptTypeFactory::registerClass(
+	ScriptType * ScriptTypeFactory::registerInstantiableClass(
 			const zs_string & _script_type_name
 			 ,const zs_string & _base_class_name
 			 ,const char * _file
@@ -453,7 +453,7 @@ namespace zetscript{
 				}
 
 				if(base_class->isStatic()){
-					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is static. To allow extension register with 'registerClass' instead of 'registerStaticClass'"
+					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is static. To allow extension register with 'registerInstantiableClass' instead of 'registerClass'"
 						,_script_type_name.c_str()
 						,_base_class_name.c_str()
 					);
@@ -546,13 +546,13 @@ namespace zetscript{
 		return NULL;
 	}
 
-	ScriptType * ScriptTypeFactory::registerStaticClass(
+	ScriptType * ScriptTypeFactory::registerClass(
 			const zs_string & _script_type_name
 			 ,const char *_file
 			 , short _line
 	){
 		ScriptType *st=	NULL;
-		if((st=registerClass(_script_type_name
+		if((st=registerInstantiableClass(_script_type_name
 				 ,""
 				 ,_file
 				 ,_line))!=NULL){

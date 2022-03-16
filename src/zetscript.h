@@ -186,7 +186,7 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		 void registerStaticClass(const zs_string & script_type_name, const char *registered_file="",short registered_line=-1){
+		 void registerClass(const zs_string & script_type_name, const char *registered_file="",short registered_line=-1){
 			script_type_factory->registerNativeStaticClass<C>(script_type_name, registered_file, registered_line);
 		}
 
@@ -195,13 +195,18 @@ namespace zetscript{
 		 */
 
 		template<typename C>
-		ScriptType * registerClass(const zs_string & script_type_name, C  * (*_constructor)(ZetScript *_zs), void (*_destructor)(ZetScript *_zs,C *), const char *registered_file="",short registered_line=-1){
+		ScriptType * registerInstantiableClass(const zs_string & script_type_name, C  * (*_constructor)(ZetScript *_zs), void (*_destructor)(ZetScript *_zs,C *), const char *registered_file="",short registered_line=-1){
 			return script_type_factory->registerNativeClass<C>(script_type_name, _constructor, _destructor, registered_file,registered_line);
 		}
 
 		template<typename C>
 		ScriptType * registerType(const zs_string & _type_name, const char *_registered_file="",short _registered_line=-1){
-			return script_type_factory->registerNativeType<C>(_type_name,_registered_file,_registered_line);
+			return script_type_factory->registerNativeType<C>(_type_name,NULL,NULL,_registered_file,_registered_line);
+		}
+
+		template<typename C>
+		ScriptType * registerInstantiableType(const zs_string & _type_name, C  * (*_constructor)(ZetScript *_zs), void (*_destructor)(ZetScript *_zs,C *), const char *_registered_file="",short _registered_line=-1){
+			return script_type_factory->registerNativeType<C>(_type_name,_constructor,_destructor,_registered_file,_registered_line);
 		}
 
 		template<class C, class B>

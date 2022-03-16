@@ -164,7 +164,7 @@ void NumberWrap_delete(zetscript::ZetScript *_zs,Number *_this){
 
 void NumberWrap_register(zetscript::ZetScript *_zs){
 
-	_zs->registerClass<Number>("Number",NumberWrap_new,NumberWrap_delete);
+	_zs->registerInstantiableClass<Number>("Number",NumberWrap_new,NumberWrap_delete);
 	_zs->registerConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *,zetscript::zs_float *)>(&NumberWrap_set));
 	_zs->registerConstructor<Number>(static_cast<void (*)(zetscript::ZetScript *_zs,Number *,Number *)>(&NumberWrap_set));
 	_zs->registerMemberFunction<Number>("toInt",&NumberWrap_toInt);
