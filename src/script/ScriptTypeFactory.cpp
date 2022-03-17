@@ -556,31 +556,13 @@ namespace zetscript{
 				 ,""
 				 ,_file
 				 ,_line))!=NULL){
-			st->properties|=SCRIPT_TYPE_PROPERTY_STATIC;
+			st->properties|=SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
 		}
 		return st;
 	}
 
 	zs_vector * ScriptTypeFactory::getScriptTypes(){
 		return script_types;
-	}
-
-	int ScriptTypeFactory::getBuiltinTypeOrClass(const zs_string & name){
-		ScriptType *sc;
-
-		if(name == ZS_TYPE_NAME_NULL){
-			return IDX_TYPE_NULL;
-		}else if(name == ZS_TYPE_NAME_INT){
-			return IDX_TYPE_ZS_INT_C;
-		}else if(name == ZS_TYPE_NAME_FLOAT){
-			return IDX_TYPE_ZS_FLOAT_C;
-		}else if(name == ZS_TYPE_NAME_BOOL){
-			return IDX_TYPE_BOOL_C;
-		}else if((sc=getScriptType(name))!=NULL){
-			return sc->idx_script_type;
-		}
-
-		return ZS_IDX_UNDEFINED;
 	}
 
 	ScriptType 	* ScriptTypeFactory::getScriptType(short _idx_script_type){

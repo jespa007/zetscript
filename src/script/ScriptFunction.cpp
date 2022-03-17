@@ -718,7 +718,7 @@ namespace zetscript{
 				}
 
 
-				if((idx_sc_found= script_type_factory->getBuiltinTypeOrClass(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if class
+				if((idx_sc_found= script_type_factory->getIdxScriptType(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if class
 					unresolved_instruction->byte_code=BYTE_CODE_LOAD_TYPE;
 					unresolved_instruction->value_op2=idx_sc_found;
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static

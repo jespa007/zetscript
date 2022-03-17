@@ -137,7 +137,7 @@ namespace zetscript{
 			sc->c_destructor = (void *)_destructor;
 
 		}else{ // Cannot be instanced so is static
-			sc->properties|=SCRIPT_TYPE_PROPERTY_STATIC;
+			sc->properties|=SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
 		}
 
 		sc->idx_script_type=script_types->count-1;

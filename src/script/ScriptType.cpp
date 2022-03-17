@@ -12,7 +12,7 @@ namespace zetscript{
 	}
 
 	bool ScriptType::isStatic(){
-		 return ((properties & SCRIPT_TYPE_PROPERTY_STATIC) != 0);
+		 return ((properties & SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE) != 0);
 	}
 	//------------------------------------------------------------
 

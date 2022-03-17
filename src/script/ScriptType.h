@@ -5,8 +5,8 @@
 #pragma once
 
 
-#define	SCRIPT_TYPE_PROPERTY_C_OBJECT_REF	0x1
-#define SCRIPT_TYPE_PROPERTY_STATIC			0x2	// cannot be instanced
+#define	SCRIPT_TYPE_PROPERTY_C_OBJECT_REF		0x1
+#define SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE	0x2	// cannot be instanced
 
 
 namespace zetscript{

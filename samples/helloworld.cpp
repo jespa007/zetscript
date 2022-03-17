@@ -4,13 +4,15 @@
  */
 #include "zetscript.h"
 
+// A function wrapper to bind C function into ZetScript
+// All ZetScript wrappers needs to have zetscript::ZetScript *_zs as FIRST parameter
 void say_helloworld(zetscript::ZetScript *_zs){
 	printf("Hello World from C!\n");
 }
 
 int main(){
 
-	// Zetscript instance
+	// ZetScript instance
 	zetscript::ZetScript zs;
 
 	// Binds 'say_helloworld' function to be accessible from script

@@ -68,8 +68,6 @@ namespace zetscript{
 		short							getIdxScriptType(const zs_string & _type_name);
 		short		 					getIdxScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
 
-		int								getBuiltinTypeOrClass(const zs_string & name);
-
 		const char 	* 					getScriptTypeName(short _idx_script_type);
 		void							scriptClassTypeInheritsFrom(const zs_string & _type_class_name,const zs_string & _type_name_inherits_from);
 		bool							isScriptClassTypeInheritsFrom(short _idx_class_type,short _idx_class_type_inherits_from);
