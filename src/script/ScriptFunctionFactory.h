@@ -40,7 +40,7 @@ namespace zetscript{
 				, unsigned short properties=0
 			);
 
-			 bool							checkCanregisterNativeFunction(const zs_string & name_script_function);
+			 bool							checkCanbindFunction(const zs_string & name_script_function);
 
 			 ScriptFunction 			* 	getScriptFunction(int idx);
 			 void							setScriptFunction(int idx, ScriptFunction *sf);

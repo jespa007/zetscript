@@ -42,7 +42,7 @@
 namespace zetscript{
 
 	template < typename R>
-	void ScriptType::registerNativeMemberVariableStaticConst(
+	void ScriptType::bindMemberVariableStaticConst(
 			const zs_string & var_name
 			, const R var_pointer
 			, const char *registered_file
@@ -53,7 +53,7 @@ namespace zetscript{
 		zs_string error;
 
 			// register variable...
-		this->registerNativeMemberVariable(
+		this->bindMemberVariable(
 				var_name
 				,var_type
 				,(zs_int)var_pointer
@@ -68,7 +68,7 @@ namespace zetscript{
 	 * like register function c but is added to member function list according type C
 	 */
 	template <typename F>
-	void ScriptType::registerNativeMemberFunctionStatic(
+	void ScriptType::bindMemberFunctionStatic(
 			const zs_string & _function_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -107,11 +107,11 @@ namespace zetscript{
 	}
 
 	/*
-	 * register static function registerNativeMemberFunction as function member
+	 * register static function bindMemberFunction as function member
 	 * Is automatically added in function member list according first parameter type of function_type
 	 */
 	template <typename F>
-	void ScriptType::registerNativeMemberFunction(
+	void ScriptType::bindMemberFunction(
 			const zs_string & _function_name
 			,F _ptr_function
 			, const char *_registered_file

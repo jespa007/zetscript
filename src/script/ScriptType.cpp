@@ -11,7 +11,7 @@ namespace zetscript{
 		 return ((properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF) != 0);
 	}
 
-	bool ScriptType::isStatic(){
+	bool ScriptType::isNonInstantiable(){
 		 return ((properties & SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE) != 0);
 	}
 	//------------------------------------------------------------
@@ -92,7 +92,7 @@ namespace zetscript{
 		);
 	}
 
-	Symbol				* 	ScriptType::registerNativeMemberVariable(
+	Symbol				* 	ScriptType::bindMemberVariable(
 		 const zs_string & symbol_name
 		,const zs_string & str_native_type
 		,zs_int ref_ptr
@@ -172,7 +172,7 @@ namespace zetscript{
 		return symbol_member_property;
 	}
 
-	Symbol				* 	ScriptType::registerNativeMemberPropertyMetamethod(
+	Symbol				* 	ScriptType::bindMemberPropertyMetamethod(
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
@@ -284,7 +284,7 @@ namespace zetscript{
 	}
 
 
-	Symbol				* 	ScriptType::registerNativeMemberPropertyMetamethodGetter(
+	Symbol				* 	ScriptType::bindMemberPropertyMetamethodGetter(
 			 const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
 			 ,char _params_len

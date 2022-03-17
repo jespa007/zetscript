@@ -59,8 +59,13 @@ namespace zetscript{
 		 /**
 		  * Class management region
 		  */
-		ScriptType * 					registerInstantiableClass(const zs_string & script_type_name, const zs_string & base_class_name="",const char * file="", short line=-1);
-		ScriptType * 					registerClass(const zs_string & _script_type_name,const char * file="", short line=-1);
+		ScriptType * 					registerScriptType(
+											 const zs_string & script_type_name
+											,const zs_string & base_class_name=""
+											,uint16_t _properties=0
+											,const char * file=""
+											, short line=-1
+										);
 		ScriptType * 					getScriptType(short _idx_script_type);
 		ScriptType * 					getScriptType(const zs_string & _type_name);
 		ScriptType * 					getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
@@ -69,8 +74,7 @@ namespace zetscript{
 		short		 					getIdxScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
 
 		const char 	* 					getScriptTypeName(short _idx_script_type);
-		void							scriptClassTypeInheritsFrom(const zs_string & _type_class_name,const zs_string & _type_name_inherits_from);
-		bool							isScriptClassTypeInheritsFrom(short _idx_class_type,short _idx_class_type_inherits_from);
+		bool							scriptTypeInheritsFrom(short _idx_class_type,short _idx_class_type_inherits_from);
 		bool							isScriptTypeInstanceable(short _idx_script_type);
 
 		zs_vector	* 					getScriptTypes();
@@ -90,7 +94,7 @@ namespace zetscript{
 		 * Register C variable
 		 */
 		template <typename V>
-		void registerNativeGlobalVariable(
+		void bindGlobalVariable(
 			 const zs_string & var_name
 			 ,V var_ptr
 			 , const char *registered_file=""
@@ -107,7 +111,7 @@ namespace zetscript{
 		 * Register C function
 		 */
 		 template <typename F>
-		 void registerNativeGlobalFunction(
+		 void bindFunction(
 			const zs_string &  name_script_function
 			 ,F function_ptr
 			 , const char *registered_file=""
@@ -115,47 +119,15 @@ namespace zetscript{
 		);
 
 		/**
-		 * Register C Class. Return index registered class
-		 */
-		 template<typename T>
-		 ScriptType *  registerNativeStaticClass(
-				 const zs_string & script_type_name
-				 , const char *registered_file=""
-				,short registered_line=-1
-		);
-
-		/**
-		 * User Register C Class
-		 */
-		template<typename C>
-		ScriptType * registerNativeClass(
-			const zs_string & script_type_name
-			, C * (*_constructor)(ZetScript *_zs)
-			, void (*_destructor)(ZetScript *_zs,C *)
-			, const char *registered_file=""
-			,short registered_line=-1
-		);
-
-		/**
 		 * Instenceable Register C type
 		 */
 		template<typename C>
-		ScriptType * registerNativeType(
+		ScriptType * bindType(
 			const zs_string & script_type_name
-			, C * (*_constructor)(ZetScript *_zs)
-			, void (*_destructor)(ZetScript *_zs,C *)
+			, C * (*_constructor)(ZetScript *_zs)=NULL
+			, void (*_destructor)(ZetScript *_zs,C *)=NULL
 			, const char *registered_file=""
 			,short registered_line=-1
-		);
-
-		/**
-		 * Static C type
-		 */
-		 template<typename T>
-		 ScriptType *  registerNativeTypeStatic(
-				 const zs_string & script_type_name
-				 , const char *registered_file=""
-				,short registered_line=-1
 		);
 
 
@@ -163,22 +135,22 @@ namespace zetscript{
 		 * Built in register C Class, like ScriptObject,ScriptObjectString...
 		 */
 		template<class C, class B>
-		void nativeClassInheritsFrom();
+		void nativeTypeInheritsFrom();
 
-		void registerNativeMemberSymbols();
+		void bindMemberSymbols();
 
 		/**
 		 * Register C Member constructor
 		 */
 		template <typename C,typename F>
-		void registerNativeConstructor(
+		void bindConstructor(
 				F function_type
 				, const char *registered_file=""
 				,short registered_line=-1
 		);
 
 		template <typename C, typename R>
-		void registerNativeStaticConstMember(
+		void bindStaticConstMember(
 				const zs_string & var_name
 				, const R var_pointer
 				 , const char *registered_file=""
@@ -186,7 +158,7 @@ namespace zetscript{
 		);
 
 		template <typename C,typename F>
-		void registerNativeMemberPropertySetter(
+		void bindSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=""
@@ -197,7 +169,7 @@ namespace zetscript{
 		 * register property getter
 		 */
 		template <typename C,typename F>
-		void registerNativeMemberPropertyGetter(
+		void bindGetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -208,7 +180,7 @@ namespace zetscript{
 		 * register member property post_inc
 		 */
 		template <typename C,typename F>
-		void registerNativeMemberPropertyPostIncrement(
+		void bindMemberPropertyPostIncrement(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -219,7 +191,7 @@ namespace zetscript{
 		 * register member property post_dec
 		 */
 		template <typename C,typename F>
-		void registerNativeMemberPropertyPostDecrement(
+		void bindMemberPropertyPostDecrement(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -230,7 +202,7 @@ namespace zetscript{
 		 * register member property pre_inc
 		 */
 		template <typename C,typename F>
-		void registerNativeMemberPropertyPreIncrement(
+		void bindMemberPropertyPreIncrement(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -241,7 +213,7 @@ namespace zetscript{
 		 * register member property pre_dec
 		 */
 		template <typename C,typename F>
-		void registerNativeMemberPropertyPreDecrement(
+		void bindMemberPropertyPreDecrement(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -250,7 +222,7 @@ namespace zetscript{
 
 		// register member property add set operation
 		template <typename C,typename F>
-		void registerNativeMemberPropertyAddSet(
+		void bindMemberPropertyAddSet(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -259,7 +231,7 @@ namespace zetscript{
 
 		// register member property sub set operation
 		template <typename C,typename F>
-		void registerNativeMemberPropertySubSet(
+		void bindMemberPropertySubSet(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -268,7 +240,7 @@ namespace zetscript{
 
 		// register mul set operation
 		template <typename C,typename F>
-		void registerNativeMemberPropertyMulSet(
+		void bindMemberPropertyMulSet(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -277,7 +249,7 @@ namespace zetscript{
 
 		// register div set operation
 		template <typename C,typename F>
-		void registerNativeMemberPropertyDivSet(
+		void bindMemberPropertyDivSet(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -286,7 +258,7 @@ namespace zetscript{
 
 		// register mod set operation
 		template <typename C,typename F>
-		void registerNativeMemberPropertyModSet(
+		void bindMemberPropertyModSet(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -295,7 +267,7 @@ namespace zetscript{
 
 		// register and set operation
 		template <typename C,typename F>
-		void registerNativeMemberPropertyAndSet(
+		void bindMemberPropertyAndSet(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -304,7 +276,7 @@ namespace zetscript{
 
 		// register or set operation
 		template <typename C,typename F>
-		void registerNativeMemberPropertyOrSet(
+		void bindMemberPropertyOrSet(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -313,7 +285,7 @@ namespace zetscript{
 
 		// register xor set operation
 		template <typename C,typename F>
-		void registerNativeMemberPropertyXorSet(
+		void bindMemberPropertyXorSet(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -322,7 +294,7 @@ namespace zetscript{
 
 		// register shl set operation
 		template <typename C,typename F>
-		void registerNativeMemberPropertyShlSet(
+		void bindMemberPropertyShlSet(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -331,7 +303,7 @@ namespace zetscript{
 
 		// register shr set operation
 		template <typename C,typename F>
-		void registerNativeMemberPropertyShrSet(
+		void bindMemberPropertyShrSet(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -342,7 +314,7 @@ namespace zetscript{
 		 * Register C Member function static Class
 		 */
 		template <typename C, typename F>
-		void registerNativeMemberFunctionStatic(
+		void bindMemberFunctionStatic(
 				const zs_string & _function_name
 				,F _ptr_function
 				, const char *_registered_file=""
@@ -354,7 +326,7 @@ namespace zetscript{
 		 * Register C function as function member
 		 */
 		template <typename C,typename F>
-		void	registerNativeMemberFunction(
+		void	bindMemberFunction(
 				const zs_string & name_script_function
 				,F ptr_function
 				 , const char *registered_file=""
@@ -388,7 +360,7 @@ namespace zetscript{
 
 		int 							idx_clear_checkpoint;
 
-		void							checkClassName(const zs_string & script_type_name);
+		void							checkScriptTypeName(const zs_string & script_type_name);
 		PrimitiveType *					getPrimitiveTypeFromStr(const zs_string & str);
 
 

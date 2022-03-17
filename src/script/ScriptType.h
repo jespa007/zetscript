@@ -66,7 +66,7 @@ namespace zetscript{
 		);
 
 		template < typename R>
-		void registerNativeMemberVariableStaticConst(
+		void bindMemberVariableStaticConst(
 			const zs_string & _var_name
 			, const R _var_pointer
 			, const char *_registered_file=""
@@ -74,7 +74,7 @@ namespace zetscript{
 		);
 
 
-		Symbol				* 	registerNativeMemberVariable(
+		Symbol				* 	bindMemberVariable(
 			 const zs_string & _symbol_name
 			,const zs_string & _str_native_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
@@ -94,7 +94,7 @@ namespace zetscript{
 
 		);
 
-		Symbol				* 	registerNativeMemberPropertyMetamethod(
+		Symbol				* 	bindMemberPropertyMetamethod(
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
@@ -105,7 +105,7 @@ namespace zetscript{
 			,short _line=-1
 		);
 
-		Symbol				* 	registerNativeMemberPropertyMetamethodGetter(
+		Symbol				* 	bindMemberPropertyMetamethodGetter(
 			const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
 			 ,char _params_len
@@ -134,7 +134,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerNativeMemberFunctionStatic(
+		void bindMemberFunctionStatic(
 				const zs_string & _function_name
 				,F _function_ptr
 				, const char *_registered_file=""
@@ -142,7 +142,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void registerNativeMemberFunction(
+		void bindMemberFunction(
 				const zs_string & _function_name
 				,F _function_type
 				, const char *_registered_file=""
@@ -158,7 +158,7 @@ namespace zetscript{
 		const char *getTypeName();
 
 		bool isNativeType();
-		bool isStatic();
+		bool isNonInstantiable();
 
 		virtual ~ScriptType();
 

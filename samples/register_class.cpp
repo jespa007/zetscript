@@ -17,37 +17,37 @@ int main(){
 	try{
 
 		// register MyClass with name MyClass in script side.
-		zs.registerInstantiableClass<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
+		zs.bindType<MyClass>("MyClass",MyClassWrap_new,MyClassWrap_delete);
 
 		 // register MyClassExtend with name MyClassExtend in script side.
-		zs.registerInstantiableClass<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
+		zs.bindType<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
 
 		// register data1 named data1 in script side as variable member and read/write.
-		zs.registerMemberPropertySetter<MyClass>("data1",&MyClassWrap_set_data1);
-		zs.registerMemberPropertyGetter<MyClass>("data1",&MyClassWrap_get_data1);
+		zs.bindSetter<MyClass>("data1",&MyClassWrap_set_data1);
+		zs.bindGetter<MyClass>("data1",&MyClassWrap_get_data1);
 
 		// register data2 named data1 in script side as variable member (only read).
-		zs.registerMemberPropertyGetter<MyClass>("data2",&MyClassWrap_get_data2);
+		zs.bindGetter<MyClass>("data2",&MyClassWrap_get_data2);
 
 		// register data1 named data1 in script side as variable member (only write).
-		zs.registerMemberPropertySetter<MyClass>("data3",&MyClassWrap_set_data3);
+		zs.bindSetter<MyClass>("data3",&MyClassWrap_set_data3);
 
 		// register function0 named function1 in script side as function member.
-		zs.registerMemberFunction<MyClass>("function0",&MyClassWrap_function0);
+		zs.bindMemberFunction<MyClass>("function0",&MyClassWrap_function0);
 
 		// register function1 named function1 in script side as function member.
-		zs.registerMemberFunction<MyClass>("function1",&MyClassWrap_function1);
+		zs.bindMemberFunction<MyClass>("function1",&MyClassWrap_function1);
 
 
 		// register data2 named data1 in script side as variable member.
-		zs.registerMemberPropertySetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
-		zs.registerMemberPropertyGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
+		zs.bindSetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
+		zs.bindGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
 
 		// register function2 named function2 in script side as function member.
-		zs.registerMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);
+		zs.bindMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);
 
 		// once all vars and functions are registered, tell that MyClassExtend is base of MyClass
-		zs.classInheritsFrom<MyClassExtend,MyClass>();
+		zs.nativeTypeInheritsFrom<MyClassExtend,MyClass>();
 
 	}catch(std::exception & ex){
 		fprintf(stderr,"register error: %s\n",ex.what());

@@ -13,7 +13,7 @@
 		THROW_RUNTIME_ERROR("Error: type built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeTypeStatic<type_class>(ZS_STR(type_class));
+	bindType<type_class>(ZS_STR(type_class));
 
 
 #define SCF_REGISTER_CLASS(name_class, type_class, idx_script_type)\
@@ -28,21 +28,21 @@
 		THROW_RUNTIME_ERROR("The class to register '%s' should be a built in class",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeClass<type_class>(name_class,type_class##Wrap_New,type_class##Wrap_Delete);
+	bindType<type_class>(name_class,type_class##Wrap_New,type_class##Wrap_Delete);
 
 #define SCF_REGISTER_SINGLETON_CLASS(type_class, idx_script_type)\
 	if(script_types->count!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error: class built in type %s doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
-	registerNativeStaticClass<type_class>(ZS_STR(type_class));
+	bindType<type_class>(ZS_STR(type_class));
 
 #define SCF_REGISTER_NATIVE_TYPE(type, idx_script_type)\
 	if(script_types->count!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",ZS_STR(type_class));\
 		return;\
 	}else{\
-		ScriptType *sc=registerInstantiableClass(ZS_STR(type));\
+		ScriptType *sc=registerScriptType(ZS_STR(type),"",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);\
 		sc->script_type_scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		sc->properties=SCRIPT_TYPE_PROPERTY_C_OBJECT_REF;\
 		sc->script_type_name_ptr=(typeid(type).name());\
@@ -53,7 +53,7 @@
 		THROW_RUNTIME_ERROR("Error initializing C built in type: %s",ZS_STR(type_class));\
 		return;\
 	}else{\
-		ScriptType *sc=registerInstantiableClass(__name__);\
+		ScriptType *sc=registerScriptType(__name__);\
 		sc->script_type_scope->properties|=SCOPE_PROPERTY_IS_C_OBJECT_REF;\
 		sc->properties=SCRIPT_TYPE_PROPERTY_C_OBJECT_REF;\
 		sc->script_type_name_ptr=(typeid(type).name());\
@@ -64,7 +64,7 @@
 		THROW_RUNTIME_ERROR("Error initializing built in type: %s",str_type);\
 		return;\
 	}else{\
-		registerInstantiableClass(str_type);\
+		registerScriptType(str_type);\
 	}
 
 namespace zetscript{
@@ -111,7 +111,7 @@ namespace zetscript{
 	void ScriptTypeFactory::init(){
 		zs_string error;
 		// ScriptFunctionFactory has to be created
-		main_object=registerInstantiableClass(MAIN_SCRIPT_CLASS_NAME); // 0
+		main_object=registerScriptType(MAIN_SCRIPT_CLASS_NAME); // 0
 		MAIN_SCOPE(this)->script_type_owner=main_object;
 
 		Symbol *symbol_main_function=main_object->registerMemberFunction(
@@ -226,76 +226,76 @@ namespace zetscript{
 		// Let's register functions,...
 		// register c function's
 
-		zs->registerFunction("ptrToZetScriptPtr",ptrToZetScriptPtr);
-		zs->registerFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_int)>(parseFloat));
-		zs->registerFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));
-		zs->registerFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInteger));
-		zs->registerFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInteger));
-		zs->registerFunction("isNumber",isNumber);
+		zs->bindFunction("ptrToZetScriptPtr",ptrToZetScriptPtr);
+		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_int)>(parseFloat));
+		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));
+		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInteger));
+		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInteger));
+		zs->bindFunction("isNumber",isNumber);
 
 		//-------------------------
 		// Wrap functions
 
 		//---------------------------------------------
 		// Vector
-		registerNativeMemberFunction<ScriptObjectVector>("push",&ScriptObjectVectorWrap_push);
-		registerNativeMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVectorWrap_pop);
-		registerNativeMemberFunction<ScriptObjectVector>("insertAt",&ScriptObjectVectorWrap_insertAt);
-		registerNativeMemberFunction<ScriptObjectVector>("eraseAt",&ScriptObjectVectorWrap_eraseAt);
-		registerNativeMemberFunction<ScriptObjectVector>("clear",&ScriptObjectVectorWrap_clear);
-		registerNativeMemberFunction<ScriptObjectVector>("size",&ScriptObjectVectorWrap_size);
-		registerNativeMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
-		registerNativeMemberFunction<ScriptObjectVector>("iter",&ScriptObjectVectorWrap_iter);
-		registerNativeMemberFunctionStatic<ScriptObjectVector>("equal",&ScriptObjectVectorWrap_equal);
+		bindMemberFunction<ScriptObjectVector>("push",&ScriptObjectVectorWrap_push);
+		bindMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVectorWrap_pop);
+		bindMemberFunction<ScriptObjectVector>("insertAt",&ScriptObjectVectorWrap_insertAt);
+		bindMemberFunction<ScriptObjectVector>("eraseAt",&ScriptObjectVectorWrap_eraseAt);
+		bindMemberFunction<ScriptObjectVector>("clear",&ScriptObjectVectorWrap_clear);
+		bindMemberFunction<ScriptObjectVector>("size",&ScriptObjectVectorWrap_size);
+		bindMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
+		bindMemberFunction<ScriptObjectVector>("iter",&ScriptObjectVectorWrap_iter);
+		bindMemberFunctionStatic<ScriptObjectVector>("equal",&ScriptObjectVectorWrap_equal);
 
 		// IteratorVector
-		registerNativeMemberFunction<ScriptObjectIteratorVector>("_post_inc",ScriptObjectIteratorVectorWrap_next);
-		registerNativeMemberFunction<ScriptObjectIteratorVector>("end",ScriptObjectIteratorVectorWrap_end);
-		registerNativeMemberFunction<ScriptObjectIteratorVector>("get",ScriptObjectIteratorVectorWrap_get);
+		bindMemberFunction<ScriptObjectIteratorVector>("_post_inc",ScriptObjectIteratorVectorWrap_next);
+		bindMemberFunction<ScriptObjectIteratorVector>("end",ScriptObjectIteratorVectorWrap_end);
+		bindMemberFunction<ScriptObjectIteratorVector>("get",ScriptObjectIteratorVectorWrap_get);
 
 
 		//---------------------------------------------
 		// String
-		registerNativeMemberFunctionStatic<ScriptObjectString>("formatNative",ScriptObjectString::format);
-		registerNativeMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectStringWrap_eraseAt);
-		registerNativeMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
-		registerNativeMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);
-		registerNativeMemberFunction<ScriptObjectString>("replace",ScriptObjectStringWrap_replace);
-		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(ScriptObjectStringWrap_split));
-		registerNativeMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(ScriptObjectStringWrap_split));
-		registerNativeMemberFunction<ScriptObjectString>("size",ScriptObjectStringWrap_size);
-		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_contains));
-		registerNativeMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_contains));
+		bindMemberFunctionStatic<ScriptObjectString>("formatNative",ScriptObjectString::format);
+		bindMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectStringWrap_eraseAt);
+		bindMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
+		bindMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);
+		bindMemberFunction<ScriptObjectString>("replace",ScriptObjectStringWrap_replace);
+		bindMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(ScriptObjectStringWrap_split));
+		bindMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(ScriptObjectStringWrap_split));
+		bindMemberFunction<ScriptObjectString>("size",ScriptObjectStringWrap_size);
+		bindMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_contains));
+		bindMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_contains));
 
-		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_indexOf));
-		registerNativeMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_indexOf));
+		bindMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_indexOf));
+		bindMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_indexOf));
 
-		registerNativeMemberFunction<ScriptObjectString>("startsWith",ScriptObjectStringWrap_startsWith);
-		registerNativeMemberFunction<ScriptObjectString>("endsWith",ScriptObjectStringWrap_endsWith);
-		registerNativeMemberFunction<ScriptObjectString>("substring",ScriptObjectStringWrap_substring);
-		registerNativeMemberFunction<ScriptObjectString>("append",ScriptObjectStringWrap_append);
+		bindMemberFunction<ScriptObjectString>("startsWith",ScriptObjectStringWrap_startsWith);
+		bindMemberFunction<ScriptObjectString>("endsWith",ScriptObjectStringWrap_endsWith);
+		bindMemberFunction<ScriptObjectString>("substring",ScriptObjectStringWrap_substring);
+		bindMemberFunction<ScriptObjectString>("append",ScriptObjectStringWrap_append);
 
-		registerNativeMemberFunction<ScriptObjectString>("iter",ScriptObjectStringWrap_iter);
+		bindMemberFunction<ScriptObjectString>("iter",ScriptObjectStringWrap_iter);
 
 		// IteratorString
-		registerNativeMemberFunction<ScriptObjectIteratorString>("_post_inc",ScriptObjectIteratorStringWrap_next);
-		registerNativeMemberFunction<ScriptObjectIteratorString>("end",ScriptObjectIteratorStringWrap_end);
-		registerNativeMemberFunction<ScriptObjectIteratorString>("get",ScriptObjectIteratorStringWrap_get);
+		bindMemberFunction<ScriptObjectIteratorString>("_post_inc",ScriptObjectIteratorStringWrap_next);
+		bindMemberFunction<ScriptObjectIteratorString>("end",ScriptObjectIteratorStringWrap_end);
+		bindMemberFunction<ScriptObjectIteratorString>("get",ScriptObjectIteratorStringWrap_get);
 
 		//---------------------------------------------
 		// Object
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("clear",&ScriptObjectObjectWrap_clear);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("erase",&ScriptObjectObjectWrap_erase);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("contains",&ScriptObjectObjectWrap_contains);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("append",&ScriptObjectObjectWrap_append);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("concat",ScriptObjectObject::concat);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("keys",ScriptObjectObjectWrap_keys);
-		registerNativeMemberFunctionStatic<ScriptObjectObject>("iter",ScriptObjectObjectWrap_iter);
+		bindMemberFunctionStatic<ScriptObjectObject>("clear",&ScriptObjectObjectWrap_clear);
+		bindMemberFunctionStatic<ScriptObjectObject>("erase",&ScriptObjectObjectWrap_erase);
+		bindMemberFunctionStatic<ScriptObjectObject>("contains",&ScriptObjectObjectWrap_contains);
+		bindMemberFunctionStatic<ScriptObjectObject>("append",&ScriptObjectObjectWrap_append);
+		bindMemberFunctionStatic<ScriptObjectObject>("concat",ScriptObjectObject::concat);
+		bindMemberFunctionStatic<ScriptObjectObject>("keys",ScriptObjectObjectWrap_keys);
+		bindMemberFunctionStatic<ScriptObjectObject>("iter",ScriptObjectObjectWrap_iter);
 
 		// IteratorObject
-		registerNativeMemberFunction<ScriptObjectIteratorObject>("_post_inc",ScriptObjectIteratorObjectWrap_next);
-		registerNativeMemberFunction<ScriptObjectIteratorObject>("end",ScriptObjectIteratorObjectWrap_end);
-		registerNativeMemberFunction<ScriptObjectIteratorObject>("get",ScriptObjectIteratorObjectWrap_get);
+		bindMemberFunction<ScriptObjectIteratorObject>("_post_inc",ScriptObjectIteratorObjectWrap_next);
+		bindMemberFunction<ScriptObjectIteratorObject>("end",ScriptObjectIteratorObjectWrap_end);
+		bindMemberFunction<ScriptObjectIteratorObject>("get",ScriptObjectIteratorObjectWrap_get);
 
 		zs->saveState();
 	}
@@ -380,34 +380,35 @@ namespace zetscript{
 		idx_clear_checkpoint = script_types->count-1;
 	}
 
-	void ScriptTypeFactory::checkClassName(const zs_string & script_type_name){
+	void ScriptTypeFactory::checkScriptTypeName(const zs_string & _script_type_name){
 
 		if(script_types->count>=MAX_REGISTER_CLASSES){
 			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
 		}
 
-		if(script_type_name.empty()){
+		if(_script_type_name.empty()){
 			THROW_RUNTIME_ERRORF("Class name empty");
 		}
 
 		if(zs->getScriptFunctionFactory()->getScriptFunctions()->count > 0){
 			Symbol *main_function_symbol=NULL;
-			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(script_type_name,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN))!=NULL){
-				THROW_RUNTIME_ERROR("Class name '%s' collides with symbol defined at [%s:%i]",script_type_name.c_str(),main_function_symbol->file,main_function_symbol->line);
+			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(_script_type_name,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN))!=NULL){
+				THROW_RUNTIME_ERROR("Class name '%s' collides with symbol defined at [%s:%i]",_script_type_name.c_str(),main_function_symbol->file,main_function_symbol->line);
 			}
 		}
 	}
 
-	ScriptType * ScriptTypeFactory::registerInstantiableClass(
+	ScriptType * ScriptTypeFactory::registerScriptType(
 			const zs_string & _script_type_name
 			 ,const zs_string & _base_class_name
+			 ,uint16_t _properties
 			 ,const char * _file
 			 , short _line
 	){
 		int  index;
 		ScriptType *sc=NULL;
 
-		checkClassName(_script_type_name);
+		checkScriptTypeName(_script_type_name);
 
 		if((index = getIdxScriptType(_script_type_name))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
 			uint16_t properties_register_scope=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
@@ -429,7 +430,7 @@ namespace zetscript{
 
 			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolScriptType(_file,_line,_script_type_name,properties_register_scope);
 
-			sc = new ScriptType(this->zs,index, _script_type_name, scope);
+			sc = new ScriptType(this->zs,index, _script_type_name, scope,TYPE_SCRIPT_VARIABLE,_properties);
 			scope->setScriptTypeOwner(sc);
 			symbol->ref_ptr=(zs_int)sc;
 
@@ -439,7 +440,7 @@ namespace zetscript{
 
 			if(_base_class_name != ""){
 
-				ScriptType *base_class=NULL;
+				ScriptType *base_type=NULL;
 
 				if(sc->idx_base_types->count > 0){
 					ScriptType *match_class=getScriptType(sc->idx_base_types->items[0]);
@@ -448,20 +449,20 @@ namespace zetscript{
 							,match_class->script_type_name.c_str());
 				}
 
-				if((base_class = getScriptType(_base_class_name)) == NULL){
-					THROW_RUNTIME_ERROR("Class '%s' not registered",_base_class_name.c_str());
+				if((base_type = getScriptType(_base_class_name)) == NULL){
+					THROW_RUNTIME_ERROR("Type '%s' not registered",_base_class_name.c_str());
 				}
 
-				if(base_class->isStatic()){
-					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is static. To allow extension register with 'registerInstantiableClass' instead of 'registerClass'"
+				/*if(base_type->isStatic()){
+					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is static. To allow extension register with 'bindNativeType' instead of 'registerClass'"
 						,_script_type_name.c_str()
 						,_base_class_name.c_str()
 					);
-				}
+				}*/
 
 
 				// 1. extend all symbols from base class
-				zs_vector *symbol_functions=base_class->script_type_scope->symbol_functions;
+				zs_vector *symbol_functions=base_type->script_type_scope->symbol_functions;
 				for(int i=0; i < symbol_functions->count; i++){
 					Symbol *symbol_src=(Symbol *)symbol_functions->items[i];
 					Symbol *symbol_dst=scope->registerSymbolFunction(
@@ -481,7 +482,7 @@ namespace zetscript{
 				sc->idx_starting_this_member_functions=sc->script_type_scope->symbol_functions->count;
 
 				// 1. extend all symbols from base class
-				zs_vector *symbol_variables=base_class->script_type_scope->symbol_variables;
+				zs_vector *symbol_variables=base_type->script_type_scope->symbol_variables;
 				for(int i=0; i < symbol_variables->count; i++){
 					Symbol *symbol_src=(Symbol *)symbol_variables->items[i];
 					Symbol *symbol_dst=scope->registerSymbolVariable(
@@ -525,7 +526,7 @@ namespace zetscript{
 				sc->idx_starting_this_member_variables=sc->script_type_scope->symbol_variables->count;
 
 				// 2. set idx base class...
-				sc->idx_base_types->push_back(base_class->idx_script_type);
+				sc->idx_base_types->push_back(base_type->idx_script_type);
 			}
 
 			if(sc->idx_script_type != IDX_TYPE_CLASS_MAIN){ // main class has no field initializers and reserve first function as main function
@@ -544,21 +545,6 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("class '%s' already registered",_script_type_name.c_str());
 		}
 		return NULL;
-	}
-
-	ScriptType * ScriptTypeFactory::registerClass(
-			const zs_string & _script_type_name
-			 ,const char *_file
-			 , short _line
-	){
-		ScriptType *st=	NULL;
-		if((st=registerInstantiableClass(_script_type_name
-				 ,""
-				 ,_file
-				 ,_line))!=NULL){
-			st->properties|=SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
-		}
-		return st;
 	}
 
 	zs_vector * ScriptTypeFactory::getScriptTypes(){
@@ -677,7 +663,7 @@ namespace zetscript{
 		 return "type_unknow";
 	}
 
-	bool 	ScriptTypeFactory::isScriptClassTypeInheritsFrom(short _idx_script_type,short _idx_base_type){
+	bool 	ScriptTypeFactory::scriptTypeInheritsFrom(short _idx_script_type,short _idx_base_type){
 
 		if(_idx_script_type == _idx_base_type){
 			return true;
@@ -686,7 +672,7 @@ namespace zetscript{
 		ScriptType *sc=(ScriptType *)script_types->get(_idx_script_type);
 
 		for(int i=0; i < sc->idx_base_types->count; i++){
-			if(isScriptClassTypeInheritsFrom(sc->idx_base_types->items[i],_idx_base_type)){
+			if(scriptTypeInheritsFrom(sc->idx_base_types->items[i],_idx_base_type)){
 				return true;
 			}
 		}
@@ -702,7 +688,7 @@ namespace zetscript{
 				|| idx_script_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT
 				|| idx_script_type>=IDX_TYPE_MAX
 		){
-			return ((ScriptType *)script_types->get(idx_script_type))->isStatic()==false;
+			return ((ScriptType *)script_types->get(idx_script_type))->isNonInstantiable()==false;
 		}
 
 		return false;

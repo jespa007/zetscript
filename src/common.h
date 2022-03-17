@@ -23,7 +23,7 @@
 #define MAX_NATIVE_FUNCTION_ARGS				8
 
 #define GET_METAMETHOD(m)														((this->zs))->getMetamethod(m)
-#define IS_IDX_TYPE_INSTANCEOF(zs,idx_script_type,idx_type_instance)	((this->script_type_factory))->isScriptClassTypeInheritsFrom(idx_script_type,idx_type_instance)
+#define IS_IDX_TYPE_INSTANCEOF(zs,idx_script_type,idx_type_instance)	((this->script_type_factory))->scriptTypeInheritsFrom(idx_script_type,idx_type_instance)
 
 #ifndef TRUE
 #define TRUE 1

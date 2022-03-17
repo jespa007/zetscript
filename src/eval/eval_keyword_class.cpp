@@ -66,9 +66,10 @@ namespace zetscript{
 
 		// register class
 		try{
-			sc=eval_data->script_type_factory->registerInstantiableClass(
+			sc=eval_data->script_type_factory->registerScriptType(
 				 script_type_name
 				,base_class_name
+				,0
 				,__FILE__
 				, __LINE__
 			);

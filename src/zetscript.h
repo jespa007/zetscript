@@ -146,7 +146,7 @@ namespace zetscript{
 		 */
 		template <typename V>
 		 void registerVariable(const zs_string & var_name,V var_ptr, const char *registered_file="",short registered_line=-1){
-			 script_type_factory->registerNativeGlobalVariable(var_name,var_ptr, registered_file, registered_line);
+			 script_type_factory->bindGlobalVariable(var_name,var_ptr, registered_file, registered_line);
 		 }
 
 		void registerConstantVariable(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1){
@@ -175,141 +175,122 @@ namespace zetscript{
 		}
 
 		/**
+		 * Register C Class. Return index registered class
+		 */
+		template<typename C>
+		ScriptType * bindType(const zs_string & script_type_name, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *registered_file="",short registered_line=-1){
+			return script_type_factory->bindType<C>(script_type_name, _constructor, _destructor, registered_file,registered_line);
+		}
+
+		/**
 		 * Register C function
 		 */
 		template <typename F>
-		void registerFunction( const zs_string & name_script_function,F ptr_function, const char *registered_file="",short registered_line=-1){
-			script_type_factory->registerNativeGlobalFunction( name_script_function,ptr_function, registered_file,registered_line);
-		}
-
-		/**
-		 * Register C Class. Return index registered class
-		 */
-		template<typename C>
-		 void registerClass(const zs_string & script_type_name, const char *registered_file="",short registered_line=-1){
-			script_type_factory->registerNativeStaticClass<C>(script_type_name, registered_file, registered_line);
-		}
-
-		/**
-		 * Register C Class. Return index registered class
-		 */
-
-		template<typename C>
-		ScriptType * registerInstantiableClass(const zs_string & script_type_name, C  * (*_constructor)(ZetScript *_zs), void (*_destructor)(ZetScript *_zs,C *), const char *registered_file="",short registered_line=-1){
-			return script_type_factory->registerNativeClass<C>(script_type_name, _constructor, _destructor, registered_file,registered_line);
-		}
-
-		template<typename C>
-		ScriptType * registerType(const zs_string & _type_name, const char *_registered_file="",short _registered_line=-1){
-			return script_type_factory->registerNativeType<C>(_type_name,NULL,NULL,_registered_file,_registered_line);
-		}
-
-		template<typename C>
-		ScriptType * registerInstantiableType(const zs_string & _type_name, C  * (*_constructor)(ZetScript *_zs), void (*_destructor)(ZetScript *_zs,C *), const char *_registered_file="",short _registered_line=-1){
-			return script_type_factory->registerNativeType<C>(_type_name,_constructor,_destructor,_registered_file,_registered_line);
+		void bindFunction( const zs_string & name_script_function,F ptr_function, const char *registered_file="",short registered_line=-1){
+			script_type_factory->bindFunction( name_script_function,ptr_function, registered_file,registered_line);
 		}
 
 		template<class C, class B>
-		void classInheritsFrom(){
-			script_type_factory->nativeClassInheritsFrom<C,B>();
+		void nativeTypeInheritsFrom(){
+			script_type_factory->nativeTypeInheritsFrom<C,B>();
 		}
 
 		template<typename C,typename F>
-		void registerConstructor(
+		void bindConstructor(
 				 F function_type
 				 , const char *registered_file=""
 				,short registered_line=-1){
 
-			script_type_factory->registerNativeConstructor<C>(function_type, registered_file,registered_line );
+			script_type_factory->bindConstructor<C>(function_type, registered_file,registered_line );
 		}
 
 		template <typename C, typename R>
-		void registerNativeStaticConstMember(
+		void bindStaticConstMember(
 				const zs_string & var_name
 				, const R var_pointer
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->registerNativeStaticConstMember<C>(var_name,var_pointer, registered_file,registered_line );
+			script_type_factory->bindStaticConstMember<C>(var_name,var_pointer, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberFunction(
+		void	bindMemberFunction(
 				const zs_string & name_script_function
 				,F function_type
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->registerNativeMemberFunction<C>(name_script_function,function_type, registered_file,registered_line );
+			script_type_factory->bindMemberFunction<C>(name_script_function,function_type, registered_file,registered_line );
 		}
 
 
 		template <typename C,typename F>
-		void	registerMemberPropertySetter(
+		void	bindSetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->registerNativeMemberPropertySetter<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindSetter<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberPropertyGetter(
+		void	bindGetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->registerNativeMemberPropertyGetter<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindGetter<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberPropertyPostIncrement(
+		void	bindMemberPropertyPostIncrement(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->registerNativeMemberPropertyPostIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindMemberPropertyPostIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberPropertyPostDecrement(
+		void	bindMemberPropertyPostDecrement(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->registerNativeMemberPropertyPostDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindMemberPropertyPostDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberPropertyPreIncrement(
+		void	bindMemberPropertyPreIncrement(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->registerNativeMemberPropertyPreIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindMemberPropertyPreIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	registerMemberPropertyPreDecrement(
+		void	bindMemberPropertyPreDecrement(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->registerNativeMemberPropertyPreDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindMemberPropertyPreDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		/**
 		 * Register Static Function Member Class
 		 */
 		template <typename C,typename F>
-		void registerMemberFunctionStatic(const zs_string & name_script_function,F fun, const char *registered_file="",short registered_line=-1){
-			script_type_factory->registerNativeMemberFunctionStatic<C>(name_script_function,fun, registered_file, registered_line);
+		void bindMemberFunctionStatic(const zs_string & name_script_function,F fun, const char *registered_file="",short registered_line=-1){
+			script_type_factory->bindMemberFunctionStatic<C>(name_script_function,fun, registered_file, registered_line);
 		}
 
 		//cpp binding
