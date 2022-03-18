@@ -511,6 +511,8 @@ error_eval_keyword_var:
 					return NULL;
 				}
 
+
+
 				// anonymous functions are always in main scope
 				/*if(
 						scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)
@@ -526,8 +528,9 @@ error_eval_keyword_var:
 				if(is_special_char(aux_p)){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
 					,scope_info->script_type_owner != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
-							"declaring function member in class '%s'"
+							"declaring function member '%s::%s'"
 							,scope_info->script_type_owner->script_type_name.c_str()
+							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
 							).c_str():"declaring function"
 							,*aux_p
 
@@ -536,8 +539,9 @@ error_eval_keyword_var:
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
 							,scope_info->script_type_owner != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
-									"declaring function member in class '%s'"
+									"declaring function member '%s::%s'"
 									,scope_info->script_type_owner->script_type_name.c_str()
+									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
 									).c_str():"declaring function"
 
 					);
