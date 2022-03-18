@@ -435,7 +435,7 @@ namespace zetscript{
 	 * register property member setter
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindSetter(
+	void ScriptTypeFactory::bindPropertySetter(
 		const zs_string & _property_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -459,7 +459,7 @@ namespace zetscript{
 				,&params_len
 				);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_SET
 			 ,&params
@@ -477,7 +477,7 @@ namespace zetscript{
 	 * register property getter
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindGetter(
+	void ScriptTypeFactory::bindPropertyGetter(
 		const zs_string & _property_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -501,7 +501,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethodGetter(
+		script_type->bindMetamethodGetter(
 				 _property_name
 				,&params
 				,params_len
@@ -516,7 +516,7 @@ namespace zetscript{
 	 * register member property  post_increment
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyPostIncrement(
+	void ScriptTypeFactory::bindPropertyPostIncrement(
 		const zs_string & _property_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -541,7 +541,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_POST_INC
 			,&params
@@ -557,7 +557,7 @@ namespace zetscript{
 	 * register member property  post_decrement
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyPostDecrement(
+	void ScriptTypeFactory::bindPropertyPostDecrement(
 			const zs_string & _property_name
 			,F _ptr_function
 			,const char *_registered_file
@@ -582,7 +582,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_POST_DEC
 			,&params
@@ -598,7 +598,7 @@ namespace zetscript{
 	 * register member property  pre_increment
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyPreIncrement(
+	void ScriptTypeFactory::bindPropertyPreDecrement(
 			const zs_string & _property_name
 			,F _ptr_function
 			,const char *_registered_file
@@ -623,7 +623,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_PRE_INC
 			,&params
@@ -639,7 +639,7 @@ namespace zetscript{
 	 * register member property  pre_decrement
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyPreDecrement(
+	void ScriptTypeFactory::bindPreDecrement(
 			const zs_string & _property_name
 			,F _ptr_function
 			,const char *_registered_file
@@ -664,7 +664,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_PRE_DEC
 			,&params
@@ -678,7 +678,7 @@ namespace zetscript{
 
 	// register member property add set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyAddSet(
+	void ScriptTypeFactory::bindAddSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -703,7 +703,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_ADD_SET
 			,&params
@@ -717,7 +717,7 @@ namespace zetscript{
 
 	// register member property  sub set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertySubSet(
+	void ScriptTypeFactory::bindSubSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -742,7 +742,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_SUB_SET
 			,&params
@@ -756,7 +756,7 @@ namespace zetscript{
 
 	// register member property mul set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyMulSet(
+	void ScriptTypeFactory::bindMulSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -781,7 +781,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_MUL_SET
 			,&params
@@ -795,7 +795,7 @@ namespace zetscript{
 
 	// register member property div set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyDivSet(
+	void ScriptTypeFactory::bindDivSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -820,7 +820,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_DIV_SET
 			,&params
@@ -834,7 +834,7 @@ namespace zetscript{
 
 	// register member property mod set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyModSet(
+	void ScriptTypeFactory::bindModSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -859,7 +859,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_MOD_SET
 			,&params
@@ -873,7 +873,7 @@ namespace zetscript{
 
 	// register member property and set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyAndSet(
+	void ScriptTypeFactory::bindAndSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -898,7 +898,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_AND_SET
 			,&params
@@ -912,7 +912,7 @@ namespace zetscript{
 
 	// register member property or set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyOrSet(
+	void ScriptTypeFactory::bindOrSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -937,7 +937,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_OR_SET
 			,&params
@@ -951,7 +951,7 @@ namespace zetscript{
 
 	// register member property xor set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyXorSet(
+	void ScriptTypeFactory::bindXorSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -976,7 +976,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_XOR_SET
 			,&params
@@ -990,7 +990,7 @@ namespace zetscript{
 
 	// register member property shl set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyShlSet(
+	void ScriptTypeFactory::bindShlSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -1015,7 +1015,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_SHL_SET
 			,&params
@@ -1029,7 +1029,7 @@ namespace zetscript{
 
 	// register member property shr set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyShrSet(
+	void ScriptTypeFactory::bindShrSet(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -1054,7 +1054,7 @@ namespace zetscript{
 			,&params_len
 		);
 
-		script_type->bindMemberPropertyMetamethod(
+		script_type->bindMetamethod(
 			 _property_name
 			 ,BYTE_CODE_METAMETHOD_SHR_SET
 			,&params

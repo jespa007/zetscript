@@ -94,7 +94,7 @@ namespace zetscript{
 
 		);
 
-		Symbol				* 	bindMemberPropertyMetamethod(
+		Symbol				* 	bindMetamethod(
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
@@ -105,7 +105,7 @@ namespace zetscript{
 			,short _line=-1
 		);
 
-		Symbol				* 	bindMemberPropertyMetamethodGetter(
+		Symbol				* 	bindMetamethodGetter(
 			const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
 			 ,char _params_len

@@ -23,14 +23,14 @@ int main(){
 		zs.bindType<MyClassExtend>("MyClassExtend",MyClassExtendWrap_new,MyClassExtendWrap_delete);
 
 		// register data1 named data1 in script side as variable member and read/write.
-		zs.bindSetter<MyClass>("data1",&MyClassWrap_set_data1);
-		zs.bindGetter<MyClass>("data1",&MyClassWrap_get_data1);
+		zs.bindPropertySetter<MyClass>("data1",&MyClassWrap_set_data1);
+		zs.bindPropertyGetter<MyClass>("data1",&MyClassWrap_get_data1);
 
 		// register data2 named data1 in script side as variable member (only read).
-		zs.bindGetter<MyClass>("data2",&MyClassWrap_get_data2);
+		zs.bindPropertyGetter<MyClass>("data2",&MyClassWrap_get_data2);
 
 		// register data1 named data1 in script side as variable member (only write).
-		zs.bindSetter<MyClass>("data3",&MyClassWrap_set_data3);
+		zs.bindPropertySetter<MyClass>("data3",&MyClassWrap_set_data3);
 
 		// register function0 named function1 in script side as function member.
 		zs.bindMemberFunction<MyClass>("function0",&MyClassWrap_function0);
@@ -40,8 +40,8 @@ int main(){
 
 
 		// register data2 named data1 in script side as variable member.
-		zs.bindSetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
-		zs.bindGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
+		zs.bindPropertySetter<MyClassExtend>("data4",&MyClassExtendWrap_set_data4);
+		zs.bindPropertyGetter<MyClassExtend>("data4",&MyClassExtendWrap_get_data4);
 
 		// register function2 named function2 in script side as function member.
 		zs.bindMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);
