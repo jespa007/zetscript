@@ -598,7 +598,7 @@ namespace zetscript{
 	 * register member property  pre_increment
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindPropertyPreDecrement(
+	void ScriptTypeFactory::bindPropertyPreIncrement(
 			const zs_string & _property_name
 			,F _ptr_function
 			,const char *_registered_file
@@ -639,7 +639,7 @@ namespace zetscript{
 	 * register member property  pre_decrement
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindPreDecrement(
+	void ScriptTypeFactory::bindPropertyPreDecrement(
 			const zs_string & _property_name
 			,F _ptr_function
 			,const char *_registered_file
@@ -678,7 +678,7 @@ namespace zetscript{
 
 	// register member property add set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindAddSet(
+	void ScriptTypeFactory::bindPropertyAddStore(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -717,7 +717,7 @@ namespace zetscript{
 
 	// register member property  sub set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindSubSet(
+	void ScriptTypeFactory::bindPropertySubStore(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
@@ -756,7 +756,7 @@ namespace zetscript{
 
 	// register member property mul set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMulSet(
+	void ScriptTypeFactory::bindPropertyMulStore(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -795,7 +795,7 @@ namespace zetscript{
 
 	// register member property div set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindDivSet(
+	void ScriptTypeFactory::bindPropertyDivStore(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -834,7 +834,7 @@ namespace zetscript{
 
 	// register member property mod set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindModSet(
+	void ScriptTypeFactory::bindPropertyModStore(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -873,7 +873,7 @@ namespace zetscript{
 
 	// register member property and set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindAndSet(
+	void ScriptTypeFactory::bindPropertyAndStore(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -912,7 +912,7 @@ namespace zetscript{
 
 	// register member property or set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindOrSet(
+	void ScriptTypeFactory::bindPropertyOrStore(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -951,7 +951,7 @@ namespace zetscript{
 
 	// register member property xor set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindXorSet(
+	void ScriptTypeFactory::bindPropertyXorStore(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -990,7 +990,7 @@ namespace zetscript{
 
 	// register member property shl set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindShlSet(
+	void ScriptTypeFactory::bindPropertyShlStore(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
@@ -1029,7 +1029,7 @@ namespace zetscript{
 
 	// register member property shr set operation
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindShrSet(
+	void ScriptTypeFactory::bindPropertyShrStore(
 			const zs_string & _property_name
 			,F _ptr_function
 			, const char *registered_file
