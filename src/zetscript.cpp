@@ -89,17 +89,17 @@ namespace zetscript{
 		// metamethods...
 		bindMemberFunction<zs_datetime>("_toString",DateTimeModule_toString);
 
-		bindPropertyGetter<zs_datetime>("week_day",DateTimeModule_get_week_day);
-		bindPropertyGetter<zs_datetime>("month_day",DateTimeModule_get_month_day);
-		bindPropertyGetter<zs_datetime>("year_day",DateTimeModule_get_year_day);
+		bindMemberPropertyGetter<zs_datetime>("week_day",DateTimeModule_get_week_day);
+		bindMemberPropertyGetter<zs_datetime>("month_day",DateTimeModule_get_month_day);
+		bindMemberPropertyGetter<zs_datetime>("year_day",DateTimeModule_get_year_day);
 
-		bindPropertyGetter<zs_datetime>("second",DateTimeModule_get_second);
-		bindPropertyGetter<zs_datetime>("minute",DateTimeModule_get_minute);
-		bindPropertyGetter<zs_datetime>("hour",DateTimeModule_get_hour);
+		bindMemberPropertyGetter<zs_datetime>("second",DateTimeModule_get_second);
+		bindMemberPropertyGetter<zs_datetime>("minute",DateTimeModule_get_minute);
+		bindMemberPropertyGetter<zs_datetime>("hour",DateTimeModule_get_hour);
 
-		bindPropertyGetter<zs_datetime>("day",DateTimeModule_get_day);
-		bindPropertyGetter<zs_datetime>("month",DateTimeModule_get_month);
-		bindPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
+		bindMemberPropertyGetter<zs_datetime>("day",DateTimeModule_get_day);
+		bindMemberPropertyGetter<zs_datetime>("month",DateTimeModule_get_month);
+		bindMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 		// Custom user function or classes
 		eval(

@@ -226,63 +226,63 @@ namespace zetscript{
 
 
 		template <typename C,typename F>
-		void	bindPropertySetter(
+		void	bindMemberPropertySetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->bindPropertySetter<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindMemberPropertySetter<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	bindPropertyGetter(
+		void	bindMemberPropertyGetter(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->bindPropertyGetter<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindMemberPropertyGetter<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	bindPropertyPostIncrement(
+		void	bindMemberPropertyPostIncrement(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->bindPropertyPostIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindMemberPropertyPostIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	bindPropertyPostDecrement(
+		void	bindMemberPropertyPostDecrement(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->bindPropertyPostDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindMemberPropertyPostDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	bindPropertyPreIncrement(
+		void	bindMemberPropertyPreIncrement(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->bindPropertyPreIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindMemberPropertyPreIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		template <typename C,typename F>
-		void	bindPropertyPreDecrement(
+		void	bindMemberPropertyPreDecrement(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->bindPropertyPreDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			script_type_factory->bindMemberPropertyPreDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
 		}
 
 		/**

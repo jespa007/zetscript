@@ -74,7 +74,7 @@ namespace zetscript{
 		);
 
 
-		Symbol				* 	bindMemberVariable(
+		Symbol				* 	registerMemberVariable(
 			 const zs_string & _symbol_name
 			,const zs_string & _str_native_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
@@ -94,7 +94,7 @@ namespace zetscript{
 
 		);
 
-		Symbol				* 	bindMetamethod(
+		Symbol				* 	registerMemberPropertyMetamethod(
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
@@ -105,7 +105,7 @@ namespace zetscript{
 			,short _line=-1
 		);
 
-		Symbol				* 	bindMetamethodGetter(
+		Symbol				* 	registerMemberPropertyGetter(
 			const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
 			 ,char _params_len

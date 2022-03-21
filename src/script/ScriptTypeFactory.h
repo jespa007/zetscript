@@ -158,7 +158,7 @@ namespace zetscript{
 		);
 
 		template <typename C,typename F>
-		void bindPropertySetter(
+		void bindMemberPropertySetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=""
@@ -169,7 +169,7 @@ namespace zetscript{
 		 * register property getter
 		 */
 		template <typename C,typename F>
-		void bindPropertyGetter(
+		void bindMemberPropertyGetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -180,7 +180,7 @@ namespace zetscript{
 		 * register member property post_inc
 		 */
 		template <typename C,typename F>
-		void bindPropertyPostIncrement(
+		void bindMemberPropertyPostIncrement(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -191,7 +191,7 @@ namespace zetscript{
 		 * register member property post_dec
 		 */
 		template <typename C,typename F>
-		void bindPropertyPostDecrement(
+		void bindMemberPropertyPostDecrement(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -202,7 +202,7 @@ namespace zetscript{
 		 * register member property pre_inc
 		 */
 		template <typename C,typename F>
-		void bindPropertyPreIncrement(
+		void bindMemberPropertyPreIncrement(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -213,7 +213,7 @@ namespace zetscript{
 		 * register member property pre_dec
 		 */
 		template <typename C,typename F>
-		void bindPropertyPreDecrement(
+		void bindMemberPropertyPreDecrement(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -222,7 +222,7 @@ namespace zetscript{
 
 		// register member property add set operation
 		template <typename C,typename F>
-		void bindPropertyAddStore(
+		void bindMemberPropertyAddSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -231,7 +231,7 @@ namespace zetscript{
 
 		// register member property sub set operation
 		template <typename C,typename F>
-		void bindPropertySubStore(
+		void bindMemberPropertySubSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -240,7 +240,7 @@ namespace zetscript{
 
 		// register mul set operation
 		template <typename C,typename F>
-		void bindPropertyMulStore(
+		void bindMemberPropertyMulSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -249,7 +249,7 @@ namespace zetscript{
 
 		// register div set operation
 		template <typename C,typename F>
-		void bindPropertyDivStore(
+		void bindMemberPropertyDivSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -258,7 +258,7 @@ namespace zetscript{
 
 		// register mod set operation
 		template <typename C,typename F>
-		void bindPropertyModStore(
+		void bindMemberPropertyModSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -267,7 +267,7 @@ namespace zetscript{
 
 		// register and set operation
 		template <typename C,typename F>
-		void bindPropertyAndStore(
+		void bindMemberPropertyAndSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -276,7 +276,7 @@ namespace zetscript{
 
 		// register or set operation
 		template <typename C,typename F>
-		void bindPropertyOrStore(
+		void bindMemberPropertyOrSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -285,7 +285,7 @@ namespace zetscript{
 
 		// register xor set operation
 		template <typename C,typename F>
-		void bindPropertyXorStore(
+		void bindMemberPropertyXorSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -294,7 +294,7 @@ namespace zetscript{
 
 		// register shl set operation
 		template <typename C,typename F>
-		void bindPropertyShlStore(
+		void bindMemberPropertyShlSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
@@ -303,7 +303,7 @@ namespace zetscript{
 
 		// register shr set operation
 		template <typename C,typename F>
-		void bindPropertyShrStore(
+		void bindMemberPropertyShrSetter(
 				const zs_string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL

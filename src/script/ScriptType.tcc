@@ -53,7 +53,7 @@ namespace zetscript{
 		zs_string error;
 
 			// register variable...
-		this->bindMemberVariable(
+		this->registerMemberVariable(
 				var_name
 				,var_type
 				,(zs_int)var_pointer

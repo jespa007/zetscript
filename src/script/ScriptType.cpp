@@ -92,7 +92,7 @@ namespace zetscript{
 		);
 	}
 
-	Symbol				* 	ScriptType::bindMemberVariable(
+	Symbol				* 	ScriptType::registerMemberVariable(
 		 const zs_string & symbol_name
 		,const zs_string & str_native_type
 		,zs_int ref_ptr
@@ -172,7 +172,7 @@ namespace zetscript{
 		return symbol_member_property;
 	}
 
-	Symbol				* 	ScriptType::bindMetamethod(
+	Symbol				* 	ScriptType::registerMemberPropertyMetamethod(
 			const zs_string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
@@ -284,7 +284,7 @@ namespace zetscript{
 	}
 
 
-	Symbol				* 	ScriptType::bindMetamethodGetter(
+	Symbol				* 	ScriptType::registerMemberPropertyGetter(
 			 const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
 			 ,char _params_len
