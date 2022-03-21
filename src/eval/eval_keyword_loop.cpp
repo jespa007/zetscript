@@ -512,7 +512,7 @@ namespace zetscript{
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
 						ei_aux=new EvalInstruction(
 							BYTE_CODE_IT_INIT
-							,ZS_IDX_UNDEFINED
+							, (uint8_t)(ZS_IDX_UNDEFINED)
 							,ZS_IDX_UNDEFINED
 							,INSTRUCTION_PROPERTY_RESET_STACK
 					)

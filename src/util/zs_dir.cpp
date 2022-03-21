@@ -30,7 +30,7 @@ namespace zetscript{
 		zs_string get_current_directory(){
 			char cwd[MAX_PATH]={0};
 			zs_string ret="";
-			if (getcwd(cwd,MAX_PATH) ==NULL){
+			if (__getcwd__(cwd,MAX_PATH) ==NULL){
 				THROW_RUNTIME_ERRORF("getcwd() error");
 			}
 

@@ -179,7 +179,6 @@ namespace zetscript{
 					if((it->byte_code==BYTE_CODE_THIS_CALL) && (it->value_op2==ZS_IDX_UNDEFINED)){
 						// search function and link its idx_position
 						const char *str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
-						int line_unreferenced_this_call=SFI_GET_LINE(sf,it);
 						Symbol *symbol_unref_this_call=sc->script_type_scope->getSymbol(str_name_unreferenced_this_call);
 
 						if(symbol_unref_this_call == NULL){ // try to call by the name of symbol later

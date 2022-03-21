@@ -124,15 +124,17 @@ namespace zetscript{
 	}
 
 	ZetScript *ptrToZetScriptPtr(ZetScript *_zs, zs_int ptr){
+		ZS_UNUSUED_PARAM(_zs);
 		return (ZetScript *)ptr;
 	}
 
 	zs_float parseFloat(ZetScript *_zs,zs_int number){
-
+		ZS_UNUSUED_PARAM(_zs);
 		return (zs_float)(number);
 	}
 
 	zs_float parseFloat(ZetScript *_zs,zs_string  *number_str){
+		ZS_UNUSUED_PARAM(_zs);
 		zs_float result=0;
 		zs_float *result_ptr=zs_strutils::parse_zs_float(*number_str);
 
@@ -145,16 +147,17 @@ namespace zetscript{
 	}
 
 	zs_int parseInteger(ZetScript *_zs,zs_float *number){
-
+		ZS_UNUSUED_PARAM(_zs);
 		return (zs_int)(*number);
 	}
 
 	bool isNumber(ZetScript *_zs,StackElement *_stk){
-
+		ZS_UNUSUED_PARAM(_zs);
 		return (_stk->properties & (STK_PROPERTY_ZS_INT | STK_PROPERTY_ZS_FLOAT)) != 0;
 	}
 
 	zs_int parseInteger(ZetScript *_zs,zs_string  *number_str){
+		ZS_UNUSUED_PARAM(_zs);
 		zs_int result=0;
 		zs_int *result_ptr=zs_strutils::parse_zs_int(*number_str);
 		if(result_ptr!=NULL){

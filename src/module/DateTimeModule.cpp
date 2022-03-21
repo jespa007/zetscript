@@ -8,6 +8,7 @@ namespace zetscript{
 
 	//----
 	zs_datetime * 			DateTimeModule_new(ZetScript *_zs){
+		ZS_UNUSUED_PARAM(_zs);
 		return new zs_datetime();
 	}
 
@@ -25,74 +26,92 @@ namespace zetscript{
 	}*/
 
 	void 					DateTimeModule_setUtc(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		_this->set_utc();
 	}
 
 	void 					DateTimeModule_addSeconds(ZetScript *_zs,zs_datetime *_this,zs_int _seconds){
+		ZS_UNUSUED_PARAM(_zs);
 		_this->add_seconds(_seconds);
 	}
 
 	void 					DateTimeModule_addMinutes(ZetScript *_zs,zs_datetime *_this,zs_int _minutes){
+		ZS_UNUSUED_PARAM(_zs);
 		_this->add_minutes(_minutes);
 	}
 
 	void 					DateTimeModule_addHours(ZetScript *_zs,zs_datetime *_this,zs_int _hours){
+		ZS_UNUSUED_PARAM(_zs);
 		_this->add_hours(_hours);
 	}
 
 	void 					DateTimeModule_addDays(ZetScript *_zs,zs_datetime *_this,zs_int _days){
+		ZS_UNUSUED_PARAM(_zs);
 		_this->add_days(_days);
 	}
 
 	void 					DateTimeModule_addMonths(ZetScript *_zs,zs_datetime *_this,zs_int _months){
+		ZS_UNUSUED_PARAM(_zs);
 		_this->add_months(_months);
 	}
 
 	void 					DateTimeModule_addYears(ZetScript *_zs,zs_datetime *_this,zs_int _years){
+		ZS_UNUSUED_PARAM(_zs);
 		_this->add_years(_years);
 	}
 
 	zs_int 					DateTimeModule_get_week_day(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		return  _this->get_week_day();
 	}
 
 	zs_string		DateTimeModule_toString(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		return _this->to_string();
 	}
 
 	zs_int 					DateTimeModule_get_month_day(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		return  _this->get_month_day();
 	}
 
 	zs_int 					DateTimeModule_get_year_day(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		return  _this->get_year_day();
 	}
 
 	zs_int 					DateTimeModule_get_second(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		return  _this->get_second();
 	}
 
 	zs_int 					DateTimeModule_get_minute(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		return  _this->get_minute();
 	}
 
 	zs_int 					DateTimeModule_get_hour(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		return  _this->get_hour();
 	}
 
 	zs_int 					DateTimeModule_get_day(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		return  _this->get_day();
 	}
 
 	zs_int 					DateTimeModule_get_month(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		return  _this->get_month();
 	}
 
 	zs_int 					DateTimeModule_get_year(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		return  _this->get_year();
 	}
 
 	void 					DateTimeModule_delete(ZetScript *_zs,zs_datetime *_this){
+		ZS_UNUSUED_PARAM(_zs);
 		delete _this;
 	}
 }

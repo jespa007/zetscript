@@ -22,6 +22,7 @@ namespace zetscript{
 	//------------------------------------------------------------------------------------------------------------------------------
 
 	char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *_scope_info, TokenNode *token_node){
+		ZS_UNUSUED_PARAM(_scope_info);
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 		EvalInstruction *eval_instruction;
 		zs_vector 	* eval_instructions=&token_node->eval_instructions;
