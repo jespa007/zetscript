@@ -5,17 +5,20 @@
 #include "zetscript.h"
 
 #ifdef _WIN32
-// MSDN recommends against using getcwd & chdir names
-#ifndef __getcwd__
-#define __getcwd__ _getcwd
-#endif
-#ifndef __chdir__
-#define __chdir__ _chdir
-#endif
+	// MSDN recommends against using getcwd & chdir names
+	#ifndef __getcwd__
+		#define __getcwd__ _getcwd
+	#endif
+	#ifndef __chdir__
+		#define __chdir__ _chdir
+	#endif
 #else
-#ifndef __chdir__
-#define __chdir__ chdir
-#endif
+	#ifndef __getcwd__
+		#define __getcwd__ getcwd
+	#endif
+	#ifndef __chdir__
+		#define __chdir__ chdir
+	#endif
 #endif
 
 namespace zetscript{

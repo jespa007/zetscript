@@ -234,6 +234,7 @@ namespace zetscript{
 				if(key_w == KEYWORD_CASE){
 					int line_case=line;
 					EvalInstructionCase *eval_instruction_case=new EvalInstructionCase();
+					eic_cases.push_back((zs_int)eval_instruction_case);
 
 					// ignore case
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
@@ -249,7 +250,7 @@ namespace zetscript{
 							,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
 					))==NULL){
 						// delete unusued vars_for
-						return NULL;
+						goto eval_keyword_switch_error;
 					}
 
 					// insert a pair of instructions...
@@ -263,7 +264,7 @@ namespace zetscript{
 					eval_instruction_case->ei_je_instruction->instruction_source_info.file=eval_data->current_parsing_file;
 
 
-					eic_cases.push_back((zs_int)eval_instruction_case);
+
 
 					// update size cases
 					size_ei_cases+=(eval_instruction_case->ei_load_symbols.count+1); // +1 is for je (i.e je_instruction)
