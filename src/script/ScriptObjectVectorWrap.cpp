@@ -7,14 +7,17 @@
 namespace zetscript{
 
 	void    			ScriptObjectVectorWrap_push(ZetScript *_zs,ScriptObjectVector *sv,StackElement  * stk){
+		ZS_UNUSUED_PARAM(_zs);
 		return sv->push(stk);
 	}
 
 	void   	ScriptObjectVectorWrap_pop(ZetScript *_zs,ScriptObjectVector *sv){
+		ZS_UNUSUED_PARAM(_zs);
 		sv->pop();
 	}
 
 	zs_int 			ScriptObjectVectorWrap_size(ZetScript *_zs,ScriptObjectVector *sv){
+		ZS_UNUSUED_PARAM(_zs);
 		return sv->length();
 	}
 
@@ -22,7 +25,7 @@ namespace zetscript{
 
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
 		*new_stk=*_stk;
-		VirtualMachine *vm=sv->getZetScript()->getVirtualMachine();
+		VirtualMachine *vm=_zs->getVirtualMachine();
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
 
 		// update n_refs +1
@@ -47,15 +50,17 @@ namespace zetscript{
 	}
 
 	void 			ScriptObjectVectorWrap_eraseAt(ZetScript *_zs,ScriptObjectVector *sv, zs_int idx){
+		ZS_UNUSUED_PARAM(_zs);
 		sv->eraseUserElementAt(idx);
 	}
 
 	void 			ScriptObjectVectorWrap_clear(ZetScript *_zs,ScriptObjectVector *sv){
+		ZS_UNUSUED_PARAM(_zs);
 		sv->eraseAllUserElements();
 	}
 
 	ScriptObjectString *		ScriptObjectVectorWrap_join(ZetScript *_zs,ScriptObjectVector *sv, zs_int idx){
-		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(sv->getZetScript());
+		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(_zs);
 		zs_string *ptr_str=(zs_string *)so_string->value;
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
 
@@ -71,6 +76,7 @@ namespace zetscript{
 	}
 
 	ScriptObjectIteratorVector * ScriptObjectVectorWrap_iter(ZetScript *_zs,ScriptObjectVector *so){
+		ZS_UNUSUED_PARAM(_zs);
 		return ZS_NEW_OBJECT_ITERATOR_VECTOR(so);
 	}
 

@@ -68,23 +68,22 @@ namespace zetscript{
 					STK_PROPERTY_BOOL_PTR | STK_PROPERTY_READ_ONLY
 			};
 		}
-		else {
-			ScriptType *info_registered_class = zs->getScriptTypeFactory()->getScriptTypeFromTypeNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
-
-			if (info_registered_class == NULL) {
-				THROW_RUNTIME_ERROR("Native symbol '%s' has type '%s' that is not registered", symbol->name.c_str(), symbol->str_native_type.c_str());
-			}
-
-			ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs, info_registered_class->idx_script_type, ptr_variable);
-
-			return{
-					(zs_int)var,
-					STK_PROPERTY_SCRIPT_OBJECT
-			};
-
-		}
 		
-		return k_stk_null;
+		// it should be script object
+		ScriptType *info_registered_class = zs->getScriptTypeFactory()->getScriptTypeFromTypeNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
+
+		if (info_registered_class == NULL) {
+			THROW_RUNTIME_ERROR("Native symbol '%s' has type '%s' that is not registered", symbol->name.c_str(), symbol->str_native_type.c_str());
+		}
+
+		ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs, info_registered_class->idx_script_type, ptr_variable);
+
+		return{
+				(zs_int)var,
+				STK_PROPERTY_SCRIPT_OBJECT
+		};
+
+
 	}
 
 	

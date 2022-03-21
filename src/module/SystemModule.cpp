@@ -14,10 +14,12 @@ namespace zetscript{
 	static int n_eval_function=0;
 
 	zs_int SystemModule_clock(ZetScript *_zs){
+		ZS_UNUSUED_PARAM(_zs);
 		return std::clock()*(1000.0f/CLOCKS_PER_SEC);
 	}
 
 	void SystemModule_makeReadOnly(ZetScript *_zs,StackElement *stk){
+		ZS_UNUSUED_PARAM(_zs);
 		stk->properties|=STK_PROPERTY_READ_ONLY;
 	}
 
@@ -36,7 +38,6 @@ namespace zetscript{
 		VirtualMachine *vm=zs->getVirtualMachine();
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		Symbol *symbol_sf=NULL;
-		Scope *scope=NULL;
 		int n_ret_args=0;
 		uint8_t stk_n_params=0;
 		StackElement *stk_vm_current=NULL;
@@ -120,7 +121,6 @@ namespace zetscript{
 		// 2. register arg symbols
 		// catch parameters...
 		if(function_params_len > 0){
-			int i=0;
 			zs_map *map=oo_param->getMapUserProperties();
 
 			for(auto it=map->begin(); !it.end(); it.next()){
