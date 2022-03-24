@@ -246,12 +246,23 @@ namespace zetscript{
 							,line
 							,scope_info
 							,&eval_instruction_case->ei_load_symbols
-							,":"
+							,NULL
 							,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
 					))==NULL){
 						// delete unusued vars_for
 						goto eval_keyword_switch_error;
 					}
+
+					/*if(*aux_p != ':'){
+						EVAL_ERROR_FILE_LINE_GOTOF(
+							eval_data->current_parsing_file
+							,line
+							,eval_keyword_switch_error
+							,"Expected ':' after expression"
+						);
+					}
+
+					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);*/
 
 					// insert a pair of instructions...
 					eval_instruction_case->ei_je_instruction=new EvalInstruction(
@@ -295,7 +306,8 @@ namespace zetscript{
 						eval_data->current_parsing_file
 						,line
 						,eval_keyword_switch_error
-						,"Syntax error switch: Expected 'case' or 'default' keyword"
+						,(key_w == KEYWORD_DEFAULT)?"Syntax error 'default': Expected ':'"
+								:"Syntax error 'case': Expected ':'"
 					);
 				}
 
@@ -304,7 +316,7 @@ namespace zetscript{
 						eval_data->current_parsing_file
 						,line
 						,eval_keyword_switch_error
-						,"Syntax error switch: Expected ':' "
+						,"Syntax error switch: Expected ':'"
 					);
 				}
 

@@ -76,11 +76,13 @@ namespace zetscript{
 
 	private:
 		char * buf = NULL;
-		int size = 0;
-		static zs_string newFromTwo(const char *_s1,const char *_s2);
+		int count=0;
+		int _size = 0;
+		static zs_string new_from_two(const char *_s1,const char *_s2);
 
 		void set(const zs_string & _s);
 		void set(const char * _s);
+		void inc_char_slot();
 		void __cleanup__();
 	};
 

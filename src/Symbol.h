@@ -46,10 +46,8 @@ namespace zetscript{
 			idx_position = ZS_IDX_UNDEFINED; // in principle is not on stack
 
 			scope = NULL;
-			name="";
 			n_params = NO_PARAMS_SYMBOL_ONLY;
 			properties = 0;
-			str_native_type = "";
 			ref_ptr = 0;
 			overrided_symbol=NULL;
 		}

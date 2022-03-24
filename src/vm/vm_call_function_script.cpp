@@ -971,14 +971,17 @@ find_element_object:
 				 sf_call_is_member_function=true;
 				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
+				 symbol_aux=NULL;
 				 // Since symbol is created on its owner, we have to get symbol from this object. This technique expects
 				 // that symbols are ordered
-				 symbol_aux=(Symbol *)this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
+				 if(instruction->value_op2!=ZS_IDX_UNDEFINED){
+					 symbol_aux=(Symbol *)this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
+				 }
 				 if(symbol_aux==NULL){ // it calls overrided function (top-most)
 					 VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
-							,((Symbol *)instruction->value_op2)->name.c_str()
+							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							,this_object->getScriptType()->script_type_name.c_str()
-							,((Symbol *)instruction->value_op2)->name.c_str()
+							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 					);
 				 }
 				 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
@@ -1291,13 +1294,13 @@ execute_function:
 						){
 							str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->script_type_name.c_str();
 						}
-
+						const char * file_src_call=SFI_GET_FILE(calling_function,instruction);
 						data->vm_error_callstack_str+=zs_strutils::format(
-							"\nat calling function %s%s%s (file:%s line:%i)" // TODO: get full symbol ?
+							"\nat calling function %s%s%s (%sline:%i)" // TODO: get full symbol ?
 							,str_class_owner==NULL?"":str_class_owner
 							,str_class_owner==NULL?"":"::"
 							,sf_call_script_function->name_script_function.c_str()
-							,SFI_GET_FILE(calling_function,instruction)
+							,file_src_call?zs_strutils::format("file:%s ",file_src_call).c_str():""
 							,SFI_GET_LINE(calling_function,instruction)
 						);
 

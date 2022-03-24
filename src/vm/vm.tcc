@@ -116,6 +116,8 @@ namespace zetscript{
 
 		 bool				vm_error,vm_error_max_stack_reached;
 		 zs_string 			vm_error_str;
+		 zs_string 			vm_error_file;
+		 int 				vm_error_line;
 		 zs_string 			vm_error_callstack_str;
 		 VM_ScopeFunction	*vm_current_scope_function;
 		 VM_ScopeFunction	vm_scope_function[VM_FUNCTION_CALL_MAX];
@@ -160,6 +162,9 @@ namespace zetscript{
 			scope_factory=NULL;
 			vm_error=false;
 			vm_error_str="";
+			vm_error_file="";
+			vm_error_line=-1;
+			vm_error_max_stack_reached=false;
 		}
 
 	};

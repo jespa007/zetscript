@@ -135,12 +135,24 @@ namespace zetscript{
 							,default_str_value
 							,line
 						)==FALSE){
-							EVAL_ERROR_FILE_LINE(
-								eval_data->current_parsing_file
-								,line
-								,"'%s' is not a valid identifier"
-								,default_str_value.c_str()
-							);
+							Operator op;
+							if((op=is_operator(default_str_value.c_str()))!=Operator::OPERATOR_UNKNOWN){
+								EVAL_ERROR_FILE_LINE(
+									eval_data->current_parsing_file
+									,line
+									,"unexpected operator '%s'"
+									,eval_data_operators[op].str
+								);
+
+							}else{
+
+								EVAL_ERROR_FILE_LINE(
+									eval_data->current_parsing_file
+									,line
+									,"expected identifier"
+									,default_str_value.c_str()
+								);
+							}
 						}
 
 						if((local_symbol=eval_find_local_symbol(eval_data,scope_info,default_str_value)) != NULL){ // local sy

@@ -130,6 +130,8 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		data->vm_error = true;
 		data->vm_error_str=str;
+		data->vm_error_file="";
+		data->vm_error_line=-1;
 	}
 
 	bool vm_it_has_error(VirtualMachine *vm){
@@ -138,10 +140,14 @@ namespace zetscript{
 	}
 
 	void vm_set_error_file_line(VirtualMachine *vm, const char *file, int line, const char *in_txt,...){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 		vm_set_error(vm,zs_strutils::format("[%s:%i] %s",file,line,out_txt));
+
+		data->vm_error_file=file;
+		data->vm_error_line=line;
 	}
 
 	zs_string vm_get_error(VirtualMachine *vm){
@@ -283,6 +289,8 @@ namespace zetscript{
 			data->vm_error_max_stack_reached=false;
 			data->vm_error=false;
 			data->vm_error_str="";
+			data->vm_error_file="";
+			data->vm_error_line=-1;
 			data->vm_error_callstack_str="";
 
 			stk_start=data->vm_stack;
@@ -332,7 +340,7 @@ namespace zetscript{
 			zs_string total_error=data->vm_error_str;
 			total_error.append(data->vm_error_callstack_str);
 
-			throw_exception(total_error.c_str());
+			throw_exception(data->vm_error_file.c_str(),data->vm_error_line,total_error.c_str());
 		}else{
 			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+calling_function->local_variables->count);
 

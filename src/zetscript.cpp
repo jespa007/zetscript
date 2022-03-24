@@ -547,6 +547,7 @@ namespace zetscript{
 			script_types->resize(resize);
 		}
 
+		functions_with_unresolved_symbols.clear();
 
 		scope_factory->clear();
 		script_function_factory->clear();
