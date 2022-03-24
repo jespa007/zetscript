@@ -128,7 +128,7 @@ namespace zetscript{
 		inline ScriptTypeFactory *getScriptTypeFactory() { return script_type_factory;}
 
 		StackElement	eval(const zs_string & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
-		StackElement	eval(const zs_string & expresion,unsigned short options, const char * filename="", const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	eval(const zs_string & expresion,unsigned short options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
 		StackElement	evalFile(const zs_string & filename,unsigned short options=0, const char *__invoke_file__="", int __invoke_line__=-1);
 
 		// CONSTANT TOOLS
@@ -486,7 +486,7 @@ namespace zetscript{
 
 		//--------
 		// VARS
-		zs_map 	 								*stk_constants;
+		zs_map 	 								*stk_constants, *script_filenames_by_ref;
 		zs_vector 			 					parsed_files;
 		zs_vector								functions_with_unresolved_symbols;
 
@@ -518,6 +518,7 @@ namespace zetscript{
 
 		//void setClearGlobalVariablesCheckpoint();
 		void resetParsedFiles();
+		const char *getFilenameByRef(const char * _filename_by_ref);
 		void clearGlobalVariables(int _idx_start_variable=ZS_IDX_UNDEFINED, int _idx_start_function=ZS_IDX_UNDEFINED);
 		bool getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf);
 

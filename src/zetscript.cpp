@@ -21,6 +21,7 @@ namespace zetscript{
 		idx_current_global_function_checkpoint=0;
 		idx_current_script_types_checkpoint=0;
 		stk_constants=NULL;
+		script_filenames_by_ref=NULL;
 
 		eval_init();
 		scope_factory = new ScopeFactory(this);
@@ -35,7 +36,7 @@ namespace zetscript{
 		script_type_factory->registerSystem();
 
 		stk_constants=new zs_map();
-
+		script_filenames_by_ref=new zs_map();
 		//-------------------------
 		// Register built in modules
 
@@ -347,9 +348,11 @@ namespace zetscript{
 		return stk_ret;
 	}
 
-	StackElement ZetScript::eval(const zs_string & _expresion, unsigned short _options, const char * _filename, const char *__invoke_file__, int __invoke_line__)  {
+	StackElement ZetScript::eval(const zs_string & _expresion, unsigned short _options, const char * _script_filename_by_ref, const char *__invoke_file__, int __invoke_line__)  {
 
-		return evalInternal(_expresion.c_str(), _options, _filename,__invoke_file__,__invoke_line__);
+		const char *script_filename_by_ref=getFilenameByRef(_script_filename_by_ref);
+
+		return evalInternal(_expresion.c_str(), _options, script_filename_by_ref,__invoke_file__,__invoke_line__);
 	}
 
 	StackElement	ZetScript::eval(const zs_string & _expresion, const char *__invoke_file__, int __invoke_line__){
@@ -494,6 +497,18 @@ namespace zetscript{
 		vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
 	}
 
+	const char *ZetScript::getFilenameByRef(const char * _filename_by_ref){
+		bool exists=false;
+		zs_int e=script_filenames_by_ref->get(_filename_by_ref,&exists);
+		if(exists==false){
+			char *s=(char *)malloc(strlen(_filename_by_ref)+1);
+			strcpy(s,_filename_by_ref);
+			script_filenames_by_ref->set(s,(zs_int)s);
+			e=(zs_int)s;
+		}
+		return ((const char *)e);
+	}
+
 
 	void ZetScript::resetParsedFiles(){
 		for(int i=0;i<parsed_files.count;i++){
@@ -624,6 +639,18 @@ namespace zetscript{
 			}
 			stk_constants->clear();
 			delete stk_constants;
+
+		}
+
+		if(script_filenames_by_ref != NULL){
+
+			for(auto it=script_filenames_by_ref->begin(); !it.end();it.next()){//std::map<zs_string,StackElement *>::iterator it=stk_constants->begin();it!=stk_constants->end();it++){
+				char *script_filename_by_ref=(char *)(it.value);
+				free(script_filename_by_ref);
+			}
+
+			delete script_filenames_by_ref;
+			script_filenames_by_ref=NULL;
 		}
 
 		eval_deinit();
