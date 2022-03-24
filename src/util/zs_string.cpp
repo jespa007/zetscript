@@ -136,8 +136,8 @@ namespace zetscript{
 
     zs_string zs_string::new_from_two(const char *_s1, const char *_s2) {
 		zs_string s; // create a new string named 's'
-		int len1=0;
-		int len2=0;
+		size_t len1=0;
+		size_t len2=0;
 
 		if(_s1!=NULL){
 			len1=strlen(_s1);
