@@ -166,6 +166,11 @@ namespace zetscript{
 	}
 
 	zs_int	zs_map::get(const char * _key, bool * _exist){
+
+		if(_key == NULL){
+			THROW_RUNTIME_ERROR("key NULL",_key);
+		}
+
 		int idx=search(_key);
 		zs_int value=0;
 

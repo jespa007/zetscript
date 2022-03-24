@@ -498,6 +498,10 @@ namespace zetscript{
 	}
 
 	const char *ZetScript::getFilenameByRef(const char * _filename_by_ref){
+		if(_filename_by_ref==NULL){
+			return NULL;
+		}
+
 		bool exists=false;
 		zs_int e=script_filenames_by_ref->get(_filename_by_ref,&exists);
 		if(exists==false){
