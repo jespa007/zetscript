@@ -516,7 +516,7 @@ namespace zetscript{
 
 						// set symbol name
 						ei_first_token_node->symbol.name=accessor_name;
-						Symbol *symbol_access_this=scope_info->script_type_owner->getSymbol(accessor_name);
+						Symbol *symbol_access_this=scope_info->script_type_owner->getSymbolVariableMember(accessor_name);
 						if(symbol_access_this!=NULL){
 							instruction_value2=symbol_access_this->idx_position;
 						}
