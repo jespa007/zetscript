@@ -321,7 +321,17 @@ find_element_object:
 							}
 							VM_PUSH_STK_PTR(stk_var);
 						}
-						else{
+						else{ // not exists
+							if(instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION){
+								VM_STOP_EXECUTE("'%s' as type '%s' has not defined member function '%s::%s'"
+										,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+										,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+										,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+										,(const char *)str_symbol
+
+								);
+							}
+
 							data->stk_vm_current->value=0;
 							data->stk_vm_current->properties=STK_PROPERTY_NULL;
 							data->stk_vm_current++;

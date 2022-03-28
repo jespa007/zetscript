@@ -435,6 +435,7 @@ namespace zetscript{
 								byte_code=ByteCode::BYTE_CODE_THIS_CALL;
 							}else{
 								byte_code=ByteCode::BYTE_CODE_MEMBER_CALL;
+								last_instruction_token->vm_instruction.properties|=INSTRUCTION_PROPERTY_CALLING_FUNCTION;
 							}
 						}
 					}
