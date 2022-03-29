@@ -297,7 +297,7 @@ find_element_object:
 						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
 
 						 if(!vm_create_shared_pointer(vm,somf)){
-								goto lbl_exit_function;
+							goto lbl_exit_function;
 						 }
 
 						data->stk_vm_current->value=(zs_int)somf;
@@ -324,11 +324,10 @@ find_element_object:
 						else{ // not exists
 							if(instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION){
 								VM_STOP_EXECUTE("'%s' as type '%s' has not defined member function '%s::%s'"
-										,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-										,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-										,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-										,(const char *)str_symbol
-
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+									,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+									,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+									,(const char *)str_symbol
 								);
 							}
 

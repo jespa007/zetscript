@@ -221,7 +221,7 @@ namespace zetscript{
 				}
 
 				// exception: These variables are registered but not allowed to pass throught parameter
-				if(idx_script_type==IDX_TYPE_ZS_FLOAT_C || idx_script_type==IDX_TYPE_BOOL_C || idx_script_type == IDX_TYPE_STRING_C){
+				if(idx_script_type==IDX_TYPE_ZS_FLOAT_C || idx_script_type==IDX_TYPE_BOOL_C || idx_script_type == IDX_TYPE_ZS_STRING_C){
 					error=zs_strutils::format("Error register function '%s': argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,name_script_function.c_str()
 							,i+1

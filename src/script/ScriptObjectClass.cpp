@@ -178,10 +178,10 @@ namespace zetscript{
 				}else{ // expect return an scriptobjectstring
 					zs_string *str=NULL;
 					switch(ptr_function->idx_script_type_return){
-					case IDX_TYPE_STRING_C:
+					case IDX_TYPE_ZS_STRING_C:
 							aux=((zs_string (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							break;
-					case IDX_TYPE_STRING_PTR_C:
+					case IDX_TYPE_ZS_STRING_PTR_C:
 							str=((zs_string * (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							if(str == NULL){
 								THROW_RUNTIME_ERRORF("toString: str NULL");

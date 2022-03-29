@@ -40,14 +40,19 @@ namespace zetscript{
 					 stk_result={(((bool)ptr_var)),STK_PROPERTY_BOOL};
 					 break;
 				 case IDX_TYPE_CONST_CHAR_PTR_C:
-				 case IDX_TYPE_STRING_PTR_C:
+				 case IDX_TYPE_ZS_STRING_PTR_C:
+				 case IDX_TYPE_ZS_STRING_C:
 
-					 if(ptr_var!=0) return stk_result;
 
 					 so=ZS_NEW_OBJECT_STRING(this);
-					 if(idx_builtin_type_var==IDX_TYPE_STRING_PTR_C){
-						so->value=(void *)ptr_var;
-
+					 if(ptr_var!=0) { // not null
+						 if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_PTR_C){ // zs_reference
+							so->value=(void *)ptr_var;
+						 }else if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_C){ // zs_string passed as pointer
+							 so->set(*(zs_string *)ptr_var);
+						 }else{ // const char
+							 so->set((const char *)ptr_var);
+						 }
 					 }
 
 					 stk_result={(intptr_t)so,STK_PROPERTY_SCRIPT_OBJECT};
@@ -187,7 +192,7 @@ namespace zetscript{
 									return false;
 								}
 
-								if(idx_builtin_type == IDX_TYPE_STRING_PTR_C){
+								if(idx_builtin_type == IDX_TYPE_ZS_STRING_PTR_C){
 									val_ret=(zs_int)(((ScriptObjectString *)script_object)->value);
 								}else if (idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
 									val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());

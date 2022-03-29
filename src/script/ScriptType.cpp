@@ -422,7 +422,7 @@ namespace zetscript{
 
 					// native
 					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
-						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(_idx_return_type == IDX_TYPE_STRING_PTR_C || _idx_return_type == IDX_TYPE_STRING_C) ){
+						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(_idx_return_type == IDX_TYPE_ZS_STRING_PTR_C || _idx_return_type == IDX_TYPE_ZS_STRING_C) ){
 							THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
 								,script_type_name.c_str()
 								,_function_name.c_str()

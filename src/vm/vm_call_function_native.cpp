@@ -363,7 +363,7 @@ namespace zetscript{
 
 			ZS_FLOAT_COPY(&result,&float_aux);
 
-		}else if(c_function->idx_script_type_return==IDX_TYPE_STRING_C){ // we must do a float cast in order to get float return.
+		}else if(c_function->idx_script_type_return==IDX_TYPE_ZS_STRING_C){ // we must do a float cast in order to get float return.
 
 			switch(n_args){
 			case 1:
@@ -438,7 +438,6 @@ namespace zetscript{
 			}
 
 			result=(zs_int)&str_aux;
-			idx_script_type_return=IDX_TYPE_STRING_PTR_C;
 
 		}else{ // generic pointer or int
 

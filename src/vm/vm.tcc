@@ -443,10 +443,10 @@ namespace zetscript{
 										all_check=arg_idx_script_type==idx_script_type; // if string object --> direct
 
 										if(all_check==false){ // try native conversions
-											idx_script_type=IDX_TYPE_STRING_PTR_C;
+											idx_script_type=IDX_TYPE_ZS_STRING_PTR_C;
 
 											all_check =
-												(	arg_idx_script_type==IDX_TYPE_STRING_PTR_C && current_arg->value!=0)
+												(	arg_idx_script_type==IDX_TYPE_ZS_STRING_PTR_C && current_arg->value!=0)
 											  ||	arg_idx_script_type==IDX_TYPE_CONST_CHAR_PTR_C;
 										}
 									}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
@@ -613,8 +613,7 @@ namespace zetscript{
 
 			if(n_candidates == 0){
 				VM_ERROR("Cannot call native %s '%s'. Function not registered\n\n"
-						//is_constructor ? "constructor":"function"
-						,class_str==""?"function":"member function"
+						,is_constructor ? "constructor":class_str==""?"function":"member function"
 						,function_name_not_found.c_str()
 						,args_str.c_str()
 						//class_str==""?"function":"member function",
@@ -625,13 +624,12 @@ namespace zetscript{
 				return NULL;
 			}
 			else{
-				VM_ERROR("Cannot call native %s '%s(%s)'\n\n%s",
-					//is_constructor ? "constructor":"function",
-					class_str==""?"function":"member function",
+				VM_ERROR("Cannot call native %s '%s(%s)'\n\n%s"
+					,is_constructor ? "constructor":class_str==""?"function":"member function"
 					//symbol_to_find.c_str(),
-					function_name_not_found.c_str(),
-					args_str.c_str(),
-					str_candidates.c_str()
+					,function_name_not_found.c_str()
+					,args_str.c_str()
+					,str_candidates.c_str()
 				);
 				return NULL;
 			}
