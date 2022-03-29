@@ -478,16 +478,19 @@ namespace zetscript{
 		}
 
 		if(ptr_function_found == NULL){
+			zs_string class_str=class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?class_obj->script_type_name:"";
 			int n_candidates=0;
 			zs_string str_candidates="";
-			zs_string args_str = "ZetScript *";
+			zs_string function_name_not_found=class_str==""?symbol_to_find.c_str():zs_strutils::format("%s::%s",class_str.c_str(),symbol_to_find.c_str());
+			zs_string args_str = "";
 			//int arg_idx_script_type=-1;
 			/* get arguments... */
 			for( unsigned k = 0; k < n_args;k++){
 				StackElement *current_arg=&stk_arg[k];
 
-
-				args_str.append(",");
+				if(k>0){
+					args_str.append(",");
+				}
 
 				//unsigned short var_type = GET_STK_PROPERTY_TYPES(current_arg->properties);
 				if(current_arg->properties & STK_PROPERTY_PTR_STK){
@@ -558,47 +561,78 @@ namespace zetscript{
 						str_candidates.append("::");
 					}
 
+					// writes script function interface
 					// function name
 					str_candidates.append(irfs->name_script_function.c_str());
 					str_candidates.append("(");
 
+					for(int a = 2; a < irfs->params_len; a++){
+						if(a>2){
+							str_candidates.append(",");
+						}
+
+						//if(irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+							str_candidates+=zs_rtti::demangle(
+								GET_IDX_2_CLASS_C_STR(data,irfs->params[a].idx_script_type)
+							);
+						/*}else{ // typic var ...
+							str_candidates.append("arg");
+							str_candidates.append(zs_strutils::zs_int_to_str(a+1));
+						}*/
+					}
+
+					// writes wrap
+
+					str_candidates.append(")");
+
+					str_candidates.append(" -- BINDED AS --> ");
+
+					str_candidates.append(zs_rtti::demangle(
+							GET_IDX_2_CLASS_C_STR(data,irfs->idx_script_type_return)
+						)
+					);
+
+					str_candidates.append(" (*)");
+					str_candidates.append("(");
 
 					for(int a = 0; a < irfs->params_len; a++){
 						if(a>0){
 							str_candidates.append(",");
 						}
 
-						if(irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
-							str_candidates+=zs_rtti::demangle(
-								GET_IDX_2_CLASS_C_STR(data,irfs->params[a].idx_script_type)
-							);
-						}else{ /* typic var ... */
-							str_candidates.append("arg");
-							str_candidates.append(zs_strutils::zs_int_to_str(a+1));
-						}
+						str_candidates.append(zs_rtti::demangle(
+							GET_IDX_2_CLASS_C_STR(data,irfs->params[a].idx_script_type)
+							)
+						);
 					}
-					str_candidates.append(");\n");
+					str_candidates.append(")\n");
+
 					n_candidates++;
 				}
 			}
 
 			if(n_candidates == 0){
-				VM_ERROR("Cannot find %s '%s%s(%s)'.\n\n",
-						is_constructor ? "constructor":"function",
-								class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?(class_obj->script_type_name+"::").c_str():"",
-								symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
-						args_str.c_str()
+				VM_ERROR("Cannot call native %s '%s'. Function not registered\n\n"
+						//is_constructor ? "constructor":"function"
+						,class_str==""?"function":"member function"
+						,function_name_not_found.c_str()
+						,args_str.c_str()
+						//class_str==""?"function":"member function",
+						//function_name_not_found.c_str(),
+						//,args_str.c_str()
 				);
 
 				return NULL;
 			}
 			else{
-				VM_ERROR("Cannot match %s '%s%s(%s)' .\n\n%s",
-					is_constructor ? "constructor":"function",
-							class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?(class_obj->script_type_name+"::").c_str():"",
-									symbol_to_find.c_str(),//calling_function->getInstructionSymbolName(instruction),
+				VM_ERROR("Cannot call native %s '%s(%s)'\n\n%s",
+					//is_constructor ? "constructor":"function",
+					class_str==""?"function":"member function",
+					//symbol_to_find.c_str(),
+					function_name_not_found.c_str(),
 					args_str.c_str(),
-					str_candidates.c_str());
+					str_candidates.c_str()
+				);
 				return NULL;
 			}
 		}
