@@ -585,7 +585,7 @@ namespace zetscript{
 
 					str_candidates.append(")");
 
-					str_candidates.append(" -- BINDED AS --> ");
+					str_candidates.append(" -- BIND FUNCTION AS --> ");
 
 					str_candidates.append(zs_rtti::demangle(
 							GET_IDX_2_CLASS_C_STR(data,irfs->idx_script_type_return)
