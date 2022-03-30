@@ -322,7 +322,7 @@ namespace zetscript{
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
 	StackElement ZetScript::evalInternal(const char * code, unsigned short options, const char * filename, const char *__invoke_file__, int __invoke_line__)  {
-		StackElement stk_ret=k_stk_null;
+		StackElement stk_ret=k_stk_undefined;
 
 		eval_parse_and_compile(this,code,filename);
 		link();

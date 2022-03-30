@@ -6,13 +6,14 @@
 
 namespace zetscript{
 
-	extern const StackElement k_stk_null={0,STK_PROPERTY_NULL};
+	extern const StackElement k_stk_undefined={0,STK_PROPERTY_UNDEFINED};
 
 	zs_string stk_to_typeof_str(ZetScript *_zs, StackElement *_stk){
 		StackElement *stk=_stk;
 		zs_string result="unknow";
-
-		if(STK_VALUE_IS_NULL(stk))
+		if(STK_VALUE_IS_UNDEFINED(stk))
+			result=ZS_TYPE_NAME_UNDEFINED; //"undefined";
+		else if(STK_VALUE_IS_NULL(stk))
 			result=ZS_TYPE_NAME_NULL; //"null";
 		else if(STK_VALUE_IS_ZS_INT(stk))
 			result=ZS_TYPE_NAME_INT;
@@ -69,8 +70,9 @@ namespace zetscript{
 			is_constant=true;
 			stk.properties&=~STK_PROPERTY_READ_ONLY;
 		}
-
-		if(STK_VALUE_IS_NULL(&stk)){
+		if(STK_VALUE_IS_UNDEFINED(&stk)){
+			result=ZS_TYPE_NAME_UNDEFINED;
+		}else if(STK_VALUE_IS_NULL(&stk)){
 			result=ZS_TYPE_NAME_NULL;
 		}else if((stk.properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)){
 			result= (const char *)stk.value;
@@ -144,7 +146,7 @@ namespace zetscript{
 	}
 
 	void StackElement::setUndefined(){
-		STK_SET_NULL(this);;
+		STK_SET_UNDEFINED(this);
 	}
 
 	StackElement	StackElement::typeOf(){
@@ -155,7 +157,9 @@ namespace zetscript{
 			stk=(StackElement *)stk->value;
 		}
 
-		if(STK_VALUE_IS_NULL(stk)){
+		if(STK_VALUE_IS_UNDEFINED(stk)){
+			result.value=IDX_TYPE_UNDEFINED;
+		}else if(STK_VALUE_IS_NULL(stk)){
 			result.value=IDX_TYPE_NULL;
 		}else if(STK_VALUE_IS_ZS_INT(stk)){
 			result.value=IDX_TYPE_ZS_INT_C;

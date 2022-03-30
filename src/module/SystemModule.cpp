@@ -32,7 +32,7 @@ namespace zetscript{
 		zs_string str_param_name;
 		ScriptFunction *sf;
 		zs_vector stk_params;
-		StackElement stk_ret=k_stk_null;
+		StackElement stk_ret=k_stk_undefined;
 		const char *str_start=NULL;
 		zs_string str_unescaped_source="";
 		VirtualMachine *vm=zs->getVirtualMachine();
@@ -162,7 +162,7 @@ namespace zetscript{
 				free(sf->instructions);
 
 				// assign ret null
-				new_buf[new_buf_len-3-offset_rst_stack].byte_code=BYTE_CODE_LOAD_NULL;
+				new_buf[new_buf_len-3-offset_rst_stack].byte_code=BYTE_CODE_LOAD_UNDEFINED;
 				new_buf[new_buf_len-2-offset_rst_stack].byte_code=BYTE_CODE_RET;
 
 				sf->instructions=new_buf;

@@ -72,7 +72,8 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_VECTOR_ITEM:					return "LOAD_VEC@ITEM"; // load element vector
 			case BYTE_CODE_LOAD_OBJECT_ITEM:					return "LOAD_OBJ@ITEM"; // load element object
 			case BYTE_CODE_LOAD_FUNCTION:						return "LOAD_FUN"; // load function
-			case BYTE_CODE_LOAD_NULL:							return "LOAD_NULL"; // load undfined
+			case BYTE_CODE_LOAD_UNDEFINED:						return "LOAD_UNDEFINED"; // load undfined
+			case BYTE_CODE_LOAD_NULL:							return "LOAD_NULL"; // load null
 			case BYTE_CODE_LOAD_STACK_ELEMENT:					return "LOAD_STK"; // load stack element
 
 			case BYTE_CODE_LOAD_STRING:							return "LOAD_STR"; // load string
@@ -156,7 +157,8 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_VECTOR_ITEM:		return "LOAD_EVEC"; // load element vector
 			case BYTE_CODE_LOAD_OBJECT_ITEM:		return "LOAD_EOBJ"; // load element object
 			case BYTE_CODE_LOAD_FUNCTION:			return "LOAD_FUNCT"; // load function
-			case BYTE_CODE_LOAD_NULL:				return "LOAD_NULL"; // load undfined
+			case BYTE_CODE_LOAD_UNDEFINED:			return "LOAD_UNDEFINED"; // load undefined
+			case BYTE_CODE_LOAD_NULL:				return "LOAD_NULL"; // load null
 			case BYTE_CODE_LOAD_STACK_ELEMENT:		return "LOAD_STK"; // load stack element
 			case BYTE_CODE_LOAD_STRING:				return "LOAD_STR"; // load string
 			case BYTE_CODE_LOAD_ZS_FLOAT:			return "LOAD_FLT"; // load float

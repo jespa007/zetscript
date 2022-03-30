@@ -2,6 +2,9 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
+#define VM_PUSH_STK_UNDEFINED \
+		STK_SET_UNDEFINED(data->stk_vm_current);\
+		data->stk_vm_current++; \
 
 #define VM_PUSH_STK_NULL \
 		STK_SET_NULL(data->stk_vm_current);\

@@ -95,8 +95,10 @@ namespace zetscript{
 					}
 				}
 
-				if(default_str_value=="null"){ // null literal
-					byte_code=ByteCode::BYTE_CODE_LOAD_NULL;
+				if(default_str_value=="undefined"){ // undefined literal
+					byte_code=ByteCode::BYTE_CODE_LOAD_UNDEFINED;
+				}else if(default_str_value=="null"){ // null literal
+						byte_code=ByteCode::BYTE_CODE_LOAD_NULL;
 				}else if((const_obj=zs_strutils::parse_bool(default_str_value))!=NULL){ // bool literal
 
 					bool value_bool = *((bool *)const_obj);

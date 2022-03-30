@@ -76,7 +76,7 @@ namespace zetscript{
 			}
 		}else{
 
-			si=k_stk_null;
+			si=k_stk_undefined;
 		}
 
 		zs_string key_value = symbol_value;

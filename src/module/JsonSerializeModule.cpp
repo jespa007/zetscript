@@ -55,7 +55,7 @@ namespace zetscript{
 							){
 						bool getter_found=false;
 						StackElement *ptr_stk_param=NULL;
-						StackElement stk_getter_result=k_stk_null;
+						StackElement stk_getter_result=k_stk_undefined;
 
 						if (_is_formatted){
 							_str_result.append('\n');
@@ -159,6 +159,9 @@ namespace zetscript{
 			case STK_PROPERTY_BOOL:
 			case STK_PROPERTY_ZS_INT:
 				str_result.append(stk_to_str(zs,stk));
+				break;
+			case STK_PROPERTY_UNDEFINED:
+				str_result.append("undefined");
 				break;
 			case STK_PROPERTY_NULL:
 				str_result.append("null");

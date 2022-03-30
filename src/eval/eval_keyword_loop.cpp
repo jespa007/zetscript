@@ -550,13 +550,6 @@ namespace zetscript{
 
 				idx_instruction_for_after_jnz_condition=(int)(eval_data->current_function->eval_instructions.count);
 
-				// push as many null as n left vars -1
-				/*for(int i=0; i < ei_init_vars_for.count;i++){
-					eval_data->current_function->eval_instructions.push_back((zs_int)(
-						ei_aux=new EvalInstruction(BYTE_CODE_LOAD_NULL)
-					));
-				}*/
-
 				// load v
 				eval_data->current_function->eval_instructions.push_back((zs_int)(
 						ei_aux=new EvalInstruction(ei_iterator)

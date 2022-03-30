@@ -512,6 +512,9 @@ namespace zetscript{
 					case STK_PROPERTY_BOOL:
 						aux_string=k_str_bool_type;
 						break;
+					case STK_PROPERTY_UNDEFINED:
+						aux_string="undefined";
+						break;
 					case STK_PROPERTY_NULL:
 						aux_string="null";
 						break;

@@ -23,7 +23,7 @@
 				 	 vm_unref_shared_script_object(vm,so,data->vm_idx_call);\
 			}\
 		}\
-		STK_SET_NULL(stk_local_var);\
+		STK_SET_UNDEFINED(stk_local_var);\
 		stk_local_var++;\
 	}\
 	--data->vm_current_scope_function->scope_current;\

@@ -266,13 +266,13 @@ namespace zetscript{
 	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		if(calling_function->instructions == NULL){ // no instructions do not execute
-			return k_stk_null;
+			return k_stk_undefined;
 		}
 
 		// in case user binds script function and calls directy from C code, idx_call will 0 so we have
 		// to prevent conflict with first call that is reserved by main_function
 		bool first_script_call_from_c=false;
-		StackElement stk_return=k_stk_null;
+		StackElement stk_return=k_stk_undefined;
 		StackElement *stk_start=NULL;
 
 

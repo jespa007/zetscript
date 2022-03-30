@@ -678,8 +678,11 @@ error_eval_keyword_var:
 						Instruction *instruction=&((EvalInstruction *)ei_instructions_default.items[0])->vm_instruction;
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
+						case BYTE_CODE_LOAD_UNDEFINED:
+							param_info.default_param_value=k_stk_undefined;
+							break;
 						case BYTE_CODE_LOAD_NULL:
-							param_info.default_param_value=k_stk_null;
+							param_info.default_param_value={0,STK_PROPERTY_NULL};
 							break;
 						case BYTE_CODE_LOAD_ZS_INT:
 							param_info.default_param_value={instruction->value_op2,STK_PROPERTY_ZS_INT};

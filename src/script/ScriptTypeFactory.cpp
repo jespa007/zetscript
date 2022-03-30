@@ -176,7 +176,7 @@ namespace zetscript{
 		// !!!
 
 		// primitives
-		//SCF_REGISTER_NATIVE_TYPE(ZS_TYPE_NAME_NULL,IDX_TYPE_NULL);
+		SCF_REGISTER_TYPE(ZS_TYPE_NAME_UNDEFINED,IDX_TYPE_UNDEFINED);
 		SCF_REGISTER_TYPE(ZS_TYPE_NAME_NULL,IDX_TYPE_NULL);
 		SCF_REGISTER_NATIVE_TYPE(void,IDX_TYPE_VOID_C);
 		SCF_REGISTER_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_INT,zs_int,IDX_TYPE_ZS_INT_C);
@@ -420,6 +420,7 @@ namespace zetscript{
 			// To avoid built-int conflict bool type
 			if(
 					index==IDX_TYPE_BOOL_C
+					|| index==IDX_TYPE_UNDEFINED
 					|| index==IDX_TYPE_NULL
 					|| index==IDX_TYPE_ZS_INT_C
 					|| index==IDX_TYPE_ZS_FLOAT_C

@@ -102,7 +102,7 @@ namespace zetscript{
 
 			// reset local variables symbols (not arg symbols)
 			for(int i=calling_function->params_len;i<calling_function->local_variables->count;i++){
-				STK_SET_NULL(_stk_local_var+i);
+				STK_SET_UNDEFINED(_stk_local_var+i);
 			}
 		}
 		//-----------------------------------------------------------------------------------------------------------------------
@@ -238,7 +238,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
 				so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
 				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
-					VM_PUSH_STK_NULL;
+					VM_PUSH_STK_UNDEFINED;
 				}else{
 					data->stk_vm_current->value= so_aux->getScriptType()->script_type_scope->symbol_functions->items[instruction->value_op2];
 					data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
@@ -332,7 +332,7 @@ find_element_object:
 							}
 
 							data->stk_vm_current->value=0;
-							data->stk_vm_current->properties=STK_PROPERTY_NULL;
+							data->stk_vm_current->properties=STK_PROPERTY_UNDEFINED;
 							data->stk_vm_current++;
 						}
 						continue;
@@ -368,6 +368,9 @@ find_element_object:
 					instruction_it++; //... and instruction iterator
 					goto load_next_element_object;
 				}
+				continue;
+			case BYTE_CODE_LOAD_UNDEFINED:
+				VM_PUSH_STK_UNDEFINED;
 				continue;
 			case BYTE_CODE_LOAD_NULL:
 				VM_PUSH_STK_NULL;
@@ -645,9 +648,10 @@ find_element_object:
 					stk_src_properties=stk_src->properties;
 
 					// init stk_dst
-					STK_SET_NULL(stk_dst);
-
-					if(stk_src_properties == STK_PROPERTY_NULL){
+					STK_SET_UNDEFINED(stk_dst);
+					if(stk_src_properties == STK_PROPERTY_UNDEFINED){
+						stk_dst->properties=STK_PROPERTY_UNDEFINED;
+					}else if(stk_src_properties == STK_PROPERTY_NULL){
 						stk_dst->properties=STK_PROPERTY_NULL;
 					}else if(stk_src_properties & STK_PROPERTY_ZS_INT){
 						stk_dst->properties=STK_PROPERTY_ZS_INT;
@@ -1200,6 +1204,7 @@ execute_function:
 						ScriptFunctionParam *param=sf_call_script_function->params+h;
 
 						switch(param->default_param_value.properties){
+						case STK_PROPERTY_UNDEFINED:
 						case STK_PROPERTY_NULL:
 						case STK_PROPERTY_ZS_INT:
 						case STK_PROPERTY_BOOL:
@@ -1332,7 +1337,7 @@ execute_function:
 
 				// add as many values expects to the left
 				for(int i=sf_call_n_returned_arguments_from_function; i < sf_call_return;i++){
-					VM_PUSH_STK_NULL;
+					VM_PUSH_STK_UNDEFINED;
 					sf_call_n_returned_arguments_from_function++;
 				}
 
@@ -1447,7 +1452,7 @@ execute_function:
 						}
 
 						if(constructor_function == NULL){
-							VM_PUSH_STK_NULL;
+							VM_PUSH_STK_UNDEFINED;
 						}
 
 				 	 }else{
@@ -1504,7 +1509,7 @@ execute_function:
 								script_object_class->deleteNativeObjectOnDestroy(true);
 							}
 						}
-						STK_SET_NULL(se);
+						STK_SET_UNDEFINED(se);
 					}
 					continue;
 			 case BYTE_CODE_PUSH_SCOPE:
@@ -1583,7 +1588,7 @@ execute_function:
 		 }
 	lbl_exit_function:
 		// default return null
-		 STK_SET_NULL(data->stk_vm_current);
+		 STK_SET_UNDEFINED(data->stk_vm_current);
 		// reset stack and set last stk return null;
 		data->stk_vm_current=_stk_local_var;
 

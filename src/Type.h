@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#define ZS_TYPE_NAME_UNDEFINED					"undefined"
 #define ZS_TYPE_NAME_NULL 						"null"
 #define ZS_TYPE_NAME_INT 						"int"
 #define ZS_TYPE_NAME_BOOL 						"bool"
@@ -25,6 +26,7 @@ namespace zetscript{
 		// !!! WARNING THE REGISTER HAS TO RESPECT THE SAME ORDER
 		// built-in types...
 		IDX_TYPE_CLASS_MAIN =0, 	// Main class ...
+		IDX_TYPE_UNDEFINED, 		// UNDEFINED ...
 		IDX_TYPE_NULL, 		// NULL ...
 
 

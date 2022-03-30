@@ -98,7 +98,7 @@ namespace zetscript{
 		void 						init(ZetScript *zs);
 
 		virtual StackElement 	* 	newBuiltinSlot();
-		virtual StackElement 	* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_null);
+		virtual StackElement 	* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 		bool 						unrefAndFreeStackElementContainer(StackElement *si);
 		int 						idxRefObject(ScriptObject  **_so);
 	};

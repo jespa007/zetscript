@@ -372,7 +372,7 @@ eval_error_sub_expression:
 				}else{
 					dst_instructions->push_back((zs_int)(
 						new EvalInstruction(
-							BYTE_CODE_LOAD_NULL
+							BYTE_CODE_LOAD_UNDEFINED
 						)
 					));
 

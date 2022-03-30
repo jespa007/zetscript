@@ -17,7 +17,7 @@ namespace zetscript{
 
 		zs_string str=zs_strutils::unescape(str_json->toString());
 		VirtualMachine *vm=_zs->getVirtualMachine();
-		StackElement return_stack_element=k_stk_null;
+		StackElement return_stack_element=k_stk_undefined;
 		json::JsonDeserializeData deserialize_data;
 		deserialize_data.filename=NULL;
 		deserialize_data.str_start=str.c_str();
@@ -31,7 +31,7 @@ namespace zetscript{
 				ScriptObject *so=(ScriptObject *)return_stack_element.value;
 				vm_unref_shared_script_object_and_remove_if_zero(vm,&so);
 			}
-			return_stack_element=k_stk_null;
+			return_stack_element=k_stk_undefined;
 		}
 
 		vm_push_stack_element(vm,return_stack_element);

@@ -92,7 +92,7 @@ namespace zetscript{
 
 	StackElement *ScriptObjectVector::pushNewUserSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
-		*stk=k_stk_null;
+		*stk=k_stk_undefined;
 		stk_user_elements.push_back((zs_int)stk);
 		return stk;
 	}
