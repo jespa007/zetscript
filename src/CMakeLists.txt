@@ -313,6 +313,13 @@ if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
 
 	target_link_libraries(test_callbacks${POST_NAME} zetscript${POST_NAME})
 	
+	# test_call_native_function
+	add_executable(test_call_native_function${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/test_call_native_function.cpp
+	)
+
+	target_link_libraries(test_call_native_function${POST_NAME} zetscript${POST_NAME})
+	
 	# test_all
 	add_executable(test_all${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_all.cpp
