@@ -178,19 +178,17 @@ namespace zetscript{
 				while(it->byte_code!=BYTE_CODE_END_FUNCTION){
 					if((it->byte_code==BYTE_CODE_THIS_CALL) && (it->value_op2==ZS_IDX_UNDEFINED)){
 						// search function and link its idx_position
-						const char *str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
-						Symbol *symbol_unref_this_call=sc->script_type_scope->getSymbol(str_name_unreferenced_this_call);
+						zs_string str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
 
-						if(symbol_unref_this_call == NULL){ // try to call by the name of symbol later
-							it->byte_code=BYTE_CODE_INDIRECT_THIS_CALL;
-							/*EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line_unreferenced_this_call ,"cannot call 'this.%s' because member function '%s::%s' is not declared"
-									,str_name_unreferenced_this_call
-									,sc->script_type_name.c_str()
-									,str_name_unreferenced_this_call
+						for(int i = 0; i < sc->script_type_scope->symbol_functions->count; i++){
+							Symbol *sv=(Symbol *)sc->script_type_scope->symbol_functions->items[i];
+							if(
+								   ( sv->name == str_name_unreferenced_this_call )
+							){
+								it->value_op2=(zs_int)sv;
+								break;
 
-								);*/
-						}else{
-							it->value_op2=(zs_int)symbol_unref_this_call;
+							}
 						}
 
 					}

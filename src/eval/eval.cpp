@@ -509,14 +509,15 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_THIS_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
-					Symbol *symbol_unref_this_call=sc_sf->script_type_scope->getSymbol(eval_instruction->symbol.name);
-
-					if(symbol_unref_this_call == NULL){ // try to call by the name of symbol later
-						eval_instruction->vm_instruction.byte_code=BYTE_CODE_INDIRECT_THIS_CALL;
-					}else{
-						eval_instruction->vm_instruction.value_op2=(zs_int)symbol_unref_this_call;
+					for(int i = 0; i < sc_sf->script_type_scope->symbol_functions->count; i++){
+						Symbol *sv=(Symbol *)sc_sf->script_type_scope->symbol_functions->items[i];
+						if(
+							   ( sv->name == eval_instruction->symbol.name )
+						){
+							eval_instruction->vm_instruction.value_op2=(zs_int)sv;
+							break;
+						}
 					}
-
 				}
 				break;
 			case BYTE_CODE_FIND_VARIABLE:

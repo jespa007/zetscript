@@ -218,13 +218,13 @@ namespace zetscript{
 	// SCOPE VARIABLE MANAGEMENT
 	//
 
-	Symbol * Scope::getSymbol(const zs_string & str_symbol, char n_params, uint16_t scope_direction){
+	Symbol * Scope::getSymbol(const zs_string & _str_symbol, char _n_params, uint16_t _scope_direction){
 
 		// for each variable in current scope ...
 		for(int i = 0; i < symbol_types->count; i++){
 			Symbol *sv=(Symbol *)symbol_types->items[i];
 			if(
-				   ( sv->name == str_symbol )
+				   ( sv->name == _str_symbol )
 			){
 				return sv;
 			}
@@ -233,7 +233,7 @@ namespace zetscript{
 		for(int i = 0; i < symbol_variables->count; i++){
 			Symbol *sv=(Symbol *)symbol_variables->items[i];
 			if(
-				   ( sv->name == str_symbol )
+				   ( sv->name == _str_symbol )
 			){
 				return sv;
 			}
@@ -242,30 +242,30 @@ namespace zetscript{
 		for(int i = 0; i < symbol_functions->count; i++){
 			Symbol *sv=(Symbol *)symbol_functions->items[i];
 			if(
-				   ( sv->name == str_symbol )
-			   &&  ( sv->n_params == n_params || n_params==NO_PARAMS_SYMBOL_ONLY )
+				   ( sv->name == _str_symbol )
+			   &&  ( sv->n_params == _n_params || _n_params==NO_PARAMS_SYMBOL_ONLY )
 			){
 				return sv;
 			}
 		}
 
 
-		if(scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN){
+		if(_scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN){
 			if(
 					   this->scope_parent != NULL			 	 // it says that is the end of scopes
 					&& this->scope_parent->getIdxScriptFunction() == idx_script_function // Only check repeated symbols in the same function scope context.
 			){
 				//uint16_t avoid_main=scope_direction & SCOPE_DIRECTION_AVOID_MAIN_SCOPE ? SCOPE_DIRECTION_AVOID_MAIN_SCOPE:0;
-				return this->scope_parent->getSymbol(str_symbol,n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
+				return this->scope_parent->getSymbol(_str_symbol,_n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 			}
 		}
 
-		if(scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP){
+		if(_scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP){
 			for(int i = 0; i < scopes->count; i++){
 				Scope *s=(Scope *)scopes->items[i];
 
 				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
-					Symbol *sv=s->getSymbol(str_symbol,n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP);
+					Symbol *sv=s->getSymbol(_str_symbol,_n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP);
 
 					if(sv != NULL) {
 						return sv;

@@ -1004,7 +1004,7 @@ find_element_object:
 				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=this_object->getProperty(SFI_GET_SYMBOL_NAME(calling_function,instruction));
 				 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
-					 VM_STOP_EXECUTE("'this.%s' not exist", SFI_GET_SYMBOL_NAME(calling_function,instruction)
+					 VM_STOP_EXECUTE("'variable this.%s' not exist", SFI_GET_SYMBOL_NAME(calling_function,instruction)
 					);
 				 }
 				 goto load_function;

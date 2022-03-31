@@ -138,9 +138,11 @@ namespace zetscript{
 				 symbol_value="this."+symbol_value;
 			 }else if(   instruction->byte_code==ByteCode:: BYTE_CODE_INDIRECT_GLOBAL_CALL
 					 || instruction->byte_code== BYTE_CODE_INDIRECT_LOCAL_CALL
-					 || instruction->byte_code== BYTE_CODE_INDIRECT_THIS_CALL
+
 			 ){
 				 symbol_value="@"+symbol_value;
+			 }else if(instruction->byte_code== BYTE_CODE_INDIRECT_THIS_CALL){
+				 symbol_value="@this."+symbol_value;
 			 }
 
 
@@ -335,11 +337,12 @@ namespace zetscript{
 			case BYTE_CODE_INDIRECT_THIS_CALL:
 			case BYTE_CODE_SUPER_CALL:
 			case BYTE_CODE_UNRESOLVED_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\targ:%i ret:%i %s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s%s\targ:%i ret:%i %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
+					,instruction->byte_code==BYTE_CODE_THIS_CALL && instruction->value_op2== ZS_IDX_UNDEFINED?"??":""
 					,symbol_value.c_str()
 					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
 					,INSTRUCTION_GET_RETURN_COUNT(instruction)
