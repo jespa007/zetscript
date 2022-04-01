@@ -6,7 +6,7 @@
 #include "zetscript.h"
 #include "test_all_config.h"
 
-
+#define FILENAME_FIXED_LENGTH_FORMAT 30
 
 int main(int argc, char * argv[]) {
 	zetscript::ZetScript zs;
@@ -54,7 +54,7 @@ int main(int argc, char * argv[]) {
 	printf("Testing all zetscript samples\n\n");
 	printf("-Script test path: \"%s\"\n\n",ZS_TEST_ALL_SCRIPT_TEST_PATH);
 
-
+	char file[FILENAME_FIXED_LENGTH_FORMAT+20]={0};
 	char **it=(char **)test_files;
 	int total=sizeof(test_files)/sizeof(char **);
 	int n=0;
@@ -62,15 +62,27 @@ int main(int argc, char * argv[]) {
 	int n_failed=0;
 
 	while(*it!=0){
+		sprintf(file,"%s",*it);
+		size_t len=strlen(file);
+		for(size_t i=len; i < FILENAME_FIXED_LENGTH_FORMAT; i++){
+			file[i]=' ';
+		}
+		file[FILENAME_FIXED_LENGTH_FORMAT]=0;
+
 		zetscript::zs_string filename=zetscript::zs_strutils::format("%s/%s",ZS_TEST_ALL_SCRIPT_TEST_PATH,*it);
 		// clear all vars in order to no have conflict with previous evaluations
 		zs.clear();
-		printf("Evaluating %i/%i:'%s'\n",++n,total,*it);
+		printf("* Test %2i/%02i - %s ... ",++n,total,file);
 		try{
+			if(zetscript::zs_file::exists(filename.c_str())==false){
+				throw std::runtime_error("file not exist");
+			}
+
 			zs.evalFile(filename.c_str());
 			n_success++;
+			printf("OK\n",++n,total,*it);
 		}catch(std::exception & ex){
-			fprintf(stderr,"Eval '%s' failed: '%s'\n",filename.c_str(),ex.what());
+			fprintf(stderr,"Failed: %s\n",ex.what());
 			n_failed++;
 		}
 		it++;

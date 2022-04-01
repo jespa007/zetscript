@@ -8,8 +8,7 @@ for(var it=str.iter();!it.end();it++){
 	sum_k+=k;
 	sum_v+=v;
 	
+	Console::outln("k:{0} v:{1} ",k,v);
 }
 
-System::assert(sum_k==6,"sum_k!=6")
-System::assert(sum_v=='a'+'b'+'c'+'d',"sum_v!="+str)
 

@@ -9,8 +9,7 @@ for(var it=Object::iter(o);!it.end();it++){
 	v,k=it.get();
 	rk+=k
 	rv+=v
+	
+	Console::outln("k:{0} v:{1} ",k,v);
 }
-
-System::assert(rk=="abc","rk!=abc")
-System::assert(rv=="1stringtrue","rv!=1stringtrue")
 

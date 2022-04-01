@@ -18,7 +18,6 @@ var j=
     	 a+1		//		a+1
     	 			//}
 // Should be j=3 and b=3 (b=a>4 ? a+5:a>3?a+4:a+2 --> it assigns the result of ternary which is correct. Note is not recommended doing assignations during ternari op ) 
-Console::outln("j:{0} b:{1}",j,b);
 System::assert(j==3,"j!=3");
 System::assert(b==3,"b!=3");
 		  
