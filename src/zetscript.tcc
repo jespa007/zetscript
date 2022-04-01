@@ -105,6 +105,8 @@ namespace zetscript{
 			}else{
 
 				switch(GET_STK_PROPERTY_TYPES(stack_element->properties)){
+				case STK_PROPERTY_NULL:
+					break;
 				case STK_PROPERTY_BOOL:
 					if(idx_builtin_type == IDX_TYPE_BOOL_C){// *ScriptType::k_str_bool_type){
 						val_ret=(zs_int)(stack_element->value);
