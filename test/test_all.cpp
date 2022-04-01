@@ -56,7 +56,7 @@ int main(int argc, char * argv[]) {
 
 	char file[FILENAME_FIXED_LENGTH_FORMAT+20]={0};
 	char **it=(char **)test_files;
-	int total=sizeof(test_files)/sizeof(char **);
+	int total=sizeof(test_files)/sizeof(char **)-1;
 	int n=0;
 	int n_success=0;
 	int n_failed=0;
@@ -80,7 +80,7 @@ int main(int argc, char * argv[]) {
 
 			zs.evalFile(filename.c_str());
 			n_success++;
-			printf("OK\n",++n,total,*it);
+			printf("OK\n");
 		}catch(std::exception & ex){
 			fprintf(stderr,"Failed: %s\n",ex.what());
 			n_failed++;
@@ -89,6 +89,6 @@ int main(int argc, char * argv[]) {
 	}
 
 	printf("\n");
-	printf("Tests success: %i of %i!\n",n_success,n);
-	printf("Tests failed: %i of %i!\n",n_failed,n);
+	printf("Tests success: %i of %i!\n",n_success,total);
+	printf("Tests failed: %i of %i!\n",n_failed,total);
 }
