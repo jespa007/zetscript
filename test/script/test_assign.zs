@@ -34,7 +34,7 @@ System::assert(c==2,"Test1. c!=2");
 a,b,c=3,4
 System::assert(a==3,"Test2. a!=3");
 System::assert(b==4,"Test2. b!=4");
-System::assert(c==null,"Test2. c!=null");
+System::assert(c==undefined,"Test2. c!=undefined");
 
 // test 3: multi-assigment: ignore excess of assigments on the right
 a,b,c=3,4,5,6,7,8,9
@@ -58,4 +58,4 @@ System::assert(c==3,"Test5. c!=3");
 a,b,c=ret_expression_sequence_2()
 System::assert(a==1,"Test6. a!=1");
 System::assert(b==2,"Test6. b!=2");
-System::assert(c==null,"Test6. c!=null");
+System::assert(c==undefined,"Test6. c!=undefined");

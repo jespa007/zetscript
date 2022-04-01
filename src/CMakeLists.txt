@@ -17,29 +17,9 @@ MACRO(INSTALL_HEADERS_WITH_DIRECTORY HEADER_LIST)
 
 ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
 
-# Copy files from source directory to destination directory, substituting any
-# variables.  Create destination directory if it does not exist.
-
-macro(configure_files srcDir destDir)
-    message(STATUS "Configuring directory ${destDir}")
-    make_directory(${destDir})
-
-    file(GLOB templateFiles RELATIVE ${srcDir} ${srcDir}/*)
-    foreach(templateFile ${templateFiles})
-        set(srcTemplatePath ${srcDir}/${templateFile})
-        if(NOT IS_DIRECTORY ${srcTemplatePath})
-            message(STATUS "Configuring file ${srcTemplatePath} to ${destDir}/${templateFile}")
-            configure_file(
-                    ${srcTemplatePath}
-                    ${destDir}/${templateFile}
-                    COPYONLY)
-        endif(NOT IS_DIRECTORY ${srcTemplatePath})
-    endforeach(templateFile)
-endmacro(configure_files)
-
 #-------------------------------------------------------------------------------------------------
 #
-# COMMON PARAMS
+# CONFIGURE FILES
 #
 
 if("${FLOAT_PRECISION}" STREQUAL "DOUBLE")
@@ -52,6 +32,15 @@ endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/config.h)
 
+set( ZS_TEST_ALL_SCRIPT_TEST_PATH		"${PROJECT_SOURCE_DIR}/../test/script" )
+MESSAGE("-- Script test path: " ${ZS_TEST_ALL_SCRIPT_TEST_PATH}  )
+
+configure_file(${PROJECT_SOURCE_DIR}/../test/test_all_config.h.in ${PROJECT_SOURCE_DIR}/../test/test_all_config.h)
+
+#-------------------------------------------------------------------------------------------------
+#
+# COMMON PARAMS
+#
 
 include_directories (
 	${PROJECT_SOURCE_DIR}

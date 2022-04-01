@@ -4,62 +4,79 @@
  */
 
 #include "zetscript.h"
+#include "test_all_config.h"
+
 
 
 int main(int argc, char * argv[]) {
 	zetscript::ZetScript zs;
 
+	// get all files in the path
+
 	// test all external tests...
 	const char *test_files[]={
 		//"samples/assert_error.zs"
-		"samples/assign.zs"
-		,"samples/class_property.zs"
-		,"samples/class_inheritance_call.zs"
-		,"samples/class_metamethod.zs"
-		,"samples/const.zs"
-		,"samples/datetime.zs"
-		,"samples/eval.zs"
-		,"samples/for_in_object.zs"
-		,"samples/for_in_string.zs"
-		,"samples/for_in_vector.zs"
-		,"samples/function_arg_by_ref.zs"
-		,"samples/function_arg_default.zs"
-		,"samples/function.zs"
-		,"samples/if_else.zs"
-		,"samples/import.zs"
-		,"samples/in.zs"
-		,"samples/instanceof.zs"
-		,"samples/iterator_object.zs"
-		,"samples/iterator_string.zs"
-		,"samples/iterator_vector.zs"
-		,"samples/json.zs"
-		,"samples/loops_break_continue.zs"
-		,"samples/loops.zs"
-		,"samples/object.zs"
-		,"samples/return.zs"
-		,"samples/string.zs"
-		,"samples/switch.zs"
-		,"samples/ternary.zs"
-		,"samples/typeof.zs"
-		,"samples/vector.zs"
-		,"samples/zs_int.zs"
+		"test_assign.zs"
+		,"test_class_property.zs"
+		,"test_class_inheritance_call.zs"
+		,"test_class_metamethod.zs"
+		,"test_const.zs"
+		,"test_datetime.zs"
+		,"test_eval.zs"
+		,"test_for_in_object.zs"
+		,"test_for_in_string.zs"
+		,"test_for_in_vector.zs"
+		,"test_function_arg_by_ref.zs"
+		,"test_function_arg_default.zs"
+		,"test_function.zs"
+		,"test_if_else.zs"
+		,"test_import.zs"
+		,"test_in.zs"
+		,"test_instanceof.zs"
+		,"test_iterator_object.zs"
+		,"test_iterator_string.zs"
+		,"test_iterator_vector.zs"
+		,"test_json.zs"
+		,"test_loops_break_continue.zs"
+		,"test_loops.zs"
+		,"test_object.zs"
+		,"test_return.zs"
+		,"test_string.zs"
+		,"test_switch.zs"
+		,"test_ternary.zs"
+		,"test_typeof.zs"
+		,"test_vector.zs"
+		,"test_integer_values.zs"
 		,0
 	};
 
-	printf("======================================\n");
-	printf("Testing all zetscript samples\n");
+	printf("======================================\n\n");
+	printf("Testing all zetscript samples\n\n");
+	printf("-Script test path: \"%s\"\n\n",ZS_TEST_ALL_SCRIPT_TEST_PATH);
+
 
 	char **it=(char **)test_files;
 	int total=sizeof(test_files)/sizeof(char **);
-	int n=1;
+	int n=0;
+	int n_success=0;
+	int n_failed=0;
 
 	while(*it!=0){
+		zetscript::zs_string filename=zetscript::zs_strutils::format("%s/%s",ZS_TEST_ALL_SCRIPT_TEST_PATH,*it);
 		// clear all vars in order to no have conflict with previous evaluations
 		zs.clear();
-		printf("Evaluating %i/%i:'%s'\n",n++,total,*it);
-		zs.evalFile(*it);
+		printf("Evaluating %i/%i:'%s'\n",++n,total,*it);
+		try{
+			zs.evalFile(filename.c_str());
+			n_success++;
+		}catch(std::exception & ex){
+			fprintf(stderr,"Eval '%s' failed: '%s'\n",filename.c_str(),ex.what());
+			n_failed++;
+		}
 		it++;
 	}
 
-	printf("All tests passed OK!\n");
+	printf("\n");
+	printf("Tests success: %i of %i!\n",n_success,n);
+	printf("Tests failed: %i of %i!\n",n_failed,n);
 }
