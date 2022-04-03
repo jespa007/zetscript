@@ -135,7 +135,9 @@ namespace zetscript{
 		StackElement * registerStkStringObject(const zs_string & key_name,const zs_string & const_name);
 		StackElement * getStkStringObject(const zs_string & const_name);
 
-
+		inline zs_map * getCompiledSymbolName(){
+			return compiled_symbol_name;
+		}
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
@@ -503,6 +505,8 @@ namespace zetscript{
 		int idx_current_global_variable_checkpoint;
 		int idx_current_global_function_checkpoint;
 		int idx_current_script_types_checkpoint;
+
+		zs_map	*compiled_symbol_name;
 
 		//===================================================================================================
 		//

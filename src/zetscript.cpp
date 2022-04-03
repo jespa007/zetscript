@@ -37,6 +37,8 @@ namespace zetscript{
 
 		stk_constants=new zs_map();
 		script_filenames_by_ref=new zs_map();
+
+		compiled_symbol_name = new zs_map();
 		//-------------------------
 		// Register built in modules
 
@@ -657,10 +659,16 @@ namespace zetscript{
 			script_filenames_by_ref=NULL;
 		}
 
-		eval_deinit();
-
 		resetParsedFiles();
 
 		functions_with_unresolved_symbols.clear();
+
+		// clear compiled symbol name
+		for(auto it=compiled_symbol_name->begin();!it.end(); it.next()){
+				delete (zs_string *)it.value;
+		}
+		delete compiled_symbol_name;
+		compiled_symbol_name=NULL;
+
 	}
 }

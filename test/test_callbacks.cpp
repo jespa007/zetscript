@@ -61,6 +61,9 @@ void test_callback(
 }
 
 void test_call_script_c_script(zetscript::ZetScript *_zs){
+
+	zetscript::ZetScript zs;
+
 	// 1s combination: Script -> C -> Script
 	// bind 'test_callback' receives a 'ScriptFunction' pointer type
 	_zs->bindFunction("test_callback",static_cast<void (*)(zetscript::ZetScript *_zs,zetscript::ScriptFunction *_script_function)>(test_callback));
@@ -111,6 +114,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs){
 
 void test_call_c_script_c(zetscript::ZetScript *_zs){
 
+
 	// 2nd test calling from C->Script->C
 	_zs->bindFunction("test_function_1st_c_call",test_function_1st_c_call);
 	// test calling script-c-script-c
@@ -134,19 +138,15 @@ void test_call_c_script_c(zetscript::ZetScript *_zs){
 }
 
 
-
+#ifdef __MAIN__
 int main(){
-
-	// instances ZetScript
 	zetscript::ZetScript zs;
-
 	try{
-
 		test_call_script_c_script(&zs);
 		test_call_c_script_c(&zs);
-
 	}catch(std::exception & ex){
-		fprintf(stderr,"%s\n",ex.what());
+		fprintf(stderr,ex.what());
 	}
-
+	return 0;
 }
+#endif

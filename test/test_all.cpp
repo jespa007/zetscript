@@ -6,89 +6,159 @@
 #include "zetscript.h"
 #include "test_all_config.h"
 
-#define FILENAME_FIXED_LENGTH_FORMAT 30
+#include "test_arithmetic_constants.cpp"
+#include "test_arithmetic_metamethods.cpp"
+#include "test_arithmetic_common.cpp"
+#include "test_arithmetic_vars.cpp"
+#include "test_call_native_function.cpp"
+#include "test_callbacks.cpp"
+#include "test_consecutive_evals.cpp"
+
+
+
+#define MAX_TEST_NAME_FIXED_LENGTH 30
+
+#ifdef __DEBUG__
+const char *post_exe_name="_d";
+#else
+const char *post_exe_name="";
+#endif
 
 int main(int argc, char * argv[]) {
 	zetscript::ZetScript zs;
 
+
+	printf("======================================\n\n");
+	printf("Testing native samples\n\n");
+
 	// get all files in the path
+	typedef struct{
+		const char *name;
+		void (* fun)(zetscript::ZetScript *_zs);
+	}TestNativeFunctionIterator;
+
+	TestNativeFunctionIterator test_native_functions[]={
+		 {"test_arithmetic_constants",test_arithmetic_constants_no_print}				// 1
+		,{"test_arithmetic_metamethods",test_arithmetic_metamethods_no_print}			// 2
+		,{"test_arithmetic_vars",test_arithmetic_vars_no_print}							// 3
+		,{"test_call_native_function_with_nulls",test_call_native_function_with_nulls}	// 4
+		,{"test_call_script_c_script",test_call_script_c_script}						// 5
+		,{"test_call_c_script_c",test_call_c_script_c}									// 6
+		,{"test_anonymous_scopes",test_anonymous_scopes_no_print}						// 7
+		,{"test_consistency_function_override",test_consistency_function_override}		// 8
+		,{0,0}
+	};
+	char name[MAX_TEST_NAME_FIXED_LENGTH+20]={0};
+	TestNativeFunctionIterator *it_test_native_functions=(TestNativeFunctionIterator *)test_native_functions;
+	int test_native_total=sizeof(test_native_functions)/sizeof(TestNativeFunctionIterator)-1;
+	int n=0;
+	int n_test_native_success=0;
+	int n_test_native_failed=0;
+
+	while(it_test_native_functions->name!=0){
+		sprintf(name,"%s",it_test_native_functions->name);
+		size_t len=strlen(name);
+		for(size_t i=len; i < MAX_TEST_NAME_FIXED_LENGTH; i++){
+			name[i]=' ';
+		}
+		name[MAX_TEST_NAME_FIXED_LENGTH]=0;
+
+
+		printf("* Test native %2i/%i - %s ... ",++n,test_native_total,name);
+		try{
+			it_test_native_functions->fun(&zs);
+			n_test_native_success++;
+			printf("OK\n");
+		}catch(std::exception & ex){
+			fprintf(stderr,"Failed: %s\n",ex.what());
+			n_test_native_failed++;
+		}
+		it_test_native_functions++;
+	}
+
+
+	printf("======================================\n\n");
+	printf("Testing script samples\n\n");
+	printf("-Script test path: \"%s\"\n\n",ZS_TEST_ALL_SCRIPT_TEST_PATH);
 
 	// test all external tests...
-	const char *test_files[]={
+	const char *test_script_files[]={
 		//"samples/assert_error.zs"
-		"test_assign.zs"
-		,"test_class_property.zs"
-		,"test_class_inheritance_call.zs"
-		,"test_class_metamethod.zs"
-		,"test_const.zs"
-		,"test_datetime.zs"
-		,"test_eval.zs"
-		,"test_for_in_object.zs"
-		,"test_for_in_string.zs"
-		,"test_for_in_vector.zs"
-		,"test_function_arg_by_ref.zs"
-		,"test_function_arg_default.zs"
-		,"test_function.zs"
-		,"test_if_else.zs"
-		,"test_import.zs"
-		,"test_in.zs"
-		,"test_instanceof.zs"
-		,"test_iterator_object.zs"
-		,"test_iterator_string.zs"
-		,"test_iterator_vector.zs"
-		,"test_json.zs"
-		,"test_loops_break_continue.zs"
-		,"test_loops.zs"
-		,"test_object.zs"
-		,"test_return.zs"
-		,"test_string.zs"
-		,"test_switch.zs"
-		,"test_ternary.zs"
-		,"test_typeof.zs"
-		,"test_vector.zs"
-		,"test_integer_values.zs"
+		"test_assign"
+		,"test_class_property"
+		,"test_class_inheritance_call"
+		,"test_class_metamethod"
+		,"test_const"
+		,"test_datetime"
+		,"test_eval"
+		,"test_for_in_object"
+		,"test_for_in_string"
+		,"test_for_in_vector"
+		,"test_function_arg_by_ref"
+		,"test_function_arg_default"
+		,"test_function"
+		,"test_if_else"
+		,"test_import"
+		,"test_in"
+		,"test_instanceof"
+		,"test_iterator_object"
+		,"test_iterator_string"
+		,"test_iterator_vector"
+		,"test_json"
+		,"test_loops_break_continue"
+		,"test_loops"
+		,"test_object"
+		,"test_return"
+		,"test_string"
+		,"test_switch"
+		,"test_ternary"
+		,"test_typeof"
+		,"test_vector"
+		,"test_integer_values"
 		,0
 	};
 
-	printf("======================================\n\n");
-	printf("Testing all zetscript samples\n\n");
-	printf("-Script test path: \"%s\"\n\n",ZS_TEST_ALL_SCRIPT_TEST_PATH);
+	char **it_test_script_files=(char **)test_script_files;
 
-	char file[FILENAME_FIXED_LENGTH_FORMAT+20]={0};
-	char **it=(char **)test_files;
-	int total=sizeof(test_files)/sizeof(char **)-1;
-	int n=0;
-	int n_success=0;
-	int n_failed=0;
+	n=0;
+	int test_script_total=sizeof(test_script_files)/sizeof(char **)-1;
+	int n_test_script_success=0;
+	int n_test_script_failed=0;
 
-	while(*it!=0){
-		sprintf(file,"%s",*it);
-		size_t len=strlen(file);
-		for(size_t i=len; i < FILENAME_FIXED_LENGTH_FORMAT; i++){
-			file[i]=' ';
+	while(*it_test_script_files!=0){
+		sprintf(name,"%s",*it_test_script_files);
+		size_t len=strlen(name);
+		for(size_t i=len; i < MAX_TEST_NAME_FIXED_LENGTH; i++){
+			name[i]=' ';
 		}
-		file[FILENAME_FIXED_LENGTH_FORMAT]=0;
+		name[MAX_TEST_NAME_FIXED_LENGTH]=0;
 
-		zetscript::zs_string filename=zetscript::zs_strutils::format("%s/%s",ZS_TEST_ALL_SCRIPT_TEST_PATH,*it);
 		// clear all vars in order to no have conflict with previous evaluations
 		zs.clear();
-		printf("* Test %2i/%02i - %s ... ",++n,total,file);
+		printf("* Test script %2i/%i - %s ... ",++n,test_script_total,name);
 		try{
+			zetscript::zs_string filename=zetscript::zs_strutils::format("%s/%s.zs",ZS_TEST_ALL_SCRIPT_TEST_PATH,*it_test_script_files);
+
 			if(zetscript::zs_file::exists(filename.c_str())==false){
 				throw std::runtime_error("file not exist");
 			}
 
 			zs.evalFile(filename.c_str());
-			n_success++;
+			n_test_script_success++;
 			printf("OK\n");
 		}catch(std::exception & ex){
 			fprintf(stderr,"Failed: %s\n",ex.what());
-			n_failed++;
+			n_test_script_failed++;
 		}
-		it++;
+		it_test_script_files++;
 	}
 
+
 	printf("\n");
-	printf("Tests success: %i of %i!\n",n_success,total);
-	printf("Tests failed: %i of %i!\n",n_failed,total);
+	printf("Native tests success: %i of %i!\n",n_test_native_success,test_native_total);
+	printf("Native tests failed: %i of %i!\n",n_test_native_failed,test_native_total);
+
+	printf("\n");
+	printf("Script tests success: %i of %i!\n",n_test_script_success,test_script_total);
+	printf("Script tests failed: %i of %i!\n",n_test_script_failed,test_script_total);
 }

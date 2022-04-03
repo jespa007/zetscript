@@ -288,8 +288,6 @@ namespace zetscript{
 
 
 	bool g_init_eval=false;
-	zs_map	 	*compiled_symbol_name=NULL;
-
 
 	char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,  Scope *scope_info,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
 	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const zs_string & symbol_to_find);
@@ -528,10 +526,10 @@ namespace zetscript{
 
 	zs_string * get_mapped_name(EvalData *eval_data, const zs_string & _mapped_name){
 		ZS_UNUSUED_PARAM(eval_data);
-		zs_int e=compiled_symbol_name->get(_mapped_name.c_str());
+		zs_int e=eval_data->zs->getCompiledSymbolName()->get(_mapped_name.c_str());
 		if(e==0){
 			zs_string *s=new zs_string (_mapped_name);
-			compiled_symbol_name->set(s->c_str(),(zs_int)(s));
+			eval_data->zs->getCompiledSymbolName()->set(s->c_str(),(zs_int)(s));
 			e=(zs_int)s;
 		}
 		return ((zs_string *)e);
@@ -886,21 +884,13 @@ namespace zetscript{
 		eval_data_directives[DIRECTIVE_UNKNOWN]={DIRECTIVE_UNKNOWN, NULL};
 		eval_data_directives[DIRECTIVE_IMPORT]={DIRECTIVE_IMPORT, "import"};
 
-		compiled_symbol_name=new zs_map();//std::map<zs_string,zs_string *>;
 
 		g_init_eval=true;
 	}
 
 	void eval_deinit(){
 		if(g_init_eval){
-
-			for(auto it=compiled_symbol_name->begin();!it.end(); it.next()){
-					delete (zs_string *)it.value;
-			}
-
-			delete compiled_symbol_name;
-			compiled_symbol_name=NULL;
-
+			g_init_eval=false;
 		}
 	}
 

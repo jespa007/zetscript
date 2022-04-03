@@ -4,9 +4,10 @@
  */
 #include "zetscript.h"
 
-void test_anonymous_scopes(
-		zetscript::ZetScript *_zs
-		){
+
+void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
+
+
 	_zs->eval("var a1=1\n");
 	_zs->eval("{var b=0}\n");
 	_zs->eval("var a2=2\n");
@@ -41,7 +42,7 @@ void test_anonymous_scopes(
 	for(int i=0; i < main_scope->symbol_variables->count; i++){
 		zetscript::Symbol *s=(zetscript::Symbol *)main_scope->symbol_variables->items[i];
 		zetscript::zs_string str_to_compare="a"+zetscript::zs_strutils::zs_int_to_str(s->idx_position+1);
-		printf("%s %i\n",s->name.c_str(),(s->idx_position+1));
+		if(_show_print) printf("%s %i\n",s->name.c_str(),(s->idx_position+1));
 		if(s->name != str_to_compare){
 			throw new std::runtime_error(zetscript::zs_strutils::format("Symbol are not ordered ('%s' != '%s')",s->name.c_str(),str_to_compare.c_str()).c_str());
 		}
@@ -54,9 +55,11 @@ void test_anonymous_scopes(
 }
 
 
-void test_consistency_function_override(
-	zetscript::ZetScript *_zs
-){
+void test_anonymous_scopes_no_print(zetscript::ZetScript *_zs){
+	test_anonymous_scopes(_zs,false);
+}
+
+void test_consistency_function_override(zetscript::ZetScript *_zs){
 
 	_zs->eval(
 		"class A{\n"
@@ -89,22 +92,20 @@ void test_consistency_function_override(
 	_zs->eval(
 			"new B()"
 	);
-
 }
 
 
+#ifdef __MAIN__
 int main(){
-
-	// instances ZetScript
 	zetscript::ZetScript zs;
 
 	try{
-
-		test_consistency_function_override(&zs);
 		test_anonymous_scopes(&zs);
-
+		test_consistency_function_override(&zs);
 	}catch(std::exception & ex){
-		fprintf(stderr,"%s\n",ex.what());
+		fprintf(stderr,ex.what());
 	}
-
+	return 0;
 }
+#endif
+

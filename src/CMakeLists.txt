@@ -210,7 +210,7 @@ add_executable(zs${POST_NAME}
 )
 target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
 
-if ((SUIT_SAMPLES) OR (NOT DEFINED SUIT_SAMPLES))
+if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
 
 	# helloworld
 	add_executable(helloworld${POST_NAME}
@@ -244,71 +244,64 @@ if ((SUIT_SAMPLES) OR (NOT DEFINED SUIT_SAMPLES))
 endif()
 
 
-if ((SUIT_TEST) OR (NOT DEFINED SUIT_TEST))
+if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 	MESSAGE ("-- Suit test: Yes")
 
 	if(false)
 	
-
-	# test_call_script_function
-	add_executable(test_call_script_function${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_call_script_function.cpp
+	#-----------------------------------------------
+	# test register_constants
+	add_executable(test_register_constant${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/test_register_constant.cpp
 	)
+	target_compile_definitions(test_register_constant${POST_NAME} PUBLIC -D__MAIN__ )
+	target_link_libraries(test_register_constant${POST_NAME} zetscript${POST_NAME})
 	
-	target_link_libraries(test_call_script_function${POST_NAME} zetscript${POST_NAME})
-	
-	
-	# register_constants
-	add_executable(register_constant${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/register_constant.cpp
-	)
-	
-	target_link_libraries(register_constant${POST_NAME} zetscript${POST_NAME})
-	
+	#-----------------------------------------------
 	# test_consecutive_evals
 	add_executable(test_consecutive_evals${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_consecutive_evals.cpp
 	)
-
+	target_compile_definitions(test_consecutive_evals${POST_NAME} PUBLIC -D__MAIN__ ) 
 	target_link_libraries(test_consecutive_evals${POST_NAME} zetscript${POST_NAME})
-	
+
+	#-----------------------------------------------
 	# test arithmetic constants
 	add_executable(test_arithmetic_constants${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/test_arithmetic_common.cpp
 		${PROJECT_SOURCE_DIR}/../test/test_arithmetic_constants.cpp
 	)
-
+	target_compile_definitions(test_arithmetic_constants${POST_NAME} PUBLIC -D__MAIN__ )
 	target_link_libraries(test_arithmetic_constants${POST_NAME} zetscript${POST_NAME})
 	
+	#-----------------------------------------------
 	# test arithmetic vars
 	add_executable(test_arithmetic_vars${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/test_arithmetic_common.cpp
 		${PROJECT_SOURCE_DIR}/../test/test_arithmetic_vars.cpp
 	)
-
+	
+	target_compile_definitions(test_arithmetic_vars${POST_NAME} PUBLIC -D__MAIN__ )
 	target_link_libraries(test_arithmetic_vars${POST_NAME} zetscript${POST_NAME})
 	
 	endif()
 	
+	#-----------------------------------------------
 	# test arithmetic metamethods
 	add_executable(test_arithmetic_metamethods${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/test_arithmetic_common.cpp
 		${PROJECT_SOURCE_DIR}/../test/test_arithmetic_metamethods.cpp
 	)
-
+	target_compile_definitions(test_arithmetic_metamethods${POST_NAME} PUBLIC -D__MAIN__ )
 	target_link_libraries(test_arithmetic_metamethods${POST_NAME} zetscript${POST_NAME})
-	
+	#-----------------------------------------------
 	# test_callbacks
 	add_executable(test_callbacks${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_callbacks.cpp
 	)
-
+	target_compile_definitions(test_callbacks${POST_NAME} PUBLIC -D__MAIN__ )
 	target_link_libraries(test_callbacks${POST_NAME} zetscript${POST_NAME})
-	
-	# test_call_native_function
-	add_executable(test_call_native_function${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_call_native_function.cpp
-	)
-
-	target_link_libraries(test_call_native_function${POST_NAME} zetscript${POST_NAME})
-	
+	#-----------------------------------------------
 	# test_all
 	add_executable(test_all${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_all.cpp

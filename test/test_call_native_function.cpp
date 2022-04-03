@@ -2,6 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
+
 #include "zetscript.h"
 
 class A{
@@ -25,6 +26,7 @@ void test_native_function_with_nulls(
 }
 
 void test_call_native_function_with_nulls(zetscript::ZetScript *_zs){
+
 	// bind type A
 	_zs->bindType<A>("A");
 
@@ -44,17 +46,18 @@ void test_call_native_function_with_nulls(zetscript::ZetScript *_zs){
 }
 
 
+
+#ifdef __MAIN__
 int main(){
-
-	// instances ZetScript
 	zetscript::ZetScript zs;
-
 	try{
-
 		test_call_native_function_with_nulls(&zs);
-
 	}catch(std::exception & ex){
-		fprintf(stderr,"%s\n",ex.what());
+		fprintf(stderr,ex.what());
+		return -1;
 	}
-
+	return 0;
 }
+#endif
+
+
