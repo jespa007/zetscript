@@ -24,28 +24,9 @@ namespace zetscript{
 	void 			ScriptObjectVectorWrap_insertAt(ZetScript *_zs,ScriptObjectVector *sv, zs_int idx,StackElement  * _stk){
 
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
-		*new_stk=*_stk;
-		VirtualMachine *vm=_zs->getVirtualMachine();
+		stk_assign(_zs,new_stk,_stk);
+
 		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
-
-		// update n_refs +1
-		if(_stk->properties&STK_PROPERTY_SCRIPT_OBJECT){
-			ScriptObject *so_param=(ScriptObject *)_stk->value;
-			if(so_param->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
-				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
-				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(_zs);
-				if(!vm_create_shared_pointer(vm,sc)){
-					return;
-				}
-				sc->set(so_param->toString());
-				so_param=sc;
-				new_stk->value=(zs_int)so_param; // update pointer
-			}
-
-			vm_share_pointer(vm,so_param);
-
-		}
-
 		stk_user_list_elements->insert(idx,(zs_int)new_stk);
 	}
 

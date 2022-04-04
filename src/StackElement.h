@@ -112,6 +112,7 @@ namespace zetscript{
 
 	zs_string 		stk_to_str(ZetScript *_zs, StackElement *_stk,const zs_string & _format="");
 	zs_string		stk_to_typeof_str(ZetScript *_zs, StackElement *_stk);
+	void			stk_assign(ZetScript *_zs,StackElement *_stk_dst, StackElement *_stk_src);
 
 
 	#pragma pack(pop)

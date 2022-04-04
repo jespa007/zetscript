@@ -125,6 +125,32 @@ namespace zetscript{
 
 	}
 
+	void			stk_assign(ZetScript *_zs,StackElement *_stk_dst, StackElement *_stk_src){
+		*_stk_dst=*_stk_src;
+
+		// update n_refs +1
+		if(_stk_src->properties&STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject *so=(ScriptObject *)_stk_src->value;
+			VirtualMachine *vm=_zs->getVirtualMachine();
+			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so->shared_pointer==NULL){
+				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
+				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(_zs);
+				if(!vm_create_shared_pointer(vm,sc)){
+					return;
+				}
+				sc->set(so->toString());
+				so=sc;
+			}
+
+			vm_share_pointer(vm,so);
+
+			// assign object value into stk
+			_stk_dst->value=(zs_int)so;
+			_stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+		}
+	}
+
+
 	zs_int	StackElement::toInt(){
 		if((this->properties & STK_PROPERTY_ZS_INT)==0){
 			THROW_RUNTIME_ERRORF("StackElement not is not int");

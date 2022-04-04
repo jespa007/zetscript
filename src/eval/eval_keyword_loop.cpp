@@ -615,6 +615,9 @@ namespace zetscript{
 					));
 				}
 
+				// restore string iterator and current linep and test_aux
+				aux_p=test_aux;
+				line=test_line;
 			}
 		}
 		// END FOR-VAR IN PROCESS

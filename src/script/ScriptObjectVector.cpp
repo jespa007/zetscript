@@ -97,15 +97,9 @@ namespace zetscript{
 		return stk;
 	}
 
+
 	void ScriptObjectVector::push(StackElement  * _stk){
-
-		StackElement *new_stk=pushNewUserSlot();
-		*new_stk=*_stk;
-
-		// update n_refs +1
-		if(_stk->properties&STK_PROPERTY_SCRIPT_OBJECT){
-			vm_share_pointer(vm,(ScriptObject *)(_stk->value));
-		}
+		stk_assign(zs,pushNewUserSlot(),_stk);
 	}
 
 	void ScriptObjectVector::pop(){
