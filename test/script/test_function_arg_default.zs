@@ -1,5 +1,7 @@
 function f(a,b=0,c){
-	Console::outln("{0} {1} {2}",a,b,c)
+	
+	System::assert(b==0,"b!=0");
+	System::assert(c==undefined,"c!=undefined");
 }
 
 f(0)

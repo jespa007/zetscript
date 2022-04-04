@@ -57,6 +57,11 @@ namespace zetscript{
 
 		zs_string error_accessor_tokens;
 
+		if(strncmp(s,"time_main = 5000",strlen("time_main = 5000"))==0){
+			int i=0;
+			i++;
+		}
+
 
 		IGNORE_BLANKS(aux_p,eval_data,s,line);
 

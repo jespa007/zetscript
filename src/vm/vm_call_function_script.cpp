@@ -159,7 +159,7 @@ namespace zetscript{
 						}
 						else{
 							ScriptObjectObject *so_object = (ScriptObjectObject *)obj;
-							if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==false){ \
+							if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==0){ \
 								VM_STOP_EXECUTEF("Expected string for object access");
 							}
 							stk_var = so_object->getProperty(stk_to_str(data->zs, stk_result_op2));

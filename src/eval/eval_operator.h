@@ -81,12 +81,12 @@ namespace zetscript{
 		OPERATOR_LOGIC_OR, 										// ||
 
 		// RELATIONAL
-		OPERATOR_EQUAL, 									// ==
-		OPERATOR_NOT_EQUAL, 								// !=
-		OPERATOR_GTE, 									// >=
-		OPERATOR_LTE, 									// <=
-		OPERATOR_GT, 										// >
-		OPERATOR_LT, 										// <
+		OPERATOR_EQUAL, 										// ==
+		OPERATOR_NOT_EQUAL, 									// !=
+		OPERATOR_GTE, 											// >=
+		OPERATOR_LTE, 											// <=
+		OPERATOR_GT, 											// >
+		OPERATOR_LT, 											// <
 
 		// ARITHMETIC
 		OPERATOR_ADD, 											// +

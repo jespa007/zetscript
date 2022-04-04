@@ -8,33 +8,19 @@ class A{
 	
 }
 
-var b1=false
-var b2=true
-var s1="abc"
-
-var i=10
-var test_in=[
-	"0 in [3,2,1,1,0]"
-	,"20 in [3,2,1,1,0]"
-	,"s1 in [3,2,1,1,\"abcd\",0]"
-	,"s1 in [3,2,1,1,\"abc\",0]"
-	,"b1 in [3,2,1,1,\"abc\",0,true]"
-	,"b2 in [3,2,1,1,\"abc\",0,false]"
-	,"b1 in [3,2,1,1,\"abc\",0,false]"
-	,"b2 in [3,2,1,1,\"abc\",0,true]"
-	,"\"a\" in {k:'a',a:0}"
-	,"\"b\" in {k:'a',a:0}"
-	,"\"abc\" in \"aaaabcdef\""
-	,"\"abce\" in \"aaaabcdef\""
-	,"'a' in \"jdkjakdkk\""
-	,"'b' in \"jdkjakdkk\""
-	,"i in new A()"
-	,"0 in new A()"
-];
-
-
-for(var v in test_in){
-	Console::outln("{0}:{1}",v,System::eval(v))
-}
+System::assert(0 in [3,2,1,1,0] == true,"(0 in [3,2,1,1,0]) != true")
+System::assert(20 in [3,2,1,1,0] == false,"(20 in [3,2,1,1,0]) != false")
+System::assert("abc" in [3,2,1,1,"abc",0]==true,"\"abc\" in [3,2,1,1,\"abc\",0]!=true")
+System::assert("abc" in [3,2,1,1,"abcd",0]==false,"\"abc\" in [3,2,1,1,\"abcd\",0]!=false")
+System::assert(false in [3,2,1,1,"abc",0,false]==true,"false in [3,2,1,1,\"abc\",0,false]!=true")
+System::assert(true in [3,2,1,1,"abc",0,true]==false,"true in [3,2,1,1,\"abc\",0,true]!=false")
+System::assert('a' in {k:'a',a:0}==true,"'a' in {k:'a',a:0}!=true")
+System::assert('b' in {k:'a',a:0}==false,"'b' in {k:'a',a:0}!=false")
+System::assert("abc" in "aaaabcdef"==true,"\"abc\" in \"aaaabcdef\"!=true")
+System::assert("abce" in "aaaabcdef"==false,"\"abce\" in \"aaaabcdef\"!=false")
+System::assert('a' in "jdkjakdkk"==true,"'a' in \"jdkjakdkk\"!=true")
+System::assert('b' in "jdkjakdkk"==false,"'b' in \"jdkjakdkk\"!=false")
+System::assert(10 in new A()==true,"i in new A()!=true")
+System::assert(0 in new A()==false,"0 in new A()!=false")
 
 

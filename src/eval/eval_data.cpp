@@ -537,7 +537,8 @@ namespace zetscript{
 
 	bool  is_end_symbol_token(char *s, char pre=0){
 
-		return    is_operator(s)!=Operator::OPERATOR_UNKNOWN
+		Operator _operator=is_operator(s);
+		return    (_operator!=Operator::OPERATOR_UNKNOWN && _operator!=Operator::OPERATOR_INSTANCEOF && _operator!=Operator::OPERATOR_IN)
 			   || is_post_operation(s)!=PostOperation::POST_OPERATION_UNKNOWN
 			   || is_separator(s)!=Separator::SEPARATOR_UNKNOWN
 			   || is_special_char(s)
