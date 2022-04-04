@@ -15,7 +15,9 @@ namespace zetscript{
 
 	zs_int SystemModule_clock(ZetScript *_zs){
 		ZS_UNUSUED_PARAM(_zs);
-		return std::clock()*(1000.0f/CLOCKS_PER_SEC);
+		//return std::clock()*(1000.0f/CLOCKS_PER_SEC);
+		//return std::chrono::system_clock::now();
+		return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 	}
 
 	void SystemModule_makeReadOnly(ZetScript *_zs,StackElement *stk){
