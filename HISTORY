@@ -266,6 +266,7 @@ Solved issues
 #325 evaluation inherited class doesn't update references from its parent 
 #326 Constructor member as named "constructor" 
 > #328 Improve one to multi-assigment 
+> #330 When try to access property member from native class it gives a bad message 
 
 //----------------------------------------------------------
 Version: 1.3.0
