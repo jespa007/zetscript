@@ -295,6 +295,13 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 	target_compile_definitions(test_arithmetic_metamethods${POST_NAME} PUBLIC -D__MAIN__ )
 	target_link_libraries(test_arithmetic_metamethods${POST_NAME} zetscript${POST_NAME})
 	#-----------------------------------------------
+	# test_call_native_functions
+	add_executable(test_call_native_functions${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/test_call_native_functions.cpp
+	)
+	target_compile_definitions(test_call_native_functions${POST_NAME} PUBLIC -D__MAIN__ )
+	target_link_libraries(test_call_native_functions${POST_NAME} zetscript${POST_NAME})	
+	#-----------------------------------------------
 	# test_callbacks
 	add_executable(test_callbacks${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_callbacks.cpp

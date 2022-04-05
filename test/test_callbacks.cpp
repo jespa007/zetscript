@@ -145,7 +145,7 @@ int main(){
 		test_call_script_c_script(&zs);
 		test_call_c_script_c(&zs);
 	}catch(std::exception & ex){
-		fprintf(stderr,ex.what());
+		fprintf(stderr,"%s\n",ex.what());
 	}
 	return 0;
 }
