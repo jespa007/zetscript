@@ -2,43 +2,6 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-/*
-#define ZS_CHECK_TEST_MEMBER_FUNCTION_PARAMETER(STR_CLASS_NAME,STR_FUNCTION_NAME,STR_EXPECTED_TYPE_NAME,PLACE_PARAM,STR_PLACE_PARAM)\
-		ScriptType * c_class_arg=	params_len<PLACE_PARAM?getScriptType(params[PLACE_PARAM].idx_script_type):NULL;\
-		if(c_class_arg == NULL){\
-			THROW_RUNTIME_ERROR("register native member function '%s::%s': needs to have "STR_PLACE_PARAM" parameter as pointer type '%s')"\
-				,STR_CLASS_NAME\
-				,STR_FUNCTION_NAME\
-				,STR_EXPECTED_TYPE_NAME\
-			);\
-		}\
-		if(strcmp(c_class_arg->script_type_name_ptr,STR_EXPECTED_TYPE_NAME)!=0){\
-			THROW_RUNTIME_ERROR(\
-				"register native member function '%s::%s': expected to have "STR_PLACE_PARAM" parameter as pointer type '%s' but it was '%s')"\
-				,STR_CLASS_NAME\
-				,STR_FUNCTION_NAME\
-				,STR_EXPECTED_TYPE_NAME\
-				,params[PLACE_PARAM].name.c_str()\
-			);\
-		}\
-
-#define ZS_CHECK_TEST_FUNCTION_PARAMETER(STR_FUNCTION_NAME,STR_EXPECTED_TYPE_NAME,PLACE_PARAM,STR_PLACE_PARAM)\
-		ScriptType * c_class_first_arg=	params_len<PLACE_PARAM?getScriptType(params[PLACE_PARAM].idx_script_type):NULL;\
-		if(c_class_first_arg == NULL){\
-			THROW_RUNTIME_ERROR("register native function '%s': needs to have "STR_PLACE_PARAM" parameter as pointer type '%s')"\
-				,STR_FUNCTION_NAME\
-				,STR_EXPECTED_TYPE_NAME\
-			);\
-		}\
-		if(strcmp(c_class_first_arg->script_type_name_ptr,STR_EXPECTED_TYPE_NAME)!=0){\
-			THROW_RUNTIME_ERROR(\
-				"register native function '%s': expected to have "STR_PLACE_PARAM" parameter as pointer type '%s' but it was '%s')"\
-				,STR_FUNCTION_NAME\
-				,STR_EXPECTED_TYPE_NAME\
-				,params[PLACE_PARAM].name.c_str()\
-			);\
-		}\
-*/
 namespace zetscript{
 
 	template < typename R>
@@ -150,8 +113,6 @@ namespace zetscript{
 				,params[1].name.c_str()
 			);
 		}
-
-		//ZS_CHECK_TEST_MEMBER_FUNCTION_PARAMETER(this->script_type_name,_function_name,this->script_type_name_ptr,1,"SECOND")
 
 		// register member function...
 		this->registerMemberFunction(

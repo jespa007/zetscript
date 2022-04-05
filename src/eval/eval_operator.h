@@ -14,9 +14,7 @@
 
 #define OPERATOR_GROUP_1(operator_type) \
 (\
-	(operator_type) == OPERATOR_IN \
-|| 	(operator_type) == OPERATOR_INSTANCEOF \
-||  (operator_type) == OPERATOR_EQUAL \
+    (operator_type) == OPERATOR_EQUAL \
 || 	(operator_type) == OPERATOR_NOT_EQUAL \
 || 	(operator_type) == OPERATOR_GTE \
 || 	(operator_type) == OPERATOR_LTE \
@@ -28,6 +26,8 @@
 ( \
 (operator_type) == OPERATOR_ADD \
 || 	(operator_type) == OPERATOR_SUB \
+||	(operator_type) == OPERATOR_IN \
+|| 	(operator_type) == OPERATOR_INSTANCEOF \
 )
 
 #define OPERATOR_GROUP_3(operator_type) \

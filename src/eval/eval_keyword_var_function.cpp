@@ -4,14 +4,14 @@
  */
 #include "eval.h"
 
+
+
 namespace zetscript{
 
-	#define EVAL_KEYWORD_VAR_ALLOW_IN 0x1
-
-	static int n_anonymous_function=0;
+	static int k_anonymous_function=0;
 
 	zs_string eval_anonymous_function_name(const zs_string &pre_name="",const zs_string &post_name=""){
-		return "_"+(pre_name==""?"":pre_name)+"@afun_"+(post_name==""?"":post_name+"_")+zs_strutils::zs_int_to_str(n_anonymous_function++);
+		return "_"+(pre_name==""?"":pre_name)+"@afun_"+(post_name==""?"":post_name+"_")+zs_strutils::zs_int_to_str(k_anonymous_function++);
 	}
 
 

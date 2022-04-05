@@ -13,11 +13,6 @@ namespace zetscript{
 		Keyword op=eval_is_keyword(s);
 		return !is_anonymous_function(eval_data,s,line) && (is_end_expression(s) || (op<Keyword::KEYWORDS_WITHIN_EXPRESSIONS && op !=Keyword::KEYWORD_UNKNOWN));
 	}
-	/*
-	bool is_end_expression_with_cr(const char * s){
-		ZS_UNUSUED_PARAM(s);
-		return false;
-	}*/
 
 	void eval_deallocate_tokens(zs_vector 	& token_nodes){
 		for(int i=0; i < token_nodes.count; i++){

@@ -7,7 +7,6 @@
 
 namespace zetscript{
 
-
 	// to zs_string utils ...
 	char * eval_symbol(EvalData *eval_data
 			,const char *start_word

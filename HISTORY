@@ -13,10 +13,11 @@ TODOS
 > #246 Erase code never execute or temporal expresion that will never assigned
 > #287 Some optimizations
 > #320 Optimize use of KR,RK 
+> #328 Improve one to multi-assigment
 
 //----------------------------------------------------------
 Version: 2.0.0
-Date: XX-01-2022 (Expected to finish on end of january)
+Date: XX-XX-2022 (Expected to finish on end of abril)
 
 Main improvements: 
 
@@ -265,13 +266,13 @@ Solved issues
 #324 Mandatory Zetscript *_zs first param for to all binding functions 
 #325 evaluation inherited class doesn't update references from its parent 
 #326 Constructor member as named "constructor" 
-> #328 Improve one to multi-assigment 
-> #330 When try to access property member from native class it gives a bad message 
+> #330 When try to access property member from native class it gives a non apropiate message 
+#332 Operation XXX "in" YYYY "==" boolean_value, not evals first "in" and then "=="
+> #331 Operation to find native member functions for call always returns first function from instance and ignores inherited functions with same name and diferents signatures 
 
 //----------------------------------------------------------
 Version: 1.3.0
 Date: 30-03-2018
-
 
 #48 Optimize compile process.
 #47 Implement interactive console (zs).

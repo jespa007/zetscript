@@ -4,8 +4,6 @@
  */
 namespace zetscript{
 
-	int n_anonymouse_function=0;
-
 	//zs_string * 	get_mapped_name(EvalData *eval_data,const zs_string * symbol_name);
 	zs_string * get_mapped_name(const zs_string & s);
 	char 		*	eval_expression(

@@ -86,7 +86,6 @@ namespace zetscript{
 		for(int i=0; i <stk_user_elements.count; i++){
 			ScriptObject::unrefAndFreeStackElementContainer((StackElement *)stk_user_elements.items[i]);
 		}
-
 		stk_user_elements.clear();
 	}
 
@@ -96,7 +95,6 @@ namespace zetscript{
 		stk_user_elements.push_back((zs_int)stk);
 		return stk;
 	}
-
 
 	void ScriptObjectVector::push(StackElement  * _stk){
 		stk_assign(zs,pushNewUserSlot(),_stk);
@@ -113,7 +111,6 @@ namespace zetscript{
 
 		// push current vm
 		vm_push_stack_element(vm,stk_element);
-
 	}
 
 	zs_string ScriptObjectVector::toString(){
@@ -122,9 +119,6 @@ namespace zetscript{
 	}
 
 	ScriptObjectVector::~ScriptObjectVector(){
-
 		eraseAllUserElements();
-
-
 	}
 }
