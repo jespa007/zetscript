@@ -74,13 +74,13 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				){ \
 					if(member_property != NULL){ \
 						VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-								,so_aux->getScriptType()->script_type_name.c_str()\
+								,so_aux->getScriptType()->str_script_type.c_str()\
 								,member_property->property_name.c_str()\
 								,__STR_ADD_SET_METAMETHOD__\
 						);\
 					}else{\
 						VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
-								,so_aux->getScriptType()->script_type_name.c_str() \
+								,so_aux->getScriptType()->str_script_type.c_str() \
 								,__STR_ADD_SET_METAMETHOD__\
 						);\
 					}\
@@ -185,13 +185,13 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				){ \
 					if(member_property!=NULL){ \
 						VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-								,so_aux->getScriptType()->script_type_name.c_str()\
+								,so_aux->getScriptType()->str_script_type.c_str()\
 								,member_property->property_name.c_str()\
 								,__STR_ARITHMETIC_SET_METAMETHOD__\
 						);\
 					}else{\
 						VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
-								,so_aux->getScriptType()->script_type_name.c_str() \
+								,so_aux->getScriptType()->str_script_type.c_str() \
 								,__STR_ARITHMETIC_SET_METAMETHOD__\
 						);\
 					}\
@@ -305,13 +305,13 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				){ \
 					if(member_property != NULL){ \
 						VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-								,so_aux->getScriptType()->script_type_name.c_str()\
+								,so_aux->getScriptType()->str_script_type.c_str()\
 								,member_property->property_name.c_str()\
 								,__STR_DIV_SET_METAMETHOD__\
 						);\
 					}else{\
 						VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
-								,so_aux->getScriptType()->script_type_name.c_str() \
+								,so_aux->getScriptType()->str_script_type.c_str() \
 								,__STR_DIV_SET_METAMETHOD__\
 						);\
 					}\
@@ -426,13 +426,13 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				){ \
 					if(member_property != NULL){ \
 						VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-								,so_aux->getScriptType()->script_type_name.c_str()\
+								,so_aux->getScriptType()->str_script_type.c_str()\
 								,member_property->property_name.c_str()\
 								,__STR_MOD_SET_METAMETHOD__\
 						);\
 					}else{\
 						VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
-								,so_aux->getScriptType()->script_type_name.c_str() \
+								,so_aux->getScriptType()->str_script_type.c_str() \
 								,__STR_MOD_SET_METAMETHOD__\
 						);\
 					}\
@@ -520,13 +520,13 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			){ \
 				if(member_property!=NULL){ \
 					VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-							,so_aux->getScriptType()->script_type_name.c_str()\
+							,so_aux->getScriptType()->str_script_type.c_str()\
 							,member_property->property_name.c_str()\
 							,__STR_ARITHMETIC_SET_METAMETHOD__\
 					);\
 				}else{\
 					VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
-							,so_aux->getScriptType()->script_type_name.c_str() \
+							,so_aux->getScriptType()->str_script_type.c_str() \
 							,__STR_ARITHMETIC_SET_METAMETHOD__\
 					);\
 				}\

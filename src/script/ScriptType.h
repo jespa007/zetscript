@@ -21,9 +21,9 @@ namespace zetscript{
 	public:
 
 		int 			idx_script_type; 	// registered class idx
-		zs_string 		script_type_name;		// info symbol class
-		Scope			*script_type_scope;
-		const char 		*script_type_name_ptr; // type_id().name();
+		zs_string 		str_script_type;		// info symbol class
+		Scope			*scope_script_type;
+		const char 		*str_script_type_ptr; // type_id().name();
 		uint16_t		properties;
 
 		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be property members or script member vars
@@ -47,7 +47,7 @@ namespace zetscript{
 				 ,short _idx_script_type
 				 , zs_string _name
 				 , Scope *_scope
-				 ,const char *  script_type_name_ptr=TYPE_SCRIPT_VARIABLE
+				 ,const char *  str_script_type_ptr=TYPE_SCRIPT_VARIABLE
 				 ,uint16_t _properties=0
 		);
 
@@ -157,6 +157,7 @@ namespace zetscript{
 
 		const char *getTypeName();
 
+		void printListFunctions();
 		bool isNativeType();
 		bool isNonInstantiable();
 

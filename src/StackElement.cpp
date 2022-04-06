@@ -39,11 +39,11 @@ namespace zetscript{
 			result=zs_string("type@")+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_PROPERTY(stk)){
 			MemberProperty *ma=(MemberProperty *)stk->value;
-			result="attr@"+ma->script_type->script_type_name+"::"+ma->property_name;
+			result="attr@"+ma->script_type->str_script_type+"::"+ma->property_name;
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-			result="fun@"+sf->scope_script_function->script_type_owner->script_type_name+"::"+sf->name_script_function;
+			result="fun@"+sf->scope_script_function->script_type_owner->str_script_type+"::"+sf->name_script_function;
 		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
@@ -95,7 +95,7 @@ namespace zetscript{
 				}else{
 					s=zs_string("member_function<");
 				}
-				result=s+st->script_type_name+"::"+symbol->name+">";
+				result=s+st->str_script_type+"::"+symbol->name+">";
 			}
 
 			/*if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
@@ -114,7 +114,7 @@ namespace zetscript{
 				}else if(so->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
 					ScriptObjectMemberFunction *somf=(ScriptObjectMemberFunction *)so;
 					ScriptType *st=somf->so_object->getScriptType();
-					result= zs_string("member_function<")+st->script_type_name+"::"+somf->so_function->name_script_function+">";
+					result= zs_string("member_function<")+st->str_script_type+"::"+somf->so_function->name_script_function+">";
 				}else{
 					result=so->toString();
 				}

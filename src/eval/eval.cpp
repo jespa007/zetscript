@@ -461,7 +461,7 @@ namespace zetscript{
 				// get current function name and find first ancestor in heritance
 				// find constructor symbol through other members...
 				for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
-					Symbol *symbol_member = (Symbol *)sc_sf->script_type_scope->symbol_functions->items[j];
+					Symbol *symbol_member = (Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
 					ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 					bool match_names=sf_member->name_script_function == sf->name_script_function;
 					bool match_params=(sf_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
@@ -481,7 +481,7 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent constructor of '%s'"
-							,sc_sf->script_type_name.c_str()
+							,sc_sf->str_script_type.c_str()
 						);
 					}else{
 						EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
@@ -489,7 +489,7 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent function '%s::%s'"
-							,sc_sf->script_type_name.c_str()
+							,sc_sf->str_script_type.c_str()
 							,sf->name_script_function.c_str()
 						);
 					}
@@ -498,7 +498,7 @@ namespace zetscript{
 				eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(
 						eval_data
 						,zs_string(
-								symbol_sf_foundf->scope->script_type_owner->script_type_name)+"::"+symbol_sf_foundf->name);
+								symbol_sf_foundf->scope->script_type_owner->str_script_type)+"::"+symbol_sf_foundf->name);
 
 				break;
 			case BYTE_CODE_CALL:
@@ -509,8 +509,8 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_THIS_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
-					for(int i = 0; i < sc_sf->script_type_scope->symbol_functions->count; i++){
-						Symbol *sv=(Symbol *)sc_sf->script_type_scope->symbol_functions->items[i];
+					for(int i = 0; i < sc_sf->scope_script_type->symbol_functions->count; i++){
+						Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->items[i];
 						if(
 							   ( sv->name == eval_instruction->symbol.name )
 						){

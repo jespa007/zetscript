@@ -57,7 +57,7 @@ namespace zetscript{
 		// init builtin
 		if(idx_script_type >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_script_type<IDX_TYPE_SCRIPT_OBJECT_CLASS){
 			ScriptType *script_type=getScriptType();
-			zs_vector *symbol_vars=script_type->script_type_scope->symbol_variables;
+			zs_vector *symbol_vars=script_type->scope_script_type->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
 			for ( int i = 0; i < symbol_vars->count; i++){
@@ -93,11 +93,11 @@ namespace zetscript{
 	}
 
 	const zs_string & ScriptObject::getTypeName(){
-		return getScriptType()->script_type_name;
+		return getScriptType()->str_script_type;
 	}
 
 	const char * ScriptObjectClass::getTypeNamePtr(){
-		return getScriptType()->script_type_name_ptr;
+		return getScriptType()->str_script_type_ptr;
 	}
 
 	bool ScriptObject::isNativeObject(){
@@ -149,7 +149,7 @@ namespace zetscript{
 
 	Symbol 	* ScriptObject::getScriptFunctionSymbol(const zs_string & _function_member_name){
 		ScriptType *script_type=getScriptType();
-		zs_vector *s=script_type->script_type_scope->symbol_functions;
+		zs_vector *s=script_type->scope_script_type->symbol_functions;
 		for(int i=s->count-1;i>=0;i--){
 			Symbol *symbol=(Symbol *)s->items[i];
 			if(symbol->name == _function_member_name){

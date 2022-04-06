@@ -173,7 +173,7 @@ namespace zetscript{
 		const char * return_type;
 		zs_vector args;
 		zs_string error="";
-		zs_string name_script_function=_script_type==NULL?_function_name:_script_type->script_type_name+"::"+_function_name;
+		zs_string name_script_function=_script_type==NULL?_function_name:_script_type->str_script_type+"::"+_function_name;
 		// 1. check all parameters ok.
 		using Traits3 = FunctionTraits<decltype(_ptr_function)>;
 		getParamsFunction<Traits3>(&return_type, args, MakeIndexSequence<Traits3::arity>{});

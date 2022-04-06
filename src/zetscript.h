@@ -180,8 +180,8 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		ScriptType * bindType(const zs_string & script_type_name, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *registered_file="",short registered_line=-1){
-			return script_type_factory->bindType<C>(script_type_name, _constructor, _destructor, registered_file,registered_line);
+		ScriptType * bindType(const zs_string & str_script_type, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *registered_file="",short registered_line=-1){
+			return script_type_factory->bindType<C>(str_script_type, _constructor, _destructor, registered_file,registered_line);
 		}
 
 		/**

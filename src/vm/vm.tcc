@@ -365,8 +365,8 @@ namespace zetscript{
 		int stk_elements_builtin_len=  data->main_function_object->scope_script_function->symbol_functions->count;// vector of symbols
 
 		if(class_obj != NULL){
-			stk_elements_builtin_ptr=class_obj->script_type_scope->symbol_functions->items;
-			stk_elements_builtin_len=class_obj->script_type_scope->symbol_functions->count;
+			stk_elements_builtin_ptr=class_obj->scope_script_type->symbol_functions->items;
+			stk_elements_builtin_len=class_obj->scope_script_type->symbol_functions->count;
 
 		}
 
@@ -478,7 +478,7 @@ namespace zetscript{
 		}
 
 		if(ptr_function_found == NULL){
-			zs_string class_str=class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?class_obj->script_type_name:"";
+			zs_string class_str=class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?class_obj->str_script_type:"";
 			int n_candidates=0;
 			zs_string str_candidates="";
 			zs_string function_name_not_found=class_str==""?symbol_to_find.c_str():zs_strutils::format("%s::%s",class_str.c_str(),symbol_to_find.c_str());
@@ -528,7 +528,7 @@ namespace zetscript{
 						}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
 							aux_string = ((ScriptObjectClass *)current_arg->value)->getTypeNamePtr();
 						}else{*/ // object
-							aux_string = ((ScriptObject *)current_arg->value)->getScriptType()->script_type_name_ptr;
+							aux_string = ((ScriptObject *)current_arg->value)->getScriptType()->str_script_type_ptr;
 						//}
 						break;
 					}
@@ -560,7 +560,7 @@ namespace zetscript{
 
 					// class if not mail
 					if(class_obj!=NULL && class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN){
-						str_candidates.append(class_obj->script_type_name.c_str());
+						str_candidates.append(class_obj->str_script_type.c_str());
 						str_candidates.append("::");
 					}
 
@@ -661,7 +661,7 @@ namespace zetscript{
 		const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
 		zs_string error_found="";
 		ScriptObject *script_object=NULL;
-		zs_string script_type_name_object_found="";
+		zs_string str_script_type_object_found="";
 		int n_stk_args=is_static?2:1;
 		int n_stk_local_symbols=0;
 		StackElement *stk_return=NULL;
@@ -676,16 +676,16 @@ namespace zetscript{
 		// op1/op2 should be the object that have the metamethod
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)){
 			script_object=(ScriptObject *)stk_result_op1->value;
-			script_type_name_object_found=script_object->getTypeName();
+			str_script_type_object_found=script_object->getTypeName();
 		}else if ((is_static==true) && (stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)){
 			script_object=(ScriptObject *)stk_result_op2->value;
-			script_type_name_object_found=script_object->getTypeName();
+			str_script_type_object_found=script_object->getTypeName();
 
 		}
 
 
 		if(script_object == NULL){ // cannot perform operation
-			if(script_type_name_object_found.empty()){ // not any object found
+			if(str_script_type_object_found.empty()){ // not any object found
 				// Because script elements can return "null" due undefined properties, do not show any error to not confuse.
 				// If is an internal error, fix!
 			}else{
@@ -693,7 +693,7 @@ namespace zetscript{
 					error_found=zs_strutils::format("Unable to perform '==' operator for case conditional");
 				}else{
 					error_found=zs_strutils::format("Type '%s' does not implements metamethod '%s'"
-						,script_type_name_object_found.c_str()
+						,str_script_type_object_found.c_str()
 						,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
 					);
 				}

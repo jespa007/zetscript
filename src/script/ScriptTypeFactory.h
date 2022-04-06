@@ -20,7 +20,7 @@
 #define SCRIPT_OBJECT_ITERATOR_OBJECT(data)				((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT))
 
 //#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_FUNCTION))
-#define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_type_factory)->getScriptType(idx)->script_type_name_ptr)
+#define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_type_factory)->getScriptType(idx)->str_script_type_ptr)
 
 
 namespace zetscript{
@@ -60,7 +60,7 @@ namespace zetscript{
 		  * Class management region
 		  */
 		ScriptType * 					registerScriptType(
-											 const zs_string & script_type_name
+											 const zs_string & str_script_type
 											,const zs_string & base_class_name=""
 											,uint16_t _properties=0
 											,const char * file=""
@@ -87,7 +87,7 @@ namespace zetscript{
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
-		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & script_type_name);
+		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & str_script_type);
 		ScriptObject 			* 			instanceScriptObjectByTypeIdx(short  idx_script_type, void * value_object = NULL);
 
 		/**
@@ -123,7 +123,7 @@ namespace zetscript{
 		 */
 		template<typename C>
 		ScriptType * bindType(
-			const zs_string & script_type_name
+			const zs_string & str_script_type
 			, C * (*_constructor)(ZetScript *_zs)=NULL
 			, void (*_destructor)(ZetScript *_zs,C *)=NULL
 			, const char *registered_file=""
@@ -360,7 +360,7 @@ namespace zetscript{
 
 		int 							idx_clear_checkpoint;
 
-		void							checkScriptTypeName(const zs_string & script_type_name);
+		void							checkScriptTypeName(const zs_string & str_script_type);
 		PrimitiveType *					getPrimitiveTypeFromStr(const zs_string & str);
 
 

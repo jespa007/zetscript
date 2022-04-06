@@ -23,6 +23,15 @@ public:
     }
 };
 
+class ClassC:public ClassB{
+public:
+    void fun1(bool _b,bool _show_print){
+    	if(_show_print){
+    		printf("from C: %s\n",_b?"true":"false");
+    	}
+    }
+};
+
 ClassA *ClassAWrap_new(zetscript::ZetScript *_zs){
 	return new ClassA;
 }
@@ -48,13 +57,32 @@ void ClassBWrap_delete(zetscript::ZetScript *_zs,ClassB *_this){
 	delete _this;
 }
 
+ClassC *ClassCWrap_new(zetscript::ZetScript *_zs){
+	return new ClassC;
+}
+
+void ClassCWrap_fun1(zetscript::ZetScript *_zs, ClassC *_c, bool *_b,bool *_show_print){
+  _c->fun1(*_b,*_show_print);
+}
+
+void ClassCWrap_delete(zetscript::ZetScript *_zs,ClassC *_this){
+	delete _this;
+}
+
 //------------------------------
 // TEST NATIVE CALL FUNCTION MEMBER
 
 void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true){
 
 	_zs->eval(
-		zetscript::zs_strutils::format("(new ClassB()).fun1(\"hello world\",%s)",_show_print?"true":"false")
+		zetscript::zs_strutils::format(
+				"(new ClassC()).fun1(\"hello world\",%s)\n"
+				//"(new ClassC()).fun1(1.5,%s)\n"
+				//"(new ClassC()).fun1(false,%s)\n"
+				,_show_print?"true":"false"
+				,_show_print?"true":"false"
+				,_show_print?"true":"false"
+		)
 	);
 
 }
@@ -93,8 +121,9 @@ void test_call_native_function_with_nulls(zetscript::ZetScript *_zs){
 
 void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	_zs->bindType<ClassA>("ClassA",ClassAWrap_new,ClassAWrap_delete);
-	_zs->bindType<ClassB>("ClassB",ClassBWrap_new,ClassBWrap_delete);
+	auto a=_zs->bindType<ClassA>("ClassA",ClassAWrap_new,ClassAWrap_delete);
+	auto b=_zs->bindType<ClassB>("ClassB",ClassBWrap_new,ClassBWrap_delete);
+	auto c=_zs->bindType<ClassC>("ClassC",ClassCWrap_new,ClassCWrap_delete);
 
 	_zs->bindMemberFunction<ClassA>("fun1",ClassAWrap_fun1);
 
@@ -102,7 +131,20 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	_zs->bindMemberFunction<ClassB>("fun1",ClassBWrap_fun1);
 
+	_zs->nativeTypeInheritsFrom<ClassC,ClassA>();
+	_zs->nativeTypeInheritsFrom<ClassC,ClassB>();
+	//_zs->nativeTypeInheritsFrom<ClassC,ClassB>();
+
+	_zs->bindMemberFunction<ClassC>("fun1",ClassCWrap_fun1);
+
+
 	_zs->bindFunction("test_native_function_with_nulls",test_native_function_with_nulls);
+
+	a->printListFunctions();
+
+	b->printListFunctions();
+
+	c->printListFunctions();
 
 
 	test_call_native_function_with_nulls(_zs);

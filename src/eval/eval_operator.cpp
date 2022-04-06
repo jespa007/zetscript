@@ -35,7 +35,6 @@ namespace zetscript{
 		case Operator::OPERATOR_ASSIGN_SHIFT_RIGHT:
 			return ByteCode::BYTE_CODE_SHR_STORE;
 
-
 		// arithmetic ops
 		case Operator::OPERATOR_ADD:
 			return ByteCode::BYTE_CODE_ADD;
@@ -79,14 +78,9 @@ namespace zetscript{
 			return ByteCode::BYTE_CODE_INSTANCEOF;
 		case Operator::OPERATOR_IN:
 			return ByteCode::BYTE_CODE_IN;
-
 		}
-
-
 		return ByteCode::BYTE_CODE_INVALID;
 	}
-
-
 
 	const char * eval_operator_to_str(Operator op){
 		switch(op){

@@ -216,7 +216,7 @@ namespace zetscript{
 										))==0
 									){//c_class->idx_script_type==idx_builtin_type){
 										error = "cannot convert '";
-										error.append(zs_rtti::demangle(c_class->script_type_name_ptr));
+										error.append(zs_rtti::demangle(c_class->str_script_type_ptr));
 										error.append("' to '");
 										error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
 										error.append("'");

@@ -221,7 +221,7 @@ namespace zetscript{
 				if(symbol_aux==NULL){ // it calls overrided function (top-most)
 					 VM_STOP_EXECUTE("Error load 'this.%s': Cannot find '%s::%s' member function"
 							,((Symbol *)instruction->value_op2)->name.c_str()
-							,this_object->getScriptType()->script_type_name.c_str()
+							,this_object->getScriptType()->str_script_type.c_str()
 							,((Symbol *)instruction->value_op2)->name.c_str()
 					);
 				 }
@@ -240,7 +240,7 @@ namespace zetscript{
 				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
 					VM_PUSH_STK_UNDEFINED;
 				}else{
-					data->stk_vm_current->value= so_aux->getScriptType()->script_type_scope->symbol_functions->items[instruction->value_op2];
+					data->stk_vm_current->value= so_aux->getScriptType()->scope_script_type->symbol_functions->items[instruction->value_op2];
 					data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 					data->stk_vm_current++;
 				}
@@ -568,13 +568,13 @@ find_element_object:
 								,1))==NULL){ \
 							if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
 								VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-										,so_aux->getScriptType()->script_type_name.c_str()\
+										,so_aux->getScriptType()->str_script_type.c_str()\
 										,stk_mp->member_property->property_name.c_str()\
 										,__STR_SETTER_METAMETHOD__\
 								);\
 							}else{\
 								VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
-										,so_aux->getScriptType()->script_type_name.c_str() \
+										,so_aux->getScriptType()->str_script_type.c_str() \
 										,__STR_SETTER_METAMETHOD__\
 								);\
 							}\
@@ -993,7 +993,7 @@ find_element_object:
 				 if(symbol_aux==NULL){ // it calls overrided function (top-most)
 					 VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-							,this_object->getScriptType()->script_type_name.c_str()
+							,this_object->getScriptType()->str_script_type.c_str()
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 					);
 				 }
@@ -1306,7 +1306,7 @@ execute_function:
 								||
 							(sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)!=0
 						){
-							str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->script_type_name.c_str();
+							str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->str_script_type.c_str();
 						}
 						const char * file_src_call=SFI_GET_FILE(calling_function,instruction);
 						data->vm_error_callstack_str+=zs_strutils::format(
@@ -1442,7 +1442,7 @@ execute_function:
 							so_class_aux->instruction_new=instruction;
 
 							// check for constructor
-							 constructor_function=sc->getSymbolMemberFunction(sc->script_type_name);
+							 constructor_function=sc->getSymbolMemberFunction(sc->str_script_type);
 
 							 if(constructor_function != NULL){
 								 data->stk_vm_current->value=(zs_int)constructor_function;
@@ -1558,22 +1558,22 @@ execute_function:
 					const char *str_end_class=NULL;
 
 					if((str_end_class=strstr(ptr_str_symbol_to_find,"::"))!=NULL){ // static access
-						char script_type_name[512]={0};
+						char str_script_type[512]={0};
 
-						strncpy(script_type_name,ptr_str_symbol_to_find,str_end_class-ptr_str_symbol_to_find);
+						strncpy(str_script_type,ptr_str_symbol_to_find,str_end_class-ptr_str_symbol_to_find);
 
 
-						if(data->zs->getScriptTypeFactory()->getScriptType(script_type_name) == NULL){
+						if(data->zs->getScriptTypeFactory()->getScriptType(str_script_type) == NULL){
 							VM_STOP_EXECUTE(
 									"class '%s' not exist"
-									,script_type_name
+									,str_script_type
 							);
 						}
 
 						VM_STOP_EXECUTE(
 								"static symbol '%s' not exist in '%s'"
 								,str_end_class+2
-								,script_type_name
+								,str_script_type
 						);
 					}else{
 						VM_STOP_EXECUTE(

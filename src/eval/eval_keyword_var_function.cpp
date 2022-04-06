@@ -202,7 +202,7 @@ namespace zetscript{
 				scope_var = MAIN_SCOPE(eval_data);
 
 				if(sc!=NULL){
-					pre_variable_name=sc->script_type_name+"::";
+					pre_variable_name=sc->str_script_type+"::";
 				}
 			}else if(sc != NULL){
 				sf_field_initializer=sc->sf_field_initializer;
@@ -359,7 +359,7 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->script_type_name.c_str()).c_str():""
+							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->str_script_type.c_str()).c_str():""
 							,variable_name.c_str());
 				}
 
@@ -482,7 +482,7 @@ error_eval_keyword_var:
 				   );
 
 				   if(sc!=NULL){ // scope is the class
-					   scope_info=sc->script_type_scope;
+					   scope_info=sc->scope_script_type;
 				   }
 				}
 
@@ -529,7 +529,7 @@ error_eval_keyword_var:
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
 					,scope_info->script_type_owner != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
 							"declaring function member '%s::%s'"
-							,scope_info->script_type_owner->script_type_name.c_str()
+							,scope_info->script_type_owner->str_script_type.c_str()
 							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
 							).c_str():"declaring function"
 							,*aux_p
@@ -540,7 +540,7 @@ error_eval_keyword_var:
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
 							,scope_info->script_type_owner != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
 									"declaring function member '%s::%s'"
-									,scope_info->script_type_owner->script_type_name.c_str()
+									,scope_info->script_type_owner->str_script_type.c_str()
 									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
 									).c_str():"declaring function"
 
@@ -723,7 +723,7 @@ error_eval_keyword_var:
 				if(custom_symbol_name != ""){
 					name_script_function=custom_symbol_name;
 				}else{
-					name_script_function=eval_anonymous_function_name();//sc!=NULL?sc->script_type_name:"");
+					name_script_function=eval_anonymous_function_name();//sc!=NULL?sc->str_script_type:"");
 				}
 			}
 
