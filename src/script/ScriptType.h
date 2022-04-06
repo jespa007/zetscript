@@ -157,7 +157,7 @@ namespace zetscript{
 
 		const char *getTypeName();
 
-		void printListFunctions();
+		void printListMemberFunctions();
 		bool isNativeType();
 		bool isNonInstantiable();
 

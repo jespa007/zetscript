@@ -48,7 +48,7 @@ namespace zetscript{
 
 	}
 
-	void ScriptType::printListFunctions(){
+	void ScriptType::printListMemberFunctions(){
 		Scope *scope=this->scope_script_type;
 		for(int i=0; i < scope->symbol_functions->count;i++){
 			Symbol *symbol = (Symbol *)scope->symbol_functions->items[i];

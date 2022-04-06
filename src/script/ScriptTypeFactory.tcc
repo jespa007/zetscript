@@ -148,7 +148,7 @@ namespace zetscript{
 
 
 	template<class C,class B>
-	void ScriptTypeFactory::nativeTypeInheritsFrom(){
+	void ScriptTypeFactory::nativeTypeExtendsFrom(){
 
 		const char *base_class_name=typeid(B).name();
 		const char * base_class_name_ptr=typeid(B *).name();
@@ -183,7 +183,7 @@ namespace zetscript{
 		for(int i=0; i < main_class->idx_base_types->count; i++){
 			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base class...
 			if(sc->str_script_type_ptr ==base_class_name_ptr){
-				THROW_RUNTIME_ERROR("native type '%s' already inherits from '%s' "
+				THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
 						,zs_rtti::demangle(str_script_type).c_str()
 						, zs_rtti::demangle(base_class_name).c_str());
 			}
@@ -197,7 +197,7 @@ namespace zetscript{
 			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base class...
 			// check whether type inherits inheritates B
 			if(sc->isDerivedFrom(idx_base_type)){
-				THROW_RUNTIME_ERROR("Type '%s' cannot be inherited by '%s' because '%s' inherits '%s' that already is inherited by '%s'"
+				THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' inherits '%s' that already is inherited by '%s'"
 					,zs_rtti::demangle(str_script_type).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 					,zs_rtti::demangle(str_script_type).c_str()
@@ -207,7 +207,7 @@ namespace zetscript{
 			}
 			// check the viceversa, if B inheritates inherited types of main_class
 			if(base->isDerivedFrom(sc->idx_script_type)){
-				THROW_RUNTIME_ERROR("Type '%s' cannot be inherited by '%s' because '%s' has inherited type '%s' that also is inherited by '%s'"
+				THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' has inherited type '%s' that also is inherited by '%s'"
 					,zs_rtti::demangle(str_script_type).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 					,zs_rtti::demangle(str_script_type).c_str()

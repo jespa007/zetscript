@@ -127,24 +127,24 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	_zs->bindMemberFunction<ClassA>("fun1",ClassAWrap_fun1);
 
-	_zs->nativeTypeInheritsFrom<ClassB,ClassA>();
+	_zs->nativeTypeExtendsFrom<ClassB,ClassA>();
 
 	_zs->bindMemberFunction<ClassB>("fun1",ClassBWrap_fun1);
 
-	_zs->nativeTypeInheritsFrom<ClassC,ClassA>();
-	_zs->nativeTypeInheritsFrom<ClassC,ClassB>();
-	//_zs->nativeTypeInheritsFrom<ClassC,ClassB>();
+	_zs->nativeTypeExtendsFrom<ClassC,ClassA>();
+	_zs->nativeTypeExtendsFrom<ClassC,ClassB>();
+	//_zs->nativeTypeExtendsFrom<ClassC,ClassB>();
 
 	_zs->bindMemberFunction<ClassC>("fun1",ClassCWrap_fun1);
 
 
 	_zs->bindFunction("test_native_function_with_nulls",test_native_function_with_nulls);
 
-	a->printListFunctions();
+	a->printListMemberFunctions();
 
-	b->printListFunctions();
+	b->printListMemberFunctions();
 
-	c->printListFunctions();
+	c->printListMemberFunctions();
 
 
 	test_call_native_function_with_nulls(_zs);

@@ -135,7 +135,7 @@ namespace zetscript{
 		 * Built in register C Class, like ScriptObject,ScriptObjectString...
 		 */
 		template<class C, class B>
-		void nativeTypeInheritsFrom();
+		void nativeTypeExtendsFrom();
 
 		void bindMemberSymbols();
 
