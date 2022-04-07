@@ -112,12 +112,12 @@ namespace zetscript{
 			}
 
 			printf("______________________________________________________________\n\n");
-			printf(" -Function: '%s' 									  		  \n",sf->name_script_function.c_str());
-			printf(" -Script Interface: '%s' 									  		  \n",script_interface.c_str());
+			printf(" -Function: '%s'\n",sf->name_script_function.c_str());
+			printf(" -Script interface: '%s'\n",script_interface.c_str());
 			if(sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
-				printf(" -Native interface: %s				  			  				  \n",native_interface.c_str());
+				printf(" -Native interface: '%s'\n",native_interface.c_str());
 			}
-			printf(" -Type origin: '%s' 									  		  \n",sf->scope_script_function->script_type_owner->str_script_type.c_str());
+			printf(" -Type origin: '%s'\n",sf->scope_script_function->script_type_owner->str_script_type.c_str());
 
 		}
 	}

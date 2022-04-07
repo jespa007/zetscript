@@ -2,55 +2,67 @@ var v1=[1,2]
 var v2=[4,5]
 var v4=["s1","s2","s3","s4"]
 
-v1.push(3);
-
-for(var i=0; i < v1.size(); i++){
-	Console::outln(v1[i]);
+//check push
+v1.push("s");
+var k_result=0
+var v_result=""
+for(var k,v in v1){
+	k_result+=k
+	v_result+=v_result;
 }
 
-var item=v1.pop();
-
-for(var i=0; i < v1.size(); i++){
-	Console::outln(v1[i]);
+//check pop
+v1.pop();
+k_result=0
+v_result=""
+for(var k,v in v1){
+	k_result+=k
+	v_result+=v_result;
 }
 
-Console::outln("---")
-Console::outln(item)
-Console::outln("---")
 
-//Console::outln("---")
-
+//check insertAt
 v2.insertAt(1,"string")
-
-for(var i=0; i < v2.size(); i++){
-	Console::outln(v2[i]);
+k_result=0
+v_result=""
+for(var k,v in v2){
+	k_result+=k
+	v_result+=v_result;
 }
 
-Console::outln("---")
-
+//check eraseAt
 v2.eraseAt(1)
-
-for(var i=0; i < v2.size(); i++){
-	Console::outln(v2[i]);
+k_result=0
+v_result=""
+for(var k,v in v2){
+	k_result+=k
+	v_result+=v_result;
 }
 
-Console::outln("---")
-
+// check concatenation
 var v3=v1+v2
-
-for(var i=0; i < v3.size(); i++){
-	Console::outln(v3[i]);
+k_result=0
+v_result=""
+for(var k,v in v3){
+	k_result+=k
+	v_result+=v_result;
 }
 
-Console::outln("---")
-
+// check clear
 v3.clear()
-
-for(var i=0; i < v3.size(); i++){
-	Console::outln(v3[i]);
+k_result=0
+v_result=""
+for(var k,v in v3){
+	k_result+=k
+	v_result+=v_result;
 }
 
-Console::outln("---")
+// check join
+k_result=0
+v_result=""
+for(var k,v in v4.join('_')){
+	k_result+=k
+	v_result+=v_result;
+}
 
-Console::outln(v4.join('_'))
 

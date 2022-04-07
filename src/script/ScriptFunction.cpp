@@ -102,10 +102,10 @@ namespace zetscript{
 
 
 		printf("______________________________________________________________\n\n");
-		printf(" Function: '%s%s' 									  		  \n",class_str.c_str(),symbol_ref.c_str());
-		printf(" Required stack: %i				  			  				  \n",sfo->min_stack_needed);
-		printf(" Scopes: %i				  			  				   		  \n\n",sfo->scope_script_function->scopes->count);
-		printf(" NUM |RS|AS|          INSTRUCTION                             \n");
+		printf(" Function: '%s%s'                                             \n",class_str.c_str(),symbol_ref.c_str());
+		printf(" Required stack: %i                                           \n",sfo->min_stack_needed);
+		printf(" Scopes: %i                                                   \n\n",sfo->scope_script_function->scopes->count);
+		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
 
 		for(Instruction * instruction=sfo->instructions; instruction->byte_code!= BYTE_CODE_END_FUNCTION; instruction++){
