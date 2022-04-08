@@ -148,7 +148,7 @@ namespace zetscript{
 
 
 	template<class C,class B>
-	void ScriptTypeFactory::nativeTypeExtendsFrom(){
+	void ScriptTypeFactory::extendsFrom(){
 
 		const char *base_class_name=typeid(B).name();
 		const char * base_class_name_ptr=typeid(B *).name();

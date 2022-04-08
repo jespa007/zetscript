@@ -452,7 +452,7 @@ namespace zetscript{
 						,new_scope
 						,&ei_load_container_identifier //eval_data->current_function->instructions
 						,NULL
-						,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
+						,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL|EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 				))==NULL){
 					goto label_exit_for;
 				}

@@ -32,12 +32,15 @@ public:
     }
 };
 
+struct ParamA{zetscript::zs_string _s;ParamA(){_s="";}};
+struct ParamB{zetscript::zs_float _f;ParamB(){_f=0;}};
+
 ClassA *ClassAWrap_new(zetscript::ZetScript *_zs){
 	return new ClassA;
 }
 
-void ClassAWrap_fun1(zetscript::ZetScript *_zs, ClassA *_a, zetscript::zs_string *_s,bool *_show_print){
-   _a->fun1(_s->c_str(),*_show_print);
+void ClassAWrap_fun1(zetscript::ZetScript *_zs, ClassA *_this, ParamA *_param_a,bool *_show_print){
+   _this->fun1(_param_a->_s.c_str(),*_show_print);
 }
 
 void ClassAWrap_delete(zetscript::ZetScript *_zs,ClassA *_this){
@@ -49,8 +52,8 @@ ClassB *ClassBWrap_new(zetscript::ZetScript *_zs){
 	return new ClassB;
 }
 
-void ClassBWrap_fun1(zetscript::ZetScript *_zs, ClassB *_b, zetscript::zs_float *_f,bool *_show_print){
-  _b->fun1(*_f,*_show_print);
+void ClassBWrap_fun1(zetscript::ZetScript *_zs, ClassB *_this, ParamB *_param_b,bool *_show_print){
+  _this->fun1(_param_b->_f,*_show_print);
 }
 
 void ClassBWrap_delete(zetscript::ZetScript *_zs,ClassB *_this){
@@ -69,6 +72,24 @@ void ClassCWrap_delete(zetscript::ZetScript *_zs,ClassC *_this){
 	delete _this;
 }
 
+ParamA *ParamAWrap_new(zetscript::ZetScript *_zs){
+	return new ParamA;
+}
+
+
+void ParamAWrap_delete(zetscript::ZetScript *_zs,ParamA *_this){
+	delete _this;
+}
+
+ParamB *ParamBWrap_new(zetscript::ZetScript *_zs){
+	return new ParamB;
+}
+
+
+void ParamBWrap_delete(zetscript::ZetScript *_zs,ParamB *_this){
+	delete _this;
+}
+
 //------------------------------
 // TEST NATIVE CALL FUNCTION MEMBER
 
@@ -76,7 +97,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	_zs->eval(
 		zetscript::zs_strutils::format(
-				"(new ClassC()).fun1(\"hello world\",%s)\n"
+				"(new ClassC()).fun1(new ParamA(),%s)\n"
 				//"(new ClassC()).fun1(1.5,%s)\n"
 				//"(new ClassC()).fun1(false,%s)\n"
 				,_show_print?"true":"false"
@@ -125,15 +146,19 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 	auto b=_zs->bindType<ClassB>("ClassB",ClassBWrap_new,ClassBWrap_delete);
 	auto c=_zs->bindType<ClassC>("ClassC",ClassCWrap_new,ClassCWrap_delete);
 
+	_zs->bindType<ParamA>("ParamA",ParamAWrap_new,ParamAWrap_delete);
+	_zs->bindType<ParamB>("ParamB",ParamBWrap_new,ParamBWrap_delete);
+
+
 	_zs->bindMemberFunction<ClassA>("fun1",ClassAWrap_fun1);
 
-	_zs->nativeTypeExtendsFrom<ClassB,ClassA>();
+	_zs->extendsFrom<ClassB,ClassA>();
 
 	_zs->bindMemberFunction<ClassB>("fun1",ClassBWrap_fun1);
 
 
-	_zs->nativeTypeExtendsFrom<ClassC,ClassB>();
-	//_zs->nativeTypeExtendsFrom<ClassC,ClassB>();
+	_zs->extendsFrom<ClassC,ClassB>();
+	//_zs->extendsFrom<ClassC,ClassB>();
 
 	//_zs->bindMemberFunction<ClassC>("fun1",ClassCWrap_fun1);
 
