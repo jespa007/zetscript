@@ -449,10 +449,20 @@ namespace zetscript{
 												(	arg_idx_script_type==IDX_TYPE_ZS_STRING_PTR_C && current_arg->value!=0)
 											  ||	arg_idx_script_type==IDX_TYPE_CONST_CHAR_PTR_C;
 										}
-									}else if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
+									}else{
+										ScriptObject *var_object = NULL;
+										var_object=((ScriptObject *)current_arg->value);
+										aux_string=var_object->getTypeName();
+										if(arg_idx_script_type==var_object->idx_script_type){
+											idx_script_type=var_object->idx_script_type;
+											all_check=true;
+										}
+									}
+										/*if(STK_IS_SCRIPT_OBJECT_CLASS(current_arg)){
 										ScriptObjectClass *var_object_class=((ScriptObjectClass *)current_arg->value);
 										aux_string=var_object_class->getTypeName();
-										if(arg_idx_script_type==idx_script_type){
+										if(arg_idx_script_type==var_object_class->idx_script_type){
+											idx_script_type=var_object_class->idx_script_type;
 											all_check=true;
 										}
 									}else{
@@ -460,9 +470,10 @@ namespace zetscript{
 										var_object=((ScriptObject *)current_arg->value);
 										aux_string=var_object->getTypeName();
 										if(arg_idx_script_type==idx_script_type){
+											idx_script_type=var_object_class->idx_script_type;
 											all_check=true;
 										}
-									}
+									}*/
 									break;
 							}
 						}
