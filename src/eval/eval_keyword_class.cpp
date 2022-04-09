@@ -487,13 +487,35 @@ namespace zetscript{
 							}
 						} else{
 
+							zs_string list_valid_metamethods="";
+
+
+
+
+							// get all member list
+							const ByteCodeMetamethod *it_mm=MetamethodMembers::byte_code_metamethod_member_list;
+							while(*it_mm!=0){
+								list_valid_metamethods+=zs_string("- '")+ byte_code_metamethod_to_symbol_str(*it_mm)+"'\n";
+								it_mm++;
+							}
+
+
+							// get all member setter listMetamethodMembers::byte_code_metamethod_member_setter_list
+							const ByteCodeMetamethod *it_setters=MetamethodMembers::byte_code_metamethod_member_setter_list;
+							while(*it_setters!=0){
+								list_valid_metamethods+=zs_string("- '")+byte_code_metamethod_to_symbol_str(*it_setters)+"'\n";
+								it_setters++;
+							}
+
+
 							EVAL_ERROR_FILE_LINE(
 								eval_data->current_parsing_file
 								,line
-								,"unexpected metamethod '%s' in property '%s::%s'"
+								,"unexpected metamethod '%s' in property '%s::%s'. Valid metamethods are the following:\n\n%s\n"
 								,name_script_function.c_str()
 								,class_property_name.c_str()
 								,property_name.c_str()
+								,list_valid_metamethods.c_str()
 							);
 						}
 					}

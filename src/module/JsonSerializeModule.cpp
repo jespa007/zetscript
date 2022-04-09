@@ -48,11 +48,21 @@ namespace zetscript{
 				for(;!mi->end();mi->next()){
 
 					StackElement *stk_se=(StackElement *)mi->value;
+					StackMemberProperty *smp=NULL;
+
+					if(stk_se->properties & STK_PROPERTY_MEMBER_PROPERTY){
+						smp=(StackMemberProperty *)stk_se->value;
+						if(smp->member_property->metamethod_members.getter == NULL){ // ignore value due it doesn't has getter
+							continue;
+						}
+					}
+
 					// only check if is not function. If is an property an implements get, call
-					if(((stk_se->properties & STK_PROPERTY_FUNCTION) == 0)
+					if(
+						((stk_se->properties & STK_PROPERTY_FUNCTION) == 0)
 							&&
 						STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_se) == false
-							){
+					){
 						bool getter_found=false;
 						StackElement *ptr_stk_param=NULL;
 						StackElement stk_getter_result=k_stk_undefined;
@@ -71,10 +81,10 @@ namespace zetscript{
 						_str_result.append("\"" + zs_string(mi->key)+ "\":");
 
 						// if property we have to call script or native...
-						if(stk_se->properties & STK_PROPERTY_MEMBER_PROPERTY){
+						if(smp!=NULL){
 
-							StackMemberProperty *smp=(StackMemberProperty *)stk_se->value;
 							ScriptFunction *ptr_function=(ScriptFunction *)(smp->member_property->metamethod_members.getter->ref_ptr);
+
 							if(ptr_function!=NULL && _obj->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_CLASS){ // getter found
 
 								getter_found=true;

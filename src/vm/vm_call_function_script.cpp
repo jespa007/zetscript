@@ -266,14 +266,22 @@ load_next_element_object:
 
 				if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)!= STK_PROPERTY_SCRIPT_OBJECT)
 				{
-					VM_STOP_EXECUTE(
-						"Cannot perform access operation [ ... %s.%s ]. Expected '%s' as object but is type '%s' %s"
-						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-						,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-						,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
-						,zs_strutils::starts_with(stk_to_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
-					);
+					if((instruction-1)->byte_code==BYTE_CODE_LOAD_OBJECT_ITEM){
+						VM_STOP_EXECUTE(
+							"Cannot perform access [ ... %s.%s ], expected '%s' as object but is type '%s' %s"
+							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+							,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+							,zs_strutils::starts_with(stk_to_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+						);
+					}else{ // from calling
+						VM_STOP_EXECUTE(
+							"Cannot perform access '.%s' from variable type '%s'"
+							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+							,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+						);
+					}
 				}
 
 				so_aux=((ScriptObject *)stk_result_op1->value);
@@ -294,6 +302,15 @@ find_element_object:
 					ScriptType *sc=so_aux->getScriptType();
 					Symbol *sf_member=sc->getSymbolMemberFunction(str_symbol);
 					if(sf_member !=NULL){
+						if((((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM)) && ((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0)){
+							VM_STOP_EXECUTE(
+								"Cannot perform access operation [ ... %s.%s ], because '%s' is a function. It should call function with '()' before '.'"
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction+1)
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+							);
+						}
+
 						ScriptObjectMemberFunction *somf=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,so_aux,(ScriptFunction *)sf_member->ref_ptr);
 
 						 if(!vm_create_shared_pointer(vm,somf)){
@@ -307,6 +324,18 @@ find_element_object:
 						continue;
 
 					}else if((stk_var=so_aux->getProperty(str_symbol)) == NULL){
+
+						if(instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION){
+							VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Member function '%s::%s' is not defined"
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+								,str_symbol
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+								,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+								,str_symbol
+							);
+						}
+
 						// something went wrong
 						if(data->vm_error == true){
 							goto lbl_exit_function;
@@ -322,37 +351,46 @@ find_element_object:
 							VM_PUSH_STK_PTR(stk_var);
 						}
 						else{ // not exists
-							if(instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION){
-								VM_STOP_EXECUTE("'%s' as type '%s' has not defined member function '%s::%s'"
-									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-									,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-									,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-									,(const char *)str_symbol
-								);
-							}
+
 
 							data->stk_vm_current->value=0;
 							data->stk_vm_current->properties=STK_PROPERTY_UNDEFINED;
 							data->stk_vm_current++;
 						}
 						continue;
-					}else if(
-						   ((stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0)
-						&& (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM  ||  instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
-						&& (instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0){ // call getter if exist
-							StackMemberProperty *stk_mp=(StackMemberProperty *)stk_var->value;
-							if(stk_mp->member_property->metamethod_members.getter != NULL){
+					}else{
 
-								VM_INNER_CALL_ONLY_RETURN(
-										stk_mp->so_object
-										,((ScriptFunction *)stk_mp->member_property->metamethod_members.getter->ref_ptr)
-										,stk_mp->member_property->metamethod_members.getter->name.c_str()
-										,true
-								);
+						if((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION) && ((stk_var->properties & STK_PROPERTY_FUNCTION)==0)){
 
-								data->stk_vm_current++;
-								continue;
-							}
+							VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Expected '%s::%s' as a function but it is '%s'"
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+								,(const char *)str_symbol
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+								,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+								,(const char *)str_symbol
+								,stk_to_typeof_str(data->zs,stk_var).c_str()
+							);
+						}
+
+						if(
+							   ((stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0)
+							&& (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM  ||  instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
+							&& (instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0){ // call getter if exist
+								StackMemberProperty *stk_mp=(StackMemberProperty *)stk_var->value;
+								if(stk_mp->member_property->metamethod_members.getter != NULL){
+
+									VM_INNER_CALL_ONLY_RETURN(
+											stk_mp->so_object
+											,((ScriptFunction *)stk_mp->member_property->metamethod_members.getter->ref_ptr)
+											,stk_mp->member_property->metamethod_members.getter->name.c_str()
+											,true
+									);
+
+									data->stk_vm_current++;
+									continue;
+								}
+						}
 					}
 				}
 

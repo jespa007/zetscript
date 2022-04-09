@@ -23,14 +23,23 @@ public:
     }
 };
 
+
+class ClassD{};
 class ClassC:public ClassB{
 public:
+	ClassD d;
+	int num;
+	ClassC(){
+		num=0;
+	}
+
     void fun1(bool _b,bool _show_print){
     	if(_show_print){
     		printf("from C: %s\n",_b?"true":"false");
     	}
     }
 };
+
 
 struct ParamA{zetscript::zs_string _s;ParamA(){_s="";}};
 struct ParamB{zetscript::zs_float _f;ParamB(){_f=0;}};
@@ -68,9 +77,25 @@ void ClassCWrap_fun1(zetscript::ZetScript *_zs, ClassC *_c, bool *_b,bool *_show
   _c->fun1(*_b,*_show_print);
 }
 
+void ClassCWrap_num_setter(zetscript::ZetScript *_zs, ClassC *_c, zetscript::zs_int _num){
+  _c->num=_num;
+}
+
+zetscript::zs_int ClassCWrap_num_getter(zetscript::ZetScript *_zs, ClassC *_c){
+  return _c->num;
+}
+
+ClassD * ClassCWrap_get_d(zetscript::ZetScript *_zs, ClassC *_c){
+  return &_c->d;
+}
+
+
 void ClassCWrap_delete(zetscript::ZetScript *_zs,ClassC *_this){
 	delete _this;
 }
+
+//-------
+// PARAMS
 
 ParamA *ParamAWrap_new(zetscript::ZetScript *_zs){
 	return new ParamA;
@@ -97,7 +122,12 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	_zs->eval(
 		zetscript::zs_strutils::format(
-				"(new ClassC()).fun1(new ParamA(),%s)\n"
+				"var c=new ClassC();\n"
+				"c.fun1(new ParamA(),%s);\n"
+				"c.x=10;\n"
+				//"Console::outln(\"x:{0}\",c.x);\n"
+				"Console::outln(c);\n"
+				"c.get_b.x=0;\n"
 				//"(new ClassC()).fun1(1.5,%s)\n"
 				//"(new ClassC()).fun1(false,%s)\n"
 				,_show_print?"true":"false"
@@ -145,6 +175,7 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 	auto a=_zs->bindType<ClassA>("ClassA",ClassAWrap_new,ClassAWrap_delete);
 	auto b=_zs->bindType<ClassB>("ClassB",ClassBWrap_new,ClassBWrap_delete);
 	auto c=_zs->bindType<ClassC>("ClassC",ClassCWrap_new,ClassCWrap_delete);
+	auto d=_zs->bindType<ClassD>("ClassD");
 
 	_zs->bindType<ParamA>("ParamA",ParamAWrap_new,ParamAWrap_delete);
 	_zs->bindType<ParamB>("ParamB",ParamBWrap_new,ParamBWrap_delete);
@@ -158,6 +189,10 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 
 	_zs->extendsFrom<ClassC,ClassB>();
+
+	_zs->bindMemberPropertySetter<ClassC>("num",ClassCWrap_num_setter);
+	_zs->bindMemberPropertyGetter<ClassC>("num",ClassCWrap_num_getter);
+	_zs->bindMemberPropertyGetter<ClassC>("get_d",ClassCWrap_get_d);
 	//_zs->extendsFrom<ClassC,ClassB>();
 
 	//_zs->bindMemberFunction<ClassC>("fun1",ClassCWrap_fun1);
@@ -165,11 +200,11 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	_zs->bindFunction("test_native_function_with_nulls",test_native_function_with_nulls);
 
-	a->printListMemberFunctions();
+	//a->printListMemberFunctions();
 
-	b->printListMemberFunctions();
+	//b->printListMemberFunctions();
 
-	c->printListMemberFunctions();
+	//c->printListMemberFunctions();
 
 
 	test_call_native_function_with_nulls(_zs);

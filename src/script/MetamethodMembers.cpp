@@ -102,7 +102,7 @@ namespace zetscript{
 		ByteCodeMetamethod _byte_code_metamethod=BYTE_CODE_METAMETHOD_INVALID;
 		while(*it!=0){
 			const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
-			if(_symbol_name == _mt_name){
+			if(strcmp(_symbol_name,_mt_name)==0){
 				_byte_code_metamethod=*it;
 				break;
 			}

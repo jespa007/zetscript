@@ -178,19 +178,23 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINE_GOTO(eval_data->current_parsing_file,token_node_symbol->line,eval_error_byte_code,"Assign a literal '%s' is not allowed",token_node_symbol->value.c_str());
 			}
 
-			zs_ei_assign_loader_instructions_post_expression.push_back((zs_int)(ei_assign_loader_instructions_post_expression=new zs_vector()));
+			EvalInstruction *ei_load_assign_instruction=((EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]);
 
+			if(INSTRUCTION_IS_BYTE_CODE_CALL(
+					&ei_load_assign_instruction->vm_instruction
+			)){
+				EVAL_ERROR_FILE_LINE_GOTOF(
+						eval_data->current_parsing_file
+						,ei_load_assign_instruction->instruction_source_info.line
+						,eval_error_byte_code
+						,"Calling a function in left assignment is not allowed");
+			}
+
+			zs_ei_assign_loader_instructions_post_expression.push_back((zs_int)(ei_assign_loader_instructions_post_expression=new zs_vector()));
 
 			// assign operators: add instructions related about its accessors...
 			for(int j=0;j<token_node_symbol->eval_instructions.count;j++){
-				EvalInstruction *ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
-				if(INSTRUCTION_IS_BYTE_CODE_CALL(&ei_load_assign_instruction->vm_instruction)){
-					EVAL_ERROR_FILE_LINE_GOTOF(
-							eval_data->current_parsing_file
-							,ei_load_assign_instruction->instruction_source_info.line
-							,eval_error_byte_code
-							,"Calling a function in left assignment is not allowed");
-				}
+				ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
 				ei_assign_loader_instructions_post_expression->push_back((zs_int)(token_node_symbol->eval_instructions.items[j]));
 			}
 

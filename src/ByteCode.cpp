@@ -219,6 +219,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SET:		return  "=";		// _set
 			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "+=";		// _set_add
 			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "-=";		// _set_sub
+			case 	BYTE_CODE_METAMETHOD_MUL_SET:   return  "*=";		// _mul_set
 			case	BYTE_CODE_METAMETHOD_DIV_SET:	return  "/=";		// _set_div
 			case	BYTE_CODE_METAMETHOD_MOD_SET:	return  "%=";		// _set_mod
 			case	BYTE_CODE_METAMETHOD_AND_SET:	return  "&=";		// _set_and
@@ -262,6 +263,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; 	// _set
 			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "_add_set";	// _set_add
 			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "_sub_set";	// _set_sub
+			case	BYTE_CODE_METAMETHOD_MUL_SET:	return  "_mul_set";	// _mul_set
 			case	BYTE_CODE_METAMETHOD_DIV_SET:	return  "_div_set";	// _set_div
 			case	BYTE_CODE_METAMETHOD_MOD_SET:	return  "_mod_set";	// _set_mod
 			case	BYTE_CODE_METAMETHOD_AND_SET:	return  "_and_set";	// _set_and
