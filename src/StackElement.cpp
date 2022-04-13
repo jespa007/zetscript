@@ -38,8 +38,8 @@ namespace zetscript{
 		else if(STK_VALUE_IS_TYPE(stk)) // is a class
 			result=zs_string("type@")+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_PROPERTY(stk)){
-			MemberProperty *ma=(MemberProperty *)stk->value;
-			result="attr@"+ma->script_type->str_script_type+"::"+ma->property_name;
+			StackMemberProperty *ma=(StackMemberProperty *)stk->value;
+			result="prop@"+ma->member_property->script_type->str_script_type+"::"+ma->member_property->property_name;
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;

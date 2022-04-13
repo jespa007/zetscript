@@ -256,7 +256,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_OBJECT_ITEM:
 load_next_element_object:
 				if(
-						(instruction-1)->byte_code == BYTE_CODE_NEW_OBJECT_BY_TYPE
+					(instruction-1)->byte_code == BYTE_CODE_NEW_OBJECT_BY_TYPE
 				){
 					stk_result_op1=(data->stk_vm_current-1);
 				}
@@ -302,7 +302,9 @@ find_element_object:
 					ScriptType *sc=so_aux->getScriptType();
 					Symbol *sf_member=sc->getSymbolMemberFunction(str_symbol);
 					if(sf_member !=NULL){
-						if((((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM)) && ((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0)){
+						if(
+							   ((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM || ((instruction+1)->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM))
+							&& ((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0)){
 							VM_STOP_EXECUTE(
 								"Cannot perform access operation [ ... %s.%s ], because '%s' is a function. It should call function with '()' before '.'"
 								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
@@ -331,7 +333,7 @@ find_element_object:
 								,str_symbol
 								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 								,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+								,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
 								,str_symbol
 							);
 						}
@@ -344,6 +346,19 @@ find_element_object:
 						// pack object+member stk info for store information...
 						if(   instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM
 						  ||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
+
+							// if object is C
+							if(so_aux->getScriptType()->properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF){
+								VM_STOP_EXECUTE("Error accessing '...%s.%s', where '%s' is type '%s'. Native type property '%s::%s' is not defined"
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+									,str_symbol
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+									,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+									,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+									,str_symbol
+								);
+							}
+
 							// save
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
 								VM_STOP_EXECUTEF(data->vm_error_str.c_str());
@@ -351,8 +366,6 @@ find_element_object:
 							VM_PUSH_STK_PTR(stk_var);
 						}
 						else{ // not exists
-
-
 							data->stk_vm_current->value=0;
 							data->stk_vm_current->properties=STK_PROPERTY_UNDEFINED;
 							data->stk_vm_current++;
@@ -362,12 +375,12 @@ find_element_object:
 
 						if((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION) && ((stk_var->properties & STK_PROPERTY_FUNCTION)==0)){
 
-							VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Expected '%s::%s' as a function but it is '%s'"
+							VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Expected '%s::%s' as a function but it is type '%s'"
 								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 								,(const char *)str_symbol
 								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 								,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+								,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
 								,(const char *)str_symbol
 								,stk_to_typeof_str(data->zs,stk_var).c_str()
 							);
@@ -576,7 +589,11 @@ find_element_object:
 					StackMemberProperty *	stk_mp=(StackMemberProperty *)stk_dst->value;\
 					if(stk_mp->member_property->metamethod_members.setters.count > 0){\
 						store_lst_setter_functions=&stk_mp->member_property->metamethod_members.setters;\
-					}\
+					}else{ // setter not allowed because it has no setter
+						VM_STOP_EXECUTE("'%s' not implements operator '=' (aka '_set')"
+							,stk_mp->member_property->property_name.c_str()
+						);
+					}
 				}
 
 				if(store_lst_setter_functions!=NULL){
@@ -601,7 +618,7 @@ find_element_object:
 								,calling_function\
 								,instruction\
 								,false\
-								,stk_mp==NULL?"_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(BYTE_CODE_METAMETHOD_ADD_SET,stk_mp->member_property->property_name)).c_str() /* symbol to find */\
+								,stk_mp==NULL?"_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(BYTE_CODE_METAMETHOD_SET,stk_mp->member_property->property_name)).c_str() /* symbol to find */\
 								,stk_arg \
 								,1))==NULL){ \
 							if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
@@ -611,7 +628,7 @@ find_element_object:
 										,__STR_SETTER_METAMETHOD__\
 								);\
 							}else{\
-								VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
+								VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
 										,so_aux->getScriptType()->str_script_type.c_str() \
 										,__STR_SETTER_METAMETHOD__\
 								);\
@@ -1635,7 +1652,28 @@ execute_function:
 		//=========================
 		// POP STACK
 		while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
-			VM_POP_SCOPE(false); // do not check removeEmptySharedPointers to have better performance
+			//VM_POP_SCOPE(false); // do not check removeEmptySharedPointers to have better performance
+			{\
+				Scope *scope=*(data->vm_current_scope_function->scope_current-1);\
+				StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
+				zs_vector *scope_symbols=scope->symbol_variables;\
+				int count=scope_symbols->count;\
+				StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\
+				while(count--){\
+					if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
+						ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
+						if(so != NULL && so->shared_pointer!=NULL){\
+							false==true?\
+								vm_unref_shared_script_object_and_remove_if_zero(vm,&so)\
+							:\
+							 	 vm_unref_shared_script_object(vm,so,data->vm_idx_call);\
+						}\
+					}\
+					STK_SET_UNDEFINED(stk_local_var);\
+					stk_local_var++;\
+				}\
+				--data->vm_current_scope_function->scope_current;\
+			}
 		}
 
 		if((data->zero_shares+data->vm_idx_call)->first!=NULL){

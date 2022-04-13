@@ -64,6 +64,7 @@ namespace zetscript{
 						STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_se) == false
 					){
 						bool getter_found=false;
+						bool value_from_vm_execute=false;
 						StackElement *ptr_stk_param=NULL;
 						StackElement stk_getter_result=k_stk_undefined;
 
@@ -90,6 +91,8 @@ namespace zetscript{
 								getter_found=true;
 
 								if((ptr_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
+
+									value_from_vm_execute=true;
 
 									stk_getter_result=VM_EXECUTE(
 										_zs->getVirtualMachine()
@@ -127,10 +130,14 @@ namespace zetscript{
 							,_is_formatted);
 
 						if(stk_getter_result.properties & STK_PROPERTY_SCRIPT_OBJECT){
-							vm_unref_lifetime_object(
-								_zs->getVirtualMachine()
-								,(ScriptObject *)stk_getter_result.value
-							);
+							if(value_from_vm_execute==true){
+								vm_unref_lifetime_object(
+									_zs->getVirtualMachine()
+									,(ScriptObject *)stk_getter_result.value
+								);
+							}else{
+								delete ((ScriptObject *)stk_getter_result.value);
+							}
 
 						}
 						k++;

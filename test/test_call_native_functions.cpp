@@ -118,16 +118,123 @@ void ParamBWrap_delete(zetscript::ZetScript *_zs,ParamB *_this){
 //------------------------------
 // TEST NATIVE CALL FUNCTION MEMBER
 
+#define MAX_CLASSES 6
+
+void test_bug(){
+	int iterations=5;
+	zetscript::ZetScript zs;
+
+	const char *str_classes[MAX_CLASSES]={
+		"main"
+		,"intro"
+		,"tutorial"
+		,"task"
+		,"end"
+		,"end1"
+	};
+
+	std::function<void ()> *fun[MAX_CLASSES]={NULL};
+
+	do{
+		zs.clear();
+
+		for(int i=0; i < MAX_CLASSES; i++){
+
+			zs.eval(zetscript::zs_strutils::format(
+				"class c%s{\n"
+					"c%s(){\n"
+					"	this.self=getScene(\"%s\")\n"
+					"}\n"
+				"}\n"
+				,str_classes[i]
+				,str_classes[i]
+				,str_classes[i]
+
+			));
+		}
+
+		for(int i=0; i < MAX_CLASSES; i++){
+			zs.eval(zetscript::zs_strutils::format(
+				"	function c%s::load(){\n"
+				"	}\n"
+				,str_classes[i])
+			);
+		}
+
+		// add  function
+		for(int i=0; i < MAX_CLASSES; i++){
+			zs.eval(zetscript::zs_strutils::format(
+				"	function c%s::ini(){\n"
+				//"		Console::outln(\"ok\")\n"
+				"		asdasdsa;\n"
+				"	}\n"
+				,str_classes[i])
+			);
+		}
+
+
+
+		zs.eval(
+			"//---- CONSTANTS\n"
+			"var BL_MAX_TRIALS= 60;\n"
+			"var N_TRIALS_BASELINE=2.0;\n"
+			"\n"
+			"//-----------------------------------------\n"
+			"// KEYS\n"
+			"var T_SPACE = 32;\n"
+			"var T_B 	= 98;\n"
+		);
+
+
+		for(int i=0; i < MAX_CLASSES; i++){
+			zs.eval(zetscript::zs_strutils::format(
+				"var %s=new c%s();\n"
+				"%s.load();"
+				,str_classes[i]
+				,str_classes[i]
+				,str_classes[i]
+			));
+		}
+
+		for(int i=0; i < MAX_CLASSES; i++){
+			fun[i]=new std::function<void ()>(zs.bindScriptFunction<void()>(
+					zetscript::zs_strutils::format(
+						"%s.ini"
+						,str_classes[i]
+					)
+			));
+		}
+
+		for(int i=0; i < MAX_CLASSES; i++){
+			try{
+				(*fun[i])();
+			}catch(std::exception & ex){
+				fprintf(stderr,"err:%s\n",ex.what());
+			}
+		}
+
+		for(int i=0; i < MAX_CLASSES; i++){
+			delete fun[i];
+			fun[i]=NULL;
+		}
+
+	}while(--iterations);
+
+
+}
+
+//------------------------------
+// TEST NATIVE CALL FUNCTION MEMBER
+
 void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true){
 
 	_zs->eval(
 		zetscript::zs_strutils::format(
 				"var c=new ClassC();\n"
 				"c.fun1(new ParamA(),%s);\n"
-				"c.x=10;\n"
-				//"Console::outln(\"x:{0}\",c.x);\n"
+				"c.num=10;\n"
 				"Console::outln(c);\n"
-				"c.get_b.x=0;\n"
+				//"c.get_d.x=0;\n"
 				//"(new ClassC()).fun1(1.5,%s)\n"
 				//"(new ClassC()).fun1(false,%s)\n"
 				,_show_print?"true":"false"
@@ -192,7 +299,7 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	_zs->bindMemberPropertySetter<ClassC>("num",ClassCWrap_num_setter);
 	_zs->bindMemberPropertyGetter<ClassC>("num",ClassCWrap_num_getter);
-	_zs->bindMemberPropertyGetter<ClassC>("get_d",ClassCWrap_get_d);
+	_zs->bindMemberFunction<ClassC>("get_d",ClassCWrap_get_d);
 	//_zs->extendsFrom<ClassC,ClassB>();
 
 	//_zs->bindMemberFunction<ClassC>("fun1",ClassCWrap_fun1);
@@ -219,7 +326,8 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 int main(){
 	zetscript::ZetScript zs;
 	try{
-		test_call_native_function(&zs);
+		//test_call_native_function(&zs);
+		test_bug();
 	}catch(std::exception & ex){
 		fprintf(stderr,"%s\n",ex.what());
 		return -1;

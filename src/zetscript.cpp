@@ -312,7 +312,6 @@ namespace zetscript{
 		stk->properties=STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY;
 
 		return stk;
-
 	}
 
 	StackElement *ZetScript::getStkStringObject(const zs_string & key_name){
@@ -479,7 +478,7 @@ namespace zetscript{
 					delete symbol;
 				}
 
-				STK_SET_NULL(vm_stk_element);
+				STK_SET_UNDEFINED(vm_stk_element);
 
 				--v;
 			}

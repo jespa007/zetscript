@@ -1384,7 +1384,7 @@ namespace zetscript{
 							file
 							,line
 							,"Cannot bind script function '%s': Cannot find function '%s'"
-							,function_access
+							,function_access.c_str()
 							,((zs_string *)(access_var.items[access_var.count-1]))->c_str()
 					);
 				}
