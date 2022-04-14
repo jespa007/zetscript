@@ -436,7 +436,7 @@ namespace zetscript{
 										ScriptObject *var_object = NULL;
 										var_object=((ScriptObject *)current_arg->value);
 										aux_string=var_object->getTypeName();
-										all_check=arg_idx_script_type==var_object->idx_script_type;
+										all_check=var_object->getScriptType()->extendsFrom(arg_idx_script_type);
 									}
 									break;
 							}
@@ -468,35 +468,35 @@ namespace zetscript{
 
 				//unsigned short var_type = GET_STK_PROPERTY_TYPES(current_arg->properties);
 				if(current_arg->properties & STK_PROPERTY_PTR_STK){
-					aux_string="StackElement";
+					current_arg=(StackElement *)current_arg->value;
 				}
-				else{
 
-					switch(current_arg->properties & STK_PROPERTY_TYPES){
 
-					default:
-						aux_string="unknow";
-						break;
-					case STK_PROPERTY_ZS_INT:
-						aux_string=k_str_zs_int_type;
-						break;
-					case STK_PROPERTY_ZS_FLOAT:
-						aux_string=k_str_zs_float_type;
-						break;
-					case STK_PROPERTY_BOOL:
-						aux_string=k_str_bool_type;
-						break;
-					case STK_PROPERTY_UNDEFINED:
-						aux_string="undefined";
-						break;
-					case STK_PROPERTY_NULL:
-						aux_string="null";
-						break;
-					case STK_PROPERTY_SCRIPT_OBJECT:
-						aux_string = ((ScriptObject *)current_arg->value)->getScriptType()->str_script_type_ptr;
-						break;
-					}
+				switch(current_arg->properties & STK_PROPERTY_TYPES){
+
+				default:
+					aux_string="unknow";
+					break;
+				case STK_PROPERTY_ZS_INT:
+					aux_string=k_str_zs_int_type;
+					break;
+				case STK_PROPERTY_ZS_FLOAT:
+					aux_string=k_str_zs_float_type;
+					break;
+				case STK_PROPERTY_BOOL:
+					aux_string=k_str_bool_type;
+					break;
+				case STK_PROPERTY_UNDEFINED:
+					aux_string="undefined";
+					break;
+				case STK_PROPERTY_NULL:
+					aux_string="null";
+					break;
+				case STK_PROPERTY_SCRIPT_OBJECT:
+					aux_string = ((ScriptObject *)current_arg->value)->getScriptType()->str_script_type_ptr;
+					break;
 				}
+
 
 				args_str.append(zs_rtti::demangle(aux_string.c_str()));
 

@@ -47,7 +47,7 @@ int main(){
 		zs.bindMemberFunction<MyClassExtend>("function2",&MyClassExtendWrap_function2);
 
 		// once all vars and functions are registered, tell that MyClassExtend is base of MyClass
-		zs.extendsFrom<MyClassExtend,MyClass>();
+		zs.extends<MyClassExtend,MyClass>();
 
 	}catch(std::exception & ex){
 		fprintf(stderr,"register error: %s\n",ex.what());

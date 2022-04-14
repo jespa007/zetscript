@@ -39,4 +39,9 @@ namespace zetscript{
 		 ZS_UNUSUED_PARAM(_zs);
 		return rand()*ZS_ONE_OVER_RAND_MAX;
 	}
+
+	 zs_float MathModule_max(ZetScript *_zs,zs_float *_n1,zs_float *_n2){
+		 ZS_UNUSUED_PARAM(_zs);
+		 return *_n1>*_n2?*_n1:*_n2;
+	 }
 }

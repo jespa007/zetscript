@@ -298,17 +298,17 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	_zs->bindMemberFunction<ClassA>("fun1",ClassAWrap_fun1);
 
-	_zs->extendsFrom<ClassB,ClassA>();
+	_zs->extends<ClassB,ClassA>();
 
 	_zs->bindMemberFunction<ClassB>("fun1",ClassBWrap_fun1);
 
 
-	_zs->extendsFrom<ClassC,ClassB>();
+	_zs->extends<ClassC,ClassB>();
 
 	_zs->bindMemberPropertySetter<ClassC>("num",ClassCWrap_num_setter);
 	_zs->bindMemberPropertyGetter<ClassC>("num",ClassCWrap_num_getter);
 	_zs->bindMemberFunction<ClassC>("get_d",ClassCWrap_get_d);
-	//_zs->extendsFrom<ClassC,ClassB>();
+	//_zs->extends<ClassC,ClassB>();
 
 	//_zs->bindMemberFunction<ClassC>("fun1",ClassCWrap_fun1);
 

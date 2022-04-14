@@ -211,7 +211,7 @@ namespace zetscript{
 								c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
 
 								if(c_class != NULL){
-									if((val_ret=c_class->isDerivedFrom(
+									if((val_ret=c_class->extendsFrom(
 											idx_builtin_type
 										))==0
 									){//c_class->idx_script_type==idx_builtin_type){

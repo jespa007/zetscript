@@ -1633,9 +1633,9 @@ execute_function:
 						}
 
 						VM_STOP_EXECUTE(
-								"static symbol '%s' not exist in '%s'"
-								,str_end_class+2
+								"static symbol '%s::%s' not exist"
 								,str_script_type
+								,str_end_class+2
 						);
 					}else{
 						VM_STOP_EXECUTE(

@@ -193,8 +193,8 @@ namespace zetscript{
 		}
 
 		template<class C, class B>
-		void extendsFrom(){
-			script_type_factory->extendsFrom<C,B>();
+		void extends(){
+			script_type_factory->extends<C,B>();
 		}
 
 		template<typename C,typename F>

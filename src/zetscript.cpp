@@ -52,6 +52,7 @@ namespace zetscript{
 		cl->bindMemberFunctionStatic("pow",MathModule_pow);
 		cl->bindMemberFunctionStatic("degToRad",MathModule_degToRad);
 		cl->bindMemberFunctionStatic("random",MathModule_random);
+		cl->bindMemberFunctionStatic("max",MathModule_max);
 
 		// Console mod
 		cl=script_type_factory->registerScriptType("Console","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);

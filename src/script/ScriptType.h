@@ -51,7 +51,7 @@ namespace zetscript{
 				 ,uint16_t _properties=0
 		);
 
-		 bool isDerivedFrom(short idx_script_type);
+		 bool extendsFrom(short idx_script_type);
 
 		//---------------------------------------------------
 		//

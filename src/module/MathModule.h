@@ -14,11 +14,12 @@ namespace zetscript{
 
 	 extern const zs_float MathModule_PI;
 
-	 zs_float MathModule_degToRad(ZetScript *_zs,zs_float *deg);
-	 zs_float MathModule_sin(ZetScript *_zs,zs_float *rad);
-	 zs_float MathModule_cos(ZetScript *_zs,zs_float *rad);
-	 zs_float MathModule_abs(ZetScript *_zs,zs_float *n);
-	 zs_float MathModule_pow(ZetScript *_zs,zs_float *base, zs_float *exp);
+	 zs_float MathModule_degToRad(ZetScript *_zs,zs_float *_deg);
+	 zs_float MathModule_sin(ZetScript *_zs,zs_float *_rad);
+	 zs_float MathModule_cos(ZetScript *_zs,zs_float *_rad);
+	 zs_float MathModule_abs(ZetScript *_zs,zs_float *_n);
+	 zs_float MathModule_pow(ZetScript *_zs,zs_float *_base, zs_float *_exp);
 	 zs_float MathModule_random(ZetScript *_zs);
+	 zs_float MathModule_max(ZetScript *_zs,zs_float *_n1,zs_float *_n2);
 }
 
