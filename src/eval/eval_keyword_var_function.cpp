@@ -170,13 +170,13 @@ namespace zetscript{
 				 end=false;
 
 			Scope *scope_var=scope_info;
-			ScriptFunction *sf_field_initializer=NULL;
+
 
 
 			char *start_var=NULL,*end_var=NULL;
 			int start_line=0;
 			ScriptType *sc=NULL;
-			zs_string s_aux,variable_name,pre_variable_name="";
+			zs_string s_aux="",variable_name="";
 			zs_string error="";
 			Symbol *symbol_variable=NULL,*symbol_member_variable=NULL;
 			is_constant=key_w == Keyword::KEYWORD_CONST;
@@ -193,32 +193,14 @@ namespace zetscript{
 				is_class_scope=true;
 			}
 
-			if(is_constant){ // scope_var will be global scope...
-				/*if(!(sc!=NULL || scope_var == MAIN_SCOPE(eval_data))){
-					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"'const' is allowed only in within class or global variables");
-				}*/
-
-				// satic or defined in in MAIN SCOPE are global symbols...
-				if((sc!=NULL) || (scope_var == MAIN_SCOPE(eval_data))){
-					scope_var = MAIN_SCOPE(eval_data);
-
-					if(sc!=NULL){
-						pre_variable_name=sc->str_script_type+"::";
-					}
-				}else{
-
-				}
-			}else if(sc != NULL){
-				sf_field_initializer=sc->sf_field_initializer;
-			}
-
-
 			do{
 				int test_line=0;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				start_var=aux_p;
 				start_line=line;
 				end_var=NULL;
+				zs_string pre_variable_name="";
+				ScriptFunction *sf_field_initializer=NULL;
 				ScriptType *sc_var_member_extension=sc;
 
 				if(sc==NULL){
@@ -239,6 +221,11 @@ namespace zetscript{
 							return NULL;
 						}
 					}
+				}
+
+				if((sc_var_member_extension!=NULL) && (is_constant==true)){
+					scope_var = MAIN_SCOPE(eval_data);
+					pre_variable_name=sc_var_member_extension->str_script_type+"::";
 				}
 
 				if(end_var==NULL){

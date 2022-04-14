@@ -226,19 +226,22 @@ namespace zetscript{
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 		if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
+			aux_p=get_name_identifier_token(
+					eval_data
+					,aux_p+2
+					,line
+					,member_symbol
+			);
 
-			if((*sc=GET_SCRIPT_TYPE(eval_data,str_script_type)) != NULL){
-				aux_p=get_name_identifier_token(
-						eval_data
-						,aux_p+2
-						,line
-						,member_symbol
+			if((*sc=GET_SCRIPT_TYPE(eval_data,str_script_type)) == NULL){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error access '%s::%s'. Type '%s' not defined"
+					,str_script_type.c_str()
+					,member_symbol.c_str()
+					,str_script_type.c_str()
 				);
-
-				return aux_p;
-			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"type %s not found",str_script_type.c_str());
 			}
+
+			return aux_p;
 		}
 		return NULL;
 	}
