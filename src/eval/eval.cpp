@@ -414,7 +414,7 @@ namespace zetscript{
 
 		zs_string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
-		ScriptType *sc_sf = GET_SCRIPT_CLASS(eval_data,sf->idx_script_type_owner);
+		ScriptType *sc_sf = GET_SCRIPT_TYPE(eval_data,sf->idx_script_type_owner);
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 

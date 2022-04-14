@@ -327,7 +327,7 @@ namespace zetscript{
 						,symbol_name
 				);
 
-				sc=GET_SCRIPT_CLASS(eval_data,symbol_name);
+				sc=GET_SCRIPT_TYPE(eval_data,symbol_name);
 
 				if(sc==NULL){
 
@@ -340,7 +340,7 @@ namespace zetscript{
 							byte_code_load= ByteCode::BYTE_CODE_LOAD_LOCAL;
 							value=vis->idx_position;
 						}
-					}else{ // class not found!
+					}else{ // type not found!
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not defined",symbol_name.c_str());
 					}
 

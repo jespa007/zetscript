@@ -10,7 +10,7 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		Keyword key_w;
 
-		// check class scope...
+		// check type scope...
 		if(eval_is_keyword(aux_p)==Keyword::KEYWORD_STATIC){
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[Keyword::KEYWORD_STATIC].str),line);

@@ -5,10 +5,10 @@
 #pragma once
 
 
-#define NEW_OBJECT_VAR_BY_CLASS_IDX(data,idx)			((data->script_type_factory)->instanceScriptObjectByTypeIdx(idx))
-#define GET_SCRIPT_CLASS(data,idx_or_name)				((data->script_type_factory)->getScriptType(idx_or_name))
-#define GET_SCRIPT_CLASS_NAME(data,idx) 				((data->script_type_factory)->getScriptTypeName(idx))
-#define SCRIPT_CLASS_MAIN(data)							((data->script_type_factory)->getScriptType(IDX_TYPE_CLASS_MAIN))    // 0 is the main class
+#define NEW_OBJECT_VAR_BY_TYPE_IDX(data,idx)			((data->script_type_factory)->instanceScriptObjectByTypeIdx(idx))
+#define GET_SCRIPT_TYPE(data,idx_or_name)				((data->script_type_factory)->getScriptType(idx_or_name))
+#define GET_SCRIPT_TYPE_NAME(data,idx) 					((data->script_type_factory)->getScriptTypeName(idx))
+#define SCRIPT_TYPE_MAIN(data)							((data->script_type_factory)->getScriptType(IDX_TYPE_CLASS_MAIN))    // 0 is the main type
 
 #define SCRIPT_OBJECT_STRING(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_STRING))
 #define SCRIPT_OBJECT_ITERATOR_STRING(data)				((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))

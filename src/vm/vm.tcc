@@ -12,7 +12,7 @@
 zs_string var_type1=stk_to_typeof_str(data->zs,stk_result_op1),\
 	   var_type2=stk_to_typeof_str(data->zs,stk_result_op2);\
 \
-	VM_ERROR("cannot perform operator '%s' %s '%s'. Check whether op1 and op2 are same type, or class implements the metamethod",\
+	VM_ERROR("cannot perform operator '%s' %s '%s'. Check whether op1 and op2 are same type, or type implements the metamethod",\
 		var_type1.c_str(),\
 		c,\
 		var_type2.c_str());\
@@ -331,7 +331,7 @@ namespace zetscript{
 
 
 #define EXTRACT_FUNCTION_INFO\
-	{ /* get elements from class */ \
+	{ /* get elements from type */ \
 		Symbol *symbol = (Symbol *)(*(stk_elements_builtin_ptr+i));\
 		if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){ \
 			irfs = (ScriptFunction *)symbol->ref_ptr;\
@@ -522,7 +522,7 @@ namespace zetscript{
 					}
 					str_candidates.append("\t\t-");
 
-					// class if not mail
+					// type if not main
 					if(class_obj!=NULL && class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN){
 						str_candidates.append(class_obj->str_script_type.c_str());
 						str_candidates.append("::");

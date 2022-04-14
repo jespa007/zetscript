@@ -184,25 +184,29 @@ namespace zetscript{
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 
-			// check class scope...
+			// check type scope...
 			if(scope_var->script_type_owner->idx_script_type != IDX_TYPE_CLASS_MAIN
 				&& scope_var->scope_base == scope_var
 				&& scope_var->scope_parent == NULL // is function member
-			){ // class members are defined as functions
+			){ // type members are defined as functions
 				sc=scope_var->script_type_owner;
 				is_class_scope=true;
 			}
 
 			if(is_constant){ // scope_var will be global scope...
-				if(!(sc!=NULL || scope_var == MAIN_SCOPE(eval_data))){
-					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"'const' is allowed only in class or global");
-				}
+				/*if(!(sc!=NULL || scope_var == MAIN_SCOPE(eval_data))){
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"'const' is allowed only in within class or global variables");
+				}*/
 
-				// always static or constant are global symbols...
-				scope_var = MAIN_SCOPE(eval_data);
+				// satic or defined in in MAIN SCOPE are global symbols...
+				if((sc!=NULL) || (scope_var == MAIN_SCOPE(eval_data))){
+					scope_var = MAIN_SCOPE(eval_data);
 
-				if(sc!=NULL){
-					pre_variable_name=sc->str_script_type+"::";
+					if(sc!=NULL){
+						pre_variable_name=sc->str_script_type+"::";
+					}
+				}else{
+
 				}
 			}else if(sc != NULL){
 				sf_field_initializer=sc->sf_field_initializer;
@@ -218,7 +222,7 @@ namespace zetscript{
 				ScriptType *sc_var_member_extension=sc;
 
 				if(sc==NULL){
-					if((end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
+					if((end_var=is_class_member_extension( // is function type extensions (example A::function1(){ return 0;} )
 						eval_data
 						,start_var
 						,start_line
@@ -421,7 +425,7 @@ error_eval_keyword_var:
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
 		}
 
-		// check class particular case
+		// check type particular case
 
 		//Keyword key_w;
 		//
@@ -433,7 +437,7 @@ error_eval_keyword_var:
 			   || (properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY)
 			  )
 			   // is function member
-			){ // class members are defined as functions
+			){ // type members are defined as functions
 			key_w=eval_is_keyword(aux_p);
 			if(key_w != Keyword::KEYWORD_FUNCTION){ // make it optional
 				key_w = Keyword::KEYWORD_FUNCTION;
@@ -473,7 +477,7 @@ error_eval_keyword_var:
 			if(named_function){ // is named function..
 
 				if(sc==NULL){ // check if function member declaration
-				   end_var=is_class_member_extension( // is function class extensions (example A::function1(){ return 0;} )
+				   end_var=is_class_member_extension( // is function type extensions (example A::function1(){ return 0;} )
 						eval_data
 						,aux_p
 						,line
@@ -481,7 +485,7 @@ error_eval_keyword_var:
 						,name_script_function
 				   );
 
-				   if(sc!=NULL){ // scope is the class
+				   if(sc!=NULL){ // scope is the type
 					   scope_info=sc->scope_script_type;
 				   }
 				}
@@ -515,7 +519,7 @@ error_eval_keyword_var:
 
 				// anonymous functions are always in main scope
 				/*if(
-						scope_info->script_type != SCRIPT_CLASS_MAIN(eval_data)
+						scope_info->script_type != SCRIPT_TYPE_MAIN(eval_data)
 					 && scope_info->scope_parent != NULL
 				){
 					sc=scope_info->script_type;
@@ -527,7 +531,7 @@ error_eval_keyword_var:
 				zs_string error;
 				if(is_special_char(aux_p)){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
-					,scope_info->script_type_owner != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
+					,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data)?zs_strutils::format(
 							"declaring function member '%s::%s'"
 							,scope_info->script_type_owner->str_script_type.c_str()
 							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
@@ -538,7 +542,7 @@ error_eval_keyword_var:
 				}else{
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
-							,scope_info->script_type_owner != SCRIPT_CLASS_MAIN(eval_data)?zs_strutils::format(
+							,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data)?zs_strutils::format(
 									"declaring function member '%s::%s'"
 									,scope_info->script_type_owner->str_script_type.c_str()
 									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
@@ -785,7 +789,7 @@ error_eval_keyword_var:
 				}
 
 				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
-					if(scope_info->script_type_owner != SCRIPT_CLASS_MAIN(eval_data)){ // is a function that was created within a member function...
+					if(scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data)){ // is a function that was created within a member function...
 						((ScriptFunction *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
 					}
 				}

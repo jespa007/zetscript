@@ -40,7 +40,7 @@ namespace zetscript{
 
 		// script type
 		int 				idx_script_type_return; 		// idx return type
-		int					idx_script_type_owner; 				// which class belongs to...
+		int					idx_script_type_owner; 				// which type belongs to...
 
 		uint16_t			properties;
 
@@ -56,7 +56,7 @@ namespace zetscript{
 		// number of instructions
 		size_t			instructions_len;
 
-		// local symbols for class or function...
+		// local symbols for type or function...
 		zs_vector   		*local_variables; // registered variable symbols
 
 		ScriptFunction(

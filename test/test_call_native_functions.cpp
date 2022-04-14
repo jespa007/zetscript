@@ -174,7 +174,7 @@ void test_bug(){
 
 
 
-		zs.eval(
+		/*zs.eval(
 			"//---- CONSTANTS\n"
 			"var BL_MAX_TRIALS= 60;\n"
 			"var N_TRIALS_BASELINE=2.0;\n"
@@ -183,10 +183,16 @@ void test_bug(){
 			"// KEYS\n"
 			"var T_SPACE = 32;\n"
 			"var T_B 	= 98;\n"
-		);
+		);*/
 
 
 		for(int i=0; i < MAX_CLASSES; i++){
+
+			if(i==MAX_CLASSES-1){
+				int hh=0;
+				hh++;
+			}
+
 			zs.eval(zetscript::zs_strutils::format(
 				"var %s=new c%s();\n"
 				"%s.load();"
@@ -195,6 +201,8 @@ void test_bug(){
 				,str_classes[i]
 			));
 		}
+
+		//zs.printGeneratedCode();
 
 		for(int i=0; i < MAX_CLASSES; i++){
 			fun[i]=new std::function<void ()>(zs.bindScriptFunction<void()>(

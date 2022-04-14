@@ -24,11 +24,11 @@ namespace zetscript{
 		symbol_functions=new zs_vector;
 		symbol_types=new zs_vector;
 
-		if(_scope_parent == NULL){ // first node (it should be a class)...
+		if(_scope_parent == NULL){ // first node (it should be a type)...
 			scope_base = this;
 		}else{ // others...
 			scope_base = scope_parent->scope_base;
-			script_type_owner=scope_parent->script_type_owner; // propagate script class
+			script_type_owner=scope_parent->script_type_owner; // propagate script type
 
 			if(idx_script_function==ZS_IDX_UNDEFINED){ // May be is a block containing if-else, for, etc --> propagate current script function
 				idx_script_function=scope_parent->idx_script_function;
@@ -138,11 +138,11 @@ namespace zetscript{
 	void Scope::checkPreRegisterSymbol(const char * file,short line, const zs_string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
 		Symbol *p_irv=NULL;
 
-		// check if you register a class...
+		// check if you register a type...
 		// check if symbol collides also with built in type...
 		if((check_repeated_symbols_direction & REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS)==0){
 			if(zs->getScriptTypeFactory()->getIdxScriptType(symbol_name) != ZS_IDX_UNDEFINED){
-				THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved builtin-type or defined class",symbol_name.c_str());
+				THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved builtin-type or defined type",symbol_name.c_str());
 			}
 		}
 
@@ -151,7 +151,7 @@ namespace zetscript{
 				if(p_irv->file == NULL || *p_irv->file==0){
 					THROW_SCRIPT_ERROR_FILE_LINE(file,line," error symbol '%s' already registered", symbol_name.c_str());
 				}else{
-					THROW_SCRIPT_ERROR_FILE_LINE(file,line," error symbol '%s' already registered at '%s:%i'", symbol_name.c_str(),p_irv->file,p_irv->line);
+					THROW_SCRIPT_ERROR_FILE_LINE(file,line," error symbol '%s' already registered at '%s:%i'", symbol_name.c_str(),zs_path::get_filename(p_irv->file).c_str(),p_irv->line);
 				}
 			}else{
 				THROW_RUNTIME_ERROR(" error symbol '%s' already registered as C++", symbol_name.c_str());

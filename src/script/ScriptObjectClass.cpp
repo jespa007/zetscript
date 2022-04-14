@@ -37,7 +37,7 @@ namespace zetscript{
 			callConstructorMemberVariables(this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]));
 		}
 
-		if(sc->sf_field_initializer != NULL){ // execute if only script class
+		if(sc->sf_field_initializer != NULL){ // execute if only script type
 			vm_execute(vm,this,sc->sf_field_initializer);
 		}
 	}
@@ -59,7 +59,7 @@ namespace zetscript{
 
 			Symbol * symbol = (Symbol *)member_vars->items[i];
 
-			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each class
+			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each type
 			if((se=addBuiltinProperty(
 				symbol->name
 			))==NULL){
@@ -86,28 +86,28 @@ namespace zetscript{
 		c_object = _c_object;
 		script_class_native=NULL;
 
-		// search native class
+		// search native type
 		if(script_type->isNativeType()){
 			script_class_native=script_type;
 		}else {
 			ScriptType *sc=script_type;
-			// get first class with c inheritance...
+			// get first type with c inheritance...
 			while((sc->idx_base_types->count>0) && (script_class_native==NULL)){
-				sc=this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]); // get base class (only first in script because has single inheritance)...
-				if(sc->isNativeType()){ // we found the native script class!
+				sc=this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]); // get base type (only first in script because has single inheritance)...
+				if(sc->isNativeType()){ // we found the native script type!
 					script_class_native=sc;
 					break;
 				}
 			}
 		}
 
-		// create object if class is native or it derives from a native class
+		// create object if type is native or it derives from a native type
 		if(c_object == NULL && script_class_native != NULL){
 			// if object == NULL, the script takes the control. Initialize c_class (script_class_native) to get needed info to destroy create the C++ object.
 			created_object = CALL_CONSTRUCTOR_CLASS(zs,script_class_native); // (*script_type->c_constructor)();
 			was_created_by_constructor=true;
 			c_object = created_object;
-			delete_c_object_on_destroy=true; // destroy object when class is destroyed. It will be safe (in principle)
+			delete_c_object_on_destroy=true; // destroy object when type is destroyed. It will be safe (in principle)
 		}
 
 		// execute init for variable members (not dynamic)

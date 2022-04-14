@@ -18,10 +18,11 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		// derefer all variables in all scopes (except main )...
 		// TODO: do stack dump from current vm_stk
-		while(data->vm_current_scope_function-- > data->vm_scope_function){
+		while(data->vm_current_scope_function > data->vm_scope_function){
 			while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
 				VM_POP_SCOPE(false);
 			}
+			--data->vm_current_scope_function;
 		}
 
 		vm_remove_empty_shared_pointers(vm,IDX_CALL_STACK_MAIN);
@@ -50,12 +51,12 @@ namespace zetscript{
 	void vm_init(VirtualMachine *vm,ZetScript *_zs){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 
-		// script class factory should be created and initialized
+		// script type factory should be created and initialized
 		data->script_function_factory=_zs->getScriptFunctionFactory();
 		data->script_type_factory=_zs->getScriptTypeFactory();
 		data->scope_factory = _zs->getScopeFactory();
 		data->main_function_object = MAIN_FUNCTION(data);
-		data->main_class_object = SCRIPT_CLASS_MAIN(data);
+		data->main_class_object = SCRIPT_TYPE_MAIN(data);
 	}
 
 	//============================================================================================================================================

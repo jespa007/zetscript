@@ -181,7 +181,7 @@ namespace zetscript{
 
 
 		for(int i=0; i < main_class->idx_base_types->count; i++){
-			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base class...
+			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base type...
 			if(sc->str_script_type_ptr ==base_class_name_ptr){
 				THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
 						,zs_rtti::demangle(str_script_type).c_str()
@@ -192,9 +192,9 @@ namespace zetscript{
 
 		ScriptType *base=(ScriptType *)script_types->get(idx_base_type);
 
-		// search native types that already inherits class B
+		// search native types that already inherits type B
 		for(int i=0; i < main_class->idx_base_types->count; i++){
-			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base class...
+			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base type...
 			// check whether type inherits inheritates B
 			if(sc->isDerivedFrom(idx_base_type)){
 				THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' inherits '%s' that already is inherited by '%s'"

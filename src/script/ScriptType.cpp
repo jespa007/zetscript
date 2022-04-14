@@ -43,7 +43,7 @@ namespace zetscript{
 		scope_factory = zs->getScopeFactory();
 		script_function_factory= zs->getScriptFunctionFactory();
 		script_type_factory=zs->getScriptTypeFactory();
-		sf_field_initializer=NULL; // will be created after register class and register member extension (if available)
+		sf_field_initializer=NULL; // will be created after register type and register member extension (if available)
 		properties=_properties;
 
 	}
@@ -58,7 +58,7 @@ namespace zetscript{
 			zs_string script_interface="";
 			zs_string native_interface="";
 
-			// class if not mail
+			// type if not mail
 			script_interface.append(this->str_script_type.c_str());
 			script_interface.append("::");
 
@@ -419,7 +419,7 @@ namespace zetscript{
 
 		if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
 
-			if(getSymbol(_function_name,(char)_params_len,false) != NULL){ // we only search repeat symbols on this class ...
+			if(getSymbol(_function_name,(char)_params_len,false) != NULL){ // we only search repeat symbols on this type ...
 				Symbol *existing_symbol;
 				if((existing_symbol=getSymbol(_function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
 					THROW_RUNTIME_ERROR("Function member '%s' is already defined at [%s:%i]"
@@ -463,7 +463,7 @@ namespace zetscript{
 				,_file
 				,_line
 				//---- Function data
-				,idx_script_type 				// idx class which belongs to...
+				,idx_script_type 				// idx type which belongs to...
 				,_function_name
 				,_params
 				,_params_len
@@ -594,7 +594,7 @@ namespace zetscript{
 					}
 
 
-					// in the class only setters are registered in member property variable (getter is ignored)
+					// in the type only setters are registered in member property variable (getter is ignored)
 					switch(op){
 					case BYTE_CODE_METAMETHOD_SET:
 					case BYTE_CODE_METAMETHOD_ADD_SET:

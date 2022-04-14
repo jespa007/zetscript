@@ -143,7 +143,7 @@ namespace zetscript{
 					   ( eval_data->current_function->script_function->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)!= 0
 					&& (	scope->script_type_owner->idx_script_type != IDX_TYPE_CLASS_MAIN)
 					   // is function member
-					){ // class members are defined as functions
+					){ // type members are defined as functions
 					sc=scope->script_type_owner;
 				}
 

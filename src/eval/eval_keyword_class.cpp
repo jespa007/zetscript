@@ -47,7 +47,7 @@ namespace zetscript{
 				,str_script_type
 		);
 
-		// try to register class...
+		// try to register type...
 		class_line = line;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -64,14 +64,14 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p, line);
 		}
 
-		// register class
+		// register type
 		try{
 			sc=eval_data->script_type_factory->registerScriptType(
 				 str_script_type
 				,base_class_name
 				,0
-				,__FILE__
-				, __LINE__
+				,eval_data->current_parsing_file
+				, line
 			);
 		}catch(zs_exception &ex){
 			eval_data->error=true;
@@ -85,7 +85,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		ZS_LOG_DEBUG("registered class '%s' line %i ",str_script_type.c_str(), class_line);
+		ZS_LOG_DEBUG("registered type '%s' line %i ",str_script_type.c_str(), class_line);
 
 		if(*aux_p != '{' ){
 			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected 'extends' or '{' to after class declaration'%s'",str_script_type.c_str());
@@ -93,8 +93,8 @@ namespace zetscript{
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-		// TODO: Register class and baseof
-		// register info class ...
+		// TODO: Register type and baseof
+		// register info type ...
 		// check for named functions or vars...
 		while(*aux_p != '}' && *aux_p != 0){
 			char *test_attrib=aux_p;
@@ -103,7 +103,7 @@ namespace zetscript{
 				eval_data
 				,aux_p
 				,line
-				,sc // pass class
+				,sc // pass type
 			))==NULL){
 
 				line=test_line_attrib; // restore line
@@ -124,7 +124,7 @@ namespace zetscript{
 							eval_data
 							,aux_p
 							, line
-							,sc->scope_script_type // pass class scope
+							,sc->scope_script_type // pass type scope
 						);
 						break;
 				case Keyword::KEYWORD_UNKNOWN: // supposes a member function
@@ -142,7 +142,7 @@ namespace zetscript{
 							eval_data
 							,aux_p
 							, line
-							,sc->scope_script_type // pass class scope
+							,sc->scope_script_type // pass type scope
 						);
 
 						if(aux_p != NULL){ // particular case where var declaration ends with ';'
@@ -227,7 +227,7 @@ namespace zetscript{
 
 		if(*aux_p == ':' && *(aux_p+1)==':'){ // extension class detected...
 
-			if((*sc=GET_SCRIPT_CLASS(eval_data,str_script_type)) != NULL){
+			if((*sc=GET_SCRIPT_TYPE(eval_data,str_script_type)) != NULL){
 				aux_p=get_name_identifier_token(
 						eval_data
 						,aux_p+2
@@ -237,7 +237,7 @@ namespace zetscript{
 
 				return aux_p;
 			}else{
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"class %s not found",str_script_type.c_str());
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"type %s not found",str_script_type.c_str());
 			}
 		}
 		return NULL;
@@ -336,7 +336,7 @@ namespace zetscript{
 
 		IGNORE_BLANKS(aux_p,eval_data,end_var,line);
 
-		if(*aux_p=='{'){ // is a class property
+		if(*aux_p=='{'){ // is a type property
 
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			Symbol *symbol=NULL;
@@ -396,7 +396,7 @@ namespace zetscript{
 						eval_data
 						,aux_p
 						, line
-						,scope_info // pass class scope
+						,scope_info // pass type scope
 						, EVAL_KEYWORD_FUNCTION_PROPERTY_IS_MEMBER_PROPERTY | EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS
 						,&symbol
 						,name_script_function+"@"+property_name

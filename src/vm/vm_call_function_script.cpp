@@ -348,15 +348,22 @@ find_element_object:
 						  ||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
 
 							// if object is C
-							if(so_aux->getScriptType()->properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF){
-								VM_STOP_EXECUTE("Error accessing '...%s.%s', where '%s' is type '%s'. Native type property '%s::%s' is not defined"
-									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-									,str_symbol
-									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-									,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-									,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-									,str_symbol
-								);
+							ScriptType *sc_type=so_aux->getScriptType();
+
+							// exceptions
+							if(sc_type->idx_script_type<IDX_TYPE_SCRIPT_OBJECT_OBJECT || sc_type->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_OBJECT){
+								// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
+								if(so_aux->getScriptType()->properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF){
+									VM_STOP_EXECUTE("Error accessing '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
+										,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+										,str_symbol
+										,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
+										,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+										,sc_type->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
+										,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+										,str_symbol
+									);
+								}
 							}
 
 							// save
@@ -782,7 +789,7 @@ find_element_object:
 					if(
 						(old_stk_dst.properties & STK_PROPERTY_SCRIPT_OBJECT)
 									&&
-						((old_stk_dst.properties & (STK_PROPERTY_IS_C_VAR_PTR))==(STK_PROPERTY_IS_C_VAR_PTR)==0) // is not C class
+						((old_stk_dst.properties & (STK_PROPERTY_IS_C_VAR_PTR))==(STK_PROPERTY_IS_C_VAR_PTR)==0) // is not C type
 									&&
 						(old_stk_dst.value!=0) // it had a pointer (no constant)...
 									&&
@@ -1456,7 +1463,7 @@ execute_function:
 				goto lbl_return_function;
 			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 
-				 	so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,instruction->value_op1);
+				 	so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data,instruction->value_op1);
 
 					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
@@ -1479,7 +1486,7 @@ execute_function:
 
 				 		 Symbol *constructor_function=NULL;
 
-				 		 so_aux=NEW_OBJECT_VAR_BY_CLASS_IDX(data,stk_result_op1->value);
+				 		 so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data,stk_result_op1->value);
 
 						if(!vm_create_shared_pointer(vm,so_aux)){
 							goto lbl_exit_function;
@@ -1620,7 +1627,7 @@ execute_function:
 
 						if(data->zs->getScriptTypeFactory()->getScriptType(str_script_type) == NULL){
 							VM_STOP_EXECUTE(
-									"class '%s' not exist"
+									"type '%s' not exist"
 									,str_script_type
 							);
 						}
@@ -1652,28 +1659,7 @@ execute_function:
 		//=========================
 		// POP STACK
 		while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
-			//VM_POP_SCOPE(false); // do not check removeEmptySharedPointers to have better performance
-			{\
-				Scope *scope=*(data->vm_current_scope_function->scope_current-1);\
-				StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
-				zs_vector *scope_symbols=scope->symbol_variables;\
-				int count=scope_symbols->count;\
-				StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\
-				while(count--){\
-					if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
-						ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
-						if(so != NULL && so->shared_pointer!=NULL){\
-							false==true?\
-								vm_unref_shared_script_object_and_remove_if_zero(vm,&so)\
-							:\
-							 	 vm_unref_shared_script_object(vm,so,data->vm_idx_call);\
-						}\
-					}\
-					STK_SET_UNDEFINED(stk_local_var);\
-					stk_local_var++;\
-				}\
-				--data->vm_current_scope_function->scope_current;\
-			}
+			VM_POP_SCOPE(false); // do not check removeEmptySharedPointers to have better performance
 		}
 
 		if((data->zero_shares+data->vm_idx_call)->first!=NULL){

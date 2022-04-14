@@ -20,8 +20,8 @@ namespace zetscript{
 
 	public:
 
-		int 			idx_script_type; 	// registered class idx
-		zs_string 		str_script_type;		// info symbol class
+		int 			idx_script_type; 	// registered type idx
+		zs_string 		str_script_type;		// info symbol type
 		Scope			*scope_script_type;
 		const char 		*str_script_type_ptr; // type_id().name();
 		uint16_t		properties;

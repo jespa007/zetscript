@@ -42,7 +42,7 @@ namespace zetscript{
 		instructions_len = 0;
 
 
-		// local symbols for class or function...
+		// local symbols for type or function...
 		local_variables=new zs_vector();
 		params = NULL;//new zs_vector();
 		params_len = 0;
@@ -92,9 +92,9 @@ namespace zetscript{
 		zs_string symbol_value="";
 		zs_string iload_info="";
 
-		if(sc==NULL){ // no class is a function on a global scope
+		if(sc==NULL){ // no type is a function on a global scope
 			symbol_ref=sfo->name_script_function;
-		}else{ // is a class
+		}else{ // is a type
 			symbol_ref=sfo->name_script_function;//+zs_string("::")+zs_string("????");
 			class_str=sc->str_script_type+"::";
 		}
@@ -104,7 +104,8 @@ namespace zetscript{
 		printf("______________________________________________________________\n\n");
 		printf(" Function: '%s%s'                                             \n",class_str.c_str(),symbol_ref.c_str());
 		printf(" Required stack: %i                                           \n",sfo->min_stack_needed);
-		printf(" Scopes: %i                                                   \n\n",sfo->scope_script_function->scopes->count);
+		printf(" Scopes: %i                                                   \n",sfo->scope_script_function->scopes->count);
+		printf(" Local vars: %i                                               \n\n",sfo->local_variables->count);
 		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
 
@@ -202,7 +203,7 @@ namespace zetscript{
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
-					,(char)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_CLASS_NAME(sfo,instruction->value_op1):"???"
+					,(char)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_TYPE_NAME(sfo,instruction->value_op1):"???"
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:
@@ -613,7 +614,7 @@ namespace zetscript{
 				,_file
 				,_line
 				//---- Function data
-				,idx_script_type_owner 				// idx class is the same which this function belongs to...
+				,idx_script_type_owner 				// idx type is the same which this function belongs to...
 				,_function_name
 				,_params
 				,_params_len
@@ -721,14 +722,14 @@ namespace zetscript{
 				}
 
 
-				if((idx_sc_found= script_type_factory->getIdxScriptType(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if class
+				if((idx_sc_found= script_type_factory->getIdxScriptType(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if type
 					unresolved_instruction->byte_code=BYTE_CODE_LOAD_TYPE;
 					unresolved_instruction->value_op2=idx_sc_found;
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
 					 zs_string static_error;
 					char copy_aux[512]={0};
 
-					// get class
+					// get type
 					strncpy(copy_aux,ptr_str_symbol_to_find,str_aux-ptr_str_symbol_to_find);
 
 					sc_found=zs->getScriptTypeFactory()->getScriptType(copy_aux);

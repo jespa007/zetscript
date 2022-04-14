@@ -25,7 +25,7 @@ namespace zetscript{
 		// !!! HERE WE DEFINE THE BUILTINT CLASSES
 		// !!! WARNING THE REGISTER HAS TO RESPECT THE SAME ORDER
 		// built-in types...
-		IDX_TYPE_CLASS_MAIN =0, 	// Main class ...
+		IDX_TYPE_CLASS_MAIN =0, 	// Main type ...
 		IDX_TYPE_UNDEFINED, 		// UNDEFINED ...
 		IDX_TYPE_NULL, 		// NULL ...
 
@@ -58,7 +58,7 @@ namespace zetscript{
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR, // IteratorVector []
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT, // IteratorObject
 
-		// Object & class
+		// Object & type
 		IDX_TYPE_SCRIPT_OBJECT_OBJECT, //  Object {}
 		IDX_TYPE_SCRIPT_OBJECT_CLASS, // class A{}
 		IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT, // zetscript

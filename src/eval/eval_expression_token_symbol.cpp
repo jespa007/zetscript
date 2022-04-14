@@ -202,7 +202,7 @@ namespace zetscript{
 					if(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':'){ //  static access
 
 						// mark symbol as static
-						// the first item is the class
+						// the first item is the type
 						zs_string static_access_value=token_node_symbol->value,class_element;
 						Symbol *member_symbol=NULL;
 
@@ -223,7 +223,7 @@ namespace zetscript{
 						// override
 						token_node_symbol->value=static_access_value;
 
-						if(sc != NULL){ // if class exist ...
+						if(sc != NULL){ // if type exist ...
 
 							member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
 
@@ -556,7 +556,7 @@ namespace zetscript{
 
 					// The last instruction was BYTE_CODE_LOAD_THIS_VARIABLE and the evaluation found its idx_position
 					// Because the instruction to be replaced is a call_this and it could have inheritance, leave as undefined
-					// to allow locate functions in the top most inherited class
+					// to allow locate functions in the top most inherited type
 					if(byte_code==BYTE_CODE_THIS_CALL || byte_code==BYTE_CODE_SUPER_CALL){
 						instruction_token->vm_instruction.value_op2=ZS_IDX_UNDEFINED;
 					}
@@ -614,7 +614,7 @@ namespace zetscript{
 						eval_data->current_parsing_file
 						,line
 						,error_expression_token_symbol
-						,"'this' only can be used within a class"
+						,"'this' only can be used within a type"
 					);
 				}
 
