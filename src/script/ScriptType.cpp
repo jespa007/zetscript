@@ -271,8 +271,10 @@ namespace zetscript{
 				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
 				,_property_name.c_str()
 			);
-			symbol_metamethod_function=zs_string(byte_code_metamethod_to_symbol_str(_byte_code_metamethod))+"@"+_property_name; //byte_code_metamethod_to_symbol_str(_byte_code_metamethod)+"@"+_property_name;
 		}
+
+		symbol_metamethod_function=zs_string(byte_code_metamethod_to_symbol_str(_byte_code_metamethod))+"@"+_property_name; //byte_code_metamethod_to_symbol_str(_byte_code_metamethod)+"@"+_property_name;
+
 		//zs_string member_property_metamethod_name=byte_code_metamethod_to_symbol_str(_metamethod)+"@"+_property_name;
 		switch(_byte_code_metamethod){
 		case BYTE_CODE_METAMETHOD_SET:

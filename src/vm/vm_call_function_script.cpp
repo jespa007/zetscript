@@ -1676,6 +1676,7 @@ execute_function:
 			if((data->zero_shares+data->vm_idx_call)->first!=NULL){
 				vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 			}
+
 			--data->vm_current_scope_function;
 		}
 
