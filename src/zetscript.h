@@ -298,7 +298,7 @@ namespace zetscript{
 		//cpp binding
 		// Helpers...
 		inline StackElement convertVarToStackElement(zs_int var_ptr, short idx_builtin_type);
-		inline bool convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, zs_int *result, zs_string & error);
+		inline bool convertStackElementToVar(const StackElement & _stack_element, int idx_builtin_type, zs_int *result, zs_string & error);
 
 		inline void unrefLifetimeObject(ScriptObject *so);
 

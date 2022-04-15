@@ -88,165 +88,162 @@ namespace zetscript{
 				return stk_result;
 		}
 
-		bool ZetScript::convertStackElementToVar(StackElement *stack_element, int idx_builtin_type, zs_int *ptr_var, zs_string & error){
+		bool ZetScript::convertStackElementToVar(const StackElement & _stack_element, int idx_builtin_type, zs_int *ptr_var, zs_string & error){
 			zs_int val_ret=0;
 			//ScriptObjectString *so=NULL;
 
 			ScriptObject *script_object=NULL;
+			StackElement stack_element=_stack_element;
+			StackElement *ptr_stack_element=&stack_element;
 
 
 			// save return type ...
-			if(stack_element->properties & STK_PROPERTY_PTR_STK){
-				stack_element=((StackElement *)stack_element->value);
+			if(ptr_stack_element->properties & STK_PROPERTY_PTR_STK){
+				ptr_stack_element=((StackElement *)ptr_stack_element->value);
 			}
 
-			if(idx_builtin_type == IDX_TYPE_STACK_ELEMENT){
-				val_ret=(zs_int)stack_element;
-			}else{
+			switch(GET_STK_PROPERTY_TYPES(ptr_stack_element->properties)){
+			case STK_PROPERTY_NULL:
+				break;
+			case STK_PROPERTY_BOOL:
+				if(idx_builtin_type == IDX_TYPE_BOOL_C){// *ScriptType::k_str_bool_type){
+					val_ret=(zs_int)(ptr_stack_element->value);
+				}else if(idx_builtin_type == IDX_TYPE_BOOL_PTR_C){//*ScriptType::k_str_bool_type_ptr){
+					val_ret=(zs_int)(&ptr_stack_element->value);
+				}else{
+					error="cannot convert '";
+					error.append(zs_rtti::demangle((k_str_bool_type_ptr)));
+					error.append("' to '");
+					error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+					error.append("'");
 
-				switch(GET_STK_PROPERTY_TYPES(stack_element->properties)){
-				case STK_PROPERTY_NULL:
+					return false;
+				}
+
+				break;
+			case STK_PROPERTY_ZS_FLOAT:
+				switch(idx_builtin_type){
+				case IDX_TYPE_ZS_FLOAT_C:
+					ZS_FLOAT_COPY(&val_ret,&ptr_stack_element->value);
 					break;
-				case STK_PROPERTY_BOOL:
-					if(idx_builtin_type == IDX_TYPE_BOOL_C){// *ScriptType::k_str_bool_type){
-						val_ret=(zs_int)(stack_element->value);
-					}else if(idx_builtin_type == IDX_TYPE_BOOL_PTR_C){//*ScriptType::k_str_bool_type_ptr){
-						val_ret=(zs_int)(&stack_element->value);
-					}else{
-						error="cannot convert '";
-						error.append(zs_rtti::demangle((k_str_bool_type_ptr)));
-						error.append("' to '");
-						error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
-						error.append("'");
+				case IDX_TYPE_ZS_FLOAT_PTR_C:
+					val_ret=(zs_int)(&ptr_stack_element->value);
+					break;
+				case IDX_TYPE_ZS_INT_C:
+					{
+						zs_int *aux_dst = ((zs_int *)&val_ret);
+						zs_float *aux_src=(zs_float *)&ptr_stack_element->value;
+						*aux_dst=(zs_int)(*aux_src);
+					}
+					break;
+				default:
+					error="cannot convert '";
+					error.append(zs_rtti::demangle((k_str_zs_float_type_ptr)));
+					error.append("' to '");
+					error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+					error.append("'");
+					return false;
+				}
+				break;
+			case STK_PROPERTY_ZS_INT:
+				switch(idx_builtin_type){
+				case IDX_TYPE_ZS_INT_C:
+					val_ret=(zs_int)(ptr_stack_element->value);
+					break;
+				case IDX_TYPE_ZS_INT_PTR_C:
+					val_ret=(zs_int)(&ptr_stack_element->value);
+					break;
+				case IDX_TYPE_ZS_FLOAT_PTR_C:
+					// first assign value
+					*((zs_float *)&ptr_stack_element->value)=ptr_stack_element->value;
+					// second assign pointer
+					val_ret=(zs_int)&ptr_stack_element->value;
+					// third stackelement is mutuated as ptr zs_float (to consensuate)
+					//stack_element->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_IS_C_VAR_PTR;
+					break;
+				default:
+					error= "cannot convert 'int' to '";
+					error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+					error.append("'");
+					return false;
+				}
+				break;
+			// it expects the ScriptFunction directly
+			case STK_PROPERTY_FUNCTION:
+				val_ret=((Symbol *)ptr_stack_element->value)->ref_ptr;
+				break;
+			default: // script variable by default ...
 
+				if(ptr_stack_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					script_object=(ScriptObject *)ptr_stack_element->value;
+					ScriptType *c_class=NULL;
+					val_ret=(zs_int)script_object;;
+
+					if(script_object==NULL){
+						error="Variable is not defined";
 						return false;
 					}
 
-					break;
-				case STK_PROPERTY_ZS_FLOAT:
-					switch(idx_builtin_type){
-					case IDX_TYPE_ZS_FLOAT_C:
-						ZS_FLOAT_COPY(&val_ret,&stack_element->value);
-						break;
-					case IDX_TYPE_ZS_FLOAT_PTR_C:
-						val_ret=(zs_int)(&stack_element->value);
-						break;
-					case IDX_TYPE_ZS_INT_C:
-						{
-							zs_int *aux_dst = ((zs_int *)&val_ret);
-							zs_float *aux_src=(zs_float *)&stack_element->value;
-							*aux_dst=(zs_int)(*aux_src);
-						}
-						break;
-					default:
-						error="cannot convert '";
-						error.append(zs_rtti::demangle((k_str_zs_float_type_ptr)));
-						error.append("' to '");
-						error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
-						error.append("'");
-						return false;
-					}
-					break;
-				case STK_PROPERTY_ZS_INT:
-					switch(idx_builtin_type){
-					case IDX_TYPE_ZS_INT_C:
-						val_ret=(zs_int)(stack_element->value);
-						break;
-					case IDX_TYPE_ZS_INT_PTR_C:
-						val_ret=(zs_int)(&stack_element->value);
-						break;
-					case IDX_TYPE_ZS_FLOAT_PTR_C:
-						// first assign value
-						*((zs_float *)&stack_element->value)=stack_element->value;
-						// second assign pointer
-						val_ret=(zs_int)&stack_element->value;
-						// third stackelement is mutuated as ptr zs_float (to consensuate)
-						stack_element->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_IS_C_VAR_PTR;
-						break;
-					default:
-						error= "cannot convert 'int' to '";
-						error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
-						error.append("'");
-						return false;
-					}
-					break;
-				// it expects the ScriptFunction directly
-				case STK_PROPERTY_FUNCTION:
-					val_ret=((Symbol *)stack_element->value)->ref_ptr;
-					break;
-				default: // script variable by default ...
+					if(idx_builtin_type!=script_object->idx_script_type){
 
-					if(stack_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						script_object=(ScriptObject *)stack_element->value;
-						ScriptType *c_class=NULL;
-						val_ret=(zs_int)script_object;;
+						if(script_object->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
+							if(ptr_stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
+								error= "internal error var_ref is NULL";
+								return false;
+							}
 
-						if(script_object==NULL){
-							error="Variable is not defined";
-							return false;
-						}
-
-						if(idx_builtin_type!=script_object->idx_script_type){
-
-							if(script_object->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
-								if(stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
-									error= "internal error var_ref is NULL";
-									return false;
-								}
-
-								if(idx_builtin_type == IDX_TYPE_ZS_STRING_PTR_C){
-									val_ret=(zs_int)(((ScriptObjectString *)script_object)->value);
-								}else if (idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
-									val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());
-								}else{
-									error= "cannot convert '";
-									error.append(zs_rtti::demangle((k_str_zs_string_type_ptr)));
-									error.append("' to '");
-									error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
-									error.append("'");
-									return false;
-								}
-							}else if(script_object->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
-								ScriptObjectClass *script_object_class = (ScriptObjectClass *)script_object;
-								c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
-
-								if(c_class != NULL){
-									if((val_ret=c_class->extendsFrom(
-											idx_builtin_type
-										))==0
-									){//c_class->idx_script_type==idx_builtin_type){
-										error = "cannot convert '";
-										error.append(zs_rtti::demangle(c_class->str_script_type_ptr));
-										error.append("' to '");
-										error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
-										error.append("'");
-										return false;
-									}
-									val_ret=(zs_int)script_object_class->getNativeObject();
-								}else{ // Is script class, set directly
-									val_ret=stack_element->value;
-									/*error = " Error calling function, no C-object parameter! Unexpected script variable (";
-									error.append(zs_rtti::demangle(script_object->getTypeName().c_str()));
-									error.append(")");
-									return false;*/
-								}
-							}else{ // cannot convert...
-								error = "cannot convert '";
-								error.append(zs_rtti::demangle(script_object->getTypeName().c_str()));
+							if(idx_builtin_type == IDX_TYPE_ZS_STRING_PTR_C){
+								val_ret=(zs_int)(((ScriptObjectString *)script_object)->value);
+							}else if (idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
+								val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());
+							}else{
+								error= "cannot convert '";
+								error.append(zs_rtti::demangle((k_str_zs_string_type_ptr)));
 								error.append("' to '");
 								error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
 								error.append("'");
 								return false;
 							}
-						}else{ // get native object...
-							val_ret=(zs_int)script_object->getNativeObject();
+						}else if(script_object->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
+							ScriptObjectClass *script_object_class = (ScriptObjectClass *)script_object;
+							c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
+
+							if(c_class != NULL){
+								if((val_ret=c_class->extendsFrom(
+										idx_builtin_type
+									))==0
+								){//c_class->idx_script_type==idx_builtin_type){
+									error = "cannot convert '";
+									error.append(zs_rtti::demangle(c_class->str_script_type_ptr));
+									error.append("' to '");
+									error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+									error.append("'");
+									return false;
+								}
+								val_ret=(zs_int)script_object_class->getNativeObject();
+							}else{ // Is script class, set directly
+								val_ret=ptr_stack_element->value;
+								/*error = " Error calling function, no C-object parameter! Unexpected script variable (";
+								error.append(zs_rtti::demangle(script_object->getTypeName().c_str()));
+								error.append(")");
+								return false;*/
+							}
+						}else{ // cannot convert...
+							error = "cannot convert '";
+							error.append(zs_rtti::demangle(script_object->getTypeName().c_str()));
+							error.append("' to '");
+							error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)));
+							error.append("'");
+							return false;
 						}
-					}else{
-						error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)).c_str());
-						return false;
+					}else{ // get native object...
+						val_ret=(zs_int)script_object->getNativeObject();
 					}
-					break;
+				}else{
+					error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,idx_builtin_type)).c_str());
+					return false;
 				}
+				break;
 			}
 
 			*ptr_var = val_ret;
@@ -307,7 +304,7 @@ namespace zetscript{
 								,line
 						);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+						if(!convertStackElementToVar(stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -380,7 +377,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!convertStackElementToVar(&stk,idx_return, (zs_int*)(&ret_value),error_str)){
+						if(!convertStackElementToVar(stk,idx_return, (zs_int*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -465,7 +462,7 @@ namespace zetscript{
 							,line
 						);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
+						if(!convertStackElementToVar(stk, idx_return, (zs_int*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -556,7 +553,7 @@ namespace zetscript{
 						,line
 					);
 
-					if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+					if(!convertStackElementToVar(stk, idx_return, (zs_int *)(&ret_value),error_str)){
 						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 					}
 					return ret_value;
@@ -651,7 +648,7 @@ namespace zetscript{
 								,line
 								);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
+						if(!convertStackElementToVar(stk, idx_return, (zs_int*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -755,7 +752,7 @@ namespace zetscript{
 							,file
 							,line);
 
-					if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
+					if(!convertStackElementToVar(stk, idx_return, (zs_int*)(&ret_value),error_str)){
 						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 					}
 					return ret_value;
@@ -862,7 +859,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+						if(!convertStackElementToVar(stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -1031,7 +1028,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+						if(!convertStackElementToVar(stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -1211,7 +1208,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+						if(!convertStackElementToVar(stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;

@@ -127,10 +127,10 @@ namespace zetscript{
 		if(stk_arg_c_function!=NULL){
 			for(unsigned char  i = idx_arg_start; i < n_args;i++){
 
-				stk_arg_current=&stk_arg_c_function[i-idx_arg_start];
+				//stk_arg_current=&stk_arg_c_function[i-idx_arg_start];
 
 				if(!data->zs->convertStackElementToVar(
-						stk_arg_current
+						stk_arg_c_function[i-idx_arg_start]
 						,c_function->params[i].idx_script_type
 						,(zs_int *)&converted_param[i]
 						,data->vm_error_str
