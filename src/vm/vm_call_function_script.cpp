@@ -1667,16 +1667,20 @@ execute_function:
 
 		//=========================
 		// POP STACK
-		while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
-			VM_POP_SCOPE(false); // do not check removeEmptySharedPointers to have better performance
+		if(data->vm_current_scope_function > data->vm_scope_function){
+
+			while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
+				VM_POP_SCOPE(false); // do not check removeEmptySharedPointers to have better performance
+			}
+
+			if((data->zero_shares+data->vm_idx_call)->first!=NULL){
+				vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
+			}
+			--data->vm_current_scope_function;
 		}
 
-		if((data->zero_shares+data->vm_idx_call)->first!=NULL){
-			vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
-		}
+		--data->vm_idx_call;
 
-		data->vm_idx_call--;
-		data->vm_current_scope_function--;
 		// POP STACK
 		//=========================
 	}

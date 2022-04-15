@@ -25,6 +25,11 @@ namespace zetscript{
 			--data->vm_current_scope_function;
 		}
 
+		if((data->vm_current_scope_function-data->vm_scope_function) < 0){
+			int jj=0;
+			jj++;
+		}
+
 		vm_remove_empty_shared_pointers(vm,IDX_CALL_STACK_MAIN);
 		data->vm_idx_call=0;
 	}
