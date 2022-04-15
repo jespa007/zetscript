@@ -148,12 +148,21 @@ namespace zetscript{
 
 						if(obj->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 							ScriptObjectVector *so_vector=(ScriptObjectVector *)obj;
+							zs_int index=0;
 
-							if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
-								VM_STOP_EXECUTEF("Expected integer index for Vector access");
+							if(STK_VALUE_IS_ZS_INT(stk_result_op2)){ \
+								index=stk_result_op2->value;
+							}else if(STK_VALUE_IS_ZS_FLOAT(stk_result_op2)){ \
+								index=*((zs_float*)&stk_result_op2->value);
+							}else{
+								VM_STOP_EXECUTEF("Expected number for Vector access");
 							}
 
-							if((stk_var =so_vector->getUserElementAt(stk_result_op2->value))==NULL){
+							if(index >= (int)so_vector->length()){
+								VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
+							}
+
+							if((stk_var =so_vector->getUserElementAt(index))==NULL){
 								goto lbl_exit_function;
 							} \
 						}

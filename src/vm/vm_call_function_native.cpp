@@ -70,6 +70,7 @@ namespace zetscript{
 
 		int idx_script_type_return=c_function->idx_script_type_return;
 		zs_int converted_param[MAX_NATIVE_FUNCTION_ARGS];
+		zs_float aux_float[MAX_NATIVE_FUNCTION_ARGS];
 		zs_int result=0;
 		StackElement *stk_arg_current;
 		data->current_call_c_function = c_function;
@@ -127,10 +128,16 @@ namespace zetscript{
 		if(stk_arg_c_function!=NULL){
 			for(unsigned char  i = idx_arg_start; i < n_args;i++){
 
-				//stk_arg_current=&stk_arg_c_function[i-idx_arg_start];
-
-				if(!data->zs->convertStackElementToVar(
-						stk_arg_c_function[i-idx_arg_start]
+				stk_arg_current=&stk_arg_c_function[i-idx_arg_start];
+				if(stk_arg_current->properties & STK_PROPERTY_PTR_STK){
+					stk_arg_current=((StackElement *)stk_arg_current->value);
+				}
+				if((stk_arg_current->properties & STK_PROPERTY_ZS_INT) && (c_function->params[i].idx_script_type == IDX_TYPE_ZS_FLOAT_PTR_C)){
+					aux_float[i]=stk_arg_current->value;
+					converted_param[i]=(zs_int)&aux_float[i];
+					stk_arg_c_function[i-idx_arg_start];
+				}else if(!data->zs->convertStackElementToVar(
+						&stk_arg_c_function[i-idx_arg_start]
 						,c_function->params[i].idx_script_type
 						,(zs_int *)&converted_param[i]
 						,data->vm_error_str

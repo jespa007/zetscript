@@ -118,7 +118,6 @@ namespace zetscript{
 				printf(" -Native interface: '%s'\n",native_interface.c_str());
 			}
 			printf(" -Type origin: '%s'\n",sf->scope_script_function->script_type_owner->str_script_type.c_str());
-
 		}
 	}
 
@@ -432,27 +431,7 @@ namespace zetscript{
 			}
 		}else{ // native function, check parameter type ...
 
-
-			for(int i=0; i < this->scope_script_type->symbol_functions->count;i++){
-				bool same_signature=true;
-				Symbol *symbol_function_memeber= (Symbol *)this->scope_script_type->symbol_functions->items[i];
-				ScriptFunction *function_member=(ScriptFunction *)symbol_function_memeber->ref_ptr;
-				if(symbol_function_memeber->name==_function_name && function_member->params_len==_params_len){
-					for(int j=0; j < _params_len && same_signature;j++){
-						same_signature&=function_member->params[j].name==(*_params)[j].name;
-					}
-
-					if(same_signature){
-						THROW_RUNTIME_ERROR("Function '%s::%s' already binded"
-							,function_member->scope_script_function->script_type_owner->str_script_type.c_str()
-							,_function_name.c_str()
-							//,zs_path::get_filename(_file).c_str()
-							//,_line
-						);
-					}
-				}
-			}
-
+			ScriptFunction::checkNativeFunctionParams(this->scope_script_type,_idx_return_type,_function_name,*_params,_params_len);
 		}
 
 		Symbol *symbol_function =  script_function_factory->newScriptFunction(

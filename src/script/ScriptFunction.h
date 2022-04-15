@@ -84,6 +84,8 @@ namespace zetscript{
 		//-----------
 
 		static void printGeneratedCode(ScriptFunction *sfo,ScriptType *sc=NULL);
+		static void checkNativeFunctionParams(Scope *_scope,int _idx_return_type, const zs_string & _function_name,ScriptFunctionParam *_params,int _params_len);
+
 
 		int existArgumentName(const zs_string & arg_name);
 

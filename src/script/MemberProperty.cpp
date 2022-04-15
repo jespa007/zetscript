@@ -30,13 +30,10 @@ namespace zetscript{
 			it++;
 		}
 
-
 		return false;
 	}
 
 	MemberProperty::~MemberProperty(){
 
 	}
-
-
 }

@@ -461,6 +461,32 @@ namespace zetscript{
 
 	 }
 
+	void ScriptFunction::checkNativeFunctionParams(Scope *_scope,int _idx_return_type,const zs_string & _function_name,ScriptFunctionParam *_params,int _params_len){
+		for(int i=0; i < _scope->symbol_functions->count;i++){
+			bool same_signature=true;
+			Symbol *symbol_function_memeber= (Symbol *)_scope->symbol_functions->items[i];
+			ScriptFunction *function_member=(ScriptFunction *)symbol_function_memeber->ref_ptr;
+			if(symbol_function_memeber->name==_function_name && function_member->params_len==_params_len){
+				for(int j=0; j < _params_len && same_signature;j++){
+					same_signature&=function_member->params[j].name==(_params)[j].name;
+				}
+
+				if(same_signature){
+					THROW_SCRIPT_ERROR_FILE_LINE(NULL,-1,"Function '%s' already binded"
+						,function_member->scope_script_function!=NULL?
+								zs_strutils::format("%s::%s"
+										,function_member->scope_script_function->script_type_owner->str_script_type.c_str()
+										,_function_name.c_str()).c_str()
+								:_function_name.c_str()
+
+						//,zs_path::get_filename(_file).c_str()
+						//,_line
+					);
+				}
+			}
+		}
+	}
+
 	short	 ScriptFunction::getInstructionLine(Instruction * ins){
 		InstructionSourceInfo *info=getInstructionInfo(ins);
 		if(info!=NULL){
@@ -559,8 +585,6 @@ namespace zetscript{
 							zs_strutils::format("[line %i]",_line):
 							zs_strutils::format("[%s:%i]",zs_path::get_filename(_file).c_str(),_line);
 
-
-
 		if(symbol_repeat != NULL){ // symbol found
 
 			ScriptFunction *sf_repeat=NULL;
@@ -601,6 +625,8 @@ namespace zetscript{
 				sf->updateParams(_params,_params_len);
 				symbol_repeat->n_params=(char)_params_len;
 				return symbol_repeat;
+			}else{ // check all params equal
+				ScriptFunction::checkNativeFunctionParams(_scope_block,_idx_return_type,_function_name,*_params,_params_len);
 			}
 
 			// from here... function should be both as c ref, mark function property to deduce at runtme

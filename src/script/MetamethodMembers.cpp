@@ -41,8 +41,6 @@ namespace zetscript{
 			,BYTE_CODE_METAMETHOD_EQU //--> is 0 (end of elements)
 	};
 
-
-
 	MetamethodMembers::MetamethodMembers(){
 		getter= NULL;
 		post_inc=NULL;
