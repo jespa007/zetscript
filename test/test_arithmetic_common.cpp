@@ -21,7 +21,7 @@ zetscript::zs_string to_string(const zetscript::zs_string & _s){
 }
 
 // Usable AlmostEqual function
-bool float_values_are_almost_the_same(zetscript::zs_float A, zetscript::zs_float B, int maxUlps)
+bool float_values_are_almost_the_same(zetscript::zs_float A, zetscript::zs_float B)
 {
 	return (fabs(A - B) <= FLT_EPSILON *2* std::max(fabs(A), fabs(B)));
 }

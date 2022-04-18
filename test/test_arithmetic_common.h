@@ -23,7 +23,7 @@ zetscript::zs_string to_string(zetscript::zs_float _f);
 zetscript::zs_string to_string(const zetscript::zs_string & _s);
 
 // Usable AlmostEqual function
-bool float_values_are_almost_the_same(zetscript::zs_float A, zetscript::zs_float B, int maxUlps=8);
+bool float_values_are_almost_the_same(zetscript::zs_float A, zetscript::zs_float B);
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //

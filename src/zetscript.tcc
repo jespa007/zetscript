@@ -1189,7 +1189,7 @@ namespace zetscript{
 						R ret_value;
 						zs_string error_str;
 
-						StackElement args[7]={
+						StackElement args[8]={
 								 convertVarToStackElement((zs_int)p1,idx_param1)
 								,convertVarToStackElement((zs_int)p2,idx_param2)
 								,convertVarToStackElement((zs_int)p3,idx_param3)

@@ -15,13 +15,13 @@ namespace zetscript{
 	/*zs_datetime * 			DateTimeModule_add(zs_datetime *dt1,zs_datetime *dt2){
 
 		zs_datetime *dt=new zs_datetime;
-		//*dt=*dt1->+*dt2;
+		// *dt=*dt1->+*dt2;
 		return dt;
 	}
 
 	zs_datetime * 			DateTimeModule_sub(zs_datetime *dt1,zs_datetime *dt2){
 		zs_datetime *dt=new zs_datetime;
-		//*dt=*dt1-*dt2;
+		// *dt=*dt1-*dt2;
 		return dt;
 	}*/
 

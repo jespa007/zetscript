@@ -894,7 +894,7 @@ find_element_object:
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
 					VM_PUSH_STK_BOOLEAN((!((zs_int)(stk_result_op1->value))));
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
-					VM_PUSH_STK_BOOLEAN((!(*((zs_float *)(&stk_result_op1->value)))==0));
+					VM_PUSH_STK_BOOLEAN(!((*((zs_float *)(&stk_result_op1->value)))==0));
 				}else{
 					if(vm_call_metamethod(
 						vm
@@ -945,7 +945,7 @@ find_element_object:
 				continue;
 			case BYTE_CODE_DIV: // /
 				VM_POP_STK_TWO;
-				VM_OPERATION_DIV(BYTE_CODE_METAMETHOD_DIV);
+				VM_OPERATION_DIV;
 				continue;
 			 case BYTE_CODE_MOD: // /
 				VM_POP_STK_TWO;

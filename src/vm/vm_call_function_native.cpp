@@ -135,7 +135,6 @@ namespace zetscript{
 				if((stk_arg_current->properties & STK_PROPERTY_ZS_INT) && (c_function->params[i].idx_script_type == IDX_TYPE_ZS_FLOAT_PTR_C)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
-					stk_arg_c_function[i-idx_arg_start];
 				}else if(!data->zs->convertStackElementToVar(
 						&stk_arg_c_function[i-idx_arg_start]
 						,c_function->params[i].idx_script_type

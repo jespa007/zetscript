@@ -282,7 +282,7 @@ namespace zetscript{
 		for(int i = 0; i < symbol_functions->count; i++){
 			sv=(Symbol *)symbol_functions->items[i];
 			if(
-			   ( sv == symbol )
+			    sv == symbol
 			){
 				delete sv;
 				symbol_functions->erase(i); // erase symbol scope
@@ -293,7 +293,7 @@ namespace zetscript{
 		for(int i = 0; i < symbol_variables->count; i++){
 			sv=(Symbol *)symbol_variables->items[i];
 			if(
-			   ( sv == symbol )
+			    sv == symbol
 			){
 				delete sv;
 				symbol_variables->erase(i); // erase symbol scope

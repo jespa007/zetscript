@@ -277,6 +277,9 @@ namespace zetscript{
 
 		//zs_string member_property_metamethod_name=byte_code_metamethod_to_symbol_str(_metamethod)+"@"+_property_name;
 		switch(_byte_code_metamethod){
+		default:
+			break;
+
 		case BYTE_CODE_METAMETHOD_SET:
 		case BYTE_CODE_METAMETHOD_ADD_SET:
 		case BYTE_CODE_METAMETHOD_SUB_SET:
@@ -575,6 +578,8 @@ namespace zetscript{
 
 					// in the type only setters are registered in member property variable (getter is ignored)
 					switch(op){
+					default:
+						break;
 					case BYTE_CODE_METAMETHOD_SET:
 					case BYTE_CODE_METAMETHOD_ADD_SET:
 					case BYTE_CODE_METAMETHOD_SUB_SET:

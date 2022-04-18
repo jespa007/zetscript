@@ -7,6 +7,7 @@
 std::function<void ()> * test_2nd_script_call = NULL;
 
 void test_function_1st_c_call(zetscript::ZetScript *_zs){
+	ZS_UNUSUED_PARAM(_zs);
 	 printf("C Function 1st call from script\n");
 
 	 if(test_2nd_script_call != NULL){

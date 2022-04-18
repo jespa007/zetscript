@@ -25,6 +25,7 @@ const char *post_exe_name="";
 #endif
 
 int main(int argc, char * argv[]) {
+	ZS_UNUSUED_2PARAMS(argc,argv);
 	zetscript::ZetScript zs;
 
 

@@ -93,6 +93,8 @@ namespace zetscript{
 	unsigned short eval_expression_load_const_byte_code_to_instruction_property(ByteCode byte_code){
 
 		switch(byte_code){
+		default:
+			break;
 		case BYTE_CODE_LOAD_ZS_INT:
 			return INSTRUCTION_PROPERTY_ZS_INT;
 			break;
@@ -335,6 +337,8 @@ namespace zetscript{
 
 
 		switch(result_bc){
+		default:
+			break;
 		case BYTE_CODE_LOAD_ZS_INT:
 			result_instruction=new EvalInstruction(
 					result_bc

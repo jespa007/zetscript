@@ -10,7 +10,7 @@
 #define EVAL_ERROR_FILE_LINE(file,line,s,...)	eval_data->error=true;\
 												eval_data->error_file=file;\
 												eval_data->error_line=line;\
-												eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+												eval_data->error_str=zetscript::zs_strutils::format(s, __VA_ARGS__);\
 												return 0;
 #define EVAL_ERROR_FILE_LINEF(file,line,s)		EVAL_ERROR_FILE_LINE(file,line,s,NULL)
 
@@ -18,14 +18,14 @@
 #define EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(file,line,my_goto,s,...)	eval_data->error=true;\
 													eval_data->error_file=file;\
 													eval_data->error_line=line;\
-													eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+													eval_data->error_str=zetscript::zs_strutils::format(s, __VA_ARGS__);\
 													goto my_goto;
 
 #define EVAL_ERROR_FILE_LINE_GOTO_NO_AUXF(file,line,my_goto,s)		EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(file,line,my_goto,s,NULL)
 
 
 #define EVAL_ERROR(s,...)						eval_data->error=true;\
-												eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+												eval_data->error_str=zetscript::zs_strutils::format(s, __VA_ARGS__);\
 												return 0;
 #define EVAL_ERRORF(file,line,s)				EVAL_ERROR(s,NULL)
 
@@ -37,13 +37,13 @@
 																	aux_p=NULL;\
 																		eval_data->error_file=file;\
 																		eval_data->error_line=line;\
-																		eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+																		eval_data->error_str=zetscript::zs_strutils::format(s, __VA_ARGS__);\
 																		goto my_goto;
 #define EVAL_ERROR_FILE_LINE_GOTOF(file,line,my_goto,s)				EVAL_ERROR_FILE_LINE_GOTO(file,line,my_goto,s,NULL);
 
 #define EVAL_ERROR_BYTE_CODE(s,...)							eval_data->error=true;\
 															aux_p=NULL;\
-															eval_data->error_str=zetscript::zs_strutils::format(s, ##__VA_ARGS__);\
+															eval_data->error_str=zetscript::zs_strutils::format(s, __VA_ARGS__);\
 															goto eval_error_byte_code;
 #define EVAL_ERROR_BYTE_CODEF(s)							EVAL_ERROR_BYTE_CODE(s,NULL)
 

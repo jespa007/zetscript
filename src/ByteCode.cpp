@@ -242,6 +242,8 @@ namespace zetscript{
 	const char * byte_code_metamethod_to_symbol_str(ByteCodeMetamethod op){
 
 		switch (op) {
+		default:
+			break;
 			case	BYTE_CODE_METAMETHOD_EQU:		return  "_equ"; 	// ==
 			case	BYTE_CODE_METAMETHOD_NOT_EQU: 	return  "_nequ";  	// !=,
 			case	BYTE_CODE_METAMETHOD_LT:		return  "_lt";  	// <
@@ -286,6 +288,8 @@ namespace zetscript{
 
 	int			 byte_code_metamethod_get_num_arguments(ByteCodeMetamethod op){
 		switch(op){
+		default:
+			break;
 			case BYTE_CODE_METAMETHOD_TO_STRING:
 			case BYTE_CODE_METAMETHOD_POST_INC:
 			case BYTE_CODE_METAMETHOD_POST_DEC:
@@ -338,6 +342,8 @@ namespace zetscript{
 	// load ptr var
 		switch(byte_code){
 			// load var content
+		default:
+			break;
 			case BYTE_CODE_LOAD_GLOBAL:return BYTE_CODE_PUSH_STK_GLOBAL;
 			case BYTE_CODE_LOAD_LOCAL:return BYTE_CODE_PUSH_STK_LOCAL;
 			case BYTE_CODE_LOAD_REF:return BYTE_CODE_LOAD_REF; // PUSH STK NOT EXIST, IS A REF ITSELF

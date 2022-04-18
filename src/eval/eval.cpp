@@ -457,6 +457,8 @@ namespace zetscript{
 
 
 			switch(eval_instruction->vm_instruction.byte_code){
+			default:
+				break;
 			case BYTE_CODE_SUPER_CALL:
 				// get current function name and find first ancestor in heritance
 				// find constructor symbol through other members...
