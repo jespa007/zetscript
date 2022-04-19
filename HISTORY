@@ -12,6 +12,7 @@ TODOS
 > #242 compile code/load compiled code feature  (*.zsc)
 > #246 Erase code never execute or temporal expresion that will never assigned
 > #287 Some optimizations
+> #310 Optimize code for instanceof and typeof
 > #320 Optimize use of KR,RK 
 > #328 Improve one to multi-assigment
 
@@ -243,7 +244,7 @@ Solved issues
 #298 Do not store function members in ScriptObject 
 #299 Do not allocate for attribute member in script object 
 #300 Use linear array instead of zs_vector in vm runtime 
-> #301 Solve inherited class call overrided function
+#301 Solve inherited class call overrided function
 #303 Implement BYTE_CODE_IMMEDIATE_CALL BYTE_CODE_THIS_CALL
 #304 Cache scope data
 #305 Simplify VMScope info optimitzation
@@ -251,7 +252,6 @@ Solved issues
 #307 Solve all symbols after each eval
 #308 Save memory: get rid of std::string and std::map 
 #309 Create new from type info stk variable 
-> #310 Optimize code for instanceof and typeof
 #311 Instruction: Add property reset stack if last instruction of expression is CALL or STORE
 #312 Direct call if metamethod is action or function without any params optimitzation 
 #313 Change names Property -> Field / Attribute -> Property 
@@ -266,8 +266,8 @@ Solved issues
 #324 Mandatory Zetscript *_zs first param for to all binding functions 
 #325 evaluation inherited class doesn't update references from its parent 
 #326 Constructor member as named "constructor" 
-> #330 When try to access property member from native class it gives a non apropiate message 
-> #331 Operation to find native member functions for call always returns first function from instance and ignores inherited functions with same name and diferents signatures
+#330 When try to access property member from native class it gives a non apropiate message 
+#331 Operation to find native member functions for call always returns first function from instance and ignores inherited functions with same name and diferents signatures
 #332 Operation XXX "in" YYYY "==" boolean_value, not evals first "in" and then "=="
 #333 for in doesn't work for function calls  
 
