@@ -128,9 +128,13 @@ namespace zetscript{
 	void			stk_assign(ZetScript *_zs,StackElement *_stk_dst, StackElement *_stk_src){
 		*_stk_dst=*_stk_src;
 
+		if(_stk_dst->properties & STK_PROPERTY_PTR_STK){
+			*_stk_dst=*((StackElement *)_stk_dst->value);
+		}
+
 		// update n_refs +1
-		if(_stk_src->properties&STK_PROPERTY_SCRIPT_OBJECT){
-			ScriptObject *so=(ScriptObject *)_stk_src->value;
+		if(_stk_dst->properties&STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject *so=(ScriptObject *)_stk_dst->value;
 			VirtualMachine *vm=_zs->getVirtualMachine();
 			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
