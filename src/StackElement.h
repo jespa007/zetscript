@@ -113,32 +113,6 @@ namespace zetscript{
 	zs_string		stk_to_typeof_str(ZetScript *_zs, StackElement *_stk);
 	void			stk_assign(ZetScript *_zs,StackElement *_stk_dst, StackElement *_stk_src);
 
-	template<typename _C>
-	_C stk_to(ZetScript *_zs, StackElement * _stk){
-		zs_string result="unknown";
-		bool is_constant=false;
-		StackElement stk=*_stk;
-		zs_string error;
-		zs_int ptr_var;
-		zs_string str_script_type_ptr = typeid(_C).name();
-		ScriptTypeFactory *_script_factory=_zs->getScriptFunctionFactory();
-		ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
-
-		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
-		}
-
-		if(_zs->convertStackElementToVar(_stk, script_type->idx_script_type, &ptr_var,error)==false){
-			THROW_RUNTIME_ERROR("Error converting StackElement to '%s': %s",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str(),error.c_str());
-		}
-
-		return (_C)result;
-
-	}
-
-
-
-
 
 	extern const StackElement k_stk_undefined;
 
