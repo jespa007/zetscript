@@ -16,6 +16,7 @@ typedef enum:unsigned short  {
 	SYMBOL_PROPERTY_CONST 						= 0x0010,// This symbol is not assignable
 	SYMBOL_PROPERTY_MEMBER_PROPERTY				= 0x0020,// Member attrib
 	SYMBOL_PROPERTY_ARG_BY_REF					= 0x0040,// Is a reference
+	SYMBOL_PROPERTY_ALLOCATED_STK				= 0x0080,// Is a reference
 }SymbolProperty;
 
 namespace zetscript{

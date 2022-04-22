@@ -435,6 +435,38 @@ namespace zetscript{
 		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 8)>::type;
 
+		//--------------------------------------------------------------------------------------------------------------------
+		//
+		// 9 PARAMS
+		//
+		// template when parameters argIdx == 8
+		template <typename R,typename T, typename... ArgTypes>
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 9)>::type;
+
+
+		template <typename R,typename T, typename... ArgTypes>
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 9)>::type;
+
+
+		//--------------------------------------------------------------------------------------------------------------------
+		//
+		// 10 PARAMS
+		//
+		// template when parameters argIdx == 8
+		template <typename R,typename T, typename... ArgTypes>
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 10)>::type;
+
+
+		template <typename R,typename T, typename... ArgTypes>
+		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 10)>::type;
+
+
+
+
 		//
 		//
 		//--------------------------------------------------------------------------------------------------------------------
