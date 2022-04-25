@@ -131,7 +131,7 @@ namespace zetscript{
     }
 
     void zs_string::clear(){
-    	this->__cleanup__();
+    	set("");
     }
 
     zs_string zs_string::new_from_two(const char *_s1, const char *_s2) {
@@ -190,6 +190,7 @@ namespace zetscript{
 
 	// ==
 	bool operator==(const zs_string & _s1, const zs_string &_s2){
+		// both are not empty
 		return strcmp(_s1.c_str(),_s2.c_str())==0;
 	}
 
@@ -273,6 +274,8 @@ namespace zetscript{
 		if((_pos+_len)>this->count) THROW_RUNTIME_ERROR("erase: _pos(%i)+_len(%i) >= size(%i)",_pos,_len,count);
 
 		int new_size=count-_len;
+
+		// it erases last element
 		char *new_buf=(char *)ZS_MALLOC(new_size*sizeof(char)+1);
 
 		// 1st copy
@@ -280,14 +283,12 @@ namespace zetscript{
 			memcpy(new_buf,buf,_pos);
 		}
 
-		// last
-		memcpy(new_buf, buf+_pos+_len,count-_len-_pos);
+		// copy last span
+		memcpy(new_buf+_pos, buf+_pos+_len,count-_len-_pos);
 
 		free(buf);
-
 		_size=count=new_size;
 		buf=new_buf;
-
 
 	}
 

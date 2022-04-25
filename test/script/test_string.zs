@@ -18,7 +18,6 @@ System::assert(s1=="1b3","s1!=\"1b3\"");
 
 //we have erased position s1[1] so s1="1b3" it becomes s1="13"
 s1.eraseAt(1);
-Console::outln(s1);
 System::assert(s1=="13","s1!=\"13\"");
 
 s1.clear();

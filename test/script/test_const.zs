@@ -15,7 +15,6 @@ const A::c=20
 
 System::assert(A::a instanceof A,"(A::a instanceof A)==false"); 
 System::assert(A::b==11,"A::b!=11"); 
-System::assert(A::a.a instanceof A,"(A::a.a instanceof A)==false");
 System::assert(A::c==20,"A::c!=10");
 
 
