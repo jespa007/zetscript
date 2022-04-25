@@ -30,7 +30,7 @@ namespace zetscript{
 		ScriptObjectObject *oo_param=NULL;
 		ScriptFunctionParam *function_params=NULL;
 		ScriptFunctionParam **function_params_ptr=NULL;
-		size_t 				 function_params_len=0;
+		int 				 function_params_len=0;
 		zs_string str_param_name;
 		ScriptFunction *sf;
 		zs_vector stk_params;

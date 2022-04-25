@@ -102,8 +102,8 @@ namespace zetscript{
 			}
 
 			// reverse result
-			size_t reverse_len=result.length();
-			for(unsigned i=0; i < (reverse_len >>1); i++){
+			int reverse_len=result.length();
+			for(int i=0; i < (reverse_len >>1); i++){
 				// do swap
 				char aux1=result[reverse_len -i-1];
 				result[reverse_len -i-1]=result[i];

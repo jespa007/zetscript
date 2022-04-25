@@ -686,7 +686,7 @@ namespace zetscript{
 		// delete existing args...
 		clearParams();
 		params=*_params;
-		params_len = _params_len;
+		params_len = (int)_params_len;
 
 		// mark ptr that was assigned. Now ScriptFunction is in charge to deallocate this variable
 		*_params=NULL;

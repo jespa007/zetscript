@@ -317,7 +317,7 @@ namespace zetscript{
 			int idx=ZS_MIN(pos,count-1);
 
 			do{
-				int len=strlen(_s);
+				size_t len=strlen(_s);
 				char c=buf[idx];
 				for(int i=0; i < len; i++){ // search for all chars
 					if(_s[i]==c){

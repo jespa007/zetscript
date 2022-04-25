@@ -188,11 +188,11 @@ void test_call_native_function_with_nulls(zetscript::ZetScript *_zs){
 
 void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	auto a=_zs->bindType<ClassA>("ClassA",ClassAWrap_new,ClassAWrap_delete);
+	/*auto a = _zs->bindType<ClassA>("ClassA", ClassAWrap_new, ClassAWrap_delete);
 	auto b=_zs->bindType<ClassB>("ClassB",ClassBWrap_new,ClassBWrap_delete);
 	auto c=_zs->bindType<ClassC>("ClassC",ClassCWrap_new,ClassCWrap_delete);
 	auto d=_zs->bindType<ClassD>("ClassD");
-
+	*/
 	_zs->bindType<ParamA>("ParamA",ParamAWrap_new,ParamAWrap_delete);
 	_zs->bindType<ParamB>("ParamB",ParamBWrap_new,ParamBWrap_delete);
 

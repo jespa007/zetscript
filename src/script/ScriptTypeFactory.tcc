@@ -375,9 +375,9 @@ namespace zetscript{
 				while(*it_setter!= 0){
 					MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
-						for(int i=0; i < mp_info.setters->count; i++){
+						for(int h=0; h < mp_info.setters->count; h++){
 
-							StackElement *stk_setter=(StackElement *)mp_info.setters->items[i];
+							StackElement *stk_setter=(StackElement *)mp_info.setters->items[h];
 							Symbol *symbol_setter=(Symbol *)stk_setter->value;
 							ScriptFunction *sf_setter=(ScriptFunction *)symbol_setter->ref_ptr,
 											*dst_script_function=NULL;
