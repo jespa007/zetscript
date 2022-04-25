@@ -3,49 +3,26 @@ var s2="456";
 var s3="456---678";
 
 var v=s3.split("---")
+System::assert(v.size()==2,"v.size() != 2");
+
+System::assert(v[0]=="456","v[0] != \"456\"");
+System::assert(v[1]=="678","v[1] != \"678\"");
 
 
-for(var i=0; i < s1.size(); i++){
-	Console::outln(s1[i]);
-}
-
-
+// assert that we have 123
+System::assert(s1=="123","s1!=\"123\"");
 s1[1]='b'
-for(var i=0; i < s1.size(); i++){
-	Console::outln(s1[i]);
-}
 
+// we have modified s1="123" by s1="1b3"
+System::assert(s1=="1b3","s1!=\"1b3\"");
 
-// test contains char
-if(s1.contains('b')){
-	Console::outln("b exist");
-}
-
-// test contains string
-if(s1.contains("12")){
-	Console::outln("12 exist");
-}else{
-	Console::outln("12 NOT exist");
-}
-
+//we have erased position s1[1] so s1="1b3" it becomes s1="13"
 s1.eraseAt(1);
-
-if(s1.contains('b') == false){
-	Console::outln("b NOT exist");
-}
-else{
-	Console::outln("b exist");
-}
+Console::outln(s1);
+System::assert(s1=="13","s1!=\"13\"");
 
 s1.clear();
+System::assert(s1=="","s1!=\"\"");
 
-for(var i=0; i < s1.size(); i++){
-	Console::outln(s1[i]);
-}
-
-
-for(var i=0; i < v.size(); i++){
-	Console::outln(v[i]);
-}
 
 

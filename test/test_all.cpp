@@ -90,7 +90,7 @@ int main(int argc, char * argv[]) {
 		,"test_class_inheritance_call"
 		,"test_class_metamethod"
 		,"test_const"
-		,"test_datetime"
+		,"test_static"
 		,"test_eval"
 		,"test_for_in_object"
 		,"test_for_in_string"
