@@ -1,59 +1,37 @@
 var s1="123";
 var s2="456";
-var s3="456---678";
-
-var v=s3.split("---")
 
 Console::outln("----")
+Console::outln("Test concatenation: s1+s2 ==> \"{0}\"",s1+s2)
+
+Console::outln("----")
+Console::outln("Iteration string 's1' as normal 'for':")
 for(var i=0; i < s1.size(); i++){
-	Console::outln(s1[i]);
+	Console::outln("s1[{0}]:{1}",i,s1[i]);
 }
-
 Console::outln("----")
+Console::outln("Iteration string 's1' as 'for-in' value:")
+for(var v in  s1){
+	Console::outln("v:{0}",v);
+}
+Console::outln("----")
+Console::outln("Iteration string 's1' as 'for-in' pair key-pair:")
+for(var k,v in  s1){
+	Console::outln("s1[{0}]:{1}",k,v);
+}
+Console::outln("----")
+Console::outln("Test split: \"456---678\".split(\"---\") ==> {0}","456---678".split("---"))
+Console::outln("----")
+Console::outln("Replace s1[1] by char 'b':")
 s1[1]='b'
-for(var i=0; i < s1.size(); i++){
-	Console::outln(s1[i]);
-}
-
-
+Console::outln("After modifed s1 ==> \"{0}\"",s1)
 Console::outln("----")
-
-// test contains char
-if(s1.contains('b')){
-	Console::outln("b exist");
-}
-
-// test contains string
-if(s1.contains("12")){
-	Console::outln("12 exist");
-}else{
-	Console::outln("12 NOT exist");
-}
-
-
+Console::outln("Test 's1' contains char 'b': s1.contains('b') ==> {0}",s1.contains('b'))
 Console::outln("----")
+Console::outln("Test 's1' contains string \"1b\": s1.contains(\"1b\") ==> {0}",s1.contains("1b"))
+Console::outln("----")
+Console::outln("Erase element s1[1]:")
 s1.eraseAt(1);
-
-if(s1.contains('b') == false){
-	Console::outln("b NOT exist");
-}
-else{
-	Console::outln("b exist");
-}
-
 Console::outln("----")
-
-s1.clear();
-
-for(var i=0; i < s1.size(); i++){
-	Console::outln(s1[i]);
-}
-
-
-//var v=s3.split("---")
-
-for(var i=0; i < v.size(); i++){
-	Console::outln(v[i]);
-}
-
+Console::outln("Test 's1' NOT contains char 'b': s1.contains('b') ==> {0}",s1.contains('b'))
 

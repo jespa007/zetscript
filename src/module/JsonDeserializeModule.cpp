@@ -389,8 +389,13 @@ namespace zetscript{
 			if(*str_current != '}'){ // do parsing object values...
 				do{
 					str_current =read_string_between_quotes(data, str_current, line, &key_id);
-					if (*str_current != ':') {// ok check value
-						json_deserialize_error(data, str_current, line, "Error ':' expected");
+					if (str_current==NULL){
+						return NULL;
+					}
+
+
+					if(*str_current != ':') {// ok check value
+						json_deserialize_error(data, str_current, line, "json-deserialize: Expected ':' after \"%s\"",key_id.c_str());
 						return NULL;
 					}
 

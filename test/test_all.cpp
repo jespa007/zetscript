@@ -108,7 +108,6 @@ int main(int argc, char * argv[]) {
 		,"test_loops_break_continue"
 		,"test_loops"
 		,"test_object"
-		,"test_return"
 		,"test_string"
 		,"test_switch"
 		,"test_ternary"

@@ -712,15 +712,8 @@ namespace zetscript{
 	}
 
 	const char *ScriptType::getTypeName(){
-		/*if(idx_script_type==IDX_TYPE_ZS_INT_C){
-			return "int";
-		}else if(idx_script_type==IDX_TYPE_ZS_FLOAT_C){
-			return "float";
-		}*/
-
 		return str_script_type.c_str();
 	}
-
 
 
 	ScriptType::~ScriptType(){
