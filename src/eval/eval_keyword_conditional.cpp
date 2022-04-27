@@ -192,7 +192,7 @@ namespace zetscript{
 					eval_data->current_parsing_file
 					,line
 					,eval_keyword_switch_error
-					,"Syntax error switch: Expected '(' conditional switch "
+					,"Expected '(' conditional switch "
 				);
 			}
 
@@ -217,7 +217,7 @@ namespace zetscript{
 					eval_data->current_parsing_file
 					,line
 					,eval_keyword_switch_error
-					,"Syntax error switch: Expected '{' begin switch block"
+					,"Expected '{' begin switch block"
 				);
 			}
 
@@ -286,7 +286,7 @@ namespace zetscript{
 								eval_data->current_parsing_file
 								,line
 								,eval_keyword_switch_error
-								,"Syntax error switch: there's an already 'default' case"
+								,"There's an already 'default' case"
 								, NULL
 						);
 					}
@@ -306,8 +306,8 @@ namespace zetscript{
 						eval_data->current_parsing_file
 						,line
 						,eval_keyword_switch_error
-						,(key_w == KEYWORD_DEFAULT)?"Syntax error 'default': Expected ':'"
-								:"Syntax error 'case': Expected ':'"
+						,(key_w == KEYWORD_DEFAULT)?"Expected ':' after 'default'"
+								:"Expected ':' after case-value"
 					);
 				}
 
@@ -316,7 +316,7 @@ namespace zetscript{
 						eval_data->current_parsing_file
 						,line
 						,eval_keyword_switch_error
-						,"Syntax error switch: Expected ':'"
+						,"Expected ':' after case-value"
 					);
 				}
 
@@ -368,7 +368,7 @@ namespace zetscript{
 						eval_data->current_parsing_file
 						,line
 						,eval_keyword_switch_error
-						,"Syntax error switch:'default' needs a 'break' at the end"
+						,"'default' needs a 'break' at the end"
 					);
 				}
 

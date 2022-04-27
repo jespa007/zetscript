@@ -319,7 +319,7 @@ namespace zetscript{
 			do{
 				size_t len=strlen(_s);
 				char c=buf[idx];
-				for(int i=0; i < len; i++){ // search for all chars
+				for(unsigned i=0; i < len; i++){ // search for all chars
 					if(_s[i]==c){
 						return idx;
 					}

@@ -229,7 +229,7 @@ namespace zetscript{
 
 		zs_string replace(const zs_string & input_str, const zs_string & str_old, const zs_string & str_new){
 			zs_string str = input_str;
-			char *start_pos=NULL;
+			char *start_pos=(char *)input_str.c_str();
 
 			while((start_pos = strstr(start_pos,str_old.c_str())) != NULL) {
 				str.replace(start_pos-str.c_str(), str_old.length(), str_new);
