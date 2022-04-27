@@ -687,10 +687,14 @@ namespace zetscript{
 				)
 			));
 
+			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1];
+
 			eval_instruction_post->instruction_source_info=InstructionSourceInfo(
 				eval_data->current_parsing_file
 				,line
+				,eval_instruction_last_access->instruction_source_info.ptr_str_symbol_name
 			);
+
 
 			// if post inc/dec hange load by push because is mutable
 			if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
@@ -730,6 +734,7 @@ namespace zetscript{
 				}
 			}
 
+			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1];
 			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]))->vm_instruction;
 
 			token_node_symbol->eval_instructions.push_back((zs_int)(
@@ -745,6 +750,7 @@ namespace zetscript{
 			eval_instruction_pre->instruction_source_info=InstructionSourceInfo(
 				eval_data->current_parsing_file
 				,line
+				,eval_instruction_last_access->instruction_source_info.ptr_str_symbol_name
 			);
 
 

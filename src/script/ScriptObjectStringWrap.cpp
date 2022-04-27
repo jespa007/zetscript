@@ -24,7 +24,6 @@ namespace zetscript{
 		return strchr(((zs_string *)so->value)->c_str(),ch) != NULL;
 	}
 
-
 	void ScriptObjectStringWrap_clear(ZetScript *_zs,ScriptObjectString *so){
 		ZS_UNUSUED_PARAM(_zs);
 		((zs_string *)so->value)->clear();

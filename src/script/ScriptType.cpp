@@ -715,7 +715,6 @@ namespace zetscript{
 		return str_script_type.c_str();
 	}
 
-
 	ScriptType::~ScriptType(){
 
 		for(int i=0; i < allocated_member_properties->count; i++){

@@ -296,11 +296,10 @@
 	default:/*metamethod*/\
 		LOAD_PROPERTIES(__METAMETHOD__);\
 		if(ptr_metamethod_members_aux->neg==NULL){\
-			zs_strutils::format("%s '%s' not implements metamethod _neg (aka '-a'') "\
+			VM_STOP_EXECUTE("%s '%s' not implements metamethod _neg (aka '-a'') "\
 					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
 			);\
-			goto lbl_exit_function;\
 		}\
 		/* call _neg */\
 		VM_INNER_CALL_ONLY_RETURN(\
@@ -312,13 +311,12 @@
 		data->stk_vm_current++; /* store negated value to stk to load after */\
 		/* call inc metamethod */\
 		if(__POST_OPERATION_VARIABLE__==NULL){\
-			zs_strutils::format("%s '%s' not implements metamethod %s (aka '%s') "\
+			VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s') "\
 					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 			);\
-			goto lbl_exit_function;\
 		}\
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
@@ -369,13 +367,12 @@
 		data->stk_vm_current++;\
 		/* call post operation metamethod */\
 		if(__POST_OPERATION_VARIABLE__==NULL){\
-			zs_strutils::format("%s '%s' not implements metamethod %s (aka '%s') "\
+			VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s') "\
 					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 			);\
-			goto lbl_exit_function;\
 		}\
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\
@@ -408,13 +405,12 @@
 		LOAD_PROPERTIES(__METAMETHOD__);\
 		/* call pre operation metamethod */\
 		if(__PRE_OPERATION_VARIABLE__==NULL){\
-			zs_strutils::format("%s '%s' not implements metamethod %s (aka '%s') " \
+			VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s') " \
 					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 			);\
-			goto lbl_exit_function;\
 		}\
 		VM_INNER_CALL_ONLY_RETURN(\
 				so_aux\

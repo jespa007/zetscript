@@ -237,11 +237,33 @@ namespace zetscript{
 
 	}
 
-	zs_string zs_string::replace(int _pos, int _len, const zs_string & _to_replace){
+	zs_string & zs_string::replace(int _pos, int _len, const zs_string & _to_replace){
 		ZS_UNUSUED_3PARAMS(_pos, _len, _to_replace);
-		zs_string str;
+		//zs_string str;
 
-		return str;
+		if(_pos>=this->count) THROW_RUNTIME_ERROR("insert(int,const zs_string &): _pos(%i) >= size(%i)",_pos,count);
+
+		int new_size = count + (_to_replace.count-_len);
+
+		if(new_size<=0) THROW_RUNTIME_ERRORF("replace(int , int , const zs_string & ): new_size <= 0");
+
+		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
+
+		if(_pos > 0){
+			strncpy(new_buf, buf, _pos); // copy the 1st string
+		}
+
+		strcat(new_buf+_pos,_to_replace.c_str());
+
+		strcpy(new_buf+_pos+_to_replace.count, buf+_pos+_len);
+
+		free(buf);
+
+		buf=new_buf;
+		count=_size=new_size;
+
+
+		return *this;
 	}
 
 	void zs_string::erase(int _pos){
@@ -249,7 +271,7 @@ namespace zetscript{
 	}
 
 	void zs_string::insert(int _pos, char _c){
-		if(_pos>=this->count) THROW_RUNTIME_ERROR("erase: _pos(%i) >= size(%i)",_pos,count);
+		if(_pos>=this->count) THROW_RUNTIME_ERROR("insert(int,char): _pos(%i) >= size(%i)",_pos,count);
 
 		int new_size = count + 1;
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
@@ -259,13 +281,31 @@ namespace zetscript{
 		}
 		*(new_buf+_pos)=_c;
 
-		strncpy(new_buf+_pos+1, buf+_pos, count-_pos);
+		strcpy(new_buf+_pos+1, buf+_pos);
 
 		free(buf);
 
 		buf=new_buf;
 		count=_size=new_size;
+	}
 
+	void zs_string::insert(int _pos, const zs_string & _s1){
+		if(_pos>=this->count) THROW_RUNTIME_ERROR("insert(int,const zs_string &): _pos(%i) >= size(%i)",_pos,count);
+
+		int new_size = count + _s1.count;
+		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
+
+		if(_pos > 0){
+			strncpy(new_buf, buf+_pos, _pos); // copy the 1st string
+		}
+		strcat(new_buf+_pos,_s1.c_str());
+
+		strncpy(new_buf+_pos+_s1.count, buf+_pos, count-_pos);
+
+		free(buf);
+
+		buf=new_buf;
+		count=_size=new_size;
 	}
 
 	void zs_string::erase(int _pos, int _len){

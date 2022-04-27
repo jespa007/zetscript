@@ -24,13 +24,22 @@ public:
 };
 
 
+class Num{
+public:
+	int x,y;
+
+	Num(){
+		x=0;
+		y=0;
+	}
+};
+
 class ClassD{};
 class ClassC:public ClassB{
 public:
 	ClassD d;
-	int num;
+	Num num;
 	ClassC(){
-		num=0;
 	}
 
     void fun1(bool _b,bool _show_print){
@@ -85,15 +94,31 @@ void ClassCWrap_fun1(zetscript::ZetScript *_zs, ClassC *_c, bool *_b,bool *_show
 	_c->fun1(*_b,*_show_print);
 }
 
-void ClassCWrap_num_setter(zetscript::ZetScript *_zs, ClassC *_c, zetscript::zs_int _num){
+/*void ClassCWrap_num_setter(zetscript::ZetScript *_zs, ClassC *_c, zetscript::zs_int _num){
 	ZS_UNUSUED_PARAM(_zs);
 	_c->num=_num;
+}*/
+
+Num * ClassCWrap_num_getter(zetscript::ZetScript *_zs, ClassC *_c){
+	ZS_UNUSUED_PARAM(_zs);
+	return &_c->num;
 }
 
-zetscript::zs_int ClassCWrap_num_getter(zetscript::ZetScript *_zs, ClassC *_c){
+zetscript::zs_int NumWrap_x_getter(zetscript::ZetScript *_zs, Num *_n){
 	ZS_UNUSUED_PARAM(_zs);
-	return _c->num;
+	return _n->x;
 }
+
+void NumWrap_pre_increment(zetscript::ZetScript *_zs, Num *_n){
+	++_n->x;
+	++_n->y;
+}
+
+void NumWrap_pre_decrement(zetscript::ZetScript *_zs, Num *_n){
+	--_n->x;
+	--_n->y;
+}
+
 
 ClassD * ClassCWrap_get_d(zetscript::ZetScript *_zs, ClassC *_c){
 	ZS_UNUSUED_PARAM(_zs);
@@ -140,7 +165,10 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 		zetscript::zs_strutils::format(
 				"var c=new ClassC();\n"
 				"c.fun1(new ParamA(),%s);\n"
-				"c.num=10;\n"
+				"Console::outln(\"decrement\");\n"
+				//"c.num.x=10;\n"
+				"--c.num;\n"
+				"c.num.x==10;\n"
 				"Console::outln(c);\n"
 				//"c.get_d.x=0;\n"
 				//"(new ClassC()).fun1(1.5,%s)\n"
@@ -149,6 +177,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 				,_show_print?"true":"false"
 				,_show_print?"true":"false"
 		)
+	,zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE
 	);
 
 }
@@ -188,11 +217,12 @@ void test_call_native_function_with_nulls(zetscript::ZetScript *_zs){
 
 void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	/*auto a = _zs->bindType<ClassA>("ClassA", ClassAWrap_new, ClassAWrap_delete);
-	auto b=_zs->bindType<ClassB>("ClassB",ClassBWrap_new,ClassBWrap_delete);
-	auto c=_zs->bindType<ClassC>("ClassC",ClassCWrap_new,ClassCWrap_delete);
-	auto d=_zs->bindType<ClassD>("ClassD");
-	*/
+	_zs->bindType<ClassA>("ClassA", ClassAWrap_new, ClassAWrap_delete);
+	_zs->bindType<ClassB>("ClassB",ClassBWrap_new,ClassBWrap_delete);
+	_zs->bindType<ClassC>("ClassC",ClassCWrap_new,ClassCWrap_delete);
+	_zs->bindType<Num>("Num");
+	_zs->bindType<ClassD>("ClassD");
+
 	_zs->bindType<ParamA>("ParamA",ParamAWrap_new,ParamAWrap_delete);
 	_zs->bindType<ParamB>("ParamB",ParamBWrap_new,ParamBWrap_delete);
 
@@ -206,8 +236,14 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	_zs->extends<ClassC,ClassB>();
 
-	_zs->bindMemberPropertySetter<ClassC>("num",ClassCWrap_num_setter);
+
 	_zs->bindMemberPropertyGetter<ClassC>("num",ClassCWrap_num_getter);
+
+	_zs->bindMemberFunction<Num>("_pre_inc",NumWrap_pre_increment);
+	_zs->bindMemberFunction<Num>("_pre_dec",NumWrap_pre_decrement);
+
+	_zs->bindMemberPropertyGetter<Num>("x",NumWrap_x_getter);
+
 	_zs->bindMemberFunction<ClassC>("get_d",ClassCWrap_get_d);
 	//_zs->extends<ClassC,ClassB>();
 
