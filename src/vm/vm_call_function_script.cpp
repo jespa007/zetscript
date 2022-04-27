@@ -402,23 +402,38 @@ find_element_object:
 							);
 						}
 
+						// member property. ... if getter, get the value itself and evaluate
 						if(
-							   ((stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0)
-							&& (instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM  ||  instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
-							&& (instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0){ // call getter if exist
-								StackMemberProperty *stk_mp=(StackMemberProperty *)stk_var->value;
-								if(stk_mp->member_property->metamethod_members.getter != NULL){
+						   (stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0
+						 ){
+							StackMemberProperty *stk_mp=(StackMemberProperty *)stk_var->value;
 
-									VM_INNER_CALL_ONLY_RETURN(
-											stk_mp->so_object
-											,((ScriptFunction *)stk_mp->member_property->metamethod_members.getter->ref_ptr)
-											,stk_mp->member_property->metamethod_members.getter->name.c_str()
-											,true
-									);
+							if(stk_mp->member_property->metamethod_members.getter!=NULL){
+								VM_INNER_CALL_ONLY_RETURN(
+										stk_mp->so_object
+										,((ScriptFunction *)stk_mp->member_property->metamethod_members.getter->ref_ptr)
+										,stk_mp->member_property->metamethod_members.getter->name.c_str()
+										,true
+								);
 
+
+								if(
+										// Pass the object if the value is object type >= TYPE_SCRIPT_OBJECT_CLASS ...
+										STK_IS_SCRIPT_OBJECT_CLASS(data->stk_vm_current)
+									||(
+											// ... or return value itself if the next instruction is not for store
+											(
+												(instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM)
+											||	(instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE)
+											)
+											&& ((instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK)==0)
+									  )
+
+								){
 									data->stk_vm_current++;
 									continue;
 								}
+							}
 						}
 					}
 				}

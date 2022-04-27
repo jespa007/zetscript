@@ -18,7 +18,7 @@
 #define STK_IS_SCRIPT_OBJECT_ITERATOR_STRING(stk)		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))
 #define STK_IS_SCRIPT_OBJECT_VECTOR(stk) 				(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_VECTOR))
 #define STK_IS_SCRIPT_OBJECT_ITERATOR_VECTOR(stk)		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR))
-#define STK_IS_SCRIPT_OBJECT_CLASS(stk) 				(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type>zetscript::IDX_TYPE_SCRIPT_OBJECT_CLASS))
+#define STK_IS_SCRIPT_OBJECT_CLASS(stk) 				(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type>=zetscript::IDX_TYPE_SCRIPT_OBJECT_CLASS))
 #define STK_IS_SCRIPT_OBJECT_VAR_REF(stk) 				(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_VAR_REF))
 #define STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk)		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER))
 #define STK_IS_SCRIPT_OBJECT_ZETSCRIPT_OBJECT(stk) 		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT))

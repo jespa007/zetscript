@@ -279,7 +279,7 @@
 
 #define VM_OPERATION_NEG_POST(__C_OP__, __METAMETHOD__,__POST_OPERATION_VARIABLE__) \
 	stk_result_op1=--data->stk_vm_current;\
-	stk_result_op1=(StackElement *)((stk_result_op1)->value);/* always expects ptr stk due it modifies the var */\
+	if(stk_result_op1->properties & STK_PROPERTY_PTR_STK) stk_result_op1=(StackElement *)((stk_result_op1)->value);\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
 	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
@@ -332,7 +332,7 @@
 
 #define VM_OPERATION_POST(__C_OP__, __METAMETHOD__,__POST_OPERATION_VARIABLE__) \
 	stk_result_op1=--data->stk_vm_current;\
-	stk_result_op1=(StackElement *)((stk_result_op1)->value);/* always expects ptr stk due it modifies the var */\
+	if(stk_result_op1->properties & STK_PROPERTY_PTR_STK) stk_result_op1=(StackElement *)((stk_result_op1)->value);\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
 	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
@@ -387,7 +387,7 @@
 
 #define VM_OPERATION_PRE(__C_OP__, __METAMETHOD__,__PRE_OPERATION_VARIABLE__) \
 	stk_result_op1=--data->stk_vm_current;\
-	stk_result_op1=(StackElement *)((stk_result_op1)->value);\
+	if(stk_result_op1->properties & STK_PROPERTY_PTR_STK) stk_result_op1=(StackElement *)((stk_result_op1)->value);\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
 	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
