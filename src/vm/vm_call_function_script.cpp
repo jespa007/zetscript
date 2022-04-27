@@ -363,7 +363,7 @@ find_element_object:
 							if(sc_type->idx_script_type<IDX_TYPE_SCRIPT_OBJECT_OBJECT || sc_type->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_OBJECT){
 								// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
 								if(so_aux->getScriptType()->properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF){
-									VM_STOP_EXECUTE("Error accessing '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
+									VM_STOP_EXECUTE("Cannot store '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
 										,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 										,str_symbol
 										,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)

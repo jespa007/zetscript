@@ -220,18 +220,21 @@ namespace zetscript{
 
 	MetamethodMembers::~MetamethodMembers(){
 
+
+
 		zs_vector *ptr_vector[]={
-				&setters
-				,&add_setters
-				,&sub_setters
-				,&div_setters
-				,&mod_setters
-				,&and_setters
-				,&or_setters
-				,&xor_setters
-				,&shl_setters
-				,&shr_setters
-				,NULL
+			&setters
+			,&add_setters
+			,&sub_setters
+			,&mul_setters
+			,&div_setters
+			,&mod_setters
+			,&and_setters
+			,&or_setters
+			,&xor_setters
+			,&shl_setters
+			,&shr_setters
+			,NULL
 		};
 
 		zs_vector **it=ptr_vector;

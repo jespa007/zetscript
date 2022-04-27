@@ -601,7 +601,7 @@ namespace zetscript{
 
 				IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,test_aux_p,eval_data,aux_p,test_line);
 
-			}while(is_access_punctuator(aux_p));
+			}while(is_access_punctuator(test_aux_p));
 
 		}else{
 

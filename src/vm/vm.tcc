@@ -84,7 +84,7 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 	}\
 	n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;\
 	/* we share pointer (true second arg) to not remove on pop in calling return */\
-	CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,true) \
+	CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,false) \
 	/* reset stack */\
 	if(reset){\
 		data->stk_vm_current=stk_def_afun_start; \

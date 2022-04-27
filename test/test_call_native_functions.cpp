@@ -125,7 +125,6 @@ ClassD * ClassCWrap_get_d(zetscript::ZetScript *_zs, ClassC *_c){
 	return &_c->d;
 }
 
-
 void ClassCWrap_delete(zetscript::ZetScript *_zs,ClassC *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	delete _this;
@@ -167,8 +166,8 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 				"c.fun1(new ParamA(),%s);\n"
 				"Console::outln(\"decrement\");\n"
 				//"c.num.x=10;\n"
-				"--c.num;\n"
-				"c.num.x==10;\n"
+				"c.num;\n"
+				//"c.num.x.y.z.t==10;\n"
 				"Console::outln(c);\n"
 				//"c.get_d.x=0;\n"
 				//"(new ClassC()).fun1(1.5,%s)\n"
