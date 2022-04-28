@@ -34,6 +34,8 @@ public:
 	}
 };
 
+Num *num_ref=NULL;
+
 class ClassD{};
 class ClassC:public ClassB{
 public:
@@ -104,6 +106,10 @@ Num * ClassCWrap_num_getter(zetscript::ZetScript *_zs, ClassC *_c){
 	return &_c->num;
 }
 
+Num *ClassCWrap_newNum(zetscript::ZetScript *_zs,ClassC *_c){
+	return num_ref;
+}
+
 zetscript::zs_int NumWrap_x_getter(zetscript::ZetScript *_zs, Num *_n){
 	ZS_UNUSUED_PARAM(_zs);
 	return _n->x;
@@ -160,24 +166,48 @@ void ParamBWrap_delete(zetscript::ZetScript *_zs,ParamB *_this){
 
 void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	_zs->eval(
-		zetscript::zs_strutils::format(
-				"var c=new ClassC();\n"
-				"c.fun1(new ParamA(),%s);\n"
-				"Console::outln(\"decrement\");\n"
-				//"c.num.x=10;\n"
-				"c.num;\n"
-				//"c.num.x.y.z.t==10;\n"
-				"Console::outln(c);\n"
-				//"c.get_d.x=0;\n"
-				//"(new ClassC()).fun1(1.5,%s)\n"
-				//"(new ClassC()).fun1(false,%s)\n"
-				,_show_print?"true":"false"
-				,_show_print?"true":"false"
-				,_show_print?"true":"false"
-		)
-	,zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE
-	);
+	Num num;
+	num_ref=&num;
+
+	for(int i=0; i < 10; i++){
+		_zs->clear();
+		_zs->eval(
+			zetscript::zs_strutils::format(
+					"function class_c_load(_class_c){\n"
+						"_class_c.num_ref=_class_c.newNum()"
+					"}\n"
+					"class ClassCWrap{\n"
+						"constructor(_this){\n"
+							"this.self=_this;\n"
+						"}\n"
+						"load(){\n"
+							"class_c_load(this)\n"
+						"}\n"
+						"newNum()\n{"
+							"return this.self.newNum();\n"
+						"}\n"
+					"}\n"
+					"var c=new ClassCWrap(new ClassC())\n"
+					"c.load()\n"
+					/*"var c=new ClassC();\n"
+					"c.fun1(new ParamA(),%s);\n"
+					"Console::outln(\"decrement\");\n"
+					//"c.num.x=10;\n"
+					"c.num;\n"
+					//"c.num.x.y.z.t==10;\n"
+					"Console::outln(c);\n"*/
+					//"c.get_d.x=0;\n"
+					//"(new ClassC()).fun1(1.5,%s)\n"
+					//"(new ClassC()).fun1(false,%s)\n"
+					,_show_print?"true":"false"
+					,_show_print?"true":"false"
+					,_show_print?"true":"false"
+			)
+		//,zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE
+		);
+
+
+	}
 
 }
 
@@ -235,9 +265,9 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 	_zs->extends<ClassC,ClassB>();
 
+	_zs->bindMemberFunction<ClassC>("newNum",ClassCWrap_newNum);
 
 	_zs->bindMemberPropertyGetter<ClassC>("num",ClassCWrap_num_getter);
-
 	_zs->bindMemberFunction<Num>("_pre_inc",NumWrap_pre_increment);
 	_zs->bindMemberFunction<Num>("_pre_dec",NumWrap_pre_decrement);
 
@@ -256,6 +286,8 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 	//b->printListMemberFunctions();
 
 	//c->printListMemberFunctions();
+
+	_zs->saveState();
 
 
 	test_call_native_function_with_nulls(_zs);
