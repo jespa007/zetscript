@@ -169,8 +169,9 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 	Num num;
 	num_ref=&num;
 
-	for(int i=0; i < 10; i++){
+	//for(int i=0; i < 10; i++){
 		_zs->clear();
+
 		_zs->eval(
 			zetscript::zs_strutils::format(
 					"function class_c_load(_class_c){\n"
@@ -186,6 +187,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 						"newNum()\n{"
 							"return this.self.newNum();\n"
 						"}\n"
+						"ini(){Console::outln(\"ini\")}\n"
 					"}\n"
 					"var c=new ClassCWrap(new ClassC())\n"
 					"c.load()\n"
@@ -206,8 +208,12 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 		//,zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE
 		);
 
+		auto ini=new std::function<void()>(_zs->bindScriptFunction<void ()>("c.ini"));
 
-	}
+		(*ini)();
+
+
+	//}
 
 }
 
