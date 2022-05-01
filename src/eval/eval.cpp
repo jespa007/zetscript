@@ -29,11 +29,16 @@ namespace zetscript{
 
 	void eval_parse_and_compile(ZetScript *zs
 			,const char * str_code
+			,EvalData *_eval_data_from
 			, const char *  _filename
 			, int _line
 			, ScriptFunction *_sf
 	){
-		EvalData *eval_data=new EvalData(zs);
+		EvalData *eval_data=_eval_data_from;//new EvalData(zs);
+		if(_eval_data_from==NULL){
+			eval_data=new EvalData(zs);
+		}
+
 		char *aux_p=NULL;
 		int line =_line;
 		bool error;
@@ -49,7 +54,9 @@ namespace zetscript{
 			scope_info =sf->scope_script_function;// NEW_SCOPE(eval_data,sf->idx_script_function,MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 		}
 
-		eval_push_function(eval_data,sf);
+		if(_eval_data_from == NULL){
+			eval_push_function(eval_data,sf);
+		}
 
 		aux_p=eval_parse_and_compile_recursive(eval_data,str_code,line,scope_info);
 		if(aux_p!=NULL){
@@ -59,27 +66,35 @@ namespace zetscript{
 			}
 		}
 
-		if(sf != MAIN_FUNCTION(eval_data) && sf->idx_script_function != IDX_ZS_SCRIPT_FUNCTION_EVAL){ // is anonyomuse function
-			if(scope_info->symbol_variables->count == 0){ // remove scope
-				scope_info->markAsUnusued();
-			}
-		}
-
-		CLEAR_UNUSUED_SCOPES(eval_data);
-
-		eval_pop_and_compile_function(eval_data);
-
 		// link unresolved functions...
 		error=eval_data->error;
 		error_str=eval_data->error_str;
 		error_file=eval_data->error_file;
 		error_line=eval_data->error_line;
 
-		delete eval_data;
+		if(_eval_data_from == NULL){
+
+			if(sf != MAIN_FUNCTION(eval_data) && sf->idx_script_function != IDX_ZS_SCRIPT_FUNCTION_EVAL){ // is anonyomuse function
+				if(scope_info->symbol_variables->count == 0){ // remove scope
+					scope_info->markAsUnusued();
+				}
+			}
+
+
+			CLEAR_UNUSUED_SCOPES(eval_data);
+
+			eval_pop_and_compile_function(eval_data);
+
+			delete eval_data;
+
+		}
+
 
 		if(error){
 			THROW_SCRIPT_ERROR_FILE_LINEF(error_file,error_line,error_str.c_str());
 		}
+
+
 	}
 
 
@@ -188,6 +203,7 @@ namespace zetscript{
 	char * eval_parse_and_compile_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case){
 		// PRE: *node_to_be_evaluated must be created (the pointer is only read mode)
 		bool custom_quit = false;
+		const char *current_parsing_file=NULL;
 		char *aux = (char *)s;
 		char *end_expr=0;
 
@@ -239,6 +255,7 @@ namespace zetscript{
 						}
 						aux++;
 						start_var=aux;
+						current_parsing_file=eval_data->current_parsing_file;
 
 						while(*aux != '\n' && *aux!=0 && !(*aux=='\"' && *(aux-1)!='\\')) aux++;
 
@@ -260,13 +277,15 @@ namespace zetscript{
 
 						try{
 							// compile but not execute, it will execute the last eval
-							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE);
+							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE,eval_data);
 						}catch(zs_exception & ex){
 							eval_data->error=true;\
-							eval_data->error_str=zetscript::zs_strutils::format("%s\n",ex.what());
-							eval_data->error_str+=zetscript::zs_strutils::format("[%s:%i] from import '%s'",zs_path::get_filename(eval_data->current_parsing_file).c_str(),line,str_symbol.c_str());
+							eval_data->error_str=zetscript::zs_strutils::format("%s\n",ex.getErrorDescription().c_str());
+							eval_data->error_str+=zetscript::zs_strutils::format("[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
 							return 0;
 						}
+
+						eval_data->current_parsing_file=current_parsing_file;
 
 						aux++;// advance ..
 						break;
@@ -567,7 +586,7 @@ namespace zetscript{
 			}
 
 			// set min stk required
-			sf->min_stack_needed=max_acc_stk_load;
+			sf->min_code_stack_needed=max_acc_stk_load;
 
 			//------------------------ SORT ALL LOCAL VARIABLES
 			// save instruction ...
@@ -611,11 +630,9 @@ lbl_exit_pop_function:
 		eval_pop_current_function(eval_data);
 
 		// update min stk needed
-		if(sf->min_stack_needed<sum_stk_load_stk){
-			sf->min_stack_needed=sum_stk_load_stk;
+		if(sf->min_code_stack_needed<sum_stk_load_stk){
+			sf->min_code_stack_needed=sum_stk_load_stk;
 		}
-
-
 
 		return ok;
 	}

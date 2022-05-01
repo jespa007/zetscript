@@ -169,13 +169,17 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 	Num num;
 	num_ref=&num;
 
-	//for(int i=0; i < 10; i++){
+	for(int i=0; i < 10; i++){
+
 		_zs->clear();
 
+		try{
 		_zs->eval(
 			zetscript::zs_strutils::format(
+					//"import \"include.zs\"\n"
 					"function class_c_load(_class_c){\n"
-						"_class_c.num_ref=_class_c.newNum()"
+						"_class_c.num_ref=_class_c.newNum()\n"
+						"_class_c.num_ref.load()\n"
 					"}\n"
 					"class ClassCWrap{\n"
 						"constructor(_this){\n"
@@ -183,14 +187,16 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 						"}\n"
 						"load(){\n"
 							"class_c_load(this)\n"
+							"Console::outln(\"load\")"
 						"}\n"
 						"newNum()\n{"
 							"return this.self.newNum();\n"
 						"}\n"
-						"ini(){Console::outln(\"ini\")}\n"
+						"ini(){\n"
+							"Console::outln()"
+						"}\n"
 					"}\n"
 					"var c=new ClassCWrap(new ClassC())\n"
-					"c.load()\n"
 					/*"var c=new ClassC();\n"
 					"c.fun1(new ParamA(),%s);\n"
 					"Console::outln(\"decrement\");\n"
@@ -198,6 +204,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 					"c.num;\n"
 					//"c.num.x.y.z.t==10;\n"
 					"Console::outln(c);\n"*/
+					"c.load()\n"
 					//"c.get_d.x=0;\n"
 					//"(new ClassC()).fun1(1.5,%s)\n"
 					//"(new ClassC()).fun1(false,%s)\n"
@@ -206,14 +213,28 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 					,_show_print?"true":"false"
 			)
 		//,zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE
+
 		);
 
+		//_zs->clear();
+
+		}catch(std::exception & ex){
+			fprintf(stderr,"%s\n",ex.what());
+		}
+
 		auto ini=new std::function<void()>(_zs->bindScriptFunction<void ()>("c.ini"));
-
 		(*ini)();
+		delete ini;
 
+		//_zs->clear();
 
-	//}
+		//_zs->clear();
+
+		//(*ini)();
+
+		//delete ini;
+
+	}
 
 }
 

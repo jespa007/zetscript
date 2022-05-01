@@ -112,7 +112,7 @@ namespace zetscript{
 				//------------------------------------------------
 				// String
 				"static String::format(s,...args){" // add static function format to String module
-				"	String::formatNative(s,args)"
+				"	return String::formatNative(s,args)"
 				"}"
 				//------------------------------------------------
 				// DateTime
@@ -324,17 +324,17 @@ namespace zetscript{
 	// STK STRING OBJECT
 	//
 	//-----------------------------------------------------------------------------------------------------------------------------------------
-	StackElement ZetScript::evalInternal(const char * code, unsigned short options, const char * filename, const char *__invoke_file__, int __invoke_line__)  {
+	StackElement ZetScript::evalInternal(const char * _code, unsigned short _eval_options, const char * _filename, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__)  {
 		StackElement stk_ret=k_stk_undefined;
 
-		eval_parse_and_compile(this,code,filename);
+		eval_parse_and_compile(this,_code,_eval_data_from,_filename);
 		link();
 
-		if(options & EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE){
-			printGeneratedCode(options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_BYTE_CODE);
+		if(_eval_options & EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE){
+			printGeneratedCode(_eval_options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_BYTE_CODE);
 		}
 
-		if((options & EvalOption::EVAL_OPTION_NO_EXECUTE)==0){
+		if((_eval_options & EvalOption::EVAL_OPTION_NO_EXECUTE)==0){
 			// the first code to execute is the main function that in fact is a special member function inside our main class
 			stk_ret=vm_execute(
 					virtual_machine
@@ -355,34 +355,34 @@ namespace zetscript{
 
 		const char *script_filename_by_ref=getFilenameByRef(_script_filename_by_ref);
 
-		return evalInternal(_expresion.c_str(), _options, script_filename_by_ref,__invoke_file__,__invoke_line__);
+		return evalInternal(_expresion.c_str(), _options, script_filename_by_ref,NULL,__invoke_file__,__invoke_line__);
 	}
 
 	StackElement	ZetScript::eval(const zs_string & _expresion, const char *__invoke_file__, int __invoke_line__){
-		return evalInternal(_expresion.c_str(), 0, NULL,__invoke_file__,__invoke_line__);
+		return evalInternal(_expresion.c_str(), 0, NULL,NULL,__invoke_file__,__invoke_line__);
 	}
 
-	StackElement ZetScript::evalFile(const zs_string &  filename, unsigned short eval_options, const char *__invoke_file__, int __invoke_line__){
+	StackElement ZetScript::evalFile(const zs_string &  _filename, unsigned short _eval_options, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__){
 		//int idx_file=-1;
 		StackElement stk_ret;
 		char *buf_tmp=NULL;
 
 		stk_ret.setUndefined();
 
-		if(!isFilenameAlreadyParsed(filename)){
+		if(!isFilenameAlreadyParsed(_filename)){
 			ParsedFile *ps=new ParsedFile();
 			zs_string current_directory="";
-			ps->filename = filename;
+			ps->filename = _filename;
 			parsed_files.push_back((zs_int)ps);
 			const char * const_file_char=ps->filename.c_str();
 			//idx_file=parsed_files.size()-1;
 			size_t n_bytes;
 
-			if((buf_tmp=zs_file::read(filename, n_bytes))!=NULL){
+			if((buf_tmp=zs_file::read(_filename, n_bytes))!=NULL){
 				// file exist and can read ... set current pwd
 				//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
 				current_directory = zs_dir::get_current_directory();
-				zs_dir::change_dir(zs_path::get_directory(filename));
+				zs_dir::change_dir(zs_path::get_directory(_filename));
 				//}
 				zs_string error_str="";
 				zs_string error_file="";
@@ -393,7 +393,7 @@ namespace zetscript{
 
 				int error_line=-1;
 				try{
-					stk_ret=evalInternal(buf_tmp,eval_options,const_file_char,__invoke_file__,__invoke_line__);
+					stk_ret=evalInternal(buf_tmp,_eval_options,const_file_char,_eval_data_from,__invoke_file__,__invoke_line__);
 				}catch(zs_exception & e){
 					error=true;
 					error_file=e.getErrorSourceFilename();

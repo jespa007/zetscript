@@ -40,7 +40,7 @@ namespace zetscript{
 	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function=false);
 	void 	eval_check_scope(EvalData *eval_data, Scope *scope);
 	void 	eval_push_function(EvalData *eval_data,ScriptFunction *script_function);
-	int 	eval_pop_and_compile_function(EvalData *eval_data);
+	int 	eval_pop_and_compile_function(EvalData *_eval_data);
 	void 	eval_pop_current_function(EvalData *eval_data);
 	void    eval_generate_byte_code_field_initializer(EvalData *data, ScriptFunction *sf, zs_vector *instructions, Symbol *symbol_member_var);
 
@@ -48,6 +48,7 @@ namespace zetscript{
 	void 	eval_parse_and_compile(
 			ZetScript *zs
 			,const char * str_code
+			,EvalData *_eval_data_from=NULL
 			, const char *  _filename=""
 			, int _line=1
 			,ScriptFunction *sf=NULL

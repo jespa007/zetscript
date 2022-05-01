@@ -144,7 +144,7 @@ namespace zetscript{
 
 		// 3. Call zetscript->eval this function
 		try{
-			eval_parse_and_compile(zs,str_start,NULL,1,sf/*,function_params,function_params_len*/);
+			eval_parse_and_compile(zs,str_start,NULL,NULL,1,sf/*,function_params,function_params_len*/);
 		}catch(std::exception & ex){
 			vm_set_error(zs->getVirtualMachine(),zs_string("eval error:")+ex.what());
 			goto goto_eval_exit;

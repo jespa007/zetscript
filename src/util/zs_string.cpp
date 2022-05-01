@@ -92,15 +92,7 @@ namespace zetscript{
 
 	zs_string& zs_string::operator=(zs_string && dyingObj) // move assignment
 	{
-		__cleanup__(); // cleanup any existing data
-
-		// Copy data from the incoming object
-		_size = dyingObj._size;
-		count = dyingObj.count;
-
-		// Transfer ownership of underlying char buffer from incoming object to this object
-		buf = dyingObj.buf;
-		dyingObj.buf = nullptr;
+		set(dyingObj.buf);
 
 		return *this;
 	}

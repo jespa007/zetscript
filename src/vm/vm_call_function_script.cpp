@@ -79,7 +79,7 @@ namespace zetscript{
 		data->stk_vm_current = stk_start;
 		data->vm_idx_call++;
 
-		if(((stk_start-data->vm_stack)+calling_function->min_stack_needed)>=VM_STACK_MAX){
+		if(((stk_start-data->vm_stack)+calling_function->min_code_stack_needed)>=VM_STACK_MAX){
 			data->vm_error_max_stack_reached=true;
 			VM_STOP_EXECUTEF("Error MAXIMUM stack size reached");
 		}
@@ -1230,9 +1230,7 @@ execute_function:
 									*stk_arg=*((ScriptObjectVarRef *)stk_arg->value)->getStackElementPtr();
 								}
 
-								bool is_stk_this = IS_STK_THIS(stk_arg);
-
-								if((stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT)  && (is_stk_this==false)){
+								if((stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT)){
 									so_param=(ScriptObject *)stk_arg->value;
 									if(so_param->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 										ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
@@ -1267,7 +1265,7 @@ execute_function:
 									stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
 								}else{ // not push in var arg
 
-									if(so_param != NULL && (so_param!=this_object)){ // share n+1 to function if not this
+									if(so_param != NULL){ // share n+1 to function if not this
 										if(!vm_share_pointer(vm,so_param)){ // By pass object in the arg, it shares pointer +1 to not remove on pop in calling return
 											goto lbl_exit_function;
 										}

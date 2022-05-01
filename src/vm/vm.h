@@ -11,7 +11,7 @@
 #include "vm_set.h"
 #include "vm_scope.h"
 
-#define VM_STACK_MAX					100
+#define VM_STACK_MAX					150
 #define VM_FUNCTION_CALL_MAX 			100
 #define VM_VARIABLE_SHARES_MAX 			100
 
@@ -89,6 +89,7 @@ namespace zetscript{
 	//StackElement * 	vm_get_top_stack_element_from_stack(VirtualMachine *vm);
 	StackElement *	vm_get_stack_elements(VirtualMachine *vm);
 	StackElement *	vm_get_current_stack_element(VirtualMachine *vm);
+	void 			vm_reset_error_vars(VirtualMachine *vm);
 	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
 	StackElement vm_execute(
 		VirtualMachine 	*	_vm

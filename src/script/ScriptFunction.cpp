@@ -55,7 +55,7 @@ namespace zetscript{
 		script_function_factory= zs->getScriptFunctionFactory();
 		script_type_factory=zs->getScriptTypeFactory();
 
-		min_stack_needed=0;
+		min_code_stack_needed=0;
 
 	}
 
@@ -103,9 +103,11 @@ namespace zetscript{
 
 		printf("______________________________________________________________\n\n");
 		printf(" Function: '%s%s'                                             \n",class_str.c_str(),symbol_ref.c_str());
-		printf(" Required stack: %i                                           \n",sfo->min_stack_needed);
+		printf(" Stack code: %i                                        		  \n",sfo->min_code_stack_needed);
+		printf(" Stack local vars: %i                                         \n",sfo->local_variables->count);
+		printf(" Total stack required: %i                                     \n\n",sfo->local_variables->count+sfo->min_code_stack_needed);
 		printf(" Scopes: %i                                                   \n",sfo->scope_script_function->scopes->count);
-		printf(" Local vars: %i                                               \n\n",sfo->local_variables->count);
+
 		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
 

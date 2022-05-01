@@ -49,7 +49,7 @@ namespace zetscript{
 		zs_int 				ref_native_function_ptr;
 		ScriptFunctionParam	*params;
 		int 				params_len;
-		int					min_stack_needed;
+		int					min_code_stack_needed;
 
 		PtrInstruction  instructions; // The set of byte code instructions that executes the function
 

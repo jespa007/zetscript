@@ -25,11 +25,6 @@ namespace zetscript{
 			--data->vm_current_scope_function;
 		}
 
-		if((data->vm_current_scope_function-data->vm_scope_function) < 0){
-			int jj=0;
-			jj++;
-		}
-
 		vm_remove_empty_shared_pointers(vm,IDX_CALL_STACK_MAIN);
 		data->vm_idx_call=0;
 	}
@@ -260,6 +255,17 @@ namespace zetscript{
 		return (data->stk_vm_current);
 	}*/
 
+	void vm_reset_error_vars(VirtualMachine *vm){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+
+		data->vm_error_max_stack_reached=false;
+		data->vm_error=false;
+		data->vm_error_str="";
+		data->vm_error_file="";
+		data->vm_error_line=-1;
+		data->vm_error_callstack_str="";
+	}
+
 	StackElement vm_execute(
 		VirtualMachine *vm
 		 ,ScriptObject 		*	this_object
@@ -292,12 +298,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",data->vm_idx_call);
 			}
 
-			data->vm_error_max_stack_reached=false;
-			data->vm_error=false;
-			data->vm_error_str="";
-			data->vm_error_file="";
-			data->vm_error_line=-1;
-			data->vm_error_callstack_str="";
+			vm_reset_error_vars(vm);
 
 			stk_start=data->vm_stack;
 			n_stk_params=(char)data->main_function_object->local_variables->count;
@@ -313,12 +314,12 @@ namespace zetscript{
 				if((properties & VM_PROPERTY_CALL_FROM_NATIVE)==0){
 					THROW_RUNTIME_ERRORF("Internal: expected first call function from C");
 				}
+				//vm_reset_error_vars(vm);
+
 				first_script_call_from_c=true;
 				data->vm_idx_call=1; // assign first idx call as 1
 				stk_start=min_stk;
-
 			}
-
 
 			if(stk_start<min_stk){ // control: not overwrite global symbols
 				// this could happen when you call script function from native c++, so this control is needed
@@ -341,12 +342,20 @@ namespace zetscript{
 
 		// get number return elements
 		if(data->vm_error){
-			// it was error so reset stack and stop execution ? ...
+			// set error as false
+			// it was error so reset stack and stop execution ...
 			vm_do_stack_dump(vm);
+
+
+			zs_string str_error=data->vm_error_file;
+			int line_error=data->vm_error_line;
 			zs_string total_error=data->vm_error_str;
 			total_error.append(data->vm_error_callstack_str);
 
-			throw_exception(data->vm_error_file.c_str(),data->vm_error_line,total_error.c_str());
+			//vm_reset_error_vars(vm);
+
+
+			throw_exception(str_error.c_str(),line_error,total_error.c_str());
 		}else{
 			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+calling_function->local_variables->count);
 

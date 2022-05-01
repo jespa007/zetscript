@@ -115,7 +115,7 @@ int main(int argc, char * argv[]) {
 			try{
 				std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 				try{
-					zs.evalFile(file,eval_options,__FILE__,__LINE__);
+					zs.evalFile(file,eval_options,NULL,__FILE__,__LINE__);
 				}catch(std::exception & ex){
 					fprintf(stderr,"%s\n",ex.what());
 				}
