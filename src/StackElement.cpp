@@ -154,13 +154,16 @@ namespace zetscript{
 		}
 	}
 
-
 	zs_int	StackElement::toInt(){
-		if((this->properties & STK_PROPERTY_ZS_INT)==0){
+		if((this->properties & (STK_PROPERTY_ZS_INT|STK_PROPERTY_ZS_FLOAT))==0){
 			THROW_RUNTIME_ERRORF("StackElement not is not int");
 		}
 
-		return (zs_int)this->value;
+		if((this->properties & STK_PROPERTY_ZS_INT)!=0){
+			return (zs_int)this->value;
+		}
+
+		return *((zs_float*)&this->value);
 	}
 
 	zs_float	StackElement::toFloat(){
