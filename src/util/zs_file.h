@@ -7,9 +7,9 @@
 namespace zetscript{
 	namespace zs_file{
 
-		bool 	exists(const zs_string & m_file);
-		char * 	read(const zs_string & filename, size_t & n_readed_bytes);
-		int	size(const zs_string & filename);
+		bool 		exists(const zs_string & m_file);
+		zs_string	read_text(const zs_string & filename);
+		int			size(const zs_string & filename);
 
 	}
 }

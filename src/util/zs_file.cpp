@@ -16,7 +16,7 @@ namespace zetscript{
 			return false;
 		}
 
-		char * read(const zs_string &  filename, size_t & n_bytes_readed){
+		zs_string read_text(const zs_string &  filename){
 
 			int  length, readed_elements;
 			FILE  *fp;
@@ -25,7 +25,7 @@ namespace zetscript{
 			{
 				if((length = size(filename)) != -1) {
 
-					n_bytes_readed=length+1;
+					size_t n_bytes_readed=length+1;
 					char *buffer = (char *)ZS_MALLOC(n_bytes_readed);
 					readed_elements = fread(buffer, 1, length, fp);
 
@@ -36,7 +36,12 @@ namespace zetscript{
 					}
 
 					fclose(fp);
-					return buffer;
+
+					zs_string file(buffer);
+
+					free(buffer);
+
+					return file;
 				}
 				else  {
 					THROW_RUNTIME_ERROR("I can't read file '%s'",filename.c_str());

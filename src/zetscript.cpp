@@ -365,7 +365,7 @@ namespace zetscript{
 	StackElement ZetScript::evalFile(const zs_string &  _filename, unsigned short _eval_options, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__){
 		//int idx_file=-1;
 		StackElement stk_ret;
-		char *buf_tmp=NULL;
+		zs_string buf_tmp;
 
 		stk_ret.setUndefined();
 
@@ -376,56 +376,50 @@ namespace zetscript{
 			parsed_files.push_back((zs_int)ps);
 			const char * const_file_char=ps->filename.c_str();
 			//idx_file=parsed_files.size()-1;
-			size_t n_bytes;
 
-			if((buf_tmp=zs_file::read(_filename, n_bytes))!=NULL){
-				// file exist and can read ... set current pwd
-				//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
-				current_directory = zs_dir::get_current_directory();
-				zs_dir::change_dir(zs_path::get_directory(_filename));
-				//}
-				zs_string error_str="";
-				zs_string error_file="";
+			buf_tmp=zs_file::read_text(_filename);
 
-
-				bool error=false;
+			// file exist and can read ... set current pwd
+			//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
+			current_directory = zs_dir::get_current_directory();
+			zs_dir::change_dir(zs_path::get_directory(_filename));
+			//}
+			zs_string error_str="";
+			zs_string error_file="";
 
 
-				int error_line=-1;
-				try{
-					stk_ret=evalInternal(buf_tmp,_eval_options,const_file_char,_eval_data_from,__invoke_file__,__invoke_line__);
-				}catch(zs_exception & e){
-					error=true;
-					error_file=e.getErrorSourceFilename();
-					error_line=e.getErrorLine();
-					error_str=e.getErrorDescription();
-				}catch(std::exception & e){
-					error=true;
-					error_str=e.what();
-				}
+			bool error=false;
 
-				// restore previous directory
-				//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
-				zs_dir::change_dir(current_directory);
-				//}
 
-				// deallocate before throw errors...
-				free(buf_tmp);
-				buf_tmp=NULL;
+			int error_line=-1;
+			try{
+				stk_ret=evalInternal(buf_tmp.c_str(),_eval_options,const_file_char,_eval_data_from,__invoke_file__,__invoke_line__);
+			}catch(zs_exception & e){
+				error=true;
+				error_file=e.getErrorSourceFilename();
+				error_line=e.getErrorLine();
+				error_str=e.getErrorDescription();
+			}catch(std::exception & e){
+				error=true;
+				error_str=e.what();
+			}
 
-				if(error){
-					if(error_file.empty()==false){
-						THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,error_str.c_str());
-					}else{
-						THROW_EXCEPTION(error_str.c_str());
-					}
+			// restore previous directory
+			//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
+			zs_dir::change_dir(current_directory);
+			//}
+
+			// deallocate before throw errors...
+
+			if(error){
+				if(error_file.empty()==false){
+					THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,error_str.c_str());
+				}else{
+					THROW_EXCEPTION(error_str.c_str());
 				}
 			}
 
-		}
 
-		if(buf_tmp!=NULL){
-			free(buf_tmp);
 		}
 
 		return stk_ret;

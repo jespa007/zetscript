@@ -186,26 +186,46 @@ namespace zetscript{
 		return strcmp(_s1.c_str(),_s2.c_str())==0;
 	}
 
+	bool operator==(const char * _s1, const zs_string & _s2){
+		if(_s1==NULL){
+			THROW_RUNTIME_ERRORF("operator '==' : operand 1 == NULL");
+		}
+
+		return strcmp(_s1,_s2.c_str())==0;
+	}
+
 	bool operator==(const zs_string & _s1, const char *_s2){
+		if(_s2==NULL){
+			THROW_RUNTIME_ERRORF("operator '==' : operand 2 == NULL");
+		}
+
 		return strcmp(_s1.c_str(),_s2)==0;
 	}
 
-	bool operator==(const char * _s1, const zs_string & _s2){
-		return strcmp(_s1,_s2.c_str())==0;
-	}
+
 
 	// !=
 	bool operator!=(const zs_string & _s1, const zs_string &_s2){
 		return strcmp(_s1.c_str(),_s2.c_str())!=0;
 	}
 
+	bool operator!=(const char * _s1, const zs_string & _s2){
+		if(_s1==NULL){
+			THROW_RUNTIME_ERRORF("operator '!=' : operand 1 == NULL");
+		}
+
+		return strcmp(_s1,_s2.c_str())!=0;
+	}
+
 	bool operator!=(const zs_string & _s1, const char *_s2){
+		if(_s2==NULL){
+			THROW_RUNTIME_ERRORF("operator '!=' : operand 2 == NULL");
+		}
+
 		return strcmp(_s1.c_str(),_s2)!=0;
 	}
 
-	bool operator!=(const char * _s1, const zs_string & _s2){
-		return strcmp(_s1,_s2.c_str())!=0;
-	}
+
 
 	zs_string zs_string::substr (int pos, int len) const{
 		zs_string s;
