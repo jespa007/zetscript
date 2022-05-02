@@ -119,14 +119,15 @@ namespace zetscript{
 			ScriptObject *script_object=NULL;
 			//StackElement stack_element=_stack_element;
 			//StackElement *_stack_element=&stack_element;
-			if(_idx_builtin_type == IDX_TYPE_STACK_ELEMENT){
-				*_ptr_var=(zs_int)_stack_element;
-				return true;
-			}
 
 			// save return type ...
 			if(_stack_element->properties & STK_PROPERTY_PTR_STK){
 				_stack_element=((StackElement *)_stack_element->value);
+			}
+
+			if(_idx_builtin_type == IDX_TYPE_STACK_ELEMENT){
+				*_ptr_var=(zs_int)_stack_element;
+				return true;
 			}
 
 			switch(GET_STK_PROPERTY_TYPES(_stack_element->properties)){

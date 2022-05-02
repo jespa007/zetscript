@@ -1,5 +1,4 @@
 import "Number.zs"
 
-var n=(new Number(1))+(new Number(3))
 
-//Console::outln(n)
+System::assert(((new Number(1))+(new Number(3)))==4),"(new Number(1))+(new Number(3))!=4)"

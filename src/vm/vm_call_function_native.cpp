@@ -142,6 +142,8 @@ namespace zetscript{
 				if(stk_arg_current->properties & STK_PROPERTY_PTR_STK){
 					stk_arg_current=((StackElement *)stk_arg_current->value);
 				}
+
+				// special case, function param is float and it has to convert to int
 				if((stk_arg_current->properties & STK_PROPERTY_ZS_INT) && (c_function->params[i].idx_script_type == IDX_TYPE_ZS_FLOAT_PTR_C)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
