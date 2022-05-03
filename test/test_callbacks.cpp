@@ -88,6 +88,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs){
 		"				,_c\n"
 		"				,_user_params" //--> params: Include aditional parameters to
 		"			){\n"
+			"hjkhk"
 		"				return \"result from object Test: a:\"+_a+\" b:\"+_b+\" c:\"+_c+\" d:\"+ _user_params.that.d;\n"
 		"			}"
 		//		2nd parameter: Object with user params ('ScriptObjectObject *' in C aka 'ScriptObjectObject')
