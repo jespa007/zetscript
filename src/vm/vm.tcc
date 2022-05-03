@@ -130,7 +130,9 @@ namespace zetscript{
 		ScriptFunction  *main_function_object;
 		ScriptType *main_class_object;
 
+		// TODO: jespada (remove vm_idx_call, data->vm_current_scope_function - data->vm_scope_function it gives also the call
 		int vm_idx_call;
+
 		int idx_last_statment;
 		const ScriptFunction *current_call_c_function;
 		ZetScript *zs;

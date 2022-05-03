@@ -22,10 +22,13 @@ namespace zetscript{
 			while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
 				VM_POP_SCOPE(false);
 			}
+
+			vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 			--data->vm_current_scope_function;
+			--data->vm_idx_call;
 		}
 
-		vm_remove_empty_shared_pointers(vm,IDX_CALL_STACK_MAIN);
+
 		data->vm_idx_call=0;
 	}
 
