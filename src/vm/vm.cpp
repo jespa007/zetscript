@@ -331,6 +331,17 @@ namespace zetscript{
 
 			StackElement *stk_aux=stk_start;
 			for(unsigned i = 0; i < n_stk_params; i++){
+				if(stk_params[i].properties & STK_PROPERTY_SCRIPT_OBJECT){
+					ScriptObject *so=(ScriptObject *)stk_params[i].value;
+
+					if(so->shared_pointer!=NULL){
+						THROW_RUNTIME_ERRORF("Internal expected shared NULL pointer");
+					}
+
+					if(vm_create_shared_pointer(vm,so) == false){
+						THROW_RUNTIME_ERRORF("Cannot create shared pointer");
+					}
+				}
 				*stk_aux++=stk_params[i];
 			}
 		}

@@ -90,7 +90,7 @@ void test_call_script_c_script(zetscript::ZetScript *_zs){
 		"			){\n"
 		"				return \"result from object Test: a:\"+_a+\" b:\"+_b+\" c:\"+_c+\" d:\"+ _user_params.that.d;\n"
 		"			}"
-		//		2nd parameter: Object with user params ('ScriptObjectObject *' in C aka 'ScriptObjectObject')
+		//		2nd parameter: Object with user params ('ScriptObjectObject *' in C aka '{}')
 		"			,{"
 		"				that:this"
 		"			}"

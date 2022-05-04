@@ -179,7 +179,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 					//"import \"include.zs\"\n"
 					"function class_c_load(_class_c){\n"
 						"_class_c.num_ref=_class_c.newNum()\n"
-						"_class_c.num_ref.load()\n"
+						//"_class_c.num_ref.load()\n"
 					"}\n"
 					"class ClassCWrap{\n"
 						"constructor(_this){\n"
@@ -187,15 +187,18 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 						"}\n"
 						"load(){\n"
 							"class_c_load(this)\n"
-							"Console::outln(\"load\")"
+							//"Console::outln(\"load\")"
 						"}\n"
 						"newNum()\n{"
 							"return this.self.newNum();\n"
 						"}\n"
-						"ini(){\n"
-							"Console::outln()"
+						"ini(n){\n"
+							"ini2(n)\n"
+							//"n.load()"
+							//"Console::outln()"
 						"}\n"
 					"}\n"
+					"function ini2(n){n.load()}"
 					"var c=new ClassCWrap(new ClassC())\n"
 					/*"var c=new ClassC();\n"
 					"c.fun1(new ParamA(),%s);\n"
@@ -222,8 +225,8 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 			fprintf(stderr,"%s\n",ex.what());
 		}
 
-		auto ini=new std::function<void()>(_zs->bindScriptFunction<void ()>("c.ini"));
-		(*ini)();
+		auto ini=new std::function<void(Num *)>(_zs->bindScriptFunction<void (Num *)>("c.ini"));
+		(*ini)(&num);
 		delete ini;
 
 		//_zs->clear();

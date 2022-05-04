@@ -17,7 +17,7 @@
 		if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
 			ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
 			if(so != NULL && so->shared_pointer!=NULL){\
-				printf("[%s] %i\n",((Symbol *)scope_symbols->items[(scope_symbols->count-1)-count])->name.c_str(),so->shared_pointer->data.n_shares);\
+				/* printf("[%s] %i\n",((Symbol *)scope_symbols->items[(scope_symbols->count-1)-count])->name.c_str(),so->shared_pointer->data.n_shares);*/\
 				destroy_on_zero_ref==true?\
 					vm_unref_shared_script_object_and_remove_if_zero(vm,&so)\
 				:\
