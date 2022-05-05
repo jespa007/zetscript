@@ -65,6 +65,24 @@ void ClassAWrap_fun1(zetscript::ZetScript *_zs, ClassA *_this, ParamA *_param_a,
 	_this->fun1(_param_a->_s.c_str(),*_show_print);
 }
 
+bool ClassAWrap_lt(zetscript::ZetScript *_zs, ClassA *_n1, ClassA *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	return true;
+}
+
+bool ClassAWrap_lt(zetscript::ZetScript *_zs, ClassA *_n1, zetscript::zs_float *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	printf("from float 1!\n");
+	return true;
+}
+
+bool ClassAWrap_lt(zetscript::ZetScript *_zs, zetscript::zs_float *_n1, ClassA *_n2){
+	ZS_UNUSUED_PARAM(_zs);
+	printf("from float 2!\n");
+	return true;
+}
+
+
 void ClassAWrap_delete(zetscript::ZetScript *_zs,ClassA *_this){
 	ZS_UNUSUED_PARAM(_zs);
 	delete _this;
@@ -176,8 +194,9 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 		try{
 		_zs->eval(
 			zetscript::zs_strutils::format(
+					"(new ClassA()) < 1"
 					//"import \"include.zs\"\n"
-					"function class_c_load(_class_c){\n"
+					/*"function class_c_load(_class_c){\n"
 						"_class_c.num_ref=_class_c.newNum()\n"
 						//"_class_c.num_ref.load()\n"
 					"}\n"
@@ -206,8 +225,8 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 					//"c.num.x=10;\n"
 					"c.num;\n"
 					//"c.num.x.y.z.t==10;\n"
-					"Console::outln(c);\n"*/
-					"c.load()\n"
+					"Console::outln(c);\n"
+					"c.load()\n"*/
 					//"c.get_d.x=0;\n"
 					//"(new ClassC()).fun1(1.5,%s)\n"
 					//"(new ClassC()).fun1(false,%s)\n"
@@ -225,9 +244,9 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 			fprintf(stderr,"%s\n",ex.what());
 		}
 
-		auto ini=new std::function<void(Num *)>(_zs->bindScriptFunction<void (Num *)>("c.ini"));
+		/*auto ini=new std::function<void(Num *)>(_zs->bindScriptFunction<void (Num *)>("c.ini"));
 		(*ini)(&num);
-		delete ini;
+		delete ini;*/
 
 		//_zs->clear();
 
@@ -287,6 +306,10 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 
 	_zs->bindMemberFunction<ClassA>("fun1",ClassAWrap_fun1);
+	_zs->bindMemberFunctionStatic<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,ClassA *)>(ClassAWrap_lt));
+	_zs->bindMemberFunctionStatic<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,zetscript::zs_float *)>(ClassAWrap_lt));
+	_zs->bindMemberFunctionStatic<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,zetscript::zs_float *,ClassA *)>(ClassAWrap_lt));
+
 
 	_zs->extends<ClassB,ClassA>();
 
