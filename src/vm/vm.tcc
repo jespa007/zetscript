@@ -517,7 +517,7 @@ namespace zetscript{
 				EXTRACT_FUNCTION_INFO
 
 
-				if(irfs->name_script_function == symbol_to_find){
+				if((irfs->name_script_function == symbol_to_find) && (irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){
 
 					if(n_candidates == 0){
 						str_candidates.append("\tPossible candidates are:\n\n");
