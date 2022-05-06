@@ -93,10 +93,7 @@ namespace zetscript{
 		if(error){
 			THROW_SCRIPT_ERROR_FILE_LINEF(error_file,error_line,error_str.c_str());
 		}
-
-
 	}
-
 
 	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_scope_function){
 		Scope *new_scope = NEW_SCOPE(
@@ -428,7 +425,6 @@ namespace zetscript{
 		return lookup_linear_stk;
 	}
 
-
 	int eval_pop_and_compile_function(EvalData *eval_data){
 
 		zs_string static_error;
@@ -460,7 +456,6 @@ namespace zetscript{
 		zs_vector order_local_vars;
 		Symbol *symbol_sf_foundf=NULL;
 		zs_string target_name="";
-
 
 		int ok=FALSE;
 		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data,&order_local_vars);
@@ -572,7 +567,7 @@ namespace zetscript{
 				default:
 					// check if local access
 					if(properties_1 & INSTRUCTION_PROPERTY_ILOAD_R) {// R
-						eval_instruction->vm_instruction.value_op2=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op2];
+						eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
 					}else if(properties_1 & INSTRUCTION_PROPERTY_ILOAD_KR) {// KR
 						eval_instruction->vm_instruction.value_op1=lookup_sorted_table_local_variables[eval_instruction->vm_instruction.value_op1];
 					}else if(properties_1 & INSTRUCTION_PROPERTY_ILOAD_RK){ // RK
