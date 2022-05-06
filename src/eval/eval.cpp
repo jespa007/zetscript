@@ -274,7 +274,6 @@ namespace zetscript{
 							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error import: file '%s' not exist",str_symbol.c_str(),str_symbol.c_str());
 						}
 
-
 						try{
 							// compile but not execute, it will execute the last eval
 							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE,eval_data);
