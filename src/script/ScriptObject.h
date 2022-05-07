@@ -82,7 +82,7 @@ namespace zetscript{
 		void 						derefObject(ScriptObject  **_so);
 		void 						refObject(ScriptObject **_so);
 
-		void 						printAllFunctionMembers();
+		void 						printAllMemberFunctions();
 
 		virtual 					~ScriptObject();
 	protected:

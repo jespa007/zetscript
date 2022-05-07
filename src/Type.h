@@ -13,7 +13,7 @@
 #define ZS_TYPE_NAME_OBJECT_VECTOR 				"Vector"
 #define ZS_TYPE_NAME_OBJECT_OBJECT 				"Object"
 #define ZS_TYPE_NAME_OBJECT_VAR_REF 			"VarRef"
-#define ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER 	"FunctionMember"
+#define ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER 	"MemberFunction"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_STRING 	"IteratorString"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR 	"IteratorVector"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"

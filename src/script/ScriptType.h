@@ -66,7 +66,7 @@ namespace zetscript{
 		);
 
 		template < typename R>
-		void bindMemberVariableStaticConst(
+		void bindStaticConstMemberVariable(
 			const zs_string & _var_name
 			, const R _var_pointer
 			, const char *_registered_file=""
@@ -134,7 +134,7 @@ namespace zetscript{
 		);
 
 		template <typename F>
-		void bindMemberFunctionStatic(
+		void bindStaticMemberFunction(
 				const zs_string & _function_name
 				,F _function_ptr
 				, const char *_registered_file=""

@@ -16,6 +16,9 @@ namespace zetscript{
 				switch(idx_builtin_type_var){
 				 case IDX_TYPE_VOID_C:
 					break;
+				 case IDX_TYPE_NULL:
+					 stk_result={0,STK_PROPERTY_NULL};
+					 break;
 				 case IDX_TYPE_ZS_INT_PTR_C:
 					 if(ptr_var==0) return stk_result;
 					 stk_result={(*((zs_int *)ptr_var)),STK_PROPERTY_ZS_INT};

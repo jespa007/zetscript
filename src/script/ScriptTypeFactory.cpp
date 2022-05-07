@@ -249,7 +249,7 @@ namespace zetscript{
 		bindMemberFunction<ScriptObjectVector>("size",&ScriptObjectVectorWrap_size);
 		bindMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
 		bindMemberFunction<ScriptObjectVector>("iter",&ScriptObjectVectorWrap_iter);
-		bindMemberFunctionStatic<ScriptObjectVector>("equal",&ScriptObjectVectorWrap_equal);
+		bindStaticMemberFunction<ScriptObjectVector>("equal",&ScriptObjectVectorWrap_equal);
 
 		// IteratorVector
 		bindMemberFunction<ScriptObjectIteratorVector>("_post_inc",ScriptObjectIteratorVectorWrap_next);
@@ -259,7 +259,7 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// String
-		bindMemberFunctionStatic<ScriptObjectString>("formatNative",ScriptObjectString::format);
+		bindStaticMemberFunction<ScriptObjectString>("formatNative",ScriptObjectString::format);
 		bindMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectStringWrap_eraseAt);
 		bindMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
 		bindMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);
@@ -287,13 +287,13 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// Object
-		bindMemberFunctionStatic<ScriptObjectObject>("clear",&ScriptObjectObjectWrap_clear);
-		bindMemberFunctionStatic<ScriptObjectObject>("erase",&ScriptObjectObjectWrap_erase);
-		bindMemberFunctionStatic<ScriptObjectObject>("contains",&ScriptObjectObjectWrap_contains);
-		bindMemberFunctionStatic<ScriptObjectObject>("append",&ScriptObjectObjectWrap_append);
-		bindMemberFunctionStatic<ScriptObjectObject>("concat",ScriptObjectObject::concat);
-		bindMemberFunctionStatic<ScriptObjectObject>("keys",ScriptObjectObjectWrap_keys);
-		bindMemberFunctionStatic<ScriptObjectObject>("iter",ScriptObjectObjectWrap_iter);
+		bindStaticMemberFunction<ScriptObjectObject>("clear",&ScriptObjectObjectWrap_clear);
+		bindStaticMemberFunction<ScriptObjectObject>("erase",&ScriptObjectObjectWrap_erase);
+		bindStaticMemberFunction<ScriptObjectObject>("contains",&ScriptObjectObjectWrap_contains);
+		bindStaticMemberFunction<ScriptObjectObject>("append",&ScriptObjectObjectWrap_append);
+		bindStaticMemberFunction<ScriptObjectObject>("concat",ScriptObjectObject::concat);
+		bindStaticMemberFunction<ScriptObjectObject>("keys",ScriptObjectObjectWrap_keys);
+		bindStaticMemberFunction<ScriptObjectObject>("iter",ScriptObjectObjectWrap_iter);
 
 		// IteratorObject
 		bindMemberFunction<ScriptObjectIteratorObject>("_post_inc",ScriptObjectIteratorObjectWrap_next);

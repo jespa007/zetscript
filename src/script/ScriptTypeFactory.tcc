@@ -1117,7 +1117,7 @@ namespace zetscript{
 	 * like register function c but is added to member function list according type C
 	 */
 	template <typename C, typename F>
-	void ScriptTypeFactory::bindMemberFunctionStatic(
+	void ScriptTypeFactory::bindStaticMemberFunction(
 		const zs_string & name_script_function
 		,F ptr_function
 		,const char *registered_file
@@ -1134,7 +1134,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
 		}
 
-		return script_type->bindMemberFunctionStatic<F>(name_script_function
+		return script_type->bindStaticMemberFunction<F>(name_script_function
 				,ptr_function
 				,registered_file
 				,registered_line);

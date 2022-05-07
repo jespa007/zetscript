@@ -32,7 +32,7 @@ namespace zetscript{
 				return "zetscript::zs_string";
 			}
 
-			if(name == zs_string("FunctionMember")){
+			if(name == zs_string("MemberFunction")){
 				return "zetscript::ScriptObjectMemberFunction *";
 			}
 

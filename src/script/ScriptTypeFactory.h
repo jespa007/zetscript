@@ -314,7 +314,7 @@ namespace zetscript{
 		 * Register C Member function static Class
 		 */
 		template <typename C, typename F>
-		void bindMemberFunctionStatic(
+		void bindStaticMemberFunction(
 				const zs_string & _function_name
 				,F _ptr_function
 				, const char *_registered_file=""

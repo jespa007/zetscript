@@ -306,9 +306,9 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 
 	_zs->bindMemberFunction<ClassA>("fun1",ClassAWrap_fun1);
-	_zs->bindMemberFunctionStatic<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,ClassA *)>(ClassAWrap_lt));
-	_zs->bindMemberFunctionStatic<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,zetscript::zs_float *)>(ClassAWrap_lt));
-	_zs->bindMemberFunctionStatic<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,zetscript::zs_float *,ClassA *)>(ClassAWrap_lt));
+	_zs->bindStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,ClassA *)>(ClassAWrap_lt));
+	_zs->bindStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,zetscript::zs_float *)>(ClassAWrap_lt));
+	_zs->bindStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,zetscript::zs_float *,ClassA *)>(ClassAWrap_lt));
 
 
 	_zs->extends<ClassB,ClassA>();

@@ -292,8 +292,8 @@ namespace zetscript{
 		 * Register Static Function Member Class
 		 */
 		template <typename C,typename F>
-		void bindMemberFunctionStatic(const zs_string & name_script_function,F fun, const char *registered_file="",short registered_line=-1){
-			script_type_factory->bindMemberFunctionStatic<C>(name_script_function,fun, registered_file, registered_line);
+		void bindStaticMemberFunction(const zs_string & name_script_function,F fun, const char *registered_file="",short registered_line=-1){
+			script_type_factory->bindStaticMemberFunction<C>(name_script_function,fun, registered_file, registered_line);
 		}
 
 		//cpp binding

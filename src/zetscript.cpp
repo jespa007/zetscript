@@ -45,42 +45,42 @@ namespace zetscript{
 		// Math mod
 		ScriptType *cl=script_type_factory->registerScriptType("Math","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
 
-		cl->bindMemberVariableStaticConst("PI",&MathModule_PI);
-		cl->bindMemberFunctionStatic("sin",MathModule_sin);
-		cl->bindMemberFunctionStatic("cos",MathModule_cos);
-		cl->bindMemberFunctionStatic("abs",MathModule_abs);
-		cl->bindMemberFunctionStatic("pow",MathModule_pow);
-		cl->bindMemberFunctionStatic("degToRad",MathModule_degToRad);
-		cl->bindMemberFunctionStatic("random",MathModule_random);
-		cl->bindMemberFunctionStatic("max",MathModule_max);
-		cl->bindMemberFunctionStatic("sqrt",MathModule_sqrt);
+		cl->bindStaticConstMemberVariable("PI",&MathModule_PI);
+		cl->bindStaticMemberFunction("sin",MathModule_sin);
+		cl->bindStaticMemberFunction("cos",MathModule_cos);
+		cl->bindStaticMemberFunction("abs",MathModule_abs);
+		cl->bindStaticMemberFunction("pow",MathModule_pow);
+		cl->bindStaticMemberFunction("degToRad",MathModule_degToRad);
+		cl->bindStaticMemberFunction("random",MathModule_random);
+		cl->bindStaticMemberFunction("max",MathModule_max);
+		cl->bindStaticMemberFunction("sqrt",MathModule_sqrt);
 
 		// Console mod
 		cl=script_type_factory->registerScriptType("Console","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
-		cl->bindMemberFunctionStatic("readChar",ConsoleModule_readChar);
-		cl->bindMemberFunctionStatic("outNative",ConsoleModule_out);
-		cl->bindMemberFunctionStatic("outlnNative",ConsoleModule_outln);
-		cl->bindMemberFunctionStatic("errorNative",ConsoleModule_error);
-		cl->bindMemberFunctionStatic("errorlnNative",ConsoleModule_errorln);
+		cl->bindStaticMemberFunction("readChar",ConsoleModule_readChar);
+		cl->bindStaticMemberFunction("outNative",ConsoleModule_out);
+		cl->bindStaticMemberFunction("outlnNative",ConsoleModule_outln);
+		cl->bindStaticMemberFunction("errorNative",ConsoleModule_error);
+		cl->bindStaticMemberFunction("errorlnNative",ConsoleModule_errorln);
 
 		// System mod
 		cl=script_type_factory->registerScriptType("System","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
-		cl->bindMemberFunctionStatic("clock",SystemModule_clock);
-		cl->bindMemberFunctionStatic("evalNative",SystemModule_eval);
-		//cl->bindMemberFunctionStatic("assertNative",SystemModule_assert);
-		cl->bindMemberFunctionStatic("errorNative",SystemModule_error);
+		cl->bindStaticMemberFunction("clock",SystemModule_clock);
+		cl->bindStaticMemberFunction("evalNative",SystemModule_eval);
+		//cl->bindStaticMemberFunction("assertNative",SystemModule_assert);
+		cl->bindStaticMemberFunction("errorNative",SystemModule_error);
 
 		// Json mod
 		cl=script_type_factory->registerScriptType("Json","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
-		cl->bindMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
-		cl->bindMemberFunctionStatic("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
-		cl->bindMemberFunctionStatic("deserialize",JsonModule_deserialize);
+		cl->bindStaticMemberFunction("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
+		cl->bindStaticMemberFunction("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
+		cl->bindStaticMemberFunction("deserialize",JsonModule_deserialize);
 		//---------------------------------------------
 		// DateTime
 		cl=bindType<zs_datetime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
 
-		/*registerMemberFunctionStatic<zs_datetime>("_add",DateTimeModule_add);
-		registerMemberFunctionStatic<zs_datetime>("_sub",DateTimeModule_sub);*/
+		/*registerStaticMemberFunction<zs_datetime>("_add",DateTimeModule_add);
+		registerStaticMemberFunction<zs_datetime>("_sub",DateTimeModule_sub);*/
 
 		bindMemberFunction<zs_datetime>("setUtc",DateTimeModule_setUtc);
 

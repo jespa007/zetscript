@@ -607,7 +607,7 @@ int main(){
 	zs->registerMemberFunction&lt;MyNumber&gt;(&quot;MyNumber&quot;,&amp;MyNumberWrap_set);
 
 	// register static function _add as metamethod
-	zs->registerMemberFunctionStatic&lt;MyNumber&gt;(&quot;_add&quot;,&amp;MyNumberWrap_add);
+	zs->registerStaticMemberFunction&lt;MyNumber&gt;(&quot;_add&quot;,&amp;MyNumberWrap_add);
 
 	try{
 		zs-&gt;eval(

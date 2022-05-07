@@ -5,7 +5,7 @@
 namespace zetscript{
 
 	template < typename R>
-	void ScriptType::bindMemberVariableStaticConst(
+	void ScriptType::bindStaticConstMemberVariable(
 			const zs_string & var_name
 			, const R var_pointer
 			, const char *registered_file
@@ -31,7 +31,7 @@ namespace zetscript{
 	 * like register function c but is added to member function list according type C
 	 */
 	template <typename F>
-	void ScriptType::bindMemberFunctionStatic(
+	void ScriptType::bindStaticMemberFunction(
 			const zs_string & _function_name
 			,F _ptr_function
 			, const char *_registered_file
