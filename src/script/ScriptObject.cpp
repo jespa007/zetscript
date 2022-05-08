@@ -218,6 +218,9 @@ namespace zetscript{
 		ref_script_objects->push_back((zs_int)_so);
 	}
 
+	ScriptTypeFactory		*	ScriptObject::getScriptTypeFactory(){
+		return zs->getScriptTypeFactory();
+	}
 
 	ScriptObject::~ScriptObject(){
 		// deallocate built-in function member objects

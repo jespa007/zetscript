@@ -59,7 +59,7 @@ namespace zetscript{
 		data->script_type_factory=_zs->getScriptTypeFactory();
 		data->scope_factory = _zs->getScopeFactory();
 		data->main_function_object = MAIN_FUNCTION(data);
-		data->main_class_object = SCRIPT_TYPE_MAIN(data);
+		data->main_class_object = SCRIPT_TYPE_MAIN(data->script_type_factory);
 	}
 
 	//============================================================================================================================================
@@ -340,6 +340,10 @@ namespace zetscript{
 
 					if(vm_create_shared_pointer(vm,so) == false){
 						THROW_RUNTIME_ERRORF("Cannot create shared pointer");
+					}
+
+					if(vm_share_pointer(vm,so) == false){
+						THROW_RUNTIME_ERRORF("Cannot shared pointer");
 					}
 				}
 				*stk_aux++=stk_params[i];

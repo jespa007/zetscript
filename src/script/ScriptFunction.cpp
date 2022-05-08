@@ -205,7 +205,7 @@ namespace zetscript{
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
-					,(char)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_TYPE_NAME(sfo,instruction->value_op1):"???"
+					,(char)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_TYPE_NAME(sfo->script_type_factory,instruction->value_op1):"???"
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:

@@ -106,8 +106,9 @@ namespace zetscript{
 								}else{ // expect return an scriptobjectstring
 									void *c_object = ((ScriptObjectClass *)_obj)->getNativeObject();
 									zs_int result=((zs_int (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
-									stk_getter_result=_zs->convertVarToStackElement(
-										result
+									stk_getter_result=to_stk(
+										_zs
+										,result
 										,ptr_function->idx_script_type_return
 									);
 

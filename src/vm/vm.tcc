@@ -541,7 +541,7 @@ namespace zetscript{
 						}
 
 						str_candidates+=zs_rtti::demangle(
-							GET_IDX_2_CLASS_C_STR(data,irfs->params[a].idx_script_type)
+							GET_IDX_2_CLASS_C_STR(data->script_type_factory,irfs->params[a].idx_script_type)
 						);
 					}
 
@@ -552,7 +552,7 @@ namespace zetscript{
 					str_candidates.append(" -- BIND FUNCTION AS --> ");
 
 					str_candidates.append(zs_rtti::demangle(
-							GET_IDX_2_CLASS_C_STR(data,irfs->idx_script_type_return)
+							GET_IDX_2_CLASS_C_STR(data->script_type_factory,irfs->idx_script_type_return)
 						)
 					);
 
@@ -565,7 +565,7 @@ namespace zetscript{
 						}
 
 						str_candidates.append(zs_rtti::demangle(
-							GET_IDX_2_CLASS_C_STR(data,irfs->params[a].idx_script_type)
+							GET_IDX_2_CLASS_C_STR(data->script_type_factory,irfs->params[a].idx_script_type)
 							)
 						);
 					}

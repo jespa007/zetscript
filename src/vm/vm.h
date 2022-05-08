@@ -106,6 +106,6 @@ namespace zetscript{
 }
 
 
-#include "vm.tcc"
+//#include "vm.tcc"
 
 

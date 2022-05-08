@@ -327,7 +327,7 @@ namespace zetscript{
 						,symbol_name
 				);
 
-				sc=GET_SCRIPT_TYPE(eval_data,symbol_name);
+				sc=GET_SCRIPT_TYPE(eval_data->script_type_factory,symbol_name);
 
 				if(sc==NULL){
 

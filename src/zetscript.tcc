@@ -2,284 +2,31 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
+
+#include	"StackElement.tcc"
+#include	"vm/vm.tcc"
+#include	"script/ScriptObjectClass.tcc"
+
 namespace zetscript{
 
-		// Helpers...
-		 StackElement ZetScript::convertVarToStackElement(zs_int ptr_var, short idx_builtin_type_var){
-			//zs_int ptr_var = (zs_int)input_var;
-				zs_string s_return_value;
-				StackElement stk_result=k_stk_undefined;
-				ScriptObjectString *so=NULL;
-
-				//int idx_builtin_type=getIdxScriptTypeFromTypeNamePtr(typeid(T).name());
-				// save return type ...
-				switch(idx_builtin_type_var){
-				 case IDX_TYPE_VOID_C:
-					break;
-				 case IDX_TYPE_NULL:
-					 stk_result={0,STK_PROPERTY_NULL};
-					 break;
-				 case IDX_TYPE_ZS_INT_PTR_C:
-					 if(ptr_var==0) return stk_result;
-					 stk_result={(*((zs_int *)ptr_var)),STK_PROPERTY_ZS_INT};
-					 break;
-				 case IDX_TYPE_ZS_INT_C:
-					 stk_result={(((zs_int)ptr_var)),STK_PROPERTY_ZS_INT};
-					 break;
-				 case IDX_TYPE_ZS_FLOAT_C:
-					 stk_result.properties=STK_PROPERTY_ZS_FLOAT;//{};
-					 ZS_FLOAT_COPY(&stk_result.value,&ptr_var);
-					 break;
-				 case IDX_TYPE_ZS_FLOAT_PTR_C:
-					 if(ptr_var==0) return stk_result;
-					 stk_result.properties=STK_PROPERTY_ZS_FLOAT;//{};
-					 ZS_FLOAT_COPY(&stk_result.value,&(*(zs_float *)ptr_var));
-					 break;
-				 case IDX_TYPE_BOOL_PTR_C:
-					 if(ptr_var==0) return stk_result;
-					 stk_result={(*((bool *)ptr_var)),STK_PROPERTY_BOOL};
-					 break;
-				 case IDX_TYPE_BOOL_C:
-					 stk_result={(((bool)ptr_var)),STK_PROPERTY_BOOL};
-					 break;
-				 case IDX_TYPE_CONST_CHAR_PTR_C:
-				 case IDX_TYPE_ZS_STRING_PTR_C:
-				 case IDX_TYPE_ZS_STRING_C:
-
-
-					 so=ZS_NEW_OBJECT_STRING(this);
-					 if(ptr_var!=0) { // not null
-						 if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_PTR_C){ // zs_reference
-							so->value=(void *)ptr_var;
-						 }else if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_C){ // zs_string passed as pointer
-							 so->set(*(zs_string *)ptr_var);
-						 }else{ // const char
-							 so->set((const char *)ptr_var);
-						 }
-					 }
-
-					 stk_result={(intptr_t)so,STK_PROPERTY_SCRIPT_OBJECT};
-					 break;
-				 case IDX_TYPE_STACK_ELEMENT:
-					 if(ptr_var==0) return stk_result;
-					 stk_result=*((StackElement *)ptr_var);
-					 break;
-				 case IDX_TYPE_SCRIPT_OBJECT_VECTOR:
-				 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR:
-				 case IDX_TYPE_SCRIPT_OBJECT_OBJECT:
-				 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT:
-				 case IDX_TYPE_SCRIPT_OBJECT_STRING:
-				 case IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING:
-					 if(ptr_var==0) return stk_result;
-					stk_result = {
-						 (intptr_t)ptr_var
-						 ,STK_PROPERTY_SCRIPT_OBJECT
-					 };
-
-					 break;
-				 default:
-					 //if(ptr_var==0) return stk_result;
-					 if(ptr_var != 0){
-						 stk_result = {
-								 (intptr_t) script_type_factory->instanceScriptObjectByTypeIdx(idx_builtin_type_var,(void *)ptr_var)
-								 ,STK_PROPERTY_SCRIPT_OBJECT
-						 };
-					 }
-					 break;
-				}
-
-				return stk_result;
-		}
-
 		template<typename _C>
-		_C stk_to(ZetScript *_zs, StackElement * _stk){
+		ScriptObjectClass * ZetScript::newScriptObjectClass(){
+			const char * str_script_type_ptr = typeid(_C *).name();
+			int idx_script_type=ZS_IDX_UNDEFINED;
 
-			bool is_constant=false;
-			StackElement stk=*_stk;
-			zs_string error;
-			zs_int ptr_var;
-			zs_string str_script_type_ptr = typeid(_C).name();
-			ScriptTypeFactory *_script_factory=_zs->getScriptTypeFactory();
-			ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
-
-			if(script_type == NULL){
-				THROW_RUNTIME_ERROR("Type '%s' not registered",zs_rtti::demangle(str_script_type_ptr.c_str()).c_str());
-			}
-
-			if(_zs->convertStackElementToVar(_stk, script_type->idx_script_type, &ptr_var,error)==false){
-				THROW_RUNTIME_ERROR("Error converting StackElement to '%s': %s"
-						,zs_rtti::demangle(str_script_type_ptr.c_str()).c_str()
-						,error.c_str()
+			if((idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr))==ZS_IDX_UNDEFINED){
+				THROW_RUNTIME_ERROR(
+				"Cannot instance script object as native type '%s' because is not registered"
+				,zs_rtti::demangle(typeid(_C *).name()).c_str()
 				);
 			}
-			return (_C)ptr_var;
+
+			_C *ptr_var=new _C();
+			auto so_script=ScriptObjectClass::newScriptObjectClass(this,idx_script_type,(void *)ptr_var);
+			so_script->deleteNativeObjectOnDestroy(true);
+			return so_script;
 		}
 
-		bool ZetScript::convertStackElementToVar(StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, zs_string & _error){
-			zs_int val_ret=0;
-			//ScriptObjectString *so=NULL;
-
-			ScriptObject *script_object=NULL;
-			//StackElement stack_element=_stack_element;
-			//StackElement *_stack_element=&stack_element;
-
-			// save return type ...
-			if(_stack_element->properties & STK_PROPERTY_PTR_STK){
-				_stack_element=((StackElement *)_stack_element->value);
-			}
-
-			if(_idx_builtin_type == IDX_TYPE_STACK_ELEMENT){
-				*_ptr_var=(zs_int)_stack_element;
-				return true;
-			}
-
-			switch(GET_STK_PROPERTY_TYPES(_stack_element->properties)){
-			case STK_PROPERTY_NULL:
-				break;
-			case STK_PROPERTY_BOOL:
-				if(_idx_builtin_type == IDX_TYPE_BOOL_C){// *ScriptType::k_str_bool_type){
-					val_ret=(zs_int)(_stack_element->value);
-				}else if(_idx_builtin_type == IDX_TYPE_BOOL_PTR_C){//*ScriptType::k_str_bool_type_ptr){
-					val_ret=(zs_int)(&_stack_element->value);
-				}else{
-					_error="cannot convert '";
-					_error.append(zs_rtti::demangle((k_str_bool_type_ptr)));
-					_error.append("' to '");
-					_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,_idx_builtin_type)));
-					_error.append("'");
-					return false;
-				}
-
-				break;
-			case STK_PROPERTY_ZS_FLOAT:
-				switch(_idx_builtin_type){
-				case IDX_TYPE_ZS_FLOAT_C:
-					ZS_FLOAT_COPY(&val_ret,&_stack_element->value);
-					break;
-				case IDX_TYPE_ZS_FLOAT_PTR_C:
-					val_ret=(zs_int)(&_stack_element->value);
-					break;
-				case IDX_TYPE_ZS_INT_C:
-					{
-						zs_int *aux_dst = ((zs_int *)&val_ret);
-						zs_float *aux_src=(zs_float *)&_stack_element->value;
-						*aux_dst=(zs_int)(*aux_src);
-					}
-					break;
-				default:
-					_error="cannot convert '";
-					_error.append(zs_rtti::demangle((k_str_zs_float_type_ptr)));
-					_error.append("' to '");
-					_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,_idx_builtin_type)));
-					_error.append("'");
-					return false;
-				}
-				break;
-			case STK_PROPERTY_ZS_INT:
-				switch(_idx_builtin_type){
-				case IDX_TYPE_ZS_INT_C:
-					val_ret=(zs_int)(_stack_element->value);
-					break;
-				case IDX_TYPE_ZS_INT_PTR_C:
-					val_ret=(zs_int)(&_stack_element->value);
-					break;
-				/*case IDX_TYPE_ZS_FLOAT_PTR_C:
-					// first assign to aux value
-					// *((zs_float *)&_stack_element->value)=_stack_element->value;
-					// second assign pointer
-					//val_ret=(zs_int)&_stack_element->value;
-					// third stackelement is mutuated as ptr zs_float (to consensuate)
-					//stack_element->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_IS_C_VAR_PTR;
-					break;*/
-				default:
-					_error= "cannot convert 'int' to '";
-					_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,_idx_builtin_type)));
-					_error.append("'");
-					return false;
-				}
-				break;
-			// it expects the ScriptFunction directly
-			case STK_PROPERTY_FUNCTION:
-				val_ret=((Symbol *)_stack_element->value)->ref_ptr;
-				break;
-			default: // script variable by default ...
-
-				if(_stack_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					script_object=(ScriptObject *)_stack_element->value;
-					ScriptType *c_class=NULL;
-					val_ret=(zs_int)script_object;;
-
-					if(script_object==NULL){
-						_error="Variable is not defined";
-						return false;
-					}
-
-					if(_idx_builtin_type!=script_object->idx_script_type){
-
-						if(script_object->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
-							if(_stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
-								_error= "internal error var_ref is NULL";
-								return false;
-							}
-
-							if(_idx_builtin_type == IDX_TYPE_ZS_STRING_PTR_C){
-								val_ret=(zs_int)(((ScriptObjectString *)script_object)->value);
-							}else if (_idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
-								val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());
-							}else{
-								_error= "cannot convert '";
-								_error.append(zs_rtti::demangle((k_str_zs_string_type_ptr)));
-								_error.append("' to '");
-								_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,_idx_builtin_type)));
-								_error.append("'");
-								return false;
-							}
-						}else if(script_object->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
-							ScriptObjectClass *script_object_class = (ScriptObjectClass *)script_object;
-							c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
-
-							if(c_class != NULL){
-								if((val_ret=c_class->extendsFrom(
-										_idx_builtin_type
-									))==0
-								){//c_class->idx_script_type==idx_builtin_type){
-									_error = "cannot convert '";
-									_error.append(zs_rtti::demangle(c_class->str_script_type_ptr));
-									_error.append("' to '");
-									_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,_idx_builtin_type)));
-									_error.append("'");
-									return false;
-								}
-								val_ret=(zs_int)script_object_class->getNativeObject();
-							}else{ // Is script class, set directly
-								val_ret=_stack_element->value;
-								/*error = " Error calling function, no C-object parameter! Unexpected script variable (";
-								error.append(zs_rtti::demangle(script_object->getTypeName().c_str()));
-								error.append(")");
-								return false;*/
-							}
-						}else{ // cannot convert...
-							_error = "cannot convert '";
-							_error.append(zs_rtti::demangle(script_object->getTypeName().c_str()));
-							_error.append("' to '");
-							_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,_idx_builtin_type)));
-							_error.append("'");
-							return false;
-						}
-					}else{ // get native object...
-						val_ret=(zs_int)script_object->getNativeObject();
-					}
-				}else{
-					_error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(this,_idx_builtin_type)).c_str());
-					return false;
-				}
-				break;
-			}
-
-			*_ptr_var = val_ret;
-
-			return true;
-		}
 
 		void ZetScript::unrefLifetimeObject(ScriptObject *so){
 			vm_unref_lifetime_object(this->virtual_machine,so);
@@ -334,7 +81,7 @@ namespace zetscript{
 								,line
 						);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -361,7 +108,7 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj, idx_param1](Param1 p1){
 
 					StackElement args[1]={
-							 convertVarToStackElement((zs_int)p1,idx_param1)
+							 to_stk(this,(zs_int)p1,idx_param1)
 					};
 
 					vm_execute(
@@ -394,7 +141,7 @@ namespace zetscript{
 						zs_string error_str;
 
 						StackElement args[1]={
-								convertVarToStackElement((zs_int)p1,idx_param1)
+								to_stk(this,(zs_int)p1,idx_param1)
 						};
 
 						StackElement stk = vm_execute(
@@ -407,7 +154,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!convertStackElementToVar(&stk,idx_return, (zs_int*)(&ret_value),error_str)){
+						if(!stk_to(this,&stk,idx_return, (zs_int*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -436,8 +183,8 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj, idx_param1, idx_param2](Param1 p1,Param2 p2){
 
 					StackElement args[2]={
-							 convertVarToStackElement((zs_int)p1,idx_param1)
-							,convertVarToStackElement((zs_int)p2,idx_param2)
+							 to_stk(this,(zs_int)p1,idx_param1)
+							,to_stk(this,(zs_int)p2,idx_param2)
 
 					};
 
@@ -476,8 +223,8 @@ namespace zetscript{
 						zs_string error_str;
 
 						StackElement args[2]={
-								 convertVarToStackElement((zs_int)p1,idx_param1)
-								,convertVarToStackElement((zs_int)p2,idx_param2)
+								 to_stk(this,(zs_int)p1,idx_param1)
+								,to_stk(this,(zs_int)p2,idx_param2)
 
 						};
 
@@ -492,7 +239,7 @@ namespace zetscript{
 							,line
 						);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
+						if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -527,9 +274,9 @@ namespace zetscript{
 
 
 					StackElement args[3]={
-							 convertVarToStackElement((zs_int)p1,idx_param1)
-							,convertVarToStackElement((zs_int)p2,idx_param2)
-							,convertVarToStackElement((zs_int)p3,idx_param3)
+							 to_stk(this,(zs_int)p1,idx_param1)
+							,to_stk(this,(zs_int)p2,idx_param2)
+							,to_stk(this,(zs_int)p3,idx_param3)
 					};
 
 					vm_execute(
@@ -567,9 +314,9 @@ namespace zetscript{
 					zs_string error_str;
 
 					StackElement args[3]={
-							 convertVarToStackElement((zs_int)p1,idx_param1)
-							,convertVarToStackElement((zs_int)p2,idx_param2)
-							,convertVarToStackElement((zs_int)p3,idx_param3)
+							 to_stk(this,(zs_int)p1,idx_param1)
+							,to_stk(this,(zs_int)p2,idx_param2)
+							,to_stk(this,(zs_int)p3,idx_param3)
 					};
 
 					StackElement stk = vm_execute(
@@ -583,7 +330,7 @@ namespace zetscript{
 						,line
 					);
 
-					if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+					if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
 						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 					}
 					return ret_value;
@@ -617,10 +364,10 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj, idx_param1, idx_param2, idx_param3, idx_param4](Param1 p1,Param2 p2,Param3 p3,Param4 p4){
 
 					StackElement args[4]={
-							 convertVarToStackElement((zs_int)p1,idx_param1)
-							,convertVarToStackElement((zs_int)p2,idx_param2)
-							,convertVarToStackElement((zs_int)p3,idx_param3)
-							,convertVarToStackElement((zs_int)p4,idx_param4)
+							 to_stk(this,(zs_int)p1,idx_param1)
+							,to_stk(this,(zs_int)p2,idx_param2)
+							,to_stk(this,(zs_int)p3,idx_param3)
+							,to_stk(this,(zs_int)p4,idx_param4)
 					};
 
 					vm_execute(
@@ -661,10 +408,10 @@ namespace zetscript{
 						zs_string error_str;
 
 						StackElement args[4]={
-								 convertVarToStackElement((zs_int)p1,idx_param1)
-								,convertVarToStackElement((zs_int)p2,idx_param2)
-								,convertVarToStackElement((zs_int)p3,idx_param3)
-								,convertVarToStackElement((zs_int)p4,idx_param4)
+								 to_stk(this,(zs_int)p1,idx_param1)
+								,to_stk(this,(zs_int)p2,idx_param2)
+								,to_stk(this,(zs_int)p3,idx_param3)
+								,to_stk(this,(zs_int)p4,idx_param4)
 						};
 
 						StackElement stk = vm_execute(
@@ -678,7 +425,7 @@ namespace zetscript{
 								,line
 								);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
+						if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -716,11 +463,11 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj,idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5){
 
 					StackElement args[5]={
-							 convertVarToStackElement((zs_int)p1,idx_param1)
-							,convertVarToStackElement((zs_int)p2,idx_param2)
-							,convertVarToStackElement((zs_int)p3,idx_param3)
-							,convertVarToStackElement((zs_int)p4,idx_param4)
-							,convertVarToStackElement((zs_int)p5,idx_param5)
+							 to_stk(this,(zs_int)p1,idx_param1)
+							,to_stk(this,(zs_int)p2,idx_param2)
+							,to_stk(this,(zs_int)p3,idx_param3)
+							,to_stk(this,(zs_int)p4,idx_param4)
+							,to_stk(this,(zs_int)p5,idx_param5)
 
 					};
 
@@ -764,11 +511,11 @@ namespace zetscript{
 					zs_string error_str;
 
 					StackElement args[5]={
-							 convertVarToStackElement((zs_int)p1,idx_param1)
-							,convertVarToStackElement((zs_int)p2,idx_param2)
-							,convertVarToStackElement((zs_int)p3,idx_param3)
-							,convertVarToStackElement((zs_int)p4,idx_param4)
-							,convertVarToStackElement((zs_int)p5,idx_param5)
+							 to_stk(this,(zs_int)p1,idx_param1)
+							,to_stk(this,(zs_int)p2,idx_param2)
+							,to_stk(this,(zs_int)p3,idx_param3)
+							,to_stk(this,(zs_int)p4,idx_param4)
+							,to_stk(this,(zs_int)p5,idx_param5)
 
 					};
 
@@ -782,7 +529,7 @@ namespace zetscript{
 							,file
 							,line);
 
-					if(!convertStackElementToVar(&stk, idx_return, (zs_int*)(&ret_value),error_str)){
+					if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),error_str)){
 						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 					}
 					return ret_value;
@@ -823,12 +570,12 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5,Param6 p6){
 
 					StackElement args[6]={
-							 convertVarToStackElement((zs_int)p1,idx_param1)
-							,convertVarToStackElement((zs_int)p2,idx_param2)
-							,convertVarToStackElement((zs_int)p3,idx_param3)
-							,convertVarToStackElement((zs_int)p4,idx_param4)
-							,convertVarToStackElement((zs_int)p5,idx_param5)
-							,convertVarToStackElement((zs_int)p6,idx_param6)
+							 to_stk(this,(zs_int)p1,idx_param1)
+							,to_stk(this,(zs_int)p2,idx_param2)
+							,to_stk(this,(zs_int)p3,idx_param3)
+							,to_stk(this,(zs_int)p4,idx_param4)
+							,to_stk(this,(zs_int)p5,idx_param5)
+							,to_stk(this,(zs_int)p6,idx_param6)
 					};
 
 					vm_execute(
@@ -871,12 +618,12 @@ namespace zetscript{
 						zs_string error_str;
 
 						StackElement args[6]={
-								 convertVarToStackElement((zs_int)p1,idx_param1)
-								,convertVarToStackElement((zs_int)p2,idx_param2)
-								,convertVarToStackElement((zs_int)p3,idx_param3)
-								,convertVarToStackElement((zs_int)p4,idx_param4)
-								,convertVarToStackElement((zs_int)p5,idx_param5)
-								,convertVarToStackElement((zs_int)p6,idx_param6)
+								 to_stk(this,(zs_int)p1,idx_param1)
+								,to_stk(this,(zs_int)p2,idx_param2)
+								,to_stk(this,(zs_int)p3,idx_param3)
+								,to_stk(this,(zs_int)p4,idx_param4)
+								,to_stk(this,(zs_int)p5,idx_param5)
+								,to_stk(this,(zs_int)p6,idx_param6)
 						};
 
 						StackElement stk = vm_execute(
@@ -889,7 +636,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -958,13 +705,13 @@ namespace zetscript{
 				){
 
 					StackElement args[7]={
-						 convertVarToStackElement((zs_int)p1,idx_param1)
-						,convertVarToStackElement((zs_int)p2,idx_param2)
-						,convertVarToStackElement((zs_int)p3,idx_param3)
-						,convertVarToStackElement((zs_int)p4,idx_param4)
-						,convertVarToStackElement((zs_int)p5,idx_param5)
-						,convertVarToStackElement((zs_int)p6,idx_param6)
-						,convertVarToStackElement((zs_int)p7,idx_param7)
+						 to_stk(this,(zs_int)p1,idx_param1)
+						,to_stk(this,(zs_int)p2,idx_param2)
+						,to_stk(this,(zs_int)p3,idx_param3)
+						,to_stk(this,(zs_int)p4,idx_param4)
+						,to_stk(this,(zs_int)p5,idx_param5)
+						,to_stk(this,(zs_int)p6,idx_param6)
+						,to_stk(this,(zs_int)p7,idx_param7)
 					};
 
 					vm_execute(
@@ -1039,13 +786,13 @@ namespace zetscript{
 						zs_string error_str;
 
 						StackElement args[7]={
-								 convertVarToStackElement((zs_int)p1,idx_param1)
-								,convertVarToStackElement((zs_int)p2,idx_param2)
-								,convertVarToStackElement((zs_int)p3,idx_param3)
-								,convertVarToStackElement((zs_int)p4,idx_param4)
-								,convertVarToStackElement((zs_int)p5,idx_param5)
-								,convertVarToStackElement((zs_int)p6,idx_param6)
-								,convertVarToStackElement((zs_int)p7,idx_param7)
+								 to_stk(this,(zs_int)p1,idx_param1)
+								,to_stk(this,(zs_int)p2,idx_param2)
+								,to_stk(this,(zs_int)p3,idx_param3)
+								,to_stk(this,(zs_int)p4,idx_param4)
+								,to_stk(this,(zs_int)p5,idx_param5)
+								,to_stk(this,(zs_int)p6,idx_param6)
+								,to_stk(this,(zs_int)p7,idx_param7)
 						};
 
 						StackElement stk = vm_execute(
@@ -1058,7 +805,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -1131,14 +878,14 @@ namespace zetscript{
 				){
 
 					StackElement args[8]={
-						 convertVarToStackElement((zs_int)p1,idx_param1)
-						,convertVarToStackElement((zs_int)p2,idx_param2)
-						,convertVarToStackElement((zs_int)p3,idx_param3)
-						,convertVarToStackElement((zs_int)p4,idx_param4)
-						,convertVarToStackElement((zs_int)p5,idx_param5)
-						,convertVarToStackElement((zs_int)p6,idx_param6)
-						,convertVarToStackElement((zs_int)p7,idx_param7)
-						,convertVarToStackElement((zs_int)p8,idx_param8)
+						 to_stk(this,(zs_int)p1,idx_param1)
+						,to_stk(this,(zs_int)p2,idx_param2)
+						,to_stk(this,(zs_int)p3,idx_param3)
+						,to_stk(this,(zs_int)p4,idx_param4)
+						,to_stk(this,(zs_int)p5,idx_param5)
+						,to_stk(this,(zs_int)p6,idx_param6)
+						,to_stk(this,(zs_int)p7,idx_param7)
+						,to_stk(this,(zs_int)p8,idx_param8)
 					};
 
 					vm_execute(
@@ -1218,14 +965,14 @@ namespace zetscript{
 						zs_string error_str;
 
 						StackElement args[8]={
-								 convertVarToStackElement((zs_int)p1,idx_param1)
-								,convertVarToStackElement((zs_int)p2,idx_param2)
-								,convertVarToStackElement((zs_int)p3,idx_param3)
-								,convertVarToStackElement((zs_int)p4,idx_param4)
-								,convertVarToStackElement((zs_int)p5,idx_param5)
-								,convertVarToStackElement((zs_int)p6,idx_param6)
-								,convertVarToStackElement((zs_int)p7,idx_param7)
-								,convertVarToStackElement((zs_int)p8,idx_param8)
+								 to_stk(this,(zs_int)p1,idx_param1)
+								,to_stk(this,(zs_int)p2,idx_param2)
+								,to_stk(this,(zs_int)p3,idx_param3)
+								,to_stk(this,(zs_int)p4,idx_param4)
+								,to_stk(this,(zs_int)p5,idx_param5)
+								,to_stk(this,(zs_int)p6,idx_param6)
+								,to_stk(this,(zs_int)p7,idx_param7)
+								,to_stk(this,(zs_int)p8,idx_param8)
 						};
 
 						StackElement stk = vm_execute(
@@ -1238,7 +985,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -1317,15 +1064,15 @@ namespace zetscript{
 				){
 
 					StackElement args[9]={
-						 convertVarToStackElement((zs_int)p1,idx_param1)
-						,convertVarToStackElement((zs_int)p2,idx_param2)
-						,convertVarToStackElement((zs_int)p3,idx_param3)
-						,convertVarToStackElement((zs_int)p4,idx_param4)
-						,convertVarToStackElement((zs_int)p5,idx_param5)
-						,convertVarToStackElement((zs_int)p6,idx_param6)
-						,convertVarToStackElement((zs_int)p7,idx_param7)
-						,convertVarToStackElement((zs_int)p8,idx_param8)
-						,convertVarToStackElement((zs_int)p9,idx_param9)
+						 to_stk(this,(zs_int)p1,idx_param1)
+						,to_stk(this,(zs_int)p2,idx_param2)
+						,to_stk(this,(zs_int)p3,idx_param3)
+						,to_stk(this,(zs_int)p4,idx_param4)
+						,to_stk(this,(zs_int)p5,idx_param5)
+						,to_stk(this,(zs_int)p6,idx_param6)
+						,to_stk(this,(zs_int)p7,idx_param7)
+						,to_stk(this,(zs_int)p8,idx_param8)
+						,to_stk(this,(zs_int)p9,idx_param9)
 					};
 
 					vm_execute(
@@ -1410,15 +1157,15 @@ namespace zetscript{
 						zs_string error_str;
 
 						StackElement args[9]={
-								 convertVarToStackElement((zs_int)p1,idx_param1)
-								,convertVarToStackElement((zs_int)p2,idx_param2)
-								,convertVarToStackElement((zs_int)p3,idx_param3)
-								,convertVarToStackElement((zs_int)p4,idx_param4)
-								,convertVarToStackElement((zs_int)p5,idx_param5)
-								,convertVarToStackElement((zs_int)p6,idx_param6)
-								,convertVarToStackElement((zs_int)p7,idx_param7)
-								,convertVarToStackElement((zs_int)p8,idx_param8)
-								,convertVarToStackElement((zs_int)p9,idx_param9)
+								 to_stk(this,(zs_int)p1,idx_param1)
+								,to_stk(this,(zs_int)p2,idx_param2)
+								,to_stk(this,(zs_int)p3,idx_param3)
+								,to_stk(this,(zs_int)p4,idx_param4)
+								,to_stk(this,(zs_int)p5,idx_param5)
+								,to_stk(this,(zs_int)p6,idx_param6)
+								,to_stk(this,(zs_int)p7,idx_param7)
+								,to_stk(this,(zs_int)p8,idx_param8)
+								,to_stk(this,(zs_int)p9,idx_param9)
 						};
 
 						StackElement stk = vm_execute(
@@ -1431,7 +1178,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;
@@ -1515,16 +1262,16 @@ namespace zetscript{
 				){
 
 					StackElement args[10]={
-						 convertVarToStackElement((zs_int)p1,idx_param1)
-						,convertVarToStackElement((zs_int)p2,idx_param2)
-						,convertVarToStackElement((zs_int)p3,idx_param3)
-						,convertVarToStackElement((zs_int)p4,idx_param4)
-						,convertVarToStackElement((zs_int)p5,idx_param5)
-						,convertVarToStackElement((zs_int)p6,idx_param6)
-						,convertVarToStackElement((zs_int)p7,idx_param7)
-						,convertVarToStackElement((zs_int)p8,idx_param8)
-						,convertVarToStackElement((zs_int)p9,idx_param9)
-						,convertVarToStackElement((zs_int)p10,idx_param10)
+						 to_stk(this,(zs_int)p1,idx_param1)
+						,to_stk(this,(zs_int)p2,idx_param2)
+						,to_stk(this,(zs_int)p3,idx_param3)
+						,to_stk(this,(zs_int)p4,idx_param4)
+						,to_stk(this,(zs_int)p5,idx_param5)
+						,to_stk(this,(zs_int)p6,idx_param6)
+						,to_stk(this,(zs_int)p7,idx_param7)
+						,to_stk(this,(zs_int)p8,idx_param8)
+						,to_stk(this,(zs_int)p9,idx_param9)
+						,to_stk(this,(zs_int)p10,idx_param10)
 					};
 
 					vm_execute(
@@ -1614,16 +1361,16 @@ namespace zetscript{
 						zs_string error_str;
 
 						StackElement args[10]={
-								 convertVarToStackElement((zs_int)p1,idx_param1)
-								,convertVarToStackElement((zs_int)p2,idx_param2)
-								,convertVarToStackElement((zs_int)p3,idx_param3)
-								,convertVarToStackElement((zs_int)p4,idx_param4)
-								,convertVarToStackElement((zs_int)p5,idx_param5)
-								,convertVarToStackElement((zs_int)p6,idx_param6)
-								,convertVarToStackElement((zs_int)p7,idx_param7)
-								,convertVarToStackElement((zs_int)p8,idx_param8)
-								,convertVarToStackElement((zs_int)p9,idx_param9)
-								,convertVarToStackElement((zs_int)p10,idx_param10)
+								 to_stk(this,(zs_int)p1,idx_param1)
+								,to_stk(this,(zs_int)p2,idx_param2)
+								,to_stk(this,(zs_int)p3,idx_param3)
+								,to_stk(this,(zs_int)p4,idx_param4)
+								,to_stk(this,(zs_int)p5,idx_param5)
+								,to_stk(this,(zs_int)p6,idx_param6)
+								,to_stk(this,(zs_int)p7,idx_param7)
+								,to_stk(this,(zs_int)p8,idx_param8)
+								,to_stk(this,(zs_int)p9,idx_param9)
+								,to_stk(this,(zs_int)p10,idx_param10)
 						};
 
 						StackElement stk = vm_execute(
@@ -1636,7 +1383,7 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!convertStackElementToVar(&stk, idx_return, (zs_int *)(&ret_value),error_str)){
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
 							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
 						}
 						return ret_value;

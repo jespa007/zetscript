@@ -14,7 +14,6 @@ namespace zetscript{
 		class  ScriptObjectClass: public ScriptObjectObject{
 		public:
 
-			//---> TODO JEB: move all vars to ScriptObjectObject Class
 			ScriptFunction 		*	info_function_new;
 			Instruction 		*	instruction_new;
 			bool 					was_created_by_constructor;
@@ -24,12 +23,12 @@ namespace zetscript{
 			ScriptObjectClass();
 			void init(ZetScript *_zs, short _idx_script_type,void *_c_object);
 
+			template<typename _C>
+			_C to();
+
 			/**
-			 * info_registered_class: scriptclass info
-			 * _c_object: pass C object reference (is not delete_c_object_on_destroy by default)
+			 * info_registered_class: scriptclass info		 * _c_object: pass C object reference (is not delete_c_object_on_destroy by default)
 			 */
-
-
 			bool isCreatedByContructor();
 			bool itHasGetMetamethod();
 			bool itHasSetMetamethod();

@@ -1184,6 +1184,10 @@ execute_function:
 				// call function
 				if((sf_call_script_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 
+					if(sf_call_script_function->name_script_function=="tweenAlphaFadeOut2"){
+						int jjjj=0;
+						jjjj++;
+					}
 					// we pass everything by copy (TODO implement ref)
 					if(sf_call_n_args > 0 && sf_call_script_function->params_len > 0){
 						StackElement *stk_arg=sf_call_stk_start_arg_call;
@@ -1283,7 +1287,6 @@ execute_function:
 
 					// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 					// will be ignored always.
-
 					for(int h = sf_call_n_args; h < sf_call_script_function->params_len; ++h){
 						ScriptFunctionParam *param=sf_call_script_function->params+h;
 
@@ -1485,7 +1488,7 @@ execute_function:
 				goto lbl_return_function;
 			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 
-				 	so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data,instruction->value_op1);
+				 	so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data->script_type_factory,instruction->value_op1);
 
 					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
@@ -1508,7 +1511,7 @@ execute_function:
 
 				 		 Symbol *constructor_function=NULL;
 
-				 		 so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data,stk_result_op1->value);
+				 		 so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data->script_type_factory,stk_result_op1->value);
 
 						if(!vm_create_shared_pointer(vm,so_aux)){
 							goto lbl_exit_function;

@@ -13,6 +13,7 @@ namespace zetscript{
 	class ScriptObject;
 	class ScriptFunction;
 	class ScriptObjectMemberFunction;
+	class ScriptTypeFactory;
 
 	typedef struct _SharedPointerInfo {
 		ScriptObject 			*ptr_script_object_shared;
@@ -96,6 +97,8 @@ namespace zetscript{
 		zs_vector				*   ref_script_objects;
 
 		void 						init(ZetScript *zs);
+
+		ScriptTypeFactory		*	getScriptTypeFactory();
 
 		virtual StackElement 	* 	newBuiltinSlot();
 		virtual StackElement 	* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);

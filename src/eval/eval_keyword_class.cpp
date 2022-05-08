@@ -233,7 +233,7 @@ namespace zetscript{
 					,member_symbol
 			);
 
-			if((*sc=GET_SCRIPT_TYPE(eval_data,str_script_type)) == NULL){
+			if((*sc=GET_SCRIPT_TYPE(eval_data->script_type_factory,str_script_type)) == NULL){
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error access '%s::%s'. Type '%s' not defined"
 					,str_script_type.c_str()
 					,member_symbol.c_str()

@@ -518,7 +518,7 @@ error_eval_keyword_var:
 				zs_string error;
 				if(is_special_char(aux_p)){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
-					,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data)?zs_strutils::format(
+					,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
 							"declaring function member '%s::%s'"
 							,scope_info->script_type_owner->str_script_type.c_str()
 							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
@@ -529,7 +529,7 @@ error_eval_keyword_var:
 				}else{
 
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
-							,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data)?zs_strutils::format(
+							,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
 									"declaring function member '%s::%s'"
 									,scope_info->script_type_owner->str_script_type.c_str()
 									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
@@ -776,7 +776,7 @@ error_eval_keyword_var:
 				}
 
 				if((properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)==0){
-					if(scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data)){ // is a function that was created within a member function...
+					if(scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)){ // is a function that was created within a member function...
 						((ScriptFunction *)(symbol_sf->ref_ptr))->properties|=FUNCTION_PROPERTY_MEMBER_FUNCTION;
 					}
 				}

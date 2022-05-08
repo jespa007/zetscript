@@ -76,9 +76,8 @@
 #include "scope/zs_scope.h"
 #include "module/zs_module.h"
 #include "script/zs_script.h"
-
-
 #include "eval/eval.h"
+#include "vm/vm.h"
 
 
 #define ZETSCRIPT_VERSION_MAJOR 2
@@ -136,6 +135,7 @@ namespace zetscript{
 		StackElement * registerStkStringObject(const zs_string & key_name,const zs_string & const_name);
 		StackElement * getStkStringObject(const zs_string & const_name);
 
+
 		inline zs_map * getCompiledSymbolName(){
 			return compiled_symbol_name;
 		}
@@ -192,6 +192,9 @@ namespace zetscript{
 		void bindFunction( const zs_string & name_script_function,F ptr_function, const char *registered_file="",short registered_line=-1){
 			script_type_factory->bindFunction( name_script_function,ptr_function, registered_file,registered_line);
 		}
+
+		template<typename _C>
+		ScriptObjectClass * newScriptObjectClass();
 
 		template<class C, class B>
 		void extends(){
@@ -297,10 +300,6 @@ namespace zetscript{
 		}
 
 		//cpp binding
-		// Helpers...
-		inline StackElement convertVarToStackElement(zs_int var_ptr, short idx_builtin_type);
-		inline bool convertStackElementToVar(StackElement * _stack_element, int _idx_builtin_type, zs_int *_result, zs_string & _error);
-
 		inline void unrefLifetimeObject(ScriptObject *so);
 
 
@@ -564,7 +563,6 @@ namespace zetscript{
 
 }
 
-#include	"vm/vm.h"
 #include 	"zetscript.tcc"
 
 

@@ -8,7 +8,7 @@
 #define 				MAX_REGISTER_CLASSES 				100
 #define 				MAIN_SCRIPT_CLASS_NAME 				"@MainClass"
 
-#define SCF_REGISTER_STRUCT(type_class, idx_script_type)\
+#define SCF_BIND_STRUCT(type_class, idx_script_type)\
 	if(script_types->count!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
@@ -16,7 +16,7 @@
 	bindType<type_class>(ZS_STR(type_class));
 
 
-#define SCF_REGISTER_CLASS(name_class, type_class, idx_script_type)\
+#define SCF_BIND_CLASS(name_class, type_class, idx_script_type)\
 	if(script_types->count!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
@@ -30,14 +30,14 @@
 	}\
 	bindType<type_class>(name_class,type_class##Wrap_New,type_class##Wrap_Delete);
 
-#define SCF_REGISTER_SINGLETON_CLASS(type_class, idx_script_type)\
+#define SCF_BIND_SINGLETON_CLASS(type_class, idx_script_type)\
 	if(script_types->count!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	bindType<type_class>(ZS_STR(type_class));
 
-#define SCF_REGISTER_NATIVE_TYPE(type, idx_script_type)\
+#define SCF_BIND_NATIVE_TYPE(type, idx_script_type)\
 	if(script_types->count!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(type_class));\
 		return;\
@@ -48,7 +48,7 @@
 		sc->str_script_type_ptr=(typeid(type).name());\
 	}
 
-#define SCF_REGISTER_NATIVE_CUSTOM_TYPE(__name__, type, idx_script_type)\
+#define SCF_BIND_NATIVE_CUSTOM_TYPE(__name__, type, idx_script_type)\
 	if(script_types->count!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(type_class));\
 		return;\
@@ -59,7 +59,7 @@
 		sc->str_script_type_ptr=(typeid(type).name());\
 	}
 
-#define SCF_REGISTER_TYPE(str_type, idx_script_type)\
+#define SCF_BIND_TYPE(str_type, idx_script_type)\
 	if(script_types->count!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error initializing built in type: '%s'",str_type);\
 		return;\
@@ -176,47 +176,47 @@ namespace zetscript{
 		// !!!
 
 		// primitives
-		SCF_REGISTER_TYPE(ZS_TYPE_NAME_UNDEFINED,IDX_TYPE_UNDEFINED);
-		SCF_REGISTER_TYPE(ZS_TYPE_NAME_NULL,IDX_TYPE_NULL);
-		SCF_REGISTER_NATIVE_TYPE(void,IDX_TYPE_VOID_C);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_INT,zs_int,IDX_TYPE_ZS_INT_C);
-		SCF_REGISTER_NATIVE_TYPE(zs_int *,IDX_TYPE_ZS_INT_PTR_C);
-		SCF_REGISTER_NATIVE_TYPE(char *,IDX_TYPE_CHAR_PTR_C);
-		SCF_REGISTER_NATIVE_TYPE(const char *,IDX_TYPE_CONST_CHAR_PTR_C);
-		SCF_REGISTER_NATIVE_TYPE(zs_string,IDX_TYPE_ZS_STRING_C);
-		SCF_REGISTER_NATIVE_TYPE(zs_string *,IDX_TYPE_ZS_STRING_PTR_C);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_BOOL,bool,IDX_TYPE_BOOL_C);
-		SCF_REGISTER_NATIVE_TYPE(bool *,IDX_TYPE_BOOL_PTR_C);
-		SCF_REGISTER_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_FLOAT,zs_float,IDX_TYPE_ZS_FLOAT_C);
-		SCF_REGISTER_NATIVE_TYPE(zs_float *,IDX_TYPE_ZS_FLOAT_PTR_C);
-		SCF_REGISTER_NATIVE_TYPE(const zs_float *,IDX_TYPE_CONST_ZS_FLOAT_PTR_C);
+		SCF_BIND_TYPE(ZS_TYPE_NAME_UNDEFINED,IDX_TYPE_UNDEFINED);
+		SCF_BIND_TYPE(ZS_TYPE_NAME_NULL,IDX_TYPE_NULL);
+		SCF_BIND_NATIVE_TYPE(void,IDX_TYPE_VOID_C);
+		SCF_BIND_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_INT,zs_int,IDX_TYPE_ZS_INT_C);
+		SCF_BIND_NATIVE_TYPE(zs_int *,IDX_TYPE_ZS_INT_PTR_C);
+		SCF_BIND_NATIVE_TYPE(char *,IDX_TYPE_CHAR_PTR_C);
+		SCF_BIND_NATIVE_TYPE(const char *,IDX_TYPE_CONST_CHAR_PTR_C);
+		SCF_BIND_NATIVE_TYPE(zs_string,IDX_TYPE_ZS_STRING_C);
+		SCF_BIND_NATIVE_TYPE(zs_string *,IDX_TYPE_ZS_STRING_PTR_C);
+		SCF_BIND_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_BOOL,bool,IDX_TYPE_BOOL_C);
+		SCF_BIND_NATIVE_TYPE(bool *,IDX_TYPE_BOOL_PTR_C);
+		SCF_BIND_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_FLOAT,zs_float,IDX_TYPE_ZS_FLOAT_C);
+		SCF_BIND_NATIVE_TYPE(zs_float *,IDX_TYPE_ZS_FLOAT_PTR_C);
+		SCF_BIND_NATIVE_TYPE(const zs_float *,IDX_TYPE_CONST_ZS_FLOAT_PTR_C);
 
 		// estructures
-		SCF_REGISTER_STRUCT(StackElement,IDX_TYPE_STACK_ELEMENT);
+		SCF_BIND_STRUCT(StackElement,IDX_TYPE_STACK_ELEMENT);
 
 
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS
 		// It self Script object
-		SCF_REGISTER_SINGLETON_CLASS(ScriptFunction,IDX_TYPE_FUNCTION);
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_VAR_REF,ScriptObjectVarRef,IDX_TYPE_SCRIPT_OBJECT_VAR_REF);
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER,ScriptObjectMemberFunction,IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER);
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_STRING,ScriptObjectString,IDX_TYPE_SCRIPT_OBJECT_STRING);
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_VECTOR,ScriptObjectVector,IDX_TYPE_SCRIPT_OBJECT_VECTOR);
+		SCF_BIND_SINGLETON_CLASS(ScriptFunction,IDX_TYPE_FUNCTION);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_VAR_REF,ScriptObjectVarRef,IDX_TYPE_SCRIPT_OBJECT_VAR_REF);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER,ScriptObjectMemberFunction,IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_STRING,ScriptObjectString,IDX_TYPE_SCRIPT_OBJECT_STRING);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_VECTOR,ScriptObjectVector,IDX_TYPE_SCRIPT_OBJECT_VECTOR);
 
 		// Script object iterators
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_STRING,ScriptObjectIteratorString,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING);
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR,ScriptObjectIteratorVector,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR);
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT,ScriptObjectIteratorObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_STRING,ScriptObjectIteratorString,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR,ScriptObjectIteratorVector,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT,ScriptObjectIteratorObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT);
 
 
 		// BUILT-IN SCRIPT OBJECTS
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS CLASSES
-		SCF_REGISTER_CLASS(ZS_TYPE_NAME_OBJECT_OBJECT,ScriptObjectObject,IDX_TYPE_SCRIPT_OBJECT_OBJECT);
-		SCF_REGISTER_CLASS("Class",ScriptObjectClass,IDX_TYPE_SCRIPT_OBJECT_CLASS);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_OBJECT,ScriptObjectObject,IDX_TYPE_SCRIPT_OBJECT_OBJECT);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_CLASS,ScriptObjectClass,IDX_TYPE_SCRIPT_OBJECT_CLASS);
 		// it needs script object type to have zetscript reference
-		SCF_REGISTER_SINGLETON_CLASS(ZetScript,IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT);
+		SCF_BIND_SINGLETON_CLASS(ZetScript,IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT);
 		// BUILT-IN SCRIPT OBJECTS CLASSES
 		//------------------------
 

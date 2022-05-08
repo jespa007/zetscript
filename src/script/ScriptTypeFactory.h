@@ -5,22 +5,22 @@
 #pragma once
 
 
-#define NEW_OBJECT_VAR_BY_TYPE_IDX(data,idx)			((data->script_type_factory)->instanceScriptObjectByTypeIdx(idx))
-#define GET_SCRIPT_TYPE(data,idx_or_name)				((data->script_type_factory)->getScriptType(idx_or_name))
-#define GET_SCRIPT_TYPE_NAME(data,idx) 					((data->script_type_factory)->getScriptTypeName(idx))
-#define SCRIPT_TYPE_MAIN(data)							((data->script_type_factory)->getScriptType(IDX_TYPE_CLASS_MAIN))    // 0 is the main type
+#define NEW_OBJECT_VAR_BY_TYPE_IDX(script_type_factory,idx)				((script_type_factory)->instanceScriptObjectByTypeIdx(idx))
+#define GET_SCRIPT_TYPE(script_type_factory,idx_or_name)				((script_type_factory)->getScriptType(idx_or_name))
+#define GET_SCRIPT_TYPE_NAME(script_type_factory,idx) 					((script_type_factory)->getScriptTypeName(idx))
+#define SCRIPT_TYPE_MAIN(script_type_factory)							((script_type_factory)->getScriptType(IDX_TYPE_CLASS_MAIN))    // 0 is the main type
 
-#define SCRIPT_OBJECT_STRING(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_STRING))
-#define SCRIPT_OBJECT_ITERATOR_STRING(data)				((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))
-//#define SCRIPT_CLASS_DICTIONARY(data)					((data->script_type_factory)->getScriptType(IDX_TYPE_DICTIONARY))
-#define SCRIPT_OBJECT_VECTOR(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_VECTOR))
-#define SCRIPT_OBJECT_ITERATOR_VECTOR(data)				((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR))
+#define SCRIPT_OBJECT_STRING(script_type_factory)						((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_STRING))
+#define SCRIPT_OBJECT_ITERATOR_STRING(script_type_factory)				((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING))
+//#define SCRIPT_CLASS_DICTIONARY(script_type_factory)					((script_type_factory->script_type_factory)->getScriptType(IDX_TYPE_DICTIONARY))
+#define SCRIPT_OBJECT_VECTOR(script_type_factory)						((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_VECTOR))
+#define SCRIPT_OBJECT_ITERATOR_VECTOR(script_type_factory)				((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR))
 
-#define SCRIPT_OBJECT_OBJECT(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_OBJECT))
-#define SCRIPT_OBJECT_ITERATOR_OBJECT(data)				((data->script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT))
+#define SCRIPT_OBJECT_OBJECT(script_type_factory)						((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_OBJECT))
+#define SCRIPT_OBJECT_ITERATOR_OBJECT(script_type_factory)				((script_type_factory)->getScriptType(IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT))
 
-//#define SCRIPT_CLASS_FUNCTOR(data)						((data->script_type_factory)->getScriptType(IDX_TYPE_FUNCTION))
-#define GET_IDX_2_CLASS_C_STR(data,idx) 				((data->script_type_factory)->getScriptType(idx)->str_script_type_ptr)
+//#define SCRIPT_CLASS_FUNCTOR(script_type_factory)						((script_type_factory->script_type_factory)->getScriptType(IDX_TYPE_FUNCTION))
+#define GET_IDX_2_CLASS_C_STR(script_type_factory,idx) 					((script_type_factory)->getScriptType(idx)->str_script_type_ptr)
 
 
 namespace zetscript{

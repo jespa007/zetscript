@@ -147,8 +147,9 @@ namespace zetscript{
 				if((stk_arg_current->properties & STK_PROPERTY_ZS_INT) && (c_function->params[i].idx_script_type == IDX_TYPE_ZS_FLOAT_PTR_C)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
-				}else if(!data->zs->convertStackElementToVar(
-						&stk_arg_c_function[i-idx_arg_start]
+				}else if(!stk_to(
+						data->zs
+						,&stk_arg_c_function[i-idx_arg_start]
 						,c_function->params[i].idx_script_type
 						,(zs_int *)&converted_param[i]
 						,data->vm_error_str
@@ -666,6 +667,6 @@ namespace zetscript{
 			}
 		}
 
-		*data->stk_vm_current++=data->zs->convertVarToStackElement(result,idx_script_type_return);
+		*data->stk_vm_current++=to_stk(data->zs,result,idx_script_type_return);
 	}
 }
