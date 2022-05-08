@@ -309,7 +309,11 @@ namespace zetscript{
 					val_ret=(zs_int)script_object->getNativeObject();
 				}
 			}else{
-				_error= zs_strutils::format("Cannot know how to convert type '%s'",zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
+				_error= zs_strutils::format(
+					"Cannot know how to convert type '%s' from '%s'"
+					,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str()
+					,stk_to_typeof_str(_zs,_stack_element).c_str()
+				);
 				return false;
 			}
 			break;
@@ -403,11 +407,8 @@ namespace zetscript{
 				 }
 				 break;
 			}
-
 			return stk_result;
 	}
-
-
 
 	zs_int	StackElement::toInt(){
 		if((this->properties & (STK_PROPERTY_ZS_INT|STK_PROPERTY_ZS_FLOAT))==0){
@@ -422,15 +423,11 @@ namespace zetscript{
 	}
 
 	zs_float	StackElement::toFloat(){
-
 		if((this->properties & STK_PROPERTY_ZS_FLOAT)==0){
 			THROW_RUNTIME_ERRORF("StackElement not is not float");
 		}
 
 		return *((zs_float *)&this->value);
-
-
-
 	}
 
 	void StackElement::setUndefined(){

@@ -606,6 +606,7 @@ namespace zetscript{
 		,StackElement *stk_result_op1
 		,StackElement *stk_result_op2
 		, bool is_static=true
+		, bool is_je_case=false
 	
 	) {
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
@@ -791,14 +792,22 @@ namespace zetscript{
 
 apply_metamethod_error:
 
-		VM_ERROR("Metamethod operation '%s' (aka %s) failed performing operation by types '%s' %s '%s': %s"
-			,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-			,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
-			,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
-			,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-			,stk_to_typeof_str(data->zs,stk_result_op2).c_str()
-			,error_found.c_str()
-		);
+		if(is_je_case){
+			VM_ERROR("Error evaluating case for variable as type '%s': %s"
+				,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+				,error_found.c_str()
+			);
+		}else{
+
+			VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types '%s' %s '%s': %s"
+				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+				,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
+				,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+				,stk_to_typeof_str(data->zs,stk_result_op2).c_str()
+				,error_found.c_str()
+			);
+		}
 
 		return false;
 	}

@@ -872,27 +872,27 @@ find_element_object:
 				continue;
 			case BYTE_CODE_EQU:  // ==
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(==, BYTE_CODE_METAMETHOD_EQU);
+				VM_OPERATION_COMPARE(==, BYTE_CODE_METAMETHOD_EQU,false);
 				continue;
 			case BYTE_CODE_NOT_EQU:  // !=
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(!=, BYTE_CODE_METAMETHOD_NOT_EQU);
+				VM_OPERATION_COMPARE(!=, BYTE_CODE_METAMETHOD_NOT_EQU,false);
 				continue;
 			case BYTE_CODE_LT:  // <
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(<, BYTE_CODE_METAMETHOD_LT);
+				VM_OPERATION_COMPARE(<, BYTE_CODE_METAMETHOD_LT,false);
 				continue;
 			case BYTE_CODE_LTE:  // <=
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(<=, BYTE_CODE_METAMETHOD_LTE);
+				VM_OPERATION_COMPARE(<=, BYTE_CODE_METAMETHOD_LTE,false);
 				continue;
 			case BYTE_CODE_GT:  // >
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(>,BYTE_CODE_METAMETHOD_GT);
+				VM_OPERATION_COMPARE(>,BYTE_CODE_METAMETHOD_GT,false);
 				continue;
 			case BYTE_CODE_GTE:  // >=
 				VM_POP_STK_TWO;
-				VM_OPERATION_COMPARE(>=,BYTE_CODE_METAMETHOD_GTE);
+				VM_OPERATION_COMPARE(>=,BYTE_CODE_METAMETHOD_GTE,false);
 				continue;
 			case BYTE_CODE_LOGIC_AND:  // &&
 				VM_POP_STK_TWO;
@@ -1041,7 +1041,7 @@ find_element_object:
 				continue;
 			case BYTE_CODE_JE_CASE:  // especial j for switch
 				VM_POP_STK_ONE_LOAD2; // reads switch value and case value
-				VM_OPERATION_COMPARE(==, BYTE_CODE_METAMETHOD_EQU);
+				VM_OPERATION_COMPARE(==, BYTE_CODE_METAMETHOD_EQU,true);
 				VM_POP_STK_ONE; // retrieve result...
 				if(stk_result_op1->value != 0){ // if true goto
 					instruction_it=instruction+instruction->value_op2;
@@ -1428,8 +1428,6 @@ execute_function:
 					sf_call_n_returned_arguments_from_function++;
 				}
 
-				sf_call_n_returned_arguments_from_function=sf_call_return;
-
 				// return all elements in reverse order in order to get right assignment ...
 				// reverse returned items
 				for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
@@ -1437,6 +1435,9 @@ execute_function:
 					sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
 					sf_call_stk_return[i]=tmp;
 				}
+
+				// set number of call return
+				sf_call_n_returned_arguments_from_function=sf_call_return;
 
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 

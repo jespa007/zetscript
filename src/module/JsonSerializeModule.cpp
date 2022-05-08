@@ -104,8 +104,22 @@ namespace zetscript{
 
 
 								}else{ // expect return an scriptobjectstring
+									zs_int result= 0;
+									zs_string str_aux="";
 									void *c_object = ((ScriptObjectClass *)_obj)->getNativeObject();
-									zs_int result=((zs_int (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
+
+									switch(ptr_function->idx_script_type_return){
+									case  IDX_TYPE_ZS_STRING_C:
+										str_aux=((zs_string (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
+										result = (zs_int)&str_aux;
+										break;
+									case  IDX_TYPE_ZS_FLOAT_C:
+										*((zs_float *)&result)=((zs_float (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
+										break;
+									default:
+										result=((zs_int (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
+										break;
+									}
 									stk_getter_result=to_stk(
 										_zs
 										,result

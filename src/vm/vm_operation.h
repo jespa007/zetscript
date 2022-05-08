@@ -154,7 +154,7 @@
 		}\
 	}\
 
-#define VM_OPERATION_COMPARE(__C_OP__, __BYTE_CODE_METAMETHOD_OPERATION__)\
+#define VM_OPERATION_COMPARE(__C_OP__, __BYTE_CODE_METAMETHOD_OPERATION__,__IS_JE_CASE__)\
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
@@ -214,6 +214,8 @@
 				, __BYTE_CODE_METAMETHOD_OPERATION__\
 				,stk_result_op1\
 				,stk_result_op2\
+				,true\
+				,__IS_JE_CASE__\
 			)==false){\
 				goto lbl_exit_function;\
 			}\
