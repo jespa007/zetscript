@@ -52,7 +52,7 @@ namespace zetscript{
 		}
 
 		// get the most preference operator by group(see eval_data::Operator)...
-		for(int i=idx_end; i >= idx_start; i--){
+		for(int i=idx_start; i<= idx_end; i++){
 
 			// get split preference
 			if(((TokenNode *)(token_nodes->items[i]))->token_type == TokenType::TOKEN_TYPE_OPERATOR){
