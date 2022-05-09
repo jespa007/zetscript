@@ -114,6 +114,7 @@ int main(int argc, char * argv[]) {
 		,"test_typeof"
 		,"test_vector"
 		,"test_integer_values"
+		,"test_constant_operations"
 		,0
 	};
 
