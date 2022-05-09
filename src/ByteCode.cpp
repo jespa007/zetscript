@@ -82,6 +82,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_ZS_INT:							return "LOAD_INT"; // load zs_int
 			case BYTE_CODE_LOAD_TYPE:							return "LOAD_TYPE"; // load to find
 			case BYTE_CODE_JMP:         						return "JMP"; // Unconditional jump.
+			case BYTE_CODE_JMP_CASE:         					return "JMP_CASE"; // Last jmp case
 			case BYTE_CODE_JNT:         						return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          						return "JT"; // goto if true ... goes end to conditional.
 			case BYTE_CODE_JE_CASE:								return "JE_CASE"; // je case equal ... goes end to conditional.
@@ -169,6 +170,7 @@ namespace zetscript{
 			case BYTE_CODE_JNT:         			return "JNT"; // goto if not true ... goes end to conditional.
 			case BYTE_CODE_JT:          			return "JT"; // goto if true ... goes end to conditional.
 			case BYTE_CODE_JE_CASE:					return "JE"; // goto if equal ... goes end to conditional.
+			case BYTE_CODE_JMP_CASE:       			return "JMP_CASE"; // Last jmp case
 			case BYTE_CODE_NEW_VECTOR: 				return "NEW_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_PUSH_VECTOR_ITEM: 		return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 					return "RET"; // Value pop for stdvector

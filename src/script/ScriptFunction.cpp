@@ -304,7 +304,8 @@ namespace zetscript{
 			case BYTE_CODE_JT:
 			case BYTE_CODE_JMP:
 			case BYTE_CODE_JE_CASE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%03i (ins%s%i)\n"
+			case BYTE_CODE_JMP_CASE:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%03i (ins%s%i) %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -312,6 +313,7 @@ namespace zetscript{
 					,(int)((instruction-sfo->instructions)+instruction->value_op2)
 					,(int)(instruction->value_op2)>=0?"+":""
 					,(int)(instruction->value_op2)
+					,instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK? "[RST]":""
 
 				);
 				break;

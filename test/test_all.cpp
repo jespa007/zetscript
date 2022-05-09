@@ -147,7 +147,7 @@ int main(int argc, char * argv[]) {
 			n_test_script_success++;
 			printf("OK\n");
 		}catch(std::exception & ex){
-			fprintf(stderr,"Failed: %s\n",ex.what());
+			printf("Failed: %s\n",ex.what());
 			n_test_script_failed++;
 		}
 		it_test_script_files++;

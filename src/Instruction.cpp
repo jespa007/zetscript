@@ -136,6 +136,7 @@ namespace zetscript{
 				case BYTE_CODE_NOT:			// pop -1 and push stk +1 = 0
 				case BYTE_CODE_RET:
 				case BYTE_CODE_JMP:
+				case BYTE_CODE_JMP_CASE:
 				case BYTE_CODE_DELETE:
 				case BYTE_CODE_POP_SCOPE:
 				case BYTE_CODE_PUSH_SCOPE:

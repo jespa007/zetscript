@@ -269,6 +269,7 @@ namespace zetscript{
 							BYTE_CODE_JE_CASE
 							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 							,((int)(eval_data->current_function->eval_instructions.count))-idx_start_instruction	 // offset
+							,INSTRUCTION_PROPERTY_RESET_STACK
 					);
 
 					eval_instruction_case->ei_je_instruction->instruction_source_info.line=line_case;
@@ -292,9 +293,10 @@ namespace zetscript{
 					}
 
 					ei_jmp_default=new EvalInstruction(
-							BYTE_CODE_JMP
+							BYTE_CODE_JMP_CASE
 							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 							,((int)(eval_data->current_function->eval_instructions.count))-idx_start_instruction+1	 // offset
+							,INSTRUCTION_PROPERTY_RESET_STACK
 					);
 
 					is_default=true;
@@ -364,6 +366,7 @@ namespace zetscript{
 
 
 				}else if(is_default){
+					EvalInstruction *ie_last=(EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.count-1];
 					EVAL_ERROR_FILE_LINE_GOTOF(
 						eval_data->current_parsing_file
 						,line
