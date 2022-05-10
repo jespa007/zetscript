@@ -394,6 +394,7 @@ namespace zetscript{
 		EvalInstruction *i1=(EvalInstruction *)eval_instructions->items[size_instructions-2];
 		EvalInstruction *i2=(EvalInstruction *)eval_instructions->items[size_instructions-1];
 
+
 		is_i1_K=i1->vm_instruction.isConstant();
 		is_i2_K=i2->vm_instruction.isConstant();
 
@@ -414,6 +415,7 @@ namespace zetscript{
 			zs_int	 load_value_op2_1= i1->vm_instruction.value_op2;
 			ByteCode load_byte_code_2= i2->vm_instruction.byte_code;
 			zs_int	 load_value_op2_2= i2->vm_instruction.value_op2;
+
 			ByteCode byte_code=eval_operator_to_byte_code(token_operation->operator_type);
 			unsigned short k_properties=0;
 			n_eval_ops=2;
@@ -470,10 +472,10 @@ namespace zetscript{
 						)
 						| k_properties
 				);
-			}else{ // check last instructions
+			}else{ // is K or R
 				i1=i2;
 				n_eval_ops=1;
-				if(is_i2_K){
+				if(is_i2_K){ // is K
 					if((k_properties=eval_expression_load_const_byte_code_to_instruction_property(load_byte_code_1))==0){
 						return NULL;
 					}
@@ -485,7 +487,7 @@ namespace zetscript{
 							, INSTRUCTION_PROPERTY_ILOAD_K |k_properties
 					);
 
-				}else if(is_i2_R){
+				}else if(is_i2_R){ // is R
 
 					instruction=new EvalInstruction(
 							byte_code

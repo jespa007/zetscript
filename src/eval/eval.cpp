@@ -550,7 +550,13 @@ namespace zetscript{
 			}
 
 			//------------------------ SET NEW SORTED POSITION
-			if(lookup_sorted_table_local_variables != NULL){
+
+
+			if(	(lookup_sorted_table_local_variables != NULL)
+							&&
+				// the instruction does not refers to this variable which is not in the scope of this sort
+				((eval_instruction->vm_instruction.properties & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) == 0)
+			){
 				// add any instruction that references global instruction
 				ByteCode byte_code=eval_instruction->vm_instruction.byte_code;
 				uint16_t properties_1=eval_instruction->vm_instruction.properties;
