@@ -154,6 +154,91 @@ void ClassCWrap_delete(zetscript::ZetScript *_zs,ClassC *_this){
 	delete _this;
 }
 
+bool allCharsTheSame(const zetscript::zs_string & input){
+
+    for(int i =1; i < input.length(); i++){
+        if(input[i-1] != input[i]) return false;
+    }
+    return true;
+}
+
+bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ScriptObjectVector * sov){
+	ZS_UNUSUED_PARAM(_zs);
+	zetscript::zs_vector *stk_user_elements = sov->getStkUserListElements();
+   for(int i =1; i < stk_user_elements->count; i++){
+	   zetscript::StackElement *stk_1=(zetscript::StackElement *)stk_user_elements->items[i-1];
+	   zetscript::StackElement *stk_2=(zetscript::StackElement *)stk_user_elements->items[i-0];
+       if(stk_1->value != stk_2->value) return false;
+   }
+   return true;
+}
+
+std::vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs,zetscript::zs_int max_number, zetscript::zs_int n_elements){
+	ZS_UNUSUED_PARAM(_zs);
+	if(max_number==0 || n_elements==0)
+		throw("max number or n_elements are 0s");
+		//new throw("invalid number");
+
+	std::vector<zetscript::zs_int> index_rand;// = new int [n_elements];
+
+
+
+	zetscript::zs_int item=0;
+	bool found = false;
+	for(int i = 0; i < n_elements; i++){
+
+		do{
+			 item = rand()%(max_number);
+			found = false;
+		 	for(int j=0; j < i;j++){
+				if(index_rand[j] == item){
+					found=true;
+				}
+		 	}
+		}while(found);
+
+		index_rand.push_back(item);
+
+	}
+	return index_rand;
+}
+
+zetscript::ScriptObjectVector * reorderValuesFromIntArray(zetscript::ZetScript *_zs,zetscript::ScriptObjectVector *_input){
+
+	zetscript::ScriptObjectVector *output=zetscript::ScriptObjectVector::newScriptObjectVector(_zs);
+	zetscript::zs_vector *input=_input->getStkUserListElements();
+	uint16_t input_count=input->count;
+	std::vector<zetscript::zs_int> rand_txt;
+
+    if(allValuesTheSame(_zs,_input)){
+          return _input;
+    }
+
+
+    bool equal = true;
+    try{
+		do{
+			rand_txt= newRandomCountExt(_zs,input_count,input_count);
+			 for(unsigned i =0; i < input_count; i++){
+		         equal&=(i==(unsigned)rand_txt[i]); // check if not consecutive...
+			 }
+		}while(equal);
+    }catch(std::exception & ex){
+    	fprintf(stderr,"%s",ex.what());
+    }
+
+    for(unsigned i =0; i < input_count; i++){
+    	// save resulting
+    	zetscript::StackElement *stk=output->pushNewUserSlot();
+    	stk->value=_input->getUserElementAt(rand_txt[i])->value;
+    	stk->properties=zetscript::STK_PROPERTY_ZS_INT;
+    }
+
+     return output;
+}
+
+
+
 //-------
 // PARAMS
 
@@ -194,7 +279,23 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 		try{
 		_zs->eval(
 			zetscript::zs_strutils::format(
-					"(new ClassA()) < 1"
+					"class A{\n"
+						"var v;\n"
+						"constructor(){\n"
+							"this.v=[0,1,2,3];\n"
+							"Console::outln(this.v)\n;"
+							"switch(0){\n"
+							"case 0:\n"
+							"	this.v=reorderValuesFromIntArray(this.v)\n"
+							"	Console::outln(this.v)\n;"
+							"	break;\n"
+							"}\n"
+						"}\n"
+					"}\n"
+
+					"new A()\n"
+
+
 					//"import \"include.zs\"\n"
 					/*"function class_c_load(_class_c){\n"
 						"_class_c.num_ref=_class_c.newNum()\n"
@@ -304,6 +405,8 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 	_zs->bindType<ParamA>("ParamA",ParamAWrap_new,ParamAWrap_delete);
 	_zs->bindType<ParamB>("ParamB",ParamBWrap_new,ParamBWrap_delete);
 
+
+	_zs->bindFunction("reorderValuesFromIntArray",reorderValuesFromIntArray);
 
 	_zs->bindMemberFunction<ClassA>("fun1",ClassAWrap_fun1);
 	_zs->bindStaticMemberFunction<ClassA>("_lt",static_cast<bool (*)(zetscript::ZetScript *,ClassA *,ClassA *)>(ClassAWrap_lt));
