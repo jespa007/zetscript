@@ -1308,10 +1308,6 @@ execute_function:
 				// call function
 				if((sf_call_script_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){ // if script function...
 
-					if(sf_call_script_function->name_script_function=="tweenAlphaFadeOut2"){
-						int jjjj=0;
-						jjjj++;
-					}
 					// we pass everything by copy (TODO implement ref)
 					if(sf_call_n_args > 0 && sf_call_script_function->params_len > 0){
 						StackElement *stk_arg=sf_call_stk_start_arg_call;
