@@ -196,6 +196,10 @@ namespace zetscript{
 		template<typename _C>
 		ScriptObjectClass * newScriptObjectClass();
 
+		ScriptObjectVector * newScriptObjectVector(){
+			return ScriptObjectVector::newScriptObjectVector(this);
+		}
+
 		template<class C, class B>
 		void extends(){
 			script_type_factory->extends<C,B>();

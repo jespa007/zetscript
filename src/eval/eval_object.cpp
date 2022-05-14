@@ -316,6 +316,9 @@ namespace zetscript{
 		if(key_w != Keyword::KEYWORD_UNKNOWN){
 
 			if(key_w == Keyword::KEYWORD_NEW){
+				bool is_native_type=false;
+				Symbol *symbol_constructor_function_name=NULL;
+
 				EvalInstruction *ei_load_function_constructor = NULL,*eval_instruction=NULL;
 				EvalInstruction *eval_instruction_new_object_by_value=NULL;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
@@ -365,6 +368,9 @@ namespace zetscript{
 							 ,get_mapped_name(eval_data,symbol_name)
 						 );
 				}else{ // known type
+					is_native_type=sc->isNativeType();
+					symbol_constructor_function_name=sc->getSymbolMemberFunction(CONSTRUCTOR_FUNCTION_NAME,0);
+
 					if(!eval_data->script_type_factory->isScriptTypeInstanceable(sc->idx_script_type)){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getTypeName());
 					}
@@ -381,7 +387,7 @@ namespace zetscript{
 
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
-				 if(((*aux_p==')') && sc->isNativeType() && (sc->getSymbolMemberFunction(CONSTRUCTOR_FUNCTION_NAME,0)==NULL))){
+				 if(((*aux_p==')') && is_native_type && (symbol_constructor_function_name==NULL))){
 					 // no args set and is native type and there's no constructor with parameters --> set default contructor ==0
 					return aux_p+1;
 				 }

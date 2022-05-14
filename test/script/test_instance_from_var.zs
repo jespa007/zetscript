@@ -1,6 +1,5 @@
 class A{
 	A(){
-		Console::outln("instance from A")
 	}
 }
 
@@ -11,7 +10,5 @@ var type_a=A;
 // it can create instances from vars that contains a type
 new type_a();
 
-if(type_a == A){
-	Console::outln("type_a is typeof A")
-}
+System::assert(type_a == A,"type_a != typeof A")
 

@@ -128,9 +128,13 @@ Num *ClassCWrap_newNum(zetscript::ZetScript *_zs,ClassC *_c){
 	return num_ref;
 }
 
-zetscript::zs_int NumWrap_x_getter(zetscript::ZetScript *_zs, Num *_n){
+zetscript::zs_int NumWrap_x_getter(zetscript::ZetScript *_zs, Num *_this){
 	ZS_UNUSUED_PARAM(_zs);
-	return _n->x;
+	return _this->x;
+}
+
+void NumWrap_setPosition(zetscript::ZetScript *_zs, Num *_this){
+	ZS_UNUSUED_PARAM(_zs);
 }
 
 void NumWrap_pre_increment(zetscript::ZetScript *_zs, Num *_n){
@@ -279,26 +283,10 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 		try{
 		_zs->eval(
 			zetscript::zs_strutils::format(
-					"class A{\n"
-						"var v;\n"
-						"constructor(){\n"
-							"this.v=[0,1,2,3];\n"
-							"Console::outln(this.v)\n;"
-							"switch(0){\n"
-							"case 0:\n"
-							"	this.v=reorderValuesFromIntArray(this.v)\n"
-							"	Console::outln(this.v)\n;"
-							"	break;\n"
-							"}\n"
-						"}\n"
-					"}\n"
-
-					"new A()\n"
-
-
 					//"import \"include.zs\"\n"
-					/*"function class_c_load(_class_c){\n"
+					"function class_c_load(_class_c){\n"
 						"_class_c.num_ref=_class_c.newNum()\n"
+						"Console::outln(\"load\")\n"
 						//"_class_c.num_ref.load()\n"
 					"}\n"
 					"class ClassCWrap{\n"
@@ -317,9 +305,20 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 							//"n.load()"
 							//"Console::outln()"
 						"}\n"
+						"updateTutorial(){\n"
+							"this.v2d_target=this.num_ref\n"
+							"this.v2d_target.setPosition();\n"
+							//"n.load()"
+							"Console::outln(\"update\")\n"
+						"}\n"
+						"update(){\n"
+							"this.updateTutorial();\n"
+						"}\n"
 					"}\n"
 					"function ini2(n){n.load()}"
 					"var c=new ClassCWrap(new ClassC())\n"
+					"ini2(c);\n"
+					"c.update();\n"
 					/*"var c=new ClassC();\n"
 					"c.fun1(new ParamA(),%s);\n"
 					"Console::outln(\"decrement\");\n"
@@ -428,6 +427,7 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 	_zs->bindMemberFunction<Num>("_pre_dec",NumWrap_pre_decrement);
 
 	_zs->bindMemberPropertyGetter<Num>("x",NumWrap_x_getter);
+	_zs->bindMemberFunction<Num>("setPosition",NumWrap_setPosition);
 
 	_zs->bindMemberFunction<ClassC>("get_d",ClassCWrap_get_d);
 	//_zs->extends<ClassC,ClassB>();
