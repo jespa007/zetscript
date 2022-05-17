@@ -54,7 +54,7 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 	StackElement *stk_def_afun_start=data->stk_vm_current;\
 	int n_returned_args_afun=0;\
 	if((sf)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
-		vm_call_function_native(\
+		vm_execute_function_native(\
 				vm\
 				,so\
 				,sf\
@@ -64,7 +64,7 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 				,n_args\
 		);\
 	}else{\
-		vm_call_function_script(\
+		vm_execute_function_script(\
 			vm\
 			,so\
 			,((ScriptFunction *)sf)\
@@ -176,14 +176,14 @@ namespace zetscript{
 	// PROTOTIPES
 	//
 
-	void vm_call_function_script(
+	void vm_execute_function_script(
 				VirtualMachine			* vm,
 				ScriptObject			* this_object,
 				ScriptFunction 			* calling_function,
 				StackElement 		  	* _stk_local_var
 	);
 
-	void  vm_call_function_native(
+	void  vm_execute_function_native(
 		VirtualMachine *vm,
 		ScriptObject  * this_object,
 		const ScriptFunction *c_function,
@@ -729,7 +729,7 @@ namespace zetscript{
 				}
 			}
 
-			vm_call_function_script(
+			vm_execute_function_script(
 				vm
 				,is_static?NULL:script_object // do not pass script_object as this on static function, it will be destroyed on pop function
 				,ptr_function_found
@@ -738,7 +738,7 @@ namespace zetscript{
 
 			n_stk_local_symbols=ptr_function_found->local_variables->count;
 		}else{ //
-			vm_call_function_native(
+			vm_execute_function_native(
 					vm
 					,is_static ? NULL:script_object
 					,ptr_function_found

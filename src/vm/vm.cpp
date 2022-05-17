@@ -351,7 +351,7 @@ namespace zetscript{
 		}
 
 		// byte code executing starts here. Later script function can call c++ function, but once in c++ function is not possible by now call script function again.
-		vm_call_function_script(
+		vm_execute_function_script(
 			vm,
 			this_object,
 			calling_function,
@@ -458,5 +458,5 @@ namespace zetscript{
 }
 
 
-#include "vm_call_function_native.cpp"
-#include "vm_call_function_script.cpp"
+#include "vm_execute_function_native.cpp"
+#include "vm_execute_function_script.cpp"

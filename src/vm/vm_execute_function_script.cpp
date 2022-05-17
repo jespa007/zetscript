@@ -15,7 +15,7 @@ namespace zetscript{
 		,short idx
 	);
 
-	void vm_call_function_script(
+	void vm_execute_function_script(
 			VirtualMachine			* vm,
 			ScriptObject			* this_object,
 			ScriptFunction 			* calling_function,
@@ -795,7 +795,7 @@ find_element_object:
 						ptr_function_found=(ScriptFunction *)symbol_setter->ref_ptr;\
 					}\
 					if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
-						vm_call_function_native(\
+						vm_execute_function_native(\
 								vm\
 								,so_aux\
 								,ptr_function_found\
@@ -805,7 +805,7 @@ find_element_object:
 								,1\
 						);\
 					}else{\
-						vm_call_function_script(\
+						vm_execute_function_script(\
 							vm\
 							,so_aux\
 							,ptr_function_found\
@@ -929,13 +929,7 @@ find_element_object:
 					if(
 						(old_stk_dst.properties & STK_PROPERTY_SCRIPT_OBJECT)
 									&&
-						((old_stk_dst.properties & (STK_PROPERTY_IS_C_VAR_PTR))==(STK_PROPERTY_IS_C_VAR_PTR)==0) // is not C type
-									&&
-						(old_stk_dst.value!=0) // it had a pointer (no constant)...
-									&&
 						(! // if not...
-							(old_stk_dst.value == stk_dst->value)  // ... same ref ...
-								||
 							(IS_STK_THIS(&old_stk_dst)) // ... or this
 							// ... do share/unshare
 						)){
@@ -1436,7 +1430,7 @@ execute_function:
 						sf_call_n_args++;
 					}
 
-					vm_call_function_script(
+					vm_execute_function_script(
 						vm
 						,sf_call_calling_object
 						,sf_call_script_function
@@ -1480,7 +1474,7 @@ execute_function:
 					}
 
 					try{
-						vm_call_function_native(
+						vm_execute_function_native(
 							vm
 							,sf_call_calling_object
 							,sf_call_script_function

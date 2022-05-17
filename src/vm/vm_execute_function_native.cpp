@@ -59,7 +59,7 @@
 
 namespace zetscript{
 
-	void  vm_call_function_native(
+	void  vm_execute_function_native(
 			VirtualMachine *vm,
 			ScriptObject  * this_object,
 			const ScriptFunction *c_function,

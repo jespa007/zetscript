@@ -130,6 +130,8 @@ namespace zetscript{
 		zs_string s; // create a new string named 's'
 		size_t len1=0;
 		size_t len2=0;
+		char *buf_new_from_two =NULL;
+		size_t buf_new_from_two_size = 0;
 
 		if(_s1!=NULL){
 			len1=strlen(_s1);
@@ -139,15 +141,23 @@ namespace zetscript{
 			len2=strlen(_s2);
 		}
 
-		int buf_new_from_two_size = len1 + len2;
-		char *buf_new_from_two = (char *)ZS_MALLOC(buf_new_from_two_size + 1); // allocate memory to keep the concatenated string
+		buf_new_from_two_size = len1 + len2;
 
-		if(_s1!=NULL) strncpy(buf_new_from_two, _s1, len1); // copy the 1st string
-		if(_s2!=NULL) strncpy(buf_new_from_two + len1, _s2, len2);
+		if(buf_new_from_two_size>0){
+			buf_new_from_two = (char *)ZS_MALLOC(buf_new_from_two_size + 1); // allocate memory to keep the concatenated string
 
-		s=buf_new_from_two;
+			if(len1!=0) {
+				strncpy(buf_new_from_two, _s1, len1); // copy the 1st string
+			}
 
-		free(buf_new_from_two);
+			if(len2!=0) {
+				strncpy(buf_new_from_two + len1, _s2, len2);
+			}
+
+			s=buf_new_from_two;
+
+			free(buf_new_from_two);
+		}
 
 		return s;
 
