@@ -1680,7 +1680,7 @@ execute_function:
 					continue;
 
 			 case  BYTE_CODE_NEW_STRING: // Create new string...
-				 so_aux= ScriptObjectString::newScriptObjectString(data->zs,instruction->getConstantValueOp2ToString());
+				 so_aux= ScriptObjectString::newScriptObjectString(data->zs,instruction->getConstantValueOp2ToString(false));
 					if(!vm_create_shared_pointer(vm,so_aux)){
 						goto lbl_exit_function;
 					}

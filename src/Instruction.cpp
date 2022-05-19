@@ -68,7 +68,7 @@ namespace zetscript{
 			return IS_BYTE_CODE_LOAD_CONSTANT(byte_code);
 		}
 
-		zs_string Instruction::getConstantValueOp2ToString(){
+		zs_string Instruction::getConstantValueOp2ToString(bool _str_with_quotes){
 			zs_string value_op2_string="unknow-value";
 
 			if(byte_code ==BYTE_CODE_LOAD_BOOL || (this->properties & INSTRUCTION_PROPERTY_BOOL) ){
@@ -78,7 +78,11 @@ namespace zetscript{
 			}else if(byte_code==BYTE_CODE_LOAD_ZS_FLOAT|| (this->properties & INSTRUCTION_PROPERTY_ZS_FLOAT)){
 				value_op2_string=zs_strutils::zs_float_to_str(this->getConstantFloat());
 			}else if(byte_code==BYTE_CODE_LOAD_STRING || (this->properties & INSTRUCTION_PROPERTY_STRING)){
-				value_op2_string="\""+this->getConstantString()+"\"";
+				if(_str_with_quotes){
+					value_op2_string="\""+this->getConstantString()+"\"";
+				}else{
+					value_op2_string=this->getConstantString();
+				}
 			}
 			return value_op2_string;
 		}

@@ -110,6 +110,9 @@ namespace zetscript{
 
 		ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
+		Scope *new_scope_info = eval_new_scope(eval_data,MAIN_SCOPE(eval_data),true);
+		sf->scope_script_function=new_scope_info;
+
 		// fill all instructions
 		start_ptr=sf->instructions=(Instruction *)ZS_MALLOC(instructions_total_bytes); // +1 is for return
 

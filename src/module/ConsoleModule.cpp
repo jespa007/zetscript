@@ -50,11 +50,6 @@ namespace zetscript{
 	}
 
 	void ConsoleModule_outln(ZetScript *zs,StackElement *str, StackElement *args){
-		if(str->properties==0){
-			fprintf(stdout,"\n");
-			return;
-		}
-
 		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s\n",str_out->toString().c_str());
