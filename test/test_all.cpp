@@ -13,6 +13,7 @@
 #include "test_call_native_functions.cpp"
 #include "test_callbacks.cpp"
 #include "test_consecutive_evals.cpp"
+#include "test_register_constants.cpp"
 
 
 
@@ -47,6 +48,7 @@ int main(int argc, char * argv[]) {
 		,{"test_call_c_script_c",test_call_c_script_c}									// 6
 		,{"test_anonymous_scopes",test_anonymous_scopes_no_print}						// 7
 		,{"test_consistency_function_override",test_consistency_function_override}		// 8
+		,{"test_register_constants",test_register_constants}							// 9
 		,{0,0}
 	};
 	char name[MAX_TEST_NAME_FIXED_LENGTH+20]={0};

@@ -56,7 +56,7 @@ int main(){
 	try{
 		test_arithmetic_vars(&zs);
 	}catch(std::exception & ex){
-		fprintf(stderr,ex.what());
+		fprintf(stderr,"%s\n",ex.what());
 		return -1;
 	}
 

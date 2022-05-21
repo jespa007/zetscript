@@ -179,13 +179,12 @@ bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ScriptObjectVector * 
 
 std::vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs,zetscript::zs_int max_number, zetscript::zs_int n_elements){
 	ZS_UNUSUED_PARAM(_zs);
-	if(max_number==0 || n_elements==0)
+	if(max_number==0 || n_elements==0){
 		throw("max number or n_elements are 0s");
+	}
 		//new throw("invalid number");
 
 	std::vector<zetscript::zs_int> index_rand;// = new int [n_elements];
-
-
 
 	zetscript::zs_int item=0;
 	bool found = false;

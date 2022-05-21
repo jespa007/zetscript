@@ -116,7 +116,7 @@ void main(){
 	try{
 		test_arithmetic_constants(zs);
 	}catch(std::exception & ex){
-		fprintf(ex.what());
+		fprintf(stderr,"%s\n",ex.what());
 	}
 }
 #endif

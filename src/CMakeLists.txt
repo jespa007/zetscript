@@ -309,6 +309,13 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 	target_compile_definitions(test_callbacks${POST_NAME} PUBLIC -D__MAIN__ )
 	target_link_libraries(test_callbacks${POST_NAME} zetscript${POST_NAME})
 	#-----------------------------------------------
+	# test_register_constants
+	add_executable(test_register_constants${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/test_register_constants.cpp
+	)
+	target_compile_definitions(test_register_constants${POST_NAME} PUBLIC -D__MAIN__ )
+	target_link_libraries(test_register_constants${POST_NAME} zetscript${POST_NAME})
+	#-----------------------------------------------
 	# test_all
 	add_executable(test_all${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_all.cpp

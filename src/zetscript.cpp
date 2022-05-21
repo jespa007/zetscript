@@ -470,9 +470,9 @@ namespace zetscript{
 					}
 					n_global_symbol_found++;
 
-					if(symbol->properties & SYMBOL_PROPERTY_ALLOCATED_STK){
+					/*if(symbol->properties & SYMBOL_PROPERTY_ALLOCATED_STK){
 						free((StackElement *)symbol->ref_ptr);
-					}
+					}*/
 
 					// erase unused global symbol
 					delete symbol;
