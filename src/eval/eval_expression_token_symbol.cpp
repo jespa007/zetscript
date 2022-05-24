@@ -601,7 +601,13 @@ namespace zetscript{
 
 				IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,test_aux_p,eval_data,aux_p,test_line);
 
-			}while(is_access_punctuator(test_aux_p));
+				// there's access punctuators and last accessor not empty (.a().)
+				// TODO: support for call function from returning function
+				if((accessor_name=="") && *test_aux_p=='('){
+					break;
+				}
+
+			}while(is_access_punctuator(test_aux_p) );
 
 		}else{
 

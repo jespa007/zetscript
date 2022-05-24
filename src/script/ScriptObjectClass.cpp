@@ -129,6 +129,11 @@ namespace zetscript{
 	}
 
 	void ScriptObjectClass::deleteNativeObjectOnDestroy(bool _delete_on_destroy){
+
+		if(this->idx_script_type<Type::IDX_TYPE_MAX){
+			return;
+		}
+
 		created_object=NULL;
 		if((this->delete_c_object_on_destroy = _delete_on_destroy)==true){
 			created_object=c_object;
