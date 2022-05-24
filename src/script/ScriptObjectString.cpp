@@ -9,7 +9,7 @@ namespace zetscript{
 
 /*	typedef struct{
 		int index;
-		int alignment;
+		int padding;
 		const char *format_string;
 	}FormatItem;*/
 
@@ -129,28 +129,28 @@ namespace zetscript{
 
 					str_num_aux="";
 					str_format="";
-					char *str_begin_alignment=strchr(str_begin,',');
+					char *str_begin_padding=strchr(str_begin,',');
 					char *str_begin_format_string=strchr(str_begin,':');
 					char *str_end_index=NULL;
 					char *str_end_aligment=NULL;
 
-					if(str_begin_alignment >= str_end ) str_begin_alignment=NULL;
+					if(str_begin_padding >= str_end ) str_begin_padding=NULL;
 					if(str_begin_format_string >= str_end ) str_begin_format_string=NULL;
 
 
 					int idx_num=-1;
-					int alignmen=-1;
+					int padding=0;
 					char *ptr_str_format_string=NULL;
 
-					if(str_begin_alignment == NULL && str_begin_format_string==NULL){ // no aligment/no format string
+					if(str_begin_padding == NULL && str_begin_format_string==NULL){ // no aligment/no format string
 						str_end_index=str_end;
-					}else if(str_begin_alignment!=NULL && str_begin_format_string == NULL){ // aligment/no format string
-						str_end_index=str_begin_alignment;
+					}else if(str_begin_padding!=NULL && str_begin_format_string == NULL){ // aligment/no format string
+						str_end_index=str_begin_padding;
 						str_end_aligment=str_end;
-					}else if(str_begin_alignment==NULL && str_begin_format_string != NULL){ // no aligment/ format string
+					}else if(str_begin_padding==NULL && str_begin_format_string != NULL){ // no aligment/ format string
 						str_end_index=str_begin_format_string;
-					}else if(str_begin_alignment < str_begin_format_string){ // aligment/ format string
-						str_end_index=str_begin_alignment;
+					}else if(str_begin_padding < str_begin_format_string){ // aligment/ format string
+						str_end_index=str_begin_padding;
 						str_end_aligment=str_begin_format_string;
 					}
 
@@ -171,16 +171,16 @@ namespace zetscript{
 
 							//----------------------------------------------------------
 							// ALIGNMENT ...
-							if(str_begin_alignment != NULL && str_end_aligment !=NULL){
+							if(str_begin_padding != NULL && str_end_aligment !=NULL){
 								str_num_aux="";
-								str_begin_alignment=str_begin_alignment+1;
+								str_begin_padding=str_begin_padding+1;
 								// try to convert str to index...
-								for(;str_begin_alignment<str_end_aligment;){
-									str_num_aux+=*str_begin_alignment++;
+								for(;str_begin_padding<str_end_aligment;){
+									str_num_aux+=*str_begin_padding++;
 								}
 
 								if((ptr_idx_num=zs_strutils::parse_zs_int(str_num_aux))!=NULL){
-									alignmen=*ptr_idx_num;
+									padding=*ptr_idx_num;
 									delete ptr_idx_num;
 									ptr_idx_num=NULL;
 								}
@@ -206,6 +206,15 @@ namespace zetscript{
 								}
 
 								str_format_results=stk_to_str(zs,sov->getUserElementAt(idx_num),str_format);
+
+								// set padding
+								int length_padding=padding-str_format_results.length();
+								if(length_padding>0){//left padding
+									for(int i=0; i < length_padding;i++){
+										str_result.append(' ');
+									}
+								}
+
 
 								str_result+=str_format_results;
 
