@@ -424,10 +424,10 @@ namespace zetscript{
 					}
 					else{
 						byte_code=ByteCode::BYTE_CODE_CALL;
-						if(	it_accessor_token==0 ){ // direct or indirect call
+						if(	(it_accessor_token==0) || (accessor_name=="")){ // direct or indirect call
 							if(ei_first_token_node->vm_instruction.byte_code==BYTE_CODE_LOAD_THIS_FUNCTION){
 								byte_code=ByteCode::BYTE_CODE_THIS_CALL;
-							}else if(ei_first_token_node->vm_instruction.byte_code==ByteCode::BYTE_CODE_LOAD_LOCAL){
+							}else if((ei_first_token_node->vm_instruction.byte_code==ByteCode::BYTE_CODE_LOAD_LOCAL) || (accessor_name=="")){
 								byte_code= ByteCode::BYTE_CODE_INDIRECT_LOCAL_CALL;
 							}
 						}else{ // access token
@@ -600,12 +600,6 @@ namespace zetscript{
 				it_accessor_token++;
 
 				IGNORE_BLANKS_AND_GOTO_ON_ERROR(error_expression_token_symbol,test_aux_p,eval_data,aux_p,test_line);
-
-				// there's access punctuators and last accessor not empty (.a().)
-				// TODO: support for call function from returning function
-				if((accessor_name=="") && *test_aux_p=='('){
-					break;
-				}
 
 			}while(is_access_punctuator(test_aux_p) );
 
