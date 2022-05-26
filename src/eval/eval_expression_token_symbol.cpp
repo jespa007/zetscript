@@ -430,7 +430,7 @@ namespace zetscript{
 							}else if((ei_first_token_node->vm_instruction.byte_code==ByteCode::BYTE_CODE_LOAD_LOCAL)){
 								byte_code= ByteCode::BYTE_CODE_INDIRECT_LOCAL_CALL;
 							}
-						}else if(accessor_name==""){ // access token
+						}else if(last_accessor_value==""){ // last access value was empty so is a stack call (a call from returning function)
 							byte_code=ByteCode::BYTE_CODE_STACK_CALL;
 						}else{
 							if(last_instruction_token->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE){
