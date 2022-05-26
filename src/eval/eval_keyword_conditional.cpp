@@ -269,7 +269,6 @@ namespace zetscript{
 							BYTE_CODE_JE_CASE
 							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 							,((int)(eval_data->current_function->eval_instructions.count))-idx_start_instruction	 // offset
-							,INSTRUCTION_PROPERTY_RESET_STACK
 					);
 
 					eval_instruction_case->ei_je_instruction->instruction_source_info.line=line_case;
