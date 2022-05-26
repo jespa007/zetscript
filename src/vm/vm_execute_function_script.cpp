@@ -1151,73 +1151,7 @@ find_element_object:
 				continue;
 			case BYTE_CODE_JE_CASE:  // especial j for switch
 				VM_POP_STK_ONE_LOAD2; // reads switch value and case value
-				//VM_OPERATION_COMPARE(==, BYTE_CODE_METAMETHOD_EQU,true);
-				msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
-				switch(msk_properties){\
-				case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
-					VM_PUSH_STK_BOOLEAN(stk_result_op1->value == stk_result_op2->value);\
-					break;\
-				case MSK_STK_OP1_BOOL_OP2_BOOL:\
-					VM_PUSH_STK_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) == STK_VALUE_TO_BOOL(stk_result_op2));\
-					break;\
-				case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
-					VM_PUSH_STK_BOOLEAN(stk_result_op1->value == *((zs_float *)&stk_result_op2->value));\
-					break;\
-				case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
-					VM_PUSH_STK_BOOLEAN(*((zs_float *)&stk_result_op1->value) == stk_result_op2->value);\
-					break;\
-				case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
-					VM_PUSH_STK_BOOLEAN(*((zs_float *)&stk_result_op1->value) == *((zs_float *)&stk_result_op2->value));\
-					break;\
-				default:\
-					if(STK_VALUE_IS_TYPE(stk_result_op1)){\
-						PRAGMA_PUSH\
-						PRAGMA_DISABLE_WARNING(4127)\
-						if(BYTE_CODE_METAMETHOD_EQU ==BYTE_CODE_METAMETHOD_EQU || BYTE_CODE_METAMETHOD_EQU ==BYTE_CODE_METAMETHOD_NOT_EQU){\
-							PRAGMA_POP\
-							if((stk_result_op1->value == IDX_TYPE_UNDEFINED) && (stk_result_op1->properties == IDX_TYPE_UNDEFINED) && (BYTE_CODE_METAMETHOD_EQU ==BYTE_CODE_METAMETHOD_EQU)){\
-								VM_PUSH_STK_BOOLEAN(true);\
-							}else if((stk_result_op1->value == IDX_TYPE_UNDEFINED) && (stk_result_op1->properties != IDX_TYPE_UNDEFINED) && (BYTE_CODE_METAMETHOD_EQU ==BYTE_CODE_METAMETHOD_NOT_EQU)){\
-								VM_PUSH_STK_BOOLEAN(true);\
-							}else{\
-								VM_PUSH_STK_BOOLEAN(stk_result_op1->value == stk_result_op2->value);\
-							}\
-						}else{\
-							VM_PUSH_STK_BOOLEAN(false);\
-						}\
-					}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
-						VM_PUSH_STK_BOOLEAN(ZS_STRCMP(stk_to_str(data->zs, stk_result_op1).c_str(), == ,stk_to_str(data->zs,stk_result_op2).c_str()));\
-					}else if(  (stk_result_op1->properties==STK_PROPERTY_UNDEFINED || stk_result_op2->properties==STK_PROPERTY_UNDEFINED)\
-							&& (BYTE_CODE_METAMETHOD_EQU == BYTE_CODE_METAMETHOD_EQU || BYTE_CODE_METAMETHOD_EQU == BYTE_CODE_METAMETHOD_NOT_EQU)\
-							){\
-						if((stk_result_op1->properties == STK_PROPERTY_UNDEFINED) && (stk_result_op2->properties == STK_PROPERTY_UNDEFINED)){\
-							VM_PUSH_STK_BOOLEAN(BYTE_CODE_METAMETHOD_EQU == BYTE_CODE_METAMETHOD_EQU);\
-						}else{\
-							VM_PUSH_STK_BOOLEAN(BYTE_CODE_METAMETHOD_EQU != BYTE_CODE_METAMETHOD_EQU);\
-						}\
-					}else if(  (stk_result_op1->properties==STK_PROPERTY_NULL || stk_result_op2->properties==STK_PROPERTY_NULL)\
-							&& (BYTE_CODE_METAMETHOD_EQU == BYTE_CODE_METAMETHOD_EQU || BYTE_CODE_METAMETHOD_EQU == BYTE_CODE_METAMETHOD_NOT_EQU)\
-							){\
-						if((stk_result_op1->properties == STK_PROPERTY_NULL) && (stk_result_op2->properties == STK_PROPERTY_NULL)){\
-							VM_PUSH_STK_BOOLEAN(BYTE_CODE_METAMETHOD_EQU == BYTE_CODE_METAMETHOD_EQU);\
-						}else{\
-							VM_PUSH_STK_BOOLEAN(BYTE_CODE_METAMETHOD_EQU != BYTE_CODE_METAMETHOD_EQU);\
-						}\
-					}else{\
-						if(vm_call_metamethod(\
-							vm\
-							,calling_function\
-							,instruction\
-							, BYTE_CODE_METAMETHOD_EQU\
-							,stk_result_op1\
-							,stk_result_op2\
-							,true\
-							,true\
-						)==false){\
-							goto lbl_exit_function;\
-						}\
-					}\
-				}\
+				VM_OPERATION_COMPARE(==, BYTE_CODE_METAMETHOD_EQU,true);
 				VM_POP_STK_ONE; // retrieve result...
 				if(stk_result_op1->value != 0){ // if true goto
 					// reset stack
@@ -1621,9 +1555,6 @@ execute_function:
 					sf_call_n_returned_arguments_from_function++;
 				}
 
-				// set number of call return
-				sf_call_n_returned_arguments_from_function=sf_call_return;
-
 				// return all elements in reverse order in order to get right assignment ...
 				// reverse returned items
 				for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
@@ -1631,6 +1562,9 @@ execute_function:
 					sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
 					sf_call_stk_return[i]=tmp;
 				}
+
+				// set number of call return
+				sf_call_n_returned_arguments_from_function=sf_call_return;
 
 
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element

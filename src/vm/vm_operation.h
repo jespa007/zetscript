@@ -207,15 +207,16 @@
 				VM_PUSH_STK_BOOLEAN(__BYTE_CODE_METAMETHOD_OPERATION__ != BYTE_CODE_METAMETHOD_EQU);\
 			}\
 		}else{\
+			StackElement stk1=*stk_result_op1, stk2=*stk_result_op2;\
 			if(vm_call_metamethod(\
 				vm\
 				,calling_function\
 				,instruction\
-				, __BYTE_CODE_METAMETHOD_OPERATION__\
-				,stk_result_op1\
-				,stk_result_op2\
+				, BYTE_CODE_METAMETHOD_EQU\
+				,&stk1\
+				,&stk2\
 				,true\
-				,__IS_JE_CASE__\
+				,true\
 			)==false){\
 				goto lbl_exit_function;\
 			}\
