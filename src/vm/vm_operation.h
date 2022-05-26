@@ -216,7 +216,7 @@
 				,&stk1\
 				,&stk2\
 				,true\
-				,true\
+				,__IS_JE_CASE__\
 			)==false){\
 				goto lbl_exit_function;\
 			}\
