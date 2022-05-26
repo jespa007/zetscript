@@ -1222,6 +1222,11 @@ find_element_object:
 				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=data->vm_stack+instruction->value_op2;
 				 goto load_function;
+			case  BYTE_CODE_STACK_CALL: // stack call
+				 sf_call_calling_object = NULL;
+				 sf_call_stk_start_function_object=0;
+				 sf_call_stk_function_ref=data->stk_vm_current-(INSTRUCTION_GET_PARAMETER_COUNT(instruction)+1);
+				 goto load_function;
 			 case  BYTE_CODE_CONSTRUCTOR_CALL:
 				sf_call_script_function=NULL;
 				sf_call_stk_function_ref = (data->stk_vm_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
@@ -1274,6 +1279,8 @@ load_function:
 							}
 							continue;
 						}
+
+						// indirect this call / member call or stk call
 						if(instruction->byte_code==BYTE_CODE_INDIRECT_THIS_CALL){
 
 							VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
@@ -1282,9 +1289,15 @@ load_function:
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							);
 
-						}else{
+						}else if(instruction->byte_code==BYTE_CODE_MEMBER_CALL){
 							VM_STOP_EXECUTE("Cannot call '%s'. '%s' is not function or not exist"
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+							);
+						}else{ // STACK CALL
+							VM_STOP_EXECUTE("Error trying to call a function from stack. StackElement value is '%s' as type '%s'"
+									,stk_to_str(data->zs,sf_call_stk_function_ref).c_str()
+									,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							);
 						}

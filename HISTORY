@@ -270,6 +270,8 @@ Solved issues
 #331 Operation to find native member functions for call always returns first function from instance and ignores inherited functions with same name and diferents signatures
 #332 Operation XXX "in" YYYY "==" boolean_value, not evals first "in" and then "=="
 #333 for in doesn't work for function calls  
+#335 Generate library name with version
+#334 Implement concatenated call  
 
 //----------------------------------------------------------
 Version: 1.3.0

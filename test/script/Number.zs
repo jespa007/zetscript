@@ -32,10 +32,9 @@ class Number{
 	}
 	
 	static _add(_n1, _n2){
-		return "dads"
-		/*var n1,n2
+		var n1,n2
 		n1,n2=Number::parseFloat(_n1,_n2);		
-		return new Number(n1+n2)*/
+		return new Number(n1+n2)
 	}
 	
 	static _sub(_n1, _n2){

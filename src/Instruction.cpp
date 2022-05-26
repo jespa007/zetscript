@@ -191,6 +191,7 @@ namespace zetscript{
 					return 1;
 				case BYTE_CODE_LOAD_THIS_FUNCTION:
 					return 2;
+				case BYTE_CODE_STACK_CALL:
 				case BYTE_CODE_INDIRECT_LOCAL_CALL:
 				case BYTE_CODE_INDIRECT_GLOBAL_CALL:
 				case BYTE_CODE_THIS_CALL:

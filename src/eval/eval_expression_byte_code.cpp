@@ -180,8 +180,8 @@ namespace zetscript{
 
 			EvalInstruction *ei_load_assign_instruction=((EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]);
 
-			if(INSTRUCTION_IS_BYTE_CODE_CALL(
-					&ei_load_assign_instruction->vm_instruction
+			if(IS_BYTE_CODE_CALL(
+					ei_load_assign_instruction->vm_instruction.byte_code
 			)){
 				EVAL_ERROR_FILE_LINE_GOTOF(
 						eval_data->current_parsing_file
@@ -279,7 +279,7 @@ namespace zetscript{
 
 			if(unique_call_instructions != NULL){
 				last_instruction=&(((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction);
-				if(INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && token_nodes->count==1){//(n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->count==1){//(n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
 					//INSTRUCTION_SET_RETURN_COUNT(last_instruction,n_return_values);
 					unique_call_instructions->push_back((zs_int)last_instruction);
 				}
@@ -322,7 +322,7 @@ namespace zetscript{
 
 			if(unique_call_instructions != NULL){
 				last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction;
-				if(INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && token_nodes->count==1){//(n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->count==1){//(n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
 					unique_call_instructions->push_back((zs_int)last_instruction);
 				}
 			}
@@ -334,7 +334,7 @@ namespace zetscript{
 		}else{
 			if(unique_call_instructions != NULL){
 				Instruction *last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction;
-				if(INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && token_nodes->count==1){//(n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
+				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->count==1){//(n_recursion_level == 0) && INSTRUCTION_IS_BYTE_CODE_CALL(last_instruction) && (properties & EVAL_EXPRESSION_ON_MAIN_BLOCK)){ // --> allow all stack return
 					unique_call_instructions->push_back((zs_int)last_instruction);
 				}
 			}

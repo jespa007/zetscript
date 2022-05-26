@@ -88,6 +88,7 @@ namespace zetscript{
 		BYTE_CODE_BEGIN_CALL=BYTE_CODE_CALL,		// direct
 		BYTE_CODE_INDIRECT_GLOBAL_CALL,	// through symbol
 		BYTE_CODE_INDIRECT_LOCAL_CALL,	// through symbol
+		BYTE_CODE_STACK_CALL,		// stack call
 		BYTE_CODE_THIS_CALL,	// this direct
 		BYTE_CODE_SUPER_CALL,	// super direct
 		BYTE_CODE_MEMBER_CALL, // through function and member loaded

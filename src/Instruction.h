@@ -39,15 +39,6 @@ typedef enum:unsigned short {
 #define INSTRUCTION_PROPERTY_ILOAD									(INSTRUCTION_PROPERTY_ILOAD_K|INSTRUCTION_PROPERTY_ILOAD_R|INSTRUCTION_PROPERTY_ILOAD_KR|INSTRUCTION_PROPERTY_ILOAD_RK|INSTRUCTION_PROPERTY_ILOAD_RR)
 //#define INSTRUCTION_PROPERTY_ILOAD_ACCESS_IS_GLOBAL(properties) 	((properties) & (INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_LOCAL | INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) == 0)
 
-#define INSTRUCTION_IS_BYTE_CODE_CALL(instruction) (\
- ((instruction)->byte_code == BYTE_CODE_CALL) \
- || ((instruction)->byte_code == 		BYTE_CODE_CALL) \
- || ((instruction)->byte_code == 		BYTE_CODE_INDIRECT_GLOBAL_CALL) \
- || ((instruction)->byte_code == 		BYTE_CODE_INDIRECT_LOCAL_CALL) \
- || ((instruction)->byte_code == 		BYTE_CODE_THIS_CALL) \
- || ((instruction)->byte_code == 		BYTE_CODE_MEMBER_CALL) \
- || ((instruction)->byte_code == 		BYTE_CODE_UNRESOLVED_CALL) \
-)
 
 #define INSTRUCTION_CONST_TO_STK_CONST_VALUE(val,properties)\
 	((properties) & (INSTRUCTION_PROPERTY_ZS_INT | INSTRUCTION_PROPERTY_BOOL | INSTRUCTION_PROPERTY_ZS_FLOAT) ) ? val \

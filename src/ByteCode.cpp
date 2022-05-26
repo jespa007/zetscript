@@ -64,6 +64,7 @@ namespace zetscript{
 			case BYTE_CODE_INDIRECT_THIS_CALL:
 			case BYTE_CODE_CALL:								return "CALL"; // direct call
 			case BYTE_CODE_UNRESOLVED_CALL:						return "CALL???"; // direct call
+			case BYTE_CODE_STACK_CALL:							return "STK_CALL"; // stack call
 
 
 			case BYTE_CODE_MEMBER_CALL:							return "MEMBER_CALL"; // this indirect call through dynamic symbol

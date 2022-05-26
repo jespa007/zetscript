@@ -2,6 +2,24 @@ cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0091 NEW)
 project(zetscript)
 
+file(READ "zetscript.h" zetscript_h)
+
+string(REGEX MATCH "ZETSCRIPT_VERSION_MAJOR ([0-9]*)" _ ${zetscript_h})
+set(ZETSCRIPT_VERSION_MAJOR ${CMAKE_MATCH_1})
+
+string(REGEX MATCH "ZETSCRIPT_VERSION_MINOR ([0-9]*)" _ ${zetscript_h})
+set(ZETSCRIPT_VERSION_MINOR ${CMAKE_MATCH_1})
+
+string(REGEX MATCH "ZETSCRIPT_VERSION_PATCH ([0-9]*)" _ ${zetscript_h})
+set(ZETSCRIPT_VERSION_PATCH ${CMAKE_MATCH_1})
+
+
+
+MESSAGE("-- ZetScript version ${ZETSCRIPT_VERSION_MAJOR}.${ZETSCRIPT_VERSION_MINOR}.${ZETSCRIPT_VERSION_PATCH}" )
+
+set(ZETSCRIPT_LIB_NAME "zetscript-${ZETSCRIPT_VERSION_MAJOR}-${ZETSCRIPT_VERSION_MINOR}-${ZETSCRIPT_VERSION_PATCH}")
+
+
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
 # MACRO UTILS
@@ -198,17 +216,17 @@ endif()
 message("-- Library type: " ${LIBRARY_TYPE_CREATION})
 
 # zetscriptlib
-add_library( zetscript${POST_NAME} ${LIBRARY_TYPE_CREATION} ${ZETSCRIPT_LIB_SRCS} )
+add_library( ${ZETSCRIPT_LIB_NAME}${POST_NAME} ${LIBRARY_TYPE_CREATION} ${ZETSCRIPT_LIB_SRCS} )
 if(MSVC)
 	#only for msvc...
-	#set_target_properties(zetscript${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)
+	#set_target_properties(${ZETSCRIPT_LIB_NAME}${POST_NAME} PROPERTIES COMPILE_DEFINITIONS ZETSCRIPT_EXPORTS)
 endif()
 
 # zs script
 add_executable(zs${POST_NAME}
 	${PROJECT_SOURCE_DIR}/zs.cpp
 )
-target_link_libraries(zs${POST_NAME} zetscript${POST_NAME} )
+target_link_libraries(zs${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME} )
 
 if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
 
@@ -217,7 +235,7 @@ if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
 		${PROJECT_SOURCE_DIR}/../samples/helloworld.cpp
 	)
 	
-	target_link_libraries(helloworld${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(helloworld${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
 	
 	# register_variables
@@ -225,21 +243,21 @@ if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
 		${PROJECT_SOURCE_DIR}/../samples/register_variable.cpp
 	)	
 	
-	target_link_libraries(register_variable${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(register_variable${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
 	# register_functions
 	add_executable(register_function${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../samples/register_function.cpp
 	)	
 	
-	target_link_libraries(register_function${POST_NAME} zetscript${POST_NAME})	
+	target_link_libraries(register_function${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})	
 	
 	# test_register_class
 	add_executable(register_class${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../samples/register_class.cpp
 	)	
 	
-	target_link_libraries(register_class${POST_NAME} zetscript${POST_NAME})	
+	target_link_libraries(register_class${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})	
 
 endif()
 
@@ -255,7 +273,7 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 		${PROJECT_SOURCE_DIR}/../test/test_register_constant.cpp
 	)
 	target_compile_definitions(test_register_constant${POST_NAME} PUBLIC -D__MAIN__ )
-	target_link_libraries(test_register_constant${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_register_constant${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
 	#-----------------------------------------------
 	# test_consecutive_evals
@@ -263,7 +281,7 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 		${PROJECT_SOURCE_DIR}/../test/test_consecutive_evals.cpp
 	)
 	target_compile_definitions(test_consecutive_evals${POST_NAME} PUBLIC -D__MAIN__ ) 
-	target_link_libraries(test_consecutive_evals${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_consecutive_evals${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 
 	#-----------------------------------------------
 	# test arithmetic constants
@@ -272,7 +290,7 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 		${PROJECT_SOURCE_DIR}/../test/test_arithmetic_constants.cpp
 	)
 	target_compile_definitions(test_arithmetic_constants${POST_NAME} PUBLIC -D__MAIN__ )
-	target_link_libraries(test_arithmetic_constants${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_arithmetic_constants${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
 	#-----------------------------------------------
 	# test arithmetic vars
@@ -282,7 +300,7 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 	)
 	
 	target_compile_definitions(test_arithmetic_vars${POST_NAME} PUBLIC -D__MAIN__ )
-	target_link_libraries(test_arithmetic_vars${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_arithmetic_vars${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
 	endif()
 	
@@ -293,35 +311,35 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 		${PROJECT_SOURCE_DIR}/../test/test_arithmetic_metamethods.cpp
 	)
 	target_compile_definitions(test_arithmetic_metamethods${POST_NAME} PUBLIC -D__MAIN__ )
-	target_link_libraries(test_arithmetic_metamethods${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_arithmetic_metamethods${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	#-----------------------------------------------
 	# test_call_native_functions
 	add_executable(test_call_native_functions${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_call_native_functions.cpp
 	)
 	target_compile_definitions(test_call_native_functions${POST_NAME} PUBLIC -D__MAIN__ )
-	target_link_libraries(test_call_native_functions${POST_NAME} zetscript${POST_NAME})	
+	target_link_libraries(test_call_native_functions${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})	
 	#-----------------------------------------------
 	# test_callbacks
 	add_executable(test_callbacks${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_callbacks.cpp
 	)
 	target_compile_definitions(test_callbacks${POST_NAME} PUBLIC -D__MAIN__ )
-	target_link_libraries(test_callbacks${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_callbacks${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	#-----------------------------------------------
 	# test_register_constants
 	add_executable(test_register_constants${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_register_constants.cpp
 	)
 	target_compile_definitions(test_register_constants${POST_NAME} PUBLIC -D__MAIN__ )
-	target_link_libraries(test_register_constants${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_register_constants${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	#-----------------------------------------------
 	# test_all
 	add_executable(test_all${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_all.cpp
 	)
 
-	target_link_libraries(test_all${POST_NAME} zetscript${POST_NAME})
+	target_link_libraries(test_all${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
 else()
 	MESSAGE ("-- Suit test: No")
@@ -426,7 +444,7 @@ SET(
 INSTALL_HEADERS_WITH_DIRECTORY(HS)
 	
 	
-INSTALL(TARGETS zetscript${POST_NAME} zs${POST_NAME}
+INSTALL(TARGETS ${ZETSCRIPT_LIB_NAME}${POST_NAME} zs${POST_NAME}
 	ARCHIVE DESTINATION  	${CMAKE_INSTALL_PREFIX}/lib
 	RUNTIME DESTINATION  	${CMAKE_INSTALL_PREFIX}/bin
 	LIBRARY DESTINATION 	${CMAKE_INSTALL_PREFIX}/lib

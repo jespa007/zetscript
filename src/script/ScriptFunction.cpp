@@ -342,11 +342,13 @@ namespace zetscript{
 			case BYTE_CODE_INDIRECT_THIS_CALL:
 			case BYTE_CODE_SUPER_CALL:
 			case BYTE_CODE_UNRESOLVED_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s%s\targ:%i ret:%i %s\n"
+			case BYTE_CODE_STACK_CALL:
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s%s\targ:%i ret:%i %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
+					,instruction->byte_code==BYTE_CODE_STACK_CALL?"\t\t":"\t\t\t"
 					,instruction->byte_code==BYTE_CODE_THIS_CALL && instruction->value_op2== ZS_IDX_UNDEFINED?"??":""
 					,symbol_value.c_str()
 					,INSTRUCTION_GET_PARAMETER_COUNT(instruction)
