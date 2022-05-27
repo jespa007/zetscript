@@ -212,7 +212,7 @@
 				vm\
 				,calling_function\
 				,instruction\
-				, BYTE_CODE_METAMETHOD_EQU\
+				, __BYTE_CODE_METAMETHOD_OPERATION__\
 				,&stk1\
 				,&stk2\
 				,true\
