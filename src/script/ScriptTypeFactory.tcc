@@ -4,6 +4,7 @@
  */
 namespace zetscript{
 
+StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
 	/**
 	 * Register C variable
 	 */
@@ -16,7 +17,8 @@ namespace zetscript{
 	{
 		//Scope *scope;
 		const char *var_type = typeid(V).name(); // we need the pointer type ...
-		Symbol *irs;
+		Symbol *symbol_variable=NULL;
+		uint16_t	stk_properties=0;
 		//int idxVariable;
 
 		if(var_ptr==NULL){
@@ -29,11 +31,9 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("main function is not created");
 		}
 
-		if(getIdxScriptTypeFromTypeNamePtr(var_type) == ZS_IDX_UNDEFINED){
-			THROW_RUNTIME_ERROR("'%s' has not valid type '%s'",var_name.c_str(),var_type);
-		}
+		StackElement stk_binded=to_stk(zs,(zs_int)var_ptr,getIdxScriptTypeFromTypeNamePtr(var_type));
 
-		if((irs = main_function->registerLocalVariable(
+		if((symbol_variable = main_function->registerLocalVariable(
 				MAIN_SCOPE(this)
 				,registered_file
 				,registered_line
@@ -44,6 +44,12 @@ namespace zetscript{
 		){
 			ZS_LOG_DEBUG("Registered variable name '%s'",var_name.c_str());
 		}
+
+		StackElement *stk=vm_get_stack_element_at(vm,symbol_variable->idx_position);
+
+		//symbol_variable->ref_ptr=(zs_int)malloc(sizeof(StackElement));
+		//StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
+		*stk=stk_binded;
 	}
 
 	/**

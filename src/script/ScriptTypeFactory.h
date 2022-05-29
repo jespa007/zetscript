@@ -353,6 +353,7 @@ namespace zetscript{
 
 		zs_vector 						*   script_types;
 		ZetScript 						*	zs;
+		VirtualMachine					*	vm;
 		ScopeFactory 					*	scope_factory;
 		ScriptFunctionFactory 			*	script_function_factory;
 		ScriptType 						* 	main_object;

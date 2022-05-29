@@ -98,6 +98,7 @@ namespace zetscript{
 
 	ScriptTypeFactory::ScriptTypeFactory(ZetScript *_zs){
 		zs = _zs;
+		vm = _zs->getVirtualMachine();
 		scope_factory = this->zs->getScopeFactory();
 		script_function_factory= this->zs->getScriptFunctionFactory();
 		main_function=NULL;
