@@ -4,7 +4,7 @@ var str="abcd"
 
 for(var it=str.iter();!it.end();it++){
 	var k,v;
-	v,k=it.get();
+	k,v=it.get();
 	sum_k+=k;
 	sum_v+=v;
 	

@@ -6,7 +6,7 @@ var rv=""
 System::assert(Object::keys(o).size()==3,"Object::keys(o).size()!=3");
 	
 for(var it=Object::iter(o);!it.end();it++){
-	v,k=it.get();
+	k,v=it.get();
 	rk+=k
 	rv+=v
 }

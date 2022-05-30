@@ -570,7 +570,7 @@ namespace zetscript{
 				));
 
 				// load k,v
-				for(int i=ei_init_vars_for.count-1; i >=0 ;i--){
+				for(int i=0; i <ei_init_vars_for.count ;i++){
 					eval_data->current_function->eval_instructions.push_back((zs_int)(
 							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.items[i])
 					));

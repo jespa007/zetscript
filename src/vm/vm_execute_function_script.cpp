@@ -1566,7 +1566,6 @@ execute_function:
 				// set number of call return
 				sf_call_n_returned_arguments_from_function=sf_call_return;
 
-
 				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
 
 				// no return parameters but the caller expects n_parameters, so

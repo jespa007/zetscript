@@ -3,7 +3,7 @@ var r=""
 
 for(var it=v1.iter();!it.end();it++){
 	var k,v;
-	v,k=it.get();
+	k,v=it.get();
 	r+=v
 }
 

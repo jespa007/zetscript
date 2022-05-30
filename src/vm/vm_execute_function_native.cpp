@@ -667,6 +667,20 @@ namespace zetscript{
 			}
 		}
 
+		// check for return values through stack
+
 		*data->stk_vm_current++=to_stk(data->zs,result,idx_script_type_return);
+
+		StackElement *sf_call_stk_return=(stk_arg_c_function+_n_args); // +1 points to starting return...
+		int sf_call_n_returned_arguments_from_function=data->stk_vm_current-sf_call_stk_return;
+
+
+		// return all elements in reverse order in order to get right assignment ...
+		// reverse returned items
+		for(int i=0; i<(sf_call_n_returned_arguments_from_function>>1); i++){
+			StackElement tmp=sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1];
+			sf_call_stk_return[sf_call_n_returned_arguments_from_function-i-1]=sf_call_stk_return[i];
+			sf_call_stk_return[i]=tmp;
+		}
 	}
 }
