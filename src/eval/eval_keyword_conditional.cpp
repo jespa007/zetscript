@@ -210,6 +210,10 @@ namespace zetscript{
 				,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			);
 
+			if(aux_p==NULL){
+				goto eval_keyword_switch_error;
+			}
+
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 			if(*aux_p != '{'){
