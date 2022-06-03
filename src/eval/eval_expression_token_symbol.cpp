@@ -26,8 +26,6 @@ namespace zetscript{
 		bool ok=true;
 		if(static_symbol->properties & SYMBOL_PROPERTY_STATIC){ // it should be constant type ...
 
-
-
 			if(static_symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 				instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
 				instruction->value_op2=(zs_int)static_symbol; // it's pointer (script function) or stack element id (const)
@@ -54,7 +52,6 @@ namespace zetscript{
 			, zs_vector *token_nodes
 			,TokenNode *last_operator_token_node
 			, uint16_t properties
-			, int n_recursive_level
 		){
 		char *aux_p = s,*test_aux_p;//, *test_s=NULL;
 		int test_line=line;
@@ -99,7 +96,6 @@ namespace zetscript{
 					, &token_node_symbol->eval_instructions
 					, NULL
 					, properties
-					, n_recursive_level+1
 				)
 			)== NULL){
 				goto error_expression_token_symbol;
@@ -391,11 +387,9 @@ namespace zetscript{
 								,&ei_arg_instruction//token_node_symbol->instructions
 								,NULL
 								,properties // avoid load ref, to avoid pass 2 reference
-								,n_recursive_level+1
 						))==NULL){
 							error_arg =true;
 						}
-
 
 						// only one argument and is variable
 						if(ei_arg_instruction.count==1){
@@ -424,6 +418,7 @@ namespace zetscript{
 					}
 					else{
 						byte_code=ByteCode::BYTE_CODE_CALL;
+
 						if(it_accessor_token==0){ // direct or indirect call
 							if(ei_first_token_node->vm_instruction.byte_code==BYTE_CODE_LOAD_THIS_FUNCTION){
 								byte_code=ByteCode::BYTE_CODE_THIS_CALL;
@@ -453,7 +448,6 @@ namespace zetscript{
 							,&token_node_symbol->eval_instructions
 							,NULL
 							,properties
-							,n_recursive_level+1
 					))==NULL){
 						goto error_expression_token_symbol;
 					}

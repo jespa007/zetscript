@@ -206,7 +206,7 @@ namespace zetscript{
 				ScriptFunction *sf_field_initializer=NULL;
 				ScriptType *sc_var_member_extension=sc;
 
-				if(sc==NULL){
+				if(sc_var_member_extension==NULL){
 					if((end_var=is_class_member_extension( // is function type extensions (example A::function1(){ return 0;} )
 						eval_data
 						,start_var
@@ -224,6 +224,8 @@ namespace zetscript{
 							return NULL;
 						}
 					}
+				}else{
+					sf_field_initializer=sc_var_member_extension->sf_field_initializer;
 				}
 
 				if((sc_var_member_extension!=NULL) && (is_constant==true)){
@@ -849,28 +851,44 @@ error_eval_keyword_var:
 		if(key_w == Keyword::KEYWORD_RETURN){ // possible variable...
 			//PASTNode child_node=NULL;
 			aux_p += strlen(eval_data_keywords[key_w].str);
-			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+			bool end=false;
 
 			// save starting point before process the expression...
-			if((aux_p = eval_expression(
-					eval_data
-					,aux_p
-					, line
-					, scope_info
-					,&eval_data->current_function->eval_instructions
-					,NULL
-					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION|EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
-			))!= NULL){
-
-				eval_data->current_function->eval_instructions.push_back((zs_int)(
-					new EvalInstruction(BYTE_CODE_RET)
-				));
+			do{
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-				return aux_p;
-			}
+
+				if((aux_p = eval_sub_expression(
+						eval_data
+						,aux_p
+						, line
+						, scope_info
+						,&eval_data->current_function->eval_instructions
+						,NULL
+						,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION
+				))== NULL){
+					return NULL;
+				}
+
+				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+					//return aux_p;
+
+
+				if(*aux_p==','){
+					aux_p++;
+				}else{
+					end=true;
+				}
+
+			}while(!end);
+
+			eval_data->current_function->eval_instructions.push_back((zs_int)(
+				new EvalInstruction(BYTE_CODE_RET)
+			));
+
+			return aux_p;
 		}
-		return NULL;
+
 	}
 }
 

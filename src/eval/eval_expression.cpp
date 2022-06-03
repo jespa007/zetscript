@@ -30,7 +30,6 @@ namespace zetscript{
 			, zs_vector 	* eval_instructions
 			, const char *expected_ending_char
 			, uint16_t _properties
-			, int n_recursive_level
 			, zs_vector *unique_call_instruction
 		){
 		// PRE: s is current zs_string to eval. This function tries to eval an expression like i+1; and generates binary ast.
@@ -79,7 +78,6 @@ namespace zetscript{
 						,&token_nodes
 						,last_operator_token_node
 						,_properties
-						,n_recursive_level
 						))==NULL){
 					goto eval_error_sub_expression;
 				}
@@ -194,7 +192,6 @@ namespace zetscript{
 				,&token_nodes
 				//,only_call_instructions
 				,_properties
-				,n_recursive_level
 				,unique_call_instruction
 			))==NULL){
 				goto eval_error_sub_expression;
@@ -314,7 +311,6 @@ eval_error_sub_expression:
 					, expression // it's saving to instructions...
 					,NULL
 					,properties_multi_expression
-					,0
 					,ptr_unique_call_instruction // max assignments left
 				))==NULL){
 					goto eval_error_expression_delete_left_right_sub_expressions;
@@ -435,8 +431,6 @@ eval_error_sub_expression:
 			ei_last=(EvalInstruction *)dst_instructions->items[dst_instructions->count-1];
 			if(
 					IS_BYTE_CODE_CALL(ei_last->vm_instruction.byte_code)
-						&&
-				((_properties & EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL)==0)
 			){
 				ei_last->vm_instruction.properties|=INSTRUCTION_PROPERTY_RESET_STACK;
 				//ei_last->vm_instruction.value_op1&=0xf; // if last op, no return parameters needed

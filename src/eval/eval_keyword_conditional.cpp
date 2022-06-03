@@ -42,14 +42,13 @@ namespace zetscript{
 				}
 
 				// eval conditional expression
-				if((end_expr = eval_expression(
+				if((end_expr = eval_sub_expression(
 						eval_data
 						,aux_p+1
 						,line
 						,scope_info
 						,&eval_data->current_function->eval_instructions
 						,")"
-						,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 				))==NULL){
 					return 0;
 				}
@@ -200,14 +199,13 @@ namespace zetscript{
 
 
 			// evaluate switch condition expression ...
-			aux_p = eval_expression(
+			aux_p = eval_sub_expression(
 				eval_data
 				,aux_p
 				,line
 				,scope_info
 				,&ei_switch_condition
 				,")"
-				,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			);
 
 			if(aux_p==NULL){

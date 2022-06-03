@@ -339,7 +339,6 @@ namespace zetscript{
 
 			return NumberType::NUMBER_TYPE_INVALID;
 
-
 		}
 
 		zs_string  erase(zs_string & str_old, char ch_to_remove){

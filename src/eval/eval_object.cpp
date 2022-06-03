@@ -17,6 +17,17 @@ namespace zetscript{
 	);
 
 
+	char * eval_sub_expression(
+			EvalData *eval_data
+			,const char *s
+			, int & line
+			, Scope *scope_info
+			, zs_vector 	* eval_instructions
+			, const char *expected_ending_char=NULL
+			, uint16_t properties=0 // uint16_t properties
+			, zs_vector *unique_call_instruction=NULL
+	);
+
 	//------------------------------------------------------------------------------------------------------------------------------
 
 	char * eval_object_function(EvalData *eval_data,const char *s,int & line,  Scope *_scope_info, TokenNode *token_node){
@@ -214,14 +225,12 @@ namespace zetscript{
 
 
 			 // go to variable...
-			 if((aux_p=eval_expression(
+			 if((aux_p=eval_sub_expression(
 					 eval_data
 					 ,aux_p
 					 ,line
 					 ,scope_info
 					 ,eval_instructions
-					 ,NULL
-					,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL // do not reset due it has to get result from function
 			))==NULL){
 				 return NULL;
 			 }
@@ -269,14 +278,12 @@ namespace zetscript{
 				EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error: unexpected ','");
 			}
 
-			aux_p=eval_expression(
+			aux_p=eval_sub_expression(
 					eval_data
 					,aux_p
 					,line
 					,scope_info
 					,eval_instructions
-					,NULL
-					,EVAL_EXPRESSION_DO_NOT_RESET_STACK_LAST_CALL
 			);
 
 			if(aux_p==NULL){
@@ -417,7 +424,7 @@ namespace zetscript{
 
 					  if(*aux_p!=')'){ // be sure that counts as argument for empty args
 						  // eval expression
-						  aux_p = eval_expression(
+						  aux_p = eval_sub_expression(
 								  eval_data
 								  ,aux_p
 								  ,line

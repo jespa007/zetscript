@@ -56,13 +56,13 @@ namespace zetscript {
 		throw zs_exception_error("",-1,out_txt);
 	}
 
-	void throw_exception(const char *filename, int line, const char *in_txt,...){
+	void throw_exception(const char *filename, int line, const char *in_txt){//,...){
 		ZS_UNUSUED_PARAM(filename);
 		ZS_UNUSUED_PARAM(line);
-		char out_txt[ZS_MAX_STR_BUFFER];
-		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
+		//char out_txt[ZS_MAX_STR_BUFFER];
+		//ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 
-		throw zs_exception_error("",ZS_IDX_UNDEFINED,out_txt);
+		throw zs_exception_error("",ZS_IDX_UNDEFINED,in_txt);
 	}
 
 	void throw_exception(const zs_string & in_txt){

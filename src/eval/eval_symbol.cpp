@@ -163,7 +163,11 @@ namespace zetscript{
 								byte_code= ByteCode::BYTE_CODE_LOAD_FUNCTION;
 								value=(zs_int)local_symbol;
 
+							}else if(local_symbol->properties & SYMBOL_PROPERTY_TYPE){
+								byte_code= ByteCode::BYTE_CODE_LOAD_GLOBAL;
+								value=-1;
 							}else{
+
 								byte_code= ByteCode::BYTE_CODE_LOAD_LOCAL;
 								value=local_symbol->idx_position;
 
