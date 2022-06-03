@@ -164,7 +164,7 @@ namespace zetscript{
 								value=(zs_int)local_symbol;
 
 							}else if(local_symbol->properties & SYMBOL_PROPERTY_TYPE){
-								byte_code= ByteCode::BYTE_CODE_LOAD_GLOBAL;
+								byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
 								value=-1;
 							}else{
 

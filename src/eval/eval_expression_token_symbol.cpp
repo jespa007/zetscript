@@ -209,10 +209,28 @@ namespace zetscript{
 
 						last_accessor_line=line;
 						if(get_accessor_name(eval_data, &aux_p, line,class_element) == false){
-							EVAL_ERROR_FILE_LINE_GOTOF(eval_data->current_parsing_file,line,error_expression_token_symbol,"Expected identifier after '::'");
+							EVAL_ERROR_FILE_LINE_GOTOF(
+								eval_data->current_parsing_file,line
+								,error_expression_token_symbol
+								,"Expected identifier after '::'"
+							);
+						}
+
+						if(sc==NULL && ei_first_token_node->vm_instruction.byte_code != BYTE_CODE_LOAD_TYPE){
+							EVAL_ERROR_FILE_LINE_GOTO(
+								eval_data->current_parsing_file
+								,line
+								,error_expression_token_symbol
+								,"Cannot perform static access %s::%s'. '%s' is not a type"
+								,static_access_value.c_str()
+								,class_element.c_str()
+								,static_access_value.c_str()
+							);
 						}
 
 						static_access_value+="::"+class_element;
+
+						ei_first_token_node->vm_instruction.byte_code = BYTE_CODE_FIND_VARIABLE;
 
 						//}while(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':' && n_static_access < max_static_access);
 

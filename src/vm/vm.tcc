@@ -635,7 +635,7 @@ namespace zetscript{
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)){
 			script_object=(ScriptObject *)stk_result_op1->value;
 			str_script_type_object_found=script_object->getTypeName();
-		}else if ((is_static==true) && (stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)){
+		}else if ((is_static==true) && (stk_result_op2!=NULL && (stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT))){
 			script_object=(ScriptObject *)stk_result_op2->value;
 			str_script_type_object_found=script_object->getTypeName();
 
@@ -799,14 +799,24 @@ apply_metamethod_error:
 			);
 		}else{
 
-			VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types '%s' %s '%s': %s"
-				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
-				,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
-				,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-				,stk_to_typeof_str(data->zs,stk_result_op2).c_str()
-				,error_found.c_str()
-			);
+			if(stk_result_op2 != NULL){
+				VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types '%s' %s '%s': %s"
+					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+					,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
+					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+					,stk_to_typeof_str(data->zs,stk_result_op2).c_str()
+					,error_found.c_str()
+				);
+			}else{
+				VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types %s '%s' : %s"
+					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+					,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
+					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
+					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+					,error_found.c_str()
+				);
+			}
 		}
 
 		return false;

@@ -104,6 +104,8 @@ namespace zetscript{
 
 
 								}else{ // expect return an scriptobjectstring
+
+									// Change undefined type as null valid in json scope
 									zs_int result= 0;
 									zs_string str_aux="";
 									void *c_object = ((ScriptObjectClass *)_obj)->getNativeObject();
@@ -125,7 +127,6 @@ namespace zetscript{
 										,result
 										,ptr_function->idx_script_type_return
 									);
-
 								}
 
 								ptr_stk_param=&stk_getter_result;
@@ -192,10 +193,8 @@ namespace zetscript{
 			case STK_PROPERTY_ZS_INT:
 				str_result.append(stk_to_str(zs,stk));
 				break;
-			case STK_PROPERTY_UNDEFINED:
-				str_result.append("undefined");
-				break;
 			case STK_PROPERTY_NULL:
+			case STK_PROPERTY_UNDEFINED:
 				str_result.append("null");
 				break;
 			case STK_PROPERTY_SCRIPT_OBJECT: // vector or object
