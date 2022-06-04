@@ -56,6 +56,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s'') " \
 						,member_property!=NULL?"Member property":"Symbol" \
 						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
+						,byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_ADD_SET)\
 						,byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_ADD_SET)\
 				);\
 			}\

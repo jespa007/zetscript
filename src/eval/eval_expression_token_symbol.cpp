@@ -413,12 +413,16 @@ namespace zetscript{
 						if(ei_arg_instruction.count==1){
 							EvalInstruction *ei_arg=(EvalInstruction *)ei_arg_instruction.items[0];
 							ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
-							if(byte_code_aux ==BYTE_CODE_LOAD_REF){
-								ei_arg->vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
-							}
-							else if(byte_code_is_load_var_type(byte_code_aux)){
-								ei_arg->vm_instruction.byte_code=byte_code_load_var_type_to_push_stk(byte_code_aux);
-								ei_arg->vm_instruction.properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
+
+							// if not LOAD THIS set STK
+							if(byte_code_aux !=BYTE_CODE_LOAD_THIS_VARIABLE){
+								if(byte_code_aux ==BYTE_CODE_LOAD_REF){
+									ei_arg->vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
+								}
+								else if(byte_code_is_load_var_type(byte_code_aux)){
+									ei_arg->vm_instruction.byte_code=byte_code_load_var_type_to_push_stk(byte_code_aux);
+									ei_arg->vm_instruction.properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
+								}
 							}
 						}
 
