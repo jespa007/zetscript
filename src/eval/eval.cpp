@@ -21,7 +21,8 @@
 #include "eval_keyword_class.cpp"
 #include "eval_keyword_conditional.cpp"
 #include "eval_keyword_loop.cpp"
-#include "eval_keyword_var_function.cpp"
+#include "eval_keyword_var.cpp"
+#include "eval_keyword_function.cpp"
 #include "eval_expression.cpp"
 #include "eval_keyword.cpp"
 

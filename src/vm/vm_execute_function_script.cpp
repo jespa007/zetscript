@@ -416,7 +416,6 @@ find_element_object:
 										,true
 								);
 
-
 								if(
 										// Pass the object if the value is object type >= TYPE_SCRIPT_OBJECT_CLASS ...
 										STK_IS_SCRIPT_OBJECT_CLASS(data->stk_vm_current)
@@ -434,6 +433,7 @@ find_element_object:
 									continue;
 								}
 							}
+
 						}
 					}
 				}
@@ -572,6 +572,7 @@ find_element_object:
 							VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s'') " \
 									,member_property!=NULL?"Member property":"Symbol" \
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
+									,byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_ADD_SET)\
 									,byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_ADD_SET)\
 							);\
 						}\
