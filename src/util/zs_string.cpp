@@ -357,10 +357,23 @@ namespace zetscript{
 	int zs_string::find(const char *_s, int pos) const{
 
 		if(pos<count){
-			const char *f=strstr(buf+pos,_s);
+			/*const char *f=strstr(buf+pos,_s);
 			if(f!=NULL){
 				return f-buf;
-			}
+			}*/
+			size_t len=strlen(_s);
+
+			int idx=0;//ZS_MIN(pos,count-1);
+
+			do{
+
+				char c=buf[idx];
+				for(unsigned i=0; i < len; i++){ // search for all chars
+					if(_s[i]==c){
+						return idx;
+					}
+				}
+			}while(++idx<count);
 		}
 
 		return npos;
@@ -371,6 +384,8 @@ namespace zetscript{
 
 	int zs_string::find_last_of(const char *_s, int pos) const{
 
+		size_t len=strlen(_s);
+
 		if(pos == npos){
 			pos=count-1;
 		}
@@ -379,7 +394,7 @@ namespace zetscript{
 			int idx=ZS_MIN(pos,count-1);
 
 			do{
-				size_t len=strlen(_s);
+
 				char c=buf[idx];
 				for(unsigned i=0; i < len; i++){ // search for all chars
 					if(_s[i]==c){

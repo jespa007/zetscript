@@ -43,8 +43,46 @@ namespace zetscript{
 		}
 
 		bool exists(const zs_string & _dir){
+
+			if(zs_file::exists(_dir)){
+				return false;
+			}
+
+			zs_string dir=_dir;
+
+			if(zs_strutils::starts_with(dir,"..")){
+				bool end=false;
+				// get current path
+				zs_string path=get_current_directory();
+
+				// ignore relative paths
+				do{
+					int pos=dir.find("\\/");
+					if(pos==zs_string::npos){
+						end=true;
+					}
+
+					if(!end){
+
+						// update directory
+						pos=path.find_last_of("\\/");
+						if(pos==zs_string::npos){
+							end=true;
+						}
+
+						if(!end){
+							path=path.substr(0,pos);
+						}
+					}
+
+				}while(!end);
+
+				dir=path;
+			}
+
+
 #if _WIN32
-			DWORD ftyp = GetFileAttributesA(_dir.c_str());
+			DWORD ftyp = GetFileAttributesA(dir.c_str());
 			  if (ftyp == INVALID_FILE_ATTRIBUTES){
 			    return false;  //something is wrong with your path!
 			  }
@@ -56,7 +94,7 @@ namespace zetscript{
 			  return false;    // this is not a directory!
 #else
 			  struct stat buffer;
-			  return (stat (_dir. c_str(), &buffer) == 0);
+			  return (stat (dir. c_str(), &buffer) == 0);
 #endif
 		}
 

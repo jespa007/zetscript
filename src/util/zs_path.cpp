@@ -7,10 +7,16 @@
 namespace zetscript{
 	namespace zs_path{
 		zs_string  get_directory(const zs_string & _path) {
-			int pos = _path.find_last_of("\\/");
-			 return (zs_string::npos == pos)
-				 ? ""
-				 : _path.substr(0, pos);
+
+			if(zs_dir::exists(_path) == false){
+
+				int pos = _path.find_last_of("\\/");
+				 return (zs_string::npos == pos)
+					 ? ""
+					 : _path.substr(0, pos);
+			}
+
+			return _path;
 		}
 
 		zs_string  get_filename(const zs_string & _path) {

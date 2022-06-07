@@ -20,6 +20,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+  
   MESSAGE(FATAL_ERROR "Prevented in-tree built. Please create a build directory outside of the 'zetscript' source code and call cmake from there. For instance,\nmkdir build\ncd build\ncmake ..")
 endif()
 
