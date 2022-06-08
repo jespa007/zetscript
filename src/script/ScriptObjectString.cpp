@@ -24,6 +24,17 @@ namespace zetscript{
 		return so;
 	}
 
+	ScriptObjectString *ScriptObjectString::newShareableScriptObjectString(ZetScript	*_zs){
+		VirtualMachine *virtual_machine = _zs->getVirtualMachine();
+
+		ScriptObjectString *so= new ScriptObjectString();
+		so->init(_zs);
+		// share this variable++
+		vm_create_shared_pointer(virtual_machine,(ScriptObject *)so);
+		vm_share_pointer(virtual_machine,(ScriptObject *)so);
+		return so;
+	}
+
 	ScriptObjectString *ScriptObjectString::newScriptObjectStringAddStk(ZetScript *zs,StackElement *stk_result_op1,StackElement *stk_result_op2){
 		ScriptObjectString *so_ref=NULL;
 		// we have to create an new string variable

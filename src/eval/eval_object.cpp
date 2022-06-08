@@ -199,8 +199,8 @@ namespace zetscript{
 
 			 // register constant...
 			str_key=zs_string("\"")+symbol_value+"\"";
-			if((stk_key_object = eval_data->zs->getStkStringObject(str_key))==NULL){
-				stk_key_object=eval_data->zs->registerStkStringObject(str_key,symbol_value);
+			if((stk_key_object = eval_data->script_type_factory->getStkConstantStringObject(str_key))==NULL){
+				stk_key_object=eval_data->script_type_factory->registerStkConstantStringObject(str_key,symbol_value);
 			 }
 
 			// add instruction...

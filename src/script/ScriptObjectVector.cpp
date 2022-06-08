@@ -17,6 +17,17 @@ namespace zetscript{
 		return sv;
 	}
 
+	ScriptObjectVector *ScriptObjectVector::newShareableScriptObjectVector(ZetScript	*_zs){
+		VirtualMachine *virtual_machine = _zs->getVirtualMachine();
+
+		ScriptObjectVector *so= new ScriptObjectVector();
+		so->init(_zs);
+		// share this variable++
+		vm_create_shared_pointer(virtual_machine,(ScriptObject *)so);
+		vm_share_pointer(virtual_machine,(ScriptObject *)so);
+		return so;
+	}
+
 	ScriptObjectVector * ScriptObjectVector::newScriptObjectVectorAdd(ZetScript *zs,ScriptObjectVector *v1,ScriptObjectVector *v2){
 		ScriptObjectVector *so_vector = ZS_NEW_OBJECT_VECTOR(zs);
 

@@ -64,6 +64,8 @@ namespace zetscript{
 
 					if(!end){
 
+						dir=dir.substr(0,pos);
+
 						// update directory
 						pos=path.find_last_of("\\/");
 						if(pos==zs_string::npos){

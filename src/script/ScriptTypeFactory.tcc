@@ -4,16 +4,20 @@
  */
 namespace zetscript{
 
-StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
+	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
+	bool 			vm_create_shared_pointer(VirtualMachine *vm, ScriptObject *_obj);
+	bool 			vm_share_pointer(VirtualMachine *vm, ScriptObject *_obj);
+
+
 	/**
 	 * Register C variable
 	 */
 	template<typename V>
 	 void  ScriptTypeFactory::bindGlobalVariable(
-		 const zs_string & var_name
-		 ,V var_ptr
-		 ,const char *registered_file
-		 ,short registered_line)
+		 const zs_string & _var_name
+		 ,V _var_ptr
+		 ,const char *_registered_file
+		 ,short _registered_line)
 	{
 		//Scope *scope;
 		const char *var_type = typeid(V).name(); // we need the pointer type ...
@@ -21,8 +25,8 @@ StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
 		uint16_t	stk_properties=0;
 		//int idxVariable;
 
-		if(var_ptr==NULL){
-			THROW_RUNTIME_ERROR("cannot register var '%s' with NULL reference value", var_name.c_str());
+		if(_var_ptr==NULL){
+			THROW_RUNTIME_ERROR("cannot register var '%s' with NULL reference value", _var_name.c_str());
 		}
 
 		ScriptFunction *main_function=MAIN_FUNCTION(this);
@@ -31,15 +35,15 @@ StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
 			THROW_RUNTIME_ERRORF("main function is not created");
 		}
 
-		StackElement stk_binded=to_stk(zs,(zs_int)var_ptr,getIdxScriptTypeFromTypeNamePtr(var_type));
+		StackElement stk_binded=to_stk(zs,(zs_int)_var_ptr,getIdxScriptTypeFromTypeNamePtr(var_type));
 
 		if((symbol_variable = main_function->registerLocalVariable(
 				MAIN_SCOPE(this)
-				,registered_file
-				,registered_line
-				,var_name
-				,var_type
-				,(zs_int)var_ptr
+				,_registered_file
+				,_registered_line
+				,_var_name
+				, var_type
+				,(zs_int)_var_ptr
 				,SYMBOL_PROPERTY_C_OBJECT_REF)) != NULL
 		){
 			ZS_LOG_DEBUG("Registered variable name '%s'",var_name.c_str());
@@ -47,9 +51,19 @@ StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
 
 		StackElement *stk=vm_get_stack_element_at(vm,symbol_variable->idx_position);
 
+		if(stk_binded.properties & STK_PROPERTY_SCRIPT_OBJECT){
+			*stk = *this->registerStkObject(_var_name, stk_binded.value);
+
+			// share this variable++
+			vm_create_shared_pointer(vm,(ScriptObject *)stk_binded.value);
+			vm_share_pointer(vm,(ScriptObject *)stk_binded.value);
+		}
+		else{
+			*stk=stk_binded;
+		}
 		//symbol_variable->ref_ptr=(zs_int)malloc(sizeof(StackElement));
 		//StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
-		*stk=stk_binded;
+
 	}
 
 	/**

@@ -131,10 +131,6 @@ namespace zetscript{
 		StackElement	eval(const zs_string & expresion,unsigned short options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
 		StackElement	evalFile(const zs_string & _filename,unsigned short _eval_options=0, EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
 
-		// CONSTANT TOOLS
-		StackElement * registerStkStringObject(const zs_string & key_name,const zs_string & const_name);
-		StackElement * getStkStringObject(const zs_string & const_name);
-
 
 		inline zs_map * getCompiledSymbolName(){
 			return compiled_symbol_name;
@@ -142,39 +138,52 @@ namespace zetscript{
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
+		//
 		bool isFilenameAlreadyParsed(const zs_string & filename);
+		//
+		//------------------------------------------------------------------------------------------------------------------------------------
+		//
+		// SHAREABLE OBJECTS
+		// This methods allows to create a shareable script objects string, vector and object. The user has to delete when is not used anymore
+		//
+		ScriptObjectObject * newShareableScriptObjectObject();
+		ScriptObjectString * newShareableScriptObjectString();
+		ScriptObjectVector * newShareableScriptObjectVector();
+		//
+		//------------------------------------------------------------------------------------------------------------------------------------
+
 		//-----------------------------------------------
 		/**
 		 * Register C variable
 		 */
 		template <typename V>
-		 void registerVariable(const zs_string & var_name,V var_ptr, const char *registered_file="",short registered_line=-1){
+		 void bindVariable(const zs_string & var_name,V var_ptr, const char *registered_file="",short registered_line=-1){
 			 script_type_factory->bindGlobalVariable(var_name,var_ptr, registered_file, registered_line);
 		 }
 
-		void registerConstantVariable(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1){
+			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void registerConstantVariable(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1){
+			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void registerConstantVariable(const zs_string & var_name, float value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & var_name, float value, const char *registered_file="", short registered_line=-1){
+			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void registerConstantVariable(const zs_string & var_name, double value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->registerConstantVariable(var_name,(float)value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & var_name, double value, const char *registered_file="", short registered_line=-1){
+			script_type_factory->bindConstantVariable(var_name,(float)value, registered_file, registered_line);
 		}
 
 
-		void registerConstantVariable(const zs_string & var_name, const zs_string & value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & var_name, const zs_string & value, const char *registered_file="", short registered_line=-1){
+			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void registerConstantVariable(const zs_string & var_name, const char *value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->registerConstantVariable(var_name,value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & var_name, const char *value, const char *registered_file="", short registered_line=-1){
+			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
 		/**
@@ -193,13 +202,8 @@ namespace zetscript{
 			script_type_factory->bindFunction( name_script_function,ptr_function, registered_file,registered_line);
 		}
 
-		template<typename _C>
-		ScriptObjectClass * newScriptObjectClass();
-
-		ScriptObjectVector * newScriptObjectVector(){
-			return ScriptObjectVector::newScriptObjectVector(this);
-		}
-
+		/*template<typename _C>
+		ScriptObjectClass * newScriptObjectClass();*/
 		template<class C, class B>
 		void extends(){
 			script_type_factory->extends<C,B>();
@@ -304,7 +308,8 @@ namespace zetscript{
 		}
 
 		//cpp binding
-		inline void unrefLifetimeObject(ScriptObject *so);
+		void unrefLifetimeObject(ScriptObject *so);
+		void makeScriptObjectShared(ScriptObject *so);
 
 
 		//--------------------------------------------------------------------------------------------------------------------
@@ -524,7 +529,7 @@ namespace zetscript{
 
 		//--------
 		// VARS
-		zs_map 	 								*stk_constants, *script_filenames_by_ref;
+		zs_map 	 								*script_filenames_by_ref;
 		zs_vector 			 					parsed_files;
 		zs_vector								functions_with_unresolved_symbols;
 

@@ -9,7 +9,7 @@
 
 namespace zetscript{
 
-		template<typename _C>
+		/*template<typename _C>
 		ScriptObjectClass * ZetScript::newScriptObjectClass(){
 			const char * str_script_type_ptr = typeid(_C *).name();
 			int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr);
@@ -33,12 +33,8 @@ namespace zetscript{
 			auto so_script=ScriptObjectClass::newScriptObjectClass(this,idx_script_type,(void *)ptr_var);
 			so_script->deleteNativeObjectOnDestroy(true);
 			return so_script;
-		}
+		}*/
 
-
-		void ZetScript::unrefLifetimeObject(ScriptObject *so){
-			vm_unref_lifetime_object(this->virtual_machine,so);
-		}
 
 		//--------------------------------------------------------------------------------------------------------------------
 		//

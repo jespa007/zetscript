@@ -20,7 +20,7 @@ namespace zetscript{
 		idx_current_global_variable_checkpoint=0;
 		idx_current_global_function_checkpoint=0;
 		idx_current_script_types_checkpoint=0;
-		stk_constants=NULL;
+
 		script_filenames_by_ref=NULL;
 
 		eval_init();
@@ -35,7 +35,6 @@ namespace zetscript{
 
 		script_type_factory->registerSystem();
 
-		stk_constants=new zs_map();
 		script_filenames_by_ref=new zs_map();
 
 		compiled_symbol_name = new zs_map();
@@ -281,49 +280,7 @@ namespace zetscript{
 		}
 		return false;
 	}
-	//-----------------------------------------------------------------------------------------
-	// STK STRING OBJECT
-	StackElement * ZetScript::registerStkStringObject(const zs_string & key_name,const zs_string & const_name){
 
-		StackElement *stk=NULL;
-		ScriptObjectString *so=NULL;
-
-		if((stk = getStkStringObject(key_name))!=NULL){
-			if(stk->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY)){
-				return stk;
-			}
-			else{
-				// throw
-				THROW_RUNTIME_ERROR(
-					"Cannot register constant '%s' as 'ScriptObjectString', because is already registered as '%s'"
-					,key_name.c_str()
-					,stk_to_typeof_str(this,stk).c_str()
-				);
-			}
-		}
-
-		stk=new StackElement;
-
-		stk_constants->set(key_name.c_str(),(zs_int)stk);
-
-		so=ZS_NEW_OBJECT_STRING(this);
-		// swap values stk_ref/value
-		so->set(const_name);
-
-		stk->value=(zs_int)so;
-		stk->properties=STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY;
-
-		return stk;
-	}
-
-	StackElement *ZetScript::getStkStringObject(const zs_string & key_name){
-		return (StackElement *)stk_constants->get(key_name.c_str());
-	}
-
-	//
-	// STK STRING OBJECT
-	//
-	//-----------------------------------------------------------------------------------------------------------------------------------------
 	StackElement ZetScript::evalInternal(const char * _code, unsigned short _eval_options, const char * _filename, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__)  {
 		StackElement stk_ret=k_stk_undefined;
 
@@ -349,6 +306,22 @@ namespace zetscript{
 		}
 
 		return stk_ret;
+	}
+	//
+	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//
+	// SHAREABLE OBJECTS
+	//
+	ScriptObjectObject * ZetScript::newShareableScriptObjectObject(){
+		return ScriptObjectObject::newShareableScriptObjectObject(this);
+	}
+
+	ScriptObjectString * ZetScript::newShareableScriptObjectString(){
+		return ScriptObjectString::newShareableScriptObjectString(this);
+	}
+
+	ScriptObjectVector * ZetScript::newShareableScriptObjectVector(){
+		return ScriptObjectVector::newShareableScriptObjectVector(this);
 	}
 
 	StackElement ZetScript::eval(const zs_string & _expresion, unsigned short _options, const char * _script_filename_by_ref, const char *__invoke_file__, int __invoke_line__)  {
@@ -620,6 +593,20 @@ namespace zetscript{
 		}
 	}
 
+	void ZetScript::unrefLifetimeObject(ScriptObject *so){
+		vm_unref_lifetime_object(this->virtual_machine,so);
+	}
+
+	void ZetScript::makeScriptObjectShared(ScriptObject *so){
+		if(so->shared_pointer != NULL){
+			// share this variable++
+			vm_create_shared_pointer(virtual_machine,so);
+			vm_share_pointer(virtual_machine,so);
+		}else{
+			THROW_RUNTIME_ERRORF("Script object already shared");
+		}
+	}
+
 	ZetScript::~ZetScript(){
 		// delete system and string...
 		clearGlobalVariables(0,0);
@@ -632,20 +619,6 @@ namespace zetscript{
 		delete scope_factory;
 
 		virtual_machine=NULL;
-
-		if(stk_constants != NULL){
-
-			for(auto it=stk_constants->begin(); !it.end();it.next()){
-				StackElement *stk=(StackElement *)(it.value);
-				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					delete (ScriptObjectString *)stk->value;
-				}
-				delete stk;
-			}
-			stk_constants->clear();
-			delete stk_constants;
-
-		}
 
 		if(script_filenames_by_ref != NULL){
 

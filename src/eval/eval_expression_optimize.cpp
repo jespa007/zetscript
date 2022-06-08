@@ -358,7 +358,7 @@ namespace zetscript{
 			result_instruction=new EvalInstruction(
 					result_bc
 					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
-					,(zs_int)eval_data->zs->registerStkStringObject(str_constant_key,result_op_str)
+					,(zs_int)eval_data->script_type_factory->registerStkConstantStringObject(str_constant_key,result_op_str)
 			);
 			break;
 		case BYTE_CODE_LOAD_BOOL:

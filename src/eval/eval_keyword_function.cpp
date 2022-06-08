@@ -611,46 +611,47 @@ namespace zetscript{
 
 		key_w = eval_is_keyword(aux_p);
 
-		if(key_w == Keyword::KEYWORD_RETURN){ // possible variable...
-			//PASTNode child_node=NULL;
-			aux_p += strlen(eval_data_keywords[key_w].str);
-			bool end=false;
-
-			// save starting point before process the expression...
-			do{
-
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-
-				if((aux_p = eval_sub_expression(
-						eval_data
-						,aux_p
-						, line
-						, scope_info
-						,&eval_data->current_function->eval_instructions
-						,NULL
-						,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION
-				))== NULL){
-					return NULL;
-				}
-
-				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
-					//return aux_p;
-
-
-				if(*aux_p==','){
-					aux_p++;
-				}else{
-					end=true;
-				}
-
-			}while(!end);
-
-			eval_data->current_function->eval_instructions.push_back((zs_int)(
-				new EvalInstruction(BYTE_CODE_RET)
-			));
-
-			return aux_p;
+		if(key_w != Keyword::KEYWORD_RETURN){ // possible variable...
+			return NULL;
 		}
 
+		//PASTNode child_node=NULL;
+		aux_p += strlen(eval_data_keywords[key_w].str);
+		bool end=false;
+
+		// save starting point before process the expression...
+		do{
+
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+			if((aux_p = eval_sub_expression(
+					eval_data
+					,aux_p
+					, line
+					, scope_info
+					,&eval_data->current_function->eval_instructions
+					,NULL
+					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION
+			))== NULL){
+				return NULL;
+			}
+
+			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+				//return aux_p;
+
+
+			if(*aux_p==','){
+				aux_p++;
+			}else{
+				end=true;
+			}
+
+		}while(!end);
+
+		eval_data->current_function->eval_instructions.push_back((zs_int)(
+			new EvalInstruction(BYTE_CODE_RET)
+		));
+
+		return aux_p;
 	}
 }

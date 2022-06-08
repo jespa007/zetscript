@@ -800,20 +800,22 @@ apply_metamethod_error:
 		}else{
 
 			if(stk_result_op2 != NULL){
-				VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types '%s' %s '%s': %s"
+				VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types '%s' %s '%s'%s %s"
 					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 					,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
 					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
 					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 					,stk_to_typeof_str(data->zs,stk_result_op2).c_str()
+					,error_found.empty()?"":":"
 					,error_found.c_str()
 				);
 			}else{
-				VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types %s '%s' : %s"
+				VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types %s '%s' %s %s"
 					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 					,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
 					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+					,error_found.empty()?"":":"
 					,error_found.c_str()
 				);
 			}

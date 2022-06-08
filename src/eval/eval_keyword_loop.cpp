@@ -432,7 +432,8 @@ namespace zetscript{
 					);
 				}
 
-				if((key_w=eval_is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
+				key_w=eval_is_keyword(aux_p);
+				if((key_w!=Keyword::KEYWORD_UNKNOWN) && (key_w!=Keyword::KEYWORD_THIS)){
 					EVAL_ERROR_FILE_LINE_GOTO(
 							eval_data->current_parsing_file
 							,test_line

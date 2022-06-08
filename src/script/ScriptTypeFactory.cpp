@@ -107,6 +107,14 @@ namespace zetscript{
 		main_object=NULL;
 		main_function=NULL;
 		idx_clear_checkpoint=0;
+
+		stk_constants=NULL;
+		stk_constants=new zs_map();
+
+		stk_objects=NULL;
+		stk_objects=new zs_map();
+
+
 	}
 
 	void ScriptTypeFactory::init(){
@@ -304,11 +312,77 @@ namespace zetscript{
 		zs->saveState();
 	}
 
+	//-----------------------------------------------------------------------------------------
+	// STK REGISTER OBJECT
+	StackElement * ScriptTypeFactory::registerStkConstantStringObject(const zs_string & key_name,const zs_string & const_name){
+
+		StackElement *stk=NULL;
+		ScriptObjectString *so=NULL;
+
+		if((stk = getStkConstantStringObject(key_name))!=NULL){
+			if(stk->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY)){
+				return stk;
+			}
+			else{
+				// throw
+				THROW_RUNTIME_ERROR(
+					"Cannot register constant '%s' as 'ScriptObjectString', because is already registered as '%s'"
+					,key_name.c_str()
+					,stk_to_typeof_str(this->zs,stk).c_str()
+				);
+			}
+		}
+
+		stk=new StackElement;
+
+		stk_constants->set(key_name.c_str(),(zs_int)stk);
+
+		so=ZS_NEW_OBJECT_STRING(this->zs);
+		// swap values stk_ref/value
+		so->set(const_name);
+
+		stk->value=(zs_int)so;
+		stk->properties=STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY;
+
+		return stk;
+	}
+
+	StackElement *ScriptTypeFactory::getStkConstantStringObject(const zs_string & key_name){
+		return (StackElement *)stk_constants->get(key_name.c_str());
+	}
+
+	StackElement * ScriptTypeFactory::registerStkObject(const zs_string & _var_name, zs_int _obj){
+
+		StackElement *stk=NULL;
+
+		if((stk = getStkObject(_var_name))!=NULL){
+			return stk;
+		}
+
+		stk=new StackElement;
+		stk->value=(zs_int)_obj;
+		stk->properties=STK_PROPERTY_SCRIPT_OBJECT;
+
+		this->stk_objects->set(_var_name.c_str(),(zs_int)stk);
+
+		return stk;
+	}
+
+	StackElement *ScriptTypeFactory::getStkObject(const zs_string & _var_name){
+		return (StackElement *)stk_objects->get(_var_name.c_str());
+	}
+
+	//
+	// STK REGISTER OBJECT
+	//
+	//-----------------------------------------------------------------------------------------------------------------------------------------
+
+
 	//--------------------------------------------------------------------------------------------------------------------------------------------
 	// REGISTER CONSTANTS
 	//
 
-	void ScriptTypeFactory::registerConstantVariable(const zs_string & var_name, int value, const char *registered_file, short registered_line){
+	void ScriptTypeFactory::bindConstantVariable(const zs_string & var_name, int value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -325,7 +399,7 @@ namespace zetscript{
 		//symbol_variable->properties|=SYMBOL_PROPERTY_ALLOCATED_STK;
 	}
 
-	void ScriptTypeFactory::registerConstantVariable(const zs_string & var_name, bool value, const char *registered_file, short registered_line){
+	void ScriptTypeFactory::bindConstantVariable(const zs_string & var_name, bool value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -343,7 +417,7 @@ namespace zetscript{
 		//symbol_variable->properties|=SYMBOL_PROPERTY_ALLOCATED_STK;
 	}
 
-	void ScriptTypeFactory::registerConstantVariable(const zs_string & var_name, zs_float value, const char *registered_file, short registered_line){
+	void ScriptTypeFactory::bindConstantVariable(const zs_string & var_name, zs_float value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -360,7 +434,7 @@ namespace zetscript{
 		//symbol_variable->properties|=SYMBOL_PROPERTY_ALLOCATED_STK;
 	}
 
-	void ScriptTypeFactory::registerConstantVariable(const zs_string & var_name, const zs_string & v, const char *registered_file, short registered_line){
+	void ScriptTypeFactory::bindConstantVariable(const zs_string & var_name, const zs_string & v, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -372,12 +446,12 @@ namespace zetscript{
 		//StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
 		VirtualMachine *vm=zs->getVirtualMachine();
 		StackElement *stk=vm_get_stack_element_at(vm,symbol_variable->idx_position);
-		*stk=*(zs->registerStkStringObject(var_name,v));
+		*stk=*(this->registerStkConstantStringObject(var_name,v));
 		//symbol_variable->properties|=SYMBOL_PROPERTY_ALLOCATED_STK;
 	}
 
-	void ScriptTypeFactory::registerConstantVariable(const zs_string & var_name, const char * v, const char *registered_file, short registered_line){
-		registerConstantVariable(var_name, zs_string(v), registered_file, registered_line);
+	void ScriptTypeFactory::bindConstantVariable(const zs_string & var_name, const char * v, const char *registered_file, short registered_line){
+		bindConstantVariable(var_name, zs_string(v), registered_file, registered_line);
 	}
 
 	// REGISTER CONSTANTS
@@ -735,5 +809,30 @@ namespace zetscript{
 		script_types->clear();
 
 		delete script_types;
+
+		if(stk_constants != NULL){
+
+			for(auto it=stk_constants->begin(); !it.end();it.next()){
+				StackElement *stk=(StackElement *)(it.value);
+				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					delete (ScriptObjectString *)stk->value;
+				}
+				delete stk;
+			}
+			stk_constants->clear();
+			delete stk_constants;
+
+		}
+
+		if(stk_objects != NULL){
+
+			for(auto it=stk_objects->begin(); !it.end();it.next()){
+				StackElement *stk=(StackElement *)(it.value);
+				delete (ScriptObject *)stk->value;
+				delete stk;
+			}
+			stk_objects->clear();
+			delete stk_objects;
+		}
 	}
 }

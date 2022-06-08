@@ -66,6 +66,7 @@ namespace zetscript{
 											,const char * file=""
 											, short line=-1
 										);
+
 		ScriptType * 					getScriptType(short _idx_script_type);
 		ScriptType * 					getScriptType(const zs_string & _type_name);
 		ScriptType * 					getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
@@ -84,6 +85,14 @@ namespace zetscript{
 		inline ScriptType * 			getMainObject() { return main_object;}
 		inline ScriptFunction * 		getMainFunction() { return main_function;}
 
+
+		// register object
+		StackElement * registerStkConstantStringObject(const zs_string & key_name,const zs_string & const_name);
+		StackElement * getStkConstantStringObject(const zs_string & const_name);
+
+		StackElement * registerStkObject(const zs_string & _var_name, zs_int _obj);
+		StackElement * getStkObject(const zs_string & _var_name);
+
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
@@ -101,11 +110,11 @@ namespace zetscript{
 			 ,short registered_line=-1
 		);
 
-		void registerConstantVariable(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1);
-		void registerConstantVariable(const zs_string & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
-		void registerConstantVariable(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1);
-		void registerConstantVariable(const zs_string & var_name, const zs_string & v, const char *registered_file="", short registered_line=-1);
-		void registerConstantVariable(const zs_string & var_name, const char * v, const char *registered_file="", short registered_line=-1);
+		void bindConstantVariable(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1);
+		void bindConstantVariable(const zs_string & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
+		void bindConstantVariable(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1);
+		void bindConstantVariable(const zs_string & var_name, const zs_string & v, const char *registered_file="", short registered_line=-1);
+		void bindConstantVariable(const zs_string & var_name, const char * v, const char *registered_file="", short registered_line=-1);
 
 		/**
 		 * Register C function
@@ -351,6 +360,7 @@ namespace zetscript{
 			zs_vector					params;
 		}RegisterFunction;
 
+		zs_map 	 						*stk_constants,*stk_objects;
 		zs_vector 						*   script_types;
 		ZetScript 						*	zs;
 		VirtualMachine					*	vm;

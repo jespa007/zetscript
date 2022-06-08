@@ -8,12 +8,33 @@ namespace zetscript{
 	namespace zs_file{
 
 		bool exists(const zs_string & filename){
-			FILE  *fp;
+#ifdef _WIN32
+			WIN32_FIND_DATA FindFileData;
+			   HANDLE handle = FindFirstFile(filename.c_str(), &FindFileData) ;
+			   int found = handle != INVALID_HANDLE_VALUE;
+			   if(found)
+			   {
+			       //FindClose(&handle); this will crash
+			       FindClose(handle);
+			       return true;
+			   }
+
+#else
+		struct stat statbuf;
+			stat(filename.c_str(), &statbuf);
+			// test for a regular file
+			if (S_ISREG(statbuf.st_mode)){
+				return true;
+			}
+
+#endif
+			return false;
+			/*FILE  *fp;
 			if((fp  =  fopen(filename.c_str(),"r")) != NULL){
 				fclose(fp);
 				return true;
 			}
-			return false;
+			return false;*/
 		}
 
 		zs_string read_text(const zs_string &  filename){

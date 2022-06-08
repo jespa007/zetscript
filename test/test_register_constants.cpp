@@ -9,10 +9,10 @@ void test_register_constants(zetscript::ZetScript *_zs) {
 
 	int n_test=0;
 
-	_zs->registerConstantVariable("TEST_INT", 100);
-	_zs->registerConstantVariable("TEST_FLOAT", 1.5f);
-	_zs->registerConstantVariable("TEST_BOOL", true);
-	_zs->registerConstantVariable("TEST_STRING", "constant_string");
+	_zs->bindConstantVariable("TEST_INT", 100);
+	_zs->bindConstantVariable("TEST_FLOAT", 1.5f);
+	_zs->bindConstantVariable("TEST_BOOL", true);
+	_zs->bindConstantVariable("TEST_STRING", "constant_string");
 
 	_zs->eval(
 			"System::assert(TEST_INT==100,\"TEST_INT!=100\")\n"

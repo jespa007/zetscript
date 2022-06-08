@@ -14,10 +14,10 @@ int main(){
 	bool 		bool_var = true;
 	zetscript::zs_string	string_var = "in c++";
 
-	zs.registerVariable("int_var",&int_var); // it takes int *
-	zs.registerVariable("float_var",&float_var); // it takes float *
-	zs.registerVariable("bool_var",&bool_var); // it takes bool *
-	zs.registerVariable("string_var",&string_var); // it takes zs_string *
+	zs.bindVariable("int_var",&int_var); // it takes int *
+	zs.bindVariable("float_var",&float_var); // it takes float *
+	zs.bindVariable("bool_var",&bool_var); // it takes bool *
+	zs.bindVariable("string_var",&string_var); // it takes zs_string *
 
 	zs.eval(
 		"int_var+=5;"

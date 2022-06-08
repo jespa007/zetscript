@@ -246,7 +246,7 @@ namespace zetscript{
 			if(_stack_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				script_object=(ScriptObject *)_stack_element->value;
 				ScriptType *c_class=NULL;
-				val_ret=(zs_int)script_object;;
+				val_ret=(zs_int)script_object;
 
 				if(script_object==NULL){
 					_error="Variable is not defined";
