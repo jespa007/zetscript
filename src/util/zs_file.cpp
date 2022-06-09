@@ -9,15 +9,10 @@ namespace zetscript{
 
 		bool exists(const zs_string & filename){
 #ifdef _WIN32
-			WIN32_FIND_DATA FindFileData;
-			   HANDLE handle = FindFirstFile(filename.c_str(), &FindFileData) ;
-			   int found = handle != INVALID_HANDLE_VALUE;
-			   if(found)
-			   {
-			       //FindClose(&handle); this will crash
-			       FindClose(handle);
-			       return true;
-			   }
+			 DWORD dwAttrib = GetFileAttributes(filename.c_str());
+
+			  return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+			         !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 
 #else
 		struct stat statbuf;

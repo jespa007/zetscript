@@ -50,6 +50,8 @@ namespace zetscript{
 
 			zs_string dir=_dir;
 
+			// Native check directory it doesn't work with relative path so, relative levels (i.e ..)
+			// has to be translated as absolute path
 			if(zs_strutils::starts_with(dir,"..")){
 				bool end=false;
 				// get current path
@@ -57,29 +59,33 @@ namespace zetscript{
 
 				// ignore relative paths
 				do{
-					int pos=dir.find("\\/");
-					if(pos==zs_string::npos){
-						end=true;
-					}
-
+					end=zs_strutils::starts_with(dir,"..")==false;
 					if(!end){
-
-						dir=dir.substr(0,pos);
-
-						// update directory
-						pos=path.find_last_of("\\/");
+						int pos=dir.find("\\/");
 						if(pos==zs_string::npos){
 							end=true;
 						}
 
 						if(!end){
-							path=path.substr(0,pos);
+
+							dir=dir.substr(pos+1,zs_string::npos);
+
+							// update directory
+							pos=path.find_last_of("\\/");
+							if(pos==zs_string::npos){
+								end=true;
+							}
+
+							if(!end){
+								path=path.substr(0,pos);
+							}
 						}
 					}
 
 				}while(!end);
 
-				dir=path;
+				// concatenate normalized relative paths
+				dir=path+"/"+dir;
 			}
 
 
