@@ -31,14 +31,14 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 		if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 			ScriptObject *sv=(ScriptObject *)stk_ret->value;\
 			if(sv->shared_pointer == NULL){\
-				if(!vm_create_shared_pointer(vm,sv)){\
+				if(!vm_create_shared_script_object(vm,sv)){\
 					goto lbl_exit_function;\
 				}\
 				PRAGMA_PUSH\
 				PRAGMA_DISABLE_WARNING(4127)\
 				if(with_share==true){\
 					PRAGMA_POP\
-					if(!vm_share_pointer(vm,sv)){\
+					if(!vm_share_script_object(vm,sv)){\
 						goto lbl_exit_function;\
 					}\
 				}\
@@ -717,14 +717,14 @@ namespace zetscript{
 
 			if(is_static == true){ // the share of the 1st object if static and object
 				if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					if(vm_share_pointer(vm,(ScriptObject *)stk_result_op1->value)==false){
+					if(vm_share_script_object(vm,(ScriptObject *)stk_result_op1->value)==false){
 						goto apply_metamethod_error;
 					}
 				}
 			}
 
 			if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				if(vm_share_pointer(vm,(ScriptObject *)stk_result_op2->value)==false){
+				if(vm_share_script_object(vm,(ScriptObject *)stk_result_op2->value)==false){
 					goto apply_metamethod_error;
 				}
 			}
@@ -772,7 +772,7 @@ namespace zetscript{
 				sv->deleteNativeObjectOnDestroy(true);
 
 				if(sv->shared_pointer == NULL){ // if return this, it holds ptr_shared_pointer
-					if(!vm_create_shared_pointer(vm,sv)){
+					if(!vm_create_shared_script_object(vm,sv)){
 						goto apply_metamethod_error;
 					}
 				}

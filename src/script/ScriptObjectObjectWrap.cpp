@@ -17,10 +17,10 @@ namespace zetscript{
 			so->set(it.key);
 
 			// create and share pointer
-			if(!vm_create_shared_pointer(vm,so)){
+			if(!vm_create_shared_script_object(vm,so)){
 				THROW_RUNTIME_ERRORF("cannot creat shared pointer");
 			}
-			if(!vm_share_pointer(vm,so)){
+			if(!vm_share_script_object(vm,so)){
 				THROW_RUNTIME_ERRORF("cannot share pointer");
 			}
 

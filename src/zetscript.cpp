@@ -600,8 +600,8 @@ namespace zetscript{
 	void ZetScript::makeScriptObjectShared(ScriptObject *so){
 		if(so->shared_pointer != NULL){
 			// share this variable++
-			vm_create_shared_pointer(virtual_machine,so);
-			vm_share_pointer(virtual_machine,so);
+			vm_create_shared_script_object(virtual_machine,so);
+			vm_share_script_object(virtual_machine,so);
 		}else{
 			THROW_RUNTIME_ERRORF("Script object already shared");
 		}

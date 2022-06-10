@@ -139,14 +139,14 @@ namespace zetscript{
 			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
 				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(_zs);
-				if(!vm_create_shared_pointer(vm,sc)){
+				if(!vm_create_shared_script_object(vm,sc)){
 					return;
 				}
 				sc->set(so->toString());
 				so=sc;
 			}
 
-			vm_share_pointer(vm,so);
+			vm_share_script_object(vm,so);
 
 			// assign object value into stk
 			_stk_dst->value=(zs_int)so;

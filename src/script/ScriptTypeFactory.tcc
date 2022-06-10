@@ -5,8 +5,8 @@
 namespace zetscript{
 
 	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
-	bool 			vm_create_shared_pointer(VirtualMachine *vm, ScriptObject *_obj);
-	bool 			vm_share_pointer(VirtualMachine *vm, ScriptObject *_obj);
+	bool 			vm_create_shared_script_object(VirtualMachine *vm, ScriptObject *_obj);
+	bool 			vm_share_script_object(VirtualMachine *vm, ScriptObject *_obj);
 
 
 	/**
@@ -55,8 +55,8 @@ namespace zetscript{
 			*stk = *this->registerStkObject(_var_name, stk_binded.value);
 
 			// share this variable++
-			vm_create_shared_pointer(vm,(ScriptObject *)stk_binded.value);
-			vm_share_pointer(vm,(ScriptObject *)stk_binded.value);
+			vm_create_shared_script_object(vm,(ScriptObject *)stk_binded.value);
+			vm_share_script_object(vm,(ScriptObject *)stk_binded.value);
 		}
 		else{
 			*stk=stk_binded;

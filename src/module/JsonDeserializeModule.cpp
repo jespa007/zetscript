@@ -220,14 +220,14 @@ namespace zetscript{
 					return NULL;
 				}
 				ScriptObject *so=ScriptObjectString::newScriptObjectString(data->zs, str_aux);
-				if(vm_create_shared_pointer(data->zs->getVirtualMachine(),so)==false){
+				if(vm_create_shared_script_object(data->zs->getVirtualMachine(),so)==false){
 					json_deserialize_error(data,str_start,line,"cannot create shared pointer for string object");
 					return NULL;
 				}
 
 				//
 				if(stk_json_element != data->first_element){
-					if(vm_share_pointer(data->zs->getVirtualMachine(),so) == false){
+					if(vm_share_script_object(data->zs->getVirtualMachine(),so) == false){
 						json_deserialize_error(data,str_start,line,"cannot share pointer for string object");
 						return NULL;
 					}
@@ -297,14 +297,14 @@ namespace zetscript{
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
 				vo=ScriptObjectVector::newScriptObjectVector(data->zs);
-				if(vm_create_shared_pointer(data->zs->getVirtualMachine(),vo) == false){
+				if(vm_create_shared_script_object(data->zs->getVirtualMachine(),vo) == false){
 					json_deserialize_error(data, str_start, line, "Cannot create shared poiner for vector object");
 					return NULL;
 				}
 
 				if(stk_json_element != data->first_element){
 
-					if(vm_share_pointer(data->zs->getVirtualMachine(),vo) == false){
+					if(vm_share_script_object(data->zs->getVirtualMachine(),vo) == false){
 						json_deserialize_error(data,str_start,line,"cannot share pointer for vector object");
 						return NULL;
 					}
@@ -365,13 +365,13 @@ namespace zetscript{
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
 				so=ScriptObjectObject::newScriptObjectObject(data->zs);
-				if(vm_create_shared_pointer(data->zs->getVirtualMachine(),so) == false){
+				if(vm_create_shared_script_object(data->zs->getVirtualMachine(),so) == false){
 					json_deserialize_error(data, str_start, line, "Cannot create shared pointer for object");
 					return NULL;
 				}
 
 				if(stk_json_element != data->first_element){
-					if(vm_share_pointer(data->zs->getVirtualMachine(),so) == false){
+					if(vm_share_script_object(data->zs->getVirtualMachine(),so) == false){
 						json_deserialize_error(data,str_start,line,"cannot share pointer for object");
 						return NULL;
 					}

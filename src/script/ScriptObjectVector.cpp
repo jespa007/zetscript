@@ -23,8 +23,8 @@ namespace zetscript{
 		ScriptObjectVector *so= new ScriptObjectVector();
 		so->init(_zs);
 		// share this variable++
-		vm_create_shared_pointer(virtual_machine,(ScriptObject *)so);
-		vm_share_pointer(virtual_machine,(ScriptObject *)so);
+		vm_create_shared_script_object(virtual_machine,(ScriptObject *)so);
+		vm_share_script_object(virtual_machine,(ScriptObject *)so);
 		return so;
 	}
 

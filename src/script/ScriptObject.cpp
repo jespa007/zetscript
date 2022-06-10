@@ -194,6 +194,10 @@ namespace zetscript{
 		return "Object@"+getTypeName();
 	}
 
+	void ScriptObject::refObject(ScriptObject **_so){
+		ref_script_objects->push_back((zs_int)_so);
+	}
+
 	int ScriptObject::idxRefObject(ScriptObject  **_so){
 		for(int i=0; i < ref_script_objects->count;i++){
 			if(*(ref_script_objects->items+i)==(zs_int)_so){
@@ -212,10 +216,6 @@ namespace zetscript{
 		}
 
 		ref_script_objects->erase(idx);
-	}
-
-	void ScriptObject::refObject(ScriptObject **_so){
-		ref_script_objects->push_back((zs_int)_so);
 	}
 
 	ScriptTypeFactory		*	ScriptObject::getScriptTypeFactory(){

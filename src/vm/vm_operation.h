@@ -88,7 +88,7 @@
 				STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)\
 			){\
 				ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(data->zs,stk_result_op1,stk_result_op2);\
-				vm_create_shared_pointer(vm,so_string);\
+				vm_create_shared_script_object(vm,so_string);\
 				VM_PUSH_STK_SCRIPT_OBJECT(so_string);\
 		}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
 					&&\
@@ -99,7 +99,7 @@
 						,(ScriptObjectVector *)stk_result_op1->value\
 						,(ScriptObjectVector *)stk_result_op2->value\
 				);\
-				vm_create_shared_pointer(vm,so_vector);\
+				vm_create_shared_script_object(vm,so_vector);\
 				VM_PUSH_STK_SCRIPT_OBJECT(so_vector);\
 		}else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
 					&&\
@@ -110,7 +110,7 @@
 						,(ScriptObjectObject *)stk_result_op1->value\
 						,(ScriptObjectObject *)stk_result_op2->value\
 				);\
-				vm_create_shared_pointer(vm,so_object);\
+				vm_create_shared_script_object(vm,so_object);\
 				VM_PUSH_STK_SCRIPT_OBJECT(so_object);\
 		}else{\
 			if(vm_call_metamethod(\

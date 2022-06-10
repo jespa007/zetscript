@@ -64,7 +64,7 @@ namespace zetscript{
 
 	//============================================================================================================================================
 	// POINTER MANANAGER
-	bool vm_create_shared_pointer(VirtualMachine *vm,ScriptObject *_obj){
+	bool vm_create_shared_script_object(VirtualMachine *vm,ScriptObject *_obj){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		if(_obj->shared_pointer == NULL){
 			InfoSharedPointerNode *_node = (InfoSharedPointerNode *)ZS_MALLOC(sizeof(InfoSharedPointerNode));
@@ -89,7 +89,7 @@ namespace zetscript{
 
 	}
 
-	bool vm_share_pointer(VirtualMachine *vm,ScriptObject *_obj){
+	bool vm_share_script_object(VirtualMachine *vm,ScriptObject *_obj){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		InfoSharedPointerNode *_node=_obj->shared_pointer;
 
@@ -338,11 +338,11 @@ namespace zetscript{
 						THROW_RUNTIME_ERRORF("Internal expected shared NULL pointer");
 					}
 
-					if(vm_create_shared_pointer(vm,so) == false){
+					if(vm_create_shared_script_object(vm,so) == false){
 						THROW_RUNTIME_ERRORF("Cannot create shared pointer");
 					}
 
-					if(vm_share_pointer(vm,so) == false){
+					if(vm_share_script_object(vm,so) == false){
 						THROW_RUNTIME_ERRORF("Cannot shared pointer");
 					}
 				}

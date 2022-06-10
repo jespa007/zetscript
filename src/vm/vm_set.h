@@ -37,10 +37,10 @@ if(stk_src_properties == STK_PROPERTY_UNDEFINED){\
 		ScriptObjectString *str_object=NULL;\
 		stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));\
 		stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
-		if(!vm_create_shared_pointer(vm,str_object)){\
+		if(!vm_create_shared_script_object(vm,str_object)){\
 			goto lbl_exit_function;\
 		}\
-		if(!vm_share_pointer(vm,str_object)){\
+		if(!vm_share_script_object(vm,str_object)){\
 			goto lbl_exit_function;\
 		}\
 		str_object->set(stk_to_str(data->zs, stk_src));\
@@ -49,7 +49,7 @@ if(stk_src_properties == STK_PROPERTY_UNDEFINED){\
 		stk_dst->value=(intptr_t)so_aux;\
 		stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 		if(!IS_STK_THIS(stk_src)){ /* do not share this! */\
-			if(!vm_share_pointer(vm,so_aux)){\
+			if(!vm_share_script_object(vm,so_aux)){\
 				goto lbl_exit_function;\
 			}\
 		}\

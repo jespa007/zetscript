@@ -60,10 +60,10 @@ namespace zetscript{
 			so_partial->set(*(zs_string *)v.items[i]);
 
 			// create and share pointer
-			if(!vm_create_shared_pointer(vm,so_partial)){
+			if(!vm_create_shared_script_object(vm,so_partial)){
 				THROW_RUNTIME_ERRORF("cannot creat shared pointer");
 			}
-			if(!vm_share_pointer(vm,so_partial)){
+			if(!vm_share_script_object(vm,so_partial)){
 				THROW_RUNTIME_ERRORF("cannot share pointer");
 			}
 
@@ -86,10 +86,10 @@ namespace zetscript{
 			so_partial->set(*((zs_string *)v.items[i]));
 
 			// create and share pointer
-			if(!vm_create_shared_pointer(vm,so_partial)){
+			if(!vm_create_shared_script_object(vm,so_partial)){
 				THROW_RUNTIME_ERRORF("cannot creat shared pointer");
 			}
-			if(!vm_share_pointer(vm,so_partial)){
+			if(!vm_share_script_object(vm,so_partial)){
 				THROW_RUNTIME_ERRORF("cannot share pointer");
 			}
 

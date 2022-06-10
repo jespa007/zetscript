@@ -22,8 +22,8 @@ namespace zetscript{
 		ScriptObjectObject *so= new ScriptObjectObject();
 		so->init(_zs);
 		// share this variable++
-		vm_create_shared_pointer(virtual_machine,(ScriptObject *)so);
-		vm_share_pointer(virtual_machine,(ScriptObject *)so);
+		vm_create_shared_script_object(virtual_machine,(ScriptObject *)so);
+		vm_share_script_object(virtual_machine,(ScriptObject *)so);
 		return so;
 	}
 
@@ -82,7 +82,7 @@ namespace zetscript{
 			si = *sv;
 			// update n_refs +1
 			if(sv->properties&STK_PROPERTY_SCRIPT_OBJECT){
-				if(vm_share_pointer(vm,(ScriptObjectObject *)(sv->value)) == false){
+				if(vm_share_script_object(vm,(ScriptObjectObject *)(sv->value)) == false){
 					return NULL;
 				}
 			}
