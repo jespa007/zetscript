@@ -272,6 +272,8 @@ Solved issues
 #333 for in doesn't work for function calls  
 #335 Generate library name with version
 #334 Implement concatenated call  
+> #337 Implement zs_map_int 
+> #336 Solve problem ciclic references 
 
 //----------------------------------------------------------
 Version: 1.3.0
