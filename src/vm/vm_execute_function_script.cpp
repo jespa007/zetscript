@@ -162,6 +162,7 @@ namespace zetscript{
 								VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
 							}
 
+							// TODO: save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
 							if((stk_var =so_vector->getUserElementAt(index))==NULL){
 								goto lbl_exit_function;
 							} \
@@ -171,6 +172,7 @@ namespace zetscript{
 							if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==0){ \
 								VM_STOP_EXECUTEF("Expected string for object access");
 							}
+							// TODO: save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
 							stk_var = so_object->getProperty(stk_to_str(data->zs, stk_result_op2));
 							if(stk_var == NULL){
 								if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
@@ -438,8 +440,9 @@ find_element_object:
 					}
 				}
 
-				// copy the content of this value
-				if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){ // push ref because is gonna to be assigned
+				// load its value for write
+				if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
+					// TODO: save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
 					VM_PUSH_STK_PTR(stk_var);
 				}else{ // load its value for read
 					*data->stk_vm_current++=*stk_var;
