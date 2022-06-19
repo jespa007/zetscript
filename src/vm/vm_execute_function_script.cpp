@@ -155,7 +155,7 @@ namespace zetscript{
 							}else if(STK_VALUE_IS_ZS_FLOAT(stk_result_op2)){ \
 								index=*((zs_float*)&stk_result_op2->value);
 							}else{
-								VM_STOP_EXECUTEF("Expected number for Vector access");
+								VM_STOP_EXECUTEF("Expected index value for vector access");
 							}
 
 							if(index >= (int)so_vector->length()){
@@ -703,6 +703,8 @@ find_element_object:
 					if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
 						stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value));
 					}
+
+					// TODO: get stk_dst if STK_PROPERTY_SLOT
 
 					StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 
