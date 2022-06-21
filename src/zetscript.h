@@ -7,6 +7,8 @@
 #include        <stdlib.h>
 #include        <stdio.h>
 
+
+
 #if defined(__GNUC__)
 	#include <cxxabi.h>
 	#include <dirent.h>
@@ -15,12 +17,12 @@
 	#include <unistd.h>
 	#include <memory.h>
 	#include <fcntl.h>
-
 	#ifdef _WIN32
 		#include <windows.h>
 		#include <stdio.h>
 		#include <conio.h>
 		#include <tchar.h>
+		#include <direct.h>
 	#else
 		#include <dlfcn.h>
 		#include <sys/ipc.h>
@@ -28,12 +30,12 @@
 		#include <sys/ioctl.h>
 		#include <termios.h>
 	#endif
-
+#else
+	#if defined(_WIN32)
+		#include <windows.h>
+	#endif
 #endif
 
-#ifdef _WIN32
-#include <direct.h>
-#endif
 
 
 #include        <memory.h>
