@@ -63,7 +63,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)((StackElement *)(ptr_metamethod_members_aux->add_setters.items[0]))->value)->ref_ptr;\
 			/* find function if c */ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
-				if((ptr_function_found=vm_find_function( \
+				if((ptr_function_found=vm_find_native_function( \
 					vm \
 					,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 					,calling_function\
@@ -174,7 +174,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->items[0])->value))->ref_ptr;\
 			/* find function if c */ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
-				if((ptr_function_found=vm_find_function( \
+				if((ptr_function_found=vm_find_native_function( \
 					vm \
 					,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 					,calling_function\
@@ -294,7 +294,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)((StackElement *)(ptr_metamethod_members_aux->div_setters.items[0]))->value)->ref_ptr;\
 			/* find function if c */ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
-				if((ptr_function_found=vm_find_function( \
+				if((ptr_function_found=vm_find_native_function( \
 					vm \
 					,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 					,calling_function\
@@ -415,7 +415,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)((StackElement *)(ptr_metamethod_members_aux->mod_setters.items[0]))->value)->ref_ptr;\
 			/* find function if c */ \
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
-				if((ptr_function_found=vm_find_function( \
+				if((ptr_function_found=vm_find_native_function( \
 					vm \
 					,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 					,calling_function\
@@ -509,7 +509,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->items[0])->value))->ref_ptr;\
 		/* find function if c */ \
 		if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
-			if((ptr_function_found=vm_find_function( \
+			if((ptr_function_found=vm_find_native_function( \
 				vm \
 				,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 				,calling_function\

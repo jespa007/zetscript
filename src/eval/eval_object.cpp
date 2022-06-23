@@ -323,56 +323,65 @@ namespace zetscript{
 		if(key_w != Keyword::KEYWORD_UNKNOWN){
 
 			if(key_w == Keyword::KEYWORD_NEW){
+				zs_string expression="";
 				bool is_native_type=false;
 				Symbol *symbol_constructor_function_name=NULL;
+				bool end=false;
 
 				EvalInstruction *ei_load_function_constructor = NULL,*eval_instruction=NULL;
 				EvalInstruction *eval_instruction_new_object_by_value=NULL;
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+strlen(eval_data_keywords[key_w].str),line);
-				// try get symbol ...++++
-				aux_p=get_name_identifier_token(
-						eval_data
-						,aux_p
-						,line
-						,symbol_name
-				);
+				// try get symbol or access identifiers...++++
+
+				for(;;){
+					if((aux_p=get_name_identifier_token(
+							eval_data
+							,aux_p
+							,line
+							,symbol_name
+					))==NULL){
+						return NULL;
+					}
+
+					expression+=symbol_name;
+					IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+					if(*aux_p == '.'){
+						expression+='.';
+						IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
+					}
+					else if(*aux_p == '('){
+						break;
+					}else{
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Unexpected '%c' in 'new' expression",*aux_p);
+					}
+				};
+
+				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
 
 				sc=GET_SCRIPT_TYPE(eval_data->script_type_factory,symbol_name);
 
+				// parse expression
 				if(sc==NULL){
-
-					ByteCode byte_code_load=BYTE_CODE_FIND_VARIABLE;
-					Symbol *vis=NULL;
-					intptr_t value=ZS_IDX_UNDEFINED;
-					// check whether local or global var...
-					if((vis=eval_find_local_symbol(eval_data,scope_info,symbol_name)) != NULL){ // local sy
-						if((vis->properties & BYTE_CODE_LOAD_LOCAL)){
-							byte_code_load= ByteCode::BYTE_CODE_LOAD_LOCAL;
-							value=vis->idx_position;
-						}
-					}else{ // type not found!
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not defined",symbol_name.c_str());
+					char *test_str=NULL;
+					if((test_str = eval_sub_expression(
+							eval_data
+							,expression.c_str()
+							,line
+							,scope_info
+							,eval_instructions //eval_data->current_function->instructions
+							,NULL
+							,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
+					))==NULL){
+						return NULL;
 					}
-
-					eval_instructions->push_back((zs_int)(
-						eval_instruction=new EvalInstruction(
-							byte_code_load
-							, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
-							,value)
-						)
-					);
-					eval_instruction->instruction_source_info=InstructionSourceInfo(
-						 eval_data->current_parsing_file
-						 ,line
-						 ,get_mapped_name(eval_data,symbol_name)
-					 );
-
 
 					eval_instructions->push_back((zs_int)(eval_instruction_new_object_by_value=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE)));
 					eval_instruction_new_object_by_value->instruction_source_info=InstructionSourceInfo(
 							 eval_data->current_parsing_file
 							 ,line
-							 ,get_mapped_name(eval_data,symbol_name)
+							 ,get_mapped_name(eval_data,expression)
 						 );
 				}else{ // known type
 					is_native_type=sc->isNativeType();
@@ -386,11 +395,7 @@ namespace zetscript{
 					eval_instruction->vm_instruction.value_op1=sc->idx_script_type;
 				}
 
-				 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-				 if(*aux_p != '('){
-					 EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Expected '(' after \'%s\'",eval_data_keywords[key_w].str);
-				 }
 
 				 IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 

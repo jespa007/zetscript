@@ -102,7 +102,7 @@ int main(int argc, char * argv[]) {
 		,"test_import"
 		,"test_in"
 		,"test_instanceof"
-		,"test_instance_from_var"
+		,"test_instance_by_value"
 		,"test_iterator_object"
 		,"test_iterator_string"
 		,"test_iterator_vector"

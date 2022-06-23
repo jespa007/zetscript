@@ -1,0 +1,42 @@
+= eBook Template
+:author: Vysakh Sreenivasan
+:email:  email@server.com
+:revnumber: 1.0
+:revdate:   January 1st, 2012
+:doctype: book
+:toc:
+:icons:
+:data-uri:
+:lang: en
+:language: javadocript
+
+[preface]
+include::chapters/about.adoc[]
+include::chapters/preface.adoc[]
+
+== Introduction
+
+include::chapters/introduction.adoc[]
+
+== First Part
+
+include::chapters/chapter2.adoc[]
+
+== Second Part
+
+include::chapters/chapter3.adoc[]
+
+[colophon]
+include::chapters/colophon.adoc[]
+
+include::chapters/bibliography.adoc[]
+
+[appendix]
+include::chapters/appendix.adoc[]
+
+ifdef::backend-docbook[]
+[index]
+Index
+-----
+endif::backend-docbook[]
+

@@ -344,7 +344,7 @@ namespace zetscript{
 	}\
 	if(irfs==NULL) continue;
 
-	inline ScriptFunction * vm_find_function(
+	inline ScriptFunction * vm_find_native_function(
 			VirtualMachine *vm
 			,ScriptType *class_obj // if NULL is MainClass
 			,ScriptFunction *calling_function
@@ -380,6 +380,7 @@ namespace zetscript{
 			bool symbol_equals=aux_string == symbol_to_find;
 
 			if((symbol_equals && ((int)irfs->params_len == (n_args+start_param)))){
+				// Only check native functions
 				if((irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int arg_idx_script_type=-1;
@@ -448,9 +449,8 @@ namespace zetscript{
 					if(all_check){ /* we found the right function (set it up!) ... */
 						ptr_function_found = irfs;
 					}
-				}else{ /* type script function  ... */
-					ptr_function_found = irfs;
 				}
+
 			}
 		}
 
@@ -671,7 +671,7 @@ namespace zetscript{
 
 
 		if(script_object->isNativeObject()){ // because isNativeObject it can have more than one setter
-			if((ptr_function_found = vm_find_function(
+			if((ptr_function_found = vm_find_native_function(
 				vm
 				,data->script_type_factory->getScriptType(script_object->idx_script_type)
 				,calling_function

@@ -646,7 +646,7 @@ find_element_object:
 					}
 					ScriptFunction *ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->items[0]))->value))->ref_ptr);\
 					if(so_aux->isNativeObject()){ /* because object is native, we can have more than one _setter */ \
-						if((ptr_function_found=vm_find_function( \
+						if((ptr_function_found=vm_find_native_function( \
 								vm \
 								,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 								,calling_function\
@@ -1058,6 +1058,7 @@ find_element_object:
 			 case  BYTE_CODE_CALL: // immediate call this
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
+				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
@@ -1066,6 +1067,7 @@ find_element_object:
 			case BYTE_CODE_SUPER_CALL:
 				 sf_call_calling_object = this_object;
 				 sf_call_stk_start_function_object=0;
+				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=true;
 				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
@@ -1074,6 +1076,7 @@ find_element_object:
 			case  BYTE_CODE_THIS_CALL: // immediate call this
 				 sf_call_calling_object = this_object;
 				 sf_call_stk_start_function_object=0;
+				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=true;
 				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
@@ -1094,6 +1097,8 @@ find_element_object:
 				 goto execute_function;
 			case BYTE_CODE_INDIRECT_THIS_CALL:
 				 sf_call_calling_object = this_object;
+				 sf_call_is_constructor=false;
+				 sf_call_is_member_function=false;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=this_object->getProperty(SFI_GET_SYMBOL_NAME(calling_function,instruction));
 				 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
@@ -1102,31 +1107,33 @@ find_element_object:
 				 }
 				 goto load_function;
 			case  BYTE_CODE_INDIRECT_LOCAL_CALL: // call from idx var
+				 sf_call_is_constructor=false;
+				 sf_call_is_member_function=false;
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=_stk_local_var+instruction->value_op2;
 				goto load_function;
 			case  BYTE_CODE_INDIRECT_GLOBAL_CALL: // call from idx var
+				 sf_call_is_constructor=false;
+				 sf_call_is_member_function=false;
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=data->vm_stack+instruction->value_op2;
 				 goto load_function;
 			case  BYTE_CODE_STACK_CALL: // stack call
+				 sf_call_is_constructor=false;
+				 sf_call_is_member_function=false;
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=data->stk_vm_current-(INSTRUCTION_GET_PARAMETER_COUNT(instruction)+1);
 				 goto load_function;
 			 case  BYTE_CODE_CONSTRUCTOR_CALL:
-				sf_call_script_function=NULL;
-				sf_call_stk_function_ref = (data->stk_vm_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
+				 sf_call_is_constructor=false;
+				 sf_call_is_member_function=false;
+				 sf_call_script_function=NULL;
+				 sf_call_stk_function_ref = (data->stk_vm_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
 				// get object
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
-
-				// When the object is being constructed its shares is 0. In the 'constructor' function may pass 'this' throug other functions
-				// exposin 'this' candidate to be dereferenced and destroyed. So we share 'this' before the call and unref after call
-				if(!vm_share_script_object(vm,sf_call_calling_object)){
-					goto lbl_exit_function;
-				}
 
 				// if we invoke constructor we need to keep object to pass after, else remove object+function
 				sf_call_stk_start_function_object=1;
@@ -1204,6 +1211,7 @@ load_function:
 				}
 
 execute_function:
+
 
 				sf_call_n_local_symbols=0;
 
@@ -1339,6 +1347,15 @@ execute_function:
 						sf_call_n_args++;
 					}
 
+
+					if(sf_call_is_constructor){
+						// When the object is being constructed its shares is 0. In the 'constructor' function may pass 'this' throug other functions
+						// exposin 'this' candidate to be dereferenced and destroyed. So we share 'this' before the call and unref after call
+						if(!vm_share_script_object(vm,sf_call_calling_object)){
+							goto lbl_exit_function;
+						}
+					}
+
 					vm_execute_function_script(
 						vm
 						,sf_call_calling_object
@@ -1360,6 +1377,8 @@ execute_function:
 					sf_call_n_local_symbols=sf_call_script_function->local_variables->count;
 				}
 				else{ // C function
+					ScriptFunction *sf_old=sf_call_script_function;
+
 					if(sf_call_script_function->properties & FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME){
 
 						ScriptType *sc=NULL;
@@ -1378,8 +1397,12 @@ execute_function:
 
 						if(ignore_call == false)
 						{
+							if(sf_call_is_constructor==false && sf_call_script_function->name_script_function=="constructor"){
+								int kk=0;
+							}
+
 							ScriptFunction *sf_aux;
-							if((sf_aux=vm_find_function(
+							if((sf_aux=vm_find_native_function(
 									vm
 									,sc
 									,calling_function
@@ -1565,7 +1588,7 @@ execute_function:
 							so_class_aux->instruction_new=instruction;
 
 							// check for constructor
-							 constructor_function=sc->getSymbolMemberFunction(sc->str_script_type);
+							 constructor_function=sc->getSymbolMemberFunction(CONSTRUCTOR_FUNCTION_NAME);
 
 							 if(constructor_function != NULL){
 								 data->stk_vm_current->value=(zs_int)constructor_function;
