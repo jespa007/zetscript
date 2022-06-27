@@ -1,8 +1,8 @@
 = eBook Template
-:author: Vysakh Sreenivasan
-:email:  email@server.com
+:author: Jordi Espada
+:email:  jespa007@gmail.com
 :revnumber: 1.0
-:revdate:   January 1st, 2012
+:revdate:   September 6st, 2022
 :doctype: book
 :toc:
 :icons:
@@ -16,15 +16,17 @@ include::chapters/preface.adoc[]
 
 == Introduction
 
-include::chapters/introduction.adoc[]
+include::chapters/1_introduction.adoc[]
 
 == First Part
 
-include::chapters/chapter2.adoc[]
+include::chapters/2_eval.adoc[]
 
 == Second Part
 
-include::chapters/chapter3.adoc[]
+include::chapters/3_language.adoc[]
+
+include::chapters/4_api.adoc[]
 
 [colophon]
 include::chapters/colophon.adoc[]

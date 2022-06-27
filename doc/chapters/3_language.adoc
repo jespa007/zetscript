@@ -1,0 +1,608 @@
+3. The language
+3.1 Statments
+ZetScript Language is based on a set of statements formed by values, operators, expressions,
+keywords, declarations, expressions, conditionals, integrators and functions.
+All statements are separated by semicolons at the end.
+Example of four statements,
+var op1,op2,res;
+op1=5;
+op2=6;
+res = 5+6;
+The last example can be executed within one line,
+var op1,op2,res; op1=5; op2=6; res = 5+6;
+3.2 Comments
+ZetScript support block and line comments.
+3.2.1 Block comment
+/*
+this is a block comment
+*/
+3.2.2 Line comment
+// This is a line comment
+3.3 Constants values
+ZetScript supports the following constants or literal types,
+• boolean
+• integer
+• float
+• string
+3.3.1 Boolean type
+ZetScript represents boolean value as true or false.
+Example,
+true // true value
+false // false value
+
+
+3.3.2 Integer type
+ZetScript represents integer values within ranges from -(2b-1) to 2b-1-1 where b=32 or 64
+it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can
+be represented as negative/positive decimal value, hexadecimal or binary format.
+Example,
+-1; // negative decimal value
+10; // positive decimal value
+0x1a; // hexadecimal value
+01001b; // 0x9 in binary value
+3.3.3 Number type
+ZetScript represents number value in 32-bit IEEE-754 floating point number. Number
+can be represented as integer and decimal form or scientific notation form.
+Example,
+1.2 // integer and decimal form
+2.0e-2 // cientific notation form
+3.3.4 String type
+ZetScript represents string value within quotes (“”).
+Example,
+"this is a string"
+
+3.4 Variables
+3.4.1 Variable declaration
+A variable is a type of container that is used to store a value in it. In ZetScript, a
+variable is declared as var keyword.
+Example,
+var i; // declares i variable
+3.4.2 Variable instantiation
+A variable is undefined (see 2.5.1) when is declared until is instanced with any value
+through operator ‘=’. As an example we can instantiate a variable with integer value
+(see section 2.2),
+var i=0; // variable v is instancied as integer.
+3.4.3 Scope
+In ZetScript we have two types of basic scopes.
+• Global
+• Local
+A ZetScript makes easy the concept of global local scope. Basically, variables declared
+on the main script are global and the others declared within a block2
+, are local.
+Example,
+var i; // this is a global variable
+{ //  block starts here
+ var j;//this is a local variable declared inside a block (you can also access to i).
+} // block ends here, so the variable j doesn’t exist anymore
+
+2
+ A block is a statement that starts with '{' and ends with '}'. 
+ 
+ 
+ 3.5 Built-in types
+ZetScript supports the following built-in types
+• Undefined
+• Null
+• Integer
+• Number
+• Boolean
+• String
+• Vector
+• Structure
+• Function
+3.5.1 Undefined type
+A undefined variable type is the default value that is instanced when any variable is
+declared. To instantiate a variable with undefined value assign it typing the undefined
+keyword.
+var i=undefined;
+3.5.2 Null type
+A null type is like undefined but in this case it has a null value. To instantiate a variable
+with undefined value type undefined keyword.
+var i=null;
+3.5.3 Integer type
+A integer variable type is instanced once a variable instance a integer constant or
+integer variable
+Example,
+var i=10;
+
+Pre/Post variable operations
+Pre/Post operations modifies the value of variable itself before/after the variable is
+read. Integer variable type has the following pre/post operations,
+
+Operator Expression Description Result
+PreIncrement ++variable Performs an increment BEFORE
+evaluate the variable
+var i=0;
+var j=++i; // j=1, i =1
+PostIncrement variable++ Performs increment AFTER
+evaluate the variable
+var i=0;
+var j=i++; // j=0; i=1
+Predecrement --variable Performs a decrement BEFORE
+evaluate the variable
+var i=0;
+var j=--i; // j=-1; i=-1
+Postdecrement variable-- Performs decrement AFTER
+evaluate the variable
+var i=0;
+var j=i--;//j=0;i=-1;
+3.5.4 Number type
+A number variable type is instanced once a variable instance a number constant or
+number variable
+Example,
+var f=1.5;
+Pre/Post variable operations
+Pre/Post operations modifies the value of variable itself before/after the variable is
+read. Number variable type has the following pre/post operations,
+
+Operator Expression Description Result
+PreIncrement ++variable Performs an increment BEFORE
+evaluate the variable
+var i=0.5;
+var j=++i; // j=1.5, i =1.5
+PostIncrement variable++ Performs increment AFTER
+evaluate the variable
+var i=0.5;
+var j=i++; // j=0.5; i=1.5
+Predecrement --variable Performs a decrement BEFORE
+evaluate the variable
+var i=0.5;
+var j=--i; // j=-0.5; i=-0.5
+Postdecrement variable-- Performs decrement AFTER
+evaluate the variable
+var i=0.5;
+var j=i--;//j=0.5;i=-0.5;
+3.5.5 Boolean type
+A boolean variable type is instanced once a variable instance a boolean constant or
+boolean variable
+Example,
+var b=false;
+
+3.5.6 string type
+A integer variable type is instanced once a variable instance a string constant or string
+variable
+Example,
+var s="this is a string";
+3.5.7 Vector type
+A vector is an special type to store multiple values in a unidimensional array. the
+instantiation is done with '[' and ']'.
+Example empty vector,
+var v=[];
+the user can instantiate a vector with values separated by comas.
+Example vector instantiated with values,
+var v=[1,"string",true,2.0];
+If the vector has any value its access is done through integer index.
+Example,
+var v=[1,"this is a string",true,2.0]; // its has 4 elements where its access [0..3]
+print("v:"+v[1]); // v:this is a string. It acces to 2nd element.
+Runtime Management
+Vector type It has the following functions in order to manage vector at runtime.
+Function Description Example
+size It returns the number of current elements var v=[1,2];
+v.size(); // =2
+push Adds value at the end of the vector var v=[1,2];
+v.push(3); //v=[1,2,3]
+pop Returns the last value and removes it. var v=[1,2];
+v.pop(); //=[2], v=[1] 
+
+
+3.5.8 Structure type
+A structure is an special type to store multiple values in a container giving a name per
+value so the reference is done through its name instead its index. The instantiation is
+done within a block.
+Example,
+var t={};
+Optionally we can init structure with some values.
+Example,
+var t={
+ i:1,
+s:"this is a string",
+b:true,
+f:2.0
+};
+To acces to its elements is done through the variable name followed by ‘.’ Followed by
+the field name.
+Example,
+print("v:"+t.i); // v:1
+print("v:"+t.s); // v:this is a string
+print("v:"+t.b); // v:true
+print("v:"+t.f); // v:2.0
+Runtime Management
+Struct type It has the following functions in order to manage struct at runtime.
+Function Description Example
+size It returns the number of current elements var v=[1,2];
+v.size(); // =2
+add Adds an attribute var s={};
+v.add("a",0); // s={a:0}
+remove Remove attribute. var s={a:0};
+v.remove("a"); // s={} 
+
+3.5.9 Function object
+A function is an object that holds information about a function and is able to call it (see
+section 3.8.3 for more information)
+Example,
+function add(op1, op2){ // function that returns the sum of two vars.
+return op1+op2;
+}
+var fun_obj = add; // stored function add reference to fun_obj
+var j=fun_obj(2,3);// calls fun_obj (aka add) function. J=5
+Another example by anonymous function,
+var fun_obj = function (op1, op2){ // function object that returns the sum of two vars.
+return op1+op2;
+};
+var j=fun_obj(2,3);// calls fun_obj (aka anonymous function). function. J=5
+
+3.6 Operations
+ZetScript has the following type of expressions
+• Arithmetic operations
+• Relational operations
+• Logical operations
+• Bit operations
+3.6.1 Arithmetic expressions
+The following operators it does evaluates arithmetic expressions,
+Operator Symbol Description Example
+Add +
+It performs a add operation between two
+integer or number values or concatenates
+strings with other values
+5+10; // = 15
+1.5+6; // = 7.5
+"string_"+1;// ="string_1"
+Subtract -
+It performs a sub operation between two
+integer or number values
+10-5; // = 5
+2.5-1;// = 1.5
+Multiply * It performs a multiplication between two
+integer or number values
+10*5; //= 50
+1.5*2;//= 3.0
+Divide / It performs a division between two integer
+or number values
+10/2; // = 5
+3/2.0 // = 1.5
+Modulus % It performs a division between two integer
+or number values
+3%2; //it results 1
+10%2.5; // it results
+3.6.2 Relational expressions
+The following operators it does evaluates relational expressions,
+Operator symbol Description Example
+Equal ==
+Check whether two values are equal 10==10;// = true
+"hello"==”bye”; // = false
+Not equal != Check whether two values are not
+equal
+10!=10; // = false
+"hello"!="bye"; // = true
+Less than < Checks whether first value is less than
+second value
+10<20; // = true
+20<10; // = false
+Greater
+than > Checks whether first value is greater
+than second value
+10>20; // = false
+20>10; // = true
+Less equal
+than <= Checks whether first value is less
+equal than second value
+10<=10; //= true
+11<=10; // = false
+Greater
+equal than >= Checks whether first value is greater
+equal than second value
+10>=11; // = false
+11>=10; // = true
+Instance of instanceof Checks if a value is instance of a type. 0 instanceof int; //= true
+"hello" instanceof int;//= false
+Note: You cannot mix different types for relational expressions. For example, doing a
+relational expression with boolean and integer values is incompatible. 
+
+3.6.3 Logic expressions
+Logic expressions are the ones that combines operations through boolean values,
+Operator symbol Description Example
+Logic And && it performs an AND operation between two
+Boolean values
+true && true;// = true
+true&& false;// = false
+Logic Or || It performs an OR operation between two
+Boolean values
+true||false;// = true
+false || false;// = false
+Logic Not ! Negates Boolean value !true; // = false
+!false; // = true
+3.6.4 Binary expressions
+Binary expressions are the ones that combines bit operations through integer values,
+Operator Symbol Description Example
+Binary And & Performs binary AND operation
+between two integers
+0xa & 0x2; // = 0x2
+0xff & 0xf0; // = 0xf0
+Binary Or | Performs binary OR operation
+between two integers
+0xa | 0x5; // = 0xf
+0x1 | 0xe; // = 0xf
+Binary Xor ^ Performs binary XOR between two
+integers
+0xa ^ 0xa; // = 0x0
+0xa ^ 0x5; // = 0xf
+Binary
+shift left
+<< Performs binary shift left 0x1 << 2; // = 0x4
+Binary
+shift right
+>> Performs binary shift right 0xff >> 1; // = 0x7f
+3.6.5 Priority operations
+Each operator it has priority of evaluation. ZetScript it has the following operator order
+priority,
+*,/,%,!=,+,-,^,&,|,<<,>>,==,<=,>=,>,<,||,&&
+For example this expression,
+2+4*5; // will result 22
+You can change the evaluation priority usign parenthesis.
+For example,
+(2+4)*5; // will result 36 
+
+3.7 Conditionals
+A conditional statement are used to perform different actions based on different
+conditions. In ZetScript we have the following conditional statement:
+• Use if to specify a block of code to be executed, if a specified condition is true
+• Use else to specify a block of code to be executed, if the same condition is false.
+• Use ternary condition to have a short if/else statement into single statement.
+• Use switch to specify manu alternative blocks of code to be executed
+3.7.1 The if statement
+Use the if statement to specify a block of ZetScript code to be executed if a condition is
+true.
+Syntax
+if(condition){
+ //Block of code to be executed if the condition is true
+}
+Example,
+if(n < 10) {
+ print("n < 10");
+}
+3.7.2 The else statement
+Use the else statement to specify a block of code to be executed if the condition is
+false
+Syntax,
+if(n < 10) {
+ print("n < 10");
+}else{
+ print("n >= 10");
+} 
+
+3.7.3 The if else statement
+Use the else statement to specify a block of code to be executed if the condition is
+false
+Syntax,
+if(n < 10) {
+ print("var n < 10");
+}else if(n < 20){
+ print("n < 20");
+}else{
+ print("n >= 20");
+}
+3.7.4 Ternary condition
+Use ternary condition to have a short if/else statement into single statement. It
+performs expression if the condition is true or the second expression if the condition is
+false.
+Syntax
+result = (condition)?first expression:2nd expression;
+Example,
+var j = 0>1? 0:1; // j = 1
+3.7.5 Switch
+Use the switch statement to select one of many blocks of code to be executed.
+switch(expression) {
+ case value_0:
+ code block
+ break;
+ case value_1:
+ code block
+ break;
+ …
+ case value_n
+ default:
+ code block
+ break;
+}
+
+Example,
+switch (n) {//  n is a random integer.
+ case 6:
+ print("6");
+ break;
+ case 0:
+ print("0");
+ break;
+ default:
+ print("n:"+n);
+ break;
+}
+Switch can have common code blocks in different conditions
+Example,
+switch (n) { //  n is a random integer.
+ case 4:
+ case 5:
+ print("4 or 5");
+ break;
+ case 0:
+ case 6:
+ print("0 or 6");
+ break;
+ default:
+ print("default");
+}
+3.8 Loops
+ZetScript supports the following loop types,
+• While Loop
+• For Loop
+3.8.1The While Loop
+The while loop loops through a block of code as long as a specified condition is true.
+while(condition){
+ // code block to be executed
+}
+Example,
+var i = 0;
+while (i < 5){
+ print("The number is "+i);
+ i++;
+} 
+
+Also it can support Do-While Statement that will always be executed at least once,
+even if the condition is false, because the code block is executed before the condition
+is tested:
+do{
+// do-while body
+} while (condition);
+Example,
+var i = 0;
+do {
+ print("The number is "+i);
+ i++;
+} while (i < 5);
+3.8.2 The For Loop
+The for loop is often the tool you will use when you want to create a loop.
+Syntax,
+for(stament1;statment2;statment3){
+ // code block to be executed…
+}
+• Statement 1 is executed before the loop (the code block) starts. Normally you will use
+statement 1 to initialize the variable used in the loop (for example var i = 0).
+• Statement 2 defines the condition for running the loop.
+• Statement 3 is executed each time after the code block has been executed.
+Example,
+for(var i=0; i < 5; i++) {
+ print("The number is "+i);
+} 
+
+
+3.8.3 Functions
+Function is a block of code to perform a particular task and is executed when in some
+part of the code it calls it.
+3.8.4 Function syntax
+A JavaScript function is defined with the function keyword, followed by a name,
+followed by parentheses ().
+Syntax,
+function fun_name(arg1, arg2, ..., argn){
+ // code to be executed
+}
+Example,
+function add(op1, op2){
+return op1+op2;
+}
+3.8.5 Call a function
+The call of a function is done when in some part of the code it calls it as follow,
+Syntax
+fun_name(arg1, arg2, arg3,..., argN);
+Note: If a function is called with less than N args the rest of arguments will remain
+undefined.
+Example,
+function add(op1,op2){
+return op1+op2;
+}
+var j=add(2,3); // calls add function. j=5
+
+3.8.6 Function object
+A function can be stored in variables through its reference,
+function add(op1, op2){
+return op1+op2;
+}
+var fun_obj = add; // stored function add reference to fun_obj
+var j=fun_obj(2,3);// calls fun_obj (aka add) function. J=5
+Also is possible to create function objects,
+Syntax
+function(arg1, arg2, …, argN){
+// code to be executed.
+};
+Example,
+var add=function(op1, op2){
+return op1+op2;
+};
+var j=add(2,5); // j=5
+
+3.9 Class
+A class is a type of structure that contains variables and functions that operates with
+this variables. A class is defined in ZetScript using keyword class followed by the
+name of class. To access class variables within functions use the this keyword in
+order to access to variable or functions inside class. In a class we can find member
+functions (functions that affects to class variable) or static functions (helper function of
+generic purposes about the class type).
+Example,
+class Test{
+ // member variable
+ var data1;
+ // member function
+ function function1 (a){
+ this.data1 =a;
+ print("function1:"+this.data1);
+ return this.data1;
+ }
+ // static function that performs an add operation between two Test type objects
+ function add_test (a,b){
+ return a.data1+b.data1;
+ }
+};
+
+3.9.1 Post add function/variable member
+In ZetScrip is possible to add more class member through "::" punctuator.
+Example,
+// post declaration of variable member
+var Test::data2;
+// post declaration of function member
+function Test::function2(){
+ this.data2="a string";
+}
+3.9.2 Instance class
+To instance a class is done through the keyword new
+Example,
+var t = new Test(); // Instantiate t as Test type.
+3.9.3 Accessing to class functions
+To access class variables/functions is done through "." operator.
+Example,
+var i=t.function1(2); // initializes data1 as 2 and return the value
+print("data1 is: "+t.data1); // prints value of data1
+3.9.4 Constructor
+Each time class is instanced, their member variables are undefined.
+var t = new Test(); // The a class Test is instanced but data1 and data2 are undefined.
+print("data1:"+t.data1); //  prints: “data1:undefined”
+The constructor is a function that is invoked automatically and with aim to initialize all
+member variables. To the define a constructor we have to define a function member
+with same name as the Class.
+Example,
+class Test{
+ var data1;
+ // Constructor function
+ function Test(){
+ this.data1 =10; // instantiate data1 as integer
+ }
+}
+var t = new Test(); // Instantiate t as Test type. Now, member variables are instanced.
+print("data1:"+t.data1); //  prints "data1: 10"
+
+3.9.5 Inheritance
+ZetScript supports inheritance through ":" punctuator after the name of the class
+followed the class name to be extended. The new extended class will inheritance all
+variable/functions members from base class.
+Example,
+class TestExtended: Test{
+ var data3;
+ function function3(){
+ this.data3=this.data1+this.function1(10);
+ }
+};
+3.9.5.1 Call parent functions (super keyword)
+The extended class can call parent functions through super keyword.
+Example,
+class TestExtended: Test{
+ var data3;
+ function function1(a){
+ var t=super(a); // it calls Test::function1(2)
+ this.data1+=t; //  Now data1=5+2 = 7
+ print("ext function1:"+this.data1);
+ return this.data1+a;
+ }
+ function function3(){
+ this.data3=this.data1+this.function1(5);
+ print("ext function3:"+this.data3);
+ }
+}; 
