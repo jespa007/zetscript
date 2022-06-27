@@ -356,24 +356,28 @@ namespace zetscript{
 
 	int zs_string::find(const char *_s, int pos) const{
 
-		if(pos<count){
-			/*const char *f=strstr(buf+pos,_s);
-			if(f!=NULL){
-				return f-buf;
-			}*/
-			size_t len=strlen(_s);
+		int len=(int)strlen(_s);
 
-			int idx=0;//ZS_MIN(pos,count-1);
+		if((pos<count) && (len <= count)){
+
+			int idx=0;
 
 			do{
-
-				char c=buf[idx];
-				for(unsigned i=0; i < len; i++){ // search for all chars
-					if(_s[i]==c){
-						return idx;
+				bool contains=true;
+				for(int i=0; (i < len) && (contains==true); i++){ // search for all chars
+					if(_s[i]!=buf[idx+i]){
+						contains=false;
 					}
 				}
-			}while(++idx<count);
+
+				if(contains==true){
+					return idx;
+				}
+
+				// next span
+				idx+=len;
+
+			}while(idx<count);
 		}
 
 		return npos;
