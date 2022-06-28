@@ -716,10 +716,15 @@ find_element_object:
 					// TODO: get stk_dst if STK_PROPERTY_SLOT
 					StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 					ContainerSlotStore *container_slot_store=NULL;
+					ScriptObject *container_slot_store_object=NULL;
+					zs_int 		container_slot_store_id_slot=0;
 					if(old_stk_dst.properties & STK_PROPERTIES_CONTAINER_SLOT_STORE){
 						container_slot_store=((ContainerSlotStore *)old_stk_dst.value);
+						container_slot_store_object=container_slot_store->object;
+						container_slot_store_id_slot=container_slot_store->id_slot;
 						old_stk_dst=container_slot_store->content;
-
+						delete container_slot_store;
+						container_slot_store=NULL;
 					}
 
 					stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
@@ -828,24 +833,26 @@ find_element_object:
 						(old_stk_dst.properties & (STK_PROPERTY_SCRIPT_OBJECT))
 					){
 						ScriptObject  *old_so=(ScriptObject  *)old_stk_dst.value;
-						if(container_slot_store!=NULL){
+
+
+
+						if(container_slot_store_object!=NULL){
 
 							// TODO: Save to map
 							if(old_so->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 								printf("\nAssing object %p type '%s' to slot '%i'"
 										,old_so
 										,old_so->getScriptType()->str_script_type.c_str()
-										,container_slot_store->id_slot
+										,container_slot_store_id_slot
 								);
 							}else{
 								printf("\nAssing object %p type '%s' to slot '%s'"
 										,old_so
 										,old_so->getScriptType()->str_script_type.c_str()
-										,(const char *)container_slot_store->id_slot
+										,(const char *)container_slot_store_id_slot
 								);
 							}
 
-							delete container_slot_store;
 						}
 
 						// unref pointer because new pointer has been attached...
@@ -863,8 +870,6 @@ find_element_object:
 						if(!vm_unref_shared_script_object(vm,old_so,data->vm_idx_call)){
 							goto lbl_exit_function;
 						}
-					}else if(container_slot_store!=NULL){
-						delete container_slot_store;
 					}
 				}
 
@@ -1536,7 +1541,7 @@ execute_function:
 				for(StackElement *stk_it=data->stk_vm_current-1;stk_it>=stk_start;stk_it--){ // can return something. value is +1 from stack
 					// if scriptvariable and in the zeros list, deattach
 					if(stk_it->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						if(!IS_STK_THIS(stk_it)){
+						//if(!IS_STK_THIS(stk_it)){
 
 							ScriptObject *script_var=(ScriptObject *)stk_it->value;
 
@@ -1569,7 +1574,7 @@ execute_function:
 
 								//-------------------------------------------------------------------
 							}
-						}
+						//}
 					}
 				}
 				goto lbl_return_function;

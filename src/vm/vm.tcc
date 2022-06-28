@@ -6,7 +6,7 @@
 
 
 // explains whether stk is this or not. Warning should be given as value and not as ptr
-#define IS_STK_THIS(stk) (this_object != NULL && (stk)->value == (zs_int)(this_object))
+//#define IS_STK_THIS(stk) (this_object != NULL && (stk)->value == (zs_int)(this_object))
 
 #define PRINT_DUAL_ERROR_OP(c)\
 zs_string var_type1=stk_to_typeof_str(data->zs,stk_result_op1),\
