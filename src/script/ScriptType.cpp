@@ -127,7 +127,9 @@ namespace zetscript{
 		}
 
 		for(int i=0; i < this->idx_base_types->count; i++){
-			return  script_type_factory->getScriptType(this->idx_base_types->items[i])->extendsFrom(_idx_script_type);
+			if (script_type_factory->getScriptType(this->idx_base_types->items[i])->extendsFrom(_idx_script_type) == true) {
+				return true;
+			}
 		}
 
 		return false;

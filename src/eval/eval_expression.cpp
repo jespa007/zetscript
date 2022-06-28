@@ -160,7 +160,7 @@ namespace zetscript{
 			}
 
 			if(found == false){
-				size_t len=aux_p-start_expression_str;
+				int len=aux_p-start_expression_str;
 				EVAL_ERROR_FILE_LINE_GOTO(
 						eval_data->current_parsing_file
 						,start_expression_line

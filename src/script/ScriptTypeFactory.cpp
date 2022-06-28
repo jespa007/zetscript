@@ -390,13 +390,9 @@ namespace zetscript{
 			, var_name
 		);
 
-		//symbol_variable->ref_ptr=(zs_int)malloc(sizeof(StackElement));
-		//StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
-		VirtualMachine *vm=zs->getVirtualMachine();
-		StackElement *stk=vm_get_stack_element_at(vm,symbol_variable->idx_position);
+		StackElement *stk=vm_get_stack_element_at(this->vm,symbol_variable->idx_position);
 		stk->value=value;
 		stk->properties=STK_PROPERTY_ZS_INT|STK_PROPERTY_READ_ONLY;
-		//symbol_variable->properties|=SYMBOL_PROPERTY_ALLOCATED_STK;
 	}
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & var_name, bool value, const char *registered_file, short registered_line){
@@ -407,14 +403,10 @@ namespace zetscript{
 			, var_name
 		);
 
-		VirtualMachine *vm=zs->getVirtualMachine();
-		StackElement *stk=vm_get_stack_element_at(vm,symbol_variable->idx_position);
+		StackElement *stk=vm_get_stack_element_at(this->vm,symbol_variable->idx_position);
 
-		//symbol_variable->ref_ptr=(zs_int)malloc(sizeof(StackElement));
-		//StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
 		stk->value=value;
 		stk->properties=STK_PROPERTY_BOOL|STK_PROPERTY_READ_ONLY;
-		//symbol_variable->properties|=SYMBOL_PROPERTY_ALLOCATED_STK;
 	}
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & var_name, zs_float value, const char *registered_file, short registered_line){
@@ -425,13 +417,9 @@ namespace zetscript{
 			, var_name
 		);
 
-		//symbol_variable->ref_ptr=(zs_int)malloc(sizeof(StackElement));
-		//StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
-		VirtualMachine *vm=zs->getVirtualMachine();
-		StackElement *stk=vm_get_stack_element_at(vm,symbol_variable->idx_position);
+		StackElement *stk=vm_get_stack_element_at(this->vm,symbol_variable->idx_position);
 		ZS_FLOAT_COPY(&stk->value,&value);
 		stk->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_READ_ONLY;
-		//symbol_variable->properties|=SYMBOL_PROPERTY_ALLOCATED_STK;
 	}
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & var_name, const zs_string & v, const char *registered_file, short registered_line){
@@ -442,12 +430,8 @@ namespace zetscript{
 			, var_name
 		);
 
-		//symbol_variable->ref_ptr=(zs_int)malloc(sizeof(StackElement));
-		//StackElement *stk=(StackElement *)symbol_variable->ref_ptr;
-		VirtualMachine *vm=zs->getVirtualMachine();
-		StackElement *stk=vm_get_stack_element_at(vm,symbol_variable->idx_position);
+		StackElement *stk=vm_get_stack_element_at(this->vm,symbol_variable->idx_position);
 		*stk=*(this->registerStkConstantStringObject(var_name,v));
-		//symbol_variable->properties|=SYMBOL_PROPERTY_ALLOCATED_STK;
 	}
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & var_name, const char * v, const char *registered_file, short registered_line){

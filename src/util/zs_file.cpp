@@ -22,8 +22,9 @@ namespace zetscript{
 				return true;
 			}
 
-#endif
+
 			return false;
+#endif
 			/*FILE  *fp;
 			if((fp  =  fopen(filename.c_str(),"r")) != NULL){
 				fclose(fp);
@@ -34,7 +35,7 @@ namespace zetscript{
 
 		zs_string read_text(const zs_string &  filename){
 
-			int  length, readed_elements;
+			size_t  length, readed_elements;
 			FILE  *fp;
 
 			if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)

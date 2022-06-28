@@ -326,7 +326,7 @@ namespace zetscript{
 				zs_string expression="";
 				bool is_native_type=false;
 				Symbol *symbol_constructor_function_name=NULL;
-				bool end=false;
+				//bool end=false;
 
 				EvalInstruction *ei_load_function_constructor = NULL,*eval_instruction=NULL;
 				EvalInstruction *eval_instruction_new_object_by_value=NULL;

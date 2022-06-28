@@ -44,7 +44,7 @@ namespace zetscript{
 
 		uint16_t			properties;
 
-		size_t				idx_position;			// idx position in array
+		int					idx_position;			// idx position in array
 
 		zs_int 				ref_native_function_ptr;
 		ScriptFunctionParam	*params;
@@ -66,7 +66,7 @@ namespace zetscript{
 				,int _idx_position
 				,const zs_string & name_script_function
 				, ScriptFunctionParam **_params
-				,int _params_len
+				, int _params_len
 				,int  idx_script_type_return
 				, zs_int _ref_native_function_ptr
 				, uint16_t _properties

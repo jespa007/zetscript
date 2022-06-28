@@ -64,7 +64,7 @@ namespace zetscript{
 			symbol->properties|=SYMBOL_PROPERTY_STATIC;
 		}
 
-		size_t idx_script_function = script_functions->count;
+		int idx_script_function = script_functions->count;
 
 		ScriptFunction *script_function = new ScriptFunction(
 				zs

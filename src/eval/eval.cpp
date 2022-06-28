@@ -525,8 +525,8 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_THIS_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
-					for(int i = 0; i < sc_sf->scope_script_type->symbol_functions->count; i++){
-						Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->items[i];
+					for(int j = 0; j < sc_sf->scope_script_type->symbol_functions->count; j++){
+						Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
 						if(
 							   ( sv->name == eval_instruction->symbol.name )
 						){

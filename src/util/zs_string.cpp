@@ -26,7 +26,7 @@ namespace zetscript{
 		if(_buffer==NULL){return;} // do not create string from NULL pointers
 
 		__cleanup__(); // cleanup any existing data
-		count = strlen(_buffer);
+		count = (int)strlen(_buffer);
 		_size=count+ZS_STRING_EXPAND_CHAR_ELEMENTS;
 		this->buf = (char *)ZS_MALLOC(sizeof(char) * _size+1); // + 1 for the keeping the null character
 		strncpy(buf, _buffer, count); // copy from the incoming buffer to character buffer of the new object
@@ -415,11 +415,11 @@ namespace zetscript{
 
 		int len=_len;
 		if(len == npos){
-			len=strlen(_buf);
+			len=(int)strlen(_buf);
 		}
 
-		size_t new_size=this->count+len;
-		char *new_buf=(char *)ZS_MALLOC(new_size+1);
+		int new_size=(size_t)(this->count+len);
+		char *new_buf=(char *)ZS_MALLOC((size_t)(new_size+1));
 
 		strncpy(new_buf,this->buf,this->count);
 		strncpy(new_buf+this->count,_buf,len);

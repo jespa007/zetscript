@@ -117,7 +117,6 @@ namespace zetscript{
 
 		int idx=search(_key);
 		zs_map_int_item *item=NULL;
-		char *key=NULL;
 		zs_map_int_node *node = NULL;
 
 		if(idx != ZS_MAP_INT_KEY_NOT_FOUND){

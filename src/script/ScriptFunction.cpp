@@ -468,6 +468,9 @@ namespace zetscript{
 	 }
 
 	void ScriptFunction::checkNativeFunctionParams(Scope *_scope,int _idx_return_type,const zs_string & _function_name,ScriptFunctionParam *_params,int _params_len){
+
+		ZS_UNUSUED_PARAM(_idx_return_type);
+
 		for(int i=0; i < _scope->symbol_functions->count;i++){
 			bool same_signature=true;
 			Symbol *symbol_function_memeber= (Symbol *)_scope->symbol_functions->items[i];

@@ -180,8 +180,8 @@ namespace zetscript{
 						// search function and link its idx_position
 						zs_string str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
 
-						for(int i = 0; i < sc->scope_script_type->symbol_functions->count; i++){
-							Symbol *sv=(Symbol *)sc->scope_script_type->symbol_functions->items[i];
+						for(int j = 0; j < sc->scope_script_type->symbol_functions->count; j++){
+							Symbol *sv=(Symbol *)sc->scope_script_type->symbol_functions->items[j];
 							if(
 								   ( sv->name == str_name_unreferenced_this_call )
 							){

@@ -843,7 +843,7 @@ find_element_object:
 								printf("\nAssing object %p type '%s' to slot '%i'"
 										,old_so
 										,old_so->getScriptType()->str_script_type.c_str()
-										,container_slot_store_id_slot
+										,(int)container_slot_store_id_slot
 								);
 							}else{
 								printf("\nAssing object %p type '%s' to slot '%s'"
@@ -1410,8 +1410,6 @@ execute_function:
 					sf_call_n_local_symbols=sf_call_script_function->local_variables->count;
 				}
 				else{ // C function
-					ScriptFunction *sf_old=sf_call_script_function;
-
 					if(sf_call_script_function->properties & FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME){
 
 						ScriptType *sc=NULL;
@@ -1430,10 +1428,6 @@ execute_function:
 
 						if(ignore_call == false)
 						{
-							if(sf_call_is_constructor==false && sf_call_script_function->name_script_function=="constructor"){
-								int kk=0;
-							}
-
 							ScriptFunction *sf_aux;
 							if((sf_aux=vm_find_native_function(
 									vm

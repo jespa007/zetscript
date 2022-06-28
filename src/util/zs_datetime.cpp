@@ -489,7 +489,7 @@ namespace zetscript{
 		char *end;
 		const char *parse_str_chr;
 
-		zs_string value_parsed = parse_str.substr(index, mask_length);
+		zs_string value_parsed = parse_str.substr(index, (int)mask_length);
 		parse_str_chr = value_parsed.c_str();
 		converted_value = strtol(parse_str_chr, &end, 10);
 		if (parse_str_chr == end) {

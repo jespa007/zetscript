@@ -43,7 +43,7 @@ namespace zetscript{
 		   }
 
 		   strcpy(*lineptr,line);
-		   return(len);
+		   return (int)(len);
 		}
 	}
 }

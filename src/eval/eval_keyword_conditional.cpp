@@ -367,7 +367,7 @@ namespace zetscript{
 
 
 				}else if(is_default){
-					EvalInstruction *ie_last=(EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.count-1];
+					//EvalInstruction *ie_last=(EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.count-1];
 					EVAL_ERROR_FILE_LINE_GOTOF(
 						eval_data->current_parsing_file
 						,line

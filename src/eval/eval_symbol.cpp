@@ -88,7 +88,7 @@ namespace zetscript{
 				while(!end){
 					pre=*aux;
 					default_str_value += (*aux++);
-					Operator token_operator=is_operator(aux);
+					//Operator token_operator=is_operator(aux);
 					if(is_end_symbol_token(aux,pre)){
 						// check if not instanceof and in operator
 						end=true;

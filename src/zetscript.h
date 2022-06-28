@@ -33,6 +33,7 @@
 #else
 	#if defined(_WIN32)
 		#include <windows.h>
+		#include <direct.h>
 	#endif
 #endif
 
