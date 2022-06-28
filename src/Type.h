@@ -52,12 +52,13 @@ namespace zetscript{
 		//--------------------------------------------------------------------------------------------------------------------->
 		// RESERVED FOR ZETSCRIPT BUILT-IN CLASSES STARTS STARTS FROM "IDX_TYPE_SCRIPT_OBJECT_STRING". PLEASE DONT'T MOVE!!!!!
 		IDX_TYPE_SCRIPT_OBJECT_STRING, // "String"
-		IDX_TYPE_SCRIPT_OBJECT_VECTOR, // Vector []
 
 		// Iterator
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING, // "IteratorString"
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR, // IteratorVector []
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT, // IteratorObject
+
+		IDX_TYPE_SCRIPT_OBJECT_VECTOR, // Vector []
 
 		// Object & type
 		IDX_TYPE_SCRIPT_OBJECT_OBJECT, //  Object {}

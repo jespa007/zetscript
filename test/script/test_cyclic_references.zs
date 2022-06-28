@@ -20,13 +20,11 @@ function test_cyclic_references(){
 	a.a=1
 	v[0]=0
 
-	fun(v[0],a.a)
-
 	var b=new B()
 	b.c=0	
 }
 
 test_cyclic_references();
 
-asset(System::objectRefences()==0,"System::objectRefences()!=0");
+System::asset(System::objectRefences()==0,"System::objectRefences()!=0");
 

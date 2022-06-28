@@ -384,7 +384,12 @@ find_element_object:
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
 								VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 							}
+
+
+							stk_var->value=(zs_int)(new ContainerSlotStore(so_aux,(zs_int)str_symbol,stk_var));
+							stk_var->properties=STK_PROPERTIES_CONTAINER_SLOT_STORE;
 							VM_PUSH_STK_PTR(stk_var);
+							//VM_PUSH_STK_PTR(stk_var);
 						}
 						else{ // not exists
 							data->stk_vm_current->value=0;
@@ -814,6 +819,31 @@ find_element_object:
 						stk_dst->value=(intptr_t)so_aux;
 						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
+
+						if(container_slot_store_object!=NULL){
+
+							// TODO: Save to map
+							ScriptObject *src_object=so_aux;
+
+							// Possibly cyclic reference
+							if((so_aux->isNativeObject()==false) && (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)){
+								if(container_slot_store_object->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+									printf("\nAssing object %p type '%s' to slot '%i'"
+											,container_slot_store_object
+											,container_slot_store_object->getScriptType()->str_script_type.c_str()
+											,(int)container_slot_store_id_slot
+									);
+								}else{
+									printf("\nAssing object %p type '%s' to slot '%s'"
+											,container_slot_store_object
+											,container_slot_store_object->getScriptType()->str_script_type.c_str()
+											,(const char *)container_slot_store_id_slot
+									);
+								}
+							}
+
+						}
+
 						if(!vm_share_script_object(vm,so_aux)){
 							goto lbl_exit_function;
 						}
@@ -834,26 +864,6 @@ find_element_object:
 					){
 						ScriptObject  *old_so=(ScriptObject  *)old_stk_dst.value;
 
-
-
-						if(container_slot_store_object!=NULL){
-
-							// TODO: Save to map
-							if(old_so->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
-								printf("\nAssing object %p type '%s' to slot '%i'"
-										,old_so
-										,old_so->getScriptType()->str_script_type.c_str()
-										,(int)container_slot_store_id_slot
-								);
-							}else{
-								printf("\nAssing object %p type '%s' to slot '%s'"
-										,old_so
-										,old_so->getScriptType()->str_script_type.c_str()
-										,(const char *)container_slot_store_id_slot
-								);
-							}
-
-						}
 
 						// unref pointer because new pointer has been attached...
 						StackElement *chk_ref=(StackElement *)stk_result_op2->value;
