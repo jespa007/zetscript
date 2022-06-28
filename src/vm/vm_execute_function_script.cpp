@@ -179,6 +179,9 @@ namespace zetscript{
 									if((stk_var =so_object->addProperty(stk_to_str(data->zs, stk_result_op2), data->vm_error_str))==NULL){
 										VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 									}
+
+									stk_var->value=(zs_int)(new ContainerSlotStore(so_aux,(zs_int)str_symbol,stk_var));
+									stk_var->properties=STK_PROPERTIES_CONTAINER_SLOT_STORE;
 								}
 							}
 						}
@@ -440,19 +443,22 @@ find_element_object:
 					}
 				}
 
-				// load its value for write
-				if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
-					// TODO: save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
-					VM_PUSH_STK_PTR(stk_var);
-				}else{ // load its value for read
-					*data->stk_vm_current++=*stk_var;
-				}
-
 				if((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM){ // fast load access without pass through switch instruction
+					*data->stk_vm_current++=*stk_var;
 					instruction++; // we have to inc current instruction...
 					instruction_it++; //... and instruction iterator
 					goto load_next_element_object;
 				}
+
+				// load its value for write
+				if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
+					stk_var->value=(zs_int)(new ContainerSlotStore(so_aux,(zs_int)str_symbol,stk_var));
+					stk_var->properties=STK_PROPERTIES_CONTAINER_SLOT_STORE;
+					VM_PUSH_STK_PTR(stk_var);
+				}else{
+					*data->stk_vm_current++=*stk_var;
+				}
+
 				continue;
 			case BYTE_CODE_LOAD_UNDEFINED:
 				VM_PUSH_STK_UNDEFINED;
@@ -708,8 +714,13 @@ find_element_object:
 					}
 
 					// TODO: get stk_dst if STK_PROPERTY_SLOT
-
 					StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
+					ContainerSlotStore *container_slot_store=NULL;
+					if(old_stk_dst.properties & STK_PROPERTIES_CONTAINER_SLOT_STORE){
+						container_slot_store=((ContainerSlotStore *)old_stk_dst.value);
+						old_stk_dst=container_slot_store->content;
+
+					}
 
 					stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
 					stk_src_ref_value=&stk_src->value;
@@ -798,10 +809,8 @@ find_element_object:
 						stk_dst->value=(intptr_t)so_aux;
 						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
-						if(!IS_STK_THIS(stk_src)){ // do not share this!
-							if(!vm_share_script_object(vm,so_aux)){
-								goto lbl_exit_function;
-							}
+						if(!vm_share_script_object(vm,so_aux)){
+							goto lbl_exit_function;
 						}
 
 					}else{
@@ -816,29 +825,48 @@ find_element_object:
 
 					// check old dst value to unref if it was an object ...
 					if(
-						(old_stk_dst.properties & STK_PROPERTY_SCRIPT_OBJECT)
-									&&
-						(! // if not...
-							(IS_STK_THIS(&old_stk_dst)) // ... or this
-							// ... do share/unshare
-						)){
-							// unref pointer because new pointer has been attached...
-							StackElement *chk_ref=(StackElement *)stk_result_op2->value;
-							ScriptObjectObject  *old_so=(ScriptObjectObject  *)old_stk_dst.value;
+						(old_stk_dst.properties & (STK_PROPERTY_SCRIPT_OBJECT))
+					){
+						ScriptObject  *old_so=(ScriptObject  *)old_stk_dst.value;
+						if(container_slot_store!=NULL){
 
-							if(chk_ref->properties & STK_PROPERTY_PTR_STK){
-								chk_ref=(StackElement *)chk_ref->value;
-							}
-							if(STK_IS_SCRIPT_OBJECT_VAR_REF(chk_ref)){
-								ScriptObjectVarRef *so_var_ref=(ScriptObjectVarRef *)chk_ref->value;
-								data->vm_idx_call=so_var_ref->getIdxCall(); // put the vm_idx_call where it was created
+							// TODO: Save to map
+							if(old_so->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+								printf("\nAssing object %p type '%s' to slot '%i'"
+										,old_so
+										,old_so->getScriptType()->str_script_type.c_str()
+										,container_slot_store->id_slot
+								);
+							}else{
+								printf("\nAssing object %p type '%s' to slot '%s'"
+										,old_so
+										,old_so->getScriptType()->str_script_type.c_str()
+										,(const char *)container_slot_store->id_slot
+								);
 							}
 
-							if(!vm_unref_shared_script_object(vm,old_so,data->vm_idx_call)){
-								goto lbl_exit_function;
-							}
+							delete container_slot_store;
 						}
+
+						// unref pointer because new pointer has been attached...
+						StackElement *chk_ref=(StackElement *)stk_result_op2->value;
+
+
+						if(chk_ref->properties & STK_PROPERTY_PTR_STK){
+							chk_ref=(StackElement *)chk_ref->value;
+						}
+						if(STK_IS_SCRIPT_OBJECT_VAR_REF(chk_ref)){
+							ScriptObjectVarRef *so_var_ref=(ScriptObjectVarRef *)chk_ref->value;
+							data->vm_idx_call=so_var_ref->getIdxCall(); // put the vm_idx_call where it was created
+						}
+
+						if(!vm_unref_shared_script_object(vm,old_so,data->vm_idx_call)){
+							goto lbl_exit_function;
+						}
+					}else if(container_slot_store!=NULL){
+						delete container_slot_store;
 					}
+				}
 
 
 				if(instruction->byte_code ==BYTE_CODE_STORE_CONST){

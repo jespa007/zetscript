@@ -352,6 +352,7 @@ eval_error_sub_expression:
 			int left_size=(int)zs_ei_left_sub_expressions.count;
 			int max_size=right_size>left_size?right_size:left_size;
 
+			// LOADS
 			// write right expressions in reverse order and the right one < left one, we push an null element
 			for(int r=max_size-1; r >=0;r--){
 				if(r<right_size){
@@ -369,6 +370,7 @@ eval_error_sub_expression:
 				}
 			}
 
+			// ASSIGMENTS
 			// write left assignments...
 			for(int l=0; l < left_size;l++){
 				zs_vector *ei_left_sub_expressions=(zs_vector *)zs_ei_left_sub_expressions.items[l];

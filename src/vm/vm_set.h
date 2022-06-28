@@ -48,10 +48,8 @@ if(stk_src_properties == STK_PROPERTY_UNDEFINED){\
 		so_aux=(ScriptObject *)stk_src->value;\
 		stk_dst->value=(intptr_t)so_aux;\
 		stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
-		if(!IS_STK_THIS(stk_src)){ /* do not share this! */\
-			if(!vm_share_script_object(vm,so_aux)){\
-				goto lbl_exit_function;\
-			}\
+		if(!vm_share_script_object(vm,so_aux)){\
+			goto lbl_exit_function;\
 		}\
 	}\
 }else{\

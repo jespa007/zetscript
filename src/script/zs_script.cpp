@@ -22,6 +22,7 @@
 #include 		"ScriptObjectClass.cpp"
 #include 		"ScriptObjectVarRef.cpp"
 
+#include		"ContainerSlotStore.cpp"
 #include		"ScriptFunctionFactory.cpp"
 #include		"ScriptTypeFactory.cpp"
 //#include		"ScriptContext.cpp"

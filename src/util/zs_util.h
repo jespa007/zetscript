@@ -9,6 +9,8 @@
 #include "zs_log.h"
 #include "zs_rtti.h"
 #include "zs_path.h"
+#include "zs_map_int_iterator.h"
+#include "zs_map_int.h"
 #include "zs_map_iterator.h"
 #include "zs_map.h"
 #include "zs_dir.h"
