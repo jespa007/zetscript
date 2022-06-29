@@ -10,21 +10,29 @@ namespace zetscript{
 
 	namespace json{
 
-		void serialize_stk(ZetScript *zs,ScriptObject *this_object,zs_string & str_result, StackElement *stk, int ident,bool is_formatted);
+		void serialize_stk(ZetScript *_zs,ScriptObject *_this_object,zs_string & _str_result, StackElement *_stk, int _ident,bool _is_formatted, bool _strict_json_format);
 
 
-		void serialize_vector(ZetScript *zs,ScriptObject *this_object,zs_string & str_result, ScriptObjectVector * vector,int ident, bool is_formatted){
+		void serialize_vector(
+				ZetScript *_zs
+				,ScriptObject *_this_object
+				,zs_string & _str_result
+				, ScriptObjectVector * _vector
+				,int _ident
+				, bool _is_formatted
+				,bool _strict_json_format
+				){
 
-			str_result.append('[');
+			_str_result.append('[');
 
-			for (unsigned i = 0; i < vector->length(); i++) {
+			for (unsigned i = 0; i < _vector->length(); i++) {
 				if (i > 0) {
-					str_result.append(',');
+					_str_result.append(',');
 				}
 
-				serialize_stk(zs,this_object,str_result,vector->getUserElementAt(i),ident,is_formatted);
+				serialize_stk(_zs,_this_object,_str_result,_vector->getUserElementAt(i),_ident,_is_formatted,_strict_json_format);
 			}
-			str_result.append(']');
+			_str_result.append(']');
 		}
 
 		void serialize_object(
@@ -33,7 +41,9 @@ namespace zetscript{
 			, zs_string & _str_result
 			, ScriptObjectObject *_obj
 			, int _ident
-			, bool _is_formatted){
+			, bool _is_formatted
+			,bool _strict_json_format
+			){
 
 			_str_result.append('{');
 
@@ -143,7 +153,8 @@ namespace zetscript{
 							, _str_result
 							, ptr_stk_param
 							, _ident+1
-							,_is_formatted);
+							,_is_formatted
+							,_strict_json_format);
 
 						if(stk_getter_result.properties & STK_PROPERTY_SCRIPT_OBJECT){
 							if(value_from_vm_execute==true){
@@ -170,20 +181,28 @@ namespace zetscript{
 			_str_result.append('}');
 		}
 
-		void serialize_stk(ZetScript *zs, ScriptObject *this_object,zs_string & str_result, StackElement *stk, int ident,bool is_formatted){
+		void serialize_stk(
+				ZetScript *_zs
+				, ScriptObject *_this_object
+				,zs_string & _str_result
+				, StackElement *_stk
+				, int _ident
+				,bool _is_formatted
+				,bool _strict_json_format){
+
 			ScriptObject *obj=NULL;
 			int16_t var_type = 0;
 
-			if(stk->properties & STK_PROPERTY_PTR_STK){
-				stk=(StackElement *)stk->value;
+			if(_stk->properties & STK_PROPERTY_PTR_STK){
+				_stk=(StackElement *)_stk->value;
 			}
 
-			if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk)){
-				stk=((ScriptObjectVarRef *)stk->value)->getStackElementPtr();
+			if(STK_IS_SCRIPT_OBJECT_VAR_REF(_stk)){
+				_stk=((ScriptObjectVarRef *)_stk->value)->getStackElementPtr();
 			}
 
 
-			var_type = GET_STK_PROPERTY_TYPES(stk->properties);
+			var_type = GET_STK_PROPERTY_TYPES(_stk->properties);
 
 			switch(var_type){
 			default:
@@ -191,31 +210,37 @@ namespace zetscript{
 			case STK_PROPERTY_ZS_FLOAT:
 			case STK_PROPERTY_BOOL:
 			case STK_PROPERTY_ZS_INT:
-				str_result.append(stk_to_str(zs,stk));
+				_str_result.append(stk_to_str(_zs,_stk));
 				break;
 			case STK_PROPERTY_NULL:
+				_str_result.append("null");
+				break;
 			case STK_PROPERTY_UNDEFINED:
-				str_result.append("null");
+				if(_strict_json_format==true){
+					_str_result.append("null");
+				}else{
+					_str_result.append("undefined");
+				}
 				break;
 			case STK_PROPERTY_SCRIPT_OBJECT: // vector or object
 
-				obj=((ScriptObject *)stk->value);
+				obj=((ScriptObject *)_stk->value);
 				switch(obj->idx_script_type){
 				case IDX_TYPE_SCRIPT_OBJECT_STRING:
-					str_result.append(zs_string("\"") + ((ScriptObjectString *)obj)->toString() + "\"");
+					_str_result.append(zs_string("\"") + ((ScriptObjectString *)obj)->toString() + "\"");
 					break;
 				case IDX_TYPE_SCRIPT_OBJECT_VECTOR:
-					serialize_vector(zs, this_object, str_result,(ScriptObjectVector *)obj,ident,is_formatted);
+					serialize_vector(_zs, _this_object, _str_result,(ScriptObjectVector *)obj,_ident,_is_formatted,_strict_json_format);
 					break;
 				default:
 					if(
 						obj->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_OBJECT
 					){
-						if(this_object != obj){ // avoid recursivity
-							serialize_object(zs,this_object,str_result,(ScriptObjectObject *)obj,ident,is_formatted);
+						if(_this_object != obj){ // avoid recursivity
+							serialize_object(_zs,_this_object,_str_result,(ScriptObjectObject *)obj,_ident,_is_formatted,_strict_json_format);
 						}
 						else{
-							str_result.append("\"Object@"+this_object->getTypeName()+"\"");
+							_str_result.append("\"Object@"+_this_object->getTypeName()+"\"");
 						}
 					}
 					break;
@@ -224,16 +249,16 @@ namespace zetscript{
 			}
 		}
 
-		zs_string serialize(ZetScript *zs, StackElement *stk, bool is_formatted){
+		zs_string serialize(ZetScript *_zs, StackElement *_stk, bool _is_formatted, bool _strict_json_format){
 			zs_string serialized_stk="";
 
 			if(
-					(stk->properties & STK_PROPERTY_SCRIPT_OBJECT)
-				&& (((ScriptObject *)(stk->value))->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_OBJECT)
+					(_stk->properties & STK_PROPERTY_SCRIPT_OBJECT)
+				&& (((ScriptObject *)(_stk->value))->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_OBJECT)
 			){
-				serialize_object(zs,(ScriptObject *)stk->value,serialized_stk,(ScriptObjectObject *)(stk->value),0,is_formatted);
+				serialize_object(_zs,(ScriptObject *)_stk->value,serialized_stk,(ScriptObjectObject *)(_stk->value),0,_is_formatted,_strict_json_format);
 			}else{
-				serialize_stk(zs,NULL,serialized_stk,stk,0,is_formatted);
+				serialize_stk(_zs,NULL,serialized_stk,_stk,0,_is_formatted,_strict_json_format);
 			}
 
 			return serialized_stk;

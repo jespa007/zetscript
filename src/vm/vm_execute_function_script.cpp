@@ -841,7 +841,6 @@ find_element_object:
 									);
 								}
 							}
-
 						}
 
 						if(!vm_share_script_object(vm,so_aux)){
@@ -1379,6 +1378,14 @@ execute_function:
 								,((Symbol *)param->default_param_value.value)->name.c_str()
 								,true
 							)
+
+							// if script object it shares in order to be used as variable in the function to be called
+							if(data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
+								if(!vm_share_script_object(vm,(ScriptObject *)data->stk_vm_current->value)){
+									goto lbl_exit_function;
+								}
+
+							}
 							data->stk_vm_current++;
 							break;
 						default:

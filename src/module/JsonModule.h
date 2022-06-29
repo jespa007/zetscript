@@ -9,7 +9,7 @@ namespace zetscript{
 	class ScriptObjectString;
 
 	namespace json{
-		zs_string serialize(ZetScript *_zs, StackElement *stk, bool is_formatted);
+		zs_string serialize(ZetScript *_zs, StackElement *_stk, bool _is_formatted, bool _strict_json_format=true);
 	}
 
 	void JsonModule_deserialize(ZetScript *_zs,ScriptObjectString *str_json);
