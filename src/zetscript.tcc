@@ -35,6 +35,34 @@ namespace zetscript{
 			return so_script;
 		}*/
 
+		template<typename _C>
+		ScriptObjectClass * ZetScript::newScriptObjectClass(){
+			//return ScriptObjectClass::newShareableScriptObjectClass<>(this);
+			const char * str_script_type_ptr = typeid(_C *).name();
+			int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr);
+
+			if(idx_script_type<IDX_TYPE_MAX){
+				THROW_RUNTIME_ERROR(
+				"Internal ScriptObject type '%s' is not instanciable as ScriptObjectClass"
+				,zs_rtti::demangle(typeid(_C *).name()).c_str()
+				);
+			}
+
+			if(idx_script_type==ZS_IDX_UNDEFINED){
+				THROW_RUNTIME_ERROR(
+				"Cannot instance script object as native type '%s' because is not registered"
+				,zs_rtti::demangle(typeid(_C *).name()).c_str()
+				);
+			}
+
+
+			_C *ptr_var=new _C();
+			auto so_script=ScriptObjectClass::newScriptObjectClass(this,idx_script_type,(void *)ptr_var);
+			so_script->deleteNativeObjectOnDestroy(true);
+			return so_script;
+		}
+
+
 
 		//--------------------------------------------------------------------------------------------------------------------
 		//

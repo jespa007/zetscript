@@ -152,8 +152,12 @@ namespace zetscript{
 		ScriptObjectObject * newShareableScriptObjectObject();
 		ScriptObjectString * newShareableScriptObjectString();
 		ScriptObjectVector * newShareableScriptObjectVector();
+
 		//
 		//------------------------------------------------------------------------------------------------------------------------------------
+
+		template<typename _C>
+		ScriptObjectClass * newScriptObjectClass();
 
 		//-----------------------------------------------
 		/**
@@ -205,8 +209,6 @@ namespace zetscript{
 			script_type_factory->bindFunction( name_script_function,ptr_function, registered_file,registered_line);
 		}
 
-		/*template<typename _C>
-		ScriptObjectClass * newScriptObjectClass();*/
 		template<class C, class B>
 		void extends(){
 			script_type_factory->extends<C,B>();
