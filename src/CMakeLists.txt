@@ -99,14 +99,18 @@ if(MSVC)
 	
 else()
 
-	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -pedantic -fPIC ")
+	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -pedantic ")
    
 	if (MINGW)
 		MESSAGE("-- Plataform: MINGW" )
-	elseif(UNIX)
-    	MESSAGE ("-- Plataform: UNIX" )
-    else()
-    	MESSAGE ("-- Plataform: Unknown" )
+	else()
+		SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -fPIC ")
+		
+		if(UNIX)
+    		MESSAGE ("-- Plataform: UNIX" )
+    	else()
+    		MESSAGE ("-- Plataform: Unknown" )
+    	endif()
 	endif()
 	
 	IF ( "${TARGET}" STREQUAL "debug")
