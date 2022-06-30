@@ -3,9 +3,11 @@
  *  See LICENSE file for details.
  */
 
+#include "vm_operation.h"
+
 #define LOAD_OPS_SET_OPERATION \
 stk_result_op1=--data->stk_vm_current;\
-stk_result_op1=(StackElement *)stk_result_op1->value; /* dst ptr stk */ \
+EXTRACT_STK_RESULT_OP1 \
 if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){ \
 	stk_result_op1=(StackElement *)(STK_GET_STK_VAR_REF(stk_result_op1)->value); \
 } \
