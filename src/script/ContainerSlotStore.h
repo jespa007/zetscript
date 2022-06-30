@@ -10,11 +10,11 @@ namespace zetscript{
 	public:
 		ScriptObject  *object; // should be vector,object or class
 		zs_int 		  id_slot;
-		StackElement  content;
+		StackElement  *ptr_stk;
 
 		ContainerSlotStore(	ScriptObject  *_object
 								,zs_int 	  id_slot
-								,StackElement *_content
+								,StackElement *_ptr_stk
 		);
 	};
 }

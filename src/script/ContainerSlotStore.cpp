@@ -10,10 +10,10 @@ namespace zetscript{
 	ContainerSlotStore::ContainerSlotStore(
 			ScriptObject  *_object
 			,zs_int 	   _id_slot
-			,StackElement *_content
+			,StackElement *_ptr_stk
 	){
 		object=_object;
 		id_slot=_id_slot;
-		content=*_content;
+		ptr_stk=_ptr_stk;
 	}
 }

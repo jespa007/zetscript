@@ -17,12 +17,12 @@ side.
  return 0;
 }
 At script side, to have access on the registered c++ variable, just make reference to it.
-Unlike script variables, C variables is strong type and it doesn’t allow to assign value
+Unlike script variables, C variables is strong type and it doesn't allow to assign value
 that differs from its type.
 Example,
-int_var =0; // ok, my_var is int and you assign a int.
-int_var =10.0; // ok, my_var is int it does a cast from float to int.
-int_var = "this is a string"; //  invalid due cannot convert string to int.
+int_var =0; // ok, my_var is int and you assign a int.
+int_var =10.0; // ok, my_var is int it does a cast from float to int.
+int_var = "this is a string"; //  invalid due cannot convert string to int.
 
 4.2 Bind C Function
 ZetScript C function binding supports int, *float, *bool, char * and string* as arguments
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]){
 }
 For instance gnu c++ compiler throws this error,
 note: template argument deduction/substitution failed:
-That means that indeed there’re more than one function named “add” and the compiler
+That means that indeed there're more than one function named 'add' and the compiler
 cannot deduce which function take to register. To achieve register more than a one
 function with the same name we have to make a cast to get the function we want with
 its signature.
@@ -143,7 +143,7 @@ register_C_VariableMember<ObjectType>("variable_name",&ObjectType::variable_name
 As an example, the following code register variable member MyClass::data1 seen on
 List 4.1,
 register_C_VariableMember<MyClass>("data1",&MyClass::data1);
-And then it can access to data1 member through field access (‘.’)
+And then it can access to data1 member through field access ('.')
 var myclass= new MyClass();
 print("data1"+myclass.data1);
 4.3.4 Bind Function Member
@@ -155,7 +155,7 @@ register_C_FunctionMember<ObjectType>("function_name",&ObjectType::function_name
 As an example, the following code registers function member MyClass::function1 seen
 on List 4.1
 register_C_FunctionMember<MyClass>("function1",&MyClass::function1);
-And then it can access to function1 member through field access (‘.’)
+And then it can access to function1 member through field access ('.')
 var myclass= new MyClass(); 
 
 myclass.function1(10); // prints "c++ argument is10"
@@ -315,24 +315,24 @@ section 3.6. ZetScript metamethods can be static or member function5
  depending
 whether the operation affects or not the object itself.
 ZetScript supports the following metamethods:
-• _equ
-• _not_equ
-• _lt
-• _lte
-• _gt
-• _gte
-• _not
-• _neg
-• _add
-• _div
-• _mul
-• _mod
-• _and
-• _or
-• _xor
-• _shl
-• _shr
-• _set
+* _equ
+* _not_equ
+* _lt
+* _lte
+* _gt
+* _gte
+* _not
+* _neg
+* _add
+* _div
+* _mul
+* _mod
+* _and
+* _or
+* _xor
+* _shl
+* _shr
+* _set
 
 5
  On script side, static function is defined as member function, but user should not access on
@@ -1592,15 +1592,15 @@ int main(){
  register_C_VariableMember<MyNumber>("num",&MyNumber::num);
  // register constructor through function MyNumber::set
  register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
- // register 1st _add metamethod function to satisfy operand (MyNumber,MyNumber) combination…
+ // register 1st _add metamethod function to satisfy operand (MyNumber,MyNumber) combinationï¿½
  register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, MyNumber *)>(&MyNumber::_add));
- // register 2nd _add metamethod function to satisfy operand (int,MyNumber) combination…
+ // register 2nd _add metamethod function to satisfy operand (int,MyNumber) combinationï¿½
  register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(int, MyNumber *)>(&MyNumber::_add));
- // register 3rd _add metamethod function to satisfy operand (MyNumber,int) combination…
+ // register 3rd _add metamethod function to satisfy operand (MyNumber,int) combinationï¿½
  register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, int)> (&MyNumber::_add));
- // register 4th _add metamethod function to satisfy operand (float,MyNumber) combination…
+ // register 4th _add metamethod function to satisfy operand (float,MyNumber) combinationï¿½
  register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(float *, MyNumber *)>(&MyNumber::_add));
- // register 5th _add metamethod function to satisfy operand (MyNumber,float) combination…
+ // register 5th _add metamethod function to satisfy operand (MyNumber,float) combinationï¿½
  register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, float *)>(&MyNumber::_add));
  if(!zs->eval(
 "var n1 = new MyNumber (20);\n"

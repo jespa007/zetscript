@@ -2,6 +2,17 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
+#define EXTRACT_STK_RESULT_OP1 \
+	if(stk_result_op1->properties & STK_PROPERTY_PTR_STK){\
+		stk_result_op1=(StackElement *)((stk_result_op1)->value);\
+	}\
+	if(stk_result_op1->properties & STK_PROPERTY_CONTAINER_SLOT_STORE){\
+		ContainerSlotStore *css=((ContainerSlotStore *)stk_result_op1->value);\
+		stk_result_op1=css->ptr_stk;\
+		delete css;\
+	}\
+
+
 #define LOAD_PROPERTIES(__METAMETHOD__) \
 	ptr_metamethod_members_aux=NULL;\
 	stk_var_copy.value=0;\
@@ -290,7 +301,7 @@
 
 #define VM_OPERATION_NEG_POST(__C_OP__, __METAMETHOD__,__POST_OPERATION_VARIABLE__) \
 	stk_result_op1=--data->stk_vm_current;\
-	if(stk_result_op1->properties & STK_PROPERTY_PTR_STK) stk_result_op1=(StackElement *)((stk_result_op1)->value);\
+	EXTRACT_STK_RESULT_OP1\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
 	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
@@ -309,7 +320,7 @@
 		if(ptr_metamethod_members_aux->neg==NULL){\
 			VM_STOP_EXECUTE("%s '%s' not implements metamethod _neg (aka '-a'') "\
 					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
+					,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 			);\
 		}\
 		/* call _neg */\
@@ -324,7 +335,7 @@
 		if(__POST_OPERATION_VARIABLE__==NULL){\
 			VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s') "\
 					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
+					,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 			);\
@@ -343,7 +354,7 @@
 
 #define VM_OPERATION_POST(__C_OP__, __METAMETHOD__,__POST_OPERATION_VARIABLE__) \
 	stk_result_op1=--data->stk_vm_current;\
-	if(stk_result_op1->properties & STK_PROPERTY_PTR_STK) stk_result_op1=(StackElement *)((stk_result_op1)->value);\
+	EXTRACT_STK_RESULT_OP1\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
 	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
@@ -380,7 +391,7 @@
 		if(__POST_OPERATION_VARIABLE__==NULL){\
 			VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s') "\
 					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
+					,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 			);\
@@ -398,7 +409,7 @@
 
 #define VM_OPERATION_PRE(__C_OP__, __METAMETHOD__,__PRE_OPERATION_VARIABLE__) \
 	stk_result_op1=--data->stk_vm_current;\
-	if(stk_result_op1->properties & STK_PROPERTY_PTR_STK) stk_result_op1=(StackElement *)((stk_result_op1)->value);\
+	EXTRACT_STK_RESULT_OP1\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
 	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
 		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
@@ -418,7 +429,7 @@
 		if(__PRE_OPERATION_VARIABLE__==NULL){\
 			VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s') " \
 					,stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY?"Member property":"Symbol"\
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)\
+					,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
 					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 			);\

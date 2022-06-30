@@ -1,5 +1,5 @@
-3. The language
-3.1 Statments
+=== 3. The language
+==== 3.1 Statments
 ZetScript Language is based on a set of statements formed by values, operators, expressions,
 keywords, declarations, expressions, conditionals, integrators and functions.
 All statements are separated by semicolons at the end.
@@ -20,10 +20,10 @@ this is a block comment
 // This is a line comment
 3.3 Constants values
 ZetScript supports the following constants or literal types,
-• boolean
-• integer
-• float
-• string
+* boolean
+* integer
+* float
+* string
 3.3.1 Boolean type
 ZetScript represents boolean value as true or false.
 Example,
@@ -47,7 +47,7 @@ Example,
 1.2 // integer and decimal form
 2.0e-2 // cientific notation form
 3.3.4 String type
-ZetScript represents string value within quotes (“”).
+ZetScript represents string value within quotes (").
 Example,
 "this is a string"
 
@@ -59,13 +59,13 @@ Example,
 var i; // declares i variable
 3.4.2 Variable instantiation
 A variable is undefined (see 2.5.1) when is declared until is instanced with any value
-through operator ‘=’. As an example we can instantiate a variable with integer value
+through operator '='. As an example we can instantiate a variable with integer value
 (see section 2.2),
 var i=0; // variable v is instancied as integer.
 3.4.3 Scope
 In ZetScript we have two types of basic scopes.
-• Global
-• Local
+* Global
+* Local
 A ZetScript makes easy the concept of global local scope. Basically, variables declared
 on the main script are global and the others declared within a block2
 , are local.
@@ -73,7 +73,7 @@ Example,
 var i; // this is a global variable
 { //  block starts here
  var j;//this is a local variable declared inside a block (you can also access to i).
-} // block ends here, so the variable j doesn’t exist anymore
+} // block ends here, so the variable j doesnï¿½t exist anymore
 
 2
  A block is a statement that starts with '{' and ends with '}'. 
@@ -81,15 +81,15 @@ var i; // this is a global variable
  
  3.5 Built-in types
 ZetScript supports the following built-in types
-• Undefined
-• Null
-• Integer
-• Number
-• Boolean
-• String
-• Vector
-• Structure
-• Function
+* Undefined
+* Null
+* Integer
+* Number
+* Boolean
+* String
+* Vector
+* Structure
+* Function
 3.5.1 Undefined type
 A undefined variable type is the default value that is instanced when any variable is
 declared. To instantiate a variable with undefined value assign it typing the undefined
@@ -200,7 +200,7 @@ s:"this is a string",
 b:true,
 f:2.0
 };
-To acces to its elements is done through the variable name followed by ‘.’ Followed by
+To acces to its elements is done through the variable name followed by '.' Followed by
 the field name.
 Example,
 print("v:"+t.i); // v:1
@@ -234,10 +234,10 @@ var j=fun_obj(2,3);// calls fun_obj (aka anonymous function). function. J=5
 
 3.6 Operations
 ZetScript has the following type of expressions
-• Arithmetic operations
-• Relational operations
-• Logical operations
-• Bit operations
+* Arithmetic operations
+* Relational operations
+* Logical operations
+* Bit operations
 3.6.1 Arithmetic expressions
 The following operators it does evaluates arithmetic expressions,
 Operator Symbol Description Example
@@ -270,7 +270,7 @@ The following operators it does evaluates relational expressions,
 Operator symbol Description Example
 Equal ==
 Check whether two values are equal 10==10;// = true
-"hello"==”bye”; // = false
+"hello"=="bye"; // = false
 Not equal != Check whether two values are not
 equal
 10!=10; // = false
@@ -346,10 +346,10 @@ For example,
 3.7 Conditionals
 A conditional statement are used to perform different actions based on different
 conditions. In ZetScript we have the following conditional statement:
-• Use if to specify a block of code to be executed, if a specified condition is true
-• Use else to specify a block of code to be executed, if the same condition is false.
-• Use ternary condition to have a short if/else statement into single statement.
-• Use switch to specify manu alternative blocks of code to be executed
+* Use if to specify a block of code to be executed, if a specified condition is true
+* Use else to specify a block of code to be executed, if the same condition is false.
+* Use ternary condition to have a short if/else statement into single statement.
+* Use switch to specify manu alternative blocks of code to be executed
 3.7.1 The if statement
 Use the if statement to specify a block of ZetScript code to be executed if a condition is
 true.
@@ -399,7 +399,7 @@ switch(expression) {
  case value_1:
  code block
  break;
- …
+ 
  case value_n
  default:
  code block
@@ -407,7 +407,7 @@ switch(expression) {
 }
 
 Example,
-switch (n) {//  n is a random integer.
+switch (n) {// n is a random integer.
  case 6:
  print("6");
  break;
@@ -420,7 +420,7 @@ switch (n) {//  n is a random integer.
 }
 Switch can have common code blocks in different conditions
 Example,
-switch (n) { //  n is a random integer.
+switch (n) { //  n is a random integer.
  case 4:
  case 5:
  print("4 or 5");
@@ -434,8 +434,8 @@ switch (n) { //  n is a random integer.
 }
 3.8 Loops
 ZetScript supports the following loop types,
-• While Loop
-• For Loop
+* While Loop
+* For Loop
 3.8.1The While Loop
 The while loop loops through a block of code as long as a specified condition is true.
 while(condition){
@@ -464,12 +464,12 @@ do {
 The for loop is often the tool you will use when you want to create a loop.
 Syntax,
 for(stament1;statment2;statment3){
- // code block to be executed…
+ // code block to be executed
 }
-• Statement 1 is executed before the loop (the code block) starts. Normally you will use
+* Statement 1 is executed before the loop (the code block) starts. Normally you will use
 statement 1 to initialize the variable used in the loop (for example var i = 0).
-• Statement 2 defines the condition for running the loop.
-• Statement 3 is executed each time after the code block has been executed.
+* Statement 2 defines the condition for running the loop.
+* Statement 3 is executed each time after the code block has been executed.
 Example,
 for(var i=0; i < 5; i++) {
  print("The number is "+i);
@@ -511,7 +511,7 @@ var fun_obj = add; // stored function add reference to fun_obj
 var j=fun_obj(2,3);// calls fun_obj (aka add) function. J=5
 Also is possible to create function objects,
 Syntax
-function(arg1, arg2, …, argN){
+function(arg1, arg2, ..., argN){
 // code to be executed.
 };
 Example,
@@ -564,7 +564,7 @@ print("data1 is: "+t.data1); // prints value of data1
 3.9.4 Constructor
 Each time class is instanced, their member variables are undefined.
 var t = new Test(); // The a class Test is instanced but data1 and data2 are undefined.
-print("data1:"+t.data1); //  prints: “data1:undefined”
+print("data1:"+t.data1); //  prints: data1:undefined"
 The constructor is a function that is invoked automatically and with aim to initialize all
 member variables. To the define a constructor we have to define a function member
 with same name as the Class.
@@ -577,7 +577,7 @@ class Test{
  }
 }
 var t = new Test(); // Instantiate t as Test type. Now, member variables are instanced.
-print("data1:"+t.data1); //  prints "data1: 10"
+print("data1:"+t.data1); //  prints "data1: 10"
 
 3.9.5 Inheritance
 ZetScript supports inheritance through ":" punctuator after the name of the class
@@ -597,7 +597,7 @@ class TestExtended: Test{
  var data3;
  function function1(a){
  var t=super(a); // it calls Test::function1(2)
- this.data1+=t; //  Now data1=5+2 = 7
+ this.data1+=t; // Now data1=5+2 = 7
  print("ext function1:"+this.data1);
  return this.data1+a;
  }

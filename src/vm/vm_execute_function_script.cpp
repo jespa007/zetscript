@@ -46,6 +46,9 @@ namespace zetscript{
 		void			*		ptr_ptr_void_ref=NULL;
 		StackElement    *		stk_load_multi_var_src=NULL;
 		MemberProperty	* 		member_property=NULL;
+		ContainerSlotStore *	container_slot_store=NULL;
+		ScriptObject 	*		container_slot_store_object=NULL;
+		zs_int 					container_slot_store_id_slot=0;
 		//------------------------------------------------
 		// SFCALL
 		StackElement	*sf_call_stk_function_ref=NULL;
@@ -130,6 +133,7 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR: // direct load
 				VM_PUSH_STK_PTR(this_object->getBuiltinElementAt(instruction->value_op2));
 				continue;
+			// access vector (i.e vec[1]) or access object (i.e obj["aa"])
 			case BYTE_CODE_PUSH_STK_VECTOR_ITEM:
 			case BYTE_CODE_LOAD_VECTOR_ITEM:
 				VM_POP_STK_TWO;
@@ -179,16 +183,16 @@ namespace zetscript{
 									if((stk_var =so_object->addProperty(stk_to_str(data->zs, stk_result_op2), data->vm_error_str))==NULL){
 										VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 									}
-
-									stk_var->value=(zs_int)(new ContainerSlotStore(so_aux,(zs_int)str_symbol,stk_var));
-									stk_var->properties=STK_PROPERTIES_CONTAINER_SLOT_STORE;
 								}
 							}
 						}
 						if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 							*data->stk_vm_current++=*stk_var;
 						}else{
-							VM_PUSH_STK_PTR(stk_var);
+							data->stk_vm_current->value=(zs_int)(new ContainerSlotStore(so_aux,(zs_int)str_symbol,stk_var));
+							data->stk_vm_current->properties=STK_PROPERTY_CONTAINER_SLOT_STORE;
+							data->stk_vm_current++;
+//							VM_PUSH_STK_PTR(stk_var);
 						}
 						continue;
 					}else if(obj->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_STRING){
@@ -380,15 +384,15 @@ find_element_object:
 								}
 							}
 
-							// save
+							// create new property initialized as undefined
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
 								VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 							}
 
 
-							stk_var->value=(zs_int)(new ContainerSlotStore(so_aux,(zs_int)str_symbol,stk_var));
-							stk_var->properties=STK_PROPERTIES_CONTAINER_SLOT_STORE;
-							VM_PUSH_STK_PTR(stk_var);
+							data->stk_vm_current->value=(zs_int)(new ContainerSlotStore(so_aux,(zs_int)str_symbol,stk_var));
+							data->stk_vm_current->properties=STK_PROPERTY_CONTAINER_SLOT_STORE;
+							data->stk_vm_current++;
 							//VM_PUSH_STK_PTR(stk_var);
 						}
 						else{ // not exists
@@ -457,13 +461,13 @@ find_element_object:
 
 				// load its value for write
 				if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
-					stk_var->value=(zs_int)(new ContainerSlotStore(so_aux,(zs_int)str_symbol,stk_var));
-					stk_var->properties=STK_PROPERTIES_CONTAINER_SLOT_STORE;
-					VM_PUSH_STK_PTR(stk_var);
-				}else{
+					data->stk_vm_current->value=(zs_int)(new ContainerSlotStore(so_aux,(zs_int)str_symbol,stk_var));
+					data->stk_vm_current->properties=STK_PROPERTY_CONTAINER_SLOT_STORE;
+					data->stk_vm_current++;
+				}
+				else{ // only read
 					*data->stk_vm_current++=*stk_var;
 				}
-
 				continue;
 			case BYTE_CODE_LOAD_UNDEFINED:
 				VM_PUSH_STK_UNDEFINED;
@@ -595,6 +599,9 @@ find_element_object:
 
 	vm_store_next:
 				store_lst_setter_functions=NULL;
+				container_slot_store=NULL;
+				container_slot_store_object=NULL;
+				container_slot_store_id_slot=0;
 				stk_src=stk_load_multi_var_src; // store ptr instruction2 op as src_var_value
 				//stk_dst=stk_result_op2;
 				stk_result_op2=stk_dst;
@@ -607,7 +614,14 @@ find_element_object:
 				//- check if ptr stk
 				if((stk_dst->properties & STK_PROPERTY_PTR_STK)!=0) {
 					stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
-				}else {
+				}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT_STORE){
+					container_slot_store=((ContainerSlotStore *)stk_dst->value);
+					container_slot_store_object=container_slot_store->object;
+					container_slot_store_id_slot=container_slot_store->id_slot;
+					stk_dst=container_slot_store->ptr_stk;
+					delete container_slot_store;
+					container_slot_store=NULL;
+				}else{
 					if((stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR)==0){
 						VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
 							,stk_to_typeof_str(data->zs,stk_dst).c_str()
@@ -720,17 +734,6 @@ find_element_object:
 
 					// TODO: get stk_dst if STK_PROPERTY_SLOT
 					StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
-					ContainerSlotStore *container_slot_store=NULL;
-					ScriptObject *container_slot_store_object=NULL;
-					zs_int 		container_slot_store_id_slot=0;
-					if(old_stk_dst.properties & STK_PROPERTIES_CONTAINER_SLOT_STORE){
-						container_slot_store=((ContainerSlotStore *)old_stk_dst.value);
-						container_slot_store_object=container_slot_store->object;
-						container_slot_store_id_slot=container_slot_store->id_slot;
-						old_stk_dst=container_slot_store->content;
-						delete container_slot_store;
-						container_slot_store=NULL;
-					}
 
 					stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
 					stk_src_ref_value=&stk_src->value;
