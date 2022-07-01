@@ -53,6 +53,7 @@ namespace zetscript{
 		cl->bindStaticMemberFunction("random",MathModule_random);
 		cl->bindStaticMemberFunction("max",MathModule_max);
 		cl->bindStaticMemberFunction("sqrt",MathModule_sqrt);
+		cl->bindStaticMemberFunction("floor",MathModule_floor);
 
 		// Console mod
 		cl=script_type_factory->registerScriptType("Console","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);

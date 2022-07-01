@@ -60,4 +60,9 @@ namespace zetscript{
 		 ZS_UNUSUED_PARAM(_zs);
 		 return sqrt(*_n);
 	 }
+
+	 zs_int MathModule_floor(ZetScript *_zs,zs_float *_n){
+		 ZS_UNUSUED_PARAM(_zs);
+		 return floor(*_n);
+	 }
 }

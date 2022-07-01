@@ -22,5 +22,6 @@ namespace zetscript{
 	 zs_float MathModule_random(ZetScript *_zs);
 	 zs_float MathModule_max(ZetScript *_zs,zs_float *_n1,zs_float *_n2);
 	 zs_float MathModule_sqrt(ZetScript *_zs,zs_float *_n);
+	 zs_int   MathModule_floor(ZetScript *_zs,zs_float *_n);
 }
 
