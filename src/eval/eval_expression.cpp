@@ -378,13 +378,24 @@ eval_error_sub_expression:
 
 				if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
 					last_load_instruction->byte_code=byte_code_load_var_type_to_push_stk(last_load_instruction->byte_code);
+
+					if(
+							last_load_instruction->byte_code==BYTE_CODE_PUSH_STK_VECTOR_ITEM
+						|| last_load_instruction->byte_code==BYTE_CODE_PUSH_STK_THIS_VARIABLE
+						|| last_load_instruction->byte_code==BYTE_CODE_PUSH_STK_OBJECT_ITEM
+
+					){
+						last_load_instruction->properties|=INSTRUCTION_PROPERTY_OBJ_ITEM_TO_STORE;
+					}
+
 				}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
 					last_load_instruction->properties=INSTRUCTION_PROPERTY_USE_PUSH_STK;
 				}
 
 				dst_instructions->concat(
-						(zs_vector *)zs_ei_left_sub_expressions.items[l]
+						ei_left_sub_expressions
 				);
+
 			}
 
 			// add final store instruction...
@@ -424,6 +435,20 @@ eval_error_sub_expression:
 						left_instructions
 					);
 
+				}
+
+				ei_last=(EvalInstruction *)left_instructions->items[left_instructions->count-1];
+
+				if(IS_BYTE_CODE_STORE(ei_last->vm_instruction.byte_code)){
+					EvalInstruction *eval_store_target=((EvalInstruction *)left_instructions->items[left_instructions->count-1-1]);
+					if(
+						eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_VECTOR_ITEM
+						|| eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_THIS_VARIABLE
+						|| eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_OBJECT_ITEM
+
+					){
+						eval_store_target->vm_instruction.properties|=INSTRUCTION_PROPERTY_OBJ_ITEM_TO_STORE;
+					}
 				}
 			}
 		}

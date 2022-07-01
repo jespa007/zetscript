@@ -282,6 +282,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_THIS_VARIABLE:
 			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
 			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
+			case BYTE_CODE_PUSH_STK_VECTOR_ITEM:
 				//instruction_aux=instruction;
 
 				while((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM){
@@ -289,7 +290,7 @@ namespace zetscript{
 					symbol_value+=zs_string(".")+SFI_GET_SYMBOL_NAME(sfo,instruction);
 				}
 
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -298,6 +299,7 @@ namespace zetscript{
 					|| instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM
 					?"\t\t":"\t"
 					,symbol_value.c_str()
+					,instruction->properties & INSTRUCTION_PROPERTY_OBJ_ITEM_TO_STORE? "[SLOT]":""
 				);
 				break;
 			case BYTE_CODE_JNT:
