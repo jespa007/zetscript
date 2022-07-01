@@ -439,7 +439,7 @@ eval_error_sub_expression:
 
 				ei_last=(EvalInstruction *)left_instructions->items[left_instructions->count-1];
 
-				if(IS_BYTE_CODE_STORE(ei_last->vm_instruction.byte_code)){
+				if(ei_last->vm_instruction.byte_code==BYTE_CODE_STORE){
 					EvalInstruction *eval_store_target=((EvalInstruction *)left_instructions->items[left_instructions->count-1-1]);
 					if(
 						eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_VECTOR_ITEM

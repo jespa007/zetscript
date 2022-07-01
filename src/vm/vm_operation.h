@@ -3,14 +3,7 @@
  *  See LICENSE file for details.
  */
 #define EXTRACT_STK_RESULT_OP1 \
-	if(stk_result_op1->properties & STK_PROPERTY_PTR_STK){\
-		stk_result_op1=(StackElement *)((stk_result_op1)->value);\
-	}\
-	if(stk_result_op1->properties & STK_PROPERTY_CONTAINER_SLOT_STORE){\
-		ContainerSlotStore *css=((ContainerSlotStore *)stk_result_op1->value);\
-		stk_result_op1=css->ptr_stk;\
-		delete css;\
-	}\
+	stk_result_op1=(StackElement *)((stk_result_op1)->value);\
 
 
 #define LOAD_PROPERTIES(__METAMETHOD__) \
