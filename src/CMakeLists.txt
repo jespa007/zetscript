@@ -361,6 +361,8 @@ SET(
 	util/zs_log.h
 	util/zs_map_iterator.h
 	util/zs_map.h
+	util/zs_map_int.h
+	util/zs_map_int_iterator.h
 	util/zs_mem.h
 	util/zs_path.h
 	util/zs_rtti.h
@@ -387,6 +389,7 @@ SET(
 	
 	# script
 	script/MemberProperty.h
+	script/ContainerSlotStore.h
 	script/MetamethodMembers.h
 	script/ScriptFunction.h
 	script/ScriptFunctionFactory.h
@@ -437,6 +440,7 @@ SET(
 	config.h
 	Instruction.h
 	StackElement.h
+	StackElement.tcc
 	Symbol.h
 	Type.h
 	zetscript.h
