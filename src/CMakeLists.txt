@@ -415,6 +415,7 @@ SET(
 	script/ScriptType.tcc
 	script/ScriptTypeFactory.h
 	script/ScriptTypeFactory.tcc
+	script/ScriptObjectClass.tcc
 	script/zs_script.h
 			
 	# scope
