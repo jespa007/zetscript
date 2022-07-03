@@ -9,7 +9,7 @@ code with any editor that supports Javascript syntax notation.
 
 ==== Install
 
-To install ZetScript ,first download last source code from http://zetscript.org
+To install ZetScript ,first download last source code from https://zetscript.org
 Then it has to compile the project with the following steps,
 1. First we have to configure the project using cmake application.
 [source]
