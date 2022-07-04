@@ -1,8 +1,8 @@
-= eBook Template
+= ZetScript 2.0.0
 :author: Jordi Espada
 :email:  jespa007@gmail.com
-:revnumber: 1.0
-:revdate:   September 6st, 2022
+:revnumber: 2.0
+:revdate:   November 6st, 2022
 :doctype: book
 :toc:
 :icons:

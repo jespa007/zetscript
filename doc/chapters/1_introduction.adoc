@@ -1,4 +1,4 @@
-=== Introduction
+= 1. Introduction
 
 ZetScript is a script language with a syntax inspired in ECMAScript or Javascript but
 also it brings a easy way to bind parts of your C++ code. ZetScript provides a virtual
@@ -7,21 +7,37 @@ Because ZetScript syntax is almost less or more equal to Javascript you can edit
 code with any editor that supports Javascript syntax notation. 
 
 
-==== Install
+== 1.1 Install
 
 To install ZetScript ,first download last source code from https://zetscript.org
 Then it has to compile the project with the following steps,
-1. First we have to configure the project using cmake application.
-[source]
+
+ . First we have to configure the project using cmake application.
++
+****
 cmake CMakeLists.txt
-
-Note: For MSVC 2017, it has a feature a Open Folder that easily configures a
-CMakeFile project just opening the folder where the project is.
-2. Second we have to compile and install the project. Using GNU tool chain is
+****
++
+Note: For MSVC 2017, it has a feature a Open Folder that easily configures a CMakeFile project just opening the folder where the project is.
+. Second we have to compile and install the project. Using GNU tool chain is
 done through this command,
++
+****
+[sudo footnote:[sudo is required when the project is compiled in linux.]] make install 
+****
 
+== 1.2 Hello World
+
+Once ZetScript is installed we present a quick sample of "HelloWorld" application, 
+
+. Create a filename named helloworld.zs and type the following sentence
++
 [source]
-[sudo<1>] make install 
-
-<1> sudo is required when the project is compiled in linux. 
-
+Console::outln("Hello world!");
++	
+. Save the file and do the following at command line,
++
+[source]
+zs helloworld.zs
++
+You should see the "Hello world" message at the command line. 
