@@ -96,11 +96,9 @@ namespace zetscript{
 
 	typedef enum{
 
-		EVAL_OPTION_NO_EXECUTE						=0x1
-		,EVAL_OPTION_SHOW_USER_BYTE_CODE			=0x2
-		,EVAL_OPTION_SHOW_SYSTEM_BYTE_CODE			=0x4
-		,EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY			=0x8
-		,EVAL_OPTION_ADD_MAIN_FUNCTION_BYTE_CODE	=0x10
+		EVAL_OPTION_NO_EXECUTE				=0x1
+		,EVAL_OPTION_SHOW_BYTE_CODE			=0x2
+		,EVAL_OPTION_SHOW_ALL_BYTE_CODE		=0x4
 
 	}EvalOption;
 
@@ -131,7 +129,7 @@ namespace zetscript{
 		inline ScriptTypeFactory *getScriptTypeFactory() { return script_type_factory;}
 
 		StackElement	eval(const zs_string & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
-		StackElement	eval(const zs_string & expresion,unsigned short options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	eval(const zs_string & expresion,unsigned short _eval_options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
 		StackElement	evalFile(const zs_string & _filename,unsigned short _eval_options=0, EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
 
 
@@ -515,7 +513,6 @@ namespace zetscript{
 		/**
 		* clear: clear compile information.
 		*/
-		void reset();
 		void clear();
 		void saveState();
 

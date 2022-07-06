@@ -1,0 +1,149 @@
+= 2. Eval
+
+The evaluation consist in process expressions and converts to byte code. The source of evaluation can came from strings  or file.
+
+== 2.1. Eval string
+To eval a string is proceed as follows,
+[source, c++]
+----
+#include "ZetScript.h"
+
+int main(){
+
+	zetscript::ZetScript zs;
+	
+	zs.eval(
+ 		"Console::outln( \"Hello world\")"
+	);
+	
+	return 0;
+}
+----
+
+
+== 2.2. Eval file
+
+
+Having a file called 'file.zs',
+
+.file.zs
+[sidebar]
+****
+[source]
+----
+Console::outln("Hello World");
+----
+****
+
+To eval a file is proceed as follow. 
+
+
+[source,c++]
+----
+#include "ZetScript.h"
+
+int main(){
+
+	zetscript::ZetScript zs;
+	
+	zs.evalFile(
+		"file.zs"
+	);
+	
+	return 0;
+} 
+----
+
+== 2.3 Eval options
+=== 2.3.1 No execution
+
+By default, evaluation process compiles and execute but it can tell to not execute passing
+second parameter with 'EvalOption::EVAL_OPTION_NO_EXECUTE' value,
+
+[source,c++]
+----
+	zs.eval(
+	 "Console::outln(\"Hello world\")"
+	 ,EvalOption::EVAL_OPTION_NO_EXECUTE
+	); 
+----
+
+=== 2.3.2 Show byte code
+
+To show the current byte code after evaluate expression, pas'EvalOption::EVAL_OPTION_SHOW_BYTE_CODE' property option,
+
+[source,c++]
+----
+	zs.eval(
+	 "var i=0;\n"
+	 "i=1;\n"
+	 ,EvalOption::EVAL_OPTION_SHOW_BYTE_CODE
+	); 
+----
+
+For the code in the list X.XX it'd show the following byte code,
+[source]
+----
+ Function: '@MainFunction'                                             
+ Stack code: 2                                                    
+ Stack local vars: 1                                         
+ Total stack required: 3                                     
+
+ Scopes: 5                                                   
+ NUM |RS|AS|               INSTRUCTION                        
+----+--+--+--------------------------------------------------
+[0000| 1|01]    LOAD_INT                0
+[0001| 1|02]    PUSH_STK_LOCAL          i
+[0002|-1|00]    STORE                   n:1 [RST]
+[0003| 1|01]    LOAD_INT                1
+[0004| 1|02]    PUSH_STK_LOCAL          i
+[0005|-1|00]    STORE                   n:1 [RST]
+----
+
+
+== 2.5 Eval exceptions
+=== 2.5.1 Script exception
+To catch eval exceptions or runtime errors it can be done through c++ try/catch,
+Example, 
+
+[source]
+----
+	try{
+		zs.evalFile(
+			"file.zs"
+		);
+	}catch(std::exception & ex){
+		fprintf(stderr,"Error:%s\n", ex.what());
+	}
+----
+
+=== 2.5.2 User error
+
+If the user wants to stop virtual machine execution due an unexpected value during part of the
+code, it can call 'System:error' function passing the error message as follows,
+
+[source]
+----
+if(n == undefined){
+	System::error("Unexpected error");
+} 
+----
+
+
+== 2.6 Save/Restore state
+ZetScript supports a way to save current compiled state. Save/restore operation is useful when, for instance, user wants to reload a expresions or files and keep previous state. 
+
+=== 2.6.1 Save state
+To save current state we have to invoke 'ZetScript::saveState'. This function returns an index that
+tells compiled state index saved.
+
+[source]
+zs.saveState()
+
+=== 2.6.2 Clear
+To clear and restore last state saved it's done by calling 'ZetScript::clear',
+
+[source]
+zs.restoreState(i) 
+
+

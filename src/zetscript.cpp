@@ -288,8 +288,8 @@ namespace zetscript{
 		eval_parse_and_compile(this,_code,_eval_data_from,_filename);
 		link();
 
-		if(_eval_options & EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE){
-			printGeneratedCode(_eval_options & EvalOption::EVAL_OPTION_SHOW_SYSTEM_BYTE_CODE);
+		if(_eval_options & EvalOption::EVAL_OPTION_SHOW_BYTE_CODE){
+			printGeneratedCode(_eval_options & EvalOption::EVAL_OPTION_SHOW_ALL_BYTE_CODE);
 		}
 
 		if((_eval_options & EvalOption::EVAL_OPTION_NO_EXECUTE)==0){
@@ -354,13 +354,11 @@ namespace zetscript{
 			buf_tmp=zs_file::read_text(_filename);
 
 			// file exist and can read ... set current pwd
-			//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
 			current_directory = zs_dir::get_current_directory();
 			zs_dir::change_dir(zs_path::get_directory(_filename));
-			//}
+
 			zs_string error_str="";
 			zs_string error_file="";
-
 
 			bool error=false;
 
@@ -379,9 +377,7 @@ namespace zetscript{
 			}
 
 			// restore previous directory
-			//if(eval_options & EVAL_OPTION_CHDIR_SCRIPT_DIRECTORY){
 			zs_dir::change_dir(current_directory);
-			//}
 
 			// deallocate before throw errors...
 

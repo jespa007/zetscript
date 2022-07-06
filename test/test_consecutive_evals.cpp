@@ -34,7 +34,7 @@ void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
 	_zs->eval("{var d=0 { var e=1}}\n");
 
 	_zs->eval("var a7=7\n");
-	_zs->eval("var a8=8\n",zetscript::EvalOption::EVAL_OPTION_SHOW_USER_BYTE_CODE);
+	_zs->eval("var a8=8\n",zetscript::EvalOption::EVAL_OPTION_SHOW_BYTE_CODE);
 
 
 	// Check 1st: all vars at the top should have idx as the end of its symbol has (i.e a1, a2, a3)
