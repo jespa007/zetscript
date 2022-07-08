@@ -3,7 +3,8 @@
  *  See LICENSE file for details.
  */
 #define VM_PUSH_SCOPE(_scope)\
-	 *data->vm_current_scope_function->scope_current++=(Scope *)_scope;
+	(data->vm_current_scope_function->scope_current)->scope=(Scope *)_scope;\
+	data->vm_current_scope_function->scope_current++;\
 
 // defer all local vars
 #define VM_POP_SCOPE(destroy_on_zero_ref)\
@@ -28,9 +29,6 @@
 			STK_SET_UNDEFINED(stk_local_var);\
 			stk_local_var++;\
 		}\
-	}\
-	if(destroy_on_zero_ref==true){\
-		vm_remove_empty_shared_pointers(vm,data->vm_idx_call);\
 	}\
 	--data->vm_current_scope_function->scope_current;\
 }

@@ -25,7 +25,7 @@ namespace zetscript{
 			Instruction *ins=&(((EvalInstruction *)eval_data->current_function->eval_instructions.items[i])->vm_instruction);//&eval_data->current_function->instructions[i]->vm_instruction;
 			if(ins->value_op1 == ZS_IDX_INSTRUCTION_JMP_BREAK){
 				ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
-				ins->value_op2=idx_end_instruction-i;
+				ins->value_op2=idx_end_instruction-i-1; // -1 is for jmp to extra POP SCOPE, due it does PUSH SCOPE ALWAYS in the loops
 			}else if(ins->value_op1 == ZS_IDX_INSTRUCTION_JMP_CONTINUE){
 				ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 				if(idx_post_instruction_for_start != ZS_IDX_UNDEFINED){
@@ -182,6 +182,12 @@ namespace zetscript{
 				)
 			));
 
+			eval_data->current_function->eval_instructions.push_back((zs_int)(
+					new EvalInstruction(
+						BYTE_CODE_POP_SCOPE
+					)
+			));
+
 			// update jnt instruction to jmp after jmp instruction...
 			ei_jnt->vm_instruction.value_op2=eval_data->current_function->eval_instructions.count-idx_instruction_conditional_while;
 
@@ -279,6 +285,21 @@ namespace zetscript{
 					,-((int)(eval_data->current_function->eval_instructions.count)-idx_do_while_start)
 			)));
 
+			// insert jmp instruction to skip pop ...
+			eval_data->current_function->eval_instructions.push_back((zs_int)(
+					new EvalInstruction(
+						BYTE_CODE_JMP
+						,ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
+						,2
+					)
+			));
+
+			eval_data->current_function->eval_instructions.push_back((zs_int)(
+					new EvalInstruction(
+						BYTE_CODE_POP_SCOPE
+					)
+			));
+
 			ei_aux->instruction_source_info.file=eval_data->current_parsing_file;
 			ei_aux->instruction_source_info.line=line;
 
@@ -304,7 +325,7 @@ namespace zetscript{
 			,idx_instruction_for_after_jnz_condition=ZS_IDX_UNDEFINED
 			,idx_post_instruction_for_start=ZS_IDX_UNDEFINED;
 
-		EvalInstruction *ei_jnt=NULL,*ei_jmp=NULL; // conditional to end block
+		EvalInstruction *ei_jnt=NULL; // conditional to end block
 		zs_vector ei_post_operations
 				,ei_load_container_identifier
 				,ei_init_vars_for;
@@ -772,10 +793,17 @@ namespace zetscript{
 
 		// insert jmp instruction to begin condition for...
 		eval_data->current_function->eval_instructions.push_back((zs_int)(
-				ei_jmp=new EvalInstruction(
+				new EvalInstruction(
 					BYTE_CODE_JMP
 					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,-((int)(eval_data->current_function->eval_instructions.count)-idx_instruction_for_start)
+				)
+		));
+
+		// insert extra pop_scope for 'break' cases
+		eval_data->current_function->eval_instructions.push_back((zs_int)(
+				new EvalInstruction(
+					BYTE_CODE_POP_SCOPE
 				)
 		));
 

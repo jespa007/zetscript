@@ -1718,7 +1718,31 @@ execute_function:
 				VM_PUSH_SCOPE(instruction->value_op2);
 				continue;
 			 case BYTE_CODE_POP_SCOPE:
-				VM_POP_SCOPE(true)
+				//VM_POP_SCOPE(true)
+			 	 {\
+					Scope *scope=(data->vm_current_scope_function->scope_current-1)->scope;\
+					StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
+					zs_vector *scope_symbols=scope->symbol_variables;\
+					int count=scope_symbols->count;\
+					if(count > 0){\
+						StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\
+						while(count--){\
+							if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
+								ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
+								if(so != NULL && so->shared_pointer!=NULL){\
+									/* printf("[%s] %i\n",((Symbol *)scope_symbols->items[(scope_symbols->count-1)-count])->name.c_str(),so->shared_pointer->data.n_shares);*/\
+									true==true?\
+										vm_unref_shared_script_object_and_remove_if_zero(vm,&so)\
+									:\
+										 vm_unref_shared_script_object(vm,so,data->vm_idx_call);\
+								}\
+							}\
+							STK_SET_UNDEFINED(stk_local_var);\
+							stk_local_var++;\
+						}\
+					}\
+					--data->vm_current_scope_function->scope_current;\
+			 	 }
 				continue;
 			 case BYTE_CODE_RESET_STACK:
 				 data->stk_vm_current=stk_start;
