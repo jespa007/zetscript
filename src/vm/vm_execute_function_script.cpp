@@ -220,7 +220,7 @@ namespace zetscript{
 						VM_STOP_EXECUTEF("Expected String,Vector or Object for access '[]' opertaion"); \
 					}
 				}else{
-					VM_STOP_EXECUTEF("Expected object for access '[]' operation"); \
+					VM_STOP_EXECUTE("Expected object for access '[]' operation but it was type '%s'",stk_to_str(data->zs,stk_result_op1).c_str()); \
 
 				}
 				continue;

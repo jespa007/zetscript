@@ -115,8 +115,8 @@ namespace zetscript{
 		return new_scope;
 	}
 
-	void eval_check_scope(EvalData *eval_data, Scope *scope){
-		if(scope->symbol_variables->count > 0){ // if there's local symbols insert push/pop scope for there symbols
+	void eval_check_scope(EvalData *eval_data, Scope *scope, bool _force_push_pop){
+		if(scope->symbol_variables->count > 0 || _force_push_pop==true){ // if there's local symbols insert push/pop scope for there symbols
 			if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 				eval_data->current_function->eval_instructions.insert(
 						scope->tmp_idx_instruction_push_scope
@@ -136,7 +136,7 @@ namespace zetscript{
 		}
 	}
 
-	char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, ScriptFunction *sf,ScriptFunctionParam *params, size_t params_len){
+	char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, ScriptFunction *sf,ScriptFunctionParam *params, size_t params_len, bool _force_push_pop){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 
@@ -190,7 +190,7 @@ namespace zetscript{
 				}
 
 				if(is_function == false){
-					eval_check_scope(eval_data,new_scope_info);
+					eval_check_scope(eval_data,new_scope_info,_force_push_pop);
 				}
 				return aux_p+1;
 			}

@@ -845,7 +845,7 @@ apply_metamethod_error:
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
 			//VM_ERROR("internal: Expected object");
 			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
-				VM_ERROR("Variable '%s' it doesn't implements iterator",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+				VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator",SFI_GET_SYMBOL_NAME(calling_function,instruction),stk_to_str(data->zs,data->stk_vm_current).c_str());
 				return;
 			}
 		}

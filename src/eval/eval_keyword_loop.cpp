@@ -162,7 +162,12 @@ namespace zetscript{
 					eval_data
 					,aux_p
 					,line
-					,scope_info)
+					,scope_info
+					,NULL
+					,NULL
+					,0
+					,true
+					)
 			 	 ) == NULL){
 				return NULL;
 			}
@@ -223,6 +228,10 @@ namespace zetscript{
 					,aux_p
 					,line
 					,scope_info
+					,NULL
+					,NULL
+					,0
+					,true
 			))==NULL){
 				return NULL;
 			}
@@ -367,6 +376,7 @@ namespace zetscript{
 			// we do another eval to capture load byte code instructions from variables variables
 			is_for_in=false;
 			char *test_aux;
+			char name[1024]={0};
 			bool error_some_instruction_not_load_local=false;
 			int test_line=line;
 
@@ -432,6 +442,7 @@ namespace zetscript{
 					);
 				}
 
+				// container expression
 				key_w=eval_is_keyword(aux_p);
 				if((key_w!=Keyword::KEYWORD_UNKNOWN) && (key_w!=Keyword::KEYWORD_THIS)){
 					EVAL_ERROR_FILE_LINE_GOTO(
@@ -444,7 +455,7 @@ namespace zetscript{
 				}
 
 				// eval iterator variable
-				if((aux_p = eval_sub_expression(
+				if((test_aux = eval_sub_expression(
 						eval_data
 						,aux_p
 						,line
@@ -455,6 +466,26 @@ namespace zetscript{
 				))==NULL){
 					goto label_exit_for;
 				}
+
+				strncpy(name,aux_p,test_aux-aux_p);
+
+				switch(((EvalInstruction *)ei_load_container_identifier.items[0])->vm_instruction.byte_code){
+				case BYTE_CODE_LOAD_UNDEFINED:
+				case BYTE_CODE_LOAD_NULL:
+				case BYTE_CODE_LOAD_ZS_FLOAT:
+				case BYTE_CODE_LOAD_BOOL:
+				case BYTE_CODE_LOAD_ZS_INT:
+					EVAL_ERROR_FILE_LINE_GOTO(
+							eval_data->current_parsing_file
+							,test_line
+							,label_exit_for
+							,"Expected container as variable but it was constant value '%s'"
+							,name
+					);
+					break;
+				}
+
+				aux_p=test_aux;
 
 				if(*aux_p!=')'){
 					if((tst_op_aux=is_operator(aux_p))!=OPERATOR_UNKNOWN){
@@ -716,12 +747,16 @@ namespace zetscript{
 		// increase the parsing_loop in order to take account for continues and breaks
 		eval_data->current_function->parsing_loop++;
 
-		// eval block ...
+		// eval block and write push/pop scope...
 		if((aux_p=eval_block(
 				eval_data
 				,aux_p
 				,line
 				,new_scope
+				,NULL
+				,NULL
+				,0
+				,true
 		))==NULL){
 			// deallocate post operations
 			goto label_exit_for;

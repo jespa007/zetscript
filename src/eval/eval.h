@@ -35,10 +35,10 @@ namespace zetscript{
 
 	void	eval_init();
 
-	char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,ScriptFunction *sf=NULL,ScriptFunctionParam *params=NULL, size_t params_len=0);
+	char * 	eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,ScriptFunction *sf=NULL,ScriptFunctionParam *params=NULL, size_t params_len=0,bool _force_push_pop=false);
 	char * 	eval_parse_and_compile_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case=false);
 	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_function=false);
-	void 	eval_check_scope(EvalData *eval_data, Scope *scope);
+	void 	eval_check_scope(EvalData *eval_data, Scope *scope, bool _force_push_pop=false);
 	void 	eval_push_function(EvalData *eval_data,ScriptFunction *script_function);
 	int 	eval_pop_and_compile_function(EvalData *_eval_data);
 	void 	eval_pop_current_function(EvalData *eval_data);
