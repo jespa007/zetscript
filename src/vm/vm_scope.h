@@ -3,15 +3,15 @@
  *  See LICENSE file for details.
  */
 #define VM_PUSH_SCOPE(_scope)\
-	(data->vm_current_scope_function->current_scope_block)->scope=(Scope *)_scope;\
-	data->vm_current_scope_function->current_scope_block++;\
+	VM_CURRENT_SCOPE_FUNCTION->current_scope_block->scope=(Scope *)_scope;\
+	VM_CURRENT_SCOPE_FUNCTION->current_scope_block++;\
 
 // defer all local vars
 #define VM_POP_SCOPE \
 {\
-	VM_ScopeBlock *scope_block=--data->vm_current_scope_function->current_scope_block;\
+	VM_ScopeBlock *scope_block=--VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
 	Scope *scope=scope_block->scope;\
-	StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
+	StackElement         * stk_local_vars	=VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
 	zs_vector *scope_symbols=scope->symbol_variables;\
 	int count=scope_symbols->count;\
 	if(count > 0){\
@@ -34,7 +34,7 @@ namespace zetscript{
 
 	struct VM_ScopeBlock{
 		Scope				*scope;
-		InfoSharedList		scope_block;
+		InfoSharedList		unreferenced_objects;
 	};
 
 

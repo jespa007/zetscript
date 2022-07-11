@@ -92,9 +92,9 @@ namespace zetscript{
 #endif
 
 		// Init local vars ...
-		//data->vm_current_scope_function->current_scope_block = NULL;
 		data->vm_current_scope_function->current_scope_block=data->vm_current_scope_function->first_scope_block;
 		data->vm_current_scope_function->stk_local_vars=_stk_local_var;
+		data->vm_current_scope_function++;
 
 		// preserve global scope vars
 		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN)){
@@ -108,7 +108,7 @@ namespace zetscript{
 				STK_SET_UNDEFINED(_stk_local_var+i);
 			}
 		}
-		data->vm_current_scope_function++;
+
 
 		//-----------------------------------------------------------------------------------------------------------------------
 		//
@@ -168,7 +168,6 @@ namespace zetscript{
 								VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
 							}
 
-							// TODO: save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
 							if((stk_var =so_vector->getUserElementAt(index))==NULL){
 								goto lbl_exit_function;
 							} \
@@ -1260,14 +1259,12 @@ load_function:
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							);
 						}
-
 					}
 					Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;
 					sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
 				}
 
 execute_function:
-
 
 				sf_call_n_local_symbols=0;
 
@@ -1398,7 +1395,6 @@ execute_function:
 								if(!vm_share_script_object(vm,(ScriptObject *)data->stk_vm_current->value)){
 									goto lbl_exit_function;
 								}
-
 							}
 							data->stk_vm_current++;
 							break;
@@ -1410,7 +1406,6 @@ execute_function:
 						}
 						sf_call_n_args++;
 					}
-
 
 					if(sf_call_is_constructor){
 						// When the object is being constructed its shares is 0. In the 'constructor' function may pass 'this' throug other functions
@@ -1434,9 +1429,7 @@ execute_function:
 						if(!vm_unref_shared_script_object(vm,sf_call_calling_object,VM_CURRENT_SCOPE_BLOCK)){
 							goto lbl_exit_function;
 						}
-
 					}
-
 
 					sf_call_n_local_symbols=sf_call_script_function->local_variables->count;
 				}
@@ -1566,51 +1559,29 @@ execute_function:
 				for(StackElement *stk_it=data->stk_vm_current-1;stk_it>=stk_start;stk_it--){ // can return something. value is +1 from stack
 					// if scriptvariable and in the zeros list, deattach
 					if(stk_it->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						//if(!IS_STK_THIS(stk_it)){
+						ScriptObject *script_var=(ScriptObject *)stk_it->value;
 
-							ScriptObject *script_var=(ScriptObject *)stk_it->value;
+						//special case for constant string object (they don't are shared elements)
+						if(script_var->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (script_var->shared_pointer==NULL)){
+							// if is not shared is constant...
+							ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
+							sc->set(script_var->toString());
+							stk_it->properties=STK_PROPERTY_SCRIPT_OBJECT;
+							stk_it->value=(zs_int)sc;
+						}else{
+							if(script_var->shared_pointer->data.n_shares<=1){ // was created here... remove share data
 
-							//special case for constant string object (they don't are shared elements)
-							if(script_var->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (script_var->shared_pointer==NULL)){
-								// if is not shared is constant...
-								ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
-								sc->set(script_var->toString());
-								stk_it->properties=STK_PROPERTY_SCRIPT_OBJECT;
-								stk_it->value=(zs_int)sc;
-							}else{
-								if(script_var->shared_pointer->data.n_shares<=1){ // was created here... remove
-
-									// deatch from list of created scope block to avoid double dealloc on pop scope
-									if(script_var->shared_pointer->data.n_shares == 0){
-										if(vm_deattach_shared_node(vm,&script_var->shared_pointer->data.created_scope_block->unreferenced_objects,script_var->shared_pointer)==false){
-											goto lbl_exit_function;
-										}
+								// deatch from list of created scope block to avoid double dealloc on pop scope
+								if(script_var->shared_pointer->data.n_shares == 0){
+									if(vm_deattach_shared_node(vm,&script_var->shared_pointer->data.created_scope_block->unreferenced_objects,script_var->shared_pointer)==false){
+										goto lbl_exit_function;
 									}
-									free(script_var->shared_pointer);
-									script_var->shared_pointer=NULL;
 								}
-								//int idx_call=IDX_VM_CURRENT_SCOPE_FUNCTION;
-								/*if(script_var->shared_pointer->data.created_idx_call==data->vm_idx_call){ // the variable was created in this function ctx
-									// only removes all refs from local
-									if(script_var->shared_pointer->data.n_shares == 0){ // removes from zero shares to not to be removed automatically on pop scope
-										if(vm_deattach_shared_node(vm,&data->zero_shares[script_var->shared_pointer->data.created_idx_call],script_var->shared_pointer)==false){
-											goto lbl_exit_function;
-										}
-									}
-									else{
-										// other wise remove from shared vars
-										if(vm_deattach_shared_node(vm,&data->shared_vars,script_var->shared_pointer)==false){
-												goto lbl_exit_function;
-										}
-									}
-									// free shared pointer and set as NULL and is returned as new object
-									free(script_var->shared_pointer);
-									script_var->shared_pointer=NULL;
-								}*/
-
-								//-------------------------------------------------------------------
+								free(script_var->shared_pointer);
+								script_var->shared_pointer=NULL;
 							}
-						//}
+							//-------------------------------------------------------------------
+						}
 					}
 				}
 				goto lbl_return_function;
@@ -1731,7 +1702,28 @@ execute_function:
 				VM_PUSH_SCOPE(instruction->value_op2);
 				continue;
 			 case BYTE_CODE_POP_SCOPE:
-				 VM_POP_SCOPE;
+				 //VM_POP_SCOPE;
+				 {\
+					VM_ScopeBlock *scope_block=--VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
+					Scope *scope=scope_block->scope;\
+					StackElement         * stk_local_vars	=VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
+					zs_vector *scope_symbols=scope->symbol_variables;\
+					int count=scope_symbols->count;\
+					if(count > 0){\
+						StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\
+						while(count--){\
+							if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
+								ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
+								if(so != NULL && so->shared_pointer!=NULL){\
+									 vm_unref_shared_script_object(vm,so,NULL);\
+								}\
+							}\
+							STK_SET_UNDEFINED(stk_local_var);\
+							stk_local_var++;\
+						}\
+					}\
+					vm_remove_empty_shared_pointers(vm,scope_block);\
+				 }
 				 continue;
 			 case BYTE_CODE_RESET_STACK:
 				 data->stk_vm_current=stk_start;
@@ -1812,29 +1804,16 @@ execute_function:
 
 		//=========================
 		// POP STACK
-		//if(data->vm_current_scope_function>VM_SCOPE_FUNCTION_MAIN){
 
 
-			// preserve global objects
-			//if(data->vm_current_scope_function > VM_SCOPE_FUNCTION_FIRST){
+		while(
+			(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
+		){
+			VM_POP_SCOPE; // do not check removeEmptySharedPointers to have better performance
+		}
 
-			while(
-				(data->vm_current_scope_function->current_scope_block > data->vm_current_scope_function->first_scope_block)
-				){
-				VM_POP_SCOPE; // do not check removeEmptySharedPointers to have better performance
-			}
+		--data->vm_current_scope_function;
 
-			/*if((data->zero_shares+data->vm_idx_call)->first!=NULL){
-				vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
-			}*/
-
-			;
-			//}
-
-			--data->vm_current_scope_function;
-
-			//--data->vm_idx_call;
-		//}
 
 		// POP STACK
 		//=========================

@@ -441,10 +441,6 @@ namespace zetscript{
 					}
 					n_global_symbol_found++;
 
-					/*if(symbol->properties & SYMBOL_PROPERTY_ALLOCATED_STK){
-						free((StackElement *)symbol->ref_ptr);
-					}*/
-
 					// erase unused global symbol
 					delete symbol;
 				}
@@ -464,9 +460,6 @@ namespace zetscript{
 			global_symbol_variables->resize(global_symbol_variables->count-n_global_symbol_found);
 
 		}
-
-
-		//vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
 	}
 
 	const char *ZetScript::getFilenameByRef(const char * _filename_by_ref){

@@ -192,7 +192,7 @@ namespace zetscript{
 			ei_jnt->vm_instruction.value_op2=eval_data->current_function->eval_instructions.count-idx_instruction_conditional_while;
 
 			// catch all breaks in the while...
-			link_loop_break_continues(eval_data,idx_instruction_jmp_while);
+			link_loop_break_continues(eval_data,idx_instruction_jmp_while,eval_data->current_function->eval_instructions.count-3);
 
 			return aux_p;
 		}
@@ -208,6 +208,7 @@ namespace zetscript{
 		Keyword key_w;
 		int idx_do_while_start;
 		int idx_do_while_conditional;
+		int idx_end_block_idx;
 
 		// check for keyword ...
 		key_w = eval_is_keyword(aux_p);
@@ -241,6 +242,7 @@ namespace zetscript{
 			))==NULL){
 				return NULL;
 			}
+
 			eval_data->current_function->parsing_loop--;
 
 				// Finally evaluate conditional line ...
@@ -307,7 +309,7 @@ namespace zetscript{
 			//link_breaks(eval_data);
 
 			// catch all continues and evaluates bottom...
-			link_loop_break_continues(eval_data,idx_do_while_start);
+			link_loop_break_continues(eval_data,idx_do_while_start,idx_do_while_conditional-1); // -1 POP_SCOPE
 
 
 			return end_expr+1;
@@ -816,7 +818,7 @@ namespace zetscript{
 		}
 
 		// catch all continues and set all jmps after processing block but before post operation...
-		link_loop_break_continues(eval_data,idx_instruction_for_start,idx_post_instruction_for_start);
+		link_loop_break_continues(eval_data,idx_instruction_for_start,idx_post_instruction_for_start-1);
 
 		// true: We treat declared variables into for as another scope.
 		eval_check_scope(eval_data,new_scope);

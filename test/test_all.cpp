@@ -87,36 +87,36 @@ int main(int argc, char * argv[]) {
 	// test all external tests...
 	const char *test_script_files[]={
 		//"samples/assert_error.zs"
-		"test_assign"
-		,"test_class_property"
-		,"test_call_member_function"
-		,"test_class_metamethod"
-		,"test_const"
-		,"test_eval"
-		,"test_for_in_object"
-		,"test_for_in_string"
-		,"test_for_in_vector"
-		,"test_function_arg_by_ref"
-		,"test_function_arg_default"
-		,"test_if_else"
-		,"test_import"
-		,"test_in"
-		,"test_instanceof"
-		,"test_instance_by_value"
-		,"test_iterator_object"
-		,"test_iterator_string"
-		,"test_iterator_vector"
-		,"test_json"
-		,"test_loops_break_continue"
-		,"test_loops"
-		,"test_object"
-		,"test_string"
-		,"test_switch"
-		,"test_ternary"
-		,"test_typeof"
-		,"test_vector"
-		,"test_integer_values"
-		,"test_constant_operations"
+		"test_assign"								//1.
+		,"test_class_property"						//2.
+		,"test_call_member_function"				//3.
+		,"test_class_metamethod"					//4.
+		,"test_const"								//5.
+		,"test_eval"								//6.
+		,"test_for_in_object"						//7.
+		,"test_for_in_string"						//8.
+		,"test_for_in_vector"						//9.
+		,"test_function_arg_by_ref"					//10.
+		,"test_function_arg_default"				//11.
+		,"test_if_else"								//12.
+		,"test_import"								//13.
+		,"test_in"									//14.
+		,"test_instanceof"							//15.
+		,"test_instance_by_value"					//16.
+		,"test_iterator_object"						//17.
+		,"test_iterator_string"						//18.
+		,"test_iterator_vector"						//19.
+		,"test_json"								//20.
+		,"test_loops_break_continue"				//21.
+		,"test_loops"								//22.
+		,"test_object"								//23.
+		,"test_string"								//24.
+		,"test_switch"								//25.
+		,"test_ternary"								//26.
+		,"test_typeof"								//27.
+		,"test_vector"								//28.
+		,"test_integer_values"						//29.
+		,"test_constant_operations"					//30.
 		,0
 	};
 

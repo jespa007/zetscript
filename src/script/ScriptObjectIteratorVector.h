@@ -28,7 +28,7 @@ namespace zetscript{
 		void get();
 		void next();
 		bool end();
-		~ScriptObjectIteratorVector();
+		//~ScriptObjectIteratorVector();
 	private:
 
 		ScriptObjectVector *vo;

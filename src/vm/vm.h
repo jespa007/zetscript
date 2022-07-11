@@ -58,7 +58,9 @@
 #define IDX_VM_CURRENT_SCOPE_FUNCTION 	(data->vm_current_scope_function-data->vm_scope_function)
 #define VM_SCOPE_FUNCTION_MAIN 			(data->vm_scope_function+0)
 #define VM_SCOPE_FUNCTION_FIRST 		(data->vm_scope_function+1)
-#define VM_CURRENT_SCOPE_BLOCK			(data->vm_current_scope_function->current_scope_block)
+#define VM_CURRENT_SCOPE_FUNCTION		(data->vm_current_scope_function-1)
+#define VM_CURRENT_SCOPE_BLOCK			(VM_CURRENT_SCOPE_FUNCTION->current_scope_block-1)
+
 
 namespace zetscript{
 

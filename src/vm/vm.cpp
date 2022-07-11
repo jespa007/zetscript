@@ -17,25 +17,19 @@ namespace zetscript{
 	void vm_do_stack_dump(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		// derefer all variables in all scopes (except main )...
-		// TODO: do stack dump from current vm_stk
-		while(data->vm_current_scope_function > VM_SCOPE_FUNCTION_FIRST){
+		while(data->vm_current_scope_function > VM_SCOPE_FUNCTION_MAIN){
 			while(
-					(data->vm_current_scope_function->current_scope_block > data->vm_current_scope_function->first_scope_block)
-								//&&
-				//(data->vm_current_scope_function->current_scope_block != &data->vm_scope_function[0].scope_block[0])
+					(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
 
 			){
-				VM_POP_SCOPE;//(false);
+				VM_POP_SCOPE;
 			}
 
-			//vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 			--data->vm_current_scope_function;
-			//--data->vm_idx_call;
 		}
 
-
 		data->vm_current_scope_function =  VM_SCOPE_FUNCTION_MAIN;
-				//data->vm_idx_call=0;
+		vm_remove_empty_shared_pointers(vm,vm_get_scope_block_main(vm));
 	}
 
 	VirtualMachine *vm_new(ZetScript *_zs){
@@ -79,7 +73,7 @@ namespace zetscript{
 			_node->next=NULL;
 			_node->data.n_shares=0;
 			_node->data.ptr_script_object_shared=_obj;
-			_node->data.created_scope_block=data->vm_current_scope_function->current_scope_block;//data->vm_idx_call; // it saves the zeros nodes where was set
+			_node->data.created_scope_block=VM_CURRENT_SCOPE_BLOCK;//data->vm_idx_call; // it saves the zeros nodes where was set
 
 			// insert node into shared nodes ...
 			if(!vm_insert_shared_node(vm,&_node->data.created_scope_block->unreferenced_objects,_node)){
@@ -246,7 +240,7 @@ namespace zetscript{
 
 	VM_ScopeBlock  *vm_get_scope_block_main(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		return &data->vm_current_scope_function->scope_block[0];
+		return &data->vm_scope_function[0].scope_block[0];
 	}
 
 	StackElement *vm_get_current_stack_element(VirtualMachine *vm){
@@ -368,6 +362,11 @@ namespace zetscript{
 			calling_function,
 			stk_start
 		);
+
+		// remove empty shared pointers
+		if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
+			vm_remove_empty_shared_pointers(vm,vm_get_scope_block_main(vm));
+		}
 
 		// get number return elements
 		if(data->vm_error){

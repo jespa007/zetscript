@@ -131,9 +131,6 @@ namespace zetscript{
 		ScriptFunction  *main_function_object;
 		ScriptType *main_class_object;
 
-		// TODO: jespada (remove vm_idx_call, data->vm_current_scope_function - data->vm_scope_function it gives also the call
-		//int vm_idx_call;
-
 		int idx_last_statment;
 		const ScriptFunction *current_call_c_function;
 		ZetScript *zs;
@@ -250,9 +247,6 @@ namespace zetscript{
 
 	inline void vm_remove_empty_shared_pointers(VirtualMachine *vm,VM_ScopeBlock *scope_block){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		/*if(idx_call_stack<=0){
-			return;
-		}*/
 
 		InfoSharedList *list=&scope_block->unreferenced_objects;//&data->zero_shares[idx_call_stack];
 		InfoSharedPointerNode *next_node=NULL,*current=list->first;
@@ -277,55 +271,6 @@ namespace zetscript{
 			}while(!finish);
 		}
 	}
-/*
-	inline bool vm_decrement_shared_nodes_and_dettach_if_zero(VirtualMachine *vm,InfoSharedPointerNode *_node, bool & is_dettached){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		is_dettached=false;
-		unsigned short *n_shares = &_node->data.n_shares;
-		if(*n_shares > 0){ // not zero
-			if(--(*n_shares)==0){ // mov back to 0s shares (candidate to be deleted on GC check)
-
-				if(!vm_deattach_shared_node(vm,&data->shared_vars,_node)){
-					return false;
-				}
-
-				is_dettached=true;
-			}
-		}
-
-		return true;
-	}*/
-
-	/*inline bool vm_unref_shared_script_object_and_remove_if_zero(VirtualMachine *vm,ScriptObject **so){
-
-		InfoSharedPointerNode *_node=(*so)->shared_pointer;
-		bool is_dettached=false;
-
-		if(_node==NULL){
-			VM_SET_USER_ERRORF(vm,"shared ptr not registered");
-			return false;
-		}
-
-		if(_node->data.n_shares==0){
-			VM_SET_USER_ERRORF(vm,"object already unreferenced");
-			return false;
-		}
-
-		//if(vm_decrement_shared_nodes_and_dettach_if_zero(vm,_node,is_dettached)){
-
-			// remove if last share
-		_node->data.n_shares--;
-
-			if(_node->data.n_shares == 1){
-				delete _node->data.ptr_script_object_shared; // it deletes shared_script_object
-				free(_node);
-			}
-			return true;
-		//}
-
-		//return false;
-	}*/
-
 
 	inline bool vm_unref_shared_script_object(VirtualMachine *vm, ScriptObject *_obj,VM_ScopeBlock *_scope_block){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
@@ -349,26 +294,13 @@ namespace zetscript{
 				delete shared_pointer->data.ptr_script_object_shared; // it deletes shared_script_object
 				free(shared_pointer);
 			}else{
-				InfoSharedList *unreferenced_objects = &_scope_block->unreferenced_objects;//&data->vm_current_scope_function->current_scope_block->unreferenced_objects;
+				InfoSharedList *unreferenced_objects = &_scope_block->unreferenced_objects;
 
 				if(vm_insert_shared_node(vm,unreferenced_objects,shared_pointer)==false){ // insert to zero shares vector to remove automatically on ending scope
 					return false;
 				}
 			}
-
-			/*bool is_dettached=false;
-			if(vm_decrement_shared_nodes_and_dettach_if_zero(vm,shared_pointer,is_dettached)){
-				/*if(is_dettached){
-					shared_pointer->data.created_idx_call=idx_current_call;
-					if(!vm_insert_shared_node(vm,&data->zero_shares[shared_pointer->data.created_idx_call],shared_pointer)){ // insert to zero shares vector to remove automatically on ending scope
-						return false;
-					}
-				}
-				return true;
-			}*/
-		}/*else{
-
-		}*/
+		}
 
 		return true;
 	}
@@ -540,7 +472,6 @@ namespace zetscript{
 					aux_string = ((ScriptObject *)current_arg->value)->getScriptType()->str_script_type_ptr;
 					break;
 				}
-
 
 				args_str.append(zs_rtti::demangle(aux_string.c_str()));
 
@@ -934,7 +865,16 @@ apply_metamethod_error:
 				return;
 			}
 
+
+
 			obj=(ScriptObject *)data->stk_vm_current->value;
+
+			if(!vm_share_script_object(vm,obj)){\
+				goto lbl_exit_function;\
+			}\
+
+
+
 			sc=obj->getScriptType();
 
 			// check all functions...
