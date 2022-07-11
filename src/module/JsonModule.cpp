@@ -29,7 +29,7 @@ namespace zetscript{
 			vm_set_error(vm,zs_string("Error deserialize:")+deserialize_data.str_error);
 			if(return_stack_element.properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)return_stack_element.value;
-				vm_unref_shared_script_object_and_remove_if_zero(vm,&so);
+				vm_unref_shared_script_object(vm,so,NULL);
 			}
 			return_stack_element=k_stk_undefined;
 		}

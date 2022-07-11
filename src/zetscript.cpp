@@ -397,7 +397,7 @@ namespace zetscript{
 
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
 		ZS_UNUSUED_PARAM(_idx_start_function);
-
+		VM_ScopeBlock *vm_scope_block_main=vm_get_scope_block_main(virtual_machine);
 		zs_string global_symbol;
 		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
@@ -406,6 +406,7 @@ namespace zetscript{
 		zs_vector *global_symbol_variables= main_scope->symbol_variables;
 		int n_global_symbol_found=0;
 		int v=local_variables->count-1;
+
 
 		// Because all symbols are ordered by scope, have G as global symbols and L local symbols the disposition is the following,
 		//
@@ -432,7 +433,7 @@ namespace zetscript{
 						var =((ScriptObjectObject *)(vm_stk_element->value));
 						if(var){
 							if(var->shared_pointer != NULL){
-								if(!vm_unref_shared_script_object(this->virtual_machine,var,IDX_CALL_STACK_MAIN)){
+								if(!vm_unref_shared_script_object(this->virtual_machine,var,NULL)){
 									THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
 								}
 							}
@@ -465,7 +466,7 @@ namespace zetscript{
 		}
 
 
-		vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
+		//vm_remove_empty_shared_pointers(virtual_machine,IDX_CALL_STACK_MAIN);
 	}
 
 	const char *ZetScript::getFilenameByRef(const char * _filename_by_ref){

@@ -3,13 +3,14 @@
  *  See LICENSE file for details.
  */
 #define VM_PUSH_SCOPE(_scope)\
-	(data->vm_current_scope_function->scope_current)->scope=(Scope *)_scope;\
-	data->vm_current_scope_function->scope_current++;\
+	(data->vm_current_scope_function->current_scope_block)->scope=(Scope *)_scope;\
+	data->vm_current_scope_function->current_scope_block++;\
 
 // defer all local vars
-#define VM_POP_SCOPE(destroy_on_zero_ref)\
+#define VM_POP_SCOPE \
 {\
-	Scope *scope=(data->vm_current_scope_function->scope_current-1)->scope;\
+	VM_ScopeBlock *scope_block=--data->vm_current_scope_function->current_scope_block;\
+	Scope *scope=scope_block->scope;\
 	StackElement         * stk_local_vars	=data->vm_current_scope_function->stk_local_vars;\
 	zs_vector *scope_symbols=scope->symbol_variables;\
 	int count=scope_symbols->count;\
@@ -19,31 +20,27 @@
 			if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
 				ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
 				if(so != NULL && so->shared_pointer!=NULL){\
-					/* printf("[%s] %i\n",((Symbol *)scope_symbols->items[(scope_symbols->count-1)-count])->name.c_str(),so->shared_pointer->data.n_shares);*/\
-					destroy_on_zero_ref==true?\
-						vm_unref_shared_script_object_and_remove_if_zero(vm,&so)\
-					:\
-						 vm_unref_shared_script_object(vm,so,data->vm_idx_call);\
+					 vm_unref_shared_script_object(vm,so,NULL);\
 				}\
 			}\
 			STK_SET_UNDEFINED(stk_local_var);\
 			stk_local_var++;\
 		}\
 	}\
-	--data->vm_current_scope_function->scope_current;\
+	vm_remove_empty_shared_pointers(vm,scope_block);\
 }
 
 namespace zetscript{
 
 	struct VM_ScopeBlock{
 		Scope				*scope;
-		zs_vector			unreferenced_objects;
+		InfoSharedList		unreferenced_objects;
 	};
 
 
 	struct VM_ScopeFunction{
-		VM_ScopeBlock		scope[MAX_INNER_SCOPES_FUNCTION];
-		VM_ScopeBlock		*scope_current;
+		VM_ScopeBlock		scope_block[MAX_INNER_SCOPES_FUNCTION];
+		VM_ScopeBlock		*current_scope_block;
 		StackElement 		*stk_local_vars;
 	};
 

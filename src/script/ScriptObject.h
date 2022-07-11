@@ -14,11 +14,13 @@ namespace zetscript{
 	class ScriptFunction;
 	class ScriptObjectMemberFunction;
 	class ScriptTypeFactory;
+	struct VM_ScopeBlock;
 
 	typedef struct _SharedPointerInfo {
 		ScriptObject 			*ptr_script_object_shared;
 		unsigned short 			n_shares;
-		int						created_idx_call;
+		//int						created_idx_call;
+		VM_ScopeBlock			*created_scope_block;
 	} SharedPointerInfo;
 
 	typedef struct _InfoSharedPointerNode{

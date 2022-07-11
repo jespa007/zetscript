@@ -18,18 +18,24 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		// derefer all variables in all scopes (except main )...
 		// TODO: do stack dump from current vm_stk
-		while(data->vm_current_scope_function > data->vm_scope_function){
-			while(data->vm_current_scope_function->scope_current > data->vm_current_scope_function->scope){
-				VM_POP_SCOPE(false);
+		while(data->vm_current_scope_function > VM_SCOPE_FUNCTION_FIRST){
+			while(
+					(data->vm_current_scope_function->current_scope_block > data->vm_current_scope_function->scope_block)
+								&&
+				(data->vm_current_scope_function->current_scope_block != &data->vm_scope_function[0].scope_block[0])
+
+			){
+				VM_POP_SCOPE;//(false);
 			}
 
-			vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
+			//vm_remove_empty_shared_pointers(vm,data->vm_idx_call);
 			--data->vm_current_scope_function;
-			--data->vm_idx_call;
+			//--data->vm_idx_call;
 		}
 
 
-		data->vm_idx_call=0;
+		data->vm_current_scope_function =  VM_SCOPE_FUNCTION_MAIN;
+				//data->vm_idx_call=0;
 	}
 
 	VirtualMachine *vm_new(ZetScript *_zs){
@@ -73,10 +79,10 @@ namespace zetscript{
 			_node->next=NULL;
 			_node->data.n_shares=0;
 			_node->data.ptr_script_object_shared=_obj;
-			_node->data.created_idx_call=data->vm_idx_call; // it saves the zeros nodes where was set
+			_node->data.created_scope_block=data->vm_current_scope_function->current_scope_block;//data->vm_idx_call; // it saves the zeros nodes where was set
 
 			// insert node into shared nodes ...
-			if(!vm_insert_shared_node(vm,&data->zero_shares[data->vm_idx_call],_node)){
+			if(!vm_insert_shared_node(vm,&_node->data.created_scope_block->unreferenced_objects,_node)){
 				return false;
 			}
 			_obj->shared_pointer=_node;
@@ -107,14 +113,14 @@ namespace zetscript{
 		if(move_to_shared_list){
 
 			// Mov to shared pointer...
-			if(!vm_deattach_shared_node(vm,&data->zero_shares[_node->data.created_idx_call],_node)){
+			if(!vm_deattach_shared_node(vm,&_node->data.created_scope_block->unreferenced_objects,_node)){
 				return false;
 			}
 			// update current stack due different levels from functions!
 			//_node->currentStack=idx_current_call;
-			if(!vm_insert_shared_node(vm,&data->shared_vars,_node)){
+			/*if(!vm_insert_shared_node(vm,&data->shared_vars,_node)){
 				return false;
-			}
+			}*/
 
 			ZS_LOG_DEBUG("Share pointer %i:%p",_node->data.ptr_script_object_shared->idx_script_type,_node->data.ptr_script_object_shared);
 
@@ -200,7 +206,7 @@ namespace zetscript{
 		data->lifetime_object.erase(idx);
 
 		if(info->script_object->shared_pointer!=NULL){
-			vm_unref_shared_script_object_and_remove_if_zero(vm,&script_object);
+			vm_unref_shared_script_object(vm,script_object,NULL);
 		}else{
 			delete script_object;
 		}
@@ -233,9 +239,14 @@ namespace zetscript{
 		return true;
 	}
 
-	int	vm_get_idx_call(VirtualMachine *vm){
+	/*int	vm_get_idx_call(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		return data->vm_idx_call;
+	}*/
+
+	VM_ScopeBlock  *vm_get_scope_block_main(VirtualMachine *vm){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		return &data->vm_current_scope_function->scope_block[0];
 	}
 
 	StackElement *vm_get_current_stack_element(VirtualMachine *vm){
@@ -297,8 +308,8 @@ namespace zetscript{
 		){ // set stack and Init vars for first call...
 
 
-			if(data->vm_idx_call != 0){
-				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",data->vm_idx_call);
+			if(data->vm_current_scope_function != VM_SCOPE_FUNCTION_MAIN){
+				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",IDX_VM_CURRENT_SCOPE_FUNCTION);
 			}
 
 			vm_reset_error_vars(vm);
@@ -312,7 +323,7 @@ namespace zetscript{
 			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->count];
 			first_script_call_from_c=false;
 
-			if(data->vm_idx_call == 0){
+			if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
 
 				if((properties & VM_PROPERTY_CALL_FROM_NATIVE)==0){
 					THROW_RUNTIME_ERRORF("Internal: expected first call function from C");
@@ -320,7 +331,7 @@ namespace zetscript{
 				//vm_reset_error_vars(vm);
 
 				first_script_call_from_c=true;
-				data->vm_idx_call=1; // assign first idx call as 1
+				data->vm_current_scope_function=VM_SCOPE_FUNCTION_FIRST; // assign first idx call as 1
 				stk_start=min_stk;
 			}
 
@@ -409,7 +420,7 @@ namespace zetscript{
 
 		// restore idx_call as 0 if first call was a script function called from C
 		if(first_script_call_from_c==true){
-			data->vm_idx_call=0;
+			data->vm_current_scope_function=VM_SCOPE_FUNCTION_MAIN;
 		}
 
 		return stk_return;

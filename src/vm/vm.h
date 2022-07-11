@@ -55,7 +55,10 @@
 #define VM_SET_USER_ERROR(vm,s,...)		vm_set_error_file_line(vm,__FILE__,__LINE__, s, __VA_ARGS__)
 #define VM_SET_USER_ERRORF(vm,s)		VM_SET_USER_ERROR(vm,s,NULL)
 
-
+#define IDX_VM_CURRENT_SCOPE_FUNCTION 	(data->vm_current_scope_function-data->vm_scope_function)
+#define VM_SCOPE_FUNCTION_MAIN 			(data->vm_scope_function+0)
+#define VM_SCOPE_FUNCTION_FIRST 		(data->vm_scope_function+1)
+#define VM_CURRENT_SCOPE_BLOCK			(data->vm_current_scope_function->current_scope_block)
 
 namespace zetscript{
 
@@ -74,10 +77,11 @@ namespace zetscript{
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
 	bool 			vm_share_script_object(VirtualMachine *vm,ScriptObject *_obj);
 	bool 			vm_create_shared_script_object(VirtualMachine *vm, VM_ScopeBlock *_scope_block,ScriptObject *_obj);
-	inline bool 	vm_unref_shared_script_object_and_remove_if_zero(VirtualMachine *vm,ScriptObject **so);
+	//inline bool 	vm_unref_shared_script_object_and_remove_if_zero(VirtualMachine *vm,ScriptObject **so);
 	void 			vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object);
 	bool 			vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk);
-	int				vm_get_idx_call(VirtualMachine *vm);
+	//int				vm_get_idx_call(VirtualMachine *vm);
+	VM_ScopeBlock  *vm_get_scope_block_main(VirtualMachine *vm);
 
 	void 			vm_set_error(VirtualMachine *vm,const zs_string & str);
 	void 			vm_set_error_file_line(VirtualMachine *vm, const char *file, int line, const char *in_txt,...);

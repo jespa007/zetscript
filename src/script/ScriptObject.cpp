@@ -28,7 +28,7 @@ namespace zetscript{
 					&& (si->value != 0)
 				 ){ // deallocate but not if is c or this ref
 					// remove property if not referenced anymore
-					if(!vm_unref_shared_script_object_and_remove_if_zero(vm,(ScriptObject **)&si->value)){
+					if(!vm_unref_shared_script_object(vm,(ScriptObject *)si->value,NULL)){
 						return false;
 					}
 				}
@@ -234,7 +234,7 @@ namespace zetscript{
 					&& (stk->value != 0)
 				  ){ // deallocate but not if is c or this ref
 					// remove property if not referenced anymore
-					vm_unref_shared_script_object_and_remove_if_zero(vm,(ScriptObject **)&stk->value);
+					vm_unref_shared_script_object(vm,(ScriptObject *)stk->value,NULL);
 				}
 			}
 			free(stk);
