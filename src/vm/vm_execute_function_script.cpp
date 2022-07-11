@@ -1702,28 +1702,7 @@ execute_function:
 				VM_PUSH_SCOPE(instruction->value_op2);
 				continue;
 			 case BYTE_CODE_POP_SCOPE:
-				 //VM_POP_SCOPE;
-				 {\
-					VM_ScopeBlock *scope_block=--VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
-					Scope *scope=scope_block->scope;\
-					StackElement         * stk_local_vars	=VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
-					zs_vector *scope_symbols=scope->symbol_variables;\
-					int count=scope_symbols->count;\
-					if(count > 0){\
-						StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\
-						while(count--){\
-							if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
-								ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
-								if(so != NULL && so->shared_pointer!=NULL){\
-									 vm_unref_shared_script_object(vm,so,NULL);\
-								}\
-							}\
-							STK_SET_UNDEFINED(stk_local_var);\
-							stk_local_var++;\
-						}\
-					}\
-					vm_remove_empty_shared_pointers(vm,scope_block);\
-				 }
+				 VM_POP_SCOPE;
 				 continue;
 			 case BYTE_CODE_RESET_STACK:
 				 data->stk_vm_current=stk_start;
