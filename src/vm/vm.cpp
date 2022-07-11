@@ -20,9 +20,9 @@ namespace zetscript{
 		// TODO: do stack dump from current vm_stk
 		while(data->vm_current_scope_function > VM_SCOPE_FUNCTION_FIRST){
 			while(
-					(data->vm_current_scope_function->current_scope_block > data->vm_current_scope_function->scope_block)
-								&&
-				(data->vm_current_scope_function->current_scope_block != &data->vm_scope_function[0].scope_block[0])
+					(data->vm_current_scope_function->current_scope_block > data->vm_current_scope_function->first_scope_block)
+								//&&
+				//(data->vm_current_scope_function->current_scope_block != &data->vm_scope_function[0].scope_block[0])
 
 			){
 				VM_POP_SCOPE;//(false);

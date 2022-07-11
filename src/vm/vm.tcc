@@ -168,6 +168,9 @@ namespace zetscript{
 			vm_error_file="";
 			vm_error_line=-1;
 			vm_error_max_stack_reached=false;
+
+			// each push scope from main is done from block scope 1
+			vm_scope_function[0].first_scope_block=&vm_scope_function[0].scope_block[1];
 		}
 
 	};

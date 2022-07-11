@@ -93,7 +93,7 @@ namespace zetscript{
 
 		// Init local vars ...
 		//data->vm_current_scope_function->current_scope_block = NULL;
-		data->vm_current_scope_function->current_scope_block=data->vm_current_scope_function->scope_block;
+		data->vm_current_scope_function->current_scope_block=data->vm_current_scope_function->first_scope_block;
 		data->vm_current_scope_function->stk_local_vars=_stk_local_var;
 
 		// preserve global scope vars
@@ -1812,16 +1812,14 @@ execute_function:
 
 		//=========================
 		// POP STACK
-		if(data->vm_current_scope_function>VM_SCOPE_FUNCTION_MAIN){
+		//if(data->vm_current_scope_function>VM_SCOPE_FUNCTION_MAIN){
 
 
 			// preserve global objects
 			//if(data->vm_current_scope_function > VM_SCOPE_FUNCTION_FIRST){
 
 			while(
-				(data->vm_current_scope_function->current_scope_block > data->vm_current_scope_function->scope_block)
-											&&
-				(data->vm_current_scope_function->current_scope_block != &data->vm_scope_function[0].scope_block[0])
+				(data->vm_current_scope_function->current_scope_block > data->vm_current_scope_function->first_scope_block)
 				){
 				VM_POP_SCOPE; // do not check removeEmptySharedPointers to have better performance
 			}
@@ -1836,7 +1834,7 @@ execute_function:
 			--data->vm_current_scope_function;
 
 			//--data->vm_idx_call;
-		}
+		//}
 
 		// POP STACK
 		//=========================
