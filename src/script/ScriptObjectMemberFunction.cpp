@@ -16,7 +16,7 @@ namespace zetscript{
 
 		sofm->so_object=_so_object;
 		sofm->so_function=_so_function;
-		//sofm->so_object->refObject(&sofm->so_object);
+		sofm->so_object->refObject(&sofm->so_object);
 		return sofm;
 	}
 
@@ -30,10 +30,10 @@ namespace zetscript{
 		this->so_object=NULL;
 	}
 
-	/*ScriptObjectMemberFunction::~ScriptObjectMemberFunction(){
+	ScriptObjectMemberFunction::~ScriptObjectMemberFunction(){
 		if(so_object != NULL){
 			so_object->derefObject(&this->so_object);
 		}
-	}*/
+	}
 
 }

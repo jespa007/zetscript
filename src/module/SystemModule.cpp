@@ -32,7 +32,7 @@ namespace zetscript{
 		ScriptFunctionParam **function_params_ptr=NULL;
 		int 				 function_params_len=0;
 		zs_string str_param_name;
-		ScriptFunction *sf;
+		ScriptFunction *sf_eval=NULL;
 		zs_vector stk_params;
 		StackElement stk_ret=k_stk_undefined;
 		const char *str_start=NULL;
@@ -102,7 +102,7 @@ namespace zetscript{
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
 		zs_string  name_script_function=zs_strutils::format("eval@",n_eval_function++);
-		sf=new	ScriptFunction(
+		sf_eval=new	ScriptFunction(
 				zs
 				,IDX_ZS_SCRIPT_FUNCTION_EVAL
 				,IDX_TYPE_CLASS_MAIN
@@ -116,8 +116,8 @@ namespace zetscript{
 		);
 
 		Scope *main_scope=((((zs)->getScopeFactory())))->getMainScope();
-		sf->scope_script_function=(((zs)->getScopeFactory()))->newScope(sf->idx_script_function,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
-		main_scope->scopes->push_back((zs_int)sf->scope_script_function);
+		sf_eval->scope_script_function=(((zs)->getScopeFactory()))->newScope(sf_eval->idx_script_function,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
+		main_scope->scopes->push_back((zs_int)sf_eval->scope_script_function);
 
 		//--------------------------------------
 		// 2. register arg symbols
@@ -127,8 +127,8 @@ namespace zetscript{
 
 			for(auto it=map->begin(); !it.end(); it.next()){
 
-				if(sf->registerLocalArgument(
-						sf->scope_script_function
+				if(sf_eval->registerLocalArgument(
+						sf_eval->scope_script_function
 						,__FILE__
 						,__LINE__
 						,it.key
@@ -144,7 +144,7 @@ namespace zetscript{
 
 		// 3. Call zetscript->eval this function
 		try{
-			eval_parse_and_compile(zs,str_start,NULL,NULL,1,sf/*,function_params,function_params_len*/);
+			eval_parse_and_compile(zs,str_start,NULL,NULL,1,sf_eval/*,function_params,function_params_len*/);
 		}catch(std::exception & ex){
 			vm_set_error(zs->getVirtualMachine(),zs_string("eval error:")+ex.what());
 			goto goto_eval_exit;
@@ -154,21 +154,21 @@ namespace zetscript{
 		zs->link();
 
 		// check if there's a reset stack at the end and set as end function in order to get last value stk ...
-		if(sf->instructions_len>2){
-			if(sf->instructions[sf->instructions_len-2].byte_code != BYTE_CODE_RET){
-				int offset_rst_stack=sf->instructions[sf->instructions_len-2].byte_code == BYTE_CODE_RESET_STACK ? 1:0;
-				size_t new_buf_len=sf->instructions_len+2;
+		if(sf_eval->instructions_len>2){
+			if(sf_eval->instructions[sf_eval->instructions_len-2].byte_code != BYTE_CODE_RET){
+				int offset_rst_stack=sf_eval->instructions[sf_eval->instructions_len-2].byte_code == BYTE_CODE_RESET_STACK ? 1:0;
+				size_t new_buf_len=sf_eval->instructions_len+2;
 				Instruction *new_buf=(Instruction *)ZS_MALLOC(new_buf_len*sizeof(Instruction));
-				memcpy(new_buf,sf->instructions,sf->instructions_len*sizeof(Instruction));
+				memcpy(new_buf,sf_eval->instructions,sf_eval->instructions_len*sizeof(Instruction));
 				// free old ptr
-				free(sf->instructions);
+				free(sf_eval->instructions);
 
 				// assign ret null
 				new_buf[new_buf_len-3-offset_rst_stack].byte_code=BYTE_CODE_LOAD_UNDEFINED;
 				new_buf[new_buf_len-2-offset_rst_stack].byte_code=BYTE_CODE_RET;
 
-				sf->instructions=new_buf;
-				sf->instructions_len=new_buf_len;
+				sf_eval->instructions=new_buf;
+				sf_eval->instructions_len=new_buf_len;
 			}
 		}
 
@@ -184,7 +184,7 @@ namespace zetscript{
 		vm_execute_function_script(
 			zs->getVirtualMachine(),
 			NULL,
-			sf,
+			sf_eval,
 			stk_vm_current);
 
 		// modifug
@@ -205,12 +205,13 @@ namespace zetscript{
 		data->stk_vm_current-=stk_n_params;
 goto_eval_exit:
 
-		 delete sf;
+		 sf_eval->scope_script_function->removeChildrenBlockTypes();
+		 sf_eval->scope_script_function->markAsUnusued();
+		 zs->getScopeFactory()->clearUnusuedScopes();
+
+		 delete sf_eval;
 		 delete symbol_sf;
 
-		 sf->scope_script_function->removeChildrenBlockTypes();
-		 sf->scope_script_function->markAsUnusued();
-		 zs->getScopeFactory()->clearUnusuedScopes();
 	}
 
 	/*void SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){

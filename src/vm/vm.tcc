@@ -246,8 +246,6 @@ namespace zetscript{
 
 
 	inline void vm_remove_empty_shared_pointers(VirtualMachine *vm,VM_ScopeBlock *scope_block){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-
 		InfoSharedList *list=&scope_block->unreferenced_objects;//&data->zero_shares[idx_call_stack];
 		InfoSharedPointerNode *next_node=NULL,*current=list->first;
 		//bool check_empty_shared_pointers=false;
@@ -273,8 +271,6 @@ namespace zetscript{
 	}
 
 	inline bool vm_unref_shared_script_object(VirtualMachine *vm, ScriptObject *_obj,VM_ScopeBlock *_scope_block){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-
 		InfoSharedPointerNode *shared_pointer=_obj->shared_pointer;
 		if(shared_pointer==NULL){
 			VM_SET_USER_ERRORF(vm,"shared ptr not registered");
@@ -328,6 +324,11 @@ namespace zetscript{
 			,StackElement *stk_arg
 			,unsigned char n_args
 		) {
+
+		if(symbol_to_find=="test_callback"){
+			int i=0;
+			i++;
+		}
 
 		// by default search over global functions...
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;

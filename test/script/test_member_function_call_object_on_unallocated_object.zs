@@ -1,7 +1,7 @@
 var a=null
 
 class A{
-	A(){
+	constructor(){
 		this.b=10
 		a=this.member_function
 		a();

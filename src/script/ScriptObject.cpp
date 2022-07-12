@@ -47,7 +47,7 @@ namespace zetscript{
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
-		//ref_script_objects=new zs_vector();
+		ref_script_objects=new zs_vector();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
@@ -194,7 +194,7 @@ namespace zetscript{
 		return "Object@"+getTypeName();
 	}
 
-	/*void ScriptObject::refObject(ScriptObject **_so){
+	void ScriptObject::refObject(ScriptObject **_so){
 		ref_script_objects->push_back((zs_int)_so);
 	}
 
@@ -216,7 +216,7 @@ namespace zetscript{
 		}
 
 		ref_script_objects->erase(idx);
-	}*/
+	}
 
 	ScriptTypeFactory		*	ScriptObject::getScriptTypeFactory(){
 		return zs->getScriptTypeFactory();
@@ -242,11 +242,11 @@ namespace zetscript{
 		stk_builtin_elements.clear();
 		delete map_builtin_properties;
 
-		/*for(int i=0; i < ref_script_objects->count; i++){
+		for(int i=0; i < ref_script_objects->count; i++){
 			ScriptObject **_so=(ScriptObject **)ref_script_objects->items[i];
 			*_so=NULL;
 		}
 
-		delete ref_script_objects;*/
+		delete ref_script_objects;
 	}
 }

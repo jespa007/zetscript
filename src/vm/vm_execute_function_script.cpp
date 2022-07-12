@@ -99,9 +99,7 @@ namespace zetscript{
 		// preserve global scope vars
 		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN)){
 
-			if(calling_function->scope_script_function->symbol_variables->count>0){
-				VM_PUSH_SCOPE(calling_function->scope_script_function);
-			}
+			VM_PUSH_SCOPE(calling_function->scope_script_function);
 
 			// reset local variables symbols (not arg symbols)
 			for(int i=calling_function->params_len;i<calling_function->local_variables->count;i++){
@@ -835,9 +833,6 @@ find_element_object:
 
 						if(container_slot_store_object!=NULL){
 
-							// TODO: Save to map
-							ScriptObject *src_object=so_aux;
-
 							// Possibly cyclic reference
 							if((so_aux->isNativeObject()==false) && (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)){
 								if(container_slot_store_object->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
@@ -883,10 +878,6 @@ find_element_object:
 
 						if(chk_ref->properties & STK_PROPERTY_PTR_STK){
 							chk_ref=(StackElement *)chk_ref->value;
-						}
-						if(STK_IS_SCRIPT_OBJECT_VAR_REF(chk_ref)){
-							ScriptObjectVarRef *so_var_ref=(ScriptObjectVarRef *)chk_ref->value;
-							//data->vm_idx_call=so_var_ref->getIdxCall(); // put the vm_idx_call where it was created
 						}
 
 						if(!vm_unref_shared_script_object(vm,old_so,VM_CURRENT_SCOPE_BLOCK)){
@@ -1251,6 +1242,12 @@ load_function:
 							VM_STOP_EXECUTE("Cannot call '%s'. '%s' is not function or not exist"
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+							);
+						}else if(instruction->byte_code==BYTE_CODE_INDIRECT_LOCAL_CALL){
+							VM_STOP_EXECUTE("Cannot call '%s' as a function. '%s' is type '%s'"
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+									,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
 							);
 						}else{ // STACK CALL
 							VM_STOP_EXECUTE("Error trying to call a function from stack. StackElement value is '%s' as type '%s'"

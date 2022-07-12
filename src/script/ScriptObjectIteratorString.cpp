@@ -31,7 +31,7 @@ namespace zetscript{
 		// setup object
 		this->init(_so->getZetScript());
 		so=_so;
-		//so->refObject((ScriptObject **)&this->so);
+		so->refObject((ScriptObject **)&this->so);
 	}
 
 	void ScriptObjectIteratorString::get(){
@@ -70,10 +70,10 @@ namespace zetscript{
 		return idx >= (int)so->length();
 	}
 
-	/*ScriptObjectIteratorString::~ScriptObjectIteratorString(){
+	ScriptObjectIteratorString::~ScriptObjectIteratorString(){
 		if(so != NULL){
 			so->derefObject((ScriptObject **)&this->so);
 		}
-	}*/
+	}
 
 }

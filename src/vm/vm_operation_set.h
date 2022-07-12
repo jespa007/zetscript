@@ -55,12 +55,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			const char *__STR_AKA_ADD_SET_METAMETHOD__=byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_ADD_SET);\
 			LOAD_PROPERTIES(BYTE_CODE_METAMETHOD_ADD_SET); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 			if(ptr_metamethod_members_aux->add_setters.count==0){\
-				VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s'') " \
-						,member_property!=NULL?"Member property":"Symbol" \
-						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-						,byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_ADD_SET)\
-						,byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_ADD_SET)\
-				);\
+				METAMETHOD_OPERATION_NOT_FOUND(BYTE_CODE_METAMETHOD_ADD_SET); \
 			}\
 			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)((StackElement *)(ptr_metamethod_members_aux->add_setters.items[0]))->value)->ref_ptr;\
 			/* find function if c */ \
@@ -166,12 +161,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			LOAD_PROPERTIES(__METAMETHOD__); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 			MetamethodMemberSetterInfo setter_info=ptr_metamethod_members_aux->getSetterInfo(__METAMETHOD__);\
 			if(setter_info.setters->count==0){\
-				VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s'') "\
-						,member_property!=NULL?"Member property":"Symbol"\
-						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-						,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
-						,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
-				);\
+				METAMETHOD_OPERATION_NOT_FOUND(__METAMETHOD__); \
 			}\
 			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->items[0])->value))->ref_ptr;\
 			/* find function if c */ \
@@ -287,11 +277,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			const char *__STR_AKA_DIV_SET_METAMETHOD__=byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_DIV_SET);\
 			LOAD_PROPERTIES(BYTE_CODE_METAMETHOD_DIV_SET); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 			if(ptr_metamethod_members_aux->div_setters.count==0){\
-				VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s'') " \
-						,member_property!=NULL?"Member property":"Symbol" \
-						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-						,byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_DIV_SET)\
-				);\
+				METAMETHOD_OPERATION_NOT_FOUND(BYTE_CODE_METAMETHOD_DIV_SET); \
 			}\
 			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)((StackElement *)(ptr_metamethod_members_aux->div_setters.items[0]))->value)->ref_ptr;\
 			/* find function if c */ \
@@ -408,11 +394,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 			const char *__STR_AKA_MOD_SET_METAMETHOD__=byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_MOD_SET);\
 			LOAD_PROPERTIES(BYTE_CODE_METAMETHOD_MOD_SET); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 			if(ptr_metamethod_members_aux->mod_setters.count==0){\
-				VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s'') " \
-						,member_property!=NULL?"Member property":"Symbol" \
-						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-						,byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_MOD_SET)\
-				);\
+				METAMETHOD_OPERATION_NOT_FOUND(BYTE_CODE_METAMETHOD_MOD_SET); \
 			}\
 			ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)((StackElement *)(ptr_metamethod_members_aux->mod_setters.items[0]))->value)->ref_ptr;\
 			/* find function if c */ \
@@ -501,12 +483,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		LOAD_PROPERTIES(__METAMETHOD__); /* saves stk_var_copy --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 		MetamethodMemberSetterInfo setter_info=ptr_metamethod_members_aux->getSetterInfo(__METAMETHOD__);\
 		if(setter_info.setters->count==0){\
-			VM_STOP_EXECUTE("%s '%s' not implements metamethod %s (aka '%s'') "\
-					,member_property!=NULL?"Member property":"Symbol"\
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-					,byte_code_metamethod_to_symbol_str(__METAMETHOD__)\
-					,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
-			);\
+			METAMETHOD_OPERATION_NOT_FOUND(__METAMETHOD__);\
 		}\
 		ScriptFunction *ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->items[0])->value))->ref_ptr;\
 		/* find function if c */ \

@@ -208,7 +208,6 @@ namespace zetscript{
 		Keyword key_w;
 		int idx_do_while_start;
 		int idx_do_while_conditional;
-		int idx_end_block_idx;
 
 		// check for keyword ...
 		key_w = eval_is_keyword(aux_p);

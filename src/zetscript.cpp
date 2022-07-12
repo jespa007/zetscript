@@ -397,7 +397,6 @@ namespace zetscript{
 
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
 		ZS_UNUSUED_PARAM(_idx_start_function);
-		VM_ScopeBlock *vm_scope_block_main=vm_get_scope_block_main(virtual_machine);
 		zs_string global_symbol;
 		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();

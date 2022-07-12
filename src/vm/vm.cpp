@@ -90,7 +90,6 @@ namespace zetscript{
 	}
 
 	bool vm_share_script_object(VirtualMachine *vm,ScriptObject *_obj){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		InfoSharedPointerNode *_node=_obj->shared_pointer;
 
 		unsigned short *n_shares = &_node->data.n_shares;
