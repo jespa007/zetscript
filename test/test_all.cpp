@@ -40,15 +40,15 @@ int main(int argc, char * argv[]) {
 	}TestNativeFunctionIterator;
 
 	TestNativeFunctionIterator test_native_functions[]={
-		/* {"test_arithmetic_constants",test_arithmetic_constants_no_print}				// 1
+		 {"test_arithmetic_constants",test_arithmetic_constants_no_print}				// 1
 		,{"test_arithmetic_metamethods",test_arithmetic_metamethods_no_print}			// 2
 		,{"test_arithmetic_vars",test_arithmetic_vars_no_print}							// 3
 		,{"test_call_native_function_with_nulls",test_call_native_function_with_nulls}	// 4
-		,*/{"test_call_script_c_script",test_call_script_c_script}						// 5
-		/*,{"test_call_c_script_c",test_call_c_script_c}									// 6
+		,{"test_call_script_c_script",test_call_script_c_script}						// 5
+		,{"test_call_c_script_c",test_call_c_script_c}									// 6
 		,{"test_anonymous_scopes",test_anonymous_scopes_no_print}						// 7
 		,{"test_consistency_function_override",test_consistency_function_override}		// 8
-		,{"test_register_constants",test_register_constants}							// 9*/
+		,{"test_register_constants",test_register_constants}							// 9
 		,{0,0}
 	};
 	char name[MAX_TEST_NAME_FIXED_LENGTH+20]={0};

@@ -325,11 +325,6 @@ namespace zetscript{
 			,unsigned char n_args
 		) {
 
-		if(symbol_to_find=="test_callback"){
-			int i=0;
-			i++;
-		}
-
 		// by default search over global functions...
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		ScriptFunction * ptr_function_found=NULL;
