@@ -1,41 +1,31 @@
-class A{
-	_toString(){
-		return "custom string";
-	}
-};
+class A{}
+class B{}
+
+var a=10,c=new A();
+
+// function WITHOUT ref
+function(_a,_c){
+	_a=0;
+	_c=new B();
+}(a,c)
+
+System::assert(a==10,"a!=10")
+System::assert(c instanceof A,"!(c instanceof A)")
+
+a=10
+c=new A();
+
+// function WITH ref
+function(ref _a, ref _c){
+	_a=0;
+	var b=_c;
+	_c=new B(); // _c write reg
+}(a,c)
 
 
+System::assert(a==0,"a!=0")
+System::assert(!(c instanceof B),"!(c instanceof B)")
 
-var functions=[
-	function(a,b,c){
-		// overwrite argument values
-		Console::outln("function passing args by copy");
-		a=0;
-		b=0;
-		c=0;
-		Console::outln("in function post a:"+a+" b:"+b+" c:"+c);
-	},function(ref a,ref b, ref c){
-		// overwrite value refs
-		Console::outln("function passing args by ref");
-		a=0;
-		b=0;
-		c=0;
-		Console::outln("in function post a:"+a+" b:"+b+" c:"+c);
-	}
-];
-
-
-for(var i=0; i < functions.size(); i++)
-{
-	var a=10,b=10,c=new A();
-	
-	Console::outln("----");
-	Console::outln("before call a:"+a+" b:"+b+" c:"+c);
-	
-	functions[i](a,b,c);
-	
-	Console::outln("after call a:"+a+" b:"+b+" c:"+c);
-}
 
 
 

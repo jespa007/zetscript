@@ -43,7 +43,7 @@ int main(int argc, char * argv[]) {
 		 {"test_arithmetic_constants",test_arithmetic_constants_no_print}				// 1
 		,{"test_arithmetic_metamethods",test_arithmetic_metamethods_no_print}			// 2
 		,{"test_arithmetic_vars",test_arithmetic_vars_no_print}							// 3
-		,{"test_call_native_function_with_nulls",test_call_native_function_with_nulls}	// 4
+		,{"test_call_native_function",test_call_native_function_no_print}	// 4
 		,{"test_call_script_c_script",test_call_script_c_script}						// 5
 		,{"test_call_c_script_c",test_call_c_script_c}									// 6
 		,{"test_anonymous_scopes",test_anonymous_scopes_no_print}						// 7
@@ -59,6 +59,7 @@ int main(int argc, char * argv[]) {
 	int n_test_native_failed=0;
 
 	while(it_test_native_functions->name!=0){
+
 		sprintf(name,"%s",it_test_native_functions->name);
 		size_t len=strlen(name);
 		for(size_t i=len; i < MAX_TEST_NAME_FIXED_LENGTH; i++){
@@ -67,13 +68,14 @@ int main(int argc, char * argv[]) {
 		name[MAX_TEST_NAME_FIXED_LENGTH]=0;
 
 
+		zs.clear();
 		printf("* Test native %2i/%i - %s ... ",++n,test_native_total,name);
 		try{
 			it_test_native_functions->fun(&zs);
 			n_test_native_success++;
 			printf("OK\n");
 		}catch(std::exception & ex){
-			fprintf(stderr,"Failed: %s\n",ex.what());
+			printf("Failed: %s\n",ex.what());
 			n_test_native_failed++;
 		}
 		it_test_native_functions++;

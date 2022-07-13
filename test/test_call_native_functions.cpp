@@ -285,7 +285,9 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 					//"import \"include.zs\"\n"
 					"function class_c_load(_class_c){\n"
 						"_class_c.num_ref=_class_c.newNum()\n"
+						"if(%s){\n"
 						"Console::outln(\"load\")\n"
+						"}\n"
 						//"_class_c.num_ref.load()\n"
 					"}\n"
 					"class ClassCWrap{\n"
@@ -310,7 +312,9 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 							"}\n"
 							"this.v2d_target.setPosition();\n"
 							//"n.load()"
-							"Console::outln(\"update\")\n"
+							"if(%s){\n"
+							"	Console::outln(\"update\")\n"
+							"}\n"
 						"}\n"
 						"update(){\n"
 							"this.updateTutorial();\n"
@@ -331,7 +335,6 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 					//"c.get_d.x=0;\n"
 					//"(new ClassC()).fun1(1.5,%s)\n"
 					//"(new ClassC()).fun1(false,%s)\n"
-					,_show_print?"true":"false"
 					,_show_print?"true":"false"
 					,_show_print?"true":"false"
 			)
@@ -453,7 +456,9 @@ void test_call_native_function(zetscript::ZetScript *_zs, bool _show_print=true)
 
 }
 
-
+void test_call_native_function_no_print(zetscript::ZetScript *_zs){
+	test_call_native_function(_zs,false);
+}
 
 #ifdef __MAIN__
 int main(){
