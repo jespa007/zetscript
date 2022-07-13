@@ -59,9 +59,9 @@ void test_anonymous_scopes_no_print(zetscript::ZetScript *_zs){
 	test_anonymous_scopes(_zs,false);
 }
 
-void test_consistency_function_override(zetscript::ZetScript *_zs){
+void test_consistency_function_override(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	_zs->eval(
+	_zs->eval(zetscript::zs_strutils::format(
 		"class A{\n"
 		"	constructor(){\n"
 		//		should call A::function1 of the instance of var is A
@@ -69,21 +69,26 @@ void test_consistency_function_override(zetscript::ZetScript *_zs){
 		"       this.function1();\n"
 		"	}\n"
 		"	function1(){\n"
+		"		if(%s){\n"
 		"       Console::outln(\"from A \");\n"
+		"		}\n"
 		"	}\n"
-		"};\n"
+		"};\n",_show_print?"true":"false")
 	);
 
-	_zs->eval(
+	_zs->eval(zetscript::zs_strutils::format(
 		"class B extends A{\n"
 		"	constructor(){\n"
 		"		super();\n"
 		"	}\n"
 		"	function1(){\n"
 		"		super();\n"
-		"       Console::outln(\"from B \");\n"
+		"		if(%s){\n"
+		"       	Console::outln(\"from B \");\n"
+		"		}\n	"
 		"	}\n"
 		"};\n"
+		,_show_print?"true":"false")
 	);
 
 	// should print
@@ -94,6 +99,9 @@ void test_consistency_function_override(zetscript::ZetScript *_zs){
 	);
 }
 
+void test_consistency_function_override_no_print(zetscript::ZetScript *_zs){
+	test_consistency_function_override(_zs, false);
+}
 
 #ifdef __MAIN__
 int main(){

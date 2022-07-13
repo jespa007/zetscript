@@ -30,7 +30,6 @@ function test_arithmetic_number_basic(_a,_b){
 // basic
 // integer arithmetic operations
 test_arithmetic_integer_basic(1,3)
-
 test_arithmetic_number_basic(1,3)
 
 

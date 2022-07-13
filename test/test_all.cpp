@@ -45,9 +45,9 @@ int main(int argc, char * argv[]) {
 		,{"test_arithmetic_vars",test_arithmetic_vars_no_print}							// 3
 		,{"test_call_native_function",test_call_native_function_no_print}	// 4
 		,{"test_call_script_c_script",test_call_script_c_script}						// 5
-		,{"test_call_c_script_c",test_call_c_script_c}									// 6
+		,{"test_call_c_script_c",test_call_c_script_c_no_print}									// 6
 		,{"test_anonymous_scopes",test_anonymous_scopes_no_print}						// 7
-		,{"test_consistency_function_override",test_consistency_function_override}		// 8
+		,{"test_consistency_function_override",test_consistency_function_override_no_print}		// 8
 		,{"test_register_constants",test_register_constants}							// 9
 		,{0,0}
 	};
@@ -90,9 +90,9 @@ int main(int argc, char * argv[]) {
 	const char *test_script_files[]={
 		//"samples/assert_error.zs"
 		"test_assign"								//1.
-		,"test_class_property"						//2.
-		,"test_call_member_function"				//3.
-		,"test_class_metamethod"					//4.
+		,"test_call"								//2.
+		,"test_metamethods"							//3.
+		,"test_class_property"						//4.
 		,"test_const"								//5.
 		,"test_eval"								//6.
 		,"test_for_in_object"						//7.

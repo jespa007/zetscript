@@ -113,20 +113,30 @@ void test_call_script_c_script(zetscript::ZetScript *_zs){
 	);
 }
 
-void test_call_c_script_c(zetscript::ZetScript *_zs){
+void test_call_c_script_c(zetscript::ZetScript *_zs, bool _show_print=true){
 
 
 	// 2nd test calling from C->Script->C
 	_zs->bindFunction("test_function_1st_c_call",test_function_1st_c_call);
 	// test calling script-c-script-c
 
-	_zs->eval("function test_1st_script_call(){\n"
-				"Console::outln (\"Hello from script\");\n"
+	_zs->eval(
+			zetscript::zs_strutils::format(
+			"function test_1st_script_call(){\n"
+				"if(%s){\n"
+					"Console::outln (\"Hello from script\");\n"
+				"}\n"
 				"test_function_1st_c_call();\n"
 			"}\n"
 			"function test_2nd_script_call(){\n"
-				"Console::outln(\"2nd call script\");\n"
-			"}");
+				"if(%s){\n"
+					"Console::outln(\"2nd call script\");\n"
+				"}\n"
+			"}"
+			,_show_print?"true":"false"
+			,_show_print?"true":"false"
+		)
+	);
 
 	auto  test_1st_script_call=_zs->bindScriptFunction<void ()>("test_1st_script_call");
 	test_2nd_script_call=new std::function<void()>(_zs->bindScriptFunction<void ()>("test_2nd_script_call"));
@@ -138,6 +148,9 @@ void test_call_c_script_c(zetscript::ZetScript *_zs){
 	delete test_2nd_script_call;
 }
 
+void test_call_c_script_c_no_print(zetscript::ZetScript *_zs){
+	test_call_c_script_c(_zs,false);
+}
 
 #ifdef __MAIN__
 int main(){
