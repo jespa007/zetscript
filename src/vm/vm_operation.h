@@ -39,11 +39,12 @@
 		ptr_metamethod_members_aux= &so_aux->getScriptType()->metamethod_members;\
 	}\
 	else{\
-		VM_STOP_EXECUTE("Error performing '%s%s': Cannot perform operation with value as '%s'"\
+		VM_STOP_EXECUTE("Error performing '%s%s': Cannot perform operation with value as '%s%s%s'"\
 			,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 			,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
-			,stk_to_str(data->zs,stk_result_op1).c_str()\
-			,stk_to_str(data->zs,stk_result_op1).c_str()\
+			,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
+			,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
+			,stk_to_str(data->zs,stk_result_op2).c_str()\
 		);\
 	}\
 
