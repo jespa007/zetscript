@@ -96,10 +96,10 @@ namespace zetscript{
 
 		bool move_to_shared_list=*n_shares==0;
 
-		if(*n_shares >= VM_VARIABLE_SHARES_MAX){
+		/*if(*n_shares >= VM_VARIABLE_SHARES_MAX){
 			VM_SET_USER_ERROR(vm,"MAX SHARED VARIABLES (Max. %i)",VM_VARIABLE_SHARES_MAX);
 			return false;
-		}
+		}*/
 
 		(*n_shares)++;
 
