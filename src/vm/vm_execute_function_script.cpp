@@ -736,9 +736,14 @@ find_element_object:
 
 				}else{ // store through script assignment
 
-					if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
+					/*if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
 						stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value));
+					}*/
+
+					if((stk_src->properties & STK_PROPERTY_PTR_STK)!=0) {
+						stk_src=(StackElement *)stk_src->value; // value is expect to contents a stack variable
 					}
+
 
 					// TODO: get stk_dst if STK_PROPERTY_SLOT
 					StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...

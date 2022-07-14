@@ -50,7 +50,7 @@ test=function(test){
 }(test)
 System::assert(test==4,"test!=4")
 
-/*{
+{
 	function local_function(test){
 		return test+1
 	}
@@ -62,18 +62,18 @@ System::assert(test==4,"test!=4")
 		
 	test=var_local_function(test)
 	System::assert(test==6,"test!=6")
-}*/
+}
 
 test=6
 
 
 var a=new A()
 test=a.member_function(test)
-System::assert(test==10,"test!=10")
+System::assert(test==7,"test!=7")
 
 var var_member_function=a.member_function  
 test=var_member_function(test);
-System::assert(test==11,"test!=11")
+System::assert(test==8,"test!=8")
 
 
 

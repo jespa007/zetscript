@@ -24,7 +24,7 @@ function(ref _a, ref _c){
 
 
 System::assert(a==0,"a!=0")
-System::assert(!(c instanceof B),"!(c instanceof B)")
+System::assert(c instanceof B,"!(c instanceof B)")
 
 
 

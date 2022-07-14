@@ -5,10 +5,15 @@
 #include "zetscript.h"
 
 std::function<void ()> * test_2nd_script_call = NULL;
+int idx_test_function_1st_c_call=0;
+bool test_function_1st_c_call_print=true;
 
 void test_function_1st_c_call(zetscript::ZetScript *_zs){
 	ZS_UNUSUED_PARAM(_zs);
-	 printf("C Function 1st call from script\n");
+	if(test_function_1st_c_call_print==true){
+		printf("C Function 1st call from script\n");
+	}
+	 idx_test_function_1st_c_call++;
 
 	 if(test_2nd_script_call != NULL){
 		 (*test_2nd_script_call)();
@@ -31,7 +36,9 @@ void test_callback(
 	auto so=script_function(&param1,&param2,&param3);
 
 	// print the results...
-	printf("FROM CALLBACK 1: calling function result: %s\n",so->toString().c_str());
+	if(test_function_1st_c_call_print==true){
+		printf("FROM CALLBACK 1: calling function result: %s\n",so->toString().c_str());
+	}
 
 	// unref 'ScriptObjectString' lifetime
 	_zs->unrefLifetimeObject(so);
@@ -54,16 +61,18 @@ void test_callback(
 	auto so=script_function(&param1,&param2,&param3,_user_params);
 
 	// print the results...
-	printf("FROM CALLBACK 2: %s\n",so->toString().c_str());
+	if(test_function_1st_c_call_print==true){
+		printf("FROM CALLBACK 2: %s\n",so->toString().c_str());
+	}
 
 	// unref 'ScriptObjectString' lifetime
 	_zs->unrefLifetimeObject(so);
 
 }
 
-void test_call_script_c_script(zetscript::ZetScript *_zs){
+void test_call_script_c_script(zetscript::ZetScript *_zs, bool _show_print=true){
 
-	zetscript::ZetScript zs;
+	test_function_1st_c_call_print=_show_print;
 
 	// 1s combination: Script -> C -> Script
 	// bind 'test_callback' receives a 'ScriptFunction' pointer type
@@ -149,7 +158,11 @@ void test_call_c_script_c(zetscript::ZetScript *_zs, bool _show_print=true){
 }
 
 void test_call_c_script_c_no_print(zetscript::ZetScript *_zs){
-	test_call_c_script_c(_zs,false);
+	 test_call_c_script_c(_zs,false);
+}
+
+void test_call_script_c_script_no_print(zetscript::ZetScript *_zs){
+	 test_call_script_c_script(_zs,false);
 }
 
 #ifdef __MAIN__
