@@ -105,7 +105,7 @@ int main(int argc, char * argv[]) {
 		,"test_import"								//13.
 		,"test_in"									//14.
 		,"test_instanceof"							//15.
-		,"test_instance_by_value"					//16.
+		,"test_instance_from_var_type"					//16.
 		,"test_iterator_object"						//17.
 		,"test_iterator_string"						//18.
 		,"test_iterator_vector"						//19.
