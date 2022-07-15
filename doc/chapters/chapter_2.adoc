@@ -144,6 +144,6 @@ zs.saveState()
 To clear and restore last state saved it's done by calling 'ZetScript::clear',
 
 [source]
-zs.restoreState(i) 
+zs.clear(i) 
 
 

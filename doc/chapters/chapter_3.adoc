@@ -1,86 +1,127 @@
-=== 3. The language
-==== 3.1 Statments
-ZetScript Language is based on a set of statements formed by values, operators, expressions,
-keywords, declarations, expressions, conditionals, integrators and functions.
-All statements are separated by semicolons at the end.
+= 3. The language
+
+== 3.1 Statments
+
+ZetScript Language is based on a set of statements formed by values, operators, expressions, keywords, declarations, expressions, conditionals, integrators and functions. All statements are separated by semicolons at the end.
+
 Example of four statements,
+
+[source, javascript]
 var op1,op2,res;
-op1=5;
-op2=6;
+op1 = 5;
+op2 = 6;
 res = 5+6;
+
 The last example can be executed within one line,
+
+[source, javascript]
 var op1,op2,res; op1=5; op2=6; res = 5+6;
-3.2 Comments
+
+== 3.2 Comments
+
 ZetScript support block and line comments.
-3.2.1 Block comment
+
+=== 3.2.1 Block comment
+
+[source, javascript]
 /*
 this is a block comment
 */
-3.2.2 Line comment
+
+== 3.2.2 Line comment
+
+[source, javascript]
 // This is a line comment
-3.3 Constants values
+
+== 3.3 Constants values
+
 ZetScript supports the following constants or literal types,
+
 * boolean
 * integer
 * float
 * string
-3.3.1 Boolean type
+
+=== 3.3.1 Boolean type
+
 ZetScript represents boolean value as true or false.
+
 Example,
+
+[source, javascript]
 true // true value
 false // false value
 
+=== 3.3.2 Integer type
 
-3.3.2 Integer type
-ZetScript represents integer values within ranges from -(2b-1) to 2b-1-1 where b=32 or 64
-it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can
-be represented as negative/positive decimal value, hexadecimal or binary format.
+ZetScript represents integer values within ranges from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as negative/positive decimal value, hexadecimal or binary format.
 Example,
+
+[source, javascript]
 -1; // negative decimal value
 10; // positive decimal value
 0x1a; // hexadecimal value
 01001b; // 0x9 in binary value
-3.3.3 Number type
-ZetScript represents number value in 32-bit IEEE-754 floating point number. Number
-can be represented as integer and decimal form or scientific notation form.
+
+=== 3.3.3 Number type
+
+ZetScript represents number value in 32-bit IEEE-754 floating point number. Number can be represented as integer and decimal form or scientific notation form.
+
 Example,
+
+[source, javascript]
 1.2 // integer and decimal form
 2.0e-2 // cientific notation form
 3.3.4 String type
+
 ZetScript represents string value within quotes (").
+
 Example,
+
+[source, javascript]
 "this is a string"
 
-3.4 Variables
-3.4.1 Variable declaration
-A variable is a type of container that is used to store a value in it. In ZetScript, a
-variable is declared as var keyword.
+== 3.4 Variables
+
+=== 3.4.1 Variable declaration
+
+A variable is a type of container that is used to store a value in it. In ZetScript, a variable is declared as var keyword.
+
 Example,
+
+[source, javascript]
 var i; // declares i variable
-3.4.2 Variable instantiation
+
+=== 3.4.2 Variable instantiation
+
 A variable is undefined (see 2.5.1) when is declared until is instanced with any value
 through operator '='. As an example we can instantiate a variable with integer value
 (see section 2.2),
+
+[source, javascript]
 var i=0; // variable v is instancied as integer.
-3.4.3 Scope
+
+=== 3.4.3 Scope
+
 In ZetScript we have two types of basic scopes.
+
 * Global
 * Local
-A ZetScript makes easy the concept of global local scope. Basically, variables declared
-on the main script are global and the others declared within a block2
-, are local.
-Example,
-var i; // this is a global variable
-{ //  block starts here
- var j;//this is a local variable declared inside a block (you can also access to i).
-} // block ends here, so the variable j doesn�t exist anymore
 
-2
- A block is a statement that starts with '{' and ends with '}'. 
- 
- 
- 3.5 Built-in types
-ZetScript supports the following built-in types
+A ZetScript makes easy the concept of global local scope. Basically, variables declared on the main script are global and the others declared within a [block footnote:[A block is a statement that starts with '{' and ends with '}']], are local.
+
+Example,
+
+[source, javascript]
+var i; // this is a global variable
+{ // --> block starts here
+ var j;//this is a local variable declared inside a block (you can also access to i).
+} // --> block ends here, so the variable j doesn�t exist anymore
+
+== 3.5 Built-in types
+
+ZetScript supports the following built-in types,
+
 * Undefined
 * Null
 * Integer
@@ -90,24 +131,33 @@ ZetScript supports the following built-in types
 * Vector
 * Structure
 * Function
-3.5.1 Undefined type
-A undefined variable type is the default value that is instanced when any variable is
-declared. To instantiate a variable with undefined value assign it typing the undefined
-keyword.
+
+=== 3.5.1 Undefined type
+
+A undefined variable type is the default value that is instanced when any variable is declared. To instantiate a variable with undefined value assign it typing the undefined keyword.
+
+[source, javascript]
 var i=undefined;
-3.5.2 Null type
-A null type is like undefined but in this case it has a null value. To instantiate a variable
-with undefined value type undefined keyword.
+
+=== 3.5.2 Null type
+
+A null type is like undefined but in this case it has a null value. To instantiate a variable with undefined value type undefined keyword.
+
+[source, javascript]
 var i=null;
-3.5.3 Integer type
-A integer variable type is instanced once a variable instance a integer constant or
-integer variable
+
+=== 3.5.3 Integer type
+
+A integer variable type is instanced once a variable instance a integer constant or integer variable.
+
 Example,
+
+[source, javascript]
 var i=10;
 
 Pre/Post variable operations
-Pre/Post operations modifies the value of variable itself before/after the variable is
-read. Integer variable type has the following pre/post operations,
+
+Pre/Post operations modifies the value of variable itself before/after the variable is read. Integer variable type has the following pre/post operations,
 
 Operator Expression Description Result
 PreIncrement ++variable Performs an increment BEFORE
@@ -126,14 +176,20 @@ Postdecrement variable-- Performs decrement AFTER
 evaluate the variable
 var i=0;
 var j=i--;//j=0;i=-1;
-3.5.4 Number type
-A number variable type is instanced once a variable instance a number constant or
-number variable
+
+=== 3.5.4 Number type
+
+A number variable type is instanced once a variable instance a number constant or number variable,
+
 Example,
+
+[source, javascript]
 var f=1.5;
+
+
 Pre/Post variable operations
-Pre/Post operations modifies the value of variable itself before/after the variable is
-read. Number variable type has the following pre/post operations,
+
+Pre/Post operations modifies the value of variable itself before/after the variable is read. Number variable type has the following pre/post operations,
 
 Operator Expression Description Result
 PreIncrement ++variable Performs an increment BEFORE
@@ -152,31 +208,54 @@ Postdecrement variable-- Performs decrement AFTER
 evaluate the variable
 var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
-3.5.5 Boolean type
-A boolean variable type is instanced once a variable instance a boolean constant or
-boolean variable
+
+
+=== 3.5.5 Boolean type
+
+A boolean variable type is instanced once a variable instance a boolean constant or boolean variable.
+
 Example,
+
+[source, javascript]
 var b=false;
 
-3.5.6 string type
-A integer variable type is instanced once a variable instance a string constant or string
-variable
+=== 3.5.6 string type
+
+A integer variable type is instanced once a variable instance a string constant or string variable
+
 Example,
+
+[source, javascript]
 var s="this is a string";
+
 3.5.7 Vector type
-A vector is an special type to store multiple values in a unidimensional array. the
-instantiation is done with '[' and ']'.
+
+A vector is an special type to store multiple values in a unidimensional array. the instantiation is done with '[' and ']'.
+
 Example empty vector,
+
+[source, javascript]
 var v=[];
+
 the user can instantiate a vector with values separated by comas.
+
 Example vector instantiated with values,
+
+[source, javascript]
 var v=[1,"string",true,2.0];
+
 If the vector has any value its access is done through integer index.
+
 Example,
+
+[source, javascript]
 var v=[1,"this is a string",true,2.0]; // its has 4 elements where its access [0..3]
-print("v:"+v[1]); // v:this is a string. It acces to 2nd element.
+var v_1=v[1]; // It access vector's second element (i.e "this is a string") and it save into v_1 variable
+
 Runtime Management
+
 Vector type It has the following functions in order to manage vector at runtime.
+
 Function Description Example
 size It returns the number of current elements var v=[1,2];
 v.size(); // =2
@@ -186,29 +265,39 @@ pop Returns the last value and removes it. var v=[1,2];
 v.pop(); //=[2], v=[1] 
 
 
-3.5.8 Structure type
-A structure is an special type to store multiple values in a container giving a name per
-value so the reference is done through its name instead its index. The instantiation is
-done within a block.
+=== 3.5.8 Structure type
+
+A structure is an special type to store multiple values in a container giving a name per value so the reference is done through its name instead its index. The instantiation is done within a block.
+
 Example,
+
+[source, javascript]
 var t={};
+
 Optionally we can init structure with some values.
+
 Example,
+
+[source, javascript]
 var t={
  i:1,
 s:"this is a string",
 b:true,
 f:2.0
 };
-To acces to its elements is done through the variable name followed by '.' Followed by
-the field name.
+
+To acces to its elements is done through the variable name followed by '.' followed by the field name or ["{attribute_name}"]
+
 Example,
-print("v:"+t.i); // v:1
-print("v:"+t.s); // v:this is a string
-print("v:"+t.b); // v:true
-print("v:"+t.f); // v:2.0
+
+[source, javascript]
+var v_i=v.i; // v_i=1
+var v_s=v["s]"; // v_s="this is a string",
+
 Runtime Management
+
 Struct type It has the following functions in order to manage struct at runtime.
+
 Function Description Example
 size It returns the number of current elements var v=[1,2];
 v.size(); // =2
@@ -217,10 +306,13 @@ v.add("a",0); // s={a:0}
 remove Remove attribute. var s={a:0};
 v.remove("a"); // s={} 
 
-3.5.9 Function object
-A function is an object that holds information about a function and is able to call it (see
-section 3.8.3 for more information)
+=== 3.5.9 Function object
+
+A function is an object that holds information about a function and is able to call it (see section 3.8.3 for more information)
+
 Example,
+
+[source, javascript]
 function add(op1, op2){ // function that returns the sum of two vars.
 return op1+op2;
 }
@@ -232,14 +324,19 @@ return op1+op2;
 };
 var j=fun_obj(2,3);// calls fun_obj (aka anonymous function). function. J=5
 
-3.6 Operations
+== 3.6 Operations
+
 ZetScript has the following type of expressions
+
 * Arithmetic operations
 * Relational operations
 * Logical operations
 * Bit operations
-3.6.1 Arithmetic expressions
+
+=== 3.6.1 Arithmetic expressions
+
 The following operators it does evaluates arithmetic expressions,
+
 Operator Symbol Description Example
 Add +
 It performs a add operation between two
@@ -299,8 +396,10 @@ Instance of instanceof Checks if a value is instance of a type. 0 instanceof int
 Note: You cannot mix different types for relational expressions. For example, doing a
 relational expression with boolean and integer values is incompatible. 
 
-3.6.3 Logic expressions
+=== 3.6.3 Logic expressions
+
 Logic expressions are the ones that combines operations through boolean values,
+
 Operator symbol Description Example
 Logic And && it performs an AND operation between two
 Boolean values
@@ -343,55 +442,80 @@ You can change the evaluation priority usign parenthesis.
 For example,
 (2+4)*5; // will result 36 
 
-3.7 Conditionals
-A conditional statement are used to perform different actions based on different
-conditions. In ZetScript we have the following conditional statement:
+== 3.7 Conditionals
+
+A conditional statement are used to perform different actions based on different conditions. In ZetScript we have the following conditional statement:
+
 * Use if to specify a block of code to be executed, if a specified condition is true
 * Use else to specify a block of code to be executed, if the same condition is false.
 * Use ternary condition to have a short if/else statement into single statement.
 * Use switch to specify manu alternative blocks of code to be executed
-3.7.1 The if statement
-Use the if statement to specify a block of ZetScript code to be executed if a condition is
-true.
-Syntax
+
+=== 3.7.1 The if statement
+Use the if statement to specify a block of ZetScript code to be executed if a condition is 'true'.
+
+Syntax,
+
+[source, javascript]
 if(condition){
  //Block of code to be executed if the condition is true
 }
+
 Example,
+
+[source, javascript]
 if(n < 10) {
- print("n < 10");
+ // do something if condition is true
 }
-3.7.2 The else statement
-Use the else statement to specify a block of code to be executed if the condition is
-false
+
+=== 3.7.2 The else statement
+
+Use the else statement to specify a block of code to be executed if the condition is 'false'.
+
 Syntax,
+
 if(n < 10) {
- print("n < 10");
+ // do something if condition is true
 }else{
- print("n >= 10");
+ // do something if condition is false
 } 
 
-3.7.3 The if else statement
-Use the else statement to specify a block of code to be executed if the condition is
-false
+=== 3.7.3 The if else statement
+
+Use the else statement to specify a block of code to be executed if the condition is 'false'.
+
 Syntax,
+
+[source, javascript]
 if(n < 10) {
- print("var n < 10");
+ // do something if condition is true
 }else if(n < 20){
- print("n < 20");
+ // do something if condition is true
 }else{
- print("n >= 20");
+ // do something if none of above conditions are true
 }
-3.7.4 Ternary condition
-Use ternary condition to have a short if/else statement into single statement. It
-performs expression if the condition is true or the second expression if the condition is
-false.
-Syntax
+
+=== 3.7.4 Ternary condition
+
+Use ternary condition to have a short if/else statement into single statement. It performs expression if the condition is true or the second expression if the condition is 'false'.
+
+Syntax,
+
+[source, javascript]
 result = (condition)?first expression:2nd expression;
+
 Example,
+
+[source, javascript]
 var j = 0>1? 0:1; // j = 1
-3.7.5 Switch
+
+=== 3.7.5 Switch
+
 Use the switch statement to select one of many blocks of code to be executed.
+
+Syntax,
+
+[source, javascript]
 switch(expression) {
  case value_0:
  code block
@@ -407,127 +531,188 @@ switch(expression) {
 }
 
 Example,
-switch (n) {// n is a random integer.
- case 6:
- print("6");
- break;
+
+[source, javascript]
+switch (n) {
  case 0:
- print("0");
+ // do something if n==0
+ break;
+ case 1:
+ // do something if n==1
  break;
  default:
- print("n:"+n);
+ // do something if n!=0 && n!=1
  break;
 }
+
 Switch can have common code blocks in different conditions
+
 Example,
-switch (n) { //  n is a random integer.
- case 4:
- case 5:
- print("4 or 5");
- break;
+
+[source, javascript]
+switch (n) {
  case 0:
- case 6:
- print("0 or 6");
+ case 1:
+  // do something if n==0 or n==1
+ break;
+ case 2:
+ case 3:
+ // do something if n==2 or n==3
  break;
  default:
- print("default");
+ // do something if n!=0 && n!=1 && n!=2 && n!=3
+ break;
 }
-3.8 Loops
+
+== 3.8 Loops
+
 ZetScript supports the following loop types,
+
 * While Loop
 * For Loop
-3.8.1The While Loop
+
+=== 3.8.1 while
+
 The while loop loops through a block of code as long as a specified condition is true.
+
+Syntax,
+
+[source, javascript]
 while(condition){
  // code block to be executed
 }
+
 Example,
+
+[source, javascript]
 var i = 0;
 while (i < 5){
- print("The number is "+i);
+ // do something until i==5
  i++;
 } 
 
-Also it can support Do-While Statement that will always be executed at least once,
-even if the condition is false, because the code block is executed before the condition
-is tested:
+=== 3.8.1 do-while
+
+do-while loop is always be executed at least once, even if the condition is false, because the code block is executed before the condition is tested:
+
+Syntax,
+
+[source, javascript]
 do{
 // do-while body
 } while (condition);
+
 Example,
+
+[source, javascript]
 var i = 0;
 do {
- print("The number is "+i);
+ // do something until i==5
  i++;
 } while (i < 5);
-3.8.2 The For Loop
+
+=== 3.8.2 The For Loop
+
 The for loop is often the tool you will use when you want to create a loop.
+
 Syntax,
+
+[source, javascript]
 for(stament1;statment2;statment3){
  // code block to be executed
 }
-* Statement 1 is executed before the loop (the code block) starts. Normally you will use
-statement 1 to initialize the variable used in the loop (for example var i = 0).
+
+* Statement 1 is executed before the loop (the code block) starts. Normally you will use statement 1 to initialize the variable used in the loop (for example var i = 0).
 * Statement 2 defines the condition for running the loop.
 * Statement 3 is executed each time after the code block has been executed.
+
 Example,
+
+[source, javascript]
 for(var i=0; i < 5; i++) {
  print("The number is "+i);
 } 
 
 
-3.8.3 Functions
-Function is a block of code to perform a particular task and is executed when in some
-part of the code it calls it.
-3.8.4 Function syntax
-A JavaScript function is defined with the function keyword, followed by a name,
-followed by parentheses ().
+=== 3.8.3 Functions
+
+Function is a block of code to perform a particular task and is executed when in some part of the code it calls it.
+
+=== 3.8.4 Function syntax
+
+A JavaScript function is defined with the function keyword, followed by a name, followed by parentheses ().
+
 Syntax,
+
+[source, javascript]
 function fun_name(arg1, arg2, ..., argn){
  // code to be executed
 }
+
 Example,
+
+[source, javascript]
 function add(op1, op2){
 return op1+op2;
 }
-3.8.5 Call a function
+
+=== 3.8.5 Call a function
+
 The call of a function is done when in some part of the code it calls it as follow,
+
 Syntax
+
+[source, javascript]
 fun_name(arg1, arg2, arg3,..., argN);
-Note: If a function is called with less than N args the rest of arguments will remain
-undefined.
+
+Note: If a function is called with less than N args the rest of arguments will remain undefined.
+
 Example,
+
+[source, javascript]
 function add(op1,op2){
 return op1+op2;
 }
 var j=add(2,3); // calls add function. j=5
 
-3.8.6 Function object
+=== 3.8.6 Function object
+
 A function can be stored in variables through its reference,
+
+[source, javascript]
 function add(op1, op2){
 return op1+op2;
 }
+
 var fun_obj = add; // stored function add reference to fun_obj
 var j=fun_obj(2,3);// calls fun_obj (aka add) function. J=5
+
+
 Also is possible to create function objects,
+
 Syntax
+
+[source, javascript]
 function(arg1, arg2, ..., argN){
 // code to be executed.
 };
+
+
 Example,
+
+[source, javascript]
 var add=function(op1, op2){
 return op1+op2;
 };
 var j=add(2,5); // j=5
 
-3.9 Class
-A class is a type of structure that contains variables and functions that operates with
-this variables. A class is defined in ZetScript using keyword class followed by the
-name of class. To access class variables within functions use the this keyword in
-order to access to variable or functions inside class. In a class we can find member
-functions (functions that affects to class variable) or static functions (helper function of
-generic purposes about the class type).
+== 3.9 Class
+
+A class is a type of structure that contains variables and functions that operates with this variables. A class is defined in ZetScript using keyword class followed by the name of class. To access class variables within functions use the this keyword in order to access to variable or functions inside class. In a class we can find member functions (functions that affects to class variable) or static functions (helper function of generic purposes about the class type).
+
 Example,
+
+[source, javascript]
 class Test{
  // member variable
  var data1;
@@ -543,32 +728,51 @@ class Test{
  }
 };
 
-3.9.1 Post add function/variable member
+=== 3.9.1 Post add function/variable member
+
 In ZetScrip is possible to add more class member through "::" punctuator.
+
 Example,
+
+[source, javascript]
 // post declaration of variable member
 var Test::data2;
 // post declaration of function member
 function Test::function2(){
  this.data2="a string";
 }
-3.9.2 Instance class
+
+=== 3.9.2 Instance class
+
 To instance a class is done through the keyword new
+
 Example,
+
+[source, javascript]
 var t = new Test(); // Instantiate t as Test type.
-3.9.3 Accessing to class functions
+
+=== 3.9.3 Accessing to class functions
+
 To access class variables/functions is done through "." operator.
+
 Example,
+
+[source, javascript]
 var i=t.function1(2); // initializes data1 as 2 and return the value
 print("data1 is: "+t.data1); // prints value of data1
-3.9.4 Constructor
-Each time class is instanced, their member variables are undefined.
-var t = new Test(); // The a class Test is instanced but data1 and data2 are undefined.
+
+=== 3.9.4 Constructor
+
+Each time class is instanced, their member variables are undefined. var t = new Test(); // The a class Test is instanced but data1 and data2 are undefined.
+
+[source, javascript]
 print("data1:"+t.data1); //  prints: data1:undefined"
-The constructor is a function that is invoked automatically and with aim to initialize all
-member variables. To the define a constructor we have to define a function member
-with same name as the Class.
+
+The constructor is a function that is invoked automatically and with aim to initialize all member variables. To the define a constructor we have to define a function member with same name as the Class.
+
 Example,
+
+[source, javascript]
 class Test{
  var data1;
  // Constructor function
@@ -579,20 +783,27 @@ class Test{
 var t = new Test(); // Instantiate t as Test type. Now, member variables are instanced.
 print("data1:"+t.data1); //  prints "data1: 10"
 
-3.9.5 Inheritance
-ZetScript supports inheritance through ":" punctuator after the name of the class
-followed the class name to be extended. The new extended class will inheritance all
-variable/functions members from base class.
+=== 3.9.5 Inheritance
+
+ZetScript supports inheritance through ":" punctuator after the name of the class followed the class name to be extended. The new extended class will inheritance all variable/functions members from base class.
+
 Example,
+
+[source, javascript]
 class TestExtended: Test{
  var data3;
  function function3(){
  this.data3=this.data1+this.function1(10);
  }
 };
-3.9.5.1 Call parent functions (super keyword)
+
+==== 3.9.5.1 Call parent functions (super keyword)
+
 The extended class can call parent functions through super keyword.
+
 Example,
+
+[source, javascript]
 class TestExtended: Test{
  var data3;
  function function1(a){
