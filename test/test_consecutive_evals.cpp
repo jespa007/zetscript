@@ -11,33 +11,33 @@ void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
 	_zs->eval("var a1=1\n");
 	_zs->eval("{var b=0}\n");
 	_zs->eval("var a2=2\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
+	_zs->eval("{var d=0; { var e=1}}\n");
+	_zs->eval("{var d=0; { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
 	_zs->eval("var a3=3\n");
 	_zs->eval("var a4=4\n");
 	_zs->eval("var a5=5\n"
-			 "{var d=0 { var e=1}}\n"
+			 "{var d=0;  { var e=1}}\n"
 			 "var a6=6\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
-	_zs->eval("{var d=0 { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0; { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
+	_zs->eval("{var d=0;  { var e=1}}\n");
 
 	_zs->eval("var a7=7\n");
-	_zs->eval("var a8=8\n",zetscript::EvalOption::EVAL_OPTION_SHOW_BYTE_CODE);
+	_zs->eval("var a8=8\n",_show_print?zetscript::EvalOption::EVAL_OPTION_SHOW_BYTE_CODE:0);
 
 
-	// Check 1st: all vars at the top should have idx as the end of its symbol has (i.e a1, a2, a3)
+	// Check all vars ordered as at the top should have idx as the end of its symbol has (i.e a1, a2, a3)
 	zetscript::Scope *main_scope=_zs->getScopeFactory()->getMainScope();
 	for(int i=0; i < main_scope->symbol_variables->count; i++){
 		zetscript::Symbol *s=(zetscript::Symbol *)main_scope->symbol_variables->items[i];
@@ -48,10 +48,6 @@ void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
 		}
 
 	}
-
-	// Should have only one scope
-
-
 }
 
 

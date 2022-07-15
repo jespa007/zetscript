@@ -7,7 +7,7 @@ function test_arithmetic_integer_basic(_a,_b){
 	for(var op in operators){
 		System::eval(
 			"System::assert(\n"+
-				"(new Integer("+_a+")"+op+"new Integer("+_b+"))==("+(_a+op+_b)+"), \\\"(new Integer("+_a+") "+op+" new Integer("+_b+"))!=\\\"+("+(_a+op+_b)+")\n"+
+				"(new Integer("+_a+")"+op+"new Integer("+_b+"))==parseInteger("+(_a+op+_b)+"), \\\"(new Integer("+_a+") "+op+" new Integer("+_b+"))!=\\\"+parseInteger("+(_a+op+_b)+")\n"+
 			");"
 		);
 	}
@@ -24,7 +24,6 @@ function test_arithmetic_number_basic(_a,_b){
 		);
 	}
 }	
-
 
 //------------------------------------------------------------------------------------------------
 // basic

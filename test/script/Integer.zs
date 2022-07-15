@@ -58,7 +58,7 @@ class Integer{
 	static _mod(_n1, _n2){
 		var n1,n2
 		n1,n2=Integer::parseInteger(_n1,_n2);		
-		return new Integer(n1/n2)
+		return new Integer(n1%n2)
 	}
 	
 	static _shr(_n1, _n2){
@@ -88,12 +88,8 @@ class Integer{
 	static _xor(_n1, _n2){
 		var n1,n2
 		n1,n2=Integer::parseInteger(_n1,_n2);		
-		return new Integer(n1|n2)
+		return new Integer(n1^n2)
 	}
-
-
-
-
 	
 	static _equ(_n1, _n2){
 		var n1,n2
