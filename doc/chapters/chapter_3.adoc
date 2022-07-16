@@ -155,27 +155,46 @@ Example,
 [source, javascript]
 var i=10;
 
-Pre/Post variable operations
+*Pre/Post variable operations*
 
 Pre/Post operations modifies the value of variable itself before/after the variable is read. Integer variable type has the following pre/post operations,
 
-Operator Expression Description Result
-PreIncrement ++variable Performs an increment BEFORE
-evaluate the variable
-var i=0;
-var j=++i; // j=1, i =1
-PostIncrement variable++ Performs increment AFTER
-evaluate the variable
-var i=0;
+[cols="1d,1m,2d,2a"]
+|====
+|Operator |Expression |Description |Result
+
+|PreIncrement
+|++variable 
+|Performs an increment BEFORE evaluate the variable
+|
+[source,javascript]
+ var i=0;
+ var j=++i; // j=1, i =1
+ 
+| PostIncrement
+| variable++ 
+| Performs increment AFTER evaluate the variable
+| 
+[source,javascript]
+var i=0; 
 var j=i++; // j=0; i=1
-Predecrement --variable Performs a decrement BEFORE
-evaluate the variable
-var i=0;
+
+| Predecrement
+| --variable 
+| Performs a decrement BEFORE evaluate the variable
+| 
+[source,javascript]
+var i=0; 
 var j=--i; // j=-1; i=-1
-Postdecrement variable-- Performs decrement AFTER
-evaluate the variable
-var i=0;
+
+| Postdecrement
+| variable--
+| Performs decrement AFTER evaluate the variable
+|[source,javascript] 
+var i=0; 
 var j=i--;//j=0;i=-1;
+
+|====
 
 === 3.5.4 Number type
 
@@ -187,28 +206,45 @@ Example,
 var f=1.5;
 
 
-Pre/Post variable operations
+*Pre/Post variable operations*
 
 Pre/Post operations modifies the value of variable itself before/after the variable is read. Number variable type has the following pre/post operations,
 
-Operator Expression Description Result
-PreIncrement ++variable Performs an increment BEFORE
-evaluate the variable
+[cols="1d,1m,2d,2a"]
+|====
+|Operator |Expression |Description |Result
+|PreIncrement 
+|++variable 
+|Performs an increment BEFORE evaluate the variable
+|
+[source,javascript]
 var i=0.5;
 var j=++i; // j=1.5, i =1.5
-PostIncrement variable++ Performs increment AFTER
-evaluate the variable
+
+|PostIncrement 
+|variable++ 
+|Performs increment AFTER evaluate the variable
+|
+[source,javascript]
 var i=0.5;
 var j=i++; // j=0.5; i=1.5
-Predecrement --variable Performs a decrement BEFORE
-evaluate the variable
+
+|Predecrement 
+|--variable 
+|Performs a decrement BEFORE evaluate the variable
+|
+[source,javascript]
 var i=0.5;
 var j=--i; // j=-0.5; i=-0.5
-Postdecrement variable-- Performs decrement AFTER
-evaluate the variable
+
+|Postdecrement 
+|variable-- 
+|Performs decrement AFTER evaluate the variable
+|
+[source,javascript]
 var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
-
+|====
 
 === 3.5.5 Boolean type
 
@@ -219,7 +255,7 @@ Example,
 [source, javascript]
 var b=false;
 
-=== 3.5.6 string type
+=== 3.5.6 String type
 
 A integer variable type is instanced once a variable instance a string constant or string variable
 
@@ -228,7 +264,7 @@ Example,
 [source, javascript]
 var s="this is a string";
 
-3.5.7 Vector type
+=== 3.5.7 Vector type
 
 A vector is an special type to store multiple values in a unidimensional array. the instantiation is done with '[' and ']'.
 
@@ -250,61 +286,90 @@ Example,
 
 [source, javascript]
 var v=[1,"this is a string",true,2.0]; // its has 4 elements where its access [0..3]
-var v_1=v[1]; // It access vector's second element (i.e "this is a string") and it save into v_1 variable
+var v_1=v[1]; // It access vector's second element (i.e "this is a string") and it's saved into v_1 variable
 
-Runtime Management
+*Built-in functions*
 
 Vector type It has the following functions in order to manage vector at runtime.
 
-Function Description Example
-size It returns the number of current elements var v=[1,2];
+[cols="1m,1d,2a"]
+|====
+|Function |Description |Example
+|size 
+|It returns the number of current elements
+|
+[source,javascript]
+var v=[1,2];
 v.size(); // =2
-push Adds value at the end of the vector var v=[1,2];
+
+|push 
+|Adds value at the end of the vector
+|
+[source,javascript]
+var v=[1,2];
 v.push(3); //v=[1,2,3]
-pop Returns the last value and removes it. var v=[1,2];
-v.pop(); //=[2], v=[1] 
+
+|pop 
+|Returns the last value and removes it. 
+|
+[source,javascript]
+var v=[1,2];
+v.pop(); //=[2], v=[1]
+|==== 
 
 
-=== 3.5.8 Structure type
+=== 3.5.8 Object type
 
-A structure is an special type to store multiple values in a container giving a name per value so the reference is done through its name instead its index. The instantiation is done within a block.
-
-Example,
+An object type is a anonymous container type to store multiple values in attributes. The instantiation is done within a pair of curly brackets (i.e '{}'),
 
 [source, javascript]
 var t={};
 
-Optionally we can init structure with some values.
-
-Example,
+Optionally we can init with some values with its attributes,
 
 [source, javascript]
 var t={
- i:1,
-s:"this is a string",
-b:true,
-f:2.0
+  i:1
+ ,s:"this is a string"
+ ,b:true
+ ,f:2.0
 };
 
-To acces to its elements is done through the variable name followed by '.' followed by the field name or ["{attribute_name}"]
-
-Example,
+To acces to its elements is done through the variable name followed by '.' and attribute name or attribute name as string within brackets (i.e ["attribute_name"] ),
 
 [source, javascript]
-var v_i=v.i; // v_i=1
-var v_s=v["s]"; // v_s="this is a string",
+var v_i=v.i; // get value 'i' by '.'
+var v_i=v["i"]; // get value 'i' by '[]'
 
-Runtime Management
+*Built-in functions*
 
-Struct type It has the following functions in order to manage struct at runtime.
+Object type it has the following functions in order to manage struct at runtime,
 
-Function Description Example
-size It returns the number of current elements var v=[1,2];
+[cols="1m,1d,2a"]
+|====
+|Function |Description |Example
+
+|size 
+|It returns the number of current elements 
+|
+[source,javascript
+var v=[1,2];
 v.size(); // =2
-add Adds an attribute var s={};
+
+|add
+|Adds an attribute
+|
+[source,javascript]
+var s={};
 v.add("a",0); // s={a:0}
-remove Remove attribute. var s={a:0};
-v.remove("a"); // s={} 
+
+|remove 
+|Removes an attribute
+|
+[source,javascript]
+var s={a:0};
+v.remove("a"); // s={}
+|====
 
 === 3.5.9 Function object
 
@@ -337,62 +402,116 @@ ZetScript has the following type of expressions
 
 The following operators it does evaluates arithmetic expressions,
 
-Operator Symbol Description Example
-Add +
-It performs a add operation between two
-integer or number values or concatenates
-strings with other values
+[cols="1d,1m,2d,2a"]
+|====
+|Operator |Symbol |Description |Example
+|Add 
+|+
+|It performs a add operation between two integer or number values or concatenates strings with other values
+|
+[source,javascript]
 5+10; // = 15
 1.5+6; // = 7.5
 "string_"+1;// ="string_1"
-Subtract -
-It performs a sub operation between two
-integer or number values
+
+|Subtract
+|-
+|It performs a sub operation between two integer or number values
+|
+[source,javascript]
 10-5; // = 5
 2.5-1;// = 1.5
-Multiply * It performs a multiplication between two
-integer or number values
+
+|Multiply 
+|* 
+|It performs a multiplication between two integer or number values
+|
+[source,javascript]
 10*5; //= 50
 1.5*2;//= 3.0
-Divide / It performs a division between two integer
-or number values
+
+|Divide 
+|/ 
+|It performs a division between two integer or number values
+|
+[source,javascript]
 10/2; // = 5
 3/2.0 // = 1.5
-Modulus % It performs a division between two integer
-or number values
+
+|Modulus 
+|% 
+|It performs a division between two integer or number values
+|
+[source,javascript]
 3%2; //it results 1
 10%2.5; // it results
-3.6.2 Relational expressions
+|====
+
+=== 3.6.2 Relational expressions
+
 The following operators it does evaluates relational expressions,
-Operator symbol Description Example
-Equal ==
-Check whether two values are equal 10==10;// = true
+
+[cols="1d,1m,2d,2a"]
+|====
+|Operator |symbol |Description |Example
+
+|Equal 
+|==
+|Check whether two values are equal
+|
+[source,javascript]
+ 10==10;// = true
 "hello"=="bye"; // = false
-Not equal != Check whether two values are not
-equal
+
+|Not equal 
+|!= 
+|Check whether two values are not equal
+|
+[source,javascript]
 10!=10; // = false
 "hello"!="bye"; // = true
-Less than < Checks whether first value is less than
-second value
+
+|Less than 
+|< 
+|Checks whether first value is less than second value
+|
+[source,javascript]
 10<20; // = true
 20<10; // = false
-Greater
-than > Checks whether first value is greater
-than second value
+
+|Greater than 
+|> 
+|Checks whether first value is greater than second value
+|
+[source,javascript]
 10>20; // = false
 20>10; // = true
-Less equal
-than <= Checks whether first value is less
-equal than second value
+
+|Less equal than 
+| <= 
+|Checks whether first value is less equal than second value
+|
+[source,javascript]
 10<=10; //= true
 11<=10; // = false
-Greater
-equal than >= Checks whether first value is greater
-equal than second value
+
+|Greater equal than 
+|>= 
+|Checks whether first value is greater equal than second value
+|
+[source,javascript]
 10>=11; // = false
 11>=10; // = true
-Instance of instanceof Checks if a value is instance of a type. 0 instanceof int; //= true
+
+|Instance of 
+|instanceof 
+|Checks if a value is instance of a type. 
+|
+[source,javascript]
+0 instanceof int; //= true
 "hello" instanceof int;//= false
+|====
+
 Note: You cannot mix different types for relational expressions. For example, doing a
 relational expression with boolean and integer values is incompatible. 
 
@@ -400,46 +519,97 @@ relational expression with boolean and integer values is incompatible.
 
 Logic expressions are the ones that combines operations through boolean values,
 
-Operator symbol Description Example
-Logic And && it performs an AND operation between two
-Boolean values
+[cols="1d,1m,2d,2a"]
+|====
+|Operator |symbol |Description |Example
+
+|Logic And 
+|&& 
+|it performs an AND operation between two Boolean values
+|
+[source,javascript]
 true && true;// = true
 true&& false;// = false
-Logic Or || It performs an OR operation between two
-Boolean values
-true||false;// = true
-false || false;// = false
-Logic Not ! Negates Boolean value !true; // = false
+
+|Logic Or 
+| \|\|
+|It performs an OR operation between two Boolean values
+|
+[source,javascript]
+true \|\| false;// = true
+false \|\| false;// = false
+
+|Logic Not 
+|! 
+|Negates Boolean value
+|
+[source,javascript]
+!true; // = false
 !false; // = true
-3.6.4 Binary expressions
+|====
+
+=== 3.6.4 Binary expressions
+
 Binary expressions are the ones that combines bit operations through integer values,
-Operator Symbol Description Example
-Binary And & Performs binary AND operation
-between two integers
+
+[cols="1d,1m,2d,2a"]
+|====
+|Operator |symbol |Description |Example
+
+|Binary And 
+|& 
+|Performs binary AND operation between two integers
+|
+[source,javascript]
 0xa & 0x2; // = 0x2
 0xff & 0xf0; // = 0xf0
-Binary Or | Performs binary OR operation
-between two integers
-0xa | 0x5; // = 0xf
-0x1 | 0xe; // = 0xf
-Binary Xor ^ Performs binary XOR between two
-integers
+
+|Binary Or
+|\|
+|Performs binary OR operation between two integers
+|
+[source,javascript]
+0xa \| 0x5; // = 0xf
+0x1 \| 0xe; // = 0xf
+
+|Binary Xor 
+|^ 
+|Performs binary XOR between two integers
+|
+[source,javascript]
 0xa ^ 0xa; // = 0x0
 0xa ^ 0x5; // = 0xf
-Binary
-shift left
-<< Performs binary shift left 0x1 << 2; // = 0x4
-Binary
-shift right
->> Performs binary shift right 0xff >> 1; // = 0x7f
-3.6.5 Priority operations
-Each operator it has priority of evaluation. ZetScript it has the following operator order
-priority,
+
+|Binary shift left
+|<< 
+|Performs binary shift left
+|
+[source,javascript]
+0x1 << 2; // = 0x4
+
+|Binary shift right
+|>> 
+|Performs binary shift right 
+|
+[source,javascript]
+0xff >> 1; // = 0x7f
+|====
+
+=== 3.6.5 Priority operations
+Each operator it has priority of evaluation. ZetScript it has the following operator order priority,
+
 *,/,%,!=,+,-,^,&,|,<<,>>,==,<=,>=,>,<,||,&&
+
 For example this expression,
+
+[source,javascript]
 2+4*5; // will result 22
+
 You can change the evaluation priority usign parenthesis.
+
 For example,
+
+[source,javascript]
 (2+4)*5; // will result 36 
 
 == 3.7 Conditionals

@@ -1,0 +1,1623 @@
+Built-in modules
+
+System
+Math
+Console
+DateTime
+Json
+
+
+
+4.1 Bind C variables
+ZetScript supports binding for basic types as int, float, bool, char * and string types. Is
+also possible to pass custom registered classes (see section 4.3)
+Bind C variable is done through macro register_C_Variable .You have to provide the
+name that will be referenced in script side.
+Sintax,
+register_C_Variable("variable_name", c_variable);
+Example,
+#include "CZetScript.h"
+using namespace zetscript;
+int main(int argc, char *argv[]){
+ CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+ int int_var=0;
+ register_C_Variable("int_var",int_var); // registers int_var named int_var at script
+side.
+ return 0;
+}
+At script side, to have access on the registered c++ variable, just make reference to it.
+Unlike script variables, C variables is strong type and it doesn't allow to assign value
+that differs from its type.
+Example,
+int_var =0; // ok, my_var is int and you assign a int.
+int_var =10.0; // ok, my_var is int it does a cast from float to int.
+int_var = "this is a string"; //  invalid due cannot convert string to int.
+
+4.2 Bind C Function
+ZetScript C function binding supports int, *float, *bool, char * and string* as arguments
+types. For return values it supports the same basic types as arguments plus bool and
+float. Is also possible to pass custom registered types (see section 4.3)
+Is important to say that ZetScript has a constraint of a maximum of 6 parameters for
+any C function to be bind in the script engine. If a function more than 6 parameters is
+tried to be registered, ZetScript will throw an error. The value of 6 is not taken by some
+performance reason or any restriction. It can modify this constraint in ZetScript to have
+more than 6 parameters, but it will depend throughout the time by what user really
+needs.
+To bind C function is done through macro register_C_Function. You have to provide
+the name that will be referenced in script side.
+Sintax,
+register_C_Variable("function_name", c_function);
+Example,
+#include "CZetScript.h"
+using namespace zetscript;
+int add(int op1, int op2){
+ return op1+op2;
+}
+int main(int argc, char *argv[]){
+ CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+ register_C_Function("add",add);
+ return 0; 
+ 
+ 
+ 4.2.1 Ambiguities
+If we try to register another function with the same name the c++ compiler will fail to
+register function.
+For instance,
+#include "CZetScript.h"
+using namespace zetscript;
+int add(int op1, int op2){ // a function that adds two integers.
+ return op1+op2;
+}
+float add(float *op1, float *op2){ // a function that adds two floats .return op1+op2;
+ return *op1+*op2;
+}
+int main(int argc, char *argv[]){
+ CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+ register_C_Function("add",add);// c++ compiler throws an error due function deduction.
+ zs->eval(
+ "print(\"result 5+4:\"+add(5,4));" // prints "result 5+4:9"
+ );
+ return 0;
+}
+For instance gnu c++ compiler throws this error,
+note: template argument deduction/substitution failed:
+That means that indeed there're more than one function named 'add' and the compiler
+cannot deduce which function take to register. To achieve register more than a one
+function with the same name we have to make a cast to get the function we want with
+its signature.
+Example,
+#include "CZetScript.h"
+using namespace zetscript;
+int add(int op1, int op2){
+ return op1+op2;
+}
+float add(float *op1, float *op2){ // a function that adds two floats .return op1+op2;
+ return *op1+*op2;
+} 
+
+int main(){
+ CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+
+ // register function add(int,int)
+ register_C_Function("add",static_cast<int (*)(int,int)>(add));
+ // register function add(float *,float *)
+ register_C_Function("add",static_cast<float (*)(float *,float *)>(add));
+
+ zs->eval(
+ "print(\"result 5+4:\"+add(5,4));" // prints "result 5+4:9"
+ "print(\"result 0.5+4.6:\"+add(0.5,4.6));" // prints "result 5.1"
+ );
+ return 0;
+}
+
+4.3 Bind C Class
+To bind a C Class is done through register_C_Class passing the type as template and
+the name that will be referenced in the script.
+Example,
+register_C_Class<type_class>("name_class");
+The following code shows an example of a registering a C++ class,
+class MyClass{
+public:
+ int data1;
+ void init(int arg){
+ printf("data1 is initialized as %i\n",arg);
+ this->data1=arg;
+ }
+ void function1(int arg){
+ this->data1 = arg;
+ printf("c++ argument is %i\n",this->data1);
+ }
+};
+List 4.1
+MyClass is registered as follow,
+register_C_Class<MyClass>("MyClass"); //register MyClass as MyClass in script side.
+
+4.3.1 Instance C Class
+To instance registered C Class it can done through keyword new, as it's shown in the
+following example,
+var myclass= new MyClass();
+4.3.2 Delete C Class
+ZetScript it has a garbage collector to delete unreferenced script variables when the
+end of scope is reached but it keeps alive its internal c pointer to avoid unintended
+segmentation faults. So to avoid memory leaks due this issue, the user has to delete
+manually any instanced C Class variable with delete keyword.
+The following code shows an example of using delete keyword,
+delete myclass; // script and c variable is destroyed.
+4.3.3 Bind Variable Member
+The binding of variable member is done through the macro function
+register_C_VariableMember. You have to provide the type class, the string name that
+will be referenced in script side and variable object reference.
+Sintax,
+register_C_VariableMember<ObjectType>("variable_name",&ObjectType::variable_name);
+As an example, the following code register variable member MyClass::data1 seen on
+List 4.1,
+register_C_VariableMember<MyClass>("data1",&MyClass::data1);
+And then it can access to data1 member through field access ('.')
+var myclass= new MyClass();
+print("data1"+myclass.data1);
+4.3.4 Bind Function Member
+The binding of variable member is done like binding c function but in this case is done
+through the macro function register_C_FunctionMember. You have to provide the type
+class, the string name that will be referenced in script side and the function object
+reference.
+register_C_FunctionMember<ObjectType>("function_name",&ObjectType::function_name);
+As an example, the following code registers function member MyClass::function1 seen
+on List 4.1
+register_C_FunctionMember<MyClass>("function1",&MyClass::function1);
+And then it can access to function1 member through field access ('.')
+var myclass= new MyClass(); 
+
+myclass.function1(10); // prints "c++ argument is10"
+4.3.5 Bind custom class Constructor
+ZetScript always calls default C++ constructor when a variable is instanced with C++
+type. ZetScript has no support of parameterized constructors but, instead, it can be
+done by registering a function with same name as the class name registered.
+As an example, the following code registers function member MyClass::init seen on List
+4.1 as constructor3
+,
+register_C_FunctionMember<MyClass>("MyClass",&MyClass::init);
+And then, when variable is intancedwe can instance the class passing a integer as
+parameter to the c contructor
+var myclass= new MyClass(10); // prints "data1 is initialized as 10"
+4.3.6 Inheritance
+Inherited classes needs to know its base classes in order to register its parent variables
+and symbols already registered with the functions already seen in the section 4.3.3 and
+4.3.4 respectively. To tell the which base class has an inherited class is done through
+class_C_baseof with two parameters: The first parameter as the inherited class type
+and second parameter as its base class type.
+Syntax,
+class_C_baseof<class, base_class>();
+If for example we want to register MyClassExtend and tell that is base of MyClass Is
+done with the following snipped,
+class MyClassExtend:public MyClass{
+public:
+ float data2;
+ void function2(float * arg){
+ this->data2 = *arg;
+ printf("Float argument is %.02f\n",this->data2);
+ }
+};
+register_C_Class<MyClassExtend>("MyClassExtend"); // register MyClassExtend
+class_C_baseof<MyClassExtend,MyClass>();
+List 4.2
+
+3
+ Note that the name of the function is the same as the name of the class
+ 
+ 4.4 Inheritance script class from c++ class
+An important feature of ZetScript is that it supports c++ class inheritance for any in
+script class and the this (section 3.9) and super (seccion 3.9.5.1) keywords works as a
+normal behavior
+For example, we could inherit MyClassExtend from 4.2 that is shown in the following
+code,
+class ScriptMyClassExtended: MyClassExtend{
+ function function1(arg1){
+ print("script argument is "+arg1)
+ super(this.data1+arg1); // calls function1 c++
+ }
+}
+var myclass=new ScriptMyClassExtend(10);
+Myclass.function1(5);
+It prints,
+data1 is initialized as 10
+script argument is 5
+c++ argument is 15 
+
+Complete example
+#include "CZetScript.h"
+using namespace zetscript;
+class MyClass{
+public:
+ int data1;
+ void init(int arg){
+ printf("data1 is initialized as %i\n",arg);
+ this->data1=arg;
+ }
+ void function1(int arg){
+ this->data1 = arg;
+ printf("c++ argument is %i\n",this->data1);
+ }
+};
+class MyClassExtend:public MyClass{
+public:
+ float data2;
+ void function2(float *arg){
+ this->data2 = *arg;
+ printf("Float argument is %.02f\n",this->data2);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+
+ register_C_Class<MyClass>("MyClass"); //register MyClass as MyClass in script side
+ register_C_Class< MyClassExtend >("MyClassExtend"); // register MyClassExtend
+ class_C_baseof<MyClassExtend,MyClass>();
+
+ // register MyClass::constructor
+ register_C_FunctionMember<MyClass>("MyClass",&MyClass::init);
+ //reg MyClass:: data1
+ register_C_VariableMember<MyClass>("data1",&MyClass::data1);
+ //reg MyClass:: function1
+ register_C_FunctionMember<MyClass>("function1",&MyClass::function1);
+
+ // eval print
+ if(!zs->eval(
+ "class ScriptMyClassExtend: MyClassExtend{\n"
+ "function function1(arg1){\n"
+ "print(\"script argument is \"+arg1);\n"
+ "super(this.data1+arg1); // calls function1 c++\n"
+ "}\n"
+ "};\n"
+ "var myclass=new ScriptMyClassExtend(10);\n"
+ "myclass.function1(5);\n"
+ "delete myclass; // script and c variable is destroyed.\n"
+ )){
+ fprintf(stderr,CZetScript::getInstance()->getErrorMsg());
+ }
+ return 0;
+}
+
+4.5 Call script function in C++
+To bind script call in c++ it can be done through bind_function passing the function type
+as template parameter and the function name as parameter4
+. It can bind a script
+function member from an already instanced object.
+Example,
+#include "CZetScript.h"
+using namespace zetscript;
+int main(){
+ CZetScript *zs = CZetScript::getInstance(); // instance zetscript
+ zs->eval(
+ "class Test{"
+ " var data1;"
+ " function function1(arg){"
+ " print(\"calling Test.Function:\"+arg);"
+ " }"
+ "};"
+ ""
+ "function delete_test(){"
+ " delete test;"
+ " print(\"test variable was deleted\");"
+ "}"
+ ""
+ "var test=new Test();"
+ );
+ // delete_test function is evaluated now test variable is instanced as Test type, so it can
+ // bind test.function1
+
+// instance function delete_test function.
+std::function<void()> * delete_test=bind_function<void()>("delete_test");
+// instance member function test.function1.
+std::function<void(int)> * test_function1=bind_function<void (int)>("test.function1");
+ (*test_function1)(10); // it calls "test.function" member function with 10 as parameter.
+ (*delete_test)(); // it calls "delete_test" function with no parameters
+ // delete functions when they are used anymore
+ delete test_function1;
+ delete delete_test;
+}
+
+4 C++ function binding is limited by a maximum of 6 parameters
+
+5 Metamethods
+Metamethods are special functions members that links with operators seen on section
+section 3.6. ZetScript metamethods can be static or member function5
+ depending
+whether the operation affects or not the object itself.
+ZetScript supports the following metamethods:
+* _equ
+* _not_equ
+* _lt
+* _lte
+* _gt
+* _gte
+* _not
+* _neg
+* _add
+* _div
+* _mul
+* _mod
+* _and
+* _or
+* _xor
+* _shl
+* _shr
+* _set
+
+5
+ On script side, static function is defined as member function, but user should not access on
+variable/function members as well it happens on c++ static function.
+
+
+5.1 _equ (aka ==)
+@Description: Performs relational equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if equal, false otherwise.
+Script Example
+Example how to use _equ metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _equ(op1, op2){
+ return op1.num==op2.num;
+ }
+};
+var n1 = new MyNumber (1), n2=new MyNumber (1);
+
+if(n1==n2){ // we use here the metamethod ==
+ print("n1 ("+n1.num+") is equal to n2 ("+n2.num+")");
+} 
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static bool _equ(MyNumber *op1, MyNumber *op2){
+ return op1->num == op2->num;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _equ as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_equ",&MyNumber::_equ);
+ if(!zs->eval(
+"var n1 = new MyNumber (1), n2=new MyNumber (1); \n "
+"if(n1==n2){ // we use here the metamethod ==\n "
+" print(\"n1 (\"+n1.num+\") is equal to n2 (\"+n2.num+\")\");\n "
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.2 _nequ (aka !=)
+@Description: Performs relational not equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if not equal, false otherwise.
+Script Example
+Example how to use _nequ metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _nequ(op1, op2){
+ return op1.num!=op2.num;
+ }
+};
+var n1 = new MyNumber (1), n2=new MyNumber (0);
+if(n1!=n2){
+ print("n1 ("+n1.num+") is not equal to n2 ("+n2.num+")");
+} 
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static bool _nequ(MyNumber *op1, MyNumber *op2){
+ return op1->num != op2->num;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _not_equ as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_nequ",&MyNumber::_nequ);
+ if(!zs->eval(
+"var n1 = new MyNumber (1), n2=new MyNumber (0); \n "
+"if(n1!=n2){ // we use here the metamethod != \n "
+" print(\"n1 (\"+n1.num+\") is not equal to n2 (\"+n2.num+\")\");\n "
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+} 
+
+5.3 _lt (aka <)
+@Description: Performs relational less equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if less equal, false otherwise.
+Script Example
+Example how to use _lt metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _lt(op1, op2){
+ return op1.num<op2.num;
+ }
+};
+var n1 = new MyNumber (0), n2=new MyNumber (1);
+if(n1<n2){
+ print("n1 ("+n1.num+") is less than n2 ("+n2.num+")");
+} 
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static bool _lt(MyNumber *op1, MyNumber *op2){
+ return op1->num < op2->num;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _lt as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_lt",&MyNumber::_lt);
+ if(!zs->eval(
+ "var n1 = new MyNumber (0), n2=new MyNumber (1);\n"
+"if(n1<n2){ \n "
+" print(\"n1 (\"+n1.num+\") is less than n2 (\"+n2.num+\")\");\n "
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.4 _lte (aka <=)
+@Description: Performs relational less equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if less equal, false otherwise.
+Script Example
+Example how to use _lte metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _lte(op1, op2){
+ return op1.num<=op2.num;
+ }
+};
+var n1 = new MyNumber (1), n2=new MyNumber (1);
+if(n1<=n2){
+ print("n1 ("+n1.num+") is less equal than n2 ("+n2.num+")");
+} 
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static bool _lte (MyNumber *op1, MyNumber *op2){
+ return op1->num <= op2->num;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _lte as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_lte",&MyNumber::_lte);
+ if(!zs->eval(
+"var n1 = new MyNumber (1), n2=new MyNumber (1);\n"
+"if(n1<=n2){\n"
+" print(\"n1 (\"+n1.num+\") is less equal than n2 (\"+n2.num+\")\");\n"
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.5 _gt (aka >)
+@Description: Performs relational greater operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if greater, false otherwise.
+Script Example
+Example how to use _gt metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _gt(op1, op2){
+ return op1.num>op2.num;
+ }
+};
+var n1 = new MyNumber (1), n2=new MyNumber (0);
+if(n1>n2){
+ print("n1 ("+n1.num+") is greater than n2 ("+n2.num+")");
+}
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static bool _gt(MyNumber *op1, MyNumber *op2){
+ return op1->num > op2->num;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _gt as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_gt",&MyNumber::_gt);
+ if(!zs->eval(
+"var n1 = new MyNumber (1), n2=new MyNumber (0);\n"
+"if(n1>n2){ \n"
+" print(\"n1 (\"+n1.num+\") is greater than n2 (\"+n2.num+\")\");\n"
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.6 _gte (aka >=)
+@Description: Performs relational greater equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if greater equal, false otherwise.
+Script Example
+Example how to use _gte metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _gte(op1, op2){
+ return op1.num>=op2.num;
+ }
+};
+var n1 = new MyNumber (1), n2=new MyNumber (1);
+if(n1>=n2){
+ print("n1 ("+n1.num+") is greater equal than n2 ("+n2.num+")");
+} 
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static bool _gte(MyNumber *op1, MyNumber *op2){
+ return op1->num >= op2->num;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _gte as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_gte",&MyNumber::_gte);
+ if(!zs->eval(
+"var n1 = new MyNumber (1), n2=new MyNumber (1); \n "
+"if(n1>=n2){ \n "
+" print(\"n1 (\"+n1.num+\") is greater equal than n2 (\"+n2.num+\")\");\n "
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.7 static _not (aka !)
+@Description: Performs a not operation.
+@Param1 : Object custom class type.
+@Returns : A Boolean type as a result of not operation.
+Script Example
+Example how to use _not metamethod within script class,
+class MyBoolean{
+ var b;
+
+ function MyBoolean(_b){
+ this.b=_b;
+ }
+ function _not(_op){
+ return !_op.b;
+ }
+};
+var b = new MyBoolean (false);
+if(!b){
+ print("b was false");
+} 
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyBoolean{
+public:
+ bool b;
+ MyBoolean (){
+ this->b=false;
+ }
+ void set(bool _b){
+ this->b=_b;
+ }
+ static bool _not(MyBoolean *op1){
+ return !op1->b;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class< MyBoolean >("MyBoolean");
+ // register variable member num
+ register_C_VariableMember<MyBoolean>("b", &MyBoolean::b);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyBoolean>("MyBoolean", &MyBoolean:: set);
+ // register static function _not as metamethod
+ register_C_StaticFunctionMember<MyBoolean>("_not", &MyBoolean::_not);
+ if(!zs->eval(
+"var b = new MyBoolean (false);\n"
+"if(!b){ \n"
+" print(\"b was false\");\n"
+"}\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+} 
+
+5.8 _neg (aka -)
+@Description: Performs negate operation.
+@Param1 : operand to negate.
+@Returns : A new object custom class type with result of negate
+operation.
+Script Example
+Example how to use _neg metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _neg(op1){
+ return new MyNumber(-op1.num);
+ }
+};
+var n1 = new MyNumber (1);
+var n2 = -n1;
+print("neg of n1 ("+n1.num+") is ("+n2.num+")"); 
+
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _num){
+ this->num=_num;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static MyNumber * _neg(MyNumber *op1){
+ return new MyNumber(-op1->num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _neg as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_neg",&MyNumber::_neg);
+ if(!zs->eval (
+"var n1 = new MyNumber (1);\n"
+"var n2 = -n1;\n"
+"print(\"neg of n1 (\"+n1.num+\") is (\"+n2.num+\")\");\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.9 _add (aka +)
+@Description: Performs add operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result add operation.
+Script Example
+Example how to use _add metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _add(op1,op2){
+ return new MyNumber(op1.num+op2.num);
+ }
+};
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =n1+n2;
+print("n1 ("+n1.num+") n2 ("+n2.num+") = "+n3.num);
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _n){
+ this->num=_n;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static MyNumber * _add(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1->num + op2->num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _add as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_add",&MyNumber::_add);
+ if(!zs->eval(
+"var n1 = new MyNumber (20);\n"
+"var n2 = new MyNumber (10); \n"
+"var n3 =n1+n2; \n "
+"print(\"n1 (\"+n1.num+\") + n2 (\"+n2.num+\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+} 
+
+5.10 _div (aka /)
+@Type: Static
+@Description: Performs divide operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result divide
+operation.
+Script Example
+Example how to use metamethod _div within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _div(op1,op2){
+ return new MyNumber(op1.num/op2.num);
+ }
+};
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =n1/n2;
+print("n1 ("+n1.num+") / n2 ("+n2.num+") = "+n3.num);
+
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _n){
+ this->num=_n;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static MyNumber *_div(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1->num / op2->num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _div as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_div",&MyNumber::_div);
+ if(!zs->eval(
+"var n1 = new MyNumber (20);\n"
+"var n2 = new MyNumber (10);\n"
+"var n3 =n1/n2;\n"
+"\n"
+"print(\"n1 (\"+n1.num+\") / n2 (\"+n2.num+\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.11 _mul (aka *)
+@Type: Static
+@Description: Performs multiply operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result multiply
+operation.
+Script Example
+Example how to use _mul metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _mul(op1,op2){
+ return new MyNumber(op1.num*op2.num);
+ }
+};
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =n1*n2;
+print("n1 ("+n1.num+") * n2 ("+n2.num+") = "+n3.num);
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _n){
+ this->num=_n;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static MyNumber *_mul(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1->num * op2->num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _mul as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_mul",&MyNumber::_mul);
+ if(!zs->eval(
+"var n1 = new MyNumber (20);\n"
+"var n2 = new MyNumber (10);\n"
+"var n3 =n1*n2;\n"
+"\n"
+"print(\"n1 (\"+n1.num+\") * n2 (\"+n2.num+\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.12 _mod (aka %)
+@Description: Performs modulus operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result modulus
+operation.
+Script Example
+Example how to use _mod metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _mod(op1,op2){
+ return new MyNumber(op1.num%op2.num);
+ }
+};
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (15);
+var n3 =n1%n2;
+print("n1 ("+n1.num+") % n2 ("+n2.num+") = "+n3.num);
+
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _n){
+ this->num=_n;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static MyNumber *_mod(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1->num % op2->num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _mod as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_mod",&MyNumber::_mod);
+ if(!zs->eval(
+"var n1 = new MyNumber (20);\n"
+"var n2 = new MyNumber (15);\n"
+"var n3 =n1%n2;\n"
+"\n"
+"print(\"n1 (\"+n1.num+\") % n2 (\"+n2.num+\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.13 _and (aka &)
+@Description: Performs binary and operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary and
+operation.
+Script Example
+Example how to use _and metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _and(op1,op2){
+ return new MyNumber(op1.num&op2.num);
+ }
+};
+var n1 = new MyNumber (0xff);
+var n2 = new MyNumber (0x0f);
+var n3 =n1&n2;
+print("n1 ("+n1.num+") & n2 ("+n2.num+") = "+n3.num); 
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _n){
+ this->num=_n;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static MyNumber * _and(MyNumber *op1, MyNumber *op2){
+ return new MyNumber (op1->num & op2->num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _and as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_and",&MyNumber::_and);
+ if(!zs->eval(
+"var n1 = new MyNumber (0xff);\n"
+"var n2 = new MyNumber (0x0f);\n"
+"var n3 =n1&n2;\n"
+"\n"
+"print(\"n1 (\"+n1.num+\") & n2 (\"+n2.num+\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+} 
+
+5.14 _or (aka |)
+@Description: Performs binary or operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary or
+operation.
+Script Example
+Example how to use _or metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _or(op1,op2){
+ return new MyNumber(op1.num|op2.num);
+ }
+};
+var n1 = new MyNumber (0xf0);
+var n2 = new MyNumber (0x0f);
+var n3 =n1|n2;
+print("n1 ("+n1.num+") | n2 ("+n2.num+") = "+n3.num);
+
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _n){
+ this->num=_n;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static MyNumber * _or(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1->num | op2->num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _or as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_or",&MyNumber::_or);
+ if(!zs->eval(
+"var n1 = new MyNumber (0xf0);\n"
+"var n2 = new MyNumber (0x0f);\n"
+"var n3 =n1|n2;\n"
+"\n"
+"print(\"n1 (\"+n1.num+\") | n2 (\"+n2.num+\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+} 
+
+5.15_xor (aka ^)
+@Description: Performs a binary xor operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary xor
+operation.
+Script Example
+Example how to use _xor metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _xor(op1,op2){
+ return new MyNumber(op1.num^op2.num);
+ }
+};
+var n1 = new MyNumber (0xf1);
+var n2 = new MyNumber (0x0f);
+var n3 =n1^n2;
+print("n1 ("+n1.num+") ^ n2 ("+n2.num+") = "+n3.num);
+
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _n){
+ this->num=_n;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static MyNumber *_xor(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1->num ^ op2->num);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _xor as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_xor",&MyNumber::_xor);
+ if(!zs->eval(
+"var n1 = new MyNumber (0xf1);\n"
+"var n2 = new MyNumber (0x0f);\n"
+"var n3 =n1^n2;"
+"\n"
+"print(\"n1 (\"+n1.num+\") ^ n2 (\"+n2.num+\") = \"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.16 _shl (aka <<)
+@Description: Performs shift left operation.
+@Param1 : Variable to apply shift left.
+@Param2 : Tells number shifts to the left.
+@Returns : A new object custom class type with n shifts left
+operation.
+Script Example
+Example how to use _shl metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _shl(op1, n_shifts){
+ return new MyNumber(op1.num<< n_shifts);
+ }
+};
+var n1 = new MyNumber (0x1);
+var n2 = n1 << 3;
+print("n1 ("+n1.num+") << 3 = "+n2.num);
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _n){
+ this->num=_n;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static MyNumber *_shl(MyNumber *op1, int n_shifts){
+ return new MyNumber(op1->num << n_shifts);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _shl as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_shl",&MyNumber::_shl);
+ if(!zs->eval(
+"var n1 = new MyNumber (0x1);\n"
+"var n2 = n1 << 3;\n"
+"\n"
+"print(\"n1 (\"+n1.num+\") << 3 = \"+n2.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.17 _shr (aka >>)
+@Description: Performs shift right operation.
+@Param1 : Variable to apply shift right.
+@Param2 : Tells number shifts to the right.
+@Returns : A new object custom class type with n shifts right
+operation.
+Script Example
+Example how to use _shr metamethod within script class,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _shr(op1,n_shifts){
+ return new MyNumber(op1.num>>n_shifts);
+ }
+};
+var n1 = new MyNumber (0xf);
+var n2 = n1 >> 2;
+print("n1 ("+n1.num+") >> 2 = "+n2.num);
+
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _n){
+ this->num=_n;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ static MyNumber * _shr(MyNumber *op1,int n_shifts){
+ return new MyNumber(op1->num >> n_shifts);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register static function _shr as metamethod
+ register_C_StaticFunctionMember<MyNumber>("_shr",&MyNumber::_shr);
+ if(!zs->eval(
+"var n1 = new MyNumber (0xf);\n"
+"var n2 = n1 >> 2;\n"
+"\n"
+"print(\"n1 (\"+n1.num+\") >> 2 = \"+n2.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.19 _set (aka =)
+@Description: Performs a set operation6.
+@Param1 : Source variable to set.
+@Returns : None.
+Script Example
+We present a simple example how to use set metamethod within script class. In the set
+metamethod we can filter which type of parameter input is to perform the right
+operation and stop execution with error function if is required.
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _set(v){
+ if(v instanceof int){
+ this.num = v;
+ }else if(v instanceof MyNumber){
+ this.num = v.num;
+ }else{
+ error("parameter not supported");
+ }
+ }
+};
+var n1 = new MyNumber (10);
+var n2 = new MyNumber (20);
+var n3; //  n3 is undefined!
+n3 = n2; //  it assigns n2 pointer.
+print("n3:"+n3.num);
+n3=n1; //  n3.num = n2.num = n1.num.
+print("n3:"+n3.num);
+n3=50; //  n3.num = n2.num = 10.
+print("n3:"+n3.num);
+n3=false; //  stops execution with error "parameter not supported".
+
+6
+If variable is undefined ZetScript will assign reference object, in the case is not
+defined it will do a set operation (if it is implemented). 
+
+
+C++ Example
+The same it can be done with C++. The C++ metamethod function associated with
+must be static.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ int num;
+ MyNumber(){
+ this->num=0;
+ }
+ void _set(int _n){
+ this->num=_n;
+ }
+ void _set(MyNumber *_n){
+ this->num=_n->num;
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ // register variable member num
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::_set
+ register_C_FunctionMember<MyNumber>(
+"MyNumber"
+, static_cast<void (MyNumber::*)(int)>(&MyNumber::_set)
+ );
+ // register two types function _set as metamethod (same as constructor)
+ register_C_FunctionMember<MyNumber>(
+"_set"
+,static_cast<void (MyNumber::*)(int)>(&MyNumber::_set)
+ );
+ register_C_FunctionMember<MyNumber>(
+"_set"
+, static_cast<void (MyNumber::*)(MyNumber *)>(&MyNumber::_set)
+ );
+ if(!zs->eval(
+"var n1 = new MyNumber (10);\n"
+"var n2 = new MyNumber (20); \n"
+"var n3; //  n3 is undefined! \n"
+"n3 = n2; //  it assigns n2 pointer. \n"
+"print(\"n3:\"+n3.num); \n"
+"n3=n1; //  n3.num = n2.num = n1.num. \n"
+"print(\"n3:\"+n3.num); \n"
+"n3=50; //  n3.num = n2.num = 10. \n"
+"print(\"n3:\"+n3.num); \n"
+"n3=false; //  stops execution with error because is not supported.\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
+
+5.20 Mixing operand types
+Working with metamethods might have situations where you are passing different type
+parameters. You can pass the object type, where metamethod function is implemented,
+or other type of parameters like integer, string, etc.
+The following example performs a sums of a combination of object, integers or floats.
+var num1= new MyNumber(1), num2=new MyNumber(2);
+var num3= 1.0 + num1 + 6 + 1 + 10.0 + num2 + 10 + num1 + num2;
+The expression cannot be performed with only objects as we have been shown in the
+last sections. You can use instanceof operator to check each type of argument and
+perform the needed operation.
+We present an example for _add metamethod function that implements a support to
+operate with MyNumber object, integer or float. Other types will cause a execution
+error.
+Example,
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _add(op1,op2){
+ var aux1, aux2;
+ if(op1 instanceof MyNumber){
+ aux1=op1.num;
+ }else if(op1 instanceof int || op1 instanceof number){
+ aux1=op1;
+ }else{
+ error("arg op1 is not supported");
+ }
+ if(op2 instanceof MyNumber){
+ aux2=op2.num;
+ }else if(op2 instanceof int || op2 instanceof number){
+ aux2=op2;
+ }else{
+ error("arg op2 is not supported ");
+ }
+
+ return new MyNumber(aux1+aux2);
+ }
+};
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =1+n1+5+7+n2+10.0+7.0+10; // mix operation with MyNumber, integer and number
+
+The same example for C++ we can to do an extra effort. We have to implement all
+possibilities that operator contemplates with operation within MyNumber, int or float.
+#include "CZetScript.h"
+using namespace zetscript;
+class MyNumber{
+public:
+ float num;
+ MyNumber(){
+ this->num=0;
+ }
+ MyNumber(int _n){
+ this->num=_n;
+ }
+ void set(int _n){
+ this->num=_n;
+ }
+ // MyNumber,MyNumber combination
+ static MyNumber * _add(MyNumber *op1, MyNumber *op2){
+ return new MyNumber(op1->num + op2->num);
+ }
+ // int,MyNumber combination
+ static MyNumber * _add(int op1, MyNumber *op2){
+ return new MyNumber(op1 + op2->num);
+ }
+ // MyNumber,int combination
+ static MyNumber * _add( MyNumber *op1, int op2){
+ return new MyNumber(op1->num + op2);
+ }
+ // float,MyNumber combination
+ static MyNumber * _add(float *op1, MyNumber *op2){
+ return new MyNumber(*op1 + op2->num);
+ }
+ // MyNumber,float combination
+ static MyNumber * _add( MyNumber *op1, float *op2){
+ return new MyNumber(op1->num + *op2);
+ }
+};
+int main(){
+ CZetScript *zs = CZetScript::getInstance();
+ // register class MyNumber
+ register_C_Class<MyNumber>("MyNumber");
+ register_C_VariableMember<MyNumber>("num",&MyNumber::num);
+ // register constructor through function MyNumber::set
+ register_C_FunctionMember<MyNumber>("MyNumber",&MyNumber:: set);
+ // register 1st _add metamethod function to satisfy operand (MyNumber,MyNumber) combination�
+ register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, MyNumber *)>(&MyNumber::_add));
+ // register 2nd _add metamethod function to satisfy operand (int,MyNumber) combination�
+ register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(int, MyNumber *)>(&MyNumber::_add));
+ // register 3rd _add metamethod function to satisfy operand (MyNumber,int) combination�
+ register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, int)> (&MyNumber::_add));
+ // register 4th _add metamethod function to satisfy operand (float,MyNumber) combination�
+ register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(float *, MyNumber *)>(&MyNumber::_add));
+ // register 5th _add metamethod function to satisfy operand (MyNumber,float) combination�
+ register_C_StaticFunctionMember<MyNumber>("_add",static_cast< MyNumber * (*)(MyNumber *, float *)>(&MyNumber::_add));
+ if(!zs->eval(
+"var n1 = new MyNumber (20);\n"
+"var n2 = new MyNumber (10);\n"
+"var n3 =1+n1+5+7+n2+10.0+7.0+10; // mix operation with MyNumber, integer and number\n"
+"print(\"n3:\"+n3.num);\n"
+ )){
+ fprintf(stderr,ZS_GET_ERROR_MSG());
+ }
+ return 0;
+}
