@@ -29,7 +29,7 @@ Having a file called 'file.zs',
 .file.zs
 [sidebar]
 ****
-[source]
+[source,zetscript]
 ----
 Console::outln("Hello World");
 ----
@@ -107,7 +107,7 @@ For the code in the list X.XX it'd show the following byte code,
 To catch eval exceptions or runtime errors it can be done through c++ try/catch,
 Example, 
 
-[source]
+[source,c++]
 ----
 	try{
 		zs.evalFile(
@@ -123,7 +123,7 @@ Example,
 If the user wants to stop virtual machine execution due an unexpected value during part of the
 code, it can call 'System:error' function passing the error message as follows,
 
-[source]
+[source,zetscript]
 ----
 if(n == undefined){
 	System::error("Unexpected error");
@@ -138,13 +138,13 @@ ZetScript supports a way to save current compiled state. Save/restore operation 
 To save current state we have to invoke 'ZetScript::saveState'. This function returns an index that
 tells compiled state index saved.
 
-[source]
+[source,zetscript]
 zs.saveState()
 
 === 2.6.2 Clear
 To clear and restore last state saved it's done by calling 'ZetScript::clear',
 
-[source]
+[source,zetscript]
 zs.clear(i) 
 
 

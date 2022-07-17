@@ -6,7 +6,7 @@ ZetScript Language is based on a set of statements formed by values, operators, 
 
 Example of four statements,
 
-[source, javascript]
+[source, zetscript]
 var op1,op2,res;
 op1 = 5;
 op2 = 6;
@@ -14,7 +14,7 @@ res = 5+6;
 
 The last example can be executed within one line,
 
-[source, javascript]
+[source, zetscript]
 var op1,op2,res; op1=5; op2=6; res = 5+6;
 
 == 3.2 Comments
@@ -23,14 +23,14 @@ ZetScript support block and line comments.
 
 === 3.2.1 Block comment
 
-[source, javascript]
+[source, zetscript]
 /*
 this is a block comment
 */
 
 == 3.2.2 Line comment
 
-[source, javascript]
+[source, zetscript]
 // This is a line comment
 
 == 3.3 Constants values
@@ -48,7 +48,7 @@ ZetScript represents boolean value as true or false.
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 true // true value
 false // false value
 
@@ -57,7 +57,7 @@ false // false value
 ZetScript represents integer values within ranges from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as negative/positive decimal value, hexadecimal or binary format.
 Example,
 
-[source, javascript]
+[source, zetscript]
 -1; // negative decimal value
 10; // positive decimal value
 0x1a; // hexadecimal value
@@ -69,7 +69,7 @@ ZetScript represents number value in 32-bit IEEE-754 floating point number. Numb
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 1.2 // integer and decimal form
 2.0e-2 // cientific notation form
 3.3.4 String type
@@ -78,7 +78,7 @@ ZetScript represents string value within quotes (").
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 "this is a string"
 
 == 3.4 Variables
@@ -89,7 +89,7 @@ A variable is a type of container that is used to store a value in it. In ZetScr
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var i; // declares i variable
 
 === 3.4.2 Variable instantiation
@@ -98,7 +98,7 @@ A variable is undefined (see 2.5.1) when is declared until is instanced with any
 through operator '='. As an example we can instantiate a variable with integer value
 (see section 2.2),
 
-[source, javascript]
+[source, zetscript]
 var i=0; // variable v is instancied as integer.
 
 === 3.4.3 Scope
@@ -112,7 +112,7 @@ A ZetScript makes easy the concept of global local scope. Basically, variables d
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var i; // this is a global variable
 { // --> block starts here
  var j;//this is a local variable declared inside a block (you can also access to i).
@@ -136,14 +136,14 @@ ZetScript supports the following built-in types,
 
 A undefined variable type is the default value that is instanced when any variable is declared. To instantiate a variable with undefined value assign it typing the undefined keyword.
 
-[source, javascript]
+[source, zetscript]
 var i=undefined;
 
 === 3.5.2 Null type
 
 A null type is like undefined but in this case it has a null value. To instantiate a variable with undefined value type undefined keyword.
 
-[source, javascript]
+[source, zetscript]
 var i=null;
 
 === 3.5.3 Integer type
@@ -152,7 +152,7 @@ A integer variable type is instanced once a variable instance a integer constant
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var i=10;
 
 *Pre/Post variable operations*
@@ -167,7 +167,7 @@ Pre/Post operations modifies the value of variable itself before/after the varia
 |++variable 
 |Performs an increment BEFORE evaluate the variable
 |
-[source,javascript]
+[source,zetscript]
  var i=0;
  var j=++i; // j=1, i =1
  
@@ -175,7 +175,7 @@ Pre/Post operations modifies the value of variable itself before/after the varia
 | variable++ 
 | Performs increment AFTER evaluate the variable
 | 
-[source,javascript]
+[source,zetscript]
 var i=0; 
 var j=i++; // j=0; i=1
 
@@ -183,14 +183,14 @@ var j=i++; // j=0; i=1
 | --variable 
 | Performs a decrement BEFORE evaluate the variable
 | 
-[source,javascript]
+[source,zetscript]
 var i=0; 
 var j=--i; // j=-1; i=-1
 
 | Postdecrement
 | variable--
 | Performs decrement AFTER evaluate the variable
-|[source,javascript] 
+|[source,zetscript] 
 var i=0; 
 var j=i--;//j=0;i=-1;
 
@@ -202,7 +202,7 @@ A number variable type is instanced once a variable instance a number constant o
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var f=1.5;
 
 
@@ -217,7 +217,7 @@ Pre/Post operations modifies the value of variable itself before/after the varia
 |++variable 
 |Performs an increment BEFORE evaluate the variable
 |
-[source,javascript]
+[source,zetscript]
 var i=0.5;
 var j=++i; // j=1.5, i =1.5
 
@@ -225,7 +225,7 @@ var j=++i; // j=1.5, i =1.5
 |variable++ 
 |Performs increment AFTER evaluate the variable
 |
-[source,javascript]
+[source,zetscript]
 var i=0.5;
 var j=i++; // j=0.5; i=1.5
 
@@ -233,7 +233,7 @@ var j=i++; // j=0.5; i=1.5
 |--variable 
 |Performs a decrement BEFORE evaluate the variable
 |
-[source,javascript]
+[source,zetscript]
 var i=0.5;
 var j=--i; // j=-0.5; i=-0.5
 
@@ -241,7 +241,7 @@ var j=--i; // j=-0.5; i=-0.5
 |variable-- 
 |Performs decrement AFTER evaluate the variable
 |
-[source,javascript]
+[source,zetscript]
 var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
 |====
@@ -252,7 +252,7 @@ A boolean variable type is instanced once a variable instance a boolean constant
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var b=false;
 
 === 3.5.6 String type
@@ -261,7 +261,7 @@ A integer variable type is instanced once a variable instance a string constant 
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var s="this is a string";
 
 === 3.5.7 Vector type
@@ -270,21 +270,21 @@ A vector is an special type to store multiple values in a unidimensional array. 
 
 Example empty vector,
 
-[source, javascript]
+[source, zetscript]
 var v=[];
 
 the user can instantiate a vector with values separated by comas.
 
 Example vector instantiated with values,
 
-[source, javascript]
+[source, zetscript]
 var v=[1,"string",true,2.0];
 
 If the vector has any value its access is done through integer index.
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var v=[1,"this is a string",true,2.0]; // its has 4 elements where its access [0..3]
 var v_1=v[1]; // It access vector's second element (i.e "this is a string") and it's saved into v_1 variable
 
@@ -298,21 +298,21 @@ Vector type It has the following functions in order to manage vector at runtime.
 |size 
 |It returns the number of current elements
 |
-[source,javascript]
+[source,zetscript]
 var v=[1,2];
 v.size(); // =2
 
 |push 
 |Adds value at the end of the vector
 |
-[source,javascript]
+[source,zetscript]
 var v=[1,2];
 v.push(3); //v=[1,2,3]
 
 |pop 
 |Returns the last value and removes it. 
 |
-[source,javascript]
+[source,zetscript]
 var v=[1,2];
 v.pop(); //=[2], v=[1]
 |==== 
@@ -322,12 +322,12 @@ v.pop(); //=[2], v=[1]
 
 An object type is a anonymous container type to store multiple values in attributes. The instantiation is done within a pair of curly brackets (i.e '{}'),
 
-[source, javascript]
+[source, zetscript]
 var t={};
 
 Optionally we can init with some values with its attributes,
 
-[source, javascript]
+[source, zetscript]
 var t={
   i:1
  ,s:"this is a string"
@@ -337,7 +337,7 @@ var t={
 
 To acces to its elements is done through the variable name followed by '.' and attribute name or attribute name as string within brackets (i.e ["attribute_name"] ),
 
-[source, javascript]
+[source, zetscript]
 var v_i=v.i; // get value 'i' by '.'
 var v_i=v["i"]; // get value 'i' by '[]'
 
@@ -352,21 +352,21 @@ Object type it has the following functions in order to manage struct at runtime,
 |size 
 |It returns the number of current elements 
 |
-[source,javascript
+[source,zetscript
 var v=[1,2];
 v.size(); // =2
 
 |add
 |Adds an attribute
 |
-[source,javascript]
+[source,zetscript]
 var s={};
 v.add("a",0); // s={a:0}
 
 |remove 
 |Removes an attribute
 |
-[source,javascript]
+[source,zetscript]
 var s={a:0};
 v.remove("a"); // s={}
 |====
@@ -377,7 +377,7 @@ A function is an object that holds information about a function and is able to c
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 function add(op1, op2){ // function that returns the sum of two vars.
 return op1+op2;
 }
@@ -409,7 +409,7 @@ The following operators it does evaluates arithmetic expressions,
 |+
 |It performs a add operation between two integer or number values or concatenates strings with other values
 |
-[source,javascript]
+[source,zetscript]
 5+10; // = 15
 1.5+6; // = 7.5
 "string_"+1;// ="string_1"
@@ -418,7 +418,7 @@ The following operators it does evaluates arithmetic expressions,
 |-
 |It performs a sub operation between two integer or number values
 |
-[source,javascript]
+[source,zetscript]
 10-5; // = 5
 2.5-1;// = 1.5
 
@@ -426,7 +426,7 @@ The following operators it does evaluates arithmetic expressions,
 |* 
 |It performs a multiplication between two integer or number values
 |
-[source,javascript]
+[source,zetscript]
 10*5; //= 50
 1.5*2;//= 3.0
 
@@ -434,7 +434,7 @@ The following operators it does evaluates arithmetic expressions,
 |/ 
 |It performs a division between two integer or number values
 |
-[source,javascript]
+[source,zetscript]
 10/2; // = 5
 3/2.0 // = 1.5
 
@@ -442,7 +442,7 @@ The following operators it does evaluates arithmetic expressions,
 |% 
 |It performs a division between two integer or number values
 |
-[source,javascript]
+[source,zetscript]
 3%2; //it results 1
 10%2.5; // it results
 |====
@@ -459,7 +459,7 @@ The following operators it does evaluates relational expressions,
 |==
 |Check whether two values are equal
 |
-[source,javascript]
+[source,zetscript]
  10==10;// = true
 "hello"=="bye"; // = false
 
@@ -467,7 +467,7 @@ The following operators it does evaluates relational expressions,
 |!= 
 |Check whether two values are not equal
 |
-[source,javascript]
+[source,zetscript]
 10!=10; // = false
 "hello"!="bye"; // = true
 
@@ -475,7 +475,7 @@ The following operators it does evaluates relational expressions,
 |< 
 |Checks whether first value is less than second value
 |
-[source,javascript]
+[source,zetscript]
 10<20; // = true
 20<10; // = false
 
@@ -483,7 +483,7 @@ The following operators it does evaluates relational expressions,
 |> 
 |Checks whether first value is greater than second value
 |
-[source,javascript]
+[source,zetscript]
 10>20; // = false
 20>10; // = true
 
@@ -491,7 +491,7 @@ The following operators it does evaluates relational expressions,
 | <= 
 |Checks whether first value is less equal than second value
 |
-[source,javascript]
+[source,zetscript]
 10<=10; //= true
 11<=10; // = false
 
@@ -499,7 +499,7 @@ The following operators it does evaluates relational expressions,
 |>= 
 |Checks whether first value is greater equal than second value
 |
-[source,javascript]
+[source,zetscript]
 10>=11; // = false
 11>=10; // = true
 
@@ -507,7 +507,7 @@ The following operators it does evaluates relational expressions,
 |instanceof 
 |Checks if a value is instance of a type. 
 |
-[source,javascript]
+[source,zetscript]
 0 instanceof int; //= true
 "hello" instanceof int;//= false
 |====
@@ -527,7 +527,7 @@ Logic expressions are the ones that combines operations through boolean values,
 |&& 
 |it performs an AND operation between two Boolean values
 |
-[source,javascript]
+[source,zetscript]
 true && true;// = true
 true&& false;// = false
 
@@ -535,7 +535,7 @@ true&& false;// = false
 | \|\|
 |It performs an OR operation between two Boolean values
 |
-[source,javascript]
+[source,zetscript]
 true \|\| false;// = true
 false \|\| false;// = false
 
@@ -543,7 +543,7 @@ false \|\| false;// = false
 |! 
 |Negates Boolean value
 |
-[source,javascript]
+[source,zetscript]
 !true; // = false
 !false; // = true
 |====
@@ -560,7 +560,7 @@ Binary expressions are the ones that combines bit operations through integer val
 |& 
 |Performs binary AND operation between two integers
 |
-[source,javascript]
+[source,zetscript]
 0xa & 0x2; // = 0x2
 0xff & 0xf0; // = 0xf0
 
@@ -568,7 +568,7 @@ Binary expressions are the ones that combines bit operations through integer val
 |\|
 |Performs binary OR operation between two integers
 |
-[source,javascript]
+[source,zetscript]
 0xa \| 0x5; // = 0xf
 0x1 \| 0xe; // = 0xf
 
@@ -576,7 +576,7 @@ Binary expressions are the ones that combines bit operations through integer val
 |^ 
 |Performs binary XOR between two integers
 |
-[source,javascript]
+[source,zetscript]
 0xa ^ 0xa; // = 0x0
 0xa ^ 0x5; // = 0xf
 
@@ -584,14 +584,14 @@ Binary expressions are the ones that combines bit operations through integer val
 |<< 
 |Performs binary shift left
 |
-[source,javascript]
+[source,zetscript]
 0x1 << 2; // = 0x4
 
 |Binary shift right
 |>> 
 |Performs binary shift right 
 |
-[source,javascript]
+[source,zetscript]
 0xff >> 1; // = 0x7f
 |====
 
@@ -602,14 +602,14 @@ Each operator it has priority of evaluation. ZetScript it has the following oper
 
 For example this expression,
 
-[source,javascript]
+[source,zetscript]
 2+4*5; // will result 22
 
 You can change the evaluation priority usign parenthesis.
 
 For example,
 
-[source,javascript]
+[source,zetscript]
 (2+4)*5; // will result 36 
 
 == 3.7 Conditionals
@@ -626,14 +626,14 @@ Use the if statement to specify a block of ZetScript code to be executed if a co
 
 Syntax,
 
-[source, javascript]
+[source, zetscript]
 if(condition){
  //Block of code to be executed if the condition is true
 }
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 if(n < 10) {
  // do something if condition is true
 }
@@ -656,7 +656,7 @@ Use the else statement to specify a block of code to be executed if the conditio
 
 Syntax,
 
-[source, javascript]
+[source, zetscript]
 if(n < 10) {
  // do something if condition is true
 }else if(n < 20){
@@ -671,12 +671,12 @@ Use ternary condition to have a short if/else statement into single statement. I
 
 Syntax,
 
-[source, javascript]
+[source, zetscript]
 result = (condition)?first expression:2nd expression;
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var j = 0>1? 0:1; // j = 1
 
 === 3.7.5 Switch
@@ -685,7 +685,7 @@ Use the switch statement to select one of many blocks of code to be executed.
 
 Syntax,
 
-[source, javascript]
+[source, zetscript]
 switch(expression) {
  case value_0:
  code block
@@ -702,7 +702,7 @@ switch(expression) {
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 switch (n) {
  case 0:
  // do something if n==0
@@ -719,7 +719,7 @@ Switch can have common code blocks in different conditions
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 switch (n) {
  case 0:
  case 1:
@@ -747,14 +747,14 @@ The while loop loops through a block of code as long as a specified condition is
 
 Syntax,
 
-[source, javascript]
+[source, zetscript]
 while(condition){
  // code block to be executed
 }
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var i = 0;
 while (i < 5){
  // do something until i==5
@@ -767,14 +767,14 @@ do-while loop is always be executed at least once, even if the condition is fals
 
 Syntax,
 
-[source, javascript]
+[source, zetscript]
 do{
 // do-while body
 } while (condition);
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var i = 0;
 do {
  // do something until i==5
@@ -787,7 +787,7 @@ The for loop is often the tool you will use when you want to create a loop.
 
 Syntax,
 
-[source, javascript]
+[source, zetscript]
 for(stament1;statment2;statment3){
  // code block to be executed
 }
@@ -798,7 +798,7 @@ for(stament1;statment2;statment3){
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 for(var i=0; i < 5; i++) {
  print("The number is "+i);
 } 
@@ -814,14 +814,14 @@ A JavaScript function is defined with the function keyword, followed by a name, 
 
 Syntax,
 
-[source, javascript]
+[source, zetscript]
 function fun_name(arg1, arg2, ..., argn){
  // code to be executed
 }
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 function add(op1, op2){
 return op1+op2;
 }
@@ -832,14 +832,14 @@ The call of a function is done when in some part of the code it calls it as foll
 
 Syntax
 
-[source, javascript]
+[source, zetscript]
 fun_name(arg1, arg2, arg3,..., argN);
 
 Note: If a function is called with less than N args the rest of arguments will remain undefined.
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 function add(op1,op2){
 return op1+op2;
 }
@@ -849,7 +849,7 @@ var j=add(2,3); // calls add function. j=5
 
 A function can be stored in variables through its reference,
 
-[source, javascript]
+[source, zetscript]
 function add(op1, op2){
 return op1+op2;
 }
@@ -862,7 +862,7 @@ Also is possible to create function objects,
 
 Syntax
 
-[source, javascript]
+[source, zetscript]
 function(arg1, arg2, ..., argN){
 // code to be executed.
 };
@@ -870,7 +870,7 @@ function(arg1, arg2, ..., argN){
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var add=function(op1, op2){
 return op1+op2;
 };
@@ -882,7 +882,7 @@ A class is a type of structure that contains variables and functions that operat
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 class Test{
  // member variable
  var data1;
@@ -904,7 +904,7 @@ In ZetScrip is possible to add more class member through "::" punctuator.
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 // post declaration of variable member
 var Test::data2;
 // post declaration of function member
@@ -918,7 +918,7 @@ To instance a class is done through the keyword new
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var t = new Test(); // Instantiate t as Test type.
 
 === 3.9.3 Accessing to class functions
@@ -927,7 +927,7 @@ To access class variables/functions is done through "." operator.
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 var i=t.function1(2); // initializes data1 as 2 and return the value
 print("data1 is: "+t.data1); // prints value of data1
 
@@ -935,14 +935,14 @@ print("data1 is: "+t.data1); // prints value of data1
 
 Each time class is instanced, their member variables are undefined. var t = new Test(); // The a class Test is instanced but data1 and data2 are undefined.
 
-[source, javascript]
+[source, zetscript]
 print("data1:"+t.data1); //  prints: data1:undefined"
 
 The constructor is a function that is invoked automatically and with aim to initialize all member variables. To the define a constructor we have to define a function member with same name as the Class.
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 class Test{
  var data1;
  // Constructor function
@@ -959,7 +959,7 @@ ZetScript supports inheritance through ":" punctuator after the name of the clas
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 class TestExtended: Test{
  var data3;
  function function3(){
@@ -973,7 +973,7 @@ The extended class can call parent functions through super keyword.
 
 Example,
 
-[source, javascript]
+[source, zetscript]
 class TestExtended: Test{
  var data3;
  function function1(a){

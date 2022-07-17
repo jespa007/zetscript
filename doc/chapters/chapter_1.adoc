@@ -23,7 +23,7 @@ Note: For MSVC 2017, it has a feature a Open Folder that easily configures a CMa
 done through this command,
 +
 ****
-[sudo footnote:[sudo is required when the project is compiled in linux.]] make install 
+sudo footnote:[sudo is required when the project is compiled in linux.] make install 
 ****
 
 == 1.2 Hello World
@@ -32,12 +32,11 @@ Once ZetScript is installed we present a quick sample of "HelloWorld" applicatio
 
 . Create a filename named helloworld.zs and type the following sentence
 +
-[source]
+[source,zetscript]
 Console::outln("Hello world!");
 +	
 . Save the file and do the following at command line,
 +
-[source]
-zs helloworld.zs
+ zs helloworld.zs
 +
 You should see the "Hello world" message at the command line. 
