@@ -987,3 +987,535 @@ class TestExtended: Test{
  print("ext function3:"+this.data3);
  }
 }; 
+
+
+== 3.10 Metamethods
+Metamethods are special functions members that links with operators seen on section section 3.6. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
+
+ZetScript supports the following metamethods:
+
+* _equ
+* _not_equ
+* _lt
+* _lte
+* _gt
+* _gte
+* _not
+* _neg
+* _add
+* _div
+* _mul
+* _mod
+* _and
+* _or
+* _xor
+* _shl
+* _shr
+* _set
+
+
+
+=== 3.10.1 _equ (aka ==)
+
+@Description: Performs relational equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if equal, false otherwise.
+
+Example how to use _equ metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _equ(op1, op2){
+ return op1.num==op2.num;
+ }
+};
+
+var n1 = new MyNumber (1), n2=new MyNumber (1);
+
+if(n1==n2){ // we use here the metamethod ==
+ print("n1 ("+n1.num+") is equal to n2 ("+n2.num+")");
+} 
+
+
+=== 3.10.2 _nequ (aka !=)
+
+@Description: Performs relational not equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if not equal, false otherwise.
+
+Example how to use _nequ metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _nequ(op1, op2){
+ return op1.num!=op2.num;
+ }
+};
+
+var n1 = new MyNumber (1), n2=new MyNumber (0);
+if(n1!=n2){
+ print("n1 ("+n1.num+") is not equal to n2 ("+n2.num+")");
+} 
+
+
+=== 3.10.3 _lt (aka <)
+
+@Description: Performs relational less equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if less equal, false otherwise.
+
+Example how to use _lt metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _lt(op1, op2){
+ return op1.num<op2.num;
+ }
+};
+
+var n1 = new MyNumber (0), n2=new MyNumber (1);
+if(n1<n2){
+ print("n1 ("+n1.num+") is less than n2 ("+n2.num+")");
+} 
+
+=== 3.10.4 _lte (aka <=)
+
+@Description: Performs relational less equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if less equal, false otherwise.
+
+Example how to use _lte metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _lte(op1, op2){
+ return op1.num<=op2.num;
+ }
+};
+
+var n1 = new MyNumber (1), n2=new MyNumber (1);
+if(n1<=n2){
+ print("n1 ("+n1.num+") is less equal than n2 ("+n2.num+")");
+} 
+
+=== 3.10.5 _gt (aka >)
+
+@Description: Performs relational greater operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if greater, false otherwise.
+
+
+Example how to use _gt metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _gt(op1, op2){
+ return op1.num>op2.num;
+ }
+};
+
+var n1 = new MyNumber (1), n2=new MyNumber (0);
+if(n1>n2){
+ print("n1 ("+n1.num+") is greater than n2 ("+n2.num+")");
+}
+
+=== 3.10.6 _gte (aka >=)
+
+@Description: Performs relational greater equal operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : true if greater equal, false otherwise.
+
+Example how to use _gte metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _gte(op1, op2){
+ return op1.num>=op2.num;
+ }
+};
+
+var n1 = new MyNumber (1), n2=new MyNumber (1);
+if(n1>=n2){
+ print("n1 ("+n1.num+") is greater equal than n2 ("+n2.num+")");
+} 
+
+
+=== 3.10.7 static _not (aka !)
+
+@Description: Performs a not operation.
+@Param1 : Object custom class type.
+@Returns : A Boolean type as a result of not operation.
+
+Example how to use _not metamethod within script class,
+
+class MyBoolean{
+ var b;
+
+ function MyBoolean(_b){
+ this.b=_b;
+ }
+ function _not(_op){
+ return !_op.b;
+ }
+};
+
+var b = new MyBoolean (false);
+if(!b){
+ print("b was false");
+} 
+
+=== 3.10.8 _neg (aka -)
+
+@Description: Performs negate operation.
+@Param1 : operand to negate.
+@Returns : A new object custom class type with result of negate operation.
+
+Example how to use _neg metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _neg(op1){
+ return new MyNumber(-op1.num);
+ }
+};
+
+var n1 = new MyNumber (1);
+var n2 = -n1;
+print("neg of n1 ("+n1.num+") is ("+n2.num+")"); 
+
+=== 3.10.9 _add (aka +)
+
+@Description: Performs add operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result add operation.
+
+Example how to use _add metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _add(op1,op2){
+ return new MyNumber(op1.num+op2.num);
+ }
+};
+
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =n1+n2;
+
+print("n1 ("+n1.num+") n2 ("+n2.num+") = "+n3.num);
+
+=== 3.10.10 _div (aka /)
+
+@Type: Static
+@Description: Performs divide operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result divide
+operation.
+
+Example how to use metamethod _div within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _div(op1,op2){
+ return new MyNumber(op1.num/op2.num);
+ }
+};
+
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =n1/n2;
+print("n1 ("+n1.num+") / n2 ("+n2.num+") = "+n3.num);
+
+
+=== 3.10.11 _mul (aka *)
+
+@Type: Static
+@Description: Performs multiply operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result multiply operation.
+
+Example how to use _mul metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _mul(op1,op2){
+ return new MyNumber(op1.num*op2.num);
+ }
+};
+
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =n1*n2;
+print("n1 ("+n1.num+") * n2 ("+n2.num+") = "+n3.num);
+
+=== 3.10.12 _mod (aka %)
+
+@Description: Performs modulus operation.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result modulus operation.
+
+Example how to use _mod metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _mod(op1,op2){
+ return new MyNumber(op1.num%op2.num);
+ }
+};
+
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (15);
+var n3 =n1%n2;
+print("n1 ("+n1.num+") % n2 ("+n2.num+") = "+n3.num);
+
+=== 3.10.13 _and (aka &)
+
+@Description: Performs binary and operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary and operation.
+
+Example how to use _and metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _and(op1,op2){
+ return new MyNumber(op1.num&op2.num);
+ }
+};
+
+var n1 = new MyNumber (0xff);
+var n2 = new MyNumber (0x0f);
+var n3 =n1&n2;
+print("n1 ("+n1.num+") & n2 ("+n2.num+") = "+n3.num); 
+
+=== 3.10.14 _or (aka |)
+
+@Description: Performs binary or operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary or operation.
+
+Example how to use _or metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _or(op1,op2){
+ return new MyNumber(op1.num|op2.num);
+ }
+};
+
+var n1 = new MyNumber (0xf0);
+var n2 = new MyNumber (0x0f);
+var n3 =n1|n2;
+print("n1 ("+n1.num+") | n2 ("+n2.num+") = "+n3.num);
+
+=== 3.10.15_xor (aka ^)
+
+@Description: Performs a binary xor operation between two integer
+operands.
+@Param1 : 1st operand.
+@Param2 : 2nd operand.
+@Returns : A new object custom class type with result of binary xor operation.
+
+Example how to use _xor metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _xor(op1,op2){
+ return new MyNumber(op1.num^op2.num);
+ }
+};
+var n1 = new MyNumber (0xf1);
+var n2 = new MyNumber (0x0f);
+var n3 =n1^n2;
+print("n1 ("+n1.num+") ^ n2 ("+n2.num+") = "+n3.num);
+
+=== 3.10.16 _shl (aka <<)
+
+@Description: Performs shift left operation.
+@Param1 : Variable to apply shift left.
+@Param2 : Tells number shifts to the left.
+@Returns : A new object custom class type with n shifts left operation.
+
+Example how to use _shl metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _shl(op1, n_shifts){
+ return new MyNumber(op1.num<< n_shifts);
+ }
+};
+
+var n1 = new MyNumber (0x1);
+var n2 = n1 << 3;
+print("n1 ("+n1.num+") << 3 = "+n2.num);
+
+
+=== 3.10.17 _shr (aka >>)
+
+@Description: Performs shift right operation.
+@Param1 : Variable to apply shift right.
+@Param2 : Tells number shifts to the right.
+@Returns : A new object custom class type with n shifts right operation.
+
+Example how to use _shr metamethod within script class,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _shr(op1,n_shifts){
+ return new MyNumber(op1.num>>n_shifts);
+ }
+};
+
+var n1 = new MyNumber (0xf);
+var n2 = n1 >> 2;
+print("n1 ("+n1.num+") >> 2 = "+n2.num);
+
+=== 3.10.19 _set (aka =)
+
+@Description: Performs a set operation6.
+@Param1 : Source variable to set.
+@Returns : None.
+
+We present a simple example how to use set metamethod within script class. In the set metamethod we can filter which type of parameter input is to perform the right operation and stop execution with error function if is required.
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ } 
+ function _set(v){
+ if(v instanceof int){
+ this.num = v;
+ }else if(v instanceof MyNumber){
+ this.num = v.num;
+ }else{
+ error("parameter not supported");
+ }
+ }
+};
+
+var n1 = new MyNumber (10);
+var n2 = new MyNumber (20);
+var n3; //  n3 is undefined!
+n3 = n2; //  it assigns n2 pointer.
+print("n3:"+n3.num);
+n3=n1; //  n3.num = n2.num = n1.num.
+print("n3:"+n3.num);
+n3=50; //  n3.num = n2.num = 10.
+print("n3:"+n3.num);
+n3=false; //  stops execution with error "parameter not supported".
+
+6
+If variable is undefined ZetScript will assign reference object, in the case is not
+defined it will do a set operation (if it is implemented). 
+
+
+=== 3.10.20 Mixing operand types
+
+Working with metamethods might have situations where you are passing different type parameters. You can pass the object type, where metamethod function is implemented, or other type of parameters like integer, string, etc.The following example performs a sums of a combination of object, integers or floats.
+
+var num1= new MyNumber(1), num2=new MyNumber(2);
+var num3= 1.0 + num1 + 6 + 1 + 10.0 + num2 + 10 + num1 + num2;
+
+The expression cannot be performed with only objects as we have been shown in the last sections. You can use instanceof operator to check each type of argument and perform the needed operation.
+
+We present an example for _add metamethod function that implements a support to operate with MyNumber object, integer or float. Other types will cause a execution
+error.
+
+Example,
+
+class MyNumber{
+ var num;
+ function MyNumber(_n){
+ this.num=_n;
+ }
+ function _add(op1,op2){
+ var aux1, aux2;
+ if(op1 instanceof MyNumber){
+ aux1=op1.num;
+ }else if(op1 instanceof int || op1 instanceof number){
+ aux1=op1;
+ }else{
+ error("arg op1 is not supported");
+ }
+ if(op2 instanceof MyNumber){
+ aux2=op2.num;
+ }else if(op2 instanceof int || op2 instanceof number){
+ aux2=op2;
+ }else{
+ error("arg op2 is not supported ");
+ }
+
+ return new MyNumber(aux1+aux2);
+ }
+};
+
+var n1 = new MyNumber (20);
+var n2 = new MyNumber (10);
+var n3 =1+n1+5+7+n2+10.0+7.0+10; // mix operation with MyNumber, integer and number
+
+
+
+
