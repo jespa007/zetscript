@@ -834,6 +834,8 @@ find_element_object:
 
 						stk_dst->value=(intptr_t)so_aux;
 						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+						StackElement *stk_obj=NULL;
+
 
 
 						if(container_slot_store_object!=NULL){
@@ -846,18 +848,24 @@ find_element_object:
 											,container_slot_store_object->getScriptType()->str_script_type.c_str()
 											,(int)container_slot_store_id_slot
 									);
+									stk_obj=container_slot_store_object->getBuiltinElementAt(container_slot_store_id_slot);
 								}else{
 									printf("\nAssing object %p type '%s' to slot '%s'"
 											,container_slot_store_object
 											,container_slot_store_object->getScriptType()->str_script_type.c_str()
 											,(const char *)container_slot_store_id_slot
 									);
+									stk_obj=container_slot_store_object->getProperty((const char *)container_slot_store_id_slot);
 								}
+
+								so_aux->refObject((ScriptObject **)&stk_obj->value);
 							}
 						}
 
-						if(!vm_share_script_object(vm,so_aux)){
-							goto lbl_exit_function;
+						if(stk_obj == NULL){
+							if(!vm_share_script_object(vm,so_aux)){
+								goto lbl_exit_function;
+							}
 						}
 
 					}else{

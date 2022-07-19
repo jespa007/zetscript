@@ -12,6 +12,8 @@ class B{
 	}
 }
 
+var t=[0]
+
 function test_cyclic_references(){
 	var v=[0]
 	var a={}
@@ -22,9 +24,14 @@ function test_cyclic_references(){
 
 	var b=new B()
 	b.c=0	
+	v[0]=b
+	
+	t[0]=new B()
 }
 
 test_cyclic_references();
 
-System::asset(System::objectRefences()==0,"System::objectRefences()!=0");
+Console::outln(t[0])
+
+//System::asset(System::objectRefences()==0,"System::objectRefences()!=0");
 

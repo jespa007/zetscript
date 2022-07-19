@@ -278,8 +278,9 @@ namespace zetscript{
 		}
 
 		if(shared_pointer->data.n_shares==0){
-			VM_SET_USER_ERRORF(vm,"object already unreferenced");
-			return false;
+			// since objects can have cyclic references unref can reach twice or more 0 (it has to check more cases)
+			// we return true
+			return true;
 		}
 
 		shared_pointer->data.n_shares--;
