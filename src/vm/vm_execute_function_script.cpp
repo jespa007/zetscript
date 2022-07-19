@@ -842,19 +842,20 @@ find_element_object:
 
 							// Possibly cyclic reference
 							if((so_aux->isNativeObject()==false) && (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)){
+								// More tests would be needed see issue #336
 								if(container_slot_store_object->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
-									printf("\nAssing object %p type '%s' to slot '%i'"
+									/*printf("\nAssing object %p type '%s' to slot '%i'"
 											,container_slot_store_object
 											,container_slot_store_object->getScriptType()->str_script_type.c_str()
 											,(int)container_slot_store_id_slot
-									);
+									);*/
 									stk_obj=container_slot_store_object->getBuiltinElementAt(container_slot_store_id_slot);
 								}else{
-									printf("\nAssing object %p type '%s' to slot '%s'"
+									/*printf("\nAssing object %p type '%s' to slot '%s'"
 											,container_slot_store_object
 											,container_slot_store_object->getScriptType()->str_script_type.c_str()
 											,(const char *)container_slot_store_id_slot
-									);
+									);*/
 									stk_obj=container_slot_store_object->getProperty((const char *)container_slot_store_id_slot);
 								}
 
