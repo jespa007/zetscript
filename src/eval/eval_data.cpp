@@ -444,6 +444,10 @@ namespace zetscript{
 			return 4;
 		}else if (OPERATOR_GROUP_5(operator_type)){
 			return 5;
+		}else if (OPERATOR_GROUP_6(operator_type)){
+			return 6;
+		}else if (OPERATOR_GROUP_7(operator_type)){
+			return 7;
 		}
 
 		return OPERATOR_GROUP_MAX;

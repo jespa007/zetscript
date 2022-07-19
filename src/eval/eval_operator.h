@@ -6,13 +6,16 @@
 
 #define OPERATOR_GROUP_0(operator_type) \
 (\
-(operator_type) == OPERATOR_LOGIC_AND \
-|| 	(operator_type) == OPERATOR_LOGIC_OR \
+  (operator_type) == OPERATOR_LOGIC_OR \
+)
+
+#define OPERATOR_GROUP_1(operator_type) \
+(\
+  (operator_type) == OPERATOR_LOGIC_AND \
 )
 
 
-
-#define OPERATOR_GROUP_1(operator_type) \
+#define OPERATOR_GROUP_2(operator_type) \
 (\
     (operator_type) == OPERATOR_EQUAL \
 || 	(operator_type) == OPERATOR_NOT_EQUAL \
@@ -22,7 +25,7 @@
 || 	(operator_type) == OPERATOR_LT \
 )
 
-#define OPERATOR_GROUP_2(operator_type) \
+#define OPERATOR_GROUP_3(operator_type) \
 ( \
 (operator_type) == OPERATOR_ADD \
 || 	(operator_type) == OPERATOR_SUB \
@@ -30,27 +33,32 @@
 || 	(operator_type) == OPERATOR_INSTANCEOF \
 )
 
-#define OPERATOR_GROUP_3(operator_type) \
+#define OPERATOR_GROUP_4(operator_type) \
 ( \
 (operator_type) == OPERATOR_MUL \
 || 	(operator_type) == OPERATOR_DIV \
 ||  (operator_type) == OPERATOR_MOD \
 )
 
-#define OPERATOR_GROUP_4(operator_type) \
+#define OPERATOR_GROUP_5(operator_type) \
 ( \
-(operator_type) == OPERATOR_AND \
-|| 	(operator_type) == OPERATOR_OR \
+ 	(operator_type) == OPERATOR_OR \
 || 	(operator_type) == OPERATOR_XOR \
 )
 
-#define	OPERATOR_GROUP_5(operator_type) \
+#define OPERATOR_GROUP_6(operator_type) \
+( \
+  (operator_type) == OPERATOR_AND \
+)
+
+
+#define	OPERATOR_GROUP_7(operator_type) \
 (\
 (operator_type) == OPERATOR_SHIFT_LEFT \
 || 	(operator_type) == OPERATOR_SHIFT_RIGHT \
 )
 
-#define OPERATOR_GROUP_MAX	5
+#define OPERATOR_GROUP_MAX	7
 
 namespace zetscript{
 
