@@ -1,7 +1,209 @@
-= 5 Built-in modules
-== 5.1 System
-// description
-// table function/description/example
+= 5 Modules
+
+Zetscript implements the following modules,
+
+* String
+* Console
+* System
+* Math
+* Json
+* DateTime
+
+== 5.1 String
+
+The console module exposes the following set of functions,
+
+* Format
+
+=== 5.1.1 Format
+
+It formats a constant string within curly bracket (i.e {} ),
+
+Syntax,
+[source,zetscript]
+String::format("string", ...args)
+
+The possible formats is described below,
+
+
+[cols="1m,3d,4a"]
+|====
+|Format |description |Example
+|{n}
+|It replaces arg with the corresponding number _n_, where _n_ starts at 0, within the curly bracket in the string
+|
+[source,zetscript]
+----
+ // prints '1st arg 1'
+ String::format("1st arg {0}",1)
+
+ // prints '1st,2nd as 1 and 2'
+ String::format("1st,2nd as {0} and {1}",1,2)
+
+ // prints '1st,2nd same 1 and 1'
+ String::format("1st,2nd same {0} and {0}",1)
+----
+
+|{n:dm}
+|It defines the argument _n_ and pads _m_ 0s on its left,
+|
+[source,zetscript]
+----
+ // prints 'Score:01'
+ String::format("Score:{0:d1}",1)
+
+ // prints 'Score:0001'
+ String::format("Score:{0:d4}",1)
+----
+
+|{n,m}
+|It defines the argument _n_ and adds _m_ spaces on its left,
+|
+[source,zetscript]
+----
+ // prints 'Score: 1'
+ String::format("Score:{0,1}",1)
+ // prints 'Score:   1'
+ String::format("One space:{0,4}",1)
+----
+
+ 
+|====
+
+
+== 5.2 Console
+
+The console module exposes the following set of functions,
+
+* outln
+* errorln
+* readChar
+
+== 5.2.1 Outln
+
+It prints message in to the console.
+
+Syntax,
+
+[source,zetscript]
+Console::outln(object,...args)
+
+If _object_ is constant string it can be formated with special tags within curly brackets (see in table X.X)
+
+Example,
+
+[source,zetscript]
+----
+ // prints string 'Hello world'
+ Console::outln("Hello world");
+ 
+ // prints formated string 'Score:0001' (see table X.X)
+ Console::outln("Score:{0:d4}",1);  
+  
+----
+
+
+
+
+== 5.2 System
+
+The system module exposes the following set of functions,
+
+* clock
+* eval
+* assert
+* error
+
+
+== 5.2.1 Clock
+
+Returns the amount of time in milliseconds
+
+Syntax,
+
+[source,zetscript]
+System::clock()
+
+Example,
+
+[source,zetscript]
+var start=System::clock()
+
+// waste some time...
+for(var i=0;i<1000; i++){
+}
+
+// print elapsed time in milliseconds
+Console::outln("Elapsed time: {0} ms",System::clock()-start_time)
+
+
+ 
+
+		// System mod
+		cl=script_type_factory->registerScriptType("System","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl->bindStaticMemberFunction("clock",SystemModule_clock);
+		cl->bindStaticMemberFunction("evalNative",SystemModule_eval);
+		//cl->bindStaticMemberFunction("assertNative",SystemModule_assert);
+		cl->bindStaticMemberFunction("errorNative",SystemModule_error);
+
+
+		ScriptType *cl=script_type_factory->registerScriptType("Math","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+
+		cl->bindStaticConstMemberVariable("PI",&MathModule_PI);
+		cl->bindStaticMemberFunction("sin",MathModule_sin);
+		cl->bindStaticMemberFunction("cos",MathModule_cos);
+		cl->bindStaticMemberFunction("abs",MathModule_abs);
+		cl->bindStaticMemberFunction("pow",MathModule_pow);
+		cl->bindStaticMemberFunction("degToRad",MathModule_degToRad);
+		cl->bindStaticMemberFunction("random",MathModule_random);
+		cl->bindStaticMemberFunction("max",MathModule_max);
+		cl->bindStaticMemberFunction("sqrt",MathModule_sqrt);
+		cl->bindStaticMemberFunction("floor",MathModule_floor);
+
+
+
+
+
+		// Json mod
+		cl=script_type_factory->registerScriptType("Json","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
+		cl->bindStaticMemberFunction("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
+		cl->bindStaticMemberFunction("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
+		cl->bindStaticMemberFunction("deserialize",JsonModule_deserialize);
+		//---------------------------------------------
+		// DateTime
+		cl=bindType<zs_datetime>("DateTime",DateTimeModule_new,DateTimeModule_delete);
+
+		/*registerStaticMemberFunction<zs_datetime>("_add",DateTimeModule_add);
+		registerStaticMemberFunction<zs_datetime>("_sub",DateTimeModule_sub);*/
+
+		bindMemberFunction<zs_datetime>("setUtc",DateTimeModule_setUtc);
+
+		bindMemberFunction<zs_datetime>("addSeconds",DateTimeModule_addSeconds);
+		bindMemberFunction<zs_datetime>("addMinutes",DateTimeModule_addMinutes);
+		bindMemberFunction<zs_datetime>("addHours",DateTimeModule_addHours);
+		bindMemberFunction<zs_datetime>("addDays",DateTimeModule_addDays);
+		bindMemberFunction<zs_datetime>("addMonths",DateTimeModule_addMonths);
+		bindMemberFunction<zs_datetime>("addYears",DateTimeModule_addYears);
+
+		// metamethods...
+		bindMemberFunction<zs_datetime>("_toString",DateTimeModule_toString);
+
+		bindMemberPropertyGetter<zs_datetime>("week_day",DateTimeModule_get_week_day);
+		bindMemberPropertyGetter<zs_datetime>("month_day",DateTimeModule_get_month_day);
+		bindMemberPropertyGetter<zs_datetime>("year_day",DateTimeModule_get_year_day);
+
+		bindMemberPropertyGetter<zs_datetime>("second",DateTimeModule_get_second);
+		bindMemberPropertyGetter<zs_datetime>("minute",DateTimeModule_get_minute);
+		bindMemberPropertyGetter<zs_datetime>("hour",DateTimeModule_get_hour);
+
+		bindMemberPropertyGetter<zs_datetime>("day",DateTimeModule_get_day);
+		bindMemberPropertyGetter<zs_datetime>("month",DateTimeModule_get_month);
+		bindMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
+
+  
+
+
+
 == 5.2 Math
 // description
 // table function/description/example
