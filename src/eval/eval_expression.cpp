@@ -196,6 +196,7 @@ namespace zetscript{
 			))==NULL){
 				goto eval_error_sub_expression;
 			}
+
 		}
 
 		eval_deallocate_tokens(token_nodes);

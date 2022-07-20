@@ -9,6 +9,10 @@
 #define ZS_IDX_INSTRUCTION_JMP_BREAK						(uint8_t)(-6)
 #define ZS_IDX_INSTRUCTION_JMP_CONTINUE						(uint8_t)(-7)
 
+#define ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR				(uint8_t)(-8)
+#define ZS_IDX_INSTRUCTION_JT_LOGIC_OK						(uint8_t)(-9)
+
+
 #define ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED					(uint8_t)(ZS_IDX_UNDEFINED)
 
 

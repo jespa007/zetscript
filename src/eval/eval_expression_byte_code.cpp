@@ -96,17 +96,51 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------
 		// OPTIMIZATION PART: Try to simplify 2 ops into one op
 		//byte_code=convert_operator_to_byte_code(split_node->operator_type);
-		if((eval_instruction=eval_expression_optimize(eval_data,scope,split_node, eval_instructions))==NULL){
-		 	// cannot be simplified...
-			// push operator byte code...
-			eval_instruction=new EvalInstruction(
-				eval_operator_to_byte_code(split_node->operator_type)
+		switch(split_node->operator_type){
+		// do not optimize logic operators, due it treats different
+		case 	OPERATOR_LOGIC_AND:
+		case 	OPERATOR_LOGIC_OR:
+		{
+			// change last two instructions if they are comparative (i.e <,<=,>=,>)
+			size_t size_instructions=eval_instructions->count;
+
+			// insert JT/acording type of JNT
+			eval_instructions->insert(size_instructions-1,
+				(zs_int)(eval_instruction=new EvalInstruction(
+					split_node->operator_type==OPERATOR_LOGIC_AND?BYTE_CODE_JNT:BYTE_CODE_JT
+					,OPERATOR_LOGIC_AND?ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR:ZS_IDX_INSTRUCTION_JT_LOGIC_OK
+				))
+			);
+
+
+
+
+
+			/*eval_instruction=new EvalInstruction(
+				eval_operator_to_byte_code(
+					split_node->operator_type==OPERATOR_LOGIC_AND?BYTE_CODE_JNT:BYTE_CODE_JT
+				)
+				,IDX_ZS_UNDEFINED
+				,split_node->operator_type==OPERATOR_LOGIC_AND?ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR:ZS_IDX_INSTRUCTION_LOGIC_JT_OK
+			);*/
+		}
+			break;
+		default:
+			if((eval_instruction=eval_expression_optimize(eval_data,scope,split_node, eval_instructions))==NULL){
+				// cannot be simplified...
+				// push operator byte code...
+				eval_instruction=new EvalInstruction(
+					eval_operator_to_byte_code(split_node->operator_type)
+				);
+			}
+
+			// push to the end
+			eval_instructions->push_back(
+					(zs_int)eval_instruction
 			);
 		}
 
-		eval_instructions->push_back(
-				(zs_int)eval_instruction
-		);
+
 		// OPTIMIZATION PART
 		//------------------------------------------------------------------------------------
 
@@ -142,6 +176,7 @@ namespace zetscript{
 		int idx_end=(int)(token_nodes->count-1);
 		zs_vector zs_ei_assign_loader_instructions_post_expression; // zs_vector<zs_vector<EvalInstruction *>>
 		zs_vector ei_assign_store_instruction_post_expression;
+		int idx_start_instructions=0;
 
 		// search for assign
 		for(int i=idx_end; i >= 0; i--){
@@ -229,7 +264,10 @@ namespace zetscript{
 		}
 		//--------------------------------------------------------------
 
-		// eval right expression
+		// eval tokens
+
+		idx_start_instructions=dst_instructions->count;
+
 		try{
 			eval_expression_tokens_to_byte_code(
 				 eval_data
@@ -242,6 +280,17 @@ namespace zetscript{
 			);
 		}catch(std::exception & error){
 			EVAL_ERROR_BYTE_CODEF(error.what());
+		}
+
+		// check logical and/or jmp from start instructions
+		for(int i=idx_start_instructions; i < dst_instructions->count; i++){
+			EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->items[i];
+			if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JNT)
+					&&
+				(eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR || eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)
+			){
+				printf("TODO SET OFFSET ACCORDING JNT OR JT, ADD EXTRA/S INSTRUCTIONS TO PUSH FALSE OR TRUE VALUE\n");
+			}
 		}
 
 		// if ends with ternary then continues performing expressions
