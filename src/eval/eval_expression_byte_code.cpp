@@ -24,6 +24,21 @@ namespace zetscript{
 	);
 
 
+	bool eval_two_last_instruction_are_constants(zs_vector *_eval_instructions){
+
+		size_t size_instructions=_eval_instructions->count;
+
+		if(size_instructions >= 2){
+
+			EvalInstruction *i1=(EvalInstruction *)_eval_instructions->items[size_instructions-2];
+			EvalInstruction *i2=(EvalInstruction *)_eval_instructions->items[size_instructions-1];
+
+			return i1->vm_instruction.isConstant() && i2->vm_instruction.isConstant();
+		}
+
+		return false;
+	}
+
 
 	// eval operator expression only evaluates expression with normal operators (+,-,>>,<<,etc) respecting always its preference. Assign operators (=,+=,-=,etc) should be extracted
 	void eval_expression_tokens_to_byte_code(
@@ -96,36 +111,24 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------
 		// OPTIMIZATION PART: Try to simplify 2 ops into one op
 		//byte_code=convert_operator_to_byte_code(split_node->operator_type);
-		switch(split_node->operator_type){
-		// do not optimize logic operators, due it treats different
-		case 	OPERATOR_LOGIC_AND:
-		case 	OPERATOR_LOGIC_OR:
-		{
-			// change last two instructions if they are comparative (i.e <,<=,>=,>)
-			size_t size_instructions=eval_instructions->count;
+
+		if(
+			(	   split_node->operator_type == OPERATOR_LOGIC_AND
+				|| split_node->operator_type == OPERATOR_LOGIC_OR
+			)	&& ((eval_two_last_instruction_are_constants(eval_instructions)==false))
+		){
+
+			// TODO SEARCH LAST
 
 			// insert JT/acording type of JNT
-			eval_instructions->insert(size_instructions-1,
+			eval_instructions->insert(eval_instructions->count-1,
 				(zs_int)(eval_instruction=new EvalInstruction(
 					split_node->operator_type==OPERATOR_LOGIC_AND?BYTE_CODE_JNT:BYTE_CODE_JT
-					,OPERATOR_LOGIC_AND?ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR:ZS_IDX_INSTRUCTION_JT_LOGIC_OK
+					,split_node->operator_type==OPERATOR_LOGIC_AND?ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR:ZS_IDX_INSTRUCTION_JT_LOGIC_OK
 				))
 			);
 
-
-
-
-
-			/*eval_instruction=new EvalInstruction(
-				eval_operator_to_byte_code(
-					split_node->operator_type==OPERATOR_LOGIC_AND?BYTE_CODE_JNT:BYTE_CODE_JT
-				)
-				,IDX_ZS_UNDEFINED
-				,split_node->operator_type==OPERATOR_LOGIC_AND?ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR:ZS_IDX_INSTRUCTION_LOGIC_JT_OK
-			);*/
-		}
-			break;
-		default:
+		}else{
 			if((eval_instruction=eval_expression_optimize(eval_data,scope,split_node, eval_instructions))==NULL){
 				// cannot be simplified...
 				// push operator byte code...
@@ -177,6 +180,8 @@ namespace zetscript{
 		zs_vector zs_ei_assign_loader_instructions_post_expression; // zs_vector<zs_vector<EvalInstruction *>>
 		zs_vector ei_assign_store_instruction_post_expression;
 		int idx_start_instructions=0;
+		zs_vector logical_and_jnt,logical_or_jt;
+		bool create_jmp_false=false;
 
 		// search for assign
 		for(int i=idx_end; i >= 0; i--){
@@ -260,7 +265,6 @@ namespace zetscript{
 					,token_node_operator->line
 					,NULL
 			);
-
 		}
 		//--------------------------------------------------------------
 
@@ -282,16 +286,82 @@ namespace zetscript{
 			EVAL_ERROR_BYTE_CODEF(error.what());
 		}
 
-		// check logical and/or jmp from start instructions
+
+		// check logical and/or jnt/jt from start instructions
 		for(int i=idx_start_instructions; i < dst_instructions->count; i++){
 			EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->items[i];
-			if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JNT)
-					&&
-				(eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR || eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)
-			){
-				printf("TODO SET OFFSET ACCORDING JNT OR JT, ADD EXTRA/S INSTRUCTIONS TO PUSH FALSE OR TRUE VALUE\n");
+			if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JNT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
+				logical_and_jnt.push_back((intptr_t)eval_instruction);
+				// go to next logic or
+				int idx_next_or_found=-1;
+				for(int j=i; j < dst_instructions->count; j++){
+					EvalInstruction *eval_instruction_post_instruction=(EvalInstruction *)dst_instructions->items[j];
+					if((eval_instruction_post_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction_post_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
+						idx_next_or_found=j;
+						break;
+					}
+				}
+
+				if(idx_next_or_found != -1){ // next or found
+					eval_instruction->vm_instruction.value_op2=idx_next_or_found-i+1;
+				}else{ // go to end with false
+					eval_instruction->vm_instruction.value_op2=dst_instructions->count-i+1;
+					create_jmp_false=true;
+				}
+			}
+			else if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
+				eval_instruction->vm_instruction.value_op2=dst_instructions->count-i;
+				logical_or_jt.push_back((intptr_t)eval_instruction);
 			}
 		}
+
+		if(create_jmp_false==true){
+
+			dst_instructions->push_back(
+				(zs_int)(new EvalInstruction(
+					BYTE_CODE_JMP
+					,ZS_IDX_UNDEFINED
+					,2
+				))
+			);
+
+			dst_instructions->push_back(
+				(zs_int)(new EvalInstruction(
+					BYTE_CODE_LOAD_BOOL
+					,ZS_IDX_UNDEFINED
+					,0
+				))
+			);
+
+		}
+			/*eval_instructions->push_back(
+				(zs_int)(new EvalInstruction(
+					BYTE_CODE_LOAD_BOOL
+					,ZS_IDX_UNDEFINED
+					,1
+				))
+			);
+
+			for(int i=0; i < logical_and_jnt.count;i++){
+			}
+		}
+
+		if(logical_and_jnt.count > 0){
+			// insert JT/acording type of JNT
+			eval_instructions->push_back(
+				(zs_int)(new EvalInstruction(
+					BYTE_CODE_LOAD_BOOL
+					,ZS_IDX_UNDEFINED
+					,0
+				))
+			);
+
+			for(int i=0; i < logical_and_jnt.count;i++){
+
+			}
+		}*/
+
+
 
 		// if ends with ternary then continues performing expressions
 		if(*aux_p == '?'){ // ternary
