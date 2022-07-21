@@ -58,6 +58,7 @@ namespace zetscript{
 		int 				idx_split=-1;
 		TokenNode      		*split_node = NULL;
 		unsigned char 		idx_group_split=OPERATOR_GROUP_MAX;
+		bool custom_insert_instruction=false;
 
 		// trivial case (symbol node)
 		if(idx_start>=idx_end){
@@ -122,9 +123,10 @@ namespace zetscript{
 		// OPTIMIZATION PART: Try to simplify 2 ops into one op
 		//byte_code=convert_operator_to_byte_code(split_node->operator_type);
 		bool two_last_instructions_are_constants=eval_two_last_instruction_are_constants(eval_instructions);
+		custom_insert_instruction=false;
 		if((split_node->operator_type == OPERATOR_LOGIC_AND) && (two_last_instructions_are_constants==false)){
 
-			int insert_at=eval_instructions->count-1;
+			int insert_at=-1;//eval_instructions->count-1;
 			int consecutive_logical_operators=0;
 			for(int i=eval_instructions->count-1; i >= idx_start_eval_instructions; i--){
 				EvalInstruction *current_instruction=(EvalInstruction *)eval_instructions->items[i];
@@ -139,15 +141,21 @@ namespace zetscript{
 				}
 			}
 
-			// insert JT/acording type of JNT, the jump for next or
-			eval_instructions->insert(insert_at,
-				(zs_int)(eval_instruction=new EvalInstruction(
-					BYTE_CODE_JNT
-					,ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR
-				))
-			);
+			if(insert_at!=-1){
 
-			logical_and_jnt->push_back((zs_int)eval_instruction);
+				// insert JT/acording type of JNT, the jump for next or
+				eval_instructions->insert(insert_at,
+					(zs_int)(eval_instruction=new EvalInstruction(
+						BYTE_CODE_JNT
+						,ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR
+					))
+				);
+
+				custom_insert_instruction=true;
+
+				logical_and_jnt->push_back((zs_int)eval_instruction);
+			}
+
 
 		}else if((split_node->operator_type == OPERATOR_LOGIC_OR) && (two_last_instructions_are_constants==false)){
 
@@ -163,6 +171,7 @@ namespace zetscript{
 					consecutive_logical_operators++;
 
 					if(consecutive_logical_operators==2){ // found the gap, insert JT
+						custom_insert_instruction=true;
 						eval_instructions->insert(
 							i+1
 							,(zs_int)(eval_instruction=new EvalInstruction(
@@ -172,11 +181,13 @@ namespace zetscript{
 						);
 
 						logical_or_jt->push_back((zs_int)eval_instruction);
+
 					}
 				}
 			}
+		}
 
-		}else{
+		if(custom_insert_instruction ==false){
 			if((eval_instruction=eval_expression_optimize(eval_data,scope,split_node, eval_instructions))==NULL){
 				// cannot be simplified...
 				// push operator byte code...
