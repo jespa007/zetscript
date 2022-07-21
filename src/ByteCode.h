@@ -54,6 +54,15 @@
 	 ((byte_code)<=BYTE_CODE_END_STORE) \
 )
 
+#define IS_BYTE_BOOLEAN_OP(byte_code) \
+(\
+	  (BYTE_CODE_BEGIN_BOOLEAN_OPS <= (byte_code)) \
+	  	  	  	  && \
+	 ((byte_code)<=BYTE_CODE_END_BOOLEAN_OPS) \
+)
+
+
+
 #define IS_BYTE_CODE_PRE_POST(byte_code) \
 	(byte_code==BYTE_CODE_PRE_INC)\
 	|| (byte_code==	BYTE_CODE_PRE_DEC)\
@@ -159,17 +168,25 @@ namespace zetscript{
 		BYTE_CODE_PUSH_VECTOR_ITEM, // Value push for vector
 		BYTE_CODE_PUSH_OBJECT_ITEM,
 		//-------------------------------
-		// OPERATIONS
 		//
-		BYTE_CODE_EQU,  // ==
+		// BOOLEAN OPS
+		//
+		BYTE_CODE_BEGIN_BOOLEAN_OPS,
+		BYTE_CODE_EQU=BYTE_CODE_BEGIN_BOOLEAN_OPS,  // ==
 		BYTE_CODE_NOT_EQU,  // !=
 		BYTE_CODE_LT,  // <
 		BYTE_CODE_LTE,  // <=
 		BYTE_CODE_GT,  // >
 		BYTE_CODE_GTE, // >=
+		BYTE_CODE_NOT, // !
+		BYTE_CODE_END_BOOLEAN_OPS=BYTE_CODE_NOT,
+		//
+		// BOOLEAN OPS
+		//
+		//-------------------------------
+
 		BYTE_CODE_LOGIC_AND, // &&
 		BYTE_CODE_LOGIC_OR,  // ||
-		BYTE_CODE_NOT, // !
 		BYTE_CODE_NEG, // -a
 		BYTE_CODE_ADD, // +
 		BYTE_CODE_SUB, // -
