@@ -108,8 +108,6 @@ namespace zetscript{
 			this->items[i]=this->items[i-1];
 		}
 
-
-
 		return idx_min;
 	}
 

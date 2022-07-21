@@ -139,16 +139,13 @@ namespace zetscript{
 				}
 			}
 
-			// insert JT/acording type of JNT
+			// insert JT/acording type of JNT, the jump for next or
 			eval_instructions->insert(insert_at,
 				(zs_int)(eval_instruction=new EvalInstruction(
 					BYTE_CODE_JNT
 					,ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR
-					,eval_instructions->count
 				))
 			);
-
-
 
 			logical_and_jnt->push_back((zs_int)eval_instruction);
 
@@ -348,109 +345,94 @@ namespace zetscript{
 			EVAL_ERROR_BYTE_CODEF(error.what());
 		}
 
+
+		// there's a logical and or logical or that will place a true/false for its final value
 		if(logical_or_jt.count > 0 || logical_and_jnt.count > 0){
+
+			int idx_jmp_load_true_value=-1;
+			int idx_jmp_load_false_value=-1;
+			int idx_jmp_end=dst_instructions->count;
+
 			dst_instructions->push_back(
+
 				(zs_int)(new EvalInstruction(
 					BYTE_CODE_JMP
 					,ZS_IDX_UNDEFINED
-					,2
+					,-1 // it will modified dinamically in function of how many load bool and jmps it will have
 				))
 			);
-		}
 
 
-		// check logical and/or jnt/jt from start instructions
-		/*for(int i=idx_start_instructions; i < dst_instructions->count; i++){
-			EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->items[i];
-			if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JNT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
-				//logical_and_jnt.push_back((intptr_t)eval_instruction);
-				// go to next logic or
-				int idx_next_or_found=-1;
-				for(int j=i; j < dst_instructions->count; j++){
-					EvalInstruction *eval_instruction_post_instruction=(EvalInstruction *)dst_instructions->items[j];
-					if((eval_instruction_post_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction_post_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
-						idx_next_or_found=j;
-						break;
+			if(logical_or_jt.count > 0){
+
+				// update jmp to +2
+				((EvalInstruction *)dst_instructions->items[idx_jmp_end])->vm_instruction.value_op2=2;
+
+				idx_jmp_load_true_value=dst_instructions->count;
+				dst_instructions->push_back(
+					(zs_int)(new EvalInstruction(
+						BYTE_CODE_LOAD_BOOL
+						,ZS_IDX_UNDEFINED
+						,1
+					))
+				);
+
+			}
+
+			if(logical_and_jnt.count>0){
+
+				if(logical_or_jt.count > 0){ // modify jmp instruction
+					((EvalInstruction *)dst_instructions->items[idx_jmp_end])->vm_instruction.value_op2=4;
+
+					// to jmp true value space
+					dst_instructions->push_back(
+						(zs_int)(new EvalInstruction(
+							BYTE_CODE_JMP
+							,ZS_IDX_UNDEFINED
+							,2
+						))
+					);
+				}
+
+				idx_jmp_load_false_value=dst_instructions->count;
+
+				dst_instructions->push_back(
+					(zs_int)(new EvalInstruction(
+						BYTE_CODE_LOAD_BOOL
+						,ZS_IDX_UNDEFINED
+						,0
+					))
+				);
+			}
+
+			for(int i=idx_start_instructions; i < dst_instructions->count; i++){
+				EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->items[i];
+				if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JNT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
+					//logical_and_jnt.push_back((intptr_t)eval_instruction);
+					// go to next logic or
+					int idx_next_or_found=-1;
+					for(int j=i; j < dst_instructions->count; j++){
+						EvalInstruction *eval_instruction_post_instruction=(EvalInstruction *)dst_instructions->items[j];
+						if((eval_instruction_post_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction_post_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
+							idx_next_or_found=j;
+							break;
+						}
+					}
+
+					if(idx_next_or_found != -1){ // next or found
+						eval_instruction->vm_instruction.value_op2=idx_next_or_found-i+1;
+					}else{ // go to end with false
+						eval_instruction->vm_instruction.value_op2=idx_jmp_load_false_value-i;
 					}
 				}
+				else
+				if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
 
-				if(idx_next_or_found != -1){ // next or found
-					eval_instruction->vm_instruction.value_op2=idx_next_or_found-i+1;
-				}else{ // go to end with false
-					eval_instruction->vm_instruction.value_op2=dst_instructions->count-i+1;
-					create_jmp_false=true;
+					eval_instruction->vm_instruction.value_op2=idx_jmp_load_true_value-i;
 				}
 			}
-			else
-			if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
-				eval_instruction->vm_instruction.value_op2=dst_instructions->count-i;
-				logical_or_jt.push_back((intptr_t)eval_instruction);
-			}
-		}*/
-
-
-
-		if(logical_or_jt.count > 0){
-
-			dst_instructions->push_back(
-				(zs_int)(new EvalInstruction(
-					BYTE_CODE_LOAD_BOOL
-					,ZS_IDX_UNDEFINED
-					,1
-				))
-			);
-
-			dst_instructions->push_back(
-				(zs_int)(new EvalInstruction(
-					BYTE_CODE_JMP
-					,ZS_IDX_UNDEFINED
-					,2
-				))
-			);
-		}
-
-		if(logical_and_jnt.count>0){
-
-			if(logical_or_jt.count > 0){ // modify jmp instruction
-				((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction.value_op2+=2;
-			}
-
-			dst_instructions->push_back(
-				(zs_int)(new EvalInstruction(
-					BYTE_CODE_LOAD_BOOL
-					,ZS_IDX_UNDEFINED
-					,0
-				))
-			);
 
 		}
-			/*eval_instructions->push_back(
-				(zs_int)(new EvalInstruction(
-					BYTE_CODE_LOAD_BOOL
-					,ZS_IDX_UNDEFINED
-					,1
-				))
-			);
-
-			for(int i=0; i < logical_and_jnt.count;i++){
-			}
-		}
-
-		if(logical_and_jnt.count > 0){
-			// insert JT/acording type of JNT
-			eval_instructions->push_back(
-				(zs_int)(new EvalInstruction(
-					BYTE_CODE_LOAD_BOOL
-					,ZS_IDX_UNDEFINED
-					,0
-				))
-			);
-
-			for(int i=0; i < logical_and_jnt.count;i++){
-
-			}
-		}*/
-
 
 
 		// if ends with ternary then continues performing expressions
