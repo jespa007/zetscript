@@ -151,36 +151,29 @@ namespace zetscript{
 
 		}else if((split_node->operator_type == OPERATOR_LOGIC_OR) && (two_last_instructions_are_constants==false)){
 
-			// insert jt in the last logical jnt
-			if(logical_and_jnt->count>0){
+			//search two consecutives compare byte codes from current
+			int consecutive_logical_operators=0;
 
-				//search two consecutives compare byte codes from current
-				int consecutive_logical_operators=0;
+			for(int i=eval_instructions->count-1; i >= idx_start_eval_instructions && consecutive_logical_operators<2; i--){
+				EvalInstruction *current_instruction=(EvalInstruction *)eval_instructions->items[i];
+				// reset consecutive each JNT NEXT OR found
+				if((current_instruction->vm_instruction.byte_code == BYTE_CODE_JNT) && (current_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
+					consecutive_logical_operators=0;
+				}else if(IS_BYTE_BOOLEAN_OP(current_instruction->vm_instruction.byte_code)){
+					consecutive_logical_operators++;
 
-				for(int i=eval_instructions->count-1; i >= idx_start_eval_instructions && consecutive_logical_operators<2; i--){
-					EvalInstruction *current_instruction=(EvalInstruction *)eval_instructions->items[i];
-					// reset consecutive each JNT NEXT OR found
-					if((current_instruction->vm_instruction.byte_code == BYTE_CODE_JNT) && (current_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
-						consecutive_logical_operators=0;
-					}else if(IS_BYTE_BOOLEAN_OP(current_instruction->vm_instruction.byte_code)){
-						consecutive_logical_operators++;
+					if(consecutive_logical_operators==2){ // found the gap, insert JT
+						eval_instructions->insert(
+							i+1
+							,(zs_int)(eval_instruction=new EvalInstruction(
+									BYTE_CODE_JT
+									,ZS_IDX_INSTRUCTION_JT_LOGIC_OK
+							))
+						);
 
-						if(consecutive_logical_operators==2){ // found the gap, insert JT
-							eval_instructions->insert(
-								i+1
-								,(zs_int)(eval_instruction=new EvalInstruction(
-										BYTE_CODE_JT
-										,ZS_IDX_INSTRUCTION_JT_LOGIC_OK
-								))
-							);
-
-							logical_or_jt->push_back((zs_int)eval_instruction);
-						}
+						logical_or_jt->push_back((zs_int)eval_instruction);
 					}
-
 				}
-
-
 			}
 
 		}else{
@@ -358,15 +351,12 @@ namespace zetscript{
 				(zs_int)(new EvalInstruction(
 					BYTE_CODE_JMP
 					,ZS_IDX_UNDEFINED
-					,-1 // it will modified dinamically in function of how many load bool and jmps it will have
+					,2 // +2 jmp instructions by default
 				))
 			);
 
 
 			if(logical_or_jt.count > 0){
-
-				// update jmp to +2
-				((EvalInstruction *)dst_instructions->items[idx_jmp_end])->vm_instruction.value_op2=2;
 
 				idx_jmp_load_true_value=dst_instructions->count;
 				dst_instructions->push_back(

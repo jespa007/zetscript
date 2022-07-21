@@ -132,7 +132,11 @@ namespace zetscript{
 
 		void removeUnusuedScopes();
 
+
+
 		bool linkUnresolvedSymbols();
+		void clearUnresolvedSymbols();
+
 		void addUnresolvedSymbol(zs_int instruction);
 		ZetScript *getZetScript();
 

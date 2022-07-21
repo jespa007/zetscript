@@ -274,7 +274,7 @@ Solved issues
 #334 Implement concatenated call  
 #337 Implement zs_map_int 
 #336 Solve problem ciclic references 
-> #339 Conditionals evaluates whole condition instead of first breaking condition improvement
+#339 Conditionals evaluates whole condition instead of first breaking condition improvement
  
 
 //----------------------------------------------------------

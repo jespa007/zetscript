@@ -703,6 +703,10 @@ namespace zetscript{
 		*_params=NULL;
 	}
 
+	void ScriptFunction::clearUnresolvedSymbols(){
+		unresolved_symbols.clear();
+	}
+
 	void ScriptFunction::clear(){
 		unresolved_symbols.clear();
 		// delete symbols refs from scope...

@@ -115,6 +115,11 @@ namespace zetscript{
 			script_functions->pop_back();
 
 		}
+
+		// clear unresolved symbols for main..
+		if(_idx_start == ZS_IDX_UNDEFINED){
+			((ScriptFunction *)script_functions->items[0])->clearUnresolvedSymbols();
+		}
 	}
 
 	void ScriptFunctionFactory::saveState(){
