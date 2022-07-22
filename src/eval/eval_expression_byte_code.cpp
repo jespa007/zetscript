@@ -60,13 +60,6 @@ namespace zetscript{
 		unsigned char 		idx_group_split=OPERATOR_GROUP_MAX;
 		bool custom_insert_instruction=false;
 
-		if(((TokenNode*)token_nodes->items[idx_start])->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION){
-			printf("A CABALLO REGALADO NO TE FIES QUE ES UNA MIERDA PINCHADA EN UN PALO 2\n");
-		}
-
-		/*if(((TokenNode*)token_nodes->items[idx_split+1])->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION){
-			printf("A CABALLO REGALADO NO TE FIES QUE ES UNA MIERDA PINCHADA EN UN PALO 3\n");
-		}*/
 
 		// trivial case (symbol node)
 		if(idx_start>=idx_end){
@@ -458,11 +451,14 @@ namespace zetscript{
 					}else{ // go to end with false
 						eval_instruction->vm_instruction.value_op2=idx_jmp_load_false_value-i;
 					}
+
+					eval_instruction->vm_instruction.value_op1=ZS_IDX_UNDEFINED; // mark as undefined due the jmp offset it was assigned
 				}
-				else
-				if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
+				else if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
 
 					eval_instruction->vm_instruction.value_op2=idx_jmp_load_true_value-i;
+
+					eval_instruction->vm_instruction.value_op1=ZS_IDX_UNDEFINED;  // mark as undefined due the jmp offset it was assigned
 				}
 			}
 
