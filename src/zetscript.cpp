@@ -107,7 +107,7 @@ namespace zetscript{
 		bindMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 		// Custom user function or classes
-		eval(
+		/*eval(
 			zs_strutils::format(
 				//------------------------------------------------
 				// String
@@ -166,7 +166,7 @@ namespace zetscript{
 			,
 			(intptr_t)this
 			)
-		);
+		);*/
 
 		saveState();
 	}
