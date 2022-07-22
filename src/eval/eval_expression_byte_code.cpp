@@ -60,6 +60,14 @@ namespace zetscript{
 		unsigned char 		idx_group_split=OPERATOR_GROUP_MAX;
 		bool custom_insert_instruction=false;
 
+		if(((TokenNode*)token_nodes->items[idx_start])->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION){
+			printf("A CABALLO REGALADO NO TE FIES QUE ES UNA MIERDA PINCHADA EN UN PALO 2\n");
+		}
+
+		/*if(((TokenNode*)token_nodes->items[idx_split+1])->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION){
+			printf("A CABALLO REGALADO NO TE FIES QUE ES UNA MIERDA PINCHADA EN UN PALO 3\n");
+		}*/
+
 		// trivial case (symbol node)
 		if(idx_start>=idx_end){
 			// concatenate instructions ...
@@ -378,8 +386,8 @@ namespace zetscript{
 		// there's a logical and or logical or that will place a true/false for its final value
 		if(logical_or_jt.count > 0 || logical_and_jnt.count > 0){
 
-			int idx_jmp_load_true_value=-1;
-			int idx_jmp_load_false_value=-1;
+			int idx_jmp_load_true_value=dst_instructions->count;
+			int idx_jmp_load_false_value=dst_instructions->count;
 			int idx_jmp_end=dst_instructions->count;
 
 			dst_instructions->push_back(
