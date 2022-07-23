@@ -162,7 +162,7 @@ namespace zetscript{
 								VM_STOP_EXECUTEF("Expected index value for vector access");
 							}
 
-							if(index >= (int)so_vector->length()){
+							if(index >= (int)so_vector->length() || index < 0){
 								VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
 							}
 
