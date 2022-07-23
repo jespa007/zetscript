@@ -66,18 +66,18 @@ void ClassAWrap_fun1(zetscript::ZetScript *_zs, ClassA *_this, ParamA *_param_a,
 }
 
 bool ClassAWrap_lt(zetscript::ZetScript *_zs, ClassA *_n1, ClassA *_n2){
-	ZS_UNUSUED_PARAM(_zs);
+	ZS_UNUSUED_3PARAMS(_zs,_n1,_n2);
 	return true;
 }
 
 bool ClassAWrap_lt(zetscript::ZetScript *_zs, ClassA *_n1, zetscript::zs_float *_n2){
-	ZS_UNUSUED_PARAM(_zs);
+	ZS_UNUSUED_3PARAMS(_zs,_n1,_n2);
 	printf("from float 1!\n");
 	return true;
 }
 
 bool ClassAWrap_lt(zetscript::ZetScript *_zs, zetscript::zs_float *_n1, ClassA *_n2){
-	ZS_UNUSUED_PARAM(_zs);
+	ZS_UNUSUED_3PARAMS(_zs,_n1,_n2);
 	printf("from float 2!\n");
 	return true;
 }
@@ -125,6 +125,7 @@ Num * ClassCWrap_num_getter(zetscript::ZetScript *_zs, ClassC *_c){
 }
 
 Num *ClassCWrap_newNum(zetscript::ZetScript *_zs,ClassC *_c){
+	ZS_UNUSUED_2PARAMS(_zs,_c);
 	return num_ref;
 }
 
@@ -134,15 +135,17 @@ zetscript::zs_int NumWrap_x_getter(zetscript::ZetScript *_zs, Num *_this){
 }
 
 void NumWrap_setPosition(zetscript::ZetScript *_zs, Num *_this){
-	ZS_UNUSUED_PARAM(_zs);
+	ZS_UNUSUED_2PARAMS(_zs,_this);
 }
 
 void NumWrap_pre_increment(zetscript::ZetScript *_zs, Num *_n){
+	ZS_UNUSUED_PARAM(_zs);
 	++_n->x;
 	++_n->y;
 }
 
 void NumWrap_pre_decrement(zetscript::ZetScript *_zs, Num *_n){
+	ZS_UNUSUED_PARAM(_zs);
 	--_n->x;
 	--_n->y;
 }

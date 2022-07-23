@@ -442,15 +442,15 @@ namespace zetscript{
 						byte_code=ByteCode::BYTE_CODE_CALL;
 
 						if(it_accessor_token==0){ // direct or indirect call
-							if(ei_first_token_node->vm_instruction.byte_code==BYTE_CODE_LOAD_THIS_FUNCTION){
+							if( ei_first_token_node->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_FUNCTION ){
 								byte_code=ByteCode::BYTE_CODE_THIS_CALL;
-							}else if((ei_first_token_node->vm_instruction.byte_code==ByteCode::BYTE_CODE_LOAD_LOCAL)){
+							}else if( ei_first_token_node->vm_instruction.byte_code == ByteCode::BYTE_CODE_LOAD_LOCAL ){
 								byte_code= ByteCode::BYTE_CODE_INDIRECT_LOCAL_CALL;
 							}
 						}else if(last_accessor_value==""){ // last access value was empty so is a stack call (a call from returning function)
 							byte_code=ByteCode::BYTE_CODE_STACK_CALL;
 						}else{
-							if(last_instruction_token->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE){
+							if( last_instruction_token->vm_instruction.byte_code == BYTE_CODE_LOAD_THIS_VARIABLE ){
 								byte_code=ByteCode::BYTE_CODE_THIS_CALL;
 							}else{
 								byte_code=ByteCode::BYTE_CODE_MEMBER_CALL;

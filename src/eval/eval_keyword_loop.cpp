@@ -505,6 +505,8 @@ namespace zetscript{
 							,name
 					);
 					break;
+				default:
+					break;
 				}
 
 				aux_p=test_aux;
