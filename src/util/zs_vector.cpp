@@ -5,24 +5,24 @@
 #include "../zetscript.h"
 
 #define ZS_VECTOR_MAX_ELEMENTS	16000
-#define ZS_VECTOR_N_SLOT_ELEMENTS 10
+#define ZS_VECTOR_EXPAND_SLOT_ELEMENTS 10
 namespace zetscript{
 
 	int zs_vector::npos=-1;
 
 	bool	zs_vector::push_back_slot(){
 		if (this->_size == 0) {
-			this->_size = ZS_VECTOR_N_SLOT_ELEMENTS;
+			this->_size = ZS_VECTOR_MAX_ELEMENTS;
 			this->items = (zs_int *)ZS_MALLOC(sizeof(zs_int) * this->_size);
 		}
 		// condition to increase this->items:
 		// last slot exhausted
 		if (this->_size ==this->count) {
-			if((this->_size+ZS_VECTOR_N_SLOT_ELEMENTS) >= ZS_VECTOR_MAX_ELEMENTS){
+			if((this->_size+ ZS_VECTOR_EXPAND_SLOT_ELEMENTS) >= ZS_VECTOR_MAX_ELEMENTS){
 				THROW_RUNTIME_ERRORF("Max elements vector");
 				return false;
 			}
-			this->_size += ZS_VECTOR_N_SLOT_ELEMENTS;
+			this->_size += ZS_VECTOR_EXPAND_SLOT_ELEMENTS;
 			this->items =(zs_int *) realloc(this->items, sizeof(zs_int) * this->_size);
 		}
 
@@ -30,10 +30,36 @@ namespace zetscript{
 		return true;
 	}
 
+
+	void zs_vector::copy(const zs_vector & _vector) {
+
+		if (_vector.items == NULL) { return; } // do not create string from NULL pointers
+
+		__cleanup__(); // cleanup any existing data
+		count = _vector.count;
+		_size = _vector._size;
+		this->items = (zs_int*)ZS_MALLOC(sizeof(zs_int) * _size + 1); // + 1 for the keeping the null character
+		
+		memcpy(this->items, _vector.items, count*sizeof(zs_int)); // copy from the incoming buffer to character buffer of the new object
+	}
+
 	zs_vector::zs_vector(){
 		items=NULL;
 		count=0; //number of items
 		_size=0;
+	}
+
+	zs_vector::zs_vector(const zs_vector& _vector) // copy constructor
+	{
+		items = NULL;
+		count = _size = 0;
+		copy(_vector);
+	}
+
+	zs_vector& zs_vector::operator=(const zs_vector& _vector) // copy assignment
+	{
+		copy(_vector);
+		return *this;
 	}
 
 	void zs_vector::set(int idx, zs_int e){
@@ -186,10 +212,19 @@ namespace zetscript{
 		this->_size=0;
 	}
 
-	zs_vector::~zs_vector(){
-		if(this->items!=NULL){
+	void zs_vector::__cleanup__()
+	{
+		if (this->items != NULL) {
 			free(this->items);
 		}
+
+		this->count = 0;
+		this->_size = 0;
+	}
+
+
+	zs_vector::~zs_vector(){
+		__cleanup__();
 	}
 
 }

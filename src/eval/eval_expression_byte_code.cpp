@@ -267,7 +267,7 @@ namespace zetscript{
 		zs_vector ei_assign_store_instruction_post_expression;
 		int idx_start_instructions=0;
 		zs_vector logical_and_jnt,logical_or_jt;
-		bool create_jmp_false=false;
+		//bool create_jmp_false=false;
 
 		// search for assign
 		for(int i=idx_end; i >= 0; i--){
@@ -387,7 +387,7 @@ namespace zetscript{
 
 				(zs_int)(new EvalInstruction(
 					BYTE_CODE_JMP
-					,ZS_IDX_UNDEFINED
+					,(uint8_t)ZS_IDX_UNDEFINED
 					,2 // +2 jmp instructions by default
 				))
 			);
@@ -399,7 +399,7 @@ namespace zetscript{
 				dst_instructions->push_back(
 					(zs_int)(new EvalInstruction(
 						BYTE_CODE_LOAD_BOOL
-						,ZS_IDX_UNDEFINED
+						, (uint8_t)ZS_IDX_UNDEFINED
 						,1
 					))
 				);
@@ -415,7 +415,7 @@ namespace zetscript{
 					dst_instructions->push_back(
 						(zs_int)(new EvalInstruction(
 							BYTE_CODE_JMP
-							,ZS_IDX_UNDEFINED
+							, (uint8_t)ZS_IDX_UNDEFINED
 							,2
 						))
 					);
@@ -426,7 +426,7 @@ namespace zetscript{
 				dst_instructions->push_back(
 					(zs_int)(new EvalInstruction(
 						BYTE_CODE_LOAD_BOOL
-						,ZS_IDX_UNDEFINED
+						, (uint8_t)ZS_IDX_UNDEFINED
 						,0
 					))
 				);
@@ -452,13 +452,13 @@ namespace zetscript{
 						eval_instruction->vm_instruction.value_op2=idx_jmp_load_false_value-i;
 					}
 
-					eval_instruction->vm_instruction.value_op1=ZS_IDX_UNDEFINED; // mark as undefined due the jmp offset it was assigned
+					eval_instruction->vm_instruction.value_op1= (uint8_t)ZS_IDX_UNDEFINED; // mark as undefined due the jmp offset it was assigned
 				}
 				else if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
 
 					eval_instruction->vm_instruction.value_op2=idx_jmp_load_true_value-i;
 
-					eval_instruction->vm_instruction.value_op1=ZS_IDX_UNDEFINED;  // mark as undefined due the jmp offset it was assigned
+					eval_instruction->vm_instruction.value_op1= (uint8_t)ZS_IDX_UNDEFINED;  // mark as undefined due the jmp offset it was assigned
 				}
 			}
 

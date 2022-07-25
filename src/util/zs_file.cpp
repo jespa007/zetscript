@@ -35,16 +35,17 @@ namespace zetscript{
 
 		zs_string read_text(const zs_string &  filename){
 
-			int  length, readed_elements;
+			int  length=-1;
+			size_t readed_elements;
 			FILE  *fp;
 
 			if((fp  =  fopen(filename.c_str(),"rb"))  !=  NULL)
 			{
 				if((length = size(filename)) != -1) {
 
-					size_t n_bytes_readed=length+1;
+					size_t n_bytes_readed=(size_t)(length+1);
 					char *buffer = (char *)ZS_MALLOC(n_bytes_readed);
-					readed_elements = fread(buffer, 1, length, fp);
+					readed_elements = fread(buffer, 1, (size_t)length, fp);
 
 					if(readed_elements != length) {
 

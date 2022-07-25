@@ -18,6 +18,8 @@ namespace zetscript{
 
 		//ZPList  	*	ZPList_New(void);
 		zs_vector();
+		zs_vector(const zs_vector& _obj);
+		zs_vector& operator=(const zs_vector& _obj);
 
 		void 		set( int  idx, zs_int e);
 		zs_int		get( int  idx);
@@ -46,6 +48,10 @@ namespace zetscript{
 		//private
 		int			_size; // size vector (user count for iterate through items)
 		bool		push_back_slot();
+
+		void copy(const zs_vector& _vector);
+		void __cleanup__();
+
 
 	};
 

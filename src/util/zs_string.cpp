@@ -456,19 +456,21 @@ namespace zetscript{
 		return buf;
 	}
 
-	zs_string::~zs_string() // destructor
-	{
-		__cleanup__();
-	}
-
 	void zs_string::__cleanup__()
 	{
 		if (buf != NULL)
 		{
 			free(buf);
 		}
-		count=_size = 0;
-		buf=NULL;
+		count = _size = 0;
+		buf = NULL;
 	}
+
+	zs_string::~zs_string() // destructor
+	{
+		__cleanup__();
+	}
+
+
 
 }
