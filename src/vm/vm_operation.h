@@ -88,7 +88,7 @@
 		}\
 	}\
 
-#define VM_OPERATION_ADD(__METAMETHOD__) \
+#define VM_OPERATION_ADD \
 	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\

@@ -265,15 +265,10 @@ namespace zetscript{
 					data->stk_vm_current++;
 				}
 				continue;
-			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
-				stk_var= this_object->getBuiltinElementAt(instruction->value_op2);
-				so_aux=this_object; // take this as default
-				goto find_element_object;
 			case BYTE_CODE_LOAD_THIS_VARIABLE:
+			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
 				so_aux=this_object; // take this as default
-				stk_var=vm_load_this_element(vm,this_object,calling_function,instruction,instruction->value_op2);
 				goto find_element_object;
-
 			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
 			case BYTE_CODE_LOAD_OBJECT_ITEM:
 load_next_element_object:
@@ -1008,99 +1003,8 @@ find_element_object:
 				*data->stk_vm_current++=stk_result_op1->typeOf();
 				continue;
 			case BYTE_CODE_ADD: // +
-				//VM_POP_STK_TWO;
-				//VM_OPERATION_ADD(BYTE_CODE_METAMETHOD_ADD);
-	switch(instruction->properties & INSTRUCTION_PROPERTY_ILOAD){\
-	default:\
-	case 0:\
-		stk_result_op2=--data->stk_vm_current;\
-		stk_result_op1=--data->stk_vm_current;\
-		break;\
-	case INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
-		 stk_result_op1=--data->stk_vm_current;\
-		 stk_result_op2=&stk_aux;\
-		 stk_result_op2->value=instruction->value_op2;\
-		 stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
-		 break;\
-	case INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
-		 stk_result_op1=--data->stk_vm_current;\
-		 stk_result_op2=LOAD_STK_FROM_INSTRUCTION(instruction->value_op1,instruction->properties);\
-		 break;\
-	case INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
-		 stk_result_op1=&stk_aux;\
-		 stk_result_op1->value=INSTRUCTION_CONST_TO_STK_CONST_VALUE(instruction->value_op2,instruction->properties);\
-		 stk_result_op1->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
-		 stk_result_op2=LOAD_STK_FROM_INSTRUCTION(instruction->value_op1,instruction->properties);\
-		 break;\
-	case INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
-		stk_result_op1=LOAD_STK_FROM_INSTRUCTION(instruction->value_op1,instruction->properties);\
-		stk_result_op2=&stk_aux;\
-		stk_result_op2->value=INSTRUCTION_CONST_TO_STK_CONST_VALUE(instruction->value_op2,instruction->properties);\
-		stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
-		break;\
-   case INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
-		stk_result_op1=LOAD_STK_FROM_INSTRUCTION(instruction->value_op1,instruction->properties);\
-		stk_result_op2=LOAD_STK_FROM_INSTRUCTION(((instruction->value_op2&0xff0000)>>16),instruction->value_op2);\
-		break;\
-	}
-
-	msk_properties=(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties)<<16)|GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op2->properties);\
-	switch(msk_properties){\
-	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
-		VM_PUSH_STK_ZS_INT(stk_result_op1->value + stk_result_op2->value);\
-		break;\
-	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
-		VM_PUSH_STK_ZS_FLOAT(stk_result_op1->value + *((zs_float *)&stk_result_op2->value));\
-		break;\
-	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
-		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) + stk_result_op2->value);\
-		break;\
-	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
-		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) + *((zs_float *)&stk_result_op2->value));\
-		break;\
-	default:\
-		if(		STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)\
-					||\
-				STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)\
-			){\
-				ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(data->zs,stk_result_op1,stk_result_op2);\
-				vm_create_shared_script_object(vm,so_string);\
-				VM_PUSH_STK_SCRIPT_OBJECT(so_string);\
-		}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
-					&&\
-				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
-		){\
-				ScriptObjectVector *so_vector=ScriptObjectVector::newScriptObjectVectorAdd(\
-						data->zs\
-						,(ScriptObjectVector *)stk_result_op1->value\
-						,(ScriptObjectVector *)stk_result_op2->value\
-				);\
-				vm_create_shared_script_object(vm,so_vector);\
-				VM_PUSH_STK_SCRIPT_OBJECT(so_vector);\
-		}else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
-					&&\
-				STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
-		){\
-				ScriptObjectObject *so_object=ScriptObjectObject::concat(\
-						data->zs\
-						,(ScriptObjectObject *)stk_result_op1->value\
-						,(ScriptObjectObject *)stk_result_op2->value\
-				);\
-				vm_create_shared_script_object(vm,so_object);\
-				VM_PUSH_STK_SCRIPT_OBJECT(so_object);\
-		}else{\
-			if(vm_call_metamethod(\
-					vm\
-					,calling_function\
-					,instruction\
-					,BYTE_CODE_METAMETHOD_ADD\
-					,stk_result_op1\
-					,stk_result_op2\
-			)==false){\
-				goto lbl_exit_function;\
-			}\
-		}\
-	}\
+				VM_POP_STK_TWO;
+				VM_OPERATION_ADD;
 				continue;
 			case BYTE_CODE_SUB: // -
 				VM_POP_STK_TWO;
@@ -1927,6 +1831,7 @@ execute_function:
 						,true
 				);
 
+				// getter requires stack to save value and avoid destroy previuos value
 				stk_var=data->stk_vm_current;
 				data->stk_vm_current++;
 			}
