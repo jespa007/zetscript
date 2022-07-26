@@ -115,7 +115,7 @@ namespace zetscript{
 	// Dynaminc unpack parameter function ...
 	// template for last parameter ArgIdx == 1
 	template <size_t ArgIdx, typename F, typename... Args>
-	auto getArgTypes( zs_vector & params)
+	auto getArgTypes( zs_vector<zs_int> & params)
 		-> typename std::enable_if<ArgIdx == 1>::type
 	{
 		const char *parameter_type=typeid(typename F::template Argument<ArgIdx-1>::type).name();
@@ -124,7 +124,7 @@ namespace zetscript{
 
 	// template when parameters ArgIdx > 1
 	template <size_t ArgIdx, typename F, typename... Args>
-	auto getArgTypes(zs_vector & params)
+	auto getArgTypes(zs_vector<zs_int> & params)
 		-> typename std::enable_if<(ArgIdx > 1)>::type
 	{
 
@@ -136,7 +136,7 @@ namespace zetscript{
 
 	// trivial case when parameters (ArgIdx == 0).
 	template <size_t ArgIdx, typename F>
-	auto getArgTypes(zs_vector & params)
+	auto getArgTypes(zs_vector<zs_int> & params)
 	-> typename std::enable_if<(ArgIdx == 0)>::type
 	{
 		ZS_UNUSUED_PARAM(params);
@@ -144,7 +144,7 @@ namespace zetscript{
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(const char ** return_type, zs_vector & type_params, IndexSequence<Is...>)
+	auto getParamsFunction(const char ** return_type, zs_vector<zs_int> & type_params, IndexSequence<Is...>)
 	-> typename std::enable_if<(_F::arity > 0)>::type
 	{
 		*return_type = typeid(typename _F::return_type).name();
@@ -152,7 +152,7 @@ namespace zetscript{
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(const char ** return_type, zs_vector & type_params, IndexSequence<Is...>)
+	auto getParamsFunction(const char ** return_type, zs_vector<zs_int> & type_params, IndexSequence<Is...>)
 	-> typename std::enable_if<(_F::arity == 0)>::type
 	{
 		*return_type = typeid(typename _F::return_type).name();
@@ -171,7 +171,7 @@ namespace zetscript{
 	){
 		int idx_script_type_return=-1;
 		const char * return_type;
-		zs_vector args;
+		zs_vector<zs_int> args;
 		zs_string error="";
 		zs_string name_script_function=_script_type==NULL?_function_name:_script_type->str_script_type+"::"+_function_name;
 		// 1. check all parameters ok.

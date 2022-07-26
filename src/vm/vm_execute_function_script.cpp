@@ -40,7 +40,7 @@ namespace zetscript{
 		const char *str_symbol=NULL;
 		//------------------------------------------------
 		// STORE
-		zs_vector 		*		store_lst_setter_functions=NULL;
+		zs_vector<StackElement *> 		*		store_lst_setter_functions=NULL;
 		int 					n_element_left_to_store=0;
 		MetamethodMembers *		ptr_metamethod_members_aux=NULL;
 		void			*		ptr_ptr_void_ref=NULL;
@@ -260,7 +260,7 @@ namespace zetscript{
 				if(instruction->value_op2 == ZS_IDX_UNDEFINED){
 					VM_PUSH_STK_UNDEFINED;
 				}else{
-					data->stk_vm_current->value= so_aux->getScriptType()->scope_script_type->symbol_functions->items[instruction->value_op2];
+					data->stk_vm_current->value=(zs_int) so_aux->getScriptType()->scope_script_type->symbol_functions->items[instruction->value_op2];
 					data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 					data->stk_vm_current++;
 				}

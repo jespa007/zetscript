@@ -37,10 +37,10 @@ namespace zetscript{
 
 		Scope 					*scope_parent, *scope_base;
 
-		zs_vector				*scopes;  // local scopes from starting block { }
-		zs_vector				*symbol_variables; // variable symbols from starting block { }
-		zs_vector				*symbol_functions; // function symbols from starting block { }
-		zs_vector				*symbol_types; // function symbols from starting block { }
+		zs_vector<Scope *>		*scopes;  // local scopes from starting block { }
+		zs_vector<Symbol *>		*symbol_variables; // variable symbols from starting block { }
+		zs_vector<Symbol *>		*symbol_functions; // function symbols from starting block { }
+		zs_vector<Symbol *>		*symbol_types; // function symbols from starting block { }
 
 		//--------------------------------------------------------------------
 		// Functions

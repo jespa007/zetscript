@@ -9,11 +9,11 @@ namespace zetscript{
 	ScriptFunctionFactory::ScriptFunctionFactory(ZetScript *_zs){
 		zs = _zs;
 		scope_factory = _zs->getScopeFactory();
-		script_functions = new zs_vector();
+		script_functions = new zs_vector<ScriptFunction *>();
 		idx_clear_checkpoint = 1; // by default MAIN function
 	}
 
-	zs_vector 	*ScriptFunctionFactory::getScriptFunctions(){
+	zs_vector<ScriptFunction *> 	*ScriptFunctionFactory::getScriptFunctions(){
 		return script_functions;
 	}
 
@@ -80,7 +80,7 @@ namespace zetscript{
 		);
 
 		symbol->ref_ptr = (zs_int)script_function;		  // ptr function
-		script_functions->push_back((zs_int)script_function);
+		script_functions->push_back(script_function);
 		return symbol;
 	}
 
@@ -89,7 +89,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("script function idx node out of bound");
 		}
 
-		script_functions->items[idx]=(zs_int)sf;
+		script_functions->items[idx]=sf;
 	}
 
 	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){

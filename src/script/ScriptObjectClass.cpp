@@ -52,7 +52,7 @@ namespace zetscript{
 
 		idx_script_type=_idx_script_type;
 		ScriptType *script_type=getScriptType();
-		zs_vector *member_vars=script_type->scope_script_type->symbol_variables;
+		zs_vector<Symbol *> *member_vars=script_type->scope_script_type->symbol_variables;
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
 		for ( int i = 0; i < member_vars->count; i++){

@@ -187,13 +187,13 @@ namespace zetscript{
 		 }
 
 		token_node_symbol->value = default_str_value;
-		token_node_symbol->eval_instructions.push_back((zs_int)(
+		token_node_symbol->eval_instructions.push_back(
 			new EvalInstruction(
 				byte_code
 				, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 				,value
 			)
-		));
+		);
 
 		return aux;
 		// POST: token as literal or identifier

@@ -104,7 +104,7 @@ namespace zetscript{
 				,is_scope_function?SCOPE_PROPERTY_IS_SCOPE_FUNCTION:SCOPE_PROPERTY_IS_SCOPE_BLOCK
 		);
 
-		scope_parent->scopes->push_back((zs_int)new_scope);
+		scope_parent->scopes->push_back(new_scope);
 		if(is_scope_function){
 			new_scope->tmp_idx_instruction_push_scope=0;
 		}
@@ -120,15 +120,15 @@ namespace zetscript{
 			if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 				eval_data->current_function->eval_instructions.insert(
 						scope->tmp_idx_instruction_push_scope
-						,(zs_int)(
+						,
 								new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope)
-						)
+
 				);
 
 				// and finally insert pop scope
-				eval_data->current_function->eval_instructions.push_back((zs_int)(
+				eval_data->current_function->eval_instructions.push_back(
 						new EvalInstruction(BYTE_CODE_POP_SCOPE,0)
-				));
+				);
 			}
 		}
 		else{ // remove scope
@@ -331,9 +331,9 @@ namespace zetscript{
 	}
 
 	void eval_push_function(EvalData *eval_data,ScriptFunction *script_function){
-		eval_data->eval_functions.push_back((zs_int)(
+		eval_data->eval_functions.push_back(
 				eval_data->current_function=new EvalFunction(script_function)
-		));
+		);
 	}
 
 	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const zs_string & symbol_to_find){
@@ -380,7 +380,7 @@ namespace zetscript{
 		return true;
 	}
 
-	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable,zs_vector *order_local_vars){
+	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable,zs_vector<zs_int> *order_local_vars){
 		for(int i=0; i < current_scope->symbol_variables->count; i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->items[i];
 			lookup_table[s->idx_position]=n_variable++;
@@ -395,7 +395,7 @@ namespace zetscript{
 		}
 	}
 
-	short *eval_create_lookup_sorted_table_local_variables(EvalData *eval_data,zs_vector *order_local_vars){
+	short *eval_create_lookup_sorted_table_local_variables(EvalData *eval_data,zs_vector<zs_int> *order_local_vars){
 
 		ScriptFunction *sf = eval_data->current_function->script_function;
 
@@ -440,12 +440,12 @@ namespace zetscript{
 		}
 
 		// remove old ref symbols
-		for(int i=0; i < sf->instruction_source_info.count; i++){
-			InstructionSourceInfo *isi=(InstructionSourceInfo *)sf->instruction_source_info.items[i];
+		for(int i=0; i < sf->instruction_source_infos.count; i++){
+			InstructionSourceInfo *isi=(InstructionSourceInfo *)sf->instruction_source_infos.items[i];
 			delete isi;
 		}
 
-		sf->instruction_source_info.clear();
+		sf->instruction_source_infos.clear();
 
 		// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
 		size_t count =eval_data->current_function->eval_instructions.count;
@@ -453,7 +453,7 @@ namespace zetscript{
 		size_t total_size_bytes = (len) * sizeof(Instruction);
 		sf->instructions_len=len;
 		sf->instructions = (PtrInstruction)ZS_MALLOC(total_size_bytes);
-		zs_vector order_local_vars;
+		zs_vector<zs_int> order_local_vars;
 		Symbol *symbol_sf_foundf=NULL;
 		zs_string target_name="";
 
@@ -600,19 +600,19 @@ namespace zetscript{
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 			instruction_info.ptr_str_symbol_name=eval_instruction->instruction_source_info.ptr_str_symbol_name;
 
-			sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(instruction_info)));
+			sf->instruction_source_infos.push_back(new InstructionSourceInfo(instruction_info));
 		}
 
 		if(lookup_sorted_table_local_variables != NULL){
 
 			// update variables symbol...
-			zs_vector *local_vars_dst=new zs_vector();
+			zs_vector<Symbol *> *local_vars_dst=new zs_vector<Symbol *>();
 
 			for(int i=0; i < sf->local_variables->count; i++){
 				int idx_var=order_local_vars.items[i];
 				Symbol *s=(Symbol *)sf->local_variables->items[idx_var];
 				s->idx_position=lookup_sorted_table_local_variables[idx_var];
-				local_vars_dst->push_back((zs_int)s);
+				local_vars_dst->push_back(s);
 			}
 
 			delete sf->local_variables;

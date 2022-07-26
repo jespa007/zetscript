@@ -124,7 +124,7 @@ namespace zetscript{
 
 
 		 StackElement     	vm_stack[VM_STACK_MAX];
-		 zs_vector			lifetime_object;
+		 zs_vector<InfoLifetimeObject *>			lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		StackElement *stk_vm_current;
@@ -332,7 +332,7 @@ namespace zetscript{
 		zs_string aux_string;
 		int start_param=0;
 
-		zs_int *stk_elements_builtin_ptr= data->main_function_object->scope_script_function->symbol_functions->items;// vector of symbols
+		Symbol ** stk_elements_builtin_ptr= data->main_function_object->scope_script_function->symbol_functions->items;// vector of symbols
 		int stk_elements_builtin_len=  data->main_function_object->scope_script_function->symbol_functions->count;// vector of symbols
 
 		if(class_obj != NULL){

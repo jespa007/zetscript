@@ -174,7 +174,7 @@ namespace zetscript{
 			}
 		}
 
-		data->lifetime_object.push_back((zs_int)info);
+		data->lifetime_object.push_back(info);
 	}
 
 	int vm_find_lifetime_object(VirtualMachine *vm,ScriptObject *script_object){

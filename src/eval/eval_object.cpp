@@ -11,7 +11,7 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, zs_vector 	* eval_instructions
+			, zs_vector<EvalInstruction *> 	* eval_instructions
 			, const char *expected_ending_char=NULL // expecting ending char when expression finish (by default not check or 0)
 			, uint16_t properties = 0
 	);
@@ -22,10 +22,10 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, zs_vector 	* eval_instructions
+			, zs_vector<EvalInstruction *> 	* eval_instructions
 			, const char *expected_ending_char=NULL
 			, uint16_t properties=0 // uint16_t properties
-			, zs_vector *unique_call_instruction=NULL
+			, zs_vector<Instruction *> *unique_call_instruction=NULL
 	);
 
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ namespace zetscript{
 		ZS_UNUSUED_PARAM(_scope_info);
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 		EvalInstruction *eval_instruction;
-		zs_vector 	* eval_instructions=&token_node->eval_instructions;
+		zs_vector<EvalInstruction *> 	* eval_instructions=&token_node->eval_instructions;
 		char *aux_p = (char *)s;
 		unsigned short instruction_properties=0; // global by default ...
 		Symbol *symbol_object=NULL;
@@ -48,12 +48,12 @@ namespace zetscript{
 			}
 		}*/
 
-		eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(
+		eval_instructions->push_back(eval_instruction=new EvalInstruction(
 				byte_code
 				, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 				,ZS_IDX_UNDEFINED
 				,instruction_properties
-		)));
+		));
 
 		if((aux_p=eval_keyword_function(
 			eval_data
@@ -150,7 +150,7 @@ namespace zetscript{
 		return false;
 	}
 
-	char * eval_object_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector	*	eval_instructions){
+	char * eval_object_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector<EvalInstruction *>	*	eval_instructions){
 		// Inline object: two possibles uses {a:1,b:2}["a"] or {a:1, b:2}.a
 		char *aux_p = (char *)s;
 		zs_string symbol_value;
@@ -165,7 +165,7 @@ namespace zetscript{
 		}
 
 		// instance object ...
-		eval_instructions->push_back((zs_int)(new EvalInstruction(BYTE_CODE_NEW_OBJECT)));
+		eval_instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_OBJECT));
 
 		// this solve problem void structs...
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -204,12 +204,12 @@ namespace zetscript{
 			 }
 
 			// add instruction...
-			eval_instructions->push_back((zs_int)(
+			eval_instructions->push_back(
 					new EvalInstruction(
 					ByteCode::BYTE_CODE_LOAD_STRING
 					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,(zs_int)stk_key_object
-			)));
+			));
 
 			 IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -236,7 +236,7 @@ namespace zetscript{
 			 }
 
 			 // push attr (push a element pair)
-			 eval_instructions->push_back((zs_int)(new EvalInstruction(BYTE_CODE_PUSH_OBJECT_ITEM)));
+			 eval_instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_OBJECT_ITEM));
 
 			 v_elements++;
 		}
@@ -248,7 +248,7 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  zs_vector * eval_instructions){
+	char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  zs_vector<EvalInstruction *> * eval_instructions){
 		// Inline vector: [0,1,2,3][0]+23
 		char * aux_p=NULL;
 		IGNORE_BLANKS(aux_p,eval_data,s,line);
@@ -258,7 +258,7 @@ namespace zetscript{
 		}
 
 		// declare vector ...
-		eval_instructions->push_back((zs_int)(new EvalInstruction(BYTE_CODE_NEW_VECTOR)));
+		eval_instructions->push_back(new EvalInstruction(BYTE_CODE_NEW_VECTOR));
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 		unsigned v_elements=0;
@@ -291,7 +291,7 @@ namespace zetscript{
 			}
 
 			// vpush
-			eval_instructions->push_back((zs_int)(new EvalInstruction(BYTE_CODE_PUSH_VECTOR_ITEM)));
+			eval_instructions->push_back(new EvalInstruction(BYTE_CODE_PUSH_VECTOR_ITEM));
 
 			v_elements++;
 		}
@@ -303,7 +303,7 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector	*	eval_instructions){
+	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector<EvalInstruction *>	*	eval_instructions){
 		// Inline new : (new A(4+5)).toString()
 		char *aux_p = (char *)s;
 		zs_string symbol_name;
@@ -377,7 +377,7 @@ namespace zetscript{
 						return NULL;
 					}
 
-					eval_instructions->push_back((zs_int)(eval_instruction_new_object_by_value=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE)));
+					eval_instructions->push_back(eval_instruction_new_object_by_value=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE));
 					eval_instruction_new_object_by_value->instruction_source_info=InstructionSourceInfo(
 							 eval_data->current_parsing_file
 							 ,line
@@ -391,7 +391,7 @@ namespace zetscript{
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getTypeName());
 					}
 
-					eval_instructions->push_back((zs_int)(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE)));
+					eval_instructions->push_back(eval_instruction=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_TYPE));
 					eval_instruction->vm_instruction.value_op1=sc->idx_script_type;
 				}
 
@@ -405,11 +405,11 @@ namespace zetscript{
 				 }
 
 				 if(eval_instruction_new_object_by_value==NULL){
-					 eval_instructions->push_back((zs_int)(
+					 eval_instructions->push_back(
 						ei_load_function_constructor=new EvalInstruction(
 							 ByteCode::BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT
 						)
-					 ));
+					 );
 
 					 ei_load_function_constructor->instruction_source_info=InstructionSourceInfo(
 						 eval_data->current_parsing_file
@@ -452,7 +452,7 @@ namespace zetscript{
 				 }while(*aux_p != ')');
 
 				 // if constructor function found insert call function...
-				 eval_instructions->push_back((zs_int)(
+				 eval_instructions->push_back(
 							 eval_instruction=new EvalInstruction(
 							  BYTE_CODE_CONSTRUCTOR_CALL
 
@@ -461,7 +461,7 @@ namespace zetscript{
 									 ,n_args
 							)
 						 )
-				 	 )
+
 				 );
 
 				 if(eval_instruction_new_object_by_value==NULL){

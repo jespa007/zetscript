@@ -34,9 +34,9 @@ namespace zetscript{
 		str_script_type=_class_name;
 		scope_script_type=_class_scope;
 		str_script_type_ptr=_str_class_ptr_type;
-		allocated_member_properties=new zs_vector();
+		allocated_member_properties=new zs_vector<MemberProperty *>();
 
-		idx_base_types=new zs_vector;
+		idx_base_types=new zs_vector<zs_int>;
 
 		// factories
 		zs = _zs;
@@ -239,7 +239,7 @@ namespace zetscript{
 		symbol_member_property = scope_script_type->registerSymbolVariable(file,line,attrib_name);
 		symbol_member_property->ref_ptr=(zs_int)(new MemberProperty(this,attrib_name));
 		symbol_member_property->properties=SYMBOL_PROPERTY_MEMBER_PROPERTY;
-		allocated_member_properties->push_back(symbol_member_property->ref_ptr);
+		allocated_member_properties->push_back((MemberProperty *)symbol_member_property->ref_ptr);
 
 		return symbol_member_property;
 	}
@@ -659,7 +659,7 @@ namespace zetscript{
 	//---------------------------------------------------------
 	Symbol *    ScriptType::getSymbolVariableMember(const zs_string & symbol_name, bool include_inherited_symbols){
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_variables;
-		zs_vector *list=this->scope_script_type->symbol_variables;
+		zs_vector<Symbol *> *list=this->scope_script_type->symbol_variables;
 
 		for(
 				int i = (int)(list->count-1);
@@ -678,7 +678,7 @@ namespace zetscript{
 	Symbol *    ScriptType::getSymbolMemberFunction(const zs_string & symbol_name, char n_params, bool include_inherited_symbols){
 		bool only_symbol=n_params<0;
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_functions;
-		zs_vector *symbol_functions=this->scope_script_type->symbol_functions;
+		zs_vector<Symbol *> *symbol_functions=this->scope_script_type->symbol_functions;
 
 		for(
 				int i = (int)(symbol_functions->count-1);

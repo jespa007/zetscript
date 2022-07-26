@@ -103,7 +103,7 @@ namespace zetscript{
 		script_function_factory= this->zs->getScriptFunctionFactory();
 		main_function=NULL;
 		main_object=NULL;
-		script_types=new zs_vector;
+		script_types=new zs_vector<ScriptType *>;
 		main_object=NULL;
 		main_function=NULL;
 		idx_clear_checkpoint=0;
@@ -526,7 +526,7 @@ namespace zetscript{
 
 			//sc->str_script_type_ptr = TYPE_SCRIPT_VARIABLE;
 
-			script_types->push_back((zs_int)sc);
+			script_types->push_back(sc);
 
 			if(_base_class_name != ""){
 
@@ -552,7 +552,7 @@ namespace zetscript{
 
 
 				// 1. extend all symbols from base type
-				zs_vector *symbol_functions=base_type->scope_script_type->symbol_functions;
+				zs_vector<Symbol *> *symbol_functions=base_type->scope_script_type->symbol_functions;
 				for(int i=0; i < symbol_functions->count; i++){
 					Symbol *symbol_src=(Symbol *)symbol_functions->items[i];
 					Symbol *symbol_dst=scope->registerSymbolFunction(
@@ -572,7 +572,7 @@ namespace zetscript{
 				sc->idx_starting_this_member_functions=sc->scope_script_type->symbol_functions->count;
 
 				// 1. extend all symbols from base type
-				zs_vector *symbol_variables=base_type->scope_script_type->symbol_variables;
+				zs_vector<Symbol *> *symbol_variables=base_type->scope_script_type->symbol_variables;
 				for(int i=0; i < symbol_variables->count; i++){
 					Symbol *symbol_src=(Symbol *)symbol_variables->items[i];
 					Symbol *symbol_dst=scope->registerSymbolVariable(
@@ -607,7 +607,7 @@ namespace zetscript{
 							it_setters++;
 						}
 
-						sc->allocated_member_properties->push_back((zs_int)mp_dst);
+						sc->allocated_member_properties->push_back(mp_dst);
 						symbol_dst->ref_ptr=(zs_int)mp_dst;
 					}
 				}
@@ -637,7 +637,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	zs_vector * ScriptTypeFactory::getScriptTypes(){
+	zs_vector<ScriptType *> * ScriptTypeFactory::getScriptTypes(){
 		return script_types;
 	}
 

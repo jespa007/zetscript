@@ -149,7 +149,7 @@ namespace zetscript{
 		// allow dynamic constructor in function its parameters ...
 		sc->c_constructor = NULL;
 		sc->c_destructor = NULL;
-		script_types->push_back((zs_int)sc);
+		script_types->push_back(sc);
 
 
 		if((_constructor != NULL) && (_destructor != NULL)){ // it can instanced, not static
@@ -197,7 +197,7 @@ namespace zetscript{
 		}
 
 		// now only allows one inheritance!
-		ScriptType *main_class=(ScriptType *)script_types->get(idx_register_class);
+		ScriptType *main_class=script_types->get(idx_register_class);
 
 
 		for(int i=0; i < main_class->idx_base_types->count; i++){
@@ -245,9 +245,9 @@ namespace zetscript{
 		// DERIVATE STATE
 		//
 
-		ScriptType *base_class = (ScriptType *)script_types->get(idx_base_type);
-		zs_vector *base_vars=base_class->scope_script_type->symbol_variables;
-		zs_vector *base_functions=base_class->scope_script_type->symbol_functions;
+		ScriptType *base_class = script_types->get(idx_base_type);
+		zs_vector<Symbol *> *base_vars=base_class->scope_script_type->symbol_variables;
+		zs_vector<Symbol *> *base_functions=base_class->scope_script_type->symbol_functions;
 
 		// register all c vars symbols ...
 		for(int i = 0; i < base_functions->count; i++){
@@ -397,7 +397,7 @@ namespace zetscript{
 					if(mp_info.setters!=NULL){
 						for(int h=0; h < mp_info.setters->count; h++){
 
-							StackElement *stk_setter=(StackElement *)mp_info.setters->items[h];
+							StackElement *stk_setter=mp_info.setters->items[h];
 							Symbol *symbol_setter=(Symbol *)stk_setter->value;
 							ScriptFunction *sf_setter=(ScriptFunction *)symbol_setter->ref_ptr,
 											*dst_script_function=NULL;

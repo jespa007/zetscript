@@ -47,7 +47,7 @@ namespace zetscript{
 					char *buffer = (char *)ZS_MALLOC(n_bytes_readed);
 					readed_elements = fread(buffer, 1, (size_t)length, fp);
 
-					if(readed_elements != length) {
+					if((int)readed_elements != length) {
 
 						free(buffer);
 						THROW_RUNTIME_ERROR("number elements doesn't match with length file (%s)",filename.c_str());

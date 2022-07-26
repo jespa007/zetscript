@@ -118,37 +118,37 @@ namespace zetscript{
 		stk->properties=STK_PROPERTY_FUNCTION;
 		switch(_byte_code_metamethod){
 			case BYTE_CODE_METAMETHOD_SET:
-				setters.push_back((zs_int)stk);
+				setters.push_back(stk);
 				break;
 			case BYTE_CODE_METAMETHOD_ADD_SET:
-				add_setters.push_back((zs_int)stk);
+				add_setters.push_back(stk);
 				break;
 			case BYTE_CODE_METAMETHOD_SUB_SET:
-				sub_setters.push_back((zs_int)stk);
+				sub_setters.push_back(stk);
 				break;
 			case BYTE_CODE_METAMETHOD_MUL_SET:
-				mul_setters.push_back((zs_int)stk);
+				mul_setters.push_back(stk);
 				break;
 			case BYTE_CODE_METAMETHOD_DIV_SET:
-				div_setters.push_back((zs_int)stk);
+				div_setters.push_back(stk);
 				break;
 			case BYTE_CODE_METAMETHOD_MOD_SET:
-				mod_setters.push_back((zs_int)stk);
+				mod_setters.push_back(stk);
 				break;
 			case BYTE_CODE_METAMETHOD_AND_SET:
-				and_setters.push_back((zs_int)stk);
+				and_setters.push_back(stk);
 				break;
 			case BYTE_CODE_METAMETHOD_OR_SET:
-				or_setters.push_back((zs_int)stk);
+				or_setters.push_back(stk);
 				break;
 			case BYTE_CODE_METAMETHOD_XOR_SET:
-				xor_setters.push_back((zs_int)stk);
+				xor_setters.push_back(stk);
 				break;
 			case BYTE_CODE_METAMETHOD_SHL_SET:
-				shl_setters.push_back((zs_int)stk);
+				shl_setters.push_back(stk);
 				break;
 			case BYTE_CODE_METAMETHOD_SHR_SET:
-				shr_setters.push_back((zs_int)stk);
+				shr_setters.push_back(stk);
 				break;
 			default:
 				THROW_EXCEPTION(zs_strutils::format("Unexpected to register '%s' setter"
@@ -222,7 +222,7 @@ namespace zetscript{
 
 
 
-		zs_vector *ptr_vector[]={
+		zs_vector<StackElement *> *ptr_vector[]={
 			&setters
 			,&add_setters
 			,&sub_setters
@@ -237,7 +237,7 @@ namespace zetscript{
 			,NULL
 		};
 
-		zs_vector **it=ptr_vector;
+		zs_vector<StackElement *> **it=ptr_vector;
 		while(*it!=NULL){
 
 			for(int i=0;i < (*it)->count; i++){

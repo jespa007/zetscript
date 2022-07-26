@@ -47,7 +47,7 @@ namespace zetscript{
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
-		ref_script_objects=new zs_vector();
+		ref_script_objects=new zs_vector<ScriptObject **>();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
@@ -57,7 +57,7 @@ namespace zetscript{
 		// init builtin
 		if(idx_script_type >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_script_type<IDX_TYPE_SCRIPT_OBJECT_CLASS){
 			ScriptType *script_type=getScriptType();
-			zs_vector *symbol_vars=script_type->scope_script_type->symbol_variables;
+			zs_vector<Symbol *> *symbol_vars=script_type->scope_script_type->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
 			for ( int i = 0; i < symbol_vars->count; i++){
@@ -71,7 +71,7 @@ namespace zetscript{
 
 	StackElement *ScriptObject::newBuiltinSlot(){
 		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
-		stk_builtin_elements.push_back((zs_int)stk);
+		stk_builtin_elements.push_back(stk);
 		return stk;
 	}
 
@@ -118,7 +118,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	zs_vector *ScriptObject::getSetterList(ByteCodeMetamethod _byte_code_metamethod){
+	zs_vector<StackElement *> *ScriptObject::getSetterList(ByteCodeMetamethod _byte_code_metamethod){
 		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
 		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
@@ -149,7 +149,7 @@ namespace zetscript{
 
 	Symbol 	* ScriptObject::getScriptFunctionSymbol(const zs_string & _function_member_name){
 		ScriptType *script_type=getScriptType();
-		zs_vector *s=script_type->scope_script_type->symbol_functions;
+		zs_vector<Symbol *> *s=script_type->scope_script_type->symbol_functions;
 		for(int i=s->count-1;i>=0;i--){
 			Symbol *symbol=(Symbol *)s->items[i];
 			if(symbol->name == _function_member_name){
@@ -167,7 +167,7 @@ namespace zetscript{
 		return this;
 	}
 
-	zs_vector * ScriptObject::getStkBuiltinListElements(){
+	zs_vector<StackElement *> * ScriptObject::getStkBuiltinListElements(){
 		return &stk_builtin_elements;
 	}
 
@@ -195,12 +195,12 @@ namespace zetscript{
 	}
 
 	void ScriptObject::refObject(ScriptObject **_so){
-		ref_script_objects->push_back((zs_int)_so);
+		ref_script_objects->push_back(_so);
 	}
 
 	int ScriptObject::idxRefObject(ScriptObject  **_so){
 		for(int i=0; i < ref_script_objects->count;i++){
-			if(*(ref_script_objects->items+i)==(zs_int)_so){
+			if(*(ref_script_objects->items+i)==_so){
 				return i;
 			}
 		}

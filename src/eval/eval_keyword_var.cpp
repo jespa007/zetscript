@@ -18,7 +18,7 @@ namespace zetscript{
 		// check for keyword ...
 		char *aux_p = (char *)s;
 		Keyword key_w = eval_is_keyword(s);
-		zs_vector ei_member_var_init;
+		zs_vector<EvalInstruction *> ei_member_var_init;
 
 		if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
 			bool  is_constant = false,
@@ -181,25 +181,25 @@ namespace zetscript{
 							eval_instruction->vm_instruction.properties&=~INSTRUCTION_PROPERTY_RESET_STACK;
 
 							// add instruction push
-							eval_data->current_function->eval_instructions.push_back((zs_int)(
+							eval_data->current_function->eval_instructions.push_back(
 									eval_instruction=new EvalInstruction(
 											BYTE_CODE_PUSH_STK_GLOBAL
 									)
-							));
+							);
 
 							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
 							eval_instruction->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, pre_variable_name+variable_name);
 							eval_instruction->symbol.name=pre_variable_name+variable_name;
 							eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
 
-							eval_data->current_function->eval_instructions.push_back((zs_int)(
+							eval_data->current_function->eval_instructions.push_back(
 									new EvalInstruction(
 										BYTE_CODE_STORE_CONST
 										,1
 										,ZS_IDX_UNDEFINED
 										,INSTRUCTION_PROPERTY_RESET_STACK
 									)
-							));
+							);
 						}
 
 					}

@@ -10,7 +10,7 @@ namespace zetscript{
 	//-----------
 	ScopeFactory::ScopeFactory(ZetScript *zs){
 		this->zs=zs;
-		this->scopes = new zs_vector;
+		this->scopes = new zs_vector<Scope *>;
 		main_scope=NULL;
 		idx_clear_checkpoint=0;  // start from MAIN scope
 		//idx_clear_global_checkpoint_global_symbol_registered_variables=0;
@@ -25,11 +25,11 @@ namespace zetscript{
 
 	Scope *	 ScopeFactory::newScope(int idx_sf,Scope * scope_parent,uint16_t _properties){
 		Scope * scope_node = new Scope(this->zs,idx_sf,scope_parent,_properties);
-		scopes->push_back((zs_int)scope_node);
+		scopes->push_back(scope_node);
 		return scope_node;
 	}
 
-	zs_vector 	*		ScopeFactory::getScopes(){
+	zs_vector<Scope *> 	*		ScopeFactory::getScopes(){
 		return scopes;
 	}
 
@@ -45,7 +45,7 @@ namespace zetscript{
 				// search parent element
 				if(scope->scope_parent != NULL){
 					// remove child from parent to
-					zs_vector *childs=scope->scope_parent->scopes;
+					zs_vector<Scope *> *childs=scope->scope_parent->scopes;
 					for(int i=0; i < childs->count; i++){
 						Scope *child=(Scope *)childs->items[i];
 						if(child==scope){

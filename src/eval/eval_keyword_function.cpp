@@ -17,7 +17,7 @@ namespace zetscript{
 	}
 
 
-	void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, zs_vector *eval_instructions, Symbol *symbol_member_var){
+	void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, zs_vector<EvalInstruction *> *eval_instructions, Symbol *symbol_member_var){
 
 		// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
 		PtrInstruction new_instructions=NULL;
@@ -61,7 +61,7 @@ namespace zetscript{
 			instruction_info.ptr_str_symbol_name=eval_instruction->instruction_source_info.ptr_str_symbol_name;
 
 			// add instruction source information...
-			sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(instruction_info)));
+			sf->instruction_source_infos.push_back(new InstructionSourceInfo(instruction_info));
 
 			start_ptr++;
 
@@ -76,15 +76,15 @@ namespace zetscript{
 			, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 			,symbol_member_var->idx_position
 		);
-		sf->instruction_source_info.push_back((zs_int)(new InstructionSourceInfo(
+		sf->instruction_source_infos.push_back(new InstructionSourceInfo(
 			eval_data->current_parsing_file
 			,symbol_member_var->line
 			,get_mapped_name(eval_data,symbol_member_var->name)
-		)));
+		));
 
 
 		*start_ptr++=Instruction(BYTE_CODE_STORE,1);
-		sf->instruction_source_info.push_back(0);
+		sf->instruction_source_infos.push_back(NULL);
 
 		if(sf->instructions != NULL){
 			free(sf->instructions); // deallocate last allocated instructions
@@ -96,7 +96,7 @@ namespace zetscript{
 		eval_instructions->clear();
 	}
 
-	Symbol *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector *eval_instructions){
+	Symbol *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector<EvalInstruction *> *eval_instructions){
 
 		zs_string name_script_function=eval_anonymous_function_name("","defval");
 		Instruction *start_ptr=NULL;
@@ -135,8 +135,8 @@ namespace zetscript{
 			// Save str_symbol that was created on eval process, and is destroyed when eval finish.
 			instruction_info.ptr_str_symbol_name=instruction->instruction_source_info.ptr_str_symbol_name;
 
-			sf->instruction_source_info.push_back((zs_int)(
-				new InstructionSourceInfo(instruction_info))
+			sf->instruction_source_infos.push_back(
+				new InstructionSourceInfo(instruction_info)
 			);
 
 			start_ptr++;
@@ -148,7 +148,7 @@ namespace zetscript{
 		start_ptr->byte_code=BYTE_CODE_RET;
 		start_ptr->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 		start_ptr->value_op2=ZS_IDX_UNDEFINED;
-		sf->instruction_source_info.push_back(0);
+		sf->instruction_source_infos.push_back(NULL);
 
 		eval_instructions->clear();
 
@@ -218,7 +218,7 @@ namespace zetscript{
 			//bool var_args=false;
 			char *end_var = NULL;
 			zs_string param_value;
-			zs_vector script_function_params;
+			zs_vector<ScriptFunctionParam *> script_function_params;
 			zs_string conditional_str;
 			Symbol *symbol_sf=NULL;
 			zs_string name_script_function="";
@@ -405,7 +405,7 @@ namespace zetscript{
 						);
 					}
 
-					zs_vector ei_instructions_default;
+					zs_vector<EvalInstruction *> ei_instructions_default;
 					bool create_anonymous_function_return_expression=false;
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -472,9 +472,9 @@ namespace zetscript{
 
 				}
 
-				script_function_params.push_back((zs_int)(
+				script_function_params.push_back(
 						new ScriptFunctionParam(param_info)
-				));
+				);
 			}
 
 			// register function ...
@@ -648,9 +648,9 @@ namespace zetscript{
 
 		}while(!end);
 
-		eval_data->current_function->eval_instructions.push_back((zs_int)(
+		eval_data->current_function->eval_instructions.push_back(
 			new EvalInstruction(BYTE_CODE_RET)
-		));
+		);
 
 		return aux_p;
 	}

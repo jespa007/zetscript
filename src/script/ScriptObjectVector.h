@@ -20,7 +20,7 @@ namespace zetscript{
 		static ScriptObjectVector * newShareableScriptObjectVector(ZetScript *zs);
 		static ScriptObjectVector * newScriptObjectVectorAdd(ZetScript *zs,ScriptObjectVector *v1,ScriptObjectVector *v2);
 
-		static zs_vector 	toVector(ScriptObjectVector *sv);
+
 
 		//
 		// Helpers
@@ -34,7 +34,7 @@ namespace zetscript{
 		void				eraseAllUserElements();
 
 		virtual size_t length();
-		virtual zs_vector * getStkUserListElements();
+		virtual zs_vector<StackElement *> * getStkUserListElements();
 
 		bool exists(StackElement  * stk);
 
@@ -44,7 +44,7 @@ namespace zetscript{
 		virtual zs_string toString();
 		virtual ~ScriptObjectVector();
 	protected:
-		zs_vector 			stk_user_elements;
+		zs_vector<StackElement *> 			stk_user_elements;
 
 
 

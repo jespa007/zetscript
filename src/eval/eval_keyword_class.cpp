@@ -298,8 +298,8 @@ namespace zetscript{
 				eval_instruction->vm_instruction.byte_code=byte_code_load_var_type_to_push_stk(byte_code);
 			}
 
-			eval_data->current_function->eval_instructions.push_back((zs_int)(new EvalInstruction(BYTE_CODE_DELETE)));
-			eval_data->current_function->eval_instructions.push_back((zs_int)(new EvalInstruction(BYTE_CODE_RESET_STACK)));
+			eval_data->current_function->eval_instructions.push_back(new EvalInstruction(BYTE_CODE_DELETE));
+			eval_data->current_function->eval_instructions.push_back(new EvalInstruction(BYTE_CODE_RESET_STACK));
 
 			return aux_p;
 		}

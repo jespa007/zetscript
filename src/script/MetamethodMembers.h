@@ -28,7 +28,7 @@ namespace zetscript{
 
 	struct MetamethodMemberSetterInfo {
 		ByteCodeMetamethod byte_code_metamethod;
-		zs_vector *setters;
+		zs_vector<StackElement *> *setters;
 		const char *str_byte_code_metamethod;
 
 		MetamethodMemberSetterInfo() {
@@ -41,17 +41,17 @@ namespace zetscript{
 
 	class MetamethodMembers{
 	public:
-		zs_vector setters; // =
-		zs_vector add_setters; // +=
-		zs_vector sub_setters; // -=
-		zs_vector mul_setters; // *=
-		zs_vector div_setters; // /=
-		zs_vector mod_setters; // %=
-		zs_vector and_setters; // &=
-		zs_vector or_setters; // |=
-		zs_vector xor_setters; // ^=
-		zs_vector shl_setters; // <<=
-		zs_vector shr_setters; // >>=
+		zs_vector<StackElement *> setters; // =
+		zs_vector<StackElement *> add_setters; // +=
+		zs_vector<StackElement *> sub_setters; // -=
+		zs_vector<StackElement *> mul_setters; // *=
+		zs_vector<StackElement *> div_setters; // /=
+		zs_vector<StackElement *> mod_setters; // %=
+		zs_vector<StackElement *> and_setters; // &=
+		zs_vector<StackElement *> or_setters; // |=
+		zs_vector<StackElement *> xor_setters; // ^=
+		zs_vector<StackElement *> shl_setters; // <<=
+		zs_vector<StackElement *> shr_setters; // >>=
 		Symbol *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg; // getter
 
 		const static ByteCodeMetamethod 	byte_code_metamethod_member_setter_list[];
@@ -66,7 +66,7 @@ namespace zetscript{
 		MetamethodMemberSetterInfo 	getSetterInfo(ByteCodeMetamethod _byte_code);
 		MetamethodMemberSetterInfo 	getSetterInfo(const char *_symbol_name);
 		void						addSetter(ByteCodeMetamethod _byte_code_metamethod,Symbol *f);
-		zs_vector * 				getVectorSetter(ByteCodeMetamethod _byte_code_metamethod);
+		zs_vector<StackElement *> * 				getVectorSetter(ByteCodeMetamethod _byte_code_metamethod);
 
 
 

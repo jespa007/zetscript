@@ -11,7 +11,6 @@
 #include 	"zs_map_int.cpp"
 #include 	"zs_map_iterator.cpp"
 #include 	"zs_map.cpp"
-#include 	"zs_vector.cpp"
 #include 	"zs_string.cpp"
 #include 	"zs_dir.cpp"
 #include 	"zs_timespan.cpp"

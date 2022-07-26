@@ -12,7 +12,7 @@
 	VM_ScopeBlock *scope_block=--VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
 	Scope *scope=scope_block->scope;\
 	StackElement         * stk_local_vars	=VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
-	zs_vector *scope_symbols=scope->symbol_variables;\
+	zs_vector<Symbol *> *scope_symbols=scope->symbol_variables;\
 	int count=scope_symbols->count;\
 	if(count > 0){\
 		StackElement *stk_local_var=stk_local_vars+((Symbol *)scope_symbols->items[0])->idx_position;\

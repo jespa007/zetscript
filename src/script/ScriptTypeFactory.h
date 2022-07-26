@@ -78,7 +78,7 @@ namespace zetscript{
 		bool							scriptTypeInheritsFrom(short _idx_class_type,short _idx_class_type_inherits_from);
 		bool							isScriptTypeInstanceable(short _idx_script_type);
 
-		zs_vector	* 					getScriptTypes();
+		zs_vector<ScriptType *>	*		getScriptTypes();
 
 		bool 							isScriptTypeRegistered(const zs_string & _type_name);
 
@@ -355,13 +355,8 @@ namespace zetscript{
 			Type  id;
 		}PrimitiveType;
 
-		typedef struct{
-			PrimitiveType 				*return_type;
-			zs_vector					params;
-		}RegisterFunction;
-
 		zs_map 	 						*stk_constants,*stk_objects;
-		zs_vector 						*   script_types;
+		zs_vector<ScriptType *>			*   script_types;
 		ZetScript 						*	zs;
 		VirtualMachine					*	vm;
 		ScopeFactory 					*	scope_factory;

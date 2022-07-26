@@ -55,7 +55,7 @@ namespace zetscript{
 		this->idx_script_type=IDX_TYPE_SCRIPT_OBJECT_VECTOR;
 	}
 
-	zs_vector * ScriptObjectVector::getStkUserListElements(){ // return list of stack elements
+	zs_vector<StackElement *> * ScriptObjectVector::getStkUserListElements(){ // return list of stack elements
 		return &stk_user_elements;
 	}
 
@@ -103,7 +103,7 @@ namespace zetscript{
 	StackElement *ScriptObjectVector::pushNewUserSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk=k_stk_undefined;
-		stk_user_elements.push_back((zs_int)stk);
+		stk_user_elements.push_back(stk);
 		return stk;
 	}
 

@@ -19,10 +19,10 @@ namespace zetscript{
 		zs=_zs;
 		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
 		scope_factory=_zs->getScopeFactory();
-		scopes=new zs_vector;
-		symbol_variables=new zs_vector;
-		symbol_functions=new zs_vector;
-		symbol_types=new zs_vector;
+		scopes=new zs_vector<Scope *>;
+		symbol_variables=new zs_vector<Symbol *>;
+		symbol_functions=new zs_vector<Symbol *>;
+		symbol_types=new zs_vector<Symbol *>;
 
 		if(_scope_parent == NULL){ // first node (it should be a type)...
 			scope_base = this;
@@ -124,7 +124,7 @@ namespace zetscript{
 		if(scope_parent != NULL){
 			for(int i=0;i < scopes->count; i++){
 				Scope *current_scope=(Scope *)scopes->items[i];
-				scope_parent->scopes->push_back((zs_int)current_scope);
+				scope_parent->scopes->push_back(current_scope);
 				current_scope->scope_parent = scope_parent;
 			}
 
@@ -171,7 +171,7 @@ namespace zetscript{
 		symbol->scope		=  this;
 		symbol->properties |=SYMBOL_PROPERTY_TYPE;
 
-		symbol_types->push_back((zs_int)symbol);
+		symbol_types->push_back(symbol);
 
 		return symbol;
 
@@ -188,7 +188,7 @@ namespace zetscript{
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
 
-		symbol_variables->push_back((zs_int)symbol);
+		symbol_variables->push_back(symbol);
 
 		return symbol;
 	}
@@ -207,7 +207,7 @@ namespace zetscript{
 		symbol->n_params	=_n_params;
 		symbol->properties |=SYMBOL_PROPERTY_FUNCTION;
 
-		symbol_functions->push_back((zs_int)symbol);
+		symbol_functions->push_back(symbol);
 
 		return symbol;
 	}

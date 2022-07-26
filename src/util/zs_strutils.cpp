@@ -169,38 +169,38 @@ namespace zetscript{
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
-		zs_vector split(const zs_string &s_in, char delim) {
-		    zs_vector elems;
+		zs_vector<zs_string> split(const zs_string &_s_in, char _delim) {
+		    zs_vector<zs_string> elems;
 		    //zs_string s = s_in;
-		    char *last_pos=(char *)s_in.c_str();
-		    char *pos=(char *)s_in.c_str();
+		    char *last_pos=(char *)_s_in.c_str();
+		    char *pos=(char *)_s_in.c_str();
 		    zs_string token;
-		    while((pos=strchr(pos,delim))!=NULL) {
-		        token = s_in.substr(last_pos-s_in.c_str(), pos-last_pos);
-		        elems.push_back((zs_int)(new zs_string(token)));
+		    while((pos=strchr(pos,_delim))!=NULL) {
+		        token = _s_in.substr(last_pos-_s_in.c_str(), pos-last_pos);
+		        elems.push_back(zs_string(token));
 		        pos++;
 		        last_pos=pos;
 		    }
 
 		    // push last token
-		    token = s_in.substr((last_pos-s_in.c_str()), s_in.length()-(last_pos-s_in.c_str()));
-	    	elems.push_back((zs_int)(new zs_string(token)));
+		    token = _s_in.substr((last_pos-_s_in.c_str()), _s_in.length()-(last_pos-_s_in.c_str()));
+	    	elems.push_back(zs_string(token));
 
 		    return elems;
 		}
 
-		zs_vector split(const zs_string &s_in, const zs_string & delim) {
-		    zs_vector elems;
-		    zs_string s = s_in;
+		zs_vector<zs_string> split(const zs_string &_s_in, const zs_string & _delim) {
+		    zs_vector<zs_string> elems;
+		    zs_string s = _s_in;
 		    int pos = 0;
 		    zs_string token;
-		    while ((pos = s.find(delim)) != zs_string::npos) {
+		    while ((pos = s.find(_delim)) != zs_string::npos) {
 		        token = s.substr(0, pos);
-		        elems.push_back((zs_int)(new zs_string(token)));
-		        s.erase(0, pos + delim.length());
+		        elems.push_back(zs_string(token));
+		        s.erase(0, pos + _delim.length());
 		    }
 
-		    elems.push_back((zs_int)(new zs_string(s)));
+		    elems.push_back(zs_string(s));
 		    return elems;
 		}
 
@@ -402,10 +402,10 @@ namespace zetscript{
 			return false;
 		}
 
-		bool contains(const zs_vector & input, const zs_string & str_containts,StringComparer sc){
+		bool contains(const zs_vector<zs_string> & input, const zs_string & str_containts,StringComparer sc){
 
 			for(int i = 0; i < input.count; i++){
-				if(contains(*(zs_string *)input.items[i],str_containts,sc)){
+				if(contains(input.items[i],str_containts,sc)){
 					return true;
 				}
 			}

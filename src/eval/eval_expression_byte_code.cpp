@@ -17,14 +17,14 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, zs_vector 	* eval_instructions
+			, zs_vector<EvalInstruction *> 	* eval_instructions
 			, const char *expected_ending_char
 			, uint16_t properties // uint16_t properties
-			, zs_vector *unique_call_instruction
+			, zs_vector<Instruction *> *unique_call_instruction
 	);
 
 
-	bool eval_two_last_instruction_are_constants(zs_vector *_eval_instructions){
+	bool eval_two_last_instruction_are_constants(zs_vector<EvalInstruction *> *_eval_instructions){
 
 		size_t size_instructions=_eval_instructions->count;
 
@@ -44,10 +44,10 @@ namespace zetscript{
 	void eval_expression_tokens_to_byte_code(
 			  EvalData *eval_data
 			, Scope *scope
-			, zs_vector 	* 	token_nodes
-			, zs_vector 	*	eval_instructions
-			, zs_vector     *   logical_and_jnt
-			, zs_vector     *  logical_or_jt
+			, zs_vector<TokenNode *> 	* 	token_nodes
+			, zs_vector<EvalInstruction *> 	*	eval_instructions
+			, zs_vector<EvalInstruction *>     *   logical_and_jnt
+			, zs_vector<EvalInstruction *>     *  logical_or_jt
 			, int idx_start_eval_instructions
 			, int idx_start
 			, int idx_end
@@ -67,7 +67,7 @@ namespace zetscript{
 			TokenNode *end_node=(TokenNode *)token_nodes->items[idx_start];
 			end_node->are_instructions_moved=true; // mark as processed
 
-			eval_instructions->concat(&end_node->eval_instructions);
+			eval_instructions->concat(end_node->eval_instructions);
 			return;
 		}
 
@@ -113,22 +113,21 @@ namespace zetscript{
 			custom_insert_instruction=true;
 			// insert JT/acording type of JNT, the jump for next or
 						eval_instructions->push_back(
-							(zs_int)(eval_instruction=new EvalInstruction(
+							eval_instruction=new EvalInstruction(
 								BYTE_CODE_JNT
 								,ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR
 							)
-						));
-						logical_and_jnt->push_back((zs_int)eval_instruction);
+						);
+						logical_and_jnt->push_back(eval_instruction);
 		}else if((split_node->operator_type == OPERATOR_LOGIC_OR) && (two_last_instructions_are_constants==false)){
 			custom_insert_instruction=true;
 			eval_instructions->push_back(
-
-				(zs_int)(eval_instruction=new EvalInstruction(
+				eval_instruction=new EvalInstruction(
 						BYTE_CODE_JT
 						,ZS_IDX_INSTRUCTION_JT_LOGIC_OK
 				)
-			));
-			logical_or_jt->push_back((zs_int)eval_instruction);
+			);
+			logical_or_jt->push_back(eval_instruction);
 		}
 
 		// perform right side op...
@@ -224,7 +223,7 @@ namespace zetscript{
 
 			// push to the end
 			eval_instructions->push_back(
-					(zs_int)eval_instruction
+					eval_instruction
 			);
 		}
 
@@ -241,9 +240,9 @@ namespace zetscript{
 		}
 	}
 
-	void eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_vector & zs_ei_assign_loader_instructions_post_expression){
+	void eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_vector<zs_vector<EvalInstruction *> *> & zs_ei_assign_loader_instructions_post_expression){
 		for(int i=0; i<zs_ei_assign_loader_instructions_post_expression.count; i++ ){
-			delete (zs_vector *)zs_ei_assign_loader_instructions_post_expression.items[i];
+			delete zs_ei_assign_loader_instructions_post_expression.items[i];
 		}
 		zs_ei_assign_loader_instructions_post_expression.clear();
 	}
@@ -253,20 +252,20 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, zs_vector *dst_instructions
-			, zs_vector * token_nodes
+			, zs_vector<EvalInstruction *> *dst_instructions
+			, zs_vector<TokenNode *> * token_nodes
 			, uint16_t properties
-			, zs_vector *unique_call_instructions
+			, zs_vector<Instruction *> *unique_call_instructions
 		){
 
 		char *aux_p=(char *)s;
-		zs_vector assing_token_informations;
+		zs_vector<TokenNode *> assing_token_informations;
 		int idx_start=0;
 		int idx_end=(int)(token_nodes->count-1);
-		zs_vector zs_ei_assign_loader_instructions_post_expression; // zs_vector<zs_vector<EvalInstruction *>>
-		zs_vector ei_assign_store_instruction_post_expression;
+		zs_vector<zs_vector<EvalInstruction *>> zs_ei_assign_loader_instructions_post_expression; // zs_vector<zs_vector<EvalInstruction *>>
+		zs_vector<EvalInstruction *> ei_assign_store_instruction_post_expression;
 		int idx_start_instructions=0;
-		zs_vector logical_and_jnt,logical_or_jt;
+		zs_vector<EvalInstruction *> logical_and_jnt,logical_or_jt;
 		//bool create_jmp_false=false;
 
 		// search for assign
@@ -286,7 +285,7 @@ namespace zetscript{
 			TokenNode * token_node_symbol = (TokenNode *)token_nodes->items[i];
 			TokenNode * token_node_operator = (TokenNode *)token_nodes->items[i+1];
 			Operator operator_type=token_node_operator->operator_type;
-			zs_vector *ei_assign_loader_instructions_post_expression=NULL;
+			zs_vector<EvalInstruction *> *ei_assign_loader_instructions_post_expression=NULL;
 
 			// Check for operators found. Each operator found it has to be (=,+=,-=,... etc)
 			if(!(
@@ -314,12 +313,12 @@ namespace zetscript{
 						,"Calling a function in left assignment is not allowed");
 			}
 
-			zs_ei_assign_loader_instructions_post_expression.push_back((zs_int)(ei_assign_loader_instructions_post_expression=new zs_vector()));
+			zs_ei_assign_loader_instructions_post_expression.push_back(zs_vector<EvalInstruction *>());//ei_assign_loader_instructions_post_expression=new zs_vector<EvalInstruction *>());
 
 			// assign operators: add instructions related about its accessors...
 			for(int j=0;j<token_node_symbol->eval_instructions.count;j++){
 				ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
-				ei_assign_loader_instructions_post_expression->push_back((zs_int)(token_node_symbol->eval_instructions.items[j]));
+				ei_assign_loader_instructions_post_expression->push_back(token_node_symbol->eval_instructions.items[j]);
 			}
 
 			// get last instruction...
@@ -342,9 +341,9 @@ namespace zetscript{
 			}
 
 			// ... add assign operations to the list to add later after eval all instructions
-			ei_assign_store_instruction_post_expression.push_back((zs_int)(eval_instruction=new EvalInstruction(
+			ei_assign_store_instruction_post_expression.push_back(eval_instruction=new EvalInstruction(
 					eval_operator_to_byte_code(operator_type),1
-			)));
+			));
 
 			eval_instruction->instruction_source_info= InstructionSourceInfo(
 					eval_data->current_parsing_file
@@ -385,11 +384,11 @@ namespace zetscript{
 
 			dst_instructions->push_back(
 
-				(zs_int)(new EvalInstruction(
+				new EvalInstruction(
 					BYTE_CODE_JMP
 					,(uint8_t)ZS_IDX_UNDEFINED
 					,2 // +2 jmp instructions by default
-				))
+				)
 			);
 
 
@@ -397,11 +396,11 @@ namespace zetscript{
 
 				idx_jmp_load_true_value=dst_instructions->count;
 				dst_instructions->push_back(
-					(zs_int)(new EvalInstruction(
+					new EvalInstruction(
 						BYTE_CODE_LOAD_BOOL
 						, (uint8_t)ZS_IDX_UNDEFINED
 						,1
-					))
+					)
 				);
 
 			}
@@ -413,22 +412,22 @@ namespace zetscript{
 
 					// to jmp true value space
 					dst_instructions->push_back(
-						(zs_int)(new EvalInstruction(
+						new EvalInstruction(
 							BYTE_CODE_JMP
 							, (uint8_t)ZS_IDX_UNDEFINED
 							,2
-						))
+						)
 					);
 				}
 
 				idx_jmp_load_false_value=dst_instructions->count;
 
 				dst_instructions->push_back(
-					(zs_int)(new EvalInstruction(
+					new EvalInstruction(
 						BYTE_CODE_LOAD_BOOL
 						, (uint8_t)ZS_IDX_UNDEFINED
 						,0
-					))
+					)
 				);
 			}
 
@@ -473,7 +472,7 @@ namespace zetscript{
 
 			// insert JNT
 			int jnt_instructions_start=dst_instructions->count;
-			dst_instructions->push_back((zs_int)(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT)));
+			dst_instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
 			ei_ternary_if_jnt->instruction_source_info.file=eval_data->current_parsing_file;
 			ei_ternary_if_jnt->instruction_source_info.line=line;
 			int jmp_instructions_start=0;
@@ -499,7 +498,7 @@ namespace zetscript{
 				last_instruction=&(((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction);
 				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->count==1){
 					//INSTRUCTION_SET_RETURN_COUNT(last_instruction,n_return_values);
-					unique_call_instructions->push_back((zs_int)last_instruction);
+					unique_call_instructions->push_back(last_instruction);
 				}
 			}
 
@@ -515,7 +514,7 @@ namespace zetscript{
 
 
 			jmp_instructions_start=dst_instructions->count;
-			dst_instructions->push_back((zs_int)(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP)));
+			dst_instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
 			body_size_if=dst_instructions->count-jnt_instructions_start; // size body "if" takes jmp as part of it
 
 
@@ -540,7 +539,7 @@ namespace zetscript{
 			if(unique_call_instructions != NULL){
 				last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction;
 				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->count==1){
-					unique_call_instructions->push_back((zs_int)last_instruction);
+					unique_call_instructions->push_back(last_instruction);
 				}
 			}
 
@@ -552,7 +551,7 @@ namespace zetscript{
 			if(unique_call_instructions != NULL){
 				Instruction *last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction;
 				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->count==1){
-					unique_call_instructions->push_back((zs_int)last_instruction);
+					unique_call_instructions->push_back(last_instruction);
 				}
 			}
 		}
@@ -561,7 +560,7 @@ namespace zetscript{
 		// ... finally save store operators
 		for(int i=(int)(zs_ei_assign_loader_instructions_post_expression.count-1); i >=0 ;i--){
 			//loaders
-			dst_instructions->concat((zs_vector *)zs_ei_assign_loader_instructions_post_expression.items[i]);
+			dst_instructions->concat(zs_ei_assign_loader_instructions_post_expression.items[i]);
 
 			// push back assign operator
 			dst_instructions->push_back(
@@ -569,7 +568,7 @@ namespace zetscript{
 			);
 		}
 
-		eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
+		//eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
 
 		return aux_p;
 
@@ -580,7 +579,7 @@ eval_error_byte_code:
 			delete (EvalInstruction *)ei_assign_store_instruction_post_expression.items[i];
 		}
 
-		eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
+		//eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
 
 		return NULL;
 

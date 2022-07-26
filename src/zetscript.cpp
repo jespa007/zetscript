@@ -204,12 +204,12 @@ namespace zetscript{
 
 	 void ZetScript::printGeneratedCode(bool show_system_code){
 
-		 zs_vector *script_classes=script_type_factory->getScriptTypes();
+		 zs_vector<ScriptType *> *script_classes=script_type_factory->getScriptTypes();
 		 // for all classes print code...
 		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
 
 		 // list functions
-		 zs_vector *symbol_functions=sf_main->scope_script_function->symbol_functions;
+		 zs_vector<Symbol *> *symbol_functions=sf_main->scope_script_function->symbol_functions;
 
 		 // print main function
 		 ScriptFunction::printGeneratedCode(sf_main);
@@ -347,7 +347,7 @@ namespace zetscript{
 			ParsedFile *ps=new ParsedFile();
 			zs_string current_directory="";
 			ps->filename = _filename;
-			parsed_files.push_back((zs_int)ps);
+			parsed_files.push_back(ps);
 			const char * const_file_char=ps->filename.c_str();
 			//idx_file=parsed_files.size()-1;
 
@@ -401,8 +401,8 @@ namespace zetscript{
 		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
-		zs_vector *local_variables=main_function_object->local_variables;
-		zs_vector *global_symbol_variables= main_scope->symbol_variables;
+		zs_vector<Symbol *> *local_variables=main_function_object->local_variables;
+		zs_vector<Symbol *> *global_symbol_variables= main_scope->symbol_variables;
 		int n_global_symbol_found=0;
 		int v=local_variables->count-1;
 
@@ -492,7 +492,7 @@ namespace zetscript{
 
 		// clearGlobalFunctions
 		Scope *main_scope=MAIN_SCOPE(this);
-		zs_vector *global_symbol_functions= main_scope->symbol_functions;
+		zs_vector<Symbol *> *global_symbol_functions= main_scope->symbol_functions;
 		int v=global_symbol_functions->count-1;
 		// remove all shared 0 pointers
 		if(v >= idx_current_global_function_checkpoint){
@@ -512,7 +512,7 @@ namespace zetscript{
 
 
 		// clearScriptTypes
-		zs_vector *script_types= main_scope->symbol_types;
+		zs_vector<Symbol *> *script_types= main_scope->symbol_types;
 		v=script_types->count-1;
 		// remove all shared 0 pointers
 		if(v >=idx_current_script_types_checkpoint){
@@ -555,7 +555,7 @@ namespace zetscript{
 
 	bool ZetScript::getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf){
 		for(int i=0;i < functions_with_unresolved_symbols.count; i++){
-			if(functions_with_unresolved_symbols.items[i]==(zs_int)_sf){
+			if(functions_with_unresolved_symbols.items[i]==_sf){
 				return true;
 			}
 		}
@@ -566,7 +566,7 @@ namespace zetscript{
 
 	void ZetScript::addUnresolvedSymbol(ScriptFunction *_sf, zs_int idx_instruction){
 		if(getFunctionWithUnresolvedSymbolExists(_sf) ==false){
-			functions_with_unresolved_symbols.push_back((zs_int)_sf);
+			functions_with_unresolved_symbols.push_back(_sf);
 		}
 		_sf->addUnresolvedSymbol(idx_instruction);
 	}

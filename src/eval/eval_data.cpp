@@ -164,7 +164,7 @@ namespace zetscript{
 
 		zs_string 						value; // token value content
 		int 							line;
-		zs_vector 						eval_instructions; // byte code load literal/identifier(can be anonymous function), zs_vector/struct.
+		zs_vector<EvalInstruction *> 						eval_instructions; // byte code load literal/identifier(can be anonymous function), zs_vector/struct.
 		bool are_instructions_moved;
 
 		TokenNode(){
@@ -185,7 +185,7 @@ namespace zetscript{
 
 	struct EvalFunction{
 
-		zs_vector						 		eval_instructions;
+		zs_vector<EvalInstruction *>						 		eval_instructions;
 		ScriptFunction 						*  	script_function;
 		int										parsing_loop;
 		int										parsing_switch;
@@ -242,7 +242,7 @@ namespace zetscript{
 	} EvalSeparator;
 
 	typedef struct{
-		zs_vector 						ei_break_jmps;
+		zs_vector<EvalInstruction *> 						ei_break_jmps;
 		int								idx_instruction_start_loop;
 	}LoopBreakContinueInfo;
 
@@ -252,7 +252,7 @@ namespace zetscript{
 		ScriptFunctionFactory 			* 		script_function_factory;
 		ScriptTypeFactory 				* 		script_type_factory;
 		EvalFunction					* 		current_function;
-		zs_vector				 	  			eval_functions;
+		zs_vector<EvalFunction *>				 	  			eval_functions;
 
 		//zs_vector				 				global_ref_instructions; // Eval Instruction
 		int										parsing_loop;

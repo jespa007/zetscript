@@ -57,7 +57,7 @@ namespace zetscript{
 
 			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so_partial=ZS_NEW_OBJECT_STRING(_zs);
-			so_partial->set(*(zs_string *)v.items[i]);
+			so_partial->set(v.items[i]);
 
 			// create and share pointer
 			if(!vm_create_shared_script_object(vm,so_partial)){
@@ -83,7 +83,7 @@ namespace zetscript{
 		for(int i=0; i<v.count; i++){
 			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so_partial=ZS_NEW_OBJECT_STRING(_zs);
-			so_partial->set(*((zs_string *)v.items[i]));
+			so_partial->set(v.items[i]);
 
 			// create and share pointer
 			if(!vm_create_shared_script_object(vm,so_partial)){
@@ -97,7 +97,7 @@ namespace zetscript{
 			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
 
 			// deallocate allocated string
-			delete (zs_string *)v.items[i];
+			//delete (zs_string *)v.items[i];
 
 		}
 

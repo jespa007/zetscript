@@ -532,8 +532,8 @@ namespace zetscript{
 		//--------
 		// VARS
 		zs_map 	 								*script_filenames_by_ref;
-		zs_vector 			 					parsed_files;
-		zs_vector								functions_with_unresolved_symbols;
+		zs_vector<ParsedFile *>					parsed_files;
+		zs_vector<ScriptFunction *>				functions_with_unresolved_symbols;
 
 		//ScriptEval * eval_obj;
 		VirtualMachine * virtual_machine;

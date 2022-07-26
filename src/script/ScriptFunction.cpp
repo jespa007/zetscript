@@ -43,7 +43,7 @@ namespace zetscript{
 
 
 		// local symbols for type or function...
-		local_variables=new zs_vector();
+		local_variables=new zs_vector<Symbol *>();
 		params = NULL;//new zs_vector();
 		params_len = 0;
 
@@ -62,7 +62,7 @@ namespace zetscript{
 	InstructionSourceInfo * ScriptFunction::getInstructionInfo(Instruction *instruction){
 		short idx= (instruction-this->instructions);///sizeof(Instruction *);
 		//if(instruction_source_info.items[idx]==1){
-		return (InstructionSourceInfo *)instruction_source_info.items[idx];
+		return (InstructionSourceInfo *)instruction_source_infos.items[idx];
 	}
 
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptType *sc){
@@ -546,7 +546,7 @@ namespace zetscript{
 		symbol->properties=_properties;
 		symbol->idx_position = idx_position_aux;
 
-		local_variables->push_back((zs_int)symbol);
+		local_variables->push_back(symbol);
 
 		return symbol;
 	}
@@ -575,7 +575,7 @@ namespace zetscript{
 		symbol->properties = _properties;
 		symbol->idx_position = idx_position_aux;
 
-		local_variables->push_back((zs_int)symbol);
+		local_variables->push_back(symbol);
 
 		return symbol;
 	}
@@ -835,8 +835,8 @@ namespace zetscript{
 	ScriptFunction::~ScriptFunction(){
 		clear();
 
-		for(int i=0; i < instruction_source_info.count; i++){
-			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_info.items[i];
+		for(int i=0; i < instruction_source_infos.count; i++){
+			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_infos.items[i];
 			if(isi != NULL){
 				delete isi;
 			}

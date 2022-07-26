@@ -28,8 +28,8 @@ namespace zetscript{
 
 		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be property members or script member vars
 		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
-		zs_vector 				*allocated_member_properties;
-		ScriptFunction			*sf_field_initializer;
+		zs_vector<MemberProperty *>		*allocated_member_properties;
+		ScriptFunction					*sf_field_initializer;
 		MetamethodMembers		metamethod_members;
 		int						idx_starting_this_member_functions;
 		int						idx_starting_this_member_variables;
@@ -41,7 +41,7 @@ namespace zetscript{
 		void								* 	c_constructor;
 		void 								*	c_destructor;
 
-		zs_vector						   	*   idx_base_types; // list of idx of classes base
+		zs_vector<zs_int>				   	*   idx_base_types; // list of idx of classes base
 
 		 ScriptType(ZetScript *_zs
 				 ,short _idx_script_type

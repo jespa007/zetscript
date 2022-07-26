@@ -33,7 +33,7 @@ namespace zetscript{
 		int 				 function_params_len=0;
 		zs_string str_param_name;
 		ScriptFunction *sf_eval=NULL;
-		zs_vector stk_params;
+		zs_vector<StackElement *> stk_params;
 		StackElement stk_ret=k_stk_undefined;
 		const char *str_start=NULL;
 		zs_string str_unescaped_source="";
@@ -85,7 +85,7 @@ namespace zetscript{
 					for(auto it=map->begin(); !it.end(); it.next()){
 						StackElement *stk=((StackElement *)it.value);
 						function_params[i]=ScriptFunctionParam(it.key);
-						stk_params.push_back((zs_int)stk);
+						stk_params.push_back(stk);
 
 						if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 							// inc number of ref as standard in pass object args
@@ -117,7 +117,7 @@ namespace zetscript{
 
 		Scope *main_scope=((((zs)->getScopeFactory())))->getMainScope();
 		sf_eval->scope_script_function=(((zs)->getScopeFactory()))->newScope(sf_eval->idx_script_function,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
-		main_scope->scopes->push_back((zs_int)sf_eval->scope_script_function);
+		main_scope->scopes->push_back(sf_eval->scope_script_function);
 
 		//--------------------------------------
 		// 2. register arg symbols

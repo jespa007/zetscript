@@ -49,14 +49,14 @@ namespace zetscript{
 			, char *s
 			, int & line
 			, Scope *scope_info
-			, zs_vector *token_nodes
+			, zs_vector<TokenNode *> *token_nodes
 			,TokenNode *last_operator_token_node
 			, uint16_t properties
 		){
 		char *aux_p = s,*test_aux_p;//, *test_s=NULL;
 		int test_line=line;
 		TokenNode *token_node_symbol=new TokenNode();
-		zs_vector ei_arg_instruction;
+		zs_vector<EvalInstruction *> ei_arg_instruction;
 		EvalInstruction *instruction_token=NULL;
 		EvalInstruction *last_instruction_token=NULL;
 		PreOperation pre_operation = PreOperation::PRE_OPERATION_UNKNOWN;
@@ -108,10 +108,10 @@ namespace zetscript{
 			aux_p=aux_p+1;
 
 			if(pre_operation==PreOperation::PRE_OPERATION_NEG){
-				token_node_symbol->eval_instructions.push_back((zs_int)(new EvalInstruction(ByteCode::BYTE_CODE_NEG)));
+				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
 				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}else if(pre_operation==PreOperation::PRE_OPERATION_NOT){
-				token_node_symbol->eval_instructions.push_back((zs_int)(new EvalInstruction(ByteCode::BYTE_CODE_NOT)));
+				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NOT));
 				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}
 
@@ -426,7 +426,7 @@ namespace zetscript{
 							}
 						}
 
-						token_node_symbol->eval_instructions.concat(&ei_arg_instruction);
+						token_node_symbol->eval_instructions.concat(ei_arg_instruction);
 
 						if(error_arg){
 							goto error_expression_token_symbol;
@@ -554,7 +554,7 @@ namespace zetscript{
 					==false){
 
 					// ... we create new instruction
-					token_node_symbol->eval_instructions.push_back((zs_int)(instruction_token=new EvalInstruction(byte_code)));
+					token_node_symbol->eval_instructions.push_back(instruction_token=new EvalInstruction(byte_code));
 				}
 
 				//EvalInstruction *ei_first_instruction_token=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
@@ -704,11 +704,11 @@ namespace zetscript{
 			   }
 		   }
 
-			token_node_symbol->eval_instructions.push_back((zs_int)(
+			token_node_symbol->eval_instructions.push_back(
 				eval_instruction_post=new EvalInstruction(
 					byte_code_post_operation
 				)
-			));
+			);
 
 			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1];
 
@@ -760,7 +760,7 @@ namespace zetscript{
 			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1];
 			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]))->vm_instruction;
 
-			token_node_symbol->eval_instructions.push_back((zs_int)(
+			token_node_symbol->eval_instructions.push_back(
 				eval_instruction_pre=new EvalInstruction(
 					pre_operation == PreOperation::PRE_OPERATION_NEG ? ByteCode::BYTE_CODE_NEG:
 					pre_operation == PreOperation::PRE_OPERATION_NOT ? ByteCode::BYTE_CODE_NOT:
@@ -768,7 +768,7 @@ namespace zetscript{
 					pre_operation == PreOperation::PRE_OPERATION_TYPEOF ? ByteCode::BYTE_CODE_TYPEOF:
 					ByteCode::BYTE_CODE_PRE_INC
 				)
-			));
+			);
 
 			eval_instruction_pre->instruction_source_info=InstructionSourceInfo(
 				eval_data->current_parsing_file
@@ -792,7 +792,7 @@ namespace zetscript{
 		}
 
 		// finally push token node symbol
-		token_nodes->push_back((zs_int)token_node_symbol);
+		token_nodes->push_back(token_node_symbol);
 
 		return aux_p;
 

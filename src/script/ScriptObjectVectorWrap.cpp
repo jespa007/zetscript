@@ -26,8 +26,8 @@ namespace zetscript{
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
 		stk_assign(_zs,new_stk,_stk);
 
-		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
-		stk_user_list_elements->insert(idx,(zs_int)new_stk);
+		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
+		stk_user_list_elements->insert(idx,new_stk);
 	}
 
 	void 			ScriptObjectVectorWrap_eraseAt(ZetScript *_zs,ScriptObjectVector *sv, zs_int idx){
@@ -43,7 +43,7 @@ namespace zetscript{
 	ScriptObjectString *		ScriptObjectVectorWrap_join(ZetScript *_zs,ScriptObjectVector *sv, zs_int idx){
 		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(_zs);
 		zs_string *ptr_str=(zs_string *)so_string->value;
-		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
+		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
 
 		for(int i=0; i < stk_user_list_elements->count;i++){
 			StackElement *stk=(StackElement *)stk_user_list_elements->items[i];
@@ -63,7 +63,7 @@ namespace zetscript{
 
 	bool 							ScriptObjectVectorWrap_contains(ZetScript *_zs,ScriptObjectVector *sv, StackElement *stk_to_compare){
 		bool found=false;
-		zs_vector *stk_user_list_elements=sv->getStkUserListElements();
+		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
 
 		for(int i=0; i < stk_user_list_elements->count && found == false;i++){
 			StackElement *stk_element=(StackElement *)stk_user_list_elements->items[i];
@@ -93,8 +93,8 @@ namespace zetscript{
 
 	bool 							ScriptObjectVectorWrap_equal(ZetScript *_zs,ScriptObjectVector *so1, ScriptObjectVector *so2){
 		bool equal=true;
-		zs_vector *stk_user_list_elements_s1=so1->getStkUserListElements();
-		zs_vector *stk_user_list_elements_s2=so2->getStkUserListElements();
+		zs_vector<StackElement *> *stk_user_list_elements_s1=so1->getStkUserListElements();
+		zs_vector<StackElement *> *stk_user_list_elements_s2=so2->getStkUserListElements();
 
 		if(stk_user_list_elements_s1->count != stk_user_list_elements_s2->count){
 			return false;

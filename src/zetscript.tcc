@@ -3,6 +3,7 @@
  *  See LICENSE file for details.
  */
 
+#include	"util/zs_vector.tcc"
 #include	"StackElement.tcc"
 #include	"vm/vm.tcc"
 #include	"script/ScriptObjectClass.tcc"
@@ -1448,7 +1449,7 @@ namespace zetscript{
 		std::function<F> ZetScript::bindScriptFunction(ScriptFunction *fun,ScriptObject *calling_obj, const char *file, int line){
 
 			const char *return_type;
-			zs_vector params;
+			zs_vector<zs_int> params;
 			int idx_script_type_return=-1;
 			void *ptr=NULL;
 
@@ -1501,7 +1502,7 @@ namespace zetscript{
 			std::function<F> return_function=NULL;
 			ScriptFunction * fun_obj=NULL;
 			ScriptObject *calling_obj=NULL;
-			zs_vector access_var = zs_strutils::split(function_access,'.');
+			zs_vector<zs_string> access_var = zs_strutils::split(function_access,'.');
 			ScriptFunction * main_function = script_type_factory->getMainFunction();
 			StackElement *se=NULL;
 			Symbol *symbol_sfm=NULL;
@@ -1512,7 +1513,7 @@ namespace zetscript{
 				for(int i=0; i < access_var.count-1; i++){
 					zs_string *symbol_to_find=(zs_string *)access_var.items[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
-						zs_vector *list_variables=main_function->scope_script_function->symbol_variables;
+						zs_vector<Symbol *> *list_variables=main_function->scope_script_function->symbol_variables;
 						for(int j = 0; j < list_variables->count && calling_obj==NULL; j++){
 							Symbol * registered_symbol=(Symbol *)list_variables->items[j];
 							if(registered_symbol->name==*symbol_to_find
@@ -1594,7 +1595,7 @@ namespace zetscript{
 
 			}else{ // some function in main function
 				zs_string *symbol_to_find=(zs_string *)access_var.items[0];
-				zs_vector *list_functions=main_function->scope_script_function->symbol_functions;
+				zs_vector<Symbol *> *list_functions=main_function->scope_script_function->symbol_functions;
 
 				for(int i = 0; i < list_functions->count && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->items[i];

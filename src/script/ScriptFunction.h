@@ -57,7 +57,7 @@ namespace zetscript{
 		size_t			instructions_len;
 
 		// local symbols for type or function...
-		zs_vector   		*local_variables; // registered variable symbols
+		zs_vector<Symbol *>  		*local_variables; // registered variable symbols
 
 		ScriptFunction(
 				ZetScript *_zs
@@ -74,7 +74,7 @@ namespace zetscript{
 
 		//-----------
 		//  SYMBOL-INSTRUCTION
-		zs_vector 			instruction_source_info; // std::map that gives symbol with at instruction idx given
+		zs_vector<InstructionSourceInfo *> 			instruction_source_infos; // std::map that gives symbol with at instruction idx given
 
 		short 				getInstructionLine(Instruction * ins);
 		const char * 		getInstructionSymbolName(Instruction * ins);
@@ -154,7 +154,7 @@ namespace zetscript{
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptTypeFactory 		*script_type_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
-		zs_vector				unresolved_symbols; // UnresolvedInstructionInfo
+		zs_vector<zs_int>		unresolved_symbols; // UnresolvedInstructionInfo
 		static zs_string 		formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
 		InstructionSourceInfo * getInstructionInfo(Instruction *instruction);
 		void clearParams();
