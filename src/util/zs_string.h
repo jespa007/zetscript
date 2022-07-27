@@ -53,11 +53,11 @@ namespace zetscript{
 		friend bool operator!=(const zs_string & _s1, const char *_s2);
 		friend bool operator!=(const char * _s1, const zs_string & _s2);
 
-		int find(const zs_string &_s, unsigned pos = 0) const;
-		int find(const char *_s, unsigned pos = 0) const;
-		int find_last_of(const char *_s, unsigned pos = npos) const;
+		size_t find(const zs_string &_s, unsigned _pos = 0) const;
+		size_t find(const char *_s, unsigned _pos = 0) const;
+		size_t find_last_of(const char *_s, unsigned _pos = npos) const;
 
-		zs_string & replace(unsigned _pos, size_t _len, const zs_string & to_replace);
+		zs_string & replace(unsigned _pos, size_t _len, const zs_string & _to_replace);
 		void append(const char *buf, size_t _len=npos);
 		void append(char _c);
 		void append(const zs_string & _s);
@@ -69,7 +69,7 @@ namespace zetscript{
 
 		bool empty() const;
 
-		int length() const;
+		size_t length() const;
 
 		const char * c_str() const;
 

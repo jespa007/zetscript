@@ -359,14 +359,14 @@ namespace zetscript{
 	}
 
 	bool eval_all_local_variables_in_scopes_already_sorted(Scope  *current_scope,  int & idx_local_variable){
-		for(int i=0; i < current_scope->symbol_variables->count; i++){
+		for(unsigned i=0; i < current_scope->symbol_variables->count; i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->items[i];
 			if(s->idx_position!=idx_local_variable++){
 				return false;
 			}
 		}
 
-		for(int i=0; i < current_scope->scopes->count; i++){
+		for(unsigned i=0; i < current_scope->scopes->count; i++){
 			Scope *scope=(Scope *)current_scope->scopes->items[i];
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				bool ok=eval_all_local_variables_in_scopes_already_sorted(scope,idx_local_variable);
@@ -381,13 +381,13 @@ namespace zetscript{
 	}
 
 	void eval_fill_lookup_local_variable(Scope  *current_scope, short *lookup_table, int & n_variable,zs_vector<zs_int> *order_local_vars){
-		for(int i=0; i < current_scope->symbol_variables->count; i++){
+		for(unsigned i=0; i < current_scope->symbol_variables->count; i++){
 			Symbol *s=(Symbol *)current_scope->symbol_variables->items[i];
 			lookup_table[s->idx_position]=n_variable++;
 			order_local_vars->push_back(s->idx_position);
 		}
 
-		for(int i=0; i < current_scope->scopes->count; i++){
+		for(unsigned i=0; i < current_scope->scopes->count; i++){
 			Scope *scope=(Scope *)current_scope->scopes->items[i];
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				eval_fill_lookup_local_variable(scope,lookup_table,n_variable,order_local_vars);
@@ -430,8 +430,8 @@ namespace zetscript{
 		zs_string static_error;
 		ScriptFunction *sf = eval_data->current_function->script_function;
 		ScriptType *sc_sf = GET_SCRIPT_TYPE(eval_data->script_type_factory,sf->idx_script_type_owner);
-		int sum_stk_load_stk=0;
-		int max_acc_stk_load=0;
+		unsigned sum_stk_load_stk=0;
+		unsigned max_acc_stk_load=0;
 
 		// remove old instructions
 		if(sf->instructions != NULL){
@@ -440,7 +440,7 @@ namespace zetscript{
 		}
 
 		// remove old ref symbols
-		for(int i=0; i < sf->instruction_source_infos.count; i++){
+		for(unsigned i=0; i < sf->instruction_source_infos.count; i++){
 			InstructionSourceInfo *isi=(InstructionSourceInfo *)sf->instruction_source_infos.items[i];
 			delete isi;
 		}
@@ -525,7 +525,7 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_THIS_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
-					for(int j = 0; j < sc_sf->scope_script_type->symbol_functions->count; j++){
+					for(unsigned j = 0; j < sc_sf->scope_script_type->symbol_functions->count; j++){
 						Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
 						if(
 							   ( sv->name == eval_instruction->symbol.name )
@@ -608,7 +608,7 @@ namespace zetscript{
 			// update variables symbol...
 			zs_vector<Symbol *> *local_vars_dst=new zs_vector<Symbol *>();
 
-			for(int i=0; i < sf->local_variables->count; i++){
+			for(unsigned i=0; i < sf->local_variables->count; i++){
 				int idx_var=order_local_vars.items[i];
 				Symbol *s=(Symbol *)sf->local_variables->items[idx_var];
 				s->idx_position=lookup_sorted_table_local_variables[idx_var];

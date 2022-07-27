@@ -42,8 +42,8 @@ namespace zetscript{
 
 			 bool							checkCanbindFunction(const zs_string & name_script_function);
 
-			 ScriptFunction 			* 	getScriptFunction(int idx);
-			 void							setScriptFunction(int idx, ScriptFunction *sf);
+			 ScriptFunction 			* 	getScriptFunction(unsigned idx);
+			 void							setScriptFunction(unsigned idx, ScriptFunction *sf);
 
 			void clear(int _idx_start = ZS_IDX_UNDEFINED);
 			void saveState();

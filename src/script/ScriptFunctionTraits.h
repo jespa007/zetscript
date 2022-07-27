@@ -206,7 +206,7 @@ namespace zetscript{
 				);
 			}
 
-			for(int i = 0; i < args.count; i++){
+			for(unsigned i = 0; i < args.count; i++){
 				const char *param=(const char *)args.items[i];
 				int idx_script_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
 

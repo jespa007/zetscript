@@ -46,7 +46,7 @@ namespace zetscript{
 				if(scope->scope_parent != NULL){
 					// remove child from parent to
 					zs_vector<Scope *> *childs=scope->scope_parent->scopes;
-					for(int i=0; i < childs->count; i++){
+					for(unsigned i=0; i < childs->count; i++){
 						Scope *child=(Scope *)childs->items[i];
 						if(child==scope){
 							childs->erase(i);
@@ -95,7 +95,7 @@ namespace zetscript{
 	ScopeFactory::~ScopeFactory(){
 
 		// destroy all nodes ...
-		for(int i = 0; i < scopes->count; i++){
+		for(unsigned i = 0; i < scopes->count; i++){
 			delete (Scope *)scopes->get(i);
 		}
 		scopes->clear();

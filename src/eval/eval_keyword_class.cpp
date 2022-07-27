@@ -170,7 +170,7 @@ namespace zetscript{
 		}
 
 		// link unreferenced forward declared functions
-		for(int i=0; i < sc->scope_script_type->symbol_functions->count; i++){
+		for(unsigned i=0; i < sc->scope_script_type->symbol_functions->count; i++){
 			Symbol  *symbol_sf=(Symbol *)(sc->scope_script_type->symbol_functions->items[i]);
 			ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
 			Instruction *it=sf->instructions;
@@ -180,7 +180,7 @@ namespace zetscript{
 						// search function and link its idx_position
 						zs_string str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
 
-						for(int j = 0; j < sc->scope_script_type->symbol_functions->count; j++){
+						for(unsigned j = 0; j < sc->scope_script_type->symbol_functions->count; j++){
 							Symbol *sv=(Symbol *)sc->scope_script_type->symbol_functions->items[j];
 							if(
 								   ( sv->name == str_name_unreferenced_this_call )

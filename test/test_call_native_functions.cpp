@@ -163,7 +163,7 @@ void ClassCWrap_delete(zetscript::ZetScript *_zs,ClassC *_this){
 
 bool allCharsTheSame(const zetscript::zs_string & input){
 
-    for(int i =1; i < input.length(); i++){
+    for(unsigned i =1; i < input.length(); i++){
         if(input[i-1] != input[i]) return false;
     }
     return true;
@@ -172,7 +172,7 @@ bool allCharsTheSame(const zetscript::zs_string & input){
 bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ScriptObjectVector * sov){
 	ZS_UNUSUED_PARAM(_zs);
 	zetscript::zs_vector<zetscript::StackElement *> *stk_user_elements = sov->getStkUserListElements();
-   for(int i =1; i < stk_user_elements->count; i++){
+   for(unsigned i =1; i < stk_user_elements->count; i++){
 	   zetscript::StackElement *stk_1=stk_user_elements->items[i-1];
 	   zetscript::StackElement *stk_2=stk_user_elements->items[i-0];
        if(stk_1->value != stk_2->value) return false;

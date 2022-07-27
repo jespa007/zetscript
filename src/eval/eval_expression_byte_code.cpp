@@ -241,7 +241,7 @@ namespace zetscript{
 	}
 
 	void eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_vector<zs_vector<EvalInstruction *> *> & zs_ei_assign_loader_instructions_post_expression){
-		for(int i=0; i<zs_ei_assign_loader_instructions_post_expression.count; i++ ){
+		for(unsigned i=0; i<zs_ei_assign_loader_instructions_post_expression.count; i++ ){
 			delete zs_ei_assign_loader_instructions_post_expression.items[i];
 		}
 		zs_ei_assign_loader_instructions_post_expression.clear();
@@ -318,7 +318,7 @@ namespace zetscript{
 			zs_ei_assign_loader_instructions_post_expression.push_back(ei_assign_loader_instructions_post_expression=new zs_vector<EvalInstruction *>());//ei_assign_loader_instructions_post_expression=new zs_vector<EvalInstruction *>());
 
 			// assign operators: add instructions related about its accessors...
-			for(int j=0;j<token_node_symbol->eval_instructions.count;j++){
+			for(unsigned j=0;j<token_node_symbol->eval_instructions.count;j++){
 				ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
 				ei_assign_loader_instructions_post_expression->push_back(token_node_symbol->eval_instructions.items[j]);
 			}
@@ -433,13 +433,13 @@ namespace zetscript{
 				);
 			}
 
-			for(int i=idx_start_instructions; i < dst_instructions->count; i++){
+			for(unsigned i=idx_start_instructions; i < dst_instructions->count; i++){
 				EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->items[i];
 				if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JNT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
 					//logical_and_jnt.push_back((intptr_t)eval_instruction);
 					// go to next logic or
 					int idx_next_or_found=-1;
-					for(int j=i; j < dst_instructions->count; j++){
+					for(unsigned j=i; j < dst_instructions->count; j++){
 						EvalInstruction *eval_instruction_post_instruction=(EvalInstruction *)dst_instructions->items[j];
 						if((eval_instruction_post_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction_post_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
 							idx_next_or_found=j;
@@ -577,7 +577,7 @@ namespace zetscript{
 eval_error_byte_code:
 
 		// only delete the new ones
-		for(int i=0; i < ei_assign_store_instruction_post_expression.count; i++){
+		for(unsigned i=0; i < ei_assign_store_instruction_post_expression.count; i++){
 			delete (EvalInstruction *)ei_assign_store_instruction_post_expression.items[i];
 		}
 

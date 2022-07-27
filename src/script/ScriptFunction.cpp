@@ -103,10 +103,10 @@ namespace zetscript{
 
 		printf("______________________________________________________________\n\n");
 		printf(" Function: '%s%s'                                             \n",class_str.c_str(),symbol_ref.c_str());
-		printf(" Stack code: %i                                        		  \n",sfo->min_code_stack_needed);
-		printf(" Stack local vars: %i                                         \n",sfo->local_variables->count);
-		printf(" Total stack required: %i                                     \n\n",sfo->local_variables->count+sfo->min_code_stack_needed);
-		printf(" Scopes: %i                                                   \n",sfo->scope_script_function->scopes->count);
+		printf(" Stack code: %lu                                       		  \n",sfo->min_code_stack_needed);
+		printf(" Stack local vars: %lu                                        \n",sfo->local_variables->count);
+		printf(" Total stack required: %lu                                    \n\n",sfo->local_variables->count+sfo->min_code_stack_needed);
+		printf(" Scopes: %lu                                                  \n",sfo->scope_script_function->scopes->count);
 
 		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
@@ -469,16 +469,16 @@ namespace zetscript{
 
 	 }
 
-	void ScriptFunction::checkNativeFunctionParams(Scope *_scope,int _idx_return_type,const zs_string & _function_name,ScriptFunctionParam *_params,int _params_len){
+	void ScriptFunction::checkNativeFunctionParams(Scope *_scope,int _idx_return_type,const zs_string & _function_name,ScriptFunctionParam *_params,size_t _params_len){
 
 		ZS_UNUSUED_PARAM(_idx_return_type);
 
-		for(int i=0; i < _scope->symbol_functions->count;i++){
+		for(unsigned i=0; i < _scope->symbol_functions->count;i++){
 			bool same_signature=true;
 			Symbol *symbol_function_memeber= (Symbol *)_scope->symbol_functions->items[i];
 			ScriptFunction *function_member=(ScriptFunction *)symbol_function_memeber->ref_ptr;
 			if(symbol_function_memeber->name==_function_name && function_member->params_len==_params_len){
-				for(int j=0; j < _params_len && same_signature;j++){
+				for(unsigned j=0; j < _params_len && same_signature;j++){
 					same_signature&=function_member->params[j].name==(_params)[j].name;
 				}
 
@@ -697,7 +697,7 @@ namespace zetscript{
 		// delete existing args...
 		clearParams();
 		params=*_params;
-		params_len = (int)_params_len;
+		params_len = _params_len;
 
 		// mark ptr that was assigned. Now ScriptFunction is in charge to deallocate this variable
 		*_params=NULL;
@@ -743,7 +743,7 @@ namespace zetscript{
 		if(unresolved_symbols.count > 0){
 
 			const char *str_aux=NULL;
-			int i=0;
+			unsigned i=0;
 			while(i < unresolved_symbols.count){
 				Instruction *unresolved_instruction=&instructions[unresolved_symbols.items[i]];
 				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(this,unresolved_instruction);
@@ -835,7 +835,7 @@ namespace zetscript{
 	ScriptFunction::~ScriptFunction(){
 		clear();
 
-		for(int i=0; i < instruction_source_infos.count; i++){
+		for(unsigned i=0; i < instruction_source_infos.count; i++){
 			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_infos.items[i];
 			if(isi != NULL){
 				delete isi;

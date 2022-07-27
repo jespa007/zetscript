@@ -39,7 +39,7 @@ void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
 
 	// Check all vars ordered as at the top should have idx as the end of its symbol has (i.e a1, a2, a3)
 	zetscript::Scope *main_scope=_zs->getScopeFactory()->getMainScope();
-	for(int i=0; i < main_scope->symbol_variables->count; i++){
+	for(unsigned i=0; i < main_scope->symbol_variables->count; i++){
 		zetscript::Symbol *s=(zetscript::Symbol *)main_scope->symbol_variables->items[i];
 		zetscript::zs_string str_to_compare="a"+zetscript::zs_strutils::zs_int_to_str(s->idx_position+1);
 		if(_show_print) printf("%s %i\n",s->name.c_str(),(s->idx_position+1));

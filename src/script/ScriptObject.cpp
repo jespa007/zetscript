@@ -60,7 +60,7 @@ namespace zetscript{
 			zs_vector<Symbol *> *symbol_vars=script_type->scope_script_type->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
-			for ( int i = 0; i < symbol_vars->count; i++){
+			for ( unsigned i = 0; i < symbol_vars->count; i++){
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_PROPERTY});
@@ -199,7 +199,7 @@ namespace zetscript{
 	}
 
 	int ScriptObject::idxRefObject(ScriptObject  **_so){
-		for(int i=0; i < ref_script_objects->count;i++){
+		for(unsigned i=0; i < ref_script_objects->count;i++){
 			if(*(ref_script_objects->items+i)==_so){
 				return i;
 			}
@@ -224,7 +224,7 @@ namespace zetscript{
 
 	ScriptObject::~ScriptObject(){
 		// deallocate built-in function member objects
-		for(int i=0; i< stk_builtin_elements.count; i++){
+		for(unsigned i=0; i< stk_builtin_elements.count; i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
 
 			if(stk->properties & STK_PROPERTY_MEMBER_PROPERTY){
@@ -242,7 +242,7 @@ namespace zetscript{
 		stk_builtin_elements.clear();
 		delete map_builtin_properties;
 
-		for(int i=0; i < ref_script_objects->count; i++){
+		for(unsigned i=0; i < ref_script_objects->count; i++){
 			ScriptObject **_so=(ScriptObject **)ref_script_objects->items[i];
 			*_so=NULL;
 		}

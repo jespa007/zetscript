@@ -32,7 +32,10 @@ namespace zetscript{
 			}
 
 			// delete old buffer
-			delete [] this->items;
+			if(this->items != NULL){
+				delete [] this->items;
+				this->items=NULL;
+			}
 
 			this->items=aux_buf;
 
@@ -132,16 +135,6 @@ namespace zetscript{
 
 	template<typename _T>
 	void zs_vector<_T>::resize(size_t _new_size){
-		/*if (_new_size==0) {
-			if(this->items!=NULL){
-				delete [] this->items;
-				this->items=NULL;
-				this->count=0;
-				this->_size=0;
-			}
-			return;
-		}*/
-
 		// the new size is greather (do not copy, only decrease the number of elements)
 		if( _new_size <= _size){
 			count=_new_size;
@@ -167,7 +160,10 @@ namespace zetscript{
 		}
 
 		// delete old buf
-		delete [] this->items;
+		if(this->items != NULL){
+			delete [] this->items;
+			this->items=NULL;
+		}
 
 		this->items=new_buf;
 		this->_size=_new_size;
@@ -226,29 +222,32 @@ namespace zetscript{
 
 		// copy first part dst_vector
 		//memcpy(new_items,items,idx*sizeof(zs_int));
-		for(int i=0; i < _idx; i++){
-			new_items[i]=items[i];
+		for(unsigned i=0; i < _idx; i++){
+			new_items[i]=this->items[i];
 		}
 
 
 		// copy src_vector -> dst_vector middle
 		//memcpy(new_items+idx,list->items,n_list_elements_to_copy*sizeof(zs_int));
-		for(int i=0; i < _n_elements_src_vector_to_copy; i++){
+		for(unsigned i=0; i < _n_elements_src_vector_to_copy; i++){
 			new_items[i+_idx]=_src_vector.items[i];
 		}
 
 
 		// copy last part of dst_vector
 		//memcpy(new_items+idx+n_list_elements_to_copy,items+idx,(count-idx)*sizeof(zs_int));
-		for(int i=0; i < (count-_idx); i++){
-			new_items[i+_idx+_n_elements_src_vector_to_copy]=items[i+_idx];
+		for(unsigned i=0; i < (count-_idx); i++){
+			new_items[i+_idx+_n_elements_src_vector_to_copy]=this->items[i+_idx];
 		}
 
-		// free old
-		delete [] items;
+		if(this->items != NULL){
+			// free old
+			delete [] this->items;
+			this->items=NULL;
+		}
 
 		// update new
-		items=new_items;
+		this->items=new_items;
 		count+=_src_vector.count;
 	}
 

@@ -48,7 +48,7 @@ namespace zetscript{
 
 
 		// 3. copy eval instructions
-		for(int i=0; i < eval_instructions->count; i++){
+		for(unsigned i=0; i < eval_instructions->count; i++){
 			EvalInstruction *eval_instruction = (EvalInstruction *)eval_instructions->items[i];
 			// save instruction ...
 			*start_ptr=eval_instruction->vm_instruction;
@@ -120,7 +120,7 @@ namespace zetscript{
 
 		sf->instructions_len=instructions_len;
 
-		for(int i=0; i < eval_instructions->count; i++){
+		for(unsigned i=0; i < eval_instructions->count; i++){
 			EvalInstruction *instruction = (EvalInstruction *)eval_instructions->items[i];
 			InstructionSourceInfo instruction_info=instruction->instruction_source_info;
 
@@ -466,7 +466,7 @@ namespace zetscript{
 					}
 
 					// finally delete all evaluated code
-					for(int i=0; i < ei_instructions_default.count; i++){
+					for(unsigned i=0; i < ei_instructions_default.count; i++){
 						delete (EvalInstruction *)ei_instructions_default.items[i];
 					}
 
@@ -490,7 +490,7 @@ namespace zetscript{
 			params_len=script_function_params.count;
 
 			// remove collected script function params
-			for(int i=0; i < script_function_params.count; i++){
+			for(unsigned i=0; i < script_function_params.count; i++){
 				delete (ScriptFunctionParam *)script_function_params.items[i];
 			}
 
@@ -588,7 +588,7 @@ namespace zetscript{
 	// CONTROL ERROR
 	eval_keyword_function_params:
 			// unallocate script function params
-			for(int h=0; h < script_function_params.count; h++){
+			for(unsigned h=0; h < script_function_params.count; h++){
 				delete (ScriptFunctionParam *)script_function_params.items[h];
 			}
 			script_function_params.clear();

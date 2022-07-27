@@ -1464,7 +1464,7 @@ namespace zetscript{
 				return NULL;
 			}
 
-			for(int i = 0; i < params.count; i++){
+			for(unsigned i = 0; i < params.count; i++){
 				char *param=(char *)params.items[i];
 				if(script_type_factory->getIdxScriptTypeFromTypeNamePtr(param)==-1){
 					THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"
@@ -1510,11 +1510,11 @@ namespace zetscript{
 
 			// 1. some variable in main function ...
 			if(access_var.count>1){
-				for(int i=0; i < access_var.count-1; i++){
+				for(unsigned i=0; i < access_var.count-1; i++){
 					zs_string symbol_to_find=access_var.items[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
 						zs_vector<Symbol *> *list_variables=main_function->scope_script_function->symbol_variables;
-						for(int j = 0; j < list_variables->count && calling_obj==NULL; j++){
+						for(unsigned j = 0; j < list_variables->count && calling_obj==NULL; j++){
 							Symbol * registered_symbol=(Symbol *)list_variables->items[j];
 							if(registered_symbol->name==symbol_to_find
 							&& registered_symbol->scope == MAIN_SCOPE(this)){
@@ -1597,7 +1597,7 @@ namespace zetscript{
 				zs_string symbol_to_find=access_var.items[0];
 				zs_vector<Symbol *> *list_functions=main_function->scope_script_function->symbol_functions;
 
-				for(int i = 0; i < list_functions->count && fun_obj==NULL; i++){
+				for(unsigned i = 0; i < list_functions->count && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->items[i];
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
 					if(	aux_fun_obj->name_script_function == symbol_to_find){

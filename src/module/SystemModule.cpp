@@ -30,7 +30,7 @@ namespace zetscript{
 		ScriptObjectObject *oo_param=NULL;
 		ScriptFunctionParam *function_params=NULL;
 		ScriptFunctionParam **function_params_ptr=NULL;
-		int 				 function_params_len=0;
+		size_t 				 function_params_len=0;
 		zs_string str_param_name;
 		ScriptFunction *sf_eval=NULL;
 		zs_vector<StackElement *> stk_params;
@@ -72,7 +72,7 @@ namespace zetscript{
 			}
 
 			oo_param=(ScriptObjectObject *)stk_oo_param->value;
-			function_params_len=(int)oo_param->length();
+			function_params_len=oo_param->length();
 			if(function_params_len>0){
 
 				function_params=new ScriptFunctionParam[function_params_len];//(ScriptFunctionParam *)ZS_MALLOC(sizeof(ScriptFunctionParam)*function_params_len);

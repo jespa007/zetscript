@@ -54,7 +54,7 @@ namespace zetscript{
 		StackElement	*sf_call_stk_function_ref=NULL;
 		ScriptFunction 	*sf_call_script_function = NULL;
 
-		int			 	 sf_call_n_args=0; // number arguments will pass to this function
+		size_t		 	 sf_call_n_args=0; // number arguments will pass to this function
 		StackElement 	*sf_call_stk_start_arg_call=NULL;
 		ScriptObject 	*sf_call_calling_object = NULL;
 		bool			 sf_call_is_constructor=false;
@@ -102,7 +102,7 @@ namespace zetscript{
 			VM_PUSH_SCOPE(calling_function->scope_script_function);
 
 			// reset local variables symbols (not arg symbols)
-			for(int i=calling_function->params_len;i<calling_function->local_variables->count;i++){
+			for(unsigned i=calling_function->params_len;i<calling_function->local_variables->count;i++){
 				STK_SET_UNDEFINED(_stk_local_var+i);
 			}
 		}
@@ -1286,9 +1286,9 @@ execute_function:
 						ScriptObjectVector *var_args=NULL;
 						ScriptObject *so_param=NULL;
 
-						int effective_args=sf_call_n_args < sf_call_script_function->params_len ? sf_call_n_args:sf_call_script_function->params_len;
+						size_t effective_args=sf_call_n_args < sf_call_script_function->params_len ? sf_call_n_args:sf_call_script_function->params_len;
 						ScriptFunctionParam *sf_param=sf_call_script_function->params;
-						for(int i=0;i < sf_call_n_args;++i){
+						for(unsigned i=0;i < sf_call_n_args;++i){
 							so_param=NULL; // script object we passing
 							uint16_t sfa_properties=sf_param->properties;// ((ScriptFunctionParam *)(*function_param))->properties;
 							if((sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF)){ // create or pass the var ref object...
@@ -1368,7 +1368,7 @@ execute_function:
 									}
 
 									sf_param++;
-									if(i+1 >= (int)effective_args){
+									if(i+1 >= effective_args){
 										break;
 									}
 								}
@@ -1379,7 +1379,7 @@ execute_function:
 
 					// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
 					// will be ignored always.
-					for(int h = sf_call_n_args; h < sf_call_script_function->params_len; ++h){
+					for(unsigned h = sf_call_n_args; h < sf_call_script_function->params_len; ++h){
 						ScriptFunctionParam *param=sf_call_script_function->params+h;
 
 						switch(param->default_param_value.properties){

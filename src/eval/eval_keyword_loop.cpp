@@ -322,8 +322,8 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		Keyword key_w;
 		bool is_for_in=false;
-		int	 idx_instruction_for_start=ZS_IDX_UNDEFINED
-			,idx_instruction_for_after_jnz_condition=ZS_IDX_UNDEFINED
+		size_t idx_instruction_for_start=zs_vector<EvalInstruction *>::npos;
+		int	  idx_instruction_for_after_jnz_condition=ZS_IDX_UNDEFINED
 			,idx_post_instruction_for_start=ZS_IDX_UNDEFINED;
 
 		EvalInstruction *ei_jnt=NULL; // conditional to end block
@@ -346,7 +346,7 @@ namespace zetscript{
 			EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected '('");
 		}
 
-		idx_instruction_for_start=(int)(eval_data->current_function->eval_instructions.count);
+		idx_instruction_for_start=eval_data->current_function->eval_instructions.count;
 
 		// save scope pointer ...
 		Scope *new_scope =eval_new_scope(eval_data,scope_info); // push current scope
@@ -422,7 +422,7 @@ namespace zetscript{
 				line=test_line;
 
 				// check each byte code is load...
-				for(int j=0; j<ei_init_vars_for.count;j++){
+				for(unsigned j=0; j<ei_init_vars_for.count;j++){
 					EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for.items[j];
 					if(ins->vm_instruction.byte_code!=BYTE_CODE_LOAD_LOCAL){
 						error_some_instruction_not_load_local=true;
@@ -548,7 +548,7 @@ namespace zetscript{
 
 
 				// 2. emit iterator init
-				for(int i=0; i < ei_load_container_identifier.count; i++){
+				for(unsigned i=0; i < ei_load_container_identifier.count; i++){
 					eval_data->current_function->eval_instructions.push_back(
 						new EvalInstruction(*((EvalInstruction *)ei_load_container_identifier.items[i]))
 					);
@@ -624,7 +624,7 @@ namespace zetscript{
 				);
 
 				// load k,v
-				for(int i=0; i <ei_init_vars_for.count ;i++){
+				for(unsigned i=0; i <ei_init_vars_for.count ;i++){
 					eval_data->current_function->eval_instructions.push_back(
 							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.items[i])
 					);
@@ -661,7 +661,7 @@ namespace zetscript{
 			}else{ // is not for-in re eval for in with no in-break
 
 				// copy var initialization
-				for(int i=0; i <ei_init_vars_for.count ;i++){
+				for(unsigned i=0; i <ei_init_vars_for.count ;i++){
 					eval_data->current_function->eval_instructions.push_back(
 							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for.items[i])
 					);
@@ -826,20 +826,20 @@ namespace zetscript{
 
 label_exit_for:
 
-		for(int i=0; i<ei_post_operations.count;i++){
+		for(unsigned i=0; i<ei_post_operations.count;i++){
 			EvalInstruction *ei=(EvalInstruction *)ei_post_operations.items[i];
 			delete ei;
 		}
 		ei_post_operations.clear();
 
 
-		for(int j=0; j<ei_init_vars_for.count;j++){
+		for(unsigned j=0; j<ei_init_vars_for.count;j++){
 			EvalInstruction *ei= (EvalInstruction *)ei_init_vars_for.items[j];
 			delete ei;
 		}
 		ei_init_vars_for.clear();
 
-		for(int j=0; j<ei_load_container_identifier.count;j++){
+		for(unsigned j=0; j<ei_load_container_identifier.count;j++){
 			EvalInstruction *ei= (EvalInstruction *)ei_load_container_identifier.items[j];
 			delete ei;
 		}

@@ -505,7 +505,7 @@ namespace zetscript{
 					str_candidates.append(irfs->name_script_function.c_str());
 					str_candidates.append("(");
 
-					for(int a = 2; a < irfs->params_len; a++){
+					for(unsigned a = 2; a < irfs->params_len; a++){
 						if(a>2){
 							str_candidates.append(",");
 						}
@@ -529,7 +529,7 @@ namespace zetscript{
 					str_candidates.append(" (*)");
 					str_candidates.append("(");
 
-					for(int a = 0; a < irfs->params_len; a++){
+					for(unsigned a = 0; a < irfs->params_len; a++){
 						if(a>0){
 							str_candidates.append(",");
 						}

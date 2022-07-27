@@ -50,10 +50,10 @@ namespace zetscript{
 
 	void ScriptType::printListMemberFunctions(){
 		Scope *scope=this->scope_script_type;
-		for(int i=0; i < scope->symbol_functions->count;i++){
+		for(unsigned i=0; i < scope->symbol_functions->count;i++){
 			Symbol *symbol = (Symbol *)scope->symbol_functions->items[i];
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-			int start_idx=0;
+			unsigned start_idx=0;
 
 			zs_string script_interface="";
 			zs_string native_interface="";
@@ -71,7 +71,7 @@ namespace zetscript{
 				start_idx=2;
 			}
 
-			for(int a = start_idx; a < sf->params_len; a++){
+			for(unsigned a = start_idx; a < sf->params_len; a++){
 				if(a>start_idx){
 					script_interface.append(",");
 				}
@@ -99,7 +99,7 @@ namespace zetscript{
 				native_interface.append(" (*)");
 				native_interface.append("(");
 
-				for(int a = 0; a < sf->params_len; a++){
+				for(unsigned a = 0; a < sf->params_len; a++){
 					if(a>0){
 						native_interface.append(",");
 					}
@@ -126,7 +126,7 @@ namespace zetscript{
 			return true;
 		}
 
-		for(int i=0; i < this->idx_base_types->count; i++){
+		for(unsigned i=0; i < this->idx_base_types->count; i++){
 			if (script_type_factory->getScriptType(this->idx_base_types->items[i])->extendsFrom(_idx_script_type) == true) {
 				return true;
 			}
@@ -719,7 +719,7 @@ namespace zetscript{
 
 	ScriptType::~ScriptType(){
 
-		for(int i=0; i < allocated_member_properties->count; i++){
+		for(unsigned i=0; i < allocated_member_properties->count; i++){
 			MemberProperty *mp=(MemberProperty *)allocated_member_properties->items[i];
 			delete mp;
 		}

@@ -48,8 +48,8 @@ namespace zetscript{
 
 		zs_int 				ref_native_function_ptr;
 		ScriptFunctionParam	*params;
-		int 				params_len;
-		int					min_code_stack_needed;
+		size_t 				params_len;
+		size_t				min_code_stack_needed;
 
 		PtrInstruction  instructions; // The set of byte code instructions that executes the function
 
@@ -84,7 +84,7 @@ namespace zetscript{
 		//-----------
 
 		static void printGeneratedCode(ScriptFunction *sfo,ScriptType *sc=NULL);
-		static void checkNativeFunctionParams(Scope *_scope,int _idx_return_type, const zs_string & _function_name,ScriptFunctionParam *_params,int _params_len);
+		static void checkNativeFunctionParams(Scope *_scope,int _idx_return_type, const zs_string & _function_name,ScriptFunctionParam *_params,size_t _params_len);
 
 
 		int existArgumentName(const zs_string & arg_name);
