@@ -55,12 +55,13 @@ namespace zetscript{
 					}
 				}
 
+
 				delete scope;
 
 				scopes->erase(v);
-			}else{
-				--v;
 			}
+
+			--v;
 		}
 	}
 

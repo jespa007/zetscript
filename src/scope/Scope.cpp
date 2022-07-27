@@ -308,29 +308,38 @@ namespace zetscript{
 	Scope::~Scope(){
 
 		// delete scope found
-		delete scopes;
-		scopes=NULL;
+		if(scopes!=NULL){
+			delete scopes;
+			scopes=NULL;
+		}
 
-		// delete local local_symbols found...
-		for(unsigned i = 0; i < symbol_types->count; i++){
-			delete (Symbol *)symbol_types->items[i];
+		if(symbol_types != NULL){
+			// delete local local_symbols found...
+			for(unsigned i = 0; i < symbol_types->count; i++){
+				delete (Symbol *)symbol_types->items[i];
+			}
+
+			delete symbol_types;
+			symbol_types=NULL;
+
 		}
 
 
-		for(unsigned i = 0; i < symbol_functions->count; i++){
-			delete (Symbol *)symbol_functions->items[i];
+		if(symbol_functions != NULL){
+			for(unsigned i = 0; i < symbol_functions->count; i++){
+				delete (Symbol *)symbol_functions->items[i];
+			}
+
+			delete symbol_functions;
+			symbol_functions=NULL;
 		}
 
-		for(unsigned i = 0; i < symbol_variables->count; i++){
-			delete (Symbol *)symbol_variables->items[i];
+		if(symbol_variables!=NULL){
+			for(unsigned i = 0; i < symbol_variables->count; i++){
+				delete (Symbol *)symbol_variables->items[i];
+			}
+			delete symbol_variables;
+			symbol_variables=NULL;
 		}
-
-		delete symbol_variables;
-		delete symbol_functions;
-		delete symbol_types;
-
-		symbol_functions=NULL;
-		symbol_variables=NULL;
-		symbol_types=NULL;
 	}
 }

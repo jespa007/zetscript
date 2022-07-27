@@ -9,7 +9,7 @@ namespace zetscript{
 	class zs_string
 	{
 	public:
-		static size_t npos;
+		static unsigned int npos;
 
 		zs_string();
 		zs_string(const char * buffer);

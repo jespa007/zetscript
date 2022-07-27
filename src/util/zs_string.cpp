@@ -8,7 +8,7 @@
 
 namespace zetscript{
 
-	size_t zs_string::npos=-1;
+	unsigned int zs_string::npos=-1;
 
 	void	zs_string::inc_char_slot(){
 		// condition to increase this->items:

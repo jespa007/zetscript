@@ -9,7 +9,7 @@
 namespace zetscript{
 
 	template<typename _T>
-	size_t zs_vector<_T>::npos=-1;
+	unsigned int zs_vector<_T>::npos=-1;
 
 	template<typename _T>
 	bool	zs_vector<_T>::push_back_slot(){
@@ -112,7 +112,7 @@ namespace zetscript{
 			return;
 		}
 
-		for (int i = _idx; i < (int)((this->count-1)); i++) {
+		for (unsigned i = _idx; i < (this->count-1); i++) {
 			this->items[i] = this->items[i+1];
 		}
 

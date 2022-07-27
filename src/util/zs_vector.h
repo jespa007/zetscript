@@ -12,7 +12,7 @@ namespace zetscript{
 	class zs_vector{
 	public:
 
-		static size_t npos;
+		static unsigned int npos;
 		//public
 		_T* items;
 		size_t count; //number of items
