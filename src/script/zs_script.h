@@ -3,6 +3,7 @@
  *  See LICENSE file for details.
  */
 #include "ScriptObject.h"
+#include "ScriptObjectWeakPointer.h"
 #include "ScriptObjectMemberFunction.h"
 #include "ScriptObjectString.h"
 #include "ScriptObjectStringWrap.h"

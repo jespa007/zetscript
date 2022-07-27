@@ -245,6 +245,8 @@ namespace zetscript{
 			delete zs_ei_assign_loader_instructions_post_expression.items[i];
 		}
 		zs_ei_assign_loader_instructions_post_expression.clear();
+
+
 	}
 
 	char * eval_expression_to_byte_code(
@@ -262,7 +264,7 @@ namespace zetscript{
 		zs_vector<TokenNode *> assing_token_informations;
 		int idx_start=0;
 		int idx_end=(int)(token_nodes->count-1);
-		zs_vector<zs_vector<EvalInstruction *>> zs_ei_assign_loader_instructions_post_expression; // zs_vector<zs_vector<EvalInstruction *>>
+		zs_vector<zs_vector<EvalInstruction *> *> zs_ei_assign_loader_instructions_post_expression; // zs_vector<zs_vector<EvalInstruction *>>
 		zs_vector<EvalInstruction *> ei_assign_store_instruction_post_expression;
 		int idx_start_instructions=0;
 		zs_vector<EvalInstruction *> logical_and_jnt,logical_or_jt;
@@ -313,7 +315,7 @@ namespace zetscript{
 						,"Calling a function in left assignment is not allowed");
 			}
 
-			zs_ei_assign_loader_instructions_post_expression.push_back(zs_vector<EvalInstruction *>());//ei_assign_loader_instructions_post_expression=new zs_vector<EvalInstruction *>());
+			zs_ei_assign_loader_instructions_post_expression.push_back(ei_assign_loader_instructions_post_expression=new zs_vector<EvalInstruction *>());//ei_assign_loader_instructions_post_expression=new zs_vector<EvalInstruction *>());
 
 			// assign operators: add instructions related about its accessors...
 			for(int j=0;j<token_node_symbol->eval_instructions.count;j++){
@@ -560,7 +562,7 @@ namespace zetscript{
 		// ... finally save store operators
 		for(int i=(int)(zs_ei_assign_loader_instructions_post_expression.count-1); i >=0 ;i--){
 			//loaders
-			dst_instructions->concat(zs_ei_assign_loader_instructions_post_expression.items[i]);
+			dst_instructions->concat(*zs_ei_assign_loader_instructions_post_expression.items[i]);
 
 			// push back assign operator
 			dst_instructions->push_back(
@@ -568,7 +570,7 @@ namespace zetscript{
 			);
 		}
 
-		//eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
+		eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
 
 		return aux_p;
 
@@ -579,7 +581,7 @@ eval_error_byte_code:
 			delete (EvalInstruction *)ei_assign_store_instruction_post_expression.items[i];
 		}
 
-		//eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
+		eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);
 
 		return NULL;
 

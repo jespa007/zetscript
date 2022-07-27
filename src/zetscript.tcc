@@ -1511,12 +1511,12 @@ namespace zetscript{
 			// 1. some variable in main function ...
 			if(access_var.count>1){
 				for(int i=0; i < access_var.count-1; i++){
-					zs_string *symbol_to_find=(zs_string *)access_var.items[i];
+					zs_string symbol_to_find=access_var.items[i];
 					if(i==0){ // get variable through main_class.main_function (global element)
 						zs_vector<Symbol *> *list_variables=main_function->scope_script_function->symbol_variables;
 						for(int j = 0; j < list_variables->count && calling_obj==NULL; j++){
 							Symbol * registered_symbol=(Symbol *)list_variables->items[j];
-							if(registered_symbol->name==*symbol_to_find
+							if(registered_symbol->name==symbol_to_find
 							&& registered_symbol->scope == MAIN_SCOPE(this)){
 								StackElement *stk = vm_get_stack_element_at(virtual_machine,j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
@@ -1542,12 +1542,12 @@ namespace zetscript{
 									,line
 									,"Cannot bind script function '%s': Variable name '%s' doesn't exist"
 									,function_access.c_str()
-									,symbol_to_find->c_str()
+									,symbol_to_find.c_str()
 							);
 						}
 
 					}else{ // we have got the calling_obj from last iteration ...
-						se = calling_obj->getProperty(*symbol_to_find);
+						se = calling_obj->getProperty(symbol_to_find);
 						if(se!=NULL){
 							if(se->properties & STK_PROPERTY_SCRIPT_OBJECT){
 								calling_obj=(ScriptObject *)se->value;
@@ -1557,7 +1557,7 @@ namespace zetscript{
 										,line
 										,"Cannot bind script function '%s': Variable name '%s' not script variable"
 										,function_access.c_str()
-										,symbol_to_find->c_str()
+										,symbol_to_find.c_str()
 								);
 							}
 						}
@@ -1567,13 +1567,13 @@ namespace zetscript{
 								,line
 								,"Cannot bind script function '%s': Variable name '%s' doesn't exist"
 								,function_access.c_str()
-								,symbol_to_find->c_str()
+								,symbol_to_find.c_str()
 							);
 						}
 					}
 				}
 
-				symbol_sfm=calling_obj->getScriptType()->getSymbolMemberFunction(*((zs_string *)access_var.items[access_var.count-1]));
+				symbol_sfm=calling_obj->getScriptType()->getSymbolMemberFunction(access_var.items[access_var.count-1]);
 				if(symbol_sfm!=NULL){
 					ScriptFunction *test_fun=NULL;
 					if(symbol_sfm->properties & SYMBOL_PROPERTY_FUNCTION){
@@ -1589,18 +1589,18 @@ namespace zetscript{
 							,line
 							,"Cannot bind script function '%s': Cannot find function '%s'"
 							,function_access.c_str()
-							,((zs_string *)(access_var.items[access_var.count-1]))->c_str()
+							,access_var.items[access_var.count-1].c_str()
 					);
 				}
 
 			}else{ // some function in main function
-				zs_string *symbol_to_find=(zs_string *)access_var.items[0];
+				zs_string symbol_to_find=access_var.items[0];
 				zs_vector<Symbol *> *list_functions=main_function->scope_script_function->symbol_functions;
 
 				for(int i = 0; i < list_functions->count && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->items[i];
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
-					if(	aux_fun_obj->name_script_function  == *symbol_to_find){
+					if(	aux_fun_obj->name_script_function == symbol_to_find){
 						fun_obj=aux_fun_obj;
 					}
 
@@ -1613,7 +1613,7 @@ namespace zetscript{
 						,line
 						,"Cannot bind script function '%s': Variable name '%s' is not found or not function type"
 						,function_access.c_str()
-						,((zs_string *)access_var.items[access_var.count-1])->c_str()
+						,access_var.items[access_var.count-1].c_str()
 				);
 			}
 			try{
@@ -1622,9 +1622,6 @@ namespace zetscript{
 				THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': %s",function_access.c_str(),ex.what());
 			}
 
-			for(int i=0; i < access_var.count;i++){
-				delete (zs_string *)access_var.items[i];
-			}
 
 			return return_function;
 

@@ -92,23 +92,20 @@ namespace zetscript{
 
 			if(properties & INSTRUCTION_PROPERTY_ILOAD){
 
-				int num_stack=0;
+				int num_stack=1;
 				switch(properties & INSTRUCTION_PROPERTY_ILOAD){
 				default:
-					num_stack=1;
-					break;
 				case INSTRUCTION_PROPERTY_ILOAD_R:
-					if(properties & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) num_stack++;
-					break;
 				case INSTRUCTION_PROPERTY_ILOAD_KR:
-					if(properties & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) num_stack++;
-					break;
 				case INSTRUCTION_PROPERTY_ILOAD_RK:
-					if(properties & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) num_stack++;
 					break;
 				case INSTRUCTION_PROPERTY_ILOAD_RR:
-					if(properties & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) num_stack++;
-					if(_instruction->value_op2 & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) num_stack++;
+					if((properties & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR)
+							&&
+						(_instruction->value_op2 & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR))
+					{
+						num_stack=2;
+					}
 					break;
 				}
 

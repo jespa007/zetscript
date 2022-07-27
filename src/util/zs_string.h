@@ -9,7 +9,7 @@ namespace zetscript{
 	class zs_string
 	{
 	public:
-		static int npos;
+		static size_t npos;
 
 		zs_string();
 		zs_string(const char * buffer);
@@ -24,16 +24,16 @@ namespace zetscript{
 		zs_string& operator=(zs_string && dying_obj);
 
 
-	    char& operator[] (int pos);
-	    const char& operator[] (int pos) const;
+	    char& operator[] (unsigned pos);
+	    const char& operator[] (unsigned _pos) const;
 
-	    char& at (int pos);
-	    const char& at (int pos) const;
+	    char& at (unsigned pos);
+	    const char& at (unsigned _pos) const;
 
 	    void clear();
 
 
-	    zs_string  substr (int pos = 0, int len = npos) const;
+	    zs_string  substr (unsigned pos = 0, size_t len = npos) const;
 
 	    // +
 		friend zs_string operator+(const zs_string & _s1, const zs_string &_s2);
@@ -53,19 +53,19 @@ namespace zetscript{
 		friend bool operator!=(const zs_string & _s1, const char *_s2);
 		friend bool operator!=(const char * _s1, const zs_string & _s2);
 
-		int find(const zs_string &_s, int pos = 0) const;
-		int find(const char *_s, int pos = 0) const;
-		int find_last_of(const char *_s, int pos = npos) const;
+		int find(const zs_string &_s, unsigned pos = 0) const;
+		int find(const char *_s, unsigned pos = 0) const;
+		int find_last_of(const char *_s, unsigned pos = npos) const;
 
-		zs_string & replace(int _pos, int _len, const zs_string & to_replace);
-		void append(const char *buf, int _len=npos);
+		zs_string & replace(unsigned _pos, size_t _len, const zs_string & to_replace);
+		void append(const char *buf, size_t _len=npos);
 		void append(char _c);
 		void append(const zs_string & _s);
 
-		void erase(int _pos, int _len);
-		void erase(int _pos);
-		void insert(int _pos, char _c);
-		void insert(int _pos, const zs_string & _s1);
+		void erase(unsigned _pos, size_t _len);
+		void erase(unsigned _pos);
+		void insert(unsigned _pos, char _c);
+		void insert(unsigned _pos, const zs_string & _s1);
 
 		bool empty() const;
 
@@ -77,8 +77,8 @@ namespace zetscript{
 
 	private:
 		char * buf = NULL;
-		int count=0;
-		int _size = 0;
+		size_t count=0;
+		size_t _size = 0;
 		static zs_string new_from_two(const char *_s1,const char *_s2);
 
 		void set(const zs_string & _s);

@@ -18,6 +18,7 @@
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_STRING 	"IteratorString"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR 	"IteratorVector"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"
+#define ZS_TYPE_NAME_OBJECT_WEAK_POINTER 		"WeakPointer"
 
 namespace zetscript{
 
@@ -49,6 +50,7 @@ namespace zetscript{
 		IDX_TYPE_FUNCTION, // function a(){}
 		IDX_TYPE_SCRIPT_OBJECT_VAR_REF,
 		IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER,
+		IDX_TYPE_SCRIPT_OBJECT_WEAK_POINTER,
 		//--------------------------------------------------------------------------------------------------------------------->
 		// RESERVED FOR ZETSCRIPT BUILT-IN CLASSES STARTS STARTS FROM "IDX_TYPE_SCRIPT_OBJECT_STRING". PLEASE DONT'T MOVE!!!!!
 		IDX_TYPE_SCRIPT_OBJECT_STRING, // "String"

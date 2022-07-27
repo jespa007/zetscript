@@ -4,6 +4,7 @@
  */
 #include 		"ScriptObject.cpp"
 #include 		"ScriptObjectMemberFunction.cpp"
+#include 		"ScriptObjectWeakPointer.cpp"
 #include		"ScriptObjectString.cpp"
 #include		"ScriptObjectStringWrap.cpp"
 #include		"ScriptObjectVector.cpp"

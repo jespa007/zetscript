@@ -371,6 +371,7 @@ SET(
 	util/zs_timespan.h
 	util/zs_util.h
 	util/zs_vector.h
+	util/zs_vector.tcc
 	
 	#eval
 	eval/eval_keyword.h
@@ -404,6 +405,7 @@ SET(
 	script/ScriptObjectIteratorVector.h
 	script/ScriptObjectIteratorVectorWrap.h
 	script/ScriptObjectMemberFunction.h
+	script/ScriptObjectWeakPointer.h
 	script/ScriptObjectObject.h
 	script/ScriptObjectObjectWrap.h
 	script/ScriptObjectString.h
