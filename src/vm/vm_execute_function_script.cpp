@@ -15,16 +15,12 @@ namespace zetscript{
 		,short idx
 	);
 
-	static int rec = 0;
-
 	void vm_execute_function_script(
 			VirtualMachine			* vm,
 			ScriptObject			* this_object,
 			ScriptFunction 			* calling_function,
 			StackElement 		  	* _stk_local_var
 	    ){
-
-		printf("rec %i", rec++);
 
 		VirtualMachineData *data = (VirtualMachineData*)vm->data;
 		Instruction * instructions = calling_function->instructions;//calling_instruction;
@@ -310,7 +306,7 @@ load_next_element_object:
 
 				if(so_aux == NULL)
 				{
-					VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(so_aux,(instruction-1)));
+					VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(calling_function,(instruction-1)));
 				}
 
 find_element_object:
@@ -833,41 +829,55 @@ find_element_object:
 
 						so_aux=(ScriptObject *)stk_src->value;
 
-						stk_dst->value=(intptr_t)so_aux;
-						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
-						StackElement *stk_obj=NULL;
+						// already share and dst is slot --> becomes a weak pointer
+						if((so_aux->shared_pointer->data.n_shares>0) && (container_slot_store_object!=NULL)){
 
-
-
-						if(container_slot_store_object!=NULL){
+							StackElement *stk_obj=NULL;
 
 							// Possibly cyclic reference
 							if((so_aux->isNativeObject()==false) && (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)){
 								// More tests would be needed see issue #336
 								if(container_slot_store_object->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
-									/*printf("\nAssing object %p type '%s' to slot '%i'"
+									printf("\nAssing object %p type '%s' to slot '%i'"
 											,container_slot_store_object
 											,container_slot_store_object->getScriptType()->str_script_type.c_str()
 											,(int)container_slot_store_id_slot
-									);*/
+									);
 									stk_obj=container_slot_store_object->getBuiltinElementAt(container_slot_store_id_slot);
 								}else{
-									/*printf("\nAssing object %p type '%s' to slot '%s'"
+									printf("\nAssing object %p type '%s' to slot '%s'"
 											,container_slot_store_object
 											,container_slot_store_object->getScriptType()->str_script_type.c_str()
 											,(const char *)container_slot_store_id_slot
-									);*/
+									);
 									stk_obj=container_slot_store_object->getProperty((const char *)container_slot_store_id_slot);
 								}
 
-								so_aux->refObject((ScriptObject **)&stk_obj->value);
-							}
-						}
+								// create weak pointer
+								auto weak_pointer=new ScriptObjectWeakPointer(so_aux);
 
-						if(stk_obj == NULL){
+
+								stk_dst->value=(intptr_t)weak_pointer;
+								stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+
+								if(!vm_create_shared_script_object(vm,weak_pointer)){
+									goto lbl_exit_function;
+								}
+
+								if(!vm_share_script_object(vm,weak_pointer)){
+									goto lbl_exit_function;
+								}
+
+								//so_aux->refObject(NULL);//(ScriptObject **)&stk_obj->value);
+							}
+						}else{ // share
+							stk_dst->value=(intptr_t)so_aux;
+							stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+
 							if(!vm_share_script_object(vm,so_aux)){
 								goto lbl_exit_function;
 							}
+
 						}
 
 					}else{
@@ -1810,7 +1820,7 @@ execute_function:
 		//=========================
 	}
 
-	StackElement *vm_load_this_element(
+	/*StackElement *vm_load_this_element(
 			VirtualMachine			* vm
 			,ScriptObject			* this_object
 			,ScriptFunction 		* calling_function
@@ -1837,12 +1847,17 @@ execute_function:
 
 				// getter requires stack to save value and avoid destroy previuos value
 				stk_var=data->stk_vm_current;
-				data->stk_vm_current++;
+
+				//data->stk_vm_current++;
+			}else{
+				VM_STOP_EXECUTE(
+						"Property '%s' does not implements _get metamethod",SFI_GET_SYMBOL_NAME(calling_function,instruction)
+				);
 			}
 		}
 
 lbl_exit_function:
 
 		return stk_var;
-	}
+	}*/
 }

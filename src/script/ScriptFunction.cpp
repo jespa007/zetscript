@@ -103,10 +103,10 @@ namespace zetscript{
 
 		printf("______________________________________________________________\n\n");
 		printf(" Function: '%s%s'                                             \n",class_str.c_str(),symbol_ref.c_str());
-		printf(" Stack code: %lu                                       		  \n",sfo->min_code_stack_needed);
-		printf(" Stack local vars: %lu                                        \n",sfo->local_variables->count);
-		printf(" Total stack required: %lu                                    \n\n",sfo->local_variables->count+sfo->min_code_stack_needed);
-		printf(" Scopes: %lu                                                  \n",sfo->scope_script_function->scopes->count);
+		printf(" Stack code: %i                                       		  \n",sfo->min_code_stack_needed);
+		printf(" Stack local vars: %i                                         \n",sfo->local_variables->count);
+		printf(" Total stack required: %i                                     \n\n",sfo->local_variables->count+sfo->min_code_stack_needed);
+		printf(" Scopes: %i                                                   \n",sfo->scope_script_function->scopes->count);
 
 		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
