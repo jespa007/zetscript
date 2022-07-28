@@ -10,7 +10,7 @@ namespace zetscript{
 
 			if(zs_dir::exists(_path) == false){
 
-				size_t pos = _path.find_last_of("\\/");
+				int pos = _path.find_last_of("\\/");
 				 return (zs_string::npos == pos)
 					 ? ""
 					 : _path.substr(0, pos);
@@ -20,7 +20,7 @@ namespace zetscript{
 		}
 
 		zs_string  get_filename(const zs_string & _path) {
-		  unsigned found;
+		  int found;
 		  zs_string ss=_path;
 		  found=_path.find_last_of("/\\");
 		  if(found != zs_string::npos){
@@ -35,7 +35,7 @@ namespace zetscript{
 
 
 			zs_string fName(file);
-				unsigned pos = fName.find_last_of(".");
+				int pos = fName.find_last_of(".");
 				if(pos == zs_string::npos)  //No extension.
 					return fName;
 

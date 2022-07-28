@@ -469,16 +469,16 @@ namespace zetscript{
 
 	 }
 
-	void ScriptFunction::checkNativeFunctionParams(Scope *_scope,int _idx_return_type,const zs_string & _function_name,ScriptFunctionParam *_params,size_t _params_len){
+	void ScriptFunction::checkNativeFunctionParams(Scope *_scope,int _idx_return_type,const zs_string & _function_name,ScriptFunctionParam *_params,int _params_len){
 
 		ZS_UNUSUED_PARAM(_idx_return_type);
 
-		for(unsigned i=0; i < _scope->symbol_functions->count;i++){
+		for(int i=0; i < _scope->symbol_functions->count;i++){
 			bool same_signature=true;
 			Symbol *symbol_function_memeber= (Symbol *)_scope->symbol_functions->items[i];
 			ScriptFunction *function_member=(ScriptFunction *)symbol_function_memeber->ref_ptr;
 			if(symbol_function_memeber->name==_function_name && function_member->params_len==_params_len){
-				for(unsigned j=0; j < _params_len && same_signature;j++){
+				for(int j=0; j < _params_len && same_signature;j++){
 					same_signature&=function_member->params[j].name==(_params)[j].name;
 				}
 
@@ -681,7 +681,7 @@ namespace zetscript{
 
 	void ScriptFunction::updateParams(
 			ScriptFunctionParam **_params
-			,size_t _params_len
+			,int _params_len
 	){
 		if(_params == NULL){
 			return;
@@ -743,7 +743,7 @@ namespace zetscript{
 		if(unresolved_symbols.count > 0){
 
 			const char *str_aux=NULL;
-			unsigned i=0;
+			int i=0;
 			while(i < unresolved_symbols.count){
 				Instruction *unresolved_instruction=&instructions[unresolved_symbols.items[i]];
 				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(this,unresolved_instruction);
@@ -835,7 +835,7 @@ namespace zetscript{
 	ScriptFunction::~ScriptFunction(){
 		clear();
 
-		for(unsigned i=0; i < instruction_source_infos.count; i++){
+		for(int i=0; i < instruction_source_infos.count; i++){
 			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_infos.items[i];
 			if(isi != NULL){
 				delete isi;

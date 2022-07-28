@@ -9,7 +9,7 @@
 namespace zetscript{
 
 	template<typename _T>
-	unsigned int zs_vector<_T>::npos=-1;
+	int zs_vector<_T>::npos=-1;
 
 	template<typename _T>
 	bool	zs_vector<_T>::push_back_slot(){
@@ -27,7 +27,7 @@ namespace zetscript{
 			_T *aux_buf=new _T[ this->_size];
 
 			// copy.
-			for(unsigned i=0; i < this->count; i++){
+			for(int i=0; i < this->count; i++){
 				aux_buf[i]=this->items[i];// =(zs_int *) realloc(this->items, sizeof(zs_int) * this->_size);
 			}
 
@@ -59,7 +59,7 @@ namespace zetscript{
 		this->items = new _T[_size]; //(zs_int*)ZS_MALLOC(sizeof(zs_int) * _size + 1); // + 1 for the keeping the null character
 		
 		//memcpy(this->items, _vector.items, count*sizeof(zs_int)); // copy from the incoming buffer to character buffer of the new object
-		for(unsigned i=0; i < count; i++){
+		for(int i=0; i < count; i++){
 			this->items[i]=_vector.items[i];
 		}
 
@@ -88,31 +88,31 @@ namespace zetscript{
 	}
 
 	template<typename _T>
-	void zs_vector<_T>::set(unsigned _idx, const _T & _val){
-		if (_idx >= this->count) {
+	void zs_vector<_T>::set(int _pos, const _T & _val){
+		if (_pos<0 || _pos >= this->count) {
 			THROW_RUNTIME_ERRORF("vector::set => idx out of bounds 1");
 			return;
 		}
-		this->items[_idx] = _val;
+		this->items[_pos] = _val;
 	}
 
 	template<typename _T>
-	const _T &	zs_vector<_T>::get(unsigned  _idx){
-		if (_idx >= this->count) {
+	const _T &	zs_vector<_T>::get(int  _pos){
+		if (_pos<0 ||_pos >= this->count) {
 			THROW_RUNTIME_ERRORF("vector::get => idx out of bounds");
 		}
 
-		return this->items[_idx];
+		return this->items[_pos];
 	}
 
 	template<typename _T>
-	void zs_vector<_T>::erase(unsigned  _idx){
-		if (_idx >= this->count) {
+	void zs_vector<_T>::erase(int  _pos){
+		if (_pos<0 ||_pos >= this->count) {
 			THROW_RUNTIME_ERRORF("vector::erase => idx out of bounds");
 			return;
 		}
 
-		for (unsigned i = _idx; i < (this->count-1); i++) {
+		for (int i = _pos; i < (this->count-1); i++) {
 			this->items[i] = this->items[i+1];
 		}
 
@@ -134,7 +134,7 @@ namespace zetscript{
 	}
 
 	template<typename _T>
-	void zs_vector<_T>::resize(size_t _new_size){
+	void zs_vector<_T>::resize(int _new_size){
 		// the new size is greather (do not copy, only decrease the number of elements)
 		if( _new_size <= _size){
 			count=_new_size;
@@ -155,7 +155,7 @@ namespace zetscript{
 		}
 
 		// copy old values
-		for(unsigned i=0; i < count; i++){
+		for(int i=0; i < count; i++){
 			new_buf[i]= this->items[i];
 		}
 
@@ -186,7 +186,7 @@ namespace zetscript{
 	}
 
 	template<typename _T>
-	void 		zs_vector<_T>::insert(unsigned  _idx,const zs_vector<_T>  & _src_vector, size_t _n_elements_src_vector_to_copy){
+	void 		zs_vector<_T>::insert(int  _pos,const zs_vector<_T>  & _src_vector, int _n_elements_src_vector_to_copy){
 
 
 		if(_src_vector.count==0) { // no insert
@@ -205,8 +205,8 @@ namespace zetscript{
 			);
 		}
 
-		if(_idx > count){
-			THROW_RUNTIME_ERROR("idx position to insert out of bounds: idx (%i) >= count(%i)",_idx,count);
+		if(_pos > count){
+			THROW_RUNTIME_ERROR("idx position to insert out of bounds: idx (%i) >= count(%i)",_pos,count);
 		}
 
 
@@ -214,7 +214,7 @@ namespace zetscript{
 		if(this->_size<=(_n_elements_src_vector_to_copy+count)){
 			_size=_n_elements_src_vector_to_copy+count;
 			if(_size >=  ZS_VECTOR_MAX_ELEMENTS){
-				THROW_RUNTIME_ERROR("Cannot insert. Reached max capacity",_idx,count);
+				THROW_RUNTIME_ERROR("Cannot insert. Reached max capacity",_pos,count);
 			}
 		}
 
@@ -222,22 +222,22 @@ namespace zetscript{
 
 		// copy first part dst_vector
 		//memcpy(new_items,items,idx*sizeof(zs_int));
-		for(unsigned i=0; i < _idx; i++){
+		for(int i=0; i < _pos; i++){
 			new_items[i]=this->items[i];
 		}
 
 
 		// copy src_vector -> dst_vector middle
 		//memcpy(new_items+idx,list->items,n_list_elements_to_copy*sizeof(zs_int));
-		for(unsigned i=0; i < _n_elements_src_vector_to_copy; i++){
-			new_items[i+_idx]=_src_vector.items[i];
+		for(int i=0; i < _n_elements_src_vector_to_copy; i++){
+			new_items[i+_pos]=_src_vector.items[i];
 		}
 
 
 		// copy last part of dst_vector
 		//memcpy(new_items+idx+n_list_elements_to_copy,items+idx,(count-idx)*sizeof(zs_int));
-		for(unsigned i=0; i < (count-_idx); i++){
-			new_items[i+_idx+_n_elements_src_vector_to_copy]=this->items[i+_idx];
+		for(int i=0; i < (count-_pos); i++){
+			new_items[i+_pos+_n_elements_src_vector_to_copy]=this->items[i+_pos];
 		}
 
 		if(this->items != NULL){
@@ -252,19 +252,19 @@ namespace zetscript{
 	}
 
 	template<typename _T>
-	void 		zs_vector<_T>::insert(unsigned  _idx, const _T & _val){
-		if(_idx > (this->count+1)){
+	void 		zs_vector<_T>::insert(int  _pos, const _T & _val){
+		if(_pos > (this->count+1)){
 			THROW_RUNTIME_ERROR("idx should be 0 to %i",this->count+1);
 			return;
 		}
 
 		if(push_back_slot()){
 			// 1. move all elements...
-			for(int i=(int)this->count-1;i>(int)_idx;i--){
+			for(int i=(int)this->count-1;i>(int)_pos;i--){
 				this->items[i]=this->items[i-1];
 			}
 			// 2. Assign element
-			this->items[_idx]=_val;
+			this->items[_pos]=_val;
 		}
 	}
 

@@ -4,7 +4,7 @@
  */
 namespace zetscript{
 
-	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,unsigned idx_glb_element);
+	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
 	bool 			vm_create_shared_script_object(VirtualMachine *vm, ScriptObject *_obj);
 	bool 			vm_share_script_object(VirtualMachine *vm, ScriptObject *_obj);
 
@@ -200,7 +200,7 @@ namespace zetscript{
 		ScriptType *main_class=script_types->get(idx_register_class);
 
 
-		for(unsigned i=0; i < main_class->idx_base_types->count; i++){
+		for(int i=0; i < main_class->idx_base_types->count; i++){
 			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base type...
 			if(sc->str_script_type_ptr ==base_class_name_ptr){
 				THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
@@ -213,7 +213,7 @@ namespace zetscript{
 		ScriptType *base=(ScriptType *)script_types->get(idx_base_type);
 
 		// search native types that already inherits type B
-		for(unsigned i=0; i < main_class->idx_base_types->count; i++){
+		for(int i=0; i < main_class->idx_base_types->count; i++){
 			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base type...
 			// check whether type inherits inheritates B
 			if(sc->extendsFrom(idx_base_type)){
@@ -250,7 +250,7 @@ namespace zetscript{
 		zs_vector<Symbol *> *base_functions=base_class->scope_script_type->symbol_functions;
 
 		// register all c vars symbols ...
-		for(unsigned i = 0; i < base_functions->count; i++){
+		for(int i = 0; i < base_functions->count; i++){
 
 			Symbol *src_symbol = (Symbol *)base_functions->items[i];
 
@@ -331,7 +331,7 @@ namespace zetscript{
 		}
 
 
-		for(unsigned i = 0; i < base_vars->count; i++){
+		for(int i = 0; i < base_vars->count; i++){
 			Symbol *src_symbol = (Symbol *)base_vars->items[i];
 
 			if(src_symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
@@ -395,7 +395,7 @@ namespace zetscript{
 				while(*it_setter!= 0){
 					MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
-						for(unsigned h=0; h < mp_info.setters->count; h++){
+						for(int h=0; h < mp_info.setters->count; h++){
 
 							StackElement *stk_setter=mp_info.setters->items[h];
 							Symbol *symbol_setter=(Symbol *)stk_setter->value;

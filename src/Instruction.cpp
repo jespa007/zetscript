@@ -224,11 +224,12 @@ namespace zetscript{
 					 // +1 to pop ScriptObjectMemberFunction or MemberFunction for CONSTRUCTOR
 					return INSTRUCTION_GET_RETURN_COUNT(_instruction)-(INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+1);
 				default:
-					THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed",_instruction->byte_code);
+					
 					break;
 				}
 			}
 
+			THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed", _instruction->byte_code);
 			return 0;
 		}
 

@@ -25,7 +25,7 @@ namespace zetscript{
 
 			_str_result.append('[');
 
-			for (unsigned i = 0; i < _vector->length(); i++) {
+			for (int i = 0; i < _vector->length(); i++) {
 				if (i > 0) {
 					_str_result.append(',');
 				}

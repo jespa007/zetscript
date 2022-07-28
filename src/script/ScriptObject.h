@@ -57,7 +57,7 @@ namespace zetscript{
 		Symbol 						*	getGetter();
 		zs_vector<StackElement *> 	*	getSetterList(ByteCodeMetamethod _byte_code_metamethod);
 
-		virtual	size_t 					length();
+		virtual	int 					length();
 
 		ZetScript      				* 	getZetScript();
 		StackElement 				* 	getBuiltinProperty(const zs_string & property_name);

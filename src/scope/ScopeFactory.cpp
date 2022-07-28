@@ -34,7 +34,7 @@ namespace zetscript{
 	}
 
 	void ScopeFactory::clearUnusuedScopes(){
-		int v=scopes->count-1;
+		int v=(int)(scopes->count-1);
 		while(v>=0){
 			Scope *scope=(Scope *)scopes->items[v];
 
@@ -46,7 +46,7 @@ namespace zetscript{
 				if(scope->scope_parent != NULL){
 					// remove child from parent to
 					zs_vector<Scope *> *childs=scope->scope_parent->scopes;
-					for(unsigned i=0; i < childs->count; i++){
+					for(int i=0; i < childs->count; i++){
 						Scope *child=(Scope *)childs->items[i];
 						if(child==scope){
 							childs->erase(i);
@@ -71,7 +71,7 @@ namespace zetscript{
 		zs_string global_symbol="";
 
 		for(
-			int v=scopes->count-1;
+			int v=(int)(scopes->count-1);
 			v >= idx_start;
 			v--
 		){
@@ -96,7 +96,7 @@ namespace zetscript{
 	ScopeFactory::~ScopeFactory(){
 
 		// destroy all nodes ...
-		for(unsigned i = 0; i < scopes->count; i++){
+		for(int i = 0; i < scopes->count; i++){
 			delete (Scope *)scopes->get(i);
 		}
 		scopes->clear();

@@ -232,7 +232,7 @@ namespace zetscript{
 		}
 
 error_eval_keyword_var:
-		for(unsigned i=0; i < ei_member_var_init.count; i++){
+		for(int i=0; i < ei_member_var_init.count; i++){
 			delete (EvalInstruction *)ei_member_var_init.items[i];
 		}
 

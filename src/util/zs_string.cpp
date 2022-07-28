@@ -8,14 +8,15 @@
 
 namespace zetscript{
 
-	unsigned int zs_string::npos=-1;
+	int zs_string::npos=-1;
 
 	void	zs_string::inc_char_slot(){
 		// condition to increase this->items:
 		// last slot exhausted
 		if (this->_size ==this->count) {
 			this->_size += ZS_STRING_EXPAND_CHAR_ELEMENTS;
-			this->buf =(char *) realloc(this->buf, sizeof(char) * this->_size+1); // + 1 for the keeping the null character
+
+			this->buf = (char*)realloc(this->buf, sizeof(char) * this->_size + 1); // + 1 for the keeping the null character
 		}
 
 		this->count++;
@@ -26,7 +27,7 @@ namespace zetscript{
 		if(_buffer==NULL){return;} // do not create string from NULL pointers
 
 		__cleanup__(); // cleanup any existing data
-		count = strlen(_buffer);
+		count = (int)strlen(_buffer);
 		_size=count+ZS_STRING_EXPAND_CHAR_ELEMENTS;
 		this->buf = (char *)ZS_MALLOC(sizeof(char) * _size+1); // + 1 for the keeping the null character
 		strncpy(buf, _buffer, count); // copy from the incoming buffer to character buffer of the new object
@@ -97,29 +98,29 @@ namespace zetscript{
 		return *this;
 	}
 
-    char& zs_string::operator[] (unsigned pos){
+    char& zs_string::operator[] (int _pos){
 
-    	if(pos>=count) THROW_EXCEPTION("zs_string::access out of bounds");
+    	if(_pos < 0 || _pos >= this->count) THROW_EXCEPTION("zs_string::access out of bounds");
 
-    	return buf[pos];
+    	return buf[_pos];
     }
 
-    const char& zs_string::operator[] (unsigned pos) const{
-    	if(pos>=count) THROW_EXCEPTION("zs_string::access out of bounds");
+    const char& zs_string::operator[] (int _pos) const{
+    	if(_pos < 0 || _pos >= this->count) THROW_EXCEPTION("zs_string::access out of bounds");
 
-    	return buf[pos];
+    	return buf[_pos];
     }
 
-    char& zs_string::at (unsigned pos){
-    	if(pos>=count) THROW_EXCEPTION("zs_string::at out of bounds");
+    char& zs_string::at (int _pos){
+    	if(_pos < 0 || _pos >= this->count) THROW_EXCEPTION("zs_string::access out of bounds");
 
-    	return buf[pos];
+    	return buf[_pos];
     }
 
-    const char& zs_string::at (unsigned pos) const{
-    	if(pos>=count) THROW_EXCEPTION("zs_string::at out of bounds");
+    const char& zs_string::at (int _pos) const{
+    	if(_pos < 0 || _pos >= this->count) THROW_EXCEPTION("zs_string::access out of bounds");
 
-    	return buf[pos];
+    	return buf[_pos];
     }
 
     void zs_string::clear(){
@@ -141,7 +142,7 @@ namespace zetscript{
 			len2=strlen(_s2);
 		}
 
-		buf_new_from_two_size = len1 + len2;
+		buf_new_from_two_size =len1 + len2;
 
 		if(buf_new_from_two_size>0){
 			buf_new_from_two = (char *)ZS_MALLOC(buf_new_from_two_size + 1); // allocate memory to keep the concatenated string
@@ -237,18 +238,18 @@ namespace zetscript{
 
 
 
-	zs_string zs_string::substr (unsigned pos, size_t len) const{
+	zs_string zs_string::substr (int _pos, int _len) const{
 		zs_string s;
-		if(len == npos){
-			len=count-pos;
+		if(_len == npos){
+			_len=count-_pos;
 		}
 
-		if((pos+len) > count){
-			THROW_RUNTIME_ERROR("substring: pos+len >= size (%i+%i>=%i)",pos,len,count);
+		if((_pos+_len) > count){
+			THROW_RUNTIME_ERROR("substring: pos+len >= size (%i+%i>=%i)",_pos,_len,count);
 		}
 
-		char *str_cut=(char *)ZS_MALLOC(len+1);
-		strncpy(str_cut,this->buf+pos,len);
+		char *str_cut=(char *)ZS_MALLOC(_len+1);
+		strncpy(str_cut,this->buf+_pos,_len);
 
 		s=str_cut;
 
@@ -259,13 +260,13 @@ namespace zetscript{
 
 	}
 
-	zs_string & zs_string::replace(unsigned _pos, size_t _len, const zs_string & _to_replace){
+	zs_string & zs_string::replace(int _pos, int _len, const zs_string & _to_replace){
 		ZS_UNUSUED_3PARAMS(_pos, _len, _to_replace);
 		//zs_string str;
 
 		if(_pos>=this->count) THROW_RUNTIME_ERROR("insert(int,const zs_string &): _pos(%i) >= size(%i)",_pos,count);
 
-		size_t new_size = count + (_to_replace.count-_len);
+		int new_size = count + (_to_replace.count-_len);
 
 		if(new_size<=0) THROW_RUNTIME_ERRORF("replace(int , int , const zs_string & ): new_size <= 0");
 
@@ -288,14 +289,14 @@ namespace zetscript{
 		return *this;
 	}
 
-	void zs_string::erase(unsigned _pos){
+	void zs_string::erase(int _pos){
 		erase(_pos,1);
 	}
 
-	void zs_string::insert(unsigned _pos, char _c){
+	void zs_string::insert(int _pos, char _c){
 		if(_pos>=this->count) THROW_RUNTIME_ERROR("insert(int,char): _pos(%i) >= size(%i)",_pos,count);
 
-		size_t new_size = count + 1;
+		int new_size = count + 1;
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
 
 		if(_pos > 0){
@@ -311,10 +312,10 @@ namespace zetscript{
 		count=_size=new_size;
 	}
 
-	void zs_string::insert(unsigned _pos, const zs_string & _s1){
+	void zs_string::insert(int _pos, const zs_string & _s1){
 		if(_pos>=this->count) THROW_RUNTIME_ERROR("insert(int,const zs_string &): _pos(%i) >= size(%i)",_pos,count);
 
-		size_t new_size = count + _s1.count;
+		int new_size = count + _s1.count;
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
 
 		if(_pos > 0){
@@ -330,12 +331,12 @@ namespace zetscript{
 		count=_size=new_size;
 	}
 
-	void zs_string::erase(unsigned _pos, size_t _len){
+	void zs_string::erase(int _pos, int _len){
 
 		if(_pos>=this->count) THROW_RUNTIME_ERROR("erase: _pos(%i) >= size(%i)",_pos,count);
 		if((_pos+_len)>this->count) THROW_RUNTIME_ERROR("erase: _pos(%i)+_len(%i) >= size(%i)",_pos,_len,count);
 
-		size_t new_size=count-_len;
+		int new_size=count-_len;
 
 		// it erases last element
 		char *new_buf=(char *)ZS_MALLOC(new_size*sizeof(char)+1);
@@ -354,17 +355,17 @@ namespace zetscript{
 
 	}
 
-	size_t zs_string::find(const char *_s, unsigned pos) const{
+	int zs_string::find(const char *_s, int pos) const{
 
-		size_t len=strlen(_s);
+		int len=(int)strlen(_s);
 
 		if((pos<count) && (len <= count)){
 
-			size_t idx=0;
+			int idx=0;
 
 			do{
 				bool contains=true;
-				for(unsigned i=0; (i < len) && (contains==true); i++){ // search for all chars
+				for(int i=0; (i < len) && (contains==true); i++){ // search for all chars
 					if(_s[i]!=buf[idx+i]){
 						contains=false;
 					}
@@ -383,13 +384,13 @@ namespace zetscript{
 		return npos;
 	}
 
-	size_t zs_string::find(const zs_string &_s, unsigned pos) const{
+	int zs_string::find(const zs_string &_s, int pos) const{
 		return find(_s.c_str(),pos);
 	}
 
-	size_t zs_string::find_last_of(const char *_s, unsigned pos) const{
+	int zs_string::find_last_of(const char *_s, int pos) const{
 
-		size_t len=strlen(_s);
+		int len=(int)strlen(_s);
 
 		if(pos == npos){
 			pos=count-1;
@@ -401,7 +402,7 @@ namespace zetscript{
 			do{
 
 				char c=buf[idx];
-				for(unsigned i=0; i < len; i++){ // search for all chars
+				for(int i=0; i < len; i++){ // search for all chars
 					if(_s[i]==c){
 						return idx;
 					}
@@ -412,15 +413,15 @@ namespace zetscript{
 		return npos;
 	}
 
-	void zs_string::append(const char *_buf, size_t _len){
+	void zs_string::append(const char *_buf, int _len){
 
-		size_t len=_len;
+		int len=_len;
 		if(len == npos){
 			len=(int)strlen(_buf);
 		}
 
-		int new_size=(size_t)(this->count+len);
-		char *new_buf=(char *)ZS_MALLOC((size_t)(new_size+1));
+		int new_size=(int)(this->count+len);
+		char *new_buf=(char *)ZS_MALLOC((int)(new_size+1));
 
 		strncpy(new_buf,this->buf,this->count);
 		strncpy(new_buf+this->count,_buf,len);
@@ -442,7 +443,7 @@ namespace zetscript{
 		buf[count-1]=_c;
 	}
 
-	size_t zs_string::length() const
+	int zs_string::length() const
 	{
 		return count;
 	}

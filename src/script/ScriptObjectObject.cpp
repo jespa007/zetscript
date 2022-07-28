@@ -138,7 +138,7 @@ namespace zetscript{
 		return map_builtin_properties;
 	}
 
-	size_t	ScriptObjectObject::length(){
+	int	ScriptObjectObject::length(){
 		return this->map_user_properties->count();
 	}
 

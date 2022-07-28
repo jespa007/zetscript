@@ -30,7 +30,7 @@ namespace zetscript{
 		ScriptObjectObject *oo_param=NULL;
 		ScriptFunctionParam *function_params=NULL;
 		ScriptFunctionParam **function_params_ptr=NULL;
-		size_t 				 function_params_len=0;
+		int 				 function_params_len=0;
 		zs_string str_param_name;
 		ScriptFunction *sf_eval=NULL;
 		zs_vector<StackElement *> stk_params;
@@ -177,7 +177,7 @@ namespace zetscript{
 		stk_n_params=(uint8_t)stk_params.count;
 		stk_vm_current=vm_get_current_stack_element(vm);
 		stk_start=stk_vm_current;//vm data->stk_vm_current;
-		for(unsigned i = 0; i < stk_n_params; i++){
+		for(int i = 0; i < stk_n_params; i++){
 			*stk_start++=*((StackElement *)stk_params.items[i]);
 		}
 

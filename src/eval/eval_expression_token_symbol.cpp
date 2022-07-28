@@ -798,7 +798,7 @@ namespace zetscript{
 
 error_expression_token_symbol:
 
-		for(unsigned kk=0;kk<token_node_symbol->eval_instructions.count;kk++){
+		for(int kk=0;kk<token_node_symbol->eval_instructions.count;kk++){
 			delete (EvalInstruction *)token_node_symbol->eval_instructions.items[kk];
 			token_node_symbol->eval_instructions.items[kk]=0;
 		}

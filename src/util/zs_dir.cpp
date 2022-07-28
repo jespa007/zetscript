@@ -61,7 +61,7 @@ namespace zetscript{
 				do{
 					end=zs_strutils::starts_with(dir,"..")==false;
 					if(!end){
-						unsigned pos=dir.find("\\/");
+						int pos=dir.find("\\/");
 						if(pos==zs_string::npos){
 							end=true;
 						}

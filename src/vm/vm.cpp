@@ -179,7 +179,7 @@ namespace zetscript{
 
 	int vm_find_lifetime_object(VirtualMachine *vm,ScriptObject *script_object){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		for(unsigned i=0; i < data->lifetime_object.count; i++){
+		for(int i=0; i < data->lifetime_object.count; i++){
 			InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[i];
 			if(info->script_object==script_object){
 				return i;
@@ -247,7 +247,7 @@ namespace zetscript{
 		return data->stk_vm_current;
 	}
 
-	StackElement * vm_get_stack_element_at(VirtualMachine *vm, unsigned idx_glb_element){
+	StackElement * vm_get_stack_element_at(VirtualMachine *vm, int idx_glb_element){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		if(idx_glb_element < data->main_function_object->local_variables->count){
 			return &data->vm_stack[idx_glb_element];
@@ -334,7 +334,7 @@ namespace zetscript{
 			}
 
 			StackElement *stk_aux=stk_start;
-			for(unsigned i = 0; i < n_stk_params; i++){
+			for(int i = 0; i < n_stk_params; i++){
 				if(stk_params[i].properties & STK_PROPERTY_SCRIPT_OBJECT){
 					ScriptObject *so=(ScriptObject *)stk_params[i].value;
 
@@ -431,7 +431,7 @@ namespace zetscript{
 			bool some_registers_without_file_line=false;
 
 			zs_string error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
-			for(unsigned i=0; i < data->lifetime_object.count;i++ ){
+			for(int i=0; i < data->lifetime_object.count;i++ ){
 				InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[i];
 				created_at="";
 				end="";

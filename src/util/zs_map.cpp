@@ -73,7 +73,7 @@ namespace zetscript{
 		return search(_key)!=ZS_MAP_KEY_NOT_FOUND;
 	}
 
-	size_t 		zs_map::count()
+	int 		zs_map::count()
 	{
 		return _count;
 	}

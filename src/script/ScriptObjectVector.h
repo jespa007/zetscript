@@ -29,11 +29,11 @@ namespace zetscript{
 
 		ScriptObjectVector();
 
-		virtual StackElement * 	getUserElementAt(unsigned idx);
-		bool 				eraseUserElementAt(unsigned idx);
+		virtual StackElement * 	getUserElementAt(int idx);
+		bool 				eraseUserElementAt(int idx);
 		void				eraseAllUserElements();
 
-		virtual size_t length();
+		virtual int length();
 		virtual zs_vector<StackElement *> * getStkUserListElements();
 
 		bool exists(StackElement  * stk);

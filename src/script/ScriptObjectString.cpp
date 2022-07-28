@@ -73,7 +73,7 @@ namespace zetscript{
 		StackElement ** stk_src_it=stk_src;
 
 		// str1
-		for(unsigned i=0; i < 2; i++){
+		for(int i=0; i < 2; i++){
 			StackElement *stk_src_item=(*stk_src_it);
 			if(stk_src_item->properties & STK_PROPERTY_PTR_STK){
 				stk_src_item=(StackElement *)stk_src_item->value;
@@ -283,7 +283,7 @@ namespace zetscript{
 		return *((zs_string *)value);
 	}
 
-	size_t ScriptObjectString::length(){
+	int ScriptObjectString::length(){
 		return ((zs_string *)value)->length();
 	}
 

@@ -27,7 +27,7 @@ namespace zetscript{
 		void  		erase(const char * key);
 		void 		clear();
 		zs_map_node *data();
-		size_t 		count();
+		int 		count();
 		~zs_map();
 
 	private:
@@ -43,8 +43,8 @@ namespace zetscript{
 		void		push_back_slot();
 		int			search(const char * key);
 		int			new_slot(const char *_key);
-		unsigned int _size; // size vector (user count for iterate through items)
-		uint16_t _count;
+		 int _size; // size vector (user count for iterate through items)
+		int _count;
 
 	};
 

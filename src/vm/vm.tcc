@@ -280,6 +280,7 @@ namespace zetscript{
 		if(shared_pointer->data.n_shares==0){
 			// since objects can have cyclic references unref can reach twice or more 0 (it has to check more cases)
 			// we return true
+			fprintf(stderr,"WARNING: Shared pointer already deattached\n");
 			return true;
 		}
 
@@ -333,14 +334,14 @@ namespace zetscript{
 		int start_param=0;
 
 		Symbol ** stk_elements_builtin_ptr= data->main_function_object->scope_script_function->symbol_functions->items;// vector of symbols
-		int stk_elements_builtin_len=  data->main_function_object->scope_script_function->symbol_functions->count;// vector of symbols
+		size_t stk_elements_builtin_len=  data->main_function_object->scope_script_function->symbol_functions->count;// vector of symbols
 
 		if(class_obj != NULL){
 			stk_elements_builtin_ptr=class_obj->scope_script_type->symbol_functions->items;
 			stk_elements_builtin_len=class_obj->scope_script_type->symbol_functions->count;
 		}
 
-		for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
+		for(int i = (int)(stk_elements_builtin_len-1); i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 			ScriptFunction *irfs = NULL;
 			start_param=1;
 
@@ -480,7 +481,7 @@ namespace zetscript{
 				}
 			}
 
-			for(int i = stk_elements_builtin_len-1; i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
+			for(int i = (int)(stk_elements_builtin_len-1); i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
 				start_param=1;
 				ScriptFunction *irfs=NULL;
 
@@ -505,7 +506,7 @@ namespace zetscript{
 					str_candidates.append(irfs->name_script_function.c_str());
 					str_candidates.append("(");
 
-					for(unsigned a = 2; a < irfs->params_len; a++){
+					for(int a = 2; a < irfs->params_len; a++){
 						if(a>2){
 							str_candidates.append(",");
 						}
@@ -529,7 +530,7 @@ namespace zetscript{
 					str_candidates.append(" (*)");
 					str_candidates.append("(");
 
-					for(unsigned a = 0; a < irfs->params_len; a++){
+					for(int a = 0; a < irfs->params_len; a++){
 						if(a>0){
 							str_candidates.append(",");
 						}
@@ -591,7 +592,7 @@ namespace zetscript{
 		ScriptObject *script_object=NULL;
 		zs_string str_script_type_object_found="";
 		int n_stk_args=is_static?2:1;
-		int n_stk_local_symbols=0;
+		size_t n_stk_local_symbols=0;
 		StackElement *stk_return=NULL;
 		int n_returned_arguments_from_function=0;
 

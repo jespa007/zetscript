@@ -12,32 +12,32 @@ namespace zetscript{
 	class zs_vector{
 	public:
 
-		static unsigned int npos;
+		static int npos;
 		//public
 		_T* items;
-		size_t count; //number of items
+		int count; //number of items
 
 		zs_vector();
 		zs_vector(const zs_vector & _obj);
 		zs_vector& operator=(const zs_vector& _obj);
 
-		void 		set( unsigned  _idx, const _T & _val);
-		const _T &	get( unsigned  _idx);
-		void 		erase( unsigned  _idx);
+		void 		set( int  _idx, const _T & _val);
+		const _T &	get( int  _idx);
+		void 		erase( int  _idx);
 		/**
 		 * Insert item at the end
 		 */
 		bool 		push_back( const _T & _val);
 		void 		concat(const zs_vector<_T>  & _vector);
-		void 		insert(unsigned _idx,const zs_vector<_T>  & _vector, size_t _n_list_elements_to_copy=npos);
+		void 		insert(int _idx,const zs_vector<_T>  & _vector, int _n_list_elements_to_copy=npos);
 		/**
 		 * Insert item at position idx.
 		 */
-		void 		insert(unsigned  idx, const _T & _val);
+		void 		insert(int  idx, const _T & _val);
 
 		void 		clear();
 		_T    		pop_back();
-		void    	resize(size_t _len);
+		void    	resize(int _len);
 
 		/**
 		 * Deletes list and its elements.
@@ -45,7 +45,7 @@ namespace zetscript{
 		~zs_vector();
 	private:
 		//private
-		size_t		_size; // size vector (user count for iterate through items)
+		int			_size; // size vector (user count for iterate through items)
 		bool		push_back_slot();
 
 		void copy(const zs_vector<_T> & _vector);

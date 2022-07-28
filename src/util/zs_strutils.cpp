@@ -154,7 +154,7 @@ namespace zetscript{
 		zs_string to_lower(const zs_string & str){
 
 			zs_string ret = str;
-			for(unsigned short l = 0; l < ret.length();l++){
+			for(int short l = 0; l < ret.length();l++){
 				ret[l] = tolower(ret[l]);
 			}
 			return ret;
@@ -163,7 +163,7 @@ namespace zetscript{
 		zs_string to_upper(const zs_string & str){
 
 			zs_string ret = str;
-			for(unsigned short l = 0; l < ret.length();l++)
+			for(int short l = 0; l < ret.length();l++)
 				ret[l] = toupper(ret[l]);
 			return ret;
 		}
@@ -192,7 +192,7 @@ namespace zetscript{
 		zs_vector<zs_string> split(const zs_string &_s_in, const zs_string & _delim) {
 		    zs_vector<zs_string> elems;
 		    zs_string s = _s_in;
-		    unsigned pos = 0;
+		    int pos = 0;
 		    zs_string token;
 		    while ((pos = s.find(_delim)) != zs_string::npos) {
 		        token = s.substr(0, pos);
@@ -345,7 +345,7 @@ namespace zetscript{
 			zs_string str = str_old;
 			zs_string str_new="";
 
-			for (unsigned  i = 0; i < str_old.length(); ++i) {
+			for(int  i = 0; i < str_old.length(); ++i) {
 				if (str_old[i] != ch_to_remove)
 						str_new+=str_old[i];
 			}
@@ -355,7 +355,7 @@ namespace zetscript{
 		int count(const zs_string & s,char c){
 			int n_items=0;
 
-			for(unsigned i=0; i < s.length(); i++)
+			for(int i=0; i < s.length(); i++)
 				if(s[i] == c)
 					n_items++;
 
@@ -404,7 +404,7 @@ namespace zetscript{
 
 		bool contains(const zs_vector<zs_string> & input, const zs_string & str_containts,StringComparer sc){
 
-			for(unsigned i = 0; i < input.count; i++){
+			for(int i = 0; i < input.count; i++){
 				if(contains(input.items[i],str_containts,sc)){
 					return true;
 				}
@@ -415,7 +415,7 @@ namespace zetscript{
 		int index_of(zs_string& text, zs_string& pattern)
 		{
 			// where appears the pattern in the text?
-			unsigned loc = text.find(pattern, 0);
+			int loc = text.find(pattern, 0);
 			if (loc != zs_string::npos)
 			{
 				return loc;

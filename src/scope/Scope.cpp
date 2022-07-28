@@ -52,17 +52,17 @@ namespace zetscript{
 		return idx_script_function;
 	}
 
-	int Scope::numInnerScopesRecursive(Scope *sc, int n){
+	int Scope::numInnerScopesRecursive(Scope *sc, int _n){
 
 		if(sc->scope_parent!=NULL){
-			return numInnerScopesRecursive(sc->scope_parent, n+1);
+			return numInnerScopesRecursive(sc->scope_parent, _n+1);
 		}
 
-		return n;
+		return _n;
 	}
 
 	void Scope::removeChildrenBlockTypes(){
-		for(unsigned i=0; i < this->scopes->count; i++){
+		for(int i=0; i < this->scopes->count; i++){
 			markBlockScopeAsUnusuedScopesRecursive((Scope *)this->scopes->items[i]);
 		}
 
@@ -80,7 +80,7 @@ namespace zetscript{
 			_sc->properties|=SCOPE_PROPERTY_UNUSUED;
 
 			// check its
-			for(unsigned i=0; i < _sc->scopes->count;i++){
+			for(int i=0; i < _sc->scopes->count;i++){
 				Scope *_child=(Scope *)_sc->scopes->items[i];
 				if((_sc->properties & SCOPE_PROPERTY_IS_SCOPE_BLOCK)==0){
 					throw std::runtime_error("expected scope as block type");
@@ -109,7 +109,7 @@ namespace zetscript{
 		if(_sc->idx_script_function==idx_script_function_reference){ // only count variables in the scope of the function
 			n_total=_sc->symbol_variables->count;
 
-			for(unsigned i=0; i < _sc->scopes->count; i++){
+			for(int i=0; i < _sc->scopes->count; i++){
 				n_total+=Scope::countVariablesRecursive((Scope *)_sc->scopes->items[i],idx_script_function_reference);
 			}
 		}
@@ -122,7 +122,7 @@ namespace zetscript{
 
 		// because no variables in there it moves all scopes in the parent ...
 		if(scope_parent != NULL){
-			for(unsigned i=0;i < scopes->count; i++){
+			for(int i=0;i < scopes->count; i++){
 				Scope *current_scope=(Scope *)scopes->items[i];
 				scope_parent->scopes->push_back(current_scope);
 				current_scope->scope_parent = scope_parent;
@@ -221,7 +221,7 @@ namespace zetscript{
 	Symbol * Scope::getSymbol(const zs_string & _str_symbol, char _n_params, uint16_t _scope_direction){
 
 		// for each variable in current scope ...
-		for(unsigned i = 0; i < symbol_types->count; i++){
+		for(int i = 0; i < symbol_types->count; i++){
 			Symbol *sv=(Symbol *)symbol_types->items[i];
 			if(
 				   ( sv->name == _str_symbol )
@@ -230,7 +230,7 @@ namespace zetscript{
 			}
 		}
 
-		for(unsigned i = 0; i < symbol_variables->count; i++){
+		for(int i = 0; i < symbol_variables->count; i++){
 			Symbol *sv=(Symbol *)symbol_variables->items[i];
 			if(
 				   ( sv->name == _str_symbol )
@@ -239,7 +239,7 @@ namespace zetscript{
 			}
 		}
 
-		for(unsigned i = 0; i < symbol_functions->count; i++){
+		for(int i = 0; i < symbol_functions->count; i++){
 			Symbol *sv=(Symbol *)symbol_functions->items[i];
 			if(
 				   ( sv->name == _str_symbol )
@@ -261,7 +261,7 @@ namespace zetscript{
 		}
 
 		if(_scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP){
-			for(unsigned i = 0; i < scopes->count; i++){
+			for(int i = 0; i < scopes->count; i++){
 				Scope *s=(Scope *)scopes->items[i];
 
 				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
@@ -279,7 +279,7 @@ namespace zetscript{
 
 	bool Scope::unregisterSymbol(Symbol *symbol){
 		Symbol *sv=NULL;
-		for(unsigned i = 0; i < symbol_functions->count; i++){
+		for(int i = 0; i < symbol_functions->count; i++){
 			sv=(Symbol *)symbol_functions->items[i];
 			if(
 			    sv == symbol
@@ -290,7 +290,7 @@ namespace zetscript{
 			}
 		}
 
-		for(unsigned i = 0; i < symbol_variables->count; i++){
+		for(int i = 0; i < symbol_variables->count; i++){
 			sv=(Symbol *)symbol_variables->items[i];
 			if(
 			    sv == symbol
@@ -315,7 +315,7 @@ namespace zetscript{
 
 		if(symbol_types != NULL){
 			// delete local local_symbols found...
-			for(unsigned i = 0; i < symbol_types->count; i++){
+			for(int i = 0; i < symbol_types->count; i++){
 				delete (Symbol *)symbol_types->items[i];
 			}
 
@@ -326,7 +326,7 @@ namespace zetscript{
 
 
 		if(symbol_functions != NULL){
-			for(unsigned i = 0; i < symbol_functions->count; i++){
+			for(int i = 0; i < symbol_functions->count; i++){
 				delete (Symbol *)symbol_functions->items[i];
 			}
 
@@ -335,7 +335,7 @@ namespace zetscript{
 		}
 
 		if(symbol_variables!=NULL){
-			for(unsigned i = 0; i < symbol_variables->count; i++){
+			for(int i = 0; i < symbol_variables->count; i++){
 				delete (Symbol *)symbol_variables->items[i];
 			}
 			delete symbol_variables;

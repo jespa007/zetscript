@@ -563,7 +563,7 @@ namespace zetscript{
 
 				// 1. extend all symbols from base type
 				zs_vector<Symbol *> *symbol_functions=base_type->scope_script_type->symbol_functions;
-				for(unsigned i=0; i < symbol_functions->count; i++){
+				for(int i=0; i < symbol_functions->count; i++){
 					Symbol *symbol_src=(Symbol *)symbol_functions->items[i];
 					Symbol *symbol_dst=scope->registerSymbolFunction(
 							symbol_src->file
@@ -583,7 +583,7 @@ namespace zetscript{
 
 				// 1. extend all symbols from base type
 				zs_vector<Symbol *> *symbol_variables=base_type->scope_script_type->symbol_variables;
-				for(unsigned i=0; i < symbol_variables->count; i++){
+				for(int i=0; i < symbol_variables->count; i++){
 					Symbol *symbol_src=(Symbol *)symbol_variables->items[i];
 					Symbol *symbol_dst=scope->registerSymbolVariable(
 							symbol_src->file
@@ -610,7 +610,7 @@ namespace zetscript{
 
 						while(*it_setters!=0){
 							MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setters);
-							for(unsigned j=0; j < mp_info.setters->count;j++){
+							for(int j=0; j < mp_info.setters->count;j++){
 								mp_dst->metamethod_members.addSetter(*it_setters,(Symbol *)(((StackElement *)mp_info.setters->items[j])->value));
 
 							}
@@ -661,7 +661,7 @@ namespace zetscript{
 
 	ScriptType *ScriptTypeFactory::getScriptType(const zs_string & _type_name){
 
-		for(unsigned i = 0; i < script_types->count; i++){
+		for(int i = 0; i < script_types->count; i++){
 			ScriptType * sc=(ScriptType *)script_types->get(i);
 			if(_type_name == sc->str_script_type){//metadata_info.object_info.symbol_info.str_native_type){
 				return sc;
@@ -672,7 +672,7 @@ namespace zetscript{
 
 	ScriptType *ScriptTypeFactory::getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr){
 
-		for(unsigned i = 0; i < script_types->count; i++){
+		for(int i = 0; i < script_types->count; i++){
 			ScriptType * sc=(ScriptType *)script_types->get(i);
 			if(_type_name_ptr == sc->str_script_type_ptr){//metadata_info.object_info.symbol_info.str_native_type){
 				return sc;
@@ -684,7 +684,7 @@ namespace zetscript{
 
 	short ScriptTypeFactory::getIdxScriptType(const zs_string & _type_name){
 
-		for(unsigned i = 0; i < script_types->count; i++){
+		for(int i = 0; i < script_types->count; i++){
 			ScriptType * sc=(ScriptType *)script_types->get(i);
 			if(_type_name == sc->str_script_type){
 				return i;
@@ -695,7 +695,7 @@ namespace zetscript{
 
 	short ScriptTypeFactory::getIdxScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr){
 		// ok check str_native_type
-		for(unsigned i = 0; i < script_types->count; i++){
+		for(int i = 0; i < script_types->count; i++){
 			ScriptType * sc=(ScriptType *)script_types->get(i);
 			if(sc->str_script_type_ptr == _type_name_ptr){
 				return i;
@@ -771,7 +771,7 @@ namespace zetscript{
 
 		ScriptType *sc=(ScriptType *)script_types->get(_idx_script_type);
 
-		for(unsigned i=0; i < sc->idx_base_types->count; i++){
+		for(int i=0; i < sc->idx_base_types->count; i++){
 			if(scriptTypeInheritsFrom(sc->idx_base_types->items[i],_idx_base_type)){
 				return true;
 			}
@@ -796,7 +796,7 @@ namespace zetscript{
 
 	ScriptTypeFactory::~ScriptTypeFactory(){
 		// we have to destroy all allocated constructor/destructor ...
-		for (unsigned i = 0; i < script_types->count; i++) {
+		for(int i = 0; i < script_types->count; i++) {
 
 			delete (ScriptType *)script_types->get(i);
 		}

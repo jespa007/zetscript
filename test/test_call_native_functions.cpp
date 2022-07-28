@@ -163,7 +163,7 @@ void ClassCWrap_delete(zetscript::ZetScript *_zs,ClassC *_this){
 
 bool allCharsTheSame(const zetscript::zs_string & input){
 
-    for(unsigned i =1; i < input.length(); i++){
+    for(int i =1; i < input.length(); i++){
         if(input[i-1] != input[i]) return false;
     }
     return true;
@@ -172,7 +172,7 @@ bool allCharsTheSame(const zetscript::zs_string & input){
 bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ScriptObjectVector * sov){
 	ZS_UNUSUED_PARAM(_zs);
 	zetscript::zs_vector<zetscript::StackElement *> *stk_user_elements = sov->getStkUserListElements();
-   for(unsigned i =1; i < stk_user_elements->count; i++){
+   for(int i =1; i < stk_user_elements->count; i++){
 	   zetscript::StackElement *stk_1=stk_user_elements->items[i-1];
 	   zetscript::StackElement *stk_2=stk_user_elements->items[i-0];
        if(stk_1->value != stk_2->value) return false;
@@ -225,15 +225,15 @@ zetscript::ScriptObjectVector * reorderValuesFromIntArray(zetscript::ZetScript *
     try{
 		do{
 			rand_txt= newRandomCountExt(_zs,input_count,input_count);
-			 for(unsigned i =0; i < input_count; i++){
-		         equal&=(i==(unsigned)rand_txt[i]); // check if not consecutive...
+			 for(zetscript::zs_int i =0; i < input_count; i++){
+		         equal&=(i==rand_txt[i]); // check if not consecutive...
 			 }
 		}while(equal);
     }catch(std::exception & ex){
     	fprintf(stderr,"%s",ex.what());
     }
 
-    for(unsigned i =0; i < input_count; i++){
+    for(int i =0; i < input_count; i++){
     	// save resulting
     	zetscript::StackElement *stk=output->pushNewUserSlot();
     	stk->value=_input->getUserElementAt(rand_txt[i])->value;
