@@ -80,6 +80,7 @@ namespace zetscript{
 		StackElement *stk_start=_stk_local_var+calling_function->local_variables->count;   // <-- here starts stk for aux vars for operations ..
 
 		data->stk_vm_current = stk_start;
+
 		//data->vm_idx_call++;
 
 		if(((stk_start-data->vm_stack)+calling_function->min_code_stack_needed)>=VM_STACK_MAX){
@@ -106,6 +107,9 @@ namespace zetscript{
 				STK_SET_UNDEFINED(_stk_local_var+i);
 			}
 		}
+
+
+
 
 
 		//-----------------------------------------------------------------------------------------------------------------------
@@ -829,47 +833,51 @@ find_element_object:
 
 						so_aux=(ScriptObject *)stk_src->value;
 
-						// already share and dst is slot --> becomes a weak pointer
-						if((so_aux->shared_pointer->data.n_shares>0) && (container_slot_store_object!=NULL)){
+
+						// already share and src is type container and dst is slot:
+						// becomes a weak pointer to avoid possibly cyclic reference
+						if((so_aux->shared_pointer->data.n_shares>0)
+							&& (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
+							&& (container_slot_store_object!=NULL)){
 
 							StackElement *stk_obj=NULL;
 
-							// Possibly cyclic reference
-							if((so_aux->isNativeObject()==false) && (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)){
-								// More tests would be needed see issue #336
-								if(container_slot_store_object->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
-									printf("\nAssing object %p type '%s' to slot '%i'"
-											,container_slot_store_object
-											,container_slot_store_object->getScriptType()->str_script_type.c_str()
-											,(int)container_slot_store_id_slot
-									);
-									stk_obj=container_slot_store_object->getBuiltinElementAt(container_slot_store_id_slot);
-								}else{
-									printf("\nAssing object %p type '%s' to slot '%s'"
-											,container_slot_store_object
-											,container_slot_store_object->getScriptType()->str_script_type.c_str()
-											,(const char *)container_slot_store_id_slot
-									);
-									stk_obj=container_slot_store_object->getProperty((const char *)container_slot_store_id_slot);
-								}
-
-								// create weak pointer
-								auto weak_pointer=new ScriptObjectWeakPointer(so_aux);
 
 
-								stk_dst->value=(intptr_t)weak_pointer;
-								stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+							// More tests would be needed see issue #336
+							if(container_slot_store_object->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+								printf("\nAssing object %p type '%s' to slot '%i'"
+										,container_slot_store_object
+										,container_slot_store_object->getScriptType()->str_script_type.c_str()
+										,(int)container_slot_store_id_slot
+								);
+								stk_obj=container_slot_store_object->getBuiltinElementAt(container_slot_store_id_slot);
+							}else{
+								printf("\nAssing object %p type '%s' to slot '%s'"
+										,container_slot_store_object
+										,container_slot_store_object->getScriptType()->str_script_type.c_str()
+										,(const char *)container_slot_store_id_slot
+								);
+								stk_obj=container_slot_store_object->getProperty((const char *)container_slot_store_id_slot);
+							}
 
-								if(!vm_create_shared_script_object(vm,weak_pointer)){
-									goto lbl_exit_function;
-								}
+							// create weak pointer
+							auto weak_pointer=new ScriptObjectWeakPointer(so_aux);
 
-								if(!vm_share_script_object(vm,weak_pointer)){
-									goto lbl_exit_function;
-								}
+
+							stk_dst->value=(intptr_t)weak_pointer;
+							stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+
+							if(!vm_create_shared_script_object(vm,weak_pointer)){
+								goto lbl_exit_function;
+							}
+
+							if(!vm_share_script_object(vm,weak_pointer)){
+								goto lbl_exit_function;
+							}
 
 								//so_aux->refObject(NULL);//(ScriptObject **)&stk_obj->value);
-							}
+
 						}else{ // share
 							stk_dst->value=(intptr_t)so_aux;
 							stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
