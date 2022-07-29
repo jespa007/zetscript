@@ -99,7 +99,7 @@ if(MSVC)
 	
 else()
 
-	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -pedantic ")
+	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -pedantic")
    
 	if (MINGW)
 		MESSAGE("-- Plataform: MINGW" )

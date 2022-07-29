@@ -41,17 +41,14 @@
 
 #include        <memory.h>
 #include        <math.h>
-#include        <vector>
 #include		<regex>
 #include        <new>
-#include 		<functional>
 #include 		<float.h>
 #include 		<cstdarg>
 #include 		<stdexcept>
 #include 		<chrono>
 
 #include 		<typeinfo>
-#include 		<map>
 #include 		<cstddef>
 #include 		<time.h>       // time_t, struct tm, time, gmtime
 
