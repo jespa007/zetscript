@@ -51,7 +51,7 @@ stk_result_op1=--data->stk_vm_current;
 #define VM_POP_STK_TWO \
 	switch(instruction->properties & INSTRUCTION_PROPERTY_ILOAD){\
 	default:\
-	case 0:\
+	case 0: /* no optimization get 2 ops */ \
 		stk_result_op2=--data->stk_vm_current;\
 		stk_result_op1=--data->stk_vm_current;\
 		break;\

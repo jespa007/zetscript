@@ -926,6 +926,7 @@ find_element_object:
 				}/*else{
 					*data->stk_vm_current++=*stk_dst;
 				}*/
+
 				continue;
 			 case BYTE_CODE_IT_INIT:
 				VM_POP_STK_TWO;
@@ -1302,7 +1303,7 @@ execute_function:
 
 						int effective_args=sf_call_n_args < sf_call_script_function->params_len ? sf_call_n_args:sf_call_script_function->params_len;
 						ScriptFunctionParam *sf_param=sf_call_script_function->params;
-						for(int i=0;i < sf_call_n_args;++i){
+						for(int i=0;i < sf_call_n_args;i++){
 							so_param=NULL; // script object we passing
 							uint16_t sfa_properties=sf_param->properties;// ((ScriptFunctionParam *)(*function_param))->properties;
 							if((sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF)){ // create or pass the var ref object...

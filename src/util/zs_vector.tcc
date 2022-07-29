@@ -260,7 +260,7 @@ namespace zetscript{
 
 		if(push_back_slot()){
 			// 1. move all elements...
-			for(int i=(int)this->count-1;i>(int)_pos;i--){
+			for(int i=this->count-1;i>_pos;i--){
 				this->items[i]=this->items[i-1];
 			}
 			// 2. Assign element
