@@ -31,7 +31,8 @@ namespace zetscript{
 		~ScriptObjectIteratorVector();
 	private:
 
-		ScriptObjectVector *vo;
+		//ScriptObjectVector *vo;
+		RefObject *ref_object;
 		zs_int idx;
 		StackElement stk_key;
 		StackElement stk_value;

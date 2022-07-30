@@ -14,6 +14,8 @@ namespace zetscript{
 	class ScriptFunction;
 	class ScriptObjectMemberFunction;
 	class ScriptTypeFactory;
+	class ScriptObjectWeakPointer;
+	class RefObject;
 	struct VM_ScopeBlock;
 
 	typedef struct _SharedPointerInfo {
@@ -82,30 +84,34 @@ namespace zetscript{
 		virtual void			*	getNativeObject();
 		virtual zs_string 			toString();
 
-		void 						derefObject(ScriptObject  **_so);
-		void 						refObject(ScriptObject **_so);
+		void 						deRefObject(RefObject * _ref_object);
+		void 						refObject(RefObject * _ref_object);
+
+		void 						refWeakPointer(ScriptObjectWeakPointer *_wp);
+		bool 						deRefWeakPointer();
 
 		void 						printAllMemberFunctions();
 
 		virtual 					~ScriptObject();
 	protected:
 
-		StackElement 				stk_this;
+		StackElement 								stk_this;
 
-		ZetScript 				*	zs; // 8
-		VirtualMachine 			*	vm; // 8
+		ZetScript 								*	zs; // 8
+		VirtualMachine 							*	vm; // 8
 		zs_vector<StackElement *>					stk_builtin_elements;
-		zs_map					*	map_builtin_properties; // to search faster each property by its name
-		zs_vector<ScriptObject **>				*   ref_script_objects;
+		zs_map					*					map_builtin_properties; // to search faster each property by its name
+		zs_vector<RefObject *>					*   ref_script_objects;
+		zs_vector<ScriptObjectWeakPointer *>	*   weak_pointers;
 
-		void 						init(ZetScript *zs);
+		void 										init(ZetScript *zs);
 
-		ScriptTypeFactory		*	getScriptTypeFactory();
+		ScriptTypeFactory						*	getScriptTypeFactory();
 
-		virtual StackElement 	* 	newBuiltinSlot();
-		virtual StackElement 	* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
-		bool 						unrefAndFreeStackElementContainer(StackElement *si);
-		int 						idxRefObject(ScriptObject  **_so);
+		virtual StackElement 					* 	newBuiltinSlot();
+		virtual StackElement 					* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
+		bool 										unrefAndFreeStackElementContainer(StackElement *si);
+		int 										idxRefObject(RefObject  *_ref_object);
 	};
 
 }

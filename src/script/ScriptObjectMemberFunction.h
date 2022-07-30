@@ -10,7 +10,7 @@ namespace zetscript{
 	class ScriptObjectMemberFunction:public ScriptObject{
 	public:
 		ScriptFunction *so_function;
-		ScriptObject *so_object;
+		RefObject *ref_object;
 
 		//----------------------------------------------
 		//

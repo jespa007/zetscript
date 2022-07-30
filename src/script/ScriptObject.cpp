@@ -47,7 +47,8 @@ namespace zetscript{
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
-		ref_script_objects=new zs_vector<ScriptObject **>();
+		ref_script_objects=new zs_vector<RefObject *>();
+		weak_pointers=new zs_vector<ScriptObjectWeakPointer *>();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
@@ -194,13 +195,17 @@ namespace zetscript{
 		return "Object@"+getTypeName();
 	}
 
-	void ScriptObject::refObject(ScriptObject **_so){
+	void ScriptObject::refWeakPointer(ScriptObjectWeakPointer *_wp){
+		weak_pointers->push_back(_wp);
+	}
+
+	void ScriptObject::refObject(RefObject *_so){
 		ref_script_objects->push_back(_so);
 	}
 
-	int ScriptObject::idxRefObject(ScriptObject  **_so){
+	int ScriptObject::idxRefObject(RefObject  *_ref_object){
 		for(int i=0; i < ref_script_objects->count;i++){
-			if(*(ref_script_objects->items+i)==_so){
+			if(*(ref_script_objects->items+i)==_ref_object){
 				return i;
 			}
 		}
@@ -208,13 +213,23 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	void ScriptObject::derefObject(ScriptObject  **_so){
-		int idx=idxRefObject(_so);
+	bool ScriptObject::deRefWeakPointer(){
+		if(weak_pointers->count>0){
+			ScriptObjectWeakPointer *wp=weak_pointers->pop_back();
+			wp->deRefObject();
+			return true;
+		}
+		return false;
+	}
+
+	void ScriptObject::deRefObject(RefObject  *_ref_object){
+		int idx=idxRefObject(_ref_object);
 
 		if(idx==ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERRORF("internal: member function not exist");
 		}
 
+		ref_script_objects->items[idx]->deRefObject();
 		ref_script_objects->erase(idx);
 	}
 
@@ -247,6 +262,19 @@ namespace zetscript{
 			*_so=NULL;
 		}
 
+		for(int i=0; i < ref_script_objects->count; i++){
+			RefObject *_ref_pointer=ref_script_objects->items[i];
+			_ref_pointer->deRefObject();
+		}
+
 		delete ref_script_objects;
+
+		for(int i=0; i < weak_pointers->count; i++){
+			weak_pointers->items[i]->deRefObject();
+
+		}
+
+		delete weak_pointers;
+
 	}
 }

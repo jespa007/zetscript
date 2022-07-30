@@ -281,12 +281,19 @@ namespace zetscript{
 			// since objects can have cyclic references unref can reach twice or more 0 (it has to check more cases)
 			// we return true
 			fprintf(stderr,"WARNING: Shared pointer already deattached\n");
-			return true;
+			return false;
 		}
 
 		shared_pointer->data.n_shares--;
 
 		if(shared_pointer->data.n_shares==0){
+
+			// weak pointer keep shared pointers
+			if(_obj->deRefWeakPointer()){
+				vm_share_script_object(vm,_obj);
+				//shared_pointer->data.n_shares=1; // already weak pointers
+				return true;
+			}
 
 			if(_scope_block==NULL){
 				delete shared_pointer->data.ptr_script_object_shared; // it deletes shared_script_object
@@ -294,7 +301,8 @@ namespace zetscript{
 			}else{
 				InfoSharedList *unreferenced_objects = &_scope_block->unreferenced_objects;
 
-				if(vm_insert_shared_node(vm,unreferenced_objects,shared_pointer)==false){ // insert to zero shares vector to remove automatically on ending scope
+				// insert to zero shares vector to remove automatically on ending scope
+				if(vm_insert_shared_node(vm,unreferenced_objects,shared_pointer)==false){
 					return false;
 				}
 			}

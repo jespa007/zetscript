@@ -3,6 +3,7 @@
  *  See LICENSE file for details.
  */
 #include 		"ScriptObject.cpp"
+#include 		"RefObject.cpp"
 #include 		"ScriptObjectMemberFunction.cpp"
 #include 		"ScriptObjectWeakPointer.cpp"
 #include		"ScriptObjectString.cpp"

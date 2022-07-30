@@ -14,9 +14,10 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("Internal:Expected script variable type >= IDX_TYPE_SCRIPT_OBJECT_STRING");
 		}
 
-		sofm->so_object=_so_object;
+
+		sofm->ref_object=new RefObject(_so_object,sofm);
 		sofm->so_function=_so_function;
-		sofm->so_object->refObject(&sofm->so_object);
+		//sofm->so_object->refObject(&sofm->so_object);
 		return sofm;
 	}
 
@@ -27,13 +28,14 @@ namespace zetscript{
 	void ScriptObjectMemberFunction::setup(){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
 		this->so_function=NULL;
-		this->so_object=NULL;
+		this->ref_object=NULL;
 	}
 
 	ScriptObjectMemberFunction::~ScriptObjectMemberFunction(){
-		if(so_object != NULL){
-			so_object->derefObject(&this->so_object);
-		}
+		delete ref_object;
+		/*if(so_object != NULL){
+			so_object->deRefObject(&this->so_object);
+		}*/
 	}
 
 }

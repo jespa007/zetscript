@@ -1240,13 +1240,14 @@ load_function:
 				  sf_call_is_member_function=true;
 				}else if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(sf_call_stk_function_ref)){
 				  ScriptObjectMemberFunction *sofm=(  ScriptObjectMemberFunction *)sf_call_stk_function_ref->value;
-				  if(sofm->so_object==NULL){
+				  ScriptObject *sofm_object=sofm->ref_object->getRefObject();
+				  if(sofm_object==NULL){
 					  VM_STOP_EXECUTE(
 							  "Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced"
 							  ,sofm->so_function->name_script_function.c_str()
 							  , SFI_GET_SYMBOL_NAME(calling_function,instruction));
 				  }
-				  sf_call_calling_object=sofm->so_object;
+				  sf_call_calling_object=sofm_object;
 				  sf_call_script_function=sofm->so_function;
 				  sf_call_is_member_function=true;
 				}else{

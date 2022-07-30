@@ -27,14 +27,17 @@ namespace zetscript{
 		//
 		//----------------------------------------------
 
+
+
 		ScriptObjectWeakPointer();
 		ScriptObjectWeakPointer(ScriptObject *_so);
+		void deRefObject();
 		~ScriptObjectWeakPointer();
 	protected:
 		void setup();
 	private:
 
-		ScriptObject *so_reference;
+		RefObject *ref_object;
 
 	};
 

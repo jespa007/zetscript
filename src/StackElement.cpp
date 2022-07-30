@@ -113,7 +113,7 @@ namespace zetscript{
 					result=((zs_datetime *)((ScriptObjectClass *)so)->getNativeObject())->to_string(_format);
 				}else if(so->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
 					ScriptObjectMemberFunction *somf=(ScriptObjectMemberFunction *)so;
-					ScriptType *st=somf->so_object->getScriptType();
+					ScriptType *st=somf->ref_object->getRefObject()->getScriptType();
 					result= zs_string("member_function<")+st->str_script_type+"::"+somf->so_function->name_script_function+">";
 				}else{
 					result=so->toString();

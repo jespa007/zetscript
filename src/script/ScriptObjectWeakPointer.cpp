@@ -16,7 +16,7 @@ namespace zetscript{
 
 	void ScriptObjectWeakPointer::setup(){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_WEAK_POINTER;
-		so_reference = NULL;
+		ref_object = NULL;
 		vm=NULL;
 	}
 
@@ -28,13 +28,14 @@ namespace zetscript{
 		setup();
 		// setup object
 		this->init(_so_reference->getZetScript());
-		so_reference=_so_reference;
-		so_reference->refObject((ScriptObject **)&this->so_reference);
+		ref_object=new RefObject(_so_reference,this);
+	}
+
+	void ScriptObjectWeakPointer::deRefObject(){
+		printf("TODO ScriptObjectWeakPointer::deRefObject\n");
 	}
 
 	ScriptObjectWeakPointer::~ScriptObjectWeakPointer(){
-		if(so_reference != NULL){
-			so_reference->derefObject(&this->so_reference);
-		}
+		delete ref_object;
 	}
 }
