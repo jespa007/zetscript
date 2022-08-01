@@ -46,50 +46,29 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 		}\
 	}
 
-#define VM_INNER_CALL_ONLY_RETURN(so,sf,name,reset) VM_INNER_CALL(so,sf,name,reset,0,true)
+//#define VM_INNER_CALL_ONLY_RETURN(_so,_sf,_name,_reset) VM_INNER_CALL(_so,_sf,0,_name,_reset,true)
 
-
-#define VM_INNER_CALL(so,sf,name,reset,n_args,goto_on_error)\
-{\
-	StackElement *stk_def_afun_start=data->stk_vm_current;\
-	int n_returned_args_afun=0;\
-	if((sf)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
-		vm_execute_function_native(\
-				vm\
-				,so\
-				,sf\
-				,calling_function\
-				,instruction\
-				,stk_def_afun_start\
-				,n_args\
-		);\
-	}else{\
-		vm_execute_function_script(\
-			vm\
-			,so\
-			,((ScriptFunction *)sf)\
-			,stk_def_afun_start\
-		);\
-	}\
-	if(data->vm_error == true){ \
+#define VM_INNER_CALL(_so_object,_so_function,_n_args,_name,_reset)\
+	vm_inner_call_internal( \
+			vm \
+			,calling_function \
+			,instruction \
+			,_so_object \
+			,_so_function \
+			,_n_args \
+			,_reset \
+	);\
+	if(data->vm_error){\
 		data->vm_error_callstack_str+=zs_strutils::format(\
 			"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */ \
-			, name \
-			,SFI_GET_FILE(calling_function,instruction)\
-			,SFI_GET_LINE(calling_function,instruction)\
+			, "iter" \
+			,SFI_GET_FILE(calling_function,instruction) \
+			,SFI_GET_LINE(calling_function,instruction) \
 		);\
-		if(goto_on_error){\
-			goto lbl_exit_function;\
-		}\
+		goto lbl_exit_function;\
 	}\
-	n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;\
-	/* we share pointer (true second arg) to not remove on pop in calling return */\
-	CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,false) \
-	/* reset stack */\
-	if(reset){\
-		data->stk_vm_current=stk_def_afun_start; \
-	}\
-}
+
+
 
 namespace zetscript{
 
@@ -115,10 +94,10 @@ namespace zetscript{
 		//===================================================================================================
 
 		 bool				vm_error,vm_error_max_stack_reached;
-		 zs_string 			vm_error_str;
-		 zs_string 			vm_error_file;
+		 char 				vm_error_str[1024];
+		 char 				vm_error_file[1024];
 		 int 				vm_error_line;
-		 zs_string 			vm_error_callstack_str;
+		 char 				vm_error_callstack_str[4096];
 		 VM_ScopeFunction	*vm_current_scope_function;
 		 VM_ScopeFunction	vm_scope_function[VM_FUNCTION_CALL_MAX];
 
@@ -161,8 +140,8 @@ namespace zetscript{
 			script_type_factory=NULL;
 			scope_factory=NULL;
 			vm_error=false;
-			vm_error_str="";
-			vm_error_file="";
+			memset(vm_error_str,0,sizeof(vm_error_str));
+			memset(vm_error_file, 0, sizeof(vm_error_file));
 			vm_error_line=-1;
 			vm_error_max_stack_reached=false;
 
@@ -177,6 +156,58 @@ namespace zetscript{
 	// PROTOTIPES
 	//
 
+	inline void vm_inner_call_internal(
+			VirtualMachine 	*vm
+			,ScriptFunction	* calling_function
+			,Instruction	* instruction
+			,ScriptObject 	*script_object
+			,ScriptFunction *script_function
+			,unsigned char _n_args
+			,bool _reset
+
+	){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		StackElement *stk_def_afun_start=data->stk_vm_current;
+		int n_returned_args_afun=0;
+		if((script_function)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+			vm_execute_function_native(
+					vm
+					,calling_function
+					,instruction
+					,script_object
+					,script_function
+					,stk_def_afun_start
+					,_n_args
+			);
+		}else{
+			vm_execute_function_script(
+				vm
+				,script_object
+				,script_function
+				,stk_def_afun_start
+			);
+		}
+		if(data->vm_error == true){
+
+			return;
+			/*if(goto_on_error){
+				goto lbl_exit_function;
+			}*/
+		}
+		n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
+		/* we share pointer (true second arg) to not remove on pop in calling return */
+		CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,false)
+		/* reset stack */
+		if(_reset){
+			data->stk_vm_current=stk_def_afun_start;
+		}
+
+		lbl_exit_function:
+
+		return;
+
+	}
+
 	void vm_execute_function_script(
 				VirtualMachine			* vm,
 				ScriptObject			* this_object,
@@ -186,10 +217,10 @@ namespace zetscript{
 
 	void  vm_execute_function_native(
 		VirtualMachine *vm,
-		ScriptObject  * this_object,
-		const ScriptFunction *c_function,
 		const ScriptFunction *calling_function,
 		Instruction *instruction,
+		ScriptObject  * this_object,
+		const ScriptFunction *c_function,
 		StackElement *stk_arg_c_function=NULL,
 		unsigned char n_args=0
 	);
@@ -719,10 +750,10 @@ namespace zetscript{
 		}else{ //
 			vm_execute_function_native(
 					vm
-					,is_static ? NULL:script_object
-					,ptr_function_found
 					,calling_function
 					,instruction
+					,is_static ? NULL:script_object
+					,ptr_function_found
 					,stk_args
 					,n_stk_args
 			);
@@ -851,18 +882,7 @@ apply_metamethod_error:
 				so_object=NULL;
 			}
 
-			VM_INNER_CALL(
-					so_object
-					,so_function
-					,"iter"
-					,true
-					,n_args
-					,false
-			);
-
-			if(data->vm_error){
-				return;
-			}
+			VM_INNER_CALL(so_object,so_function,n_args,"iter",true);
 
 			// ok stk_vm_current holds the iter object
 			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
@@ -994,5 +1014,7 @@ lbl_exit_function:
 
 		return true;
 	}
+
+
 }
 

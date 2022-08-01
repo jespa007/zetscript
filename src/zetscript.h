@@ -43,6 +43,7 @@
 #include        <math.h>
 #include		<regex>
 #include        <new>
+#include 		<functional>
 #include 		<float.h>
 #include 		<cstdarg>
 #include 		<stdexcept>

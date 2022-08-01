@@ -66,36 +66,26 @@ namespace zetscript{
 		return *this;
 	}
 
+
+	zs_string& zs_string::operator=(const char *_str) // copy assignment
+	{
+		set(_str);
+		return *this;
+	}
+
 	zs_string& zs_string::operator+=(const zs_string& obj){
 		append(obj.buf);
 	    return *this;
 	}
 
+	zs_string& zs_string::operator+=(const char *_str) {
+		append(_str);
+		return *this;
+	}
+
 	zs_string& zs_string::operator+=(char _c){
 		append(_c);
 	    return *this;
-	}
-
-	zs_string::zs_string(zs_string && dyingObj) // move constructor
-	// && is a reference operator defined in the C++11 standard
-	// which means "dyingObj" is an r-value reference.
-	// Compiler calls this constructor when the object passed in the argument
-	// is about to die due to scope end or such
-	{
-		// Copy data from the incoming object
-		_size = dyingObj._size;
-		count = dyingObj.count;
-
-		// Transfer ownership of underlying char buffer from incoming object to this object
-		buf = dyingObj.buf;
-		dyingObj.buf = nullptr;
-	}
-
-	zs_string& zs_string::operator=(zs_string && dyingObj) // move assignment
-	{
-		set(dyingObj.buf);
-
-		return *this;
 	}
 
     char& zs_string::operator[] (int _pos){

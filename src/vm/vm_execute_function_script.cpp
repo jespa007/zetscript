@@ -26,10 +26,6 @@ namespace zetscript{
 		Instruction * instructions = calling_function->instructions;//calling_instruction;
 		Instruction *instruction=instructions; // starting instruction
 
-		if(IDX_VM_CURRENT_SCOPE_FUNCTION >= VM_FUNCTION_CALL_MAX){
-			VM_ERROR_AND_RETF("Reached max stack");
-		}
-
 		ScriptObject *so_aux=NULL;
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
@@ -68,18 +64,97 @@ namespace zetscript{
 
 		// SFCALL
 		//------------------------------------------------
+
+		const char *__STR_SET_METAMETHOD__=NULL;//byte_code_metamethod_to_symbol_str(__METAMETHOD__);
+		const char *__STR_AKA_SET_METAMETHOD__=NULL;//byte_code_metamethod_to_operator_str(__METAMETHOD__);
 		uint32_t msk_properties=0;
+		ScriptFunction *ptr_function_found=NULL;
 		StackElement *stk_dst=NULL;
 		StackElement *stk_src=NULL;
 		zs_int *stk_src_ref_value=NULL;
 		zs_int *stk_dst_ref_value=NULL;
 		uint16_t stk_src_properties=0;
 		void *stk_src_ref_value_copy_aux=NULL;
+		StackMemberProperty *stk_mp_aux=NULL;
 
 		Instruction *instruction_it=instructions;
 		StackElement *stk_start=_stk_local_var+calling_function->local_variables->count;   // <-- here starts stk for aux vars for operations ..
 
-		data->stk_vm_current = stk_start;
+		typedef struct {
+			VirtualMachine* vm;
+			ScriptObject* this_object;
+			ScriptFunction* calling_function;
+			StackElement* _stk_local_var;
+			VirtualMachineData* data;
+			Instruction* instructions;
+			Instruction* instruction; // starting instruction
+			ScriptObject* so_aux;
+			StackElement* stk_result_op1;
+			StackElement* stk_result_op2;
+			StackElement stk_aux;
+			StackElement* stk_var;
+			Symbol* symbol_aux;
+			StackElement stk_var_copy;
+			const char* str_symbol;
+			//------------------------------------------------
+			// STORE
+			zs_vector<StackElement*>* store_lst_setter_functions;
+			int 					n_element_left_to_store;
+			MetamethodMembers* ptr_metamethod_members_aux;
+			void* ptr_ptr_void_ref;
+			StackElement* stk_load_multi_var_src;
+			MemberProperty* member_property;
+			ContainerSlotStore* container_slot_store;
+			ScriptObject* container_slot_store_object;
+			zs_int 					container_slot_store_id_slot;
+			//------------------------------------------------
+			// SFCALL
+			StackElement* sf_call_stk_function_ref;
+			ScriptFunction* sf_call_script_function;
+
+			int		 	 	sf_call_n_args; // number arguments will pass to this function
+			StackElement* sf_call_stk_start_arg_call;
+			ScriptObject* sf_call_calling_object;
+			bool			 sf_call_is_constructor;
+			bool			sf_call_ignore_call;
+			int 		 	sf_call_n_local_symbols;
+			bool 			 sf_call_is_member_function;
+			StackElement* sf_call_stk_return;
+			int 			sf_call_n_returned_arguments_from_function;
+			int				sf_call_stk_start_function_object;
+			int				sf_call_return;
+
+			// SFCALL
+			//------------------------------------------------
+
+			const char* __STR_SET_METAMETHOD__;//byte_code_metamethod_to_symbol_str(__METAMETHOD__);
+			const char* __STR_AKA_SET_METAMETHOD__;//byte_code_metamethod_to_operator_str(__METAMETHOD__);
+			uint32_t msk_properties;
+			ScriptFunction* ptr_function_found;
+			StackElement* stk_dst;
+			StackElement* stk_src;
+			zs_int* stk_src_ref_value;
+			zs_int* stk_dst_ref_value;
+			uint16_t stk_src_properties;
+			void* stk_src_ref_value_copy_aux;
+			StackMemberProperty* stk_mp_aux;
+			Instruction* instruction_it;
+			StackElement* stk_start;   // <-- here starts stk for au
+		}tMierda;
+
+		printf("size %lu", sizeof(tMierda));
+
+
+		if (IDX_VM_CURRENT_SCOPE_FUNCTION >= VM_FUNCTION_CALL_MAX) {
+			//VM_ERROR_AND_RETF("Reached max stack");
+			data->vm_error = true; 
+			data->vm_error_file = SFI_GET_FILE(calling_function, instruction); 
+			data->vm_error_line = SFI_GET_LINE(calling_function, instruction); 
+			data->vm_error_str = ZS_LOG_FILE_LINE_STR(data->vm_error_file.c_str(), data->vm_error_line) + zetscript::zs_strutils::format("Reached max stack"); 
+			return;
+		}
+
+	/*	data->stk_vm_current = stk_start;
 
 		//data->vm_idx_call++;
 
@@ -109,7 +184,7 @@ namespace zetscript{
 		}
 
 
-
+		*/
 
 
 		//-----------------------------------------------------------------------------------------------------------------------
@@ -122,10 +197,10 @@ namespace zetscript{
 
 			switch(instruction->byte_code){
 			default:
-				VM_STOP_EXECUTE("byte code '%s' not implemented",byte_code_to_str(instruction->byte_code));
+				//VM_STOP_EXECUTE("byte code '%s' not implemented",byte_code_to_str(instruction->byte_code));
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
-			case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
+			/*case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
 				VM_PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
 				continue;
 			case BYTE_CODE_PUSH_STK_LOCAL: // load variable ...
@@ -425,13 +500,14 @@ find_element_object:
 						if(
 						   (stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0
 						 ){
-							StackMemberProperty *stk_mp=(StackMemberProperty *)stk_var->value;
+							stk_mp_aux=(StackMemberProperty *)stk_var->value;
 
-							if(stk_mp->member_property->metamethod_members.getter!=NULL){
-								VM_INNER_CALL_ONLY_RETURN(
-										stk_mp->so_object
-										,((ScriptFunction *)stk_mp->member_property->metamethod_members.getter->ref_ptr)
-										,stk_mp->member_property->metamethod_members.getter->name.c_str()
+							if(stk_mp_aux->member_property->metamethod_members.getter!=NULL){
+								VM_INNER_CALL(
+										stk_mp_aux->so_object
+										,((ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr)
+										,0
+										,stk_mp_aux->member_property->metamethod_members.getter->name.c_str()
 										,true
 								);
 
@@ -654,12 +730,12 @@ find_element_object:
 						}
 					}
 				}else if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){
-					StackMemberProperty *	stk_mp=(StackMemberProperty *)stk_dst->value;\
-					if(stk_mp->member_property->metamethod_members.setters.count > 0){\
-						store_lst_setter_functions=&stk_mp->member_property->metamethod_members.setters;\
+					stk_mp_aux=(StackMemberProperty *)stk_dst->value;\
+					if(stk_mp_aux->member_property->metamethod_members.setters.count > 0){\
+						store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 					}else{ // setter not allowed because it has no setter
 						VM_STOP_EXECUTE("'%s' not implements operator '=' (aka '_set')"
-							,stk_mp->member_property->property_name.c_str()
+							,stk_mp_aux->member_property->property_name.c_str()
 						);
 					}
 				}
@@ -667,32 +743,31 @@ find_element_object:
 				if(store_lst_setter_functions!=NULL){
 
 					StackElement *stk_vm_start=data->stk_vm_current;\
-					StackElement *stk_arg=stk_vm_start+1; /*start from stk_src */\
+					StackElement *stk_arg=stk_vm_start+1; //start from stk_src
 					const char *__STR_SETTER_METAMETHOD__=byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET);\
 					const char *__STR_AKA_SETTER_METAMETHOD__=byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_SET);\
 					*stk_arg=*stk_src;\
-					StackMemberProperty *	stk_mp=NULL;\
 					if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){
-						stk_mp=(StackMemberProperty *)(stk_dst->value);
-						so_aux=stk_mp->so_object;\
+						stk_mp_aux=(StackMemberProperty *)(stk_dst->value);
+						so_aux=stk_mp_aux->so_object;\
 					}else{
 						so_aux=(ScriptObjectClass *)stk_dst->value;
 					}
 					ScriptFunction *ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->items[0]))->value))->ref_ptr);\
-					if(so_aux->isNativeObject()){ /* because object is native, we can have more than one _setter */ \
+					if(so_aux->isNativeObject()){ // because object is native, we can have more than one _setter
 						if((ptr_function_found=vm_find_native_function( \
 								vm \
 								,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
 								,calling_function\
 								,instruction\
 								,false\
-								,stk_mp==NULL?"_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(BYTE_CODE_METAMETHOD_SET,stk_mp->member_property->property_name)).c_str() /* symbol to find */\
+								,stk_mp_aux==NULL?"_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(BYTE_CODE_METAMETHOD_SET,stk_mp_aux->member_property->property_name)).c_str() // symbol to find
 								,stk_arg \
 								,1))==NULL){ \
 							if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
 								VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
 										,so_aux->getScriptType()->str_script_type.c_str()\
-										,stk_mp->member_property->property_name.c_str()\
+										,stk_mp_aux->member_property->property_name.c_str()\
 										,__STR_SETTER_METAMETHOD__\
 								);\
 							}else{\
@@ -702,7 +777,7 @@ find_element_object:
 								);\
 							}\
 						}\
-					}else if(store_lst_setter_functions->count>1){ /* it has overrided metamethods */\
+					}else if(store_lst_setter_functions->count>1){ // it has overrided metamethods
 						Symbol * symbol_setter = so_aux->getScriptType()->getSymbol(__STR_SETTER_METAMETHOD__); \
 						if(symbol_setter == NULL){\
 							VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\
@@ -718,10 +793,10 @@ find_element_object:
 					if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
 						vm_execute_function_native(\
 								vm\
-								,so_aux\
-								,ptr_function_found\
 								,calling_function\
 								,instruction\
+								,so_aux\
+								,ptr_function_found\
 								,stk_arg\
 								,1\
 						);\
@@ -737,10 +812,6 @@ find_element_object:
 
 				}else{ // store through script assignment
 
-					/*if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){
-						stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value));
-					}*/
-
 					if((stk_src->properties & STK_PROPERTY_PTR_STK)!=0) {
 						stk_src=(StackElement *)stk_src->value; // value is expect to contents a stack variable
 					}
@@ -749,7 +820,7 @@ find_element_object:
 					// TODO: get stk_dst if STK_PROPERTY_SLOT
 					StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 
-					stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */
+					stk_src_ref_value_copy_aux=NULL;//copy aux in case of the var is c and primitive (we have to update value on save)
 					stk_src_ref_value=&stk_src->value;
 					stk_dst_ref_value=&stk_dst->value;
 					if(stk_src->properties & STK_PROPERTY_IS_C_VAR_PTR){ // src is C pointer
@@ -931,10 +1002,7 @@ find_element_object:
 				}
 				else if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
 					data->stk_vm_current=stk_start;
-				}/*else{
-					*data->stk_vm_current++=*stk_dst;
-				}*/
-
+				}
 				continue;
 			 case BYTE_CODE_IT_INIT:
 				VM_POP_STK_TWO;
@@ -1415,9 +1483,10 @@ execute_function:
 							*data->stk_vm_current++=param->default_param_value;
 							break;
 						case STK_PROPERTY_FUNCTION: // we call function that return default value
-							VM_INNER_CALL_ONLY_RETURN(
+							VM_INNER_CALL(
 								NULL
 								,(ScriptFunction *)(((Symbol *)param->default_param_value.value)->ref_ptr)
+								, 0
 								,((Symbol *)param->default_param_value.value)->name.c_str()
 								,true
 							)
@@ -1503,13 +1572,12 @@ execute_function:
 					try{
 						vm_execute_function_native(
 							vm
-							,sf_call_calling_object
-							,sf_call_script_function
 							,calling_function
 							,instruction
+							,sf_call_calling_object
+							,sf_call_script_function
 							,sf_call_stk_start_arg_call
 							,sf_call_n_args
-
 						);
 					}catch(std::exception & ex){
 						data->vm_error = true;
@@ -1799,7 +1867,7 @@ execute_function:
 								,ptr_str_symbol_to_find
 						);
 					}
-				}
+				}*/
 				goto lbl_exit_function;
 			}
 
@@ -1817,7 +1885,7 @@ execute_function:
 		// POP STACK
 
 
-		while(
+		while (
 			(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
 		){
 			VM_POP_SCOPE; // do not check removeEmptySharedPointers to have better performance

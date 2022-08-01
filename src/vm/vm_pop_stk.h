@@ -17,12 +17,13 @@
 			_stk_result = this_object->getBuiltinElementAt(_offset); \
 		} \
 		if(_stk_result != NULL && (_stk_result->properties & STK_PROPERTY_MEMBER_PROPERTY)){ \
-			StackMemberProperty *stk_mp=(StackMemberProperty *)_stk_result->value; \
-			if(stk_mp->member_property->metamethod_members.getter != NULL){ \
-				VM_INNER_CALL_ONLY_RETURN( \
-						stk_mp->so_object \
-						,(ScriptFunction *)stk_mp->member_property->metamethod_members.getter->ref_ptr \
-						,stk_mp->member_property->metamethod_members.getter->name.c_str() \
+			stk_mp_aux=(StackMemberProperty *)_stk_result->value; \
+			if(stk_mp_aux->member_property->metamethod_members.getter != NULL){ \
+				VM_INNER_CALL( \
+						stk_mp_aux->so_object \
+						,(ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr \
+						,0 \
+						,stk_mp_aux->member_property->metamethod_members.getter->name.c_str() \
 						,true \
 				); \
 				/* getter requires stack to save value and avoid destroy previuos value*/ \

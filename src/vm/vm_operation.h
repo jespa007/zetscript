@@ -30,10 +30,10 @@
 	member_property=NULL;\
 	if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){\
 		stk_var_copy=*stk_result_op1;\
-		StackMemberProperty *stk_mp=(StackMemberProperty *)stk_result_op1->value;\
-		member_property=stk_mp->member_property;\
+		stk_mp_aux=(StackMemberProperty *)stk_result_op1->value;\
+		member_property=stk_mp_aux->member_property;\
 		ptr_metamethod_members_aux= &member_property->metamethod_members;\
-		so_aux = stk_mp->so_object;\
+		so_aux = stk_mp_aux->so_object;\
 	}else if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 		so_aux= (ScriptObject *)stk_result_op1->value;\
 		ptr_metamethod_members_aux= &so_aux->getScriptType()->metamethod_members;\
@@ -331,9 +331,10 @@
 			METAMETHOD_OPERATION_NOT_FOUND(BYTE_CODE_METAMETHOD_NEG); \
 		}\
 		/* call _neg */\
-		VM_INNER_CALL_ONLY_RETURN(\
+		VM_INNER_CALL(\
 				so_aux\
 				,(ScriptFunction *)ptr_metamethod_members_aux->neg->ref_ptr\
+				,0\
 				,ptr_metamethod_members_aux->neg->name.c_str()\
 				,true\
 		);\
@@ -342,9 +343,10 @@
 		if(__POST_OPERATION_VARIABLE__==NULL){\
 			METAMETHOD_OPERATION_NOT_FOUND(__METAMETHOD__); \
 		}\
-		VM_INNER_CALL_ONLY_RETURN(\
+		VM_INNER_CALL(\
 				so_aux\
 				,(ScriptFunction *)__POST_OPERATION_VARIABLE__->ref_ptr\
+				,0\
 				,__POST_OPERATION_VARIABLE__->name.c_str()\
 				,true\
 		);\
@@ -374,9 +376,10 @@
 		LOAD_PROPERTIES(__METAMETHOD__);\
 		if(ptr_metamethod_members_aux->getter!=NULL){\
 			/* call _neg */\
-			VM_INNER_CALL_ONLY_RETURN(\
+			VM_INNER_CALL(\
 					so_aux\
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
+					, 0 \
 					,ptr_metamethod_members_aux->getter->name.c_str()\
 					,true\
 			);\
@@ -393,9 +396,10 @@
 		if(__POST_OPERATION_VARIABLE__==NULL){\
 			METAMETHOD_OPERATION_NOT_FOUND(__METAMETHOD__); \
 		}\
-		VM_INNER_CALL_ONLY_RETURN(\
+		VM_INNER_CALL(\
 				so_aux\
 				,(ScriptFunction *)__POST_OPERATION_VARIABLE__->ref_ptr\
+				, 0 \
 				,__POST_OPERATION_VARIABLE__->name.c_str()\
 				,true\
 		);\
@@ -426,18 +430,20 @@
 		if(__PRE_OPERATION_VARIABLE__==NULL){\
 			METAMETHOD_OPERATION_NOT_FOUND(__METAMETHOD__); \
 		}\
-		VM_INNER_CALL_ONLY_RETURN(\
+		VM_INNER_CALL(\
 				so_aux\
 				,(ScriptFunction *)__PRE_OPERATION_VARIABLE__->ref_ptr\
+				,0 \
 				,__PRE_OPERATION_VARIABLE__->name.c_str()\
 				,true\
 		);\
 		/*getter after*/\
 		if(ptr_metamethod_members_aux->getter!=NULL){\
 			/* call _neg */\
-			VM_INNER_CALL_ONLY_RETURN(\
+			VM_INNER_CALL(\
 					so_aux\
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
+					,0 \
 					,ptr_metamethod_members_aux->getter->name.c_str()\
 					,true\
 			);\

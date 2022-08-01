@@ -108,6 +108,24 @@ namespace zetscript{
 		,int 				_line=-1
 	);
 
+	void  vm_execute_function_native(
+			VirtualMachine *vm,
+			const ScriptFunction *calling_function,
+			Instruction *instruction,
+			ScriptObject  * this_object,
+			const ScriptFunction *c_function,
+			StackElement *stk_arg_c_function,
+			unsigned char _n_args
+	);
+
+	void vm_execute_function_script(
+				VirtualMachine			* vm,
+				ScriptObject			* this_object,
+				ScriptFunction 			* calling_function,
+				StackElement 		  	* _stk_local_var
+		    );
+
+
 	void vm_delete(VirtualMachine *vm);
 }
 
