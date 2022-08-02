@@ -173,7 +173,7 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObject::addProperty(
-			const zs_string & symbol_value
+			const char * symbol_value
 			,char * error
 			,StackElement * stk_element
 
