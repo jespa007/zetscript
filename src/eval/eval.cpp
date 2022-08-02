@@ -43,7 +43,7 @@ namespace zetscript{
 		char *aux_p=NULL;
 		int line =_line;
 		bool error;
-		zs_string str_error;
+		zs_string str_error="";
 		zs_string error_file="";
 		int error_line=-1;
 		Scope *scope_info=MAIN_SCOPE(eval_data);

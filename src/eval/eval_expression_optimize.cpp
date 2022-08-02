@@ -26,9 +26,9 @@
 				eval_data->current_parsing_file\
 				,token_operator->line\
 				,"I don't know how to perform arithmetic operation '%s %s %s'"\
-				,i1->getConstantValueOp2ToString()\
+				,i1->getConstantValueOp2ToString().c_str()\
 				,ZS_STR(ARITHMETIC_OP)\
-				,i2->getConstantValueOp2ToString());\
+				,i2->getConstantValueOp2ToString().c_str());\
 	}
 
 

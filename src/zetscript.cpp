@@ -107,12 +107,12 @@ namespace zetscript{
 		bindMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 		// Custom user function or classes
-		eval(
+		/*eval(
 			zs_strutils::format(
 				//------------------------------------------------
 				// String
-				"static String::format(s,...args){" // add static function format to String module
-				"	return String::formatNative(s,args)"
+				"static String::format(_s,..._args){" // add static function format to String module
+				"	return String::formatNative(_s,_args)"
 				"}"
 				//------------------------------------------------
 				// DateTime
@@ -127,46 +127,46 @@ namespace zetscript{
 				"}"
 				//------------------------------------------------
 				// Console
-				"static Console::out(s=\"\",...args){"
-				"	Console::outNative(s,args)"
+				"static Console::out(s=\"\",..._args){"
+				"	Console::outNative(_s,_args)"
 				"}"
-				"static Console::outln(s=\"\",...args){"
-				"	Console::outlnNative(s,args)"
+				"static Console::outln(_s=\"\",..._args){"
+				"	Console::outlnNative(_s,_args)"
 				"}"
-				"static Console::error(s=\"\",...args){"
-				"	Console::errorNative(s,args)"
+				"static Console::error(_s=\"\",..._args){"
+				"	Console::errorNative(_s,_args)"
 				"}"
-				"static Console::errorln(s=\"\",...args){"
-				"	Console::errorlnNative(s,args)"
+				"static Console::errorln(_s=\"\",..._args){"
+				"	Console::errorlnNative(_s,_args)"
 				"}"
 				//------------------------------------------------
 				// System
-				"static System::assert(check,s,...args){"
-				"	if((typeof check)!=bool){"
-				"		System::errorNative(\"Error, executing  'System::assert' first parameter must be boolean but it was {0}\",[typeof check])"
+				"static System::assert(_check,_s,..._args){"
+				"	if((typeof _check)!=bool){"
+				"		System::errorNative(\"Error, executing  'System::assert' first parameter must be boolean but it was {0}\",[typeof _check])"
 				"	}"
 				"	if(check==false){"
 				"		System::errorNative(\"Assert error: \"+s,args)"
 				"	}"
 				"}"
-				"static System::error(s=\"\",...args){"
-				"	System::errorNative(s,args)"
+				"static System::error(_s=\"\",..._args){"
+				"	System::errorNative(_s,_args)"
 				"}"
-				"static System::eval(s,params){"
-				"	return System::evalNative(s,params)"
+				"static System::eval(_s,_params){"
+				"	return System::evalNative(_s,_params)"
 				"}"
 				"static System::getZetScript(){"
 				"	return ptrToZetScriptPtr(%lu);" // ptrToZetScript it gets current this
 				"}"
 				//------------------------------------------------
 				// Json
-				"static Json::serialize(stk,formatted=false){"
-				"	return Json::serializeNative(stk,formatted)"
+				"static Json::serialize(_stk,_formatted=false){"
+				"	return Json::serializeNative(_stk,_formatted)"
 				"}"
 			,
 			(intptr_t)this
 			)
-		);
+		);*/
 
 		saveState();
 	}

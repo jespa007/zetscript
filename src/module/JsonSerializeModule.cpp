@@ -192,6 +192,7 @@ namespace zetscript{
 
 			ScriptObject *obj=NULL;
 			int16_t var_type = 0;
+			char str_aux[512]={0};
 
 			if(_stk->properties & STK_PROPERTY_PTR_STK){
 				_stk=(StackElement *)_stk->value;
@@ -210,7 +211,7 @@ namespace zetscript{
 			case STK_PROPERTY_ZS_FLOAT:
 			case STK_PROPERTY_BOOL:
 			case STK_PROPERTY_ZS_INT:
-				_str_result.append(stk_to_str(_zs,_stk));
+				_str_result.append(stk_to_str(str_aux,_zs,_stk));
 				break;
 			case STK_PROPERTY_NULL:
 				_str_result.append("null");

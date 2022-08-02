@@ -8,7 +8,7 @@ namespace zetscript{
 
 	extern const StackElement k_stk_undefined={0,STK_PROPERTY_UNDEFINED};
 
-	zs_string stk_to_typeof_str(ZetScript *_zs, StackElement *_stk){
+	const char *stk_to_typeof_str(char *_intermediate,ZetScript *_zs, StackElement *_stk){
 		StackElement *stk=_stk;
 		zs_string result="unknow";
 		if(STK_VALUE_IS_UNDEFINED(stk))
@@ -54,10 +54,12 @@ namespace zetscript{
 			}
 		}
 
-		return result;
+
+		strcpy(_intermediate,result.c_str());
+		return _intermediate;
 	}
 
-	zs_string stk_to_str(ZetScript *_zs, StackElement *_stk, const zs_string & _format ){
+	const char *stk_to_str(char *_intermediate,ZetScript *_zs, StackElement *_stk, const zs_string & _format ){
 		zs_string result="unknown";
 		bool is_constant=false;
 		StackElement stk=*_stk;
@@ -121,7 +123,9 @@ namespace zetscript{
 			}
 		}
 
-		return result;
+		strcpy(_intermediate,result.c_str());
+
+		return _intermediate;
 
 	}
 

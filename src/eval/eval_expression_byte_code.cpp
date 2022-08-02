@@ -295,12 +295,24 @@ namespace zetscript{
 				&&	(IS_OPERATOR_TYPE_ASSIGN(operator_type))
 
 				)){ // ... save all assignables from operator split
-				EVAL_ERROR_FILE_LINE_GOTO(eval_data->current_parsing_file,token_node_operator->line,eval_error_byte_code,"Operation '%s' in assignment is not allowed",eval_data_operators[operator_type].str);
+				EVAL_ERROR_FILE_LINE_GOTO(
+					eval_data->current_parsing_file
+					,token_node_operator->line
+					,eval_error_byte_code
+					,"Operation '%s' in assignment is not allowed"
+					,eval_data_operators[operator_type].str
+				);
 			}
 
 			// should be identifier...
 			if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
-				EVAL_ERROR_FILE_LINE_GOTO(eval_data->current_parsing_file,token_node_symbol->line,eval_error_byte_code,"Assign a literal '%s' is not allowed",token_node_symbol->value.c_str());
+				EVAL_ERROR_FILE_LINE_GOTO(
+					eval_data->current_parsing_file
+					,token_node_symbol->line
+					,eval_error_byte_code
+					,"Assign a literal '%s' is not allowed"
+					,token_node_symbol->value.c_str()
+				);
 			}
 
 			EvalInstruction *ei_load_assign_instruction=((EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]);

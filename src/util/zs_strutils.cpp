@@ -7,11 +7,11 @@
 namespace zetscript{
 	namespace zs_strutils{
 
-		zs_string  format(const  char  *input_text, ...){
+		zs_string  format(const  char  *_str_in, ...){
 			char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
 			va_list  ap;
-			va_start(ap,  input_text);
-			vsprintf(_sformat_buffer,  input_text,  ap);
+			va_start(ap,  _str_in);
+			vsprintf(_sformat_buffer,  _str_in,  ap);
 			va_end(ap);
 
 			return zs_string(_sformat_buffer);
@@ -19,17 +19,18 @@ namespace zetscript{
 
 		void		format_file_line(char *_str_out,const char* _file, int _line, const  char* _str_in, ...) {
 			//char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
-			char _s_aux[1024];
-
-			(_file == NULL || *_file == 0) ? sprintf((_s_aux), "line %i:", _line)\
-				: sprintf((_s_aux), "%s:%i", _file, _line); \
-
-			strcat(_s_aux, _str_in);
-
+			char _s_aux[ZS_MAX_STR_BUFFER]={0};
 			va_list  ap;
-			va_start(ap, _s_aux);
-			vsprintf(_str_out, _s_aux, ap);
+
+			(_file == NULL || *_file == 0) ? sprintf((_str_out), "line %i:", _line)\
+				: sprintf((_str_out), "%s:%i", _file, _line); \
+
+			va_start(ap, _str_in);
+			vsprintf(_s_aux, _str_in, ap);
 			va_end(ap);
+
+			strcat(_str_out, _s_aux);
+
 		}
 
 		zs_int *  parse_zs_int(const zs_string & val){

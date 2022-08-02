@@ -151,7 +151,7 @@ namespace zetscript{
 								EVAL_ERROR_FILE_LINE(
 									eval_data->current_parsing_file
 									,line
-									,"expected identifier"
+									,"expected identifier after '%s'"
 									,default_str_value.c_str()
 								);
 							}

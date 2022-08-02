@@ -80,77 +80,12 @@ namespace zetscript{
 		Instruction *instruction_it=instructions;
 		StackElement *stk_start=_stk_local_var+calling_function->local_variables->count;   // <-- here starts stk for aux vars for operations ..
 
-		typedef struct {
-			VirtualMachine* vm;
-			ScriptObject* this_object;
-			ScriptFunction* calling_function;
-			StackElement* _stk_local_var;
-			VirtualMachineData* data;
-			Instruction* instructions;
-			Instruction* instruction; // starting instruction
-			ScriptObject* so_aux;
-			StackElement* stk_result_op1;
-			StackElement* stk_result_op2;
-			StackElement stk_aux;
-			StackElement* stk_var;
-			Symbol* symbol_aux;
-			StackElement stk_var_copy;
-			const char* str_symbol;
-			//------------------------------------------------
-			// STORE
-			zs_vector<StackElement*>* store_lst_setter_functions;
-			int 					n_element_left_to_store;
-			MetamethodMembers* ptr_metamethod_members_aux;
-			void* ptr_ptr_void_ref;
-			StackElement* stk_load_multi_var_src;
-			MemberProperty* member_property;
-			ContainerSlotStore* container_slot_store;
-			ScriptObject* container_slot_store_object;
-			zs_int 					container_slot_store_id_slot;
-			//------------------------------------------------
-			// SFCALL
-			StackElement* sf_call_stk_function_ref;
-			ScriptFunction* sf_call_script_function;
-
-			int		 	 	sf_call_n_args; // number arguments will pass to this function
-			StackElement* sf_call_stk_start_arg_call;
-			ScriptObject* sf_call_calling_object;
-			bool			 sf_call_is_constructor;
-			bool			sf_call_ignore_call;
-			int 		 	sf_call_n_local_symbols;
-			bool 			 sf_call_is_member_function;
-			StackElement* sf_call_stk_return;
-			int 			sf_call_n_returned_arguments_from_function;
-			int				sf_call_stk_start_function_object;
-			int				sf_call_return;
-
-			// SFCALL
-			//------------------------------------------------
-
-			const char* __STR_SET_METAMETHOD__;//byte_code_metamethod_to_symbol_str(__METAMETHOD__);
-			const char* __STR_AKA_SET_METAMETHOD__;//byte_code_metamethod_to_operator_str(__METAMETHOD__);
-			uint32_t msk_properties;
-			ScriptFunction* ptr_function_found;
-			StackElement* stk_dst;
-			StackElement* stk_src;
-			zs_int* stk_src_ref_value;
-			zs_int* stk_dst_ref_value;
-			uint16_t stk_src_properties;
-			void* stk_src_ref_value_copy_aux;
-			StackMemberProperty* stk_mp_aux;
-			Instruction* instruction_it;
-			StackElement* stk_start;   // <-- here starts stk for au
-		}tMierda;
-
-		printf("size %lu", sizeof(tMierda));
-
-
 		if (IDX_VM_CURRENT_SCOPE_FUNCTION >= VM_FUNCTION_CALL_MAX) {
 			VM_ERROR_AND_RETF("Reached max stack");
 			return;
 		}
 
-	/*	data->stk_vm_current = stk_start;
+		data->stk_vm_current = stk_start;
 
 		//data->vm_idx_call++;
 
@@ -180,7 +115,7 @@ namespace zetscript{
 		}
 
 
-		*/
+
 
 
 		//-----------------------------------------------------------------------------------------------------------------------
@@ -196,7 +131,7 @@ namespace zetscript{
 				//VM_STOP_EXECUTE("byte code '%s' not implemented",byte_code_to_str(instruction->byte_code));
 			case BYTE_CODE_END_FUNCTION:
 				goto lbl_exit_function;
-			/*case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
+			case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
 				VM_PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
 				continue;
 			case BYTE_CODE_PUSH_STK_LOCAL: // load variable ...
@@ -255,7 +190,7 @@ namespace zetscript{
 							if(stk_var == NULL){
 								if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
 									if((stk_var =so_object->addProperty(stk_to_str(data->zs, stk_result_op2), data->vm_error_str))==NULL){
-										VM_STOP_EXECUTEF(data->vm_error_str.c_str());
+										VM_STOP_EXECUTEF(data->vm_error_str);
 									}
 								}
 							}
@@ -364,14 +299,14 @@ load_next_element_object:
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-							,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
-							,zs_strutils::starts_with(stk_to_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
+							,stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1)
+							,zs_strutils::starts_with(stk_to_typeof_str(data->vm_str_aux[1],data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 						);
 					}else{ // from calling
 						VM_STOP_EXECUTE(
 							"Cannot perform access '.%s' from variable type '%s'"
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-							,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+							,stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1)
 						);
 					}
 				}
@@ -460,7 +395,7 @@ find_element_object:
 
 							// create new property initialized as undefined
 							if((stk_var=so_aux->addProperty((const char *)str_symbol, data->vm_error_str))==NULL){
-								VM_STOP_EXECUTEF(data->vm_error_str.c_str());
+								VM_STOP_EXECUTEF(data->vm_error_str);
 							}
 
 							if(instruction->properties & INSTRUCTION_PROPERTY_OBJ_ITEM_TO_STORE){
@@ -620,8 +555,8 @@ find_element_object:
 
 				//const char *str = (const char *)stk_result_op1->value;
 				stk_src=stk_result_op2;
-				if((stk_var =so_aux->addProperty(stk_to_str(data->zs, stk_result_op1),data->vm_error_str))==NULL){
-					VM_STOP_EXECUTEF(data->vm_error_str.c_str());
+				if((stk_var =so_aux->addProperty(stk_to_str(data->vm_str_aux[0],data->zs, stk_result_op1),data->vm_error_str))==NULL){
+					VM_STOP_EXECUTEF(data->vm_error_str);
 				}
 
 				stk_dst=stk_var;
@@ -1577,7 +1512,7 @@ execute_function:
 						);
 					}catch(std::exception & ex){
 						data->vm_error = true;
-						data->vm_error_str=ex.what();
+						strcpy(data->vm_error_str,ex.what());
 					}
 
 					// restore stk_start_arg_call due in C args are not considered as local symbols (only for scripts)
@@ -1601,14 +1536,15 @@ execute_function:
 							str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->str_script_type.c_str();
 						}
 						const char * file_src_call=SFI_GET_FILE(calling_function,instruction);
-						data->vm_error_callstack_str+=zs_strutils::format(
-							"\nat calling function %s%s%s (%sline:%i)" // TODO: get full symbol ?
-							,str_class_owner==NULL?"":str_class_owner
-							,str_class_owner==NULL?"":"::"
-							,sf_call_script_function->name_script_function.c_str()
-							,file_src_call?zs_strutils::format("file:%s ",file_src_call).c_str():""
-							,SFI_GET_LINE(calling_function,instruction)
+						sprintf(data->vm_str_aux
+								,"\nat calling function %s%s%s (%sline:%i)" // TODO: get full symbol ?
+								,str_class_owner==NULL?"":str_class_owner
+								,str_class_owner==NULL?"":"::"
+								,sf_call_script_function->name_script_function.c_str()
+								,file_src_call?zs_strutils::format("file:%s ",file_src_call).c_str():""
+								,SFI_GET_LINE(calling_function,instruction)
 						);
+						strcat(data->vm_error_callstack_str,data->vm_str_aux);
 
 					}
 					goto lbl_exit_function;
@@ -1863,7 +1799,7 @@ execute_function:
 								,ptr_str_symbol_to_find
 						);
 					}
-				}*/
+				}
 				goto lbl_exit_function;
 			}
 

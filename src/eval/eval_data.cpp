@@ -10,7 +10,10 @@
 #define EVAL_ERROR_FILE_LINE(_file,_line,_s_in,...)		eval_data->error=true;\
 														strcpy(eval_data->error_file,_file);\
 														eval_data->error_line=_line;\
+														PRAGMA_PUSH\
+														PRAGMA_DISABLE_WARNING(4474)\
 														sprintf((eval_data->str_error),(_s_in), __VA_ARGS__);\
+														PRAGMA_POP\
 														return 0;
 
 #define EVAL_ERROR_FILE_LINEF(_file,_line,_s_in)		EVAL_ERROR_FILE_LINE(_file,_line,_s_in,NULL)
@@ -34,13 +37,17 @@
 
 
 
-#define EVAL_ERROR_FILE_LINE_GOTO(file,line,my_goto,s,...)			eval_data->error=true;\
+#define EVAL_ERROR_FILE_LINE_GOTO(_file,_line,_my_goto,_s_in,...)	eval_data->error=true;\
 																	aux_p=NULL;\
-																	strcpy(eval_data->error_file,file);\
-																		eval_data->error_line=line;\
-																		sprintf(eval_data->str_error,s, __VA_ARGS__);\
-																		goto my_goto;
-#define EVAL_ERROR_FILE_LINE_GOTOF(file,line,my_goto,s)				EVAL_ERROR_FILE_LINE_GOTO(file,line,my_goto,s,NULL);
+																	strcpy(eval_data->error_file,_file);\
+																	eval_data->error_line=_line;\
+																	PRAGMA_PUSH\
+																	PRAGMA_DISABLE_WARNING(4474)\
+																	sprintf(eval_data->str_error,(_s_in), ##__VA_ARGS__);\
+																	PRAGMA_POP\
+																	goto _my_goto;
+
+#define EVAL_ERROR_FILE_LINE_GOTOF(_file,_line,_my_goto,_s_in)		EVAL_ERROR_FILE_LINE_GOTO(_file,_line,_my_goto,_s_in,NULL);
 
 #define EVAL_ERROR_BYTE_CODE(s,...)							eval_data->error=true;\
 															aux_p=NULL;\

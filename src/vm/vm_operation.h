@@ -16,7 +16,7 @@
 		}else{\
 				VM_STOP_EXECUTE("Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
 						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-						,stk_to_typeof_str(data->zs,stk_result_op1).c_str() \
+						,stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1) \
 						,byte_code_metamethod_to_symbol_str(__BYTE_CODE_METAMETHOD__)\
 						,byte_code_metamethod_to_operator_str(__BYTE_CODE_METAMETHOD__)\
 				);\
@@ -44,7 +44,7 @@
 			,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
 			,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
 			,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
-			,stk_to_str(data->zs,stk_result_op2).c_str()\
+			,stk_to_str(data->vm_str_aux[0],data->zs,stk_result_op2)\
 		);\
 	}\
 

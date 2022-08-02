@@ -59,13 +59,13 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 			,_reset \
 	);\
 	if(data->vm_error){\
-		sprintf(data->vm_str_aux\
+		sprintf(data->vm_str_aux[0]\
 			,"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */ \
 			, "iter" \
 			,SFI_GET_FILE(calling_function,instruction) \
 			,SFI_GET_LINE(calling_function,instruction) \
 		);\
-		strcat(data->vm_error_callstack_str,data->vm_str_aux);\
+		strcat(data->vm_error_callstack_str,data->vm_str_aux[0]);\
 		goto lbl_exit_function;\
 	}\
 
@@ -97,7 +97,7 @@ namespace zetscript{
 		 bool				vm_error,vm_error_max_stack_reached;
 		 char 				vm_error_str[1024];
 		 char 				vm_error_file[1024];
-		 char				vm_str_aux[1024]; // todo str intermediate operations
+		 char				vm_str_aux[3][1024]; // todo str intermediate operations
 		 int 				vm_error_line;
 		 char 				vm_error_callstack_str[4096];
 		 VM_ScopeFunction	*vm_current_scope_function;
@@ -806,7 +806,7 @@ apply_metamethod_error:
 
 		if(is_je_case){
 			VM_ERROR("Error evaluating case for variable as type '%s': %s"
-				,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+				,stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1)
 				,error_found.c_str()
 			);
 		}else{
@@ -815,9 +815,9 @@ apply_metamethod_error:
 				VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types '%s' %s '%s'%s %s"
 					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 					,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
-					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+					,stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1)
 					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-					,stk_to_typeof_str(data->zs,stk_result_op2).c_str()
+					,stk_to_typeof_str(data->vm_str_aux[1],data->zs,stk_result_op2)
 					,error_found.empty()?"":":"
 					,error_found.c_str()
 				);
@@ -826,7 +826,7 @@ apply_metamethod_error:
 					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
 					,byte_code_metamethod_to_symbol_str(byte_code_metamethod)
 					,byte_code_metamethod_to_operator_str(byte_code_metamethod)
-					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+					,stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1)
 					,error_found.empty()?"":":"
 					,error_found.c_str()
 				);
@@ -857,7 +857,10 @@ apply_metamethod_error:
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
 			//VM_ERROR("internal: Expected object");
 			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
-				VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator",SFI_GET_SYMBOL_NAME(calling_function,instruction),stk_to_str(data->zs,data->stk_vm_current).c_str());
+				VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
+					,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+					,stk_to_str(data->vm_str_aux[0],data->zs,data->stk_vm_current)
+				);
 				return;
 			}
 		}
@@ -889,7 +892,7 @@ apply_metamethod_error:
 			// ok stk_vm_current holds the iter object
 			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
 				VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'"
-						,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str());
+						,stk_to_typeof_str(data->vm_str_aux[0],data->zs,data->stk_vm_current));
 				return;
 			}
 

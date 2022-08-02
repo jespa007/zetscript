@@ -77,11 +77,10 @@ namespace zetscript{
 		if(key_w == Keyword::KEYWORD_CONTINUE){
 
 			if(eval_data->current_function->parsing_loop <= 0){
-				EVAL_ERROR_FILE_LINE(
+				EVAL_ERROR_FILE_LINEF(
 					eval_data->current_parsing_file
 					,line
 					,"continue is only available on 'for' or 'while' loops"
-					, NULL
 				);
 			}
 
@@ -120,11 +119,10 @@ namespace zetscript{
 
 			// evaluate conditional line ...
 			if(*aux_p != '('){
-				EVAL_ERROR_FILE_LINE(
+				EVAL_ERROR_FILE_LINEF(
 					eval_data->current_parsing_file
 					,line
 					,"Syntax error 'while': Expected '(' "
-					, NULL
 				);
 			}
 

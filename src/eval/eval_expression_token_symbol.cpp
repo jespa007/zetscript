@@ -102,7 +102,11 @@ namespace zetscript{
 			}
 
 			if(*aux_p != ')'){
-				EVAL_ERROR_FILE_LINE_GOTOF(eval_data->current_parsing_file,line ,error_expression_token_symbol,"Expected ')'");
+				EVAL_ERROR_FILE_LINE_GOTOF(
+					eval_data->current_parsing_file
+					,line 
+					,error_expression_token_symbol,"Expected ')'"
+				);
 			}
 
 			aux_p=aux_p+1;
