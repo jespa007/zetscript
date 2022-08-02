@@ -17,6 +17,21 @@ namespace zetscript{
 			return zs_string(_sformat_buffer);
 		}
 
+		void		format_file_line(char *_str_out,const char* _file, int _line, const  char* _str_in, ...) {
+			//char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
+			char _s_aux[1024];
+
+			(_file == NULL || *_file == 0) ? sprintf((_s_aux), "line %i:", _line)\
+				: sprintf((_s_aux), "%s:%i", _file, _line); \
+
+			strcat(_s_aux, _str_in);
+
+			va_list  ap;
+			va_start(ap, _s_aux);
+			vsprintf(_str_out, _s_aux, ap);
+			va_end(ap);
+		}
+
 		zs_int *  parse_zs_int(const zs_string & val){
 			zs_int *n=NULL;
 			NumberType number_type = is_number(val);

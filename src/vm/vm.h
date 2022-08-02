@@ -26,28 +26,28 @@
 
 #define VM_EXECUTE(vm,o,f,stk,n)		vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
 
-#define VM_ERROR(s,...)	\
+#define VM_ERROR(_s_in,...)	\
 	data->vm_error=true;\
-	data->vm_error_file=SFI_GET_FILE(calling_function,instruction);\
+	strcpy(data->vm_error_file,SFI_GET_FILE(calling_function,instruction));\
 	data->vm_error_line=SFI_GET_LINE(calling_function,instruction);\
-	data->vm_error_str=ZS_LOG_FILE_LINE_STR(data->vm_error_file.c_str(),data->vm_error_line)+zetscript::zs_strutils::format(s, __VA_ARGS__);
+	zs_strutils::format_file_line(data->vm_error_str,data->vm_error_file,data->vm_error_line,_s_in, __VA_ARGS__);
 
-#define VM_ERRORF(s)					VM_ERROR(s,NULL)
+#define VM_ERRORF(_s_in)					VM_ERROR(_s_in,NULL)
 
 #define VM_ERROR_AND_RET(s,...)	\
 	data->vm_error=true;\
-	data->vm_error_file=SFI_GET_FILE(calling_function,instruction);\
+	strcpy(data->vm_error_file,SFI_GET_FILE(calling_function,instruction));\
 	data->vm_error_line=SFI_GET_LINE(calling_function,instruction);\
-	data->vm_error_str=ZS_LOG_FILE_LINE_STR(data->vm_error_file.c_str(),data->vm_error_line)+zetscript::zs_strutils::format(s, __VA_ARGS__);\
+	zs_strutils::format_file_line(data->vm_error_str,data->vm_error_file,data->vm_error_line,s, __VA_ARGS__);\
 	return;
 
 #define VM_ERROR_AND_RETF(s)			VM_ERROR_AND_RET(s,NULL)
 
 #define VM_STOP_EXECUTE(s,...)	\
 	data->vm_error=true;\
-	data->vm_error_file=SFI_GET_FILE(calling_function,instruction);\
+	strcpy(data->vm_error_file,SFI_GET_FILE(calling_function,instruction));\
 	data->vm_error_line=SFI_GET_LINE(calling_function,instruction);\
-	data->vm_error_str=ZS_LOG_FILE_LINE_STR(data->vm_error_file.c_str(),data->vm_error_line)+zetscript::zs_strutils::format(s, __VA_ARGS__);\
+	ZS_STR_FORMAT_FILE_LINE(data->vm_error_str,data->vm_str_aux,data->vm_error_file,data->vm_error_line,s, __VA_ARGS__);\
 	goto lbl_exit_function;
 
 #define VM_STOP_EXECUTEF(s)				VM_STOP_EXECUTE(s,NULL)

@@ -114,7 +114,7 @@ namespace zetscript{
 	zs_string		stk_to_typeof_str(ZetScript *_zs, StackElement *_stk);
 	void			stk_assign(ZetScript *_zs,StackElement *_stk_dst, StackElement *_stk_src);
 	StackElement 	to_stk(ZetScript *_zs, zs_int ptr_var, short idx_builtin_type_var);
-	bool			stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, zs_string & _error);
+	bool			stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, char  * _error);
 
 	template<typename _C>
 	_C 				stk_to(ZetScript *_zs, StackElement * _stk);

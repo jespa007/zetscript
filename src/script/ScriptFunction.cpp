@@ -592,7 +592,7 @@ namespace zetscript{
 			, unsigned short _function_properties
 	){
 		Symbol *symbol_repeat=_scope_block->getSymbol(_function_name, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
-		zs_string current_file_line=ZS_CONST_STR_IS_EMPTY(_file)?
+		zs_string current_file_line=ZS_STR_CONST_IS_EMPTY(_file)?
 							zs_strutils::format("[line %i]",_line):
 							zs_strutils::format("[%s:%i]",zs_path::get_filename(_file).c_str(),_line);
 
@@ -600,7 +600,7 @@ namespace zetscript{
 
 			ScriptFunction *sf_repeat=NULL;
 
-			zs_string symbol_file_line=ZS_CONST_STR_IS_EMPTY(symbol_repeat->file)?
+			zs_string symbol_file_line=ZS_STR_CONST_IS_EMPTY(symbol_repeat->file)?
 					zs_strutils::format("[line %i]",_line):
 					zs_strutils::format("[%s:%i]",zs_path::get_filename(symbol_repeat->file).c_str(),_line);
 
@@ -688,10 +688,10 @@ namespace zetscript{
 		}
 
 		if(_params_len>=FUNCTION_PARAMETER_COUNT_MAX){
-			THROW_EXCEPTION(zs_strutils::format("Reached max parameter count (count:%i max:%i)"
+			THROW_EXCEPTION("Reached max parameter count (count:%i max:%i)"
 				,_params_len
 				,FUNCTION_PARAMETER_COUNT_MAX
-			));
+			);
 		}
 
 		// delete existing args...

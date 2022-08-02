@@ -357,7 +357,7 @@ namespace zetscript{
 			current_directory = zs_dir::get_current_directory();
 			zs_dir::change_dir(zs_path::get_directory(_filename));
 
-			zs_string error_str="";
+			zs_string str_error="";
 			zs_string error_file="";
 
 			bool error=false;
@@ -370,10 +370,10 @@ namespace zetscript{
 				error=true;
 				error_file=e.getErrorSourceFilename();
 				error_line=e.getErrorLine();
-				error_str=e.getErrorDescription();
+				str_error=e.getErrorDescription();
 			}catch(std::exception & e){
 				error=true;
-				error_str=e.what();
+				str_error=e.what();
 			}
 
 			// restore previous directory
@@ -383,9 +383,9 @@ namespace zetscript{
 
 			if(error){
 				if(error_file.empty()==false){
-					THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,error_str.c_str());
+					THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,str_error.c_str());
 				}else{
-					THROW_EXCEPTION(error_str.c_str());
+					THROW_EXCEPTION(str_error.c_str());
 				}
 			}
 

@@ -154,10 +154,11 @@ namespace zetscript{
 						,(zs_int *)&converted_param[i]
 						,data->vm_error_str
 				)){
+					strcpy(data->vm_str_aux, data->vm_error_str);
 					VM_ERROR_AND_RET("Function '%s', param %i: %s",
 						c_function->name_script_function.c_str(),
 						i,
-						data->vm_error_str.c_str()
+						data->vm_str_aux
 					);
 				}
 			}

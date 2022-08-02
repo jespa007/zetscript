@@ -132,8 +132,8 @@ namespace zetscript{
 	void vm_set_error(VirtualMachine *vm,const zs_string & str){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		data->vm_error = true;
-		data->vm_error_str=str;
-		data->vm_error_file="";
+		strcpy(data->vm_error_str,str.c_str());
+		memset(data->vm_error_file,0,sizeof(data->vm_error_file));
 		data->vm_error_line=-1;
 	}
 
@@ -149,7 +149,7 @@ namespace zetscript{
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 		vm_set_error(vm,zs_strutils::format("[%s:%i] %s",file,line,out_txt));
 
-		data->vm_error_file=file;
+		strcpy(data->vm_error_file,file);
 		data->vm_error_line=line;
 	}
 
@@ -267,10 +267,10 @@ namespace zetscript{
 
 		data->vm_error_max_stack_reached=false;
 		data->vm_error=false;
-		data->vm_error_str="";
-		data->vm_error_file="";
+		memset(data->vm_error_str,0,sizeof(data->vm_error_str));
+		memset(data->vm_error_file,0,sizeof(data->vm_error_str));
 		data->vm_error_line=-1;
-		data->vm_error_callstack_str="";
+		memset(data->vm_error_callstack_str,0,sizeof(data->vm_error_str));
 	}
 
 	StackElement vm_execute(

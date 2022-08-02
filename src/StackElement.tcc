@@ -9,7 +9,7 @@ namespace zetscript{
 
 		bool is_constant=false;
 		StackElement stk=*_stk;
-		zs_string error;
+		char error[512];
 		zs_int ptr_var;
 		zs_string str_script_type_ptr = typeid(_C).name();
 		ScriptTypeFactory *_script_factory=_zs->getScriptTypeFactory();
@@ -22,7 +22,7 @@ namespace zetscript{
 		if(stk_to(_zs,_stk, script_type->idx_script_type, &ptr_var,error)==false){
 			THROW_RUNTIME_ERROR("Error converting StackElement to '%s': %s"
 					,zs_rtti::demangle(str_script_type_ptr.c_str()).c_str()
-					,error.c_str()
+					,error
 			);
 		}
 		return (_C)ptr_var;

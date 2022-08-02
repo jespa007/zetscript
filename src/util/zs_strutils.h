@@ -22,7 +22,16 @@ if(n==ZS_MAX_STR_BUFFER){\
 }\
 va_end(ap);}
 
-#define ZS_CONST_STR_IS_EMPTY(str) ((str)==NULL || (*(str))==0)
+#define ZS_STR_CONST_IS_EMPTY(str) ((str)==NULL || (*(str))==0)
+
+/*#define ZS_STR_FORMAT_FILE_LINE(_s_out,_s_aux,_file,_line,_s_in, ...)\
+	(_file == NULL || *_file == 0) ? sprintf((_s_aux), "line %i:", _line)\
+	:sprintf((_s_aux), "%s:%i",_file,_line);\
+	strcat((_s_aux),(_s_in));\
+	sprintf((_s_out), (_s_aux),__VA_ARGS__);
+
+#define ZS_STR_FORMAT_FILE_LINEF(_s_out,_s_aux,_file,_line,_s_in) ZS_STR_FORMAT_FILE_LINE(_s_out,_s_aux,_file,_line,_s_in, NULL)
+*/
 
 namespace zetscript{
 	namespace zs_strutils{
@@ -49,6 +58,7 @@ namespace zetscript{
 		 zs_string to_lower(const zs_string & str);
 		 zs_string to_upper(const zs_string & str);
 		 zs_string  format(const  char  *string_text, ...);
+		 void		format_file_line(char* _str_out, const char* _file, int _line, const  char* _str_in, ...);
 
 		 bool is_empty(const zs_string & str);
 		 bool ends_with(const zs_string & str, const zs_string & ending);

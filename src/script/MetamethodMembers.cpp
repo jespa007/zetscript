@@ -151,9 +151,8 @@ namespace zetscript{
 				shr_setters.push_back(stk);
 				break;
 			default:
-				THROW_EXCEPTION(zs_strutils::format("Unexpected to register '%s' setter"
-						,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
-					)
+				THROW_EXCEPTION("Unexpected to register '%s' setter"
+					,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
 				);
 				break;
 			}

@@ -100,7 +100,7 @@ namespace zetscript{
 
 			*ptr_fun=((void *)(new std::function<R ()>(
 				[&,file,line,calling_obj,fun_obj,idx_return](){
-						zs_string error_str;
+						char str_error[512];
 						R ret_value;
 
 						StackElement stk = vm_execute(
@@ -114,8 +114,8 @@ namespace zetscript{
 								,line
 						);
 
-						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 						}
 						return ret_value;
 				}
@@ -171,7 +171,7 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1](Param1 p1){
 
 						R ret_value;
-						zs_string error_str;
+						char str_error[512];
 
 						StackElement args[1]={
 								to_stk(this,(zs_int)p1,idx_param1)
@@ -187,8 +187,8 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_to(this,&stk,idx_return, (zs_int*)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						if(!stk_to(this,&stk,idx_return, (zs_int*)(&ret_value),str_error)){
+							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 						}
 						return ret_value;
 				}
@@ -253,7 +253,7 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2](Param1 p1,Param2 p2){
 
 						R ret_value;
-						zs_string error_str;
+						char str_error[512];
 
 						StackElement args[2]={
 								 to_stk(this,(zs_int)p1,idx_param1)
@@ -272,8 +272,8 @@ namespace zetscript{
 							,line
 						);
 
-						if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),str_error)){
+							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 						}
 						return ret_value;
 				}
@@ -344,7 +344,7 @@ namespace zetscript{
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3](Param1 p1,Param2 p2,Param3 p3){
 					R ret_value;
-					zs_string error_str;
+					char str_error[512];
 
 					StackElement args[3]={
 							 to_stk(this,(zs_int)p1,idx_param1)
@@ -363,8 +363,8 @@ namespace zetscript{
 						,line
 					);
 
-					if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+					if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+						THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 					}
 					return ret_value;
 				}
@@ -438,7 +438,7 @@ namespace zetscript{
 			*ptr_fun=((void *)(new std::function<R (Param1,Param2,Param3,Param4)>(
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4](Param1 p1,Param2 p2,Param3 p3,Param4 p4){
 						R ret_value;
-						zs_string error_str;
+						char str_error[512];
 
 						StackElement args[4]={
 								 to_stk(this,(zs_int)p1,idx_param1)
@@ -458,8 +458,8 @@ namespace zetscript{
 								,line
 								);
 
-						if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),str_error)){
+							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 						}
 						return ret_value;
 				}
@@ -541,7 +541,7 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5){
 
 					R ret_value;
-					zs_string error_str;
+					char str_error[512];
 
 					StackElement args[5]={
 							 to_stk(this,(zs_int)p1,idx_param1)
@@ -562,8 +562,8 @@ namespace zetscript{
 							,file
 							,line);
 
-					if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),error_str)){
-						THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+					if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),str_error)){
+						THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 					}
 					return ret_value;
 				}
@@ -648,7 +648,7 @@ namespace zetscript{
 				[&,file,line,calling_obj,fun_obj,idx_return, idx_param1, idx_param2, idx_param3, idx_param4, idx_param5, idx_param6](Param1 p1,Param2 p2,Param3 p3,Param4 p4,Param5 p5,Param6 p6){
 
 						R ret_value;
-						zs_string error_str;
+						char str_error[512];
 
 						StackElement args[6]={
 								 to_stk(this,(zs_int)p1,idx_param1)
@@ -669,8 +669,8 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 						}
 						return ret_value;
 
@@ -816,7 +816,7 @@ namespace zetscript{
 				){
 
 						R ret_value;
-						zs_string error_str;
+						char str_error[512];
 
 						StackElement args[7]={
 								 to_stk(this,(zs_int)p1,idx_param1)
@@ -838,8 +838,8 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 						}
 						return ret_value;
 
@@ -995,7 +995,7 @@ namespace zetscript{
 				){
 
 						R ret_value;
-						zs_string error_str;
+						char str_error[512];
 
 						StackElement args[8]={
 								 to_stk(this,(zs_int)p1,idx_param1)
@@ -1018,8 +1018,8 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 						}
 						return ret_value;
 
@@ -1187,7 +1187,7 @@ namespace zetscript{
 				){
 
 						R ret_value;
-						zs_string error_str;
+						char str_error[512];
 
 						StackElement args[9]={
 								 to_stk(this,(zs_int)p1,idx_param1)
@@ -1211,8 +1211,8 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 						}
 						return ret_value;
 
@@ -1391,7 +1391,7 @@ namespace zetscript{
 				){
 
 						R ret_value;
-						zs_string error_str;
+						char str_error[512];
 
 						StackElement args[10]={
 								 to_stk(this,(zs_int)p1,idx_param1)
@@ -1416,8 +1416,8 @@ namespace zetscript{
 								,file
 								,line);
 
-						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),error_str)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",error_str.c_str());
+						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
+							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error);
 						}
 						return ret_value;
 

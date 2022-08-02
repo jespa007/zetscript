@@ -154,7 +154,7 @@ namespace zetscript{
 		}
 	}
 
-	bool stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, zs_string & _error){
+	bool stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, char *_error){
 		zs_int val_ret=0;
 		//ScriptObjectString *so=NULL;
 
@@ -181,11 +181,11 @@ namespace zetscript{
 			}else if(_idx_builtin_type == IDX_TYPE_BOOL_PTR_C){//*ScriptType::k_str_bool_type_ptr){
 				val_ret=(zs_int)(&_stack_element->value);
 			}else{
-				_error="cannot convert '";
-				_error.append(zs_rtti::demangle((k_str_bool_type_ptr)));
-				_error.append("' to '");
-				_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)));
-				_error.append("'");
+				strcpy(_error,"cannot convert '");
+				strcat(_error,zs_rtti::demangle(k_str_bool_type_ptr).c_str());
+				strcat(_error,"' to '");
+				strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
+				strcat(_error,"'");
 				return false;
 			}
 
@@ -206,11 +206,11 @@ namespace zetscript{
 				}
 				break;
 			default:
-				_error="cannot convert '";
-				_error.append(zs_rtti::demangle((k_str_zs_float_type_ptr)));
-				_error.append("' to '");
-				_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)));
-				_error.append("'");
+				strcpy(_error,"cannot convert '");
+				strcat(_error,zs_rtti::demangle(k_str_zs_float_type_ptr).c_str());
+				strcat(_error,"' to '");
+				strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
+				strcat(_error,"'");
 				return false;
 			}
 			break;
@@ -231,9 +231,9 @@ namespace zetscript{
 				//stack_element->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_IS_C_VAR_PTR;
 				break;*/
 			default:
-				_error= "cannot convert 'int' to '";
-				_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)));
-				_error.append("'");
+				strcpy(_error,"cannot convert 'int' to '");
+				strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
+				strcat(_error,"'");
 				return false;
 			}
 			break;
@@ -249,7 +249,7 @@ namespace zetscript{
 				val_ret=(zs_int)script_object;
 
 				if(script_object==NULL){
-					_error="Variable is not defined";
+					strcpy(_error,"Variable is not defined");
 					return false;
 				}
 
@@ -257,7 +257,7 @@ namespace zetscript{
 
 					if(script_object->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
 						if(_stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
-							_error= "internal error var_ref is NULL";
+							strcpy(_error, "internal error var_ref is NULL");
 							return false;
 						}
 
@@ -266,11 +266,11 @@ namespace zetscript{
 						}else if (_idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
 							val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());
 						}else{
-							_error= "cannot convert '";
-							_error.append(zs_rtti::demangle((k_str_zs_string_type_ptr)));
-							_error.append("' to '");
-							_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)));
-							_error.append("'");
+							strcpy(_error,"cannot convert '");
+							strcat(_error,zs_rtti::demangle((k_str_zs_string_type_ptr)).c_str());
+							strcat(_error,"' to '");
+							strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
+							strcat(_error,"'");
 							return false;
 						}
 					}else if(script_object->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
@@ -282,11 +282,11 @@ namespace zetscript{
 									_idx_builtin_type
 								))==0
 							){//c_class->idx_script_type==idx_builtin_type){
-								_error = "cannot convert '";
-								_error.append(zs_rtti::demangle(c_class->str_script_type_ptr));
-								_error.append("' to '");
-								_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)));
-								_error.append("'");
+								strcpy(_error,"cannot convert '");
+								strcat(_error,zs_rtti::demangle(c_class->str_script_type_ptr).c_str());
+								strcat(_error,"' to '");
+								strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
+								strcat(_error,"'");
 								return false;
 							}
 							val_ret=(zs_int)script_object_class->getNativeObject();
@@ -298,18 +298,18 @@ namespace zetscript{
 							return false;*/
 						}
 					}else{ // cannot convert...
-						_error = "cannot convert '";
-						_error.append(zs_rtti::demangle(script_object->getTypeName().c_str()));
-						_error.append("' to '");
-						_error.append(zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)));
-						_error.append("'");
+						strcpy(_error,"cannot convert '");
+						strcat(_error,zs_rtti::demangle(script_object->getTypeName().c_str()).c_str());
+						strcat(_error,"' to '");
+						strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
+						strcat(_error,"'");
 						return false;
 					}
 				}else{ // get native object...
 					val_ret=(zs_int)script_object->getNativeObject();
 				}
 			}else{
-				_error= zs_strutils::format(
+				sprintf(_error,
 					"Cannot know how to convert type '%s' from '%s'"
 					,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str()
 					,stk_to_typeof_str(_zs,_stack_element).c_str()

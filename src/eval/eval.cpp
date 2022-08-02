@@ -43,7 +43,7 @@ namespace zetscript{
 		char *aux_p=NULL;
 		int line =_line;
 		bool error;
-		zs_string error_str;
+		zs_string str_error;
 		zs_string error_file="";
 		int error_line=-1;
 		Scope *scope_info=MAIN_SCOPE(eval_data);
@@ -63,13 +63,13 @@ namespace zetscript{
 		if(aux_p!=NULL){
 			if(*aux_p=='}'){
 				eval_data->error=true;
-				eval_data->error_str=ZS_LOG_FILE_LINE_STR(_filename,line)+zetscript::zs_strutils::format("unexpected ending block ('}')");
+				zs_strutils::format_file_line(eval_data->str_error,_filename,line,"unexpected ending block ('}')");
 			}
 		}
 
 		// link unresolved functions...
 		error=eval_data->error;
-		error_str=eval_data->error_str;
+		str_error=eval_data->str_error;
 		error_file=eval_data->error_file;
 		error_line=eval_data->error_line;
 
@@ -92,7 +92,7 @@ namespace zetscript{
 
 
 		if(error){
-			THROW_SCRIPT_ERROR_FILE_LINEF(error_file,error_line,error_str.c_str());
+			THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,str_error.c_str());
 		}
 	}
 
@@ -172,7 +172,7 @@ namespace zetscript{
 
 					}catch(std::exception & ex){
 						eval_data->error=true;
-						eval_data->error_str=ex.what();
+						strcpy(eval_data->str_error,ex.what());
 						return NULL;
 					}
 				}
@@ -258,7 +258,11 @@ namespace zetscript{
 						while(*aux != '\n' && *aux!=0 && !(*aux=='\"' && *(aux-1)!='\\')) aux++;
 
 						if(*aux != '\"'){
-							EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"expected end \" directive");
+							EVAL_ERROR_FILE_LINEF(
+								eval_data->current_parsing_file
+								,line
+								,"expected \" for finished directive declaration"
+							);
 						}
 
 						end_var=aux;
@@ -269,7 +273,12 @@ namespace zetscript{
 
 						// save current file info...
 						if(!zs_file::exists(str_symbol)){
-							EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Error import: file '%s' not exist",str_symbol.c_str(),str_symbol.c_str());
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Error import: file '%s' not exist"
+								,str_symbol.c_str()
+							);
 						}
 
 						try{
@@ -277,8 +286,9 @@ namespace zetscript{
 							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE,eval_data);
 						}catch(zs_exception & ex){
 							eval_data->error=true;\
-							eval_data->error_str=zetscript::zs_strutils::format("%s\n",ex.getErrorDescription().c_str());
-							eval_data->error_str+=zetscript::zs_strutils::format("[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
+							sprintf(eval_data->str_error,"%s\n",ex.getErrorDescription());
+							sprintf(eval_data->str_aux_error,"[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
+							strcat(eval_data->str_error,eval_data->str_aux_error);//+=zetscript::zs_strutils::format("[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
 							return 0;
 						}
 

@@ -6,17 +6,17 @@
 
 namespace zetscript {
 
-	zs_exception::zs_exception(const zs_string &  _file, int _line, const char * _error_description, const char *_error_type){
+	zs_exception::zs_exception(const char *  _file, int _line, const char * _error_description, const char *_error_type){
 		error_type=_error_type;
-		file=_file;
+		strcpy(file,_file);
 		line=_line;
-		error_description=_error_description;
-		if(_file.empty() && _line == ZS_IDX_UNDEFINED){
-			sprintf(what_msg,"%s", (char *)error_description.c_str());
-		}else if(_file.empty()){
-			sprintf(what_msg,"line %i: %s", _line, (char *)error_description.c_str());
+		strcpy(error_description,_error_description);
+		if((_file==0 || *_file==0) && _line == ZS_IDX_UNDEFINED){
+			sprintf(what_msg,"%s", error_description);
+		}else if((_file==0 || *_file==0)){
+			sprintf(what_msg,"line %i: %s", _line, error_description);
 		}else{
-			sprintf(what_msg,"[%s:%i] %s",zs_path::get_filename(_file).c_str(), _line, (char *)error_description.c_str());
+			sprintf(what_msg,"[%s:%i] %s",_file, _line, error_description);
 		}
 
 	}
@@ -31,19 +31,19 @@ namespace zetscript {
 		return line;
 	}
 
-	const zs_string & zs_exception::getErrorDescription(){
+	const char * zs_exception::getErrorDescription(){
 		return this->error_description;
 	}
 
-	const zs_string & zs_exception::getErrorSourceFilename(){
+	const char * zs_exception::getErrorSourceFilename(){
 		return this->file;
 	}
 
 
-	zs_exception_error::zs_exception_error(const zs_string &  _file, int _line, const char * _error):zs_exception(_file,  _line, _error,"ERR"){}
+	zs_exception_error::zs_exception_error(const char * _file, int _line, const char * _error):zs_exception(_file,  _line, _error,"ERR"){}
 
 
-	void throw_script_error(const zs_string & script_filename, int script_line, const char *in_txt,...){
+	void throw_script_error(const char * script_filename, int script_line, const char *in_txt,...){
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 
@@ -56,17 +56,22 @@ namespace zetscript {
 		throw zs_exception_error("",-1,out_txt);
 	}
 
-	void throw_exception(const char *filename, int line, const char *in_txt){//,...){
-		ZS_UNUSUED_PARAM(filename);
-		ZS_UNUSUED_PARAM(line);
-		//char out_txt[ZS_MAX_STR_BUFFER];
-		//ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
+	void throw_exception_file_line(const char *filename, int line, const char *in_txt,...){
+		char aux[ZS_MAX_STR_BUFFER];
+		sprintf(aux,"[%s:%i] ",filename,line);
 
-		throw zs_exception_error("",ZS_IDX_UNDEFINED,in_txt);
+		char out_txt[ZS_MAX_STR_BUFFER];
+		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
+
+		strcat(aux,out_txt);
+
+		throw zs_exception_error(filename,line,out_txt);
 	}
 
-	void throw_exception(const zs_string & in_txt){
-		throw zs_exception_error("",ZS_IDX_UNDEFINED,in_txt.c_str());
+	void throw_exception(const char * in_txt,...){
+		char out_txt[ZS_MAX_STR_BUFFER];
+		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
+		throw zs_exception_error("",ZS_IDX_UNDEFINED,out_txt);
 	}
 
 

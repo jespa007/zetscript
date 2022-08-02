@@ -59,12 +59,13 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 			,_reset \
 	);\
 	if(data->vm_error){\
-		data->vm_error_callstack_str+=zs_strutils::format(\
-			"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */ \
+		sprintf(data->vm_str_aux\
+			,"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */ \
 			, "iter" \
 			,SFI_GET_FILE(calling_function,instruction) \
 			,SFI_GET_LINE(calling_function,instruction) \
 		);\
+		strcat(data->vm_error_callstack_str,data->vm_str_aux);\
 		goto lbl_exit_function;\
 	}\
 
@@ -96,6 +97,7 @@ namespace zetscript{
 		 bool				vm_error,vm_error_max_stack_reached;
 		 char 				vm_error_str[1024];
 		 char 				vm_error_file[1024];
+		 char				vm_str_aux[1024]; // todo str intermediate operations
 		 int 				vm_error_line;
 		 char 				vm_error_callstack_str[4096];
 		 VM_ScopeFunction	*vm_current_scope_function;
@@ -586,7 +588,7 @@ namespace zetscript{
 			}
 
 			if(n_candidates == 0){
-				VM_ERROR("Cannot call native %s '%s'. Function not registered\n\n"
+				VM_ERROR("Cannot call native %s '%s(%s)'. Function not registered\n\n"
 					,is_constructor ? "constructor":class_str==""?"function":"member function"
 					,function_name_not_found.c_str()
 					,args_str.c_str()
@@ -848,7 +850,7 @@ apply_metamethod_error:
 		// stk_op2 expects to be obj with container
 
 		if((stk_result_op2->properties & STK_PROPERTY_PTR_STK) == 0){
-			VM_ERROR("internal: Expected stk",0);
+			VM_ERRORF("internal: Expected stk");
 			return;
 		}
 
@@ -923,7 +925,7 @@ apply_metamethod_error:
 			*stk_result_op2=*data->stk_vm_current;
 		}
 		else{
-			VM_ERROR("Object not implements 'iter' ",obj->getTypeName().c_str());
+			VM_ERROR("Object '%s' not implements 'iter'",obj->getTypeName().c_str());
 		}
 
 		// get iterator...

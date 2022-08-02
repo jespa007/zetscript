@@ -146,11 +146,7 @@ namespace zetscript{
 
 
 		if (IDX_VM_CURRENT_SCOPE_FUNCTION >= VM_FUNCTION_CALL_MAX) {
-			//VM_ERROR_AND_RETF("Reached max stack");
-			data->vm_error = true; 
-			data->vm_error_file = SFI_GET_FILE(calling_function, instruction); 
-			data->vm_error_line = SFI_GET_LINE(calling_function, instruction); 
-			data->vm_error_str = ZS_LOG_FILE_LINE_STR(data->vm_error_file.c_str(), data->vm_error_line) + zetscript::zs_strutils::format("Reached max stack"); 
+			VM_ERROR_AND_RETF("Reached max stack");
 			return;
 		}
 
