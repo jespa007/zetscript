@@ -20,7 +20,7 @@ namespace zetscript{
 		StackElement *getStackElementPtr();
 		void setStackElement(StackElement stk);
 
-		virtual zs_string toString(const zs_string _format="");
+		virtual zs_string toString();
 
 	private:
 		StackElement stk_var_ref;

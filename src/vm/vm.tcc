@@ -9,20 +9,15 @@
 //#define IS_STK_THIS(stk) (this_object != NULL && (stk)->value == (zs_int)(this_object))
 
 #define PRINT_DUAL_ERROR_OP(c)\
-zs_string var_type1=stk_to_typeof_str(data->zs,stk_result_op1),\
-	   var_type2=stk_to_typeof_str(data->zs,stk_result_op2);\
-\
 	VM_ERROR("cannot perform operator '%s' %s '%s'. Check whether op1 and op2 are same type, or type implements the metamethod",\
-		var_type1.c_str(),\
+		stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1),\
 		c,\
-		var_type2.c_str());\
+		stk_to_typeof_str(data->vm_str_aux[1],data->zs,stk_result_op2));\
 
 #define PRINT_ERROR_OP(c)\
-	zs_string var_type1=stk_to_typeof_str(data->zs,stk_result_op1);\
-\
 VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the metamethod",\
 	c,\
-	var_type1.c_str());\
+	stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1));\
 	return NULL;
 
 #define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return, n_return,with_share)\

@@ -1511,7 +1511,7 @@ namespace zetscript{
 			// 1. some variable in main function ...
 			if(access_var.count>1){
 				for(int i=0; i < access_var.count-1; i++){
-					zs_string symbol_to_find=access_var.items[i];
+					const char *symbol_to_find=access_var.items[i].c_str();
 					if(i==0){ // get variable through main_class.main_function (global element)
 						zs_vector<Symbol *> *list_variables=main_function->scope_script_function->symbol_variables;
 						for(int j = 0; j < list_variables->count && calling_obj==NULL; j++){
@@ -1542,7 +1542,7 @@ namespace zetscript{
 									,line
 									,"Cannot bind script function '%s': Variable name '%s' doesn't exist"
 									,function_access.c_str()
-									,symbol_to_find.c_str()
+									,symbol_to_find
 							);
 						}
 
@@ -1557,7 +1557,7 @@ namespace zetscript{
 										,line
 										,"Cannot bind script function '%s': Variable name '%s' not script variable"
 										,function_access.c_str()
-										,symbol_to_find.c_str()
+										,symbol_to_find
 								);
 							}
 						}
@@ -1567,7 +1567,7 @@ namespace zetscript{
 								,line
 								,"Cannot bind script function '%s': Variable name '%s' doesn't exist"
 								,function_access.c_str()
-								,symbol_to_find.c_str()
+								,symbol_to_find
 							);
 						}
 					}

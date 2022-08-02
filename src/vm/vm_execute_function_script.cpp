@@ -186,10 +186,10 @@ namespace zetscript{
 								VM_STOP_EXECUTEF("Expected string for object access");
 							}
 							// TODO: save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
-							stk_var = so_object->getProperty(stk_to_str(data->zs, stk_result_op2));
+							stk_var = so_object->getProperty(stk_to_str(data->vm_str_aux[0],data->zs, stk_result_op2));
 							if(stk_var == NULL){
 								if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
-									if((stk_var =so_object->addProperty(stk_to_str(data->zs, stk_result_op2), data->vm_error_str))==NULL){
+									if((stk_var =so_object->addProperty(stk_to_str(data->vm_str_aux[0],data->zs, stk_result_op2), data->vm_error_str))==NULL){
 										VM_STOP_EXECUTEF(data->vm_error_str);
 									}
 								}
@@ -229,7 +229,7 @@ namespace zetscript{
 						VM_STOP_EXECUTEF("Expected String,Vector or Object for access '[]' opertaion"); \
 					}
 				}else{
-					VM_STOP_EXECUTE("Expected object for access '[]' operation but it was type '%s'",stk_to_str(data->zs,stk_result_op1).c_str()); \
+					VM_STOP_EXECUTE("Expected object for access '[]' operation but it was type '%s'",stk_to_str(data->vm_str_aux[0],data->zs,stk_result_op1)); \
 
 				}
 				continue;
@@ -359,8 +359,8 @@ find_element_object:
 								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 								,str_symbol
 								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-								,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-								,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+								,stk_to_typeof_str(data->vm_str_aux[0],data->zs,data->stk_vm_current)
+								,stk_to_typeof_str(data->vm_str_aux[1],data->zs,data->stk_vm_current)
 								,str_symbol
 							);
 						}
@@ -385,9 +385,9 @@ find_element_object:
 										,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 										,str_symbol
 										,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-										,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+										,stk_to_typeof_str(data->vm_str_aux[0],data->zs,data->stk_vm_current)
 										,sc_type->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
-										,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+										,stk_to_typeof_str(data->vm_str_aux[1],data->zs,data->stk_vm_current)
 										,str_symbol
 									);
 								}
@@ -420,10 +420,10 @@ find_element_object:
 								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
 								,(const char *)str_symbol
 								,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)
-								,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-								,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+								,stk_to_typeof_str(data->vm_str_aux[0],data->zs,data->stk_vm_current)
+								,stk_to_typeof_str(data->vm_str_aux[1],data->zs,data->stk_vm_current)
 								,(const char *)str_symbol
-								,stk_to_typeof_str(data->zs,stk_var).c_str()
+								,stk_to_typeof_str(data->vm_str_aux[2],data->zs,stk_var)
 							);
 						}
 
@@ -542,14 +542,14 @@ find_element_object:
 
 				stk_var=(data->stk_vm_current-1);
 				if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_var) == 0){
-					VM_STOP_EXECUTE("Expected object but is type '%s'",stk_to_typeof_str(data->zs,stk_var).c_str());
+					VM_STOP_EXECUTE("Expected object but is type '%s'",stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_var));
 				}
 
 				so_aux = (ScriptObject *)stk_var->value;
 
 				if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
 					VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type '%s'"
-							,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
+							,stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1)
 					);
 				}
 
@@ -640,7 +640,7 @@ find_element_object:
 				}else{
 					if((stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR)==0){
 						VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
-							,stk_to_typeof_str(data->zs,stk_dst).c_str()
+							,stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_dst)
 						);
 					}
 				}
@@ -827,7 +827,7 @@ find_element_object:
 						if(stk_src_properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)){
 							str_object->set((const char *)stk_src->value);
 						}else{
-							str_object->set(stk_to_str(data->zs, stk_src));
+							str_object->set(stk_to_str(data->vm_str_aux[0],data->zs, stk_src));
 						}
 
 
@@ -892,7 +892,7 @@ find_element_object:
 
 					}else{
 						VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
-							,stk_to_typeof_str(data->zs,stk_src).c_str()
+							,stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_src)
 						);
 					}
 
@@ -1102,7 +1102,7 @@ find_element_object:
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				VM_POP_STK_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_typeof_str(data->zs,stk_result_op1).c_str());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1));
 				}
 				if(stk_result_op1->value == 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1111,7 +1111,7 @@ find_element_object:
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				VM_POP_STK_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_typeof_str(data->zs,stk_result_op1).c_str());
+					VM_STOP_EXECUTE("Expected boolean expression but it was '%s'",stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1));
 				}
 				if(stk_result_op1->value != 0){
 					instruction_it=instruction+instruction->value_op2;
@@ -1268,7 +1268,7 @@ load_function:
 
 							VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-									,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
+									,stk_to_typeof_str(data->vm_str_aux[0],data->zs,sf_call_stk_function_ref)
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							);
 
@@ -1281,12 +1281,12 @@ load_function:
 							VM_STOP_EXECUTE("Cannot call '%s' as a function. '%s' is type '%s'"
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-									,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
+									,stk_to_typeof_str(data->vm_str_aux[0],data->zs,sf_call_stk_function_ref)
 							);
 						}else{ // STACK CALL
 							VM_STOP_EXECUTE("Error trying to call a function from stack. StackElement value is '%s' as type '%s'"
-									,stk_to_str(data->zs,sf_call_stk_function_ref).c_str()
-									,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
+									,stk_to_str(data->vm_str_aux[0],data->zs,sf_call_stk_function_ref)
+									,stk_to_typeof_str(data->vm_str_aux[1],data->zs,sf_call_stk_function_ref)
 									,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 							);
 						}
@@ -1356,7 +1356,7 @@ execute_function:
 										if(!vm_create_shared_script_object(vm,sc)){
 											goto lbl_exit_function;
 										}
-										sc->set(stk_to_str(data->zs,stk_arg));
+										sc->set(stk_to_str(data->vm_str_aux[0],data->zs,stk_arg));
 										so_param=sc;
 										stk_arg->value=(zs_int)sc;
 										stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -1432,7 +1432,7 @@ execute_function:
 							break;
 						default:
 							VM_STOP_EXECUTE("Internal error: Unexpected default stack element '%s'"
-									,stk_to_typeof_str(data->zs,&param->default_param_value).c_str());
+									,stk_to_typeof_str(data->vm_str_aux[0],data->zs,&param->default_param_value));
 							break;
 
 						}
@@ -1536,7 +1536,7 @@ execute_function:
 							str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->str_script_type.c_str();
 						}
 						const char * file_src_call=SFI_GET_FILE(calling_function,instruction);
-						sprintf(data->vm_str_aux
+						sprintf(data->vm_str_aux[0]
 								,"\nat calling function %s%s%s (%sline:%i)" // TODO: get full symbol ?
 								,str_class_owner==NULL?"":str_class_owner
 								,str_class_owner==NULL?"":"::"
@@ -1544,7 +1544,7 @@ execute_function:
 								,file_src_call?zs_strutils::format("file:%s ",file_src_call).c_str():""
 								,SFI_GET_LINE(calling_function,instruction)
 						);
-						strcat(data->vm_error_callstack_str,data->vm_str_aux);
+						strcat(data->vm_error_callstack_str,data->vm_str_aux[0]);
 
 					}
 					goto lbl_exit_function;
@@ -1597,7 +1597,7 @@ execute_function:
 						if(script_var->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (script_var->shared_pointer==NULL)){
 							// if is not shared is constant...
 							ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
-							sc->set(script_var->toString());
+							sc->set(script_var->toString().c_str());
 							stk_it->properties=STK_PROPERTY_SCRIPT_OBJECT;
 							stk_it->value=(zs_int)sc;
 						}else{
@@ -1674,7 +1674,10 @@ execute_function:
 						}
 
 				 	 }else{
-				 		VM_STOP_EXECUTE("var '%s' expected as 'type' but it was '%s'",SFI_GET_SYMBOL_NAME(calling_function,instruction), stk_to_typeof_str(data->zs,stk_result_op1).c_str());
+				 		VM_STOP_EXECUTE("var '%s' expected as 'type' but it was '%s'"
+				 				,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+								, stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_result_op1)
+						);
 				 	 }
 				 	 continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new vector...

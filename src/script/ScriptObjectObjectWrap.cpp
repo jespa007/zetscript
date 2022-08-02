@@ -49,7 +49,7 @@ namespace zetscript{
 
 	void ScriptObjectObjectWrap_erase(ZetScript *_zs,ScriptObjectObject *o1, zs_string * key){
 		ZS_UNUSUED_PARAM(_zs);
-		o1->eraseUserProperty(*key);
+		o1->eraseUserProperty(key->c_str());
 	}
 
 	ScriptObjectIteratorObject * ScriptObjectObjectWrap_iter(ZetScript *_zs,ScriptObjectObject *oo){

@@ -61,7 +61,7 @@ namespace zetscript{
 
 			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each type
 			if((se=addBuiltinProperty(
-				symbol->name
+				symbol->name.c_str()
 			))==NULL){
 				return;
 			}
@@ -153,6 +153,7 @@ namespace zetscript{
 	}
 
 	zs_string ScriptObjectClass::toString(){
+		char str_aux[512];
 		// check whether toString is implemented...
 		Symbol *symbol_function=getScriptType()->getSymbolMemberFunction(byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_TO_STRING));
 		zs_string aux="";
@@ -178,7 +179,7 @@ namespace zetscript{
 						vm_unref_lifetime_object(this->vm,so);
 						// return
 					}else{
-						aux=stk_to_str(zs,&result);
+						aux=stk_to_str(str_aux,zs,&result);
 					}
 				}else{ // expect return an scriptobjectstring
 					zs_string *str=NULL;

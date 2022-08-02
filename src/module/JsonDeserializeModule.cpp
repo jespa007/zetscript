@@ -402,7 +402,7 @@ namespace zetscript{
 					str_current = eval_ignore_blanks(str_current + 1, line);
 
 					// create property... //get c property
-					if((stk_element=so->addProperty(key_id,str_aux)) == NULL){
+					if((stk_element=so->addProperty(key_id.c_str(),str_aux)) == NULL){
 						json_deserialize_error(data, str_current, line, str_aux);
 						return NULL;
 					}

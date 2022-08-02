@@ -275,8 +275,8 @@ namespace zetscript{
 		value = &default_str_value;
 	}
 
-	void ScriptObjectString::set(const zs_string & s){
-		*((zs_string *)value) = zs_strutils::unescape(s);
+	void ScriptObjectString::set(const char * _s){
+		*((zs_string *)value) = zs_strutils::unescape(_s);
 	}
 
 	zs_string ScriptObjectString::toString(){

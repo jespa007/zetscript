@@ -160,6 +160,7 @@ namespace zetscript{
 
 	bool stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, char *_error){
 		zs_int val_ret=0;
+		char str_aux[512]={0};
 		//ScriptObjectString *so=NULL;
 
 		ScriptObject *script_object=NULL;
@@ -316,7 +317,7 @@ namespace zetscript{
 				sprintf(_error,
 					"Cannot know how to convert type '%s' from '%s'"
 					,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str()
-					,stk_to_typeof_str(_zs,_stack_element).c_str()
+					,stk_to_typeof_str(str_aux,_zs,_stack_element)
 				);
 				return false;
 			}
@@ -373,7 +374,7 @@ namespace zetscript{
 					 if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_PTR_C){ // zs_reference
 						so->value=(void *)ptr_var;
 					 }else if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_C){ // zs_string passed as pointer
-						 so->set(*(zs_string *)ptr_var);
+						 so->set(ptr_var->c_str());
 					 }else{ // const char
 						 so->set((const char *)ptr_var);
 					 }

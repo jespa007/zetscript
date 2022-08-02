@@ -33,7 +33,7 @@ namespace zetscript{
 
 		ScriptObjectString();
 
-		void set(const zs_string & s);
+		void set(const char * _s);
 		virtual int length();
 		virtual zs_string toString();
 

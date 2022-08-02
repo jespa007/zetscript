@@ -99,10 +99,10 @@ namespace zetscript{
 		return new_stk;
 	}
 
-	StackElement * ScriptObjectObject::getUserProperty(const zs_string & property_name){
+	StackElement * ScriptObjectObject::getUserProperty(const char * property_name){
 
 		bool exists;
-		StackElement *stk_element=(StackElement *)this->map_user_properties->get(property_name.c_str(),&exists);
+		StackElement *stk_element=(StackElement *)this->map_user_properties->get(property_name,&exists);
 		if(exists){
 			return stk_element;
 		}
@@ -110,7 +110,7 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObjectObject::addProperty(
-			const zs_string & symbol_value
+			const char * symbol_value
 			,char * error
 			,StackElement * stk_element
 	){
@@ -118,7 +118,7 @@ namespace zetscript{
 		return addUserProperty(symbol_value,error,stk_element);
 	}
 
-	StackElement 	* ScriptObjectObject::getProperty(const zs_string & property_name){
+	StackElement 	* ScriptObjectObject::getProperty(const char  * property_name){
 		StackElement *stk=getBuiltinProperty(property_name);
 		if(stk==NULL){
 			stk=getUserProperty(property_name/*,idx*/);
@@ -126,8 +126,8 @@ namespace zetscript{
 		return stk;
 	}
 
-	bool ScriptObjectObject::existUserProperty(const zs_string & property_name){
-		return map_user_properties->exist(property_name.c_str());
+	bool ScriptObjectObject::existUserProperty(const char * property_name){
+		return map_user_properties->exist(property_name);
 	}
 
 	zs_map *ScriptObjectObject::getMapUserProperties(){
@@ -142,16 +142,16 @@ namespace zetscript{
 		return this->map_user_properties->count();
 	}
 
-	bool ScriptObjectObject::eraseUserProperty(const zs_string & property_name/*, const ScriptFunction *info_function*/){
+	bool ScriptObjectObject::eraseUserProperty(const char * property_name/*, const ScriptFunction *info_function*/){
 		bool exists=false;
-		StackElement *stk_user_element = (StackElement *)map_user_properties->get(property_name.c_str(),&exists);
+		StackElement *stk_user_element = (StackElement *)map_user_properties->get(property_name,&exists);
 		if(!exists){
-			VM_SET_USER_ERROR(vm,"Property %s not exist",property_name.c_str());
+			VM_SET_USER_ERROR(vm,"Property %s not exist",property_name);
 			return false;
 		}
 
 		free(stk_user_element);
-		map_user_properties->erase(property_name.c_str()); // erase also property key
+		map_user_properties->erase(property_name); // erase also property key
 		return true;
 	}
 
