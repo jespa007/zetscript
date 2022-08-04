@@ -50,7 +50,14 @@ namespace zetscript{
 			if(i>0){
 				ptr_str->append((char)idx);
 			}
-			ptr_str->append(stk_to_str(_zs,stk));
+
+			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				ptr_str->append(((ScriptObject *)stk->value)->toString());
+			}
+			else{
+				char str_aux[100];
+				ptr_str->append(stk_to_str(str_aux,_zs,stk));
+			}
 		}
 
 		return so_string;
@@ -81,7 +88,7 @@ namespace zetscript{
 					   ){
 					// particular case string
 					if(((ScriptObject *)stk_to_compare->value)->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){
-						found=stk_to_str(_zs,stk_to_compare)==stk_to_str(_zs,stk_element);
+						found=((ScriptObject *)stk_to_compare->value)->toString()==((ScriptObject *)stk_element->value)->toString();
 					}
 				}
 				break;
@@ -120,7 +127,7 @@ namespace zetscript{
 					break;
 				case STK_PROPERTY_SCRIPT_OBJECT:
 					if(STK_IS_SCRIPT_OBJECT_STRING(stk_element_s1) && STK_IS_SCRIPT_OBJECT_STRING(stk_element_s2)){
-						equal=stk_to_str(_zs,stk_element_s1) == stk_to_str(_zs,stk_element_s2);
+						equal=((ScriptObject *)stk_element_s1->value)->toString() == ((ScriptObject *)stk_element_s2->value)->toString();
 					}else{
 						equal=stk_element_s1->value==stk_element_s2->value;
 					}

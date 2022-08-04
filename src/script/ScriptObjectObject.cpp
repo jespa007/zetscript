@@ -67,14 +67,14 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObjectObject::addUserProperty(
-			const zs_string & symbol_value
+			const char * symbol_value
 			,char * error
 			,StackElement * sv
 		){
 		StackElement si;
 
-		if(map_user_properties->exist(symbol_value.c_str())){
-			sprintf(error,"'%s' symbol already exists",symbol_value.c_str());
+		if(map_user_properties->exist(symbol_value)){
+			sprintf(error,"'%s' symbol already exists",symbol_value);
 			return NULL;
 		}
 

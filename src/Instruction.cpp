@@ -41,7 +41,6 @@ namespace zetscript{
 			}
 
 			return obj->toString();
-
 		}
 
 		zs_float Instruction::getConstantFloat(){
@@ -68,7 +67,7 @@ namespace zetscript{
 			return IS_BYTE_CODE_LOAD_CONSTANT(byte_code);
 		}
 
-		zs_string Instruction::getConstantValueOp2ToString(bool _str_with_quotes){
+		zs_string Instruction::getConstantValueOp2ToString( bool _str_with_quotes){
 			zs_string value_op2_string="unknow-value";
 
 			if(byte_code ==BYTE_CODE_LOAD_BOOL || (this->properties & INSTRUCTION_PROPERTY_BOOL) ){
@@ -84,6 +83,7 @@ namespace zetscript{
 					value_op2_string=this->getConstantString();
 				}
 			}
+
 			return value_op2_string;
 		}
 

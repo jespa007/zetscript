@@ -7,7 +7,20 @@
 namespace zetscript{
 	namespace zs_strutils{
 
+		const char *sprintf( char  *_str_out,const char *_str_in, ...){
+			char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
+			va_list  ap;
+			va_start(ap,  _str_in);
+			vsprintf(_sformat_buffer,  _str_in,  ap);
+			va_end(ap);
+
+			strcpy(_str_out,_sformat_buffer);
+
+			return  _str_out;
+		}
+
 		zs_string  format(const  char  *_str_in, ...){
+
 			char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
 			va_list  ap;
 			va_start(ap,  _str_in);
@@ -99,7 +112,7 @@ namespace zetscript{
 			return new zs_float(l);
 		}
 
-		zs_string zs_int_to_str(zs_int _number, const zs_string & _format){
+		zs_string zs_int_to_str(zs_int _number, const char * _format){
 
 			zs_string result="0";
 			bool negative=false;
@@ -127,7 +140,8 @@ namespace zetscript{
 			}
 
 			// check format ...
-			if(_format.length()>0){
+
+			if(_format!=NULL){
 				zs_string sf=zs_strutils::to_lower(_format);
 				char *it_str=(char *)sf.c_str();
 

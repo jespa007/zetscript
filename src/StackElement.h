@@ -110,7 +110,7 @@ namespace zetscript{
 	};
 	#pragma pack(pop)
 
-	const char *	stk_to_str(char *_str_itermediate, ZetScript *_zs, StackElement *_stk,const char * _format="");
+	const char *	stk_to_str(char *_str_out, ZetScript *_zs, StackElement *_stk,const char * _format=NULL);
 	const char *	stk_to_typeof_str(char *_str_itermediate, ZetScript *_zs, StackElement *_stk);
 	void			stk_assign(ZetScript *_zs,StackElement *_stk_dst, StackElement *_stk_src);
 	StackElement 	to_stk(ZetScript *_zs, zs_int ptr_var, short idx_builtin_type_var);

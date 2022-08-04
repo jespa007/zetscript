@@ -42,7 +42,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	default:\
 		if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
-			((zs_string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(stk_to_str(data->vm_str_aux[0],data->zs,stk_result_op2));\
+			((zs_string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op2));\
 			VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 		}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
 					&&\
@@ -66,7 +66,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 					,calling_function\
 					,instruction\
 					,false\
-					,member_property==NULL?"_add_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(BYTE_CODE_METAMETHOD_ADD_SET,member_property->property_name)).c_str()  /* symbol to find */\
+					,member_property==NULL?"_add_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(data->vm_str_metamethod_aux,BYTE_CODE_METAMETHOD_ADD_SET,member_property->property_name))  /* symbol to find */\
 					,data->stk_vm_current \
 					,1))==NULL\
 				){ \
@@ -172,7 +172,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 					,calling_function\
 					,instruction\
 					,false\
-					,member_property==NULL?__STR_SET_METAMETHOD__:(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(__METAMETHOD__,member_property->property_name)).c_str()  /* symbol to find */\
+					,member_property==NULL?__STR_SET_METAMETHOD__:(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(data->vm_str_metamethod_aux,__METAMETHOD__,member_property->property_name))  /* symbol to find */\
 					,data->stk_vm_current \
 					,1))==NULL\
 				){ \
@@ -288,7 +288,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 					,calling_function\
 					,instruction\
 					,false\
-					,member_property==NULL?"_div_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(BYTE_CODE_METAMETHOD_DIV_SET,member_property->property_name)).c_str()  /* symbol to find */\
+					,member_property==NULL?"_div_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(data->vm_str_metamethod_aux,BYTE_CODE_METAMETHOD_DIV_SET,member_property->property_name))  /* symbol to find */\
 					,data->stk_vm_current \
 					,1))==NULL\
 				){ \
@@ -405,7 +405,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 					,calling_function\
 					,instruction\
 					,false\
-					,member_property==NULL?"_mod_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(BYTE_CODE_METAMETHOD_MOD_SET,member_property->property_name)).c_str()  /* symbol to find */\
+					,member_property==NULL?"_mod_set":(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(data->vm_str_metamethod_aux,BYTE_CODE_METAMETHOD_MOD_SET,member_property->property_name))  /* symbol to find */\
 					,data->stk_vm_current \
 					,1))==NULL\
 				){ \
@@ -494,7 +494,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 				,calling_function\
 				,instruction\
 				,false\
-				,member_property==NULL?__STR_SET_METAMETHOD__:(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(__METAMETHOD__,member_property->property_name)).c_str()  /* symbol to find */\
+				,member_property==NULL?__STR_SET_METAMETHOD__:(ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(data->vm_str_metamethod_aux,__METAMETHOD__,member_property->property_name))  /* symbol to find */\
 				,data->stk_vm_current \
 				,1))==NULL\
 			){ \

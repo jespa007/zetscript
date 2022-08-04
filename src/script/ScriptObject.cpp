@@ -77,7 +77,7 @@ namespace zetscript{
 	}
 
 	// built-in only for initialized
-	StackElement * ScriptObject::addBuiltinProperty(const zs_string & symbol_value, StackElement stk){
+	StackElement * ScriptObject::addBuiltinProperty(const char  * symbol_value, StackElement stk){
 		zs_string key_value = symbol_value;
 
 		// if ignore duplicate was true, map resets idx to the last function...
@@ -134,9 +134,9 @@ namespace zetscript{
 		return zs;
 	}
 
-	StackElement * 			ScriptObject::getBuiltinProperty(const zs_string & property_name){
+	StackElement * 			ScriptObject::getBuiltinProperty(const char * property_name){
 		bool exists=false;
-		StackElement  *stk_item=(StackElement  *)this->map_builtin_properties->get(property_name.c_str(),&exists);
+		StackElement  *stk_item=(StackElement  *)this->map_builtin_properties->get(property_name,&exists);
 
 		if(exists){
 			return stk_item;
@@ -144,11 +144,11 @@ namespace zetscript{
 		return NULL;
 	}
 
-	StackElement 	* ScriptObject::getProperty(const zs_string & property_name){
+	StackElement 	* ScriptObject::getProperty(const char * property_name){
 		return getBuiltinProperty(property_name);
 	}
 
-	Symbol 	* ScriptObject::getScriptFunctionSymbol(const zs_string & _function_member_name){
+	Symbol 	* ScriptObject::getScriptFunctionSymbol(const char * _function_member_name){
 		ScriptType *script_type=getScriptType();
 		zs_vector<Symbol *> *s=script_type->scope_script_type->symbol_functions;
 		for(int i=s->count-1;i>=0;i--){

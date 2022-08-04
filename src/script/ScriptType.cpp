@@ -254,6 +254,7 @@ namespace zetscript{
 			,const char * _file
 			,short _line
 	){
+		char str_metamethod_aux[100];
 		Symbol *symbol_member_property=NULL;
 		MemberProperty *mp=NULL;
 		MetamethodMemberSetterInfo mp_setter_info;
@@ -293,7 +294,7 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_XOR_SET:
 		case BYTE_CODE_METAMETHOD_SHL_SET:
 		case BYTE_CODE_METAMETHOD_SHR_SET:
-			symbol_metamethod_function=ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code_metamethod,_property_name);
+			symbol_metamethod_function=ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(str_metamethod_aux,_byte_code_metamethod,_property_name);
 			mp_setter_info=mp->metamethod_members.getSetterInfo(_byte_code_metamethod);
 			break;
 		// particular case

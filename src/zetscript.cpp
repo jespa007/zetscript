@@ -119,7 +119,6 @@ namespace zetscript{
 				"static DateTime::now(){" // add static function now
 				"	return new DateTime()"
 				"}"
-
 				"static DateTime::nowUtc(){" // add static function nowUtc
 				"   var t=new DateTime();"
 				"   t.setUtc()"

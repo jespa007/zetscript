@@ -103,7 +103,7 @@ namespace zetscript{
 		zs_int getConstantInt();
 		bool isConstant();
 
-		zs_string getConstantValueOp2ToString(bool _str_with_quotes=true);
+		zs_string getConstantValueOp2ToString( bool _str_with_quotes=true);
 
 
 	};

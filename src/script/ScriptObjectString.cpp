@@ -17,10 +17,14 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	ScriptObjectString * ScriptObjectString::newScriptObjectString(ZetScript *zs, const zs_string & str){
+	ScriptObjectString * ScriptObjectString::newScriptObjectString(ZetScript *zs, const char *_str){
 		ScriptObjectString *so=new ScriptObjectString();
 		so->init(zs);
-		so->set(str);
+
+		if(_str != NULL){
+			so->set(_str);
+		}
+
 		return so;
 	}
 
@@ -35,7 +39,7 @@ namespace zetscript{
 		return so;
 	}
 
-	ScriptObjectString *ScriptObjectString::newScriptObjectStringAddStk(ZetScript *zs,StackElement *stk_result_op1,StackElement *stk_result_op2){
+	ScriptObjectString *ScriptObjectString::newScriptObjectStringAddStk(ZetScript *_zs,StackElement *stk_result_op1,StackElement *stk_result_op2){
 		ScriptObjectString *so_ref=NULL;
 		// we have to create an new string variable
 		if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
@@ -50,11 +54,8 @@ namespace zetscript{
 		   }
 		}
 
-
 		//zs_string *str;
-		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(zs);
-
-
+		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(_zs);
 
 		zs_string str1;
 		zs_string str2;
@@ -74,12 +75,18 @@ namespace zetscript{
 
 		// str1
 		for(int i=0; i < 2; i++){
+			char aux[100]={0};
 			StackElement *stk_src_item=(*stk_src_it);
 			if(stk_src_item->properties & STK_PROPERTY_PTR_STK){
 				stk_src_item=(StackElement *)stk_src_item->value;
 			}
 
-			*(*str_dst_it)=stk_to_str(zs, stk_src_item);
+			if(stk_src_item->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				*(*str_dst_it)=((ScriptObject *)stk_src_item->value)->toString();
+			}else{
+				char str_aux[100];
+				*(*str_dst_it)=stk_to_str(str_aux,_zs, stk_src_item);
+			}
 
 			str_dst_it++;
 			stk_src_it++;
@@ -94,11 +101,19 @@ namespace zetscript{
 
 	ScriptObjectString * ScriptObjectString::format(ZetScript *zs, StackElement *stk_str_obj, StackElement *args){
 		// transform '\"' to '"','\n' to carry returns, etc
-		zs_string str_input=zs_strutils::unescape(stk_to_str(zs, stk_str_obj));
+		zs_string str_input;
+		char str_aux[100];
+
+		if(stk_str_obj->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			str_input=zs_strutils::unescape(((ScriptObject *)stk_str_obj->value)->toString());
+		}
+		else{
+			str_input=stk_to_str(str_aux,zs, stk_str_obj);
+		}
+
 		zs_string str_result;
 		ScriptObjectVector *sov=NULL;
 		zs_string str_num_aux;
-		zs_string str_format;
 		bool error=false;
 		zs_string str_error="";
 
@@ -139,7 +154,6 @@ namespace zetscript{
 					str_begin=str_begin+1; // ignore '{'
 
 					str_num_aux="";
-					str_format="";
 					char *str_begin_padding=strchr(str_begin,',');
 					char *str_begin_format_string=strchr(str_begin,':');
 					char *str_end_index=NULL;
@@ -212,14 +226,15 @@ namespace zetscript{
 
 							if(idx_num >=0 && idx_num<(int)sov->length()){ // print
 								zs_string str_format_results="";
-								if(ptr_str_format_string != NULL){
-									str_format=ptr_str_format_string;
+
+								if(stk_str_obj->properties & STK_PROPERTY_SCRIPT_OBJECT){
+									str_format_results=((ScriptObject *)stk_str_obj)->toString();
+								}else{
+									str_format_results=stk_to_str(str_aux,zs,sov->getUserElementAt(idx_num),ptr_str_format_string);
 								}
 
-								str_format_results=stk_to_str(zs,sov->getUserElementAt(idx_num),str_format);
-
 								// set padding
-								int length_padding=padding-str_format_results.length();
+								int length_padding=padding-strlen(ptr_str_format_string);
 								if(length_padding>0){//left padding
 									for(int i=0; i < length_padding;i++){
 										str_result.append(' ');
@@ -238,6 +253,7 @@ namespace zetscript{
 
 							if(ptr_str_format_string != NULL){
 								free(ptr_str_format_string);
+								ptr_str_format_string=NULL;
 							}
 						}
 						// INDEX ...
@@ -275,7 +291,7 @@ namespace zetscript{
 		value = &default_str_value;
 	}
 
-	void ScriptObjectString::set(const char * _s){
+	void ScriptObjectString::set(const zs_string & _s){
 		*((zs_string *)value) = zs_strutils::unescape(_s);
 	}
 

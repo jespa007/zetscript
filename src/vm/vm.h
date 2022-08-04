@@ -50,7 +50,7 @@
 	zs_strutils::format_file_line(data->vm_error_str,data->vm_error_file,data->vm_error_line,_str_in, ##__VA_ARGS__);\
 	goto lbl_exit_function;
 
-#define VM_STOP_EXECUTEF(_str_in)				VM_STOP_EXECUTE(_str_in,NULL)
+#define VM_STOP_EXECUTEF(_str_in)		VM_STOP_EXECUTE(_str_in,NULL)
 
 #define VM_SET_USER_ERROR(vm,s,...)		vm_set_error_file_line(vm,__FILE__,__LINE__, s, __VA_ARGS__)
 #define VM_SET_USER_ERRORF(vm,s)		VM_SET_USER_ERROR(vm,s,NULL)
@@ -61,6 +61,9 @@
 #define VM_CURRENT_SCOPE_FUNCTION		(data->vm_current_scope_function-1)
 #define VM_CURRENT_SCOPE_BLOCK			(VM_CURRENT_SCOPE_FUNCTION->current_scope_block-1)
 
+#define VM_STR_AUX_PARAM_0				(data->vm_str_aux[0])
+#define VM_STR_AUX_PARAM_1				(data->vm_str_aux[1])
+#define VM_STR_AUX_PARAM_2				(data->vm_str_aux[2])
 
 namespace zetscript{
 

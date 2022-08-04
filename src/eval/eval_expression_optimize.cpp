@@ -183,6 +183,7 @@ namespace zetscript{
 			, EvalInstruction *ei2
 	){
 		zs_float  result_op_float=0;
+		//char str_aux[3][100];
 		zs_int result_op_zs_int=0;
 		bool	result_op_bool=false;
 		zs_string result_op_str="";
@@ -314,7 +315,7 @@ namespace zetscript{
 				result_op_bool=strchr(i2->getConstantString().c_str(),i1->getConstantInt()) != NULL;
 				result_bc=BYTE_CODE_LOAD_BOOL;
 			}else if(INSTRUCTION_IS_STRING(i1) && INSTRUCTION_IS_STRING(i2)){
-				result_op_bool=zs_strutils::contains(i2->getConstantString(),i1->getConstantString());
+				result_op_bool=zs_strutils::contains(i2->getConstantString().c_str(),i1->getConstantString().c_str());
 				result_bc=BYTE_CODE_LOAD_BOOL;
 			}
 			else{

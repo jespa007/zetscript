@@ -43,7 +43,7 @@ if(stk_src_properties == STK_PROPERTY_UNDEFINED){\
 		if(!vm_share_script_object(vm,str_object)){\
 			goto lbl_exit_function;\
 		}\
-		str_object->set(stk_to_str(data->vm_str_aux[0],data->zs, stk_src));\
+		str_object->set(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_src));\
 	}else{ \
 		so_aux=(ScriptObject *)stk_src->value;\
 		stk_dst->value=(intptr_t)so_aux;\
@@ -54,7 +54,7 @@ if(stk_src_properties == STK_PROPERTY_UNDEFINED){\
 	}\
 }else{\
 	VM_STOP_EXECUTE("VM_SET_CONTAINER_ELEMENT:(internal) cannot determine var type %s"\
-		,stk_to_typeof_str(data->vm_str_aux[0],data->zs,stk_src)\
+		,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_src)\
 	);\
 }\
 if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_C_VAR_PTR;

@@ -53,11 +53,12 @@ namespace zetscript{
 		 zs_float	* parse_zs_float(const zs_string & );
 
 
-		 zs_string zs_int_to_str(zs_int _number, const zs_string & _format = "");
+		 zs_string zs_int_to_str(zs_int _number, const char  *_format = NULL);
 		 zs_string zs_float_to_str(zs_float _number);
 		 zs_string to_lower(const zs_string & str);
 		 zs_string to_upper(const zs_string & str);
-		 zs_string  format(const  char  *string_text, ...);
+		 zs_string   format(const  char  *string_text, ...);
+		 const char *sprintf(char  *_str_out,const char *_str_in, ...);
 		 void		format_file_line(char* _str_out, const char* _file, int _line, const  char* _str_in, ...);
 
 		 bool is_empty(const zs_string & str);

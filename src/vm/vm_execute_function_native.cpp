@@ -154,11 +154,11 @@ namespace zetscript{
 						,(zs_int *)&converted_param[i]
 						,data->vm_error_str
 				)){
-					strcpy(data->vm_str_aux[0], data->vm_error_str);
+					strcpy(VM_STR_AUX_PARAM_0, data->vm_error_str);
 					VM_ERROR_AND_RET("Function '%s', param %i: %s",
 						c_function->name_script_function.c_str(),
 						i,
-						data->vm_str_aux[0]
+						VM_STR_AUX_PARAM_0
 					);
 				}
 			}
@@ -565,6 +565,7 @@ namespace zetscript{
 				break;
 			}
 
+			// it pass as zs_string reference (i.e zs_string)
 			result=(zs_int)&str_aux;
 
 		}else{ // generic pointer or int

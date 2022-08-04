@@ -219,7 +219,7 @@ namespace zetscript{
 				if((str_current=read_string_between_quotes(data,str_current,line,&str_aux))==NULL){
 					return NULL;
 				}
-				ScriptObject *so=ScriptObjectString::newScriptObjectString(data->zs, str_aux);
+				ScriptObject *so=ScriptObjectString::newScriptObjectString(data->zs, str_aux.c_str());
 				if(vm_create_shared_script_object(data->zs->getVirtualMachine(),so)==false){
 					json_deserialize_error(data,str_start,line,"cannot create shared pointer for string object");
 					return NULL;

@@ -158,20 +158,6 @@ namespace zetscript{
 			}
 	}
 
-
-	/*const zs_string & MetamethodMembers::byte_code_metamethod_to_symbol_str(ByteCodeMetamethod _byte_code, const zs_string & _property_name){
-		zs_string symbol="N/A";
-		const ByteCodeMetamethod *it=byte_code_metamethod_member_list;
-
-		while(*it!=0){
-			if(_byte_code==*it){
-				symbol=zs_string(ByteCode::byte_code_metamethod_to_symbol_str(_byte_code))+"@"+_property_name;//ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(_byte_code,_property_name);
-				break;
-			}
-			it++;
-		}
-		return symbol;
-	}*/
 	bool MetamethodMembers::isSetter(ByteCodeMetamethod _byte_code_metamethod){
 		const ByteCodeMetamethod *it=byte_code_metamethod_member_setter_list;
 		while(*it!=0){
@@ -183,24 +169,6 @@ namespace zetscript{
 
 		return false;
 	}
-
-	/*ByteCodeMetamethod MetamethodMembers::toByteCodeMetamethod(const char *_symbol_name)
-	{
-
-			const ByteCodeMetamethod *it=byte_code_metamethod_member_setter_list;
-			bool found=false;
-			while(*it!=0){
-				const char *_mt_name=byte_code_metamethod_to_symbol_str(*it);
-				if(_symbol_name == _mt_name){
-					return *it;
-				}
-
-				it++;
-			}
-
-			return BYTE_CODE_METAMETHOD_INVALID;
-	}*/
-
 
 	bool MetamethodMembers::isMetamethodMember(ByteCodeMetamethod _byte_code){
 		zs_string symbol="N/A";
@@ -215,11 +183,7 @@ namespace zetscript{
 		return false;
 	}
 
-
-
 	MetamethodMembers::~MetamethodMembers(){
-
-
 
 		zs_vector<StackElement *> *ptr_vector[]={
 			&setters

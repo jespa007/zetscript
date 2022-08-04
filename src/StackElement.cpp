@@ -8,7 +8,8 @@ namespace zetscript{
 
 	extern const StackElement k_stk_undefined={0,STK_PROPERTY_UNDEFINED};
 
-	const char *stk_to_typeof_str(char *_intermediate,ZetScript *_zs, StackElement *_stk){
+	const char *stk_to_typeof_str(char *_str_out,ZetScript *_zs, StackElement *_stk){
+		// PRE: _str_out should allocated a minimum of 100 bytes
 		StackElement *stk=_stk;
 		zs_string result="unknow";
 		if(STK_VALUE_IS_UNDEFINED(stk))
@@ -55,11 +56,12 @@ namespace zetscript{
 		}
 
 
-		strcpy(_intermediate,result.c_str());
-		return _intermediate;
+		strcpy(_str_out,result.c_str());
+		return _str_out;
 	}
 
-	const char *stk_to_str(char *_intermediate,ZetScript *_zs, StackElement *_stk, const zs_string & _format ){
+	const char *stk_to_str(char *_str_out,ZetScript *_zs, StackElement *_stk, const char  *_format ){
+		// PRE: _str_out should allocated a minimum of 100 bytes
 		zs_string result="unknown";
 		bool is_constant=false;
 		StackElement stk=*_stk;
@@ -111,21 +113,20 @@ namespace zetscript{
 		}else{
 			if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk.value;
-				if(so->getTypeName() == "DateTime"){
-					result=((zs_datetime *)((ScriptObjectClass *)so)->getNativeObject())->to_string(_format);
-				}else if(so->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
+				if(so->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
 					ScriptObjectMemberFunction *somf=(ScriptObjectMemberFunction *)so;
 					ScriptType *st=somf->ref_object->getRefObject()->getScriptType();
 					result= zs_string("member_function<")+st->str_script_type+"::"+somf->so_function->name_script_function+">";
 				}else{
-					result=so->toString();
+					// PROCECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
+					result="Object::"+so->getTypeName();
 				}
 			}
 		}
 
-		strcpy(_intermediate,result.c_str());
+		strcpy(_str_out,result.c_str());
 
-		return _intermediate;
+		return _str_out;
 
 	}
 
@@ -146,7 +147,7 @@ namespace zetscript{
 				if(!vm_create_shared_script_object(vm,sc)){
 					return;
 				}
-				sc->set(so->toString());
+				sc->set(so->toString().c_str());
 				so=sc;
 			}
 
@@ -374,7 +375,7 @@ namespace zetscript{
 					 if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_PTR_C){ // zs_reference
 						so->value=(void *)ptr_var;
 					 }else if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_C){ // zs_string passed as pointer
-						 so->set(ptr_var->c_str());
+						 so->set(*((zs_string *)ptr_var));
 					 }else{ // const char
 						 so->set((const char *)ptr_var);
 					 }
