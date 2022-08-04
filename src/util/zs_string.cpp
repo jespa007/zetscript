@@ -30,7 +30,7 @@ namespace zetscript{
 		count = (int)strlen(_buffer);
 		_size=count+ZS_STRING_EXPAND_CHAR_ELEMENTS;
 		this->buf = (char *)ZS_MALLOC(sizeof(char) * _size+1); // + 1 for the keeping the null character
-		strncpy(buf, _buffer, count); // copy from the incoming buffer to character buffer of the new object
+		strcpy(buf, _buffer); // copy from the incoming buffer to character buffer of the new object
 	}
 
 
@@ -138,11 +138,11 @@ namespace zetscript{
 			buf_new_from_two = (char *)ZS_MALLOC(buf_new_from_two_size + 1); // allocate memory to keep the concatenated string
 
 			if(len1!=0) {
-				strncpy(buf_new_from_two, _s1, len1); // copy the 1st string
+				strcpy(buf_new_from_two, _s1); // copy the 1st string
 			}
 
 			if(len2!=0) {
-				strncpy(buf_new_from_two + len1, _s2, len2);
+				strcpy(buf_new_from_two + len1, _s2);
 			}
 
 			s=buf_new_from_two;

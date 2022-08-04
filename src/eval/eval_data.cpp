@@ -260,7 +260,7 @@ namespace zetscript{
 		ScriptFunctionFactory 			* 		script_function_factory;
 		ScriptTypeFactory 				* 		script_type_factory;
 		EvalFunction					* 		current_function;
-		zs_vector<EvalFunction *>				 	  			eval_functions;
+		zs_vector<EvalFunction *>				eval_functions;
 
 		//zs_vector				 				global_ref_instructions; // Eval Instruction
 		int										parsing_loop;
@@ -282,7 +282,7 @@ namespace zetscript{
 			error=false;
 			memset(str_error,0,sizeof(str_error));
 			parsing_loop=0;
-			memset(error_file,0,sizeof(str_error));
+			memset(error_file,0,sizeof(error_file));
 			error_line=-1;
 		}
 	};
