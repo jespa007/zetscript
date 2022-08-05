@@ -118,11 +118,8 @@ namespace zetscript{
 		StackElement stk_aux;
 
 		VirtualMachineData(ZetScript *_zs){
-			//memset(&zero_shares,0,sizeof(zero_shares));
-			//memset(&shared_vars,0,sizeof(shared_vars));
 			memset(&vm_stack,0,sizeof(vm_stack));
 
-			//vm_idx_call=0;
 			stk_vm_current=NULL;
 			vm_current_scope_function = vm_scope_function;
 

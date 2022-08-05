@@ -268,9 +268,9 @@ namespace zetscript{
 		data->vm_error_max_stack_reached=false;
 		data->vm_error=false;
 		memset(data->vm_error_str,0,sizeof(data->vm_error_str));
-		memset(data->vm_error_file,0,sizeof(data->vm_error_str));
+		memset(data->vm_error_file,0,sizeof(data->vm_error_file));
 		data->vm_error_line=-1;
-		memset(data->vm_error_callstack_str,0,sizeof(data->vm_error_str));
+		memset(data->vm_error_callstack_str,0,sizeof(data->vm_error_callstack_str));
 	}
 
 	StackElement vm_execute(
