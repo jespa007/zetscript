@@ -24,12 +24,12 @@
 
 #define LOAD_PROPERTIES(__METAMETHOD__) \
 	ptr_metamethod_members_aux=NULL;\
-	stk_var_copy.value=0;\
-	stk_var_copy.properties=0;\
+	__STK_VAR_COPY__.value=0;\
+	__STK_VAR_COPY__.properties=0;\
 	so_aux=NULL;\
 	member_property=NULL;\
 	if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){\
-		stk_var_copy=*stk_result_op1;\
+		__STK_VAR_COPY__=*stk_result_op1;\
 		stk_mp_aux=(StackMemberProperty *)stk_result_op1->value;\
 		member_property=stk_mp_aux->member_property;\
 		ptr_metamethod_members_aux= &member_property->metamethod_members;\
@@ -232,14 +232,14 @@
 				VM_PUSH_STK_BOOLEAN(__BYTE_CODE_METAMETHOD_OPERATION__ != BYTE_CODE_METAMETHOD_EQU);\
 			}\
 		}else{\
-			StackElement stk1=*stk_result_op1, stk2=*stk_result_op2;\
+			stk_aux1=*stk_result_op1, stk_aux2=*stk_result_op2;\
 			if(vm_call_metamethod(\
 				vm\
 				,calling_function\
 				,instruction\
 				, __BYTE_CODE_METAMETHOD_OPERATION__\
-				,&stk1\
-				,&stk2\
+				,&stk_aux1\
+				,&stk_aux2\
 				,true\
 				,__IS_JE_CASE__\
 			)==false){\
@@ -340,7 +340,6 @@
 				,(ScriptFunction *)ptr_metamethod_members_aux->neg->ref_ptr\
 				,0\
 				,ptr_metamethod_members_aux->neg->name.c_str()\
-				,true\
 		);\
 		data->stk_vm_current++; /* store negated value to stk to load after */\
 		/* call inc metamethod */\
@@ -352,7 +351,6 @@
 				,(ScriptFunction *)__POST_OPERATION_VARIABLE__->ref_ptr\
 				,0\
 				,__POST_OPERATION_VARIABLE__->name.c_str()\
-				,true\
 		);\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
@@ -385,14 +383,13 @@
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					, 0 \
 					,ptr_metamethod_members_aux->getter->name.c_str()\
-					,true\
 			);\
 		}else{ /* store object */ \
 			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 				data->stk_vm_current->value=(zs_int)so_aux;\
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
-				*data->stk_vm_current=stk_var_copy;\
+				*data->stk_vm_current=__STK_VAR_COPY__;\
 			}\
 		}\
 		data->stk_vm_current++;\
@@ -405,7 +402,6 @@
 				,(ScriptFunction *)__POST_OPERATION_VARIABLE__->ref_ptr\
 				, 0 \
 				,__POST_OPERATION_VARIABLE__->name.c_str()\
-				,true\
 		);\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
@@ -439,7 +435,6 @@
 				,(ScriptFunction *)__PRE_OPERATION_VARIABLE__->ref_ptr\
 				,0 \
 				,__PRE_OPERATION_VARIABLE__->name.c_str()\
-				,true\
 		);\
 		/*getter after*/\
 		if(ptr_metamethod_members_aux->getter!=NULL){\
@@ -449,14 +444,13 @@
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,0 \
 					,ptr_metamethod_members_aux->getter->name.c_str()\
-					,true\
 			);\
 		}else{ /* store object */ \
 			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
 				data->stk_vm_current->value=(zs_int)so_aux;\
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
-				*data->stk_vm_current=stk_var_copy;\
+				*data->stk_vm_current=__STK_VAR_COPY__;\
 			}\
 		}\
 		data->stk_vm_current++;\

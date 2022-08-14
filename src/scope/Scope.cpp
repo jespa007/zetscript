@@ -163,9 +163,8 @@ namespace zetscript{
 
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
-		Symbol *symbol 		= new Symbol();
+		Symbol *symbol 		= new Symbol(_symbol_name);
 		symbol->idx_position=symbol_types->count;
-		symbol->name 		= _symbol_name;
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
@@ -181,9 +180,8 @@ namespace zetscript{
 
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
-		Symbol *symbol 		= new Symbol();
+		Symbol *symbol 		= new Symbol(_symbol_name);
 		symbol->idx_position=symbol_variables->count;
-		symbol->name 		= _symbol_name;
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
@@ -198,9 +196,8 @@ namespace zetscript{
 			checkPreRegisterSymbol(_file, _line, _symbol_name,  _n_params,_check_repeated_symbols_direction);
 		}
 
-		Symbol *symbol 		= new Symbol();
+		Symbol *symbol 		= new Symbol(_symbol_name);
 		symbol->idx_position=symbol_functions->count;
-		symbol->name 		= _symbol_name;
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;

@@ -53,7 +53,7 @@ namespace zetscript{
 		const int ONE_DAY = 86400; //24 hours * 60 mins * 60 secs
 		const int ONE_HOUR = 3600; //60 mins * 60 secs
 		const int ONE_MINUTE = 60; // 60 secs
-		struct tm *timeInfo = nullptr;
+		struct tm *time_info = nullptr;
 		bool auto_created = true;
 		bool _is_leapyear(int year) const;
 		static int _parse_intvalue(const zs_string &pattern, int index, size_t mask_length, const zs_string &parse_str);

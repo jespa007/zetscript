@@ -69,6 +69,7 @@ namespace zetscript{
 	}
 
 	bool 							ScriptObjectVectorWrap_contains(ZetScript *_zs,ScriptObjectVector *sv, StackElement *stk_to_compare){
+		ZS_UNUSUED_PARAM(_zs);
 		bool found=false;
 		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
 
@@ -99,6 +100,7 @@ namespace zetscript{
 	}
 
 	bool 							ScriptObjectVectorWrap_equal(ZetScript *_zs,ScriptObjectVector *so1, ScriptObjectVector *so2){
+		ZS_UNUSUED_PARAM(_zs);
 		bool equal=true;
 		zs_vector<StackElement *> *stk_user_list_elements_s1=so1->getStkUserListElements();
 		zs_vector<StackElement *> *stk_user_list_elements_s2=so2->getStkUserListElements();

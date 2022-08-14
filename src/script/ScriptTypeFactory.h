@@ -87,11 +87,11 @@ namespace zetscript{
 
 
 		// register object
-		StackElement * registerStkConstantStringObject(const zs_string & key_name,const zs_string & const_name);
-		StackElement * getStkConstantStringObject(const zs_string & const_name);
+		StackElement * registerStkConstantStringObject(const zs_string & _key,const zs_string & _value);
+		StackElement * getStkConstantStringObject(const zs_string & _key);
 
-		StackElement * registerStkObject(const zs_string & _var_name, zs_int _obj);
-		StackElement * getStkObject(const zs_string & _var_name);
+		StackElement * registerStkObject(const zs_string & _key, zs_int _value);
+		StackElement * getStkObject(const zs_string & _key);
 
 		/**
 		 * Class name given this function creates the object and initializes all variables.

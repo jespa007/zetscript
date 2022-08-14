@@ -22,8 +22,9 @@ namespace zetscript{
 		zs_map();
 		bool		exist(const char * key);
 		zs_map_iterator begin();
-		void 		set(const char * key,zs_int val);
+		zs_map_node	*set(const char * key,zs_int val);
 		zs_int 		get(const char * key, bool * exists=NULL);
+		const char *getKey(const char * _key);
 		void  		erase(const char * key);
 		void 		clear();
 		zs_map_node *data();

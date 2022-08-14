@@ -34,7 +34,7 @@ namespace zetscript{
 	public:
 
 		// script function properties
-		zs_string			name_script_function;
+		char*				name_script_function;
 		Scope				*scope_script_function;
 		int 				idx_script_function;	// idx_script_function from factory
 

@@ -5,13 +5,13 @@
 namespace zetscript{
 
 
-	bool is_end_expression(const char *s){
-		 return *s==')' || *s==','||  *s==']' || *s==';' || *s == 0 || *s=='}';
+	bool is_end_expression(const char *_str_expression){
+		 return *_str_expression==')' || *_str_expression==','||  *_str_expression==']' || *_str_expression==';' || *_str_expression == 0 || *_str_expression=='}';
 	}
 
-	int    is_end_expression_or_keyword(EvalData *eval_data,const char * s,int line){
-		Keyword op=eval_is_keyword(s);
-		return !is_anonymous_function(eval_data,s,line) && (is_end_expression(s) || (op<Keyword::KEYWORDS_WITHIN_EXPRESSIONS && op !=Keyword::KEYWORD_UNKNOWN));
+	int    is_end_expression_or_keyword(EvalData *eval_data,const char * _str_expression,int line){
+		Keyword op=eval_is_keyword(_str_expression);
+		return !is_anonymous_function(eval_data,_str_expression,line) && (is_end_expression(_str_expression) || (op<Keyword::KEYWORDS_WITHIN_EXPRESSIONS && op !=Keyword::KEYWORD_UNKNOWN));
 	}
 
 	void eval_deallocate_tokens(zs_vector<TokenNode *> 	& token_nodes){
@@ -24,7 +24,7 @@ namespace zetscript{
 
 	char * eval_sub_expression(
 			EvalData *eval_data
-			,const char *s
+			,const char *_str_expression
 			, int & line
 			, Scope *scope_info
 			, zs_vector<EvalInstruction *> 	* eval_instructions
@@ -51,17 +51,17 @@ namespace zetscript{
 
 		zs_string error_accessor_tokens;
 
-		IGNORE_BLANKS(aux_p,eval_data,s,line);
+		IGNORE_BLANKS(aux_p,eval_data,_str_expression,line);
 
 		start_expression_str=aux_p;
 		start_expression_line=line;
 
 		if(
-			   *s==')'
-			|| *s==','
-			|| *s==']'
-			|| *s== 0
-			|| *s=='}'
+			   *_str_expression==')'
+			|| *_str_expression==','
+			|| *_str_expression==']'
+			|| *_str_expression== 0
+			|| *_str_expression=='}'
 		){
 			EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Unexpected '%c'",*aux_p);
 		}
@@ -235,7 +235,7 @@ eval_error_sub_expression:
 
 	char * eval_expression(
 			EvalData *eval_data
-			,const char *s
+			,const char *_str_expression
 			, int & line
 			, Scope *scope_info
 			, zs_vector<EvalInstruction *> 	* dst_instructions
@@ -257,7 +257,7 @@ eval_error_sub_expression:
 
 		char *aux_p=eval_sub_expression(
 			eval_data
-			, s
+			, _str_expression
 			, line
 			, scope_info
 			, zs_ei_left_sub_expressions.items[0]
@@ -413,7 +413,7 @@ eval_error_sub_expression:
 				EvalInstruction *instruction = (EvalInstruction *)left_sub_expression->items[left_sub_expression->count-1];
 
 				if(IS_BYTE_CODE_PUSH_STK_VARIABLE_TYPE(instruction->vm_instruction.byte_code) == false){
-					const char *str_symbol=instruction->instruction_source_info.ptr_str_symbol_name==NULL?"unknow":instruction->instruction_source_info.ptr_str_symbol_name->c_str();
+					const char *str_symbol=instruction->instruction_source_info.ptr_str_symbol_name==NULL?"unknow":instruction->instruction_source_info.ptr_str_symbol_name;
 					EVAL_ERROR_FILE_LINE_GOTO(
 						eval_data->current_parsing_file
 						,instruction->instruction_source_info.line

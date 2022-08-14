@@ -75,7 +75,7 @@ namespace zetscript{
 
 		// str1
 		for(int i=0; i < 2; i++){
-			char aux[100]={0};
+			//char aux[100]={0};
 			StackElement *stk_src_item=(*stk_src_it);
 			if(stk_src_item->properties & STK_PROPERTY_PTR_STK){
 				stk_src_item=(StackElement *)stk_src_item->value;
@@ -115,7 +115,7 @@ namespace zetscript{
 		ScriptObjectVector *sov=NULL;
 		zs_string str_num_aux;
 		bool error=false;
-		zs_string str_error="";
+		char str_error[512]={0};
 
 
 		zs_int *ptr_idx_num=NULL;
@@ -226,21 +226,23 @@ namespace zetscript{
 
 							if(idx_num >=0 && idx_num<(int)sov->length()){ // print
 								zs_string str_format_results="";
+								StackElement *stk_arg=sov->getUserElementAt(idx_num);
 
-								if(stk_str_obj->properties & STK_PROPERTY_SCRIPT_OBJECT){
-									str_format_results=((ScriptObject *)stk_str_obj)->toString();
+								if(stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT){
+									str_format_results=((ScriptObject *)stk_arg->value)->toString();
 								}else{
-									str_format_results=stk_to_str(str_aux,zs,sov->getUserElementAt(idx_num),ptr_str_format_string);
+									str_format_results=stk_to_str(str_aux,zs,stk_arg,ptr_str_format_string);
 								}
 
 								// set padding
-								int length_padding=padding-strlen(ptr_str_format_string);
-								if(length_padding>0){//left padding
-									for(int i=0; i < length_padding;i++){
-										str_result.append(' ');
+								if(ptr_str_format_string != NULL){
+									int length_padding=padding-(int)strlen(ptr_str_format_string);
+									if(length_padding>0){//left padding
+										for(int i=0; i < length_padding;i++){
+											str_result.append(' ');
+										}
 									}
 								}
-
 
 								str_result+=str_format_results;
 
@@ -255,6 +257,10 @@ namespace zetscript{
 								free(ptr_str_format_string);
 								ptr_str_format_string=NULL;
 							}
+						}else{
+							error=true;
+							sprintf(str_error,"Cannot convert '%s' to number",str_num_aux.c_str());
+							break;
 						}
 						// INDEX ...
 						//----------------------------------------------------------
@@ -268,7 +274,7 @@ namespace zetscript{
 		}
 
 		if(error){
-			vm_set_error(zs->getVirtualMachine(),str_error.c_str());
+			vm_set_error(zs->getVirtualMachine(),str_error);
 			return NULL;
 		}
 

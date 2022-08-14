@@ -511,7 +511,6 @@ namespace zetscript{
 			if(unique_call_instructions != NULL){
 				last_instruction=&(((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction);
 				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->count==1){
-					//INSTRUCTION_SET_RETURN_COUNT(last_instruction,n_return_values);
 					unique_call_instructions->push_back(last_instruction);
 				}
 			}

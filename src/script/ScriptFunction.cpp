@@ -11,8 +11,8 @@
 :"Local"\
 
 #define GET_ILOAD_R_STR(properties,value) \
-	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->items[value])->name.c_str()\
-	:((Symbol *)sfo->local_variables->items[value])->name.c_str()\
+	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->items[value])->name\
+	:((Symbol *)sfo->local_variables->items[value])->name\
 
 namespace zetscript{
 
@@ -31,7 +31,7 @@ namespace zetscript{
 
 		// function data...
 		idx_script_type_owner=_idx_script_type_owner;
-		name_script_function=_function_name;
+		name_script_function=zs_strutils::clone_to_char_ptr(_function_name);
 		idx_script_function=_idx_script_function;
 		idx_position = _idx_position;
 		idx_script_type_return = _idx_return_type;
@@ -96,7 +96,7 @@ namespace zetscript{
 			symbol_ref=sfo->name_script_function;
 		}else{ // is a type
 			symbol_ref=sfo->name_script_function;//+zs_string("::")+zs_string("????");
-			class_str=sc->str_script_type+"::";
+			class_str=zs_string(sc->str_script_type)+"::";
 		}
 
 
@@ -148,9 +148,14 @@ namespace zetscript{
 				 symbol_value="@this."+symbol_value;
 			 }
 
-
 			 req_stk=instruction_num_required_stack(instruction);
+
+			if(req_stk==ZS_NUM_REQUIRED_BYTE_CODE_NOT_MANAGED){
+				THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed", instruction->byte_code);
+			}
+
 			 sum_stk_load_stk+=req_stk;
+
 			 max_acc_stk_load=ZS_MAX(max_acc_stk_load,sum_stk_load_stk);
 			 if(instruction->byte_code == BYTE_CODE_RESET_STACK
 				|| instruction->byte_code == BYTE_CODE_RET
@@ -486,7 +491,7 @@ namespace zetscript{
 					THROW_SCRIPT_ERROR_FILE_LINE(NULL,-1,"Function '%s' already binded"
 						,function_member->scope_script_function!=NULL?
 								zs_strutils::format("%s::%s"
-										,function_member->scope_script_function->script_type_owner->str_script_type.c_str()
+										,function_member->scope_script_function->script_type_owner->str_script_type
 										,_function_name.c_str()).c_str()
 								:_function_name.c_str()
 
@@ -510,7 +515,7 @@ namespace zetscript{
 		InstructionSourceInfo *info=getInstructionInfo(ins);
 
 		if(info!=NULL && info->ptr_str_symbol_name!=NULL){
-			return info->ptr_str_symbol_name->c_str();
+			return info->ptr_str_symbol_name;
 		}
 		return NULL;
 	}
@@ -571,7 +576,7 @@ namespace zetscript{
 
 		symbol->ref_ptr =_ref_ptr;
 		//scope_symbol->symbol=scope_symbol;
-		symbol->str_native_type = _str_native_type;
+		symbol->str_native_type = zs_strutils::clone_to_char_ptr(_str_native_type);
 		symbol->properties = _properties;
 		symbol->idx_position = idx_position_aux;
 
@@ -621,7 +626,7 @@ namespace zetscript{
 			{
 				// if exist override, but should be in the same scope
 				THROW_RUNTIME_ERROR("Symbol '%s' defined at %s is already defined at %s"
-					,name_script_function.c_str()
+					,name_script_function
 					,current_file_line.c_str()
 					,_line
 					,symbol_file_line.c_str()

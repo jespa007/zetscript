@@ -541,7 +541,8 @@ namespace zetscript{
 				ei_iterator.vm_instruction.byte_code=BYTE_CODE_LOAD_LOCAL;
 				ei_iterator.vm_instruction.value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
 				ei_iterator.vm_instruction.value_op2=symbol_iterator->idx_position;
-				ei_iterator.symbol=*symbol_iterator;
+				ei_iterator.symbol_name=symbol_iterator->name;
+				ei_iterator.symbol_scope=symbol_iterator->scope;
 				ei_iterator.instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, symbol_iterator->name);
 
 

@@ -61,7 +61,7 @@ namespace zetscript{
 
 			// we add symbol as property. In it will have the same idx as when were evaluated declared symbols on each type
 			if((se=addBuiltinProperty(
-				symbol->name.c_str()
+				symbol->name
 			))==NULL){
 				return;
 			}

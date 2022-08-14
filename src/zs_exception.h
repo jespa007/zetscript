@@ -4,15 +4,15 @@
  */
 #pragma once
 
-#define THROW_RUNTIME_ERROR(s, ...)							::zetscript::throw_script_error(__FILENAME__,__LINE__,s, __VA_ARGS__)
-#define THROW_RUNTIME_ERRORF(s)								THROW_RUNTIME_ERROR(s,NULL)
+#define THROW_RUNTIME_ERROR(_str_error, ...)							::zetscript::throw_script_error(__FILENAME__,__LINE__,_str_error, __VA_ARGS__)
+#define THROW_RUNTIME_ERRORF(_str_error)								THROW_RUNTIME_ERROR(_str_error,NULL)
 
-#define THROW_SCRIPT_ERROR_FILE_LINE(file,line,s, ...)		::zetscript::throw_script_error(file,line,s, __VA_ARGS__)
-#define THROW_SCRIPT_ERROR_FILE_LINEF(file,line,s)			THROW_SCRIPT_ERROR_FILE_LINE(file,line,s,NULL)
+#define THROW_SCRIPT_ERROR_FILE_LINE(file,line,_str_error, ...)			::zetscript::throw_script_error(file,line,_str_error, __VA_ARGS__)
+#define THROW_SCRIPT_ERROR_FILE_LINEF(file,line,_str_error)				THROW_SCRIPT_ERROR_FILE_LINE(file,line,_str_error,NULL)
 
-#define THROW_SCRIPT_ERROR 									::zetscript::throw_script_error
-#define THROW_EXCEPTION_FILE_LINE							::zetscript::throw_exception_file_line
-#define THROW_EXCEPTION										::zetscript::throw_exception
+#define THROW_SCRIPT_ERROR 												::zetscript::throw_script_error
+#define THROW_EXCEPTION_FILE_LINE										::zetscript::throw_exception_file_line
+#define THROW_EXCEPTION													::zetscript::throw_exception
 
 namespace zetscript {
 

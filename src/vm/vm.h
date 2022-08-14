@@ -30,15 +30,15 @@
 	data->vm_error=true;\
 	strcpy(data->vm_error_file,SFI_GET_FILE(calling_function,instruction));\
 	data->vm_error_line=SFI_GET_LINE(calling_function,instruction);\
-	zs_strutils::format_file_line(data->vm_error_str,data->vm_error_file,data->vm_error_line,_s_in, __VA_ARGS__);
+	zs_strutils::sprintf(data->vm_error_str,_s_in, __VA_ARGS__);
 
 #define VM_ERRORF(_s_in)					VM_ERROR(_s_in,NULL)
 
-#define VM_ERROR_AND_RET(s,...)	\
+#define VM_ERROR_AND_RET(_str_in,...)	\
 	data->vm_error=true;\
 	strcpy(data->vm_error_file,SFI_GET_FILE(calling_function,instruction));\
 	data->vm_error_line=SFI_GET_LINE(calling_function,instruction);\
-	zs_strutils::format_file_line(data->vm_error_str,data->vm_error_file,data->vm_error_line,s, __VA_ARGS__);\
+	zs_strutils::sprintf(data->vm_error_str,_str_in, __VA_ARGS__);\
 	return;
 
 #define VM_ERROR_AND_RETF(s)			VM_ERROR_AND_RET(s,NULL)
@@ -47,7 +47,7 @@
 	data->vm_error=true;\
 	strcpy(data->vm_error_file,SFI_GET_FILE(calling_function,instruction));\
 	data->vm_error_line=SFI_GET_LINE(calling_function,instruction);\
-	zs_strutils::format_file_line(data->vm_error_str,data->vm_error_file,data->vm_error_line,_str_in, ##__VA_ARGS__);\
+	zs_strutils::sprintf(data->vm_error_str,_str_in, ##__VA_ARGS__);\
 	goto lbl_exit_function;
 
 #define VM_STOP_EXECUTEF(_str_in)		VM_STOP_EXECUTE(_str_in,NULL)
@@ -128,6 +128,83 @@ namespace zetscript{
 				StackElement 		  	* _stk_local_var
 		    );
 
+
+	ScriptFunction * vm_find_native_function(
+			VirtualMachine *vm
+			,ScriptType *class_obj // if NULL is MainClass
+			,ScriptFunction *calling_function
+			,Instruction * instruction // call instruction
+			,bool is_constructor
+			,const char * symbol_to_find
+			,StackElement *stk_arg
+			,unsigned char n_args
+	);
+
+
+	bool vm_call_metamethod(
+		VirtualMachine *vm
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+		,ByteCodeMetamethod byte_code_metamethod
+		,StackElement *stk_result_op1
+		,StackElement *stk_result_op2
+		, bool is_static=true
+		, bool is_je_case=false
+
+	);
+
+	void vm_iterator_init(VirtualMachine *vm
+			 ,ScriptFunction *calling_function
+			,Instruction *instruction
+			,StackElement *stk_result_op1
+			,StackElement *stk_result_op2
+	);
+
+	bool vm_perform_in_operator(
+			VirtualMachine *vm
+			 ,ScriptFunction *calling_function
+			,Instruction *instruction
+			, StackElement *stk_result_op1
+			, StackElement *stk_result_op2
+	);
+
+
+	bool vm_store(
+			VirtualMachine *vm
+			,ScriptFunction *calling_function
+			,Instruction *instruction
+	);
+
+	bool vm_operation_store(
+		VirtualMachine *vm
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+		,StackElement *stk_result_op1
+		,StackElement *stk_result_op2
+		, ByteCodeMetamethod byte_code_metamethod
+	);
+
+	bool vm_call(
+		VirtualMachine *vm
+		,ScriptObject *this_object
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+		,StackElement *_stk_local_var
+	);
+
+	bool vm_load_field(
+		VirtualMachine *vm
+		,ScriptObject *this_object
+		,ScriptFunction *calling_function
+		,Instruction **instruction_it
+	);
+
+
+	void vm_throw_error_cannot_find_symbol(
+		VirtualMachine *vm
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+	);
 
 	void vm_delete(VirtualMachine *vm);
 }

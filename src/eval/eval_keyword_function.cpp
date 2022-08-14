@@ -211,7 +211,6 @@ namespace zetscript{
 
 
 		if(key_w == Keyword::KEYWORD_FUNCTION || is_static){
-			ScriptFunctionParam param_info;
 			ScriptFunctionParam *params=NULL;
 			int params_len=0;
 
@@ -288,7 +287,7 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
 					,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
 							"declaring function member '%s::%s'"
-							,scope_info->script_type_owner->str_script_type.c_str()
+							,scope_info->script_type_owner->str_script_type
 							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
 							).c_str():"declaring function"
 							,*aux_p
@@ -299,7 +298,7 @@ namespace zetscript{
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
 							,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
 									"declaring function member '%s::%s'"
-									,scope_info->script_type_owner->str_script_type.c_str()
+									,scope_info->script_type_owner->str_script_type
 									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
 									).c_str():"declaring function"
 
@@ -311,7 +310,8 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 			while(*aux_p != 0 && *aux_p != ')'){
-				param_info=ScriptFunctionParam();
+				ScriptFunctionParam param_info;
+
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				Keyword kw_arg=Keyword::KEYWORD_UNKNOWN;
 

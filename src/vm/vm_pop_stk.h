@@ -24,7 +24,6 @@
 						,(ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr \
 						,0 \
 						,stk_mp_aux->member_property->metamethod_members.getter->name.c_str() \
-						,true \
 				); \
 				/* getter requires stack to save value and avoid destroy previuos value*/ \
 				_stk_result=data->stk_vm_current; \
@@ -58,7 +57,7 @@ stk_result_op1=--data->stk_vm_current;
 		break;\
 	case INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
 		 stk_result_op1=--data->stk_vm_current;\
-		 stk_result_op2=&stk_aux;\
+		 stk_result_op2=&stk_aux1;\
 		 stk_result_op2->value=instruction->value_op2;\
 		 stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
 		 break;\
@@ -67,14 +66,14 @@ stk_result_op1=--data->stk_vm_current;
 		 LOAD_STK_FROM_INSTRUCTION(stk_result_op2,instruction->value_op1,instruction->properties);\
 		 break;\
 	case INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
-		 stk_result_op1=&stk_aux;\
+		 stk_result_op1=&stk_aux1;\
 		 stk_result_op1->value=INSTRUCTION_CONST_TO_STK_CONST_VALUE(instruction->value_op2,instruction->properties);\
 		 stk_result_op1->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
 		 LOAD_STK_FROM_INSTRUCTION(stk_result_op2,instruction->value_op1,instruction->properties);\
 		 break;\
 	case INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
 		LOAD_STK_FROM_INSTRUCTION(stk_result_op1,instruction->value_op1,instruction->properties);\
-		stk_result_op2=&stk_aux;\
+		stk_result_op2=&stk_aux1;\
 		stk_result_op2->value=INSTRUCTION_CONST_TO_STK_CONST_VALUE(instruction->value_op2,instruction->properties);\
 		stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
 		break;\

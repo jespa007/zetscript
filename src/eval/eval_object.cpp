@@ -68,14 +68,13 @@ namespace zetscript{
 
 		eval_instruction->vm_instruction.byte_code=byte_code;
 		eval_instruction->vm_instruction.value_op2=(zs_int)symbol_object;//->idx_position;
-		token_node->value=eval_instruction->symbol.name=symbol_object->name;
-		eval_instruction->symbol.scope=scope_info;
+		token_node->value=eval_instruction->symbol_name=symbol_object->name;
+		eval_instruction->symbol_scope=scope_info;
 
 		eval_instruction->instruction_source_info= InstructionSourceInfo(
 			eval_data->current_parsing_file
 			,line
-			,get_mapped_name(eval_data,token_node->value
-			)
+			,get_mapped_name(eval_data,token_node->value.c_str())
 		);
 
 
@@ -381,7 +380,7 @@ namespace zetscript{
 					eval_instruction_new_object_by_value->instruction_source_info=InstructionSourceInfo(
 							 eval_data->current_parsing_file
 							 ,line
-							 ,get_mapped_name(eval_data,expression)
+							 ,get_mapped_name(eval_data,expression.c_str())
 						 );
 				}else{ // known type
 					is_native_type=sc->isNativeType();
@@ -472,7 +471,7 @@ namespace zetscript{
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
 							Symbol *symbol_member = (Symbol *)sc->scope_script_type->symbol_functions->items[i];
 							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
-							if(sf_member->name_script_function == CONSTRUCTOR_FUNCTION_NAME){
+							if(ZS_STRCMP(sf_member->name_script_function,==, CONSTRUCTOR_FUNCTION_NAME)){
 								constructor_function = symbol_member;
 							}
 						}

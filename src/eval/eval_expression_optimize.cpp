@@ -124,7 +124,7 @@ namespace zetscript{
 		 }
 
 		 // is a type, not register. Note may be we could optimize but generally we are doing ops between registers
-		 if(eval_data->script_type_factory->getScriptType(i1->symbol.name)!=NULL){
+		 if(eval_data->script_type_factory->getScriptType(i1->symbol_name)!=NULL){
 			return false;
 		}
 
@@ -133,7 +133,7 @@ namespace zetscript{
 
 		if(i1->vm_instruction.byte_code == BYTE_CODE_FIND_VARIABLE){
 
-			if((symbol_found = eval_find_local_symbol(eval_data,scope,i1->symbol.name)) != NULL){
+			if((symbol_found = eval_find_local_symbol(eval_data,scope,i1->symbol_name)) != NULL){
 				load_byte_code=BYTE_CODE_LOAD_LOCAL;
 				load_value_op2=symbol_found->idx_position;
 				if((symbol_found->properties & (SYMBOL_PROPERTY_ARG_BY_REF)) == SYMBOL_PROPERTY_ARG_BY_REF){
@@ -154,7 +154,7 @@ namespace zetscript{
 				}
 
 				if(sc != NULL){
-					symbol_found = sc->getSymbolVariableMember(i1->symbol.name);
+					symbol_found = sc->getSymbolVariableMember(i1->symbol_name);
 				}
 
 				if(symbol_found == NULL){

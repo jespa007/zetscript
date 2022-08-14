@@ -31,6 +31,7 @@ namespace zetscript{
 
 		~ScriptFunctionParam();
 	private:
+		void init();
 		void copy( const ScriptFunctionParam & _function_param);
 	};
 }

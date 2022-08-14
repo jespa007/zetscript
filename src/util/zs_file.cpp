@@ -33,7 +33,7 @@ namespace zetscript{
 			return false;*/
 		}
 
-		zs_string read_text(const zs_string &  filename){
+		zs_buffer *read_text(const zs_string &  filename){
 
 			int  length=-1;
 			size_t readed_elements;
@@ -44,22 +44,18 @@ namespace zetscript{
 				if((length = size(filename)) != -1) {
 
 					size_t n_bytes_readed=(size_t)(length+1);
-					char *buffer = (char *)ZS_MALLOC(n_bytes_readed);
-					readed_elements = fread(buffer, 1, (size_t)length, fp);
+					zs_buffer *buffer= new zs_buffer((uint8_t *)ZS_MALLOC(n_bytes_readed),n_bytes_readed);
+					readed_elements = fread(buffer->ptr, 1, (size_t)length, fp);
 
 					if((int)readed_elements != length) {
 
-						free(buffer);
+						delete buffer;
 						THROW_RUNTIME_ERROR("number elements doesn't match with length file (%s)",filename.c_str());
 					}
 
 					fclose(fp);
 
-					zs_string file(buffer);
-
-					free(buffer);
-
-					return file;
+					return buffer;
 				}
 				else  {
 					THROW_RUNTIME_ERROR("I can't read file '%s'",filename.c_str());

@@ -129,8 +129,6 @@ namespace zetscript{
 
 		item=this->items[this->count-1];
 		erase(this->count-1);
-		this->count--;
-
 		return item;
 	}
 

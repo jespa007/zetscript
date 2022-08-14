@@ -229,8 +229,7 @@ namespace zetscript{
 				}
 			}
 
-			THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed", _instruction->byte_code);
-			return 0;
+			return ZS_NUM_REQUIRED_BYTE_CODE_NOT_MANAGED;
 		}
 
 

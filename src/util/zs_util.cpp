@@ -3,6 +3,7 @@
  *  See LICENSE file for details.
  */
 #include	"zs_file.cpp"
+#include 	"zs_buffer.cpp"
 #include 	"zs_log.cpp"
 #include 	"zs_path.cpp"
 #include 	"zs_rtti.cpp"

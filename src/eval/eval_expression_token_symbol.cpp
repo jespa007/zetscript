@@ -196,7 +196,7 @@ namespace zetscript{
 				if(token_node_symbol->token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
 
 					EvalInstruction *eval_instruction = ei_first_token_node;
-					eval_instruction->symbol.scope=scope_info;
+					eval_instruction->symbol_scope=scope_info;
 
 
 					if(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':'){ //  static access
@@ -288,7 +288,7 @@ namespace zetscript{
 					}
 				}
 
-				ei_first_token_node->symbol.name=token_node_symbol->value;
+				ei_first_token_node->symbol_name=token_node_symbol->value;
 
 				// add info to add as symbol value ...
 				ei_first_token_node->instruction_source_info = InstructionSourceInfo(
@@ -538,7 +538,7 @@ namespace zetscript{
 						}
 
 						// set symbol name
-						ei_first_token_node->symbol.name=accessor_name;
+						ei_first_token_node->symbol_name=accessor_name;
 						Symbol *symbol_access_this=scope_info->script_type_owner->getSymbolVariableMember(accessor_name);
 						if(symbol_access_this!=NULL){
 							instruction_value2=symbol_access_this->idx_position;
@@ -573,7 +573,8 @@ namespace zetscript{
 					instruction_token->vm_instruction=ei_first_token_node->vm_instruction;
 					instruction_token->vm_instruction.byte_code=byte_code;
 					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_params); // by default always returns 1 value
-					instruction_token->symbol=ei_first_token_node->symbol;
+					instruction_token->symbol_name=ei_first_token_node->symbol_name;
+					instruction_token->symbol_scope=ei_first_token_node->symbol_scope;
 					instruction_token->instruction_source_info= ei_first_token_node->instruction_source_info;
 
 					// The last instruction was BYTE_CODE_LOAD_THIS_VARIABLE and the evaluation found its idx_position

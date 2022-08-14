@@ -221,7 +221,7 @@ namespace zetscript{
 					,zs_rtti::demangle(str_script_type).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 					,zs_rtti::demangle(str_script_type).c_str()
-					,zs_rtti::demangle(sc->str_script_type.c_str()).c_str()
+					,zs_rtti::demangle(sc->str_script_type).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 				);
 			}
@@ -231,7 +231,7 @@ namespace zetscript{
 					,zs_rtti::demangle(str_script_type).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 					,zs_rtti::demangle(str_script_type).c_str()
-					, zs_rtti::demangle(sc->str_script_type.c_str()).c_str()
+					, zs_rtti::demangle(sc->str_script_type).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 				);
 			}
@@ -255,43 +255,11 @@ namespace zetscript{
 			Symbol *src_symbol = (Symbol *)base_functions->items[i];
 
 			bool is_metamethod_function = MemberProperty::symbolNameMatchStartSymbolNameMetamethod(src_symbol->name);
-/*										    zs_strutils::starts_with(src_symbol->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_GETTER)
-										||  zs_strutils::starts_with(src_symbol->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_INC)
-										||  zs_strutils::starts_with(src_symbol->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_POST_DEC)
-										||  zs_strutils::starts_with(src_symbol->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_INC)
-										||  zs_strutils::starts_with(src_symbol->name,ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_PRE_DEC)
-										;
-
-			if(is_metamethod_function==false){ // try find setter
-				ByteCodeMetamethod *it=MemberProperty::byte_code_metamethod_member_setter_list;
-				zs_string symbol_name_methametod;
-				while(*it!=0 && is_metamethod_function==false){
-					symbol_name_methametod=byte_code_metamethod_to_symbol_str(*it);
-					symbol_name_methametod.append('@');
-					is_metamethod_function=zs_strutils::starts_with(src_symbol->name,symbol_name_methametod);
-					it++;
-				}
-			}*/
 
 			// we have to know whether function member is or not getter/setter because we create them in the property member case. If not, we could have
 			// duplicated symbols.
 			if(is_metamethod_function == false){
 				ScriptFunction *src_script_function =NULL;
-				/*if(src_symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){ // property
-					MemberProperty *mp=(MemberProperty *)src_symbol->ref_ptr;
-
-					this_class->registerMemberFunction(
-						script_function->name_script_function,
-						&params,
-						params_len,
-						script_function->properties, //derivated_symbol_info_properties
-						script_function->idx_script_type_return,
-						script_function->ref_native_function_ptr, // it contains script function pointer
-						src_symbol->file,
-						src_symbol->line
-					);
-
-				}else */
 				if(src_symbol->properties & SYMBOL_PROPERTY_FUNCTION){ // function
 					src_script_function=(ScriptFunction *)src_symbol->ref_ptr;
 					Symbol *dst_symbol=NULL;
@@ -319,14 +287,8 @@ namespace zetscript{
 					THROW_RUNTIME_ERROR("Error adding functions from base elements '%s': '%s::%s' is not a function"
 							,zs_rtti::demangle(base_class_name).c_str()
 							,zs_rtti::demangle(base_class_name).c_str()
-							, src_symbol->name.c_str());
+							, src_symbol->name);
 				}
-
-
-				// build params...
-
-
-
 			}
 		}
 
@@ -380,8 +342,6 @@ namespace zetscript{
 								src_script_function->properties,
 								src_script_function->idx_script_type_return,
 								src_script_function->ref_native_function_ptr
-								//it->src_function->symbol.file,
-								//it->src_function->symbol.line
 						);
 
 						*it->dst_symbol_function=symbol_function;
@@ -406,15 +366,12 @@ namespace zetscript{
 							char params_len=sf_setter->params_len;
 
 							symbol_function=this_class->registerMemberFunction(
-									sf_setter->name_script_function,
-									&params,
-									params_len,
-									sf_setter->properties,
-									sf_setter->idx_script_type_return,
-									sf_setter->ref_native_function_ptr
-
-									//sf_setter->symbol->file,
-									//sf_setter->symbol->line
+								sf_setter->name_script_function,
+								&params,
+								params_len,
+								sf_setter->properties,
+								sf_setter->idx_script_type_return,
+								sf_setter->ref_native_function_ptr
 							);
 
 							mp_dst->metamethod_members.addSetter(*it_setter,symbol_function);
@@ -480,7 +437,7 @@ namespace zetscript{
 		// check valid parameters ...
 		if(getIdxScriptTypeFromTypeNamePtr(var_type) == ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
-					,script_type->str_script_type.c_str()
+					,script_type->str_script_type
 					,var_name
 					,zs_rtti::demangle(typeid(R).name()).c_str());
 		}
@@ -516,13 +473,13 @@ namespace zetscript{
 		}
 
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
-				this
-				,script_type
-				,_property_name
-				,_ptr_function
-				,&params
-				,&params_len
-				);
+			this
+			,script_type
+			,_property_name
+			,_ptr_function
+			,&params
+			,&params_len
+		);
 
 		script_type->registerMemberPropertyMetamethod(
 			 _property_name

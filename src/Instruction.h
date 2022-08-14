@@ -12,6 +12,7 @@
 #define ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR				(uint8_t)(-8)
 #define ZS_IDX_INSTRUCTION_JT_LOGIC_OK						(uint8_t)(-9)
 
+#define	ZS_NUM_REQUIRED_BYTE_CODE_NOT_MANAGED				1024
 
 #define ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED					(uint8_t)(ZS_IDX_UNDEFINED)
 
@@ -115,7 +116,7 @@ namespace zetscript{
 
 		const char *file;
 		short line;
-		zs_string * ptr_str_symbol_name; // should be deallocated
+		const char * ptr_str_symbol_name; // should be deallocated
 
 		InstructionSourceInfo(){
 			ptr_str_symbol_name=NULL;
@@ -123,7 +124,7 @@ namespace zetscript{
 			line=-1;
 		}
 
-		InstructionSourceInfo(const char * _file,short _line,zs_string *_ptr_str_symbol_name=NULL){
+		InstructionSourceInfo(const char * _file,short _line,const char *_ptr_str_symbol_name=NULL){
 			file=_file;
 			line=_line;
 			ptr_str_symbol_name=_ptr_str_symbol_name;

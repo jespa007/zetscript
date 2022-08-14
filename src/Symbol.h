@@ -31,25 +31,25 @@ namespace zetscript{
 		Scope *scope;		// scope where symbol was registered
 		unsigned short properties; // symbol properties using SymbolProperty bits
 
-		zs_string name; 	// symbol name
+		char *name; 	// symbol name
 		zs_int ref_ptr; 	// pointer ref that holds rellevant information
-		zs_string str_native_type; // In case is C, we need to know its type ...
+		char *str_native_type; // In case is C, we need to know its type ...
 
 		char n_params; // max params in case of function
 
 		Symbol *overrided_symbol; // for virtual functions
 
-		Symbol(){
-			file="";
-			line=-1;
-			idx_position = ZS_IDX_UNDEFINED; // in principle is not on stack
+		Symbol(const zs_string & _name);
 
-			scope = NULL;
-			n_params = NO_PARAMS_SYMBOL_ONLY;
-			properties = 0;
-			ref_ptr = 0;
-			overrided_symbol=NULL;
-		}
+		Symbol(const Symbol & _symbol);
+
+		Symbol operator = (const Symbol & _symbol);
+
+		~Symbol();
+
+	protected:
+
+		void copy(const Symbol & _symbol);
 
 	};
 

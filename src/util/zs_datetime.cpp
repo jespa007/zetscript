@@ -8,7 +8,7 @@ namespace zetscript{
 
 	//Default constructor get current date and time
 	zs_datetime::zs_datetime()
-		: timeInfo(new tm())
+		: time_info(new tm())
 	{
 		time_t rawtime;
 		time (&rawtime);
@@ -64,45 +64,45 @@ namespace zetscript{
 		if (second < 0 || second > 59) {
 			THROW_RUNTIME_ERRORF("second must be between 0 and 59");
 		}
-		timeInfo = new tm();
-		timeInfo->tm_year = year - 1900;
-		timeInfo->tm_mon = month - 1;
-		timeInfo->tm_mday = day;
-		timeInfo->tm_hour = hour;
-		timeInfo->tm_min = minute;
-		timeInfo->tm_sec = second;
-		timeInfo->tm_isdst = -1;
-		mktime(timeInfo);
+		time_info = new tm();
+		time_info->tm_year = year - 1900;
+		time_info->tm_mon = month - 1;
+		time_info->tm_mday = day;
+		time_info->tm_hour = hour;
+		time_info->tm_min = minute;
+		time_info->tm_sec = second;
+		time_info->tm_isdst = -1;
+		mktime(time_info);
 	}
 
 	//Copy constructor
 	zs_datetime::zs_datetime(const zs_datetime& other)
 	{
-		timeInfo = new tm();
-		_copy_from(other.timeInfo);
+		time_info = new tm();
+		_copy_from(other.time_info);
 	}
 
 	//Copy assignment
 	zs_datetime& zs_datetime::operator=(const zs_datetime& other)
 	{
 		if (this != &other) {
-			_copy_from(other.timeInfo);
+			_copy_from(other.time_info);
 		}
 		return *this;
 	}
 
 	zs_datetime::~zs_datetime()
 	{
-		delete timeInfo;
+		delete time_info;
 	}
 
 	//Move constructor
 	zs_datetime::zs_datetime(zs_datetime&& other) noexcept
-		: timeInfo(other.timeInfo)
+		: time_info(other.time_info)
 	{
 		// Release the data pointer from the source object so that the destructor
 		// does not free the memory multiple times.
-		other.timeInfo = nullptr;
+		other.time_info = nullptr;
 	}
 
 	void zs_datetime::set_utc(){
@@ -117,12 +117,12 @@ namespace zetscript{
 	{
 		if (this != &other)
 		{
-			delete timeInfo;
+			delete time_info;
 			// Copy the data pointer and its length from the source object.
-			timeInfo = other.timeInfo;
+			time_info = other.time_info;
 			// Release the data pointer from the source object so that
 			// the destructor does not free the memory multiple times.
-			other.timeInfo = nullptr;
+			other.time_info = nullptr;
 		}
 		return *this;
 	}
@@ -284,52 +284,52 @@ namespace zetscript{
 
 	int zs_datetime::get_year() const
 	{
-		return timeInfo->tm_year + 1900;
+		return time_info->tm_year + 1900;
 	}
 
 	int zs_datetime::get_month() const
 	{
-		return timeInfo->tm_mon + 1;
+		return time_info->tm_mon + 1;
 	}
 
 	int zs_datetime::get_day() const
 	{
-		return timeInfo->tm_mday;
+		return time_info->tm_mday;
 	}
 
 	int zs_datetime::get_hour() const
 	{
-		return timeInfo->tm_hour;
+		return time_info->tm_hour;
 	}
 
 	int zs_datetime::get_minute() const
 	{
-		return timeInfo->tm_min;
+		return time_info->tm_min;
 	}
 
 	int zs_datetime::get_second() const
 	{
-		return timeInfo->tm_sec;
+		return time_info->tm_sec;
 	}
 
 	int zs_datetime::get_week_day() const
 	{
-		return timeInfo->tm_wday;
+		return time_info->tm_wday;
 	}
 
 	int zs_datetime::get_month_day() const
 	{
-		return timeInfo->tm_mday;
+		return time_info->tm_mday;
 	}
 
 	int zs_datetime::get_year_day() const
 	{
-		return timeInfo->tm_yday;
+		return time_info->tm_yday;
 	}
 
 	void zs_datetime::add_years(int nb_years)
 	{
-		timeInfo->tm_year += nb_years;
+		time_info->tm_year += nb_years;
 	}
 
 	void zs_datetime::add_months(int nb_months)
@@ -338,16 +338,16 @@ namespace zetscript{
 		auto nb_year = static_cast<int>(ceil(nb_months / 12));
 		int nb_months_final = nb_months % 12;
 
-		if (timeInfo->tm_mon + nb_months_final > 11) { // tm_mon is from 0 to 11
+		if (time_info->tm_mon + nb_months_final > 11) { // tm_mon is from 0 to 11
 			nb_year++;
-			nb_months_final = (timeInfo->tm_mon + nb_months_final) - 12;
-			timeInfo->tm_mon = nb_months_final;
+			nb_months_final = (time_info->tm_mon + nb_months_final) - 12;
+			time_info->tm_mon = nb_months_final;
 		}
 		else {
-			timeInfo->tm_mon += nb_months_final;
+			time_info->tm_mon += nb_months_final;
 		}
 
-		timeInfo->tm_year += nb_year;
+		time_info->tm_year += nb_year;
 	}
 
 	void zs_datetime::add_days(int nb_days)
@@ -369,12 +369,12 @@ namespace zetscript{
 	{
 		struct tm *tm_new_time;
 		//errno_t err;
-		time_t new_seconds = mktime(timeInfo) + nb_seconds;
-		delete timeInfo;
+		time_t new_seconds = mktime(time_info) + nb_seconds;
+		delete time_info;
 
 		tm_new_time = localtime(&new_seconds);
 
-		timeInfo = new tm();
+		time_info = new tm();
 		_copy_from(tm_new_time);
 	}
 
@@ -391,15 +391,15 @@ namespace zetscript{
 
 	void zs_datetime::_copy_from(const tm * otm)
 	{
-		timeInfo->tm_year = otm->tm_year;
-		timeInfo->tm_mon = otm->tm_mon;
-		timeInfo->tm_mday = otm->tm_mday;
-		timeInfo->tm_hour = otm->tm_hour;
-		timeInfo->tm_min = otm->tm_min;
-		timeInfo->tm_sec = otm->tm_sec;
-		timeInfo->tm_isdst = otm->tm_isdst;
-		timeInfo->tm_wday = otm->tm_wday;
-		timeInfo->tm_yday = otm->tm_yday;
+		time_info->tm_year = otm->tm_year;
+		time_info->tm_mon = otm->tm_mon;
+		time_info->tm_mday = otm->tm_mday;
+		time_info->tm_hour = otm->tm_hour;
+		time_info->tm_min = otm->tm_min;
+		time_info->tm_sec = otm->tm_sec;
+		time_info->tm_isdst = otm->tm_isdst;
+		time_info->tm_wday = otm->tm_wday;
+		time_info->tm_yday = otm->tm_yday;
 	}
 
 	zs_datetime zs_datetime::parse(const zs_string& format, const zs_string& value)
@@ -504,12 +504,12 @@ namespace zetscript{
 	{
 		char retVal[128] = "";
 		sprintf(static_cast<char *>(retVal), "%d-%02d-%02d %02d:%02d:%02d",
-			dt.timeInfo->tm_year + 1900,
-			dt.timeInfo->tm_mon + 1,
-			dt.timeInfo->tm_mday,
-			dt.timeInfo->tm_hour,
-			dt.timeInfo->tm_min,
-			dt.timeInfo->tm_sec);
+			dt.time_info->tm_year + 1900,
+			dt.time_info->tm_mon + 1,
+			dt.time_info->tm_mday,
+			dt.time_info->tm_hour,
+			dt.time_info->tm_min,
+			dt.time_info->tm_sec);
 		std::os << static_cast<char *>(retVal);
 
 		return os;
@@ -517,32 +517,32 @@ namespace zetscript{
 
 	bool operator<(const zs_datetime &mdt, const zs_datetime &odt)
 	{
-		return mktime(mdt.timeInfo) < mktime(odt.timeInfo);
+		return mktime(mdt.time_info) < mktime(odt.time_info);
 	}
 
 	bool operator>(const zs_datetime &mdt, const zs_datetime &odt)
 	{
-		return mktime(odt.timeInfo) < mktime(mdt.timeInfo);
+		return mktime(odt.time_info) < mktime(mdt.time_info);
 	}
 
 	bool operator<=(const zs_datetime &mdt, const zs_datetime &odt)
 	{
-		return !(mktime(mdt.timeInfo) > mktime(odt.timeInfo));
+		return !(mktime(mdt.time_info) > mktime(odt.time_info));
 	}
 
 	bool operator>=(const zs_datetime &mdt, const zs_datetime &odt)
 	{
-		return !(mktime(mdt.timeInfo) < mktime(odt.timeInfo));
+		return !(mktime(mdt.time_info) < mktime(odt.time_info));
 	}
 
 	bool operator==(const zs_datetime &mdt, const zs_datetime &odt)
 	{
-		return mktime(mdt.timeInfo) == mktime(odt.timeInfo);
+		return mktime(mdt.time_info) == mktime(odt.time_info);
 	}
 
 	bool operator!=(const zs_datetime &mdt, const zs_datetime &odt)
 	{
-		return !(mktime(mdt.timeInfo) == mktime(odt.timeInfo));
+		return !(mktime(mdt.time_info) == mktime(odt.time_info));
 	}
 
 	zs_timespan operator-(const zs_datetime &mdt, const zs_datetime &odt)
@@ -550,8 +550,8 @@ namespace zetscript{
 		int days = 0, hours = 0, minutes = 0, seconds = 0;
 
 		//Transfer both dates in a number of days
-		time_t time_mdt = mktime(mdt.timeInfo);
-		time_t time_odt = mktime(odt.timeInfo);
+		time_t time_mdt = mktime(mdt.time_info);
+		time_t time_odt = mktime(odt.time_info);
 		double difference = difftime(time_mdt, time_odt) / (60 * 60 * 24);
 		days = static_cast<int>(difference);
 

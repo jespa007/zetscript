@@ -78,7 +78,7 @@ namespace zetscript{
 
 		zs_vector<StackElement *> 				* 	getStkBuiltinListElements();
 		bool 						isNativeObject();
-		const zs_string 		& 	getTypeName();
+		const char * 				getTypeName();
 		ScriptType * 	    		getScriptType();
 		StackElement 			*	getThisProperty();
 		virtual void			*	getNativeObject();

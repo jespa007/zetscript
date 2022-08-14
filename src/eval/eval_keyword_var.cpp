@@ -83,7 +83,7 @@ namespace zetscript{
 
 				if((sc_var_member_extension!=NULL) && (is_constant==true)){
 					scope_var = MAIN_SCOPE(eval_data);
-					pre_variable_name=sc_var_member_extension->str_script_type+"::";
+					pre_variable_name=zs_string(sc_var_member_extension->str_script_type)+"::";
 				}
 
 				if(end_var==NULL){
@@ -189,8 +189,8 @@ namespace zetscript{
 
 							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
 							eval_instruction->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, pre_variable_name+variable_name);
-							eval_instruction->symbol.name=pre_variable_name+variable_name;
-							eval_instruction->symbol.scope=MAIN_SCOPE(eval_data);
+							eval_instruction->symbol_name=pre_variable_name+variable_name;
+							eval_instruction->symbol_scope=MAIN_SCOPE(eval_data);
 
 							eval_data->current_function->eval_instructions.push_back(
 									new EvalInstruction(
@@ -208,7 +208,7 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->str_script_type.c_str()).c_str():""
+							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->str_script_type).c_str():""
 							,variable_name.c_str());
 				}
 

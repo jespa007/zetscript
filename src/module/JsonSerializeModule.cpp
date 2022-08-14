@@ -241,7 +241,7 @@ namespace zetscript{
 							serialize_object(_zs,_this_object,_str_result,(ScriptObjectObject *)obj,_ident,_is_formatted,_strict_json_format);
 						}
 						else{
-							_str_result.append("\"Object@"+_this_object->getTypeName()+"\"");
+							_str_result.append("\"Object@"+zs_string(_this_object->getTypeName())+"\"");
 						}
 					}
 					break;

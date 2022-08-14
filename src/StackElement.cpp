@@ -40,18 +40,18 @@ namespace zetscript{
 			result=zs_string("type@")+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_PROPERTY(stk)){
 			StackMemberProperty *ma=(StackMemberProperty *)stk->value;
-			result="prop@"+ma->member_property->script_type->str_script_type+"::"+ma->member_property->property_name;
+			result="prop@"+zs_string(ma->member_property->script_type->str_script_type)+"::"+zs_string(ma->member_property->property_name);
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-			result="fun@"+sf->scope_script_function->script_type_owner->str_script_type+"::"+sf->name_script_function;
+			result="fun@"+zs_string(sf->scope_script_function->script_type_owner->str_script_type)+"::"+zs_string(sf->name_script_function);
 		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
 			}
 
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				result=((ScriptObjectObject *)stk->value)->getTypeName().c_str();
+				result=((ScriptObjectObject *)stk->value)->getTypeName();
 			}
 		}
 
@@ -119,7 +119,7 @@ namespace zetscript{
 					result= zs_string("member_function<")+st->str_script_type+"::"+somf->so_function->name_script_function+">";
 				}else{
 					// PROCECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
-					result="Object::"+so->getTypeName();
+					result="Object::"+zs_string(so->getTypeName());
 				}
 			}
 		}
@@ -305,7 +305,7 @@ namespace zetscript{
 						}
 					}else{ // cannot convert...
 						strcpy(_error,"cannot convert '");
-						strcat(_error,zs_rtti::demangle(script_object->getTypeName().c_str()).c_str());
+						strcat(_error,zs_rtti::demangle(script_object->getTypeName()).c_str());
 						strcat(_error,"' to '");
 						strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
 						strcat(_error,"'");

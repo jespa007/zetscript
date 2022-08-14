@@ -6,10 +6,12 @@
 
 namespace zetscript{
 
+	// STATIC
+
 	StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol, void *ptr_variable) {
 
 		if ((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0) {
-			THROW_RUNTIME_ERROR("Variable %s is not c referenced as C symbol", symbol->name.c_str());
+			THROW_RUNTIME_ERROR("Variable %s is not c referenced as C symbol", symbol->name);
 		}
 
 		if (k_str_zs_int_type_ptr == symbol->str_native_type) {
@@ -73,7 +75,11 @@ namespace zetscript{
 		ScriptType *info_registered_class = zs->getScriptTypeFactory()->getScriptTypeFromTypeNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);
 
 		if (info_registered_class == NULL) {
-			THROW_RUNTIME_ERROR("Native symbol '%s' has type '%s' that is not registered", symbol->name.c_str(), symbol->str_native_type.c_str());
+			THROW_RUNTIME_ERROR(
+				"Native symbol '%s' has type '%s' that is not registered"
+				, symbol->name
+				, symbol->str_native_type
+			);
 		}
 
 		ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs, info_registered_class->idx_script_type, ptr_variable);
@@ -82,10 +88,72 @@ namespace zetscript{
 				(zs_int)var,
 				STK_PROPERTY_SCRIPT_OBJECT
 		};
-
-
 	}
 
-	
+	// PRIVATE
+
+	void Symbol::copy(const Symbol & _symbol){
+		if(_symbol.name!= NULL){
+			if(name !=NULL){
+				free(name);
+			}
+			name=zs_strutils::clone_to_char_ptr(zs_string(_symbol.name));
+		}
+
+		if(_symbol.str_native_type !=NULL){
+			if(str_native_type != NULL){
+				free(str_native_type);
+				str_native_type=NULL;
+			}
+			str_native_type=zs_strutils::clone_to_char_ptr(zs_string(_symbol.str_native_type));
+		}
+
+		file=_symbol.file;
+		line=_symbol.line;
+		idx_position = _symbol.idx_position; // in principle is not on stack
+
+		scope = _symbol.scope;
+		n_params = _symbol.n_params;
+		properties = _symbol.properties;
+		ref_ptr = _symbol.ref_ptr;
+		overrided_symbol=_symbol.overrided_symbol;
+	}
+
+	// PUBLIC
+	Symbol::Symbol(const zs_string & _name){
+		name = zs_strutils::clone_to_char_ptr(_name);
+		str_native_type = NULL;
+		file="";
+		line=-1;
+		idx_position = ZS_IDX_UNDEFINED; // in principle is not on stack
+
+		scope = NULL;
+		n_params = NO_PARAMS_SYMBOL_ONLY;
+		properties = 0;
+		ref_ptr = 0;
+		overrided_symbol=NULL;
+	}
+
+	Symbol::Symbol(const Symbol & _symbol){
+		copy(_symbol);
+	}
+
+	Symbol Symbol::operator = (const Symbol & _symbol){
+		copy(_symbol);
+		return *this;
+	}
+
+	Symbol::~Symbol() {
+		if(name!= NULL){
+			free(name);
+			name=NULL;
+		}
+
+		if(str_native_type !=NULL){
+			free(str_native_type);
+			str_native_type=NULL;
+		}
+	}
+
 
 }

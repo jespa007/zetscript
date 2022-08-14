@@ -7,7 +7,6 @@
 if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){ \
 	stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value)); \
 } \
-stk_src_ref_value_copy_aux=NULL;/*copy aux in case of the var is c and primitive (we have to update value on save) */ \
 stk_src_ref_value=&stk_src->value; \
 stk_dst_ref_value=&stk_dst->value; \
 if(stk_src->properties & STK_PROPERTY_IS_C_VAR_PTR){ /* src is C pointer */ \
@@ -21,15 +20,12 @@ if(stk_src_properties == STK_PROPERTY_UNDEFINED){\
 }else if(stk_src_properties & STK_PROPERTY_ZS_INT){\
 	stk_dst->properties=STK_PROPERTY_ZS_INT;\
 	*((zs_int *)stk_dst_ref_value)=*((zs_int *)stk_src_ref_value);\
-	if(stk_src_ref_value_copy_aux!=NULL)(*(zs_int *)stk_src_ref_value_copy_aux)=*((zs_int *)stk_src_ref_value);\
 }else if(stk_src_properties & STK_PROPERTY_ZS_FLOAT){\
 	stk_dst->properties=STK_PROPERTY_ZS_FLOAT;\
 	*((zs_float *)stk_dst_ref_value)=*((zs_float *)stk_src_ref_value);\
-	if(stk_src_ref_value_copy_aux!=NULL)(*(zs_float *)stk_src_ref_value_copy_aux)=*((zs_float *)stk_src_ref_value);\
 }else if(stk_src_properties & STK_PROPERTY_BOOL){\
 	stk_dst->properties=STK_PROPERTY_BOOL;\
 	*((bool *)stk_dst_ref_value)=*((bool *)stk_src_ref_value);\
-	if(stk_src_ref_value_copy_aux!=NULL)(*(bool *)stk_src_ref_value_copy_aux)=*((bool *)stk_src_ref_value);\
 }else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){\
 	*stk_dst=*stk_src;\
 }else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){\
@@ -57,6 +53,6 @@ if(stk_src_properties == STK_PROPERTY_UNDEFINED){\
 		,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_src)\
 	);\
 }\
-if(stk_src_ref_value_copy_aux!=NULL)stk_dst->properties|=STK_PROPERTY_IS_C_VAR_PTR;
+
 
 

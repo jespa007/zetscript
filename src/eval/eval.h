@@ -11,10 +11,12 @@ namespace zetscript{
 
 	struct EvalInstruction{
 		Instruction 					vm_instruction;
-		Symbol							symbol;
+		zs_string						symbol_name;
+		Scope							*symbol_scope;
 		InstructionSourceInfo 			instruction_source_info;
 
 		EvalInstruction(){
+			symbol_scope=NULL;
 		}
 
 		EvalInstruction(
@@ -24,11 +26,13 @@ namespace zetscript{
 			,unsigned short _properties=0
 		 ){
 			vm_instruction=Instruction(_byte_code,_index_op1,_index_op2,_properties);
+			symbol_scope=NULL;
 		}
 
 		EvalInstruction(const EvalInstruction & _eval_instruction){
 			vm_instruction=_eval_instruction.vm_instruction;
-			symbol = _eval_instruction.symbol;
+			symbol_name = _eval_instruction.symbol_name;
+			symbol_scope= _eval_instruction.symbol_scope;
 			instruction_source_info=_eval_instruction.instruction_source_info;
 		}
 	};

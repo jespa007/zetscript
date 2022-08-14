@@ -35,8 +35,8 @@ namespace zetscript{
 			char _s_aux[ZS_MAX_STR_BUFFER]={0};
 			va_list  ap;
 
-			(_file == NULL || *_file == 0) ? sprintf((_str_out), "line %i:", _line)\
-				: sprintf((_str_out), "%s:%i", _file, _line); \
+			(_file == NULL || *_file == 0) ? sprintf((_str_out), "[line %i] ", _line)\
+				: sprintf((_str_out), "[%s:%i] ", zs_path::get_filename(_file).c_str(), _line); \
 
 			va_start(ap, _str_in);
 			vsprintf(_s_aux, _str_in, ap);
@@ -44,6 +44,16 @@ namespace zetscript{
 
 			strcat(_str_out, _s_aux);
 
+		}
+
+		char *clone_to_char_ptr(const zs_string & _str_in){
+			if(_str_in.empty()==false){
+				char *buf=(char *)ZS_MALLOC(_str_in.length()+1);
+				strncpy(buf,_str_in.c_str(), _str_in.length());
+				return buf;
+			}
+
+			return NULL;
 		}
 
 		zs_int *  parse_zs_int(const zs_string & val){

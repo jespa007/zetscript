@@ -540,15 +540,14 @@ namespace zetscript{
 		return Directive::DIRECTIVE_UNKNOWN;
 	}
 
-	zs_string * get_mapped_name(EvalData *eval_data, const zs_string & _mapped_name){
+	const char * get_mapped_name(EvalData *eval_data, const zs_string & _mapped_name){
 		ZS_UNUSUED_PARAM(eval_data);
-		zs_int e=eval_data->zs->getCompiledSymbolName()->get(_mapped_name.c_str());
-		if(e==0){
-			zs_string *s=new zs_string (_mapped_name);
-			eval_data->zs->getCompiledSymbolName()->set(s->c_str(),(zs_int)(s));
-			e=(zs_int)s;
+		char * key=(char *)eval_data->zs->getCompiledSymbolName()->getKey(_mapped_name.c_str());
+		if(key==NULL){
+			auto node=eval_data->zs->getCompiledSymbolName()->set(_mapped_name.c_str(),0);
+			key=node->key;
 		}
-		return ((zs_string *)e);
+		return key;
 	}
 
 	bool  is_end_symbol_token(char *s, char pre=0){

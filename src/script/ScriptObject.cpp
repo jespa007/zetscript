@@ -64,7 +64,14 @@ namespace zetscript{
 			for(int i = 0; i < symbol_vars->count; i++){
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
-					addBuiltinProperty(symbol->name.c_str(),{(zs_int)(new StackMemberProperty(this,(MemberProperty *)symbol->ref_ptr)),STK_PROPERTY_MEMBER_PROPERTY});
+					addBuiltinProperty(
+							symbol->name
+							,{(zs_int)(new StackMemberProperty(
+									this
+									,(MemberProperty *)symbol->ref_ptr)
+							)
+							,STK_PROPERTY_MEMBER_PROPERTY}
+					);
 				}
 			}
 		}
@@ -93,7 +100,7 @@ namespace zetscript{
 		return 0;
 	}
 
-	const zs_string & ScriptObject::getTypeName(){
+	const char  * ScriptObject::getTypeName(){
 		return getScriptType()->str_script_type;
 	}
 
@@ -192,7 +199,7 @@ namespace zetscript{
 	}
 
 	zs_string ScriptObject::toString(){
-		return "Object@"+getTypeName();
+		return "Object@"+zs_string(getTypeName());
 	}
 
 	void ScriptObject::refWeakPointer(ScriptObjectWeakPointer *_wp){

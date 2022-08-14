@@ -107,7 +107,7 @@ namespace zetscript{
 		bindMemberPropertyGetter<zs_datetime>("year",DateTimeModule_get_year);
 
 		// Custom user function or classes
-		/*eval(
+		eval(
 			zs_strutils::format(
 				//------------------------------------------------
 				// String
@@ -165,7 +165,7 @@ namespace zetscript{
 			,
 			(intptr_t)this
 			)
-		);*/
+		);
 
 		saveState();
 	}
@@ -241,16 +241,16 @@ namespace zetscript{
 
 			 // ignore builtin implementations if not chosen ...
 			 if(show_system_code == false && (
-					 	sc->str_script_type == "System"
-					||	sc->str_script_type == "String"
-					||	sc->str_script_type == "IteratorString"
-					||	sc->str_script_type == "Object"
-					||	sc->str_script_type == "IteratorObject"
-					||	sc->str_script_type == "Console"
-					||	sc->str_script_type == "DateTime"
-					||	sc->str_script_type == "Vector"
-					||	sc->str_script_type == "IteratorVector"
-					||	sc->str_script_type == "Json"
+					   ZS_STRCMP(sc->str_script_type, ==, "System")
+					|| ZS_STRCMP(sc->str_script_type, == , "String")
+					|| ZS_STRCMP(sc->str_script_type, == , "IteratorString")
+					|| ZS_STRCMP(sc->str_script_type, == , "Object")
+					|| ZS_STRCMP(sc->str_script_type, == , "IteratorObject")
+					|| ZS_STRCMP(sc->str_script_type, == , "Console")
+					|| ZS_STRCMP(sc->str_script_type, ==, "DateTime")
+					|| ZS_STRCMP(sc->str_script_type, == , "Vector")
+					|| ZS_STRCMP(sc->str_script_type, == , "IteratorVector")
+					|| ZS_STRCMP(sc->str_script_type, == , "Json")
 				)){
 				 show_class=false;
 			 }
@@ -338,7 +338,7 @@ namespace zetscript{
 	StackElement ZetScript::evalFile(const zs_string &  _filename, unsigned short _eval_options, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__){
 		//int idx_file=-1;
 		StackElement stk_ret;
-		zs_string buf_tmp;
+		zs_buffer *buf_tmp=NULL;
 
 		stk_ret.setUndefined();
 
@@ -364,7 +364,14 @@ namespace zetscript{
 
 			int error_line=-1;
 			try{
-				stk_ret=evalInternal(buf_tmp.c_str(),_eval_options,const_file_char,_eval_data_from,__invoke_file__,__invoke_line__);
+				stk_ret=evalInternal(
+						(const char *)buf_tmp->ptr
+						,_eval_options
+						,const_file_char
+						,_eval_data_from
+						,__invoke_file__
+						,__invoke_line__
+				);
 			}catch(zs_exception & e){
 				error=true;
 				error_file=e.getErrorSourceFilename();
@@ -379,6 +386,7 @@ namespace zetscript{
 			zs_dir::change_dir(current_directory);
 
 			// deallocate before throw errors...
+			delete buf_tmp;
 
 			if(error){
 				if(error_file.empty()==false){
@@ -625,9 +633,9 @@ namespace zetscript{
 		functions_with_unresolved_symbols.clear();
 
 		// clear compiled symbol name
-		for(auto it=compiled_symbol_name->begin();!it.end(); it.next()){
-				delete (zs_string *)it.value;
-		}
+		/*for(auto it=compiled_symbol_name->begin();!it.end(); it.next()){
+				free((char *)it.value);
+		}*/
 		delete compiled_symbol_name;
 		compiled_symbol_name=NULL;
 

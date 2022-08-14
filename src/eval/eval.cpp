@@ -473,10 +473,13 @@ namespace zetscript{
 		for(int i=0; i < count; i++){
 
 			EvalInstruction *eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[i];
-			zs_string *ptr_str_symbol_to_find=NULL;
-			ptr_str_symbol_to_find=&eval_instruction->symbol.name;
 
-			sum_stk_load_stk+=instruction_num_required_stack(&eval_instruction->vm_instruction);
+			int req_stk=instruction_num_required_stack(&eval_instruction->vm_instruction);
+			if(req_stk==ZS_NUM_REQUIRED_BYTE_CODE_NOT_MANAGED){
+				THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed", eval_instruction->vm_instruction.byte_code);
+			}
+
+			sum_stk_load_stk+=req_stk;
 			max_acc_stk_load=ZS_MAX(max_acc_stk_load,sum_stk_load_stk);
 
 
@@ -507,7 +510,7 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent constructor of '%s'"
-							,sc_sf->str_script_type.c_str()
+							,sc_sf->str_script_type
 						);
 					}else{
 						EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
@@ -515,8 +518,8 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent function '%s::%s'"
-							,sc_sf->str_script_type.c_str()
-							,sf->name_script_function.c_str()
+							,sc_sf->str_script_type
+							,sf->name_script_function
 						);
 					}
 				}
@@ -538,7 +541,7 @@ namespace zetscript{
 					for(int j = 0; j < sc_sf->scope_script_type->symbol_functions->count; j++){
 						Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
 						if(
-							   ( sv->name == eval_instruction->symbol.name )
+							   (ZS_STRCMP(sv->name, ==,eval_instruction->symbol_name.c_str()) )
 						){
 							eval_instruction->vm_instruction.value_op2=(zs_int)sv;
 							break;

@@ -3,6 +3,7 @@
  *  See LICENSE file for details.
  */
 #include "zs_vector.h"
+#include "zs_buffer.h"
 #include "zs_string.h"
 #include "zs_strutils.h"
 #include "zs_file.h"
@@ -18,3 +19,4 @@
 #include "zs_datetime.h"
 #include "zs_io.h"
 #include "zs_mem.h"
+

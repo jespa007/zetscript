@@ -111,7 +111,7 @@ namespace zetscript{
 		return idx_min;
 	}
 
-	void	zs_map::set(const char * _key,zs_int _value){
+	zs_map_node	*zs_map::set(const char * _key,zs_int _value){
 
 		int idx=search(_key);
 		zs_map_item *item=NULL;
@@ -157,6 +157,8 @@ namespace zetscript{
 
 
 		item->node->value=_value;
+
+		return node;
 	}
 
 	zs_map_iterator zs_map::begin(){
@@ -181,6 +183,21 @@ namespace zetscript{
 		}
 
 		return value;
+	}
+
+	const char *zs_map::getKey(const char * _key){
+		if(_key == NULL){
+			THROW_RUNTIME_ERROR("key NULL",_key);
+		}
+
+		int idx=search(_key);
+		char *key=NULL;
+
+		if(idx!=ZS_MAP_KEY_NOT_FOUND){
+			key=items[idx].node->key;
+		}
+
+		return key;
 	}
 
 	void	zs_map::erase(const char * _key){

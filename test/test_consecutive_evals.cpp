@@ -42,9 +42,14 @@ void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
 	for(int i=0; i < main_scope->symbol_variables->count; i++){
 		zetscript::Symbol *s=(zetscript::Symbol *)main_scope->symbol_variables->items[i];
 		zetscript::zs_string str_to_compare="a"+zetscript::zs_strutils::zs_int_to_str(s->idx_position+1);
-		if(_show_print) printf("%s %i\n",s->name.c_str(),(s->idx_position+1));
+		if(_show_print) printf("%s %i\n",s->name,(s->idx_position+1));
 		if(s->name != str_to_compare){
-			throw new std::runtime_error(zetscript::zs_strutils::format("Symbol are not ordered ('%s' != '%s')",s->name.c_str(),str_to_compare.c_str()).c_str());
+			throw new std::runtime_error(
+				zetscript::zs_strutils::format(
+						"Symbol are not ordered ('%s' != '%s')"
+						,s->name
+						,str_to_compare.c_str()).c_str()
+			);
 		}
 
 	}
