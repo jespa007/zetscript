@@ -328,7 +328,6 @@ namespace zetscript{
 
 		StackElement *stk=NULL;
 		ScriptObjectString *so=NULL;
-		char str_aux[100];
 
 		if((stk = getStkConstantStringObject(_key))!=NULL){
 			if(stk->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY)){
@@ -339,7 +338,7 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR(
 					"Cannot register constant '%s' as 'ScriptObjectString', because is already registered as '%s'"
 					,_key.c_str()
-					,stk_to_typeof_str(str_aux,this->zs,stk)
+					,stk_to_typeof_str(this->zs,stk).c_str()
 				);
 			}
 		}

@@ -39,8 +39,6 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 		}\
 	}
 
-//#define VM_INNER_CALL_ONLY_RETURN(_so,_sf,_name,_reset) VM_INNER_CALL(_so,_sf,0,_name,_reset,true)
-
 #define VM_EXTRACT_FUNCTION_INFO\
 	{ /* get elements from type */ \
 		Symbol *symbol = (Symbol *)(*(stk_elements_builtin_ptr+i));\
@@ -54,7 +52,7 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 	if(irfs==NULL) continue;
 
 #define VM_INNER_CALL(_so_object,_so_function,_n_args,_name)\
-	vm_inner_call_internal( \
+	vm_inner_call( \
 			vm \
 			,calling_function \
 			,instruction \
@@ -81,23 +79,15 @@ namespace zetscript{
 
 
 	struct VirtualMachineData{
-		//===================================================================================================
-		//
-		// POINTER MANAGER ...
-		//
 
-		//InfoSharedList zero_shares[VM_FUNCTION_CALL_MAX]; // each function contains the number of local scriptvars vars that should or not removed.
-		//InfoSharedList shared_vars; // global vector
-
-		//===================================================================================================
 
 		 bool				vm_error,vm_error_max_stack_reached;
-		 char 				vm_error_str[1024];
-		 char 				vm_error_file[512];
-		 char				vm_str_aux[3][512]; // todo str intermediate operations
-		 char 				vm_str_metamethod_aux[100];
+		 zs_string			vm_error_str;
+		 zs_string			vm_error_file;
 		 int 				vm_error_line;
-		 char 				vm_error_callstack_str[4096];
+		 zs_string 			vm_error_callstack_str;
+		 char				vm_str_metamethod_aux[100];
+		 char				vm_str_aux[2][100];
 		 VM_ScopeFunction	*vm_current_scope_function;
 		 VM_ScopeFunction	vm_scope_function[VM_FUNCTION_CALL_MAX];
 
@@ -137,8 +127,6 @@ namespace zetscript{
 			script_type_factory=NULL;
 			scope_factory=NULL;
 			vm_error=false;
-			memset(vm_error_str,0,sizeof(vm_error_str));
-			memset(vm_error_file, 0, sizeof(vm_error_file));
 			vm_error_line=-1;
 			vm_error_max_stack_reached=false;
 
@@ -153,79 +141,158 @@ namespace zetscript{
 	// PROTOTIPES
 	//
 
-	inline void vm_inner_call_internal(
+	void vm_inner_call(
 			VirtualMachine 	*vm
 			,ScriptFunction	* calling_function
 			,Instruction	* instruction
 			,ScriptObject 	*script_object
 			,ScriptFunction *script_function
 			,int _n_args
+	);
 
-	){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		StackElement *stk_def_afun_start=data->stk_vm_current;
-		int n_returned_args_afun=0;
-		if((script_function)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
-			vm_execute_function_native(
-					vm
-					,calling_function
-					,instruction
-					,script_object
-					,script_function
-					,stk_def_afun_start
-					,_n_args
-			);
-		}else{
-			vm_execute_function_script(
-				vm
-				,script_object
-				,script_function
-				,stk_def_afun_start
-			);
-		}
-		if(data->vm_error == true){
-
-			sprintf(VM_STR_AUX_PARAM_0\
-				,"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */ \
-				, "iter" \
-				,SFI_GET_FILE(calling_function,instruction) \
-				,SFI_GET_LINE(calling_function,instruction) \
-			);\
-			strcat(data->vm_error_callstack_str,VM_STR_AUX_PARAM_0);\
-			return;
-			/*if(goto_on_error){
-				goto lbl_exit_function;
-			}*/
-		}
-		n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
-		/* we share pointer (true second arg) to not remove on pop in calling return */
-		CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,false)
-
-		/* reset stack */
-		data->stk_vm_current=stk_def_afun_start;
-
-	lbl_exit_function:
-
-		return;
-
-	}
-
-	void vm_execute_function_script(
-				VirtualMachine			* vm,
-				ScriptObject			* this_object,
-				ScriptFunction 			* calling_function,
-				StackElement 		  	* _stk_local_var
+	StackElement *vm_load_this_element(
+		VirtualMachine			* vm
+		,ScriptObject			* this_object
+		,ScriptFunction 		* calling_function
+		,Instruction			*instruction
+		,short idx
 	);
 
 	void  vm_execute_function_native(
-		VirtualMachine *vm,
-		const ScriptFunction *calling_function,
-		Instruction *instruction,
-		ScriptObject  * this_object,
-		const ScriptFunction *c_function,
-		StackElement *stk_arg_c_function=NULL,
-		unsigned char n_args=0
+			VirtualMachine *vm,
+			const ScriptFunction *calling_function,
+			Instruction *instruction,
+			ScriptObject  * this_object,
+			const ScriptFunction *c_function,
+			StackElement *stk_arg_c_function,
+			unsigned char _n_args
 	);
+
+	void vm_execute_function_script(
+			VirtualMachine			* vm,
+			ScriptObject			* this_object,
+			ScriptFunction 			* calling_function,
+			StackElement 		  	* _stk_local_var
+	);
+
+
+	ScriptFunction * vm_find_native_function(
+			VirtualMachine *vm
+			,ScriptType *class_obj // if NULL is MainClass
+			,ScriptFunction *calling_function
+			,Instruction * instruction // call instruction
+			,bool is_constructor
+			,const char * symbol_to_find
+			,StackElement *stk_arg
+			,unsigned char n_args
+	);
+
+
+	bool vm_call_metamethod(
+		VirtualMachine *vm
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+		,ByteCodeMetamethod byte_code_metamethod
+		,StackElement *stk_result_op1
+		,StackElement *stk_result_op2
+		, bool is_static=true
+		, bool is_je_case=false
+
+	);
+
+	void vm_iterator_init(VirtualMachine *vm
+			 ,ScriptFunction *calling_function
+			,Instruction *instruction
+			,StackElement *stk_result_op1
+			,StackElement *stk_result_op2
+	);
+
+	bool vm_perform_in_operator(
+			VirtualMachine *vm
+			 ,ScriptFunction *calling_function
+			,Instruction *instruction
+			, StackElement *stk_result_op1
+			, StackElement *stk_result_op2
+	);
+
+	bool vm_store(
+			VirtualMachine *vm
+			,ScriptFunction *calling_function
+			,Instruction *instruction
+	);
+
+	bool vm_call_operation_store_metamethod(
+		VirtualMachine *vm
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+		,StackElement *stk_result_op1
+		,StackElement *stk_result_op2
+		, ByteCodeMetamethod byte_code_metamethod
+	);
+
+	bool vm_call(
+		VirtualMachine *vm
+		,ScriptObject *this_object
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+		,StackElement *_stk_local_var
+	);
+
+	bool vm_load_field(
+		VirtualMachine *vm
+		,ScriptObject *this_object
+		,ScriptFunction *calling_function
+		,Instruction **instruction_it
+	);
+
+
+	void vm_throw_error_cannot_find_symbol(
+		VirtualMachine *vm
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+	);
+
+
+	bool vm_string_compare(
+		VirtualMachine *vm
+		, StackElement *_stk1
+		, StackElement *_stk2
+		, ByteCodeMetamethod _byte_code_metamethod
+	);
+
+	/*void vm_error_bool_expression(
+			VirtualMachine *vm
+			,ScriptFunction *calling_function
+			,Instruction *instruction
+			, StackElement *_stk
+	);
+
+	void vm_error_bool_expression(
+			VirtualMachine *vm
+			,ScriptFunction *calling_function
+			,Instruction *instruction
+			, StackElement *_stk
+			,ByteCodeMetamethod _byte_code_metamethod
+	);
+
+	void vm_error_load_properties(
+			VirtualMachine *vm
+			,ScriptFunction *calling_function
+			,Instruction *instruction
+			, StackElement *_stk
+			,ByteCodeMetamethod _byte_code_metamethod
+	);
+
+	 void vm_error_metamethod_not_found(
+		VirtualMachine *vm
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+		, StackElement *_stk
+		,MemberProperty *member_property
+		, ByteCodeMetamethod _byte_code_metamethod
+	);*/
+
+	//-----------------------------------------
 
 	inline bool  vm_insert_shared_node(VirtualMachine *vm, InfoSharedList * list, InfoSharedPointerNode *_node){
 		if(_node->next != NULL || _node->previous!=NULL) {

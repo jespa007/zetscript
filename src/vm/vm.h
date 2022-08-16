@@ -13,7 +13,6 @@
 
 #define VM_STACK_MAX					150
 #define VM_FUNCTION_CALL_MAX 			100
-//#define VM_VARIABLE_SHARES_MAX 			10000
 
 #define VM_PROPERTY_CALL_FROM_NATIVE	0x1
 
@@ -26,34 +25,47 @@
 
 #define VM_EXECUTE(vm,o,f,stk,n)		vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
 
-#define VM_ERROR(_s_in,...)	\
-	data->vm_error=true;\
-	strcpy(data->vm_error_file,SFI_GET_FILE(calling_function,instruction));\
-	data->vm_error_line=SFI_GET_LINE(calling_function,instruction);\
-	zs_strutils::sprintf(data->vm_error_str,_s_in, __VA_ARGS__);
+#define VM_ERROR(_str_error,...)	\
+	vm_set_file_line_error(\
+		vm \
+		,SFI_GET_FILE(calling_function,instruction)\
+		,SFI_GET_LINE(calling_function,instruction)\
+		,_str_error\
+		, __VA_ARGS__\
+	);
 
-#define VM_ERRORF(_s_in)					VM_ERROR(_s_in,NULL)
+#define VM_ERRORF(_str_error)					VM_ERROR(_str_error,NULL)
 
-#define VM_ERROR_AND_RET(_str_in,...)	\
-	data->vm_error=true;\
-	strcpy(data->vm_error_file,SFI_GET_FILE(calling_function,instruction));\
-	data->vm_error_line=SFI_GET_LINE(calling_function,instruction);\
-	zs_strutils::sprintf(data->vm_error_str,_str_in, __VA_ARGS__);\
+#define VM_ERROR_AND_RET(_str_error,...)	\
+	vm_set_file_line_error(\
+		vm \
+		,SFI_GET_FILE(calling_function,instruction)\
+		,SFI_GET_LINE(calling_function,instruction)\
+		,_str_error\
+		, __VA_ARGS__\
+	);\
 	return;
 
-#define VM_ERROR_AND_RETF(s)			VM_ERROR_AND_RET(s,NULL)
+#define VM_ERROR_AND_RETF(_str_error)			VM_ERROR_AND_RET(_str_error,NULL)
 
-#define VM_STOP_EXECUTE(_str_in,...)	\
-	data->vm_error=true;\
-	strcpy(data->vm_error_file,SFI_GET_FILE(calling_function,instruction));\
-	data->vm_error_line=SFI_GET_LINE(calling_function,instruction);\
-	zs_strutils::sprintf(data->vm_error_str,_str_in, ##__VA_ARGS__);\
+#define VM_STOP_EXECUTE(_str_error,...)	\
+	vm_set_file_line_error(\
+		vm \
+		,SFI_GET_FILE(calling_function,instruction)\
+		,SFI_GET_LINE(calling_function,instruction)\
+		,_str_error\
+		, __VA_ARGS__\
+	);\
 	goto lbl_exit_function;
 
-#define VM_STOP_EXECUTEF(_str_in)		VM_STOP_EXECUTE(_str_in,NULL)
+#define VM_STOP_EXECUTEF(_str_error) \
+	VM_STOP_EXECUTE(_str_error,NULL)
 
-#define VM_SET_USER_ERROR(vm,s,...)		vm_set_error_file_line(vm,__FILE__,__LINE__, s, __VA_ARGS__)
-#define VM_SET_USER_ERRORF(vm,s)		VM_SET_USER_ERROR(vm,s,NULL)
+#define VM_SET_USER_ERROR(vm,_str_error,...)	\
+	vm_set_file_line_error(vm,__FILE__,__LINE__, _str_error, __VA_ARGS__)
+
+#define VM_SET_USER_ERRORF(vm,_str_error) \
+	VM_SET_USER_ERROR(vm,_str_error,NULL)
 
 #define IDX_VM_CURRENT_SCOPE_FUNCTION 	(data->vm_current_scope_function-data->vm_scope_function)
 #define VM_SCOPE_FUNCTION_MAIN 			(data->vm_scope_function+0)
@@ -63,7 +75,7 @@
 
 #define VM_STR_AUX_PARAM_0				(data->vm_str_aux[0])
 #define VM_STR_AUX_PARAM_1				(data->vm_str_aux[1])
-#define VM_STR_AUX_PARAM_2				(data->vm_str_aux[2])
+
 
 namespace zetscript{
 
@@ -88,8 +100,8 @@ namespace zetscript{
 	//int				vm_get_idx_call(VirtualMachine *vm);
 	VM_ScopeBlock  *vm_get_scope_block_main(VirtualMachine *vm);
 
-	void 			vm_set_error(VirtualMachine *vm,const zs_string & str);
-	void 			vm_set_error_file_line(VirtualMachine *vm, const char *file, int line, const char *in_txt,...);
+	void 			vm_set_error(VirtualMachine *vm, const char *_str_error,...);
+	void 			vm_set_file_line_error(VirtualMachine *vm, const char *file, int line, const char *in_txt,...);
 	zs_string 		vm_get_error(VirtualMachine *vm);
 	
 	bool 			vm_it_has_error(VirtualMachine *vm);
@@ -111,100 +123,13 @@ namespace zetscript{
 		,int 				_line=-1
 	);
 
-	void  vm_execute_function_native(
-			VirtualMachine *vm,
-			const ScriptFunction *calling_function,
-			Instruction *instruction,
-			ScriptObject  * this_object,
-			const ScriptFunction *c_function,
-			StackElement *stk_arg_c_function,
-			unsigned char _n_args
-	);
-
 	void vm_execute_function_script(
-				VirtualMachine			* vm,
-				ScriptObject			* this_object,
-				ScriptFunction 			* calling_function,
-				StackElement 		  	* _stk_local_var
-		    );
-
-
-	ScriptFunction * vm_find_native_function(
-			VirtualMachine *vm
-			,ScriptType *class_obj // if NULL is MainClass
-			,ScriptFunction *calling_function
-			,Instruction * instruction // call instruction
-			,bool is_constructor
-			,const char * symbol_to_find
-			,StackElement *stk_arg
-			,unsigned char n_args
+			VirtualMachine			* vm,
+			ScriptObject			* this_object,
+			ScriptFunction 			* calling_function,
+			StackElement 		  	* _stk_local_var
 	);
 
-
-	bool vm_call_metamethod(
-		VirtualMachine *vm
-		,ScriptFunction *calling_function
-		,Instruction *instruction
-		,ByteCodeMetamethod byte_code_metamethod
-		,StackElement *stk_result_op1
-		,StackElement *stk_result_op2
-		, bool is_static=true
-		, bool is_je_case=false
-
-	);
-
-	void vm_iterator_init(VirtualMachine *vm
-			 ,ScriptFunction *calling_function
-			,Instruction *instruction
-			,StackElement *stk_result_op1
-			,StackElement *stk_result_op2
-	);
-
-	bool vm_perform_in_operator(
-			VirtualMachine *vm
-			 ,ScriptFunction *calling_function
-			,Instruction *instruction
-			, StackElement *stk_result_op1
-			, StackElement *stk_result_op2
-	);
-
-
-	bool vm_store(
-			VirtualMachine *vm
-			,ScriptFunction *calling_function
-			,Instruction *instruction
-	);
-
-	bool vm_operation_store(
-		VirtualMachine *vm
-		,ScriptFunction *calling_function
-		,Instruction *instruction
-		,StackElement *stk_result_op1
-		,StackElement *stk_result_op2
-		, ByteCodeMetamethod byte_code_metamethod
-	);
-
-	bool vm_call(
-		VirtualMachine *vm
-		,ScriptObject *this_object
-		,ScriptFunction *calling_function
-		,Instruction *instruction
-		,StackElement *_stk_local_var
-	);
-
-	bool vm_load_field(
-		VirtualMachine *vm
-		,ScriptObject *this_object
-		,ScriptFunction *calling_function
-		,Instruction **instruction_it
-	);
-
-
-	void vm_throw_error_cannot_find_symbol(
-		VirtualMachine *vm
-		,ScriptFunction *calling_function
-		,Instruction *instruction
-	);
 
 	void vm_delete(VirtualMachine *vm);
 }

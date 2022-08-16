@@ -30,16 +30,15 @@ if(stk_src_properties == STK_PROPERTY_UNDEFINED){\
 	*stk_dst=*stk_src;\
 }else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){\
 	if(STK_IS_SCRIPT_OBJECT_STRING(stk_src)){\
-		ScriptObjectString *str_object=NULL;\
-		stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));\
+		stk_dst->value=(zs_int)(so_aux= ZS_NEW_OBJECT_STRING(data->zs));\
 		stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
-		if(!vm_create_shared_script_object(vm,str_object)){\
+		if(!vm_create_shared_script_object(vm,so_aux)){\
 			goto lbl_exit_function;\
 		}\
-		if(!vm_share_script_object(vm,str_object)){\
+		if(!vm_share_script_object(vm,so_aux)){\
 			goto lbl_exit_function;\
 		}\
-		str_object->set(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_src));\
+		((ScriptObjectString *)so_aux)->set(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_src));\
 	}else{ \
 		so_aux=(ScriptObject *)stk_src->value;\
 		stk_dst->value=(intptr_t)so_aux;\

@@ -347,7 +347,7 @@ namespace zetscript{
 		char * deserialize_object(JsonDeserializeData *data, const char * str_start, int & line,StackElement *stk_json_element) {
 			char *str_current = (char *)str_start;
 			zs_string variable_name,key_id;
-			char str_aux[512]={0};
+			zs_string error;
 			ScriptObjectObject *so;
 			StackElement *stk_element=NULL;
 
@@ -358,7 +358,7 @@ namespace zetscript{
 						, str_start
 						, line
 						, "A '{' was expected to parse %s type"
-						,stk_json_element!=NULL?stk_to_typeof_str(str_aux,data->zs,stk_json_element):"");
+						,stk_json_element!=NULL?stk_to_typeof_str(data->zs,stk_json_element).c_str():"");
 				return NULL;
 			}
 
@@ -402,8 +402,8 @@ namespace zetscript{
 					str_current = eval_ignore_blanks(str_current + 1, line);
 
 					// create property... //get c property
-					if((stk_element=so->addProperty(key_id.c_str(),str_aux)) == NULL){
-						json_deserialize_error(data, str_current, line, str_aux);
+					if((stk_element=so->addProperty(key_id.c_str(),error)) == NULL){
+						json_deserialize_error(data, str_current, line, error.c_str());
 						return NULL;
 					}
 

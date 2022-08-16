@@ -2,6 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
+#include 	"zs_system.cpp"
 #include	"zs_file.cpp"
 #include 	"zs_buffer.cpp"
 #include 	"zs_log.cpp"

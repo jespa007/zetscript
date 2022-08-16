@@ -38,9 +38,8 @@ namespace zetscript{
 	}
 
 	zs_string ScriptObjectVarRef::toString(){
-		char str_aux[512];
 
-		return stk_to_str(str_aux,zs,&stk_var_ref);
+		return stk_to_str(zs,&stk_var_ref);
 	}
 
 }

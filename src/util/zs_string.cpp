@@ -24,13 +24,16 @@ namespace zetscript{
 
 	void zs_string::set(const char * _buffer){
 
-		if(_buffer==NULL){return;} // do not create string from NULL pointers
+		const char *buffer=_buffer;
+		if(buffer==NULL){
+			buffer="";
+		} // do not create string from NULL pointers
 
 		__cleanup__(); // cleanup any existing data
-		count = (int)strlen(_buffer);
+		count = (int)strlen(buffer);
 		_size=count+ZS_STRING_EXPAND_CHAR_ELEMENTS;
 		this->buf = (char *)ZS_MALLOC(sizeof(char) * _size+1); // + 1 for the keeping the null character
-		strcpy(buf, _buffer); // copy from the incoming buffer to character buffer of the new object
+		strcpy(buf, buffer); // copy from the incoming buffer to character buffer of the new object
 	}
 
 
@@ -60,9 +63,38 @@ namespace zetscript{
 		set(obj);
 	}
 
-	zs_string& zs_string::operator=(const zs_string & obj) // copy assignment
+	zs_string::zs_string(zs_string && _str_tmp) // move constructor
+	// && is a reference operator defined in the C++11 standard
+	// which means "dyingObj" is an r-value reference.
+	// Compiler calls this constructor when the object passed in the argument
+	// is about to die due to scope end or such
 	{
-		set(obj);
+		// Copy data from the incoming object
+		_size = _str_tmp._size;
+		count = _str_tmp.count;
+
+		// Transfer ownership of underlying char buffer from incoming object to this object
+		buf = _str_tmp.buf;
+		_str_tmp.buf = nullptr;
+	}
+
+	zs_string& zs_string::operator=(const zs_string & _str) {
+		set(_str);
+		return *this;
+	}
+
+	zs_string& zs_string::operator=(zs_string && _str_tmp){ // move assignment
+
+		__cleanup__(); // cleanup any existing data
+
+		// Copy data from the incoming object
+		_size = _str_tmp._size;
+		count = _str_tmp.count;
+
+		// Transfer ownership of underlying char buffer from incoming object to this object
+		buf = _str_tmp.buf;
+		_str_tmp.buf = nullptr;
+
 		return *this;
 	}
 

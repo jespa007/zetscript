@@ -8,7 +8,7 @@ namespace zetscript{
 
 	extern const StackElement k_stk_undefined={0,STK_PROPERTY_UNDEFINED};
 
-	const char *stk_to_typeof_str(char *_str_out,ZetScript *_zs, StackElement *_stk){
+	zs_string stk_to_typeof_str(ZetScript *_zs, StackElement *_stk){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		StackElement *stk=_stk;
 		zs_string result="unknow";
@@ -55,12 +55,18 @@ namespace zetscript{
 			}
 		}
 
+		return result;
+	}
 
-		strcpy(_str_out,result.c_str());
+	const char *stk_to_typeof_str(char *_str_out,ZetScript *_zs, StackElement *_stk){
+		auto str=stk_to_str(_zs,_stk);
+
+		strcpy(_str_out,str.c_str());
+
 		return _str_out;
 	}
 
-	const char *stk_to_str(char *_str_out,ZetScript *_zs, StackElement *_stk, const char  *_format ){
+	zs_string stk_to_str(ZetScript *_zs, StackElement *_stk, const zs_string  & _format ){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		zs_string result="unknown";
 		bool is_constant=false;
@@ -101,13 +107,6 @@ namespace zetscript{
 				}
 				result=s+st->str_script_type+"::"+symbol->name+">";
 			}
-
-			/*if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
-				ScriptFunction *sf=(ScriptFunction *)stk->value;
-				result= zs_string("function@")+"UnknowClass(TODO)"+"::"+sf->name_script_function;
-			}else{ // normal function
-				result= zs_string("function@")+((Symbol *)stk->value)->name;
-			}*/
 		}else if(STK_VALUE_IS_TYPE(&stk)){
 			result= zs_string("type")+"@"+_zs->getScriptTypeFactory()->getScriptTypeName(stk.value);
 		}else{
@@ -118,16 +117,20 @@ namespace zetscript{
 					ScriptType *st=somf->ref_object->getRefObject()->getScriptType();
 					result= zs_string("member_function<")+st->str_script_type+"::"+somf->so_function->name_script_function+">";
 				}else{
-					// PROCECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
+					// PROTECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
 					result="Object::"+zs_string(so->getTypeName());
 				}
 			}
 		}
+		return result;
+	}
 
-		strcpy(_str_out,result.c_str());
+	const char		*stk_to_str(char *_str_out, ZetScript *_zs, StackElement *_stk,const zs_string & _format){
+		auto str=stk_to_str(_zs,_stk,_format);
+
+		strcpy(_str_out,str.c_str());
 
 		return _str_out;
-
 	}
 
 	void			stk_assign(ZetScript *_zs,StackElement *_stk_dst, StackElement *_stk_src){
@@ -159,14 +162,10 @@ namespace zetscript{
 		}
 	}
 
-	bool stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, char *_error){
+	bool stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, zs_string  & _error){
 		zs_int val_ret=0;
-		char str_aux[512]={0};
-		//ScriptObjectString *so=NULL;
 
 		ScriptObject *script_object=NULL;
-		//StackElement stack_element=_stack_element;
-		//StackElement *_stack_element=&stack_element;
 
 		// save return type ...
 		if(_stack_element->properties & STK_PROPERTY_PTR_STK){
@@ -187,11 +186,11 @@ namespace zetscript{
 			}else if(_idx_builtin_type == IDX_TYPE_BOOL_PTR_C){//*ScriptType::k_str_bool_type_ptr){
 				val_ret=(zs_int)(&_stack_element->value);
 			}else{
-				strcpy(_error,"cannot convert '");
-				strcat(_error,zs_rtti::demangle(k_str_bool_type_ptr).c_str());
-				strcat(_error,"' to '");
-				strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
-				strcat(_error,"'");
+				_error="cannot convert '"
+					+zs_rtti::demangle(k_str_bool_type_ptr)
+					+"' to '"
+					+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str()
+					+"'";
 				return false;
 			}
 
@@ -212,11 +211,11 @@ namespace zetscript{
 				}
 				break;
 			default:
-				strcpy(_error,"cannot convert '");
-				strcat(_error,zs_rtti::demangle(k_str_zs_float_type_ptr).c_str());
-				strcat(_error,"' to '");
-				strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
-				strcat(_error,"'");
+				_error="cannot convert '"
+					+zs_rtti::demangle(k_str_zs_float_type_ptr)
+					+"' to '"
+					+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type))
+					+"'";
 				return false;
 			}
 			break;
@@ -237,9 +236,9 @@ namespace zetscript{
 				//stack_element->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_IS_C_VAR_PTR;
 				break;*/
 			default:
-				strcpy(_error,"cannot convert 'int' to '");
-				strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
-				strcat(_error,"'");
+				_error="cannot convert 'int' to '"
+				+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type))
+				+"'";
 				return false;
 			}
 			break;
@@ -255,7 +254,7 @@ namespace zetscript{
 				val_ret=(zs_int)script_object;
 
 				if(script_object==NULL){
-					strcpy(_error,"Variable is not defined");
+					_error="Variable is not defined";
 					return false;
 				}
 
@@ -263,7 +262,7 @@ namespace zetscript{
 
 					if(script_object->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING){ // string
 						if(_stack_element->value == 0){ // if not created try to create a tmp scriptvar it will be removed...
-							strcpy(_error, "internal error var_ref is NULL");
+							_error="internal error var_ref is NULL";
 							return false;
 						}
 
@@ -272,11 +271,11 @@ namespace zetscript{
 						}else if (_idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
 							val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());
 						}else{
-							strcpy(_error,"cannot convert '");
-							strcat(_error,zs_rtti::demangle((k_str_zs_string_type_ptr)).c_str());
-							strcat(_error,"' to '");
-							strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
-							strcat(_error,"'");
+							_error="cannot convert '"
+									+zs_rtti::demangle((k_str_zs_string_type_ptr))
+									+"' to '"
+									+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type))
+									+"'";
 							return false;
 						}
 					}else if(script_object->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
@@ -288,11 +287,11 @@ namespace zetscript{
 									_idx_builtin_type
 								))==0
 							){//c_class->idx_script_type==idx_builtin_type){
-								strcpy(_error,"cannot convert '");
-								strcat(_error,zs_rtti::demangle(c_class->str_script_type_ptr).c_str());
-								strcat(_error,"' to '");
-								strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
-								strcat(_error,"'");
+								_error="cannot convert '"
+										+zs_rtti::demangle(c_class->str_script_type_ptr)
+										+"' to '"
+										+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type))
+										+"'";
 								return false;
 							}
 							val_ret=(zs_int)script_object_class->getNativeObject();
@@ -304,21 +303,20 @@ namespace zetscript{
 							return false;*/
 						}
 					}else{ // cannot convert...
-						strcpy(_error,"cannot convert '");
-						strcat(_error,zs_rtti::demangle(script_object->getTypeName()).c_str());
-						strcat(_error,"' to '");
-						strcat(_error,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str());
-						strcat(_error,"'");
+						_error="cannot convert '"
+							+zs_rtti::demangle(script_object->getTypeName())
+							+"' to '"
+							+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type))
+							+"'";
 						return false;
 					}
 				}else{ // get native object...
 					val_ret=(zs_int)script_object->getNativeObject();
 				}
 			}else{
-				sprintf(_error,
-					"Cannot know how to convert type '%s' from '%s'"
+				_error=zs_strutils::format("Cannot know how to convert type '%s' from '%s'"
 					,zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type)).c_str()
-					,stk_to_typeof_str(str_aux,_zs,_stack_element)
+					,stk_to_typeof_str(_zs,_stack_element).c_str()
 				);
 				return false;
 			}

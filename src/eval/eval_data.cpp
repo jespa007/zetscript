@@ -7,53 +7,60 @@
 
 #define RESULT_LITERAL_VALUE 							(number_part[0]+number_part[1]+number_part[2]).c_str()
 
-#define EVAL_ERROR_FILE_LINE(_file,_line,_s_in,...)		eval_data->error=true;\
-														strcpy(eval_data->error_file,_file);\
-														eval_data->error_line=_line;\
-														PRAGMA_PUSH\
-														PRAGMA_DISABLE_WARNING(4474)\
-														sprintf((eval_data->str_error),(_s_in), __VA_ARGS__);\
-														PRAGMA_POP\
-														return 0;
-
-#define EVAL_ERROR_FILE_LINEF(_file,_line,_s_in)		EVAL_ERROR_FILE_LINE(_file,_line,_s_in,NULL)
+#define EVAL_ERROR_FILE_LINE(_file,_line,_str_error,...) \
+	eval_data->error=true;\
+	eval_data->error_file=_file;\
+	eval_data->error_line=_line;\
+	eval_data->str_error=zs_strutils::format(_str_error, __VA_ARGS__);\
+	return 0;
 
 
-#define EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(file,line,my_goto,s,...)	eval_data->error=true;\
-													strcpy(eval_data->error_file,file);\
-													eval_data->error_line=line;\
-													sprintf(eval_data->str_error,s, __VA_ARGS__);\
-													goto my_goto;
-
-#define EVAL_ERROR_FILE_LINE_GOTO_NO_AUXF(file,line,my_goto,s)		EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(file,line,my_goto,s,NULL)
+#define EVAL_ERROR_FILE_LINEF(_file,_line,_str_error_in) \
+		EVAL_ERROR_FILE_LINE(_file,_line,_str_error_in,NULL)
 
 
-#define EVAL_ERROR(s,...)						eval_data->error=true;\
-												sprintf(eval_data->str_error,s, __VA_ARGS__);\
-												return 0;
-#define EVAL_ERRORF(file,line,s)				EVAL_ERROR(s,NULL)
+#define EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(file,line,my_goto,_str_error,...)	\
+		eval_data->error=true;\
+		eval_data->error_file=file;\
+		eval_data->error_line=line;\
+		eval_data->str_error=zs_strutils::format(_str_error, __VA_ARGS__);\
+		goto my_goto;
+
+#define EVAL_ERROR_FILE_LINE_GOTO_NO_AUXF(file,line,my_goto,_str_error)	\
+		EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(file,line,my_goto,_str_error,NULL)
+
+
+#define EVAL_ERROR(_str_error,...) \
+	eval_data->error=true;\
+	eval_data->str_error=zs_strutils::format(_str_error, __VA_ARGS__);\
+	return 0;
+
+#define EVAL_ERRORF(file,line,_str_error) \
+	EVAL_ERROR(_str_error,NULL)
 
 
 
 
 
-#define EVAL_ERROR_FILE_LINE_GOTO(_file,_line,_my_goto,_s_in,...)	eval_data->error=true;\
-																	aux_p=NULL;\
-																	strcpy(eval_data->error_file,_file);\
-																	eval_data->error_line=_line;\
-																	PRAGMA_PUSH\
-																	PRAGMA_DISABLE_WARNING(4474)\
-																	sprintf(eval_data->str_error,(_s_in), ##__VA_ARGS__);\
-																	PRAGMA_POP\
-																	goto _my_goto;
+#define EVAL_ERROR_FILE_LINE_GOTO(_file,_line,_my_goto,_str_error,...) \
+	eval_data->error=true;\
+	aux_p=NULL;\
+	eval_data->error_file=_file;\
+	eval_data->error_line=_line;\
+	eval_data->str_error=zs_strutils::format(_str_error, ##__VA_ARGS__);\
+	goto _my_goto;
 
-#define EVAL_ERROR_FILE_LINE_GOTOF(_file,_line,_my_goto,_s_in)		EVAL_ERROR_FILE_LINE_GOTO(_file,_line,_my_goto,_s_in,NULL);
+#define EVAL_ERROR_FILE_LINE_GOTOF(_file,_line,_my_goto,_str_error)	\
+	EVAL_ERROR_FILE_LINE_GOTO(_file,_line,_my_goto,_str_error,NULL);
 
-#define EVAL_ERROR_BYTE_CODE(s,...)							eval_data->error=true;\
-															aux_p=NULL;\
-															sprintf(eval_data->str_error,s, __VA_ARGS__);\
-															goto eval_error_byte_code;
-#define EVAL_ERROR_BYTE_CODEF(s)							EVAL_ERROR_BYTE_CODE(s,NULL)
+#define EVAL_ERROR_BYTE_CODE(_str_error,...)	\
+	eval_data->error=true;\
+	aux_p=NULL;\
+	eval_data->str_error=zs_strutils::format(_str_error, __VA_ARGS__);\
+	goto eval_error_byte_code;
+
+#define EVAL_ERROR_BYTE_CODEF(_str_error) \
+	EVAL_ERROR_BYTE_CODE(_str_error,NULL)
 
 
 #define IS_OPERATOR_TYPE_ASSIGN_WITH_OPERATION(c) (Operator::OPERATOR_ASSIGN_ADD<=(c) && (c)<=Operator::OPERATOR_ASSIGN_SHIFT_RIGHT)
@@ -267,9 +274,8 @@ namespace zetscript{
 
 		const char *					 		current_parsing_file;
 		bool							  		error;
-		char									str_error[4096];
-		char									str_aux_error[512];
-		char									error_file[256];
+		zs_string								str_error;
+		zs_string								error_file;
 		int 									error_line;
 
 		EvalData(ZetScript * _zs){
@@ -280,9 +286,7 @@ namespace zetscript{
 			this->scope_factory=zs->getScopeFactory();
 			this->script_type_factory=zs->getScriptTypeFactory();
 			error=false;
-			memset(str_error,0,sizeof(str_error));
 			parsing_loop=0;
-			memset(error_file,0,sizeof(error_file));
 			error_line=-1;
 		}
 	};

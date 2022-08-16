@@ -20,7 +20,7 @@ namespace zetscript{
 
 	ScriptFunctionParam::ScriptFunctionParam(const zs_string & _name){
 		idx_script_type=ZS_IDX_UNDEFINED;
-		name=zs_strutils::clone_to_char_ptr(_name);
+		name=_name;
 		line=ZS_IDX_UNDEFINED;
 		properties=0;
 		default_param_value=k_stk_undefined;
@@ -28,7 +28,7 @@ namespace zetscript{
 
 	ScriptFunctionParam::ScriptFunctionParam(int _idx_script_type, const zs_string & _name){
 		idx_script_type=_idx_script_type;
-		name=zs_strutils::clone_to_char_ptr(_name);
+		name=_name;
 		line=ZS_IDX_UNDEFINED;
 		properties=0;
 		default_param_value=k_stk_undefined;

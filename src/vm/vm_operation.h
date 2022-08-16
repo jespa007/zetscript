@@ -115,24 +115,24 @@
 					&&\
 				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
 		){\
-				ScriptObjectVector *so_vector=ScriptObjectVector::newScriptObjectVectorAdd(\
+				so_aux=ScriptObjectVector::newScriptObjectVectorAdd(\
 						data->zs\
 						,(ScriptObjectVector *)stk_result_op1->value\
 						,(ScriptObjectVector *)stk_result_op2->value\
 				);\
-				vm_create_shared_script_object(vm,so_vector);\
-				VM_PUSH_STK_SCRIPT_OBJECT(so_vector);\
+				vm_create_shared_script_object(vm,so_aux);\
+				VM_PUSH_STK_SCRIPT_OBJECT(so_aux);\
 		}else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
 					&&\
 				STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
 		){\
-				ScriptObjectObject *so_object=ScriptObjectObject::concat(\
+				so_aux=ScriptObjectObject::concat(\
 						data->zs\
 						,(ScriptObjectObject *)stk_result_op1->value\
 						,(ScriptObjectObject *)stk_result_op2->value\
 				);\
-				vm_create_shared_script_object(vm,so_object);\
-				VM_PUSH_STK_SCRIPT_OBJECT(so_object);\
+				vm_create_shared_script_object(vm,so_aux);\
+				VM_PUSH_STK_SCRIPT_OBJECT(so_aux);\
 		}else{\
 			if(vm_call_metamethod(\
 					vm\
@@ -210,11 +210,7 @@
 				VM_PUSH_STK_BOOLEAN(false);\
 			}\
 		}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
-			VM_PUSH_STK_BOOLEAN(ZS_STRCMP(\
-					stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op1)\
-					, __C_OP__ \
-					,stk_to_str(VM_STR_AUX_PARAM_1,data->zs,stk_result_op2))\
-				);\
+			VM_PUSH_STK_BOOLEAN(vm_string_compare(vm,stk_result_op1,stk_result_op2,__BYTE_CODE_METAMETHOD_OPERATION__));\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_UNDEFINED || stk_result_op2->properties==STK_PROPERTY_UNDEFINED)\
 				&& (__BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_EQU || __BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
 				){\
@@ -339,7 +335,7 @@
 				so_aux\
 				,(ScriptFunction *)ptr_metamethod_members_aux->neg->ref_ptr\
 				,0\
-				,ptr_metamethod_members_aux->neg->name.c_str()\
+				,ptr_metamethod_members_aux->neg->name\
 		);\
 		data->stk_vm_current++; /* store negated value to stk to load after */\
 		/* call inc metamethod */\
@@ -350,7 +346,7 @@
 				so_aux\
 				,(ScriptFunction *)__POST_OPERATION_VARIABLE__->ref_ptr\
 				,0\
-				,__POST_OPERATION_VARIABLE__->name.c_str()\
+				,__POST_OPERATION_VARIABLE__->name\
 		);\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
@@ -382,7 +378,7 @@
 					so_aux\
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					, 0 \
-					,ptr_metamethod_members_aux->getter->name.c_str()\
+					,ptr_metamethod_members_aux->getter->name\
 			);\
 		}else{ /* store object */ \
 			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
@@ -401,7 +397,7 @@
 				so_aux\
 				,(ScriptFunction *)__POST_OPERATION_VARIABLE__->ref_ptr\
 				, 0 \
-				,__POST_OPERATION_VARIABLE__->name.c_str()\
+				,__POST_OPERATION_VARIABLE__->name\
 		);\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
@@ -434,7 +430,7 @@
 				so_aux\
 				,(ScriptFunction *)__PRE_OPERATION_VARIABLE__->ref_ptr\
 				,0 \
-				,__PRE_OPERATION_VARIABLE__->name.c_str()\
+				,__PRE_OPERATION_VARIABLE__->name\
 		);\
 		/*getter after*/\
 		if(ptr_metamethod_members_aux->getter!=NULL){\
@@ -443,7 +439,7 @@
 					so_aux\
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,0 \
-					,ptr_metamethod_members_aux->getter->name.c_str()\
+					,ptr_metamethod_members_aux->getter->name\
 			);\
 		}else{ /* store object */ \
 			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\

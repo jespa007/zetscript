@@ -63,7 +63,7 @@ namespace zetscript{
 		if(aux_p!=NULL){
 			if(*aux_p=='}'){
 				eval_data->error=true;
-				zs_strutils::format_file_line(eval_data->str_error,_filename,line,"unexpected ending block ('}')");
+				eval_data->str_error=zs_strutils::format_file_line(_filename,line,"unexpected ending block ('}')");
 			}
 		}
 
@@ -172,7 +172,7 @@ namespace zetscript{
 
 					}catch(std::exception & ex){
 						eval_data->error=true;
-						strcpy(eval_data->str_error,ex.what());
+						eval_data->str_error=ex.what();
 						return NULL;
 					}
 				}
@@ -286,9 +286,15 @@ namespace zetscript{
 							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE,eval_data);
 						}catch(zs_exception & ex){
 							eval_data->error=true;\
-							sprintf(eval_data->str_error,"%s\n",ex.getErrorDescription());
-							sprintf(eval_data->str_aux_error,"[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
-							strcat(eval_data->str_error,eval_data->str_aux_error);//+=zetscript::zs_strutils::format("[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
+							eval_data->str_error=zs_strutils::format(
+									"%s \n"
+									"[%s:%i] from import '%s'"
+									,ex.getErrorDescription()
+									,zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str()
+							);
+							//sprintf(eval_data->str_error,"%s\n",ex.getErrorDescription());
+							//sprintf(eval_data->str_aux_error,"[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
+							//strcat(eval_data->str_error,eval_data->str_aux_error);//+=zetscript::zs_strutils::format("[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
 							return 0;
 						}
 

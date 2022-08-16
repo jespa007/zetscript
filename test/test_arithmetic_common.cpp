@@ -39,10 +39,12 @@ void test_arithmetic_int_expression(zetscript::ZetScript *_zs, zetscript::zs_int
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %i but it was %i!\n",str_expr,(int)expr,int(((zetscript::zs_int)stk.value))).c_str()); \
 			} \
 		}else{\
-			char aux[100];
 			throw std::runtime_error(
-					zetscript::zs_strutils::format("error test '%s' expected int but it was '%s'!\n"
-						,str_expr,stk_to_str(aux,_zs,&stk)).c_str()); \
+					zetscript::zs_strutils::format(
+						"error test '%s' expected int but it was '%s'!\n"
+						,str_expr
+						,stk_to_str(_zs,&stk)).c_str()
+					); \
 		} \
 	}catch(std::exception & ex){\
 		throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n",str_expr,ex.what()).c_str()); \
@@ -57,8 +59,12 @@ void test_constant_int_expression(zetscript::ZetScript *_zs, const char *str_exp
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %i but it was %i!\n",str_expr,(int)expected_value,(int)((zetscript::zs_int)stk.value)).c_str()); \
 			} \
 		}else{\
-			char aux[100];
-			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected int but it was '%s'!\n",str_expr,stk_to_str(aux,_zs,&stk)).c_str()); \
+			throw std::runtime_error(
+					zetscript::zs_strutils::format(
+							"error test '%s' expected int but it was '%s'!\n"
+							,str_expr
+							,stk_to_str(_zs,&stk)).c_str()
+					); \
 		} \
 	}catch(std::exception & ex){\
 		throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n", str_expr,ex.what()).c_str()); \
@@ -109,8 +115,13 @@ void _complete_test_arithmetic_integer_op(zetscript::ZetScript *_zs,zetscript::z
 					throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
 				}
 			}else{
-				char aux[100];
-				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected int but it was '%s'!\n",it_iod->str.c_str(),stk_to_str(aux,_zs,&stk)).c_str()); \
+				throw std::runtime_error(
+					zetscript::zs_strutils::format(
+						"error test '%s' expected int but it was '%s'!\n"
+						,it_iod->str.c_str()
+						,stk_to_str(_zs,&stk).c_str()
+					).c_str()
+				); \
 			}
 		}
 		catch (std::exception & ex) {
@@ -159,8 +170,13 @@ void _complete_test_arithmetic_integer_op_assign(zetscript::ZetScript *_zs, zets
 					throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
 				}
 			}else{
-				char aux[100];
-				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected int but it was '%s'!\n",it_iod->str.c_str(),stk_to_str(aux,_zs,&stk)).c_str()); \
+				throw std::runtime_error(
+						zetscript::zs_strutils::format(
+								"error test '%s' expected int but it was '%s'!\n"
+								,it_iod->str.c_str()
+								,stk_to_str(_zs,&stk).c_str()
+						).c_str()
+				); \
 			}
 		}
 		catch (std::exception & ex) {
@@ -184,8 +200,13 @@ void test_constant_float_expression(zetscript::ZetScript *_zs,const char  *str_e
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %f but it was %f!\n",str_expr,expected_value,result).c_str());
 			}
 		}else{
-			char aux[100];
-			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected float but it was '%s'!\n",str_expr,stk_to_str(aux,_zs,&stk)).c_str());
+			throw std::runtime_error(
+					zetscript::zs_strutils::format(
+							"error test '%s' expected float but it was '%s'!\n"
+							,str_expr
+							,stk_to_str(_zs,&stk).c_str()
+					).c_str()
+			);
 		}
 	}catch(std::exception & ex){
 		throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n",str_expr,ex.what()).c_str());
@@ -208,8 +229,12 @@ void test_arithmetic_float_expression(zetscript::ZetScript *_zs,zetscript::zs_fl
 				}
 			}
 		}else{
-			char aux[100];
-			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected float but it was '%s'!\n",str_expr,stk_to_str(aux,_zs,&stk)).c_str());
+			throw std::runtime_error(
+					zetscript::zs_strutils::format(
+							"error test '%s' expected float but it was '%s'!\n"
+							,str_expr,stk_to_str(_zs,&stk).c_str()
+					).c_str()
+			);
 		}
 	}
 	catch (std::exception & ex) {
@@ -266,8 +291,13 @@ void _complete_test_arithmetic_float_op(zetscript::ZetScript *_zs,zetscript::zs_
 					throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %f but it was %f!\n", it_af->str.c_str(), it_af->val, result).c_str());
 				}
 			}else{
-				char aux[100];
-				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected float but it was '%s'!\n",it_af->str.c_str(),stk_to_str(aux,_zs,&stk)).c_str());
+				throw std::runtime_error(
+						zetscript::zs_strutils::format(
+								"error test '%s' expected float but it was '%s'!\n"
+								,it_af->str.c_str()
+								,stk_to_str(_zs,&stk).c_str()
+						).c_str()
+				);
 			}
 		}
 		catch (std::exception & ex) {
@@ -289,8 +319,13 @@ void _complete_test_arithmetic_float_op(zetscript::ZetScript *_zs,zetscript::zs_
 					throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %f but it was %f!\n", it_afm->str.c_str(), it_afm->val, result).c_str()); \
 				}
 			}else{
-				char aux[100];
-				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected float but it was '%s'!\n",it_afm->str.c_str(),stk_to_str(aux,_zs,&stk)).c_str());
+				throw std::runtime_error(
+						zetscript::zs_strutils::format(
+								"error test '%s' expected float but it was '%s'!\n"
+								,it_afm->str.c_str()
+								,stk_to_str(_zs,&stk).c_str()
+						).c_str()
+				);
 			}
 		}
 		catch (std::exception & ex) {
@@ -315,8 +350,13 @@ void test_constant_bool_expression(zetscript::ZetScript *_zs,const char *str_exp
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %i but it was %i!\n", str_expr,expected_value,(bool)stk.value).c_str());
 			}
 		}else{
-			char aux[100];
-			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected bool but it was '%s'!\n",str_expr,stk_to_str(aux,_zs,&stk)).c_str());
+			throw std::runtime_error(
+					zetscript::zs_strutils::format(
+							"error test '%s' expected bool but it was '%s'!\n"
+							,str_expr
+							,stk_to_str(_zs,&stk).c_str()
+					).c_str()
+			);
 		}
 	}catch(std::exception & ex){
 		throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n", str_expr,ex.what()).c_str());
@@ -332,8 +372,13 @@ void test_arithmetic_bool_expression(zetscript::ZetScript *_zs,bool expr, const 
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %s but it was %s!\n", str_expr,(expr)?"true":"false",(bool)stk.value?"true":"false").c_str());
 			}
 		}else{
-			char aux[100];
-			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected bool but it was '%s'!\n",str_expr,stk_to_str(aux,_zs,&stk)).c_str());
+			throw std::runtime_error(
+					zetscript::zs_strutils::format(
+							"error test '%s' expected bool but it was '%s'!\n"
+							,str_expr
+							,stk_to_str(_zs,&stk).c_str()
+					).c_str()
+			);
 		}
 	}catch(std::exception & ex){
 		throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n", str_expr,ex.what()).c_str());
@@ -358,8 +403,13 @@ void test_constant_string_expression(zetscript::ZetScript *_zs,const char * expe
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected '%s' but it was '%s'!\n", str_expr, expected_value, so->toString().c_str()).c_str());
 			}
 		}else{
-			char aux[100];
-			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk_to_str(aux,_zs,&stk)).c_str());
+			throw std::runtime_error(
+					zetscript::zs_strutils::format(
+							"error test '%s' expected 'ScriptObjectString' but it was '%s'!\n"
+							,str_expr
+							,stk_to_str(_zs,&stk).c_str()
+					).c_str()
+			);
 		}
 	}catch(std::exception & ex){
 		throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n", str_expr,ex.what()).c_str());
@@ -380,8 +430,12 @@ void test_arithmetic_string_expression(zetscript::ZetScript *_zs,const zetscript
 			// destroy lifetime object when is not needed
 			_zs->unrefLifetimeObject(so);
 		}else{
-			char aux[100];
-			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected 'ScriptObjectString' but it was '%s'!\n",str_expr,stk_to_str(aux,_zs,&stk)).c_str());
+			throw std::runtime_error(
+					zetscript::zs_strutils::format(
+							"error test '%s' expected 'ScriptObjectString' but it was '%s'!\n"
+							,str_expr,stk_to_str(_zs,&stk).c_str()
+					).c_str()
+			);
 
 		}
 	}catch(std::exception & ex){\

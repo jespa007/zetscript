@@ -254,12 +254,11 @@ namespace zetscript{
 			,const char * _file
 			,short _line
 	){
-		char str_metamethod_aux[100];
 		Symbol *symbol_member_property=NULL;
 		MemberProperty *mp=NULL;
 		MetamethodMemberSetterInfo mp_setter_info;
 		Symbol *symbol_function=NULL;
-		zs_string symbol_metamethod_function;
+		char symbol_metamethod_function[100];
 		Symbol **ptr_getter_script_function=NULL;
 
 		if((symbol_member_property=getSymbol(_property_name)) == NULL){
@@ -276,13 +275,16 @@ namespace zetscript{
 			);
 		}
 
-		symbol_metamethod_function=zs_string(byte_code_metamethod_to_symbol_str(_byte_code_metamethod))+"@"+_property_name; //byte_code_metamethod_to_symbol_str(_byte_code_metamethod)+"@"+_property_name;
+		ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
+			symbol_metamethod_function
+			,_byte_code_metamethod
+			, _property_name.c_str()
+		);
 
 		//zs_string member_property_metamethod_name=byte_code_metamethod_to_symbol_str(_metamethod)+"@"+_property_name;
 		switch(_byte_code_metamethod){
 		default:
 			break;
-
 		case BYTE_CODE_METAMETHOD_SET:
 		case BYTE_CODE_METAMETHOD_ADD_SET:
 		case BYTE_CODE_METAMETHOD_SUB_SET:
@@ -294,7 +296,11 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_XOR_SET:
 		case BYTE_CODE_METAMETHOD_SHL_SET:
 		case BYTE_CODE_METAMETHOD_SHR_SET:
-			symbol_metamethod_function=ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_SETTER(str_metamethod_aux,_byte_code_metamethod, symbol_member_property->name);
+			ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
+				symbol_metamethod_function
+				,_byte_code_metamethod
+				, symbol_member_property->name
+			);
 			mp_setter_info=mp->metamethod_members.getSetterInfo(_byte_code_metamethod);
 			break;
 		// particular case
@@ -723,6 +729,10 @@ namespace zetscript{
 		for(int i=0; i < allocated_member_properties->count; i++){
 			MemberProperty *mp=(MemberProperty *)allocated_member_properties->items[i];
 			delete mp;
+		}
+
+		if(str_script_type != NULL){
+			free(str_script_type);
 		}
 
 		delete allocated_member_properties;

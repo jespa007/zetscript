@@ -32,13 +32,13 @@ namespace zetscript{
 
 		virtual StackElement * addProperty(
 				const char * symbol_value
-				,char * error
+				,zs_string & error
 				,StackElement * stk_element = NULL
 		);
 
 		StackElement * addUserProperty(
 						const char * symbol_value
-						,char * error
+						,zs_string & error
 						,StackElement * stk_element = NULL
 				);
 

@@ -2,6 +2,7 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
+#include "zs_system.h"
 #include "zs_vector.h"
 #include "zs_buffer.h"
 #include "zs_string.h"

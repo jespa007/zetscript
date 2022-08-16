@@ -847,6 +847,11 @@ namespace zetscript{
 			}
 		}
 
+		if(name_script_function != NULL){
+			free(name_script_function);
+			name_script_function=NULL;
+		}
+
 		delete local_variables;
 		local_variables=NULL;
 	}

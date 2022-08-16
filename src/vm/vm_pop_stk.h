@@ -12,27 +12,15 @@
 	if((_properties & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR)==0){ \
 		_stk_result=_stk_local_var+_offset; \
 	}else{\
-		_stk_result=NULL;\
-		if(_offset != (uint8_t)ZS_IDX_UNDEFINED){ \
-			_stk_result = this_object->getBuiltinElementAt(_offset); \
-		} \
-		if(_stk_result != NULL && (_stk_result->properties & STK_PROPERTY_MEMBER_PROPERTY)){ \
-			stk_mp_aux=(StackMemberProperty *)_stk_result->value; \
-			if(stk_mp_aux->member_property->metamethod_members.getter != NULL){ \
-				VM_INNER_CALL( \
-						stk_mp_aux->so_object \
-						,(ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr \
-						,0 \
-						,stk_mp_aux->member_property->metamethod_members.getter->name.c_str() \
-				); \
-				/* getter requires stack to save value and avoid destroy previuos value*/ \
-				_stk_result=data->stk_vm_current; \
-			}else{ \
-				VM_STOP_EXECUTE( \
-						"Property '%s' does not implements _get metamethod",SFI_GET_SYMBOL_NAME(calling_function,instruction) \
-				); \
-			}\
-		} \
+		if((_stk_result=vm_load_this_element(\
+				vm\
+				,this_object\
+				,calling_function\
+				,instruction\
+				, _offset\
+		))==NULL){\
+			goto lbl_exit_function;\
+		}\
 	}\
 
 

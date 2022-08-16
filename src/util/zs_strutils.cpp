@@ -7,18 +7,6 @@
 namespace zetscript{
 	namespace zs_strutils{
 
-		const char *sprintf( char  *_str_out,const char *_str_in, ...){
-			char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
-			va_list  ap;
-			va_start(ap,  _str_in);
-			vsprintf(_sformat_buffer,  _str_in,  ap);
-			va_end(ap);
-
-			strcpy(_str_out,_sformat_buffer);
-
-			return  _str_out;
-		}
-
 		zs_string  format(const  char  *_str_in, ...){
 
 			char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
@@ -30,19 +18,21 @@ namespace zetscript{
 			return zs_string(_sformat_buffer);
 		}
 
-		void		format_file_line(char *_str_out,const char* _file, int _line, const  char* _str_in, ...) {
-			//char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
-			char _s_aux[ZS_MAX_STR_BUFFER]={0};
+		zs_string	format_file_line(const char* _file, int _line, const  char* _str_in, ...) {
+			zs_string str_out;
+			char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
 			va_list  ap;
-
-			(_file == NULL || *_file == 0) ? sprintf((_str_out), "[line %i] ", _line)\
-				: sprintf((_str_out), "[%s:%i] ", zs_path::get_filename(_file).c_str(), _line); \
-
-			va_start(ap, _str_in);
-			vsprintf(_s_aux, _str_in, ap);
+			va_start(ap,  _str_in);
+			vsprintf(_sformat_buffer,  _str_in,  ap);
 			va_end(ap);
 
-			strcat(_str_out, _s_aux);
+			if((_file == NULL || *_file == 0)){
+				str_out=format("[line %i] ", _line);
+			}else{
+				str_out=format("[%s:%i] ", zs_path::get_filename(_file).c_str(), _line);
+			}
+
+			return str_out;
 
 		}
 
@@ -122,7 +112,7 @@ namespace zetscript{
 			return new zs_float(l);
 		}
 
-		zs_string zs_int_to_str(zs_int _number, const char * _format){
+		zs_string zs_int_to_str(zs_int _number, const zs_string & _format){
 
 			zs_string result="0";
 			bool negative=false;
@@ -151,7 +141,7 @@ namespace zetscript{
 
 			// check format ...
 
-			if(_format!=NULL){
+			if(_format.empty()!=false){
 				zs_string sf=zs_strutils::to_lower(_format);
 				char *it_str=(char *)sf.c_str();
 

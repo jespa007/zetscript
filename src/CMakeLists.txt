@@ -261,7 +261,15 @@ if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
 		${PROJECT_SOURCE_DIR}/../samples/register_class.cpp
 	)	
 	
-	target_link_libraries(register_class${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})	
+	target_link_libraries(register_class${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
+	
+	#-----------------------------------------------
+	# test_map
+	add_executable(test_benchmark_map${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/test_benchmark_map.cpp
+	)
+	target_link_libraries(test_benchmark_map${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
+			
 
 endif()
 
@@ -337,6 +345,7 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 	)
 	target_compile_definitions(test_register_constants${POST_NAME} PUBLIC -D__MAIN__ )
 	target_link_libraries(test_register_constants${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
+		
 	#-----------------------------------------------
 	# test_all
 	add_executable(test_all${POST_NAME}

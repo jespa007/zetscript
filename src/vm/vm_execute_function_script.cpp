@@ -3,24 +3,11 @@
  *  See LICENSE file for details.
  */
 
-
-//#define __STR_SET_METAMETHOD__ 		str_symbol_aux1
-//#define __STR_AKA_SET_METAMETHOD__ 	str_symbol_aux2
-
 #define __STR_PTR_SYMBOL_TO_FIND__ 	str_symbol_aux1
 #define __STR_PTR_END_CLASS__ 		str_symbol_aux2
 
-//#define __SYMBOL_SETTER__			symbol_aux
-
 namespace zetscript{
 
-	StackElement *vm_load_this_element(
-		VirtualMachine			* vm
-		,ScriptObject			* this_object
-		,ScriptFunction 		* calling_function
-		,Instruction			*instruction
-		,short idx
-	);
 
 	void vm_execute_function_script(
 			VirtualMachine			* vm,
@@ -29,9 +16,9 @@ namespace zetscript{
 			StackElement 		  	* _stk_local_var
 	    ){
 
+		// generic vars for management
 		VirtualMachineData *data = (VirtualMachineData*)vm->data;
-		Instruction *instruction=calling_function->instructions; // starting instruction
-
+		Instruction 			*	instruction=calling_function->instructions; // starting instruction
 		ScriptObject 			*	so_aux=NULL;
 		StackElement 			*	stk_result_op1=NULL;
 		StackElement 			*	stk_result_op2=NULL;
@@ -44,18 +31,18 @@ namespace zetscript{
 		MemberProperty 			*	member_property=NULL;
 		ScriptObjectClass		*	so_class_aux1=NULL;
 
-		uint32_t msk_properties=0;
-		StackElement *stk_dst=NULL;
-		StackElement *stk_src=NULL;
-		zs_int *stk_src_ref_value=NULL;
-		zs_int *stk_dst_ref_value=NULL;
-		uint16_t stk_src_properties=0;
-		StackMemberProperty *stk_mp_aux=NULL;
-		void						*		ptr_ptr_void_ref=NULL;
-		int index_aux1=0;
+		uint32_t 					msk_properties=0;
+		StackElement 			*	stk_dst=NULL;
+		StackElement 			*	stk_src=NULL;
+		zs_int 					*	stk_src_ref_value=NULL;
+		zs_int 					*	stk_dst_ref_value=NULL;
+		uint16_t 					stk_src_properties=0;
+		StackMemberProperty 	*	stk_mp_aux=NULL;
+		void					*	ptr_ptr_void_ref=NULL;
+		int 						index_aux1=0;
 
-		Instruction *instruction_it=calling_function->instructions;
-		StackElement *stk_start=_stk_local_var+calling_function->local_variables->count;   // <-- here starts stk for aux vars for operations ..
+		Instruction 			*	instruction_it=calling_function->instructions;
+		StackElement 			*	stk_start=_stk_local_var+calling_function->local_variables->count;   // <-- here starts stk for aux vars for operations ..
 
 		if (IDX_VM_CURRENT_SCOPE_FUNCTION >= VM_FUNCTION_CALL_MAX) {
 			VM_ERROR_AND_RETF("Reached max stack");
@@ -70,7 +57,7 @@ namespace zetscript{
 		}
 
 #ifdef __DEBUG__
-		ZS_LOG_DEBUG("Executing function %s ...",calling_function->symbol.name.c_str());
+		ZS_LOG_DEBUG("Executing function %s ...",calling_function->symbol.name);
 #endif
 
 		// Init local vars ...
@@ -78,12 +65,10 @@ namespace zetscript{
 		data->vm_current_scope_function->stk_local_vars=_stk_local_var;
 		data->vm_current_scope_function++;
 
-		// preserve global scope vars
+
+		// init local variables symbols (except arguments) as undefined
 		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN)){
-
 			VM_PUSH_SCOPE(calling_function->scope_script_function);
-
-			// reset local variables symbols (not arg symbols)
 			for(index_aux1=calling_function->params_len; index_aux1 <calling_function->local_variables->count; index_aux1++){
 				STK_SET_UNDEFINED(_stk_local_var+ index_aux1);
 			}
@@ -247,11 +232,10 @@ namespace zetscript{
 					break;
 				default:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						bool b = data->script_type_factory->scriptTypeInheritsFrom(			//
+						VM_PUSH_STK_BOOLEAN(data->script_type_factory->scriptTypeInheritsFrom(			//
 								((ScriptObjectObject *)(stk_result_op1->value))->idx_script_type // A
 								, instruction->value_op2		// B
-						);
-						VM_PUSH_STK_BOOLEAN(b);
+						));
 					}else{
 						VM_PUSH_STK_BOOLEAN(false);
 					}
@@ -425,18 +409,17 @@ namespace zetscript{
 				}
 				continue;
 			 case  BYTE_CODE_RET:
-				for(StackElement *stk_it=data->stk_vm_current-1;stk_it>=stk_start;stk_it--){ // can return something. value is +1 from stack
+				for(stk_var=data->stk_vm_current-1;stk_var>=stk_start;stk_var--){ // can return something. value is +1 from stack
 					// if scriptvariable and in the zeros list, deattach
-					if(stk_it->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						so_aux=(ScriptObject *)stk_it->value;
+					if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){
+						so_aux=(ScriptObject *)stk_var->value;
 
 						//special case for constant string object (they don't are shared elements)
 						if(so_aux->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (so_aux->shared_pointer==NULL)){
 							// if is not shared is constant...
-							ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
-							sc->set(so_aux->toString().c_str());
-							stk_it->properties=STK_PROPERTY_SCRIPT_OBJECT;
-							stk_it->value=(zs_int)sc;
+							so_aux=ScriptObjectString::newScriptObjectString(data->zs,so_aux->toString());
+							stk_var->properties=STK_PROPERTY_SCRIPT_OBJECT;
+							stk_var->value=(zs_int)so_aux;
 						}else{
 							if(so_aux->shared_pointer->data.n_shares<=1){ // was created here... remove share data
 
@@ -539,7 +522,7 @@ namespace zetscript{
 					continue;
 
 			 case  BYTE_CODE_NEW_STRING: // Create new string...
-				 so_aux= ScriptObjectString::newScriptObjectString(data->zs,instruction->getConstantValueOp2ToString(false).c_str());
+				 so_aux= ScriptObjectString::newScriptObjectString(data->zs,instruction->getConstantValueOp2ToString(false));
 					if(!vm_create_shared_script_object(vm,so_aux)){
 						goto lbl_exit_function;
 					}
@@ -643,7 +626,7 @@ namespace zetscript{
 					//const char *str = (const char *)stk_result_op1->value;
 					stk_src=stk_result_op2;
 					if((stk_var =so_aux->addProperty(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op1),data->vm_error_str))==NULL){
-						VM_STOP_EXECUTEF(data->vm_error_str);
+						VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 					}
 
 					stk_dst=stk_var;
@@ -696,11 +679,15 @@ namespace zetscript{
 									VM_STOP_EXECUTEF("Expected string for object access");
 								}
 								// Save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
-								stk_var = ((ScriptObjectObject *)so_aux)->getProperty(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2));
+								stk_var = ((ScriptObjectObject *)so_aux)->getProperty(
+										stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2)
+								);
 								if(stk_var == NULL){
 									if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
-										if((stk_var =((ScriptObjectObject *)so_aux)->addProperty(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2), data->vm_error_str))==NULL){
-											VM_STOP_EXECUTEF(data->vm_error_str);
+										if((stk_var =((ScriptObjectObject *)so_aux)->addProperty(
+												stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2), data->vm_error_str)
+										)==NULL){
+											VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 										}
 									}
 								}
@@ -733,11 +720,10 @@ namespace zetscript{
 							data->stk_vm_current++;
 							continue;
 						}else{
-							VM_STOP_EXECUTEF("Expected String,Vector or Object for access '[]' opertaion"); \
+							VM_STOP_EXECUTEF("Expected String,Vector or Object for access '[]' operation"); \
 						}
 					}else{
 						VM_STOP_EXECUTE("Expected object for access '[]' operation but it was type '%s'",stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)); \
-
 					}
 					continue;
 				case BYTE_CODE_LOAD_REF:
@@ -795,6 +781,7 @@ namespace zetscript{
 					, calling_function
 					, instruction
 				);
+				goto lbl_exit_function;
 			case BYTE_CODE_END_FUNCTION:
 			default:
 				goto lbl_exit_function;
@@ -827,4 +814,79 @@ namespace zetscript{
 		// POP STACK
 		//=========================
 	}
+
+
+	void vm_throw_error_cannot_find_symbol(
+			VirtualMachine *vm
+			,ScriptFunction *calling_function
+			,Instruction *instruction
+	){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+
+		const char *__STR_PTR_SYMBOL_TO_FIND__=SFI_GET_SYMBOL_NAME(calling_function,instruction);
+		const char *__STR_PTR_END_CLASS__=NULL;
+
+		if((__STR_PTR_END_CLASS__=strstr(__STR_PTR_SYMBOL_TO_FIND__,"::"))!=NULL){ // static access
+			char str_script_type[512]={0};
+
+			strncpy(str_script_type,__STR_PTR_SYMBOL_TO_FIND__,__STR_PTR_END_CLASS__-__STR_PTR_SYMBOL_TO_FIND__);
+
+
+			if(data->zs->getScriptTypeFactory()->getScriptType(str_script_type) == NULL){
+				VM_STOP_EXECUTE(
+						"type '%s' not exist"
+						,str_script_type
+				);
+			}
+
+			VM_STOP_EXECUTE(
+					"static symbol '%s::%s' not exist"
+					,str_script_type
+					,__STR_PTR_END_CLASS__+2
+			);
+		}else{
+			VM_STOP_EXECUTE(
+					"Symbol '%s' not defined"
+					,__STR_PTR_SYMBOL_TO_FIND__
+			);
+		}
+
+	lbl_exit_function:
+		return;
+	}
+
+
+
+	bool vm_string_compare(
+		VirtualMachine *vm
+		, StackElement *_stk1
+		, StackElement *_stk2
+		, ByteCodeMetamethod _byte_code_metamethod
+	){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		zs_string str1=stk_to_str(data->zs,_stk1);
+		zs_string str2=stk_to_str(data->zs, _stk2);
+
+		switch(_byte_code_metamethod){
+		case BYTE_CODE_METAMETHOD_EQU:
+			return ZS_STRCMP(str1.c_str(),==,str1.c_str());
+		case BYTE_CODE_METAMETHOD_LT:
+			return ZS_STRCMP(str1.c_str(),<,str1.c_str());
+		case BYTE_CODE_METAMETHOD_GT:
+			return ZS_STRCMP(str1.c_str(),>,str1.c_str());
+		case BYTE_CODE_METAMETHOD_LTE:
+			return ZS_STRCMP(str1.c_str(),<=,str1.c_str());
+		case BYTE_CODE_METAMETHOD_GTE:
+			return ZS_STRCMP(str1.c_str(),>=,str1.c_str());
+		}
+
+		return false;
+	}	
 }
+
+#include "vm_byte_code_call_metamethod.cpp"
+#include "vm_byte_code_call.cpp"
+#include "vm_byte_code_field.cpp"
+#include "vm_byte_code_iterator.cpp"
+#include "vm_byte_code_store.cpp"
+#include "vm_function.cpp"

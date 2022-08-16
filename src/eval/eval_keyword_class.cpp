@@ -75,13 +75,13 @@ namespace zetscript{
 			);
 		}catch(zs_exception &ex){
 			eval_data->error=true;
-			strcpy(eval_data->str_error,ex.what());
+			eval_data->str_error=ex.what();
 			eval_data->error_line=ex.getErrorLine();
-			strcpy(eval_data->error_file,ex.getErrorSourceFilename());
+			eval_data->error_file=ex.getErrorSourceFilename();
 			return NULL;
 		}catch(std::exception &ex){
 			eval_data->error=true;
-			strcpy(eval_data->str_error,ex.what());
+			eval_data->str_error=ex.what();
 			return NULL;
 		}
 

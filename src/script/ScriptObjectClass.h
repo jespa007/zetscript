@@ -48,8 +48,6 @@ namespace zetscript{
 
 		protected:
 			void callConstructorMemberVariables(ScriptType *sc);
-			//virtual StackElement * newSlotBuiltin();
-			//virtual StackElement * addPropertyBuiltin(const zs_string & symbol_value, StackElement stk=k_stk_null);
 
 
 		private:

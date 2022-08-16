@@ -15,9 +15,7 @@ namespace zetscript{
 
 	zs_int SystemModule_clock(ZetScript *_zs){
 		ZS_UNUSUED_PARAM(_zs);
-		//return std::clock()*(1000.0f/CLOCKS_PER_SEC);
-		//return std::chrono::system_clock::now();
-		return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		return zs_system::clock();
 	}
 
 	void SystemModule_makeReadOnly(ZetScript *_zs,StackElement *stk){
@@ -51,7 +49,8 @@ namespace zetscript{
 			vm_set_error(
 					zs->getVirtualMachine()
 					,zs_strutils::format("eval error:expected ScriptObjectString as first parameter but the typeof is '%s'"
-							,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_so_str_eval))
+							,stk_to_typeof_str(data->zs,stk_so_str_eval).c_str()
+					).c_str()
 			);
 			return;
 		}
@@ -64,9 +63,10 @@ namespace zetscript{
 
 			if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_oo_param) == false){
 				vm_set_error(
-						zs->getVirtualMachine()
-						,zs_strutils::format("eval error:expected ScriptObjectObject as second parameter but the typeof is '%'"
-								,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_oo_param))
+					zs->getVirtualMachine()
+					,zs_strutils::format("eval error:expected ScriptObjectObject as second parameter but the typeof is '%'"
+							,stk_to_typeof_str(data->zs,stk_oo_param).c_str()
+					).c_str()
 				);
 				return;
 			}
@@ -146,7 +146,7 @@ namespace zetscript{
 		try{
 			eval_parse_and_compile(zs,str_start,NULL,NULL,1,sf_eval/*,function_params,function_params_len*/);
 		}catch(std::exception & ex){
-			vm_set_error(zs->getVirtualMachine(),zs_string("eval error:")+ex.what());
+			vm_set_error(zs->getVirtualMachine(),(zs_string("eval error:")+ex.what()).c_str());
 			goto goto_eval_exit;
 		}
 
@@ -190,7 +190,7 @@ namespace zetscript{
 		// modifug
 		if(vm_it_has_error(zs->getVirtualMachine())){
 			zs_string error=vm_get_error(zs->getVirtualMachine());
-			vm_set_error(zs->getVirtualMachine(),zs_strutils::format("eval error %s",error.c_str()));
+			vm_set_error(zs->getVirtualMachine(),zs_strutils::format("eval error %s",error.c_str()).c_str());
 		}
 
 		n_ret_args=vm_get_current_stack_element(vm)-stk_vm_current;

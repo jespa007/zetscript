@@ -14,8 +14,10 @@ namespace zetscript{
 		zs_string();
 		zs_string(const char * buffer);
 		zs_string(const zs_string & obj);
+		zs_string(zs_string && _str_tmp);
 
 		zs_string& operator=(const zs_string & obj);
+		zs_string& operator=(zs_string && _str_tmp);
 		zs_string& operator=(const char* buffer);
 
 		zs_string& operator+=(const zs_string& rhs);
