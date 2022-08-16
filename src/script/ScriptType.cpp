@@ -112,7 +112,7 @@ namespace zetscript{
 			}
 
 			printf("______________________________________________________________\n\n");
-			printf(" -Function: '%s'\n",sf->name_script_function);
+			printf(" -Function: '%s'\n",sf->name_script_function.c_str());
 			printf(" -Script interface: '%s'\n",script_interface.c_str());
 			if(sf->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 				printf(" -Native interface: '%s'\n",native_interface.c_str());
@@ -165,46 +165,46 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptType::registerMemberVariable(
-		 const zs_string & symbol_name
-		,const zs_string & str_native_type
-		,zs_int ref_ptr
-		,unsigned short symbol_properties
-		,const char * file
-		,short line
+		 const zs_string & _symbol_name
+		,const zs_string & _str_native_type
+		,zs_int _ref_ptr
+		,unsigned short _symbol_properties
+		,const char * _file
+		,short _line
 	){
 		return registerInternalMemberVariable(
-			symbol_name
-			,symbol_properties
-			,str_native_type
-			,ref_ptr
-			,file
-			,line
+			_symbol_name
+			,_symbol_properties
+			,_str_native_type
+			,_ref_ptr
+			,_file
+			,_line
 		);
 	}
 
 	Symbol				* 	ScriptType::registerInternalMemberVariable(
-		const zs_string & symbol_name
-		,unsigned short symbol_properties
-		,const zs_string & str_native_type
-		,zs_int ref_ptr
-		,const char * file
-		,short line
+		const zs_string & _symbol_name
+		,unsigned short _symbol_properties
+		,const zs_string & _str_native_type
+		,zs_int _ref_ptr
+		,const char * _file
+		,short _line
 
 	){
-		if(getSymbol(symbol_name)!=NULL){
-			THROW_RUNTIME_ERROR("Variable '%s' already registered",symbol_name.c_str());
+		if(getSymbol(_symbol_name)!=NULL){
+			THROW_RUNTIME_ERROR("Variable '%s' already registered",_symbol_name.c_str());
 			return NULL;
 		}
 
 		Symbol *symbol=scope_script_type->registerSymbolVariable(
-				file
-				,line
-				,symbol_name
+				_file
+				,_line
+				,_symbol_name
 		);
 
-		symbol->ref_ptr=ref_ptr;
-		symbol->str_native_type = zs_strutils::clone_to_char_ptr(str_native_type);
-		symbol->properties=symbol_properties;
+		symbol->ref_ptr=_ref_ptr;
+		symbol->str_native_type = _str_native_type;
+		symbol->properties=_symbol_properties;
 		return symbol;
 	}
 	//---------------------------------------------------

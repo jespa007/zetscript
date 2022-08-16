@@ -10,16 +10,20 @@ namespace zetscript{
 
 	int zs_string::npos=-1;
 
-	void	zs_string::inc_char_slot(){
+	void	zs_string::inc_slots(int _n_slots){
 		// condition to increase this->items:
 		// last slot exhausted
-		if (this->_size ==this->count) {
-			this->_size += ZS_STRING_EXPAND_CHAR_ELEMENTS;
+		if (this->_size <= (this->count+_n_slots)) {
+			this->_size = this->count+_n_slots+ZS_STRING_EXPAND_CHAR_ELEMENTS;
 
-			this->buf = (char*)realloc(this->buf, sizeof(char) * this->_size + 1); // + 1 for the keeping the null character
+			char *buf_aux = (char*)malloc( sizeof(char) * this->_size + 1); // + 1 for the keeping the null character
+			memcpy(buf,buf_aux,this->count);
+
+			free(buf);
+			buf=buf_aux;
 		}
 
-		this->count++;
+		this->count+=_n_slots;
 	}
 
 	void zs_string::set(const char * _buffer){
@@ -436,30 +440,24 @@ namespace zetscript{
 	}
 
 	void zs_string::append(const char *_buf, int _len){
-
-		int len=_len;
-		if(len == npos){
-			len=(int)strlen(_buf);
-		}
-
-		int new_size=(int)(this->count+len);
-		char *new_buf=(char *)ZS_MALLOC((int)(new_size+1));
-
-		strncpy(new_buf,this->buf,this->count);
-		strncpy(new_buf+this->count,_buf,len);
-
-		__cleanup__(); // cleanup any existing data
-
-	    this->buf=new_buf;
-	    this->_size=this->count=new_size;
+		inc_slots(_len);
+		strcat(buf,_buf);
 	}
 
 	void zs_string::append(const zs_string &_s){
 		zs_string::append(_s.buf);
 	}
 
+	void zs_string::append(const char *_s){
+		if(_s==NULL){
+			THROW_RUNTIME_ERRORF("input string null");
+		}
+		zs_string::append(_s,strlen(_s));
+	}
+
+
 	void zs_string::append(char _c){
-		inc_char_slot();
+		inc_slots(1);
 		//buf=(char *)rea0loc(buf,size+1);
 		buf[count]=0;
 		buf[count-1]=_c;

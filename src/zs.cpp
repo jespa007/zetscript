@@ -20,6 +20,8 @@ void show_usage(){
 
 int main(int argc, char * argv[]) {
 
+	std::map<zetscript::zs_string, zetscript::zs_string> caca;
+
 	zetscript::ZetScript zs;
 	const char *file="";
 	unsigned short eval_options=0;

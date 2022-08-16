@@ -42,6 +42,7 @@
 #include        <memory.h>
 #include        <math.h>
 #include		<regex>
+#include		<map>
 #include        <new>
 #include 		<functional>
 #include 		<float.h>
@@ -201,8 +202,8 @@ namespace zetscript{
 		 * Register C function
 		 */
 		template <typename F>
-		void bindFunction( const zs_string & name_script_function,F ptr_function, const char *registered_file="",short registered_line=-1){
-			script_type_factory->bindFunction( name_script_function,ptr_function, registered_file,registered_line);
+		void bindFunction( const zs_string & _name_script_function,F ptr_function, const char *registered_file="",short registered_line=-1){
+			script_type_factory->bindFunction( _name_script_function,ptr_function, registered_file,registered_line);
 		}
 
 		template<class C, class B>
@@ -231,12 +232,12 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void	bindMemberFunction(
-				const zs_string & name_script_function
+				const zs_string & _name_script_function
 				,F function_type
 				 , const char *registered_file=""
 				,short registered_line=-1
 		){
-			script_type_factory->bindMemberFunction<C>(name_script_function,function_type, registered_file,registered_line );
+			script_type_factory->bindMemberFunction<C>(_name_script_function,function_type, registered_file,registered_line );
 		}
 
 
@@ -304,8 +305,8 @@ namespace zetscript{
 		 * Register Static Function Member Class
 		 */
 		template <typename C,typename F>
-		void bindStaticMemberFunction(const zs_string & name_script_function,F fun, const char *registered_file="",short registered_line=-1){
-			script_type_factory->bindStaticMemberFunction<C>(name_script_function,fun, registered_file, registered_line);
+		void bindStaticMemberFunction(const zs_string & _name_script_function,F fun, const char *registered_file="",short registered_line=-1){
+			script_type_factory->bindStaticMemberFunction<C>(_name_script_function,fun, registered_file, registered_line);
 		}
 
 		//cpp binding

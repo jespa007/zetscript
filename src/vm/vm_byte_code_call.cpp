@@ -200,7 +200,7 @@ load_function:
 			  if(sofm_object==NULL){
 				  VM_STOP_EXECUTE(
 						  "Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced"
-						  ,sofm->so_function->name_script_function
+						  ,sofm->so_function->name_script_function.c_str()
 						  , SFI_GET_SYMBOL_NAME(calling_function,instruction));
 			  }
 			  sf_call_calling_object=sofm_object;
@@ -281,7 +281,7 @@ execute_function:
 
 								if((stk_arg->properties & STK_PROPERTY_PTR_STK) != STK_PROPERTY_PTR_STK){
 									VM_STOP_EXECUTE("Calling function '%s', parameter '%i': Argument by reference has to be variable"
-											,sf_call_script_function->name_script_function,i+1);
+											,sf_call_script_function->name_script_function.c_str(),i+1);
 								}
 
 								ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg);
@@ -512,7 +512,7 @@ execute_function:
 						"\nat calling function %s%s%s (%sline:%i)" // TODO: get full symbol ?
 						,str_class_owner==NULL?"":str_class_owner
 						,str_class_owner==NULL?"":"::"
-						,sf_call_script_function->name_script_function
+						,sf_call_script_function->name_script_function.c_str()
 						,file_src_call?zs_strutils::format("file:%s ",file_src_call).c_str():""
 						,SFI_GET_LINE(calling_function,instruction)
 					);

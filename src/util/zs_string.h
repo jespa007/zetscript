@@ -61,9 +61,10 @@ namespace zetscript{
 		int find_last_of(const char *_s, int _pos = npos) const;
 
 		zs_string & replace(int _pos, int _len, const zs_string & _to_replace);
-		void append(const char *buf, int _len=npos);
+		void append(const char *buf, int _len);
 		void append(char _c);
 		void append(const zs_string & _s);
+		void append(const char * _s);
 
 		void erase(int _pos, int _len);
 		void erase(int _pos);
@@ -86,7 +87,7 @@ namespace zetscript{
 
 		void set(const zs_string & _s);
 		void set(const char * _s);
-		void inc_char_slot();
+		void inc_slots(int _n_slots);
 		void __cleanup__();
 	};
 

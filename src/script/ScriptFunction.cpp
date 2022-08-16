@@ -576,7 +576,7 @@ namespace zetscript{
 
 		symbol->ref_ptr =_ref_ptr;
 		//scope_symbol->symbol=scope_symbol;
-		symbol->str_native_type = zs_strutils::clone_to_char_ptr(_str_native_type);
+		symbol->str_native_type = _str_native_type;
 		symbol->properties = _properties;
 		symbol->idx_position = idx_position_aux;
 
@@ -626,7 +626,7 @@ namespace zetscript{
 			{
 				// if exist override, but should be in the same scope
 				THROW_RUNTIME_ERROR("Symbol '%s' defined at %s is already defined at %s"
-					,name_script_function
+					,name_script_function.c_str()
 					,current_file_line.c_str()
 					,_line
 					,symbol_file_line.c_str()

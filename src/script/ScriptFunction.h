@@ -51,13 +51,13 @@ namespace zetscript{
 		int 				params_len;
 		int					min_code_stack_needed;
 
-		PtrInstruction  instructions; // The set of byte code instructions that executes the function
+		PtrInstruction  	instructions; // The set of byte code instructions that executes the function
 
 		// number of instructions
-		size_t			instructions_len;
+		size_t				instructions_len;
 
 		// local symbols for type or function...
-		zs_vector<Symbol *>  		*local_variables; // registered variable symbols
+		zs_vector<Symbol *> *local_variables; // registered variable symbols
 
 		ScriptFunction(
 				ZetScript *_zs

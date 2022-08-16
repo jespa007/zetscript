@@ -106,7 +106,7 @@ namespace zetscript{
 				,FUNCTION_PROPERTY_C_OBJECT_REF
 			);
 
-		ZS_LOG_DEBUG("Registered function name '%s'",name_script_function);
+		ZS_LOG_DEBUG("Registered function name '%s'",name_script_function.c_str());
 	}
 
 	/**

@@ -44,7 +44,7 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-			result="fun@"+zs_string(sf->scope_script_function->script_type_owner->str_script_type)+"::"+zs_string(sf->name_script_function);
+			result="fun@"+zs_string(sf->scope_script_function->script_type_owner->str_script_type)+"::"+sf->name_script_function;
 		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;

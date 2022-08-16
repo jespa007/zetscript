@@ -170,12 +170,12 @@ namespace zetscript{
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
 		Symbol				* 	registerInternalMemberVariable(
-			const zs_string & symbol_name
-			, unsigned short properties
-			,const zs_string & str_native_type=""
-			,zs_int ref_ptr=0 // it's the offset from pointer or a pointer directly
-			,const char *file=""
-			, short line=-1
+			const zs_string & _symbol_name
+			, unsigned short _properties
+			,const zs_string & _str_native_type=""
+			,zs_int _ref_ptr=0 // it's the offset from pointer or a pointer directly
+			,const char *_file=""
+			, short _line=-1
 
 		);
 

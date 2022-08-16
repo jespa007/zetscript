@@ -524,8 +524,8 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent function of '%s::%s'"
-							,sc_sf->str_script_type
-							,sf->name_script_function
+							,sc_sf->str_script_type.c_str()
+							,sf->name_script_function.c_str()
 						);
 					}
 				}
