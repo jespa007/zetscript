@@ -480,19 +480,19 @@ execute_function:
 					(
 						(
 							(
-								ZS_STRCMP(calling_function->name_script_function,==,"assert")
-							||  ZS_STRCMP(calling_function->name_script_function,==,"error")
+								calling_function->name_script_function=="assert"
+							||  calling_function->name_script_function=="error"
 							)
 							&&
 							(
-								ZS_STRCMP(sf_call_script_function->name_script_function,==,"errorNative")
+								sf_call_script_function->name_script_function=="errorNative"
 							)
 						)
 						||
 						(
 							(
-								ZS_STRCMP(calling_function->name_script_function,==,"eval")
-							&&  ZS_STRCMP(sf_call_script_function->name_script_function,==,"evalNative")
+								calling_function->name_script_function=="eval"
+							&&  sf_call_script_function->name_script_function=="evalNative"
 							)
 						)
 					)==false)
@@ -505,7 +505,7 @@ execute_function:
 							||
 						(sf_call_script_function->properties & FUNCTION_PROPERTY_STATIC)!=0
 					){
-						str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->str_script_type;
+						str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->str_script_type.c_str();
 					}
 					const char * file_src_call=SFI_GET_FILE(calling_function,instruction);
 					data->vm_error_callstack_str+=zs_strutils::format(

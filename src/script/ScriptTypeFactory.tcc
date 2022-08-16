@@ -221,7 +221,7 @@ namespace zetscript{
 					,zs_rtti::demangle(str_script_type).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 					,zs_rtti::demangle(str_script_type).c_str()
-					,zs_rtti::demangle(sc->str_script_type).c_str()
+					,zs_rtti::demangle(sc->str_script_type.c_str()).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 				);
 			}
@@ -231,7 +231,7 @@ namespace zetscript{
 					,zs_rtti::demangle(str_script_type).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 					,zs_rtti::demangle(str_script_type).c_str()
-					, zs_rtti::demangle(sc->str_script_type).c_str()
+					, zs_rtti::demangle(sc->str_script_type.c_str()).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 				);
 			}

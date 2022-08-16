@@ -31,7 +31,7 @@ namespace zetscript{
 
 		// function data...
 		idx_script_type_owner=_idx_script_type_owner;
-		name_script_function=zs_strutils::clone_to_char_ptr(_function_name);
+		name_script_function=_function_name;
 		idx_script_function=_idx_script_function;
 		idx_position = _idx_position;
 		idx_script_type_return = _idx_return_type;
@@ -845,11 +845,6 @@ namespace zetscript{
 			if(isi != NULL){
 				delete isi;
 			}
-		}
-
-		if(name_script_function != NULL){
-			free(name_script_function);
-			name_script_function=NULL;
 		}
 
 		delete local_variables;

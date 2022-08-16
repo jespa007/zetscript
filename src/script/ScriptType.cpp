@@ -18,7 +18,7 @@ namespace zetscript{
 
 	ScriptType::ScriptType(ZetScript *_zs
 			,short _idx_script_type
-			, zs_string _class_name
+			, const zs_string & _class_name
 			, Scope *_class_scope
 			,const char *_str_class_ptr_type
 			,uint16_t _properties){
@@ -31,7 +31,7 @@ namespace zetscript{
 		idx_script_type=_idx_script_type;
 		idx_starting_this_member_variables=0;
 		idx_starting_this_member_functions=0;
-		str_script_type=zs_strutils::clone_to_char_ptr(_class_name);
+		str_script_type=_class_name;
 		scope_script_type=_class_scope;
 		str_script_type_ptr=_str_class_ptr_type;
 		allocated_member_properties=new zs_vector<MemberProperty *>();
@@ -535,7 +535,7 @@ namespace zetscript{
 									THROW_RUNTIME_ERROR("error registering metamethod '%s::%s'. Expected return bool but it was '%s'",
 											this->str_script_type,
 											_function_name.c_str(),
-											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr).c_str()
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
 									);
 									return NULL;
 								}
@@ -551,12 +551,12 @@ namespace zetscript{
 							case BYTE_CODE_METAMETHOD_SHL: // << shift left
 							case BYTE_CODE_METAMETHOD_SHR: // >> shift right
 
-								if(ZS_STRCMP(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr, != ,this->str_script_type_ptr)){
+								if(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr != this->str_script_type_ptr){
 
 									THROW_RUNTIME_ERROR("error registering metamethod %s::%s. Expected return %s but it was %s",
 											this->str_script_type,
 											_function_name.c_str(),
-											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr).c_str()
+											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
 									);
 									return NULL;
 								}
@@ -721,7 +721,7 @@ namespace zetscript{
 	}
 
 	const char *ScriptType::getTypeName(){
-		return str_script_type;
+		return str_script_type.c_str();
 	}
 
 	ScriptType::~ScriptType(){
@@ -729,10 +729,6 @@ namespace zetscript{
 		for(int i=0; i < allocated_member_properties->count; i++){
 			MemberProperty *mp=(MemberProperty *)allocated_member_properties->items[i];
 			delete mp;
-		}
-
-		if(str_script_type != NULL){
-			free(str_script_type);
 		}
 
 		delete allocated_member_properties;

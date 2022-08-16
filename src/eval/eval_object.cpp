@@ -471,7 +471,7 @@ namespace zetscript{
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
 							Symbol *symbol_member = (Symbol *)sc->scope_script_type->symbol_functions->items[i];
 							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
-							if(ZS_STRCMP(sf_member->name_script_function,==, CONSTRUCTOR_FUNCTION_NAME)){
+							if(sf_member->name_script_function== CONSTRUCTOR_FUNCTION_NAME){
 								constructor_function = symbol_member;
 							}
 						}

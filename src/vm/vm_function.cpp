@@ -10,7 +10,7 @@ namespace zetscript{
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
 			,bool is_constructor
-			,const char * symbol_to_find
+			,const zs_string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
 	){
@@ -18,7 +18,7 @@ namespace zetscript{
 		// by default search over global functions...
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		ScriptFunction * ptr_function_found=NULL;
-		const char * aux_string;
+		zs_string aux_string;
 		int start_param=0;
 
 		Symbol ** stk_elements_builtin_ptr= data->main_function_object->scope_script_function->symbol_functions->items;// vector of symbols
@@ -159,7 +159,7 @@ namespace zetscript{
 					break;
 				}
 
-				args_str.append(zs_rtti::demangle(aux_string));
+				args_str.append(zs_rtti::demangle(aux_string.c_str()));
 
 				if(current_arg->properties == STK_PROPERTY_ZS_INT
 				||current_arg->properties == STK_PROPERTY_ZS_FLOAT

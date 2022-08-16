@@ -33,7 +33,7 @@ namespace zetscript{
 
 		char *name; 	// symbol name
 		zs_int ref_ptr; 	// pointer ref that holds rellevant information
-		char *str_native_type; // In case is C, we need to know its type ...
+		zs_string str_native_type; // In case is C, we need to know its type ...
 
 		char n_params; // max params in case of function
 

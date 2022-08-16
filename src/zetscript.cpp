@@ -241,16 +241,16 @@ namespace zetscript{
 
 			 // ignore builtin implementations if not chosen ...
 			 if(show_system_code == false && (
-					   ZS_STRCMP(sc->str_script_type, ==, "System")
-					|| ZS_STRCMP(sc->str_script_type, == , "String")
-					|| ZS_STRCMP(sc->str_script_type, == , "IteratorString")
-					|| ZS_STRCMP(sc->str_script_type, == , "Object")
-					|| ZS_STRCMP(sc->str_script_type, == , "IteratorObject")
-					|| ZS_STRCMP(sc->str_script_type, == , "Console")
-					|| ZS_STRCMP(sc->str_script_type, ==, "DateTime")
-					|| ZS_STRCMP(sc->str_script_type, == , "Vector")
-					|| ZS_STRCMP(sc->str_script_type, == , "IteratorVector")
-					|| ZS_STRCMP(sc->str_script_type, == , "Json")
+					   sc->str_script_type == "System"
+					|| sc->str_script_type == "String"
+					|| sc->str_script_type == "IteratorString"
+					|| sc->str_script_type == "Object"
+					|| sc->str_script_type == "IteratorObject"
+					|| sc->str_script_type == "Console"
+					|| sc->str_script_type == "DateTime"
+					|| sc->str_script_type == "Vector"
+					|| sc->str_script_type == "IteratorVector"
+					|| sc->str_script_type == "Json"
 				)){
 				 show_class=false;
 			 }

@@ -101,11 +101,11 @@ namespace zetscript{
 	}
 
 	const char  * ScriptObject::getTypeName(){
-		return getScriptType()->str_script_type;
+		return getScriptType()->str_script_type.c_str();
 	}
 
 	const char * ScriptObjectClass::getTypeNamePtr(){
-		return getScriptType()->str_script_type_ptr;
+		return getScriptType()->str_script_type_ptr.c_str();
 	}
 
 	bool ScriptObject::isNativeObject(){

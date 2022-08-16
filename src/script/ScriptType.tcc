@@ -104,7 +104,7 @@ namespace zetscript{
 			);
 		}
 
-		if(strcmp(c_class_first_arg->str_script_type_ptr,this->str_script_type_ptr)!=0){
+		if(c_class_first_arg->str_script_type_ptr!=this->str_script_type_ptr){
 			THROW_RUNTIME_ERROR(
 				"bind member function '%s::%s': expected to have SECOND parameter as pointer type '%s' but it was '%s')"
 				,str_script_type

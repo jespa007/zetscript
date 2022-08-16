@@ -182,7 +182,7 @@ namespace zetscript{
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
 			,bool is_constructor
-			,const char * symbol_to_find
+			,const zs_string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
 	);

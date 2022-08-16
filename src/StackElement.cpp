@@ -288,7 +288,7 @@ namespace zetscript{
 								))==0
 							){//c_class->idx_script_type==idx_builtin_type){
 								_error="cannot convert '"
-										+zs_rtti::demangle(c_class->str_script_type_ptr)
+										+zs_rtti::demangle(c_class->str_script_type_ptr.c_str())
 										+"' to '"
 										+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type))
 										+"'";

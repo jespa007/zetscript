@@ -78,7 +78,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR(
 				"Native symbol '%s' has type '%s' that is not registered"
 				, symbol->name
-				, symbol->str_native_type
+				, symbol->str_native_type.c_str()
 			);
 		}
 
@@ -100,13 +100,9 @@ namespace zetscript{
 			name=zs_strutils::clone_to_char_ptr(zs_string(_symbol.name));
 		}
 
-		if(_symbol.str_native_type !=NULL){
-			if(str_native_type != NULL){
-				free(str_native_type);
-				str_native_type=NULL;
-			}
-			str_native_type=zs_strutils::clone_to_char_ptr(zs_string(_symbol.str_native_type));
-		}
+
+		str_native_type=_symbol.str_native_type;
+
 
 		file=_symbol.file;
 		line=_symbol.line;
@@ -122,7 +118,7 @@ namespace zetscript{
 	// PUBLIC
 	Symbol::Symbol(const zs_string & _name){
 		name = zs_strutils::clone_to_char_ptr(_name);
-		str_native_type = NULL;
+		str_native_type = "";
 		file="";
 		line=-1;
 		idx_position = ZS_IDX_UNDEFINED; // in principle is not on stack
@@ -147,11 +143,6 @@ namespace zetscript{
 		if(name!= NULL){
 			free(name);
 			name=NULL;
-		}
-
-		if(str_native_type !=NULL){
-			free(str_native_type);
-			str_native_type=NULL;
 		}
 	}
 

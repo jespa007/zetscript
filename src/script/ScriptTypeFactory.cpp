@@ -758,7 +758,7 @@ namespace zetscript{
 	const char * ScriptTypeFactory::getScriptTypeName(short _idx_script_type){
 		if(_idx_script_type != ZS_IDX_UNDEFINED){
 			ScriptType *sc=(ScriptType *)script_types->get(_idx_script_type);
-			return sc->str_script_type;
+			return sc->str_script_type.c_str();
 		}
 		 return "type_unknow";
 	}
