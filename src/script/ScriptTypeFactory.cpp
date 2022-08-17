@@ -358,7 +358,7 @@ namespace zetscript{
 	}
 
 	StackElement *ScriptTypeFactory::getStkConstantStringObject(const std::string & _key){
-		return stk_constants->get(_key);
+		return stk_constants->at(_key);
 	}
 
 	StackElement * ScriptTypeFactory::registerStkObject(const std::string & _key, zs_int _value){

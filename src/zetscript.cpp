@@ -35,7 +35,7 @@ namespace zetscript{
 
 		script_type_factory->registerSystem();
 
-		script_filenames_by_ref=new std::map<std::string,std::string>();
+		script_filenames_by_ref=new std::map<std::string,char *>();
 
 		compiled_symbol_name = new std::map<std::string,std::string *>();
 		//-------------------------
@@ -428,7 +428,7 @@ namespace zetscript{
 
 				StackElement *vm_stk_element=&vm_get_stack_elements(virtual_machine)[v];
 
-				Symbol *symbol=(Symbol *)local_variables->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
+				Symbol *symbol=(Symbol *)local_variables->at(v);//(Symbol *)main_function_object->registered_symbols->items[v];
 
 
 				ScriptObjectObject *var = NULL;
@@ -473,20 +473,22 @@ namespace zetscript{
 			return NULL;
 		}
 
-		bool exists=false;
-		zs_int e=script_filenames_by_ref->get(_filename_by_ref,&exists);
-		if(script_filenames_by_ref->count(_filename_by_ref)==0){
+		const char *e=NULL;
+
+		if(script_filenames_by_ref->count(_filename_by_ref)!=0){
+			e=script_filenames_by_ref->at(_filename_by_ref);
+		}else{
 			char *s=(char *)malloc(strlen(_filename_by_ref)+1);
 			strcpy(s,_filename_by_ref);
-			script_filenames_by_ref->set(s,(zs_int)s);
-			e=(zs_int)s;
+			script_filenames_by_ref->at(s)=s;
+			e=s;
 		}
 		return ((const char *)e);
 	}
 
 
 	void ZetScript::resetParsedFiles(){
-		for(int i=0;i<parsed_files.size();i++){
+		for(unsigned i=0;i<parsed_files.size();i++){
 			delete ((ParsedFile *)parsed_files[i]);
 		}
 		parsed_files.clear();
@@ -508,7 +510,7 @@ namespace zetscript{
 			) {
 
 
-				Symbol *symbol=(Symbol *)global_symbol_functions->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
+				Symbol *symbol=(Symbol *)global_symbol_functions->at(v);//(Symbol *)main_function_object->registered_symbols->items[v];
 				delete symbol;
 				--v;
 			}
@@ -528,7 +530,7 @@ namespace zetscript{
 			) {
 
 
-				Symbol *symbol=(Symbol *)script_types->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
+				Symbol *symbol=(Symbol *)script_types->at(v);//(Symbol *)main_function_object->registered_symbols->items[v];
 				delete symbol;
 				--v;
 			}
@@ -561,7 +563,7 @@ namespace zetscript{
 	}
 
 	bool ZetScript::getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf){
-		for(int i=0;i < functions_with_unresolved_symbols.size(); i++){
+		for(unsigned i=0;i < functions_with_unresolved_symbols.size(); i++){
 			if(functions_with_unresolved_symbols[i]==_sf){
 				return true;
 			}
@@ -579,11 +581,11 @@ namespace zetscript{
 	}
 
 	void ZetScript::link(){
-		int i=0;
+		unsigned i=0;
 		while(i<functions_with_unresolved_symbols.size()){
 			ScriptFunction *_sf=(ScriptFunction *)functions_with_unresolved_symbols[i];
 			if(_sf->linkUnresolvedSymbols()){ // if link all symbols, erase
-				functions_with_unresolved_symbols.erase(i);
+				functions_with_unresolved_symbols.erase(functions_with_unresolved_symbols.begin()+i);
 			}else{ // next function
 				i++;
 			}
@@ -619,8 +621,8 @@ namespace zetscript{
 
 		if(script_filenames_by_ref != NULL){
 
-			for(auto it=script_filenames_by_ref->begin(); !it.end();it.next()){
-				char *script_filename_by_ref=(char *)(it.value);
+			for(auto it=script_filenames_by_ref->begin();it!=script_filenames_by_ref->end();it++){
+				char *script_filename_by_ref=(char *)(it->second);
 				free(script_filename_by_ref);
 			}
 

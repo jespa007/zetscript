@@ -24,7 +24,7 @@ namespace zetscript{
 			,uint16_t _properties){
 		sf_field_initializer=NULL;
 
-		str_script_type_ptr=NULL;
+		str_script_type_ptr="";
 		c_destructor = NULL;
 		c_constructor=NULL;
 		idx_function_member_constructor = ZS_IDX_UNDEFINED;
@@ -50,8 +50,8 @@ namespace zetscript{
 
 	void ScriptType::printListMemberFunctions(){
 		Scope *scope=this->scope_script_type;
-		for(int i=0; i < scope->symbol_functions->size();i++){
-			Symbol *symbol = (Symbol *)scope->symbol_functions->items[i];
+		for(unsigned i=0; i < scope->symbol_functions->size();i++){
+			Symbol *symbol = (Symbol *)scope->symbol_functions->at(i);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 			int start_idx=0;
 
@@ -126,8 +126,8 @@ namespace zetscript{
 			return true;
 		}
 
-		for(int i=0; i < this->idx_base_types->size(); i++){
-			if (script_type_factory->getScriptType(this->idx_base_types->items[i])->extendsFrom(_idx_script_type) == true) {
+		for(unsigned i=0; i < this->idx_base_types->size(); i++){
+			if (script_type_factory->getScriptType(this->idx_base_types->at(i))->extendsFrom(_idx_script_type) == true) {
 				return true;
 			}
 		}
@@ -673,7 +673,7 @@ namespace zetscript{
 				i >= idx_end
 				; i--
 		){
-			Symbol *member_symbol=(Symbol *)list->items[i];
+			Symbol *member_symbol=(Symbol *)list->at(i);
 			if(member_symbol->name == symbol_name){
 				return member_symbol;
 			}
@@ -692,7 +692,7 @@ namespace zetscript{
 				i >= idx_end
 				; i--
 		){
-			Symbol *member_symbol=(Symbol *)symbol_functions->items[i];
+			Symbol *member_symbol=(Symbol *)symbol_functions->at(i);
 			if(member_symbol->name == symbol_name){
 				if(only_symbol){
 					return member_symbol;

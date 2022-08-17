@@ -23,7 +23,7 @@ namespace zetscript{
 		//
 		while(*it!=0){
 			symbol_name_methametod=byte_code_metamethod_to_symbol_str(*it);
-			symbol_name_methametod.append('@');
+			symbol_name_methametod.append("@");
 			if(zs_strutils::starts_with(_symbol_name,symbol_name_methametod)){
 				return true;
 			}

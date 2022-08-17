@@ -478,9 +478,9 @@ namespace zetscript{
 
 		ZS_UNUSUED_PARAM(_idx_return_type);
 
-		for(int i=0; i < _scope->symbol_functions->size();i++){
+		for(unsigned i=0; i < _scope->symbol_functions->size();i++){
 			bool same_signature=true;
-			Symbol *symbol_function_memeber= (Symbol *)_scope->symbol_functions->items[i];
+			Symbol *symbol_function_memeber= (Symbol *)_scope->symbol_functions->at(i);
 			ScriptFunction *function_member=(ScriptFunction *)symbol_function_memeber->ref_ptr;
 			if(symbol_function_memeber->name==_function_name && function_member->params_len==_params_len){
 				for(int j=0; j < _params_len && same_signature;j++){
@@ -735,7 +735,7 @@ namespace zetscript{
 		scope_script_function->removeChildrenBlockTypes();
 
 		// count number vars at the top most
-		int n_var_scope=scope_script_function->size()Variables(true);
+		int n_var_scope=scope_script_function->countVariables(true);
 
 		// remove last symbols
 		local_variables->resize(n_var_scope);
@@ -748,7 +748,7 @@ namespace zetscript{
 		if(unresolved_symbols.size() > 0){
 
 			const char *str_aux=NULL;
-			int i=0;
+			unsigned i=0;
 			while(i < unresolved_symbols.size()){
 				Instruction *unresolved_instruction=&instructions[unresolved_symbols[i]];
 				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(this,unresolved_instruction);
@@ -815,7 +815,7 @@ namespace zetscript{
 					}
 
 					// unstack unresolved symbol
-					unresolved_symbols.erase(i);
+					unresolved_symbols.erase(unresolved_symbols.begin()+i);
 
 				}
 				else{ // next
@@ -840,7 +840,7 @@ namespace zetscript{
 	ScriptFunction::~ScriptFunction(){
 		clear();
 
-		for(int i=0; i < instruction_source_infos.size(); i++){
+		for(unsigned i=0; i < instruction_source_infos.size(); i++){
 			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_infos[i];
 			if(isi != NULL){
 				delete isi;
