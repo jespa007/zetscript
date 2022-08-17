@@ -344,7 +344,7 @@ namespace zetscript{
 			EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'for': Expected '('");
 		}
 
-		idx_instruction_for_start=eval_data->current_function->eval_instructions.size();
+		idx_instruction_for_start=(int)eval_data->current_function->eval_instructions.size();
 
 		// save scope pointer ...
 		Scope *new_scope =eval_new_scope(eval_data,scope_info); // push current scope
@@ -377,7 +377,7 @@ namespace zetscript{
 			else{ // in
 
 				// check if no instructions (i.e v,k=1+2) and aux_test is operator in...
-				if(idx_instruction_for_start!=eval_data->current_function->eval_instructions.size()){
+				if(idx_instruction_for_start!=(int)eval_data->current_function->eval_instructions.size()){
 					EVAL_ERROR_FILE_LINEF(
 							eval_data->current_parsing_file
 							,line
@@ -420,7 +420,7 @@ namespace zetscript{
 				line=test_line;
 
 				// check each byte code is load...
-				for(int j=0; j<ei_init_vars_for.size();j++){
+				for(unsigned j=0; j<ei_init_vars_for.size();j++){
 					EvalInstruction *ins=(EvalInstruction *)ei_init_vars_for[j];
 					if(ins->vm_instruction.byte_code!=BYTE_CODE_LOAD_LOCAL){
 						error_some_instruction_not_load_local=true;
@@ -623,7 +623,7 @@ namespace zetscript{
 				);
 
 				// load k,v
-				for(int i=0; i <ei_init_vars_for.size() ;i++){
+				for(unsigned i=0; i <ei_init_vars_for.size() ;i++){
 					eval_data->current_function->eval_instructions.push_back(
 							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for[i])
 					);
@@ -660,7 +660,7 @@ namespace zetscript{
 			}else{ // is not for-in re eval for in with no in-break
 
 				// copy var initialization
-				for(int i=0; i <ei_init_vars_for.size() ;i++){
+				for(unsigned i=0; i <ei_init_vars_for.size() ;i++){
 					eval_data->current_function->eval_instructions.push_back(
 							new EvalInstruction(*(EvalInstruction *)ei_init_vars_for[i])
 					);
@@ -791,7 +791,11 @@ namespace zetscript{
 		idx_post_instruction_for_start=eval_data->current_function->eval_instructions.size();
 
 		// insert post operations...
-		eval_data->current_function->eval_instructions.concat(ei_post_operations);
+		eval_data->current_function->eval_instructions.insert(
+				eval_data->current_function->eval_instructions.end()
+				,ei_post_operations.begin()
+				,ei_post_operations.end()
+		);
 
 		// insert jmp instruction to begin condition for...
 		eval_data->current_function->eval_instructions.push_back(

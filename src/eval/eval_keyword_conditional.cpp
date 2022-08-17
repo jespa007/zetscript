@@ -413,7 +413,8 @@ namespace zetscript{
 				// 1. Insert eval instructions for switch condition
 				eval_data->current_function->eval_instructions.insert(
 						eval_data->current_function->eval_instructions.begin()+idx_start_instruction
-						,ei_switch_condition
+						,ei_switch_condition.begin()
+						,ei_switch_condition.end()
 				);
 
 				// 2. insert all cases found first from start + offset size instruction cases found

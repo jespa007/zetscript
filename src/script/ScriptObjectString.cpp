@@ -234,7 +234,7 @@ namespace zetscript{
 									int length_padding=padding-(int)strlen(ptr_str_format_string);
 									if(length_padding>0){//left padding
 										for(int i=0; i < length_padding;i++){
-											str_result.append(' ');
+											str_result.append(" ");
 										}
 									}
 								}

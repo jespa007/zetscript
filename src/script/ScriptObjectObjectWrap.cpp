@@ -10,11 +10,11 @@ namespace zetscript{
 		VirtualMachine *vm=_zs->getVirtualMachine();
 		ScriptObjectVector *sv= ZS_NEW_OBJECT_VECTOR(_zs);
 
-		zs_map *map=o1->getMapUserProperties();
-		for(auto it=map->begin(); !it.end(); it.next()){
+		auto user_properties=o1->getMapUserProperties();
+		for(auto it=user_properties->begin(); it!=user_properties->end(); it++){
 			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so=ZS_NEW_OBJECT_STRING(_zs);
-			so->set(it.key);
+			so->set(it->first);
 
 			// create and share pointer
 			if(!vm_create_shared_script_object(vm,so)){

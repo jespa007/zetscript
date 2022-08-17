@@ -397,7 +397,8 @@ eval_error_sub_expression:
 
 				dst_instructions->insert(
 						dst_instructions->end()
-						,*ei_left_sub_expressions
+						,ei_left_sub_expressions->begin()
+						,ei_left_sub_expressions->end()
 				);
 
 			}
@@ -411,7 +412,7 @@ eval_error_sub_expression:
 			);
 
 			// check if any left assignment is not literal ...
-			for(unsigned l=0; l < left_size;l++){
+			for(int l=0; l < left_size;l++){
 				std::vector<EvalInstruction *> *left_sub_expression=(std::vector<EvalInstruction *> *)zs_ei_left_sub_expressions[l];
 				EvalInstruction *instruction = (EvalInstruction *)left_sub_expression->at(left_sub_expression->size()-1);
 
@@ -437,7 +438,8 @@ eval_error_sub_expression:
 					// read first instruction
 					dst_instructions->insert(
 						dst_instructions->end()
-						,*left_instructions
+						,left_instructions->begin()
+						,left_instructions->end()
 					);
 
 				}
@@ -445,7 +447,7 @@ eval_error_sub_expression:
 				ei_last=(EvalInstruction *)left_instructions->at(left_instructions->size()-1);
 
 				if(ei_last->vm_instruction.byte_code==BYTE_CODE_STORE){
-					EvalInstruction *eval_store_target=((EvalInstruction *)left_instructions->at(left_instructions->size()-1-1]);
+					EvalInstruction *eval_store_target=(EvalInstruction *)left_instructions->at(left_instructions->size()-1-1);
 					if(
 						eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_VECTOR_ITEM
 						|| eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_THIS_VARIABLE

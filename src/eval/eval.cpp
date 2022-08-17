@@ -421,7 +421,7 @@ namespace zetscript{
 		}
 
 		int n_var_fun=sf->local_variables->size();
-		int n_var_scope=sf->scope_script_function->size()Variables(true);
+		int n_var_scope=sf->scope_script_function->countVariables(true);
 
 		if(n_var_fun != n_var_scope){
 
@@ -496,7 +496,7 @@ namespace zetscript{
 				// get current function name and find first ancestor in heritance
 				// find constructor symbol through other members...
 				for(int j = sf->idx_position-1; j >=0 && symbol_sf_foundf==NULL; j--){
-					Symbol *symbol_member = (Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
+					Symbol *symbol_member = (Symbol *)sc_sf->scope_script_type->symbol_functions->at(j);
 					ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 					bool match_names=sf_member->name_script_function == sf->name_script_function;
 					bool match_params=(sf_member->properties & SYMBOL_PROPERTY_C_OBJECT_REF?match_names:true);
@@ -545,7 +545,7 @@ namespace zetscript{
 			case BYTE_CODE_THIS_CALL:
 				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
 					for(unsigned j = 0; j < sc_sf->scope_script_type->symbol_functions->size(); j++){
-						Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
+						Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->at(j);
 						if(
 							   sv->name ==eval_instruction->symbol_name
 						){

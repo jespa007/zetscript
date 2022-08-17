@@ -35,9 +35,9 @@ namespace zetscript{
 
 		script_type_factory->registerSystem();
 
-		script_filenames_by_ref=new zs_map();
+		script_filenames_by_ref=new std::map<std::string,std::string>();
 
-		compiled_symbol_name = new zs_map();
+		compiled_symbol_name = new std::map<std::string,std::string *>();
 		//-------------------------
 		// Register built in modules
 
@@ -214,8 +214,8 @@ namespace zetscript{
 		 ScriptFunction::printGeneratedCode(sf_main);
 
 		 // print defined functions in main function
-		 for(int j =0; j < symbol_functions->size(); j++){
-			Symbol *symbol=(Symbol *)symbol_functions->items[j];
+		 for(unsigned j =0; j < symbol_functions->size(); j++){
+			Symbol *symbol=(Symbol *)symbol_functions->at(j);
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
 
@@ -235,8 +235,8 @@ namespace zetscript{
 			}
 		}
 
-		 for(int i = 1; i < script_classes->size(); i++){
-			 ScriptType *sc=(ScriptType *)script_classes->get(i);
+		 for(unsigned i = 1; i < script_classes->size(); i++){
+			 ScriptType *sc=(ScriptType *)script_classes->at(i);
 			 bool show_class=true;
 
 			 // ignore builtin implementations if not chosen ...
@@ -257,9 +257,9 @@ namespace zetscript{
 
 			 if(show_class){
 				 symbol_functions=sc->scope_script_type->symbol_functions;
-				 for(int f = 0; f < symbol_functions->size(); f++){
+				 for(unsigned f = 0; f < symbol_functions->size(); f++){
 					 bool show_function=true;
-					 Symbol *symbol=(Symbol *)symbol_functions->items[f];
+					 Symbol *symbol=(Symbol *)symbol_functions->at(f);
 
 					 if(show_function){
 						 ScriptFunction::printGeneratedCode((ScriptFunction *)symbol->ref_ptr,sc);
@@ -273,7 +273,7 @@ namespace zetscript{
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // FILE MANAGEMENT
 	bool ZetScript::isFilenameAlreadyParsed(const std::string & filename){
-		for(int i = 0; i < parsed_files.size(); i++){
+		for(unsigned i = 0; i < parsed_files.size(); i++){
 			if(((ParsedFile *)parsed_files[i])->filename==filename){
 				return true;
 			}
@@ -475,7 +475,7 @@ namespace zetscript{
 
 		bool exists=false;
 		zs_int e=script_filenames_by_ref->get(_filename_by_ref,&exists);
-		if(exists==false){
+		if(script_filenames_by_ref->count(_filename_by_ref)==0){
 			char *s=(char *)malloc(strlen(_filename_by_ref)+1);
 			strcpy(s,_filename_by_ref);
 			script_filenames_by_ref->set(s,(zs_int)s);

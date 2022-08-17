@@ -61,7 +61,7 @@ namespace zetscript{
 		if(ref_object->getRefObject()==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
-		it->next();
+		it++;
 	}
 
 	ScriptObjectIteratorObject::~ScriptObjectIteratorObject(){

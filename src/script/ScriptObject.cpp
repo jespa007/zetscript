@@ -42,7 +42,7 @@ namespace zetscript{
 		idx_script_type=ZS_IDX_UNDEFINED;
 		shared_pointer=NULL;
 		zs=NULL;
-		map_builtin_properties=new zs_map();
+		map_builtin_properties=new std::map<std::string,StackElement *>();
 		memset(&stk_this,0,sizeof(stk_this));
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -61,8 +61,8 @@ namespace zetscript{
 			std::vector<Symbol *> *symbol_vars=script_type->scope_script_type->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
-			for(int i = 0; i < symbol_vars->size(); i++){
-				Symbol * symbol = (Symbol *)symbol_vars->items[i];
+			for(unsigned i = 0; i < symbol_vars->size(); i++){
+				Symbol * symbol = (Symbol *)symbol_vars->at(i);
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 					addBuiltinProperty(
 							symbol->name
@@ -84,7 +84,10 @@ namespace zetscript{
 	}
 
 	// built-in only for initialized
-	StackElement * ScriptObject::addBuiltinProperty(const char  * symbol_value, StackElement stk){
+	StackElement * ScriptObject::addBuiltinProperty(
+			const std::string & symbol_value
+			, StackElement stk
+	){
 		std::string key_value = symbol_value;
 
 		// if ignore duplicate was true, map resets idx to the last function...
@@ -143,7 +146,7 @@ namespace zetscript{
 
 	StackElement * 			ScriptObject::getBuiltinProperty(const std::string & property_name){
 		bool exists=false;
-		if(this->map_builtin_properties->size()(property_name)!=0){
+		if(this->map_builtin_properties->count(property_name)!=0){
 			return this->map_builtin_properties->at(property_name);
 		}
 		return NULL;
@@ -193,7 +196,7 @@ namespace zetscript{
 			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
-		return (StackElement *)stk_builtin_elements.at[idx];
+		return (StackElement *)stk_builtin_elements.at(idx);
 	}
 
 	std::string ScriptObject::toString(){
@@ -209,8 +212,8 @@ namespace zetscript{
 	}
 
 	int ScriptObject::idxRefObject(RefObject  *_ref_object){
-		for(int i=0; i < ref_script_objects->size();i++){
-			if(*(ref_script_objects->at(i))==_ref_object){
+		for(unsigned i=0; i < ref_script_objects->size();i++){
+			if(ref_script_objects->at(i)==_ref_object){
 				return i;
 			}
 		}
@@ -220,7 +223,9 @@ namespace zetscript{
 
 	bool ScriptObject::deRefWeakPointer(){
 		if(weak_pointers->size()>0){
-			ScriptObjectWeakPointer *wp=weak_pointers->pop_back();
+			// get last
+			ScriptObjectWeakPointer *wp=weak_pointers->at(weak_pointers->size()-1);
+			weak_pointers->pop_back();
 			wp->deRefObject();
 			return true;
 		}
@@ -234,7 +239,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("internal: member function not exist");
 		}
 
-		ref_script_objects->at[idx]->deRefObject();
+		ref_script_objects->at(idx)->deRefObject();
 		ref_script_objects->erase(ref_script_objects->begin()+idx);
 	}
 
@@ -244,7 +249,7 @@ namespace zetscript{
 
 	ScriptObject::~ScriptObject(){
 		// deallocate built-in function member objects
-		for(int i=0; i< stk_builtin_elements.size(); i++){
+		for(unsigned i=0; i< stk_builtin_elements.size(); i++){
 			StackElement *stk=(StackElement *)stk_builtin_elements[i];
 
 			if(stk->properties & STK_PROPERTY_MEMBER_PROPERTY){
@@ -262,19 +267,19 @@ namespace zetscript{
 		stk_builtin_elements.clear();
 		delete map_builtin_properties;
 
-		for(int i=0; i < ref_script_objects->size(); i++){
+		for(unsigned i=0; i < ref_script_objects->size(); i++){
 			ScriptObject **_so=(ScriptObject **)ref_script_objects->at(i);
 			*_so=NULL;
 		}
 
-		for(int i=0; i < ref_script_objects->size(); i++){
+		for(unsigned i=0; i < ref_script_objects->size(); i++){
 			RefObject *_ref_pointer=ref_script_objects->at(i);
 			_ref_pointer->deRefObject();
 		}
 
 		delete ref_script_objects;
 
-		for(int i=0; i < weak_pointers->size(); i++){
+		for(unsigned i=0; i < weak_pointers->size(); i++){
 			weak_pointers->at(i)->deRefObject();
 
 		}

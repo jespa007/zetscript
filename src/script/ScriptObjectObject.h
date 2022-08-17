@@ -37,7 +37,7 @@ namespace zetscript{
 		);
 
 		StackElement * addUserProperty(
-						const std::string symbol_value
+						const std::string & symbol_value
 						,std::string & error
 						,StackElement * stk_element = NULL
 				);
@@ -65,7 +65,7 @@ namespace zetscript{
 		std::map<std::string,StackElement *>	*	map_user_properties; // to search faster each property by its name
 
 
-		StackElement * 			getUserProperty(const char  * property_name);
+		StackElement * 			getUserProperty(const std::string  & property_name);
 	};
 
 }

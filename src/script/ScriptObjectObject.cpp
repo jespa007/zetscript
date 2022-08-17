@@ -99,7 +99,7 @@ namespace zetscript{
 		return new_stk;
 	}
 
-	StackElement * ScriptObjectObject::getUserProperty(const char * property_name){
+	StackElement * ScriptObjectObject::getUserProperty(const std::string & property_name){
 
 		bool exists;
 		if(this->map_user_properties->count(property_name)!=0){
@@ -142,14 +142,13 @@ namespace zetscript{
 	}
 
 	bool ScriptObjectObject::eraseUserProperty(const char * property_name/*, const ScriptFunction *info_function*/){
-		bool exists=false;
 
-		if(map_user_properties.size()(property_name)==0){
+		if(map_user_properties->count(property_name)==0){
 			VM_SET_USER_ERROR(vm,"Property %s not exist",property_name);
 			return false;
 		}
 
-		StackElement *stk_user_element = (StackElement *)map_user_properties->at(property_name,&exists);
+		StackElement *stk_user_element = (StackElement *)map_user_properties->at(property_name);
 		free(stk_user_element);
 		map_user_properties->erase(property_name); // erase also property key
 		return true;

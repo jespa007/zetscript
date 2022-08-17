@@ -726,8 +726,8 @@ namespace zetscript{
 
 	ScriptType::~ScriptType(){
 
-		for(int i=0; i < allocated_member_properties->size(); i++){
-			MemberProperty *mp=(MemberProperty *)allocated_member_properties->items[i];
+		for(unsigned i=0; i < allocated_member_properties->size(); i++){
+			MemberProperty *mp=(MemberProperty *)allocated_member_properties->at(i);
 			delete mp;
 		}
 

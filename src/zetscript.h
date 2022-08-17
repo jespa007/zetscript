@@ -530,7 +530,7 @@ namespace zetscript{
 
 		//--------
 		// VARS
-		std::map<std::string,std::string>			*script_filenames_by_ref;
+		std::map<std::string,std::string *>			*script_filenames_by_ref;
 		std::vector<ParsedFile *>					parsed_files;
 		std::vector<ScriptFunction *>				functions_with_unresolved_symbols;
 
