@@ -11,7 +11,7 @@ namespace zetscript{
 
 	struct EvalInstruction{
 		Instruction 					vm_instruction;
-		zs_string						symbol_name;
+		std::string						symbol_name;
 		Scope							*symbol_scope;
 		InstructionSourceInfo 			instruction_source_info;
 
@@ -46,9 +46,9 @@ namespace zetscript{
 	void 	eval_push_function(EvalData *eval_data,ScriptFunction *script_function);
 	int 	eval_pop_and_compile_function(EvalData *_eval_data);
 	void 	eval_pop_current_function(EvalData *eval_data);
-	void    eval_generate_byte_code_field_initializer(EvalData *data, ScriptFunction *sf, zs_vector<EvalInstruction *> *instructions, Symbol *symbol_member_var);
+	void    eval_generate_byte_code_field_initializer(EvalData *data, ScriptFunction *sf, std::vector<EvalInstruction *> *instructions, Symbol *symbol_member_var);
 
-	bool 	eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,zs_string & static_error);
+	bool 	eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,std::string & static_error);
 	void 	eval_parse_and_compile(
 			ZetScript *zs
 			,const char * str_code

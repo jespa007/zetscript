@@ -6,14 +6,14 @@ namespace zetscript{
 
 	template < typename R>
 	void ScriptType::bindStaticConstMemberVariable(
-			const zs_string & var_name
+			const std::string & var_name
 			, const R var_pointer
 			, const char *registered_file
 			,short registered_line)
 	{
 		// to make compatible MSVC shared library
-		zs_string var_type = typeid(R).name();
-		zs_string error;
+		std::string var_type = typeid(R).name();
+		std::string error;
 
 			// register variable...
 		this->registerMemberVariable(
@@ -32,13 +32,13 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptType::bindStaticMemberFunction(
-			const zs_string & _function_name
+			const std::string & _function_name
 			,F _ptr_function
 			, const char *_registered_file
 			,short _registered_line
 		)
 	{
-		zs_string error;
+		std::string error;
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
 		const char *return_type;
@@ -75,7 +75,7 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptType::bindMemberFunction(
-			const zs_string & _function_name
+			const std::string & _function_name
 			,F _ptr_function
 			, const char *_registered_file
 			,short _registered_line
@@ -83,7 +83,7 @@ namespace zetscript{
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
 
-		zs_string error;
+		std::string error;
 
 		// 1. check all parameters ok.
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(

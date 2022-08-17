@@ -20,8 +20,8 @@
 #define SET_BOOLEAN_RETURN(b) 			CURRENT_VM->setBooleanReturnValue(b)
 #define SET_FLOAT_RETURN(f)   			CURRENT_VM->setFloatReturnValue(f)
 
-#define NO_PARAMS zs_vector<StackElement>{}
-#define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectObject * (const zs_vector<ScriptObjectObject *> & param)>
+#define NO_PARAMS std::vector<StackElement>{}
+#define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectObject * (const std::vector<ScriptObjectObject *> & param)>
 
 #define VM_EXECUTE(vm,o,f,stk,n)		vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
 
@@ -102,7 +102,7 @@ namespace zetscript{
 
 	void 			vm_set_error(VirtualMachine *vm, const char *_str_error,...);
 	void 			vm_set_file_line_error(VirtualMachine *vm, const char *file, int line, const char *in_txt,...);
-	zs_string 		vm_get_error(VirtualMachine *vm);
+	std::string 		vm_get_error(VirtualMachine *vm);
 	
 	bool 			vm_it_has_error(VirtualMachine *vm);
 

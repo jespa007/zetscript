@@ -48,48 +48,48 @@ namespace zetscript{
 			NUMBER_TYPE_DOUBLE
 		}NumberType;
 
-		 bool  		* parse_bool(const zs_string & );
-		 zs_int		* parse_zs_int(const zs_string & );
-		 zs_float	* parse_zs_float(const zs_string & );
+		 bool  		* parse_bool(const std::string & );
+		 zs_int		* parse_zs_int(const std::string & );
+		 zs_float	* parse_zs_float(const std::string & );
 
 
-		 zs_string 	zs_int_to_str(zs_int _number, const zs_string & _format = "");
-		 zs_string 	zs_float_to_str(zs_float _number);
-		 zs_string 	to_lower(const zs_string & str);
-		 zs_string 	to_upper(const zs_string & str);
-		 char 		*clone_to_char_ptr(const zs_string & _str_in);
-		 zs_string  format(const  char  *string_text, ...);
-		 zs_string	format_file_line(const char* _file, int _line, const  char* _str_in, ...);
+		 std::string 	zs_int_to_str(zs_int _number, const std::string & _format = "");
+		 std::string 	zs_float_to_str(zs_float _number);
+		 std::string 	to_lower(const std::string & str);
+		 std::string 	to_upper(const std::string & str);
+		 char 		*clone_to_char_ptr(const std::string & _str_in);
+		 std::string  format(const  char  *string_text, ...);
+		 std::string	format_file_line(const char* _file, int _line, const  char* _str_in, ...);
 
-		 bool is_empty(const zs_string & str);
-		 bool ends_with(const zs_string & str, const zs_string & ending);
-		 bool starts_with(const zs_string & str, const zs_string & starting);
-		 zs_string replace(const zs_string & str_input, const zs_string & old_word, const zs_string & new_word);
+		 bool is_empty(const std::string & str);
+		 bool ends_with(const std::string & str, const std::string & ending);
+		 bool starts_with(const std::string & str, const std::string & starting);
+		 std::string replace(const std::string & str_input, const std::string & old_word, const std::string & new_word);
 
-		 zs_vector<zs_string> split(const zs_string &s, char delim);
+		 std::vector<std::string> split(const std::string &s, char delim);
 
-		 zs_vector<zs_string> split(const zs_string &s_in, const zs_string & delim);
+		 std::vector<std::string> split(const std::string &s_in, const std::string & delim);
 
-		 NumberType is_number(const zs_string & test_str);
-		 bool 		 is_binary(const zs_string & test_str);
+		 NumberType is_number(const std::string & test_str);
+		 bool 		 is_binary(const std::string & test_str);
 
-		 zs_string remove(zs_string & str_old, char ch_to_remove);
+		 std::string remove(std::string & str_old, char ch_to_remove);
 
-		 int count(const zs_string & s,char c);
+		 int count(const std::string & s,char c);
 
 		/**
-		 * Given two pointers within that points within a zs_string, this function copies zs_string between its interval.
+		 * Given two pointers within that points within a std::string, this function copies std::string between its interval.
 		 * @p1:start pointer
 		 * @p2:end pointer
 		 */
-		void copy_from_ptr_diff(zs_string & str_dst,const char *p1, const char *p2);
+		void copy_from_ptr_diff(std::string & str_dst,const char *p1, const char *p2);
 
 
-		bool contains(const zs_string & input, const zs_string & str_containts,StringComparer sc=StringComparer::Exactly);
-		bool contains(const zs_vector<zs_string> & input, const zs_string & str_containts,StringComparer sc=StringComparer::Exactly);
+		bool contains(const std::string & input, const std::string & str_containts,StringComparer sc=StringComparer::Exactly);
+		bool contains(const std::vector<std::string> & input, const std::string & str_containts,StringComparer sc=StringComparer::Exactly);
 
-		int index_of(zs_string& text, zs_string& pattern);
+		int index_of(std::string& text, std::string& pattern);
 
-		zs_string unescape(const zs_string & s);
+		std::string unescape(const std::string & s);
 	}
 }

@@ -80,11 +80,11 @@ void test_std_string(){
 	printf("Elapsed time %i\n",zetscript::zs_system::clock()-start);
 	printf("=======================================\n");
 }
-void test_zs_string(){
-	zetscript::zs_string str;
+void test_std::string(){
+	std::string str;
 	printf("=======================================\n");
-	printf("Test zs_string\n");
-	printf("sizeof(zs_string):%lu\n",sizeof(str));
+	printf("Test std::string\n");
+	printf("sizeof(std::string):%lu\n",sizeof(str));
 
 	printf("Append elements...");
 	int start=zetscript::zs_system::clock();
@@ -106,7 +106,7 @@ void test_map(){
 
 void test_string(){
 	test_std_string();
-	test_zs_string();
+	test_std::string();
 }
 
 int main(int argc, char *argv[]){

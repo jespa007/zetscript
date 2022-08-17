@@ -36,7 +36,8 @@ namespace zetscript{
 		RefObject *ref_object;
 		//ScriptObjectObject *oo;
 		StackElement stk_key;
-		zs_map_iterator it;
+		std::map<std::string,StackElement *>::iterator it;
+		std::map<std::string,StackElement *> *it_map;
 		void setup();
 
 	};

@@ -82,10 +82,10 @@ namespace zetscript{
 
 
 		 bool				vm_error,vm_error_max_stack_reached;
-		 zs_string			vm_error_str;
-		 zs_string			vm_error_file;
+		 std::string			vm_error_str;
+		 std::string			vm_error_file;
 		 int 				vm_error_line;
-		 zs_string 			vm_error_callstack_str;
+		 std::string 			vm_error_callstack_str;
 		 char				vm_str_metamethod_aux[100];
 		 char				vm_str_aux[2][100];
 		 VM_ScopeFunction	*vm_current_scope_function;
@@ -93,7 +93,7 @@ namespace zetscript{
 
 
 		 StackElement     	vm_stack[VM_STACK_MAX];
-		 zs_vector<InfoLifetimeObject *>			lifetime_object;
+		 std::vector<InfoLifetimeObject *>			lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
 		StackElement *stk_vm_current;
@@ -182,7 +182,7 @@ namespace zetscript{
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
 			,bool is_constructor
-			,const zs_string & symbol_to_find
+			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
 	);
@@ -418,10 +418,10 @@ namespace zetscript{
 		VM_ScopeBlock *scope_block=--VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
 		Scope *scope=scope_block->scope;\
 		StackElement         * stk_local_vars	=VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
-		zs_vector<Symbol *> *scope_symbols=scope->symbol_variables;\
-		int count=scope_symbols->count;\
+		std::vector<Symbol *> *scope_symbols=scope->symbol_variables;\
+		int count=(int)scope_symbols->size();\
 		if(count > 0){\
-			StackElement *stk_local_var=stk_local_vars+scope_symbols->items[0]->idx_position;\
+			StackElement *stk_local_var=stk_local_vars+scope_symbols->at(0)->idx_position;\
 			while(count--){\
 				if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
 					ScriptObject *so=(ScriptObject *)(stk_local_var->value);\

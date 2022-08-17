@@ -171,7 +171,7 @@ namespace zetscript{
 	}
 
 	bool MetamethodMembers::isMetamethodMember(ByteCodeMetamethod _byte_code){
-		zs_string symbol="N/A";
+		std::string symbol="N/A";
 		const ByteCodeMetamethod *it=byte_code_metamethod_member_list;
 
 		while(*it!=0){
@@ -185,7 +185,7 @@ namespace zetscript{
 
 	MetamethodMembers::~MetamethodMembers(){
 
-		zs_vector<StackElement *> *ptr_vector[]={
+		std::vector<StackElement *> *ptr_vector[]={
 			&setters
 			,&add_setters
 			,&sub_setters
@@ -200,10 +200,10 @@ namespace zetscript{
 			,NULL
 		};
 
-		zs_vector<StackElement *> **it=ptr_vector;
+		std::vector<StackElement *> **it=ptr_vector;
 		while(*it!=NULL){
 
-			for(int i=0;i < (*it)->count; i++){
+			for(int i=0;i < (*it)->size(); i++){
 				StackElement *stk_el=(StackElement *)(*it)->items[i];
 				free(stk_el);
 			}

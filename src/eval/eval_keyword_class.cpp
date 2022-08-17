@@ -19,8 +19,8 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		int class_line;
-		zs_string str_script_type;
-		zs_string base_class_name="";
+		std::string str_script_type;
+		std::string base_class_name="";
 		ScriptType *sc;
 		Keyword key_w;
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -170,18 +170,18 @@ namespace zetscript{
 		}
 
 		// link unreferenced forward declared functions
-		for(int i=0; i < sc->scope_script_type->symbol_functions->count; i++){
-			Symbol  *symbol_sf=(Symbol *)(sc->scope_script_type->symbol_functions->items[i]);
+		for(unsigned i=0; i < sc->scope_script_type->symbol_functions->size(); i++){
+			Symbol  *symbol_sf=(Symbol *)(sc->scope_script_type->symbol_functions->at(i));
 			ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
 			Instruction *it=sf->instructions;
 			if(it != NULL){
 				while(it->byte_code!=BYTE_CODE_END_FUNCTION){
 					if((it->byte_code==BYTE_CODE_THIS_CALL) && (it->value_op2==ZS_IDX_UNDEFINED)){
 						// search function and link its idx_position
-						zs_string str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
+						std::string str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
 
-						for(int j = 0; j < sc->scope_script_type->symbol_functions->count; j++){
-							Symbol *sv=(Symbol *)sc->scope_script_type->symbol_functions->items[j];
+						for(unsigned j = 0; j < sc->scope_script_type->symbol_functions->size(); j++){
+							Symbol *sv=(Symbol *)sc->scope_script_type->symbol_functions->at(j);
 							if(
 								   ( sv->name == str_name_unreferenced_this_call )
 							){
@@ -204,10 +204,10 @@ namespace zetscript{
 
 	}
 
-	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptType **sc,zs_string & member_symbol){
+	char * is_class_member_extension(EvalData *eval_data,const char *s,int & line,ScriptType **sc,std::string & member_symbol){
 
 		char *aux_p = (char *)s;
-		zs_string str_script_type;
+		std::string str_script_type;
 		*sc=NULL;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -249,7 +249,7 @@ namespace zetscript{
 	char * eval_keyword_delete(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
-		zs_string symbol_value;
+		std::string symbol_value;
 		Keyword key_w;
 		EvalInstruction *eval_instruction;
 
@@ -290,7 +290,7 @@ namespace zetscript{
 			}
 
 			// get last instruction...
-			eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.count-1];
+			eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions[eval_data->current_function->eval_instructions.size()-1];
 			ByteCode  byte_code=eval_instruction->vm_instruction.byte_code;
 			if(byte_code==BYTE_CODE_FIND_VARIABLE){
 				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
@@ -315,10 +315,10 @@ namespace zetscript{
 		){
 
 		char *aux_p = (char *)s;
-		zs_string property_name="";
+		std::string property_name="";
 		int attrib_start_line;
 		char *end_var = NULL;
-		zs_string class_property_name=sc->str_script_type;
+		std::string class_property_name=sc->str_script_type;
 		Scope *scope_info=sc->scope_script_type;
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -346,8 +346,8 @@ namespace zetscript{
 			Symbol *symbol_attrib=NULL;
 			MemberProperty *mp=NULL;
 			
-			zs_string name_script_function;
-			zs_string error;
+			std::string name_script_function;
+			std::string error;
 
 			try{
 				symbol_attrib=sc->registerMemberProperty(
@@ -477,7 +477,7 @@ namespace zetscript{
 						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name_script_function.c_str());
 
 						if(_mp_info.byte_code_metamethod!=BYTE_CODE_METAMETHOD_INVALID){
-							if(_mp_info.setters->count == 0){
+							if(_mp_info.setters->size() == 0){
 								mp->metamethod_members.addSetter(_mp_info.byte_code_metamethod,symbol);
 							}else{
 								EVAL_ERROR_FILE_LINE(
@@ -490,7 +490,7 @@ namespace zetscript{
 							}
 						} else{
 
-							zs_string list_valid_metamethods="";
+							std::string list_valid_metamethods="";
 
 
 
@@ -498,7 +498,7 @@ namespace zetscript{
 							// get all member list
 							const ByteCodeMetamethod *it_mm=MetamethodMembers::byte_code_metamethod_member_list;
 							while(*it_mm!=0){
-								list_valid_metamethods+=zs_string("- '")+ byte_code_metamethod_to_symbol_str(*it_mm)+"'\n";
+								list_valid_metamethods+=std::string("- '")+ byte_code_metamethod_to_symbol_str(*it_mm)+"'\n";
 								it_mm++;
 							}
 
@@ -506,7 +506,7 @@ namespace zetscript{
 							// get all member setter listMetamethodMembers::byte_code_metamethod_member_setter_list
 							const ByteCodeMetamethod *it_setters=MetamethodMembers::byte_code_metamethod_member_setter_list;
 							while(*it_setters!=0){
-								list_valid_metamethods+=zs_string("- '")+byte_code_metamethod_to_symbol_str(*it_setters)+"'\n";
+								list_valid_metamethods+=std::string("- '")+byte_code_metamethod_to_symbol_str(*it_setters)+"'\n";
 								it_setters++;
 							}
 

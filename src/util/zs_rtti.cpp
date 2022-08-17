@@ -6,33 +6,33 @@
 
 namespace zetscript{
 	namespace zs_rtti{
-		zs_string  demangle(const char * name) {
+		std::string  demangle(const char * name) {
 
 		#ifdef _MSC_VER // visual studio doesn't support this.
 			return name;
 		#else
-			if(name == zs_string(typeid(zs_string *).name())){
-				return "zetscript::zs_string*";
+			if(name == std::string(typeid(std::string *).name())){
+				return "std::string*";
 			}
 
-			if(name == zs_string(typeid(zs_int *).name())){
+			if(name == std::string(typeid(zs_int *).name())){
 					return "zetscript::zs_int*";
 				}
 
-			if(name == zs_string(typeid(bool *).name())){
+			if(name == std::string(typeid(bool *).name())){
 					return "zetscript::bool*";
 				}
 
-			if(name == zs_string(typeid(zs_float *).name())){
+			if(name == std::string(typeid(zs_float *).name())){
 					return ZS_STR(zs_float)"*";
 				}
 
 
-			if(name == zs_string(typeid(zs_string).name())){
-				return "zetscript::zs_string";
+			if(name == std::string(typeid(std::string).name())){
+				return "std::string";
 			}
 
-			if(name == zs_string("MemberFunction")){
+			if(name == std::string("MemberFunction")){
 				return "zetscript::ScriptObjectMemberFunction *";
 			}
 

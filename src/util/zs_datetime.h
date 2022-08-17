@@ -28,9 +28,9 @@ namespace zetscript{
 		friend bool operator==(const zs_datetime& mdt, const zs_datetime &odt);
 		friend bool operator!=(const zs_datetime& mdt, const zs_datetime &odt);
 		friend zs_timespan operator-(const zs_datetime& mdt, const zs_datetime &odt);
-		zs_string to_string() const;
-		zs_string to_string(const zs_string& format) const;
-		zs_string to_shortdate_string() const;
+		std::string to_string() const;
+		std::string to_string(const std::string& format) const;
+		std::string to_shortdate_string() const;
 		int get_year() const;
 		int get_month() const;
 		int get_day() const;
@@ -47,7 +47,7 @@ namespace zetscript{
 		void add_minutes(int nb_minutes);
 		void add_seconds(int nb_seconds);
 		bool is_leapyear();
-		static zs_datetime parse(const zs_string& format, const zs_string& value);
+		static zs_datetime parse(const std::string& format, const std::string& value);
 		static bool is_leapyear(int year);
 	protected:
 		const int ONE_DAY = 86400; //24 hours * 60 mins * 60 secs
@@ -56,7 +56,7 @@ namespace zetscript{
 		struct tm *time_info = nullptr;
 		bool auto_created = true;
 		bool _is_leapyear(int year) const;
-		static int _parse_intvalue(const zs_string &pattern, int index, size_t mask_length, const zs_string &parse_str);
+		static int _parse_intvalue(const std::string &pattern, int index, size_t mask_length, const std::string &parse_str);
 		void _copy_from(const tm* otm);
 	};
 }

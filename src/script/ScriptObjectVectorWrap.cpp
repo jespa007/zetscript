@@ -26,8 +26,11 @@ namespace zetscript{
 		StackElement *new_stk=(StackElement *)malloc(sizeof(StackElement));
 		stk_assign(_zs,new_stk,_stk);
 
-		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
-		stk_user_list_elements->insert(idx,new_stk);
+		std::vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
+		stk_user_list_elements->insert(
+				stk_user_list_elements->begin()+idx
+				,new_stk
+		);
 	}
 
 	void 			ScriptObjectVectorWrap_eraseAt(ZetScript *_zs,ScriptObjectVector *sv, zs_int idx){
@@ -42,13 +45,13 @@ namespace zetscript{
 
 	ScriptObjectString *		ScriptObjectVectorWrap_join(ZetScript *_zs,ScriptObjectVector *sv, zs_int idx){
 		ScriptObjectString *so_string = ZS_NEW_OBJECT_STRING(_zs);
-		zs_string *ptr_str=(zs_string *)so_string->value;
-		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
+		std::string *ptr_str=(std::string *)so_string->value;
+		std::vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
 
-		for(int i=0; i < stk_user_list_elements->count;i++){
-			StackElement *stk=(StackElement *)stk_user_list_elements->items[i];
+		for(unsigned i=0; i < stk_user_list_elements->size();i++){
+			StackElement *stk=(StackElement *)stk_user_list_elements->at(i);
 			if(i>0){
-				ptr_str->append((char)idx);
+				*ptr_str+=((char)idx);
 			}
 
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -70,10 +73,10 @@ namespace zetscript{
 	bool 							ScriptObjectVectorWrap_contains(ZetScript *_zs,ScriptObjectVector *sv, StackElement *stk_to_compare){
 		ZS_UNUSUED_PARAM(_zs);
 		bool found=false;
-		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
+		std::vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
 
-		for(int i=0; i < stk_user_list_elements->count && found == false;i++){
-			StackElement *stk_element=(StackElement *)stk_user_list_elements->items[i];
+		for(unsigned i=0; i < stk_user_list_elements->size() && found == false;i++){
+			StackElement *stk_element=(StackElement *)stk_user_list_elements->at(i);
 			switch(stk_to_compare->properties & stk_element->properties){ // match element
 			case STK_PROPERTY_BOOL:
 			case STK_PROPERTY_ZS_INT:
@@ -101,16 +104,16 @@ namespace zetscript{
 	bool 							ScriptObjectVectorWrap_equal(ZetScript *_zs,ScriptObjectVector *so1, ScriptObjectVector *so2){
 		ZS_UNUSUED_PARAM(_zs);
 		bool equal=true;
-		zs_vector<StackElement *> *stk_user_list_elements_s1=so1->getStkUserListElements();
-		zs_vector<StackElement *> *stk_user_list_elements_s2=so2->getStkUserListElements();
+		std::vector<StackElement *> *stk_user_list_elements_s1=so1->getStkUserListElements();
+		std::vector<StackElement *> *stk_user_list_elements_s2=so2->getStkUserListElements();
 
-		if(stk_user_list_elements_s1->count != stk_user_list_elements_s2->count){
+		if(stk_user_list_elements_s1->size() != stk_user_list_elements_s2->size()){
 			return false;
 		}
 
-		for(int i=0; i < stk_user_list_elements_s1->count && equal == true;i++){
-			StackElement *stk_element_s1=(StackElement *)stk_user_list_elements_s1->items[i];
-			StackElement *stk_element_s2=(StackElement *)stk_user_list_elements_s2->items[i];
+		for(unsigned i=0; i < stk_user_list_elements_s1->size() && equal == true;i++){
+			StackElement *stk_element_s1=(StackElement *)stk_user_list_elements_s1->at(i);
+			StackElement *stk_element_s2=(StackElement *)stk_user_list_elements_s2->at(i);
 
 			// compare primitives (inclusive strings) other objects as the same pointer
 			switch(stk_element_s1->properties | stk_element_s2->properties){

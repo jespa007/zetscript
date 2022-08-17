@@ -15,7 +15,7 @@ namespace zetscript{
 	void JsonModule_deserialize(ZetScript *_zs,ScriptObjectString *str_json){
 		// deserialize ...
 
-		zs_string str=zs_strutils::unescape(str_json->toString());
+		std::string str=zs_strutils::unescape(str_json->toString());
 		VirtualMachine *vm=_zs->getVirtualMachine();
 		StackElement return_stack_element=k_stk_undefined;
 		json::JsonDeserializeData deserialize_data;
@@ -26,7 +26,7 @@ namespace zetscript{
 		int line=1;
 
 		if(json::deserialize(&deserialize_data,deserialize_data.str_start,line,&return_stack_element)==NULL){
-			vm_set_error(vm,(zs_string("Error deserialize:")+deserialize_data.str_error).c_str());
+			vm_set_error(vm,(std::string("Error deserialize:")+deserialize_data.str_error).c_str());
 			if(return_stack_element.properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)return_stack_element.value;
 				vm_unref_shared_script_object(vm,so,NULL);

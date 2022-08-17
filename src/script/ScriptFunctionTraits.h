@@ -115,28 +115,28 @@ namespace zetscript{
 	// Dynaminc unpack parameter function ...
 	// template for last parameter ArgIdx == 1
 	template <size_t ArgIdx, typename F, typename... Args>
-	auto getArgTypes( zs_vector<zs_int> & params)
+	auto getArgTypes( std::vector<zs_int> & params)
 		-> typename std::enable_if<ArgIdx == 1>::type
 	{
 		const char *parameter_type=typeid(typename F::template Argument<ArgIdx-1>::type).name();
-		params.insert(0,(zs_int)parameter_type);
+		params.insert(params.begin()+0,(zs_int)parameter_type);
 	}
 
 	// template when parameters ArgIdx > 1
 	template <size_t ArgIdx, typename F, typename... Args>
-	auto getArgTypes(zs_vector<zs_int> & params)
+	auto getArgTypes(std::vector<zs_int> & params)
 		-> typename std::enable_if<(ArgIdx > 1)>::type
 	{
 
 		const char *parameter_type=typeid(typename F::template Argument<ArgIdx-1>::type).name();
-		params.insert(0,(zs_int)parameter_type);
+		params.insert(params.begin(),(zs_int)parameter_type);
 		getArgTypes<ArgIdx - 1,F, Args...>( params);
 	}
 
 
 	// trivial case when parameters (ArgIdx == 0).
 	template <size_t ArgIdx, typename F>
-	auto getArgTypes(zs_vector<zs_int> & params)
+	auto getArgTypes(std::vector<zs_int> & params)
 	-> typename std::enable_if<(ArgIdx == 0)>::type
 	{
 		ZS_UNUSUED_PARAM(params);
@@ -144,7 +144,7 @@ namespace zetscript{
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(const char ** return_type, zs_vector<zs_int> & type_params, IndexSequence<Is...>)
+	auto getParamsFunction(const char ** return_type, std::vector<zs_int> & type_params, IndexSequence<Is...>)
 	-> typename std::enable_if<(_F::arity > 0)>::type
 	{
 		*return_type = typeid(typename _F::return_type).name();
@@ -152,7 +152,7 @@ namespace zetscript{
 	}
 
 	template <typename _F, std::size_t... Is>
-	auto getParamsFunction(const char ** return_type, zs_vector<zs_int> & type_params, IndexSequence<Is...>)
+	auto getParamsFunction(const char ** return_type, std::vector<zs_int> & type_params, IndexSequence<Is...>)
 	-> typename std::enable_if<(_F::arity == 0)>::type
 	{
 		*return_type = typeid(typename _F::return_type).name();
@@ -163,7 +163,7 @@ namespace zetscript{
 	int getNativeFunctionRetArgsTypes(
 			 ScriptTypeFactory *_script_class_factory
 			,ScriptType * _script_type
-			,const zs_string & _function_name
+			,const std::string & _function_name
 			,F _ptr_function
 			,ScriptFunctionParam **_params
 			,int *_params_len
@@ -171,14 +171,14 @@ namespace zetscript{
 	){
 		int idx_script_type_return=-1;
 		const char * return_type;
-		zs_vector<zs_int> args;
-		zs_string error="";
-		zs_string name_script_function=_script_type==NULL?_function_name:zs_string(_script_type->str_script_type)+"::"+_function_name;
+		std::vector<zs_int> args;
+		std::string error="";
+		std::string name_script_function=_script_type==NULL?_function_name:std::string(_script_type->str_script_type)+"::"+_function_name;
 		// 1. check all parameters ok.
 		using Traits3 = FunctionTraits<decltype(_ptr_function)>;
 		getParamsFunction<Traits3>(&return_type, args, MakeIndexSequence<Traits3::arity>{});
 
-		if(args.count>MAX_NATIVE_FUNCTION_ARGS){
+		if(args.size()>MAX_NATIVE_FUNCTION_ARGS){
 			THROW_RUNTIME_ERROR(
 				"Error register function '%s': max arguments reached (max:'%i')"
 				,name_script_function.c_str()
@@ -196,18 +196,18 @@ namespace zetscript{
 		}
 
 		if(_params != NULL){
-			*_params=new ScriptFunctionParam[args.count];
-			*_params_len=args.count;
+			*_params=new ScriptFunctionParam[args.size()];
+			*_params_len=args.size();
 
-			if(args.count==0){
+			if(args.size()==0){
 				THROW_RUNTIME_ERROR(
 					"Error register function '%s': It expectes at FIRST parameter as 'ZetScript *'"
 					,name_script_function.c_str()
 				);
 			}
 
-			for(int i = 0; i < args.count; i++){
-				const char *param=(const char *)args.items[i];
+			for(unsigned i = 0; i < args.size(); i++){
+				const char *param=(const char *)args[i];
 				int idx_script_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
 
 				if(i==0){
@@ -221,7 +221,7 @@ namespace zetscript{
 				}
 
 				// exception: These variables are registered but not allowed to pass throught parameter
-				if(idx_script_type==IDX_TYPE_ZS_FLOAT_C || idx_script_type==IDX_TYPE_BOOL_C || idx_script_type == IDX_TYPE_ZS_STRING_C){
+				if(idx_script_type==IDX_TYPE_ZS_FLOAT_C || idx_script_type==IDX_TYPE_BOOL_C || idx_script_type == IDX_TYPE_STRING_C){
 					error=zs_strutils::format("Error register function '%s': argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,name_script_function.c_str()
 							,i+1

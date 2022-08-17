@@ -21,14 +21,14 @@ namespace zetscript{
 	public:
 
 		int 			idx_script_type; 	// registered type idx
-		zs_string		str_script_type;		// info symbol type
+		std::string		str_script_type;		// info symbol type
 		Scope			*scope_script_type;
-		zs_string 		str_script_type_ptr; // type_id().name();
+		std::string 		str_script_type_ptr; // type_id().name();
 		uint16_t		properties;
 
-		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be property members or script member vars
-		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
-		zs_vector<MemberProperty *>		*allocated_member_properties;
+		//std::vector *symbol_member_variables; // symbol_member_variable:  It can be property members or script member vars
+		//std::vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
+		std::vector<MemberProperty *>		*allocated_member_properties;
 		ScriptFunction					*sf_field_initializer;
 		MetamethodMembers		metamethod_members;
 		int						idx_starting_this_member_functions;
@@ -41,11 +41,11 @@ namespace zetscript{
 		void								* 	c_constructor;
 		void 								*	c_destructor;
 
-		zs_vector<zs_int>				   	*   idx_base_types; // list of idx of classes base
+		std::vector<zs_int>				   	*   idx_base_types; // list of idx of classes base
 
 		 ScriptType(ZetScript *_zs
 				 ,short _idx_script_type
-				 , const zs_string & _name
+				 , const std::string & _name
 				 , Scope *_scope
 				 ,const char *  str_script_type_ptr=TYPE_SCRIPT_VARIABLE
 				 ,uint16_t _properties=0
@@ -58,7 +58,7 @@ namespace zetscript{
 		// MEMBER VARIABLES
 		//
 		Symbol				* 	registerMemberVariable(
-			 const zs_string & _symbol_name
+			 const std::string & _symbol_name
 			,unsigned short _symbol_properties
 			,const char * _file=""
 			,short _line=-1
@@ -67,7 +67,7 @@ namespace zetscript{
 
 		template < typename R>
 		void bindStaticConstMemberVariable(
-			const zs_string & _var_name
+			const std::string & _var_name
 			, const R _var_pointer
 			, const char *_registered_file=""
 			,short _registered_line=-1
@@ -75,8 +75,8 @@ namespace zetscript{
 
 
 		Symbol				* 	registerMemberVariable(
-			 const zs_string & _symbol_name
-			,const zs_string & _str_native_type
+			 const std::string & _symbol_name
+			,const std::string & _str_native_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,unsigned short _symbol_properties
 			,const char * _file=""
@@ -88,14 +88,14 @@ namespace zetscript{
 		// MEMBER PROPERTIES
 		//
 		Symbol 				*	registerMemberProperty(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,const char * _file=""
 				,short _line=-1
 
 		);
 
 		Symbol				* 	registerMemberPropertyMetamethod(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
 			,int _params_len
@@ -106,7 +106,7 @@ namespace zetscript{
 		);
 
 		Symbol				* 	registerMemberPropertyGetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			 ,ScriptFunctionParam **_params
 			 ,char _params_len
 			, int _idx_return_type
@@ -119,10 +119,10 @@ namespace zetscript{
 		//
 		// FUNCTIONS
 		//
-		unsigned 	getNumNativeFunctions(const zs_string & name_script_function);
+		unsigned 	getNumNativeFunctions(const std::string & name_script_function);
 
 		Symbol				* 	registerMemberFunction(
-			 const zs_string & _function_name
+			 const std::string & _function_name
 			,ScriptFunctionParam **_params=NULL
 			,int _params_len=0
 			, unsigned short _function_properties=0
@@ -135,7 +135,7 @@ namespace zetscript{
 
 		template <typename F>
 		void bindStaticMemberFunction(
-				const zs_string & _function_name
+				const std::string & _function_name
 				,F _function_ptr
 				, const char *_registered_file=""
 				,short _registered_line=-1
@@ -143,7 +143,7 @@ namespace zetscript{
 
 		template <typename F>
 		void bindMemberFunction(
-				const zs_string & _function_name
+				const std::string & _function_name
 				,F _function_type
 				, const char *_registered_file=""
 				,short _registered_line=-1
@@ -151,9 +151,9 @@ namespace zetscript{
 
 		//---------------------------------------------------
 
-		Symbol *    getSymbol(const zs_string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
-		Symbol *    getSymbolVariableMember(const zs_string & symbol_name, bool include_inherited_symbols=true);
-		Symbol *    getSymbolMemberFunction(const zs_string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
+		Symbol *    getSymbol(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
+		Symbol *    getSymbolVariableMember(const std::string & symbol_name, bool include_inherited_symbols=true);
+		Symbol *    getSymbolMemberFunction(const std::string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 
 		const char *getTypeName();
 
@@ -170,9 +170,9 @@ namespace zetscript{
 		ScopeFactory 			*scope_factory;	// reference scope_factory
 
 		Symbol				* 	registerInternalMemberVariable(
-			const zs_string & _symbol_name
+			const std::string & _symbol_name
 			, unsigned short _properties
-			,const zs_string & _str_native_type=""
+			,const std::string & _str_native_type=""
 			,zs_int _ref_ptr=0 // it's the offset from pointer or a pointer directly
 			,const char *_file=""
 			, short _line=-1

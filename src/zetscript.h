@@ -127,19 +127,19 @@ namespace zetscript{
 		inline ScriptFunctionFactory *getScriptFunctionFactory() { return script_function_factory;}
 		inline ScriptTypeFactory *getScriptTypeFactory() { return script_type_factory;}
 
-		StackElement	eval(const zs_string & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
-		StackElement	eval(const zs_string & expresion,unsigned short _eval_options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
-		StackElement	evalFile(const zs_string & _filename,unsigned short _eval_options=0, EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	eval(const std::string & expresion, const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	eval(const std::string & expresion,unsigned short _eval_options, const char * _script_file_by_ref="", const char *__invoke_file__="", int __invoke_line__=-1);
+		StackElement	evalFile(const std::string & _filename,unsigned short _eval_options=0, EvalData *_eval_data_from=NULL, const char *__invoke_file__="", int __invoke_line__=-1);
 
 
-		inline zs_map * getCompiledSymbolName(){
+		inline std::map<std::string,std::string *> * getCompiledSymbolName(){
 			return compiled_symbol_name;
 		}
 
 		//---------------------------------------------------------------------------------------------------------------------------------------
 		// FILE MANAGEMENT
 		//
-		bool isFilenameAlreadyParsed(const zs_string & filename);
+		bool isFilenameAlreadyParsed(const std::string & filename);
 		//
 		//------------------------------------------------------------------------------------------------------------------------------------
 		//
@@ -161,32 +161,32 @@ namespace zetscript{
 		 * Register C variable
 		 */
 		template <typename V>
-		 void bindVariable(const zs_string & var_name,V var_ptr, const char *registered_file="",short registered_line=-1){
+		 void bindVariable(const std::string & var_name,V var_ptr, const char *registered_file="",short registered_line=-1){
 			 script_type_factory->bindGlobalVariable(var_name,var_ptr, registered_file, registered_line);
 		 }
 
-		void bindConstantVariable(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1){
+		void bindConstantVariable(const std::string & var_name, int value, const char *registered_file="", short registered_line=-1){
 			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void bindConstantVariable(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1){
+		void bindConstantVariable(const std::string & var_name, bool value, const char *registered_file="", short registered_line=-1){
 			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void bindConstantVariable(const zs_string & var_name, float value, const char *registered_file="", short registered_line=-1){
+		void bindConstantVariable(const std::string & var_name, float value, const char *registered_file="", short registered_line=-1){
 			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void bindConstantVariable(const zs_string & var_name, double value, const char *registered_file="", short registered_line=-1){
+		void bindConstantVariable(const std::string & var_name, double value, const char *registered_file="", short registered_line=-1){
 			script_type_factory->bindConstantVariable(var_name,(float)value, registered_file, registered_line);
 		}
 
 
-		void bindConstantVariable(const zs_string & var_name, const zs_string & value, const char *registered_file="", short registered_line=-1){
+		void bindConstantVariable(const std::string & var_name, const std::string & value, const char *registered_file="", short registered_line=-1){
 			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
-		void bindConstantVariable(const zs_string & var_name, const char *value, const char *registered_file="", short registered_line=-1){
+		void bindConstantVariable(const std::string & var_name, const char *value, const char *registered_file="", short registered_line=-1){
 			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
 		}
 
@@ -194,7 +194,7 @@ namespace zetscript{
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		ScriptType * bindType(const zs_string & str_script_type, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *registered_file="",short registered_line=-1){
+		ScriptType * bindType(const std::string & str_script_type, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *registered_file="",short registered_line=-1){
 			return script_type_factory->bindType<C>(str_script_type, _constructor, _destructor, registered_file,registered_line);
 		}
 
@@ -202,7 +202,7 @@ namespace zetscript{
 		 * Register C function
 		 */
 		template <typename F>
-		void bindFunction( const zs_string & _name_script_function,F ptr_function, const char *registered_file="",short registered_line=-1){
+		void bindFunction( const std::string & _name_script_function,F ptr_function, const char *registered_file="",short registered_line=-1){
 			script_type_factory->bindFunction( _name_script_function,ptr_function, registered_file,registered_line);
 		}
 
@@ -222,7 +222,7 @@ namespace zetscript{
 
 		template <typename C, typename R>
 		void bindStaticConstMember(
-				const zs_string & var_name
+				const std::string & var_name
 				, const R var_pointer
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -232,7 +232,7 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void	bindMemberFunction(
-				const zs_string & _name_script_function
+				const std::string & _name_script_function
 				,F function_type
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -243,7 +243,7 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void	bindMemberPropertySetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -253,7 +253,7 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void	bindMemberPropertyGetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -263,7 +263,7 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void	bindMemberPropertyPostIncrement(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -273,7 +273,7 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void	bindMemberPropertyPostDecrement(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -283,7 +283,7 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void	bindMemberPropertyPreIncrement(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -293,7 +293,7 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void	bindMemberPropertyPreDecrement(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -305,7 +305,7 @@ namespace zetscript{
 		 * Register Static Function Member Class
 		 */
 		template <typename C,typename F>
-		void bindStaticMemberFunction(const zs_string & _name_script_function,F fun, const char *registered_file="",short registered_line=-1){
+		void bindStaticMemberFunction(const std::string & _name_script_function,F fun, const char *registered_file="",short registered_line=-1){
 			script_type_factory->bindStaticMemberFunction<C>(_name_script_function,fun, registered_file, registered_line);
 		}
 
@@ -491,10 +491,10 @@ namespace zetscript{
 		 auto bindScriptFunctionBuilderBase(const char *file,int line,void **ptr_fun, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity == 0)>::type;
 
-		void getScriptObject(const zs_string &function_access,ScriptObject **calling_obj,ScriptFunction **fun_obj );
+		void getScriptObject(const std::string &function_access,ScriptObject **calling_obj,ScriptFunction **fun_obj );
 
 		template <  typename F>
-		std::function<F> bindScriptFunction(const zs_string & function_access, const char *file="", int line=-1);
+		std::function<F> bindScriptFunction(const std::string & function_access, const char *file="", int line=-1);
 
 		template <  typename F>
 		std::function<F> bindScriptFunction(ScriptObjectMemberFunction *sf, const char *file="", int line=-1);
@@ -523,16 +523,16 @@ namespace zetscript{
 	private:
 
 		typedef struct {
-			zs_string filename;
+			std::string filename;
 			//unsigned char *data;
 		} ParsedFile;
 
 
 		//--------
 		// VARS
-		zs_map 	 								*script_filenames_by_ref;
-		zs_vector<ParsedFile *>					parsed_files;
-		zs_vector<ScriptFunction *>				functions_with_unresolved_symbols;
+		std::map<std::string,std::string>			*script_filenames_by_ref;
+		std::vector<ParsedFile *>					parsed_files;
+		std::vector<ScriptFunction *>				functions_with_unresolved_symbols;
 
 		//ScriptEval * eval_obj;
 		VirtualMachine * virtual_machine;
@@ -543,12 +543,12 @@ namespace zetscript{
 		zs_float eval_float;
 		zs_int eval_int;
 		bool eval_bool;
-		zs_string eval_string;
+		std::string eval_string;
 		int idx_current_global_variable_checkpoint;
 		int idx_current_global_function_checkpoint;
 		int idx_current_script_types_checkpoint;
 
-		zs_map	*compiled_symbol_name;
+		std::map<std::string,std::string*>	*compiled_symbol_name;
 
 		//===================================================================================================
 		//

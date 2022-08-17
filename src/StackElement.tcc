@@ -9,9 +9,9 @@ namespace zetscript{
 
 		bool is_constant=false;
 		StackElement stk=*_stk;
-		zs_string error;
+		std::string error;
 		zs_int ptr_var;
-		zs_string str_script_type_ptr = typeid(_C).name();
+		std::string str_script_type_ptr = typeid(_C).name();
 		ScriptTypeFactory *_script_factory=_zs->getScriptTypeFactory();
 		ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 

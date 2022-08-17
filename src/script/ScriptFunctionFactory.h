@@ -22,7 +22,7 @@ namespace zetscript{
 			/**
 			 * Set/Get ScriptType Node by its idx, regarding current state.
 			 */
-			zs_vector<ScriptFunction *> 	*	getScriptFunctions();
+			std::vector<ScriptFunction *> 	*	getScriptFunctions();
 
 			Symbol 			*	newScriptFunction(
 				//--- Register information
@@ -31,7 +31,7 @@ namespace zetscript{
 				, short line
 				//--- Function data
 			    , int idx_script_type
-				, const zs_string & name_script_function
+				, const std::string & name_script_function
 				, ScriptFunctionParam **_params
 				,int _params_len
 
@@ -40,7 +40,7 @@ namespace zetscript{
 				, unsigned short properties=0
 			);
 
-			 bool							checkCanbindFunction(const zs_string & name_script_function);
+			 bool							checkCanbindFunction(const std::string & name_script_function);
 
 			 ScriptFunction 			* 	getScriptFunction(int idx);
 			 void							setScriptFunction(int idx, ScriptFunction *sf);
@@ -53,7 +53,7 @@ namespace zetscript{
 		private:
 			ZetScript 						* 	zs;
 			ScopeFactory 					* 	scope_factory;
-			zs_vector<ScriptFunction *>		*   script_functions;
+			std::vector<ScriptFunction *>		*   script_functions;
 			int idx_clear_checkpoint;
 	};
 

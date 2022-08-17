@@ -14,7 +14,7 @@ namespace zetscript{
 	 */
 	template<typename V>
 	 void  ScriptTypeFactory::bindGlobalVariable(
-		 const zs_string & _var_name
+		 const std::string & _var_name
 		 ,V _var_ptr
 		 ,const char *_registered_file
 		 ,short _registered_line)
@@ -71,12 +71,12 @@ namespace zetscript{
 	 */
 	template <typename F>
 	void ScriptTypeFactory::bindFunction(
-		const zs_string &  _function_name
+		const std::string &  _function_name
 		,F _ptr_function
 		,const char *_registered_file
 		,short _registered_line)
 	{
-		zs_string error;
+		std::string error;
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
 
@@ -114,16 +114,16 @@ namespace zetscript{
 	 */
 	template<class T>
 	ScriptType * ScriptTypeFactory::bindType(
-		const zs_string & str_script_type
+		const std::string & str_script_type
 		,T * (*_constructor)(ZetScript *_zs)
 		,void (*_destructor)(ZetScript *_zs,T *)
 		,const char *registered_file
 		,short registered_line
-	){//, const zs_string & base_class_name=""){
+	){//, const std::string & base_class_name=""){
 
 		ScriptType *sc=NULL;
 		const char * str_script_type_ptr = typeid( T *).name();
-		//int size=script_types->count;
+		//int size=script_types->size();
 		int idx_script_type=ZS_IDX_UNDEFINED;
 		Scope * scope = NULL;
 
@@ -137,7 +137,7 @@ namespace zetscript{
 			);
 		}
 
-		idx_script_type=script_types->count;
+		idx_script_type=script_types->size();
 		scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		MAIN_SCOPE(this)->registerSymbolScriptType(registered_file,registered_line,str_script_type);
 
@@ -160,7 +160,7 @@ namespace zetscript{
 			sc->properties|=SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
 		}
 
-		sc->idx_script_type=script_types->count-1;
+		sc->idx_script_type=script_types->size()-1;
 		ZS_LOG_DEBUG("* native type '%s' registered as (%s).",str_script_type.c_str(),zs_rtti::demangle(str_script_type_ptr).c_str());
 
 		return sc;
@@ -174,7 +174,7 @@ namespace zetscript{
 		const char * base_class_name_ptr=typeid(B *).name();
 		const char * str_script_type=typeid(C).name();
 		const char * class_name_ptr=typeid(C *).name();
-		zs_string error;
+		std::string error;
 
 		int idx_base_type = getIdxScriptTypeFromTypeNamePtr(base_class_name_ptr);
 		if(idx_base_type == -1) {
@@ -197,11 +197,11 @@ namespace zetscript{
 		}
 
 		// now only allows one inheritance!
-		ScriptType *main_class=script_types->get(idx_register_class);
+		ScriptType *main_class=script_types->at(idx_register_class);
 
 
-		for(int i=0; i < main_class->idx_base_types->count; i++){
-			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base type...
+		for(int i=0; i < main_class->idx_base_types->size(); i++){
+			ScriptType *sc=getScriptType(main_class->idx_base_types->at(i)); // get base type...
 			if(sc->str_script_type_ptr ==base_class_name_ptr){
 				THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
 						,zs_rtti::demangle(str_script_type).c_str()
@@ -210,11 +210,11 @@ namespace zetscript{
 		}
 
 
-		ScriptType *base=(ScriptType *)script_types->get(idx_base_type);
+		ScriptType *base=(ScriptType *)script_types->at(idx_base_type);
 
 		// search native types that already inherits type B
-		for(int i=0; i < main_class->idx_base_types->count; i++){
-			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base type...
+		for(int i=0; i < main_class->idx_base_types->size(); i++){
+			ScriptType *sc=getScriptType(main_class->idx_base_types->at(i)); // get base type...
 			// check whether type inherits inheritates B
 			if(sc->extendsFrom(idx_base_type)){
 				THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' inherits '%s' that already is inherited by '%s'"
@@ -237,7 +237,7 @@ namespace zetscript{
 			}
 		}
 
-		ScriptType *this_class = (ScriptType *)script_types->get(idx_register_class);
+		ScriptType *this_class = (ScriptType *)script_types->at(idx_register_class);
 		this_class->idx_base_types->push_back(idx_base_type);
 
 		//----------------------------
@@ -245,14 +245,14 @@ namespace zetscript{
 		// DERIVATE STATE
 		//
 
-		ScriptType *base_class = script_types->get(idx_base_type);
-		zs_vector<Symbol *> *base_vars=base_class->scope_script_type->symbol_variables;
-		zs_vector<Symbol *> *base_functions=base_class->scope_script_type->symbol_functions;
+		ScriptType *base_class = script_types->at(idx_base_type);
+		std::vector<Symbol *> *base_vars=base_class->scope_script_type->symbol_variables;
+		std::vector<Symbol *> *base_functions=base_class->scope_script_type->symbol_functions;
 
 		// register all c vars symbols ...
-		for(int i = 0; i < base_functions->count; i++){
+		for(int i = 0; i < base_functions->size(); i++){
 
-			Symbol *src_symbol = (Symbol *)base_functions->items[i];
+			Symbol *src_symbol = (Symbol *)base_functions->at(i);
 
 			bool is_metamethod_function = MemberProperty::symbolNameMatchStartSymbolNameMetamethod(src_symbol->name);
 
@@ -293,8 +293,8 @@ namespace zetscript{
 		}
 
 
-		for(int i = 0; i < base_vars->count; i++){
-			Symbol *src_symbol = (Symbol *)base_vars->items[i];
+		for(int i = 0; i < base_vars->size(); i++){
+			Symbol *src_symbol = (Symbol *)base_vars->at(i);
 
 			if(src_symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 
@@ -355,9 +355,9 @@ namespace zetscript{
 				while(*it_setter!= 0){
 					MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
-						for(int h=0; h < mp_info.setters->count; h++){
+						for(int h=0; h < mp_info.setters->size(); h++){
 
-							StackElement *stk_setter=mp_info.setters->items[h];
+							StackElement *stk_setter=mp_info.setters->at(h);
 							Symbol *symbol_setter=(Symbol *)stk_setter->value;
 							ScriptFunction *sf_setter=(ScriptFunction *)symbol_setter->ref_ptr,
 											*dst_script_function=NULL;
@@ -402,7 +402,7 @@ namespace zetscript{
 		,short registered_line
 	){
 
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 		ScriptType * script_type=	getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 		if(script_type == NULL){
 			THROW_RUNTIME_ERROR("native type '%s' is not registered",str_script_type_ptr.c_str());
@@ -415,7 +415,7 @@ namespace zetscript{
 	 */
 	template <typename C, typename R>
 	void ScriptTypeFactory::bindStaticConstMember(
-			const zs_string & var_name
+			const std::string & var_name
 			,const R var_pointer
 			,const char *registered_file
 			,short registered_line) //unsigned int offset)
@@ -423,7 +423,7 @@ namespace zetscript{
 		// to make compatible MSVC shared library
 		const char *var_type = typeid(R).name(); // we need the pointer type ...
 		const char *return_type;
-		zs_string error;
+		std::string error;
 		const char *str_script_type_ptr = typeid( C *).name();
 		Symbol *symbol;
 
@@ -458,12 +458,12 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertySetter(
-		const zs_string & _property_name
+		const std::string & _property_name
 		,F _ptr_function
 		,const char *_registered_file
 		,short _registered_line
 	){
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
@@ -500,14 +500,14 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyGetter(
-		const zs_string & _property_name
+		const std::string & _property_name
 		,F _ptr_function
 		,const char *_registered_file
 		,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
@@ -539,14 +539,14 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyPostIncrement(
-		const zs_string & _property_name
+		const std::string & _property_name
 		,F _ptr_function
 		,const char *_registered_file
 		,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -580,14 +580,14 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyPostDecrement(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			,const char *_registered_file
 			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -621,14 +621,14 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyPreIncrement(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			,const char *_registered_file
 			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -662,14 +662,14 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyPreDecrement(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			,const char *_registered_file
 			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -701,14 +701,14 @@ namespace zetscript{
 	// register member property add set operation
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyAddSetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
 			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -740,14 +740,14 @@ namespace zetscript{
 	// register member property  sub set operation
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertySubSetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			, const char *_registered_file
 			,short _registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -779,14 +779,14 @@ namespace zetscript{
 	// register member property mul set operation
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyMulSetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -818,14 +818,14 @@ namespace zetscript{
 	// register member property div set operation
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyDivSetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -857,14 +857,14 @@ namespace zetscript{
 	// register member property mod set operation
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyModSetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -896,14 +896,14 @@ namespace zetscript{
 	// register member property and set operation
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyAndSetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -935,14 +935,14 @@ namespace zetscript{
 	// register member property or set operation
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyOrSetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -974,14 +974,14 @@ namespace zetscript{
 	// register member property xor set operation
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyXorSetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -1013,14 +1013,14 @@ namespace zetscript{
 	// register member property shl set operation
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyShlSetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -1052,14 +1052,14 @@ namespace zetscript{
 	// register member property shr set operation
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberPropertyShrSetter(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,F _ptr_function
 			, const char *registered_file
 			,short registered_line
 	){
 		ScriptFunctionParam *params=NULL;
 		int params_len=0;
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -1095,14 +1095,14 @@ namespace zetscript{
 	 */
 	template <typename C, typename F>
 	void ScriptTypeFactory::bindStaticMemberFunction(
-		const zs_string & name_script_function
+		const std::string & name_script_function
 		,F ptr_function
 		,const char *registered_file
 		,short registered_line
 	)
 	{
 		// to make compatible MSVC shared library
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
@@ -1124,12 +1124,12 @@ namespace zetscript{
 	 */
 	template <typename C,typename F>
 	void ScriptTypeFactory::bindMemberFunction(
-		const zs_string & name_script_function
+		const std::string & name_script_function
 		,F ptr_function
 		,const char *registered_file
 		,short registered_line
 	){
-		zs_string str_script_type_ptr = typeid( C *).name();
+		std::string str_script_type_ptr = typeid( C *).name();
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 

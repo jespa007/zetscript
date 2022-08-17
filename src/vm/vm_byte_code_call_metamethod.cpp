@@ -15,16 +15,16 @@ namespace zetscript{
 
 	) {
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		zs_string str_stk_result_op1_full_definition="";
-		zs_string str_stk_result_op2_full_definition="";
+		std::string str_stk_result_op1_full_definition="";
+		std::string str_stk_result_op2_full_definition="";
 		StackElement *stk_vm_current_backup,*stk_args;
 		ScriptFunction *ptr_function_found=NULL;
 		StackElement ret_obj;
 		const char *byte_code_metamethod_operator_str=byte_code_metamethod_to_operator_str(byte_code_metamethod);
 		const char *str_symbol_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
-		zs_string error_found="";
+		std::string error_found="";
 		ScriptObject *script_object=NULL;
-		zs_string str_script_type_object_found="";
+		std::string str_script_type_object_found="";
 		int n_stk_args=is_static?2:1;
 		size_t n_stk_local_symbols=0;
 		StackElement *stk_return=NULL;
@@ -141,7 +141,7 @@ namespace zetscript{
 				,stk_args
 			);
 
-			n_stk_local_symbols=ptr_function_found->local_variables->count;
+			n_stk_local_symbols=ptr_function_found->local_variables->size();
 		}else{ //
 			vm_execute_function_native(
 					vm

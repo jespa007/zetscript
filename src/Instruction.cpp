@@ -24,7 +24,7 @@ namespace zetscript{
 		}
 
 
-		zs_string Instruction::getConstantString(){
+		std::string Instruction::getConstantString(){
 			ScriptObject *obj=NULL;
 			StackElement *stk=NULL;
 
@@ -67,8 +67,8 @@ namespace zetscript{
 			return IS_BYTE_CODE_LOAD_CONSTANT(byte_code);
 		}
 
-		zs_string Instruction::getConstantValueOp2ToString( bool _str_with_quotes){
-			zs_string value_op2_string="unknow-value";
+		std::string Instruction::getConstantValueOp2ToString( bool _str_with_quotes){
+			std::string value_op2_string="unknow-value";
 
 			if(byte_code ==BYTE_CODE_LOAD_BOOL || (this->properties & INSTRUCTION_PROPERTY_BOOL) ){
 				value_op2_string=this->value_op2 == 0 ? "false":"true";

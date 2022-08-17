@@ -37,7 +37,7 @@ namespace zetscript{
 	}*/
 
 
-	bool ScriptObjectObjectWrap_contains(ZetScript *_zs,ScriptObjectObject *o1, zs_string * key){
+	bool ScriptObjectObjectWrap_contains(ZetScript *_zs,ScriptObjectObject *o1, std::string * key){
 		ZS_UNUSUED_PARAM(_zs);
 		return o1->existUserProperty(key->c_str());
 	}
@@ -47,7 +47,7 @@ namespace zetscript{
 		o1->eraseAllUserProperties();
 	}
 
-	void ScriptObjectObjectWrap_erase(ZetScript *_zs,ScriptObjectObject *o1, zs_string * key){
+	void ScriptObjectObjectWrap_erase(ZetScript *_zs,ScriptObjectObject *o1, std::string * key){
 		ZS_UNUSUED_PARAM(_zs);
 		o1->eraseUserProperty(key->c_str());
 	}

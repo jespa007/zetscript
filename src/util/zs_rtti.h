@@ -6,7 +6,7 @@
 
 namespace zetscript{
 	namespace zs_rtti{
-		zs_string  demangle(const char * name);
+		std::string  demangle(const char * name);
 
 	}
 }

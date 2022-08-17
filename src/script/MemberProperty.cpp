@@ -5,14 +5,14 @@
 #include "zetscript.h"
 
 namespace zetscript{
-	MemberProperty::MemberProperty(ScriptType *_script_class,const zs_string & _property_name){
+	MemberProperty::MemberProperty(ScriptType *_script_class,const std::string & _property_name){
 		property_name=zs_strutils::clone_to_char_ptr(_property_name);
 		script_type=_script_class;
 	}
 
-	bool MemberProperty::symbolNameMatchStartSymbolNameMetamethod(const zs_string & _symbol_name){
-		zs_string symbol="N/A";
-		zs_string symbol_name_methametod;
+	bool MemberProperty::symbolNameMatchStartSymbolNameMetamethod(const std::string & _symbol_name){
+		std::string symbol="N/A";
+		std::string symbol_name_methametod;
 		const ByteCodeMetamethod *it=MetamethodMembers::byte_code_metamethod_member_list;
 
 		// custom case get...

@@ -28,11 +28,11 @@ namespace zetscript{
 	extern const char *	k_str_void_type;				// 	typeid(void).name()
 	extern const char * k_str_zs_int_type_ptr;			//	typeid(zs_int *).name()
 	extern const char * k_str_const_zs_int_type_ptr;	//	typeid(zs_int *).name()
-	extern const char * k_str_zs_float_type_ptr;			//	typeid(zs_float *).name()
-	extern const char * k_str_const_zs_float_type_ptr;		//	typeid(zs_float *).name()
-	extern const char * k_str_zs_string_type_ptr;			//	typeid(zs_string *).name()
-	extern const char * k_str_char_type_ptr;			//	typeid(zs_string *).name()
-	extern const char * k_str_const_char_type_ptr;		//	typeid(zs_string *).name()
+	extern const char * k_str_zs_float_type_ptr;		//	typeid(zs_float *).name()
+	extern const char * k_str_const_zs_float_type_ptr;	//	typeid(zs_float *).name()
+	extern const char * k_str_string_type_ptr;			//	typeid(std::string *).name()
+	extern const char * k_str_char_type_ptr;			//	typeid(std::string *).name()
+	extern const char * k_str_const_char_type_ptr;		//	typeid(std::string *).name()
 	extern const char * k_str_bool_type_ptr;			//	typeid(bool *).name()
 	extern const char * k_str_const_bool_type_ptr;		//	typeid(bool *).name()
 	extern const char *	k_str_zs_int_type;				//	typeid(zs_int).name()
@@ -60,43 +60,43 @@ namespace zetscript{
 		  * Class management region
 		  */
 		ScriptType * 					registerScriptType(
-											 const zs_string & str_script_type
-											,const zs_string & base_class_name=""
+											 const std::string & str_script_type
+											,const std::string & base_class_name=""
 											,uint16_t _properties=0
 											,const char * file=""
 											, short line=-1
 										);
 
 		ScriptType * 					getScriptType(short _idx_script_type);
-		ScriptType * 					getScriptType(const zs_string & _type_name);
-		ScriptType * 					getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
+		ScriptType * 					getScriptType(const std::string & _type_name);
+		ScriptType * 					getScriptTypeFromTypeNamePtr(const std::string & _type_name_ptr);
 
-		short							getIdxScriptType(const zs_string & _type_name);
-		short		 					getIdxScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr);
+		short							getIdxScriptType(const std::string & _type_name);
+		short		 					getIdxScriptTypeFromTypeNamePtr(const std::string & _type_name_ptr);
 
 		const char 	* 					getScriptTypeName(short _idx_script_type);
 		bool							scriptTypeInheritsFrom(short _idx_class_type,short _idx_class_type_inherits_from);
 		bool							isScriptTypeInstanceable(short _idx_script_type);
 
-		zs_vector<ScriptType *>	*		getScriptTypes();
+		std::vector<ScriptType *>	*	getScriptTypes();
 
-		bool 							isScriptTypeRegistered(const zs_string & _type_name);
+		bool 							isScriptTypeRegistered(const std::string & _type_name);
 
 		inline ScriptType * 			getMainObject() { return main_object;}
 		inline ScriptFunction * 		getMainFunction() { return main_function;}
 
 
 		// register object
-		StackElement * registerStkConstantStringObject(const zs_string & _key,const zs_string & _value);
-		StackElement * getStkConstantStringObject(const zs_string & _key);
+		StackElement * registerStkConstantStringObject(const std::string & _key,const std::string & _value);
+		StackElement * getStkConstantStringObject(const std::string & _key);
 
-		StackElement * registerStkObject(const zs_string & _key, zs_int _value);
-		StackElement * getStkObject(const zs_string & _key);
+		StackElement * registerStkObject(const std::string & _key, zs_int _value);
+		StackElement * getStkObject(const std::string & _key);
 
 		/**
 		 * Class name given this function creates the object and initializes all variables.
 		 */
-		ScriptObject 			* 			instanceScriptObjectByTypeName(const zs_string & str_script_type);
+		ScriptObject 			* 			instanceScriptObjectByTypeName(const std::string & str_script_type);
 		ScriptObject 			* 			instanceScriptObjectByTypeIdx(short  idx_script_type, void * value_object = NULL);
 
 		/**
@@ -104,24 +104,24 @@ namespace zetscript{
 		 */
 		template <typename V>
 		void bindGlobalVariable(
-			 const zs_string & var_name
+			 const std::string & var_name
 			 ,V var_ptr
 			 , const char *registered_file=""
 			 ,short registered_line=-1
 		);
 
-		void bindConstantVariable(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1);
-		void bindConstantVariable(const zs_string & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
-		void bindConstantVariable(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1);
-		void bindConstantVariable(const zs_string & var_name, const zs_string & v, const char *registered_file="", short registered_line=-1);
-		void bindConstantVariable(const zs_string & var_name, const char * v, const char *registered_file="", short registered_line=-1);
+		void bindConstantVariable(const std::string & var_name, int value, const char *registered_file="", short registered_line=-1);
+		void bindConstantVariable(const std::string & var_name, zs_float value, const char *registered_file="", short registered_line=-1);
+		void bindConstantVariable(const std::string & var_name, bool value, const char *registered_file="", short registered_line=-1);
+		void bindConstantVariable(const std::string & var_name, const std::string & v, const char *registered_file="", short registered_line=-1);
+		void bindConstantVariable(const std::string & var_name, const char * v, const char *registered_file="", short registered_line=-1);
 
 		/**
 		 * Register C function
 		 */
 		 template <typename F>
 		 void bindFunction(
-			const zs_string &  name_script_function
+			const std::string &  name_script_function
 			 ,F function_ptr
 			 , const char *registered_file=""
 			,short registered_line=-1
@@ -132,7 +132,7 @@ namespace zetscript{
 		 */
 		template<typename C>
 		ScriptType * bindType(
-			const zs_string & str_script_type
+			const std::string & str_script_type
 			, C * (*_constructor)(ZetScript *_zs)=NULL
 			, void (*_destructor)(ZetScript *_zs,C *)=NULL
 			, const char *registered_file=""
@@ -160,7 +160,7 @@ namespace zetscript{
 
 		template <typename C, typename R>
 		void bindStaticConstMember(
-				const zs_string & var_name
+				const std::string & var_name
 				, const R var_pointer
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -168,7 +168,7 @@ namespace zetscript{
 
 		template <typename C,typename F>
 		void bindMemberPropertySetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=""
 				,short registered_line=-1
@@ -179,7 +179,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void bindMemberPropertyGetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -190,7 +190,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void bindMemberPropertyPostIncrement(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -201,7 +201,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void bindMemberPropertyPostDecrement(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -212,7 +212,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void bindMemberPropertyPreIncrement(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -223,7 +223,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void bindMemberPropertyPreDecrement(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -232,7 +232,7 @@ namespace zetscript{
 		// register member property add set operation
 		template <typename C,typename F>
 		void bindMemberPropertyAddSetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -241,7 +241,7 @@ namespace zetscript{
 		// register member property sub set operation
 		template <typename C,typename F>
 		void bindMemberPropertySubSetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -250,7 +250,7 @@ namespace zetscript{
 		// register mul set operation
 		template <typename C,typename F>
 		void bindMemberPropertyMulSetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -259,7 +259,7 @@ namespace zetscript{
 		// register div set operation
 		template <typename C,typename F>
 		void bindMemberPropertyDivSetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -268,7 +268,7 @@ namespace zetscript{
 		// register mod set operation
 		template <typename C,typename F>
 		void bindMemberPropertyModSetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -277,7 +277,7 @@ namespace zetscript{
 		// register and set operation
 		template <typename C,typename F>
 		void bindMemberPropertyAndSetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -286,7 +286,7 @@ namespace zetscript{
 		// register or set operation
 		template <typename C,typename F>
 		void bindMemberPropertyOrSetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -295,7 +295,7 @@ namespace zetscript{
 		// register xor set operation
 		template <typename C,typename F>
 		void bindMemberPropertyXorSetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -304,7 +304,7 @@ namespace zetscript{
 		// register shl set operation
 		template <typename C,typename F>
 		void bindMemberPropertyShlSetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -313,7 +313,7 @@ namespace zetscript{
 		// register shr set operation
 		template <typename C,typename F>
 		void bindMemberPropertyShrSetter(
-				const zs_string & _property_name
+				const std::string & _property_name
 				,F _ptr_function
 				, const char *registered_file=NULL
 				,short registered_line=-1
@@ -324,7 +324,7 @@ namespace zetscript{
 		 */
 		template <typename C, typename F>
 		void bindStaticMemberFunction(
-				const zs_string & _function_name
+				const std::string & _function_name
 				,F _ptr_function
 				, const char *_registered_file=""
 				,short _registered_line=-1);
@@ -336,7 +336,7 @@ namespace zetscript{
 		 */
 		template <typename C,typename F>
 		void	bindMemberFunction(
-				const zs_string & name_script_function
+				const std::string & name_script_function
 				,F ptr_function
 				 , const char *registered_file=""
 				,short registered_line=-1
@@ -355,24 +355,24 @@ namespace zetscript{
 			Type  id;
 		}PrimitiveType;
 
-		zs_map 	 						*stk_constants,*stk_objects;
-		zs_vector<ScriptType *>			*   script_types;
-		ZetScript 						*	zs;
-		VirtualMachine					*	vm;
-		ScopeFactory 					*	scope_factory;
-		ScriptFunctionFactory 			*	script_function_factory;
-		ScriptType 						* 	main_object;
-		ScriptFunction 					* 	main_function;
+		std::map<std::string,StackElement*>		*stk_constants,*stk_objects;
+		std::vector<ScriptType *>				*script_types;
+		ZetScript 								*	zs;
+		VirtualMachine							*	vm;
+		ScopeFactory 							*	scope_factory;
+		ScriptFunctionFactory 					*	script_function_factory;
+		ScriptType 								* 	main_object;
+		ScriptFunction 							* 	main_function;
 
 		int 							idx_clear_checkpoint;
 
-		void							checkScriptTypeName(const zs_string & str_script_type);
-		PrimitiveType *					getPrimitiveTypeFromStr(const zs_string & str);
+		void							checkScriptTypeName(const std::string & str_script_type);
+		PrimitiveType *					getPrimitiveTypeFromStr(const std::string & str);
 
 
 		void 							registerPrimitiveTypes();
 
-		short							getIdxTypeFromTypeNameInternal(const zs_string & _type_name);
+		short							getIdxTypeFromTypeNameInternal(const std::string & _type_name);
 
 		void 							setup();
 		void 							internalPrintError(const char *s);

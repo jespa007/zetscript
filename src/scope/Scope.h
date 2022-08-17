@@ -37,10 +37,10 @@ namespace zetscript{
 
 		Scope 					*scope_parent, *scope_base;
 
-		zs_vector<Scope *>		*scopes;  // local scopes from starting block { }
-		zs_vector<Symbol *>		*symbol_variables; // variable symbols from starting block { }
-		zs_vector<Symbol *>		*symbol_functions; // function symbols from starting block { }
-		zs_vector<Symbol *>		*symbol_types; // function symbols from starting block { }
+		std::vector<Scope *>		*scopes;  // local scopes from starting block { }
+		std::vector<Symbol *>		*symbol_variables; // variable symbols from starting block { }
+		std::vector<Symbol *>		*symbol_functions; // function symbols from starting block { }
+		std::vector<Symbol *>		*symbol_types; // function symbols from starting block { }
 
 		//--------------------------------------------------------------------
 		// Functions
@@ -54,11 +54,11 @@ namespace zetscript{
 		 * register/search symbol info
 		 * @n_params:
 		 */
-		Symbol * registerSymbolVariable(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
-		Symbol * registerSymbolFunction(const char * file, short line,const zs_string & symbol_name, char n_params,uint16_t  _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
-		Symbol * registerSymbolScriptType(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
+		Symbol * registerSymbolVariable(const char * file, short line,const std::string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
+		Symbol * registerSymbolFunction(const char * file, short line,const std::string & symbol_name, char n_params,uint16_t  _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
+		Symbol * registerSymbolScriptType(const char * file, short line,const std::string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
 		Symbol * getSymbol(
-				const zs_string & var_name
+				const std::string & var_name
 				, char n_params=NO_PARAMS_SYMBOL_ONLY
 				, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
 		);
@@ -84,11 +84,11 @@ namespace zetscript{
 		ScopeFactory *scope_factory;
 		int 			idx_script_function;
 
-		void 	 checkPreRegisterSymbol(const char * file,short line, const zs_string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction);
+		void 	 checkPreRegisterSymbol(const char * file,short line, const std::string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction);
 
-		Symbol * getSymbolRecursive(const zs_string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
-		Symbol * getSymbolRecursiveDownScope(const zs_string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
-		Symbol * getSymbolRecursiveUpScope(const zs_string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
+		Symbol * getSymbolRecursive(const std::string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
+		Symbol * getSymbolRecursiveDownScope(const std::string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
+		Symbol * getSymbolRecursiveUpScope(const std::string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
 
 		void markBlockScopeAsUnusuedScopesRecursive(Scope *_sc);
 

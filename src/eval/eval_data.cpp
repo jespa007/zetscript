@@ -177,9 +177,9 @@ namespace zetscript{
 		PreOperation   					pre_operation; // !,+,-,--,++
 		Operator  						operator_type;
 
-		zs_string 						value; // token value content
+		std::string 						value; // token value content
 		int 							line;
-		zs_vector<EvalInstruction *> 						eval_instructions; // byte code load literal/identifier(can be anonymous function), zs_vector/struct.
+		std::vector<EvalInstruction *> 						eval_instructions; // byte code load literal/identifier(can be anonymous function), std::vector/struct.
 		bool are_instructions_moved;
 
 		TokenNode(){
@@ -200,7 +200,7 @@ namespace zetscript{
 
 	struct EvalFunction{
 
-		zs_vector<EvalInstruction *>						 		eval_instructions;
+		std::vector<EvalInstruction *>						 		eval_instructions;
 		ScriptFunction 						*  	script_function;
 		int										parsing_loop;
 		int										parsing_switch;
@@ -213,8 +213,8 @@ namespace zetscript{
 		}
 
 		~EvalFunction(){
-			for(int i=0; i< eval_instructions.count; i++){
-				delete (EvalInstruction *)eval_instructions.items[i];
+			for(unsigned i=0; i< eval_instructions.size(); i++){
+				delete (EvalInstruction *)eval_instructions[i];
 			}
 		}
 	};
@@ -257,7 +257,7 @@ namespace zetscript{
 	} EvalSeparator;
 
 	typedef struct{
-		zs_vector<EvalInstruction *> 						ei_break_jmps;
+		std::vector<EvalInstruction *> 						ei_break_jmps;
 		int								idx_instruction_start_loop;
 	}LoopBreakContinueInfo;
 
@@ -267,15 +267,15 @@ namespace zetscript{
 		ScriptFunctionFactory 			* 		script_function_factory;
 		ScriptTypeFactory 				* 		script_type_factory;
 		EvalFunction					* 		current_function;
-		zs_vector<EvalFunction *>				eval_functions;
+		std::vector<EvalFunction *>				eval_functions;
 
-		//zs_vector				 				global_ref_instructions; // Eval Instruction
+		//std::vector				 				global_ref_instructions; // Eval Instruction
 		int										parsing_loop;
 
 		const char *					 		current_parsing_file;
 		bool							  		error;
-		zs_string								str_error;
-		zs_string								error_file;
+		std::string								str_error;
+		std::string								error_file;
 		int 									error_line;
 
 		EvalData(ZetScript * _zs){
@@ -302,8 +302,8 @@ namespace zetscript{
 	bool g_init_eval=false;
 
 	char *  eval_symbol(EvalData *eval_data,const char *start_word, int line,  Scope *scope_info,TokenNode * token_node, PreOperation pre_operation, PostOperation post_operation);
-	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const zs_string & symbol_to_find);
-	Symbol *eval_find_global_symbol(EvalData *eval_data, const zs_string & symbol_to_find);
+	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const std::string & symbol_to_find);
+	Symbol *eval_find_global_symbol(EvalData *eval_data, const std::string & symbol_to_find);
 
 	bool	is_operator_ternary_if(const char *s)				{return *s=='?';}
 	bool 	is_operator_ternary_else(const char *s)				{return *s==':';}
@@ -544,12 +544,16 @@ namespace zetscript{
 		return Directive::DIRECTIVE_UNKNOWN;
 	}
 
-	const char * get_mapped_name(EvalData *eval_data, const zs_string & _mapped_name){
+	std::string * get_mapped_name(EvalData *eval_data, const std::string & _mapped_name){
 		ZS_UNUSUED_PARAM(eval_data);
-		char * key=(char *)eval_data->zs->getCompiledSymbolName()->getKey(_mapped_name.c_str());
-		if(key==NULL){
-			auto node=eval_data->zs->getCompiledSymbolName()->set(_mapped_name.c_str(),0);
-			key=node->key;
+		std::string *key=NULL;
+		if(eval_data->zs->getCompiledSymbolName()->count(_mapped_name)!=0){
+			key=eval_data->zs->getCompiledSymbolName()->at(_mapped_name);
+		}else{
+
+			key=new std::string(_mapped_name);
+			eval_data->zs->getCompiledSymbolName()->at(_mapped_name)=key;
+
 		}
 		return key;
 	}
@@ -581,7 +585,7 @@ namespace zetscript{
 		return false;
 	}
 
-	int  check_identifier_name_expression_ok(EvalData *eval_data,const zs_string & symbol, int line){
+	int  check_identifier_name_expression_ok(EvalData *eval_data,const std::string & symbol, int line){
 
 		char *aux_p = (char *)symbol.c_str();
 		Keyword kw;
@@ -625,12 +629,12 @@ namespace zetscript{
 		return TRUE;
 	}
 
-	char * parse_literal_number(EvalData *eval_data,const char *s, int & line, zs_string & value){
-		// PRE: a zs_string given...
+	char * parse_literal_number(EvalData *eval_data,const char *s, int & line, std::string & value){
+		// PRE: a std::string given...
 		char *aux_p = NULL;
 		bool end=false;
 		int current_part=0;
-		zs_string number_part[3];
+		std::string number_part[3];
 		//value="";
 		bool is_hexa=false;
 		bool is01s=true;
@@ -768,7 +772,7 @@ namespace zetscript{
 		// POST: detects integer/binary/fractional/hexa
 	}
 
-	char *  get_name_identifier_token(EvalData *eval_data,const char *s, int line, zs_string & name, bool _throw_error=true){
+	char *  get_name_identifier_token(EvalData *eval_data,const char *s, int line, std::string & name, bool _throw_error=true){
 
 		char *aux_p = (char *)s;
 		name="";

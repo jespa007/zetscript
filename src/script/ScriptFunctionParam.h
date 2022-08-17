@@ -14,19 +14,19 @@ namespace zetscript{
 	class ScriptFunctionParam{
 	public:
 		int idx_script_type;
-		zs_string name; //arg c++ type or arg name
+		std::string name; //arg c++ type or arg name
 		int line;
 		uint16_t properties;
 		StackElement default_param_value; // constant int/float/bool/string or anonymous function that return an expression or other object
 
 		ScriptFunctionParam();
-		ScriptFunctionParam(const zs_string & _name);
-		ScriptFunctionParam(int _idx_script_type, const zs_string & _name);
+		ScriptFunctionParam(const std::string & _name);
+		ScriptFunctionParam(int _idx_script_type, const std::string & _name);
 		ScriptFunctionParam( const ScriptFunctionParam & _function_param);
 
 		ScriptFunctionParam & operator=( const ScriptFunctionParam & _function_param);
 
-		static ScriptFunctionParam *createArrayFromVector(const zs_vector<ScriptFunctionParam *>  * _script_function_params);
+		static ScriptFunctionParam *createArrayFromVector(const std::vector<ScriptFunctionParam *>  * _script_function_params);
 		static ScriptFunctionParam *createArrayFromScriptFunction(const ScriptFunction * sf);
 
 		~ScriptFunctionParam();

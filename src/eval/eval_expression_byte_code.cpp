@@ -17,21 +17,21 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, zs_vector<EvalInstruction *> 	* eval_instructions
+			, std::vector<EvalInstruction *> 	* eval_instructions
 			, const char *expected_ending_char
 			, uint16_t properties // uint16_t properties
-			, zs_vector<Instruction *> *unique_call_instruction
+			, std::vector<Instruction *> *unique_call_instruction
 	);
 
 
-	bool eval_two_last_instruction_are_constants(zs_vector<EvalInstruction *> *_eval_instructions){
+	bool eval_two_last_instruction_are_constants(std::vector<EvalInstruction *> *_eval_instructions){
 
-		size_t size_instructions=_eval_instructions->count;
+		size_t size_instructions=_eval_instructions->size();
 
 		if(size_instructions >= 2){
 
-			EvalInstruction *i1=(EvalInstruction *)_eval_instructions->items[size_instructions-2];
-			EvalInstruction *i2=(EvalInstruction *)_eval_instructions->items[size_instructions-1];
+			EvalInstruction *i1=(EvalInstruction *)_eval_instructions->at(size_instructions-2);
+			EvalInstruction *i2=(EvalInstruction *)_eval_instructions->at(size_instructions-1);
 
 			return i1->vm_instruction.isConstant() && i2->vm_instruction.isConstant();
 		}
@@ -44,10 +44,10 @@ namespace zetscript{
 	void eval_expression_tokens_to_byte_code(
 			  EvalData *eval_data
 			, Scope *scope
-			, zs_vector<TokenNode *> 	* 	token_nodes
-			, zs_vector<EvalInstruction *> 	*	eval_instructions
-			, zs_vector<EvalInstruction *>     *   logical_and_jnt
-			, zs_vector<EvalInstruction *>     *  logical_or_jt
+			, std::vector<TokenNode *> 	* 	token_nodes
+			, std::vector<EvalInstruction *> 	*	eval_instructions
+			, std::vector<EvalInstruction *>     *   logical_and_jnt
+			, std::vector<EvalInstruction *>     *  logical_or_jt
 			, int idx_start_eval_instructions
 			, int idx_start
 			, int idx_end
@@ -64,10 +64,15 @@ namespace zetscript{
 		// trivial case (symbol node)
 		if(idx_start>=idx_end){
 			// concatenate instructions ...
-			TokenNode *end_node=(TokenNode *)token_nodes->items[idx_start];
+			TokenNode *end_node=(TokenNode *)token_nodes->at(idx_start);
 			end_node->are_instructions_moved=true; // mark as processed
 
-			eval_instructions->concat(end_node->eval_instructions);
+			eval_instructions->insert(
+				eval_instructions->end()
+				,end_node->eval_instructions.begin()
+				,end_node->eval_instructions.end()
+			);
+
 			return;
 		}
 
@@ -75,8 +80,8 @@ namespace zetscript{
 		for(int i=idx_start; i<= idx_end; i++){
 
 			// get split preference
-			if(((TokenNode *)(token_nodes->items[i]))->token_type == TokenType::TOKEN_TYPE_OPERATOR){
-				unsigned char idx_group=get_operator_type_group(((TokenNode *)(token_nodes->items[i]))->operator_type);
+			if(((TokenNode *)(token_nodes->at(i)))->token_type == TokenType::TOKEN_TYPE_OPERATOR){
+				unsigned char idx_group=get_operator_type_group(((TokenNode *)(token_nodes->at(i)))->operator_type);
 
 				if(idx_group <= idx_group_split){
 					idx_group_split=idx_group;
@@ -90,7 +95,7 @@ namespace zetscript{
 		}
 
 		// split left/right by operator precedence...
-		split_node=(TokenNode *)token_nodes->items[idx_split];
+		split_node=(TokenNode *)token_nodes->at(idx_split);
 
 		// perform left side op (can have operators)...
 		eval_expression_tokens_to_byte_code(
@@ -151,9 +156,9 @@ namespace zetscript{
 		/*custom_insert_instruction=false;
 		if((split_node->operator_type == OPERATOR_LOGIC_AND) && (two_last_instructions_are_constants==false)){
 
-			int insert_at=-1;//eval_instructions->count-1;
+			int insert_at=-1;//eval_instructions->size()-1;
 			int consecutive_logical_operators=0;
-			for(int i=eval_instructions->count-1; i >= idx_start_eval_instructions; i--){
+			for(int i=eval_instructions->size()-1; i >= idx_start_eval_instructions; i--){
 				EvalInstruction *current_instruction=(EvalInstruction *)eval_instructions->items[i];
 				if(IS_BYTE_BOOLEAN_OP(current_instruction->vm_instruction.byte_code)){
 
@@ -187,7 +192,7 @@ namespace zetscript{
 			//search two consecutives compare byte codes from current
 			int consecutive_logical_operators=0;
 
-			for(int i=eval_instructions->count-1; i >= idx_start_eval_instructions && consecutive_logical_operators<2; i--){
+			for(int i=eval_instructions->size()-1; i >= idx_start_eval_instructions && consecutive_logical_operators<2; i--){
 				EvalInstruction *current_instruction=(EvalInstruction *)eval_instructions->items[i];
 				// reset consecutive each JNT NEXT OR found
 				if((current_instruction->vm_instruction.byte_code == BYTE_CODE_JNT) && (current_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
@@ -240,9 +245,9 @@ namespace zetscript{
 		}
 	}
 
-	void eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_vector<zs_vector<EvalInstruction *> *> & zs_ei_assign_loader_instructions_post_expression){
-		for(int i=0; i<zs_ei_assign_loader_instructions_post_expression.count; i++ ){
-			delete zs_ei_assign_loader_instructions_post_expression.items[i];
+	void eval_deallocate_zs_ei_assign_loader_instructions_post_expression(std::vector<std::vector<EvalInstruction *> *> & zs_ei_assign_loader_instructions_post_expression){
+		for(unsigned i=0; i<zs_ei_assign_loader_instructions_post_expression.size(); i++ ){
+			delete zs_ei_assign_loader_instructions_post_expression[i];
 		}
 		zs_ei_assign_loader_instructions_post_expression.clear();
 
@@ -254,25 +259,25 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, zs_vector<EvalInstruction *> *dst_instructions
-			, zs_vector<TokenNode *> * token_nodes
+			, std::vector<EvalInstruction *> *dst_instructions
+			, std::vector<TokenNode *> * token_nodes
 			, uint16_t properties
-			, zs_vector<Instruction *> *unique_call_instructions
+			, std::vector<Instruction *> *unique_call_instructions
 		){
 
 		char *aux_p=(char *)s;
-		zs_vector<TokenNode *> assing_token_informations;
+		std::vector<TokenNode *> assing_token_informations;
 		int idx_start=0;
-		int idx_end=(int)(token_nodes->count-1);
-		zs_vector<zs_vector<EvalInstruction *> *> zs_ei_assign_loader_instructions_post_expression; // zs_vector<zs_vector<EvalInstruction *>>
-		zs_vector<EvalInstruction *> ei_assign_store_instruction_post_expression;
+		int idx_end=(int)(token_nodes->size()-1);
+		std::vector<std::vector<EvalInstruction *> *> zs_ei_assign_loader_instructions_post_expression; // std::vector<std::vector<EvalInstruction *>>
+		std::vector<EvalInstruction *> ei_assign_store_instruction_post_expression;
 		int idx_start_instructions=0;
-		zs_vector<EvalInstruction *> logical_and_jnt,logical_or_jt;
+		std::vector<EvalInstruction *> logical_and_jnt,logical_or_jt;
 		//bool create_jmp_false=false;
 
 		// search for assign
 		for(int i=idx_end; i >= 0; i--){
-			Operator token_operator = ((TokenNode *)token_nodes->items[i])->operator_type;
+			Operator token_operator = ((TokenNode *)token_nodes->at(i))->operator_type;
 
 			if(IS_OPERATOR_TYPE_ASSIGN(token_operator)){ // ... save all assignables from operator split
 					idx_start=i+1;
@@ -284,10 +289,10 @@ namespace zetscript{
 		// operator assign = found --> assign operators, load identifiers first
 		for(int i=0; i < idx_start; i+=2){ // starting from assign operator if idx_start > 0 += 2 is because there's a symbol followed by its operator
 			EvalInstruction *eval_instruction=NULL;
-			TokenNode * token_node_symbol = (TokenNode *)token_nodes->items[i];
-			TokenNode * token_node_operator = (TokenNode *)token_nodes->items[i+1];
+			TokenNode * token_node_symbol = (TokenNode *)token_nodes->at(i);
+			TokenNode * token_node_operator = (TokenNode *)token_nodes->at(i+1);
 			Operator operator_type=token_node_operator->operator_type;
-			zs_vector<EvalInstruction *> *ei_assign_loader_instructions_post_expression=NULL;
+			std::vector<EvalInstruction *> *ei_assign_loader_instructions_post_expression=NULL;
 
 			// Check for operators found. Each operator found it has to be (=,+=,-=,... etc)
 			if(!(
@@ -315,7 +320,7 @@ namespace zetscript{
 				);
 			}
 
-			EvalInstruction *ei_load_assign_instruction=((EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]);
+			EvalInstruction *ei_load_assign_instruction=((EvalInstruction *)token_node_symbol->eval_instructions[token_node_symbol->eval_instructions.size()-1]);
 
 			if(IS_BYTE_CODE_CALL(
 					ei_load_assign_instruction->vm_instruction.byte_code
@@ -327,16 +332,19 @@ namespace zetscript{
 						,"Calling a function in left assignment is not allowed");
 			}
 
-			zs_ei_assign_loader_instructions_post_expression.push_back(ei_assign_loader_instructions_post_expression=new zs_vector<EvalInstruction *>());//ei_assign_loader_instructions_post_expression=new zs_vector<EvalInstruction *>());
+			zs_ei_assign_loader_instructions_post_expression.push_back(ei_assign_loader_instructions_post_expression=new std::vector<EvalInstruction *>());//ei_assign_loader_instructions_post_expression=new std::vector<EvalInstruction *>());
 
 			// assign operators: add instructions related about its accessors...
-			for(int j=0;j<token_node_symbol->eval_instructions.count;j++){
-				ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions.items[j];
-				ei_assign_loader_instructions_post_expression->push_back(token_node_symbol->eval_instructions.items[j]);
+			for(unsigned j=0;j<token_node_symbol->eval_instructions.size();j++){
+				ei_load_assign_instruction=(EvalInstruction *)token_node_symbol->eval_instructions[j];
+				ei_assign_loader_instructions_post_expression->push_back(token_node_symbol->eval_instructions[j]);
 			}
 
 			// get last instruction...
-			EvalInstruction *ei_last_load_instruction=(EvalInstruction *)ei_assign_loader_instructions_post_expression->items[ei_assign_loader_instructions_post_expression->count-1];
+			EvalInstruction *ei_last_load_instruction=ei_assign_loader_instructions_post_expression->at(
+					ei_assign_loader_instructions_post_expression->size()-1
+			);
+
 			Instruction *last_load_instruction=&ei_last_load_instruction->vm_instruction;
 
 			if(byte_code_is_load_var_type(last_load_instruction->byte_code)){
@@ -369,7 +377,7 @@ namespace zetscript{
 
 		// eval tokens
 
-		idx_start_instructions=dst_instructions->count;
+		idx_start_instructions=dst_instructions->size();
 
 		try{
 			eval_expression_tokens_to_byte_code(
@@ -379,7 +387,7 @@ namespace zetscript{
 				, dst_instructions
 				, &logical_and_jnt
 				, &logical_or_jt
-				, dst_instructions->count
+				, dst_instructions->size()
 				, idx_start
 				, idx_end
 				, properties
@@ -390,11 +398,11 @@ namespace zetscript{
 
 
 		// there's a logical and or logical or that will place a true/false for its final value
-		if(logical_or_jt.count > 0 || logical_and_jnt.count > 0){
+		if(logical_or_jt.size() > 0 || logical_and_jnt.size() > 0){
 
-			int idx_jmp_load_true_value=dst_instructions->count;
-			int idx_jmp_load_false_value=dst_instructions->count;
-			int idx_jmp_end=dst_instructions->count;
+			int idx_jmp_load_true_value=dst_instructions->size();
+			int idx_jmp_load_false_value=dst_instructions->size();
+			int idx_jmp_end=dst_instructions->size();
 
 			dst_instructions->push_back(
 
@@ -406,9 +414,9 @@ namespace zetscript{
 			);
 
 
-			if(logical_or_jt.count > 0){
+			if(logical_or_jt.size() > 0){
 
-				idx_jmp_load_true_value=dst_instructions->count;
+				idx_jmp_load_true_value=dst_instructions->size();
 				dst_instructions->push_back(
 					new EvalInstruction(
 						BYTE_CODE_LOAD_BOOL
@@ -419,10 +427,10 @@ namespace zetscript{
 
 			}
 
-			if(logical_and_jnt.count>0){
+			if(logical_and_jnt.size()>0){
 
-				if(logical_or_jt.count > 0){ // modify jmp instruction
-					((EvalInstruction *)dst_instructions->items[idx_jmp_end])->vm_instruction.value_op2=4;
+				if(logical_or_jt.size() > 0){ // modify jmp instruction
+					((EvalInstruction *)dst_instructions->at(idx_jmp_end))->vm_instruction.value_op2=4;
 
 					// to jmp true value space
 					dst_instructions->push_back(
@@ -434,7 +442,7 @@ namespace zetscript{
 					);
 				}
 
-				idx_jmp_load_false_value=dst_instructions->count;
+				idx_jmp_load_false_value=dst_instructions->size();
 
 				dst_instructions->push_back(
 					new EvalInstruction(
@@ -445,14 +453,14 @@ namespace zetscript{
 				);
 			}
 
-			for(int i=idx_start_instructions; i < dst_instructions->count; i++){
-				EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->items[i];
+			for(unsigned i=idx_start_instructions; i < dst_instructions->size(); i++){
+				EvalInstruction *eval_instruction=(EvalInstruction *)dst_instructions->at(i);
 				if((eval_instruction->vm_instruction.byte_code == BYTE_CODE_JNT) && (eval_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JNT_LOGIC_NEXT_OR)){
 					//logical_and_jnt.push_back((intptr_t)eval_instruction);
 					// go to next logic or
 					int idx_next_or_found=-1;
-					for(int j=i; j < dst_instructions->count; j++){
-						EvalInstruction *eval_instruction_post_instruction=(EvalInstruction *)dst_instructions->items[j];
+					for(unsigned j=i; j < dst_instructions->size(); j++){
+						EvalInstruction *eval_instruction_post_instruction=(EvalInstruction *)dst_instructions->at(j);
 						if((eval_instruction_post_instruction->vm_instruction.byte_code == BYTE_CODE_JT) && (eval_instruction_post_instruction->vm_instruction.value_op1== ZS_IDX_INSTRUCTION_JT_LOGIC_OK)){
 							idx_next_or_found=j;
 							break;
@@ -485,7 +493,7 @@ namespace zetscript{
 			Instruction *last_instruction=NULL;
 
 			// insert JNT
-			int jnt_instructions_start=dst_instructions->count;
+			int jnt_instructions_start=dst_instructions->size();
 			dst_instructions->push_back(ei_ternary_if_jnt=new EvalInstruction(BYTE_CODE_JNT));
 			ei_ternary_if_jnt->instruction_source_info.file=eval_data->current_parsing_file;
 			ei_ternary_if_jnt->instruction_source_info.line=line;
@@ -509,8 +517,8 @@ namespace zetscript{
 			}
 
 			if(unique_call_instructions != NULL){
-				last_instruction=&(((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction);
-				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->count==1){
+				last_instruction=&(((EvalInstruction *)dst_instructions->at(dst_instructions->size()-1))->vm_instruction);
+				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->size()==1){
 					unique_call_instructions->push_back(last_instruction);
 				}
 			}
@@ -526,9 +534,9 @@ namespace zetscript{
 			}
 
 
-			jmp_instructions_start=dst_instructions->count;
+			jmp_instructions_start=dst_instructions->size();
 			dst_instructions->push_back(ei_ternary_else_jmp=new EvalInstruction(BYTE_CODE_JMP));
-			body_size_if=dst_instructions->count-jnt_instructions_start; // size body "if" takes jmp as part of it
+			body_size_if=dst_instructions->size()-jnt_instructions_start; // size body "if" takes jmp as part of it
 
 
 
@@ -547,23 +555,22 @@ namespace zetscript{
 				goto eval_error_byte_code;
 			}
 
-			body_size_else=dst_instructions->count-jmp_instructions_start;
+			body_size_else=dst_instructions->size()-jmp_instructions_start;
 
 			if(unique_call_instructions != NULL){
-				last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction;
-				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->count==1){
+				last_instruction=&((EvalInstruction *)dst_instructions->at(dst_instructions->size()-1))->vm_instruction;
+				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->size()==1){
 					unique_call_instructions->push_back(last_instruction);
 				}
 			}
-
 
 			ei_ternary_if_jnt->vm_instruction.value_op2=body_size_if; // +1 because
 			ei_ternary_else_jmp->vm_instruction.value_op2=body_size_else;
 
 		}else{
 			if(unique_call_instructions != NULL){
-				Instruction *last_instruction=&((EvalInstruction *)dst_instructions->items[dst_instructions->count-1])->vm_instruction;
-				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->count==1){
+				Instruction *last_instruction=&((EvalInstruction *)dst_instructions->at(dst_instructions->size()-1))->vm_instruction;
+				if(IS_BYTE_CODE_CALL(last_instruction->byte_code) && token_nodes->size()==1){
 					unique_call_instructions->push_back(last_instruction);
 				}
 			}
@@ -571,13 +578,17 @@ namespace zetscript{
 		//--------------------------------------------------------------
 
 		// ... finally save store operators
-		for(int i=(int)(zs_ei_assign_loader_instructions_post_expression.count-1); i >=0 ;i--){
+		for(int i=(int)(zs_ei_assign_loader_instructions_post_expression.size()-1); i >=0 ;i--){
 			//loaders
-			dst_instructions->concat(*zs_ei_assign_loader_instructions_post_expression.items[i]);
+			dst_instructions->insert(
+				dst_instructions->begin()
+				,zs_ei_assign_loader_instructions_post_expression[i]->begin()
+			    ,zs_ei_assign_loader_instructions_post_expression[i]->end()
+			);
 
 			// push back assign operator
 			dst_instructions->push_back(
-				ei_assign_store_instruction_post_expression.items[i]
+				ei_assign_store_instruction_post_expression[i]
 			);
 		}
 
@@ -588,8 +599,8 @@ namespace zetscript{
 eval_error_byte_code:
 
 		// only delete the new ones
-		for(int i=0; i < ei_assign_store_instruction_post_expression.count; i++){
-			delete (EvalInstruction *)ei_assign_store_instruction_post_expression.items[i];
+		for(unsigned i=0; i < ei_assign_store_instruction_post_expression.size(); i++){
+			delete (EvalInstruction *)ei_assign_store_instruction_post_expression[i];
 		}
 
 		eval_deallocate_zs_ei_assign_loader_instructions_post_expression(zs_ei_assign_loader_instructions_post_expression);

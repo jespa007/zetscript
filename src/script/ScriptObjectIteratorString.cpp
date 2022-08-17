@@ -39,7 +39,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 
-		zs_string *str_ref=(zs_string *)sos->value;
+		std::string *str_ref=(std::string *)sos->value;
 		if(idx < (int)str_ref->length()){
 			// set value
 			zs_int ch=str_ref->at(idx);

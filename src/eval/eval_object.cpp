@@ -4,14 +4,14 @@
  */
 namespace zetscript{
 
-	//zs_string * 	get_mapped_name(EvalData *eval_data,const zs_string * symbol_name);
-	zs_string * get_mapped_name(const zs_string & s);
+	//std::string * 	get_mapped_name(EvalData *eval_data,const std::string * symbol_name);
+	std::string * get_mapped_name(const std::string & s);
 	char 		*	eval_expression(
 			EvalData *eval_data
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, zs_vector<EvalInstruction *> 	* eval_instructions
+			, std::vector<EvalInstruction *> 	* eval_instructions
 			, const char *expected_ending_char=NULL // expecting ending char when expression finish (by default not check or 0)
 			, uint16_t properties = 0
 	);
@@ -22,10 +22,10 @@ namespace zetscript{
 			,const char *s
 			, int & line
 			, Scope *scope_info
-			, zs_vector<EvalInstruction *> 	* eval_instructions
+			, std::vector<EvalInstruction *> 	* eval_instructions
 			, const char *expected_ending_char=NULL
 			, uint16_t properties=0 // uint16_t properties
-			, zs_vector<Instruction *> *unique_call_instruction=NULL
+			, std::vector<Instruction *> *unique_call_instruction=NULL
 	);
 
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ namespace zetscript{
 		ZS_UNUSUED_PARAM(_scope_info);
 		// this function is not like keyword function, it ensures that is a function object (anonymouse function)...
 		EvalInstruction *eval_instruction;
-		zs_vector<EvalInstruction *> 	* eval_instructions=&token_node->eval_instructions;
+		std::vector<EvalInstruction *> 	* eval_instructions=&token_node->eval_instructions;
 		char *aux_p = (char *)s;
 		unsigned short instruction_properties=0; // global by default ...
 		Symbol *symbol_object=NULL;
@@ -81,7 +81,7 @@ namespace zetscript{
 		return aux_p;
 	}
 
-	char * eval_object_identifier(EvalData *eval_data,const char *s, int line, zs_string & symbol_value){
+	char * eval_object_identifier(EvalData *eval_data,const char *s, int line, std::string & symbol_value){
 		char *aux_p = (char *)s;
 		symbol_value="";
 		// get identifier with quotes...
@@ -123,7 +123,7 @@ namespace zetscript{
 		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 		if(*aux_p == '{'){ // go for final ...
-			zs_string symbol_value;
+			std::string symbol_value;
 			IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
 			if(*aux_p == '}'){ // Empty {} is a block
@@ -149,13 +149,13 @@ namespace zetscript{
 		return false;
 	}
 
-	char * eval_object_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector<EvalInstruction *>	*	eval_instructions){
+	char * eval_object_object(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *>	*	eval_instructions){
 		// Inline object: two possibles uses {a:1,b:2}["a"] or {a:1, b:2}.a
 		char *aux_p = (char *)s;
-		zs_string symbol_value;
-		zs_string str_key;
+		std::string symbol_value;
+		std::string str_key;
 		int lineSymbol;
-		//zs_string key_value;
+		//std::string key_value;
 		StackElement *stk_key_object;
 		Keyword keyw;
 
@@ -197,7 +197,7 @@ namespace zetscript{
 			}
 
 			 // register constant...
-			str_key=zs_string("\"")+symbol_value+"\"";
+			str_key=std::string("\"")+symbol_value+"\"";
 			if((stk_key_object = eval_data->script_type_factory->getStkConstantStringObject(str_key))==NULL){
 				stk_key_object=eval_data->script_type_factory->registerStkConstantStringObject(str_key,symbol_value);
 			 }
@@ -247,7 +247,7 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  zs_vector<EvalInstruction *> * eval_instructions){
+	char * eval_object_vector(EvalData *eval_data,const char *s,int & line,  Scope *scope_info,  std::vector<EvalInstruction *> * eval_instructions){
 		// Inline vector: [0,1,2,3][0]+23
 		char * aux_p=NULL;
 		IGNORE_BLANKS(aux_p,eval_data,s,line);
@@ -302,10 +302,10 @@ namespace zetscript{
 		return aux_p+1;
 	}
 
-	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, zs_vector<EvalInstruction *>	*	eval_instructions){
+	char * eval_object_new(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, std::vector<EvalInstruction *>	*	eval_instructions){
 		// Inline new : (new A(4+5)).toString()
 		char *aux_p = (char *)s;
-		zs_string symbol_name;
+		std::string symbol_name;
 		ScriptType *sc=NULL;
 		int n_args=0;
 		Symbol *constructor_function=NULL;
@@ -322,7 +322,7 @@ namespace zetscript{
 		if(key_w != Keyword::KEYWORD_UNKNOWN){
 
 			if(key_w == Keyword::KEYWORD_NEW){
-				zs_string expression="";
+				std::string expression="";
 				bool is_native_type=false;
 				Symbol *symbol_constructor_function_name=NULL;
 				//bool end=false;
@@ -466,10 +466,10 @@ namespace zetscript{
 				 if(eval_instruction_new_object_by_value==NULL){
 					 // check constructor symbol
 					 constructor_function=sc->getSymbol(CONSTRUCTOR_FUNCTION_NAME);
-					 int start_idx_function=sc->scope_script_type->symbol_functions->count-1;
+					 int start_idx_function=sc->scope_script_type->symbol_functions->size()-1;
 					 if(constructor_function == NULL){ // find first constructor throught its function members
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
-							Symbol *symbol_member = (Symbol *)sc->scope_script_type->symbol_functions->items[i];
+							Symbol *symbol_member = (Symbol *)sc->scope_script_type->symbol_functions->at(i);
 							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
 							if(sf_member->name_script_function== CONSTRUCTOR_FUNCTION_NAME){
 								constructor_function = symbol_member;

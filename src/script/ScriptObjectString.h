@@ -17,7 +17,7 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ScriptObjectString * newScriptObjectString(ZetScript *zs, const zs_string &_str="");
+		static ScriptObjectString * newScriptObjectString(ZetScript *zs, const std::string &_str="");
 		static ScriptObjectString * newShareableScriptObjectString(ZetScript	*_zs);
 
 		static ScriptObjectString * newScriptObjectStringAddStk(ZetScript *zs,StackElement *stk_result_op1,StackElement *stk_result_op2);
@@ -33,9 +33,9 @@ namespace zetscript{
 
 		ScriptObjectString();
 
-		void set(const zs_string & _s);
+		void set(const std::string & _s);
 		virtual int length();
-		virtual zs_string toString();
+		virtual std::string toString();
 
 		ScriptObjectString *sub(ScriptObjectString *s1);
 
@@ -44,7 +44,7 @@ namespace zetscript{
 
 
 	private:
-		zs_string default_str_value;
+		std::string default_str_value;
 
 		void setup();
 	};

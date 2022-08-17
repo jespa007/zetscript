@@ -34,17 +34,17 @@ namespace zetscript{
 		void				eraseAllUserElements();
 
 		virtual int length();
-		virtual zs_vector<StackElement *> * getStkUserListElements();
+		virtual std::vector<StackElement *> * getStkUserListElements();
 
 		bool exists(StackElement  * stk);
 
 		StackElement *			pushNewUserSlot();
 		void 					push(StackElement  * stk);
 		void 					pop();
-		virtual zs_string toString();
+		virtual std::string toString();
 		virtual ~ScriptObjectVector();
 	protected:
-		zs_vector<StackElement *> 			stk_user_elements;
+		std::vector<StackElement *> 			stk_user_elements;
 
 
 

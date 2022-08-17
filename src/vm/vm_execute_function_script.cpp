@@ -44,7 +44,7 @@ namespace zetscript{
 		int 						index_aux1=0;
 
 		Instruction 			*	instruction_it=calling_function->instructions;
-		StackElement 			*	stk_start=_stk_local_var+calling_function->local_variables->count;   // <-- here starts stk for aux vars for operations ..
+		StackElement 			*	stk_start=_stk_local_var+calling_function->local_variables->size();   // <-- here starts stk for aux vars for operations ..
 
 		if (IDX_VM_CURRENT_SCOPE_FUNCTION >= VM_FUNCTION_CALL_MAX) {
 			VM_ERROR_AND_RETF("Reached max stack");
@@ -71,7 +71,7 @@ namespace zetscript{
 		// init local variables symbols (except arguments) as undefined
 		if((calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN)){
 			VM_PUSH_SCOPE(calling_function->scope_script_function);
-			for(index_aux1=calling_function->params_len; index_aux1 <calling_function->local_variables->count; index_aux1++){
+			for(index_aux1=calling_function->params_len; index_aux1 <(int)calling_function->local_variables->size(); index_aux1++){
 				STK_SET_UNDEFINED(_stk_local_var+ index_aux1);
 			}
 		}
@@ -711,7 +711,7 @@ namespace zetscript{
 								VM_STOP_EXECUTEF("Expected integer index for String access");
 							}
 
-							zs_char *ptr_char=(zs_char *)&((zs_string *)((ScriptObjectString *)so_aux)->value)->c_str()[stk_result_op2->value];
+							zs_char *ptr_char=(zs_char *)&((std::string *)((ScriptObjectString *)so_aux)->value)->c_str()[stk_result_op2->value];
 							if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 								data->stk_vm_current->value=((zs_int)(*ptr_char));
 								data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;
@@ -758,7 +758,7 @@ namespace zetscript{
 					if(instruction->value_op2 == ZS_IDX_UNDEFINED){
 						VM_PUSH_STK_UNDEFINED;
 					}else{
-						data->stk_vm_current->value=(zs_int) so_aux->getScriptType()->scope_script_type->symbol_functions->items[instruction->value_op2];
+						data->stk_vm_current->value=(zs_int) so_aux->getScriptType()->scope_script_type->symbol_functions->at(instruction->value_op2);
 						data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
 						data->stk_vm_current++;
 					}
@@ -866,8 +866,8 @@ namespace zetscript{
 		, ByteCodeMetamethod _byte_code_metamethod
 	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		zs_string str1=stk_to_str(data->zs,_stk1);
-		zs_string str2=stk_to_str(data->zs, _stk2);
+		std::string str1=stk_to_str(data->zs,_stk1);
+		std::string str2=stk_to_str(data->zs, _stk2);
 
 		switch(_byte_code_metamethod){
 		case BYTE_CODE_METAMETHOD_EQU:

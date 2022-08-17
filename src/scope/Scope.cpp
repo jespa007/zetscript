@@ -19,10 +19,10 @@ namespace zetscript{
 		zs=_zs;
 		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
 		scope_factory=_zs->getScopeFactory();
-		scopes=new zs_vector<Scope *>;
-		symbol_variables=new zs_vector<Symbol *>;
-		symbol_functions=new zs_vector<Symbol *>;
-		symbol_types=new zs_vector<Symbol *>;
+		scopes=new std::vector<Scope *>;
+		symbol_variables=new std::vector<Symbol *>;
+		symbol_functions=new std::vector<Symbol *>;
+		symbol_types=new std::vector<Symbol *>;
 
 		if(_scope_parent == NULL){ // first node (it should be a type)...
 			scope_base = this;
@@ -62,8 +62,8 @@ namespace zetscript{
 	}
 
 	void Scope::removeChildrenBlockTypes(){
-		for(int i=0; i < this->scopes->count; i++){
-			markBlockScopeAsUnusuedScopesRecursive((Scope *)this->scopes->items[i]);
+		for(unsigned i=0; i < this->scopes->size(); i++){
+			markBlockScopeAsUnusuedScopesRecursive((Scope *)this->scopes->at(i));
 		}
 
 		this->scope_factory->clearUnusuedScopes();
@@ -80,8 +80,8 @@ namespace zetscript{
 			_sc->properties|=SCOPE_PROPERTY_UNUSUED;
 
 			// check its
-			for(int i=0; i < _sc->scopes->count;i++){
-				Scope *_child=(Scope *)_sc->scopes->items[i];
+			for(unsigned i=0; i < _sc->scopes->size();i++){
+				Scope *_child=(Scope *)_sc->scopes->at(i);
 				if((_sc->properties & SCOPE_PROPERTY_IS_SCOPE_BLOCK)==0){
 					throw std::runtime_error("expected scope as block type");
 				}
@@ -100,17 +100,17 @@ namespace zetscript{
 			return Scope::countVariablesRecursive(this,this->idx_script_function);
 		}
 
-		return this->symbol_variables->count;
+		return this->symbol_variables->size();
 
 	}
 
 	int Scope::countVariablesRecursive(Scope *_sc, int idx_script_function_reference){
 		int n_total=0;
 		if(_sc->idx_script_function==idx_script_function_reference){ // only count variables in the scope of the function
-			n_total=_sc->symbol_variables->count;
+			n_total=_sc->symbol_variables->size();
 
-			for(int i=0; i < _sc->scopes->count; i++){
-				n_total+=Scope::countVariablesRecursive((Scope *)_sc->scopes->items[i],idx_script_function_reference);
+			for(unsigned i=0; i < _sc->scopes->size(); i++){
+				n_total+=Scope::countVariablesRecursive((Scope *)_sc->scopes->at(i),idx_script_function_reference);
 			}
 		}
 
@@ -122,8 +122,8 @@ namespace zetscript{
 
 		// because no variables in there it moves all scopes in the parent ...
 		if(scope_parent != NULL){
-			for(int i=0;i < scopes->count; i++){
-				Scope *current_scope=(Scope *)scopes->items[i];
+			for(unsigned i=0;i < scopes->size(); i++){
+				Scope *current_scope=(Scope *)scopes->at(i);
 				scope_parent->scopes->push_back(current_scope);
 				current_scope->scope_parent = scope_parent;
 			}
@@ -135,7 +135,7 @@ namespace zetscript{
 		this->properties|=SCOPE_PROPERTY_UNUSUED;
 	}
 
-	void Scope::checkPreRegisterSymbol(const char * file,short line, const zs_string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
+	void Scope::checkPreRegisterSymbol(const char * file,short line, const std::string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
 		Symbol *p_irv=NULL;
 
 		// check if you register a type...
@@ -159,12 +159,12 @@ namespace zetscript{
 		}
 	}
 
-	Symbol * Scope::registerSymbolScriptType(const char * _file,short _line, const zs_string & _symbol_name, uint16_t _check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbolScriptType(const char * _file,short _line, const std::string & _symbol_name, uint16_t _check_repeated_symbols_direction){
 
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
 		Symbol *symbol 		= new Symbol(_symbol_name);
-		symbol->idx_position=symbol_types->count;
+		symbol->idx_position=symbol_types->size();
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
@@ -176,12 +176,12 @@ namespace zetscript{
 
 	}
 
-	Symbol * Scope::registerSymbolVariable(const char * _file,short _line, const zs_string & _symbol_name ,uint16_t _check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbolVariable(const char * _file,short _line, const std::string & _symbol_name ,uint16_t _check_repeated_symbols_direction){
 
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
 		Symbol *symbol 		= new Symbol(_symbol_name);
-		symbol->idx_position=symbol_variables->count;
+		symbol->idx_position=symbol_variables->size();
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
@@ -191,13 +191,13 @@ namespace zetscript{
 		return symbol;
 	}
 
-	Symbol * Scope::registerSymbolFunction(const char * _file,short _line, const zs_string & _symbol_name, char _n_params, uint16_t _check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbolFunction(const char * _file,short _line, const std::string & _symbol_name, char _n_params, uint16_t _check_repeated_symbols_direction){
 		if((_check_repeated_symbols_direction & REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS)==0){
 			checkPreRegisterSymbol(_file, _line, _symbol_name,  _n_params,_check_repeated_symbols_direction);
 		}
 
 		Symbol *symbol 		= new Symbol(_symbol_name);
-		symbol->idx_position=symbol_functions->count;
+		symbol->idx_position=symbol_functions->size();
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
@@ -215,11 +215,11 @@ namespace zetscript{
 	// SCOPE VARIABLE MANAGEMENT
 	//
 
-	Symbol * Scope::getSymbol(const zs_string & _str_symbol, char _n_params, uint16_t _scope_direction){
+	Symbol * Scope::getSymbol(const std::string & _str_symbol, char _n_params, uint16_t _scope_direction){
 
 		// for each variable in current scope ...
-		for(int i = 0; i < symbol_types->count; i++){
-			Symbol *sv=(Symbol *)symbol_types->items[i];
+		for(unsigned i = 0; i < symbol_types->size(); i++){
+			Symbol *sv=(Symbol *)symbol_types->at(i);
 			if(
 				   ( sv->name == _str_symbol )
 			){
@@ -227,8 +227,8 @@ namespace zetscript{
 			}
 		}
 
-		for(int i = 0; i < symbol_variables->count; i++){
-			Symbol *sv=(Symbol *)symbol_variables->items[i];
+		for(unsigned i = 0; i < symbol_variables->size(); i++){
+			Symbol *sv=(Symbol *)symbol_variables->at(i);
 			if(
 				   ( sv->name == _str_symbol )
 			){
@@ -236,8 +236,8 @@ namespace zetscript{
 			}
 		}
 
-		for(int i = 0; i < symbol_functions->count; i++){
-			Symbol *sv=(Symbol *)symbol_functions->items[i];
+		for(unsigned i = 0; i < symbol_functions->size(); i++){
+			Symbol *sv=(Symbol *)symbol_functions->at(i);
 			if(
 				   ( sv->name == _str_symbol )
 			   &&  ( sv->n_params == _n_params || _n_params==NO_PARAMS_SYMBOL_ONLY )
@@ -258,8 +258,8 @@ namespace zetscript{
 		}
 
 		if(_scope_direction&REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP){
-			for(int i = 0; i < scopes->count; i++){
-				Scope *s=(Scope *)scopes->items[i];
+			for(unsigned i = 0; i < scopes->size(); i++){
+				Scope *s=(Scope *)scopes->at(i);
 
 				if(s->getIdxScriptFunction() == idx_script_function){ // Only check repeated symbols in the same function scope context.
 					Symbol *sv=s->getSymbol(_str_symbol,_n_params,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP);
@@ -276,24 +276,24 @@ namespace zetscript{
 
 	bool Scope::unregisterSymbol(Symbol *symbol){
 		Symbol *sv=NULL;
-		for(int i = 0; i < symbol_functions->count; i++){
-			sv=(Symbol *)symbol_functions->items[i];
+		for(unsigned i = 0; i < symbol_functions->size(); i++){
+			sv=(Symbol *)symbol_functions->at(i);
 			if(
 			    sv == symbol
 			){
 				delete sv;
-				symbol_functions->erase(i); // erase symbol scope
+				symbol_functions->erase(symbol_functions->begin()+i); // erase symbol scope
 				return true;
 			}
 		}
 
-		for(int i = 0; i < symbol_variables->count; i++){
-			sv=(Symbol *)symbol_variables->items[i];
+		for(unsigned i = 0; i < symbol_variables->size(); i++){
+			sv=(Symbol *)symbol_variables->at(i);
 			if(
 			    sv == symbol
 			){
 				delete sv;
-				symbol_variables->erase(i); // erase symbol scope
+				symbol_variables->erase(symbol_variables->begin()+i); // erase symbol scope
 				return true;
 			}
 		}
@@ -312,8 +312,8 @@ namespace zetscript{
 
 		if(symbol_types != NULL){
 			// delete local local_symbols found...
-			for(int i = 0; i < symbol_types->count; i++){
-				delete (Symbol *)symbol_types->items[i];
+			for(unsigned i = 0; i < symbol_types->size(); i++){
+				delete (Symbol *)symbol_types->at(i);
 			}
 
 			delete symbol_types;
@@ -323,8 +323,8 @@ namespace zetscript{
 
 
 		if(symbol_functions != NULL){
-			for(int i = 0; i < symbol_functions->count; i++){
-				delete (Symbol *)symbol_functions->items[i];
+			for(unsigned i = 0; i < symbol_functions->size(); i++){
+				delete (Symbol *)symbol_functions->at(i);
 			}
 
 			delete symbol_functions;
@@ -332,8 +332,8 @@ namespace zetscript{
 		}
 
 		if(symbol_variables!=NULL){
-			for(int i = 0; i < symbol_variables->count; i++){
-				delete (Symbol *)symbol_variables->items[i];
+			for(unsigned i = 0; i < symbol_variables->size(); i++){
+				delete (Symbol *)symbol_variables->at(i);
 			}
 			delete symbol_variables;
 			symbol_variables=NULL;

@@ -18,7 +18,7 @@ namespace zetscript{
 
 	ScriptType::ScriptType(ZetScript *_zs
 			,short _idx_script_type
-			, const zs_string & _class_name
+			, const std::string & _class_name
 			, Scope *_class_scope
 			,const char *_str_class_ptr_type
 			,uint16_t _properties){
@@ -34,9 +34,9 @@ namespace zetscript{
 		str_script_type=_class_name;
 		scope_script_type=_class_scope;
 		str_script_type_ptr=_str_class_ptr_type;
-		allocated_member_properties=new zs_vector<MemberProperty *>();
+		allocated_member_properties=new std::vector<MemberProperty *>();
 
-		idx_base_types=new zs_vector<zs_int>;
+		idx_base_types=new std::vector<zs_int>;
 
 		// factories
 		zs = _zs;
@@ -50,13 +50,13 @@ namespace zetscript{
 
 	void ScriptType::printListMemberFunctions(){
 		Scope *scope=this->scope_script_type;
-		for(int i=0; i < scope->symbol_functions->count;i++){
+		for(int i=0; i < scope->symbol_functions->size();i++){
 			Symbol *symbol = (Symbol *)scope->symbol_functions->items[i];
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 			int start_idx=0;
 
-			zs_string script_interface="";
-			zs_string native_interface="";
+			std::string script_interface="";
+			std::string native_interface="";
 
 			// type if not mail
 			script_interface.append(this->str_script_type);
@@ -126,7 +126,7 @@ namespace zetscript{
 			return true;
 		}
 
-		for(int i=0; i < this->idx_base_types->count; i++){
+		for(int i=0; i < this->idx_base_types->size(); i++){
 			if (script_type_factory->getScriptType(this->idx_base_types->items[i])->extendsFrom(_idx_script_type) == true) {
 				return true;
 			}
@@ -148,7 +148,7 @@ namespace zetscript{
 	// MEMBER VARIABLES
 	//
 	Symbol				* 	ScriptType::registerMemberVariable(
-		const zs_string & symbol_name
+		const std::string & symbol_name
 		,unsigned short symbol_properties
 		,const char * file
 		,short line
@@ -165,8 +165,8 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptType::registerMemberVariable(
-		 const zs_string & _symbol_name
-		,const zs_string & _str_native_type
+		 const std::string & _symbol_name
+		,const std::string & _str_native_type
 		,zs_int _ref_ptr
 		,unsigned short _symbol_properties
 		,const char * _file
@@ -183,9 +183,9 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptType::registerInternalMemberVariable(
-		const zs_string & _symbol_name
+		const std::string & _symbol_name
 		,unsigned short _symbol_properties
-		,const zs_string & _str_native_type
+		,const std::string & _str_native_type
 		,zs_int _ref_ptr
 		,const char * _file
 		,short _line
@@ -212,7 +212,7 @@ namespace zetscript{
 	// MEMBER PROPERTIES
 	//
 	Symbol *ScriptType::registerMemberProperty(
-			 const zs_string & attrib_name
+			 const std::string & attrib_name
 			,const char * file
 			,short line
 	){
@@ -245,7 +245,7 @@ namespace zetscript{
 	}
 
 	Symbol				* 	ScriptType::registerMemberPropertyMetamethod(
-			const zs_string & _property_name
+			const std::string & _property_name
 			,ByteCodeMetamethod _byte_code_metamethod
 			,ScriptFunctionParam **_params
 			,int _params_len
@@ -281,7 +281,7 @@ namespace zetscript{
 			, _property_name.c_str()
 		);
 
-		//zs_string member_property_metamethod_name=byte_code_metamethod_to_symbol_str(_metamethod)+"@"+_property_name;
+		//std::string member_property_metamethod_name=byte_code_metamethod_to_symbol_str(_metamethod)+"@"+_property_name;
 		switch(_byte_code_metamethod){
 		default:
 			break;
@@ -369,7 +369,7 @@ namespace zetscript{
 
 
 	Symbol				* 	ScriptType::registerMemberPropertyGetter(
-			 const zs_string & _property_name
+			 const std::string & _property_name
 			 ,ScriptFunctionParam **_params
 			 ,char _params_len
 			, int _idx_return_type
@@ -418,7 +418,7 @@ namespace zetscript{
 	//
 
 	Symbol * ScriptType::registerMemberFunction(
-		 const zs_string & _function_name
+		 const std::string & _function_name
 		 , ScriptFunctionParam **_params
 		 ,int _params_len
 		, unsigned short _function_properties
@@ -510,8 +510,8 @@ namespace zetscript{
 
 					// native
 					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
-						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(_idx_return_type == IDX_TYPE_ZS_STRING_PTR_C || _idx_return_type == IDX_TYPE_ZS_STRING_C) ){
-							THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
+						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(_idx_return_type == IDX_TYPE_STRING_PTR_C || _idx_return_type == IDX_TYPE_STRING_C) ){
+							THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return std::string * or std::string *"
 								,str_script_type
 								,_function_name.c_str()
 							);
@@ -605,7 +605,7 @@ namespace zetscript{
 
 						if(((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) //--> script function has to have one setter function, meanwhile c ref can have more than one (due different signatures)
 								&&
-							(info_mp.setters!=NULL && info_mp.setters->count>0)){
+							(info_mp.setters!=NULL && info_mp.setters->size()>0)){
 							// error already set (script functions only can be set once)
 							THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
 									,str_script_type
@@ -664,12 +664,12 @@ namespace zetscript{
 		return symbol_function;
 	}
 	//---------------------------------------------------------
-	Symbol *    ScriptType::getSymbolVariableMember(const zs_string & symbol_name, bool include_inherited_symbols){
+	Symbol *    ScriptType::getSymbolVariableMember(const std::string & symbol_name, bool include_inherited_symbols){
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_variables;
-		zs_vector<Symbol *> *list=this->scope_script_type->symbol_variables;
+		std::vector<Symbol *> *list=this->scope_script_type->symbol_variables;
 
 		for(
-				int i = (int)(list->count-1);
+				int i = (int)(list->size()-1);
 				i >= idx_end
 				; i--
 		){
@@ -682,13 +682,13 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol *    ScriptType::getSymbolMemberFunction(const zs_string & symbol_name, char n_params, bool include_inherited_symbols){
+	Symbol *    ScriptType::getSymbolMemberFunction(const std::string & symbol_name, char n_params, bool include_inherited_symbols){
 		bool only_symbol=n_params<0;
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_functions;
-		zs_vector<Symbol *> *symbol_functions=this->scope_script_type->symbol_functions;
+		std::vector<Symbol *> *symbol_functions=this->scope_script_type->symbol_functions;
 
 		for(
-				int i = (int)(symbol_functions->count-1);
+				int i = (int)(symbol_functions->size()-1);
 				i >= idx_end
 				; i--
 		){
@@ -709,7 +709,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol				* 	ScriptType::getSymbol(const zs_string & symbol_name, char n_params,bool include_inherited_symbols){
+	Symbol				* 	ScriptType::getSymbol(const std::string & symbol_name, char n_params,bool include_inherited_symbols){
 
 		Symbol *symbol=NULL;
 
@@ -726,7 +726,7 @@ namespace zetscript{
 
 	ScriptType::~ScriptType(){
 
-		for(int i=0; i < allocated_member_properties->count; i++){
+		for(int i=0; i < allocated_member_properties->size(); i++){
 			MemberProperty *mp=(MemberProperty *)allocated_member_properties->items[i];
 			delete mp;
 		}

@@ -311,7 +311,7 @@ execute_function:
 									if(!vm_create_shared_script_object(vm,sc)){
 										goto lbl_exit_function;
 									}
-									sc->set(*((zs_string *)((ScriptObjectString *)so_param)->value));
+									sc->set(*((std::string *)((ScriptObjectString *)so_param)->value));
 									so_param=sc;
 									stk_arg->value=(zs_int)sc;
 									stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -417,7 +417,7 @@ execute_function:
 					}
 				}
 
-				sf_call_n_local_symbols=sf_call_script_function->local_variables->count;
+				sf_call_n_local_symbols=sf_call_script_function->local_variables->size();
 			}
 			else{ // C function
 				if(sf_call_script_function->properties & FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME){

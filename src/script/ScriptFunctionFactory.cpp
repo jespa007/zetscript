@@ -9,11 +9,11 @@ namespace zetscript{
 	ScriptFunctionFactory::ScriptFunctionFactory(ZetScript *_zs){
 		zs = _zs;
 		scope_factory = _zs->getScopeFactory();
-		script_functions = new zs_vector<ScriptFunction *>();
+		script_functions = new std::vector<ScriptFunction *>();
 		idx_clear_checkpoint = 1; // by default MAIN function
 	}
 
-	zs_vector<ScriptFunction *> 	*ScriptFunctionFactory::getScriptFunctions(){
+	std::vector<ScriptFunction *> 	*ScriptFunctionFactory::getScriptFunctions(){
 		return script_functions;
 	}
 
@@ -24,7 +24,7 @@ namespace zetscript{
 			, short _line
 			//--- Function data
 			, int _idx_script_type
-			, const zs_string & _function_name
+			, const std::string & _function_name
 			, ScriptFunctionParam **_params
 			,int _params_len
 			, int _idx_return_type
@@ -64,7 +64,7 @@ namespace zetscript{
 			symbol->properties|=SYMBOL_PROPERTY_STATIC;
 		}
 
-		int idx_script_function = script_functions->count;
+		int idx_script_function = script_functions->size();
 
 		ScriptFunction *script_function = new ScriptFunction(
 				zs
@@ -85,7 +85,7 @@ namespace zetscript{
 	}
 
 	void	ScriptFunctionFactory::setScriptFunction(int idx, ScriptFunction *sf){
-		if(idx<0 || idx >= script_functions->count){
+		if(idx<0 || idx >= script_functions->size()){
 			THROW_RUNTIME_ERRORF("script function idx node out of bound");
 		}
 
@@ -93,7 +93,7 @@ namespace zetscript{
 	}
 
 	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){
-		if(idx<0 || idx >= script_functions->count){
+		if(idx<0 || idx >= script_functions->size()){
 			THROW_RUNTIME_ERRORF("script function idx node out of bound");
 			return NULL;
 		}
@@ -105,7 +105,7 @@ namespace zetscript{
 		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
-			int v=script_functions->count-1;
+			int v=script_functions->size()-1;
 			v > idx_start; // avoid delete main function
 			v--
 		){
@@ -123,12 +123,12 @@ namespace zetscript{
 	}
 
 	void ScriptFunctionFactory::saveState(){
-		idx_clear_checkpoint = script_functions->count-1;
+		idx_clear_checkpoint = script_functions->size()-1;
 	}
 
 	ScriptFunctionFactory::~ScriptFunctionFactory(){
 		// erases all functions...
-		for(int i = 0;i < script_functions->count;i++){
+		for(int i = 0;i < script_functions->size();i++){
 			ScriptFunction * info_function = (ScriptFunction *)script_functions->items[i];
 
 			if (info_function->instructions != NULL) {

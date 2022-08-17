@@ -31,15 +31,15 @@ namespace zetscript{
 		Scope *scope;		// scope where symbol was registered
 		unsigned short properties; // symbol properties using SymbolProperty bits
 
-		char *name; 	// symbol name
-		zs_int ref_ptr; 	// pointer ref that holds rellevant information
-		zs_string str_native_type; // In case is C, we need to know its type ...
+		std::string	name; 	// symbol name
+		zs_int 		ref_ptr; 	// pointer ref that holds rellevant information
+		std::string str_native_type; // In case is C, we need to know its type ...
 
 		char n_params; // max params in case of function
 
 		Symbol *overrided_symbol; // for virtual functions
 
-		Symbol(const zs_string & _name);
+		Symbol(const std::string & _name);
 
 		Symbol(const Symbol & _symbol);
 

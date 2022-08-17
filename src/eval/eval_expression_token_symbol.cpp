@@ -13,7 +13,7 @@ namespace zetscript{
 		return  is_access_punctuator(s) || (*s==':' && *(s+1)==':');
 	}
 
-	bool get_accessor_name(EvalData *eval_data, char **aux_p, int line, zs_string & accessor_name){
+	bool get_accessor_name(EvalData *eval_data, char **aux_p, int line, std::string & accessor_name){
 		//char *aux_p = s;
 		accessor_name="";
 		while(!is_end_symbol_token(*aux_p)){ // get name...
@@ -22,7 +22,7 @@ namespace zetscript{
 		return check_identifier_name_expression_ok(eval_data,accessor_name,line) == TRUE;
 	}
 
-	bool eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,zs_string & static_error){
+	bool eval_set_instruction_static_symbol(Instruction * instruction, Symbol *static_symbol,std::string & static_error){
 		bool ok=true;
 		if(static_symbol->properties & SYMBOL_PROPERTY_STATIC){ // it should be constant type ...
 
@@ -49,21 +49,21 @@ namespace zetscript{
 			, char *s
 			, int & line
 			, Scope *scope_info
-			, zs_vector<TokenNode *> *token_nodes
+			, std::vector<TokenNode *> *token_nodes
 			,TokenNode *last_operator_token_node
 			, uint16_t properties
 		){
 		char *aux_p = s,*test_aux_p;//, *test_s=NULL;
 		int test_line=line;
 		TokenNode *token_node_symbol=new TokenNode();
-		zs_vector<EvalInstruction *> ei_arg_instruction;
+		std::vector<EvalInstruction *> ei_arg_instruction;
 		EvalInstruction *instruction_token=NULL;
 		EvalInstruction *last_instruction_token=NULL;
 		PreOperation pre_operation = PreOperation::PRE_OPERATION_UNKNOWN;
 		PostOperation post_operation=PostOperation::POST_OPERATION_UNKNOWN;
 		int last_accessor_line=line;
 		int last_line_ok=line;
-		zs_string static_error;
+		std::string static_error;
 		ScriptType *token_node_symbol_class=NULL;
 
 		// check pre operator (-,+,!,-- or ++)
@@ -191,7 +191,7 @@ namespace zetscript{
 					goto error_expression_token_symbol;
 				}
 
-				EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
+				EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions[0];
 
 				if(token_node_symbol->token_type == TokenType::TOKEN_TYPE_IDENTIFIER){
 
@@ -203,7 +203,7 @@ namespace zetscript{
 
 						// mark symbol as static
 						// the first item is the type
-						zs_string static_access_value=token_node_symbol->value,class_element;
+						std::string static_access_value=token_node_symbol->value,class_element;
 						Symbol *member_symbol=NULL;
 
 						ScriptType *sc=eval_data->zs->getScriptTypeFactory()->getScriptType(token_node_symbol->value);
@@ -269,7 +269,7 @@ namespace zetscript{
 					}else{ // check if only gets the type
 
 						token_node_symbol_class=eval_data->script_type_factory->getScriptType(token_node_symbol->value);
-						Instruction *instruction=&((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction;
+						Instruction *instruction=&((EvalInstruction *)token_node_symbol->eval_instructions[0])->vm_instruction;
 						if(token_node_symbol_class != NULL){ // byte code it will be a type
 							instruction->byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
 							instruction->value_op2=token_node_symbol_class->idx_script_type;
@@ -310,8 +310,8 @@ namespace zetscript{
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_FUNCTION
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_OBJECT
 				|| token_node_symbol->token_type==TokenType::TOKEN_TYPE_OBJECT_VECTOR
-				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_LITERAL) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==BYTE_CODE_LOAD_STRING) && *test_aux_p=='.')
-				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION) && (((EvalInstruction *)token_node_symbol->eval_instructions.items[0])->vm_instruction.byte_code==BYTE_CODE_NEW_OBJECT_BY_TYPE) && *test_aux_p=='.')
+				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_LITERAL) && (((EvalInstruction *)token_node_symbol->eval_instructions[0])->vm_instruction.byte_code==BYTE_CODE_LOAD_STRING) && *test_aux_p=='.')
+				|| ((token_node_symbol->token_type==TokenType::TOKEN_TYPE_SUBEXPRESSION) && (((EvalInstruction *)token_node_symbol->eval_instructions[0])->vm_instruction.byte_code==BYTE_CODE_NEW_OBJECT_BY_TYPE) && *test_aux_p=='.')
 			)==false){
 				EVAL_ERROR_FILE_LINE_GOTO(
 						eval_data->current_parsing_file
@@ -338,7 +338,7 @@ namespace zetscript{
 			aux_p=test_aux_p;
 			line=test_line;
 
-			zs_string accessor_name="",
+			std::string accessor_name="",
 						last_accessor_value=token_node_symbol->value;
 
 			char n_params=0;
@@ -348,7 +348,7 @@ namespace zetscript{
 				ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 				accessor_name="";
 				zs_int instruction_value2=ZS_IDX_UNDEFINED;
-				EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
+				EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions[0];
 
 				aux_p=test_aux_p;
 				line=test_line;
@@ -414,8 +414,8 @@ namespace zetscript{
 						}
 
 						// only one argument and is variable
-						if(ei_arg_instruction.count==1){
-							EvalInstruction *ei_arg=(EvalInstruction *)ei_arg_instruction.items[0];
+						if(ei_arg_instruction.size()==1){
+							EvalInstruction *ei_arg=(EvalInstruction *)ei_arg_instruction[0];
 							ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
 
 							// if not LOAD THIS set STK
@@ -430,7 +430,11 @@ namespace zetscript{
 							}
 						}
 
-						token_node_symbol->eval_instructions.concat(ei_arg_instruction);
+						token_node_symbol->eval_instructions.insert(
+								token_node_symbol->eval_instructions.end()
+								,ei_arg_instruction.begin()
+								,ei_arg_instruction.end()
+						);
 
 						if(error_arg){
 							goto error_expression_token_symbol;
@@ -561,7 +565,7 @@ namespace zetscript{
 					token_node_symbol->eval_instructions.push_back(instruction_token=new EvalInstruction(byte_code));
 				}
 
-				//EvalInstruction *ei_first_instruction_token=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
+				//EvalInstruction *ei_first_instruction_token=(EvalInstruction *)token_node_symbol->eval_instructions[0];
 
 				switch(byte_code){
 				case BYTE_CODE_THIS_CALL:
@@ -588,7 +592,7 @@ namespace zetscript{
 					// erase first token node because last this.xxx is gona to be replaced to a single instruction
 					// last_instruction_token will be erased!!!
 					delete ei_first_token_node;
-					token_node_symbol->eval_instructions.erase(0);
+					token_node_symbol->eval_instructions.erase(token_node_symbol->eval_instructions.begin()+0);
 					last_instruction_token=NULL;
 
 					break;
@@ -633,7 +637,7 @@ namespace zetscript{
 
 		}else{
 
-			EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions.items[0];
+			EvalInstruction *ei_first_token_node=(EvalInstruction *)token_node_symbol->eval_instructions[0];
 
 			if(token_node_symbol->value==SYMBOL_VALUE_THIS){ // only takes symbol this
 
@@ -666,7 +670,7 @@ namespace zetscript{
 		){
 			EvalInstruction *eval_instruction_post=NULL;
 			ByteCode byte_code_post_operation= ByteCode::BYTE_CODE_INVALID;
-			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]))->vm_instruction;
+			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions[token_node_symbol->eval_instructions.size()-1]))->vm_instruction;
 
 			if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
 				EVAL_ERROR_FILE_LINE_GOTO(
@@ -715,7 +719,7 @@ namespace zetscript{
 				)
 			);
 
-			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1];
+			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions[token_node_symbol->eval_instructions.size()-1];
 
 			eval_instruction_post->instruction_source_info=InstructionSourceInfo(
 				eval_data->current_parsing_file
@@ -762,8 +766,8 @@ namespace zetscript{
 				}
 			}
 
-			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1];
-			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]))->vm_instruction;
+			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions[token_node_symbol->eval_instructions.size()-1];
+			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions[token_node_symbol->eval_instructions.size()-1]))->vm_instruction;
 
 			token_node_symbol->eval_instructions.push_back(
 				eval_instruction_pre=new EvalInstruction(
@@ -803,9 +807,9 @@ namespace zetscript{
 
 error_expression_token_symbol:
 
-		for(int kk=0;kk<token_node_symbol->eval_instructions.count;kk++){
-			delete (EvalInstruction *)token_node_symbol->eval_instructions.items[kk];
-			token_node_symbol->eval_instructions.items[kk]=0;
+		for(int kk=0;kk<token_node_symbol->eval_instructions.size();kk++){
+			delete (EvalInstruction *)token_node_symbol->eval_instructions[kk];
+			token_node_symbol->eval_instructions[kk]=0;
 		}
 
 		delete token_node_symbol;

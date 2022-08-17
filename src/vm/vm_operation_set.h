@@ -42,7 +42,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	default:\
 		if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
-			((zs_string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(\
+			((std::string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(\
 					(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op2)\
 			);\
 			VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\

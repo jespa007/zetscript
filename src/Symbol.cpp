@@ -42,17 +42,17 @@ namespace zetscript{
 		}
 		else if (k_str_char_type_ptr == symbol->str_native_type
 			|| k_str_const_char_type_ptr == symbol->str_native_type
-			|| k_str_zs_string_type_ptr == symbol->str_native_type
+			|| k_str_string_type_ptr == symbol->str_native_type
 			) {
 			char *input_s = (char *)ptr_variable;
 			ScriptObjectString *s = ZS_NEW_OBJECT_STRING(zs);
 
-			if (k_str_zs_string_type_ptr == symbol->str_native_type) {
+			if (k_str_string_type_ptr == symbol->str_native_type) {
 				s->value = (void *)ptr_variable;
-				input_s = (char *)(((zs_string *)ptr_variable)->c_str());
+				input_s = (char *)(((std::string *)ptr_variable)->c_str());
 			}
 
-			*((zs_string *)(s->value)) = input_s;
+			*((std::string *)(s->value)) = input_s;
 			return {
 				(zs_int)(s),
 				STK_PROPERTY_SCRIPT_OBJECT
@@ -93,14 +93,8 @@ namespace zetscript{
 	// PRIVATE
 
 	void Symbol::copy(const Symbol & _symbol){
-		if(_symbol.name!= NULL){
-			if(name !=NULL){
-				free(name);
-			}
-			name=zs_strutils::clone_to_char_ptr(zs_string(_symbol.name));
-		}
 
-
+		name=_symbol.name;
 		str_native_type=_symbol.str_native_type;
 
 
@@ -116,8 +110,8 @@ namespace zetscript{
 	}
 
 	// PUBLIC
-	Symbol::Symbol(const zs_string & _name){
-		name = zs_strutils::clone_to_char_ptr(_name);
+	Symbol::Symbol(const std::string & _name){
+		name = _name;
 		str_native_type = "";
 		file="";
 		line=-1;
@@ -140,10 +134,7 @@ namespace zetscript{
 	}
 
 	Symbol::~Symbol() {
-		if(name!= NULL){
-			free(name);
-			name=NULL;
-		}
+
 	}
 
 

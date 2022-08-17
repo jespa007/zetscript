@@ -57,7 +57,7 @@ namespace zetscript{
 		ScriptObject();
 
 		Symbol 						*	getGetter();
-		zs_vector<StackElement *> 	*	getSetterList(ByteCodeMetamethod _byte_code_metamethod);
+		std::vector<StackElement *> 	*	getSetterList(ByteCodeMetamethod _byte_code_metamethod);
 
 		virtual	int 					length();
 
@@ -68,7 +68,7 @@ namespace zetscript{
 
 		virtual StackElement 	* 	addProperty(
 				const char * symbol_value
-				,const zs_string & error
+				,const std::string & error
 				,StackElement * stk_element = NULL
 		);
 
@@ -76,13 +76,13 @@ namespace zetscript{
 		virtual Symbol 			*  	getScriptFunctionSymbol(const char * _function_member_name);
 
 
-		zs_vector<StackElement *> 				* 	getStkBuiltinListElements();
+		std::vector<StackElement *> 				* 	getStkBuiltinListElements();
 		bool 						isNativeObject();
 		const char * 				getTypeName();
 		ScriptType * 	    		getScriptType();
 		StackElement 			*	getThisProperty();
 		virtual void			*	getNativeObject();
-		virtual zs_string 			toString();
+		virtual std::string 			toString();
 
 		void 						deRefObject(RefObject * _ref_object);
 		void 						refObject(RefObject * _ref_object);
@@ -99,10 +99,10 @@ namespace zetscript{
 
 		ZetScript 								*	zs; // 8
 		VirtualMachine 							*	vm; // 8
-		zs_vector<StackElement *>					stk_builtin_elements;
-		zs_map					*					map_builtin_properties; // to search faster each property by its name
-		zs_vector<RefObject *>					*   ref_script_objects;
-		zs_vector<ScriptObjectWeakPointer *>	*   weak_pointers;
+		std::vector<StackElement *>					stk_builtin_elements;
+		std::map<std::string,StackElement *>    *	map_builtin_properties; // to search faster each property by its name
+		std::vector<RefObject *>			    *   ref_script_objects;
+		std::vector<ScriptObjectWeakPointer *>	*   weak_pointers;
 
 		void 										init(ZetScript *zs);
 

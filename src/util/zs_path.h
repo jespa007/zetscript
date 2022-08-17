@@ -12,8 +12,8 @@
 
 namespace zetscript{
 	namespace zs_path{
-		zs_string  get_directory(const zs_string &  _path);
-		zs_string  get_filename(const zs_string &  _path);
-		zs_string  get_filename_without_extension(const zs_string & _path);
+		std::string  get_directory(const std::string &  _path);
+		std::string  get_filename(const std::string &  _path);
+		std::string  get_filename_without_extension(const std::string & _path);
 	}
 }

@@ -203,18 +203,18 @@ namespace zetscript{
 
 	 void ZetScript::printGeneratedCode(bool show_system_code){
 
-		 zs_vector<ScriptType *> *script_classes=script_type_factory->getScriptTypes();
+		 std::vector<ScriptType *> *script_classes=script_type_factory->getScriptTypes();
 		 // for all classes print code...
 		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
 
 		 // list functions
-		 zs_vector<Symbol *> *symbol_functions=sf_main->scope_script_function->symbol_functions;
+		 std::vector<Symbol *> *symbol_functions=sf_main->scope_script_function->symbol_functions;
 
 		 // print main function
 		 ScriptFunction::printGeneratedCode(sf_main);
 
 		 // print defined functions in main function
-		 for(int j =0; j < symbol_functions->count; j++){
+		 for(int j =0; j < symbol_functions->size(); j++){
 			Symbol *symbol=(Symbol *)symbol_functions->items[j];
 
 			if(symbol->properties & SYMBOL_PROPERTY_FUNCTION){
@@ -235,7 +235,7 @@ namespace zetscript{
 			}
 		}
 
-		 for(int i = 1; i < script_classes->count; i++){
+		 for(int i = 1; i < script_classes->size(); i++){
 			 ScriptType *sc=(ScriptType *)script_classes->get(i);
 			 bool show_class=true;
 
@@ -257,7 +257,7 @@ namespace zetscript{
 
 			 if(show_class){
 				 symbol_functions=sc->scope_script_type->symbol_functions;
-				 for(int f = 0; f < symbol_functions->count; f++){
+				 for(int f = 0; f < symbol_functions->size(); f++){
 					 bool show_function=true;
 					 Symbol *symbol=(Symbol *)symbol_functions->items[f];
 
@@ -272,9 +272,9 @@ namespace zetscript{
 	 // PRINT ASM INFO
 	 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 // FILE MANAGEMENT
-	bool ZetScript::isFilenameAlreadyParsed(const zs_string & filename){
-		for(int i = 0; i < parsed_files.count; i++){
-			if(((ParsedFile *)parsed_files.items[i])->filename==filename){
+	bool ZetScript::isFilenameAlreadyParsed(const std::string & filename){
+		for(int i = 0; i < parsed_files.size(); i++){
+			if(((ParsedFile *)parsed_files[i])->filename==filename){
 				return true;
 			}
 		}
@@ -324,18 +324,18 @@ namespace zetscript{
 		return ScriptObjectVector::newShareableScriptObjectVector(this);
 	}
 
-	StackElement ZetScript::eval(const zs_string & _expresion, unsigned short _options, const char * _script_filename_by_ref, const char *__invoke_file__, int __invoke_line__)  {
+	StackElement ZetScript::eval(const std::string & _expresion, unsigned short _options, const char * _script_filename_by_ref, const char *__invoke_file__, int __invoke_line__)  {
 
 		const char *script_filename_by_ref=getFilenameByRef(_script_filename_by_ref);
 
 		return evalInternal(_expresion.c_str(), _options, script_filename_by_ref,NULL,__invoke_file__,__invoke_line__);
 	}
 
-	StackElement	ZetScript::eval(const zs_string & _expresion, const char *__invoke_file__, int __invoke_line__){
+	StackElement	ZetScript::eval(const std::string & _expresion, const char *__invoke_file__, int __invoke_line__){
 		return evalInternal(_expresion.c_str(), 0, NULL,NULL,__invoke_file__,__invoke_line__);
 	}
 
-	StackElement ZetScript::evalFile(const zs_string &  _filename, unsigned short _eval_options, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__){
+	StackElement ZetScript::evalFile(const std::string &  _filename, unsigned short _eval_options, EvalData *_eval_data_from, const char *__invoke_file__, int __invoke_line__){
 		//int idx_file=-1;
 		StackElement stk_ret;
 		zs_buffer *buf_tmp=NULL;
@@ -344,7 +344,7 @@ namespace zetscript{
 
 		if(!isFilenameAlreadyParsed(_filename)){
 			ParsedFile *ps=new ParsedFile();
-			zs_string current_directory="";
+			std::string current_directory="";
 			ps->filename = _filename;
 			parsed_files.push_back(ps);
 			const char * const_file_char=ps->filename.c_str();
@@ -356,8 +356,8 @@ namespace zetscript{
 			current_directory = zs_dir::get_current_directory();
 			zs_dir::change_dir(zs_path::get_directory(_filename));
 
-			zs_string str_error="";
-			zs_string error_file="";
+			std::string str_error="";
+			std::string error_file="";
 
 			bool error=false;
 
@@ -404,14 +404,14 @@ namespace zetscript{
 
 	void ZetScript::clearGlobalVariables(int _idx_start_variable, int _idx_start_function){
 		ZS_UNUSUED_PARAM(_idx_start_function);
-		zs_string global_symbol;
+		std::string global_symbol;
 		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
-		zs_vector<Symbol *> *local_variables=main_function_object->local_variables;
-		zs_vector<Symbol *> *global_symbol_variables= main_scope->symbol_variables;
+		std::vector<Symbol *> *local_variables=main_function_object->local_variables;
+		std::vector<Symbol *> *global_symbol_variables= main_scope->symbol_variables;
 		int n_global_symbol_found=0;
-		int v=local_variables->count-1;
+		int v=local_variables->size()-1;
 
 
 		// Because all symbols are ordered by scope, have G as global symbols and L local symbols the disposition is the following,
@@ -421,7 +421,7 @@ namespace zetscript{
 		// So we only have to delete symbols
 
 		// remove all shared 0 pointers
-		if(local_variables->count > 0){
+		if(local_variables->size() > 0){
 			for (
 				;v>=idx_start_variable;
 			) {
@@ -461,9 +461,9 @@ namespace zetscript{
 			memset(vm_stack+idx_start_variable,0,sizeof(StackElement)*(VM_STACK_MAX-idx_start_variable));
 
 			// erase global elements that they weren't saved...
-			int resize=local_variables->count-(local_variables->count-idx_start_variable);
+			int resize=local_variables->size()-(local_variables->size()-idx_start_variable);
 			local_variables->resize(resize);
-			global_symbol_variables->resize(global_symbol_variables->count-n_global_symbol_found);
+			global_symbol_variables->resize(global_symbol_variables->size()-n_global_symbol_found);
 
 		}
 	}
@@ -486,8 +486,8 @@ namespace zetscript{
 
 
 	void ZetScript::resetParsedFiles(){
-		for(int i=0;i<parsed_files.count;i++){
-			delete ((ParsedFile *)parsed_files.items[i]);
+		for(int i=0;i<parsed_files.size();i++){
+			delete ((ParsedFile *)parsed_files[i]);
 		}
 		parsed_files.clear();
 	}
@@ -499,8 +499,8 @@ namespace zetscript{
 
 		// clearGlobalFunctions
 		Scope *main_scope=MAIN_SCOPE(this);
-		zs_vector<Symbol *> *global_symbol_functions= main_scope->symbol_functions;
-		int v=global_symbol_functions->count-1;
+		std::vector<Symbol *> *global_symbol_functions= main_scope->symbol_functions;
+		int v=global_symbol_functions->size()-1;
 		// remove all shared 0 pointers
 		if(v >= idx_current_global_function_checkpoint){
 			for (
@@ -513,14 +513,14 @@ namespace zetscript{
 				--v;
 			}
 
-			int resize=global_symbol_functions->count-(global_symbol_functions->count-idx_current_global_function_checkpoint);
+			int resize=global_symbol_functions->size()-(global_symbol_functions->size()-idx_current_global_function_checkpoint);
 			global_symbol_functions->resize(resize);
 		}
 
 
 		// clearScriptTypes
-		zs_vector<Symbol *> *script_types= main_scope->symbol_types;
-		v=script_types->count-1;
+		std::vector<Symbol *> *script_types= main_scope->symbol_types;
+		v=script_types->size()-1;
 		// remove all shared 0 pointers
 		if(v >=idx_current_script_types_checkpoint){
 			for (
@@ -533,7 +533,7 @@ namespace zetscript{
 				--v;
 			}
 
-			int resize=script_types->count-(script_types->count-idx_current_script_types_checkpoint);
+			int resize=script_types->size()-(script_types->size()-idx_current_script_types_checkpoint);
 			script_types->resize(resize);
 		}
 
@@ -551,9 +551,9 @@ namespace zetscript{
 	void ZetScript::saveState(){
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
-		idx_current_global_variable_checkpoint=main_function_object->local_variables->count;
-		idx_current_global_function_checkpoint=main_scope->symbol_functions->count;
-		idx_current_script_types_checkpoint=main_scope->symbol_types->count;
+		idx_current_global_variable_checkpoint=main_function_object->local_variables->size();
+		idx_current_global_function_checkpoint=main_scope->symbol_functions->size();
+		idx_current_script_types_checkpoint=main_scope->symbol_types->size();
 
 		scope_factory->saveState();
 		script_function_factory->saveState();
@@ -561,8 +561,8 @@ namespace zetscript{
 	}
 
 	bool ZetScript::getFunctionWithUnresolvedSymbolExists(ScriptFunction *_sf){
-		for(int i=0;i < functions_with_unresolved_symbols.count; i++){
-			if(functions_with_unresolved_symbols.items[i]==_sf){
+		for(int i=0;i < functions_with_unresolved_symbols.size(); i++){
+			if(functions_with_unresolved_symbols[i]==_sf){
 				return true;
 			}
 		}
@@ -580,8 +580,8 @@ namespace zetscript{
 
 	void ZetScript::link(){
 		int i=0;
-		while(i<functions_with_unresolved_symbols.count){
-			ScriptFunction *_sf=(ScriptFunction *)functions_with_unresolved_symbols.items[i];
+		while(i<functions_with_unresolved_symbols.size()){
+			ScriptFunction *_sf=(ScriptFunction *)functions_with_unresolved_symbols[i];
 			if(_sf->linkUnresolvedSymbols()){ // if link all symbols, erase
 				functions_with_unresolved_symbols.erase(i);
 			}else{ // next function

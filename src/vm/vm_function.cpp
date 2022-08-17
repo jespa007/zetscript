@@ -10,7 +10,7 @@ namespace zetscript{
 			,ScriptFunction *calling_function
 			,Instruction * instruction // call instruction
 			,bool is_constructor
-			,const zs_string & symbol_to_find
+			,const std::string & symbol_to_find
 			,StackElement *stk_arg
 			,unsigned char n_args
 	){
@@ -18,15 +18,15 @@ namespace zetscript{
 		// by default search over global functions...
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		ScriptFunction * ptr_function_found=NULL;
-		zs_string aux_string;
+		std::string aux_string;
 		int start_param=0;
 
-		Symbol ** stk_elements_builtin_ptr= data->main_function_object->scope_script_function->symbol_functions->items;// vector of symbols
-		size_t stk_elements_builtin_len=  data->main_function_object->scope_script_function->symbol_functions->count;// vector of symbols
+		Symbol ** stk_elements_builtin_ptr= data->main_function_object->scope_script_function->symbol_functions->data();// vector of symbols
+		size_t stk_elements_builtin_len=  data->main_function_object->scope_script_function->symbol_functions->size();// vector of symbols
 
 		if(class_obj != NULL){
-			stk_elements_builtin_ptr=class_obj->scope_script_type->symbol_functions->items;
-			stk_elements_builtin_len=class_obj->scope_script_type->symbol_functions->count;
+			stk_elements_builtin_ptr=class_obj->scope_script_type->symbol_functions->data();
+			stk_elements_builtin_len=class_obj->scope_script_type->symbol_functions->size();
 		}
 
 		for(int i = (int)(stk_elements_builtin_len-1); i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
@@ -92,7 +92,7 @@ namespace zetscript{
 
 										if(all_check==false){ // try native conversions
 											all_check =
-												(	arg_idx_script_type==IDX_TYPE_ZS_STRING_PTR_C && current_arg->value!=0)
+												(	arg_idx_script_type==IDX_TYPE_STRING_PTR_C && current_arg->value!=0)
 											  ||	arg_idx_script_type==IDX_TYPE_CONST_CHAR_PTR_C;
 										}
 									}else{
@@ -115,11 +115,11 @@ namespace zetscript{
 		}
 
 		if(ptr_function_found == NULL){
-			zs_string class_str=class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?class_obj->str_script_type:"";
+			std::string class_str=class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?class_obj->str_script_type:"";
 			int n_candidates=0;
-			zs_string str_candidates="";
-			zs_string function_name_not_found=class_str==""?symbol_to_find:zs_strutils::format("%s::%s",class_str.c_str(),symbol_to_find);
-			zs_string args_str = "";
+			std::string str_candidates="";
+			std::string function_name_not_found=class_str==""?symbol_to_find:zs_strutils::format("%s::%s",class_str.c_str(),symbol_to_find);
+			std::string args_str = "";
 			/* get arguments... */
 			for( unsigned k = 0; k < n_args;k++){
 				StackElement *current_arg=&stk_arg[k];

@@ -12,12 +12,12 @@ namespace zetscript{
 
 	static int k_anonymous_function=0;
 
-	zs_string eval_anonymous_function_name(const zs_string &pre_name="",const zs_string &post_name=""){
+	std::string eval_anonymous_function_name(const std::string &pre_name="",const std::string &post_name=""){
 		return "_"+(pre_name==""?"":pre_name)+"@afun_"+(post_name==""?"":post_name+"_")+zs_strutils::zs_int_to_str(k_anonymous_function++);
 	}
 
 
-	void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, zs_vector<EvalInstruction *> *eval_instructions, Symbol *symbol_member_var){
+	void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, std::vector<EvalInstruction *> *eval_instructions, Symbol *symbol_member_var){
 
 		// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
 		PtrInstruction new_instructions=NULL;
@@ -25,7 +25,7 @@ namespace zetscript{
 		size_t new_instructions_len=0;
 		size_t new_instructions_total_bytes=0;
 		Instruction * start_ptr=NULL;
-		int n_elements_to_add=eval_instructions->count;
+		int n_elements_to_add=eval_instructions->size();
 
 		n_elements_to_add=n_elements_to_add+3; // +3 for load/store/reset stack
 
@@ -48,8 +48,8 @@ namespace zetscript{
 
 
 		// 3. copy eval instructions
-		for(int i=0; i < eval_instructions->count; i++){
-			EvalInstruction *eval_instruction = (EvalInstruction *)eval_instructions->items[i];
+		for(unsigned i=0; i < eval_instructions->size(); i++){
+			EvalInstruction *eval_instruction = (EvalInstruction *)eval_instructions->at(i);
 			// save instruction ...
 			*start_ptr=eval_instruction->vm_instruction;
 
@@ -96,11 +96,11 @@ namespace zetscript{
 		eval_instructions->clear();
 	}
 
-	Symbol *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector<EvalInstruction *> *eval_instructions){
+	Symbol *eval_new_inline_anonymous_function(EvalData *eval_data,std::vector<EvalInstruction *> *eval_instructions){
 
-		zs_string name_script_function=eval_anonymous_function_name("","defval");
+		std::string name_script_function=eval_anonymous_function_name("","defval");
 		Instruction *start_ptr=NULL;
-		size_t instructions_len=(eval_instructions->count+2); // additional +2 operations byte_code_ret and byte_code_end_function
+		size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
 
 		Symbol * symbol_sf=MAIN_FUNCTION(eval_data)->registerLocalFunction(
@@ -120,8 +120,8 @@ namespace zetscript{
 
 		sf->instructions_len=instructions_len;
 
-		for(int i=0; i < eval_instructions->count; i++){
-			EvalInstruction *instruction = (EvalInstruction *)eval_instructions->items[i];
+		for(unsigned i=0; i < eval_instructions->size(); i++){
+			EvalInstruction *instruction = (EvalInstruction *)eval_instructions->at(i);
 			InstructionSourceInfo instruction_info=instruction->instruction_source_info;
 
 			// save instruction ...
@@ -163,7 +163,7 @@ namespace zetscript{
 			, Scope *scope_info
 			, uint16_t properties // allow_anonymous_function attrib /anonymous, etc
 			, Symbol ** result_symbol_function
-			, const zs_string & custom_symbol_name
+			, const std::string & custom_symbol_name
 
 		){
 
@@ -216,11 +216,11 @@ namespace zetscript{
 
 			//bool var_args=false;
 			char *end_var = NULL;
-			zs_string param_value;
-			zs_vector<ScriptFunctionParam *> script_function_params;
-			zs_string conditional_str;
+			std::string param_value;
+			std::vector<ScriptFunctionParam *> script_function_params;
+			std::string conditional_str;
 			Symbol *symbol_sf=NULL;
-			zs_string name_script_function="";
+			std::string name_script_function="";
 			ScriptFunction *sf = NULL;
 
 			// advance keyword...
@@ -282,7 +282,7 @@ namespace zetscript{
 
 			// eval function args...
 			if(*aux_p != '('){ // expected (
-				zs_string error;
+				std::string error;
 				if(is_special_char(aux_p)){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
 					,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
@@ -315,7 +315,7 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				Keyword kw_arg=Keyword::KEYWORD_UNKNOWN;
 
-				if(script_function_params.count>0){
+				if(script_function_params.size()>0){
 					if(*aux_p != ','){
 						EVAL_ERROR_FILE_LINE_GOTOF(
 							eval_data->current_parsing_file
@@ -379,7 +379,7 @@ namespace zetscript{
 				// copy value
 				zs_strutils::copy_from_ptr_diff(param_value,aux_p,end_var);
 				// ok register symbol into the object function ...
-				param_info.name=zs_string(param_value);
+				param_info.name=std::string(param_value);
 
 
 				aux_p=end_var;
@@ -405,7 +405,7 @@ namespace zetscript{
 						);
 					}
 
-					zs_vector<EvalInstruction *> ei_instructions_default;
+					std::vector<EvalInstruction *> ei_instructions_default;
 					bool create_anonymous_function_return_expression=false;
 
 					IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
@@ -422,7 +422,7 @@ namespace zetscript{
 						goto eval_keyword_function_params;
 					}
 
-					if(ei_instructions_default.count == 0){ // expected expression
+					if(ei_instructions_default.size() == 0){ // expected expression
 						EVAL_ERROR_FILE_LINE_GOTOF(
 							eval_data->current_parsing_file
 							,line
@@ -433,8 +433,8 @@ namespace zetscript{
 
 					// copy evaluated instruction
 					// convert instruction to stk_element
-					if(ei_instructions_default.count == 1){
-						Instruction *instruction=&((EvalInstruction *)ei_instructions_default.items[0])->vm_instruction;
+					if(ei_instructions_default.size() == 1){
+						Instruction *instruction=&((EvalInstruction *)ei_instructions_default[0])->vm_instruction;
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
 						case BYTE_CODE_LOAD_UNDEFINED:
@@ -466,8 +466,8 @@ namespace zetscript{
 					}
 
 					// finally delete all evaluated code
-					for(int i=0; i < ei_instructions_default.count; i++){
-						delete (EvalInstruction *)ei_instructions_default.items[i];
+					for(unsigned i=0; i < ei_instructions_default.size(); i++){
+						delete (EvalInstruction *)ei_instructions_default[i];
 					}
 
 				}
@@ -487,11 +487,11 @@ namespace zetscript{
 			}
 
 			params=ScriptFunctionParam::createArrayFromVector(&script_function_params);
-			params_len=script_function_params.count;
+			params_len=script_function_params.size();
 
 			// remove collected script function params
-			for(int i=0; i < script_function_params.count; i++){
-				delete (ScriptFunctionParam *)script_function_params.items[i];
+			for(unsigned i=0; i < script_function_params.size(); i++){
+				delete (ScriptFunctionParam *)script_function_params[i];
 			}
 
 			aux_p++;
@@ -588,8 +588,8 @@ namespace zetscript{
 	// CONTROL ERROR
 	eval_keyword_function_params:
 			// unallocate script function params
-			for(int h=0; h < script_function_params.count; h++){
-				delete (ScriptFunctionParam *)script_function_params.items[h];
+			for(unsigned h=0; h < script_function_params.size(); h++){
+				delete (ScriptFunctionParam *)script_function_params[h];
 			}
 			script_function_params.clear();
 			return NULL;
@@ -607,7 +607,7 @@ namespace zetscript{
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 		Keyword key_w;
-		zs_string s_aux;
+		std::string s_aux;
 
 		key_w = eval_is_keyword(aux_p);
 

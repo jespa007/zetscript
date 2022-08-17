@@ -7,7 +7,7 @@
 namespace zetscript{
 	namespace zs_strutils{
 
-		zs_string  format(const  char  *_str_in, ...){
+		std::string  format(const  char  *_str_in, ...){
 
 			char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
 			va_list  ap;
@@ -15,11 +15,11 @@ namespace zetscript{
 			vsprintf(_sformat_buffer,  _str_in,  ap);
 			va_end(ap);
 
-			return zs_string(_sformat_buffer);
+			return std::string(_sformat_buffer);
 		}
 
-		zs_string	format_file_line(const char* _file, int _line, const  char* _str_in, ...) {
-			zs_string str_out;
+		std::string	format_file_line(const char* _file, int _line, const  char* _str_in, ...) {
+			std::string str_out;
 			char  _sformat_buffer[ZS_MAX_STR_BUFFER] = { 0 };
 			va_list  ap;
 			va_start(ap,  _str_in);
@@ -36,7 +36,7 @@ namespace zetscript{
 
 		}
 
-		char *clone_to_char_ptr(const zs_string & _str_in){
+		char *clone_to_char_ptr(const std::string & _str_in){
 			if(_str_in.empty()==false){
 				char *buf=(char *)ZS_MALLOC(_str_in.length()+1);
 				strncpy(buf,_str_in.c_str(), _str_in.length());
@@ -46,7 +46,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		zs_int *  parse_zs_int(const zs_string & val){
+		zs_int *  parse_zs_int(const std::string & val){
 			zs_int *n=NULL;
 			NumberType number_type = is_number(val);
 			zs_int value=0;
@@ -55,7 +55,7 @@ namespace zetscript{
 			}else if(number_type == NumberType::NUMBER_TYPE_HEXA){
 				value=strtoll (val.c_str(), NULL, 16);
 			}else if(is_binary(val)){
-				zs_string binary = val.substr(0,val.length()-1);
+				std::string binary = val.substr(0,val.length()-1);
 				value=strtoll (binary.c_str(), NULL, 2);
 			}
 			else{
@@ -71,7 +71,7 @@ namespace zetscript{
 			return n;
 		}
 
-		bool * parse_bool(const zs_string & s){
+		bool * parse_bool(const std::string & s){
 
 			if(to_lower(s)=="true"){
 				bool *b=new bool;
@@ -90,7 +90,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		zs_float *  parse_zs_float(const zs_string & s){
+		zs_float *  parse_zs_float(const std::string & s){
 
 			char *end;
 			char *data=(char *)s.c_str();
@@ -112,9 +112,9 @@ namespace zetscript{
 			return new zs_float(l);
 		}
 
-		zs_string zs_int_to_str(zs_int _number, const zs_string & _format){
+		std::string zs_int_to_str(zs_int _number, const std::string & _format){
 
-			zs_string result="0";
+			std::string result="0";
 			bool negative=false;
 
 			if(_number < 0){
@@ -142,7 +142,7 @@ namespace zetscript{
 			// check format ...
 
 			if(_format.empty()!=false){
-				zs_string sf=zs_strutils::to_lower(_format);
+				std::string sf=zs_strutils::to_lower(_format);
 				char *it_str=(char *)sf.c_str();
 
 				if(*it_str == 'd'){ // decimal
@@ -172,73 +172,73 @@ namespace zetscript{
 
 		}
 
-		zs_string zs_float_to_str(zs_float _number){
+		std::string zs_float_to_str(zs_float _number){
 
 			char float_str[100000];
 
 			sprintf(float_str,"%f",_number);
 
-		   return zs_string(float_str);
+		   return std::string(float_str);
 		}
 
-		zs_string to_lower(const zs_string & str){
+		std::string to_lower(const std::string & str){
 
-			zs_string ret = str;
-			for(int short l = 0; l < ret.length();l++){
+			std::string ret = str;
+			for(unsigned l = 0; l < ret.length();l++){
 				ret[l] = tolower(ret[l]);
 			}
 			return ret;
 		}
 
-		zs_string to_upper(const zs_string & str){
+		std::string to_upper(const std::string & str){
 
-			zs_string ret = str;
-			for(int short l = 0; l < ret.length();l++)
+			std::string ret = str;
+			for(unsigned l = 0; l < ret.length();l++)
 				ret[l] = toupper(ret[l]);
 			return ret;
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
-		zs_vector<zs_string> split(const zs_string &_s_in, char _delim) {
-		    zs_vector<zs_string> elems;
-		    //zs_string s = s_in;
+		std::vector<std::string> split(const std::string &_s_in, char _delim) {
+		    std::vector<std::string> elems;
+		    //std::string s = s_in;
 		    char *last_pos=(char *)_s_in.c_str();
 		    char *pos=(char *)_s_in.c_str();
-		    zs_string token;
+		    std::string token;
 		    while((pos=strchr(pos,_delim))!=NULL) {
 		        token = _s_in.substr(last_pos-_s_in.c_str(), pos-last_pos);
-		        elems.push_back(zs_string(token));
+		        elems.push_back(std::string(token));
 		        pos++;
 		        last_pos=pos;
 		    }
 
 		    // push last token
 		    token = _s_in.substr((last_pos-_s_in.c_str()), _s_in.length()-(last_pos-_s_in.c_str()));
-	    	elems.push_back(zs_string(token));
+	    	elems.push_back(std::string(token));
 
 		    return elems;
 		}
 
-		zs_vector<zs_string> split(const zs_string &_s_in, const zs_string & _delim) {
-		    zs_vector<zs_string> elems;
-		    zs_string s = _s_in;
-		    int pos = 0;
-		    zs_string token;
-		    while ((pos = s.find(_delim)) != zs_string::npos) {
+		std::vector<std::string> split(const std::string &_s_in, const std::string & _delim) {
+		    std::vector<std::string> elems;
+		    std::string s = _s_in;
+		    size_t pos = 0;
+		    std::string token;
+		    while ((pos = s.find(_delim)) != std::string::npos) {
 		        token = s.substr(0, pos);
-		        elems.push_back(zs_string(token));
+		        elems.push_back(std::string(token));
 		        s.erase(0, pos + _delim.length());
 		    }
 
-		    elems.push_back(zs_string(s));
+		    elems.push_back(std::string(s));
 		    return elems;
 		}
 
-		bool is_empty(const zs_string & str){
+		bool is_empty(const std::string & str){
 			return str.empty();
 		}
 
-		bool ends_with(const zs_string & str, const zs_string & ending){
+		bool ends_with(const std::string & str, const std::string & ending){
 			size_t len_str=str.length();
 			size_t len_end_str=ending.length();
 			if(len_end_str<=len_str){
@@ -250,15 +250,15 @@ namespace zetscript{
 			return false;
 		}
 
-		bool starts_with(const zs_string & str, const zs_string & starting){
+		bool starts_with(const std::string & str, const std::string & starting){
 			if (str.length() >= starting.length()) {
 				return strncmp(str.c_str(),starting.c_str(),starting.length())==0;
 			}
 			return false;
 		}
 
-		zs_string replace(const zs_string & input_str, const zs_string & str_old, const zs_string & str_new){
-			zs_string str = input_str;
+		std::string replace(const std::string & input_str, const std::string & str_old, const std::string & str_new){
+			std::string str = input_str;
 			int	idx_current_pos=0;
 			char *current_pos=NULL;
 
@@ -293,7 +293,7 @@ namespace zetscript{
 			return aux_p;
 		}
 
-		bool is_binary(const zs_string & test_str_number){
+		bool is_binary(const std::string & test_str_number){
 
 			char *start_p=(char *)test_str_number.c_str();
 			char *aux_p =start_p;
@@ -309,7 +309,7 @@ namespace zetscript{
 			return (*aux_p=='b' || *aux_p=='B') && (aux_p > start_p);
 		}
 
-		NumberType is_number(const zs_string & test_str_number){
+		NumberType is_number(const std::string & test_str_number){
 			bool isHexa=false;
 			char *str = (char *)test_str_number.c_str();
 
@@ -371,28 +371,28 @@ namespace zetscript{
 
 		}
 
-		zs_string  erase(zs_string & str_old, char ch_to_remove){
-			zs_string str = str_old;
-			zs_string str_new="";
+		std::string  erase(std::string & str_old, char ch_to_remove){
+			std::string str = str_old;
+			std::string str_new="";
 
-			for(int  i = 0; i < str_old.length(); ++i) {
+			for(unsigned  i = 0; i < str_old.length(); ++i) {
 				if (str_old[i] != ch_to_remove)
 						str_new+=str_old[i];
 			}
 			return str_new;
 		}
 
-		int count(const zs_string & s,char c){
+		int count(const std::string & s,char c){
 			int n_items=0;
 
-			for(int i=0; i < s.length(); i++)
+			for(unsigned i=0; i < s.length(); i++)
 				if(s[i] == c)
 					n_items++;
 
 			return n_items;
 		}
 
-		void copy_from_ptr_diff(zs_string & str_dst,const char *p1, const char *p2){
+		void copy_from_ptr_diff(std::string & str_dst,const char *p1, const char *p2){
 
 			char aux_str_copy[ZS_MAX_STR_BUFFER] = {0};
 
@@ -416,37 +416,37 @@ namespace zetscript{
 
 		}
 
-		bool contains(const zs_string & input, const zs_string & str_containts,StringComparer sc){
+		bool contains(const std::string & input, const std::string & str_containts,StringComparer sc){
 
-			zs_string s1=input;
-			zs_string s2=str_containts;
+			std::string s1=input;
+			std::string s2=str_containts;
 
 			if(sc==StringComparer::OrdinalIgnoreCase){
 				s1=to_lower(s1);
 				s2=to_lower(s2);
 			}
 
-			if (s1.find(s2) != zs_string::npos) {
+			if (s1.find(s2) != std::string::npos) {
 				return true;
 			}
 			return false;
 		}
 
-		bool contains(const zs_vector<zs_string> & input, const zs_string & str_containts,StringComparer sc){
+		bool contains(const std::vector<std::string> & input, const std::string & str_containts,StringComparer sc){
 
-			for(int i = 0; i < input.count; i++){
-				if(contains(input.items[i],str_containts,sc)){
+			for(unsigned i = 0; i < input.size(); i++){
+				if(contains(input[i],str_containts,sc)){
 					return true;
 				}
 			}
 			return false;
 		}
 
-		int index_of(zs_string& text, zs_string& pattern)
+		int index_of(std::string& text, std::string& pattern)
 		{
 			// where appears the pattern in the text?
-			int loc = text.find(pattern, 0);
-			if (loc != zs_string::npos)
+			size_t loc = text.find(pattern, 0);
+			if (loc != std::string::npos)
 			{
 				return loc;
 			}
@@ -457,8 +457,8 @@ namespace zetscript{
 		}
 
 
-		zs_string unescape(const zs_string & s)	{
-			zs_string res;
+		std::string unescape(const std::string & s)	{
+			std::string res;
 			char *it = (char *)s.c_str();
 			char *end= (char *)s.c_str()+s.length();
 			while (it != end) {

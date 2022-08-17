@@ -29,12 +29,12 @@ namespace zetscript{
 		ScriptFunctionParam *function_params=NULL;
 		ScriptFunctionParam **function_params_ptr=NULL;
 		int 				 function_params_len=0;
-		zs_string str_param_name;
+		std::string str_param_name;
 		ScriptFunction *sf_eval=NULL;
-		zs_vector<StackElement *> stk_params;
+		std::vector<StackElement *> stk_params;
 		StackElement stk_ret=k_stk_undefined;
 		const char *str_start=NULL;
-		zs_string str_unescaped_source="";
+		std::string str_unescaped_source="";
 		VirtualMachine *vm=zs->getVirtualMachine();
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		Symbol *symbol_sf=NULL;
@@ -80,11 +80,11 @@ namespace zetscript{
 
 				if(function_params!=NULL){
 					int i=0;
-					zs_map *map=oo_param->getMapUserProperties();
+					auto user_properties=oo_param->getMapUserProperties();
 
-					for(auto it=map->begin(); !it.end(); it.next()){
-						StackElement *stk=((StackElement *)it.value);
-						function_params[i]=ScriptFunctionParam(it.key);
+					for(auto it=user_properties->begin();it!=user_properties->end(); it++){
+						StackElement *stk=it->second;
+						function_params[i]=ScriptFunctionParam(it->first);
 						stk_params.push_back(stk);
 
 						if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -101,7 +101,7 @@ namespace zetscript{
 		//--------------------------------------
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
-		zs_string  name_script_function=zs_strutils::format("eval@",n_eval_function++);
+		std::string  name_script_function=zs_strutils::format("eval@",n_eval_function++);
 		sf_eval=new	ScriptFunction(
 				zs
 				,IDX_ZS_SCRIPT_FUNCTION_EVAL
@@ -123,15 +123,15 @@ namespace zetscript{
 		// 2. register arg symbols
 		// catch parameters...
 		if(function_params_len > 0){
-			zs_map *map=oo_param->getMapUserProperties();
+			auto user_properties=oo_param->getMapUserProperties();
 
-			for(auto it=map->begin(); !it.end(); it.next()){
+			for(auto it=user_properties->begin(); it!=user_properties->end(); it++){
 
 				if(sf_eval->registerLocalArgument(
 						sf_eval->scope_script_function
 						,__FILE__
 						,__LINE__
-						,it.key
+						,it->first
 				,0)==NULL){
 					goto goto_eval_exit;
 				}
@@ -146,7 +146,7 @@ namespace zetscript{
 		try{
 			eval_parse_and_compile(zs,str_start,NULL,NULL,1,sf_eval/*,function_params,function_params_len*/);
 		}catch(std::exception & ex){
-			vm_set_error(zs->getVirtualMachine(),(zs_string("eval error:")+ex.what()).c_str());
+			vm_set_error(zs->getVirtualMachine(),(std::string("eval error:")+ex.what()).c_str());
 			goto goto_eval_exit;
 		}
 
@@ -174,11 +174,11 @@ namespace zetscript{
 
 		// 4. Call function passing all arg parameter
 		// pass data to stk_vm_current
-		stk_n_params=(uint8_t)stk_params.count;
+		stk_n_params=(uint8_t)stk_params.size();
 		stk_vm_current=vm_get_current_stack_element(vm);
 		stk_start=stk_vm_current;//vm data->stk_vm_current;
 		for(int i = 0; i < stk_n_params; i++){
-			*stk_start++=*((StackElement *)stk_params.items[i]);
+			*stk_start++=*(stk_params.at(i));
 		}
 
 		vm_execute_function_script(
@@ -189,7 +189,7 @@ namespace zetscript{
 
 		// modifug
 		if(vm_it_has_error(zs->getVirtualMachine())){
-			zs_string error=vm_get_error(zs->getVirtualMachine());
+			std::string error=vm_get_error(zs->getVirtualMachine());
 			vm_set_error(zs->getVirtualMachine(),zs_strutils::format("eval error %s",error.c_str()).c_str());
 		}
 

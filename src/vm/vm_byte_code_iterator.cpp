@@ -114,7 +114,7 @@ namespace zetscript{
 			, StackElement *stk_result_op1
 			, StackElement *stk_result_op2
 	){
-		zs_string error="";
+		std::string error="";
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 
 		if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -131,7 +131,7 @@ namespace zetscript{
 					)
 				);
 			}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
-				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
+				std::string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
 				VM_PUSH_STK_BOOLEAN(
 					ScriptObjectStringWrap_contains(
 						data->zs
@@ -152,7 +152,7 @@ namespace zetscript{
 			break;
 			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
+				std::string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
 				VM_PUSH_STK_BOOLEAN(
 					ScriptObjectObjectWrap_contains(
 						data->zs,(ScriptObjectObject *)so_aux,&str_op1

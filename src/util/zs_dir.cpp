@@ -23,16 +23,16 @@
 
 namespace zetscript{
 	namespace zs_dir{
-		bool change_dir(const zs_string & _path){
+		bool change_dir(const std::string & _path){
 			if(__chdir__(_path.c_str())==-1) {
 				return false;
 			}
 			return true;
 		}
 
-		zs_string get_current_directory(){
+		std::string get_current_directory(){
 			char cwd[MAX_PATH]={0};
-			zs_string ret="";
+			std::string ret="";
 			if (__getcwd__(cwd,MAX_PATH) ==NULL){
 				THROW_RUNTIME_ERRORF("getcwd() error");
 			}
@@ -42,37 +42,37 @@ namespace zetscript{
 			return ret;
 		}
 
-		bool exists(const zs_string & _dir){
+		bool exists(const std::string & _dir){
 
 			if(zs_file::exists(_dir)){
 				return false;
 			}
 
-			zs_string dir=_dir;
+			std::string dir=_dir;
 
 			// Native check directory it doesn't work with relative path so, relative levels (i.e ..)
 			// has to be translated as absolute path
 			if(zs_strutils::starts_with(dir,"..")){
 				bool end=false;
 				// get current path
-				zs_string path=get_current_directory();
+				std::string path=get_current_directory();
 
 				// ignore relative paths
 				do{
 					end=zs_strutils::starts_with(dir,"..")==false;
 					if(!end){
-						int pos=dir.find("\\/");
-						if(pos==zs_string::npos){
+						size_t pos=dir.find("\\/");
+						if(pos==std::string::npos){
 							end=true;
 						}
 
 						if(!end){
 
-							dir=dir.substr(pos+1,zs_string::npos);
+							dir=dir.substr(pos+1,std::string::npos);
 
 							// update directory
 							pos=path.find_last_of("\\/");
-							if(pos==zs_string::npos){
+							if(pos==std::string::npos){
 								end=true;
 							}
 

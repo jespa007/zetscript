@@ -186,8 +186,8 @@ namespace zetscript{
 		//char str_aux[3][100];
 		zs_int result_op_zs_int=0;
 		bool	result_op_bool=false;
-		zs_string result_op_str="";
-		zs_string str_constant_key="";
+		std::string result_op_str="";
+		std::string str_constant_key="";
 		EvalInstruction *result_instruction=NULL;
 		ByteCode result_bc=ByteCode::BYTE_CODE_INVALID;
 		Instruction *i1=&ei1->vm_instruction;
@@ -364,7 +364,7 @@ namespace zetscript{
 			);
 			break;
 		case BYTE_CODE_LOAD_STRING:
-			str_constant_key=zs_string("\"")+result_op_str+"\"";
+			str_constant_key=std::string("\"")+result_op_str+"\"";
 			result_instruction=new EvalInstruction(
 					result_bc
 					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
@@ -387,9 +387,9 @@ namespace zetscript{
 			EvalData *eval_data
 			,Scope *scope_info
 			,TokenNode   *token_operation
-			, zs_vector<EvalInstruction *> *eval_instructions
+			, std::vector<EvalInstruction *> *eval_instructions
 	){
-		size_t size_instructions=eval_instructions->count;
+		size_t size_instructions=eval_instructions->size();
 		EvalInstruction *instruction=NULL;
 		bool is_i1_K=false;
 		bool is_i2_K=false;
@@ -401,8 +401,8 @@ namespace zetscript{
 			return NULL;
 		}
 
-		EvalInstruction *i1=(EvalInstruction *)eval_instructions->items[size_instructions-2];
-		EvalInstruction *i2=(EvalInstruction *)eval_instructions->items[size_instructions-1];
+		EvalInstruction *i1=(EvalInstruction *)eval_instructions->at(size_instructions-2);
+		EvalInstruction *i2=(EvalInstruction *)eval_instructions->at(size_instructions-1);
 
 
 		is_i1_K=i1->vm_instruction.isConstant();
@@ -525,7 +525,7 @@ namespace zetscript{
 		}
 
 		// erase last two instructions
-		eval_instructions->resize(eval_instructions->count-n_eval_ops);
+		eval_instructions->resize(eval_instructions->size()-n_eval_ops);
 
 		// and push the new one
 		return instruction;

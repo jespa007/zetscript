@@ -6,12 +6,12 @@
 
 namespace zetscript{
 	namespace zs_path{
-		zs_string  get_directory(const zs_string & _path) {
+		std::string  get_directory(const std::string & _path) {
 
 			if(zs_dir::exists(_path) == false){
 
-				int pos = _path.find_last_of("\\/");
-				 return (zs_string::npos == pos)
+				size_t pos = _path.find_last_of("\\/");
+				 return (std::string::npos == pos)
 					 ? ""
 					 : _path.substr(0, pos);
 			}
@@ -19,24 +19,24 @@ namespace zetscript{
 			return _path;
 		}
 
-		zs_string  get_filename(const zs_string & _path) {
-		  int found;
-		  zs_string ss=_path;
+		std::string  get_filename(const std::string & _path) {
+		  size_t found;
+		  std::string ss=_path;
 		  found=_path.find_last_of("/\\");
-		  if(found != zs_string::npos){
+		  if(found != std::string::npos){
 			  ss= _path.substr(found+1);
 		  }
 		  return ss;
 		}
 
-		zs_string  get_filename_without_extension(const zs_string & _path) {
+		std::string  get_filename_without_extension(const std::string & _path) {
 
-			zs_string file = get_filename(_path);
+			std::string file = get_filename(_path);
 
 
-			zs_string fName(file);
-				int pos = fName.find_last_of(".");
-				if(pos == zs_string::npos)  //No extension.
+			std::string fName(file);
+				size_t pos = fName.find_last_of(".");
+				if(pos == std::string::npos)  //No extension.
 					return fName;
 
 				if(pos == 0)    //. is at the front. Not an extension.

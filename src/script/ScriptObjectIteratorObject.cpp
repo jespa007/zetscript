@@ -28,8 +28,9 @@ namespace zetscript{
 		setup();
 		// setup object
 		this->init(_oo->getZetScript());
-		//oo=_oo;
-		it=_oo->getMapUserProperties()->begin();
+
+		it_map=_oo->getMapUserProperties();
+		it=it_map->begin();
 		//oo->refObject((ScriptObject **)&this->oo);
 		ref_object=new RefObject(_oo,this);
 	}
@@ -39,19 +40,19 @@ namespace zetscript{
 		if(ref_object->getRefObject()==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
-		return it.end();
+		return it!=it_map->end();
 	}
 
 	void	 ScriptObjectIteratorObject::get(){
 		if(ref_object->getRefObject()==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
-		if(it.end()) return;
+		if(it!=it_map->end()) return;
 
 		// pass value through the stack
-		stk_key.value=(zs_int)it.key;
+		stk_key.value=(zs_int)it->first.c_str();
 
-		vm_push_stack_element(vm,*((StackElement *)it.value));  // last value/first value to get
+		vm_push_stack_element(vm,*(it->second));  // last value/first value to get
 		vm_push_stack_element(vm,stk_key);
 	}
 
@@ -60,7 +61,7 @@ namespace zetscript{
 		if(ref_object->getRefObject()==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
-		it.next();
+		it->next();
 	}
 
 	ScriptObjectIteratorObject::~ScriptObjectIteratorObject(){

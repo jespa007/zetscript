@@ -42,7 +42,7 @@ namespace zetscript{
 
 			ScriptFunction *getConstructorFunction();
 
-			virtual zs_string toString();
+			virtual std::string toString();
 
 			virtual ~ScriptObjectClass();
 

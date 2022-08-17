@@ -7,8 +7,8 @@
 namespace zetscript{
 
 	struct VM_Foreach{
-		StackElement 		   	*key; // iterator element can be zs_string or integer...
-		ScriptObjectObject		*ptr; // can be struct or zs_vector...
+		StackElement 		   	*key; // iterator element can be std::string or integer...
+		ScriptObjectObject		*ptr; // can be struct or std::vector...
 		unsigned int 		   	idx_current;
 
 	};
@@ -157,7 +157,7 @@ namespace zetscript{
 		data->vm_error_line=_line;
 	}
 
-	zs_string vm_get_error(VirtualMachine *vm){
+	std::string vm_get_error(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		return data->vm_error_str;
 	}
@@ -183,8 +183,8 @@ namespace zetscript{
 
 	int vm_find_lifetime_object(VirtualMachine *vm,ScriptObject *script_object){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		for(int i=0; i < data->lifetime_object.count; i++){
-			InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[i];
+		for(unsigned i=0; i < data->lifetime_object.size(); i++){
+			InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object[i];
 			if(info->script_object==script_object){
 				return i;
 			}
@@ -199,8 +199,8 @@ namespace zetscript{
 		if((idx=vm_find_lifetime_object(vm,script_object))==ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERRORF("Cannot find stack element lifetime");
 		}
-		InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[idx];
-		data->lifetime_object.erase(idx);
+		InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object[idx];
+		data->lifetime_object.erase(data->lifetime_object.begin()+idx);
 
 		if(info->script_object->shared_pointer!=NULL){
 			vm_unref_shared_script_object(vm,script_object,NULL);
@@ -253,7 +253,7 @@ namespace zetscript{
 
 	StackElement * vm_get_stack_element_at(VirtualMachine *vm, int idx_glb_element){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(idx_glb_element < data->main_function_object->local_variables->count){
+		if(idx_glb_element < (int)data->main_function_object->local_variables->size()){
 			return &data->vm_stack[idx_glb_element];
 		}else{
 			VM_SET_USER_ERRORF(vm,"getStackElement: out of bounds");
@@ -309,12 +309,12 @@ namespace zetscript{
 			vm_reset_error_vars(vm);
 
 			stk_start=data->vm_stack;
-			n_stk_params=(char)data->main_function_object->local_variables->count;
+			n_stk_params=(char)data->main_function_object->local_variables->size();
 
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
 			stk_start=data->stk_vm_current;
-			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->count];
+			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->size()];
 			first_script_call_from_c=false;
 
 			if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
@@ -373,12 +373,12 @@ namespace zetscript{
 			// it was error so reset stack and stop execution ...
 			vm_do_stack_dump(vm);
 
-			zs_string total_error=data->vm_error_str;
+			std::string total_error=data->vm_error_str;
 			total_error.append(data->vm_error_callstack_str);
 
 			throw_exception_file_line(data->vm_error_file.c_str(),data->vm_error_line,total_error.c_str());
 		}else{
-			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+calling_function->local_variables->count);
+			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+calling_function->local_variables->size());
 
 			if(n_returned_arguments_from_function > 0){
 
@@ -421,14 +421,14 @@ namespace zetscript{
 
 	void vm_delete(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(data->lifetime_object.count>0){
-			zs_string created_at="";
-			zs_string end="";
+		if(data->lifetime_object.size()>0){
+			std::string created_at="";
+			std::string end="";
 			bool some_registers_without_file_line=false;
 
-			zs_string error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
-			for(int i=0; i < data->lifetime_object.count;i++ ){
-				InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[i];
+			std::string error="\n\nSome lifetime objects returned by virtual machine were not unreferenced:\n\n";
+			for(unsigned i=0; i < data->lifetime_object.size();i++ ){
+				InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object[i];
 				created_at="";
 				end="";
 

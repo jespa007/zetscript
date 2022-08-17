@@ -34,7 +34,7 @@ namespace zetscript{
 	public:
 
 		// script function properties
-		zs_string			name_script_function;
+		std::string			name_script_function;
 		Scope				*scope_script_function;
 		int 				idx_script_function;	// idx_script_function from factory
 
@@ -57,14 +57,14 @@ namespace zetscript{
 		size_t				instructions_len;
 
 		// local symbols for type or function...
-		zs_vector<Symbol *> *local_variables; // registered variable symbols
+		std::vector<Symbol *> *local_variables; // registered variable symbols
 
 		ScriptFunction(
 				ZetScript *_zs
 				,int _idx_script_function
 				,int _idx_script_type
 				,int _idx_position
-				,const zs_string & name_script_function
+				,const std::string & name_script_function
 				, ScriptFunctionParam **_params
 				, int _params_len
 				,int  idx_script_type_return
@@ -74,7 +74,7 @@ namespace zetscript{
 
 		//-----------
 		//  SYMBOL-INSTRUCTION
-		zs_vector<InstructionSourceInfo *> 			instruction_source_infos; // std::map that gives symbol with at instruction idx given
+		std::vector<InstructionSourceInfo *> 			instruction_source_infos; // std::map that gives symbol with at instruction idx given
 
 		short 				getInstructionLine(Instruction * ins);
 		const char * 		getInstructionSymbolName(Instruction * ins);
@@ -84,10 +84,10 @@ namespace zetscript{
 		//-----------
 
 		static void printGeneratedCode(ScriptFunction *sfo,ScriptType *sc=NULL);
-		static void checkNativeFunctionParams(Scope *_scope,int _idx_return_type, const zs_string & _function_name,ScriptFunctionParam *_params,int _params_len);
+		static void checkNativeFunctionParams(Scope *_scope,int _idx_return_type, const std::string & _function_name,ScriptFunctionParam *_params,int _params_len);
 
 
-		int existArgumentName(const zs_string & arg_name);
+		int existArgumentName(const std::string & arg_name);
 
 
 		/* Registers argument variable
@@ -97,7 +97,7 @@ namespace zetscript{
 				 Scope * scope_block
 				, const char * file
 				, short line
-				, const zs_string & symbol_name
+				, const std::string & symbol_name
 				, uint16_t properties
 		);
 
@@ -108,8 +108,8 @@ namespace zetscript{
 				 Scope * scope_block
 				, const char * file
 				, short line
-				, const zs_string & symbol_name
-				, const zs_string & str_native_type=""
+				, const std::string & symbol_name
+				, const std::string & str_native_type=""
 				, zs_int ref_ptr=0
 				, unsigned short properties=0
 		);
@@ -122,7 +122,7 @@ namespace zetscript{
 				  Scope * scope_block
 				, const char * file
 				, short line
-				, const zs_string & name_script_function
+				, const std::string & name_script_function
 				, ScriptFunctionParam **_params=NULL
 				,char _params_len=0
 				, int idx_script_type_return=ZS_IDX_UNDEFINED
@@ -154,8 +154,8 @@ namespace zetscript{
 		ScriptFunctionFactory 	*script_function_factory;
 		ScriptTypeFactory 		*script_type_factory;
 		ScopeFactory 			*scope_factory;	// reference scope_factory
-		zs_vector<zs_int>		unresolved_symbols; // UnresolvedInstructionInfo
-		static zs_string 		formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
+		std::vector<zs_int>		unresolved_symbols; // UnresolvedInstructionInfo
+		static std::string 		formatInstructionLoadType(ScriptFunction *function,Instruction *instruction);
 		InstructionSourceInfo * getInstructionInfo(Instruction *instruction);
 		void clearParams();
 

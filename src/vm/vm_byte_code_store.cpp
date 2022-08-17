@@ -26,11 +26,11 @@ namespace zetscript{
 
 		LOAD_PROPERTIES(byte_code_metamethod); /* saves __STK_VAR_COPY__ --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 		setter_info=ptr_metamethod_members_aux->getSetterInfo(byte_code_metamethod);
-		if(setter_info.setters->count==0){\
+		if(setter_info.setters->size()==0){\
 			METAMETHOD_OPERATION_NOT_FOUND(byte_code_metamethod); \
 			goto lbl_exit_function;
 		}\
-		ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->items[0])->value))->ref_ptr;\
+		ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->at(0))->value))->ref_ptr;\
 		/* find function if c */ \
 		if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){ /* because object is native, we can have more than one _setter */ \
 			if(member_property==NULL){
@@ -61,7 +61,7 @@ namespace zetscript{
 					);\
 				}\
 			}\
-		}else if(setter_info.setters->count>1){\
+		}else if(setter_info.setters->size()>1){\
 			symbol_setter = so_aux->getScriptType()->getSymbol(str_set_metamethod); \
 			if(symbol_setter == NULL){\
 				VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\
@@ -115,7 +115,7 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		StackElement 				*		stk_dst=NULL,
 									*		stk_src=NULL;
-		zs_vector<StackElement *> 	*		store_lst_setter_functions=NULL;
+		std::vector<StackElement *> 	*		store_lst_setter_functions=NULL;
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
 		ContainerSlotStore 			*		container_slot_store=NULL;
@@ -183,13 +183,13 @@ namespace zetscript{
 		if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
 			if((store_lst_setter_functions=((ScriptObjectClass *)stk_dst->value)->getSetterList(BYTE_CODE_METAMETHOD_SET))!=NULL){
 
-				if(store_lst_setter_functions->count == 0){
+				if(store_lst_setter_functions->size() == 0){
 					store_lst_setter_functions=NULL;
 				}
 			}
 		}else if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){
 			stk_mp_aux=(StackMemberProperty *)stk_dst->value;\
-			if(stk_mp_aux->member_property->metamethod_members.setters.count > 0){\
+			if(stk_mp_aux->member_property->metamethod_members.setters.size() > 0){\
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 			}else{ // setter not allowed because it has no setter
 				VM_STOP_EXECUTE("'%s' not implements operator '=' (aka '_set')"
@@ -211,7 +211,7 @@ namespace zetscript{
 			}else{
 				so_aux=(ScriptObjectClass *)stk_dst->value;
 			}
-			ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->items[0]))->value))->ref_ptr);\
+			ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->at(0)))->value))->ref_ptr);\
 			if(so_aux->isNativeObject()){ // because object is native, we can have more than one _setter
 				if(stk_mp_aux==NULL){
 					strcpy(data->vm_str_metamethod_aux,"_set");
@@ -241,7 +241,7 @@ namespace zetscript{
 						);\
 					}\
 				}\
-			}else if(store_lst_setter_functions->count>1){ // it has overrided metamethods
+			}else if(store_lst_setter_functions->size()>1){ // it has overrided metamethods
 				Symbol * symbol_setter = so_aux->getScriptType()->getSymbol(__STR_SETTER_METAMETHOD__); \
 				if(symbol_setter == NULL){\
 					VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\
@@ -343,7 +343,7 @@ namespace zetscript{
 
 				if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
 					str_object=(ScriptObjectString *)stk_dst->value;
-				}else{ // Generates a zs_string var
+				}else{ // Generates a std::string var
 					stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 					// create shared ptr

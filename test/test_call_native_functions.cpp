@@ -52,7 +52,7 @@ public:
 };
 
 
-struct ParamA{zetscript::zs_string _s;ParamA(){_s="";}};
+struct ParamA{std::string _s;ParamA(){_s="";}};
 struct ParamB{zetscript::zs_float _f;ParamB(){_f=0;}};
 
 ClassA *ClassAWrap_new(zetscript::ZetScript *_zs){
@@ -161,7 +161,7 @@ void ClassCWrap_delete(zetscript::ZetScript *_zs,ClassC *_this){
 	delete _this;
 }
 
-bool allCharsTheSame(const zetscript::zs_string & input){
+bool allCharsTheSame(const std::string & input){
 
     for(int i =1; i < input.length(); i++){
         if(input[i-1] != input[i]) return false;
@@ -171,8 +171,8 @@ bool allCharsTheSame(const zetscript::zs_string & input){
 
 bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ScriptObjectVector * sov){
 	ZS_UNUSUED_PARAM(_zs);
-	zetscript::zs_vector<zetscript::StackElement *> *stk_user_elements = sov->getStkUserListElements();
-   for(int i =1; i < stk_user_elements->count; i++){
+	std::vector<zetscript::StackElement *> *stk_user_elements = sov->getStkUserListElements();
+   for(int i =1; i < stk_user_elements->size(); i++){
 	   zetscript::StackElement *stk_1=stk_user_elements->items[i-1];
 	   zetscript::StackElement *stk_2=stk_user_elements->items[i-0];
        if(stk_1->value != stk_2->value) return false;
@@ -212,8 +212,8 @@ std::vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs,zetsc
 zetscript::ScriptObjectVector * reorderValuesFromIntArray(zetscript::ZetScript *_zs,zetscript::ScriptObjectVector *_input){
 
 	zetscript::ScriptObjectVector *output=zetscript::ScriptObjectVector::newScriptObjectVector(_zs);
-	zetscript::zs_vector<zetscript::StackElement *> *input=_input->getStkUserListElements();
-	uint16_t input_count=input->count;
+	std::vector<zetscript::StackElement *> *input=_input->getStkUserListElements();
+	uint16_t input_count=input->size();
 	std::vector<zetscript::zs_int> rand_txt;
 
     if(allValuesTheSame(_zs,_input)){

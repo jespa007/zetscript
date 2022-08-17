@@ -12,12 +12,12 @@ int main(){
 	zetscript::zs_int 		int_var = 10;
 	zetscript::zs_float 	float_var = 0.5;
 	bool 		bool_var = true;
-	zetscript::zs_string	string_var = "in c++";
+	std::string	string_var = "in c++";
 
 	zs.bindVariable("int_var",&int_var); // it takes int *
 	zs.bindVariable("float_var",&float_var); // it takes float *
 	zs.bindVariable("bool_var",&bool_var); // it takes bool *
-	zs.bindVariable("string_var",&string_var); // it takes zs_string *
+	zs.bindVariable("string_var",&string_var); // it takes std::string *
 
 	zs.eval(
 		"int_var+=5;"

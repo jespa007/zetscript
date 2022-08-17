@@ -7,7 +7,7 @@
 namespace zetscript{
 	namespace zs_file{
 
-		bool exists(const zs_string & filename){
+		bool exists(const std::string & filename){
 #ifdef _WIN32
 			 DWORD dwAttrib = GetFileAttributes(filename.c_str());
 
@@ -33,7 +33,7 @@ namespace zetscript{
 			return false;*/
 		}
 
-		zs_buffer *read_text(const zs_string &  filename){
+		zs_buffer *read_text(const std::string &  filename){
 
 			int  length=-1;
 			size_t readed_elements;
@@ -68,7 +68,7 @@ namespace zetscript{
 			return NULL;
 		}
 
-		int  size(const  zs_string & filename)
+		int  size(const  std::string & filename)
 		{
 			int  ini,  end;
 			FILE  *fp;

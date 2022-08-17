@@ -11,8 +11,8 @@
 :"Local"\
 
 #define GET_ILOAD_R_STR(properties,value) \
-	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->items[value])->name\
-	:((Symbol *)sfo->local_variables->items[value])->name\
+	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->at(value))->name\
+	:((Symbol *)sfo->local_variables->at(value))->name\
 
 namespace zetscript{
 
@@ -21,7 +21,7 @@ namespace zetscript{
 			,int _idx_script_function
 			,int _idx_script_type_owner
 			,int _idx_position
-			,const zs_string & _function_name
+			,const std::string & _function_name
 			, ScriptFunctionParam **_params
 			, int _params_len
 			,int _idx_return_type
@@ -43,8 +43,8 @@ namespace zetscript{
 
 
 		// local symbols for type or function...
-		local_variables=new zs_vector<Symbol *>();
-		params = NULL;//new zs_vector();
+		local_variables=new std::vector<Symbol *>();
+		params = NULL;//new std::vector();
 		params_len = 0;
 
 		updateParams(_params,_params_len);
@@ -61,8 +61,8 @@ namespace zetscript{
 
 	InstructionSourceInfo * ScriptFunction::getInstructionInfo(Instruction *instruction){
 		short idx= (instruction-this->instructions);///sizeof(Instruction *);
-		//if(instruction_source_info.items[idx]==1){
-		return (InstructionSourceInfo *)instruction_source_infos.items[idx];
+		//if(instruction_source_info[idx]==1){
+		return (InstructionSourceInfo *)instruction_source_infos[idx];
 	}
 
 	 void ScriptFunction::printGeneratedCode(ScriptFunction *sfo,ScriptType *sc){
@@ -87,16 +87,16 @@ namespace zetscript{
 			return;
 		}
 
-		zs_string symbol_ref="????";
-		zs_string class_str="";
-		zs_string symbol_value="";
-		zs_string iload_info="";
+		std::string symbol_ref="????";
+		std::string class_str="";
+		std::string symbol_value="";
+		std::string iload_info="";
 
 		if(sc==NULL){ // no type is a function on a global scope
 			symbol_ref=sfo->name_script_function;
 		}else{ // is a type
-			symbol_ref=sfo->name_script_function;//+zs_string("::")+zs_string("????");
-			class_str=zs_string(sc->str_script_type)+"::";
+			symbol_ref=sfo->name_script_function;//+std::string("::")+std::string("????");
+			class_str=std::string(sc->str_script_type)+"::";
 		}
 
 
@@ -104,9 +104,9 @@ namespace zetscript{
 		printf("______________________________________________________________\n\n");
 		printf(" Function: '%s%s'                                             \n",class_str.c_str(),symbol_ref.c_str());
 		printf(" Stack code: %i                                       		  \n",sfo->min_code_stack_needed);
-		printf(" Stack local vars: %i                                         \n",sfo->local_variables->count);
-		printf(" Total stack required: %i                                     \n\n",sfo->local_variables->count+sfo->min_code_stack_needed);
-		printf(" Scopes: %i                                                   \n",sfo->scope_script_function->scopes->count);
+		printf(" Stack local vars: %i                                         \n",sfo->local_variables->size());
+		printf(" Total stack required: %i                                     \n\n",sfo->local_variables->size()+sfo->min_code_stack_needed);
+		printf(" Scopes: %i                                                   \n",sfo->scope_script_function->scopes->size());
 
 		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
@@ -292,7 +292,7 @@ namespace zetscript{
 
 				while((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM){
 					instruction++;
-					symbol_value+=zs_string(".")+SFI_GET_SYMBOL_NAME(sfo,instruction);
+					symbol_value+=std::string(".")+SFI_GET_SYMBOL_NAME(sfo,instruction);
 				}
 
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s %s\n"
@@ -474,11 +474,11 @@ namespace zetscript{
 
 	 }
 
-	void ScriptFunction::checkNativeFunctionParams(Scope *_scope,int _idx_return_type,const zs_string & _function_name,ScriptFunctionParam *_params,int _params_len){
+	void ScriptFunction::checkNativeFunctionParams(Scope *_scope,int _idx_return_type,const std::string & _function_name,ScriptFunctionParam *_params,int _params_len){
 
 		ZS_UNUSUED_PARAM(_idx_return_type);
 
-		for(int i=0; i < _scope->symbol_functions->count;i++){
+		for(int i=0; i < _scope->symbol_functions->size();i++){
 			bool same_signature=true;
 			Symbol *symbol_function_memeber= (Symbol *)_scope->symbol_functions->items[i];
 			ScriptFunction *function_member=(ScriptFunction *)symbol_function_memeber->ref_ptr;
@@ -515,7 +515,7 @@ namespace zetscript{
 		InstructionSourceInfo *info=getInstructionInfo(ins);
 
 		if(info!=NULL && info->ptr_str_symbol_name!=NULL){
-			return info->ptr_str_symbol_name;
+			return info->ptr_str_symbol_name->c_str();
 		}
 		return NULL;
 	}
@@ -533,11 +533,11 @@ namespace zetscript{
 			 Scope * _scope_block
 			, const char *_file
 			, short _line
-			, const zs_string & _symbol_name
+			, const std::string & _symbol_name
 			, uint16_t _properties
 	){
 		Symbol * symbol=NULL;
-		short idx_position_aux=(short)local_variables->count;
+		short idx_position_aux=(short)local_variables->size();
 
 		if((symbol=_scope_block->registerSymbolVariable(
 				_file
@@ -560,15 +560,15 @@ namespace zetscript{
 			 Scope * _scope_block
 			, const char * _file
 			, short _line
-			, const zs_string & _symbol_name
-			, const zs_string & _str_native_type
+			, const std::string & _symbol_name
+			, const std::string & _str_native_type
 			, zs_int _ref_ptr
 			, unsigned short _properties
 	){
 		//ScopeSymbolInfo *irs=new ScopeSymbolInfo;
 
 		Symbol * symbol=NULL;
-		short idx_position_aux=(short)local_variables->count;
+		short idx_position_aux=(short)local_variables->size();
 
 		if((symbol=_scope_block->registerSymbolVariable(_file,_line, _symbol_name ))==NULL){
 				return NULL;
@@ -589,7 +589,7 @@ namespace zetscript{
 			 Scope * _scope_block
 			,const char *_file
 			, short _line
-			, const zs_string & _function_name
+			, const std::string & _function_name
 			, ScriptFunctionParam **_params
 			,char _params_len
 			, int _idx_return_type
@@ -597,7 +597,7 @@ namespace zetscript{
 			, unsigned short _function_properties
 	){
 		Symbol *symbol_repeat=_scope_block->getSymbol(_function_name, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
-		zs_string current_file_line=ZS_STR_CONST_IS_EMPTY(_file)?
+		std::string current_file_line=ZS_STR_CONST_IS_EMPTY(_file)?
 							zs_strutils::format("[line %i]",_line):
 							zs_strutils::format("[%s:%i]",zs_path::get_filename(_file).c_str(),_line);
 
@@ -605,7 +605,7 @@ namespace zetscript{
 
 			ScriptFunction *sf_repeat=NULL;
 
-			zs_string symbol_file_line=ZS_STR_CONST_IS_EMPTY(symbol_repeat->file)?
+			std::string symbol_file_line=ZS_STR_CONST_IS_EMPTY(symbol_repeat->file)?
 					zs_strutils::format("[line %i]",_line):
 					zs_strutils::format("[%s:%i]",zs_path::get_filename(symbol_repeat->file).c_str(),_line);
 
@@ -735,7 +735,7 @@ namespace zetscript{
 		scope_script_function->removeChildrenBlockTypes();
 
 		// count number vars at the top most
-		int n_var_scope=scope_script_function->countVariables(true);
+		int n_var_scope=scope_script_function->size()Variables(true);
 
 		// remove last symbols
 		local_variables->resize(n_var_scope);
@@ -745,12 +745,12 @@ namespace zetscript{
 
 	bool ScriptFunction::linkUnresolvedSymbols(){
 		ScriptType *sc_found=NULL;
-		if(unresolved_symbols.count > 0){
+		if(unresolved_symbols.size() > 0){
 
 			const char *str_aux=NULL;
 			int i=0;
-			while(i < unresolved_symbols.count){
-				Instruction *unresolved_instruction=&instructions[unresolved_symbols.items[i]];
+			while(i < unresolved_symbols.size()){
+				Instruction *unresolved_instruction=&instructions[unresolved_symbols[i]];
 				const char *ptr_str_symbol_to_find=SFI_GET_SYMBOL_NAME(this,unresolved_instruction);
 				const char *instruction_file=SFI_GET_FILE(this,unresolved_instruction);
 				int instruction_line=SFI_GET_LINE(this,unresolved_instruction);
@@ -763,7 +763,7 @@ namespace zetscript{
 						instruction_file
 						,instruction_line
 						,"Cannot find symbol name at instruction %i"
-						,unresolved_symbols.items[i]
+						,unresolved_symbols[i]
 					);
 				}
 
@@ -772,7 +772,7 @@ namespace zetscript{
 					unresolved_instruction->byte_code=BYTE_CODE_LOAD_TYPE;
 					unresolved_instruction->value_op2=idx_sc_found;
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
-					 zs_string static_error;
+					 std::string static_error;
 					char copy_aux[512]={0};
 
 					// get type
@@ -826,7 +826,7 @@ namespace zetscript{
 			}
 		}
 
-		return unresolved_symbols.count==0;
+		return unresolved_symbols.size()==0;
 	}
 
 	void ScriptFunction::addUnresolvedSymbol(zs_int instruction){
@@ -840,8 +840,8 @@ namespace zetscript{
 	ScriptFunction::~ScriptFunction(){
 		clear();
 
-		for(int i=0; i < instruction_source_infos.count; i++){
-			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_infos.items[i];
+		for(int i=0; i < instruction_source_infos.size(); i++){
+			InstructionSourceInfo *isi=(InstructionSourceInfo *)instruction_source_infos[i];
 			if(isi != NULL){
 				delete isi;
 			}

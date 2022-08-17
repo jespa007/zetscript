@@ -142,7 +142,7 @@ int main(int argc, char * argv[]) {
 		zs.clear();
 		printf("* Test script %2i/%i - %s ... ",++n,test_script_total,name);
 		try{
-			zetscript::zs_string filename=zetscript::zs_strutils::format("%s/%s.zs",ZS_TEST_ALL_SCRIPT_TEST_PATH,*it_test_script_files);
+			std::string filename=zetscript::zs_strutils::format("%s/%s.zs",ZS_TEST_ALL_SCRIPT_TEST_PATH,*it_test_script_files);
 
 			if(zetscript::zs_file::exists(filename.c_str())==false){
 				throw std::runtime_error("file not exist");

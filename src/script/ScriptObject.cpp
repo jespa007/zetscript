@@ -47,8 +47,8 @@ namespace zetscript{
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
-		ref_script_objects=new zs_vector<RefObject *>();
-		weak_pointers=new zs_vector<ScriptObjectWeakPointer *>();
+		ref_script_objects=new std::vector<RefObject *>();
+		weak_pointers=new std::vector<ScriptObjectWeakPointer *>();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
@@ -58,10 +58,10 @@ namespace zetscript{
 		// init builtin
 		if(idx_script_type >= IDX_TYPE_SCRIPT_OBJECT_STRING && idx_script_type<IDX_TYPE_SCRIPT_OBJECT_CLASS){
 			ScriptType *script_type=getScriptType();
-			zs_vector<Symbol *> *symbol_vars=script_type->scope_script_type->symbol_variables;
+			std::vector<Symbol *> *symbol_vars=script_type->scope_script_type->symbol_variables;
 			//------------------------------------------------------------------------------
 			// pre-register built-in members...
-			for(int i = 0; i < symbol_vars->count; i++){
+			for(int i = 0; i < symbol_vars->size(); i++){
 				Symbol * symbol = (Symbol *)symbol_vars->items[i];
 				if(symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
 					addBuiltinProperty(
@@ -85,13 +85,13 @@ namespace zetscript{
 
 	// built-in only for initialized
 	StackElement * ScriptObject::addBuiltinProperty(const char  * symbol_value, StackElement stk){
-		zs_string key_value = symbol_value;
+		std::string key_value = symbol_value;
 
 		// if ignore duplicate was true, map resets idx to the last function...
 		StackElement *new_stk=newBuiltinSlot();
 		*new_stk=stk;
 
-		map_builtin_properties->set(key_value.c_str(),(zs_int)new_stk);
+		(*map_builtin_properties)[key_value]=new_stk;
 
   	    return new_stk;
 	}
@@ -126,7 +126,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	zs_vector<StackElement *> *ScriptObject::getSetterList(ByteCodeMetamethod _byte_code_metamethod){
+	std::vector<StackElement *> *ScriptObject::getSetterList(ByteCodeMetamethod _byte_code_metamethod){
 		ScriptType *script_type=this->zs->getScriptTypeFactory()->getScriptType(idx_script_type);
 		MetamethodMembers *metamethod_members=&script_type->metamethod_members;
 
@@ -141,25 +141,23 @@ namespace zetscript{
 		return zs;
 	}
 
-	StackElement * 			ScriptObject::getBuiltinProperty(const char * property_name){
+	StackElement * 			ScriptObject::getBuiltinProperty(const std::string & property_name){
 		bool exists=false;
-		StackElement  *stk_item=(StackElement  *)this->map_builtin_properties->get(property_name,&exists);
-
-		if(exists){
-			return stk_item;
+		if(this->map_builtin_properties->size()(property_name)!=0){
+			return this->map_builtin_properties->at(property_name);
 		}
 		return NULL;
 	}
 
-	StackElement 	* ScriptObject::getProperty(const char * property_name){
+	StackElement 	* ScriptObject::getProperty(const std::string & property_name){
 		return getBuiltinProperty(property_name);
 	}
 
-	Symbol 	* ScriptObject::getScriptFunctionSymbol(const char * _function_member_name){
+	Symbol 	* ScriptObject::getScriptFunctionSymbol(const std::string & _function_member_name){
 		ScriptType *script_type=getScriptType();
-		zs_vector<Symbol *> *s=script_type->scope_script_type->symbol_functions;
-		for(int i=s->count-1;i>=0;i--){
-			Symbol *symbol=(Symbol *)s->items[i];
+		std::vector<Symbol *> *s=script_type->scope_script_type->symbol_functions;
+		for(int i=((int)s->size())-1;i>=0;i--){
+			Symbol *symbol=(Symbol *)s->at(i);
 			if(symbol->name == _function_member_name){
 				return symbol;
 			}
@@ -175,13 +173,13 @@ namespace zetscript{
 		return this;
 	}
 
-	zs_vector<StackElement *> * ScriptObject::getStkBuiltinListElements(){
+	std::vector<StackElement *> * ScriptObject::getStkBuiltinListElements(){
 		return &stk_builtin_elements;
 	}
 
 	StackElement * ScriptObject::addProperty(
 			const char * symbol_value
-			,const zs_string & error
+			,const std::string & error
 			,StackElement * stk_element
 
 	){
@@ -191,15 +189,15 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObject::getBuiltinElementAt(short idx){
-		if(idx >= (int)stk_builtin_elements.count || idx < 0){
+		if(idx >= (int)stk_builtin_elements.size() || idx < 0){
 			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
-		return (StackElement *)stk_builtin_elements.items[idx];
+		return (StackElement *)stk_builtin_elements.at[idx];
 	}
 
-	zs_string ScriptObject::toString(){
-		return "Object@"+zs_string(getTypeName());
+	std::string ScriptObject::toString(){
+		return "Object@"+std::string(getTypeName());
 	}
 
 	void ScriptObject::refWeakPointer(ScriptObjectWeakPointer *_wp){
@@ -211,8 +209,8 @@ namespace zetscript{
 	}
 
 	int ScriptObject::idxRefObject(RefObject  *_ref_object){
-		for(int i=0; i < ref_script_objects->count;i++){
-			if(*(ref_script_objects->items+i)==_ref_object){
+		for(int i=0; i < ref_script_objects->size();i++){
+			if(*(ref_script_objects->at(i))==_ref_object){
 				return i;
 			}
 		}
@@ -221,7 +219,7 @@ namespace zetscript{
 	}
 
 	bool ScriptObject::deRefWeakPointer(){
-		if(weak_pointers->count>0){
+		if(weak_pointers->size()>0){
 			ScriptObjectWeakPointer *wp=weak_pointers->pop_back();
 			wp->deRefObject();
 			return true;
@@ -236,8 +234,8 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("internal: member function not exist");
 		}
 
-		ref_script_objects->items[idx]->deRefObject();
-		ref_script_objects->erase(idx);
+		ref_script_objects->at[idx]->deRefObject();
+		ref_script_objects->erase(ref_script_objects->begin()+idx);
 	}
 
 	ScriptTypeFactory		*	ScriptObject::getScriptTypeFactory(){
@@ -246,8 +244,8 @@ namespace zetscript{
 
 	ScriptObject::~ScriptObject(){
 		// deallocate built-in function member objects
-		for(int i=0; i< stk_builtin_elements.count; i++){
-			StackElement *stk=(StackElement *)stk_builtin_elements.items[i];
+		for(int i=0; i< stk_builtin_elements.size(); i++){
+			StackElement *stk=(StackElement *)stk_builtin_elements[i];
 
 			if(stk->properties & STK_PROPERTY_MEMBER_PROPERTY){
 				delete (StackMemberProperty *)stk->value;
@@ -264,20 +262,20 @@ namespace zetscript{
 		stk_builtin_elements.clear();
 		delete map_builtin_properties;
 
-		for(int i=0; i < ref_script_objects->count; i++){
-			ScriptObject **_so=(ScriptObject **)ref_script_objects->items[i];
+		for(int i=0; i < ref_script_objects->size(); i++){
+			ScriptObject **_so=(ScriptObject **)ref_script_objects->at(i);
 			*_so=NULL;
 		}
 
-		for(int i=0; i < ref_script_objects->count; i++){
-			RefObject *_ref_pointer=ref_script_objects->items[i];
+		for(int i=0; i < ref_script_objects->size(); i++){
+			RefObject *_ref_pointer=ref_script_objects->at(i);
 			_ref_pointer->deRefObject();
 		}
 
 		delete ref_script_objects;
 
-		for(int i=0; i < weak_pointers->count; i++){
-			weak_pointers->items[i]->deRefObject();
+		for(int i=0; i < weak_pointers->size(); i++){
+			weak_pointers->at(i)->deRefObject();
 
 		}
 

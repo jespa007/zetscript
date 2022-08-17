@@ -46,16 +46,16 @@
 #define PTR_FUNCTION_RET_BOOL_PARAM9(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 #define PTR_FUNCTION_RET_BOOL_PARAM10(f) ((bool (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
-#define PTR_FUNCTION_RET_STRING_PARAM1(f) ((zs_string (*)(zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM2(f) ((zs_string (*)(zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM3(f) ((zs_string (*)(zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM4(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM5(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM6(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM7(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM8(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM9(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
-#define PTR_FUNCTION_RET_STRING_PARAM10(f) ((zs_string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM1(f) ((std::string (*)(zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM2(f) ((std::string (*)(zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM3(f) ((std::string (*)(zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM4(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM5(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM6(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM7(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM8(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM9(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
+#define PTR_FUNCTION_RET_STRING_PARAM10(f) ((std::string (*)(zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int,zs_int))(f))
 
 namespace zetscript{
 
@@ -71,7 +71,7 @@ namespace zetscript{
 
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		zs_int  fun_ptr = c_function->ref_native_function_ptr;
-		zs_string str_aux;
+		std::string str_aux;
 
 		if((c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){
 			VM_SET_USER_ERRORF(vm,"Internal error: Function not native");
@@ -463,7 +463,7 @@ namespace zetscript{
 
 			ZS_FLOAT_COPY(&result,&float_aux);
 
-		}else if(c_function->idx_script_type_return==IDX_TYPE_ZS_STRING_C){ // we must do a float cast in order to get float return.
+		}else if(c_function->idx_script_type_return==IDX_TYPE_STRING_C){ // we must do a float cast in order to get float return.
 
 			switch(n_args){
 			case 1:
@@ -564,7 +564,7 @@ namespace zetscript{
 				break;
 			}
 
-			// it pass as zs_string reference (i.e zs_string)
+			// it pass as std::string reference (i.e std::string)
 			result=(zs_int)&str_aux;
 
 		}else{ // generic pointer or int

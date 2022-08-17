@@ -8,10 +8,10 @@ namespace zetscript{
 
 	extern const StackElement k_stk_undefined={0,STK_PROPERTY_UNDEFINED};
 
-	zs_string stk_to_typeof_str(ZetScript *_zs, StackElement *_stk){
+	std::string stk_to_typeof_str(ZetScript *_zs, StackElement *_stk){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		StackElement *stk=_stk;
-		zs_string result="unknow";
+		std::string result="unknow";
 		if(STK_VALUE_IS_UNDEFINED(stk))
 			result=ZS_TYPE_NAME_UNDEFINED; //"undefined";
 		else if(STK_VALUE_IS_NULL(stk))
@@ -35,16 +35,16 @@ namespace zetscript{
 		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT;
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result=zs_string("fun@")+((ScriptFunction *)stk->value)->name_script_function;
+			result=std::string("fun@")+((ScriptFunction *)stk->value)->name_script_function;
 		else if(STK_VALUE_IS_TYPE(stk)) // is a type
-			result=zs_string("type@")+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
+			result=std::string("type@")+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_PROPERTY(stk)){
 			StackMemberProperty *ma=(StackMemberProperty *)stk->value;
-			result="prop@"+zs_string(ma->member_property->script_type->str_script_type)+"::"+zs_string(ma->member_property->property_name);
+			result="prop@"+std::string(ma->member_property->script_type->str_script_type)+"::"+std::string(ma->member_property->property_name);
 		}else if(STK_VALUE_IS_MEMBER_FUNCTION(stk)){
 			Symbol *symbol=((Symbol *)stk->value);
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
-			result="fun@"+zs_string(sf->scope_script_function->script_type_owner->str_script_type)+"::"+sf->name_script_function;
+			result="fun@"+std::string(sf->scope_script_function->script_type_owner->str_script_type)+"::"+sf->name_script_function;
 		}else{
 			if(stk->properties & STK_PROPERTY_PTR_STK){
 				stk=(StackElement *)stk->value;
@@ -66,9 +66,9 @@ namespace zetscript{
 		return _str_out;
 	}
 
-	zs_string stk_to_str(ZetScript *_zs, StackElement *_stk, const zs_string  & _format ){
+	std::string stk_to_str(ZetScript *_zs, StackElement *_stk, const std::string  & _format ){
 		// PRE: _str_out should allocated a minimum of 100 bytes
-		zs_string result="unknown";
+		std::string result="unknown";
 		bool is_constant=false;
 		StackElement stk=*_stk;
 
@@ -96,36 +96,36 @@ namespace zetscript{
 			Symbol *symbol=((Symbol *)stk.value);
 			ScriptType *st=symbol->scope->getScriptTypeOwner();
 			if(st==((_zs->getScriptTypeFactory())->getScriptType(IDX_TYPE_CLASS_MAIN))){
-				result= zs_string("function<")+symbol->name+">";
+				result= std::string("function<")+symbol->name+">";
 			}else{
-				zs_string s="";
+				std::string s="";
 
 				if(symbol->properties & SYMBOL_PROPERTY_STATIC){
-					s=zs_string("static_function<");
+					s=std::string("static_function<");
 				}else{
-					s=zs_string("member_function<");
+					s=std::string("member_function<");
 				}
 				result=s+st->str_script_type+"::"+symbol->name+">";
 			}
 		}else if(STK_VALUE_IS_TYPE(&stk)){
-			result= zs_string("type")+"@"+_zs->getScriptTypeFactory()->getScriptTypeName(stk.value);
+			result= std::string("type")+"@"+_zs->getScriptTypeFactory()->getScriptTypeName(stk.value);
 		}else{
 			if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk.value;
 				if(so->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
 					ScriptObjectMemberFunction *somf=(ScriptObjectMemberFunction *)so;
 					ScriptType *st=somf->ref_object->getRefObject()->getScriptType();
-					result= zs_string("member_function<")+st->str_script_type+"::"+somf->so_function->name_script_function+">";
+					result= std::string("member_function<")+st->str_script_type+"::"+somf->so_function->name_script_function+">";
 				}else{
 					// PROTECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
-					result="Object::"+zs_string(so->getTypeName());
+					result="Object::"+std::string(so->getTypeName());
 				}
 			}
 		}
 		return result;
 	}
 
-	const char		*stk_to_str(char *_str_out, ZetScript *_zs, StackElement *_stk,const zs_string & _format){
+	const char		*stk_to_str(char *_str_out, ZetScript *_zs, StackElement *_stk,const std::string & _format){
 		auto str=stk_to_str(_zs,_stk,_format);
 
 		strcpy(_str_out,str.c_str());
@@ -162,7 +162,7 @@ namespace zetscript{
 		}
 	}
 
-	bool stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, zs_string  & _error){
+	bool stk_to(ZetScript *_zs, StackElement * _stack_element, int _idx_builtin_type, zs_int *_ptr_var, std::string  & _error){
 		zs_int val_ret=0;
 
 		ScriptObject *script_object=NULL;
@@ -266,13 +266,13 @@ namespace zetscript{
 							return false;
 						}
 
-						if(_idx_builtin_type == IDX_TYPE_ZS_STRING_PTR_C){
+						if(_idx_builtin_type == IDX_TYPE_STRING_PTR_C){
 							val_ret=(zs_int)(((ScriptObjectString *)script_object)->value);
 						}else if (_idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
-							val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());
+							val_ret=(zs_int)(((std::string *)(((ScriptObjectString *)script_object)))->c_str());
 						}else{
 							_error="cannot convert '"
-									+zs_rtti::demangle((k_str_zs_string_type_ptr))
+									+zs_rtti::demangle((k_str_string_type_ptr))
 									+"' to '"
 									+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type))
 									+"'";
@@ -331,7 +331,7 @@ namespace zetscript{
 	// Helpers...
 	 StackElement to_stk(ZetScript *_zs, zs_int ptr_var, short idx_builtin_type_var){
 		//zs_int ptr_var = (zs_int)input_var;
-			zs_string s_return_value;
+			std::string s_return_value;
 			StackElement stk_result=k_stk_undefined;
 			ScriptObjectString *so=NULL;
 
@@ -364,16 +364,16 @@ namespace zetscript{
 				 stk_result={(((bool)ptr_var)),STK_PROPERTY_BOOL};
 				 break;
 			 case IDX_TYPE_CONST_CHAR_PTR_C:
-			 case IDX_TYPE_ZS_STRING_PTR_C:
-			 case IDX_TYPE_ZS_STRING_C:
+			 case IDX_TYPE_STRING_PTR_C:
+			 case IDX_TYPE_STRING_C:
 
 
 				 so=ZS_NEW_OBJECT_STRING(_zs);
 				 if(ptr_var!=0) { // not null
-					 if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_PTR_C){ // zs_reference
+					 if(idx_builtin_type_var==IDX_TYPE_STRING_PTR_C){ // zs_reference
 						so->value=(void *)ptr_var;
-					 }else if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_C){ // zs_string passed as pointer
-						 so->set(*((zs_string *)ptr_var));
+					 }else if(idx_builtin_type_var==IDX_TYPE_STRING_C){ // std::string passed as pointer
+						 so->set(*((std::string *)ptr_var));
 					 }else{ // const char
 						 so->set((const char *)ptr_var);
 					 }

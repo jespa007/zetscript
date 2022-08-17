@@ -18,7 +18,7 @@ namespace zetscript{
 		// check for keyword ...
 		char *aux_p = (char *)s;
 		Keyword key_w = eval_is_keyword(s);
-		zs_vector<EvalInstruction *> ei_member_var_init;
+		std::vector<EvalInstruction *> ei_member_var_init;
 
 		if(key_w == Keyword::KEYWORD_VAR || key_w == Keyword::KEYWORD_CONST){ // possible variable...
 			bool  is_constant = false,
@@ -32,8 +32,8 @@ namespace zetscript{
 			char *start_var=NULL,*end_var=NULL;
 			int start_line=0;
 			ScriptType *sc=NULL;
-			zs_string s_aux="",variable_name="";
-			zs_string error="";
+			std::string s_aux="",variable_name="";
+			std::string error="";
 			Symbol *symbol_variable=NULL,*symbol_member_variable=NULL;
 			is_constant=key_w == Keyword::KEYWORD_CONST;
 			Operator ending_op=Operator::OPERATOR_UNKNOWN;
@@ -55,7 +55,7 @@ namespace zetscript{
 				start_var=aux_p;
 				start_line=line;
 				end_var=NULL;
-				zs_string pre_variable_name="";
+				std::string pre_variable_name="";
 				ScriptFunction *sf_field_initializer=NULL;
 				ScriptType *sc_var_member_extension=sc;
 
@@ -83,7 +83,7 @@ namespace zetscript{
 
 				if((sc_var_member_extension!=NULL) && (is_constant==true)){
 					scope_var = MAIN_SCOPE(eval_data);
-					pre_variable_name=zs_string(sc_var_member_extension->str_script_type)+"::";
+					pre_variable_name=std::string(sc_var_member_extension->str_script_type)+"::";
 				}
 
 				if(end_var==NULL){
@@ -177,7 +177,7 @@ namespace zetscript{
 						if(is_constant){ // make ptr as constant after variable is saved
 
 							// unset last reset stack
-							EvalInstruction *eval_instruction=(EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.count-1];
+							EvalInstruction *eval_instruction=(EvalInstruction *)eval_data->current_function->eval_instructions[eval_data->current_function->eval_instructions.size()-1];
 							eval_instruction->vm_instruction.properties&=~INSTRUCTION_PROPERTY_RESET_STACK;
 
 							// add instruction push
@@ -232,8 +232,8 @@ namespace zetscript{
 		}
 
 error_eval_keyword_var:
-		for(int i=0; i < ei_member_var_init.count; i++){
-			delete (EvalInstruction *)ei_member_var_init.items[i];
+		for(unsigned i=0; i < ei_member_var_init.size(); i++){
+			delete (EvalInstruction *)ei_member_var_init[i];
 		}
 
 		ei_member_var_init.clear();

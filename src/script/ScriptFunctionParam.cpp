@@ -18,7 +18,7 @@ namespace zetscript{
 		init();
 	}
 
-	ScriptFunctionParam::ScriptFunctionParam(const zs_string & _name){
+	ScriptFunctionParam::ScriptFunctionParam(const std::string & _name){
 		idx_script_type=ZS_IDX_UNDEFINED;
 		name=_name;
 		line=ZS_IDX_UNDEFINED;
@@ -26,7 +26,7 @@ namespace zetscript{
 		default_param_value=k_stk_undefined;
 	}
 
-	ScriptFunctionParam::ScriptFunctionParam(int _idx_script_type, const zs_string & _name){
+	ScriptFunctionParam::ScriptFunctionParam(int _idx_script_type, const std::string & _name){
 		idx_script_type=_idx_script_type;
 		name=_name;
 		line=ZS_IDX_UNDEFINED;
@@ -52,10 +52,10 @@ namespace zetscript{
 		return *this;
 	}
 
-	ScriptFunctionParam *ScriptFunctionParam::createArrayFromVector(const zs_vector<ScriptFunctionParam *> * _script_function_params){
-		ScriptFunctionParam *params=new ScriptFunctionParam[_script_function_params->count];
+	ScriptFunctionParam *ScriptFunctionParam::createArrayFromVector(const std::vector<ScriptFunctionParam *> * _script_function_params){
+		ScriptFunctionParam *params=new ScriptFunctionParam[_script_function_params->size()];
 
-		for(int i=0; i < _script_function_params->count; i++){
+		for(int i=0; i < _script_function_params->size(); i++){
 			params[i]=*((ScriptFunctionParam *)_script_function_params->items[i]);
 		}
 

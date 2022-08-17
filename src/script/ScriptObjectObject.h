@@ -32,13 +32,13 @@ namespace zetscript{
 
 		virtual StackElement * addProperty(
 				const char * symbol_value
-				,zs_string & error
+				,std::string & error
 				,StackElement * stk_element = NULL
 		);
 
 		StackElement * addUserProperty(
-						const char * symbol_value
-						,zs_string & error
+						const std::string symbol_value
+						,std::string & error
 						,StackElement * stk_element = NULL
 				);
 
@@ -51,18 +51,18 @@ namespace zetscript{
 
 		bool eraseUserProperty(const char * symbol_value);
 		void eraseAllUserProperties(/*const ScriptFunction *info_function=NULL*/);
-		zs_map *getMapUserProperties();
-		zs_map *getMapBuiltinProperties();
+		std::map<std::string,StackElement *> *getMapUserProperties();
+		std::map<std::string,StackElement *> *getMapBuiltinProperties();
 
 
 
 
-		virtual zs_string toString();
+		virtual std::string toString();
 		virtual ~ScriptObjectObject();
 
 	protected:
 
-		zs_map				*	map_user_properties; // to search faster each property by its name
+		std::map<std::string,StackElement *>	*	map_user_properties; // to search faster each property by its name
 
 
 		StackElement * 			getUserProperty(const char  * property_name);

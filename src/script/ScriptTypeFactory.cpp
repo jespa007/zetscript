@@ -9,7 +9,7 @@
 #define 				MAIN_SCRIPT_CLASS_NAME 				"@MainClass"
 
 #define SCF_BIND_STRUCT(type_class, idx_script_type)\
-	if(script_types->count!=idx_script_type){\
+	if(script_types->size()!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
@@ -17,7 +17,7 @@
 
 
 #define SCF_BIND_CLASS(name_class, type_class, idx_script_type)\
-	if(script_types->count!=idx_script_type){\
+	if(script_types->size()!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
@@ -31,21 +31,21 @@
 	bindType<type_class>(name_class,type_class##Wrap_New,type_class##Wrap_Delete);
 
 #define SCF_BIND_SINGLETON_CLASS(type_class, idx_script_type)\
-	if(script_types->count!=idx_script_type){\
+	if(script_types->size()!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	bindType<type_class>(ZS_STR(type_class));
 
 #define SCF_BIND_SINGLETON_NAME_CLASS(name, type_class, idx_script_type)\
-	if(script_types->count!=idx_script_type){\
+	if(script_types->size()!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	bindType<type_class>(name);
 
 #define SCF_BIND_NATIVE_TYPE(type, idx_script_type)\
-	if(script_types->count!=idx_script_type){\
+	if(script_types->size()!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(type_class));\
 		return;\
 	}else{\
@@ -56,7 +56,7 @@
 	}
 
 #define SCF_BIND_NATIVE_CUSTOM_TYPE(__name__, type, idx_script_type)\
-	if(script_types->count!=idx_script_type){\
+	if(script_types->size()!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(type_class));\
 		return;\
 	}else{\
@@ -67,7 +67,7 @@
 	}
 
 #define SCF_BIND_TYPE(str_type, idx_script_type)\
-	if(script_types->count!=idx_script_type){\
+	if(script_types->size()!=idx_script_type){\
 		THROW_RUNTIME_ERROR("Error initializing built in type: '%s'",str_type);\
 		return;\
 	}else{\
@@ -82,7 +82,7 @@ namespace zetscript{
 	const char * k_str_const_zs_int_type_ptr=typeid(const zs_int *).name();
 	const char * k_str_zs_float_type_ptr=typeid(zs_float *).name();
 	const char * k_str_const_zs_float_type_ptr=typeid(const zs_float *).name();
-	const char * k_str_zs_string_type_ptr=typeid(zs_string *).name();
+	const char * k_str_string_type_ptr=typeid(std::string *).name();
 	const char * k_str_char_type_ptr=typeid(char *).name();
 	const char * k_str_const_char_type_ptr=typeid(const char *).name();
 	const char * k_str_bool_type_ptr=typeid(bool *).name();
@@ -111,22 +111,22 @@ namespace zetscript{
 		script_function_factory= this->zs->getScriptFunctionFactory();
 		main_function=NULL;
 		main_object=NULL;
-		script_types=new zs_vector<ScriptType *>;
+		script_types=new std::vector<ScriptType *>;
 		main_object=NULL;
 		main_function=NULL;
 		idx_clear_checkpoint=0;
 
 		stk_constants=NULL;
-		stk_constants=new zs_map();
+		stk_constants=new std::map<std::string, StackElement *>();
 
 		stk_objects=NULL;
-		stk_objects=new zs_map();
+		stk_objects=new std::map<std::string, StackElement *>();
 
 
 	}
 
 	void ScriptTypeFactory::init(){
-		zs_string error;
+		std::string error;
 		// ScriptFunctionFactory has to be created
 		main_object=registerScriptType(MAIN_SCRIPT_CLASS_NAME); // 0
 		MAIN_SCOPE(this)->script_type_owner=main_object;
@@ -150,7 +150,7 @@ namespace zetscript{
 		return (zs_float)(number);
 	}
 
-	zs_float parseFloat(ZetScript *_zs,zs_string  *number_str){
+	zs_float parseFloat(ZetScript *_zs,std::string  *number_str){
 		ZS_UNUSUED_PARAM(_zs);
 		zs_float result=0;
 		zs_float *result_ptr=zs_strutils::parse_zs_float(*number_str);
@@ -173,7 +173,7 @@ namespace zetscript{
 		return (_stk->properties & (STK_PROPERTY_ZS_INT | STK_PROPERTY_ZS_FLOAT)) != 0;
 	}
 
-	zs_int parseInteger(ZetScript *_zs,zs_string  *number_str){
+	zs_int parseInteger(ZetScript *_zs,std::string  *number_str){
 		ZS_UNUSUED_PARAM(_zs);
 		zs_int result=0;
 		zs_int *result_ptr=zs_strutils::parse_zs_int(*number_str);
@@ -200,8 +200,8 @@ namespace zetscript{
 		SCF_BIND_NATIVE_TYPE(zs_int *,IDX_TYPE_ZS_INT_PTR_C);
 		SCF_BIND_NATIVE_TYPE(char *,IDX_TYPE_CHAR_PTR_C);
 		SCF_BIND_NATIVE_TYPE(const char *,IDX_TYPE_CONST_CHAR_PTR_C);
-		SCF_BIND_NATIVE_TYPE(zs_string,IDX_TYPE_ZS_STRING_C);
-		SCF_BIND_NATIVE_TYPE(zs_string *,IDX_TYPE_ZS_STRING_PTR_C);
+		SCF_BIND_NATIVE_TYPE(std::string,IDX_TYPE_STRING_C);
+		SCF_BIND_NATIVE_TYPE(std::string *,IDX_TYPE_STRING_PTR_C);
 		SCF_BIND_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_BOOL,bool,IDX_TYPE_BOOL_C);
 		SCF_BIND_NATIVE_TYPE(bool *,IDX_TYPE_BOOL_PTR_C);
 		SCF_BIND_NATIVE_CUSTOM_TYPE(ZS_TYPE_NAME_FLOAT,zs_float,IDX_TYPE_ZS_FLOAT_C);
@@ -250,9 +250,9 @@ namespace zetscript{
 
 		zs->bindFunction("ptrToZetScriptPtr",ptrToZetScriptPtr);
 		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_int)>(parseFloat));
-		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));
+		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,std::string *)>(parseFloat));
 		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInteger));
-		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInteger));
+		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,std::string *)>(parseInteger));
 		zs->bindFunction("isNumber",isNumber);
 
 		//-------------------------
@@ -283,13 +283,13 @@ namespace zetscript{
 		bindMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
 		bindMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);
 		bindMemberFunction<ScriptObjectString>("replace",ScriptObjectStringWrap_replace);
-		bindMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(ScriptObjectStringWrap_split));
+		bindMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, std::string *)>(ScriptObjectStringWrap_split));
 		bindMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(ScriptObjectStringWrap_split));
 		bindMemberFunction<ScriptObjectString>("size",ScriptObjectStringWrap_size);
-		bindMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_contains));
+		bindMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, std::string *)>(&ScriptObjectStringWrap_contains));
 		bindMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_contains));
 
-		bindMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_indexOf));
+		bindMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, std::string *)>(&ScriptObjectStringWrap_indexOf));
 		bindMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_indexOf));
 
 		bindMemberFunction<ScriptObjectString>("startsWith",ScriptObjectStringWrap_startsWith);
@@ -324,7 +324,7 @@ namespace zetscript{
 
 	//-----------------------------------------------------------------------------------------
 	// STK REGISTER OBJECT
-	StackElement * ScriptTypeFactory::registerStkConstantStringObject(const zs_string & _key,const zs_string & _value){
+	StackElement * ScriptTypeFactory::registerStkConstantStringObject(const std::string & _key,const std::string & _value){
 
 		StackElement *stk=NULL;
 		ScriptObjectString *so=NULL;
@@ -345,7 +345,7 @@ namespace zetscript{
 
 		stk=new StackElement;
 
-		stk_constants->set(_key.c_str(),(zs_int)stk);
+		stk_constants->at(_key)=stk;
 
 		so=ZS_NEW_OBJECT_STRING(this->zs);
 		// swap values stk_ref/value
@@ -357,11 +357,11 @@ namespace zetscript{
 		return stk;
 	}
 
-	StackElement *ScriptTypeFactory::getStkConstantStringObject(const zs_string & _key){
-		return (StackElement *)stk_constants->get(_key.c_str());
+	StackElement *ScriptTypeFactory::getStkConstantStringObject(const std::string & _key){
+		return stk_constants->get(_key);
 	}
 
-	StackElement * ScriptTypeFactory::registerStkObject(const zs_string & _key, zs_int _value){
+	StackElement * ScriptTypeFactory::registerStkObject(const std::string & _key, zs_int _value){
 
 		StackElement *stk=NULL;
 
@@ -373,13 +373,13 @@ namespace zetscript{
 		stk->value=(zs_int)_value;
 		stk->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
-		this->stk_objects->set(_key.c_str(),(zs_int)stk);
+		this->stk_objects->at(_key)=stk;
 
 		return stk;
 	}
 
-	StackElement *ScriptTypeFactory::getStkObject(const zs_string & _key){
-		return (StackElement *)stk_objects->get(_key.c_str());
+	StackElement *ScriptTypeFactory::getStkObject(const std::string & _key){
+		return (StackElement *)stk_objects->at(_key.c_str());
 	}
 
 	//
@@ -392,7 +392,7 @@ namespace zetscript{
 	// REGISTER CONSTANTS
 	//
 
-	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, int _value, const char *registered_file, short registered_line){
+	void ScriptTypeFactory::bindConstantVariable(const std::string & _key, int _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -405,7 +405,7 @@ namespace zetscript{
 		stk->properties=STK_PROPERTY_ZS_INT|STK_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, bool _value, const char *registered_file, short registered_line){
+	void ScriptTypeFactory::bindConstantVariable(const std::string & _key, bool _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -419,7 +419,7 @@ namespace zetscript{
 		stk->properties=STK_PROPERTY_BOOL|STK_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, zs_float _value, const char *registered_file, short registered_line){
+	void ScriptTypeFactory::bindConstantVariable(const std::string & _key, zs_float _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -432,7 +432,7 @@ namespace zetscript{
 		stk->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_READ_ONLY;
 	}
 
-	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, const zs_string & _value, const char *registered_file, short registered_line){
+	void ScriptTypeFactory::bindConstantVariable(const std::string & _key, const std::string & _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
 			MAIN_SCOPE(this)
 			, registered_file
@@ -444,8 +444,8 @@ namespace zetscript{
 		*stk=*(this->registerStkConstantStringObject(_key,_value));
 	}
 
-	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, const char * _value, const char *registered_file, short registered_line){
-		bindConstantVariable(_key, zs_string(_value), registered_file, registered_line);
+	void ScriptTypeFactory::bindConstantVariable(const std::string & _key, const char * _value, const char *registered_file, short registered_line){
+		bindConstantVariable(_key, std::string(_value), registered_file, registered_line);
 	}
 
 	// REGISTER CONSTANTS
@@ -455,23 +455,23 @@ namespace zetscript{
 		short idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
-			int v=script_types->count-1;
+			int v=script_types->size()-1;
 			v > idx_start; // avoid main type
 			v--
 		){
-			ScriptType * sc = (ScriptType *)script_types->get(v);
+			ScriptType * sc = (ScriptType *)script_types->at(v);
 			delete sc;
 			script_types->pop_back();
 		}
 	}
 
 	void ScriptTypeFactory::saveState(){
-		idx_clear_checkpoint = script_types->count-1;
+		idx_clear_checkpoint = script_types->size()-1;
 	}
 
-	void ScriptTypeFactory::checkScriptTypeName(const zs_string & _str_script_type){
+	void ScriptTypeFactory::checkScriptTypeName(const std::string & _str_script_type){
 
-		if(script_types->count>=MAX_REGISTER_CLASSES){
+		if(script_types->size()>=MAX_REGISTER_CLASSES){
 			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
 		}
 
@@ -479,7 +479,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("Class name empty");
 		}
 
-		if(zs->getScriptFunctionFactory()->getScriptFunctions()->count > 0){
+		if(zs->getScriptFunctionFactory()->getScriptFunctions()->size() > 0){
 			Symbol *main_function_symbol=NULL;
 			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(
 					_str_script_type
@@ -498,8 +498,8 @@ namespace zetscript{
 	}
 
 	ScriptType * ScriptTypeFactory::registerScriptType(
-			const zs_string & _str_script_type
-			 ,const zs_string & _base_class_name
+			const std::string & _str_script_type
+			 ,const std::string & _base_class_name
 			 ,uint16_t _properties
 			 ,const char * _file
 			 , short _line
@@ -511,7 +511,7 @@ namespace zetscript{
 
 		if((index = getIdxScriptType(_str_script_type))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
 			uint16_t properties_register_scope=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
-			index=script_types->count;
+			index=script_types->size();
 
 			// To avoid built-int conflict bool type
 			if(
@@ -542,8 +542,8 @@ namespace zetscript{
 
 				ScriptType *base_type=NULL;
 
-				if(sc->idx_base_types->count > 0){
-					ScriptType *match_class=getScriptType(sc->idx_base_types->items[0]);
+				if(sc->idx_base_types->size() > 0){
+					ScriptType *match_class=getScriptType(sc->idx_base_types->at(0));
 					THROW_RUNTIME_ERROR("Type '%s' already is inherited from '%s'"
 							,_str_script_type.c_str()
 							,match_class->str_script_type);
@@ -562,9 +562,9 @@ namespace zetscript{
 
 
 				// 1. extend all symbols from base type
-				zs_vector<Symbol *> *symbol_functions=base_type->scope_script_type->symbol_functions;
-				for(int i=0; i < symbol_functions->count; i++){
-					Symbol *symbol_src=(Symbol *)symbol_functions->items[i];
+				std::vector<Symbol *> *symbol_functions=base_type->scope_script_type->symbol_functions;
+				for(unsigned i=0; i < symbol_functions->size(); i++){
+					Symbol *symbol_src=(Symbol *)symbol_functions->at(i);
 					Symbol *symbol_dst=scope->registerSymbolFunction(
 							symbol_src->file
 							,symbol_src->line
@@ -579,12 +579,12 @@ namespace zetscript{
 				}
 
 				// set idx starting member
-				sc->idx_starting_this_member_functions=sc->scope_script_type->symbol_functions->count;
+				sc->idx_starting_this_member_functions=sc->scope_script_type->symbol_functions->size();
 
 				// 1. extend all symbols from base type
-				zs_vector<Symbol *> *symbol_variables=base_type->scope_script_type->symbol_variables;
-				for(int i=0; i < symbol_variables->count; i++){
-					Symbol *symbol_src=(Symbol *)symbol_variables->items[i];
+				std::vector<Symbol *> *symbol_variables=base_type->scope_script_type->symbol_variables;
+				for(unsigned i=0; i < symbol_variables->size(); i++){
+					Symbol *symbol_src=(Symbol *)symbol_variables->at(i);
 					Symbol *symbol_dst=scope->registerSymbolVariable(
 							symbol_src->file
 							,symbol_src->line
@@ -610,8 +610,8 @@ namespace zetscript{
 
 						while(*it_setters!=0){
 							MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setters);
-							for(int j=0; j < mp_info.setters->count;j++){
-								mp_dst->metamethod_members.addSetter(*it_setters,(Symbol *)(((StackElement *)mp_info.setters->items[j])->value));
+							for(unsigned j=0; j < mp_info.setters->size();j++){
+								mp_dst->metamethod_members.addSetter(*it_setters,(Symbol *)(((StackElement *)mp_info.setters->at(j))->value));
 
 							}
 							it_setters++;
@@ -623,14 +623,14 @@ namespace zetscript{
 				}
 
 				// set idx starting member
-				sc->idx_starting_this_member_variables=sc->scope_script_type->symbol_variables->count;
+				sc->idx_starting_this_member_variables=sc->scope_script_type->symbol_variables->size();
 
 				// 2. set idx base type...
 				sc->idx_base_types->push_back(base_type->idx_script_type);
 			}
 
 			if(sc->idx_script_type != IDX_TYPE_CLASS_MAIN){ // main type has no field initializers and reserve first function as main function
-				zs_string error="";
+				std::string error="";
 				Symbol *symbol_field_initializer=NULL;
 
 				symbol_field_initializer=sc->registerMemberFunction(
@@ -647,7 +647,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	zs_vector<ScriptType *> * ScriptTypeFactory::getScriptTypes(){
+	std::vector<ScriptType *> * ScriptTypeFactory::getScriptTypes(){
 		return script_types;
 	}
 
@@ -656,13 +656,13 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("ScriptType node out of bound");
 			return NULL;
 		}
-		return (ScriptType *)script_types->get(_idx_script_type);
+		return (ScriptType *)script_types->at(_idx_script_type);
 	}
 
-	ScriptType *ScriptTypeFactory::getScriptType(const zs_string & _type_name){
+	ScriptType *ScriptTypeFactory::getScriptType(const std::string & _type_name){
 
-		for(int i = 0; i < script_types->count; i++){
-			ScriptType * sc=(ScriptType *)script_types->get(i);
+		for(unsigned i = 0; i < script_types->size(); i++){
+			ScriptType * sc=(ScriptType *)script_types->at(i);
 			if(_type_name == sc->str_script_type){//metadata_info.object_info.symbol_info.str_native_type){
 				return sc;
 			}
@@ -670,10 +670,10 @@ namespace zetscript{
 		return NULL;
 	}
 
-	ScriptType *ScriptTypeFactory::getScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr){
+	ScriptType *ScriptTypeFactory::getScriptTypeFromTypeNamePtr(const std::string & _type_name_ptr){
 
-		for(int i = 0; i < script_types->count; i++){
-			ScriptType * sc=(ScriptType *)script_types->get(i);
+		for(unsigned i = 0; i < script_types->size(); i++){
+			ScriptType * sc=(ScriptType *)script_types->at(i);
 			if(_type_name_ptr == sc->str_script_type_ptr){//metadata_info.object_info.symbol_info.str_native_type){
 				return sc;
 			}
@@ -682,10 +682,10 @@ namespace zetscript{
 	}
 
 
-	short ScriptTypeFactory::getIdxScriptType(const zs_string & _type_name){
+	short ScriptTypeFactory::getIdxScriptType(const std::string & _type_name){
 
-		for(int i = 0; i < script_types->count; i++){
-			ScriptType * sc=(ScriptType *)script_types->get(i);
+		for(unsigned i = 0; i < script_types->size(); i++){
+			ScriptType * sc=(ScriptType *)script_types->at(i);
 			if(_type_name == sc->str_script_type){
 				return i;
 			}
@@ -693,10 +693,10 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	short ScriptTypeFactory::getIdxScriptTypeFromTypeNamePtr(const zs_string & _type_name_ptr){
+	short ScriptTypeFactory::getIdxScriptTypeFromTypeNamePtr(const std::string & _type_name_ptr){
 		// ok check str_native_type
-		for(int i = 0; i < script_types->count; i++){
-			ScriptType * sc=(ScriptType *)script_types->get(i);
+		for(unsigned i = 0; i < script_types->size(); i++){
+			ScriptType * sc=(ScriptType *)script_types->at(i);
 			if(sc->str_script_type_ptr == _type_name_ptr){
 				return i;
 			}
@@ -704,11 +704,11 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	bool ScriptTypeFactory::isScriptTypeRegistered(const zs_string & _type_name){
+	bool ScriptTypeFactory::isScriptTypeRegistered(const std::string & _type_name){
 		return getIdxScriptType(_type_name) != ZS_IDX_UNDEFINED;
 	}
 
-	ScriptObject *		ScriptTypeFactory::instanceScriptObjectByTypeName(const zs_string & _type_name){
+	ScriptObject *		ScriptTypeFactory::instanceScriptObjectByTypeName(const std::string & _type_name){
 		 // 0. Search type info ...
 		 ScriptType * rc = getScriptType(_type_name);
 
@@ -757,7 +757,7 @@ namespace zetscript{
 
 	const char * ScriptTypeFactory::getScriptTypeName(short _idx_script_type){
 		if(_idx_script_type != ZS_IDX_UNDEFINED){
-			ScriptType *sc=(ScriptType *)script_types->get(_idx_script_type);
+			ScriptType *sc=(ScriptType *)script_types->at(_idx_script_type);
 			return sc->str_script_type.c_str();
 		}
 		 return "type_unknow";
@@ -769,10 +769,10 @@ namespace zetscript{
 			return true;
 		}
 
-		ScriptType *sc=(ScriptType *)script_types->get(_idx_script_type);
+		ScriptType *sc=(ScriptType *)script_types->at(_idx_script_type);
 
-		for(int i=0; i < sc->idx_base_types->count; i++){
-			if(scriptTypeInheritsFrom(sc->idx_base_types->items[i],_idx_base_type)){
+		for(unsigned i=0; i < sc->idx_base_types->size(); i++){
+			if(scriptTypeInheritsFrom(sc->idx_base_types->at(i),_idx_base_type)){
 				return true;
 			}
 		}
@@ -788,7 +788,7 @@ namespace zetscript{
 				|| idx_script_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT
 				|| idx_script_type>=IDX_TYPE_MAX
 		){
-			return ((ScriptType *)script_types->get(idx_script_type))->isNonInstantiable()==false;
+			return ((ScriptType *)script_types->at(idx_script_type))->isNonInstantiable()==false;
 		}
 
 		return false;
@@ -796,9 +796,9 @@ namespace zetscript{
 
 	ScriptTypeFactory::~ScriptTypeFactory(){
 		// we have to destroy all allocated constructor/destructor ...
-		for(int i = 0; i < script_types->count; i++) {
+		for(unsigned i = 0; i < script_types->size(); i++) {
 
-			delete (ScriptType *)script_types->get(i);
+			delete (ScriptType *)script_types->at(i);
 		}
 		script_types->clear();
 
@@ -806,8 +806,8 @@ namespace zetscript{
 
 		if(stk_constants != NULL){
 
-			for(auto it=stk_constants->begin(); !it.end();it.next()){
-				StackElement *stk=(StackElement *)(it.value);
+			for(auto it=stk_constants->begin(); it!=stk_constants->end();it++){
+				StackElement *stk=it->second;
 				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
 					delete (ScriptObjectString *)stk->value;
 				}
@@ -820,8 +820,8 @@ namespace zetscript{
 
 		if(stk_objects != NULL){
 
-			for(auto it=stk_objects->begin(); !it.end();it.next()){
-				StackElement *stk=(StackElement *)(it.value);
+			for(auto it=stk_objects->begin(); it!=stk_objects->end();it++){
+				StackElement *stk=it->second;
 				delete (ScriptObject *)stk->value;
 				delete stk;
 			}
