@@ -210,7 +210,7 @@
 				VM_PUSH_STK_BOOLEAN(false);\
 			}\
 		}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
-			VM_PUSH_STK_BOOLEAN(vm_string_compare(vm,stk_result_op1,stk_result_op2,__BYTE_CODE_METAMETHOD_OPERATION__));\
+			 VM_PUSH_STK_BOOLEAN(vm_string_compare(vm,stk_result_op1,stk_result_op2,__BYTE_CODE_METAMETHOD_OPERATION__));\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_UNDEFINED || stk_result_op2->properties==STK_PROPERTY_UNDEFINED)\
 				&& (__BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_EQU || __BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
 				){\

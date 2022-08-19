@@ -15,6 +15,15 @@ std::string std_random_key(){
 	return std::string(k);
 }
 
+zetscript::zs_string zs_std_random_key(){
+	char k[10]={0};
+	for(int i=0; i < 10; i++){
+		k[i]=49+rand()%10;
+	}
+
+	return zetscript::zs_string(k);
+}
+
 void test_std_map(){
 	std::map<std::string,std::string> std_map;
 
@@ -23,7 +32,7 @@ void test_std_map(){
 	printf("Inserting elements...");
 	int start=zetscript::zs_system::clock();
 
-	for(int i=0; i < 1000000; i++){
+	for(int i=0; i < 100000; i++){
 		std_map[std_random_key()]="a";
 	}
 
@@ -45,7 +54,7 @@ void test_zs_map(){
 	printf("Inserting elements...");
 	int start=zetscript::zs_system::clock();
 
-	for(int i=0; i < 1000000; i++){
+	for(int i=0; i < 100000; i++){
 		map.set(std_random_key().c_str(),(zetscript::zs_int)(new std::string("a")));
 	}
 
@@ -71,14 +80,18 @@ void test_std_string(){
 	printf("Append elements...");
 	int start=zetscript::zs_system::clock();
 
-	for(int i=0; i < 1000000; i++){
-		str.append("abc");
+	for(int i=0; i < 100000; i++){
+		str.append(std_random_key());
+		if((i%100000)==0){
+			printf("%i\n",i);
+		}
 	}
 
 	printf("done! %i chars\n",str.length());
 
 	printf("Elapsed time %i\n",zetscript::zs_system::clock()-start);
 	printf("=======================================\n");
+	//zetscript::zs_io::read_char();
 }
 void test_zs_string(){
 	zetscript::zs_string str;
@@ -89,14 +102,18 @@ void test_zs_string(){
 	printf("Append elements...");
 	int start=zetscript::zs_system::clock();
 
-	for(int i=0; i < 1000000; i++){
-		str.append("abc");
+	for(int i=0; i < 100000; i++){
+		str.append(zs_std_random_key());
+		if((i%100000)==0){
+			printf("%i\n",i);
+		}
 	}
 
-	printf("done!\n");
+	//printf("done!\n");
 
 	printf("Elapsed time %i\n",zetscript::zs_system::clock()-start);
 	printf("=======================================\n");
+	zetscript::zs_io::read_char();
 }
 
 void test_map(){
@@ -110,7 +127,7 @@ void test_string(){
 }
 
 int main(int argc, char *argv[]){
-	//test_map();
+	test_map();
 	test_string();
 
 }
