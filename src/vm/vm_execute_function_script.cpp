@@ -38,7 +38,8 @@ namespace zetscript{
 			StackElement 		  	* _stk_local_var
 	    ){
 		// This is the main script function body, and due there's a lot of code, is important to reuse as many variables as possible
-		// and not abuse of temporal variables returning from classes to keep HEAP memory region low to avoid StackOverflow in recursion
+		// and not abuse of temporal variables (i.e return values from objexts), keeping HEAP memory region low to avoid StackOverflow
+		// in recursion
 		//
 		// generic vars for management
 		VirtualMachineData *data = (VirtualMachineData*)vm->data;
