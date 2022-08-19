@@ -277,6 +277,7 @@ namespace zetscript{
 
 	bool vm_byte_code_push_vector_item(
 		VirtualMachine *vm
+		,ScriptObject *this_object
 		,ScriptFunction *calling_function
 		,Instruction *instruction
 		,StackElement *_stk_local_var
@@ -321,6 +322,7 @@ lbl_exit_function:
 
 	bool vm_byte_code_push_object_item(
 		VirtualMachine *vm
+		,ScriptObject *this_object
 		,ScriptFunction *calling_function
 		,Instruction *instruction
 		,StackElement *_stk_local_var
@@ -330,7 +332,9 @@ lbl_exit_function:
 		StackElement 		*stk_result_op2=NULL;
 		ScriptObject 		*so_aux=NULL;
 		StackElement 		*stk_src=NULL,
-							*stk_dst=NULL;
+							*stk_dst=NULL,
+							*stk_var=NULL;
+
 		StackElement		stk_aux1;
 		void				*stk_src_ref_value=NULL,
 							*stk_dst_ref_value=NULL;
@@ -363,6 +367,118 @@ lbl_exit_function:
 		return true;
 
 lbl_exit_function:
+		return false;
+
+	}
+
+	bool vm_load_vector_item(
+			VirtualMachine *vm
+			,ScriptObject *this_object
+			,ScriptFunction *calling_function
+			,Instruction *instruction
+			,StackElement *_stk_local_var
+
+	){
+		VirtualMachineData 	*data=(VirtualMachineData *)vm->data;
+		StackElement 		*stk_result_op1=NULL;
+		StackElement 		*stk_result_op2=NULL;
+		ScriptObject 		*so_aux=NULL;
+		int					index_aux1=0;
+		StackElement		*stk_var=NULL;
+		const char 			*str_symbol_aux1=NULL;
+		StackElement		stk_aux1;
+
+		VM_POP_STK_TWO;
+		so_aux=NULL;
+		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
+			stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->value)->getStackElementPtr();
+		}
+		stk_var=NULL;
+		// determine object ...
+		if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			so_aux=(ScriptObject *)stk_result_op1->value;
+			if(		   so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR
+					|| so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT
+					|| so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS
+			){
+
+				if(so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+					index_aux1=0;
+
+					if(STK_VALUE_IS_ZS_INT(stk_result_op2)){ \
+						index_aux1=stk_result_op2->value;
+					}else if(STK_VALUE_IS_ZS_FLOAT(stk_result_op2)){ \
+						index_aux1=*((zs_float*)&stk_result_op2->value);
+					}else{
+						VM_STOP_EXECUTEF("Expected index value for vector access");
+					}
+
+					if(index_aux1 >= (int)((ScriptObjectVector *)so_aux)->length() || index_aux1 < 0){
+						VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
+					}
+
+					if((stk_var =((ScriptObjectVector *)so_aux)->getUserElementAt(index_aux1))==NULL){
+						goto lbl_exit_function;
+					} \
+				}
+				else{
+					if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==0){ \
+						VM_STOP_EXECUTEF("Expected string for object access");
+					}
+					// Save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
+					stk_var = ((ScriptObjectObject *)so_aux)->getProperty(
+							stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2)
+					);
+					if(stk_var == NULL){
+						if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
+							if((stk_var =((ScriptObjectObject *)so_aux)->addProperty(
+									stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2), data->vm_error_str)
+							)==NULL){
+								VM_STOP_EXECUTEF(data->vm_error_str.c_str());
+							}
+						}
+					}
+				}
+				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
+					*data->stk_vm_current++=*stk_var;
+				}else{
+					if(instruction->properties & INSTRUCTION_PROPERTY_OBJ_ITEM_TO_STORE){
+						data->stk_vm_current->value=(zs_int)(new ContainerSlotStore(so_aux,(zs_int)str_symbol_aux1,stk_var));
+						data->stk_vm_current->properties=STK_PROPERTY_CONTAINER_SLOT_STORE;
+						data->stk_vm_current++;
+					}else{
+						VM_PUSH_STK_PTR(stk_var);
+					}
+				}
+				goto lbl_exit_ok;
+			}else if(so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_STRING){
+				if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
+					VM_STOP_EXECUTEF("Expected integer index for String access");
+				}
+
+				zs_char *ptr_char=(zs_char *)&((std::string *)((ScriptObjectString *)so_aux)->value)->c_str()[stk_result_op2->value];
+				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
+					data->stk_vm_current->value=((zs_int)(*ptr_char));
+					data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;
+				}else{ // push stk
+					data->stk_vm_current->value=(zs_int)ptr_char;
+					data->stk_vm_current->properties=STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR;
+				}
+				data->stk_vm_current++;
+				goto lbl_exit_ok;
+			}else{
+				VM_STOP_EXECUTEF("Expected String,Vector or Object for access '[]' operation"); \
+			}
+		}else{
+			VM_STOP_EXECUTE("Expected object for access '[]' operation but it was type '%s'",stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)); \
+		}
+
+		lbl_exit_ok:
+
+		return true;
+
+		lbl_exit_function:
+
 		return false;
 
 	}

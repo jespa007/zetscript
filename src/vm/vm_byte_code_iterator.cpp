@@ -5,18 +5,23 @@
 namespace zetscript{
 	bool vm_iterator_init(
 			VirtualMachine 		*	vm
-			 ,ScriptFunction 	*	calling_function
+			,ScriptObject 		*	this_object
+			,ScriptFunction 	*	calling_function
 			,Instruction 		*	instruction
-			,StackElement *_stk_local_var
+			,StackElement 		*	_stk_local_var
 	){
 
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		VirtualMachineData *	data=(VirtualMachineData *)vm->data;
+		StackElement 			stk_aux1;
+
 		// stk_op1 expects to be stk
 		//ScriptFunction *sf_iter=NULL;
 		Symbol *symbol_iter;
 
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
+		ScriptObject *obj=NULL;
+		ScriptType *sc=NULL;
 
 		 VM_POP_STK_TWO;
 
@@ -39,8 +44,8 @@ namespace zetscript{
 		}
 
 		stk_result_op2 = (StackElement *)(stk_result_op2->value);
-		ScriptObject *obj=(ScriptObject *)stk_result_op1->value;
-		ScriptType *sc=obj->getScriptType();
+		obj=(ScriptObject *)stk_result_op1->value;
+		sc=obj->getScriptType();
 
 		symbol_iter=sc->getSymbolMemberFunction("iter");
 
@@ -116,15 +121,17 @@ namespace zetscript{
 	}
 
 	bool vm_perform_in_operator(
-			VirtualMachine *vm
-			 ,ScriptFunction *calling_function
-			,Instruction *instruction
-			,StackElement *_stk_local_var
+			VirtualMachine 	*vm
+			,ScriptObject 	*this_object
+			,ScriptFunction *calling_function
+			,Instruction 	*instruction
+			,StackElement 	*_stk_local_var
 	){
 		std::string error="";
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		StackElement *stk_result_op1=NULL;
 		StackElement *stk_result_op2=NULL;
+		StackElement stk_aux1;
 
 		 VM_POP_STK_TWO;
 
@@ -199,6 +206,9 @@ namespace zetscript{
 		}
 
 		return true;
+
+lbl_exit_function:
+		return false;
 	}
 
 }

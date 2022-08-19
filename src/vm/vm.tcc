@@ -145,6 +145,7 @@ namespace zetscript{
 		VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR=0
 		,VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED
 		,VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED
+		,VM_MAIN_ERROR_CANNOT_FIND_SYMBOL
 	}VM_MainError;
 
 	typedef struct{
@@ -287,9 +288,8 @@ namespace zetscript{
 		,ScriptFunction *calling_function
 		,Instruction *instruction
 		,VM_MainError _error
-		,StackElement *_stk
-		,ByteCodeMetamethod _byte_code_metamethod
-
+		,StackElement *_stk=NULL
+		,ByteCodeMetamethod _byte_code_metamethod=BYTE_CODE_METAMETHOD_INVALID
 	);
 
 	void vm_push_stk_boolean_equal_strings(
