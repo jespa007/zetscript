@@ -1,0 +1,65 @@
+
+namespace zetscript{
+	bool vm_byte_code_new_object_by_value(
+			VirtualMachine *vm
+			,ScriptFunction *calling_function
+			,Instruction *instruction
+	){
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		StackElement *stk_result_op1=NULL;
+		ScriptType *sc_aux1=NULL;
+		Symbol *symbol_aux=NULL;
+		ScriptObject *so_aux=NULL;
+		ScriptObjectClass *so_class_aux1=NULL;
+
+		VM_POP_STK_ONE;
+		 if(STK_VALUE_IS_TYPE(stk_result_op1)){
+			sc_aux1=data->script_type_factory->getScriptType(stk_result_op1->value);
+			if(!data->script_type_factory->isScriptTypeInstanceable(stk_result_op1->value)){
+				VM_STOP_EXECUTE("'%s' type is not object instanceable",sc_aux1->getTypeName());
+			}
+
+			 symbol_aux=NULL;
+
+			 so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data->script_type_factory,stk_result_op1->value);
+
+			if(!vm_create_shared_script_object(vm,so_aux)){
+				goto lbl_exit_function;
+			}
+
+			data->stk_vm_current->value=(zs_int)so_aux;
+			data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+			data->stk_vm_current++;
+
+			if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
+
+				so_class_aux1=(ScriptObjectClass *)so_aux;
+
+				so_class_aux1->info_function_new=calling_function;
+				so_class_aux1->instruction_new=instruction;
+
+				// check for constructor
+				symbol_aux=sc_aux1->getSymbolMemberFunction(CONSTRUCTOR_FUNCTION_NAME);
+
+				 if(symbol_aux != NULL){
+					 data->stk_vm_current->value=(zs_int)symbol_aux;
+					 data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
+					 data->stk_vm_current++;
+				 }
+			}
+
+			if(symbol_aux == NULL){
+				VM_PUSH_STK_UNDEFINED;
+			}
+
+		 }else{
+			VM_STOP_EXECUTE("var '%s' expected as 'type' but it was '%s'"
+					,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+					, stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
+			);
+		 }
+		 return	true;
+		 lbl_exit_function:
+		 return false;
+	}
+}

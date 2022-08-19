@@ -131,8 +131,8 @@ namespace zetscript{
 			}
 
 			// reverse result
-			int reverse_len=result.length();
-			for(int i=0; i < (reverse_len >>1); i++){
+			size_t reverse_len=result.length();
+			for(unsigned i=0; i < (reverse_len >>1); i++){
 				// do swap
 				char aux1=result[reverse_len -i-1];
 				result[reverse_len -i-1]=result[i];
@@ -265,7 +265,7 @@ namespace zetscript{
 			while((current_pos = strstr((char*)str.c_str()+idx_current_pos,str_old.c_str())) != NULL) {
 				idx_current_pos=current_pos-str.c_str();
 				str.replace(idx_current_pos, str_old.length(), str_new);
-				idx_current_pos += str_new.length(); // Handles case where 'str_new' is a substring of 'str_old'
+				idx_current_pos += (int)str_new.length(); // Handles case where 'str_new' is a substring of 'str_old'
 			}
 
 			return str;
@@ -442,7 +442,7 @@ namespace zetscript{
 			return false;
 		}
 
-		int index_of(std::string& text, std::string& pattern)
+		size_t index_of(std::string& text, std::string& pattern)
 		{
 			// where appears the pattern in the text?
 			size_t loc = text.find(pattern, 0);
@@ -452,7 +452,7 @@ namespace zetscript{
 			}
 			else
 			{
-				return -1;
+				return (size_t)-1;
 			}
 		}
 

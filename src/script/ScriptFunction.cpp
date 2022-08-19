@@ -11,8 +11,8 @@
 :"Local"\
 
 #define GET_ILOAD_R_STR(properties,value) \
-	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->at(value))->name\
-	:((Symbol *)sfo->local_variables->at(value))->name\
+	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->at(value))->name.c_str()\
+	:((Symbol *)sfo->local_variables->at(value))->name.c_str()\
 
 namespace zetscript{
 
@@ -104,9 +104,9 @@ namespace zetscript{
 		printf("______________________________________________________________\n\n");
 		printf(" Function: '%s%s'                                             \n",class_str.c_str(),symbol_ref.c_str());
 		printf(" Stack code: %i                                       		  \n",sfo->min_code_stack_needed);
-		printf(" Stack local vars: %i                                         \n",sfo->local_variables->size());
-		printf(" Total stack required: %i                                     \n\n",sfo->local_variables->size()+sfo->min_code_stack_needed);
-		printf(" Scopes: %i                                                   \n",sfo->scope_script_function->scopes->size());
+		printf(" Stack local vars: %i                                         \n",(int)sfo->local_variables->size());
+		printf(" Total stack required: %i                                     \n\n",(int)sfo->local_variables->size()+sfo->min_code_stack_needed);
+		printf(" Scopes: %i                                                   \n",(int)sfo->scope_script_function->scopes->size());
 
 		printf(" NUM |RS|AS|               INSTRUCTION                        \n");
 		printf("-----+--+--+--------------------------------------------------\n");
@@ -491,7 +491,7 @@ namespace zetscript{
 					THROW_SCRIPT_ERROR_FILE_LINE(NULL,-1,"Function '%s' already binded"
 						,function_member->scope_script_function!=NULL?
 								zs_strutils::format("%s::%s"
-										,function_member->scope_script_function->script_type_owner->str_script_type
+										,function_member->scope_script_function->script_type_owner->str_script_type.c_str()
 										,_function_name.c_str()).c_str()
 								:_function_name.c_str()
 
@@ -517,7 +517,7 @@ namespace zetscript{
 		if(info!=NULL && info->ptr_str_symbol_name!=NULL){
 			return info->ptr_str_symbol_name->c_str();
 		}
-		return NULL;
+		return "";
 	}
 
 	const char *ScriptFunction::getInstructionSourceFile(Instruction * ins){
@@ -735,7 +735,7 @@ namespace zetscript{
 		scope_script_function->removeChildrenBlockTypes();
 
 		// count number vars at the top most
-		int n_var_scope=scope_script_function->countVariables(true);
+		size_t n_var_scope=scope_script_function->countVariables(true);
 
 		// remove last symbols
 		local_variables->resize(n_var_scope);

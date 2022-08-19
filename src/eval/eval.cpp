@@ -420,8 +420,8 @@ namespace zetscript{
 			return NULL;
 		}
 
-		int n_var_fun=sf->local_variables->size();
-		int n_var_scope=sf->scope_script_function->countVariables(true);
+		size_t n_var_fun=sf->local_variables->size();
+		size_t n_var_scope=sf->scope_script_function->countVariables(true);
 
 		if(n_var_fun != n_var_scope){
 
@@ -464,9 +464,9 @@ namespace zetscript{
 		sf->instruction_source_infos.clear();
 
 		// get total size op + 1 ends with 0 (INVALID BYTE_CODE)
-		int count =eval_data->current_function->eval_instructions.size();
-		int len=count + 1; // +1 for end instruction
-		int total_size_bytes = (len) * sizeof(Instruction);
+		size_t count =eval_data->current_function->eval_instructions.size();
+		size_t len=count + 1; // +1 for end instruction
+		size_t total_size_bytes = (len) * sizeof(Instruction);
 		sf->instructions_len=len;
 		sf->instructions = (PtrInstruction)ZS_MALLOC(total_size_bytes);
 		std::vector<zs_int> order_local_vars;
@@ -476,7 +476,7 @@ namespace zetscript{
 		int ok=FALSE;
 		short *lookup_sorted_table_local_variables=eval_create_lookup_sorted_table_local_variables(eval_data,&order_local_vars);
 
-		for(int i=0; i < count; i++){
+		for(size_t i=0; i < count; i++){
 
 			EvalInstruction *eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions[i];
 
@@ -516,7 +516,7 @@ namespace zetscript{
 							,eval_instruction->instruction_source_info.line
 							,lbl_exit_pop_function
 							,"Cannot find parent constructor of '%s'"
-							,sc_sf->str_script_type
+							,sc_sf->str_script_type.c_str()
 						);
 					}else{
 						EVAL_ERROR_FILE_LINE_GOTO_NO_AUX(
@@ -530,7 +530,7 @@ namespace zetscript{
 					}
 				}
 				eval_instruction->vm_instruction.value_op2=(zs_int)symbol_sf_foundf;//->idx_position;
-				eval_instruction->instruction_source_info.ptr_str_symbol_name =get_mapped_name(
+				eval_instruction->instruction_source_info.ptr_str_symbol_name =eval_get_mapped_name(
 						eval_data
 						,std::string(
 								symbol_sf_foundf->scope->script_type_owner->str_script_type)+"::"+symbol_sf_foundf->name);

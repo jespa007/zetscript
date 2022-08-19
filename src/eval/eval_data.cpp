@@ -544,7 +544,7 @@ namespace zetscript{
 		return Directive::DIRECTIVE_UNKNOWN;
 	}
 
-	std::string * get_mapped_name(EvalData *eval_data, const std::string & _mapped_name){
+	std::string * eval_get_mapped_name(EvalData *eval_data, const std::string & _mapped_name){
 		ZS_UNUSUED_PARAM(eval_data);
 		std::string *key=NULL;
 		if(eval_data->zs->getCompiledSymbolName()->count(_mapped_name)!=0){
@@ -552,7 +552,7 @@ namespace zetscript{
 		}else{
 
 			key=new std::string(_mapped_name);
-			eval_data->zs->getCompiledSymbolName()->at(_mapped_name)=key;
+			(*eval_data->zs->getCompiledSymbolName())[_mapped_name]=key;
 
 		}
 		return key;

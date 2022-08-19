@@ -1438,7 +1438,7 @@ namespace zetscript{
 				return NULL;
 			}
 
-			for(int i = 0; i < params.size(); i++){
+			for(unsigned i = 0; i < params.size(); i++){
 				char *param=(char *)params.at(i);
 				if(script_type_factory->getIdxScriptTypeFromTypeNamePtr(param)==-1){
 					THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"
@@ -1483,12 +1483,12 @@ namespace zetscript{
 			size_t count=access_var.size();
 
 			// 1. some variable in main function ...
-			if(count>1){
-				for(int i=0; i < access_var.size()-1; i++){
-					const char *symbol_to_find=access_var.at(i).c_str();
+			if(access_var.size()>1){
+				for(unsigned i=0; i < access_var.size()-1; i++){
+					std::string symbol_to_find=access_var.at(i);
 					if(i==0){ // get variable through main_class.main_function (global element)
 						std::vector<Symbol *> *list_variables=main_function->scope_script_function->symbol_variables;
-						for(int j = 0; j < list_variables->size() && calling_obj==NULL; j++){
+						for(unsigned j = 0; j < list_variables->size() && calling_obj==NULL; j++){
 							Symbol * registered_symbol=(Symbol *)list_variables->at(j);
 							if(registered_symbol->name==symbol_to_find
 							&& registered_symbol->scope == MAIN_SCOPE(this)){
@@ -1571,7 +1571,7 @@ namespace zetscript{
 				std::string symbol_to_find=access_var[0];
 				std::vector<Symbol *> *list_functions=main_function->scope_script_function->symbol_functions;
 
-				for(int i = 0; i < list_functions->size() && fun_obj==NULL; i++){
+				for(unsigned i = 0; i < list_functions->size() && fun_obj==NULL; i++){
 					Symbol *symbol=(Symbol *)list_functions->at(i);
 					ScriptFunction *aux_fun_obj=(ScriptFunction *)symbol->ref_ptr;
 					if(	aux_fun_obj->name_script_function == symbol_to_find){

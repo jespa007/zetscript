@@ -95,7 +95,7 @@ namespace zetscript{
 		return numInnerScopesRecursive(this,1);
 	}
 
-	int Scope::countVariables(bool _recursive){
+	size_t Scope::countVariables(bool _recursive){
 		if(_recursive){
 			return Scope::countVariablesRecursive(this,this->idx_script_function);
 		}
@@ -104,8 +104,8 @@ namespace zetscript{
 
 	}
 
-	int Scope::countVariablesRecursive(Scope *_sc, int idx_script_function_reference){
-		int n_total=0;
+	size_t Scope::countVariablesRecursive(Scope *_sc, int idx_script_function_reference){
+		size_t n_total=0;
 		if(_sc->idx_script_function==idx_script_function_reference){ // only count variables in the scope of the function
 			n_total=_sc->symbol_variables->size();
 
@@ -164,7 +164,7 @@ namespace zetscript{
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
 		Symbol *symbol 		= new Symbol(_symbol_name);
-		symbol->idx_position=symbol_types->size();
+		symbol->idx_position=(int)symbol_types->size();
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
@@ -181,7 +181,7 @@ namespace zetscript{
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
 		Symbol *symbol 		= new Symbol(_symbol_name);
-		symbol->idx_position=symbol_variables->size();
+		symbol->idx_position=(int)symbol_variables->size();
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;
@@ -197,7 +197,7 @@ namespace zetscript{
 		}
 
 		Symbol *symbol 		= new Symbol(_symbol_name);
-		symbol->idx_position=symbol_functions->size();
+		symbol->idx_position=(int)symbol_functions->size();
 		symbol->file	 	= _file;
 		symbol->line 	 	= _line;
 		symbol->scope		=  this;

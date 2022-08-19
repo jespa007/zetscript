@@ -59,14 +59,14 @@ namespace zetscript{
 		return &stk_user_elements;
 	}
 
-	int ScriptObjectVector::length(){
+	size_t ScriptObjectVector::length(){
 
 		return this->stk_user_elements.size();
 	}
 
 
-	StackElement * ScriptObjectVector::getUserElementAt(int _idx){
-		if(_idx >= (int)stk_user_elements.size()){
+	StackElement * ScriptObjectVector::getUserElementAt(size_t _idx){
+		if(_idx >= stk_user_elements.size()){
 			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",_idx);
 			return NULL;
 		}
@@ -74,11 +74,11 @@ namespace zetscript{
 		return (StackElement *)stk_user_elements[_idx];
 	}
 
-	bool ScriptObjectVector::eraseUserElementAt( int idx){//onst std::string & varname){
+	bool ScriptObjectVector::eraseUserElementAt( size_t idx){//onst std::string & varname){
 
 		StackElement *si;
 
-		if(idx >= (int)stk_user_elements.size()){
+		if(idx >= stk_user_elements.size()){
 			VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_user_elements.size());
 		}
 
@@ -115,7 +115,7 @@ namespace zetscript{
 		StackElement stk_element=*((StackElement *)stk_user_elements[stk_user_elements.size()-1]);
 
 		// erase
-		if(!eraseUserElementAt(stk_user_elements.size()-1)){
+		if(!eraseUserElementAt((int)stk_user_elements.size()-1)){
 			return;
 		}
 

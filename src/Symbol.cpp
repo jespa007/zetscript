@@ -11,7 +11,10 @@ namespace zetscript{
 	StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol, void *ptr_variable) {
 
 		if ((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0) {
-			THROW_RUNTIME_ERROR("Variable %s is not c referenced as C symbol", symbol->name);
+			THROW_RUNTIME_ERROR(
+				"Variable %s is not c referenced as C symbol"
+				, symbol->name.c_str()
+			);
 		}
 
 		if (k_str_zs_int_type_ptr == symbol->str_native_type) {
@@ -77,7 +80,7 @@ namespace zetscript{
 		if (info_registered_class == NULL) {
 			THROW_RUNTIME_ERROR(
 				"Native symbol '%s' has type '%s' that is not registered"
-				, symbol->name
+				, symbol->name.c_str()
 				, symbol->str_native_type.c_str()
 			);
 		}

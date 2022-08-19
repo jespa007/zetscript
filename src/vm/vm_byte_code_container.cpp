@@ -4,15 +4,14 @@
  */
 namespace zetscript{
 
-
 	bool vm_load_field(
 		VirtualMachine *vm
 		,ScriptObject *this_object
 		,ScriptFunction *calling_function
 		,Instruction **instruction_it
 	){
-		Instruction *instruction=(*instruction_it)-1;
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		Instruction *instruction=(*instruction_it)-1;
 		ScriptObject *so_aux=NULL;
 		StackElement *stk_result_op1=NULL;
 		const char *str_symbol_aux1=NULL;
@@ -30,7 +29,7 @@ namespace zetscript{
 				goto find_element_object;
 		}
 
-load_next_element_object:
+	load_next_element_object:
 		instruction=(*instruction_it)-1;
 
 		if(
@@ -70,7 +69,7 @@ load_next_element_object:
 			VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(calling_function,(instruction-1)));
 		}
 
-find_element_object:
+	find_element_object:
 
 		str_symbol_aux1=(char *)SFI_GET_SYMBOL_NAME(calling_function,instruction);
 
@@ -241,11 +240,11 @@ find_element_object:
 	}
 
 	StackElement *vm_load_this_element(
-		VirtualMachine			* vm
-		,ScriptObject			* this_object
-		,ScriptFunction 		* calling_function
-		,Instruction			*instruction
-		,short _offset
+		VirtualMachine	 		*	vm
+		,ScriptObject			* 	this_object
+		,ScriptFunction 		* 	calling_function
+		,Instruction			*	instruction
+		,short 						_offset
 	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		StackMemberProperty *stk_mp_aux=NULL;
@@ -274,6 +273,98 @@ find_element_object:
 		return _stk_result;
 	lbl_exit_function:
 		return NULL;
+	}
+
+	bool vm_byte_code_push_vector_item(
+		VirtualMachine *vm
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+		,StackElement *_stk_local_var
+	){
+
+		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		StackElement *stk_result_op1=NULL;
+		ScriptObject *so_aux=NULL;
+		StackElement *stk_src=NULL,
+					*stk_dst=NULL;
+		StackElement		stk_aux1;
+		void		*stk_src_ref_value=NULL,
+					*stk_dst_ref_value=NULL;
+		uint16_t	stk_src_properties=0;
+
+
+		VM_POP_STK_ONE; // only pops the value, the last is the vector variable itself
+
+		if((data->stk_vm_current-1)->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			so_aux = (ScriptObject *)(data->stk_vm_current-1)->value;
+			if(so_aux->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
+				// op1 is now the src value ...
+				stk_src=stk_result_op1;
+				if(stk_src->properties & STK_PROPERTY_PTR_STK){
+					stk_src=(StackElement *)stk_result_op1->value;
+				}
+
+				stk_dst=((ScriptObjectVector *)so_aux)->pushNewUserSlot();
+			}
+		}
+
+		if(so_aux==NULL){
+			VM_STOP_EXECUTEF("Expected vector object");
+		}
+		VM_SET_CONTAINER_ELEMENT;
+
+		return true;
+
+lbl_exit_function:
+		return false;
+	}
+
+	bool vm_byte_code_push_object_item(
+		VirtualMachine *vm
+		,ScriptFunction *calling_function
+		,Instruction *instruction
+		,StackElement *_stk_local_var
+	){
+		VirtualMachineData 	*data=(VirtualMachineData *)vm->data;
+		StackElement 		*stk_result_op1=NULL;
+		StackElement 		*stk_result_op2=NULL;
+		ScriptObject 		*so_aux=NULL;
+		StackElement 		*stk_src=NULL,
+							*stk_dst=NULL;
+		StackElement		stk_aux1;
+		void				*stk_src_ref_value=NULL,
+							*stk_dst_ref_value=NULL;
+		uint16_t			stk_src_properties=0;
+
+		VM_POP_STK_TWO; // first must be a string that describes variable name and the other the variable itself ...
+
+		stk_var=(data->stk_vm_current-1);
+		if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_var) == 0){
+			VM_STOP_EXECUTE("Expected object but is type '%s'",stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_var));
+		}
+
+		so_aux = (ScriptObject *)stk_var->value;
+
+		if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
+			VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type '%s'"
+					,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
+			);
+		}
+
+		//const char *str = (const char *)stk_result_op1->value;
+		stk_src=stk_result_op2;
+		if((stk_var =so_aux->addProperty(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op1),data->vm_error_str))==NULL){
+			VM_STOP_EXECUTEF(data->vm_error_str.c_str());
+		}
+
+		stk_dst=stk_var;
+		VM_SET_CONTAINER_ELEMENT;
+
+		return true;
+
+lbl_exit_function:
+		return false;
+
 	}
 
 }

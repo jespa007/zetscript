@@ -5,7 +5,7 @@
 namespace zetscript{
 
 	void vm_inner_call(
-			VirtualMachine 	*vm
+			VirtualMachine *vm
 			,ScriptFunction	* calling_function
 			,Instruction	* instruction
 			,ScriptObject 	*script_object
@@ -74,12 +74,12 @@ namespace zetscript{
 		StackElement	*sf_call_stk_function_ref=NULL;
 		ScriptFunction 	*sf_call_script_function = NULL;
 
-		int		 	 	sf_call_n_args=0; // number arguments will pass to this function
+		unsigned char 	sf_call_n_args=0; // number arguments will pass to this function
 		StackElement 	*sf_call_stk_start_arg_call=NULL;
 		ScriptObject 	*sf_call_calling_object = NULL;
 		bool			 sf_call_is_constructor=false;
 		bool			sf_call_ignore_call=false;
-		int 		 	sf_call_n_local_symbols=0;
+		size_t 		 	sf_call_n_local_symbols=0;
 		bool 			 sf_call_is_member_function=false;
 		StackElement 	*sf_call_stk_return=NULL;
 		int 			sf_call_n_returned_arguments_from_function=0;
@@ -125,7 +125,7 @@ namespace zetscript{
 				 if(symbol_aux==NULL){ // it calls overrided function (top-most)
 					 VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-							,this_object->getScriptType()->str_script_type
+							,this_object->getScriptType()->str_script_type.c_str()
 							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 					);
 				 }

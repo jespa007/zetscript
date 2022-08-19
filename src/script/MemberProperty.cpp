@@ -6,7 +6,7 @@
 
 namespace zetscript{
 	MemberProperty::MemberProperty(ScriptType *_script_class,const std::string & _property_name){
-		property_name=zs_strutils::clone_to_char_ptr(_property_name);
+		property_name=_property_name;
 		script_type=_script_class;
 	}
 
@@ -34,9 +34,6 @@ namespace zetscript{
 	}
 
 	MemberProperty::~MemberProperty(){
-		if(property_name!=NULL){
-			free(property_name);
-			property_name=NULL;
-		}
+
 	}
 }

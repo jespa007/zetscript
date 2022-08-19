@@ -197,7 +197,7 @@ namespace zetscript{
 
 		if(_params != NULL){
 			*_params=new ScriptFunctionParam[args.size()];
-			*_params_len=args.size();
+			*_params_len=(int)args.size();
 
 			if(args.size()==0){
 				THROW_RUNTIME_ERROR(

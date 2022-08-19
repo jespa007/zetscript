@@ -99,7 +99,7 @@ namespace zetscript{
   	    return new_stk;
 	}
 
-	int ScriptObject::length(){
+	size_t ScriptObject::length(){
 		return 0;
 	}
 
@@ -145,7 +145,6 @@ namespace zetscript{
 	}
 
 	StackElement * 			ScriptObject::getBuiltinProperty(const std::string & property_name){
-		bool exists=false;
 		if(this->map_builtin_properties->count(property_name)!=0){
 			return this->map_builtin_properties->at(property_name);
 		}

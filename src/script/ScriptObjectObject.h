@@ -46,7 +46,7 @@ namespace zetscript{
 
 		bool existUserProperty(const char  * property_name);
 
-		virtual int	length();
+		virtual size_t	length();
 
 
 		bool eraseUserProperty(const char * symbol_value);

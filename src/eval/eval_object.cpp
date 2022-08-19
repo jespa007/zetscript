@@ -4,8 +4,8 @@
  */
 namespace zetscript{
 
-	//std::string * 	get_mapped_name(EvalData *eval_data,const std::string * symbol_name);
-	std::string * get_mapped_name(const std::string & s);
+	//std::string * 	eval_get_mapped_name(EvalData *eval_data,const std::string * symbol_name);
+	std::string * eval_get_mapped_name(const std::string & s);
 	char 		*	eval_expression(
 			EvalData *eval_data
 			,const char *s
@@ -74,7 +74,7 @@ namespace zetscript{
 		eval_instruction->instruction_source_info= InstructionSourceInfo(
 			eval_data->current_parsing_file
 			,line
-			,get_mapped_name(eval_data,token_node->value.c_str())
+			,eval_get_mapped_name(eval_data,token_node->value.c_str())
 		);
 
 
@@ -380,7 +380,7 @@ namespace zetscript{
 					eval_instruction_new_object_by_value->instruction_source_info=InstructionSourceInfo(
 							 eval_data->current_parsing_file
 							 ,line
-							 ,get_mapped_name(eval_data,expression.c_str())
+							 ,eval_get_mapped_name(eval_data,expression.c_str())
 						 );
 				}else{ // known type
 					is_native_type=sc->isNativeType();
@@ -413,7 +413,7 @@ namespace zetscript{
 					 ei_load_function_constructor->instruction_source_info=InstructionSourceInfo(
 						 eval_data->current_parsing_file
 						 ,line
-						 ,get_mapped_name(eval_data,CONSTRUCTOR_FUNCTION_NAME)
+						 ,eval_get_mapped_name(eval_data,CONSTRUCTOR_FUNCTION_NAME)
 					 );
 				 }
 
@@ -466,7 +466,7 @@ namespace zetscript{
 				 if(eval_instruction_new_object_by_value==NULL){
 					 // check constructor symbol
 					 constructor_function=sc->getSymbol(CONSTRUCTOR_FUNCTION_NAME);
-					 int start_idx_function=sc->scope_script_type->symbol_functions->size()-1;
+					 int start_idx_function=(int)sc->scope_script_type->symbol_functions->size()-1;
 					 if(constructor_function == NULL){ // find first constructor throught its function members
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
 							Symbol *symbol_member = (Symbol *)sc->scope_script_type->symbol_functions->at(i);

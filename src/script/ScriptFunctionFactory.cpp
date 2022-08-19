@@ -64,7 +64,7 @@ namespace zetscript{
 			symbol->properties|=SYMBOL_PROPERTY_STATIC;
 		}
 
-		int idx_script_function = script_functions->size();
+		int idx_script_function = (int)script_functions->size();
 
 		ScriptFunction *script_function = new ScriptFunction(
 				zs
@@ -105,7 +105,7 @@ namespace zetscript{
 		int idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
-			int v=script_functions->size()-1;
+			int v=(int)script_functions->size()-1;
 			v > idx_start; // avoid delete main function
 			v--
 		){
@@ -123,7 +123,7 @@ namespace zetscript{
 	}
 
 	void ScriptFunctionFactory::saveState(){
-		idx_clear_checkpoint = script_functions->size()-1;
+		idx_clear_checkpoint = (int)script_functions->size()-1;
 	}
 
 	ScriptFunctionFactory::~ScriptFunctionFactory(){

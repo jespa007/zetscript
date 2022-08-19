@@ -4,12 +4,12 @@
  */
 namespace zetscript{
 	bool vm_call_operation_store_metamethod(
-			VirtualMachine *vm
-			,ScriptFunction *calling_function
-			,Instruction *instruction
-			,StackElement *stk_result_op1
-			,StackElement *stk_result_op2
-			, ByteCodeMetamethod byte_code_metamethod
+			VirtualMachine 			*	vm
+			,ScriptFunction 		*	calling_function
+			,Instruction 			*	instruction
+			,StackElement 			*	stk_result_op1
+			,StackElement 			*	stk_result_op2
+			, ByteCodeMetamethod 		byte_code_metamethod
 	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		MemberProperty *member_property=NULL;
@@ -24,6 +24,24 @@ namespace zetscript{
 		const char *str_set_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
 		const char *str_aka_set_metamethod=byte_code_metamethod_to_operator_str(byte_code_metamethod);
 
+		if(byte_code_metamethod == BYTE_CODE_METAMETHOD_ADD_SET){
+			if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
+				((std::string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(\
+						(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op2)\
+				);\
+				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
+				return true;
+			}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+						&&\
+					STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+			){\
+				ScriptObjectObject::append(data->zs, (ScriptObjectObject *)stk_result_op1->value,(ScriptObjectObject *)stk_result_op1->value);\
+				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
+				return true;
+			}
+		}
+
+
 		LOAD_PROPERTIES(byte_code_metamethod); /* saves __STK_VAR_COPY__ --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 		setter_info=ptr_metamethod_members_aux->getSetterInfo(byte_code_metamethod);
 		if(setter_info.setters->size()==0){\
@@ -36,7 +54,11 @@ namespace zetscript{
 			if(member_property==NULL){
 				strcpy(data->vm_str_metamethod_aux,str_set_metamethod);
 			}else{
-				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(data->vm_str_metamethod_aux,byte_code_metamethod,member_property->property_name);
+				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
+					data->vm_str_metamethod_aux
+					,byte_code_metamethod
+					,member_property->property_name.c_str()
+				);
 			}
 			if((ptr_function_found=vm_find_native_function( \
 				vm \
@@ -50,13 +72,13 @@ namespace zetscript{
 			){ \
 				if(member_property!=NULL){ \
 					VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-							,so_aux->getScriptType()->str_script_type\
-							,member_property->property_name\
+							,so_aux->getScriptType()->str_script_type.c_str()\
+							,member_property->property_name.c_str()\
 							,str_set_metamethod\
 					);\
 				}else{\
 					VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
-							,so_aux->getScriptType()->str_script_type \
+							,so_aux->getScriptType()->str_script_type.c_str() \
 							,str_set_metamethod\
 					);\
 				}\
@@ -193,7 +215,7 @@ namespace zetscript{
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 			}else{ // setter not allowed because it has no setter
 				VM_STOP_EXECUTE("'%s' not implements operator '=' (aka '_set')"
-					,stk_mp_aux->member_property->property_name
+					,stk_mp_aux->member_property->property_name.c_str()
 				);
 			}
 		}
@@ -216,7 +238,11 @@ namespace zetscript{
 				if(stk_mp_aux==NULL){
 					strcpy(data->vm_str_metamethod_aux,"_set");
 				}else{
-					ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(data->vm_str_metamethod_aux,BYTE_CODE_METAMETHOD_SET,stk_mp_aux->member_property->property_name); // symbol to find"
+					ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
+						data->vm_str_metamethod_aux
+						,BYTE_CODE_METAMETHOD_SET
+						,stk_mp_aux->member_property->property_name.c_str()
+					); // symbol to find"
 				}
 
 				if((ptr_function_found=vm_find_native_function( \
@@ -230,13 +256,13 @@ namespace zetscript{
 						,1))==NULL){ \
 					if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
 						VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
-								,so_aux->getScriptType()->str_script_type\
-								,stk_mp_aux->member_property->property_name\
+								,so_aux->getScriptType()->str_script_type.c_str()\
+								,stk_mp_aux->member_property->property_name.c_str()\
 								,__STR_SETTER_METAMETHOD__\
 						);\
 					}else{\
 						VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
-								,so_aux->getScriptType()->str_script_type \
+								,so_aux->getScriptType()->str_script_type.c_str() \
 								,__STR_SETTER_METAMETHOD__\
 						);\
 					}\
@@ -383,14 +409,14 @@ namespace zetscript{
 					if(container_slot_store_object->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 						printf("\nAssing object %p type '%s' to slot '%i'"
 								,container_slot_store_object
-								,container_slot_store_object->getScriptType()->str_script_type
+								,container_slot_store_object->getScriptType()->str_script_type.c_str()
 								,(int)container_slot_store_id_slot
 						);
 						stk_obj=container_slot_store_object->getBuiltinElementAt(container_slot_store_id_slot);
 					}else{
 						printf("\nAssing object %p type '%s' to slot '%s'"
 								,container_slot_store_object
-								,container_slot_store_object->getScriptType()->str_script_type
+								,container_slot_store_object->getScriptType()->str_script_type.c_str()
 								,(const char *)container_slot_store_id_slot
 						);
 						stk_obj=container_slot_store_object->getProperty((const char *)container_slot_store_id_slot);

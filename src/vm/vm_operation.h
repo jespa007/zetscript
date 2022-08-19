@@ -6,21 +6,23 @@
 	stk_result_op1=(StackElement *)((stk_result_op1)->value);\
 
 
+
+
 #define METAMETHOD_OPERATION_NOT_FOUND(__BYTE_CODE_METAMETHOD__) \
 		if(member_property!=NULL){\
-				VM_STOP_EXECUTE("Member property '%s' not implements metamethod '%s' (aka '%s') " \
-						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-						,byte_code_metamethod_to_symbol_str(__BYTE_CODE_METAMETHOD__)\
-						,byte_code_metamethod_to_operator_str(__BYTE_CODE_METAMETHOD__)\
-				);\
+			VM_MAIN_ERROR(\
+				VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED\
+				,stk_result_op1\
+				,__BYTE_CODE_METAMETHOD__\
+			);\
 		}else{\
-				VM_STOP_EXECUTE("Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
-						,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-						,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1) \
-						,byte_code_metamethod_to_symbol_str(__BYTE_CODE_METAMETHOD__)\
-						,byte_code_metamethod_to_operator_str(__BYTE_CODE_METAMETHOD__)\
-				);\
+			VM_MAIN_ERROR(\
+				VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED\
+				,stk_result_op1\
+				,__BYTE_CODE_METAMETHOD__\
+			);\
 		}
+
 
 #define LOAD_PROPERTIES(__METAMETHOD__) \
 	ptr_metamethod_members_aux=NULL;\
@@ -39,12 +41,10 @@
 		ptr_metamethod_members_aux= &so_aux->getScriptType()->metamethod_members;\
 	}\
 	else{\
-		VM_STOP_EXECUTE("Error performing '%s%s': Cannot perform operation with value as '%s%s%s'"\
-			,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-			,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
-			,SFI_GET_SYMBOL_NAME(calling_function,instruction-1)\
-			,byte_code_metamethod_to_operator_str(__METAMETHOD__)\
-			,stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op2)\
+		VM_MAIN_ERROR(\
+				VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR\
+				,stk_result_op2\
+				,__METAMETHOD__\
 		);\
 	}\
 
@@ -104,47 +104,17 @@
 		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) + *((zs_float *)&stk_result_op2->value));\
 		break;\
 	default:\
-		if(		STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)\
-					||\
-				STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)\
-			){\
-				ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(data->zs,stk_result_op1,stk_result_op2);\
-				vm_create_shared_script_object(vm,so_string);\
-				VM_PUSH_STK_SCRIPT_OBJECT(so_string);\
-		}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
-					&&\
-				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
-		){\
-				so_aux=ScriptObjectVector::newScriptObjectVectorAdd(\
-						data->zs\
-						,(ScriptObjectVector *)stk_result_op1->value\
-						,(ScriptObjectVector *)stk_result_op2->value\
-				);\
-				vm_create_shared_script_object(vm,so_aux);\
-				VM_PUSH_STK_SCRIPT_OBJECT(so_aux);\
-		}else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
-					&&\
-				STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
-		){\
-				so_aux=ScriptObjectObject::concat(\
-						data->zs\
-						,(ScriptObjectObject *)stk_result_op1->value\
-						,(ScriptObjectObject *)stk_result_op2->value\
-				);\
-				vm_create_shared_script_object(vm,so_aux);\
-				VM_PUSH_STK_SCRIPT_OBJECT(so_aux);\
-		}else{\
-			if(vm_call_metamethod(\
-					vm\
-					,calling_function\
-					,instruction\
-					,BYTE_CODE_METAMETHOD_ADD\
-					,stk_result_op1\
-					,stk_result_op2\
-			)==false){\
-				goto lbl_exit_function;\
-			}\
+		if(vm_call_metamethod(\
+				vm\
+				,calling_function\
+				,instruction\
+				,BYTE_CODE_METAMETHOD_ADD\
+				,stk_result_op1\
+				,stk_result_op2\
+		)==false){\
+			goto lbl_exit_function;\
 		}\
+		break;\
 	}\
 
 #define VM_OPERATION_ARITHMETIC(__C_OP__, __METAMETHOD__)\
@@ -173,6 +143,7 @@
 		)==false){\
 			goto lbl_exit_function;\
 		}\
+		break;\
 	}\
 
 #define VM_OPERATION_COMPARE(__C_OP__, __BYTE_CODE_METAMETHOD_OPERATION__,__IS_JE_CASE__)\
@@ -210,7 +181,7 @@
 				VM_PUSH_STK_BOOLEAN(false);\
 			}\
 		}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
-			VM_PUSH_STK_BOOLEAN(vm_string_compare(vm,stk_result_op1,stk_result_op2,__BYTE_CODE_METAMETHOD_OPERATION__));\
+			vm_push_stk_boolean_equal_strings(vm,stk_result_op1,stk_result_op2,__BYTE_CODE_METAMETHOD_OPERATION__);\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_UNDEFINED || stk_result_op2->properties==STK_PROPERTY_UNDEFINED)\
 				&& (__BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_EQU || __BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
 				){\

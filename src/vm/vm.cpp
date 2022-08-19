@@ -10,9 +10,7 @@ namespace zetscript{
 		StackElement 		   	*key; // iterator element can be std::string or integer...
 		ScriptObjectObject		*ptr; // can be struct or std::vector...
 		unsigned int 		   	idx_current;
-
 	};
-
 
 	void vm_do_stack_dump(VirtualMachine *_vm){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
@@ -236,11 +234,6 @@ namespace zetscript{
 		return true;
 	}
 
-	/*int	vm_get_idx_call(VirtualMachine *vm){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		return data->vm_idx_call;
-	}*/
-
 	VM_ScopeBlock  *vm_get_scope_block_main(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		return &data->vm_scope_function[0].scope_block[0];
@@ -251,20 +244,15 @@ namespace zetscript{
 		return data->stk_vm_current;
 	}
 
-	StackElement * vm_get_stack_element_at(VirtualMachine *vm, int idx_glb_element){
+	StackElement * vm_get_stack_element_at(VirtualMachine *vm, unsigned idx_glb_element){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(idx_glb_element < (int)data->main_function_object->local_variables->size()){
+		if(idx_glb_element < data->main_function_object->local_variables->size()){
 			return &data->vm_stack[idx_glb_element];
 		}else{
 			VM_SET_USER_ERRORF(vm,"getStackElement: out of bounds");
 		}
 		return NULL;
 	}
-
-	/*StackElement * 	vm_get_top_stack_element_from_stack(VirtualMachine *vm){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		return (data->stk_vm_current);
-	}*/
 
 	void vm_reset_error_vars(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
@@ -378,7 +366,7 @@ namespace zetscript{
 
 			throw_exception_file_line(data->vm_error_file.c_str(),data->vm_error_line,total_error.c_str());
 		}else{
-			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+calling_function->local_variables->size());
+			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+(int)calling_function->local_variables->size());
 
 			if(n_returned_arguments_from_function > 0){
 
@@ -418,6 +406,46 @@ namespace zetscript{
 		return stk_return;
 	}
 
+	bool vm_unref_shared_script_object(VirtualMachine *vm, ScriptObject *_obj,VM_ScopeBlock *_scope_block){
+		InfoSharedPointerNode *shared_pointer=_obj->shared_pointer;
+		if(shared_pointer==NULL){
+			VM_SET_USER_ERRORF(vm,"shared ptr not registered");
+			return false;
+		}
+
+		if(shared_pointer->data.n_shares==0){
+			// since objects can have cyclic references unref can reach twice or more 0 (it has to check more cases)
+			// we return true
+			fprintf(stderr,"WARNING: Shared pointer already deattached\n");
+			return false;
+		}
+
+		shared_pointer->data.n_shares--;
+
+		if(shared_pointer->data.n_shares==0){
+
+			// weak pointer keep shared pointers
+			if(_obj->deRefWeakPointer()){
+				vm_share_script_object(vm,_obj);
+				//shared_pointer->data.n_shares=1; // already weak pointers
+				return true;
+			}
+
+			if(_scope_block==NULL){
+				delete shared_pointer->data.ptr_script_object_shared; // it deletes shared_script_object
+				free(shared_pointer);
+			}else{
+				InfoSharedList *unreferenced_objects = &_scope_block->unreferenced_objects;
+
+				// insert to zero shares vector to remove automatically on ending scope
+				if(vm_insert_shared_node(vm,unreferenced_objects,shared_pointer)==false){
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
 
 	void vm_delete(VirtualMachine *vm){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;

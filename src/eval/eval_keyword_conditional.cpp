@@ -60,7 +60,7 @@ namespace zetscript{
 				ei_aux->instruction_source_info.line=line;
 
 				ei_if_jnt=ei_aux;
-				unsigned idx_start_block=eval_data->current_function->eval_instructions.size();
+				size_t idx_start_block=eval_data->current_function->eval_instructions.size();
 				//ei_jmps.push_back(ei_aux);
 
 				IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
@@ -76,7 +76,7 @@ namespace zetscript{
 						return NULL;
 				}
 
-				unsigned idx_end_block=eval_data->current_function->eval_instructions.size();
+				size_t idx_end_block=eval_data->current_function->eval_instructions.size();
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
@@ -181,7 +181,7 @@ namespace zetscript{
 
 		if(key_w == Keyword::KEYWORD_SWITCH){
 			int idx_start_instruction = (int)(eval_data->current_function->eval_instructions.size());;
-			int size_ei_cases=0;
+			size_t size_ei_cases=0;
 
 			aux_p += strlen(eval_data_keywords[key_w].str);
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
@@ -398,9 +398,9 @@ namespace zetscript{
 
 				//int size_ei_cases=ei_cases.size();
 				unsigned offset_ei_case=0;
-				int size_ei_switch_condition = ei_switch_condition.size();
-				int size_ei_cases_and_switch_expression = size_ei_cases+size_ei_switch_condition+1; // +1 for jmp default if there's no default
-				int total_instructions_switch=offset_end_instruction+size_ei_cases_and_switch_expression; // total instructions switch
+				size_t size_ei_switch_condition = ei_switch_condition.size();
+				size_t  size_ei_cases_and_switch_expression = size_ei_cases+size_ei_switch_condition+1; // +1 for jmp default if there's no default
+				size_t  total_instructions_switch=offset_end_instruction+size_ei_cases_and_switch_expression; // total instructions switch
 
 				if(ei_jmp_default == NULL){ // no default found so, we insert a default jmp to the end
 					ei_jmp_default=new EvalInstruction(
@@ -428,7 +428,7 @@ namespace zetscript{
 							,eic_case->ei_load_symbols.end()
 					);
 
-					offset_ei_case+=(eic_case->ei_load_symbols.size()); // load instruction token
+					offset_ei_case+=(int)eic_case->ei_load_symbols.size(); // load instruction token
 
 					// insert je...
 					eval_data->current_function->eval_instructions.insert(
@@ -447,7 +447,7 @@ namespace zetscript{
 						ei_jmp_default
 				);
 
-				offset_end_instruction=eval_data->current_function->eval_instructions.size();
+				offset_end_instruction=(int)eval_data->current_function->eval_instructions.size();
 				for(unsigned i=idx_start_instruction; i < eval_data->current_function->eval_instructions.size();i++){
 					Instruction *ins=&((EvalInstruction *)eval_data->current_function->eval_instructions[i])->vm_instruction;
 					if(ins->value_op1==ZS_IDX_INSTRUCTION_JMP_BREAK){

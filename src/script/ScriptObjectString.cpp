@@ -300,7 +300,7 @@ namespace zetscript{
 		return *((std::string *)value);
 	}
 
-	int ScriptObjectString::length(){
+	size_t ScriptObjectString::length(){
 		return ((std::string *)value)->length();
 	}
 

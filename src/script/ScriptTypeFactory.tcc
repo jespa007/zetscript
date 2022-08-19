@@ -4,7 +4,7 @@
  */
 namespace zetscript{
 
-	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
+	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,unsigned idx_glb_element);
 	bool 			vm_create_shared_script_object(VirtualMachine *vm, ScriptObject *_obj);
 	bool 			vm_share_script_object(VirtualMachine *vm, ScriptObject *_obj);
 
@@ -137,7 +137,7 @@ namespace zetscript{
 			);
 		}
 
-		idx_script_type=script_types->size();
+		idx_script_type=(int)script_types->size();
 		scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
 		MAIN_SCOPE(this)->registerSymbolScriptType(registered_file,registered_line,str_script_type);
 
@@ -160,7 +160,7 @@ namespace zetscript{
 			sc->properties|=SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE;
 		}
 
-		sc->idx_script_type=script_types->size()-1;
+		sc->idx_script_type=(int)script_types->size()-1;
 		ZS_LOG_DEBUG("* native type '%s' registered as (%s).",str_script_type.c_str(),zs_rtti::demangle(str_script_type_ptr).c_str());
 
 		return sc;
@@ -200,7 +200,7 @@ namespace zetscript{
 		ScriptType *main_class=script_types->at(idx_register_class);
 
 
-		for(int i=0; i < main_class->idx_base_types->size(); i++){
+		for(unsigned i=0; i < main_class->idx_base_types->size(); i++){
 			ScriptType *sc=getScriptType(main_class->idx_base_types->at(i)); // get base type...
 			if(sc->str_script_type_ptr ==base_class_name_ptr){
 				THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
@@ -213,7 +213,7 @@ namespace zetscript{
 		ScriptType *base=(ScriptType *)script_types->at(idx_base_type);
 
 		// search native types that already inherits type B
-		for(int i=0; i < main_class->idx_base_types->size(); i++){
+		for(unsigned i=0; i < main_class->idx_base_types->size(); i++){
 			ScriptType *sc=getScriptType(main_class->idx_base_types->at(i)); // get base type...
 			// check whether type inherits inheritates B
 			if(sc->extendsFrom(idx_base_type)){
@@ -250,7 +250,7 @@ namespace zetscript{
 		std::vector<Symbol *> *base_functions=base_class->scope_script_type->symbol_functions;
 
 		// register all c vars symbols ...
-		for(int i = 0; i < base_functions->size(); i++){
+		for(unsigned i = 0; i < base_functions->size(); i++){
 
 			Symbol *src_symbol = (Symbol *)base_functions->at(i);
 
@@ -293,7 +293,7 @@ namespace zetscript{
 		}
 
 
-		for(int i = 0; i < base_vars->size(); i++){
+		for(unsigned i = 0; i < base_vars->size(); i++){
 			Symbol *src_symbol = (Symbol *)base_vars->at(i);
 
 			if(src_symbol->properties & SYMBOL_PROPERTY_MEMBER_PROPERTY){
@@ -355,7 +355,7 @@ namespace zetscript{
 				while(*it_setter!= 0){
 					MetamethodMemberSetterInfo mp_info=mp_src->metamethod_members.getSetterInfo(*it_setter);
 					if(mp_info.setters!=NULL){
-						for(int h=0; h < mp_info.setters->size(); h++){
+						for(unsigned h=0; h < mp_info.setters->size(); h++){
 
 							StackElement *stk_setter=mp_info.setters->at(h);
 							Symbol *symbol_setter=(Symbol *)stk_setter->value;

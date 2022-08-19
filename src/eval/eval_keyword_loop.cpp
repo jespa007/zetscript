@@ -19,9 +19,9 @@ namespace zetscript{
 	//
 	void link_loop_break_continues(EvalData *eval_data,int idx_start, int idx_post_instruction_for_start=ZS_IDX_UNDEFINED){
 
-		int idx_end_instruction = eval_data->current_function->eval_instructions.size();
+		size_t  idx_end_instruction = eval_data->current_function->eval_instructions.size();
 
-		for(int i=idx_start; i < idx_end_instruction;i++){
+		for(size_t  i=idx_start; i < idx_end_instruction;i++){
 			Instruction *ins=&(((EvalInstruction *)eval_data->current_function->eval_instructions[i])->vm_instruction);//&eval_data->current_function->instructions[i]->vm_instruction;
 			if(ins->value_op1 == ZS_IDX_INSTRUCTION_JMP_BREAK){
 				ins->value_op1= ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED;
@@ -543,7 +543,7 @@ namespace zetscript{
 				ei_iterator.vm_instruction.value_op2=symbol_iterator->idx_position;
 				ei_iterator.symbol_name=symbol_iterator->name;
 				ei_iterator.symbol_scope=symbol_iterator->scope;
-				ei_iterator.instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, symbol_iterator->name);
+				ei_iterator.instruction_source_info.ptr_str_symbol_name=eval_get_mapped_name(eval_data, symbol_iterator->name);
 
 
 				// 2. emit iterator init
@@ -583,7 +583,7 @@ namespace zetscript{
 				eval_data->current_function->eval_instructions.push_back(
 					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
 				);
-				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "end");
+				ei_aux->instruction_source_info.ptr_str_symbol_name=eval_get_mapped_name(eval_data, "end");
 
 				// call
 				eval_data->current_function->eval_instructions.push_back(
@@ -611,7 +611,7 @@ namespace zetscript{
 					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
 				);
 
-				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "get");
+				ei_aux->instruction_source_info.ptr_str_symbol_name=eval_get_mapped_name(eval_data, "get");
 
 				// call, return all
 				eval_data->current_function->eval_instructions.push_back(
@@ -649,7 +649,7 @@ namespace zetscript{
 					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
 				);
 
-				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_post_inc");
+				ei_aux->instruction_source_info.ptr_str_symbol_name=eval_get_mapped_name(eval_data, "_post_inc");
 
 				// call
 				ei_post_operations.push_back(
@@ -788,7 +788,7 @@ namespace zetscript{
 		// parsing_loop--
 		eval_data->current_function->parsing_loop--;
 
-		idx_post_instruction_for_start=eval_data->current_function->eval_instructions.size();
+		idx_post_instruction_for_start=(int)eval_data->current_function->eval_instructions.size();
 
 		// insert post operations...
 		eval_data->current_function->eval_instructions.insert(

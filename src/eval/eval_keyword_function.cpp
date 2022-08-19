@@ -25,7 +25,7 @@ namespace zetscript{
 		size_t new_instructions_len=0;
 		size_t new_instructions_total_bytes=0;
 		Instruction * start_ptr=NULL;
-		int n_elements_to_add=eval_instructions->size();
+		size_t n_elements_to_add=eval_instructions->size();
 
 		n_elements_to_add=n_elements_to_add+3; // +3 for load/store/reset stack
 
@@ -79,7 +79,7 @@ namespace zetscript{
 		sf->instruction_source_infos.push_back(new InstructionSourceInfo(
 			eval_data->current_parsing_file
 			,symbol_member_var->line
-			,get_mapped_name(eval_data,symbol_member_var->name)
+			,eval_get_mapped_name(eval_data,symbol_member_var->name)
 		));
 
 
@@ -284,24 +284,41 @@ namespace zetscript{
 			if(*aux_p != '('){ // expected (
 				std::string error;
 				if(is_special_char(aux_p)){
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: unexpected '%c' "
-					,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
-							"declaring function member '%s::%s'"
-							,scope_info->script_type_owner->str_script_type
-							,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
-							).c_str():"declaring function"
+					EVAL_ERROR_FILE_LINE(
+						eval_data->current_parsing_file
+						,line
+						,"Syntax error %s: unexpected '%c' "
+						,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)
+							?
+							zs_strutils::format(
+								"declaring function member '%s::%s'"
+								,scope_info->script_type_owner->str_script_type.c_str()
+								,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
+							).c_str()
+							:
+							"declaring function"
 							,*aux_p
 
 					);
 				}else{
 
-					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error %s: expected function start argument declaration '(' "
-							,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)?zs_strutils::format(
+					EVAL_ERROR_FILE_LINE(
+						eval_data->current_parsing_file
+						,line
+						,"Syntax error %s: expected function start argument declaration '(' "
+						,scope_info->script_type_owner != SCRIPT_TYPE_MAIN(eval_data->script_type_factory)
+							?
+								zs_strutils::format(
 									"declaring function member '%s::%s'"
-									,scope_info->script_type_owner->str_script_type
-									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)?"anonymous_function":name_script_function.c_str()
-									).c_str():"declaring function"
-
+									,scope_info->script_type_owner->str_script_type.c_str()
+									,(properties & EVAL_KEYWORD_FUNCTION_PROPERTY_IS_ANONYMOUS)
+										?
+											"anonymous_function"
+										:
+											name_script_function.c_str()
+								).c_str()
+							:
+								"declaring function"
 					);
 				}
 			}
@@ -487,7 +504,7 @@ namespace zetscript{
 			}
 
 			params=ScriptFunctionParam::createArrayFromVector(&script_function_params);
-			params_len=script_function_params.size();
+			params_len=(int)script_function_params.size();
 
 			// remove collected script function params
 			for(unsigned i=0; i < script_function_params.size(); i++){

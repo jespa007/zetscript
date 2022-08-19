@@ -59,7 +59,7 @@ namespace zetscript{
 		Symbol 						*	getGetter();
 		std::vector<StackElement *> 	*	getSetterList(ByteCodeMetamethod _byte_code_metamethod);
 
-		virtual	int 					length();
+		virtual	size_t 					length();
 
 		ZetScript      				* 	getZetScript();
 		StackElement 				* 	getBuiltinProperty(const std::string & property_name);

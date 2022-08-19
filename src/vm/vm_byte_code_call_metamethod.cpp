@@ -30,6 +30,42 @@ namespace zetscript{
 		StackElement *stk_return=NULL;
 		int n_returned_arguments_from_function=0;
 
+		if(byte_code_metamethod == BYTE_CODE_METAMETHOD_ADD){
+			if(		STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)\
+						||\
+					STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)\
+			){\
+					ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(data->zs,stk_result_op1,stk_result_op2);\
+					vm_create_shared_script_object(vm,so_string);\
+					VM_PUSH_STK_SCRIPT_OBJECT(so_string);\
+					return true;
+			}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+						&&\
+					STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
+			){\
+				script_object=ScriptObjectVector::newScriptObjectVectorAdd(\
+							data->zs\
+							,(ScriptObjectVector *)stk_result_op1->value\
+							,(ScriptObjectVector *)stk_result_op2->value\
+					);\
+					vm_create_shared_script_object(vm,script_object);\
+					VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
+					return true;
+			}else if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
+						&&\
+					STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
+			){\
+				script_object=ScriptObjectObject::concat(\
+							data->zs\
+							,(ScriptObjectObject *)stk_result_op1->value\
+							,(ScriptObjectObject *)stk_result_op2->value\
+					);\
+					vm_create_shared_script_object(vm,script_object);\
+					VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
+					return true;
+			}
+		}
+
 		ret_obj.setUndefined();
 
 		// init stk
@@ -45,7 +81,6 @@ namespace zetscript{
 			str_script_type_object_found=script_object->getTypeName();
 
 		}
-
 
 		if(script_object == NULL){ // cannot perform operation
 			if(str_script_type_object_found.empty()){ // not any object found

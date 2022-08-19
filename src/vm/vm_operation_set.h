@@ -41,28 +41,15 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
 		break;\
 	default:\
-		if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
-			((std::string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(\
-					(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op2)\
-			);\
-			VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
-		}else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
-					&&\
-				STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
-		){\
-				ScriptObjectObject::append(data->zs, (ScriptObjectObject *)stk_result_op1->value,(ScriptObjectObject *)stk_result_op1->value);\
-				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
-		}else{\
-			if(!vm_call_operation_store_metamethod(\
-				vm\
-				,calling_function\
-				,instruction\
-				,stk_result_op1\
-				,stk_result_op2\
-				, BYTE_CODE_METAMETHOD_ADD_SET\
-			)){\
-				goto lbl_exit_function;\
-			}\
+		if(!vm_call_operation_store_metamethod(\
+			vm\
+			,calling_function\
+			,instruction\
+			,stk_result_op1\
+			,stk_result_op2\
+			, BYTE_CODE_METAMETHOD_ADD_SET\
+		)){\
+			goto lbl_exit_function;\
 		}\
 		break;\
 	}\

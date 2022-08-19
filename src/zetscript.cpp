@@ -411,7 +411,7 @@ namespace zetscript{
 		std::vector<Symbol *> *local_variables=main_function_object->local_variables;
 		std::vector<Symbol *> *global_symbol_variables= main_scope->symbol_variables;
 		int n_global_symbol_found=0;
-		int v=local_variables->size()-1;
+		int v=(int)local_variables->size()-1;
 
 
 		// Because all symbols are ordered by scope, have G as global symbols and L local symbols the disposition is the following,
@@ -461,9 +461,9 @@ namespace zetscript{
 			memset(vm_stack+idx_start_variable,0,sizeof(StackElement)*(VM_STACK_MAX-idx_start_variable));
 
 			// erase global elements that they weren't saved...
-			int resize=local_variables->size()-(local_variables->size()-idx_start_variable);
+			int resize=(int)local_variables->size()-((int)local_variables->size()-idx_start_variable);
 			local_variables->resize(resize);
-			global_symbol_variables->resize(global_symbol_variables->size()-n_global_symbol_found);
+			global_symbol_variables->resize((int)global_symbol_variables->size()-n_global_symbol_found);
 
 		}
 	}
@@ -502,7 +502,7 @@ namespace zetscript{
 		// clearGlobalFunctions
 		Scope *main_scope=MAIN_SCOPE(this);
 		std::vector<Symbol *> *global_symbol_functions= main_scope->symbol_functions;
-		int v=global_symbol_functions->size()-1;
+		int v=(int)global_symbol_functions->size()-1;
 		// remove all shared 0 pointers
 		if(v >= idx_current_global_function_checkpoint){
 			for (
@@ -515,14 +515,14 @@ namespace zetscript{
 				--v;
 			}
 
-			int resize=global_symbol_functions->size()-(global_symbol_functions->size()-idx_current_global_function_checkpoint);
+			int resize=(int)global_symbol_functions->size()-((int)global_symbol_functions->size()-idx_current_global_function_checkpoint);
 			global_symbol_functions->resize(resize);
 		}
 
 
 		// clearScriptTypes
 		std::vector<Symbol *> *script_types= main_scope->symbol_types;
-		v=script_types->size()-1;
+		v=(int)script_types->size()-1;
 		// remove all shared 0 pointers
 		if(v >=idx_current_script_types_checkpoint){
 			for (
@@ -535,7 +535,7 @@ namespace zetscript{
 				--v;
 			}
 
-			int resize=script_types->size()-(script_types->size()-idx_current_script_types_checkpoint);
+			int resize=(int)script_types->size()-((int)script_types->size()-idx_current_script_types_checkpoint);
 			script_types->resize(resize);
 		}
 
@@ -553,9 +553,9 @@ namespace zetscript{
 	void ZetScript::saveState(){
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
 		Scope *main_scope=MAIN_SCOPE(this);
-		idx_current_global_variable_checkpoint=main_function_object->local_variables->size();
-		idx_current_global_function_checkpoint=main_scope->symbol_functions->size();
-		idx_current_script_types_checkpoint=main_scope->symbol_types->size();
+		idx_current_global_variable_checkpoint=(int)main_function_object->local_variables->size();
+		idx_current_global_function_checkpoint=(int)main_scope->symbol_functions->size();
+		idx_current_script_types_checkpoint=(int)main_scope->symbol_types->size();
 
 		scope_factory->saveState();
 		script_function_factory->saveState();

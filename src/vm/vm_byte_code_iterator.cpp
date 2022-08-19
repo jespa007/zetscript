@@ -3,23 +3,28 @@
  *  See LICENSE file for details.
  */
 namespace zetscript{
-	void vm_iterator_init(VirtualMachine *vm
-			 ,ScriptFunction *calling_function
-			,Instruction *instruction
-			,StackElement *stk_result_op1
-			,StackElement *stk_result_op2
+	bool vm_iterator_init(
+			VirtualMachine 		*	vm
+			 ,ScriptFunction 	*	calling_function
+			,Instruction 		*	instruction
+			,StackElement *_stk_local_var
 	){
 
-		// stk_op1 expects to be stk
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		// stk_op1 expects to be stk
 		//ScriptFunction *sf_iter=NULL;
 		Symbol *symbol_iter;
+
+		StackElement *stk_result_op1=NULL;
+		StackElement *stk_result_op2=NULL;
+
+		 VM_POP_STK_TWO;
 
 		// stk_op2 expects to be obj with container
 
 		if((stk_result_op2->properties & STK_PROPERTY_PTR_STK) == 0){
 			VM_ERRORF("internal: Expected stk");
-			return;
+			return false;
 		}
 
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
@@ -29,7 +34,7 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(calling_function,instruction)
 					,stk_to_str(data->zs,data->stk_vm_current).c_str()
 				);
-				return;
+				return false;
 			}
 		}
 
@@ -62,7 +67,7 @@ namespace zetscript{
 				VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'"
 						,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
 				);
-				return;
+				return false;
 			}
 
 
@@ -80,17 +85,17 @@ namespace zetscript{
 			// check all functions...
 			if(sc->getSymbolMemberFunction("get")==NULL){
 				VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getTypeName());
-				return;
+				return false;
 			}
 
 			if(sc->getSymbolMemberFunction("_post_inc")==NULL){
 				VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getTypeName());
-				return;
+				return false;
 			}
 
 			if(sc->getSymbolMemberFunction("end")==NULL){
 				VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getTypeName());
-				return;
+				return false;
 			}
 
 			// everything allright store and share pointer
@@ -98,12 +103,15 @@ namespace zetscript{
 		}
 		else{
 			VM_ERROR("Object '%s' not implements 'iter'",obj->getTypeName());
+			return false;
 		}
+
+		return true;
 
 		// get iterator...
 	lbl_exit_function:
 
-		return;
+		return false;
 
 	}
 
@@ -111,11 +119,14 @@ namespace zetscript{
 			VirtualMachine *vm
 			 ,ScriptFunction *calling_function
 			,Instruction *instruction
-			, StackElement *stk_result_op1
-			, StackElement *stk_result_op2
+			,StackElement *_stk_local_var
 	){
 		std::string error="";
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		StackElement *stk_result_op1=NULL;
+		StackElement *stk_result_op2=NULL;
+
+		 VM_POP_STK_TWO;
 
 		if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so_aux=(ScriptObject *)stk_result_op2->value;

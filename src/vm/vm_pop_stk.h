@@ -13,11 +13,11 @@
 		_stk_result=_stk_local_var+_offset; \
 	}else{\
 		if((_stk_result=vm_load_this_element(\
-				vm\
-				,this_object\
-				,calling_function\
-				,instruction\
-				, _offset\
+			vm\
+			,this_object\
+			,calling_function\
+			,instruction\
+			, _offset\
 		))==NULL){\
 			goto lbl_exit_function;\
 		}\

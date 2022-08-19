@@ -17,7 +17,7 @@ namespace zetscript{
 
 	void ScopeFactory::init(){
 		main_scope=newScope(IDX_SCRIPT_FUNCTION_MAIN,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
-		idx_clear_checkpoint=scopes->size();
+		idx_clear_checkpoint=(int)scopes->size();
 	}
 
 	Scope *	 ScopeFactory::newScope(int idx_sf,Scope * scope_parent,uint16_t _properties){
@@ -76,7 +76,7 @@ namespace zetscript{
 	}
 
 	void ScopeFactory::saveState(){
-		idx_clear_checkpoint=scopes->size();
+		idx_clear_checkpoint=(int)scopes->size();
 	}
 
 	ScopeFactory::~ScopeFactory(){

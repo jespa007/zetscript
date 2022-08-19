@@ -294,7 +294,7 @@ namespace zetscript{
 				ei_first_token_node->instruction_source_info = InstructionSourceInfo(
 					eval_data->current_parsing_file
 					,line
-					,get_mapped_name(eval_data,token_node_symbol->value)
+					,eval_get_mapped_name(eval_data,token_node_symbol->value)
 				);
 
 			}
@@ -605,7 +605,7 @@ namespace zetscript{
 					instruction_token->instruction_source_info= InstructionSourceInfo(
 						eval_data->current_parsing_file
 						,last_accessor_line
-						,get_mapped_name(eval_data,last_accessor_value) // only can get from last_accessor_value because accessor_name is empty on each iteration
+						,eval_get_mapped_name(eval_data,last_accessor_value) // only can get from last_accessor_value because accessor_name is empty on each iteration
 					);
 					break;
 				default:
@@ -614,7 +614,7 @@ namespace zetscript{
 					instruction_token->instruction_source_info= InstructionSourceInfo(
 						eval_data->current_parsing_file
 						,line
-						,get_mapped_name(eval_data,accessor_name)
+						,eval_get_mapped_name(eval_data,accessor_name)
 					);
 					break;
 				}
@@ -653,7 +653,7 @@ namespace zetscript{
 				ei_first_token_node->instruction_source_info= InstructionSourceInfo(
 					eval_data->current_parsing_file
 					,last_accessor_line
-					,get_mapped_name(eval_data,SYMBOL_VALUE_THIS)
+					,eval_get_mapped_name(eval_data,SYMBOL_VALUE_THIS)
 				);
 
 				ei_first_token_node->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;

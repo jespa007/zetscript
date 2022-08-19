@@ -98,18 +98,18 @@ namespace zetscript{
 		ScriptType * c_class_first_arg=	params_len>1?getScriptType(params[1].idx_script_type):NULL;
 		if(c_class_first_arg == NULL){
 			THROW_RUNTIME_ERROR("bind member function '%s::%s': needs to have SECOND parameter as pointer type '%s')"
-				,str_script_type
+				,str_script_type.c_str()
 				,_function_name.c_str()
-				,this->str_script_type
+				,this->str_script_type.c_str()
 			);
 		}
 
 		if(c_class_first_arg->str_script_type_ptr!=this->str_script_type_ptr){
 			THROW_RUNTIME_ERROR(
 				"bind member function '%s::%s': expected to have SECOND parameter as pointer type '%s' but it was '%s')"
-				,str_script_type
+				,str_script_type.c_str()
 				,_function_name.c_str()
-				,this->str_script_type
+				,this->str_script_type.c_str()
 				,params[1].name.c_str()
 			);
 		}

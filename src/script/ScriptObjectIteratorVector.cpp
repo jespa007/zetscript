@@ -40,7 +40,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 
-		if(idx<sov->length()){
+		if(idx<(int)sov->length()){
 			// set value
 			stk_value=*((StackElement *)sov->getUserElementAt(idx));
 		}
@@ -59,7 +59,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 
-		if(idx<sov->length()){
+		if(idx<(int)sov->length()){
 			idx++;
 		}
 	}
@@ -69,7 +69,7 @@ namespace zetscript{
 		if(sov==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
-		return idx >= sov->length();
+		return idx >= (int)sov->length();
 	}
 
 	ScriptObjectIteratorVector::~ScriptObjectIteratorVector(){

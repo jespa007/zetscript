@@ -118,7 +118,13 @@ namespace zetscript{
 			std::string class_str=class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?class_obj->str_script_type:"";
 			int n_candidates=0;
 			std::string str_candidates="";
-			std::string function_name_not_found=class_str==""?symbol_to_find:zs_strutils::format("%s::%s",class_str.c_str(),symbol_to_find);
+			std::string function_name_not_found=
+				class_str==""
+				?
+				symbol_to_find
+				:
+				zs_strutils::format("%s::%s",class_str.c_str(),symbol_to_find.c_str());
+
 			std::string args_str = "";
 			/* get arguments... */
 			for( unsigned k = 0; k < n_args;k++){

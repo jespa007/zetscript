@@ -72,7 +72,7 @@ namespace zetscript{
 			}
 
 			oo_param=(ScriptObjectObject *)stk_oo_param->value;
-			function_params_len=oo_param->length();
+			function_params_len=(int)oo_param->length();
 			if(function_params_len>0){
 
 				function_params=new ScriptFunctionParam[function_params_len];//(ScriptFunctionParam *)ZS_MALLOC(sizeof(ScriptFunctionParam)*function_params_len);

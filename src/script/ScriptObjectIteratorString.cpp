@@ -59,7 +59,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 
-		if(idx<sos->length()){
+		if(idx<(int)sos->length()){
 			idx++;
 		}
 	}
@@ -69,7 +69,7 @@ namespace zetscript{
 		if(sos==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
-		return idx >= sos->length();
+		return idx >= (int)sos->length();
 	}
 
 	ScriptObjectIteratorString::~ScriptObjectIteratorString(){

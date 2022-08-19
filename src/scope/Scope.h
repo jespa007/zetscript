@@ -73,7 +73,7 @@ namespace zetscript{
 		int getIdxScriptFunction();
 		int numInnerScopes();
 
-		int countVariables(bool _recursive=false);
+		size_t countVariables(bool _recursive=false);
 
 
 		~Scope();
@@ -93,7 +93,7 @@ namespace zetscript{
 		void markBlockScopeAsUnusuedScopesRecursive(Scope *_sc);
 
 		int numInnerScopesRecursive(Scope *sc, int n);
-		int countVariablesRecursive(Scope *sc, int idx_script_function_reference);
+		size_t countVariablesRecursive(Scope *sc, int idx_script_function_reference);
 
 
 	};

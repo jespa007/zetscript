@@ -263,13 +263,7 @@ if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
 	
 	target_link_libraries(register_class${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
-	#-----------------------------------------------
-	# test_map
-	add_executable(test_benchmark_std${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_benchmark_std.cpp
-	)
-	target_link_libraries(test_benchmark_std${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
-			
+		
 
 endif()
 
@@ -304,13 +298,6 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 	target_compile_definitions(test_arithmetic_constants${POST_NAME} PUBLIC -D__MAIN__ )
 	target_link_libraries(test_arithmetic_constants${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
-	
-		#-----------------------------------------------
-	# test_map
-	add_executable(test_benchmark_std${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_benchmark_std.cpp
-	)
-	target_link_libraries(test_benchmark_std${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
 	#-----------------------------------------------
 	# test arithmetic vars

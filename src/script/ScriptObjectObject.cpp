@@ -74,7 +74,7 @@ namespace zetscript{
 		StackElement si;
 
 		if(map_user_properties->count(symbol_value)!=0){
-			error=zs_strutils::format("'%s' symbol already exists",symbol_value);
+			error=zs_strutils::format("'%s' symbol already exists",symbol_value.c_str());
 			return NULL;
 		}
 
@@ -101,7 +101,6 @@ namespace zetscript{
 
 	StackElement * ScriptObjectObject::getUserProperty(const std::string & property_name){
 
-		bool exists;
 		if(this->map_user_properties->count(property_name)!=0){
 			return this->map_user_properties->at(property_name);
 		}
@@ -137,7 +136,7 @@ namespace zetscript{
 		return map_builtin_properties;
 	}
 
-	int	ScriptObjectObject::length(){
+	size_t	ScriptObjectObject::length(){
 		return this->map_user_properties->size();
 	}
 

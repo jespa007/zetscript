@@ -64,11 +64,88 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 		goto lbl_exit_function;\
 	}\
 
+#define VM_PROPERTY_CALL_FROM_NATIVE	0x1
 
+#define SET_INTEGER_RETURN(i)			CURRENT_VM->setIntegerReturnValue(i)
+#define SET_BOOLEAN_RETURN(b) 			CURRENT_VM->setBooleanReturnValue(b)
+#define SET_FLOAT_RETURN(f)   			CURRENT_VM->setFloatReturnValue(f)
+
+#define NO_PARAMS std::vector<StackElement>{}
+#define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectObject * (const std::vector<ScriptObjectObject *> & param)>
+
+#define VM_EXECUTE(vm,o,f,stk,n)		vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
+
+#define VM_ERROR(_str_error,...)	\
+	vm_set_file_line_error(\
+		vm \
+		,SFI_GET_FILE(calling_function,instruction)\
+		,SFI_GET_LINE(calling_function,instruction)\
+		,_str_error\
+		, __VA_ARGS__\
+	);
+
+#define VM_ERRORF(_str_error)					VM_ERROR(_str_error,NULL)
+
+#define VM_ERROR_AND_RET(_str_error,...)	\
+	vm_set_file_line_error(\
+		vm \
+		,SFI_GET_FILE(calling_function,instruction)\
+		,SFI_GET_LINE(calling_function,instruction)\
+		,_str_error\
+		, __VA_ARGS__\
+	);\
+	return;
+
+#define VM_ERROR_AND_RETF(_str_error)			VM_ERROR_AND_RET(_str_error,NULL)
+
+#define VM_STOP_EXECUTE(_str_error,...)	\
+	vm_set_file_line_error(\
+		vm \
+		,SFI_GET_FILE(calling_function,instruction)\
+		,SFI_GET_LINE(calling_function,instruction)\
+		,_str_error\
+		, __VA_ARGS__\
+	);\
+	goto lbl_exit_function;
+
+#define VM_STOP_EXECUTEF(_str_error) \
+	VM_STOP_EXECUTE(_str_error,NULL)
+
+#define VM_SET_USER_ERROR(vm,_str_error,...)	\
+	vm_set_file_line_error(vm,__FILE__,__LINE__, _str_error, __VA_ARGS__)
+
+#define VM_SET_USER_ERRORF(vm,_str_error) \
+	VM_SET_USER_ERROR(vm,_str_error,NULL)
+
+#define IDX_VM_CURRENT_SCOPE_FUNCTION 	(data->vm_current_scope_function-data->vm_scope_function)
+#define VM_SCOPE_FUNCTION_MAIN 			(data->vm_scope_function+0)
+#define VM_SCOPE_FUNCTION_FIRST 		(data->vm_scope_function+1)
+#define VM_CURRENT_SCOPE_FUNCTION		(data->vm_current_scope_function-1)
+#define VM_CURRENT_SCOPE_BLOCK			(VM_CURRENT_SCOPE_FUNCTION->current_scope_block-1)
+
+#define VM_STR_AUX_PARAM_0				(data->vm_str_aux[0])
+#define VM_STR_AUX_PARAM_1				(data->vm_str_aux[1])
+
+#define VM_MAIN_ERROR(_error,_stk, _metamethod) \
+		vm_print_main_error(\
+				vm\
+				,calling_function\
+				,instruction\
+				,_error\
+				,_stk\
+				,_metamethod\
+		);\
+		goto lbl_exit_function;
 
 namespace zetscript{
 
 	class ZetScript;
+
+	typedef enum{
+		VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR=0
+		,VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED
+		,VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED
+	}VM_MainError;
 
 	typedef struct{
 		const char *file;
@@ -141,25 +218,10 @@ namespace zetscript{
 	// PROTOTIPES
 	//
 
-	void vm_inner_call(
-			VirtualMachine 	*vm
-			,ScriptFunction	* calling_function
-			,Instruction	* instruction
-			,ScriptObject 	*script_object
-			,ScriptFunction *script_function
-			,int _n_args
-	);
 
-	StackElement *vm_load_this_element(
-		VirtualMachine			* vm
-		,ScriptObject			* this_object
-		,ScriptFunction 		* calling_function
-		,Instruction			*instruction
-		,short idx
-	);
 
 	void  vm_execute_function_native(
-			VirtualMachine *vm,
+			VirtualMachine 		*vm,
 			const ScriptFunction *calling_function,
 			Instruction *instruction,
 			ScriptObject  * this_object,
@@ -169,22 +231,10 @@ namespace zetscript{
 	);
 
 	void vm_execute_function_script(
-			VirtualMachine			* vm,
+			VirtualMachine 			*	vm,
 			ScriptObject			* this_object,
 			ScriptFunction 			* calling_function,
 			StackElement 		  	* _stk_local_var
-	);
-
-
-	ScriptFunction * vm_find_native_function(
-			VirtualMachine *vm
-			,ScriptType *class_obj // if NULL is MainClass
-			,ScriptFunction *calling_function
-			,Instruction * instruction // call instruction
-			,bool is_constructor
-			,const std::string & symbol_to_find
-			,StackElement *stk_arg
-			,unsigned char n_args
 	);
 
 
@@ -200,66 +250,65 @@ namespace zetscript{
 
 	);
 
-	void vm_iterator_init(VirtualMachine *vm
-			 ,ScriptFunction *calling_function
-			,Instruction *instruction
-			,StackElement *stk_result_op1
-			,StackElement *stk_result_op2
+
+
+	void vm_pop_scope(
+		VirtualMachine *vm
 	);
 
-	bool vm_perform_in_operator(
+	bool  vm_insert_shared_node(
+		VirtualMachine *vm
+		, InfoSharedList * list
+		, InfoSharedPointerNode *_node
+	);
+
+	void vm_remove_empty_shared_pointers(
 			VirtualMachine *vm
-			 ,ScriptFunction *calling_function
-			,Instruction *instruction
-			, StackElement *stk_result_op1
-			, StackElement *stk_result_op2
+			,VM_ScopeBlock *scope_block
 	);
 
-	bool vm_store(
+	bool vm_deattach_shared_node(
+			VirtualMachine *vm
+			, InfoSharedList * list
+			, InfoSharedPointerNode *_node
+	);
+
+
+	bool vm_byte_code_new_object_by_value(
 			VirtualMachine *vm
 			,ScriptFunction *calling_function
 			,Instruction *instruction
 	);
 
-	bool vm_call_operation_store_metamethod(
+
+
+	void vm_print_main_error(
 		VirtualMachine *vm
 		,ScriptFunction *calling_function
 		,Instruction *instruction
-		,StackElement *stk_result_op1
-		,StackElement *stk_result_op2
-		, ByteCodeMetamethod byte_code_metamethod
+		,VM_MainError _error
+		,StackElement *_stk
+		,ByteCodeMetamethod _byte_code_metamethod
+
 	);
 
-	bool vm_call(
-		VirtualMachine *vm
-		,ScriptObject *this_object
-		,ScriptFunction *calling_function
-		,Instruction *instruction
-		,StackElement *_stk_local_var
-	);
-
-	bool vm_load_field(
-		VirtualMachine *vm
-		,ScriptObject *this_object
-		,ScriptFunction *calling_function
-		,Instruction **instruction_it
-	);
-
-
-	void vm_throw_error_cannot_find_symbol(
-		VirtualMachine *vm
-		,ScriptFunction *calling_function
-		,Instruction *instruction
-	);
-
-
-	bool vm_string_compare(
+	void vm_push_stk_boolean_equal_strings(
 		VirtualMachine *vm
 		, StackElement *_stk1
 		, StackElement *_stk2
 		, ByteCodeMetamethod _byte_code_metamethod
 	);
 
+	ScriptFunction * vm_find_native_function(
+			VirtualMachine *vm
+			,ScriptType *class_obj // if NULL is MainClass
+			,ScriptFunction *calling_function
+			,Instruction * instruction // call instruction
+			,bool is_constructor
+			,const std::string & symbol_to_find
+			,StackElement *stk_arg
+			,unsigned char n_args
+	);
 	/*void vm_error_bool_expression(
 			VirtualMachine *vm
 			,ScriptFunction *calling_function
@@ -294,147 +343,7 @@ namespace zetscript{
 
 	//-----------------------------------------
 
-	inline bool  vm_insert_shared_node(VirtualMachine *vm, InfoSharedList * list, InfoSharedPointerNode *_node){
-		if(_node->next != NULL || _node->previous!=NULL) {
-			VM_SET_USER_ERRORF(vm," Internal error expected node not in list");
-			return false;
-		}
 
-		if(list->first == NULL){ /*one  node: trivial ?*/
-			_node->previous=_node->next= list->last = list->first =_node;
-		}
-		else{ /* >1 node add to the end */
-			// attach last-previous
-			_node->previous=list->last;
-			list->last->next=_node;
-			list->last=_node;
-
-			// attach next
-			_node->next=list->first;
-			list->first->previous=_node;
-		}
-		return true;
-	}
-
-	inline bool vm_deattach_shared_node(VirtualMachine *vm, InfoSharedList * list, InfoSharedPointerNode *_node){
-
-		if(list == NULL) return true;
-
-		if(_node->next == NULL || _node->previous == NULL){
-			VM_SET_USER_ERRORF(vm," Internal error: An already deattached node");
-			return false;
-		}
-
-		if((_node->previous == _node) && (_node->next == _node)){ // 1 single node...
-			list->last=list->first=NULL;
-		}
-		else{ // dettach and attach next...
-			// [1]<->[2]<-> ...[P]<->[C]<->[N]...[M-1]<->[M]
-			if(_node == list->first){
-				list->first=_node->next;
-			}
-			else if(_node == list->last){
-				list->last=_node->previous;
-			}
-			_node->previous->next=_node->next;
-			_node->next->previous=_node->previous;
-
-		}
-		_node->previous = _node->next = NULL;
-		return true;
-	}
-
-
-	inline void vm_remove_empty_shared_pointers(VirtualMachine *vm,VM_ScopeBlock *scope_block){
-		InfoSharedList *list=&scope_block->unreferenced_objects;//&data->zero_shares[idx_call_stack];
-		InfoSharedPointerNode *next_node=NULL,*current=list->first;
-		//bool check_empty_shared_pointers=false;
-
-		if(current != NULL){
-			bool finish=false;
-			do{
-				next_node=current->next;
-				finish=next_node ==list->first;
-
-				if(!vm_deattach_shared_node(vm,list,current)){
-					return;
-				}
-
-				delete current->data.ptr_script_object_shared;
-				current->data.ptr_script_object_shared=NULL;
-				free(current);
-
-				current=next_node;
-
-			}while(!finish);
-		}
-	}
-
-	inline bool vm_unref_shared_script_object(VirtualMachine *vm, ScriptObject *_obj,VM_ScopeBlock *_scope_block){
-		InfoSharedPointerNode *shared_pointer=_obj->shared_pointer;
-		if(shared_pointer==NULL){
-			VM_SET_USER_ERRORF(vm,"shared ptr not registered");
-			return false;
-		}
-
-		if(shared_pointer->data.n_shares==0){
-			// since objects can have cyclic references unref can reach twice or more 0 (it has to check more cases)
-			// we return true
-			fprintf(stderr,"WARNING: Shared pointer already deattached\n");
-			return false;
-		}
-
-		shared_pointer->data.n_shares--;
-
-		if(shared_pointer->data.n_shares==0){
-
-			// weak pointer keep shared pointers
-			if(_obj->deRefWeakPointer()){
-				vm_share_script_object(vm,_obj);
-				//shared_pointer->data.n_shares=1; // already weak pointers
-				return true;
-			}
-
-			if(_scope_block==NULL){
-				delete shared_pointer->data.ptr_script_object_shared; // it deletes shared_script_object
-				free(shared_pointer);
-			}else{
-				InfoSharedList *unreferenced_objects = &_scope_block->unreferenced_objects;
-
-				// insert to zero shares vector to remove automatically on ending scope
-				if(vm_insert_shared_node(vm,unreferenced_objects,shared_pointer)==false){
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	// defer all local vars
-	inline void vm_pop_scope(VirtualMachine *_vm)
-	{\
-		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		VM_ScopeBlock *scope_block=--VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
-		Scope *scope=scope_block->scope;\
-		StackElement         * stk_local_vars	=VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
-		std::vector<Symbol *> *scope_symbols=scope->symbol_variables;\
-		int count=(int)scope_symbols->size();\
-		if(count > 0){\
-			StackElement *stk_local_var=stk_local_vars+scope_symbols->at(0)->idx_position;\
-			while(count--){\
-				if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
-					ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
-					if(so != NULL && so->shared_pointer!=NULL){\
-						 vm_unref_shared_script_object(_vm,so,NULL);\
-					}\
-				}\
-				STK_SET_UNDEFINED(stk_local_var);\
-				stk_local_var++;\
-			}\
-		}\
-		vm_remove_empty_shared_pointers(_vm,scope_block);\
-	}
 
 }
 

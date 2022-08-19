@@ -345,7 +345,7 @@ namespace zetscript{
 
 		stk=new StackElement;
 
-		stk_constants->at(_key)=stk;
+		(*stk_constants)[_key]=stk;
 
 		so=ZS_NEW_OBJECT_STRING(this->zs);
 		// swap values stk_ref/value
@@ -358,7 +358,10 @@ namespace zetscript{
 	}
 
 	StackElement *ScriptTypeFactory::getStkConstantStringObject(const std::string & _key){
-		return stk_constants->at(_key);
+		if (stk_constants->count(_key) != 0) {
+			return stk_constants->at(_key);
+		}
+		return NULL;
 	}
 
 	StackElement * ScriptTypeFactory::registerStkObject(const std::string & _key, zs_int _value){
@@ -455,7 +458,7 @@ namespace zetscript{
 		short idx_start = _idx_start == ZS_IDX_UNDEFINED ?  idx_clear_checkpoint:_idx_start;
 
 		for(
-			int v=script_types->size()-1;
+			int v=(int)script_types->size()-1;
 			v > idx_start; // avoid main type
 			v--
 		){
@@ -466,7 +469,7 @@ namespace zetscript{
 	}
 
 	void ScriptTypeFactory::saveState(){
-		idx_clear_checkpoint = script_types->size()-1;
+		idx_clear_checkpoint = (int)script_types->size()-1;
 	}
 
 	void ScriptTypeFactory::checkScriptTypeName(const std::string & _str_script_type){
@@ -511,7 +514,7 @@ namespace zetscript{
 
 		if((index = getIdxScriptType(_str_script_type))==ZS_IDX_UNDEFINED){ // check whether is local var registered scope ...
 			uint16_t properties_register_scope=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN;
-			index=script_types->size();
+			index=(int)script_types->size();
 
 			// To avoid built-int conflict bool type
 			if(
@@ -546,7 +549,8 @@ namespace zetscript{
 					ScriptType *match_class=getScriptType(sc->idx_base_types->at(0));
 					THROW_RUNTIME_ERROR("Type '%s' already is inherited from '%s'"
 							,_str_script_type.c_str()
-							,match_class->str_script_type);
+							,match_class->str_script_type.c_str()
+					);
 				}
 
 				if((base_type = getScriptType(_base_class_name)) == NULL){
@@ -579,7 +583,7 @@ namespace zetscript{
 				}
 
 				// set idx starting member
-				sc->idx_starting_this_member_functions=sc->scope_script_type->symbol_functions->size();
+				sc->idx_starting_this_member_functions=(int)sc->scope_script_type->symbol_functions->size();
 
 				// 1. extend all symbols from base type
 				std::vector<Symbol *> *symbol_variables=base_type->scope_script_type->symbol_variables;
@@ -623,7 +627,7 @@ namespace zetscript{
 				}
 
 				// set idx starting member
-				sc->idx_starting_this_member_variables=sc->scope_script_type->symbol_variables->size();
+				sc->idx_starting_this_member_variables=(int)sc->scope_script_type->symbol_variables->size();
 
 				// 2. set idx base type...
 				sc->idx_base_types->push_back(base_type->idx_script_type);
@@ -634,7 +638,7 @@ namespace zetscript{
 				Symbol *symbol_field_initializer=NULL;
 
 				symbol_field_initializer=sc->registerMemberFunction(
-					zs_strutils::format("__@field_initializer_%s_@__",sc->str_script_type)
+					zs_strutils::format("__@field_initializer_%s_@__",sc->str_script_type.c_str())
 				);
 
 				sc->sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;
