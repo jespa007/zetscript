@@ -4,27 +4,30 @@
  */
 namespace zetscript{
 	bool vm_call_operation_store_metamethod(
-			VirtualMachine 			*	vm
-			,ScriptFunction 		*	calling_function
-			,Instruction 			*	instruction
-			,StackElement 			*	stk_result_op1
-			,StackElement 			*	stk_result_op2
-			, ByteCodeMetamethod 		byte_code_metamethod
+			VirtualMachine 			*	_vm
+			,ScriptFunction 		*	_calling_function
+			,Instruction 			*	_instruction
+			,StackElement 			*	_stk_result_op1
+			,StackElement 			*	_stk_result_op2
+			, ByteCodeMetamethod 		_byte_code_metamethod
 	){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		MemberProperty *member_property=NULL;
-		Symbol *symbol_setter=NULL;
-		ScriptObject *so_aux=NULL;
-		StackElement *stk_var=NULL;
-		StackElement stk_aux1;
-		StackMemberProperty *stk_mp_aux=NULL;
-		MetamethodMembers *ptr_metamethod_members_aux=NULL;
-		ScriptFunction *ptr_function_found=NULL;
-		MetamethodMemberSetterInfo setter_info;
-		const char *str_set_metamethod=byte_code_metamethod_to_symbol_str(byte_code_metamethod);
-		const char *str_aka_set_metamethod=byte_code_metamethod_to_operator_str(byte_code_metamethod);
+		VirtualMachineData 	*			data=(VirtualMachineData *)_vm->data;
+		MemberProperty 		*			member_property=NULL;
+		Symbol 				*			symbol_setter=NULL;
+		ScriptObject 		*			so_aux=NULL;
+		StackElement 		*			stk_var=NULL;
+		StackElement 					stk_aux1;
+		StackElement 		*			stk_result_op1=_stk_result_op1;
+		StackElement 		*			stk_result_op2=_stk_result_op2;
+		StackMemberProperty *			stk_mp_aux=NULL;
+		MetamethodMembers 	*			ptr_metamethod_members_aux=NULL;
+		ScriptFunction 		*			ptr_function_found=NULL;
+		MetamethodMemberSetterInfo 		setter_info;
+		const char 			*			str_set_metamethod=byte_code_metamethod_to_symbol_str(_byte_code_metamethod);
+		const char 			*			str_aka_set_metamethod=byte_code_metamethod_to_operator_str(_byte_code_metamethod);
+		Instruction			*			instruction=_instruction;
 
-		if(byte_code_metamethod == BYTE_CODE_METAMETHOD_ADD_SET){
+		if(_byte_code_metamethod == BYTE_CODE_METAMETHOD_ADD_SET){
 			if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
 				((std::string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(\
 						(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op2)\
@@ -42,10 +45,10 @@ namespace zetscript{
 		}
 
 
-		LOAD_PROPERTIES(byte_code_metamethod); /* saves __STK_VAR_COPY__ --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
-		setter_info=ptr_metamethod_members_aux->getSetterInfo(byte_code_metamethod);
+		LOAD_PROPERTIES(_byte_code_metamethod); /* saves __STK_VAR_COPY__ --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
+		setter_info=ptr_metamethod_members_aux->getSetterInfo(_byte_code_metamethod);
 		if(setter_info.setters->size()==0){\
-			METAMETHOD_OPERATION_NOT_FOUND(byte_code_metamethod); \
+			METAMETHOD_OPERATION_NOT_FOUND(_byte_code_metamethod); \
 			goto lbl_exit_function;
 		}\
 		ptr_function_found=(ScriptFunction *)((Symbol *)(((StackElement *)setter_info.setters->at(0))->value))->ref_ptr;\
@@ -56,15 +59,15 @@ namespace zetscript{
 			}else{
 				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
 					data->vm_str_metamethod_aux
-					,byte_code_metamethod
+					,_byte_code_metamethod
 					,member_property->property_name.c_str()
 				);
 			}
 			if((ptr_function_found=vm_find_native_function( \
-				vm \
+				_vm \
 				,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
-				,calling_function\
-				,instruction\
+				,_calling_function\
+				,_instruction\
 				,false\
 				,data->vm_str_metamethod_aux
 				,data->stk_vm_current \
@@ -130,14 +133,14 @@ namespace zetscript{
 	}
 
 	bool vm_store(
-			VirtualMachine *vm
-			,ScriptFunction *calling_function
-			,Instruction *instruction
+			VirtualMachine 	*	_vm
+			,ScriptFunction *	_calling_function
+			,Instruction 	*	_instruction
 	){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		VirtualMachineData 			*		data=(VirtualMachineData *)_vm->data;
 		StackElement 				*		stk_dst=NULL,
 									*		stk_src=NULL;
-		std::vector<StackElement *> 	*		store_lst_setter_functions=NULL;
+		std::vector<StackElement *> *		store_lst_setter_functions=NULL;
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
 		ContainerSlotStore 			*		container_slot_store=NULL;
@@ -151,10 +154,11 @@ namespace zetscript{
 		StackMemberProperty 		*		stk_mp_aux=NULL;
 		ScriptFunction 				*		ptr_function_found=NULL;
 		uint16_t 							stk_src_properties=0;
+		Instruction					*		instruction=_instruction;
 
 
 		 // n elements left
-		n_element_left_to_store=(char)instruction->value_op1;
+		n_element_left_to_store=(char)_instruction->value_op1;
 
 		// vm_current - n_element_left_to_store we have src values
 		// do +1 is because it has to point to first the stack, due vm_stk_current points to new stk slot
@@ -246,9 +250,9 @@ namespace zetscript{
 				}
 
 				if((ptr_function_found=vm_find_native_function( \
-						vm \
+						_vm \
 						,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
-						,calling_function\
+						,_calling_function\
 						,instruction\
 						,false\
 						,data->vm_str_metamethod_aux
@@ -282,8 +286,8 @@ namespace zetscript{
 			}\
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
 				vm_execute_function_native(\
-						vm\
-						,calling_function\
+						_vm\
+						,_calling_function\
 						,instruction\
 						,so_aux\
 						,ptr_function_found\
@@ -292,7 +296,7 @@ namespace zetscript{
 				);\
 			}else{\
 				vm_execute_function_script(\
-					vm\
+					_vm\
 					,so_aux\
 					,ptr_function_found\
 					,stk_arg\
@@ -326,9 +330,14 @@ namespace zetscript{
 						if(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties) != GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src->properties)
 						){
 							// check particular case
-							VM_STOP_EXECUTE("Symbol '%s': different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals",SFI_GET_SYMBOL_NAME(calling_function,instruction));
+							VM_STOP_EXECUTE(
+								"Symbol '%s': different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals"
+								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+							);
 						}else{ // is object
-							VM_STOP_EXECUTEF("Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator (aka set metamethod) in order to perform assign operation");
+							VM_STOP_EXECUTEF(
+								"Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator (aka set metamethod) in order to perform assign operation"
+							);
 						}
 					}
 				}
@@ -373,11 +382,11 @@ namespace zetscript{
 					stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 					// create shared ptr
-					if(!vm_create_shared_script_object(vm,str_object)){
+					if(!vm_create_shared_script_object(_vm,str_object)){
 						goto lbl_exit_function;
 					}
 					// share ptr
-					if(!vm_share_script_object(vm,str_object)){
+					if(!vm_share_script_object(_vm,str_object)){
 						goto lbl_exit_function;
 					}
 					//-------------------------------------
@@ -429,11 +438,11 @@ namespace zetscript{
 					stk_dst->value=(intptr_t)weak_pointer;
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
-					if(!vm_create_shared_script_object(vm,weak_pointer)){
+					if(!vm_create_shared_script_object(_vm,weak_pointer)){
 						goto lbl_exit_function;
 					}
 
-					if(!vm_share_script_object(vm,weak_pointer)){
+					if(!vm_share_script_object(_vm,weak_pointer)){
 						goto lbl_exit_function;
 					}
 
@@ -443,7 +452,7 @@ namespace zetscript{
 					stk_dst->value=(intptr_t)so_aux;
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
-					if(!vm_share_script_object(vm,so_aux)){
+					if(!vm_share_script_object(_vm,so_aux)){
 						goto lbl_exit_function;
 					}
 
@@ -474,14 +483,14 @@ namespace zetscript{
 					chk_ref=(StackElement *)chk_ref->value;
 				}
 
-				if(!vm_unref_shared_script_object(vm,old_so,VM_CURRENT_SCOPE_BLOCK)){
+				if(!vm_unref_shared_script_object(_vm,old_so,VM_CURRENT_SCOPE_BLOCK)){
 					goto lbl_exit_function;
 				}
 			}
 		}
 
 
-		if(instruction->byte_code ==BYTE_CODE_STORE_CONST){
+		if(_instruction->byte_code ==BYTE_CODE_STORE_CONST){
 			stk_dst->properties |= STK_PROPERTY_READ_ONLY;
 		}
 

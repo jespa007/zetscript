@@ -5,18 +5,19 @@
 
 namespace zetscript{
 	ScriptFunction * vm_find_native_function(
-			VirtualMachine *vm
-			,ScriptType *class_obj // if NULL is MainClass
-			,ScriptFunction *calling_function
-			,Instruction * instruction // call instruction
-			,bool is_constructor
-			,const std::string & symbol_to_find
-			,StackElement *stk_arg
-			,unsigned char n_args
+			VirtualMachine 		*	_vm
+			,ScriptType 		*	_class_obj // if NULL is MainClass
+			,ScriptFunction 	*	_calling_function
+			,Instruction 		* 	_instruction // call instruction
+			,bool 					_is_constructor
+			,const std::string & 	_symbol_to_find
+			,StackElement 		*	_stk_arg
+			,unsigned char 			_n_args
 	){
 
 		// by default search over global functions...
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
+		Instruction	*instruction=_instruction;
 		ScriptFunction * ptr_function_found=NULL;
 		std::string aux_string;
 		int start_param=0;
@@ -24,9 +25,9 @@ namespace zetscript{
 		Symbol ** stk_elements_builtin_ptr= data->main_function_object->scope_script_function->symbol_functions->data();// vector of symbols
 		size_t stk_elements_builtin_len=  data->main_function_object->scope_script_function->symbol_functions->size();// vector of symbols
 
-		if(class_obj != NULL){
-			stk_elements_builtin_ptr=class_obj->scope_script_type->symbol_functions->data();
-			stk_elements_builtin_len=class_obj->scope_script_type->symbol_functions->size();
+		if(_class_obj != NULL){
+			stk_elements_builtin_ptr=_class_obj->scope_script_type->symbol_functions->data();
+			stk_elements_builtin_len=_class_obj->scope_script_type->symbol_functions->size();
 		}
 
 		for(int i = (int)(stk_elements_builtin_len-1); i>=0 && ptr_function_found==NULL; i--){ /* search all function that match symbol ... */
@@ -37,16 +38,16 @@ namespace zetscript{
 
 			aux_string=irfs->name_script_function;
 
-			bool symbol_equals=aux_string == symbol_to_find;
+			bool symbol_equals=aux_string == _symbol_to_find;
 
-			if((symbol_equals && ((int)irfs->params_len == (n_args+start_param)))){
+			if((symbol_equals && ((int)irfs->params_len == (_n_args+start_param)))){
 				// Only check native functions
 				if((irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ /* C! Must match all args...*/
 					bool all_check=true; /*  check arguments types ... */
 					int arg_idx_script_type=-1;
 
-					for( unsigned k = 0; k < n_args && all_check;k++){ // ignore first parameter due expects zetscript
-						StackElement *current_arg=&stk_arg[k];
+					for( unsigned k = 0; k < _n_args && all_check;k++){ // ignore first parameter due expects zetscript
+						StackElement *current_arg=&_stk_arg[k];
 						arg_idx_script_type=irfs->params[k+start_param].idx_script_type;
 
 						if(arg_idx_script_type!=IDX_TYPE_STACK_ELEMENT){
@@ -115,20 +116,20 @@ namespace zetscript{
 		}
 
 		if(ptr_function_found == NULL){
-			std::string class_str=class_obj==NULL?"":class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?class_obj->str_script_type:"";
+			std::string class_str=_class_obj==NULL?"":_class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN?_class_obj->str_script_type:"";
 			int n_candidates=0;
 			std::string str_candidates="";
 			std::string function_name_not_found=
 				class_str==""
 				?
-				symbol_to_find
+				_symbol_to_find
 				:
-				zs_strutils::format("%s::%s",class_str.c_str(),symbol_to_find.c_str());
+				zs_strutils::format("%s::%s",class_str.c_str(),_symbol_to_find.c_str());
 
 			std::string args_str = "";
 			/* get arguments... */
-			for( unsigned k = 0; k < n_args;k++){
-				StackElement *current_arg=&stk_arg[k];
+			for( unsigned k = 0; k < _n_args;k++){
+				StackElement *current_arg=&_stk_arg[k];
 
 				if(k>0){
 					args_str.append(",");
@@ -181,7 +182,7 @@ namespace zetscript{
 
 				VM_EXTRACT_FUNCTION_INFO
 
-				if((irfs->name_script_function == symbol_to_find) && (irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){
+				if((irfs->name_script_function == _symbol_to_find) && (irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){
 
 					if(n_candidates == 0){
 						str_candidates.append("\tPossible candidates are:\n\n");
@@ -189,8 +190,8 @@ namespace zetscript{
 					str_candidates.append("\t\t-");
 
 					// type if not main
-					if(class_obj!=NULL && class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN){
-						str_candidates.append(class_obj->str_script_type);
+					if(_class_obj!=NULL && _class_obj->idx_script_type!=IDX_TYPE_CLASS_MAIN){
+						str_candidates.append(_class_obj->str_script_type);
 						str_candidates.append("::");
 					}
 
@@ -241,7 +242,7 @@ namespace zetscript{
 
 			if(n_candidates == 0){
 				VM_ERROR("Cannot call native %s '%s(%s)'. Function not registered\n\n"
-					,is_constructor ? "constructor":class_str==""?"function":"member function"
+					,_is_constructor ? "constructor":class_str==""?"function":"member function"
 					,function_name_not_found.c_str()
 					,args_str.c_str()
 				);
@@ -250,7 +251,7 @@ namespace zetscript{
 			}
 			else{
 				VM_ERROR("Cannot call native %s '%s(%s)'\n\n%s"
-					,is_constructor ? "constructor":class_str==""?"function":"member function"
+					,_is_constructor ? "constructor":class_str==""?"function":"member function"
 					,function_name_not_found.c_str()
 					,args_str.c_str()
 					,str_candidates.c_str()

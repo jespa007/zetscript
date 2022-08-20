@@ -4,24 +4,21 @@
  */
 namespace zetscript{
 	bool vm_iterator_init(
-			VirtualMachine 		*	vm
-			,ScriptObject 		*	this_object
-			,ScriptFunction 	*	calling_function
-			,Instruction 		*	instruction
+			VirtualMachine 		*	_vm
+			,ScriptObject 		*	_this_object
+			,ScriptFunction 	*	_calling_function
+			,Instruction 		*	_instruction
 			,StackElement 		*	_stk_local_var
 	){
 
-		VirtualMachineData *	data=(VirtualMachineData *)vm->data;
+		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
 		StackElement 			stk_aux1;
-
-		// stk_op1 expects to be stk
-		//ScriptFunction *sf_iter=NULL;
-		Symbol *symbol_iter;
-
-		StackElement *stk_result_op1=NULL;
-		StackElement *stk_result_op2=NULL;
-		ScriptObject *obj=NULL;
-		ScriptType *sc=NULL;
+		Symbol 				*	symbol_iter;
+		StackElement 		*	stk_result_op1=NULL;
+		StackElement 		*	stk_result_op2=NULL;
+		ScriptObject 		*	obj=NULL;
+		ScriptType 			*	sc=NULL;
+		Instruction			* 	instruction=_instruction;
 
 		 VM_POP_STK_TWO;
 
@@ -36,7 +33,7 @@ namespace zetscript{
 			//VM_ERROR("internal: Expected object");
 			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
 				VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 					,stk_to_str(data->zs,data->stk_vm_current).c_str()
 				);
 				return false;
@@ -79,7 +76,7 @@ namespace zetscript{
 
 			obj=(ScriptObject *)data->stk_vm_current->value;
 
-			if(!vm_share_script_object(vm,obj)){\
+			if(!vm_share_script_object(_vm,obj)){\
 				goto lbl_exit_function;\
 			}\
 
@@ -121,17 +118,18 @@ namespace zetscript{
 	}
 
 	bool vm_perform_in_operator(
-			VirtualMachine 	*vm
-			,ScriptObject 	*this_object
-			,ScriptFunction *calling_function
-			,Instruction 	*instruction
+			VirtualMachine 	*_vm
+			,ScriptObject 	*_this_object
+			,ScriptFunction *_calling_function
+			,Instruction 	*_instruction
 			,StackElement 	*_stk_local_var
 	){
-		std::string error="";
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		StackElement *stk_result_op1=NULL;
-		StackElement *stk_result_op2=NULL;
-		StackElement stk_aux1;
+		std::string 			error="";
+		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
+		StackElement 		*	stk_result_op1=NULL;
+		StackElement 		*	stk_result_op2=NULL;
+		StackElement 			stk_aux1;
+		Instruction			*	instruction=_instruction;
 
 		 VM_POP_STK_TWO;
 
@@ -183,9 +181,9 @@ namespace zetscript{
 			default:
 				// TODO:
 				if(vm_call_metamethod(
-						vm,
-						calling_function,
-						instruction,
+						_vm,
+						_calling_function,
+						_instruction,
 						BYTE_CODE_METAMETHOD_IN,
 						stk_result_op2,
 						stk_result_op1,

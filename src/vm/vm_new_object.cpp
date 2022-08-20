@@ -1,16 +1,17 @@
 
 namespace zetscript{
 	bool vm_byte_code_new_object_by_value(
-			VirtualMachine *vm
-			,ScriptFunction *calling_function
-			,Instruction *instruction
+			VirtualMachine 	*	_vm
+			,ScriptFunction *	_calling_function
+			,Instruction 	*	_instruction
 	){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		StackElement *stk_result_op1=NULL;
 		ScriptType *sc_aux1=NULL;
 		Symbol *symbol_aux=NULL;
 		ScriptObject *so_aux=NULL;
 		ScriptObjectClass *so_class_aux1=NULL;
+		Instruction *instruction=_instruction;
 
 		VM_POP_STK_ONE;
 		 if(STK_VALUE_IS_TYPE(stk_result_op1)){
@@ -23,7 +24,7 @@ namespace zetscript{
 
 			 so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data->script_type_factory,stk_result_op1->value);
 
-			if(!vm_create_shared_script_object(vm,so_aux)){
+			if(!vm_create_shared_script_object(_vm,so_aux)){
 				goto lbl_exit_function;
 			}
 
@@ -35,8 +36,8 @@ namespace zetscript{
 
 				so_class_aux1=(ScriptObjectClass *)so_aux;
 
-				so_class_aux1->info_function_new=calling_function;
-				so_class_aux1->instruction_new=instruction;
+				so_class_aux1->info_function_new=_calling_function;
+				so_class_aux1->instruction_new=_instruction;
 
 				// check for constructor
 				symbol_aux=sc_aux1->getSymbolMemberFunction(CONSTRUCTOR_FUNCTION_NAME);
@@ -54,7 +55,7 @@ namespace zetscript{
 
 		 }else{
 			VM_STOP_EXECUTE("var '%s' expected as 'type' but it was '%s'"
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+					,SFI_GET_SYMBOL_NAME(_calling_function,_instruction)
 					, stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
 			);
 		 }

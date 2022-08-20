@@ -4,33 +4,36 @@
  */
 namespace zetscript{
 
-	void vm_inner_call(
-			VirtualMachine *vm
-			,ScriptFunction	* calling_function
-			,Instruction	* instruction
-			,ScriptObject 	*script_object
-			,ScriptFunction *script_function
-			,int _n_args
+	bool vm_inner_call(
+			VirtualMachine 	*	_vm
+			,ScriptFunction	* 	_calling_function
+			,Instruction	* 	_instruction
+			,ScriptObject 	*	_script_object
+			,ScriptFunction *	_script_function
+			,int 				_n_args
 
 	){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		StackElement *stk_def_afun_start=data->stk_vm_current;
-		int n_returned_args_afun=0;
-		if((script_function)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
+		StackElement 		*	stk_def_afun_start=data->stk_vm_current;
+		int 					n_returned_args_afun=0;
+		Instruction			*	instruction=_instruction;
+
+
+		if((_script_function)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 			vm_execute_function_native(
-					vm
-					,calling_function
+					_vm
+					,_calling_function
 					,instruction
-					,script_object
-					,script_function
+					,_script_object
+					,_script_function
 					,stk_def_afun_start
 					,_n_args
 			);
 		}else{
 			vm_execute_function_script(
-				vm
-				,script_object
-				,script_function
+				_vm
+				,_script_object
+				,_script_function
 				,stk_def_afun_start
 			);
 		}
@@ -39,55 +42,53 @@ namespace zetscript{
 			data->vm_error_callstack_str+=zs_strutils::format(
 				"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */
 				, "iter"
-				,SFI_GET_FILE(calling_function,instruction)
-				,SFI_GET_LINE(calling_function,instruction)
+				,SFI_GET_FILE(_calling_function,instruction)
+				,SFI_GET_LINE(_calling_function,instruction)
 			);
-			return;
+			return false;
 			/*if(goto_on_error){
 				goto lbl_exit_function;
 			}*/
 		}
 		n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
 		/* we share pointer (true second arg) to not remove on pop in calling return */
-		CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,false)
+		CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,false);
 
 		/* reset stack */
 		data->stk_vm_current=stk_def_afun_start;
 
+		return true;
+
 	lbl_exit_function:
 
-		return;
+		return false;
 
 	}
 
 	bool vm_call(
-			VirtualMachine *vm
-			,ScriptObject *this_object
-			,ScriptFunction *calling_function
-			,Instruction *instruction
-			,StackElement *_stk_local_var
+			VirtualMachine 	*	_vm
+			,ScriptObject 	*	_this_object
+			,ScriptFunction *	_calling_function
+			,Instruction 	*	_instruction
+			,StackElement 	*	_stk_local_var
 	){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		//------------------------------------------------
-		// SFCALL
-		Symbol			*symbol_aux=NULL;
-		StackElement	*sf_call_stk_function_ref=NULL;
-		ScriptFunction 	*sf_call_script_function = NULL;
+		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
+		Symbol				*	symbol_aux=NULL;
+		StackElement		*	sf_call_stk_function_ref=NULL;
+		ScriptFunction 		*	sf_call_script_function = NULL;
 
-		unsigned char 	sf_call_n_args=0; // number arguments will pass to this function
-		StackElement 	*sf_call_stk_start_arg_call=NULL;
-		ScriptObject 	*sf_call_calling_object = NULL;
-		bool			 sf_call_is_constructor=false;
-		bool			sf_call_ignore_call=false;
-		size_t 		 	sf_call_n_local_symbols=0;
-		bool 			 sf_call_is_member_function=false;
-		StackElement 	*sf_call_stk_return=NULL;
-		int 			sf_call_n_returned_arguments_from_function=0;
-		int				sf_call_stk_start_function_object=0;
-		int				sf_call_return=0;
-
-		// SFCALL
-		//------------------------------------------------
+		unsigned char 			sf_call_n_args=0; // number arguments will pass to this function
+		StackElement 		*	sf_call_stk_start_arg_call=NULL;
+		ScriptObject 		*	sf_call_calling_object = NULL;
+		bool			 		sf_call_is_constructor=false;
+		bool					sf_call_ignore_call=false;
+		size_t 		 			sf_call_n_local_symbols=0;
+		bool 			 		sf_call_is_member_function=false;
+		StackElement 		*	sf_call_stk_return=NULL;
+		int 					sf_call_n_returned_arguments_from_function=0;
+		int						sf_call_stk_start_function_object=0;
+		int						sf_call_return=0;
+		Instruction			*	instruction=_instruction;
 
 
 		switch(instruction->byte_code){
@@ -101,7 +102,7 @@ namespace zetscript{
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
 			case BYTE_CODE_SUPER_CALL:
-				 sf_call_calling_object = this_object;
+				 sf_call_calling_object = _this_object;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=true;
@@ -110,7 +111,7 @@ namespace zetscript{
 				 sf_call_script_function=(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr;
 				 goto execute_function;
 			case  BYTE_CODE_THIS_CALL: // immediate call this
-				 sf_call_calling_object = this_object;
+				 sf_call_calling_object = _this_object;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=true;
@@ -120,25 +121,25 @@ namespace zetscript{
 				 // Since symbol is created on its owner, we have to get symbol from this object. This technique expects
 				 // that symbols are ordered
 				 if(instruction->value_op2!=ZS_IDX_UNDEFINED){
-					 symbol_aux=(Symbol *)this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
+					 symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
 				 }
 				 if(symbol_aux==NULL){ // it calls overrided function (top-most)
 					 VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
-							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-							,this_object->getScriptType()->str_script_type.c_str()
-							,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+							,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+							,_this_object->getScriptType()->str_script_type.c_str()
+							,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 					);
 				 }
 				 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
 				 goto execute_function;
 			case BYTE_CODE_INDIRECT_THIS_CALL:
-				 sf_call_calling_object = this_object;
+				 sf_call_calling_object = _this_object;
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_stk_start_function_object=0;
-				 sf_call_stk_function_ref=this_object->getProperty(SFI_GET_SYMBOL_NAME(calling_function,instruction));
+				 sf_call_stk_function_ref=_this_object->getProperty(SFI_GET_SYMBOL_NAME(_calling_function,instruction));
 				 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
-					 VM_STOP_EXECUTE("'variable this.%s' not exist", SFI_GET_SYMBOL_NAME(calling_function,instruction)
+					 VM_STOP_EXECUTE("'variable this.%s' not exist", SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 					);
 				 }
 				 goto load_function;
@@ -201,7 +202,7 @@ load_function:
 				  VM_STOP_EXECUTE(
 						  "Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced"
 						  ,sofm->so_function->name_script_function.c_str()
-						  , SFI_GET_SYMBOL_NAME(calling_function,instruction));
+						  , SFI_GET_SYMBOL_NAME(_calling_function,instruction));
 			  }
 			  sf_call_calling_object=sofm_object;
 			  sf_call_script_function=sofm->so_function;
@@ -222,27 +223,27 @@ load_function:
 					if(instruction->byte_code==BYTE_CODE_INDIRECT_THIS_CALL){
 
 						VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 						);
 
 					}else if(instruction->byte_code==BYTE_CODE_MEMBER_CALL){
 						VM_STOP_EXECUTE("Cannot call '%s'. '%s' is not function or not exist"
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 						);
 					}else if(instruction->byte_code==BYTE_CODE_INDIRECT_LOCAL_CALL){
 						VM_STOP_EXECUTE("Cannot call '%s' as a function. '%s' is type '%s'"
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
 						);
 					}else{ // STACK CALL
 						VM_STOP_EXECUTE("Error trying to call a function from stack. StackElement value is '%s' as type '%s'"
 								,stk_to_str(data->zs,sf_call_stk_function_ref).c_str()
 								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
-								,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 						);
 					}
 				}
@@ -285,7 +286,7 @@ execute_function:
 								}
 
 								ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg);
-								if(!vm_create_shared_script_object(vm,sc)){
+								if(!vm_create_shared_script_object(_vm,sc)){
 									goto lbl_exit_function;
 								}
 								so_param=sc;
@@ -308,7 +309,7 @@ execute_function:
 								so_param=(ScriptObject *)stk_arg->value;
 								if(so_param->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
 									ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
-									if(!vm_create_shared_script_object(vm,sc)){
+									if(!vm_create_shared_script_object(_vm,sc)){
 										goto lbl_exit_function;
 									}
 									sc->set(*((std::string *)((ScriptObjectString *)so_param)->value));
@@ -324,11 +325,11 @@ execute_function:
 						}else{
 							if(sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS){ // enter var args
 								var_args=ZS_NEW_OBJECT_VECTOR(data->zs);
-								if(!vm_create_shared_script_object(vm,var_args)){
+								if(!vm_create_shared_script_object(_vm,var_args)){
 									goto lbl_exit_function;
 								}
 
-								if(!vm_share_script_object(vm,var_args)){ // we share pointer +1 to not remove on pop in calling return
+								if(!vm_share_script_object(_vm,var_args)){ // we share pointer +1 to not remove on pop in calling return
 									goto lbl_exit_function;
 								}
 
@@ -340,7 +341,7 @@ execute_function:
 							}else{ // not push in var arg
 
 								if(so_param != NULL){ // share n+1 to function if not this
-									if(!vm_share_script_object(vm,so_param)){ // By pass object in the arg, it shares pointer +1 to not remove on pop in calling return
+									if(!vm_share_script_object(_vm,so_param)){ // By pass object in the arg, it shares pointer +1 to not remove on pop in calling return
 										goto lbl_exit_function;
 									}
 								}
@@ -378,7 +379,7 @@ execute_function:
 
 						// if script object it shares in order to be used as variable in the function to be called
 						if(data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
-							if(!vm_share_script_object(vm,(ScriptObject *)data->stk_vm_current->value)){
+							if(!vm_share_script_object(_vm,(ScriptObject *)data->stk_vm_current->value)){
 								goto lbl_exit_function;
 							}
 						}
@@ -396,13 +397,13 @@ execute_function:
 				if(sf_call_is_constructor){
 					// When the object is being constructed its shares is 0. In the 'constructor' function may pass 'this' throug other functions
 					// exposin 'this' candidate to be dereferenced and destroyed. So we share 'this' before the call and unref after call
-					if(!vm_share_script_object(vm,sf_call_calling_object)){
+					if(!vm_share_script_object(_vm,sf_call_calling_object)){
 						goto lbl_exit_function;
 					}
 				}
 
 				vm_execute_function_script(
-					vm
+					_vm
 					,sf_call_calling_object
 					,sf_call_script_function
 					,sf_call_stk_start_arg_call
@@ -412,7 +413,11 @@ execute_function:
 					// When the object is being constructed its shares is 0. In the 'constructor' function may pass 'this' throug other functions
 					// exposin 'this' candidate to be dereferenced and destroyed. In the BYTE_CODE_CONSTRUCTOR_CALL was shared +1.
 					// In this case deref the shared 'this' is dereferenced
-					if(!vm_unref_shared_script_object(vm,sf_call_calling_object,VM_CURRENT_SCOPE_BLOCK)){
+					if(!vm_unref_shared_script_object(
+							_vm
+							,sf_call_calling_object
+							,VM_CURRENT_SCOPE_BLOCK)
+					){
 						goto lbl_exit_function;
 					}
 				}
@@ -440,9 +445,9 @@ execute_function:
 					{
 						ScriptFunction *sf_aux;
 						if((sf_aux=vm_find_native_function(
-								vm
+								_vm
 								,sc
-								,calling_function
+								,_calling_function
 								,instruction
 								,sf_call_is_constructor
 								,sf_call_script_function->name_script_function // symbol to find
@@ -456,8 +461,8 @@ execute_function:
 
 				try{
 					vm_execute_function_native(
-						vm
-						,calling_function
+						_vm
+						,_calling_function
 						,instruction
 						,sf_call_calling_object
 						,sf_call_script_function
@@ -480,8 +485,8 @@ execute_function:
 					(
 						(
 							(
-								calling_function->name_script_function=="assert"
-							||  calling_function->name_script_function=="error"
+								_calling_function->name_script_function=="assert"
+							||  _calling_function->name_script_function=="error"
 							)
 							&&
 							(
@@ -491,7 +496,7 @@ execute_function:
 						||
 						(
 							(
-								calling_function->name_script_function=="eval"
+								_calling_function->name_script_function=="eval"
 							&&  sf_call_script_function->name_script_function=="evalNative"
 							)
 						)
@@ -507,14 +512,14 @@ execute_function:
 					){
 						str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->str_script_type.c_str();
 					}
-					const char * file_src_call=SFI_GET_FILE(calling_function,instruction);
+					const char * file_src_call=SFI_GET_FILE(_calling_function,instruction);
 					data->vm_error_callstack_str+=zs_strutils::format(
 						"\nat calling function %s%s%s (%sline:%i)" // TODO: get full symbol ?
 						,str_class_owner==NULL?"":str_class_owner
 						,str_class_owner==NULL?"":"::"
 						,sf_call_script_function->name_script_function.c_str()
 						,file_src_call?zs_strutils::format("file:%s ",file_src_call).c_str():""
-						,SFI_GET_LINE(calling_function,instruction)
+						,SFI_GET_LINE(_calling_function,instruction)
 					);
 
 				}

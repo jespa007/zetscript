@@ -8,7 +8,6 @@
 #include "vm_push_stk.h"
 #include "vm_operation.h"
 #include "vm_operation_set.h"
-#include "vm_set.h"
 #include "vm_scope.h"
 
 #define VM_STACK_MAX					150
@@ -41,14 +40,26 @@ namespace zetscript{
 	void 			vm_set_file_line_error(VirtualMachine *vm, const char *file, int line, const char *in_txt,...);
 	std::string 		vm_get_error(VirtualMachine *vm);
 	
-	bool 			vm_it_has_error(VirtualMachine *vm);
+	bool 			vm_it_has_error(
+		VirtualMachine 	*	_vm
+	);
 
 
 	//StackElement * 	vm_get_top_stack_element_from_stack(VirtualMachine *vm);
-	StackElement *	vm_get_stack_elements(VirtualMachine *vm);
-	StackElement *	vm_get_current_stack_element(VirtualMachine *vm);
+	StackElement *	vm_get_stack_elements(
+		VirtualMachine 	*	_vm
+	);
+
+	StackElement *	vm_get_current_stack_element(
+		VirtualMachine 	*	_vm
+	);
+
 	void 			vm_reset_error_vars(VirtualMachine *vm);
-	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,unsigned idx_glb_element);
+	StackElement * 	vm_get_stack_element_at(
+		VirtualMachine *vm
+		,unsigned idx_glb_element
+	);
+
 	StackElement vm_execute(
 		VirtualMachine 	*	_vm
 		,ScriptObject 	*	_this_object
@@ -61,16 +72,16 @@ namespace zetscript{
 	);
 
 	void vm_execute_function_script(
-			VirtualMachine			* vm,
-			ScriptObject			* this_object,
-			ScriptFunction 			* calling_function,
+			VirtualMachine			* _vm,
+			ScriptObject			* _this_object,
+			ScriptFunction 			* _calling_function,
 			StackElement 		  	* _stk_local_var
 	);
 
 	bool vm_unref_shared_script_object(
-		VirtualMachine *vm
-		, ScriptObject *_obj
-		,VM_ScopeBlock *_scope_block
+		VirtualMachine 	*	_vm
+		, ScriptObject 	*	_obj
+		,VM_ScopeBlock 	*	_scope_block
 	);
 
 	void vm_delete(VirtualMachine *vm);

@@ -43,7 +43,7 @@
 	else{\
 		VM_MAIN_ERROR(\
 				VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR\
-				,stk_result_op2\
+				,stk_result_op1\
 				,__METAMETHOD__\
 		);\
 	}\
@@ -77,8 +77,8 @@
 		break;\
 	default:\
 		if(vm_call_metamethod(\
-				vm\
-				,calling_function\
+				_vm\
+				,_calling_function\
 				,instruction\
 				,BYTE_CODE_METAMETHOD_DIV\
 				,stk_result_op1\
@@ -105,8 +105,8 @@
 		break;\
 	default:\
 		if(vm_call_metamethod(\
-				vm\
-				,calling_function\
+				_vm\
+				,_calling_function\
 				,instruction\
 				,BYTE_CODE_METAMETHOD_ADD\
 				,stk_result_op1\
@@ -134,8 +134,8 @@
 		break;\
 	default:\
 		if(vm_call_metamethod(\
-				vm\
-				,calling_function\
+				_vm\
+				,_calling_function\
 				,instruction\
 				,__METAMETHOD__\
 				,stk_result_op1\
@@ -181,7 +181,7 @@
 				VM_PUSH_STK_BOOLEAN(false);\
 			}\
 		}else if( STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) && STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){\
-			vm_push_stk_boolean_equal_strings(vm,stk_result_op1,stk_result_op2,__BYTE_CODE_METAMETHOD_OPERATION__);\
+			vm_push_stk_boolean_equal_strings(_vm,stk_result_op1,stk_result_op2,__BYTE_CODE_METAMETHOD_OPERATION__);\
 		}else if(  (stk_result_op1->properties==STK_PROPERTY_UNDEFINED || stk_result_op2->properties==STK_PROPERTY_UNDEFINED)\
 				&& (__BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_EQU || __BYTE_CODE_METAMETHOD_OPERATION__ == BYTE_CODE_METAMETHOD_NOT_EQU)\
 				){\
@@ -201,8 +201,8 @@
 		}else{\
 			stk_aux1=*stk_result_op1, stk_aux2=*stk_result_op2;\
 			if(vm_call_metamethod(\
-				vm\
-				,calling_function\
+				_vm\
+				,_calling_function\
 				,instruction\
 				, __BYTE_CODE_METAMETHOD_OPERATION__\
 				,&stk_aux1\
@@ -244,8 +244,8 @@
 		break;\
 	default:\
 		if(vm_call_metamethod(\
-			vm\
-			,calling_function\
+			_vm\
+			,_calling_function\
 			,instruction\
 			,BYTE_CODE_METAMETHOD_MOD\
 			,stk_result_op1\
@@ -269,8 +269,8 @@
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
 	}else{\
 		if(vm_call_metamethod(\
-			vm\
-			,calling_function\
+			_vm\
+			,_calling_function\
 			,instruction\
 			, __METAMETHOD__\
 			,stk_result_op1\
@@ -280,7 +280,7 @@
 		}\
 	}\
 
-#define VM_OPERATION_NEG_POST(__C_OP__, __METAMETHOD__,__POST_OPERATION_VARIABLE__) \
+#define VM_OPERATION_NEG_POST(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->stk_vm_current;\
 	EXTRACT_STK_RESULT_OP1\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
@@ -297,35 +297,24 @@
 		(*((zs_float *)(ptr_ptr_void_ref)))__C_OP__;\
 		break;\
 	default:/*metamethod*/\
-		LOAD_PROPERTIES(__METAMETHOD__);\
-		if(ptr_metamethod_members_aux->neg==NULL){\
-			METAMETHOD_OPERATION_NOT_FOUND(BYTE_CODE_METAMETHOD_NEG); \
+		if(vm_call_metamethod_operation_post(\
+			_vm\
+			,_calling_function\
+			,instruction\
+			,stk_result_op1\
+			,__METAMETHOD__\
+			,true\
+		)==false){\
+			goto lbl_exit_function;\
 		}\
-		/* call _neg */\
-		VM_INNER_CALL(\
-				so_aux\
-				,(ScriptFunction *)ptr_metamethod_members_aux->neg->ref_ptr\
-				,0\
-				,ptr_metamethod_members_aux->neg->name\
-		);\
-		data->stk_vm_current++; /* store negated value to stk to load after */\
-		/* call inc metamethod */\
-		if(__POST_OPERATION_VARIABLE__==NULL){\
-			METAMETHOD_OPERATION_NOT_FOUND(__METAMETHOD__); \
-		}\
-		VM_INNER_CALL(\
-				so_aux\
-				,(ScriptFunction *)__POST_OPERATION_VARIABLE__->ref_ptr\
-				,0\
-				,__POST_OPERATION_VARIABLE__->name\
-		);\
+		break;\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
 		data->stk_vm_current=stk_start;\
 	}
 
 
-#define VM_OPERATION_POST(__C_OP__, __METAMETHOD__,__POST_OPERATION_VARIABLE__) \
+#define VM_OPERATION_POST(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->stk_vm_current;\
 	EXTRACT_STK_RESULT_OP1\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
@@ -342,40 +331,22 @@
 		(*((zs_float *)(ptr_ptr_void_ref)))__C_OP__;\
 		break;\
 	default:/*metamethod*/\
-		LOAD_PROPERTIES(__METAMETHOD__);\
-		if(ptr_metamethod_members_aux->getter!=NULL){\
-			/* call _neg */\
-			VM_INNER_CALL(\
-					so_aux\
-					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
-					, 0 \
-					,ptr_metamethod_members_aux->getter->name\
-			);\
-		}else{ /* store object */ \
-			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
-				data->stk_vm_current->value=(zs_int)so_aux;\
-				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
-			}else{\
-				*data->stk_vm_current=__STK_VAR_COPY__;\
-			}\
+		if(vm_call_metamethod_operation_post(\
+			_vm\
+			,_calling_function\
+			,instruction\
+			,stk_result_op1\
+			,__METAMETHOD__\
+		)==false){\
+			goto lbl_exit_function;\
 		}\
-		data->stk_vm_current++;\
-		/* call post operation metamethod */\
-		if(__POST_OPERATION_VARIABLE__==NULL){\
-			METAMETHOD_OPERATION_NOT_FOUND(__METAMETHOD__); \
-		}\
-		VM_INNER_CALL(\
-				so_aux\
-				,(ScriptFunction *)__POST_OPERATION_VARIABLE__->ref_ptr\
-				, 0 \
-				,__POST_OPERATION_VARIABLE__->name\
-		);\
+		break;\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
 		data->stk_vm_current=stk_start;\
 	}
 
-#define VM_OPERATION_PRE(__C_OP__, __METAMETHOD__,__PRE_OPERATION_VARIABLE__) \
+#define VM_OPERATION_PRE(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->stk_vm_current;\
 	EXTRACT_STK_RESULT_OP1\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
@@ -392,35 +363,16 @@
 		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)(ptr_ptr_void_ref)));\
 		break;\
 	default:\
-		LOAD_PROPERTIES(__METAMETHOD__);\
-		/* call pre operation metamethod */\
-		if(__PRE_OPERATION_VARIABLE__==NULL){\
-			METAMETHOD_OPERATION_NOT_FOUND(__METAMETHOD__); \
+		if(vm_call_metamethod_operation_pre(\
+			_vm\
+			,_calling_function\
+			,instruction\
+			,stk_result_op1\
+			,__METAMETHOD__\
+		)==false){\
+			goto lbl_exit_function;\
 		}\
-		VM_INNER_CALL(\
-				so_aux\
-				,(ScriptFunction *)__PRE_OPERATION_VARIABLE__->ref_ptr\
-				,0 \
-				,__PRE_OPERATION_VARIABLE__->name\
-		);\
-		/*getter after*/\
-		if(ptr_metamethod_members_aux->getter!=NULL){\
-			/* call _neg */\
-			VM_INNER_CALL(\
-					so_aux\
-					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
-					,0 \
-					,ptr_metamethod_members_aux->getter->name\
-			);\
-		}else{ /* store object */ \
-			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
-				data->stk_vm_current->value=(zs_int)so_aux;\
-				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
-			}else{\
-				*data->stk_vm_current=__STK_VAR_COPY__;\
-			}\
-		}\
-		data->stk_vm_current++;\
+		break;\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
 		data->stk_vm_current=stk_start;\

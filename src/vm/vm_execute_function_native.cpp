@@ -60,30 +60,31 @@
 namespace zetscript{
 
 	void  vm_execute_function_native(
-			VirtualMachine *vm,
-			const ScriptFunction *calling_function,
-			Instruction *instruction,
-			ScriptObject  * this_object,
-			const ScriptFunction *c_function,
-			StackElement *stk_arg_c_function,
-			unsigned char _n_args
+			VirtualMachine 			*	_vm,
+			const ScriptFunction 	*	_calling_function,
+			Instruction 			*	_instruction,
+			ScriptObject  			* 	_this_object,
+			const ScriptFunction 	*	_c_function,
+			StackElement 			*	_stk_arg_c_function,
+			unsigned char 				_n_args
 	){
 
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		zs_int  fun_ptr = c_function->ref_native_function_ptr;
-		std::string str_aux;
+		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
+		zs_int  				fun_ptr = _c_function->ref_native_function_ptr;
+		std::string 			str_aux;
+		Instruction			*	instruction=_instruction;
 
-		if((c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){
-			VM_SET_USER_ERRORF(vm,"Internal error: Function not native");
+		if((_c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){
+			VM_SET_USER_ERRORF(_vm,"Internal error: Function not native");
 			return;
 		}
 
-		int idx_script_type_return=c_function->idx_script_type_return;
+		int idx_script_type_return=_c_function->idx_script_type_return;
 		zs_int converted_param[MAX_NATIVE_FUNCTION_ARGS];
 		zs_float aux_float[MAX_NATIVE_FUNCTION_ARGS];
 		zs_int result=0;
 		StackElement *stk_arg_current;
-		data->current_call_c_function = c_function;
+		data->current_call_c_function = _c_function;
 		//int this_param=0;
 		int idx_arg_start=1;
 		unsigned char n_args=_n_args+1;
@@ -94,28 +95,28 @@ namespace zetscript{
 
 
 		// special case that this is passed in static ref function
-		if(this_object!=NULL){
+		if(_this_object!=NULL){
 			if(
-				(c_function->properties&FUNCTION_PROPERTY_MEMBER_FUNCTION)
+				(_c_function->properties&FUNCTION_PROPERTY_MEMBER_FUNCTION)
 			){
 				idx_arg_start++;
 				n_args++;
-				converted_param[1]=(zs_int)this_object->getNativeObject();
-			}else if(this_object->idx_script_type != IDX_TYPE_CLASS_MAIN){
+				converted_param[1]=(zs_int)_this_object->getNativeObject();
+			}else if(_this_object->idx_script_type != IDX_TYPE_CLASS_MAIN){
 				VM_ERROR_AND_RET("Function '%s' is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e '%s::%s')"
-						,c_function->name_script_function.c_str()
-						,this_object->getScriptType()->str_script_type.c_str()
-						,c_function->name_script_function.c_str()
-						,c_function->name_script_function.c_str()
+						,_c_function->name_script_function.c_str()
+						,_this_object->getScriptType()->str_script_type.c_str()
+						,_c_function->name_script_function.c_str()
+						,_c_function->name_script_function.c_str()
 						);
 			}
 		}
 
-		if(n_args>MAX_NATIVE_FUNCTION_ARGS){
-			VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
+		if(_n_args>MAX_NATIVE_FUNCTION_ARGS){
+			VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,_n_args);
 		}
 
-		if((c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF) {
+		if((_c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF) {
 			VM_ERROR_AND_RETF("Function is not registered as C");
 		}
 
@@ -123,39 +124,39 @@ namespace zetscript{
 			VM_ERROR_AND_RETF("Null function");
 		}
 
-		if((char)c_function->params_len != (n_args)){
+		if((char)_c_function->params_len != (n_args)){
 			VM_ERROR_AND_RET("Native function '%s' expects %i arguments but it passed %i arguments"
-					,c_function->name_script_function.c_str()
-					,c_function->params_len
-					,n_args);
+					,_c_function->name_script_function.c_str()
+					,_c_function->params_len
+					,_n_args);
 		}
 
-		if(c_function->params_len > MAX_NATIVE_FUNCTION_ARGS){
-			VM_ERROR_AND_RET("Reached max param for C function (Current: %i Max Allowed: %i)",c_function->params_len,MAX_NATIVE_FUNCTION_ARGS);
+		if(_c_function->params_len > MAX_NATIVE_FUNCTION_ARGS){
+			VM_ERROR_AND_RET("Reached max param for C function (Current: %i Max Allowed: %i)",_c_function->params_len,MAX_NATIVE_FUNCTION_ARGS);
 		}
 
 		// convert parameters script to c...
-		if(stk_arg_c_function!=NULL){
+		if(_stk_arg_c_function!=NULL){
 			for(unsigned char  i = idx_arg_start; i < n_args;i++){
 
-				stk_arg_current=&stk_arg_c_function[i-idx_arg_start];
+				stk_arg_current=&_stk_arg_c_function[i-idx_arg_start];
 				if(stk_arg_current->properties & STK_PROPERTY_PTR_STK){
 					stk_arg_current=((StackElement *)stk_arg_current->value);
 				}
 
 				// special case, function param is float and it has to convert to int
-				if((stk_arg_current->properties & STK_PROPERTY_ZS_INT) && (c_function->params[i].idx_script_type == IDX_TYPE_ZS_FLOAT_PTR_C)){
+				if((stk_arg_current->properties & STK_PROPERTY_ZS_INT) && (_c_function->params[i].idx_script_type == IDX_TYPE_ZS_FLOAT_PTR_C)){
 					aux_float[i]=stk_arg_current->value;
 					converted_param[i]=(zs_int)&aux_float[i];
 				}else if(!stk_to(
 						data->zs
-						,&stk_arg_c_function[i-idx_arg_start]
-						,c_function->params[i].idx_script_type
+						,&_stk_arg_c_function[i-idx_arg_start]
+						,_c_function->params[i].idx_script_type
 						,(zs_int *)&converted_param[i]
 						,data->vm_error_str
 				)){
 					VM_ERROR_AND_RET("Function '%s', param %i: %s",
-						c_function->name_script_function.c_str(),
+						_c_function->name_script_function.c_str(),
 						i,
 						data->vm_error_str.c_str()
 					);
@@ -163,9 +164,9 @@ namespace zetscript{
 			}
 		}
 
-		if(c_function->idx_script_type_return == IDX_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
+		if(_c_function->idx_script_type_return == IDX_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
 
-			switch(n_args){
+			switch(_n_args){
 			case 1:
 				PTR_FUNCTION_VOID_PARAM1(fun_ptr)(
 					converted_param[0]
@@ -263,7 +264,7 @@ namespace zetscript{
 					break;
 			}
 
-		}else if(c_function->idx_script_type_return==IDX_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
+		}else if(_c_function->idx_script_type_return==IDX_TYPE_BOOL_C){  // we must do a bool cast in order to get float return.
 			switch(n_args){
 			case 1:
 				result=PTR_FUNCTION_RET_BOOL_PARAM1(fun_ptr)(
@@ -361,7 +362,7 @@ namespace zetscript{
 				);
 				break;
 			}
-		}else if(c_function->idx_script_type_return==IDX_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->idx_script_type_return==IDX_TYPE_ZS_FLOAT_C){ // we must do a float cast in order to get float return.
 			zs_float float_aux=0;
 			switch(n_args){
 			case 1:
@@ -463,7 +464,7 @@ namespace zetscript{
 
 			ZS_FLOAT_COPY(&result,&float_aux);
 
-		}else if(c_function->idx_script_type_return==IDX_TYPE_STRING_C){ // we must do a float cast in order to get float return.
+		}else if(_c_function->idx_script_type_return==IDX_TYPE_STRING_C){ // we must do a float cast in order to get float return.
 
 			switch(n_args){
 			case 1:
@@ -672,7 +673,7 @@ namespace zetscript{
 
 		*data->stk_vm_current++=to_stk(data->zs,result,idx_script_type_return);
 
-		StackElement *sf_call_stk_return=(stk_arg_c_function+_n_args); // +1 points to starting return...
+		StackElement *sf_call_stk_return=(_stk_arg_c_function+_n_args); // +1 points to starting return...
 		int sf_call_n_returned_arguments_from_function=data->stk_vm_current-sf_call_stk_return;
 
 

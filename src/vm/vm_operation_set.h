@@ -42,8 +42,8 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	default:\
 		if(!vm_call_operation_store_metamethod(\
-			vm\
-			,calling_function\
+			_vm\
+			,_calling_function\
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -83,8 +83,8 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	default:\
 		if(!vm_call_operation_store_metamethod(\
-			vm\
-			,calling_function\
+			_vm\
+			,_calling_function\
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -135,8 +135,8 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	default:\
 		if(!vm_call_operation_store_metamethod(\
-			vm\
-			,calling_function\
+			_vm\
+			,_calling_function\
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -188,8 +188,8 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	default:\
 		if(!vm_call_operation_store_metamethod(\
-			vm\
-			,calling_function\
+			_vm\
+			,_calling_function\
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -213,8 +213,8 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		(*((zs_int *)(ptr_ptr_void_ref)))=stk_result_op1->value;\
 	}else{\
 		if(!vm_call_operation_store_metamethod(\
-			vm\
-			,calling_function\
+			_vm\
+			,_calling_function\
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
