@@ -81,15 +81,10 @@ namespace zetscript{
 				}
 			}
 
-
 			CLEAR_UNUSUED_SCOPES(eval_data);
-
 			eval_pop_and_compile_function(eval_data);
-
 			delete eval_data;
-
 		}
-
 
 		if(error){
 			THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,str_error.c_str());

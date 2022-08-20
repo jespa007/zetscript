@@ -431,8 +431,8 @@ SET(
 	scope/zs_scope.h
 	
 	# vm
-	vm/vm_set.h
-	vm/vm_operation.h
+	vm/vm_byte_code_operation.h
+	vm/vm_byte_code_operation_set.h
 	vm/vm_pop_stk.h
 	vm/vm_push_stk.h
 	vm/vm_scope.h

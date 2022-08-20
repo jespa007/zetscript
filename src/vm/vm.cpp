@@ -12,7 +12,9 @@ namespace zetscript{
 		unsigned int 		   	idx_current;
 	};
 
-	void vm_do_stack_dump(VirtualMachine *_vm){
+	void vm_do_stack_dump(
+			VirtualMachine *_vm
+	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		// derefer all variables in all scopes (except main )...
 		while(data->vm_current_scope_function > VM_SCOPE_FUNCTION_MAIN){
@@ -49,8 +51,11 @@ namespace zetscript{
 	#endif
 
 
-	void vm_init(VirtualMachine *vm,ZetScript *_zs){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	void vm_init(
+		VirtualMachine *_vm
+		,ZetScript *_zs
+	){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
 		// script type factory should be created and initialized
 		data->script_function_factory=_zs->getScriptFunctionFactory();
@@ -62,8 +67,11 @@ namespace zetscript{
 
 	//============================================================================================================================================
 	// POINTER MANANAGER
-	bool vm_create_shared_script_object(VirtualMachine *vm,ScriptObject *_obj){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	bool vm_create_shared_script_object(
+		VirtualMachine *_vm
+		,ScriptObject *_obj
+	){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		if(_obj->shared_pointer == NULL){
 			InfoSharedPointerNode *_node = (InfoSharedPointerNode *)ZS_MALLOC(sizeof(InfoSharedPointerNode));
 			// init
@@ -74,20 +82,23 @@ namespace zetscript{
 			_node->data.created_scope_block=VM_CURRENT_SCOPE_BLOCK;//data->vm_idx_call; // it saves the zeros nodes where was set
 
 			// insert node into shared nodes ...
-			if(!vm_insert_shared_node(vm,&_node->data.created_scope_block->unreferenced_objects,_node)){
+			if(!vm_insert_shared_node(_vm,&_node->data.created_scope_block->unreferenced_objects,_node)){
 				return false;
 			}
 			_obj->shared_pointer=_node;
 			return true;
 		}else{
-			VM_SET_USER_ERRORF(vm," shared ptr already has a shared pointer data");
+			VM_SET_USER_ERRORF(_vm," shared ptr already has a shared pointer data");
 		}
 
 		return false;
 
 	}
 
-	bool vm_share_script_object(VirtualMachine *vm,ScriptObject *_obj){
+	bool vm_share_script_object(
+		VirtualMachine *_vm
+		,ScriptObject *_obj
+	){
 		InfoSharedPointerNode *_node=_obj->shared_pointer;
 
 		unsigned short *n_shares = &_node->data.n_shares;
@@ -104,7 +115,7 @@ namespace zetscript{
 		if(move_to_shared_list){
 
 			// Mov to shared pointer...
-			if(!vm_deattach_shared_node(vm,&_node->data.created_scope_block->unreferenced_objects,_node)){
+			if(!vm_deattach_shared_node(_vm,&_node->data.created_scope_block->unreferenced_objects,_node)){
 				return false;
 			}
 			// update current stack due different levels from functions!
@@ -122,18 +133,26 @@ namespace zetscript{
 	//============================================================================================================================================
 
 
-	const ScriptFunction * vm_get_current_native_function_call(VirtualMachine *vm){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	const ScriptFunction * vm_get_current_native_function_call(
+			VirtualMachine *_vm
+	){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		return data->current_call_c_function;
 	}
 
-	bool vm_it_has_error(VirtualMachine *vm){
+	bool vm_it_has_error(
+			VirtualMachine *vm
+	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		return data->vm_error;
 	}
 
-	void vm_set_error(VirtualMachine *vm, const char *_str_error,...){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	void vm_set_error(
+			VirtualMachine *_vm
+			, const char *_str_error
+			,...
+	){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,_str_error);
@@ -144,46 +163,60 @@ namespace zetscript{
 		data->vm_error_line=-1;
 	}
 
-	void vm_set_file_line_error(VirtualMachine *vm, const char *_file, int _line, const char *_str_error,...){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	void vm_set_file_line_error(
+			VirtualMachine *_vm
+			, const char *_file
+			, int _line
+			, const char *_str_error
+			,...
+	){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,_str_error);
-		vm_set_error(vm,zs_strutils::format_file_line(_file,_line,out_txt).c_str());
+		vm_set_error(_vm,zs_strutils::format_file_line(_file,_line,out_txt).c_str());
 
 		data->vm_error_file=_file;
 		data->vm_error_line=_line;
 	}
 
-	std::string vm_get_error(VirtualMachine *vm){
+	std::string vm_get_error(
+			VirtualMachine *vm
+	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		return data->vm_error_str;
 	}
 
-
-
-	void vm_insert_lifetime_object(VirtualMachine *vm, const char *file, int line, ScriptObject *script_object){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	void vm_insert_lifetime_object(
+			VirtualMachine *_vm
+			, const char *_file
+			, int _line
+			, ScriptObject *_script_object
+	){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		InfoLifetimeObject *info = (InfoLifetimeObject *)ZS_MALLOC(sizeof(InfoLifetimeObject));
 
-		info->file=file;
-		info->line=line;
-		info->script_object=script_object;
+		info->file=_file;
+		info->line=_line;
+		info->script_object=_script_object;
 
-		if(script_object->shared_pointer != NULL){
-			if(script_object->shared_pointer->data.n_shares > 0){
-				script_object->shared_pointer->data.n_shares++;
+		if(_script_object->shared_pointer != NULL){
+			if(_script_object->shared_pointer->data.n_shares > 0){
+				_script_object->shared_pointer->data.n_shares++;
 			}
 		}
 
 		data->lifetime_object.push_back(info);
 	}
 
-	int vm_find_lifetime_object(VirtualMachine *vm,ScriptObject *script_object){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	int vm_find_lifetime_object(
+			VirtualMachine *_vm
+			,ScriptObject *_script_object
+	){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		for(unsigned i=0; i < data->lifetime_object.size(); i++){
 			InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object[i];
-			if(info->script_object==script_object){
+			if(info->script_object==_script_object){
 				return i;
 			}
 		}
@@ -191,71 +224,74 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	void vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	void vm_unref_lifetime_object(
+			VirtualMachine *_vm
+			,ScriptObject *_script_object
+	){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		int idx = ZS_IDX_UNDEFINED;
-		if((idx=vm_find_lifetime_object(vm,script_object))==ZS_IDX_UNDEFINED){
+		if((idx=vm_find_lifetime_object(_vm,_script_object))==ZS_IDX_UNDEFINED){
 			THROW_RUNTIME_ERRORF("Cannot find stack element lifetime");
 		}
 		InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object[idx];
 		data->lifetime_object.erase(data->lifetime_object.begin()+idx);
 
 		if(info->script_object->shared_pointer!=NULL){
-			vm_unref_shared_script_object(vm,script_object,NULL);
+			vm_unref_shared_script_object(_vm,_script_object,NULL);
 		}else{
-			delete script_object;
+			delete _script_object;
 		}
 		free(info);
 	}
 
-	StackElement *vm_get_stack_elements(VirtualMachine *vm){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	StackElement *vm_get_stack_elements(VirtualMachine *_vm){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		return data->vm_stack;
 	}
 
-	void vm_push_stack_element(VirtualMachine *vm, StackElement stk){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	void vm_push_stack_element(VirtualMachine *_vm, StackElement _stk){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		if(((data->stk_vm_current-data->vm_stack)+1)>=VM_STACK_MAX){
 
-			vm_set_error(vm,"Error MAXIMUM stack size reached");
+			vm_set_error(_vm,"Error MAXIMUM stack size reached");
 			return;
 		}
-		*data->stk_vm_current++=stk;
+		*data->stk_vm_current++=_stk;
 	}
 
-	bool vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(idx >= VM_STACK_MAX){
-			VM_SET_USER_ERRORF(vm,"setStackElement: out of bounds");
+	bool vm_set_stack_element_at(VirtualMachine *_vm,unsigned int _idx, StackElement _stk){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
+		if(_idx >= VM_STACK_MAX){
+			VM_SET_USER_ERRORF(_vm,"setStackElement: out of bounds");
 			return false;
 		}
 
-		data->vm_stack[idx]=stk;
+		data->vm_stack[_idx]=_stk;
 		return true;
 	}
 
-	VM_ScopeBlock  *vm_get_scope_block_main(VirtualMachine *vm){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	VM_ScopeBlock  *vm_get_scope_block_main(VirtualMachine *_vm){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		return &data->vm_scope_function[0].scope_block[0];
 	}
 
-	StackElement *vm_get_current_stack_element(VirtualMachine *vm){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	StackElement *vm_get_current_stack_element(VirtualMachine *_vm){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		return data->stk_vm_current;
 	}
 
-	StackElement * vm_get_stack_element_at(VirtualMachine *vm, unsigned idx_glb_element){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(idx_glb_element < data->main_function_object->local_variables->size()){
-			return &data->vm_stack[idx_glb_element];
+	StackElement * vm_get_stack_element_at(VirtualMachine *_vm, unsigned _idx_glb_element){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
+		if(_idx_glb_element < data->main_function_object->local_variables->size()){
+			return &data->vm_stack[_idx_glb_element];
 		}else{
-			VM_SET_USER_ERRORF(vm,"getStackElement: out of bounds");
+			VM_SET_USER_ERRORF(_vm,"getStackElement: out of bounds");
 		}
 		return NULL;
 	}
 
-	void vm_reset_error_vars(VirtualMachine *vm){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+	void vm_reset_error_vars(VirtualMachine *_vm){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
 		data->vm_error_max_stack_reached=false;
 		data->vm_error=false;
@@ -263,17 +299,18 @@ namespace zetscript{
 	}
 
 	StackElement vm_execute(
-		VirtualMachine *vm
-		 ,ScriptObject 		*	this_object
-		 ,ScriptFunction 	*	calling_function
-		 ,StackElement 		*  	stk_params
-		 ,unsigned	char  		n_stk_params
-		 ,unsigned short		properties
-		 ,const char *file
-		 ,int line
+		VirtualMachine 		*	_vm
+		 ,ScriptObject 		*	_this_object
+		 ,ScriptFunction 	*	_calling_function
+		 ,StackElement 		*  	_stk_params
+		 ,unsigned	char  		_n_stk_params
+		 ,unsigned short		_properties
+		 ,const char 		*	_file
+		 ,int 					_line
 	){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		if(calling_function->instructions == NULL){ // no instructions do not execute
+		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
+
+		if(_calling_function->instructions == NULL){ // no instructions do not execute
 			return k_stk_undefined;
 		}
 
@@ -285,8 +322,8 @@ namespace zetscript{
 
 
 		if(
-			calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN
-			&& ((properties & VM_PROPERTY_CALL_FROM_NATIVE) == 0)
+			_calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN
+			&& ((_properties & VM_PROPERTY_CALL_FROM_NATIVE) == 0)
 		){ // set stack and Init vars for first call...
 
 
@@ -294,10 +331,10 @@ namespace zetscript{
 				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",IDX_VM_CURRENT_SCOPE_FUNCTION);
 			}
 
-			vm_reset_error_vars(vm);
+			vm_reset_error_vars(_vm);
 
 			stk_start=data->vm_stack;
-			n_stk_params=(char)data->main_function_object->local_variables->size();
+			_n_stk_params=(char)data->main_function_object->local_variables->size();
 
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
@@ -307,7 +344,7 @@ namespace zetscript{
 
 			if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
 
-				if((properties & VM_PROPERTY_CALL_FROM_NATIVE)==0){
+				if((_properties & VM_PROPERTY_CALL_FROM_NATIVE)==0){
 					THROW_RUNTIME_ERRORF("Internal: expected first call function from C");
 				}
 				//vm_reset_error_vars(vm);
@@ -323,50 +360,52 @@ namespace zetscript{
 			}
 
 			StackElement *stk_it=stk_start;
-			for(int i = 0; i < n_stk_params; i++){
-				if(stk_params[i].properties & STK_PROPERTY_SCRIPT_OBJECT){
-					ScriptObject *so=(ScriptObject *)stk_params[i].value;
+			for(int i = 0; i < _n_stk_params; i++){
+				if(_stk_params[i].properties & STK_PROPERTY_SCRIPT_OBJECT){
+					ScriptObject *so=(ScriptObject *)_stk_params[i].value;
 
 					if(so->shared_pointer==NULL){
-						if(vm_create_shared_script_object(vm,so) == false){
+						if(vm_create_shared_script_object(_vm,so) == false){
 							THROW_RUNTIME_ERRORF("Cannot create shared pointer");
 						}
 					}
 
-					if(vm_share_script_object(vm,so) == false){
+					if(vm_share_script_object(_vm,so) == false){
 						THROW_RUNTIME_ERRORF("Cannot shared pointer");
 					}
 
 				}
-				*stk_it++=stk_params[i];
+				*stk_it++=_stk_params[i];
 			}
 		}
 
 		// byte code executing starts here. Later script function can call c++ function, but once in c++ function is not possible by now call script function again.
 		vm_execute_script_function(
-			vm,
-			this_object,
-			calling_function,
+			_vm,
+			_this_object,
+			_calling_function,
 			stk_start
 		);
 
 		// remove empty shared pointers
 		if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
-			vm_remove_empty_shared_pointers(vm,vm_get_scope_block_main(vm));
+			vm_remove_empty_shared_pointers(_vm
+					,vm_get_scope_block_main(_vm)
+			);
 		}
 
 		// get number return elements
 		if(data->vm_error){
 			// set error as false
 			// it was error so reset stack and stop execution ...
-			vm_do_stack_dump(vm);
+			vm_do_stack_dump(_vm);
 
 			std::string total_error=data->vm_error_str;
 			total_error.append(data->vm_error_callstack_str);
 
 			throw_exception_file_line(data->vm_error_file.c_str(),data->vm_error_line,total_error.c_str());
 		}else{
-			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+(int)calling_function->local_variables->size());
+			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+(int)_calling_function->local_variables->size());
 
 			if(n_returned_arguments_from_function > 0){
 
@@ -377,7 +416,12 @@ namespace zetscript{
 				// if object add into lifetime till user delete it
 				if(stk_return.properties & STK_PROPERTY_SCRIPT_OBJECT){
 					// add generated
-					vm_insert_lifetime_object(vm,file,line,(ScriptObjectObject *)stk_return.value);
+					vm_insert_lifetime_object(
+						_vm
+						,_file
+						,_line
+						,(ScriptObjectObject *)stk_return.value
+					);
 				}
 
 				// deinit vm variable...
@@ -406,10 +450,14 @@ namespace zetscript{
 		return stk_return;
 	}
 
-	bool vm_unref_shared_script_object(VirtualMachine *vm, ScriptObject *_obj,VM_ScopeBlock *_scope_block){
+	bool vm_unref_shared_script_object(
+			VirtualMachine 	*	_vm
+			, ScriptObject 	*	_obj
+			,VM_ScopeBlock 	*	_scope_block
+	){
 		InfoSharedPointerNode *shared_pointer=_obj->shared_pointer;
 		if(shared_pointer==NULL){
-			VM_SET_USER_ERRORF(vm,"shared ptr not registered");
+			VM_SET_USER_ERRORF(_vm,"shared ptr not registered");
 			return false;
 		}
 
@@ -426,7 +474,7 @@ namespace zetscript{
 
 			// weak pointer keep shared pointers
 			if(_obj->deRefWeakPointer()){
-				vm_share_script_object(vm,_obj);
+				vm_share_script_object(_vm,_obj);
 				//shared_pointer->data.n_shares=1; // already weak pointers
 				return true;
 			}
@@ -438,7 +486,7 @@ namespace zetscript{
 				InfoSharedList *unreferenced_objects = &_scope_block->unreferenced_objects;
 
 				// insert to zero shares vector to remove automatically on ending scope
-				if(vm_insert_shared_node(vm,unreferenced_objects,shared_pointer)==false){
+				if(vm_insert_shared_node(_vm,unreferenced_objects,shared_pointer)==false){
 					return false;
 				}
 			}
@@ -486,10 +534,6 @@ namespace zetscript{
 		delete data;
 		free(vm);
 	}
-
-
-
-
 }
 
 

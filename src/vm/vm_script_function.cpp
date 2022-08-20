@@ -6,12 +6,15 @@
 #define __STR_PTR_SYMBOL_TO_FIND__ 	str_symbol_aux1
 #define __STR_PTR_END_CLASS__ 		str_symbol_aux2
 
+#include "vm_byte_code_operation.h"
+#include "vm_byte_code_operation_set.h"
 
 #include "vm_byte_code_call_metamethod.cpp"
 #include "vm_byte_code_call.cpp"
 #include "vm_byte_code_container.cpp"
 #include "vm_byte_code_iterator.cpp"
 #include "vm_byte_code_store.cpp"
+#include "vm_byte_code_operation_set.cpp"
 #include "vm_byte_code_new_object.cpp"
 
 

@@ -6,8 +6,6 @@
 
 #include "vm_pop_stk.h"
 #include "vm_push_stk.h"
-#include "vm_operation.h"
-#include "vm_operation_set.h"
 #include "vm_scope.h"
 
 #define VM_STACK_MAX					150

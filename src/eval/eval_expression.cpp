@@ -144,12 +144,14 @@ namespace zetscript{
 
 				if(*aux_p!=*it){
 					if(it>expected_ending_char){
-						*(it+1) == 0 ?
-								expected_ending_str+=" or ":
-								expected_ending_str+=" , ";
 
-
+						*(it+1) == 0
+						?
+							expected_ending_str+=" or "
+						:
+							expected_ending_str+=" , ";
 					}
+
 					expected_ending_str+=std::string("\"")+*it+"\"";
 				}
 				else {
@@ -162,11 +164,11 @@ namespace zetscript{
 			if(found == false){
 				int len=aux_p-start_expression_str;
 				EVAL_ERROR_FILE_LINE_GOTO(
-						eval_data->current_parsing_file
-						,start_expression_line
-						,eval_error_sub_expression
-						,"%s at the end of expression %10s..."
-						,expected_ending_str.c_str(),std::string(start_expression_str).substr(0,len).c_str()
+					eval_data->current_parsing_file
+					,start_expression_line
+					,eval_error_sub_expression
+					,"%s at the end of expression %10s..."
+					,expected_ending_str.c_str(),std::string(start_expression_str).substr(0,len).c_str()
 				);
 			}
 		}
@@ -196,7 +198,6 @@ namespace zetscript{
 			))==NULL){
 				goto eval_error_sub_expression;
 			}
-
 		}
 
 		eval_deallocate_tokens(token_nodes);
