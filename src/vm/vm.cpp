@@ -174,7 +174,7 @@ namespace zetscript{
 
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,_str_error);
-		vm_set_error(_vm,zs_strutils::format_file_line(_file,_line,out_txt).c_str());
+		vm_set_error(_vm,out_txt);
 
 		data->vm_error_file=_file;
 		data->vm_error_line=_line;

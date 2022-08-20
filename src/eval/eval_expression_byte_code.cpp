@@ -581,7 +581,7 @@ namespace zetscript{
 		for(int i=(int)(zs_ei_assign_loader_instructions_post_expression.size()-1); i >=0 ;i--){
 			//loaders
 			dst_instructions->insert(
-				dst_instructions->begin()
+				dst_instructions->end()
 				,zs_ei_assign_loader_instructions_post_expression[i]->begin()
 			    ,zs_ei_assign_loader_instructions_post_expression[i]->end()
 			);

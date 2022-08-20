@@ -773,16 +773,16 @@ namespace zetscript{
 								,"type '%s' not exist"
 								,str_script_type
 						);
+					}else{
+						vm_set_file_line_error(\
+								_vm \
+								,SFI_GET_FILE(_calling_function,instruction)\
+								,SFI_GET_LINE(_calling_function,instruction)\
+								,"static symbol '%s::%s' not exist"
+								,str_script_type
+								,__STR_PTR_END_CLASS__+2
+						);
 					}
-
-					vm_set_file_line_error(\
-							_vm \
-							,SFI_GET_FILE(_calling_function,instruction)\
-							,SFI_GET_LINE(_calling_function,instruction)\
-							,"static symbol '%s::%s' not exist"
-							,str_script_type
-							,__STR_PTR_END_CLASS__+2
-					);
 				}else{
 					vm_set_file_line_error(\
 							_vm \
