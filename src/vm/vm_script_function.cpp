@@ -34,8 +34,6 @@ namespace zetscript{
 
 	bool vm_byte_code_delete(
 		VirtualMachine *vm
-		,ScriptFunction *calling_function
-		,Instruction *instruction
 	);
 
 	bool vm_byte_code_new_string(
@@ -513,8 +511,6 @@ namespace zetscript{
 			 case  BYTE_CODE_DELETE:
 				 if(vm_byte_code_delete(
 						_vm
-						,_calling_function
-						,instruction
 				)==false){
 					 goto lbl_exit_function;
 				 }
@@ -961,11 +957,9 @@ namespace zetscript{
 	}
 
 	bool vm_byte_code_delete(
-		VirtualMachine *vm
-		,ScriptFunction *calling_function
-		,Instruction *instruction
+		VirtualMachine *_vm
 	){
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		StackElement *stk_result_op1=NULL;
 		ScriptObject *so_aux=NULL;
 		ScriptObjectClass *so_class_aux1=NULL;
@@ -981,7 +975,7 @@ namespace zetscript{
 
 			so_aux = (ScriptObject *)(stk_result_op1)->value;
 
-			if(!vm_unref_shared_script_object(vm,so_aux,NULL)){
+			if(!vm_unref_shared_script_object(_vm,so_aux,NULL)){
 				return false;
 			}
 
