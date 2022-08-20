@@ -371,8 +371,8 @@ namespace zetscript{
 			}
 		}
 
-		if(_n_args>MAX_NATIVE_FUNCTION_ARGS){
-			VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,_n_args);
+		if(n_args>MAX_NATIVE_FUNCTION_ARGS){
+			VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
 		}
 
 		if((_c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF) {
@@ -387,7 +387,7 @@ namespace zetscript{
 			VM_ERROR_AND_RET("Native function '%s' expects %i arguments but it passed %i arguments"
 					,_c_function->name_script_function.c_str()
 					,_c_function->params_len
-					,_n_args);
+					,n_args);
 		}
 
 		if(_c_function->params_len > MAX_NATIVE_FUNCTION_ARGS){
@@ -425,7 +425,7 @@ namespace zetscript{
 
 		if(_c_function->idx_script_type_return == IDX_TYPE_VOID_C){ // getInstance()->getIdxClassVoid()){
 
-			switch(_n_args){
+			switch(n_args){
 			case 1:
 				PTR_FUNCTION_VOID_PARAM1(fun_ptr)(
 					converted_param[0]

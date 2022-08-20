@@ -95,20 +95,25 @@ namespace zetscript{
 	}
 
 
-	ScriptObjectString * ScriptObjectString::format(ZetScript *zs, StackElement *stk_str_obj, StackElement *args){
+	ScriptObjectString * ScriptObjectString::format(
+			ZetScript 		*	_zs
+			, StackElement 	*	_stk_str_obj
+			, StackElement 	*	_args
+	){
 		// transform '\"' to '"','\n' to carry returns, etc
-		std::string str_input;
+		std::string 			str_input;
+		std::string 			str_result;
+		ScriptObjectVector *	sov=NULL;
+		std::string 			str_num_aux;
 
-		if(stk_str_obj->properties & STK_PROPERTY_SCRIPT_OBJECT){
-			str_input=zs_strutils::unescape(((ScriptObject *)stk_str_obj->value)->toString());
+		if(_stk_str_obj->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			str_input=zs_strutils::unescape(((ScriptObject *)_stk_str_obj->value)->toString());
 		}
 		else{
-			str_input=stk_to_str(zs, stk_str_obj);
+			str_input=stk_to_str(_zs, _stk_str_obj);
 		}
 
-		std::string str_result;
-		ScriptObjectVector *sov=NULL;
-		std::string str_num_aux;
+
 		bool error=false;
 		char str_error[512]={0};
 
@@ -116,12 +121,12 @@ namespace zetscript{
 		zs_int *ptr_idx_num=NULL;
 
 
-		if(args->properties & STK_PROPERTY_PTR_STK){
-			args=(StackElement *)args->value;
+		if(_args->properties & STK_PROPERTY_PTR_STK){
+			_args=(StackElement *)_args->value;
 		}
 
-		if(args->properties & STK_PROPERTY_SCRIPT_OBJECT){
-			ScriptObject *so=(ScriptObject *)args->value;
+		if(_args->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject *so=(ScriptObject *)_args->value;
 			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 				sov=(ScriptObjectVector *)so;
 			}
@@ -226,7 +231,15 @@ namespace zetscript{
 								if(stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT){
 									str_format_results=((ScriptObject *)stk_arg->value)->toString();
 								}else{
-									str_format_results=stk_to_str(zs,stk_arg,ptr_str_format_string);
+									str_format_results=stk_to_str(
+											_zs
+											,stk_arg
+											,ptr_str_format_string==NULL
+											?
+												""
+											:
+												ptr_str_format_string
+									);
 								}
 
 								// set padding
@@ -269,12 +282,12 @@ namespace zetscript{
 		}
 
 		if(error){
-			vm_set_error(zs->getVirtualMachine(),str_error);
+			vm_set_error(_zs->getVirtualMachine(),str_error);
 			return NULL;
 		}
 
 		//ScriptObjectString *str_in=(ScriptObjectString *)(str->var_ref);
-		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(zs);
+		ScriptObjectString *str_out=ZS_NEW_OBJECT_STRING(_zs);
 		str_out->set(str_result);//str_in->default_str_value;
 
 
