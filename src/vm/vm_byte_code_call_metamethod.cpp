@@ -173,7 +173,7 @@ namespace zetscript{
 				}
 			}
 
-			vm_execute_function_script(
+			vm_execute_script_function(
 				_vm
 				,_is_static?NULL:script_object // do not pass script_object as this on static function, it will be destroyed on pop function
 				,ptr_function_found
@@ -182,7 +182,7 @@ namespace zetscript{
 
 			n_stk_local_symbols=ptr_function_found->local_variables->size();
 		}else{ //
-			vm_execute_function_native(
+			vm_execute_native_function(
 					_vm
 					,_calling_function
 					,instruction

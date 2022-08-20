@@ -181,7 +181,7 @@ namespace zetscript{
 			*stk_start++=*(stk_params.at(i));
 		}
 
-		vm_execute_function_script(
+		vm_execute_script_function(
 			zs->getVirtualMachine(),
 			NULL,
 			sf_eval,

@@ -635,9 +635,9 @@ namespace zetscript{
 		functions_with_unresolved_symbols.clear();
 
 		// clear compiled symbol name
-		/*for(auto it=compiled_symbol_name->begin();!it.end(); it.next()){
-				free((char *)it.value);
-		}*/
+		for(auto it=compiled_symbol_name->begin();it!=compiled_symbol_name->end(); it++){
+				delete it->second;
+		}
 		delete compiled_symbol_name;
 		compiled_symbol_name=NULL;
 

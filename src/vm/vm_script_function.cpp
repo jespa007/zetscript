@@ -7,14 +7,12 @@
 #define __STR_PTR_END_CLASS__ 		str_symbol_aux2
 
 
-#include "vm_metamethod.cpp"
-#include "vm_call.cpp"
-#include "vm_container.cpp"
-#include "vm_iterator.cpp"
-#include "vm_store.cpp"
-#include "vm_function.cpp"
-#include "vm_new_object.cpp"
-
+#include "vm_byte_code_call_metamethod.cpp"
+#include "vm_byte_code_call.cpp"
+#include "vm_byte_code_container.cpp"
+#include "vm_byte_code_iterator.cpp"
+#include "vm_byte_code_store.cpp"
+#include "vm_byte_code_new_object.cpp"
 
 
 namespace zetscript{
@@ -42,7 +40,7 @@ namespace zetscript{
 			,Instruction 	*	_instruction
 	);
 
-	void vm_execute_function_script(
+	void vm_execute_script_function(
 			VirtualMachine			* _vm,
 			ScriptObject			* _this_object,
 			ScriptFunction 			* _calling_function,

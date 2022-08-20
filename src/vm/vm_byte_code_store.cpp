@@ -285,7 +285,7 @@ namespace zetscript{
 				ptr_function_found=(ScriptFunction *)symbol_setter->ref_ptr;\
 			}\
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
-				vm_execute_function_native(\
+				vm_execute_native_function(\
 						_vm\
 						,_calling_function\
 						,instruction\
@@ -295,7 +295,7 @@ namespace zetscript{
 						,1\
 				);\
 			}else{\
-				vm_execute_function_script(\
+				vm_execute_script_function(\
 					_vm\
 					,so_aux\
 					,ptr_function_found\

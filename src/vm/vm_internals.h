@@ -28,30 +28,6 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 	)==false){\
 		goto lbl_exit_function;\
 	}\
-/*
-
-#define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_return, n_return,with_share)\
-	for(int i=0; i < n_return; i++){\
-		StackElement *stk_ret = stk_return+i;\
-		if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){\
-			ScriptObject *sv=(ScriptObject *)stk_ret->value;\
-			if(sv->shared_pointer == NULL){\
-				if(!vm_create_shared_script_object(_vm,sv)){\
-					goto lbl_exit_function;\
-				}\
-				PRAGMA_PUSH\
-				PRAGMA_DISABLE_WARNING(4127)\
-				if(with_share==true){\
-					PRAGMA_POP\
-					if(!vm_share_script_object(_vm,sv)){\
-						goto lbl_exit_function;\
-					}\
-				}\
-			}\
-		}\
-	}
-
-*/
 
 #define VM_EXTRACT_FUNCTION_INFO\
 	{ /* get elements from type */ \
@@ -168,7 +144,6 @@ namespace zetscript{
 	}InfoLifetimeObject;
 
 
-
 	struct VirtualMachineData{
 
 
@@ -227,144 +202,87 @@ namespace zetscript{
 
 	};
 
-	//-----------------------------------------
-	//
-	// PROTOTIPES
-	//
-
-	void  vm_execute_function_native(
-		VirtualMachine 			*	_vm,
-		const ScriptFunction 	*	_calling_function,
-		Instruction 			*	_instruction,
-		ScriptObject  			* 	_this_object,
-		const ScriptFunction 	*	_c_function,
-		StackElement 			*	_stk_arg_c_function,
-		unsigned char 				_n_args
-	);
-
-	void vm_execute_function_script(
-		VirtualMachine 		*	_vm,
-		ScriptObject		* 	_this_object,
-		ScriptFunction 		* 	_calling_function,
-		StackElement 		*	_stk_local_var
-	);
-
-
 	bool vm_call_metamethod(
-		VirtualMachine			*	_vm
-		,ScriptFunction 		*	_calling_function
-		,Instruction 			*	_instruction
-		,ByteCodeMetamethod 		_byte_code_metamethod
-		,StackElement 			*	_stk_result_op1
-		,StackElement 			*	_stk_result_op2
-		, bool 						_is_static=true
-		, bool 						_is_je_case=false
-	);
+			VirtualMachine			*	_vm
+			,ScriptFunction 		*	_calling_function
+			,Instruction 			*	_instruction
+			,ByteCodeMetamethod 		_byte_code_metamethod
+			,StackElement 			*	_stk_result_op1
+			,StackElement 			*	_stk_result_op2
+			, bool 						_is_static=true
+			, bool 						_is_je_case=false
+		);
 
-	bool vm_inner_call(
-		VirtualMachine 			*	_vm
-		,ScriptFunction			* 	_calling_function
-		,Instruction			* 	_instruction
-		,ScriptObject 			*	_script_object
-		,ScriptFunction 		*	_script_function
-		,int 						_n_args
-	);
+		bool vm_inner_call(
+			VirtualMachine 			*	_vm
+			,ScriptFunction			* 	_calling_function
+			,Instruction			* 	_instruction
+			,ScriptObject 			*	_script_object
+			,ScriptFunction 		*	_script_function
+			,int 						_n_args
+		);
 
-	void vm_pop_scope(
-		VirtualMachine 			*	_vm
-	);
+		void vm_pop_scope(
+			VirtualMachine 			*	_vm
+		);
 
-	bool  vm_insert_shared_node(
-		VirtualMachine	 		*	_vm
-		, InfoSharedList 		*	 list
-		, InfoSharedPointerNode *	_node
-	);
+		bool  vm_insert_shared_node(
+			VirtualMachine	 		*	_vm
+			, InfoSharedList 		*	 list
+			, InfoSharedPointerNode *	_node
+		);
 
-	void vm_remove_empty_shared_pointers(
-		VirtualMachine 		*	_vm
-		,VM_ScopeBlock 		*	_scope_block
-	);
+		void vm_remove_empty_shared_pointers(
+			VirtualMachine 		*	_vm
+			,VM_ScopeBlock 		*	_scope_block
+		);
 
-	bool vm_deattach_shared_node(
-		VirtualMachine 			*	_vm
-		, InfoSharedList 		* 	_list
-		, InfoSharedPointerNode *	_node
-	);
+		bool vm_deattach_shared_node(
+			VirtualMachine 			*	_vm
+			, InfoSharedList 		* 	_list
+			, InfoSharedPointerNode *	_node
+		);
 
 
-	bool vm_byte_code_new_object_by_value(
-		VirtualMachine 		*vm
-		,ScriptFunction *calling_function
-		,Instruction *instruction
-	);
-
-	void vm_print_main_error(
-		VirtualMachine 			*	_vm
-		,ScriptFunction 		*	_calling_function
-		,Instruction 			*	_instruction
-		,VM_MainError 				_error
-		,StackElement 			*	_stk=NULL
-		,ByteCodeMetamethod 		_byte_code_metamethod=BYTE_CODE_METAMETHOD_INVALID
-	);
-
-	void vm_push_stk_boolean_equal_strings(
-		VirtualMachine			*	_vm
-		, StackElement 			*	_stk1
-		, StackElement 			*	_stk2
-		, ByteCodeMetamethod 		_byte_code_metamethod
-	);
-
-	ScriptFunction * vm_find_native_function(
-		VirtualMachine 		*	_vm
-		,ScriptType 		*	_class_obj // if NULL is MainClass
-		,ScriptFunction 	*	_calling_function
-		,Instruction 		* 	_instruction // call instruction
-		,bool 					_is_constructor
-		,const std::string 	& 	_symbol_to_find
-		,StackElement 		*	_stk_arg
-		,unsigned char 			_n_args
-	);
-
-	bool vm_create_share_pointer_to_all_returning_objects(
-		VirtualMachine 	*	_vm
-		,StackElement 	*	_stk_return
-		,int 				_n_return
-		,bool 				_with_share
-	);
-	/*void vm_error_bool_expression(
-			VirtualMachine *vm
+		bool vm_byte_code_new_object_by_value(
+			VirtualMachine 		*vm
 			,ScriptFunction *calling_function
 			,Instruction *instruction
-			, StackElement *_stk
-	);
+		);
 
-	void vm_error_bool_expression(
-			VirtualMachine *vm
-			,ScriptFunction *calling_function
-			,Instruction *instruction
-			, StackElement *_stk
-			,ByteCodeMetamethod _byte_code_metamethod
-	);
+		void vm_print_main_error(
+			VirtualMachine 			*	_vm
+			,ScriptFunction 		*	_calling_function
+			,Instruction 			*	_instruction
+			,VM_MainError 				_error
+			,StackElement 			*	_stk=NULL
+			,ByteCodeMetamethod 		_byte_code_metamethod=BYTE_CODE_METAMETHOD_INVALID
+		);
 
-	void vm_error_load_properties(
-			VirtualMachine *vm
-			,ScriptFunction *calling_function
-			,Instruction *instruction
-			, StackElement *_stk
-			,ByteCodeMetamethod _byte_code_metamethod
-	);
+		void vm_push_stk_boolean_equal_strings(
+			VirtualMachine			*	_vm
+			, StackElement 			*	_stk1
+			, StackElement 			*	_stk2
+			, ByteCodeMetamethod 		_byte_code_metamethod
+		);
 
-	 void vm_error_metamethod_not_found(
-		VirtualMachine *vm
-		,ScriptFunction *calling_function
-		,Instruction *instruction
-		, StackElement *_stk
-		,MemberProperty *member_property
-		, ByteCodeMetamethod _byte_code_metamethod
-	);*/
+		ScriptFunction * vm_find_native_function(
+			VirtualMachine 		*	_vm
+			,ScriptType 		*	_class_obj // if NULL is MainClass
+			,ScriptFunction 	*	_calling_function
+			,Instruction 		* 	_instruction // call instruction
+			,bool 					_is_constructor
+			,const std::string 	& 	_symbol_to_find
+			,StackElement 		*	_stk_arg
+			,unsigned char 			_n_args
+		);
 
-	//-----------------------------------------
-
+		bool vm_create_share_pointer_to_all_returning_objects(
+			VirtualMachine 	*	_vm
+			,StackElement 	*	_stk_return
+			,int 				_n_return
+			,bool 				_with_share
+		);
 
 
 }

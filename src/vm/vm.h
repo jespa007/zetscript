@@ -21,7 +21,6 @@ namespace zetscript{
 
 	VirtualMachine *vm_new(ZetScript *zs);
 
-
 	/**
 	 * Reserve for N vars. Return base pointer.
 	 */
@@ -71,7 +70,7 @@ namespace zetscript{
 		,int 				_line=-1
 	);
 
-	void vm_execute_function_script(
+	void vm_execute_script_function(
 			VirtualMachine			* _vm,
 			ScriptObject			* _this_object,
 			ScriptFunction 			* _calling_function,
@@ -84,10 +83,26 @@ namespace zetscript{
 		,VM_ScopeBlock 	*	_scope_block
 	);
 
+	void  vm_execute_native_function(
+		VirtualMachine 			*	_vm,
+		const ScriptFunction 	*	_calling_function,
+		Instruction 			*	_instruction,
+		ScriptObject  			* 	_this_object,
+		const ScriptFunction 	*	_c_function,
+		StackElement 			*	_stk_arg_c_function,
+		unsigned char 				_n_args
+	);
+
+	void vm_execute_script_function(
+		VirtualMachine 		*	_vm,
+		ScriptObject		* 	_this_object,
+		ScriptFunction 		* 	_calling_function,
+		StackElement 		*	_stk_local_var
+	);
+
+
 	void vm_delete(VirtualMachine *vm);
 }
 
-
-//#include "vm.tcc"
-
+#include "vm_internals.h"
 

@@ -20,7 +20,7 @@ namespace zetscript{
 
 
 		if((_script_function)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
-			vm_execute_function_native(
+			vm_execute_native_function(
 					_vm
 					,_calling_function
 					,instruction
@@ -30,7 +30,7 @@ namespace zetscript{
 					,_n_args
 			);
 		}else{
-			vm_execute_function_script(
+			vm_execute_script_function(
 				_vm
 				,_script_object
 				,_script_function
@@ -402,7 +402,7 @@ execute_function:
 					}
 				}
 
-				vm_execute_function_script(
+				vm_execute_script_function(
 					_vm
 					,sf_call_calling_object
 					,sf_call_script_function
@@ -460,7 +460,7 @@ execute_function:
 				}
 
 				try{
-					vm_execute_function_native(
+					vm_execute_native_function(
 						_vm
 						,_calling_function
 						,instruction

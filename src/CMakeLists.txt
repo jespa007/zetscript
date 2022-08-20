@@ -436,10 +436,8 @@ SET(
 	vm/vm_pop_stk.h
 	vm/vm_push_stk.h
 	vm/vm_scope.h
-	vm/vm_set.h
-	vm/vm.cpp
 	vm/vm.h
-	vm/vm.tcc
+	vm/vm_internals.h
 	
 	
 	# main

@@ -5,7 +5,6 @@
 
 //#include	"util/std::vector.tcc"
 #include	"StackElement.tcc"
-#include	"vm/vm.tcc"
 #include	"script/ScriptObjectClass.tcc"
 
 namespace zetscript{
