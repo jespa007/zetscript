@@ -176,7 +176,7 @@ namespace zetscript{
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,_str_error);
 		vm_set_error(_vm,out_txt);
 
-		data->vm_error_file=_file;
+		data->vm_error_file=_file==NULL?"":_file;
 		data->vm_error_line=_line;
 	}
 
@@ -294,6 +294,8 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
 		data->vm_error_max_stack_reached=false;
+		data->vm_error="";
+		data->vm_error_callstack_str="";
 		data->vm_error=false;
 		data->vm_error_line=-1;
 	}

@@ -15,7 +15,7 @@ namespace zetscript{
 		MemberProperty 		*			member_property=NULL;
 		Symbol 				*			symbol_setter=NULL;
 		ScriptObject 		*			so_aux=NULL;
-		StackElement 		*			stk_var=NULL;
+		//StackElement 		*			stk_var=NULL;
 		StackElement 					stk_aux1;
 		StackElement 		*			stk_result_op1=_stk_result_op1;
 		StackElement 		*			stk_result_op2=_stk_result_op2;
@@ -45,7 +45,7 @@ namespace zetscript{
 		}
 
 
-		LOAD_PROPERTIES(_byte_code_metamethod); /* saves __STK_VAR_COPY__ --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
+		LOAD_PROPERTIES(_byte_code_metamethod); /* saves stk_aux1 --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
 		setter_info=ptr_metamethod_members_aux->getSetterInfo(_byte_code_metamethod);
 		if(setter_info.setters->size()==0){\
 			METAMETHOD_OPERATION_NOT_FOUND(_byte_code_metamethod); \
@@ -122,11 +122,11 @@ namespace zetscript{
 					,ptr_metamethod_members_aux->getter->name.c_str()\
 			);\
 		}else{ /* store object */ \
-			if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			if(_stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				data->stk_vm_current->value=(zs_int)so_aux;\
 				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
-				*data->stk_vm_current=__STK_VAR_COPY__;
+				*data->stk_vm_current=stk_aux1;
 			}
 		}
 		data->stk_vm_current++;\

@@ -180,10 +180,9 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObject::addProperty(
-			const char * symbol_value
-			,const std::string & error
-			,StackElement * stk_element
-
+		const std::string & symbol_value
+		,std::string & error
+		,StackElement * stk_element
 	){
 		ZS_UNUSUED_3PARAMS(symbol_value, error, stk_element);
 		VM_SET_USER_ERRORF(vm,"addProperty is not implemented");
@@ -235,11 +234,20 @@ namespace zetscript{
 		int idx=idxRefObject(_ref_object);
 
 		if(idx==ZS_IDX_UNDEFINED){
-			THROW_RUNTIME_ERRORF("internal: member function not exist");
+			//THROW_RUNTIME_ERRORF("internal: member function not exist");
+			return;
 		}
 
-		ref_script_objects->at(idx)->deRefObject();
+		// get ref object element
+		auto ref_object=ref_script_objects->at(idx);
+
+		// remove element before call deRefObject to avoid recursion
 		ref_script_objects->erase(ref_script_objects->begin()+idx);
+
+
+		// call ref
+		ref_object->deRefObject();
+
 	}
 
 	ScriptTypeFactory		*	ScriptObject::getScriptTypeFactory(){
@@ -267,11 +275,6 @@ namespace zetscript{
 		delete map_builtin_properties;
 
 		for(unsigned i=0; i < ref_script_objects->size(); i++){
-			ScriptObject **_so=(ScriptObject **)ref_script_objects->at(i);
-			*_so=NULL;
-		}
-
-		for(unsigned i=0; i < ref_script_objects->size(); i++){
 			RefObject *_ref_pointer=ref_script_objects->at(i);
 			_ref_pointer->deRefObject();
 		}
@@ -280,7 +283,6 @@ namespace zetscript{
 
 		for(unsigned i=0; i < weak_pointers->size(); i++){
 			weak_pointers->at(i)->deRefObject();
-
 		}
 
 		delete weak_pointers;

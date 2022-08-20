@@ -45,7 +45,7 @@
 #define EVAL_ERROR_FILE_LINE_GOTO(_file,_line,_my_goto,_str_error,...) \
 	eval_data->error=true;\
 	aux_p=NULL;\
-	eval_data->error_file=_file;\
+	eval_data->error_file=_file==NULL?"":_file;\
 	eval_data->error_line=_line;\
 	eval_data->str_error=zs_strutils::format(_str_error, ##__VA_ARGS__);\
 	goto _my_goto;

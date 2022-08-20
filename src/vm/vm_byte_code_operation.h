@@ -26,12 +26,12 @@
 
 #define LOAD_PROPERTIES(__METAMETHOD__) \
 	ptr_metamethod_members_aux=NULL;\
-	__STK_VAR_COPY__.value=0;\
-	__STK_VAR_COPY__.properties=0;\
+	stk_aux1.value=0;\
+	stk_aux1.properties=0;\
 	so_aux=NULL;\
 	member_property=NULL;\
 	if(stk_result_op1->properties & STK_PROPERTY_MEMBER_PROPERTY){\
-		__STK_VAR_COPY__=*stk_result_op1;\
+		stk_aux1=*stk_result_op1;\
 		stk_mp_aux=(StackMemberProperty *)stk_result_op1->value;\
 		member_property=stk_mp_aux->member_property;\
 		ptr_metamethod_members_aux= &member_property->metamethod_members;\

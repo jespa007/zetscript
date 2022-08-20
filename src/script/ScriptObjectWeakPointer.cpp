@@ -24,11 +24,11 @@ namespace zetscript{
 		setup();
 	}
 
-	ScriptObjectWeakPointer::ScriptObjectWeakPointer(ScriptObject *_so_reference){
+	ScriptObjectWeakPointer::ScriptObjectWeakPointer(ScriptObject *_so_target){
 		setup();
 		// setup object
-		this->init(_so_reference->getZetScript());
-		ref_object=new RefObject(_so_reference,this);
+		this->init(_so_target->getZetScript());
+		ref_object=new RefObject(_so_target,this);
 	}
 
 	void ScriptObjectWeakPointer::deRefObject(){

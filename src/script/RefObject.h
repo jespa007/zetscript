@@ -9,14 +9,14 @@ namespace zetscript{
 	class ScriptObject;
 	class RefObject{
 	public:
-		RefObject(ScriptObject *_ref_object, ScriptObject *_ref_from_object);
+		RefObject(ScriptObject *_target_obj, ScriptObject *_link_obj);
 		void deRefObject();
-		ScriptObject *getRefObject();
+		ScriptObject *getTargetObject();
 		~RefObject();
 
 	private:
-		ScriptObject *ref_object;
-		ScriptObject *ref_from_object;
+		ScriptObject *target_obj;
+		ScriptObject *link_obj;
 	};
 
 }

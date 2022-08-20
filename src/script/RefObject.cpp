@@ -3,24 +3,22 @@
 
 namespace zetscript{
 
-	RefObject::RefObject(ScriptObject *_ref_object, ScriptObject *_ref_from_object){
-		ref_object=_ref_object;
-		ref_from_object=_ref_from_object;
-		ref_object->refObject(this);
+	RefObject::RefObject(ScriptObject *_target_obj, ScriptObject *_link_obj){
+		target_obj=_target_obj;
+		link_obj=_link_obj;
+		target_obj->refObject(this);
 
 	}
 
-	ScriptObject *RefObject::getRefObject(){
-		return ref_object;
+	ScriptObject *RefObject::getTargetObject(){
+		return target_obj;
 	}
 
 	void RefObject::deRefObject(){
-		if(ref_object == NULL){
-			THROW_RUNTIME_ERRORF("Already deferenced object");
+		if(target_obj != NULL){
+			target_obj->deRefObject(this);
+			target_obj=NULL;
 		}
-
-		ref_object->deRefObject(this);
-		ref_object=NULL;
 	}
 
 

@@ -435,13 +435,13 @@ namespace zetscript{
 			case  BYTE_CODE_STACK_CALL: // stack call
 			case  BYTE_CODE_CONSTRUCTOR_CALL:
 			case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
-				if(!vm_call(
+				if(vm_call(
 						_vm
 						,_this_object
 						,_calling_function
 						,instruction
 						,_stk_local_var
-				)){
+				)==false){
 					goto lbl_exit_function;\
 				}
 
@@ -619,12 +619,12 @@ namespace zetscript{
 				case BYTE_CODE_PUSH_STK_THIS_VARIABLE:
 				case BYTE_CODE_PUSH_STK_OBJECT_ITEM:
 				case BYTE_CODE_LOAD_OBJECT_ITEM:
-					if(!vm_load_field(
+					if(vm_load_field(
 							_vm
 							,_this_object
 							,_calling_function
 							,&instruction_it
-					)){
+					)==false){
 						goto lbl_exit_function;
 					}
 					continue;
@@ -656,14 +656,14 @@ namespace zetscript{
 		//=========================
 		// POP STACK
 
-
-		while (
-			(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
-		){
-			vm_pop_scope(_vm); // do not check removeEmptySharedPointers to have better performance
+		if(data->vm_current_scope_function > VM_SCOPE_FUNCTION_MAIN){
+			while (
+				(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
+			){
+				vm_pop_scope(_vm); // do not check removeEmptySharedPointers to have better performance
+			}
+			--data->vm_current_scope_function;
 		}
-
-		--data->vm_current_scope_function;
 
 
 		// POP STACK

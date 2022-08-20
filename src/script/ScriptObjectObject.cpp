@@ -67,10 +67,10 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObjectObject::addUserProperty(
-			const std::string & symbol_value
-			,std::string & error
-			,StackElement * sv
-		){
+		const std::string & symbol_value
+		,std::string & error
+		,StackElement * sv
+	){
 		StackElement si;
 
 		if(map_user_properties->count(symbol_value)!=0){
@@ -93,7 +93,7 @@ namespace zetscript{
 
 		std::string key_value = symbol_value;
 		StackElement *new_stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));
-		map_user_properties->at(key_value)=new_stk;
+		(*map_user_properties)[key_value]=new_stk;
 
 		*new_stk=si; //assign var
 		return new_stk;
@@ -108,12 +108,12 @@ namespace zetscript{
 	}
 
 	StackElement * ScriptObjectObject::addProperty(
-			const char * symbol_value
-			,std::string & _error
-			,StackElement * stk_element
+			const 	std::string  	&	_symbol_value
+			,std::string 			& 	_error
+			,StackElement 			* 	_stk_element
 	){
 
-		return addUserProperty(symbol_value,_error,stk_element);
+		return addUserProperty(_symbol_value,_error,_stk_element);
 	}
 
 	StackElement 	* ScriptObjectObject::getProperty(const char  * property_name){
@@ -140,7 +140,7 @@ namespace zetscript{
 		return this->map_user_properties->size();
 	}
 
-	bool ScriptObjectObject::eraseUserProperty(const char * property_name/*, const ScriptFunction *info_function*/){
+	bool ScriptObjectObject::eraseUserProperty(const std::string & property_name/*, const ScriptFunction *info_function*/){
 
 		if(map_user_properties->count(property_name)==0){
 			VM_SET_USER_ERROR(vm,"Property %s not exist",property_name);

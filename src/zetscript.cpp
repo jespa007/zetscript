@@ -126,33 +126,33 @@ namespace zetscript{
 				"}"
 				//------------------------------------------------
 				// Console
-				"static Console::out(s=\"\",..._args){"
-				"	Console::outNative(_s,_args)"
+				"static Console::out(_str_out,..._args){"
+				"	Console::outNative(_str_out,_args)"
 				"}"
-				"static Console::outln(_s=\"\",..._args){"
-				"	Console::outlnNative(_s,_args)"
+				"static Console::outln(_str_out=\"\",..._args){"
+				"	Console::outlnNative(_str_out,_args)"
 				"}"
-				"static Console::error(_s=\"\",..._args){"
-				"	Console::errorNative(_s,_args)"
+				"static Console::error(_str_error,..._args){"
+				"	Console::errorNative(_str_error,_args)"
 				"}"
-				"static Console::errorln(_s=\"\",..._args){"
-				"	Console::errorlnNative(_s,_args)"
+				"static Console::errorln(_str_error,..._args){"
+				"	Console::errorlnNative(_str_error,_args)"
 				"}"
 				//------------------------------------------------
 				// System
-				"static System::assert(_check,_s,..._args){"
+				"static System::assert(_check,_str_error,..._args){"
 				"	if((typeof _check)!=bool){"
 				"		System::errorNative(\"Error, executing  'System::assert' first parameter must be boolean but it was {0}\",[typeof _check])"
 				"	}"
-				"	if(check==false){"
-				"		System::errorNative(\"Assert error: \"+s,args)"
+				"	if(_check==false){"
+				"		System::errorNative(\"Assert error: \"+_str_error,_args)"
 				"	}"
 				"}"
-				"static System::error(_s=\"\",..._args){"
-				"	System::errorNative(_s,_args)"
+				"static System::error(_str_error,..._args){"
+				"	System::errorNative(_str_error,_args)"
 				"}"
-				"static System::eval(_s,_params){"
-				"	return System::evalNative(_s,_params)"
+				"static System::eval(_str_expression,_params){"
+				"	return System::evalNative(_str_expression,_params)"
 				"}"
 				"static System::getZetScript(){"
 				"	return ptrToZetScriptPtr(%lu);" // ptrToZetScript it gets current this
@@ -480,7 +480,7 @@ namespace zetscript{
 		}else{
 			char *s=(char *)malloc(strlen(_filename_by_ref)+1);
 			strcpy(s,_filename_by_ref);
-			script_filenames_by_ref->at(s)=s;
+			(*script_filenames_by_ref)[s]=s;
 			e=s;
 		}
 		return ((const char *)e);

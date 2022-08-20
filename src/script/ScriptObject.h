@@ -67,9 +67,9 @@ namespace zetscript{
 		StackElement 			* 	getBuiltinElementAt(short idx);
 
 		virtual StackElement 	* 	addProperty(
-				const char * symbol_value
-				,const std::string & error
-				,StackElement * stk_element = NULL
+			const std::string 	& 	symbol_value
+			,std::string 		& 	error
+			,StackElement 		*	stk_element = NULL
 		);
 
 		virtual StackElement 	* 	getProperty(const std::string & property_name);
