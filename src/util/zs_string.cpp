@@ -17,7 +17,7 @@ namespace zetscript{
 			this->_size = this->count+_n_slots+ZS_STRING_EXPAND_CHAR_ELEMENTS;
 
 			char *buf_aux = (char*)malloc( sizeof(char) * this->_size + 1); // + 1 for the keeping the null character
-			memcpy(buf,buf_aux,this->count);
+			memcpy(buf_aux,buf,this->count);
 
 			free(buf);
 			buf=buf_aux;
