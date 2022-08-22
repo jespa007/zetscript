@@ -4,7 +4,7 @@
  */
 namespace zetscript{
 
-	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,int idx_glb_element);
+	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,unsigned idx_glb_element);
 	bool 			vm_create_shared_script_object(VirtualMachine *vm, ScriptObject *_obj);
 	bool 			vm_share_script_object(VirtualMachine *vm, ScriptObject *_obj);
 

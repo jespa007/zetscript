@@ -55,7 +55,7 @@ void test_zs_map(){
 	int start=zetscript::zs_system::clock();
 
 	for(int i=0; i < 100000; i++){
-		map.set(std_random_key().c_str(),(zetscript::zs_int)(new std::string("a")));
+		map.set(std_random_key().c_str(),(zetscript::zs_int)(new zetscript::zs_string("a")));
 	}
 
 	printf("done!\n");
@@ -74,14 +74,14 @@ void test_std_string(){
 	std::string str;
 
 	printf("=======================================\n");
-	printf("Test std::string\n");
+	printf("Test zs_string\n");
 	printf("sizeof(std::std_string):%lu\n",sizeof(str));
 
 	printf("Append elements...");
 	int start=zetscript::zs_system::clock();
 
 	for(int i=0; i < 100000; i++){
-		str.append(std_random_key());
+		str+=';';
 		if((i%100000)==0){
 			printf("%i\n",i);
 		}
@@ -103,7 +103,7 @@ void test_zs_string(){
 	int start=zetscript::zs_system::clock();
 
 	for(int i=0; i < 100000; i++){
-		str.append(zs_std_random_key());
+		str+=';';//.append(zs_std_random_key());
 		if((i%100000)==0){
 			printf("%i\n",i);
 		}

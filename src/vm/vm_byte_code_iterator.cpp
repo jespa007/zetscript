@@ -3,39 +3,46 @@
  *  See LICENSE file for details.
  */
 namespace zetscript{
-	void vm_iterator_init(VirtualMachine *vm
-			 ,ScriptFunction *calling_function
-			,Instruction *instruction
-			,StackElement *stk_result_op1
-			,StackElement *stk_result_op2
+	bool vm_iterator_init(
+			VirtualMachine 		*	_vm
+			,ScriptObject 		*	_this_object
+			,ScriptFunction 	*	_calling_function
+			,Instruction 		*	_instruction
+			,StackElement 		*	_stk_local_var
 	){
 
-		// stk_op1 expects to be stk
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		//ScriptFunction *sf_iter=NULL;
-		Symbol *symbol_iter;
+		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
+		StackElement 			stk_aux1;
+		Symbol 				*	symbol_iter;
+		StackElement 		*	stk_result_op1=NULL;
+		StackElement 		*	stk_result_op2=NULL;
+		ScriptObject 		*	obj=NULL;
+		ScriptType 			*	sc=NULL;
+		Instruction			* 	instruction=_instruction;
+
+		 VM_POP_STK_TWO;
 
 		// stk_op2 expects to be obj with container
 
 		if((stk_result_op2->properties & STK_PROPERTY_PTR_STK) == 0){
 			VM_ERRORF("internal: Expected stk");
-			return;
+			return false;
 		}
 
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
 			//VM_ERROR("internal: Expected object");
 			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
 				VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
-					,SFI_GET_SYMBOL_NAME(calling_function,instruction)
+					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 					,stk_to_str(data->zs,data->stk_vm_current).c_str()
 				);
-				return;
+				return false;
 			}
 		}
 
 		stk_result_op2 = (StackElement *)(stk_result_op2->value);
-		ScriptObject *obj=(ScriptObject *)stk_result_op1->value;
-		ScriptType *sc=obj->getScriptType();
+		obj=(ScriptObject *)stk_result_op1->value;
+		sc=obj->getScriptType();
 
 		symbol_iter=sc->getSymbolMemberFunction("iter");
 
@@ -62,14 +69,14 @@ namespace zetscript{
 				VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'"
 						,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
 				);
-				return;
+				return false;
 			}
 
 
 
 			obj=(ScriptObject *)data->stk_vm_current->value;
 
-			if(!vm_share_script_object(vm,obj)){\
+			if(!vm_share_script_object(_vm,obj)){\
 				goto lbl_exit_function;\
 			}\
 
@@ -80,17 +87,17 @@ namespace zetscript{
 			// check all functions...
 			if(sc->getSymbolMemberFunction("get")==NULL){
 				VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getTypeName());
-				return;
+				return false;
 			}
 
 			if(sc->getSymbolMemberFunction("_post_inc")==NULL){
 				VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getTypeName());
-				return;
+				return false;
 			}
 
 			if(sc->getSymbolMemberFunction("end")==NULL){
 				VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getTypeName());
-				return;
+				return false;
 			}
 
 			// everything allright store and share pointer
@@ -98,24 +105,33 @@ namespace zetscript{
 		}
 		else{
 			VM_ERROR("Object '%s' not implements 'iter'",obj->getTypeName());
+			return false;
 		}
+
+		return true;
 
 		// get iterator...
 	lbl_exit_function:
 
-		return;
+		return false;
 
 	}
 
 	bool vm_perform_in_operator(
-			VirtualMachine *vm
-			 ,ScriptFunction *calling_function
-			,Instruction *instruction
-			, StackElement *stk_result_op1
-			, StackElement *stk_result_op2
+			VirtualMachine 	*_vm
+			,ScriptObject 	*_this_object
+			,ScriptFunction *_calling_function
+			,Instruction 	*_instruction
+			,StackElement 	*_stk_local_var
 	){
-		zs_string error="";
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
+		zs_string 			error="";
+		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
+		StackElement 		*	stk_result_op1=NULL;
+		StackElement 		*	stk_result_op2=NULL;
+		StackElement 			stk_aux1;
+		Instruction			*	instruction=_instruction;
+
+		 VM_POP_STK_TWO;
 
 		if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so_aux=(ScriptObject *)stk_result_op2->value;
@@ -165,9 +181,9 @@ namespace zetscript{
 			default:
 				// TODO:
 				if(vm_call_metamethod(
-						vm,
-						calling_function,
-						instruction,
+						_vm,
+						_calling_function,
+						_instruction,
 						BYTE_CODE_METAMETHOD_IN,
 						stk_result_op2,
 						stk_result_op1,
@@ -188,6 +204,9 @@ namespace zetscript{
 		}
 
 		return true;
+
+lbl_exit_function:
+		return false;
 	}
 
 }

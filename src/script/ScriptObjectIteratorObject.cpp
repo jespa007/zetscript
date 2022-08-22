@@ -36,14 +36,14 @@ namespace zetscript{
 
 
 	bool	 ScriptObjectIteratorObject::end(){
-		if(ref_object->getRefObject()==NULL) {
+		if(ref_object->getTargetObject()==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 		return it.end();
 	}
 
 	void	 ScriptObjectIteratorObject::get(){
-		if(ref_object->getRefObject()==NULL) {
+		if(ref_object->getTargetObject()==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 		if(it.end()) return;
@@ -57,7 +57,7 @@ namespace zetscript{
 
 
 	void	 ScriptObjectIteratorObject::next(){
-		if(ref_object->getRefObject()==NULL) {
+		if(ref_object->getTargetObject()==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 		it.next();

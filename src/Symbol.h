@@ -31,7 +31,7 @@ namespace zetscript{
 		Scope *scope;		// scope where symbol was registered
 		unsigned short properties; // symbol properties using SymbolProperty bits
 
-		char *name; 	// symbol name
+		zs_string name; 	// symbol name
 		zs_int ref_ptr; 	// pointer ref that holds rellevant information
 		zs_string str_native_type; // In case is C, we need to know its type ...
 

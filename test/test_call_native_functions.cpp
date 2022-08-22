@@ -7,7 +7,7 @@
 
 class ClassA{
 	public:
-	 void fun1(const std::string & _s,bool _show_print){
+	 void fun1(const zetscript::zs_string & _s,bool _show_print){
 		 if(_show_print){
 			 printf("from A: %s\n",_s.c_str());
 		 }
@@ -180,14 +180,14 @@ bool allValuesTheSame(zetscript::ZetScript *_zs,zetscript::ScriptObjectVector * 
    return true;
 }
 
-std::vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs,zetscript::zs_int max_number, zetscript::zs_int n_elements){
+zetscript::zs_vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs,zetscript::zs_int max_number, zetscript::zs_int n_elements){
 	ZS_UNUSUED_PARAM(_zs);
 	if(max_number==0 || n_elements==0){
 		throw("max number or n_elements are 0s");
 	}
 		//new throw("invalid number");
 
-	std::vector<zetscript::zs_int> index_rand;// = new int [n_elements];
+	zetscript::zs_vector<zetscript::zs_int> index_rand;// = new int [n_elements];
 
 	zetscript::zs_int item=0;
 	bool found = false;
@@ -197,7 +197,7 @@ std::vector<zetscript::zs_int> newRandomCountExt(zetscript::ZetScript *_zs,zetsc
 			 item = rand()%(max_number);
 			found = false;
 		 	for(int j=0; j < i;j++){
-				if(index_rand[j] == item){
+				if(index_rand.items[j] == item){
 					found=true;
 				}
 		 	}
@@ -214,7 +214,7 @@ zetscript::ScriptObjectVector * reorderValuesFromIntArray(zetscript::ZetScript *
 	zetscript::ScriptObjectVector *output=zetscript::ScriptObjectVector::newScriptObjectVector(_zs);
 	zetscript::zs_vector<zetscript::StackElement *> *input=_input->getStkUserListElements();
 	uint16_t input_count=input->count;
-	std::vector<zetscript::zs_int> rand_txt;
+	zetscript::zs_vector<zetscript::zs_int> rand_txt;
 
     if(allValuesTheSame(_zs,_input)){
           return _input;
@@ -226,7 +226,7 @@ zetscript::ScriptObjectVector * reorderValuesFromIntArray(zetscript::ZetScript *
 		do{
 			rand_txt= newRandomCountExt(_zs,input_count,input_count);
 			 for(zetscript::zs_int i =0; i < input_count; i++){
-		         equal&=(i==rand_txt[i]); // check if not consecutive...
+		         equal&=(i==rand_txt.items[i]); // check if not consecutive...
 			 }
 		}while(equal);
     }catch(std::exception & ex){
@@ -236,7 +236,7 @@ zetscript::ScriptObjectVector * reorderValuesFromIntArray(zetscript::ZetScript *
     for(int i =0; i < input_count; i++){
     	// save resulting
     	zetscript::StackElement *stk=output->pushNewUserSlot();
-    	stk->value=_input->getUserElementAt(rand_txt[i])->value;
+    	stk->value=_input->getUserElementAt(rand_txt.items[i])->value;
     	stk->properties=zetscript::STK_PROPERTY_ZS_INT;
     }
 

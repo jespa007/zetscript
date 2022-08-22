@@ -16,11 +16,7 @@ namespace zetscript{
 		if (this->_size <= (this->count+_n_slots)) {
 			this->_size = this->count+_n_slots+ZS_STRING_EXPAND_CHAR_ELEMENTS;
 
-			char *buf_aux = (char*)malloc( sizeof(char) * this->_size + 1); // + 1 for the keeping the null character
-			memcpy(buf_aux,buf,this->count);
-
-			free(buf);
-			buf=buf_aux;
+			buf=(char *)realloc(buf, sizeof(char) * this->_size + 1); // + 1 for the keeping the null character
 		}
 
 		this->count+=_n_slots;

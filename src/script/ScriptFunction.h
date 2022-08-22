@@ -116,7 +116,7 @@ namespace zetscript{
 
 
 		/* Registers a function.
-		 * Desc: Inserts function at custom scope. It returns the idx std::vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
+		 * Desc: Inserts function at custom scope. It returns the idx zs_vector element on symbol_info.scope_info.[vRegisteredFunction/vRegisteredVariables]
 		 */
 		Symbol * registerLocalFunction(
 				  Scope * scope_block

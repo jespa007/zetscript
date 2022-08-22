@@ -547,7 +547,7 @@ namespace zetscript{
 					for(int j = 0; j < sc_sf->scope_script_type->symbol_functions->count; j++){
 						Symbol *sv=(Symbol *)sc_sf->scope_script_type->symbol_functions->items[j];
 						if(
-							   (ZS_STRCMP(sv->name, ==,eval_instruction->symbol_name.c_str()) )
+							   sv->name==eval_instruction->symbol_name
 						){
 							eval_instruction->vm_instruction.value_op2=(zs_int)sv;
 							break;

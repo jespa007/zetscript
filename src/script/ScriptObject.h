@@ -62,18 +62,18 @@ namespace zetscript{
 		virtual	int 					length();
 
 		ZetScript      				* 	getZetScript();
-		StackElement 				* 	getBuiltinProperty(const char * property_name);
+		StackElement 				* 	getBuiltinProperty(const zs_string & property_name);
 
 		StackElement 			* 	getBuiltinElementAt(short idx);
 
 		virtual StackElement 	* 	addProperty(
-				const char * symbol_value
-				,const zs_string & error
-				,StackElement * stk_element = NULL
+			const zs_string 	& 	symbol_value
+			,zs_string 		& 	error
+			,StackElement 		*	stk_element = NULL
 		);
 
-		virtual StackElement 	* 	getProperty(const char * property_name);
-		virtual Symbol 			*  	getScriptFunctionSymbol(const char * _function_member_name);
+		virtual StackElement 	* 	getProperty(const zs_string & property_name);
+		virtual Symbol 			*  	getScriptFunctionSymbol(const zs_string & _function_member_name);
 
 
 		zs_vector<StackElement *> 				* 	getStkBuiltinListElements();
@@ -100,8 +100,8 @@ namespace zetscript{
 		ZetScript 								*	zs; // 8
 		VirtualMachine 							*	vm; // 8
 		zs_vector<StackElement *>					stk_builtin_elements;
-		zs_map					*					map_builtin_properties; // to search faster each property by its name
-		zs_vector<RefObject *>					*   ref_script_objects;
+		zs_map    								*	map_builtin_properties; // to search faster each property by its name
+		zs_vector<RefObject *>			    *   ref_script_objects;
 		zs_vector<ScriptObjectWeakPointer *>	*   weak_pointers;
 
 		void 										init(ZetScript *zs);
@@ -109,7 +109,7 @@ namespace zetscript{
 		ScriptTypeFactory						*	getScriptTypeFactory();
 
 		virtual StackElement 					* 	newBuiltinSlot();
-		virtual StackElement 					* 	addBuiltinProperty(const char * symbol_value, StackElement stk=k_stk_undefined);
+		virtual StackElement 					* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 		bool 										unrefAndFreeStackElementContainer(StackElement *si);
 		int 										idxRefObject(RefObject  *_ref_object);
 	};

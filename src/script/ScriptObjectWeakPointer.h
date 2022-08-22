@@ -20,7 +20,7 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ScriptObjectWeakPointer * newScriptObjectWeakPointer(ScriptObject *_so_reference);
+		static ScriptObjectWeakPointer * newScriptObjectWeakPointer(ScriptObject *_so_target);
 
 		//
 		// Helpers

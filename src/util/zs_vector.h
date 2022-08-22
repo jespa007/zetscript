@@ -39,6 +39,9 @@ namespace zetscript{
 		_T    		pop_back();
 		void    	resize(int _len);
 
+		inline _T *data(){return items;}
+		inline int	size(){return count;}
+
 		/**
 		 * Deletes list and its elements.
 		 */

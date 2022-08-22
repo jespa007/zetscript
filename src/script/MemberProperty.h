@@ -14,7 +14,7 @@ namespace zetscript{
 	class MemberProperty{
 	public:
 		ScriptType *script_type;
-		 char *property_name;
+		 zs_string property_name;
 		 MetamethodMembers metamethod_members;
 
 		 static bool 						symbolNameMatchStartSymbolNameMetamethod(const zs_string & _symbol_name);

@@ -93,14 +93,7 @@ namespace zetscript{
 	// PRIVATE
 
 	void Symbol::copy(const Symbol & _symbol){
-		if(_symbol.name!= NULL){
-			if(name !=NULL){
-				free(name);
-			}
-			name=zs_strutils::clone_to_char_ptr(zs_string(_symbol.name));
-		}
-
-
+		name=_symbol.name;
 		str_native_type=_symbol.str_native_type;
 
 
@@ -117,7 +110,7 @@ namespace zetscript{
 
 	// PUBLIC
 	Symbol::Symbol(const zs_string & _name){
-		name = zs_strutils::clone_to_char_ptr(_name);
+		name = _name;
 		str_native_type = "";
 		file="";
 		line=-1;
@@ -140,10 +133,7 @@ namespace zetscript{
 	}
 
 	Symbol::~Symbol() {
-		if(name!= NULL){
-			free(name);
-			name=NULL;
-		}
+
 	}
 
 

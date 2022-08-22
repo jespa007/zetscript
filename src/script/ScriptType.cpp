@@ -299,7 +299,7 @@ namespace zetscript{
 			ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD(
 				symbol_metamethod_function
 				,_byte_code_metamethod
-				, symbol_member_property->name
+				, symbol_member_property->name.c_str()
 			);
 			mp_setter_info=mp->metamethod_members.getSetterInfo(_byte_code_metamethod);
 			break;
