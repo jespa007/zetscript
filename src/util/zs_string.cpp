@@ -4,7 +4,8 @@
  */
 #include "zetscript.h"
 
-#define ZS_STRING_EXPAND_CHAR_ELEMENTS 10
+#define ZS_STRING_MAX_ELEMENTS			2000000
+#define ZS_STRING_EXPAND_CHAR_ELEMENTS 	16
 
 namespace zetscript{
 

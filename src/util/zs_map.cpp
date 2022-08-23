@@ -6,7 +6,7 @@
 
 #define ZS_MAP_KEY_NOT_FOUND 	-1
 #define ZS_MAP_MAX_ITEMS  		1000000
-#define ZS_MAP_N_SLOT_ITEMS 	10
+#define ZS_MAP_N_SLOT_ITEMS 	16
 
 namespace zetscript{
 

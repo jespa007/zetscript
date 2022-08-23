@@ -3,8 +3,8 @@
  *  See LICENSE file for details.
  */
 
-#define ZS_VECTOR_MAX_ELEMENTS	16000
-#define ZS_VECTOR_EXPAND_SLOT_ELEMENTS 10
+#define ZS_VECTOR_MAX_ELEMENTS	2000000
+#define ZS_VECTOR_EXPAND_SLOT_ELEMENTS 16
 
 namespace zetscript{
 
