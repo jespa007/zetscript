@@ -546,7 +546,7 @@ namespace zetscript{
 					ScriptType *match_class=getScriptType(sc->idx_base_types->items[0]);
 					THROW_RUNTIME_ERROR("Type '%s' already is inherited from '%s'"
 							,_str_script_type.c_str()
-							,match_class->str_script_type);
+							,match_class->str_script_type.c_str());
 				}
 
 				if((base_type = getScriptType(_base_class_name)) == NULL){
@@ -634,7 +634,7 @@ namespace zetscript{
 				Symbol *symbol_field_initializer=NULL;
 
 				symbol_field_initializer=sc->registerMemberFunction(
-					zs_strutils::format("__@field_initializer_%s_@__",sc->str_script_type)
+					zs_strutils::format("__@field_initializer_%s_@__",sc->str_script_type.c_str())
 				);
 
 				sc->sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;

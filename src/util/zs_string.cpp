@@ -448,7 +448,7 @@ namespace zetscript{
 		if(_s==NULL){
 			THROW_RUNTIME_ERRORF("input string null");
 		}
-		zs_string::append(_s,strlen(_s));
+		zs_string::append(_s,(int)strlen(_s));
 	}
 
 

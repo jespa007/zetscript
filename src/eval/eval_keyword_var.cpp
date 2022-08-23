@@ -208,7 +208,7 @@ namespace zetscript{
 				}
 				else if(is_constant){
 					EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,test_line,"Uninitialized constant symbol %s%s"
-							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->str_script_type).c_str():""
+							,sc_var_member_extension!=NULL?zs_strutils::format("::%s",sc->str_script_type.c_str()).c_str():""
 							,variable_name.c_str());
 				}
 

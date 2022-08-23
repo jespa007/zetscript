@@ -11,8 +11,8 @@
 :"Local"\
 
 #define GET_ILOAD_R_STR(properties,value) \
-	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->items[value])->name\
-	:((Symbol *)sfo->local_variables->items[value])->name\
+	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->items[value])->name.c_str()\
+	:((Symbol *)sfo->local_variables->items[value])->name.c_str()\
 
 namespace zetscript{
 
@@ -491,7 +491,7 @@ namespace zetscript{
 					THROW_SCRIPT_ERROR_FILE_LINE(NULL,-1,"Function '%s' already binded"
 						,function_member->scope_script_function!=NULL?
 								zs_strutils::format("%s::%s"
-										,function_member->scope_script_function->script_type_owner->str_script_type
+										,function_member->scope_script_function->script_type_owner->str_script_type.c_str()
 										,_function_name.c_str()).c_str()
 								:_function_name.c_str()
 
