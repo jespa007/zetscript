@@ -31,11 +31,11 @@ namespace zetscript{
 	ScriptObjectVector * ScriptObjectVector::newScriptObjectVectorAdd(ZetScript *zs,ScriptObjectVector *v1,ScriptObjectVector *v2){
 		ScriptObjectVector *so_vector = ZS_NEW_OBJECT_VECTOR(zs);
 
-		for(int i=0; i < v1->stk_user_elements.count;i++){
+		for(int i=0; i < v1->stk_user_elements.size();i++){
 			so_vector->push((StackElement *)v1->stk_user_elements.items[i]);
 		}
 
-		for(int i=0; i < v2->stk_user_elements.count;i++){
+		for(int i=0; i < v2->stk_user_elements.size();i++){
 			so_vector->push((StackElement *)v2->stk_user_elements.items[i]);
 		}
 
@@ -61,12 +61,12 @@ namespace zetscript{
 
 	int ScriptObjectVector::length(){
 
-		return this->stk_user_elements.count;
+		return this->stk_user_elements.size();
 	}
 
 
 	StackElement * ScriptObjectVector::getUserElementAt(int _idx){
-		if(_idx >= stk_user_elements.count){
+		if(_idx >= stk_user_elements.size()){
 			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",_idx);
 			return NULL;
 		}
@@ -78,8 +78,8 @@ namespace zetscript{
 
 		StackElement *si;
 
-		if(idx >= stk_user_elements.count){
-			VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_user_elements.count);
+		if(idx >= stk_user_elements.size()){
+			VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_user_elements.size());
 		}
 
 		si=(StackElement *)stk_user_elements.items[idx];
@@ -93,7 +93,7 @@ namespace zetscript{
 	}
 
 	void ScriptObjectVector::eraseAllUserElements(){
-		for(int i=0; i <stk_user_elements.count; i++){
+		for(int i=0; i <stk_user_elements.size(); i++){
 			ScriptObject::unrefAndFreeStackElementContainer((StackElement *)stk_user_elements.items[i]);
 		}
 		stk_user_elements.clear();
@@ -112,10 +112,10 @@ namespace zetscript{
 
 	void ScriptObjectVector::pop(){
 		// save last element...
-		StackElement stk_element=*((StackElement *)stk_user_elements.items[stk_user_elements.count-1]);
+		StackElement stk_element=*((StackElement *)stk_user_elements.items[stk_user_elements.size()-1]);
 
 		// erase
-		if(!eraseUserElementAt(stk_user_elements.count-1)){
+		if(!eraseUserElementAt(stk_user_elements.size()-1)){
 			return;
 		}
 

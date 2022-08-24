@@ -33,7 +33,7 @@ namespace zetscript{
 			return;
 		}
 
-		if(sc->idx_base_types->count>0){
+		if(sc->idx_base_types->size()>0){
 			callConstructorMemberVariables(this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]));
 		}
 
@@ -55,7 +55,7 @@ namespace zetscript{
 		zs_vector<Symbol *> *member_vars=script_type->scope_script_type->symbol_variables;
 		//------------------------------------------------------------------------------
 		// pre-register built-in members...
-		for(int i = 0; i < member_vars->count; i++){
+		for(int i = 0; i < member_vars->size(); i++){
 
 			Symbol * symbol = (Symbol *)member_vars->items[i];
 
@@ -92,7 +92,7 @@ namespace zetscript{
 		}else {
 			ScriptType *sc=script_type;
 			// get first type with c inheritance...
-			while((sc->idx_base_types->count>0) && (script_class_native==NULL)){
+			while((sc->idx_base_types->size()>0) && (script_class_native==NULL)){
 				sc=this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]); // get base type (only first in script because has single inheritance)...
 				if(sc->isNativeType()){ // we found the native script type!
 					script_class_native=sc;

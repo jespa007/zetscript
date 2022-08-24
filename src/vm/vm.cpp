@@ -474,13 +474,6 @@ namespace zetscript{
 
 		if(shared_pointer->data.n_shares==0){
 
-			// weak pointer keep shared pointers
-			if(_obj->deRefWeakPointer()){
-				vm_share_script_object(_vm,_obj);
-				//shared_pointer->data.n_shares=1; // already weak pointers
-				return true;
-			}
-
 			if(_scope_block==NULL){
 				delete shared_pointer->data.ptr_script_object_shared; // it deletes shared_script_object
 				free(shared_pointer);

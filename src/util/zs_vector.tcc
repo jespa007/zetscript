@@ -19,7 +19,7 @@ namespace zetscript{
 		}
 		// condition to increase this->items:
 		// last slot exhausted
-		if (this->_size ==this->count) {
+		if (this->_size ==this->size()) {
 			if((this->_size+ ZS_VECTOR_EXPAND_SLOT_ELEMENTS) >= ZS_VECTOR_MAX_ELEMENTS){
 				THROW_RUNTIME_ERRORF("Max elements vector");
 			}
@@ -27,7 +27,7 @@ namespace zetscript{
 			_T *aux_buf=new _T[ this->_size];
 
 			// copy.
-			for(int i=0; i < this->count; i++){
+			for(int i=0; i < this->size(); i++){
 				aux_buf[i]=this->items[i];// =(zs_int *) realloc(this->items, sizeof(zs_int) * this->_size);
 			}
 
@@ -54,7 +54,7 @@ namespace zetscript{
 
 		clear(); // cleanup any existing data
 
-		count = _vector.count;
+		count = _vector.size();
 		_size = _vector._size;
 		this->items = new _T[_size]; //(zs_int*)ZS_MALLOC(sizeof(zs_int) * _size + 1); // + 1 for the keeping the null character
 		
@@ -89,7 +89,7 @@ namespace zetscript{
 
 	template<typename _T>
 	void zs_vector<_T>::set(int _pos, const _T & _val){
-		if (_pos<0 || _pos >= this->count) {
+		if (_pos<0 || _pos >= this->size()) {
 			THROW_RUNTIME_ERRORF("vector::set => idx out of bounds 1");
 			return;
 		}
@@ -98,7 +98,7 @@ namespace zetscript{
 
 	template<typename _T>
 	const _T &	zs_vector<_T>::get(int  _pos){
-		if (_pos<0 ||_pos >= this->count) {
+		if (_pos<0 ||_pos >= this->size()) {
 			THROW_RUNTIME_ERRORF("vector::get => idx out of bounds");
 		}
 
@@ -107,12 +107,12 @@ namespace zetscript{
 
 	template<typename _T>
 	void zs_vector<_T>::erase(int  _pos){
-		if (_pos<0 ||_pos >= this->count) {
+		if (_pos<0 ||_pos >= this->size()) {
 			THROW_RUNTIME_ERRORF("vector::erase => idx out of bounds");
 			return;
 		}
 
-		for (int i = _pos; i < (this->count-1); i++) {
+		for (int i = _pos; i < (this->size()-1); i++) {
 			this->items[i] = this->items[i+1];
 		}
 
@@ -122,13 +122,13 @@ namespace zetscript{
 	template<typename _T>
 	_T zs_vector<_T>::pop_back(){
 		_T item;
-		if (this->count==0) {
+		if (this->size()==0) {
 			THROW_RUNTIME_ERRORF("no elements");
 			return 0;
 		}
 
-		item=this->items[this->count-1];
-		erase(this->count-1);
+		item=this->items[this->size()-1];
+		erase(this->size()-1);
 		return item;
 	}
 
@@ -166,14 +166,14 @@ namespace zetscript{
 
 		this->items=new_buf;
 		this->_size=_new_size;
-		//this->count=_new_size;
+		//this->size()=_new_size;
 
 	}
 
 	template<typename _T>
 	bool zs_vector<_T>::push_back(const _T & _val){
 		if(push_back_slot()){
-			this->items[this->count-1] = _val; // add element to end list...
+			this->items[this->size()-1] = _val; // add element to end list...
 			return true;
 		}
 		return false;
@@ -181,25 +181,25 @@ namespace zetscript{
 
 	template<typename _T>
 	void zs_vector<_T>::concat(const zs_vector<_T> & _vector){
-		insert(count,_vector, _vector.count);
+		insert(count,_vector, _vector.size());
 	}
 
 	template<typename _T>
 	void 		zs_vector<_T>::insert(int  _pos,const zs_vector<_T>  & _src_vector, int _n_elements_src_vector_to_copy){
 
 
-		if(_src_vector.count==0) { // no insert
+		if(_src_vector.size()==0) { // no insert
 			return;
 		}
 
 		if(_n_elements_src_vector_to_copy == npos){
-			_n_elements_src_vector_to_copy=_src_vector.count;
+			_n_elements_src_vector_to_copy=_src_vector.size();
 		}
 
 
-		if(_src_vector.count < _n_elements_src_vector_to_copy) {
-			THROW_RUNTIME_ERROR("there's more elements than the list to insert: list->count (%i) < n_list_elements_to_copy (%i)"
-				,_src_vector.count
+		if(_src_vector.size() < _n_elements_src_vector_to_copy) {
+			THROW_RUNTIME_ERROR("there's more elements than the list to insert: list->size() (%i) < n_list_elements_to_copy (%i)"
+				,_src_vector.size()
 				,_n_elements_src_vector_to_copy
 			);
 		}
@@ -247,19 +247,19 @@ namespace zetscript{
 
 		// update new
 		this->items=new_items;
-		count+=_src_vector.count;
+		count+=_src_vector.size();
 	}
 
 	template<typename _T>
 	void 		zs_vector<_T>::insert(int  _pos, const _T & _val){
-		if(_pos > (this->count+1)){
-			THROW_RUNTIME_ERROR("idx should be 0 to %i",this->count+1);
+		if(_pos > (this->size()+1)){
+			THROW_RUNTIME_ERROR("idx should be 0 to %i",this->size()+1);
 			return;
 		}
 
 		if(push_back_slot()){
 			// 1. move all elements...
-			for(int i=this->count-1;i>_pos;i--){
+			for(int i=this->size()-1;i>_pos;i--){
 				this->items[i]=this->items[i-1];
 			}
 			// 2. Assign element

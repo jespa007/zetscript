@@ -203,11 +203,58 @@ namespace zetscript{
 		return "Object@"+zs_string(getTypeName());
 	}
 
-	void ScriptObject::refWeakPointer(ScriptObjectWeakPointer *_wp){
+	void ScriptObject::addWeakPointer(ScriptObjectWeakPointer *_wp){
 		weak_pointers->push_back(_wp);
 	}
 
-	void ScriptObject::refObject(RefObject *_so){
+	int ScriptObject::idxWeakPointer(ScriptObjectWeakPointer  *_wp){
+		for(int i=0; i < weak_pointers->size();i++){
+			if(weak_pointers->items[i]==_wp){
+				return i;
+			}
+		}
+
+		return ZS_IDX_UNDEFINED;
+	}
+
+	void ScriptObject::removeWeakPointer(ScriptObjectWeakPointer  *_wp){
+		int idx=idxWeakPointer(_wp);
+
+		if(idx==ZS_IDX_UNDEFINED){
+			//THROW_RUNTIME_ERRORF("internal: member function not exist");
+			return;
+		}
+
+		// get ref object element
+		auto ref_object=weak_pointers->items[idx];
+
+		// remove element before call deRefObject to avoid recursion
+		ref_script_objects->erase(idx);
+
+
+		// call ref
+		//ref_object->deRefObject();
+
+	}
+
+	/*bool ScriptObject::deRefWeakPointer(){
+		if(weak_pointers->size()>0){
+			// get last
+			ScriptObjectWeakPointer *wp=weak_pointers->items[weak_pointers->size()-1];
+			weak_pointers->pop_back();
+
+			// weak pointer becomes strong pointer
+			//StackElement *stk_slot=wp->getContainerSlotStore()->ptr_stk;
+			//stk_slot->properties=STK_PROPERTY_SCRIPT_OBJECT;
+			//stk_slot->value=(zs_int)wp->getTargetObject();
+			//wp->deRefObject();
+			return true;
+		}
+		return false;
+	}*/
+
+
+	void ScriptObject::addRefObject(RefObject *_so){
 		ref_script_objects->push_back(_so);
 	}
 
@@ -221,18 +268,8 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	bool ScriptObject::deRefWeakPointer(){
-		if(weak_pointers->size()>0){
-			// get last
-			ScriptObjectWeakPointer *wp=weak_pointers->items[weak_pointers->size()-1];
-			weak_pointers->pop_back();
-			wp->deRefObject();
-			return true;
-		}
-		return false;
-	}
 
-	void ScriptObject::deRefObject(RefObject  *_ref_object){
+	void ScriptObject::removeRefObject(RefObject  *_ref_object){
 		int idx=idxRefObject(_ref_object);
 
 		if(idx==ZS_IDX_UNDEFINED){
@@ -284,7 +321,7 @@ namespace zetscript{
 		delete ref_script_objects;
 
 		for(int i=0; i < weak_pointers->size(); i++){
-			weak_pointers->items[i]->deRefObject();
+			delete weak_pointers->items[i];
 		}
 
 		delete weak_pointers;

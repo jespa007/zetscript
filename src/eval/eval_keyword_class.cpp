@@ -170,7 +170,7 @@ namespace zetscript{
 		}
 
 		// link unreferenced forward declared functions
-		for(int i=0; i < sc->scope_script_type->symbol_functions->count; i++){
+		for(int i=0; i < sc->scope_script_type->symbol_functions->size(); i++){
 			Symbol  *symbol_sf=(Symbol *)(sc->scope_script_type->symbol_functions->items[i]);
 			ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
 			Instruction *it=sf->instructions;
@@ -180,7 +180,7 @@ namespace zetscript{
 						// search function and link its idx_position
 						zs_string str_name_unreferenced_this_call=SFI_GET_SYMBOL_NAME(sf,it);
 
-						for(int j = 0; j < sc->scope_script_type->symbol_functions->count; j++){
+						for(int j = 0; j < sc->scope_script_type->symbol_functions->size(); j++){
 							Symbol *sv=(Symbol *)sc->scope_script_type->symbol_functions->items[j];
 							if(
 								   ( sv->name == str_name_unreferenced_this_call )
@@ -290,7 +290,7 @@ namespace zetscript{
 			}
 
 			// get last instruction...
-			eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.count-1];
+			eval_instruction = (EvalInstruction *)eval_data->current_function->eval_instructions.items[eval_data->current_function->eval_instructions.size()-1];
 			ByteCode  byte_code=eval_instruction->vm_instruction.byte_code;
 			if(byte_code==BYTE_CODE_FIND_VARIABLE){
 				eval_instruction->vm_instruction.properties|=INSTRUCTION_PROPERTY_USE_PUSH_STK;
@@ -477,7 +477,7 @@ namespace zetscript{
 						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name_script_function.c_str());
 
 						if(_mp_info.byte_code_metamethod!=BYTE_CODE_METAMETHOD_INVALID){
-							if(_mp_info.setters->count == 0){
+							if(_mp_info.setters->size() == 0){
 								mp->metamethod_members.addSetter(_mp_info.byte_code_metamethod,symbol);
 							}else{
 								EVAL_ERROR_FILE_LINE(

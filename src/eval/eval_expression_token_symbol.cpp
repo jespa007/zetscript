@@ -414,7 +414,7 @@ namespace zetscript{
 						}
 
 						// only one argument and is variable
-						if(ei_arg_instruction.count==1){
+						if(ei_arg_instruction.size()==1){
 							EvalInstruction *ei_arg=(EvalInstruction *)ei_arg_instruction.items[0];
 							ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
 
@@ -666,7 +666,7 @@ namespace zetscript{
 		){
 			EvalInstruction *eval_instruction_post=NULL;
 			ByteCode byte_code_post_operation= ByteCode::BYTE_CODE_INVALID;
-			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]))->vm_instruction;
+			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.size()-1]))->vm_instruction;
 
 			if(token_node_symbol->token_type != TokenType::TOKEN_TYPE_IDENTIFIER){
 				EVAL_ERROR_FILE_LINE_GOTO(
@@ -715,7 +715,7 @@ namespace zetscript{
 				)
 			);
 
-			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1];
+			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.size()-1];
 
 			eval_instruction_post->instruction_source_info=InstructionSourceInfo(
 				eval_data->current_parsing_file
@@ -762,8 +762,8 @@ namespace zetscript{
 				}
 			}
 
-			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1];
-			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.count-1]))->vm_instruction;
+			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.size()-1];
+			Instruction *last_load_instruction=&((EvalInstruction *)(token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.size()-1]))->vm_instruction;
 
 			token_node_symbol->eval_instructions.push_back(
 				eval_instruction_pre=new EvalInstruction(
@@ -803,7 +803,7 @@ namespace zetscript{
 
 error_expression_token_symbol:
 
-		for(int kk=0;kk<token_node_symbol->eval_instructions.count;kk++){
+		for(int kk=0;kk<token_node_symbol->eval_instructions.size();kk++){
 			delete (EvalInstruction *)token_node_symbol->eval_instructions.items[kk];
 			token_node_symbol->eval_instructions.items[kk]=0;
 		}

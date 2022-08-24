@@ -203,7 +203,7 @@ namespace zetscript{
 		zs_vector<StackElement *> **it=ptr_vector;
 		while(*it!=NULL){
 
-			for(int i=0;i < (*it)->count; i++){
+			for(int i=0;i < (*it)->size(); i++){
 				StackElement *stk_el=(StackElement *)(*it)->items[i];
 				free(stk_el);
 			}

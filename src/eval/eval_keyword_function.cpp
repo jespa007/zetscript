@@ -25,7 +25,7 @@ namespace zetscript{
 		size_t new_instructions_len=0;
 		size_t new_instructions_total_bytes=0;
 		Instruction * start_ptr=NULL;
-		int n_elements_to_add=eval_instructions->count;
+		int n_elements_to_add=eval_instructions->size();
 
 		n_elements_to_add=n_elements_to_add+3; // +3 for load/store/reset stack
 
@@ -48,7 +48,7 @@ namespace zetscript{
 
 
 		// 3. copy eval instructions
-		for(int i=0; i < eval_instructions->count; i++){
+		for(int i=0; i < eval_instructions->size(); i++){
 			EvalInstruction *eval_instruction = (EvalInstruction *)eval_instructions->items[i];
 			// save instruction ...
 			*start_ptr=eval_instruction->vm_instruction;
@@ -100,7 +100,7 @@ namespace zetscript{
 
 		zs_string name_script_function=eval_anonymous_function_name("","defval");
 		Instruction *start_ptr=NULL;
-		size_t instructions_len=(eval_instructions->count+2); // additional +2 operations byte_code_ret and byte_code_end_function
+		size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
 
 		Symbol * symbol_sf=MAIN_FUNCTION(eval_data)->registerLocalFunction(
@@ -120,7 +120,7 @@ namespace zetscript{
 
 		sf->instructions_len=instructions_len;
 
-		for(int i=0; i < eval_instructions->count; i++){
+		for(int i=0; i < eval_instructions->size(); i++){
 			EvalInstruction *instruction = (EvalInstruction *)eval_instructions->items[i];
 			InstructionSourceInfo instruction_info=instruction->instruction_source_info;
 
@@ -315,7 +315,7 @@ namespace zetscript{
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				Keyword kw_arg=Keyword::KEYWORD_UNKNOWN;
 
-				if(script_function_params.count>0){
+				if(script_function_params.size()>0){
 					if(*aux_p != ','){
 						EVAL_ERROR_FILE_LINE_GOTOF(
 							eval_data->current_parsing_file
@@ -422,7 +422,7 @@ namespace zetscript{
 						goto eval_keyword_function_params;
 					}
 
-					if(ei_instructions_default.count == 0){ // expected expression
+					if(ei_instructions_default.size() == 0){ // expected expression
 						EVAL_ERROR_FILE_LINE_GOTOF(
 							eval_data->current_parsing_file
 							,line
@@ -433,7 +433,7 @@ namespace zetscript{
 
 					// copy evaluated instruction
 					// convert instruction to stk_element
-					if(ei_instructions_default.count == 1){
+					if(ei_instructions_default.size() == 1){
 						Instruction *instruction=&((EvalInstruction *)ei_instructions_default.items[0])->vm_instruction;
 						// trivial default values that can be accomplished by single stack element.
 						switch(instruction->byte_code){
@@ -466,7 +466,7 @@ namespace zetscript{
 					}
 
 					// finally delete all evaluated code
-					for(int i=0; i < ei_instructions_default.count; i++){
+					for(int i=0; i < ei_instructions_default.size(); i++){
 						delete (EvalInstruction *)ei_instructions_default.items[i];
 					}
 
@@ -487,10 +487,10 @@ namespace zetscript{
 			}
 
 			params=ScriptFunctionParam::createArrayFromVector(&script_function_params);
-			params_len=script_function_params.count;
+			params_len=script_function_params.size();
 
 			// remove collected script function params
-			for(int i=0; i < script_function_params.count; i++){
+			for(int i=0; i < script_function_params.size(); i++){
 				delete (ScriptFunctionParam *)script_function_params.items[i];
 			}
 
@@ -588,7 +588,7 @@ namespace zetscript{
 	// CONTROL ERROR
 	eval_keyword_function_params:
 			// unallocate script function params
-			for(int h=0; h < script_function_params.count; h++){
+			for(int h=0; h < script_function_params.size(); h++){
 				delete (ScriptFunctionParam *)script_function_params.items[h];
 			}
 			script_function_params.clear();

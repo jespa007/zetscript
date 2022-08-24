@@ -5,6 +5,7 @@
 
 #include "ScriptObject.h"
 #include "RefObject.h"
+#include "ContainerSlotStore.h"
 #include "ScriptObjectWeakPointer.h"
 #include "ScriptObjectMemberFunction.h"
 #include "ScriptObjectString.h"
@@ -23,8 +24,6 @@
 #include "ScriptObjectIteratorVector.h"
 #include "ScriptObjectIteratorVectorWrap.h"
 
-
-#include "ContainerSlotStore.h"
 #include "MetamethodMembers.h"
 #include "MemberProperty.h"
 #include "ScriptFunctionParam.h"

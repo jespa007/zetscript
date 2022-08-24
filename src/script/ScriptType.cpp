@@ -50,7 +50,7 @@ namespace zetscript{
 
 	void ScriptType::printListMemberFunctions(){
 		Scope *scope=this->scope_script_type;
-		for(int i=0; i < scope->symbol_functions->count;i++){
+		for(int i=0; i < scope->symbol_functions->size();i++){
 			Symbol *symbol = (Symbol *)scope->symbol_functions->items[i];
 			ScriptFunction *sf=(ScriptFunction *)symbol->ref_ptr;
 			int start_idx=0;
@@ -126,7 +126,7 @@ namespace zetscript{
 			return true;
 		}
 
-		for(int i=0; i < this->idx_base_types->count; i++){
+		for(int i=0; i < this->idx_base_types->size(); i++){
 			if (script_type_factory->getScriptType(this->idx_base_types->items[i])->extendsFrom(_idx_script_type) == true) {
 				return true;
 			}
@@ -605,7 +605,7 @@ namespace zetscript{
 
 						if(((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0) //--> script function has to have one setter function, meanwhile c ref can have more than one (due different signatures)
 								&&
-							(info_mp.setters!=NULL && info_mp.setters->count>0)){
+							(info_mp.setters!=NULL && info_mp.setters->size()>0)){
 							// error already set (script functions only can be set once)
 							THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
 									,str_script_type.c_str()
@@ -669,7 +669,7 @@ namespace zetscript{
 		zs_vector<Symbol *> *list=this->scope_script_type->symbol_variables;
 
 		for(
-				int i = (int)(list->count-1);
+				int i = (int)(list->size()-1);
 				i >= idx_end
 				; i--
 		){
@@ -688,7 +688,7 @@ namespace zetscript{
 		zs_vector<Symbol *> *symbol_functions=this->scope_script_type->symbol_functions;
 
 		for(
-				int i = (int)(symbol_functions->count-1);
+				int i = (int)(symbol_functions->size()-1);
 				i >= idx_end
 				; i--
 		){
@@ -726,7 +726,7 @@ namespace zetscript{
 
 	ScriptType::~ScriptType(){
 
-		for(int i=0; i < allocated_member_properties->count; i++){
+		for(int i=0; i < allocated_member_properties->size(); i++){
 			MemberProperty *mp=(MemberProperty *)allocated_member_properties->items[i];
 			delete mp;
 		}

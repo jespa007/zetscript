@@ -61,17 +61,28 @@ namespace zetscript{
 			}
 		}
 
-		so_aux=((ScriptObject *)stk_result_op1->value);
-
+		if(STK_IS_SCRIPT_OBJECT_WEAK_POINTER(stk_result_op1)){
+			so_aux=((ScriptObjectWeakPointer *)stk_result_op1->value)->getTargetObject();
+		}
+		else{
+			so_aux=((ScriptObject *)stk_result_op1->value);
+		}
 
 		if(so_aux == NULL)
 		{
 			VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(_calling_function,(instruction-1)));
 		}
 
+
+
 	find_element_object:
 
 		str_symbol_aux1=(char *)SFI_GET_SYMBOL_NAME(_calling_function,instruction);
+
+		if(strcmp(str_symbol_aux1,"self")==0){
+			int y=0;
+			y++;
+		}
 
 		//
 		sc_type=so_aux->getScriptType();
@@ -214,7 +225,7 @@ namespace zetscript{
 		if((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM){ // fast load access without pass through switch instruction
 			*data->stk_vm_current++=*stk_var;
 			instruction++; // we have to inc current instruction...
-			*_instruction_it++; //... and instruction iterator
+			(*_instruction_it)++; //... and instruction iterator
 			goto load_next_element_object;
 		}
 

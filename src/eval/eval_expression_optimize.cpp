@@ -389,7 +389,7 @@ namespace zetscript{
 			,TokenNode   *token_operation
 			, zs_vector<EvalInstruction *> *eval_instructions
 	){
-		size_t size_instructions=eval_instructions->count;
+		size_t size_instructions=eval_instructions->size();
 		EvalInstruction *instruction=NULL;
 		bool is_i1_K=false;
 		bool is_i2_K=false;
@@ -525,7 +525,7 @@ namespace zetscript{
 		}
 
 		// erase last two instructions
-		eval_instructions->resize(eval_instructions->count-n_eval_ops);
+		eval_instructions->resize(eval_instructions->size()-n_eval_ops);
 
 		// and push the new one
 		return instruction;

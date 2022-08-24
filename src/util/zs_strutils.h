@@ -85,8 +85,8 @@ namespace zetscript{
 		void copy_from_ptr_diff(zs_string & str_dst,const char *p1, const char *p2);
 
 
-		bool contains(const zs_string & input, const zs_string & str_containts,StringComparer sc=StringComparer::Exactly);
-		bool contains(const zs_vector<zs_string> & input, const zs_string & str_containts,StringComparer sc=StringComparer::Exactly);
+		bool contains(const zs_string & _str_input, const zs_string & _str_containts,StringComparer sc=StringComparer::Exactly);
+		bool contains(const zs_vector<zs_string> & _strings, const zs_string & _str_containts,StringComparer sc=StringComparer::Exactly);
 
 		int index_of(zs_string& text, zs_string& pattern);
 

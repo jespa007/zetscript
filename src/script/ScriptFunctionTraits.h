@@ -178,7 +178,7 @@ namespace zetscript{
 		using Traits3 = FunctionTraits<decltype(_ptr_function)>;
 		getParamsFunction<Traits3>(&return_type, args, MakeIndexSequence<Traits3::arity>{});
 
-		if(args.count>MAX_NATIVE_FUNCTION_ARGS){
+		if(args.size()>MAX_NATIVE_FUNCTION_ARGS){
 			THROW_RUNTIME_ERROR(
 				"Error register function '%s': max arguments reached (max:'%i')"
 				,name_script_function.c_str()
@@ -196,17 +196,17 @@ namespace zetscript{
 		}
 
 		if(_params != NULL){
-			*_params=new ScriptFunctionParam[args.count];
-			*_params_len=args.count;
+			*_params=new ScriptFunctionParam[args.size()];
+			*_params_len=args.size();
 
-			if(args.count==0){
+			if(args.size()==0){
 				THROW_RUNTIME_ERROR(
 					"Error register function '%s': It expectes at FIRST parameter as 'ZetScript *'"
 					,name_script_function.c_str()
 				);
 			}
 
-			for(int i = 0; i < args.count; i++){
+			for(int i = 0; i < args.size(); i++){
 				const char *param=(const char *)args.items[i];
 				int idx_script_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
 

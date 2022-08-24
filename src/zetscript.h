@@ -40,8 +40,9 @@
 
 
 #include        <memory.h>
+#include        <memory>
 #include        <math.h>
-#include		<regex>
+#include		<vector>
 #include		<map>
 #include        <new>
 #include 		<functional>

@@ -416,10 +416,10 @@ namespace zetscript{
 
 		}
 
-		bool contains(const zs_string & input, const zs_string & str_containts,StringComparer sc){
+		bool contains(const zs_string & _str_input, const zs_string & _str_containts,StringComparer sc){
 
-			zs_string s1=input;
-			zs_string s2=str_containts;
+			zs_string s1=_str_input;
+			zs_string s2=_str_containts;
 
 			if(sc==StringComparer::OrdinalIgnoreCase){
 				s1=to_lower(s1);
@@ -432,10 +432,10 @@ namespace zetscript{
 			return false;
 		}
 
-		bool contains(const zs_vector<zs_string> & input, const zs_string & str_containts,StringComparer sc){
+		bool contains(const zs_vector<zs_string> & _strings, const zs_string & _str_containts,StringComparer sc){
 
-			for(int i = 0; i < input.count; i++){
-				if(contains(input.items[i],str_containts,sc)){
+			for(int i = 0; i < _strings.size(); i++){
+				if(contains(_strings.items[i],_str_containts,sc)){
 					return true;
 				}
 			}

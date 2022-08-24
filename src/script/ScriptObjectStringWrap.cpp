@@ -53,7 +53,7 @@ namespace zetscript{
 
 		auto v=zs_strutils::split(so->toString(),ch_delim);
 
-		for(int i=0; i<v.count; i++){
+		for(int i=0; i<v.size(); i++){
 
 			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so_partial=ZS_NEW_OBJECT_STRING(_zs);
@@ -80,7 +80,7 @@ namespace zetscript{
 
 		auto v=zs_strutils::split(so->toString(),*str_token);
 
-		for(int i=0; i<v.count; i++){
+		for(int i=0; i<v.size(); i++){
 			StackElement *stk=sv->pushNewUserSlot();
 			ScriptObjectString *so_partial=ZS_NEW_OBJECT_STRING(_zs);
 			so_partial->set(v.items[i]);

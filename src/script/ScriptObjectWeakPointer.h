@@ -20,23 +20,24 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ScriptObjectWeakPointer * newScriptObjectWeakPointer(ScriptObject *_so_target);
+		static ScriptObjectWeakPointer * newScriptObjectWeakPointer(ScriptObject *_so_target, ContainerSlotStore *_stk_item);
 
 		//
 		// Helpers
 		//
 		//----------------------------------------------
 
-
+		ScriptObject *getTargetObject();
 
 		ScriptObjectWeakPointer();
-		ScriptObjectWeakPointer(ScriptObject *_so);
-		void deRefObject();
+		ScriptObjectWeakPointer(ScriptObject *_so, ContainerSlotStore *_stk_item);
+		ContainerSlotStore *getContainerSlotStore();
 		~ScriptObjectWeakPointer();
 	protected:
 		void setup();
 	private:
 
+		ContainerSlotStore	*container_slot_store;
 		RefObject *ref_object;
 
 	};

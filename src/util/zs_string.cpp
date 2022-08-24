@@ -236,8 +236,6 @@ namespace zetscript{
 		return strcmp(_s1.c_str(),_s2)==0;
 	}
 
-
-
 	// !=
 	bool operator!=(const zs_string & _s1, const zs_string &_s2){
 		return strcmp(_s1.c_str(),_s2.c_str())!=0;
@@ -259,8 +257,6 @@ namespace zetscript{
 		return strcmp(_s1.c_str(),_s2)!=0;
 	}
 
-
-
 	zs_string zs_string::substr (int _pos, int _len) const{
 		zs_string s;
 		if(_len == npos){
@@ -279,8 +275,6 @@ namespace zetscript{
 		free(str_cut);
 
 		return s;
-
-
 	}
 
 	zs_string & zs_string::replace(int _pos, int _len, const zs_string & _to_replace){
@@ -307,7 +301,6 @@ namespace zetscript{
 
 		buf=new_buf;
 		count=_size=new_size;
-
 
 		return *this;
 	}
@@ -458,11 +451,6 @@ namespace zetscript{
 		//buf=(char *)rea0loc(buf,size+1);
 		buf[count]=0;
 		buf[count-1]=_c;
-	}
-
-	int zs_string::length() const
-	{
-		return count;
 	}
 
 	bool zs_string::empty() const{

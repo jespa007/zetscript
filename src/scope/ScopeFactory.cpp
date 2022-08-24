@@ -17,7 +17,7 @@ namespace zetscript{
 
 	void ScopeFactory::init(){
 		main_scope=newScope(IDX_SCRIPT_FUNCTION_MAIN,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
-		idx_clear_checkpoint=scopes->count;
+		idx_clear_checkpoint=scopes->size();
 	}
 
 	Scope *	 ScopeFactory::newScope(int idx_sf,Scope * scope_parent,uint16_t _properties){
@@ -31,7 +31,7 @@ namespace zetscript{
 	}
 
 	void ScopeFactory::clearUnusuedScopes(){
-		int v=(int)(scopes->count-1);
+		int v=(int)(scopes->size()-1);
 		while(v>=0){
 			Scope *scope=(Scope *)scopes->items[v];
 
@@ -42,7 +42,7 @@ namespace zetscript{
 				if(scope->scope_parent != NULL){
 					// remove child from parent to
 					zs_vector<Scope *> *childs=scope->scope_parent->scopes;
-					for(int i=0; i < childs->count; i++){
+					for(int i=0; i < childs->size(); i++){
 						Scope *child=(Scope *)childs->items[i];
 						if(child==scope){
 							childs->erase(i);
@@ -64,7 +64,7 @@ namespace zetscript{
 		zs_string global_symbol="";
 
 		for(
-			int v=(int)(scopes->count-1);
+			int v=(int)(scopes->size()-1);
 			v >= idx_start;
 			v--
 		){
@@ -76,13 +76,13 @@ namespace zetscript{
 	}
 
 	void ScopeFactory::saveState(){
-		idx_clear_checkpoint=scopes->count;
+		idx_clear_checkpoint=scopes->size();
 	}
 
 	ScopeFactory::~ScopeFactory(){
 
 		// destroy all nodes ...
-		for(int i = 0; i < scopes->count; i++){
+		for(int i = 0; i < scopes->size(); i++){
 			delete (Scope *)scopes->get(i);
 		}
 		scopes->clear();

@@ -5,6 +5,7 @@
 
 #include "zetscript.h"
 #include <map>
+#include <vector>
 
 //------------------------------------------------------------------------------------
 
@@ -101,7 +102,7 @@ void test_std_string(){
 		}
 	}
 
-	printf("done! %i chars\n",str.length());
+	printf("done! %i chars\n",(int)str.length());
 
 	printf("Elapsed time %i\n",zetscript::zs_system::clock()-start);
 	printf("=======================================\n");

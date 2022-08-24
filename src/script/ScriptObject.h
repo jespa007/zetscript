@@ -84,11 +84,12 @@ namespace zetscript{
 		virtual void			*	getNativeObject();
 		virtual zs_string 			toString();
 
-		void 						deRefObject(RefObject * _ref_object);
-		void 						refObject(RefObject * _ref_object);
+		void 						removeRefObject(RefObject * _ref_object);
+		void 						addRefObject(RefObject * _ref_object);
 
-		void 						refWeakPointer(ScriptObjectWeakPointer *_wp);
-		bool 						deRefWeakPointer();
+		void 						addWeakPointer(ScriptObjectWeakPointer *_wp);
+		void 						removeWeakPointer(ScriptObjectWeakPointer * _wp);
+		//bool 						deRefWeakPointer();
 
 		void 						printAllMemberFunctions();
 
@@ -101,7 +102,9 @@ namespace zetscript{
 		VirtualMachine 							*	vm; // 8
 		zs_vector<StackElement *>					stk_builtin_elements;
 		zs_map    								*	map_builtin_properties; // to search faster each property by its name
-		zs_vector<RefObject *>			    *   ref_script_objects;
+
+		// TODO: replace zs_vector by zs_map_int to search ref_objects/weak_pointers quickly
+		zs_vector<RefObject *>			    	*   ref_script_objects;
 		zs_vector<ScriptObjectWeakPointer *>	*   weak_pointers;
 
 		void 										init(ZetScript *zs);
@@ -111,6 +114,7 @@ namespace zetscript{
 		virtual StackElement 					* 	newBuiltinSlot();
 		virtual StackElement 					* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 		bool 										unrefAndFreeStackElementContainer(StackElement *si);
+		int 										idxWeakPointer(ScriptObjectWeakPointer *_wp);
 		int 										idxRefObject(RefObject  *_ref_object);
 	};
 

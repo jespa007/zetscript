@@ -466,7 +466,7 @@ namespace zetscript{
 				 if(eval_instruction_new_object_by_value==NULL){
 					 // check constructor symbol
 					 constructor_function=sc->getSymbol(CONSTRUCTOR_FUNCTION_NAME);
-					 int start_idx_function=sc->scope_script_type->symbol_functions->count-1;
+					 int start_idx_function=sc->scope_script_type->symbol_functions->size()-1;
 					 if(constructor_function == NULL){ // find first constructor throught its function members
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
 							Symbol *symbol_member = (Symbol *)sc->scope_script_type->symbol_functions->items[i];

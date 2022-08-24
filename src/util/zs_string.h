@@ -73,7 +73,9 @@ namespace zetscript{
 
 		bool empty() const;
 
-		int length() const;
+		inline int length() const{
+			return count;
+		}
 
 		const char * c_str() const;
 
