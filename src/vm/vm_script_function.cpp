@@ -213,7 +213,7 @@ namespace zetscript{
 						,stk_result_op1
 						,NULL
 					)==false){
-						goto lbl_exit_function;
+						return;
 					}
 				}
 				continue;
@@ -232,7 +232,7 @@ namespace zetscript{
 							,stk_result_op1
 							,NULL
 					)){
-						goto lbl_exit_function;
+						return;
 					}
 				}
 				continue;
@@ -342,7 +342,7 @@ namespace zetscript{
 					// if scriptvariable and in the zeros list, deattach
 					if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						if(vm_unref_script_object_for_ret(_vm, stk_var)==false){
-							goto lbl_exit_function;
+							return;
 						}
 					}
 				}
@@ -412,12 +412,12 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_STORE_CONST:
 			case BYTE_CODE_STORE:
-				if(!vm_store(
+				if(vm_store(
 					_vm
 					,_calling_function
 					,instruction
-				)){
-					goto lbl_exit_function;\
+				)==false){
+					return;
 				}
 				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
 					data->stk_vm_current=stk_start;
@@ -440,7 +440,7 @@ namespace zetscript{
 						,instruction
 						,_stk_local_var
 				)==false){
-					goto lbl_exit_function;\
+					return;\
 				}
 
 				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
@@ -480,7 +480,7 @@ namespace zetscript{
 							,_calling_function
 							,instruction
 			 		)==false){
-				 		 goto lbl_exit_function;
+						return;
 				 	 }
 				 	 continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new vector...
@@ -495,7 +495,7 @@ namespace zetscript{
 			 case  BYTE_CODE_NEW_OBJECT: // Create new object...
 				 	so_aux=ZS_NEW_OBJECT_OBJECT(data->zs);
 					if(vm_create_shared_script_object(_vm,so_aux)==false){
-						goto lbl_exit_function;
+						return;
 					}
 					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
@@ -505,14 +505,14 @@ namespace zetscript{
 						 _vm
 						 ,instruction
 					)==false){
-						goto lbl_exit_function;
+						return;
 				 }
 				continue;
 			 case  BYTE_CODE_DELETE:
 				 if(vm_byte_code_delete(
 						_vm
 				)==false){
-					 goto lbl_exit_function;
+					return;
 				 }
 				continue;
 			 case BYTE_CODE_RESET_STACK:
@@ -526,7 +526,7 @@ namespace zetscript{
 						,instruction
 						,_stk_local_var
 				)==false){
-					goto lbl_exit_function;
+					return;
 				}
 				// always it does a reset
 				data->stk_vm_current=stk_start;
@@ -539,7 +539,7 @@ namespace zetscript{
 						 ,instruction
 						 ,_stk_local_var
 				)==false){
-					goto lbl_exit_function;
+					return;
 				 }
 				 continue;
 				case BYTE_CODE_LOAD_TYPE:
@@ -554,7 +554,7 @@ namespace zetscript{
 							 ,_stk_local_var
 							 ,false
 					 )==false){
-						goto lbl_exit_function;
+						return;
 					 }
 					continue;
 				case BYTE_CODE_PUSH_OBJECT_ITEM:
@@ -565,8 +565,8 @@ namespace zetscript{
 							 ,instruction
 							 ,_stk_local_var
 							 , true
-						)==false){
-							goto lbl_exit_function;
+					)==false){
+						return;
 					 }
 					continue;
 				// access vector (i.e vec[1]) or access object (i.e obj["aa"])
@@ -579,7 +579,7 @@ namespace zetscript{
 						 ,instruction
 						 ,_stk_local_var
 					)==false){
-						goto lbl_exit_function;
+						return;
 					}
 					continue;
 				case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
@@ -595,7 +595,7 @@ namespace zetscript{
 					so_aux=ZS_NEW_OBJECT_MEMBER_FUNCTION(data->zs,_this_object,(ScriptFunction *)(symbol_aux->ref_ptr));
 
 					 if(!vm_create_shared_script_object(_vm,so_aux)){
-							goto lbl_exit_function;
+						return;
 					 }
 					 data->stk_vm_current->value=(zs_int)so_aux;
 					 data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -621,7 +621,7 @@ namespace zetscript{
 							,_calling_function
 							,&instruction_it
 					)==false){
-						goto lbl_exit_function;
+						return;
 					}
 					continue;
 			case BYTE_CODE_FIND_VARIABLE:
@@ -632,7 +632,7 @@ namespace zetscript{
 						,instruction\
 						,VM_MAIN_ERROR_CANNOT_FIND_SYMBOL
 				);
-				goto lbl_exit_function;
+				return;
 			case BYTE_CODE_END_FUNCTION:
 			default:
 				goto lbl_exit_function;
@@ -652,15 +652,12 @@ namespace zetscript{
 		//=========================
 		// POP STACK
 
-		if(data->vm_current_scope_function > VM_SCOPE_FUNCTION_MAIN){
-			while (
-				(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
-			){
-				vm_pop_scope(_vm); // do not check removeEmptySharedPointers to have better performance
-			}
-			--data->vm_current_scope_function;
+		while (
+			(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
+		){
+			vm_pop_scope(_vm); // do not check removeEmptySharedPointers to have better performance
 		}
-
+		--data->vm_current_scope_function;
 
 		// POP STACK
 		//=========================
@@ -905,56 +902,7 @@ namespace zetscript{
 		}
 	}
 
-	// defer all local vars
-	void vm_pop_scope(VirtualMachine *vm)
-	{\
-		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		VM_ScopeBlock *scope_block=--VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
-		Scope *scope=scope_block->scope;\
-		StackElement         * stk_local_vars	=VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
-		zs_vector<Symbol *> *scope_symbols=scope->symbol_variables;\
-		int count=(int)scope_symbols->size();\
-		if(count > 0){\
-			StackElement *stk_local_var=stk_local_vars+scope_symbols->items[0]->idx_position;\
-			while(count--){\
-				if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
-					ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
-					if(so != NULL && so->shared_pointer!=NULL){\
-						 vm_unref_shared_script_object(vm,so,NULL);\
-					}\
-				}\
-				STK_SET_UNDEFINED(stk_local_var);\
-				stk_local_var++;\
-			}\
-		}\
-		vm_remove_empty_shared_pointers(vm,scope_block);\
-	}
 
-	bool vm_create_share_pointer_to_all_returning_objects(
-			VirtualMachine 	*	_vm
-			,StackElement 	*	_stk_return
-			,int 				_n_return
-			,bool 				_with_share
-	){
-
-		for(int i=0; i < _n_return; i++){
-			StackElement *stk_ret = _stk_return+i;
-			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				ScriptObject *sv=(ScriptObject *)stk_ret->value;
-				if(sv->shared_pointer == NULL){
-					if(!vm_create_shared_script_object(_vm,sv)){
-						return false;\
-					}
-					if(_with_share==true){\
-						if(!vm_share_script_object(_vm,sv)){
-							return false;\
-						}
-					}
-				}
-			}
-		}
-		return true;
-	}
 
 	bool vm_byte_code_delete(
 		VirtualMachine *_vm

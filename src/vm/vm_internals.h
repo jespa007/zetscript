@@ -19,15 +19,23 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 	return NULL;
 
 
-#define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(_stk_return, _n_return,_with_share)\
-	if(vm_create_share_pointer_to_all_returning_objects( \
-			_vm \
-			,_stk_return\
-			,_n_return\
-			,_with_share\
-	)==false){\
-		goto lbl_exit_function;\
-	}\
+#define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(_stk_return, _n_return,_with_share) \
+		for(int i=0; i < _n_return; i++){\
+			StackElement *stk_ret = _stk_return+i;\
+			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){\
+				ScriptObject *sv=(ScriptObject *)stk_ret->value;\
+				if(sv->shared_pointer == NULL){\
+					if(!vm_create_shared_script_object(_vm,sv)){\
+						return false;\
+					}\
+					if(_with_share==true){\
+						if(vm_share_script_object(_vm,sv)==false){\
+							return false;\
+						}\
+					}\
+				}\
+			}\
+		}
 
 #define VM_EXTRACT_FUNCTION_INFO\
 	{ /* get elements from type */ \
@@ -222,9 +230,11 @@ namespace zetscript{
 			,int 						_n_args
 		);
 
-		void vm_pop_scope(
+		/*void vm_pop_scope(
 			VirtualMachine 			*	_vm
-		);
+		);*/
+		// defer all local vars
+
 
 		bool  vm_insert_shared_node(
 			VirtualMachine	 		*	_vm
@@ -283,7 +293,32 @@ namespace zetscript{
 			,int 				_n_return
 			,bool 				_with_share
 		);
-}
+
+
+		inline void vm_pop_scope(VirtualMachine *vm)
+		{\
+			VirtualMachineData *data=(VirtualMachineData *)vm->data;
+			VM_ScopeBlock *scope_block=--VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
+			Scope *scope=scope_block->scope;\
+			StackElement         * stk_local_vars	=VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
+			zs_vector<Symbol *> *scope_symbols=scope->symbol_variables;\
+			int count=(int)scope_symbols->size();\
+			if(count > 0){\
+				StackElement *stk_local_var=stk_local_vars+scope_symbols->items[0]->idx_position;\
+				while(count--){\
+					if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
+						ScriptObject *so=(ScriptObject *)(stk_local_var->value);\
+						if(so != NULL && so->shared_pointer!=NULL){\
+							 vm_unref_shared_script_object(vm,so,NULL);\
+						}\
+					}\
+					STK_SET_UNDEFINED(stk_local_var);\
+					stk_local_var++;\
+				}\
+			}\
+			vm_remove_empty_shared_pointers(vm,scope_block);\
+		}
+}
 
 
 

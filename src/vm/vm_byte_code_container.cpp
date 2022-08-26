@@ -79,11 +79,6 @@ namespace zetscript{
 
 		str_symbol_aux1=(char *)SFI_GET_SYMBOL_NAME(_calling_function,instruction);
 
-		if(strcmp(str_symbol_aux1,"self")==0){
-			int y=0;
-			y++;
-		}
-
 		//
 		sc_type=so_aux->getScriptType();
 		sf_member=sc_type->getSymbolMemberFunction(str_symbol_aux1);

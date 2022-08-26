@@ -115,19 +115,19 @@ else()
 	
 	IF ( "${TARGET}" STREQUAL "debug")
 	
-		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -O0 -g ")
+		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -O1 -g ")
 	
-		IF( EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr )
-			message("-- Memmanager: Yes")
-			SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__MEMMANAGER__")
-			include_directories (
-				${PROJECT_SOURCE_DIR}/../../memmgr
-			)
-		
-	   		set(ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${PROJECT_SOURCE_DIR}/../../memmgr/memmgr.cpp)
-	   	else()
-	   		message("-- Memmanager: OFF (../../memmgr not exist)")
-	   	endif()
+		#IF( EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr )
+		#	message("-- Memmanager: Yes")
+		#	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__MEMMANAGER__")
+		#	include_directories (
+		#		${PROJECT_SOURCE_DIR}/../../memmgr
+		#	)
+		#
+	   	#	set(ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${PROJECT_SOURCE_DIR}/../../memmgr/memmgr.cpp)
+	   	#else()
+	   	#	message("-- Memmanager: OFF (../../memmgr not exist)")
+	   	#endif()
 		
 	ELSE()
 		set(TARGET "release")
