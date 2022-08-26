@@ -103,4 +103,4 @@ namespace zetscript{
 }
 
 #include "vm_internals.h"
-
+#include "vm.tcc"

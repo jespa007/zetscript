@@ -117,17 +117,17 @@ else()
 	
 		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -O1 -g ")
 	
-		#IF( EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr )
-		#	message("-- Memmanager: Yes")
-		#	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__MEMMANAGER__")
-		#	include_directories (
-		#		${PROJECT_SOURCE_DIR}/../../memmgr
-		#	)
-		#
-	   	#	set(ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${PROJECT_SOURCE_DIR}/../../memmgr/memmgr.cpp)
-	   	#else()
-	   	#	message("-- Memmanager: OFF (../../memmgr not exist)")
-	   	#endif()
+		IF( EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr )
+			message("-- Memmanager: Yes")
+			SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__MEMMANAGER__")
+			include_directories (
+				${PROJECT_SOURCE_DIR}/../../memmgr
+			)
+		
+	   		set(ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${PROJECT_SOURCE_DIR}/../../memmgr/memmgr.cpp)
+	   	else()
+	   		message("-- Memmanager: OFF (../../memmgr not exist)")
+	   	endif()
 		
 	ELSE()
 		set(TARGET "release")
@@ -444,15 +444,16 @@ SET(
 	scope/zs_scope.h
 	
 	# vm
-	vm/vm_operation_set.h
-	vm/vm_operation.h
+	vm/vm_byte_code_operation_set.h
+	vm/vm_byte_code_operation.h
 	vm/vm_pop_stk.h
 	vm/vm_push_stk.h
 	vm/vm_scope.h
-	vm/vm_set.h
 	vm/vm.cpp
 	vm/vm.h
 	vm/vm.tcc
+	vm/vm_internals.h
+
 	
 	
 	# main
