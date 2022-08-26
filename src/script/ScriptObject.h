@@ -14,7 +14,7 @@ namespace zetscript{
 	class ScriptFunction;
 	class ScriptObjectMemberFunction;
 	class ScriptTypeFactory;
-	class ScriptObjectWeakPointer;
+	class ScriptObjectContainerSlotStore;
 	class RefObject;
 	struct VM_ScopeBlock;
 
@@ -87,8 +87,8 @@ namespace zetscript{
 		void 						removeRefObject(RefObject * _ref_object);
 		void 						addRefObject(RefObject * _ref_object);
 
-		void 						addWeakPointer(ScriptObjectWeakPointer *_wp);
-		void 						removeWeakPointer(ScriptObjectWeakPointer * _wp);
+		void 						addWeakPointer(ScriptObjectContainerSlotStore *_wp);
+		void 						removeWeakPointer(ScriptObjectContainerSlotStore * _wp);
 		//bool 						deRefWeakPointer();
 
 		void 						printAllMemberFunctions();
@@ -105,7 +105,7 @@ namespace zetscript{
 
 		// TODO: replace zs_vector by zs_map_int to search ref_objects/weak_pointers quickly
 		zs_vector<RefObject *>			    	*   ref_script_objects;
-		zs_vector<ScriptObjectWeakPointer *>	*   weak_pointers;
+		zs_vector<ScriptObjectContainerSlotStore *>	*   weak_pointers;
 
 		void 										init(ZetScript *zs);
 
@@ -114,7 +114,7 @@ namespace zetscript{
 		virtual StackElement 					* 	newBuiltinSlot();
 		virtual StackElement 					* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 		bool 										unrefAndFreeStackElementContainer(StackElement *si);
-		int 										idxWeakPointer(ScriptObjectWeakPointer *_wp);
+		int 										idxWeakPointer(ScriptObjectContainerSlotStore *_wp);
 		int 										idxRefObject(RefObject  *_ref_object);
 	};
 

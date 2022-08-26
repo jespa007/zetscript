@@ -8,11 +8,11 @@
  */
 #pragma once
 
-#define ZS_NEW_OBJECT_WEAK_POINTER(so) (ScriptObjectWeakPointer::newScriptObjectWeakPointer(so))
+#define ZS_NEW_OBJECT_CONTAINER_SLOT_STORE(so) (ScriptObjectContainerSlotStore::newScriptObjectContainerSlotStore(so))
 
 namespace zetscript{
 
-	class  ScriptObjectWeakPointer:public ScriptObject{
+	class  ScriptObjectContainerSlotStore:public ScriptObject{
 
 	public:
 
@@ -20,7 +20,7 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static ScriptObjectWeakPointer * newScriptObjectWeakPointer(ScriptObject *_so_target, ContainerSlotStore *_stk_item);
+		static ScriptObjectContainerSlotStore * newScriptObjectContainerSlotStore(ScriptObject *_so_target, ContainerSlotStore *_stk_item);
 
 		//
 		// Helpers
@@ -29,10 +29,10 @@ namespace zetscript{
 
 		ScriptObject *getTargetObject();
 
-		ScriptObjectWeakPointer();
-		ScriptObjectWeakPointer(ScriptObject *_so, ContainerSlotStore *_stk_item);
+		ScriptObjectContainerSlotStore();
+		ScriptObjectContainerSlotStore(ScriptObject *_so, ContainerSlotStore *_stk_item);
 		ContainerSlotStore *getContainerSlotStore();
-		~ScriptObjectWeakPointer();
+		~ScriptObjectContainerSlotStore();
 	protected:
 		void setup();
 	private:

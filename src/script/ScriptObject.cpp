@@ -48,7 +48,7 @@ namespace zetscript{
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
 		ref_script_objects=new zs_vector<RefObject *>();
-		weak_pointers=new zs_vector<ScriptObjectWeakPointer *>();
+		weak_pointers=new zs_vector<ScriptObjectContainerSlotStore *>();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
@@ -203,11 +203,11 @@ namespace zetscript{
 		return "Object@"+zs_string(getTypeName());
 	}
 
-	void ScriptObject::addWeakPointer(ScriptObjectWeakPointer *_wp){
+	void ScriptObject::addWeakPointer(ScriptObjectContainerSlotStore *_wp){
 		weak_pointers->push_back(_wp);
 	}
 
-	int ScriptObject::idxWeakPointer(ScriptObjectWeakPointer  *_wp){
+	int ScriptObject::idxWeakPointer(ScriptObjectContainerSlotStore  *_wp){
 		for(int i=0; i < weak_pointers->size();i++){
 			if(weak_pointers->items[i]==_wp){
 				return i;
@@ -217,7 +217,7 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	void ScriptObject::removeWeakPointer(ScriptObjectWeakPointer  *_wp){
+	void ScriptObject::removeWeakPointer(ScriptObjectContainerSlotStore  *_wp){
 		int idx=idxWeakPointer(_wp);
 
 		if(idx==ZS_IDX_UNDEFINED){
@@ -240,7 +240,7 @@ namespace zetscript{
 	/*bool ScriptObject::deRefWeakPointer(){
 		if(weak_pointers->size()>0){
 			// get last
-			ScriptObjectWeakPointer *wp=weak_pointers->items[weak_pointers->size()-1];
+			ScriptObjectContainerSlotStore *wp=weak_pointers->items[weak_pointers->size()-1];
 			weak_pointers->pop_back();
 
 			// weak pointer becomes strong pointer

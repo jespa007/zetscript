@@ -5,7 +5,7 @@
 #include 		"ScriptObject.cpp"
 #include 		"RefObject.cpp"
 #include 		"ScriptObjectMemberFunction.cpp"
-#include 		"ScriptObjectWeakPointer.cpp"
+#include 		"ScriptObjectContainerSlotStore.cpp"
 #include		"ScriptObjectString.cpp"
 #include		"ScriptObjectStringWrap.cpp"
 #include		"ScriptObjectVector.cpp"

@@ -62,7 +62,7 @@ namespace zetscript{
 		}
 
 		if(STK_IS_SCRIPT_OBJECT_WEAK_POINTER(stk_result_op1)){
-			so_aux=((ScriptObjectWeakPointer *)stk_result_op1->value)->getTargetObject();
+			so_aux=((ScriptObjectContainerSlotStore *)stk_result_op1->value)->getTargetObject();
 		}
 		else{
 			so_aux=((ScriptObject *)stk_result_op1->value);

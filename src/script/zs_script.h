@@ -6,7 +6,7 @@
 #include "ScriptObject.h"
 #include "RefObject.h"
 #include "ContainerSlotStore.h"
-#include "ScriptObjectWeakPointer.h"
+#include "ScriptObjectContainerSlotStore.h"
 #include "ScriptObjectMemberFunction.h"
 #include "ScriptObjectString.h"
 #include "ScriptObjectStringWrap.h"

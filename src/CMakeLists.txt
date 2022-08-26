@@ -423,7 +423,7 @@ SET(
 	script/ScriptObjectIteratorVector.h
 	script/ScriptObjectIteratorVectorWrap.h
 	script/ScriptObjectMemberFunction.h
-	script/ScriptObjectWeakPointer.h
+	script/ScriptObjectContainerSlotStore.h
 	script/ScriptObjectObject.h
 	script/ScriptObjectObjectWrap.h
 	script/ScriptObjectString.h

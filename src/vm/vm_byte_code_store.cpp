@@ -279,8 +279,8 @@ namespace zetscript{
 
 				// already share and src is type container and dst is slot:
 				// becomes a weak pointer to avoid possibly cyclic reference
-				if((so_aux->shared_pointer->data.n_shares>0)
-					&& (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
+				if(//(so_aux->shared_pointer->data.n_shares>0)
+					   (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
 					&& (container_slot_store!=NULL)){
 
 					StackElement *stk_obj=NULL;
@@ -305,7 +305,7 @@ namespace zetscript{
 					}
 
 					// create weak pointer
-					auto weak_pointer=new ScriptObjectWeakPointer(so_aux,container_slot_store);
+					auto weak_pointer=new ScriptObjectContainerSlotStore(so_aux,container_slot_store);
 
 
 					stk_dst->value=(intptr_t)weak_pointer;
