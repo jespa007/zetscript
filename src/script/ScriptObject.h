@@ -14,7 +14,7 @@ namespace zetscript{
 	class ScriptFunction;
 	class ScriptObjectMemberFunction;
 	class ScriptTypeFactory;
-	class ScriptObjectContainerSlotStore;
+	class ScriptObjectContainerSlotAssignment;
 	class RefObject;
 	struct VM_ScopeBlock;
 
@@ -87,9 +87,9 @@ namespace zetscript{
 		void 						removeRefObject(RefObject * _ref_object);
 		void 						addRefObject(RefObject * _ref_object);
 
-		void 						addWeakPointer(ScriptObjectContainerSlotStore *_wp);
-		void 						removeWeakPointer(ScriptObjectContainerSlotStore * _wp);
-		//bool 						deRefWeakPointer();
+		void 						addContainerSlotAssignment(ScriptObjectContainerSlotAssignment *_wp);
+		void 						removeContainerSlotAssignment(ScriptObjectContainerSlotAssignment * _wp);
+		//bool 						deRefContainerSlotAssignment();
 
 		void 						printAllMemberFunctions();
 
@@ -103,9 +103,9 @@ namespace zetscript{
 		zs_vector<StackElement *>					stk_builtin_elements;
 		zs_map    								*	map_builtin_properties; // to search faster each property by its name
 
-		// TODO: replace zs_vector by zs_map_int to search ref_objects/weak_pointers quickly
+		// TODO: replace zs_vector by zs_map_int to search ref_objects/container_slot_assignments quickly
 		zs_vector<RefObject *>			    	*   ref_script_objects;
-		zs_vector<ScriptObjectContainerSlotStore *>	*   weak_pointers;
+		zs_vector<ScriptObjectContainerSlotAssignment *>	*   container_slot_assignments;
 
 		void 										init(ZetScript *zs);
 
@@ -114,7 +114,7 @@ namespace zetscript{
 		virtual StackElement 					* 	newBuiltinSlot();
 		virtual StackElement 					* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 		bool 										unrefAndFreeStackElementContainer(StackElement *si);
-		int 										idxWeakPointer(ScriptObjectContainerSlotStore *_wp);
+		int 										idxContainerSlotAssignment(ScriptObjectContainerSlotAssignment *_wp);
 		int 										idxRefObject(RefObject  *_ref_object);
 	};
 

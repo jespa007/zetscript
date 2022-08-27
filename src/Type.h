@@ -18,7 +18,7 @@
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_STRING 	"IteratorString"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR 	"IteratorVector"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"
-#define ZS_TYPE_NAME_OBJECT_WEAK_POINTER 		"WeakPointer"
+#define ZS_TYPE_NAME_OBJECT_WEAK_POINTER 		"ContainerSlotAssignment"
 
 namespace zetscript{
 

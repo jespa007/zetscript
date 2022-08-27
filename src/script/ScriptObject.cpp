@@ -48,7 +48,7 @@ namespace zetscript{
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
 		ref_script_objects=new zs_vector<RefObject *>();
-		weak_pointers=new zs_vector<ScriptObjectContainerSlotStore *>();
+		container_slot_assignments=new zs_vector<ScriptObjectContainerSlotAssignment *>();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
@@ -203,13 +203,13 @@ namespace zetscript{
 		return "Object@"+zs_string(getTypeName());
 	}
 
-	void ScriptObject::addWeakPointer(ScriptObjectContainerSlotStore *_wp){
-		weak_pointers->push_back(_wp);
+	void ScriptObject::addContainerSlotAssignment(ScriptObjectContainerSlotAssignment *_wp){
+		container_slot_assignments->push_back(_wp);
 	}
 
-	int ScriptObject::idxWeakPointer(ScriptObjectContainerSlotStore  *_wp){
-		for(int i=0; i < weak_pointers->size();i++){
-			if(weak_pointers->items[i]==_wp){
+	int ScriptObject::idxContainerSlotAssignment(ScriptObjectContainerSlotAssignment  *_wp){
+		for(int i=0; i < container_slot_assignments->size();i++){
+			if(container_slot_assignments->items[i]==_wp){
 				return i;
 			}
 		}
@@ -217,8 +217,8 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	void ScriptObject::removeWeakPointer(ScriptObjectContainerSlotStore  *_wp){
-		int idx=idxWeakPointer(_wp);
+	void ScriptObject::removeContainerSlotAssignment(ScriptObjectContainerSlotAssignment  *_wp){
+		int idx=idxContainerSlotAssignment(_wp);
 
 		if(idx==ZS_IDX_UNDEFINED){
 			//THROW_RUNTIME_ERRORF("internal: member function not exist");
@@ -226,7 +226,7 @@ namespace zetscript{
 		}
 
 		// get ref object element
-		auto ref_object=weak_pointers->items[idx];
+		auto ref_object=container_slot_assignments->items[idx];
 
 		// remove element before call deRefObject to avoid recursion
 		ref_script_objects->erase(idx);
@@ -237,14 +237,14 @@ namespace zetscript{
 
 	}
 
-	/*bool ScriptObject::deRefWeakPointer(){
-		if(weak_pointers->size()>0){
+	/*bool ScriptObject::deRefContainerSlotAssignment(){
+		if(container_slot_assignments->size()>0){
 			// get last
-			ScriptObjectContainerSlotStore *wp=weak_pointers->items[weak_pointers->size()-1];
-			weak_pointers->pop_back();
+			ScriptObjectContainerSlotAssignment *wp=container_slot_assignments->items[container_slot_assignments->size()-1];
+			container_slot_assignments->pop_back();
 
 			// weak pointer becomes strong pointer
-			//StackElement *stk_slot=wp->getContainerSlotStore()->ptr_stk;
+			//StackElement *stk_slot=wp->getContainerSlotAssignment()->ptr_stk;
 			//stk_slot->properties=STK_PROPERTY_SCRIPT_OBJECT;
 			//stk_slot->value=(zs_int)wp->getTargetObject();
 			//wp->deRefObject();
@@ -320,11 +320,11 @@ namespace zetscript{
 
 		delete ref_script_objects;
 
-		for(int i=0; i < weak_pointers->size(); i++){
-			delete weak_pointers->items[i];
+		for(int i=0; i < container_slot_assignments->size(); i++){
+			delete container_slot_assignments->items[i];
 		}
 
-		delete weak_pointers;
+		delete container_slot_assignments;
 
 	}
 }

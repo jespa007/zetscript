@@ -5,8 +5,8 @@
 
 #include "ScriptObject.h"
 #include "RefObject.h"
-#include "ContainerSlotStore.h"
-#include "ScriptObjectContainerSlotStore.h"
+#include "ContainerSlotAssignment.h"
+#include "ScriptObjectContainerSlotAssignment.h"
 #include "ScriptObjectMemberFunction.h"
 #include "ScriptObjectString.h"
 #include "ScriptObjectStringWrap.h"

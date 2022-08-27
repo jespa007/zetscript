@@ -7,7 +7,7 @@
 namespace zetscript{
 
 
-	ContainerSlotStore::ContainerSlotStore(
+	ContainerSlotAssignment::ContainerSlotAssignment(
 			ScriptObject  *_object
 			,zs_int 	   _id_slot
 			,StackElement *_ptr_stk

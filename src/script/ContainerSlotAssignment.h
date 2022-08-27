@@ -6,13 +6,13 @@
 
 namespace zetscript{
 
-	class ContainerSlotStore{
+	class ContainerSlotAssignment{
 	public:
 		ScriptObject  *object; // should be vector,object or class
 		zs_int 		  id_slot;
 		StackElement  *ptr_stk;
 
-		ContainerSlotStore(	ScriptObject  *_object
+		ContainerSlotAssignment(	ScriptObject  *_object
 								,zs_int 	  id_slot
 								,StackElement *_ptr_stk
 		);

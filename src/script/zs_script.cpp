@@ -5,7 +5,7 @@
 #include 		"ScriptObject.cpp"
 #include 		"RefObject.cpp"
 #include 		"ScriptObjectMemberFunction.cpp"
-#include 		"ScriptObjectContainerSlotStore.cpp"
+#include 		"ScriptObjectContainerSlotAssignment.cpp"
 #include		"ScriptObjectString.cpp"
 #include		"ScriptObjectStringWrap.cpp"
 #include		"ScriptObjectVector.cpp"
@@ -24,7 +24,7 @@
 #include 		"ScriptObjectClass.cpp"
 #include 		"ScriptObjectVarRef.cpp"
 
-#include		"ContainerSlotStore.cpp"
+#include		"ContainerSlotAssignment.cpp"
 #include		"ScriptFunctionFactory.cpp"
 #include		"ScriptTypeFactory.cpp"
 //#include		"ScriptContext.cpp"
