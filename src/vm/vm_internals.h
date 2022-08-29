@@ -28,11 +28,6 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 					if(!vm_create_shared_script_object(_vm,sv)){\
 						return false;\
 					}\
-					if(_with_share==true){\
-						if(vm_share_script_object(_vm,sv)==false){\
-							return false;\
-						}\
-					}\
 				}\
 			}\
 		}

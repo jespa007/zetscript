@@ -59,10 +59,6 @@ namespace zetscript{
 
 		return true;
 
-	lbl_exit_function:
-
-		return false;
-
 	}
 
 	bool vm_call(
