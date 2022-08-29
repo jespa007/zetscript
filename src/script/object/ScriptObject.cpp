@@ -48,7 +48,7 @@ namespace zetscript{
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
 		ref_script_objects=new zs_vector<RefObject *>();
-		container_slot_assignments=new zs_vector<ScriptObjectContainerSlotAssignment *>();
+		container_slot_assignments=new zs_vector<ScriptObjectContainerSlot *>();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
@@ -203,11 +203,11 @@ namespace zetscript{
 		return "Object@"+zs_string(getTypeName());
 	}
 
-	void ScriptObject::addContainerSlotAssignment(ScriptObjectContainerSlotAssignment *_wp){
+	void ScriptObject::addContainerSlot(ScriptObjectContainerSlot *_wp){
 		container_slot_assignments->push_back(_wp);
 	}
 
-	int ScriptObject::idxContainerSlotAssignment(ScriptObjectContainerSlotAssignment  *_wp){
+	int ScriptObject::idxContainerSlot(ScriptObjectContainerSlot  *_wp){
 		for(int i=0; i < container_slot_assignments->size();i++){
 			if(container_slot_assignments->items[i]==_wp){
 				return i;
@@ -217,8 +217,8 @@ namespace zetscript{
 		return ZS_IDX_UNDEFINED;
 	}
 
-	void ScriptObject::removeContainerSlotAssignment(ScriptObjectContainerSlotAssignment  *_wp){
-		int idx=idxContainerSlotAssignment(_wp);
+	void ScriptObject::removeContainerSlot(ScriptObjectContainerSlot  *_wp){
+		int idx=idxContainerSlot(_wp);
 
 		if(idx==ZS_IDX_UNDEFINED){
 			//THROW_RUNTIME_ERRORF("internal: member function not exist");
@@ -237,14 +237,14 @@ namespace zetscript{
 
 	}
 
-	/*bool ScriptObject::deRefContainerSlotAssignment(){
+	/*bool ScriptObject::deRefContainerSlot(){
 		if(container_slot_assignments->size()>0){
 			// get last
-			ScriptObjectContainerSlotAssignment *wp=container_slot_assignments->items[container_slot_assignments->size()-1];
+			ScriptObjectContainerSlot *wp=container_slot_assignments->items[container_slot_assignments->size()-1];
 			container_slot_assignments->pop_back();
 
 			// weak pointer becomes strong pointer
-			//StackElement *stk_slot=wp->getContainerSlotAssignment()->ptr_stk;
+			//StackElement *stk_slot=wp->getContainerSlot()->ptr_stk;
 			//stk_slot->properties=STK_PROPERTY_SCRIPT_OBJECT;
 			//stk_slot->value=(zs_int)wp->getTargetObject();
 			//wp->deRefObject();

@@ -408,7 +408,7 @@ SET(
 	
 	# script
 	script/MemberProperty.h
-	script/ContainerSlotAssignment.h
+	script/ContainerSlot.h
 	script/MetamethodMembers.h
 	script/ScriptFunction.h
 	script/ScriptFunctionFactory.h
@@ -423,7 +423,7 @@ SET(
 	script/ScriptObjectIteratorVector.h
 	script/ScriptObjectIteratorVectorWrap.h
 	script/ScriptObjectMemberFunction.h
-	script/ScriptObjectContainerSlotAssignment.h
+	script/ScriptObjectContainerSlot.h
 	script/ScriptObjectObject.h
 	script/ScriptObjectObjectWrap.h
 	script/ScriptObjectString.h

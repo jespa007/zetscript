@@ -16,7 +16,7 @@ namespace zetscript{
 		zs_vector<StackElement *> *		store_lst_setter_functions=NULL;
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
-		ContainerSlotAssignment 			*		container_slot_store=NULL;
+		ContainerSlot 			*		container_slot_store=NULL;
 		//ScriptObject 				*		container_slot_store_object=NULL;
 		//zs_int 								container_slot_store_id_slot=0;
 		void 						*		stk_src_ref_value_copy_aux=NULL;
@@ -57,7 +57,7 @@ namespace zetscript{
 		if((stk_dst->properties & STK_PROPERTY_PTR_STK)!=0) {
 			stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
 		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT_ASSIGNMENT){
-			container_slot_store=((ContainerSlotAssignment *)stk_dst->value);
+			container_slot_store=((ContainerSlot *)stk_dst->value);
 			//container_slot_store_object=container_slot_store->object;
 			//container_slot_store_id_slot=container_slot_store->id_slot;
 			stk_dst=container_slot_store->ptr_stk;
@@ -305,7 +305,7 @@ namespace zetscript{
 					}
 
 					// create weak pointer
-					auto weak_pointer=new ScriptObjectContainerSlotAssignment(so_aux,container_slot_store);
+					auto weak_pointer=new ScriptObjectContainerSlot(so_aux,container_slot_store);
 
 
 					stk_dst->value=(intptr_t)weak_pointer;
@@ -319,7 +319,7 @@ namespace zetscript{
 						goto lbl_exit_function;
 					}
 
-					so_aux->addContainerSlotAssignment(weak_pointer);//(ScriptObject **)&stk_obj->value);
+					so_aux->addContainerSlot(weak_pointer);//(ScriptObject **)&stk_obj->value);
 
 				}else{ // share
 					stk_dst->value=(intptr_t)so_aux;

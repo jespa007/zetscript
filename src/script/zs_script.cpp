@@ -2,34 +2,36 @@
  *  This file is distributed under the MIT License.
  *  See LICENSE file for details.
  */
-#include 		"ScriptObject.cpp"
-#include 		"RefObject.cpp"
-#include 		"ScriptObjectMemberFunction.cpp"
-#include 		"ScriptObjectContainerSlotAssignment.cpp"
-#include		"ScriptObjectString.cpp"
-#include		"ScriptObjectStringWrap.cpp"
-#include		"ScriptObjectVector.cpp"
-#include		"ScriptObjectVectorWrap.cpp"
-#include 		"ScriptObjectObject.cpp"
-#include 		"ScriptObjectObjectWrap.cpp"
 
-#include 		"ScriptObjectIteratorObject.cpp"
-#include 		"ScriptObjectIteratorObjectWrap.cpp"
-#include 		"ScriptObjectIteratorString.cpp"
-#include 		"ScriptObjectIteratorStringWrap.cpp"
-#include		"ScriptObjectIteratorVector.cpp"
-#include		"ScriptObjectIteratorVectorWrap.cpp"
+#include <script/container_slot/ContainerSlotTemp.cpp>
+#include 		"ref_object/RefObject.cpp"
+
+#include 		"object/ScriptObject.cpp"
+#include 		"object/ScriptObjectMemberFunction.cpp"
+#include 		"object/ScriptObjectContainerSlot.cpp"
+#include		"object/ScriptObjectString.cpp"
+#include		"object/ScriptObjectStringWrap.cpp"
+#include		"object/ScriptObjectVector.cpp"
+#include		"object/ScriptObjectVectorWrap.cpp"
+#include 		"object/ScriptObjectObject.cpp"
+#include 		"object/ScriptObjectObjectWrap.cpp"
+
+#include 		"object/iterator/ScriptObjectIteratorObject.cpp"
+#include 		"object/iterator/ScriptObjectIteratorObjectWrap.cpp"
+#include 		"object/iterator/ScriptObjectIteratorString.cpp"
+#include 		"object/iterator/ScriptObjectIteratorStringWrap.cpp"
+#include		"object/iterator/ScriptObjectIteratorVector.cpp"
+#include		"object/iterator/ScriptObjectIteratorVectorWrap.cpp"
 
 
-#include 		"ScriptObjectClass.cpp"
-#include 		"ScriptObjectVarRef.cpp"
+#include 		"object/ScriptObjectClass.cpp"
+#include 		"object/ScriptObjectVarRef.cpp"
 
-#include		"ContainerSlotAssignment.cpp"
-#include		"ScriptFunctionFactory.cpp"
-#include		"ScriptTypeFactory.cpp"
-//#include		"ScriptContext.cpp"
-#include		"ScriptFunctionParam.cpp"
-#include		"ScriptFunction.cpp"
+#include		"function/ScriptFunctionFactory.cpp"
+#include		"type/ScriptTypeFactory.cpp"
+
+#include		"function/ScriptFunctionParam.cpp"
+#include		"function/ScriptFunction.cpp"
 #include 		"MetamethodMembers.cpp"
 #include 		"MemberProperty.cpp"
-#include		"ScriptType.cpp"
+#include		"type/ScriptType.cpp"

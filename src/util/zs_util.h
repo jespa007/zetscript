@@ -4,6 +4,7 @@
  */
 #include "zs_system.h"
 #include "zs_vector.h"
+#include "zs_list.h"
 #include "zs_buffer.h"
 #include "zs_string.h"
 #include "zs_strutils.h"
