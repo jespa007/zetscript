@@ -61,8 +61,8 @@ namespace zetscript{
 			}
 		}
 
-		if(STK_IS_SCRIPT_OBJECT_WEAK_POINTER(stk_result_op1)){
-			so_aux=((ScriptObjectContainerSlot *)stk_result_op1->value)->getTargetObject();
+		if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
+			so_aux=((ScriptObjectContainerSlot *)stk_result_op1->value)->getOriginContainerSlotObject();
 		}
 		else{
 			so_aux=((ScriptObject *)stk_result_op1->value);
@@ -152,8 +152,8 @@ namespace zetscript{
 					VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 				}
 
-				if(instruction->properties & INSTRUCTION_PROPERTY_OBJ_ITEM_TO_STORE){
-					data->stk_vm_current->value=(zs_int)(new ContainerSlot(so_aux,(zs_int)str_symbol_aux1,stk_var));
+				if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
+					data->stk_vm_current->value=(zs_int)(new ContainerSlotData((ScriptObjectContainerSlot *)so_aux,(zs_int)str_symbol_aux1,stk_var));
 					data->stk_vm_current->properties=STK_PROPERTY_CONTAINER_SLOT_ASSIGNMENT;
 					data->stk_vm_current++;
 				}else{
@@ -226,8 +226,8 @@ namespace zetscript{
 
 		// load its value for write
 		if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
-			if(instruction->properties & INSTRUCTION_PROPERTY_OBJ_ITEM_TO_STORE){
-				data->stk_vm_current->value=(zs_int)(new ContainerSlot(so_aux,(zs_int)str_symbol_aux1,stk_var));
+			if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
+				data->stk_vm_current->value=(zs_int)(new ContainerSlotData((ScriptObjectContainerSlot *)so_aux,(zs_int)str_symbol_aux1,stk_var));
 				data->stk_vm_current->properties=STK_PROPERTY_CONTAINER_SLOT_ASSIGNMENT;
 				data->stk_vm_current++;
 			}else{
@@ -481,8 +481,8 @@ lbl_exit_function:
 				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 					*data->stk_vm_current++=*stk_var;
 				}else{
-					if(instruction->properties & INSTRUCTION_PROPERTY_OBJ_ITEM_TO_STORE){
-						data->stk_vm_current->value=(zs_int)(new ContainerSlot(so_aux,(zs_int)str_symbol_aux1,stk_var));
+					if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
+						data->stk_vm_current->value=(zs_int)(new ContainerSlotData((ScriptObjectContainerSlot *)so_aux,(zs_int)str_symbol_aux1,stk_var));
 						data->stk_vm_current->properties=STK_PROPERTY_CONTAINER_SLOT_ASSIGNMENT;
 						data->stk_vm_current++;
 					}else{

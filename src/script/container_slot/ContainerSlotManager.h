@@ -7,7 +7,10 @@
 namespace zetscript{
 
 	class ContainerSlotManager{
-
+	public:
+		zs_list_node<ContainerSlotNode *> *newNode();
+	private:
+		zs_list<ContainerSlotNode *> list;
 	};
 
 }

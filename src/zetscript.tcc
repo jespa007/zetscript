@@ -3,9 +3,10 @@
  *  See LICENSE file for details.
  */
 
-#include	"util/zs_vector.tcc"
+
 #include	"StackElement.tcc"
-#include	"script/ScriptObjectClass.tcc"
+#include 	"script/function/ScriptFunctionTraits.h"
+#include	"script/object/ScriptObjectClass.tcc"
 
 namespace zetscript{
 
@@ -1486,7 +1487,7 @@ namespace zetscript{
 
 		template <  typename F>
 		std::function<F> ZetScript::bindScriptFunction(ScriptObjectMemberFunction *fun, const char *file, int line){
-			return bindScriptFunction<F>(fun->so_function,fun->ref_object->getTargetObject(), file, line);
+			return bindScriptFunction<F>(fun->so_function,fun->getRefObject(), file, line);
 		}
 
 		template <  typename F>

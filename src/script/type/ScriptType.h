@@ -20,20 +20,19 @@ namespace zetscript{
 
 	public:
 
-		int 			idx_script_type; 	// registered type idx
-		zs_string		str_script_type;		// info symbol type
-		Scope			*scope_script_type;
-		zs_string 		str_script_type_ptr; // type_id().name();
-		uint16_t		properties;
+		int 								idx_script_type; 	// registered type idx
+		zs_string							str_script_type;		// info symbol type
+		Scope							*	scope_script_type;
+		zs_string 							str_script_type_ptr; // type_id().name();
+		uint16_t							properties;
 
 		//zs_vector *symbol_member_variables; // symbol_member_variable:  It can be property members or script member vars
 		//zs_vector *symbol_member_functions; // symbol_member_functions: It can be static or member functions
-		zs_vector<MemberProperty *>		*allocated_member_properties;
-		ScriptFunction					*sf_field_initializer;
-		MetamethodMembers		metamethod_members;
-		int						idx_starting_this_member_functions;
-		int						idx_starting_this_member_variables;
-
+		zs_vector<MemberProperty *>		*	allocated_member_properties;
+		ScriptFunction					*	sf_field_initializer;
+		MetamethodMembers					metamethod_members;
+		int									idx_starting_this_member_functions;
+		int									idx_starting_this_member_variables;
 
 		//------------- VARIABLES STRUCT ---------------
 		int									idx_function_member_constructor;

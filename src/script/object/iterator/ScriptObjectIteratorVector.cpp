@@ -16,7 +16,6 @@ namespace zetscript{
 
 	void ScriptObjectIteratorVector::setup(){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR;
-		ref_object = NULL;
 		vm=NULL;
 		idx=0;
 		stk_key.properties=STK_PROPERTY_ZS_INT;
@@ -31,11 +30,11 @@ namespace zetscript{
 		setup();
 		// setup object
 		this->init(_so->getZetScript());
-		ref_object=new RefObject(_so, this);
+
 	}
 
 	void ScriptObjectIteratorVector::get(){
-		ScriptObjectVector *sov=(ScriptObjectVector *)ref_object->getTargetObject();
+		ScriptObjectVector *sov=(ScriptObjectVector *)ref_object;
 		if(sov==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
@@ -54,7 +53,7 @@ namespace zetscript{
 	}
 
 	void	 ScriptObjectIteratorVector::next(){
-		ScriptObjectVector *sov=(ScriptObjectVector *)ref_object->getTargetObject();
+		ScriptObjectVector *sov=(ScriptObjectVector *)ref_object;
 		if(sov==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
@@ -65,7 +64,7 @@ namespace zetscript{
 	}
 
 	bool	 ScriptObjectIteratorVector::end(){
-		ScriptObjectVector *sov=(ScriptObjectVector *)ref_object->getTargetObject();
+		ScriptObjectVector *sov=(ScriptObjectVector *)ref_object;
 		if(sov==NULL) {
 			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
@@ -74,6 +73,6 @@ namespace zetscript{
 
 	ScriptObjectIteratorVector::~ScriptObjectIteratorVector(){
 
-		delete ref_object;
+
 	}
 }

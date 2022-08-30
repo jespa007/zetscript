@@ -40,11 +40,17 @@
 #define ZS_MAX(a,b) (a)>(b)?(a):(b)
 #define ZS_MIN(a,b) (a)<(b)?(a):(b)
 
-
+#define		ZS_MAX_STR_BUFFER 					4096
 #define 	ZS_UNUSUED_PARAM(x) 				((void)(x))
 #define 	ZS_UNUSUED_2PARAMS(x1,x2) 			((void)(x1),(void)(x2))
 #define 	ZS_UNUSUED_3PARAMS(x1,x2,x3) 		((void)(x1),(void)(x2),(void)(x3))
 #define 	ZS_UNUSUED_4PARAMS(x1,x2,x3,x4)		((void)(x1),(void)(x2),(void)(x3),(void)(x4))
+
+#ifdef _WIN32
+#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+#else
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#endif
 
 namespace zetscript{
 	typedef intptr_t zs_int;

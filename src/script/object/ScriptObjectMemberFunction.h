@@ -7,10 +7,9 @@
 #define ZS_NEW_OBJECT_MEMBER_FUNCTION(zs,so_object, so_function) (ScriptObjectMemberFunction::newScriptObjectMemberFunction(zs,so_object,so_function))
 
 namespace zetscript{
-	class ScriptObjectMemberFunction:public ScriptObject{
+	class ScriptObjectMemberFunction:public ScriptObjectRefObject{
 	public:
 		ScriptFunction *so_function;
-		RefObject *ref_object;
 
 		//----------------------------------------------
 		//

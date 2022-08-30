@@ -13,12 +13,12 @@ namespace zetscript{
 		VirtualMachineData 			*		data=(VirtualMachineData *)_vm->data;
 		StackElement 				*		stk_dst=NULL,
 									*		stk_src=NULL;
-		zs_vector<StackElement *> *		store_lst_setter_functions=NULL;
+		zs_vector<StackElement *> 	*		store_lst_setter_functions=NULL;
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
-		ContainerSlot 			*		container_slot_store=NULL;
-		//ScriptObject 				*		container_slot_store_object=NULL;
-		//zs_int 								container_slot_store_id_slot=0;
+		ScriptObjectContainerSlot	*		container_slot_store_object=NULL;
+		zs_int 								container_slot_store_id_slot=0;
+		StackElement				*		container_slot_store_ptr_stk=NULL;
 		void 						*		stk_src_ref_value_copy_aux=NULL;
 		StackElement 				*		stk_result_op2=NULL;
 		zs_int 						*		stk_src_ref_value=NULL;
@@ -41,9 +41,9 @@ namespace zetscript{
 
 	vm_store_next:
 		store_lst_setter_functions=NULL;
-		container_slot_store=NULL;
-		//container_slot_store_object=NULL;
-		//container_slot_store_id_slot=0;
+		container_slot_store_object=NULL;
+		container_slot_store_id_slot=0;
+		container_slot_store_ptr_stk=NULL;
 		stk_src=stk_load_multi_var_src; // store ptr instruction2 op as src_var_value
 		//stk_dst=stk_result_op2;
 		stk_result_op2=stk_dst;
@@ -57,12 +57,11 @@ namespace zetscript{
 		if((stk_dst->properties & STK_PROPERTY_PTR_STK)!=0) {
 			stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
 		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT_ASSIGNMENT){
-			container_slot_store=((ContainerSlot *)stk_dst->value);
-			//container_slot_store_object=container_slot_store->object;
-			//container_slot_store_id_slot=container_slot_store->id_slot;
-			stk_dst=container_slot_store->ptr_stk;
-			//delete container_slot_store;
-			//container_slot_store=NULL;
+			ContainerSlotData 	*	container_slot_store=((ContainerSlotData *)stk_dst->value);
+			container_slot_store_object=container_slot_store->so_container_slot_ref;
+			container_slot_store_id_slot=container_slot_store->id_slot;
+			container_slot_store_ptr_stk=stk_dst=container_slot_store->ptr_stk;
+			delete container_slot_store;
 		}else{
 			if((stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR)==0){
 				VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
@@ -281,45 +280,49 @@ namespace zetscript{
 				// becomes a weak pointer to avoid possibly cyclic reference
 				if(//(so_aux->shared_pointer->data.n_shares>0)
 					   (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
-					&& (container_slot_store!=NULL)){
+					&& (container_slot_store_ptr_stk!=NULL)){
 
 					StackElement *stk_obj=NULL;
 
 
 
 					// More tests would be needed see issue #336
-					if(container_slot_store->object->getScriptType()->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+					if(container_slot_store_object->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 						printf("\nAssing object %p type '%s' to slot '%i'"
-								,container_slot_store->object
-								,container_slot_store->object->getScriptType()->str_script_type.c_str()
-								,(int)container_slot_store->id_slot
+								,container_slot_store_object
+								,container_slot_store_object->getScriptType()->str_script_type.c_str()
+								,(int)container_slot_store_id_slot
 						);
-						stk_obj=container_slot_store->object->getBuiltinElementAt(container_slot_store->id_slot);
+						stk_obj=container_slot_store_object->getBuiltinElementAt(container_slot_store_id_slot);
 					}else{
 						printf("\nAssing object %p type '%s' to slot '%s'"
-								,container_slot_store->object
-								,container_slot_store->object->getScriptType()->str_script_type.c_str()
-								,(const char *)container_slot_store->id_slot
+								,container_slot_store_object
+								,container_slot_store_object->getScriptType()->str_script_type.c_str()
+								,(const char *)container_slot_store_id_slot
 						);
-						stk_obj=container_slot_store->object->getProperty((const char *)container_slot_store->id_slot);
+						stk_obj=container_slot_store_object->getProperty((const char *)container_slot_store_id_slot);
 					}
 
 					// create weak pointer
-					auto weak_pointer=new ScriptObjectContainerSlot(so_aux,container_slot_store);
+					auto script_object_container_slot=new ScriptObjectContainerSlot(
+							container_slot_store_object
+							,container_slot_store_id_slot
+							,container_slot_store_ptr_stk
+					);
 
 
-					stk_dst->value=(intptr_t)weak_pointer;
+					stk_dst->value=(intptr_t)script_object_container_slot;
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
-					if(!vm_create_shared_script_object(_vm,weak_pointer)){
+					if(!vm_create_shared_script_object(_vm,script_object_container_slot)){
 						goto lbl_exit_function;
 					}
 
-					if(!vm_share_script_object(_vm,weak_pointer)){
+					if(!vm_share_script_object(_vm,script_object_container_slot)){
 						goto lbl_exit_function;
 					}
 
-					so_aux->addContainerSlot(weak_pointer);//(ScriptObject **)&stk_obj->value);
+					//so_aux->addContainerSlot(script_object_container_slot);//(ScriptObject **)&stk_obj->value);
 
 				}else{ // share
 					stk_dst->value=(intptr_t)so_aux;

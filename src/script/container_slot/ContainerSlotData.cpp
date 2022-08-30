@@ -7,12 +7,12 @@
 namespace zetscript{
 
 
-	ContainerSlot::ContainerSlot(
-			ScriptObject  *_object
+	ContainerSlotData::ContainerSlotData(
+			ScriptObjectContainerSlot  *_so_container_slot_ref
 			,zs_int 	   _id_slot
 			,StackElement *_ptr_stk
 	){
-		object=_object;
+		so_container_slot_ref=_so_container_slot_ref;
 		id_slot=_id_slot;
 		ptr_stk=_ptr_stk;
 	}

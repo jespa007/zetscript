@@ -42,6 +42,7 @@ namespace zetscript{
 	extern const char * k_str_stack_element_type;		//	typeid(bool).name()
 
 	class ScriptObjectObject;
+	class ScriptFunction;
 	class ScriptType;
 	class ZetScript;
 
@@ -381,5 +382,5 @@ namespace zetscript{
 	};
 
 }
-#include "ScriptTypeFactory.tcc"
+
 

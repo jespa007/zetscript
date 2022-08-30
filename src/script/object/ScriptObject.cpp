@@ -47,8 +47,8 @@ namespace zetscript{
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
-		ref_script_objects=new zs_vector<RefObject *>();
-		container_slot_assignments=new zs_vector<ScriptObjectContainerSlot *>();
+		ref_objects=NULL;//new zs_list<RefObject *>();
+		//container_slot_assignments=new zs_vector<ScriptObjectContainerSlot *>();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
@@ -203,90 +203,23 @@ namespace zetscript{
 		return "Object@"+zs_string(getTypeName());
 	}
 
-	void ScriptObject::addContainerSlot(ScriptObjectContainerSlot *_wp){
-		container_slot_assignments->push_back(_wp);
-	}
 
-	int ScriptObject::idxContainerSlot(ScriptObjectContainerSlot  *_wp){
-		for(int i=0; i < container_slot_assignments->size();i++){
-			if(container_slot_assignments->items[i]==_wp){
-				return i;
-			}
+
+
+	void ScriptObject::attachRefObjectNode(zs_list_node<ScriptObjectRefObject *> *_ref_object_node){
+		if(ref_objects==NULL){
+			ref_objects=new zs_list<ScriptObjectRefObject *>;
 		}
-
-		return ZS_IDX_UNDEFINED;
+		ref_objects->insert(_ref_object_node);
 	}
 
-	void ScriptObject::removeContainerSlot(ScriptObjectContainerSlot  *_wp){
-		int idx=idxContainerSlot(_wp);
 
-		if(idx==ZS_IDX_UNDEFINED){
-			//THROW_RUNTIME_ERRORF("internal: member function not exist");
+	void ScriptObject::deattachRefObjectNode(zs_list_node<ScriptObjectRefObject *> *_ref_object_node){
+		if(ref_objects==NULL){
+			VM_SET_USER_ERRORF(vm,"ref_objects==NULL");
 			return;
 		}
-
-		// get ref object element
-		auto ref_object=container_slot_assignments->items[idx];
-
-		// remove element before call deRefObject to avoid recursion
-		ref_script_objects->erase(idx);
-
-
-		// call ref
-		//ref_object->deRefObject();
-
-	}
-
-	/*bool ScriptObject::deRefContainerSlot(){
-		if(container_slot_assignments->size()>0){
-			// get last
-			ScriptObjectContainerSlot *wp=container_slot_assignments->items[container_slot_assignments->size()-1];
-			container_slot_assignments->pop_back();
-
-			// weak pointer becomes strong pointer
-			//StackElement *stk_slot=wp->getContainerSlot()->ptr_stk;
-			//stk_slot->properties=STK_PROPERTY_SCRIPT_OBJECT;
-			//stk_slot->value=(zs_int)wp->getTargetObject();
-			//wp->deRefObject();
-			return true;
-		}
-		return false;
-	}*/
-
-
-	void ScriptObject::addRefObject(RefObject *_so){
-		ref_script_objects->push_back(_so);
-	}
-
-	int ScriptObject::idxRefObject(RefObject  *_ref_object){
-		for(int i=0; i < ref_script_objects->size();i++){
-			if(ref_script_objects->items[i]==_ref_object){
-				return i;
-			}
-		}
-
-		return ZS_IDX_UNDEFINED;
-	}
-
-
-	void ScriptObject::removeRefObject(RefObject  *_ref_object){
-		int idx=idxRefObject(_ref_object);
-
-		if(idx==ZS_IDX_UNDEFINED){
-			//THROW_RUNTIME_ERRORF("internal: member function not exist");
-			return;
-		}
-
-		// get ref object element
-		auto ref_object=ref_script_objects->items[idx];
-
-		// remove element before call deRefObject to avoid recursion
-		ref_script_objects->erase(idx);
-
-
-		// call ref
-		ref_object->deRefObject();
-
+		ref_objects->remove(_ref_object_node);
 	}
 
 	ScriptTypeFactory		*	ScriptObject::getScriptTypeFactory(){
@@ -313,18 +246,15 @@ namespace zetscript{
 		stk_builtin_elements.clear();
 		delete map_builtin_properties;
 
-		for(int i=0; i < ref_script_objects->size(); i++){
-			RefObject *_ref_pointer=ref_script_objects->items[i];
-			_ref_pointer->deRefObject();
+		auto current_node=ref_objects->first;
+		if(current_node != NULL){
+			do{
+				current_node->data->setRefObject(NULL); //deref script object reference
+				current_node=current_node->next;
+			}while(current_node->next!=ref_objects->last);
 		}
 
-		delete ref_script_objects;
-
-		for(int i=0; i < container_slot_assignments->size(); i++){
-			delete container_slot_assignments->items[i];
-		}
-
-		delete container_slot_assignments;
+		delete ref_objects;
 
 	}
 }

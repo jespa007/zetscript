@@ -66,11 +66,12 @@
 // utils
 #include "config.h"
 #include "common.h"
+#include "zs_exception.h"
 #include "util/zs_util.h"
 
 #include "Type.h"
 #include "StackElement.h"
-#include "zs_exception.h"
+
 #include "ByteCode.h"
 #include "Instruction.h"
 #include "Symbol.h"

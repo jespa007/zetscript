@@ -32,8 +32,6 @@ namespace zetscript{
 
 	private:
 
-		//ScriptObjectString *so;
-		RefObject *ref_object;
 		zs_int idx;
 		StackElement stk_key;
 		StackElement stk_value;

@@ -3,9 +3,11 @@
  *  See LICENSE file for details.
  */
 
-#include <script/container_slot/ContainerSlotTemp.h>
-#include "ref_object/RefObject.h"
+#include "MetamethodMembers.h"
+#include "MemberProperty.h"
+
 #include "object/ScriptObject.h"
+#include "object/ScriptObjectRefObject.h"
 #include "object/ScriptObjectContainerSlot.h"
 #include "object/ScriptObjectMemberFunction.h"
 #include "object/ScriptObjectString.h"
@@ -24,15 +26,18 @@
 #include "object/iterator/ScriptObjectIteratorVector.h"
 #include "object/iterator/ScriptObjectIteratorVectorWrap.h"
 
-#include "MetamethodMembers.h"
-#include "MemberProperty.h"
 #include "function/ScriptFunctionParam.h"
 #include "function/ScriptFunction.h"
 #include "function/ScriptFunctionFactory.h"
-#include "function/ScriptFunctionTraits.h"
 
 #include "type/ScriptType.h"
 #include "type/ScriptTypeFactory.h"
+
+#include "container_slot/ContainerSlotData.h"
+#include "container_slot/ContainerSlotNode.h"
+#include "container_slot/ContainerSlotManager.h"
+
+#include "function/ScriptFunctionTraits.h"
 
 
 

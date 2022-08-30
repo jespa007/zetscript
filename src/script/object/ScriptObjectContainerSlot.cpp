@@ -7,15 +7,23 @@
 
 namespace zetscript{
 
-	ScriptObjectContainerSlot * ScriptObjectContainerSlot::newScriptObjectContainerSlot(ScriptObject *_so, ContainerSlot *_container_slot_store){
-		ScriptObjectContainerSlot *si= new ScriptObjectContainerSlot(_so,_container_slot_store);
+	ScriptObjectContainerSlot * ScriptObjectContainerSlot::newScriptObjectContainerSlot(
+			ScriptObjectContainerSlot 	*	_so_origin_container_slot
+			,zs_int 						_id_slot
+			,StackElement  				*	_ptr_stk
+	){
+		ScriptObjectContainerSlot *si= new ScriptObjectContainerSlot(
+			_so_origin_container_slot
+			,_id_slot
+			,_ptr_stk
+		);
 		return si;
 	}
 
 
 	void ScriptObjectContainerSlot::setup(){
-		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_WEAK_POINTER;
-		ref_object = NULL;
+		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_CONTAINER_SLOT;
+		so_origin_container_slot = NULL;
 		vm=NULL;
 	}
 
@@ -23,24 +31,23 @@ namespace zetscript{
 		setup();
 	}
 
-	ScriptObjectContainerSlot::ScriptObjectContainerSlot(ScriptObject *_so_target, ContainerSlot *_container_slot_store){
+	ScriptObjectContainerSlot::ScriptObjectContainerSlot(
+			ScriptObjectContainerSlot 	*	_so_origin_container_slot
+			,zs_int 						_id_slot
+			,StackElement  				*	_ptr_stk
+	){
 		setup();
 		// setup object
-		this->init(_so_target->getZetScript());
-		ref_object=new RefObject(_so_target,this);
-		this->container_slot_store=_container_slot_store;
+		this->init(_so_origin_container_slot->getZetScript());
+
+		so_origin_container_slot=_so_origin_container_slot;
+		id_slot=_id_slot;
+		ptr_stk=_ptr_stk;
+
 	}
 
-	ContainerSlot *ScriptObjectContainerSlot::getContainerSlot(){
-		return this->container_slot_store;
-	}
-
-	ScriptObject *ScriptObjectContainerSlot::getTargetObject(){
-		return ref_object->getTargetObject();
-	}
 
 	ScriptObjectContainerSlot::~ScriptObjectContainerSlot(){
-		delete ref_object;
-		delete this->container_slot_store;
+
 	}
 }

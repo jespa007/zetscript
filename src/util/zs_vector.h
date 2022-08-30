@@ -4,8 +4,6 @@
  */
 #pragma once
 
-
-
 namespace zetscript{
 
 	template<typename _T>
@@ -60,7 +58,6 @@ namespace zetscript{
 
 
 	};
-
-
-
 }
+
+#include "zs_vector.tcc"

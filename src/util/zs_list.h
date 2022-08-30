@@ -7,35 +7,30 @@
 namespace zetscript{
 
 	template<typename _N>
-	typedef struct _zs_list_node{
+	struct zs_list_node{
 		_N data;
-		_zs_list_node *previous, *next;
+		zs_list_node *previous, *next;
 
-		_zs_list_node(){
+		zs_list_node(){
 			previous=next=NULL;
 		}
-	} zs_list_node;
+	};
 
 
 	template<typename _N>
 	class zs_list{
 	public:
-		/*typedef struct _SharedPointerInfo {
-			ScriptObject 			*ptr_script_object_shared;
-			unsigned short 			n_shares;
-			//int						created_idx_call;
-			VM_ScopeBlock			*created_scope_block;
-		} SharedPointerInfo;*/
-
 
 		zs_list_node<_N> *first, *last;
 
 		zs_list();
 
-		bool insert(const _N & _data);
+		bool insert(zs_list_node<_N> * _node);
 		bool remove(zs_list_node<_N> * _node);
+		void remove_all();
 
 		~zs_list();
+
 	};
 }
 

@@ -33,8 +33,6 @@ namespace zetscript{
 
 	private:
 
-		RefObject *ref_object;
-		//ScriptObjectObject *oo;
 		StackElement stk_key;
 		zs_map_iterator it;
 		void setup();

@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define	ZS_MAX_STR_BUFFER 	4096
+
 #define ZS_STR_EXPAND(tok) 	#tok
 #define ZS_STR(tok) 		ZS_STR_EXPAND(tok)
 #define ZS_STRCMP(a, R, b) 	(strcmp(a,b) R 0)

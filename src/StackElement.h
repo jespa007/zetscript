@@ -22,7 +22,7 @@
 #define STK_IS_SCRIPT_OBJECT_VAR_REF(stk) 				(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_VAR_REF))
 #define STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk)		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER))
 #define STK_IS_SCRIPT_OBJECT_ZETSCRIPT_OBJECT(stk) 		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT))
-#define STK_IS_SCRIPT_OBJECT_WEAK_POINTER(stk)			(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_WEAK_POINTER))
+#define STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk)		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_CONTAINER_SLOT))
 
 #define STK_GET_STK_VAR_REF(stk)  						(((ScriptObjectVarRef *)((stk))->value)->getStackElementPtr())
 

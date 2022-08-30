@@ -390,6 +390,7 @@ SET(
 	util/zs_util.h
 	util/zs_vector.h
 	util/zs_vector.tcc
+	util/zs_list.tcc
 	
 	#eval
 	eval/eval_keyword.h
@@ -405,38 +406,45 @@ SET(
 	module/SystemModule.h
 	module/zs_module.h
 	
-	
 	# script
+	script/zs_script.h
 	script/MemberProperty.h
 	script/ContainerSlot.h
 	script/MetamethodMembers.h
-	script/ScriptFunction.h
-	script/ScriptFunctionFactory.h
-	script/ScriptFunctionParam.h
-	script/ScriptFunctionTraits.h
-	script/ScriptObject.h
-	script/ScriptObjectClass.h
-	script/ScriptObjectIteratorObject.h
-	script/ScriptObjectIteratorObjectWrap.h
-	script/ScriptObjectIteratorString.h
-	script/ScriptObjectIteratorStringWrap.h
-	script/ScriptObjectIteratorVector.h
-	script/ScriptObjectIteratorVectorWrap.h
-	script/ScriptObjectMemberFunction.h
-	script/ScriptObjectContainerSlot.h
-	script/ScriptObjectObject.h
-	script/ScriptObjectObjectWrap.h
-	script/ScriptObjectString.h
-	script/ScriptObjectStringWrap.h
-	script/ScriptObjectVarRef.h
-	script/ScriptObjectVector.h
-	script/ScriptObjectVectorWrap.h
-	script/ScriptType.h
-	script/ScriptType.tcc
-	script/ScriptTypeFactory.h
-	script/ScriptTypeFactory.tcc
-	script/ScriptObjectClass.tcc
-	script/zs_script.h
+		
+	# script/function	
+	script/function/ScriptFunction.h
+	script/function/ScriptFunctionFactory.h
+	script/function/ScriptFunctionParam.h
+	script/function/ScriptFunctionTraits.h
+	
+	# script/type
+	script/type/ScriptType.h
+	script/type/ScriptType.tcc
+	script/type/ScriptTypeFactory.h
+	script/type/ScriptTypeFactory.tcc
+	
+	# script/object
+	script/object/ScriptObject.h
+	script/object/ScriptObjectClass.h
+	script/object/ScriptObjectMemberFunction.h
+	script/object/ScriptObjectContainerSlot.h
+	script/object/ScriptObjectObject.h
+	script/object/ScriptObjectObjectWrap.h
+	script/object/ScriptObjectString.h
+	script/object/ScriptObjectStringWrap.h
+	script/object/ScriptObjectVarRef.h
+	script/object/ScriptObjectVector.h
+	script/object/ScriptObjectVectorWrap.h
+	script/object/ScriptObjectClass.tcc
+	
+	# script/object/iterator
+	script/object/iterator/ScriptObjectIteratorObject.h
+	script/object/iterator/ScriptObjectIteratorObjectWrap.h
+	script/object/iterator/ScriptObjectIteratorString.h
+	script/object/iterator/ScriptObjectIteratorStringWrap.h
+	script/object/iterator/ScriptObjectIteratorVector.h
+	script/object/iterator/ScriptObjectIteratorVectorWrap.h
 			
 	# scope
 	scope/Scope.h
@@ -453,8 +461,6 @@ SET(
 	vm/vm.h
 	vm/vm.tcc
 	vm/vm_internals.h
-
-	
 	
 	# main
 	ByteCode.h
