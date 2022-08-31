@@ -13,11 +13,10 @@ namespace zetscript{
 	}
 
 	template<typename _N>
-	bool zs_list<_N>::insert( zs_list_node<_N> * _node){
+	void zs_list<_N>::insert( zs_list_node<_N> * _node){
 
 		if(_node->next != NULL || _node->previous != NULL){
 			THROW_RUNTIME_ERRORF("Internal error: An already attached node");
-			return false;
 		}
 
 		if(this->first == NULL){ /*one  node: trivial ?*/
@@ -33,16 +32,14 @@ namespace zetscript{
 			_node->next=this->first;
 			this->first->previous=_node;
 		}
-		return true;
 	}
 
 
 	template<typename _N>
-	bool zs_list<_N>::remove(zs_list_node<_N> * _node){
+	void zs_list<_N>::remove(zs_list_node<_N> * _node){
 
 		if(_node->next == NULL || _node->previous == NULL){
 			THROW_RUNTIME_ERRORF("Internal error: An already deattached node");
-			return false;
 		}
 
 		if((_node->previous == _node) && (_node->next == _node)){ // 1 single node...

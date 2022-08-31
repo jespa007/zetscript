@@ -25,8 +25,8 @@ namespace zetscript{
 
 		zs_list();
 
-		bool insert(zs_list_node<_N> * _node);
-		bool remove(zs_list_node<_N> * _node);
+		void insert(zs_list_node<_N> * _node);
+		void remove(zs_list_node<_N> * _node);
 		void remove_all();
 
 		~zs_list();
