@@ -17,6 +17,8 @@ namespace zetscript{
 		ScriptObjectContainerSlot 				*getScriptObjectContainerSlotRoot();
 		~ScriptObjectContainer();
 
+	protected:
+		virtual void init(ZetScript *_zs);
 	private:
 
 		// refs where this container is referenced

@@ -103,7 +103,7 @@ namespace zetscript{
 		//zs_vector<RefObject *>			    	*   ref_script_objects;
 		//zs_vector<ScriptObjectContainerSlot *>	*   container_slot_assignments;
 
-		void 										init(ZetScript *zs);
+		virtual void								init(ZetScript *zs);
 
 		ScriptTypeFactory						*	getScriptTypeFactory();
 

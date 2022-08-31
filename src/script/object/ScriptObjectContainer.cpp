@@ -9,9 +9,14 @@ namespace zetscript{
 
 
 	ScriptObjectContainer::ScriptObjectContainer(){
+		root=NULL;
+	}
+
+	void ScriptObjectContainer::init(ZetScript *_zs){
+		ScriptObject::init(_zs);
 		root=new ScriptObjectContainerSlot(
-				NULL,0,NULL
-		);
+					this,0,NULL
+			);
 	}
 
 	ScriptObjectContainerSlot 				*ScriptObjectContainer::getScriptObjectContainerSlotRoot(){
@@ -19,7 +24,9 @@ namespace zetscript{
 	}
 
 	ScriptObjectContainer::~ScriptObjectContainer(){
-		root->removeChilds();
-		delete root;
+		if(root != NULL){
+			root->removeChilds();
+			delete root;
+		}
 	}
 }

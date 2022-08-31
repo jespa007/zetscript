@@ -246,15 +246,17 @@ namespace zetscript{
 		stk_builtin_elements.clear();
 		delete map_builtin_properties;
 
-		auto current_node=ref_objects->first;
-		if(current_node != NULL){
-			do{
-				current_node->data->setRefObject(NULL); //deref script object reference
-				current_node=current_node->next;
-			}while(current_node->next!=ref_objects->last);
-		}
+		if(ref_objects!=NULL){
+			auto current_node=ref_objects->first;
+			if(current_node != NULL){
+				do{
+					current_node->data->setRefObject(NULL); //deref script object reference
+					current_node=current_node->next;
+				}while(current_node->next!=ref_objects->last);
+			}
 
-		delete ref_objects;
+			delete ref_objects;
+		}
 
 	}
 }
