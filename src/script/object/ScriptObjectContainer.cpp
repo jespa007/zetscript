@@ -12,11 +12,15 @@ namespace zetscript{
 		root=NULL;
 	}
 
+	void ScriptObjectContainer::initContainer(){
+		root=new ScriptObjectContainerSlot(
+				this,0,NULL
+		);
+	}
+
 	void ScriptObjectContainer::init(ZetScript *_zs){
 		ScriptObject::init(_zs);
-		root=new ScriptObjectContainerSlot(
-					this,0,NULL
-			);
+		initContainer();
 	}
 
 	ScriptObjectContainerSlot 				*ScriptObjectContainer::getScriptObjectContainerSlotRoot(){

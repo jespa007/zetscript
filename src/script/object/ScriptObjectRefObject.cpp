@@ -35,7 +35,7 @@ namespace zetscript{
 	}
 
 	void ScriptObjectRefObject::dettachRefObject(){
-		if(ref_object_node != NULL){
+		if(ref_object != NULL){
 			ref_object->deattachRefObjectNode(ref_object_node);
 			ref_object_node->data=NULL;
 		}

@@ -34,6 +34,10 @@ namespace zetscript{
 		setup();
 		// setup object
 		this->init(_so_container_ref->getZetScript());
+
+		so_container_ref=_so_container_ref;
+		id_slot=_id_slot;
+		ptr_stk=_ptr_stk;
 	}
 
 	void ScriptObjectContainerSlot::add(ScriptObjectContainerSlot *_so_container_slot){
@@ -53,15 +57,8 @@ namespace zetscript{
 		if(this->childs.first!=NULL){
 			zs_list_node<ScriptObjectContainerSlot *> *current=this->childs.first;
 			do{
-				// detach child node and its childs recursively
-				remove(current->data);
-
 				// set stack element as undefined
-				current->data->ptr_stk->value=0;
-				current->data->ptr_stk->properties=0;
-
-				// remove container slot object
-				vm_unref_shared_script_object(vm, current->data, NULL);
+				remove(current->data);
 
 				// next
 				current=current->next;
@@ -81,7 +78,10 @@ namespace zetscript{
 			_so_container_slot->parent->childs.remove(_so_container_slot->list_node_child);
 		}
 
-		delete _so_container_slot;
+		_so_container_slot->ptr_stk->value=0;
+		_so_container_slot->ptr_stk->properties=0;
+
+		vm_unref_shared_script_object(vm, _so_container_slot, NULL);
 	}
 
 	ScriptObjectContainer *ScriptObjectContainerSlot::getScriptObjectContainerRef(){

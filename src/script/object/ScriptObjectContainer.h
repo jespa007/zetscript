@@ -19,6 +19,7 @@ namespace zetscript{
 
 	protected:
 		virtual void init(ZetScript *_zs);
+		void initContainer();
 	private:
 
 		// refs where this container is referenced
