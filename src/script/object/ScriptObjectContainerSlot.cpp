@@ -8,46 +8,91 @@
 namespace zetscript{
 
 	ScriptObjectContainerSlot * ScriptObjectContainerSlot::newScriptObjectContainerSlot(
-			ScriptObjectContainerSlot 	*	_so_origin_container_slot
+			ScriptObjectContainer 		*	_so_container_ref
 			,zs_int 						_id_slot
 			,StackElement  				*	_ptr_stk
 	){
 		ScriptObjectContainerSlot *si= new ScriptObjectContainerSlot(
-			_so_origin_container_slot
+			_so_container_ref
 			,_id_slot
 			,_ptr_stk
 		);
 		return si;
 	}
 
-
 	void ScriptObjectContainerSlot::setup(){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_CONTAINER_SLOT;
-		so_origin_container_slot = NULL;
+		so_container_ref = NULL;
 		vm=NULL;
 	}
 
-	ScriptObjectContainerSlot::ScriptObjectContainerSlot(){
-		setup();
-	}
-
 	ScriptObjectContainerSlot::ScriptObjectContainerSlot(
-			ScriptObjectContainerSlot 	*	_so_origin_container_slot
+			ScriptObjectContainer 		*	_so_container_ref
 			,zs_int 						_id_slot
 			,StackElement  				*	_ptr_stk
 	){
 		setup();
 		// setup object
-		this->init(_so_origin_container_slot->getZetScript());
-
-		so_origin_container_slot=_so_origin_container_slot;
-		id_slot=_id_slot;
-		ptr_stk=_ptr_stk;
-
+		this->init(_so_container_ref->getZetScript());
 	}
 
+	void ScriptObjectContainerSlot::add(ScriptObjectContainerSlot *_so_container_slot){
+		// create container slot node from script object container slot
+		_so_container_slot->parent=this;
+
+		// create list node to allow deattach later
+		_so_container_slot->list_node_child=new zs_list_node<ScriptObjectContainerSlot *>();
+
+		_so_container_slot->list_node_child->data=_so_container_slot;
+
+		// insert in the list of childs
+		childs.insert(_so_container_slot->list_node_child);
+	}
+
+	void ScriptObjectContainerSlot::removeChilds(){
+		if(this->childs.first!=NULL){
+			zs_list_node<ScriptObjectContainerSlot *> *current=this->childs.first;
+			do{
+				// detach child node and its childs recursively
+				remove(current->data);
+
+				// set stack element as undefined
+				current->data->ptr_stk->value=0;
+				current->data->ptr_stk->properties=0;
+
+				// remove container slot object
+				vm_unref_shared_script_object(vm, current->data, NULL);
+
+				// next
+				current=current->next;
+			}while(current->next != this->childs.first);
+
+			this->childs.remove_all();
+		}
+	}
+
+	void ScriptObjectContainerSlot::remove(ScriptObjectContainerSlot *_so_container_slot){
+		// dettach recursive
+
+		_so_container_slot->removeChilds();
+
+		// if node is not root remove child from its parent
+		if(_so_container_slot->parent != NULL){
+			_so_container_slot->parent->childs.remove(_so_container_slot->list_node_child);
+		}
+
+		delete _so_container_slot;
+	}
+
+	ScriptObjectContainer *ScriptObjectContainerSlot::getScriptObjectContainerRef(){
+		return so_container_ref;
+	}
+
+	zs_int								ScriptObjectContainerSlot::getIdSlot(){
+		return id_slot;
+	}
 
 	ScriptObjectContainerSlot::~ScriptObjectContainerSlot(){
-
+		removeChilds();
 	}
 }

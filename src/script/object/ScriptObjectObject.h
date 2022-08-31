@@ -10,7 +10,7 @@
 namespace zetscript{
 
 	class ZetScript;
-	class  ScriptObjectObject:public ScriptObjectContainerSlot{
+	class  ScriptObjectObject:public ScriptObjectContainer{
 
 	public:
 

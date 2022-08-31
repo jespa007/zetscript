@@ -10,16 +10,17 @@ namespace zetscript{
 		,ScriptFunction *	_calling_function
 		,Instruction 	**	_instruction_it
 	){
-		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		Instruction *instruction=(*_instruction_it)-1;
-		ScriptObject *so_aux=NULL;
-		StackElement *stk_result_op1=NULL;
-		const char *str_symbol_aux1=NULL;
-		StackElement *stk_var=NULL;
-		StackMemberProperty *stk_mp_aux=NULL;
-		ScriptType *sc_type=NULL;
-		Symbol *sf_member=NULL;
-		ScriptObjectMemberFunction *somf=NULL;
+		VirtualMachineData 			*	data=(VirtualMachineData *)_vm->data;
+		Instruction 				*	instruction=(*_instruction_it)-1;
+		ScriptObject 				*	so_aux=NULL;
+		StackElement 				*	stk_result_op1=NULL;
+		const char 					*	str_symbol_aux1=NULL;
+		StackElement 				*	stk_var=NULL;
+		StackMemberProperty 		*	stk_mp_aux=NULL;
+		ScriptType					*	sc_type=NULL;
+		Symbol 						*	sf_member=NULL;
+		ScriptObjectMemberFunction 	*	somf=NULL;
+		ScriptObjectContainerSlot	*	so_container_slot_ref=NULL;
 
 		if(
 				instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE
@@ -30,6 +31,8 @@ namespace zetscript{
 		}
 
 	load_next_element_object:
+
+		so_container_slot_ref=NULL;
 		instruction=(*_instruction_it)-1;
 
 		if(
@@ -62,7 +65,8 @@ namespace zetscript{
 		}
 
 		if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
-			so_aux=((ScriptObjectContainerSlot *)stk_result_op1->value)->getOriginContainerSlotObject();
+			so_container_slot_ref=(ScriptObjectContainerSlot *)stk_result_op1->value;
+			so_aux=so_container_slot_ref->getScriptObjectContainerRef();
 		}
 		else{
 			so_aux=((ScriptObject *)stk_result_op1->value);
@@ -106,7 +110,9 @@ namespace zetscript{
 
 			goto lbl_exit_function_ok;
 
+
 		}else if((stk_var=so_aux->getProperty(str_symbol_aux1)) == NULL){
+			// property is not defined
 
 			if(instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION){
 				VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Member function '%s::%s' is not defined"
@@ -153,9 +159,12 @@ namespace zetscript{
 				}
 
 				if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
-					data->stk_vm_current->value=(zs_int)(new ContainerSlotData((ScriptObjectContainerSlot *)so_aux,(zs_int)str_symbol_aux1,stk_var));
-					data->stk_vm_current->properties=STK_PROPERTY_CONTAINER_SLOT_ASSIGNMENT;
-					data->stk_vm_current++;
+					VM_PUSH_SLOT_DATA(
+							so_container_slot_ref
+							,(ScriptObjectContainer *)so_aux
+							,(zs_int)str_symbol_aux1
+							,stk_var
+					);
 				}else{
 					VM_PUSH_STK_PTR(stk_var);
 				}
@@ -181,7 +190,7 @@ namespace zetscript{
 				);
 			}
 
-			// member property. ... if getter, get the value itself and evaluate
+			// Is member property. ... if it has getter function defined, get the value itself and evaluate
 			if(
 			   (stk_var->properties & STK_PROPERTY_MEMBER_PROPERTY)!=0
 			 ){
@@ -227,9 +236,12 @@ namespace zetscript{
 		// load its value for write
 		if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
 			if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
-				data->stk_vm_current->value=(zs_int)(new ContainerSlotData((ScriptObjectContainerSlot *)so_aux,(zs_int)str_symbol_aux1,stk_var));
-				data->stk_vm_current->properties=STK_PROPERTY_CONTAINER_SLOT_ASSIGNMENT;
-				data->stk_vm_current++;
+				VM_PUSH_SLOT_DATA(
+						so_container_slot_ref
+						,(ScriptObjectContainer *)so_aux
+						,(zs_int)str_symbol_aux1
+						,stk_var
+				);
 			}else{
 				VM_PUSH_STK_PTR(stk_var);
 			}
@@ -417,25 +429,38 @@ lbl_exit_function:
 			,StackElement 	*_stk_local_var
 
 	){
-		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
-		StackElement 		*	stk_result_op1=NULL;
-		StackElement 		*	stk_result_op2=NULL;
-		ScriptObject 		*	so_aux=NULL;
-		int						index_aux1=0;
-		StackElement		*	stk_var=NULL;
-		const char 			*	str_symbol_aux1=NULL;
-		StackElement			stk_aux1;
-		Instruction			*	instruction=_instruction;
+		VirtualMachineData 			*	data=(VirtualMachineData *)_vm->data;
+		StackElement 				*	stk_result_op1=NULL;
+		StackElement 				*	stk_result_op2=NULL;
+		ScriptObject 				*	so_aux=NULL;
+		int								index_aux1=0;
+		StackElement				*	stk_var=NULL;
+		const char 					*	str_symbol_aux1=NULL;
+		StackElement					stk_aux1;
+		Instruction					*	instruction=_instruction;
+		ScriptObjectContainerSlot 	*	so_container_slot_ref=NULL;
 
 		VM_POP_STK_TWO;
 		so_aux=NULL;
+
 		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
 			stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->value)->getStackElementPtr();
 		}
+
 		stk_var=NULL;
 		// determine object ...
 		if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-			so_aux=(ScriptObject *)stk_result_op1->value;
+
+			so_container_slot_ref=NULL;
+
+			if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
+				so_container_slot_ref=(ScriptObjectContainerSlot *)stk_result_op1->value;
+				so_aux=so_container_slot_ref->getScriptObjectContainerRef();
+			}else{
+				so_aux=(ScriptObject *)stk_result_op1->value;
+			}
+
+
 			if(		   so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR
 					|| so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT
 					|| so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS
@@ -481,10 +506,16 @@ lbl_exit_function:
 				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 					*data->stk_vm_current++=*stk_var;
 				}else{
+					// dest to write
 					if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
-						data->stk_vm_current->value=(zs_int)(new ContainerSlotData((ScriptObjectContainerSlot *)so_aux,(zs_int)str_symbol_aux1,stk_var));
-						data->stk_vm_current->properties=STK_PROPERTY_CONTAINER_SLOT_ASSIGNMENT;
-						data->stk_vm_current++;
+
+						VM_PUSH_SLOT_DATA(
+								so_container_slot_ref
+								,(ScriptObjectContainer *)so_aux
+								,(zs_int)str_symbol_aux1
+								,stk_var
+						);
+
 					}else{
 						VM_PUSH_STK_PTR(stk_var);
 					}

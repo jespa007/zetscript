@@ -14,9 +14,8 @@ namespace zetscript{
 
 	public:
 
-
 		ScriptObjectContainerSlot * newScriptObjectContainerSlot(
-				ScriptObjectContainerSlot 	*	_so_origin_container_slot
+				ScriptObjectContainer 		*	_so_container_ref
 				,zs_int 						_id_slot
 				,StackElement  				*	_ptr_stk
 		);
@@ -25,23 +24,34 @@ namespace zetscript{
 		//
 		//----------------------------------------------
 
-		ScriptObjectContainerSlot();
+		StackElement  							*	ptr_stk;
+
 		ScriptObjectContainerSlot(
-			ScriptObjectContainerSlot 	*	_so_origin_container_slot
+			ScriptObjectContainer	 	*	_so_container_ref
 			,zs_int 						_id_slot
 			,StackElement  				*	_ptr_stk
 		);
 
-		ScriptObjectContainerSlot	*	getOriginContainerSlotObject();
+		void add(ScriptObjectContainerSlot *_so_container_slot);
+		void remove(ScriptObjectContainerSlot *_so_container_slot);
+
+		ScriptObjectContainer			*	getScriptObjectContainerRef();
+		zs_int								getIdSlot();
+		void 								removeChilds();
+
 		~ScriptObjectContainerSlot();
 	protected:
 		void setup();
 	private:
 
-		zs_list<ScriptObjectContainerSlot *>		container_slots;
-		ScriptObjectContainerSlot				*	so_origin_container_slot;
-		zs_int 										id_slot;
-		StackElement  							*	ptr_stk;
+		ScriptObjectContainerSlot 					*	parent;
+		zs_list<ScriptObjectContainerSlot *> 			childs;
+		zs_list_node<ScriptObjectContainerSlot *>  	*	list_node_child;
+
+		void removeChilds(ScriptObjectContainerSlot *_so_container_slot);
+
+		ScriptObjectContainer						*	so_container_ref;
+		zs_int 											id_slot;
 	};
 
 }

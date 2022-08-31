@@ -9,7 +9,7 @@
 namespace zetscript{
 
 	class CZetgine;
-	class  ScriptObjectVector: public ScriptObjectContainerSlot{
+	class  ScriptObjectVector: public ScriptObjectContainer{
 	public:
 
 		//----------------------------------------------

@@ -5,8 +5,8 @@
 
 
 #include	"StackElement.tcc"
-#include 	"script/function/ScriptFunctionTraits.h"
-#include	"script/object/ScriptObjectClass.tcc"
+#include 	"script/type/ScriptTypeFactory.tcc"
+#include 	"script/object/ScriptObjectClass.tcc"
 
 namespace zetscript{
 

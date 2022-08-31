@@ -6,8 +6,10 @@
 #include "MetamethodMembers.h"
 #include "MemberProperty.h"
 
+#include "object/ContainerSlotData.h"
 #include "object/ScriptObject.h"
 #include "object/ScriptObjectRefObject.h"
+#include "object/ScriptObjectContainer.h"
 #include "object/ScriptObjectContainerSlot.h"
 #include "object/ScriptObjectMemberFunction.h"
 #include "object/ScriptObjectString.h"
@@ -33,10 +35,9 @@
 #include "type/ScriptType.h"
 #include "type/ScriptTypeFactory.h"
 
-#include "container_slot/ContainerSlotData.h"
-#include "container_slot/ContainerSlotNode.h"
-#include "container_slot/ContainerSlotManager.h"
 
+
+// templates
 #include "function/ScriptFunctionTraits.h"
 
 

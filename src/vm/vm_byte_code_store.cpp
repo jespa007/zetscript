@@ -16,7 +16,8 @@ namespace zetscript{
 		zs_vector<StackElement *> 	*		store_lst_setter_functions=NULL;
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
-		ScriptObjectContainerSlot	*		container_slot_store_object=NULL;
+		ScriptObjectContainer		*		so_container_ref=NULL;
+		ScriptObjectContainerSlot	*		so_container_slot_ref=NULL;
 		zs_int 								container_slot_store_id_slot=0;
 		StackElement				*		container_slot_store_ptr_stk=NULL;
 		void 						*		stk_src_ref_value_copy_aux=NULL;
@@ -41,7 +42,8 @@ namespace zetscript{
 
 	vm_store_next:
 		store_lst_setter_functions=NULL;
-		container_slot_store_object=NULL;
+		so_container_ref=NULL;
+		so_container_slot_ref=NULL;
 		container_slot_store_id_slot=0;
 		container_slot_store_ptr_stk=NULL;
 		stk_src=stk_load_multi_var_src; // store ptr instruction2 op as src_var_value
@@ -56,9 +58,10 @@ namespace zetscript{
 		//- check if ptr stk
 		if((stk_dst->properties & STK_PROPERTY_PTR_STK)!=0) {
 			stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
-		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT_ASSIGNMENT){
+		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
 			ContainerSlotData 	*	container_slot_store=((ContainerSlotData *)stk_dst->value);
-			container_slot_store_object=container_slot_store->so_container_slot_ref;
+			so_container_ref=container_slot_store->so_container_ref;
+			so_container_slot_ref=container_slot_store->so_container_slot_ref;
 			container_slot_store_id_slot=container_slot_store->id_slot;
 			container_slot_store_ptr_stk=stk_dst=container_slot_store->ptr_stk;
 			delete container_slot_store;
@@ -275,7 +278,6 @@ namespace zetscript{
 
 				so_aux=(ScriptObject *)stk_src->value;
 
-
 				// already share and src is type container and dst is slot:
 				// becomes a weak pointer to avoid possibly cyclic reference
 				if(//(so_aux->shared_pointer->data.n_shares>0)
@@ -285,27 +287,33 @@ namespace zetscript{
 					StackElement *stk_obj=NULL;
 
 
-
 					// More tests would be needed see issue #336
-					if(container_slot_store_object->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+					if(so_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 						printf("\nAssing object %p type '%s' to slot '%i'"
-								,container_slot_store_object
-								,container_slot_store_object->getScriptType()->str_script_type.c_str()
+								,so_container_ref
+								,so_container_ref->getScriptType()->str_script_type.c_str()
 								,(int)container_slot_store_id_slot
 						);
-						stk_obj=container_slot_store_object->getBuiltinElementAt(container_slot_store_id_slot);
+						stk_obj=so_container_ref->getBuiltinElementAt(container_slot_store_id_slot);
 					}else{
 						printf("\nAssing object %p type '%s' to slot '%s'"
-								,container_slot_store_object
-								,container_slot_store_object->getScriptType()->str_script_type.c_str()
+								,so_container_ref
+								,so_container_ref->getScriptType()->str_script_type.c_str()
 								,(const char *)container_slot_store_id_slot
 						);
-						stk_obj=container_slot_store_object->getProperty((const char *)container_slot_store_id_slot);
+						stk_obj=so_container_ref->getProperty((const char *)container_slot_store_id_slot);
 					}
 
-					// create weak pointer
+
+					if(so_container_slot_ref==NULL){
+						// get root node from container
+						so_container_slot_ref=so_container_ref->getScriptObjectContainerSlotRoot();
+
+					}
+
+					// create script object container slot
 					auto script_object_container_slot=new ScriptObjectContainerSlot(
-							container_slot_store_object
+							so_container_ref
 							,container_slot_store_id_slot
 							,container_slot_store_ptr_stk
 					);
@@ -321,6 +329,11 @@ namespace zetscript{
 					if(!vm_share_script_object(_vm,script_object_container_slot)){
 						goto lbl_exit_function;
 					}
+
+					// finally adds to container slot hierarchy
+					so_container_slot_ref->add(
+							script_object_container_slot
+					);
 
 					//so_aux->addContainerSlot(script_object_container_slot);//(ScriptObject **)&stk_obj->value);
 

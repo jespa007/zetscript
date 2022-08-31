@@ -4,8 +4,11 @@
  */
 
 
+#include 		"object/ContainerSlotData.cpp"
+
 #include 		"object/ScriptObject.cpp"
 #include 		"object/ScriptObjectRefObject.cpp"
+#include 		"object/ScriptObjectContainer.cpp"
 #include 		"object/ScriptObjectContainerSlot.cpp"
 #include 		"object/ScriptObjectMemberFunction.cpp"
 #include		"object/ScriptObjectString.cpp"
@@ -16,8 +19,6 @@
 #include 		"object/ScriptObjectObjectWrap.cpp"
 #include 		"object/ScriptObjectClass.cpp"
 #include 		"object/ScriptObjectVarRef.cpp"
-
-
 
 #include 		"object/iterator/ScriptObjectIteratorObject.cpp"
 #include 		"object/iterator/ScriptObjectIteratorObjectWrap.cpp"
@@ -32,10 +33,6 @@
 
 #include		"type/ScriptTypeFactory.cpp"
 #include		"type/ScriptType.cpp"
-
-#include 		"container_slot/ContainerSlotData.cpp"
-#include 		"container_slot/ContainerSlotNode.cpp"
-#include 		"container_slot/ContainerSlotManager.cpp"
 
 #include 		"MetamethodMembers.cpp"
 #include 		"MemberProperty.cpp"
