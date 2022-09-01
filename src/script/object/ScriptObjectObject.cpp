@@ -171,7 +171,7 @@ namespace zetscript{
 
 	ScriptObjectObject::~ScriptObjectObject(){
 
-		checkReferences();
+		countReferences();
 
 		eraseAllUserProperties();
 		delete map_user_properties;

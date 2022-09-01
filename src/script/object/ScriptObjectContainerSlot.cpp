@@ -24,6 +24,10 @@ namespace zetscript{
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_CONTAINER_SLOT;
 		so_container_ref = NULL;
 		vm=NULL;
+		parent=NULL;
+		root=this;
+		list_node_child=NULL;
+		so_container_ref=NULL;
 	}
 
 	ScriptObjectContainerSlot::ScriptObjectContainerSlot(
@@ -48,6 +52,8 @@ namespace zetscript{
 
 		// create container slot node from script object container slot
 		_so_container_slot->parent=this;
+		_so_container_slot->root=this->root;
+
 
 		// create list node to allow deattach later
 		_so_container_slot->list_node_child=new zs_list_node<ScriptObjectContainerSlot *>();
@@ -84,6 +90,8 @@ namespace zetscript{
 			// mark as unreferenced!
 			_so_container_slot->so_container_ref=NULL;
 			_so_container_slot->id_slot=-1;
+			_so_container_slot->parent=NULL;
+			_so_container_slot->root=NULL;
 		}
 	}
 
@@ -94,7 +102,7 @@ namespace zetscript{
 			zs_list_node<ScriptObjectContainerSlot *> *current=this->childs.first;
 			do{
 				// set stack element as undefined
-				if(current->data->so_container_ref==_so_container_ref){
+				if(current->data->so_container_ref==this->root->so_container_ref){
 					count++;
 				}
 

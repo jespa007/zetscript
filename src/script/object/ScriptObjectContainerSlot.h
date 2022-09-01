@@ -47,6 +47,10 @@ namespace zetscript{
 	private:
 
 		ScriptObjectContainerSlot 					*	parent;
+
+		// root node will perform fast check about itself references
+		ScriptObjectContainerSlot 					*	root;
+
 		zs_list<ScriptObjectContainerSlot *> 			childs;
 		zs_list_node<ScriptObjectContainerSlot *>  	*	list_node_child;
 

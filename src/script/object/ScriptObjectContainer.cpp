@@ -31,7 +31,7 @@ namespace zetscript{
 		return root;
 	}
 
-	void ScriptObjectContainer::checkReferences(){
+	void ScriptObjectContainer::countReferences(){
 		if(so_container_slots.first!=NULL){
 			auto current=so_container_slots.first;
 			do{

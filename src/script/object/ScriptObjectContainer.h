@@ -20,7 +20,7 @@ namespace zetscript{
 
 	protected:
 		virtual void init(ZetScript *_zs);
-		void checkReferences();
+		void countReferences();
 		void initContainer();
 	private:
 
