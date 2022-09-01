@@ -157,7 +157,6 @@ namespace zetscript{
 
 	void ScriptObjectObject::eraseAllUserProperties(){
 
-
 		for(auto it=map_user_properties->begin();!it.end();it.next()){
 			StackElement *si=(StackElement *)(it.value);
 			ScriptObject::unrefAndFreeStackElementContainer(si);
@@ -170,9 +169,9 @@ namespace zetscript{
 		return json::serialize(zs,&stk,true,false);
 	}
 
-
-
 	ScriptObjectObject::~ScriptObjectObject(){
+
+		checkReferences();
 
 		eraseAllUserProperties();
 		delete map_user_properties;

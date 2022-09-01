@@ -289,14 +289,14 @@ namespace zetscript{
 
 					// More tests would be needed see issue #336
 					if(so_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
-						printf("\nAssing object %p type '%s' to slot '%i'"
+						printf("\nAssing object %p type '%s' to slot '%i'\n"
 								,so_container_ref
 								,so_container_ref->getScriptType()->str_script_type.c_str()
 								,(int)container_slot_store_id_slot
 						);
 						stk_obj=so_container_ref->getBuiltinElementAt(container_slot_store_id_slot);
 					}else{
-						printf("\nAssing object %p type '%s' to slot '%s'"
+						printf("\nAssing object %p type '%s' to slot '%s'\n"
 								,so_container_ref
 								,so_container_ref->getScriptType()->str_script_type.c_str()
 								,(const char *)container_slot_store_id_slot

@@ -15,10 +15,12 @@ namespace zetscript{
 
 		ScriptObjectContainer();
 		ScriptObjectContainerSlot 				*getScriptObjectContainerSlotRoot();
+		zs_list<ScriptObjectContainerSlot *>	*getListContainerSlotsRef();
 		~ScriptObjectContainer();
 
 	protected:
 		virtual void init(ZetScript *_zs);
+		void checkReferences();
 		void initContainer();
 	private:
 

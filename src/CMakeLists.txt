@@ -115,7 +115,7 @@ else()
 	
 	IF ( "${TARGET}" STREQUAL "debug")
 	
-		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -O1 -g ")
+		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -O0 -g ")
 	
 		IF( EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr )
 			message("-- Memmanager: Yes")

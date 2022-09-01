@@ -23,11 +23,27 @@ namespace zetscript{
 		initContainer();
 	}
 
+	zs_list<ScriptObjectContainerSlot *>	*ScriptObjectContainer::getListContainerSlotsRef(){
+		return &so_container_slots;
+	}
+
 	ScriptObjectContainerSlot 				*ScriptObjectContainer::getScriptObjectContainerSlotRoot(){
 		return root;
 	}
 
+	void ScriptObjectContainer::checkReferences(){
+		if(so_container_slots.first!=NULL){
+			auto current=so_container_slots.first;
+			do{
+				printf("%i refs %i shared\n",current->data->countReferences(this),this->shared_pointer->data.n_shares);
+				current=current->next;
+			}while(current!=so_container_slots.first);
+
+		}
+	}
+
 	ScriptObjectContainer::~ScriptObjectContainer(){
+
 		if(root != NULL){
 			root->removeChilds();
 			delete root;

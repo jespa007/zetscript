@@ -24,7 +24,8 @@ namespace zetscript{
 		//
 		//----------------------------------------------
 
-		StackElement  							*	ptr_stk;
+		StackElement  								*	ptr_stk;
+		zs_list_node<ScriptObjectContainerSlot *>  	*	list_node_container;
 
 		ScriptObjectContainerSlot(
 			ScriptObjectContainer	 	*	_so_container_ref
@@ -38,6 +39,7 @@ namespace zetscript{
 		ScriptObjectContainer			*	getScriptObjectContainerRef();
 		zs_int								getIdSlot();
 		void 								removeChilds();
+		int									countReferences(ScriptObjectContainer *_so_container_ref);
 
 		~ScriptObjectContainerSlot();
 	protected:
@@ -48,7 +50,7 @@ namespace zetscript{
 		zs_list<ScriptObjectContainerSlot *> 			childs;
 		zs_list_node<ScriptObjectContainerSlot *>  	*	list_node_child;
 
-		void removeChilds(ScriptObjectContainerSlot *_so_container_slot);
+		void removeChilds(ScriptObjectContainerSlot *	_so_container_slot);
 
 		ScriptObjectContainer						*	so_container_ref;
 		zs_int 											id_slot;
