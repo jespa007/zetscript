@@ -277,6 +277,7 @@ namespace zetscript{
 			}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){// object we pass its reference
 
 				so_aux=(ScriptObject *)stk_src->value;
+				bool is_ciclic_reference=false;
 
 				// already share and src is type container and dst is slot:
 				// becomes a weak pointer to avoid possibly cyclic reference
@@ -289,17 +290,24 @@ namespace zetscript{
 
 					// More tests would be needed see issue #336
 					if(so_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
-						printf("\nAssing object %p type '%s' to slot '%i'\n"
+						printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'\n"
+								,so_aux
+								,so_aux->getScriptType()->str_script_type.c_str()
 								,so_container_ref
-								,so_container_ref->getScriptType()->str_script_type.c_str()
 								,(int)container_slot_store_id_slot
-						);
-						stk_obj=so_container_ref->getBuiltinElementAt(container_slot_store_id_slot);
-					}else{
-						printf("\nAssing object %p type '%s' to slot '%s'\n"
-								,so_container_ref
 								,so_container_ref->getScriptType()->str_script_type.c_str()
+
+						);
+						stk_obj=((VectorScriptObject *)so_container_ref)->getUserElementAt(container_slot_store_id_slot);
+					}else{
+						// object
+						printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'\n"
+								,so_aux
+								,so_aux->getScriptType()->str_script_type.c_str()
+								,so_container_ref
 								,(const char *)container_slot_store_id_slot
+								,so_container_ref->getScriptType()->str_script_type.c_str()
+
 						);
 						stk_obj=so_container_ref->getProperty((const char *)container_slot_store_id_slot);
 					}
@@ -313,7 +321,8 @@ namespace zetscript{
 
 					// create script object container slot
 					auto script_object_container_slot=new ContainerSlotScriptObject(
-							so_container_ref
+							 so_container_ref // dst where src container will stored
+							,(ContainerScriptObject *)so_aux // src which container is stored
 							,container_slot_store_id_slot
 							,container_slot_store_ptr_stk
 					);
@@ -333,6 +342,7 @@ namespace zetscript{
 					// finally adds to container slot hierarchy
 					so_container_slot_ref->add(
 							script_object_container_slot
+							,is_ciclic_reference
 					);
 
 					//so_aux->addContainerSlot(script_object_container_slot);//(ScriptObject **)&stk_obj->value);
@@ -340,11 +350,12 @@ namespace zetscript{
 				}else{ // share
 					stk_dst->value=(intptr_t)so_aux;
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+				}
 
+				if(is_ciclic_reference==false){
 					if(!vm_share_script_object(_vm,so_aux)){
 						goto lbl_exit_function;
 					}
-
 				}
 
 			}else{

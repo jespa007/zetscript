@@ -66,7 +66,7 @@ namespace zetscript{
 
 		if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
 			so_container_slot_ref=(ContainerSlotScriptObject *)stk_result_op1->value;
-			so_aux=so_container_slot_ref->getScriptObjectContainerRef();
+			so_aux=so_container_slot_ref->getSrcContainerRef();
 		}
 		else{
 			so_aux=((ScriptObject *)stk_result_op1->value);
@@ -455,7 +455,7 @@ lbl_exit_function:
 
 			if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
 				so_container_slot_ref=(ContainerSlotScriptObject *)stk_result_op1->value;
-				so_aux=so_container_slot_ref->getScriptObjectContainerRef();
+				so_aux=so_container_slot_ref->getSrcContainerRef();
 			}else{
 				so_aux=(ScriptObject *)stk_result_op1->value;
 			}

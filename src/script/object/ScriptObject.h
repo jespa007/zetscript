@@ -63,7 +63,7 @@ namespace zetscript{
 		ZetScript      				* 	getZetScript();
 		StackElement 				* 	getBuiltinProperty(const zs_string & property_name);
 
-		StackElement 			* 	getBuiltinElementAt(short idx);
+		StackElement 			* 	getBuiltinElementAt(int idx);
 
 		virtual StackElement 	* 	addProperty(
 			const zs_string 	& 	symbol_value

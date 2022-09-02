@@ -14,7 +14,7 @@ namespace zetscript{
 
 	void ContainerScriptObject::initContainer(){
 		root=new ContainerSlotScriptObject(
-				this,0,NULL
+				this,this,0,NULL
 		);
 	}
 
@@ -23,24 +23,29 @@ namespace zetscript{
 		initContainer();
 	}
 
-	zs_list<ContainerSlotScriptObject *>	*ContainerScriptObject::getListContainerSlotsRef(){
+	/*zs_list<ContainerSlotScriptObject *>	*ContainerScriptObject::getListContainerSlotsRef(){
 		return &so_container_slots;
-	}
+	}*/
 
 	ContainerSlotScriptObject 				*ContainerScriptObject::getScriptObjectContainerSlotRoot(){
 		return root;
 	}
 
-	void ContainerScriptObject::countReferences(){
-		if(so_container_slots.first!=NULL){
-			auto current=so_container_slots.first;
-			do{
-				printf("%i refs %i shared\n",current->data->countReferences(this),this->shared_pointer->data.n_shares);
-				current=current->next;
-			}while(current!=so_container_slots.first);
+	/*void ContainerScriptObject::printReferences(){
 
+		int count=0;
+
+		auto current = so_container_slots.first;
+		if(current!=NULL){
+			do{
+				count+=current->data->countReferences(this);
+				current=current->next;
+
+			}while(current!=so_container_slots.first);
 		}
-	}
+
+		printf("Ciclic references %i Shared references %i\n",root->countReferences(this),this->shared_pointer->data.n_shares);
+	}*/
 
 	ContainerScriptObject::~ContainerScriptObject(){
 

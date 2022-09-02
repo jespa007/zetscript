@@ -7,48 +7,33 @@
 
 namespace zetscript{
 
-	ContainerSlotScriptObject * ContainerSlotScriptObject::newScriptObjectContainerSlot(
-			ContainerScriptObject 		*	_so_container_ref
-			,zs_int 						_id_slot
-			,StackElement  				*	_ptr_stk
-	){
-		ContainerSlotScriptObject *si= new ContainerSlotScriptObject(
-			_so_container_ref
-			,_id_slot
-			,_ptr_stk
-		);
-		return si;
-	}
-
 	void ContainerSlotScriptObject::setup(){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_CONTAINER_SLOT;
-		so_container_ref = NULL;
 		vm=NULL;
 		parent=NULL;
 		root=this;
 		list_node_child=NULL;
-		so_container_ref=NULL;
+		src_so_container_ref=NULL;
+		dst_so_container_ref=NULL;
 	}
 
 	ContainerSlotScriptObject::ContainerSlotScriptObject(
-			ContainerScriptObject 		*	_so_container_ref
+			ContainerScriptObject 		*	_dst_so_container_ref
+			,ContainerScriptObject 		*	_src_so_container_ref
 			,zs_int 						_id_slot
 			,StackElement  				*	_ptr_stk
 	){
 		setup();
 		// setup object
-		this->init(_so_container_ref->getZetScript());
+		this->init(_dst_so_container_ref->getZetScript());
 
-		so_container_ref=_so_container_ref;
+		src_so_container_ref=_src_so_container_ref;
+		dst_so_container_ref=_dst_so_container_ref;
 		id_slot=_id_slot;
 		ptr_stk=_ptr_stk;
 	}
 
-	void ContainerSlotScriptObject::add(ContainerSlotScriptObject *_so_container_slot){
-
-		// retrieve list container slots references
-		auto _so_container_ref=_so_container_slot->getScriptObjectContainerRef();
-		auto list_container_slots=_so_container_ref->getListContainerSlotsRef();
+	void ContainerSlotScriptObject::add(ContainerSlotScriptObject *_so_container_slot, bool & _is_ciclic_reference){
 
 		// create container slot node from script object container slot
 		_so_container_slot->parent=this;
@@ -62,11 +47,23 @@ namespace zetscript{
 		// insert node as child
 		childs.insert(_so_container_slot->list_node_child);
 
-		// insert node as reference container
-		_so_container_slot->list_node_container=new zs_list_node<ContainerSlotScriptObject *>();
-		_so_container_slot->list_node_container->data=_so_container_slot;
+		/*if(_so_container_slot->so_container_ref == root->so_container_ref){
+			// insert node as reference container if is itself reference from its root
 
-		list_container_slots->insert(_so_container_slot->list_node_container);
+			// retrieve list container slots references
+			auto _so_container_ref=_so_container_slot->getScriptObjectContainerRef();
+			auto list_container_slots=_so_container_ref->getListContainerSlotsRef();
+
+			_so_container_slot->list_node_container=new zs_list_node<ContainerSlotScriptObject *>();
+			_so_container_slot->list_node_container->data=_so_container_slot;
+
+			list_container_slots->insert(_so_container_slot->list_node_container);
+
+			_so_container_ref->printReferences();
+		}*/
+
+		_is_ciclic_reference=_so_container_slot->src_so_container_ref == root->dst_so_container_ref;
+
 	}
 
 	void ContainerSlotScriptObject::remove(ContainerSlotScriptObject *_so_container_slot){
@@ -81,43 +78,37 @@ namespace zetscript{
 			}
 
 			// remove slot reference from container
-			if(_so_container_slot->list_node_container != NULL){
+			/*if(_so_container_slot->list_node_container != NULL){
 				auto _so_container_ref=_so_container_slot->getScriptObjectContainerRef();
-				auto list_container_slots=_so_container_ref->getListContainerSlotsRef();
-				list_container_slots->remove(_so_container_slot->list_node_container);
-			}
+				//auto list_container_slots=_so_container_ref->getListContainerSlotsRef();
+				//list_container_slots->remove(_so_container_slot->list_node_container);
+			}*/
 
 			// mark as unreferenced!
-			_so_container_slot->so_container_ref=NULL;
+			_so_container_slot->src_so_container_ref=NULL;
+			_so_container_slot->dst_so_container_ref=NULL;
 			_so_container_slot->id_slot=-1;
 			_so_container_slot->parent=NULL;
 			_so_container_slot->root=NULL;
 		}
 	}
 
-	int	ContainerSlotScriptObject::countReferences(ContainerScriptObject *_so_container_ref){
-		int count=0;
-
-		if(this->childs.first!=NULL){
-			zs_list_node<ContainerSlotScriptObject *> *current=this->childs.first;
-			do{
-				// set stack element as undefined
-				if(current->data->so_container_ref==this->root->so_container_ref){
-					count++;
-				}
-
-				// next
-				current=current->next;
-			}while(current->next != this->childs.first);
+	/*void	ContainerSlotScriptObject::countReferencesRecursive(ContainerScriptObject *_so_container_ref, int & _count ){
+		if(this->so_container_ref == _so_container_ref){
+			_count++;
 		}
 
 		if(this->parent!=NULL){
-			count+=this->parent->countReferences(_so_container_ref);
+			this->parent->countReferencesRecursive(_so_container_ref,_count);
 		}
-
-
-		return count;
 	}
+
+	int	ContainerSlotScriptObject::countReferences(ContainerScriptObject *_so_container_ref){
+		int count=0;
+		countReferencesRecursive(_so_container_ref,count);
+		return count;
+
+	}*/
 
 	void ContainerSlotScriptObject::removeChilds(){
 		if(this->childs.first!=NULL){
@@ -128,15 +119,20 @@ namespace zetscript{
 
 				// next
 				current=current->next;
-			}while(current->next != this->childs.first);
+			}while(current != this->childs.first);
 
 			this->childs.remove_all();
 		}
 	}
 
-	ContainerScriptObject *ContainerSlotScriptObject::getScriptObjectContainerRef(){
-		return so_container_ref;
+	ContainerScriptObject *ContainerSlotScriptObject::getSrcContainerRef(){
+		return src_so_container_ref;
 	}
+
+	ContainerScriptObject *ContainerSlotScriptObject::getDstContainerRef(){
+		return dst_so_container_ref;
+	}
+
 
 	zs_int								ContainerSlotScriptObject::getIdSlot(){
 		return id_slot;
@@ -148,8 +144,8 @@ namespace zetscript{
 			delete list_node_child;
 		}
 
-		if(list_node_container!=NULL){
+		/*if(list_node_container!=NULL){
 			delete list_node_container;
-		}
+		}*/
 	}
 }

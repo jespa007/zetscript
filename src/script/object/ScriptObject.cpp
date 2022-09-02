@@ -191,7 +191,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	StackElement * ScriptObject::getBuiltinElementAt(short idx){
+	StackElement * ScriptObject::getBuiltinElementAt(int idx){
 		if(idx >= (int)stk_builtin_elements.size() || idx < 0){
 			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;

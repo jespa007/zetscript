@@ -17,16 +17,16 @@ namespace zetscript{
 		ContainerScriptObject();
 		ContainerSlotScriptObject 				*getScriptObjectContainerSlotRoot();
 		zs_list<ContainerSlotScriptObject *>	*getListContainerSlotsRef();
+		void 									 printReferences();
 		~ContainerScriptObject();
 
 	protected:
 		virtual void init(ZetScript *_zs);
-		void countReferences();
 		void initContainer();
 	private:
 
 		// refs where this container is referenced
-		zs_list<ContainerSlotScriptObject *>	so_container_slots;
+		//zs_list<ContainerSlotScriptObject *>	so_container_slots;
 
 		// root of herarchy nodes
 		ContainerSlotScriptObject 				*root;
