@@ -304,7 +304,7 @@ namespace zetscript{
 					|| instruction->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM
 					?"\t\t":"\t"
 					,symbol_value.c_str()
-					,instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE? "[SLOT]":""
+					,instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT? "[SLOT]":""
 				);
 				break;
 			case BYTE_CODE_JNT:

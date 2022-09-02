@@ -386,7 +386,7 @@ eval_error_sub_expression:
 						|| last_load_instruction->byte_code==BYTE_CODE_PUSH_STK_OBJECT_ITEM
 
 					){
-						last_load_instruction->properties|=INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE;
+						last_load_instruction->properties|=INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT;
 					}
 
 				}else if(last_load_instruction->byte_code == BYTE_CODE_FIND_VARIABLE){
@@ -448,7 +448,7 @@ eval_error_sub_expression:
 						|| eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_OBJECT_ITEM
 
 					){
-						eval_store_target->vm_instruction.properties|=INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE;
+						eval_store_target->vm_instruction.properties|=INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT;
 					}
 				}
 			}

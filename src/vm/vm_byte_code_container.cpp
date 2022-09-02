@@ -158,8 +158,8 @@ namespace zetscript{
 					VM_STOP_EXECUTEF(data->vm_error_str.c_str());
 				}
 
-				if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
-					VM_PUSH_SLOT_DATA(
+				if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
+					VM_PUSH_CONTAINER_SLOT_DATA(
 							so_container_slot_ref
 							,(ContainerScriptObject *)so_aux
 							,(zs_int)str_symbol_aux1
@@ -235,8 +235,8 @@ namespace zetscript{
 
 		// load its value for write
 		if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
-			if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
-				VM_PUSH_SLOT_DATA(
+			if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
+				VM_PUSH_CONTAINER_SLOT_DATA(
 						so_container_slot_ref
 						,(ContainerScriptObject *)so_aux
 						,(zs_int)str_symbol_aux1
@@ -507,9 +507,9 @@ lbl_exit_function:
 					*data->stk_vm_current++=*stk_var;
 				}else{
 					// dest to write
-					if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
+					if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
 
-						VM_PUSH_SLOT_DATA(
+						VM_PUSH_CONTAINER_SLOT_DATA(
 								so_container_slot_ref
 								,(ContainerScriptObject *)so_aux
 								,(zs_int)str_symbol_aux1

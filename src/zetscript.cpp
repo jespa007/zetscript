@@ -185,6 +185,7 @@ namespace zetscript{
 				"VectorScriptObject:%i\n"
 				"ObjectScriptObject:%i\n"
 				"ClassScriptObject:%i\n"
+				"ContainerSlotScriptObject:%i\n"
 				,(int)sizeof(ZetScript)
 				, (int)sizeof(VirtualMachineData)
 				, (int)sizeof(ScriptType)
@@ -197,6 +198,7 @@ namespace zetscript{
 				, (int)sizeof(VectorScriptObject)
 				, (int)sizeof(ObjectScriptObject)
 				, (int)sizeof(ClassScriptObject)
+				, (int)sizeof(ContainerSlotScriptObject)
 			);
 	}
 

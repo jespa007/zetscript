@@ -269,6 +269,13 @@ if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
 		${PROJECT_SOURCE_DIR}/../test/test_benchmark_std.cpp
 	)
 	target_link_libraries(test_benchmark_std${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
+	
+	#-----------------------------------------------
+	# print_object_sizes
+	add_executable(print_object_sizes${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/print_object_sizes.cpp
+	)
+	target_link_libraries(print_object_sizes${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 			
 
 endif()
