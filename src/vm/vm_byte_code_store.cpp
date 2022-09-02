@@ -254,7 +254,7 @@ namespace zetscript{
 				if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
 					str_object=(StringScriptObject *)stk_dst->value;
 				}else{ // Generates a zs_string var
-					stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));
+					stk_dst->value=(zs_int)(str_object= ZS_NEW_STRING_OBJECT(data->zs));
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 					// create shared ptr
 					if(!vm_create_shared_script_object(_vm,str_object)){

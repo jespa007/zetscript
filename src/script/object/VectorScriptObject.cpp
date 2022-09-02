@@ -29,7 +29,7 @@ namespace zetscript{
 	}
 
 	VectorScriptObject * VectorScriptObject::newVectorScriptObjectAdd(ZetScript *zs,VectorScriptObject *v1,VectorScriptObject *v2){
-		VectorScriptObject *so_vector = ZS_NEW_OBJECT_VECTOR(zs);
+		VectorScriptObject *so_vector = ZS_NEW_VECTOR_OBJECT(zs);
 
 		for(int i=0; i < v1->stk_user_elements.size();i++){
 			so_vector->push((StackElement *)v1->stk_user_elements.items[i]);

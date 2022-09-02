@@ -8,12 +8,12 @@ namespace zetscript{
 
 	VectorScriptObject *ObjectScriptObjectWrap_keys(ZetScript *_zs,ObjectScriptObject *o1){
 		VirtualMachine *vm=_zs->getVirtualMachine();
-		VectorScriptObject *sv= ZS_NEW_OBJECT_VECTOR(_zs);
+		VectorScriptObject *sv= ZS_NEW_VECTOR_OBJECT(_zs);
 
 		zs_map *map=o1->getMapUserProperties();
 		for(auto it=map->begin(); !it.end(); it.next()){
 			StackElement *stk=sv->pushNewUserSlot();
-			StringScriptObject *so=ZS_NEW_OBJECT_STRING(_zs);
+			StringScriptObject *so=ZS_NEW_STRING_OBJECT(_zs);
 			so->set(it.key);
 
 			// create and share pointer

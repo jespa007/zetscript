@@ -41,7 +41,7 @@ namespace zetscript{
 	}
 
 	StringScriptObject *		VectorScriptObjectWrap_join(ZetScript *_zs,VectorScriptObject *sv, zs_int idx){
-		StringScriptObject *so_string = ZS_NEW_OBJECT_STRING(_zs);
+		StringScriptObject *so_string = ZS_NEW_STRING_OBJECT(_zs);
 		zs_string *ptr_str=(zs_string *)so_string->value;
 		zs_vector<StackElement *> *stk_user_list_elements=sv->getStkUserListElements();
 

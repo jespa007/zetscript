@@ -30,7 +30,7 @@ namespace zetscript{
 	}
 
 	StringScriptObject *StringScriptObjectWrap_replace(ZetScript *_zs,StringScriptObject *str_in,zs_string *str_old, zs_string *str_new){
-		StringScriptObject *str_out=ZS_NEW_OBJECT_STRING(_zs);
+		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
 		str_out->set(zs_strutils::replace(*((zs_string *)str_in->value),*str_old,*str_new));
 		return str_out;
 	}
@@ -49,14 +49,14 @@ namespace zetscript{
 
 	VectorScriptObject * StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so,zs_int ch_delim){
 		VirtualMachine *vm=_zs->getVirtualMachine();
-		VectorScriptObject *sv=ZS_NEW_OBJECT_VECTOR(_zs);
+		VectorScriptObject *sv=ZS_NEW_VECTOR_OBJECT(_zs);
 
 		auto v=zs_strutils::split(so->toString(),ch_delim);
 
 		for(int i=0; i<v.size(); i++){
 
 			StackElement *stk=sv->pushNewUserSlot();
-			StringScriptObject *so_partial=ZS_NEW_OBJECT_STRING(_zs);
+			StringScriptObject *so_partial=ZS_NEW_STRING_OBJECT(_zs);
 			so_partial->set(v.items[i]);
 
 			// create and share pointer
@@ -76,13 +76,13 @@ namespace zetscript{
 
 	VectorScriptObject * StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so, zs_string * str_token){
 		VirtualMachine *vm=_zs->getVirtualMachine();
-		VectorScriptObject *sv=ZS_NEW_OBJECT_VECTOR(_zs);
+		VectorScriptObject *sv=ZS_NEW_VECTOR_OBJECT(_zs);
 
 		auto v=zs_strutils::split(so->toString(),*str_token);
 
 		for(int i=0; i<v.size(); i++){
 			StackElement *stk=sv->pushNewUserSlot();
-			StringScriptObject *so_partial=ZS_NEW_OBJECT_STRING(_zs);
+			StringScriptObject *so_partial=ZS_NEW_STRING_OBJECT(_zs);
 			so_partial->set(v.items[i]);
 
 			// create and share pointer
@@ -132,7 +132,7 @@ namespace zetscript{
 	}
 
 	StringScriptObject * StringScriptObjectWrap_substring(ZetScript *_zs,StringScriptObject *str_in,zs_int start,zs_int end){
-		StringScriptObject *str_out=ZS_NEW_OBJECT_STRING(_zs);
+		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
 		str_out->set(str_in->toString().substr(start,end));
 		return str_out;
 	}

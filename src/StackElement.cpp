@@ -146,7 +146,7 @@ namespace zetscript{
 			VirtualMachine *vm=_zs->getVirtualMachine();
 			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
-				StringScriptObject *sc=ZS_NEW_OBJECT_STRING(_zs);
+				StringScriptObject *sc=ZS_NEW_STRING_OBJECT(_zs);
 				if(!vm_create_shared_script_object(vm,sc)){
 					return;
 				}
@@ -368,7 +368,7 @@ namespace zetscript{
 			 case IDX_TYPE_ZS_STRING_C:
 
 
-				 so=ZS_NEW_OBJECT_STRING(_zs);
+				 so=ZS_NEW_STRING_OBJECT(_zs);
 				 if(ptr_var!=0) { // not null
 					 if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_PTR_C){ // zs_reference
 						so->value=(void *)ptr_var;

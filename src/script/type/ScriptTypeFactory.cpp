@@ -347,7 +347,7 @@ namespace zetscript{
 
 		stk_constants->set(_key.c_str(),(zs_int)stk);
 
-		so=ZS_NEW_OBJECT_STRING(this->zs);
+		so=ZS_NEW_STRING_OBJECT(this->zs);
 		// swap values stk_ref/value
 		so->set(_value.c_str());
 

@@ -484,7 +484,7 @@ namespace zetscript{
 				 	 }
 				 	 continue;
 			 case BYTE_CODE_NEW_VECTOR: // Create new vector...
-					so_aux=ZS_NEW_OBJECT_VECTOR(data->zs);
+					so_aux=ZS_NEW_VECTOR_OBJECT(data->zs);
 					if(!vm_create_shared_script_object(_vm,so_aux)){
 						goto lbl_exit_function;
 					}

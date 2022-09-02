@@ -52,7 +52,7 @@ namespace zetscript{
 		}
 
 		//zs_string *str;
-		StringScriptObject *so_string = ZS_NEW_OBJECT_STRING(_zs);
+		StringScriptObject *so_string = ZS_NEW_STRING_OBJECT(_zs);
 
 		zs_string str1;
 		zs_string str2;
@@ -274,7 +274,7 @@ namespace zetscript{
 		}
 
 		//StringScriptObject *str_in=(StringScriptObject *)(str->var_ref);
-		StringScriptObject *str_out=ZS_NEW_OBJECT_STRING(zs);
+		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(zs);
 		str_out->set(str_result);//str_in->default_str_value;
 
 
@@ -306,7 +306,7 @@ namespace zetscript{
 
 	StringScriptObject *StringScriptObject::sub(StringScriptObject *s1){
 		//zs_string *str;
-		StringScriptObject *so_string = ZS_NEW_OBJECT_STRING(this->zs);
+		StringScriptObject *so_string = ZS_NEW_STRING_OBJECT(this->zs);
 		so_string->set(zs_strutils::replace(this->toString(),s1->toString(),""));
 		return so_string;
 	}

@@ -48,7 +48,7 @@ namespace zetscript{
 			|| k_str_zs_string_type_ptr == symbol->str_native_type
 			) {
 			char *input_s = (char *)ptr_variable;
-			StringScriptObject *s = ZS_NEW_OBJECT_STRING(zs);
+			StringScriptObject *s = ZS_NEW_STRING_OBJECT(zs);
 
 			if (k_str_zs_string_type_ptr == symbol->str_native_type) {
 				s->value = (void *)ptr_variable;

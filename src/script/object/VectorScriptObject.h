@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define ZS_NEW_OBJECT_VECTOR(zs) (VectorScriptObject::newVectorScriptObject(zs)) //ScriptType::getInstance()->getRegisteredClassByIdx(ScriptType::getInstance()->getIdxClassVector())))//,(void *)(new VectorScriptObject())))
+#define ZS_NEW_VECTOR_OBJECT(zs) (VectorScriptObject::newVectorScriptObject(zs)) //ScriptType::getInstance()->getRegisteredClassByIdx(ScriptType::getInstance()->getIdxClassVector())))//,(void *)(new VectorScriptObject())))
 
 namespace zetscript{
 

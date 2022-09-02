@@ -390,7 +390,7 @@ namespace zetscript{
 			*stk_dst=*stk_src;\
 		}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){\
 			if(STK_IS_SCRIPT_OBJECT_STRING(stk_src)){\
-				stk_dst->value=(zs_int)(so_aux= ZS_NEW_OBJECT_STRING(data->zs));\
+				stk_dst->value=(zs_int)(so_aux= ZS_NEW_STRING_OBJECT(data->zs));\
 				stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 				if(!vm_create_shared_script_object(_vm,so_aux)){\
 					goto lbl_exit_function;\

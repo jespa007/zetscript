@@ -304,7 +304,7 @@ execute_function:
 							if((stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT)){
 								so_param=(ScriptObject *)stk_arg->value;
 								if(so_param->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
-									StringScriptObject *sc=ZS_NEW_OBJECT_STRING(data->zs);
+									StringScriptObject *sc=ZS_NEW_STRING_OBJECT(data->zs);
 									if(!vm_create_shared_script_object(_vm,sc)){
 										goto lbl_exit_function;
 									}
@@ -320,7 +320,7 @@ execute_function:
 							var_args->push(stk_arg); // we do not share pointer here due is already added in a vector
 						}else{
 							if(sfa_properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_VAR_ARGS){ // enter var args
-								var_args=ZS_NEW_OBJECT_VECTOR(data->zs);
+								var_args=ZS_NEW_VECTOR_OBJECT(data->zs);
 								if(!vm_create_shared_script_object(_vm,var_args)){
 									goto lbl_exit_function;
 								}
