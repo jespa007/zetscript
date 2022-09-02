@@ -63,7 +63,7 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 #define SET_FLOAT_RETURN(f)   			CURRENT_VM->setFloatReturnValue(f)
 
 #define NO_PARAMS zs_vector<StackElement>{}
-#define ZS_VM_FUNCTION_TYPE std::function<ScriptObjectObject * (const zs_vector<ScriptObjectObject *> & param)>
+#define ZS_VM_FUNCTION_TYPE std::function<ObjectScriptObject * (const zs_vector<ObjectScriptObject *> & param)>
 
 #define VM_EXECUTE(vm,o,f,stk,n)		vm_execute(vm,o,f,stk,n,0,__FILE__,__LINE__)
 
@@ -201,6 +201,26 @@ namespace zetscript{
 
 			// each push scope from main is done from block scope 1
 			vm_scope_function[0].first_scope_block=&vm_scope_function[0].scope_block[1];
+		}
+
+	};
+
+	struct ContainerSlotData{
+		ContainerSlotScriptObject  	*	so_container_slot_ref; 	// it references the slot container (if NULL is the first node of hierarchy)
+		ContainerScriptObject  		*	so_container_ref; 		// it references the container src
+		zs_int 		  					id_slot;
+		StackElement  				*	ptr_stk; // should have ContainerSlotScriptObject
+
+		ContainerSlotData(
+				ContainerSlotScriptObject	*	_so_container_slot_ref
+				,ContainerScriptObject  	*	_so_container_ref
+				,zs_int 	  					_id_slot
+				,StackElement 				*	_ptr_stk
+		){
+			so_container_slot_ref=_so_container_slot_ref;
+			so_container_ref=_so_container_ref;
+			id_slot=_id_slot;
+			ptr_stk=_ptr_stk;
 		}
 
 	};

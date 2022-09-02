@@ -16,8 +16,8 @@ namespace zetscript{
 		zs_vector<StackElement *> 	*		store_lst_setter_functions=NULL;
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
-		ScriptObjectContainer		*		so_container_ref=NULL;
-		ScriptObjectContainerSlot	*		so_container_slot_ref=NULL;
+		ContainerScriptObject		*		so_container_ref=NULL;
+		ContainerSlotScriptObject	*		so_container_slot_ref=NULL;
 		zs_int 								container_slot_store_id_slot=0;
 		StackElement				*		container_slot_store_ptr_stk=NULL;
 		void 						*		stk_src_ref_value_copy_aux=NULL;
@@ -82,7 +82,7 @@ namespace zetscript{
 		store_lst_setter_functions=NULL;
 
 		if(STK_IS_SCRIPT_OBJECT_CLASS(stk_dst)){
-			if((store_lst_setter_functions=((ScriptObjectClass *)stk_dst->value)->getSetterList(BYTE_CODE_METAMETHOD_SET))!=NULL){
+			if((store_lst_setter_functions=((ClassScriptObject *)stk_dst->value)->getSetterList(BYTE_CODE_METAMETHOD_SET))!=NULL){
 
 				if(store_lst_setter_functions->size() == 0){
 					store_lst_setter_functions=NULL;
@@ -110,7 +110,7 @@ namespace zetscript{
 				stk_mp_aux=(StackMemberProperty *)(stk_dst->value);
 				so_aux=stk_mp_aux->so_object;\
 			}else{
-				so_aux=(ScriptObjectClass *)stk_dst->value;
+				so_aux=(ClassScriptObject *)stk_dst->value;
 			}
 			ptr_function_found=(ScriptFunction *)(((Symbol *)(((StackElement *)(store_lst_setter_functions->items[0]))->value))->ref_ptr);\
 			if(so_aux->isNativeObject()){ // because object is native, we can have more than one _setter
@@ -249,10 +249,10 @@ namespace zetscript{
 				(stk_src_properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR))
 
 			){
-				ScriptObjectString *str_object=NULL;
+				StringScriptObject *str_object=NULL;
 
 				if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
-					str_object=(ScriptObjectString *)stk_dst->value;
+					str_object=(StringScriptObject *)stk_dst->value;
 				}else{ // Generates a zs_string var
 					stk_dst->value=(zs_int)(str_object= ZS_NEW_OBJECT_STRING(data->zs));
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -312,7 +312,7 @@ namespace zetscript{
 					}
 
 					// create script object container slot
-					auto script_object_container_slot=new ScriptObjectContainerSlot(
+					auto script_object_container_slot=new ContainerSlotScriptObject(
 							so_container_ref
 							,container_slot_store_id_slot
 							,container_slot_store_ptr_stk

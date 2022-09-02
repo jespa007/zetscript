@@ -148,15 +148,15 @@ namespace zetscript{
 		// SHAREABLE OBJECTS
 		// This methods allows to create a shareable script objects string, vector and object. The user has to delete when is not used anymore
 		//
-		ScriptObjectObject * newShareableScriptObjectObject();
-		ScriptObjectString * newShareableScriptObjectString();
-		ScriptObjectVector * newShareableScriptObjectVector();
+		ObjectScriptObject * newShareableScriptObjectObject();
+		StringScriptObject * newShareableStringScriptObject();
+		VectorScriptObject * newShareableVectorScriptObject();
 
 		//
 		//------------------------------------------------------------------------------------------------------------------------------------
 
 		template<typename _C>
-		ScriptObjectClass * newScriptObjectClass();
+		ClassScriptObject * newScriptObjectClass();
 
 		//-----------------------------------------------
 		/**
@@ -499,7 +499,7 @@ namespace zetscript{
 		std::function<F> bindScriptFunction(const zs_string & function_access, const char *file="", int line=-1);
 
 		template <  typename F>
-		std::function<F> bindScriptFunction(ScriptObjectMemberFunction *sf, const char *file="", int line=-1);
+		std::function<F> bindScriptFunction(MemberFunctionScriptObject *sf, const char *file="", int line=-1);
 
 
 		template <  typename F>

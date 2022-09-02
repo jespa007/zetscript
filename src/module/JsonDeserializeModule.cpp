@@ -219,7 +219,7 @@ namespace zetscript{
 				if((str_current=read_string_between_quotes(data,str_current,line,&str_aux))==NULL){
 					return NULL;
 				}
-				ScriptObject *so=ScriptObjectString::newScriptObjectString(data->zs, str_aux.c_str());
+				ScriptObject *so=StringScriptObject::newStringScriptObject(data->zs, str_aux.c_str());
 				if(vm_create_shared_script_object(data->zs->getVirtualMachine(),so)==false){
 					json_deserialize_error(data,str_start,line,"cannot create shared pointer for string object");
 					return NULL;
@@ -283,7 +283,7 @@ namespace zetscript{
 				){
 			char *str_current = (char *)str_start;
 			zs_string error;
-			ScriptObjectVector *vo;
+			VectorScriptObject *vo;
 			StackElement *stk_element=NULL;
 
 
@@ -296,7 +296,7 @@ namespace zetscript{
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				vo=ScriptObjectVector::newScriptObjectVector(data->zs);
+				vo=VectorScriptObject::newVectorScriptObject(data->zs);
 				if(vm_create_shared_script_object(data->zs->getVirtualMachine(),vo) == false){
 					json_deserialize_error(data, str_start, line, "Cannot create shared poiner for vector object");
 					return NULL;
@@ -348,7 +348,7 @@ namespace zetscript{
 			char *str_current = (char *)str_start;
 			zs_string variable_name,key_id;
 			zs_string error;
-			ScriptObjectObject *so;
+			ObjectScriptObject *so;
 			StackElement *stk_element=NULL;
 
 			str_current = eval_ignore_blanks(str_current, line);
@@ -364,7 +364,7 @@ namespace zetscript{
 
 			// ok, we create object
 			if(stk_json_element != NULL && stk_json_element->properties==0){
-				so=ScriptObjectObject::newScriptObjectObject(data->zs);
+				so=ObjectScriptObject::newScriptObjectObject(data->zs);
 				if(vm_create_shared_script_object(data->zs->getVirtualMachine(),so) == false){
 					json_deserialize_error(data, str_start, line, "Cannot create shared pointer for object");
 					return NULL;

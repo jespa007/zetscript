@@ -48,7 +48,7 @@ namespace zetscript{
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
 		ref_objects=NULL;//new zs_list<RefObject *>();
-		//container_slot_assignments=new zs_vector<ScriptObjectContainerSlot *>();
+		//container_slot_assignments=new zs_vector<ContainerSlotScriptObject *>();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){
@@ -107,7 +107,7 @@ namespace zetscript{
 		return getScriptType()->str_script_type.c_str();
 	}
 
-	const char * ScriptObjectClass::getTypeNamePtr(){
+	const char * ClassScriptObject::getTypeNamePtr(){
 		return getScriptType()->str_script_type_ptr.c_str();
 	}
 
@@ -206,15 +206,15 @@ namespace zetscript{
 
 
 
-	void ScriptObject::attachRefObjectNode(zs_list_node<ScriptObjectRefObject *> *_ref_object_node){
+	void ScriptObject::attachRefObjectNode(zs_list_node<RefObjectScriptObject *> *_ref_object_node){
 		if(ref_objects==NULL){
-			ref_objects=new zs_list<ScriptObjectRefObject *>;
+			ref_objects=new zs_list<RefObjectScriptObject *>;
 		}
 		ref_objects->insert(_ref_object_node);
 	}
 
 
-	void ScriptObject::deattachRefObjectNode(zs_list_node<ScriptObjectRefObject *> *_ref_object_node){
+	void ScriptObject::deattachRefObjectNode(zs_list_node<RefObjectScriptObject *> *_ref_object_node){
 		if(ref_objects==NULL){
 			VM_SET_USER_ERRORF(vm,"ref_objects==NULL");
 			return;

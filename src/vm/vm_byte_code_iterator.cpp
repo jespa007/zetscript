@@ -53,7 +53,7 @@ namespace zetscript{
 
 			int n_args=0;
 
-			// ScriptObjectObject uses static method in order to call iter (i.e Object::iter(o)
+			// ObjectScriptObject uses static method in order to call iter (i.e Object::iter(o)
 			if((symbol_iter->properties & SYMBOL_PROPERTY_STATIC)!= 0){ //is static
 				n_args=1;
 
@@ -140,38 +140,38 @@ namespace zetscript{
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // check whether 'char' or 'string' exists
 			if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
 				VM_PUSH_STK_BOOLEAN(
-					ScriptObjectStringWrap_contains(
+					StringScriptObjectWrap_contains(
 						data->zs
-						,((ScriptObjectString *)so_aux)
+						,((StringScriptObject *)so_aux)
 						,(zs_int)stk_result_op1->value
 					)
 				);
 			}else if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){
-				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
+				zs_string str_op1=((StringScriptObject *)stk_result_op1->value)->toString();
 				VM_PUSH_STK_BOOLEAN(
-					ScriptObjectStringWrap_contains(
+					StringScriptObjectWrap_contains(
 						data->zs
-						,(ScriptObjectString *)so_aux
+						,(StringScriptObject *)so_aux
 						,&str_op1)
 				);
 			}else{
-				error="operand is not 'zs_int' or 'ScriptObjectString' type";
+				error="operand is not 'zs_int' or 'StringScriptObject' type";
 			}
 			break;
 			case IDX_TYPE_SCRIPT_OBJECT_VECTOR: // check whether value exists...
-			//PUSH_STK_BOOLEAN(((ScriptObjectVector *)so_aux)->exists(stk_result_op1));
+			//PUSH_STK_BOOLEAN(((VectorScriptObject *)so_aux)->exists(stk_result_op1));
 				VM_PUSH_STK_BOOLEAN(
-				ScriptObjectVectorWrap_contains(
-					data->zs,(ScriptObjectVector *)so_aux,stk_result_op1
+				VectorScriptObjectWrap_contains(
+					data->zs,(VectorScriptObject *)so_aux,stk_result_op1
 				)
 			);
 			break;
 			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: // check key value exists...
 			 if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				zs_string str_op1=((ScriptObjectString *)stk_result_op1->value)->toString();
+				zs_string str_op1=((StringScriptObject *)stk_result_op1->value)->toString();
 				VM_PUSH_STK_BOOLEAN(
-					ScriptObjectObjectWrap_contains(
-						data->zs,(ScriptObjectObject *)so_aux,&str_op1
+					ObjectScriptObjectWrap_contains(
+						data->zs,(ObjectScriptObject *)so_aux,&str_op1
 					)
 				);
 

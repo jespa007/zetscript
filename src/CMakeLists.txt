@@ -409,7 +409,6 @@ SET(
 	# script
 	script/zs_script.h
 	script/MemberProperty.h
-	script/ContainerSlot.h
 	script/MetamethodMembers.h
 		
 	# script/function	
@@ -426,25 +425,26 @@ SET(
 	
 	# script/object
 	script/object/ScriptObject.h
-	script/object/ScriptObjectClass.h
-	script/object/ScriptObjectMemberFunction.h
-	script/object/ScriptObjectContainerSlot.h
-	script/object/ScriptObjectObject.h
-	script/object/ScriptObjectObjectWrap.h
-	script/object/ScriptObjectString.h
-	script/object/ScriptObjectStringWrap.h
-	script/object/ScriptObjectVarRef.h
-	script/object/ScriptObjectVector.h
-	script/object/ScriptObjectVectorWrap.h
-	script/object/ScriptObjectClass.tcc
+	script/object/ClassScriptObject.h
+	script/object/ClassScriptObject.tcc
+	script/object/MemberFunctionScriptObject.h
+	script/object/ContainerScriptObject.h
+	script/object/ContainerSlotData.h
+	script/object/ContainerSlotScriptObject.h
+	script/object/ObjectScriptObject.h
+	script/object/ObjectScriptObjectWrap.h
+	script/object/ObjectIteratorScriptObject.h
+	script/object/ObjectIteratorScriptObjectWrap.h
+	script/object/StringScriptObject.h
+	script/object/StringScriptObjectWrap.h
+	script/object/StringIteratorScriptObject.h
+	script/object/StringIteratorScriptObjectWrap.h
+	script/object/VarRefScriptObject.h
+	script/object/VectorScriptObject.h
+	script/object/VectorScriptObjectWrap.h
+	script/object/VectorIteratorScriptObject.h
+	script/object/VectorIteratorScriptObjectWrap.h
 	
-	# script/object/iterator
-	script/object/iterator/ScriptObjectIteratorObject.h
-	script/object/iterator/ScriptObjectIteratorObjectWrap.h
-	script/object/iterator/ScriptObjectIteratorString.h
-	script/object/iterator/ScriptObjectIteratorStringWrap.h
-	script/object/iterator/ScriptObjectIteratorVector.h
-	script/object/iterator/ScriptObjectIteratorVectorWrap.h
 			
 	# scope
 	scope/Scope.h

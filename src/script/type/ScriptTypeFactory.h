@@ -41,7 +41,7 @@ namespace zetscript{
 	extern const char * k_str_bool_type;				//	typeid(bool).name()
 	extern const char * k_str_stack_element_type;		//	typeid(bool).name()
 
-	class ScriptObjectObject;
+	class ObjectScriptObject;
 	class ScriptFunction;
 	class ScriptType;
 	class ZetScript;
@@ -142,7 +142,7 @@ namespace zetscript{
 
 
 		/**
-		 * Built in register C Class, like ScriptObject,ScriptObjectString...
+		 * Built in register C Class, like ScriptObject,StringScriptObject...
 		 */
 		template<class C, class B>
 		void extends();

@@ -1,0 +1,64 @@
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
+#include "zetscript.h"
+
+namespace zetscript{
+
+	VectorScriptObject *ObjectScriptObjectWrap_keys(ZetScript *_zs,ObjectScriptObject *o1){
+		VirtualMachine *vm=_zs->getVirtualMachine();
+		VectorScriptObject *sv= ZS_NEW_OBJECT_VECTOR(_zs);
+
+		zs_map *map=o1->getMapUserProperties();
+		for(auto it=map->begin(); !it.end(); it.next()){
+			StackElement *stk=sv->pushNewUserSlot();
+			StringScriptObject *so=ZS_NEW_OBJECT_STRING(_zs);
+			so->set(it.key);
+
+			// create and share pointer
+			if(!vm_create_shared_script_object(vm,so)){
+				THROW_RUNTIME_ERRORF("cannot creat shared pointer");
+			}
+			if(!vm_share_script_object(vm,so)){
+				THROW_RUNTIME_ERRORF("cannot share pointer");
+			}
+
+			stk->value=(zs_int)so;
+			stk->properties = STK_PROPERTY_SCRIPT_OBJECT;
+		}
+
+		return sv;
+
+	}
+
+	/*static ObjectIteratorScriptObject *ObjectScriptObjectWrap_iteratorSf(ObjectScriptObject *o1){
+
+	}*/
+
+
+	bool ObjectScriptObjectWrap_contains(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key){
+		ZS_UNUSUED_PARAM(_zs);
+		return o1->existUserProperty(key->c_str());
+	}
+
+	void ObjectScriptObjectWrap_clear(ZetScript *_zs,ObjectScriptObject *o1){
+		ZS_UNUSUED_PARAM(_zs);
+		o1->eraseAllUserProperties();
+	}
+
+	void ObjectScriptObjectWrap_erase(ZetScript *_zs,ObjectScriptObject *o1, zs_string * key){
+		ZS_UNUSUED_PARAM(_zs);
+		o1->eraseUserProperty(key->c_str());
+	}
+
+	ObjectIteratorScriptObject * ObjectScriptObjectWrap_iter(ZetScript *_zs,ObjectScriptObject *oo){
+		ZS_UNUSUED_PARAM(_zs);
+		return ZS_NEW_OBJECT_ITERATOR_OBJECT(oo);
+	}
+
+	void						 	ObjectScriptObjectWrap_append(ZetScript *_zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
+		ObjectScriptObject::append(_zs,o1,o2);
+	}
+
+}

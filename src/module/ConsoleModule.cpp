@@ -14,7 +14,7 @@ namespace zetscript{
 	}
 
 	void ConsoleModule_outln(ZetScript *zs,StackElement *str, StackElement *args){
-		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s\n",str_out->toString().c_str());
 			fflush(stdout);
@@ -24,7 +24,7 @@ namespace zetscript{
 
 
 	void ConsoleModule_out(ZetScript *zs,StackElement *str, StackElement *args){
-		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stdout,"%s",str_out->toString().c_str());
 			fflush(stdout);
@@ -40,7 +40,7 @@ namespace zetscript{
 			return;
 		}
 
-		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stderr,"%s\n",str_out->toString().c_str());
 			fflush(stderr);
@@ -54,7 +54,7 @@ namespace zetscript{
 			return;
 		}
 
-		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		if(str_out!=NULL){
 			fprintf(stderr,"%s",str_out->toString().c_str());
 			fflush(stderr);

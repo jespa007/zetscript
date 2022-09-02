@@ -51,7 +51,7 @@ namespace zetscript{
 			}
 
 			if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				result=((ScriptObjectObject *)stk->value)->getTypeName();
+				result=((ObjectScriptObject *)stk->value)->getTypeName();
 			}
 		}
 
@@ -113,7 +113,7 @@ namespace zetscript{
 			if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk.value;
 				if(so->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
-					ScriptObjectMemberFunction *somf=(ScriptObjectMemberFunction *)so;
+					MemberFunctionScriptObject *somf=(MemberFunctionScriptObject *)so;
 					ScriptType *st=somf->getRefObject()->getScriptType();
 					result= zs_string("member_function<")+st->str_script_type+"::"+somf->so_function->name_script_function+">";
 				}else{
@@ -146,7 +146,7 @@ namespace zetscript{
 			VirtualMachine *vm=_zs->getVirtualMachine();
 			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
-				ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(_zs);
+				StringScriptObject *sc=ZS_NEW_OBJECT_STRING(_zs);
 				if(!vm_create_shared_script_object(vm,sc)){
 					return;
 				}
@@ -267,9 +267,9 @@ namespace zetscript{
 						}
 
 						if(_idx_builtin_type == IDX_TYPE_ZS_STRING_PTR_C){
-							val_ret=(zs_int)(((ScriptObjectString *)script_object)->value);
+							val_ret=(zs_int)(((StringScriptObject *)script_object)->value);
 						}else if (_idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
-							val_ret=(zs_int)(((zs_string *)(((ScriptObjectString *)script_object)))->c_str());
+							val_ret=(zs_int)(((zs_string *)(((StringScriptObject *)script_object)))->c_str());
 						}else{
 							_error="cannot convert '"
 									+zs_rtti::demangle((k_str_zs_string_type_ptr))
@@ -279,7 +279,7 @@ namespace zetscript{
 							return false;
 						}
 					}else if(script_object->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
-						ScriptObjectClass *script_object_class = (ScriptObjectClass *)script_object;
+						ClassScriptObject *script_object_class = (ClassScriptObject *)script_object;
 						c_class=script_object_class->getNativeScriptClass(); // get the pointer directly ...
 
 						if(c_class != NULL){
@@ -333,7 +333,7 @@ namespace zetscript{
 		//zs_int ptr_var = (zs_int)input_var;
 			zs_string s_return_value;
 			StackElement stk_result=k_stk_undefined;
-			ScriptObjectString *so=NULL;
+			StringScriptObject *so=NULL;
 
 			//int idx_builtin_type=getIdxScriptTypeFromTypeNamePtr(typeid(T).name());
 			// save return type ...
@@ -457,7 +457,7 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_BOOLEAN(stk)){
 			result.value=IDX_TYPE_BOOL_C;
 		}else if(STK_VALUE_IS_SCRIPT_OBJECT(stk)){
-			result.value=((ScriptObjectObject *)stk->value)->getScriptType()->idx_script_type;
+			result.value=((ObjectScriptObject *)stk->value)->getScriptType()->idx_script_type;
 		}
 
 		return result;

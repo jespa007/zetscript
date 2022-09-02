@@ -24,8 +24,8 @@ namespace zetscript{
 	}
 
 	void SystemModule_eval(ZetScript *zs,StackElement *stk_so_str_eval,StackElement *stk_oo_param){
-		ScriptObjectString *so_str_eval=NULL;
-		ScriptObjectObject *oo_param=NULL;
+		StringScriptObject *so_str_eval=NULL;
+		ObjectScriptObject *oo_param=NULL;
 		ScriptFunctionParam *function_params=NULL;
 		ScriptFunctionParam **function_params_ptr=NULL;
 		int 				 function_params_len=0;
@@ -48,14 +48,14 @@ namespace zetscript{
 		if(STK_IS_SCRIPT_OBJECT_STRING(stk_so_str_eval) == false){ // expected string to evaluate
 			vm_set_error(
 					zs->getVirtualMachine()
-					,zs_strutils::format("eval error:expected ScriptObjectString as first parameter but the typeof is '%s'"
+					,zs_strutils::format("eval error:expected StringScriptObject as first parameter but the typeof is '%s'"
 							,stk_to_typeof_str(data->zs,stk_so_str_eval).c_str()
 					).c_str()
 			);
 			return;
 		}
 
-		so_str_eval=(ScriptObjectString *)stk_so_str_eval->value;
+		so_str_eval=(StringScriptObject *)stk_so_str_eval->value;
 
 		//--------------------------------------
 		// 0. setup scope and parameters
@@ -64,14 +64,14 @@ namespace zetscript{
 			if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_oo_param) == false){
 				vm_set_error(
 					zs->getVirtualMachine()
-					,zs_strutils::format("eval error:expected ScriptObjectObject as second parameter but the typeof is '%'"
+					,zs_strutils::format("eval error:expected ObjectScriptObject as second parameter but the typeof is '%'"
 							,stk_to_typeof_str(data->zs,stk_oo_param).c_str()
 					).c_str()
 				);
 				return;
 			}
 
-			oo_param=(ScriptObjectObject *)stk_oo_param->value;
+			oo_param=(ObjectScriptObject *)stk_oo_param->value;
 			function_params_len=oo_param->length();
 			if(function_params_len>0){
 
@@ -216,14 +216,14 @@ goto_eval_exit:
 
 	/*void SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){
 		if(*chk_assert == false){
-			ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
+			StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 			vm_set_error(zs->getVirtualMachine(),str_out->toString().c_str());
 			delete str_out;
 		}
 	}*/
 
 	void SystemModule_error(ZetScript *zs, StackElement *str, StackElement *args){
-		ScriptObjectString *str_out=ScriptObjectString::format(zs,str,args);
+		StringScriptObject *str_out=StringScriptObject::format(zs,str,args);
 		vm_set_error(zs->getVirtualMachine(),str_out->toString().c_str());
 		delete str_out;
 

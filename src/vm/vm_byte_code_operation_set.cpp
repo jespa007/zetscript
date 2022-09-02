@@ -29,7 +29,7 @@ namespace zetscript{
 
 		if(_byte_code_metamethod == BYTE_CODE_METAMETHOD_ADD_SET){
 			if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
-				((zs_string *)(((ScriptObjectString *)stk_result_op1->value)->value))->append(\
+				((zs_string *)(((StringScriptObject *)stk_result_op1->value)->value))->append(\
 						(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op2)\
 				);\
 				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
@@ -38,7 +38,7 @@ namespace zetscript{
 						&&\
 					STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
 			){\
-				ScriptObjectObject::append(data->zs, (ScriptObjectObject *)stk_result_op1->value,(ScriptObjectObject *)stk_result_op1->value);\
+				ObjectScriptObject::append(data->zs, (ObjectScriptObject *)stk_result_op1->value,(ObjectScriptObject *)stk_result_op1->value);\
 				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 				return true;
 			}

@@ -52,7 +52,7 @@ data->stk_vm_current++;
 #define VM_PUSH_SLOT_DATA(so_container_slot_ref,so_aux,str_symbol_aux1,stk_var) \
 	data->stk_vm_current->value=(zs_int)(new ContainerSlotData(\
 		so_container_slot_ref\
-		,(ScriptObjectContainer *)so_aux\
+		,(ContainerScriptObject *)so_aux\
 		,(zs_int)str_symbol_aux1\
 		,stk_var\
 		)\

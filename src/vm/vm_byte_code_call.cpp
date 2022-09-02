@@ -192,7 +192,7 @@ load_function:
 			  sf_call_script_function=(ScriptFunction *)symbol->ref_ptr;
 			  sf_call_is_member_function=true;
 			}else if(STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(sf_call_stk_function_ref)){
-			  ScriptObjectMemberFunction *sofm=(  ScriptObjectMemberFunction *)sf_call_stk_function_ref->value;
+			  MemberFunctionScriptObject *sofm=(  MemberFunctionScriptObject *)sf_call_stk_function_ref->value;
 			  ScriptObject *sofm_object=sofm->getRefObject();
 			  if(sofm_object==NULL){
 				  VM_STOP_EXECUTE(
@@ -258,7 +258,7 @@ execute_function:
 				// we pass everything by copy (TODO implement ref)
 				if(sf_call_n_args > 0 && sf_call_script_function->params_len > 0){
 					StackElement *stk_arg=sf_call_stk_start_arg_call;
-					ScriptObjectVector *var_args=NULL;
+					VectorScriptObject *var_args=NULL;
 					ScriptObject *so_param=NULL;
 
 					int effective_args=sf_call_n_args < sf_call_script_function->params_len ? sf_call_n_args:sf_call_script_function->params_len;
@@ -281,7 +281,7 @@ execute_function:
 											,sf_call_script_function->name_script_function.c_str(),i+1);
 								}
 
-								ScriptObjectVarRef *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg);
+								VarRefScriptObject *sc=ZS_NEW_OBJECT_VAR_REF(data->zs,*stk_arg);
 								if(!vm_create_shared_script_object(_vm,sc)){
 									goto lbl_exit_function;
 								}
@@ -298,17 +298,17 @@ execute_function:
 							}
 
 							if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==true) { // not passing by ref it gets its value
-								*stk_arg=*((ScriptObjectVarRef *)stk_arg->value)->getStackElementPtr();
+								*stk_arg=*((VarRefScriptObject *)stk_arg->value)->getStackElementPtr();
 							}
 
 							if((stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT)){
 								so_param=(ScriptObject *)stk_arg->value;
 								if(so_param->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so_param->shared_pointer==NULL){
-									ScriptObjectString *sc=ZS_NEW_OBJECT_STRING(data->zs);
+									StringScriptObject *sc=ZS_NEW_OBJECT_STRING(data->zs);
 									if(!vm_create_shared_script_object(_vm,sc)){
 										goto lbl_exit_function;
 									}
-									sc->set(*((zs_string *)((ScriptObjectString *)so_param)->value));
+									sc->set(*((zs_string *)((StringScriptObject *)so_param)->value));
 									so_param=sc;
 									stk_arg->value=(zs_int)sc;
 									stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;

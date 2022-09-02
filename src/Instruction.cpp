@@ -221,7 +221,7 @@ namespace zetscript{
 					return INSTRUCTION_GET_RETURN_COUNT(_instruction)-(INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+0);
 				 case  BYTE_CODE_CONSTRUCTOR_CALL:
 				 case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
-					 // +1 to pop ScriptObjectMemberFunction or MemberFunction for CONSTRUCTOR
+					 // +1 to pop MemberFunctionScriptObject or MemberFunction for CONSTRUCTOR
 					return INSTRUCTION_GET_RETURN_COUNT(_instruction)-(INSTRUCTION_GET_PARAMETER_COUNT(_instruction)+1);
 				default:
 					

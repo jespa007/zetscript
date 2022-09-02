@@ -72,8 +72,8 @@ namespace zetscript{
 
 		// Json mod
 		cl=script_type_factory->registerScriptType("Json","",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);
-		cl->bindStaticMemberFunction("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
-		cl->bindStaticMemberFunction("serializeNative",static_cast<ScriptObjectString * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
+		cl->bindStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *)>(JsonModule_serialize));
+		cl->bindStaticMemberFunction("serializeNative",static_cast<StringScriptObject * (*)(ZetScript *zs,StackElement *, bool *)>(JsonModule_serialize));
 		cl->bindStaticMemberFunction("deserialize",JsonModule_deserialize);
 		//---------------------------------------------
 		// DateTime
@@ -181,10 +181,10 @@ namespace zetscript{
 				"Symbol:%i\n"
 				"Scope:%i\n"
 				"ScriptObject:%i\n"
-				"ScriptObjectString:%i\n"
-				"ScriptObjectVector:%i\n"
-				"ScriptObjectObject:%i\n"
-				"ScriptObjectClass:%i\n"
+				"StringScriptObject:%i\n"
+				"VectorScriptObject:%i\n"
+				"ObjectScriptObject:%i\n"
+				"ClassScriptObject:%i\n"
 				,(int)sizeof(ZetScript)
 				, (int)sizeof(VirtualMachineData)
 				, (int)sizeof(ScriptType)
@@ -193,10 +193,10 @@ namespace zetscript{
 				, (int)sizeof(Symbol)
 				, (int)sizeof(Scope)
 				, (int)sizeof(ScriptObject)
-				, (int)sizeof(ScriptObjectString)
-				, (int)sizeof(ScriptObjectVector)
-				, (int)sizeof(ScriptObjectObject)
-				, (int)sizeof(ScriptObjectClass)
+				, (int)sizeof(StringScriptObject)
+				, (int)sizeof(VectorScriptObject)
+				, (int)sizeof(ObjectScriptObject)
+				, (int)sizeof(ClassScriptObject)
 			);
 	}
 
@@ -312,16 +312,16 @@ namespace zetscript{
 	//
 	// SHAREABLE OBJECTS
 	//
-	ScriptObjectObject * ZetScript::newShareableScriptObjectObject(){
-		return ScriptObjectObject::newShareableScriptObjectObject(this);
+	ObjectScriptObject * ZetScript::newShareableScriptObjectObject(){
+		return ObjectScriptObject::newShareableScriptObjectObject(this);
 	}
 
-	ScriptObjectString * ZetScript::newShareableScriptObjectString(){
-		return ScriptObjectString::newShareableScriptObjectString(this);
+	StringScriptObject * ZetScript::newShareableStringScriptObject(){
+		return StringScriptObject::newShareableStringScriptObject(this);
 	}
 
-	ScriptObjectVector * ZetScript::newShareableScriptObjectVector(){
-		return ScriptObjectVector::newShareableScriptObjectVector(this);
+	VectorScriptObject * ZetScript::newShareableVectorScriptObject(){
+		return VectorScriptObject::newShareableVectorScriptObject(this);
 	}
 
 	StackElement ZetScript::eval(const zs_string & _expresion, unsigned short _options, const char * _script_filename_by_ref, const char *__invoke_file__, int __invoke_line__)  {
@@ -431,12 +431,12 @@ namespace zetscript{
 				Symbol *symbol=(Symbol *)local_variables->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
 
 
-				ScriptObjectObject *var = NULL;
+				ObjectScriptObject *var = NULL;
 
 				if(symbol != NULL && symbol->scope == main_scope){ // if variable in global scope
 
 					if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						var =((ScriptObjectObject *)(vm_stk_element->value));
+						var =((ObjectScriptObject *)(vm_stk_element->value));
 						if(var){
 							if(var->shared_pointer != NULL){
 								if(!vm_unref_shared_script_object(this->virtual_machine,var,NULL)){

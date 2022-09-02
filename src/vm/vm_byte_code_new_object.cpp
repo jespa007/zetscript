@@ -10,7 +10,7 @@ namespace zetscript{
 		ScriptType *sc_aux1=NULL;
 		Symbol *symbol_aux=NULL;
 		ScriptObject *so_aux=NULL;
-		ScriptObjectClass *so_class_aux1=NULL;
+		ClassScriptObject *so_class_aux1=NULL;
 		Instruction *instruction=_instruction;
 
 		VM_POP_STK_ONE;
@@ -34,7 +34,7 @@ namespace zetscript{
 
 			if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
 
-				so_class_aux1=(ScriptObjectClass *)so_aux;
+				so_class_aux1=(ClassScriptObject *)so_aux;
 
 				so_class_aux1->info_function_new=_calling_function;
 				so_class_aux1->instruction_new=_instruction;

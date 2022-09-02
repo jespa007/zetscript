@@ -6,18 +6,18 @@
 
 #include	"StackElement.tcc"
 #include 	"script/type/ScriptTypeFactory.tcc"
-#include 	"script/object/ScriptObjectClass.tcc"
+#include 	"script/object/ClassScriptObject.tcc"
 
 namespace zetscript{
 
 		/*template<typename _C>
-		ScriptObjectClass * ZetScript::newScriptObjectClass(){
+		ClassScriptObject * ZetScript::newScriptObjectClass(){
 			const char * str_script_type_ptr = typeid(_C *).name();
 			int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 			if(idx_script_type<IDX_TYPE_MAX){
 				THROW_RUNTIME_ERROR(
-				"Internal ScriptObject type '%s' is not instanciable as ScriptObjectClass"
+				"Internal ScriptObject type '%s' is not instanciable as ClassScriptObject"
 				,zs_rtti::demangle(typeid(_C *).name()).c_str()
 				);
 			}
@@ -31,20 +31,20 @@ namespace zetscript{
 
 
 			_C *ptr_var=new _C();
-			auto so_script=ScriptObjectClass::newScriptObjectClass(this,idx_script_type,(void *)ptr_var);
+			auto so_script=ClassScriptObject::newScriptObjectClass(this,idx_script_type,(void *)ptr_var);
 			so_script->deleteNativeObjectOnDestroy(true);
 			return so_script;
 		}*/
 
 		template<typename _C>
-		ScriptObjectClass * ZetScript::newScriptObjectClass(){
-			//return ScriptObjectClass::newShareableScriptObjectClass<>(this);
+		ClassScriptObject * ZetScript::newScriptObjectClass(){
+			//return ClassScriptObject::newShareableScriptObjectClass<>(this);
 			const char * str_script_type_ptr = typeid(_C *).name();
 			int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 			if(idx_script_type<IDX_TYPE_MAX){
 				THROW_RUNTIME_ERROR(
-				"Internal ScriptObject type '%s' is not instanciable as ScriptObjectClass"
+				"Internal ScriptObject type '%s' is not instanciable as ClassScriptObject"
 				,zs_rtti::demangle(typeid(_C *).name()).c_str()
 				);
 			}
@@ -58,7 +58,7 @@ namespace zetscript{
 
 
 			_C *ptr_var=new _C();
-			auto so_script=ScriptObjectClass::newScriptObjectClass(this,idx_script_type,(void *)ptr_var);
+			auto so_script=ClassScriptObject::newScriptObjectClass(this,idx_script_type,(void *)ptr_var);
 			so_script->deleteNativeObjectOnDestroy(true);
 			return so_script;
 		}
@@ -1486,7 +1486,7 @@ namespace zetscript{
 		}
 
 		template <  typename F>
-		std::function<F> ZetScript::bindScriptFunction(ScriptObjectMemberFunction *fun, const char *file, int line){
+		std::function<F> ZetScript::bindScriptFunction(MemberFunctionScriptObject *fun, const char *file, int line){
 			return bindScriptFunction<F>(fun->so_function,fun->getRefObject(), file, line);
 		}
 

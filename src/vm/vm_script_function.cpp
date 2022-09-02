@@ -60,7 +60,7 @@ namespace zetscript{
 		StackElement 				stk_aux1,stk_aux2;
 		StackElement 			*	stk_var=NULL;
 		Symbol 		 			*	symbol_aux=NULL;
-		ScriptObjectClass		*	so_class_aux1=NULL;
+		ClassScriptObject		*	so_class_aux1=NULL;
 
 		uint32_t 					msk_properties=0;
 		void					*	ptr_ptr_void_ref=NULL;
@@ -257,7 +257,7 @@ namespace zetscript{
 				default:
 					if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						VM_PUSH_STK_BOOLEAN(data->script_type_factory->scriptTypeInheritsFrom(			//
-								((ScriptObjectObject *)(stk_result_op1->value))->idx_script_type // A
+								((ObjectScriptObject *)(stk_result_op1->value))->idx_script_type // A
 								, instruction->value_op2		// B
 						));
 					}else{
@@ -468,7 +468,7 @@ namespace zetscript{
 					}
 
 					if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
-						so_class_aux1=(ScriptObjectClass *)so_aux;
+						so_class_aux1=(ClassScriptObject *)so_aux;
 						so_class_aux1->info_function_new=_calling_function;
 						so_class_aux1->instruction_new=instruction;
 					}
@@ -602,7 +602,7 @@ namespace zetscript{
 					 data->stk_vm_current++;
 					continue;
 				case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
-					so_aux=(ScriptObjectClass *)((data->stk_vm_current-1)->value);
+					so_aux=(ClassScriptObject *)((data->stk_vm_current-1)->value);
 					if(instruction->value_op2 == ZS_IDX_UNDEFINED){
 						VM_PUSH_STK_UNDEFINED;
 					}else{
@@ -801,7 +801,7 @@ namespace zetscript{
 		//special case for constant string object (they don't are shared elements)
 		if(so_aux->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && (so_aux->shared_pointer==NULL)){
 			// if is not shared is constant...
-			so_aux=ScriptObjectString::newScriptObjectString(data->zs,so_aux->toString());
+			so_aux=StringScriptObject::newStringScriptObject(data->zs,so_aux->toString());
 			stk_var->properties=STK_PROPERTY_SCRIPT_OBJECT;
 			stk_var->value=(zs_int)so_aux;
 		}else{
@@ -854,7 +854,7 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		StackElement *stk_result_op1=NULL;
 		ScriptObject *so_aux=NULL;
-		ScriptObjectClass *so_class_aux1=NULL;
+		ClassScriptObject *so_class_aux1=NULL;
 
 		VM_POP_STK_ONE;
 		//script_var
@@ -873,7 +873,7 @@ namespace zetscript{
 
 			if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS)
 			{ // max ...
-				so_class_aux1=(ScriptObjectClass *)so_aux;
+				so_class_aux1=(ClassScriptObject *)so_aux;
 
 				if(so_class_aux1->isCreatedByContructor()){
 					so_class_aux1->deleteNativeObjectOnDestroy(true);
@@ -893,7 +893,7 @@ namespace zetscript{
 		ScriptObject 		*	so_aux=NULL;
 
 
-		so_aux= ScriptObjectString::newScriptObjectString(data->zs,_instruction->getConstantValueOp2ToString(false));
+		so_aux= StringScriptObject::newStringScriptObject(data->zs,_instruction->getConstantValueOp2ToString(false));
 		if(!vm_create_shared_script_object(_vm,so_aux)){
 			return false;
 		}

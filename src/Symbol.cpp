@@ -48,7 +48,7 @@ namespace zetscript{
 			|| k_str_zs_string_type_ptr == symbol->str_native_type
 			) {
 			char *input_s = (char *)ptr_variable;
-			ScriptObjectString *s = ZS_NEW_OBJECT_STRING(zs);
+			StringScriptObject *s = ZS_NEW_OBJECT_STRING(zs);
 
 			if (k_str_zs_string_type_ptr == symbol->str_native_type) {
 				s->value = (void *)ptr_variable;
@@ -85,7 +85,7 @@ namespace zetscript{
 			);
 		}
 
-		ScriptObjectClass *var = ScriptObjectClass::newScriptObjectClass(zs, info_registered_class->idx_script_type, ptr_variable);
+		ClassScriptObject *var = ClassScriptObject::newScriptObjectClass(zs, info_registered_class->idx_script_type, ptr_variable);
 
 		return{
 				(zs_int)var,

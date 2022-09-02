@@ -6,8 +6,8 @@
 
 namespace zetscript{
 
-	class ScriptObjectString;
-	class ScriptObjectVector;
+	class StringScriptObject;
+	class VectorScriptObject;
 	class StringMod;
 
 	zs_int 	SystemModule_clock(ZetScript *_zs);

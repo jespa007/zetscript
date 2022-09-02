@@ -19,8 +19,8 @@ namespace zetscript{
 		StackMemberProperty 		*	stk_mp_aux=NULL;
 		ScriptType					*	sc_type=NULL;
 		Symbol 						*	sf_member=NULL;
-		ScriptObjectMemberFunction 	*	somf=NULL;
-		ScriptObjectContainerSlot	*	so_container_slot_ref=NULL;
+		MemberFunctionScriptObject 	*	somf=NULL;
+		ContainerSlotScriptObject	*	so_container_slot_ref=NULL;
 
 		if(
 				instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE
@@ -65,7 +65,7 @@ namespace zetscript{
 		}
 
 		if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
-			so_container_slot_ref=(ScriptObjectContainerSlot *)stk_result_op1->value;
+			so_container_slot_ref=(ContainerSlotScriptObject *)stk_result_op1->value;
 			so_aux=so_container_slot_ref->getScriptObjectContainerRef();
 		}
 		else{
@@ -161,7 +161,7 @@ namespace zetscript{
 				if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
 					VM_PUSH_SLOT_DATA(
 							so_container_slot_ref
-							,(ScriptObjectContainer *)so_aux
+							,(ContainerScriptObject *)so_aux
 							,(zs_int)str_symbol_aux1
 							,stk_var
 					);
@@ -238,7 +238,7 @@ namespace zetscript{
 			if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
 				VM_PUSH_SLOT_DATA(
 						so_container_slot_ref
-						,(ScriptObjectContainer *)so_aux
+						,(ContainerScriptObject *)so_aux
 						,(zs_int)str_symbol_aux1
 						,stk_var
 				);
@@ -354,7 +354,7 @@ namespace zetscript{
 						stk_src=(StackElement *)stk_result_op1->value;
 					}
 
-					stk_dst=((ScriptObjectVector *)so_aux)->pushNewUserSlot();
+					stk_dst=((VectorScriptObject *)so_aux)->pushNewUserSlot();
 				}
 			}
 
@@ -398,7 +398,7 @@ namespace zetscript{
 				if(!vm_share_script_object(_vm,so_aux)){\
 					goto lbl_exit_function;\
 				}\
-				((ScriptObjectString *)so_aux)->set(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_src));\
+				((StringScriptObject *)so_aux)->set(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_src));\
 			}else{ \
 				so_aux=(ScriptObject *)stk_src->value;\
 				stk_dst->value=(intptr_t)so_aux;\
@@ -438,13 +438,13 @@ lbl_exit_function:
 		const char 					*	str_symbol_aux1=NULL;
 		StackElement					stk_aux1;
 		Instruction					*	instruction=_instruction;
-		ScriptObjectContainerSlot 	*	so_container_slot_ref=NULL;
+		ContainerSlotScriptObject 	*	so_container_slot_ref=NULL;
 
 		VM_POP_STK_TWO;
 		so_aux=NULL;
 
 		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){
-			stk_result_op1 = ((ScriptObjectVarRef *)stk_result_op1->value)->getStackElementPtr();
+			stk_result_op1 = ((VarRefScriptObject *)stk_result_op1->value)->getStackElementPtr();
 		}
 
 		stk_var=NULL;
@@ -454,7 +454,7 @@ lbl_exit_function:
 			so_container_slot_ref=NULL;
 
 			if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
-				so_container_slot_ref=(ScriptObjectContainerSlot *)stk_result_op1->value;
+				so_container_slot_ref=(ContainerSlotScriptObject *)stk_result_op1->value;
 				so_aux=so_container_slot_ref->getScriptObjectContainerRef();
 			}else{
 				so_aux=(ScriptObject *)stk_result_op1->value;
@@ -477,11 +477,11 @@ lbl_exit_function:
 						VM_STOP_EXECUTEF("Expected index value for vector access");
 					}
 
-					if(index_aux1 >= (int)((ScriptObjectVector *)so_aux)->length() || index_aux1 < 0){
+					if(index_aux1 >= (int)((VectorScriptObject *)so_aux)->length() || index_aux1 < 0){
 						VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
 					}
 
-					if((stk_var =((ScriptObjectVector *)so_aux)->getUserElementAt(index_aux1))==NULL){
+					if((stk_var =((VectorScriptObject *)so_aux)->getUserElementAt(index_aux1))==NULL){
 						goto lbl_exit_function;
 					} \
 				}
@@ -490,12 +490,12 @@ lbl_exit_function:
 						VM_STOP_EXECUTEF("Expected string for object access");
 					}
 					// Save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
-					stk_var = ((ScriptObjectObject *)so_aux)->getProperty(
+					stk_var = ((ObjectScriptObject *)so_aux)->getProperty(
 							stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2)
 					);
 					if(stk_var == NULL){
 						if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
-							if((stk_var =((ScriptObjectObject *)so_aux)->addProperty(
+							if((stk_var =((ObjectScriptObject *)so_aux)->addProperty(
 									stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2), data->vm_error_str)
 							)==NULL){
 								VM_STOP_EXECUTEF(data->vm_error_str.c_str());
@@ -511,7 +511,7 @@ lbl_exit_function:
 
 						VM_PUSH_SLOT_DATA(
 								so_container_slot_ref
-								,(ScriptObjectContainer *)so_aux
+								,(ContainerScriptObject *)so_aux
 								,(zs_int)str_symbol_aux1
 								,stk_var
 						);
@@ -526,7 +526,7 @@ lbl_exit_function:
 					VM_STOP_EXECUTEF("Expected integer index for String access");
 				}
 
-				zs_char *ptr_char=(zs_char *)&((zs_string *)((ScriptObjectString *)so_aux)->value)->c_str()[stk_result_op2->value];
+				zs_char *ptr_char=(zs_char *)&((zs_string *)((StringScriptObject *)so_aux)->value)->c_str()[stk_result_op2->value];
 				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 					data->stk_vm_current->value=((zs_int)(*ptr_char));
 					data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;

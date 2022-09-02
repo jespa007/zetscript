@@ -39,7 +39,7 @@ namespace zetscript{
 						||\
 					STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)\
 			){\
-					ScriptObjectString *so_string=ScriptObjectString::newScriptObjectStringAddStk(data->zs,stk_result_op1,stk_result_op2);\
+					StringScriptObject *so_string=StringScriptObject::newStringScriptObjectAddStk(data->zs,stk_result_op1,stk_result_op2);\
 					vm_create_shared_script_object(_vm,so_string);\
 					VM_PUSH_STK_SCRIPT_OBJECT(so_string);\
 					return true;
@@ -47,10 +47,10 @@ namespace zetscript{
 						&&\
 					STK_IS_SCRIPT_OBJECT_VECTOR(stk_result_op2)\
 			){\
-				script_object=ScriptObjectVector::newScriptObjectVectorAdd(\
+				script_object=VectorScriptObject::newVectorScriptObjectAdd(\
 							data->zs\
-							,(ScriptObjectVector *)stk_result_op1->value\
-							,(ScriptObjectVector *)stk_result_op2->value\
+							,(VectorScriptObject *)stk_result_op1->value\
+							,(VectorScriptObject *)stk_result_op2->value\
 					);\
 					vm_create_shared_script_object(_vm,script_object);\
 					VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
@@ -59,10 +59,10 @@ namespace zetscript{
 						&&\
 					STK_IS_SCRIPT_OBJECT_OBJECT(stk_result_op2)\
 			){\
-				script_object=ScriptObjectObject::concat(\
+				script_object=ObjectScriptObject::concat(\
 							data->zs\
-							,(ScriptObjectObject *)stk_result_op1->value\
-							,(ScriptObjectObject *)stk_result_op2->value\
+							,(ObjectScriptObject *)stk_result_op1->value\
+							,(ObjectScriptObject *)stk_result_op2->value\
 					);\
 					vm_create_shared_script_object(_vm,script_object);\
 					VM_PUSH_STK_SCRIPT_OBJECT(script_object);\
@@ -210,7 +210,7 @@ namespace zetscript{
 
 			// if a scriptvar --> init shared
 			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				ScriptObjectClass *sv=(ScriptObjectClass *)stk_ret->value;
+				ClassScriptObject *sv=(ClassScriptObject *)stk_ret->value;
 
 				// Auto destroy always C when ref == 0
 				sv->deleteNativeObjectOnDestroy(true);

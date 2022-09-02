@@ -33,7 +33,7 @@ namespace zetscript{
 			}
 
 			if(name == zs_string("MemberFunction")){
-				return "zetscript::ScriptObjectMemberFunction *";
+				return "zetscript::MemberFunctionScriptObject *";
 			}
 
 			int status = -4; // some arbitrary value to eliminate the compiler warning

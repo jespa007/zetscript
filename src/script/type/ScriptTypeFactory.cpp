@@ -93,16 +93,16 @@ namespace zetscript{
 	const char * k_str_stack_element_type=typeid(StackElement).name();
 	const char * k_str_zetscript_type_ptr=typeid(ZetScript *).name();
 
-	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectObject)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectIteratorObject)
-	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectString)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectIteratorString)
-	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectVector)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectIteratorVector)
-	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectClass)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectVarRef)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectMemberFunction)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ScriptObjectContainerSlot)
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ObjectScriptObject)
+	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ObjectIteratorScriptObject)
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(StringScriptObject)
+	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(StringIteratorScriptObject)
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(VectorScriptObject)
+	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(VectorIteratorScriptObject)
+	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ClassScriptObject)
+	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(VarRefScriptObject)
+	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(MemberFunctionScriptObject)
+	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ContainerSlotScriptObject)
 
 	ScriptTypeFactory::ScriptTypeFactory(ZetScript *_zs){
 		zs = _zs;
@@ -216,24 +216,24 @@ namespace zetscript{
 		// BUILT-IN SCRIPT OBJECTS
 		// It self Script object
 		SCF_BIND_SINGLETON_CLASS(ScriptFunction,IDX_TYPE_FUNCTION);
-		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_VAR_REF,ScriptObjectVarRef,IDX_TYPE_SCRIPT_OBJECT_VAR_REF);
-		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER,ScriptObjectMemberFunction,IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER);
-		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_CONTAINER_SLOT,ScriptObjectContainerSlot,IDX_TYPE_SCRIPT_OBJECT_CONTAINER_SLOT);
+		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_VAR_REF,VarRefScriptObject,IDX_TYPE_SCRIPT_OBJECT_VAR_REF);
+		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_FUNCTION_MEMBER,MemberFunctionScriptObject,IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER);
+		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_CONTAINER_SLOT,ContainerSlotScriptObject,IDX_TYPE_SCRIPT_OBJECT_CONTAINER_SLOT);
 
-		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_STRING,ScriptObjectString,IDX_TYPE_SCRIPT_OBJECT_STRING);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_STRING,StringScriptObject,IDX_TYPE_SCRIPT_OBJECT_STRING);
 
 		// Script object iterators
-		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_STRING,ScriptObjectIteratorString,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING);
-		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR,ScriptObjectIteratorVector,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR);
-		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT,ScriptObjectIteratorObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT);
+		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_STRING,StringIteratorScriptObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING);
+		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR,VectorIteratorScriptObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR);
+		SCF_BIND_SINGLETON_NAME_CLASS(ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT,ObjectIteratorScriptObject,IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT);
 
 
 		// BUILT-IN SCRIPT OBJECTS
 		//------------------------
 		// BUILT-IN SCRIPT OBJECTS CLASSES
-		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_VECTOR,ScriptObjectVector,IDX_TYPE_SCRIPT_OBJECT_VECTOR);
-		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_OBJECT,ScriptObjectObject,IDX_TYPE_SCRIPT_OBJECT_OBJECT);
-		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_CLASS,ScriptObjectClass,IDX_TYPE_SCRIPT_OBJECT_CLASS);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_VECTOR,VectorScriptObject,IDX_TYPE_SCRIPT_OBJECT_VECTOR);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_OBJECT,ObjectScriptObject,IDX_TYPE_SCRIPT_OBJECT_OBJECT);
+		SCF_BIND_CLASS(ZS_TYPE_NAME_OBJECT_CLASS,ClassScriptObject,IDX_TYPE_SCRIPT_OBJECT_CLASS);
 		// it needs script object type to have zetscript reference
 		SCF_BIND_SINGLETON_CLASS(ZetScript,IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT);
 		// BUILT-IN SCRIPT OBJECTS CLASSES
@@ -260,64 +260,64 @@ namespace zetscript{
 
 		//---------------------------------------------
 		// Vector
-		bindMemberFunction<ScriptObjectVector>("push",&ScriptObjectVectorWrap_push);
-		bindMemberFunction<ScriptObjectVector>("pop",&ScriptObjectVectorWrap_pop);
-		bindMemberFunction<ScriptObjectVector>("insertAt",&ScriptObjectVectorWrap_insertAt);
-		bindMemberFunction<ScriptObjectVector>("eraseAt",&ScriptObjectVectorWrap_eraseAt);
-		bindMemberFunction<ScriptObjectVector>("clear",&ScriptObjectVectorWrap_clear);
-		bindMemberFunction<ScriptObjectVector>("size",&ScriptObjectVectorWrap_size);
-		bindMemberFunction<ScriptObjectVector>("join",&ScriptObjectVectorWrap_join);
-		bindMemberFunction<ScriptObjectVector>("iter",&ScriptObjectVectorWrap_iter);
-		bindStaticMemberFunction<ScriptObjectVector>("equal",&ScriptObjectVectorWrap_equal);
+		bindMemberFunction<VectorScriptObject>("push",&VectorScriptObjectWrap_push);
+		bindMemberFunction<VectorScriptObject>("pop",&VectorScriptObjectWrap_pop);
+		bindMemberFunction<VectorScriptObject>("insertAt",&VectorScriptObjectWrap_insertAt);
+		bindMemberFunction<VectorScriptObject>("eraseAt",&VectorScriptObjectWrap_eraseAt);
+		bindMemberFunction<VectorScriptObject>("clear",&VectorScriptObjectWrap_clear);
+		bindMemberFunction<VectorScriptObject>("size",&VectorScriptObjectWrap_size);
+		bindMemberFunction<VectorScriptObject>("join",&VectorScriptObjectWrap_join);
+		bindMemberFunction<VectorScriptObject>("iter",&VectorScriptObjectWrap_iter);
+		bindStaticMemberFunction<VectorScriptObject>("equal",&VectorScriptObjectWrap_equal);
 
 		// IteratorVector
-		bindMemberFunction<ScriptObjectIteratorVector>("_post_inc",ScriptObjectIteratorVectorWrap_next);
-		bindMemberFunction<ScriptObjectIteratorVector>("end",ScriptObjectIteratorVectorWrap_end);
-		bindMemberFunction<ScriptObjectIteratorVector>("get",ScriptObjectIteratorVectorWrap_get);
+		bindMemberFunction<VectorIteratorScriptObject>("_post_inc",VectorIteratorScriptObjectWrap_next);
+		bindMemberFunction<VectorIteratorScriptObject>("end",VectorIteratorScriptObjectWrap_end);
+		bindMemberFunction<VectorIteratorScriptObject>("get",VectorIteratorScriptObjectWrap_get);
 
 
 		//---------------------------------------------
 		// String
-		bindStaticMemberFunction<ScriptObjectString>("formatNative",ScriptObjectString::format);
-		bindMemberFunction<ScriptObjectString>("eraseAt",ScriptObjectStringWrap_eraseAt);
-		bindMemberFunction<ScriptObjectString>("insertAt",ScriptObjectStringWrap_insertAt);
-		bindMemberFunction<ScriptObjectString>("clear",ScriptObjectStringWrap_clear);
-		bindMemberFunction<ScriptObjectString>("replace",ScriptObjectStringWrap_replace);
-		bindMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(ScriptObjectStringWrap_split));
-		bindMemberFunction<ScriptObjectString>("split",static_cast<ScriptObjectVector * (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(ScriptObjectStringWrap_split));
-		bindMemberFunction<ScriptObjectString>("size",ScriptObjectStringWrap_size);
-		bindMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_contains));
-		bindMemberFunction<ScriptObjectString>("contains",static_cast<bool (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_contains));
+		bindStaticMemberFunction<StringScriptObject>("formatNative",StringScriptObject::format);
+		bindMemberFunction<StringScriptObject>("eraseAt",StringScriptObjectWrap_eraseAt);
+		bindMemberFunction<StringScriptObject>("insertAt",StringScriptObjectWrap_insertAt);
+		bindMemberFunction<StringScriptObject>("clear",StringScriptObjectWrap_clear);
+		bindMemberFunction<StringScriptObject>("replace",StringScriptObjectWrap_replace);
+		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(StringScriptObjectWrap_split));
+		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(StringScriptObjectWrap_split));
+		bindMemberFunction<StringScriptObject>("size",StringScriptObjectWrap_size);
+		bindMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(&StringScriptObjectWrap_contains));
+		bindMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectWrap_contains));
 
-		bindMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, zs_string *)>(&ScriptObjectStringWrap_indexOf));
-		bindMemberFunction<ScriptObjectString>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,ScriptObjectString *so, zs_int )>(&ScriptObjectStringWrap_indexOf));
+		bindMemberFunction<StringScriptObject>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(&StringScriptObjectWrap_indexOf));
+		bindMemberFunction<StringScriptObject>("indexOf",static_cast<zs_int (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectWrap_indexOf));
 
-		bindMemberFunction<ScriptObjectString>("startsWith",ScriptObjectStringWrap_startsWith);
-		bindMemberFunction<ScriptObjectString>("endsWith",ScriptObjectStringWrap_endsWith);
-		bindMemberFunction<ScriptObjectString>("substring",ScriptObjectStringWrap_substring);
-		bindMemberFunction<ScriptObjectString>("append",ScriptObjectStringWrap_append);
+		bindMemberFunction<StringScriptObject>("startsWith",StringScriptObjectWrap_startsWith);
+		bindMemberFunction<StringScriptObject>("endsWith",StringScriptObjectWrap_endsWith);
+		bindMemberFunction<StringScriptObject>("substring",StringScriptObjectWrap_substring);
+		bindMemberFunction<StringScriptObject>("append",StringScriptObjectWrap_append);
 
-		bindMemberFunction<ScriptObjectString>("iter",ScriptObjectStringWrap_iter);
+		bindMemberFunction<StringScriptObject>("iter",StringScriptObjectWrap_iter);
 
 		// IteratorString
-		bindMemberFunction<ScriptObjectIteratorString>("_post_inc",ScriptObjectIteratorStringWrap_next);
-		bindMemberFunction<ScriptObjectIteratorString>("end",ScriptObjectIteratorStringWrap_end);
-		bindMemberFunction<ScriptObjectIteratorString>("get",ScriptObjectIteratorStringWrap_get);
+		bindMemberFunction<StringIteratorScriptObject>("_post_inc",StringIteratorScriptObjectWrap_next);
+		bindMemberFunction<StringIteratorScriptObject>("end",StringIteratorScriptObjectWrap_end);
+		bindMemberFunction<StringIteratorScriptObject>("get",StringIteratorScriptObjectWrap_get);
 
 		//---------------------------------------------
 		// Object
-		bindStaticMemberFunction<ScriptObjectObject>("clear",&ScriptObjectObjectWrap_clear);
-		bindStaticMemberFunction<ScriptObjectObject>("erase",&ScriptObjectObjectWrap_erase);
-		bindStaticMemberFunction<ScriptObjectObject>("contains",&ScriptObjectObjectWrap_contains);
-		bindStaticMemberFunction<ScriptObjectObject>("append",&ScriptObjectObjectWrap_append);
-		bindStaticMemberFunction<ScriptObjectObject>("concat",ScriptObjectObject::concat);
-		bindStaticMemberFunction<ScriptObjectObject>("keys",ScriptObjectObjectWrap_keys);
-		bindStaticMemberFunction<ScriptObjectObject>("iter",ScriptObjectObjectWrap_iter);
+		bindStaticMemberFunction<ObjectScriptObject>("clear",&ObjectScriptObjectWrap_clear);
+		bindStaticMemberFunction<ObjectScriptObject>("erase",&ObjectScriptObjectWrap_erase);
+		bindStaticMemberFunction<ObjectScriptObject>("contains",&ObjectScriptObjectWrap_contains);
+		bindStaticMemberFunction<ObjectScriptObject>("append",&ObjectScriptObjectWrap_append);
+		bindStaticMemberFunction<ObjectScriptObject>("concat",ObjectScriptObject::concat);
+		bindStaticMemberFunction<ObjectScriptObject>("keys",ObjectScriptObjectWrap_keys);
+		bindStaticMemberFunction<ObjectScriptObject>("iter",ObjectScriptObjectWrap_iter);
 
 		// IteratorObject
-		bindMemberFunction<ScriptObjectIteratorObject>("_post_inc",ScriptObjectIteratorObjectWrap_next);
-		bindMemberFunction<ScriptObjectIteratorObject>("end",ScriptObjectIteratorObjectWrap_end);
-		bindMemberFunction<ScriptObjectIteratorObject>("get",ScriptObjectIteratorObjectWrap_get);
+		bindMemberFunction<ObjectIteratorScriptObject>("_post_inc",ObjectIteratorScriptObjectWrap_next);
+		bindMemberFunction<ObjectIteratorScriptObject>("end",ObjectIteratorScriptObjectWrap_end);
+		bindMemberFunction<ObjectIteratorScriptObject>("get",ObjectIteratorScriptObjectWrap_get);
 
 		zs->saveState();
 	}
@@ -327,7 +327,7 @@ namespace zetscript{
 	StackElement * ScriptTypeFactory::registerStkConstantStringObject(const zs_string & _key,const zs_string & _value){
 
 		StackElement *stk=NULL;
-		ScriptObjectString *so=NULL;
+		StringScriptObject *so=NULL;
 
 		if((stk = getStkConstantStringObject(_key))!=NULL){
 			if(stk->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_READ_ONLY)){
@@ -336,7 +336,7 @@ namespace zetscript{
 			else{
 				// throw
 				THROW_RUNTIME_ERROR(
-					"Cannot register constant '%s' as 'ScriptObjectString', because is already registered as '%s'"
+					"Cannot register constant '%s' as 'StringScriptObject', because is already registered as '%s'"
 					,_key.c_str()
 					,stk_to_typeof_str(this->zs,stk).c_str()
 				);
@@ -729,21 +729,21 @@ namespace zetscript{
 			 // Is a primitive ?
 			switch(rc->idx_script_type){
 			case IDX_TYPE_SCRIPT_OBJECT_STRING: // "String"
-				so=ScriptObjectString::newScriptObjectString(zs);
+				so=StringScriptObject::newStringScriptObject(zs);
 				break;
 			case IDX_TYPE_SCRIPT_OBJECT_VECTOR: // Vector []
-				so=ScriptObjectVector::newScriptObjectVector(zs);
+				so=VectorScriptObject::newVectorScriptObject(zs);
 				break;
 			// Object
 			case IDX_TYPE_SCRIPT_OBJECT_OBJECT: //  Object {}
-				so=ScriptObjectObject::newScriptObjectObject(zs);
+				so=ObjectScriptObject::newScriptObjectObject(zs);
 				break;
 
 			default:
 
 				if(rc->idx_script_type > IDX_TYPE_SCRIPT_OBJECT_CLASS){
 					 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
-					 so = ScriptObjectClass::newScriptObjectClass(zs,rc->idx_script_type, value_object);
+					 so = ClassScriptObject::newScriptObjectClass(zs,rc->idx_script_type, value_object);
 				}else{
 					 THROW_RUNTIME_ERROR("Internal error: An idx type was expected but it was %i",rc->idx_script_type);
 					 return NULL;
@@ -809,7 +809,7 @@ namespace zetscript{
 			for(auto it=stk_constants->begin(); !it.end();it.next()){
 				StackElement *stk=(StackElement *)(it.value);
 				if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){
-					delete (ScriptObjectString *)stk->value;
+					delete (StringScriptObject *)stk->value;
 				}
 				delete stk;
 			}
