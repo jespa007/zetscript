@@ -281,7 +281,7 @@
 	}\
 
 #define VM_OPERATION_NEG_POST(__C_OP__, __METAMETHOD__) \
-	stk_result_op1=--data->stk_vm_current;\
+	stk_result_op1=--data->vm_stk_current;\
 	EXTRACT_STK_RESULT_OP1\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
 	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
@@ -310,12 +310,12 @@
 		break;\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->stk_vm_current=stk_start;\
+		data->vm_stk_current=stk_start;\
 	}
 
 
 #define VM_OPERATION_POST(__C_OP__, __METAMETHOD__) \
-	stk_result_op1=--data->stk_vm_current;\
+	stk_result_op1=--data->vm_stk_current;\
 	EXTRACT_STK_RESULT_OP1\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
 	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
@@ -343,11 +343,11 @@
 		break;\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->stk_vm_current=stk_start;\
+		data->vm_stk_current=stk_start;\
 	}
 
 #define VM_OPERATION_PRE(__C_OP__, __METAMETHOD__) \
-	stk_result_op1=--data->stk_vm_current;\
+	stk_result_op1=--data->vm_stk_current;\
 	EXTRACT_STK_RESULT_OP1\
 	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
 	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
@@ -375,5 +375,5 @@
 		break;\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->stk_vm_current=stk_start;\
+		data->vm_stk_current=stk_start;\
 	}

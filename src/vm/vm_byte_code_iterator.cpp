@@ -31,10 +31,10 @@ namespace zetscript{
 
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
 			//VM_ERROR("internal: Expected object");
-			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
+			if((data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
 				VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
-					,stk_to_str(data->zs,data->stk_vm_current).c_str()
+					,stk_to_str(data->zs,data->vm_stk_current).c_str()
 				);
 				return false;
 			}
@@ -58,23 +58,23 @@ namespace zetscript{
 				n_args=1;
 
 				// only stores and not increment (++ ) in order to start the stk arg
-				*data->stk_vm_current={(intptr_t)so_object,STK_PROPERTY_SCRIPT_OBJECT};
+				*data->vm_stk_current={(intptr_t)so_object,STK_PROPERTY_SCRIPT_OBJECT};
 				so_object=NULL;
 			}
 
 			VM_INNER_CALL(so_object,so_function,n_args,"iter");
 
-			// ok stk_vm_current holds the iter object
-			if((data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
+			// ok vm_stk_current holds the iter object
+			if((data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
 				VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'"
-						,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+						,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
 				);
 				return false;
 			}
 
 
 
-			obj=(ScriptObject *)data->stk_vm_current->value;
+			obj=(ScriptObject *)data->vm_stk_current->value;
 
 			if(!vm_share_script_object(_vm,obj)){\
 				goto lbl_exit_function;\
@@ -101,7 +101,7 @@ namespace zetscript{
 			}
 
 			// everything allright store and share pointer
-			*stk_result_op2=*data->stk_vm_current;
+			*stk_result_op2=*data->vm_stk_current;
 		}
 		else{
 			VM_ERROR("Object '%s' not implements 'iter'",obj->getTypeName());

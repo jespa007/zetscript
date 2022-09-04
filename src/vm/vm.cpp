@@ -158,7 +158,7 @@ namespace zetscript{
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,_str_error);
 
 		data->vm_error = true;
-		data->vm_error_str=out_txt;
+		data->vm_error_description=out_txt;
 		data->vm_error_file="";
 		data->vm_error_line=-1;
 	}
@@ -184,7 +184,7 @@ namespace zetscript{
 			VirtualMachine *vm
 	){
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		return data->vm_error_str;
+		return data->vm_error_description;
 	}
 
 	void vm_insert_lifetime_object(
@@ -251,12 +251,12 @@ namespace zetscript{
 
 	void vm_push_stack_element(VirtualMachine *_vm, StackElement _stk){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		if(((data->stk_vm_current-data->vm_stack)+1)>=VM_STACK_MAX){
+		if(((data->vm_stk_current-data->vm_stack)+1)>=VM_STACK_MAX){
 
 			vm_set_error(_vm,"Error MAXIMUM stack size reached");
 			return;
 		}
-		*data->stk_vm_current++=_stk;
+		*data->vm_stk_current++=_stk;
 	}
 
 	bool vm_set_stack_element_at(VirtualMachine *_vm,unsigned int _idx, StackElement _stk){
@@ -277,7 +277,7 @@ namespace zetscript{
 
 	StackElement *vm_get_current_stack_element(VirtualMachine *_vm){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		return data->stk_vm_current;
+		return data->vm_stk_current;
 	}
 
 	StackElement * vm_get_stack_element_at(VirtualMachine *_vm, unsigned _idx_glb_element){
@@ -340,7 +340,7 @@ namespace zetscript{
 
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
-			stk_start=data->stk_vm_current;
+			stk_start=data->vm_stk_current;
 			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->size()];
 			first_script_call_from_c=false;
 
@@ -402,17 +402,17 @@ namespace zetscript{
 			// it was error so reset stack and stop execution ...
 			vm_do_stack_dump(_vm);
 
-			zs_string total_error=data->vm_error_str;
+			zs_string total_error=data->vm_error_description;
 			total_error.append(data->vm_error_callstack_str);
 
 			throw_exception_file_line(data->vm_error_file.c_str(),data->vm_error_line,total_error.c_str());
 		}else{
-			int n_returned_arguments_from_function=data->stk_vm_current-(stk_start+(int)_calling_function->local_variables->size());
+			int n_returned_arguments_from_function=data->vm_stk_current-(stk_start+(int)_calling_function->local_variables->size());
 
 			if(n_returned_arguments_from_function > 0){
 
 				// get first...
-				StackElement *ptr_stk_return=(data->stk_vm_current-n_returned_arguments_from_function);
+				StackElement *ptr_stk_return=(data->vm_stk_current-n_returned_arguments_from_function);
 				stk_return = ptr_stk_return[0];
 
 				// if object add into lifetime till user delete it
@@ -442,7 +442,7 @@ namespace zetscript{
 		}
 
 		// Important restore stk!
-		data->stk_vm_current=stk_start;
+		data->vm_stk_current=stk_start;
 
 		// restore idx_call as 0 if first call was a script function called from C
 		if(first_script_call_from_c==true){

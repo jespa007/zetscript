@@ -14,7 +14,7 @@ namespace zetscript{
 
 	){
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
-		StackElement 		*	stk_def_afun_start=data->stk_vm_current;
+		StackElement 		*	stk_def_afun_start=data->vm_stk_current;
 		int 					n_returned_args_afun=0;
 		Instruction			*	instruction=_instruction;
 
@@ -50,12 +50,12 @@ namespace zetscript{
 				goto lbl_exit_function;
 			}*/
 		}
-		n_returned_args_afun=data->stk_vm_current-stk_def_afun_start;
+		n_returned_args_afun=data->vm_stk_current-stk_def_afun_start;
 		/* we share pointer (true second arg) to not remove on pop in calling return */
 		CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,false);
 
 		/* reset stack */
-		data->stk_vm_current=stk_def_afun_start;
+		data->vm_stk_current=stk_def_afun_start;
 
 		return true;
 
@@ -88,13 +88,16 @@ namespace zetscript{
 
 
 		switch(instruction->byte_code){
+		default:
+			 VM_STOP_EXECUTE("byte code '%s' not handled",instruction->byte_code);
+			break;
 			case  BYTE_CODE_CALL: // immediate call this
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
-				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
+				 sf_call_stk_start_arg_call = (data->vm_stk_current - sf_call_n_args);
 				 sf_call_script_function=(ScriptFunction *)(((Symbol *)instruction->value_op2)->ref_ptr);
 				 goto execute_function;
 			case BYTE_CODE_SUPER_CALL:
@@ -103,7 +106,7 @@ namespace zetscript{
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=true;
 				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
-				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
+				 sf_call_stk_start_arg_call = (data->vm_stk_current - sf_call_n_args);
 				 sf_call_script_function=(ScriptFunction *)((Symbol *)instruction->value_op2)->ref_ptr;
 				 goto execute_function;
 			case  BYTE_CODE_THIS_CALL: // immediate call this
@@ -112,7 +115,7 @@ namespace zetscript{
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=true;
 				 sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
-				 sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
+				 sf_call_stk_start_arg_call = (data->vm_stk_current - sf_call_n_args);
 				 symbol_aux=NULL;
 				 // Since symbol is created on its owner, we have to get symbol from this object. This technique expects
 				 // that symbols are ordered
@@ -158,13 +161,13 @@ namespace zetscript{
 				 sf_call_is_member_function=false;
 				 sf_call_calling_object = NULL;
 				 sf_call_stk_start_function_object=0;
-				 sf_call_stk_function_ref=data->stk_vm_current-(INSTRUCTION_GET_PARAMETER_COUNT(instruction)+1);
+				 sf_call_stk_function_ref=data->vm_stk_current-(INSTRUCTION_GET_PARAMETER_COUNT(instruction)+1);
 				 goto load_function;
 			 case  BYTE_CODE_CONSTRUCTOR_CALL:
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_script_function=NULL;
-				 sf_call_stk_function_ref = (data->stk_vm_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
+				 sf_call_stk_function_ref = (data->vm_stk_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
 				// get object
 				sf_call_calling_object=(ScriptObject *)((sf_call_stk_function_ref-1)->value);
 
@@ -174,7 +177,7 @@ namespace zetscript{
 		 case  BYTE_CODE_MEMBER_CALL: // calling function after all of args are processed...
 
 			sf_call_script_function=NULL;
-			sf_call_stk_function_ref = (data->stk_vm_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
+			sf_call_stk_function_ref = (data->vm_stk_current-INSTRUCTION_GET_PARAMETER_COUNT(instruction)-1);
 			// if we invoke constructor we need to keep object to pass after, else remove object+function
 			sf_call_stk_start_function_object=1;//instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL?1:0; // object + function
 
@@ -185,7 +188,7 @@ load_function:
 			sf_call_ignore_call=false;
 
 			sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
-			sf_call_stk_start_arg_call = (data->stk_vm_current - sf_call_n_args);
+			sf_call_stk_start_arg_call = (data->vm_stk_current - sf_call_n_args);
 
 			if(sf_call_stk_function_ref->properties & STK_PROPERTY_MEMBER_FUNCTION){
 			  Symbol *symbol=(Symbol *)sf_call_stk_function_ref->value;
@@ -210,7 +213,7 @@ load_function:
 					if(instruction->byte_code== BYTE_CODE_CONSTRUCTOR_CALL){ // constructor was not found so we do nothing
 						// reset stack to last
 						if((instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK)==0){
-							data->stk_vm_current=sf_call_stk_function_ref;//sf_call_stk_start_arg_call-sf_call_stk_start_function_object;
+							data->vm_stk_current=sf_call_stk_function_ref;//sf_call_stk_start_arg_call-sf_call_stk_start_function_object;
 						}
 						goto lbl_exit_function_ok;
 					}
@@ -363,7 +366,7 @@ execute_function:
 					case STK_PROPERTY_ZS_INT:
 					case STK_PROPERTY_BOOL:
 					case STK_PROPERTY_ZS_FLOAT:
-						*data->stk_vm_current++=param->default_param_value;
+						*data->vm_stk_current++=param->default_param_value;
 						break;
 					case STK_PROPERTY_FUNCTION: // we call function that return default value
 						VM_INNER_CALL(
@@ -374,12 +377,12 @@ execute_function:
 						)
 
 						// if script object it shares in order to be used as variable in the function to be called
-						if(data->stk_vm_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
-							if(!vm_share_script_object(_vm,(ScriptObject *)data->stk_vm_current->value)){
+						if(data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
+							if(!vm_share_script_object(_vm,(ScriptObject *)data->vm_stk_current->value)){
 								goto lbl_exit_function;
 							}
 						}
-						data->stk_vm_current++;
+						data->vm_stk_current++;
 						break;
 					default:
 						VM_STOP_EXECUTE("Internal error: Unexpected default stack element '%s'"
@@ -524,7 +527,7 @@ execute_function:
 
 			// calcule returned stack elements
 			sf_call_stk_return=(sf_call_stk_start_arg_call+sf_call_n_local_symbols); // +1 points to starting return...
-			sf_call_n_returned_arguments_from_function=data->stk_vm_current-sf_call_stk_return;
+			sf_call_n_returned_arguments_from_function=data->vm_stk_current-sf_call_stk_return;
 			sf_call_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
 
 			// setup all returned variables from function
@@ -549,11 +552,11 @@ execute_function:
 				// set number of call return
 				sf_call_n_returned_arguments_from_function=sf_call_return;
 
-				data->stk_vm_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // stk_vm_current points to first stack element
+				data->vm_stk_current=sf_call_stk_start_arg_call-sf_call_stk_start_function_object;//(sf_call_stk_start_function_object?0:1);//+n_returned_arguments_from_function; // vm_stk_current points to first stack element
 
 				// no return parameters but the caller expects n_parameters, so
 				for(int i=0; i < sf_call_n_returned_arguments_from_function;i++){
-					*data->stk_vm_current++=*sf_call_stk_return++;
+					*data->vm_stk_current++=*sf_call_stk_return++;
 				}
 			}
 		}

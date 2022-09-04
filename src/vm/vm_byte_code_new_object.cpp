@@ -28,9 +28,9 @@ namespace zetscript{
 				goto lbl_exit_function;
 			}
 
-			data->stk_vm_current->value=(zs_int)so_aux;
-			data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
-			data->stk_vm_current++;
+			data->vm_stk_current->value=(zs_int)so_aux;
+			data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+			data->vm_stk_current++;
 
 			if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){ // custom object by user
 
@@ -43,9 +43,9 @@ namespace zetscript{
 				symbol_aux=sc_aux1->getSymbolMemberFunction(CONSTRUCTOR_FUNCTION_NAME);
 
 				 if(symbol_aux != NULL){
-					 data->stk_vm_current->value=(zs_int)symbol_aux;
-					 data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
-					 data->stk_vm_current++;
+					 data->vm_stk_current->value=(zs_int)symbol_aux;
+					 data->vm_stk_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
+					 data->vm_stk_current++;
 				 }
 			}
 

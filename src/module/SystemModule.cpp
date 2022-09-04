@@ -40,7 +40,7 @@ namespace zetscript{
 		Symbol *symbol_sf=NULL;
 		int n_ret_args=0;
 		uint8_t stk_n_params=0;
-		StackElement *stk_vm_current=NULL;
+		StackElement *vm_stk_current=NULL;
 		StackElement *stk_start=NULL;
 
 		// Example of use,
@@ -173,10 +173,10 @@ namespace zetscript{
 		}
 
 		// 4. Call function passing all arg parameter
-		// pass data to stk_vm_current
+		// pass data to vm_stk_current
 		stk_n_params=(uint8_t)stk_params.size();
-		stk_vm_current=vm_get_current_stack_element(vm);
-		stk_start=stk_vm_current;//vm data->stk_vm_current;
+		vm_stk_current=vm_get_current_stack_element(vm);
+		stk_start=vm_stk_current;//vm data->vm_stk_current;
 		for(int i = 0; i < stk_n_params; i++){
 			*stk_start++=*((StackElement *)stk_params.items[i]);
 		}
@@ -185,7 +185,7 @@ namespace zetscript{
 			zs->getVirtualMachine(),
 			NULL,
 			sf_eval,
-			stk_vm_current);
+			vm_stk_current);
 
 		// modifug
 		if(vm_it_has_error(zs->getVirtualMachine())){
@@ -193,16 +193,16 @@ namespace zetscript{
 			vm_set_error(zs->getVirtualMachine(),zs_strutils::format("eval error %s",error.c_str()).c_str());
 		}
 
-		n_ret_args=vm_get_current_stack_element(vm)-stk_vm_current;
-		stk_start=stk_vm_current;
+		n_ret_args=vm_get_current_stack_element(vm)-vm_stk_current;
+		stk_start=vm_stk_current;
 
 		// overwrite first entered params due are the objects passed before and now are undefined
 		for(int i = 0; i < n_ret_args-stk_n_params; i++){
-			*stk_start++=*(stk_vm_current+stk_n_params+i);
+			*stk_start++=*(vm_stk_current+stk_n_params+i);
 		}
 
 		// avoid pass params
-		data->stk_vm_current-=stk_n_params;
+		data->vm_stk_current-=stk_n_params;
 goto_eval_exit:
 
 		 sf_eval->scope_script_function->removeChildrenBlockTypes();

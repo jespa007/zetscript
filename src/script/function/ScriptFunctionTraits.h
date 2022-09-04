@@ -211,7 +211,7 @@ namespace zetscript{
 				int idx_script_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
 
 				if(i==0){
-					if(idx_script_type!=IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT){
+					if(idx_script_type!=IDX_TYPE_SCRIPT_OBJECT_ZETSCRIPT){
 						THROW_RUNTIME_ERROR(\
 							"Error register function '%s': expected 'ZetScript *' as FIRST parameter but it was '%s'"
 							,name_script_function.c_str()

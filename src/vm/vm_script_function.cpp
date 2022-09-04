@@ -73,7 +73,7 @@ namespace zetscript{
 			return;
 		}
 
-		data->stk_vm_current = stk_start;
+		data->vm_stk_current = stk_start;
 
 		if(((stk_start-data->vm_stack)+_calling_function->min_code_stack_needed)>=VM_STACK_MAX){
 			data->vm_error_max_stack_reached=true;
@@ -115,10 +115,10 @@ namespace zetscript{
 				continue;
 			// load
 			case BYTE_CODE_LOAD_GLOBAL: // load variable ...
-				*data->stk_vm_current++=*(data->vm_stack+instruction->value_op2);
+				*data->vm_stk_current++=*(data->vm_stack+instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_LOCAL: // load variable ...
-				*data->stk_vm_current++=*(_stk_local_var+instruction->value_op2);
+				*data->vm_stk_current++=*(_stk_local_var+instruction->value_op2);
 				continue;
 			case BYTE_CODE_EQU:  // ==
 				VM_POP_STK_TWO;
@@ -154,7 +154,7 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_TYPEOF:
 				VM_POP_STK_ONE;
-				*data->stk_vm_current++ = stk_result_op1->typeOf();
+				*data->vm_stk_current++ = stk_result_op1->typeOf();
 				continue;
 			case BYTE_CODE_ADD: // +
 				VM_POP_STK_TWO;
@@ -299,14 +299,14 @@ namespace zetscript{
 				VM_POP_STK_ONE; // retrieve result...
 				if(stk_result_op1->value != 0){ // if true goto
 					// reset stack
-					data->stk_vm_current=stk_start;
+					data->vm_stk_current=stk_start;
 
 					// goto to state
 					instruction_it=instruction+instruction->value_op2;
 				}
 				continue;
 			case BYTE_CODE_JMP_CASE:
-  			    data->stk_vm_current=stk_start;
+  			    data->vm_stk_current=stk_start;
 				instruction_it=instruction+instruction->value_op2;
 				continue;
 			case BYTE_CODE_LOAD_UNDEFINED:
@@ -319,26 +319,26 @@ namespace zetscript{
 				VM_PUSH_STK_SCRIPT_FUNCTION(instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_ZS_INT:
-				data->stk_vm_current->value=instruction->value_op2;
-				data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;
-				data->stk_vm_current++;
+				data->vm_stk_current->value=instruction->value_op2;
+				data->vm_stk_current->properties=STK_PROPERTY_ZS_INT;
+				data->vm_stk_current++;
 				continue;
 			case BYTE_CODE_LOAD_ZS_FLOAT:
-				data->stk_vm_current->value=instruction->value_op2;
-				data->stk_vm_current->properties=STK_PROPERTY_ZS_FLOAT;
-				data->stk_vm_current++;
+				data->vm_stk_current->value=instruction->value_op2;
+				data->vm_stk_current->properties=STK_PROPERTY_ZS_FLOAT;
+				data->vm_stk_current++;
 				continue;
 			case BYTE_CODE_LOAD_BOOL:
-				data->stk_vm_current->value=instruction->value_op2;
-				data->stk_vm_current->properties=STK_PROPERTY_BOOL;
-				data->stk_vm_current++;
+				data->vm_stk_current->value=instruction->value_op2;
+				data->vm_stk_current->properties=STK_PROPERTY_BOOL;
+				data->vm_stk_current++;
 				continue;
 			case BYTE_CODE_LOAD_STACK_ELEMENT:
 			case BYTE_CODE_LOAD_STRING:
-				*data->stk_vm_current++=*((StackElement *)instruction->value_op2);
+				*data->vm_stk_current++=*((StackElement *)instruction->value_op2);
 				continue;
 			 case  BYTE_CODE_RET:
-				for(stk_var=data->stk_vm_current-1;stk_var>=stk_start;stk_var--){ // can return something. value is +1 from stack
+				for(stk_var=data->vm_stk_current-1;stk_var>=stk_start;stk_var--){ // can return something. value is +1 from stack
 					// if scriptvariable and in the zeros list, deattach
 					if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){
 						if(vm_unref_script_object_for_ret(_vm, stk_var)==false){
@@ -420,7 +420,7 @@ namespace zetscript{
 					return;
 				}
 				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
-					data->stk_vm_current=stk_start;
+					data->vm_stk_current=stk_start;
 				}
 				continue;
 			//----- immediate call
@@ -444,17 +444,17 @@ namespace zetscript{
 				}
 
 				if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){
-					data->stk_vm_current=stk_start;
+					data->vm_stk_current=stk_start;
 				}
 				continue;
 			case BYTE_CODE_PUSH_STK_THIS: // load variable ...
 				VM_PUSH_STK_PTR(_this_object->getThisProperty());
 				continue;
 			case BYTE_CODE_LOAD_REF:
-				*data->stk_vm_current++=*STK_GET_STK_VAR_REF(_stk_local_var+instruction->value_op2);
+				*data->vm_stk_current++=*STK_GET_STK_VAR_REF(_stk_local_var+instruction->value_op2);
 				continue;
 			case BYTE_CODE_LOAD_THIS: // load variable ...
-				*data->stk_vm_current++=*_this_object->getThisProperty();
+				*data->vm_stk_current++=*_this_object->getThisProperty();
 				continue;
 			case BYTE_CODE_PUSH_STK_MEMBER_VAR: // direct load
 				VM_PUSH_STK_PTR(_this_object->getBuiltinElementAt(instruction->value_op2));
@@ -472,7 +472,7 @@ namespace zetscript{
 						so_class_aux1->info_function_new=_calling_function;
 						so_class_aux1->instruction_new=instruction;
 					}
-					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+					(*data->vm_stk_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				 	 if(vm_byte_code_new_object_by_value(
@@ -488,16 +488,16 @@ namespace zetscript{
 					if(!vm_create_shared_script_object(_vm,so_aux)){
 						goto lbl_exit_function;
 					}
-					data->stk_vm_current->value=(zs_int)so_aux;
-					data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
-					data->stk_vm_current++;
+					data->vm_stk_current->value=(zs_int)so_aux;
+					data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+					data->vm_stk_current++;
 					continue;
 			 case  BYTE_CODE_NEW_OBJECT: // Create new object...
 				 	so_aux=ZS_NEW_OBJECT_OBJECT(data->zs);
 					if(vm_create_shared_script_object(_vm,so_aux)==false){
 						return;
 					}
-					(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+					(*data->vm_stk_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 					continue;
 
 			 case  BYTE_CODE_NEW_STRING: // Create new string...
@@ -516,7 +516,7 @@ namespace zetscript{
 				 }
 				continue;
 			 case BYTE_CODE_RESET_STACK:
-				 data->stk_vm_current=stk_start;
+				 data->vm_stk_current=stk_start;
 				 continue;
 			case BYTE_CODE_IT_INIT:
 				if(vm_iterator_init(
@@ -529,7 +529,7 @@ namespace zetscript{
 					return;
 				}
 				// always it does a reset
-				data->stk_vm_current=stk_start;
+				data->vm_stk_current=stk_start;
 				continue;
 			 case BYTE_CODE_IN:
 				 if(vm_perform_in_operator(
@@ -597,18 +597,18 @@ namespace zetscript{
 					 if(!vm_create_shared_script_object(_vm,so_aux)){
 						return;
 					 }
-					 data->stk_vm_current->value=(zs_int)so_aux;
-					 data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
-					 data->stk_vm_current++;
+					 data->vm_stk_current->value=(zs_int)so_aux;
+					 data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+					 data->vm_stk_current++;
 					continue;
 				case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
-					so_aux=(ClassScriptObject *)((data->stk_vm_current-1)->value);
+					so_aux=(ClassScriptObject *)((data->vm_stk_current-1)->value);
 					if(instruction->value_op2 == ZS_IDX_UNDEFINED){
 						VM_PUSH_STK_UNDEFINED;
 					}else{
-						data->stk_vm_current->value=(zs_int) so_aux->getScriptType()->scope_script_type->symbol_functions->get(instruction->value_op2);
-						data->stk_vm_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
-						data->stk_vm_current++;
+						data->vm_stk_current->value=(zs_int) so_aux->getScriptType()->scope_script_type->symbol_functions->get(instruction->value_op2);
+						data->vm_stk_current->properties=STK_PROPERTY_MEMBER_FUNCTION;
+						data->vm_stk_current++;
 					}
 					continue;
 				case BYTE_CODE_LOAD_THIS_VARIABLE:
@@ -642,9 +642,9 @@ namespace zetscript{
 
 	lbl_exit_function:
 		// default return null
-		 STK_SET_UNDEFINED(data->stk_vm_current);
+		 STK_SET_UNDEFINED(data->vm_stk_current);
 		// reset stack and set last stk return null;
-		data->stk_vm_current=_stk_local_var;
+		data->vm_stk_current=_stk_local_var;
 
 	lbl_return_function:
 
@@ -897,7 +897,7 @@ namespace zetscript{
 		if(!vm_create_shared_script_object(_vm,so_aux)){
 			return false;
 		}
-		(*data->stk_vm_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
+		(*data->vm_stk_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
 		return true;
 	}
 }

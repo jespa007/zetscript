@@ -16,10 +16,7 @@ namespace zetscript{
 		zs_vector<StackElement *> 	*		store_lst_setter_functions=NULL;
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
-		ContainerScriptObject		*		so_container_ref=NULL;
-		ContainerSlotScriptObject	*		so_container_slot_ref=NULL;
-		zs_int 								container_slot_store_id_slot=0;
-		StackElement				*		container_slot_store_ptr_stk=NULL;
+		ContainerSlotData			*		container_slot=NULL;
 		void 						*		stk_src_ref_value_copy_aux=NULL;
 		StackElement 				*		stk_result_op2=NULL;
 		zs_int 						*		stk_src_ref_value=NULL;
@@ -36,16 +33,14 @@ namespace zetscript{
 
 		// vm_current - n_element_left_to_store we have src values
 		// do +1 is because it has to point to first the stack, due vm_stk_current points to new stk slot
-		stk_load_multi_var_src=data->stk_vm_current-(n_element_left_to_store<<1); // it loads n_loads + n_vars to store 2xn_elements to store
-		stk_dst=--data->stk_vm_current; // dst first read
+		stk_load_multi_var_src=data->vm_stk_current-(n_element_left_to_store<<1); // it loads n_loads + n_vars to store 2xn_elements to store
+		stk_dst=--data->vm_stk_current; // dst first read
 		n_element_left_to_store--; // first read
 
 	vm_store_next:
 		store_lst_setter_functions=NULL;
-		so_container_ref=NULL;
-		so_container_slot_ref=NULL;
-		container_slot_store_id_slot=0;
-		container_slot_store_ptr_stk=NULL;
+		container_slot=NULL;
+
 		stk_src=stk_load_multi_var_src; // store ptr instruction2 op as src_var_value
 		//stk_dst=stk_result_op2;
 		stk_result_op2=stk_dst;
@@ -58,13 +53,9 @@ namespace zetscript{
 		//- check if ptr stk
 		if((stk_dst->properties & STK_PROPERTY_PTR_STK)!=0) {
 			stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
-		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE){
-			ContainerSlotData 	*	container_slot_store=((ContainerSlotData *)stk_dst->value);
-			so_container_ref=container_slot_store->so_container_ref;
-			so_container_slot_ref=container_slot_store->so_container_slot_ref;
-			container_slot_store_id_slot=container_slot_store->id_slot;
-			container_slot_store_ptr_stk=stk_dst=container_slot_store->ptr_stk;
-			delete container_slot_store;
+		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT){
+			container_slot=((ContainerSlotData *)stk_dst->value);
+			stk_dst=container_slot->ptr_stk;
 		}else{
 			if((stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR)==0){
 				VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
@@ -101,7 +92,7 @@ namespace zetscript{
 
 		if(store_lst_setter_functions!=NULL){
 
-			StackElement *stk_vm_start=data->stk_vm_current;\
+			StackElement *stk_vm_start=data->vm_stk_current;\
 			StackElement *stk_arg=stk_vm_start+1; //start from stk_src
 			const char *__STR_SETTER_METAMETHOD__=byte_code_metamethod_to_symbol_str(BYTE_CODE_METAMETHOD_SET);\
 			const char *__STR_AKA_SETTER_METAMETHOD__=byte_code_metamethod_to_operator_str(BYTE_CODE_METAMETHOD_SET);\
@@ -177,7 +168,7 @@ namespace zetscript{
 					,stk_arg\
 				);\
 			}\
-			data->stk_vm_current=stk_vm_start;
+			data->vm_stk_current=stk_vm_start;
 
 		}else{ // store through script assignment
 
@@ -243,6 +234,10 @@ namespace zetscript{
 				if(stk_src_ref_value_copy_aux!=NULL)(*(bool *)stk_src_ref_value_copy_aux)=*((bool *)stk_src_ref_value);
 			}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
 				*stk_dst=*stk_src;
+			}else if(stk_src_properties  &  (STK_PROPERTY_CONTAINER_SLOT) ){
+				VM_STOP_EXECUTEF(
+						"Container slot implemented"
+				);
 			}else if(
 				STK_IS_SCRIPT_OBJECT_STRING(stk_src)
 							||
@@ -277,54 +272,54 @@ namespace zetscript{
 			}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){// object we pass its reference
 
 				so_aux=(ScriptObject *)stk_src->value;
-				bool is_ciclic_reference=false;
+				bool is_cyclic_reference=false;
 
 				// already share and src is type container and dst is slot:
 				// becomes a weak pointer to avoid possibly cyclic reference
 				if(//(so_aux->shared_pointer->data.n_shares>0)
 					   (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
-					&& (container_slot_store_ptr_stk!=NULL)){
+					&& (container_slot!=NULL)){
 
 					StackElement *stk_obj=NULL;
 
 
 					// More tests would be needed see issue #336
-					if(so_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+					if(container_slot->so_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 						printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'\n"
-								,so_aux
+								,(void *)so_aux
 								,so_aux->getScriptType()->str_script_type.c_str()
-								,so_container_ref
-								,(int)container_slot_store_id_slot
-								,so_container_ref->getScriptType()->str_script_type.c_str()
+								,(void *)container_slot->so_container_ref
+								,(int)container_slot->id_slot
+								,container_slot->so_container_ref->getScriptType()->str_script_type.c_str()
 
 						);
-						stk_obj=((VectorScriptObject *)so_container_ref)->getUserElementAt(container_slot_store_id_slot);
+						stk_obj=((VectorScriptObject *)container_slot->so_container_ref)->getUserElementAt((int)container_slot->id_slot);
 					}else{
 						// object
 						printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'\n"
-								,so_aux
+								,(void *)so_aux
 								,so_aux->getScriptType()->str_script_type.c_str()
-								,so_container_ref
-								,(const char *)container_slot_store_id_slot
-								,so_container_ref->getScriptType()->str_script_type.c_str()
+								,(void *)container_slot->so_container_ref
+								,(const char *)container_slot->id_slot
+								,container_slot->so_container_ref->getScriptType()->str_script_type.c_str()
 
 						);
-						stk_obj=so_container_ref->getProperty((const char *)container_slot_store_id_slot);
+						stk_obj=container_slot->so_container_ref->getProperty((const char *)container_slot->id_slot);
 					}
 
 
-					if(so_container_slot_ref==NULL){
+					/*if(so_container_slot_ref==NULL){
 						// get root node from container
 						so_container_slot_ref=so_container_ref->getScriptObjectContainerSlotRoot();
 
-					}
+					}*/
 
 					// create script object container slot
 					auto script_object_container_slot=new ContainerSlotScriptObject(
-							 so_container_ref // dst where src container will stored
+							container_slot->so_container_ref // dst where src container will stored
 							,(ContainerScriptObject *)so_aux // src which container is stored
-							,container_slot_store_id_slot
-							,container_slot_store_ptr_stk
+							,container_slot->id_slot
+							,container_slot->ptr_stk
 					);
 
 
@@ -340,10 +335,12 @@ namespace zetscript{
 					}
 
 					// finally adds to container slot hierarchy
-					so_container_slot_ref->add(
-							script_object_container_slot
-							,is_ciclic_reference
+					container_slot->so_container_ref->setContainerSlot(
+							container_slot
 					);
+
+					// check cyclic reference
+					is_cyclic_reference=container_slot->so_container_ref==so_aux;
 
 					//so_aux->addContainerSlot(script_object_container_slot);//(ScriptObject **)&stk_obj->value);
 
@@ -352,7 +349,7 @@ namespace zetscript{
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 				}
 
-				if(is_ciclic_reference==false){
+				if(is_cyclic_reference==false){
 					if(!vm_share_script_object(_vm,so_aux)){
 						goto lbl_exit_function;
 					}
@@ -362,6 +359,10 @@ namespace zetscript{
 				VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
 					,stk_to_typeof_str(data->zs,stk_src).c_str()
 				);
+			}
+
+			if(container_slot != NULL){
+				delete container_slot;
 			}
 
 			if(stk_src_ref_value_copy_aux!=NULL){
@@ -395,7 +396,7 @@ namespace zetscript{
 		}
 
 		if(n_element_left_to_store-- > 0){
-			stk_dst=--data->stk_vm_current;//stk_multi_var_dest++; // left assigment
+			stk_dst=--data->vm_stk_current;//stk_multi_var_dest++; // left assigment
 			stk_src=++stk_load_multi_var_src; // result on the right
 			goto vm_store_next;
 		}

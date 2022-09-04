@@ -38,7 +38,7 @@ namespace zetscript{
 		if(
 			(instruction-1)->byte_code == BYTE_CODE_NEW_OBJECT_BY_TYPE
 		){
-			stk_result_op1=(data->stk_vm_current-1);
+			stk_result_op1=(data->vm_stk_current-1);
 		}
 		else{
 			VM_POP_STK_ONE; // get var op1 and symbol op2
@@ -104,9 +104,9 @@ namespace zetscript{
 				goto lbl_exit_function;
 			 }
 
-			data->stk_vm_current->value=(zs_int)somf;
-			data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
-			data->stk_vm_current++;
+			data->vm_stk_current->value=(zs_int)somf;
+			data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;
+			data->vm_stk_current++;
 
 			goto lbl_exit_function_ok;
 
@@ -119,8 +119,8 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
 					,str_symbol_aux1
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
-					,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-					,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+					,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
+					,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
 					,str_symbol_aux1
 				);
 			}
@@ -145,17 +145,17 @@ namespace zetscript{
 							,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
 							,str_symbol_aux1
 							,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
-							,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+							,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
 							,sc_type->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
-							,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+							,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
 							,str_symbol_aux1
 						);
 					}
 				}
 
 				// create new property initialized as undefined
-				if((stk_var=so_aux->addProperty((const char *)str_symbol_aux1, data->vm_error_str))==NULL){
-					VM_STOP_EXECUTEF(data->vm_error_str.c_str());
+				if((stk_var=so_aux->addProperty((const char *)str_symbol_aux1, data->vm_error_description))==NULL){
+					VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 				}
 
 				if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
@@ -170,9 +170,9 @@ namespace zetscript{
 				}
 			}
 			else{ // not exists
-				data->stk_vm_current->value=0;
-				data->stk_vm_current->properties=STK_PROPERTY_UNDEFINED;
-				data->stk_vm_current++;
+				data->vm_stk_current->value=0;
+				data->vm_stk_current->properties=STK_PROPERTY_UNDEFINED;
+				data->vm_stk_current++;
 			}
 			goto lbl_exit_function_ok;
 		}else{
@@ -183,8 +183,8 @@ namespace zetscript{
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
 					,(const char *)str_symbol_aux1
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
-					,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
-					,stk_to_typeof_str(data->zs,data->stk_vm_current).c_str()
+					,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
+					,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
 					,(const char *)str_symbol_aux1
 					,stk_to_typeof_str(data->zs,stk_var).c_str()
 				);
@@ -206,7 +206,7 @@ namespace zetscript{
 
 					if(
 							// Pass the object if the value is object type >= TYPE_SCRIPT_OBJECT_CLASS ...
-							STK_IS_SCRIPT_OBJECT_CLASS(data->stk_vm_current)
+							STK_IS_SCRIPT_OBJECT_CLASS(data->vm_stk_current)
 						||(
 								// ... or return value itself if the next instruction is not for store
 								(
@@ -217,7 +217,7 @@ namespace zetscript{
 						  )
 
 					){
-						data->stk_vm_current++;
+						data->vm_stk_current++;
 						goto lbl_exit_function_ok;
 					}
 				}
@@ -227,7 +227,7 @@ namespace zetscript{
 
 
 		if((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM){ // fast load access without pass through switch instruction
-			*data->stk_vm_current++=*stk_var;
+			*data->vm_stk_current++=*stk_var;
 			instruction++; // we have to inc current instruction...
 			(*_instruction_it)++; //... and instruction iterator
 			goto load_next_element_object;
@@ -247,7 +247,7 @@ namespace zetscript{
 			}
 		}
 		else{ // only read
-			*data->stk_vm_current++=*stk_var;
+			*data->vm_stk_current++=*stk_var;
 		}
 
 	lbl_exit_function_ok:
@@ -282,7 +282,7 @@ namespace zetscript{
 						,stk_mp_aux->member_property->metamethod_members.getter->name.c_str()
 				);
 				/* getter requires stack to save value and avoid destroy previuos value*/
-				stk_result=data->stk_vm_current;
+				stk_result=data->vm_stk_current;
 			}else{
 				VM_STOP_EXECUTE(
 						"Property '%s' does not implements _get metamethod",SFI_GET_SYMBOL_NAME(_calling_function,instruction)
@@ -321,7 +321,7 @@ namespace zetscript{
 
 			VM_POP_STK_TWO; // first must be a string that describes variable name and the other the variable itself ...
 
-			stk_var=(data->stk_vm_current-1);
+			stk_var=(data->vm_stk_current-1);
 			if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_var) == 0){
 				VM_STOP_EXECUTE("Expected object but is type '%s'",stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_var));
 			}
@@ -336,8 +336,8 @@ namespace zetscript{
 
 			//const char *str = (const char *)stk_result_op1->value;
 			stk_src=stk_result_op2;
-			if((stk_var =so_aux->addProperty(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op1),data->vm_error_str))==NULL){
-				VM_STOP_EXECUTEF(data->vm_error_str.c_str());
+			if((stk_var =so_aux->addProperty(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op1),data->vm_error_description))==NULL){
+				VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 			}
 
 			stk_dst=stk_var;
@@ -345,8 +345,8 @@ namespace zetscript{
 
 			VM_POP_STK_ONE; // only pops the value, the last is the vector variable itself
 
-			if((data->stk_vm_current-1)->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				so_aux = (ScriptObject *)(data->stk_vm_current-1)->value;
+			if((data->vm_stk_current-1)->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				so_aux = (ScriptObject *)(data->vm_stk_current-1)->value;
 				if(so_aux->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
 					// op1 is now the src value ...
 					stk_src=stk_result_op1;
@@ -496,15 +496,15 @@ lbl_exit_function:
 					if(stk_var == NULL){
 						if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
 							if((stk_var =((ObjectScriptObject *)so_aux)->addProperty(
-									stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2), data->vm_error_str)
+									stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2), data->vm_error_description)
 							)==NULL){
-								VM_STOP_EXECUTEF(data->vm_error_str.c_str());
+								VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 							}
 						}
 					}
 				}
 				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
-					*data->stk_vm_current++=*stk_var;
+					*data->vm_stk_current++=*stk_var;
 				}else{
 					// dest to write
 					if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
@@ -528,13 +528,13 @@ lbl_exit_function:
 
 				zs_char *ptr_char=(zs_char *)&((zs_string *)((StringScriptObject *)so_aux)->value)->c_str()[stk_result_op2->value];
 				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
-					data->stk_vm_current->value=((zs_int)(*ptr_char));
-					data->stk_vm_current->properties=STK_PROPERTY_ZS_INT;
+					data->vm_stk_current->value=((zs_int)(*ptr_char));
+					data->vm_stk_current->properties=STK_PROPERTY_ZS_INT;
 				}else{ // push stk
-					data->stk_vm_current->value=(zs_int)ptr_char;
-					data->stk_vm_current->properties=STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR;
+					data->vm_stk_current->value=(zs_int)ptr_char;
+					data->vm_stk_current->properties=STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR;
 				}
-				data->stk_vm_current++;
+				data->vm_stk_current++;
 				goto lbl_exit_ok;
 			}else{
 				VM_STOP_EXECUTEF("Expected String,Vector or Object for access '[]' operation"); \

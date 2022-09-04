@@ -21,7 +21,7 @@
 #define STK_IS_SCRIPT_OBJECT_CLASS(stk) 				(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type>=zetscript::IDX_TYPE_SCRIPT_OBJECT_CLASS))
 #define STK_IS_SCRIPT_OBJECT_VAR_REF(stk) 				(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_VAR_REF))
 #define STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk)		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER))
-#define STK_IS_SCRIPT_OBJECT_ZETSCRIPT_OBJECT(stk) 		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_CLASS_ZETSCRIPT))
+#define STK_IS_SCRIPT_OBJECT_ZETSCRIPT_OBJECT(stk) 		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_ZETSCRIPT))
 #define STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk)		(((stk)->properties & zetscript::STK_PROPERTY_SCRIPT_OBJECT) && (((zetscript::ScriptObject *)(stk)->value)->idx_script_type==zetscript::IDX_TYPE_SCRIPT_OBJECT_CONTAINER_SLOT))
 
 #define STK_GET_STK_VAR_REF(stk)  						(((VarRefScriptObject *)((stk))->value)->getStackElementPtr())
@@ -91,7 +91,7 @@ namespace zetscript{
 		STK_PROPERTY_IS_C_VAR_PTR 			= STK_PROPERTY_MAX, 		// 0x0200 ptr to C
 		STK_PROPERTY_PTR_STK				=0x0800,	 				// 0x0400
 		STK_PROPERTY_READ_ONLY				=0x1000,
-		STK_PROPERTY_CONTAINER_SLOT_READ_TO_CONTAINER_SLOT_WRITE	=0x2000
+		STK_PROPERTY_CONTAINER_SLOT			=0x2000
 
 	}StkProperty;
 

@@ -412,12 +412,12 @@ namespace zetscript{
 						,&_stk_arg_c_function[i-idx_arg_start]
 						,_c_function->params[i].idx_script_type
 						,(zs_int *)&converted_param[i]
-						,data->vm_error_str
+						,data->vm_error_description
 				)){
 					VM_ERROR_AND_RET("Function '%s', param %i: %s",
 						_c_function->name_script_function.c_str(),
 						i,
-						data->vm_error_str.c_str()
+						data->vm_error_description.c_str()
 					);
 				}
 			}
@@ -930,10 +930,10 @@ namespace zetscript{
 
 		// check for return values through stack
 
-		*data->stk_vm_current++=to_stk(data->zs,result,idx_script_type_return);
+		*data->vm_stk_current++=to_stk(data->zs,result,idx_script_type_return);
 
 		StackElement *sf_call_stk_return=(_stk_arg_c_function+_n_args); // +1 points to starting return...
-		int sf_call_n_returned_arguments_from_function=data->stk_vm_current-sf_call_stk_return;
+		int sf_call_n_returned_arguments_from_function=data->vm_stk_current-sf_call_stk_return;
 
 
 		// return all elements in reverse order in order to get right assignment ...

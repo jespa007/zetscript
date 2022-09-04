@@ -25,32 +25,32 @@
 
 
 #define VM_POP_STK_ONE_LOAD2 \
-stk_result_op2=--data->stk_vm_current;\
-stk_result_op1=(data->stk_vm_current-1);
+stk_result_op2=--data->vm_stk_current;\
+stk_result_op1=(data->vm_stk_current-1);
 
 #define VM_POP_STK_TWO_LOAD2 \
-stk_result_op2=--data->stk_vm_current;\
-stk_result_op1=--data->stk_vm_current;
+stk_result_op2=--data->vm_stk_current;\
+stk_result_op1=--data->vm_stk_current;
 
 #define VM_POP_STK_ONE \
-stk_result_op1=--data->stk_vm_current;
+stk_result_op1=--data->vm_stk_current;
 
 
 #define VM_POP_STK_TWO \
 	switch(instruction->properties & INSTRUCTION_PROPERTY_ILOAD){\
 	default:\
 	case 0: /* no optimization get 2 ops */ \
-		stk_result_op2=--data->stk_vm_current;\
-		stk_result_op1=--data->stk_vm_current;\
+		stk_result_op2=--data->vm_stk_current;\
+		stk_result_op1=--data->vm_stk_current;\
 		break;\
 	case INSTRUCTION_PROPERTY_ILOAD_K: /* only perfom with one constant*/\
-		 stk_result_op1=--data->stk_vm_current;\
+		 stk_result_op1=--data->vm_stk_current;\
 		 stk_result_op2=&stk_aux1;\
 		 stk_result_op2->value=instruction->value_op2;\
 		 stk_result_op2->properties = INSTRUCTION_CONST_TO_STK_CONST_PROPERTY(instruction->properties);\
 		 break;\
 	case INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
-		 stk_result_op1=--data->stk_vm_current;\
+		 stk_result_op1=--data->vm_stk_current;\
 		 LOAD_STK_FROM_INSTRUCTION(stk_result_op2,instruction->value_op1,instruction->properties);\
 		 break;\
 	case INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\

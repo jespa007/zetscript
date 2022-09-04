@@ -6,12 +6,12 @@
 #include "vm_byte_code_operation.h"
 
 #define LOAD_OPS_SET_OPERATION \
-stk_result_op1=--data->stk_vm_current;\
+stk_result_op1=--data->vm_stk_current;\
 EXTRACT_STK_RESULT_OP1 \
 if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op1)){ \
 	stk_result_op1=(StackElement *)(STK_GET_STK_VAR_REF(stk_result_op1)->value); \
 } \
-stk_result_op2=--data->stk_vm_current;\
+stk_result_op2=--data->vm_stk_current;\
 if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	stk_result_op2=(StackElement *)((STK_GET_STK_VAR_REF(stk_result_op2)->value)); \
 }
@@ -54,7 +54,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->stk_vm_current=stk_start;\
+		data->vm_stk_current=stk_start;\
 	}\
 
 
@@ -95,7 +95,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->stk_vm_current=stk_start;\
+		data->vm_stk_current=stk_start;\
 	}\
 
 #define VM_OPERATION_DIV_SET() \
@@ -147,7 +147,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->stk_vm_current=stk_start;\
+		data->vm_stk_current=stk_start;\
 	}\
 
 
@@ -200,7 +200,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		break;\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->stk_vm_current=stk_start;\
+		data->vm_stk_current=stk_start;\
 	}\
 
 #define VM_OPERATION_BINARY_SET(__C_OP__, __METAMETHOD__)\
@@ -224,6 +224,6 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		}\
 	}\
 	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
-		data->stk_vm_current=stk_start;\
+		data->vm_stk_current=stk_start;\
 	}\
 

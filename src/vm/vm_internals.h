@@ -150,41 +150,39 @@ namespace zetscript{
 	struct VirtualMachineData{
 
 
-		 bool				vm_error,vm_error_max_stack_reached;
-		 zs_string			vm_error_str;
-		 zs_string			vm_error_file;
-		 int 				vm_error_line;
-		 zs_string 			vm_error_callstack_str;
-		 char				vm_str_metamethod_aux[100];
-		 char				vm_str_aux[2][100];
-		 VM_ScopeFunction	*vm_current_scope_function;
-		 VM_ScopeFunction	vm_scope_function[VM_FUNCTION_CALL_MAX];
+		 bool									vm_error,vm_error_max_stack_reached;
+		 zs_string								vm_error_description;
+		 zs_string								vm_error_file;
+		 int 									vm_error_line;
+		 zs_string 								vm_error_callstack_str;
+		 char									vm_str_metamethod_aux[100];
+		 char									vm_str_aux[2][100];
+		 VM_ScopeFunction					*	vm_current_scope_function;
+		 VM_ScopeFunction						vm_scope_function[VM_FUNCTION_CALL_MAX];
 
 
-		 StackElement     	vm_stack[VM_STACK_MAX];
-		 zs_vector<InfoLifetimeObject *>			lifetime_object;
+		 StackElement     						vm_stack[VM_STACK_MAX];
+		 zs_vector<InfoLifetimeObject *>		lifetime_object;
 
 		 // global vars show be initialized to stack array taking the difference (the registered variables on the main function) - global_vars ...
-		StackElement *stk_vm_current;
-		ScriptFunction  *main_function_object;
-		ScriptType *main_class_object;
+		StackElement 						*	vm_stk_current;
+		ScriptFunction  					*	main_function_object;
+		ScriptType 							*	main_class_object;
 
-		int idx_last_statment;
-		const ScriptFunction *current_call_c_function;
+		const ScriptFunction 				*	current_call_c_function;
 		ZetScript *zs;
-		ScriptFunctionFactory 	*script_function_factory;
-		ScriptTypeFactory 		*script_type_factory;
-		ScopeFactory 			*scope_factory;
+		ScriptFunctionFactory 				*	script_function_factory;
+		ScriptTypeFactory 					*	script_type_factory;
+		ScopeFactory 						*	scope_factory;
+		zs_map_int								containers_with_container_slots;
 
-		StackElement stk_aux;
+		//StackElement 							stk_aux;
 
 		VirtualMachineData(ZetScript *_zs){
 			memset(&vm_stack,0,sizeof(vm_stack));
 
-			stk_vm_current=NULL;
+			vm_stk_current=NULL;
 			vm_current_scope_function = vm_scope_function;
-
-			idx_last_statment=0;
 
 			main_function_object = NULL;
 			main_class_object=NULL;

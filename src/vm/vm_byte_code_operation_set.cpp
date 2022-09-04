@@ -45,7 +45,7 @@ namespace zetscript{
 		}
 
 
-		LOAD_PROPERTIES(_byte_code_metamethod); /* saves stk_aux1 --> stk_vm_current points to stk_result_op2 that is the a parameter to pass */\
+		LOAD_PROPERTIES(_byte_code_metamethod); /* saves stk_aux1 --> vm_stk_current points to stk_result_op2 that is the a parameter to pass */\
 		setter_info=ptr_metamethod_members_aux->getSetterInfo(_byte_code_metamethod);
 		if(setter_info.setters->size()==0){\
 			METAMETHOD_OPERATION_NOT_FOUND(_byte_code_metamethod); \
@@ -73,7 +73,7 @@ namespace zetscript{
 				,_instruction\
 				,false\
 				,data->vm_str_metamethod_aux
-				,data->stk_vm_current \
+				,data->vm_stk_current \
 				,1))==NULL\
 			){ \
 				if(member_property!=NULL){ \
@@ -123,13 +123,13 @@ namespace zetscript{
 			);\
 		}else{ /* store object */ \
 			if(_stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				data->stk_vm_current->value=(zs_int)so_aux;\
-				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
+				data->vm_stk_current->value=(zs_int)so_aux;\
+				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
-				*data->stk_vm_current=stk_aux1;
+				*data->vm_stk_current=stk_aux1;
 			}
 		}
-		data->stk_vm_current++;\
+		data->vm_stk_current++;\
 
 		return true;
 

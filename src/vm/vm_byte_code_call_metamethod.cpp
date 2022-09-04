@@ -73,8 +73,8 @@ namespace zetscript{
 		ret_obj.setUndefined();
 
 		// init stk
-		stk_vm_current_backup=data->stk_vm_current;
-		stk_args=data->stk_vm_current;
+		stk_vm_current_backup=data->vm_stk_current;
+		stk_args=data->vm_stk_current;
 
 		// op1/op2 should be the object that have the metamethod
 		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)){
@@ -106,10 +106,10 @@ namespace zetscript{
 		//------------------------------------
 		// push stk results...
 		if(_is_static == true){
-			*data->stk_vm_current++=*stk_result_op1;
-			*data->stk_vm_current++=*stk_result_op2;
+			*data->vm_stk_current++=*stk_result_op1;
+			*data->vm_stk_current++=*stk_result_op2;
 		}else{
-			*data->stk_vm_current++=*stk_result_op2;
+			*data->vm_stk_current++=*stk_result_op2;
 		}
 		//------------------------------------
 
@@ -196,7 +196,7 @@ namespace zetscript{
 		}
 
 		stk_return=(stk_args+n_stk_local_symbols );
-		n_returned_arguments_from_function=data->stk_vm_current-stk_return;
+		n_returned_arguments_from_function=data->vm_stk_current-stk_return;
 
 		if(n_returned_arguments_from_function==0){
 			error_found="Metamethod function should return a value";
@@ -206,7 +206,7 @@ namespace zetscript{
 		// setup all returned variables from function
 		for(int i=0; i < n_returned_arguments_from_function; i++){
 
-			StackElement *stk_ret = --data->stk_vm_current;
+			StackElement *stk_ret = --data->vm_stk_current;
 
 			// if a scriptvar --> init shared
 			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -228,9 +228,9 @@ namespace zetscript{
 
 
 		// reset stack...
-		data->stk_vm_current=stk_vm_current_backup;
+		data->vm_stk_current=stk_vm_current_backup;
 
-		*data->stk_vm_current++ = ret_obj;
+		*data->vm_stk_current++ = ret_obj;
 
 		return data->vm_error == false;
 
@@ -325,13 +325,13 @@ namespace zetscript{
 			);\
 		}else{ /* store object */ \
 			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
-				data->stk_vm_current->value=(zs_int)so_aux;\
-				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
+				data->vm_stk_current->value=(zs_int)so_aux;\
+				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
-				*data->stk_vm_current=__STK_VAR_COPY__;\
+				*data->vm_stk_current=__STK_VAR_COPY__;\
 			}\
 		}\
-		data->stk_vm_current++;\
+		data->vm_stk_current++;\
 
 		/* call post operation metamethod */\
 		VM_INNER_CALL(\
@@ -399,13 +399,13 @@ lbl_exit_function:
 			);\
 		}else{ /* store object */ \
 			if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){\
-				data->stk_vm_current->value=(zs_int)so_aux;\
-				data->stk_vm_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
+				data->vm_stk_current->value=(zs_int)so_aux;\
+				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
-				*data->stk_vm_current=__STK_VAR_COPY__;\
+				*data->vm_stk_current=__STK_VAR_COPY__;\
 			}\
 		}\
-		data->stk_vm_current++;\
+		data->vm_stk_current++;\
 
 		return true;
 
