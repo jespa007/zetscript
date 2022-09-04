@@ -113,7 +113,6 @@ namespace zetscript{
 		// execute init for variable members (not dynamic)
 		callConstructorMemberVariables(script_type);
 
-		initContainer();
 	}
 
 	ScriptFunction *ClassScriptObject::getConstructorFunction(){

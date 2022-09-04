@@ -203,26 +203,6 @@ namespace zetscript{
 
 	};
 
-	struct ContainerSlotData{
-		ContainerSlotScriptObject  	*	so_container_slot_ref; 	// it references the slot container (if NULL is the first node of hierarchy)
-		ContainerScriptObject  		*	so_container_ref; 		// it references the container src
-		zs_int 		  					id_slot;
-		StackElement  				*	ptr_stk; // should have ContainerSlotScriptObject
-
-		ContainerSlotData(
-				ContainerSlotScriptObject	*	_so_container_slot_ref
-				,ContainerScriptObject  	*	_so_container_ref
-				,zs_int 	  					_id_slot
-				,StackElement 				*	_ptr_stk
-		){
-			so_container_slot_ref=_so_container_slot_ref;
-			so_container_ref=_so_container_ref;
-			id_slot=_id_slot;
-			ptr_stk=_ptr_stk;
-		}
-
-	};
-
 	bool vm_call_metamethod(
 			VirtualMachine			*	_vm
 			,ScriptFunction 		*	_calling_function

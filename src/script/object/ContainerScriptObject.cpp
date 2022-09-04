@@ -9,33 +9,48 @@ namespace zetscript{
 
 
 	ContainerScriptObject::ContainerScriptObject(){
-		root=NULL;
+		container_slots=NULL;
 	}
 
-	void ContainerScriptObject::initContainer(){
-		root=new ContainerSlotScriptObject(
-				this,this,0,NULL
-		);
+	zs_list<ContainerSlot *>	*ContainerScriptObject::getListContainerSlotsRef(){
+		return container_slots;
 	}
 
-	void ContainerScriptObject::init(ZetScript *_zs){
-		ScriptObject::init(_zs);
-		initContainer();
+	void ContainerScriptObject::addSlot(ContainerSlot *_container_slot, ContainerScriptObject	 	*	_src_so_container_ref){
+		zs_list_node<ContainerSlot *>  	*node=_container_slot->setSrcContainerRef(_src_so_container_ref);
+		if(container_slots==NULL){
+			container_slots=new zs_list<ContainerSlot *>;
+		}
+		container_slots->insert(node);
+
 	}
 
-	/*zs_list<ContainerSlotScriptObject *>	*ContainerScriptObject::getListContainerSlotsRef(){
-		return &so_container_slots;
-	}*/
 
-	ContainerSlotScriptObject 				*ContainerScriptObject::getScriptObjectContainerSlotRoot(){
-		return root;
+	void ContainerScriptObject::removeSlot(ContainerSlot *_container_slot, VM_ScopeBlock 	*	_scope_block){
+		if(_container_slot!=NULL){
+
+
+			auto container_slot_node=_container_slot->getContainerSlotNode();
+
+			container_slots->remove(container_slot_node);
+
+			// if not ciclic, unref
+			if(_container_slot->isCyclicReference()==false){
+				vm_unref_shared_script_object(vm,_container_slot->getSrcContainerRef(),_scope_block );
+			}
+
+			delete _container_slot;
+
+		}
 	}
 
-	/*void ContainerScriptObject::printReferences(){
+
+
+	void ContainerScriptObject::printReferences(){
 
 		int count=0;
 
-		auto current = so_container_slots.first;
+		/*auto current = so_container_slots.first;
 		if(current!=NULL){
 			do{
 				count+=current->data->countReferences(this);
@@ -44,14 +59,14 @@ namespace zetscript{
 			}while(current!=so_container_slots.first);
 		}
 
-		printf("Ciclic references %i Shared references %i\n",root->countReferences(this),this->shared_pointer->data.n_shares);
-	}*/
+		printf("Ciclic references %i Shared references %i\n",root->countReferences(this),this->shared_pointer->data.n_shares);*/
+	}
 
 	ContainerScriptObject::~ContainerScriptObject(){
 
-		if(root != NULL){
-			root->removeChilds();
-			delete root;
+		if(container_slots != NULL){
+			delete container_slots;
+			printf("TODO DELETE CONTAINER SLOTS");
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace zetscript{
 		ScriptType					*	sc_type=NULL;
 		Symbol 						*	sf_member=NULL;
 		MemberFunctionScriptObject 	*	somf=NULL;
-		ContainerSlotScriptObject	*	so_container_slot_ref=NULL;
+		ContainerSlot	*	so_container_slot_ref=NULL;
 
 		if(
 				instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE
@@ -65,7 +65,7 @@ namespace zetscript{
 		}
 
 		if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
-			so_container_slot_ref=(ContainerSlotScriptObject *)stk_result_op1->value;
+			so_container_slot_ref=(ContainerSlot *)stk_result_op1->value;
 			so_aux=so_container_slot_ref->getSrcContainerRef();
 		}
 		else{
@@ -159,7 +159,7 @@ namespace zetscript{
 				}
 
 				if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
-					VM_PUSH_CONTAINER_SLOT_DATA(
+					VM_PUSH_CONTAINER_SLOT(
 							so_container_slot_ref
 							,(ContainerScriptObject *)so_aux
 							,(zs_int)str_symbol_aux1
@@ -236,7 +236,7 @@ namespace zetscript{
 		// load its value for write
 		if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
 			if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
-				VM_PUSH_CONTAINER_SLOT_DATA(
+				VM_PUSH_CONTAINER_SLOT(
 						so_container_slot_ref
 						,(ContainerScriptObject *)so_aux
 						,(zs_int)str_symbol_aux1
@@ -438,7 +438,7 @@ lbl_exit_function:
 		const char 					*	str_symbol_aux1=NULL;
 		StackElement					stk_aux1;
 		Instruction					*	instruction=_instruction;
-		ContainerSlotScriptObject 	*	so_container_slot_ref=NULL;
+		ContainerSlot 	*	so_container_slot_ref=NULL;
 
 		VM_POP_STK_TWO;
 		so_aux=NULL;
@@ -454,7 +454,7 @@ lbl_exit_function:
 			so_container_slot_ref=NULL;
 
 			if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
-				so_container_slot_ref=(ContainerSlotScriptObject *)stk_result_op1->value;
+				so_container_slot_ref=(ContainerSlot *)stk_result_op1->value;
 				so_aux=so_container_slot_ref->getSrcContainerRef();
 			}else{
 				so_aux=(ScriptObject *)stk_result_op1->value;
@@ -509,7 +509,7 @@ lbl_exit_function:
 					// dest to write
 					if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
 
-						VM_PUSH_CONTAINER_SLOT_DATA(
+						VM_PUSH_CONTAINER_SLOT(
 								so_container_slot_ref
 								,(ContainerScriptObject *)so_aux
 								,(zs_int)str_symbol_aux1

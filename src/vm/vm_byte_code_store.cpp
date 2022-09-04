@@ -16,7 +16,7 @@ namespace zetscript{
 		zs_vector<StackElement *> 	*		store_lst_setter_functions=NULL;
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
-		ContainerSlotData			*		container_slot=NULL;
+		ContainerSlot				*		container_slot=NULL;
 		void 						*		stk_src_ref_value_copy_aux=NULL;
 		StackElement 				*		stk_result_op2=NULL;
 		zs_int 						*		stk_src_ref_value=NULL;
@@ -54,7 +54,7 @@ namespace zetscript{
 		if((stk_dst->properties & STK_PROPERTY_PTR_STK)!=0) {
 			stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
 		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT){
-			container_slot=((ContainerSlotData *)stk_dst->value);
+			container_slot=((ContainerSlot *)stk_dst->value);
 			stk_dst=container_slot->ptr_stk;
 		}else{
 			if((stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR)==0){
@@ -273,6 +273,8 @@ namespace zetscript{
 
 				so_aux=(ScriptObject *)stk_src->value;
 				bool is_cyclic_reference=false;
+				ContainerScriptObject *dst_so_container_ref=container_slot->getDstContainerRef();
+				zs_int dst_container_slot_id=container_slot->getIdSlot();
 
 				// already share and src is type container and dst is slot:
 				// becomes a weak pointer to avoid possibly cyclic reference
@@ -282,29 +284,28 @@ namespace zetscript{
 
 					StackElement *stk_obj=NULL;
 
-
 					// More tests would be needed see issue #336
-					if(container_slot->so_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+					if(dst_so_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 						printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'\n"
 								,(void *)so_aux
 								,so_aux->getScriptType()->str_script_type.c_str()
-								,(void *)container_slot->so_container_ref
-								,(int)container_slot->id_slot
-								,container_slot->so_container_ref->getScriptType()->str_script_type.c_str()
+								,(void *)dst_so_container_ref
+								,dst_container_slot_id
+								,dst_so_container_ref->getScriptType()->str_script_type.c_str()
 
 						);
-						stk_obj=((VectorScriptObject *)container_slot->so_container_ref)->getUserElementAt((int)container_slot->id_slot);
+						stk_obj=((VectorScriptObject *)dst_so_container_ref)->getUserElementAt((int)dst_container_slot_id);
 					}else{
 						// object
 						printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'\n"
 								,(void *)so_aux
 								,so_aux->getScriptType()->str_script_type.c_str()
-								,(void *)container_slot->so_container_ref
-								,(const char *)container_slot->id_slot
-								,container_slot->so_container_ref->getScriptType()->str_script_type.c_str()
+								,(void *)dst_so_container_ref
+								,(const char *)dst_container_slot_id
+								,dst_so_container_ref->getScriptType()->str_script_type.c_str()
 
 						);
-						stk_obj=container_slot->so_container_ref->getProperty((const char *)container_slot->id_slot);
+						stk_obj=dst_so_container_ref->getProperty((const char *)dst_container_slot_id);
 					}
 
 
@@ -315,32 +316,33 @@ namespace zetscript{
 					}*/
 
 					// create script object container slot
-					auto script_object_container_slot=new ContainerSlotScriptObject(
+					/*auto script_object_container_slot=new ContainerSlot(
 							container_slot->so_container_ref // dst where src container will stored
 							,(ContainerScriptObject *)so_aux // src which container is stored
 							,container_slot->id_slot
 							,container_slot->ptr_stk
-					);
+					);*/
 
 
-					stk_dst->value=(intptr_t)script_object_container_slot;
-					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+					//stk_dst->value=(intptr_t)script_object_container_slot;
+					//stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 
-					if(!vm_create_shared_script_object(_vm,script_object_container_slot)){
+
+					/*if(!vm_create_shared_script_object(_vm,script_object_container_slot)){
 						goto lbl_exit_function;
 					}
 
 					if(!vm_share_script_object(_vm,script_object_container_slot)){
 						goto lbl_exit_function;
-					}
+					}*/
 
 					// finally adds to container slot hierarchy
-					container_slot->so_container_ref->setContainerSlot(
-							container_slot
+					container_slot->setSrcContainerRef(
+							(ContainerScriptObject *)so_aux
 					);
 
 					// check cyclic reference
-					is_cyclic_reference=container_slot->so_container_ref==so_aux;
+					is_cyclic_reference=container_slot->isCyclicReference();
 
 					//so_aux->addContainerSlot(script_object_container_slot);//(ScriptObject **)&stk_obj->value);
 

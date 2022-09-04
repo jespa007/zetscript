@@ -101,7 +101,7 @@ namespace zetscript{
 		// TODO: replace zs_vector by zs_map_int to search ref_objects/container_slot_assignments quickly
 		zs_list<RefObjectScriptObject *>		*	ref_objects;
 		//zs_vector<RefObject *>			    	*   ref_script_objects;
-		//zs_vector<ContainerSlotScriptObject *>	*   container_slot_assignments;
+		//zs_vector<ContainerSlot *>	*   container_slot_assignments;
 
 		virtual void								init(ZetScript *zs);
 
@@ -110,7 +110,7 @@ namespace zetscript{
 		virtual StackElement 					* 	newBuiltinSlot();
 		virtual StackElement 					* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 		bool 										unrefAndFreeStackElementContainer(StackElement *si);
-		//int 										idxContainerSlot(ContainerSlotScriptObject *_wp);
+		//int 										idxContainerSlot(ContainerSlot *_wp);
 		//int 										idxRefObject(RefObject  *_ref_object);
 	};
 

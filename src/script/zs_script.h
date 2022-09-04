@@ -9,7 +9,7 @@
 #include "object/ScriptObject.h"
 #include "object/RefObjectScriptObject.h"
 #include "object/ContainerScriptObject.h"
-#include "object/ContainerSlotScriptObject.h"
+#include "object/ContainerSlot.h"
 #include "object/MemberFunctionScriptObject.h"
 #include "object/StringScriptObject.h"
 #include "object/StringScriptObjectWrap.h"

@@ -48,7 +48,7 @@ namespace zetscript{
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
 		vm=NULL;
 		ref_objects=NULL;//new zs_list<RefObject *>();
-		//container_slot_assignments=new zs_vector<ContainerSlotScriptObject *>();
+		//container_slot_assignments=new zs_vector<ContainerSlot *>();
 	}
 
 	void ScriptObject::init(ZetScript *_zs){

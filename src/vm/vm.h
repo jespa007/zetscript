@@ -102,5 +102,5 @@ namespace zetscript{
 	void vm_delete(VirtualMachine *vm);
 }
 
-#include "vm_internals.h"
+#include "vm_common.h"
 #include "vm.tcc"

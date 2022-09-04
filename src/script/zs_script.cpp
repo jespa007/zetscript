@@ -7,7 +7,7 @@
 #include 		"object/ScriptObject.cpp"
 #include 		"object/RefObjectScriptObject.cpp"
 #include 		"object/ContainerScriptObject.cpp"
-#include 		"object/ContainerSlotScriptObject.cpp"
+#include 		"object/ContainerSlot.cpp"
 #include 		"object/MemberFunctionScriptObject.cpp"
 #include		"object/StringScriptObject.cpp"
 #include		"object/StringScriptObjectWrap.cpp"

@@ -10,26 +10,22 @@
 
 namespace zetscript{
 
-	class ContainerSlotScriptObject;
+	class ContainerSlot;
 	class  ContainerScriptObject:public ScriptObject{
 	public:
 
 		ContainerScriptObject();
-		ContainerSlotScriptObject 				*getScriptObjectContainerSlotRoot();
-		zs_list<ContainerSlotScriptObject *>	*getListContainerSlotsRef();
-		void 									 printReferences();
+		ContainerSlot 				*	getScriptObjectContainerSlotRoot();
+		zs_list<ContainerSlot *>	*	getListContainerSlotsRef();
+		void							addSlot(ContainerSlot *_container_slot, ContainerScriptObject	 	*	_src_so_container_ref);
+		void 							removeSlot(ContainerSlot *_container_slot, VM_ScopeBlock 	*	_scope_block);
+		void 							printReferences();
 		~ContainerScriptObject();
-
-	protected:
-		virtual void init(ZetScript *_zs);
-		void initContainer();
 	private:
 
 		// refs where this container is referenced
-		//zs_list<ContainerSlotScriptObject *>	so_container_slots;
+		zs_list<ContainerSlot *>	*container_slots;
 
-		// root of herarchy nodes
-		ContainerSlotScriptObject 				*root;
 	};
 
 }

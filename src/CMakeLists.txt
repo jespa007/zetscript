@@ -436,8 +436,8 @@ SET(
 	script/object/ClassScriptObject.tcc
 	script/object/MemberFunctionScriptObject.h
 	script/object/ContainerScriptObject.h
-	script/object/ContainerSlotData.h
-	script/object/ContainerSlotScriptObject.h
+	script/object/ContainerSlot.h
+	script/object/ContainerSlot.h
 	script/object/ObjectScriptObject.h
 	script/object/ObjectScriptObjectWrap.h
 	script/object/ObjectIteratorScriptObject.h
@@ -467,7 +467,7 @@ SET(
 	vm/vm.cpp
 	vm/vm.h
 	vm/vm.tcc
-	vm/vm_internals.h
+	vm/vm_common.h
 	
 	# main
 	ByteCode.h
