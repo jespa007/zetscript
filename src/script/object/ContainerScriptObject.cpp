@@ -59,7 +59,7 @@ namespace zetscript{
 
 	ContainerScriptObject::~ContainerScriptObject(){
 		delete container_slots;
-		printf("TODO DELETE CONTAINER SLOTS");
+		printf("TODO DELETE CONTAINER SLOTS\n");
 
 	}
 }

@@ -23,15 +23,18 @@ namespace zetscript{
 		this->count+=_n_slots;
 	}
 
-	void zs_string::set(const char * _buffer){
+	void zs_string::set(const char * _const_char, int _length){
 
-		const char *buffer=_buffer;
+		const char *buffer=_const_char;
 		if(buffer==NULL){
 			buffer="";
 		} // do not create string from NULL pointers
 
 		__cleanup__(); // cleanup any existing data
-		count = (int)strlen(buffer);
+		count=_length;
+		if(count == npos){
+			count = (int)strlen(buffer);
+		}
 		_size=count+ZS_STRING_EXPAND_CHAR_ELEMENTS;
 		this->buf = (char *)ZS_MALLOC(sizeof(char) * _size+1); // + 1 for the keeping the null character
 		strcpy(buf, buffer); // copy from the incoming buffer to character buffer of the new object
@@ -50,19 +53,24 @@ namespace zetscript{
 		set("");
 	}
 
-	zs_string::zs_string(const char * buffer) // constructor
+	zs_string::zs_string(const char * _const_char) // constructor
 	{
 		buf=NULL;
 		count=_size=0;
-		set(buffer);
+		set(_const_char);
 	}
 
-	zs_string::zs_string(const zs_string & obj) // copy constructor
+	zs_string::zs_string(const zs_string & _obj) // copy constructor
 	{
 		buf=NULL;
 		count=_size=0;
-		set(obj);
+		set(_obj);
 	}
+
+	zs_string::zs_string(const zs_buffer & _buf){
+		set((const char *)_buf.ptr,_buf.ptr_len);
+	}
+
 
 	zs_string::zs_string(zs_string && _str_tmp) // move constructor
 	// && is a reference operator defined in the C++11 standard

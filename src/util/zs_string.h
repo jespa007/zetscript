@@ -12,8 +12,9 @@ namespace zetscript{
 		static int npos;
 
 		zs_string();
-		zs_string(const char * buffer);
-		zs_string(const zs_string & obj);
+		zs_string(const char * _const_char);
+		zs_string(const zs_string & _obj);
+		zs_string(const zs_buffer & _buf);
 		zs_string(zs_string && _str_tmp);
 
 		zs_string& operator=(const zs_string & obj);
@@ -88,7 +89,7 @@ namespace zetscript{
 		static zs_string new_from_two(const char *_s1,const char *_s2);
 
 		void set(const zs_string & _s);
-		void set(const char * _s);
+		void set(const char * _s, int _length=npos);
 		void inc_slots(int _n_slots);
 		void __cleanup__();
 	};
