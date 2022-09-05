@@ -17,8 +17,11 @@ namespace zetscript{
 		ContainerScriptObject();
 		ContainerSlot 				*	getScriptObjectContainerSlotRoot();
 		zs_list<ContainerSlot *>	*	getListContainerSlotsRef();
-		void							addSlot(ContainerSlot *_container_slot, ContainerScriptObject	 	*	_src_so_container_ref);
+
+		// Container src references should use 'addSlots' and 'removeSlot'
+		void							addSlot(ContainerSlot *_container_slot);
 		void 							removeSlot(ContainerSlot *_container_slot, VM_ScopeBlock 	*	_scope_block);
+
 		void 							printReferences();
 		~ContainerScriptObject();
 	private:

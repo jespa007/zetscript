@@ -50,7 +50,6 @@ namespace zetscript{
 		IDX_TYPE_FUNCTION, // function a(){}
 		IDX_TYPE_SCRIPT_OBJECT_VAR_REF,
 		IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER,
-		IDX_TYPE_SCRIPT_OBJECT_CONTAINER_SLOT,
 		IDX_TYPE_SCRIPT_OBJECT_ZETSCRIPT, // zetscript
 		//--------------------------------------------------------------------------------------------------------------------->
 		// RESERVED FOR ZETSCRIPT BUILT-IN CLASSES STARTS STARTS FROM "IDX_TYPE_SCRIPT_OBJECT_STRING". PLEASE DONT'T MOVE!!!!!

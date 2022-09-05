@@ -270,6 +270,12 @@ namespace zetscript{
 			,unsigned char 			_n_args
 		);
 
+		void vm_assign_container_slot(
+			VirtualMachine *_vm
+			, ContainerSlot *_container_slot
+			, ContainerScriptObject *_src_so_container_ref
+		);
+
 }
 
 

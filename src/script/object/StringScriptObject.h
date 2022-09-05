@@ -34,6 +34,7 @@ namespace zetscript{
 		StringScriptObject();
 
 		void set(const zs_string & _s);
+		const char *getConstChar();
 		virtual int length();
 		virtual zs_string toString();
 

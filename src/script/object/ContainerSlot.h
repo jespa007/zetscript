@@ -15,9 +15,6 @@ namespace zetscript{
 
 	public:
 
-
-
-
 		StackElement  								*	ptr_stk;
 
 		ContainerSlot(
@@ -26,11 +23,11 @@ namespace zetscript{
 			// id slot dst stored
 			,zs_int 						_id_slot
 
-			// stk dst slot element
+			// stk element where slot is stored
 			,StackElement  				*	_ptr_stk
 		);
 
-		zs_list_node<ContainerSlot *>  	*	setSrcContainerRef(ContainerScriptObject	 	*	_src_so_container_ref);
+		void								setSrcContainerRef(ContainerScriptObject	 	*	_src_so_container_ref);
 		ContainerScriptObject			*	getSrcContainerRef();
 		ContainerScriptObject			*	getDstContainerRef();
 

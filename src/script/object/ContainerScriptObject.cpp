@@ -9,20 +9,15 @@ namespace zetscript{
 
 
 	ContainerScriptObject::ContainerScriptObject(){
-		container_slots=NULL;
+		container_slots=new zs_list<ContainerSlot *>;
 	}
 
 	zs_list<ContainerSlot *>	*ContainerScriptObject::getListContainerSlotsRef(){
 		return container_slots;
 	}
 
-	void ContainerScriptObject::addSlot(ContainerSlot *_container_slot, ContainerScriptObject	 	*	_src_so_container_ref){
-		zs_list_node<ContainerSlot *>  	*node=_container_slot->setSrcContainerRef(_src_so_container_ref);
-		if(container_slots==NULL){
-			container_slots=new zs_list<ContainerSlot *>;
-		}
-		container_slots->insert(node);
-
+	void ContainerScriptObject::addSlot(ContainerSlot *_container_slot){
+		_container_slot->setSrcContainerRef(this);
 	}
 
 
@@ -63,10 +58,8 @@ namespace zetscript{
 	}
 
 	ContainerScriptObject::~ContainerScriptObject(){
+		delete container_slots;
+		printf("TODO DELETE CONTAINER SLOTS");
 
-		if(container_slots != NULL){
-			delete container_slots;
-			printf("TODO DELETE CONTAINER SLOTS");
-		}
 	}
 }

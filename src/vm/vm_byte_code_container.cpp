@@ -44,7 +44,7 @@ namespace zetscript{
 			VM_POP_STK_ONE; // get var op1 and symbol op2
 		}
 
-		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT)!= STK_PROPERTY_SCRIPT_OBJECT)
+		if((stk_result_op1->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_CONTAINER_SLOT)) == 0)
 		{
 			if((instruction-1)->byte_code==BYTE_CODE_LOAD_OBJECT_ITEM){
 				VM_STOP_EXECUTE(
@@ -64,7 +64,7 @@ namespace zetscript{
 			}
 		}
 
-		if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
+		if(stk_result_op1->properties & STK_PROPERTY_CONTAINER_SLOT){
 			so_container_slot_ref=(ContainerSlot *)stk_result_op1->value;
 			so_aux=so_container_slot_ref->getSrcContainerRef();
 		}
@@ -296,30 +296,32 @@ namespace zetscript{
 	}
 
 	bool vm_push_container_item(
-		VirtualMachine 	*	_vm
-		,ScriptObject 	*	_this_object
-		,ScriptFunction *	_calling_function
-		,Instruction 	*	_instruction
-		,StackElement 	*	_stk_local_var
-		,bool				_is_object
+		VirtualMachine 			*	_vm
+		,ScriptObject 			*	_this_object
+		,ScriptFunction 		*	_calling_function
+		,Instruction 			*	_instruction
+		,StackElement 			*	_stk_local_var
+		,bool						_is_object
 	){
-		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
-		StackElement 		*	stk_result_op1=NULL;
-		StackElement 		*	stk_result_op2=NULL;
-		ScriptObject 		*	so_aux=NULL;
-		StackElement 		*	stk_src=NULL,
-							*	stk_dst=NULL,
-							*	stk_var=NULL;
+		VirtualMachineData 		*	data=(VirtualMachineData *)_vm->data;
+		StackElement 			*	stk_result_op1=NULL;
+		StackElement 			*	stk_result_op2=NULL;
+		ContainerScriptObject 	*	dst_container=NULL;
+		ScriptObject 			*	so_aux=NULL;
+		StackElement 			*	stk_src=NULL,
+								*	stk_dst=NULL,
+								*	stk_var=NULL;
 
-		StackElement			stk_aux1;
-		void				*	stk_src_ref_value=NULL,
-							*	stk_dst_ref_value=NULL;
-		uint16_t				stk_src_properties=0;
-		Instruction			*	instruction=_instruction;
+		StackElement				stk_aux1;
+		void					*	stk_src_ref_value=NULL,
+								*	stk_dst_ref_value=NULL;
+		uint16_t					stk_src_properties=0;
+		Instruction				*	instruction=_instruction;
+		zs_int						id_slot=ZS_IDX_UNDEFINED;
 
 		if(_is_object==true){
 
-			VM_POP_STK_TWO; // first must be a string that describes variable name and the other the variable itself ...
+			VM_POP_STK_TWO; // first must be a string that describes property name and the other the variable itself ...
 
 			stk_var=(data->vm_stk_current-1);
 			if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_var) == 0){
@@ -340,6 +342,7 @@ namespace zetscript{
 				VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 			}
 
+			id_slot=(zs_int)(((StringScriptObject *)stk_result_op1->value)->getConstChar());
 			stk_dst=stk_var;
 		}else{ // is vector
 
@@ -354,6 +357,7 @@ namespace zetscript{
 						stk_src=(StackElement *)stk_result_op1->value;
 					}
 
+					id_slot=((VectorScriptObject *)so_aux)->length();
 					stk_dst=((VectorScriptObject *)so_aux)->pushNewUserSlot();
 				}
 			}
@@ -362,6 +366,8 @@ namespace zetscript{
 				VM_STOP_EXECUTEF("Expected vector object");
 			}
 		}
+
+		dst_container=(ContainerScriptObject *)so_aux;
 
 		//------
 		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){ \
@@ -400,9 +406,27 @@ namespace zetscript{
 				}\
 				((StringScriptObject *)so_aux)->set(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_src));\
 			}else{ \
-				so_aux=(ScriptObject *)stk_src->value;\
-				stk_dst->value=(intptr_t)so_aux;\
-				stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
+
+				if(
+					   (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
+				){
+
+					ContainerScriptObject *src_container=(ContainerScriptObject *)so_aux;\
+
+					ContainerSlot *container_slot=new ContainerSlot(
+						dst_container
+						,id_slot
+						,stk_dst
+					);
+
+					src_container->addSlot(container_slot);
+				}else{
+					// is not container
+					stk_dst->value=(intptr_t)so_aux;\
+					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
+				}
+
+				// share always because it's not possible have cyclic reference of each push item object/vector
 				if(!vm_share_script_object(_vm,so_aux)){\
 					goto lbl_exit_function;\
 				}\
@@ -453,7 +477,7 @@ lbl_exit_function:
 
 			so_container_slot_ref=NULL;
 
-			if(STK_IS_SCRIPT_OBJECT_CONTAINER_SLOT(stk_result_op1)){
+			if(stk_result_op1->properties & STK_PROPERTY_CONTAINER_SLOT){
 				so_container_slot_ref=(ContainerSlot *)stk_result_op1->value;
 				so_aux=so_container_slot_ref->getSrcContainerRef();
 			}else{

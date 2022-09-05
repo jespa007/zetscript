@@ -296,6 +296,10 @@ namespace zetscript{
 		*((zs_string *)value) = zs_strutils::unescape(_s);
 	}
 
+	const char *StringScriptObject::getConstChar(){
+		return ((zs_string *)value)->c_str();
+	}
+
 	zs_string StringScriptObject::toString(){
 		return *((zs_string *)value);
 	}

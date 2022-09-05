@@ -529,6 +529,46 @@ namespace zetscript{
 		delete data;
 		free(vm);
 	}
+
+	void vm_assign_container_slot(
+			VirtualMachine *_vm
+			, ContainerSlot *_container_slot
+			, ContainerScriptObject *_src_so_container_ref
+	){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
+
+		ContainerScriptObject *dst_so_container_ref=_container_slot->getDstContainerRef();
+		zs_int dst_container_slot_id=_container_slot->getIdSlot();
+
+		StackElement *stk_obj=NULL;
+
+		// More tests would be needed see issue #336
+		if(dst_so_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
+			printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'\n"
+					,(void *)_src_so_container_ref
+					,_src_so_container_ref->getScriptType()->str_script_type.c_str()
+					,(void *)dst_so_container_ref
+					,dst_container_slot_id
+					,dst_so_container_ref->getScriptType()->str_script_type.c_str()
+
+			);
+			stk_obj=((VectorScriptObject *)dst_so_container_ref)->getUserElementAt((int)dst_container_slot_id);
+		}else{
+			// object
+			printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'\n"
+					,(void *)_src_so_container_ref
+					,_src_so_container_ref->getScriptType()->str_script_type.c_str()
+					,(void *)dst_so_container_ref
+					,(const char *)dst_container_slot_id
+					,dst_so_container_ref->getScriptType()->str_script_type.c_str()
+
+			);
+			stk_obj=dst_so_container_ref->getProperty((const char *)dst_container_slot_id);
+		}
+
+		// finally adds to container slot hierarchy
+		_src_so_container_ref->addSlot(_container_slot);
+	}
 }
 
 
