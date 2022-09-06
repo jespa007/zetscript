@@ -548,7 +548,7 @@ namespace zetscript{
 					,(void *)_src_so_container_ref
 					,_src_so_container_ref->getScriptType()->str_script_type.c_str()
 					,(void *)dst_so_container_ref
-					,dst_container_slot_id
+					,(int)dst_container_slot_id
 					,dst_so_container_ref->getScriptType()->str_script_type.c_str()
 
 			);
