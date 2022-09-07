@@ -53,7 +53,7 @@ namespace zetscript{
 		InfoSharedPointerNode 	* 	shared_pointer; // 8
 		short						idx_script_type; // 2
 
-		ScriptObject();
+		ScriptObject(ZetScript *zs);
 
 		Symbol 						*	getGetter();
 		zs_vector<StackElement *> 	*	getSetterList(ByteCodeMetamethod _byte_code_metamethod);
@@ -99,12 +99,8 @@ namespace zetscript{
 		zs_map    								*	map_builtin_properties; // to search faster each property by its name
 
 		// TODO: replace zs_vector by zs_map_int to search ref_objects/container_slot_assignments quickly
+
 		zs_list<RefObjectScriptObject *>		*	ref_objects;
-		//zs_vector<RefObject *>			    	*   ref_script_objects;
-		//zs_vector<ContainerSlot *>	*   container_slot_assignments;
-
-		virtual void								init(ZetScript *zs);
-
 		ScriptTypeFactory						*	getScriptTypeFactory();
 
 		virtual StackElement 					* 	newBuiltinSlot();

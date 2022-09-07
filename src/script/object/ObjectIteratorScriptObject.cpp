@@ -7,27 +7,25 @@
 
 namespace zetscript{
 
-	ObjectIteratorScriptObject * ObjectIteratorScriptObject::newObjectIteratorScriptObject(ObjectScriptObject *_oo){
-		ObjectIteratorScriptObject *oi= new ObjectIteratorScriptObject(_oo);
-		return oi;
+	ObjectIteratorScriptObject * ObjectIteratorScriptObject::newObjectIteratorScriptObject(
+			ZetScript *_zs
+			,ObjectScriptObject *_so_ref){
+		return new ObjectIteratorScriptObject(_zs,_so_ref);
 	}
 
-	void ObjectIteratorScriptObject::setup(){
-			idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT;
-			vm=NULL;
-			stk_key.setUndefined();
-			stk_key.properties=(STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR);
-	}
 
-	ObjectIteratorScriptObject::ObjectIteratorScriptObject(){
-		setup();
-	}
 
-	ObjectIteratorScriptObject::ObjectIteratorScriptObject(ObjectScriptObject *_oo){
-		setup();
+	ObjectIteratorScriptObject::ObjectIteratorScriptObject(
+		ZetScript *_zs
+		,ObjectScriptObject *_so_ref
+	):RefObjectScriptObject(_zs,_so_ref){
+		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT;
+		vm=NULL;
+		stk_key.setUndefined();
+		stk_key.properties=(STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR);
+
 		// setup object
-		this->init(_oo->getZetScript());
-		it=_oo->getMapUserProperties()->begin();
+		it=_so_ref->getMapUserProperties()->begin();
 	}
 
 

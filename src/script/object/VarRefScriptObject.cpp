@@ -7,15 +7,15 @@
 
 namespace zetscript{
 
-	VarRefScriptObject * VarRefScriptObject::newVarRefScriptObject(ZetScript *zs,StackElement stk){//,int idx_call){
-		VarRefScriptObject *so=new VarRefScriptObject();
-		so->setStackElement(stk);
-		so->init(zs);
-		//so->setIdxCall(idx_call);
+	VarRefScriptObject * VarRefScriptObject::newVarRefScriptObject(ZetScript *_zs,StackElement _stk){//,int idx_call){
+		VarRefScriptObject *so=new VarRefScriptObject(_zs);
+		so->setStackElement(_stk);
 		return so;
 	}
 
-	VarRefScriptObject::VarRefScriptObject(){
+	VarRefScriptObject::VarRefScriptObject(
+			ZetScript *_zs
+	):ScriptObject(_zs){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_VAR_REF;
 		stk_var_ref.setUndefined();
 		//idx_call=ZS_IDX_UNDEFINED;

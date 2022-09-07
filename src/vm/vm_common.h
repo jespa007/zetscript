@@ -19,7 +19,7 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 	return NULL;
 
 
-#define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(_stk_return, _n_return,_with_share) \
+#define CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(_stk_return, _n_return) \
 		for(int i=0; i < _n_return; i++){\
 			StackElement *stk_ret = _stk_return+i;\
 			if(stk_ret->properties & STK_PROPERTY_SCRIPT_OBJECT){\
@@ -128,6 +128,9 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 				,_metamethod\
 		);\
 		goto lbl_exit_function;
+
+#define VM_STK_IS_GLOBAL(stk_var) \
+		((stk_var - data->vm_stack)< data->main_function_object->local_variables->size())
 
 namespace zetscript{
 

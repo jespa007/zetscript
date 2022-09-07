@@ -340,7 +340,9 @@ namespace zetscript{
 			 case  BYTE_CODE_RET:
 				for(stk_var=data->vm_stk_current-1;stk_var>=stk_start;stk_var--){ // can return something. value is +1 from stack
 					// if scriptvariable and in the zeros list, deattach
-					if(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					if(
+						(stk_var->properties & STK_PROPERTY_SCRIPT_OBJECT)
+					){
 						if(vm_unref_script_object_for_ret(_vm, stk_var)==false){
 							return;
 						}

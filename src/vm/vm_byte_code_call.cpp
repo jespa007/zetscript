@@ -52,7 +52,7 @@ namespace zetscript{
 		}
 		n_returned_args_afun=data->vm_stk_current-stk_def_afun_start;
 		/* we share pointer (true second arg) to not remove on pop in calling return */
-		CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun,false);
+		CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun);
 
 		/* reset stack */
 		data->vm_stk_current=stk_def_afun_start;
@@ -199,12 +199,13 @@ load_function:
 			  ScriptObject *sofm_object=sofm->getRefObject();
 			  if(sofm_object==NULL){
 				  VM_STOP_EXECUTE(
-						  "Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced"
-						  ,sofm->so_function->name_script_function.c_str()
-						  , SFI_GET_SYMBOL_NAME(_calling_function,instruction));
+					  "Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced"
+					  ,sofm->sf_ref->name_script_function.c_str()
+					  , SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+				  );
 			  }
 			  sf_call_calling_object=sofm_object;
-			  sf_call_script_function=sofm->so_function;
+			  sf_call_script_function=sofm->sf_ref;
 			  sf_call_is_member_function=true;
 			}else{
 				sf_call_is_member_function=false;
@@ -531,7 +532,7 @@ execute_function:
 			sf_call_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
 
 			// setup all returned variables from function
-			CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function,false)
+			CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function)
 
 			if((instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK)==0){
 

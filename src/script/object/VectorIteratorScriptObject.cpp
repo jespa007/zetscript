@@ -7,30 +7,23 @@
 
 namespace zetscript{
 
-	VectorIteratorScriptObject * VectorIteratorScriptObject::newVectorIteratorScriptObject(VectorScriptObject *_so){
-		VectorIteratorScriptObject *si= new VectorIteratorScriptObject(_so);
-
-		return si;
+	VectorIteratorScriptObject * VectorIteratorScriptObject::newVectorIteratorScriptObject(
+			ZetScript *_zs
+			, VectorScriptObject *_so_ref
+	){
+		return new VectorIteratorScriptObject(_zs,_so_ref);
 	}
 
 
-	void VectorIteratorScriptObject::setup(){
+	VectorIteratorScriptObject::VectorIteratorScriptObject(
+		ZetScript *_zs
+		, VectorScriptObject *_so_ref
+	):RefObjectScriptObject(_zs,_so_ref)
+	{
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR;
-		vm=NULL;
 		idx=0;
 		stk_key.properties=STK_PROPERTY_ZS_INT;
 		stk_value.properties=STK_PROPERTY_ZS_INT;
-	}
-
-	VectorIteratorScriptObject::VectorIteratorScriptObject(){
-		setup();
-	}
-
-	VectorIteratorScriptObject::VectorIteratorScriptObject(VectorScriptObject *_so){
-		setup();
-		// setup object
-		this->init(_so->getZetScript());
-
 	}
 
 	void VectorIteratorScriptObject::get(){

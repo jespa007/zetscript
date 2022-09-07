@@ -17,9 +17,8 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	StringScriptObject * StringScriptObject::newStringScriptObject(ZetScript *zs, const zs_string & _str){
-		StringScriptObject *so=new StringScriptObject();
-		so->init(zs);
+	StringScriptObject * StringScriptObject::newStringScriptObject(ZetScript *_zs, const zs_string & _str){
+		StringScriptObject *so=new StringScriptObject(_zs);
 		so->set(_str);
 
 		return so;
@@ -27,9 +26,8 @@ namespace zetscript{
 
 	StringScriptObject *StringScriptObject::newShareableStringScriptObject(ZetScript	*_zs){
 		VirtualMachine *virtual_machine = _zs->getVirtualMachine();
+		StringScriptObject *so= new StringScriptObject(_zs);
 
-		StringScriptObject *so= new StringScriptObject();
-		so->init(_zs);
 		// share this variable++
 		vm_create_shared_script_object(virtual_machine,(ScriptObject *)so);
 		vm_share_script_object(virtual_machine,(ScriptObject *)so);
@@ -286,7 +284,9 @@ namespace zetscript{
 	//
 	//----------------------------------------------
 
-	StringScriptObject::StringScriptObject(){
+	StringScriptObject::StringScriptObject(
+			ZetScript *_zs
+	):ScriptObject(_zs){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_STRING;
 		default_str_value = "";
 		value = &default_str_value;

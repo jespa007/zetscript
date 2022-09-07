@@ -7,28 +7,21 @@
 
 namespace zetscript{
 
-	StringIteratorScriptObject * StringIteratorScriptObject::newStringIteratorScriptObject(StringScriptObject *_so){
-		StringIteratorScriptObject *si= new StringIteratorScriptObject(_so);
-		return si;
+	StringIteratorScriptObject * StringIteratorScriptObject::newStringIteratorScriptObject(
+			ZetScript *_zs
+			, StringScriptObject *_so_ref
+	){
+		return new StringIteratorScriptObject(_zs,_so_ref);
 	}
 
-
-	void StringIteratorScriptObject::setup(){
+	StringIteratorScriptObject::StringIteratorScriptObject(
+			ZetScript *_zs
+			, StringScriptObject *_so_ref
+	):RefObjectScriptObject(_zs,_so_ref){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING;
-		vm=NULL;
 		idx=0;
 		stk_key.properties=STK_PROPERTY_ZS_INT;
 		stk_value.properties=STK_PROPERTY_ZS_INT;
-	}
-
-	StringIteratorScriptObject::StringIteratorScriptObject(){
-		setup();
-	}
-
-	StringIteratorScriptObject::StringIteratorScriptObject(StringScriptObject *_so){
-		setup();
-		// setup object
-		this->init(_so->getZetScript());
 	}
 
 	void StringIteratorScriptObject::get(){

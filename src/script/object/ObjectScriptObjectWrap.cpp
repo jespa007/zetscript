@@ -52,9 +52,8 @@ namespace zetscript{
 		o1->eraseUserProperty(key->c_str());
 	}
 
-	ObjectIteratorScriptObject * ObjectScriptObjectWrap_iter(ZetScript *_zs,ObjectScriptObject *oo){
-		ZS_UNUSUED_PARAM(_zs);
-		return ZS_NEW_OBJECT_ITERATOR_OBJECT(oo);
+	ObjectIteratorScriptObject * ObjectScriptObjectWrap_iter(ZetScript *_zs,ObjectScriptObject *_oo){
+		return ZS_NEW_OBJECT_ITERATOR_OBJECT(_zs,_oo);
 	}
 
 	void						 	ObjectScriptObjectWrap_append(ZetScript *_zs,ObjectScriptObject *o1,ObjectScriptObject *o2){

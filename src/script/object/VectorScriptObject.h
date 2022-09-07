@@ -27,7 +27,7 @@ namespace zetscript{
 		//
 		//----------------------------------------------
 
-		VectorScriptObject();
+		VectorScriptObject(ZetScript *_zs);
 
 		virtual StackElement * 	getUserElementAt(int idx);
 		bool 				eraseUserElementAt(int idx);

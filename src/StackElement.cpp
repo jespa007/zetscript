@@ -115,7 +115,7 @@ namespace zetscript{
 				if(so->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER){
 					MemberFunctionScriptObject *somf=(MemberFunctionScriptObject *)so;
 					ScriptType *st=somf->getRefObject()->getScriptType();
-					result= zs_string("member_function<")+st->str_script_type+"::"+somf->so_function->name_script_function+">";
+					result= zs_string("member_function<")+st->str_script_type+"::"+somf->sf_ref->name_script_function+">";
 				}else{
 					// PROTECTION: do not give you big strings, instead they will retrieve from particular parts of code like JsonSerialize or Console::*)
 					result="Object::"+zs_string(so->getTypeName());

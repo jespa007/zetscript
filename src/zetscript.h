@@ -89,7 +89,7 @@
 #define ZETSCRIPT_VERSION_PATCH 0
 
 #define ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(class_type) \
- class_type * class_type##Wrap_New(ZetScript *_zs){ ZS_UNUSUED_PARAM(_zs);return new class_type();} \
+ class_type * class_type##Wrap_New(ZetScript *_zs){ return new class_type(_zs);} \
  void class_type##Wrap_Delete(ZetScript *_zs,class_type *ptr){ ZS_UNUSUED_PARAM(_zs);delete  (class_type *)(ptr);}
 
 

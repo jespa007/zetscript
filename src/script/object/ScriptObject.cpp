@@ -43,20 +43,17 @@ namespace zetscript{
 		return true;
 	}
 
-	ScriptObject::ScriptObject(){
+	ScriptObject::ScriptObject(ZetScript *_zs){
 		idx_script_type=ZS_IDX_UNDEFINED;
 		shared_pointer=NULL;
-		zs=NULL;
+
 		map_builtin_properties=new zs_map;
 		memset(&stk_this,0,sizeof(stk_this));
 		stk_this.value=(zs_int)this;
 		stk_this.properties=STK_PROPERTY_SCRIPT_OBJECT;
-		vm=NULL;
-		ref_objects=NULL;//new zs_list<RefObject *>();
-		//container_slot_assignments=new zs_vector<ContainerSlot *>();
-	}
 
-	void ScriptObject::init(ZetScript *_zs){
+		ref_objects=NULL;//new zs_list<RefObject *>();
+
 		zs=_zs;
 		vm=_zs->getVirtualMachine();
 
@@ -81,6 +78,7 @@ namespace zetscript{
 			}
 		}
 	}
+
 
 	StackElement *ScriptObject::newBuiltinSlot(){
 		StackElement *stk=(StackElement *)ZS_MALLOC(sizeof(StackElement));

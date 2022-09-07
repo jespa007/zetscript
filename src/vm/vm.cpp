@@ -311,6 +311,7 @@ namespace zetscript{
 		 ,int 					_line
 	){
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
+		int n_stk_params=_n_stk_params;
 
 		if(_calling_function->instructions == NULL){ // no instructions do not execute
 			return k_stk_undefined;
@@ -336,7 +337,7 @@ namespace zetscript{
 			vm_reset_error_vars(_vm);
 
 			stk_start=data->vm_stack;
-			_n_stk_params=(char)data->main_function_object->local_variables->size();
+			n_stk_params=data->main_function_object->local_variables->size();
 
 		}else{ // Not main function -> allow params for other functions
 			// push param stack elements...
@@ -362,7 +363,7 @@ namespace zetscript{
 			}
 
 			StackElement *stk_it=stk_start;
-			for(int i = 0; i < _n_stk_params; i++){
+			for(int i = 0; i < n_stk_params; i++){
 				if(_stk_params[i].properties & STK_PROPERTY_SCRIPT_OBJECT){
 					ScriptObject *so=(ScriptObject *)_stk_params[i].value;
 

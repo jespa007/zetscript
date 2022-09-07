@@ -79,6 +79,8 @@ namespace zetscript{
 	}
 
 	ContainerSlot::~ContainerSlot(){
+		// set undefined the stk slot
+		*ptr_stk=k_stk_undefined;
 
 		if(container_slot_node!=NULL){
 			delete container_slot_node;

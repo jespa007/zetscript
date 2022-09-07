@@ -10,12 +10,14 @@
 namespace zetscript{
 
 	ClassScriptObject * ClassScriptObject::newScriptObjectClass(ZetScript *_zs, short _idx_script_type,void *_c_object){
-		ClassScriptObject *sc=new ClassScriptObject();
-		sc->init(_zs,_idx_script_type,_c_object);
-		return sc;
+		return new ClassScriptObject(_zs, _idx_script_type,_c_object);
 	}
 
-	ClassScriptObject::ClassScriptObject(){
+	ClassScriptObject::ClassScriptObject(
+			ZetScript *_zs
+			, short _idx_script_type
+			,void *_c_object
+	):ObjectScriptObject(_zs){
 		was_created_by_constructor=false;
 		info_function_new=NULL;
 		instruction_new=NULL;
@@ -26,24 +28,7 @@ namespace zetscript{
 		idx_script_type = IDX_TYPE_SCRIPT_OBJECT_CLASS;
 		delete_c_object_on_destroy = false; // --> user is responsible to delete C objects!
 		script_class_native=NULL;
-	}
 
-	void ClassScriptObject::callConstructorMemberVariables(ScriptType *sc ){
-		if(sc == NULL){
-			return;
-		}
-
-		if(sc->idx_base_types->size()>0){
-			callConstructorMemberVariables(this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]));
-		}
-
-		if(sc->sf_field_initializer != NULL){ // execute if only script type
-			vm_execute(vm,this,sc->sf_field_initializer);
-		}
-	}
-
-
-	void ClassScriptObject::init(ZetScript *_zs, short _idx_script_type,void *_c_object){
 		zs = _zs;
 		StackElement *se;
 		zs_string error;
@@ -112,7 +97,20 @@ namespace zetscript{
 
 		// execute init for variable members (not dynamic)
 		callConstructorMemberVariables(script_type);
+	}
 
+	void ClassScriptObject::callConstructorMemberVariables(ScriptType *sc ){
+		if(sc == NULL){
+			return;
+		}
+
+		if(sc->idx_base_types->size()>0){
+			callConstructorMemberVariables(this->zs->getScriptTypeFactory()->getScriptType(sc->idx_base_types->items[0]));
+		}
+
+		if(sc->sf_field_initializer != NULL){ // execute if only script type
+			vm_execute(vm,this,sc->sf_field_initializer);
+		}
 	}
 
 	ScriptFunction *ClassScriptObject::getConstructorFunction(){

@@ -14,7 +14,7 @@ namespace zetscript{
 	class  ContainerScriptObject:public ScriptObject{
 	public:
 
-		ContainerScriptObject();
+		ContainerScriptObject(ZetScript *_zs);
 		ContainerSlot 				*	getScriptObjectContainerSlotRoot();
 		zs_list<ContainerSlot *>	*	getListContainerSlotsRef();
 

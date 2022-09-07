@@ -17,11 +17,11 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static StringScriptObject * newStringScriptObject(ZetScript *zs, const zs_string &_str="");
+		static StringScriptObject * newStringScriptObject(ZetScript *_zs, const zs_string &_str="");
 		static StringScriptObject * newShareableStringScriptObject(ZetScript	*_zs);
 
-		static StringScriptObject * newStringScriptObjectAddStk(ZetScript *zs,StackElement *stk_result_op1,StackElement *stk_result_op2);
-		static StringScriptObject * format(ZetScript *zs,StackElement *str, StackElement *args);
+		static StringScriptObject * newStringScriptObjectAddStk(ZetScript *_zs,StackElement *_stk_result_op1,StackElement *_stk_result_op2);
+		static StringScriptObject * format(ZetScript *_zs,StackElement *_str, StackElement *_args);
 
 		//
 		// Helpers
@@ -31,7 +31,7 @@ namespace zetscript{
 		void 		*	value;	// 8
 
 
-		StringScriptObject();
+		StringScriptObject(ZetScript *_zs);
 
 		void set(const zs_string & _s);
 		const char *getConstChar();

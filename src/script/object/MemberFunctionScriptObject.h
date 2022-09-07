@@ -9,22 +9,29 @@
 namespace zetscript{
 	class MemberFunctionScriptObject:public RefObjectScriptObject{
 	public:
-		ScriptFunction *so_function;
+		ScriptFunction *sf_ref;
 
 		//----------------------------------------------
 		//
 		// Helpers
 		//
-		static MemberFunctionScriptObject * newScriptObjectMemberFunction(ZetScript *zs, ScriptObject *_so_object, ScriptFunction *_so_function);
+		static MemberFunctionScriptObject * newScriptObjectMemberFunction(
+				ZetScript *_zs
+				, ScriptObject *_so_ref
+				, ScriptFunction *_sf_ref
+		);
 		//----------------------------------------------
 		//
 		// Members
 		//
-		MemberFunctionScriptObject();
-		~MemberFunctionScriptObject();
-	private:
+		MemberFunctionScriptObject(
+				ZetScript *zs
+				,ScriptObject *_so_ref
+				, ScriptFunction *_sf_ref
+		);
 
-		void setup();
+		~MemberFunctionScriptObject();
+
 
 	};
 }

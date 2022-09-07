@@ -19,8 +19,8 @@ namespace zetscript{
 		StackMemberProperty 		*	stk_mp_aux=NULL;
 		ScriptType					*	sc_type=NULL;
 		Symbol 						*	sf_member=NULL;
-		MemberFunctionScriptObject 	*	somf=NULL;
-		ContainerSlot	*	so_container_slot_ref=NULL;
+		MemberFunctionScriptObject	*	somf=NULL;
+		ContainerSlot				*	so_container_slot_ref=NULL;
 
 		if(
 				instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE
@@ -338,7 +338,7 @@ namespace zetscript{
 
 			//const char *str = (const char *)stk_result_op1->value;
 			stk_src=stk_result_op2;
-			if((stk_var =so_aux->addProperty(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op1),data->vm_error_description))==NULL){
+			if((stk_var =so_aux->addProperty(((StringScriptObject *)stk_result_op1->value)->toString(),data->vm_error_description))==NULL){
 				VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 			}
 

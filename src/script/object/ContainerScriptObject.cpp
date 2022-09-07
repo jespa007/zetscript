@@ -8,7 +8,9 @@
 namespace zetscript{
 
 
-	ContainerScriptObject::ContainerScriptObject(){
+	ContainerScriptObject::ContainerScriptObject(
+			ZetScript *_zs
+	):ScriptObject(_zs){
 		container_slots=new zs_list<ContainerSlot *>;
 	}
 

@@ -28,7 +28,7 @@ namespace zetscript{
 		//----------------------------------------------
 
 
-		ObjectScriptObject();
+		ObjectScriptObject(ZetScript	*_zs);
 
 		virtual StackElement * addProperty(
 				const zs_string &  symbol_value

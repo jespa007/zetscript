@@ -64,7 +64,7 @@ namespace zetscript{
 
 	VectorIteratorScriptObject * VectorScriptObjectWrap_iter(ZetScript *_zs,VectorScriptObject *so){
 		ZS_UNUSUED_PARAM(_zs);
-		return ZS_NEW_OBJECT_ITERATOR_VECTOR(so);
+		return ZS_NEW_OBJECT_ITERATOR_VECTOR(_zs,so);
 	}
 
 	bool 							VectorScriptObjectWrap_contains(ZetScript *_zs,VectorScriptObject *sv, StackElement *stk_to_compare){

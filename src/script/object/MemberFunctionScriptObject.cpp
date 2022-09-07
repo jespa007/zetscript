@@ -6,27 +6,21 @@
 
 namespace zetscript{
 
-	MemberFunctionScriptObject * MemberFunctionScriptObject::newScriptObjectMemberFunction(ZetScript *zs, ScriptObject *_so_object, ScriptFunction *_so_function){
-		MemberFunctionScriptObject *sofm=new MemberFunctionScriptObject();
-		sofm->init(zs);
+	MemberFunctionScriptObject * MemberFunctionScriptObject::newScriptObjectMemberFunction(ZetScript *_zs, ScriptObject *_so_object_ref, ScriptFunction *_sf_ref){
 
-		if(_so_object->idx_script_type<IDX_TYPE_SCRIPT_OBJECT_STRING){
-			THROW_RUNTIME_ERRORF("Internal:Expected script variable type >= IDX_TYPE_SCRIPT_OBJECT_STRING");
-		}
-
-		sofm->so_function=_so_function;
-		//sofm->so_object->refObject(&sofm->so_object);
-		return sofm;
+		return new MemberFunctionScriptObject(_zs,_so_object_ref,_sf_ref);
 	}
 
-	MemberFunctionScriptObject::MemberFunctionScriptObject(){
-		setup();
-	}
-
-	void MemberFunctionScriptObject::setup(){
+	MemberFunctionScriptObject::MemberFunctionScriptObject(
+			ZetScript *_zs
+			, ScriptObject *_so_ref
+			, ScriptFunction *_sf_ref
+	):RefObjectScriptObject(_zs, _so_ref){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER;
-		this->so_function=NULL;
+		this->sf_ref=_sf_ref;
 	}
+
+
 
 	MemberFunctionScriptObject::~MemberFunctionScriptObject(){
 	}

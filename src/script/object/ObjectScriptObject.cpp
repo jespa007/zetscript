@@ -11,16 +11,13 @@ namespace zetscript{
 	// Helpers
 	//
 	ObjectScriptObject * ObjectScriptObject::newScriptObjectObject(ZetScript	*_zs){
-		ObjectScriptObject *ac= new ObjectScriptObject();
-		ac->init(_zs);
-		return ac;
+		return new ObjectScriptObject(_zs);
 	}
 
 	ObjectScriptObject *ObjectScriptObject::newShareableScriptObjectObject(ZetScript	*_zs){
 		VirtualMachine *virtual_machine = _zs->getVirtualMachine();
+		ObjectScriptObject *so= new ObjectScriptObject(_zs);
 
-		ObjectScriptObject *so= new ObjectScriptObject();
-		so->init(_zs);
 		// share this variable++
 		vm_create_shared_script_object(virtual_machine,(ScriptObject *)so);
 		vm_share_script_object(virtual_machine,(ScriptObject *)so);
@@ -61,7 +58,9 @@ namespace zetscript{
 	//
 	//----------------------------------------------
 
-	ObjectScriptObject::ObjectScriptObject(){
+	ObjectScriptObject::ObjectScriptObject(
+			ZetScript	*_zs
+	):ContainerScriptObject(_zs){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_OBJECT;
 		map_user_properties=new zs_map();
 	}

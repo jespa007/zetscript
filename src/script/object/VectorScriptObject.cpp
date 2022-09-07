@@ -10,25 +10,25 @@ namespace zetscript{
 	//
 	// Helpers
 	//
-	VectorScriptObject * VectorScriptObject::newVectorScriptObject(ZetScript *zs){
-		VectorScriptObject *sv=new VectorScriptObject();
-		sv->init(zs);
-
-		return sv;
+	VectorScriptObject * VectorScriptObject::newVectorScriptObject(ZetScript *_zs){
+		return new VectorScriptObject(_zs);
 	}
 
 	VectorScriptObject *VectorScriptObject::newShareableVectorScriptObject(ZetScript	*_zs){
 		VirtualMachine *virtual_machine = _zs->getVirtualMachine();
+		VectorScriptObject *so= new VectorScriptObject(_zs);
 
-		VectorScriptObject *so= new VectorScriptObject();
-		so->init(_zs);
 		// share this variable++
 		vm_create_shared_script_object(virtual_machine,(ScriptObject *)so);
 		vm_share_script_object(virtual_machine,(ScriptObject *)so);
 		return so;
 	}
 
-	VectorScriptObject * VectorScriptObject::newVectorScriptObjectAdd(ZetScript *zs,VectorScriptObject *v1,VectorScriptObject *v2){
+	VectorScriptObject * VectorScriptObject::newVectorScriptObjectAdd(
+			ZetScript *zs
+			,VectorScriptObject *v1
+			,VectorScriptObject *v2
+	){
 		VectorScriptObject *so_vector = ZS_NEW_VECTOR_OBJECT(zs);
 
 		for(int i=0; i < v1->stk_user_elements.size();i++){
@@ -38,7 +38,6 @@ namespace zetscript{
 		for(int i=0; i < v2->stk_user_elements.size();i++){
 			so_vector->push((StackElement *)v2->stk_user_elements.items[i]);
 		}
-
 
 		return so_vector;
 	}
@@ -51,7 +50,9 @@ namespace zetscript{
 	//----------------------------------------------
 
 
-	VectorScriptObject::VectorScriptObject(){
+	VectorScriptObject::VectorScriptObject(
+			ZetScript *_zs
+	):ContainerScriptObject(_zs){
 		this->idx_script_type=IDX_TYPE_SCRIPT_OBJECT_VECTOR;
 	}
 

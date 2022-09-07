@@ -4,10 +4,15 @@
  */
 
 namespace zetscript{
-	RefObjectScriptObject::RefObjectScriptObject(){
-		ref_object_node=NULL;
-		ref_object=NULL;
+	RefObjectScriptObject::RefObjectScriptObject(
+			ZetScript *_zs
+			, ScriptObject *_so_ref
+	):ScriptObject(_zs){
+		ref_object=_so_ref;
 		ref_object_node=new zs_list_node<RefObjectScriptObject *>;
+		ref_object_node->data=this;
+
+		ref_object->attachRefObjectNode(ref_object_node);
 	}
 
 

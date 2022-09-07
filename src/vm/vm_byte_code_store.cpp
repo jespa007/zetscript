@@ -235,7 +235,7 @@ namespace zetscript{
 				*stk_dst=*stk_src;
 			}else if(stk_src_properties  &  (STK_PROPERTY_CONTAINER_SLOT) ){
 				VM_STOP_EXECUTEF(
-						"Container slot implemented"
+						"Container slot not implemented"
 				);
 			}else if(
 				STK_IS_SCRIPT_OBJECT_STRING(stk_src)

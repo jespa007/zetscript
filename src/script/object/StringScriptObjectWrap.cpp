@@ -144,6 +144,6 @@ namespace zetscript{
 
 	StringIteratorScriptObject * StringScriptObjectWrap_iter(ZetScript *_zs,StringScriptObject *so){
 		ZS_UNUSUED_PARAM(_zs);
-		return ZS_NEW_OBJECT_ITERATOR_STRING(so);
+		return ZS_NEW_OBJECT_ITERATOR_STRING(_zs,so);
 	}
 }

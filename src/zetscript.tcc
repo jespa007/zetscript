@@ -1487,7 +1487,7 @@ namespace zetscript{
 
 		template <  typename F>
 		std::function<F> ZetScript::bindScriptFunction(MemberFunctionScriptObject *fun, const char *file, int line){
-			return bindScriptFunction<F>(fun->so_function,fun->getRefObject(), file, line);
+			return bindScriptFunction<F>(fun->sf_ref,fun->getRefObject(), file, line);
 		}
 
 		template <  typename F>

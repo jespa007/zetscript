@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define ZS_NEW_OBJECT_ITERATOR_STRING(so) (StringIteratorScriptObject::newStringIteratorScriptObject(so))
+#define ZS_NEW_OBJECT_ITERATOR_STRING(zs,so) (StringIteratorScriptObject::newStringIteratorScriptObject(zs,so))
 
 namespace zetscript{
 
@@ -16,15 +16,21 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static StringIteratorScriptObject * newStringIteratorScriptObject(StringScriptObject *so);
+		static StringIteratorScriptObject * newStringIteratorScriptObject(
+				ZetScript *_zs
+				,StringScriptObject *_so_ref
+		);
 
 		//
 		// Helpers
 		//
 		//----------------------------------------------
 
-		StringIteratorScriptObject();
-		StringIteratorScriptObject(StringScriptObject *so);
+		//StringIteratorScriptObject();
+		StringIteratorScriptObject(
+				ZetScript *_zs
+				,StringScriptObject *_so_ref
+		);
 		void get();
 		void next();
 		bool end();

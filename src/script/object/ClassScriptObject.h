@@ -20,8 +20,7 @@ namespace zetscript{
 
 			static ClassScriptObject * newScriptObjectClass(ZetScript *_zs,short _idx_script_type,void *  _c_object=NULL);
 
-			ClassScriptObject();
-			void init(ZetScript *_zs, short _idx_script_type,void *_c_object);
+			ClassScriptObject(ZetScript *_zs,short _idx_script_type,void *  _c_object=NULL);
 
 			template<typename _C>
 			_C to();

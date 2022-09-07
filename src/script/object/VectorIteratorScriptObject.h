@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define ZS_NEW_OBJECT_ITERATOR_VECTOR(so) (VectorIteratorScriptObject::newVectorIteratorScriptObject(so))
+#define ZS_NEW_OBJECT_ITERATOR_VECTOR(zs,so) (VectorIteratorScriptObject::newVectorIteratorScriptObject(zs,so))
 
 namespace zetscript{
 
@@ -16,15 +16,14 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static VectorIteratorScriptObject * newVectorIteratorScriptObject(VectorScriptObject *vo);
+		static VectorIteratorScriptObject * newVectorIteratorScriptObject(ZetScript *_zs, VectorScriptObject *_so_ref);
 
 		//
 		// Helpers
 		//
 		//----------------------------------------------
 
-		VectorIteratorScriptObject();
-		VectorIteratorScriptObject(VectorScriptObject *vo);
+		VectorIteratorScriptObject(ZetScript *_zs,VectorScriptObject *_so_ref);
 		void get();
 		void next();
 		bool end();
@@ -35,7 +34,6 @@ namespace zetscript{
 		StackElement stk_key;
 		StackElement stk_value;
 
-		void setup();
 	};
 
 }
