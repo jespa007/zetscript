@@ -49,6 +49,7 @@
 #define STK_VALUE_IS_BOOLEAN(stk) 						((stk)->properties & STK_PROPERTY_BOOL)
 #define STK_VALUE_IS_UNDEFINED(stk) 					((stk)->properties == STK_PROPERTY_UNDEFINED)
 #define STK_VALUE_IS_NULL(stk) 							((stk)->properties == STK_PROPERTY_NULL)
+#define STK_VALUE_IS_CONTAINER_SLOT(stk)				((stk)->properties & STK_PROPERTY_CONTAINER_SLOT)
 #define STK_VALUE_IS_FUNCTION(stk) 						((stk)->properties & STK_PROPERTY_FUNCTION)
 #define STK_VALUE_IS_TYPE(stk) 							((stk)->properties & STK_PROPERTY_TYPE)
 #define STK_VALUE_IS_MEMBER_PROPERTY(stk) 				((stk)->properties & STK_PROPERTY_MEMBER_PROPERTY)

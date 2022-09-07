@@ -250,12 +250,15 @@ namespace zetscript{
 		delete map_builtin_properties;
 
 		if(ref_objects!=NULL){
-			auto current_node=ref_objects->first;
+			auto first_node=ref_objects->first;
+			auto current_node=first_node;
 			if(current_node != NULL){
 				do{
-					current_node->data->setRefObject(NULL); //deref script object reference
 					current_node=current_node->next;
-				}while(current_node->next!=ref_objects->last);
+
+					current_node->data->setRefObject(NULL); //deref script object reference
+
+				}while(current_node!=first_node);
 			}
 
 			delete ref_objects;

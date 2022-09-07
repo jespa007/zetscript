@@ -210,6 +210,7 @@ namespace zetscript{
 
 		// estructures
 		SCF_BIND_STRUCT(StackElement,IDX_TYPE_STACK_ELEMENT);
+		SCF_BIND_STRUCT(ContainerSlot,IDX_TYPE_CONTAINER_SLOT);
 
 
 		//------------------------

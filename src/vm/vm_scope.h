@@ -19,12 +19,14 @@ namespace zetscript{
 		VM_ScopeBlock		*first_scope_block;
 		VM_ScopeBlock		*current_scope_block;
 		StackElement 		*stk_local_vars;
+		ScriptFunction		*calling_function;
 
 		VM_ScopeFunction(){
 			memset(scope_block,0,sizeof(scope_block));
 			stk_local_vars=NULL;
 			current_scope_block=NULL;
 			first_scope_block=scope_block;
+			calling_function=NULL;
 		}
 	};
 

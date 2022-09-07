@@ -40,9 +40,10 @@ namespace zetscript{
 	}
 
 	void RefObjectScriptObject::dettachRefObject(){
+		// if ref_object != is not already deattached
 		if(ref_object != NULL){
 			ref_object->deattachRefObjectNode(ref_object_node);
-			ref_object_node->data=NULL;
+			ref_object_node->data->ref_object=NULL;
 		}
 	}
 

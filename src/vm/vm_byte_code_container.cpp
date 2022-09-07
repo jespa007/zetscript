@@ -20,7 +20,6 @@ namespace zetscript{
 		ScriptType					*	sc_type=NULL;
 		Symbol 						*	sf_member=NULL;
 		MemberFunctionScriptObject	*	somf=NULL;
-		ContainerSlot				*	so_container_slot_ref=NULL;
 
 		if(
 				instruction->byte_code == BYTE_CODE_LOAD_THIS_VARIABLE
@@ -32,7 +31,6 @@ namespace zetscript{
 
 	load_next_element_object:
 
-		so_container_slot_ref=NULL;
 		instruction=(*_instruction_it)-1;
 
 		if(
@@ -65,8 +63,7 @@ namespace zetscript{
 		}
 
 		if(stk_result_op1->properties & STK_PROPERTY_CONTAINER_SLOT){
-			so_container_slot_ref=(ContainerSlot *)stk_result_op1->value;
-			so_aux=so_container_slot_ref->getSrcContainerRef();
+			so_aux=((ContainerSlot *)stk_result_op1->value)->getSrcContainerRef();
 		}
 		else{
 			so_aux=((ScriptObject *)stk_result_op1->value);
@@ -160,10 +157,9 @@ namespace zetscript{
 
 				if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
 					VM_PUSH_CONTAINER_SLOT(
-							so_container_slot_ref
-							,(ContainerScriptObject *)so_aux
-							,(zs_int)str_symbol_aux1
-							,stk_var
+						(ContainerScriptObject *)so_aux
+						,(zs_int)str_symbol_aux1
+						,stk_var
 					);
 				}else{
 					VM_PUSH_STK_PTR(stk_var);
@@ -237,10 +233,9 @@ namespace zetscript{
 		if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
 			if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
 				VM_PUSH_CONTAINER_SLOT(
-						so_container_slot_ref
-						,(ContainerScriptObject *)so_aux
-						,(zs_int)str_symbol_aux1
-						,stk_var
+					(ContainerScriptObject *)so_aux
+					,(zs_int)str_symbol_aux1
+					,stk_var
 				);
 			}else{
 				VM_PUSH_STK_PTR(stk_var);
@@ -462,7 +457,6 @@ lbl_exit_function:
 		const char 					*	str_symbol_aux1=NULL;
 		StackElement					stk_aux1;
 		Instruction					*	instruction=_instruction;
-		ContainerSlot 	*	so_container_slot_ref=NULL;
 
 		VM_POP_STK_TWO;
 		so_aux=NULL;
@@ -475,11 +469,8 @@ lbl_exit_function:
 		// determine object ...
 		if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
 
-			so_container_slot_ref=NULL;
-
 			if(stk_result_op1->properties & STK_PROPERTY_CONTAINER_SLOT){
-				so_container_slot_ref=(ContainerSlot *)stk_result_op1->value;
-				so_aux=so_container_slot_ref->getSrcContainerRef();
+					so_aux=((ContainerSlot *)stk_result_op1->value)->getSrcContainerRef();
 			}else{
 				so_aux=(ScriptObject *)stk_result_op1->value;
 			}
@@ -534,10 +525,9 @@ lbl_exit_function:
 					if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
 
 						VM_PUSH_CONTAINER_SLOT(
-								so_container_slot_ref
-								,(ContainerScriptObject *)so_aux
-								,(zs_int)str_symbol_aux1
-								,stk_var
+							(ContainerScriptObject *)so_aux
+							,(zs_int)str_symbol_aux1
+							,stk_var
 						);
 
 					}else{

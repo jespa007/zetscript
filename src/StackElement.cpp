@@ -22,6 +22,8 @@ namespace zetscript{
 			result=ZS_TYPE_NAME_FLOAT;
 		else if(STK_VALUE_IS_BOOLEAN(stk))
 			result=ZS_TYPE_NAME_BOOL;
+		else if(STK_VALUE_IS_CONTAINER_SLOT(stk))
+			result=ZS_TYPE_NAME_CONTAINER_SLOT;
 		else if(STK_IS_SCRIPT_OBJECT_STRING(stk))
 			result=ZS_TYPE_NAME_OBJECT_STRING;
 		else if(STK_IS_SCRIPT_OBJECT_VECTOR(stk))
@@ -456,6 +458,8 @@ namespace zetscript{
 			result.value=IDX_TYPE_ZS_FLOAT_C;
 		}else if(STK_VALUE_IS_BOOLEAN(stk)){
 			result.value=IDX_TYPE_BOOL_C;
+		}else if(STK_VALUE_IS_CONTAINER_SLOT(stk)){
+			result.value=IDX_TYPE_CONTAINER_SLOT;
 		}else if(STK_VALUE_IS_SCRIPT_OBJECT(stk)){
 			result.value=((ObjectScriptObject *)stk->value)->getScriptType()->idx_script_type;
 		}

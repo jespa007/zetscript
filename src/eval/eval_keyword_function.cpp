@@ -621,7 +621,7 @@ namespace zetscript{
 
 		// save starting point before process the expression...
 		do{
-
+			zs_vector<EvalInstruction *> partial_ex;
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
 			if((aux_p = eval_sub_expression(
@@ -629,7 +629,7 @@ namespace zetscript{
 					,aux_p
 					, line
 					, scope_info
-					,&eval_data->current_function->eval_instructions
+					,&partial_ex
 					,NULL
 					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION
 			))== NULL){
@@ -639,7 +639,23 @@ namespace zetscript{
 			IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				//return aux_p;
 
+			// global variables should not deref object references due they are not incs its references through
+			// calling functions
+			if(partial_ex.size()==1){
+				EvalInstruction *ei_arg=(EvalInstruction *)partial_ex.items[0];
+				ByteCode byte_code_aux=ei_arg->vm_instruction.byte_code;
 
+				// If byte code is a global var load (find var is also global) set as push stk to
+				// avoid deref global objects
+				if(byte_code_aux ==BYTE_CODE_LOAD_GLOBAL){
+					ei_arg->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+				}else if(byte_code_aux ==BYTE_CODE_FIND_VARIABLE){
+					ei_arg->vm_instruction.properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
+				}
+			}
+
+			eval_data->current_function->eval_instructions.concat(partial_ex);
+			// next
 			if(*aux_p==','){
 				aux_p++;
 			}else{
