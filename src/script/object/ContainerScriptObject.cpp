@@ -36,8 +36,6 @@ namespace zetscript{
 				vm_unref_shared_script_object(vm,_container_slot->getSrcContainerRef(),_scope_block );
 			}
 
-			delete _container_slot;
-
 		}
 	}
 

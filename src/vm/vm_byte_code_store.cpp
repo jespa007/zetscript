@@ -53,8 +53,6 @@ namespace zetscript{
 		//- check if ptr stk
 		if((stk_dst->properties & STK_PROPERTY_PTR_STK)!=0) {
 			stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
-		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT){
-			container_slot=((ContainerSlot *)stk_dst->value);
 		}else{
 			if((stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR)==0){
 				VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
@@ -62,6 +60,11 @@ namespace zetscript{
 				);
 			}
 		}
+
+		 if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT){
+			container_slot=((ContainerSlot *)stk_dst->value);
+			stk_dst=container_slot->getPtrStackElement();
+		 }
 
 		//-----------------------
 		if(stk_dst->properties & STK_PROPERTY_READ_ONLY){
@@ -212,10 +215,12 @@ namespace zetscript{
 			stk_src_properties=stk_src->properties;
 
 			// init stk_dst
-			STK_SET_UNDEFINED(stk_dst);
+
 			if(stk_src_properties == STK_PROPERTY_UNDEFINED){
+				stk_dst->value=0;
 				stk_dst->properties=STK_PROPERTY_UNDEFINED;
 			}else if(stk_src_properties == STK_PROPERTY_NULL){
+				stk_dst->value=0;
 				stk_dst->properties=STK_PROPERTY_NULL;
 			}else if(stk_src_properties & STK_PROPERTY_ZS_INT){
 				stk_dst->properties=STK_PROPERTY_ZS_INT;
@@ -271,65 +276,88 @@ namespace zetscript{
 			}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){// object we pass its reference
 
 				so_aux=(ScriptObject *)stk_src->value;
-				bool is_cyclic_reference=false;
 
-				// src is type container and dst is slot:
+				// if not assigning same object
 				if(
-					   (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
-					&& (container_slot!=NULL)){
+				(
+						container_slot!=NULL
+						?
+								container_slot->getSrcContainerRef()==so_aux
+						:
+								old_stk_dst.value==(zs_int)so_aux
+				)==false)
+				{
 
-					vm_assign_container_slot(_vm,container_slot, (ContainerScriptObject *)so_aux);
 
-					// check cyclic reference
-					is_cyclic_reference=container_slot->isCyclicReference();
+					bool is_cyclic_reference=false;
 
-					// set container slot to no be deferred after
-					container_slot=NULL;
+					// src is type container and dst is slot:
+					if(
+						   (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
+						&& (container_slot!=NULL)
+					){
 
-				}else{ // object
-					stk_dst->value=(intptr_t)so_aux;
-					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
-				}
+						vm_assign_container_slot(_vm,container_slot, (ContainerScriptObject *)so_aux);
 
-				if(is_cyclic_reference==false){
-					if(!vm_share_script_object(_vm,so_aux)){
-						goto lbl_exit_function;
+						// check cyclic reference
+						is_cyclic_reference=container_slot->isCyclicReference();
+
+
+						// set container slot to no be deferred after
+						container_slot=NULL;
+
+					}else{ // object
+						stk_dst->value=(intptr_t)so_aux;
+						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 					}
-				}
 
+					if(is_cyclic_reference==false){
+						if(!vm_share_script_object(_vm,so_aux)){
+							goto lbl_exit_function;
+						}
+					}
+
+
+					// remove unusued container slot
+					if(container_slot != NULL){
+						delete container_slot;
+					}
+
+					if(stk_src_ref_value_copy_aux!=NULL){
+						stk_dst->properties|=STK_PROPERTY_IS_C_VAR_PTR;
+					}
+
+					// check old dst value to unref if it was an object ...
+					if(
+						(old_stk_dst.properties & (STK_PROPERTY_SCRIPT_OBJECT))
+					){
+						ScriptObject  *old_so=(ScriptObject  *)old_stk_dst.value;
+
+
+						// unref pointer because new pointer has been attached...
+						StackElement *chk_ref=(StackElement *)stk_result_op2->value;
+
+
+						if(chk_ref->properties & STK_PROPERTY_PTR_STK){
+							chk_ref=(StackElement *)chk_ref->value;
+						}
+
+						if(!vm_unref_shared_script_object(_vm,old_so,VM_CURRENT_SCOPE_BLOCK)){
+							goto lbl_exit_function;
+						}
+					}
+				}else{
+					printf("[%s:%i] Warning assigning same object %p type %s\n"
+							,SFI_GET_FILE(_calling_function,instruction)\
+							,SFI_GET_LINE(_calling_function,instruction)\
+							,(void *)so_aux
+							,so_aux->getScriptType()->str_script_type.c_str()
+					);
+				}
 			}else{
 				VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
 					,stk_to_typeof_str(data->zs,stk_src).c_str()
 				);
-			}
-
-			// remove unusued container slot
-			if(container_slot != NULL){
-				delete container_slot;
-			}
-
-			if(stk_src_ref_value_copy_aux!=NULL){
-				stk_dst->properties|=STK_PROPERTY_IS_C_VAR_PTR;
-			}
-
-			// check old dst value to unref if it was an object ...
-			if(
-				(old_stk_dst.properties & (STK_PROPERTY_SCRIPT_OBJECT))
-			){
-				ScriptObject  *old_so=(ScriptObject  *)old_stk_dst.value;
-
-
-				// unref pointer because new pointer has been attached...
-				StackElement *chk_ref=(StackElement *)stk_result_op2->value;
-
-
-				if(chk_ref->properties & STK_PROPERTY_PTR_STK){
-					chk_ref=(StackElement *)chk_ref->value;
-				}
-
-				if(!vm_unref_shared_script_object(_vm,old_so,VM_CURRENT_SCOPE_BLOCK)){
-					goto lbl_exit_function;
-				}
 			}
 		}
 

@@ -9,6 +9,7 @@ namespace zetscript{
 	bool ScriptObject::unrefAndFreeStackElementContainer(StackElement *si){
 		ScriptFunction 	* ir_fun;
 		ContainerSlot 	* container_slot=NULL;
+		ContainerScriptObject *so_container_ref=NULL;
 		unsigned short var_type = GET_STK_PROPERTY_TYPES(si->properties);
 
 		switch(var_type){
@@ -21,7 +22,11 @@ namespace zetscript{
 				break;
 			case STK_PROPERTY_CONTAINER_SLOT:
 				container_slot=(ContainerSlot *)si->value;
-				container_slot->getSrcContainerRef()->removeSlot(container_slot,NULL);
+				so_container_ref=container_slot->getSrcContainerRef();
+				if(so_container_ref!=NULL){
+					so_container_ref->removeSlot(container_slot,NULL);
+				}
+				delete container_slot;
 				break;
 			case STK_PROPERTY_FUNCTION:
 				 ir_fun  = (ScriptFunction *)(si->value);

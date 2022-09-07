@@ -14,7 +14,7 @@ namespace zetscript{
 			,zs_int 						_id_slot
 			,StackElement  				*	_ptr_stk
 	){
-		container_slot_node=NULL;
+
 		src_so_container_ref=NULL;
 		dst_so_container_ref=_dst_so_container_ref;
 		id_slot=_id_slot;
@@ -28,10 +28,10 @@ namespace zetscript{
 
 		auto list_container_slots=_src_container_ref->getListContainerSlotsRef();
 
-		container_slot_node=new zs_list_node<ContainerSlot *>();
-		container_slot_node->data=this;
+		//container_slot_node=new zs_list_node<ContainerSlot *>();
+		container_slot_node.data=this;
 
-		list_container_slots->insert(container_slot_node);
+		list_container_slots->insert(&container_slot_node);
 
 		_src_container_ref->printReferences();
 
@@ -61,7 +61,7 @@ namespace zetscript{
 	}
 
 	zs_list_node<ContainerSlot *>  	*	ContainerSlot::getContainerSlotNode(){
-		return container_slot_node;
+		return &container_slot_node;
 	}
 
 
@@ -73,6 +73,10 @@ namespace zetscript{
 		return dst_so_container_ref;
 	}
 
+	StackElement 					*	ContainerSlot::getPtrStackElement(){
+		return ptr_stk;
+	}
+
 
 	zs_int								ContainerSlot::getIdSlot(){
 		return id_slot;
@@ -80,10 +84,9 @@ namespace zetscript{
 
 	ContainerSlot::~ContainerSlot(){
 		// set undefined the stk slot
-		*ptr_stk=k_stk_undefined;
-
-		if(container_slot_node!=NULL){
-			delete container_slot_node;
+		if(src_so_container_ref != NULL){
+			*ptr_stk=k_stk_undefined;
+			src_so_container_ref->removeSlot(this, NULL);
 		}
 
 	}

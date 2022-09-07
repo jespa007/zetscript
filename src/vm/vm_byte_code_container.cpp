@@ -155,15 +155,18 @@ namespace zetscript{
 					VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 				}
 
-				if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
-					VM_PUSH_CONTAINER_SLOT(
+				// if it has to push container slot and slot itself is not container slot push new one
+				if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
+						&&
+				((stk_var->properties & STK_PROPERTY_CONTAINER_SLOT)!=STK_PROPERTY_CONTAINER_SLOT)){
+					VM_PUSH_NEW_CONTAINER_SLOT(
 						(ContainerScriptObject *)so_aux
 						,(zs_int)str_symbol_aux1
 						,stk_var
 					);
-				}else{
-					VM_PUSH_STK_PTR(stk_var);
 				}
+				VM_PUSH_STK_PTR(stk_var);
+
 			}
 			else{ // not exists
 				data->vm_stk_current->value=0;
@@ -231,15 +234,16 @@ namespace zetscript{
 
 		// load its value for write
 		if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
-			if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
-				VM_PUSH_CONTAINER_SLOT(
+			if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
+					&&
+			((stk_var->properties & STK_PROPERTY_CONTAINER_SLOT)!=STK_PROPERTY_CONTAINER_SLOT)){
+				VM_PUSH_NEW_CONTAINER_SLOT(
 					(ContainerScriptObject *)so_aux
 					,(zs_int)str_symbol_aux1
 					,stk_var
 				);
-			}else{
-				VM_PUSH_STK_PTR(stk_var);
 			}
+			VM_PUSH_STK_PTR(stk_var);
 		}
 		else{ // only read
 			*data->vm_stk_current++=*stk_var;
@@ -524,7 +528,7 @@ lbl_exit_function:
 					// dest to write
 					if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
 
-						VM_PUSH_CONTAINER_SLOT(
+						VM_PUSH_NEW_CONTAINER_SLOT(
 							(ContainerScriptObject *)so_aux
 							,(zs_int)str_symbol_aux1
 							,stk_var
