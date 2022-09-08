@@ -8,6 +8,7 @@
 #define ZS_TYPE_NAME_NULL 						"null"
 #define ZS_TYPE_NAME_INT 						"int"
 #define ZS_TYPE_NAME_BOOL 						"bool"
+#define ZS_TYPE_NAME_STACK_ELEMENT 				"StackElement"
 #define ZS_TYPE_NAME_FLOAT 						"float"
 #define ZS_TYPE_NAME_CONTAINER_SLOT 			"ContainerSlot"
 #define ZS_TYPE_NAME_OBJECT_STRING 				"String"

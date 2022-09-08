@@ -43,7 +43,7 @@ namespace zetscript{
 			{
 				if((length = size(filename)) != -1) {
 
-					size_t n_bytes_readed=(size_t)(length+1);
+					int n_bytes_readed=length+1;
 					zs_buffer *buffer= new zs_buffer((uint8_t *)ZS_MALLOC(n_bytes_readed),n_bytes_readed);
 					readed_elements = fread(buffer->ptr, 1, (size_t)length, fp);
 

@@ -107,6 +107,7 @@ namespace zetscript{
 		//----- END CALL
 
 		BYTE_CODE_UNRESOLVED_CALL,
+		BYTE_CODE_PUSH_STK_GLOBAL_IRGO,
 
 		//------ LOAD INI-----------------------
 		// load ptr var

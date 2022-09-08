@@ -35,10 +35,19 @@ namespace zetscript{
 			if(_container_slot->isCyclicReference()==false){
 				vm_unref_shared_script_object(vm,_container_slot->getSrcContainerRef(),_scope_block );
 			}
-
 		}
 	}
 
+	void ContainerScriptObject::onDettachContainerSlotNode(zs_list_node<ContainerSlot *> *_current_node){
+		_current_node->data->setSrcContainerRef(NULL);
+	}
+
+	void ContainerScriptObject::removeAllSlots(){
+
+		if(ref_objects!=NULL){
+			container_slots->dettachAllNodes(onDettachContainerSlotNode);
+		}
+	}
 
 
 	void ContainerScriptObject::printReferences(){
@@ -58,6 +67,7 @@ namespace zetscript{
 	}
 
 	ContainerScriptObject::~ContainerScriptObject(){
+		removeAllSlots();
 		delete container_slots;
 	}
 }

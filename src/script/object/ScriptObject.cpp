@@ -21,12 +21,7 @@ namespace zetscript{
 			case STK_PROPERTY_ZS_FLOAT:
 				break;
 			case STK_PROPERTY_CONTAINER_SLOT:
-				container_slot=(ContainerSlot *)si->value;
-				so_container_ref=container_slot->getSrcContainerRef();
-				if(so_container_ref!=NULL){
-					so_container_ref->removeSlot(container_slot,NULL);
-				}
-				delete container_slot;
+				delete (ContainerSlot *)si->value;
 				break;
 			case STK_PROPERTY_FUNCTION:
 				 ir_fun  = (ScriptFunction *)(si->value);
@@ -234,6 +229,10 @@ namespace zetscript{
 		return zs->getScriptTypeFactory();
 	}
 
+	void ScriptObject::onDettachRefObjectNode(zs_list_node<RefObjectScriptObject *> *_current_node){
+		_current_node->data->setRefObject(NULL);
+	}
+
 	ScriptObject::~ScriptObject(){
 		// deallocate built-in function member objects
 		for(int i=0; i< stk_builtin_elements.size(); i++){
@@ -255,16 +254,7 @@ namespace zetscript{
 		delete map_builtin_properties;
 
 		if(ref_objects!=NULL){
-			auto first_node=ref_objects->first;
-			auto current_node=first_node;
-			if(current_node != NULL){
-				do{
-					current_node=current_node->next;
-
-					current_node->data->setRefObject(NULL); //deref script object reference
-
-				}while(current_node!=first_node);
-			}
+			ref_objects->dettachAllNodes(onDettachRefObjectNode);
 
 			delete ref_objects;
 		}

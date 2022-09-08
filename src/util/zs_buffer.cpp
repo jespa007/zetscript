@@ -7,7 +7,7 @@
 #include "zetscript.h"
 
 namespace zetscript{
-	zs_buffer::zs_buffer(uint8_t *_ptr,size_t  _ptr_len){
+	zs_buffer::zs_buffer(uint8_t *_ptr,int  _ptr_len){
 		ptr=_ptr;
 		ptr_len=_ptr_len;
 	}

@@ -47,6 +47,7 @@
 #define STK_VALUE_IS_ZS_FLOAT(stk) 						((stk)->properties & STK_PROPERTY_ZS_FLOAT)
 #define STK_VALUE_IS_ZS_INT(stk) 						((stk)->properties & STK_PROPERTY_ZS_INT)
 #define STK_VALUE_IS_BOOLEAN(stk) 						((stk)->properties & STK_PROPERTY_BOOL)
+#define STK_PROPERTY_PTR_STK(stk) 						((stk)->properties & STK_PROPERTY_PTR_STK)
 #define STK_VALUE_IS_UNDEFINED(stk) 					((stk)->properties == STK_PROPERTY_UNDEFINED)
 #define STK_VALUE_IS_NULL(stk) 							((stk)->properties == STK_PROPERTY_NULL)
 #define STK_VALUE_IS_CONTAINER_SLOT(stk)				((stk)->properties & STK_PROPERTY_CONTAINER_SLOT)

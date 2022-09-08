@@ -27,7 +27,7 @@ namespace zetscript{
 
 		void insert(zs_list_node<_N> * _node);
 		void remove(zs_list_node<_N> * _node);
-		void remove_all();
+		void dettachAllNodes(void (*_onDettachNode)(zs_list_node<_N> *)=NULL);
 
 		~zs_list();
 

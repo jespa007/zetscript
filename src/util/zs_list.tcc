@@ -62,21 +62,22 @@ namespace zetscript{
 
 
 	template<typename _N>
-	void zs_list<_N>::remove_all(){
+	void zs_list<_N>::dettachAllNodes(void (*_onDettachNode)(zs_list_node<_N> *)){
 
-		zs_list_node<_N> *next_node=NULL,*current=this->first;
+		zs_list_node<_N> * next_node=NULL;
+		zs_list_node<_N> * current_node=this->first;
+		if(current_node != NULL){
+			while(current_node->next!=this->first){
+				next_node=current_node->next;
 
-		if(current != NULL){
-			bool finish=false;
-			do{
-				next_node=current->next;
-				finish=next_node ==this->first;
+				if(_onDettachNode != NULL){
+					_onDettachNode(current_node); //deref script object reference
+				}
 
-				delete current;
+				current_node=next_node;
+			}
 
-				current=next_node;
-
-			}while(!finish);
+			_onDettachNode(current_node);
 		}
 
 		this->first=this->last=NULL;
@@ -84,7 +85,7 @@ namespace zetscript{
 
 	template<typename _N>
 	zs_list<_N>::~zs_list(){
-		remove_all();
+		dettachAllNodes();
 	}
 }
 

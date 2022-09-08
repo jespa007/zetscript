@@ -276,7 +276,7 @@ namespace zetscript{
 		void vm_assign_container_slot(
 			VirtualMachine *_vm
 			, ContainerSlot *_container_slot
-			, ContainerScriptObject *_src_so_container_ref
+			, ContainerScriptObject *_src_container_ref
 		);
 
 }

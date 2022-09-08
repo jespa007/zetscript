@@ -275,7 +275,7 @@ Solved issues
 #337 Implement zs_map_int 
 #336 Solve problem ciclic references 
 #339 Conditionals evaluates whole condition instead of first breaking condition improvement
- 
+#340 StackOverflow core dumped in deep recursion 
 
 //----------------------------------------------------------
 Version: 1.3.0

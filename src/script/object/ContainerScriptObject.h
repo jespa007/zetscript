@@ -26,7 +26,10 @@ namespace zetscript{
 		~ContainerScriptObject();
 	private:
 
+		static void 	onDettachContainerSlotNode(zs_list_node<ContainerSlot *> *_current_node);
+
 		// refs where this container is referenced
+		void						removeAllSlots();
 		zs_list<ContainerSlot *>	*container_slots;
 
 	};

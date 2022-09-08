@@ -16,7 +16,7 @@ namespace zetscript{
 		zs_vector<StackElement *> 	*		store_lst_setter_functions=NULL;
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
-		ContainerSlot				*		container_slot=NULL;
+		ContainerSlot				*		dst_container_slot=NULL;
 		void 						*		stk_src_ref_value_copy_aux=NULL;
 		StackElement 				*		stk_result_op2=NULL;
 		zs_int 						*		stk_src_ref_value=NULL;
@@ -39,7 +39,7 @@ namespace zetscript{
 
 	vm_store_next:
 		store_lst_setter_functions=NULL;
-		container_slot=NULL;
+		dst_container_slot=NULL;
 
 		stk_src=stk_load_multi_var_src; // store ptr instruction2 op as src_var_value
 		//stk_dst=stk_result_op2;
@@ -62,8 +62,8 @@ namespace zetscript{
 		}
 
 		 if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT){
-			container_slot=((ContainerSlot *)stk_dst->value);
-			stk_dst=container_slot->getPtrStackElement();
+			dst_container_slot=((ContainerSlot *)stk_dst->value);
+			stk_dst=dst_container_slot->getPtrStackElement();
 		 }
 
 		//-----------------------
@@ -238,10 +238,6 @@ namespace zetscript{
 				if(stk_src_ref_value_copy_aux!=NULL)(*(bool *)stk_src_ref_value_copy_aux)=*((bool *)stk_src_ref_value);
 			}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
 				*stk_dst=*stk_src;
-			}else if(stk_src_properties  &  (STK_PROPERTY_CONTAINER_SLOT) ){
-				VM_STOP_EXECUTEF(
-						"Container slot not implemented"
-				);
 			}else if(
 				STK_IS_SCRIPT_OBJECT_STRING(stk_src)
 							||
@@ -273,16 +269,21 @@ namespace zetscript{
 				}
 
 
-			}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){// object we pass its reference
+			}else if(stk_src_properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_CONTAINER_SLOT)){// object we pass its reference
 
-				so_aux=(ScriptObject *)stk_src->value;
+				if(stk_src_properties & STK_PROPERTY_CONTAINER_SLOT){
+					so_aux=((ContainerSlot *)stk_src->value)->getSrcContainerRef();
+				}
+				else{
+					so_aux=(ScriptObject *)stk_src->value;
+				}
 
 				// if not assigning same object
 				if(
 				(
-						container_slot!=NULL
+						dst_container_slot!=NULL
 						?
-								container_slot->getSrcContainerRef()==so_aux
+								dst_container_slot->getSrcContainerRef()==so_aux
 						:
 								old_stk_dst.value==(zs_int)so_aux
 				)==false)
@@ -294,17 +295,17 @@ namespace zetscript{
 					// src is type container and dst is slot:
 					if(
 						   (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
-						&& (container_slot!=NULL)
+						&& (dst_container_slot!=NULL)
 					){
 
-						vm_assign_container_slot(_vm,container_slot, (ContainerScriptObject *)so_aux);
+						vm_assign_container_slot(_vm,dst_container_slot, (ContainerScriptObject *)so_aux);
 
 						// check cyclic reference
-						is_cyclic_reference=container_slot->isCyclicReference();
+						is_cyclic_reference=dst_container_slot->isCyclicReference();
 
 
 						// set container slot to no be deferred after
-						container_slot=NULL;
+						dst_container_slot=NULL;
 
 					}else{ // object
 						stk_dst->value=(intptr_t)so_aux;
@@ -315,12 +316,6 @@ namespace zetscript{
 						if(!vm_share_script_object(_vm,so_aux)){
 							goto lbl_exit_function;
 						}
-					}
-
-
-					// remove unusued container slot
-					if(container_slot != NULL){
-						delete container_slot;
 					}
 
 					if(stk_src_ref_value_copy_aux!=NULL){
@@ -361,6 +356,10 @@ namespace zetscript{
 			}
 		}
 
+		// remove unusued container slot
+		if(dst_container_slot != NULL){
+			delete dst_container_slot;
+		}
 
 		if(_instruction->byte_code ==BYTE_CODE_STORE_CONST){
 			stk_dst->properties |= STK_PROPERTY_READ_ONLY;

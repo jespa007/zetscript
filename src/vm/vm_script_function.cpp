@@ -107,12 +107,6 @@ namespace zetscript{
 			instruction = instruction_it++;
 
 			switch(instruction->byte_code){
-			case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
-				VM_PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
-				continue;
-			case BYTE_CODE_PUSH_STK_LOCAL: // load variable ...
-				VM_PUSH_STK_PTR(_stk_local_var+instruction->value_op2);
-				continue;
 			// load
 			case BYTE_CODE_LOAD_GLOBAL: // load variable ...
 				*data->vm_stk_current++=*(data->vm_stack+instruction->value_op2);
@@ -337,6 +331,17 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_STRING:
 				*data->vm_stk_current++=*((StackElement *)instruction->value_op2);
 				continue;
+				// to avoid deref global objects from returning functions
+			case BYTE_CODE_PUSH_STK_GLOBAL_IRGO:
+
+				if((data->vm_stack+instruction->value_op2)->properties & STK_PROPERTY_SCRIPT_OBJECT){
+					// push load
+					VM_PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
+				}else{
+					// normal load
+					*data->vm_stk_current++=*(data->vm_stack+instruction->value_op2);
+				}
+				continue;
 			 case  BYTE_CODE_RET:
 				for(stk_var=data->vm_stk_current-1;stk_var>=stk_start;stk_var--){ // can return something. value is +1 from stack
 					stk_result_op1=stk_var;
@@ -351,6 +356,12 @@ namespace zetscript{
 					}
 				}
 				goto lbl_return_function;
+			case BYTE_CODE_PUSH_STK_GLOBAL: // load variable ...
+				VM_PUSH_STK_PTR(data->vm_stack + instruction->value_op2);
+				continue;
+			case BYTE_CODE_PUSH_STK_LOCAL: // load variable ...
+				VM_PUSH_STK_PTR(_stk_local_var+instruction->value_op2);
+				continue;
 			 case BYTE_CODE_PUSH_SCOPE:
 				VM_PUSH_SCOPE(instruction->value_op2);
 				continue;

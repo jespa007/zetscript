@@ -250,6 +250,7 @@ namespace zetscript{
 				break;
 
 			case BYTE_CODE_PUSH_STK_GLOBAL:
+			case BYTE_CODE_PUSH_STK_GLOBAL_IRGO:
 			case BYTE_CODE_PUSH_STK_LOCAL:
 			//case BYTE_CODE_PUSH_STK_REF:
 			case BYTE_CODE_PUSH_STK_THIS:
@@ -803,11 +804,15 @@ namespace zetscript{
 						if(unresolved_instruction->byte_code == BYTE_CODE_UNRESOLVED_CALL){
 							unresolved_instruction->byte_code=BYTE_CODE_INDIRECT_GLOBAL_CALL;
 						}else{
-
-							if(unresolved_instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
-								unresolved_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+							// global
+							if(unresolved_instruction->value_op1==ZS_IDX_INSTRUCTION_PUSH_STK_GLOBAL_IRGO){
+								unresolved_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL_IRGO;
 							}else{
-								unresolved_instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
+								if(unresolved_instruction->properties & INSTRUCTION_PROPERTY_USE_PUSH_STK){
+									unresolved_instruction->byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+								}else{
+									unresolved_instruction->byte_code=BYTE_CODE_LOAD_GLOBAL;
+								}
 							}
 						}
 

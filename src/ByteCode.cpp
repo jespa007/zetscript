@@ -41,6 +41,7 @@ namespace zetscript{
 			case BYTE_CODE_BITWISE_XOR_STORE: 	   				return "STORE_XOR"; // ^=
 			case BYTE_CODE_SHL_STORE: 	      					return "STORE_SHL"; // <<=
 			case BYTE_CODE_SHR_STORE: 	      					return "STORE_SHR"; // >>=
+			case BYTE_CODE_PUSH_STK_GLOBAL_IRGO:				return "PUSH_STK_GLOBAL_IRGO"; // load type var
 			case BYTE_CODE_PUSH_STK_GLOBAL:						return "PUSH_STK_GLOBAL"; // push stk global
 			case BYTE_CODE_PUSH_STK_LOCAL:						return "PUSH_STK_LOCAL"; // push stk global
 			//case BYTE_CODE_PUSH_STK_REF:						return "PUSH_STK_REF"; // push stk global
@@ -175,7 +176,7 @@ namespace zetscript{
 			case BYTE_CODE_NEW_VECTOR: 				return "NEW_VEC"; // Vector object (CREATE)
 			case BYTE_CODE_PUSH_VECTOR_ITEM: 		return "VPUSH"; // Value push for stdvector
 			case BYTE_CODE_RET: 					return "RET"; // Value pop for stdvector
-			case BYTE_CODE_NEW_OBJECT_BY_TYPE:return "NEW_OBJECT_TYPE"; // New object (CREATE)
+			case BYTE_CODE_NEW_OBJECT_BY_TYPE:		return "NEW_OBJECT_TYPE"; // New object (CREATE)
 			case BYTE_CODE_DELETE:					return "DELETE";
 			case BYTE_CODE_POP_SCOPE: 				return "POP_SCOPE"; // New object (CREATE)
 			case BYTE_CODE_PUSH_SCOPE: 				return "PUSH_SCOPE"; // New object (CREATE)

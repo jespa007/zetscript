@@ -9,8 +9,8 @@ namespace zetscript{
 	class zs_buffer{
 	public:
 		uint8_t *ptr;
-		size_t   ptr_len;
-		zs_buffer(uint8_t *ptr,size_t   ptr_len);
+		int		ptr_len;
+		zs_buffer(uint8_t *ptr,int   ptr_len);
 		~zs_buffer();
 	};
 

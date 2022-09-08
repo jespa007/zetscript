@@ -648,9 +648,9 @@ namespace zetscript{
 				// If byte code is a global var load (find var is also global) set as push stk to
 				// avoid deref global objects
 				if(byte_code_aux ==BYTE_CODE_LOAD_GLOBAL){
-					ei_arg->vm_instruction.byte_code=BYTE_CODE_PUSH_STK_GLOBAL;
+					ei_arg->vm_instruction=BYTE_CODE_PUSH_STK_GLOBAL_IRGO;
 				}else if(byte_code_aux ==BYTE_CODE_FIND_VARIABLE){
-					ei_arg->vm_instruction.properties |= INSTRUCTION_PROPERTY_USE_PUSH_STK;
+					ei_arg->vm_instruction.value_op1=ZS_IDX_INSTRUCTION_PUSH_STK_GLOBAL_IRGO;
 				}
 			}
 
