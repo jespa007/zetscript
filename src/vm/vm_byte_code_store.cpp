@@ -304,9 +304,6 @@ namespace zetscript{
 						is_cyclic_reference=dst_container_slot->isCyclicReference();
 
 
-						// set container slot to no be deferred after
-						dst_container_slot=NULL;
-
 					}else{ // object
 						stk_dst->value=(intptr_t)so_aux;
 						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -349,6 +346,10 @@ namespace zetscript{
 							,so_aux->getScriptType()->str_script_type.c_str()
 					);
 				}
+
+				// set dst_container to be not removed later
+				dst_container_slot=NULL;
+
 			}else{
 				VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
 					,stk_to_typeof_str(data->zs,stk_src).c_str()
