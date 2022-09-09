@@ -8,42 +8,42 @@ namespace zetscript{
 
 	zs_int StringScriptObjectWrap_size(ZetScript *_zs,StringScriptObject *so){
 		ZS_UNUSUED_PARAM(_zs);
-		return ((zs_string *)so->value)->length();
+		return so->str_ptr->length();
 	}
 
 	bool StringScriptObjectWrap_contains(ZetScript *_zs,StringScriptObject *so, zs_string *str){
 		ZS_UNUSUED_PARAM(_zs);
 		return zs_strutils::contains(
-				*((zs_string *)(so->value))
+				*(so->str_ptr)
 				,*str
 		);
 	}
 
 	bool StringScriptObjectWrap_contains(ZetScript *_zs,StringScriptObject *so, zs_int ch){
 		ZS_UNUSUED_PARAM(_zs);
-		return strchr(((zs_string *)so->value)->c_str(),ch) != NULL;
+		return strchr(so->str_ptr->c_str(),ch) != NULL;
 	}
 
 	void StringScriptObjectWrap_clear(ZetScript *_zs,StringScriptObject *so){
 		ZS_UNUSUED_PARAM(_zs);
-		((zs_string *)so->value)->clear();
+		so->str_ptr->clear();
 	}
 
 	StringScriptObject *StringScriptObjectWrap_replace(ZetScript *_zs,StringScriptObject *str_in,zs_string *str_old, zs_string *str_new){
 		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
-		str_out->set(zs_strutils::replace(*((zs_string *)str_in->value),*str_old,*str_new));
+		str_out->set(zs_strutils::replace(*(str_in->str_ptr),*str_old,*str_new));
 		return str_out;
 	}
 
 	void StringScriptObjectWrap_eraseAt(ZetScript *_zs,StringScriptObject *so, zs_int idx){
 		ZS_UNUSUED_PARAM(_zs);
-		zs_string *str=((zs_string *)so->value);
+		zs_string *str=so->str_ptr;
 		str->erase(idx);
 	}
 
 	void StringScriptObjectWrap_insertAt(ZetScript *_zs,StringScriptObject *so, zs_int idx,zs_int ch){
 		ZS_UNUSUED_PARAM(_zs);
-		zs_string *str=((zs_string *)so->value);
+		zs_string *str=so->str_ptr;
 		str->insert(idx,ch);
 	}
 
@@ -106,7 +106,7 @@ namespace zetscript{
 
 	zs_int StringScriptObjectWrap_indexOf(ZetScript *_zs,StringScriptObject *so,zs_int search){
 		ZS_UNUSUED_PARAM(_zs);
-		zs_string *str=((zs_string *)so->value);
+		zs_string *str=so->str_ptr;
 		zs_string pattern="";
 		pattern+=(char)+search;
 		return zs_strutils::index_of(*str,pattern);
@@ -115,19 +115,19 @@ namespace zetscript{
 
 	zs_int StringScriptObjectWrap_indexOf(ZetScript *_zs,StringScriptObject *so,zs_string *search){
 		ZS_UNUSUED_PARAM(_zs);
-		zs_string *str=((zs_string *)so->value);
+		zs_string *str=so->str_ptr;
 		return zs_strutils::index_of(*str,*search);
 	}
 
 	bool StringScriptObjectWrap_startsWith(ZetScript *_zs,StringScriptObject *so,zs_string *prefix){
 		ZS_UNUSUED_PARAM(_zs);
-		zs_string *str=((zs_string *)so->value);
+		zs_string *str=so->str_ptr;
 		return zs_strutils::starts_with(*str,*prefix);
 	}
 
 	bool StringScriptObjectWrap_endsWith(ZetScript *_zs,StringScriptObject *so,zs_string *suffix){
 		ZS_UNUSUED_PARAM(_zs);
-		zs_string *str=((zs_string *)so->value);
+		zs_string *str=so->str_ptr;
 		return zs_strutils::ends_with(*str,*suffix);
 	}
 
@@ -139,7 +139,7 @@ namespace zetscript{
 
 	void 							StringScriptObjectWrap_append(ZetScript *_zs,StringScriptObject *str_in,StringScriptObject *str_append){
 		ZS_UNUSUED_PARAM(_zs);
-		*(zs_string *)str_in->value+=*(zs_string *)(str_append->value);
+		*(str_in->str_ptr)+=*(str_append->str_ptr);
 	}
 
 	StringIteratorScriptObject * StringScriptObjectWrap_iter(ZetScript *_zs,StringScriptObject *so){

@@ -327,7 +327,7 @@ namespace zetscript{
 				VM_STOP_EXECUTE("Expected object but is type '%s'",stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_var));
 			}
 
-			so_aux = (ScriptObject *)stk_var->value;
+			dst_container = (ContainerScriptObject *)stk_var->value;
 
 			if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
 				VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type '%s'"
@@ -335,38 +335,35 @@ namespace zetscript{
 				);
 			}
 
-			//const char *str = (const char *)stk_result_op1->value;
-			stk_src=stk_result_op2;
-			if((stk_var =so_aux->addProperty(((StringScriptObject *)stk_result_op1->value)->toString(),data->vm_error_description))==NULL){
+			if((stk_var =so_aux->addProperty(
+					((StringScriptObject *)stk_result_op1->value)->toString()
+					,data->vm_error_description)
+			)==NULL){
 				VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 			}
 
 			id_slot=(zs_int)(((StringScriptObject *)stk_result_op1->value)->getConstChar());
 			stk_dst=stk_var;
+			stk_src=stk_result_op2;
+
 		}else{ // is vector
 
 			VM_POP_STK_ONE; // only pops the value, the last is the vector variable itself
 
-			if((data->vm_stk_current-1)->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				so_aux = (ScriptObject *)(data->vm_stk_current-1)->value;
-				if(so_aux->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_VECTOR){ // push value ...
-					// op1 is now the src value ...
-					stk_src=stk_result_op1;
-					if(stk_src->properties & STK_PROPERTY_PTR_STK){
-						stk_src=(StackElement *)stk_result_op1->value;
-					}
-
-					id_slot=((VectorScriptObject *)so_aux)->length();
-					stk_dst=((VectorScriptObject *)so_aux)->pushNewUserSlot();
-				}
+			stk_var=(data->vm_stk_current-1);
+			if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_var) == 0){
+				VM_STOP_EXECUTE("Expected vector but is type '%s'",stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_var));
 			}
 
-			if(so_aux==NULL){
-				VM_STOP_EXECUTEF("Expected vector object");
+			dst_container = (ContainerScriptObject *)stk_var->value;
+			id_slot=((VectorScriptObject *)dst_container)->length();
+			stk_dst=((VectorScriptObject *)dst_container)->pushNewUserSlot();
+			stk_src=stk_result_op1;
+
+			if(stk_src->properties & STK_PROPERTY_PTR_STK){
+				stk_src=(StackElement *)stk_result_op1->value;
 			}
 		}
-
-		dst_container=(ContainerScriptObject *)so_aux;
 
 		//------
 		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){ \
@@ -394,8 +391,9 @@ namespace zetscript{
 		}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){\
 			*stk_dst=*stk_src;\
 		}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){\
+
 			if(STK_IS_SCRIPT_OBJECT_STRING(stk_src)){\
-				stk_dst->value=(zs_int)(so_aux= ZS_NEW_STRING_OBJECT(data->zs));\
+				stk_dst->value=(zs_int)(so_aux= new StringScriptObject(data->zs));\
 				stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 				if(!vm_create_shared_script_object(_vm,so_aux)){\
 					goto lbl_exit_function;\
@@ -403,30 +401,29 @@ namespace zetscript{
 				if(!vm_share_script_object(_vm,so_aux)){\
 					goto lbl_exit_function;\
 				}\
-				((StringScriptObject *)so_aux)->set(stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_src));\
+				((StringScriptObject *)(so_aux))->set(((StringScriptObject *)stk_src->value)->get());
 			}else{ \
+				ContainerScriptObject *src_container=(ContainerScriptObject *)stk_src->value;
 
 				if(
-					   (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
+					   (src_container->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
 				){
-
-					ContainerScriptObject *src_container=(ContainerScriptObject *)so_aux;\
-
 					ContainerSlot *container_slot=new ContainerSlot(
 						dst_container
 						,id_slot
 						,stk_dst
 					);
 
-					src_container->addSlot(container_slot);
+					vm_assign_container_slot(_vm,container_slot, src_container);
+
 				}else{
 					// is not container
-					stk_dst->value=(intptr_t)so_aux;\
+					stk_dst->value=(intptr_t)src_container;\
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 				}
 
 				// share always because it's not possible have cyclic reference of each push item object/vector
-				if(!vm_share_script_object(_vm,so_aux)){\
+				if(!vm_share_script_object(_vm,src_container)){\
 					goto lbl_exit_function;\
 				}\
 			}\
@@ -510,15 +507,19 @@ lbl_exit_function:
 					}
 					// Save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
 					stk_var = ((ObjectScriptObject *)so_aux)->getProperty(
-							stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2)
+							((StringScriptObject *)(stk_result_op2->value))->get()
 					);
 					if(stk_var == NULL){
 						if(instruction->byte_code == BYTE_CODE_PUSH_STK_VECTOR_ITEM){
 							if((stk_var =((ObjectScriptObject *)so_aux)->addProperty(
-									stk_to_str(VM_STR_AUX_PARAM_0,data->zs, stk_result_op2), data->vm_error_description)
+									((StringScriptObject *)(stk_result_op2->value))->get(),
+									data->vm_error_description
+								)
 							)==NULL){
 								VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 							}
+						}else{
+							VM_STOP_EXECUTE("property '%s' not exist in object",((StringScriptObject *)(stk_result_op2->value))->getConstChar());
 						}
 					}
 				}
@@ -544,7 +545,7 @@ lbl_exit_function:
 					VM_STOP_EXECUTEF("Expected integer index for String access");
 				}
 
-				zs_char *ptr_char=(zs_char *)&((zs_string *)((StringScriptObject *)so_aux)->value)->c_str()[stk_result_op2->value];
+				zs_char *ptr_char=(zs_char *)&((StringScriptObject *)so_aux)->str_ptr->c_str()[stk_result_op2->value];
 				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 					data->vm_stk_current->value=((zs_int)(*ptr_char));
 					data->vm_stk_current->properties=STK_PROPERTY_ZS_INT;

@@ -687,8 +687,23 @@ namespace zetscript{
 		, ByteCodeMetamethod 		_byte_code_metamethod
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		zs_string str1=stk_to_str(data->zs,_stk1);
-		zs_string str2=stk_to_str(data->zs, _stk2);
+		zs_string str1="1";
+		zs_string str2="2";
+
+		if(STK_IS_SCRIPT_OBJECT_STRING(_stk1)){
+			str1=((StringScriptObject *)_stk1)->get();
+		}else{
+			str1=stk_to_str(data->zs,_stk1);
+		}
+
+
+
+		if(STK_IS_SCRIPT_OBJECT_STRING(_stk2)){
+			str1=((StringScriptObject *)_stk2)->get();
+		}else{
+			str2=stk_to_str(data->zs, _stk2);
+		}
+
 		bool result=false;
 
 		switch(_byte_code_metamethod){

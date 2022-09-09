@@ -94,25 +94,22 @@ namespace zetscript{
 
 
 	StringScriptObject * StringScriptObject::format(ZetScript *zs, StackElement *stk_str_obj, StackElement *args){
-		// transform '\"' to '"','\n' to carry returns, etc
+
 		zs_string str_input;
-
-		if(stk_str_obj->properties & STK_PROPERTY_SCRIPT_OBJECT){
-			str_input=zs_strutils::unescape(((ScriptObject *)stk_str_obj->value)->toString());
-		}
-		else{
-			str_input=stk_to_str(zs, stk_str_obj);
-		}
-
 		zs_string str_result;
 		VectorScriptObject *sov=NULL;
 		zs_string str_num_aux;
 		bool error=false;
 		char str_error[512]={0};
-
-
 		zs_int *ptr_idx_num=NULL;
 
+		if(stk_str_obj->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			// transform '\"' to '"','\n' to carry returns, etc
+			str_input=zs_strutils::unescape(((ScriptObject *)stk_str_obj->value)->toString());
+		}
+		else{
+			str_input=stk_to_str(zs, stk_str_obj);
+		}
 
 		if(args->properties & STK_PROPERTY_PTR_STK){
 			args=(StackElement *)args->value;
@@ -289,23 +286,27 @@ namespace zetscript{
 	):ScriptObject(_zs){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_STRING;
 		default_str_value = "";
-		value = &default_str_value;
+		str_ptr = &default_str_value;
 	}
 
 	void StringScriptObject::set(const zs_string & _s){
-		*((zs_string *)value) = zs_strutils::unescape(_s);
+		*str_ptr = zs_strutils::unescape(_s);
+	}
+
+	const zs_string & StringScriptObject::get(){
+		return *str_ptr;
 	}
 
 	const char *StringScriptObject::getConstChar(){
-		return ((zs_string *)value)->c_str();
+		return str_ptr->c_str();
 	}
 
 	zs_string StringScriptObject::toString(){
-		return *((zs_string *)value);
+		return *str_ptr;
 	}
 
 	int StringScriptObject::length(){
-		return ((zs_string *)value)->length();
+		return str_ptr->length();
 	}
 
 	StringScriptObject *StringScriptObject::sub(StringScriptObject *s1){

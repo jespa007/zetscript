@@ -14,13 +14,11 @@ namespace zetscript{
 	}
 
 
-
 	ObjectIteratorScriptObject::ObjectIteratorScriptObject(
 		ZetScript *_zs
 		,ObjectScriptObject *_so_ref
 	):RefObjectScriptObject(_zs,_so_ref){
 		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT;
-		vm=NULL;
 		stk_key.setUndefined();
 		stk_key.properties=(STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR);
 

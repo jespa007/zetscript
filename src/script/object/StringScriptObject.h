@@ -28,12 +28,13 @@ namespace zetscript{
 		//
 		//----------------------------------------------
 
-		void 		*	value;	// 8
+		zs_string		*	str_ptr;	// 8
 
 
 		StringScriptObject(ZetScript *_zs);
 
 		void set(const zs_string & _s);
+		const zs_string & get();
 		const char *getConstChar();
 		virtual int length();
 		virtual zs_string toString();

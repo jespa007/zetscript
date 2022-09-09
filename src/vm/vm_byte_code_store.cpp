@@ -265,7 +265,7 @@ namespace zetscript{
 				if(stk_src_properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)){
 					str_object->set((const char *)stk_src->value);
 				}else{
-					str_object->set(stk_to_str(data->zs, stk_src));
+					str_object->set(((StringScriptObject *)(stk_src->value))->get());
 				}
 
 

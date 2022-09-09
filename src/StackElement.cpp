@@ -269,7 +269,7 @@ namespace zetscript{
 						}
 
 						if(_idx_builtin_type == IDX_TYPE_ZS_STRING_PTR_C){
-							val_ret=(zs_int)(((StringScriptObject *)script_object)->value);
+							val_ret=(zs_int)(((StringScriptObject *)script_object)->str_ptr);
 						}else if (_idx_builtin_type == IDX_TYPE_CONST_CHAR_PTR_C){
 							val_ret=(zs_int)(((zs_string *)(((StringScriptObject *)script_object)))->c_str());
 						}else{
@@ -372,8 +372,9 @@ namespace zetscript{
 
 				 so=ZS_NEW_STRING_OBJECT(_zs);
 				 if(ptr_var!=0) { // not null
-					 if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_PTR_C){ // zs_reference
-						so->value=(void *)ptr_var;
+					 if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_PTR_C){
+						// assing zs_string reference
+						so->str_ptr=(zs_string *)ptr_var;
 					 }else if(idx_builtin_type_var==IDX_TYPE_ZS_STRING_C){ // zs_string passed as pointer
 						 so->set(*((zs_string *)ptr_var));
 					 }else{ // const char

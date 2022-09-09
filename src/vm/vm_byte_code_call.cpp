@@ -312,7 +312,7 @@ execute_function:
 									if(!vm_create_shared_script_object(_vm,sc)){
 										goto lbl_exit_function;
 									}
-									sc->set(*((zs_string *)((StringScriptObject *)so_param)->value));
+									sc->set(*(((StringScriptObject *)so_param)->str_ptr));
 									so_param=sc;
 									stk_arg->value=(zs_int)sc;
 									stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;

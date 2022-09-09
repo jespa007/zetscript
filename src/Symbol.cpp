@@ -47,15 +47,17 @@ namespace zetscript{
 			|| k_str_const_char_type_ptr == symbol->str_native_type
 			|| k_str_zs_string_type_ptr == symbol->str_native_type
 			) {
-			char *input_s = (char *)ptr_variable;
 			StringScriptObject *s = ZS_NEW_STRING_OBJECT(zs);
 
+
 			if (k_str_zs_string_type_ptr == symbol->str_native_type) {
-				s->value = (void *)ptr_variable;
-				input_s = (char *)(((zs_string *)ptr_variable)->c_str());
+				// assign native zs_string ptr
+				s->str_ptr = (zs_string *)ptr_variable;
+			}else{
+				// assign value
+				*(s->str_ptr) = (char *)ptr_variable;
 			}
 
-			*((zs_string *)(s->value)) = input_s;
 			return {
 				(zs_int)(s),
 				STK_PROPERTY_SCRIPT_OBJECT
