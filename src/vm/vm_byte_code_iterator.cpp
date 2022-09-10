@@ -73,14 +73,12 @@ namespace zetscript{
 			}
 
 
-
+			// get iterator object and references +1
 			obj=(ScriptObject *)data->vm_stk_current->value;
 
 			if(!vm_share_script_object(_vm,obj)){\
 				goto lbl_exit_function;\
 			}\
-
-
 
 			sc=obj->getScriptType();
 
@@ -100,7 +98,7 @@ namespace zetscript{
 				return false;
 			}
 
-			// everything allright store and share pointer
+			// everything allright -> store iterator obj
 			*stk_result_op2=*data->vm_stk_current;
 		}
 		else{
