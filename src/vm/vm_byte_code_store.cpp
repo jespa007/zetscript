@@ -362,6 +362,8 @@ namespace zetscript{
 			}
 		}
 
+
+
 		// remove unusued container slot
 		if(dst_container_slot != NULL){
 			delete dst_container_slot;
