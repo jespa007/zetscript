@@ -26,7 +26,7 @@ namespace zetscript{
 		ScriptFunction 				*		ptr_function_found=NULL;
 		uint16_t 							stk_src_properties=0;
 		Instruction					*		instruction=_instruction;
-		bool								check_old_stk=true;
+		bool								unref_old_stk_script_object=true;
 
 
 		 // n elements left
@@ -41,7 +41,7 @@ namespace zetscript{
 	vm_store_next:
 		store_lst_setter_functions=NULL;
 		dst_container_slot=NULL;
-		check_old_stk=true;
+		unref_old_stk_script_object=true;
 
 		stk_src=stk_load_multi_var_src; // store ptr instruction2 op as src_var_value
 		//stk_dst=stk_result_op2;
@@ -250,7 +250,7 @@ namespace zetscript{
 
 				if(STK_IS_SCRIPT_OBJECT_STRING(stk_dst)){ // dst is string reload
 					str_object=(StringScriptObject *)stk_dst->value;
-					check_old_stk=false;
+					unref_old_stk_script_object=false;
 				}else{ // Generates a zs_string var
 					stk_dst->value=(zs_int)(str_object= ZS_NEW_STRING_OBJECT(data->zs));
 					stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
@@ -318,10 +318,11 @@ namespace zetscript{
 						}
 					}
 
-					if(stk_src_ref_value_copy_aux!=NULL){
-						stk_dst->properties|=STK_PROPERTY_IS_C_VAR_PTR;
-					}
 				}else{
+
+					// because is not referenced, it has to be not dereferenced
+					unref_old_stk_script_object=false;
+
 					printf("[%s:%i] Warning assigning same object %p type %s\n"
 							,SFI_GET_FILE(_calling_function,instruction)\
 							,SFI_GET_LINE(_calling_function,instruction)\
@@ -339,28 +340,26 @@ namespace zetscript{
 				);
 			}
 
-			// check old dst value to unref if it was an object ...
+			if(stk_src_ref_value_copy_aux!=NULL){
+				stk_dst->properties|=STK_PROPERTY_IS_C_VAR_PTR;
+			}
+
+
+			// if old dst value was a script object, it has to be dereferenced because it was written by other type ...
 			if(
 				(old_stk_dst.properties & (STK_PROPERTY_SCRIPT_OBJECT))
 								&&
-						check_old_stk==true
+					unref_old_stk_script_object==true
 			){
 				ScriptObject  *old_so=(ScriptObject  *)old_stk_dst.value;
-
-
-				// unref pointer because new pointer has been attached...
-				StackElement *chk_ref=(StackElement *)stk_result_op2->value;
-
-
-				if(chk_ref->properties & STK_PROPERTY_PTR_STK){
-					chk_ref=(StackElement *)chk_ref->value;
-				}
 
 				if(!vm_unref_shared_script_object(_vm,old_so,VM_CURRENT_SCOPE_BLOCK)){
 					goto lbl_exit_function;
 				}
 			}
 		}
+
+
 
 
 

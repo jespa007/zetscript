@@ -438,8 +438,9 @@ namespace zetscript{
 	}
 
 	void zs_string::append(const char *_buf, int _len){
+		int start=count;
 		inc_slots(_len);
-		strcat(buf,_buf);
+		strncpy(buf+start,_buf,_len);
 	}
 
 	void zs_string::append(const zs_string &_s){
