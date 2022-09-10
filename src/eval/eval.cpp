@@ -136,7 +136,16 @@ namespace zetscript{
 		}
 	}
 
-	char * eval_block(EvalData *eval_data,const char *s,int & line,  Scope *scope_info, ScriptFunction *sf,ScriptFunctionParam *params, int params_len, bool _force_push_pop){
+	char * eval_block(
+			EvalData *eval_data
+			,const char *s
+			,int & line
+			,  Scope *scope_info
+			, ScriptFunction *sf
+			,ScriptFunctionParam *params
+			, int params_len
+			, bool _force_push_pop
+	){
 		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
 		char *aux_p = (char *)s;
 

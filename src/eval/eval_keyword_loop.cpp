@@ -656,7 +656,10 @@ namespace zetscript{
 					new EvalInstruction(BYTE_CODE_MEMBER_CALL,0,0,INSTRUCTION_PROPERTY_RESET_STACK)
 				);
 
-
+				// reset zero pointers
+				ei_post_operations.push_back(
+					new EvalInstruction(BYTE_CODE_CLEAR_ZERO_POINTERS)
+				);
 			}else{ // is not for-in re eval for in with no in-break
 
 				// copy var initialization

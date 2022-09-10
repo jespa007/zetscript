@@ -530,6 +530,9 @@ namespace zetscript{
 					return;
 				 }
 				continue;
+			 case BYTE_CODE_CLEAR_ZERO_POINTERS:
+				 vm_remove_empty_shared_pointers(_vm,VM_CURRENT_SCOPE_BLOCK);
+				 continue;
 			 case BYTE_CODE_RESET_STACK:
 				 data->vm_stk_current=stk_start;
 				 continue;
@@ -691,7 +694,7 @@ namespace zetscript{
 		zs_string str2="2";
 
 		if(STK_IS_SCRIPT_OBJECT_STRING(_stk1)){
-			str1=((StringScriptObject *)_stk1)->get();
+			str1=((StringScriptObject *)(_stk1->value))->get();
 		}else{
 			str1=stk_to_str(data->zs,_stk1);
 		}
@@ -699,7 +702,7 @@ namespace zetscript{
 
 
 		if(STK_IS_SCRIPT_OBJECT_STRING(_stk2)){
-			str1=((StringScriptObject *)_stk2)->get();
+			str1=((StringScriptObject *)(_stk2->value))->get();
 		}else{
 			str2=stk_to_str(data->zs, _stk2);
 		}

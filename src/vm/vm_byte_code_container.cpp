@@ -335,7 +335,7 @@ namespace zetscript{
 				);
 			}
 
-			if((stk_var =so_aux->addProperty(
+			if((stk_var =dst_container->addProperty(
 					((StringScriptObject *)stk_result_op1->value)->toString()
 					,data->vm_error_description)
 			)==NULL){

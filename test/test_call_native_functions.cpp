@@ -278,7 +278,8 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 	Num num;
 	num_ref=&num;
 
-	for(int i=0; i < 10; i++){
+	// ensure working doing various clear-eval
+	for(int i=0; i < 5; i++){
 
 		_zs->clear();
 
@@ -310,7 +311,7 @@ void test_call_function_member(zetscript::ZetScript *_zs, bool _show_print=true)
 							//"Console::outln()"
 						"}\n"
 						"updateTutorial(){\n"
-							"for(var i=0; i < 1000; i++){\n"
+							"for(var i=0; i < 5; i++){\n"
 							"	this.v2d_target=this.num_ref\n"
 							"}\n"
 							"this.v2d_target.setPosition();\n"
