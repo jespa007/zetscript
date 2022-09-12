@@ -502,6 +502,7 @@ lbl_exit_function:
 					} \
 				}
 				else{
+					// is object
 					if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==0){ \
 						VM_STOP_EXECUTEF("Expected string for object access");
 					}
@@ -523,6 +524,7 @@ lbl_exit_function:
 						}
 					}
 				}
+
 				if(instruction->byte_code == BYTE_CODE_LOAD_VECTOR_ITEM){
 					*data->vm_stk_current++=*stk_var;
 				}else{
@@ -535,9 +537,9 @@ lbl_exit_function:
 							,stk_var
 						);
 
-					}else{
-						VM_PUSH_STK_PTR(stk_var);
 					}
+					VM_PUSH_STK_PTR(stk_var);
+
 				}
 				goto lbl_exit_ok;
 			}else if(so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_STRING){
