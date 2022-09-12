@@ -57,7 +57,7 @@ namespace zetscript{
 		EvalInstruction 	*eval_instruction=NULL;
 		int 				idx_split=-1;
 		TokenNode      		*split_node = NULL;
-		unsigned char 		idx_split_group_preference=OPERATOR_PREFERENCE_GROUP_MAX;
+		unsigned char 		idx_split_group_preference=PREFERENCE_OPERATOR_GROUP_MAX;
 		bool custom_insert_instruction=false;
 
 
@@ -76,7 +76,7 @@ namespace zetscript{
 
 			// get split preference
 			if(((TokenNode *)(token_nodes->items[i]))->token_type == TokenType::TOKEN_TYPE_OPERATOR){
-				unsigned char idx_group_preference=get_group_preference_operator(((TokenNode *)(token_nodes->items[i]))->operator_type);
+				unsigned char idx_group_preference=get_preference_operator_group(((TokenNode *)(token_nodes->items[i]))->operator_type);
 
 				if(idx_group_preference <= idx_split_group_preference){
 					idx_split_group_preference=idx_group_preference;

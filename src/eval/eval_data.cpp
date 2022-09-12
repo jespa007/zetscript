@@ -448,26 +448,26 @@ namespace zetscript{
 		return Operator::OPERATOR_UNKNOWN;
 	}
 
-	unsigned char get_group_preference_operator(Operator _operator){
-		if(OPERATOR_PREFERENCE_GROUP_0(_operator)){
+	unsigned char get_preference_operator_group(Operator _operator){
+		if(PREFERENCE_OPERATOR_GROUP_0(_operator)){
 			return 0;
-		}else if (OPERATOR_PREFERENCE_GROUP_1(_operator)){
+		}else if (PREFERENCE_OPERATOR_GROUP_1(_operator)){
 			return 1;
-		}else if (OPERATOR_PREFERENCE_GROUP_2(_operator)){
+		}else if (PREFERENCE_OPERATOR_GROUP_2(_operator)){
 			return 2;
-		}else if (OPERATOR_PREFERENCE_GROUP_3(_operator)){
+		}else if (PREFERENCE_OPERATOR_GROUP_3(_operator)){
 			return 3;
-		}else if (OPERATOR_PREFERENCE_GROUP_4(_operator)){
+		}else if (PREFERENCE_OPERATOR_GROUP_4(_operator)){
 			return 4;
-		}else if (OPERATOR_PREFERENCE_GROUP_5(_operator)){
+		}else if (PREFERENCE_OPERATOR_GROUP_5(_operator)){
 			return 5;
-		}else if (OPERATOR_PREFERENCE_GROUP_6(_operator)){
+		}else if (PREFERENCE_OPERATOR_GROUP_6(_operator)){
 			return 6;
-		}else if (OPERATOR_PREFERENCE_GROUP_7(_operator)){
+		}else if (PREFERENCE_OPERATOR_GROUP_7(_operator)){
 			return 7;
 		}
 
-		return OPERATOR_PREFERENCE_GROUP_MAX;
+		return PREFERENCE_OPERATOR_GROUP_MAX;
 
 	}
 

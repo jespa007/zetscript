@@ -4,18 +4,18 @@
  */
 #pragma once
 
-#define OPERATOR_PREFERENCE_GROUP_0(_operator) \
+#define PREFERENCE_OPERATOR_GROUP_0(_operator) \
 (\
   (_operator) == OPERATOR_LOGIC_OR \
 )
 
-#define OPERATOR_PREFERENCE_GROUP_1(_operator) \
+#define PREFERENCE_OPERATOR_GROUP_1(_operator) \
 (\
   (_operator) == OPERATOR_LOGIC_AND \
 )
 
 
-#define OPERATOR_PREFERENCE_GROUP_2(_operator) \
+#define PREFERENCE_OPERATOR_GROUP_2(_operator) \
 (\
     (_operator) == OPERATOR_EQUAL \
 || 	(_operator) == OPERATOR_NOT_EQUAL \
@@ -25,7 +25,7 @@
 || 	(_operator) == OPERATOR_LT \
 )
 
-#define OPERATOR_PREFERENCE_GROUP_3(_operator) \
+#define PREFERENCE_OPERATOR_GROUP_3(_operator) \
 ( \
 (_operator) == OPERATOR_ADD \
 || 	(_operator) == OPERATOR_SUB \
@@ -33,32 +33,32 @@
 || 	(_operator) == OPERATOR_INSTANCEOF \
 )
 
-#define OPERATOR_PREFERENCE_GROUP_4(_operator) \
+#define PREFERENCE_OPERATOR_GROUP_4(_operator) \
 ( \
 (_operator) == OPERATOR_MUL \
 || 	(_operator) == OPERATOR_DIV \
 ||  (_operator) == OPERATOR_MOD \
 )
 
-#define OPERATOR_PREFERENCE_GROUP_5(_operator) \
+#define PREFERENCE_OPERATOR_GROUP_5(_operator) \
 ( \
  	(_operator) == OPERATOR_OR \
 || 	(_operator) == OPERATOR_XOR \
 )
 
-#define OPERATOR_PREFERENCE_GROUP_6(_operator) \
+#define PREFERENCE_OPERATOR_GROUP_6(_operator) \
 ( \
   (_operator) == OPERATOR_AND \
 )
 
 
-#define	OPERATOR_PREFERENCE_GROUP_7(_operator) \
+#define	PREFERENCE_OPERATOR_GROUP_7(_operator) \
 (\
 (_operator) == OPERATOR_SHIFT_LEFT \
 || 	(_operator) == OPERATOR_SHIFT_RIGHT \
 )
 
-#define OPERATOR_PREFERENCE_GROUP_MAX	7
+#define PREFERENCE_OPERATOR_GROUP_MAX	7
 
 namespace zetscript{
 
