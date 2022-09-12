@@ -4,61 +4,61 @@
  */
 #pragma once
 
-#define OPERATOR_GROUP_0(operator_type) \
+#define OPERATOR_PREFERENCE_GROUP_0(_operator) \
 (\
-  (operator_type) == OPERATOR_LOGIC_OR \
+  (_operator) == OPERATOR_LOGIC_OR \
 )
 
-#define OPERATOR_GROUP_1(operator_type) \
+#define OPERATOR_PREFERENCE_GROUP_1(_operator) \
 (\
-  (operator_type) == OPERATOR_LOGIC_AND \
+  (_operator) == OPERATOR_LOGIC_AND \
 )
 
 
-#define OPERATOR_GROUP_2(operator_type) \
+#define OPERATOR_PREFERENCE_GROUP_2(_operator) \
 (\
-    (operator_type) == OPERATOR_EQUAL \
-|| 	(operator_type) == OPERATOR_NOT_EQUAL \
-|| 	(operator_type) == OPERATOR_GTE \
-|| 	(operator_type) == OPERATOR_LTE \
-|| 	(operator_type) == OPERATOR_GT \
-|| 	(operator_type) == OPERATOR_LT \
+    (_operator) == OPERATOR_EQUAL \
+|| 	(_operator) == OPERATOR_NOT_EQUAL \
+|| 	(_operator) == OPERATOR_GTE \
+|| 	(_operator) == OPERATOR_LTE \
+|| 	(_operator) == OPERATOR_GT \
+|| 	(_operator) == OPERATOR_LT \
 )
 
-#define OPERATOR_GROUP_3(operator_type) \
+#define OPERATOR_PREFERENCE_GROUP_3(_operator) \
 ( \
-(operator_type) == OPERATOR_ADD \
-|| 	(operator_type) == OPERATOR_SUB \
-||	(operator_type) == OPERATOR_IN \
-|| 	(operator_type) == OPERATOR_INSTANCEOF \
+(_operator) == OPERATOR_ADD \
+|| 	(_operator) == OPERATOR_SUB \
+||	(_operator) == OPERATOR_IN \
+|| 	(_operator) == OPERATOR_INSTANCEOF \
 )
 
-#define OPERATOR_GROUP_4(operator_type) \
+#define OPERATOR_PREFERENCE_GROUP_4(_operator) \
 ( \
-(operator_type) == OPERATOR_MUL \
-|| 	(operator_type) == OPERATOR_DIV \
-||  (operator_type) == OPERATOR_MOD \
+(_operator) == OPERATOR_MUL \
+|| 	(_operator) == OPERATOR_DIV \
+||  (_operator) == OPERATOR_MOD \
 )
 
-#define OPERATOR_GROUP_5(operator_type) \
+#define OPERATOR_PREFERENCE_GROUP_5(_operator) \
 ( \
- 	(operator_type) == OPERATOR_OR \
-|| 	(operator_type) == OPERATOR_XOR \
+ 	(_operator) == OPERATOR_OR \
+|| 	(_operator) == OPERATOR_XOR \
 )
 
-#define OPERATOR_GROUP_6(operator_type) \
+#define OPERATOR_PREFERENCE_GROUP_6(_operator) \
 ( \
-  (operator_type) == OPERATOR_AND \
+  (_operator) == OPERATOR_AND \
 )
 
 
-#define	OPERATOR_GROUP_7(operator_type) \
+#define	OPERATOR_PREFERENCE_GROUP_7(_operator) \
 (\
-(operator_type) == OPERATOR_SHIFT_LEFT \
-|| 	(operator_type) == OPERATOR_SHIFT_RIGHT \
+(_operator) == OPERATOR_SHIFT_LEFT \
+|| 	(_operator) == OPERATOR_SHIFT_RIGHT \
 )
 
-#define OPERATOR_GROUP_MAX	7
+#define OPERATOR_PREFERENCE_GROUP_MAX	7
 
 namespace zetscript{
 

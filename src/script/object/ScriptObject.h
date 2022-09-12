@@ -50,64 +50,66 @@ namespace zetscript{
 
 	class ScriptObject{
 	public:
-		InfoSharedPointerNode 	* 	shared_pointer; // 8
-		short						idx_script_type; // 2
+		InfoSharedPointerNode 				* 	shared_pointer; // 8
+		short									idx_script_type; // 2
 
-		ScriptObject(ZetScript *zs);
-
-		Symbol 						*	getGetter();
-		zs_vector<StackElement *> 	*	getSetterList(ByteCodeMetamethod _byte_code_metamethod);
-
-		virtual	int 					length();
-
-		ZetScript      				* 	getZetScript();
-		StackElement 				* 	getBuiltinProperty(const zs_string & property_name);
-
-		StackElement 			* 	getBuiltinElementAt(int idx);
-
-		virtual StackElement 	* 	addProperty(
-			const zs_string 	& 	symbol_value
-			,zs_string 		& 	error
-			,StackElement 		*	stk_element = NULL
+		ScriptObject(
+				ZetScript 		*	_zs
 		);
 
-		virtual StackElement 	* 	getProperty(const zs_string & property_name);
-		virtual Symbol 			*  	getScriptFunctionSymbol(const zs_string & _function_member_name);
+		Symbol 								*	getGetter();
+		zs_vector<StackElement *> 			*	getSetterList(ByteCodeMetamethod _byte_code_metamethod);
+
+		virtual	int 							length();
+
+		ZetScript      						* 	getZetScript();
+		StackElement 						* 	getBuiltinProperty(const zs_string & property_name);
+
+		StackElement 						* 	getBuiltinElementAt(int idx);
+
+		virtual StackElement 				* 	addProperty(
+			const zs_string 		& 	symbol_value
+			,zs_string 				& 	error
+			,StackElement 			*	stk_element = NULL
+		);
+
+		virtual StackElement 				* 	getProperty(const zs_string & property_name);
+		virtual Symbol 						*  	getScriptFunctionSymbol(const zs_string & _function_member_name);
 
 
-		zs_vector<StackElement *> 				* 	getStkBuiltinListElements();
-		bool 						isNativeObject();
-		const char * 				getTypeName();
-		ScriptType * 	    		getScriptType();
-		StackElement 			*	getThisProperty();
-		virtual void			*	getNativeObject();
-		virtual zs_string 			toString();
+		zs_vector<StackElement *> 			* 	getStkBuiltinListElements();
+		bool 									isNativeObject();
+		const char * 							getTypeName();
+		ScriptType * 	    					getScriptType();
+		StackElement 						*	getThisProperty();
+		virtual void						*	getNativeObject();
+		virtual zs_string 						toString();
 
-		void 						attachRefObjectNode(zs_list_node<RefObjectScriptObject *> * _ref_object_node);
-		void 						deattachRefObjectNode(zs_list_node<RefObjectScriptObject *> * _ref_object_node);
+		void 									attachRefObjectNode(zs_list_node<RefObjectScriptObject *> * _ref_object_node);
+		void 									deattachRefObjectNode(zs_list_node<RefObjectScriptObject *> * _ref_object_node);
 
-		void 						printAllMemberFunctions();
+		void 									printAllMemberFunctions();
 
-		virtual 					~ScriptObject();
+		virtual 								~ScriptObject();
 	protected:
 
-		StackElement 								stk_this;
+		StackElement 							stk_this;
 
-		ZetScript 								*	zs; // 8
-		VirtualMachine 							*	vm; // 8
-		zs_vector<StackElement *>					stk_builtin_elements;
-		zs_map    								*	map_builtin_properties; // to search faster each property by its name
+		ZetScript 							*	zs; // 8
+		VirtualMachine 						*	vm; // 8
+		zs_vector<StackElement *>				stk_builtin_elements;
+		zs_map    							*	map_builtin_properties; // to search faster each property by its name
 
 		// TODO: replace zs_vector by zs_map_int to search ref_objects/container_slot_assignments quickly
-		static void 								onDettachRefObjectNode(zs_list_node<RefObjectScriptObject *> *node);
-		zs_list<RefObjectScriptObject *>		*	ref_objects;
-		ScriptTypeFactory						*	getScriptTypeFactory();
+		static void 							onDettachRefObjectNode(zs_list_node<RefObjectScriptObject *> *node);
+		zs_list<RefObjectScriptObject *>	*	ref_objects;
+		ScriptTypeFactory					*	getScriptTypeFactory();
 
-		virtual StackElement 					* 	newBuiltinSlot();
-		virtual StackElement 					* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
-		bool 										unrefAndFreeStackElementContainer(StackElement *si);
-		//int 										idxContainerSlot(ContainerSlot *_wp);
-		//int 										idxRefObject(RefObject  *_ref_object);
+		virtual StackElement 				* 	newBuiltinSlot();
+		virtual StackElement 				* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
+		bool 									unrefAndFreeStackElementContainer(StackElement *si);
+		//int 									idxContainerSlot(ContainerSlot *_wp);
+		//int 									idxRefObject(RefObject  *_ref_object);
 	};
 
 }
