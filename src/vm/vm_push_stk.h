@@ -49,10 +49,14 @@ data->vm_stk_current++;
 	data->vm_stk_current->properties=STK_PROPERTY_PTR_STK;\
 	data->vm_stk_current++;
 
-#define VM_PUSH_NEW_CONTAINER_SLOT(so_aux,str_symbol_aux1,stk_var) \
-	(new ContainerSlot(\
+#define VM_PUSH_NEW_CONTAINER_SLOT(so_aux,str_symbol_aux1,stk_slot) \
+{\
+	data->vm_stk_current->value=(intptr_t)(new ContainerSlot(\
 		(ContainerScriptObject *)so_aux\
 		,(zs_int)str_symbol_aux1\
-		,stk_var\
+		,stk_slot\
 		)\
-	);
+	);\
+	data->vm_stk_current->properties=STK_PROPERTY_CONTAINER_SLOT;\
+	data->vm_stk_current++;\
+}

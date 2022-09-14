@@ -132,6 +132,12 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 #define VM_STK_IS_GLOBAL(stk_var) \
 		((stk_var - data->vm_stack)< data->main_function_object->local_variables->size())
 
+#define VM_CHECK_CONTAINER_FOR_SLOT(_container) \
+			   (_container->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR) \
+			   	   	   	   	   && \
+			   ((_container->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS && _container->isNativeObject())==false) \
+
+
 namespace zetscript{
 
 	class ZetScript;

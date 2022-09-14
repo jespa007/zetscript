@@ -536,39 +536,54 @@ namespace zetscript{
 			, ContainerSlot *_container_slot
 			, ContainerScriptObject *_src_container_ref
 	){
-		ZS_UNUSUED_PARAM(_vm);
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
 		ContainerScriptObject *dst_container_ref=_container_slot->getDstContainerRef();
 		zs_int dst_container_slot_id=_container_slot->getIdSlot();
+		StackElement *stk_dst=_container_slot->getPtrStackElement();
 
 		StackElement *stk_obj=NULL;
 
 		// More tests would be needed see issue #336
 		if(dst_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
-			printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'\n"
+			stk_obj=((VectorScriptObject *)dst_container_ref)->getUserElementAt((int)dst_container_slot_id);
+			printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'. Last value type '%s'\n"
 					,(void *)_src_container_ref
 					,_src_container_ref->getScriptType()->str_script_type.c_str()
 					,(void *)dst_container_ref
 					,(int)dst_container_slot_id
 					,dst_container_ref->getScriptType()->str_script_type.c_str()
+					,stk_to_typeof_str(data->zs,stk_obj).c_str()
 
 			);
-			stk_obj=((VectorScriptObject *)dst_container_ref)->getUserElementAt((int)dst_container_slot_id);
+
 		}else{
 			// object
-			printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'\n"
+			stk_obj=dst_container_ref->getProperty((const char *)dst_container_slot_id);
+			printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'. Last value type '%s'\n"
 					,(void *)_src_container_ref
 					,_src_container_ref->getScriptType()->str_script_type.c_str()
 					,(void *)dst_container_ref
 					,(const char *)dst_container_slot_id
 					,dst_container_ref->getScriptType()->str_script_type.c_str()
+					,stk_to_typeof_str(data->zs,stk_obj).c_str()
 
 			);
-			stk_obj=dst_container_ref->getProperty((const char *)dst_container_slot_id);
+
 		}
+
+
 
 		// finally adds to container slot hierarchy
 		_src_container_ref->addSlot(_container_slot);
+
+		// do the assigment
+		stk_dst->value=(zs_int)_container_slot;
+		stk_dst->properties=STK_PROPERTY_CONTAINER_SLOT;
+
+		// add ref into map of pointers
+		data->containers_with_container_slots.set((zs_int)_src_container_ref,(zs_int)_src_container_ref);
+
 	}
 }
 

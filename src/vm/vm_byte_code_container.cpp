@@ -158,14 +158,18 @@ namespace zetscript{
 				// if it has to push container slot and slot itself is not container slot push new one
 				if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
 						&&
-				((stk_var->properties & STK_PROPERTY_CONTAINER_SLOT)!=STK_PROPERTY_CONTAINER_SLOT)){
+				((stk_var->properties & STK_PROPERTY_CONTAINER_SLOT)!=STK_PROPERTY_CONTAINER_SLOT)
+						&&
+					VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
+				){
 					VM_PUSH_NEW_CONTAINER_SLOT(
 						(ContainerScriptObject *)so_aux
 						,(zs_int)str_symbol_aux1
 						,stk_var
 					);
+				}else{
+					VM_PUSH_STK_PTR(stk_var);
 				}
-				VM_PUSH_STK_PTR(stk_var);
 
 			}
 			else{ // not exists
@@ -236,14 +240,18 @@ namespace zetscript{
 		if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
 			if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
 					&&
-			((stk_var->properties & STK_PROPERTY_CONTAINER_SLOT)!=STK_PROPERTY_CONTAINER_SLOT)){
+			((stk_var->properties & STK_PROPERTY_CONTAINER_SLOT)!=STK_PROPERTY_CONTAINER_SLOT)
+					&&
+				VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
+			){
 				VM_PUSH_NEW_CONTAINER_SLOT(
 					(ContainerScriptObject *)so_aux
 					,(zs_int)str_symbol_aux1
 					,stk_var
 				);
+			}else{
+				VM_PUSH_STK_PTR(stk_var);
 			}
-			VM_PUSH_STK_PTR(stk_var);
 		}
 		else{ // only read
 			*data->vm_stk_current++=*stk_var;
@@ -405,9 +413,7 @@ namespace zetscript{
 			}else{ \
 				ContainerScriptObject *src_container=(ContainerScriptObject *)stk_src->value;
 
-				if(
-					   (src_container->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR)
-				){
+				if(VM_CHECK_CONTAINER_FOR_SLOT(src_container)){
 					ContainerSlot *container_slot=new ContainerSlot(
 						dst_container
 						,id_slot
@@ -529,7 +535,10 @@ lbl_exit_function:
 					*data->vm_stk_current++=*stk_var;
 				}else{
 					// dest to write
-					if(instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT){
+					if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
+								&&
+							VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
+					){
 
 						VM_PUSH_NEW_CONTAINER_SLOT(
 							(ContainerScriptObject *)so_aux
@@ -537,8 +546,9 @@ lbl_exit_function:
 							,stk_var
 						);
 
+					}else{
+						VM_PUSH_STK_PTR(stk_var);
 					}
-					VM_PUSH_STK_PTR(stk_var);
 
 				}
 				goto lbl_exit_ok;
