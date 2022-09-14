@@ -468,7 +468,7 @@ lbl_exit_function:
 
 		stk_var=NULL;
 		// determine object ...
-		if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+		if(stk_result_op1->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_CONTAINER_SLOT)){
 
 			if(stk_result_op1->properties & STK_PROPERTY_CONTAINER_SLOT){
 					so_aux=((ContainerSlot *)stk_result_op1->value)->getSrcContainerRef();

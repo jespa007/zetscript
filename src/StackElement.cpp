@@ -174,11 +174,6 @@ namespace zetscript{
 			_stack_element=((StackElement *)_stack_element->value);
 		}
 
-		if(_stack_element->properties & STK_PROPERTY_CONTAINER_SLOT){
-			*_ptr_var=(zs_int)((ContainerSlot *)_stack_element->value)->getSrcContainerRef();
-			return true;
-		}
-
 		if(_idx_builtin_type == IDX_TYPE_STACK_ELEMENT){
 			*_ptr_var=(zs_int)_stack_element;
 			return true;
@@ -255,8 +250,13 @@ namespace zetscript{
 			break;
 		default: // script variable by default ...
 
-			if(_stack_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
-				script_object=(ScriptObject *)_stack_element->value;
+			if(_stack_element->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_CONTAINER_SLOT)){
+
+				if(_stack_element->properties & STK_PROPERTY_CONTAINER_SLOT){
+					script_object=((ContainerSlot *)(_stack_element->value))->getSrcContainerRef();
+				}else{
+					script_object=(ScriptObject *)_stack_element->value;
+				}
 				ScriptType *c_class=NULL;
 				val_ret=(zs_int)script_object;
 
