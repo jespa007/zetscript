@@ -39,15 +39,14 @@ namespace zetscript {
 		return this->file;
 	}
 
-
 	zs_exception_error::zs_exception_error(const char * _file, int _line, const char * _error):zs_exception(_file,  _line, _error,"ERR"){}
 
 
-	void throw_script_error(const char * script_filename, int script_line, const char *in_txt,...){
-		char out_txt[ZS_MAX_STR_BUFFER];
-		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
+	void throw_script_error(const char * _file, int _line, const char *_str_in,...){
+		char str_out[ZS_MAX_STR_BUFFER];
+		ZS_CAPTURE_VARIABLE_ARGS(str_out,_str_in);
 
-		throw zs_exception_error(script_filename,script_line,out_txt);
+		throw zs_exception_error(_file,_line,str_out);
 	}
 
 	void throw_runtime_error(const char *in_txt,...){
@@ -56,16 +55,16 @@ namespace zetscript {
 		throw zs_exception_error("",-1,out_txt);
 	}
 
-	void throw_exception_file_line(const char *filename, int line, const char *in_txt,...){
+	void throw_exception_file_line(const char *_file, int _line, const char *in_txt,...){
 		char aux[ZS_MAX_STR_BUFFER];
-		sprintf(aux,"[%s:%i] ",filename,line);
+		sprintf(aux,"[%s:%i] ",_file,_line);
 
 		char out_txt[ZS_MAX_STR_BUFFER];
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 
 		strcat(aux,out_txt);
 
-		throw zs_exception_error(filename,line,out_txt);
+		throw zs_exception_error(_file,_line,out_txt);
 	}
 
 	void throw_exception(const char * in_txt,...){

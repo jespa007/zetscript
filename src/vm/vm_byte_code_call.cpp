@@ -471,7 +471,7 @@ execute_function:
 					);
 				}catch(std::exception & ex){
 					data->vm_error = true;
-					data->vm_error=ex.what();
+					data->vm_error_description=ex.what();
 				}
 
 				// restore stk_start_arg_call due in C args are not considered as local symbols (only for scripts)
