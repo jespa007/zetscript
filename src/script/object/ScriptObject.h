@@ -100,7 +100,6 @@ namespace zetscript{
 		zs_vector<StackElement *>				stk_builtin_elements;
 		zs_map    							*	map_builtin_properties; // to search faster each property by its name
 
-		// TODO: replace zs_vector by zs_map_int to search ref_objects/container_slot_assignments quickly
 		static void 							onDettachRefObjectNode(zs_list_node<RefObjectScriptObject *> *node);
 		zs_list<RefObjectScriptObject *>	*	ref_objects;
 		ScriptTypeFactory					*	getScriptTypeFactory();

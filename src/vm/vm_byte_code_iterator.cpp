@@ -177,7 +177,6 @@ namespace zetscript{
 			 }
 			break;
 			default:
-				// TODO:
 				if(vm_call_metamethod(
 						_vm,
 						_calling_function,

@@ -178,8 +178,6 @@ namespace zetscript{
 				stk_src=(StackElement *)stk_src->value; // value is expect to contents a stack variable
 			}
 
-
-			// TODO: get stk_dst if STK_PROPERTY_SLOT
 			StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 
 			stk_src_ref_value_copy_aux=NULL;//copy aux in case of the var is c and primitive (we have to update value on save)
@@ -356,6 +354,10 @@ namespace zetscript{
 				if(!vm_unref_shared_script_object(_vm,old_so,VM_CURRENT_SCOPE_BLOCK)){
 					goto lbl_exit_function;
 				}
+			}else if(old_stk_dst.properties & STK_PROPERTY_CONTAINER_SLOT){
+				delete (ContainerSlot *)old_stk_dst.value;
+				printf("Unassigns container slot by '%s'\n",stk_to_typeof_str(data->zs,stk_src).c_str());
+				// TODO: remove from container_slot_map
 			}
 		}
 
