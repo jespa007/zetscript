@@ -3,7 +3,7 @@ class Test{
 	
 	var a
 	constructor(a){
-		this.a=a; // init built-in
+		this.a=a; // ini built-in
 		//Console::outln("Test::Test this.a:{0}",this.a);
 	}
 	function1(a){

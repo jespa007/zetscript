@@ -29,9 +29,9 @@ namespace zetscript{
 			return false;
 		}
 
-		if((stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
+		if((stk_result_op1->properties & (STK_PROPERTY_SCRIPT_OBJECT|STK_PROPERTY_CONTAINER_SLOT)) == 0){
 			//VM_ERROR("internal: Expected object");
-			if((data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == 0){
+			if((data->vm_stk_current->properties & (STK_PROPERTY_SCRIPT_OBJECT|STK_PROPERTY_CONTAINER_SLOT)) == 0){
 				VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 					,stk_to_str(data->zs,data->vm_stk_current).c_str()
@@ -41,7 +41,18 @@ namespace zetscript{
 		}
 
 		stk_result_op2 = (StackElement *)(stk_result_op2->value);
-		obj=(ScriptObject *)stk_result_op1->value;
+
+
+		// ok vm_stk_current holds the iter object
+		if(stk_result_op1->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			// get iterator object and references +1
+			obj=(ScriptObject *)stk_result_op1->value;
+		}else{ // slot container
+			// get iterator object and references +1
+			obj=((ContainerSlot *)(stk_result_op1->value))->getSrcContainerRef();
+		}
+
+
 		sc=obj->getScriptType();
 
 		symbol_iter=sc->getSymbolMemberFunction("iter");
@@ -65,16 +76,16 @@ namespace zetscript{
 			VM_INNER_CALL(so_object,so_function,n_args,"iter");
 
 			// ok vm_stk_current holds the iter object
-			if((data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT) == false){
-				VM_ERROR("Expected IteratorObject returned by 'iter' but it was '%s'"
-						,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
-				);
-				return false;
+			if(data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
+				// get iterator object and references +1
+				obj=(ScriptObject *)data->vm_stk_current->value;
+			}else{
+				// get iterator object and references +1
+				obj=((ContainerSlot *)(data->vm_stk_current->value))->getSrcContainerRef();
 			}
 
 
-			// get iterator object and references +1
-			obj=(ScriptObject *)data->vm_stk_current->value;
+
 
 			if(!vm_share_script_object(_vm,obj)){\
 				goto lbl_exit_function;\
