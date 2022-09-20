@@ -44,6 +44,15 @@ namespace zetscript{
 			}
 		}
 
+		// particular errors
+		if((stk_result_op2->properties==0) || (stk_result_op2->properties & STK_PROPERTY_NULL)){
+			VM_MAIN_ERROR(\
+					VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR\
+					,stk_result_op2\
+					,_byte_code_metamethod\
+			);\
+		}
+
 
 		LOAD_PROPERTIES(_byte_code_metamethod); /* saves stk_aux1 --> vm_stk_current points to stk_result_op2 that is the a parameter to pass */\
 		setter_info=ptr_metamethod_members_aux->getSetterInfo(_byte_code_metamethod);

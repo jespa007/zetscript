@@ -94,6 +94,9 @@ namespace zetscript{
 			result= zs_strutils::zs_float_to_str(*((zs_float *)&stk.value));
 		}else if(STK_VALUE_IS_BOOLEAN(&stk)){
 			result= stk.value?"true":"false";
+		}else if(STK_VALUE_IS_MEMBER_PROPERTY(&stk)){
+			StackMemberProperty *ma=(StackMemberProperty *)stk.value;
+			result="prop@"+zs_string(ma->member_property->script_type->str_script_type)+"::"+zs_string(ma->member_property->property_name);
 		}else if(STK_VALUE_IS_FUNCTION(&stk)){
 			Symbol *symbol=((Symbol *)stk.value);
 			ScriptType *st=symbol->scope->getScriptTypeOwner();
@@ -124,6 +127,7 @@ namespace zetscript{
 				}
 			}
 		}
+
 		return result;
 	}
 
