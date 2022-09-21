@@ -282,14 +282,18 @@ namespace zetscript{
 		if(stk_result != NULL && (stk_result->properties & STK_PROPERTY_MEMBER_PROPERTY)){
 			stk_mp_aux=(StackMemberProperty *)stk_result->value;
 			if(stk_mp_aux->member_property->metamethod_members.getter != NULL){
+				// saves current stack element due the return will overwrite current stackpositin
+				StackElement *stk_back=data->vm_stk_current;
+				data->vm_stk_current++;
 				VM_INNER_CALL(
 						stk_mp_aux->so_object
 						,(ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr
 						,0 \
 						,stk_mp_aux->member_property->metamethod_members.getter->name.c_str()
 				);
-				/* getter requires stack to save value and avoid destroy previuos value*/
+				/* restore */
 				stk_result=data->vm_stk_current;
+				data->vm_stk_current=stk_back;
 			}else{
 				VM_STOP_EXECUTE(
 						"Property '%s' does not implements _get metamethod",SFI_GET_SYMBOL_NAME(_calling_function,instruction)
