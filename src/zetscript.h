@@ -156,7 +156,7 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------------------------------------------------------
 
 		template<typename _C>
-		ClassScriptObject * newScriptObjectClass();
+		ClassScriptObject * newScriptObjectClass(_C  *_instance=NULL);
 
 		//-----------------------------------------------
 		/**
