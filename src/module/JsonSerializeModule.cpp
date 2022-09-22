@@ -10,7 +10,15 @@ namespace zetscript{
 
 	namespace json{
 
-		void serialize_stk(ZetScript *_zs,ScriptObject *_this_object,zs_string & _str_result, StackElement *_stk, int _ident,bool _is_formatted, bool _strict_json_format);
+		void serialize_stk(
+				ZetScript *_zs
+				,ScriptObject *_this_object
+				,zs_string & _str_result
+				, StackElement *_stk
+				, int _ident
+				,bool _is_formatted
+				, bool _strict_json_format
+		);
 
 
 		void serialize_vector(
@@ -30,7 +38,15 @@ namespace zetscript{
 					_str_result.append(',');
 				}
 
-				serialize_stk(_zs,_this_object,_str_result,_vector->getUserElementAt(i),_ident,_is_formatted,_strict_json_format);
+				serialize_stk(
+					_zs
+					,_this_object
+					,_str_result
+					,_vector->getUserElementAt(i)
+					,_ident
+					,_is_formatted
+					,_strict_json_format
+				);
 			}
 			_str_result.append(']');
 		}
@@ -57,25 +73,32 @@ namespace zetscript{
 				zs_map_iterator *mi=&map_iterators[i];
 				for(;!mi->end();mi->next()){
 
-					StackElement *stk_se=(StackElement *)mi->value;
+					StackElement stk_se=*((StackElement *)mi->value);
+
+					// depack container slot
+					if(stk_se.properties & STK_PROPERTY_CONTAINER_SLOT){
+						stk_se.value=(zs_int)((ContainerSlot *)(stk_se.value))->getSrcContainerRef();
+						stk_se.properties=STK_PROPERTY_SCRIPT_OBJECT;
+					}
+
 					StackMemberProperty *smp=NULL;
 
-					if(stk_se->properties & STK_PROPERTY_MEMBER_PROPERTY){
-						smp=(StackMemberProperty *)stk_se->value;
+					if(stk_se.properties & STK_PROPERTY_MEMBER_PROPERTY){
+						smp=(StackMemberProperty *)stk_se.value;
 						if(smp->member_property->metamethod_members.getter == NULL){ // ignore value due it doesn't has getter
 							continue;
 						}
 					}
 
-					// only check if is not function. If is an property an implements get, call
+					// Serialize values as primitives or objects and ignore functions or script object memeber functions
 					if(
-						((stk_se->properties & STK_PROPERTY_FUNCTION) == 0)
+						((stk_se.properties & STK_PROPERTY_FUNCTION) == 0)
 							&&
-						STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(stk_se) == false
+						STK_IS_SCRIPT_OBJECT_MEMBER_FUNCTION(&stk_se) == false
 					){
 						bool getter_found=false;
 						bool value_from_vm_execute=false;
-						StackElement *ptr_stk_param=NULL;
+						StackElement ptr_stk_param=k_stk_undefined;
 						StackElement stk_getter_result=k_stk_undefined;
 
 						if (_is_formatted){
@@ -91,7 +114,7 @@ namespace zetscript{
 
 						_str_result.append("\"" + zs_string(mi->key)+ "\":");
 
-						// if property we have to call script or native...
+						// if is member property we have to call _get if exist...
 						if(smp!=NULL){
 
 							ScriptFunction *ptr_function=(ScriptFunction *)(smp->member_property->metamethod_members.getter->ref_ptr);
@@ -139,19 +162,19 @@ namespace zetscript{
 									);
 								}
 
-								ptr_stk_param=&stk_getter_result;
+								ptr_stk_param=stk_getter_result;
 							}
 						}
 
 						if(getter_found == false){
-							ptr_stk_param=(StackElement *)(mi->value);
+							ptr_stk_param=stk_se;
 						}
 
 						serialize_stk(
 							_zs
 							,_this_object
 							, _str_result
-							, ptr_stk_param
+							, &ptr_stk_param
 							, _ident+1
 							,_is_formatted
 							,_strict_json_format);
