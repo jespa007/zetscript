@@ -475,7 +475,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -557,7 +557,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -598,7 +598,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -639,7 +639,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -680,7 +680,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -719,7 +719,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -758,7 +758,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			, script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -797,7 +797,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -836,7 +836,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -875,7 +875,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -914,7 +914,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -953,7 +953,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -992,7 +992,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -1031,7 +1031,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
@@ -1070,7 +1070,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,_property_name
+			,script_type->str_script_type+"::"+_property_name
 			,_ptr_function
 			,&params
 			,&params_len
