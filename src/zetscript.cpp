@@ -311,19 +311,17 @@ namespace zetscript{
 	}
 	//
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-	//
-	// SHAREABLE OBJECTS
-	//
-	ObjectScriptObject * ZetScript::newShareableScriptObjectObject(){
-		return ObjectScriptObject::newShareableScriptObjectObject(this);
+
+	ObjectScriptObject * ZetScript::newScriptObjectObject(){
+		return ObjectScriptObject::newScriptObjectObject(this);
 	}
 
-	StringScriptObject * ZetScript::newShareableStringScriptObject(){
-		return StringScriptObject::newShareableStringScriptObject(this);
+	StringScriptObject * ZetScript::newStringScriptObject(){
+		return StringScriptObject::newStringScriptObject(this);
 	}
 
-	VectorScriptObject * ZetScript::newShareableVectorScriptObject(){
-		return VectorScriptObject::newShareableVectorScriptObject(this);
+	VectorScriptObject * ZetScript::newVectorScriptObject(){
+		return VectorScriptObject::newVectorScriptObject(this);
 	}
 
 	StackElement ZetScript::eval(const zs_string & _expresion, unsigned short _options, const char * _script_filename_by_ref, const char *__invoke_file__, int __invoke_line__)  {

@@ -19,7 +19,6 @@ namespace zetscript{
 		// Helpers
 		//
 		static ObjectScriptObject * newScriptObjectObject(ZetScript	*_zs);
-		static ObjectScriptObject * newShareableScriptObjectObject(ZetScript	*_zs);
 		static ObjectScriptObject * concat(ZetScript *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
 		static void  append(ZetScript *zs,ObjectScriptObject *o1,ObjectScriptObject *o2);
 		//

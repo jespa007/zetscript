@@ -17,7 +17,6 @@ namespace zetscript{
 		// Helpers
 		//
 		static VectorScriptObject * newVectorScriptObject(ZetScript *zs);
-		static VectorScriptObject * newShareableVectorScriptObject(ZetScript *zs);
 		static VectorScriptObject * newVectorScriptObjectAdd(ZetScript *zs,VectorScriptObject *v1,VectorScriptObject *v2);
 
 

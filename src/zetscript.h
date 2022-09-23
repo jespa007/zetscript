@@ -143,17 +143,9 @@ namespace zetscript{
 		//
 		bool isFilenameAlreadyParsed(const zs_string & filename);
 		//
-		//------------------------------------------------------------------------------------------------------------------------------------
-		//
-		// SHAREABLE OBJECTS
-		// This methods allows to create a shareable script objects string, vector and object. The user has to delete when is not used anymore
-		//
-		ObjectScriptObject * newShareableScriptObjectObject();
-		StringScriptObject * newShareableStringScriptObject();
-		VectorScriptObject * newShareableVectorScriptObject();
-
-		//
-		//------------------------------------------------------------------------------------------------------------------------------------
+		ObjectScriptObject * newScriptObjectObject();
+		StringScriptObject * newStringScriptObject();
+		VectorScriptObject * newVectorScriptObject();
 
 		template<typename _C>
 		ClassScriptObject * newScriptObjectClass(_C  *_instance=NULL);

@@ -14,16 +14,6 @@ namespace zetscript{
 		return new VectorScriptObject(_zs);
 	}
 
-	VectorScriptObject *VectorScriptObject::newShareableVectorScriptObject(ZetScript	*_zs){
-		VirtualMachine *virtual_machine = _zs->getVirtualMachine();
-		VectorScriptObject *so= new VectorScriptObject(_zs);
-
-		// share this variable++
-		vm_create_shared_script_object(virtual_machine,(ScriptObject *)so);
-		vm_share_script_object(virtual_machine,(ScriptObject *)so);
-		return so;
-	}
-
 	VectorScriptObject * VectorScriptObject::newVectorScriptObjectAdd(
 			ZetScript *zs
 			,VectorScriptObject *v1

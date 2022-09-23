@@ -14,17 +14,6 @@ namespace zetscript{
 		return new ObjectScriptObject(_zs);
 	}
 
-	ObjectScriptObject *ObjectScriptObject::newShareableScriptObjectObject(ZetScript	*_zs){
-		VirtualMachine *virtual_machine = _zs->getVirtualMachine();
-		ObjectScriptObject *so= new ObjectScriptObject(_zs);
-
-		// share this variable++
-		vm_create_shared_script_object(virtual_machine,(ScriptObject *)so);
-		vm_share_script_object(virtual_machine,(ScriptObject *)so);
-		return so;
-	}
-
-
 	ObjectScriptObject * ObjectScriptObject::concat(ZetScript *zs,ObjectScriptObject *o1,ObjectScriptObject *o2){
 		zs_string error;
 		ObjectScriptObject *obj = ZS_NEW_OBJECT_OBJECT(zs);

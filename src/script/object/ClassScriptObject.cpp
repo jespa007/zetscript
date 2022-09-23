@@ -206,6 +206,15 @@ namespace zetscript{
 	ClassScriptObject::~ClassScriptObject(){
 
 		if(created_object != 0 && delete_c_object_on_destroy){
+
+			if(script_class_native->c_destructor==NULL){
+				THROW_RUNTIME_ERROR(
+						"Cannot delete variable as type '%s' because it was defined as not instanceable but created through 'newScriptObjectClass'. To solve this issue, define type '%s' as instanceable (i.e to have defined type '%s' with constructor/destructor functions)"
+						,script_class_native->str_script_type.c_str()
+						,script_class_native->str_script_type.c_str()
+						,script_class_native->str_script_type.c_str()
+				);
+			}
 			 // only erases pointer if basic type or user/auto delete is required ...
 			CALL_DESTRUCTOR_CLASS(zs,script_class_native,created_object);//(*(script_class_native->c_destructor))(created_object);
 		}else if(was_created_by_constructor){
