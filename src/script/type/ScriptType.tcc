@@ -46,7 +46,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 				this->script_type_factory
 				,NULL
-				,str_script_type+"::"+_function_name
+				,zs_strutils::format("bindStaticMemberFunction<%s>(\"%s\",...)",str_script_type.c_str(),_function_name.c_str())
 				,_ptr_function
 				,&params
 				,&params_len
@@ -89,7 +89,7 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 				this->script_type_factory
 				,this
-				,str_script_type+"::"+_function_name
+				,zs_strutils::format("bindMemberFunction<%s>(\"%s\",...)",str_script_type.c_str(),_function_name.c_str())
 				,_ptr_function
 				,&params
 				,&params_len

@@ -4,6 +4,9 @@
  */
 #pragma once
 
+#include "util/zs_buffer.h"
+#include "util/zs_string.h"
+
 #define THROW_RUNTIME_ERROR(_str_error, ...)							::zetscript::throw_script_error(__FILENAME__,__LINE__,_str_error, __VA_ARGS__)
 #define THROW_RUNTIME_ERRORF(_str_error)								THROW_RUNTIME_ERROR(_str_error,NULL)
 
@@ -21,12 +24,11 @@ namespace zetscript {
 
 			char 	file[512];
 			int	   line;
-			char	error_description[512];
-
-			char what_msg[ZS_MAX_STR_BUFFER];
+			zs_string	error_description;
+			zs_string 	what_msg;
 		public:
 
-			zs_exception(const char *   _file, int _line, const char * _error_description, const char *_error_type);
+			zs_exception(const char *   _file, int _line, const zs_string & _error_description, const char *_error_type);
 			virtual const char* what() const noexcept;
 
 			int getErrorLine();
@@ -40,7 +42,7 @@ namespace zetscript {
 	class zs_exception_error: public zs_exception{
 	public:
 
-		zs_exception_error(const char *  _file, int _line, const char * _error);
+		zs_exception_error(const char *  _file, int _line, const zs_string & _error);
 	};
 
 	void throw_script_error(const char * scrip_filename, int script_line, const char *in_txt,...);
