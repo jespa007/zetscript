@@ -323,7 +323,6 @@ namespace zetscript{
 		StackElement stk_return=k_stk_undefined;
 		StackElement *stk_start=NULL;
 
-
 		if(
 			_calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN
 			&& ((_properties & VM_PROPERTY_CALL_FROM_NATIVE) == 0)
@@ -450,6 +449,10 @@ namespace zetscript{
 			data->vm_current_scope_function=VM_SCOPE_FUNCTION_MAIN;
 		}
 
+		if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
+			vm_check_cyclic_references(_vm);
+		}
+
 		return stk_return;
 	}
 
@@ -572,8 +575,6 @@ namespace zetscript{
 
 		}
 
-
-
 		// finally adds to container slot hierarchy
 		_src_container_ref->addSlot(_container_slot);
 
@@ -585,6 +586,46 @@ namespace zetscript{
 		data->containers_with_container_slots.set((zs_int)_src_container_ref,(zs_int)_src_container_ref);
 
 	}
+
+	void vm_remove_container_for_cyclic_references_checking(VirtualMachine *_vm,ContainerScriptObject *_csso){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
+		data->containers_with_container_slots.erase((zs_int)_csso);
+	}
+
+	void vm_count_cyclic_references(ContainerScriptObject *_current,ContainerScriptObject *_container_to_check, int & _count){
+		zs_list_node<ContainerSlot *> *first_node=NULL,* current_node=NULL;
+
+		current_node=first_node=_current->getListContainerSlotsRef()->first;
+
+		if(current_node != NULL){
+			do{
+				if(_container_to_check==current_node->data->getSrcContainerRef()){
+					_count++;
+				}
+				current_node=current_node->next;
+			}while(current_node!=first_node);
+
+		}
+	}
+
+	void vm_check_cyclic_references(VirtualMachine *_vm){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
+		for(auto it=data->containers_with_container_slots.begin();!it.end();it.next()){
+			// count reference number
+			ContainerScriptObject *cso=(ContainerScriptObject *)it.value;
+			int count=0;
+
+			vm_count_cyclic_references(cso,cso,count);
+			printf("Counting reference for container instance %p. Cyclic counts %i Shares counts: %i. Can be removed (cyclic == n_shares): %s\n"
+					,cso
+					,count
+					,cso->shared_pointer->data.n_shares
+					,count==cso->shared_pointer->data.n_shares?"true":"false"
+
+				);
+		}
+	}
+
 }
 
 

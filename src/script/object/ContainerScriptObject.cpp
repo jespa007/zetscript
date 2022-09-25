@@ -47,6 +47,8 @@ namespace zetscript{
 		if(ref_objects!=NULL){
 			container_slots->dettachAllNodes(onDettachContainerSlotNode);
 		}
+
+		vm_remove_container_for_cyclic_references_checking(vm,this);
 	}
 
 

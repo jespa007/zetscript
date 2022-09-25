@@ -67,17 +67,13 @@ namespace zetscript{
 		zs_list_node<_N> * next_node=NULL;
 		zs_list_node<_N> * current_node=this->first;
 		if(current_node != NULL){
-			while(current_node->next!=this->first){
-				next_node=current_node->next;
-
+			do{
 				if(_onDettachNode != NULL){
 					_onDettachNode(current_node); //deref script object reference
 				}
+				next_node=current_node->next;
+			}while(current_node!=this->first);
 
-				current_node=next_node;
-			}
-
-			_onDettachNode(current_node);
 		}
 
 		this->first=this->last=NULL;

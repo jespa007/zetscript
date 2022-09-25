@@ -312,14 +312,14 @@ namespace zetscript{
 		,ScriptFunction 		*	_calling_function
 		,Instruction 			*	_instruction
 		,StackElement 			*	_stk_local_var
-		,bool						_is_object
+		,bool						_dst_container_is_object
 	){
 		VirtualMachineData 		*	data=(VirtualMachineData *)_vm->data;
 		StackElement 			*	stk_result_op1=NULL;
 		StackElement 			*	stk_result_op2=NULL;
 		ContainerScriptObject 	*	dst_container=NULL;
 		ScriptObject 			*	so_aux=NULL;
-		StackElement 			*	stk_src=NULL,
+		StackElement 				stk_src=k_stk_undefined,
 								*	stk_dst=NULL,
 								*	stk_var=NULL;
 
@@ -330,7 +330,7 @@ namespace zetscript{
 		Instruction				*	instruction=_instruction;
 		zs_int						id_slot=ZS_IDX_UNDEFINED;
 
-		if(_is_object==true){
+		if(_dst_container_is_object==true){
 
 			VM_POP_STK_TWO; // first must be a string that describes property name and the other the variable itself ...
 
@@ -356,7 +356,7 @@ namespace zetscript{
 
 			id_slot=(zs_int)(((StringScriptObject *)stk_result_op1->value)->getConstChar());
 			stk_dst=stk_var;
-			stk_src=stk_result_op2;
+			stk_src=*stk_result_op2;
 
 		}else{ // is vector
 
@@ -370,23 +370,28 @@ namespace zetscript{
 			dst_container = (ContainerScriptObject *)stk_var->value;
 			id_slot=((VectorScriptObject *)dst_container)->length();
 			stk_dst=((VectorScriptObject *)dst_container)->pushNewUserSlot();
-			stk_src=stk_result_op1;
-
-			if(stk_src->properties & STK_PROPERTY_PTR_STK){
-				stk_src=(StackElement *)stk_result_op1->value;
-			}
+			stk_src=*stk_result_op1;
 		}
 
+		if(stk_src.properties & STK_PROPERTY_PTR_STK){
+			stk_src=*((StackElement *)stk_src.value);
+		}
 		//------
-		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_src)){ \
-			stk_src=(StackElement *)((STK_GET_STK_VAR_REF(stk_src)->value)); \
+		if(STK_IS_SCRIPT_OBJECT_VAR_REF(&stk_src)){ \
+			stk_src=(*(StackElement *)((STK_GET_STK_VAR_REF(&stk_src)->value))); \
 		} \
-		stk_src_ref_value=&stk_src->value; \
+
+		if(STK_VALUE_IS_CONTAINER_SLOT(&stk_src)){
+			stk_src.properties=STK_PROPERTY_SCRIPT_OBJECT; \
+			stk_src.value=(zs_int)((ContainerSlot *)(stk_src.value))->getSrcContainerRef();
+		}
+
+		stk_src_ref_value=&stk_src.value; \
 		stk_dst_ref_value=&stk_dst->value; \
-		if(stk_src->properties & STK_PROPERTY_IS_C_VAR_PTR){ /* src is C pointer */ \
-			stk_src_ref_value=(zs_int *)((stk_src)->value); \
+		if(stk_src.properties & STK_PROPERTY_IS_C_VAR_PTR){ /* src is C pointer */ \
+			stk_src_ref_value=(zs_int *)((stk_src).value); \
 		}\
-		stk_src_properties=stk_src->properties;\
+		stk_src_properties=stk_src.properties;\
 		if(stk_src_properties == STK_PROPERTY_UNDEFINED){\
 			stk_dst->properties=STK_PROPERTY_UNDEFINED;\
 		}else if(stk_src_properties == STK_PROPERTY_NULL){\
@@ -401,10 +406,10 @@ namespace zetscript{
 			stk_dst->properties=STK_PROPERTY_BOOL;\
 			*((bool *)stk_dst_ref_value)=*((bool *)stk_src_ref_value);\
 		}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){\
-			*stk_dst=*stk_src;\
+			*stk_dst=stk_src;\
 		}else if(stk_src_properties & STK_PROPERTY_SCRIPT_OBJECT){\
 
-			if(STK_IS_SCRIPT_OBJECT_STRING(stk_src)){\
+			if(STK_IS_SCRIPT_OBJECT_STRING(&stk_src)){\
 				stk_dst->value=(zs_int)(so_aux= new StringScriptObject(data->zs));\
 				stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 				if(!vm_create_shared_script_object(_vm,so_aux)){\
@@ -413,9 +418,9 @@ namespace zetscript{
 				if(!vm_share_script_object(_vm,so_aux)){\
 					goto lbl_exit_function;\
 				}\
-				((StringScriptObject *)(so_aux))->set(((StringScriptObject *)stk_src->value)->get());
+				((StringScriptObject *)(so_aux))->set(((StringScriptObject *)stk_src.value)->get());
 			}else{ \
-				ContainerScriptObject *src_container=(ContainerScriptObject *)stk_src->value;
+				ContainerScriptObject *src_container=(ContainerScriptObject *)stk_src.value;
 
 				if(VM_CHECK_CONTAINER_FOR_SLOT(src_container)){
 					ContainerSlot *container_slot=new ContainerSlot(
@@ -439,7 +444,7 @@ namespace zetscript{
 			}\
 		}else{\
 			VM_STOP_EXECUTE("VM_SET_CONTAINER_ELEMENT:(internal) cannot determine var type %s"\
-				,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_src)\
+				,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,&stk_src)\
 			);\
 		}\
 		//----
