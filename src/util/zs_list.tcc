@@ -71,7 +71,7 @@ namespace zetscript{
 				if(_onDettachNode != NULL){
 					_onDettachNode(current_node); //deref script object reference
 				}
-				next_node=current_node->next;
+				current_node=current_node->next;
 			}while(current_node!=this->first);
 
 		}
