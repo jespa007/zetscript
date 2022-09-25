@@ -1,6 +1,6 @@
 /*
- *  This file is distributed under the MIT License.
- *  See LICENSE file for details.
+ *  This _file is distributed under the MIT License.
+ *  See LICENSE _file for details.
  */
 #pragma once
 
@@ -155,49 +155,86 @@ namespace zetscript{
 		 * Register C variable
 		 */
 		template <typename V>
-		 void bindVariable(const zs_string & var_name,V var_ptr, const char *registered_file="",short registered_line=-1){
-			 script_type_factory->bindGlobalVariable(var_name,var_ptr, registered_file, registered_line);
+		 void bindVariable(const zs_string & _var_name,V var_ptr, const char *_registered_file="",short _registered_line=-1){
+			try{
+				script_type_factory->bindGlobalVariable(_var_name,var_ptr, _registered_file, _registered_line);
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+			}
 		 }
 
-		void bindConstantVariable(const zs_string & var_name, int value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & _var_name, int value, const char *_registered_file="", short _registered_line=-1){
+			try{
+				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
-		void bindConstantVariable(const zs_string & var_name, bool value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & _var_name, bool value, const char *_registered_file="", short _registered_line=-1){
+			try{
+				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
-		void bindConstantVariable(const zs_string & var_name, float value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & _var_name, float value, const char *_registered_file="", short _registered_line=-1){
+			try{
+				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
-		void bindConstantVariable(const zs_string & var_name, double value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->bindConstantVariable(var_name,(float)value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & _var_name, double value, const char *_registered_file="", short _registered_line=-1){
+			try{
+				script_type_factory->bindConstantVariable(_var_name,(float)value, _registered_file, _registered_line);
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 
-		void bindConstantVariable(const zs_string & var_name, const zs_string & value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & _var_name, const zs_string & value, const char *_registered_file="", short _registered_line=-1){
+			try{
+				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
-		void bindConstantVariable(const zs_string & var_name, const char *value, const char *registered_file="", short registered_line=-1){
-			script_type_factory->bindConstantVariable(var_name,value, registered_file, registered_line);
+		void bindConstantVariable(const zs_string & _var_name, const char *value, const char *_registered_file="", short _registered_line=-1){
+			try{
+				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+			}
+
 		}
 
 		/**
 		 * Register C Class. Return index registered class
 		 */
 		template<typename C>
-		ScriptType * bindType(const zs_string & str_script_type, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *registered_file="",short registered_line=-1){
-			return script_type_factory->bindType<C>(str_script_type, _constructor, _destructor, registered_file,registered_line);
+		ScriptType * bindType(const zs_string & str_script_type, C  * (*_constructor)(ZetScript *_zs)=NULL, void (*_destructor)(ZetScript *_zs,C *)=NULL, const char *_registered_file="",short _registered_line=-1){
+			try{
+				return script_type_factory->bindType<C>(str_script_type, _constructor, _destructor, _registered_file,_registered_line);
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(C).name()),str_script_type.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 		/**
 		 * Register C function
 		 */
 		template <typename F>
-		void bindFunction( const zs_string & _name_script_function,F ptr_function, const char *registered_file="",short registered_line=-1){
-			script_type_factory->bindFunction( _name_script_function,ptr_function, registered_file,registered_line);
+		void bindFunction( const zs_string & _name_script_function,F ptr_function, const char *_registered_file="",short _registered_line=-1){
+			try{
+				script_type_factory->bindFunction( _name_script_function,ptr_function, _registered_file,_registered_line);
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\")': %s",__func__,_name_script_function.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 		template<class C, class B>
@@ -208,30 +245,42 @@ namespace zetscript{
 		template<typename C,typename F>
 		void bindConstructor(
 				 F function_type
-				 , const char *registered_file=""
-				,short registered_line=-1){
-
-			script_type_factory->bindConstructor<C>(function_type, registered_file,registered_line );
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindConstructor<C>(function_type, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_ex.getErrorDescription());
+			}
 		}
 
 		template <typename C, typename R>
 		void bindStaticConstMember(
-				const zs_string & var_name
-				, const R var_pointer
-				 , const char *registered_file=""
-				,short registered_line=-1
+				const zs_string & _var_name
+				, const R _var_pointer
+				 , const char *_registered_file=""
+				,short _registered_line=-1
 		){
-			script_type_factory->bindStaticConstMember<C>(var_name,var_pointer, registered_file,registered_line );
+			try{
+				script_type_factory->bindStaticConstMember<C>(_var_name,_var_pointer, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_var_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 		template <typename C,typename F>
 		void	bindMemberFunction(
 				const zs_string & _name_script_function
 				,F function_type
-				 , const char *registered_file=""
-				,short registered_line=-1
+				 , const char *_registered_file=""
+				,short _registered_line=-1
 		){
-			script_type_factory->bindMemberFunction<C>(_name_script_function,function_type, registered_file,registered_line );
+			try{
+				script_type_factory->bindMemberFunction<C>(_name_script_function,function_type, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_name_script_function.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 
@@ -239,68 +288,96 @@ namespace zetscript{
 		void	bindMemberPropertySetter(
 				const zs_string & _property_name
 				,F ptr_function
-				 , const char *registered_file=""
-				,short registered_line=-1
+				 , const char *_registered_file=""
+				,short _registered_line=-1
 		){
-			script_type_factory->bindMemberPropertySetter<C>(_property_name,ptr_function, registered_file,registered_line );
+			try{
+				script_type_factory->bindMemberPropertySetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 		template <typename C,typename F>
 		void	bindMemberPropertyGetter(
 				const zs_string & _property_name
 				,F ptr_function
-				 , const char *registered_file=""
-				,short registered_line=-1
+				 , const char *_registered_file=""
+				,short _registered_line=-1
 		){
-			script_type_factory->bindMemberPropertyGetter<C>(_property_name,ptr_function, registered_file,registered_line );
+			try{
+				script_type_factory->bindMemberPropertyGetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),_property_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 		template <typename C,typename F>
 		void	bindMemberPropertyPostIncrement(
 				const zs_string & _property_name
 				,F ptr_function
-				 , const char *registered_file=""
-				,short registered_line=-1
+				 , const char *_registered_file=""
+				,short _registered_line=-1
 		){
-			script_type_factory->bindMemberPropertyPostIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			try{
+				script_type_factory->bindMemberPropertyPostIncrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 		template <typename C,typename F>
 		void	bindMemberPropertyPostDecrement(
 				const zs_string & _property_name
 				,F ptr_function
-				 , const char *registered_file=""
-				,short registered_line=-1
+				 , const char *_registered_file=""
+				,short _registered_line=-1
 		){
-			script_type_factory->bindMemberPropertyPostDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			try{
+				script_type_factory->bindMemberPropertyPostDecrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 		template <typename C,typename F>
 		void	bindMemberPropertyPreIncrement(
 				const zs_string & _property_name
 				,F ptr_function
-				 , const char *registered_file=""
-				,short registered_line=-1
+				 , const char *_registered_file=""
+				,short _registered_line=-1
 		){
-			script_type_factory->bindMemberPropertyPreIncrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			try{
+				script_type_factory->bindMemberPropertyPreIncrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 		template <typename C,typename F>
 		void	bindMemberPropertyPreDecrement(
 				const zs_string & _property_name
 				,F ptr_function
-				 , const char *registered_file=""
-				,short registered_line=-1
+				 , const char *_registered_file=""
+				,short _registered_line=-1
 		){
-			script_type_factory->bindMemberPropertyPreDecrement<C>(_property_name,ptr_function, registered_file,registered_line );
+			try{
+				script_type_factory->bindMemberPropertyPreDecrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 		/**
 		 * Register Static Function Member Class
 		 */
 		template <typename C,typename F>
-		void bindStaticMemberFunction(const zs_string & _name_script_function,F fun, const char *registered_file="",short registered_line=-1){
-			script_type_factory->bindStaticMemberFunction<C>(_name_script_function,fun, registered_file, registered_line);
+		void bindStaticMemberFunction(const zs_string & _name_script_function,F _fun, const char *_registered_file="",short _registered_line=-1){
+			try{
+				script_type_factory->bindStaticMemberFunction<C>(_name_script_function,_fun, _registered_file, _registered_line);
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_name_script_function.c_str(),_ex.getErrorDescription());
+			}
 		}
 
 		//cpp binding
@@ -313,12 +390,12 @@ namespace zetscript{
 		// 0 PARAMS
 		//
 		template <typename R,typename T>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<std::is_same<R,void>::value>::type;
 
 
 		template <typename R,typename T>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 		->typename std::enable_if<!std::is_same<R,void>::value>::type;
 
 
@@ -328,12 +405,12 @@ namespace zetscript{
 		//
 		// template for last parameter argIdx == 1
 		template<typename R,typename T,  typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun ,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line,void **ptr_fun ,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type;
 
 
 		template<typename R,typename T,  typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line,void **ptr_fun ,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line,void **ptr_fun ,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 1)>::type;
 
 
@@ -343,12 +420,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 2
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 2)>::type;
 
 
@@ -358,12 +435,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 3
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 3)>::type;
 
 
@@ -374,12 +451,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 4
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 4)>::type;
 
 
@@ -389,13 +466,13 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 5
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type;
 
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 5)>::type;
 
 		//--------------------------------------------------------------------------------------------------------------------
@@ -404,12 +481,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 6
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 6)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 6)>::type;
 
 		//--------------------------------------------------------------------------------------------------------------------
@@ -418,12 +495,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 7
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 7)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 7)>::type;
 
 		//--------------------------------------------------------------------------------------------------------------------
@@ -432,12 +509,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 8
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 8)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 8)>::type;
 
 		//--------------------------------------------------------------------------------------------------------------------
@@ -446,12 +523,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 8
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 9)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 9)>::type;
 
 
@@ -461,12 +538,12 @@ namespace zetscript{
 		//
 		// template when parameters argIdx == 8
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(std::is_same<R,void>::value) && (sizeof...(ArgTypes) == 10)>::type;
 
 
 		template <typename R,typename T, typename... ArgTypes>
-		auto bindScriptFunctionBuilder(const char *file,int line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
+		auto bindScriptFunctionBuilder(const char *_file,int _line, void **ptr_fun,ScriptObject *calling_obj,ScriptFunction *fun_obj)
 			-> typename std::enable_if<(!std::is_same<R,void>::value) &&(sizeof...(ArgTypes) == 10)>::type;
 
 
@@ -477,28 +554,28 @@ namespace zetscript{
 		//--------------------------------------------------------------------------------------------------------------------
 
 		 template <typename F, std::size_t... Is>
-		 auto bindScriptFunctionBuilderBase(const char *file,int line,void **ptr_fun, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto bindScriptFunctionBuilderBase(const char *_file,int _line,void **ptr_fun, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity > 0)>::type;
 
 
 		 template <typename F, std::size_t... Is>
-		 auto bindScriptFunctionBuilderBase(const char *file,int line,void **ptr_fun, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
+		 auto bindScriptFunctionBuilderBase(const char *_file,int _line,void **ptr_fun, ScriptObject *calling_obj,ScriptFunction *fun_obj,IndexSequence<Is...>)
 		 -> typename std::enable_if<(F::arity == 0)>::type;
 
 		void getScriptObject(const zs_string &function_access,ScriptObject **calling_obj,ScriptFunction **fun_obj );
 
 		template <  typename F>
-		std::function<F> bindScriptFunction(const zs_string & function_access, const char *file="", int line=-1);
+		std::function<F> bindScriptFunction(const zs_string & function_access, const char *_file="", int _line=-1);
 
 		template <  typename F>
-		std::function<F> bindScriptFunction(MemberFunctionScriptObject *sf, const char *file="", int line=-1);
+		std::function<F> bindScriptFunction(MemberFunctionScriptObject *_sf, const char *_file="", int _line=-1);
 
 
 		template <  typename F>
-		std::function<F> bindScriptFunction(ScriptFunction *sf, ScriptObject *calling_object, const char *file="", int line=-1);
+		std::function<F> bindScriptFunction(ScriptFunction *_sf, ScriptObject *_calling_object, const char *_file="", int _line=-1);
 
 		template <  typename F>
-		std::function<F> bindScriptFunction(ScriptFunction *sf, const char *file="", int line=-1);
+		std::function<F> bindScriptFunction(ScriptFunction *_sf, const char *_file="", int _line=-1);
 
 
 
@@ -509,7 +586,7 @@ namespace zetscript{
 		void clear();
 		void saveState();
 
-		void addUnresolvedSymbol(ScriptFunction *sf, zs_int idx_instruction);
+		void addUnresolvedSymbol(ScriptFunction *_sf, zs_int _idx_instruction);
 		void link();
 
 		 ~ZetScript();

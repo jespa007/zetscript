@@ -87,7 +87,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 				this
 				,NULL
-				,zs_strutils::format("bindFunction(\"%s\")",_function_name.c_str())
 				,_ptr_function
 				,&params
 				,&params_len
@@ -475,7 +474,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertySetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -515,7 +513,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyGetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -530,6 +527,8 @@ namespace zetscript{
 				,_registered_file
 				,_registered_line
 		);
+
+
 	}
 
 	/*
@@ -555,7 +554,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyPostIncrement<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -596,7 +594,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyPostDecrement<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -637,7 +634,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyPreIncrement<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -678,7 +674,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyPreDecrement<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -717,7 +712,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyAddSetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -756,7 +750,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			, script_type
-			,zs_strutils::format("bindMemberPropertySubSetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -795,7 +788,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyMulSetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -834,7 +826,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyDivSetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -873,7 +864,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyModSetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -912,7 +902,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyAndSetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -951,7 +940,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyOrSetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -990,7 +978,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyXorSetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -1029,7 +1016,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyShlSetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len
@@ -1068,7 +1054,6 @@ namespace zetscript{
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
 			this
 			,script_type
-			,zs_strutils::format("bindMemberPropertyShrSetter<%s>(\"%s\",...)",script_type->str_script_type.c_str(),_property_name.c_str())
 			,_ptr_function
 			,&params
 			,&params_len

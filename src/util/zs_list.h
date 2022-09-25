@@ -16,7 +16,6 @@ namespace zetscript{
 		}
 	};
 
-
 	template<typename _N>
 	class zs_list{
 	public:

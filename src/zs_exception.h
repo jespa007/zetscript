@@ -20,12 +20,6 @@
 namespace zetscript {
 
 	class zs_exception: public std::exception{
-			const char *error_type;
-
-			char 	file[512];
-			int	   line;
-			zs_string	error_description;
-			zs_string 	what_msg;
 		public:
 
 			zs_exception(const char *   _file, int _line, const zs_string & _error_description, const char *_error_type);
@@ -36,7 +30,14 @@ namespace zetscript {
 			const char * getErrorDescription();
 
 			const char * getErrorSourceFilename();
+		private:
+			const char *error_type;
 
+			zs_string	file;
+			int	   		line;
+			zs_string	error_description;
+			zs_string 	what_msg;
+			zs_string 	stk_trace;
 	};
 
 	class zs_exception_error: public zs_exception{

@@ -398,6 +398,9 @@ SET(
 	util/zs_vector.h
 	util/zs_vector.tcc
 	util/zs_list.tcc
+	util/zs_buffer.h
+	util/zs_system.h
+	util/zs_list.h
 	
 	#eval
 	eval/eval_keyword.h
@@ -431,6 +434,7 @@ SET(
 	script/type/ScriptTypeFactory.tcc
 	
 	# script/object
+	script/object/RefObjectScriptObject.h
 	script/object/ScriptObject.h
 	script/object/ClassScriptObject.h
 	script/object/ClassScriptObject.tcc

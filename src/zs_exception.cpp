@@ -8,7 +8,6 @@ namespace zetscript {
 
 	zs_exception::zs_exception(const char *  _file, int _line, const zs_string & _error_description, const char *_error_type){
 		error_type=_error_type;
-		strcpy(file,_file);
 		line=_line;
 		error_description = _error_description;
 		if((_file==0 || *_file==0) && _line == ZS_IDX_UNDEFINED){
@@ -16,14 +15,15 @@ namespace zetscript {
 		}else if((_file==0 || *_file==0)){
 			what_msg=zs_strutils::format("line %i: %s", _line, _error_description.c_str());
 		}else{
-			what_msg=zs_strutils::format("[%s:%i] %s",_file, _line, _error_description.c_str());
+			file=zs_path::get_filename(_file);
+			what_msg=zs_strutils::format("[%s:%i] %s",file.c_str(), _line, _error_description.c_str());
 		}
 
 	}
 
 	const char* zs_exception::what() const noexcept
 	{
-		return what_msg.c_str();
+		return error_description.c_str();
 	}
 
 
@@ -36,7 +36,7 @@ namespace zetscript {
 	}
 
 	const char * zs_exception::getErrorSourceFilename(){
-		return this->file;
+		return this->file.c_str();
 	}
 
 	zs_exception_error::zs_exception_error(const char * _file, int _line, const zs_string & _error):zs_exception(_file,  _line, _error,"ERR"){}

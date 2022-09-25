@@ -163,7 +163,6 @@ namespace zetscript{
 	int getNativeFunctionRetArgsTypes(
 			 ScriptTypeFactory *_script_class_factory
 			,ScriptType * _script_type
-			,const zs_string & _bind_function_description
 			,F _ptr_function
 			,ScriptFunctionParam **_params
 			,int *_params_len
@@ -180,8 +179,7 @@ namespace zetscript{
 
 		if(args.size()>MAX_NATIVE_FUNCTION_ARGS){
 			THROW_RUNTIME_ERROR(
-				"Error '%s': max arguments reached (max:'%i')"
-				,_bind_function_description.c_str()
+				"Max arguments reached (max:'%i')"
 				,MAX_NATIVE_FUNCTION_ARGS
 			);
 		}
@@ -189,8 +187,7 @@ namespace zetscript{
 		// check valid parameters ...
 		if((idx_script_type_return=_script_class_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
 			THROW_RUNTIME_ERROR(
-				"Error '%s': return type '%s' not registered"
-				,_bind_function_description.c_str()
+				"Return type '%s' not registered"
 				,zs_rtti::demangle(return_type).c_str()
 			);
 		}
@@ -200,10 +197,17 @@ namespace zetscript{
 			*_params_len=args.size();
 
 			if(args.size()==0){
-				THROW_RUNTIME_ERROR(
-					"Error '%s': It expectes at FIRST parameter as 'ZetScript *'"
-					,_bind_function_description.c_str()
+				THROW_RUNTIME_ERRORF(
+					"Function to bind has to have 'ZetScript *' as FIRST parameter"
 				);
+			}
+
+			if(args.size()==1 && _script_type != NULL){
+				error=zs_strutils::format(
+					"Function to bind has to have '%s' as SECOND parameter for object member reference"
+					,zs_rtti::demangle(_script_type->str_script_type_ptr.c_str()).c_str()
+				);
+
 			}
 
 			for(int i = 0; i < args.size(); i++){
@@ -212,9 +216,8 @@ namespace zetscript{
 
 				if(i==0){
 					if(idx_script_type!=IDX_TYPE_SCRIPT_OBJECT_ZETSCRIPT){
-						THROW_RUNTIME_ERROR(\
-							"Error '%s': expected 'ZetScript *' as FIRST parameter but it was '%s'"
-							,_bind_function_description.c_str()
+						THROW_RUNTIME_ERROR(
+							"Expected FIRST parameter as 'ZetScript *' but it was '%s'"
 							,zs_rtti::demangle(param).c_str()
 						);
 					}
@@ -223,8 +226,7 @@ namespace zetscript{
 				if(i==1 && _script_type!=NULL){
 					if(strcmp(param,_script_type->str_script_type_ptr.c_str())!=0){
 						error=zs_strutils::format(
-							"Error '%s': expected to have SECOND parameter as pointer type '%s' but it was '%s'"
-							,_bind_function_description.c_str()
+							"SECOND parameter, as object member reference, has to be type '%s' but it was '%s'"
 							,zs_rtti::demangle(_script_type->str_script_type_ptr.c_str()).c_str()
 							,zs_rtti::demangle(param).c_str()
 						);
@@ -234,8 +236,7 @@ namespace zetscript{
 
 				// exception: These variables are registered but not allowed to pass throught parameter
 				if(idx_script_type==IDX_TYPE_ZS_FLOAT_C || idx_script_type==IDX_TYPE_BOOL_C || idx_script_type == IDX_TYPE_ZS_STRING_C){
-					error=zs_strutils::format("Error '%s': argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
-							,_bind_function_description.c_str()
+					error=zs_strutils::format("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1
 							,zs_rtti::demangle(param).c_str()
 							,zs_rtti::demangle(param).c_str());
@@ -244,8 +245,7 @@ namespace zetscript{
 
 				if(idx_script_type==ZS_IDX_UNDEFINED){
 
-					error=zs_strutils::format("Error '%s': argument %i type '%s' not registered"
-						,_bind_function_description.c_str()
+					error=zs_strutils::format("Argument %i type '%s' not registered"
 						,i+1
 						,zs_rtti::demangle(param).c_str()
 					);
@@ -254,14 +254,6 @@ namespace zetscript{
 
 				(*_params)[i]=ScriptFunctionParam(idx_script_type,param);
 			}
-		}
-
-		if(_script_type != NULL && *_params_len<=1){
-			error=zs_strutils::format("Error '%s': needs to have SECOND parameter as pointer type '%s'"
-				,_bind_function_description.c_str()
-				,zs_rtti::demangle(_script_type->str_script_type_ptr.c_str()).c_str()
-			);
-
 		}
 
 exit_function_traits:
