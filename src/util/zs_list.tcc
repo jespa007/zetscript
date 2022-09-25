@@ -50,7 +50,7 @@ namespace zetscript{
 			if(_node == this->first){
 				this->first=_node->next;
 			}
-			else if(_node == this->last){
+			if(_node == this->last){
 				this->last=_node->previous;
 			}
 			_node->previous->next=_node->next;
@@ -58,6 +58,11 @@ namespace zetscript{
 
 		}
 		_node->previous = _node->next = NULL;
+
+		if(this->first!=NULL && this->first->previous == NULL && this->first->next == NULL){
+			int kk=0;
+			kk=1;
+		}
 	}
 
 
@@ -68,15 +73,19 @@ namespace zetscript{
 		zs_list_node<_N> * current_node=this->first;
 		if(current_node != NULL){
 			do{
+				// save next node pointer because current_node->next can be NULL on dettach
+				next_node=current_node->next;
+
 				if(_onDettachNode != NULL){
 					_onDettachNode(current_node); //deref script object reference
 				}
-				current_node=current_node->next;
+				current_node=next_node;
 			}while(current_node!=this->first);
 
+			this->first=this->last=NULL;
 		}
 
-		this->first=this->last=NULL;
+
 	}
 
 	template<typename _N>

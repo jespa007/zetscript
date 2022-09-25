@@ -182,7 +182,7 @@ namespace zetscript{
 		int idx=search(_key);
 
 		if(idx==ZS_MAP_INT_KEY_NOT_FOUND){
-			THROW_RUNTIME_ERROR("key '%s' not found",_key);
+			THROW_RUNTIME_ERROR("key '%lu' not found",_key);
 		}
 
 		zs_map_int_node *node = items[idx].node;

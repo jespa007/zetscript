@@ -112,7 +112,7 @@ int main(){
 		test_anonymous_scopes(&zs);
 		test_consistency_function_override(&zs);
 	}catch(std::exception & ex){
-		fprintf(stderr,ex.what());
+		fprintf(stderr,"%s\n",ex.what());
 	}
 	return 0;
 }

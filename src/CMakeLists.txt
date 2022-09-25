@@ -295,14 +295,6 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 	target_link_libraries(test_register_constant${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
 	#-----------------------------------------------
-	# test_consecutive_evals
-	add_executable(test_consecutive_evals${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_consecutive_evals.cpp
-	)
-	target_compile_definitions(test_consecutive_evals${POST_NAME} PUBLIC -D__MAIN__ ) 
-	target_link_libraries(test_consecutive_evals${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
-
-	#-----------------------------------------------
 	# test arithmetic constants
 	add_executable(test_arithmetic_constants${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/test_arithmetic_common.cpp
@@ -330,6 +322,14 @@ if ((SUITTEST) OR (NOT DEFINED SUITTEST))
 	target_link_libraries(test_arithmetic_vars${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
 	endif()
+	
+	#-----------------------------------------------
+	# test_consecutive_evals
+	add_executable(test_consecutive_evals${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/test_consecutive_evals.cpp
+	)
+	target_compile_definitions(test_consecutive_evals${POST_NAME} PUBLIC -D__MAIN__ ) 
+	target_link_libraries(test_consecutive_evals${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})	
 	
 	#-----------------------------------------------
 	# test arithmetic metamethods

@@ -617,7 +617,7 @@ namespace zetscript{
 
 			vm_count_cyclic_references(cso,cso,count);
 			printf("Counting reference for container instance %p. Cyclic counts %i Shares counts: %i. Can be removed (cyclic == n_shares): %s\n"
-					,cso
+					,(void *)cso
 					,count
 					,cso->shared_pointer->data.n_shares
 					,count==cso->shared_pointer->data.n_shares?"true":"false"
