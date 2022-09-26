@@ -18,12 +18,12 @@ namespace zetscript{
 		return container_slots;
 	}
 
-	void ContainerScriptObject::addSlot(ContainerSlot *_container_slot){
+	void ContainerScriptObject::addContainerSlot(ContainerSlot *_container_slot){
 		_container_slot->setSrcContainerRef(this);
 	}
 
 
-	void ContainerScriptObject::removeSlot(ContainerSlot *_container_slot, VM_ScopeBlock 	*	_scope_block){
+	void ContainerScriptObject::removeContainerSlot(ContainerSlot *_container_slot, VM_ScopeBlock 	*	_scope_block){
 		if(_container_slot!=NULL){
 
 

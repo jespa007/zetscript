@@ -450,7 +450,7 @@ namespace zetscript{
 		}
 
 		if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
-			vm_check_cyclic_references(_vm);
+			//vm_check_cyclic_references(_vm);
 		}
 
 		return stk_return;
@@ -576,7 +576,7 @@ namespace zetscript{
 		}
 
 		// finally adds to container slot hierarchy
-		_src_container_ref->addSlot(_container_slot);
+		_src_container_ref->addContainerSlot(_container_slot);
 
 		// do the assigment
 		stk_dst->value=(zs_int)_container_slot;

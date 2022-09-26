@@ -29,7 +29,7 @@ namespace zetscript{
 		if(src_container_ref!=_src_container_ref){
 			//detach current
 			if(src_container_ref!=NULL){
-				src_container_ref->removeSlot(this,NULL);
+				src_container_ref->removeContainerSlot(this,NULL);
 			}
 		}
 
@@ -95,7 +95,7 @@ namespace zetscript{
 		// set undefined the stk slot
 		if(src_container_ref != NULL){
 			*ptr_stk=k_stk_undefined;
-			src_container_ref->removeSlot(this, NULL);
+			src_container_ref->removeContainerSlot(this, NULL);
 		}
 
 	}
