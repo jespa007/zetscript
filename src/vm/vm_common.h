@@ -289,7 +289,7 @@ namespace zetscript{
 			VirtualMachine *_vm
 		);
 
-		void vm_remove_container_for_cyclic_references_checking(
+		void vm_remove_container_instance_cyclic_references_map(
 			  VirtualMachine *_vm
 			, ContainerScriptObject *_container_slot
 		);

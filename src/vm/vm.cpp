@@ -587,7 +587,7 @@ namespace zetscript{
 
 	}
 
-	void vm_remove_container_for_cyclic_references_checking(VirtualMachine *_vm,ContainerScriptObject *_csso){
+	void vm_remove_container_instance_cyclic_references_map(VirtualMachine *_vm,ContainerScriptObject *_csso){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		data->containers_with_container_slots.erase((zs_int)_csso);
 	}

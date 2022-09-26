@@ -32,7 +32,8 @@ namespace zetscript{
 			container_slots->remove(container_slot_node);
 
 			if(container_slots->first==NULL){
-				vm_remove_container_for_cyclic_references_checking(vm,_container_slot->getSrcContainerRef());
+				// there's no any cycli reference so container instance can be removed from cyclic references map
+				vm_remove_container_instance_cyclic_references_map(vm,_container_slot->getSrcContainerRef());
 			}
 
 			// if not ciclic, unref
@@ -52,7 +53,7 @@ namespace zetscript{
 
 		//if(container_slots->first!=NULL){
 		container_slots->dettachAllNodes(onDettachContainerSlotNode);
-			//vm_remove_container_for_cyclic_references_checking(vm,this);
+			//vm_remove_container_instance_cyclic_references_map(vm,this);
 		//}
 	}
 
