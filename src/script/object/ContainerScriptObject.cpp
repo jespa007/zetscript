@@ -37,9 +37,9 @@ namespace zetscript{
 			}
 
 			// if not ciclic, unref
-			if(_container_slot->isCyclicReference()==false){
-				vm_unref_shared_script_object(vm,_container_slot->getSrcContainerRef(),_scope_block );
-			}
+			//if(_container_slot->isCyclicReference()==false){
+			vm_unref_shared_script_object(vm,_container_slot->getSrcContainerRef(),_scope_block );
+			//}
 
 
 		}

@@ -17,7 +17,7 @@ namespace zetscript{
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		// derefer all variables in all scopes (except main )...
-		while(data->vm_current_scope_function > VM_SCOPE_FUNCTION_MAIN){
+		while(data->vm_current_scope_function > VM_MAIN_SCOPE){
 			while(
 					(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
 
@@ -28,7 +28,7 @@ namespace zetscript{
 			--data->vm_current_scope_function;
 		}
 
-		data->vm_current_scope_function =  VM_SCOPE_FUNCTION_MAIN;
+		data->vm_current_scope_function =  VM_MAIN_SCOPE;
 		vm_remove_empty_shared_pointers(_vm,vm_get_scope_block_main(_vm));
 	}
 
@@ -329,7 +329,7 @@ namespace zetscript{
 		){ // set stack and Init vars for first call...
 
 
-			if(data->vm_current_scope_function != VM_SCOPE_FUNCTION_MAIN){
+			if(data->vm_current_scope_function != VM_MAIN_SCOPE){
 				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",IDX_VM_CURRENT_SCOPE_FUNCTION);
 			}
 
@@ -344,7 +344,7 @@ namespace zetscript{
 			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->size()];
 			first_script_call_from_c=false;
 
-			if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
+			if(data->vm_current_scope_function == VM_MAIN_SCOPE){
 
 				if((_properties & VM_PROPERTY_CALL_FROM_NATIVE)==0){
 					THROW_RUNTIME_ERRORF("Internal: expected first call function from C");
@@ -390,7 +390,7 @@ namespace zetscript{
 		);
 
 		// remove empty shared pointers
-		if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
+		if(data->vm_current_scope_function == VM_MAIN_SCOPE){
 			vm_remove_empty_shared_pointers(_vm
 					,vm_get_scope_block_main(_vm)
 			);
@@ -446,11 +446,11 @@ namespace zetscript{
 
 		// restore idx_call as 0 if first call was a script function called from C
 		if(first_script_call_from_c==true){
-			data->vm_current_scope_function=VM_SCOPE_FUNCTION_MAIN;
+			data->vm_current_scope_function=VM_MAIN_SCOPE;
 		}
 
-		if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
-			vm_check_cyclic_references(_vm);
+		if(data->vm_current_scope_function == VM_MAIN_SCOPE){
+			//vm_check_cyclic_references(_vm);
 		}
 
 		return stk_return;

@@ -291,7 +291,7 @@ namespace zetscript{
 				{
 
 
-					bool is_cyclic_reference=false;
+					//bool is_cyclic_reference=false;
 
 					// src is type container and dst is slot:
 					if( VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
@@ -302,7 +302,7 @@ namespace zetscript{
 						vm_assign_container_slot(_vm,dst_container_slot, (ContainerScriptObject *)so_aux);
 
 						// check cyclic reference
-						is_cyclic_reference=dst_container_slot->isCyclicReference();
+						//is_cyclic_reference=dst_container_slot->isCyclicReference();
 
 
 					}else{ // object
@@ -310,11 +310,11 @@ namespace zetscript{
 						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
 					}
 
-					if(is_cyclic_reference==false){
+					//if(is_cyclic_reference==false){
 						if(!vm_share_script_object(_vm,so_aux)){
 							goto lbl_exit_function;
 						}
-					}
+					//}
 
 				}else{
 

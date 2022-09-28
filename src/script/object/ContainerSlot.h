@@ -35,7 +35,7 @@ namespace zetscript{
 
 		zs_int								getIdSlot();
 
-		bool								isCyclicReference();
+		//bool								isCyclicReference();
 
 		// it count all references from top slot to root
 		//int								countReferences(ContainerScriptObject *_so_container_ref);

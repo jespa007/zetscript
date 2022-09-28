@@ -65,9 +65,9 @@ namespace zetscript{
 		return count;
 
 	}*/
-	bool								ContainerSlot::isCyclicReference(){
+	/*bool								ContainerSlot::isCyclicReference(){
 		return src_container_ref == dst_container_ref;
-	}
+	}*/
 
 	zs_list_node<ContainerSlot *>  	*	ContainerSlot::getContainerSlotNode(){
 		return &container_slot_node;
