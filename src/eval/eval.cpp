@@ -46,13 +46,13 @@ namespace zetscript{
 		zs_string str_error="";
 		zs_string error_file="";
 		int error_line=-1;
-		Scope *scope_info=MAIN_SCOPE(eval_data);
+		Scope *scope_info=ZS_MAIN_SCOPE(eval_data);
 		eval_data->current_parsing_file=_filename;
 		ScriptFunction *sf = _sf == NULL?MAIN_FUNCTION(eval_data):_sf;
 		sf->removeUnusuedScopes();
 
 		if(sf != MAIN_FUNCTION(eval_data)){ // remove/reset old code
-			scope_info =sf->scope_script_function;// NEW_SCOPE(eval_data,sf->idx_script_function,MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
+			scope_info =sf->scope_script_function;// ZS_NEW_SCOPE(eval_data,sf->idx_script_function,ZS_MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 		}
 
 		if(_eval_data_from == NULL){
@@ -82,7 +82,7 @@ namespace zetscript{
 			}
 
 
-			CLEAR_UNUSUED_SCOPES(eval_data);
+			ZS_CLEAR_UNUSUED_SCOPES(eval_data);
 
 			eval_pop_and_compile_function(eval_data);
 
@@ -97,7 +97,7 @@ namespace zetscript{
 	}
 
 	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_scope_function){
-		Scope *new_scope = NEW_SCOPE(
+		Scope *new_scope = ZS_NEW_SCOPE(
 				eval_data
 				,eval_data->current_function->script_function->idx_script_function
 				,scope_parent
@@ -368,7 +368,7 @@ namespace zetscript{
 
 	Symbol *eval_find_global_symbol(EvalData *eval_data, const zs_string & symbol_to_find){
 		// try find global variable...
-		return MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL);
+		return ZS_MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL);
 	}
 
 	void eval_pop_current_function(EvalData *eval_data){

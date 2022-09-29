@@ -177,15 +177,20 @@ namespace zetscript{
 		return value;
 	}
 
-	void	zs_map_int::erase(zs_int _key){
-
-		int idx=search(_key);
-
-		if(idx==ZS_MAP_INT_KEY_NOT_FOUND){
-			THROW_RUNTIME_ERROR("key '%lu' not found",_key);
+	zs_int		zs_map_int::getValueByIdx(zs_int _idx){
+		if(_idx < 0 || _idx >= _count){
+			THROW_RUNTIME_ERRORF("getIdx out of bound");
 		}
 
-		zs_map_int_node *node = items[idx].node;
+		return this->items[_idx].node->value;
+	}
+
+	void		zs_map_int::eraseByIdx(zs_int _idx){
+		if(_idx < 0 || _idx >= _count){
+			THROW_RUNTIME_ERRORF("getIdx out of bound");
+		}
+
+		zs_map_int_node *node = items[_idx].node;
 
 		if((node->previous == node) && (node->next == node)){ // 1 single node...
 			last=first=NULL;
@@ -206,7 +211,7 @@ namespace zetscript{
 		free(node);
 
 		// erase item from lookup list
-		for (int i = idx; i < (int)((this->_count-1)); i++) {
+		for (int i = _idx; i < (int)((this->_count-1)); i++) {
 			this->items[i] = this->items[i+1];
 		}
 
@@ -215,6 +220,18 @@ namespace zetscript{
 		this->items[this->_count-1].node=NULL;
 
 		this->_count--;
+	}
+
+	void	zs_map_int::erase(zs_int _key){
+
+		int idx=search(_key);
+
+		if(idx==ZS_MAP_INT_KEY_NOT_FOUND){
+			THROW_RUNTIME_ERROR("key '%lu' not found",_key);
+		}
+
+		eraseByIdx(idx);
+
 	}
 
 	zs_map_int_node *zs_map_int::data(){

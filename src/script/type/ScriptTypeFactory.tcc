@@ -38,7 +38,7 @@ namespace zetscript{
 		StackElement stk_binded=to_stk(zs,(zs_int)_var_ptr,getIdxScriptTypeFromTypeNamePtr(var_type));
 
 		if((symbol_variable = main_function->registerLocalVariable(
-				MAIN_SCOPE(this)
+				ZS_MAIN_SCOPE(this)
 				,_registered_file
 				,_registered_line
 				,_var_name
@@ -94,7 +94,7 @@ namespace zetscript{
 
 		// Init struct...
 		main_function->registerLocalFunction(
-				 MAIN_SCOPE(this)
+				 ZS_MAIN_SCOPE(this)
 				,_registered_file
 				,_registered_line
 				,_function_name
@@ -137,8 +137,8 @@ namespace zetscript{
 		}
 
 		idx_script_type=script_types->size();
-		scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
-		MAIN_SCOPE(this)->registerSymbolScriptType(registered_file,registered_line,str_script_type);
+		scope = ZS_NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS|SCOPE_PROPERTY_IS_C_OBJECT_REF);
+		ZS_MAIN_SCOPE(this)->registerSymbolScriptType(registered_file,registered_line,str_script_type);
 
 		sc = new ScriptType(zs,idx_script_type,str_script_type,scope,str_script_type_ptr,SCRIPT_TYPE_PROPERTY_C_OBJECT_REF);
 		scope->setScriptTypeOwner(sc);

@@ -791,7 +791,7 @@ namespace zetscript{
 						symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 					}
 				}else{ // global scope
-					symbol_found = MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
+					symbol_found = ZS_MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 				}
 
 

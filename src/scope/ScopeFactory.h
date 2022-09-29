@@ -4,10 +4,10 @@
  */
 #pragma once
 
-#define IDX_SCRIPT_SCOPE_MAIN										0
-#define MAIN_SCOPE(data)											(((data)->scope_factory))->getMainScope()
-#define NEW_SCOPE(data,idx_function,scope_parent,properties)		(((data)->scope_factory))->newScope(idx_function,scope_parent,properties)
-#define CLEAR_UNUSUED_SCOPES(data)									(((data)->scope_factory))->clearUnusuedScopes()
+#define ZS_IDX_SCRIPT_SCOPE_MAIN									0
+#define ZS_MAIN_SCOPE(data)											(((data)->scope_factory))->getMainScope()
+#define ZS_NEW_SCOPE(data,idx_function,scope_parent,properties)		(((data)->scope_factory))->newScope(idx_function,scope_parent,properties)
+#define ZS_CLEAR_UNUSUED_SCOPES(data)								(((data)->scope_factory))->clearUnusuedScopes()
 
 
 namespace zetscript{

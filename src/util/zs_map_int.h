@@ -24,6 +24,8 @@ namespace zetscript{
 		zs_map_int_iterator begin();
 		void 		set(zs_int key,zs_int val);
 		zs_int 		get(zs_int key, bool * exists=NULL);
+		zs_int		getValueByIdx(zs_int _idx);
+		void		eraseByIdx(zs_int _idx);
 		void  		erase(zs_int key);
 		void 		clear();
 		zs_map_int_node *data();

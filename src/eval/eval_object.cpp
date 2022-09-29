@@ -39,7 +39,7 @@ namespace zetscript{
 		unsigned short instruction_properties=0; // global by default ...
 		Symbol *symbol_object=NULL;
 		ByteCode byte_code = ByteCode::BYTE_CODE_LOAD_FUNCTION;
-		Scope *scope_info=MAIN_SCOPE(eval_data);
+		Scope *scope_info=ZS_MAIN_SCOPE(eval_data);
 
 		/*if(scope_info->scope_parent!=NULL){// is within function ?
 

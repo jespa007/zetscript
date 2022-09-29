@@ -110,10 +110,11 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 	VM_SET_USER_ERROR(_vm,_str_error,NULL)
 
 #define IDX_VM_CURRENT_SCOPE_FUNCTION 	(data->vm_current_scope_function-data->vm_scope_function)
-#define VM_MAIN_SCOPE 			(data->vm_scope_function+0)
+#define VM_SCOPE_FUNCTION_MAIN 			(data->vm_scope_function+0)
 #define VM_SCOPE_FUNCTION_FIRST 		(data->vm_scope_function+1)
 #define VM_CURRENT_SCOPE_FUNCTION		(data->vm_current_scope_function-1)
 #define VM_CURRENT_SCOPE_BLOCK			(VM_CURRENT_SCOPE_FUNCTION->current_scope_block-1)
+#define VM_MAIN_SCOPE_BLOCK				(VM_SCOPE_FUNCTION_MAIN->scope_block)
 
 #define VM_STR_AUX_PARAM_0				(data->vm_str_aux[0])
 #define VM_STR_AUX_PARAM_1				(data->vm_str_aux[1])

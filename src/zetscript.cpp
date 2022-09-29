@@ -407,7 +407,7 @@ namespace zetscript{
 		zs_string global_symbol;
 		int idx_start_variable = _idx_start_variable == ZS_IDX_UNDEFINED ?  idx_current_global_variable_checkpoint:_idx_start_variable;
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
-		Scope *main_scope=MAIN_SCOPE(this);
+		Scope *main_scope=ZS_MAIN_SCOPE(this);
 		zs_vector<Symbol *> *local_variables=main_function_object->local_variables;
 		zs_vector<Symbol *> *global_symbol_variables= main_scope->symbol_variables;
 		int n_global_symbol_found=0;
@@ -498,7 +498,7 @@ namespace zetscript{
 		clearGlobalVariables();
 
 		// clearGlobalFunctions
-		Scope *main_scope=MAIN_SCOPE(this);
+		Scope *main_scope=ZS_MAIN_SCOPE(this);
 		zs_vector<Symbol *> *global_symbol_functions= main_scope->symbol_functions;
 		int v=global_symbol_functions->size()-1;
 		// remove all shared 0 pointers
@@ -550,7 +550,7 @@ namespace zetscript{
 
 	void ZetScript::saveState(){
 		ScriptFunction *main_function_object=script_type_factory->getMainFunction();
-		Scope *main_scope=MAIN_SCOPE(this);
+		Scope *main_scope=ZS_MAIN_SCOPE(this);
 		idx_current_global_variable_checkpoint=main_function_object->local_variables->size();
 		idx_current_global_function_checkpoint=main_scope->symbol_functions->size();
 		idx_current_script_types_checkpoint=main_scope->symbol_types->size();

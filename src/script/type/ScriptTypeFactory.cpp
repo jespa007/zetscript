@@ -129,13 +129,13 @@ namespace zetscript{
 		zs_string error;
 		// ScriptFunctionFactory has to be created
 		main_object=registerScriptType(MAIN_SCRIPT_CLASS_NAME); // 0
-		MAIN_SCOPE(this)->script_type_owner=main_object;
+		ZS_MAIN_SCOPE(this)->script_type_owner=main_object;
 
 		Symbol *symbol_main_function=main_object->registerMemberFunction(
 				MAIN_SCRIPT_FUNCTION_NAME
 		);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
-		main_function->scope_script_function=MAIN_SCOPE(this);
+		main_function->scope_script_function=ZS_MAIN_SCOPE(this);
 
 		idx_clear_checkpoint=1; // by default restore till main type.
 	}
@@ -394,7 +394,7 @@ namespace zetscript{
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, int _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
-			MAIN_SCOPE(this)
+			ZS_MAIN_SCOPE(this)
 			, registered_file
 			, registered_line
 			, _key
@@ -407,7 +407,7 @@ namespace zetscript{
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, bool _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
-			MAIN_SCOPE(this)
+			ZS_MAIN_SCOPE(this)
 			, registered_file
 			, registered_line
 			, _key
@@ -421,7 +421,7 @@ namespace zetscript{
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, zs_float _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
-			MAIN_SCOPE(this)
+			ZS_MAIN_SCOPE(this)
 			, registered_file
 			, registered_line
 			, _key
@@ -434,7 +434,7 @@ namespace zetscript{
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, const zs_string & _value, const char *registered_file, short registered_line){
 		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
-			MAIN_SCOPE(this)
+			ZS_MAIN_SCOPE(this)
 			, registered_file
 			, registered_line
 			, _key
@@ -524,11 +524,11 @@ namespace zetscript{
 				properties_register_scope|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 			}
 			// BYTE_CODE_NEW SCOPE C and register ...
-			Scope * scope = NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
+			Scope * scope = ZS_NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
 
 			// register symbol on main scope...
 
-			Symbol *symbol=MAIN_SCOPE(this)->registerSymbolScriptType(_file,_line,_str_script_type,properties_register_scope);
+			Symbol *symbol=ZS_MAIN_SCOPE(this)->registerSymbolScriptType(_file,_line,_str_script_type,properties_register_scope);
 
 			sc = new ScriptType(this->zs,index, _str_script_type, scope,TYPE_SCRIPT_VARIABLE,_properties);
 			scope->setScriptTypeOwner(sc);

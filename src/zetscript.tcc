@@ -1490,7 +1490,7 @@ namespace zetscript{
 						for(int j = 0; j < list_variables->size() && calling_obj==NULL; j++){
 							Symbol * registered_symbol=(Symbol *)list_variables->items[j];
 							if(registered_symbol->name==symbol_to_find
-							&& registered_symbol->scope == MAIN_SCOPE(this)){
+							&& registered_symbol->scope == ZS_MAIN_SCOPE(this)){
 								StackElement *stk = vm_get_stack_element_at(virtual_machine,j); // main_function->object_info.local_symbols.variable[j].
 								if(stk!=NULL){
 									if(stk->properties & STK_PROPERTY_SCRIPT_OBJECT){

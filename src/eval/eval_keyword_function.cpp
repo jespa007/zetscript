@@ -104,7 +104,7 @@ namespace zetscript{
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
 
 		Symbol * symbol_sf=MAIN_FUNCTION(eval_data)->registerLocalFunction(
-			 MAIN_SCOPE(eval_data)
+			 ZS_MAIN_SCOPE(eval_data)
 			, eval_data->current_parsing_file
 			, -1
 			, name_script_function
@@ -112,7 +112,7 @@ namespace zetscript{
 
 		ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
-		Scope *new_scope_info = eval_new_scope(eval_data,MAIN_SCOPE(eval_data),true);
+		Scope *new_scope_info = eval_new_scope(eval_data,ZS_MAIN_SCOPE(eval_data),true);
 		sf->scope_script_function=new_scope_info;
 
 		// fill all instructions
@@ -414,7 +414,7 @@ namespace zetscript{
 						eval_data
 						,aux_p
 						,line
-						,MAIN_SCOPE(eval_data)
+						,ZS_MAIN_SCOPE(eval_data)
 						,&ei_instructions_default
 					);
 

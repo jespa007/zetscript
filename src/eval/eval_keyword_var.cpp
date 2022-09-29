@@ -82,7 +82,7 @@ namespace zetscript{
 				}
 
 				if((sc_var_member_extension!=NULL) && (is_constant==true)){
-					scope_var = MAIN_SCOPE(eval_data);
+					scope_var = ZS_MAIN_SCOPE(eval_data);
 					pre_variable_name=zs_string(sc_var_member_extension->str_script_type)+"::";
 				}
 
@@ -190,7 +190,7 @@ namespace zetscript{
 							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
 							eval_instruction->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, pre_variable_name+variable_name);
 							eval_instruction->symbol_name=pre_variable_name+variable_name;
-							eval_instruction->symbol_scope=MAIN_SCOPE(eval_data);
+							eval_instruction->symbol_scope=ZS_MAIN_SCOPE(eval_data);
 
 							eval_data->current_function->eval_instructions.push_back(
 									new EvalInstruction(
