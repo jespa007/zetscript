@@ -9,7 +9,7 @@ namespace zetscript{
 	bool ScriptObject::unrefAndFreeStackElementContainer(StackElement *si){
 		ScriptFunction 	* ir_fun;
 		ContainerSlot 	* container_slot=NULL;
-		ContainerScriptObject *so_container_ref=NULL;
+		//ContainerScriptObject *so_container_ref=NULL;
 		unsigned short var_type = GET_STK_PROPERTY_TYPES(si->properties);
 
 		switch(var_type){

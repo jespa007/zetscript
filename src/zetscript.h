@@ -221,7 +221,7 @@ namespace zetscript{
 			try{
 				return script_type_factory->bindType<C>(str_script_type, _constructor, _destructor, _registered_file,_registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(C).name()),str_script_type.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),str_script_type.c_str(),_ex.getErrorDescription());
 				return NULL;
 			}
 		}
@@ -280,7 +280,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindMemberFunction<C>(_name_script_function,function_type, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_name_script_function.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),_name_script_function.c_str(),_ex.getErrorDescription());
 			}
 		}
 

@@ -617,9 +617,9 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		zs_vector<zs_list_node<ContainerSlot *>  *> slots;
 
-		for(size_t i=0; i < data->containers_with_container_slots.count();){
+		for(size_t it=0; it < data->containers_with_container_slots.count();){
 			// count reference number
-			ContainerScriptObject *cso=(ContainerScriptObject *)(data->containers_with_container_slots.getValueByIdx(i));
+			ContainerScriptObject *cso=(ContainerScriptObject *)(data->containers_with_container_slots.getValueByIdx(it));
 			bool containers_with_container_slots_element=false;
 
 			vm_count_cyclic_references(cso,cso,&slots);
@@ -668,7 +668,7 @@ namespace zetscript{
 			if(containers_with_container_slots_element==true){
 				data->containers_with_container_slots.erase((zs_int)cso);
 			}else{
-				i++;
+				it++;
 			}
 
 			slots.clear();

@@ -60,9 +60,9 @@ namespace zetscript{
 
 	void ContainerScriptObject::printReferences(){
 
-		int count=0;
+		/*int count = 0;
 
-		/*auto current = so_container_slots.first;
+		auto current = so_container_slots.first;
 		if(current!=NULL){
 			do{
 				count+=current->data->countReferences(this);
