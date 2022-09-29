@@ -551,6 +551,7 @@ namespace zetscript{
 		// More tests would be needed see issue #336
 		if(dst_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 			stk_obj=((VectorScriptObject *)dst_container_ref)->getUserElementAt((int)dst_container_slot_id);
+#ifdef __ZS_LOG_CONTAINER_SLOT__
 			printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'. Last value type '%s'\n"
 					,(void *)_src_container_ref
 					,_src_container_ref->getScriptType()->str_script_type.c_str()
@@ -560,10 +561,12 @@ namespace zetscript{
 					,stk_to_typeof_str(data->zs,stk_obj).c_str()
 
 			);
+#endif
 
 		}else{
 			// object
 			stk_obj=dst_container_ref->getProperty((const char *)dst_container_slot_id);
+#ifdef __ZS_LOG_CONTAINER_SLOT__
 			printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'. Last value type '%s'\n"
 					,(void *)_src_container_ref
 					,_src_container_ref->getScriptType()->str_script_type.c_str()
@@ -573,6 +576,7 @@ namespace zetscript{
 					,stk_to_typeof_str(data->zs,stk_obj).c_str()
 
 			);
+#endif
 
 		}
 
@@ -619,6 +623,7 @@ namespace zetscript{
 			bool containers_with_container_slots_element=false;
 
 			vm_count_cyclic_references(cso,cso,&slots);
+#ifdef __ZS_LOG_CONTAINER_SLOT__
 			printf("Counting reference for container instance %p. Cyclic counts %i Shares counts: %i. Can be removed (cyclic == n_shares): %s\n"
 					,(void *)cso
 					,slots.count
@@ -626,6 +631,7 @@ namespace zetscript{
 					,slots.count==cso->shared_pointer->data.n_shares?"true":"false"
 
 				);
+#endif
 
 			// if n_shares == shared_pointers
 			if(slots.count>0){

@@ -21,7 +21,9 @@ namespace zetscript{
 			case STK_PROPERTY_ZS_FLOAT:
 				break;
 			case STK_PROPERTY_CONTAINER_SLOT:
-				delete (ContainerSlot *)si->value;
+				container_slot=(ContainerSlot *)si->value;
+				container_slot->getSrcContainerRef()->removeContainerSlot(container_slot, NULL);
+				delete container_slot;
 				break;
 			case STK_PROPERTY_FUNCTION:
 				 ir_fun  = (ScriptFunction *)(si->value);
