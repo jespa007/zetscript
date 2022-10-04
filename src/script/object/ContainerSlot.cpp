@@ -7,7 +7,33 @@
 
 namespace zetscript{
 
+	ContainerSlot *ContainerSlot::newContainerSlot(
+			// container dst reference to store
+			ContainerScriptObject	 	*	_dst_container_ref
+			// id slot dst stored
+			,zs_int 						_id_slot
 
+			// stk element where slot is stored
+			,StackElement  				*	_ptr_stk
+	)	{
+		return new ContainerSlot(
+				// container dst reference to store
+				_dst_container_ref
+				// id slot dst stored
+				,_id_slot
+
+				// stk element where slot is stored
+				,_ptr_stk
+		);
+	}
+
+	void ContainerSlot::deleteContainerSlot(ContainerSlot * _container_slot, bool _remove_container_slot){
+		ContainerScriptObject *cso= _container_slot->getSrcContainerRef();
+		if(cso!=NULL && _remove_container_slot==true){
+			cso->removeContainerSlot(_container_slot, NULL);
+		}
+		delete _container_slot;
+	}
 
 	ContainerSlot::ContainerSlot(
 			ContainerScriptObject 		*	_dst_container_ref

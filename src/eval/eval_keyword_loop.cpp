@@ -156,14 +156,12 @@ namespace zetscript{
 
 			eval_data->current_function->parsing_loop++;
 
-			if((aux_p=eval_block(
+			if((aux_p=eval_block_body(
 					eval_data
 					,aux_p
 					,line
 					,scope_info
 					,NULL
-					,NULL
-					,0
 					,true
 					)
 			 	 ) == NULL){
@@ -227,14 +225,12 @@ namespace zetscript{
 			}
 
 			eval_data->current_function->parsing_loop++;
-			if((aux_p=eval_block(
+			if((aux_p=eval_block_body(
 					eval_data
 					,aux_p
 					,line
 					,scope_info
 					,NULL
-					,NULL
-					,0
 					,true
 			))==NULL){
 				return NULL;
@@ -347,7 +343,8 @@ namespace zetscript{
 		idx_instruction_for_start=eval_data->current_function->eval_instructions.size();
 
 		// save scope pointer ...
-		Scope *new_scope =eval_new_scope(eval_data,scope_info); // push current scope
+		Scope *new_scope_body=NULL;
+		Scope *new_scope_init =eval_new_scope_block(eval_data,scope_info); // push current scope
 
 		IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 
@@ -365,7 +362,7 @@ namespace zetscript{
 					eval_data
 					,aux_p
 					,line
-					,new_scope
+					,new_scope_init
 					, EVAL_KEYWORD_VAR_PROPERTY_ALLOW_IN_OPERATOR
 			))==NULL){
 				return NULL;
@@ -405,7 +402,7 @@ namespace zetscript{
 					eval_data
 					,aux_p
 					,test_line
-					,new_scope
+					,new_scope_init
 					,&ei_init_vars_for //eval_data->current_function->instructions
 					,NULL
 					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION | EVAL_EXPRESSION_FOR_IN_VARIABLES
@@ -479,7 +476,7 @@ namespace zetscript{
 						eval_data
 						,aux_p
 						,line
-						,new_scope
+						,new_scope_init
 						,&ei_load_container_identifier //eval_data->current_function->instructions
 						,NULL
 						,EVAL_EXPRESSION_ONLY_TOKEN_SYMBOL
@@ -530,7 +527,7 @@ namespace zetscript{
 
 				// 1. create iterator symbol
 				if((symbol_iterator=eval_data->current_function->script_function->registerLocalVariable(
-						new_scope
+						new_scope_init
 						, eval_data->current_parsing_file
 						, line
 						, eval_anonymous_iterator_name()
@@ -601,12 +598,18 @@ namespace zetscript{
 
 				idx_instruction_for_after_jnz_condition=(int)(eval_data->current_function->eval_instructions.size());
 
-				// load v
+				// PUSH SCOPE
+				/*eval_data->current_function->eval_instructions.push_back(
+						new EvalInstruction(BYTE_CODE_PUSH_SCOPE)
+				);*/
+				new_scope_body =eval_new_scope_block(eval_data,new_scope_init);
+
+				// load container
 				eval_data->current_function->eval_instructions.push_back(
 						ei_aux=new EvalInstruction(ei_iterator)
 				);
 
-				// v._get
+				// load _get member function
 				eval_data->current_function->eval_instructions.push_back(
 					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
 				);
@@ -657,9 +660,9 @@ namespace zetscript{
 				);
 
 				// reset zero pointers
-				ei_post_operations.push_back(
+				/*ei_post_operations.push_back(
 					new EvalInstruction(BYTE_CODE_CLEAR_ZERO_POINTERS)
-				);
+				);*/
 			}else{ // is not for-in re eval for in with no in-break
 
 				// copy var initialization
@@ -706,7 +709,7 @@ namespace zetscript{
 							eval_data
 							,(const char *)aux_p
 							,line
-							,new_scope
+							,new_scope_init
 							,&eval_data->current_function->eval_instructions
 					))==NULL){
 						goto label_exit_for;
@@ -741,7 +744,7 @@ namespace zetscript{
 					eval_data
 					,(const char *)aux_p
 					,line
-					,new_scope
+					,new_scope_init
 					,&ei_post_operations
 					,{}
 					,EVAL_EXPRESSION_ALLOW_SEQUENCE_EXPRESSION // it allows expression sequence and it does a reset stack in the end
@@ -774,14 +777,12 @@ namespace zetscript{
 		eval_data->current_function->parsing_loop++;
 
 		// eval block and write push/pop scope...
-		if((aux_p=eval_block(
+		if((aux_p=eval_block_body(
 				eval_data
 				,aux_p
 				,line
-				,new_scope
-				,NULL
-				,NULL
-				,0
+				,new_scope_init
+				,new_scope_body
 				,true
 		))==NULL){
 			// deallocate post operations
@@ -824,7 +825,7 @@ namespace zetscript{
 		link_loop_break_continues(eval_data,idx_instruction_for_start,idx_post_instruction_for_start-1);
 
 		// true: We treat declared variables into for as another scope.
-		eval_check_scope(eval_data,new_scope);
+		eval_check_scope(eval_data,new_scope_init);
 
 label_exit_for:
 

@@ -36,11 +36,7 @@ namespace zetscript{
 				vm_remove_container_instance_cyclic_references_map(vm,_container_slot->getSrcContainerRef());
 			}
 
-			// if not ciclic, unref
-			//if(_container_slot->isCyclicReference()==false){
 			vm_unref_shared_script_object(vm,_container_slot->getSrcContainerRef(),_scope_block );
-			//}
-
 
 		}
 	}

@@ -107,8 +107,6 @@ namespace zetscript{
 		virtual StackElement 				* 	newBuiltinSlot();
 		virtual StackElement 				* 	addBuiltinProperty(const zs_string & symbol_value, StackElement stk=k_stk_undefined);
 		bool 									unrefAndFreeStackElementContainer(StackElement *si);
-		//int 									idxContainerSlot(ContainerSlot *_wp);
-		//int 									idxRefObject(RefObject  *_ref_object);
 	};
 
 }

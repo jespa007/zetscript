@@ -112,19 +112,16 @@ int main(int argc, char * argv[]) {
 
 		if(zetscript::zs_file::exists(file)){
 
+			std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 			try{
-				std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-				try{
-					zs.evalFile(file,eval_options,NULL,__FILE__,__LINE__);
-				}catch(std::exception & ex){
-					fprintf(stderr,"%s\n",ex.what());
-				}
-				std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-				std::chrono::duration<double, std::milli> time_span=t2-t1;
-				printf("executed %s %.0fms\n", zetscript::zs_path::get_filename(file).c_str(),time_span.count());
+				zs.evalFile(file,eval_options,NULL,__FILE__,__LINE__);
 			}catch(std::exception & ex){
 				fprintf(stderr,"%s\n",ex.what());
 			}
+			std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double, std::milli> time_span=t2-t1;
+			printf("executed %s %.0fms\n", zetscript::zs_path::get_filename(file).c_str(),time_span.count());
+
 		}else{
 			fprintf(stderr,"file '%s' not exits\n",file);
 		}

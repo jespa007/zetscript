@@ -51,7 +51,7 @@ data->vm_stk_current++;
 
 #define VM_PUSH_NEW_CONTAINER_SLOT(so_aux,str_symbol_aux1,stk_slot) \
 {\
-	data->vm_stk_current->value=(intptr_t)(new ContainerSlot(\
+	data->vm_stk_current->value=(intptr_t)(ContainerSlot::newContainerSlot(\
 		(ContainerScriptObject *)so_aux\
 		,(zs_int)str_symbol_aux1\
 		,stk_slot\

@@ -25,11 +25,11 @@ namespace zetscript {
 			zs_exception(const char *   _file, int _line, const zs_string & _error_description, const char *_error_type);
 			virtual const char* what() const noexcept;
 
-			int getErrorLine();
+			int getLine();
 
-			const char * getErrorDescription();
+			const char * getDescription();
 
-			const char * getErrorSourceFilename();
+			const char * getFilename();
 		private:
 			const char *error_type;
 

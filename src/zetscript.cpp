@@ -374,9 +374,9 @@ namespace zetscript{
 				);
 			}catch(zs_exception & e){
 				error=true;
-				error_file=e.getErrorSourceFilename();
-				error_line=e.getErrorLine();
-				str_error=e.getErrorDescription();
+				error_file=e.getFilename();
+				error_line=e.getLine();
+				str_error=e.getDescription();
 			}catch(std::exception & e){
 				error=true;
 				str_error=e.what();

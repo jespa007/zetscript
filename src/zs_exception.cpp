@@ -21,21 +21,19 @@ namespace zetscript {
 
 	}
 
-	const char* zs_exception::what() const noexcept
-	{
-		return error_description.c_str();
+	const char* zs_exception::what() const noexcept{
+		return what_msg.c_str();
 	}
 
-
-	int zs_exception::getErrorLine(){
+	int zs_exception::getLine(){
 		return line;
 	}
 
-	const char * zs_exception::getErrorDescription(){
+	const char * zs_exception::getDescription(){
 		return this->error_description.c_str();
 	}
 
-	const char * zs_exception::getErrorSourceFilename(){
+	const char * zs_exception::getFilename(){
 		return this->file.c_str();
 	}
 
@@ -58,14 +56,14 @@ namespace zetscript {
 	void throw_exception_file_line(const char *_file, int _line, const char *in_txt,...){
 		//char aux[ZS_MAX_STR_BUFFER];
 		//sprintf(aux,"[%s:%i] ",_file,_line);
-		zs_string aux=zs_strutils::format("[%s:%i] ",_file,_line);
+		//zs_string aux=zs_strutils::format("[%s:%i] ",_file,_line);
 
 		char out_txt[ZS_MAX_STR_BUFFER]={0};
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 
-		aux+=out_txt;
+		//aux+=out_txt;
 
-		throw zs_exception_error(_file,_line,aux);
+		throw zs_exception_error(_file,_line,out_txt);
 	}
 
 	void throw_exception(const char * in_txt,...){

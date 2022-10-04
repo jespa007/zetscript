@@ -423,7 +423,7 @@ namespace zetscript{
 				ContainerScriptObject *src_container=(ContainerScriptObject *)stk_src.value;
 
 				if(VM_CHECK_CONTAINER_FOR_SLOT(src_container)){
-					ContainerSlot *container_slot=new ContainerSlot(
+					ContainerSlot *container_slot=ContainerSlot::newContainerSlot(
 						dst_container
 						,id_slot
 						,stk_dst

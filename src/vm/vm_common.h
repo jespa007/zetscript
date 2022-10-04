@@ -3,7 +3,7 @@
  *  See LICENSE file for details.
  */
 
-//#define __ZS_LOG_CONTAINER_SLOT__
+#define __ZS_LOG_CONTAINER_SLOT__
 
 #define __STK_VAR_COPY__			stk_aux1
 
@@ -136,9 +136,11 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 		((stk_var - data->vm_stack)< data->main_function_object->local_variables->size())
 
 #define VM_CHECK_CONTAINER_FOR_SLOT(_container) \
-			   (_container->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_VECTOR) \
-			   	   	   	   	   && \
-			   ((_container->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS && _container->isNativeObject())==false) \
+			   (\
+					(_container->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR) \
+			   	   	   	   	   || \
+					(((_container->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && _container->isNativeObject())==false) \
+				)
 
 
 namespace zetscript{

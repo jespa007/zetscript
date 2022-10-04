@@ -76,8 +76,8 @@ namespace zetscript{
 		}catch(zs_exception &ex){
 			eval_data->error=true;
 			eval_data->str_error=ex.what();
-			eval_data->error_line=ex.getErrorLine();
-			eval_data->error_file=ex.getErrorSourceFilename();
+			eval_data->error_line=ex.getLine();
+			eval_data->error_file=ex.getFilename();
 			return NULL;
 		}catch(std::exception &ex){
 			eval_data->error=true;

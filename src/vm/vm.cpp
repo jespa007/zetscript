@@ -656,7 +656,7 @@ namespace zetscript{
 							THROW_RUNTIME_ERRORF("stk container is not container slot");
 						}
 
-						delete (ContainerSlot *)stk->value;
+						ContainerSlot::deleteContainerSlot((ContainerSlot *)stk->value,false);
 
 						// and set as undefined
 						*stk=k_stk_undefined;

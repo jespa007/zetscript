@@ -112,7 +112,7 @@ namespace zetscript{
 
 		ScriptFunction *sf=(ScriptFunction *)symbol_sf->ref_ptr;
 
-		Scope *new_scope_info = eval_new_scope(eval_data,ZS_MAIN_SCOPE(eval_data),true);
+		Scope *new_scope_info = eval_new_scope_function(eval_data,ZS_MAIN_SCOPE(eval_data));
 		sf->scope_script_function=new_scope_info;
 
 		// fill all instructions
@@ -566,7 +566,7 @@ namespace zetscript{
 			eval_push_function(eval_data,sf);
 
 			// ok let's go to body..
-			if((aux_p = eval_block(
+			if((aux_p = eval_block_function(
 					eval_data
 					,aux_p
 					,line

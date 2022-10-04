@@ -120,6 +120,8 @@ int main(int argc, char * argv[]) {
 		,"test_vector"								//28.
 		,"test_integer_values"						//29.
 		,"test_constant_operations"					//30.
+		,"test_member_functions"					//31.
+		,"test_member_variables"					//32.
 		,0
 	};
 

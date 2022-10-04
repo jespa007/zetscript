@@ -69,7 +69,7 @@ namespace zetscript{
 
 				}
 
-				if((aux_p=eval_block(eval_data,aux_p
+				if((aux_p=eval_block_body(eval_data,aux_p
 					,line
 					,scope_info
 				  ))==NULL){
@@ -118,7 +118,7 @@ namespace zetscript{
 						}
 
 						// eval else block
-						if((aux_p=eval_block(
+						if((aux_p=eval_block_body(
 								eval_data
 								,aux_p
 								,line

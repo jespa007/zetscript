@@ -159,7 +159,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindGlobalVariable(_var_name,var_ptr, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		 }
 
@@ -167,7 +167,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -175,7 +175,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -183,7 +183,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -191,7 +191,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindConstantVariable(_var_name,(float)value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -200,7 +200,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -208,7 +208,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindConstantVariable(_var_name,value, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
 
 		}
@@ -221,7 +221,7 @@ namespace zetscript{
 			try{
 				return script_type_factory->bindType<C>(str_script_type, _constructor, _destructor, _registered_file,_registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),str_script_type.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\")': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),str_script_type.c_str(),_ex.getDescription());
 				return NULL;
 			}
 		}
@@ -234,7 +234,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindFunction( _name_script_function,ptr_function, _registered_file,_registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\")': %s",__func__,_name_script_function.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\")': %s",__func__,_name_script_function.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -252,7 +252,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindConstructor<C>(function_type, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_ex.getDescription());
 			}
 		}
 
@@ -266,7 +266,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindStaticConstMember<C>(_var_name,_var_pointer, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_var_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_var_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -280,7 +280,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindMemberFunction<C>(_name_script_function,function_type, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),_name_script_function.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),_name_script_function.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -295,7 +295,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindMemberPropertySetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -309,7 +309,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindMemberPropertyGetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),_property_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),_property_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -323,7 +323,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindMemberPropertyPostIncrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -337,7 +337,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindMemberPropertyPostDecrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -351,7 +351,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindMemberPropertyPreIncrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -365,7 +365,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindMemberPropertyPreDecrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
 			}
 		}
 
@@ -377,7 +377,7 @@ namespace zetscript{
 			try{
 				script_type_factory->bindStaticMemberFunction<C>(_name_script_function,_fun, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
-				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_name_script_function.c_str(),_ex.getErrorDescription());
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_name_script_function.c_str(),_ex.getDescription());
 			}
 		}
 

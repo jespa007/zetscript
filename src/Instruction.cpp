@@ -171,7 +171,7 @@ namespace zetscript{
 				case BYTE_CODE_POST_DEC:		// pop -1 and stk +1 = 0
 				case BYTE_CODE_NEG_POST_DEC:	// pop -1 and stk +1 = 0
 				case BYTE_CODE_RESET_STACK:		// pop -1 and stk +1 = 0
-				case BYTE_CODE_CLEAR_ZERO_POINTERS:
+				//case BYTE_CODE_CLEAR_ZERO_POINTERS:
 				case BYTE_CODE_LOAD_OBJECT_ITEM:
 					return 0;
 				case BYTE_CODE_STORE:

@@ -96,27 +96,35 @@ namespace zetscript{
 		}
 	}
 
-	Scope * eval_new_scope(EvalData *eval_data, Scope *scope_parent, bool is_scope_function){
+	Scope * eval_new_scope_function(EvalData *eval_data, Scope *scope_parent){
 		Scope *new_scope = ZS_NEW_SCOPE(
 				eval_data
 				,eval_data->current_function->script_function->idx_script_function
 				,scope_parent
-				,is_scope_function?SCOPE_PROPERTY_IS_SCOPE_FUNCTION:SCOPE_PROPERTY_IS_SCOPE_BLOCK
+				,SCOPE_PROPERTY_IS_SCOPE_FUNCTION
 		);
 
 		scope_parent->scopes->push_back(new_scope);
-		if(is_scope_function){
-			new_scope->tmp_idx_instruction_push_scope=0;
-		}
-		else{
-			new_scope->tmp_idx_instruction_push_scope=(int)eval_data->current_function->eval_instructions.size();
-		}
+		new_scope->tmp_idx_instruction_push_scope=0;
 
 		return new_scope;
 	}
 
-	void eval_check_scope(EvalData *eval_data, Scope *scope, bool _force_push_pop){
-		if(scope->symbol_variables->size() > 0 || _force_push_pop==true){ // if there's local symbols insert push/pop scope for there symbols
+	Scope * eval_new_scope_block(EvalData *eval_data, Scope *scope_parent){
+		Scope *new_scope = ZS_NEW_SCOPE(
+				eval_data
+				,eval_data->current_function->script_function->idx_script_function
+				,scope_parent
+				,SCOPE_PROPERTY_IS_SCOPE_BLOCK
+		);
+
+		scope_parent->scopes->push_back(new_scope);
+		new_scope->tmp_idx_instruction_push_scope=(int)eval_data->current_function->eval_instructions.size();
+		return new_scope;
+	}
+
+	void eval_check_scope(EvalData *eval_data, Scope *scope, bool _is_block_body_loop){
+		if(scope->symbol_variables->size() > 0 || _is_block_body_loop==true){ // if there's local symbols insert push/pop scope for there symbols
 			if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
 				eval_data->current_function->eval_instructions.insert(
 						scope->tmp_idx_instruction_push_scope
@@ -136,7 +144,77 @@ namespace zetscript{
 		}
 	}
 
-	char * eval_block(
+	char * eval_block_internal(
+			EvalData *eval_data
+			,const char *s
+			,int & line
+			,  Scope *scope_info
+			, Scope *_new_scope
+	){
+		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
+		char *aux_p = (char *)s;
+		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
+
+		// check for keyword ...
+		if(*aux_p == '{'){
+			aux_p++;
+
+			if(scope_info->numInnerScopes() >= MAX_INNER_SCOPES_FUNCTION){
+				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Reached max scopes (Max: %i)",MAX_INNER_SCOPES_FUNCTION);
+			}
+
+			if((aux_p = eval_parse_and_compile_recursive(
+					eval_data
+					,aux_p
+					, line
+					, _new_scope
+			)) != NULL){
+
+				if(*aux_p != '}'){
+					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Expected '}' ");
+				}
+
+				return aux_p+1;
+			}
+		}
+		return NULL;
+	}
+
+	char * eval_block_body(
+
+			EvalData *eval_data
+			,const char *s
+			,int & line
+			,  Scope *scope_info
+			, Scope *_new_scope
+			, bool _is_block_body_loop
+	){
+		Scope *new_scope=_new_scope;
+
+		if(new_scope==NULL){
+			new_scope = eval_new_scope_block(eval_data,scope_info);
+		}
+
+		char *result=eval_block_internal(
+						eval_data
+						,s
+						, line
+						, scope_info
+						,new_scope
+				);
+
+		if(result==NULL){
+			return NULL;
+		}
+
+		eval_check_scope(eval_data,new_scope,_is_block_body_loop);
+
+		return result;
+
+	}
+
+	char * eval_block_function(
+
 			EvalData *eval_data
 			,const char *s
 			,int & line
@@ -144,67 +222,41 @@ namespace zetscript{
 			, ScriptFunction *sf
 			,ScriptFunctionParam *params
 			, int params_len
-			, bool _force_push_pop
 	){
-		// PRE: **ast_node_to_be_evaluated must be created and is i/o ast pointer variable where to write changes.
-		char *aux_p = (char *)s;
 
-		Scope *new_scope_info=  NULL;
-		IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 
-		// check for keyword ...
-		if(*aux_p == '{'){
-			bool is_function = sf!=NULL && params != NULL;
-			aux_p++;
+		Scope *new_scope = eval_new_scope_function(eval_data,scope_info);
 
-			if(scope_info->numInnerScopes() >= MAX_INNER_SCOPES_FUNCTION){
-				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Reached max scopes (Max: %i)",MAX_INNER_SCOPES_FUNCTION);
-			}
 
-			new_scope_info = eval_new_scope(eval_data,scope_info,is_function);
+		// set scope to the function
+		sf->scope_script_function=new_scope;
 
-			if(is_function){
+		// register args as part of stack...
+		for(int i=0; i < params_len; i++){
+			try{
+				sf->registerLocalArgument(
+						new_scope
+					,eval_data->current_parsing_file
+					,params[i].line
+					,params[i].name
+					,params[i].properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF?SYMBOL_PROPERTY_ARG_BY_REF:0
+				);
 
-				// set scope to the function
-				sf->scope_script_function=new_scope_info;
-
-				// register args as part of stack...
-				for(int i=0; i < params_len; i++){
-					try{
-						sf->registerLocalArgument(
-							new_scope_info
-							,eval_data->current_parsing_file
-							,params[i].line
-							,params[i].name
-							,params[i].properties & MSK_SCRIPT_FUNCTION_ARG_PROPERTY_BY_REF?SYMBOL_PROPERTY_ARG_BY_REF:0
-						);
-
-					}catch(std::exception & ex){
-						eval_data->error=true;
-						eval_data->str_error=ex.what();
-						return NULL;
-					}
-				}
-			}
-
-			if((aux_p = eval_parse_and_compile_recursive(
-					eval_data
-					,aux_p
-					, line
-					, new_scope_info
-			)) != NULL){
-
-				if(*aux_p != '}'){
-					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Expected '}' ");
-				}
-
-				if(is_function == false){
-					eval_check_scope(eval_data,new_scope_info,_force_push_pop);
-				}
-				return aux_p+1;
+			}catch(std::exception & ex){
+				eval_data->error=true;
+				eval_data->str_error=ex.what();
+				return NULL;
 			}
 		}
-		return NULL;
+
+
+		return eval_block_internal(
+				eval_data
+				,s
+				, line
+				,  scope_info
+				,new_scope
+		);
 	}
 
 	char * eval_parse_and_compile_recursive(EvalData *eval_data,const char *s, int & line, Scope *scope_info, bool return_on_break_or_case){
@@ -298,10 +350,10 @@ namespace zetscript{
 							eval_data->str_error=zs_strutils::format(
 									"%s \n"
 									"[%s:%i] from import '%s'"
-									,ex.getErrorDescription()
+									,ex.getDescription()
 									,zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str()
 							);
-							//sprintf(eval_data->str_error,"%s\n",ex.getErrorDescription());
+							//sprintf(eval_data->str_error,"%s\n",ex.getDescription());
 							//sprintf(eval_data->str_aux_error,"[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
 							//strcat(eval_data->str_error,eval_data->str_aux_error);//+=zetscript::zs_strutils::format("[%s:%i] from import '%s'",zs_path::get_filename(current_parsing_file).c_str(),line,str_symbol.c_str());
 							return 0;
@@ -325,7 +377,7 @@ namespace zetscript{
 				}
 
 				// 2nd. check whether eval a block
-				end_expr = eval_block(
+				end_expr = eval_block_body(
 					eval_data
 					,aux
 					,line
