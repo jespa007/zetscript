@@ -99,6 +99,7 @@ if(MSVC)
 	
 else()
 
+	SET(COMPILER "gcc")
 	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -pedantic")
    
 	if (MINGW)
@@ -145,6 +146,8 @@ else()
 
 endif()
 
+MESSAGE("-- Compiler: " ${COMPILER} )
+
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	# 64 bits
 	MESSAGE ("-- Architecture: 64bit")
@@ -152,7 +155,6 @@ elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
     # 32 bits
     MESSAGE ("-- Architecture: 32bit")
 endif()
-
 
 
 IF ( "${TARGET}" STREQUAL "")
