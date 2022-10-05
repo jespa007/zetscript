@@ -37,6 +37,7 @@ namespace zetscript{
 		zs_list_node<ContainerSlot *>  	*	getContainerSlotNode();
 
 		zs_int								getIdSlot();
+		bool								isReferenced();
 
 		//bool								isCyclicReference();
 

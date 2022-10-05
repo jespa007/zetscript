@@ -117,6 +117,10 @@ namespace zetscript{
 		return id_slot;
 	}
 
+	bool ContainerSlot::isReferenced(){
+		return src_container_ref!=NULL;
+	}
+
 	ContainerSlot::~ContainerSlot(){
 		// set undefined the stk slot
 	/*	if(src_container_ref != NULL){

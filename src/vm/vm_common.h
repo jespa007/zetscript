@@ -3,7 +3,7 @@
  *  See LICENSE file for details.
  */
 
-#define __ZS_LOG_CONTAINER_SLOT__
+//#define __ZS_LOG_CONTAINER_SLOT__
 
 #define __STK_VAR_COPY__			stk_aux1
 

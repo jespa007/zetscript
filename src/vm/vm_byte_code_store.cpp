@@ -299,15 +299,6 @@ namespace zetscript{
 						// unref current
 						stk_dst->value=(intptr_t)so_aux;
 						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
-
-						// if slot container object was allocated before and the src object is native, by nature, it cannot have cyclic references so
-						// it will destroy dst_container_slot allocated before
-						if(
-							(dst_container_slot!=NULL) && (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject()
-						){
-							//dst_container_slot=NULL;
-							ContainerSlot::deleteContainerSlot(dst_container_slot);
-						}
 					}
 
 					if(!vm_share_script_object(_vm,so_aux)){
@@ -365,12 +356,13 @@ namespace zetscript{
 			}
 		}
 
-		/*if(
-				(dst_container_slot != NULL) //(((so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject()) == false )
+		// check whether dst_container_slot is not referenced
+		if(
+				(dst_container_slot != NULL && (dst_container_slot->isReferenced()==false)) //(((so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject()) == false )
 		){
 			ContainerSlot::deleteContainerSlot(dst_container_slot);
 			//dst_container_slot=NULL;
-		}*/
+		}
 
 		if(_instruction->byte_code ==BYTE_CODE_STORE_CONST){
 			stk_dst->properties |= STK_PROPERTY_READ_ONLY;
