@@ -72,7 +72,6 @@ message("-- Install directory: " ${CMAKE_INSTALL_PREFIX})
 set(ZETSCRIPT_LIB_SRCS "")
 
 if(MSVC)
-	SET(COMPILER "msvc")
 	MESSAGE ("-- Plataform: MSVC" )
 	
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -99,7 +98,6 @@ if(MSVC)
 	
 else()
 
-	SET(COMPILER "gcc")
 	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -pedantic")
    
 	if (MINGW)
@@ -146,7 +144,6 @@ else()
 
 endif()
 
-MESSAGE("-- Compiler: " ${COMPILER} )
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	# 64 bits
