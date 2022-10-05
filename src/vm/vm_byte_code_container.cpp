@@ -129,7 +129,8 @@ namespace zetscript{
 			//------------------------------------------------------------------
 			// pack object+member stk info for store information...
 			if(   instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM
-			  ||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
+			  ||  instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE
+			 ){
 
 				// if object is C
 				//sc_type=so_aux->getScriptType();
@@ -157,8 +158,6 @@ namespace zetscript{
 
 				// if it has to push container slot and slot itself is not container slot push new one
 				if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
-						&&
-				((stk_var->properties & STK_PROPERTY_CONTAINER_SLOT)!=STK_PROPERTY_CONTAINER_SLOT)
 						&&
 					VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
 				){
@@ -237,10 +236,14 @@ namespace zetscript{
 		}
 
 		// load its value for write
-		if(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE){
-			if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
-					&&
+		if(
+			// instruction indicates that stk_var will be a target to store
+			(instruction->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM || instruction->byte_code == BYTE_CODE_PUSH_STK_THIS_VARIABLE)
+								&&
+			// if stk_var is container slot only has to be readed because ContainerSlot itself it contains all information for storage
 			((stk_var->properties & STK_PROPERTY_CONTAINER_SLOT)!=STK_PROPERTY_CONTAINER_SLOT)
+		){
+			if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
 					&&
 				VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
 			){

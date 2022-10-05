@@ -139,6 +139,8 @@ VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the me
 			   (\
 					(_container->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR) \
 			   	   	   	   	   || \
+					(_container->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_OBJECT) \
+								|| \
 					(((_container->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && _container->isNativeObject())==false) \
 				)
 

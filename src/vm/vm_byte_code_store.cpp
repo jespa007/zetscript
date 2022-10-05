@@ -55,10 +55,6 @@ namespace zetscript{
 		//- check for packed dst_stk
 		if(stk_dst->properties & STK_PROPERTY_PTR_STK) {
 			stk_dst=(StackElement *)stk_dst->value; // value is expect to contents a stack variable
-			if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT){
-				dst_container_slot=((ContainerSlot *)stk_dst->value);
-				stk_dst=dst_container_slot->getPtrStackElement();
-			}
 		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT){
 			dst_container_slot=((ContainerSlot *)stk_dst->value);
 			stk_dst=dst_container_slot->getPtrStackElement();
@@ -279,7 +275,7 @@ namespace zetscript{
 					so_aux=(ScriptObject *)stk_src->value;
 				}
 
-				// check slot assignemnt: if not assigning same object and src is not native object
+				// if dst and src don't references same object
 				if(
 						(
 								dst_container_slot!=NULL
@@ -298,11 +294,20 @@ namespace zetscript{
 
 						vm_assign_container_slot(_vm,dst_container_slot, (ContainerScriptObject *)so_aux);
 
-					}else{ // object
+					}else{ // assign object
 
 						// unref current
 						stk_dst->value=(intptr_t)so_aux;
 						stk_dst->properties=STK_PROPERTY_SCRIPT_OBJECT;
+
+						// if slot container object was allocated before and the src object is native, by nature, it cannot have cyclic references so
+						// it will destroy dst_container_slot allocated before
+						if(
+							(dst_container_slot!=NULL) && (so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject()
+						){
+							//dst_container_slot=NULL;
+							ContainerSlot::deleteContainerSlot(dst_container_slot);
+						}
 					}
 
 					if(!vm_share_script_object(_vm,so_aux)){
@@ -310,24 +315,16 @@ namespace zetscript{
 					}
 				}else{
 
-					// because is not referenced, it has to be not dereferenced
+					// because is same references, it has to be not dereferenced
 					unref_old_stk_script_object=false;
-
+#ifdef __ZS_LOG_CONTAINER_SLOT__
 					printf("[%s:%i] Warning assigning same object %p type %s\n"
 							,SFI_GET_FILE(_calling_function,instruction)\
 							,SFI_GET_LINE(_calling_function,instruction)\
 							,(void *)so_aux
 							,so_aux->getScriptType()->str_script_type.c_str()
 					);
-				}
-
-				// if slot container object was allocated before and the src object is native, by nature, it cannot have cyclic references so
-				// it will destroy dst_container_slot allocated before
-				if(
-					(((so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject())==false /*&& (dst_container_slot!=NULL)*/)
-				){
-					dst_container_slot=NULL;
-					//ContainerSlot::deleteContainerSlot(dst_container_slot);
+#endif
 				}
 
 			}else{
@@ -352,7 +349,11 @@ namespace zetscript{
 				if(!vm_unref_shared_script_object(_vm,old_so,VM_CURRENT_SCOPE_BLOCK)){
 					goto lbl_exit_function;
 				}
-			}else if(old_stk_dst.properties & STK_PROPERTY_CONTAINER_SLOT){
+			}else if(
+					(old_stk_dst.properties & STK_PROPERTY_CONTAINER_SLOT)!=0
+										&&
+					(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT)==0
+				){
 
 				ContainerSlot::deleteContainerSlot((ContainerSlot *)old_stk_dst.value);
 				printf("Unassigns container slot by '%s'\n",stk_to_typeof_str(data->zs,stk_src).c_str());
@@ -364,12 +365,12 @@ namespace zetscript{
 			}
 		}
 
-		if(
+		/*if(
 				(dst_container_slot != NULL) //(((so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS) && so_aux->isNativeObject()) == false )
 		){
 			ContainerSlot::deleteContainerSlot(dst_container_slot);
 			//dst_container_slot=NULL;
-		}
+		}*/
 
 		if(_instruction->byte_code ==BYTE_CODE_STORE_CONST){
 			stk_dst->properties |= STK_PROPERTY_READ_ONLY;

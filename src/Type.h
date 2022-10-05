@@ -55,17 +55,20 @@ namespace zetscript{
 		IDX_TYPE_SCRIPT_OBJECT_FUNCTION_MEMBER,
 		IDX_TYPE_SCRIPT_OBJECT_ZETSCRIPT, // zetscript
 		//--------------------------------------------------------------------------------------------------------------------->
-		// RESERVED FOR ZETSCRIPT BUILT-IN CLASSES STARTS STARTS FROM "IDX_TYPE_SCRIPT_OBJECT_STRING". PLEASE DONT'T MOVE!!!!!
+		//
+		// BUILT-IN CLASSES
+		//
 		IDX_TYPE_SCRIPT_OBJECT_STRING, // "String"
 
 		// Iterator
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_STRING, // "IteratorString"
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_VECTOR, // IteratorVector []
 		IDX_TYPE_SCRIPT_OBJECT_ITERATOR_OBJECT, // IteratorObject
-
+		//
+		// BUILT-IN CLASSES
 		//--------------------------------------------------------------------------------------------------------------------->
 		//
-		// CONTAINERS CLASSES
+		// CONTAINER CLASSES
 		//
 		IDX_TYPE_SCRIPT_OBJECT_VECTOR, // Vector []
 
@@ -73,9 +76,9 @@ namespace zetscript{
 		IDX_TYPE_SCRIPT_OBJECT_OBJECT, //  Object {}
 		IDX_TYPE_SCRIPT_OBJECT_CLASS, // class A{}
 
-		// !!!
-		// !!! DO NOT DECLARE NOTHING HERE!! RESERVED FOR ZETSCRIPT BUILT-IN CLASSES !!!!!
-		// !!!
+		//
+		// CONTAINER CLASSES
+		//
 		//--------------------------------------------------------------------------------------------------------------------->
 		IDX_TYPE_MAX
 	}Type;
