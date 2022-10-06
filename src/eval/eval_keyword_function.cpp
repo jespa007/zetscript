@@ -27,7 +27,7 @@ namespace zetscript{
 		Instruction * start_ptr=NULL;
 		int n_elements_to_add=eval_instructions->size();
 
-		n_elements_to_add=n_elements_to_add+3; // +3 for load/store/reset stack
+		n_elements_to_add=n_elements_to_add+2; // +2 for push_stk + store at the end
 
 		if(sf->instructions == NULL){
 			n_elements_to_add=n_elements_to_add+1; // +1 for end instruction
