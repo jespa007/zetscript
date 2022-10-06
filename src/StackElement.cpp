@@ -146,6 +146,10 @@ namespace zetscript{
 			*_stk_dst=*((StackElement *)_stk_dst->value);
 		}
 
+		// erase read only property if set
+		_stk_dst->properties&=~(STK_PROPERTY_READ_ONLY);
+
+
 		// update n_refs +1
 		if(_stk_dst->properties&STK_PROPERTY_SCRIPT_OBJECT){
 			ScriptObject *so=(ScriptObject *)_stk_dst->value;
