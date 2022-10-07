@@ -242,13 +242,13 @@ namespace zetscript{
 				,error_found.c_str()
 			);
 		}else{
-			zs_string tip="";
-			if(STK_VALUE_IS_MEMBER_PROPERTY(stk_result_op2) || STK_VALUE_IS_MEMBER_PROPERTY(stk_result_op1)){
+			zs_string tip=". The operation is incompatible or its metamethod is not defined properly";
+			if(((stk_result_op2!=NULL) && STK_VALUE_IS_MEMBER_PROPERTY(stk_result_op2)) || STK_VALUE_IS_MEMBER_PROPERTY(stk_result_op1)){
 				tip=". Check whether any of the member property involved in the operation has defined the getter (i.e _get) properly";
 			}
 
 			if(stk_result_op2 != NULL){
-				VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types '%s %s %s'%s %s%s"
+				VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '(%s) %s (%s)'%s%s%s"
 					,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
 					,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
 					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
@@ -259,7 +259,7 @@ namespace zetscript{
 					,tip.c_str()
 				);
 			}else{
-				VM_ERROR("Metamethod operation '%s' (aka %s). Failed performing operation by types '%s %s %s' %s%s"
+				VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '%s (%s)'%s%s%s"
 					,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
 					,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
 					,byte_code_metamethod_to_operator_str(_byte_code_metamethod)

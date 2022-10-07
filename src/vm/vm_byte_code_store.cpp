@@ -205,6 +205,7 @@ namespace zetscript{
 						}
 					}
 				}
+				// value is already a pointer
 				stk_dst_ref_value=(zs_int *)((stk_dst)->value);
 				stk_src_ref_value_copy_aux=&((stk_dst)->value);
 			}
@@ -220,16 +221,19 @@ namespace zetscript{
 				stk_dst->properties=STK_PROPERTY_NULL;
 			}else if(stk_src_properties & STK_PROPERTY_ZS_INT){
 				stk_dst->properties=STK_PROPERTY_ZS_INT;
+				stk_dst->value=0; // reset value
 				old_stk_dst.properties &  STK_PROPERTY_ZS_CHAR?
 				*((zs_char *)stk_dst_ref_value)=*((zs_int *)stk_src_ref_value) & 0xff
 				:*((zs_int *)stk_dst_ref_value)=*((zs_int *)stk_src_ref_value);
 				if(stk_src_ref_value_copy_aux!=NULL)(*(zs_int *)stk_src_ref_value_copy_aux)=*((zs_int *)stk_src_ref_value);
 			}else if(stk_src_properties & STK_PROPERTY_ZS_FLOAT){
 				stk_dst->properties=STK_PROPERTY_ZS_FLOAT;
+				stk_dst->value=0; // reset value
 				*((zs_float *)stk_dst_ref_value)=*((zs_float *)stk_src_ref_value);
 				if(stk_src_ref_value_copy_aux!=NULL)(*(zs_float *)stk_src_ref_value_copy_aux)=*((zs_float *)stk_src_ref_value);
 			}else if(stk_src_properties & STK_PROPERTY_BOOL){
 				stk_dst->properties=STK_PROPERTY_BOOL;
+				stk_dst->value=0; // reset value
 				*((bool *)stk_dst_ref_value)=*((bool *)stk_src_ref_value);
 				if(stk_src_ref_value_copy_aux!=NULL)(*(bool *)stk_src_ref_value_copy_aux)=*((bool *)stk_src_ref_value);
 			}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){

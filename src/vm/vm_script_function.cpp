@@ -192,12 +192,8 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_NOT: // !
 				VM_POP_STK_ONE;
-				if(stk_result_op1->properties & STK_PROPERTY_BOOL){ // operation will result as integer.
+				if(stk_result_op1->properties & STK_PROPERTY_BOOL){ // boolean operation
 					VM_PUSH_STK_BOOLEAN((!((bool)(stk_result_op1->value))));
-				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){
-					VM_PUSH_STK_BOOLEAN((!((zs_int)(stk_result_op1->value))));
-				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
-					VM_PUSH_STK_BOOLEAN(!((*((zs_float *)(&stk_result_op1->value)))==0));
 				}else{
 					if(vm_call_metamethod(
 						_vm
@@ -213,7 +209,7 @@ namespace zetscript{
 				continue;
 			case BYTE_CODE_NEG: // -
 				VM_POP_STK_ONE;
-				if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){ // operation will result as integer.
+				if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){ // arithmetic operation
 					VM_PUSH_STK_ZS_INT((-((zs_int)(stk_result_op1->value))));
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
 					VM_PUSH_STK_ZS_FLOAT(-*((zs_float *)&stk_result_op1->value));

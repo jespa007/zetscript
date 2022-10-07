@@ -111,12 +111,15 @@ void test_arithmetic_constants_no_print(zetscript::ZetScript *_zs) {
 
 
 #ifdef __MAIN__
-void main(){
-	zetscript::ZetScript _zs;
+int main(){
+	zetscript::ZetScript zs;
 	try{
-		test_arithmetic_constants(zs);
+		test_arithmetic_constants(&zs);
 	}catch(std::exception & ex){
 		fprintf(stderr,"%s\n",ex.what());
+		return -1;
 	}
+
+	return 0;
 }
 #endif

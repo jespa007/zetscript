@@ -7,6 +7,7 @@
 
 #pragma once
 
+#define TEST_CONSTANT_BOOL_EXPRESSION(_zs,str_expr, expected_value) 	test_constant_bool_expression(_zs,str_expr, expected_value)
 #define TEST_CONSTANT_INT_EXPRESSION(_zs,str_expr, expected_value) 		test_constant_int_expression(_zs,str_expr, expected_value)
 #define TEST_CONSTANT_FLOAT_EXPRESSION(_zs,str_expr, expected_value) 	test_constant_float_expression(_zs,str_expr, expected_value)
 #define TEST_CONSTANT_STRING_EXPRESSION(str_expr, expected_value) 		test_constant_string_expression(expected_value,str_expr)

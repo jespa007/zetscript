@@ -341,18 +341,17 @@ void _complete_test_arithmetic_float_op(zetscript::ZetScript *_zs,zetscript::zs_
 //
 // BOOL OPERATIONS
 //
-#define TEST_CONSTANT_BOOL_EXPRESSION(_zs,str_expr, expected_value) test_constant_bool_expression(_zs,str_expr, expected_value)
 void test_constant_bool_expression(zetscript::ZetScript *_zs,const char *str_expr, bool expected_value){
 	try{
 		zetscript::StackElement stk = _zs->eval(str_expr);
 		if(stk.properties & zetscript::STK_PROPERTY_BOOL){
 			if((bool)stk.value  != (expected_value)){
-				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %i but it was %i!\n", str_expr,expected_value,(bool)stk.value).c_str());
+				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %s but it was %s!\n", str_expr,expected_value?"true":"false",(bool)stk.value?"true":"false").c_str());
 			}
 		}else{
 			throw std::runtime_error(
 					zetscript::zs_strutils::format(
-							"error test '%s' expected bool but it was '%s'!\n"
+							"error test '%s' expected bool type but it was '%s'!\n"
 							,str_expr
 							,stk_to_str(_zs,&stk).c_str()
 					).c_str()
