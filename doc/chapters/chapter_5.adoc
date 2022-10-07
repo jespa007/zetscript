@@ -191,8 +191,6 @@ Example,
 
 
 
-
-
 == 5.4 Math
 
 Math module exposes the following set of static members,
