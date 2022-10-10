@@ -141,7 +141,7 @@ namespace zetscript{
 
 			// check format ...
 
-			if(_format.empty()!=false){
+			if(!_format.empty()){
 				zs_string sf=zs_strutils::to_lower(_format);
 				char *it_str=(char *)sf.c_str();
 

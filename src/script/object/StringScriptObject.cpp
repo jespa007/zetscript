@@ -178,10 +178,10 @@ namespace zetscript{
 							// ALIGNMENT ...
 							if(str_begin_padding != NULL && str_end_aligment !=NULL){
 								str_num_aux="";
-								str_begin_padding=str_begin_padding+1;
+								char *str_begin_padding_it=str_begin_padding+1;
 								// try to convert str to index...
-								for(;str_begin_padding<str_end_aligment;){
-									str_num_aux+=*str_begin_padding++;
+								for(;str_begin_padding_it<str_end_aligment;){
+									str_num_aux+=*str_begin_padding_it++;
 								}
 
 								if((ptr_idx_num=zs_strutils::parse_zs_int(str_num_aux))!=NULL){
@@ -215,8 +215,8 @@ namespace zetscript{
 								}
 
 								// set padding
-								if(ptr_str_format_string != NULL){
-									int length_padding=padding-(int)strlen(ptr_str_format_string);
+								if(padding>0){
+									int length_padding=padding-str_format_results.length();
 									if(length_padding>0){//left padding
 										for(int i=0; i < length_padding;i++){
 											str_result.append(' ');
