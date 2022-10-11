@@ -31,5 +31,7 @@ function test_arithmetic_number_basic(_a,_b){
 test_arithmetic_integer_basic(1,3)
 test_arithmetic_number_basic(1,3)
 
+// check aritemthic 
+
 
 

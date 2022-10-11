@@ -93,35 +93,34 @@ int main(int argc, char * argv[]) {
 		"test_assign"								//1.
 		,"test_call"								//2.
 		,"test_metamethods"							//3.
-		,"test_class_property"						//4.
-		,"test_const"								//5.
-		,"test_eval"								//6.
-		,"test_for_in_object"						//7.
-		,"test_for_in_string"						//8.
-		,"test_for_in_vector"						//9.
-		,"test_function_arg_by_ref"					//10.
-		,"test_function_arg_default"				//11.
-		,"test_if_else"								//12.
-		,"test_import"								//13.
-		,"test_in"									//14.
-		,"test_instanceof"							//15.
-		,"test_instance_from_var_type"					//16.
-		,"test_iterator_object"						//17.
-		,"test_iterator_string"						//18.
-		,"test_iterator_vector"						//19.
-		,"test_json"								//20.
-		,"test_loops_break_continue"				//21.
-		,"test_loops"								//22.
-		,"test_object"								//23.
-		,"test_string"								//24.
-		,"test_switch"								//25.
-		,"test_ternary"								//26.
-		,"test_typeof"								//27.
-		,"test_vector"								//28.
-		,"test_integer_values"						//29.
-		,"test_constant_operations"					//30.
-		,"test_member_functions"					//31.
-		,"test_member_variables"					//32.
+		,"test_const"								//4.
+		,"test_eval"								//5.
+		,"test_for_in_object"						//6.
+		,"test_for_in_string"						//7.
+		,"test_for_in_vector"						//8.
+		,"test_function_arg_by_ref"					//9.
+		,"test_function_arg_default"				//10.
+		,"test_if_else"								//11.
+		,"test_import"								//12.
+		,"test_in"									//13.
+		,"test_instanceof"							//14.
+		,"test_instance_from_var_type"				//15.
+		,"test_iterator_object"						//16.
+		,"test_iterator_string"						//17.
+		,"test_iterator_vector"						//18.
+		,"test_json"								//19.
+		,"test_loops_break_continue"				//20.
+		,"test_loops"								//21.
+		,"test_object"								//22.
+		,"test_string"								//23.
+		,"test_switch"								//24.
+		,"test_ternary"								//25.
+		,"test_typeof"								//26.
+		,"test_vector"								//27.
+		,"test_integer_values"						//28.
+		,"test_constant_operations"					//29.
+		,"test_member_functions"					//30.
+		,"test_member_variables"					//31.
 		,0
 	};
 
