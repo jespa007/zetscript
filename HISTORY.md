@@ -18,7 +18,7 @@ TODOS
 
 //----------------------------------------------------------
 Version: 2.0.0
-Date: XX-XX-2022 (Expected to finish on end of abril)
+Date: XX-XX-2022 (Expected to finish on end december 2022)
 
 Main improvements: 
 
