@@ -87,6 +87,7 @@
 namespace zetscript{
 
 	typedef enum:uint8_t{
+		BYTE_CODE_INVALID=255,
 
 		// ARITMETHIC OPERATORS.
 		BYTE_CODE_END_FUNCTION = 0,
@@ -228,14 +229,12 @@ namespace zetscript{
 		//BYTE_CODE_CLEAR_ZERO_POINTERS,
 		BYTE_CODE_TYPEOF,
 		BYTE_CODE_IN,
-		//---------------------------
-		BYTE_CODE_INVALID=255,
-
+		MAX_BYTE_CODES
 	}ByteCode;
 
-	typedef enum: char {
+	typedef enum: uint8_t {
 		// static
-		BYTE_CODE_METAMETHOD_INVALID=-1,  // ==
+		BYTE_CODE_METAMETHOD_INVALID=255,  // ==
 		BYTE_CODE_METAMETHOD_EQU=0,  // ==
 		BYTE_CODE_METAMETHOD_NOT_EQU,  // !=
 		BYTE_CODE_METAMETHOD_LT,  // <
@@ -273,7 +272,7 @@ namespace zetscript{
 		BYTE_CODE_METAMETHOD_PRE_INC, // ++i
 		BYTE_CODE_METAMETHOD_PRE_DEC, // --i
 		BYTE_CODE_METAMETHOD_IN, // special metamethod in
-		BYTE_CODE_METAMETHOD_MAX
+		MAX_BYTE_CODE_METAMETHODS,
 	}ByteCodeMetamethod;
 
 

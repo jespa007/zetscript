@@ -91,8 +91,8 @@ namespace zetscript{
 		StackElement * registerStkConstantStringObject(const zs_string & _key,const zs_string & _value);
 		StackElement * getStkConstantStringObject(const zs_string & _key);
 
-		StackElement * registerStkObject(const zs_string & _key, zs_int _value);
-		StackElement * getStkObject(const zs_string & _key);
+		//StackElement * registerStkObject(const zs_string & _key, zs_int _value);
+		//StackElement * getStkObject(const zs_string & _key);
 
 		/**
 		 * Class name given this function creates the object and initializes all variables.
@@ -356,7 +356,7 @@ namespace zetscript{
 			Type  id;
 		}PrimitiveType;
 
-		zs_map 	 						*stk_constants,*stk_objects;
+		zs_map 	 						*stk_constants;//,*stk_objects;
 		zs_vector<ScriptType *>			*   script_types;
 		ZetScript 						*	zs;
 		VirtualMachine					*	vm;

@@ -157,7 +157,10 @@ namespace zetscript{
 			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_STRING && so->shared_pointer==NULL){
 				//STK_IS_SCRIPT_OBJECT_STRING(stk_arg)){ // remove
 				StringScriptObject *sc=ZS_NEW_STRING_OBJECT(_zs);
-				if(!vm_create_shared_script_object(vm,sc)){
+				if(!vm_create_shared_script_object(
+						vm
+						,sc
+				)){
 					return;
 				}
 				sc->set(so->toString().c_str());

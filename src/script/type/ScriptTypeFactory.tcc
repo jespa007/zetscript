@@ -4,11 +4,6 @@
  */
 namespace zetscript{
 
-	StackElement * 	vm_get_stack_element_at(VirtualMachine *vm,unsigned idx_glb_element);
-	bool 			vm_create_shared_script_object(VirtualMachine *vm, ScriptObject *_obj);
-	bool 			vm_share_script_object(VirtualMachine *vm, ScriptObject *_obj);
-
-
 	/**
 	 * Register C variable
 	 */
@@ -52,11 +47,17 @@ namespace zetscript{
 		StackElement *stk=vm_get_stack_element_at(vm,symbol_variable->idx_position);
 
 		if(stk_binded.properties & STK_PROPERTY_SCRIPT_OBJECT){
-			*stk = *this->registerStkObject(_var_name, stk_binded.value);
+			VirtualMachineData *data=(VirtualMachineData *)vm->data;
+			*stk=stk_binded;
+			//*stk = *this->registerStkObject(_var_name, stk_binded.value);
 
 			// share this variable++
-			vm_create_shared_script_object(vm,(ScriptObject *)stk_binded.value);
-			vm_share_script_object(vm,(ScriptObject *)stk_binded.value);
+			vm_create_shared_script_object(
+					vm
+					,(ScriptObject *)stk->value
+					,VM_MAIN_SCOPE_BLOCK
+			);
+			vm_share_script_object(vm,(ScriptObject *)stk->value);
 		}
 		else{
 			*stk=stk_binded;

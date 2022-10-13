@@ -483,7 +483,7 @@ namespace zetscript{
 		}
 		else{
 			// check metamethod function...
-			for(int i = 0; i < BYTE_CODE_METAMETHOD_MAX; i++){
+			for(int i = 0; i < MAX_BYTE_CODE_METAMETHODS; i++){
 				if(ZS_STRCMP(byte_code_metamethod_to_symbol_str((ByteCodeMetamethod)i),==,_function_name.c_str())){
 					// check whether function meets the conditions of num params, static etc
 					MetamethodMemberSetterInfo info_mp;

@@ -1,4 +1,7 @@
-
+/*
+ *  This file is distributed under the MIT License.
+ *  See LICENSE file for details.
+ */
 namespace zetscript{
 	bool vm_byte_code_new_object_by_value(
 			VirtualMachine 	*	_vm

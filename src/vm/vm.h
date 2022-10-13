@@ -26,7 +26,11 @@ namespace zetscript{
 	void			vm_init(VirtualMachine *vm, ZetScript *_zs);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
 	bool 			vm_share_script_object(VirtualMachine *vm,ScriptObject *_obj);
-	bool 			vm_create_shared_script_object(VirtualMachine *vm, ScriptObject *_obj);
+	bool 			vm_create_shared_script_object(
+			VirtualMachine *vm
+			, ScriptObject *_obj
+			,VM_ScopeBlock *_vm_scope_block=NULL
+	);
 	//inline bool 	vm_unref_shared_script_object_and_remove_if_zero(VirtualMachine *vm,ScriptObject **so);
 	void 			vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object);
 	bool 			vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk);

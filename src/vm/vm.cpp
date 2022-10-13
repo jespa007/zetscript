@@ -70,8 +70,15 @@ namespace zetscript{
 	bool vm_create_shared_script_object(
 		VirtualMachine *_vm
 		,ScriptObject *_obj
+		,VM_ScopeBlock *_vm_scope_block
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
+
+		// if vm block NULL set current block scope by default
+		if(_vm_scope_block == NULL){
+			_vm_scope_block=VM_CURRENT_SCOPE_BLOCK;
+		}
+
 		if(_obj->shared_pointer == NULL){
 			InfoSharedPointerNode *_node = (InfoSharedPointerNode *)ZS_MALLOC(sizeof(InfoSharedPointerNode));
 			// init
@@ -79,7 +86,7 @@ namespace zetscript{
 			_node->next=NULL;
 			_node->data.n_shares=0;
 			_node->data.ptr_script_object_shared=_obj;
-			_node->data.created_scope_block=VM_CURRENT_SCOPE_BLOCK;//data->vm_idx_call; // it saves the zeros nodes where was set
+			_node->data.created_scope_block=_vm_scope_block;//VM_CURRENT_SCOPE_BLOCK;//data->vm_idx_call; // it saves the zeros nodes where was set
 
 			// insert node into shared nodes ...
 			if(!vm_insert_shared_node(_vm,&_node->data.created_scope_block->unreferenced_objects,_node)){

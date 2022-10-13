@@ -119,8 +119,8 @@ namespace zetscript{
 		stk_constants=NULL;
 		stk_constants=new zs_map();
 
-		stk_objects=NULL;
-		stk_objects=new zs_map();
+		//stk_objects=NULL;
+		//stk_objects=new zs_map();
 
 
 	}
@@ -361,7 +361,7 @@ namespace zetscript{
 		return (StackElement *)stk_constants->get(_key.c_str());
 	}
 
-	StackElement * ScriptTypeFactory::registerStkObject(const zs_string & _key, zs_int _value){
+	/*StackElement * ScriptTypeFactory::registerStkObject(const zs_string & _key, zs_int _value){
 
 		StackElement *stk=NULL;
 
@@ -380,7 +380,7 @@ namespace zetscript{
 
 	StackElement *ScriptTypeFactory::getStkObject(const zs_string & _key){
 		return (StackElement *)stk_objects->get(_key.c_str());
-	}
+	}*/
 
 	//
 	// STK REGISTER OBJECT
@@ -818,7 +818,7 @@ namespace zetscript{
 
 		}
 
-		if(stk_objects != NULL){
+		/*if(stk_objects != NULL){
 
 			for(auto it=stk_objects->begin(); !it.end();it.next()){
 				StackElement *stk=(StackElement *)(it.value);
@@ -827,6 +827,6 @@ namespace zetscript{
 			}
 			stk_objects->clear();
 			delete stk_objects;
-		}
+		}*/
 	}
 }
