@@ -42,6 +42,7 @@ namespace zetscript{
 		uint8_t stk_n_params=0;
 		StackElement *vm_stk_current=NULL;
 		StackElement *stk_start=NULL;
+		VM_ScopeFunction *vm_eval_scope_function=data->vm_current_scope_function;
 
 		// Example of use,
 		// System::eval("a+b",{a:1,b:2})
@@ -101,7 +102,7 @@ namespace zetscript{
 		//--------------------------------------
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
-		zs_string  name_script_function=zs_strutils::format("eval@",n_eval_function++);
+		zs_string  name_script_function=zs_strutils::format("eval@%i",n_eval_function++);
 		sf_eval=new	ScriptFunction(
 				zs
 				,IDX_ZS_SCRIPT_FUNCTION_EVAL
@@ -204,6 +205,18 @@ namespace zetscript{
 		// avoid pass params
 		data->vm_stk_current-=stk_n_params;
 goto_eval_exit:
+
+		while(data->vm_current_scope_function > vm_eval_scope_function){
+			while(
+					(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
+
+			){
+				//VM_CURRENT_SCOPE_FUNCTION->current_scope_block--;
+				vm_pop_scope(vm);
+			}
+
+			--data->vm_current_scope_function;
+		}
 
 		 sf_eval->scope_script_function->removeChildrenBlockTypes();
 		 sf_eval->scope_script_function->markAsUnusued();

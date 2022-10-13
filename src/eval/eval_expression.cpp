@@ -438,17 +438,19 @@ eval_error_sub_expression:
 
 				}
 
-				ei_last=(EvalInstruction *)left_instructions->items[left_instructions->size()-1];
+				if(left_instructions->size()>0){
+					ei_last=(EvalInstruction *)left_instructions->items[left_instructions->size()-1];
 
-				if(ei_last->vm_instruction.byte_code==BYTE_CODE_STORE){
-					EvalInstruction *eval_store_target=((EvalInstruction *)left_instructions->items[left_instructions->size()-1-1]);
-					if(
-						eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_VECTOR_ITEM
-						|| eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_THIS_VARIABLE
-						|| eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_OBJECT_ITEM
+					if(ei_last->vm_instruction.byte_code==BYTE_CODE_STORE){
+						EvalInstruction *eval_store_target=((EvalInstruction *)left_instructions->items[left_instructions->size()-1-1]);
+						if(
+							eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_VECTOR_ITEM
+							|| eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_THIS_VARIABLE
+							|| eval_store_target->vm_instruction.byte_code==BYTE_CODE_PUSH_STK_OBJECT_ITEM
 
-					){
-						eval_store_target->vm_instruction.properties|=INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT;
+						){
+							eval_store_target->vm_instruction.properties|=INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT;
+						}
 					}
 				}
 			}

@@ -95,10 +95,30 @@ class Integer{
 		return new Integer(n1+n2)
 	}
 	
+	_add_set(_n1){
+		if(isNumber(_n1)){
+			this.__num__+=parseInteger(_n1)
+		}else if(_n1 instanceof Integer){
+			this.__num__+=_n1.__num__	
+		}else{
+			System::error("Integer::_add_set: expected _n1 as int,float or Integer but it was '{0}'",typeof _n1)
+		}		
+	}
+	
 	static _sub(_n1, _n2){
 		var n1,n2
 		n1,n2=Integer::parseInteger(_n1,_n2);		
 		return new Integer(n1-n2)
+	}
+	
+	_sub_set(_n1){
+		if(isNumber(_n1)){
+			this.__num__-=parseInteger(_n1)
+		}else if(_n1 instanceof Integer){
+			this.__num__-=_n1.__num__	
+		}else{
+			System::error("Integer::_sub_set: expected _n1 as int,float or Integer but it was '{0}'",typeof _n1)
+		}		
 	}
 	
 	static _mul(_n1, _n2){
@@ -107,10 +127,31 @@ class Integer{
 		return new Integer(n1*n2)
 	}
 	
+	
+	_mul_set(_n1){
+		if(isNumber(_n1)){
+			this.__num__*=parseInteger(_n1)
+		}else if(_n1 instanceof Integer){
+			this.__num__*=_n1.__num__	
+		}else{
+			System::error("Integer::_mul_set: expected _n1 as int,float or Integer but it was '{0}'",typeof _n1)
+		}		
+	}
+	
 	static _div(_n1, _n2){
 		var n1,n2
 		n1,n2=Integer::parseInteger(_n1,_n2);		
 		return new Integer(n1/n2)
+	}
+	
+	_div_set(_n1){
+		if(isNumber(_n1)){
+			this.__num__/=parseInteger(_n1)
+		}else if(_n1 instanceof Integer){
+			this.__num__/=_n1.__num__	
+		}else{
+			System::error("Integer::_div_set: expected _n1 as int,float or Integer but it was '{0}'",typeof _n1)
+		}		
 	}
 	
 	static _mod(_n1, _n2){
@@ -119,10 +160,30 @@ class Integer{
 		return new Integer(n1%n2)
 	}
 	
+	_mod_set(_n1){
+		if(isNumber(_n1)){
+			this.__num__%=parseInteger(_n1)
+		}else if(_n1 instanceof Integer){
+			this.__num__%=_n1.__num__	
+		}else{
+			System::error("Integer::_mod_set: expected _n1 as int,float or Integer but it was '{0}'",typeof _n1)
+		}		
+	}
+	
 	static _shr(_n1, _n2){
 		var n1,n2
 		n1,n2=Integer::parseInteger(_n1,_n2);		
 		return new Integer(n1>>n2)
+	}
+	
+	_shr_set(_n1){
+		if(isNumber(_n1)){
+			this.__num__>>=parseInteger(_n1)
+		}else if(_n1 instanceof Integer){
+			this.__num__>>=_n1.__num__	
+		}else{
+			System::error("Integer::_shr_set: expected _n1 as int,float or Integer but it was '{0}'",typeof _n1)
+		}		
 	}
 
 	static _shl(_n1, _n2){
@@ -131,10 +192,30 @@ class Integer{
 		return new Integer(n1<<n2)
 	}
 	
+	_shl_set(_n1){
+		if(isNumber(_n1)){
+			this.__num__<<=parseInteger(_n1)
+		}else if(_n1 instanceof Integer){
+			this.__num__<<=_n1.__num__	
+		}else{
+			System::error("Integer::_shl_set: expected _n1 as int,float or Integer but it was '{0}'",typeof _n1)
+		}		
+	}
+	
 	static _and(_n1, _n2){
 		var n1,n2
 		n1,n2=Integer::parseInteger(_n1,_n2);		
 		return new Integer(n1&n2)
+	}
+	
+	_and_set(_n1){
+		if(isNumber(_n1)){
+			this.__num__&=parseInteger(_n1)
+		}else if(_n1 instanceof Integer){
+			this.__num__&=_n1.__num__	
+		}else{
+			System::error("Integer::_and_set: expected _n1 as int,float or Integer but it was '{0}'",typeof _n1)
+		}		
 	}
 	
 	static _or(_n1, _n2){
@@ -143,10 +224,30 @@ class Integer{
 		return new Integer(n1|n2)
 	}
 	
+	_or_set(_n1){
+		if(isNumber(_n1)){
+			this.__num__|=parseInteger(_n1)
+		}else if(_n1 instanceof Integer){
+			this.__num__|=_n1.__num__	
+		}else{
+			System::error("Integer::_or_set: expected _n1 as int,float or Integer but it was '{0}'",typeof _n1)
+		}		
+	}
+	
 	static _xor(_n1, _n2){
 		var n1,n2
 		n1,n2=Integer::parseInteger(_n1,_n2);		
 		return new Integer(n1^n2)
+	}
+	
+	_xor_set(_n1){
+		if(isNumber(_n1)){
+			this.__num__^=parseInteger(_n1)
+		}else if(_n1 instanceof Integer){
+			this.__num__^=_n1.__num__	
+		}else{
+			System::error("Integer::_xor_set: expected _n1 as int,float or Integer but it was '{0}'",typeof _n1)
+		}		
 	}
 	
 	static _equ(_n1, _n2){
