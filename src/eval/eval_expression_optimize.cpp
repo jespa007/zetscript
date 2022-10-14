@@ -183,7 +183,6 @@ namespace zetscript{
 			, EvalInstruction *ei2
 	){
 		zs_float  result_op_float=0;
-		//char str_aux[3][100];
 		zs_int result_op_zs_int=0;
 		bool	result_op_bool=false;
 		zs_string result_op_str="";

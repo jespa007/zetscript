@@ -107,7 +107,7 @@ namespace zetscript{
 		Symbol				* 	registerMemberPropertyGetter(
 			const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
-			 ,char _params_len
+			 ,int8_t _params_len
 			, int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char * _file=""
@@ -150,9 +150,9 @@ namespace zetscript{
 
 		//---------------------------------------------------
 
-		Symbol *    getSymbol(const zs_string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
+		Symbol *    getSymbol(const zs_string & symbol_name, int8_t n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 		Symbol *    getSymbolVariableMember(const zs_string & symbol_name, bool include_inherited_symbols=true);
-		Symbol *    getSymbolMemberFunction(const zs_string & symbol_name, char n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
+		Symbol *    getSymbolMemberFunction(const zs_string & symbol_name, int8_t n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 
 		const char *getTypeName();
 

@@ -371,7 +371,7 @@ namespace zetscript{
 	Symbol				* 	ScriptType::registerMemberPropertyGetter(
 			 const zs_string & _property_name
 			 ,ScriptFunctionParam **_params
-			 ,char _params_len
+			 ,int8_t _params_len
 			, int _idx_return_type
 			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
 			,const char *_file
@@ -430,7 +430,7 @@ namespace zetscript{
 
 		if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){ // we only allow repeated symbols on native functions...
 
-			if(getSymbol(_function_name,(char)_params_len,false) != NULL){ // we only search repeat symbols on this type ...
+			if(getSymbol(_function_name,(int8_t)_params_len,false) != NULL){ // we only search repeat symbols on this type ...
 				Symbol *existing_symbol;
 				if((existing_symbol=getSymbol(_function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
 					THROW_RUNTIME_ERROR("Function member '%s' is already defined at [%s:%i]"
@@ -682,7 +682,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol *    ScriptType::getSymbolMemberFunction(const zs_string & symbol_name, char n_params, bool include_inherited_symbols){
+	Symbol *    ScriptType::getSymbolMemberFunction(const zs_string & symbol_name, int8_t n_params, bool include_inherited_symbols){
 		bool only_symbol=n_params<0;
 		int idx_end=include_inherited_symbols==true?0:idx_starting_this_member_functions;
 		zs_vector<Symbol *> *symbol_functions=this->scope_script_type->symbol_functions;
@@ -699,7 +699,7 @@ namespace zetscript{
 				}
 
 				ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
-				if(((n_params==(char)sf->params_len) || (n_params==NO_PARAMS_SYMBOL_ONLY))
+				if(((n_params==(int8_t)sf->params_len) || (n_params==NO_PARAMS_SYMBOL_ONLY))
 				 ){
 					return member_symbol;
 				}
@@ -709,7 +709,7 @@ namespace zetscript{
 		return NULL;
 	}
 
-	Symbol				* 	ScriptType::getSymbol(const zs_string & symbol_name, char n_params,bool include_inherited_symbols){
+	Symbol				* 	ScriptType::getSymbol(const zs_string & symbol_name, int8_t n_params,bool include_inherited_symbols){
 
 		Symbol *symbol=NULL;
 

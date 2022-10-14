@@ -37,7 +37,6 @@ namespace zetscript{
 		zs_string str_unescaped_source="";
 		VirtualMachine *vm=zs->getVirtualMachine();
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		Symbol *symbol_sf=NULL;
 		int n_ret_args=0;
 		uint8_t stk_n_params=0;
 		StackElement *vm_stk_current=NULL;
@@ -223,8 +222,6 @@ goto_eval_exit:
 		 zs->getScopeFactory()->clearUnusuedScopes();
 
 		 delete sf_eval;
-		 delete symbol_sf;
-
 	}
 
 	/*void SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){

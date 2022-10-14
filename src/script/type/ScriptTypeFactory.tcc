@@ -266,7 +266,7 @@ namespace zetscript{
 					ScriptFunction *dst_script_function=NULL;
 
 					ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(src_script_function);
-					char params_len=src_script_function->params_len;
+					int8_t params_len=src_script_function->params_len;
 
 
 					dst_symbol=this_class->registerMemberFunction(
@@ -333,7 +333,7 @@ namespace zetscript{
 									   ,*dst_script_function=NULL;
 
 						ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(src_script_function);
-						char params_len=src_script_function->params_len;
+						int8_t params_len=src_script_function->params_len;
 
 						symbol_function=this_class->registerMemberFunction(
 								src_script_function->name_script_function,
@@ -363,7 +363,7 @@ namespace zetscript{
 											*dst_script_function=NULL;
 
 							ScriptFunctionParam *params=ScriptFunctionParam::createArrayFromScriptFunction(sf_setter);
-							char params_len=sf_setter->params_len;
+							int8_t params_len=sf_setter->params_len;
 
 							symbol_function=this_class->registerMemberFunction(
 								sf_setter->name_script_function,

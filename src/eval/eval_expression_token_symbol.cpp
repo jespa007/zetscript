@@ -14,7 +14,6 @@ namespace zetscript{
 	}
 
 	bool get_accessor_name(EvalData *eval_data, char **aux_p, int line, zs_string & accessor_name){
-		//char *aux_p = s;
 		accessor_name="";
 		while(!is_end_symbol_token(*aux_p)){ // get name...
 			accessor_name += *(*aux_p)++;
@@ -341,7 +340,7 @@ namespace zetscript{
 			zs_string accessor_name="",
 						last_accessor_value=token_node_symbol->value;
 
-			char n_params=0;
+			int8_t n_params=0;
 			int it_accessor_token=0;
 
 			do{

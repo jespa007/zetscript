@@ -54,6 +54,6 @@
 
 namespace zetscript{
 	typedef intptr_t zs_int;
-	typedef char zs_char;
+	typedef int8_t zs_char;
 }
 

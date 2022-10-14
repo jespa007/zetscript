@@ -67,7 +67,7 @@ namespace zetscript{
 			,bool 					_is_constructor
 			,const zs_string & 	_symbol_to_find
 			,StackElement 		*	_stk_arg
-			,unsigned char 			_n_args
+			,uint8_t	 			_n_args
 	){
 
 		// by default search over global functions...
@@ -325,7 +325,7 @@ namespace zetscript{
 			ScriptObject  			* 	_this_object,
 			const ScriptFunction 	*	_c_function,
 			StackElement 			*	_stk_arg_c_function,
-			unsigned char 				_n_args
+			uint8_t		 				_n_args
 	){
 
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
@@ -346,7 +346,7 @@ namespace zetscript{
 		data->current_call_c_function = _c_function;
 		//int this_param=0;
 		int idx_arg_start=1;
-		unsigned char n_args=_n_args+1;
+		uint8_t n_args=_n_args+1;
 
 
 		// First param is zetscript instance reference always
@@ -383,7 +383,7 @@ namespace zetscript{
 			VM_ERROR_AND_RETF("Null function");
 		}
 
-		if((char)_c_function->params_len != (n_args)){
+		if((int8_t)_c_function->params_len != (n_args)){
 			VM_ERROR_AND_RET("Native function '%s' expects %i arguments but it passed %i arguments"
 					,_c_function->name_script_function.c_str()
 					,_c_function->params_len
@@ -396,7 +396,7 @@ namespace zetscript{
 
 		// convert parameters script to c...
 		if(_stk_arg_c_function!=NULL){
-			for(unsigned char  i = idx_arg_start; i < n_args;i++){
+			for(uint8_t  i = idx_arg_start; i < n_args;i++){
 
 				stk_arg_current=&_stk_arg_c_function[i-idx_arg_start];
 				if(stk_arg_current->properties & STK_PROPERTY_PTR_STK){

@@ -63,7 +63,7 @@
 namespace zetscript{
 
 	// operator enumerated as its precedence
-	typedef enum :unsigned char {
+	typedef enum :uint8_t {
 
 		OPERATOR_UNKNOWN = 0,
 

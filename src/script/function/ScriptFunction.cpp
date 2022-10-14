@@ -122,7 +122,7 @@ namespace zetscript{
 			iload_info="";
 			unsigned idx_instruction=instruction-sfo->instructions;
 
-			if((char)value_op1 != ZS_IDX_UNDEFINED){
+			if((int8_t)value_op1 != ZS_IDX_UNDEFINED){
 				n_ops++;
 			}
 
@@ -210,7 +210,7 @@ namespace zetscript{
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
-					,(char)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_TYPE_NAME(sfo->script_type_factory,instruction->value_op1):"???"
+					,(int8_t)instruction->value_op1!=ZS_IDX_UNDEFINED?GET_SCRIPT_TYPE_NAME(sfo->script_type_factory,instruction->value_op1):"???"
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:
@@ -592,7 +592,7 @@ namespace zetscript{
 			, short _line
 			, const zs_string & _function_name
 			, ScriptFunctionParam **_params
-			,char _params_len
+			,int8_t _params_len
 			, int _idx_return_type
 			,zs_int _ref_ptr
 			, unsigned short _function_properties
@@ -640,7 +640,7 @@ namespace zetscript{
 				ScriptFunction *sf = (ScriptFunction *)symbol_repeat->ref_ptr;
 				sf->clear();
 				sf->updateParams(_params,_params_len);
-				symbol_repeat->n_params=(char)_params_len;
+				symbol_repeat->n_params=(int8_t)_params_len;
 				return symbol_repeat;
 			}else{ // check all params equal
 				ScriptFunction::checkNativeFunctionParams(_scope_block,_idx_return_type,_function_name,*_params,_params_len);

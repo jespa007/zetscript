@@ -80,7 +80,7 @@ namespace zetscript{
 	}EvalExpressionProperty;
 
 	typedef enum
-		:unsigned char {
+		:uint8_t {
 		KEYWORD_UNKNOWN = 0,
 		KEYWORD_IF,
 		KEYWORD_ELSE,
@@ -117,7 +117,7 @@ namespace zetscript{
 	}Directive;
 
 	// In a expression we can find three types of tokens: an identifier, a separator, an operator, a literal or object token.
-	typedef enum :char{
+	typedef enum :int8_t{
 		TOKEN_TYPE_UNKNOWN=0,
 		TOKEN_TYPE_IDENTIFIER,  // a,b,c,d
 		TOKEN_TYPE_LITERAL, // true, false, 0.1, -12e-12
@@ -131,7 +131,7 @@ namespace zetscript{
 	}TokenType;
 
 
-	typedef enum:char{
+	typedef enum:int8_t{
 		ACCESSOR_UNKNOWN=0,
 		ACCESSOR_CALL, // v(1)
 		ACCESSOR_VECTOR, // v[0]
@@ -139,7 +139,7 @@ namespace zetscript{
 		ACCESSOR_MAX
 	}AccessorType;
 
-	typedef enum :unsigned char {
+	typedef enum :uint8_t {
 		PRE_OPERATION_UNKNOWN=0,
 		// two chars here!
 		PRE_OPERATION_DEC    ,	// --
@@ -153,7 +153,7 @@ namespace zetscript{
 		PRE_OPERATION_MAX
 	}PreOperation;
 
-	typedef enum :unsigned char {
+	typedef enum :uint8_t {
 		POST_OPERATION_UNKNOWN=0,
 		POST_OPERATION_DEC	,	// --
 		POST_OPERATION_INC	,	// ++
@@ -161,7 +161,7 @@ namespace zetscript{
 		POST_OPERATION_MAX
 	}PostOperation;
 
-	typedef enum :unsigned char {
+	typedef enum :uint8_t {
 		SEPARATOR_UNKNOWN=0,
 		SEPARATOR_COMA,				// ,
 		SEPARATOR_SEMICOLON,    		// ;

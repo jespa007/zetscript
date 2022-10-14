@@ -14,7 +14,6 @@
 #include "vm_byte_code_container.cpp"
 #include "vm_byte_code_iterator.cpp"
 #include "vm_byte_code_store.cpp"
-#include "vm_byte_code_operation_set.cpp"
 #include "vm_byte_code_new_object.cpp"
 
 

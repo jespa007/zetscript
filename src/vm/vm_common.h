@@ -283,7 +283,7 @@ namespace zetscript{
 			,bool 					_is_constructor
 			,const zs_string 	& 	_symbol_to_find
 			,StackElement 		*	_stk_arg
-			,unsigned char 			_n_args
+			,uint8_t	 			_n_args
 		);
 
 		void vm_assign_container_slot(

@@ -41,7 +41,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
 		break;\
 	default:\
-		if(!vm_operation_set_metamethod(\
+		if(!vm_call_metamethod_set(\
 			_vm\
 			,_calling_function\
 			,instruction\
@@ -82,7 +82,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
 		break;\
 	default:\
-		if(!vm_operation_set_metamethod(\
+		if(!vm_call_metamethod_set(\
 			_vm\
 			,_calling_function\
 			,instruction\
@@ -134,7 +134,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
 		break;\
 	default:\
-		if(!vm_operation_set_metamethod(\
+		if(!vm_call_metamethod_set(\
 			_vm\
 			,_calling_function\
 			,instruction\
@@ -187,7 +187,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		(*((zs_float *)(ptr_ptr_void_ref)))=*((zs_float *)&stk_result_op1->value);\
 		break;\
 	default:\
-		if(!vm_operation_set_metamethod(\
+		if(!vm_call_metamethod_set(\
 			_vm\
 			,_calling_function\
 			,instruction\
@@ -212,7 +212,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
 		(*((zs_int *)(ptr_ptr_void_ref)))=stk_result_op1->value;\
 	}else{\
-		if(!vm_operation_set_metamethod(\
+		if(!vm_call_metamethod_set(\
 			_vm\
 			,_calling_function\
 			,instruction\

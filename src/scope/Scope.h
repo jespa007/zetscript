@@ -45,7 +45,12 @@ namespace zetscript{
 		//--------------------------------------------------------------------
 		// Functions
 
-		Scope(ZetScript * _zs, int _idx_script_function, Scope * _scope_parent=NULL,uint16_t _properties=0);
+		Scope(
+			ZetScript * _zs
+			, int _idx_script_function
+			, Scope * _scope_parent=NULL
+			,uint16_t _properties=0
+		);
 
 		//--------------------------------------------------------------------
 		// Register functions
@@ -54,12 +59,31 @@ namespace zetscript{
 		 * register/search symbol info
 		 * @n_params:
 		 */
-		Symbol * registerSymbolVariable(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
-		Symbol * registerSymbolFunction(const char * file, short line,const zs_string & symbol_name, char n_params,uint16_t  _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
-		Symbol * registerSymbolScriptType(const char * file, short line,const zs_string & symbol_name, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN);
+		Symbol * registerSymbolVariable(
+				const char * file
+				, short line
+				,const zs_string & symbol_name
+				, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
+		);
+
+		Symbol * registerSymbolFunction(
+				const char * file
+				, short line
+				,const zs_string & symbol_name
+				, int8_t n_params
+				,uint16_t  _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
+		);
+
+		Symbol * registerSymbolScriptType(
+				const char * file
+				,short line
+				,const zs_string & symbol_name
+				, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
+		);
+
 		Symbol * getSymbol(
 				const zs_string & var_name
-				, char n_params=NO_PARAMS_SYMBOL_ONLY
+				, int8_t n_params=NO_PARAMS_SYMBOL_ONLY
 				, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
 		);
 
@@ -84,11 +108,13 @@ namespace zetscript{
 		ScopeFactory *scope_factory;
 		int 			idx_script_function;
 
-		void 	 checkPreRegisterSymbol(const char * file,short line, const zs_string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction);
-
-		Symbol * getSymbolRecursive(const zs_string & var_name, char n_params=NO_PARAMS_SYMBOL_ONLY);
-		Symbol * getSymbolRecursiveDownScope(const zs_string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
-		Symbol * getSymbolRecursiveUpScope(const zs_string & ref_symbol, char n_params=NO_PARAMS_SYMBOL_ONLY);
+		void 	 checkPreRegisterSymbol(
+				const char * file
+				,short line
+				, const zs_string & symbol_name
+				, int8_t n_params
+				, uint16_t check_repeated_symbols_direction
+		);
 
 		void markBlockScopeAsUnusuedScopesRecursive(Scope *_sc);
 

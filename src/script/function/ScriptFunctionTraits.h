@@ -211,24 +211,24 @@ namespace zetscript{
 			}
 
 			for(int i = 0; i < args.size(); i++){
-				const char *param=(const char *)args.items[i];
-				int idx_script_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(param);
+				const char *str_param=(const char *)args.items[i];
+				int idx_script_type = _script_class_factory->getIdxScriptTypeFromTypeNamePtr(str_param);
 
 				if(i==0){
 					if(idx_script_type!=IDX_TYPE_SCRIPT_OBJECT_ZETSCRIPT){
 						THROW_RUNTIME_ERROR(
 							"Expected FIRST parameter as 'ZetScript *' but it was '%s'"
-							,zs_rtti::demangle(param).c_str()
+							,zs_rtti::demangle(str_param).c_str()
 						);
 					}
 				}
 
 				if(i==1 && _script_type!=NULL){
-					if(strcmp(param,_script_type->str_script_type_ptr.c_str())!=0){
+					if(strcmp(str_param,_script_type->str_script_type_ptr.c_str())!=0){
 						error=zs_strutils::format(
 							"SECOND parameter, as object member reference, has to be type '%s' but it was '%s'"
 							,zs_rtti::demangle(_script_type->str_script_type_ptr.c_str()).c_str()
-							,zs_rtti::demangle(param).c_str()
+							,zs_rtti::demangle(str_param).c_str()
 						);
 						goto exit_function_traits;
 					}
@@ -238,8 +238,8 @@ namespace zetscript{
 				if(idx_script_type==IDX_TYPE_ZS_FLOAT_C || idx_script_type==IDX_TYPE_BOOL_C || idx_script_type == IDX_TYPE_ZS_STRING_C){
 					error=zs_strutils::format("Argument %i type '%s' is not supported as parameter, you should use pointer instead (i.e '%s *')"
 							,i+1
-							,zs_rtti::demangle(param).c_str()
-							,zs_rtti::demangle(param).c_str());
+							,zs_rtti::demangle(str_param).c_str()
+							,zs_rtti::demangle(str_param).c_str());
 					goto exit_function_traits;
 				}
 
@@ -247,12 +247,12 @@ namespace zetscript{
 
 					error=zs_strutils::format("Argument %i type '%s' not registered"
 						,i+1
-						,zs_rtti::demangle(param).c_str()
+						,zs_rtti::demangle(str_param).c_str()
 					);
 					goto exit_function_traits;
 				}
 
-				(*_params)[i]=ScriptFunctionParam(idx_script_type,param);
+				(*_params)[i]=ScriptFunctionParam(idx_script_type,str_param);
 			}
 		}
 

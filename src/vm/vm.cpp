@@ -686,8 +686,6 @@ namespace zetscript{
 
 }
 
-
 #include "vm_script_function.cpp"
 #include "vm_native_function.cpp"
-
 

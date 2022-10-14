@@ -135,7 +135,13 @@ namespace zetscript{
 		this->properties|=SCOPE_PROPERTY_UNUSUED;
 	}
 
-	void Scope::checkPreRegisterSymbol(const char * file,short line, const zs_string & symbol_name, char n_params, uint16_t check_repeated_symbols_direction){
+	void Scope::checkPreRegisterSymbol(
+			const char * file
+			,short line
+			, const zs_string & symbol_name
+			, int8_t n_params
+			, uint16_t check_repeated_symbols_direction
+	){
 		Symbol *p_irv=NULL;
 
 		// check if you register a type...
@@ -159,8 +165,12 @@ namespace zetscript{
 		}
 	}
 
-	Symbol * Scope::registerSymbolScriptType(const char * _file,short _line, const zs_string & _symbol_name, uint16_t _check_repeated_symbols_direction){
-
+	Symbol * Scope::registerSymbolScriptType(
+			const char * _file
+			,short _line
+			, const zs_string & _symbol_name
+			, uint16_t _check_repeated_symbols_direction
+	){
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
 		Symbol *symbol 		= new Symbol(_symbol_name);
@@ -176,8 +186,12 @@ namespace zetscript{
 
 	}
 
-	Symbol * Scope::registerSymbolVariable(const char * _file,short _line, const zs_string & _symbol_name ,uint16_t _check_repeated_symbols_direction){
-
+	Symbol * Scope::registerSymbolVariable(
+			const char * _file
+			,short _line
+			, const zs_string & _symbol_name
+			,uint16_t _check_repeated_symbols_direction
+	){
 		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
 		Symbol *symbol 		= new Symbol(_symbol_name);
@@ -191,7 +205,14 @@ namespace zetscript{
 		return symbol;
 	}
 
-	Symbol * Scope::registerSymbolFunction(const char * _file,short _line, const zs_string & _symbol_name, char _n_params, uint16_t _check_repeated_symbols_direction){
+	Symbol * Scope::registerSymbolFunction(
+			const char * _file
+			,short _line
+			, const zs_string & _symbol_name
+			, int8_t _n_params
+			, uint16_t _check_repeated_symbols_direction
+	){
+
 		if((_check_repeated_symbols_direction & REGISTER_SCOPE_NO_CHECK_REPEATED_SYMBOLS)==0){
 			checkPreRegisterSymbol(_file, _line, _symbol_name,  _n_params,_check_repeated_symbols_direction);
 		}
@@ -215,7 +236,7 @@ namespace zetscript{
 	// SCOPE VARIABLE MANAGEMENT
 	//
 
-	Symbol * Scope::getSymbol(const zs_string & _str_symbol, char _n_params, uint16_t _scope_direction){
+	Symbol * Scope::getSymbol(const zs_string & _str_symbol, int8_t _n_params, uint16_t _scope_direction){
 
 		// for each variable in current scope ...
 		for(int i = 0; i < symbol_types->size(); i++){

@@ -13,7 +13,7 @@ namespace zetscript{
 		}
 
 		Instruction::Instruction(ByteCode _byte_code
-		 ,unsigned char _value_op1
+		 ,uint8_t _value_op1
 		 ,zs_int _value_op2
 		 ,unsigned short _properties
 		 ){

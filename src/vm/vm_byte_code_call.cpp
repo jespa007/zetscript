@@ -73,7 +73,7 @@ namespace zetscript{
 		StackElement		*	sf_call_stk_function_ref=NULL;
 		ScriptFunction 		*	sf_call_script_function = NULL;
 
-		unsigned char 			sf_call_n_args=0; // number arguments will pass to this function
+		uint8_t		 			sf_call_n_args=0; // number arguments will pass to this function
 		StackElement 		*	sf_call_stk_start_arg_call=NULL;
 		ScriptObject 		*	sf_call_calling_object = NULL;
 		bool			 		sf_call_is_constructor=false;
