@@ -4,9 +4,9 @@
 /CMakeFiles/
 /bin/
 /src/config.h
-*.cmake
 CMakeCache.txt
+cmake_install.cmake
 Makefile
 /config.h
-
 /release/
+/debug/
