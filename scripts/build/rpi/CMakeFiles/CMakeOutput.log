@@ -1,0 +1,482 @@
+The target system is: Linux -  - arm
+The host system is: Linux - 5.4.0-128-generic - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc 
+Build flags: -mcpu=arm1176jzf-s;-mfpu=vfp;-mfloat-abi=hard;-I/home/jespada/rpi/rootfs/usr/include;;-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib;-Wl,-rpath-link,/opt/cross-pi-gcc/arm-linux-gnueabihf/lib;-L/opt/cross-pi-gcc/lib;-Wl,-rpath-link,/opt/cross-pi-gcc/lib;-L/home/jespada/rpi/rootfs/opt/vc/lib;-Wl,-rpath-link,/home/jespada/rpi/rootfs/opt/vc/lib;-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf;-Wl,-rpath-link,/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf;-L/home/jespada/rpi/rootfs/usr/local/lib;-Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/local/lib;-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf;-Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf;-L/home/jespada/rpi/rootfs/usr/lib;-Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib;-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas;-Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas;-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack;-Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is GNU, found in "/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/3.17.2/CompilerIdC/a.out"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++ 
+Build flags: -mcpu=arm1176jzf-s;-mfpu=vfp;-mfloat-abi=hard;-I/home/jespada/rpi/rootfs/usr/include;;-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib;-Wl,-rpath-link,/opt/cross-pi-gcc/arm-linux-gnueabihf/lib;-L/opt/cross-pi-gcc/lib;-Wl,-rpath-link,/opt/cross-pi-gcc/lib;-L/home/jespada/rpi/rootfs/opt/vc/lib;-Wl,-rpath-link,/home/jespada/rpi/rootfs/opt/vc/lib;-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf;-Wl,-rpath-link,/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf;-L/home/jespada/rpi/rootfs/usr/local/lib;-Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/local/lib;-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf;-Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf;-L/home/jespada/rpi/rootfs/usr/lib;-Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib;-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas;-Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas;-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack;-Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is GNU, found in "/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/3.17.2/CompilerIdCXX/a.out"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: /home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_29f6d/fast && /usr/bin/make  -f CMakeFiles/cmTC_29f6d.dir/build.make CMakeFiles/cmTC_29f6d.dir/build
+make[1]: Entering directory '/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_29f6d.dir/testCCompiler.c.o
+/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc --sysroot=/home/jespada/rpi/rootfs   -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl,-rpath-link,/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl,-rpath-link,/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack    -o CMakeFiles/cmTC_29f6d.dir/testCCompiler.c.o   -c /home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTC_29f6d
+/opt/cmake/bin/cmake -E cmake_link_script CMakeFiles/cmTC_29f6d.dir/link.txt --verbose=1
+/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc --sysroot=/home/jespada/rpi/rootfs -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl,-rpath-link,/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl,-rpath-link,/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack     CMakeFiles/cmTC_29f6d.dir/testCCompiler.c.o  -o cmTC_29f6d 
+make[1]: Leaving directory '/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp'
+
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_0857d/fast && /usr/bin/make  -f CMakeFiles/cmTC_0857d.dir/build.make CMakeFiles/cmTC_0857d.dir/build
+make[1]: Entering directory '/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o
+/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc --sysroot=/home/jespada/rpi/rootfs   -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl,-rpath-link,/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl,-rpath-link,/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack    -v -o CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o   -c /opt/cmake/share/cmake-3.17/Modules/CMakeCCompilerABI.c
+Using built-in specs.
+COLLECT_GCC=/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc
+Target: arm-linux-gnueabihf
+Configured with: ../gcc-8.3.0/configure --prefix=/opt/cross-pi-gcc --target=arm-linux-gnueabihf --enable-languages=c,c++,fortran --with-arch=armv6 --with-fpu=vfp --with-float=hard --disable-multilib
+Thread model: posix
+gcc version 8.3.0 (GCC) 
+COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o' '-c' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp'
+ /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/cc1 -quiet -v -I /home/jespada/rpi/rootfs/usr/include -isysroot /home/jespada/rpi/rootfs /opt/cmake/share/cmake-3.17/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mtls-dialect=gnu -marm -march=armv6kz+fp -auxbase-strip CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o -version -o /tmp/ccZ6DaE8.s
+GNU C17 (GCC) version 8.3.0 (arm-linux-gnueabihf)
+	compiled by GNU C version 8.4.0, GMP version 6.1.0, MPFR version 3.1.4, MPC version 1.0.3, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring nonexistent directory "/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/sys-include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/jespada/rpi/rootfs/usr/include
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include
+End of search list.
+GNU C17 (GCC) version 8.3.0 (arm-linux-gnueabihf)
+	compiled by GNU C version 8.4.0, GMP version 6.1.0, MPFR version 3.1.4, MPC version 1.0.3, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: 0561f2442d77db4a93079578cd778727
+COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o' '-c' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp'
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/as -v -I /home/jespada/rpi/rootfs/usr/include -march=armv6kz -mfloat-abi=hard -mfpu=vfp -meabi=5 -o CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o /tmp/ccZ6DaE8.s
+GNU assembler version 2.31.1 (arm-linux-gnueabihf) using BFD version (GNU Binutils) 2.31.1
+COMPILER_PATH=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/
+LIBRARY_PATH=/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/:/home/jespada/rpi/rootfs/lib/:/home/jespada/rpi/rootfs/usr/lib/
+COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o' '-c' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp'
+Linking C executable cmTC_0857d
+/opt/cmake/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0857d.dir/link.txt --verbose=1
+/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc --sysroot=/home/jespada/rpi/rootfs -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl,-rpath-link,/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl,-rpath-link,/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack    -v CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o  -o cmTC_0857d 
+Using built-in specs.
+COLLECT_GCC=/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc
+COLLECT_LTO_WRAPPER=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/lto-wrapper
+Target: arm-linux-gnueabihf
+Configured with: ../gcc-8.3.0/configure --prefix=/opt/cross-pi-gcc --target=arm-linux-gnueabihf --enable-languages=c,c++,fortran --with-arch=armv6 --with-fpu=vfp --with-float=hard --disable-multilib
+Thread model: posix
+gcc version 8.3.0 (GCC) 
+COMPILER_PATH=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/
+LIBRARY_PATH=/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/:/home/jespada/rpi/rootfs/lib/:/home/jespada/rpi/rootfs/usr/lib/
+COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'cmTC_0857d' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp'
+ /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/collect2 -plugin /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/liblto_plugin.so -plugin-opt=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccANRoEy.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/home/jespada/rpi/rootfs --eh-frame-hdr -dynamic-linker /lib/ld-linux-armhf.so.3 -X -m armelf_linux_eabi -o cmTC_0857d /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crt1.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crti.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtbegin.o -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0 -L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib -L/home/jespada/rpi/rootfs/lib -L/home/jespada/rpi/rootfs/usr/lib -rpath-link /opt/cross-pi-gcc/arm-linux-gnueabihf/lib -rpath-link /opt/cross-pi-gcc/lib -rpath-link /home/jespada/rpi/rootfs/opt/vc/lib -rpath-link /home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -rpath-link /home/jespada/rpi/rootfs/usr/local/lib -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -rpath-link /home/jespada/rpi/rootfs/usr/lib -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtend.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crtn.o
+COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'cmTC_0857d' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp'
+make[1]: Leaving directory '/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp'
+
+
+
+Parsed C implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/home/jespada/rpi/rootfs/usr/include]
+    add: [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include]
+    add: [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed]
+    add: [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include]
+  end of search list found
+  collapse include dir [/home/jespada/rpi/rootfs/usr/include] ==> [/home/jespada/rpi/rootfs/usr/include]
+  collapse include dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include] ==> [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include]
+  collapse include dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed] ==> [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed]
+  collapse include dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include] ==> [/opt/cross-pi-gcc/arm-linux-gnueabihf/include]
+  implicit include dirs: [/home/jespada/rpi/rootfs/usr/include;/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include;/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed;/opt/cross-pi-gcc/arm-linux-gnueabihf/include]
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(arm-linux-gnueabihf-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make cmTC_0857d/fast && /usr/bin/make  -f CMakeFiles/cmTC_0857d.dir/build.make CMakeFiles/cmTC_0857d.dir/build]
+  ignore line: [make[1]: Entering directory '/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp']
+  ignore line: [Building C object CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc --sysroot=/home/jespada/rpi/rootfs   -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl -rpath-link /opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl -rpath-link /opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl -rpath-link /home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl -rpath-link /home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl -rpath-link /home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack    -v -o CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o   -c /opt/cmake/share/cmake-3.17/Modules/CMakeCCompilerABI.c]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc]
+  ignore line: [Target: arm-linux-gnueabihf]
+  ignore line: [Configured with: ../gcc-8.3.0/configure --prefix=/opt/cross-pi-gcc --target=arm-linux-gnueabihf --enable-languages=c c++ fortran --with-arch=armv6 --with-fpu=vfp --with-float=hard --disable-multilib]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 8.3.0 (GCC) ]
+  ignore line: [COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o' '-c' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp']
+  ignore line: [ /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/cc1 -quiet -v -I /home/jespada/rpi/rootfs/usr/include -isysroot /home/jespada/rpi/rootfs /opt/cmake/share/cmake-3.17/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mtls-dialect=gnu -marm -march=armv6kz+fp -auxbase-strip CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o -version -o /tmp/ccZ6DaE8.s]
+  ignore line: [GNU C17 (GCC) version 8.3.0 (arm-linux-gnueabihf)]
+  ignore line: [	compiled by GNU C version 8.4.0  GMP version 6.1.0  MPFR version 3.1.4  MPC version 1.0.3  isl version isl-0.18-GMP]
+  ignore line: []
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [ignoring nonexistent directory "/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/sys-include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /home/jespada/rpi/rootfs/usr/include]
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include]
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed]
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include]
+  ignore line: [End of search list.]
+  ignore line: [GNU C17 (GCC) version 8.3.0 (arm-linux-gnueabihf)]
+  ignore line: [	compiled by GNU C version 8.4.0  GMP version 6.1.0  MPFR version 3.1.4  MPC version 1.0.3  isl version isl-0.18-GMP]
+  ignore line: []
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [Compiler executable checksum: 0561f2442d77db4a93079578cd778727]
+  ignore line: [COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o' '-c' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp']
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/as -v -I /home/jespada/rpi/rootfs/usr/include -march=armv6kz -mfloat-abi=hard -mfpu=vfp -meabi=5 -o CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o /tmp/ccZ6DaE8.s]
+  ignore line: [GNU assembler version 2.31.1 (arm-linux-gnueabihf) using BFD version (GNU Binutils) 2.31.1]
+  ignore line: [COMPILER_PATH=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/]
+  ignore line: [LIBRARY_PATH=/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/:/home/jespada/rpi/rootfs/lib/:/home/jespada/rpi/rootfs/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o' '-c' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp']
+  ignore line: [Linking C executable cmTC_0857d]
+  ignore line: [/opt/cmake/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0857d.dir/link.txt --verbose=1]
+  ignore line: [/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc --sysroot=/home/jespada/rpi/rootfs -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl -rpath-link /opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl -rpath-link /opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl -rpath-link /home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl -rpath-link /home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl -rpath-link /home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack    -v CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o  -o cmTC_0857d ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-gcc]
+  ignore line: [COLLECT_LTO_WRAPPER=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/lto-wrapper]
+  ignore line: [Target: arm-linux-gnueabihf]
+  ignore line: [Configured with: ../gcc-8.3.0/configure --prefix=/opt/cross-pi-gcc --target=arm-linux-gnueabihf --enable-languages=c c++ fortran --with-arch=armv6 --with-fpu=vfp --with-float=hard --disable-multilib]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 8.3.0 (GCC) ]
+  ignore line: [COMPILER_PATH=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/]
+  ignore line: [LIBRARY_PATH=/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/:/home/jespada/rpi/rootfs/lib/:/home/jespada/rpi/rootfs/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'cmTC_0857d' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp']
+  link line: [ /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/collect2 -plugin /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/liblto_plugin.so -plugin-opt=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccANRoEy.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/home/jespada/rpi/rootfs --eh-frame-hdr -dynamic-linker /lib/ld-linux-armhf.so.3 -X -m armelf_linux_eabi -o cmTC_0857d /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crt1.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crti.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtbegin.o -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0 -L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib -L/home/jespada/rpi/rootfs/lib -L/home/jespada/rpi/rootfs/usr/lib -rpath-link /opt/cross-pi-gcc/arm-linux-gnueabihf/lib -rpath-link /opt/cross-pi-gcc/lib -rpath-link /home/jespada/rpi/rootfs/opt/vc/lib -rpath-link /home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -rpath-link /home/jespada/rpi/rootfs/usr/local/lib -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -rpath-link /home/jespada/rpi/rootfs/usr/lib -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtend.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crtn.o]
+    arg [/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/ccANRoEy.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [--sysroot=/home/jespada/rpi/rootfs] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib/ld-linux-armhf.so.3] ==> ignore
+    arg [-X] ==> ignore
+    arg [-m] ==> ignore
+    arg [armelf_linux_eabi] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_0857d] ==> ignore
+    arg [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crt1.o] ==> ignore
+    arg [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crti.o] ==> ignore
+    arg [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtbegin.o] ==> ignore
+    arg [-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib] ==> dir [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib]
+    arg [-L/opt/cross-pi-gcc/lib] ==> dir [/opt/cross-pi-gcc/lib]
+    arg [-L/home/jespada/rpi/rootfs/opt/vc/lib] ==> dir [/home/jespada/rpi/rootfs/opt/vc/lib]
+    arg [-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf] ==> dir [/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf]
+    arg [-L/home/jespada/rpi/rootfs/usr/local/lib] ==> dir [/home/jespada/rpi/rootfs/usr/local/lib]
+    arg [-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf] ==> dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf]
+    arg [-L/home/jespada/rpi/rootfs/usr/lib] ==> dir [/home/jespada/rpi/rootfs/usr/lib]
+    arg [-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas] ==> dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas]
+    arg [-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack] ==> dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack]
+    arg [-L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0] ==> dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0]
+    arg [-L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib] ==> dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib]
+    arg [-L/home/jespada/rpi/rootfs/lib] ==> dir [/home/jespada/rpi/rootfs/lib]
+    arg [-L/home/jespada/rpi/rootfs/usr/lib] ==> dir [/home/jespada/rpi/rootfs/usr/lib]
+    arg [-rpath-link] ==> ignore
+    arg [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/opt/cross-pi-gcc/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/opt/vc/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/usr/local/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/usr/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack] ==> ignore
+    arg [CMakeFiles/cmTC_0857d.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtend.o] ==> ignore
+    arg [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crtn.o] ==> ignore
+  collapse library dir [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib] ==> [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib]
+  collapse library dir [/opt/cross-pi-gcc/lib] ==> [/opt/cross-pi-gcc/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/opt/vc/lib] ==> [/home/jespada/rpi/rootfs/opt/vc/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf] ==> [/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/local/lib] ==> [/home/jespada/rpi/rootfs/usr/local/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf] ==> [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/lib] ==> [/home/jespada/rpi/rootfs/usr/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas] ==> [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack] ==> [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack]
+  collapse library dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0] ==> [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0]
+  collapse library dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib] ==> [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/lib] ==> [/home/jespada/rpi/rootfs/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/lib] ==> [/home/jespada/rpi/rootfs/usr/lib]
+  implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+  implicit dirs: [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib;/opt/cross-pi-gcc/lib;/home/jespada/rpi/rootfs/opt/vc/lib;/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf;/home/jespada/rpi/rootfs/usr/local/lib;/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf;/home/jespada/rpi/rootfs/usr/lib;/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas;/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack;/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0;/home/jespada/rpi/rootfs/lib]
+  implicit fwks: []
+
+
+Determining if the CXX compiler works passed with the following output:
+Change Dir: /home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_d3d70/fast && /usr/bin/make  -f CMakeFiles/cmTC_d3d70.dir/build.make CMakeFiles/cmTC_d3d70.dir/build
+make[1]: Entering directory '/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_d3d70.dir/testCXXCompiler.cxx.o
+/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++ --sysroot=/home/jespada/rpi/rootfs    -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl,-rpath-link,/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl,-rpath-link,/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack    -o CMakeFiles/cmTC_d3d70.dir/testCXXCompiler.cxx.o -c /home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+Linking CXX executable cmTC_d3d70
+/opt/cmake/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d3d70.dir/link.txt --verbose=1
+/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++ --sysroot=/home/jespada/rpi/rootfs  -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl,-rpath-link,/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl,-rpath-link,/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack     CMakeFiles/cmTC_d3d70.dir/testCXXCompiler.cxx.o  -o cmTC_d3d70 
+make[1]: Leaving directory '/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp'
+
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_df264/fast && /usr/bin/make  -f CMakeFiles/cmTC_df264.dir/build.make CMakeFiles/cmTC_df264.dir/build
+make[1]: Entering directory '/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o
+/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++ --sysroot=/home/jespada/rpi/rootfs    -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl,-rpath-link,/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl,-rpath-link,/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack    -v -o CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o -c /opt/cmake/share/cmake-3.17/Modules/CMakeCXXCompilerABI.cpp
+Using built-in specs.
+COLLECT_GCC=/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++
+Target: arm-linux-gnueabihf
+Configured with: ../gcc-8.3.0/configure --prefix=/opt/cross-pi-gcc --target=arm-linux-gnueabihf --enable-languages=c,c++,fortran --with-arch=armv6 --with-fpu=vfp --with-float=hard --disable-multilib
+Thread model: posix
+gcc version 8.3.0 (GCC) 
+COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp'
+ /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/cc1plus -quiet -v -I /home/jespada/rpi/rootfs/usr/include -isysroot /home/jespada/rpi/rootfs -D_GNU_SOURCE /opt/cmake/share/cmake-3.17/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpbase CMakeCXXCompilerABI.cpp -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mtls-dialect=gnu -marm -march=armv6kz+fp -auxbase-strip CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o -version -o /tmp/ccQzPxi2.s
+GNU C++14 (GCC) version 8.3.0 (arm-linux-gnueabihf)
+	compiled by GNU C version 8.4.0, GMP version 6.1.0, MPFR version 3.1.4, MPC version 1.0.3, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring nonexistent directory "/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/sys-include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/jespada/rpi/rootfs/usr/include
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0/arm-linux-gnueabihf
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0/backward
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include
+End of search list.
+GNU C++14 (GCC) version 8.3.0 (arm-linux-gnueabihf)
+	compiled by GNU C version 8.4.0, GMP version 6.1.0, MPFR version 3.1.4, MPC version 1.0.3, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: f886a7b09326525c685c180e6fe4a442
+COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp'
+ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/as -v -I /home/jespada/rpi/rootfs/usr/include -march=armv6kz -mfloat-abi=hard -mfpu=vfp -meabi=5 -o CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccQzPxi2.s
+GNU assembler version 2.31.1 (arm-linux-gnueabihf) using BFD version (GNU Binutils) 2.31.1
+COMPILER_PATH=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/
+LIBRARY_PATH=/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/:/home/jespada/rpi/rootfs/lib/:/home/jespada/rpi/rootfs/usr/lib/
+COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp'
+Linking CXX executable cmTC_df264
+/opt/cmake/bin/cmake -E cmake_link_script CMakeFiles/cmTC_df264.dir/link.txt --verbose=1
+/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++ --sysroot=/home/jespada/rpi/rootfs  -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl,-rpath-link,/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl,-rpath-link,/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl,-rpath-link,/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack    -v CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_df264 
+Using built-in specs.
+COLLECT_GCC=/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++
+COLLECT_LTO_WRAPPER=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/lto-wrapper
+Target: arm-linux-gnueabihf
+Configured with: ../gcc-8.3.0/configure --prefix=/opt/cross-pi-gcc --target=arm-linux-gnueabihf --enable-languages=c,c++,fortran --with-arch=armv6 --with-fpu=vfp --with-float=hard --disable-multilib
+Thread model: posix
+gcc version 8.3.0 (GCC) 
+COMPILER_PATH=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/
+LIBRARY_PATH=/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/:/home/jespada/rpi/rootfs/lib/:/home/jespada/rpi/rootfs/usr/lib/
+COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'cmTC_df264' '-shared-libgcc' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp'
+ /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/collect2 -plugin /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/liblto_plugin.so -plugin-opt=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/cc42bl9w.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/jespada/rpi/rootfs --eh-frame-hdr -dynamic-linker /lib/ld-linux-armhf.so.3 -X -m armelf_linux_eabi -o cmTC_df264 /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crt1.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crti.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtbegin.o -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0 -L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib -L/home/jespada/rpi/rootfs/lib -L/home/jespada/rpi/rootfs/usr/lib -rpath-link /opt/cross-pi-gcc/arm-linux-gnueabihf/lib -rpath-link /opt/cross-pi-gcc/lib -rpath-link /home/jespada/rpi/rootfs/opt/vc/lib -rpath-link /home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -rpath-link /home/jespada/rpi/rootfs/usr/local/lib -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -rpath-link /home/jespada/rpi/rootfs/usr/lib -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtend.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crtn.o
+COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'cmTC_df264' '-shared-libgcc' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp'
+make[1]: Leaving directory '/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp'
+
+
+
+Parsed CXX implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/home/jespada/rpi/rootfs/usr/include]
+    add: [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0]
+    add: [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0/arm-linux-gnueabihf]
+    add: [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0/backward]
+    add: [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include]
+    add: [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed]
+    add: [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include]
+  end of search list found
+  collapse include dir [/home/jespada/rpi/rootfs/usr/include] ==> [/home/jespada/rpi/rootfs/usr/include]
+  collapse include dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0] ==> [/opt/cross-pi-gcc/arm-linux-gnueabihf/include/c++/8.3.0]
+  collapse include dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0/arm-linux-gnueabihf] ==> [/opt/cross-pi-gcc/arm-linux-gnueabihf/include/c++/8.3.0/arm-linux-gnueabihf]
+  collapse include dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0/backward] ==> [/opt/cross-pi-gcc/arm-linux-gnueabihf/include/c++/8.3.0/backward]
+  collapse include dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include] ==> [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include]
+  collapse include dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed] ==> [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed]
+  collapse include dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include] ==> [/opt/cross-pi-gcc/arm-linux-gnueabihf/include]
+  implicit include dirs: [/home/jespada/rpi/rootfs/usr/include;/opt/cross-pi-gcc/arm-linux-gnueabihf/include/c++/8.3.0;/opt/cross-pi-gcc/arm-linux-gnueabihf/include/c++/8.3.0/arm-linux-gnueabihf;/opt/cross-pi-gcc/arm-linux-gnueabihf/include/c++/8.3.0/backward;/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include;/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed;/opt/cross-pi-gcc/arm-linux-gnueabihf/include]
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(arm-linux-gnueabihf-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make cmTC_df264/fast && /usr/bin/make  -f CMakeFiles/cmTC_df264.dir/build.make CMakeFiles/cmTC_df264.dir/build]
+  ignore line: [make[1]: Entering directory '/home/jespada/zetdev/zetscript/scripts/build/rpi/CMakeFiles/CMakeTmp']
+  ignore line: [Building CXX object CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++ --sysroot=/home/jespada/rpi/rootfs    -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl -rpath-link /opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl -rpath-link /opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl -rpath-link /home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl -rpath-link /home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl -rpath-link /home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack    -v -o CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o -c /opt/cmake/share/cmake-3.17/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++]
+  ignore line: [Target: arm-linux-gnueabihf]
+  ignore line: [Configured with: ../gcc-8.3.0/configure --prefix=/opt/cross-pi-gcc --target=arm-linux-gnueabihf --enable-languages=c c++ fortran --with-arch=armv6 --with-fpu=vfp --with-float=hard --disable-multilib]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 8.3.0 (GCC) ]
+  ignore line: [COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp']
+  ignore line: [ /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/cc1plus -quiet -v -I /home/jespada/rpi/rootfs/usr/include -isysroot /home/jespada/rpi/rootfs -D_GNU_SOURCE /opt/cmake/share/cmake-3.17/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpbase CMakeCXXCompilerABI.cpp -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mtls-dialect=gnu -marm -march=armv6kz+fp -auxbase-strip CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o -version -o /tmp/ccQzPxi2.s]
+  ignore line: [GNU C++14 (GCC) version 8.3.0 (arm-linux-gnueabihf)]
+  ignore line: [	compiled by GNU C version 8.4.0  GMP version 6.1.0  MPFR version 3.1.4  MPC version 1.0.3  isl version isl-0.18-GMP]
+  ignore line: []
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [ignoring nonexistent directory "/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/sys-include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /home/jespada/rpi/rootfs/usr/include]
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0]
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0/arm-linux-gnueabihf]
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include/c++/8.3.0/backward]
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include]
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/include-fixed]
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/include]
+  ignore line: [End of search list.]
+  ignore line: [GNU C++14 (GCC) version 8.3.0 (arm-linux-gnueabihf)]
+  ignore line: [	compiled by GNU C version 8.4.0  GMP version 6.1.0  MPFR version 3.1.4  MPC version 1.0.3  isl version isl-0.18-GMP]
+  ignore line: []
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [Compiler executable checksum: f886a7b09326525c685c180e6fe4a442]
+  ignore line: [COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp']
+  ignore line: [ /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/as -v -I /home/jespada/rpi/rootfs/usr/include -march=armv6kz -mfloat-abi=hard -mfpu=vfp -meabi=5 -o CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccQzPxi2.s]
+  ignore line: [GNU assembler version 2.31.1 (arm-linux-gnueabihf) using BFD version (GNU Binutils) 2.31.1]
+  ignore line: [COMPILER_PATH=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/]
+  ignore line: [LIBRARY_PATH=/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/:/home/jespada/rpi/rootfs/lib/:/home/jespada/rpi/rootfs/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp']
+  ignore line: [Linking CXX executable cmTC_df264]
+  ignore line: [/opt/cmake/bin/cmake -E cmake_link_script CMakeFiles/cmTC_df264.dir/link.txt --verbose=1]
+  ignore line: [/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++ --sysroot=/home/jespada/rpi/rootfs  -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -I/home/jespada/rpi/rootfs/usr/include  -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -Wl -rpath-link /opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -Wl -rpath-link /opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -Wl -rpath-link /home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -Wl -rpath-link /home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -Wl -rpath-link /home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -Wl -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack    -v CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_df264 ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-g++]
+  ignore line: [COLLECT_LTO_WRAPPER=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/lto-wrapper]
+  ignore line: [Target: arm-linux-gnueabihf]
+  ignore line: [Configured with: ../gcc-8.3.0/configure --prefix=/opt/cross-pi-gcc --target=arm-linux-gnueabihf --enable-languages=c c++ fortran --with-arch=armv6 --with-fpu=vfp --with-float=hard --disable-multilib]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 8.3.0 (GCC) ]
+  ignore line: [COMPILER_PATH=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/bin/]
+  ignore line: [LIBRARY_PATH=/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/:/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/:/home/jespada/rpi/rootfs/lib/:/home/jespada/rpi/rootfs/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-mcpu=arm1176jzf-s' '-mfpu=vfp' '-mfloat-abi=hard' '-I' '/home/jespada/rpi/rootfs/usr/include' '-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib' '-L/opt/cross-pi-gcc/lib' '-L/home/jespada/rpi/rootfs/opt/vc/lib' '-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/local/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf' '-L/home/jespada/rpi/rootfs/usr/lib' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas' '-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack' '-v' '-o' 'cmTC_df264' '-shared-libgcc' '-mtls-dialect=gnu' '-marm' '-march=armv6kz+fp']
+  link line: [ /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/collect2 -plugin /opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/liblto_plugin.so -plugin-opt=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/cc42bl9w.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/jespada/rpi/rootfs --eh-frame-hdr -dynamic-linker /lib/ld-linux-armhf.so.3 -X -m armelf_linux_eabi -o cmTC_df264 /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crt1.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crti.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtbegin.o -L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib -L/opt/cross-pi-gcc/lib -L/home/jespada/rpi/rootfs/opt/vc/lib -L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/local/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -L/home/jespada/rpi/rootfs/usr/lib -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack -L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0 -L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib -L/home/jespada/rpi/rootfs/lib -L/home/jespada/rpi/rootfs/usr/lib -rpath-link /opt/cross-pi-gcc/arm-linux-gnueabihf/lib -rpath-link /opt/cross-pi-gcc/lib -rpath-link /home/jespada/rpi/rootfs/opt/vc/lib -rpath-link /home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf -rpath-link /home/jespada/rpi/rootfs/usr/local/lib -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf -rpath-link /home/jespada/rpi/rootfs/usr/lib -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas -rpath-link /home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtend.o /opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crtn.o]
+    arg [/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/cc42bl9w.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [--sysroot=/home/jespada/rpi/rootfs] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib/ld-linux-armhf.so.3] ==> ignore
+    arg [-X] ==> ignore
+    arg [-m] ==> ignore
+    arg [armelf_linux_eabi] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_df264] ==> ignore
+    arg [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crt1.o] ==> ignore
+    arg [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crti.o] ==> ignore
+    arg [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtbegin.o] ==> ignore
+    arg [-L/opt/cross-pi-gcc/arm-linux-gnueabihf/lib] ==> dir [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib]
+    arg [-L/opt/cross-pi-gcc/lib] ==> dir [/opt/cross-pi-gcc/lib]
+    arg [-L/home/jespada/rpi/rootfs/opt/vc/lib] ==> dir [/home/jespada/rpi/rootfs/opt/vc/lib]
+    arg [-L/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf] ==> dir [/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf]
+    arg [-L/home/jespada/rpi/rootfs/usr/local/lib] ==> dir [/home/jespada/rpi/rootfs/usr/local/lib]
+    arg [-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf] ==> dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf]
+    arg [-L/home/jespada/rpi/rootfs/usr/lib] ==> dir [/home/jespada/rpi/rootfs/usr/lib]
+    arg [-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas] ==> dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas]
+    arg [-L/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack] ==> dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack]
+    arg [-L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0] ==> dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0]
+    arg [-L/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib] ==> dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib]
+    arg [-L/home/jespada/rpi/rootfs/lib] ==> dir [/home/jespada/rpi/rootfs/lib]
+    arg [-L/home/jespada/rpi/rootfs/usr/lib] ==> dir [/home/jespada/rpi/rootfs/usr/lib]
+    arg [-rpath-link] ==> ignore
+    arg [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/opt/cross-pi-gcc/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/opt/vc/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/usr/local/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/usr/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack] ==> ignore
+    arg [CMakeFiles/cmTC_df264.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/crtend.o] ==> ignore
+    arg [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib/crtn.o] ==> ignore
+  collapse library dir [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib] ==> [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib]
+  collapse library dir [/opt/cross-pi-gcc/lib] ==> [/opt/cross-pi-gcc/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/opt/vc/lib] ==> [/home/jespada/rpi/rootfs/opt/vc/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf] ==> [/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/local/lib] ==> [/home/jespada/rpi/rootfs/usr/local/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf] ==> [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/lib] ==> [/home/jespada/rpi/rootfs/usr/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas] ==> [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack] ==> [/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack]
+  collapse library dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0] ==> [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0]
+  collapse library dir [/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0/../../../../arm-linux-gnueabihf/lib] ==> [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/lib] ==> [/home/jespada/rpi/rootfs/lib]
+  collapse library dir [/home/jespada/rpi/rootfs/usr/lib] ==> [/home/jespada/rpi/rootfs/usr/lib]
+  implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+  implicit dirs: [/opt/cross-pi-gcc/arm-linux-gnueabihf/lib;/opt/cross-pi-gcc/lib;/home/jespada/rpi/rootfs/opt/vc/lib;/home/jespada/rpi/rootfs/lib/arm-linux-gnueabihf;/home/jespada/rpi/rootfs/usr/local/lib;/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf;/home/jespada/rpi/rootfs/usr/lib;/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/blas;/home/jespada/rpi/rootfs/usr/lib/arm-linux-gnueabihf/lapack;/opt/cross-pi-gcc/lib/gcc/arm-linux-gnueabihf/8.3.0;/home/jespada/rpi/rootfs/lib]
+  implicit fwks: []
+
+

@@ -1,0 +1,2 @@
+/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-ar qc ../release/libzetscript-2-0-0.a  CMakeFiles/zetscript-2-0-0.dir/util/zs_util.cpp.o CMakeFiles/zetscript-2-0-0.dir/module/zs_module.cpp.o CMakeFiles/zetscript-2-0-0.dir/vm/vm.cpp.o CMakeFiles/zetscript-2-0-0.dir/eval/eval.cpp.o CMakeFiles/zetscript-2-0-0.dir/scope/zs_scope.cpp.o CMakeFiles/zetscript-2-0-0.dir/script/zs_script.cpp.o CMakeFiles/zetscript-2-0-0.dir/zetscript.cpp.o
+/opt/cross-pi-gcc/bin/arm-linux-gnueabihf-ranlib ../release/libzetscript-2-0-0.a
