@@ -199,6 +199,7 @@ void test_string(){
 }
 
 int main(int argc, char *argv[]){
+	ZS_UNUSUED_2PARAMS(argc,argv);
 	//test_vector();
 	test_map();
 	//test_string();

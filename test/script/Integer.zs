@@ -74,6 +74,8 @@ class Integer{
 			n1=parseInteger(_n1)
 		}else if(_n1 instanceof Integer){
 			n1=_n1.__num__	
+		}else if(_n1 instanceof Number){
+			n1=parseInteger(_n1.__num__)	
 		}else{
 			System::error("Integer::constructor: expected _n as int,float or Integer but it was '{0}'",typeof _n1)
 		}
@@ -82,6 +84,8 @@ class Integer{
 			n2=parseInteger(_n2)
 		}else if(_n2 instanceof Integer){
 			n2=_n2.__num__	
+		}else if(_n2 instanceof Number){
+			n2=parseInteger(_n2.__num__)	
 		}else{
 			System::error("Integer::constructor: expected _n as int,float or Integer but it was '{0}'",typeof _n2)
 		}

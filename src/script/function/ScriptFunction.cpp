@@ -336,11 +336,12 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_INSTANCEOF:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
+					,symbol_value.c_str()
 				);
 				break;
 			case BYTE_CODE_CALL:

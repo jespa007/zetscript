@@ -287,7 +287,7 @@ namespace zetscript{
 					THROW_RUNTIME_ERROR("Error adding functions from base elements '%s': '%s::%s' is not a function"
 							,zs_rtti::demangle(base_class_name).c_str()
 							,zs_rtti::demangle(base_class_name).c_str()
-							, src_symbol->name);
+							, src_symbol->name.c_str());
 				}
 			}
 		}

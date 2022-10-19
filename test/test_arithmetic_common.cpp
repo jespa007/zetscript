@@ -23,7 +23,7 @@ zetscript::zs_string to_string(const zetscript::zs_string & _s){
 // Usable AlmostEqual function
 bool float_values_are_almost_the_same(zetscript::zs_float A, zetscript::zs_float B)
 {
-	return (fabs(A - B) <= FLT_EPSILON *2* std::max(fabs(A), fabs(B)));
+	return (fabs(A - B) <= FLT_EPSILON *2* ZS_MAX(fabs(A), fabs(B)));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ void test_constant_int_expression(zetscript::ZetScript *_zs, const char *str_exp
 					zetscript::zs_strutils::format(
 							"error test '%s' expected int but it was '%s'!\n"
 							,str_expr
-							,stk_to_str(_zs,&stk)).c_str()
+							,stk_to_str(_zs,&stk).c_str()).c_str()
 					); \
 		} \
 	}catch(std::exception & ex){\
