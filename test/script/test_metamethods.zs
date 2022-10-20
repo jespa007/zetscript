@@ -33,7 +33,7 @@ function test_arithmetic_set(_a,_b){
 				" ma"+op+"mb\n;"+
 				" va"+op+"vb\n;"+
 				"System::assert(\n"+
-					"ma==va, \\\"ma("+a+op+_b+")!=\\\"+va\n"+
+					"ma==va, \\\"ma("+a+op+_b+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
 				 ");"					
 
 				,{
@@ -62,9 +62,8 @@ function test_arithmetic_property(_a,_b){
 				" ma.num"+op+"mb.num\n;"+
 				" va"+op+"vb\n;"+
 				"System::assert(\n"+
-					"ma==va, \\\"ma("+a+op+_b+")!=\\\"+va\n"+
+					"ma==va, \\\"ma("+a+op+_b+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
 				 ");"					
-
 				,{
 					a:a
 					,b:b

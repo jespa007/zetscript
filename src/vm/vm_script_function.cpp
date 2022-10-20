@@ -62,7 +62,6 @@ namespace zetscript{
 		ClassScriptObject		*	so_class_aux1=NULL;
 
 		uint32_t 					msk_properties=0;
-		void					*	ptr_ptr_void_ref=NULL;
 
 		Instruction 			*	instruction_it=_calling_function->instructions;
 		StackElement 			*	stk_start=_stk_local_var+_calling_function->local_variables->size();   // <-- here starts stk for aux vars for operations ..

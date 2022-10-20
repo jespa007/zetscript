@@ -17,10 +17,10 @@ namespace zetscript{
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
 		ContainerSlot				*		dst_container_slot=NULL;
-		void 						*		stk_src_ref_value_copy_aux=NULL;
+		//void 						*		stk_src_ref_value_copy_aux=NULL;
 		StackElement 				*		stk_result_op2=NULL;
-		zs_int 						*		stk_src_ref_value=NULL;
-		zs_int 						*		stk_dst_ref_value=NULL;
+		//zs_int 						*		stk_src_ref_value=NULL;
+		//zs_int 						*		stk_dst_ref_value=NULL;
 		ScriptObject 				*		so_aux=NULL;
 		StackMemberProperty 		*		stk_mp_aux=NULL;
 		ScriptFunction 				*		ptr_function_found=NULL;
@@ -58,7 +58,7 @@ namespace zetscript{
 		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT){
 			dst_container_slot=((ContainerSlot *)stk_dst->value);
 			stk_dst=dst_container_slot->getPtrStackElement();
-		 }else	if((stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR)==0){
+		 }else{
 			ZS_VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
 				,stk_to_typeof_str(data->zs,stk_dst).c_str()
 			);
@@ -178,17 +178,14 @@ namespace zetscript{
 
 			StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
 
-			stk_src_ref_value_copy_aux=NULL;//copy aux in case of the var is c and primitive (we have to update value on save)
-			stk_src_ref_value=&stk_src->value;
-			stk_dst_ref_value=&stk_dst->value;
-			if(stk_src->properties & STK_PROPERTY_IS_C_VAR_PTR){ // src is C pointer
-				stk_src_ref_value=(zs_int *)((stk_src)->value);
-			}
-			if(stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR){ // dst is a C pointer
+			//stk_src_ref_value_copy_aux=NULL;//copy aux in case of the var is c and primitive (we have to update value on save)
+			//stk_src_ref_value=&stk_src->value;
+			//stk_dst_ref_value=&stk_dst->value;
+			/*if(stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR){ // dst is a C pointer
 				// particular case
 				if(
 						stk_dst->properties != stk_src->properties
-					&& (((stk_dst->properties & STK_PROPERTY_ZS_CHAR) && (stk_src->properties & STK_PROPERTY_ZS_INT))==0)){
+					&& (((stk_dst->properties & STK_PROPERTY_ZS_CHAR_PTR) && (stk_src->properties & STK_PROPERTY_ZS_INT))==0)){
 
 					 if(stk_dst->properties != stk_src->properties){
 						if(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties) != GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src->properties)
@@ -208,7 +205,7 @@ namespace zetscript{
 				// value is already a pointer
 				stk_dst_ref_value=(zs_int *)((stk_dst)->value);
 				stk_src_ref_value_copy_aux=&((stk_dst)->value);
-			}
+			}*/
 			stk_src_properties=stk_src->properties;
 
 			// init stk_dst
@@ -220,28 +217,21 @@ namespace zetscript{
 				stk_dst->value=0;
 				stk_dst->properties=STK_PROPERTY_NULL;
 			}else if(stk_src_properties & STK_PROPERTY_ZS_INT){
+				stk_dst->value=stk_src->value;
 				stk_dst->properties=STK_PROPERTY_ZS_INT;
-				stk_dst->value=0; // reset value
-				old_stk_dst.properties &  STK_PROPERTY_ZS_CHAR?
-				*((zs_char *)stk_dst_ref_value)=*((zs_int *)stk_src_ref_value) & 0xff
-				:*((zs_int *)stk_dst_ref_value)=*((zs_int *)stk_src_ref_value);
-				if(stk_src_ref_value_copy_aux!=NULL)(*(zs_int *)stk_src_ref_value_copy_aux)=*((zs_int *)stk_src_ref_value);
 			}else if(stk_src_properties & STK_PROPERTY_ZS_FLOAT){
 				stk_dst->properties=STK_PROPERTY_ZS_FLOAT;
 				stk_dst->value=0; // reset value
-				*((zs_float *)stk_dst_ref_value)=*((zs_float *)stk_src_ref_value);
-				if(stk_src_ref_value_copy_aux!=NULL)(*(zs_float *)stk_src_ref_value_copy_aux)=*((zs_float *)stk_src_ref_value);
+				*((zs_float *)&stk_dst->value)=*((zs_float *)&stk_src->value);
 			}else if(stk_src_properties & STK_PROPERTY_BOOL){
 				stk_dst->properties=STK_PROPERTY_BOOL;
-				stk_dst->value=0; // reset value
-				*((bool *)stk_dst_ref_value)=*((bool *)stk_src_ref_value);
-				if(stk_src_ref_value_copy_aux!=NULL)(*(bool *)stk_src_ref_value_copy_aux)=*((bool *)stk_src_ref_value);
+				stk_dst->value=stk_src->value;
 			}else if(stk_src_properties  &  (STK_PROPERTY_FUNCTION | STK_PROPERTY_TYPE | STK_PROPERTY_MEMBER_FUNCTION) ){
 				*stk_dst=*stk_src;
 			}else if(
 				STK_IS_SCRIPT_OBJECT_STRING(stk_src)
 							||
-				(stk_src_properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR))
+				(stk_src_properties & (STK_PROPERTY_ZS_CHAR_PTR))
 
 			){
 				StringScriptObject *str_object=NULL;
@@ -263,7 +253,7 @@ namespace zetscript{
 					//-------------------------------------
 				}
 
-				if(stk_src_properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)){
+				if(stk_src_properties & (STK_PROPERTY_ZS_CHAR_PTR)){
 					str_object->set((const char *)stk_src->value);
 				}else{
 					str_object->set(((StringScriptObject *)(stk_src->value))->get());
@@ -327,11 +317,6 @@ namespace zetscript{
 					,stk_to_typeof_str(data->zs,stk_src).c_str()
 				);
 			}
-
-			if(stk_src_ref_value_copy_aux!=NULL){
-				stk_dst->properties|=STK_PROPERTY_IS_C_VAR_PTR;
-			}
-
 
 			// if old dst value was a script object, it has to be dereferenced because it was written by other type ...
 			if(

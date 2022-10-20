@@ -10,7 +10,7 @@ namespace zetscript{
 
 	StackElement convertSymbolToStackElement(ZetScript * zs, Symbol *symbol, void *ptr_variable) {
 
-		if ((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0) {
+		/*if ((symbol->properties & SYMBOL_PROPERTY_C_OBJECT_REF) == 0) {
 			THROW_RUNTIME_ERROR(
 				"Variable %s is not c referenced as C symbol"
 				, symbol->name.c_str()
@@ -43,7 +43,8 @@ namespace zetscript{
 					STK_PROPERTY_ZS_FLOAT_PTR | STK_PROPERTY_READ_ONLY
 			};
 		}
-		else if (k_str_char_type_ptr == symbol->str_native_type
+		else*/
+		if (k_str_char_type_ptr == symbol->str_native_type
 			|| k_str_const_char_type_ptr == symbol->str_native_type
 			|| k_str_zs_string_type_ptr == symbol->str_native_type
 			) {
@@ -63,7 +64,7 @@ namespace zetscript{
 				STK_PROPERTY_SCRIPT_OBJECT
 			};
 		}
-		else if (k_str_bool_type_ptr == symbol->str_native_type) {
+		/*else if (k_str_bool_type_ptr == symbol->str_native_type) {
 			return {
 					(zs_int)ptr_variable,
 					STK_PROPERTY_BOOL_PTR
@@ -74,7 +75,7 @@ namespace zetscript{
 					(zs_int)ptr_variable,
 					STK_PROPERTY_BOOL_PTR | STK_PROPERTY_READ_ONLY
 			};
-		}
+		}*/
 		
 		// it should be script object
 		ScriptType *info_registered_class = zs->getScriptTypeFactory()->getScriptTypeFromTypeNamePtr(symbol->str_native_type);//  ScriptType::getInstance()->getRegisteredClassBy_C_ClassPtr(ir_var->c_type);

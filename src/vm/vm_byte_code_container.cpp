@@ -391,9 +391,6 @@ namespace zetscript{
 
 		stk_src_ref_value=&stk_src.value; \
 		stk_dst_ref_value=&stk_dst->value; \
-		if(stk_src.properties & STK_PROPERTY_IS_C_VAR_PTR){ /* src is C pointer */ \
-			stk_src_ref_value=(zs_int *)((stk_src).value); \
-		}\
 		stk_src_properties=stk_src.properties;\
 		if(stk_src_properties == STK_PROPERTY_UNDEFINED){\
 			stk_dst->properties=STK_PROPERTY_UNDEFINED;\
@@ -575,7 +572,7 @@ lbl_exit_function:
 					data->vm_stk_current->properties=STK_PROPERTY_ZS_INT;
 				}else{ // push stk
 					data->vm_stk_current->value=(zs_int)ptr_char;
-					data->vm_stk_current->properties=STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR;
+					data->vm_stk_current->properties=STK_PROPERTY_ZS_CHAR_PTR;
 				}
 				data->vm_stk_current++;
 				goto lbl_exit_ok;

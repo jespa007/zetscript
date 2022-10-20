@@ -283,18 +283,14 @@
 #define VM_OPERATION_NEG_POST(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
 	EXTRACT_STK_RESULT_OP1\
-	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
-	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
-		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
-	}\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
-		VM_PUSH_STK_ZS_INT(-(*((zs_int *)(ptr_ptr_void_ref))));\
-		(*((zs_int *)(ptr_ptr_void_ref)))__C_OP__;\
+		VM_PUSH_STK_ZS_INT(-stk_result_op1->value);\
+		stk_result_op1->value __C_OP__;\
 		break;\
 	case STK_PROPERTY_ZS_FLOAT:\
-		VM_PUSH_STK_ZS_FLOAT(-(*((zs_float *)(ptr_ptr_void_ref))));\
-		(*((zs_float *)(ptr_ptr_void_ref)))__C_OP__;\
+		VM_PUSH_STK_ZS_FLOAT(-*((zs_float *)&stk_result_op1->value));\
+		(*((zs_float *)&stk_result_op1->value)) __C_OP__;\
 		break;\
 	default:/*metamethod*/\
 		if(vm_call_metamethod_operation_post(\
@@ -317,18 +313,14 @@
 #define VM_OPERATION_POST(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
 	EXTRACT_STK_RESULT_OP1\
-	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
-	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
-		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
-	}\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
-		VM_PUSH_STK_ZS_INT(-(*((zs_int *)(ptr_ptr_void_ref))));\
-		(*((zs_int *)(ptr_ptr_void_ref)))__C_OP__;\
+		VM_PUSH_STK_ZS_INT(stk_result_op1->value);\
+		stk_result_op1->value __C_OP__;\
 		break;\
 	case STK_PROPERTY_ZS_FLOAT:\
-		VM_PUSH_STK_ZS_FLOAT(-(*((zs_float *)(ptr_ptr_void_ref))));\
-		(*((zs_float *)(ptr_ptr_void_ref)))__C_OP__;\
+		VM_PUSH_STK_ZS_FLOAT(-*((zs_float *)&stk_result_op1->value));\
+		(*((zs_float *)&stk_result_op1->value)) __C_OP__;\
 		break;\
 	default:/*metamethod*/\
 		if(vm_call_metamethod_operation_post(\
@@ -349,18 +341,14 @@
 #define VM_OPERATION_PRE(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\
 	EXTRACT_STK_RESULT_OP1\
-	ptr_ptr_void_ref=(void **)(&((stk_result_op1)->value));\
-	if(stk_result_op1->properties & STK_PROPERTY_IS_C_VAR_PTR){\
-		ptr_ptr_void_ref=(void **)((stk_result_op1)->value);\
-	}\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
-		(*((zs_int *)(ptr_ptr_void_ref)))__C_OP__;\
-		VM_PUSH_STK_ZS_INT(*((zs_int *)(ptr_ptr_void_ref)));\
+		stk_result_op1->value __C_OP__;\
+		VM_PUSH_STK_ZS_INT(stk_result_op1->value);\
 		break;\
 	case STK_PROPERTY_ZS_FLOAT:\
-		(*((zs_float *)(ptr_ptr_void_ref)))__C_OP__;\
-		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)(ptr_ptr_void_ref)));\
+		(*((zs_float *)&stk_result_op1->value)) __C_OP__;\
+		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value));\
 		break;\
 	default:\
 		if(vm_call_metamethod_operation_pre(\

@@ -13,6 +13,7 @@ class Number{
 	}
 	
 	num{
+		// input values expects to be simple int or float
 		_get(){
 			return this.__num__;
 		}
@@ -20,7 +21,7 @@ class Number{
 			this.__num__=_val;
 		}
 		_neg(){
-			return -this.__num__=_val;
+			return -this.__num__;
 		}
 		_post_inc(){
 			this.__num__++;
@@ -48,6 +49,21 @@ class Number{
 		}
 		_mod_set(_val){
 			this.__num__%=_val;
+		}
+		_xor_set(_val){
+			this.__num__=parseInteger(this.__num__)^parseInteger(_val);
+		}
+		_or_set(_val){
+			this.__num__=parseInteger(this.__num__)|parseInteger(_val);
+		}
+		_and_set(_val){
+			this.__num__=parseInteger(this.__num__)&parseInteger(_val);
+		}
+		_shl_set(_val){
+			this.__num__=parseInteger(this.__num__)<<parseInteger(_val);
+		}
+		_shr_set(_val){
+			this.__num__=parseInteger(this.__num__)>>parseInteger(_val);
 		}
 	}
 

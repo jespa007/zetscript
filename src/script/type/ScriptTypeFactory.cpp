@@ -150,6 +150,11 @@ namespace zetscript{
 		return (zs_float)(number);
 	}
 
+	zs_float parseFloat(ZetScript *_zs,zs_float *number){
+		ZS_UNUSUED_PARAM(_zs);
+		return *number;
+	}
+
 	zs_float parseFloat(ZetScript *_zs,zs_string  *number_str){
 		ZS_UNUSUED_PARAM(_zs);
 		zs_float result=0;
@@ -163,14 +168,14 @@ namespace zetscript{
 		return result;
 	}
 
+	zs_int parseInteger(ZetScript *_zs,zs_int number){
+		ZS_UNUSUED_PARAM(_zs);
+		return number;
+	}
+
 	zs_int parseInteger(ZetScript *_zs,zs_float *number){
 		ZS_UNUSUED_PARAM(_zs);
 		return (zs_int)(*number);
-	}
-
-	bool isNumber(ZetScript *_zs,StackElement *_stk){
-		ZS_UNUSUED_PARAM(_zs);
-		return (_stk->properties & (STK_PROPERTY_ZS_INT | STK_PROPERTY_ZS_FLOAT)) != 0;
 	}
 
 	zs_int parseInteger(ZetScript *_zs,zs_string  *number_str){
@@ -184,6 +189,11 @@ namespace zetscript{
 		return result;
 	}
 
+
+	bool isNumber(ZetScript *_zs,StackElement *_stk){
+		ZS_UNUSUED_PARAM(_zs);
+		return (_stk->properties & (STK_PROPERTY_ZS_INT | STK_PROPERTY_ZS_FLOAT)) != 0;
+	}
 
 	void ScriptTypeFactory::registerSystem(){
 
@@ -250,8 +260,10 @@ namespace zetscript{
 
 		zs->bindFunction("ptrToZetScriptPtr",ptrToZetScriptPtr);
 		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_int)>(parseFloat));
+		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_float *)>(parseFloat));
 		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));
 		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInteger));
+		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_int )>(parseInteger));
 		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInteger));
 		zs->bindFunction("isNumber",isNumber);
 

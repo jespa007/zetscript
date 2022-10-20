@@ -86,7 +86,7 @@ namespace zetscript{
 			result=ZS_TYPE_NAME_UNDEFINED;
 		}else if(STK_VALUE_IS_NULL(&stk)){
 			result=ZS_TYPE_NAME_NULL;
-		}else if((stk.properties & (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)) == (STK_PROPERTY_ZS_CHAR | STK_PROPERTY_IS_C_VAR_PTR)){
+		}else if(stk.properties & STK_PROPERTY_ZS_CHAR_PTR){
 			result= (const char *)stk.value;
 		}else if(STK_VALUE_IS_ZS_INT(&stk)){
 			result= zs_strutils::zs_int_to_str((zs_int)stk.value,_format);
@@ -240,14 +240,6 @@ namespace zetscript{
 			case IDX_TYPE_ZS_INT_PTR_C:
 				val_ret=(zs_int)(&_stack_element->value);
 				break;
-			/*case IDX_TYPE_ZS_FLOAT_PTR_C:
-				// first assign to aux value
-				// *((zs_float *)&_stack_element->value)=_stack_element->value;
-				// second assign pointer
-				//val_ret=(zs_int)&_stack_element->value;
-				// third stackelement is mutuated as ptr zs_float (to consensuate)
-				//stack_element->properties=STK_PROPERTY_ZS_FLOAT|STK_PROPERTY_IS_C_VAR_PTR;
-				break;*/
 			default:
 				_error="cannot convert 'int' to '"
 				+zs_rtti::demangle(GET_IDX_2_CLASS_C_STR(_zs->getScriptTypeFactory(),_idx_builtin_type))
