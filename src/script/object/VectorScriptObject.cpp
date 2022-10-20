@@ -58,7 +58,7 @@ namespace zetscript{
 
 	StackElement * VectorScriptObject::getUserElementAt(int _idx){
 		if(_idx >= stk_user_elements.size()){
-			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",_idx);
+			ZS_VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",_idx);
 			return NULL;
 		}
 
@@ -70,7 +70,7 @@ namespace zetscript{
 		StackElement *si;
 
 		if(idx >= stk_user_elements.size()){
-			VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_user_elements.size());
+			ZS_VM_SET_USER_ERROR(vm,"idx out of bounds (%i>=%i)",idx,stk_user_elements.size());
 		}
 
 		si=(StackElement *)stk_user_elements.items[idx];

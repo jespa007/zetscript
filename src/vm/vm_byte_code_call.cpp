@@ -52,7 +52,7 @@ namespace zetscript{
 		}
 		n_returned_args_afun=data->vm_stk_current-stk_def_afun_start;
 		/* we share pointer (true second arg) to not remove on pop in calling return */
-		CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun);
+		ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(stk_def_afun_start,n_returned_args_afun);
 
 		/* reset stack */
 		data->vm_stk_current=stk_def_afun_start;
@@ -89,7 +89,7 @@ namespace zetscript{
 
 		switch(instruction->byte_code){
 		default:
-			 VM_STOP_EXECUTE("byte code '%s' not handled",instruction->byte_code);
+			 ZS_VM_STOP_EXECUTE("byte code '%s' not handled",instruction->byte_code);
 			break;
 			case  BYTE_CODE_CALL: // immediate call this
 				 sf_call_calling_object = NULL;
@@ -123,7 +123,7 @@ namespace zetscript{
 					 symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
 				 }
 				 if(symbol_aux==NULL){ // it calls overrided function (top-most)
-					 VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
+					 ZS_VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
 							,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 							,_this_object->getScriptType()->str_script_type.c_str()
 							,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
@@ -138,7 +138,7 @@ namespace zetscript{
 				 sf_call_stk_start_function_object=0;
 				 sf_call_stk_function_ref=_this_object->getProperty(SFI_GET_SYMBOL_NAME(_calling_function,instruction));
 				 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
-					 VM_STOP_EXECUTE("'variable this.%s' not exist", SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+					 ZS_VM_STOP_EXECUTE("'variable this.%s' not exist", SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 					);
 				 }
 				 goto load_function;
@@ -198,7 +198,7 @@ load_function:
 			  MemberFunctionScriptObject *sofm=(  MemberFunctionScriptObject *)sf_call_stk_function_ref->value;
 			  ScriptObject *sofm_object=sofm->getRefObject();
 			  if(sofm_object==NULL){
-				  VM_STOP_EXECUTE(
+				  ZS_VM_STOP_EXECUTE(
 					  "Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced"
 					  ,sofm->sf_ref->name_script_function.c_str()
 					  , SFI_GET_SYMBOL_NAME(_calling_function,instruction)
@@ -222,25 +222,25 @@ load_function:
 					// indirect this call / member call or stk call
 					if(instruction->byte_code==BYTE_CODE_INDIRECT_THIS_CALL){
 
-						VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
+						ZS_VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
 								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
 								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 						);
 
 					}else if(instruction->byte_code==BYTE_CODE_MEMBER_CALL){
-						VM_STOP_EXECUTE("Cannot call '%s'. '%s' is not function or not exist"
+						ZS_VM_STOP_EXECUTE("Cannot call '%s'. '%s' is not function or not exist"
 								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 						);
 					}else if(instruction->byte_code==BYTE_CODE_INDIRECT_LOCAL_CALL){
-						VM_STOP_EXECUTE("Cannot call '%s' as a function. '%s' is type '%s'"
+						ZS_VM_STOP_EXECUTE("Cannot call '%s' as a function. '%s' is type '%s'"
 								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
 						);
 					}else{ // STACK CALL
-						VM_STOP_EXECUTE("Error trying to call a function from stack. StackElement value is '%s' as type '%s'"
+						ZS_VM_STOP_EXECUTE("Error trying to call a function from stack. StackElement value is '%s' as type '%s'"
 								,stk_to_str(data->zs,sf_call_stk_function_ref).c_str()
 								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
 								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
@@ -281,7 +281,7 @@ execute_function:
 							if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==false) { // create new
 
 								if((stk_arg->properties & STK_PROPERTY_PTR_STK) != STK_PROPERTY_PTR_STK){
-									VM_STOP_EXECUTE("Calling function '%s', parameter '%i': Argument by reference has to be variable"
+									ZS_VM_STOP_EXECUTE("Calling function '%s', parameter '%i': Argument by reference has to be variable"
 											,sf_call_script_function->name_script_function.c_str(),i+1);
 								}
 
@@ -370,7 +370,7 @@ execute_function:
 						*data->vm_stk_current++=param->default_param_value;
 						break;
 					case STK_PROPERTY_FUNCTION: // we call function that return default value
-						VM_INNER_CALL(
+						ZS_VM_INNER_CALL(
 							NULL
 							,(ScriptFunction *)(((Symbol *)param->default_param_value.value)->ref_ptr)
 							, 0
@@ -386,7 +386,7 @@ execute_function:
 						data->vm_stk_current++;
 						break;
 					default:
-						VM_STOP_EXECUTE("Internal error: Unexpected default stack element '%s'"
+						ZS_VM_STOP_EXECUTE("Internal error: Unexpected default stack element '%s'"
 								,stk_to_typeof_str(data->zs,&param->default_param_value).c_str());
 						break;
 
@@ -416,7 +416,7 @@ execute_function:
 					if(!vm_unref_shared_script_object(
 							_vm
 							,sf_call_calling_object
-							,VM_CURRENT_SCOPE_BLOCK)
+							,ZS_VM_CURRENT_SCOPE_BLOCK)
 					){
 						goto lbl_exit_function;
 					}
@@ -532,7 +532,7 @@ execute_function:
 			sf_call_return=INSTRUCTION_GET_RETURN_COUNT(instruction);
 
 			// setup all returned variables from function
-			CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function)
+			ZS_CREATE_SHARE_POINTER_TO_ALL_RETURNING_OBJECTS(sf_call_stk_return,sf_call_n_returned_arguments_from_function)
 
 			if((instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK)==0){
 

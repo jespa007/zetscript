@@ -483,7 +483,7 @@ namespace zetscript{
 			Symbol *main_function_symbol=NULL;
 			if((main_function_symbol=scope_factory->getMainScope()->getSymbol(
 					_str_script_type
-					,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN
+					,ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN
 			))!=NULL){
 				THROW_RUNTIME_ERROR("Type name '%s' is already defined %s"
 						,_str_script_type.c_str()

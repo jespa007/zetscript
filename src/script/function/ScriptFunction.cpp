@@ -336,7 +336,7 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_INSTANCEOF:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s %s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -379,7 +379,7 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_LOAD_TYPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_TYPE\t%s\n"
+				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_TYPE\t\t%s\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
@@ -598,7 +598,7 @@ namespace zetscript{
 			,zs_int _ref_ptr
 			, unsigned short _function_properties
 	){
-		Symbol *symbol_repeat=_scope_block->getSymbol(_function_name, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
+		Symbol *symbol_repeat=_scope_block->getSymbol(_function_name, ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN),*symbol=NULL;
 		zs_string current_file_line=ZS_STR_CONST_IS_EMPTY(_file)?
 							zs_strutils::format("[line %i]",_line):
 							zs_strutils::format("[%s:%i]",zs_path::get_filename(_file).c_str(),_line);
@@ -771,8 +771,18 @@ namespace zetscript{
 
 
 				if((idx_sc_found= script_type_factory->getIdxScriptType(ptr_str_symbol_to_find))!= ZS_IDX_UNDEFINED){ // check if type
-					unresolved_instruction->byte_code=BYTE_CODE_LOAD_TYPE;
+
+					// set idx type found
 					unresolved_instruction->value_op2=idx_sc_found;
+
+					switch(unresolved_instruction->byte_code){
+					case BYTE_CODE_INSTANCEOF:
+						break;
+					default:
+						// cheange type
+						unresolved_instruction->byte_code=BYTE_CODE_LOAD_TYPE;
+						break;
+					}
 				 }else if((str_aux=strstr(ptr_str_symbol_to_find,"::")) != NULL){ // static
 					 zs_string static_error;
 					char copy_aux[512]={0};
@@ -792,7 +802,7 @@ namespace zetscript{
 						symbol_found=sc_found->getSymbol(copy_aux); // ... and member as well we can define the instruction here
 					}
 				}else{ // global scope
-					symbol_found = ZS_MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
+					symbol_found = ZS_MAIN_SCOPE(this)->getSymbol(ptr_str_symbol_to_find,ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 				}
 
 

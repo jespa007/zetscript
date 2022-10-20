@@ -59,14 +59,14 @@ namespace zetscript{
 			dst_container_slot=((ContainerSlot *)stk_dst->value);
 			stk_dst=dst_container_slot->getPtrStackElement();
 		 }else	if((stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR)==0){
-			VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
+			ZS_VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
 				,stk_to_typeof_str(data->zs,stk_dst).c_str()
 			);
 		}
 
 		//-----------------------
 		if(stk_dst->properties & STK_PROPERTY_READ_ONLY){
-			VM_STOP_EXECUTEF("Assignment to constant variable");
+			ZS_VM_STOP_EXECUTEF("Assignment to constant variable");
 		}
 
 		// store through metamethod
@@ -84,7 +84,7 @@ namespace zetscript{
 			if(stk_mp_aux->member_property->metamethod_members.setters.size() > 0){\
 				store_lst_setter_functions=&stk_mp_aux->member_property->metamethod_members.setters;\
 			}else{ // setter not allowed because it has no setter
-				VM_STOP_EXECUTE("'%s' not implements operator '=' (aka '_set')"
+				ZS_VM_STOP_EXECUTE("'%s' not implements operator '=' (aka '_set')"
 					,stk_mp_aux->member_property->property_name.c_str()
 				);
 			}
@@ -125,13 +125,13 @@ namespace zetscript{
 						,stk_arg \
 						,1))==NULL){ \
 					if(stk_dst->properties & STK_PROPERTY_MEMBER_PROPERTY){ \
-						VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
+						ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
 								,so_aux->getScriptType()->str_script_type.c_str()\
 								,stk_mp_aux->member_property->property_name.c_str()\
 								,__STR_SETTER_METAMETHOD__\
 						);\
 					}else{\
-						VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
+						ZS_VM_STOP_EXECUTE("Type '%s' does not implement '%s' metamethod" \
 								,so_aux->getScriptType()->str_script_type.c_str() \
 								,__STR_SETTER_METAMETHOD__\
 						);\
@@ -140,13 +140,13 @@ namespace zetscript{
 			}else if(store_lst_setter_functions->size()>1){ // it has overrided metamethods
 				Symbol * symbol_setter = so_aux->getScriptType()->getSymbol(__STR_SETTER_METAMETHOD__); \
 				if(symbol_setter == NULL){\
-					VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\
+					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"\
 							,__STR_SETTER_METAMETHOD__\
 							,__STR_AKA_SETTER_METAMETHOD__\
 					);\
 				}\
 				if((symbol_setter->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)==0){\
-					VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not function",__STR_SETTER_METAMETHOD__,__STR_AKA_SETTER_METAMETHOD__);\
+					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not function",__STR_SETTER_METAMETHOD__,__STR_AKA_SETTER_METAMETHOD__);\
 				}\
 				ptr_function_found=(ScriptFunction *)symbol_setter->ref_ptr;\
 			}\
@@ -194,12 +194,12 @@ namespace zetscript{
 						if(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties) != GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src->properties)
 						){
 							// check particular case
-							VM_STOP_EXECUTE(
+							ZS_VM_STOP_EXECUTE(
 								"Symbol '%s': different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals"
 								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 							);
 						}else{ // is object
-							VM_STOP_EXECUTEF(
+							ZS_VM_STOP_EXECUTEF(
 								"Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator (aka set metamethod) in order to perform assign operation"
 							);
 						}
@@ -291,7 +291,7 @@ namespace zetscript{
 				{
 
 					// src is type container and dst is slot:
-					if( VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
+					if( ZS_VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
 						   	   	   	   &&
 						   (dst_container_slot!=NULL)
 					){
@@ -323,7 +323,7 @@ namespace zetscript{
 				}
 
 			}else{
-				VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
+				ZS_VM_STOP_EXECUTE("BYTE_CODE_STORE: (internal) cannot determine var type %s"
 					,stk_to_typeof_str(data->zs,stk_src).c_str()
 				);
 			}
@@ -341,7 +341,7 @@ namespace zetscript{
 			){
 				ScriptObject  *old_so=(ScriptObject  *)old_stk_dst.value;
 
-				if(!vm_unref_shared_script_object(_vm,old_so,VM_CURRENT_SCOPE_BLOCK)){
+				if(!vm_unref_shared_script_object(_vm,old_so,ZS_VM_CURRENT_SCOPE_BLOCK)){
 					goto lbl_exit_function;
 				}
 			}else if(

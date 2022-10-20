@@ -83,7 +83,7 @@ namespace zetscript{
 
 		Symbol * getSymbol(
 				const zs_string & var_name
-				, int8_t n_params=NO_PARAMS_SYMBOL_ONLY
+				, int8_t n_params=ZS_NO_PARAMS_SYMBOL_ONLY
 				, uint16_t _check_repeteaded_symbols=REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_UP_AND_DOWN
 		);
 

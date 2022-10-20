@@ -122,7 +122,7 @@ namespace zetscript{
 		idx_position = ZS_IDX_UNDEFINED; // in principle is not on stack
 
 		scope = NULL;
-		n_params = NO_PARAMS_SYMBOL_ONLY;
+		n_params = ZS_NO_PARAMS_SYMBOL_ONLY;
 		properties = 0;
 		ref_ptr = 0;
 		overrided_symbol=NULL;

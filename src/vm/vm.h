@@ -19,10 +19,6 @@ namespace zetscript{
 
 	VirtualMachine *vm_new(ZetScript *zs);
 
-	/**
-	 * Reserve for N vars. Return base pointer.
-	 */
-
 	void			vm_init(VirtualMachine *vm, ZetScript *_zs);
 	void 			vm_push_stack_element(VirtualMachine *vm, StackElement stk);
 	bool 			vm_share_script_object(VirtualMachine *vm,ScriptObject *_obj);
@@ -31,10 +27,10 @@ namespace zetscript{
 			, ScriptObject *_obj
 			,VM_ScopeBlock *_vm_scope_block=NULL
 	);
-	//inline bool 	vm_unref_shared_script_object_and_remove_if_zero(VirtualMachine *vm,ScriptObject **so);
+
 	void 			vm_unref_lifetime_object(VirtualMachine *vm,ScriptObject *script_object);
 	bool 			vm_set_stack_element_at(VirtualMachine *vm,unsigned int idx, StackElement stk);
-	//int				vm_get_idx_call(VirtualMachine *vm);
+
 	VM_ScopeBlock  *vm_get_scope_block_main(VirtualMachine *vm);
 
 	void 			vm_set_error(VirtualMachine *vm, const char *_str_error,...);
@@ -45,8 +41,6 @@ namespace zetscript{
 		VirtualMachine 	*	_vm
 	);
 
-
-	//StackElement * 	vm_get_top_stack_element_from_stack(VirtualMachine *vm);
 	StackElement *	vm_get_stack_elements(
 		VirtualMachine 	*	_vm
 	);
@@ -55,7 +49,10 @@ namespace zetscript{
 		VirtualMachine 	*	_vm
 	);
 
-	void 			vm_reset_error_vars(VirtualMachine *vm);
+	void 			vm_reset_error_vars(
+		VirtualMachine *vm
+	);
+
 	StackElement * 	vm_get_stack_element_at(
 		VirtualMachine *vm
 		,unsigned idx_glb_element
@@ -101,7 +98,6 @@ namespace zetscript{
 		ScriptFunction 		* 	_calling_function,
 		StackElement 		*	_stk_local_var
 	);
-
 
 	void vm_delete(VirtualMachine *vm);
 }

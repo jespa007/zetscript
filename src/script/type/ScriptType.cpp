@@ -432,7 +432,7 @@ namespace zetscript{
 
 			if(getSymbol(_function_name,(int8_t)_params_len,false) != NULL){ // we only search repeat symbols on this type ...
 				Symbol *existing_symbol;
-				if((existing_symbol=getSymbol(_function_name, NO_PARAMS_SYMBOL_ONLY)) != NULL){
+				if((existing_symbol=getSymbol(_function_name, ZS_NO_PARAMS_SYMBOL_ONLY)) != NULL){
 					THROW_RUNTIME_ERROR("Function member '%s' is already defined at [%s:%i]"
 						,_function_name.c_str()
 						//,zs_path::get_filename(_file).c_str()
@@ -469,7 +469,7 @@ namespace zetscript{
 		// register num function symbols only for c symbols...
 		if(sf_current->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 			Symbol *symbol_repeat=NULL;
-			if((symbol_repeat=this->getSymbolMemberFunction(_function_name,NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
+			if((symbol_repeat=this->getSymbolMemberFunction(_function_name,ZS_NO_PARAMS_SYMBOL_ONLY))!=NULL){ // there's one or more name with same args --> mark deduce at runtime
 				ScriptFunction *sf_repeat=(ScriptFunction *)symbol_repeat->ref_ptr;
 
 				sf_repeat->properties|=FUNCTION_PROPERTY_DEDUCE_AT_RUNTIME;
@@ -699,7 +699,7 @@ namespace zetscript{
 				}
 
 				ScriptFunction *sf=(ScriptFunction *)member_symbol->ref_ptr;
-				if(((n_params==(int8_t)sf->params_len) || (n_params==NO_PARAMS_SYMBOL_ONLY))
+				if(((n_params==(int8_t)sf->params_len) || (n_params==ZS_NO_PARAMS_SYMBOL_ONLY))
 				 ){
 					return member_symbol;
 				}

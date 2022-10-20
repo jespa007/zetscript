@@ -414,6 +414,13 @@ namespace zetscript{
 					, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 					,i2->vm_instruction.value_op2
 			);
+
+			instruction->symbol_name=token_operation->value;
+			instruction->instruction_source_info = InstructionSourceInfo(
+				eval_data->current_parsing_file
+				,token_operation->line
+				,get_mapped_name(eval_data,token_operation->value)
+			);
 			i1=i2; // swap instruction to erase...
 			n_eval_ops=1;
 		}else if(is_i1_K && is_i2_K){

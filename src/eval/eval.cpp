@@ -415,12 +415,12 @@ namespace zetscript{
 
 	Symbol *eval_find_local_symbol(EvalData *eval_data,Scope *scope, const zs_string & symbol_to_find){
 		ZS_UNUSUED_PARAM(eval_data);
-		return scope->getSymbol(symbol_to_find, NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
+		return scope->getSymbol(symbol_to_find, ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN);
 	}
 
 	Symbol *eval_find_global_symbol(EvalData *eval_data, const zs_string & symbol_to_find){
 		// try find global variable...
-		return ZS_MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL);
+		return ZS_MAIN_SCOPE(eval_data)->getSymbol(symbol_to_find,ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_CURRENT_LEVEL);
 	}
 
 	void eval_pop_current_function(EvalData *eval_data){
@@ -509,6 +509,10 @@ namespace zetscript{
 		ScriptType *sc_sf = GET_SCRIPT_TYPE(eval_data->script_type_factory,sf->idx_script_type_owner);
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
+
+		if(sf->name_script_function == "f"){
+			int jjjj=0;
+		}
 
 		// remove old instructions
 		if(sf->instructions != NULL){
@@ -614,6 +618,11 @@ namespace zetscript{
 							break;
 						}
 					}
+				}
+				break;
+			case BYTE_CODE_INSTANCEOF:
+				if(eval_instruction->vm_instruction.value_op2==ZS_IDX_UNDEFINED){
+					eval_data->zs->addUnresolvedSymbol(sf,i);
 				}
 				break;
 			case BYTE_CODE_FIND_VARIABLE:

@@ -188,13 +188,13 @@ namespace zetscript{
 		,StackElement * stk_element
 	){
 		ZS_UNUSUED_3PARAMS(symbol_value, error, stk_element);
-		VM_SET_USER_ERRORF(vm,"addProperty is not implemented");
+		ZS_VM_SET_USER_ERRORF(vm,"addProperty is not implemented");
 		return NULL;
 	}
 
 	StackElement * ScriptObject::getBuiltinElementAt(int idx){
 		if(idx >= (int)stk_builtin_elements.size() || idx < 0){
-			VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
+			ZS_VM_SET_USER_ERROR(vm,"idx symbol index out of bounds (%i)",idx);
 			return NULL;
 		}
 		return (StackElement *)stk_builtin_elements.items[idx];
@@ -217,7 +217,7 @@ namespace zetscript{
 
 	void ScriptObject::deattachRefObjectNode(zs_list_node<RefObjectScriptObject *> *_ref_object_node){
 		if(ref_objects==NULL){
-			VM_SET_USER_ERRORF(vm,"ref_objects==NULL");
+			ZS_VM_SET_USER_ERRORF(vm,"ref_objects==NULL");
 			return;
 		}
 		ref_objects->remove(_ref_object_node);

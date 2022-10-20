@@ -25,14 +25,14 @@ namespace zetscript{
 		// stk_op2 expects to be obj with container
 
 		if((stk_result_op2->properties & STK_PROPERTY_PTR_STK) == 0){
-			VM_ERRORF("internal: Expected stk");
+			ZS_VM_ERRORF("internal: Expected stk");
 			return false;
 		}
 
 		if((stk_result_op1->properties & (STK_PROPERTY_SCRIPT_OBJECT|STK_PROPERTY_CONTAINER_SLOT)) == 0){
-			//VM_ERROR("internal: Expected object");
+			//ZS_VM_ERROR("internal: Expected object");
 			if((data->vm_stk_current->properties & (STK_PROPERTY_SCRIPT_OBJECT|STK_PROPERTY_CONTAINER_SLOT)) == 0){
-				VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
+				ZS_VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 					,stk_to_str(data->zs,data->vm_stk_current).c_str()
 				);
@@ -73,7 +73,7 @@ namespace zetscript{
 				so_object=NULL;
 			}
 
-			VM_INNER_CALL(so_object,so_function,n_args,"iter");
+			ZS_VM_INNER_CALL(so_object,so_function,n_args,"iter");
 
 			// ok vm_stk_current holds the iter object
 			if(data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -95,17 +95,17 @@ namespace zetscript{
 
 			// check all functions...
 			if(sc->getSymbolMemberFunction("get")==NULL){
-				VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getTypeName());
+				ZS_VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getTypeName());
 				return false;
 			}
 
 			if(sc->getSymbolMemberFunction("_post_inc")==NULL){
-				VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getTypeName());
+				ZS_VM_ERROR("IteratorObject '%s' does not implement '_post_inc' function",obj->getTypeName());
 				return false;
 			}
 
 			if(sc->getSymbolMemberFunction("end")==NULL){
-				VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getTypeName());
+				ZS_VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getTypeName());
 				return false;
 			}
 
@@ -113,7 +113,7 @@ namespace zetscript{
 			*stk_result_op2=*data->vm_stk_current;
 		}
 		else{
-			VM_ERROR("Object '%s' not implements 'iter'",obj->getTypeName());
+			ZS_VM_ERROR("Object '%s' not implements 'iter'",obj->getTypeName());
 			return false;
 		}
 
@@ -207,7 +207,7 @@ namespace zetscript{
 		}
 
 		if(error.empty()==false){
-			VM_ERROR("Cannot perform operation 'in' because %s",error.c_str());
+			ZS_VM_ERROR("Cannot perform operation 'in' because %s",error.c_str());
 			return false;
 		}
 

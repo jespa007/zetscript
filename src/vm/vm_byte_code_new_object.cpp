@@ -20,7 +20,7 @@ namespace zetscript{
 		 if(STK_VALUE_IS_TYPE(stk_result_op1)){
 			sc_aux1=data->script_type_factory->getScriptType(stk_result_op1->value);
 			if(!data->script_type_factory->isScriptTypeInstanceable(stk_result_op1->value)){
-				VM_STOP_EXECUTE("'%s' type is not object instanceable",sc_aux1->getTypeName());
+				ZS_VM_STOP_EXECUTE("'%s' type is not object instanceable",sc_aux1->getTypeName());
 			}
 
 			 symbol_aux=NULL;
@@ -57,9 +57,9 @@ namespace zetscript{
 			}
 
 		 }else{
-			VM_STOP_EXECUTE("var '%s' expected as 'type' but it was '%s'"
+			ZS_VM_STOP_EXECUTE("var '%s' expected as 'type' but it was '%s'"
 					,SFI_GET_SYMBOL_NAME(_calling_function,_instruction)
-					, stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
+					, stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
 			);
 		 }
 		 return	true;

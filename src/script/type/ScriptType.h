@@ -150,9 +150,9 @@ namespace zetscript{
 
 		//---------------------------------------------------
 
-		Symbol *    getSymbol(const zs_string & symbol_name, int8_t n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
+		Symbol *    getSymbol(const zs_string & symbol_name, int8_t n_params=ZS_NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 		Symbol *    getSymbolVariableMember(const zs_string & symbol_name, bool include_inherited_symbols=true);
-		Symbol *    getSymbolMemberFunction(const zs_string & symbol_name, int8_t n_params=NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
+		Symbol *    getSymbolMemberFunction(const zs_string & symbol_name, int8_t n_params=ZS_NO_PARAMS_SYMBOL_ONLY, bool include_inherited_symbols=true);
 
 		const char *getTypeName();
 

@@ -10,13 +10,13 @@
 
 #define METAMETHOD_OPERATION_NOT_FOUND(__BYTE_CODE_METAMETHOD__) \
 		if(member_property!=NULL){\
-			VM_MAIN_ERROR(\
+			ZS_VM_MAIN_ERROR(\
 				VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED\
 				,stk_result_op1\
 				,__BYTE_CODE_METAMETHOD__\
 			);\
 		}else{\
-			VM_MAIN_ERROR(\
+			ZS_VM_MAIN_ERROR(\
 				VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED\
 				,stk_result_op1\
 				,__BYTE_CODE_METAMETHOD__\
@@ -41,7 +41,7 @@
 		ptr_metamethod_members_aux= &so_aux->getScriptType()->metamethod_members;\
 	}\
 	else{\
-		VM_MAIN_ERROR(\
+		ZS_VM_MAIN_ERROR(\
 				VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR\
 				,stk_result_op1\
 				,__METAMETHOD__\
@@ -53,25 +53,25 @@
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
 		if(stk_result_op2->value == 0){\
-			VM_STOP_EXECUTEF("exception div operation by 0");\
+			ZS_VM_STOP_EXECUTEF("exception div operation by 0");\
 		}\
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value / stk_result_op2->value);\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
 		if(*((zs_float *)&stk_result_op2->value) == 0){\
-			VM_STOP_EXECUTEF("exception div operation by 0");\
+			ZS_VM_STOP_EXECUTEF("exception div operation by 0");\
 		}\
 		VM_PUSH_STK_ZS_FLOAT(stk_result_op1->value / *((zs_float *)&stk_result_op2->value));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
 		if(stk_result_op2->value == 0){\
-			VM_STOP_EXECUTEF("exception div operation by 0");\
+			ZS_VM_STOP_EXECUTEF("exception div operation by 0");\
 		}\
 		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) / stk_result_op2->value);\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
 		if(*((zs_float *)&stk_result_op2->value) == 0){\
-			VM_STOP_EXECUTEF("exception div operation by 0");\
+			ZS_VM_STOP_EXECUTEF("exception div operation by 0");\
 		}\
 		VM_PUSH_STK_ZS_FLOAT(*((zs_float *)&stk_result_op1->value) / *((zs_float *)&stk_result_op2->value));\
 		break;\
@@ -220,25 +220,25 @@
 	switch(msk_properties){\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_INT:\
 		if(stk_result_op2->value == 0){\
-			VM_STOP_EXECUTEF("exception mod operation by 0");\
+			ZS_VM_STOP_EXECUTEF("exception mod operation by 0");\
 		}\
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value % stk_result_op2->value);\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
 		if(*((zs_float *)&stk_result_op2->value) == 0){\
-			VM_STOP_EXECUTEF("exception mod operation by 0");\
+			ZS_VM_STOP_EXECUTEF("exception mod operation by 0");\
 		}\
 		VM_PUSH_STK_ZS_FLOAT(fmod(stk_result_op1->value,*((zs_float *)&stk_result_op2->value)));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
 		if(stk_result_op2->value == 0){\
-			VM_STOP_EXECUTEF("exception mod operation by 0");\
+			ZS_VM_STOP_EXECUTEF("exception mod operation by 0");\
 		}\
 		VM_PUSH_STK_ZS_FLOAT(fmod(*((zs_float *)&stk_result_op1->value) , stk_result_op2->value));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
 		if(*((zs_float *)&stk_result_op2->value) == 0){\
-			VM_STOP_EXECUTEF("exception mod operation by 0");\
+			ZS_VM_STOP_EXECUTEF("exception mod operation by 0");\
 		}\
 		VM_PUSH_STK_ZS_FLOAT(fmod(*((zs_float *)&stk_result_op1->value) , *((zs_float *)&stk_result_op2->value)));\
 		break;\
@@ -259,7 +259,7 @@
 	if((GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_result_op1->properties&stk_result_op2->properties)) == STK_PROPERTY_BOOL){\
 		VM_PUSH_STK_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 	}else{\
-		PRINT_DUAL_ERROR_OP(ZS_STR(__C_OP__));\
+		ZS_PRINT_DUAL_ERROR_OP(ZS_STR(__C_OP__));\
 		goto lbl_exit_function;\
 	}\
 

@@ -161,7 +161,7 @@ namespace zetscript{
 
 				if((ptr_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) == 0){
 
-					StackElement result=VM_EXECUTE(
+					StackElement result=ZS_VM_EXECUTE(
 							this->vm
 							,this
 							,ptr_function

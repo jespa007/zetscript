@@ -64,8 +64,9 @@ namespace zetscript{
 			if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_oo_param) == false){
 				vm_set_error(
 					zs->getVirtualMachine()
-					,zs_strutils::format("eval error:expected ObjectScriptObject as second parameter but the typeof is '%'"
-							,stk_to_typeof_str(data->zs,stk_oo_param).c_str()
+					,zs_strutils::format(
+						"eval error:expected 'Object' as second parameter but the typeof is '%s'"
+						,stk_to_typeof_str(data->zs,stk_oo_param).c_str()
 					).c_str()
 				);
 				return;
@@ -101,7 +102,7 @@ namespace zetscript{
 		//--------------------------------------
 		// 1. Create lambda function that configures and call with entered parameters like this
 		//    function(a,b){a+b}(1,2);
-		zs_string  name_script_function=zs_strutils::format("eval@%i",n_eval_function++);
+		zs_string  name_script_function=zs_strutils::format("__eval@_%i__",n_eval_function++);
 		sf_eval=new	ScriptFunction(
 				zs
 				,IDX_ZS_SCRIPT_FUNCTION_EVAL
@@ -144,7 +145,14 @@ namespace zetscript{
 
 		// 3. Call zetscript->eval this function
 		try{
-			eval_parse_and_compile(zs,str_start,NULL,NULL,1,sf_eval/*,function_params,function_params_len*/);
+			eval_parse_and_compile(
+					zs
+					,str_start
+					,NULL
+					,NULL
+					,1
+					,sf_eval
+			);
 		}catch(std::exception & ex){
 			vm_set_error(zs->getVirtualMachine(),(zs_string("eval error:")+ex.what()).c_str());
 			goto goto_eval_exit;
@@ -190,27 +198,17 @@ namespace zetscript{
 		// modifug
 		if(vm_it_has_error(zs->getVirtualMachine())){
 			zs_string error=vm_get_error(zs->getVirtualMachine());
-			vm_set_error(zs->getVirtualMachine(),zs_strutils::format("eval error %s",error.c_str()).c_str());
+			vm_set_error(zs->getVirtualMachine(),zs_strutils::format("eval error: %s",error.c_str()).c_str());
 		}
 
-		n_ret_args=vm_get_current_stack_element(vm)-vm_stk_current;
-		stk_start=vm_stk_current;
-
-		// overwrite first entered params due are the objects passed before and now are undefined
-		for(int i = 0; i < n_ret_args-stk_n_params; i++){
-			*stk_start++=*(vm_stk_current+stk_n_params+i);
-		}
-
-		// avoid pass params
-		data->vm_stk_current-=stk_n_params;
 goto_eval_exit:
 
+		// unref symbols eval instance
 		while(data->vm_current_scope_function > vm_eval_scope_function){
 			while(
-					(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
+					(ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block > ZS_VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
 
 			){
-				//VM_CURRENT_SCOPE_FUNCTION->current_scope_block--;
 				vm_pop_scope(vm);
 			}
 
@@ -222,6 +220,15 @@ goto_eval_exit:
 		 zs->getScopeFactory()->clearUnusuedScopes();
 
 		 delete sf_eval;
+
+		 // assign returning vars...
+		n_ret_args=vm_get_current_stack_element(vm)-vm_stk_current;
+		stk_start=vm_stk_current;
+
+		// overwrite first entered params due are the objects passed before and now are undefined
+		for(int i = 0; i < n_ret_args-stk_n_params; i++){
+			*stk_start++=*(vm_stk_current+stk_n_params+i);
+		}
 	}
 
 	/*void SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){

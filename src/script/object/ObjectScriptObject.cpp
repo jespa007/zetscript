@@ -134,7 +134,7 @@ namespace zetscript{
 		bool exists=false;
 		StackElement *stk_user_element = (StackElement *)map_user_properties->get(property_name.c_str(),&exists);
 		if(!exists){
-			VM_SET_USER_ERROR(vm,"Property %s not exist",property_name.c_str());
+			ZS_VM_SET_USER_ERROR(vm,"Property %s not exist",property_name.c_str());
 			return false;
 		}
 

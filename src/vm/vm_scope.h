@@ -3,8 +3,8 @@
  *  See LICENSE file for details.
  */
 #define VM_PUSH_SCOPE(_scope)\
-	VM_CURRENT_SCOPE_FUNCTION->current_scope_block->scope=(Scope *)_scope;\
-	VM_CURRENT_SCOPE_FUNCTION->current_scope_block++;\
+	ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block->scope=(Scope *)_scope;\
+	ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block++;\
 
 namespace zetscript{
 

@@ -67,8 +67,8 @@ namespace zetscript{
 		Instruction 			*	instruction_it=_calling_function->instructions;
 		StackElement 			*	stk_start=_stk_local_var+_calling_function->local_variables->size();   // <-- here starts stk for aux vars for operations ..
 
-		if (IDX_VM_CURRENT_SCOPE_FUNCTION >= VM_FUNCTION_CALL_MAX) {
-			VM_ERROR_AND_RETF("Reached max stack");
+		if (ZS_IDX_VM_CURRENT_SCOPE_FUNCTION >= VM_FUNCTION_CALL_MAX) {
+			ZS_VM_ERROR_AND_RETF("Reached max stack");
 			return;
 		}
 
@@ -76,7 +76,7 @@ namespace zetscript{
 
 		if(((stk_start-data->vm_stack)+_calling_function->min_code_stack_needed)>=VM_STACK_MAX){
 			data->vm_error_max_stack_reached=true;
-			VM_STOP_EXECUTEF("Error MAXIMUM stack size reached");
+			ZS_VM_STOP_EXECUTEF("Error MAXIMUM stack size reached");
 		}
 
 #ifdef __DEBUG__
@@ -229,7 +229,7 @@ namespace zetscript{
 				 VM_POP_STK_ONE;
 				switch(instruction->value_op2){
 				case ZS_IDX_UNDEFINED:
-					VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(_calling_function,instruction));
+					ZS_VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(_calling_function,instruction));
 					break;
 				case IDX_TYPE_ZS_INT_C:
 					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
@@ -261,9 +261,9 @@ namespace zetscript{
 			 case BYTE_CODE_JNT: // goto if not true ... goes end to conditional.
 				VM_POP_STK_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE(
+					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
-						,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
+						,stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
 					);
 				}
 				if(stk_result_op1->value == 0){
@@ -273,9 +273,9 @@ namespace zetscript{
 			 case BYTE_CODE_JT: // goto if true ... goes end to conditional.
 				VM_POP_STK_ONE;
 				if((stk_result_op1->properties & STK_PROPERTY_BOOL)==0){
-					VM_STOP_EXECUTE(
+					ZS_VM_STOP_EXECUTE(
 						"Expected boolean expression but it was '%s'"
-						,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
+						,stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
 					);
 				}
 				if(stk_result_op1->value != 0){
@@ -527,7 +527,7 @@ namespace zetscript{
 				 }
 				continue;
 			/* case BYTE_CODE_CLEAR_ZERO_POINTERS:
-				 vm_remove_empty_shared_pointers(_vm,VM_CURRENT_SCOPE_BLOCK);
+				 vm_remove_empty_shared_pointers(_vm,ZS_VM_CURRENT_SCOPE_BLOCK);
 				 continue;*/
 			 case BYTE_CODE_RESET_STACK:
 				 data->vm_stk_current=stk_start;
@@ -599,7 +599,7 @@ namespace zetscript{
 				case BYTE_CODE_LOAD_THIS_FUNCTION:// direct load
 					symbol_aux=(Symbol *)_this_object->getScriptType()->getSymbolMemberFunction(((Symbol *)instruction->value_op2)->name);
 					if(symbol_aux==NULL){ // it calls overrided function (top-most)
-						 VM_STOP_EXECUTE("Error load 'this.%s': Cannot find '%s::%s' member function"
+						 ZS_VM_STOP_EXECUTE("Error load 'this.%s': Cannot find '%s::%s' member function"
 								,((Symbol *)instruction->value_op2)->name.c_str()
 								,_this_object->getScriptType()->str_script_type.c_str()
 								,((Symbol *)instruction->value_op2)->name.c_str()
@@ -667,7 +667,7 @@ namespace zetscript{
 		// POP STACK
 
 		while (
-			(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
+			(ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block > ZS_VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
 		){
 			vm_pop_scope(_vm); // do not check removeEmptySharedPointers to have better performance
 		}
@@ -749,7 +749,7 @@ namespace zetscript{
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
 				,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
-				,stk_to_str(VM_STR_AUX_PARAM_0,data->zs,_stk)
+				,stk_to_str(ZS_VM_STR_AUX_PARAM_0,data->zs,_stk)
 			);
 			break;
 		case VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED:
@@ -770,7 +770,7 @@ namespace zetscript{
 				,SFI_GET_LINE(_calling_function,instruction)\
 				,"Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
 				,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)\
-				,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,_stk) \
+				,stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,_stk) \
 				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)\
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)\
 			);\
@@ -857,7 +857,7 @@ namespace zetscript{
 
 	bool  vm_insert_shared_node(VirtualMachine *vm, InfoSharedList * list, InfoSharedPointerNode *_node){
 		if(_node->next != NULL || _node->previous!=NULL) {
-			VM_SET_USER_ERRORF(vm," Internal error expected node not in list");
+			ZS_VM_SET_USER_ERRORF(vm," Internal error expected node not in list");
 			return false;
 		}
 

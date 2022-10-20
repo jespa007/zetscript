@@ -17,9 +17,9 @@ namespace zetscript{
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		// derefer all variables in all scopes (except main )...
-		while(data->vm_current_scope_function > VM_SCOPE_FUNCTION_MAIN){
+		while(data->vm_current_scope_function > ZS_VM_SCOPE_FUNCTION_MAIN){
 			while(
-					(VM_CURRENT_SCOPE_FUNCTION->current_scope_block > VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
+					(ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block > ZS_VM_CURRENT_SCOPE_FUNCTION->first_scope_block)
 
 			){
 				vm_pop_scope(_vm);
@@ -28,7 +28,7 @@ namespace zetscript{
 			--data->vm_current_scope_function;
 		}
 
-		data->vm_current_scope_function =  VM_SCOPE_FUNCTION_MAIN;
+		data->vm_current_scope_function =  ZS_VM_SCOPE_FUNCTION_MAIN;
 		vm_remove_empty_shared_pointers(_vm,vm_get_scope_block_main(_vm));
 	}
 
@@ -76,7 +76,7 @@ namespace zetscript{
 
 		// if vm block NULL set current block scope by default
 		if(_vm_scope_block == NULL){
-			_vm_scope_block=VM_CURRENT_SCOPE_BLOCK;
+			_vm_scope_block=ZS_VM_CURRENT_SCOPE_BLOCK;
 		}
 
 		if(_obj->shared_pointer == NULL){
@@ -86,7 +86,7 @@ namespace zetscript{
 			_node->next=NULL;
 			_node->data.n_shares=0;
 			_node->data.ptr_script_object_shared=_obj;
-			_node->data.created_scope_block=_vm_scope_block;//VM_CURRENT_SCOPE_BLOCK;//data->vm_idx_call; // it saves the zeros nodes where was set
+			_node->data.created_scope_block=_vm_scope_block;//ZS_VM_CURRENT_SCOPE_BLOCK;//data->vm_idx_call; // it saves the zeros nodes where was set
 
 			// insert node into shared nodes ...
 			if(!vm_insert_shared_node(_vm,&_node->data.created_scope_block->unreferenced_objects,_node)){
@@ -95,7 +95,7 @@ namespace zetscript{
 			_obj->shared_pointer=_node;
 			return true;
 		}else{
-			VM_SET_USER_ERRORF(_vm," shared ptr already has a shared pointer data");
+			ZS_VM_SET_USER_ERRORF(_vm," shared ptr already has a shared pointer data");
 		}
 
 		return false;
@@ -113,7 +113,7 @@ namespace zetscript{
 		bool move_to_shared_list=*n_shares==0;
 
 		/*if(*n_shares >= VM_VARIABLE_SHARES_MAX){
-			VM_SET_USER_ERROR(vm,"MAX SHARED VARIABLES (Max. %i)",VM_VARIABLE_SHARES_MAX);
+			ZS_VM_SET_USER_ERROR(vm,"MAX SHARED VARIABLES (Max. %i)",VM_VARIABLE_SHARES_MAX);
 			return false;
 		}*/
 
@@ -269,7 +269,7 @@ namespace zetscript{
 	bool vm_set_stack_element_at(VirtualMachine *_vm,unsigned int _idx, StackElement _stk){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		if(_idx >= VM_STACK_MAX){
-			VM_SET_USER_ERRORF(_vm,"setStackElement: out of bounds");
+			ZS_VM_SET_USER_ERRORF(_vm,"setStackElement: out of bounds");
 			return false;
 		}
 
@@ -292,7 +292,7 @@ namespace zetscript{
 		if(_idx_glb_element < (unsigned)data->main_function_object->local_variables->size()){
 			return &data->vm_stack[_idx_glb_element];
 		}else{
-			VM_SET_USER_ERRORF(_vm,"getStackElement: out of bounds");
+			ZS_VM_SET_USER_ERRORF(_vm,"getStackElement: out of bounds");
 		}
 		return NULL;
 	}
@@ -332,12 +332,12 @@ namespace zetscript{
 
 		if(
 			_calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN
-			&& ((_properties & VM_PROPERTY_CALL_FROM_NATIVE) == 0)
+			&& ((_properties & ZS_VM_PROPERTY_CALL_FROM_NATIVE) == 0)
 		){ // set stack and Init vars for first call...
 
 
-			if(data->vm_current_scope_function != VM_SCOPE_FUNCTION_MAIN){
-				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",IDX_VM_CURRENT_SCOPE_FUNCTION);
+			if(data->vm_current_scope_function != ZS_VM_SCOPE_FUNCTION_MAIN){
+				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",ZS_IDX_VM_CURRENT_SCOPE_FUNCTION);
 			}
 
 			vm_reset_error_vars(_vm);
@@ -351,15 +351,15 @@ namespace zetscript{
 			StackElement *min_stk=&data->vm_stack[data->main_function_object->local_variables->size()];
 			first_script_call_from_c=false;
 
-			if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
+			if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
 
-				if((_properties & VM_PROPERTY_CALL_FROM_NATIVE)==0){
+				if((_properties & ZS_VM_PROPERTY_CALL_FROM_NATIVE)==0){
 					THROW_RUNTIME_ERRORF("Internal: expected first call function from C");
 				}
 				//vm_reset_error_vars(vm);
 
 				first_script_call_from_c=true;
-				data->vm_current_scope_function=VM_SCOPE_FUNCTION_FIRST; // assign first idx call as 1
+				data->vm_current_scope_function=ZS_VM_SCOPE_FUNCTION_FIRST; // assign first idx call as 1
 				stk_start=min_stk;
 			}
 
@@ -396,12 +396,12 @@ namespace zetscript{
 			stk_start
 		);
 
-		if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
+		if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
 			vm_check_cyclic_references(_vm);
 		}
 
 		// remove empty shared pointers
-		if(data->vm_current_scope_function == VM_SCOPE_FUNCTION_MAIN){
+		if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
 			vm_remove_empty_shared_pointers(_vm
 					,vm_get_scope_block_main(_vm)
 			);
@@ -457,7 +457,7 @@ namespace zetscript{
 
 		// restore idx_call as 0 if first call was a script function called from C
 		if(first_script_call_from_c==true){
-			data->vm_current_scope_function=VM_SCOPE_FUNCTION_MAIN;
+			data->vm_current_scope_function=ZS_VM_SCOPE_FUNCTION_MAIN;
 		}
 
 
@@ -471,7 +471,7 @@ namespace zetscript{
 	){
 		InfoSharedPointerNode *shared_pointer=_obj->shared_pointer;
 		if(shared_pointer==NULL){
-			VM_SET_USER_ERRORF(_vm,"shared ptr not registered");
+			ZS_VM_SET_USER_ERRORF(_vm,"shared ptr not registered");
 			return false;
 		}
 
@@ -584,7 +584,6 @@ namespace zetscript{
 
 			);
 #endif
-
 		}
 
 		// finally adds to container slot hierarchy
@@ -595,13 +594,13 @@ namespace zetscript{
 		stk_dst->properties=STK_PROPERTY_CONTAINER_SLOT;
 
 		// add ref into map of pointers
-		data->containers_with_container_slots.set((zs_int)_src_container_ref,(zs_int)_src_container_ref);
+		data->cyclic_container_instances.set((zs_int)_src_container_ref,(zs_int)_src_container_ref);
 
 	}
 
 	void vm_remove_container_instance_cyclic_references_map(VirtualMachine *_vm,ContainerScriptObject *_csso){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		data->containers_with_container_slots.erase((zs_int)_csso);
+		data->cyclic_container_instances.erase((zs_int)_csso);
 	}
 
 	void vm_count_cyclic_references(ContainerScriptObject *_current,ContainerScriptObject *_container_to_check, zs_vector<zs_list_node<ContainerSlot *> *> *_slots){
@@ -620,30 +619,34 @@ namespace zetscript{
 		}
 	}
 
+	zs_map_int *vm_get_cyclic_container_instances(VirtualMachine *_vm){
+		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
+		return &data->cyclic_container_instances;
+	}
+
 	void vm_check_cyclic_references(VirtualMachine *_vm){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		zs_vector<zs_list_node<ContainerSlot *>  *> slots;
 
-		for(size_t it=0; it < data->containers_with_container_slots.count();){
+		for(size_t it=0; it < data->cyclic_container_instances.count();){
 			// count reference number
-			ContainerScriptObject *cso=(ContainerScriptObject *)(data->containers_with_container_slots.getValueByIdx(it));
-			bool containers_with_container_slots_element=false;
+			ContainerScriptObject *cso=(ContainerScriptObject *)(data->cyclic_container_instances.getValueByIdx(it));
+			bool cyclic_container_instances_element=false;
 
 			vm_count_cyclic_references(cso,cso,&slots);
 #ifdef __ZS_LOG_CONTAINER_SLOT__
 			printf("Counting reference for container instance %p. Cyclic counts %i Shares counts: %i. Can be removed (cyclic == n_shares): %s\n"
-					,(void *)cso
-					,slots.count
-					,cso->shared_pointer->data.n_shares
-					,slots.count==cso->shared_pointer->data.n_shares?"true":"false"
-
-				);
+				,(void *)cso
+				,slots.count
+				,cso->shared_pointer->data.n_shares
+				,slots.count==cso->shared_pointer->data.n_shares?"true":"false"
+			);
 #endif
 
 			// if n_shares == shared_pointers
 			if(slots.count>0){
 				if(slots.count==cso->shared_pointer->data.n_shares){
-					containers_with_container_slots_element=true;
+					cyclic_container_instances_element=true;
 					auto container_slots_intance=cso->getListContainerSlotsRef();
 
 					for(int i=0; i < slots.count;i++){
@@ -652,7 +655,7 @@ namespace zetscript{
 						// 1. dettach from container slot list
 						auto container_slot_node=slots.items[i]->data->getContainerSlotNode();
 						container_slots_intance->remove(container_slot_node);
-						vm_unref_shared_script_object(_vm,cso,VM_MAIN_SCOPE_BLOCK);
+						vm_unref_shared_script_object(_vm,cso,ZS_VM_MAIN_SCOPE_BLOCK);
 
 						// 2. back container slot as undefined
 						//
@@ -672,8 +675,8 @@ namespace zetscript{
 				}
 			}
 
-			if(containers_with_container_slots_element==true){
-				data->containers_with_container_slots.erase((zs_int)cso);
+			if(cyclic_container_instances_element==true){
+				data->cyclic_container_instances.erase((zs_int)cso);
 			}else{
 				it++;
 			}

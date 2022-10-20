@@ -89,7 +89,7 @@ namespace zetscript{
 			ScriptFunction *irfs = NULL;
 			start_param=1;
 
-			VM_EXTRACT_FUNCTION_INFO
+			ZS_VM_EXTRACT_FUNCTION_INFO
 
 			aux_string=irfs->name_script_function;
 
@@ -235,7 +235,7 @@ namespace zetscript{
 				start_param=1;
 				ScriptFunction *irfs=NULL;
 
-				VM_EXTRACT_FUNCTION_INFO
+				ZS_VM_EXTRACT_FUNCTION_INFO
 
 				if((irfs->name_script_function == _symbol_to_find) && (irfs->properties & FUNCTION_PROPERTY_C_OBJECT_REF)){
 
@@ -296,7 +296,7 @@ namespace zetscript{
 			}
 
 			if(n_candidates == 0){
-				VM_ERROR("Cannot call native %s '%s(%s)'. Function not registered\n\n"
+				ZS_VM_ERROR("Cannot call native %s '%s(%s)'. Function not registered\n\n"
 					,_is_constructor ? "constructor":class_str==""?"function":"member function"
 					,function_name_not_found.c_str()
 					,args_str.c_str()
@@ -305,7 +305,7 @@ namespace zetscript{
 				return NULL;
 			}
 			else{
-				VM_ERROR("Cannot call native %s '%s(%s)'\n\n%s"
+				ZS_VM_ERROR("Cannot call native %s '%s(%s)'\n\n%s"
 					,_is_constructor ? "constructor":class_str==""?"function":"member function"
 					,function_name_not_found.c_str()
 					,args_str.c_str()
@@ -334,7 +334,7 @@ namespace zetscript{
 		Instruction			*	instruction=_instruction;
 
 		if((_c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF)==0){
-			VM_SET_USER_ERRORF(_vm,"Internal error: Function not native");
+			ZS_VM_SET_USER_ERRORF(_vm,"Internal error: Function not native");
 			return;
 		}
 
@@ -362,7 +362,7 @@ namespace zetscript{
 				n_args++;
 				converted_param[1]=(zs_int)_this_object->getNativeObject();
 			}else if(_this_object->idx_script_type != IDX_TYPE_CLASS_MAIN){
-				VM_ERROR_AND_RET("Function '%s' is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e '%s::%s')"
+				ZS_VM_ERROR_AND_RET("Function '%s' is binded as STATIC at but it was acceded as member. You have to use STATIC access (i.e '%s::%s')"
 						,_c_function->name_script_function.c_str()
 						,_this_object->getScriptType()->str_script_type.c_str()
 						,_c_function->name_script_function.c_str()
@@ -372,26 +372,26 @@ namespace zetscript{
 		}
 
 		if(n_args>MAX_NATIVE_FUNCTION_ARGS){
-			VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
+			ZS_VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
 		}
 
 		if((_c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF) {
-			VM_ERROR_AND_RETF("Function is not registered as C");
+			ZS_VM_ERROR_AND_RETF("Function is not registered as C");
 		}
 
 		if(fun_ptr==0){
-			VM_ERROR_AND_RETF("Null function");
+			ZS_VM_ERROR_AND_RETF("Null function");
 		}
 
 		if((int8_t)_c_function->params_len != (n_args)){
-			VM_ERROR_AND_RET("Native function '%s' expects %i arguments but it passed %i arguments"
+			ZS_VM_ERROR_AND_RET("Native function '%s' expects %i arguments but it passed %i arguments"
 					,_c_function->name_script_function.c_str()
 					,_c_function->params_len
 					,n_args);
 		}
 
 		if(_c_function->params_len > MAX_NATIVE_FUNCTION_ARGS){
-			VM_ERROR_AND_RET("Reached max param for C function (Current: %i Max Allowed: %i)",_c_function->params_len,MAX_NATIVE_FUNCTION_ARGS);
+			ZS_VM_ERROR_AND_RET("Reached max param for C function (Current: %i Max Allowed: %i)",_c_function->params_len,MAX_NATIVE_FUNCTION_ARGS);
 		}
 
 		// convert parameters script to c...
@@ -414,7 +414,7 @@ namespace zetscript{
 						,(zs_int *)&converted_param[i]
 						,data->vm_error_description
 				)){
-					VM_ERROR_AND_RET("Function '%s', param %i: %s",
+					ZS_VM_ERROR_AND_RET("Function '%s', param %i: %s",
 						_c_function->name_script_function.c_str(),
 						i,
 						data->vm_error_description.c_str()

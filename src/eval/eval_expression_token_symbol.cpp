@@ -272,18 +272,24 @@ namespace zetscript{
 						if(token_node_symbol_class != NULL){ // byte code it will be a type
 							ei_instruction->vm_instruction.byte_code= ByteCode::BYTE_CODE_LOAD_TYPE;
 							ei_instruction->vm_instruction.value_op2=token_node_symbol_class->idx_script_type;
-						}else{ // sc is null
+						}
+
+						// set operator symbol
+						if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
+							last_operator_token_node->value=token_node_symbol->value;
+						}
+						/*else{ // sc is null
 							if((last_operator_token_node != NULL && last_operator_token_node->operator_type == Operator::OPERATOR_INSTANCEOF)){
 								//last_operator_token_node->value=token_node_symbol->value;
 								//EvalInstruction *ei_last_operator=last_operator_token_node->eval_instructions.items[0];
-								/*ei_last_operator->instruction_source_info= InstructionSourceInfo(
+								ei_last_operator->instruction_source_info= InstructionSourceInfo(
 										eval_data->current_parsing_file
 										,line
 										,get_mapped_name(eval_data,token_node_symbol->value)
 									);
 								//int kk=0;
 								//kk++;
-								 */
+
 								EVAL_ERROR_FILE_LINE_GOTOF(
 									eval_data->current_parsing_file
 									,line
@@ -292,7 +298,7 @@ namespace zetscript{
 								);
 							}
 
-						}
+						}*/
 
 					}
 				}

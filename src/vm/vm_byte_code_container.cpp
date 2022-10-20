@@ -45,7 +45,7 @@ namespace zetscript{
 		if((stk_result_op1->properties & (STK_PROPERTY_SCRIPT_OBJECT | STK_PROPERTY_CONTAINER_SLOT)) == 0)
 		{
 			if((instruction-1)->byte_code==BYTE_CODE_LOAD_OBJECT_ITEM){
-				VM_STOP_EXECUTE(
+				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access [ ... %s.%s ], expected '%s' as object but is type '%s' %s"
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
@@ -54,7 +54,7 @@ namespace zetscript{
 					,zs_strutils::starts_with(stk_to_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 				);
 			}else{ // from calling
-				VM_STOP_EXECUTE(
+				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access '.%s' from variable type '%s'"
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
@@ -71,7 +71,7 @@ namespace zetscript{
 
 		if(so_aux == NULL)
 		{
-			VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(_calling_function,(instruction-1)));
+			ZS_VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(_calling_function,(instruction-1)));
 		}
 
 
@@ -87,7 +87,7 @@ namespace zetscript{
 			if(
 				   ((instruction+1)->byte_code == BYTE_CODE_LOAD_OBJECT_ITEM || ((instruction+1)->byte_code == BYTE_CODE_PUSH_STK_OBJECT_ITEM))
 				&& ((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0)){
-				VM_STOP_EXECUTE(
+				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access operation [ ... %s.%s ], because '%s' is a function. It should call function with '()' before '.'"
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction+1)
@@ -112,7 +112,7 @@ namespace zetscript{
 			// property is not defined
 
 			if(instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION){
-				VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Member function '%s::%s' is not defined"
+				ZS_VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Member function '%s::%s' is not defined"
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
 					,str_symbol_aux1
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
@@ -139,7 +139,7 @@ namespace zetscript{
 				if(sc_type->idx_script_type<IDX_TYPE_SCRIPT_OBJECT_OBJECT || sc_type->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_OBJECT){
 					// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
 					if(so_aux->getScriptType()->properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF){
-						VM_STOP_EXECUTE("Cannot store '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
+						ZS_VM_STOP_EXECUTE("Cannot store '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
 							,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
 							,str_symbol_aux1
 							,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
@@ -153,13 +153,13 @@ namespace zetscript{
 
 				// create new property initialized as undefined
 				if((stk_var=so_aux->addProperty((const char *)str_symbol_aux1, data->vm_error_description))==NULL){
-					VM_STOP_EXECUTEF(data->vm_error_description.c_str());
+					ZS_VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 				}
 
 				// if it has to push container slot and slot itself is not container slot push new one
 				if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
 						&&
-					VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
+					ZS_VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
 				){
 					VM_PUSH_NEW_CONTAINER_SLOT(
 						(ContainerScriptObject *)so_aux
@@ -181,7 +181,7 @@ namespace zetscript{
 
 			if((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION) && ((stk_var->properties & STK_PROPERTY_FUNCTION)==0)){
 
-				VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Expected '%s::%s' as a function but it is type '%s'"
+				ZS_VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Expected '%s::%s' as a function but it is type '%s'"
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
 					,(const char *)str_symbol_aux1
 					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
@@ -199,7 +199,7 @@ namespace zetscript{
 				stk_mp_aux=(StackMemberProperty *)stk_var->value;
 
 				if(stk_mp_aux->member_property->metamethod_members.getter!=NULL){
-					VM_INNER_CALL(
+					ZS_VM_INNER_CALL(
 							stk_mp_aux->so_object
 							,((ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr)
 							,0
@@ -245,7 +245,7 @@ namespace zetscript{
 		){
 			if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
 					&&
-				VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
+				ZS_VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
 			){
 				VM_PUSH_NEW_CONTAINER_SLOT(
 					(ContainerScriptObject *)so_aux
@@ -288,7 +288,7 @@ namespace zetscript{
 				// saves current stack element due the return will overwrite current stackpositin
 				StackElement *stk_back=data->vm_stk_current;
 				data->vm_stk_current++;
-				VM_INNER_CALL(
+				ZS_VM_INNER_CALL(
 						stk_mp_aux->so_object
 						,(ScriptFunction *)stk_mp_aux->member_property->metamethod_members.getter->ref_ptr
 						,0 \
@@ -298,7 +298,7 @@ namespace zetscript{
 				stk_result=data->vm_stk_current;
 				data->vm_stk_current=stk_back;
 			}else{
-				VM_STOP_EXECUTE(
+				ZS_VM_STOP_EXECUTE(
 						"Property '%s' does not implements _get metamethod",SFI_GET_SYMBOL_NAME(_calling_function,instruction)
 				);
 			}
@@ -339,14 +339,14 @@ namespace zetscript{
 
 			stk_var=(data->vm_stk_current-1);
 			if(STK_IS_SCRIPT_OBJECT_OBJECT(stk_var) == 0){
-				VM_STOP_EXECUTE("Expected object but is type '%s'",stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_var));
+				ZS_VM_STOP_EXECUTE("Expected object but is type '%s'",stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_var));
 			}
 
 			dst_container = (ContainerScriptObject *)stk_var->value;
 
 			if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1) == 0){
-				VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type '%s'"
-						,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
+				ZS_VM_STOP_EXECUTE("Internal: Expected stk_result_op1 as string but is type '%s'"
+						,stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
 				);
 			}
 
@@ -354,7 +354,7 @@ namespace zetscript{
 					((StringScriptObject *)stk_result_op1->value)->toString()
 					,data->vm_error_description)
 			)==NULL){
-				VM_STOP_EXECUTEF(data->vm_error_description.c_str());
+				ZS_VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 			}
 
 			id_slot=(zs_int)(((StringScriptObject *)stk_result_op1->value)->getConstChar());
@@ -367,7 +367,7 @@ namespace zetscript{
 
 			stk_var=(data->vm_stk_current-1);
 			if(STK_IS_SCRIPT_OBJECT_VECTOR(stk_var) == 0){
-				VM_STOP_EXECUTE("Expected vector but is type '%s'",stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,stk_var));
+				ZS_VM_STOP_EXECUTE("Expected vector but is type '%s'",stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_var));
 			}
 
 			dst_container = (ContainerScriptObject *)stk_var->value;
@@ -425,7 +425,7 @@ namespace zetscript{
 			}else{ \
 				ContainerScriptObject *src_container=(ContainerScriptObject *)stk_src.value;
 
-				if(VM_CHECK_CONTAINER_FOR_SLOT(src_container)){
+				if(ZS_VM_CHECK_CONTAINER_FOR_SLOT(src_container)){
 					ContainerSlot *container_slot=ContainerSlot::newContainerSlot(
 						dst_container
 						,id_slot
@@ -446,8 +446,8 @@ namespace zetscript{
 				}\
 			}\
 		}else{\
-			VM_STOP_EXECUTE("VM_SET_CONTAINER_ELEMENT:(internal) cannot determine var type %s"\
-				,stk_to_typeof_str(VM_STR_AUX_PARAM_0,data->zs,&stk_src)\
+			ZS_VM_STOP_EXECUTE("VM_SET_CONTAINER_ELEMENT:(internal) cannot determine var type %s"\
+				,stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,&stk_src)\
 			);\
 		}\
 		//----
@@ -508,11 +508,11 @@ lbl_exit_function:
 					}else if(STK_VALUE_IS_ZS_FLOAT(stk_result_op2)){ \
 						index_aux1=*((zs_float*)&stk_result_op2->value);
 					}else{
-						VM_STOP_EXECUTEF("Expected index value for vector access");
+						ZS_VM_STOP_EXECUTEF("Expected index value for vector access");
 					}
 
 					if(index_aux1 >= (int)((VectorScriptObject *)so_aux)->length() || index_aux1 < 0){
-						VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
+						ZS_VM_STOP_EXECUTEF("Error accessing vector, index out of bounds");
 					}
 
 					if((stk_var =((VectorScriptObject *)so_aux)->getUserElementAt(index_aux1))==NULL){
@@ -522,7 +522,7 @@ lbl_exit_function:
 				else{
 					// is object
 					if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)==0){ \
-						VM_STOP_EXECUTEF("Expected string for object access");
+						ZS_VM_STOP_EXECUTEF("Expected string for object access");
 					}
 					// Save STK_PROPERTY_SLOT if not BYTE_CODE_LOAD_VECTOR_ITEM
 					stk_var = ((ObjectScriptObject *)so_aux)->getProperty(
@@ -535,10 +535,10 @@ lbl_exit_function:
 									data->vm_error_description
 								)
 							)==NULL){
-								VM_STOP_EXECUTEF(data->vm_error_description.c_str());
+								ZS_VM_STOP_EXECUTEF(data->vm_error_description.c_str());
 							}
 						}else{
-							VM_STOP_EXECUTE("property '%s' not exist in object",((StringScriptObject *)(stk_result_op2->value))->getConstChar());
+							ZS_VM_STOP_EXECUTE("property '%s' not exist in object",((StringScriptObject *)(stk_result_op2->value))->getConstChar());
 						}
 					}
 				}
@@ -549,7 +549,7 @@ lbl_exit_function:
 					// dest to write
 					if((instruction->properties & INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT)
 								&&
-							VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
+							ZS_VM_CHECK_CONTAINER_FOR_SLOT(so_aux)
 					){
 
 						VM_PUSH_NEW_CONTAINER_SLOT(
@@ -566,7 +566,7 @@ lbl_exit_function:
 				goto lbl_exit_ok;
 			}else if(so_aux->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_STRING){
 				if(STK_VALUE_IS_ZS_INT(stk_result_op2)==false){ \
-					VM_STOP_EXECUTEF("Expected integer index for String access");
+					ZS_VM_STOP_EXECUTEF("Expected integer index for String access");
 				}
 
 				zs_char *ptr_char=(zs_char *)&((StringScriptObject *)so_aux)->str_ptr->c_str()[stk_result_op2->value];
@@ -580,10 +580,10 @@ lbl_exit_function:
 				data->vm_stk_current++;
 				goto lbl_exit_ok;
 			}else{
-				VM_STOP_EXECUTEF("Expected String,Vector or Object for access '[]' operation"); \
+				ZS_VM_STOP_EXECUTEF("Expected String,Vector or Object for access '[]' operation"); \
 			}
 		}else{
-			VM_STOP_EXECUTE("Expected object for access '[]' operation but it was type '%s'",stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)); \
+			ZS_VM_STOP_EXECUTE("Expected object for access '[]' operation but it was type '%s'",stk_to_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)); \
 		}
 
 	lbl_exit_ok:

@@ -9,7 +9,7 @@ namespace zetscript{
 		if(list == NULL) return true;
 
 		if(_node->next == NULL || _node->previous == NULL){
-			VM_SET_USER_ERRORF(vm," Internal error: An already deattached node");
+			ZS_VM_SET_USER_ERRORF(vm," Internal error: An already deattached node");
 			return false;
 		}
 
@@ -60,9 +60,9 @@ namespace zetscript{
 	inline void vm_pop_scope(VirtualMachine *vm)
 	{\
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
-		VM_ScopeBlock *scope_block=--VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
+		VM_ScopeBlock *scope_block=--ZS_VM_CURRENT_SCOPE_FUNCTION->current_scope_block;\
 		Scope *scope=scope_block->scope;\
-		StackElement         * stk_local_vars	=VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
+		StackElement         * stk_local_vars	=ZS_VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
 		zs_vector<Symbol *> *scope_symbols=scope->symbol_variables;\
 		int count=(int)scope_symbols->size();\
 		if(count > 0){\

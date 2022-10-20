@@ -236,7 +236,7 @@ namespace zetscript{
 	apply_metamethod_error:
 
 		if(_is_je_case){
-			VM_ERROR("Error evaluating case for variable as type '%s': %s"
+			ZS_VM_ERROR("Error evaluating case for variable as type '%s': %s"
 				,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
 				,error_found.c_str()
 			);
@@ -247,7 +247,7 @@ namespace zetscript{
 			}
 
 			if(stk_result_op2 != NULL){
-				VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '(%s) %s (%s)'%s%s%s"
+				ZS_VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '(%s) %s (%s)'%s%s%s"
 					,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
 					,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
 					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
@@ -258,7 +258,7 @@ namespace zetscript{
 					,tip.c_str()
 				);
 			}else{
-				VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '%s (%s)'%s%s%s"
+				ZS_VM_ERROR("Operator '%s' (aka %s) cannot be performed as operation with types '%s (%s)'%s%s%s"
 					,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
 					,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
 					,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
@@ -300,7 +300,7 @@ namespace zetscript{
 		if(_byte_code_metamethod == BYTE_CODE_METAMETHOD_ADD_SET){
 			if(	STK_IS_SCRIPT_OBJECT_STRING(stk_result_op1)){\
 				(((StringScriptObject *)stk_result_op1->value)->str_ptr)->append(\
-						(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):stk_to_str(VM_STR_AUX_PARAM_0,data->zs,stk_result_op2)\
+						(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT)?(((ScriptObject *)stk_result_op2->value)->toString()):stk_to_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op2)\
 				);\
 				VM_PUSH_STK_SCRIPT_OBJECT(stk_result_op1->value);\
 				return true;
@@ -316,7 +316,7 @@ namespace zetscript{
 
 		// particular errors
 		if((stk_result_op2->properties==0) || (stk_result_op2->properties & STK_PROPERTY_NULL)){
-			VM_MAIN_ERROR(\
+			ZS_VM_MAIN_ERROR(\
 					VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR\
 					,stk_result_op2\
 					,_byte_code_metamethod\
@@ -338,20 +338,20 @@ namespace zetscript{
 			// avoid be removed on function exit stk_result_op1 is always the _this object
 			if(stk_result_op2->properties & STK_PROPERTY_SCRIPT_OBJECT){
 				if(vm_share_script_object(_vm,(ScriptObject *)stk_result_op2->value)==false){
-					VM_STOP_EXECUTEF("Internal error: cannot share script object");
+					ZS_VM_STOP_EXECUTEF("Internal error: cannot share script object");
 				}
 			}
 
 			if(setter_info.setters->size()>1){
 				symbol_setter = so_aux->getScriptType()->getSymbol(str_set_metamethod);
 				if(symbol_setter == NULL){
-					VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"
+					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not implemented"
 						,str_set_metamethod
 						,str_aka_set_metamethod
 					);
 				}
 				if((symbol_setter->properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)==0){
-					VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not function"
+					ZS_VM_STOP_EXECUTE("Operator metamethod '%s' (aka %s) is not function"
 						,str_set_metamethod
 						,str_aka_set_metamethod
 					);\
@@ -382,13 +382,13 @@ namespace zetscript{
 				,1))==NULL\
 			){ \
 				if(member_property!=NULL){ \
-					VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
+					ZS_VM_STOP_EXECUTE("Property '%s::%s' does not implement metamethod '%s'"\
 							,so_aux->getScriptType()->str_script_type.c_str()\
 							,member_property->property_name.c_str()\
 							,str_set_metamethod\
 					);\
 				}else{\
-					VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
+					ZS_VM_STOP_EXECUTE("Class '%s' does not implement '%s' metamethod" \
 							,so_aux->getScriptType()->str_script_type.c_str() \
 							,str_set_metamethod\
 					);\
@@ -396,7 +396,7 @@ namespace zetscript{
 			}\
 		}
 		/* call metamethod  */ \
-		VM_INNER_CALL(\
+		ZS_VM_INNER_CALL(\
 			so_aux\
 			,ptr_function_found\
 			,1 \
@@ -405,7 +405,7 @@ namespace zetscript{
 		/*getter after*/\
 		if(ptr_metamethod_members_aux->getter!=NULL){\
 			/* call _neg */\
-				VM_INNER_CALL(\
+				ZS_VM_INNER_CALL(\
 					so_aux\
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,0 \
@@ -477,7 +477,7 @@ namespace zetscript{
 
 		if(symbol_metamethod_pre_operation != NULL){
 			/* call _neg */\
-			VM_INNER_CALL(\
+			ZS_VM_INNER_CALL(\
 					so_aux\
 					,(ScriptFunction *)symbol_metamethod_pre_operation->ref_ptr\
 					, 0 \
@@ -488,13 +488,13 @@ namespace zetscript{
 				data->vm_stk_current->value=(zs_int)so_aux;\
 				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
-				*data->vm_stk_current=__STK_VAR_COPY__;\
+				*data->vm_stk_current=__ZS_STK_VAR_COPY__;\
 			}\
 		}\
 		data->vm_stk_current++;\
 
 		/* call post operation metamethod */\
-		VM_INNER_CALL(\
+		ZS_VM_INNER_CALL(\
 				so_aux\
 				,(ScriptFunction *)symbol_metamethod_post->ref_ptr\
 				, 0 \
@@ -542,7 +542,7 @@ lbl_exit_function:
 		if(symbol_metamethod_pre==NULL){\
 			METAMETHOD_OPERATION_NOT_FOUND(_byte_code_metamethod); \
 		}\
-		VM_INNER_CALL(\
+		ZS_VM_INNER_CALL(\
 				so_aux\
 				,(ScriptFunction *)symbol_metamethod_pre->ref_ptr\
 				,0 \
@@ -551,7 +551,7 @@ lbl_exit_function:
 		/*getter after*/\
 		if(ptr_metamethod_members_aux->getter!=NULL){\
 			/* call _neg */\
-			VM_INNER_CALL(\
+			ZS_VM_INNER_CALL(\
 					so_aux\
 					,(ScriptFunction *)ptr_metamethod_members_aux->getter->ref_ptr\
 					,0 \
@@ -562,7 +562,7 @@ lbl_exit_function:
 				data->vm_stk_current->value=(zs_int)so_aux;\
 				data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT;\
 			}else{\
-				*data->vm_stk_current=__STK_VAR_COPY__;\
+				*data->vm_stk_current=__ZS_STK_VAR_COPY__;\
 			}\
 		}\
 		data->vm_stk_current++;\

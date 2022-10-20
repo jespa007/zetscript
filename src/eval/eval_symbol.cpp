@@ -174,7 +174,6 @@ namespace zetscript{
 								if((local_symbol->properties & SYMBOL_PROPERTY_ARG_BY_REF) == SYMBOL_PROPERTY_ARG_BY_REF){
 									byte_code= ByteCode::BYTE_CODE_LOAD_REF;
 								}
-
 							}
 						}else{
 							if(eval_data->current_function->script_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN){

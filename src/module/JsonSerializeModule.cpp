@@ -127,7 +127,7 @@ namespace zetscript{
 
 									value_from_vm_execute=true;
 
-									stk_getter_result=VM_EXECUTE(
+									stk_getter_result=ZS_VM_EXECUTE(
 										_zs->getVirtualMachine()
 										,_obj
 										,ptr_function

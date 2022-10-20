@@ -55,7 +55,7 @@ namespace zetscript{
 			vm_create_shared_script_object(
 					vm
 					,(ScriptObject *)stk->value
-					,VM_MAIN_SCOPE_BLOCK
+					,ZS_VM_MAIN_SCOPE_BLOCK
 			);
 			vm_share_script_object(vm,(ScriptObject *)stk->value);
 		}

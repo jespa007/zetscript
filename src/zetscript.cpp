@@ -456,6 +456,14 @@ namespace zetscript{
 				--v;
 			}
 
+			// remove cyclic container instances
+			vm_check_cyclic_references(this->virtual_machine);
+
+			vm_remove_empty_shared_pointers(
+					this->virtual_machine
+				,vm_get_scope_block_main(this->virtual_machine)
+			);
+
 			// clear all garbage
 			StackElement *vm_stack=vm_get_stack_elements(virtual_machine);
 			memset(vm_stack+idx_start_variable,0,sizeof(StackElement)*(VM_STACK_MAX-idx_start_variable));

@@ -56,7 +56,7 @@ namespace zetscript{
 						,fun_obj
 						,NULL
 						,0
-						,VM_PROPERTY_CALL_FROM_NATIVE
+						,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 						,file
 						,line
 					);
@@ -82,7 +82,7 @@ namespace zetscript{
 								,fun_obj
 								,NULL
 								,0
-								,VM_PROPERTY_CALL_FROM_NATIVE
+								,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line
 						);
@@ -123,7 +123,7 @@ namespace zetscript{
 								,fun_obj
 								,args
 								,1
-								,VM_PROPERTY_CALL_FROM_NATIVE
+								,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line);
 				}
@@ -156,7 +156,7 @@ namespace zetscript{
 								,fun_obj
 								,args
 								,1
-								,VM_PROPERTY_CALL_FROM_NATIVE
+								,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line);
 
@@ -200,7 +200,7 @@ namespace zetscript{
 						,fun_obj
 						,args
 						,2
-						,VM_PROPERTY_CALL_FROM_NATIVE
+						,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 						,file
 						,line
 					);
@@ -240,7 +240,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,2
-							,VM_PROPERTY_CALL_FROM_NATIVE
+							,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line
 						);
@@ -291,7 +291,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,3
-							,VM_PROPERTY_CALL_FROM_NATIVE
+							,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line
 					);
@@ -331,7 +331,7 @@ namespace zetscript{
 						,fun_obj
 						,args
 						,3
-						,VM_PROPERTY_CALL_FROM_NATIVE
+						,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 						,file
 						,line
 					);
@@ -382,7 +382,7 @@ namespace zetscript{
 						,fun_obj
 						,args
 						,4
-						,VM_PROPERTY_CALL_FROM_NATIVE
+						,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 						,file
 						,line
 					);
@@ -426,7 +426,7 @@ namespace zetscript{
 								,fun_obj
 								,args
 								,4
-								,VM_PROPERTY_CALL_FROM_NATIVE
+								,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line
 								);
@@ -483,7 +483,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,5
-							,VM_PROPERTY_CALL_FROM_NATIVE
+							,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line);
 				}
@@ -531,7 +531,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,5
-							,VM_PROPERTY_CALL_FROM_NATIVE
+							,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line);
 
@@ -590,7 +590,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,6
-							,VM_PROPERTY_CALL_FROM_NATIVE
+							,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line);
 				}
@@ -638,7 +638,7 @@ namespace zetscript{
 								fun_obj,
 								args,
 								6
-								,VM_PROPERTY_CALL_FROM_NATIVE
+								,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line);
 
@@ -726,7 +726,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,7
-							,VM_PROPERTY_CALL_FROM_NATIVE
+							,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line);
 				}
@@ -807,7 +807,7 @@ namespace zetscript{
 								fun_obj,
 								args,
 								7
-								,VM_PROPERTY_CALL_FROM_NATIVE
+								,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line);
 
@@ -900,7 +900,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,8
-							,VM_PROPERTY_CALL_FROM_NATIVE
+							,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line);
 				}
@@ -987,7 +987,7 @@ namespace zetscript{
 								fun_obj,
 								args,
 								8
-								,VM_PROPERTY_CALL_FROM_NATIVE
+								,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line);
 
@@ -1087,7 +1087,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,9
-							,VM_PROPERTY_CALL_FROM_NATIVE
+							,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line);
 				}
@@ -1180,7 +1180,7 @@ namespace zetscript{
 								fun_obj,
 								args,
 								9
-								,VM_PROPERTY_CALL_FROM_NATIVE
+								,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line);
 
@@ -1286,7 +1286,7 @@ namespace zetscript{
 							,fun_obj
 							,args
 							,10
-							,VM_PROPERTY_CALL_FROM_NATIVE
+							,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 							,file
 							,line);
 				}
@@ -1385,7 +1385,7 @@ namespace zetscript{
 								fun_obj,
 								args,
 								10
-								,VM_PROPERTY_CALL_FROM_NATIVE
+								,ZS_VM_PROPERTY_CALL_FROM_NATIVE
 								,file
 								,line);
 

@@ -121,6 +121,7 @@ int main(int argc, char * argv[]) {
 		,"test_constant_operations"					//29.
 		,"test_member_functions"					//30.
 		,"test_member_variables"					//31.
+		,"test_cyclic_references"					//32.
 		,0
 	};
 
@@ -150,6 +151,16 @@ int main(int argc, char * argv[]) {
 			}
 
 			zs.evalFile(filename.c_str());
+
+
+			if(strcmp(*it_test_script_files,"test_cyclic_references")==0){
+				auto cyclic_container_instances=vm_get_cyclic_container_instances(zs.getVirtualMachine());
+
+				if(cyclic_container_instances->count() > 0){
+					throw std::runtime_error("Some cyclic container instances still not freed");
+				}
+			}
+
 			n_test_script_success++;
 			printf("OK\n");
 		}catch(std::exception & ex){

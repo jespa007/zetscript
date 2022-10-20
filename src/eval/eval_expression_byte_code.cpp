@@ -235,7 +235,7 @@ namespace zetscript{
 			eval_instruction->instruction_source_info= InstructionSourceInfo(
 					eval_data->current_parsing_file
 					,split_node->line
-					,NULL
+					,get_mapped_name(eval_data,eval_instruction->symbol_name.c_str())
 			);
 		}
 	}

@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#define NO_PARAMS_SYMBOL_ONLY			-1
+#define ZS_NO_PARAMS_SYMBOL_ONLY			-1
 
 
 //typedef tInfoStatementOp *PInfoStatementOp;

@@ -171,7 +171,7 @@ namespace zetscript{
 			, const zs_string & _symbol_name
 			, uint16_t _check_repeated_symbols_direction
 	){
-		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
+		checkPreRegisterSymbol(_file, _line, _symbol_name,  ZS_NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
 		Symbol *symbol 		= new Symbol(_symbol_name);
 		symbol->idx_position=symbol_types->size();
@@ -192,7 +192,7 @@ namespace zetscript{
 			, const zs_string & _symbol_name
 			,uint16_t _check_repeated_symbols_direction
 	){
-		checkPreRegisterSymbol(_file, _line, _symbol_name,  NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
+		checkPreRegisterSymbol(_file, _line, _symbol_name,  ZS_NO_PARAMS_SYMBOL_ONLY,_check_repeated_symbols_direction);
 
 		Symbol *symbol 		= new Symbol(_symbol_name);
 		symbol->idx_position=symbol_variables->size();
@@ -261,7 +261,7 @@ namespace zetscript{
 			Symbol *sv=(Symbol *)symbol_functions->items[i];
 			if(
 				   ( sv->name == _str_symbol )
-			   &&  ( sv->n_params == _n_params || _n_params==NO_PARAMS_SYMBOL_ONLY )
+			   &&  ( sv->n_params == _n_params || _n_params==ZS_NO_PARAMS_SYMBOL_ONLY )
 			){
 				return sv;
 			}
