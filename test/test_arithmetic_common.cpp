@@ -1,37 +1,60 @@
 
 #include "test_arithmetic_common.h"
 
-#define INLINE_OPERATION(val1,op,val2) {zetscript::zs_strutils::format(str_format,to_string(val1).c_str(),ZS_STR(op),to_string(val2).c_str()), (val1) op (val2)}
+#define INLINE_OPERATION(val1,op,val2) {\
+	zetscript::zs_strutils::format(\
+			str_format\
+			,to_string(val1).c_str()\
+			,ZS_STR(op)\
+			,to_string(val2).c_str()\
+	)\
+	, (val1) op (val2)\
+}
 
 
-zetscript::zs_string to_string(bool _b){
+zetscript::zs_string to_string(
+		bool _b
+){
 	return _b?"true":"false";
 }
 
-zetscript::zs_string to_string(zetscript::zs_int _i){
+zetscript::zs_string to_string(
+		zetscript::zs_int _i
+){
 	return zetscript::zs_strutils::zs_int_to_str(_i);
 }
 
-zetscript::zs_string to_string(zetscript::zs_float _f){
+zetscript::zs_string to_string(
+		zetscript::zs_float _f
+){
 	return zetscript::zs_strutils::zs_float_to_str(_f);
 }
 
-zetscript::zs_string to_string(const zetscript::zs_string & _s){
+zetscript::zs_string to_string(
+		const zetscript::zs_string & _s
+){
 	return _s;
 }
 
 // Usable AlmostEqual function
-bool float_values_are_almost_the_same(zetscript::zs_float A, zetscript::zs_float B)
-{
-	return (fabs(A - B) <= FLT_EPSILON *2* ZS_MAX(fabs(A), fabs(B)));
+bool float_values_are_almost_the_same(
+		zetscript::zs_float A
+		, zetscript::zs_float B
+){
+	auto a=fabs(A - B);
+	auto b=FLT_EPSILON *2* ZS_MAX(fabs(A), fabs(B));
+	return a <= b;//(fabs(A - B) <= FLT_EPSILON *2* ZS_MAX(fabs(A), fabs(B)));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
 // INTEGER OPERATIONS
 //
-void test_arithmetic_int_expression(zetscript::ZetScript *_zs, zetscript::zs_int expr,const char *str_expr)
-{ \
+void test_arithmetic_int_expression(
+		zetscript::ZetScript *_zs
+		, zetscript::zs_int expr
+		,const char *str_expr
+){ \
 	try{\
 		zetscript::StackElement stk=_zs->eval(zetscript::zs_string("return ")+str_expr);\
 		if(stk.properties & zetscript::STK_PROPERTY_ZS_INT){\
@@ -51,7 +74,11 @@ void test_arithmetic_int_expression(zetscript::ZetScript *_zs, zetscript::zs_int
 	}\
 }
 
-void test_constant_int_expression(zetscript::ZetScript *_zs, const char *str_expr, zetscript::zs_int expected_value) {
+void test_constant_int_expression(
+		zetscript::ZetScript *_zs
+		, const char *str_expr
+		, zetscript::zs_int expected_value
+) {
 	try{\
 		zetscript::StackElement stk=_zs->eval(str_expr);\
 		if(stk.properties & zetscript::STK_PROPERTY_ZS_INT){\
@@ -71,10 +98,24 @@ void test_constant_int_expression(zetscript::ZetScript *_zs, const char *str_exp
 	}\
 }
 
-#define INLINE_OPERATION_ASSIGN(val1,op,val2) {zetscript::zs_strutils::format(str_format,ZS_STR(op),to_string(val2).c_str()), (val1) op (val2)}
-void _complete_test_arithmetic_integer_op(zetscript::ZetScript *_zs,zetscript::zs_int val1, zetscript::zs_int val2, const char *str_format){
+#define INLINE_OPERATION_ASSIGN(val1,op,val2) {\
+		zetscript::zs_strutils::format(\
+			str_format\
+			,ZS_STR(op)\
+			,to_string(val2).c_str()\
+		)\
+		, (val1) op (val2)\
+	}
+
+void _complete_test_arithmetic_integer_op(
+		zetscript::ZetScript *_zs
+		,zetscript::zs_int val1
+		, zetscript::zs_int val2
+		, const char *str_format
+){
 	struct _test_arithmetic_integer_op_data {
-		zetscript::zs_string str; zetscript::zs_int val;\
+		zetscript::zs_string str;
+		zetscript::zs_int val;
 	}test_arithmetic_integer_op_data[] = {
 		INLINE_OPERATION(val1,+,val2)
 		,INLINE_OPERATION(val1,+,-val2)
@@ -131,7 +172,12 @@ void _complete_test_arithmetic_integer_op(zetscript::ZetScript *_zs,zetscript::z
 	}
 }
 
-void _complete_test_arithmetic_integer_op_assign(zetscript::ZetScript *_zs, zetscript::zs_int *ref_val1, zetscript::zs_int val2, const char *str_format){
+void _complete_test_arithmetic_integer_op_assign(
+		zetscript::ZetScript *_zs
+		, zetscript::zs_int *ref_val1
+		, zetscript::zs_int val2
+		, const char *str_format
+){
 	struct _test_arithmetic_integer_op_data {
 		zetscript::zs_string str; zetscript::zs_int val;\
 	}test_arithmetic_integer_op_data[] = {
@@ -190,7 +236,11 @@ void _complete_test_arithmetic_integer_op_assign(zetscript::ZetScript *_zs, zets
 //
 // FLOAT OPERATIONS
 //
-void test_constant_float_expression(zetscript::ZetScript *_zs,const char  *str_expr, zetscript::zs_float expected_value) {
+void test_constant_float_expression(
+		zetscript::ZetScript *_zs
+		,const char  *str_expr
+		, zetscript::zs_float expected_value
+) {
 	try{
 		zetscript::StackElement stk=_zs->eval(str_expr);
 		if(stk.properties & zetscript::STK_PROPERTY_ZS_FLOAT){
@@ -213,7 +263,12 @@ void test_constant_float_expression(zetscript::ZetScript *_zs,const char  *str_e
 	}
 }
 
-void test_arithmetic_float_expression(zetscript::ZetScript *_zs,zetscript::zs_float expr, const char *str_expr, bool print_warnings) {
+void test_arithmetic_float_expression(
+		zetscript::ZetScript *_zs
+		,zetscript::zs_float expr
+		, const char *str_expr
+		, bool print_warnings
+) {
 
 	try {
 		zetscript::StackElement stk=_zs->eval(zetscript::zs_string("return ")+str_expr);
@@ -243,9 +298,15 @@ void test_arithmetic_float_expression(zetscript::ZetScript *_zs,zetscript::zs_fl
 }
 
 #define INLINE_FLOAT_MOD_OPERATION(val1,val2) {zetscript::zs_strutils::format(str_format,to_string(val1).c_str(),"%",to_string(val2).c_str()), (zetscript::zs_float)fmod(val1,val2)}
-void _complete_test_arithmetic_float_op(zetscript::ZetScript *_zs,zetscript::zs_float val1, zetscript::zs_float val2, const char *str_format) {
+void _complete_test_arithmetic_float_op(
+		zetscript::ZetScript *_zs
+		,zetscript::zs_float val1
+		, zetscript::zs_float val2
+		, const char *str_format
+) {
 	struct _test_arithmetic_float_op_data {
-		zetscript::zs_string str; zetscript::zs_float val;
+		zetscript::zs_string str;
+		zetscript::zs_float val;
 	}test_arithmetic_float_op_data[] = {
 		INLINE_OPERATION(val1,+,val2)
 		,INLINE_OPERATION(val1,+,-val2)

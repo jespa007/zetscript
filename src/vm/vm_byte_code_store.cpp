@@ -58,7 +58,7 @@ namespace zetscript{
 		}else if(stk_dst->properties & STK_PROPERTY_CONTAINER_SLOT){
 			dst_container_slot=((ContainerSlot *)stk_dst->value);
 			stk_dst=dst_container_slot->getPtrStackElement();
-		 }else{
+		 }else if((stk_dst->properties & STK_PROPERTY_ZS_CHAR_PTR)==0){
 			ZS_VM_STOP_EXECUTE("Expected l-value on assignment but it was type '%s'"
 				,stk_to_typeof_str(data->zs,stk_dst).c_str()
 			);
@@ -222,7 +222,7 @@ namespace zetscript{
 			}else if(stk_src_properties & STK_PROPERTY_ZS_FLOAT){
 				stk_dst->properties=STK_PROPERTY_ZS_FLOAT;
 				stk_dst->value=0; // reset value
-				*((zs_float *)&stk_dst->value)=*((zs_float *)&stk_src->value);
+				ZS_INTPTR_TO_FLOAT(stk_dst->value)=ZS_INTPTR_TO_FLOAT(stk_src->value);
 			}else if(stk_src_properties & STK_PROPERTY_BOOL){
 				stk_dst->properties=STK_PROPERTY_BOOL;
 				stk_dst->value=stk_src->value;

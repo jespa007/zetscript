@@ -26,10 +26,10 @@ data->vm_stk_current->value=(zs_int)obj_value; \
 data->vm_stk_current->properties=STK_PROPERTY_SCRIPT_OBJECT; \
 data->vm_stk_current++;
 
-#define ZS_STK_TO_FLOAT(_stk) (*((zs_float *)&_stk->value))
+#define ZS_INTPTR_TO_FLOAT(_value) (*((zs_float *)&(_value)))
 
 #define VM_PUSH_STK_ZS_FLOAT(init_value) \
-	*((zs_float *)&data->vm_stk_current->value)=(init_value);\
+	ZS_INTPTR_TO_FLOAT(data->vm_stk_current->value)=(init_value);\
 	data->vm_stk_current->properties=STK_PROPERTY_ZS_FLOAT; \
 	data->vm_stk_current++; \
 

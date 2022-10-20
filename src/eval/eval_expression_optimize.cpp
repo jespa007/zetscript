@@ -10,15 +10,15 @@
 		result_op_zs_int=(i1->value_op2) ARITHMETIC_OP (i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_ZS_INT;\
 	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){\
-		result_op_float=(i1->value_op2) ARITHMETIC_OP (*((zs_float *)&i2->value_op2));\
+		result_op_float=(i1->value_op2) ARITHMETIC_OP (ZS_INTPTR_TO_FLOAT(i2->value_op2));\
 		ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
 		result_bc=BYTE_CODE_LOAD_ZS_FLOAT;\
 	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
-		result_op_float=(*((zs_float *)&i1->value_op2)) ARITHMETIC_OP (i2->value_op2);\
+		result_op_float=(ZS_INTPTR_TO_FLOAT(i1->value_op2)) ARITHMETIC_OP (i2->value_op2);\
 		ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
 		result_bc=BYTE_CODE_LOAD_ZS_FLOAT;\
 	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){\
-		result_op_float=(*((zs_float *)&i1->value_op2)) ARITHMETIC_OP (*((zs_float *)&i2->value_op2));\
+		result_op_float=(ZS_INTPTR_TO_FLOAT(i1->value_op2)) ARITHMETIC_OP (ZS_INTPTR_TO_FLOAT(i2->value_op2));\
 		ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
 		result_bc=BYTE_CODE_LOAD_ZS_FLOAT;\
 	}else{\
@@ -40,13 +40,13 @@
 		result_op_bool=(i1->value_op2)__COMPARE_OP__(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){\
-		result_op_float=(i1->value_op2)__COMPARE_OP__*((zs_float *)&i2->value_op2);\
+		result_op_float=(i1->value_op2)__COMPARE_OP__ ZS_INTPTR_TO_FLOAT(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){\
-		result_op_bool=*((zs_float *)&i1->value_op2)__COMPARE_OP__(i2->value_op2);\
+		result_op_bool=ZS_INTPTR_TO_FLOAT(i1->value_op2)__COMPARE_OP__(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){\
-		result_op_bool=*((zs_float *)&i1->value_op2)__COMPARE_OP__ *((zs_float *)&i2->value_op2);\
+		result_op_bool=ZS_INTPTR_TO_FLOAT(i1->value_op2)__COMPARE_OP__ ZS_INTPTR_TO_FLOAT(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else if( i1->byte_code == BYTE_CODE_LOAD_STRING && i2->byte_code==BYTE_CODE_LOAD_STRING){\
 		result_op_bool=ZS_STRCMP(i1->getConstantValueOp2ToString().c_str(), __COMPARE_OP__ ,i2->getConstantValueOp2ToString().c_str());\
@@ -246,15 +246,15 @@ namespace zetscript{
 				result_op_zs_int=(i1->value_op2)%(i2->value_op2);
 				result_bc=BYTE_CODE_LOAD_ZS_INT;
 			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_INT){
-				result_op_float=fmod(*((zs_float *)&i1->value_op2),(i2->value_op2));
+				result_op_float=fmod(ZS_INTPTR_TO_FLOAT(i1->value_op2),(i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_INT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){
-				result_op_float=fmod(*((zs_float *)&i1->value_op2),(i2->value_op2));
+				result_op_float=fmod(ZS_INTPTR_TO_FLOAT(i1->value_op2),(i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else if(i1->byte_code == BYTE_CODE_LOAD_ZS_FLOAT && i2->byte_code == BYTE_CODE_LOAD_ZS_FLOAT){
-				result_op_float=fmod(*((zs_float *)&i1->value_op2), *((zs_float *)&i2->value_op2));
+				result_op_float=fmod(ZS_INTPTR_TO_FLOAT(i1->value_op2), ZS_INTPTR_TO_FLOAT(i2->value_op2));
 				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else{

@@ -23,10 +23,10 @@ void test_arithmetic_vars(zetscript::ZetScript *_zs, bool _show_print=true) {
 
 
 	TEST_CONSTANT_INT_EXPRESSION(_zs,"i=10;i*=10;return i;",100);
-	TEST_CONSTANT_INT_EXPRESSION(_zs,"i/=10;return i;",10);
-	TEST_CONSTANT_INT_EXPRESSION(_zs,"i+=10;return i;",20);
-	TEST_CONSTANT_INT_EXPRESSION(_zs,"i-=5;return i;",15);
-	TEST_CONSTANT_INT_EXPRESSION(_zs,"i%=10;return i;",5);
+	TEST_CONSTANT_INT_EXPRESSION(_zs,"i+=155;return i;",255);
+	TEST_CONSTANT_INT_EXPRESSION(_zs,"i-=5;return i;",250);
+	TEST_CONSTANT_FLOAT_EXPRESSION(_zs,"i/=10;return i;",25);
+	TEST_CONSTANT_FLOAT_EXPRESSION(_zs,"i%=100;return i;",25);
 
 	// test reassign and float
 	TEST_CONSTANT_FLOAT_EXPRESSION(_zs,"i=2.0;return i;",2.0f);

@@ -189,7 +189,6 @@ namespace zetscript{
 		return result;
 	}
 
-
 	bool isNumber(ZetScript *_zs,StackElement *_stk){
 		ZS_UNUSUED_PARAM(_zs);
 		return (_stk->properties & (STK_PROPERTY_ZS_INT | STK_PROPERTY_ZS_FLOAT)) != 0;

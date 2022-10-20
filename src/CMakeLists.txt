@@ -240,14 +240,6 @@ if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
 	
 	target_link_libraries(helloworld${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
-	
-	# register_variables
-	add_executable(register_variable${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../samples/register_variable.cpp
-	)	
-	
-	target_link_libraries(register_variable${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
-	
 	# register_functions
 	add_executable(register_function${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../samples/register_function.cpp

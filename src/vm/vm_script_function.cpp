@@ -210,7 +210,7 @@ namespace zetscript{
 				if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){ // arithmetic operation
 					VM_PUSH_STK_ZS_INT((-((zs_int)(stk_result_op1->value))));
 				}else if(stk_result_op1->properties & STK_PROPERTY_ZS_FLOAT){
-					VM_PUSH_STK_ZS_FLOAT(-*((zs_float *)&stk_result_op1->value));
+					VM_PUSH_STK_ZS_FLOAT(-ZS_INTPTR_TO_FLOAT(stk_result_op1->value));
 				}else{ // try metamethod ...
 					if(!vm_call_metamethod(
 							_vm

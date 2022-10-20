@@ -154,14 +154,14 @@ namespace zetscript{
 		/**
 		 * Register C variable
 		 */
-		template <typename V>
+		/*template <typename V>
 		 void bindVariable(const zs_string & _var_name,V var_ptr, const char *_registered_file="",short _registered_line=-1){
 			try{
 				script_type_factory->bindGlobalVariable(_var_name,var_ptr, _registered_file, _registered_line);
 			}catch(zs_exception & _ex){
 				THROW_RUNTIME_ERROR("Exception in '%s(\"%s\",...)': %s",__func__,_var_name.c_str(),_ex.getDescription());
 			}
-		 }
+		 }*/
 
 		void bindConstantVariable(const zs_string & _var_name, int value, const char *_registered_file="", short _registered_line=-1){
 			try{
