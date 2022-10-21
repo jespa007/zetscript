@@ -328,6 +328,7 @@ namespace zetscript{
 			// just the name of op
 			case BYTE_CODE_PUSH_SCOPE:
 			case BYTE_CODE_POP_SCOPE:
+			case BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
 					,idx_instruction
 					,req_stk
