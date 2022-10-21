@@ -313,6 +313,36 @@ namespace zetscript{
 			}
 		}
 
+
+		template <typename C,typename F>
+		void	bindMemberPropertyAddSetter(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyAddSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
+			}
+		}
+
+		template <typename C,typename F>
+		void	bindMemberPropertySubSetter(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertySubSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
+			}
+		}
+
+
 		template <typename C,typename F>
 		void	bindMemberPropertyPostIncrement(
 				const zs_string & _property_name
