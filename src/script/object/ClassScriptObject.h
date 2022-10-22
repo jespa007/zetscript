@@ -18,7 +18,7 @@ namespace zetscript{
 			Instruction 		*	instruction_new;
 			bool 					was_created_by_constructor;
 
-			static ClassScriptObject * newScriptObjectClass(ZetScript *_zs,short _idx_script_type,void *  _c_object=NULL);
+			static ClassScriptObject * newClassScriptObject(ZetScript *_zs,short _idx_script_type,void *  _c_object=NULL);
 
 			ClassScriptObject(ZetScript *_zs,short _idx_script_type,void *  _c_object=NULL);
 

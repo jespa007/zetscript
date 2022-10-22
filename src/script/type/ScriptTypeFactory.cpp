@@ -754,7 +754,7 @@ namespace zetscript{
 
 				if(rc->idx_script_type > IDX_TYPE_SCRIPT_OBJECT_CLASS){
 					 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
-					 so = ClassScriptObject::newScriptObjectClass(zs,rc->idx_script_type, value_object);
+					 so = ClassScriptObject::newClassScriptObject(zs,rc->idx_script_type, value_object);
 				}else{
 					 THROW_RUNTIME_ERROR("Internal error: An idx type was expected but it was %i",rc->idx_script_type);
 					 return NULL;

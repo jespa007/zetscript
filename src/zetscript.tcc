@@ -11,8 +11,8 @@
 namespace zetscript{
 
 		template<typename _C>
-		ClassScriptObject * ZetScript::newScriptObjectClass(_C *_instance){
-			//return ClassScriptObject::newShareableScriptObjectClass<>(this);
+		ClassScriptObject * ZetScript::newClassScriptObject(_C *_instance){
+			//return ClassScriptObject::newShareableClassScriptObject<>(this);
 			const char * str_script_type_ptr = typeid(_C *).name();
 			int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -31,7 +31,7 @@ namespace zetscript{
 			}
 
 
-			auto so_script=ClassScriptObject::newScriptObjectClass(this,idx_script_type,(void *)_instance);
+			auto so_script=ClassScriptObject::newClassScriptObject(this,idx_script_type,(void *)_instance);
 			so_script->deleteNativeObjectOnDestroy(true);
 			return so_script;
 		}

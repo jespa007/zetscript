@@ -9,7 +9,7 @@
 
 namespace zetscript{
 
-	ClassScriptObject * ClassScriptObject::newScriptObjectClass(ZetScript *_zs, short _idx_script_type,void *_c_object){
+	ClassScriptObject * ClassScriptObject::newClassScriptObject(ZetScript *_zs, short _idx_script_type,void *_c_object){
 		return new ClassScriptObject(_zs, _idx_script_type,_c_object);
 	}
 
@@ -209,7 +209,7 @@ namespace zetscript{
 
 			if(script_class_native->c_destructor==NULL){
 				THROW_RUNTIME_ERROR(
-						"Cannot delete variable as type '%s' because it was defined as not instanceable but created through 'newScriptObjectClass'. To solve this issue, define type '%s' as instanceable (i.e to have defined type '%s' with constructor/destructor functions)"
+						"Cannot delete variable as type '%s' because it was defined as not instanceable but created through 'newClassScriptObject'. To solve this issue, define type '%s' as instanceable (i.e to have defined type '%s' with constructor/destructor functions)"
 						,script_class_native->str_script_type.c_str()
 						,script_class_native->str_script_type.c_str()
 						,script_class_native->str_script_type.c_str()
