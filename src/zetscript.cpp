@@ -173,7 +173,12 @@ namespace zetscript{
 	 // PRINT INFO
 
 	void ZetScript::printAllStructSizes(){
-		printf("ZetScript:%i\n"
+		printf(
+				"zs_char:%i\n"
+				"zs_int:%i\n"
+				"zs_float:%i\n"
+				"bool:%i\n"
+				"ZetScript:%i\n"
 				"VirtualMachineData:%i\n"
 				"ScriptType:%i\n"
 				"ScriptFunction:%i\n"
@@ -186,6 +191,10 @@ namespace zetscript{
 				"ObjectScriptObject:%i\n"
 				"ClassScriptObject:%i\n"
 				"ContainerSlot:%i\n"
+				,(int)sizeof(zs_char)
+				,(int)sizeof(zs_int)
+				,(int)sizeof(zs_float)
+				,(int)sizeof(bool)
 				,(int)sizeof(ZetScript)
 				, (int)sizeof(VirtualMachineData)
 				, (int)sizeof(ScriptType)
