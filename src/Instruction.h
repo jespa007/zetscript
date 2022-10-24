@@ -83,8 +83,11 @@ typedef enum:unsigned short {
 
 namespace zetscript{
 
-	#pragma pack(push, 1)
-
+#ifndef __arm__
+// Instruction estructure is unaligned estructure due pragma(1) and in ARM environment it derives a seg fault bus error when get float from intptr_t
+// so in arm is disabled. Another option could be align the estructure for float ops (i.e put value op2 at the begining of Instruction)
+#pragma pack(push, 1)
+#endif
 
 	struct Instruction {
 
@@ -110,8 +113,9 @@ namespace zetscript{
 
 
 	};
-
-	#pragma pack(pop)
+#ifndef __arm__
+#pragma pack(pop)
+#endif
 
 	class InstructionSourceInfo {
 	public:

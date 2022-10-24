@@ -91,8 +91,6 @@ namespace zetscript{
 
 	}StkProperty;
 
-	#pragma pack(push, 1)
-
 	struct StackElement {
 		zs_int 			value; // operable value
 		uint16_t 		properties; // it tells its properties
@@ -103,9 +101,7 @@ namespace zetscript{
 		zs_float		toFloat();
 
 		StackElement	typeOf();
-
 	};
-	#pragma pack(pop)
 
 
 	zs_string		stk_to_str(ZetScript *_zs, StackElement *_stk,const zs_string & _format="");

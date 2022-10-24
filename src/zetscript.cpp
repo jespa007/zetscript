@@ -182,6 +182,7 @@ namespace zetscript{
 				"VirtualMachineData:%i\n"
 				"ScriptType:%i\n"
 				"ScriptFunction:%i\n"
+				"Instruction:%i\n"
 				"StackElement:%i\n"
 				"Symbol:%i\n"
 				"Scope:%i\n"
@@ -199,6 +200,7 @@ namespace zetscript{
 				, (int)sizeof(VirtualMachineData)
 				, (int)sizeof(ScriptType)
 				, (int)sizeof(ScriptFunction)
+				, (int)sizeof(Instruction)
 				, (int)sizeof(StackElement)
 				, (int)sizeof(Symbol)
 				, (int)sizeof(Scope)
