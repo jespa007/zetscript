@@ -92,7 +92,7 @@ int main(int argc, char * argv[]) {
 		//"samples/assert_error.zs"
 		"test_assign"								//1.
 		,"test_call"								//2.
-		,"test_metamethods"							//3.
+		,"test_arithmetic_metamethods"				//3.
 		,"test_const"								//4.
 		,"test_eval"								//5.
 		,"test_for_in_object"						//6.

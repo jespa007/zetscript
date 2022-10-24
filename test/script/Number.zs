@@ -17,11 +17,11 @@ class Number{
 		_get(){
 			return this.__num__;
 		}
-		_set(_val){
-			this.__num__=_val;
-		}
 		_neg(){
 			return -this.__num__;
+		}		
+		_set(_val){
+			this.__num__=_val;
 		}
 		_post_inc(){
 			this.__num__++;
@@ -275,5 +275,20 @@ class Number{
 		n1,n2=Number::parseFloat(_n1,_n2);
 		return n1==n2
 	}
-
+	
+	_post_inc(){
+		this.num++;
+	}
+	
+	_post_dec(){
+		this.num--;
+	}
+	
+	_pre_inc(){
+		++this.num;
+	}
+	
+	_pre_dec(){
+		--this.num;
+	}
 }

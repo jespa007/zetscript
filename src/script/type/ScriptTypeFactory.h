@@ -187,6 +187,17 @@ namespace zetscript{
 		);
 
 		/*
+		 * register property neg
+		 */
+		template <typename C,typename F>
+		void bindMemberPropertyNeg(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		/*
 		 * register member property post_inc
 		 */
 		template <typename C,typename F>

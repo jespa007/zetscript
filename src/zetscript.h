@@ -313,6 +313,20 @@ namespace zetscript{
 			}
 		}
 
+		template <typename C,typename F>
+		void	bindMemberPropertyNeg(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyNeg<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()).c_str(),_property_name.c_str(),_ex.getDescription());
+			}
+		}
+
 
 		template <typename C,typename F>
 		void	bindMemberPropertyAddSetter(
@@ -342,6 +356,117 @@ namespace zetscript{
 			}
 		}
 
+		template <typename C,typename F>
+		void	bindMemberPropertyMulSetter(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyMulSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
+			}
+		}
+
+		template <typename C,typename F>
+		void	bindMemberPropertyDivSetter(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyDivSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
+			}
+		}
+
+		template <typename C,typename F>
+		void	bindMemberPropertyModSetter(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyModSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
+			}
+		}
+
+		template <typename C,typename F>
+		void	bindMemberPropertyXorSetter(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyXorSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
+			}
+		}
+
+		template <typename C,typename F>
+		void	bindMemberPropertyOrSetter(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyOrSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
+			}
+		}
+
+		template <typename C,typename F>
+		void	bindMemberPropertyAndSetter(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyAndSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
+			}
+		}
+
+		template <typename C,typename F>
+		void	bindMemberPropertyShrSetter(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyShrSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
+			}
+		}
+
+		template <typename C,typename F>
+		void	bindMemberPropertyShlSetter(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyShlSetter<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
+			}
+		}
 
 		template <typename C,typename F>
 		void	bindMemberPropertyPostIncrement(
