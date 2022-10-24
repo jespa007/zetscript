@@ -5,8 +5,16 @@
 #ifndef ZS_CONFIG_H
 #define ZS_CONFIG_H
 
+#include <cstdint>
+
 namespace zetscript{
-	typedef ${ZS_FLOAT_TYPE} 	zs_float;
+	#if INTPTR_MAX == INT32_MAX
+		typedef float 				zs_float;
+	#elif INTPTR_MAX==INT64_MAX
+		typedef ${ZS_FLOAT_TYPE} 	zs_float;
+	#else
+	#error "Environment not 32 or 64-bit."
+	#endif
 }
 
 #define ZS_FLOAT_COPY(dst_ptr, src_ptr) memcpy((void *)(dst_ptr),(void *)(src_ptr),sizeof(zetscript::zs_float))
