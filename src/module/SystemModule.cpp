@@ -39,7 +39,7 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)vm->data;
 		int n_ret_args=0;
 		uint8_t stk_n_params=0;
-		StackElement *vm_stk_current=NULL;
+		StackElement *vm_stk_current=vm_get_current_stack_element(vm);
 		StackElement *stk_start=NULL;
 		VM_ScopeFunction *vm_eval_scope_function=data->vm_current_scope_function;
 
@@ -183,7 +183,6 @@ namespace zetscript{
 		// 4. Call function passing all arg parameter
 		// pass data to vm_stk_current
 		stk_n_params=(uint8_t)stk_params.size();
-		vm_stk_current=vm_get_current_stack_element(vm);
 		stk_start=vm_stk_current;//vm data->vm_stk_current;
 		for(int i = 0; i < stk_n_params; i++){
 			*stk_start++=*((StackElement *)stk_params.items[i]);
@@ -221,6 +220,7 @@ goto_eval_exit:
 
 		 delete sf_eval;
 
+
 		 // assign returning vars...
 		n_ret_args=vm_get_current_stack_element(vm)-vm_stk_current;
 		stk_start=vm_stk_current;
@@ -229,6 +229,7 @@ goto_eval_exit:
 		for(int i = 0; i < n_ret_args-stk_n_params; i++){
 			*stk_start++=*(vm_stk_current+stk_n_params+i);
 		}
+
 	}
 
 	/*void SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args){

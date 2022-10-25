@@ -1,6 +1,6 @@
 import "Number.zs"
 
-function test_arithmetic_basic(_a,_b){
+function test_arithmetic(_a,_b){
 	var operators=["+","-","*","/","%","^","&","<<",">>"]
 
 	// normal
@@ -32,7 +32,7 @@ function test_arithmetic_set(_a,_b){
 				" ma"+op+"mb\n;"+
 				" va"+op+"vb\n;"+
 				"System::assert(\n"+
-					"ma==va, \\\"ma("+a+op+_b+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
+					"ma==va, \\\"test_arithmetic_set ma("+a+op+_b+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
 				 ");"					
 
 				,{
@@ -47,7 +47,7 @@ function test_arithmetic_set(_a,_b){
 	}
 }
 
-function test_arithmetic_property(_a,_b){
+function test_arithmetic_set_property(_a,_b){
 	var operators=["+=","-=","*=","/=","%=","^=","&=","<<=",">>="]
 
 	// normal
@@ -61,7 +61,7 @@ function test_arithmetic_property(_a,_b){
 				" ma.num"+op+"mb.num\n;"+
 				" va"+op+"vb\n;"+
 				"System::assert(\n"+
-					"ma==va, \\\"ma("+a+op+_b+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
+					"ma==va, \\\"test_arithmetic_set_property ma("+a+op+_b+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
 				 ");"					
 				,{
 					a:a
@@ -75,19 +75,54 @@ function test_arithmetic_property(_a,_b){
 	}
 }
 
+function test_self_operation(_a){
+	
+	var operations=["{0}++","{0}--","++{0}","--{0}"]
+	
+	for(var op in operations){
+		System::eval(
+			"var ma=new Number("+_a+");\n" +
+			"var va="+_a+";\n" +
+			String::format(op,"ma")+";\n"+
+			String::format(op,"va")+";\n"+
+			"System::assert(\n"+
+				"ma.num==va, \\\"test_self_operation "+String::format(op,"ma")+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
+			 ");"					
+		);
+	}
+}
+
+function test_self_operation_property(_a){
+	var operations=["-{0}","{0}++","{0}--","++{0}","--{0}","-{0}++","-{0}--"]
+	
+	for(var op in operations){
+		System::eval(
+			"var ma=new Number("+_a+");\n" +
+			"var va="+_a+";\n" +
+			"System::assert(\n"+
+				String::format(op,"ma.num")+"=="+String::format(op,"va")+",\\\"test_self_operation_property "+String::format(op,"ma")+" => \\\"+ma.num+\\\")!=\\\"+va\n"+
+			 ");"					
+		);
+	}	
+}
+
 
 //------------------------------------------------------------------------------------------------
 // basic
-// integer arithmetic operations
-test_arithmetic_basic(20,10)
+// integer arithemtic operations
+test_arithmetic(20,10)
 
-// check aritemthic metamethods
+// check arithemtic metamethods
 test_arithmetic_set(20,10)
 
-// check aritemthic properties
-test_arithmetic_property(20,10)
+// check arithemtic properties
+test_arithmetic_set_property(20,10)
 
+// check self operations
+test_self_operation(10)
 
+// check properties self operations
+test_self_operation_property(10)
 
 
 
