@@ -131,10 +131,17 @@ void test_arithmetic_metamethods(zetscript::ZetScript *_zs,bool _show_print=true
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_FC(_zs,5.2,4.2); // op1 > op2
 	COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_FC(_zs,5.2,2.0e2); // op1 > op2
 
-	if(_show_print) printf("%i. testing arithmetic operations assign ...\n",++n_test);
+	if(_show_print) printf("%i. testing arithmetic operations integer assign ...\n",++n_test);
 	_zs->eval("var result_assign=new Number();");
 	_complete_test_arithmetic_integer_op_assign(_zs,&result_assign,10,"result_assign%s%s;return result_assign.toInt()");
 
+	/*if(_show_print) printf("%i. testing arithmetic operations float assign ...\n",++n_test);
+	_zs->eval("var result_assign=new Number();");
+	_complete_test_arithmetic_float_op_assign(_zs,&result_assign,10,"result_assign%s%s;return result_assign.toFloat()");*/
+
+	// self operations
+
+	// self operations property
 
 
 }

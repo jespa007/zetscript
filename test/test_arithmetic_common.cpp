@@ -231,7 +231,67 @@ void _complete_test_arithmetic_integer_op_assign(
 		it_iod++;
 	}
 }
+/*
+void _complete_test_arithmetic_float_op_assign(
+		zetscript::ZetScript *_zs
+		, zetscript::zs_float *ref_val1
+		, zetscript::zs_float val2
+		, const char *str_format
+){
+	struct _test_arithmetic_float_op_data {
+		zetscript::zs_string str; zetscript::zs_float val;\
+	}test_arithmetic_integer_op_data[] = {
+		// assign right +
+		INLINE_OPERATION_ASSIGN(*ref_val1,=,val2)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,+=,val2*10)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,-=,val2*5)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,*=,val2*2)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,/=,val2)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,%=,val2*100)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,^=,((zetscript::zs_int)(0x1100)))
+		,INLINE_OPERATION_ASSIGN(*ref_val1,&=,((zetscript::zs_int)(0xffff)))
+		,INLINE_OPERATION_ASSIGN(*ref_val1,<<=,((zetscript::zs_int)(2)))
+		,INLINE_OPERATION_ASSIGN(*ref_val1,>>=,((zetscript::zs_int)(1)))
+		// assign right -
+		,INLINE_OPERATION_ASSIGN(*ref_val1,=,-val2)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,+=,-val2*10)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,-=,-val2*5)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,*=,-val2*2)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,/=,-val2)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,%=,-val2*100)
+		,INLINE_OPERATION_ASSIGN(*ref_val1,^=,((zetscript::zs_int)(0x1100)))
+		,INLINE_OPERATION_ASSIGN(*ref_val1,&=,((zetscript::zs_int)(0xffff)))
+		,INLINE_OPERATION_ASSIGN(*ref_val1,<<=,((zetscript::zs_int)(2)))
+		,INLINE_OPERATION_ASSIGN(*ref_val1,>>=,((zetscript::zs_int)(1)))
+		, { "",0 }
+	};
 
+	// process
+	_test_arithmetic_integer_op_data *it_iod = test_arithmetic_integer_op_data;
+	while (!it_iod->str.empty()) {
+		try {
+			zetscript::StackElement stk=_zs->eval(it_iod->str); \
+			if (stk.properties & zetscript::STK_PROPERTY_ZS_INT) {
+				if ((zetscript::zs_int)stk.value != (it_iod->val)) {
+					throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
+				}
+			}else{
+				throw std::runtime_error(
+						zetscript::zs_strutils::format(
+								"error test '%s' expected int but it was '%s'!\n"
+								,it_iod->str.c_str()
+								,stk_to_str(_zs,&stk).c_str()
+						).c_str()
+				); \
+			}
+		}
+		catch (std::exception & ex) {
+			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n", it_iod->str.c_str(), ex.what()).c_str());
+		}
+		it_iod++;
+	}
+}
+*/
 //------------------------------------------------------------------------------------------------------------------------------------
 //
 // FLOAT OPERATIONS
