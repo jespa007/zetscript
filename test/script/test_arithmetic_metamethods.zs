@@ -1,4 +1,3 @@
-import "Integer.zs"
 import "Number.zs"
 
 function test_arithmetic_basic(_a,_b){
@@ -75,6 +74,8 @@ function test_arithmetic_property(_a,_b){
 		_a,_b=_b,_a
 	}
 }
+
+
 //------------------------------------------------------------------------------------------------
 // basic
 // integer arithmetic operations
@@ -85,6 +86,8 @@ test_arithmetic_set(20,10)
 
 // check aritemthic properties
 test_arithmetic_property(20,10)
+
+
 
 
 
