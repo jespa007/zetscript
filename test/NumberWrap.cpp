@@ -349,6 +349,24 @@ void NumberWrap_shr_set(zetscript::ZetScript *_zs, Number *_this,Number *_n){
 	_this->num=((zetscript::zs_int)_this->num) >> ((zetscript::zs_int)_n->num);
 }
 
+
+void  NumberWrap_post_inc(zetscript::ZetScript *_zs,Number *_this){
+	_this->num++;
+}
+
+void  NumberWrap_post_dec(zetscript::ZetScript *_zs,Number *_this){
+	_this->num--;
+}
+
+void  NumberWrap_pre_inc(zetscript::ZetScript *_zs,Number *_this){
+	++_this->num;
+}
+
+void  NumberWrap_pre_dec(zetscript::ZetScript *_zs,Number *_this){
+	--_this->num;
+}
+
+
 // METAMETHODS
 //--------------------------------
 
@@ -392,6 +410,12 @@ void NumberWrap_register(zetscript::ZetScript *_zs){
 	_zs->bindMemberPropertyAndSetter<Number>("num",NumberWrap_num_and_set);
 	_zs->bindMemberPropertyShrSetter<Number>("num",NumberWrap_num_shr_set);
 	_zs->bindMemberPropertyShlSetter<Number>("num",NumberWrap_num_shl_set);
+
+	_zs->bindMemberPropertyPostInc<Number>("num",NumberWrap_num_post_inc);
+	_zs->bindMemberPropertyPostDec<Number>("num",NumberWrap_num_post_dec);
+
+	_zs->bindMemberPropertyPreInc<Number>("num",NumberWrap_num_pre_inc);
+	_zs->bindMemberPropertyPreDec<Number>("num",NumberWrap_num_pre_dec);
 
 
 	_zs->bindStaticMemberFunction<Number>("_add",static_cast<Number * (*)(zetscript::ZetScript *_zs,zetscript::zs_float *,Number * )>(&NumberWrap_add));
@@ -484,6 +508,12 @@ void NumberWrap_register(zetscript::ZetScript *_zs){
 
 
 	_zs->bindMemberFunction<Number>("_neg",static_cast<Number * (*)(zetscript::ZetScript *_zs,Number *)>(&NumberWrap_neg));
+
+	_zs->bindMemberFunction<Number>("_post_inc",NumberWrap_post_inc);
+	_zs->bindMemberFunction<Number>("_post_dec",NumberWrap_post_dec);
+
+	_zs->bindMemberFunction<Number>("_pre_inc",NumberWrap_pre_inc);
+	_zs->bindMemberFunction<Number>("_pre_dec",NumberWrap_pre_dec);
 }
 
 

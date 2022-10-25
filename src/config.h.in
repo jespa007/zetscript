@@ -18,6 +18,7 @@ namespace zetscript{
 }
 
 #define ZS_FLOAT_COPY(dst_ptr, src_ptr) memcpy((void *)(dst_ptr),(void *)(src_ptr),sizeof(zetscript::zs_float))
+#define ZS_INTPTR_TO_FLOAT(_value) (*((zetscript::zs_float *)&(_value)))
 
 #endif /* ZS_CONFIG_H */
 

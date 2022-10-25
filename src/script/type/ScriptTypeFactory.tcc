@@ -576,7 +576,7 @@ namespace zetscript{
 	 * register member property  post_increment
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyPostIncrement(
+	void ScriptTypeFactory::bindMemberPropertyPostInc(
 		const zs_string & _property_name
 		,F _ptr_function
 		,const char *_registered_file
@@ -616,7 +616,7 @@ namespace zetscript{
 	 * register member property  post_decrement
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyPostDecrement(
+	void ScriptTypeFactory::bindMemberPropertyPostDec(
 			const zs_string & _property_name
 			,F _ptr_function
 			,const char *_registered_file
@@ -656,7 +656,7 @@ namespace zetscript{
 	 * register member property  pre_increment
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyPreIncrement(
+	void ScriptTypeFactory::bindMemberPropertyPreInc(
 			const zs_string & _property_name
 			,F _ptr_function
 			,const char *_registered_file
@@ -696,7 +696,7 @@ namespace zetscript{
 	 * register member property  pre_decrement
 	 */
 	template <typename C,typename F>
-	void ScriptTypeFactory::bindMemberPropertyPreDecrement(
+	void ScriptTypeFactory::bindMemberPropertyPreDec(
 			const zs_string & _property_name
 			,F _ptr_function
 			,const char *_registered_file

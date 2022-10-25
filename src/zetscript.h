@@ -469,56 +469,56 @@ namespace zetscript{
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyPostIncrement(
+		void	bindMemberPropertyPostInc(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyPostIncrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->bindMemberPropertyPostInc<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
 			}
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyPostDecrement(
+		void	bindMemberPropertyPostDec(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyPostDecrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->bindMemberPropertyPostDec<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
 			}
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyPreIncrement(
+		void	bindMemberPropertyPreInc(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyPreIncrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->bindMemberPropertyPreInc<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
 			}
 		}
 
 		template <typename C,typename F>
-		void	bindMemberPropertyPreDecrement(
+		void	bindMemberPropertyPreDec(
 				const zs_string & _property_name
 				,F ptr_function
 				 , const char *_registered_file=""
 				,short _registered_line=-1
 		){
 			try{
-				script_type_factory->bindMemberPropertyPreDecrement<C>(_property_name,ptr_function, _registered_file,_registered_line );
+				script_type_factory->bindMemberPropertyPreDec<C>(_property_name,ptr_function, _registered_file,_registered_line );
 			}catch(zs_exception & _ex){
 				THROW_RUNTIME_ERROR("Exception in '%s<%s>(\"%s\",...)': %s",__func__,zs_rtti::demangle(typeid(C).name()),_property_name.c_str(),_ex.getDescription());
 			}

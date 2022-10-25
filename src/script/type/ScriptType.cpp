@@ -449,7 +449,7 @@ namespace zetscript{
 				_line
 		);
 
-		mp->metamethod_members.getter=symbol_function;
+		mp->metamethod_members.neg=symbol_function;
 
 		return symbol_member_property;
 	}

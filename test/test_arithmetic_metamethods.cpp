@@ -89,7 +89,8 @@
 void test_arithmetic_metamethods(zetscript::ZetScript *_zs,bool _show_print=true) {
 
 	int n_test=0;
-	zetscript::zs_int result_assign=10;
+	//zetscript::zs_int result_assign=10;
+	//zetscript::zs_float result_float_assign=20;
 
 	// register wraps
 	NumberWrap_register(_zs);
@@ -133,11 +134,23 @@ void test_arithmetic_metamethods(zetscript::ZetScript *_zs,bool _show_print=true
 
 	if(_show_print) printf("%i. testing arithmetic operations integer assign ...\n",++n_test);
 	_zs->eval("var result_assign=new Number();");
-	_complete_test_arithmetic_integer_op_assign(_zs,&result_assign,10,"result_assign%s%s;return result_assign.toInt()");
+	_complete_test_arithmetic_integer_op_assign(_zs,5,10,"result_assign%s%s;return result_assign.toInt()");
 
-	/*if(_show_print) printf("%i. testing arithmetic operations float assign ...\n",++n_test);
-	_zs->eval("var result_assign=new Number();");
-	_complete_test_arithmetic_float_op_assign(_zs,&result_assign,10,"result_assign%s%s;return result_assign.toFloat()");*/
+	if(_show_print) printf("%i. testing arithmetic operations float assign ...\n",++n_test);
+	_complete_test_arithmetic_float_op_assign(_zs,33,10,"result_assign%s%s;return result_assign.toFloat()");
+
+	if(_show_print) printf("%i. testing arithmetic operations property ...\n",++n_test);
+	_complete_test_arithmetic_integer_op_assign(_zs,10,5,"result_assign.num%s%s;return result_assign.toInt()");
+
+	if(_show_print) printf("%i. testing arithmetic self operations ...\n",++n_test);
+	_zs->eval("result_assign=10;");
+	_complete_test_arithmetic_self_op(_zs,10,"%sresult_assign%s;return result_assign.toInt()");
+
+	if(_show_print) printf("%i. testing arithmetic self operations property ...\n",++n_test);
+	_zs->eval("var source=new Number(10);");
+	_zs->eval("result_assign=100;");
+	_complete_test_arithmetic_self_property_op(_zs,10,"result_assign=%ssource.num%s;return result_assign.toInt()");
+
 
 	// self operations
 
