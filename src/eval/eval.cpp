@@ -510,10 +510,6 @@ namespace zetscript{
 		int sum_stk_load_stk=0;
 		int max_acc_stk_load=0;
 
-		if(sf->name_script_function == "f"){
-			int jjjj=0;
-		}
-
 		// remove old instructions
 		if(sf->instructions != NULL){
 			free(sf->instructions);

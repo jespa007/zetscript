@@ -45,7 +45,7 @@
 	)
 
 // Float operations
-#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_CC(_zs,val1,val2)  _complete_test_arithmetic_float_op(_zs,val1,val2,"it1=("\
+#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_CC(_zs,val1,val2)  _complete_test_arithmetic_float_op(_zs,(zetscript::zs_float)val1,(zetscript::zs_float)val2,"it1=("\
 				"(new Number("\
 				"%s" \
 				"))"\
@@ -58,7 +58,7 @@
 				"return it2;\n" \
 	)
 
-#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_CF(_zs,val1,val2)  _complete_test_arithmetic_float_op(_zs,val1,val2,"it1=("\
+#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_CF(_zs,val1,val2)  _complete_test_arithmetic_float_op(_zs,(zetscript::zs_float)val1,(zetscript::zs_float)val2,"it1=("\
 				"(new Number("\
 				"%s" \
 				"))"\
@@ -71,7 +71,7 @@
 				"return it2;\n" \
 	)
 
-#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_FC(_zs,val1,val2)  _complete_test_arithmetic_float_op(_zs,val1,val2,"it1=("\
+#define COMPLETE_TEST_ARITHMETIC_FLOAT_OP_WITH_CLASS_NUMBER_FC(_zs,val1,val2)  _complete_test_arithmetic_float_op(_zs,(zetscript::zs_float)val1,(zetscript::zs_float)val2,"it1=("\
 				"("\
 				"%s" \
 				")"\

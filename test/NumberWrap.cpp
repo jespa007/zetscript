@@ -7,7 +7,6 @@
 Number *NumberWrap_new(zetscript::ZetScript *_zs){
 	ZS_UNUSUED_PARAM(_zs);
 	return new Number();
-
 }
 
 void NumberWrap_set(zetscript::ZetScript *_zs,Number *_this, zetscript::zs_float *_n){
@@ -24,70 +23,87 @@ void NumberWrap_set(zetscript::ZetScript *_zs,Number *_this,Number *_ci2){
 // PROPERTY
 
 zetscript::zs_float NumberWrap_num_getter(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
 	return _this->num;
 }
 
 zetscript::zs_float NumberWrap_num_neg(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
 	return -_this->num;
 }
 
 void NumberWrap_num_setter(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num=*_value;
 }
 
 void  NumberWrap_num_post_inc(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num++;
 }
 
 void  NumberWrap_num_post_dec(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num--;
 }
 
 void  NumberWrap_num_pre_inc(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
 	++_this->num;
 }
 
 void  NumberWrap_num_pre_dec(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
 	--_this->num;
 }
 
 void NumberWrap_num_add_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num+=*_value;
 }
 
 void NumberWrap_num_sub_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num-=*_value;
 }
 
 void NumberWrap_num_mul_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num*=*_value;
 }
 
 void NumberWrap_num_div_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num/=*_value;
 }
 
 void NumberWrap_num_mod_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num=fmod(_this->num,*_value);
 }
 
 void NumberWrap_num_xor_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num=(int)(_this->num)^(int)(*_value);
 }
 
 void NumberWrap_num_or_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num=(int)(_this->num)|(int)(*_value);
 }
 
 void NumberWrap_num_and_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num=(int)(_this->num)&(int)(*_value);
 }
 
 void NumberWrap_num_shl_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num=(int)(_this->num)<<(int)(*_value);
 }
 
 void NumberWrap_num_shr_set(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num=(int)(_this->num)>>(int)(*_value);
 }
 
@@ -351,18 +367,22 @@ void NumberWrap_shr_set(zetscript::ZetScript *_zs, Number *_this,Number *_n){
 
 
 void  NumberWrap_post_inc(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num++;
 }
 
 void  NumberWrap_post_dec(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
 	_this->num--;
 }
 
 void  NumberWrap_pre_inc(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
 	++_this->num;
 }
 
 void  NumberWrap_pre_dec(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
 	--_this->num;
 }
 

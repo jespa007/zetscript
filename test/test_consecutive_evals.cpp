@@ -47,7 +47,7 @@ void test_anonymous_scopes(zetscript::ZetScript *_zs, bool _show_print=true){
 			throw new std::runtime_error(
 				zetscript::zs_strutils::format(
 						"Symbol are not ordered ('%s' != '%s')"
-						,s->name
+						,s->name.c_str()
 						,str_to_compare.c_str()).c_str()
 			);
 		}

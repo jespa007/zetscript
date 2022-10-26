@@ -34,7 +34,7 @@ void test_std_map(){
 	std::map<std::string,std::string> std_map;
 	std::map<std::string,std::string> std_map1;
 
-	printf("sizeof(std::map):%lu\n",sizeof(std_map));
+	printf("sizeof(std::map):%i\n",(int)sizeof(std_map));
 
 	printf("Inserting elements...");
 	int start=zetscript::zs_system::clock();
@@ -62,7 +62,7 @@ void test_zs_map(){
 
 
 
-	printf("sizeof(zs_map):%lu\n",sizeof(map));
+	printf("sizeof(zs_map):%i\n",(int)sizeof(map));
 
 
     printf("Inserting elements...");
@@ -90,7 +90,7 @@ void test_std_string(){
 
 	printf("=======================================\n");
 	printf("Test zs_string\n");
-	printf("sizeof(std::std_string):%lu\n",sizeof(str));
+	printf("sizeof(std::std_string):%i\n",(int)sizeof(str));
 
 	printf("Append elements...");
 	int start=zetscript::zs_system::clock();
@@ -114,7 +114,7 @@ void test_zs_string(){
 	zetscript::zs_string str;
 	printf("=======================================\n");
 	printf("Test zs_string\n");
-	printf("sizeof(zs_string):%lu\n",sizeof(str));
+	printf("sizeof(zs_string):%i\n",(int)sizeof(str));
 
 	printf("Append elements...");
 	int start=zetscript::zs_system::clock();
@@ -139,7 +139,7 @@ void test_std_vector(){
 	std::vector<int> vec;
 	printf("=======================================\n");
 	printf("Test std::vector<int>\n");
-	printf("sizeof(std::vector<int>):%lu\n",sizeof(std::vector<int>));
+	printf("sizeof(std::vector<int>):%i\n",(int)sizeof(std::vector<int>));
 
 	printf("Append elements...");
 		int start=zetscript::zs_system::clock();
@@ -161,7 +161,7 @@ void test_zs_vector(){
 	zetscript::zs_vector<int> vec;
 	printf("=======================================\n");
 	printf("Test zs_vector<int>\n");
-	printf("sizeof(zs_vector<int>):%lu\n",sizeof(zetscript::zs_vector<int>));
+	printf("sizeof(zs_vector<int>):%i\n",(int)sizeof(zetscript::zs_vector<int>));
 
 	printf("Append elements...");
 		int start=zetscript::zs_system::clock();

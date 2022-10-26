@@ -7,7 +7,7 @@
 
 void test_register_constants(zetscript::ZetScript *_zs) {
 
-	int n_test=0;
+	//int n_test=0;
 
 	_zs->bindConstantVariable("TEST_INT", 100);
 	_zs->bindConstantVariable("TEST_FLOAT", 1.5f);

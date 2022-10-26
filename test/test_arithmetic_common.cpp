@@ -41,8 +41,8 @@ bool float_values_are_almost_the_same(
 		zetscript::zs_float A
 		, zetscript::zs_float B
 ){
-	auto a=fabs(A - B);
-	auto b=FLT_EPSILON *2* ZS_MAX(fabs(A), fabs(B));
+	zetscript::zs_float a=fabs(A - B);
+	zetscript::zs_float b=FLT_EPSILON *2* ZS_MAX(fabs(A), fabs(B));
 	return a <= b;//(fabs(A - B) <= FLT_EPSILON *2* ZS_MAX(fabs(A), fabs(B)));
 }
 
@@ -63,11 +63,12 @@ void test_arithmetic_int_expression(
 			} \
 		}else{\
 			throw std::runtime_error(
-					zetscript::zs_strutils::format(
-						"error test '%s' expected int but it was '%s'!\n"
-						,str_expr
-						,stk_to_str(_zs,&stk)).c_str()
-					); \
+				zetscript::zs_strutils::format(
+					"error test '%s' expected int but it was '%s'!\n"
+					,str_expr
+					,stk_to_str(_zs,&stk).c_str()
+				).c_str()
+			); \
 		} \
 	}catch(std::exception & ex){\
 		throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n",str_expr,ex.what()).c_str()); \
@@ -276,8 +277,8 @@ void _complete_test_arithmetic_self_op(
 		, zetscript::zs_int _start_value
 		, const char *str_format
 ){
-	zetscript::zs_int result=0;
-	zetscript::zs_int ref_val1=_start_value;
+	//zetscript::zs_int result=0;
+	//zetscript::zs_int ref_val1=_start_value;
 	// post_inc
 	struct _test_arithmetic_integer_op_data {
 		zetscript::zs_string str;
@@ -321,7 +322,7 @@ void _complete_test_arithmetic_self_property_op(
 		, zetscript::zs_int _start_value
 		, const char *str_format
 ){
-	zetscript::zs_int result=0;
+	//zetscript::zs_int result=0;
 	zetscript::zs_int ref_val1=_start_value;
 	// post_inc
 	struct _test_arithmetic_integer_op_data {
