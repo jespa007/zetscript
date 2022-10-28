@@ -57,7 +57,7 @@ configure_file(${PROJECT_SOURCE_DIR}/../test/test_all_config.h.in ${PROJECT_SOUR
 
 #-------------------------------------------------------------------------------------------------
 #
-# COMMON PARAMS
+# COMPILER PARAMS
 #
 
 include_directories (
@@ -98,12 +98,12 @@ if(MSVC)
 	
 else()
 
-	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -pedantic")
+	SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -pedantic")
    
 	if (MINGW)
 		MESSAGE("-- Plataform: MINGW" )
 	else()
-		SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -fPIC ")
+		SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fPIC ")
 		
     	if(RASPBERRY)
     		MESSAGE ("-- Plataform: RASPBERRY" )
@@ -116,11 +116,11 @@ else()
 	
 	IF ( "${TARGET}" STREQUAL "debug")
 	
-		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -O0 -g ")
+		set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -O0 -g ")
 	
 		IF( EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr )
 			message("-- Memmanager: Yes")
-			SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__MEMMANAGER__")
+			SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__MEMMANAGER__")
 			include_directories (
 				${PROJECT_SOURCE_DIR}/../../memmgr
 			)
@@ -132,7 +132,7 @@ else()
 		
 	ELSE()
 		set(TARGET "release")
-		set(COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -O2 ")
+		set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -O2 ")
 		message("-- Memmanager: No")
 	ENDIF()
 	
@@ -168,18 +168,15 @@ ENDIF()
 MESSAGE ("-- Target: " ${TARGET})
 
 IF ( "${TARGET}" STREQUAL "debug")
-	SET( COMMON_CXX_PARAMS " ${COMMON_CXX_PARAMS} -D__DEBUG__ ")
+	SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__DEBUG__ ")
 ENDIF()
 
-SET(CMAKE_CXX_FLAGS   " ${COMMON_CXX_PARAMS}  " )
-
-
 #
-# COMMON PARAMS
+# COMPILER PARAMS
 #
 #-------------------------------------------------------------------------------------------------
 #
-# COMPILE PARAMS
+# SOURCE PARAMS
 #
 
 # Library
