@@ -55,7 +55,7 @@
 		if(stk_result_op2->value == 0){\
 			ZS_VM_STOP_EXECUTEF("exception div operation by 0");\
 		}\
-		VM_PUSH_STK_ZS_FLOAT((zs_float)stk_result_op1->value / (zs_float)stk_result_op2->value);\
+		VM_PUSH_STK_ZS_FLOAT(((zs_float)stk_result_op1->value) / ((zs_float)stk_result_op2->value));\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
 		if(ZS_INTPTR_TO_FLOAT(stk_result_op2->value) == 0){\
