@@ -52,6 +52,7 @@ namespace zetscript{
 		cl->bindStaticMemberFunction("degToRad",MathModule_degToRad);
 		cl->bindStaticMemberFunction("random",MathModule_random);
 		cl->bindStaticMemberFunction("max",MathModule_max);
+		cl->bindStaticMemberFunction("min",MathModule_min);
 		cl->bindStaticMemberFunction("sqrt",MathModule_sqrt);
 		cl->bindStaticMemberFunction("floor",MathModule_floor);
 

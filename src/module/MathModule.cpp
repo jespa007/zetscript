@@ -56,6 +56,11 @@ namespace zetscript{
 		 return *_n1>*_n2?*_n1:*_n2;
 	 }
 
+	 zs_float MathModule_min(ZetScript *_zs,zs_float *_n1,zs_float *_n2){
+		 ZS_UNUSUED_PARAM(_zs);
+		 return *_n1<*_n2?*_n1:*_n2;
+	 }
+
 	 zs_float MathModule_sqrt(ZetScript *_zs,zs_float *_n){
 		 ZS_UNUSUED_PARAM(_zs);
 		 return sqrt(*_n);
