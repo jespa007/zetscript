@@ -1,43 +1,26 @@
 
 
-//----------------------------------------------------------
-TODOS
-
-> #79 Implement coroutines 
-> #165 try eval expressions as constant 
-> #176 Add shared version
-> #221 Implement backup/restore state
-> #225 implement File class
-> #226 implement Stream class
-> #242 compile code/load compiled code feature  (*.zsc)
-> #246 Erase code never execute or temporal expresion that will never assigned
-> #287 Some optimizations
-> #310 Optimize code for instanceof and typeof
-> #320 Optimize use of KR,RK 
-> #328 Improve one to multi-assigment
-
-//----------------------------------------------------------
 Version: 2.0.0
 Date: XX-XX-2022 (Expected to finish on end december 2022)
 
 Main improvements: 
 
--Massive update that rewrites a internal architecture, organize and clean code
--VM speed up ~x2.5
--VM save memory stack ~x2
--Optimize size/compile times ~x2
--ZetScript can be instanced more than once
--Implements multiple Return/Assignments
--Anonymous functions created within class an use "this" keyword in its body.
--Implements arguments with options: default, variable arguments and by reference
--Implements setter/getter for member variables
--Implements keywords 'const'
--Implements operators 'in','typeof'
--Implements builtin iterators for String, Vector and anonymous/class objects
--Implements builtin obj: 'DateTime'
--Implements builtin modules: 'System', 'Math', 'Json' and 'String'
--The use of "function" keyword on class function members are not mandatory
--switch-case eval expressions
+- Massive update that rewrites a internal architecture, organize and clean code
+- VM speed up ~x2.5
+- VM save memory stack ~x2
+- Optimize size/compile times ~x2
+- ZetScript can be instanced more than once
+- Implements multiple Return/Assignments
+- Anonymous functions created within class an use "this" keyword in its body.
+- Implements arguments with options: default, variable arguments and by reference
+- Implements setter/getter for member variables
+- Implements keywords 'const'
+- Implements operators 'in','typeof'
+- Implements builtin iterators for String, Vector and anonymous/class objects
+- Implements builtin obj: 'DateTime'
+- Implements builtin modules: 'System', 'Math', 'Json' and 'String'
+- The use of "function" keyword on class function members are not mandatory
+- switch-case eval expressions
 
 Solved issues
  
@@ -277,7 +260,7 @@ Solved issues
 #339 Conditionals evaluates whole condition instead of first breaking condition improvement
 #340 StackOverflow core dumped in deep recursion 
 
-//----------------------------------------------------------
+---
 Version: 1.3.0
 Date: 30-03-2018
 
@@ -299,7 +282,7 @@ Date: 30-03-2018
 
 Added fibonacci test (fib.zs)
 
-//----------------------------------------------------------
+---
 Version: 1.2.0
 Date: 13-02-2018
 
@@ -320,69 +303,66 @@ Date: 13-02-2018
      Due 41, now we have to pass class type on both register_C_MemberFunction/register_C_VariableMember (+1 feature version)
 #45: Fixed. Seg. fault on returning wrong C pointer derived class. A helper function has been implemented to return right pointer in function of type parameter.
 
--Due float it cannot be the same size as the any param of c functions, float type is disable since 1.2. Instead do float *. 
--Fixed. Seg.faults on returning strings * from C functions.
--Check if C function can be registered. C function should be registered at last elements. 
--VM: It prints more information when user wants to access to member function into primitive. Currently it gives the error 
--Support converting pointers C functions if can derive from base class.
--Fixed. Seg.faults on autodelete C pointers given by some C function.
--Fixed. Assignment of C variables of type int/number independent if source script variable is int or number.
--vscript2vector: support for converting elements to numbers (aka floats).
+- Due float it cannot be the same size as the any param of c functions, float type is disable since 1.2. Instead do float *. 
+- Fixed. Seg.faults on returning strings * from C functions.
+- Check if C function can be registered. C function should be registered at last elements. 
+- VM: It prints more information when user wants to access to member function into primitive. Currently it gives the error 
+- Support converting pointers C functions if can derive from base class.
+- Fixed. Seg.faults on autodelete C pointers given by some C function.
+- Fixed. Assignment of C variables of type int/number independent if source script variable is int or number.
+- vscript2vector: support for converting elements to numbers (aka floats).
 
--Removed assign hereritance of runtime stack var on assigment op.
--Fixed. Seg. fault on restore/save states.
--Renamed zg_variable.x to zs_variable.
+- Removed assign hereritance of runtime stack var on assigment op.
+- Fixed. Seg. fault on restore/save states.
+- Renamed zg_variable.x to zs_variable.
 
-
-
-//----------------------------------------------------------
+---
 Version: 1.1.3
 Date: 19-11-2017
 
 Make compatible binding functions with MSVC compiler.
 
-//----------------------------------------------------------
+---
 Version: 1.1.2
 Date: 19-11-2017
 
 Solved bug #25: Fixed error on keyword after case/default keyword
 
-//----------------------------------------------------------
+---
 Version: 1.1.1
 Date: 12-11-2017
 
-Fixed bug #24
-Fixed bug #23
-
+#21: bind functions already implemented 
 #22: cast vector from/to stk implemented
-#21: bind functions already implemented
+#23 Fixed bug
+#24 Fixed bug
 
-//----------------------------------------------------------
+---
 Version: 1.1.0
 Date: 11-11-2017
 
-- Script function calls usign std::function.
+- [x] Script function calls usign std::function.
 
-//----------------------------------------------------------
+---
 Version: 1.0.2
 Date: 05-11-2017
 
-Solved some bugs
-print comulative errors getErrorMsg()
+- [x] Solved some bugs
+- [x] print comulative errors getErrorMsg()
 
-//----------------------------------------------------------
+---
 Version: 1.0.1
 Date: 04-11-2017
 
-Solved some bugs
+- [x] Solved some bugs
 
-//----------------------------------------------------------
+---
 Version: 1.0.0
 Date: 04-11-2017
 
-Solved various bugs
-ZetScript bugs various bug
-Implement error feature feature
-Support for if-else if-else feature
-Memory leaks improvement
+- [x] Solved various bugs
+- [x] ZetScript bugs various bug
+- [x] Implement error feature feature
+- [x] Support for if-else if-else feature
+- [x] Memory leaks improvement
  

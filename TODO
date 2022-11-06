@@ -1,0 +1,15 @@
+---
+TODOS
+
+> #79 Implement coroutines 
+> #165 try eval expressions as constant 
+> #176 Add shared version
+> #221 Implement backup/restore state
+> #225 implement File class
+> #226 implement Stream class
+> #242 compile code/load compiled code feature  (*.zsc)
+> #246 Erase code never execute or temporal expresion that will never assigned
+> #287 Some optimizations
+> #310 Optimize code for instanceof and typeof
+> #320 Optimize use of KR,RK 
+> #328 Improve one to multi-assigment
