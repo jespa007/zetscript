@@ -97,8 +97,10 @@ namespace zetscript{
 
 		// it gives stackelement as string (the result should be deleted)
 		void 			setUndefined();
+		bool			toBool();
 		zs_int			toInt();
 		zs_float		toFloat();
+		zs_string		toString();
 
 		StackElement	typeOf();
 	};

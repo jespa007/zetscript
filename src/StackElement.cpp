@@ -100,7 +100,7 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_FUNCTION(&stk)){
 			Symbol *symbol=((Symbol *)stk.value);
 			ScriptType *st=symbol->scope->getScriptTypeOwner();
-			if(st==((_zs->getScriptTypeFactory())->getScriptType(IDX_TYPE_CLASS_MAIN))){
+			if(st->idx_script_type==IDX_TYPE_CLASS_MAIN){
 				result= zs_string("function<")+symbol->name+">";
 			}else{
 				zs_string s="";
@@ -113,7 +113,11 @@ namespace zetscript{
 				result=s+st->str_script_type+"::"+symbol->name+">";
 			}
 		}else if(STK_VALUE_IS_TYPE(&stk)){
-			result= zs_string("type")+"@"+_zs->getScriptTypeFactory()->getScriptTypeName(stk.value);
+			if(_zs!=NULL){
+				result= zs_string("type")+"@"+_zs->getScriptTypeFactory()->getScriptTypeName(stk.value);
+			}else{
+				result= zs_strutils::format("type@%i",(int)stk.value);
+			}
 		}else{
 			if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){
 				ScriptObject *so=(ScriptObject *)stk.value;
@@ -443,6 +447,22 @@ namespace zetscript{
 		}
 
 		return ZS_INTPTR_TO_FLOAT(this->value);
+	}
+
+	bool	StackElement::toBool(){
+		if((this->properties & STK_PROPERTY_BOOL)==0){
+			THROW_RUNTIME_ERRORF("StackElement not is not bool");
+		}
+
+		return this->value;
+	}
+
+	zs_string		StackElement::toString(){
+		if(STK_IS_SCRIPT_OBJECT_STRING(this)){
+			return ((StringScriptObject *)this->value)->toString();
+		}
+		return stk_to_str(NULL,this);
+
 	}
 
 	void StackElement::setUndefined(){
