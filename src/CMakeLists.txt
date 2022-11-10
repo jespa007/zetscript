@@ -40,16 +40,13 @@ ENDMACRO(INSTALL_HEADERS_WITH_DIRECTORY)
 # CONFIGURE FILES
 #
 
-# By default double precision, but user can explicity set SINGLE precision doing -DFLOAT_PRECISION=SINGLE. Is not recommended due precision lose. 
-# For example,
-# Take a float of single precision using System::clock() that gives a large numbers, the difference between lower interval could give a same value (i.e a difference of 0)
-#
-if("${FLOAT_PRECISION}" STREQUAL "SINGLE")
-	set( ZS_FLOAT_TYPE		"float" )
-	MESSAGE("-- Float precision: single"  )
-else()
+
+if((CMAKE_SIZEOF_VOID_P EQUAL 8) OR "${FLOAT_PRECISION}" STREQUAL "DOUBLE")
 	set( ZS_FLOAT_TYPE 		"double" )
 	MESSAGE("-- Float precision: double"  )
+else()
+	set( ZS_FLOAT_TYPE		"float" )
+	MESSAGE("-- Float precision: single"  )
 endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/config.h)

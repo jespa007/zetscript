@@ -10,7 +10,7 @@ namespace zetscript{
 	class VectorScriptObject;
 	class StringMod;
 
-	zs_int 	SystemModule_clock(ZetScript *_zs);
+	zs_float	SystemModule_clock(ZetScript *_zs);
 	void 	SystemModule_makeReadOnly(ZetScript *_zs,StackElement *stk);
 	void 	SystemModule_eval(ZetScript *zs,StackElement *str_eval,StackElement *object_args);
 	//void 	SystemModule_assert(ZetScript *zs,bool *chk_assert, StackElement *str, StackElement *args);

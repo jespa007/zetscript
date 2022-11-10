@@ -13,7 +13,7 @@ namespace zetscript{
 
 	static int n_eval_function=0;
 
-	zs_int SystemModule_clock(ZetScript *_zs){
+	zs_float SystemModule_clock(ZetScript *_zs){
 		ZS_UNUSUED_PARAM(_zs);
 		return zs_system::clock();
 	}

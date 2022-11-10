@@ -4,6 +4,6 @@
  */
 namespace zetscript{
 	namespace zs_system{
-		int clock();
+		zs_float clock();
 	}
 }
