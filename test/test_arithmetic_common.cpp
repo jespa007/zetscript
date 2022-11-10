@@ -56,7 +56,7 @@ void test_arithmetic_int_expression(
 		,const char *str_expr
 ){ \
 	try{\
-		zetscript::StackElement stk=_zs->eval(zetscript::zs_string("return ")+str_expr);\
+		zetscript::StackElement stk=_zs->eval(zetscript::zs_string("return parseInteger(")+str_expr+")");\
 		if(stk.properties & zetscript::STK_PROPERTY_ZS_INT){\
 			if((zetscript::zs_int)stk.value != expr){ \
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %i but it was %i!\n",str_expr,(int)expr,int(((zetscript::zs_int)stk.value))).c_str()); \
@@ -179,18 +179,8 @@ void _complete_test_arithmetic_integer_op(
 	while (!it_iod->str.empty()) {
 		try {
 			zetscript::StackElement stk=_zs->eval(it_iod->str); \
-			if (stk.properties & zetscript::STK_PROPERTY_ZS_INT) {
-				if ((zetscript::zs_int)stk.value != (it_iod->val)) {
-					throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
-				}
-			}else{
-				throw std::runtime_error(
-					zetscript::zs_strutils::format(
-						"error test '%s' expected int but it was '%s'!\n"
-						,it_iod->str.c_str()
-						,stk_to_str(_zs,&stk).c_str()
-					).c_str()
-				); \
+			if (stk.toInt() != (it_iod->val)) {
+				throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
 			}
 		}
 		catch (std::exception & ex) {
@@ -241,18 +231,8 @@ void _complete_test_arithmetic_integer_op_assign(
 	while (!it_iod->str.empty()) {
 		try {
 			zetscript::StackElement stk=_zs->eval(it_iod->str); \
-			if (stk.properties & zetscript::STK_PROPERTY_ZS_INT) {
-				if ((zetscript::zs_int)stk.value != (it_iod->val)) {
-					throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
-				}
-			}else{
-				throw std::runtime_error(
-						zetscript::zs_strutils::format(
-								"error test '%s' expected int but it was '%s'!\n"
-								,it_iod->str.c_str()
-								,stk_to_str(_zs,&stk).c_str()
-						).c_str()
-				); \
+			if (stk.toInt() != (it_iod->val)) {
+				throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
 			}
 		}
 		catch (std::exception & ex) {
@@ -296,19 +276,11 @@ void _complete_test_arithmetic_self_op(
 	while (!it_iod->str.empty()) {
 		try {
 			zetscript::StackElement stk=_zs->eval(it_iod->str); \
-			if (stk.properties & zetscript::STK_PROPERTY_ZS_INT) {
-				if ((zetscript::zs_int)stk.value != (it_iod->val)) {
-					throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
-				}
-			}else{
-				throw std::runtime_error(
-					zetscript::zs_strutils::format(
-						"error test '%s' expected int but it was '%s'!\n"
-						,it_iod->str.c_str()
-						,stk_to_str(_zs,&stk).c_str()
-					).c_str()
-				); \
+
+			if (stk.toInt() != (it_iod->val)) {
+				throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
 			}
+
 		}catch (std::exception & ex) {
 			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n", it_iod->str.c_str(), ex.what()).c_str());
 		}
@@ -344,18 +316,9 @@ void _complete_test_arithmetic_self_property_op(
 	while (!it_iod->str.empty()) {
 		try {
 			zetscript::StackElement stk=_zs->eval(it_iod->str); \
-			if (stk.properties & zetscript::STK_PROPERTY_ZS_INT) {
-				if ((zetscript::zs_int)stk.value != (it_iod->val)) {
-					throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
-				}
-			}else{
-				throw std::runtime_error(
-					zetscript::zs_strutils::format(
-						"error test '%s' expected int but it was '%s'!\n"
-						,it_iod->str.c_str()
-						,stk_to_str(_zs,&stk).c_str()
-					).c_str()
-				); \
+
+			if (stk.toInt() != it_iod->val) {
+				throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %i but it was %i!\n", it_iod->str.c_str(), (int)it_iod->val,(int)((zetscript::zs_int)stk.value)).c_str());
 			}
 		}
 		catch (std::exception & ex) {
@@ -376,21 +339,11 @@ void test_constant_float_expression(
 ) {
 	try{
 		zetscript::StackElement stk=_zs->eval(str_expr);
-		if(stk.properties & zetscript::STK_PROPERTY_ZS_FLOAT){
-			zetscript::zs_float result;
-			ZS_FLOAT_COPY(&result,&stk.value);
-			if(result  != (expected_value)){
-				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %f but it was %f!\n",str_expr,expected_value,result).c_str());
-			}
-		}else{
-			throw std::runtime_error(
-					zetscript::zs_strutils::format(
-							"error test '%s' expected float but it was '%s'!\n"
-							,str_expr
-							,stk_to_str(_zs,&stk).c_str()
-					).c_str()
-			);
+		zetscript::zs_float result=stk.toFloat();
+		if(result  != expected_value){
+			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %f but it was %f!\n",str_expr,expected_value,result).c_str());
 		}
+
 	}catch(std::exception & ex){
 		throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n",str_expr,ex.what()).c_str());
 	}
@@ -405,25 +358,16 @@ void test_arithmetic_float_expression(
 
 	try {
 		zetscript::StackElement stk=_zs->eval(zetscript::zs_string("return ")+str_expr);
-		if(stk.properties & zetscript::STK_PROPERTY_ZS_FLOAT){
-			zetscript::zs_float result;
-			ZS_FLOAT_COPY(&result,&stk.value);
-			if (!float_values_are_almost_the_same(result, expr)) {
-				double error = fabs(fabs(result) - fabs(expr));
-				if (error > 0.001) { /* Only error if the difference is more than expected */
-					throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %f but it was %f!\n", str_expr, expr, result).c_str());
-				}else if(print_warnings) {
-					fprintf(stderr, "warning: test '%s' expected %f but it was %f (it has some precision error)!\n", str_expr, expr, result);
-				}
+		zetscript::zs_float result = stk.toFloat();
+		if (!float_values_are_almost_the_same(result, expr)) {
+			double error = fabs(fabs(result) - fabs(expr));
+			if (error > 0.001) { /* Only error if the difference is more than expected */
+				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %f but it was %f!\n", str_expr, expr, result).c_str());
+			}else if(print_warnings) {
+				fprintf(stderr, "warning: test '%s' expected %f but it was %f (it has some precision error)!\n", str_expr, expr, result);
 			}
-		}else{
-			throw std::runtime_error(
-					zetscript::zs_strutils::format(
-							"error test '%s' expected float but it was '%s'!\n"
-							,str_expr,stk_to_str(_zs,&stk).c_str()
-					).c_str()
-			);
 		}
+
 	}
 	catch (std::exception & ex) {
 		throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n", str_expr, ex.what()).c_str());
@@ -477,22 +421,12 @@ void _complete_test_arithmetic_float_op(
 	while (!it_af->str.empty()) {
 		try {
 			zetscript::StackElement stk = _zs->eval(it_af->str);
-			if(stk.properties & zetscript::STK_PROPERTY_ZS_FLOAT){
-				zetscript::zs_float result;
-				ZS_FLOAT_COPY(&result,&stk.value);
+			zetscript::zs_float result=stk.toFloat();
 
-				if (!float_values_are_almost_the_same(result, it_af->val)) {
-					throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %f but it was %f!\n", it_af->str.c_str(), it_af->val, result).c_str());
-				}
-			}else{
-				throw std::runtime_error(
-						zetscript::zs_strutils::format(
-								"error test '%s' expected float but it was '%s'!\n"
-								,it_af->str.c_str()
-								,stk_to_str(_zs,&stk).c_str()
-						).c_str()
-				);
+			if (!float_values_are_almost_the_same(result, it_af->val)) {
+				throw std::runtime_error(zetscript::zs_strutils::format( "error test '%s' expected %f but it was %f!\n", it_af->str.c_str(), it_af->val, result).c_str());
 			}
+
 		}
 		catch (std::exception & ex) {
 			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n", it_af->str.c_str(), ex.what()).c_str());
@@ -506,20 +440,10 @@ void _complete_test_arithmetic_float_op(
 	while (!it_afm->str.empty()) {
 		try {
 			zetscript::StackElement stk = _zs->eval(it_afm->str);
-			if(stk.properties & zetscript::STK_PROPERTY_ZS_FLOAT){
-				zetscript::zs_float result;
-				ZS_FLOAT_COPY(&result,&stk.value);
-				if (!float_values_are_almost_the_same(result, it_afm->val)) {
-					throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %f but it was %f!\n", it_afm->str.c_str(), it_afm->val, result).c_str()); \
-				}
-			}else{
-				throw std::runtime_error(
-						zetscript::zs_strutils::format(
-								"error test '%s' expected float but it was '%s'!\n"
-								,it_afm->str.c_str()
-								,stk_to_str(_zs,&stk).c_str()
-						).c_str()
-				);
+
+			zetscript::zs_float result=stk.toFloat();
+			if (!float_values_are_almost_the_same(result, it_afm->val)) {
+				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %f but it was %f!\n", it_afm->str.c_str(), it_afm->val, result).c_str()); \
 			}
 		}
 		catch (std::exception & ex) {
@@ -570,24 +494,16 @@ void _complete_test_arithmetic_float_op_assign(
 	while (!it_iod->str.empty()) {
 		try {
 			zetscript::StackElement stk=_zs->eval(it_iod->str); \
-			if (stk.properties & zetscript::STK_PROPERTY_ZS_FLOAT) {
-				if (float_values_are_almost_the_same(ZS_INTPTR_TO_FLOAT(stk.value),it_iod->val)==false) {
-					throw std::runtime_error(zetscript::zs_strutils::format(
-						"error test '%s' expected '%.02f' but it was '%.02f'!\n"
-						, it_iod->str.c_str()
-						, it_iod->val
-						,ZS_INTPTR_TO_FLOAT(stk.value)).c_str()
-					);
-				}
-			}else{
-				throw std::runtime_error(
-						zetscript::zs_strutils::format(
-							"error test '%s' expected type 'float' but it was type '%s'!\n"
-							,it_iod->str.c_str()
-							,stk_to_str(_zs,&stk).c_str()
-						).c_str()
-				); \
+			zetscript::zs_float result=stk.toFloat();
+			if (float_values_are_almost_the_same(result,it_iod->val)==false) {
+				throw std::runtime_error(zetscript::zs_strutils::format(
+					"error test '%s' expected '%.02f' but it was '%.02f'!\n"
+					, it_iod->str.c_str()
+					, it_iod->val
+					,ZS_INTPTR_TO_FLOAT(stk.value)).c_str()
+				);
 			}
+
 		}
 		catch (std::exception & ex) {
 			throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' : %s!\n", it_iod->str.c_str(), ex.what()).c_str());

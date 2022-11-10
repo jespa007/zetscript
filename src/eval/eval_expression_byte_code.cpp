@@ -44,10 +44,10 @@ namespace zetscript{
 	void eval_expression_tokens_to_byte_code(
 			  EvalData *eval_data
 			, Scope *scope
-			, zs_vector<TokenNode *> 	* 	token_nodes
-			, zs_vector<EvalInstruction *> 	*	eval_instructions
-			, zs_vector<EvalInstruction *>     *   logical_and_jnt
-			, zs_vector<EvalInstruction *>     *  logical_or_jt
+			, zs_vector<TokenNode *> 			* 	token_nodes
+			, zs_vector<EvalInstruction *> 		*	eval_instructions
+			, zs_vector<EvalInstruction *>     	*   logical_and_jnt
+			, zs_vector<EvalInstruction *>     	*  	logical_or_jt
 			, int idx_start_eval_instructions
 			, int idx_start
 			, int idx_end
