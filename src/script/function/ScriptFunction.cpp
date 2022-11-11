@@ -809,7 +809,19 @@ namespace zetscript{
 
 				if(symbol_found !=NULL){ // symbol found
 
-					if(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION){
+					if(
+							(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION)
+					){
+						// if call is not defined only
+						if(unresolved_instruction->value_op1==(uint8_t)ZS_IDX_UNDEFINED){
+							THROW_SCRIPT_ERROR_FILE_LINE(
+								instruction_file
+								,instruction_line
+								,"To call function '%s' must format with parenthesis with and its arguments if it has (i.e  '%s(...)')"
+								,symbol_found->name.c_str()
+								,symbol_found->name.c_str()
+							);
+						}
 						unresolved_instruction->byte_code=BYTE_CODE_CALL;
 						unresolved_instruction->value_op2=(zs_int)symbol_found; // store script function
 					}else{ // global variable

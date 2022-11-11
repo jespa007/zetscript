@@ -65,7 +65,7 @@ namespace zetscript{
 			,ScriptFunction 	*	_calling_function
 			,Instruction 		* 	_instruction // call instruction
 			,bool 					_is_constructor
-			,const zs_string & 	_symbol_to_find
+			,const zs_string 	& 	_symbol_to_find
 			,StackElement 		*	_stk_arg
 			,uint8_t	 			_n_args
 	){
