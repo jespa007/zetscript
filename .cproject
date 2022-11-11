@@ -142,7 +142,7 @@
 			<target name="CMake Debug" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>-H. -Bbuild/gcc -DTARGET=debug  -DSUITTEST:BOOL=true</buildTarget>
+				<buildTarget>-H. -Bbuild/gcc -DTARGET=debug  -DSUITTESTS:BOOL=true</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>
@@ -150,7 +150,7 @@
 			<target name="CMake Release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>cmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>-H. -Bbuild/gcc -DTARGET=release  -DSUITTEST:BOOL=false</buildTarget>
+				<buildTarget>-H. -Bbuild/gcc -DTARGET=release  -DSUITTESTS:BOOL=false</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>

@@ -234,6 +234,7 @@ add_executable(zs${POST_NAME}
 target_link_libraries(zs${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME} )
 
 if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
+	MESSAGE ("-- Suit samples: Yes")
 
 	# helloworld
 	add_executable(helloworld${POST_NAME}
@@ -257,13 +258,6 @@ if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
 	target_link_libraries(register_class${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 	
 	#-----------------------------------------------
-	# test_map
-	add_executable(test_benchmark_std${POST_NAME}
-		${PROJECT_SOURCE_DIR}/../test/test_benchmark_std.cpp
-	)
-	target_link_libraries(test_benchmark_std${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
-	
-	#-----------------------------------------------
 	# print_object_sizes
 	add_executable(print_object_sizes${POST_NAME}
 		${PROJECT_SOURCE_DIR}/../test/print_object_sizes.cpp
@@ -271,33 +265,23 @@ if ((SUITSAMPLES) OR (NOT DEFINED SUITSAMPLES))
 	target_link_libraries(print_object_sizes${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 			
 
+else()
+	MESSAGE ("-- Suit samples: No")
 endif()
 
 
-if ((SUITTEST) OR (NOT DEFINED SUITTEST))
+if ((SUITTESTS) OR (NOT DEFINED SUITTESTS))
 	MESSAGE ("-- Suit test: Yes")
-
-	if(false)
 	
-		#-----------------------------------------------
-		# test register_constants
-		add_executable(test_register_constant${POST_NAME}
-			${PROJECT_SOURCE_DIR}/../test/test_register_constant.cpp
-		)
-		target_compile_definitions(test_register_constant${POST_NAME} PUBLIC -D__MAIN__ )
-		target_link_libraries(test_register_constant${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
-		
 	
-		#-----------------------------------------------
-		# test_map
-		add_executable(test_benchmark_std${POST_NAME}
-			${PROJECT_SOURCE_DIR}/../test/test_benchmark_std.cpp
-		)
-		target_link_libraries(test_benchmark_std${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
+	#-----------------------------------------------
+	# test benchmark_std
+	add_executable(test_benchmark_std${POST_NAME}
+		${PROJECT_SOURCE_DIR}/../test/test_benchmark_std.cpp
+	)
+	target_link_libraries(test_benchmark_std${POST_NAME} ${ZETSCRIPT_LIB_NAME}${POST_NAME})
 		
 
-	endif()
-	
 	#-----------------------------------------------
 	# test arithmetic vars
 	add_executable(test_arithmetic_vars${POST_NAME}

@@ -45,7 +45,7 @@ void test_std_map(){
 
 	printf("done!\n");
 
-	printf("Elapsed time %i\n",zetscript::zs_system::clock()-start);
+	printf("Elapsed time %i\n",(int)((zetscript::zs_system::clock()-start)*1000));
 
 	printf("=======================================\n");
 	printf("Press any key\n");
@@ -74,7 +74,7 @@ void test_zs_map(){
 
 	printf("done!\n");
 
-	printf("Elapsed time %i\n",zetscript::zs_system::clock()-start);
+	printf("Elapsed time %i\n",(int)((zetscript::zs_system::clock()-start)*1000));
 
 
 
@@ -104,7 +104,7 @@ void test_std_string(){
 
 	printf("done! %i chars\n",(int)str.length());
 
-	printf("Elapsed time %i\n",zetscript::zs_system::clock()-start);
+	printf("Elapsed time %i\n",(int)((zetscript::zs_system::clock()-start)*1000));
 	printf("=======================================\n");
 	printf("Press any key\n");
 	zetscript::zs_io::read_char();
@@ -128,7 +128,7 @@ void test_zs_string(){
 
 	//printf("done!\n");
 
-	printf("Elapsed time %i\n",zetscript::zs_system::clock()-start);
+	printf("Elapsed time %i\n",(int)((zetscript::zs_system::clock()-start)*1000));
 	printf("=======================================\n");
 	printf("Press any key\n");
 	zetscript::zs_io::read_char();
@@ -150,7 +150,7 @@ void test_std_vector(){
 			printf("%i\n",i);
 		}
 	}
-	printf("Elapsed time %i\n",zetscript::zs_system::clock()-start);
+	printf("Elapsed time %i\n",(int)((zetscript::zs_system::clock()-start)*1000));
 	printf("=======================================\n");
 	printf("Press any key\n");
 	zetscript::zs_io::read_char();
@@ -172,7 +172,7 @@ void test_zs_vector(){
 			printf("%i\n",i);
 		}
 	}
-	printf("Elapsed time %i\n",zetscript::zs_system::clock()-start);
+	printf("Elapsed time %i\n",(int)((zetscript::zs_system::clock()-start)*1000));
 	printf("=======================================\n");
 	printf("Press any key\n");
 	zetscript::zs_io::read_char();
