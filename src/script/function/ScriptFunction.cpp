@@ -815,9 +815,9 @@ namespace zetscript{
 						// if call is not defined only
 						if(unresolved_instruction->value_op1==(uint8_t)ZS_IDX_UNDEFINED){
 							THROW_SCRIPT_ERROR_FILE_LINE(
-								symbol_found->file
-								,symbol_found->line
-								,"To call function '%s' must format with parenthesis with and its arguments if it has (i.e  '%s(...)')"
+								instruction_file
+								,instruction_line
+								,"Cannot call '%s' function. To call the function it must include parenthesis (i.e  '%s(...)')"
 								,symbol_found->name.c_str()
 								,symbol_found->name.c_str()
 							);

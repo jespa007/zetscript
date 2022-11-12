@@ -232,10 +232,11 @@ namespace zetscript{
 		//------------------------------------------------------------------------------------
 
 		if(eval_instruction!=NULL){
-			eval_instruction->instruction_source_info= InstructionSourceInfo(
-					eval_data->current_parsing_file
-					,split_node->line
-					,get_mapped_name(eval_data,eval_instruction->symbol_name.c_str())
+			eval_instruction->instruction_source_info= eval_instruction_source_info(
+				eval_data
+				,eval_data->current_parsing_file
+				,split_node->line
+				,eval_instruction->symbol_name
 			);
 		}
 	}
@@ -360,9 +361,8 @@ namespace zetscript{
 			));
 
 			eval_instruction->instruction_source_info= InstructionSourceInfo(
-					eval_data->current_parsing_file
-					,token_node_operator->line
-					,NULL
+				eval_data->current_parsing_file
+				,token_node_operator->line
 			);
 		}
 		//--------------------------------------------------------------

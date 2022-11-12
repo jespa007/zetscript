@@ -440,10 +440,11 @@ namespace zetscript{
 			);
 
 			instruction->symbol_name=token_operation->value;
-			instruction->instruction_source_info = InstructionSourceInfo(
-				eval_data->current_parsing_file
+			instruction->instruction_source_info = eval_instruction_source_info(
+				eval_data
+				,eval_data->current_parsing_file
 				,token_operation->line
-				,get_mapped_name(eval_data,token_operation->value)
+				,token_operation->value
 			);
 			i1=i2; // swap instruction to erase...
 			n_eval_ops=1;

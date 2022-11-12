@@ -132,10 +132,10 @@ namespace zetscript{
 			line=-1;
 		}
 
-		InstructionSourceInfo(const char * _file,short _line,const char *_ptr_str_symbol_name=NULL){
+		InstructionSourceInfo(const char * _file,short _line){
 			file=_file;
 			line=_line;
-			ptr_str_symbol_name=_ptr_str_symbol_name;
+			ptr_str_symbol_name=NULL;
 		}
 
 		InstructionSourceInfo(const InstructionSourceInfo & _instruction_source_info){

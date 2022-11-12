@@ -347,6 +347,8 @@ namespace zetscript{
 							eval_data->zs->evalFile(str_symbol,EvalOption::EVAL_OPTION_NO_EXECUTE,eval_data);
 						}catch(zs_exception & ex){
 							eval_data->error=true;\
+							eval_data->error_file=ex.getFilename();
+							eval_data->error_line=ex.getLine();
 							eval_data->str_error=zs_strutils::format(
 									"%s \n"
 									"[%s:%i] from import '%s'"

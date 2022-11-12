@@ -21,6 +21,7 @@ namespace zetscript{
 		ByteCode byte_code=ByteCode::BYTE_CODE_INVALID;
 		token_node_symbol->token_type = TokenType::TOKEN_TYPE_LITERAL;
 		token_node_symbol->line=line;
+		EvalInstruction *eval_instruction=NULL;
 		void *const_obj=NULL;
 		char *aux=(char *)start_word;
 		zs_string default_str_value="";
@@ -179,6 +180,7 @@ namespace zetscript{
 							if(eval_data->current_function->script_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN){
 								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Symbol '%s' not defined",default_str_value.c_str());
 							}
+							// else it remains as variable to be found in the post evaluation
 						}
 					}
 				}
@@ -187,7 +189,7 @@ namespace zetscript{
 
 		token_node_symbol->value = default_str_value;
 		token_node_symbol->eval_instructions.push_back(
-			new EvalInstruction(
+			eval_instruction=new EvalInstruction(
 				byte_code
 				, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
 				,value

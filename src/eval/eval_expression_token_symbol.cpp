@@ -306,10 +306,11 @@ namespace zetscript{
 				ei_first_token_node->symbol_name=token_node_symbol->value;
 
 				// add info to add as symbol value ...
-				ei_first_token_node->instruction_source_info = InstructionSourceInfo(
-					eval_data->current_parsing_file
+				ei_first_token_node->instruction_source_info = eval_instruction_source_info(
+					eval_data
+					,eval_data->current_parsing_file
 					,line
-					,get_mapped_name(eval_data,token_node_symbol->value)
+					,token_node_symbol->value
 				);
 
 			}
@@ -517,7 +518,12 @@ namespace zetscript{
 
 					last_accessor_line=line;
 					if(get_accessor_name(eval_data, &aux_p, line,accessor_name) == false){
-						goto error_expression_token_symbol;
+						EVAL_ERROR_FILE_LINE_GOTO(
+						eval_data->current_parsing_file
+						,line
+						,error_expression_token_symbol
+						,"Expected identifier after '.'"
+						);
 					}
 
 					if(accessor_name == SYMBOL_VALUE_THIS){
@@ -613,19 +619,21 @@ namespace zetscript{
 					instruction_token->vm_instruction.value_op1=INSTRUCTION_SET_VALUE_OP1_RETURN_PARAMETER_COUNT(1,n_params);
 
 					// also insert source file/line/symbol info to get info of this call...
-					instruction_token->instruction_source_info= InstructionSourceInfo(
-						eval_data->current_parsing_file
+					instruction_token->instruction_source_info= eval_instruction_source_info(
+						eval_data
+						,eval_data->current_parsing_file
 						,last_accessor_line
-						,get_mapped_name(eval_data,last_accessor_value) // only can get from last_accessor_value because accessor_name is empty on each iteration
+						,last_accessor_value // only can get from last_accessor_value because accessor_name is empty on each iteration
 					);
 					break;
 				default:
 					instruction_token->vm_instruction.byte_code=byte_code;
 					instruction_token->vm_instruction.value_op2=instruction_value2;
-					instruction_token->instruction_source_info= InstructionSourceInfo(
-						eval_data->current_parsing_file
+					instruction_token->instruction_source_info= eval_instruction_source_info(
+						eval_data
+						,eval_data->current_parsing_file
 						,line
-						,get_mapped_name(eval_data,accessor_name)
+						,accessor_name
 					);
 					break;
 				}
@@ -661,10 +669,11 @@ namespace zetscript{
 					);
 				}
 
-				ei_first_token_node->instruction_source_info= InstructionSourceInfo(
-					eval_data->current_parsing_file
+				ei_first_token_node->instruction_source_info= eval_instruction_source_info(
+					eval_data
+					,eval_data->current_parsing_file
 					,last_accessor_line
-					,get_mapped_name(eval_data,SYMBOL_VALUE_THIS)
+					,SYMBOL_VALUE_THIS
 				);
 
 				ei_first_token_node->vm_instruction.value_op2=ZS_IDX_INSTRUCTION_OP2_THIS;
@@ -732,8 +741,9 @@ namespace zetscript{
 
 			EvalInstruction *eval_instruction_last_access=(EvalInstruction *)token_node_symbol->eval_instructions.items[token_node_symbol->eval_instructions.size()-1];
 
-			eval_instruction_post->instruction_source_info=InstructionSourceInfo(
-				eval_data->current_parsing_file
+			eval_instruction_post->instruction_source_info=eval_instruction_source_info(
+				eval_data
+				,eval_data->current_parsing_file
 				,line
 				,eval_instruction_last_access->instruction_source_info.ptr_str_symbol_name
 			);
@@ -790,8 +800,9 @@ namespace zetscript{
 				)
 			);
 
-			eval_instruction_pre->instruction_source_info=InstructionSourceInfo(
-				eval_data->current_parsing_file
+			eval_instruction_pre->instruction_source_info=eval_instruction_source_info(
+				eval_data
+				,eval_data->current_parsing_file
 				,line
 				,eval_instruction_last_access->instruction_source_info.ptr_str_symbol_name
 			);

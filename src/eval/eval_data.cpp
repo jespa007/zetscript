@@ -798,6 +798,17 @@ namespace zetscript{
 		return NULL;
 	}
 
+	InstructionSourceInfo eval_instruction_source_info(
+			EvalData *_eval_data
+			,const char *_file
+			,int _line
+			,const zs_string & _name
+	){
+		InstructionSourceInfo is=InstructionSourceInfo(_file,_line);
+		is.ptr_str_symbol_name=get_mapped_name(_eval_data,_name);
+		return is;
+	}
+
 	// PROTOTYPES
 	void eval_init(){
 

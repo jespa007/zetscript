@@ -71,10 +71,11 @@ namespace zetscript{
 		token_node->value=eval_instruction->symbol_name=symbol_object->name;
 		eval_instruction->symbol_scope=scope_info;
 
-		eval_instruction->instruction_source_info= InstructionSourceInfo(
-			eval_data->current_parsing_file
+		eval_instruction->instruction_source_info= eval_instruction_source_info(
+			eval_data
+			,eval_data->current_parsing_file
 			,line
-			,get_mapped_name(eval_data,token_node->value.c_str())
+			,token_node->value
 		);
 
 
@@ -377,10 +378,11 @@ namespace zetscript{
 					}
 
 					eval_instructions->push_back(eval_instruction_new_object_by_value=new EvalInstruction(BYTE_CODE_NEW_OBJECT_BY_VALUE));
-					eval_instruction_new_object_by_value->instruction_source_info=InstructionSourceInfo(
-							 eval_data->current_parsing_file
+					eval_instruction_new_object_by_value->instruction_source_info=eval_instruction_source_info(
+							  eval_data
+							 ,eval_data->current_parsing_file
 							 ,line
-							 ,get_mapped_name(eval_data,expression.c_str())
+							 ,expression
 						 );
 				}else{ // known type
 					is_native_type=sc->isNativeType();
@@ -410,10 +412,11 @@ namespace zetscript{
 						)
 					 );
 
-					 ei_load_function_constructor->instruction_source_info=InstructionSourceInfo(
-						 eval_data->current_parsing_file
+					 ei_load_function_constructor->instruction_source_info=eval_instruction_source_info(
+						 eval_data
+						 ,eval_data->current_parsing_file
 						 ,line
-						 ,get_mapped_name(eval_data,CONSTRUCTOR_FUNCTION_NAME)
+						 ,CONSTRUCTOR_FUNCTION_NAME
 					 );
 				 }
 

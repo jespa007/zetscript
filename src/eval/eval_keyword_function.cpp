@@ -77,10 +77,12 @@ namespace zetscript{
 			,symbol_member_var->idx_position
 		);
 		sf->instruction_source_infos.push_back(new InstructionSourceInfo(
-			eval_data->current_parsing_file
-			,symbol_member_var->line
-			,get_mapped_name(eval_data,symbol_member_var->name)
-		));
+			eval_instruction_source_info(
+				eval_data
+				,eval_data->current_parsing_file
+				,symbol_member_var->line
+				,symbol_member_var->name
+		)));
 
 
 		*start_ptr++=Instruction(BYTE_CODE_STORE,1);
