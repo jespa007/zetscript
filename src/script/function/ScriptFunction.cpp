@@ -814,15 +814,18 @@ namespace zetscript{
 					){
 						// if call is not defined only
 						if(unresolved_instruction->value_op1==(uint8_t)ZS_IDX_UNDEFINED){
-							THROW_SCRIPT_ERROR_FILE_LINE(
+
+							/*THROW_SCRIPT_ERROR_FILE_LINE(
 								instruction_file
 								,instruction_line
 								,"Cannot call '%s' function. To call the function it must include parenthesis (i.e  '%s(...)')"
 								,symbol_found->name.c_str()
 								,symbol_found->name.c_str()
-							);
+							);*/
+							unresolved_instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
+						}else{
+							unresolved_instruction->byte_code=BYTE_CODE_CALL;
 						}
-						unresolved_instruction->byte_code=BYTE_CODE_CALL;
 						unresolved_instruction->value_op2=(zs_int)symbol_found; // store script function
 					}else{ // global variable
 						if(unresolved_instruction->byte_code == BYTE_CODE_UNRESOLVED_CALL){
