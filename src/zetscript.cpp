@@ -219,7 +219,7 @@ namespace zetscript{
 
 		 zs_vector<ScriptType *> *script_classes=script_type_factory->getScriptTypes();
 		 // for all classes print code...
-		 ScriptFunction *sf_main=MAIN_FUNCTION(this);
+		 ScriptFunction *sf_main=ZS_MAIN_FUNCTION(this);
 
 		 // list functions
 		 zs_vector<Symbol *> *symbol_functions=sf_main->scope_script_function->symbol_functions;

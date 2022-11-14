@@ -61,7 +61,7 @@ namespace zetscript{
 		data->script_function_factory=_zs->getScriptFunctionFactory();
 		data->script_type_factory=_zs->getScriptTypeFactory();
 		data->scope_factory = _zs->getScopeFactory();
-		data->main_function_object = MAIN_FUNCTION(data);
+		data->main_function_object = ZS_MAIN_FUNCTION(data);
 		data->main_class_object = SCRIPT_TYPE_MAIN(data->script_type_factory);
 	}
 
@@ -331,7 +331,7 @@ namespace zetscript{
 		StackElement *stk_start=NULL;
 
 		if(
-			_calling_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN
+			_calling_function->idx_script_function==ZS_IDX_SCRIPT_FUNCTION_MAIN
 			&& ((_properties & ZS_VM_PROPERTY_CALL_FROM_NATIVE) == 0)
 		){ // set stack and Init vars for first call...
 
@@ -442,10 +442,10 @@ namespace zetscript{
 				ptr_stk_return->setUndefined();
 				// deallocate all returned variables from 1
 				for(int i=1; i < n_returned_arguments_from_function; i++){
-					StackElement stk_ret=ptr_stk_return[i];
+					/*StackElement stk_ret=ptr_stk_return[i];
 					if(stk_ret.properties & STK_PROPERTY_SCRIPT_OBJECT){
 						delete (ScriptObject *)stk_ret.value;
-					}
+					}*/
 					// deinit vm variable...
 					ptr_stk_return[i].setUndefined();
 				}

@@ -27,10 +27,9 @@ namespace zetscript{
 
 			Scope *scope_var=scope_info;
 
-
-
 			char *start_var=NULL,*end_var=NULL;
 			int start_line=0;
+			bool is_static=scope_info==ZS_MAIN_SCOPE(eval_data);
 			ScriptType *sc=NULL;
 			zs_string s_aux="",variable_name="";
 			zs_string error="";
@@ -47,6 +46,7 @@ namespace zetscript{
 			){ // type members are defined as functions
 				sc=scope_var->script_type_owner;
 				is_class_scope=true;
+				is_static=true;
 			}
 
 			do{
@@ -183,14 +183,14 @@ namespace zetscript{
 							// add instruction push
 							eval_data->current_function->eval_instructions.push_back(
 									eval_instruction=new EvalInstruction(
-											BYTE_CODE_PUSH_STK_GLOBAL
+											is_static?BYTE_CODE_PUSH_STK_GLOBAL:BYTE_CODE_PUSH_STK_LOCAL
 									)
 							);
 
 							eval_instruction->vm_instruction.value_op2=symbol_variable->idx_position;
 							eval_instruction->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, pre_variable_name+variable_name);
 							eval_instruction->symbol_name=pre_variable_name+variable_name;
-							eval_instruction->symbol_scope=ZS_MAIN_SCOPE(eval_data);
+							eval_instruction->symbol_scope=scope_var;
 
 							eval_data->current_function->eval_instructions.push_back(
 									new EvalInstruction(

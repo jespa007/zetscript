@@ -16,7 +16,7 @@ namespace zetscript{
 	}
 
 	void ScopeFactory::init(){
-		main_scope=newScope(IDX_SCRIPT_FUNCTION_MAIN,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
+		main_scope=newScope(ZS_IDX_SCRIPT_FUNCTION_MAIN,NULL,SCOPE_PROPERTY_IS_SCOPE_CLASS); // create global scope (scope 0)
 		idx_clear_checkpoint=scopes->size();
 	}
 

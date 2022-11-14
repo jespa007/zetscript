@@ -132,7 +132,7 @@ namespace zetscript{
 		ZS_MAIN_SCOPE(this)->script_type_owner=main_object;
 
 		Symbol *symbol_main_function=main_object->registerMemberFunction(
-				MAIN_SCRIPT_FUNCTION_NAME
+				ZS_MAIN_SCRIPT_FUNCTION_NAME
 		);
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
 		main_function->scope_script_function=ZS_MAIN_SCOPE(this);
@@ -404,7 +404,7 @@ namespace zetscript{
 	//
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, int _value, const char *registered_file, short registered_line){
-		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
+		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
 			, registered_line
@@ -417,7 +417,7 @@ namespace zetscript{
 	}
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, bool _value, const char *registered_file, short registered_line){
-		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
+		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
 			, registered_line
@@ -431,7 +431,7 @@ namespace zetscript{
 	}
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, zs_float _value, const char *registered_file, short registered_line){
-		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
+		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
 			, registered_line
@@ -444,7 +444,7 @@ namespace zetscript{
 	}
 
 	void ScriptTypeFactory::bindConstantVariable(const zs_string & _key, const zs_string & _value, const char *registered_file, short registered_line){
-		Symbol *symbol_variable=MAIN_FUNCTION(this)->registerLocalVariable(
+		Symbol *symbol_variable=ZS_MAIN_FUNCTION(this)->registerLocalVariable(
 			ZS_MAIN_SCOPE(this)
 			, registered_file
 			, registered_line

@@ -583,6 +583,13 @@ namespace zetscript{
 		symbol->properties = _properties;
 		symbol->idx_position = idx_position_aux;
 
+		if(this==ZS_MAIN_FUNCTION(this)){
+			// if function is main, we must initialize stack element at position local_variables->size()
+			// to prevent collect garbage information from previous evaluations where the stack element
+			// was used for temporal operations
+			vm_set_stack_element_at(zs->getVirtualMachine(),local_variables->size(),k_stk_undefined);
+		}
+
 		local_variables->push_back(symbol);
 
 		return symbol;
@@ -812,16 +819,12 @@ namespace zetscript{
 					if(
 							(symbol_found->properties & SYMBOL_PROPERTY_FUNCTION)
 					){
-						// if call is not defined only
-						if(unresolved_instruction->value_op1==(uint8_t)ZS_IDX_UNDEFINED){
+						// if symbol is function, then there's two possible actions:
+						// 1. call function
+						// 2. load function
 
-							/*THROW_SCRIPT_ERROR_FILE_LINE(
-								instruction_file
-								,instruction_line
-								,"Cannot call '%s' function. To call the function it must include parenthesis (i.e  '%s(...)')"
-								,symbol_found->name.c_str()
-								,symbol_found->name.c_str()
-							);*/
+						if(unresolved_instruction->value_op1==(uint8_t)ZS_IDX_UNDEFINED){
+							// if byte code has not defined number of parameters, it loads the function
 							unresolved_instruction->byte_code=BYTE_CODE_LOAD_FUNCTION;
 						}else{
 							unresolved_instruction->byte_code=BYTE_CODE_CALL;

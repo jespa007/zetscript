@@ -4,12 +4,12 @@
  */
 #pragma once
 
-#define MAIN_SCRIPT_FUNCTION_NAME 		"@MainFunction"
-#define CONSTRUCTOR_FUNCTION_NAME 		"constructor"
-#define IDX_SCRIPT_FUNCTION_MAIN		0
-#define NEW_SCRIPT_FUNCTION(data)		(((data)->script_function_factory))->newScriptFunction
-#define GET_SCRIPT_FUNCTION(data,idx)	(((data)->script_function_factory))->getScriptFunction(idx)
-#define MAIN_FUNCTION(data)				GET_SCRIPT_FUNCTION(data,IDX_SCRIPT_FUNCTION_MAIN)
+#define ZS_MAIN_SCRIPT_FUNCTION_NAME 		"@MainFunction"
+#define ZS_CONSTRUCTOR_FUNCTION_NAME 		"constructor"
+#define ZS_IDX_SCRIPT_FUNCTION_MAIN			0
+#define ZS_NEW_SCRIPT_FUNCTION(data)		(((data)->script_function_factory))->newScriptFunction
+#define ZS_GET_SCRIPT_FUNCTION(data,idx)	(((data)->script_function_factory))->getScriptFunction(idx)
+#define ZS_MAIN_FUNCTION(data)				ZS_GET_SCRIPT_FUNCTION(data,ZS_IDX_SCRIPT_FUNCTION_MAIN)
 
 namespace zetscript{
 	class ScopeFactory;

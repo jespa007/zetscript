@@ -105,7 +105,7 @@ namespace zetscript{
 		size_t instructions_len=(eval_instructions->size()+2); // additional +2 operations byte_code_ret and byte_code_end_function
 		size_t instructions_total_bytes=instructions_len*sizeof(Instruction);
 
-		Symbol * symbol_sf=MAIN_FUNCTION(eval_data)->registerLocalFunction(
+		Symbol * symbol_sf=ZS_MAIN_FUNCTION(eval_data)->registerLocalFunction(
 			 ZS_MAIN_SCOPE(eval_data)
 			, eval_data->current_parsing_file
 			, -1

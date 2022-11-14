@@ -48,10 +48,10 @@ namespace zetscript{
 		int error_line=-1;
 		Scope *scope_info=ZS_MAIN_SCOPE(eval_data);
 		eval_data->current_parsing_file=_filename;
-		ScriptFunction *sf = _sf == NULL?MAIN_FUNCTION(eval_data):_sf;
+		ScriptFunction *sf = _sf == NULL?ZS_MAIN_FUNCTION(eval_data):_sf;
 		sf->removeUnusuedScopes();
 
-		if(sf != MAIN_FUNCTION(eval_data)){ // remove/reset old code
+		if(sf != ZS_MAIN_FUNCTION(eval_data)){ // remove/reset old code
 			scope_info =sf->scope_script_function;// ZS_NEW_SCOPE(eval_data,sf->idx_script_function,ZS_MAIN_SCOPE(eval_data),SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
 		}
 
@@ -75,7 +75,7 @@ namespace zetscript{
 
 		if(_eval_data_from == NULL){
 
-			if(sf != MAIN_FUNCTION(eval_data) && sf->idx_script_function != IDX_ZS_SCRIPT_FUNCTION_EVAL){ // is anonyomuse function
+			if(sf != ZS_MAIN_FUNCTION(eval_data) && sf->idx_script_function != IDX_ZS_SCRIPT_FUNCTION_EVAL){ // is anonyomuse function
 				if(scope_info->symbol_variables->size() == 0){ // remove scope
 					scope_info->markAsUnusued();
 				}

@@ -43,7 +43,7 @@ namespace zetscript{
 				so_class_aux1->instruction_new=_instruction;
 
 				// check for constructor
-				symbol_aux=sc_aux1->getSymbolMemberFunction(CONSTRUCTOR_FUNCTION_NAME);
+				symbol_aux=sc_aux1->getSymbolMemberFunction(ZS_CONSTRUCTOR_FUNCTION_NAME);
 
 				 if(symbol_aux != NULL){
 					 data->vm_stk_current->value=(zs_int)symbol_aux;

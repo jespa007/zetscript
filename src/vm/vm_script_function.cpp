@@ -89,7 +89,7 @@ namespace zetscript{
 
 
 		// init local variables symbols (except arguments) as undefined
-		if((_calling_function->idx_script_function != IDX_SCRIPT_FUNCTION_MAIN)){
+		if((_calling_function->idx_script_function != ZS_IDX_SCRIPT_FUNCTION_MAIN)){
 			VM_PUSH_SCOPE(_calling_function->scope_script_function);
 			for(int i=_calling_function->params_len; i <(int)_calling_function->local_variables->size(); i++){
 				STK_SET_UNDEFINED(_stk_local_var+ i);

@@ -518,7 +518,7 @@ namespace zetscript{
 
 					last_accessor_line=line;
 					if(get_accessor_name(eval_data, &aux_p, line,accessor_name) == false){
-						EVAL_ERROR_FILE_LINE_GOTO(
+						EVAL_ERROR_FILE_LINE_GOTOF(
 						eval_data->current_parsing_file
 						,line
 						,error_expression_token_symbol

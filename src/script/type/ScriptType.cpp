@@ -520,7 +520,7 @@ namespace zetscript{
 		}
 
 		// constructor...
-		if(_function_name == CONSTRUCTOR_FUNCTION_NAME){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
+		if(_function_name == ZS_CONSTRUCTOR_FUNCTION_NAME){ //  FUNCTION_MEMBER_CONSTRUCTOR_NAME
 			idx_function_member_constructor = symbol_function->idx_position;
 		}
 		else{

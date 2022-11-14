@@ -177,7 +177,7 @@ namespace zetscript{
 								}
 							}
 						}else{
-							if(eval_data->current_function->script_function->idx_script_function==IDX_SCRIPT_FUNCTION_MAIN){
+							if(eval_data->current_function->script_function->idx_script_function==ZS_IDX_SCRIPT_FUNCTION_MAIN){
 								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line ,"Symbol '%s' not defined",default_str_value.c_str());
 							}
 							// else it remains as variable to be found in the post evaluation

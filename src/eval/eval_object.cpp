@@ -386,7 +386,7 @@ namespace zetscript{
 						 );
 				}else{ // known type
 					is_native_type=sc->isNativeType();
-					symbol_constructor_function_name=sc->getSymbolMemberFunction(CONSTRUCTOR_FUNCTION_NAME,0);
+					symbol_constructor_function_name=sc->getSymbolMemberFunction(ZS_CONSTRUCTOR_FUNCTION_NAME,0);
 
 					if(!eval_data->script_type_factory->isScriptTypeInstanceable(sc->idx_script_type)){
 						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"'%s' type is not object instanceable",sc->getTypeName());
@@ -416,7 +416,7 @@ namespace zetscript{
 						 eval_data
 						 ,eval_data->current_parsing_file
 						 ,line
-						 ,CONSTRUCTOR_FUNCTION_NAME
+						 ,ZS_CONSTRUCTOR_FUNCTION_NAME
 					 );
 				 }
 
@@ -468,13 +468,13 @@ namespace zetscript{
 
 				 if(eval_instruction_new_object_by_value==NULL){
 					 // check constructor symbol
-					 constructor_function=sc->getSymbol(CONSTRUCTOR_FUNCTION_NAME);
+					 constructor_function=sc->getSymbol(ZS_CONSTRUCTOR_FUNCTION_NAME);
 					 int start_idx_function=sc->scope_script_type->symbol_functions->size()-1;
 					 if(constructor_function == NULL){ // find first constructor throught its function members
 						 for(int i = start_idx_function; i >=0 && constructor_function==NULL; i--){
 							Symbol *symbol_member = (Symbol *)sc->scope_script_type->symbol_functions->items[i];
 							ScriptFunction *sf_member=(ScriptFunction *)symbol_member->ref_ptr;
-							if(sf_member->name_script_function== CONSTRUCTOR_FUNCTION_NAME){
+							if(sf_member->name_script_function== ZS_CONSTRUCTOR_FUNCTION_NAME){
 								constructor_function = symbol_member;
 							}
 						}

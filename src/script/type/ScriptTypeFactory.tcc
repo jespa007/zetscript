@@ -24,7 +24,7 @@ namespace zetscript{
 			THROW_RUNTIME_ERROR("cannot register var '%s' with NULL reference value", _var_name.c_str());
 		}
 
-		ScriptFunction *main_function=MAIN_FUNCTION(this);
+		ScriptFunction *main_function=ZS_MAIN_FUNCTION(this);
 
 		if(main_function == NULL){
 			THROW_RUNTIME_ERRORF("main function is not created");
@@ -407,7 +407,7 @@ namespace zetscript{
 		if(script_type == NULL){
 			THROW_RUNTIME_ERROR("native type '%s' is not registered",str_script_type_ptr.c_str());
 		}
-		return bindMemberFunction<C>(CONSTRUCTOR_FUNCTION_NAME,function_type, registered_file,registered_line );
+		return bindMemberFunction<C>(ZS_CONSTRUCTOR_FUNCTION_NAME,function_type, registered_file,registered_line );
 	}
 
 	/**
