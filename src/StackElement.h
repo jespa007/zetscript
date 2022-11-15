@@ -119,6 +119,10 @@ namespace zetscript{
 	template<typename _C>
 	_C 				stk_to(ZetScript *_zs, StackElement * _stk);
 
+	template<typename _C>
+	StackElement	to_stk(ZetScript *_zs, _C _val);
+
+
 	extern const StackElement k_stk_undefined;
 
 

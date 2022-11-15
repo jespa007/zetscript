@@ -219,18 +219,6 @@ namespace zetscript{
 							);
 						}
 
-						if(sc==NULL && ei_first_token_node->vm_instruction.byte_code != BYTE_CODE_LOAD_TYPE){
-							EVAL_ERROR_FILE_LINE_GOTO(
-								eval_data->current_parsing_file
-								,line
-								,error_expression_token_symbol
-								,"Cannot perform static access %s::%s'. '%s' is not a type"
-								,static_access_value.c_str()
-								,class_element.c_str()
-								,static_access_value.c_str()
-							);
-						}
-
 						static_access_value+="::"+class_element;
 
 						ei_first_token_node->vm_instruction.byte_code = BYTE_CODE_FIND_VARIABLE;
@@ -240,7 +228,20 @@ namespace zetscript{
 						// override
 						token_node_symbol->value=static_access_value;
 
-						if(sc != NULL){ // if type exist ...
+						/*if(sc==NULL ){
+							EVAL_ERROR_FILE_LINE_GOTO(
+								eval_data->current_parsing_file
+								,line
+								,error_expression_token_symbol
+								,"Cannot perform static access %s::%s'. '%s' is not a type"
+								,static_access_value.c_str()
+								,class_element.c_str()
+								,static_access_value.c_str()
+							);
+						}*/
+
+
+						if(sc != NULL && ei_first_token_node->vm_instruction.byte_code != BYTE_CODE_LOAD_TYPE){ // if type exist ...
 
 							member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
 
