@@ -487,6 +487,8 @@ namespace zetscript{
 			result.value=IDX_TYPE_ZS_FLOAT_C;
 		}else if(STK_VALUE_IS_BOOLEAN(stk)){
 			result.value=IDX_TYPE_BOOL_C;
+		}else if(STK_VALUE_IS_TYPE(stk)){
+			result=*stk;
 		}else if(STK_VALUE_IS_CONTAINER_SLOT(stk)){
 			result.value=((ContainerSlot *)stk->value)->getSrcContainerRef()->getScriptType()->idx_script_type;;
 		}else if(STK_VALUE_IS_SCRIPT_OBJECT(stk)){

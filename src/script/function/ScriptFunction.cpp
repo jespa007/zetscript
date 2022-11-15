@@ -846,7 +846,11 @@ namespace zetscript{
 							}
 						}
 
-						unresolved_instruction->value_op2=symbol_found->idx_position;
+						if(symbol_found->properties & SYMBOL_PROPERTY_CONST){
+							unresolved_instruction->value_op2=symbol_found->ref_ptr;
+						}else{
+							unresolved_instruction->value_op2=symbol_found->idx_position;
+						}
 					}
 
 					// unstack unresolved symbol

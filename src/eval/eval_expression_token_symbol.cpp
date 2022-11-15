@@ -202,7 +202,8 @@ namespace zetscript{
 
 						// mark symbol as static
 						// the first item is the type
-						zs_string static_access_value=token_node_symbol->value,class_element;
+						//zs_string static_access_value=token_node_symbol->value
+						zs_string class_element;
 						Symbol *member_symbol=NULL;
 
 						ScriptType *sc=eval_data->zs->getScriptTypeFactory()->getScriptType(token_node_symbol->value);
@@ -219,14 +220,14 @@ namespace zetscript{
 							);
 						}
 
-						static_access_value+="::"+class_element;
+						token_node_symbol->value+="::"+class_element;
 
-						ei_first_token_node->vm_instruction.byte_code = BYTE_CODE_FIND_VARIABLE;
+
 
 						//}while(*aux_p != 0 && *aux_p==':' && *(aux_p+1)==':' && n_static_access < max_static_access);
 
 						// override
-						token_node_symbol->value=static_access_value;
+						//token_node_symbol->value=static_access_value;
 
 						/*if(sc==NULL ){
 							EVAL_ERROR_FILE_LINE_GOTO(
@@ -241,7 +242,9 @@ namespace zetscript{
 						}*/
 
 
-						if(sc != NULL && ei_first_token_node->vm_instruction.byte_code != BYTE_CODE_LOAD_TYPE){ // if type exist ...
+						if(sc != NULL){ // if type exist ...
+
+							ei_first_token_node->vm_instruction.byte_code = BYTE_CODE_FIND_VARIABLE;
 
 							member_symbol=sc->getSymbol(class_element); // ... and member as well we can define the instruction here
 
@@ -253,7 +256,7 @@ namespace zetscript{
 												,line
 												,error_expression_token_symbol
 												,"Symbol '%s' %s"
-												,static_access_value.c_str()
+												,token_node_symbol->value.c_str()
 												,static_error.c_str());
 									}
 								}else{
@@ -261,7 +264,7 @@ namespace zetscript{
 											eval_data->current_parsing_file
 											,line
 											,error_expression_token_symbol
-											,"Symbol '%s' is not static",static_access_value.c_str());
+											,"Symbol '%s' is not static",token_node_symbol->value.c_str());
 								}
 							}
 						} // --> in eval::pop_function will be find

@@ -600,9 +600,6 @@ namespace zetscript{
 		}
 
 		return NULL;
-
-
-
 	}
 
 	char *  eval_keyword_return(EvalData *eval_data,const char *s,int & line,  Scope *scope_info){
