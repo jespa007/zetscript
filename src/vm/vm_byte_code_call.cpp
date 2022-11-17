@@ -41,7 +41,7 @@ namespace zetscript{
 
 			data->vm_error_callstack_str+=zs_strutils::format(
 				"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */
-				, "iter"
+				, "_iter"
 				,SFI_GET_FILE(_calling_function,instruction)
 				,SFI_GET_LINE(_calling_function,instruction)
 			);

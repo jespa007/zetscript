@@ -2,9 +2,9 @@ var sum_k=0;
 var sum_v=0;
 var str="abcd"
 
-for(var it=str.iter();!it.end();it++){
+for(var it=str._iter();!it._end();it++){
 	var k,v;
-	k,v=it.get();
+	k,v=it._get();
 	sum_k+=k;
 	sum_v+=v;
 	

@@ -278,13 +278,13 @@ namespace zetscript{
 		bindMemberFunction<VectorScriptObject>("clear",&VectorScriptObjectWrap_clear);
 		bindMemberFunction<VectorScriptObject>("size",&VectorScriptObjectWrap_size);
 		bindMemberFunction<VectorScriptObject>("join",&VectorScriptObjectWrap_join);
-		bindMemberFunction<VectorScriptObject>("iter",&VectorScriptObjectWrap_iter);
+		bindMemberFunction<VectorScriptObject>("_iter",&VectorScriptObjectWrap_iter);
 		bindStaticMemberFunction<VectorScriptObject>("equal",&VectorScriptObjectWrap_equal);
 
 		// IteratorVector
 		bindMemberFunction<VectorIteratorScriptObject>("_post_inc",VectorIteratorScriptObjectWrap_next);
-		bindMemberFunction<VectorIteratorScriptObject>("end",VectorIteratorScriptObjectWrap_end);
-		bindMemberFunction<VectorIteratorScriptObject>("get",VectorIteratorScriptObjectWrap_get);
+		bindMemberFunction<VectorIteratorScriptObject>("_end",VectorIteratorScriptObjectWrap_end);
+		bindMemberFunction<VectorIteratorScriptObject>("_get",VectorIteratorScriptObjectWrap_get);
 
 
 		//---------------------------------------------
@@ -308,12 +308,12 @@ namespace zetscript{
 		bindMemberFunction<StringScriptObject>("substring",StringScriptObjectWrap_substring);
 		bindMemberFunction<StringScriptObject>("append",StringScriptObjectWrap_append);
 
-		bindMemberFunction<StringScriptObject>("iter",StringScriptObjectWrap_iter);
+		bindMemberFunction<StringScriptObject>("_iter",StringScriptObjectWrap_iter);
 
 		// IteratorString
 		bindMemberFunction<StringIteratorScriptObject>("_post_inc",StringIteratorScriptObjectWrap_next);
-		bindMemberFunction<StringIteratorScriptObject>("end",StringIteratorScriptObjectWrap_end);
-		bindMemberFunction<StringIteratorScriptObject>("get",StringIteratorScriptObjectWrap_get);
+		bindMemberFunction<StringIteratorScriptObject>("_end",StringIteratorScriptObjectWrap_end);
+		bindMemberFunction<StringIteratorScriptObject>("_get",StringIteratorScriptObjectWrap_get);
 
 		//---------------------------------------------
 		// Object
@@ -323,12 +323,12 @@ namespace zetscript{
 		bindStaticMemberFunction<ObjectScriptObject>("append",&ObjectScriptObjectWrap_append);
 		bindStaticMemberFunction<ObjectScriptObject>("concat",ObjectScriptObject::concat);
 		bindStaticMemberFunction<ObjectScriptObject>("keys",ObjectScriptObjectWrap_keys);
-		bindStaticMemberFunction<ObjectScriptObject>("iter",ObjectScriptObjectWrap_iter);
+		bindStaticMemberFunction<ObjectScriptObject>("_iter",ObjectScriptObjectWrap_iter);
 
 		// IteratorObject
 		bindMemberFunction<ObjectIteratorScriptObject>("_post_inc",ObjectIteratorScriptObjectWrap_next);
-		bindMemberFunction<ObjectIteratorScriptObject>("end",ObjectIteratorScriptObjectWrap_end);
-		bindMemberFunction<ObjectIteratorScriptObject>("get",ObjectIteratorScriptObjectWrap_get);
+		bindMemberFunction<ObjectIteratorScriptObject>("_end",ObjectIteratorScriptObjectWrap_end);
+		bindMemberFunction<ObjectIteratorScriptObject>("_get",ObjectIteratorScriptObjectWrap_get);
 
 		zs->saveState();
 	}

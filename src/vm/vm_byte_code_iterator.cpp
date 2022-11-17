@@ -55,7 +55,7 @@ namespace zetscript{
 
 		sc=obj->getScriptType();
 
-		symbol_iter=sc->getSymbolMemberFunction("iter");
+		symbol_iter=sc->getSymbolMemberFunction("_iter");
 
 		if(symbol_iter != NULL){
 
@@ -73,7 +73,7 @@ namespace zetscript{
 				so_object=NULL;
 			}
 
-			ZS_VM_INNER_CALL(so_object,so_function,n_args,"iter");
+			ZS_VM_INNER_CALL(so_object,so_function,n_args,"_iter");
 
 			// ok vm_stk_current holds the iter object
 			if(data->vm_stk_current->properties & STK_PROPERTY_SCRIPT_OBJECT){
@@ -81,10 +81,13 @@ namespace zetscript{
 				obj=(ScriptObject *)data->vm_stk_current->value;
 			}else{
 				// get iterator object and references +1
-				obj=((ContainerSlot *)(data->vm_stk_current->value))->getSrcContainerRef();
+				if(data->vm_stk_current->properties & STK_PROPERTY_CONTAINER_SLOT){
+					obj=((ContainerSlot *)(data->vm_stk_current->value))->getSrcContainerRef();
+				}else{
+					ZS_VM_ERROR("Object '%s' does not returns an iterator object",obj->getTypeName());
+					return false;
+				}
 			}
-
-
 
 
 			if(!vm_share_script_object(_vm,obj)){\
@@ -94,8 +97,8 @@ namespace zetscript{
 			sc=obj->getScriptType();
 
 			// check all functions...
-			if(sc->getSymbolMemberFunction("get")==NULL){
-				ZS_VM_ERROR("IteratorObject '%s' does not implement 'get' function",obj->getTypeName());
+			if(sc->getSymbolMemberFunction("_get")==NULL){
+				ZS_VM_ERROR("IteratorObject '%s' does not implement '_get' function",obj->getTypeName());
 				return false;
 			}
 
@@ -104,8 +107,8 @@ namespace zetscript{
 				return false;
 			}
 
-			if(sc->getSymbolMemberFunction("end")==NULL){
-				ZS_VM_ERROR("IteratorObject '%s' does not implement 'end' function",obj->getTypeName());
+			if(sc->getSymbolMemberFunction("_end")==NULL){
+				ZS_VM_ERROR("IteratorObject '%s' does not implement '_end' function",obj->getTypeName());
 				return false;
 			}
 

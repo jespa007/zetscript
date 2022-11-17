@@ -580,7 +580,7 @@ namespace zetscript{
 				eval_data->current_function->eval_instructions.push_back(
 					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
 				);
-				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "end");
+				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_end");
 
 				// call
 				eval_data->current_function->eval_instructions.push_back(
@@ -614,7 +614,7 @@ namespace zetscript{
 					ei_aux=new EvalInstruction(BYTE_CODE_LOAD_OBJECT_ITEM)
 				);
 
-				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "get");
+				ei_aux->instruction_source_info.ptr_str_symbol_name=get_mapped_name(eval_data, "_get");
 
 				// call, return all
 				eval_data->current_function->eval_instructions.push_back(
