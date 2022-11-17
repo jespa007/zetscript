@@ -11,7 +11,7 @@ function fibR(n) {
 for(var i=0; i <10; i++)
 {
 	var start=System::clock()
-	Console::outln("fib: {0} time: {1} ms", fibR(34),System::clock()-start);
+	Console::outln("fib: {0} time: {1} s", fibR(34),System::clock()-start);
 }
 
 
