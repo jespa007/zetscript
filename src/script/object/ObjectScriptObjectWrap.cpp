@@ -12,7 +12,7 @@ namespace zetscript{
 
 		zs_map *map=o1->getMapUserProperties();
 		for(auto it=map->begin(); !it.end(); it.next()){
-			StackElement *stk=sv->pushNewUserSlot();
+			StackElement *stk=sv->newSlot();
 			StringScriptObject *so=ZS_NEW_STRING_OBJECT(_zs);
 			so->set(it.key);
 

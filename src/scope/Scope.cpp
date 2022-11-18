@@ -17,7 +17,7 @@ namespace zetscript{
 		script_type_owner=NULL;
 		idx_script_function=_idx_script_function;
 		zs=_zs;
-		tmp_idx_instruction_push_scope=ZS_IDX_UNDEFINED;
+		offset_instruction_push_scope=ZS_IDX_UNDEFINED;
 		scope_factory=_zs->getScopeFactory();
 		scopes=new zs_vector<Scope *>;
 		symbol_variables=new zs_vector<Symbol *>;

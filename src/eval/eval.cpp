@@ -105,7 +105,7 @@ namespace zetscript{
 		);
 
 		scope_parent->scopes->push_back(new_scope);
-		new_scope->tmp_idx_instruction_push_scope=0;
+		new_scope->offset_instruction_push_scope=0;
 
 		return new_scope;
 	}
@@ -119,15 +119,16 @@ namespace zetscript{
 		);
 
 		scope_parent->scopes->push_back(new_scope);
-		new_scope->tmp_idx_instruction_push_scope=(int)eval_data->current_function->eval_instructions.size();
+		new_scope->offset_instruction_push_scope=(int)eval_data->current_function->eval_instructions.size();
 		return new_scope;
 	}
 
 	void eval_check_scope(EvalData *eval_data, Scope *scope, bool _is_block_body_loop){
-		if(scope->symbol_variables->size() > 0 || _is_block_body_loop==true){ // if there's local symbols insert push/pop scope for there symbols
-			if(scope->tmp_idx_instruction_push_scope!=ZS_IDX_UNDEFINED){
+		if(scope->symbol_variables->size() > 0 || _is_block_body_loop==true){
+			// if there's local symbols insert push/pop scope
+			if(scope->offset_instruction_push_scope!=ZS_IDX_UNDEFINED){
 				eval_data->current_function->eval_instructions.insert(
-						scope->tmp_idx_instruction_push_scope
+						scope->offset_instruction_push_scope
 						,
 								new EvalInstruction(BYTE_CODE_PUSH_SCOPE,0,(zs_int)scope)
 

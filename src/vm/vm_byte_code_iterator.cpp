@@ -20,7 +20,7 @@ namespace zetscript{
 		ScriptType 			*	sc=NULL;
 		Instruction			* 	instruction=_instruction;
 
-		 VM_POP_STK_TWO;
+		VM_POP_STK_TWO;
 
 		// stk_op2 expects to be obj with container
 

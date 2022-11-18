@@ -32,7 +32,7 @@ namespace zetscript{
 		//bool is_c_node;
 		//bool is_scope_function; // this will ignore symbols within scopes where functions starts to avoid conflicts with global functions...
 		ScriptType *script_type_owner;
-		int tmp_idx_instruction_push_scope;
+		int offset_instruction_push_scope;
 
 
 		Scope 					*scope_parent, *scope_base;

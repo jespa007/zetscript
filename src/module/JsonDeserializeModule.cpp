@@ -323,7 +323,7 @@ namespace zetscript{
 
 				do{
 					// add new element,
-					stk_element=vo->pushNewUserSlot();
+					stk_element=vo->newSlot();
 
 					if((str_current=deserialize(data,str_current,line,stk_element))==NULL){
 						return NULL;

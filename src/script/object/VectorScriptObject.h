@@ -37,7 +37,12 @@ namespace zetscript{
 
 		bool exists(StackElement  * stk);
 
-		StackElement *			pushNewUserSlot();
+		/**
+		 * creates and insert new StackElement at the end of the vector
+		 * @Return: New StackElement created
+		 */
+		StackElement *			newSlot();
+
 		void 					push(StackElement  * stk);
 		void 					pop();
 		virtual zs_string toString();

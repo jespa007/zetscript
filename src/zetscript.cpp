@@ -443,15 +443,15 @@ namespace zetscript{
 				Symbol *symbol=(Symbol *)local_variables->items[v];//(Symbol *)main_function_object->registered_symbols->items[v];
 
 
-				ObjectScriptObject *var = NULL;
+				ScriptObject *script_object = NULL;
 
 				if(symbol != NULL && symbol->scope == main_scope){ // if variable in global scope
 
 					if(vm_stk_element->properties & STK_PROPERTY_SCRIPT_OBJECT){
-						var =((ObjectScriptObject *)(vm_stk_element->value));
-						if(var){
-							if(var->shared_pointer != NULL){
-								if(!vm_unref_shared_script_object(this->virtual_machine,var,NULL)){
+						script_object =((ScriptObject *)(vm_stk_element->value));
+						if(script_object!=NULL){
+							if(script_object->shared_pointer != NULL){
+								if(!vm_unref_shared_script_object(this->virtual_machine,script_object,NULL)){
 									THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
 								}
 							}

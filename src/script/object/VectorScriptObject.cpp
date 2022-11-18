@@ -90,7 +90,7 @@ namespace zetscript{
 		stk_user_elements.clear();
 	}
 
-	StackElement *VectorScriptObject::pushNewUserSlot(){
+	StackElement *VectorScriptObject::newSlot(){
 		StackElement *stk=(StackElement *)malloc(sizeof(StackElement));
 		*stk=k_stk_undefined;
 		stk_user_elements.push_back(stk);
@@ -98,7 +98,7 @@ namespace zetscript{
 	}
 
 	void VectorScriptObject::push(StackElement  * _stk){
-		stk_assign(zs,pushNewUserSlot(),_stk);
+		stk_assign(zs,newSlot(),_stk);
 	}
 
 	void VectorScriptObject::pop(){

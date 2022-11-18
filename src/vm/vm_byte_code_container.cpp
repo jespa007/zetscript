@@ -372,7 +372,7 @@ namespace zetscript{
 
 			dst_container = (ContainerScriptObject *)stk_var->value;
 			id_slot=((VectorScriptObject *)dst_container)->length();
-			stk_dst=((VectorScriptObject *)dst_container)->pushNewUserSlot();
+			stk_dst=((VectorScriptObject *)dst_container)->newSlot();
 			stk_src=*stk_result_op1;
 		}
 
