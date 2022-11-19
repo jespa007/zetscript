@@ -65,7 +65,11 @@ namespace zetscript{
 		StackElement         * stk_local_vars	=ZS_VM_CURRENT_SCOPE_FUNCTION->stk_local_vars;\
 		zs_vector<Symbol *> *scope_symbols=scope->symbol_variables;\
 		int count=(int)scope_symbols->size();\
-		if(count > 0){\
+
+		if(  count > 0  // if there's variable symbols registered
+		 && ((scope->properties & SCOPE_PROPERTY_IS_SCOPE_CLASS)==0)) // do not unref symbol vars as built-in class, they are saved in the class
+		{
+
 			StackElement *stk_local_var=stk_local_vars+scope_symbols->items[0]->idx_position;\
 			while(count--){\
 				if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\
