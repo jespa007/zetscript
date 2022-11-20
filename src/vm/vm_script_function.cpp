@@ -720,6 +720,10 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_GTE:
 			result= ZS_STRCMP(str1.c_str(),>=,str1.c_str());
 			break;
+		default:
+			ZS_VM_SET_USER_ERRORF(_vm," Internal error expected byte_code_metamethod comparer");
+			return;
+			break;
 		}
 
 		VM_PUSH_STK_BOOLEAN(result);

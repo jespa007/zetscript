@@ -47,7 +47,7 @@
 	aux_p=NULL;\
 	eval_data->error_file=_file;\
 	eval_data->error_line=_line;\
-	eval_data->str_error=zs_strutils::format(_str_error, ##__VA_ARGS__);\
+	eval_data->str_error=zs_strutils::format(_str_error, __VA_ARGS__);\
 	goto _my_goto;
 
 #define EVAL_ERROR_FILE_LINE_GOTOF(_file,_line,_my_goto,_str_error)	\
