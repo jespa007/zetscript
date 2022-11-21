@@ -466,9 +466,6 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_THIS: // load variable ...
 				*data->vm_stk_current++=*_this_object->getThisProperty();
 				continue;
-			case BYTE_CODE_PUSH_STK_MEMBER_VAR: // direct load
-				VM_PUSH_STK_PTR(_this_object->getBuiltinElementAt(instruction->value_op2));
-				continue;
 			 case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
 
 				 	so_aux=NEW_OBJECT_VAR_BY_TYPE_IDX(data->script_type_factory,instruction->value_op1);

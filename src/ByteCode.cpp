@@ -46,7 +46,6 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_LOCAL:						return "PUSH_STK_LOCAL"; // push stk global
 			//case BYTE_CODE_PUSH_STK_REF:						return "PUSH_STK_REF"; // push stk global
 			case BYTE_CODE_PUSH_STK_THIS:						return "PUSH_STK_THIS"; // push stk global
-			case BYTE_CODE_PUSH_STK_MEMBER_VAR:					return "PUSH_STK_MEMBER_VAR"; // push stk global
 			case BYTE_CODE_PUSH_STK_VECTOR_ITEM:				return "PUSH_STK_VEC@ITEM"; // load element vector
 			case BYTE_CODE_PUSH_STK_OBJECT_ITEM:				return "PUSH_STK_OBJ@ITEM"; // load element object
 			case BYTE_CODE_PUSH_STK_THIS_VARIABLE:				return "PUSH_STK_THIS@VAR"; // load element object

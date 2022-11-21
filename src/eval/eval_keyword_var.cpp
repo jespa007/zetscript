@@ -110,7 +110,7 @@ namespace zetscript{
 				try{
 
 					bool is_local_or_const=is_constant || sc_var_member_extension==NULL;
-					bool is_const_member_or_var_member=sc_var_member_extension != NULL;
+					//bool is_const_member_or_var_member=sc_var_member_extension != NULL;
 
 					if(is_local_or_const){ // is constant or is local (sc_var_member_extension==NULL)
 						symbol_variable=eval_data->current_function->script_function->registerLocalVariable(
@@ -119,9 +119,28 @@ namespace zetscript{
 							, line
 							, pre_variable_name+variable_name
 						);
+
+						// static constant
+						if(sc_var_member_extension!=NULL){
+							try{
+								symbol_member_variable=sc_var_member_extension->registerMemberVariable(
+									variable_name
+									,SYMBOL_PROPERTY_CONST | SYMBOL_PROPERTY_STATIC
+									,eval_data->current_parsing_file
+									,line
+								);
+
+							}catch(std::exception & ex){
+								EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"%s",ex.what());
+							}
+
+							if(is_constant == true){
+								symbol_member_variable->ref_ptr=symbol_variable->idx_position;
+							}
+						}
 					}
 
-					if( is_const_member_or_var_member){
+					/*if( is_const_member_or_var_member){
 						try{
 							symbol_member_variable=sc_var_member_extension->registerMemberVariable(
 								variable_name
@@ -138,7 +157,7 @@ namespace zetscript{
 							symbol_member_variable->ref_ptr=symbol_variable->idx_position;
 						}
 
-					}
+					}*/
 				}catch(std::exception & ex){
 					EVAL_ERROR("%s",ex.what());
 				}
@@ -169,7 +188,13 @@ namespace zetscript{
 
 					if(is_var_member){ // check load and set find
 
-						eval_generate_byte_code_field_initializer(eval_data,sf_field_initializer,&ei_member_var_init,symbol_member_variable);
+						eval_generate_byte_code_field_initializer(
+							eval_data
+							,sf_field_initializer
+							,line
+							,variable_name
+							,&ei_member_var_init
+						);
 
 						ei_member_var_init.clear();
 					}

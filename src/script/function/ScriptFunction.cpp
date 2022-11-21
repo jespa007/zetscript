@@ -254,7 +254,6 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_STK_LOCAL:
 			//case BYTE_CODE_PUSH_STK_REF:
 			case BYTE_CODE_PUSH_STK_THIS:
-			case BYTE_CODE_PUSH_STK_MEMBER_VAR:
 			case BYTE_CODE_LOAD_THIS_FUNCTION:
 			case BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT:
 			case BYTE_CODE_LOAD_FUNCTION:
@@ -268,8 +267,7 @@ namespace zetscript{
 					,req_stk
 					,sum_stk_load_stk
 					,byte_code_to_str(instruction->byte_code)
-					, instruction->byte_code == BYTE_CODE_PUSH_STK_MEMBER_VAR
-					|| instruction->byte_code == BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT
+					,instruction->byte_code == BYTE_CODE_LOAD_CONSTRUCTOR_FUNCT
 					? "\t" : "\t\t"
 					,symbol_value.c_str()
 				);

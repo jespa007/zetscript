@@ -67,7 +67,9 @@ namespace zetscript{
 		int count=(int)scope_symbols->size();\
 
 		if(  count > 0  // if there's variable symbols registered
-		 && ((scope->properties & SCOPE_PROPERTY_IS_SCOPE_CLASS)==0)) // do not unref symbol vars as built-in class, they are saved in the class
+		//By now, it does not unref symbol vars as built-in class, they are saved in the class.
+		// TODO: Implement namespace scope, like main scope that does not pop at the end
+		 && ((scope->properties & SCOPE_PROPERTY_IS_SCOPE_CLASS)==0))
 		{
 
 			StackElement *stk_local_var=stk_local_vars+scope_symbols->items[0]->idx_position;\

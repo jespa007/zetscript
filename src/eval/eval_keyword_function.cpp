@@ -17,7 +17,13 @@ namespace zetscript{
 	}
 
 
-	void eval_generate_byte_code_field_initializer(EvalData *eval_data, ScriptFunction *sf, zs_vector<EvalInstruction *> *eval_instructions, Symbol *symbol_member_var){
+	void eval_generate_byte_code_field_initializer(
+			EvalData *_eval_data
+			, ScriptFunction *_sf
+			, int _line
+			,const zs_string & _symbol_name
+			, zs_vector<EvalInstruction *> *_eval_instructions
+	){
 
 		// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
 		PtrInstruction new_instructions=NULL;
@@ -25,31 +31,31 @@ namespace zetscript{
 		size_t new_instructions_len=0;
 		size_t new_instructions_total_bytes=0;
 		Instruction * start_ptr=NULL;
-		int n_elements_to_add=eval_instructions->size();
+		int n_elements_to_add=_eval_instructions->size();
 
 		n_elements_to_add=n_elements_to_add+2; // +2 for push_stk + store at the end
 
-		if(sf->instructions == NULL){
+		if(_sf->instructions == NULL){
 			n_elements_to_add=n_elements_to_add+1; // +1 for end instruction
 		}
 
-		new_instructions_len = sf->instructions_len+(n_elements_to_add);
+		new_instructions_len = _sf->instructions_len+(n_elements_to_add);
 		new_instructions_total_bytes=new_instructions_len* sizeof(Instruction);
 		new_instructions=(Instruction *)ZS_MALLOC(new_instructions_total_bytes);
 
 
-		start_ptr=new_instructions+sf->instructions_len;
+		start_ptr=new_instructions+_sf->instructions_len;
 
 		// 2. copy current block to new
-		if(sf->instructions_len>0){
-			memcpy(new_instructions,sf->instructions,sf->instructions_len*sizeof(Instruction));
+		if(_sf->instructions_len>0){
+			memcpy(new_instructions,_sf->instructions,_sf->instructions_len*sizeof(Instruction));
 			start_ptr--; // start from end instruction
 		}
 
 
 		// 3. copy eval instructions
-		for(int i=0; i < eval_instructions->size(); i++){
-			EvalInstruction *eval_instruction = (EvalInstruction *)eval_instructions->items[i];
+		for(int i=0; i < _eval_instructions->size(); i++){
+			EvalInstruction *eval_instruction = (EvalInstruction *)_eval_instructions->items[i];
 			// save instruction ...
 			*start_ptr=eval_instruction->vm_instruction;
 
@@ -61,7 +67,7 @@ namespace zetscript{
 			instruction_info.ptr_str_symbol_name=eval_instruction->instruction_source_info.ptr_str_symbol_name;
 
 			// add instruction source information...
-			sf->instruction_source_infos.push_back(new InstructionSourceInfo(instruction_info));
+			_sf->instruction_source_infos.push_back(new InstructionSourceInfo(instruction_info));
 
 			start_ptr++;
 
@@ -72,30 +78,31 @@ namespace zetscript{
 		// 4. add load/store/reset stack
 		idx_position=start_ptr-new_instructions;
 		*start_ptr++=Instruction(
-			BYTE_CODE_PUSH_STK_MEMBER_VAR
-			, ZS_IDX_INSTRUCTION_OP1_NOT_DEFINED
-			,symbol_member_var->idx_position
+				BYTE_CODE_PUSH_STK_THIS_VARIABLE
+			, ZS_IDX_UNDEFINED
+			,ZS_IDX_UNDEFINED
+			,INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT
 		);
-		sf->instruction_source_infos.push_back(new InstructionSourceInfo(
+		_sf->instruction_source_infos.push_back(new InstructionSourceInfo(
 			eval_instruction_source_info(
-				eval_data
-				,eval_data->current_parsing_file
-				,symbol_member_var->line
-				,symbol_member_var->name
+				_eval_data
+				,_eval_data->current_parsing_file
+				,_line
+				,_symbol_name
 		)));
 
 
 		*start_ptr++=Instruction(BYTE_CODE_STORE,1);
-		sf->instruction_source_infos.push_back(NULL);
+		_sf->instruction_source_infos.push_back(NULL);
 
-		if(sf->instructions != NULL){
-			free(sf->instructions); // deallocate last allocated instructions
+		if(_sf->instructions != NULL){
+			free(_sf->instructions); // deallocate last allocated instructions
 		}
 
-		sf->instructions=new_instructions;
-		sf->instructions_len=new_instructions_len;
+		_sf->instructions=new_instructions;
+		_sf->instructions_len=new_instructions_len;
 
-		eval_instructions->clear();
+		_eval_instructions->clear();
 	}
 
 	Symbol *eval_new_inline_anonymous_function(EvalData *eval_data,zs_vector<EvalInstruction *> *eval_instructions){
