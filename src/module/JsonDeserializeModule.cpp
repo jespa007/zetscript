@@ -169,7 +169,7 @@ namespace zetscript{
 
 			data->str_error=what_msg;
 
-			//THROW_EXCEPTION(what_msg);
+			//ZS_THROW_EXCEPTION(what_msg);
 		}
 
 		char * read_string_between_quotes(JsonDeserializeData *data, const char *str_start,int & line, zs_string * str_out){

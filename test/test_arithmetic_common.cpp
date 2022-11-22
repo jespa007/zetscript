@@ -56,7 +56,7 @@ void test_arithmetic_int_expression(
 		,const char *str_expr
 ){ \
 	try{\
-		zetscript::StackElement stk=_zs->eval(zetscript::zs_string("return parseInteger(")+str_expr+")");\
+		zetscript::StackElement stk=_zs->eval(zetscript::zs_string("return parseInt(")+str_expr+")");\
 		if(stk.properties & zetscript::STK_PROPERTY_ZS_INT){\
 			if((zetscript::zs_int)stk.value != expr){ \
 				throw std::runtime_error(zetscript::zs_strutils::format("error test '%s' expected %i but it was %i!\n",str_expr,(int)expr,int(((zetscript::zs_int)stk.value))).c_str()); \

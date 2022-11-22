@@ -50,7 +50,7 @@ namespace zetscript{
 					if((int)readed_elements != length) {
 
 						delete buffer;
-						THROW_RUNTIME_ERROR("number elements doesn't match with length file (%s)",filename.c_str());
+						ZS_THROW_RUNTIME_ERROR("number elements doesn't match with length file (%s)",filename.c_str());
 					}
 
 					fclose(fp);
@@ -58,11 +58,11 @@ namespace zetscript{
 					return buffer;
 				}
 				else  {
-					THROW_RUNTIME_ERROR("I can't read file '%s'",filename.c_str());
+					ZS_THROW_RUNTIME_ERROR("I can't read file '%s'",filename.c_str());
 				}
 			}
 			else  {
-				THROW_RUNTIME_ERROR("I can't open file '%s'",filename.c_str());
+				ZS_THROW_RUNTIME_ERROR("I can't open file '%s'",filename.c_str());
 			}
 
 			return NULL;

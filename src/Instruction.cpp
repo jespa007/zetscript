@@ -37,7 +37,7 @@ namespace zetscript{
 				obj = (ScriptObject *)stk->value;
 
 			}else{
-				THROW_EXCEPTION("instruction is not constant string");
+				ZS_THROW_EXCEPTION("instruction is not constant string");
 			}
 
 			return obj->toString();
@@ -46,7 +46,7 @@ namespace zetscript{
 		zs_float Instruction::getConstantFloat(){
 
 			if(((this->byte_code == BYTE_CODE_LOAD_ZS_FLOAT) || (this->properties & INSTRUCTION_PROPERTY_ZS_FLOAT))==false){
-				THROW_EXCEPTION("instruction is not constant " ZS_STR(zs_float));
+				ZS_THROW_EXCEPTION("instruction is not constant " ZS_STR(zs_float));
 			}
 
 			return ZS_INTPTR_TO_FLOAT(this->value_op2);
@@ -56,7 +56,7 @@ namespace zetscript{
 		zs_int Instruction::getConstantInt(){
 
 			if(((this->byte_code == BYTE_CODE_LOAD_ZS_INT) || (this->properties & INSTRUCTION_PROPERTY_ZS_INT))==false){
-				THROW_EXCEPTION("instruction is not constant " ZS_STR(zs_int));
+				ZS_THROW_EXCEPTION("instruction is not constant " ZS_STR(zs_int));
 			}
 
 			return (zs_int)this->value_op2;

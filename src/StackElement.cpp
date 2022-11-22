@@ -431,7 +431,7 @@ namespace zetscript{
 
 	zs_int	StackElement::toInt(){
 		if((this->properties & (STK_PROPERTY_ZS_INT|STK_PROPERTY_ZS_FLOAT))==0){
-			THROW_RUNTIME_ERRORF("StackElement not is not int");
+			ZS_THROW_RUNTIME_ERRORF("StackElement not is not int");
 		}
 
 		if((this->properties & STK_PROPERTY_ZS_INT)!=0){
@@ -443,7 +443,7 @@ namespace zetscript{
 
 	zs_float	StackElement::toFloat(){
 		if((this->properties & STK_PROPERTY_ZS_FLOAT)==0){
-			THROW_RUNTIME_ERRORF("StackElement not is not float");
+			ZS_THROW_RUNTIME_ERRORF("StackElement not is not float");
 		}
 
 		return ZS_INTPTR_TO_FLOAT(this->value);
@@ -451,7 +451,7 @@ namespace zetscript{
 
 	bool	StackElement::toBool(){
 		if((this->properties & STK_PROPERTY_BOOL)==0){
-			THROW_RUNTIME_ERRORF("StackElement not is not bool");
+			ZS_THROW_RUNTIME_ERRORF("StackElement not is not bool");
 		}
 
 		return this->value;

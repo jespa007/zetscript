@@ -188,12 +188,12 @@ namespace zetscript{
 					case IDX_TYPE_ZS_STRING_PTR_C:
 							str=((zs_string * (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(zs,this->c_object);
 							if(str == NULL){
-								THROW_RUNTIME_ERRORF("toString: str NULL");
+								ZS_THROW_RUNTIME_ERRORF("toString: str NULL");
 							}
 							aux=*str;
 							break;
 					default:
-						THROW_RUNTIME_ERRORF("toString: expected zs_string or *zs_string");
+						ZS_THROW_RUNTIME_ERRORF("toString: expected zs_string or *zs_string");
 						break;
 					}
 				}
@@ -208,7 +208,7 @@ namespace zetscript{
 		if(created_object != 0 && delete_c_object_on_destroy){
 
 			if(script_class_native->c_destructor==NULL){
-				THROW_RUNTIME_ERROR(
+				ZS_THROW_RUNTIME_ERROR(
 						"Cannot delete variable as type '%s' because it was defined as not instanceable but created through 'newClassScriptObject'. To solve this issue, define type '%s' as instanceable (i.e to have defined type '%s' with constructor/destructor functions)"
 						,script_class_native->str_script_type.c_str()
 						,script_class_native->str_script_type.c_str()

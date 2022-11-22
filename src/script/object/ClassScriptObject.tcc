@@ -10,7 +10,7 @@ namespace zetscript{
 		const char * str_script_type_ptr = typeid(_C).name();
 		int idx_script_type=ZS_IDX_UNDEFINED;
 		if((idx_script_type=zs->getScriptTypeFactory()->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr))==ZS_IDX_UNDEFINED){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 			"Cannot instance script object as native type '%s' because is not registered"
 			,zs_rtti::demangle(typeid(_C).name()).c_str()
 			);

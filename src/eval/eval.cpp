@@ -92,7 +92,7 @@ namespace zetscript{
 
 
 		if(error){
-			THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,str_error.c_str());
+			ZS_THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,str_error.c_str());
 		}
 	}
 
@@ -546,7 +546,7 @@ namespace zetscript{
 
 			int req_stk=instruction_num_required_stack(&eval_instruction->vm_instruction);
 			if(req_stk==ZS_NUM_REQUIRED_BYTE_CODE_NOT_MANAGED){
-				THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed", eval_instruction->vm_instruction.byte_code);
+				ZS_THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed", eval_instruction->vm_instruction.byte_code);
 			}
 
 			sum_stk_load_stk+=req_stk;

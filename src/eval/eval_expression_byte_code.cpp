@@ -86,7 +86,7 @@ namespace zetscript{
 		}
 
 		if(idx_split == -1){
-			THROW_RUNTIME_ERRORF("Cannot fint operator");
+			ZS_THROW_RUNTIME_ERRORF("Cannot fint operator");
 		}
 
 		// split left/right by operator precedence...

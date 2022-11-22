@@ -16,7 +16,7 @@ namespace zetscript{
 	void zs_list<_N>::insert( zs_list_node<_N> * _node){
 
 		if(_node->next != NULL || _node->previous != NULL){
-			THROW_RUNTIME_ERRORF("Internal error: An already attached node");
+			ZS_THROW_RUNTIME_ERRORF("Internal error: An already attached node");
 		}
 
 		if(this->first == NULL){ /*one  node: trivial ?*/
@@ -39,7 +39,7 @@ namespace zetscript{
 	void zs_list<_N>::remove(zs_list_node<_N> * _node){
 
 		if(_node->next == NULL || _node->previous == NULL){
-			THROW_RUNTIME_ERRORF("Internal error: An already deattached node");
+			ZS_THROW_RUNTIME_ERRORF("Internal error: An already deattached node");
 		}
 
 		if((_node->previous == _node) && (_node->next == _node)){ // 1 single node...

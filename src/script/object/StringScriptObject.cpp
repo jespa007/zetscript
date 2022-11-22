@@ -35,7 +35,7 @@ namespace zetscript{
 		   if(STK_IS_SCRIPT_OBJECT_STRING(stk_result_op2)){
 			   so_ref=(StringScriptObject *)stk_result_op2->value;
 		   }else{
-			   THROW_RUNTIME_ERRORF("Expected one of both operants as string var");
+			   ZS_THROW_RUNTIME_ERRORF("Expected one of both operants as string var");
 		   }
 		}
 

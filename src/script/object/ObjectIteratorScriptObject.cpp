@@ -29,14 +29,14 @@ namespace zetscript{
 
 	bool	 ObjectIteratorScriptObject::end(){
 		if(ref_object==NULL) {
-			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
+			ZS_THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 		return it.end();
 	}
 
 	void	 ObjectIteratorScriptObject::get(){
 		if(ref_object==NULL) {
-			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
+			ZS_THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 		if(it.end()) return;
 
@@ -50,7 +50,7 @@ namespace zetscript{
 
 	void	 ObjectIteratorScriptObject::next(){
 		if(ref_object==NULL) {
-			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
+			ZS_THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 		it.next();
 	}

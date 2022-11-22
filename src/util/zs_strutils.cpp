@@ -397,17 +397,17 @@ namespace zetscript{
 			char aux_str_copy[ZS_MAX_STR_BUFFER] = {0};
 
 			if(p1 == NULL || p2 == NULL){
-				THROW_RUNTIME_ERROR("NULL entry (%p %p)",p1,p2);
+				ZS_THROW_RUNTIME_ERROR("NULL entry (%p %p)",p1,p2);
 			}
 
 			int var_length=p2-p1;
 
 			if(var_length < 0 || var_length >= (ZS_MAX_STR_BUFFER+1)){
-				THROW_RUNTIME_ERROR("array out of bounds (Max:%i Min:%i Current:%i)",0,ZS_MAX_STR_BUFFER,var_length);
+				ZS_THROW_RUNTIME_ERROR("array out of bounds (Max:%i Min:%i Current:%i)",0,ZS_MAX_STR_BUFFER,var_length);
 			}
 
 			if(p1 == p2){
-				THROW_RUNTIME_ERRORF("Nothing to copy");
+				ZS_THROW_RUNTIME_ERRORF("Nothing to copy");
 			}
 
 			strncpy(aux_str_copy,p1,var_length);

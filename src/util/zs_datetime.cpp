@@ -20,35 +20,35 @@ namespace zetscript{
 	{
 		//Check out of range limit
 		if (month < 1 || month > 12) {
-			THROW_RUNTIME_ERRORF("month must be between 1 and 12");
+			ZS_THROW_RUNTIME_ERRORF("month must be between 1 and 12");
 		}
 		if (day < 1) {
-			THROW_RUNTIME_ERRORF("day is out of range");
+			ZS_THROW_RUNTIME_ERRORF("day is out of range");
 		}
 		if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) && day > 31) {
-			THROW_RUNTIME_ERRORF("day is out of range");
+			ZS_THROW_RUNTIME_ERRORF("day is out of range");
 		}
 		if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) {
-			THROW_RUNTIME_ERRORF("day is out of range");
+			ZS_THROW_RUNTIME_ERRORF("day is out of range");
 		}
 		if (month == 2 && this->_is_leapyear(year) && day > 29) {
-			THROW_RUNTIME_ERRORF("day is out of range");
+			ZS_THROW_RUNTIME_ERRORF("day is out of range");
 		}
 		if (month == 2 && !this->_is_leapyear(year) && day > 28) {
-			THROW_RUNTIME_ERRORF("day is out of range");
+			ZS_THROW_RUNTIME_ERRORF("day is out of range");
 		}
 		if (day_period == period::undefined)
 		{
 			if (hour < 0 || hour > 23) {
-				THROW_RUNTIME_ERRORF("hour must be between 0 and 23");
+				ZS_THROW_RUNTIME_ERRORF("hour must be between 0 and 23");
 			}
 		}
 		else {
 			if (day_period != period::AM && day_period != period::PM) {
-				THROW_RUNTIME_ERRORF("the selected period is out of range");
+				ZS_THROW_RUNTIME_ERRORF("the selected period is out of range");
 			}
 			if (hour < 1 || hour > 12) {
-				THROW_RUNTIME_ERRORF("hour must be between 1 and 12");
+				ZS_THROW_RUNTIME_ERRORF("hour must be between 1 and 12");
 			}
 			//Adjust to 24 hour format
 			if (hour == 12 && day_period == period::AM) {
@@ -59,10 +59,10 @@ namespace zetscript{
 			}
 		}
 		if (minute < 0 || minute > 59) {
-			THROW_RUNTIME_ERRORF("minute must be between 0 and 59");
+			ZS_THROW_RUNTIME_ERRORF("minute must be between 0 and 59");
 		}
 		if (second < 0 || second > 59) {
-			THROW_RUNTIME_ERRORF("second must be between 0 and 59");
+			ZS_THROW_RUNTIME_ERRORF("second must be between 0 and 59");
 		}
 		time_info = new tm();
 		time_info->tm_year = year - 1900;
@@ -407,7 +407,7 @@ namespace zetscript{
 		int year = 1970, month = 1, day = 1, hour = 0, minute = 0, second = 0;
 
 		if (strcmp(format.c_str(), "") == 0) {
-			THROW_RUNTIME_ERRORF("format");
+			ZS_THROW_RUNTIME_ERRORF("format");
 		}
 
 		zs_string pattern_temp;
@@ -463,7 +463,7 @@ namespace zetscript{
 							day_period = period::PM;
 						}
 						else {
-							THROW_RUNTIME_ERRORF("invalid value for period");
+							ZS_THROW_RUNTIME_ERRORF("invalid value for period");
 						}
 					}
 					if (ptr_date_section != nullptr) {
@@ -493,7 +493,7 @@ namespace zetscript{
 		parse_str_chr = value_parsed.c_str();
 		converted_value = strtol(parse_str_chr, &end, 10);
 		if (parse_str_chr == end) {
-			THROW_RUNTIME_ERROR("Unable to parse the mask '%s'", pattern.c_str());
+			ZS_THROW_RUNTIME_ERROR("Unable to parse the mask '%s'", pattern.c_str());
 		}
 		ret_val = static_cast<int>(converted_value);
 		return ret_val;

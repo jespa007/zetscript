@@ -34,7 +34,7 @@ namespace zetscript{
 			char cwd[MAX_PATH]={0};
 			zs_string ret="";
 			if (__getcwd__(cwd,MAX_PATH) ==NULL){
-				THROW_RUNTIME_ERRORF("getcwd() error");
+				ZS_THROW_RUNTIME_ERRORF("getcwd() error");
 			}
 
 			ret = cwd;

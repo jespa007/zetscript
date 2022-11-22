@@ -151,7 +151,7 @@ namespace zetscript{
 			 req_stk=instruction_num_required_stack(instruction);
 
 			if(req_stk==ZS_NUM_REQUIRED_BYTE_CODE_NOT_MANAGED){
-				THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed", instruction->byte_code);
+				ZS_THROW_RUNTIME_ERROR("byte_code_num_required_stack: byte_code '%i' not managed", instruction->byte_code);
 			}
 
 			 sum_stk_load_stk+=req_stk;
@@ -489,7 +489,7 @@ namespace zetscript{
 				}
 
 				if(same_signature){
-					THROW_SCRIPT_ERROR_FILE_LINE(NULL,-1,"Function '%s' already binded"
+					ZS_THROW_SCRIPT_ERROR_FILE_LINE(NULL,-1,"Function '%s' already binded"
 						,function_member->scope_script_function!=NULL?
 								zs_strutils::format("%s::%s"
 										,function_member->scope_script_function->script_type_owner->str_script_type.c_str()
@@ -633,7 +633,7 @@ namespace zetscript{
 			) // repeat symbol are not both c or script funtions
 			{
 				// if exist override, but should be in the same scope
-				THROW_RUNTIME_ERROR("Symbol '%s' defined at %s is already defined at %s"
+				ZS_THROW_RUNTIME_ERROR("Symbol '%s' defined at %s is already defined at %s"
 					,name_script_function.c_str()
 					,current_file_line.c_str()
 					,_line
@@ -701,7 +701,7 @@ namespace zetscript{
 		}
 
 		if(_params_len>=FUNCTION_PARAMETER_COUNT_MAX){
-			THROW_EXCEPTION("Reached max parameter count (count:%i max:%i)"
+			ZS_THROW_EXCEPTION("Reached max parameter count (count:%i max:%i)"
 				,_params_len
 				,FUNCTION_PARAMETER_COUNT_MAX
 			);
@@ -767,7 +767,7 @@ namespace zetscript{
 
 
 				if(ptr_str_symbol_to_find==NULL){
-					THROW_SCRIPT_ERROR_FILE_LINE(
+					ZS_THROW_SCRIPT_ERROR_FILE_LINE(
 						instruction_file
 						,instruction_line
 						,"Cannot find symbol name at instruction %i"

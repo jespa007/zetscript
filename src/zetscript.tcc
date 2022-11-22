@@ -17,14 +17,14 @@ namespace zetscript{
 			int idx_script_type=script_type_factory->getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 			if(idx_script_type<IDX_TYPE_MAX){
-				THROW_RUNTIME_ERROR(
+				ZS_THROW_RUNTIME_ERROR(
 				"Internal ScriptObject type '%s' is not instanciable as ClassScriptObject"
 				,zs_rtti::demangle(typeid(_C *).name()).c_str()
 				);
 			}
 
 			if(idx_script_type==ZS_IDX_UNDEFINED){
-				THROW_RUNTIME_ERROR(
+				ZS_THROW_RUNTIME_ERROR(
 				"Cannot instance script object as native type '%s' because is not registered"
 				,zs_rtti::demangle(typeid(_C *).name()).c_str()
 				);
@@ -88,7 +88,7 @@ namespace zetscript{
 						);
 
 						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
 				}
@@ -161,7 +161,7 @@ namespace zetscript{
 								,line);
 
 						if(!stk_to(this,&stk,idx_return, (zs_int*)(&ret_value),str_error)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
 				}
@@ -246,7 +246,7 @@ namespace zetscript{
 						);
 
 						if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),str_error)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
 				}
@@ -337,7 +337,7 @@ namespace zetscript{
 					);
 
 					if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
-						THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+						ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 					}
 					return ret_value;
 				}
@@ -432,7 +432,7 @@ namespace zetscript{
 								);
 
 						if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),str_error)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
 				}
@@ -536,7 +536,7 @@ namespace zetscript{
 							,line);
 
 					if(!stk_to(this,&stk, idx_return, (zs_int*)(&ret_value),str_error)){
-						THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+						ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 					}
 					return ret_value;
 				}
@@ -643,7 +643,7 @@ namespace zetscript{
 								,line);
 
 						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
 
@@ -812,7 +812,7 @@ namespace zetscript{
 								,line);
 
 						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
 
@@ -992,7 +992,7 @@ namespace zetscript{
 								,line);
 
 						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
 
@@ -1185,7 +1185,7 @@ namespace zetscript{
 								,line);
 
 						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
 
@@ -1390,7 +1390,7 @@ namespace zetscript{
 								,line);
 
 						if(!stk_to(this,&stk, idx_return, (zs_int *)(&ret_value),str_error)){
-							THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
+							ZS_THROW_RUNTIME_ERROR("run-time error converting result value:%s",str_error.c_str());
 						}
 						return ret_value;
 
@@ -1433,14 +1433,14 @@ namespace zetscript{
 
 			// 2. check valid parameters ...
 			if((idx_script_type_return=script_type_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
-				THROW_RUNTIME_ERROR("Return type '%s' for bind function not registered",zs_rtti::demangle(return_type).c_str());
+				ZS_THROW_RUNTIME_ERROR("Return type '%s' for bind function not registered",zs_rtti::demangle(return_type).c_str());
 				return NULL;
 			}
 
 			for(int i = 0; i < params.size(); i++){
 				char *param=(char *)params.items[i];
 				if(script_type_factory->getIdxScriptTypeFromTypeNamePtr(param)==-1){
-					THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"
+					ZS_THROW_RUNTIME_ERROR("Argument %i type '%s' for bind function not registered"
 							,i+1
 							,zs_rtti::demangle(param).c_str());
 					return NULL;
@@ -1498,7 +1498,7 @@ namespace zetscript{
 									}
 								}
 								else{
-									THROW_SCRIPT_ERROR_FILE_LINE(
+									ZS_THROW_SCRIPT_ERROR_FILE_LINE(
 											file
 											,line
 											,"Cannot bind script function '%s': cannot access i (%i)"
@@ -1510,7 +1510,7 @@ namespace zetscript{
 						}
 
 						if(calling_obj == NULL){
-							THROW_SCRIPT_ERROR_FILE_LINE(
+							ZS_THROW_SCRIPT_ERROR_FILE_LINE(
 									file
 									,line
 									,"Cannot bind script function '%s': Variable name '%s' doesn't exist"
@@ -1525,7 +1525,7 @@ namespace zetscript{
 							if(se->properties & STK_PROPERTY_SCRIPT_OBJECT){
 								calling_obj=(ScriptObject *)se->value;
 							}else{
-								THROW_SCRIPT_ERROR_FILE_LINE(
+								ZS_THROW_SCRIPT_ERROR_FILE_LINE(
 										file
 										,line
 										,"Cannot bind script function '%s': Variable name '%s' not script variable"
@@ -1535,7 +1535,7 @@ namespace zetscript{
 							}
 						}
 						else{
-							THROW_SCRIPT_ERROR_FILE_LINE(
+							ZS_THROW_SCRIPT_ERROR_FILE_LINE(
 								file
 								,line
 								,"Cannot bind script function '%s': Variable name '%s' doesn't exist"
@@ -1557,7 +1557,7 @@ namespace zetscript{
 						fun_obj=test_fun;
 					}
 				}else{
-					THROW_SCRIPT_ERROR_FILE_LINE(
+					ZS_THROW_SCRIPT_ERROR_FILE_LINE(
 							file
 							,line
 							,"Cannot bind script function '%s': Cannot find function '%s'"
@@ -1581,7 +1581,7 @@ namespace zetscript{
 			}
 
 			if(fun_obj==NULL){
-				THROW_SCRIPT_ERROR_FILE_LINE(
+				ZS_THROW_SCRIPT_ERROR_FILE_LINE(
 						file
 						,line
 						,"Cannot bind script function '%s': Variable name '%s' is not found or not function type"
@@ -1592,7 +1592,7 @@ namespace zetscript{
 			try{
 				return_function=bindScriptFunction<F>(fun_obj,calling_obj,file,line);
 			}catch(std::exception & ex){
-				THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': %s",function_access.c_str(),ex.what());
+				ZS_THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot bind script function '%s': %s",function_access.c_str(),ex.what());
 			}
 
 

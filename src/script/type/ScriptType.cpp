@@ -192,7 +192,7 @@ namespace zetscript{
 
 	){
 		if(getSymbol(_symbol_name)!=NULL){
-			THROW_RUNTIME_ERROR("Variable '%s' already registered",_symbol_name.c_str());
+			ZS_THROW_RUNTIME_ERROR("Variable '%s' already registered",_symbol_name.c_str());
 			return NULL;
 		}
 
@@ -228,7 +228,7 @@ namespace zetscript{
 					what="it conflicts with member variable";
 				}
 			}
-			THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Property '%s' %s at [%s:%i]"
+			ZS_THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Property '%s' %s at [%s:%i]"
 				,attrib_name.c_str()
 				,what
 				,zs_path::get_filename(symbol_member_property->file).c_str()
@@ -269,7 +269,7 @@ namespace zetscript{
 
 
 		if(MetamethodMembers::isMetamethodMember(_byte_code_metamethod)==false){
-			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Invalid metamethod '%s' for property '%s'"
+			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Invalid metamethod '%s' for property '%s'"
 				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)
 				,_property_name.c_str()
 			);
@@ -307,7 +307,7 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_POST_INC:
 			if(mp->metamethod_members.post_inc != NULL){
 
-				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '%s++') metamethod"
+				ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post increment (aka '%s++') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
@@ -317,7 +317,7 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_POST_DEC:
 			if(mp->metamethod_members.post_dec != NULL){
 
-				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post decrement (aka '%s--') metamethod"
+				ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a post decrement (aka '%s--') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
@@ -327,7 +327,7 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_PRE_INC:
 			if(mp->metamethod_members.pre_inc != NULL){
 
-				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre increment (aka '++%s') metamethod"
+				ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre increment (aka '++%s') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
@@ -337,7 +337,7 @@ namespace zetscript{
 		case BYTE_CODE_METAMETHOD_PRE_DEC:
 			if(mp->metamethod_members.pre_dec != NULL){
 
-				THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre decrement (aka '--%s') metamethod"
+				ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a pre decrement (aka '--%s') metamethod"
 					,_property_name.c_str()
 					,_property_name.c_str()
 				);
@@ -390,7 +390,7 @@ namespace zetscript{
 
 		if(mp->metamethod_members.getter != NULL){
 
-			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a getter"
+			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a getter"
 				,_property_name.c_str()
 			);
 		}
@@ -433,7 +433,7 @@ namespace zetscript{
 
 		if(mp->metamethod_members.neg != NULL){
 
-			THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a neg"
+			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a neg"
 				,_property_name.c_str()
 			);
 		}
@@ -475,7 +475,7 @@ namespace zetscript{
 			if(getSymbol(_function_name,(int8_t)_params_len,false) != NULL){ // we only search repeat symbols on this type ...
 				Symbol *existing_symbol;
 				if((existing_symbol=getSymbol(_function_name, ZS_NO_PARAMS_SYMBOL_ONLY)) != NULL){
-					THROW_RUNTIME_ERROR("Function member '%s' is already defined at [%s:%i]"
+					ZS_THROW_RUNTIME_ERROR("Function member '%s' is already defined at [%s:%i]"
 						,_function_name.c_str()
 						//,zs_path::get_filename(_file).c_str()
 						//,_line
@@ -537,13 +537,13 @@ namespace zetscript{
 
 					// can be one parameter or 0 params...
 					if(byte_code_metamethod_should_be_static(op) && ((_function_properties & FUNCTION_PROPERTY_STATIC)==0)){
-						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as static instead of member"
+						ZS_THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as static instead of member"
 							,str_script_type.c_str()
 							,_function_name.c_str()
 						);
 						return NULL;
 					}else if((byte_code_metamethod_should_be_static(op)==false) && ((_function_properties & FUNCTION_PROPERTY_STATIC))){
-						THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as member instead of static"
+						ZS_THROW_RUNTIME_ERROR("Metamethod '%s::%s' has to be declared as member instead of static"
 							,str_script_type.c_str()
 							,_function_name.c_str()
 						);
@@ -553,7 +553,7 @@ namespace zetscript{
 					// native
 					if((_function_properties & FUNCTION_PROPERTY_C_OBJECT_REF)){ // if-native
 						if(op == BYTE_CODE_METAMETHOD_TO_STRING && !(_idx_return_type == IDX_TYPE_ZS_STRING_PTR_C || _idx_return_type == IDX_TYPE_ZS_STRING_C) ){
-							THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
+							ZS_THROW_RUNTIME_ERROR("Metamethod '%s::%s' should return zs_string * or zs_string *"
 								,str_script_type.c_str()
 								,_function_name.c_str()
 							);
@@ -574,7 +574,7 @@ namespace zetscript{
 
 								// return type must be bool...
 								if(_idx_return_type != IDX_TYPE_BOOL_C){
-									THROW_RUNTIME_ERROR("error registering metamethod '%s::%s'. Expected return bool but it was '%s'",
+									ZS_THROW_RUNTIME_ERROR("error registering metamethod '%s::%s'. Expected return bool but it was '%s'",
 											this->str_script_type.c_str(),
 											_function_name.c_str(),
 											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
@@ -595,7 +595,7 @@ namespace zetscript{
 
 								if(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr != this->str_script_type_ptr){
 
-									THROW_RUNTIME_ERROR("error registering metamethod %s::%s. Expected return %s but it was %s",
+									ZS_THROW_RUNTIME_ERROR("error registering metamethod %s::%s. Expected return %s but it was %s",
 											this->str_script_type.c_str(),
 											_function_name.c_str(),
 											zs_rtti::demangle(this->script_type_factory->getScriptType(_idx_return_type)->str_script_type_ptr.c_str()).c_str()
@@ -617,7 +617,7 @@ namespace zetscript{
 					}
 
 					if(symbol_function->n_params< (n_args_static_metamethod+this_arg)){ // non-static functions pass this object as first parameter
-						THROW_RUNTIME_ERROR("%s metamethod '%s' (aka '%s') should have at least %i parameter/s"
+						ZS_THROW_RUNTIME_ERROR("%s metamethod '%s' (aka '%s') should have at least %i parameter/s"
 							,(_function_properties & FUNCTION_PROPERTY_MEMBER_FUNCTION)?"Member":"Static"
 							,str_symbol_metamethod
 							,byte_code_metamethod_operator_str
@@ -649,7 +649,7 @@ namespace zetscript{
 								&&
 							(info_mp.setters!=NULL && info_mp.setters->size()>0)){
 							// error already set (script functions only can be set once)
-							THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
+							ZS_THROW_RUNTIME_ERROR("Setter '%s::%s' already set"
 									,str_script_type.c_str()
 									,info_mp.str_byte_code_metamethod);
 
@@ -660,7 +660,7 @@ namespace zetscript{
 					case BYTE_CODE_METAMETHOD_POST_INC:
 						if(metamethod_members.post_inc != NULL){
 
-							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a post increment (aka '%s++') metamethod"
+							ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a post increment (aka '%s++') metamethod"
 								,str_script_type.c_str()
 							);
 						}
@@ -669,7 +669,7 @@ namespace zetscript{
 					case BYTE_CODE_METAMETHOD_POST_DEC:
 						if(metamethod_members.post_dec != NULL){
 
-							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a post decrement (aka '%s--') metamethod"
+							ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a post decrement (aka '%s--') metamethod"
 								,str_script_type.c_str()
 							);
 						}
@@ -678,7 +678,7 @@ namespace zetscript{
 					case BYTE_CODE_METAMETHOD_PRE_INC:
 						if(metamethod_members.pre_inc != NULL){
 
-							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a pre increment (aka '++%s') metamethod"
+							ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a pre increment (aka '++%s') metamethod"
 								,str_script_type.c_str()
 							);
 						}
@@ -687,7 +687,7 @@ namespace zetscript{
 					case BYTE_CODE_METAMETHOD_PRE_DEC:
 						if(metamethod_members.pre_dec != NULL){
 
-							THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a pre decrement (aka '--%s') metamethod"
+							ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Class '%s' has already a pre decrement (aka '--%s') metamethod"
 								,str_script_type.c_str()
 							);
 						}

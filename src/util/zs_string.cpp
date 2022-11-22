@@ -131,25 +131,25 @@ namespace zetscript{
 
     char& zs_string::operator[] (int _pos){
 
-    	if(_pos < 0 || _pos >= this->count) THROW_EXCEPTION("zs_string::access out of bounds");
+    	if(_pos < 0 || _pos >= this->count) ZS_THROW_EXCEPTION("zs_string::access out of bounds");
 
     	return buf[_pos];
     }
 
     const char& zs_string::operator[] (int _pos) const{
-    	if(_pos < 0 || _pos >= this->count) THROW_EXCEPTION("zs_string::access out of bounds");
+    	if(_pos < 0 || _pos >= this->count) ZS_THROW_EXCEPTION("zs_string::access out of bounds");
 
     	return buf[_pos];
     }
 
     char& zs_string::at (int _pos){
-    	if(_pos < 0 || _pos >= this->count) THROW_EXCEPTION("zs_string::access out of bounds");
+    	if(_pos < 0 || _pos >= this->count) ZS_THROW_EXCEPTION("zs_string::access out of bounds");
 
     	return buf[_pos];
     }
 
     const char& zs_string::at (int _pos) const{
-    	if(_pos < 0 || _pos >= this->count) THROW_EXCEPTION("zs_string::access out of bounds");
+    	if(_pos < 0 || _pos >= this->count) ZS_THROW_EXCEPTION("zs_string::access out of bounds");
 
     	return buf[_pos];
     }
@@ -230,7 +230,7 @@ namespace zetscript{
 
 	bool operator==(const char * _s1, const zs_string & _s2){
 		if(_s1==NULL){
-			THROW_RUNTIME_ERRORF("operator '==' : operand 1 == NULL");
+			ZS_THROW_RUNTIME_ERRORF("operator '==' : operand 1 == NULL");
 		}
 
 		return strcmp(_s1,_s2.c_str())==0;
@@ -238,7 +238,7 @@ namespace zetscript{
 
 	bool operator==(const zs_string & _s1, const char *_s2){
 		if(_s2==NULL){
-			THROW_RUNTIME_ERRORF("operator '==' : operand 2 == NULL");
+			ZS_THROW_RUNTIME_ERRORF("operator '==' : operand 2 == NULL");
 		}
 
 		return strcmp(_s1.c_str(),_s2)==0;
@@ -251,7 +251,7 @@ namespace zetscript{
 
 	bool operator!=(const char * _s1, const zs_string & _s2){
 		if(_s1==NULL){
-			THROW_RUNTIME_ERRORF("operator '!=' : operand 1 == NULL");
+			ZS_THROW_RUNTIME_ERRORF("operator '!=' : operand 1 == NULL");
 		}
 
 		return strcmp(_s1,_s2.c_str())!=0;
@@ -259,7 +259,7 @@ namespace zetscript{
 
 	bool operator!=(const zs_string & _s1, const char *_s2){
 		if(_s2==NULL){
-			THROW_RUNTIME_ERRORF("operator '!=' : operand 2 == NULL");
+			ZS_THROW_RUNTIME_ERRORF("operator '!=' : operand 2 == NULL");
 		}
 
 		return strcmp(_s1.c_str(),_s2)!=0;
@@ -272,7 +272,7 @@ namespace zetscript{
 		}
 
 		if((_pos+_len) > count){
-			THROW_RUNTIME_ERROR("substring: pos+len >= size (%i+%i>=%i)",_pos,_len,count);
+			ZS_THROW_RUNTIME_ERROR("substring: pos+len >= size (%i+%i>=%i)",_pos,_len,count);
 		}
 
 		char *str_cut=(char *)ZS_MALLOC(_len+1);
@@ -289,11 +289,11 @@ namespace zetscript{
 		ZS_UNUSUED_3PARAMS(_pos, _len, _to_replace);
 		//zs_string str;
 
-		if(_pos>=this->count) THROW_RUNTIME_ERROR("insert(int,const zs_string &): _pos(%i) >= size(%i)",_pos,count);
+		if(_pos>=this->count) ZS_THROW_RUNTIME_ERROR("insert(int,const zs_string &): _pos(%i) >= size(%i)",_pos,count);
 
 		int new_size = count + (_to_replace.count-_len);
 
-		if(new_size<=0) THROW_RUNTIME_ERRORF("replace(int , int , const zs_string & ): new_size <= 0");
+		if(new_size<=0) ZS_THROW_RUNTIME_ERRORF("replace(int , int , const zs_string & ): new_size <= 0");
 
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
 
@@ -318,7 +318,7 @@ namespace zetscript{
 	}
 
 	void zs_string::insert(int _pos, char _c){
-		if(_pos>=this->count) THROW_RUNTIME_ERROR("insert(int,char): _pos(%i) >= size(%i)",_pos,count);
+		if(_pos>=this->count) ZS_THROW_RUNTIME_ERROR("insert(int,char): _pos(%i) >= size(%i)",_pos,count);
 
 		int new_size = count + 1;
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
@@ -337,7 +337,7 @@ namespace zetscript{
 	}
 
 	void zs_string::insert(int _pos, const zs_string & _s1){
-		if(_pos>=this->count) THROW_RUNTIME_ERROR("insert(int,const zs_string &): _pos(%i) >= size(%i)",_pos,count);
+		if(_pos>=this->count) ZS_THROW_RUNTIME_ERROR("insert(int,const zs_string &): _pos(%i) >= size(%i)",_pos,count);
 
 		int new_size = count + _s1.count;
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
@@ -357,8 +357,8 @@ namespace zetscript{
 
 	void zs_string::erase(int _pos, int _len){
 
-		if(_pos>=this->count) THROW_RUNTIME_ERROR("erase: _pos(%i) >= size(%i)",_pos,count);
-		if((_pos+_len)>this->count) THROW_RUNTIME_ERROR("erase: _pos(%i)+_len(%i) >= size(%i)",_pos,_len,count);
+		if(_pos>=this->count) ZS_THROW_RUNTIME_ERROR("erase: _pos(%i) >= size(%i)",_pos,count);
+		if((_pos+_len)>this->count) ZS_THROW_RUNTIME_ERROR("erase: _pos(%i)+_len(%i) >= size(%i)",_pos,_len,count);
 
 		int new_size=count-_len;
 
@@ -449,7 +449,7 @@ namespace zetscript{
 
 	void zs_string::append(const char *_s){
 		if(_s==NULL){
-			THROW_RUNTIME_ERRORF("input string null");
+			ZS_THROW_RUNTIME_ERRORF("input string null");
 		}
 		zs_string::append(_s,(int)strlen(_s));
 	}

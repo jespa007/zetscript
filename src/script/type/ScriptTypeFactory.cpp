@@ -10,7 +10,7 @@
 
 #define SCF_BIND_STRUCT(type_class, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\
-		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
+		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	bindType<type_class>(ZS_STR(type_class));
@@ -18,35 +18,35 @@
 
 #define SCF_BIND_CLASS(name_class, type_class, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\
-		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
+		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	PRAGMA_PUSH\
 	PRAGMA_DISABLE_WARNING(4127)\
 	if(idx_script_type >= IDX_TYPE_MAX){\
 		PRAGMA_POP\
-		THROW_RUNTIME_ERROR("The type to bind '%s' should be a built in type",ZS_STR(type_class));\
+		ZS_THROW_RUNTIME_ERROR("The type to bind '%s' should be a built in type",ZS_STR(type_class));\
 		return;\
 	}\
 	bindType<type_class>(name_class,type_class##Wrap_New,type_class##Wrap_Delete);
 
 #define SCF_BIND_SINGLETON_CLASS(type_class, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\
-		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
+		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	bindType<type_class>(ZS_STR(type_class));
 
 #define SCF_BIND_SINGLETON_NAME_CLASS(name, type_class, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\
-		THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
+		ZS_THROW_RUNTIME_ERROR("Error: built in type '%s' doesn't match its id",ZS_STR(type_class));\
 		return;\
 	}\
 	bindType<type_class>(name);
 
 #define SCF_BIND_NATIVE_TYPE(type, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\
-		THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(type_class));\
+		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(type_class));\
 		return;\
 	}else{\
 		ScriptType *sc=registerScriptType(ZS_STR(type),"",SCRIPT_TYPE_PROPERTY_NON_INSTANTIABLE);\
@@ -57,7 +57,7 @@
 
 #define SCF_BIND_NATIVE_CUSTOM_TYPE(__name__, type, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\
-		THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(type_class));\
+		ZS_THROW_RUNTIME_ERROR("Error initializing C built in type: '%s'",ZS_STR(type_class));\
 		return;\
 	}else{\
 		ScriptType *sc=registerScriptType(__name__);\
@@ -68,7 +68,7 @@
 
 #define SCF_BIND_TYPE(str_type, idx_script_type)\
 	if(script_types->size()!=idx_script_type){\
-		THROW_RUNTIME_ERROR("Error initializing built in type: '%s'",str_type);\
+		ZS_THROW_RUNTIME_ERROR("Error initializing built in type: '%s'",str_type);\
 		return;\
 	}else{\
 		registerScriptType(str_type);\
@@ -168,17 +168,17 @@ namespace zetscript{
 		return result;
 	}
 
-	zs_int parseInteger(ZetScript *_zs,zs_int number){
+	zs_int parseInt(ZetScript *_zs,zs_int number){
 		ZS_UNUSUED_PARAM(_zs);
 		return number;
 	}
 
-	zs_int parseInteger(ZetScript *_zs,zs_float *number){
+	zs_int parseInt(ZetScript *_zs,zs_float *number){
 		ZS_UNUSUED_PARAM(_zs);
 		return (zs_int)(*number);
 	}
 
-	zs_int parseInteger(ZetScript *_zs,zs_string  *number_str){
+	zs_int parseInt(ZetScript *_zs,zs_string  *number_str){
 		ZS_UNUSUED_PARAM(_zs);
 		zs_int result=0;
 		zs_int *result_ptr=zs_strutils::parse_zs_int(*number_str);
@@ -261,9 +261,9 @@ namespace zetscript{
 		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_int)>(parseFloat));
 		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_float *)>(parseFloat));
 		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));
-		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInteger));
-		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_int )>(parseInteger));
-		zs->bindFunction("parseInteger",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInteger));
+		zs->bindFunction("parseInt",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInt));
+		zs->bindFunction("parseInt",static_cast<zs_int (*)(ZetScript *,zs_int )>(parseInt));
+		zs->bindFunction("parseInt",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInt));
 		zs->bindFunction("isNumber",isNumber);
 
 		//-------------------------
@@ -346,7 +346,7 @@ namespace zetscript{
 			}
 			else{
 				// throw
-				THROW_RUNTIME_ERROR(
+				ZS_THROW_RUNTIME_ERROR(
 					"Cannot register constant '%s' as 'StringScriptObject', because is already registered as '%s'"
 					,_key.c_str()
 					,stk_to_typeof_str(this->zs,stk).c_str()
@@ -483,11 +483,11 @@ namespace zetscript{
 	void ScriptTypeFactory::checkScriptTypeName(const zs_string & _str_script_type){
 
 		if(script_types->size()>=MAX_REGISTER_CLASSES){
-			THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
+			ZS_THROW_RUNTIME_ERROR("Max register classes reached (Max:%i)",MAX_REGISTER_CLASSES);
 		}
 
 		if(_str_script_type.empty()){
-			THROW_RUNTIME_ERRORF("Class name empty");
+			ZS_THROW_RUNTIME_ERRORF("Class name empty");
 		}
 
 		if(zs->getScriptFunctionFactory()->getScriptFunctions()->size() > 0){
@@ -496,7 +496,7 @@ namespace zetscript{
 					_str_script_type
 					,ZS_NO_PARAMS_SYMBOL_ONLY,REGISTER_SCOPE_CHECK_REPEATED_SYMBOLS_DOWN
 			))!=NULL){
-				THROW_RUNTIME_ERROR("Type name '%s' is already defined %s"
+				ZS_THROW_RUNTIME_ERROR("Type name '%s' is already defined %s"
 						,_str_script_type.c_str()
 						,main_function_symbol->file!=NULL && strcmp(main_function_symbol->file,"")!=0 && main_function_symbol->line!=-1?
 							zs_strutils::format("at [%s:%i]"
@@ -555,17 +555,17 @@ namespace zetscript{
 
 				if(sc->idx_base_types->size() > 0){
 					ScriptType *match_class=getScriptType(sc->idx_base_types->items[0]);
-					THROW_RUNTIME_ERROR("Type '%s' already is inherited from '%s'"
+					ZS_THROW_RUNTIME_ERROR("Type '%s' already is inherited from '%s'"
 							,_str_script_type.c_str()
 							,match_class->str_script_type.c_str());
 				}
 
 				if((base_type = getScriptType(_base_class_name)) == NULL){
-					THROW_RUNTIME_ERROR("Type '%s' not registered",_base_class_name.c_str());
+					ZS_THROW_RUNTIME_ERROR("Type '%s' not registered",_base_class_name.c_str());
 				}
 
 				/*if(base_type->isStatic()){
-					THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is static. To allow extension register with 'bindNativeType' instead of 'registerClass'"
+					ZS_THROW_RUNTIME_ERROR("Class '%s' cannot extend from '%s' because is static. To allow extension register with 'bindNativeType' instead of 'registerClass'"
 						,_str_script_type.c_str()
 						,_base_class_name.c_str()
 					);
@@ -653,7 +653,7 @@ namespace zetscript{
 
 			return sc;
 		}else{
-			THROW_RUNTIME_ERROR("Type '%s' already registered",_str_script_type.c_str());
+			ZS_THROW_RUNTIME_ERROR("Type '%s' already registered",_str_script_type.c_str());
 		}
 		return NULL;
 	}
@@ -664,7 +664,7 @@ namespace zetscript{
 
 	ScriptType 	* ScriptTypeFactory::getScriptType(short _idx_script_type){
 		if(_idx_script_type == ZS_IDX_UNDEFINED){
-			THROW_RUNTIME_ERRORF("ScriptType node out of bound");
+			ZS_THROW_RUNTIME_ERRORF("ScriptType node out of bound");
 			return NULL;
 		}
 		return (ScriptType *)script_types->get(_idx_script_type);
@@ -756,7 +756,7 @@ namespace zetscript{
 					 // we create the object but not init as shared because it can hold a C pointer that is in charge of user deallocate or not
 					 so = ClassScriptObject::newClassScriptObject(zs,rc->idx_script_type, value_object);
 				}else{
-					 THROW_RUNTIME_ERROR("Internal error: An idx type was expected but it was %i",rc->idx_script_type);
+					 ZS_THROW_RUNTIME_ERROR("Internal error: An idx type was expected but it was %i",rc->idx_script_type);
 					 return NULL;
 				 }
 				break;

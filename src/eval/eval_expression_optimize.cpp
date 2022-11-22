@@ -22,7 +22,7 @@
 		ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);\
 		result_bc=BYTE_CODE_LOAD_ZS_FLOAT;\
 	}else{\
-		THROW_EXCEPTION_FILE_LINE(\
+		ZS_THROW_EXCEPTION_FILE_LINE(\
 				eval_data->current_parsing_file\
 				,token_operator->line\
 				,"I don't know how to perform arithmetic operation '%s %s %s'"\
@@ -52,7 +52,7 @@
 		result_op_bool=ZS_STRCMP(i1->getConstantValueOp2ToString().c_str(), __COMPARE_OP__ ,i2->getConstantValueOp2ToString().c_str());\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else{\
-		THROW_EXCEPTION(\
+		ZS_THROW_EXCEPTION(\
 			eval_data->current_parsing_file\
 			,token_operator->line\
 			,"I don't know how to perform compare operation '%s %s %s'"\
@@ -66,7 +66,7 @@
 		result_op_zs_int=(i1->value_op2)BINARY_OP(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_ZS_INT;\
 	}else{\
-		THROW_EXCEPTION_FILE_LINE(\
+		ZS_THROW_EXCEPTION_FILE_LINE(\
 				 eval_data->current_parsing_file\
 				,token_operator->line\
 				,"I don't know how to perform binary operation '%s %s %s'"\
@@ -80,7 +80,7 @@
 		result_op_bool=(i1->value_op2)LOGIC_OP(i2->value_op2);\
 		result_bc=BYTE_CODE_LOAD_BOOL;\
 	}else{\
-		THROW_EXCEPTION(\
+		ZS_THROW_EXCEPTION(\
 				eval_data->current_parsing_file\
 				,token_operator->line\
 				,"I don't know how to perform boolean operation '%s %s %s'"\
@@ -226,7 +226,7 @@ namespace zetscript{
 			break;
 		case BYTE_CODE_DIV:
 			if(i2->value_op2==0){
-				THROW_EXCEPTION_FILE_LINE(
+				ZS_THROW_EXCEPTION_FILE_LINE(
 						 eval_data->current_parsing_file
 						,token_operator->line
 						,"constant divide operation by 0"
@@ -249,7 +249,7 @@ namespace zetscript{
 				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else{
-				THROW_EXCEPTION_FILE_LINE(
+				ZS_THROW_EXCEPTION_FILE_LINE(
 						eval_data->current_parsing_file
 						,token_operator->line
 						,"I don't know how to perform constant operation '%s / %s'"
@@ -259,7 +259,7 @@ namespace zetscript{
 			break;
 		case BYTE_CODE_MOD:
 			if(i2->value_op2==0){
-				THROW_EXCEPTION_FILE_LINE(
+				ZS_THROW_EXCEPTION_FILE_LINE(
 					eval_data->current_parsing_file
 					,token_operator->line
 					,"constant module operation by 0"
@@ -282,7 +282,7 @@ namespace zetscript{
 				ZS_FLOAT_COPY(&result_op_zs_int,&result_op_float);
 				result_bc=BYTE_CODE_LOAD_ZS_FLOAT;
 			}else{
-				THROW_EXCEPTION_FILE_LINE(
+				ZS_THROW_EXCEPTION_FILE_LINE(
 						eval_data->current_parsing_file
 						,token_operator->line
 						,"I don't know how to perform constant operation '%s % %s'"
@@ -342,7 +342,7 @@ namespace zetscript{
 				result_bc=BYTE_CODE_LOAD_BOOL;
 			}
 			else{
-				THROW_EXCEPTION_FILE_LINE(
+				ZS_THROW_EXCEPTION_FILE_LINE(
 					eval_data->current_parsing_file
 					,token_operator->line
 					,"I don't know how to perform constant operation '%s in %s'"
@@ -352,8 +352,8 @@ namespace zetscript{
 			}
 			break;
 		default:
-			//THROW_EXCEPTION(zs_strutils::format("cannot perform K '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
-			THROW_EXCEPTION_FILE_LINE(
+			//ZS_THROW_EXCEPTION(zs_strutils::format("cannot perform K '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
+			ZS_THROW_EXCEPTION_FILE_LINE(
 				eval_data->current_parsing_file
 				,token_operator->line
 				,"I don't know how to perform constant operation '%s %s %s'"
@@ -364,7 +364,7 @@ namespace zetscript{
 			break;
 /*			break;
 		default:
-			THROW_EXCEPTION(zs_strutils::format("const operation KK '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
+			ZS_THROW_EXCEPTION(zs_strutils::format("const operation KK '%s' not implemented",eval_operator_to_str(token_operator->operator_type)));
 			break;*/
 		}
 

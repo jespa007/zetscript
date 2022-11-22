@@ -86,7 +86,7 @@ namespace zetscript{
 
 	void	ScriptFunctionFactory::setScriptFunction(int idx, ScriptFunction *sf){
 		if(idx<0 || idx >= script_functions->size()){
-			THROW_RUNTIME_ERRORF("script function idx node out of bound");
+			ZS_THROW_RUNTIME_ERRORF("script function idx node out of bound");
 		}
 
 		script_functions->items[idx]=sf;
@@ -94,7 +94,7 @@ namespace zetscript{
 
 	ScriptFunction 	* ScriptFunctionFactory::getScriptFunction(int idx){
 		if(idx<0 || idx >= script_functions->size()){
-			THROW_RUNTIME_ERRORF("script function idx node out of bound");
+			ZS_THROW_RUNTIME_ERRORF("script function idx node out of bound");
 			return NULL;
 		}
 		return (ScriptFunction 	*)script_functions->items[idx];

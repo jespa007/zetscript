@@ -402,9 +402,9 @@ namespace zetscript{
 
 			if(error){
 				if(error_file.empty()==false){
-					THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,str_error.c_str());
+					ZS_THROW_SCRIPT_ERROR_FILE_LINEF(error_file.c_str(),error_line,str_error.c_str());
 				}else{
-					THROW_EXCEPTION(str_error.c_str());
+					ZS_THROW_EXCEPTION(str_error.c_str());
 				}
 			}
 
@@ -452,7 +452,7 @@ namespace zetscript{
 						if(script_object!=NULL){
 							if(script_object->shared_pointer != NULL){
 								if(!vm_unref_shared_script_object(this->virtual_machine,script_object,NULL)){
-									THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
+									ZS_THROW_RUNTIME_ERROR("error clearing variables: %s",vm_get_error(this->virtual_machine).c_str());
 								}
 							}
 						}
@@ -620,7 +620,7 @@ namespace zetscript{
 			vm_create_shared_script_object(virtual_machine,so);
 			vm_share_script_object(virtual_machine,so);
 		}else{
-			THROW_RUNTIME_ERRORF("Script object already shared");
+			ZS_THROW_RUNTIME_ERRORF("Script object already shared");
 		}
 	}
 

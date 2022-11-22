@@ -50,7 +50,7 @@ namespace zetscript{
 		// last slot exhausted
 		if (this->_size ==this->_count) {
 			if((this->_size+ZS_MAP_INT_N_SLOT_ITEMS) >= ZS_MAP_INT_MAX_ITEMS){
-				THROW_RUNTIME_ERRORF("Reached Max elements");
+				ZS_THROW_RUNTIME_ERRORF("Reached Max elements");
 				return;
 			}
 			this->_size += ZS_MAP_INT_N_SLOT_ITEMS;
@@ -179,7 +179,7 @@ namespace zetscript{
 
 	zs_int		zs_map_int::getValueByIdx(zs_int _idx){
 		if(_idx < 0 || _idx >= _count){
-			THROW_RUNTIME_ERRORF("getIdx out of bound");
+			ZS_THROW_RUNTIME_ERRORF("getIdx out of bound");
 		}
 
 		return this->items[_idx].node->value;
@@ -187,7 +187,7 @@ namespace zetscript{
 
 	void		zs_map_int::eraseByIdx(zs_int _idx){
 		if(_idx < 0 || _idx >= _count){
-			THROW_RUNTIME_ERRORF("getIdx out of bound");
+			ZS_THROW_RUNTIME_ERRORF("getIdx out of bound");
 		}
 
 		zs_map_int_node *node = items[_idx].node;
@@ -227,7 +227,7 @@ namespace zetscript{
 		int idx=search(_key);
 
 		if(idx==ZS_MAP_INT_KEY_NOT_FOUND){
-			THROW_RUNTIME_ERROR("key '%lu' not found",_key);
+			ZS_THROW_RUNTIME_ERROR("key '%lu' not found",_key);
 		}
 
 		eraseByIdx(idx);

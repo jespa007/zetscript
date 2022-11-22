@@ -21,13 +21,13 @@ namespace zetscript{
 		//int idxVariable;
 
 		if(_var_ptr==NULL){
-			THROW_RUNTIME_ERROR("cannot register var '%s' with NULL reference value", _var_name.c_str());
+			ZS_THROW_RUNTIME_ERROR("cannot register var '%s' with NULL reference value", _var_name.c_str());
 		}
 
 		ScriptFunction *main_function=ZS_MAIN_FUNCTION(this);
 
 		if(main_function == NULL){
-			THROW_RUNTIME_ERRORF("main function is not created");
+			ZS_THROW_RUNTIME_ERRORF("main function is not created");
 		}
 
 		StackElement stk_binded=to_stk(zs,(zs_int)_var_ptr,getIdxScriptTypeFromTypeNamePtr(var_type));
@@ -82,7 +82,7 @@ namespace zetscript{
 		int params_len=0;
 
 		if(main_function == NULL){
-			THROW_RUNTIME_ERRORF("main function is not created");
+			ZS_THROW_RUNTIME_ERRORF("main function is not created");
 		}
 
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
@@ -131,7 +131,7 @@ namespace zetscript{
 		checkScriptTypeName(str_script_type);
 
 		if(getIdxScriptTypeFromTypeNamePtr(str_script_type_ptr)!=ZS_IDX_UNDEFINED){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 			"Native type '%s' is already registered"
 			,zs_rtti::demangle(typeid( T).name()).c_str()
 			);
@@ -178,22 +178,22 @@ namespace zetscript{
 
 		int idx_base_type = getIdxScriptTypeFromTypeNamePtr(base_class_name_ptr);
 		if(idx_base_type == -1) {
-			THROW_RUNTIME_ERROR("base native type '%s' not registered",base_class_name_ptr);
+			ZS_THROW_RUNTIME_ERROR("base native type '%s' not registered",base_class_name_ptr);
 		}
 
 
 		int idx_register_class = getIdxScriptTypeFromTypeNamePtr(class_name_ptr);
 		if(idx_register_class == ZS_IDX_UNDEFINED) {
-			THROW_RUNTIME_ERROR("native type '%s' not registered",class_name_ptr);
+			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",class_name_ptr);
 		}
 
 		if(scriptTypeInheritsFrom(idx_register_class,idx_base_type)){
-			THROW_RUNTIME_ERROR("native type '%s' is already registered as base of '%s' ",zs_rtti::demangle(str_script_type).c_str(), zs_rtti::demangle(base_class_name).c_str());
+			ZS_THROW_RUNTIME_ERROR("native type '%s' is already registered as base of '%s' ",zs_rtti::demangle(str_script_type).c_str(), zs_rtti::demangle(base_class_name).c_str());
 		}
 
 		// check whether is in fact base of ...
 		if(!std::is_base_of<B,C>::value){
-			THROW_RUNTIME_ERROR("native type '%s' is not base of '%s' ",zs_rtti::demangle(str_script_type).c_str(), zs_rtti::demangle(base_class_name).c_str());
+			ZS_THROW_RUNTIME_ERROR("native type '%s' is not base of '%s' ",zs_rtti::demangle(str_script_type).c_str(), zs_rtti::demangle(base_class_name).c_str());
 		}
 
 		// now only allows one inheritance!
@@ -203,7 +203,7 @@ namespace zetscript{
 		for(int i=0; i < main_class->idx_base_types->size(); i++){
 			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base type...
 			if(sc->str_script_type_ptr ==base_class_name_ptr){
-				THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
+				ZS_THROW_RUNTIME_ERROR("native type '%s' already extends from '%s' "
 						,zs_rtti::demangle(str_script_type).c_str()
 						, zs_rtti::demangle(base_class_name).c_str());
 			}
@@ -217,7 +217,7 @@ namespace zetscript{
 			ScriptType *sc=getScriptType(main_class->idx_base_types->items[i]); // get base type...
 			// check whether type inherits inheritates B
 			if(sc->extendsFrom(idx_base_type)){
-				THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' inherits '%s' that already is inherited by '%s'"
+				ZS_THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' inherits '%s' that already is inherited by '%s'"
 					,zs_rtti::demangle(str_script_type).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 					,zs_rtti::demangle(str_script_type).c_str()
@@ -227,7 +227,7 @@ namespace zetscript{
 			}
 			// check the viceversa, if B inheritates inherited types of main_class
 			if(base->extendsFrom(sc->idx_script_type)){
-				THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' has inherited type '%s' that also is inherited by '%s'"
+				ZS_THROW_RUNTIME_ERROR("Type '%s' cannot extend from '%s' because '%s' has inherited type '%s' that also is inherited by '%s'"
 					,zs_rtti::demangle(str_script_type).c_str()
 					, zs_rtti::demangle(base_class_name).c_str()
 					,zs_rtti::demangle(str_script_type).c_str()
@@ -284,7 +284,7 @@ namespace zetscript{
 					dst_script_function->scope_script_function=src_script_function->scope_script_function;
 
 				}else{
-					THROW_RUNTIME_ERROR("Error adding functions from base elements '%s': '%s::%s' is not a function"
+					ZS_THROW_RUNTIME_ERROR("Error adding functions from base elements '%s': '%s::%s' is not a function"
 							,zs_rtti::demangle(base_class_name).c_str()
 							,zs_rtti::demangle(base_class_name).c_str()
 							, src_symbol->name.c_str());
@@ -405,7 +405,7 @@ namespace zetscript{
 		zs_string str_script_type_ptr = typeid( C *).name();
 		ScriptType * script_type=	getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native type '%s' is not registered",str_script_type_ptr.c_str());
+			ZS_THROW_RUNTIME_ERROR("native type '%s' is not registered",str_script_type_ptr.c_str());
 		}
 		return bindMemberFunction<C>(ZS_CONSTRUCTOR_FUNCTION_NAME,function_type, registered_file,registered_line );
 	}
@@ -430,13 +430,13 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr);
+			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr);
 		}
 
 		// 1. check all parameters ok.
 		// check valid parameters ...
 		if(getIdxScriptTypeFromTypeNamePtr(var_type) == ZS_IDX_UNDEFINED){
-			THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
+			ZS_THROW_RUNTIME_ERROR("%s::%s has not valid type (%s)"
 					,script_type->str_script_type
 					,var_name
 					,zs_rtti::demangle(typeid(R).name()).c_str());
@@ -469,7 +469,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
+			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
 		}
 
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
@@ -508,7 +508,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
+			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
 		}
 
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
@@ -549,7 +549,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
+			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
 		}
 
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
@@ -589,7 +589,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
+			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
 		}
 
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
@@ -629,7 +629,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
+			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
 		}
 
 		int idx_script_type_return=getNativeFunctionRetArgsTypes(
@@ -669,7 +669,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -712,7 +712,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -753,7 +753,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -794,7 +794,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -835,7 +835,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -876,7 +876,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -917,7 +917,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -958,7 +958,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -999,7 +999,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -1040,7 +1040,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -1081,7 +1081,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -1122,7 +1122,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"native type '%s' not registered"
 				,str_script_type_ptr.c_str()
 			);
@@ -1168,7 +1168,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
+			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
 		}
 
 		return script_type->bindStaticMemberFunction<F>(name_script_function
@@ -1194,7 +1194,7 @@ namespace zetscript{
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
 		if(script_type == NULL){
-			THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
+			ZS_THROW_RUNTIME_ERROR("native type '%s' not registered",str_script_type_ptr.c_str());
 		}
 
 		script_type->bindMemberFunction<F>(

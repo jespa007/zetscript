@@ -238,7 +238,7 @@ namespace zetscript{
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		int idx = ZS_IDX_UNDEFINED;
 		if((idx=vm_find_lifetime_object(_vm,_script_object))==ZS_IDX_UNDEFINED){
-			THROW_RUNTIME_ERRORF("Cannot find stack element lifetime");
+			ZS_THROW_RUNTIME_ERRORF("Cannot find stack element lifetime");
 		}
 		InfoLifetimeObject *info=(InfoLifetimeObject *)data->lifetime_object.items[idx];
 		data->lifetime_object.erase(idx);
@@ -337,7 +337,7 @@ namespace zetscript{
 
 
 			if(data->vm_current_scope_function != ZS_VM_SCOPE_FUNCTION_MAIN){
-				THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",ZS_IDX_VM_CURRENT_SCOPE_FUNCTION);
+				ZS_THROW_RUNTIME_ERROR("Internal: vm_idx_call != 0 (%i)",ZS_IDX_VM_CURRENT_SCOPE_FUNCTION);
 			}
 
 			vm_reset_error_vars(_vm);
@@ -354,7 +354,7 @@ namespace zetscript{
 			if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
 
 				if((_properties & ZS_VM_PROPERTY_CALL_FROM_NATIVE)==0){
-					THROW_RUNTIME_ERRORF("Internal: expected first call function from C");
+					ZS_THROW_RUNTIME_ERRORF("Internal: expected first call function from C");
 				}
 				//vm_reset_error_vars(vm);
 
@@ -365,7 +365,7 @@ namespace zetscript{
 
 			if(stk_start<min_stk){ // control: not overwrite global symbols
 				// this could happen when you call script function from native c++, so this control is needed
-				THROW_RUNTIME_ERRORF("Internal: stk_start < min_stk");
+				ZS_THROW_RUNTIME_ERRORF("Internal: stk_start < min_stk");
 			}
 
 			StackElement *stk_it=stk_start;
@@ -375,12 +375,12 @@ namespace zetscript{
 
 					if(so->shared_pointer==NULL){
 						if(vm_create_shared_script_object(_vm,so) == false){
-							THROW_RUNTIME_ERRORF("Cannot create shared pointer");
+							ZS_THROW_RUNTIME_ERRORF("Cannot create shared pointer");
 						}
 					}
 
 					if(vm_share_script_object(_vm,so) == false){
-						THROW_RUNTIME_ERRORF("Cannot shared pointer");
+						ZS_THROW_RUNTIME_ERRORF("Cannot shared pointer");
 					}
 
 				}
@@ -663,7 +663,7 @@ namespace zetscript{
 						auto stk=slots.items[i]->data->getPtrStackElement();
 
 						if((stk->properties & STK_PROPERTY_CONTAINER_SLOT)==0){
-							THROW_RUNTIME_ERRORF("stk container is not container slot");
+							ZS_THROW_RUNTIME_ERRORF("stk container is not container slot");
 						}
 
 						ContainerSlot::deleteContainerSlot((ContainerSlot *)stk->value,false);

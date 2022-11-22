@@ -9,7 +9,7 @@ namespace zetscript{
 	ByteCode eval_operator_to_byte_code(Operator op){
 		switch(op){
 		default:
-			THROW_RUNTIME_ERROR("Convert %i to byte code not implemented",op);
+			ZS_THROW_RUNTIME_ERROR("Convert %i to byte code not implemented",op);
 			break;
 		// assign and arithmetic with assign
 		case Operator::OPERATOR_ASSIGN:

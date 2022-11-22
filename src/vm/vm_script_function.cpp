@@ -702,6 +702,9 @@ namespace zetscript{
 		bool result=false;
 
 		switch(_byte_code_metamethod){
+		case BYTE_CODE_METAMETHOD_NOT_EQU:
+			result= ZS_STRCMP(str1.c_str(),!=,str1.c_str());
+			break;
 		case BYTE_CODE_METAMETHOD_EQU:
 			result= ZS_STRCMP(str1.c_str(),==,str1.c_str());
 			break;

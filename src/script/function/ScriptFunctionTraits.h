@@ -178,7 +178,7 @@ namespace zetscript{
 		getParamsFunction<Traits3>(&return_type, args, MakeIndexSequence<Traits3::arity>{});
 
 		if(args.size()>MAX_NATIVE_FUNCTION_ARGS){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"Max arguments reached (max:'%i')"
 				,MAX_NATIVE_FUNCTION_ARGS
 			);
@@ -186,7 +186,7 @@ namespace zetscript{
 
 		// check valid parameters ...
 		if((idx_script_type_return=_script_class_factory->getIdxScriptTypeFromTypeNamePtr(return_type)) == -1){
-			THROW_RUNTIME_ERROR(
+			ZS_THROW_RUNTIME_ERROR(
 				"Return type '%s' not registered"
 				,zs_rtti::demangle(return_type).c_str()
 			);
@@ -197,7 +197,7 @@ namespace zetscript{
 			*_params_len=args.size();
 
 			if(args.size()==0){
-				THROW_RUNTIME_ERRORF(
+				ZS_THROW_RUNTIME_ERRORF(
 					"Function to bind has to have 'ZetScript *' as FIRST parameter"
 				);
 			}
@@ -216,7 +216,7 @@ namespace zetscript{
 
 				if(i==0){
 					if(idx_script_type!=IDX_TYPE_SCRIPT_OBJECT_ZETSCRIPT){
-						THROW_RUNTIME_ERROR(
+						ZS_THROW_RUNTIME_ERROR(
 							"Expected FIRST parameter as 'ZetScript *' but it was '%s'"
 							,zs_rtti::demangle(str_param).c_str()
 						);
@@ -266,7 +266,7 @@ exit_function_traits:
 
 			 *_params=NULL;
 
-			THROW_RUNTIME_ERRORF(
+			ZS_THROW_RUNTIME_ERRORF(
 					error.c_str()
 			);
 		}

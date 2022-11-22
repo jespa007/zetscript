@@ -29,7 +29,7 @@ namespace zetscript{
 	void VectorIteratorScriptObject::get(){
 		VectorScriptObject *sov=(VectorScriptObject *)ref_object;
 		if(sov==NULL) {
-			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
+			ZS_THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 
 		if(idx<sov->length()){
@@ -48,7 +48,7 @@ namespace zetscript{
 	void	 VectorIteratorScriptObject::next(){
 		VectorScriptObject *sov=(VectorScriptObject *)ref_object;
 		if(sov==NULL) {
-			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
+			ZS_THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 
 		if(idx<sov->length()){
@@ -59,7 +59,7 @@ namespace zetscript{
 	bool	 VectorIteratorScriptObject::end(){
 		VectorScriptObject *sov=(VectorScriptObject *)ref_object;
 		if(sov==NULL) {
-			THROW_RUNTIME_ERRORF("Attached object was unreferenced");
+			ZS_THROW_RUNTIME_ERRORF("Attached object was unreferenced");
 		}
 		return idx >= sov->length();
 	}

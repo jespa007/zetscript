@@ -38,7 +38,7 @@ namespace zetscript{
 
 	void Scope::setScriptTypeOwner(ScriptType *_script_type_owner){
 		if(scope_parent != NULL){
-			THROW_RUNTIME_ERRORF("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
+			ZS_THROW_RUNTIME_ERRORF("Internal error setScriptclass scope_parent should NULL (i.e scope should be root)");
 			return;
 		}
 		script_type_owner=_script_type_owner;
@@ -148,19 +148,19 @@ namespace zetscript{
 		// check if symbol collides also with built in type...
 		if((check_repeated_symbols_direction & REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS)==0){
 			if(zs->getScriptTypeFactory()->getIdxScriptType(symbol_name) != ZS_IDX_UNDEFINED){
-				THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved builtin-type or defined type",symbol_name.c_str());
+				ZS_THROW_SCRIPT_ERROR_FILE_LINE(file,line,"Cannot name symbol as '%s' because is a reserved builtin-type or defined type",symbol_name.c_str());
 			}
 		}
 
 		if((p_irv = getSymbol(symbol_name,n_params,check_repeated_symbols_direction))!=NULL){ // check whether symbol is already registered ...
 			if(p_irv != NULL) { // if not null is defined in script scope, else is C++ var
 				if(p_irv->file == NULL || *p_irv->file==0){
-					THROW_SCRIPT_ERROR_FILE_LINE(file,line," error symbol '%s' already registered", symbol_name.c_str());
+					ZS_THROW_SCRIPT_ERROR_FILE_LINE(file,line," error symbol '%s' already registered", symbol_name.c_str());
 				}else{
-					THROW_SCRIPT_ERROR_FILE_LINE(file,line," error symbol '%s' already registered at '%s:%i'", symbol_name.c_str(),zs_path::get_filename(p_irv->file).c_str(),p_irv->line);
+					ZS_THROW_SCRIPT_ERROR_FILE_LINE(file,line," error symbol '%s' already registered at '%s:%i'", symbol_name.c_str(),zs_path::get_filename(p_irv->file).c_str(),p_irv->line);
 				}
 			}else{
-				THROW_RUNTIME_ERROR(" error symbol '%s' already registered as C++", symbol_name.c_str());
+				ZS_THROW_RUNTIME_ERROR(" error symbol '%s' already registered as C++", symbol_name.c_str());
 			}
 		}
 	}

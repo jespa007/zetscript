@@ -21,7 +21,7 @@ namespace zetscript{
 		// last slot exhausted
 		if (this->_size ==this->size()) {
 			if((this->_size+ ZS_VECTOR_EXPAND_SLOT_ELEMENTS) >= ZS_VECTOR_MAX_ELEMENTS){
-				THROW_RUNTIME_ERRORF("Max elements vector");
+				ZS_THROW_RUNTIME_ERRORF("Max elements vector");
 			}
 			this->_size += ZS_VECTOR_EXPAND_SLOT_ELEMENTS;
 			_T *aux_buf=new _T[ this->_size];
@@ -90,7 +90,7 @@ namespace zetscript{
 	template<typename _T>
 	void zs_vector<_T>::set(int _pos, const _T & _val){
 		if (_pos<0 || _pos >= this->size()) {
-			THROW_RUNTIME_ERRORF("vector::set => idx out of bounds 1");
+			ZS_THROW_RUNTIME_ERRORF("vector::set => idx out of bounds 1");
 			return;
 		}
 		this->items[_pos] = _val;
@@ -99,7 +99,7 @@ namespace zetscript{
 	template<typename _T>
 	const _T &	zs_vector<_T>::get(int  _pos){
 		if (_pos<0 ||_pos >= this->size()) {
-			THROW_RUNTIME_ERRORF("vector::get => idx out of bounds");
+			ZS_THROW_RUNTIME_ERRORF("vector::get => idx out of bounds");
 		}
 
 		return this->items[_pos];
@@ -108,7 +108,7 @@ namespace zetscript{
 	template<typename _T>
 	void zs_vector<_T>::erase(int  _pos){
 		if (_pos<0 ||_pos >= this->size()) {
-			THROW_RUNTIME_ERRORF("vector::erase => idx out of bounds");
+			ZS_THROW_RUNTIME_ERRORF("vector::erase => idx out of bounds");
 			return;
 		}
 
@@ -123,7 +123,7 @@ namespace zetscript{
 	_T zs_vector<_T>::pop_back(){
 		_T item;
 		if (this->size()==0) {
-			THROW_RUNTIME_ERRORF("no elements");
+			ZS_THROW_RUNTIME_ERRORF("no elements");
 			return 0;
 		}
 
@@ -141,7 +141,7 @@ namespace zetscript{
 		}
 
 		if(_new_size >=  ZS_VECTOR_MAX_ELEMENTS){
-			THROW_RUNTIME_ERROR("Cannot resize zs_vector. Reached maximum",_new_size);
+			ZS_THROW_RUNTIME_ERROR("Cannot resize zs_vector. Reached maximum",_new_size);
 			return;
 		}
 
@@ -149,7 +149,7 @@ namespace zetscript{
 		//this->items=(zs_int *)realloc(this->items,_new_size*sizeof(zs_int));
 
 		if(new_buf == NULL){
-			THROW_RUNTIME_ERROR("Cannot resize zs_vector to %i bytes",_new_size);
+			ZS_THROW_RUNTIME_ERROR("Cannot resize zs_vector to %i bytes",_new_size);
 			return;
 		}
 
@@ -198,14 +198,14 @@ namespace zetscript{
 
 
 		if(_src_vector.size() < _n_elements_src_vector_to_copy) {
-			THROW_RUNTIME_ERROR("there's more elements than the list to insert: list->size() (%i) < n_list_elements_to_copy (%i)"
+			ZS_THROW_RUNTIME_ERROR("there's more elements than the list to insert: list->size() (%i) < n_list_elements_to_copy (%i)"
 				,_src_vector.size()
 				,_n_elements_src_vector_to_copy
 			);
 		}
 
 		if(_pos > count){
-			THROW_RUNTIME_ERROR("idx position to insert out of bounds: idx (%i) >= count(%i)",_pos,count);
+			ZS_THROW_RUNTIME_ERROR("idx position to insert out of bounds: idx (%i) >= count(%i)",_pos,count);
 		}
 
 
@@ -213,7 +213,7 @@ namespace zetscript{
 		if(this->_size<=(_n_elements_src_vector_to_copy+count)){
 			_size=_n_elements_src_vector_to_copy+count;
 			if(_size >=  ZS_VECTOR_MAX_ELEMENTS){
-				THROW_RUNTIME_ERROR("Cannot insert. Reached max capacity",_pos,count);
+				ZS_THROW_RUNTIME_ERROR("Cannot insert. Reached max capacity",_pos,count);
 			}
 		}
 
@@ -253,7 +253,7 @@ namespace zetscript{
 	template<typename _T>
 	void 		zs_vector<_T>::insert(int  _pos, const _T & _val){
 		if(_pos > (this->size()+1)){
-			THROW_RUNTIME_ERROR("idx should be 0 to %i",this->size()+1);
+			ZS_THROW_RUNTIME_ERROR("idx should be 0 to %i",this->size()+1);
 			return;
 		}
 
