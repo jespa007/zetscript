@@ -104,7 +104,6 @@ namespace zetscript{
 				,SCOPE_PROPERTY_IS_SCOPE_FUNCTION
 		);
 
-		scope_parent->scopes->push_back(new_scope);
 		new_scope->offset_instruction_push_scope=0;
 
 		return new_scope;
@@ -118,7 +117,6 @@ namespace zetscript{
 				,SCOPE_PROPERTY_IS_SCOPE_BLOCK
 		);
 
-		scope_parent->scopes->push_back(new_scope);
 		new_scope->offset_instruction_push_scope=(int)eval_data->current_function->eval_instructions.size();
 		return new_scope;
 	}
@@ -446,8 +444,9 @@ namespace zetscript{
 			}
 		}
 
-		for(int i=0; i < current_scope->scopes->size(); i++){
-			Scope *scope=(Scope *)current_scope->scopes->items[i];
+		auto scopes=current_scope->getScopes();
+		for(int i=0; i < scopes->size(); i++){
+			Scope *scope=(Scope *)scopes->items[i];
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				bool ok=eval_all_local_variables_in_scopes_already_sorted(scope,idx_local_variable);
 
@@ -467,8 +466,10 @@ namespace zetscript{
 			order_local_vars->push_back(s->idx_position);
 		}
 
-		for(int i=0; i < current_scope->scopes->size(); i++){
-			Scope *scope=(Scope *)current_scope->scopes->items[i];
+		auto scopes=current_scope->getScopes();
+
+		for(int i=0; i < scopes->size(); i++){
+			Scope *scope=(Scope *)scopes->items[i];
 			if((scope->properties & (SCOPE_PROPERTY_IS_SCOPE_FUNCTION | SCOPE_PROPERTY_IS_SCOPE_CLASS)) == 0){ // ignore local functions/classes
 				eval_fill_lookup_local_variable(scope,lookup_table,n_variable,order_local_vars);
 			}

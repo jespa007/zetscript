@@ -535,14 +535,14 @@ namespace zetscript{
 				properties_register_scope|=REGISTER_SCOPE_NO_CHECK_CLASS_SYMBOLS;
 			}
 			// BYTE_CODE_NEW SCOPE C and register ...
-			Scope * scope = ZS_NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
+			Scope * scope_class = ZS_NEW_SCOPE(this,ZS_IDX_UNDEFINED,NULL, SCOPE_PROPERTY_IS_SCOPE_CLASS);
 
 			// register symbol on main scope...
 
 			Symbol *symbol=ZS_MAIN_SCOPE(this)->registerSymbolScriptType(_file,_line,_str_script_type,properties_register_scope);
 
-			sc = new ScriptType(this->zs,index, _str_script_type, scope,TYPE_SCRIPT_VARIABLE,_properties);
-			scope->setScriptTypeOwner(sc);
+			sc = new ScriptType(this->zs,index, _str_script_type, scope_class,TYPE_SCRIPT_VARIABLE,_properties);
+			scope_class->setScriptTypeOwner(sc);
 			symbol->ref_ptr=(zs_int)sc;
 
 			//sc->str_script_type_ptr = TYPE_SCRIPT_VARIABLE;
@@ -576,7 +576,7 @@ namespace zetscript{
 				zs_vector<Symbol *> *symbol_functions=base_type->scope_script_type->symbol_functions;
 				for(int i=0; i < symbol_functions->size(); i++){
 					Symbol *symbol_src=(Symbol *)symbol_functions->items[i];
-					Symbol *symbol_dst=scope->registerSymbolFunction(
+					Symbol *symbol_dst=scope_class->registerSymbolFunction(
 							symbol_src->file
 							,symbol_src->line
 							,symbol_src->name
@@ -596,7 +596,7 @@ namespace zetscript{
 				zs_vector<Symbol *> *symbol_variables=base_type->scope_script_type->symbol_variables;
 				for(int i=0; i < symbol_variables->size(); i++){
 					Symbol *symbol_src=(Symbol *)symbol_variables->items[i];
-					Symbol *symbol_dst=scope->registerSymbolVariable(
+					Symbol *symbol_dst=scope_class->registerSymbolVariable(
 							symbol_src->file
 							,symbol_src->line
 							,symbol_src->name
@@ -645,10 +645,20 @@ namespace zetscript{
 				Symbol *symbol_field_initializer=NULL;
 
 				symbol_field_initializer=sc->registerMemberFunction(
-					zs_strutils::format("__@field_initializer_%s_@__",sc->str_script_type.c_str())
+					zs_strutils::format(
+						"__@field_initializer_%s_@__"
+						,sc->str_script_type.c_str()
+					)
 				);
 
 				sc->sf_field_initializer=(ScriptFunction *)symbol_field_initializer->ref_ptr;
+
+				// create new scope
+				sc->sf_field_initializer->scope_script_function=(((zs)->getScopeFactory()))->newScope(
+						sc->sf_field_initializer->idx_script_function
+						,scope_class
+						,SCOPE_PROPERTY_IS_SCOPE_FUNCTION
+				);
 			}
 
 			return sc;

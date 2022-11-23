@@ -33,6 +33,9 @@ namespace zetscript{
 			if(idx_script_function==ZS_IDX_UNDEFINED){ // May be is a block containing if-else, for, etc --> propagate current script function
 				idx_script_function=scope_parent->idx_script_function;
 			}
+
+			// parent owns this scope
+			_scope_parent->scopes->push_back(this);
 		}
 	}
 
@@ -133,6 +136,10 @@ namespace zetscript{
 
 		// mark as unused, late we can remove safely check unusued flag...
 		this->properties|=SCOPE_PROPERTY_UNUSUED;
+	}
+
+	zs_vector<Scope *>	*Scope::getScopes(){
+		return scopes;
 	}
 
 	void Scope::checkPreRegisterSymbol(

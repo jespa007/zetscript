@@ -41,7 +41,7 @@ namespace zetscript{
 				// search parent element
 				if(scope->scope_parent != NULL){
 					// remove child from parent to
-					zs_vector<Scope *> *childs=scope->scope_parent->scopes;
+					zs_vector<Scope *> *childs=scope->scope_parent->getScopes();
 					for(int i=0; i < childs->size(); i++){
 						Scope *child=(Scope *)childs->items[i];
 						if(child==scope){

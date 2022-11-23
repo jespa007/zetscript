@@ -37,7 +37,6 @@ namespace zetscript{
 
 		Scope 					*scope_parent, *scope_base;
 
-		zs_vector<Scope *>		*scopes;  // local scopes from starting block { }
 		zs_vector<Symbol *>		*symbol_variables; // variable symbols from starting block { }
 		zs_vector<Symbol *>		*symbol_functions; // function symbols from starting block { }
 		zs_vector<Symbol *>		*symbol_types; // function symbols from starting block { }
@@ -90,6 +89,7 @@ namespace zetscript{
 		bool 	unregisterSymbol(Symbol *symbol);
 
 		void						    markAsUnusued();
+		zs_vector<Scope *>	*getScopes();
 
 		void removeChildrenBlockTypes();
 		void setScriptTypeOwner(ScriptType *_script_type_owner);
@@ -105,8 +105,10 @@ namespace zetscript{
 	private:
 
 		ZetScript *zs;
-		ScopeFactory *scope_factory;
-		int 			idx_script_function;
+
+		zs_vector<Scope *>		*scopes;  // local scopes from starting block { }
+		ScopeFactory 			*scope_factory;
+		int 					idx_script_function;
 
 		void 	 checkPreRegisterSymbol(
 				const char * file

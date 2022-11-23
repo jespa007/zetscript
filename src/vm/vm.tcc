@@ -66,15 +66,7 @@ namespace zetscript{
 		zs_vector<Symbol *> *scope_symbols=scope->symbol_variables;\
 		int count=(int)scope_symbols->size();\
 
-		if(  count > 0  // if there's variable symbols registered
-		// By now, vm_pop_scope it can dereference variables that are registered in class as constants, so it manages special case
-		// when scope is SCOPE_CLASS
-		// TODO: Next version, it will implement namespace scope support, (environments) that will be initilized as persistent variables like
-		// main scope, it will register variables but it will dereferenced when program exits or clear() is called
-		 && ((scope->properties & SCOPE_PROPERTY_IS_SCOPE_CLASS)==0)
-		)
-		{
-
+		if(count > 0 ){
 			StackElement *stk_local_var=stk_local_vars+scope_symbols->items[0]->idx_position;\
 			while(count--){\
 				if((stk_local_var->properties & STK_PROPERTY_SCRIPT_OBJECT)){\

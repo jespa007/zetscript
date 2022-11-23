@@ -118,7 +118,6 @@ namespace zetscript{
 
 		Scope *main_scope=((((zs)->getScopeFactory())))->getMainScope();
 		sf_eval->scope_script_function=(((zs)->getScopeFactory()))->newScope(sf_eval->idx_script_function,main_scope,SCOPE_PROPERTY_IS_SCOPE_FUNCTION);
-		main_scope->scopes->push_back(sf_eval->scope_script_function);
 
 		//--------------------------------------
 		// 2. register arg symbols
