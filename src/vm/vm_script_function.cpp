@@ -682,8 +682,8 @@ namespace zetscript{
 		, ByteCodeMetamethod 		_byte_code_metamethod
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
-		zs_string str1="1";
-		zs_string str2="2";
+		zs_string str1="@@@STR1_NOT_INIT@@@@";
+		zs_string str2="@@@STR2_NOT_INIT@@@@";
 
 		if(STK_IS_SCRIPT_OBJECT_STRING(_stk1)){
 			str1=((StringScriptObject *)(_stk1->value))->get();
@@ -694,7 +694,7 @@ namespace zetscript{
 
 
 		if(STK_IS_SCRIPT_OBJECT_STRING(_stk2)){
-			str1=((StringScriptObject *)(_stk2->value))->get();
+			str2=((StringScriptObject *)(_stk2->value))->get();
 		}else{
 			str2=stk_to_str(data->zs, _stk2);
 		}
@@ -703,22 +703,22 @@ namespace zetscript{
 
 		switch(_byte_code_metamethod){
 		case BYTE_CODE_METAMETHOD_NOT_EQU:
-			result= ZS_STRCMP(str1.c_str(),!=,str1.c_str());
+			result= ZS_STRCMP(str1.c_str(),!=,str2.c_str());
 			break;
 		case BYTE_CODE_METAMETHOD_EQU:
-			result= ZS_STRCMP(str1.c_str(),==,str1.c_str());
+			result= ZS_STRCMP(str1.c_str(),==,str2.c_str());
 			break;
 		case BYTE_CODE_METAMETHOD_LT:
-			result= ZS_STRCMP(str1.c_str(),<,str1.c_str());
+			result= ZS_STRCMP(str1.c_str(),<,str2.c_str());
 			break;
 		case BYTE_CODE_METAMETHOD_GT:
-			result= ZS_STRCMP(str1.c_str(),>,str1.c_str());
+			result= ZS_STRCMP(str1.c_str(),>,str2.c_str());
 			break;
 		case BYTE_CODE_METAMETHOD_LTE:
-			result= ZS_STRCMP(str1.c_str(),<=,str1.c_str());
+			result= ZS_STRCMP(str1.c_str(),<=,str2.c_str());
 			break;
 		case BYTE_CODE_METAMETHOD_GTE:
-			result= ZS_STRCMP(str1.c_str(),>=,str1.c_str());
+			result= ZS_STRCMP(str1.c_str(),>=,str2.c_str());
 			break;
 		default:
 			ZS_VM_SET_USER_ERRORF(_vm," Internal error expected byte_code_metamethod comparer");
