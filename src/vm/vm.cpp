@@ -375,12 +375,12 @@ namespace zetscript{
 
 					if(so->shared_pointer==NULL){
 						if(vm_create_shared_script_object(_vm,so) == false){
-							ZS_THROW_RUNTIME_ERRORF("Cannot create shared pointer");
+							ZS_THROW_RUNTIME_ERRORF("Internal error: Cannot create shared pointer");
 						}
 					}
 
 					if(vm_share_script_object(_vm,so) == false){
-						ZS_THROW_RUNTIME_ERRORF("Cannot shared pointer");
+						ZS_THROW_RUNTIME_ERRORF("Internal error: Cannot share script pointer");
 					}
 
 				}
