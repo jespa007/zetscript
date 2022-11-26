@@ -843,7 +843,7 @@ namespace zetscript{
 				if(so_aux->shared_pointer->data.n_shares == 0){
 					if(vm_deattach_shared_node(
 							vm
-							,&so_aux->shared_pointer->data.created_scope_block->unreferenced_objects
+							,&so_aux->shared_pointer->data.vm_scope_block_where_created->unreferenced_objects
 							,so_aux->shared_pointer
 					)==false){
 						return false;

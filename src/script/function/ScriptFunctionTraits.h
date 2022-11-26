@@ -177,10 +177,10 @@ namespace zetscript{
 		using Traits3 = FunctionTraits<decltype(_ptr_function)>;
 		getParamsFunction<Traits3>(&return_type, args, MakeIndexSequence<Traits3::arity>{});
 
-		if(args.size()>MAX_NATIVE_FUNCTION_ARGS){
+		if(args.size()>ZS_MAX_NATIVE_FUNCTION_ARGS){
 			ZS_THROW_RUNTIME_ERROR(
 				"Max arguments reached (max:'%i')"
-				,MAX_NATIVE_FUNCTION_ARGS
+				,ZS_MAX_NATIVE_FUNCTION_ARGS
 			);
 		}
 

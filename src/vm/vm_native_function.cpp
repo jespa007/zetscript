@@ -339,8 +339,8 @@ namespace zetscript{
 		}
 
 		int idx_script_type_return=_c_function->idx_script_type_return;
-		zs_int converted_param[MAX_NATIVE_FUNCTION_ARGS];
-		zs_float aux_float[MAX_NATIVE_FUNCTION_ARGS];
+		zs_int converted_param[ZS_MAX_NATIVE_FUNCTION_ARGS];
+		zs_float aux_float[ZS_MAX_NATIVE_FUNCTION_ARGS];
 		zs_int result=0;
 		StackElement *stk_arg_current;
 		data->current_call_c_function = _c_function;
@@ -371,8 +371,8 @@ namespace zetscript{
 			}
 		}
 
-		if(n_args>MAX_NATIVE_FUNCTION_ARGS){
-			ZS_VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",MAX_NATIVE_FUNCTION_ARGS,n_args);
+		if(n_args>ZS_MAX_NATIVE_FUNCTION_ARGS){
+			ZS_VM_ERROR_AND_RET("Max run-time args! (Max:%i Provided:%i)",ZS_MAX_NATIVE_FUNCTION_ARGS,n_args);
 		}
 
 		if((_c_function->properties & FUNCTION_PROPERTY_C_OBJECT_REF) != FUNCTION_PROPERTY_C_OBJECT_REF) {
@@ -390,8 +390,8 @@ namespace zetscript{
 					,n_args);
 		}
 
-		if(_c_function->params_len > MAX_NATIVE_FUNCTION_ARGS){
-			ZS_VM_ERROR_AND_RET("Reached max param for C function (Current: %i Max Allowed: %i)",_c_function->params_len,MAX_NATIVE_FUNCTION_ARGS);
+		if(_c_function->params_len > ZS_MAX_NATIVE_FUNCTION_ARGS){
+			ZS_VM_ERROR_AND_RET("Reached max param for C function (Current: %i Max Allowed: %i)",_c_function->params_len,ZS_MAX_NATIVE_FUNCTION_ARGS);
 		}
 
 		// convert parameters script to c...

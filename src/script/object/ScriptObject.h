@@ -21,7 +21,7 @@ namespace zetscript{
 		ScriptObject 			*ptr_script_object_shared;
 		unsigned short 			n_shares;
 		//int						created_idx_call;
-		VM_ScopeBlock			*created_scope_block;
+		VM_ScopeBlock			*vm_scope_block_where_created;
 	} SharedPointerInfo;
 
 	typedef struct _InfoSharedPointerNode{
