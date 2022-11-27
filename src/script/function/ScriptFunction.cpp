@@ -411,8 +411,10 @@ namespace zetscript{
 			case BYTE_CODE_PRE_DEC:
 			case BYTE_CODE_POST_INC:
 			case BYTE_CODE_NEG_POST_INC:
+			case BYTE_CODE_BWC_POST_INC:
 			case BYTE_CODE_POST_DEC:
 			case BYTE_CODE_NEG_POST_DEC:
+			case BYTE_CODE_BWC_POST_DEC:
 				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
 					,req_stk

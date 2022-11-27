@@ -113,6 +113,9 @@ namespace zetscript{
 			if(pre_operation==PreOperation::PRE_OPERATION_NEG){
 				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NEG));
 				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
+			}else if(pre_operation==PreOperation::PRE_OPERATION_BWC){
+				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_BWC));
+				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
 			}else if(pre_operation==PreOperation::PRE_OPERATION_NOT){
 				token_node_symbol->eval_instructions.push_back(new EvalInstruction(ByteCode::BYTE_CODE_NOT));
 				pre_operation=PreOperation::PRE_OPERATION_UNKNOWN;
@@ -710,7 +713,11 @@ namespace zetscript{
 			aux_p+=strlen(eval_data_post_operations[post_operation].str);
 
 			if(token_node_symbol->pre_operation != PreOperation::PRE_OPERATION_UNKNOWN){
-			   if(token_node_symbol->pre_operation != PreOperation::PRE_OPERATION_NEG){
+			   if(
+					  (token_node_symbol->pre_operation != PreOperation::PRE_OPERATION_NEG)
+					  &&
+					  (token_node_symbol->pre_operation != PreOperation::PRE_OPERATION_BWC)
+			   ){
 				   EVAL_ERROR_FILE_LINE_GOTO(
 					   eval_data->current_parsing_file
 					   ,line
@@ -728,11 +735,17 @@ namespace zetscript{
 			   if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_NEG){
 				   byte_code_post_operation=ByteCode::BYTE_CODE_NEG_POST_INC;
 				   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a++
+			   }else if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_BWC){
+				   byte_code_post_operation=ByteCode::BYTE_CODE_BWC_POST_INC;
+				   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a++
 			   }
 		   }else {
 			   byte_code_post_operation=ByteCode::BYTE_CODE_POST_DEC;
 			   if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_NEG){
 				   byte_code_post_operation=ByteCode::BYTE_CODE_NEG_POST_DEC;
+				   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a--
+			   }else if(token_node_symbol->pre_operation==PreOperation::PRE_OPERATION_BWC){
+				   byte_code_post_operation=ByteCode::BYTE_CODE_BWC_POST_DEC;
 				   pre_operation=token_node_symbol->pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // the pre-operation neg was absorbed by -a--
 			   }
 		   }
@@ -762,6 +775,7 @@ namespace zetscript{
 		}
 
 		if(		(pre_operation == PreOperation::PRE_OPERATION_NEG)
+			|| 	(pre_operation == PreOperation::PRE_OPERATION_BWC)
 			|| 	(pre_operation == PreOperation::PRE_OPERATION_NOT)
 			|| 	(pre_operation == PreOperation::PRE_OPERATION_INC)
 			|| 	(pre_operation == PreOperation::PRE_OPERATION_DEC)
@@ -797,6 +811,7 @@ namespace zetscript{
 			token_node_symbol->eval_instructions.push_back(
 				eval_instruction_pre=new EvalInstruction(
 					pre_operation == PreOperation::PRE_OPERATION_NEG ? ByteCode::BYTE_CODE_NEG:
+					pre_operation == PreOperation::PRE_OPERATION_BWC ? ByteCode::BYTE_CODE_BWC:
 					pre_operation == PreOperation::PRE_OPERATION_NOT ? ByteCode::BYTE_CODE_NOT:
 					pre_operation == PreOperation::PRE_OPERATION_DEC ? ByteCode::BYTE_CODE_PRE_DEC:
 					pre_operation == PreOperation::PRE_OPERATION_TYPEOF ? ByteCode::BYTE_CODE_TYPEOF:

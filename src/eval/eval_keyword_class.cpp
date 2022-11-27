@@ -473,6 +473,17 @@ namespace zetscript{
 								,property_name.c_str()
 							);
 						}
+					}else if(name_script_function == "_bwc"){
+						if(mp->metamethod_members.bwc==NULL){
+							mp->metamethod_members.bwc=symbol;
+						}else{
+							EVAL_ERROR_FILE_LINE(
+								eval_data->current_parsing_file
+								,line
+								,"Property \"%s\" has already a bitwise complement (aka ~) metamethod"
+								,property_name.c_str()
+							);
+						}
 					}else{ // find setter
 						MetamethodMemberSetterInfo _mp_info=mp->metamethod_members.getSetterInfo(name_script_function.c_str());
 

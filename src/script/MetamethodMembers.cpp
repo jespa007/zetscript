@@ -48,6 +48,7 @@ namespace zetscript{
 		pre_inc=NULL;
 		pre_dec=NULL;
 		neg=NULL;
+		bwc=NULL;
 	}
 	MetamethodMemberSetterInfo MetamethodMembers::getSetterInfo(ByteCodeMetamethod _byte_code_metamethod){
 		MetamethodMemberSetterInfo info;
@@ -218,5 +219,6 @@ namespace zetscript{
 		pre_inc = NULL;
 		pre_dec = NULL;
 		neg = NULL;
+		bwc=NULL;
 	}
 }

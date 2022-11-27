@@ -433,7 +433,7 @@ namespace zetscript{
 
 		if(mp->metamethod_members.neg != NULL){
 
-			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already a neg"
+			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already registered 'neg' property"
 				,_property_name.c_str()
 			);
 		}
@@ -450,6 +450,49 @@ namespace zetscript{
 		);
 
 		mp->metamethod_members.neg=symbol_function;
+
+		return symbol_member_property;
+	}
+
+	Symbol				* 	ScriptType::registerMemberPropertyBwc(
+			 const zs_string & _property_name
+			 ,ScriptFunctionParam **_params
+			 ,int8_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,const char *_file
+			,short _line
+	){
+
+		Symbol *symbol_member_property=NULL;
+		Symbol *symbol_function=NULL;
+
+		MemberProperty *mp=NULL;
+		if((symbol_member_property=getSymbol(_property_name)) == NULL){
+			symbol_member_property=registerMemberProperty(_property_name,_file,_line);
+		}
+
+		mp=(MemberProperty *)symbol_member_property->ref_ptr;
+
+		if(mp->metamethod_members.bwc != NULL){
+
+			ZS_THROW_SCRIPT_ERROR_FILE_LINE(_file,_line,"Property '%s' has already registered 'bwc' property"
+				,_property_name.c_str()
+			);
+		}
+
+		symbol_function=registerMemberFunction(
+				ZS_SYMBOL_NAME_MEMBER_PROPERTY_METAMETHOD_BWC+_property_name,
+				_params,
+				_params_len,
+				FUNCTION_PROPERTY_C_OBJECT_REF | FUNCTION_PROPERTY_MEMBER_FUNCTION,
+				_idx_return_type,
+				_ref_ptr,
+				_file,
+				_line
+		);
+
+		mp->metamethod_members.bwc=symbol_function;
 
 		return symbol_member_property;
 	}

@@ -33,7 +33,7 @@ namespace zetscript{
 		zs_vector<StackElement *> xor_setters; // ^=
 		zs_vector<StackElement *> shl_setters; // <<=
 		zs_vector<StackElement *> shr_setters; // >>=
-		Symbol *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg; // getter
+		Symbol *getter,*post_inc,*post_dec,*pre_inc,*pre_dec,*neg,*bwc; // getter
 
 		const static ByteCodeMetamethod 	byte_code_metamethod_member_setter_list[];
 		const static ByteCodeMetamethod 	byte_code_metamethod_member_list[];

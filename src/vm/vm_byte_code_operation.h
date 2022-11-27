@@ -299,7 +299,7 @@
 			,instruction\
 			,stk_result_op1\
 			,__METAMETHOD__\
-			,true\
+			,BYTE_CODE_METAMETHOD_NEG\
 		)==false){\
 			goto lbl_exit_function;\
 		}\
@@ -309,6 +309,30 @@
 		data->vm_stk_current=stk_start;\
 	}
 
+#define VM_OPERATION_BWC_POST(__C_OP__, __METAMETHOD__) \
+	stk_result_op1=--data->vm_stk_current;\
+	EXTRACT_STK_RESULT_OP1\
+	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
+	case STK_PROPERTY_ZS_INT:\
+		VM_PUSH_STK_ZS_INT(~stk_result_op1->value);\
+		stk_result_op1->value __C_OP__;\
+		break;\
+	default:/*metamethod*/\
+		if(vm_call_metamethod_operation_post(\
+			_vm\
+			,_calling_function\
+			,instruction\
+			,stk_result_op1\
+			,__METAMETHOD__\
+			,BYTE_CODE_METAMETHOD_BWC\
+		)==false){\
+			goto lbl_exit_function;\
+		}\
+		break;\
+	}\
+	if(instruction->properties & INSTRUCTION_PROPERTY_RESET_STACK){\
+		data->vm_stk_current=stk_start;\
+	}
 
 #define VM_OPERATION_POST(__C_OP__, __METAMETHOD__) \
 	stk_result_op1=--data->vm_stk_current;\

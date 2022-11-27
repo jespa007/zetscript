@@ -123,6 +123,16 @@ namespace zetscript{
 			,const char * _file=""
 			,short _line=-1
 		);
+
+		Symbol				* 	registerMemberPropertyBwc(
+			const zs_string & _property_name
+			 ,ScriptFunctionParam **_params
+			 ,int8_t _params_len
+			, int _idx_return_type
+			,zs_int _ref_ptr // it's the offset from pointer or a pointer directly
+			,const char * _file=""
+			,short _line=-1
+		);
 		//---------------------------------------------------
 		//
 		// FUNCTIONS

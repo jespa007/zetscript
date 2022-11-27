@@ -224,6 +224,23 @@ namespace zetscript{
 					}
 				}
 				continue;
+			case BYTE_CODE_BWC: // ~
+				VM_POP_STK_ONE;
+				if(stk_result_op1->properties & STK_PROPERTY_ZS_INT){ // arithmetic operation
+					VM_PUSH_STK_ZS_INT((~((zs_int)(stk_result_op1->value))));
+				}else{ // try metamethod ...
+					if(!vm_call_metamethod(
+							_vm
+							,_calling_function
+							,instruction
+							,BYTE_CODE_METAMETHOD_BWC
+							,stk_result_op1
+							,NULL
+					)){
+						return;
+					}
+				}
+				continue;
 			 case BYTE_CODE_INSTANCEOF: // check instance of ...
 				 VM_POP_STK_ONE;
 				switch(instruction->value_op2){
@@ -368,11 +385,17 @@ namespace zetscript{
 			 case BYTE_CODE_NEG_POST_INC:
 				 VM_OPERATION_NEG_POST(++,BYTE_CODE_METAMETHOD_POST_INC);
 				 continue;
+			 case BYTE_CODE_BWC_POST_INC:
+				 VM_OPERATION_BWC_POST(++,BYTE_CODE_METAMETHOD_POST_INC);
+				 continue;
 			 case BYTE_CODE_POST_DEC:
 				 VM_OPERATION_POST(--,BYTE_CODE_METAMETHOD_POST_DEC);
 				 continue;
 			 case BYTE_CODE_NEG_POST_DEC:
 				 VM_OPERATION_NEG_POST(--,BYTE_CODE_METAMETHOD_POST_DEC);
+				 continue;
+			 case BYTE_CODE_BWC_POST_DEC:
+				 VM_OPERATION_BWC_POST(--,BYTE_CODE_METAMETHOD_POST_DEC);
 				 continue;
 			 case BYTE_CODE_PRE_INC:
 				 VM_OPERATION_PRE(++,BYTE_CODE_METAMETHOD_PRE_INC);

@@ -198,6 +198,17 @@ namespace zetscript{
 		);
 
 		/*
+		 * register property bwc
+		 */
+		template <typename C,typename F>
+		void bindMemberPropertyBwc(
+				const zs_string & _property_name
+				,F _ptr_function
+				, const char *registered_file=NULL
+				,short registered_line=-1
+		);
+
+		/*
 		 * register member property post_inc
 		 */
 		template <typename C,typename F>

@@ -38,6 +38,9 @@ namespace zetscript{
 				if(pre_operation==PreOperation::PRE_OPERATION_NEG){
 					pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
 					value=-value;
+				}else if(pre_operation==PreOperation::PRE_OPERATION_BWC){
+					pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
+					value=~value;
 				}
 
 				delete (zs_int *)const_obj;
@@ -49,6 +52,9 @@ namespace zetscript{
 				if(pre_operation==PreOperation::PRE_OPERATION_NEG){
 					pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
 					value_flt=-value_flt;
+				}else if(pre_operation==PreOperation::PRE_OPERATION_BWC){
+					pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
+					value_flt=~((zs_int)(value_flt));
 				}
 
 				delete (zs_float *)const_obj;

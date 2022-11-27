@@ -434,7 +434,7 @@ namespace zetscript{
 		,Instruction 			*	_instruction
 		,StackElement 			*	_stk_result_op1
 		,ByteCodeMetamethod 		_byte_code_metamethod
-		,bool						_pre_negate=false
+		,ByteCodeMetamethod			_pre_operation=BYTE_CODE_METAMETHOD_INVALID
 
 	){
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
@@ -466,13 +466,24 @@ namespace zetscript{
 			METAMETHOD_OPERATION_NOT_FOUND(_byte_code_metamethod); \
 		}\
 
-		if(_pre_negate==true){
+		switch(_pre_operation){
+		case BYTE_CODE_METAMETHOD_NEG:
 			if(ptr_metamethod_members_aux->neg==NULL){\
 				METAMETHOD_OPERATION_NOT_FOUND(BYTE_CODE_METAMETHOD_NEG); \
 			}\
 			symbol_metamethod_pre_operation=ptr_metamethod_members_aux->neg;
-		}else if(ptr_metamethod_members_aux->getter!=NULL){\
-			symbol_metamethod_pre_operation=ptr_metamethod_members_aux->getter;
+			break;
+		case BYTE_CODE_METAMETHOD_BWC:
+			if(ptr_metamethod_members_aux->bwc==NULL){\
+				METAMETHOD_OPERATION_NOT_FOUND(BYTE_CODE_METAMETHOD_BWC); \
+			}\
+			symbol_metamethod_pre_operation=ptr_metamethod_members_aux->bwc;
+			break;
+		default:
+			if(ptr_metamethod_members_aux->getter!=NULL){\
+				symbol_metamethod_pre_operation=ptr_metamethod_members_aux->getter;
+			}
+			break;
 		}
 
 		if(symbol_metamethod_pre_operation != NULL){

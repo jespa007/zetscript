@@ -32,6 +32,11 @@ zetscript::zs_float NumberWrap_num_neg(zetscript::ZetScript *_zs,Number *_this){
 	return -_this->num;
 }
 
+zetscript::zs_float NumberWrap_num_bwc(zetscript::ZetScript *_zs,Number *_this){
+	ZS_UNUSUED_PARAM(_zs);
+	return ~((zetscript::zs_int)(_this->num));
+}
+
 void NumberWrap_num_setter(zetscript::ZetScript *_zs,Number *_this,zetscript::zs_float *_value){
 	ZS_UNUSUED_PARAM(_zs);
 	_this->num=*_value;
@@ -420,6 +425,7 @@ void NumberWrap_register(zetscript::ZetScript *_zs){
 	_zs->bindMemberPropertySetter<Number>("num",NumberWrap_num_setter);
 	_zs->bindMemberPropertyGetter<Number>("num",NumberWrap_num_getter);
 	_zs->bindMemberPropertyNeg<Number>("num",NumberWrap_num_neg);
+	_zs->bindMemberPropertyBwc<Number>("num",NumberWrap_num_bwc);
 	_zs->bindMemberPropertyAddSetter<Number>("num",NumberWrap_num_add_set);
 	_zs->bindMemberPropertySubSetter<Number>("num",NumberWrap_num_sub_set);
 	_zs->bindMemberPropertyMulSetter<Number>("num",NumberWrap_num_mul_set);

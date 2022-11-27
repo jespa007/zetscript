@@ -360,6 +360,25 @@ namespace zetscript{
 			}
 		}
 
+		template <typename C,typename F>
+		void	bindMemberPropertyBwc(
+				const zs_string & _property_name
+				,F ptr_function
+				 , const char *_registered_file=""
+				,short _registered_line=-1
+		){
+			try{
+				script_type_factory->bindMemberPropertyBwc<C>(_property_name,ptr_function, _registered_file,_registered_line );
+			}catch(zs_exception & _ex){
+				ZS_THROW_RUNTIME_ERROR(
+					"Exception in '%s<%s>(\"%s\",...)': %s"
+					,__func__
+					,zs_rtti::demangle(typeid(C).name()).c_str()
+					,_property_name.c_str()
+					,_ex.getDescription()
+				);
+			}
+		}
 
 		template <typename C,typename F>
 		void	bindMemberPropertyAddSetter(

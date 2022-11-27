@@ -616,6 +616,7 @@ namespace zetscript{
 						mp_dst->metamethod_members.pre_inc=mp_src->metamethod_members.pre_inc;
 						mp_dst->metamethod_members.pre_dec=mp_src->metamethod_members.pre_dec;
 						mp_dst->metamethod_members.neg=mp_src->metamethod_members.neg;
+						mp_dst->metamethod_members.bwc=mp_src->metamethod_members.bwc;
 
 						const ByteCodeMetamethod *it_setters=MetamethodMembers::byte_code_metamethod_member_setter_list;
 

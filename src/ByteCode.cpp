@@ -18,6 +18,7 @@ namespace zetscript{
 			case BYTE_CODE_GT:          						return "GT";  // >
 			case BYTE_CODE_GTE:        							return "GTE"; // >=
 			case BYTE_CODE_NEG:         						return "NEG"; // !
+			case BYTE_CODE_BWC:					return "BWC"; // ~
 			case BYTE_CODE_ADD:         						return "ADD"; // +
 			case BYTE_CODE_SUB:         						return "SUB"; // -
 			case BYTE_CODE_LOGIC_AND:   						return "LOGIC_AND"; // &&
@@ -105,8 +106,9 @@ namespace zetscript{
 			case BYTE_CODE_PRE_DEC:								return "PRE_DEC"; // --i
 			case BYTE_CODE_POST_INC:							return "POST_INC"; // i++
 			case BYTE_CODE_NEG_POST_INC:						return "NEG_POST_INC"; // -i++
+			case BYTE_CODE_BWC_POST_INC:			return "BWC_POST_INC"; // ~i++
 			case BYTE_CODE_POST_DEC:							return "POST_DEC"; // i--
-			case BYTE_CODE_NEG_POST_DEC:						return "NEG_POST_DEC"; // -i--
+			case BYTE_CODE_BWC_POST_DEC:			return "BWC_POST_DEC"; // ~i--
 			case BYTE_CODE_RESET_STACK:							return "RESET_STACK"; // POP ONE AND IT MARKS END EXPRESSION
 			//case BYTE_CODE_CLEAR_ZERO_POINTERS:					return "CLEAR_ZERO_POINTERS";
 			case BYTE_CODE_TYPEOF:								return "TYPEOF"; // POP ONE AND IT MARKS END EXPRESSION
@@ -130,6 +132,7 @@ namespace zetscript{
 			case BYTE_CODE_GT:          			return ">";  // >
 			case BYTE_CODE_GTE:        				return ">="; // >=
 			case BYTE_CODE_NEG:         			return "-"; // -
+			case BYTE_CODE_BWC:		return "~"; // ~
 			case BYTE_CODE_ADD:         			return "+"; // +
 			case BYTE_CODE_SUB:         			return "-"; // -
 			case BYTE_CODE_LOGIC_AND:   			return "&&"; // &&
@@ -188,8 +191,10 @@ namespace zetscript{
 			case BYTE_CODE_PRE_DEC:					return "PRE_DEC"; // --i
 			case BYTE_CODE_POST_INC:				return "POST_INC"; // i++
 			case BYTE_CODE_NEG_POST_INC:			return "NEG_POST_INC"; // -i++
+			case BYTE_CODE_BWC_POST_INC:	return "BWC_POST_INC"; // ~i++
 			case BYTE_CODE_POST_DEC:				return "POST_DEC"; // i--
 			case BYTE_CODE_NEG_POST_DEC:			return "NEG_POST_DEC"; // -i--
+			case BYTE_CODE_BWC_POST_DEC:			return "BWC_POST_DEC"; // ~i--
 			case BYTE_CODE_RESET_STACK:				return "RESET_STACK"; // POP ONE AND IT MARKS END EXPRESSION
 			//case BYTE_CODE_CLEAR_ZERO_POINTERS:		return "CLEAR_ZERO_POINTERS"; // POP ONE AND IT MARKS END EXPRESSION
 			case BYTE_CODE_TYPEOF:					return "typeof"; // POP ONE AND IT MARKS END EXPRESSION
@@ -211,6 +216,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_GT:		return  ">";  		// >
 			case	BYTE_CODE_METAMETHOD_GTE:		return  ">="; 		// >=
 			case	BYTE_CODE_METAMETHOD_NEG:		return  "-"; 		// -a
+			case	BYTE_CODE_METAMETHOD_BWC:		return  "~"; 		// -a
 			case	BYTE_CODE_METAMETHOD_ADD:		return  "+"; 		// +
 			case	BYTE_CODE_METAMETHOD_SUB:		return  "-"; 		// -
 			case	BYTE_CODE_METAMETHOD_DIV:		return  "/"; 		// /
@@ -257,6 +263,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_GT:		return  "_gt";  	// >
 			case	BYTE_CODE_METAMETHOD_GTE:		return  "_gte"; 	// >=
 			case	BYTE_CODE_METAMETHOD_NEG:		return  "_neg"; 	// -a, !a
+			case	BYTE_CODE_METAMETHOD_BWC:		return  "_btw"; 	// ~a
 			case	BYTE_CODE_METAMETHOD_ADD:		return  "_add"; 	// +
 			case	BYTE_CODE_METAMETHOD_SUB:		return  "_sub"; 	// -
 			case	BYTE_CODE_METAMETHOD_DIV:		return  "_div"; 	// /
@@ -302,6 +309,7 @@ namespace zetscript{
 			case BYTE_CODE_METAMETHOD_PRE_DEC:
 			case BYTE_CODE_METAMETHOD_NOT:
 			case BYTE_CODE_METAMETHOD_NEG:
+			case BYTE_CODE_METAMETHOD_BWC:
 				return 0;
 			case BYTE_CODE_METAMETHOD_ADD_SET:
 			case BYTE_CODE_METAMETHOD_SUB_SET:
