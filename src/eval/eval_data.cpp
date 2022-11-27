@@ -338,7 +338,7 @@ namespace zetscript{
 	bool 	is_operator_logic_gte(const char *s)				{return ((*s=='>') && (*(s+1)=='='));}
 	bool 	is_operator_logic_lte(const char *s)				{return ((*s=='<') && (*(s+1)=='='));}
 	bool 	is_operator_logic_not(const char *s)				{return ((*s=='!') && (*(s+1)!='='));}
-	bool 	is_operator_bitwise_complement(const char *s)		{return ((*s=='~') && (*(s+1)!='='));}
+	bool 	is_operator_bwc(const char *s)						{return (*s=='~');}
 
 	bool 	is_operation_dec(const char *s)						{return ((*s=='-') && (*(s+1)=='-'));}
 	bool 	is_operation_inc(const char *s)						{return ((*s=='+') && (*(s+1)=='+'));}
@@ -866,7 +866,7 @@ namespace zetscript{
 		eval_data_pre_operations[PRE_OPERATION_TYPEOF]={PRE_OPERATION_TYPEOF, "typeof",is_operator_typeof};
 		eval_data_pre_operations[PRE_OPERATION_POS]={PRE_OPERATION_POS, "+",is_operator_add};
 		eval_data_pre_operations[PRE_OPERATION_NEG]={PRE_OPERATION_NEG, "-",is_operator_sub};
-		eval_data_pre_operations[PRE_OPERATION_BWC]={PRE_OPERATION_BWC, "~",is_operator_bitwise_complement};
+		eval_data_pre_operations[PRE_OPERATION_BWC]={PRE_OPERATION_BWC, "~",is_operator_bwc};
 		eval_data_pre_operations[PRE_OPERATION_DEC]={PRE_OPERATION_DEC, "--",is_operation_dec};
 		eval_data_pre_operations[PRE_OPERATION_INC]={PRE_OPERATION_INC, "++",is_operation_inc};
 		eval_data_pre_operations[PRE_OPERATION_DEC_INC_INVALID]={PRE_OPERATION_DEC_INC_INVALID, "+-/-+",is_operation_dec_inc_invalid};

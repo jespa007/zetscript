@@ -53,8 +53,12 @@ namespace zetscript{
 					pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
 					value_flt=-value_flt;
 				}else if(pre_operation==PreOperation::PRE_OPERATION_BWC){
-					pre_operation=PreOperation::PRE_OPERATION_UNKNOWN; // --> already consumed
-					value_flt=~((zs_int)(value_flt));
+						EVAL_ERROR_FILE_LINE(
+							eval_data->current_parsing_file
+							,line
+							,"Bitwise complement (~) not allowed for constant float '%f'"
+							,value_flt
+						);
 				}
 
 				delete (zs_float *)const_obj;

@@ -445,11 +445,6 @@ namespace zetscript{
 			stk_start
 		);
 
-		// unref params passed through from native function if any
-		for(int i=0; i < n_deref_native_args; i++){
-			vm_unref_shared_script_object(_vm,deref_native_args[i],ZS_VM_CURRENT_SCOPE_BLOCK);
-		}
-
 		if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
 			vm_check_cyclic_references(_vm);
 		}
@@ -506,6 +501,11 @@ namespace zetscript{
 			}
 		}
 
+		// unref params passed through from native function if any
+		for(int i=0; i < n_deref_native_args; i++){
+			vm_unref_shared_script_object(_vm,deref_native_args[i],deref_native_args[i]->shared_pointer->data.vm_scope_block_where_created);
+		}
+
 		// Important restore stk!
 		data->vm_stk_current=stk_start;
 
@@ -513,7 +513,6 @@ namespace zetscript{
 		if(first_script_call_from_c==true){
 			data->vm_current_scope_function=ZS_VM_SCOPE_FUNCTION_MAIN;
 		}
-
 
 		return stk_return;
 	}

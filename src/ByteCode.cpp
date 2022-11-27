@@ -132,7 +132,7 @@ namespace zetscript{
 			case BYTE_CODE_GT:          			return ">";  // >
 			case BYTE_CODE_GTE:        				return ">="; // >=
 			case BYTE_CODE_NEG:         			return "-"; // -
-			case BYTE_CODE_BWC:		return "~"; // ~
+			case BYTE_CODE_BWC:						return "~"; // ~
 			case BYTE_CODE_ADD:         			return "+"; // +
 			case BYTE_CODE_SUB:         			return "-"; // -
 			case BYTE_CODE_LOGIC_AND:   			return "&&"; // &&
