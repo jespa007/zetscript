@@ -17,10 +17,7 @@ namespace zetscript{
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
 		ContainerSlot				*		dst_container_slot=NULL;
-		//void 						*		stk_src_ref_value_copy_aux=NULL;
 		StackElement 				*		stk_result_op2=NULL;
-		//zs_int 						*		stk_src_ref_value=NULL;
-		//zs_int 						*		stk_dst_ref_value=NULL;
 		ScriptObject 				*		so_aux=NULL;
 		StackMemberProperty 		*		stk_mp_aux=NULL;
 		ScriptFunction 				*		ptr_function_found=NULL;
@@ -177,35 +174,6 @@ namespace zetscript{
 			}
 
 			StackElement old_stk_dst = *stk_dst; // save dst_var to check after assignment...
-
-			//stk_src_ref_value_copy_aux=NULL;//copy aux in case of the var is c and primitive (we have to update value on save)
-			//stk_src_ref_value=&stk_src->value;
-			//stk_dst_ref_value=&stk_dst->value;
-			/*if(stk_dst->properties & STK_PROPERTY_IS_C_VAR_PTR){ // dst is a C pointer
-				// particular case
-				if(
-						stk_dst->properties != stk_src->properties
-					&& (((stk_dst->properties & STK_PROPERTY_ZS_CHAR_PTR) && (stk_src->properties & STK_PROPERTY_ZS_INT))==0)){
-
-					 if(stk_dst->properties != stk_src->properties){
-						if(GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_dst->properties) != GET_STK_PROPERTY_PRIMITIVE_TYPES(stk_src->properties)
-						){
-							// check particular case
-							ZS_VM_STOP_EXECUTE(
-								"Symbol '%s': different types! dst var is native (i.e embedd C++) and cannot change its type. dest and src must be equals"
-								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
-							);
-						}else{ // is object
-							ZS_VM_STOP_EXECUTEF(
-								"Assign native C scriptvar is not allowed to avoid memory leaks. Define '=' operator (aka set metamethod) in order to perform assign operation"
-							);
-						}
-					}
-				}
-				// value is already a pointer
-				stk_dst_ref_value=(zs_int *)((stk_dst)->value);
-				stk_src_ref_value_copy_aux=&((stk_dst)->value);
-			}*/
 			stk_src_properties=stk_src->properties;
 
 			// init stk_dst
@@ -217,8 +185,12 @@ namespace zetscript{
 				stk_dst->value=0;
 				stk_dst->properties=STK_PROPERTY_NULL;
 			}else if(stk_src_properties & STK_PROPERTY_ZS_INT){
-				stk_dst->value=stk_src->value;
-				stk_dst->properties=STK_PROPERTY_ZS_INT;
+				if((stk_dst->properties & STK_PROPERTY_ZS_CHAR_PTR)==0){
+					stk_dst->value=stk_src->value;
+					stk_dst->properties=STK_PROPERTY_ZS_INT;
+				}else{
+					*((zs_char *)stk_dst->value)=stk_src->value;
+				}
 			}else if(stk_src_properties & STK_PROPERTY_ZS_FLOAT){
 				stk_dst->properties=STK_PROPERTY_ZS_FLOAT;
 				stk_dst->value=0; // reset value
@@ -336,12 +308,9 @@ namespace zetscript{
 				){
 
 				ContainerSlot::deleteContainerSlot((ContainerSlot *)old_stk_dst.value);
+#ifdef __ZS_LOG_CONTAINER_SLOT__
 				printf("Unassigns container slot by '%s'\n",stk_to_typeof_str(data->zs,stk_src).c_str());
-
-				// avoid deallocates twice
-				/*if((zs_int)dst_container_slot == old_stk_dst.properties){
-					dst_container_slot=NULL;
-				}*/
+#endif
 			}
 		}
 
