@@ -181,11 +181,27 @@ namespace zetscript{
 		   return zs_string(float_str);
 		}
 
+		char  to_lower(char _ch){
+			if('A' <= _ch && _ch <= 'Z'){
+				 //Only if it's a upper letter
+				return 'a'+(_ch-'A');
+			}
+			return _ch;
+		}
+
+		char  to_upper(char _ch){
+	        if( 'a' <= _ch && _ch <= 'z'){
+	        	//Only if it's a lower letter
+	            return 'A'+(_ch - 'a');
+			}
+			return _ch;
+		}
+
 		zs_string to_lower(const zs_string & str){
 
 			zs_string ret = str;
 			for(int short l = 0; l < ret.length();l++){
-				ret[l] = tolower(ret[l]);
+				ret[l] = to_lower(ret[l]);
 			}
 			return ret;
 		}
@@ -194,7 +210,7 @@ namespace zetscript{
 
 			zs_string ret = str;
 			for(int short l = 0; l < ret.length();l++)
-				ret[l] = toupper(ret[l]);
+				ret[l] = to_upper(ret[l]);
 			return ret;
 		}
 
@@ -278,7 +294,7 @@ namespace zetscript{
 
 
 		bool is_hexa_digit(char c){
-			return ((('0' <= c) && (c<='9')) || ('a'<=(tolower(c))&&(tolower(c)<='f')));
+			return ((('0' <= c) && (c<='9')) || ('a'<=(to_lower(c))&&(to_lower(c)<='f')));
 		}
 
 		char *advance_digits(char *aux_p){
@@ -317,7 +333,7 @@ namespace zetscript{
 			case '-': str++; // negative numbers ...
 					   break;
 			case '0':
-					  if(tolower(*(str+1))=='x')  {
+					  if(to_lower(*(str+1))=='x')  {
 						  isHexa = true;
 						  str+=2;
 					  }
