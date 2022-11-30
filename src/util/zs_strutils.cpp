@@ -189,28 +189,12 @@ namespace zetscript{
 			return _ch;
 		}
 
-		char  to_upper(char _ch){
-	        if( 'a' <= _ch && _ch <= 'z'){
-	        	//Only if it's a lower letter
-	            return 'A'+(_ch - 'a');
-			}
-			return _ch;
-		}
-
 		zs_string to_lower(const zs_string & str){
 
 			zs_string ret = str;
 			for(int short l = 0; l < ret.length();l++){
 				ret[l] = to_lower(ret[l]);
 			}
-			return ret;
-		}
-
-		zs_string to_upper(const zs_string & str){
-
-			zs_string ret = str;
-			for(int short l = 0; l < ret.length();l++)
-				ret[l] = to_upper(ret[l]);
 			return ret;
 		}
 
