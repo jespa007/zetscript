@@ -26,9 +26,9 @@ namespace zetscript{
 	);
 
 	void vm_throw_error_cannot_find_symbol(
-			VirtualMachine *vm
-			,ScriptFunction *calling_function
-			,Instruction *instruction
+			VirtualMachine *_vm
+			,ScriptFunction *_script_function
+			,Instruction *_instruction
 	);
 
 	bool vm_byte_code_delete(
@@ -43,7 +43,7 @@ namespace zetscript{
 	void vm_execute_script_function(
 			VirtualMachine			* _vm,
 			ScriptObject			* _this_object,
-			ScriptFunction 			* _calling_function,
+			ScriptFunction 			* _script_function,
 			StackElement 		  	* _stk_local_var
 	    ){
 		// This is the main script function body, and due there's a lot of code, is important to reuse as many variables as possible
@@ -52,7 +52,7 @@ namespace zetscript{
 		//
 		// generic vars for management
 		VirtualMachineData 		*	data = (VirtualMachineData*)_vm->data;
-		Instruction 			*	instruction=_calling_function->instructions; // starting instruction
+		Instruction 			*	instruction=_script_function->instructions; // starting instruction
 		ScriptObject 			*	so_aux=NULL;
 		StackElement 			*	stk_result_op1=NULL;
 		StackElement 			*	stk_result_op2=NULL;
@@ -63,8 +63,8 @@ namespace zetscript{
 
 		uint32_t 					msk_properties=0;
 
-		Instruction 			*	instruction_it=_calling_function->instructions;
-		StackElement 			*	stk_start=_stk_local_var+_calling_function->local_variables->size();   // <-- here starts stk for aux vars for operations ..
+		Instruction 			*	instruction_it=_script_function->instructions;
+		StackElement 			*	stk_start=_stk_local_var+_script_function->local_variables->size();   // <-- here starts stk for aux vars for operations ..
 
 		if (ZS_IDX_VM_CURRENT_SCOPE_FUNCTION >= VM_FUNCTION_CALL_MAX) {
 			ZS_VM_ERROR_AND_RETF("Reached max stack");
@@ -73,7 +73,7 @@ namespace zetscript{
 
 		data->vm_stk_current = stk_start;
 
-		if(((stk_start-data->vm_stack)+_calling_function->min_code_stack_needed)>=VM_STACK_MAX){
+		if(((stk_start-data->vm_stack)+_script_function->min_code_stack_needed)>=VM_STACK_MAX){
 			data->vm_error_max_stack_reached=true;
 			ZS_VM_STOP_EXECUTEF("Error MAXIMUM stack size reached");
 		}
@@ -89,9 +89,9 @@ namespace zetscript{
 
 
 		// init local variables symbols (except arguments) as undefined
-		if((_calling_function->idx_script_function != ZS_IDX_SCRIPT_FUNCTION_MAIN)){
-			VM_PUSH_SCOPE(_calling_function->scope_script_function);
-			for(int i=_calling_function->params_len; i <(int)_calling_function->local_variables->size(); i++){
+		if((_script_function->idx_script_function != ZS_IDX_SCRIPT_FUNCTION_MAIN)){
+			VM_PUSH_SCOPE(_script_function->scope_script_function);
+			for(int i=_script_function->params_len; i <(int)_script_function->local_variables->size(); i++){
 				STK_SET_UNDEFINED(_stk_local_var+ i);
 			}
 		}
@@ -195,7 +195,7 @@ namespace zetscript{
 				}else{
 					if(vm_call_metamethod(
 						_vm
-						,_calling_function
+						,_script_function
 						,instruction
 						,BYTE_CODE_METAMETHOD_NOT
 						,stk_result_op1
@@ -214,7 +214,7 @@ namespace zetscript{
 				}else{ // try metamethod ...
 					if(!vm_call_metamethod(
 							_vm
-							,_calling_function
+							,_script_function
 							,instruction
 							,BYTE_CODE_METAMETHOD_NEG
 							,stk_result_op1
@@ -231,7 +231,7 @@ namespace zetscript{
 				}else{ // try metamethod ...
 					if(!vm_call_metamethod(
 							_vm
-							,_calling_function
+							,_script_function
 							,instruction
 							,BYTE_CODE_METAMETHOD_BWC
 							,stk_result_op1
@@ -245,7 +245,7 @@ namespace zetscript{
 				 VM_POP_STK_ONE;
 				switch(instruction->value_op2){
 				case ZS_IDX_UNDEFINED:
-					ZS_VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(_calling_function,instruction));
+					ZS_VM_STOP_EXECUTE("type '%s' does not exist ",SFI_GET_SYMBOL_NAME(_script_function,instruction));
 					break;
 				case IDX_TYPE_ZS_INT_C:
 					VM_PUSH_STK_BOOLEAN((stk_result_op1->properties & STK_PROPERTY_ZS_INT)!=0);
@@ -447,7 +447,7 @@ namespace zetscript{
 			case BYTE_CODE_STORE:
 				if(vm_store(
 					_vm
-					,_calling_function
+					,_script_function
 					,instruction
 				)==false){
 					return;
@@ -469,7 +469,7 @@ namespace zetscript{
 				if(vm_call(
 						_vm
 						,_this_object
-						,_calling_function
+						,_script_function
 						,instruction
 						,_stk_local_var
 				)==false){
@@ -499,7 +499,7 @@ namespace zetscript{
 
 					if(so_aux->idx_script_type>=IDX_TYPE_SCRIPT_OBJECT_CLASS){
 						so_class_aux1=(ClassScriptObject *)so_aux;
-						so_class_aux1->info_function_new=_calling_function;
+						so_class_aux1->info_function_new=_script_function;
 						so_class_aux1->instruction_new=instruction;
 					}
 					(*data->vm_stk_current++)={(zs_int)so_aux,STK_PROPERTY_SCRIPT_OBJECT};
@@ -507,7 +507,7 @@ namespace zetscript{
 			 case  BYTE_CODE_NEW_OBJECT_BY_VALUE:
 				 	 if(vm_byte_code_new_object_by_value(
 							_vm
-							,_calling_function
+							,_script_function
 							,instruction
 			 		)==false){
 						return;
@@ -555,7 +555,7 @@ namespace zetscript{
 				if(vm_iterator_init(
 						_vm
 						,_this_object
-						,_calling_function
+						,_script_function
 						,instruction
 						,_stk_local_var
 				)==false){
@@ -568,7 +568,7 @@ namespace zetscript{
 				 if(vm_perform_in_operator(
 						 _vm
 						 ,_this_object
-						 ,_calling_function
+						 ,_script_function
 						 ,instruction
 						 ,_stk_local_var
 				)==false){
@@ -582,7 +582,7 @@ namespace zetscript{
 					if(vm_push_container_item(
 							 _vm
 							 ,_this_object
-							 ,_calling_function
+							 ,_script_function
 							 ,instruction
 							 ,_stk_local_var
 							 ,false
@@ -594,7 +594,7 @@ namespace zetscript{
 					if(vm_push_container_item(
 							 _vm
 							 ,_this_object
-							 ,_calling_function
+							 ,_script_function
 							 ,instruction
 							 ,_stk_local_var
 							 , true
@@ -608,7 +608,7 @@ namespace zetscript{
 					if(vm_load_vector_item(
 						 _vm
 						 ,_this_object
-						 ,_calling_function
+						 ,_script_function
 						 ,instruction
 						 ,_stk_local_var
 					)==false){
@@ -651,7 +651,7 @@ namespace zetscript{
 					if(vm_load_field(
 							_vm
 							,_this_object
-							,_calling_function
+							,_script_function
 							,&instruction_it
 					)==false){
 						return;
@@ -661,7 +661,7 @@ namespace zetscript{
 			case BYTE_CODE_UNRESOLVED_CALL:
 				vm_print_main_error(\
 						_vm\
-						,_calling_function\
+						,_script_function\
 						,instruction\
 						,VM_MAIN_ERROR_CANNOT_FIND_SYMBOL
 				);
@@ -754,7 +754,7 @@ namespace zetscript{
 
 	void vm_print_main_error(
 		VirtualMachine 			*	_vm
-		,ScriptFunction 		*	_calling_function
+		,ScriptFunction 		*	_script_function
 		,Instruction 			*	_instruction
 		,VM_MainError 				_error
 		,StackElement 			*	_stk
@@ -768,12 +768,12 @@ namespace zetscript{
 		case 	VM_MAIN_ERROR_LOAD_PROPERTIES_ERROR:
 			vm_set_file_line_error(\
 				_vm \
-				,SFI_GET_FILE(_calling_function,instruction)\
-				,SFI_GET_LINE(_calling_function,instruction)\
+				,SFI_GET_FILE(_script_function,instruction)\
+				,SFI_GET_LINE(_script_function,instruction)\
 				,"Error performing '%s%s': Cannot perform operation with value as '%s%s%s'"\
-				,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
+				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
-				,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
+				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)
 				,stk_to_str(ZS_VM_STR_AUX_PARAM_0,data->zs,_stk)
 			);
@@ -781,10 +781,10 @@ namespace zetscript{
 		case VM_MAIN_ERROR_METAMETHOD_OPERATION_MEMBER_PROPERTY_NOT_IMPLEMENTED:
 			vm_set_file_line_error(\
 				_vm \
-				,SFI_GET_FILE(_calling_function,instruction)\
-				,SFI_GET_LINE(_calling_function,instruction)\
+				,SFI_GET_FILE(_script_function,instruction)\
+				,SFI_GET_LINE(_script_function,instruction)\
 				,"Member property '%s' not implements metamethod '%s' (aka '%s') " \
-				,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)\
+				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
 				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)\
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)\
 			);\
@@ -792,10 +792,10 @@ namespace zetscript{
 		case VM_MAIN_ERROR_METAMETHOD_OPERATION_SYMBOL_NOT_IMPLEMENTED:
 			vm_set_file_line_error(\
 				_vm \
-				,SFI_GET_FILE(_calling_function,instruction)\
-				,SFI_GET_LINE(_calling_function,instruction)\
+				,SFI_GET_FILE(_script_function,instruction)\
+				,SFI_GET_LINE(_script_function,instruction)\
 				,"Symbol '%s' as type '%s' not implements metamethod '%s' (aka '%s') " \
-				,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)\
+				,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)\
 				,stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,_stk) \
 				,byte_code_metamethod_to_symbol_str(_byte_code_metamethod)\
 				,byte_code_metamethod_to_operator_str(_byte_code_metamethod)\
@@ -804,7 +804,7 @@ namespace zetscript{
 		case VM_MAIN_ERROR_CANNOT_FIND_SYMBOL:
 			{
 
-				const char *__STR_PTR_SYMBOL_TO_FIND__=SFI_GET_SYMBOL_NAME(_calling_function,instruction);
+				const char *__STR_PTR_SYMBOL_TO_FIND__=SFI_GET_SYMBOL_NAME(_script_function,instruction);
 				const char *__STR_PTR_END_CLASS__=NULL;
 
 				if((__STR_PTR_END_CLASS__=strstr(__STR_PTR_SYMBOL_TO_FIND__,"::"))!=NULL){ // static access
@@ -816,16 +816,16 @@ namespace zetscript{
 					if(data->zs->getScriptTypeFactory()->getScriptType(str_script_type) == NULL){
 						vm_set_file_line_error(\
 								_vm \
-								,SFI_GET_FILE(_calling_function,instruction)\
-								,SFI_GET_LINE(_calling_function,instruction)\
+								,SFI_GET_FILE(_script_function,instruction)\
+								,SFI_GET_LINE(_script_function,instruction)\
 								,"type '%s' not exist"
 								,str_script_type
 						);
 					}else{
 						vm_set_file_line_error(\
 								_vm \
-								,SFI_GET_FILE(_calling_function,instruction)\
-								,SFI_GET_LINE(_calling_function,instruction)\
+								,SFI_GET_FILE(_script_function,instruction)\
+								,SFI_GET_LINE(_script_function,instruction)\
 								,"static symbol '%s::%s' not exist"
 								,str_script_type
 								,__STR_PTR_END_CLASS__+2
@@ -834,8 +834,8 @@ namespace zetscript{
 				}else{
 					vm_set_file_line_error(\
 							_vm \
-							,SFI_GET_FILE(_calling_function,instruction)\
-							,SFI_GET_LINE(_calling_function,instruction)\
+							,SFI_GET_FILE(_script_function,instruction)\
+							,SFI_GET_LINE(_script_function,instruction)\
 							,"Symbol '%s' not defined"
 							,__STR_PTR_SYMBOL_TO_FIND__
 					);

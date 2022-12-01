@@ -6,7 +6,7 @@ namespace zetscript{
 	bool vm_iterator_init(
 			VirtualMachine 		*	_vm
 			,ScriptObject 		*	_this_object
-			,ScriptFunction 	*	_calling_function
+			,ScriptFunction 	*	_script_function
 			,Instruction 		*	_instruction
 			,StackElement 		*	_stk_local_var
 	){
@@ -33,7 +33,7 @@ namespace zetscript{
 			//ZS_VM_ERROR("internal: Expected object");
 			if((data->vm_stk_current->properties & (STK_PROPERTY_SCRIPT_OBJECT|STK_PROPERTY_CONTAINER_SLOT)) == 0){
 				ZS_VM_ERROR("Variable '%s' as type '%s' it doesn't implements iterator"
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					,stk_to_str(data->zs,data->vm_stk_current).c_str()
 				);
 				return false;
@@ -132,7 +132,7 @@ namespace zetscript{
 	bool vm_perform_in_operator(
 			VirtualMachine 	*_vm
 			,ScriptObject 	*_this_object
-			,ScriptFunction *_calling_function
+			,ScriptFunction *_script_function
 			,Instruction 	*_instruction
 			,StackElement 	*_stk_local_var
 	){
@@ -193,7 +193,7 @@ namespace zetscript{
 			default:
 				if(vm_call_metamethod(
 						_vm,
-						_calling_function,
+						_script_function,
 						_instruction,
 						BYTE_CODE_METAMETHOD_IN,
 						stk_result_op2,

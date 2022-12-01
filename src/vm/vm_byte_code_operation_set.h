@@ -36,7 +36,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	default:\
 		if(!vm_call_metamethod_set(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -71,7 +71,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	default:\
 		if(!vm_call_metamethod_set(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -117,7 +117,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	default:\
 		if(!vm_call_metamethod_set(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -164,7 +164,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	default:\
 		if(!vm_call_metamethod_set(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\
@@ -184,7 +184,7 @@ if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_result_op2)){ /*src stk*/ \
 	}else{\
 		if(!vm_call_metamethod_set(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			,stk_result_op1\
 			,stk_result_op2\

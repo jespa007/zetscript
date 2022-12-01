@@ -62,7 +62,7 @@ namespace zetscript{
 	ScriptFunction * vm_find_native_function(
 			VirtualMachine 		*	_vm
 			,ScriptType 		*	_class_obj // if NULL is MainClass
-			,ScriptFunction 	*	_calling_function
+			,ScriptFunction 	*	_script_function
 			,Instruction 		* 	_instruction // call instruction
 			,bool 					_is_constructor
 			,const zs_string 	& 	_symbol_to_find
@@ -320,7 +320,7 @@ namespace zetscript{
 
 	void  vm_execute_native_function(
 			VirtualMachine 			*	_vm,
-			const ScriptFunction 	*	_calling_function,
+			const ScriptFunction 	*	_script_function,
 			Instruction 			*	_instruction,
 			ScriptObject  			* 	_this_object,
 			const ScriptFunction 	*	_c_function,

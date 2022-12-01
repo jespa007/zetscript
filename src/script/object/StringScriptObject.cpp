@@ -83,30 +83,42 @@ namespace zetscript{
 	}
 
 
-	StringScriptObject * StringScriptObject::format(ZetScript *zs, StackElement *stk_str_obj, StackElement *args){
+	StringScriptObject * StringScriptObject::format(
+			ZetScript *_zs,
+			StackElement *_stk
+			, StackElement *_stk_args
+	){
 
 		zs_string str_input;
 		zs_string str_result;
+		StackElement stk=*_stk;
 		VectorScriptObject *sov=NULL;
 		zs_string str_num_aux;
 		bool error=false;
 		char str_error[512]={0};
 		zs_int *ptr_idx_num=NULL;
 
-		if(stk_str_obj->properties & STK_PROPERTY_SCRIPT_OBJECT){
+
+
+		if(stk.properties & STK_PROPERTY_CONTAINER_SLOT){
+			stk.value=(zs_int)(((ContainerSlot *)stk.value)->getSrcContainerRef());
+			stk.properties=STK_PROPERTY_SCRIPT_OBJECT;
+		}
+
+		if(stk.properties & STK_PROPERTY_SCRIPT_OBJECT){
 			// transform '\"' to '"','\n' to carry returns, etc
-			str_input=zs_strutils::unescape(((ScriptObject *)stk_str_obj->value)->toString());
+			str_input=zs_strutils::unescape(((ScriptObject *)stk.value)->toString());
 		}
 		else{
-			str_input=stk_to_str(zs, stk_str_obj);
+			str_input=stk_to_str(_zs, &stk);
 		}
 
-		if(args->properties & STK_PROPERTY_PTR_STK){
-			args=(StackElement *)args->value;
+		if(_stk_args->properties & STK_PROPERTY_PTR_STK){
+			_stk_args=(StackElement *)_stk_args->value;
 		}
 
-		if(args->properties & STK_PROPERTY_SCRIPT_OBJECT){
-			ScriptObject *so=(ScriptObject *)args->value;
+		if(_stk_args->properties & STK_PROPERTY_SCRIPT_OBJECT){
+			ScriptObject *so=(ScriptObject *)_stk_args->value;
 			if(so->idx_script_type == IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 				sov=(VectorScriptObject *)so;
 			}
@@ -206,12 +218,21 @@ namespace zetscript{
 
 							if(idx_num >=0 && idx_num<(int)sov->length()){ // print
 								zs_string str_format_results="";
-								StackElement *stk_arg=sov->getUserElementAt(idx_num);
+								StackElement stk_arg=*sov->getUserElementAt(idx_num);
 
-								if(stk_arg->properties & STK_PROPERTY_SCRIPT_OBJECT){
-									str_format_results=((ScriptObject *)stk_arg->value)->toString();
+								if(stk_arg.properties & STK_PROPERTY_CONTAINER_SLOT){
+									stk_arg.value=(zs_int)(((ContainerSlot *)stk_arg.value)->getSrcContainerRef());
+									stk_arg.properties=STK_PROPERTY_SCRIPT_OBJECT;
+								}
+
+								if(stk_arg.properties & STK_PROPERTY_SCRIPT_OBJECT){
+									str_format_results=((ScriptObject *)stk_arg.value)->toString();
 								}else{
-									str_format_results=stk_to_str(zs,stk_arg,ptr_str_format_string);
+									str_format_results=stk_to_str(
+										_zs
+										,&stk_arg
+										,ptr_str_format_string
+									);
 								}
 
 								// set padding
@@ -254,12 +275,11 @@ namespace zetscript{
 		}
 
 		if(error){
-			vm_set_error(zs->getVirtualMachine(),str_error);
+			vm_set_error(_zs->getVirtualMachine(),str_error);
 			return NULL;
 		}
 
-		//StringScriptObject *str_in=(StringScriptObject *)(str->var_ref);
-		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(zs);
+		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
 		str_out->set(str_result);//str_in->default_str_value;
 
 

@@ -61,7 +61,7 @@ namespace zetscript{
 	StackElement vm_execute(
 		VirtualMachine 	*	_vm
 		,ScriptObject 	*	_this_object
-		,ScriptFunction *	_calling_function
+		,ScriptFunction *	_script_function
 		,StackElement 	*  	_stk_params=NULL
 		,unsigned char		_n_stk_params=0
 		,unsigned short 	_properties=0
@@ -72,7 +72,7 @@ namespace zetscript{
 	void vm_execute_script_function(
 			VirtualMachine			* _vm,
 			ScriptObject			* _this_object,
-			ScriptFunction 			* _calling_function,
+			ScriptFunction 			* _script_function,
 			StackElement 		  	* _stk_local_var
 	);
 
@@ -84,7 +84,7 @@ namespace zetscript{
 
 	void  vm_execute_native_function(
 		VirtualMachine 			*	_vm,
-		const ScriptFunction 	*	_calling_function,
+		const ScriptFunction 	*	_script_function,
 		Instruction 			*	_instruction,
 		ScriptObject  			* 	_this_object,
 		const ScriptFunction 	*	_c_function,
@@ -95,7 +95,7 @@ namespace zetscript{
 	void vm_execute_script_function(
 		VirtualMachine 		*	_vm,
 		ScriptObject		* 	_this_object,
-		ScriptFunction 		* 	_calling_function,
+		ScriptFunction 		* 	_script_function,
 		StackElement 		*	_stk_local_var
 	);
 

@@ -15,7 +15,7 @@
 		if((_stk_result=vm_load_this_element(\
 			_vm\
 			,_this_object\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			, _offset\
 		))==NULL){\

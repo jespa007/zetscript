@@ -17,9 +17,21 @@ namespace zetscript{
 		//
 		// Helpers
 		//
-		static StringScriptObject * newStringScriptObject(ZetScript *_zs, const zs_string &_str="");
-		static StringScriptObject * newStringScriptObjectAddStk(ZetScript *_zs,StackElement *_stk_result_op1,StackElement *_stk_result_op2);
-		static StringScriptObject * format(ZetScript *_zs,StackElement *_str, StackElement *_args);
+		static StringScriptObject * newStringScriptObject(
+			ZetScript *_zs
+			, const zs_string &_str=""
+		);
+
+		static StringScriptObject * newStringScriptObjectAddStk(
+			ZetScript *_zs
+			,StackElement *_stk_result_op1
+			,StackElement *_stk_result_op2
+		);
+
+		static StringScriptObject * format(
+			ZetScript *_zs,StackElement *_stk
+			, StackElement *_args
+		);
 
 		//
 		// Helpers

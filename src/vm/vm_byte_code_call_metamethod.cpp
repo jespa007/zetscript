@@ -5,7 +5,7 @@
 namespace zetscript{
 	bool vm_call_metamethod(
 		VirtualMachine 		*	_vm
-		,ScriptFunction 	*	_calling_function
+		,ScriptFunction 	*	_script_function
 		,Instruction 		*	_instruction
 		,ByteCodeMetamethod 	_byte_code_metamethod
 		,StackElement 		*	_stk_result_op1
@@ -118,7 +118,7 @@ namespace zetscript{
 			if((ptr_function_found = vm_find_native_function(
 				_vm
 				,data->script_type_factory->getScriptType(script_object->idx_script_type)
-				,_calling_function
+				,_script_function
 				,instruction
 				,false
 				,str_symbol_metamethod
@@ -183,7 +183,7 @@ namespace zetscript{
 		}else{ //
 			vm_execute_native_function(
 					_vm
-					,_calling_function
+					,_script_function
 					,instruction
 					,_is_static ? NULL:script_object
 					,ptr_function_found
@@ -275,7 +275,7 @@ namespace zetscript{
 
 	bool vm_call_metamethod_set(
 			VirtualMachine 			*	_vm
-			,ScriptFunction 		*	_calling_function
+			,ScriptFunction 		*	_script_function
 			,Instruction 			*	_instruction
 			,StackElement 			*	_stk_result_op1
 			,StackElement 			*	_stk_result_op2
@@ -374,7 +374,7 @@ namespace zetscript{
 			if((ptr_function_found=vm_find_native_function( \
 				_vm \
 				,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
-				,_calling_function\
+				,_script_function\
 				,_instruction\
 				,false\
 				,data->vm_str_metamethod_aux
@@ -430,7 +430,7 @@ namespace zetscript{
 
 	bool vm_call_metamethod_operation_post(
 		VirtualMachine 			*	_vm
-		,ScriptFunction 		*	_calling_function
+		,ScriptFunction 		*	_script_function
 		,Instruction 			*	_instruction
 		,StackElement 			*	_stk_result_op1
 		,ByteCodeMetamethod 		_byte_code_metamethod
@@ -520,7 +520,7 @@ lbl_exit_function:
 
 	bool vm_call_metamethod_operation_pre(
 		VirtualMachine 			*	_vm
-		,ScriptFunction 		*	_calling_function
+		,ScriptFunction 		*	_script_function
 		,Instruction 			*	_instruction
 		,StackElement 			*	_stk_result_op1
 		,ByteCodeMetamethod 		_byte_code_metamethod

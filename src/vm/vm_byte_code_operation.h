@@ -78,7 +78,7 @@
 	default:\
 		if(vm_call_metamethod(\
 				_vm\
-				,_calling_function\
+				,_script_function\
 				,instruction\
 				,BYTE_CODE_METAMETHOD_DIV\
 				,stk_result_op1\
@@ -106,7 +106,7 @@
 	default:\
 		if(vm_call_metamethod(\
 				_vm\
-				,_calling_function\
+				,_script_function\
 				,instruction\
 				,BYTE_CODE_METAMETHOD_ADD\
 				,stk_result_op1\
@@ -135,7 +135,7 @@
 	default:\
 		if(vm_call_metamethod(\
 				_vm\
-				,_calling_function\
+				,_script_function\
 				,instruction\
 				,__METAMETHOD__\
 				,stk_result_op1\
@@ -202,7 +202,7 @@
 			stk_aux1=*stk_result_op1, stk_aux2=*stk_result_op2;\
 			if(vm_call_metamethod(\
 				_vm\
-				,_calling_function\
+				,_script_function\
 				,instruction\
 				, __BYTE_CODE_METAMETHOD_OPERATION__\
 				,&stk_aux1\
@@ -245,7 +245,7 @@
 	default:\
 		if(vm_call_metamethod(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			,BYTE_CODE_METAMETHOD_MOD\
 			,stk_result_op1\
@@ -270,7 +270,7 @@
 	}else{\
 		if(vm_call_metamethod(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			, __METAMETHOD__\
 			,stk_result_op1\
@@ -295,7 +295,7 @@
 	default:/*metamethod*/\
 		if(vm_call_metamethod_operation_post(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			,stk_result_op1\
 			,__METAMETHOD__\
@@ -320,7 +320,7 @@
 	default:/*metamethod*/\
 		if(vm_call_metamethod_operation_post(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			,stk_result_op1\
 			,__METAMETHOD__\
@@ -349,7 +349,7 @@
 	default:/*metamethod*/\
 		if(vm_call_metamethod_operation_post(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			,stk_result_op1\
 			,__METAMETHOD__\
@@ -377,7 +377,7 @@
 	default:\
 		if(vm_call_metamethod_operation_pre(\
 			_vm\
-			,_calling_function\
+			,_script_function\
 			,instruction\
 			,stk_result_op1\
 			,__METAMETHOD__\

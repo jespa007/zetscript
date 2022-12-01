@@ -71,17 +71,21 @@ namespace zetscript{
 	zs_string stk_to_str(ZetScript *_zs, StackElement *_stk, const zs_string  & _format ){
 		// PRE: _str_out should allocated a minimum of 100 bytes
 		zs_string result="unknown";
-		bool is_constant=false;
 		StackElement stk=*_stk;
 
 		if(stk.properties & STK_PROPERTY_PTR_STK){
 			stk=*((StackElement *)stk.value);
 		}
 
+		if(stk.properties & STK_PROPERTY_CONTAINER_SLOT){
+			stk.value=(zs_int)(((ContainerSlot *)stk.value)->getSrcContainerRef());
+			stk.properties=STK_PROPERTY_SCRIPT_OBJECT;
+		}
+
 		if(stk.properties & STK_PROPERTY_READ_ONLY){
-			is_constant=true;
 			stk.properties&=~STK_PROPERTY_READ_ONLY;
 		}
+
 		if(STK_VALUE_IS_UNDEFINED(&stk)){
 			result=ZS_TYPE_NAME_UNDEFINED;
 		}else if(STK_VALUE_IS_NULL(&stk)){

@@ -7,7 +7,7 @@ namespace zetscript{
 	bool vm_load_field(
 		VirtualMachine 	*	_vm
 		,ScriptObject 	*	_this_object
-		,ScriptFunction *	_calling_function
+		,ScriptFunction *	_script_function
 		,Instruction 	**	_instruction_it
 	){
 		VirtualMachineData 			*	data=(VirtualMachineData *)_vm->data;
@@ -47,16 +47,16 @@ namespace zetscript{
 			if((instruction-1)->byte_code==BYTE_CODE_LOAD_OBJECT_ITEM){
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access [ ... %s.%s ], expected '%s' as object but is type '%s' %s"
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
 					,zs_strutils::starts_with(stk_to_typeof_str(data->zs,stk_result_op1),"type@")? ". If you are trying to call/access static member of class you need to use static access operator (i.e '::') instead of member access operator (i.e '.')":""
 				);
 			}else{ // from calling
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access '.%s' from variable type '%s'"
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					,stk_to_typeof_str(data->zs,stk_result_op1).c_str()
 				);
 			}
@@ -71,14 +71,14 @@ namespace zetscript{
 
 		if(so_aux == NULL)
 		{
-			ZS_VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(_calling_function,(instruction-1)));
+			ZS_VM_STOP_EXECUTE("var '%s' is not scriptvariable",SFI_GET_SYMBOL_NAME(_script_function,(instruction-1)));
 		}
 
 
 
 	find_element_object:
 
-		str_symbol_aux1=(char *)SFI_GET_SYMBOL_NAME(_calling_function,instruction);
+		str_symbol_aux1=(char *)SFI_GET_SYMBOL_NAME(_script_function,instruction);
 
 		//
 		sc_type=so_aux->getScriptType();
@@ -89,9 +89,9 @@ namespace zetscript{
 				&& ((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION)==0)){
 				ZS_VM_STOP_EXECUTE(
 					"Cannot perform access operation [ ... %s.%s ], because '%s' is a function. It should call function with '()' before '.'"
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction+1)
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction+1)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 				);
 			}
 
@@ -113,9 +113,9 @@ namespace zetscript{
 
 			if(instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION){
 				ZS_VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Member function '%s::%s' is not defined"
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,str_symbol_aux1
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
 					,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
 					,str_symbol_aux1
@@ -140,9 +140,9 @@ namespace zetscript{
 					// Properties from native types or custom internal type through script side cannot be added if not exist, so if not exist throw error.
 					if(so_aux->getScriptType()->properties & SCRIPT_TYPE_PROPERTY_C_OBJECT_REF){
 						ZS_VM_STOP_EXECUTE("Cannot store '...%s.%s', where '%s' is type '%s'. %s property '%s::%s' is not defined"
-							,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
+							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,str_symbol_aux1
-							,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
+							,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 							,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
 							,sc_type->idx_script_type>IDX_TYPE_SCRIPT_OBJECT_OBJECT?"Native type":"Type"
 							,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
@@ -182,9 +182,9 @@ namespace zetscript{
 			if((instruction->properties & INSTRUCTION_PROPERTY_CALLING_FUNCTION) && ((stk_var->properties & STK_PROPERTY_FUNCTION)==0)){
 
 				ZS_VM_STOP_EXECUTE("Error call function '...%s.%s(...)', where '%s' is type '%s'. Expected '%s::%s' as a function but it is type '%s'"
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,(const char *)str_symbol_aux1
-					,SFI_GET_SYMBOL_NAME(_calling_function,instruction-1)
+					,SFI_GET_SYMBOL_NAME(_script_function,instruction-1)
 					,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
 					,stk_to_typeof_str(data->zs,data->vm_stk_current).c_str()
 					,(const char *)str_symbol_aux1
@@ -270,7 +270,7 @@ namespace zetscript{
 	StackElement *vm_load_this_element(
 		VirtualMachine	 		*	_vm
 		,ScriptObject			* 	_this_object
-		,ScriptFunction 		* 	_calling_function
+		,ScriptFunction 		* 	_script_function
 		,Instruction			*	_instruction
 		,short 						_offset
 	){
@@ -299,7 +299,7 @@ namespace zetscript{
 				data->vm_stk_current=stk_back;
 			}else{
 				ZS_VM_STOP_EXECUTE(
-						"Property '%s' does not implements _get metamethod",SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+						"Property '%s' does not implements _get metamethod",SFI_GET_SYMBOL_NAME(_script_function,instruction)
 				);
 			}
 		}
@@ -312,7 +312,7 @@ namespace zetscript{
 	bool vm_push_container_item(
 		VirtualMachine 			*	_vm
 		,ScriptObject 			*	_this_object
-		,ScriptFunction 		*	_calling_function
+		,ScriptFunction 		*	_script_function
 		,Instruction 			*	_instruction
 		,StackElement 			*	_stk_local_var
 		,bool						_dst_container_is_object
@@ -459,7 +459,7 @@ lbl_exit_function:
 	bool vm_load_vector_item(
 			VirtualMachine 	*_vm
 			,ScriptObject 	*_this_object
-			,ScriptFunction *_calling_function
+			,ScriptFunction *_script_function
 			,Instruction 	*_instruction
 			,StackElement 	*_stk_local_var
 

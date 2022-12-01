@@ -5,7 +5,7 @@
 namespace zetscript{
 	bool vm_byte_code_new_object_by_value(
 			VirtualMachine 	*	_vm
-			,ScriptFunction *	_calling_function
+			,ScriptFunction *	_script_function
 			,Instruction 	*	_instruction
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
@@ -39,7 +39,7 @@ namespace zetscript{
 
 				so_class_aux1=(ClassScriptObject *)so_aux;
 
-				so_class_aux1->info_function_new=_calling_function;
+				so_class_aux1->info_function_new=_script_function;
 				so_class_aux1->instruction_new=_instruction;
 
 				// check for constructor
@@ -58,7 +58,7 @@ namespace zetscript{
 
 		 }else{
 			ZS_VM_STOP_EXECUTE("var '%s' expected as 'type' but it was '%s'"
-					,SFI_GET_SYMBOL_NAME(_calling_function,_instruction)
+					,SFI_GET_SYMBOL_NAME(_script_function,_instruction)
 					, stk_to_typeof_str(ZS_VM_STR_AUX_PARAM_0,data->zs,stk_result_op1)
 			);
 		 }

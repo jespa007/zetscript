@@ -348,7 +348,7 @@ namespace zetscript{
 	StackElement vm_execute(
 		VirtualMachine 		*	_vm
 		 ,ScriptObject 		*	_this_object
-		 ,ScriptFunction 	*	_calling_function
+		 ,ScriptFunction 	*	_script_function
 		 ,StackElement 		*  	_stk_params
 		 ,unsigned	char  		_n_stk_params
 		 ,unsigned short		_properties
@@ -360,7 +360,7 @@ namespace zetscript{
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
 		int n_stk_params=_n_stk_params;
 
-		if(_calling_function->instructions == NULL){ // no instructions do not execute
+		if(_script_function->instructions == NULL){ // no instructions do not execute
 			return k_stk_undefined;
 		}
 
@@ -372,7 +372,7 @@ namespace zetscript{
 
 		// calling main funcion
 		if(
-			_calling_function->idx_script_function==ZS_IDX_SCRIPT_FUNCTION_MAIN
+			_script_function->idx_script_function==ZS_IDX_SCRIPT_FUNCTION_MAIN
 		){ // set stack and Init vars for first call...
 
 
@@ -441,7 +441,7 @@ namespace zetscript{
 		vm_execute_script_function(
 			_vm,
 			_this_object,
-			_calling_function,
+			_script_function,
 			stk_start
 		);
 
@@ -467,7 +467,7 @@ namespace zetscript{
 
 			throw_exception_file_line(data->vm_error_file.c_str(),data->vm_error_line,total_error.c_str());
 		}else{
-			int n_returned_arguments_from_function=data->vm_stk_current-(stk_start+(int)_calling_function->local_variables->size());
+			int n_returned_arguments_from_function=data->vm_stk_current-(stk_start+(int)_script_function->local_variables->size());
 
 			if(n_returned_arguments_from_function > 0){
 

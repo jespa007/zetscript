@@ -51,8 +51,13 @@ namespace zetscript{
 		zs_list_node<ContainerSlot *>  		container_slot_node;
 
 		StackElement  					*	ptr_stk;
+
+		// this is the value container ref
 		ContainerScriptObject			*	src_container_ref;
+
+		// this is the slot container ref
 		ContainerScriptObject			*	dst_container_ref;
+
 		zs_int 								id_slot;
 
 		ContainerSlot(

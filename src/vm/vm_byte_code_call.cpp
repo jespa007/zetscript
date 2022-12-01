@@ -5,13 +5,12 @@
 namespace zetscript{
 
 	bool vm_inner_call(
-			VirtualMachine 	*	_vm
-			,ScriptFunction	* 	_calling_function
-			,Instruction	* 	_instruction
-			,ScriptObject 	*	_script_object
-			,ScriptFunction *	_script_function
-			,int 				_n_args
-
+		VirtualMachine 	*	_vm
+		,ScriptFunction	* 	_script_function
+		,Instruction	* 	_instruction
+		,ScriptObject 	*	_script_object
+		,ScriptFunction *	_script_function_to_call
+		,int 				_n_args
 	){
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
 		StackElement 		*	stk_def_afun_start=data->vm_stk_current;
@@ -19,13 +18,13 @@ namespace zetscript{
 		Instruction			*	instruction=_instruction;
 
 
-		if((_script_function)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
+		if((_script_function_to_call)->properties & FUNCTION_PROPERTY_C_OBJECT_REF){
 			vm_execute_native_function(
 					_vm
-					,_calling_function
+					,_script_function
 					,instruction
 					,_script_object
-					,_script_function
+					,_script_function_to_call
 					,stk_def_afun_start
 					,_n_args
 			);
@@ -33,7 +32,7 @@ namespace zetscript{
 			vm_execute_script_function(
 				_vm
 				,_script_object
-				,_script_function
+				,_script_function_to_call
 				,stk_def_afun_start
 			);
 		}
@@ -42,8 +41,8 @@ namespace zetscript{
 			data->vm_error_callstack_str+=zs_strutils::format(
 				"\nat %s (file:%s line:%i)" /* TODO: get full symbol ? */
 				, "_iter"
-				,SFI_GET_FILE(_calling_function,instruction)
-				,SFI_GET_LINE(_calling_function,instruction)
+				,SFI_GET_FILE(_script_function,instruction)
+				,SFI_GET_LINE(_script_function,instruction)
 			);
 			return false;
 			/*if(goto_on_error){
@@ -62,11 +61,11 @@ namespace zetscript{
 	}
 
 	bool vm_call(
-			VirtualMachine 	*	_vm
-			,ScriptObject 	*	_this_object
-			,ScriptFunction *	_calling_function
-			,Instruction 	*	_instruction
-			,StackElement 	*	_stk_local_var
+		VirtualMachine 	*	_vm
+		,ScriptObject 	*	_this_object
+		,ScriptFunction *	_script_function
+		,Instruction 	*	_instruction
+		,StackElement 	*	_stk_local_var
 	){
 		VirtualMachineData 	*	data=(VirtualMachineData *)_vm->data;
 		Symbol				*	symbol_aux=NULL;
@@ -124,9 +123,9 @@ namespace zetscript{
 				 }
 				 if(symbol_aux==NULL){ // it calls overrided function (top-most)
 					 ZS_VM_STOP_EXECUTE("Error call 'this.%s': Cannot find '%s::%s' member function"
-							,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+							,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 							,_this_object->getScriptType()->str_script_type.c_str()
-							,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+							,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					);
 				 }
 				 sf_call_script_function=(ScriptFunction *)(symbol_aux->ref_ptr);
@@ -136,9 +135,9 @@ namespace zetscript{
 				 sf_call_is_constructor=false;
 				 sf_call_is_member_function=false;
 				 sf_call_stk_start_function_object=0;
-				 sf_call_stk_function_ref=_this_object->getProperty(SFI_GET_SYMBOL_NAME(_calling_function,instruction));
+				 sf_call_stk_function_ref=_this_object->getProperty(SFI_GET_SYMBOL_NAME(_script_function,instruction));
 				 if(sf_call_stk_function_ref==NULL){ // it calls overrided function (top-most)
-					 ZS_VM_STOP_EXECUTE("'variable this.%s' not exist", SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+					 ZS_VM_STOP_EXECUTE("'variable this.%s' not exist", SFI_GET_SYMBOL_NAME(_script_function,instruction)
 					);
 				 }
 				 goto load_function;
@@ -201,7 +200,7 @@ load_function:
 				  ZS_VM_STOP_EXECUTE(
 					  "Cannot call function member object '%s' stored in variable '%s' due its own object has been dereferenced"
 					  ,sofm->sf_ref->name_script_function.c_str()
-					  , SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+					  , SFI_GET_SYMBOL_NAME(_script_function,instruction)
 				  );
 			  }
 			  sf_call_calling_object=sofm_object;
@@ -223,27 +222,27 @@ load_function:
 					if(instruction->byte_code==BYTE_CODE_INDIRECT_THIS_CALL){
 
 						ZS_VM_STOP_EXECUTE("Cannot call 'this.%s' as type '%s'. 'this.%s' is not function"
-								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
-								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 
 					}else if(instruction->byte_code==BYTE_CODE_MEMBER_CALL){
 						ZS_VM_STOP_EXECUTE("Cannot call '%s'. '%s' is not function or not exist"
-								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
-								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 					}else if(instruction->byte_code==BYTE_CODE_INDIRECT_LOCAL_CALL){
 						ZS_VM_STOP_EXECUTE("Cannot call '%s' as a function. '%s' is type '%s'"
-								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
-								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
 						);
 					}else{ // STACK CALL
 						ZS_VM_STOP_EXECUTE("Error trying to call a function from stack. StackElement value is '%s' as type '%s'"
 								,stk_to_str(data->zs,sf_call_stk_function_ref).c_str()
 								,stk_to_typeof_str(data->zs,sf_call_stk_function_ref).c_str()
-								,SFI_GET_SYMBOL_NAME(_calling_function,instruction)
+								,SFI_GET_SYMBOL_NAME(_script_function,instruction)
 						);
 					}
 				}
@@ -267,6 +266,9 @@ execute_function:
 
 					int effective_args=sf_call_n_args < sf_call_script_function->params_len ? sf_call_n_args:sf_call_script_function->params_len;
 					ScriptFunctionParam *sf_param=sf_call_script_function->params;
+
+					//-------------------------------------------------------------------------------------
+					// PASS ARGS
 					for(int i=0;i < sf_call_n_args;i++){
 						so_param=NULL; // script object we passing
 						uint16_t sfa_properties=sf_param->properties;// ((ScriptFunctionParam *)(*function_param))->properties;
@@ -299,6 +301,11 @@ execute_function:
 						}else{
 							if(stk_arg->properties & STK_PROPERTY_PTR_STK){ // get its value
 								*stk_arg=*(StackElement *)stk_arg->value;
+							}
+
+							if((stk_arg->properties & STK_PROPERTY_CONTAINER_SLOT)){
+								stk_arg->value=(zs_int)(((ContainerSlot *)stk_arg->value)->getSrcContainerRef());
+								stk_arg->properties=STK_PROPERTY_SCRIPT_OBJECT;
 							}
 
 							if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_arg)==true) { // not passing by ref it gets its value
@@ -354,6 +361,9 @@ execute_function:
 						}
 						stk_arg++;
 					}
+					// PASS ARGS
+					//-------------------------------------------------------------------------------------
+
 				}
 
 				// ... we must set the rest of parameters with default value in case user put less params. If params exceds the number of accepted params in function,
@@ -447,7 +457,7 @@ execute_function:
 						if((sf_aux=vm_find_native_function(
 								_vm
 								,sc
-								,_calling_function
+								,_script_function
 								,instruction
 								,sf_call_is_constructor
 								,sf_call_script_function->name_script_function // symbol to find
@@ -462,7 +472,7 @@ execute_function:
 				try{
 					vm_execute_native_function(
 						_vm
-						,_calling_function
+						,_script_function
 						,instruction
 						,sf_call_calling_object
 						,sf_call_script_function
@@ -485,8 +495,8 @@ execute_function:
 					(
 						(
 							(
-								_calling_function->name_script_function=="assert"
-							||  _calling_function->name_script_function=="error"
+								_script_function->name_script_function=="assert"
+							||  _script_function->name_script_function=="error"
 							)
 							&&
 							(
@@ -496,7 +506,7 @@ execute_function:
 						||
 						(
 							(
-								_calling_function->name_script_function=="eval"
+								_script_function->name_script_function=="eval"
 							&&  sf_call_script_function->name_script_function=="evalNative"
 							)
 						)
@@ -512,14 +522,14 @@ execute_function:
 					){
 						str_class_owner=data->script_type_factory->getScriptType(sf_call_script_function->idx_script_type_owner)->str_script_type.c_str();
 					}
-					const char * file_src_call=SFI_GET_FILE(_calling_function,instruction);
+					const char * file_src_call=SFI_GET_FILE(_script_function,instruction);
 					data->vm_error_callstack_str+=zs_strutils::format(
 						"\nat calling function %s%s%s (%sline:%i)" // TODO: get full symbol ?
 						,str_class_owner==NULL?"":str_class_owner
 						,str_class_owner==NULL?"":"::"
 						,sf_call_script_function->name_script_function.c_str()
 						,file_src_call?zs_strutils::format("file:%s ",file_src_call).c_str():""
-						,SFI_GET_LINE(_calling_function,instruction)
+						,SFI_GET_LINE(_script_function,instruction)
 					);
 
 				}

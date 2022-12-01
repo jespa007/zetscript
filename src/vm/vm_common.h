@@ -49,7 +49,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_VM_INNER_CALL(_so_object,_so_function,_n_args,_name)\
 	if(vm_inner_call( \
 			_vm \
-			,_calling_function \
+			,_script_function \
 			,instruction \
 			,_so_object \
 			,_so_function \
@@ -72,8 +72,8 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_VM_ERROR(_str_error,...)	\
 	vm_set_file_line_error(\
 		_vm \
-		,SFI_GET_FILE(_calling_function,instruction)\
-		,SFI_GET_LINE(_calling_function,instruction)\
+		,SFI_GET_FILE(_script_function,instruction)\
+		,SFI_GET_LINE(_script_function,instruction)\
 		,_str_error\
 		, __VA_ARGS__\
 	);
@@ -83,8 +83,8 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_VM_ERROR_AND_RET(_str_error,...)	\
 	vm_set_file_line_error(\
 		_vm \
-		,SFI_GET_FILE(_calling_function,instruction)\
-		,SFI_GET_LINE(_calling_function,instruction)\
+		,SFI_GET_FILE(_script_function,instruction)\
+		,SFI_GET_LINE(_script_function,instruction)\
 		,_str_error\
 		, __VA_ARGS__\
 	);\
@@ -95,8 +95,8 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_VM_STOP_EXECUTE(_str_error,...)	\
 	vm_set_file_line_error(\
 		_vm \
-		,SFI_GET_FILE(_calling_function,instruction)\
-		,SFI_GET_LINE(_calling_function,instruction)\
+		,SFI_GET_FILE(_script_function,instruction)\
+		,SFI_GET_LINE(_script_function,instruction)\
 		,_str_error\
 		, __VA_ARGS__\
 	);\
@@ -124,7 +124,7 @@ ZS_VM_ERROR("cannot perform preoperator %s'%s'. Check whether op1 implements the
 #define ZS_VM_MAIN_ERROR(_error,_stk, _metamethod) \
 		vm_print_main_error(\
 				_vm\
-				,_calling_function\
+				,_script_function\
 				,instruction\
 				,_error\
 				,_stk\
@@ -215,7 +215,7 @@ namespace zetscript{
 
 	bool vm_call_metamethod(
 		VirtualMachine			*	_vm
-		,ScriptFunction 		*	_calling_function
+		,ScriptFunction 		*	_script_function
 		,Instruction 			*	_instruction
 		,ByteCodeMetamethod 		_byte_code_metamethod
 		,StackElement 			*	_stk_result_op1
@@ -226,10 +226,10 @@ namespace zetscript{
 
 	bool vm_inner_call(
 		VirtualMachine 			*	_vm
-		,ScriptFunction			* 	_calling_function
+		,ScriptFunction			* 	_script_function
 		,Instruction			* 	_instruction
 		,ScriptObject 			*	_script_object
-		,ScriptFunction 		*	_script_function
+		,ScriptFunction 		*	_script_function_to_call
 		,int 						_n_args
 	);
 
@@ -247,7 +247,7 @@ namespace zetscript{
 
 	void vm_print_main_error(
 		VirtualMachine 			*	_vm
-		,ScriptFunction 		*	_calling_function
+		,ScriptFunction 		*	_script_function
 		,Instruction 			*	_instruction
 		,VM_MainError 				_error
 		,StackElement 			*	_stk=NULL
@@ -264,7 +264,7 @@ namespace zetscript{
 	ScriptFunction * vm_find_native_function(
 		VirtualMachine 		*	_vm
 		,ScriptType 		*	_class_obj // if NULL is MainClass
-		,ScriptFunction 	*	_calling_function
+		,ScriptFunction 	*	_script_function
 		,Instruction 		* 	_instruction // call instruction
 		,bool 					_is_constructor
 		,const zs_string 	& 	_symbol_to_find

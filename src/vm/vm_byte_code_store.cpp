@@ -7,7 +7,7 @@ namespace zetscript{
 
 	bool vm_store(
 			VirtualMachine 	*	_vm
-			,ScriptFunction *	_calling_function
+			,ScriptFunction *	_script_function
 			,Instruction 	*	_instruction
 	){
 		VirtualMachineData 			*		data=(VirtualMachineData *)_vm->data;
@@ -115,7 +115,7 @@ namespace zetscript{
 				if((ptr_function_found=vm_find_native_function( \
 						_vm \
 						,data->script_type_factory->getScriptType(so_aux->idx_script_type)\
-						,_calling_function\
+						,_script_function\
 						,instruction\
 						,false\
 						,data->vm_str_metamethod_aux
@@ -150,7 +150,7 @@ namespace zetscript{
 			if(ptr_function_found->properties & FUNCTION_PROPERTY_C_OBJECT_REF){\
 				vm_execute_native_function(\
 						_vm\
-						,_calling_function\
+						,_script_function\
 						,instruction\
 						,so_aux\
 						,ptr_function_found\
@@ -276,8 +276,8 @@ namespace zetscript{
 					unref_old_stk_script_object=false;
 #ifdef __ZS_LOG_CONTAINER_SLOT__
 					printf("[%s:%i] Warning assigning same object %p type %s\n"
-							,SFI_GET_FILE(_calling_function,instruction)\
-							,SFI_GET_LINE(_calling_function,instruction)\
+							,SFI_GET_FILE(_script_function,instruction)\
+							,SFI_GET_LINE(_script_function,instruction)\
 							,(void *)so_aux
 							,so_aux->getScriptType()->str_script_type.c_str()
 					);
