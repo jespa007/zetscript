@@ -79,7 +79,7 @@ namespace zetscript{
 		idx_position=start_ptr-new_instructions;
 		*start_ptr++=Instruction(
 				BYTE_CODE_PUSH_STK_THIS_VARIABLE
-			, ZS_IDX_UNDEFINED
+			,(uint8_t)ZS_IDX_UNDEFINED
 			,ZS_IDX_UNDEFINED
 			,INSTRUCTION_PROPERTY_CONTAINER_SLOT_ASSIGMENT
 		);
