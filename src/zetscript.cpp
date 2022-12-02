@@ -434,6 +434,10 @@ namespace zetscript{
 
 		// remove all shared 0 pointers
 		if(local_variables->size() > 0){
+
+			// remove cyclic container instances
+			vm_check_cyclic_references(this->virtual_machine);
+
 			for (
 				;v>=idx_start_variable;
 			) {
@@ -467,9 +471,6 @@ namespace zetscript{
 
 				--v;
 			}
-
-			// remove cyclic container instances
-			vm_check_cyclic_references(this->virtual_machine);
 
 			vm_remove_empty_shared_pointers(
 					this->virtual_machine

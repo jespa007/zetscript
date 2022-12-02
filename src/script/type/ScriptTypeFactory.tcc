@@ -41,7 +41,7 @@ namespace zetscript{
 				,(zs_int)_var_ptr
 				,SYMBOL_PROPERTY_C_OBJECT_REF)) != NULL
 		){
-			ZS_LOG_DEBUG("Registered variable name '%s'",var_name.c_str());
+			ZS_LOG_DEBUG("Registered variable name '%s'",_var_name.c_str());
 		}
 
 		StackElement *stk=vm_get_stack_element_at(vm,symbol_variable->idx_position);
@@ -106,7 +106,7 @@ namespace zetscript{
 				,FUNCTION_PROPERTY_C_OBJECT_REF
 			);
 
-		ZS_LOG_DEBUG("Registered function name '%s'",name_script_function.c_str());
+		ZS_LOG_DEBUG("Registered function name '%s'",_function_name.c_str());
 	}
 
 	/**

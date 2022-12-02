@@ -79,7 +79,7 @@ namespace zetscript{
 		}
 
 #ifdef __DEBUG__
-		ZS_LOG_DEBUG("Executing function %s ...",calling_function->symbol.name);
+		ZS_LOG_DEBUG("Executing function %s ...",_script_function->name_script_function.c_str());
 #endif
 
 		// Init local vars ...

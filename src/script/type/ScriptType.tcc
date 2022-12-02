@@ -65,7 +65,7 @@ namespace zetscript{
 
 		);
 
-		ZS_LOG_DEBUG("Registered member function name %s::%s",this->name.c_str(), name_script_function.c_str());
+		ZS_LOG_DEBUG("Registered member function name %s::%s",this->str_script_type.c_str(), _function_name.c_str());
 	}
 
 	/*
@@ -106,7 +106,11 @@ namespace zetscript{
 		);
 
 
-		ZS_LOG_DEBUG("Registered C function '%s' as function member '%s'",_function_name, function_class_name.c_str());
+		ZS_LOG_DEBUG("Registered C function '%s' as function member '%s::%s'"
+				,_function_name.c_str()
+				,this->str_script_type.c_str()
+				,_function_name.c_str()
+		);
 	}
 
 }

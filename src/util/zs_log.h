@@ -7,7 +7,7 @@
 //#define zs_print_error_cr(s, ...) 		ZetScript::log::print(__FILE__,__LINE__,ZetScript::zs_strutils::ZS_LOG_LEVEL_ERROR	, true,s, ##__VA_ARGS__)
 #define ZS_LOG_WARNING(s, ...)   			zetscript::zs_log::print(__FILE__,__LINE__,zetscript::zs_log::ZS_LOG_LEVEL_WARNING	, true,s, ##__VA_ARGS__)
 #define ZS_LOG_INFO(s, ...)   				zetscript::zs_log::print(__FILE__,__LINE__,zetscript::zs_log::ZS_LOG_LEVEL_INFO	, true,s, ##__VA_ARGS__)
-#ifdef __ZETSCRIPT_VERBOSE_MESSAGE__
+#ifdef __ZS_VERBOSE_MESSAGE__
 #define ZS_LOG_DEBUG(s, ...)   				zetscript::zs_log::print(__FILE__,__LINE__,zetscript::zs_log::ZS_LOG_LEVEL_DEBUG	, true,s, ##__VA_ARGS__)
 #else
 #define ZS_LOG_DEBUG(s, ...)

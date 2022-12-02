@@ -4,7 +4,7 @@
  */
 #include "zetscript.h"
 
-#ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
+#ifdef  __ZS_VERBOSE_MESSAGE__
 
 #define print_eval_cr ZS_LOG_DEBUG
 #else

@@ -43,7 +43,7 @@ namespace zetscript{
 		return vm;
 	}
 
-	#ifdef  __ZETSCRIPT_VERBOSE_MESSAGE__
+	#ifdef  __ZS_VERBOSE_MESSAGE__
 
 	#define print_vm_cr ZS_LOG_INFO
 	#else
@@ -444,10 +444,6 @@ namespace zetscript{
 			_script_function,
 			stk_start
 		);
-
-		if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
-			vm_check_cyclic_references(_vm);
-		}
 
 		// remove empty shared pointers
 		if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
