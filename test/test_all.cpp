@@ -154,6 +154,15 @@ int main(int argc, char * argv[]) {
 
 
 			if(strcmp(*it_test_script_files,"test_cyclic_references")==0){
+
+				// remove cyclic container instances
+				vm_check_cyclic_references(zs.getVirtualMachine());
+
+				vm_remove_empty_shared_pointers(
+						zs.getVirtualMachine()
+					,vm_get_scope_block_main(zs.getVirtualMachine())
+				);
+
 				auto cyclic_container_instances=vm_get_cyclic_container_instances(zs.getVirtualMachine());
 
 				if(cyclic_container_instances->count() > 0){

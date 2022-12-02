@@ -445,12 +445,17 @@ namespace zetscript{
 			stk_start
 		);
 
+		// TODO: Eval
+		/*if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
+			vm_check_cyclic_references(_vm);
+		}
+
 		// remove empty shared pointers
 		if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
 			vm_remove_empty_shared_pointers(_vm
 					,vm_get_scope_block_main(_vm)
 			);
-		}
+		}*/
 
 		// get number return elements
 		if(data->vm_error){

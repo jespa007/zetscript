@@ -15,8 +15,8 @@
 #endif
 
 #ifdef __DEBUG__ // incoment __ZS_VERBOSE_MESSAGE__ to print all messages (wrning is going to be slow because of the prints)
-#define __ZS_VERBOSE_MESSAGE__
-#define __ZS_LOG_CONTAINER_SLOT__
+//#define __ZS_VERBOSE_MESSAGE__
+//#define __ZS_LOG_CONTAINER_SLOT__
 #endif
 
 #define ZS_IDX_UNDEFINED 						-1

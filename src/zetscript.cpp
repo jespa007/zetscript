@@ -438,6 +438,11 @@ namespace zetscript{
 			// remove cyclic container instances
 			vm_check_cyclic_references(this->virtual_machine);
 
+			vm_remove_empty_shared_pointers(
+					this->virtual_machine
+				,vm_get_scope_block_main(this->virtual_machine)
+			);
+
 			for (
 				;v>=idx_start_variable;
 			) {
