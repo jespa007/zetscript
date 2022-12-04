@@ -199,7 +199,7 @@ namespace zetscript{
 				switch(current_arg->properties & STK_PROPERTY_TYPES){
 
 				default:
-					aux_string="unknow";
+					aux_string=stk_to_typeof_str(data->zs,current_arg);
 					break;
 				case STK_PROPERTY_ZS_INT:
 					aux_string=k_str_zs_int_type;

@@ -37,7 +37,7 @@ namespace zetscript{
 		else if(STK_IS_SCRIPT_OBJECT_ITERATOR_OBJECT(stk))
 			result=ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT;
 		else if(STK_VALUE_IS_FUNCTION(stk))
-			result=zs_string("fun@")+((ScriptFunction *)stk->value)->name_script_function;
+			result=zs_string("fun@")+((ScriptFunction *)(((Symbol *)stk->value)->ref_ptr))->name_script_function;
 		else if(STK_VALUE_IS_TYPE(stk)) // is a type
 			result=zs_string("type@")+_zs->getScriptTypeFactory()->getScriptTypeName(stk->value);
 		else if(STK_VALUE_IS_MEMBER_PROPERTY(stk)){
