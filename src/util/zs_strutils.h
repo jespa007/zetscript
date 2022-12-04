@@ -10,15 +10,20 @@
 #define ZS_STRCMP(a, R, b) 	(strcmp(a,b) R 0)
 #define ARRAY_LENGTH(s) (sizeof(s)/sizeof(s[0]))
 
-
-#define ZS_CAPTURE_VARIABLE_ARGS(text_out, text_in)\
+// Util to capture args by ...
+#define 	ZS_CAPTURE_VARIABLE_ARGS(_str_out, _str_in)\
 {va_list  ap;\
-va_start(ap,  text_in);\
-int n=vsnprintf(text_out,ZS_MAX_STR_BUFFER,text_in,  ap);\
-if(n==ZS_MAX_STR_BUFFER){\
-	text_out[sizeof(text_out)-2]='.';\
-	text_out[sizeof(text_out)-3]='.';\
-	text_out[sizeof(text_out)-4]='.';\
+int max_len=(int)((sizeof(_str_out)/sizeof(char))-1);\
+va_start(ap, _str_in);\
+int n=vsnprintf(_str_out,max_len,_str_in,  ap);\
+if(n==-1){\
+	auto last_error=errno;\
+	ZS_THROW_RUNTIME_ERROR("ZS_CAPTURE_VARIABLE_ARGS vsnprintf error (%i): %s",last_error,zs_system::getErrorCodeDetails(last_error));\
+}\
+if(n==(int)max_len){\
+	_str_out[max_len-2]='.';\
+	_str_out[max_len-3]='.';\
+	_str_out[max_len-4]='.';\
 }\
 va_end(ap);}
 
