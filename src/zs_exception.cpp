@@ -39,30 +39,9 @@ namespace zetscript {
 
 	zs_exception_error::zs_exception_error(const char * _file, int _line, const zs_string & _error):zs_exception(_file,  _line, _error,"ERR"){}
 
-
-	void throw_script_error(const char * _file, int _line, const char *_str_in,...){
-		char str_out[ZS_MAX_STR_BUFFER]={0};
-		ZS_CAPTURE_VARIABLE_ARGS(str_out,_str_in);
-
-		throw zs_exception_error(_file,_line,str_out);
-	}
-
-	void throw_runtime_error(const char *in_txt,...){
-		char out_txt[ZS_MAX_STR_BUFFER]={0};
-		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
-		throw zs_exception_error("",-1,out_txt);
-	}
-
 	void throw_exception_file_line(const char *_file, int _line, const char *in_txt,...){
-		//char aux[ZS_MAX_STR_BUFFER];
-		//sprintf(aux,"[%s:%i] ",_file,_line);
-		//zs_string aux=zs_strutils::format("[%s:%i] ",_file,_line);
-
 		char out_txt[ZS_MAX_STR_BUFFER]={0};
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
-
-		//aux+=out_txt;
-
 		throw zs_exception_error(_file,_line,out_txt);
 	}
 
@@ -71,6 +50,4 @@ namespace zetscript {
 		ZS_CAPTURE_VARIABLE_ARGS(out_txt,in_txt);
 		throw zs_exception_error("",ZS_IDX_UNDEFINED,out_txt);
 	}
-
-
 }

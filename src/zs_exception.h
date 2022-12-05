@@ -7,13 +7,13 @@
 #include "util/zs_buffer.h"
 #include "util/zs_string.h"
 
-#define ZS_THROW_RUNTIME_ERROR(_str_error, ...)							::zetscript::throw_script_error(__FILENAME__,__LINE__,_str_error, __VA_ARGS__)
+#define ZS_THROW_RUNTIME_ERROR(_str_error, ...)							::zetscript::throw_exception_file_line(__FILENAME__,__LINE__,_str_error, __VA_ARGS__)
 #define ZS_THROW_RUNTIME_ERRORF(_str_error)								ZS_THROW_RUNTIME_ERROR(_str_error,NULL)
 
-#define ZS_THROW_SCRIPT_ERROR_FILE_LINE(file,line,_str_error, ...)		::zetscript::throw_script_error(file,line,_str_error, __VA_ARGS__)
+#define ZS_THROW_SCRIPT_ERROR_FILE_LINE(file,line,_str_error, ...)		::zetscript::throw_exception_file_line(file,line,_str_error, __VA_ARGS__)
 #define ZS_THROW_SCRIPT_ERROR_FILE_LINEF(file,line,_str_error)			ZS_THROW_SCRIPT_ERROR_FILE_LINE(file,line,_str_error,NULL)
 
-#define ZS_THROW_SCRIPT_ERROR 											::zetscript::throw_script_error
+#define ZS_THROW_SCRIPT_ERROR 											::zetscript::throw_exception_file_line
 #define ZS_THROW_EXCEPTION_FILE_LINE									::zetscript::throw_exception_file_line
 #define ZS_THROW_EXCEPTION												::zetscript::throw_exception
 
@@ -46,7 +46,6 @@ namespace zetscript {
 		zs_exception_error(const char *  _file, int _line, const zs_string & _error);
 	};
 
-	void throw_script_error(const char * scrip_filename, int script_line, const char *in_txt,...);
 	void throw_exception_file_line(const char *filename, int line,const char *error,...);
 	void throw_exception(const char  * error,...);
 
