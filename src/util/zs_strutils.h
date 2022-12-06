@@ -14,16 +14,10 @@
 #define 	ZS_CAPTURE_VARIABLE_ARGS(_str_out, _str_in)\
 {va_list  ap;\
 int max_len=(int)((sizeof(_str_out)/sizeof(char))-1);\
-if(max_len<4){\
-	ZS_THROW_RUNTIME_ERRORF("ZS_CAPTURE_VARIABLE_ARGS minum buffer is 4");\
-}\
 va_start(ap, _str_in);\
 int n=vsnprintf(_str_out,max_len,_str_in,  ap);\
-if(n==-1){\
-	auto last_error=errno;\
-	ZS_THROW_RUNTIME_ERROR("ZS_CAPTURE_VARIABLE_ARGS vsnprintf error (%i): %s",last_error,zs_system::getErrorCodeDetails(last_error));\
-}\
-if(n>=(int)max_len){\
+if(n>=(int)max_len || (n==-1)){\
+	_str_out[max_len-1]=0;\
 	_str_out[max_len-2]='.';\
 	_str_out[max_len-3]='.';\
 	_str_out[max_len-4]='.';\
@@ -32,14 +26,6 @@ va_end(ap);}
 
 #define ZS_STR_CONST_IS_EMPTY(str) ((str)==NULL || (*(str))==0)
 
-/*#define ZS_STR_FORMAT_FILE_LINE(_s_out,_s_aux,_file,_line,_s_in, ...)\
-	(_file == NULL || *_file == 0) ? sprintf((_s_aux), "line %i:", _line)\
-	:sprintf((_s_aux), "%s:%i",_file,_line);\
-	strcat((_s_aux),(_s_in));\
-	sprintf((_s_out), (_s_aux),__VA_ARGS__);
-
-#define ZS_STR_FORMAT_FILE_LINEF(_s_out,_s_aux,_file,_line,_s_in) ZS_STR_FORMAT_FILE_LINE(_s_out,_s_aux,_file,_line,_s_in, NULL)
-*/
 
 namespace zetscript{
 	namespace zs_strutils{
