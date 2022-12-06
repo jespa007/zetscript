@@ -301,8 +301,8 @@ namespace zetscript{
 		eval_parse_and_compile(this,_code,_eval_data_from,_filename);
 		link();
 
-		if(_eval_options & EvalOption::EVAL_OPTION_SHOW_BYTE_CODE){
-			printGeneratedCode(_eval_options & EvalOption::EVAL_OPTION_SHOW_ALL_BYTE_CODE);
+		if(_eval_options & EvalOption::EVAL_OPTION_PRINT_BYTE_CODE){
+			printGeneratedCode(_eval_options & EvalOption::EVAL_OPTION_PRINT_ALL_BYTE_CODE);
 		}
 
 		if((_eval_options & EvalOption::EVAL_OPTION_NO_EXECUTE)==0){

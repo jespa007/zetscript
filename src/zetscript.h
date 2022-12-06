@@ -97,9 +97,9 @@ namespace zetscript{
 
 	typedef enum{
 
-		EVAL_OPTION_NO_EXECUTE				=0x1
-		,EVAL_OPTION_SHOW_BYTE_CODE			=0x2
-		,EVAL_OPTION_SHOW_ALL_BYTE_CODE		=0x4
+		 EVAL_OPTION_NO_EXECUTE					=0x1
+		,EVAL_OPTION_PRINT_BYTE_CODE			=0x2
+		,EVAL_OPTION_PRINT_ALL_BYTE_CODE		=0x4
 
 	}EvalOption;
 
