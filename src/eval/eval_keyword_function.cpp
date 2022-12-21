@@ -27,7 +27,6 @@ namespace zetscript{
 
 		// 1. allocate for  sf->instructions_len + (eval_data->current_function->instructions.size() + 1)
 		PtrInstruction new_instructions=NULL;
-		unsigned idx_position=0;
 		size_t new_instructions_len=0;
 		size_t new_instructions_total_bytes=0;
 		Instruction * start_ptr=NULL;
@@ -76,7 +75,6 @@ namespace zetscript{
 		}
 
 		// 4. add load/store/reset stack
-		idx_position=start_ptr-new_instructions;
 		*start_ptr++=Instruction(
 				BYTE_CODE_PUSH_STK_THIS_VARIABLE
 			,(uint8_t)ZS_IDX_UNDEFINED
