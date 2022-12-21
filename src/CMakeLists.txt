@@ -99,7 +99,7 @@ if(MSVC)
 	
 else()
 
-	SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -I -Wall -Wextra -pedantic")
+	SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__STDC_CONSTANT_MACROS -std=gnu++0x -Wall -Wextra -pedantic")
    
 	if (MINGW)
 		MESSAGE("-- Plataform: MINGW" )
@@ -128,7 +128,12 @@ else()
 		
 	   		set(ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${PROJECT_SOURCE_DIR}/../../memmgr/memmgr.cpp)
 	   	else()
-	   		message("-- Memmanager: OFF (../../memmgr not exist)")
+	   		if(UNIX)
+		 		set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fsanitize=address ")
+		 		message("-- Memmanager: -fsanitize=address")
+		 	else()
+		 		message("-- Memmanager: OFF (../../memmgr not exist)")
+		 	endif()
 	   	endif()
 		
 	ELSE()

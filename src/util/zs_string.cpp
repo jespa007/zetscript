@@ -16,13 +16,9 @@ namespace zetscript{
 		// last slot exhausted
 		if (this->_size <= (this->count+_n_slots)) {
 			this->_size = this->count+_n_slots+ZS_STRING_EXPAND_CHAR_ELEMENTS;
-			size_t new_allocate=sizeof(char) * this->_size + 1;
-			char *tmp_buf=(char *)malloc(new_allocate);
-			memset(tmp_buf,0,new_allocate);
-			memcpy(tmp_buf,buf,this->count);
-			free(buf);
-			buf=tmp_buf;
-			//buf=(char *)realloc(buf, sizeof(char) * this->_size + 1); // + 1 for the keeping the null character
+			size_t _size_new=sizeof(char) * this->_size + 1;
+			buf=(char *)realloc(buf, _size_new); // + 1 for the keeping the null character
+			memset(buf+this->count,0,_size_new-this->count);
 		}
 
 		this->count+=_n_slots;

@@ -76,7 +76,6 @@ namespace zetscript{
 		StackElement 		*	sf_call_stk_start_arg_call=NULL;
 		ScriptObject 		*	sf_call_calling_object = NULL;
 		bool			 		sf_call_is_constructor=false;
-		bool					sf_call_ignore_call=false;
 		size_t 		 			sf_call_n_local_symbols=0;
 		bool 			 		sf_call_is_member_function=false;
 		StackElement 		*	sf_call_stk_return=NULL;
@@ -184,7 +183,6 @@ load_function:
 
 			sf_call_is_member_function=false;
 			sf_call_is_constructor=instruction->byte_code==BYTE_CODE_CONSTRUCTOR_CALL;
-			sf_call_ignore_call=false;
 
 			sf_call_n_args = INSTRUCTION_GET_PARAMETER_COUNT(instruction); // number arguments will pass to this function
 			sf_call_stk_start_arg_call = (data->vm_stk_current - sf_call_n_args);

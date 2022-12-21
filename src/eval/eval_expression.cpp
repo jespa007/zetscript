@@ -35,8 +35,6 @@ namespace zetscript{
 		// PRE: s is current zs_string to eval. This function tries to eval an expression like i+1; and generates binary ast.
 		// If this functions finds ';' then the function will generate ast.
 		zs_vector<TokenNode *> token_nodes;
-		Keyword keyword_type;
-		//int last_line_ok=0;
 		zs_string identifier_value="";
 		Operator operator_type = Operator::OPERATOR_UNKNOWN;
 		TokenNode 	*operator_token_node=NULL, *last_operator_token_node=NULL;
@@ -92,8 +90,6 @@ namespace zetscript{
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p,line);
 				operator_type=is_operator(aux_p);
-
-				keyword_type=eval_is_keyword(aux_p);
 
 				if(	is_end_expression_or_keyword(eval_data,aux_p,line)
 				|| operator_type==Operator::OPERATOR_TERNARY_IF

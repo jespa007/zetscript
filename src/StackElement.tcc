@@ -7,8 +7,6 @@ namespace zetscript{
 	template<typename _C>
 	_C stk_to(ZetScript *_zs, StackElement * _stk){
 
-		bool is_constant=false;
-		StackElement stk=*_stk;
 		zs_string error;
 		zs_int ptr_var;
 		zs_string str_script_type_ptr = typeid(_C).name();

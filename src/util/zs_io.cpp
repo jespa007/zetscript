@@ -16,7 +16,6 @@ namespace zetscript{
 		static char line[256];
 		char *ptr;
 		size_t len;
-		char *c;
 
 		   if (lineptr == NULL || n == NULL)
 		   {
@@ -30,7 +29,7 @@ namespace zetscript{
 		   if (feof(stream))
 			  return -1;
 
-		   c=fgets(line,256,stream);
+		   fgets(line,256,stream);
 
 		   ptr = strchr(line,'\n');
 		   if (ptr)

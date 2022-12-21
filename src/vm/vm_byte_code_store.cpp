@@ -17,7 +17,6 @@ namespace zetscript{
 		int 								n_element_left_to_store=0;
 		StackElement    			*		stk_load_multi_var_src=NULL;
 		ContainerSlot				*		dst_container_slot=NULL;
-		StackElement 				*		stk_result_op2=NULL;
 		ScriptObject 				*		so_aux=NULL;
 		StackMemberProperty 		*		stk_mp_aux=NULL;
 		ScriptFunction 				*		ptr_function_found=NULL;
@@ -41,8 +40,7 @@ namespace zetscript{
 		unref_old_stk_script_object=true;
 
 		stk_src=stk_load_multi_var_src; // store ptr instruction2 op as src_var_value
-		//stk_dst=stk_result_op2;
-		stk_result_op2=stk_dst;
+
 
 		// check if by ref
 		if(STK_IS_SCRIPT_OBJECT_VAR_REF(stk_dst)){

@@ -32,7 +32,6 @@ namespace zetscript{
 		zs_string str_param_name;
 		ScriptFunction *sf_eval=NULL;
 		zs_vector<StackElement *> stk_params;
-		StackElement stk_ret=k_stk_undefined;
 		const char *str_start=NULL;
 		zs_string str_unescaped_source="";
 		VirtualMachine *vm=zs->getVirtualMachine();

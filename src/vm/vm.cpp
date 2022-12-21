@@ -565,16 +565,17 @@ namespace zetscript{
 	){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 
-		ContainerScriptObject *dst_container_ref=_container_slot->getDstContainerRef();
-		zs_int dst_container_slot_id=_container_slot->getIdSlot();
 		StackElement *stk_dst=_container_slot->getPtrStackElement();
 
+#ifdef __ZS_LOG_CONTAINER_SLOT__
 		StackElement *stk_obj=NULL;
+		ContainerScriptObject *dst_container_ref=_container_slot->getDstContainerRef();
+		zs_int dst_container_slot_id=_container_slot->getIdSlot();
 
 		// More tests would be needed see issue #336
 		if(dst_container_ref->idx_script_type==IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 			stk_obj=((VectorScriptObject *)dst_container_ref)->getUserElementAt((int)dst_container_slot_id);
-#ifdef __ZS_LOG_CONTAINER_SLOT__
+
 			printf("\nAssing object %p type '%s' TO  vector %p slot '%i' type '%s'. Last value type '%s'\n"
 					,(void *)_src_container_ref
 					,_src_container_ref->getScriptType()->str_script_type.c_str()
@@ -584,12 +585,10 @@ namespace zetscript{
 					,stk_to_typeof_str(data->zs,stk_obj).c_str()
 
 			);
-#endif
 
 		}else{
 			// object
 			stk_obj=dst_container_ref->getProperty((const char *)dst_container_slot_id);
-#ifdef __ZS_LOG_CONTAINER_SLOT__
 			printf("\nAssing object %p type '%s' TO  object %p slot '%s' type '%s'. Last value type '%s'\n"
 					,(void *)_src_container_ref
 					,_src_container_ref->getScriptType()->str_script_type.c_str()
@@ -598,9 +597,8 @@ namespace zetscript{
 					,dst_container_ref->getScriptType()->str_script_type.c_str()
 					,stk_to_typeof_str(data->zs,stk_obj).c_str()
 
-			);
-#endif
-		}
+			);f
+		}#endif
 
 		// finally adds to container slot hierarchy
 		_src_container_ref->addContainerSlot(_container_slot);

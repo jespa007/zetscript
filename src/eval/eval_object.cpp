@@ -155,8 +155,6 @@ namespace zetscript{
 		char *aux_p = (char *)s;
 		zs_string symbol_value;
 		zs_string str_key;
-		int lineSymbol;
-		//zs_string key_value;
 		StackElement *stk_key_object;
 		Keyword keyw;
 
@@ -183,8 +181,6 @@ namespace zetscript{
 
 				IGNORE_BLANKS(aux_p,eval_data,aux_p+1,line);
 			}
-
-			lineSymbol = line;
 
 			if((keyw=eval_is_keyword(aux_p))!=Keyword::KEYWORD_UNKNOWN){
 				EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"Syntax error: '%s' keyword is not allowed as property name",eval_data_keywords[keyw].str);
