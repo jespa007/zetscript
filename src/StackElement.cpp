@@ -105,16 +105,16 @@ namespace zetscript{
 			Symbol *symbol=((Symbol *)stk.value);
 			ScriptType *st=symbol->scope->getScriptTypeOwner();
 			if(st->idx_script_type==IDX_TYPE_CLASS_MAIN){
-				result= zs_string("function<")+symbol->name+">";
+				result= zs_string("fun@")+symbol->name;
 			}else{
 				zs_string s="";
 
 				if(symbol->properties & SYMBOL_PROPERTY_STATIC){
-					s=zs_string("static_function<");
+					s=zs_string("static_fun@");
 				}else{
 					s=zs_string("member_function<");
 				}
-				result=s+st->str_script_type+"::"+symbol->name+">";
+				result=s+st->str_script_type+"::"+symbol->name;
 			}
 		}else if(STK_VALUE_IS_TYPE(&stk)){
 			if(_zs!=NULL){

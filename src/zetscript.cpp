@@ -436,7 +436,7 @@ namespace zetscript{
 		if(local_variables->size() > 0){
 
 			// remove cyclic container instances
-			vm_check_cyclic_references(this->virtual_machine);
+			vm_deref_cyclic_references(this->virtual_machine);
 
 			vm_remove_empty_shared_pointers(
 					this->virtual_machine
@@ -492,6 +492,12 @@ namespace zetscript{
 			global_symbol_variables->resize(global_symbol_variables->size()-n_global_symbol_found);
 
 		}
+
+		// remove any temporal memory pointers
+		vm_remove_empty_shared_pointers(
+				this->virtual_machine
+			,vm_get_scope_block_main(this->virtual_machine)
+		);
 	}
 
 	const char *ZetScript::getFilenameByRef(const char * _filename_by_ref){

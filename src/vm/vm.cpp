@@ -447,15 +447,15 @@ namespace zetscript{
 
 		// TODO: Eval
 		/*if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
-			vm_check_cyclic_references(_vm);
-		}
+			vm_deref_cyclic_references(_vm);
+		}*/
 
-		// remove empty shared pointers
+		// any empty shared pointers after call main
 		if(data->vm_current_scope_function == ZS_VM_SCOPE_FUNCTION_MAIN){
 			vm_remove_empty_shared_pointers(_vm
 					,vm_get_scope_block_main(_vm)
 			);
-		}*/
+		}
 
 		// get number return elements
 		if(data->vm_error){
@@ -638,7 +638,7 @@ namespace zetscript{
 		return &data->cyclic_container_instances;
 	}
 
-	void vm_check_cyclic_references(VirtualMachine *_vm){
+	void vm_deref_cyclic_references(VirtualMachine *_vm){
 		VirtualMachineData *data=(VirtualMachineData *)_vm->data;
 		zs_vector<zs_list_node<ContainerSlot *>  *> slots;
 

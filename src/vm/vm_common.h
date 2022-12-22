@@ -276,7 +276,7 @@ namespace zetscript{
 		, ContainerScriptObject *_src_container_ref
 	);
 
-	void vm_check_cyclic_references(
+	void vm_deref_cyclic_references(
 		VirtualMachine *_vm
 	);
 
