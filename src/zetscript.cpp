@@ -431,18 +431,12 @@ namespace zetscript{
 		// [G][G][G][G]..[G][L][L][L][L][L]..[L]
 		//
 		// So we only have to delete symbols
+		vm_deref_cyclic_references(this->virtual_machine);
 
 		// remove all shared 0 pointers
 		if(local_variables->size() > 0){
 
 			// remove cyclic container instances
-			vm_deref_cyclic_references(this->virtual_machine);
-
-			vm_remove_empty_shared_pointers(
-					this->virtual_machine
-				,vm_get_scope_block_main(this->virtual_machine)
-			);
-
 			for (
 				;v>=idx_start_variable;
 			) {
@@ -477,11 +471,6 @@ namespace zetscript{
 				--v;
 			}
 
-			vm_remove_empty_shared_pointers(
-					this->virtual_machine
-				,vm_get_scope_block_main(this->virtual_machine)
-			);
-
 			// clear all garbage
 			StackElement *vm_stack=vm_get_stack_elements(virtual_machine);
 			memset(vm_stack+idx_start_variable,0,sizeof(StackElement)*(VM_STACK_MAX-idx_start_variable));
@@ -490,7 +479,6 @@ namespace zetscript{
 			int resize=local_variables->size()-(local_variables->size()-idx_start_variable);
 			local_variables->resize(resize);
 			global_symbol_variables->resize(global_symbol_variables->size()-n_global_symbol_found);
-
 		}
 
 		// remove any temporal memory pointers

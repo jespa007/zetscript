@@ -597,7 +597,7 @@ namespace zetscript{
 					,dst_container_ref->getScriptType()->str_script_type.c_str()
 					,stk_to_typeof_str(data->zs,stk_obj).c_str()
 
-			);f
+			);
 		}#endif
 
 		// finally adds to container slot hierarchy
