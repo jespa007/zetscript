@@ -100,6 +100,12 @@ For the code in the list X.XX it'd show the following byte code,
 [0005|-1|00]    STORE                   n:1 [RST]
 ----
 
+Where
+
+Num: Instruction number
+RS: Stack Cost
+AS: Total Stack
+
 *TODO* Explain the marks found in this type of output
 
 == 2.5 Eval exceptions

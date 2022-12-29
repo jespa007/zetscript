@@ -4,13 +4,13 @@
  */
 #include "zetscript.h"
 
-#define FORMAT_PRINT_INSTRUCTION "%04i|%2i|%02i"
+#define ZS_HEADER_FORMAT_INSTRUCTION "%04i|%2i|%02i"
 
-#define GET_ILOAD_ACCESS_TYPE_STR(properties) \
+#define ZS_GET_ILOAD_ACCESS_TYPE_STR(properties) \
 ((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? "This"\
 :"Local"\
 
-#define GET_ILOAD_R_STR(properties,value) \
+#define ZS_GET_ILOAD_R_STR(properties,value) \
 	((properties) & INSTRUCTION_PROPERTY_ILOAD_R_ACCESS_THIS_VAR) ? ((Symbol *)sc->scope_script_type->symbol_variables->items[value])->name.c_str()\
 	:((Symbol *)sfo->local_variables->items[value])->name.c_str()\
 
@@ -173,31 +173,31 @@ namespace zetscript{
 				 break;
 			case INSTRUCTION_PROPERTY_ILOAD_R: /* only perfom with one Register */\
 				 iload_info=zs_strutils::format("%s['%s']"
-					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
-					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
+					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
+					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				 break;
 			case INSTRUCTION_PROPERTY_ILOAD_KR: /* perfom Konstant-Register*/\
 			 	 iload_info=zs_strutils::format("%s,%s['%s']"
 					 ,instruction->getConstantValueOp2ToString().c_str()
-					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
-					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
+					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
+					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 				 );
 				break;
 			case INSTRUCTION_PROPERTY_ILOAD_RK: /* perfom Register-Konstant */\
 				 iload_info=zs_strutils::format("%s['%s'],%s"
-					 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
-					 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
+					 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
+					 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
 					 ,instruction->getConstantValueOp2ToString().c_str()
 				 );
 				break;
 		   case INSTRUCTION_PROPERTY_ILOAD_RR: /* perfom Register-Register*/ \
 		   	   iload_info=zs_strutils::format(
 		   			 "%s['%s'],%s['%s']"
-		  			 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
-		  			 ,GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
-		  			 ,GET_ILOAD_ACCESS_TYPE_STR(instruction->value_op2)
-					 ,GET_ILOAD_R_STR(instruction->value_op2,(instruction->value_op2 & 0xff0000) >> 16)
+		  			 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->properties)
+		  			 ,ZS_GET_ILOAD_R_STR(instruction->properties,instruction->value_op1)
+		  			 ,ZS_GET_ILOAD_ACCESS_TYPE_STR(instruction->value_op2)
+					 ,ZS_GET_ILOAD_R_STR(instruction->value_op2,(instruction->value_op2 & 0xff0000) >> 16)
 		  		);
 				break;
 			}
@@ -205,7 +205,7 @@ namespace zetscript{
 			switch(instruction->byte_code){
 
 			case  BYTE_CODE_NEW_OBJECT_BY_TYPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t%s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -214,35 +214,35 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_LOAD_BOOL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_BOOL\t\t%s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_BOOL\t\t%s\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
 						,instruction->value_op2==0?"false":"true");
 				break;
 			case BYTE_CODE_LOAD_ZS_FLOAT:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_FLT\t\t%f\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_FLT\t\t%f\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
 						,ZS_INTPTR_TO_FLOAT(instruction->value_op2));
 				break;
 			case BYTE_CODE_LOAD_ZS_INT:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_INT\t\t%i\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_INT\t\t%i\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
 						,(int)(instruction->value_op2));
 				break;
 			case BYTE_CODE_LOAD_STRING:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_STRING\t\t%s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_STRING\t\t%s\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
 						,instruction->getConstantValueOp2ToString().c_str());
 				break;
 			case BYTE_CODE_NEW_STRING:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tNEW_STRING\t\t%s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tNEW_STRING\t\t%s\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
@@ -262,7 +262,7 @@ namespace zetscript{
 			case BYTE_CODE_LOAD_LOCAL:
 			case BYTE_CODE_LOAD_THIS:
 			case BYTE_CODE_LOAD_GLOBAL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -274,7 +274,7 @@ namespace zetscript{
 				break;
 
 			case BYTE_CODE_LOAD_VECTOR_ITEM:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s {vector}\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t%s {vector}\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -294,7 +294,7 @@ namespace zetscript{
 					symbol_value+=zs_string(".")+SFI_GET_SYMBOL_NAME(sfo,instruction);
 				}
 
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s %s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%s%s %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -311,7 +311,7 @@ namespace zetscript{
 			case BYTE_CODE_JMP:
 			case BYTE_CODE_JE_CASE:
 			case BYTE_CODE_JMP_CASE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%03i (ins%s%i) %s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t\t%03i (ins%s%i) %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -327,7 +327,7 @@ namespace zetscript{
 			case BYTE_CODE_PUSH_SCOPE:
 			case BYTE_CODE_POP_SCOPE:
 			case BYTE_CODE_NEW_OBJECT_BY_VALUE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -335,7 +335,7 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_INSTANCEOF:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -351,7 +351,7 @@ namespace zetscript{
 			case BYTE_CODE_SUPER_CALL:
 			case BYTE_CODE_UNRESOLVED_CALL:
 			case BYTE_CODE_STACK_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s%s\targ:%i ret:%i %s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%s%s%s\targ:%i ret:%i %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -366,7 +366,7 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_MEMBER_CALL:
 			case BYTE_CODE_CONSTRUCTOR_CALL:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%sarg:%i ret:%i %s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%sarg:%i ret:%i %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -378,7 +378,7 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_LOAD_TYPE:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\tLOAD_TYPE\t\t%s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_TYPE\t\t%s\n"
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
@@ -386,7 +386,7 @@ namespace zetscript{
 				break;
 			case BYTE_CODE_STORE:
 			case BYTE_CODE_STORE_CONST:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%sn:%i %s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%sn:%i %s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -415,7 +415,7 @@ namespace zetscript{
 			case BYTE_CODE_POST_DEC:
 			case BYTE_CODE_NEG_POST_DEC:
 			case BYTE_CODE_BWC_POST_DEC:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s%s%s\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s%s%s\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -425,7 +425,7 @@ namespace zetscript{
 				);
 				break;
 			case BYTE_CODE_IT_INIT:
-				printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t[RST]\n"
+				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t\t[RST]\n"
 					,idx_instruction
 					,req_stk
 					,sum_stk_load_stk
@@ -435,7 +435,7 @@ namespace zetscript{
 			default:
 
 				if(iload_info != ""){
-					printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+					printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 						idx_instruction
 						,req_stk
 						,sum_stk_load_stk
@@ -444,14 +444,14 @@ namespace zetscript{
 					);
 				}else{
 					if(n_ops==0){
-						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
+						printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\n", // VGET CAN HAVE PRE/POST INCREMENTS
 							idx_instruction
 							,req_stk
 							,sum_stk_load_stk
 							,byte_code_to_str(instruction->byte_code)
 						);
 					}else if(n_ops==1){
-						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t\t%i\n"
+						printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t\t%i\n"
 							,idx_instruction
 							,req_stk
 							,sum_stk_load_stk
@@ -459,7 +459,7 @@ namespace zetscript{
 							,instruction->value_op1
 						);
 					}else{ //2 ops
-						printf("[" FORMAT_PRINT_INSTRUCTION "]\t%s\t\t%i,%i\n"
+						printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\t%s\t\t%i,%i\n"
 							,idx_instruction
 							,req_stk
 							,sum_stk_load_stk
