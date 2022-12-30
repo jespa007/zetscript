@@ -115,31 +115,26 @@ else()
     	endif()
 	endif()
 	
-	IF ( "${TARGET}" STREQUAL "debug")
+	IF ( "${TARGET}" STREQUAL "debug" AND EXISTS  ${PROJECT_SOURCE_DIR}/../../memmgr)
 	
 		set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -O0 -g ")
-	
-		IF( EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr )
-			message("-- Memmanager: Yes")
-			SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__MEMMANAGER__")
-			include_directories (
-				${PROJECT_SOURCE_DIR}/../../memmgr
-			)
+		message("-- Memmanager: Yes")
+		SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__MEMMANAGER__")
+		include_directories (
+			${PROJECT_SOURCE_DIR}/../../memmgr
+		)
 		
-	   		set(ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${PROJECT_SOURCE_DIR}/../../memmgr/memmgr.cpp)
-	   	else()
-	   		if(UNIX)
-		 		set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fsanitize=address ")
-		 		message("-- Memmanager: -fsanitize=address")
-		 	else()
-		 		message("-- Memmanager: OFF (../../memmgr not exist)")
-		 	endif()
-	   	endif()
+   		set(ZETSCRIPT_LIB_SRCS ${ZETSCRIPT_LIB_SRCS} ${PROJECT_SOURCE_DIR}/../../memmgr/memmgr.cpp)
 		
 	ELSE()
 		set(TARGET "release")
 		set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -O2 ")
-		message("-- Memmanager: No")
+		if(UNIX)
+			set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fsanitize=address ")
+		 	message("-- Memmanager: -fsanitize=address")
+		 else()
+		 	message("-- Memmanager: OFF (../../memmgr not exist)")
+		 endif()
 	ENDIF()
 	
 
