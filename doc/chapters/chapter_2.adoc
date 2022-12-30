@@ -102,9 +102,9 @@ For the code in the list X.XX it'd show the following byte code,
 
 Where
 
-Num: Instruction number
-RS: Stack Cost
-AS: Total Stack
+* Num: Instruction number
+* RS: Required Stack
+* AS: Acumulated Stack
 
 *TODO* Explain the marks found in this type of output
 
