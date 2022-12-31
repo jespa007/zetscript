@@ -1,0 +1,29 @@
+= ZetScript 2.0.0
+Jordi Espada
+v2.0, January 30,2023
+:doctype: book
+:toc:
+:icons:
+:lang: en
+:language: zetscript
+
+[preface]
+include::prefaces/preface_1_historic_version.adoc[]
+include::prefaces/preface_2_acknowledgment.adoc[]
+
+
+include::chapters/chapter_1_introduction.adoc[]
+include::chapters/chapter_2_the_language.adoc[]
+include::chapters/chapter_3_the_api.adoc[]
+include::chapters/chapter_4_modules.adoc[]
+
+[appendix]
+include::appendixes/appendix_1_eval.adoc[]
+
+
+ifdef::backend-docbook[]
+[index]
+Index
+-----
+endif::backend-docbook[]
+

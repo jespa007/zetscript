@@ -263,7 +263,7 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_GT:		return  "_gt";  	// >
 			case	BYTE_CODE_METAMETHOD_GTE:		return  "_gte"; 	// >=
 			case	BYTE_CODE_METAMETHOD_NEG:		return  "_neg"; 	// -a, !a
-			case	BYTE_CODE_METAMETHOD_BWC:		return  "_btw"; 	// ~a
+			case	BYTE_CODE_METAMETHOD_BWC:		return  "_bwc"; 	// ~a bitwise complement operator
 			case	BYTE_CODE_METAMETHOD_ADD:		return  "_add"; 	// +
 			case	BYTE_CODE_METAMETHOD_SUB:		return  "_sub"; 	// -
 			case	BYTE_CODE_METAMETHOD_DIV:		return  "_div"; 	// /

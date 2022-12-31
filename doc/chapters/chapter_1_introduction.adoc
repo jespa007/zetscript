@@ -1,4 +1,4 @@
-= 1. Introduction
+== 1. Introduction
 
 ZetScript is a script language with a syntax inspired in ECMAScript or Javascript but
 also it brings a easy way to bind parts of your C++ code. ZetScript provides a virtual
@@ -7,7 +7,7 @@ Because ZetScript syntax is almost less or more equal to Javascript you can edit
 code with any editor that supports Javascript syntax notation. 
 
 
-== 1.1 Compile
+=== 1.1 Compile
 
 ZetScript has to be configured through (cmake,http://cmake.org) with the following compile toolchains,
 
@@ -30,7 +30,7 @@ done through this command,
 sudo footnote:[sudo is required when the project is compiled in linux.] make install 
 ****
 
-== 1.2 Hello World
+=== 1.2 Hello World
 
 Once ZetScript is installed we present a quick sample of "HelloWorld" application, 
 

@@ -1,6 +1,6 @@
-= 3. The language
+== 3. The language
 
-== 3.1 Statments
+=== 3.1 Statments
 
 ZetScript Language is based on a set of statements formed by values, operators, expressions, keywords, declarations, expressions, conditionals, integrators and functions. All statements are separated by semicolons at the end.
 
@@ -17,34 +17,34 @@ The last example can be executed within one line,
 [source, zetscript]
 var op1,op2,res; op1=5; op2=6; res = 5+6;
 
-== 3.2 Comments
+=== 3.2 Comments
 
 ZetScript support block and line comments.
 
-=== 3.2.1 Block comment
+==== 3.2.1 Block comment
 
 [source, zetscript]
 /*
 this is a block comment
 */
 
-== 3.2.2 Line comment
+==== 3.2.2 Line comment
 
 [source, zetscript]
-// This is a line comment
+ // This is a line comment
 
-== 3.3 Constants values
+=== 3.3 Literal values
 
-ZetScript supports the following constants or literal types,
+ZetScript supports the following literal values,
 
 * boolean
 * integer
 * float
 * string
 
-=== 3.3.1 Boolean type
+==== 3.3.1 Boolean
 
-ZetScript represents boolean value as true or false.
+Boolean literals is represented as true or false.
 
 Example,
 
@@ -52,47 +52,50 @@ Example,
 true // true value
 false // false value
 
-=== 3.3.2 Integer type
+==== 3.3.2 Integer
 
-ZetScript represents integer values within ranges from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as negative/positive decimal value, hexadecimal or binary format.
+Integer literals are represented as integer with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as decimal value, hexadecimal,binary or char format.
 Example,
 
 [source, zetscript]
 -1; // negative decimal value
 10; // positive decimal value
 0x1a; // hexadecimal value
-01001b; // 0x9 in binary value
+01001b; // binary value
+'b'; // char value
 
-=== 3.3.3 Number type
 
-ZetScript represents number value in 32-bit IEEE-754 floating point number. Number can be represented as integer and decimal form or scientific notation form.
+==== 3.3.3 Float
+
+Float literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. Float can be represented in decimal form or scientific notation form.
 
 Example,
 
 [source, zetscript]
 1.2 // integer and decimal form
 2.0e-2 // cientific notation form
-3.3.4 String type
 
-ZetScript represents string value within quotes (").
+==== 3.3.4 String
+
+String literal is represented as string within quotes (").
 
 Example,
 
 [source, zetscript]
 "this is a string"
 
-== 3.4 Variables
+=== 3.4 Variables
 
-=== 3.4.1 Variable declaration
+==== 3.4.1 Variable declaration
 
-A variable is a type of container that is used to store a value in it. In ZetScript, a variable is declared as var keyword.
+A variable is a type of container that is used to store a value in it. A variable is declared as *var* keyword.
 
 Example,
 
 [source, zetscript]
 var i; // declares i variable
 
-=== 3.4.2 Variable instantiation
+==== 3.4.2 Variable instantiation
 
 A variable is undefined (see 2.5.1) when is declared until is instanced with any value
 through operator '='. As an example we can instantiate a variable with integer value
@@ -101,7 +104,7 @@ through operator '='. As an example we can instantiate a variable with integer v
 [source, zetscript]
 var i=0; // variable v is instancied as integer.
 
-=== 3.4.3 Scope
+==== 3.4.3 Scope
 
 In ZetScript we have two types of basic scopes.
 
@@ -113,12 +116,17 @@ A ZetScript makes easy the concept of global local scope. Basically, variables d
 Example,
 
 [source, zetscript]
-var i; // this is a global variable
-{ // --> block starts here
- var j;//this is a local variable declared inside a block (you can also access to i).
-} // --> block ends here, so the variable j doesn�t exist anymore
+// Declares *i* variable as global
+var i;
 
-== 3.5 Built-in types
+// block starts here 
+{	
+	// Declare *j* variable as local (you can also access to i).
+	var j;
+}
+// block ends here, so *j* variable doesn't exist anymore
+
+=== 3.5 Built-in types
 
 ZetScript supports the following built-in types,
 
@@ -132,28 +140,33 @@ ZetScript supports the following built-in types,
 * Structure
 * Function
 
-=== 3.5.1 Undefined type
+==== 3.5.1 Undefined
 
-A undefined variable type is the default value that is instanced when any variable is declared. To instantiate a variable with undefined value assign it typing the undefined keyword.
+A undefined type it defines a non initialized variable. A undefined variable is defined once a variable assings *undefined* value,
 
 [source, zetscript]
-var i=undefined;
+var a; // 'a' is undefined as default
+var b=undefined; // assigns undefined value
 
-=== 3.5.2 Null type
+==== 3.5.2 Null
 
-A null type is like undefined but in this case it has a null value. To instantiate a variable with undefined value type undefined keyword.
+A null type it defines an empty or not valid variable. A null variable is defined once a variable assings *null* value,
 
 [source, zetscript]
 var i=null;
 
-=== 3.5.3 Integer type
+==== 3.5.3 Integer
 
-A integer variable type is instanced once a variable instance a integer constant or integer variable.
+Integer type it defines a integer value with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer is instanced once it assigns decimal, hexadecimal,binary or char value.
 
 Example,
 
 [source, zetscript]
-var i=10;
+var a=-1; // negative decimal value
+var b=10; // positive decimal value
+var c=0x1a; // hexadecimal value
+var d=01001b; // binary value
+var e='b'; //  char value
 
 *Pre/Post variable operations*
 
@@ -196,7 +209,7 @@ var j=i--;//j=0;i=-1;
 
 |====
 
-=== 3.5.4 Number type
+==== 3.5.4 Number type
 
 A number variable type is instanced once a variable instance a number constant or number variable,
 
@@ -318,7 +331,7 @@ v.pop(); //=[2], v=[1]
 |==== 
 
 
-=== 3.5.8 Object type
+==== 3.5.8 Object type
 
 An object type is a anonymous container type to store multiple values in attributes. The instantiation is done within a pair of curly brackets (i.e '{}'),
 
@@ -371,7 +384,7 @@ var s={a:0};
 v.remove("a"); // s={}
 |====
 
-=== 3.5.9 Function object
+==== 3.5.9 Function object
 
 A function is an object that holds information about a function and is able to call it (see section 3.8.3 for more information)
 
@@ -389,7 +402,7 @@ return op1+op2;
 };
 var j=fun_obj(2,3);// calls fun_obj (aka anonymous function). function. J=5
 
-== 3.6 Operations
+=== 3.6 Operations
 
 ZetScript has the following type of expressions
 
@@ -398,7 +411,7 @@ ZetScript has the following type of expressions
 * Logical operations
 * Bit operations
 
-=== 3.6.1 Arithmetic expressions
+==== 3.6.1 Arithmetic expressions
 
 The following operators it does evaluates arithmetic expressions,
 
@@ -447,7 +460,7 @@ The following operators it does evaluates arithmetic expressions,
 10%2.5; // it results
 |====
 
-=== 3.6.2 Relational expressions
+==== 3.6.2 Relational expressions
 
 The following operators it does evaluates relational expressions,
 
@@ -515,7 +528,7 @@ The following operators it does evaluates relational expressions,
 Note: You cannot mix different types for relational expressions. For example, doing a
 relational expression with boolean and integer values is incompatible. 
 
-=== 3.6.3 Logic expressions
+==== 3.6.3 Logic expressions
 
 Logic expressions are the ones that combines operations through boolean values,
 
@@ -548,7 +561,7 @@ false \|\| false;// = false
 !false; // = true
 |====
 
-=== 3.6.4 Binary expressions
+==== 3.6.4 Binary expressions
 
 Binary expressions are the ones that combines bit operations through integer values,
 
@@ -612,7 +625,7 @@ For example,
 [source,zetscript]
 (2+4)*5; // will result 36 
 
-== 3.7 Conditionals
+=== 3.7 Conditionals
 
 A conditional statement are used to perform different actions based on different conditions. In ZetScript we have the following conditional statement:
 
@@ -621,7 +634,7 @@ A conditional statement are used to perform different actions based on different
 * Use ternary condition to have a short if/else statement into single statement.
 * Use switch to specify manu alternative blocks of code to be executed
 
-=== 3.7.1 The if statement
+==== 3.7.1 The if statement
 Use the if statement to specify a block of ZetScript code to be executed if a condition is 'true'.
 
 Syntax,
@@ -638,7 +651,7 @@ if(n < 10) {
  // do something if condition is true
 }
 
-=== 3.7.2 The else statement
+==== 3.7.2 The else statement
 
 Use the else statement to specify a block of code to be executed if the condition is 'false'.
 
@@ -650,7 +663,7 @@ if(n < 10) {
  // do something if condition is false
 } 
 
-=== 3.7.3 The if else statement
+==== 3.7.3 The if else statement
 
 Use the else statement to specify a block of code to be executed if the condition is 'false'.
 
@@ -665,7 +678,7 @@ if(n < 10) {
  // do something if none of above conditions are true
 }
 
-=== 3.7.4 Ternary condition
+==== 3.7.4 Ternary condition
 
 Use ternary condition to have a short if/else statement into single statement. It performs expression if the condition is true or the second expression if the condition is 'false'.
 
@@ -679,7 +692,7 @@ Example,
 [source, zetscript]
 var j = 0>1? 0:1; // j = 1
 
-=== 3.7.5 Switch
+==== 3.7.5 Switch
 
 Use the switch statement to select one of many blocks of code to be executed.
 
@@ -734,14 +747,14 @@ switch (n) {
  break;
 }
 
-== 3.8 Loops
+=== 3.8 Loops
 
 ZetScript supports the following loop types,
 
 * While Loop
 * For Loop
 
-=== 3.8.1 while
+==== 3.8.1 while
 
 The while loop loops through a block of code as long as a specified condition is true.
 
@@ -761,7 +774,7 @@ while (i < 5){
  i++;
 } 
 
-=== 3.8.1 do-while
+==== 3.8.2 do-while
 
 do-while loop is always be executed at least once, even if the condition is false, because the code block is executed before the condition is tested:
 
@@ -781,7 +794,7 @@ do {
  i++;
 } while (i < 5);
 
-=== 3.8.2 The For Loop
+==== 3.8.3 The For Loop
 
 The for loop is often the tool you will use when you want to create a loop.
 
@@ -804,11 +817,11 @@ for(var i=0; i < 5; i++) {
 } 
 
 
-=== 3.8.3 Functions
+=== 3.9 Functions
 
 Function is a block of code to perform a particular task and is executed when in some part of the code it calls it.
 
-=== 3.8.4 Function syntax
+==== 3.9.1 Function syntax
 
 A JavaScript function is defined with the function keyword, followed by a name, followed by parentheses ().
 
@@ -826,7 +839,7 @@ function add(op1, op2){
 return op1+op2;
 }
 
-=== 3.8.5 Call a function
+==== 3.9.2 Call a function
 
 The call of a function is done when in some part of the code it calls it as follow,
 
@@ -845,7 +858,7 @@ return op1+op2;
 }
 var j=add(2,3); // calls add function. j=5
 
-=== 3.8.6 Function object
+==== 3.9.3 Function object
 
 A function can be stored in variables through its reference,
 
@@ -876,7 +889,7 @@ return op1+op2;
 };
 var j=add(2,5); // j=5
 
-== 3.9 Class
+=== 3.10 Class
 
 A class is a type of structure that contains variables and functions that operates with this variables. A class is defined in ZetScript using keyword class followed by the name of class. To access class variables within functions use the this keyword in order to access to variable or functions inside class. In a class we can find member functions (functions that affects to class variable) or static functions (helper function of generic purposes about the class type).
 
@@ -898,7 +911,7 @@ class Test{
  }
 };
 
-=== 3.9.1 Post add function/variable member
+==== 3.10.1 Post add function/variable member
 
 In ZetScrip is possible to add more class member through "::" punctuator.
 
@@ -912,7 +925,7 @@ function Test::function2(){
  this.data2="a string";
 }
 
-=== 3.9.2 Instance class
+==== 3.10.2 Instance class
 
 To instance a class is done through the keyword new
 
@@ -921,7 +934,7 @@ Example,
 [source, zetscript]
 var t = new Test(); // Instantiate t as Test type.
 
-=== 3.9.3 Accessing to class functions
+==== 3.10.3 Accessing to class functions
 
 To access class variables/functions is done through "." operator.
 
@@ -931,7 +944,7 @@ Example,
 var i=t.function1(2); // initializes data1 as 2 and return the value
 print("data1 is: "+t.data1); // prints value of data1
 
-=== 3.9.4 Constructor
+==== 3.10.4 Constructor
 
 Each time class is instanced, their member variables are undefined. var t = new Test(); // The a class Test is instanced but data1 and data2 are undefined.
 
@@ -953,7 +966,7 @@ class Test{
 var t = new Test(); // Instantiate t as Test type. Now, member variables are instanced.
 print("data1:"+t.data1); //  prints "data1: 10"
 
-=== 3.9.5 Inheritance
+==== 3.10.5 Inheritance
 
 ZetScript supports inheritance through ":" punctuator after the name of the class followed the class name to be extended. The new extended class will inheritance all variable/functions members from base class.
 
@@ -967,42 +980,43 @@ class TestExtended: Test{
  }
 };
 
-==== 3.9.5.1 Call parent functions (super keyword)
+===== 3.10.5.1 Call parent functions (super keyword)
 
 The extended class can call parent functions through super keyword.
 
 Example,
 
 [source, zetscript]
-class TestExtended: Test{
- var data3;
- function function1(a){
+class TestExtended extends Test{
+ function1(a){
  var t=super(a); // it calls Test::function1(2)
  this.data1+=t; // Now data1=5+2 = 7
  print("ext function1:"+this.data1);
  return this.data1+a;
  }
- function function3(){
+ function3(){
  this.data3=this.data1+this.function1(5);
  print("ext function3:"+this.data3);
  }
 }; 
 
 
-== 3.10 Metamethods
+=== 3.11 Metamethods
 Metamethods are special functions members that links with operators seen on section section 3.6. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
 
 ZetScript supports the following metamethods:
 
 * _equ
-* _not_equ
+* _nequ
 * _lt
 * _lte
+* _not
 * _gt
 * _gte
-* _not
 * _neg
+* _btw
 * _add
+* _sub
 * _div
 * _mul
 * _mod
@@ -1012,10 +1026,26 @@ ZetScript supports the following metamethods:
 * _shl
 * _shr
 * _set
+* _add_set
+* _sub_set
+* _mul_set
+* _div_set
+* _mod_set
+* _and_set
+* _or_set"
+* _xor_set
+* _shl_set
+* _shr_set
+* _toString
+* _post_inc
+* _post_dec
+* _pre_inc
+* _pre_dec
+* _in
 
 
 
-=== 3.10.1 _equ (aka ==)
+==== 3.10.1 _equ (aka ==)
 
 @Description: Performs relational equal operation.
 @Param1 : 1st operand.
@@ -1025,11 +1055,10 @@ ZetScript supports the following metamethods:
 Example how to use _equ metamethod within script class,
 
 class MyNumber{
- var num;
- function MyNumber(_n){
+ MyNumber(_n){
  this.num=_n;
  }
- function _equ(op1, op2){
+ _equ(op1, op2){
  return op1.num==op2.num;
  }
 };
@@ -1041,7 +1070,7 @@ if(n1==n2){ // we use here the metamethod ==
 } 
 
 
-=== 3.10.2 _nequ (aka !=)
+==== 3.10.2 _nequ (aka !=)
 
 @Description: Performs relational not equal operation.
 @Param1 : 1st operand.
@@ -1051,11 +1080,10 @@ if(n1==n2){ // we use here the metamethod ==
 Example how to use _nequ metamethod within script class,
 
 class MyNumber{
- var num;
- function MyNumber(_n){
+ MyNumber(_n){
  this.num=_n;
  }
- function _nequ(op1, op2){
+ _nequ(op1, op2){
  return op1.num!=op2.num;
  }
 };
@@ -1066,7 +1094,7 @@ if(n1!=n2){
 } 
 
 
-=== 3.10.3 _lt (aka <)
+==== 3.10.3 _lt (aka <)
 
 @Description: Performs relational less equal operation.
 @Param1 : 1st operand.
@@ -1090,7 +1118,7 @@ if(n1<n2){
  print("n1 ("+n1.num+") is less than n2 ("+n2.num+")");
 } 
 
-=== 3.10.4 _lte (aka <=)
+==== 3.10.4 _lte (aka <=)
 
 @Description: Performs relational less equal operation.
 @Param1 : 1st operand.
@@ -1114,7 +1142,7 @@ if(n1<=n2){
  print("n1 ("+n1.num+") is less equal than n2 ("+n2.num+")");
 } 
 
-=== 3.10.5 _gt (aka >)
+==== 3.10.5 _gt (aka >)
 
 @Description: Performs relational greater operation.
 @Param1 : 1st operand.
@@ -1139,7 +1167,7 @@ if(n1>n2){
  print("n1 ("+n1.num+") is greater than n2 ("+n2.num+")");
 }
 
-=== 3.10.6 _gte (aka >=)
+==== 3.10.6 _gte (aka >=)
 
 @Description: Performs relational greater equal operation.
 @Param1 : 1st operand.
@@ -1164,7 +1192,7 @@ if(n1>=n2){
 } 
 
 
-=== 3.10.7 static _not (aka !)
+==== 3.10.7 static _not (aka !)
 
 @Description: Performs a not operation.
 @Param1 : Object custom class type.
@@ -1188,7 +1216,7 @@ if(!b){
  print("b was false");
 } 
 
-=== 3.10.8 _neg (aka -)
+==== 3.10.8 _neg (aka -)
 
 @Description: Performs negate operation.
 @Param1 : operand to negate.
@@ -1210,7 +1238,7 @@ var n1 = new MyNumber (1);
 var n2 = -n1;
 print("neg of n1 ("+n1.num+") is ("+n2.num+")"); 
 
-=== 3.10.9 _add (aka +)
+==== 3.10.9 _add (aka +)
 
 @Description: Performs add operation.
 @Param1 : 1st operand.
@@ -1235,7 +1263,7 @@ var n3 =n1+n2;
 
 print("n1 ("+n1.num+") n2 ("+n2.num+") = "+n3.num);
 
-=== 3.10.10 _div (aka /)
+==== 3.10.10 _div (aka /)
 
 @Type: Static
 @Description: Performs divide operation.
@@ -1262,7 +1290,7 @@ var n3 =n1/n2;
 print("n1 ("+n1.num+") / n2 ("+n2.num+") = "+n3.num);
 
 
-=== 3.10.11 _mul (aka *)
+==== 3.10.11 _mul (aka *)
 
 @Type: Static
 @Description: Performs multiply operation.
@@ -1287,7 +1315,7 @@ var n2 = new MyNumber (10);
 var n3 =n1*n2;
 print("n1 ("+n1.num+") * n2 ("+n2.num+") = "+n3.num);
 
-=== 3.10.12 _mod (aka %)
+==== 3.10.12 _mod (aka %)
 
 @Description: Performs modulus operation.
 @Param1 : 1st operand.
@@ -1311,7 +1339,7 @@ var n2 = new MyNumber (15);
 var n3 =n1%n2;
 print("n1 ("+n1.num+") % n2 ("+n2.num+") = "+n3.num);
 
-=== 3.10.13 _and (aka &)
+==== 3.10.13 _and (aka &)
 
 @Description: Performs binary and operation between two integer
 operands.
@@ -1336,7 +1364,7 @@ var n2 = new MyNumber (0x0f);
 var n3 =n1&n2;
 print("n1 ("+n1.num+") & n2 ("+n2.num+") = "+n3.num); 
 
-=== 3.10.14 _or (aka |)
+==== 3.10.14 _or (aka |)
 
 @Description: Performs binary or operation between two integer
 operands.
@@ -1361,7 +1389,7 @@ var n2 = new MyNumber (0x0f);
 var n3 =n1|n2;
 print("n1 ("+n1.num+") | n2 ("+n2.num+") = "+n3.num);
 
-=== 3.10.15_xor (aka ^)
+==== 3.10.15_xor (aka ^)
 
 @Description: Performs a binary xor operation between two integer
 operands.
@@ -1385,7 +1413,7 @@ var n2 = new MyNumber (0x0f);
 var n3 =n1^n2;
 print("n1 ("+n1.num+") ^ n2 ("+n2.num+") = "+n3.num);
 
-=== 3.10.16 _shl (aka <<)
+==== 3.10.16 _shl (aka <<)
 
 @Description: Performs shift left operation.
 @Param1 : Variable to apply shift left.
@@ -1409,7 +1437,7 @@ var n2 = n1 << 3;
 print("n1 ("+n1.num+") << 3 = "+n2.num);
 
 
-=== 3.10.17 _shr (aka >>)
+==== 3.10.17 _shr (aka >>)
 
 @Description: Performs shift right operation.
 @Param1 : Variable to apply shift right.
@@ -1432,7 +1460,7 @@ var n1 = new MyNumber (0xf);
 var n2 = n1 >> 2;
 print("n1 ("+n1.num+") >> 2 = "+n2.num);
 
-=== 3.10.19 _set (aka =)
+==== 3.10.19 _set (aka =)
 
 @Description: Performs a set operation6.
 @Param1 : Source variable to set.
@@ -1516,6 +1544,10 @@ var n1 = new MyNumber (20);
 var n2 = new MyNumber (10);
 var n3 =1+n1+5+7+n2+10.0+7.0+10; // mix operation with MyNumber, integer and number
 
+
+3.11 Properties
+
+A property is a member that defines a set of metamethods that to operate with. 
 
 
 

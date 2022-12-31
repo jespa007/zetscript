@@ -1,50 +1,7 @@
-= 4 ZetScript API
+== 4 the API
 
-== 4.1 Bind C variable
 
-Binding variable is done through _ZetScript::bindVariable_ .It has to provide the variable's name and variable's native pointer to be referenced in script side. 
-
-Syntax,
-
-[source,c++]
-zs.bindVariable("variable_name", &c_variable);
-
-Example,
-
-[source,c++]
-----
-#include "ZetScript.h"
-
-int main(int argc, char *argv[])
-{
-	zetscript::ZetScript zs;  			
-	
-	// instance built-in zetscript integer variable initialized as 10
-	zetscript::zs_int int_var=10;		
-	
-	// registers int_var named int_var at script side.
- 	zs.bindVariable("int_var",&int_var); 
- 	
- 	zs.eval(
- 		"Console::outln(\"result:\"+int_var)" // prints "result: 10"
- 	);
- 	
- 	return 0;
-}
-----
-
-ZetScript supports binding for types as _zs_int_ footnote:[zs_int is a buil-in type that acts as integer],_zs_float_ footnote:[zs_float is a built-in type that acts as float single-precision (default) or double-presicion ], _bool_, _char *_ and _zs_string_ footnote:[zs_string is built-in type that acts as string ] types. Is also possible to pass custom registered classes (see section 4.3).
-
-At script side, to have access on the registered c++ variable, just make reference to it. Unlike script variables, any C variable is strong type and it doesn't allow to assign value that differs from its native type.
-
-Example,
-
-[source,zetscript]
-int_var = 0; 					//  ok, my_var is int and you assign a int.
-int_var = 10.0; 				//  ok, my_var is int it does a cast from float to int.
-int_var = "this is a string"; 	//  invalid due cannot convert string to int.
-
-== 4.2 Bind function
+=== 4.1 Bind function
 
 To bind a function first it has to declare a function with a signature compatible to ZetScript. All, functions will have ZetScript pointer as first parameter, and the others will be built-in types or types defined by the user. 
 
@@ -83,7 +40,7 @@ int main(int argc, char *argv[])
 } 
 ---- 
  
-=== 4.2.1 Ambiguities
+==== 4.2.1 Ambiguities
 
 If we try to register another function with the same name the c++ compiler will fail to register function.
 
@@ -159,9 +116,9 @@ int main(int argc, char *argv[])
 }
 ----
 
-== 4.3 Bind types
+=== 4.3 Bind types
 
-== 4.3.1 Bind static type
+==== 4.3.1 Bind static type
 
 Binding a native class or type as static it means it's not instantiable in the script side , so it cannot use *new* keyword.
 To bind type as static is done through *bindType* function by passing the type as template and the name that will be referenced in the script.
@@ -270,7 +227,7 @@ void main(argc, char *argv[])
  
 Note: Is valuable to see that static types are safety because never are created in the script side, they are created by the C++ side 
  
-== 4.3.2 Bind instantiable type
+==== 4.3.2 Bind instantiable type
 
 Binding class or type as instantiable means that can it be instanced in the script side by using *new* keyword. To bind a instantiable type is done through *bindType* passing the type as template,the name and the interface new/delete functions,
 
@@ -309,17 +266,16 @@ void main(argc, char *argv[])
 ----
 
  
-=== 4.3.3 Delete C Class
+==== 4.3.3 Delete C Class
 
 ZetScript it has a garbage collector to delete unreferenced script variables when the end of scope is reached but it keeps alive its internal native pointer to avoid unintended segmentation faults. So to avoid memory leaks due this issue, the user has to delete manually any instanced C Class variable with delete keyword. The following code shows an example of using delete keyword,
 
  delete myclass; // script and c variable is destroyed.
  
- 
- 
+  
 === 4.4 Bind members
 
-=== 4.4.1 Bind Function Member
+==== 4.4.1 Bind Function Member
 
 The binding of variable member is done like binding c function but in this case is done through the macro function register_C_FunctionMember. You have to provide the type class, the string name that will be referenced in script side and the function object reference.
 
@@ -335,7 +291,7 @@ var myclass= new MyClass();
 
 myclass.function1(10); // prints "c++ argument is10"
 
-=== 4.4.2 Bind function constructor
+==== 4.4.2 Bind function constructor
 
 ZetScript always calls default C++ constructor when a variable is instanced with C++ type. ZetScript has no support of parameterized constructors but, instead, it can be done by registering a function with same name as the class name registered. As an example, the following code registers function member MyClass::init seen on List 4.1 as constructor3
 ,
