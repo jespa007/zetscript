@@ -7,7 +7,12 @@ Because ZetScript syntax is almost less or more equal to Javascript you can edit
 code with any editor that supports Javascript syntax notation. 
 
 
-== 1.1 Install
+== 1.1 Compile
+
+ZetScript has to be configured through (cmake,http://cmake.org) with the following compile toolchains,
+
+
+sing gnu toolchain, mingw, clang and Visual Studio through cmake
 
 To install ZetScript ,first download last source code from https://zetscript.org
 Then it has to compile the project with the following steps,
@@ -18,7 +23,6 @@ Then it has to compile the project with the following steps,
 cmake CMakeLists.txt
 ****
 +
-Note: For MSVC 2017, it has a feature a Open Folder that easily configures a CMakeFile project just opening the folder where the project is.
 . Second we have to compile and install the project. Using GNU tool chain is
 done through this command,
 +
@@ -40,3 +44,6 @@ Console::outln("Hello world!");
  zs helloworld.zs
 +
 You should see the "Hello world" message at the command line. 
+
+
+== 1.1 Compile

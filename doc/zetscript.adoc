@@ -14,19 +14,11 @@
 include::chapters/about.adoc[]
 include::chapters/preface.adoc[]
 
-== Introduction
-
-include::chapters/1_introduction.adoc[]
-
-== First Part
-
-include::chapters/2_eval.adoc[]
-
-== Second Part
-
-include::chapters/3_language.adoc[]
-
-include::chapters/4_api.adoc[]
+include::chapters/chapter_1.adoc[]
+include::chapters/chapter_2.adoc[]
+include::chapters/chapter_3.adoc[]
+include::chapters/chapter_4.adoc[]
+include::chapters/chapter_5.adoc[]
 
 [colophon]
 include::chapters/colophon.adoc[]

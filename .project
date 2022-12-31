@@ -3,6 +3,7 @@
 	<name>zetscript</name>
 	<comment></comment>
 	<projects>
+		<project>memmgr</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
