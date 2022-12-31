@@ -140,9 +140,9 @@ namespace zetscript{
 			case BYTE_CODE_DIV:         			return "/"; // /
 			case BYTE_CODE_MUL:         			return "*"; // *
 			case BYTE_CODE_MOD:         			return "%";  // %
-			case BYTE_CODE_BITWISE_AND:         	return "&"; // bitwise logic and
-			case BYTE_CODE_BITWISE_OR:         		return "|"; // bitwise logic or
-			case BYTE_CODE_BITWISE_XOR:      		return "^"; // logic xor
+			case BYTE_CODE_BITWISE_AND:         	return "&"; // bitwise and
+			case BYTE_CODE_BITWISE_OR:         		return "|"; // bitwise or
+			case BYTE_CODE_BITWISE_XOR:      		return "^"; // bitwise xor
 			case BYTE_CODE_SHL:         			return ">>"; // shift left
 			case BYTE_CODE_SHR:         			return "<<"; // shift right
 			case BYTE_CODE_STORE:       			return "="; // =
@@ -222,11 +222,11 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_DIV:		return  "/"; 		// /
 			case	BYTE_CODE_METAMETHOD_MUL:		return  "*"; 		// *
 			case	BYTE_CODE_METAMETHOD_MOD:		return  "%";  		// %
-			case	BYTE_CODE_METAMETHOD_AND:		return  "&"; 		// binary and
-			case	BYTE_CODE_METAMETHOD_OR:		return  "|";		// binary or
-			case	BYTE_CODE_METAMETHOD_XOR:		return  "^"; 		// binary xor
-			case	BYTE_CODE_METAMETHOD_SHL:		return  "<<"; 		// binary shift left
-			case	BYTE_CODE_METAMETHOD_SHR:		return  ">>"; 		// binary shift right
+			case	BYTE_CODE_METAMETHOD_AND:		return  "&"; 		// bitwise and
+			case	BYTE_CODE_METAMETHOD_OR:		return  "|";		// bitwise or
+			case	BYTE_CODE_METAMETHOD_XOR:		return  "^"; 		// bitwise xor
+			case	BYTE_CODE_METAMETHOD_SHL:		return  "<<"; 		// bitwise shift left
+			case	BYTE_CODE_METAMETHOD_SHR:		return  ">>"; 		// bitwise shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "=";		// _set
 			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "+=";		// _set_add
 			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "-=";		// _set_sub
@@ -269,11 +269,11 @@ namespace zetscript{
 			case	BYTE_CODE_METAMETHOD_DIV:		return  "_div"; 	// /
 			case	BYTE_CODE_METAMETHOD_MUL:		return  "_mul"; 	// *
 			case	BYTE_CODE_METAMETHOD_MOD:		return  "_mod";  	// %
-			case	BYTE_CODE_METAMETHOD_AND:		return  "_and"; 	// binary and
-			case	BYTE_CODE_METAMETHOD_OR:		return  "_or"; 		// binary or
-			case	BYTE_CODE_METAMETHOD_XOR:		return  "_xor"; 	// binary xor
-			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; 	// binary shift left
-			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; 	// binary shift right
+			case	BYTE_CODE_METAMETHOD_AND:		return  "_and"; 	// bitwise and
+			case	BYTE_CODE_METAMETHOD_OR:		return  "_or"; 		// bitwise or
+			case	BYTE_CODE_METAMETHOD_XOR:		return  "_xor"; 	// bitwise xor
+			case	BYTE_CODE_METAMETHOD_SHL:		return  "_shl"; 	// bitwise shift left
+			case	BYTE_CODE_METAMETHOD_SHR:		return  "_shr"; 	// bitwise shift right
 			case	BYTE_CODE_METAMETHOD_SET:		return  "_set"; 	// _set
 			case	BYTE_CODE_METAMETHOD_ADD_SET:	return  "_add_set";	// _set_add
 			case	BYTE_CODE_METAMETHOD_SUB_SET:	return  "_sub_set";	// _set_sub

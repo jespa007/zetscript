@@ -69,7 +69,7 @@
 		ZS_THROW_EXCEPTION_FILE_LINE(\
 				 eval_data->current_parsing_file\
 				,token_operator->line\
-				,"I don't know how to perform binary operation '%s %s %s'"\
+				,"I don't know how to perform bitwise operation '%s %s %s'"\
 				,i1->getConstantValueOp2ToString().c_str()\
 				,ZS_STR(BINARY_OP)\
 				,i2->getConstantValueOp2ToString().c_str());\
@@ -290,7 +290,7 @@ namespace zetscript{
 						,i2->getConstantValueOp2ToString().c_str());
 			}
 			break;
-		// binary ops
+		// bitwise ops
 		case BYTE_CODE_BITWISE_AND:
 			EVAL_OPERATION_BINARY(&);
 			break;
