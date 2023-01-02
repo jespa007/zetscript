@@ -1,3 +1,6 @@
+:source-highlighter: highlight.js
+:highlightjs-languages: rust, swift
+
 == 3. The language
 
 === 3.1 Statments
@@ -6,16 +9,20 @@ ZetScript Language is based on a set of statements formed by values, operators, 
 
 Example of four statements,
 
-[source, zetscript]
+[source,javascript]
+----
 var op1,op2,res;
 op1 = 5;
 op2 = 6;
 res = 5+6;
+----
 
 The last example can be executed within one line,
 
-[source, zetscript]
+[source,javascript]
+----
 var op1,op2,res; op1=5; op2=6; res = 5+6;
+----
 
 === 3.2 Comments
 
@@ -23,15 +30,19 @@ ZetScript support block and line comments.
 
 ==== 3.2.1 Block comment
 
-[source, zetscript]
+[source,javascript]
+----
 /*
 this is a block comment
 */
+----
 
 ==== 3.2.2 Line comment
 
-[source, zetscript]
- // This is a line comment
+[source,javascript]
+----
+// This is a line comment
+----
 
 === 3.3 Literal values
 
@@ -48,22 +59,45 @@ Boolean literals is represented as true or false.
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 true // true value
 false // false value
+----
 
 ==== 3.3.2 Integer
 
 Integer literals are represented as integer with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as decimal value, hexadecimal,binary or char format.
 Example,
 
-[source, zetscript]
--1; // negative decimal value
-10; // positive decimal value
+[source,javascript]
+----
+10; // decimal value
 0x1a; // hexadecimal value
 01001b; // binary value
 'b'; // char value
+----
 
+Literal integer pre operators are the following,
+
+[cols="1d,1m,2d,2a"]
+|====
+|Operator |Expression |Description |Example
+
+|Negate
+|-integer 
+|Negated value
+|
+[source,javascript]
+ -10
+ 
+|Bitwise complement
+|~integer 
+|Invert all bits
+|
+[source,javascript]
+~(00000011b) // 11111100b
+|====
 
 ==== 3.3.3 Float
 
@@ -71,9 +105,11 @@ Float literals are represented as IEEE-754 floating point numbers in 32-bit or 6
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 1.2 // integer and decimal form
 2.0e-2 // cientific notation form
+----
 
 ==== 3.3.4 String
 
@@ -81,8 +117,10 @@ String literal is represented as string within quotes (").
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 "this is a string"
+----
 
 === 3.4 Variables
 
@@ -92,17 +130,36 @@ A variable is a type of container that is used to store a value in it. A variabl
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 var i; // declares i variable
+----
 
-==== 3.4.2 Variable instantiation
+==== 3.4.2 Variable
 
-A variable is undefined (see 2.5.1) when is declared until is instanced with any value
-through operator '='. As an example we can instantiate a variable with integer value
+A variable is a kind of element that can hold a variable. Because ZetScript variables are _dynamically typed_, it can hold different type of values on its lifetime. A variable is declared as *var* and, by default, is initialized as *undefined* value (see 2.5.1). 
+
+[source,javascript]
+----
+var i; // Declared variable 'i' with no inicialization (undefined value).
+----
+
+A variable can be initialized with a proper type value through '=' operator. The follow example initializes a variable with integer value
 (see section 2.2),
 
-[source, zetscript]
-var i=0; // variable v is instancied as integer.
+[source,javascript]
+----
+var i=10; // Declared variable 'i' and initialized as integer value.
+----
+
+==== 3.4.2 Constant
+
+A constant is a kind of element where its value is immutable on its in lifetime. A constant is declared as *const* and is mandatory to be initialized.
+
+[source,javascript]
+----
+const NUM_ITEMS=10; // constant 'NUM_ITEMS' with value 10.
+----
 
 ==== 3.4.3 Scope
 
@@ -115,7 +172,8 @@ A ZetScript makes easy the concept of global local scope. Basically, variables d
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 // Declares *i* variable as global
 var i;
 
@@ -125,6 +183,7 @@ var i;
 	var j;
 }
 // block ends here, so *j* variable doesn't exist anymore
+----
 
 === 3.5 Built-in types
 
@@ -137,45 +196,65 @@ ZetScript supports the following built-in types,
 * Boolean
 * String
 * Vector
-* Structure
+* Object
 * Function
 
 ==== 3.5.1 Undefined
 
 A undefined type it defines a non initialized variable. A undefined variable is defined once a variable assings *undefined* value,
 
-[source, zetscript]
+[source,javascript]
+----
 var a; // 'a' is undefined as default
 var b=undefined; // assigns undefined value
+----
 
 ==== 3.5.2 Null
 
 A null type it defines an empty or not valid variable. A null variable is defined once a variable assings *null* value,
 
-[source, zetscript]
+[source,javascript]
+----
 var i=null;
+----
 
 ==== 3.5.3 Integer
 
-Integer type it defines a integer value with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer is instanced once it assigns decimal, hexadecimal,binary or char value.
+Integer type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as integer once it assigns a decimal, hexadecimal,binary or char value.
 
 Example,
 
-[source, zetscript]
-var a=-1; // negative decimal value
-var b=10; // positive decimal value
-var c=0x1a; // hexadecimal value
-var d=01001b; // binary value
-var e='b'; //  char value
+[source,javascript]
+----
+var a=10; // decimal value
+var b=0x1a; // hexadecimal value
+var c=01001b; // binary value
+var d='b'; //  char value
+----
 
-*Pre/Post variable operations*
+*Integer pre/post operators*
 
-Pre/Post operations modifies the value of variable itself before/after the variable is read. Integer variable type has the following pre/post operations,
+Integer pre/post operations are applied on integer variables before or after is read. Integer pre/post operations are the following,
 
 [cols="1d,1m,2d,2a"]
 |====
 |Operator |Expression |Description |Result
 
+|Negate
+|-variable 
+|Negate value
+|
+[source,zetscript]
+ var i=10;
+ var j=-i; // j=-10
+ 
+|Bitwise complement
+|~variable 
+|Invert all bits
+|
+[source,zetscript]
+ var i=00000011b;
+ var j=~i; // j=11111100b or -4 decimal
 |PreIncrement
 |++variable 
 |Performs an increment BEFORE evaluate the variable
@@ -188,7 +267,7 @@ Pre/Post operations modifies the value of variable itself before/after the varia
 | variable++ 
 | Performs increment AFTER evaluate the variable
 | 
-[source,zetscript]
+[source,javascript]
 var i=0; 
 var j=i++; // j=0; i=1
 
@@ -206,26 +285,37 @@ var j=--i; // j=-1; i=-1
 |[source,zetscript] 
 var i=0; 
 var j=i--;//j=0;i=-1;
-
 |====
 
-==== 3.5.4 Number type
+==== 3.5.4 Float
 
-A number variable type is instanced once a variable instance a number constant or number variable,
+Float type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as float once it assigns a decimal or scientific value notation forms.
 
 Example,
 
-[source, zetscript]
-var f=1.5;
+[source,javascript]
+----
+var a=1.2 // decimal form value
+var b=2.0e-2 // cientific notation form value
+----
 
 
-*Pre/Post variable operations*
+*Float pre/post operations*
 
-Pre/Post operations modifies the value of variable itself before/after the variable is read. Number variable type has the following pre/post operations,
+Float pre/post operations are applied on float variables before or after is read. Float pre/post operations are the following,
+
 
 [cols="1d,1m,2d,2a"]
 |====
 |Operator |Expression |Description |Result
+|Negate
+|-variable 
+|Get value as negated
+|
+[source,zetscript]
+ var i=10.5;
+ var j=-i; // j=-10.5
+
 |PreIncrement 
 |++variable 
 |Performs an increment BEFORE evaluate the variable
@@ -259,47 +349,57 @@ var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
 |====
 
-=== 3.5.5 Boolean type
+=== 3.5.5 Boolean
 
-A boolean variable type is instanced once a variable instance a boolean constant or boolean variable.
+Boolean type it defines a boolean variable represented as true or false. A variable is instanced as boolean once it assigns a boolean value.
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 var b=false;
+----
 
-=== 3.5.6 String type
+=== 3.5.6 String
 
-A integer variable type is instanced once a variable instance a string constant or string variable
+String type it defines a string variable represented as string within double quotes("). A variable is instanced as string once it assigns a string value.
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 var s="this is a string";
+----
 
 === 3.5.7 Vector type
 
-A vector is an special type to store multiple values in a unidimensional array. the instantiation is done with '[' and ']'.
+A vector is an special type to store multiple values in a unidimensional array. To instantiate variable as vector is done with square brackets '[' and ']'.
 
 Example empty vector,
 
-[source, zetscript]
+[source,javascript]
+----
 var v=[];
+----
 
 the user can instantiate a vector with values separated by comas.
 
 Example vector instantiated with values,
 
-[source, zetscript]
+[source,javascript]
+----
 var v=[1,"string",true,2.0];
+----
 
 If the vector has any value its access is done through integer index.
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 var v=[1,"this is a string",true,2.0]; // its has 4 elements where its access [0..3]
 var v_1=v[1]; // It access vector's second element (i.e "this is a string") and it's saved into v_1 variable
+----
 
 *Built-in functions*
 
@@ -335,24 +435,30 @@ v.pop(); //=[2], v=[1]
 
 An object type is a anonymous container type to store multiple values in attributes. The instantiation is done within a pair of curly brackets (i.e '{}'),
 
-[source, zetscript]
+[source,javascript]
+----
 var t={};
+----
 
 Optionally we can init with some values with its attributes,
 
-[source, zetscript]
+[source,javascript]
+----
 var t={
   i:1
  ,s:"this is a string"
  ,b:true
  ,f:2.0
 };
+----
 
 To acces to its elements is done through the variable name followed by '.' and attribute name or attribute name as string within brackets (i.e ["attribute_name"] ),
 
-[source, zetscript]
+[source,javascript]
+----
 var v_i=v.i; // get value 'i' by '.'
 var v_i=v["i"]; // get value 'i' by '[]'
+----
 
 *Built-in functions*
 
@@ -390,7 +496,8 @@ A function is an object that holds information about a function and is able to c
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 function add(op1, op2){ // function that returns the sum of two vars.
 return op1+op2;
 }
@@ -401,6 +508,7 @@ var fun_obj = function (op1, op2){ // function object that returns the sum of tw
 return op1+op2;
 };
 var j=fun_obj(2,3);// calls fun_obj (aka anonymous function). function. J=5
+----
 
 === 3.6 Operations
 
@@ -615,15 +723,19 @@ Each operator it has priority of evaluation. ZetScript it has the following oper
 
 For example this expression,
 
-[source,zetscript]
+[source,javascript]
+----
 2+4*5; // will result 22
+----
 
 You can change the evaluation priority usign parenthesis.
 
 For example,
 
-[source,zetscript]
-(2+4)*5; // will result 36 
+[source,javascript]
+----
+(2+4)*5; // will result 36
+---- 
 
 === 3.7 Conditionals
 
@@ -639,17 +751,21 @@ Use the if statement to specify a block of ZetScript code to be executed if a co
 
 Syntax,
 
-[source, zetscript]
+[source,javascript]
+----
 if(condition){
- //Block of code to be executed if the condition is true
+	//Block of code to be executed if the condition is true
 }
+----
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 if(n < 10) {
- // do something if condition is true
+	// do something if condition is true
 }
+----
 
 ==== 3.7.2 The else statement
 
@@ -657,11 +773,14 @@ Use the else statement to specify a block of code to be executed if the conditio
 
 Syntax,
 
+[source,javascript]
+----
 if(n < 10) {
- // do something if condition is true
+	// do something if condition is true
 }else{
- // do something if condition is false
+	// do something if condition is false
 } 
+----
 
 ==== 3.7.3 The if else statement
 
@@ -669,14 +788,16 @@ Use the else statement to specify a block of code to be executed if the conditio
 
 Syntax,
 
-[source, zetscript]
+[source,javascript]
+----
 if(n < 10) {
- // do something if condition is true
+ 	// do something if condition is true
 }else if(n < 20){
- // do something if condition is true
+	// do something if condition is true
 }else{
- // do something if none of above conditions are true
+	// do something if none of above conditions are true
 }
+----
 
 ==== 3.7.4 Ternary condition
 
@@ -684,13 +805,17 @@ Use ternary condition to have a short if/else statement into single statement. I
 
 Syntax,
 
-[source, zetscript]
+[source,javascript]
+----
 result = (condition)?first expression:2nd expression;
+----
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 var j = 0>1? 0:1; // j = 1
+----
 
 ==== 3.7.5 Switch
 
@@ -698,54 +823,60 @@ Use the switch statement to select one of many blocks of code to be executed.
 
 Syntax,
 
-[source, zetscript]
+[source,javascript]
+----
 switch(expression) {
- case value_0:
- code block
- break;
- case value_1:
- code block
- break;
- 
- case value_n
- default:
- code block
- break;
+	case value_0:
+		code block
+		break;
+	case value_1:
+		code block
+		break;
+	 	...
+		case value_n
+		default:
+		code block
+		break;
 }
+----
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 switch (n) {
- case 0:
- // do something if n==0
- break;
- case 1:
- // do something if n==1
- break;
- default:
- // do something if n!=0 && n!=1
- break;
+	case 0:
+		// do something if n==0
+		break;
+	case 1:
+		// do something if n==1
+		break;
+	default:
+		// do something if n!=0 && n!=1
+		break;
 }
+----
 
 Switch can have common code blocks in different conditions
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 switch (n) {
- case 0:
- case 1:
-  // do something if n==0 or n==1
- break;
- case 2:
- case 3:
- // do something if n==2 or n==3
- break;
- default:
- // do something if n!=0 && n!=1 && n!=2 && n!=3
- break;
+	case 0:
+	case 1:
+	 	// do something if n==0 or n==1
+		break;
+	case 2:
+	case 3:
+		// do something if n==2 or n==3
+	break;
+	default:
+		// do something if n!=0 && n!=1 && n!=2 && n!=3
+		break;
 }
+----
 
 === 3.8 Loops
 
@@ -760,19 +891,23 @@ The while loop loops through a block of code as long as a specified condition is
 
 Syntax,
 
-[source, zetscript]
+[source,javascript]
+----
 while(condition){
- // code block to be executed
+	// code block to be executed
 }
+----
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 var i = 0;
 while (i < 5){
- // do something until i==5
- i++;
+	// do something until i==5
+	i++;
 } 
+----
 
 ==== 3.8.2 do-while
 
@@ -780,19 +915,23 @@ do-while loop is always be executed at least once, even if the condition is fals
 
 Syntax,
 
-[source, zetscript]
+[source,javascript]
+----
 do{
-// do-while body
+	// do-while body
 } while (condition);
+----
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 var i = 0;
 do {
- // do something until i==5
- i++;
+	// do something until i==5
+	i++;
 } while (i < 5);
+----
 
 ==== 3.8.3 The For Loop
 
@@ -800,10 +939,12 @@ The for loop is often the tool you will use when you want to create a loop.
 
 Syntax,
 
-[source, zetscript]
+[source,javascript]
+----
 for(stament1;statment2;statment3){
- // code block to be executed
+	// code block to be executed
 }
+----
 
 * Statement 1 is executed before the loop (the code block) starts. Normally you will use statement 1 to initialize the variable used in the loop (for example var i = 0).
 * Statement 2 defines the condition for running the loop.
@@ -811,10 +952,12 @@ for(stament1;statment2;statment3){
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 for(var i=0; i < 5; i++) {
- print("The number is "+i);
+	print("The number is "+i);
 } 
+----
 
 
 === 3.9 Functions
@@ -827,17 +970,21 @@ A JavaScript function is defined with the function keyword, followed by a name, 
 
 Syntax,
 
-[source, zetscript]
+[source,javascript]
+----
 function fun_name(arg1, arg2, ..., argn){
- // code to be executed
+	// code to be executed
 }
+----
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 function add(op1, op2){
-return op1+op2;
+	return op1+op2;
 }
+----
 
 ==== 3.9.2 Call a function
 
@@ -845,18 +992,24 @@ The call of a function is done when in some part of the code it calls it as foll
 
 Syntax
 
-[source, zetscript]
+[source,javascript]
+----
 fun_name(arg1, arg2, arg3,..., argN);
+----
 
 Note: If a function is called with less than N args the rest of arguments will remain undefined.
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
+
 function add(op1,op2){
-return op1+op2;
+	return op1+op2;
 }
+
 var j=add(2,3); // calls add function. j=5
+----
 
 ==== 3.9.3 Function object
 
