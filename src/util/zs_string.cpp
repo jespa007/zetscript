@@ -325,10 +325,13 @@ namespace zetscript{
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
 
 		if(_pos > 0){
-			strncpy(new_buf, buf+_pos, _pos); // copy the 1st string
+			strncpy(new_buf, buf, _pos); // copy the 1st string
 		}
+
+		// set char
 		*(new_buf+_pos)=_c;
 
+		// copy last string
 		strcpy(new_buf+_pos+1, buf+_pos);
 
 		free(buf);
@@ -344,7 +347,7 @@ namespace zetscript{
 		char *new_buf = (char *)ZS_MALLOC(new_size + 1); // allocate memory to keep the concatenated string
 
 		if(_pos > 0){
-			strncpy(new_buf, buf+_pos, _pos); // copy the 1st string
+			strncpy(new_buf, buf, _pos); // copy the 1st string
 		}
 		strcat(new_buf+_pos,_s1.c_str());
 
@@ -401,7 +404,7 @@ namespace zetscript{
 				}
 
 				// next span
-				idx+=len;
+				idx++;
 
 			}while(idx<count);
 		}

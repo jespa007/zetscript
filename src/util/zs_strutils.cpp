@@ -371,7 +371,7 @@ namespace zetscript{
 
 		}
 
-		zs_string  erase(zs_string & str_old, char ch_to_remove){
+		zs_string  erase(const zs_string & str_old, char ch_to_remove){
 			zs_string str = str_old;
 			zs_string str_new="";
 
@@ -392,7 +392,7 @@ namespace zetscript{
 			return n_items;
 		}
 
-		void copy_from_ptr_diff(zs_string & str_dst,const char *p1, const char *p2){
+		zs_string copy_from_ptr_diff(const char *p1, const char *p2){
 
 			char aux_str_copy[ZS_MAX_STR_BUFFER] = {0};
 
@@ -412,7 +412,7 @@ namespace zetscript{
 
 			strncpy(aux_str_copy,p1,var_length);
 
-			str_dst=aux_str_copy;
+			return aux_str_copy;
 
 		}
 
@@ -442,7 +442,7 @@ namespace zetscript{
 			return false;
 		}
 
-		int index_of(zs_string& text, zs_string& pattern)
+		int index_of(const zs_string& text, const zs_string& pattern)
 		{
 			// where appears the pattern in the text?
 			int loc = text.find(pattern, 0);

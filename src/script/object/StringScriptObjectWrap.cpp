@@ -47,6 +47,12 @@ namespace zetscript{
 		str->insert(idx,ch);
 	}
 
+	void StringScriptObjectWrap_insertAt(ZetScript *_zs,StringScriptObject *so, zs_int idx,zs_string * _str){
+		ZS_UNUSUED_PARAM(_zs);
+		zs_string *str=so->str_ptr;
+		str->insert(idx,*_str);
+	}
+
 	VectorScriptObject * StringScriptObjectWrap_split(ZetScript *_zs,StringScriptObject *so,zs_int ch_delim){
 		VirtualMachine *vm=_zs->getVirtualMachine();
 		VectorScriptObject *sv=ZS_NEW_VECTOR_OBJECT(_zs);
@@ -131,9 +137,9 @@ namespace zetscript{
 		return zs_strutils::ends_with(*str,*suffix);
 	}
 
-	StringScriptObject * StringScriptObjectWrap_substring(ZetScript *_zs,StringScriptObject *str_in,zs_int start,zs_int end){
+	StringScriptObject * StringScriptObjectWrap_substring(ZetScript *_zs,StringScriptObject *str_in,zs_int _pos,zs_int _length){
 		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
-		str_out->set(str_in->toString().substr(start,end));
+		str_out->set(str_in->toString().substr(_pos,_length));
 		return str_out;
 	}
 

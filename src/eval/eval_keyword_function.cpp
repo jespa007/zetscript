@@ -384,7 +384,7 @@ namespace zetscript{
 				}
 
 				// copy value
-				zs_strutils::copy_from_ptr_diff(param_value,aux_p,end_var);
+				param_value=zs_strutils::copy_from_ptr_diff(aux_p,end_var);
 				// ok register symbol into the object function ...
 				param_info.name=zs_string(param_value);
 

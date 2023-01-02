@@ -350,7 +350,7 @@ var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
 |====
 
-=== 3.5.5 Boolean type
+==== 3.5.5 Boolean type
 
 Boolean type it defines a boolean variable represented as _true_ or _false_. A variable is instanced as _boolean_ once it assigns a boolean value.
 
@@ -361,7 +361,7 @@ Example,
 var b=false;
 ----
 
-=== 3.5.6 String type
+==== 3.5.6 String type
 
 String type it defines a string type represented as a sequence of chars. A variable is instanced as _string_ once it assigns a string value.
 
@@ -371,6 +371,88 @@ Example,
 ----
 var s="this is a string";
 ----
+
+===== 3.5.6.1 Member functions
+
+String type provides the following set of member functions,
+
+ * size()
+ * eraseAt(_pos)
+ * insertAt(_pos,_char)
+ * clear()
+ * replace(_old_str,_new_str)
+ * split(_char|_str)
+ * contains(_str)
+ * indexOf(_char|_str)
+ * startsWith(_str)
+ * endsWith(_str)
+ * substring(_str,_pos,_length)
+ * append(_str)
+ 
+*String::size()*
+
+_String::size_ returns the length of the string
+
+Example,
+
+[source,javascript]
+----
+"hello world".size() // returns 11 
+----
+
+*String::eraseAt*
+
+_String::eraseAt_ inserts additional characters into the string right before the character indicated by pos (or p):
+
+Example,
+
+[source,javascript]
+----
+"hello world".size() // returns 11 
+----
+
+*String::insertAt(_pos)*
+
+Inserts additional characters into the string right before the character indicated by __pos_
+
+Example,
+
+[source,javascript]
+----
+var s1=
+"hello world".size() // returns 11 
+----
+
+*String::clear*
+
+*String::replace*
+
+*String::split*
+
+*String::contains*
+
+*String::indexOf*
+
+*String::startsWith*
+
+*String::endsWith*
+
+*String::substring*
+
+*String::append*
+ 
+====== 3.5.6.2 Static functions
+
+String type provides the following set of static functions,
+
+* format
+
+===== 3.5.6.3 Operators
+
+String type provides the following set of operators,
+
+ * ==
+ * +=
 
 === 3.5.7 Vector type
 

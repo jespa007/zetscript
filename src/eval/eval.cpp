@@ -327,7 +327,7 @@ namespace zetscript{
 
 						end_var=aux;
 
-						zs_strutils::copy_from_ptr_diff(str_symbol,start_var,end_var);
+						str_symbol=zs_strutils::copy_from_ptr_diff(start_var,end_var);
 
 						ZS_LOG_DEBUG("import file: %s",str_symbol.c_str());
 

@@ -282,11 +282,12 @@ namespace zetscript{
 		// String
 		bindStaticMemberFunction<StringScriptObject>("formatNative",StringScriptObject::format);
 		bindMemberFunction<StringScriptObject>("eraseAt",StringScriptObjectWrap_eraseAt);
-		bindMemberFunction<StringScriptObject>("insertAt",StringScriptObjectWrap_insertAt);
+		bindMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ZetScript *_zs,StringScriptObject *so, zs_int, zs_int )>(StringScriptObjectWrap_insertAt));
+		bindMemberFunction<StringScriptObject>("insertAt",static_cast<void (*)(ZetScript *_zs,StringScriptObject *so, zs_int, zs_string *)>(StringScriptObjectWrap_insertAt));
 		bindMemberFunction<StringScriptObject>("clear",StringScriptObjectWrap_clear);
 		bindMemberFunction<StringScriptObject>("replace",StringScriptObjectWrap_replace);
-		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(StringScriptObjectWrap_split));
 		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(StringScriptObjectWrap_split));
+		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(StringScriptObjectWrap_split));
 		bindMemberFunction<StringScriptObject>("size",StringScriptObjectWrap_size);
 		bindMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(&StringScriptObjectWrap_contains));
 		bindMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectWrap_contains));

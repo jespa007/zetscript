@@ -66,7 +66,7 @@ namespace zetscript{
 		 NumberType is_number(const zs_string & test_str);
 		 bool 		 is_binary(const zs_string & test_str);
 
-		 zs_string remove(zs_string & str_old, char ch_to_remove);
+		 zs_string remove(const zs_string & str_old, char ch_to_remove);
 
 		 int count(const zs_string & s,char c);
 
@@ -75,13 +75,13 @@ namespace zetscript{
 		 * @p1:start pointer
 		 * @p2:end pointer
 		 */
-		void copy_from_ptr_diff(zs_string & str_dst,const char *p1, const char *p2);
+		zs_string copy_from_ptr_diff(const char *p1, const char *p2);
 
 
 		bool contains(const zs_string & _str_input, const zs_string & _str_containts,StringComparer sc=StringComparer::Exactly);
 		bool contains(const zs_vector<zs_string> & _strings, const zs_string & _str_containts,StringComparer sc=StringComparer::Exactly);
 
-		int index_of(zs_string& text, zs_string& pattern);
+		int index_of(const zs_string& text, const zs_string& pattern);
 
 		zs_string unescape(const zs_string & s);
 	}

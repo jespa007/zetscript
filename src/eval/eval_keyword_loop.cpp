@@ -146,7 +146,7 @@ namespace zetscript{
 			ei_jnt->instruction_source_info.line=line;
 
 
-			zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr);
+			start_symbol=zs_strutils::copy_from_ptr_diff(aux_p+1, end_expr);
 
 			IGNORE_BLANKS(aux_p,eval_data,end_expr+1,line);
 
@@ -265,7 +265,7 @@ namespace zetscript{
 						,&eval_data->current_function->eval_instructions
 						,")"
 				)) != NULL){
-					zs_strutils::copy_from_ptr_diff(start_symbol,aux_p+1, end_expr);
+					start_symbol=zs_strutils::copy_from_ptr_diff(aux_p+1, end_expr);
 				}else{
 					EVAL_ERROR_FILE_LINEF(eval_data->current_parsing_file,line,"Syntax error 'do-while': Expected ')'");
 				}
