@@ -44,16 +44,16 @@ this is a block comment
 // This is a line comment
 ----
 
-=== 3.3 Literal values
+=== 3.3 Literals
 
-ZetScript supports the following literal values,
+ZetScript supports the following literals,
 
 * boolean
 * integer
 * float
 * string
 
-==== 3.3.1 Boolean
+==== 3.3.1 Boolean literal
 
 Boolean literals is represented as true or false.
 
@@ -65,9 +65,10 @@ true // true value
 false // false value
 ----
 
-==== 3.3.2 Integer
+==== 3.3.2 Integer literal
 
 Integer literals are represented as integer with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as decimal value, hexadecimal,binary or char format.
+
 Example,
 
 [source,javascript]
@@ -99,7 +100,7 @@ Literal integer pre operators are the following,
 ~(00000011b) // 11111100b
 |====
 
-==== 3.3.3 Float
+==== 3.3.3 Float literal
 
 Float literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. Float can be represented in decimal form or scientific notation form.
 
@@ -111,7 +112,7 @@ Example,
 2.0e-2 // cientific notation form
 ----
 
-==== 3.3.4 String
+==== 3.3.4 String literal
 
 String literal is represented as string within quotes (").
 
@@ -185,9 +186,9 @@ var i;
 // block ends here, so *j* variable doesn't exist anymore
 ----
 
-=== 3.5 Built-in types
+=== 3.5 Types
 
-ZetScript supports the following built-in types,
+ZetScript supports the following types,
 
 * Undefined
 * Null
@@ -199,9 +200,9 @@ ZetScript supports the following built-in types,
 * Object
 * Function
 
-==== 3.5.1 Undefined
+==== 3.5.1 Undefined type
 
-A undefined type it defines a non initialized variable. A undefined variable is defined once a variable assings *undefined* value,
+Undefined type it defines a non initialized variable. A variable is instanced as _undefined_ once a its assings *undefined* value,
 
 [source,javascript]
 ----
@@ -209,18 +210,18 @@ var a; // 'a' is undefined as default
 var b=undefined; // assigns undefined value
 ----
 
-==== 3.5.2 Null
+==== 3.5.2 Null type
 
-A null type it defines an empty or not valid variable. A null variable is defined once a variable assings *null* value,
+Null type it defines an empty or not valid variable. A variable is instanced as _null_ once a its assings *null* value,
 
 [source,javascript]
 ----
 var i=null;
 ----
 
-==== 3.5.3 Integer
+==== 3.5.3 Integer type
 
-Integer type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as integer once it assigns a decimal, hexadecimal,binary or char value.
+Integer type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as _integer_ once it assigns decimal, hexadecimal,binary or char value.
 
 Example,
 
@@ -232,9 +233,9 @@ var c=01001b; // binary value
 var d='b'; //  char value
 ----
 
-*Integer pre/post operators*
+*Integer operators*
 
-Integer pre/post operations are applied on integer variables before or after is read. Integer pre/post operations are the following,
+Integer operators are applied on integer variables before or after is read. Integer operators are the following,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -242,9 +243,9 @@ Integer pre/post operations are applied on integer variables before or after is 
 
 |Negate
 |-variable 
-|Negate value
+|Negates its value
 |
-[source,zetscript]
+[source,javascript]
  var i=10;
  var j=-i; // j=-10
  
@@ -252,20 +253,20 @@ Integer pre/post operations are applied on integer variables before or after is 
 |~variable 
 |Invert all bits
 |
-[source,zetscript]
+[source,javascript]
  var i=00000011b;
  var j=~i; // j=11111100b or -4 decimal
 |PreIncrement
 |++variable 
-|Performs an increment BEFORE evaluate the variable
+|Increments FIRST and THEN evaluates
 |
-[source,zetscript]
+[source,javascript]
  var i=0;
  var j=++i; // j=1, i =1
  
-| PostIncrement
-| variable++ 
-| Performs increment AFTER evaluate the variable
+|PostIncrement
+|variable++ 
+|Evaluates FIRST and THEN increments
 | 
 [source,javascript]
 var i=0; 
@@ -273,23 +274,23 @@ var j=i++; // j=0; i=1
 
 | Predecrement
 | --variable 
-| Performs a decrement BEFORE evaluate the variable
+|Decrements FIRST and THEN evaluates
 | 
-[source,zetscript]
+[source,javascript]
 var i=0; 
 var j=--i; // j=-1; i=-1
 
-| Postdecrement
-| variable--
-| Performs decrement AFTER evaluate the variable
-|[source,zetscript] 
+|Postdecrement
+|variable--
+|Evaluates FIRST and THEN decrements
+|[source,javascript] 
 var i=0; 
 var j=i--;//j=0;i=-1;
 |====
 
-==== 3.5.4 Float
+==== 3.5.4 Float type
 
-Float type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as float once it assigns a decimal or scientific value notation forms.
+Float type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as _float_ once it assigns a decimal or scientific value notation forms.
 
 Example,
 
@@ -300,9 +301,9 @@ var b=2.0e-2 // cientific notation form value
 ----
 
 
-*Float pre/post operations*
+*Float operators*
 
-Float pre/post operations are applied on float variables before or after is read. Float pre/post operations are the following,
+Float operators are applied on float variables before or after is read. Float operators are the following,
 
 
 [cols="1d,1m,2d,2a"]
@@ -310,48 +311,48 @@ Float pre/post operations are applied on float variables before or after is read
 |Operator |Expression |Description |Result
 |Negate
 |-variable 
-|Get value as negated
+|Evaluates negated variable
 |
-[source,zetscript]
+[source,javascript]
  var i=10.5;
  var j=-i; // j=-10.5
 
 |PreIncrement 
 |++variable 
-|Performs an increment BEFORE evaluate the variable
+|Increments FIRST and THEN evaluates
 |
-[source,zetscript]
+[source,javascript]
 var i=0.5;
 var j=++i; // j=1.5, i =1.5
 
 |PostIncrement 
 |variable++ 
-|Performs increment AFTER evaluate the variable
+|Evaluates FIRST and THEN increments
 |
-[source,zetscript]
+[source,javascript]
 var i=0.5;
 var j=i++; // j=0.5; i=1.5
 
 |Predecrement 
 |--variable 
-|Performs a decrement BEFORE evaluate the variable
+|Decrements FIRST and THEN evaluates
 |
-[source,zetscript]
+[source,javascript]
 var i=0.5;
 var j=--i; // j=-0.5; i=-0.5
 
 |Postdecrement 
 |variable-- 
-|Performs decrement AFTER evaluate the variable
+|Evaluates FIRST and THEN decrements
 |
-[source,zetscript]
+[source,javascript]
 var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
 |====
 
-=== 3.5.5 Boolean
+=== 3.5.5 Boolean type
 
-Boolean type it defines a boolean variable represented as true or false. A variable is instanced as boolean once it assigns a boolean value.
+Boolean type it defines a boolean variable represented as _true_ or _false_. A variable is instanced as _boolean_ once it assigns a boolean value.
 
 Example,
 
@@ -360,9 +361,9 @@ Example,
 var b=false;
 ----
 
-=== 3.5.6 String
+=== 3.5.6 String type
 
-String type it defines a string variable represented as string within double quotes("). A variable is instanced as string once it assigns a string value.
+String type it defines a string type represented as a sequence of chars. A variable is instanced as _string_ once it assigns a string value.
 
 Example,
 
@@ -373,37 +374,37 @@ var s="this is a string";
 
 === 3.5.7 Vector type
 
-A vector is an special type to store multiple values in a unidimensional array. To instantiate variable as vector is done with square brackets '[' and ']'.
-
-Example empty vector,
-
-[source,javascript]
-----
-var v=[];
-----
-
-the user can instantiate a vector with values separated by comas.
-
-Example vector instantiated with values,
-
-[source,javascript]
-----
-var v=[1,"string",true,2.0];
-----
-
-If the vector has any value its access is done through integer index.
+Vector type it defines a container type that stores multiple values in a unidimensional array. A variable is instanced as _vector_ once it assings a open/closed square brackets (i.e '[]' ), 
 
 Example,
 
 [source,javascript]
 ----
-var v=[1,"this is a string",true,2.0]; // its has 4 elements where its access [0..3]
-var v_1=v[1]; // It access vector's second element (i.e "this is a string") and it's saved into v_1 variable
+var v=[]; // empty vector
 ----
 
-*Built-in functions*
+Variable instanced as _vector_ can also have initialized with a sequence of elementsseparated with coma (i.e ',') within square brackets,
 
-Vector type It has the following functions in order to manage vector at runtime.
+Example,
+
+[source,javascript]
+----
+var v=[1,"string",true,2.0]; // Vector with elements
+----
+
+To access element vector is done through integer as a index.
+
+Example,
+
+[source,javascript]
+----
+var v=[1,"this is a string",true,2.0]; // its has 4 elements where its index access exist in [0..3]
+v[1]; // It access vector's second element (i.e "this is a string")
+----
+
+*Member functions*
+
+Vector type provides the following set of member functions.
 
 [cols="1m,1d,2a"]
 |====
@@ -411,21 +412,21 @@ Vector type It has the following functions in order to manage vector at runtime.
 |size 
 |It returns the number of current elements
 |
-[source,zetscript]
+[source,javascript]
 var v=[1,2];
 v.size(); // =2
 
 |push 
 |Adds value at the end of the vector
 |
-[source,zetscript]
+[source,javascript]
 var v=[1,2];
 v.push(3); //v=[1,2,3]
 
 |pop 
 |Returns the last value and removes it. 
 |
-[source,zetscript]
+[source,javascript]
 var v=[1,2];
 v.pop(); //=[2], v=[1]
 |==== 
@@ -471,21 +472,21 @@ Object type it has the following functions in order to manage struct at runtime,
 |size 
 |It returns the number of current elements 
 |
-[source,zetscript
+[source,javascript
 var v=[1,2];
 v.size(); // =2
 
 |add
 |Adds an attribute
 |
-[source,zetscript]
+[source,javascript]
 var s={};
 v.add("a",0); // s={a:0}
 
 |remove 
 |Removes an attribute
 |
-[source,zetscript]
+[source,javascript]
 var s={a:0};
 v.remove("a"); // s={}
 |====
@@ -530,7 +531,7 @@ The following operators it does evaluates arithmetic expressions,
 |+
 |It performs a add operation between two integer or number values or concatenates strings with other values
 |
-[source,zetscript]
+[source,javascript]
 5+10; // = 15
 1.5+6; // = 7.5
 "string_"+1;// ="string_1"
@@ -539,7 +540,7 @@ The following operators it does evaluates arithmetic expressions,
 |-
 |It performs a sub operation between two integer or number values
 |
-[source,zetscript]
+[source,javascript]
 10-5; // = 5
 2.5-1;// = 1.5
 
@@ -547,7 +548,7 @@ The following operators it does evaluates arithmetic expressions,
 |* 
 |It performs a multiplication between two integer or number values
 |
-[source,zetscript]
+[source,javascript]
 10*5; //= 50
 1.5*2;//= 3.0
 
@@ -555,7 +556,7 @@ The following operators it does evaluates arithmetic expressions,
 |/ 
 |It performs a division between two integer or number values
 |
-[source,zetscript]
+[source,javascript]
 10/2; // = 5
 3/2.0 // = 1.5
 
@@ -563,7 +564,7 @@ The following operators it does evaluates arithmetic expressions,
 |% 
 |It performs a division between two integer or number values
 |
-[source,zetscript]
+[source,javascript]
 3%2; //it results 1
 10%2.5; // it results
 |====
@@ -580,7 +581,7 @@ The following operators it does evaluates relational expressions,
 |==
 |Check whether two values are equal
 |
-[source,zetscript]
+[source,javascript]
  10==10;// = true
 "hello"=="bye"; // = false
 
@@ -588,7 +589,7 @@ The following operators it does evaluates relational expressions,
 |!= 
 |Check whether two values are not equal
 |
-[source,zetscript]
+[source,javascript]
 10!=10; // = false
 "hello"!="bye"; // = true
 
@@ -596,7 +597,7 @@ The following operators it does evaluates relational expressions,
 |< 
 |Checks whether first value is less than second value
 |
-[source,zetscript]
+[source,javascript]
 10<20; // = true
 20<10; // = false
 
@@ -604,7 +605,7 @@ The following operators it does evaluates relational expressions,
 |> 
 |Checks whether first value is greater than second value
 |
-[source,zetscript]
+[source,javascript]
 10>20; // = false
 20>10; // = true
 
@@ -612,7 +613,7 @@ The following operators it does evaluates relational expressions,
 | <= 
 |Checks whether first value is less equal than second value
 |
-[source,zetscript]
+[source,javascript]
 10<=10; //= true
 11<=10; // = false
 
@@ -620,7 +621,7 @@ The following operators it does evaluates relational expressions,
 |>= 
 |Checks whether first value is greater equal than second value
 |
-[source,zetscript]
+[source,javascript]
 10>=11; // = false
 11>=10; // = true
 
@@ -628,7 +629,7 @@ The following operators it does evaluates relational expressions,
 |instanceof 
 |Checks if a value is instance of a type. 
 |
-[source,zetscript]
+[source,javascript]
 0 instanceof int; //= true
 "hello" instanceof int;//= false
 |====
@@ -648,7 +649,7 @@ Logic expressions are the ones that combines operations through boolean values,
 |&& 
 |it performs an AND operation between two Boolean values
 |
-[source,zetscript]
+[source,javascript]
 true && true;// = true
 true&& false;// = false
 
@@ -656,7 +657,7 @@ true&& false;// = false
 | \|\|
 |It performs an OR operation between two Boolean values
 |
-[source,zetscript]
+[source,javascript]
 true \|\| false;// = true
 false \|\| false;// = false
 
@@ -664,7 +665,7 @@ false \|\| false;// = false
 |! 
 |Negates Boolean value
 |
-[source,zetscript]
+[source,javascript]
 !true; // = false
 !false; // = true
 |====
@@ -681,7 +682,7 @@ Binary expressions are the ones that combines bit operations through integer val
 |& 
 |Performs binary AND operation between two integers
 |
-[source,zetscript]
+[source,javascript]
 0xa & 0x2; // = 0x2
 0xff & 0xf0; // = 0xf0
 
@@ -689,7 +690,7 @@ Binary expressions are the ones that combines bit operations through integer val
 |\|
 |Performs binary OR operation between two integers
 |
-[source,zetscript]
+[source,javascript]
 0xa \| 0x5; // = 0xf
 0x1 \| 0xe; // = 0xf
 
@@ -697,7 +698,7 @@ Binary expressions are the ones that combines bit operations through integer val
 |^ 
 |Performs binary XOR between two integers
 |
-[source,zetscript]
+[source,javascript]
 0xa ^ 0xa; // = 0x0
 0xa ^ 0x5; // = 0xf
 
@@ -705,14 +706,14 @@ Binary expressions are the ones that combines bit operations through integer val
 |<< 
 |Performs binary shift left
 |
-[source,zetscript]
+[source,javascript]
 0x1 << 2; // = 0x4
 
 |Binary shift right
 |>> 
 |Performs binary shift right 
 |
-[source,zetscript]
+[source,javascript]
 0xff >> 1; // = 0x7f
 |====
 

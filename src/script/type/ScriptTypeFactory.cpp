@@ -94,15 +94,8 @@ namespace zetscript{
 	const char * k_str_zetscript_type_ptr=typeid(ZetScript *).name();
 
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ObjectScriptObject)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ObjectIteratorScriptObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(StringScriptObject)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(StringIteratorScriptObject)
 	ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(VectorScriptObject)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(VectorIteratorScriptObject)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ClassScriptObject)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(VarRefScriptObject)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(MemberFunctionScriptObject)
-	//ZS_DECLARE_CONSTRUCTOR_DESTRUCTOR_FUNCTIONS(ContainerSlot)
 
 	ScriptTypeFactory::ScriptTypeFactory(ZetScript *_zs){
 		zs = _zs;
@@ -119,14 +112,11 @@ namespace zetscript{
 		stk_constants=NULL;
 		stk_constants=new zs_map();
 
-		//stk_objects=NULL;
-		//stk_objects=new zs_map();
-
-
 	}
 
 	void ScriptTypeFactory::init(){
 		zs_string error;
+
 		// ScriptFunctionFactory has to be created
 		main_object=registerScriptType(MAIN_SCRIPT_CLASS_NAME); // 0
 		ZS_MAIN_SCOPE(this)->script_type_owner=main_object;
@@ -134,6 +124,7 @@ namespace zetscript{
 		Symbol *symbol_main_function=main_object->registerMemberFunction(
 				ZS_MAIN_SCRIPT_FUNCTION_NAME
 		);
+
 		main_function=(ScriptFunction *)symbol_main_function->ref_ptr;
 		main_function->scope_script_function=ZS_MAIN_SCOPE(this);
 
@@ -194,7 +185,7 @@ namespace zetscript{
 		return (_stk->properties & (STK_PROPERTY_ZS_INT | STK_PROPERTY_ZS_FLOAT)) != 0;
 	}
 
-	void ScriptTypeFactory::registerSystem(){
+	void ScriptTypeFactory::setup(){
 
 		// !!!
 		// !!! START REGISTER BUILT IN CLASSES AND TYPES

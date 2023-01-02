@@ -55,7 +55,7 @@ namespace zetscript{
 
 		ScriptTypeFactory(ZetScript *_zs);
 		void init();
-		void registerSystem();
+		void setup();
 
 		 /**
 		  * Class management region
@@ -378,8 +378,8 @@ namespace zetscript{
 			Type  id;
 		}PrimitiveType;
 
-		zs_map 	 						*stk_constants;//,*stk_objects;
-		zs_vector<ScriptType *>			*   script_types;
+		zs_map 	 						*	stk_constants;//,*stk_objects;
+		zs_vector<ScriptType *>			*	script_types;
 		ZetScript 						*	zs;
 		VirtualMachine					*	vm;
 		ScopeFactory 					*	scope_factory;
@@ -397,7 +397,6 @@ namespace zetscript{
 
 		short							getIdxTypeFromTypeNameInternal(const zs_string & _type_name);
 
-		void 							setup();
 		void 							internalPrintError(const char *s);
 
 

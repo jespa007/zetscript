@@ -33,7 +33,7 @@ namespace zetscript{
 		script_type_factory->init();
 		vm_init(virtual_machine,this);
 
-		script_type_factory->registerSystem();
+		script_type_factory->setup();
 
 		script_filenames_by_ref=new zs_map();
 

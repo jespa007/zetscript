@@ -15,16 +15,26 @@ System::assert(s1=="123","s1!=\"123\"");
 s1[1]='b'
 System::assert(s1=="1b3","s1!=\"1b3\"");
 
+// Test insertAt. In this case it inserts 'a' character at position 1 changing its current value "1b3" by "1ab3"
+s1.insertAt(1,'a');
+System::assert(s1=="1ab3","s1!=\"1ab3\"");
+
 // Test eraseAt. In this case it erases position s1[1] changing its current value "1b3" by "13"
 s1.eraseAt(1);
-System::assert(s1=="13","s1!=\"13\"");
+System::assert(s1=="1b3","s1!=\"1b3\"");
+
+// Test indexOf. Get index first ocurrence of character 'b'
+System::assert("abc".indexOf('b')==1,"\"abc\".indexOf('b')!=1");
+
+// Test indexOf. Get index first ocurrence of string "world"
+System::assert("hello world".indexOf("world")==6,"\"hello world\".indexOf(\"world\")!=6");
 
 // Test clear
 s1.clear();
 System::assert(s1=="","s1!=\"\"");
 
-// Test replace string "hello world" by "hello people"
-System::assert("hello world".replace("world","people")=="hello people","\"hello world\".replace(\"world\",\"people\")!=\"hello people\"")
+// Test replace string "world" by "people"
+System::assert("hello world world".replace("world","people")=="hello people people","\"hello world\".replace(\"world\",\"people\")!=\"hello people people\"")
 
 
 
