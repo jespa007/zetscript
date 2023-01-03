@@ -48,12 +48,13 @@ this is a block comment
 
 ZetScript supports the following literals,
 
-* boolean
-* integer
-* float
-* string
 
-==== 3.3.1 Boolean literal
+* Boolean
+* Integer
+* Float
+* String
+
+==== 3.3.1 Boolean
 
 Boolean literals is represented as true or false.
 
@@ -65,7 +66,7 @@ true // true value
 false // false value
 ----
 
-==== 3.3.2 Integer literal
+==== 3.3.2 Integer
 
 Integer literals are represented as integer with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as decimal value, hexadecimal,binary or char format.
 
@@ -79,7 +80,7 @@ Example,
 'b'; // char value
 ----
 
-Literal integer pre operators are the following,
+Integer literlas supports the following pre operators,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -97,10 +98,10 @@ Literal integer pre operators are the following,
 |Invert all bits
 |
 [source,javascript]
-~(00000011b) // 11111100b
+~00000011b // 11111100b (-4)
 |====
 
-==== 3.3.3 Float literal
+==== 3.3.3 Float
 
 Float literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. Float can be represented in decimal form or scientific notation form.
 
@@ -108,11 +109,26 @@ Example,
 
 [source,javascript]
 ----
-1.2 // integer and decimal form
+1.2 // decimal form
 2.0e-2 // cientific notation form
 ----
 
-==== 3.3.4 String literal
+Float literals supports the following pre operators,
+
+[cols="1d,1m,2d,2a"]
+|====
+|Operator |Expression |Description |Example
+
+|Negate
+|-float
+|Negated value
+|
+[source,javascript]
+ -10.5
+
+|====
+
+==== 3.3.4 String
 
 String literal is represented as string within quotes (").
 
@@ -123,20 +139,9 @@ Example,
 "this is a string"
 ----
 
-=== 3.4 Variables
+=== 3.4 Variables and constants
 
-==== 3.4.1 Variable declaration
-
-A variable is a type of container that is used to store a value in it. A variable is declared as *var* keyword.
-
-Example,
-
-[source,javascript]
-----
-var i; // declares i variable
-----
-
-==== 3.4.2 Variable
+==== 3.4.1 Variable
 
 A variable is a kind of element that can hold a variable. Because ZetScript variables are _dynamically typed_, it can hold different type of values on its lifetime. A variable is declared as *var* and, by default, is initialized as *undefined* value (see 2.5.1). 
 
@@ -162,7 +167,7 @@ A constant is a kind of element where its value is immutable on its in lifetime.
 const NUM_ITEMS=10; // constant 'NUM_ITEMS' with value 10.
 ----
 
-==== 3.4.3 Scope
+==== 3.5 Scope
 
 In ZetScript we have two types of basic scopes.
 
@@ -186,7 +191,7 @@ var i;
 // block ends here, so *j* variable doesn't exist anymore
 ----
 
-=== 3.5 Types
+=== 3.6 Types
 
 ZetScript supports the following types,
 
@@ -200,9 +205,9 @@ ZetScript supports the following types,
 * Object
 * Function
 
-==== 3.5.1 Undefined type
+==== 3.6.1 Undefined
 
-Undefined type it defines a non initialized variable. A variable is instanced as _undefined_ once a its assings *undefined* value,
+Undefined type it defines a non initialized variable. A variable is instanced as _Undefined_ once a its assings *undefined* value,
 
 [source,javascript]
 ----
@@ -210,18 +215,18 @@ var a; // 'a' is undefined as default
 var b=undefined; // assigns undefined value
 ----
 
-==== 3.5.2 Null type
+==== 3.6.2 Null
 
-Null type it defines an empty or not valid variable. A variable is instanced as _null_ once a its assings *null* value,
+Null type it defines an empty or not valid variable. A variable is instanced as _Null_ once a its assings *null* value,
 
 [source,javascript]
 ----
 var i=null;
 ----
 
-==== 3.5.3 Integer type
+==== 3.6.3 Integer
 
-Integer type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as _integer_ once it assigns decimal, hexadecimal,binary or char value.
+Integer type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as _Integer_ once it assigns decimal, hexadecimal,binary or char value.
 
 Example,
 
@@ -233,7 +238,7 @@ var c=01001b; // binary value
 var d='b'; //  char value
 ----
 
-*Integer operators*
+===== Operators
 
 Integer operators are applied on integer variables before or after is read. Integer operators are the following,
 
@@ -288,7 +293,22 @@ var i=0;
 var j=i--;//j=0;i=-1;
 |====
 
-==== 3.5.4 Float type
+===== Functions
+
+Integer type defines the following functions,
+
+ * Integer::parser(_value)
+ 
+====== Integer::parser(_value)
+
+@Description: Performs a set operation6
+@Param1 : Source variable to set.
+@Returns : None.
+
+
+
+
+==== 3.6.4 Float
 
 Float type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as _float_ once it assigns a decimal or scientific value notation forms.
 
@@ -350,9 +370,9 @@ var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
 |====
 
-==== 3.5.5 Boolean type
+==== 3.5.5 Boolean
 
-Boolean type it defines a boolean variable represented as _true_ or _false_. A variable is instanced as _boolean_ once it assigns a boolean value.
+Boolean type it defines a boolean variable represented as _true_ or _false_. A variable is instanced as _Boolean_ once it assigns a boolean value.
 
 Example,
 
@@ -372,24 +392,24 @@ Example,
 var s="this is a string";
 ----
 
-===== 3.5.6.1 Member functions
+===== Member functions
 
 String type provides the following set of member functions,
 
- * size()
- * eraseAt(_pos)
- * insertAt(_pos,_char)
- * clear()
- * replace(_old_str,_new_str)
- * split(_char|_str)
- * contains(_str)
- * indexOf(_char|_str)
- * startsWith(_str)
- * endsWith(_str)
- * substring(_str,_pos,_length)
- * append(_str)
+ * String::size()
+ * String::eraseAt(_pos)
+ * String::insertAt(_pos,_char)
+ * String::clear()
+ * String::replace(_old_str,_new_str)
+ * String::split(_char|_str)
+ * String::contains(_str)
+ * String::indexOf(_char|_str)
+ * String::startsWith(_str)
+ * String::endsWith(_str)
+ * String::substring(_str,_pos,_length)
+ * String::append(_str)
  
-*String::size()*
+====== String::size()
 
 _String::size_ returns the length of the string
 
