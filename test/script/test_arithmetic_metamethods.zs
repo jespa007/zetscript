@@ -8,7 +8,7 @@ function test_arithmetic(_a,_b){
 		for(var op in operators){
 			System::eval(
 				"System::assert(\n"+
-					"(new Number("+_a+")"+op+"new Number("+_b+"))==parseFloat("+(_a+op+_b)+"), \\\"(new Number("+_a+") "+op+" new Number("+_b+"))!=\\\"+("+(_a+op+_b)+")\n"+
+					"(new Number("+_a+")"+op+"new Number("+_b+"))==Float::parse("+(_a+op+_b)+"), \\\"(new Number("+_a+") "+op+" new Number("+_b+"))!=\\\"+("+(_a+op+_b)+")\n"+
 				");"
 			);
 		}

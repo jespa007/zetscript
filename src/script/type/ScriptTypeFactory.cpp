@@ -249,12 +249,19 @@ namespace zetscript{
 		// register c function's
 
 		zs->bindFunction("ptrToZetScriptPtr",ptrToZetScriptPtr);
-		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_int)>(parseFloat));
-		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_float *)>(parseFloat));
-		zs->bindFunction("parseFloat",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));
-		zs->bindFunction("parseInt",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInt));
-		zs->bindFunction("parseInt",static_cast<zs_int (*)(ZetScript *,zs_int )>(parseInt));
-		zs->bindFunction("parseInt",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInt));
+
+		ScriptType *integer_type=this->getScriptType(ZS_TYPE_NAME_INT);
+		integer_type->bindStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_float *)>(parseInt));
+		integer_type->bindStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_int )>(parseInt));
+		integer_type->bindStaticMemberFunction("parse",static_cast<zs_int (*)(ZetScript *,zs_string *)>(parseInt));
+
+		ScriptType *float_type=this->getScriptType(ZS_TYPE_NAME_FLOAT);
+		float_type->bindStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_int )>(parseFloat));
+		float_type->bindStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_float *)>(parseFloat));
+		float_type->bindStaticMemberFunction("parse",static_cast<zs_float (*)(ZetScript *,zs_string *)>(parseFloat));
+
+
+		// Global symbols
 		zs->bindFunction("isNumber",isNumber);
 
 		//-------------------------

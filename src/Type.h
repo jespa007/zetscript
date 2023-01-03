@@ -4,12 +4,12 @@
  */
 #pragma once
 
-#define ZS_TYPE_NAME_UNDEFINED					"undefined"
-#define ZS_TYPE_NAME_NULL 						"null"
-#define ZS_TYPE_NAME_INT 						"int"
-#define ZS_TYPE_NAME_BOOL 						"bool"
+#define ZS_TYPE_NAME_UNDEFINED					"Undefined"
+#define ZS_TYPE_NAME_NULL 						"Null"
+#define ZS_TYPE_NAME_INT 						"Integer"
+#define ZS_TYPE_NAME_BOOL 						"Boolean"
 #define ZS_TYPE_NAME_STACK_ELEMENT 				"StackElement"
-#define ZS_TYPE_NAME_FLOAT 						"float"
+#define ZS_TYPE_NAME_FLOAT 						"Float"
 #define ZS_TYPE_NAME_CONTAINER_SLOT 			"ContainerSlot"
 #define ZS_TYPE_NAME_OBJECT_STRING 				"String"
 #define ZS_TYPE_NAME_OBJECT_VECTOR 				"Vector"

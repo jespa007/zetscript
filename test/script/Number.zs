@@ -8,7 +8,7 @@ class Number{
 		}else if(_num instanceof Number){
 			this.__num__=_num.__num__;	
 		}else{
-			System::error("Number::constructor: expected _n as int,float or Number but it was '{0}'",typeof _num)
+			System::error("Number::constructor: expected _n as Integer,Float or Number but it was '{0}'",typeof _num)
 		}
 	}
 	
@@ -51,38 +51,38 @@ class Number{
 			this.__num__%=_val;
 		}
 		_xor_set(_val){
-			this.__num__=parseInt(this.__num__)^parseInt(_val);
+			this.__num__=Integer::parse(this.__num__)^Integer::parse(_val);
 		}
 		_or_set(_val){
-			this.__num__=parseInt(this.__num__)|parseInt(_val);
+			this.__num__=Integer::parse(this.__num__)|Integer::parse(_val);
 		}
 		_and_set(_val){
-			this.__num__=parseInt(this.__num__)&parseInt(_val);
+			this.__num__=Integer::parse(this.__num__)&Integer::parse(_val);
 		}
 		_shl_set(_val){
-			this.__num__=parseInt(this.__num__)<<parseInt(_val);
+			this.__num__=Integer::parse(this.__num__)<<Integer::parse(_val);
 		}
 		_shr_set(_val){
-			this.__num__=parseInt(this.__num__)>>parseInt(_val);
+			this.__num__=Integer::parse(this.__num__)>>Integer::parse(_val);
 		}
 	}
 
 	static parseInt(_n1,_n2){
 		var n1,n2
 		if(isNumber(_n1)){
-			n1=parseInt(_n1)
+			n1=Integer::parse(_n1)
 		}else if(_n1 instanceof Number){
-			n1=parseInt(_n1.__num__)
+			n1=Integer::parse(_n1.__num__)
 		}else{
-			System::error("Number::parseInt: expected _n as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::parseInt: expected _n as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}
 	
 		if(isNumber(_n2)){
-			n2=parseInt(_n2)
+			n2=Integer::parse(_n2)
 		}else if(_n2 instanceof Number){
-			n2=parseInt(_n2.__num__)	
+			n2=Integer::parse(_n2.__num__)	
 		}else{
-			System::error("Number::parseInt: expected _n as int,float or Number but it was '{0}'",typeof _n2)
+			System::error("Number::parseInt: expected _n as Integer,Float or Number but it was '{0}'",typeof _n2)
 		}
 	
 		return n1,n2
@@ -95,7 +95,7 @@ class Number{
 		}else if(_n1 instanceof Number){
 			n1=_n1.__num__	
 		}else{
-			System::error("Number::parseFloat: expected _n1 int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::parseFloat: expected _n1 Integer,Float or Number but it was '{0}'",typeof _n1)
 		}
 	
 		if(isNumber(_n2)){
@@ -103,7 +103,7 @@ class Number{
 		}else if(_n2 instanceof Number){
 			n2=_n2.__num__	
 		}else{
-			System::error("Number::parseFloat: expected _n2 int,float or Number but it was '{0}'",typeof _n2)
+			System::error("Number::parseFloat: expected _n2 Integer,Float or Number but it was '{0}'",typeof _n2)
 		}
 	
 		return n1,n2
@@ -121,7 +121,7 @@ class Number{
 		}else if( _n1 instanceof Number){
 			this.__num__+=_n1.__num__	
 		}else{
-			System::error("Number::_add_set: expected _n1 as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_add_set: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -137,7 +137,7 @@ class Number{
 		}else if( _n1 instanceof Number){
 			this.__num__-=_n1.__num__	
 		}else{
-			System::error("Number::_sub_set: expected _n1 as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_sub_set: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -154,7 +154,7 @@ class Number{
 		}else if( _n1 instanceof Number){
 			this.__num__*=_n1.__num__	
 		}else{
-			System::error("Number::_mul_set: expected _n1 as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_mul_set: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -170,7 +170,7 @@ class Number{
 		}else if( _n1 instanceof Number){
 			this.__num__/=_n1.__num__	
 		}else{
-			System::error("Number::_div_set: expected _n1 as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_div_set: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -186,7 +186,7 @@ class Number{
 		}else if( _n1 instanceof Number){
 			this.__num__%=_n1.__num__	
 		}else{
-			System::error("Number::_mod_set: expected _n1 as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_mod_set: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -198,11 +198,11 @@ class Number{
 	
 	_shr_set(_n1){
 		if(isNumber(_n1)){
-			this.__num__=parseInt(this.__num__)>>parseInt(_n1)
+			this.__num__=Integer::parse(this.__num__)>>Integer::parse(_n1)
 		}else if( _n1 instanceof Number){
-			this.__num__=parseInt(this.__num__)>>parseInt(_n1.__num__)	
+			this.__num__=Integer::parse(this.__num__)>>Integer::parse(_n1.__num__)	
 		}else{
-			System::error("Number::_shr_set: expected _n1 as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_shr_set: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 
@@ -214,11 +214,11 @@ class Number{
 	
 	_shl_set(_n1){
 		if(isNumber(_n1)){
-			this.__num__=parseInt(this.__num__)<<parseInt(_n1)
+			this.__num__=Integer::parse(this.__num__)<<Integer::parse(_n1)
 		}else if( _n1 instanceof Number){
-			this.__num__=parseInt(this.__num__)<<parseInt(_n1.__num__)	
+			this.__num__=Integer::parse(this.__num__)<<Integer::parse(_n1.__num__)	
 		}else{
-			System::error("Number::_shl_set: expected _n1 as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_shl_set: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -230,11 +230,11 @@ class Number{
 	
 	_and_set(_n1){
 		if(isNumber(_n1)){
-			this.__num__=parseInt(this.__num__)&parseInt(_n1)
+			this.__num__=Integer::parse(this.__num__)&Integer::parse(_n1)
 		}else if( _n1 instanceof Number){
-			this.__num__=parseInt(this.__num__)&parseInt(_n1.__num__)	
+			this.__num__=Integer::parse(this.__num__)&Integer::parse(_n1.__num__)	
 		}else{
-			System::error("Number::_and_set: expected _n1 as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_and_set: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -246,11 +246,11 @@ class Number{
 	
 	_or_set(_n1){
 		if(isNumber(_n1)){
-			this.__num__=parseInt(this.__num__)|parseInt(_n1)
+			this.__num__=Integer::parse(this.__num__)|Integer::parse(_n1)
 		}else if( _n1 instanceof Number){
-			this.__num__=parseInt(this.__num__)|parseInt(_n1.__num__)	
+			this.__num__=Integer::parse(this.__num__)|Integer::parse(_n1.__num__)	
 		}else{
-			System::error("Number::_or_set: expected _n1 as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_or_set: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	
@@ -262,11 +262,11 @@ class Number{
 	
 	_xor_set(_n1){
 		if(isNumber(_n1)){
-			this.__num__=parseInt(this.__num__)^parseInt(_n1)
+			this.__num__=Integer::parse(this.__num__)^Integer::parse(_n1)
 		}else if( _n1 instanceof Number){
-			this.__num__=parseInt(this.__num__)^parseInt(_n1.__num__)	
+			this.__num__=Integer::parse(this.__num__)^Integer::parse(_n1.__num__)	
 		}else{
-			System::error("Number::_xor_set: expected _n1 as int,float or Number but it was '{0}'",typeof _n1)
+			System::error("Number::_xor_set: expected _n1 as Integer,Float or Number but it was '{0}'",typeof _n1)
 		}		
 	}
 	

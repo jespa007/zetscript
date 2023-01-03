@@ -12,9 +12,9 @@ class C{
 }
 
 
-System::assert(0 instanceof int==true,"0 instanceof int!=true")
-System::assert(0.0 instanceof float==true,"0.0 instanceof float!=true")
-System::assert(true instanceof bool==true,"true instanceof bool!=true")
+System::assert(0 instanceof Integer==true,"0 instanceof Integer!=true")
+System::assert(0.0 instanceof Float==true,"0.0 instanceof Float!=true")
+System::assert(true instanceof Boolean==true,"true instanceof Boolean!=true")
 System::assert([0,1,2] instanceof Vector==true,"[0,1,2] instanceof Vector!=true")
 System::assert("abc" instanceof String==true,"abc instanceof String!=true")
 System::assert(new A() instanceof A == true,"new A() instanceof A != true")

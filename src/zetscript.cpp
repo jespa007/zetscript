@@ -142,7 +142,7 @@ namespace zetscript{
 				//------------------------------------------------
 				// System
 				"static System::assert(_check,_str_error,..._args){"
-				"	if((typeof _check)!=bool){"
+				"	if((typeof _check)!=Boolean){"
 				"		System::errorNative(\"Error, executing  'System::assert' first parameter must be boolean but it was {0}\",[typeof _check])"
 				"	}"
 				"	if(_check==false){"
