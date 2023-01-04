@@ -1,7 +1,11 @@
-== 4 the API
+:source-highlighter: highlight.js
+:highlightjs-languages: cpp, javascript
+:sectnums:
 
 
-=== 4.1 Bind function
+== the API
+
+=== Bind function
 
 To bind a function first it has to declare a function with a signature compatible to ZetScript. All, functions will have ZetScript pointer as first parameter, and the others will be built-in types or types defined by the user. 
 
@@ -11,12 +15,12 @@ Is important to say that ZetScript has a constraint *maximum of 8 parameters* fo
 
 Syntax,
 
-[source,c++]
+[source,cpp]
 zs.bindFunction("function_name", c_function);
 
 Example,
 
-[source,c++]
+[source,cpp]
 ----
 #include "ZetScript.h"
 
@@ -40,7 +44,7 @@ int main(int argc, char *argv[])
 } 
 ---- 
  
-==== 4.2.1 Ambiguities
+==== Ambiguities
 
 If we try to register another function with the same name the c++ compiler will fail to register function.
 
@@ -81,7 +85,7 @@ That means that indeed there're more than one function named 'add' and the compi
 
 Example,
 
-[source,c++]
+[source,cpp]
 ----
 #include "ZetScript.h"
 
@@ -116,9 +120,9 @@ int main(int argc, char *argv[])
 }
 ----
 
-=== 4.3 Bind types
+=== Bind types
 
-==== 4.3.1 Bind static type
+==== Bind static type
 
 Binding a native class or type as static it means it's not instantiable in the script side , so it cannot use *new* keyword.
 To bind type as static is done through *bindType* function by passing the type as template and the name that will be referenced in the script.
@@ -129,7 +133,7 @@ Example,
  
 The following code shows an example of a registering a C++ class,
 
-[source,c++]
+[source,cpp]
 ----
 class MyClass{
 public:
@@ -149,7 +153,7 @@ List 4.1
 
 Using the list 4.1, to bind MyClass as static (i.e no instantiable) in script side is proceded as follows,
 
-[source,c++]
+[source,cpp]
 ----
 void main(argc, char *argv[])
 {
@@ -164,7 +168,7 @@ void main(argc, char *argv[])
 
 In the following example it evals a code to try instance MyClass type but it will throw an error that MyClass is not instanciable because is static,
 
-[source,c++]
+[source,cpp]
 ----
 void main(argc, char *argv[])
 {
@@ -187,7 +191,7 @@ In order to use a MyClass instantiation it has to be done in the C++ aplication.
 
 For example,
 
-[source,c++]
+[source,cpp]
 ----
 
 MyClass *my_class=NULL;
@@ -227,24 +231,27 @@ void main(argc, char *argv[])
  
 Note: Is valuable to see that static types are safety because never are created in the script side, they are created by the C++ side 
  
-==== 4.3.2 Bind instantiable type
+==== Bind instantiable type
 
 Binding class or type as instantiable means that can it be instanced in the script side by using *new* keyword. To bind a instantiable type is done through *bindType* passing the type as template,the name and the interface new/delete functions,
 
 Example,
 
+[source,cpp]
+----
  zs.bindType<MyClass>("MyClass",new_function, delete_function);
+----
 
 Using the list 4.1, to bind MyClass as instanciable in script side is proceded as follows,
 
-[source,c++]
+[source,cpp]
 ----
 
-MyClass *MyClass_New(){
+MyClass *MyClass_new(){
 	return new MyClass(); 
 }
 
-void MyClass_Delete(MyClass *_this){
+void MyClass_delete(MyClass *_this){
 	delete _this;
 }
 
@@ -254,28 +261,29 @@ void main(argc, char *argv[])
 	zetscript::ZetScript zs;
 
 	//register MyClass as instantiable type in script side.
-	zs.bindType<MyClass>("MyClass",MyClass_New,MyClass_Delete); 
+	zs.bindType<MyClass>("MyClass",MyClass_new,MyClass_delete); 
 	
 	// It instances MyClass
  	zs.eval(
- 		"var my_class= getMyClass();" 
+ 		"var my_class= new MyClass();" 
  	);
 	
 	return 0;
 }
 ----
-
  
-==== 4.3.3 Delete C Class
+==== Delete C Class
 
 ZetScript it has a garbage collector to delete unreferenced script variables when the end of scope is reached but it keeps alive its internal native pointer to avoid unintended segmentation faults. So to avoid memory leaks due this issue, the user has to delete manually any instanced C Class variable with delete keyword. The following code shows an example of using delete keyword,
 
+[source,javascript]
+----
  delete myclass; // script and c variable is destroyed.
- 
+---- 
   
-=== 4.4 Bind members
+=== Bind members
 
-==== 4.4.1 Bind Function Member
+==== Bind Function Member
 
 The binding of variable member is done like binding c function but in this case is done through the macro function register_C_FunctionMember. You have to provide the type class, the string name that will be referenced in script side and the function object reference.
 
@@ -283,23 +291,35 @@ register_C_FunctionMember<ObjectType>("function_name",&ObjectType::function_name
 
 As an example, the following code registers function member MyClass::function1 seen on List 4.1
 
-register_C_FunctionMember<MyClass>("function1",&MyClass::function1);
+[source,cpp]
+----
+zs.bindFunctionMember<MyClass>("function1",&MyClass::function1);
+----
 
 And then it can access to function1 member through field access ('.')
 
-var myclass= new MyClass(); 
+[source,javascript]
+----
+var myclass= new MyClass();
+---- 
 
 myclass.function1(10); // prints "c++ argument is10"
 
-==== 4.4.2 Bind function constructor
+==== Bind function constructor
 
-ZetScript always calls default C++ constructor when a variable is instanced with C++ type. ZetScript has no support of parameterized constructors but, instead, it can be done by registering a function with same name as the class name registered. As an example, the following code registers function member MyClass::init seen on List 4.1 as constructor3
-,
-register_C_FunctionMember<MyClass>("MyClass",&MyClass::init);
+ZetScript always calls default C++ constructor when a variable is instanced with C++ type. ZetScript has no support of parameterized constructors but, instead, it can be done by registering a function with same name as the class name registered. As an example, the following code registers function member MyClass::init seen on List 4.1 as constructor3,
+
+[source,cpp]
+----
+zs.bindFunctionMember<MyClass>("MyClass",&MyClass::init);
+----
 
 And then, when variable is intancedwe can instance the class passing a integer as parameter to the c contructor
 
+[source,javascript]
+----
 var myclass= new MyClass(10); // prints "data1 is initialized as 10"
+----
 
 4.3.6 Inheritance
 
@@ -309,19 +329,31 @@ and symbols already registered with the functions already seen in the section 4.
 class_C_baseof with two parameters: The first parameter as the inherited class type
 and second parameter as its base class type.
 Syntax,
-class_C_baseof<class, base_class>();
+
+
+[source,cpp]
+----
+zs.extends<class, base_class>();
+----
+
+
 If for example we want to register MyClassExtend and tell that is base of MyClass Is
 done with the following snipped,
+
+[source,cpp]
+----
 class MyClassExtend:public MyClass{
 public:
- float data2;
- void function2(float * arg){
- this->data2 = *arg;
- printf("Float argument is %.02f\n",this->data2);
- }
+	float data2;
+	void function2(float * arg){
+ 		this->data2 = *arg;
+ 		printf("Float argument is %.02f\n",this->data2);
+ 	}
 };
-register_C_Class<MyClassExtend>("MyClassExtend"); // register MyClassExtend
-class_C_baseof<MyClassExtend,MyClass>();
+
+zs.bindType<MyClassExtend>("MyClassExtend"); // register MyClassExtend
+zs.extends<MyClassExtend,MyClass>();
+----
 List 4.2
 
 3
@@ -329,12 +361,19 @@ List 4.2
 
 
 
-=== 4.4 Bind member variable
+=== Bind static constant variable
 
 The binding of variable member is done through the macro function *bindMemberVariable*. You have to provide the type class, the string name that
 will be referenced in script side and variable object reference.
+
 Sintax,
-register_C_VariableMember<ObjectType>("variable_name",&ObjectType::variable_name);
+
+[source,cpp]
+----
+zs.bindStaticConstantVariableMember<ObjectType>("variable_name",&ObjectType::variable_name);
+----
+
+
 As an example, the following code register variable member MyClass::data1 seen on
 List 4.1,
 register_C_VariableMember<MyClass>("data1",&MyClass::data1);

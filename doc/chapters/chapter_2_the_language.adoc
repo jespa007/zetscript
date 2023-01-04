@@ -1,9 +1,10 @@
 :source-highlighter: highlight.js
-:highlightjs-languages: rust, swift
+:highlightjs-languages: cpp, javascript
+:sectnums:
 
-== 3. The language
+== The language
 
-=== 3.1 Statments
+=== Statments
 
 ZetScript Language is based on a set of statements formed by values, operators, expressions, keywords, declarations, expressions, conditionals, integrators and functions. All statements are separated by semicolons at the end.
 
@@ -24,11 +25,11 @@ The last example can be executed within one line,
 var op1,op2,res; op1=5; op2=6; res = 5+6;
 ----
 
-=== 3.2 Comments
+=== Comments
 
 ZetScript support block and line comments.
 
-==== 3.2.1 Block comment
+==== Block comment
 
 [source,javascript]
 ----
@@ -37,14 +38,14 @@ this is a block comment
 */
 ----
 
-==== 3.2.2 Line comment
+==== Line comment
 
 [source,javascript]
 ----
 // This is a line comment
 ----
 
-=== 3.3 Literals
+=== Literals
 
 ZetScript supports the following literals,
 
@@ -54,7 +55,7 @@ ZetScript supports the following literals,
 * Float
 * String
 
-==== 3.3.1 Boolean
+==== Boolean
 
 Boolean literals is represented as true or false.
 
@@ -66,7 +67,7 @@ true // true value
 false // false value
 ----
 
-==== 3.3.2 Integer
+==== Integer
 
 Integer literals are represented as integer with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. The integer value can be represented as decimal value, hexadecimal,binary or char format.
 
@@ -101,7 +102,7 @@ Integer literlas supports the following pre operators,
 ~00000011b // 11111100b (-4)
 |====
 
-==== 3.3.3 Float
+==== Float
 
 Float literals are represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. Float can be represented in decimal form or scientific notation form.
 
@@ -128,7 +129,7 @@ Float literals supports the following pre operators,
 
 |====
 
-==== 3.3.4 String
+==== String
 
 String literal is represented as string within quotes (").
 
@@ -139,9 +140,9 @@ Example,
 "this is a string"
 ----
 
-=== 3.4 Variables and constants
+=== Variables and constants
 
-==== 3.4.1 Variable
+==== Variable
 
 A variable is a kind of element that can hold a variable. Because ZetScript variables are _dynamically typed_, it can hold different type of values on its lifetime. A variable is declared as *var* and, by default, is initialized as *undefined* value (see 2.5.1). 
 
@@ -158,7 +159,7 @@ A variable can be initialized with a proper type value through '=' operator. The
 var i=10; // Declared variable 'i' and initialized as integer value.
 ----
 
-==== 3.4.2 Constant
+==== Constant
 
 A constant is a kind of element where its value is immutable on its in lifetime. A constant is declared as *const* and is mandatory to be initialized.
 
@@ -167,7 +168,7 @@ A constant is a kind of element where its value is immutable on its in lifetime.
 const NUM_ITEMS=10; // constant 'NUM_ITEMS' with value 10.
 ----
 
-==== 3.5 Scope
+==== Scope
 
 In ZetScript we have two types of basic scopes.
 
@@ -191,7 +192,7 @@ var i;
 // block ends here, so *j* variable doesn't exist anymore
 ----
 
-=== 3.6 Types
+=== Types
 
 ZetScript supports the following types,
 
@@ -205,7 +206,7 @@ ZetScript supports the following types,
 * Object
 * Function
 
-==== 3.6.1 Undefined
+==== Undefined
 
 Undefined type it defines a non initialized variable. A variable is instanced as _Undefined_ once a its assings *undefined* value,
 
@@ -215,7 +216,7 @@ var a; // 'a' is undefined as default
 var b=undefined; // assigns undefined value
 ----
 
-==== 3.6.2 Null
+==== Null
 
 Null type it defines an empty or not valid variable. A variable is instanced as _Null_ once a its assings *null* value,
 
@@ -224,9 +225,9 @@ Null type it defines an empty or not valid variable. A variable is instanced as 
 var i=null;
 ----
 
-==== 3.6.3 Integer
+==== Integer
 
-Integer type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as _Integer_ once it assigns decimal, hexadecimal,binary or char value.
+Integer type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Integer_ once it assigns decimal, hexadecimal,binary or char value.
 
 Example,
 
@@ -305,12 +306,9 @@ Integer type defines the following functions,
 @Param1 : Source variable to set.
 @Returns : None.
 
+==== Float
 
-
-
-==== 3.6.4 Float
-
-Float type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. A variable is instanced as _float_ once it assigns a decimal or scientific value notation forms.
+Float type it defines a float variable represented as IEEE-754 floating point numbers in 32-bit or 64 bit it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _float_ once it assigns a decimal or scientific value notation forms.
 
 Example,
 
@@ -321,7 +319,7 @@ var b=2.0e-2 // cientific notation form value
 ----
 
 
-*Float operators*
+===== Operators
 
 Float operators are applied on float variables before or after is read. Float operators are the following,
 
@@ -370,9 +368,9 @@ var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
 |====
 
-==== 3.5.5 Boolean
+==== Boolean
 
-Boolean type it defines a boolean variable represented as _true_ or _false_. A variable is instanced as _Boolean_ once it assigns a boolean value.
+Boolean type it defines a boolean variable represented as _true_ or _false_. A variable is initialized as _Boolean_ once it assigns a boolean value.
 
 Example,
 
@@ -381,9 +379,9 @@ Example,
 var b=false;
 ----
 
-==== 3.5.6 String type
+==== String
 
-String type it defines a string type represented as a sequence of chars. A variable is instanced as _string_ once it assigns a string value.
+String type it defines a string type represented as a sequence of chars. A variable is initialized as _String_ once it assigns a string value.
 
 Example,
 
@@ -392,35 +390,22 @@ Example,
 var s="this is a string";
 ----
 
-===== Member functions
-
-String type provides the following set of member functions,
-
- * String::size()
- * String::eraseAt(_pos)
- * String::insertAt(_pos,_char)
- * String::clear()
- * String::replace(_old_str,_new_str)
- * String::split(_char|_str)
- * String::contains(_str)
- * String::indexOf(_char|_str)
- * String::startsWith(_str)
- * String::endsWith(_str)
- * String::substring(_str,_pos,_length)
- * String::append(_str)
+===== Properties
  
-====== String::size()
+====== String::length
 
-_String::size_ returns the length of the string
+_String::length_ returns the length of the string
 
 Example,
 
 [source,javascript]
 ----
-"hello world".size() // returns 11 
+"hello world".length // returns 11 
 ----
 
-*String::eraseAt*
+===== Members
+
+====== String::eraseAt(_pos)
 
 _String::eraseAt_ inserts additional characters into the string right before the character indicated by pos (or p):
 
@@ -428,55 +413,79 @@ Example,
 
 [source,javascript]
 ----
-"hello world".size() // returns 11 
+
 ----
 
-*String::insertAt(_pos)*
-
-Inserts additional characters into the string right before the character indicated by __pos_
-
-Example,
-
+====== String::clear()
 [source,javascript]
 ----
-var s1=
-"hello world".size() // returns 11 
+
 ----
 
-*String::clear*
+====== String::replace()
+[source,javascript]
+----
 
-*String::replace*
+----
 
-*String::split*
+====== String::split()
+[source,javascript]
+----
 
-*String::contains*
+----
 
-*String::indexOf*
+====== String::contains()
+[source,javascript]
+----
 
-*String::startsWith*
+----
 
-*String::endsWith*
+====== String::indexOf()
+[source,javascript]
+----
 
-*String::substring*
+----
 
-*String::append*
+====== String::startsWith()
+[source,javascript]
+----
+
+----
+
+====== String::endsWith()
+[source,javascript]
+----
+
+----
+
+====== String::substring()
+[source,javascript]
+----
+
+----
+
+====== String::append()
+[source,javascript]
+----
+
+----
  
-====== 3.5.6.2 Static functions
+====== String::format()
+[source,javascript]
+----
 
-String type provides the following set of static functions,
+----
 
-* format
 
-===== 3.5.6.3 Operators
+===== Operators
 
-String type provides the following set of operators,
+====== Operator ==
 
- * ==
- * +=
+====== Operator +=
 
-=== 3.5.7 Vector type
+=== Vector
 
-Vector type it defines a container type that stores multiple values in a unidimensional array. A variable is instanced as _vector_ once it assings a open/closed square brackets (i.e '[]' ), 
+Vector type it defines a container type that stores multiple values in a unidimensional array. A variable is initialized as _Vector_ once it assings a open/closed square brackets (i.e '[]' ), 
 
 Example,
 
@@ -485,7 +494,7 @@ Example,
 var v=[]; // empty vector
 ----
 
-Variable instanced as _vector_ can also have initialized with a sequence of elementsseparated with coma (i.e ',') within square brackets,
+Variable instanced as _Vector_ can also have initialized with a sequence of elements separated with coma (i.e ',') within square brackets,
 
 Example,
 
@@ -504,39 +513,70 @@ var v=[1,"this is a string",true,2.0]; // its has 4 elements where its index acc
 v[1]; // It access vector's second element (i.e "this is a string")
 ----
 
-*Member functions*
+====== Metamethods
 
-Vector type provides the following set of member functions.
+Vector type implements the following set of metamethods,
 
-[cols="1m,1d,2a"]
-|====
-|Function |Description |Example
-|size 
-|It returns the number of current elements
-|
+* _equ (aka ==)
+
+
+====== Operator ==
 [source,javascript]
-var v=[1,2];
-v.size(); // =2
+----
 
-|push 
-|Adds value at the end of the vector
-|
+----
+
+
+===== Properties
+
+Vector type provides the following set of properties,
+
+* Vector::length
+
+====== Vector::length
 [source,javascript]
-var v=[1,2];
-v.push(3); //v=[1,2,3]
+----
 
-|pop 
-|Returns the last value and removes it. 
-|
+----
+
+====== Member functions
+
+======= Vector::push
 [source,javascript]
-var v=[1,2];
-v.pop(); //=[2], v=[1]
-|==== 
+----
+
+----
+======= Vector::pop
+[source,javascript]
+----
+
+----
+======= Vector::insertAt
+[source,javascript]
+----
+
+----
+======= Vector::eraseAt
+[source,javascript]
+----
+
+----
+======= Vector::clear
+[source,javascript]
+----
+
+----
+======= Vector::join
+[source,javascript]
+----
+
+----
 
 
-==== 3.5.8 Object type
 
-An object type is a anonymous container type to store multiple values in attributes. The instantiation is done within a pair of curly brackets (i.e '{}'),
+==== Object type
+
+An Object type is a anonymous container type to store multiple values in attributes. A variable is initialized as _Object_ once it assings a open/closed of curly brackets (i.e '{}'),
 
 [source,javascript]
 ----
@@ -593,27 +633,33 @@ var s={a:0};
 v.remove("a"); // s={}
 |====
 
-==== 3.5.9 Function object
+==== Function
 
-A function is an object that holds information about a function and is able to call it (see section 3.8.3 for more information)
+Function is an object that holds information about a function and is able to call it (see section 3.8.3 for more information)
 
 Example,
 
 [source,javascript]
 ----
 function add(op1, op2){ // function that returns the sum of two vars.
-return op1+op2;
+	return op1+op2;
 }
+
 var fun_obj = add; // stored function add reference to fun_obj
 var j=fun_obj(2,3);// calls fun_obj (aka add) function. J=5
+----
+
 Another example by anonymous function,
+
+[source,javascript]
+----
 var fun_obj = function (op1, op2){ // function object that returns the sum of two vars.
-return op1+op2;
+	return op1+op2;
 };
 var j=fun_obj(2,3);// calls fun_obj (aka anonymous function). function. J=5
 ----
 
-=== 3.6 Operations
+=== Operations
 
 ZetScript has the following type of expressions
 
@@ -622,7 +668,7 @@ ZetScript has the following type of expressions
 * Logical operations
 * Bit operations
 
-==== 3.6.1 Arithmetic expressions
+==== Arithmetic expressions
 
 The following operators it does evaluates arithmetic expressions,
 
@@ -671,7 +717,7 @@ The following operators it does evaluates arithmetic expressions,
 10%2.5; // it results
 |====
 
-==== 3.6.2 Relational expressions
+==== Relational expressions
 
 The following operators it does evaluates relational expressions,
 
@@ -739,7 +785,7 @@ The following operators it does evaluates relational expressions,
 Note: You cannot mix different types for relational expressions. For example, doing a
 relational expression with boolean and integer values is incompatible. 
 
-==== 3.6.3 Logic expressions
+==== Logic expressions
 
 Logic expressions are the ones that combines operations through boolean values,
 
@@ -772,9 +818,9 @@ false \|\| false;// = false
 !false; // = true
 |====
 
-==== 3.6.4 Binary expressions
+==== Binary operations
 
-Binary expressions are the ones that combines bit operations through integer values,
+Binary operations are the ones that combines bit operations through integer values,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -819,7 +865,7 @@ Binary expressions are the ones that combines bit operations through integer val
 0xff >> 1; // = 0x7f
 |====
 
-=== 3.6.5 Priority operations
+=== Priority operations
 Each operator it has priority of evaluation. ZetScript it has the following operator order priority,
 
 *,/,%,!=,+,-,^,&,|,<<,>>,==,<=,>=,>,<,||,&&
@@ -840,7 +886,7 @@ For example,
 (2+4)*5; // will result 36
 ---- 
 
-=== 3.7 Conditionals
+=== Conditionals
 
 A conditional statement are used to perform different actions based on different conditions. In ZetScript we have the following conditional statement:
 
@@ -849,8 +895,9 @@ A conditional statement are used to perform different actions based on different
 * Use ternary condition to have a short if/else statement into single statement.
 * Use switch to specify manu alternative blocks of code to be executed
 
-==== 3.7.1 The if statement
-Use the if statement to specify a block of ZetScript code to be executed if a condition is 'true'.
+==== if-else statement
+
+_If_ statement is used to specify a block of ZetScript code to be executed if a condition is 'true'.
 
 Syntax,
 
@@ -870,9 +917,7 @@ if(n < 10) {
 }
 ----
 
-==== 3.7.2 The else statement
-
-Use the else statement to specify a block of code to be executed if the condition is 'false'.
+It can use _Else_ statement  is used to specify a block of code to be executed if the condition is 'false'.
 
 Syntax,
 
@@ -885,7 +930,7 @@ if(n < 10) {
 } 
 ----
 
-==== 3.7.3 The if else statement
+==== if-else statement
 
 Use the else statement to specify a block of code to be executed if the condition is 'false'.
 
@@ -902,7 +947,7 @@ if(n < 10) {
 }
 ----
 
-==== 3.7.4 Ternary condition
+==== Ternary condition
 
 Use ternary condition to have a short if/else statement into single statement. It performs expression if the condition is true or the second expression if the condition is 'false'.
 
@@ -920,9 +965,9 @@ Example,
 var j = 0>1? 0:1; // j = 1
 ----
 
-==== 3.7.5 Switch
+==== switch
 
-Use the switch statement to select one of many blocks of code to be executed.
+Switch statement is used to select one of many blocks of code to be executed.
 
 Syntax,
 
@@ -981,14 +1026,14 @@ switch (n) {
 }
 ----
 
-=== 3.8 Loops
+=== Loops
 
 ZetScript supports the following loop types,
 
 * While Loop
 * For Loop
 
-==== 3.8.1 while
+==== while
 
 The while loop loops through a block of code as long as a specified condition is true.
 
@@ -1012,7 +1057,7 @@ while (i < 5){
 } 
 ----
 
-==== 3.8.2 do-while
+==== do-while
 
 do-while loop is always be executed at least once, even if the condition is false, because the code block is executed before the condition is tested:
 
@@ -1036,7 +1081,7 @@ do {
 } while (i < 5);
 ----
 
-==== 3.8.3 The For Loop
+==== for
 
 The for loop is often the tool you will use when you want to create a loop.
 
@@ -1063,11 +1108,11 @@ for(var i=0; i < 5; i++) {
 ----
 
 
-=== 3.9 Functions
+=== Functions
 
 Function is a block of code to perform a particular task and is executed when in some part of the code it calls it.
 
-==== 3.9.1 Function syntax
+==== Function syntax
 
 A JavaScript function is defined with the function keyword, followed by a name, followed by parentheses ().
 
@@ -1089,7 +1134,7 @@ function add(op1, op2){
 }
 ----
 
-==== 3.9.2 Call a function
+==== Call a function
 
 The call of a function is done when in some part of the code it calls it as follow,
 
@@ -1114,150 +1159,149 @@ function add(op1,op2){
 var j=add(2,3); // calls add function. j=5
 ----
 
-==== 3.9.3 Function object
+==== Function object
 
 A function can be stored in variables through its reference,
 
-[source, zetscript]
+[source,javascript]
+----
 function add(op1, op2){
-return op1+op2;
+	return op1+op2;
 }
 
 var fun_obj = add; // stored function add reference to fun_obj
 var j=fun_obj(2,3);// calls fun_obj (aka add) function. J=5
-
+----
 
 Also is possible to create function objects,
 
 Syntax
 
-[source, zetscript]
+[source,javascript]
+----
 function(arg1, arg2, ..., argN){
-// code to be executed.
+	// code to be executed.
 };
-
+----
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 var add=function(op1, op2){
-return op1+op2;
+	return op1+op2;
 };
+
 var j=add(2,5); // j=5
+----
 
-=== 3.10 Class
+=== Class
 
-A class is a type of structure that contains variables and functions that operates with this variables. A class is defined in ZetScript using keyword class followed by the name of class. To access class variables within functions use the this keyword in order to access to variable or functions inside class. In a class we can find member functions (functions that affects to class variable) or static functions (helper function of generic purposes about the class type).
+A class is a custom type that contains variables and functions that operates with its variables. A class is defined in ZetScript using keyword class followed by the name of class. To access class variables within functions use the this keyword in order to access to variable or functions inside class. In a class we can find member functions (functions that affects to class variable) or static functions (helper function of generic purposes about the class type).
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 class Test{
- // member variable
- var data1;
- // member function
- function function1 (a){
- this.data1 =a;
- print("function1:"+this.data1);
- return this.data1;
- }
- // static function that performs an add operation between two Test type objects
- function add_test (a,b){
- return a.data1+b.data1;
- }
-};
 
-==== 3.10.1 Post add function/variable member
+};
+----
+
+==== Post add function/variable member
 
 In ZetScrip is possible to add more class member through "::" punctuator.
 
 Example,
 
-[source, zetscript]
-// post declaration of variable member
-var Test::data2;
-// post declaration of function member
-function Test::function2(){
- this.data2="a string";
-}
+[source,javascript]
+----
+	// post declaration of variable member
+	const Test::data2;
+	
+	// post declaration of function member
+	function Test::function2(){
+ 		this.data2="a string";
+	}
+----
 
-==== 3.10.2 Instance class
+==== Instance class
 
 To instance a class is done through the keyword new
 
 Example,
 
-[source, zetscript]
+[source,javascript]
 var t = new Test(); // Instantiate t as Test type.
 
-==== 3.10.3 Accessing to class functions
+==== Accessing to class functions
 
 To access class variables/functions is done through "." operator.
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 var i=t.function1(2); // initializes data1 as 2 and return the value
-print("data1 is: "+t.data1); // prints value of data1
+----
 
-==== 3.10.4 Constructor
+==== Constructor
 
 Each time class is instanced, their member variables are undefined. var t = new Test(); // The a class Test is instanced but data1 and data2 are undefined.
 
-[source, zetscript]
+[source,javascript]
 print("data1:"+t.data1); //  prints: data1:undefined"
 
 The constructor is a function that is invoked automatically and with aim to initialize all member variables. To the define a constructor we have to define a function member with same name as the Class.
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 class Test{
- var data1;
- // Constructor function
- function Test(){
- this.data1 =10; // instantiate data1 as integer
- }
+ 	// Constructor function
+	constructor(){
+ 		this.data1 =10; // instantiate data1 as integer
+ 	}
 }
-var t = new Test(); // Instantiate t as Test type. Now, member variables are instanced.
-print("data1:"+t.data1); //  prints "data1: 10"
+----
 
-==== 3.10.5 Inheritance
+==== Inheritance
 
 ZetScript supports inheritance through ":" punctuator after the name of the class followed the class name to be extended. The new extended class will inheritance all variable/functions members from base class.
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 class TestExtended: Test{
- var data3;
- function function3(){
- this.data3=this.data1+this.function1(10);
- }
+	function3(){
+		this.data3=this.data1+this.function1(10);
+	}
 };
-
-===== 3.10.5.1 Call parent functions (super keyword)
+----
+===== Call parent functions (super keyword)
 
 The extended class can call parent functions through super keyword.
 
 Example,
 
-[source, zetscript]
+[source,javascript]
+----
 class TestExtended extends Test{
- function1(a){
- var t=super(a); // it calls Test::function1(2)
- this.data1+=t; // Now data1=5+2 = 7
- print("ext function1:"+this.data1);
- return this.data1+a;
- }
- function3(){
- this.data3=this.data1+this.function1(5);
- print("ext function3:"+this.data3);
- }
+	function1(a){
+ 		var t=super(a); // it calls Test::function1(2)
+ 		this.data1+=t; // Now data1=5+2 = 7
+ 		return this.data1+a;
+ 	}
+ 	
+ 	function3(){
+ 		this.data3=this.data1+this.function1(5);
+ 	}
 }; 
+----
 
-
-=== 3.11 Metamethods
+==== Metamethods
 Metamethods are special functions members that links with operators seen on section section 3.6. ZetScript metamethods can be static or member function footnote:[ On script side, static function is defined as member function, but user should not access on variable/function members as well it happens on c++ static function.] depending whether the operation affects or not the object itself. 
 
 ZetScript supports the following metamethods:
@@ -1288,7 +1332,7 @@ ZetScript supports the following metamethods:
 * _div_set
 * _mod_set
 * _and_set
-* _or_set"
+* _or_set
 * _xor_set
 * _shl_set
 * _shr_set
@@ -1301,7 +1345,7 @@ ZetScript supports the following metamethods:
 
 
 
-==== 3.10.1 _equ (aka ==)
+===== _equ (aka ==)
 
 @Description: Performs relational equal operation.
 @Param1 : 1st operand.
@@ -1310,14 +1354,17 @@ ZetScript supports the following metamethods:
 
 Example how to use _equ metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- MyNumber(_n){
- this.num=_n;
- }
- _equ(op1, op2){
- return op1.num==op2.num;
- }
+	constructor(_n){
+ 		this.num=_n;
+	}
+ 	_equ(op1, op2){
+ 		return op1.num==op2.num;
+ 	}
 };
+----
 
 var n1 = new MyNumber (1), n2=new MyNumber (1);
 
@@ -1326,7 +1373,7 @@ if(n1==n2){ // we use here the metamethod ==
 } 
 
 
-==== 3.10.2 _nequ (aka !=)
+===== _nequ (aka !=)
 
 @Description: Performs relational not equal operation.
 @Param1 : 1st operand.
@@ -1335,22 +1382,26 @@ if(n1==n2){ // we use here the metamethod ==
 
 Example how to use _nequ metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- MyNumber(_n){
- this.num=_n;
- }
- _nequ(op1, op2){
- return op1.num!=op2.num;
- }
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	
+ 	_nequ(op1, op2){
+ 		return op1.num!=op2.num;
+ 	}
 };
 
 var n1 = new MyNumber (1), n2=new MyNumber (0);
 if(n1!=n2){
- print("n1 ("+n1.num+") is not equal to n2 ("+n2.num+")");
-} 
+ 	Console::outln("n1 ("+n1.num+") is not equal to n2 ("+n2.num+")");
+}
+---- 
 
 
-==== 3.10.3 _lt (aka <)
+===== _lt (aka <)
 
 @Description: Performs relational less equal operation.
 @Param1 : 1st operand.
@@ -1359,22 +1410,25 @@ if(n1!=n2){
 
 Example how to use _lt metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _lt(op1, op2){
- return op1.num<op2.num;
- }
+	constructor(_n){
+		this.num=_n;
+	}
+ 	static _lt(op1, op2){
+ 		return op1.num<op2.num;
+ 	}
 };
+
 
 var n1 = new MyNumber (0), n2=new MyNumber (1);
 if(n1<n2){
- print("n1 ("+n1.num+") is less than n2 ("+n2.num+")");
+	Console::outln("n1 < n2");
 } 
+----
 
-==== 3.10.4 _lte (aka <=)
+===== _lte (aka <=)
 
 @Description: Performs relational less equal operation.
 @Param1 : 1st operand.
@@ -1383,22 +1437,25 @@ if(n1<n2){
 
 Example how to use _lte metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _lte(op1, op2){
- return op1.num<=op2.num;
- }
+	constructor(_n){
+		this.num=_n;
+	}
+	static _lte(op1, op2){
+		return op1.num<=op2.num;
+	}
 };
+
 
 var n1 = new MyNumber (1), n2=new MyNumber (1);
 if(n1<=n2){
- print("n1 ("+n1.num+") is less equal than n2 ("+n2.num+")");
-} 
+	System::outln("n1 <= n2");
+}
+---- 
 
-==== 3.10.5 _gt (aka >)
+===== _gt (aka >)
 
 @Description: Performs relational greater operation.
 @Param1 : 1st operand.
@@ -1408,22 +1465,24 @@ if(n1<=n2){
 
 Example how to use _gt metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _gt(op1, op2){
- return op1.num>op2.num;
- }
+	constructor(_n){
+		this.num=_n;
+	}
+	static _gt(op1, op2){
+		return op1.num>op2.num;
+	}
 };
 
 var n1 = new MyNumber (1), n2=new MyNumber (0);
 if(n1>n2){
- print("n1 ("+n1.num+") is greater than n2 ("+n2.num+")");
+	Console::outln("n1 ("+n1.num+") is greater than n2 ("+n2.num+")");
 }
+----
 
-==== 3.10.6 _gte (aka >=)
+===== _gte (aka >=)
 
 @Description: Performs relational greater equal operation.
 @Param1 : 1st operand.
@@ -1432,23 +1491,25 @@ if(n1>n2){
 
 Example how to use _gte metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _gte(op1, op2){
- return op1.num>=op2.num;
- }
+	constructor(_n){
+		this.num=_n;
+	}
+ 	static _gte(op1, op2){
+ 		return op1.num>=op2.num;
+ 	}
 };
 
-var n1 = new MyNumber (1), n2=new MyNumber (1);
+var n1 = new MyNumber (2), n2=new MyNumber (1);
 if(n1>=n2){
- print("n1 ("+n1.num+") is greater equal than n2 ("+n2.num+")");
+ 	Console::outln("n1 >= n2");
 } 
+----
 
 
-==== 3.10.7 static _not (aka !)
+===== _not (aka !)
 
 @Description: Performs a not operation.
 @Param1 : Object custom class type.
@@ -1456,23 +1517,26 @@ if(n1>=n2){
 
 Example how to use _not metamethod within script class,
 
-class MyBoolean{
- var b;
 
- function MyBoolean(_b){
- this.b=_b;
- }
- function _not(_op){
- return !_op.b;
- }
+[source,javascript]
+----
+class MyBoolean{
+	constructor(_b){
+		this.b=_b;
+	}
+ 	_not(){
+ 		return !_op.b;
+ 	}
 };
 
-var b = new MyBoolean (false);
+var b = new MyBoolean (true);
 if(!b){
- print("b was false");
-} 
+	Console::outln("b was false");
+}
 
-==== 3.10.8 _neg (aka -)
+---- 
+
+===== _neg (aka -)
 
 @Description: Performs negate operation.
 @Param1 : operand to negate.
@@ -1480,21 +1544,24 @@ if(!b){
 
 Example how to use _neg metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _neg(op1){
- return new MyNumber(-op1.num);
- }
+	constructor(_n){
+		this.num=_n;
+	}
+	
+	_neg(){
+		return new MyNumber(-op1.num);
+	}
 };
 
 var n1 = new MyNumber (1);
 var n2 = -n1;
-print("neg of n1 ("+n1.num+") is ("+n2.num+")"); 
+----
+ 
 
-==== 3.10.9 _add (aka +)
+===== _add (aka +)
 
 @Description: Performs add operation.
 @Param1 : 1st operand.
@@ -1503,14 +1570,16 @@ print("neg of n1 ("+n1.num+") is ("+n2.num+")");
 
 Example how to use _add metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _add(op1,op2){
- return new MyNumber(op1.num+op2.num);
- }
+
+	constructor(_n){
+		this.num=_n;
+	}
+ 	static _add(op1,op2){
+ 		return new MyNumber(op1.num+op2.num);
+ 	}
 };
 
 var n1 = new MyNumber (20);
@@ -1518,8 +1587,9 @@ var n2 = new MyNumber (10);
 var n3 =n1+n2;
 
 print("n1 ("+n1.num+") n2 ("+n2.num+") = "+n3.num);
+----
 
-==== 3.10.10 _div (aka /)
+===== _div (aka /)
 
 @Type: Static
 @Description: Performs divide operation.
@@ -1530,23 +1600,24 @@ operation.
 
 Example how to use metamethod _div within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _div(op1,op2){
- return new MyNumber(op1.num/op2.num);
- }
+	constructor(_n){
+		this.num=_n;
+	}
+	static _div(op1,op2){
+		return new MyNumber(op1.num/op2.num);
+ 	}
 };
 
 var n1 = new MyNumber (20);
 var n2 = new MyNumber (10);
 var n3 =n1/n2;
-print("n1 ("+n1.num+") / n2 ("+n2.num+") = "+n3.num);
+----
 
 
-==== 3.10.11 _mul (aka *)
+===== _mul (aka *)
 
 @Type: Static
 @Description: Performs multiply operation.
@@ -1556,22 +1627,24 @@ print("n1 ("+n1.num+") / n2 ("+n2.num+") = "+n3.num);
 
 Example how to use _mul metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _mul(op1,op2){
- return new MyNumber(op1.num*op2.num);
- }
+ 
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	static _mul(op1,op2){
+ 		return new MyNumber(op1.num*op2.num);
+ 	}
 };
 
 var n1 = new MyNumber (20);
 var n2 = new MyNumber (10);
-var n3 =n1*n2;
-print("n1 ("+n1.num+") * n2 ("+n2.num+") = "+n3.num);
+var n3 = n1*n2;
+----
 
-==== 3.10.12 _mod (aka %)
+===== _mod (aka %)
 
 @Description: Performs modulus operation.
 @Param1 : 1st operand.
@@ -1580,22 +1653,24 @@ print("n1 ("+n1.num+") * n2 ("+n2.num+") = "+n3.num);
 
 Example how to use _mod metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _mod(op1,op2){
- return new MyNumber(op1.num%op2.num);
- }
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	_mod(op1,op2){
+ 		return new MyNumber(op1.num%op2.num);
+ 	}
 };
 
 var n1 = new MyNumber (20);
 var n2 = new MyNumber (15);
-var n3 =n1%n2;
-print("n1 ("+n1.num+") % n2 ("+n2.num+") = "+n3.num);
+var n3 = n1%n2;
+----
 
-==== 3.10.13 _and (aka &)
+
+===== _and (aka &)
 
 @Description: Performs binary and operation between two integer
 operands.
@@ -1605,22 +1680,23 @@ operands.
 
 Example how to use _and metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _and(op1,op2){
- return new MyNumber(op1.num&op2.num);
- }
+	constructor(_n){
+		this.num=_n;
+	}
+	static _and(op1,op2){
+		return new MyNumber(op1.num&op2.num);
+	}
 };
 
 var n1 = new MyNumber (0xff);
 var n2 = new MyNumber (0x0f);
 var n3 =n1&n2;
-print("n1 ("+n1.num+") & n2 ("+n2.num+") = "+n3.num); 
+---- 
 
-==== 3.10.14 _or (aka |)
+===== _or (aka |)
 
 @Description: Performs binary or operation between two integer
 operands.
@@ -1630,22 +1706,23 @@ operands.
 
 Example how to use _or metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _or(op1,op2){
- return new MyNumber(op1.num|op2.num);
- }
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	static _or(op1,op2){
+ 		return new MyNumber(op1.num|op2.num);
+ 	}
 };
 
 var n1 = new MyNumber (0xf0);
 var n2 = new MyNumber (0x0f);
 var n3 =n1|n2;
-print("n1 ("+n1.num+") | n2 ("+n2.num+") = "+n3.num);
+----
 
-==== 3.10.15_xor (aka ^)
+=====_xor (aka ^)
 
 @Description: Performs a binary xor operation between two integer
 operands.
@@ -1655,21 +1732,22 @@ operands.
 
 Example how to use _xor metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _xor(op1,op2){
- return new MyNumber(op1.num^op2.num);
- }
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	static _xor(op1,op2){
+ 		return new MyNumber(op1.num^op2.num);
+ 	}
 };
 var n1 = new MyNumber (0xf1);
 var n2 = new MyNumber (0x0f);
 var n3 =n1^n2;
-print("n1 ("+n1.num+") ^ n2 ("+n2.num+") = "+n3.num);
+----
 
-==== 3.10.16 _shl (aka <<)
+===== _shl (aka <<)
 
 @Description: Performs shift left operation.
 @Param1 : Variable to apply shift left.
@@ -1678,22 +1756,23 @@ print("n1 ("+n1.num+") ^ n2 ("+n2.num+") = "+n3.num);
 
 Example how to use _shl metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _shl(op1, n_shifts){
- return new MyNumber(op1.num<< n_shifts);
- }
+	constructor(_n){
+		this.num=_n;
+	}
+ 	static _shl(op1, n_shifts){
+ 		return new MyNumber(op1.num<< n_shifts);
+ 	}
 };
 
 var n1 = new MyNumber (0x1);
 var n2 = n1 << 3;
-print("n1 ("+n1.num+") << 3 = "+n2.num);
+----
 
 
-==== 3.10.17 _shr (aka >>)
+===== _shr (aka >>)
 
 @Description: Performs shift right operation.
 @Param1 : Variable to apply shift right.
@@ -1702,21 +1781,22 @@ print("n1 ("+n1.num+") << 3 = "+n2.num);
 
 Example how to use _shr metamethod within script class,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _shr(op1,n_shifts){
- return new MyNumber(op1.num>>n_shifts);
- }
+	constructor(_n){
+ 		this.num=_n;
+ 	}
+ 	static _shr(op1,n_shifts){
+ 		return new MyNumber(op1.num>>n_shifts);
+ 	}
 };
 
 var n1 = new MyNumber (0xf);
 var n2 = n1 >> 2;
-print("n1 ("+n1.num+") >> 2 = "+n2.num);
+----
 
-==== 3.10.19 _set (aka =)
+===== _set (aka =)
 
 @Description: Performs a set operation6.
 @Param1 : Source variable to set.
@@ -1724,44 +1804,42 @@ print("n1 ("+n1.num+") >> 2 = "+n2.num);
 
 We present a simple example how to use set metamethod within script class. In the set metamethod we can filter which type of parameter input is to perform the right operation and stop execution with error function if is required.
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- } 
- function _set(v){
- if(v instanceof int){
- this.num = v;
- }else if(v instanceof MyNumber){
- this.num = v.num;
- }else{
- error("parameter not supported");
- }
- }
+	constructor(_n){
+ 		this.num=_n;
+	} 
+ 	_set(v){
+ 		if(v instanceof int){
+ 			this.num = v;
+ 		}else if(v instanceof MyNumber){
+ 			this.num = v.num;
+ 		}else{
+ 			error("parameter not supported");
+ 		}
+ 	}
 };
 
 var n1 = new MyNumber (10);
-var n2 = new MyNumber (20);
-var n3; //  n3 is undefined!
-n3 = n2; //  it assigns n2 pointer.
-print("n3:"+n3.num);
-n3=n1; //  n3.num = n2.num = n1.num.
-print("n3:"+n3.num);
-n3=50; //  n3.num = n2.num = 10.
-print("n3:"+n3.num);
-n3=false; //  stops execution with error "parameter not supported".
+var n2; // n3 is undefined!
+n2 = n1; // it assigns n1=n2.
+n2 = 50; // n3 now values 50
+----
 
-6
 If variable is undefined ZetScript will assign reference object, in the case is not
 defined it will do a set operation (if it is implemented). 
 
 
-=== 3.10.20 Mixing operand types
+===== Mixing operand types
 
 Working with metamethods might have situations where you are passing different type parameters. You can pass the object type, where metamethod function is implemented, or other type of parameters like integer, string, etc.The following example performs a sums of a combination of object, integers or floats.
 
+[source,javascript]
+----
 var num1= new MyNumber(1), num2=new MyNumber(2);
 var num3= 1.0 + num1 + 6 + 1 + 10.0 + num2 + 10 + num1 + num2;
+----
 
 The expression cannot be performed with only objects as we have been shown in the last sections. You can use instanceof operator to check each type of argument and perform the needed operation.
 
@@ -1770,27 +1848,30 @@ error.
 
 Example,
 
+[source,javascript]
+----
 class MyNumber{
- var num;
- function MyNumber(_n){
- this.num=_n;
- }
- function _add(op1,op2){
- var aux1, aux2;
- if(op1 instanceof MyNumber){
- aux1=op1.num;
- }else if(op1 instanceof int || op1 instanceof number){
- aux1=op1;
- }else{
- error("arg op1 is not supported");
- }
- if(op2 instanceof MyNumber){
- aux2=op2.num;
- }else if(op2 instanceof int || op2 instanceof number){
- aux2=op2;
- }else{
- error("arg op2 is not supported ");
- }
+ 
+	constructor(_n){
+		this.num=_n;
+	}
+	static _add(op1,op2){
+ 		var aux1, aux2;
+ 		if(op1 instanceof MyNumber){
+ 			aux1=op1.num;
+ 		}else if(op1 instanceof int || op1 instanceof number){
+			aux1=op1;
+		}else{
+			System::errorln("arg op1 is not supported");
+		}
+	
+ 		if(op2 instanceof MyNumber){
+ 			aux2=op2.num;
+ 		}else if(op2 instanceof int || op2 instanceof number){
+ 			aux2=op2;
+ 		}else{
+ 			System::errorln("arg op2 is not supported ");
+ 		}
 
  return new MyNumber(aux1+aux2);
  }
@@ -1799,9 +1880,9 @@ class MyNumber{
 var n1 = new MyNumber (20);
 var n2 = new MyNumber (10);
 var n3 =1+n1+5+7+n2+10.0+7.0+10; // mix operation with MyNumber, integer and number
+----
 
-
-3.11 Properties
+==== Properties
 
 A property is a member that defines a set of metamethods that to operate with. 
 

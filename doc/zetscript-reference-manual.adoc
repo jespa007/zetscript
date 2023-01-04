@@ -6,6 +6,7 @@ v2.0, January 30,2023
 :icons:
 :lang: en
 :language: zetscript
+:sectnums:
 
 [preface]
 include::prefaces/preface_2_acknowledgment.adoc[]

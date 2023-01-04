@@ -7,7 +7,7 @@ Because ZetScript syntax is almost less or more equal to Javascript you can edit
 code with any editor that supports Javascript syntax notation. 
 
 
-=== 1.1 Compile
+=== Compile
 
 ZetScript has to be configured through (cmake,http://cmake.org) with the following compile toolchains,
 
@@ -30,7 +30,7 @@ done through this command,
 sudo footnote:[sudo is required when the project is compiled in linux.] make install 
 ****
 
-=== 1.2 Hello World
+=== Hello World
 
 Once ZetScript is installed we present a quick sample of "HelloWorld" application, 
 
@@ -46,4 +46,4 @@ Console::outln("Hello world!");
 You should see the "Hello world" message at the command line. 
 
 
-== 1.1 Compile
+=== Compile

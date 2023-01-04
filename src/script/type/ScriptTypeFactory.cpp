@@ -268,24 +268,6 @@ namespace zetscript{
 		// Wrap functions
 
 		//---------------------------------------------
-		// Vector
-		bindMemberFunction<VectorScriptObject>("push",&VectorScriptObjectWrap_push);
-		bindMemberFunction<VectorScriptObject>("pop",&VectorScriptObjectWrap_pop);
-		bindMemberFunction<VectorScriptObject>("insertAt",&VectorScriptObjectWrap_insertAt);
-		bindMemberFunction<VectorScriptObject>("eraseAt",&VectorScriptObjectWrap_eraseAt);
-		bindMemberFunction<VectorScriptObject>("clear",&VectorScriptObjectWrap_clear);
-		bindMemberPropertyGetter<VectorScriptObject>("length",&VectorScriptObjectWrap_length);
-		bindMemberFunction<VectorScriptObject>("join",&VectorScriptObjectWrap_join);
-		bindMemberFunction<VectorScriptObject>("_iter",&VectorScriptObjectWrap_iter);
-		bindStaticMemberFunction<VectorScriptObject>("equal",&VectorScriptObjectWrap_equal);
-
-		// IteratorVector
-		bindMemberFunction<VectorIteratorScriptObject>("_post_inc",VectorIteratorScriptObjectWrap_next);
-		bindMemberFunction<VectorIteratorScriptObject>("_end",VectorIteratorScriptObjectWrap_end);
-		bindMemberFunction<VectorIteratorScriptObject>("_get",VectorIteratorScriptObjectWrap_get);
-
-
-		//---------------------------------------------
 		// String
 		bindStaticMemberFunction<StringScriptObject>("formatNative",StringScriptObject::format);
 		bindMemberFunction<StringScriptObject>("eraseAt",StringScriptObjectWrap_eraseAt);
@@ -313,6 +295,30 @@ namespace zetscript{
 		bindMemberFunction<StringIteratorScriptObject>("_post_inc",StringIteratorScriptObjectWrap_next);
 		bindMemberFunction<StringIteratorScriptObject>("_end",StringIteratorScriptObjectWrap_end);
 		bindMemberFunction<StringIteratorScriptObject>("_get",StringIteratorScriptObjectWrap_get);
+
+		//---------------------------------------------
+		// Vector
+		bindMemberPropertyGetter<VectorScriptObject>("length",&VectorScriptObjectWrap_length);
+
+		bindMemberFunction<VectorScriptObject>("push",&VectorScriptObjectWrap_push);
+		bindMemberFunction<VectorScriptObject>("pop",&VectorScriptObjectWrap_pop);
+		bindMemberFunction<VectorScriptObject>("insertAt",&VectorScriptObjectWrap_insertAt);
+		bindMemberFunction<VectorScriptObject>("eraseAt",&VectorScriptObjectWrap_eraseAt);
+		bindMemberFunction<VectorScriptObject>("clear",&VectorScriptObjectWrap_clear);
+		bindMemberFunction<VectorScriptObject>("join",&VectorScriptObjectWrap_join);
+		//bindStaticMemberFunction<VectorScriptObject>("concat",VectorScriptObject::concat);
+
+
+
+		bindMemberFunction<VectorScriptObject>("_iter",&VectorScriptObjectWrap_iter);
+		bindStaticMemberFunction<VectorScriptObject>("_equ",&VectorScriptObjectWrap_equal);
+		//bindStaticMemberFunction<VectorScriptObject>("_add",&VectorScriptObjectWrap_equal_add);
+
+		// IteratorVector
+		bindMemberFunction<VectorIteratorScriptObject>("_post_inc",VectorIteratorScriptObjectWrap_next);
+		bindMemberFunction<VectorIteratorScriptObject>("_end",VectorIteratorScriptObjectWrap_end);
+		bindMemberFunction<VectorIteratorScriptObject>("_get",VectorIteratorScriptObjectWrap_get);
+
 
 		//---------------------------------------------
 		// Object
