@@ -6,7 +6,7 @@ Console::outln("Test concatenation: s1+s2 ==> \"{0}\"",s1+s2)
 
 Console::outln("----")
 Console::outln("Iteration string 's1' as normal 'for':")
-for(var i=0; i < s1.size(); i++){
+for(var i=0; i < s1.length; i++){
 	Console::outln("s1[{0}]:{1}",i,s1[i]);
 }
 Console::outln("----")

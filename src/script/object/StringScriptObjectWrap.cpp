@@ -6,7 +6,7 @@
 
 namespace zetscript{
 
-	zs_int StringScriptObjectWrap_size(ZetScript *_zs,StringScriptObject *so){
+	zs_int StringScriptObjectWrap_length(ZetScript *_zs,StringScriptObject *so){
 		ZS_UNUSUED_PARAM(_zs);
 		return so->str_ptr->length();
 	}

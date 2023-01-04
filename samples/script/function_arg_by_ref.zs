@@ -25,7 +25,7 @@ var functions=[
 ];
 
 
-for(var i=0; i < functions.size(); i++)
+for(var i=0; i < functions.length; i++)
 {
 	var a=10,b=10,c=new A();
 	

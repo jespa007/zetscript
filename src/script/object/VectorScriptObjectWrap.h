@@ -8,7 +8,7 @@ namespace zetscript{
 
 	void    						VectorScriptObjectWrap_push(ZetScript *_zs,VectorScriptObject *sv,StackElement  * stk);
 	void   							VectorScriptObjectWrap_pop(ZetScript *_zs,VectorScriptObject *sv);
-	zs_int 							VectorScriptObjectWrap_size(ZetScript *_zs,VectorScriptObject *sv);
+	zs_int 							VectorScriptObjectWrap_length(ZetScript *_zs,VectorScriptObject *sv);
 	void 							VectorScriptObjectWrap_insertAt(ZetScript *_zs,VectorScriptObject *sv, zs_int idx,StackElement  * stk);
 	void 							VectorScriptObjectWrap_eraseAt(ZetScript *_zs,VectorScriptObject *sv, zs_int idx);
 	void 							VectorScriptObjectWrap_clear(ZetScript *_zs,VectorScriptObject *sv);

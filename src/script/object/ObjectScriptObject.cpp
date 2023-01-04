@@ -49,8 +49,7 @@ namespace zetscript{
 
 	ObjectScriptObject::ObjectScriptObject(
 			ZetScript	*_zs
-	):ContainerScriptObject(_zs){
-		idx_script_type=IDX_TYPE_SCRIPT_OBJECT_OBJECT;
+	):ContainerScriptObject(_zs,IDX_TYPE_SCRIPT_OBJECT_OBJECT){
 		map_user_properties=new zs_map();
 	}
 

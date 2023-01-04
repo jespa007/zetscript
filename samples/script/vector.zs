@@ -14,7 +14,7 @@ var i=0;
 // 3 types iteration
 // iterator by index
 Console::outln("Iterator by index:")
-for( i=0; i < v3.size(); i++){
+for( i=0; i < v3.length; i++){
 	if(i>0){
 		Console::out(",");
 	}
@@ -49,7 +49,7 @@ Console::outln()
 v3.push("pushed_3");
 v3.push("pushed_4");
 Console::outln("After 2 pushes:")
-for( i=0; i < v3.size(); i++){
+for( i=0; i < v3.length; i++){
 	if(i>0){
 		Console::out(",");
 	}
@@ -60,7 +60,7 @@ Console::outln()
 v3.pop();
 
 Console::outln("After pop lat value:")
-for( i=0; i < v3.size(); i++){
+for( i=0; i < v3.length; i++){
 	if(i>0){
 		Console::out(",");
 	}
@@ -70,7 +70,7 @@ Console::outln()
 Console::outln("After insert 'string' value at position 1:")
 v3.insertAt(1,"string")
 
-for(i=0; i < v3.size(); i++){
+for(i=0; i < v3.length; i++){
 	if(i>0){
 		Console::out(",");
 	}
@@ -79,7 +79,7 @@ for(i=0; i < v3.size(); i++){
 Console::outln()
 v3.eraseAt(2)
 Console::outln("After remove element at position 2:")
-for(i=0; i < v3.size(); i++){
+for(i=0; i < v3.length; i++){
 	if(i>0){
 		Console::out(",");
 	}

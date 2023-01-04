@@ -1,6 +1,6 @@
 var s0="1,2,3";
 var v0=s0.split(",")
-System::assert(v0.size()==3,"v0.size() != 3");
+System::assert(v0.length==3,"v0.length != 3");
 System::assert(v0[0]=="1","v0[0] != \"1\"");
 System::assert(v0[1]=="2","v0[1] != \"2\"");
 System::assert(v0[2]=="3","v0[2] != \"3\"");
@@ -11,7 +11,7 @@ var s2="456";
 var s3="456---678";
 
 var v=s3.split("---")
-System::assert(v.size()==2,"v.size() != 2");
+System::assert(v.length==2,"v.length != 2");
 
 System::assert(v[0]=="456","v[0] != \"456\"");
 System::assert(v[1]=="678","v[1] != \"678\"");
@@ -60,7 +60,7 @@ System::assert("hello world".startsWith("hello"),"\"hello world\".startsWith(\"h
 System::assert("hello world".endsWith("world"),"\"hello world\".endsWith(\"world\")");
 
 // Test substring. Check whether substring == "hello world" 
-System::assert("!!!hello world!!!".substring(3,"hello world".size())=="hello world","\"hello world\".substring(3,\"hello world\".size())!=\"hello world\"");
+System::assert("!!!hello world!!!".substring(3,"hello world".length)=="hello world","\"hello world\".substring(3,\"hello world\".length)!=\"hello world\"");
 
 // Test replace string "world" by "people"
 System::assert("hello world world".replace("world","people")=="hello people people","\"hello world\".replace(\"world\",\"people\")!=\"hello people people\"")

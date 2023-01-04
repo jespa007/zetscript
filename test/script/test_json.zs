@@ -23,7 +23,7 @@ System::assert(typeof json_obj.d[2]==String	,"deserialize json_obj.d[2] != typeo
 
 System::assert(typeof json_obj.e==Object	,"deserialize json_obj.e != typeof Object");
 
-System::assert(Object::keys(json_obj.e).size()==4,"deserialize Object::keys(json_obj.e).size() != 4");
+System::assert(Object::keys(json_obj.e).length==4,"deserialize Object::keys(json_obj.e).length != 4");
 
 System::assert(typeof json_obj.e.a==Float		,"deserialize json_obj.e.a != typeof Float");
 System::assert(typeof json_obj.e.b==Boolean		,"deserialize json_obj.e.b != typeof Boolean");

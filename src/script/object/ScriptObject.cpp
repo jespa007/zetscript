@@ -39,8 +39,10 @@ namespace zetscript{
 		return true;
 	}
 
-	ScriptObject::ScriptObject(ZetScript *_zs){
-		idx_script_type=ZS_IDX_UNDEFINED;
+
+
+	ScriptObject::ScriptObject(ZetScript *_zs, short _idx_script_type){
+		idx_script_type=_idx_script_type;
 		shared_pointer=NULL;
 
 		map_builtin_properties=new zs_map;

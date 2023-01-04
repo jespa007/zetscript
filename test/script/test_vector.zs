@@ -2,7 +2,7 @@ var v1=[1,2]
 var v2=[4,5]
 var v4=["s1","s2","s3","s4"]
 
-System::assert(v4.size()==4,"v4.size()!=4")
+System::assert(v4.length==4,"v4.length!=4")
 
 //check push
 v1.push("s");

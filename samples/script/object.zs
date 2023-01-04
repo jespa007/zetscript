@@ -22,7 +22,7 @@ var obj2={c:3,d:4}
 var key1=Object::keys(obj1);
 var key2=Object::keys(obj2);
 
-for(var i=0; i < key1.size(); i++){
+for(var i=0; i < key1.length; i++){
 	Console::outln(key1[i]);
 }
 
@@ -33,7 +33,7 @@ if(Object::contains(obj1,"a")){
 var obj3=obj1+obj2;
 var key3=Object::keys(obj3);
 
-for(var i=0; i < key3.size(); i++){
+for(var i=0; i < key3.length; i++){
 	Console::outln(key3[i]);
 }
 
@@ -41,7 +41,7 @@ Object::clear(obj3)
 
 key3=Object::keys(obj3);
 
-for(var i=0; i < key3.size(); i++){
+for(var i=0; i < key3.length; i++){
 	Console::outln(key3[i]);
 }
 

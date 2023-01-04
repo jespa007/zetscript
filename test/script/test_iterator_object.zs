@@ -3,7 +3,7 @@ var k,v;
 var rk=""
 var rv=""
 
-System::assert(Object::keys(o).size()==3,"Object::keys(o).size()!=3");
+System::assert(Object::keys(o).length==3,"Object::keys(o).length!=3");
 	
 for(var it=Object::_iter(o);!it._end();it++){
 	k,v=it._get();

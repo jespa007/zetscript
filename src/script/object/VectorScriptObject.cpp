@@ -42,8 +42,7 @@ namespace zetscript{
 
 	VectorScriptObject::VectorScriptObject(
 			ZetScript *_zs
-	):ContainerScriptObject(_zs){
-		this->idx_script_type=IDX_TYPE_SCRIPT_OBJECT_VECTOR;
+	):ContainerScriptObject(_zs,IDX_TYPE_SCRIPT_OBJECT_VECTOR){
 	}
 
 	zs_vector<StackElement *> * VectorScriptObject::getStkUserListElements(){ // return list of stack elements

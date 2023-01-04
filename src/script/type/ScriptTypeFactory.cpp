@@ -274,7 +274,7 @@ namespace zetscript{
 		bindMemberFunction<VectorScriptObject>("insertAt",&VectorScriptObjectWrap_insertAt);
 		bindMemberFunction<VectorScriptObject>("eraseAt",&VectorScriptObjectWrap_eraseAt);
 		bindMemberFunction<VectorScriptObject>("clear",&VectorScriptObjectWrap_clear);
-		bindMemberFunction<VectorScriptObject>("size",&VectorScriptObjectWrap_size);
+		bindMemberPropertyGetter<VectorScriptObject>("length",&VectorScriptObjectWrap_length);
 		bindMemberFunction<VectorScriptObject>("join",&VectorScriptObjectWrap_join);
 		bindMemberFunction<VectorScriptObject>("_iter",&VectorScriptObjectWrap_iter);
 		bindStaticMemberFunction<VectorScriptObject>("equal",&VectorScriptObjectWrap_equal);
@@ -295,7 +295,7 @@ namespace zetscript{
 		bindMemberFunction<StringScriptObject>("replace",StringScriptObjectWrap_replace);
 		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(StringScriptObjectWrap_split));
 		bindMemberFunction<StringScriptObject>("split",static_cast<VectorScriptObject * (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(StringScriptObjectWrap_split));
-		bindMemberFunction<StringScriptObject>("size",StringScriptObjectWrap_size);
+		bindMemberPropertyGetter<StringScriptObject>("length",StringScriptObjectWrap_length);
 		bindMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_string *)>(&StringScriptObjectWrap_contains));
 		bindMemberFunction<StringScriptObject>("contains",static_cast<bool (*)(ZetScript *_zs,StringScriptObject *so, zs_int )>(&StringScriptObjectWrap_contains));
 

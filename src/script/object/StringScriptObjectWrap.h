@@ -8,7 +8,7 @@ namespace zetscript{
 
 	class	StringIteratorScriptObject;
 
-	zs_int 							StringScriptObjectWrap_size(ZetScript *_zs,StringScriptObject *_so);
+	zs_int 							StringScriptObjectWrap_length(ZetScript *_zs,StringScriptObject *_so);
 	bool 							StringScriptObjectWrap_contains(ZetScript *_zs,StringScriptObject *so, zs_string *_str);
 	bool 							StringScriptObjectWrap_contains(ZetScript *_zs,StringScriptObject *so, zs_int _ch);
 	void 							StringScriptObjectWrap_clear(ZetScript *_zs,StringScriptObject *_so);

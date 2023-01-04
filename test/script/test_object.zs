@@ -25,7 +25,7 @@ var key2=Object::keys(obj2);
 var concat_keys="";
 
 // iteration through the keys
-for(var i=0; i < key1.size(); i++){
+for(var i=0; i < key1.length; i++){
 	concat_keys+=key1[i];
 }
 
@@ -38,7 +38,7 @@ var obj3=obj1+obj2;
 var key3=Object::keys(obj3);
 concat_keys="";
 
-for(var i=0; i < key3.size(); i++){
+for(var i=0; i < key3.length; i++){
 	concat_keys+=key3[i];
 }
 
@@ -48,7 +48,7 @@ Object::clear(obj3)
 key3=Object::keys(obj3);
 concat_keys="";
 
-for(var i=0; i < key3.size(); i++){
+for(var i=0; i < key3.length; i++){
 	concat_keys+=key3[i];
 }
 

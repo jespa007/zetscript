@@ -10,7 +10,8 @@ namespace zetscript{
 
 	ContainerScriptObject::ContainerScriptObject(
 			ZetScript *_zs
-	):ScriptObject(_zs){
+			,short _idx_script_ref
+	):ScriptObject(_zs, _idx_script_ref){
 		container_slots=new zs_list<ContainerSlot *>;
 	}
 

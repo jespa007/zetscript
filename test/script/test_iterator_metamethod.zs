@@ -15,7 +15,7 @@ class CustomObjectIterator{
 	}
 	
 	_end(){
-		return this.idx==this.cv.data.size()
+		return this.idx==this.cv.data.length
 	}
 }
 

@@ -16,7 +16,7 @@ namespace zetscript{
 		sv->pop();
 	}
 
-	zs_int 			VectorScriptObjectWrap_size(ZetScript *_zs,VectorScriptObject *sv){
+	zs_int 			VectorScriptObjectWrap_length(ZetScript *_zs,VectorScriptObject *sv){
 		ZS_UNUSUED_PARAM(_zs);
 		return sv->length();
 	}
