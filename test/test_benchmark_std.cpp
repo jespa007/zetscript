@@ -5,6 +5,7 @@
 
 #include "zetscript.h"
 #include <map>
+#include <string>
 #include <vector>
 
 //------------------------------------------------------------------------------------

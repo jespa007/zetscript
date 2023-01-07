@@ -17,8 +17,6 @@ namespace zetscript{
 		//Scope *scope;
 		const char *var_type = typeid(V).name(); // we need the pointer type ...
 		Symbol *symbol_variable=NULL;
-		uint16_t	stk_properties=0;
-		//int idxVariable;
 
 		if(_var_ptr==NULL){
 			ZS_THROW_RUNTIME_ERROR("cannot register var '%s' with NULL reference value", _var_name.c_str());
@@ -422,10 +420,8 @@ namespace zetscript{
 	{
 		// to make compatible MSVC shared library
 		const char *var_type = typeid(R).name(); // we need the pointer type ...
-		const char *return_type;
 		zs_string error;
 		const char *str_script_type_ptr = typeid( C *).name();
-		Symbol *symbol;
 
 		ScriptType *script_type = getScriptTypeFromTypeNamePtr(str_script_type_ptr);
 
@@ -443,7 +439,7 @@ namespace zetscript{
 		}
 
 		// register variable...
-		symbol=script_type->registerMemberVariable(
+		script_type->registerMemberVariable(
 				var_name
 				,var_type
 				,(zs_int)var_pointer

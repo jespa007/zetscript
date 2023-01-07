@@ -28,9 +28,7 @@ namespace zetscript{
 
 	template<typename _C>
 	StackElement	to_stk(ZetScript *_zs, _C _val){
-		bool is_constant=false;
 		zs_string error;
-		StackElement stk;
 		zs_string str_script_type_ptr = typeid(_C).name();
 		ScriptTypeFactory *_script_factory=_zs->getScriptTypeFactory();
 		ScriptType *script_type = _script_factory->getScriptTypeFromTypeNamePtr(str_script_type_ptr);
