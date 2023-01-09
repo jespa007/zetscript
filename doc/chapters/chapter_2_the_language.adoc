@@ -400,7 +400,7 @@ Example,
 
 [source,javascript]
 ----
-"hello world".length // returns 11 
+include::../../test/script/string/test_string_length.zs[]
 ----
 
 ===== Members
