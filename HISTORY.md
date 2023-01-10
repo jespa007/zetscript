@@ -24,8 +24,8 @@ Main improvements:
 
 Solved issues
  
-- #64 Implement "include" preprocessor feature 
-- #65 added shared/static link cmake option through -DLINK=[SHARED|STATIC]
+#64 Implement "include" preprocessor feature 
+#65 added shared/static link cmake option through -DLINK=[SHARED|STATIC]
 - #66 Added memory leak detection manager (only for GNU toolchain).  It needs memmanager https://github.org/jespa007/memmanager and pass -DMEMMANAGER parameter on cmake
 - #67 Compact all utils source in one called CZetScriptUtils
 - #68 implement try/catch. CZetScript getErrorMsg is not used anymore. catch will return message error and line
