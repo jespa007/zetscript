@@ -24,8 +24,8 @@ Main improvements:
 
 Solved issues
  
-#64 Implement "include" preprocessor feature 
-#65 added shared/static link cmake option through -DLINK=[SHARED|STATIC]
+- #64 Implement "include" preprocessor feature 
+- #65 added shared/static link cmake option through -DLINK=[SHARED|STATIC]
 - #66 Added memory leak detection manager (only for GNU toolchain).  It needs memmanager https://github.org/jespa007/memmanager and pass -DMEMMANAGER parameter on cmake
 - #67 Compact all utils source in one called CZetScriptUtils
 - #68 implement try/catch. CZetScript getErrorMsg is not used anymore. catch will return message error and line
@@ -107,6 +107,7 @@ Solved issues
 - #155 Check compile Visual Studio 2015, 2019
 - #156 Fix SWITCH  
 - #157 Fix +=,-=,/= etc operator
+- #159 Implements zetscript documentation asciidoctor 
 - #160 Update Invader ZetScript 2.0 
 - #161 Merge symbol+functions in one container !!!
 - #162 Implement eval Function object 
@@ -282,22 +283,22 @@ Added fibonacci test (fib.zs)
 Version: 1.2.0
 Date: 13-02-2018
 
-- #30: ASTNode.h right push/pop pragma.
-- #31: Configure output library as shared. 
-- #28: Fixed ciclic dependency in class_C_baseof function on already registered classes.
-- #34: Added support for unsigned int and intptr_t types. 
-- #35: Fixed. Bug bad scope index on push/pop ast node 
-- #36: Fixed. It doesn't register a class if it tries to register some variable base of class that has not registered by base_of_class 
-- #37: Fixed. When symbols are not found during searching on its linking, it does a memory corruption 
-- #38: Fixed. Bug double free pointer on set/restore state
-- #39: Fixed. Script function and script classes are not clean after call cleancompile function.
-- #41: More detail information about error accessing function "XXXXX" when prints "Expected scriptvar".
-- #43: Improvement split eval process into parse, compile and execute functions.
-- #40: Support detection class base of param type in C function calls.
-- #41: Fixed/Implemented. Due virtual classes changes its memory map at run-time, function and variables cannot ensure the same pointer as base class so
+- #30 ASTNode.h right push/pop pragma.
+- #31 Configure output library as shared. 
+- #28 Fixed ciclic dependency in class_C_baseof function on already registered classes.
+- #34 Added support for unsigned int and intptr_t types. 
+- #35 Fixed. Bug bad scope index on push/pop ast node 
+- #36 Fixed. It doesn't register a class if it tries to register some variable base of class that has not registered by base_of_class 
+- #37 Fixed. When symbols are not found during searching on its linking, it does a memory corruption 
+- #38 Fixed. Bug double free pointer on set/restore state
+- #39 Fixed. Script function and script classes are not clean after call cleancompile function.
+- #41 More detail information about error accessing function "XXXXX" when prints "Expected scriptvar".
+- #43 Improvement split eval process into parse, compile and execute functions.
+- #40 Support detection class base of param type in C function calls.
+- #41 Fixed/Implemented. Due virtual classes changes its memory map at run-time, function and variables cannot ensure the same pointer as base class so
      has been decided to disable heritate all functions/variables from parent classes (only C).
      Due 41, now we have to pass class type on both register_C_MemberFunction/register_C_VariableMember (+1 feature version)
-- #45: Fixed. Seg. fault on returning wrong C pointer derived class. A helper function has been implemented to return right pointer in function of type parameter.
+- #45 Fixed. Seg. fault on returning wrong C pointer derived class. A helper function has been implemented to return right pointer in function of type parameter.
 
 - Due float it cannot be the same size as the any param of c functions, float type is disable since 1.2. Instead do float *. 
 - Fixed. Seg.faults on returning strings * from C functions.
@@ -328,8 +329,8 @@ Date: 19-11-2017
 Version: 1.1.1
 Date: 12-11-2017
 
-- #21: bind functions already implemented 
-- #22: cast vector from/to stk implemented
+- #21 bind functions already implemented 
+- #22 cast vector from/to stk implemented
 - #23 Fixed bug
 - #24 Fixed bug
 
@@ -356,9 +357,5 @@ Date: 04-11-2017
 Version: 1.0.0
 Date: 04-11-2017
 
-- Solved various bugs
-- ZetScript bugs various bug
-- Implement error feature feature
-- Support for if-else if-else feature
-- Memory leaks improvement
+- First version
  
