@@ -21,7 +21,6 @@
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_VECTOR 	"IteratorVector"
 #define ZS_TYPE_NAME_OBJECT_ITERATOR_OBJECT 	"IteratorObject"
 
-
 namespace zetscript{
 
 	typedef enum:short{
@@ -84,5 +83,4 @@ namespace zetscript{
 	}Type;
 
 	Type	is_built_in_type(const char *s);
-
 }

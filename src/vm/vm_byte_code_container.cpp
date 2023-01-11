@@ -503,7 +503,7 @@ lbl_exit_function:
 					if(STK_VALUE_IS_ZS_INT(stk_result_op2)){ \
 						index_aux1=stk_result_op2->value;
 					}else if(STK_VALUE_IS_ZS_FLOAT(stk_result_op2)){ \
-						index_aux1=*((zs_float*)&stk_result_op2->value);
+						index_aux1=ZS_READ_INTPTR_FLOAT(stk_result_op2->value);
 					}else{
 						ZS_VM_STOP_EXECUTEF("Expected index value for vector access");
 					}

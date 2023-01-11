@@ -225,7 +225,7 @@ namespace zetscript{
 						,idx_instruction
 						,req_stk
 						,sum_stk_load_stk
-						,ZS_INTPTR_TO_FLOAT(instruction->value_op2));
+						,ZS_READ_INTPTR_FLOAT(instruction->value_op2));
 				break;
 			case BYTE_CODE_LOAD_ZS_INT:
 				printf("[" ZS_HEADER_FORMAT_INSTRUCTION "]\tLOAD_INT\t\t%i\n"

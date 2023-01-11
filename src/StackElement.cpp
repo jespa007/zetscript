@@ -95,7 +95,7 @@ namespace zetscript{
 		}else if(STK_VALUE_IS_ZS_INT(&stk)){
 			result= zs_strutils::zs_int_to_str((zs_int)stk.value,_format);
 		}else if(STK_VALUE_IS_ZS_FLOAT(&stk)){
-			result= zs_strutils::zs_float_to_str(ZS_INTPTR_TO_FLOAT(stk.value));
+			result= zs_strutils::zs_float_to_str(ZS_READ_INTPTR_FLOAT(stk.value));
 		}else if(STK_VALUE_IS_BOOLEAN(&stk)){
 			result= stk.value?"true":"false";
 		}else if(STK_VALUE_IS_MEMBER_PROPERTY(&stk)){
@@ -442,7 +442,7 @@ namespace zetscript{
 			return (zs_int)this->value;
 		}
 
-		return *((zs_float*)&this->value);
+		return ZS_READ_INTPTR_FLOAT(this->value);
 	}
 
 	zs_float	StackElement::toFloat(){
@@ -450,7 +450,7 @@ namespace zetscript{
 			ZS_THROW_RUNTIME_ERRORF("StackElement not is not float");
 		}
 
-		return ZS_INTPTR_TO_FLOAT(this->value);
+		return ZS_READ_INTPTR_FLOAT(this->value);
 	}
 
 	bool	StackElement::toBool(){

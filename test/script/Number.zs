@@ -89,6 +89,9 @@ class Number{
 	}
 	
 	static parseFloat(_n1,_n2){
+	var ll=0.5
+		Console::outln(ll)
+	
 		var n1,n2
 		if(isNumber(_n1)){
 			n1=_n1

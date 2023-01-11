@@ -192,7 +192,7 @@ namespace zetscript{
 			}else if(stk_src_properties & STK_PROPERTY_ZS_FLOAT){
 				stk_dst->properties=STK_PROPERTY_ZS_FLOAT;
 				stk_dst->value=0; // reset value
-				ZS_INTPTR_TO_FLOAT(stk_dst->value)=ZS_INTPTR_TO_FLOAT(stk_src->value);
+				ZS_WRITE_INTPTR_FLOAT(&stk_dst->value,ZS_READ_INTPTR_FLOAT(stk_src->value));
 			}else if(stk_src_properties & STK_PROPERTY_BOOL){
 				stk_dst->properties=STK_PROPERTY_BOOL;
 				stk_dst->value=stk_src->value;

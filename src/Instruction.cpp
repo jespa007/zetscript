@@ -49,7 +49,7 @@ namespace zetscript{
 				ZS_THROW_EXCEPTION("instruction is not constant " ZS_STR(zs_float));
 			}
 
-			return ZS_INTPTR_TO_FLOAT(this->value_op2);
+			return ZS_READ_INTPTR_FLOAT(this->value_op2);
 
 		}
 

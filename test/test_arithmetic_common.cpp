@@ -500,7 +500,7 @@ void _complete_test_arithmetic_float_op_assign(
 					"error test '%s' expected '%.02f' but it was '%.02f'!\n"
 					, it_iod->str.c_str()
 					, it_iod->val
-					,ZS_INTPTR_TO_FLOAT(stk.value)).c_str()
+					,ZS_READ_INTPTR_FLOAT(stk.value)).c_str()
 				);
 			}
 

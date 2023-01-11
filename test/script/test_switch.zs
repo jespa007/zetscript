@@ -34,19 +34,19 @@ function test_switch(a){
 	return v
 }
 var v=test_switch(-2)
-System::assert(Vector::equal(v,[-2]),"v!=[-2]")
+System::assert(v==[-2],"v!=[-2]")
 
 v=test_switch(-1)
-System::assert(Vector::equal(v,[-1,0,1,2,-3]),"v!=[-1,0,1,2,-3]")
+System::assert(v==[-1,0,1,2,-3],"v!=[-1,0,1,2,-3]")
 v=test_switch(0)
 
-System::assert(Vector::equal(v,[0,1,2,-3]),"v!=[0,1,2,-3]")
+System::assert(v==[0,1,2,-3],"v!=[0,1,2,-3]")
 v=test_switch(3)
 
-System::assert(Vector::equal(v,[3]),"v!=[3]")
+System::assert(v==[3],"v!=[3]")
 v=test_switch(4)
 
-System::assert(Vector::equal(v,[4]),"v!=[4]")
+System::assert(v==[4],"v!=[4]")
 
 var s="hello"
 var r="";

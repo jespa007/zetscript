@@ -365,7 +365,7 @@ namespace zetscript{
 						aux++;// advance ..
 						break;
 					default:
-						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"directive '%s' not supported",eval_data_directives[directive].str);
+						EVAL_ERROR_FILE_LINE(eval_data->current_parsing_file,line,"directive '%i' not supported",directive);
 						break;
 					}
 

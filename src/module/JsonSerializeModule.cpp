@@ -149,7 +149,7 @@ namespace zetscript{
 										result = (zs_int)&str_aux;
 										break;
 									case  IDX_TYPE_ZS_FLOAT_C:
-										ZS_INTPTR_TO_FLOAT(result)=((zs_float (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);
+										ZS_WRITE_INTPTR_FLOAT(&result,((zs_float (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object));
 										break;
 									default:
 										result=((zs_int (*)(ZetScript *,void *))(ptr_function->ref_native_function_ptr))(_zs,c_object);

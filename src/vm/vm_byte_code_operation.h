@@ -58,22 +58,22 @@
 		VM_PUSH_STK_ZS_FLOAT(((zs_float)stk_result_op1->value) / ((zs_float)stk_result_op2->value));\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
-		if(ZS_INTPTR_TO_FLOAT(stk_result_op2->value) == 0){\
+		if(ZS_READ_INTPTR_FLOAT(stk_result_op2->value) == 0){\
 			ZS_VM_STOP_EXECUTEF("exception div operation by 0");\
 		}\
-		VM_PUSH_STK_ZS_FLOAT(stk_result_op1->value / ZS_INTPTR_TO_FLOAT(stk_result_op2->value));\
+		VM_PUSH_STK_ZS_FLOAT(stk_result_op1->value / ZS_READ_INTPTR_FLOAT(stk_result_op2->value));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
 		if(stk_result_op2->value == 0){\
 			ZS_VM_STOP_EXECUTEF("exception div operation by 0");\
 		}\
-		VM_PUSH_STK_ZS_FLOAT(ZS_INTPTR_TO_FLOAT(stk_result_op1->value) / stk_result_op2->value);\
+		VM_PUSH_STK_ZS_FLOAT(ZS_READ_INTPTR_FLOAT(stk_result_op1->value) / stk_result_op2->value);\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
-		if(ZS_INTPTR_TO_FLOAT(stk_result_op2->value) == 0){\
+		if(ZS_READ_INTPTR_FLOAT(stk_result_op2->value) == 0){\
 			ZS_VM_STOP_EXECUTEF("exception div operation by 0");\
 		}\
-		VM_PUSH_STK_ZS_FLOAT(ZS_INTPTR_TO_FLOAT(stk_result_op1->value) / ZS_INTPTR_TO_FLOAT(stk_result_op2->value));\
+		VM_PUSH_STK_ZS_FLOAT(ZS_READ_INTPTR_FLOAT(stk_result_op1->value) / ZS_READ_INTPTR_FLOAT(stk_result_op2->value));\
 		break;\
 	default:\
 		if(vm_call_metamethod(\
@@ -95,13 +95,13 @@
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value + stk_result_op2->value);\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
-		VM_PUSH_STK_ZS_FLOAT(stk_result_op1->value + ZS_INTPTR_TO_FLOAT(stk_result_op2->value));\
+		VM_PUSH_STK_ZS_FLOAT(stk_result_op1->value + ZS_READ_INTPTR_FLOAT(stk_result_op2->value));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
-		VM_PUSH_STK_ZS_FLOAT(ZS_INTPTR_TO_FLOAT(stk_result_op1->value) + stk_result_op2->value);\
+		VM_PUSH_STK_ZS_FLOAT(ZS_READ_INTPTR_FLOAT(stk_result_op1->value) + stk_result_op2->value);\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
-		VM_PUSH_STK_ZS_FLOAT(ZS_INTPTR_TO_FLOAT(stk_result_op1->value) + ZS_INTPTR_TO_FLOAT(stk_result_op2->value));\
+		VM_PUSH_STK_ZS_FLOAT(ZS_READ_INTPTR_FLOAT(stk_result_op1->value) + ZS_READ_INTPTR_FLOAT(stk_result_op2->value));\
 		break;\
 	default:\
 		if(vm_call_metamethod(\
@@ -124,13 +124,13 @@
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value __C_OP__ stk_result_op2->value);\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
-		VM_PUSH_STK_ZS_FLOAT(stk_result_op1->value __C_OP__ ZS_INTPTR_TO_FLOAT(stk_result_op2->value));\
+		VM_PUSH_STK_ZS_FLOAT(stk_result_op1->value __C_OP__ ZS_READ_INTPTR_FLOAT(stk_result_op2->value));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
-		VM_PUSH_STK_ZS_FLOAT(ZS_INTPTR_TO_FLOAT(stk_result_op1->value) __C_OP__ stk_result_op2->value);\
+		VM_PUSH_STK_ZS_FLOAT(ZS_READ_INTPTR_FLOAT(stk_result_op1->value) __C_OP__ stk_result_op2->value);\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
-		VM_PUSH_STK_ZS_FLOAT(ZS_INTPTR_TO_FLOAT(stk_result_op1->value) __C_OP__ ZS_INTPTR_TO_FLOAT(stk_result_op2->value));\
+		VM_PUSH_STK_ZS_FLOAT(ZS_READ_INTPTR_FLOAT(stk_result_op1->value) __C_OP__ ZS_READ_INTPTR_FLOAT(stk_result_op2->value));\
 		break;\
 	default:\
 		if(vm_call_metamethod(\
@@ -156,13 +156,13 @@
 		VM_PUSH_STK_BOOLEAN(STK_VALUE_TO_BOOL(stk_result_op1) __C_OP__ STK_VALUE_TO_BOOL(stk_result_op2));\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
-		VM_PUSH_STK_BOOLEAN(stk_result_op1->value __C_OP__ ZS_INTPTR_TO_FLOAT(stk_result_op2->value));\
+		VM_PUSH_STK_BOOLEAN(stk_result_op1->value __C_OP__ ZS_READ_INTPTR_FLOAT(stk_result_op2->value));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
-		VM_PUSH_STK_BOOLEAN(ZS_INTPTR_TO_FLOAT(stk_result_op1->value) __C_OP__ stk_result_op2->value);\
+		VM_PUSH_STK_BOOLEAN(ZS_READ_INTPTR_FLOAT(stk_result_op1->value) __C_OP__ stk_result_op2->value);\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
-		VM_PUSH_STK_BOOLEAN(ZS_INTPTR_TO_FLOAT(stk_result_op1->value) __C_OP__ ZS_INTPTR_TO_FLOAT(stk_result_op2->value));\
+		VM_PUSH_STK_BOOLEAN(ZS_READ_INTPTR_FLOAT(stk_result_op1->value) __C_OP__ ZS_READ_INTPTR_FLOAT(stk_result_op2->value));\
 		break;\
 	default:\
 		if(STK_VALUE_IS_TYPE(stk_result_op1)){\
@@ -225,22 +225,22 @@
 		VM_PUSH_STK_ZS_FLOAT(fmod(stk_result_op1->value, stk_result_op2->value));\
 		break;\
 	case MSK_STK_OP1_ZS_INT_OP2_ZS_FLOAT:\
-		if(ZS_INTPTR_TO_FLOAT(stk_result_op2->value) == 0){\
+		if(ZS_READ_INTPTR_FLOAT(stk_result_op2->value) == 0){\
 			ZS_VM_STOP_EXECUTEF("exception mod operation by 0");\
 		}\
-		VM_PUSH_STK_ZS_FLOAT(fmod(stk_result_op1->value,ZS_INTPTR_TO_FLOAT(stk_result_op2->value)));\
+		VM_PUSH_STK_ZS_FLOAT(fmod(stk_result_op1->value,ZS_READ_INTPTR_FLOAT(stk_result_op2->value)));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_INT:\
 		if(stk_result_op2->value == 0){\
 			ZS_VM_STOP_EXECUTEF("exception mod operation by 0");\
 		}\
-		VM_PUSH_STK_ZS_FLOAT(fmod(ZS_INTPTR_TO_FLOAT(stk_result_op1->value) , stk_result_op2->value));\
+		VM_PUSH_STK_ZS_FLOAT(fmod(ZS_READ_INTPTR_FLOAT(stk_result_op1->value) , stk_result_op2->value));\
 		break;\
 	case MSK_STK_OP1_ZS_FLOAT_OP2_ZS_FLOAT:\
-		if(ZS_INTPTR_TO_FLOAT(stk_result_op2->value) == 0){\
+		if(ZS_READ_INTPTR_FLOAT(stk_result_op2->value) == 0){\
 			ZS_VM_STOP_EXECUTEF("exception mod operation by 0");\
 		}\
-		VM_PUSH_STK_ZS_FLOAT(fmod(ZS_INTPTR_TO_FLOAT(stk_result_op1->value) , ZS_INTPTR_TO_FLOAT(stk_result_op2->value)));\
+		VM_PUSH_STK_ZS_FLOAT(fmod(ZS_READ_INTPTR_FLOAT(stk_result_op1->value) , ZS_READ_INTPTR_FLOAT(stk_result_op2->value)));\
 		break;\
 	default:\
 		if(vm_call_metamethod(\
@@ -289,8 +289,9 @@
 		stk_result_op1->value __C_OP__;\
 		break;\
 	case STK_PROPERTY_ZS_FLOAT:\
-		VM_PUSH_STK_ZS_FLOAT(-ZS_INTPTR_TO_FLOAT(stk_result_op1->value));\
-		(ZS_INTPTR_TO_FLOAT(stk_result_op1->value)) __C_OP__;\
+		zs_float_aux=(zs_float *)&stk_result_op1->value;\
+		VM_PUSH_STK_ZS_FLOAT(-(*zs_float_aux));\
+		(*zs_float_aux) __C_OP__;\
 		break;\
 	default:/*metamethod*/\
 		if(vm_call_metamethod_operation_post(\
@@ -343,8 +344,9 @@
 		stk_result_op1->value __C_OP__;\
 		break;\
 	case STK_PROPERTY_ZS_FLOAT:\
-		VM_PUSH_STK_ZS_FLOAT(-ZS_INTPTR_TO_FLOAT(stk_result_op1->value));\
-		(ZS_INTPTR_TO_FLOAT(stk_result_op1->value)) __C_OP__;\
+		zs_float_aux=(zs_float *)&stk_result_op1->value;\
+		VM_PUSH_STK_ZS_FLOAT(*zs_float_aux);\
+		(*zs_float_aux) __C_OP__;\
 		break;\
 	default:/*metamethod*/\
 		if(vm_call_metamethod_operation_post(\
@@ -367,12 +369,13 @@
 	EXTRACT_STK_RESULT_OP1\
 	switch(GET_STK_PROPERTY_PRIMITIVE_TYPES((stk_result_op1)->properties)){\
 	case STK_PROPERTY_ZS_INT:\
-		stk_result_op1->value __C_OP__;\
+		__C_OP__ stk_result_op1->value;\
 		VM_PUSH_STK_ZS_INT(stk_result_op1->value);\
 		break;\
 	case STK_PROPERTY_ZS_FLOAT:\
-		(ZS_INTPTR_TO_FLOAT(stk_result_op1->value)) __C_OP__;\
-		VM_PUSH_STK_ZS_FLOAT(ZS_INTPTR_TO_FLOAT(stk_result_op1->value));\
+		zs_float_aux=(zs_float *)&stk_result_op1->value;\
+		(*zs_float_aux) __C_OP__;\
+		VM_PUSH_STK_ZS_FLOAT(*zs_float_aux);\
 		break;\
 	default:\
 		if(vm_call_metamethod_operation_pre(\

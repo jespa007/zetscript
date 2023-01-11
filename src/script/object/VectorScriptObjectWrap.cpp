@@ -121,9 +121,9 @@ namespace zetscript{
 					break;
 				case (STK_PROPERTY_ZS_INT|STK_PROPERTY_ZS_FLOAT):
 					if((stk_element_s1->properties & STK_PROPERTY_ZS_INT) && (stk_element_s2->properties & STK_PROPERTY_ZS_FLOAT)){
-						equal=stk_element_s1->value == *((float *)&stk_element_s2->value);
+						equal=stk_element_s1->value == ZS_READ_INTPTR_FLOAT(stk_element_s2->value);
 					}else{
-						equal=*((float *)&stk_element_s1->value)==stk_element_s2->value;
+						equal=ZS_READ_INTPTR_FLOAT(stk_element_s1->value)==stk_element_s2->value;
 					}
 					break;
 				case STK_PROPERTY_SCRIPT_OBJECT:

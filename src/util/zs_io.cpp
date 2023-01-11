@@ -9,13 +9,16 @@
 #define getch _getch
 #endif
 
+#define ZS_IO_GET_LINE_MAX 256
+
 namespace zetscript{
+
 	namespace zs_io{
 		int getline(char **lineptr, size_t *n, FILE *stream)
 		{
-		static char line[256];
-		char *ptr;
-		size_t len;
+		static char line[ZS_IO_GET_LINE_MAX]={0};
+		char *ptr=NULL;
+		size_t len=0;
 
 		   if (lineptr == NULL || n == NULL)
 		   {
@@ -29,21 +32,22 @@ namespace zetscript{
 		   if (feof(stream))
 			  return -1;
 
-		   fgets(line,256,stream);
+		   if(fgets(line,ZS_IO_GET_LINE_MAX,stream)!=NULL){
 
-		   ptr = strchr(line,'\n');
-		   if (ptr)
-			  *ptr = '\0';
+			   ptr = strchr(line,'\n');
+			   if (ptr)
+				   *ptr = '\0';
 
-		   len = strlen(line);
+			   len = strlen(line);
 
-		   if ((len+1) < 256)
-		   {
-			  ptr = (char *)realloc(*lineptr, 256);
-			  if (ptr == NULL)
-				 return(-1);
-			  *lineptr = ptr;
-			  *n = 256;
+			   if ((len+1) < ZS_IO_GET_LINE_MAX)
+			   {
+				  ptr = (char *)realloc(*lineptr, ZS_IO_GET_LINE_MAX);
+				  if (ptr == NULL)
+					 return(-1);
+				  *lineptr = ptr;
+				  *n = ZS_IO_GET_LINE_MAX;
+			   }
 		   }
 
 		   strcpy(*lineptr,line);
