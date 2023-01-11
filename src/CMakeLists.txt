@@ -7,7 +7,15 @@ IF( NOT CMAKE_BUILD_TYPE )
    SET( CMAKE_BUILD_TYPE Release )
 ENDIF()
 
-set(IS_DEBUG "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+set(POST_NAME "")
+set(IS_DEBUG FALSE)
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+	set(IS_DEBUG TRUE)
+	SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__DEBUG__ ")
+	set( POST_NAME "_d")
+endif()
+
+MESSAGE ("-- Target: " ${CMAKE_BUILD_TYPE})
 
 file(READ "zetscript.h" zetscript_h)
 
@@ -173,22 +181,6 @@ elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
     # 32 bits
     MESSAGE ("-- Architecture: 32bit")
 endif()
-
-
-IF ( "${CMAKE_BUILD_TYPE}" STREQUAL "")
-   SET ( CMAKE_BUILD_TYPE "release" )
-ENDIF ()
-
-set( POST_NAME "")
-IF ( IS_DEBUG)
-	set( POST_NAME "_d")
-ENDIF()
- 
-MESSAGE ("-- Target: " ${CMAKE_BUILD_TYPE})
-
-IF ( IS_DEBUG)
-	SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__DEBUG__ ")
-ENDIF()
 
 #
 # COMPILER PARAMS
