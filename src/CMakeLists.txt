@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0091 NEW)
 project(zetscript)
 
+
+IF( NOT CMAKE_BUILD_TYPE )
+   SET( CMAKE_BUILD_TYPE Release )
+ENDIF()
+
+set(IS_DEBUG "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+
 file(READ "zetscript.h" zetscript_h)
 
 string(REGEX MATCH "ZETSCRIPT_VERSION_MAJOR ([0-9]*)" _ ${zetscript_h})
@@ -109,17 +116,19 @@ else()
     	if(RASPBERRY)
     		MESSAGE ("-- Plataform: RASPBERRY" )
     	elseif(UNIX)
-    		MESSAGE ("-- Plataform: UNIX" )
+    		MESSAGE ("-- Plataform: Unix" )
+    		file(READ "/etc/issue" ETC_ISSUE )
+			string(REGEX MATCH "Debian|Ubuntu|Alpine" DIST ${ETC_ISSUE})
+			MESSAGE ("-- Dist: " ${DIST} )
     	else()
     		MESSAGE ("-- Plataform: Unknown" )
     	endif()
 	endif()
 	
-	IF ( "${TARGET}" STREQUAL "debug")
-		set(TARGET "debug")
+	IF ( IS_DEBUG)
 		set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -O0 -g ")
 		
-		IF (${PROJECT_SOURCE_DIR}/../../memmgr)
+		IF (EXISTS ${PROJECT_SOURCE_DIR}/../../memmgr)
 		
 			message("-- Memmanager: Yes")
 			SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__MEMMANAGER__")
@@ -132,25 +141,25 @@ else()
 		ELSE()
 	
 			if(UNIX)
-				set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fsanitize=address ")
-			 	message("-- Memmanager: -fsanitize=address")
+				if( NOT "${DIST}" STREQUAL "Alpine")
+					set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -fsanitize=address ")
+					message("-- Memmanager: -fsanitize=address")
+				else()
+					message("-- Memmanager: -fsanitize NOT supported")
+				endif()
 			 else()
 			 	message("-- Memmanager: OFF (../../memmgr not exist)")
 			 endif()
 		ENDIF()
 	ELSE()
-		set(TARGET "release")
 		set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -O2 ")
 	ENDIF()
 	
 	
-
-	
-
 	#Redefine output dir ...
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${TARGET})
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${TARGET})
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${TARGET})
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
 	LINK_DIRECTORIES(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})	
 	
 
@@ -166,18 +175,18 @@ elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
 endif()
 
 
-IF ( "${TARGET}" STREQUAL "")
-   SET ( TARGET "release" )
+IF ( "${CMAKE_BUILD_TYPE}" STREQUAL "")
+   SET ( CMAKE_BUILD_TYPE "release" )
 ENDIF ()
 
 set( POST_NAME "")
-IF ( "${TARGET}" STREQUAL "debug")
+IF ( IS_DEBUG)
 	set( POST_NAME "_d")
 ENDIF()
  
-MESSAGE ("-- Target: " ${TARGET})
+MESSAGE ("-- Target: " ${CMAKE_BUILD_TYPE})
 
-IF ( "${TARGET}" STREQUAL "debug")
+IF ( IS_DEBUG)
 	SET( CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -D__DEBUG__ ")
 ENDIF()
 

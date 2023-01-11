@@ -8,10 +8,10 @@
 #include <cstdint>
 
 namespace zetscript{
-	#if INTPTR_MAX == INT32_MAX
-		typedef float 				zs_float;
-	#elif INTPTR_MAX==INT64_MAX
-		typedef ${ZS_FLOAT_TYPE} 	zs_float;
+	#if INTPTR_MAX==INT64_MAX
+		typedef double 			zs_float;
+	#elif INTPTR_MAX == INT32_MAX
+		typedef float 			zs_float;
 	#else
 	#error "Environment not 32 or 64-bit."
 	#endif
