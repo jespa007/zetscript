@@ -1,3 +1,2 @@
-output
+*.output
 *.pdf
-examples\*.output
