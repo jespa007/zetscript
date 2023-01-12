@@ -21,8 +21,8 @@ namespace zetscript{
 		return *aux;
 	}
 	
-	inline void zs_write_intptr_float(intptr_t _dst, zs_float _src){
-		zs_float *dst=(zs_float*)&_dst;
+	inline void zs_write_intptr_float(intptr_t *_dst, zs_float _src){
+		zs_float *dst=(zs_float*)_dst;
 		*dst=_src;
 	}
 }
