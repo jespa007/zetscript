@@ -390,6 +390,7 @@ Example,
 var s="this is a string";
 ----
 
+
 ===== String properties
  
 '''
@@ -417,6 +418,15 @@ include::../examples/the_language/string_length_out.txt[]
 ===== Members
 
 '''
+====== *String::format(_str,..._args)*
+'''
+[source,javascript]
+----
+
+----
+
+
+'''
 ====== *String::insertAt(_pos,[_char,_str])*
 '''
 
@@ -436,7 +446,9 @@ Output,
 include::../examples/the_language/string_insert_at_out.txt[]
 ----
 
+'''
 ====== *String::eraseAt(_pos)*
+'''
 
 _String::eraseAt_ inserts additional characters into the string right before the character indicated by pos (or p):
 
@@ -447,65 +459,80 @@ Example,
 
 ----
 
+'''
 ====== String::clear()
+'''
+
 [source,javascript]
 ----
 
 ----
 
+'''
 ====== String::replace()
+'''
+
 [source,javascript]
 ----
 
 ----
 
+'''
 ====== String::split()
+'''
+
 [source,javascript]
 ----
 
 ----
 
+'''
 ====== String::contains()
+'''
 [source,javascript]
 ----
 
 ----
 
+'''
 ====== String::indexOf()
+'''
 [source,javascript]
 ----
 
 ----
-
+'''
 ====== String::startsWith()
+'''
 [source,javascript]
 ----
 
 ----
-
+'''
 ====== String::endsWith()
+'''
 [source,javascript]
 ----
 
 ----
 
+'''
 ====== String::substring()
+'''
 [source,javascript]
 ----
 
 ----
 
+'''
 ====== String::append()
+'''
 [source,javascript]
 ----
 
 ----
- 
-====== String::format()
-[source,javascript]
-----
 
-----
+
 
 
 ===== Operators
