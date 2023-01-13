@@ -192,9 +192,9 @@ var i;
 // block ends here, so *j* variable doesn't exist anymore
 ----
 
-=== Types
+=== Data types
 
-ZetScript supports the following types,
+ZetScript supports the following data types,
 
 * Undefined
 * Null
@@ -390,9 +390,12 @@ Example,
 var s="this is a string";
 ----
 
-===== Properties
+===== String properties
  
-====== String::length
+'''
+====== *String::length*
+
+'''
 
 _String::length_ returns the length of the string
 
@@ -400,12 +403,40 @@ Example,
 
 [source,javascript]
 ----
-include::../../test/script/string/test_string_length.zs[]
+include::../examples/the_language/string_length.zs[]
 ----
+
+Output,
+
+[source,text]
+----
+include::../examples/the_language/string_length_out.txt[]
+----
+
 
 ===== Members
 
-====== String::eraseAt(_pos)
+'''
+====== *String::insertAt(_pos,[_char,_str])*
+'''
+
+_String::insertAt_ inserts a character (_char) or string (_str) into the string right before the character indicated by _pos
+
+Example,
+
+[source,javascript]
+----
+include::../examples/the_language/string_insert_at.zs[]
+----
+
+Output,
+
+[source,text]
+----
+include::../examples/the_language/string_insert_at_out.txt[]
+----
+
+====== *String::eraseAt(_pos)*
 
 _String::eraseAt_ inserts additional characters into the string right before the character indicated by pos (or p):
 
