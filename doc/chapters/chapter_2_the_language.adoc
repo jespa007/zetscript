@@ -450,14 +450,25 @@ include::../examples/the_language/string_insert_at_out.txt[]
 ====== *String::eraseAt(_pos)*
 '''
 
-_String::eraseAt_ inserts additional characters into the string right before the character indicated by pos (or p):
+- *params:* none
+- *return:* none
+
+_String::eraseAt_ removes the character right before the character indicated by _pos
 
 Example,
 
 [source,javascript]
 ----
-
+include::../examples/the_language/string_erase_at.zs[]
 ----
+
+Output,
+
+[source,text]
+----
+include::../examples/the_language/string_erase_at_out.txt[]
+----
+
 
 '''
 ====== String::clear()
