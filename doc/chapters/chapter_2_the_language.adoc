@@ -2,6 +2,7 @@
 :highlightjs-languages: cpp, javascript
 :sectnums:
 
+
 == The language
 
 === Statments
@@ -398,9 +399,18 @@ var s="this is a string";
 
 '''
 
-_String::length_ returns the length of the string
+*Description*
 
-Example,
+returns the length of the string
+
+*Parameters*
+
+None
+
+*Returns*
+ the length of the string
+
+*Example*
 
 [source,javascript]
 ----
