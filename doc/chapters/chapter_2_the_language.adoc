@@ -2,7 +2,6 @@
 :highlightjs-languages: cpp, javascript
 :sectnums:
 
-
 == The language
 
 === Statments
@@ -78,7 +77,7 @@ Example,
 ----
 10; // decimal value
 0x1a; // hexadecimal value
-01001b; // binary value
+11010b; // 0x1a as binary value
 'b'; // char value
 ----
 
@@ -100,7 +99,7 @@ Integer literlas supports the following pre operators,
 |Invert all bits
 |
 [source,javascript]
-~00000011b // 11111100b (-4)
+~011010b // (-27)
 |====
 
 ==== Float
@@ -209,7 +208,7 @@ ZetScript supports the following data types,
 
 ==== Undefined
 
-Undefined type it defines a non initialized variable. A variable is instanced as _Undefined_ once a its assings *undefined* value,
+Undefined data type it defines a non initialized variable. A variable is instanced as _Undefined_ once a its assings *undefined* value,
 
 [source,javascript]
 ----
@@ -219,7 +218,7 @@ var b=undefined; // assigns undefined value
 
 ==== Null
 
-Null type it defines an empty or not valid variable. A variable is instanced as _Null_ once a its assings *null* value,
+Null data type it defines an empty or not valid variable. A variable is instanced as _Null_ once a its assings *null* value,
 
 [source,javascript]
 ----
@@ -228,7 +227,7 @@ var i=null;
 
 ==== Integer
 
-Integer type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Integer_ once it assigns decimal, hexadecimal,binary or char value.
+Integer data type it defines a integer variable with range from -(2b-1) to 2b-1-1 where b=32 or 64 it depending whether ZetScript is compiled for 32bits or 64bits. A variable is initialized as _Integer_ once it assigns decimal, hexadecimal,binary or char value.
 
 Example,
 
@@ -242,7 +241,7 @@ var d='b'; //  char value
 
 ===== Operators
 
-Integer operators are applied on integer variables before or after is read. Integer operators are the following,
+Integer data operators are applied on integer variables before or after is read. Integer operators are the following,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -295,17 +294,37 @@ var i=0;
 var j=i--;//j=0;i=-1;
 |====
 
-===== Functions
+===== Static functions
 
-Integer type defines the following functions,
-
- * Integer::parser(_value)
- 
+'''
 ====== Integer::parser(_value)
+'''
 
-@Description: Performs a set operation6
-@Param1 : Source variable to set.
-@Returns : None.
+*Description*
+
+Converts input value as Integer
+
+*Parameters*
+
+- __value_ : String or Float literal or datatype to parse
+
+*Returns*
+
+Integer as parsed value
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/integer_parse.zs[]
+----
+
+Output,
+
+[source,txt]
+----
+include::../examples/the_language/integer_parse_out.txt[]
+----
 
 ==== Float
 
@@ -369,6 +388,38 @@ var i=0.5;
 var j=i--;//j=0.5;i=-0.5;
 |====
 
+===== Static functions
+
+'''
+====== Float::parse(_value)
+'''
+
+*Description*
+
+Converts input value as Float
+
+*Parameters*
+
+- __value_ : String or Integer literal or data type
+
+*Returns*
+
+Float as parsed value
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/float_parse.zs[]
+----
+
+Output,
+
+[source,txt]
+----
+include::../examples/the_language/float_parse_out.txt[]
+----
+
 ==== Boolean
 
 Boolean type it defines a boolean variable represented as _true_ or _false_. A variable is initialized as _Boolean_ once it assigns a boolean value.
@@ -392,23 +443,75 @@ var s="this is a string";
 ----
 
 
-===== String properties
+===== Static functions
  
 '''
-====== *String::length*
+====== *String::format(_string,..._args)*
 
 '''
 
 *Description*
 
-returns the length of the string
+Builds a string placing formated values in {} as string with a serie of variable args
+
+The possible formats is described below,
+
+
+[cols="1m,3d"]
+|====
+|Format |description
+|{n}
+|It replaces {_n_} by the argument _n_
+
+|{n:dm}
+|It replaces the argument _n_ padding _m_ 0s on its left
+
+|{n,m}
+|It replaces argument _n_ padding _m_ spaces on its left
+
+
+ 
+|====
+
+*Parameters*
+
+- _string : string value with   
+- _args: variable args
+
+*Returns*
+
+Formated string
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/string_format.zs[]
+----
+
+Output,
+
+[source,txt]
+----
+include::../examples/the_language/string_format_out.txt[]
+----
+
+
+
+===== Properties
+ 
+'''
+====== *String::length*
+
+Returns the length of the string
 
 *Parameters*
 
 None
 
 *Returns*
- the length of the string
+
+The length of the string
 
 *Example*
 

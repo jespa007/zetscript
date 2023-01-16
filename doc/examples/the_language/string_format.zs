@@ -1,0 +1,7 @@
+Console::outln(String::format("1st arg {0}",1))
+Console::outln(String::format("1st,2nd as {0} and {1}",1,2))
+Console::outln(String::format("1st,2nd same {0} and {0}",1))
+Console::outln(String::format("Score:{0:d1}",1))
+Console::outln(String::format("Score:{0:d4}",1))
+Console::outln(String::format("Score:{0,1}",1))
+Console::outln(String::format("One space:{0,4}",1))
