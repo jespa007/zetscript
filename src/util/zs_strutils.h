@@ -50,6 +50,7 @@ namespace zetscript{
 		 zs_string 	zs_int_to_str(zs_int _number, const zs_string & _format = "");
 		 zs_string 	zs_float_to_str(zs_float _number);
 		 zs_string 	to_lower(const zs_string & str);
+		 zs_string 	to_upper(const zs_string & str);
 		 char 		*clone_to_char_ptr(const zs_string & _str_in);
 		 zs_string  format(const  char  *string_text, ...);
 		 zs_string	format_file_line(const char* _file, int _line, const  char* _str_in, ...);

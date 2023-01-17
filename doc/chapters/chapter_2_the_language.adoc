@@ -543,9 +543,11 @@ include::../examples/the_language/string_length_out.txt[]
 ====== *String::insertAt(_pos,[_char,_str])*
 '''
 
+*Description*
+
 _String::insertAt_ inserts a character (_char) or string (_str) into the string right before the character indicated by _pos
 
-Example,
+*Example*
 
 [source,javascript]
 ----
@@ -563,12 +565,19 @@ include::../examples/the_language/string_insert_at_out.txt[]
 ====== *String::eraseAt(_pos)*
 '''
 
-- *params:* none
-- *return:* none
+*Description*
 
 _String::eraseAt_ removes the character right before the character indicated by _pos
 
-Example,
+*Parameters:* 
+
+None
+
+*Return* 
+
+None
+
+*Example*
 
 [source,javascript]
 ----
@@ -582,6 +591,61 @@ Output,
 include::../examples/the_language/string_erase_at_out.txt[]
 ----
 
+'''
+====== *String::toUpperCase(_pos)*
+'''
+*Description*
+
+Returns the calling string value converted to uppercase
+
+*Parameters*
+ 
+None
+
+*Return*
+
+Returns the calling string value converted to uppercase
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/string_to_upper_case.zs[]
+----
+
+Output,
+
+[source,text]
+----
+include::../examples/the_language/string_to_upper_case_out.txt[]
+----
+
+
+'''
+====== *String::toLowerCase(_pos)*
+'''
+
+*Parameters*
+
+None
+
+*Return* 
+
+Returns the calling string value converted to lowercase
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/string_to_lower_case.zs[]
+----
+
+Output,
+
+[source,text]
+----
+include::../examples/the_language/string_to_lower_case_out.txt[]
+----
 
 '''
 ====== String::clear()

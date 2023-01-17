@@ -148,6 +148,19 @@ namespace zetscript{
 		*(str_in->str_ptr)+=*(str_append->str_ptr);
 	}
 
+	StringScriptObject * 	StringScriptObjectWrap_toLowerCase(ZetScript *_zs,StringScriptObject *so){
+		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
+		str_out->set(zs_strutils::to_lower(so->toString()));
+		return str_out;
+	}
+
+	StringScriptObject * 	StringScriptObjectWrap_toUpperCase(ZetScript *_zs,StringScriptObject *so){
+		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
+		str_out->set(zs_strutils::to_upper(so->toString()));
+		return str_out;
+	}
+
+
 	StringIteratorScriptObject * StringScriptObjectWrap_iter(ZetScript *_zs,StringScriptObject *so){
 		ZS_UNUSUED_PARAM(_zs);
 		return ZS_NEW_OBJECT_ITERATOR_STRING(_zs,so);

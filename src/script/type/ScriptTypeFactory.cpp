@@ -288,6 +288,8 @@ namespace zetscript{
 		bindMemberFunction<StringScriptObject>("endsWith",StringScriptObjectWrap_endsWith);
 		bindMemberFunction<StringScriptObject>("substring",StringScriptObjectWrap_substring);
 		bindMemberFunction<StringScriptObject>("append",StringScriptObjectWrap_append);
+		bindMemberFunction<StringScriptObject>("toLowerCase",StringScriptObjectWrap_toLowerCase);
+		bindMemberFunction<StringScriptObject>("toUpperCase",StringScriptObjectWrap_toUpperCase);
 
 		bindMemberFunction<StringScriptObject>("_iter",StringScriptObjectWrap_iter);
 
