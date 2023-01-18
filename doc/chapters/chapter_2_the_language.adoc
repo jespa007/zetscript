@@ -296,7 +296,7 @@ var j=i--;//j=0;i=-1;
 ===== Static functions
 
 
-====== Integer::parser(_value)
+====== Integer::parse(_value)
 
 
 *Description*
@@ -960,8 +960,8 @@ The following operators it does evaluates relational expressions,
 |Checks if a value is instance of a type. 
 |
 [source,javascript]
-0 instanceof int; //= true
-"hello" instanceof int;//= false
+0 instanceof Integer; //= true
+"hello" instanceof Integer;//= false
 |====
 
 Note: You cannot mix different types for relational expressions. For example, doing a
@@ -1993,7 +1993,7 @@ class MyNumber{
  		this.num=_n;
 	} 
  	_set(v){
- 		if(v instanceof int){
+ 		if(v instanceof Integer){
  			this.num = v;
  		}else if(v instanceof MyNumber){
  			this.num = v.num;
@@ -2041,7 +2041,7 @@ class MyNumber{
  		var aux1, aux2;
  		if(op1 instanceof MyNumber){
  			aux1=op1.num;
- 		}else if(op1 instanceof int || op1 instanceof number){
+ 		}else if(op1 instanceof Integer || op1 instanceof Float){
 			aux1=op1;
 		}else{
 			System::errorln("arg op1 is not supported");
@@ -2049,7 +2049,7 @@ class MyNumber{
 	
  		if(op2 instanceof MyNumber){
  			aux2=op2.num;
- 		}else if(op2 instanceof int || op2 instanceof number){
+ 		}else if(op2 instanceof Integer || op2 instanceof Float){
  			aux2=op2;
  		}else{
  			System::errorln("arg op2 is not supported ");
