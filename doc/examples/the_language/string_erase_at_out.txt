@@ -1,0 +1,2 @@
+ Original string before erase character = 'helilo world'
+ After erase character at position 3 = 'hello world'

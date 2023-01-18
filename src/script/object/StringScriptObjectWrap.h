@@ -23,11 +23,13 @@ namespace zetscript{
 	zs_int 							StringScriptObjectWrap_indexOf(ZetScript *_zs,StringScriptObject *so,zs_string *search);
 	bool 							StringScriptObjectWrap_startsWith(ZetScript *_zs,StringScriptObject *so,zs_string *prefix);
 	bool 							StringScriptObjectWrap_endsWith(ZetScript *_zs,StringScriptObject *so,zs_string *suffix);
-	StringScriptObject * 			StringScriptObjectWrap_substring(ZetScript *_zs,StringScriptObject *str_in,zs_int _pos,zs_int _length);
 
 	void 							StringScriptObjectWrap_append(ZetScript *_zs,StringScriptObject *str_in,StringScriptObject *_str_append);
 	StringScriptObject * 			StringScriptObjectWrap_toUpperCase(ZetScript *_zs,StringScriptObject *so);
 	StringScriptObject * 			StringScriptObjectWrap_toLowerCase(ZetScript *_zs,StringScriptObject *so);
+
+	StringScriptObject * 			StringScriptObjectWrap_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index, zs_int _end_index);
+	StringScriptObject * 			StringScriptObjectWrap_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index);
 
 
 	StringIteratorScriptObject *	StringScriptObjectWrap_iter(ZetScript *_zs,StringScriptObject *_str_in);

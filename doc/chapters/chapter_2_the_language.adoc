@@ -49,7 +49,6 @@ this is a block comment
 
 ZetScript supports the following literals,
 
-
 * Boolean
 * Integer
 * Float
@@ -194,7 +193,7 @@ var i;
 
 === Data types
 
-ZetScript supports the following data types,
+ZetScript supports the following builtin data types,
 
 * Undefined
 * Null
@@ -241,7 +240,7 @@ var d='b'; //  char value
 
 ===== Operators
 
-Integer data operators are applied on integer variables before or after is read. Integer operators are the following,
+Integer data operators are applied on integer variables before or after its read. Integer operators are the following,
 
 [cols="1d,1m,2d,2a"]
 |====
@@ -296,9 +295,9 @@ var j=i--;//j=0;i=-1;
 
 ===== Static functions
 
-'''
+
 ====== Integer::parser(_value)
-'''
+
 
 *Description*
 
@@ -319,7 +318,7 @@ Integer as parsed value
 include::../examples/the_language/integer_parse.zs[]
 ----
 
-Output,
+Output:
 
 [source,txt]
 ----
@@ -341,7 +340,7 @@ var b=2.0e-2 // cientific notation form value
 
 ===== Operators
 
-Float operators are applied on float variables before or after is read. Float operators are the following,
+Float operators are applied on float variables before or after its read. Float operators are the following,
 
 
 [cols="1d,1m,2d,2a"]
@@ -390,17 +389,15 @@ var j=i--;//j=0.5;i=-0.5;
 
 ===== Static functions
 
-'''
+
 ====== Float::parse(_value)
-'''
 
-*Description*
+Converts input as Float value
 
-Converts input value as Float
 
 *Parameters*
 
-- __value_ : String or Integer literal or data type
+- __value_ : Input value
 
 *Returns*
 
@@ -413,7 +410,7 @@ Float as parsed value
 include::../examples/the_language/float_parse.zs[]
 ----
 
-Output,
+Output:
 
 [source,txt]
 ----
@@ -435,73 +432,16 @@ var b=false;
 
 String type it defines a string type represented as a sequence of chars. A variable is initialized as _String_ once it assigns a string value.
 
-Example,
+*Example*
 
 [source,javascript]
 ----
 var s="this is a string";
 ----
 
-
-===== Static functions
- 
-'''
-====== *String::format(_string,..._args)*
-
-'''
-
-*Description*
-
-Builds a string placing formated values in {} as string with a serie of variable args
-
-The possible formats is described below,
-
-
-[cols="1m,3d"]
-|====
-|Format |description
-|{n}
-|It replaces {_n_} by the argument _n_
-
-|{n:dm}
-|It replaces the argument _n_ padding _m_ 0s on its left
-
-|{n,m}
-|It replaces argument _n_ padding _m_ spaces on its left
-
-
- 
-|====
-
-*Parameters*
-
-- _string : string value with   
-- _args: variable args
-
-*Returns*
-
-Formated string
-
-*Example*
-
-[source,javascript]
-----
-include::../examples/the_language/string_format.zs[]
-----
-
-Output,
-
-[source,txt]
-----
-include::../examples/the_language/string_format_out.txt[]
-----
-
-
-
 ===== Properties
  
-'''
-====== *String::length*
+====== String::length
 
 Returns the length of the string
 
@@ -520,32 +460,60 @@ The length of the string
 include::../examples/the_language/string_length.zs[]
 ----
 
-Output,
+Output:
 
 [source,text]
 ----
 include::../examples/the_language/string_length_out.txt[]
 ----
 
+===== Static functions
+ 
+====== String::format(_string,..._args)
 
-===== Members
+Builds a string placing formated values in {} as string with a serie of variable args. The possible formats is described below,
 
-'''
-====== *String::format(_str,..._args)*
-'''
+
+[cols="1m,3d"]
+|====
+|Format |description
+|{n}
+|It replaces {_n_} by the argument _n_
+|{n:dm}
+|It replaces the argument _n_ padding _m_ 0s on its left
+|{n,m}
+|It replaces argument _n_ padding _m_ spaces on its left
+|====
+
+*Parameters*
+
+- __string_ : string value with 
+
+- __args_ : variable args
+
+*Returns*
+
+Formated string
+
+*Example*
+
 [source,javascript]
 ----
-
+include::../examples/the_language/string_format.zs[]
 ----
 
+Output:
 
-'''
-====== *String::insertAt(_pos,[_char,_str])*
-'''
+[source,txt]
+----
+include::../examples/the_language/string_format_out.txt[]
+----
 
-*Description*
+===== Member functions
 
-_String::insertAt_ inserts a character (_char) or string (_str) into the string right before the character indicated by _pos
+====== *String::insertAt(_pos,_value)
+
+Inserts a character or string into the string at index
 
 *Example*
 
@@ -554,18 +522,14 @@ _String::insertAt_ inserts a character (_char) or string (_str) into the string 
 include::../examples/the_language/string_insert_at.zs[]
 ----
 
-Output,
+Output:
 
 [source,text]
 ----
 include::../examples/the_language/string_insert_at_out.txt[]
 ----
 
-'''
-====== *String::eraseAt(_pos)*
-'''
-
-*Description*
+====== String::eraseAt(_pos)
 
 _String::eraseAt_ removes the character right before the character indicated by _pos
 
@@ -584,17 +548,14 @@ None
 include::../examples/the_language/string_erase_at.zs[]
 ----
 
-Output,
+Output:
 
 [source,text]
 ----
 include::../examples/the_language/string_erase_at_out.txt[]
 ----
 
-'''
-====== *String::toUpperCase(_pos)*
-'''
-*Description*
+====== String::toUpperCase()
 
 Returns the calling string value converted to uppercase
 
@@ -613,17 +574,14 @@ Returns the calling string value converted to uppercase
 include::../examples/the_language/string_to_upper_case.zs[]
 ----
 
-Output,
+Output:
 
 [source,text]
 ----
 include::../examples/the_language/string_to_upper_case_out.txt[]
 ----
 
-
-'''
-====== *String::toLowerCase(_pos)*
-'''
+====== String::toLowerCase()
 
 *Parameters*
 
@@ -640,104 +598,93 @@ Returns the calling string value converted to lowercase
 include::../examples/the_language/string_to_lower_case.zs[]
 ----
 
-Output,
+Output:
 
 [source,text]
 ----
 include::../examples/the_language/string_to_lower_case_out.txt[]
 ----
 
-'''
 ====== String::clear()
-'''
 
 [source,javascript]
 ----
 
 ----
 
-'''
 ====== String::replace()
-'''
 
 [source,javascript]
 ----
 
 ----
 
-'''
 ====== String::split()
-'''
 
 [source,javascript]
 ----
 
 ----
 
-'''
 ====== String::contains()
-'''
+
 [source,javascript]
 ----
 
 ----
 
-'''
 ====== String::indexOf()
-'''
+
 [source,javascript]
 ----
 
 ----
-'''
 ====== String::startsWith()
-'''
+
 [source,javascript]
 ----
 
 ----
-'''
+
 ====== String::endsWith()
-'''
+
 [source,javascript]
 ----
 
 ----
 
-'''
-====== String::substring()
-'''
+====== String::substring(_start_index, _end_index=-1)
+
+Returns the part of the string from the start index and, optionally, a second parameter to specify the end index. If the end index is not provided it sets as -1 as default that means that will copy till string end
+
 [source,javascript]
 ----
-
+include::../examples/the_language/string_substring.zs[]
 ----
 
-'''
+Ouput:
+
+[source,txt]
+----
+include::../examples/the_language/string_substring_out.txt[]
+----
+
 ====== String::append()
-'''
+
 [source,javascript]
 ----
 
 ----
-
-
-
-
-===== Operators
-
-====== Operator ==
-
-====== Operator +=
 
 === Vector
 
-Vector type it defines a container type that stores multiple values in a unidimensional array. A variable is initialized as _Vector_ once it assings a open/closed square brackets (i.e '[]' ), 
+Vector type it defines a container type that stores values in a unidimensional array. A variable is initialized as _Vector_ once it assings a open/closed square brackets (i.e '[]' ), 
 
 Example,
 
 [source,javascript]
 ----
-var v=[]; // empty vector
+[]; // a vector
 ----
 
 Variable instanced as _Vector_ can also have initialized with a sequence of elements separated with coma (i.e ',') within square brackets,
@@ -746,7 +693,7 @@ Example,
 
 [source,javascript]
 ----
-var v=[1,"string",true,2.0]; // Vector with elements
+[1,"string",true,2.0]; // A vector with elements
 ----
 
 To access element vector is done through integer as a index.
@@ -755,29 +702,11 @@ Example,
 
 [source,javascript]
 ----
-var v=[1,"this is a string",true,2.0]; // its has 4 elements where its index access exist in [0..3]
+var v=[1,"this is a string",true,2.0]; // variable 'v' has 4 elements where its access exist in [0..3]
 v[1]; // It access vector's second element (i.e "this is a string")
 ----
 
-====== Metamethods
-
-Vector type implements the following set of metamethods,
-
-* _equ (aka ==)
-
-
-====== Operator ==
-[source,javascript]
-----
-
-----
-
-
 ===== Properties
-
-Vector type provides the following set of properties,
-
-* Vector::length
 
 ====== Vector::length
 [source,javascript]
@@ -785,55 +714,56 @@ Vector type provides the following set of properties,
 
 ----
 
-====== Member functions
+===== Static functions
 
-======= Vector::push
+===== Member functions
+
+====== Vector::push(_value)
 [source,javascript]
 ----
 
 ----
-======= Vector::pop
+====== Vector::pop()
 [source,javascript]
 ----
 
 ----
-======= Vector::insertAt
+====== Vector::insertAt(_pos,_value)
 [source,javascript]
 ----
 
 ----
-======= Vector::eraseAt
+====== Vector::eraseAt(_pos)
 [source,javascript]
 ----
 
 ----
-======= Vector::clear
+====== Vector::clear()
 [source,javascript]
 ----
 
 ----
-======= Vector::join
+====== Vector::join(_vector)
 [source,javascript]
 ----
 
 ----
-
 
 
 ==== Object type
 
-An Object type is a anonymous container type to store multiple values in attributes. A variable is initialized as _Object_ once it assings a open/closed of curly brackets (i.e '{}'),
+Object type is a anonymous container type to store values through attributes. A variable is initialized as _Object_ once it assings a open/closed of curly brackets (i.e '{}'),
 
 [source,javascript]
 ----
-var t={};
+{}; // Object
 ----
 
 Optionally we can init with some values with its attributes,
 
 [source,javascript]
 ----
-var t={
+{
   i:1
  ,s:"this is a string"
  ,b:true
@@ -845,65 +775,71 @@ To acces to its elements is done through the variable name followed by '.' and a
 
 [source,javascript]
 ----
-var v_i=v.i; // get value 'i' by '.'
-var v_i=v["i"]; // get value 'i' by '[]'
+
+var o={
+  i:1
+ ,s:"this is a string"
+ ,b:true
+ ,f:2.0
+};
+
+var o_i=o.i; // get value 'i' by '.'
+var o_i=o["i"]; // get value 'i' by '[]'
 ----
 
-*Built-in functions*
+===== Static functions
 
-Object type it has the following functions in order to manage struct at runtime,
+====== Object::clear()
 
-[cols="1m,1d,2a"]
-|====
-|Function |Description |Example
-
-|size 
-|It returns the number of current elements 
-|
-[source,javascript
-var v=[1,2];
-v.size(); // =2
-
-|add
-|Adds an attribute
-|
 [source,javascript]
-var s={};
-v.add("a",0); // s={a:0}
+----
+----
 
-|remove 
-|Removes an attribute
-|
+====== Object::erase(_id)
+
 [source,javascript]
-var s={a:0};
-v.remove("a"); // s={}
-|====
+----
+----
+
+====== Object::contains()
+
+[source,javascript]
+----
+----
+
+====== Object::append()
+
+[source,javascript]
+----
+----
+
+====== Object::concat()
+
+[source,javascript]
+----
+----
+
+====== Object::keys()
+
+[source,javascript]
+----
+----
 
 ==== Function
 
-Function is an object that holds information about a function and is able to call it (see section 3.8.3 for more information)
+Function type is a anonymous function object to be assigned. A variable is initialized as _Function_ once it assings an anonymous function (see section X.XX)
 
 Example,
 
 [source,javascript]
 ----
-function add(op1, op2){ // function that returns the sum of two vars.
-	return op1+op2;
-}
-
-var fun_obj = add; // stored function add reference to fun_obj
-var j=fun_obj(2,3);// calls fun_obj (aka add) function. J=5
-----
-
-Another example by anonymous function,
-
-[source,javascript]
-----
-var fun_obj = function (op1, op2){ // function object that returns the sum of two vars.
-	return op1+op2;
+var f=function(){
+	Console::outln("Call from function object")
 };
-var j=fun_obj(2,3);// calls fun_obj (aka anonymous function). function. J=5
+
+f(); // it prints "Call from function object"
 ----
+
 
 === Operations
 
@@ -1111,7 +1047,7 @@ Binary operations are the ones that combines bit operations through integer valu
 0xff >> 1; // = 0x7f
 |====
 
-=== Priority operations
+==== Priority operations
 Each operator it has priority of evaluation. ZetScript it has the following operator order priority,
 
 *,/,%,!=,+,-,^,&,|,<<,>>,==,<=,>=,>,<,||,&&

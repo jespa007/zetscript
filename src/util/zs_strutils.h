@@ -84,6 +84,8 @@ namespace zetscript{
 
 		int index_of(const zs_string& text, const zs_string& pattern);
 
+		zs_string substring(const zs_string & _str_in, int _start_index, int _end_index=-1);
+
 		zs_string unescape(const zs_string & s);
 	}
 }

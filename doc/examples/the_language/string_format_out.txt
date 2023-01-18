@@ -1,0 +1,7 @@
+1st arg 1
+1st,2nd as 1 and 2
+1st,2nd same 1 and 1
+Score:1
+Score:0001
+Score:1
+One space:   1

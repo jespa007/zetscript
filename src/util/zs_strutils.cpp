@@ -473,6 +473,25 @@ namespace zetscript{
 			}
 		}
 
+		zs_string substring(const zs_string & _str_in, int _start_index, int _end_index){
+			zs_string out_string="";
+			if(_start_index<0){
+				ZS_THROW_RUNTIME_ERROR("_start_index negative (_start_index:%i)", _start_index);
+			}
+			if(_end_index < 0){
+				_end_index=_str_in.length()+_end_index;
+			}
+			if(_end_index>=_str_in.length()){
+				_end_index=_str_in.length()-1;
+			}
+
+			if(_start_index<=_end_index){
+				out_string=_str_in.substr(_start_index,_end_index-_start_index+1);
+			}
+
+			return out_string;
+		}
+
 
 		zs_string unescape(const zs_string & s)	{
 			zs_string res;

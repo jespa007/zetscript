@@ -137,12 +137,6 @@ namespace zetscript{
 		return zs_strutils::ends_with(*str,*suffix);
 	}
 
-	StringScriptObject * StringScriptObjectWrap_substring(ZetScript *_zs,StringScriptObject *str_in,zs_int _pos,zs_int _length){
-		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
-		str_out->set(str_in->toString().substr(_pos,_length));
-		return str_out;
-	}
-
 	void 							StringScriptObjectWrap_append(ZetScript *_zs,StringScriptObject *str_in,StringScriptObject *str_append){
 		ZS_UNUSUED_PARAM(_zs);
 		*(str_in->str_ptr)+=*(str_append->str_ptr);
@@ -160,6 +154,15 @@ namespace zetscript{
 		return str_out;
 	}
 
+	StringScriptObject * 	StringScriptObjectWrap_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index, zs_int _end_index){
+		StringScriptObject *str_out=ZS_NEW_STRING_OBJECT(_zs);
+		str_out->set(zs_strutils::substring(_so->toString(),_start_index, _end_index));
+		return str_out;
+	}
+
+	StringScriptObject * 	StringScriptObjectWrap_substring(ZetScript *_zs,StringScriptObject *_so, zs_int _start_index){
+		return StringScriptObjectWrap_substring(_zs, _so,  _start_index,-1);
+	}
 
 	StringIteratorScriptObject * StringScriptObjectWrap_iter(ZetScript *_zs,StringScriptObject *so){
 		ZS_UNUSUED_PARAM(_zs);
