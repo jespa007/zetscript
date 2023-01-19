@@ -565,7 +565,7 @@ None
 
 *Return*
 
-Returns the calling string value converted to uppercase
+It returns the String, converted to uppercase
 
 *Example*
 
@@ -583,13 +583,15 @@ include::../examples/the_language/string_to_upper_case_out.txt[]
 
 ====== String::toLowerCase()
 
+Returns the calling string value converted to lowercase
+
 *Parameters*
 
 None
 
 *Return* 
 
-Returns the calling string value converted to lowercase
+It returns the String, converted to lowercase
 
 *Example*
 
@@ -607,12 +609,24 @@ include::../examples/the_language/string_to_lower_case_out.txt[]
 
 ====== String::clear()
 
+*Parameters*
+
+*Return* 
+
+*Example*
+
 [source,javascript]
 ----
 
 ----
 
 ====== String::replace()
+
+*Parameters*
+
+*Return* 
+
+*Example*
 
 [source,javascript]
 ----
@@ -621,12 +635,24 @@ include::../examples/the_language/string_to_lower_case_out.txt[]
 
 ====== String::split()
 
+*Parameters*
+
+*Return* 
+
+*Example*
+
 [source,javascript]
 ----
 
 ----
 
 ====== String::contains()
+
+*Parameters*
+
+*Return* 
+
+*Example*
 
 [source,javascript]
 ----
@@ -635,27 +661,84 @@ include::../examples/the_language/string_to_lower_case_out.txt[]
 
 ====== String::indexOf()
 
-[source,javascript]
-----
+*Parameters*
 
-----
-====== String::startsWith()
+*Return* 
 
-[source,javascript]
-----
-
-----
-
-====== String::endsWith()
+*Example*
 
 [source,javascript]
 ----
 
+----
+====== String::startsWith(_value)
+
+Checks whether a string starts with the specified string passed by __value_
+
+*Parameters*
+
+- __value_ :  A string representing the value to check for
+
+*Return* 
+
+Returns a Boolean value:
+
+- true :  if the string starts with the specified string passed by __value_
+- false:  if the string does not starts with the specified string passed by __value_
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/string_starts_with.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/string_starts_with_out.txt[]
+----
+
+====== String::endsWith(_value)
+
+Checks whether a string ends with the specified string passed by __value_
+
+*Parameters*
+
+- __value_ :  A string representing the value to check for
+
+*Return* 
+
+Returns a Boolean value:
+
+- true :  if the string ends with the specified string passed by __value_
+- false:  if the string does not ends with the specified string passed by __value_
+
+*Example*
+
+[source,javascript]
+----
+include::../examples/the_language/string_ends_with.zs[]
+----
+
+Output:
+
+[source,text]
+----
+include::../examples/the_language/string_ends_with_out.txt[]
 ----
 
 ====== String::substring(_start_index, _end_index=-1)
 
 Returns the part of the string from the start index and, optionally, a second parameter to specify the end index. If the end index is not provided it sets as -1 as default that means that will copy till string end
+
+*Parameters*
+
+*Return* 
+
+*Example*
+
 
 [source,javascript]
 ----
@@ -670,6 +753,12 @@ include::../examples/the_language/string_substring_out.txt[]
 ----
 
 ====== String::append()
+
+*Parameters*
+
+*Return* 
+
+*Example*
 
 [source,javascript]
 ----

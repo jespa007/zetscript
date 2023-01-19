@@ -1,0 +1,3 @@
+s.startsWith("Hel") => true
+s.startsWith("llo") => false
+s.startsWith("o") => false
