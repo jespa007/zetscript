@@ -1,3 +1,0 @@
-s.endsWith("Hel") => false
-s.endsWith("llo") => true
-s.endsWith("o") => true

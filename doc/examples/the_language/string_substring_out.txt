@@ -1,4 +1,0 @@
-s.substring(0) => hello world 
-s.substring(3) => lo world 
-s.substring(2,3) => ll 
-s.substring(3,-2) => lo worl 

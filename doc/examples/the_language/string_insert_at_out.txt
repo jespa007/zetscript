@@ -1,5 +1,0 @@
- Original string before insert character = 'hell wd'
- After insert character 'o' at position 4 = 'hello wd'
-
- Original string before insert string = 'hello wd'
- After insert string "orl" at position 7 = 'hello world'
